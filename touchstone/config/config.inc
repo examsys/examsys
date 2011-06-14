@@ -58,7 +58,7 @@ switch (strtolower($_SERVER['HTTP_HOST'])) {
 
 //Warnings
   $cfg_hour_warning = 10;       // Warning for summative exams
-  error_reporting(-1);          // PHP error reporting 
+  error_reporting(0);           // PHP error reporting 
   
 //Assistance
   $support_email = 'learning-team-support@nottingham.ac.uk';
