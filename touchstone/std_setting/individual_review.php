@@ -642,10 +642,10 @@ $current_screen = 1;
 
 <tr><td colspan="2" style="text-align:center">
 <?php
-  if (isset($_COOKIE['caabanksave']) and $_COOKIE['caabanksave'] != '1') {
-    echo '<input type="checkbox" name="banksave" value="1" />&nbsp;Save ratings into question bank';
-  } else {
+  if (isset($_COOKIE['caabanksave']) and $_COOKIE['caabanksave'] == '1') {
     echo '<input type="checkbox" name="banksave" value="1" checked />&nbsp;Save ratings into question bank';
+  } else {
+    echo '<input type="checkbox" name="banksave" value="1" />&nbsp;Save ratings into question bank';
   }
   $mysqli->close();
 ?>

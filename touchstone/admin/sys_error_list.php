@@ -32,8 +32,8 @@
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
 <style>
 th {background-color:#F1F5FB; font-weight:normal; text-align:left}
-td {padding-left:6px}
 .no {text-align:right}
+.err {padding-left:6px; vertical-align:top}
 </style>
 <script src="../javascript/staff_help.js" type="text/javascript"></script>
 </head>
@@ -48,16 +48,16 @@ td {padding-left:6px}
 <td colspan="6" style="padding-left:0px; background-color:#F1F5FB"><div class="breadcrumb"><a href="../index.php">Home</a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php">Administrative Tools</a></div><div style="margin-left:10px; font-size:200%; font-weight:bold">System Error Report</td>
 <td style="padding-left:0px; background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(1); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="Help" border="0" /></a></td>
 </tr>
-<tr><th>&nbsp;Date</th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Type</th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Message</th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;File</th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Line No.</th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;User</th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;UserID</th></tr>
+<tr><th>&nbsp;Date</th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Type</th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Message</th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;File</th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Line&nbsp;No.&nbsp;</th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;User</th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;UserID</th></tr>
 <tr><td colspan="7" style="padding-left:0px; height:3px"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td></tr>
 
 <?php
-  $result = $mysqli->prepare("SELECT title, initials, surname, occurred, errtype, errstr, errfile, errline, users.id FROM sys_errors, users WHERE users.id=sys_errors.userID ORDER BY occurred DESC LIMIT 1000");
+  $result = $mysqli->prepare("SELECT title, initials, surname, DATE_FORMAT(occurred,'%d/%m/%y&nbsp;%H:%i'), errtype, errstr, errfile, errline, users.id FROM sys_errors, users WHERE users.id=sys_errors.userID ORDER BY occurred DESC LIMIT 1000");
   $result->execute();
   $result->store_result();
   $result->bind_result($title, $initials, $surname, $occurred, $errtype, $errstr, $errfile, $errline, $tmp_userID);
   while ($result->fetch()) {
-    echo "<tr><td>$occurred</td><td>$errtype</td><td>$errstr</td><td>$errfile</td><td>$errline</td><td>$title $initials $surname</td><td>$tmp_userID</td></tr>\n";
+    echo "<tr><td class=\"err\">$occurred</td><td class=\"err\">$errtype</td><td class=\"err\">$errstr</td><td class=\"err\">$errfile</td><td class=\"err\">$errline</td><td class=\"err\">$title&nbsp;$initials&nbsp;$surname</td><td class=\"err\">$tmp_userID</td></tr>\n";
   }
 ?>
 </table>

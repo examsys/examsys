@@ -18,7 +18,7 @@
 
   function customErrorHandler($errno, $errstr, $errfile, $errline) {
     global $mysqli, $userID;
-    
+      
     switch ($errno) {
       case E_NOTICE:
       case E_USER_NOTICE:
@@ -36,14 +36,25 @@
         $error_type = "Unknown";
         break;
     }
+    
+    // Errors we do not want to log.
+    if ($error_type == 'Warning') {
+      if (strpos($errstr,'The device is not ready.') !== false) {
+        return true;
+      } elseif (strpos($errstr,'Access is denied.') !== false) {
+        return true;
+      } elseif (strpos($errstr,'ldap_bind()') !== false) {
+        return true;
+      }
+    }
 
-    if ($error_type != 'Notice') {
+    if ($error_type != 'Notice') {  // Record errors that are not notices.
       $log_error = $mysqli->prepare("INSERT INTO sys_errors VALUES(NULL, NOW(), ?, ?, ?, ?, ?)");
       $log_error->bind_param('issss', $userID, $error_type, $errstr, $errfile, $errline);
       $log_error->execute();
       $log_error->close();
     }
     
-    return  false;
+    return false;
   }
 ?>

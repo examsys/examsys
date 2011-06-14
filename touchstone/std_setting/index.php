@@ -439,7 +439,11 @@
 
     $review_no++;
     if ($old_method == 'Modified Angoff') {
-      $pass_score = round($std_total/$question_no);
+      if ($question_no > 0) {
+        $pass_score = round($std_total/$question_no);
+      } else {
+        $pass_score = 0;
+      }
       $review_total = $angoff_review_marks;
       $distinction_score = 'n/a';
     } elseif ($old_method == 'Ebel') {

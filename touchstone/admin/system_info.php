@@ -194,8 +194,9 @@ if ($cfg_use_ldap == true) {
     $i = 0;
     foreach ($disks as $key=>$disk) {
       if ($disk != 'Drives') {
-        $master_array[$i][3] = round(((@disk_free_space(strtoupper($disk) . ':') / 1024) / 1024) / 1024) . 'G';
-        $master_array[$i][1] = round(((@disk_total_space(strtoupper($disk) . ':') / 1024) / 1024) / 1024) . 'G';
+        $driveID = strtoupper($disk) . ':';
+        $master_array[$i][3] = round(((@disk_free_space($driveID) / 1024) / 1024) / 1024) . 'G';
+        $master_array[$i][1] = round(((@disk_total_space($driveID) / 1024) / 1024) / 1024) . 'G';
         $master_array[$i][5] = $disk . ':';
       }
       $i++;
