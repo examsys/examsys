@@ -221,15 +221,7 @@
       echo "<tr><td colspan=\"4\" style=\"padding-left:4px\"><table border=\"0\" style=\"padding-top:6px; padding-bottom:2px; width:100%; color:#1E3287\"><tr><td><nobr>Screen " . $temp_array[$x]['screen'] . "</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n</td></tr>\n";
     }
     $old_screen = $temp_array[$x]['screen'];
-    $teamOK = false;
-    if ($temp_array[$x]['ownerID'] == $userID or $paper_ownerID == $userID or strpos($userroles,'SysAdmin') !== false) {
-      $teamOK = true;
-    } else {
-      foreach ($user_teams as $individual_team) {
-        if ($individual_team == $temp_array[$x]['q_group']) $teamOK = true;
-      }
-    }
-
+    
     $objByModule = getObjectivesByMapping($moduleID,$session,$paperID,$temp_array[$x]['q_id'],$mysqli);
     if(array_key_exists($temp_array[$x]['q_id'],$excluded)) {
       $class = 'mapping_exclueded';
