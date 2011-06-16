@@ -330,7 +330,6 @@ function display_options($options,$q_id, $current_theme, $current_scenario, $cur
               echo "<tr><td>" .  reviewScale('mrq', $q_id, $question_no, $part_id, $std_method, $tmp_reviews, substr($tmp_exclude,0,1)) . "</td><td><input type=\"checkbox\" name=\"q" . $question_no . "_" . $part_id . "\" value=\"y\" checked /></td><td";
               if (isset($exclude[$q_id])) echo ' style="color:red; text-decoration:line-through"';
               echo ">" . stripslashes($display_option['option_text']) . "</td></tr>\n";
-              $mrq_part++;
             }
           } else {
             echo "<tr><td></td><td><input type=\"checkbox\" name=\"q" . $question_no . "_" . $part_id . "\" id=\"q" . $question_no . "_" . $part_id . "\" value=\"y\" /></td><td";
@@ -343,7 +342,6 @@ function display_options($options,$q_id, $current_theme, $current_scenario, $cur
               echo "<tr><td>&nbsp;</td><td><input type=\"checkbox\" name=\"q" . $question_no . "_" . $part_id . "\" id=\"q" . $question_no . "_" . $part_id . "\" value=\"y\" checked /><span class=\"active\" id=\"$question_no" . "_" . "$part_id\">" . stripslashes($display_option['option_text']) . "</span><br /><img src=\"./media/" . $display_option['o_media'] . "\" width=\"" . $display_option['o_media_width'] . "\" height=\"" . $display_option['o_media_height'] . "\" border=\"0\"/></td></tr>\n";
             } else {
               echo "<tr><td>" .  reviewScale('mrq', $q_id, $question_no, $part_id, $std_method, $tmp_reviews, substr($tmp_exclude,0,1)) . "</td><td><input type=\"checkbox\" name=\"q" . $question_no . "_" . $part_id . "\" id=\"q" . $question_no . "_" . $part_id . "\" value=\"y\" checked /><span class=\"active\" id=\"$question_no" . "_" . "$part_id\">" . stripslashes($display_option['option_text']) . "</span><br /><img src=\"./media/" . $display_option['o_media'] . "\" width=\"" . $display_option['o_media_width'] . "\" height=\"" . $display_option['o_media_height'] . "\" border=\"0\"/></td></tr>\n";
-              $mrq_part++;
             }
           } else {
             echo "<tr><td></td><td><input type=\"checkbox\" name=\"q" . $question_no . "_" . $part_id . "\" id=\"q" . $question_no . "_" . $part_id . "\" value=\"y\" /><span class=\"active\" id=\"$question_no" . "_" . "$part_id\">" . stripslashes($display_option['option_text']) . "</span><br /><img src=\"./media/" . $display_option['o_media'] . "\" width=\"" . $display_option['o_media_width'] . "\" height=\"" . $display_option['o_media_height'] . "\" border=\"0\"/></td></tr>\n";
@@ -353,7 +351,6 @@ function display_options($options,$q_id, $current_theme, $current_scenario, $cur
             echo "<tr><td>&nbsp;</td><td><input type=\"checkbox\" name=\"q" . $question_no . "_" . $part_id . "\" value=\"y\" checked /><img src=\"./media/" . $display_option['o_media'] . "\" width=\"" . $display_option['o_media_width'] . "\" height=\"" . stripslashes($display_option['o_media_height']) . "\" border=\"0\"/></td></tr>\n";
           } else {
             echo "<tr><td>" .  reviewScale('mrq', $q_id, $question_no, $part_id, $std_method, $tmp_reviews, substr($tmp_exclude,0,1)) . "</td><td><input type=\"checkbox\" name=\"q" . $question_no . "_" . $part_id . "\" value=\"y\" /><img src=\"./media/" . $display_option['o_media'] . "\" width=\"" . $display_option['o_media_width'] . "\" height=\"" . stripslashes($display_option['o_media_height']) . "\" border=\"0\"/></td></tr>\n";
-            $mrq_part++;
           }
         }
         if ($display_option['score_method'] == 'SelectedPositive') {
@@ -363,6 +360,7 @@ function display_options($options,$q_id, $current_theme, $current_scenario, $cur
         } else {
           $marks++;  // 1 mark for each and every item
         }
+        $mrq_part++;
         break;
       case 'extmatch':
       case 'matrix':
