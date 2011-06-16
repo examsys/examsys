@@ -18,7 +18,7 @@
 
   function customErrorHandler($errno, $errstr, $errfile, $errline) {
     global $mysqli, $userID;
-      
+          
     switch ($errno) {
       case E_NOTICE:
       case E_USER_NOTICE:
@@ -49,12 +49,12 @@
     }
 
     if ($error_type != 'Notice') {  // Record errors that are not notices.
-      $log_error = $mysqli->prepare("INSERT INTO sys_errors VALUES(NULL, NOW(), ?, ?, ?, ?, ?)");
-      $log_error->bind_param('issss', $userID, $error_type, $errstr, $errfile, $errline);
+      $log_error = $mysqli->prepare("INSERT INTO sys_errors VALUES(NULL, NOW(), ?, ?, ?, ?, ?, 0 , ?, ?, ?)");
+      $log_error->bind_param('isssssss', $userID, $error_type, $errstr, $errfile, $errline, $_SERVER['PHP_SELF'], $_SERVER['QUERY_STRING'], $_SERVER['REQUEST_METHOD']);
       $log_error->execute();
       $log_error->close();
     }
-    
+   
     return false;
   }
 ?>
