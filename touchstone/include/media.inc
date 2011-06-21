@@ -87,7 +87,7 @@ function unique_filename($filename, $strip = TRUE) {
     $filename = preg_replace("/[^a-z0-9_\-\(\)\.]/","",$filename);
   }
 
-  while(file_exists($cfg_web_root . "touchstone/media/$filename")) {
+  while (file_exists($cfg_web_root . "touchstone/media/$filename")) {
     if(!isset($ext)) {
       $tmp = explode('.',$filename);
       $n = count($tmp);
@@ -192,7 +192,7 @@ function deleteMedia($filename) {
   
   if ($filename != '') {
     if (@!unlink($cfg_web_root . 'touchstone/media/' . $filename)) {
-      display_error("Failed to delete " . $filename, '', false, true);
+      //display_error("Failed to delete " . $filename, '', false, true);
     }
   }
 }
