@@ -54,13 +54,16 @@ $lab_info->close();
 
 // Get modules
 $modules = array();
+$i = 0;
 if ($stmt = $mysqli->prepare("SELECT m.ModuleID, m.fullname, sm.calendar_year FROM modules m INNER JOIN student_modules sm on m.moduleID = sm.moduleid WHERE sm.userID = ? AND m.active = 1 ORDER BY sm.calendar_year ASC, m.fullname ASC")) {
   $stmt->bind_param('i', $userID);
   $stmt->execute();
   $stmt->bind_result($moduleID, $module_name, $module_year);
   while($stmt->fetch()) {
-		$modules[$moduleID]['name'] = $module_name;
-		$modules[$moduleID]['year'] = $module_year;
+		$modules[$i]['id'] = $moduleID;
+		$modules[$i]['name'] = $module_name;
+		$modules[$i]['year'] = $module_year;
+		$i++;
   }
 }
 $stmt->close();
@@ -79,14 +82,14 @@ AND p.deleted IS NULL
 GROUP BY p.property_id
 QUERY;
 
-foreach(array_keys($modules) as $mod_id) {
+for($i = 0; $i < count($modules); $i++) {
+  $mod_id = $modules[$i]['id'];
 	if ($stmt = $mysqli->prepare($papers_query)) {
 		$mod_string = '%'.$mod_id.'%';
-	  $stmt->bind_param('ss', $mod_string, $modules[$mod_id]['year']);
+	  $stmt->bind_param('ss', $mod_string, $modules[$i]['year']);
 	  $stmt->execute();
 	  $stmt->bind_result($paper_title, $paper_type, $labs, $start_date, $end_date, $screens, $calendar_year);
 	  $stmt->store_result();
-	  $i = 0;
 	  while($stmt->fetch()) {
 	  	// Check if the user is able to access the paper from their current location
 	  	$lab_arr = (empty($labs)) ? array() : explode(',', $labs);
@@ -95,12 +98,11 @@ foreach(array_keys($modules) as $mod_id) {
 	  		
 	  		// Don't show if 0 screens
 	  		if($screens > 0) {
-					$modules[$mod_id]['papers'][] = array('title' =>$paper_title, 'type' => $paper_type, 'start' => $start_date, 'end' => $end_date, 'screens' => $screens);
-					$i++;
+					$modules[$i]['papers'][] = array('title' =>$paper_title, 'type' => $paper_type, 'start' => $start_date, 'end' => $end_date, 'screens' => $screens);
 					$papers++;
 					
-					if(!in_array($modules[$mod_id]['year'], $sessions_with_papers)) {
-						$sessions_with_papers[] = $modules[$mod_id]['year'];
+					if(!in_array($modules[$i]['year'], $sessions_with_papers)) {
+						$sessions_with_papers[] = $modules[$i]['year'];
 					}
 	  		}
 	  	}
@@ -163,8 +165,9 @@ if(count($sessions_with_papers) > 0) {
 if($papers > 0) {
 	$last_session = '';
 	
-	foreach($modules as $mod_id => $module)
-	{	
+	foreach($modules as $module)
+	{
+	  $mod_id = $module['id'];
 		if(!empty($module['papers']))
 		{
 			if($module['year'] != $last_session) {
