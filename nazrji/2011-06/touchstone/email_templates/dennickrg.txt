@@ -1,0 +1,25 @@
+reg.dennick@nottingham.ac.uk
+
+
+Results for CP Progress Test 2
+
+
+<div>Dear {student-title} {student-last-name},</div>
+
+<div>&nbsp;</div>
+
+<div>Your mark for the first progress test is {student-adj-percent}%</div>
+
+<div>The Average mark is {class-mean-adj-percent}%</div>
+
+<div>&nbsp;</div>
+
+<div>The test is now available as a formative test so you can take it again.</div>
+
+<div>&nbsp;</div>
+
+<div>Well done!</div>
+
+<div>&nbsp;</div>
+
+<div>Dr Reg Dennick</div>

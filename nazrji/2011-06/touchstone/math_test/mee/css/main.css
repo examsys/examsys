@@ -1,0 +1,207 @@
+/* For debug */
+.indent
+{
+    padding-left: 20px;
+}
+
+/* stop line wrapping */
+.mee span
+{
+    white-space: nowrap;
+}
+
+/* Main container */
+.mee
+{
+    /*padding: 1em;*/ /* debug */
+    font-family: MathJax_Main;
+}
+
+/* set of elements */
+.mee_elemset
+{
+    position: relative;
+    /*border: 1px dashed green;*/
+}
+
+/* single element */
+.mee_elem
+{
+    position: relative;
+    /*border: 1px dashed blue;*/
+}
+
+/* elements main component */
+.mee_main
+{
+    position: relative; /* THIS HAS TO BE 'RELATIVE' OR NESTED SIZING DOESNT WORK CORRECTLY */
+    padding-right: 1px;
+}
+
+/* elements superscript component */
+.mee_superscript
+{
+    position: absolute;
+    top: 0px;
+    font-size: 65%;
+    /*border:1px solid red;*/
+}
+/* elements subscript component */
+.mee_subscript
+{
+    position: absolute;
+    bottom: 0px;
+    font-size: 65%;
+    /*border:1px solid blue;*/
+}
+
+
+/* variable - ie x y */
+.mee_variable
+{
+    font-style: italic;
+}
+
+/* greek letters */
+.mee_greek
+{
+    font-style: italic;
+}
+/* command element */
+.mee_command_elem
+{
+    margin-left: 0.1em;
+    margin-right: 0.1em;
+}
+
+/* large operators \int \sum */
+.mee_largeop_main
+{
+    font-family: MathJax_Size2;    
+}
+
+/* accents */
+.mee_accent_main
+{
+    position: absolute;
+    left:0.1em;
+    bottom:0em;
+}
+
+/* DEBUG - Hightlight and args left over */
+.mee_arg
+{
+    /*border: 1px solid red;*/
+}
+
+/* for \sqrt */
+.mee_sqrt_super
+{
+    font-size: 60%;
+    left: 0.5em;
+}
+
+/* for \boxed */
+.mee_boxed
+{
+    border: 1px solid black;
+    padding: 0.1em;
+}
+
+/* debug */
+.mee_row
+{
+    /*border: 1px solid red;*/
+}
+
+.mee_col
+{
+    /*border: 1px solid blue;*/
+}
+
+/* vector special changes */
+.mee_vector
+{
+    position: relative;
+    left: 0.6em;
+    font-family: MathJax_Main;
+}
+.mee_font_arial
+{
+    /*position: relative;
+    left: 0.6em;*/
+    font-family: Arial Unicode MS;
+}
+.mee_font_arial_2
+{
+    position: absolute;
+    left: 0px;
+    top: 0.15em;
+}
+/* Fonts */
+.mee_font_math { font-family: MathJax_Math; }
+.mee_font_main { font-family: MathJax_Main; }
+.mee_font_cal { font-family: MathJax_Caligraphic; }
+.mee_font_scr { font-family: MathJax_Script; }
+.mee_font_rm { }
+.mee_font_bf { font-weight: bold; }
+.mee_font_bb { font-family: MathJax_AMS; }
+.mee_font_it { font-style: italic; }
+.mee_font_frak { font-family: MathJax_Fraktur; }
+.mee_font_sf { font-family: MathJax_SansSerif; }
+.mee_font_tt { font-family: MathJax_Typewriter; }
+.mee_font_oldstyle { font-family: MathJax_Caligraphic; }
+
+
+/* fractions */
+.mee_frac_upper 
+{
+    font-size: 80%;
+}
+.mee_frac_lower
+{
+    font-size: 80%;
+}
+.mee_matrix_col
+{
+    font-size: 90%;
+}
+.mee_matrix_row
+{
+    
+}
+.mee_pmod
+{
+    padding-left: 0.9em;
+}
+.mee_binary
+{
+    padding-left: 0.2em;
+    padding-right: 0.2em;
+}
+.mee_operator
+{
+    padding-left: 0.2em;
+    padding-right: 0.2em;
+}
+.mee_arrows
+{
+    padding-left: 0.2em;
+    font-family: MathJax_AMS;
+}
+.mee_test_size1
+{
+    font-family: MathJax_Size1;
+}
+.mee_test_size2
+{
+    font-family: MathJax_Size2;
+}
+.mee_test_size3
+{
+    font-family: MathJax_Size3;
+}
+.mee_test_size4
+{
+    font-family: MathJax_Size4;
+}

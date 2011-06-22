@@ -1,0 +1,23 @@
+Gillian Manning
+
+gillian.manning@nottingham.ac.uk
+MCQ Blocks 1 and 2
+
+
+<div>Dear {student-title} {student-last-name},</div>
+
+<div>&nbsp;</div>
+
+<div>Below is a summary of your results for {paper-title}: Your raw score&nbsp;was {student-raw-mark} out of 75.</div>
+
+<div>&nbsp;</div>
+
+<div>The link to the paper from the GEM assessment section of the website will be available ASAP.</div>
+
+<div>&nbsp;</div>
+
+<div>Gillian</div>
+
+<div>&nbsp;</div>
+
+<div>&nbsp;</div>

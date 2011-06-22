@@ -1,0 +1,129 @@
+function refreshparent() {
+  window.opener.location.reload();
+}
+function onoff(questionID, itemID) {
+  objID = questionID + '_' + itemID;
+  if (document.getElementById(objID).className == "act") {
+    document.getElementById(objID).className = "inact";
+    setting = '1';
+  } else {
+    document.getElementById(objID).className = "act";
+    setting = '0';
+  }
+  objID = 'dismiss' + questionID;
+  current_value = document.getElementById(objID).value;
+  new_value = current_value.slice(0,itemID-1) + setting + current_value.slice(itemID,current_value.length);
+  document.getElementById(objID).value = new_value;
+}
+
+// please keep these lines on when you copy the source
+// made by: Nicolas - http://www.javascript-page.com
+var clockID = 0;
+function UpdateClock() {
+  if(clockID) {
+    clearTimeout(clockID);
+    clockID  = 0;
+  }
+  var tDate = new Date();
+  document.getElementById('theTime').value = "" + ((tDate.getHours() < 10) ? "0" : "") + tDate.getHours() +
+    ((tDate.getMinutes()  < 10) ? ":0" : ":") + tDate.getMinutes() +
+    ((tDate.getSeconds() < 10) ? ":0" : ":") + tDate.getSeconds();
+    clockID = setTimeout("UpdateClock()", 1000);
+}
+function StartClock() {
+  clockID = setTimeout("UpdateClock()", 500);
+}
+function KillClock() {
+  if(clockID) {
+    clearTimeout(clockID);
+    clockID  = 0;
+  }
+}
+function MRQ(questionid,part_id,options_total,selectable) {
+  checked_total = 0;
+  for (i=1; i<=options_total; i++) {
+    currentid = "q" + questionid + "_" + i;
+    if (document.getElementById(currentid).checked == 1) {
+      checked_total++;
+    }
+  }
+  if (checked_total > selectable) {
+    alert("Too many options selected!\n\nOnly " + selectable + " items can be selected in this question.");
+    document.getElementById("q" + questionid + "_" + part_id).checked = 0;
+  }
+}
+function rankCheck(questionid,part_id,options_total,selectable) {
+  checked_total = 0;
+  duplicate = 0;
+  current_value = document.getElementById('q' + questionid + '_' + part_id).value;
+  for (i=1; i<=options_total; i++) {
+    currentid = "q" + questionid + "_" + i;
+    if (document.getElementById(currentid).value != 0 && document.getElementById(currentid).value != 'u') {
+      checked_total++;
+    }
+    if (i != part_id && current_value != 0 && current_value != 'u') {
+      if (document.getElementById(currentid).value == current_value) {
+        duplicate = 1;
+      }
+    }
+  }
+  if (checked_total > selectable) {
+    alert("Too many options selected!\n\nOnly " + selectable + " items can be selected in this question.");
+    document.getElementById('q' + questionid + '_' + part_id).value = 0;
+  } else if (duplicate == 1) {
+    alert("You have already selected " + current_value + ".\n\nPlease select a different ranking.");
+    document.getElementById('q' + questionid + '_' + part_id).value = 0;    
+  }
+}
+function multimatchingCheck(questionid,options_total,selectable) {
+  checked_total = 0;
+  for (i=0; i<options_total; i++) {
+    if (document.getElementById(questionid).options[i].selected == 1) {
+      checked_total++;
+    }
+  }
+  tmp_count = 0;
+  if (checked_total > selectable) {
+    alert("Too many options selected!\n\nOnly " + selectable + " items can be selected in this question.");
+    for (i=0; i<options_total; i++) {
+      if (document.getElementById(questionid).options[i].selected == 1) {
+        tmp_count++;
+      }
+      if (tmp_count > selectable) {
+        document.getElementById(questionid).options[i].selected = 0;
+      }
+    }
+  }
+}
+function openCalc() {
+  if (typeof(calc) == 'object' && calc.closed != true) {
+    calc.focus();
+  } else {
+    calc=window.open("/touchstone/tools/calc98/jcalc98.htm","calculator","width=250,height=331,top=10,left="+(document.documentElement.clientWidth-280)+"scrollbars=no,resizable=no,toolbar=no,location=no,directories=no,status=no,menubar=no");
+    if (window.focus) {
+      calc.focus();
+    }
+  }
+}
+function openLink(url,name,width,height) {
+  if (typeof (doc) == 'object' && doc.closed != true) {
+    doc.focus();
+  } else {
+    doc = window.open(url, name, "width=" + width + ",height=" + height + ",top=10,left="+(document.documentElement.clientWidth-280)+",scrollbars=yes,resizable=yes,toolbar=no,location=no,directories=no,status=no,menubar=no");
+    if (window.focus) {
+      doc.focus();
+    }
+  }
+}
+function write_string(p_string) {
+  document.write(p_string);
+}
+var DragMath = Array();
+function saveMath() {
+  for (var i=0; i<DragMath.length; i++) {
+	var applet = document.getElementById('DragMath_' + DragMath[i]);
+    var input = document.getElementById(DragMath[i]);
+	input.value = applet.getMathExpression();
+  }
+}
+

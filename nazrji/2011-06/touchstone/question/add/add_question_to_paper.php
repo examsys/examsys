@@ -1,0 +1,170 @@
+<?php
+// This file is part of TouchStone
+//
+// TouchStone is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// TouchStone is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with TouchStone.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+* 
+* @author Simon Wilkinson
+* @version 1.0
+* @copyright Copyright (c) 2011 The University of Nottingham
+* @package
+*/
+
+require '../../include/staff_auth.inc';
+require '../../include/errors.inc';
+require '../../classes/dateutils.class.php';
+
+if (!isset($_POST['submit'])) {
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title>Add new Question</title>
+<style>
+body {font-family:Arial,sans-serif}
+td {font-size:80%}
+</style>
+
+<script language="JavaScript">
+  function checkForm() {
+    checkOption = -1
+    for (i=0; i<theForm.property_id.length; i++) {
+      if (theForm.property_id[i].checked) {
+        checkOption = i;
+      }
+    }
+    if (checkOption == -1) {
+      alert("Please select which paper you would like to add the question to.");
+      return false;
+    }
+    
+    paperTitle = theForm.new_paper.value;
+    for (a=0; a<paperTitle.length; a++) {
+      char = paperTitle.substr(a,1);
+      if (char == '&' || char == '#' || char == '@' || char == '?' || char == '^' || char == '~') {
+        alert('A paper name cannot contain any of the following characters:\r      &  #  @  ?  ^  ~');
+        return false;
+      }
+    }
+  }
+</script>
+</head>
+
+<body style="margin:0px">
+<?php
+  echo "<form method=\"post\" name=\"theForm\" onsubmit=\"return checkForm()\" action=\"" . $_SERVER['PHP_SELF'] . "?q_id=" . $_GET['q_id'] . "\">\n";
+?>  
+
+  <table cellpadding="2" cellspacing="0" border="0" width="100%">
+  <tr><td style="background-color:#EBEADB; border-left:solid white 1px; border-right:solid #D8D2BD 1px; border-top:solid white 1px; border-bottom:solid #D8D2BD 1px; font-size:200%; font-weight:bold; color:black\">&nbsp;Select Paper</td></tr>
+  </table>
+
+  <p style="margin:4px; text-align:justify; font-size:70%"><img src="../../artwork/small_warning_16.png" width="16" height="16" alt="WARNING: Active paper!" border="0" /> = A paper is currently 'active'. The current date lies between its start and end dates. This is a safety feature so active papers cannot be altered.</p>
+  <p style="margin:4px; text-align:justify; font-size:70%"><img src="../../artwork/small_padlock.png" width="16" height="16" alt="WARNING: Locked paper!" border="0" /> = A summative paper is locked and cannot be altered.</p>
+
+  <table cellpadding="0" cellspacing="1" border="0">
+<?php
+  $teamSQL = '';
+  foreach ($teams as $team) {
+    $teamSQL .= " OR moduleID LIKE '%$team%'";
+  }
+
+ // echo "SELECT DISTINCT property_id, paper_title, start_date, end_date, paper_type FROM properties WHERE (paper_ownerID=? $teamSQL) AND deleted IS NULL ORDER BY paper_title";
+  $result = $mysqli->prepare("SELECT DISTINCT property_id, paper_title, start_date, end_date, paper_type FROM properties WHERE (paper_ownerID=? $teamSQL) AND deleted IS NULL ORDER BY paper_title");
+  $result->bind_param('s', $userID);
+  $result->execute();
+  $result->bind_result($property_id, $paper_title, $start_date, $end_date, $paper_type);
+  while ($row = $result->fetch()) {
+    if (($paper_type == '2' or $paper_type == '4') and date("Y-m-d H:i:s") > $end_date) {
+      echo "<tr><td style=\"width:20px\"><img src=\"../../artwork/small_padlock.png\" width=\"16\" height=\"16\" alt=\"WARNING: Locked paper!\" border=\"0\" /></td><td><input type=\"radio\" name=\"property_id\" value=\"$paper_title\" disabled><span style=\"color:#808080\">" . stripslashes($paper_title) . "</span></td></tr>\n";
+    } elseif ($start_date < date("Y-m-d H:i:s") and $end_date > date("Y-m-d H:i:s")) {
+      echo "<tr><td style=\"width:20px\"><img src=\"../../artwork/small_warning_16.png\" width=\"16\" height=\"16\" alt=\"WARNING: Active paper!\" border=\"0\" /></td><td><input type=\"radio\" name=\"property_id\" value=\"$paper_title\" disabled><span style=\"color:#808080\">" . stripslashes($paper_title) . "</span></td></tr>\n";
+    } else {
+      echo "<tr><td style=\"width:20px\">&nbsp;</td><td><input type=\"radio\" name=\"property_id\" value=\"$property_id\">" . stripslashes($paper_title) . "</td></tr>\n";
+    }
+  }
+  $result->close();
+  echo "<tr><td>&nbsp;</td><td><input type=\"radio\" name=\"property_id\" value=\"-new-assessment-paper-\"><input type=\"text\" size=\"40\" name=\"new_paper\" value=\"New Assessment Paper\" /></td></tr>\n</table>\n<br />";
+  echo "<div align=\"center\"><input type=\"submit\" style=\"width:120px\" name=\"submit\" value=\"Add to Paper\" />&nbsp;&nbsp;<input type=\"button\" style=\"width:120px\" name=\"cancel\" onclick=\"window.close();\" value=\"Cancel\" /></div>\n</form>\n";
+} else {
+?>
+<html>
+<head>
+<title>Add new Question</title>
+</head>
+<body style="font-family:Arial,sans-serif;background-color:EEECDC;text-align:center">
+<?php
+  $property_id = $_POST['property_id'];
+  $q_id = $_GET['q_id'];
+  
+  if ($property_id == '-new-assessment-paper-') {
+    // Check that paper name is not already in use.
+    $result = $mysqli->prepare("SELECT property_id FROM properties WHERE paper_title=? LIMIT 1");
+    $np_name = stripslashes($_POST['new_paper']);
+    $result->bind_param('s', $np_name);
+    $result->execute();  
+    $result->store_result();
+    $result->bind_result($tmp_id);
+    $rows_found = $result->num_rows;
+    $result->free_result();
+    $result->close();
+    if ($rows_found > 0) {
+      echo "Sorry <strong>'" . stripslashes($_POST['new_paper']) . "'</strong> is a name already in use.";
+      echo "<p><input type=\"button\" value=\"Back\" style=\"width:100px\" onclick=\"history.back();\" /></p>\n</body>\n</html>\n";
+      exit;
+    }
+    
+    // Calculate what the current academic session is.
+		$session = DateUtils::get_current_academic_year();
+        
+    $tmp_paper_title = stripslashes($_POST['new_paper']);
+    
+    // Create the new paper.
+    $result = $mysqli->prepare("INSERT INTO properties VALUES (NULL,?,'20030101090000','20250101090000','Europe/London','0','','','white','black','#316AC5','#C00000','0',1,'0',40,70,?,'','','',0,'',NULL,NULL,NOW(),0,0,'1','1','1','1','0',NULL,?,'',NULL,NULL,'0',0,'')");
+    $result->bind_param('sis', $tmp_paper_title, $userID, $session);
+    $result->execute();  
+    $property_id = $mysqli->insert_id;
+    $result->close();
+
+    $display_pos = 1;
+    $screen = 1;
+  } else {
+    // Get the maximum display position for an existing paper.
+    $result = $mysqli->prepare("SELECT MAX(display_pos), MAX(screen) FROM papers WHERE paper=?");
+    $result->bind_param('i', $property_id);
+    $result->execute();
+    $result->bind_result($display_pos, $screen);
+    $result->fetch();
+    $result->close();
+    if ($screen == '') $screen = 1;
+    $display_pos++;                     // Add one to put new question right at the end.
+  }
+
+  $question_array = array();
+  $question_array = explode(',',$q_id);
+  foreach ($question_array as $question_part) {
+    $result = $mysqli->prepare("INSERT INTO papers VALUES (NULL,?,?,?,?)");
+    $result->bind_param('iiii',$property_id,$question_part,$screen,$display_pos);
+    $result->execute();  
+    $result->close();  
+  }
+
+  echo "<p>Question added.</p>\n";
+  echo "<p><input type=\"button\" value=\"  OK  \" onclick=\"window.close();\" /></p>\n";
+}
+?>
+</body>
+</html>

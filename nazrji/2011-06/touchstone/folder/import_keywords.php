@@ -1,0 +1,131 @@
+<?php
+// This file is part of TouchStone
+//
+// TouchStone is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// TouchStone is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with TouchStone.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+* 
+* @author Simon Wilkinson
+* @version 1.0
+* @copyright Copyright (c) 2011 The University of Nottingham
+* @package
+*/
+
+require '../include/staff_auth.inc';
+
+  function marks_from_file($fileName) {
+    global $mysqli;
+  
+    // Get the ID of the module
+    $result = $mysqli->prepare("SELECT id FROM modules WHERE moduleid=?");
+    $result->bind_param('s', $_GET['module']);
+    $result->execute();
+    $result->bind_result($tmp_userID);
+    $result->fetch();
+    $result->close();
+
+    // Get the existing team keywords for the folder.
+    $existing_keywords = array();
+    $result = $mysqli->prepare("SELECT keyword FROM keywords_user WHERE userID=?");
+    $result->bind_param('i', $tmp_userID);
+    $result->execute();
+    $result->bind_result($keyword);
+    while ($result->fetch()) {
+      $existing_keywords[$keyword] = $keyword;
+    }
+    $result->close();
+    
+    $lines = file($fileName);
+    foreach ($lines as $separate_line) {
+      $separate_line = trim($separate_line);
+      if (!isset($existing_keywords[$separate_line])) {
+        $result = $mysqli->prepare("INSERT INTO keywords_user VALUES(NULL,?,?,'team')");
+        $result->bind_param('is', $tmp_userID, $separate_line);
+        $result->execute();
+        $result->close();
+      }
+    }
+  }
+
+  if (isset($_POST['submit']) and $_POST['submit']) {
+    if ($_FILES['txtfile']['name'] != 'none' and $_FILES['txtfile']['name'] != '') {
+      if (!move_uploaded_file($_FILES['txtfile']['tmp_name'], "/tmp/" . $userID . "_keywords.txt"))  {
+        echo uploadError($_FILES['txtfile']['error']);
+        exit;
+      } else {
+        marks_from_file('/tmp/' . $userID . '_keywords.txt');
+        unlink('/tmp/' . $userID . '_keywords.txt');
+        header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/touchstone/folder/list_keywords.php?paperID=". $_GET['paperID'] . "&module=" . $_GET['module'] . "&folder=" . $_GET['folder']);
+      }
+    }
+  } else {
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title>Load Spotter Marks</title>
+<link rel="stylesheet" href="../css/submenu.css" type="text/css">
+<style>
+  body, p {color:#003366; font-family:Arial,sans-serif}
+</style>
+
+</head>
+
+<body>
+<?php
+  require '../include/folder_keyword_options.inc';
+?>
+
+<div id="content" class="content">
+<br />
+<br />
+<table border="0" width="100%" height="100%">
+<tr><td valign="middle">
+<div align="center">
+
+<table border="0" cellpadding="4" cellspacing="0" style="border:1px solid #5582D2; width:85%">
+<tr>
+<td valign="middle" align="left" style="background-color:white"><img src="../artwork/import_csv_32.gif" width="32" height="32" alt="Icon" />&nbsp;&nbsp;<span style="font-family:Arial,sans-serif; font-size:16pt; font-weight:bold; color:#5582D2">Load Keywords (TXT) File</span></td>
+</tr>
+<tr>
+<td align="left" style="background-color:#DFE8FF">
+
+<p>Keywords should be listed one per line.</p>
+
+<div>Please select the TXT file you wish to load:</div>
+
+
+<div align="center">
+<form name="import" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>?paperID=<?php if (isset($_GET['paperID'])) echo $_GET['paperID']; ?>&folder=<?php if (isset($_GET['folder'])) echo $_GET['folder']; ?>&module=<?php echo $_GET['module']; ?>" enctype="multipart/form-data">
+
+<p><input type="file" size="50" name="txtfile" /></p>
+
+<p><input type="submit" style="width:100px" value="Load Keywords" name="submit" />&nbsp;<input style="width:100px" type="button" value="Cancel" name="cancel" onclick="history.go(-1)" /></p>
+</form>
+</div>
+</td>
+</tr>
+</table>
+
+</div>
+</td></tr>
+</table>
+</div>
+
+</body>
+</html>
+<?php
+  }
+  $mysqli->close();
+?>
