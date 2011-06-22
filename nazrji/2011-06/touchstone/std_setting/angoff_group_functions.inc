@@ -764,7 +764,7 @@ function display_options($options,$q_id, $current_theme, $current_scenario, $cur
           if (max($ratings_array) > (min($ratings_array) + 10) and count($ratings_array) > 0) {
             echo '<div>' .  reviewScale('extmatch', $q_id, $question_no, $rating_part, $review_mean, 0) . '</div>';
           } else {
-            echo '<div>' .  reviewScale('extmatch', $q_id, $question_no, $rating_part, review_mean, 1) . '</div>';
+            echo '<div>' .  reviewScale('extmatch', $q_id, $question_no, $rating_part, $review_mean, 1) . '</div>';
           }
           $rating_part++;
         }
