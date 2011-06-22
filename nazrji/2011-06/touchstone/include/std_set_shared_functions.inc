@@ -369,7 +369,7 @@ function ss_get_marks($mysqli, $paper_id, $exclude, &$marks_array) {
   }
 }
 
-function display_option($firstoption, $q_id, $question_no, &$part_id, $display_option, $std_method, $is_group, &$marks, $exclude, $review_val, &$matching_options, $review_mean, $default_on, $tmp_reviews, $tmp_exclude, $option_no, $total_rank_no, $require_na) {
+function display_option($firstoption, $q_id, $question_no, &$part_id, $display_option, $std_method, $is_group, &$marks, $exclude, $review_val, &$matching_options, $review_mean, $default_on, $tmp_reviews, $tmp_exclude, $option_no, $total_rank_no, $require_na, $bgcolor) {
   $qn_excluded = ($exclude == '1');
   
   switch ($firstoption['q_type']) {

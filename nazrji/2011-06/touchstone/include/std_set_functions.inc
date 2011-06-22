@@ -101,7 +101,7 @@ function display_options($options,$q_id, $current_theme, $current_scenario, $cur
   foreach ($options as $display_option) {
     $part_id++;
     $review_val = get_review($options[0]['q_type'], $std_method, $q_id, $part_id, $tmp_reviews);
-    display_option($options[0], $q_id, $question_no, $part_id, $display_option, $std_method, false, $marks, $tmp_exclude, $review_val, $matching_options, 0, 1, $tmp_reviews, $tmp_exclude, $option_no, $total_rank_no, $require_na);
+    display_option($options[0], $q_id, $question_no, $part_id, $display_option, $std_method, false, $marks, $tmp_exclude, $review_val, $matching_options, 0, 1, $tmp_reviews, $tmp_exclude, $option_no, $total_rank_no, $require_na, $bgcolor);
     $i++;
   }                    // End foreach loop
 
