@@ -47,9 +47,9 @@
     
     $html = '';
     if ($setter_id == $userID or strpos($userroles,'SysAdmin') !== false) {
-      $html .= "<tr id=\"review{$review['review_no']}\" style=\"cursor:hand\" onmouseover=\"highlight({$review['review_no']})\" onmouseout=\"unhighlight({$review['review_no']})\" onclick=\"selReview('$setter_id','{$review['date']}',{$review['review_no']},'{$review['method']}','menu2b',event); return false;\" ondblclick=\"editReview('$setter_id','{$review['date']}','{$review['review_no']}','{$review['method']}','{$review['group_review']}'); return false;\"><td align=\"center\"><img src=\"$icon\" width=\"16\" height=\"16\" alt=\"icon\" border=\"0\" /></td><td>&nbsp;";
+      $html .= "<tr id=\"review{$review['review_no']}\" style=\"cursor:hand\" onmouseover=\"highlight({$review['review_no']})\" onmouseout=\"unhighlight({$review['review_no']})\" onclick=\"selReview('$setter_id','{$review['date']}',{$review['review_no']},'{$review['method']}','menu2b',event); return false;\" ondblclick=\"editReview('{$review['group_review']}'); return false;\"><td align=\"center\"><img src=\"$icon\" width=\"16\" height=\"16\" alt=\"icon\" border=\"0\" /></td><td>&nbsp;";
     } else {
-      $html .= "<tr id=\"review{$review['review_no']}\" style=\"cursor:hand\" onmouseover=\"highlight({$review['review_no']})\" onmouseout=\"unhighlight({$review['review_no']})\" onclick=\"selReview('$setter_id','{$review['date']}',{$review['review_no']},'{$review['method']}','menu2c',event); return false;\" ondblclick=\"editReview('$setter_id','{$review['date']}','{$review['review_no']}','{$review['method']}','{$review['group_review']}'); return false;\"><td align=\"center\"><img src=\"$icon\" width=\"16\" height=\"16\" alt=\"icon\" border=\"0\" /></td><td>&nbsp;";
+      $html .= "<tr id=\"review{$review['review_no']}\" style=\"cursor:hand\" onmouseover=\"highlight({$review['review_no']})\" onmouseout=\"unhighlight({$review['review_no']})\" onclick=\"selReview('$setter_id','{$review['date']}',{$review['review_no']},'{$review['method']}','menu2c',event); return false;\" ondblclick=\"editReview('{$review['group_review']}'); return false;\"><td align=\"center\"><img src=\"$icon\" width=\"16\" height=\"16\" alt=\"icon\" border=\"0\" /></td><td>&nbsp;";
     }
     if ($review['distinction_score'] != 'n/a') $review['distinction_score'] .= '%';
     if ($review['group_review'] != 'No') {
@@ -74,19 +74,6 @@
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
 <script src="../javascript/staff_help.js" type="text/javascript"></script>
 <script language="JavaScript" type="text/javascript">
-  function editReview(tmp_setter, tmp_date, tmp_review_no, tmp_method, tmp_group_review) {
-    if (tmp_method == 'Modified Angoff') {
-      tmp_method = 'modified_angoff';
-    } else if (tmp_method == 'Ebel') {
-      tmp_method = 'ebel';
-    }
-    if (tmp_group_review == 'No') {
-      window.location.href = "individual_review.php?setterID=" + tmp_setter + "&paperID=<?php echo $_GET['paperID']; ?>&module=<?php echo $_GET['module']; ?>&dateID=" + tmp_date + "&method=" + tmp_method;
-    } else {
-      window.location.href = "group_set_angoff.php?reviewers=" + tmp_setter + "&paperID=<?php echo $_GET['paperID']; ?>&module=<?php echo $_GET['module']; ?>&dateID=" + tmp_date + "&method=" + tmp_method;
-    }
-  }
-
   function selReview(setterID, dateID, reviewID, methodType, menuID, evt) {
     tmp_ID = document.StdSetMenu.oldReviewID.value;
     if (tmp_ID != '') {
@@ -109,9 +96,9 @@
   }
 
   function reviewOff() {
-    parent.frames['menu'].document.getElementById('menu2a').style.display = 'block';
-    parent.frames['menu'].document.getElementById('menu2b').style.display = 'none';
-    parent.frames['menu'].document.getElementById('menu2c').style.display = 'none';
+    document.getElementById('menu2a').style.display = 'block';
+    document.getElementById('menu2b').style.display = 'none';
+    document.getElementById('menu2c').style.display = 'none';
     tmp_ID = document.StdSetMenu.oldReviewID.value;
     if (tmp_ID != '') {
       document.getElementById('review' + tmp_ID).style.backgroundColor = 'white';
@@ -120,13 +107,13 @@
   }
 
   function highlight(lineID) {
-    if (lineID != parent.frames['menu'].document.StdSetMenu.oldReviewID.value) {
+    if (lineID != document.StdSetMenu.oldReviewID.value) {
       document.getElementById('review' + lineID).style.backgroundColor = '#ECE9D8';
     }
   }
 
   function unhighlight(lineID) {
-    if (lineID != parent.frames['menu'].document.StdSetMenu.oldReviewID.value) {
+    if (lineID != document.StdSetMenu.oldReviewID.value) {
       document.getElementById('review' + lineID).style.backgroundColor = '';
     }
   }

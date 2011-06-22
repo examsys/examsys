@@ -347,6 +347,5 @@ function display_options($options,$q_id, $current_theme, $current_scenario, $cur
     }
     $total_marks += $marks;
   }
-  $stdID++;
 }
 ?>

@@ -32,7 +32,7 @@
       notice.focus();
     }
   }
-  function editReview() {
+  function editReview(groupReview) {
     var methodType = '';
     if (document.StdSetMenu.method.value == 'Angoff (Yes/No)') {
       methodType = 'angoff_yes_no';
@@ -40,9 +40,13 @@
       methodType = 'modified_angoff';
     } else {
       methodType = 'ebel';
+    }  
+
+    if (groupReview == 'No') {
+      window.location.href = "individual_review.php?setterID=" + document.StdSetMenu.setterID.value + "&paperID=<?php echo $_GET['paperID']; ?>&module=<?php echo $_GET['module']; ?>&dateID=" + document.StdSetMenu.dateID.value + "&method=" + methodType;
+    } else {
+      window.location.href = "group_set_angoff.php?reviewers=" + document.StdSetMenu.setterID.value + "&paperID=<?php echo $_GET['paperID']; ?>&module=<?php echo $_GET['module']; ?>&dateID=" + document.StdSetMenu.dateID.value + "&method=" + methodType;
     }
-    
-    window.location.href = "individual_review.php?setterID=" + document.StdSetMenu.setterID.value + "&paperID=<?php echo $_GET['paperID']; ?>&dateID=" + document.StdSetMenu.dateID.value + "&method=" + methodType;
   }
 </script>
 
