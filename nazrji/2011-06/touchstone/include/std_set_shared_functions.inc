@@ -369,7 +369,7 @@ function ss_get_marks($mysqli, $paper_id, $exclude, &$marks_array) {
   }
 }
 
-function display_option($firstoption, $q_id, $question_no, &$part_id, &$mrq_part, $display_option, $std_method, $is_group, &$marks, $exclude, $review_val, &$matching_options, $review_mean, $default_on, $tmp_reviews, $tmp_exclude, $option_no, $total_rank_no, $require_na) {
+function display_option($firstoption, $q_id, $question_no, &$part_id, $display_option, $std_method, $is_group, &$marks, $exclude, $review_val, &$matching_options, $review_mean, $default_on, $tmp_reviews, $tmp_exclude, $option_no, $total_rank_no, $require_na) {
   $qn_excluded = ($exclude == '1');
   
   switch ($firstoption['q_type']) {
@@ -561,7 +561,6 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, &$mrq_part
       } else {
         $marks++;  // 1 mark for each and every item
       }
-      $mrq_part++;
       break;
     case 'extmatch':
     case 'matrix':
@@ -580,7 +579,6 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, &$mrq_part
       } else {
         echo "<tr><td></td><td class=\"option\"><select name=\"q" . $question_no . "_" . $part_id . "\">\n";
       }
-      $mrq_part++;
       echo "<option value=\"u\"></option>\n";
       if ($require_na) {
         echo "<option value=\"0\">N/A</option>\n";
@@ -1121,7 +1119,7 @@ function reviewScale2($q_no, $part_no, $method, $excluded, $value, $show_current
   return $html;
 }
 
-function get_review($q_type, $method, $q_id, $part_no, $mrq_part, $prev_reviews) {
+function get_review($q_type, $method, $q_id, $part_no, $prev_reviews) {
   $current_review = '';
   switch ($method) {
     case 'modified_angoff':
@@ -1145,11 +1143,7 @@ function get_review($q_type, $method, $q_id, $part_no, $mrq_part, $prev_reviews)
         } else {
           $sub_reviews = array('','','','','','','','','','','','','','','');
         }
-//        if ($q_type == 'rank') {
-//          $current_review = (empty($sub_reviews[$mrq_part - 1])) ? '' : $sub_reviews[$mrq_part - 1];
-//        } else {
-          $current_review = (empty($sub_reviews[$part_no - 1])) ? '' : $sub_reviews[$part_no - 1];
-//        }
+        $current_review = (empty($sub_reviews[$part_no - 1])) ? '' : $sub_reviews[$part_no - 1];
       } else {
         if (isset($prev_reviews[$q_id])) {
           $current_review = $prev_reviews[$q_id];

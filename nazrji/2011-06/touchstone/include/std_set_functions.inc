@@ -34,7 +34,7 @@ function checkVariables($number) {
 
 // TODO: stop $stdID being global
 function display_options($options,$q_id, $current_theme, $current_scenario, $current_leadin, $current_notes, $q_type, $std_method, $tmp_reviews, $exclude) {
-  global $marking, $question_no, $question_offset, $part_id, $labelcolor, $old_likert_label, $A, $B, $C, $D, $E, $F, $G, $H, $li_set, $bgcolor, $mrq_part, $total_marks, $old_correct_fback, $stdID;
+  global $marking, $question_no, $question_offset, $part_id, $labelcolor, $old_likert_label, $A, $B, $C, $D, $E, $F, $G, $H, $li_set, $bgcolor, $total_marks, $old_correct_fback, $stdID;
 
   if (array_key_exists($q_id,$exclude)) {
     $tmp_exclude = $exclude[$q_id];
@@ -98,12 +98,10 @@ function display_options($options,$q_id, $current_theme, $current_scenario, $cur
   }
 
   $i = 0;
-  // TODO: check how mrq_part differs form part_id
-  $mrq_part = 1;
   foreach ($options as $display_option) {
     $part_id++;
-    $review_val = get_review($options[0]['q_type'], $std_method, $q_id, $part_id, $mrq_part, $tmp_reviews);
-    display_option($options[0], $q_id, $question_no, $part_id, $mrq_part, $display_option, $std_method, false, $marks, $tmp_exclude, $review_val, $matching_options, 0, 1, $tmp_reviews, $tmp_exclude, $option_no, $total_rank_no, $require_na);
+    $review_val = get_review($options[0]['q_type'], $std_method, $q_id, $part_id, $tmp_reviews);
+    display_option($options[0], $q_id, $question_no, $part_id, $display_option, $std_method, false, $marks, $tmp_exclude, $review_val, $matching_options, 0, 1, $tmp_reviews, $tmp_exclude, $option_no, $total_rank_no, $require_na);
     $i++;
   }                    // End foreach loop
 
@@ -154,7 +152,7 @@ function display_options($options,$q_id, $current_theme, $current_scenario, $cur
       echo "</blockquote>\n";
       if ($options[0]['score_method'] == 'AllItemsCorrect') {
         $part_id++;
-        $review_val = get_review($options[0]['q_type'], $std_method, $q_id, 1, $mrq_part, $tmp_reviews);
+        $review_val = get_review($options[0]['q_type'], $std_method, $q_id, 1, $tmp_reviews);
         echo "<div>";
         echo reviewScale('mrq', $q_id, $question_no, 1, $std_method, $tmp_reviews, substr($tmp_exclude,0,1));
         echo reviewScale2($question_no, 1, $std_method, substr($tmp_exclude,0,1), $review_val, true, $stdID);
@@ -163,7 +161,7 @@ function display_options($options,$q_id, $current_theme, $current_scenario, $cur
     } elseif ($options[0]['q_type'] == 'rank') {
       echo "<input type=\"hidden\" id=\"rank" . $question_no . "_options\" name=\"rank" . $question_no . "_options\" value=\"$part_id\" />\n";
       if ($options[0]['score_method'] == 'BonusMark') {
-        $review_val = get_review($options[0]['q_type'], $std_method, $q_id, ($part_id+1), ($mrq_part+1), $tmp_reviews);
+        $review_val = get_review($options[0]['q_type'], $std_method, $q_id, ($part_id+1), $tmp_reviews);
         echo "<br />\n<div>All items correct: ";
         echo reviewScale('rank', $q_id, $question_no, ($part_id+1), $std_method, $tmp_reviews, substr($tmp_exclude,0,1));
         echo reviewScale2($question_no, ($part_id+1), $std_method, substr($tmp_exclude,0,1), $review_val, true, $stdID);
@@ -193,7 +191,7 @@ function display_options($options,$q_id, $current_theme, $current_scenario, $cur
     echo '<ol type="i">';
     $rating_part = 0;
     for ($part_id=1; $part_id<=$scenario_no; $part_id++) {
-      $review_val = get_review($options[0]['q_type'], $std_method, $q_id, $part_id, $mrq_part, $tmp_reviews);
+      $review_val = get_review($options[0]['q_type'], $std_method, $q_id, $part_id, $tmp_reviews);
       $answer_no = substr_count($matching_answers[$part_id-1],'$') + 1;
       $marks += substr_count($matching_answers[$part_id - 1],'$') + 1;
 
@@ -260,7 +258,7 @@ function display_options($options,$q_id, $current_theme, $current_scenario, $cur
     $part_id = 1;
     echo "<blockquote>\n<table cellpadding=\"2\" cellspacing=\"0\" border=\"0\">\n";
     foreach ($matching_options as $single_option) {
-      $review_val = get_review($options[0]['q_type'], $std_method, $q_id, $part_id, $mrq_part, $tmp_reviews);
+      $review_val = get_review($options[0]['q_type'], $std_method, $q_id, $part_id, $tmp_reviews);
       echo "<tr><td>" . chr($part_id + 64) . ".</td><td>" . $single_option . "</td><td>";
       echo reviewScale('labelling', $q_id, $question_no, $part_id, $std_method, $tmp_reviews, substr($tmp_exclude,$part_id-1,1));
       echo reviewScale2($question_no, $part_id, $std_method, substr($tmp_exclude,$part_id,1), $review_val, true, $stdID);
@@ -273,7 +271,7 @@ function display_options($options,$q_id, $current_theme, $current_scenario, $cur
     $part_id = 1;
     echo "<table summary=\"Options for Hotspot question\">\n";
     foreach ($matching_options as $single_option) {
-      $review_val = get_review($options[0]['q_type'], $std_method, $q_id, $part_id, $mrq_part, $tmp_reviews);
+      $review_val = get_review($options[0]['q_type'], $std_method, $q_id, $part_id, $tmp_reviews);
       echo "<tbody><tr><td style=\"padding-right: 12px\">" .  chr($part_id+64) . ')&nbsp;' . $single_option . "</td><td>";
       echo reviewScale('hotspot', $q_id, $question_no, $part_id, $std_method, $tmp_reviews, substr($tmp_exclude,$part_id-1,1));
       echo reviewScale2($question_no, $part_id, $std_method, substr($tmp_exclude,$part_id,1), $review_val, true, $stdID);
@@ -294,7 +292,7 @@ function display_options($options,$q_id, $current_theme, $current_scenario, $cur
     echo "<tr>\n";
     $numerals = array('0','i','ii','iii','iv','v','vi','vii','viii','ix','x');
     foreach ($matching_scenarios as $single_scenario) {
-      $review_val = get_review($options[0]['q_type'], $std_method, $q_id, $part_id, $mrq_part, $tmp_reviews);
+      $review_val = get_review($options[0]['q_type'], $std_method, $q_id, $part_id, $tmp_reviews);
       if (trim($single_scenario) != '') {
         echo '<tr><td>';
         echo reviewScale('matrix',$q_id, $question_no, $part_id, $std_method, $tmp_reviews, substr($tmp_exclude,$part_id-1,1));
