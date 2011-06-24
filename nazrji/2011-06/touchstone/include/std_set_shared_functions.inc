@@ -395,9 +395,9 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
       echo '<tr>';
       echo '<td align="center">';
       if ($tmp_user_answer == 't') {
-        echo '<input type="radio" name="q' . $question_no . '_' . $part_id . '" value="t" checked /></td><td align="center"><input type="radio" name="q' . $question_no . '_' . $part_id . '" value="f" /></td>';
+        echo '<input type="radio" name="q' . $question_no . '_' . $part_id . '" value="t" checked=\"checked\" /></td><td align="center"><input type="radio" name="q' . $question_no . '_' . $part_id . '" value="f" /></td>';
       } elseif ($tmp_user_answer == 'f') {
-        echo '<input type="radio" name="q' . $question_no . '_' . $part_id . '" value="t" /></td><td align="center"><input type="radio" name="q' . $question_no . '_' . $part_id . '" value="f" checked /></td>';
+        echo '<input type="radio" name="q' . $question_no . '_' . $part_id . '" value="t" /></td><td align="center"><input type="radio" name="q' . $question_no . '_' . $part_id . '" value="f" checked=\"checked\" /></td>';
       } elseif ($tmp_user_answer == 'a') {
         echo '<input type="radio" name="q' . $question_no . '_' . $part_id . '" value="t" /></td><td align="center"><input type="radio" name="q' . $question_no . '_' . $part_id . '" value="f" /></td>';
       } else {
@@ -454,7 +454,7 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
       if ($firstoption['score_method'] == 'vertical' or $firstoption['score_method'] == 'vertical_other') {
         if ($display_option['option_text'] != '' and $display_option['o_media'] == '') {        // Text and No media
           if ($part_id == $display_option['correct']) {
-            echo "<tr><td><input type=\"radio\" name=\"q" . $question_no . "\" value=\"$part_id\" checked /></td><td";
+            echo "<tr><td><input type=\"radio\" name=\"q" . $question_no . "\" value=\"$part_id\" checked=\"checked\" /></td><td";
             if ($qn_excluded) echo ' style="color:red; text-decoration:line-through"';
             echo ">" . $display_option['option_text'] . "</td></tr>\n";
           } else {
@@ -464,7 +464,7 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
           }
         } elseif ($display_option['option_text'] != '' and $display_option['o_media'] != '') {  // Text and media
           if ($part_id == $display_option['correct']) {
-            echo "<tr><td><input type=\"radio\" name=\"q" . $question_no . "\" value=\"$part_id\" checked /></td><td";
+            echo "<tr><td><input type=\"radio\" name=\"q" . $question_no . "\" value=\"$part_id\" checked=\"checked\" /></td><td";
             if ($qn_excluded) echo ' style="color:red; text-decoration:line-through"';
             echo ">" . $display_option['option_text'] . "<br />" . display_media($display_option['o_media'],$display_option['o_media_width'],$display_option['o_media_height']) . "</td></tr>\n";
           } else {
@@ -474,7 +474,7 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
           }
         } elseif ($display_option['option_text'] == '' and $display_option['o_media'] != '') {  // No Text and media
           if ($part_id == $display_option['correct']) {
-            echo "<tr><td><input type=\"radio\" name=\"q" . $question_no . "\" value=\"$part_id\" checked /></td><td>" . display_media($display_option['o_media'],$display_option['o_media_width'],$display_option['o_media_height']) . "</td></tr>\n";
+            echo "<tr><td><input type=\"radio\" name=\"q" . $question_no . "\" value=\"$part_id\" checked=\"checked\" /></td><td>" . display_media($display_option['o_media'],$display_option['o_media_width'],$display_option['o_media_height']) . "</td></tr>\n";
           } else {
             echo "<tr><td><input type=\"radio\" name=\"q" . $question_no . "\" value=\"$part_id\" /></td><td>" . display_media($display_option['o_media'],$display_option['o_media_width'],$display_option['o_media_height']) . "</td></tr>\n";
           }
@@ -482,7 +482,7 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
       } elseif ($firstoption['score_method'] == 'horizontal') {
         if ($display_option['option_text'] != '' and $display_option['o_media'] == '') {        // Text and No media
           if ($part_id == $display_option['correct']) {
-            echo "<input type=\"radio\" name=\"q" . $question_no . "\" value=\"" . $part_id . "\" checked />&nbsp;<span";
+            echo "<input type=\"radio\" name=\"q" . $question_no . "\" value=\"" . $part_id . "\" checked=\"checked\" />&nbsp;<span";
             if ($qn_excluded) echo ' style="color:red; text-decoration:line-through"';
             echo ">" . $display_option['option_text'] ."</span>&nbsp;&nbsp;";
           } else {
@@ -492,13 +492,13 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
           }
         } elseif ($display_option['option_text'] != '' and $display_option['o_media'] != '') {  // Text and media
           if ($part_id == $display_option['correct']) {
-            echo "<input type=\"radio\" name=\"q" . $question_no . "\" value=\"" . $part_id . "\" checked />&nbsp;" . $display_option['option_text'] . "<br />" . display_media($display_option['o_media'],$display_option['o_media_width'],$display_option['o_media_height']) . "&nbsp;&nbsp;";
+            echo "<input type=\"radio\" name=\"q" . $question_no . "\" value=\"" . $part_id . "\" checked=\"checked\" />&nbsp;" . $display_option['option_text'] . "<br />" . display_media($display_option['o_media'],$display_option['o_media_width'],$display_option['o_media_height']) . "&nbsp;&nbsp;";
           } else {
             echo "<input type=\"radio\" name=\"q" . $question_no . "\" value=\"" . $part_id . "\" />&nbsp;" . $display_option['option_text'] . "<br />" . display_media($display_option['o_media'],$display_option['o_media_width'],$display_option['o_media_height']) . "&nbsp;&nbsp;";
           }
         } elseif ($display_option['option_text'] == '' and $display_option['o_media'] != '') {  // No Text and media
           if ($part_id == $display_option['correct']) {
-            echo "<input type=\"radio\" name=\"q" . $question_no . "\" value=\"" . $part_id . "\" checked />&nbsp;" . display_media($display_option['o_media'],$display_option['o_media_width'],$display_option['o_media_height']) . "&nbsp;&nbsp;";
+            echo "<input type=\"radio\" name=\"q" . $question_no . "\" value=\"" . $part_id . "\" checked=\"checked\" />&nbsp;" . display_media($display_option['o_media'],$display_option['o_media_width'],$display_option['o_media_height']) . "&nbsp;&nbsp;";
           } else {
             echo "<input type=\"radio\" name=\"q" . $question_no . "\" value=\"" . $part_id . "\" />&nbsp;" . display_media($display_option['o_media'],$display_option['o_media_width'],$display_option['o_media_height']) . "&nbsp;&nbsp;";
           }
@@ -518,12 +518,12 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
       if ($display_option['option_text'] != '' and $display_option['o_media'] == '') {        // Text and No image
         if ($display_option['correct'] == 'y') {
           if ($display_option['score_method'] == 'AllItemsCorrect') {
-            echo "<tr><td><input type=\"checkbox\" name=\"q" . $question_no . "_" . $part_id . "\" value=\"y\" checked /></td><td";
+            echo "<tr><td><input type=\"checkbox\" name=\"q" . $question_no . "_" . $part_id . "\" value=\"y\" checked=\"checked\" /></td><td";
             if ($qn_excluded) echo ' style="color:red; text-decoration:line-through"';
             echo ">" . stripslashes($display_option['option_text']) . "</td><td>&nbsp;</td><td>&nbsp;</td></tr>\n";
           } else {
             echo "<tr>";
-            echo "<td><input type=\"checkbox\" name=\"q" . $question_no . "_" . $part_id . "\" value=\"y\" checked /></td><td";
+            echo "<td><input type=\"checkbox\" name=\"q" . $question_no . "_" . $part_id . "\" value=\"y\" checked=\"checked\" /></td><td";
             if ($qn_excluded) echo ' style="color:red; text-decoration:line-through"';
             echo ">" . stripslashes($display_option['option_text']) . "</td><td>&nbsp;</td><td>\n";
             echo reviewScale('mrq', $q_id, $question_no, $part_id, $std_method, $tmp_reviews, substr($tmp_exclude,0,1));
@@ -538,9 +538,9 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
       } elseif ($display_option['option_text'] != '' and $display_option['o_media'] != '') {  // Text and image
         if ($display_option['correct'] == 'y') {
           if ($display_option['score_method'] == 'AllItemsCorrect') {
-            echo "<tr><td><input type=\"checkbox\" name=\"q" . $question_no . "_" . $part_id . "\" id=\"q" . $question_no . "_" . $part_id . "\" value=\"y\" checked /><span class=\"active\" id=\"$question_no" . "_" . "$part_id\">" . stripslashes($display_option['option_text']) . "</span><br /><img src=\"./media/" . $display_option['o_media'] . "\" width=\"" . $display_option['o_media_width'] . "\" height=\"" . $display_option['o_media_height'] . "\" border=\"0\"/></td><td>&nbsp;</td><td>&nbsp;</td></tr>\n";
+            echo "<tr><td><input type=\"checkbox\" name=\"q" . $question_no . "_" . $part_id . "\" id=\"q" . $question_no . "_" . $part_id . "\" value=\"y\" checked=\"checked\" /><span class=\"active\" id=\"$question_no" . "_" . "$part_id\">" . stripslashes($display_option['option_text']) . "</span><br /><img src=\"./media/" . $display_option['o_media'] . "\" width=\"" . $display_option['o_media_width'] . "\" height=\"" . $display_option['o_media_height'] . "\" border=\"0\"/></td><td>&nbsp;</td><td>&nbsp;</td></tr>\n";
           } else {
-            echo "<tr><td><input type=\"checkbox\" name=\"q" . $question_no . "_" . $part_id . "\" id=\"q" . $question_no . "_" . $part_id . "\" value=\"y\" checked /><span class=\"active\" id=\"$question_no" . "_" . "$part_id\">" . stripslashes($display_option['option_text']) . "</span><br /><img src=\"./media/" . $display_option['o_media'] . "\" width=\"" . $display_option['o_media_width'] . "\" height=\"" . $display_option['o_media_height'] . "\" border=\"0\"/>";
+            echo "<tr><td><input type=\"checkbox\" name=\"q" . $question_no . "_" . $part_id . "\" id=\"q" . $question_no . "_" . $part_id . "\" value=\"y\" checked=\"checked\" /><span class=\"active\" id=\"$question_no" . "_" . "$part_id\">" . stripslashes($display_option['option_text']) . "</span><br /><img src=\"./media/" . $display_option['o_media'] . "\" width=\"" . $display_option['o_media_width'] . "\" height=\"" . $display_option['o_media_height'] . "\" border=\"0\"/>";
             echo "</td><td>&nbsp;</td><td>\n";
             echo reviewScale('mrq', $q_id, $question_no, $part_id, $std_method, $tmp_reviews, substr($tmp_exclude,0,1));
             echo reviewScale2($question_no, $part_id, $std_method, $qn_excluded, $review_val, $stdID, $is_group);
@@ -551,7 +551,7 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
         }
       } elseif ($display_option['option_text'] == '' and $display_option['o_media'] != '') {  // No Text and image
         if ($display_option['correct'] == 'y' and $display_option['score_method'] != 'AllItemsCorrect') {
-          echo "<tr><td><input type=\"checkbox\" name=\"q" . $question_no . "_" . $part_id . "\" value=\"y\" checked /><img src=\"./media/" . $display_option['o_media'] . "\" width=\"" . $display_option['o_media_width'] . "\" height=\"" . stripslashes($display_option['o_media_height']) . "\" border=\"0\"/></td><td>&nbsp;</td><td>&nbsp;</td></tr>\n";
+          echo "<tr><td><input type=\"checkbox\" name=\"q" . $question_no . "_" . $part_id . "\" value=\"y\" checked=\"checked\" /><img src=\"./media/" . $display_option['o_media'] . "\" width=\"" . $display_option['o_media_width'] . "\" height=\"" . stripslashes($display_option['o_media_height']) . "\" border=\"0\"/></td><td>&nbsp;</td><td>&nbsp;</td></tr>\n";
         } else {
           echo "<tr><td><input type=\"checkbox\" name=\"q" . $question_no . "_" . $part_id . "\" value=\"y\" /><img src=\"./media/" . $display_option['o_media'] . "\" width=\"" . $display_option['o_media_width'] . "\" height=\"" . stripslashes($display_option['o_media_height']) . "\" border=\"0\"/>";
           echo "</td><td>&nbsp;</td><td>\n";
@@ -1125,7 +1125,7 @@ function reviewScale2($q_no, $part_no, $method, $excluded, $value, &$stdID, $is_
       $html = "<select name=\"std$qID\" style=\"background-color:$bgcolor; color:$fgcolor\">\n<option value=\"\"></option>";
       for ($i=0; $i<=100; $i+=5) {
         if ($valid and $value == $i) {
-          $html .= "<option value=\"$i\" selected>$i%</option>\n";
+          $html .= "<option value=\"$i\" selected=\"selected\">$i%</option>\n";
         } else {
           $html .= "<option value=\"$i\">$i%</option>\n";
         }
@@ -1138,9 +1138,9 @@ function reviewScale2($q_no, $part_no, $method, $excluded, $value, &$stdID, $is_
       $options = array('EE'=>'Easy - Essential','EI'=>'Easy - Important','EN'=>'Easy - Nice to know','ME'=>'Medium - Essential','MI'=>'Medium - Important','MN'=>'Medium - Nice to know','HE'=>'Hard - Essential','HI'=>'Hard - Important','HN'=>'Hard - Nice to know');
       foreach ($options as $ebel_value=>$title) {
         if ($valid and str_replace('exclude_','',$value) == $ebel_value) {
-          $html .= "<option value=\"" . $extra . $ebel_value . "\" selected>$ebel_value: $title</option>";
+          $html .= "<option value=\"" . $extra . $ebel_value . "\" selected=\"selected\">$ebel_value: $title</option>\n";
         } else {
-          $html .= "<option value=\"" . $extra . $ebel_value . "\">$ebel_value: $title</option>";
+          $html .= "<option value=\"" . $extra . $ebel_value . "\">$ebel_value: $title</option>\n";
         }
       }
       $html .= "</select>\n";

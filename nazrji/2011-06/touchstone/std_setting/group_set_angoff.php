@@ -145,6 +145,9 @@ if (!isset($no_screens)) {
   .inactive {color:#C0C0C0}
   .heading {background-color:#EBEADB; color:black; font-family:Arial,sans-serif}
 </style>
+
+<script src="../javascript/ie_fix.js" type="text/javascript"></script>
+<script language="JavaScript" src="../javascript/flash_include.js"></script>
 <script src="../javascript/staff_help.js" type="text/javascript"></script>
 
 </head>
