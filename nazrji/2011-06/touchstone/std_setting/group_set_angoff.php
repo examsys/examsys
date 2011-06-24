@@ -24,8 +24,8 @@
 
 require '../include/staff_auth.inc';
 require '../include/media.inc';
-//require '../include/std_set_shared_functions.inc';
-require 'angoff_group_functions.inc';
+require '../include/std_set_functions.inc';
+//require 'angoff_group_functions.inc';
 
 $rater_query = '';
 $rater_names = array();
@@ -176,110 +176,130 @@ if (!isset($no_screens)) {
   </div>
   <br />
 <?php
-  $old_leadin = '';
-  $old_q_type = '';
-  $old_q_id = 0;
-  $question_no = 0;
-  $old_theme = '';
-  $old_screen = 1;
-  $question_offset = 1;
+// Get any questions to exclude.
+$excluded = array();
+$result = $mysqli->prepare("SELECT q_id, parts FROM question_exclude WHERE q_paper=?");
+$result->bind_param('i', $_GET['paperID']);
+$result->execute();
+$result->bind_result($q_id, $parts);
+while ($row = $result->fetch()) {
+  $excluded[$q_id] = $parts;
+}
+$result->close();
 
-  $stmt = $mysqli->prepare("SELECT screen, q_type, q_id, score_method, marks, theme, scenario, leadin, correct, REPLACE(option_text,'\t','') AS option_text, q_media, q_media_width, q_media_height, o_media, o_media_width, o_media_height, notes FROM papers, questions, options WHERE paper=? AND papers.question=questions.q_id AND questions.q_id=options.o_id ORDER BY display_pos, id_num");
-  $stmt->bind_param('i', $paperID);
-  $stmt->execute();
-  $stmt->store_result();
-  $num_rows = $stmt->num_rows;
-  $stmt->bind_result($screen, $q_type, $q_id, $score_method, $marks, $theme, $scenario, $leadin, $correct, $option_text, $q_media, $q_media_width, $q_media_height, $o_media, $o_media_width, $o_media_height, $notes);  
+$old_leadin = '';
+$old_q_type = '';
+$old_q_id = 0;
+$question_no = 0;
+$old_theme = '';
+$old_screen = 1;
+$question_offset = 1;
+$prologue_show = 1;
 
-  echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">\n";
+$stmt = $mysqli->prepare("SELECT screen, q_type, q_id, score_method, marks, theme, scenario, leadin, correct, REPLACE(option_text,'\t','') AS option_text, q_media, q_media_width, q_media_height, o_media, o_media_width, o_media_height, notes FROM papers, questions, options WHERE paper=? AND papers.question=questions.q_id AND questions.q_id=options.o_id ORDER BY display_pos, id_num");
+$stmt->bind_param('i', $paperID);
+$stmt->execute();
+$stmt->store_result();
+$num_rows = $stmt->num_rows;
+$stmt->bind_result($screen, $q_type, $q_id, $score_method, $marks, $theme, $scenario, $leadin, $correct, $option_text, $q_media, $q_media_width, $q_media_height, $o_media, $o_media_width, $o_media_height, $notes);  
 
-  while($stmt->fetch()) {
-    $tmp_userID = $setter_id;
-    $reviews[$tmp_userID][$questionID] = $rating;
-    $reviews[$tmp_userID]['name'] = $title . ' ' .$surname;
+echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">\n";
 
-    if ($question_no == 0 and $current_screen == 1 and $paper_prologue != '') {
-      echo '<tr><td colspan="2" style="padding: 20px; text-align:justify">' . $paper_prologue . '</td></tr>';
+while($stmt->fetch()) {
+//  $tmp_userID = $setter_id;
+//  $reviews[$tmp_userID][$questionID] = $rating;
+//  $reviews[$tmp_userID]['name'] = $title . ' ' .$surname;
+
+  if ($prologue_show == 1 and $current_screen == 1 and $paper_prologue != '') {
+    echo '<tr><td colspan="2" style="padding:20px; text-align:justify">' . $paper_prologue . '</td></tr>';
+    $prologue_show = 0;
+  }
+  
+  if ($question_no == 0) echo "<tr><td colspan=\"2\">&nbsp;</td></tr>\n";
+  if ($old_q_id != $q_id) {          // New Question
+    // Print the options of the previous question
+    $li_set = 0;
+    if ($old_leadin != '') {
+      if ($li_set == 1) echo "</td></tr>\n";
+//      display_options($options_array, $old_q_id, $old_theme, $old_scenario, $old_leadin, $old_notes, $paper_type, 'modified_angoff', $setterID);
+      display_options($options_array, $old_q_id, $old_theme, $old_scenario, $old_leadin, $old_notes, $paper_type, 'modified_angoff', $reviews, $excluded, true);
+      
+      if ($old_screen != $screen) {
+        echo '<tr><td colspan="2"><table cellpadding="0" cellspacing="1" border="0" style="width:100%; height:70px; border-top:1px solid #B5C4DF; background-image:url(\'../artwork/screen_no_background.gif\'); background-repeat:repeat-x">';
+        echo "<tr>\n<td width=\"20\">&nbsp;</td>\n";
+        echo "<td style=\"vertical-align:top; font-size:90%; font-weight:bold; color:#15428B\">Screen&nbsp;" . $screen . "</td>\n</tr>\n";
+        echo '</table></td></tr>';
+      }
+    }
+    if (($old_q_type == 'likert' and $q_type != 'likert') or ($old_q_type != 'likert' and $q_type == 'likert')) echo "</table>\n<br />\n<table cellpadding=\"4\" cellspacing=\"0\" border=\"0\" width=\"100%\">\n";
+
+    if ($theme != '') {
+      if ($old_q_type == 'likert') echo '</table><br /><table cellpadding="4" cellspacing="0" border="0" width="100%">';  // Close off table if last question was likert scale.
+      echo '<tr><td class="question_no">&nbsp;</td><td><p class="theme">' . $theme . '</p></td></tr>';
     }
 
-    if ($question_no == 0) echo "<tr><td colspan=\"2\">&nbsp;</td></tr>\n";
-    if ($old_q_id != $q_id) {          // New Question
-      // Print the options of the previous question
-      $li_set = 0;
-      if ($old_leadin != '') {
-        if ($li_set == 1) echo "</td></tr>\n";
-        display_options($options_array, $old_q_id, $old_theme, $old_scenario, $old_leadin, $old_notes, $paper_type, 'modified_angoff', $setterID);
-        
-        if ($old_screen != $screen) {
-          echo '<tr><td colspan="2"><table cellpadding="0" cellspacing="1" border="0" style="width:100%; height:70px; border-top:1px solid #B5C4DF; background-image:url(\'../artwork/screen_no_background.gif\'); background-repeat:repeat-x">';
-          echo "<tr>\n<td width=\"20\">&nbsp;</td>\n";
-          echo "<td style=\"vertical-align:top; font-size:90%; font-weight:bold; color:#15428B\">Screen&nbsp;" . $screen . "</td>\n</tr>\n";
-          echo '</table></td></tr>';
-        }
-      }
-      if (($old_q_type == 'likert' and $q_type != 'likert') or ($old_q_type != 'likert' and $q_type == 'likert')) echo "</table>\n<br />\n<table cellpadding=\"4\" cellspacing=\"0\" border=\"0\" width=\"100%\">\n";
+    if ($notes != '' and $q_type != 'likert') echo '<tr><td></td><td class="notes"><img src="notes_icon.gif" width="14" height="14" alt="Note" />&nbsp;<strong>NOTE:</strong>&nbsp;' . $notes . '</td></tr>';
 
-      if ($theme != '') {
-        if ($old_q_type == 'likert') echo '</table><br /><table cellpadding="4" cellspacing="0" border="0" width="100%">';  // Close off table if last question was likert scale.
-        echo '<tr><td class="question_no">&nbsp;</td><td><p class="theme">' . $theme . '</p></td></tr>';
-      }
-
-      if ($notes != '' and $q_type != 'likert') echo '<tr><td></td><td class="notes"><img src="notes_icon.gif" width="14" height="14" alt="Note" />&nbsp;<strong>NOTE:</strong>&nbsp;' . $notes . '</td></tr>';
-
-      if ($scenario != '' and $q_type != 'extmatch' and $q_type != 'matrix' and $q_type != 'likert') {
-        echo '<tr><td class="question_no">' . ($question_no + $question_offset) . '.&nbsp;</td><td valign="top"><p>' . $scenario . '</p>';
+    if ($scenario != '' and $q_type != 'extmatch' and $q_type != 'matrix' and $q_type != 'likert') {
+      echo '<tr><td class="question_no">' . ($question_no + $question_offset) . '.&nbsp;</td><td valign="top"><p>' . $scenario . '</p>';
+      $li_set = 1;
+    }
+    if ($q_media != '' and $q_media != NULL and $q_type != 'hotspot' and $q_type != 'labelling' and $q_type != 'flash' and $q_type != 'extmatch') {
+      if (substr($q_media, -4) == '.gif' or substr($q_media, -4) == '.jpg' or substr($q_media, -4) == 'jpeg' or substr($q_media, -4) == '.png') {
+        if ($li_set == 0) echo '<tr><td class="question_no">' . $question_no . '.&nbsp;</td><td>';
         $li_set = 1;
-      }
-      if ($q_media != '' and $q_media != NULL and $q_type != 'hotspot' and $q_type != 'labelling' and $q_type != 'flash' and $q_type != 'extmatch') {
-        if (substr($q_media, -4) == '.gif' or substr($q_media, -4) == '.jpg' or substr($q_media, -4) == 'jpeg' or substr($q_media, -4) == '.png') {
-          if ($li_set == 0) echo '<tr><td class="question_no">' . $question_no . '.&nbsp;</td><td>';
-          $li_set = 1;
-          echo "<p align=\"center\">" . display_media($q_media, $q_media_width, $q_media_height, $question_no) . "</p>\n";
-        } else {
-          if ($li_set == 0) {
-            echo '<tr><td class="question_no">' . ($question_no + $question_offset) . '.&nbsp;</td><td>';
-          }
-          $li_set = 1;
-          echo "<p>" . display_media($q_media, $q_media_width, $q_media_height, $question_no) . "</p>\n";
-        }
-      }
-      if ($q_type != 'likert') {
+        echo "<p align=\"center\">" . display_media($q_media, $q_media_width, $q_media_height, $question_no) . "</p>\n";
+      } else {
         if ($li_set == 0) {
           echo '<tr><td class="question_no">' . ($question_no + $question_offset) . '.&nbsp;</td><td>';
         }
         $li_set = 1;
-        echo '<p>' . $leadin . '</p>';
+        echo "<p>" . display_media($q_media, $q_media_width, $q_media_height, $question_no) . "</p>\n";
       }
-
-      $old_leadin = $leadin;
-      $old_scenario = $scenario;
-      $old_notes = $notes;
-      $old_q_type = $q_type;
-      $old_q_id = $q_id;
-      $old_theme = $theme;
-      $old_screen = $screen;
-      $options_array = array();          // Clear options array
-      $question_no++;
     }
+    if ($q_type != 'likert' and $q_type != 'calculation' and $q_type != 'info') {
+      if ($li_set == 0) {
+        echo '<tr><td class="question_no">' . ($question_no + $question_offset) . '.&nbsp;</td><td>';
+      }
+      $li_set = 1;
+      echo '<p>' . $leadin . '</p>';
+    }
+    if ($q_type == 'info') {
+      if ($li_set == 0) echo '<tr><td colspan="2" style="padding-left:20px; padding-right:20px">' . $leadin;
+      $li_set = 1;
+      $question_no--;
+    }
+  
+    $old_leadin = $leadin;
+    $old_scenario = $scenario;
+    $old_notes = $notes;
+    $old_q_type = $q_type;
+    $old_q_id = $q_id;
+    $old_theme = $theme;
+    $old_screen = $screen;
+    $options_array = array();          // Clear options array
+    $question_no++;
+  }
 
-    $options_array[] = array('q_type'=>$q_type, 'score_method'=>$score_method, 'correct'=>$correct, 'scenario'=>$scenario, 'q_media'=>$q_media, 'q_media_width'=>$q_media_width, 'q_media_height'=>$q_media_height, 'option_text'=>$option_text, 'o_media'=>$o_media, 'o_media_width'=>$o_media_width, 'o_media_height'=>$o_media_height, 'marks'=>$marks);
-  }         // End of While loop
-  $stmt->close();
+  $options_array[] = array('q_type'=>$q_type, 'score_method'=>$score_method, 'correct'=>$correct, 'scenario'=>$scenario, 'q_media'=>$q_media, 'q_media_width'=>$q_media_width, 'q_media_height'=>$q_media_height, 'option_text'=>$option_text, 'o_media'=>$o_media, 'o_media_width'=>$o_media_width, 'o_media_height'=>$o_media_height, 'marks'=>$marks);
+}         // End of While loop
+$stmt->close();
 
-  // Print the options for the last question on the screen.
-  display_options($options_array, $old_q_id, $old_theme, $old_scenario, $old_leadin, $old_notes, $paper_type, 'modified_angoff', $setterID);
+// Print the options for the last question on the screen.
+//display_options($options_array, $old_q_id, $old_theme, $old_scenario, $old_leadin, $old_notes, $paper_type, 'modified_angoff', $setterID);
+display_options($options_array, $old_q_id, $old_theme, $old_scenario, $old_leadin, $old_notes, $paper_type, 'modified_angoff', $reviews, $excluded, true);
 
-  echo '</td></tr></table></td></tr>';
-  echo "<tr><td colspan=\"2\" style=\"border-top:dotted #808080 1px; color:#808080; font-size:90%; font-weight:bold\">&nbsp;</td>\n</tr>\n";
-  echo '</table>';
-  echo '<input type="hidden" name="module" value="' . $module . '" />';
-  echo '<input type="hidden" name="folder" value="' . $folder . '" />';
-  echo '<input type="hidden" name="paperID" value="' . $paperID . '" />';
-  echo '<input type="hidden" name="setterID" value="' . $setterID . '" />';
-  echo '<input type="hidden" name="dateID" value="' . $dateID . '" />';
-  echo '<input type="hidden" name="review_string" value="' . $review_string . '" />';
-  echo "<input type=\"hidden\" name=\"method\" value=\"Modified Angoff\" />\n";
-  $mysqli->close();
+echo '</td></tr></table></td></tr>';
+echo "<tr><td colspan=\"2\" style=\"border-top:dotted #808080 1px; color:#808080; font-size:90%; font-weight:bold\">&nbsp;</td>\n</tr>\n";
+echo '</table>';
+echo '<input type="hidden" name="module" value="' . $module . '" />';
+echo '<input type="hidden" name="folder" value="' . $folder . '" />';
+echo '<input type="hidden" name="paperID" value="' . $paperID . '" />';
+echo '<input type="hidden" name="setterID" value="' . $setterID . '" />';
+echo '<input type="hidden" name="dateID" value="' . $dateID . '" />';
+echo '<input type="hidden" name="review_string" value="' . $review_string . '" />';
+echo "<input type=\"hidden\" name=\"method\" value=\"Modified Angoff\" />\n";
+$mysqli->close();
 ?>
 <div align="center">
 <input type="checkbox" name="alterpassmark" value="1" checked /> Update paper pass mark<br />
