@@ -1090,18 +1090,24 @@ function reviewScale2($q_no, $part_no, $method, $excluded, $value, &$stdID, $is_
   $review_string = '';
   $valid = true;
   
+  // Process the passed values for group reviews
   if($is_group) {
     $review_string = (!empty($value['string'])) ? $value['string'] : '';
     $mean = (isset($value['raw_mean'])) ? $value['raw_mean'] : 0;
     $valid = (isset($value['valid'])) ? $value['valid'] : false;
-    $value = (isset($value['mean'])) ? $value['mean'] : 0;
+    $tmp_value = (isset($value['mean'])) ? $value['mean'] : 0;
     if ($valid) {
       $review_string = "mean=$mean%, $review_string\n";
     } else {
       $review_string = "<img src=\"../artwork/small_yellow_warning_icon.gif\" width=\"16\" height=\"16\" alt=\"!\" /><span style=\"font-weight:bold\">mean=$mean%, </span><span style=\"color:red; font-weight:bold\">$review_string</span>\n";
     }
-    
+    if (isset($value['prev_review']) and $value['prev_review'] > 0) {
+      $tmp_value = $value['prev_review'];
+      $valid = true;
+    }
+    $value = $tmp_value;
   }
+  
   $extra = '';
   if ($excluded) {
     $bgcolor = '#FFC0C0';
@@ -1147,7 +1153,7 @@ function reviewScale2($q_no, $part_no, $method, $excluded, $value, &$stdID, $is_
 function get_review($q_type, $method, $q_id, $part_no, $prev_reviews, $is_group = false) {
   $current_review = '';
   
-  if(!$is_group) {
+  if(!$is_group or isset($prev_reviews[$q_id])) {
     switch ($method) {
       case 'modified_angoff':
         if (isset($prev_reviews[$q_id]) and $prev_reviews[$q_id] != '') {
@@ -1178,34 +1184,43 @@ function get_review($q_type, $method, $q_id, $part_no, $prev_reviews, $is_group 
         }
         break;
     }
-  } else {
+  }
+  if($is_group) {
     $rating_string = '';
+    $prev_review = 0;
     $ratings_array = array();
     $rating_total = 0;
     $min = 100; $max = 0;
     foreach ($prev_reviews as $individual_rater) {
-      if ($q_type == 'dichotomous' or $q_type == 'extmatch' or $q_type == 'mrq' or $q_type == 'matrix' or $q_type == 'blank' or $q_type == 'rank' or $q_type == 'labelling' or $q_type == 'hotspot') {
-        $ratings_parts = explode(',',$individual_rater[$q_id]);
-        $this_rating = $ratings_parts[$part_no - 1];
-      } else {
-        $this_rating = $individual_rater[$q_id];
-      }
-      $ratings_array[] = $this_rating;
-      $rating_total += $this_rating;
-      $min = ($this_rating < $min) ? $this_rating : $min;
-      $max = ($this_rating > $max) ? $this_rating : $max;
-      $rater_name = $individual_rater['name'];
-      if ($rating_string == '') {
-        $rating_string = $rater_name . '=' . $this_rating . '%';
-      } else {
-        $rating_string .= ', ' . $rater_name . '=' . $this_rating . '%';
+      if(is_array($individual_rater)) {
+        if ($q_type == 'dichotomous' or $q_type == 'extmatch' or $q_type == 'mrq' or $q_type == 'matrix' or $q_type == 'blank' or $q_type == 'rank' or $q_type == 'labelling' or $q_type == 'hotspot') {
+          $ratings_parts = explode(',',$individual_rater[$q_id]);
+          $this_rating = $ratings_parts[$part_no - 1];
+        } else {
+          $this_rating = $individual_rater[$q_id];
+        }
+        $ratings_array[] = $this_rating;
+        $rating_total += $this_rating;
+        $min = ($this_rating < $min) ? $this_rating : $min;
+        $max = ($this_rating > $max) ? $this_rating : $max;
+        $rater_name = $individual_rater['name'];
+        if ($rating_string == '') {
+          $rating_string = $rater_name . '=' . $this_rating . '%';
+        } else {
+          $rating_string .= ', ' . $rater_name . '=' . $this_rating . '%';
+        }
       }
     }
-    // Round mean to nearest 5 to match values in scale
     $raw_mean = round($rating_total / count($ratings_array));
+    // Round mean to nearest 5 to match values in scale
     $review_mean = round(($rating_total / count($ratings_array)) / 5) * 5;
     
-    $current_review = array('raw_mean' => $raw_mean, 'mean' => $review_mean, 'string' => $rating_string, 'valid' => ($max <= $min + 10));
+    // Return previous group review value if it exists
+    if(isset($prev_reviews[$q_id])) {
+      $prev_review = $current_review;
+    }
+    
+    $current_review = array('raw_mean' => $raw_mean, 'mean' => $review_mean, 'prev_review' => $prev_review, 'string' => $rating_string, 'valid' => ($max <= $min + 10));
   }
   
   return $current_review;

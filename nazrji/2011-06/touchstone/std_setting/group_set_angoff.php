@@ -41,7 +41,7 @@ if (isset($_GET['reviewers'])) {
     if ($row_no == 0) {
       $setterID = $parts[0];
       $dateID = $parts[1];
-      $rater_query = " AND ((setterID=$parts[0] AND std_set=$parts[1])";
+//      $rater_query = " AND ((setterID=$parts[0] AND std_set=$parts[1])";
     } else {
       if ($rater_query == '') {
         $rater_query = " AND ((setterID=$parts[0] AND std_set=$parts[1])";
@@ -75,24 +75,24 @@ if (isset($_GET['reviewers'])) {
 $reviews = array();
 $review_string = substr($review_string,1);
 
-// TODO: confirm that we don't need this
+//TODO: confirm if we need the hidden fields
 //$hidden_fields = '';
-//if ($setterID != '') {
-//  $query_string = "SELECT std_set, rating, questionID FROM standards_setting WHERE paperID=$paperID AND setterID=$setterID AND std_set=$dateID";
-//  $results = $mysqli->query($query_string);
-//  while ($row = $results->fetch_assoc()) {
-//    $questionID = $row['questionID'];
-//    $reviews[$questionID] = $row['rating'];
-//  }
-//  $results->close();
-//  
+if ($setterID != '') {
+  $query_string = "SELECT std_set, rating, questionID FROM standards_setting WHERE paperID=$paperID AND setterID=$setterID AND std_set=$dateID";
+  $results = $mysqli->query($query_string);
+  while ($row = $results->fetch_assoc()) {
+    $questionID = $row['questionID'];
+    $reviews[$questionID] = $row['rating'];
+  }
+  $results->close();
+  
 //  $query_string = "SELECT question, std FROM (papers, questions) WHERE paper=$paperID AND papers.question=questions.q_id";
 //  $results = $mysqli->query($query_string);
 //  while ($row = $results->fetch_assoc()) {
 //    $hidden_fields .= "<input type=\"hidden\" name=\"old" . $row['question'] . "\" value=\"" . $row['std'] . "\" />";
 //  }
 //  $results->close();
-//}
+}
 
 if ($rater_query != '') {
   $stmt = $mysqli->prepare("SELECT rating, setterID, method, title, surname, questionID FROM (standards_setting, users) WHERE standards_setting.setterID=users.id AND paperID=? $rater_query) ORDER BY std_set, setterID");

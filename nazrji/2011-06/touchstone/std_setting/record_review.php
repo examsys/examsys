@@ -40,8 +40,8 @@
   $total_parts = 0;
   $tmp_method = $_POST['method'];
 
-  if (isset($_GET['group']) and $_GET['group'] == 'true') {
-    $group_review = 'Yes';
+  if (isset($_GET['group']) and $_GET['group'] == 'true' and isset($_POST['review_string']) and $_POST['review_string'] != '') {
+    $group_review = $_POST['review_string'];
   } else {
     $group_review = 'No';
   }
