@@ -252,7 +252,7 @@ td {font-size:80%}
       $keyword_result->close();
     }
     $addOption = $mysqli->prepare("INSERT INTO options VALUES(?,?,?,?,?,?,?,?,NULL,?)");
-    $addOption->bind_param('isssssssi', $question_id, $option_text, $new_o_media, $o_media_width, $o_media_height, $feedback_right, $feedback_wrong, $correct, $marks);
+    $addOption->bind_param('isssssssd', $question_id, $option_text, $new_o_media, $o_media_width, $o_media_height, $feedback_right, $feedback_wrong, $correct, $marks);
     $addOption->execute();
     $addOption->close();
     $line++;
