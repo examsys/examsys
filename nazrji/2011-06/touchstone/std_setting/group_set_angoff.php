@@ -25,7 +25,6 @@
 require '../include/staff_auth.inc';
 require '../include/media.inc';
 require '../include/std_set_functions.inc';
-//require 'angoff_group_functions.inc';
 
 $rater_query = '';
 $rater_names = array();
