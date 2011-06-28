@@ -75,8 +75,6 @@ if (isset($_GET['reviewers'])) {
 $reviews = array();
 $review_string = substr($review_string,1);
 
-//TODO: confirm if we need the hidden fields
-//$hidden_fields = '';
 if ($setterID != '') {
   $query_string = "SELECT std_set, rating, questionID FROM standards_setting WHERE paperID=$paperID AND setterID=$setterID AND std_set=$dateID";
   $results = $mysqli->query($query_string);
@@ -85,13 +83,6 @@ if ($setterID != '') {
     $reviews[$questionID] = $row['rating'];
   }
   $results->close();
-  
-//  $query_string = "SELECT question, std FROM (papers, questions) WHERE paper=$paperID AND papers.question=questions.q_id";
-//  $results = $mysqli->query($query_string);
-//  while ($row = $results->fetch_assoc()) {
-//    $hidden_fields .= "<input type=\"hidden\" name=\"old" . $row['question'] . "\" value=\"" . $row['std'] . "\" />";
-//  }
-//  $results->close();
 }
 
 if ($rater_query != '') {
@@ -320,7 +311,6 @@ $mysqli->close();
 <input type="submit" name="submit" value="Save Ratings" style="width:150px" />&nbsp;<input onclick="javascript: history.back()" type="button" name="cancel" value="Cancel" style="width:100px" />
 </div>
 <br />
-<?php // echo $hidden_fields ?>
 </form>
 </body>
 </html>

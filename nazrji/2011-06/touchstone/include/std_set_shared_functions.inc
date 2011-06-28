@@ -380,8 +380,7 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
        
       if ($std_method == 'modified_angoff') {
         for ($mark_part=$marks; $mark_part>0; $mark_part--) {
-          echo reviewScale('textbox', $q_id, $question_no, $mark_part, $std_method, $tmp_reviews, substr($exclude,$mark_part,1)) . " $mark_part marks<br />\n";
-          echo reviewScale2($question_no, $mark_part, $std_method, $qn_excluded, $review_val, $stdID, $is_group);
+          echo reviewScale($question_no, $mark_part, $std_method, $qn_excluded, $review_val, $stdID, $is_group);
         }
       } else {
         echo "<div style=\"color:#C00000\"><strong>Note:</strong> Ebel method cannot be used to standard set textbox questions.</div>\n";
@@ -414,8 +413,7 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
       }
       echo "</td>";
       echo '<td>';
-      echo reviewScale('dichotomous', $q_id, $question_no, $part_id, $std_method, $tmp_reviews, substr($exclude,$part_id-1,1));
-      echo reviewScale2($question_no, $part_id, $std_method, substr($exclude,$part_id-1,1), $review_val, $stdID, $is_group);
+      echo reviewScale($question_no, $part_id, $std_method, substr($exclude,$part_id-1,1), $review_val, $stdID, $is_group);
       echo '</td>';
       echo "</tr>\n";
       $marks++;
@@ -523,8 +521,7 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
           } else {
             echo "<tr>";
             echo "<td><input type=\"checkbox\" name=\"q" . $question_no . "_" . $part_id . "\" value=\"y\" checked=\"checked\" /></td><td$excl_string>" . stripslashes($display_option['option_text']) . "</td><td>&nbsp;</td><td>\n";
-            echo reviewScale('mrq', $q_id, $question_no, $part_id, $std_method, $tmp_reviews, substr($exclude,0,1));
-            echo reviewScale2($question_no, $part_id, $std_method, $qn_excluded, $review_val, $stdID, $is_group);
+            echo reviewScale($question_no, $part_id, $std_method, $qn_excluded, $review_val, $stdID, $is_group);
             echo "</td></tr>\n";
           }
         } else {
@@ -537,8 +534,7 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
           } else {
             echo "<tr><td><input type=\"checkbox\" name=\"q" . $question_no . "_" . $part_id . "\" id=\"q" . $question_no . "_" . $part_id . "\" value=\"y\" checked=\"checked\" /><span class=\"active\" id=\"$question_no" . "_" . "$part_id\"$excl_string>" . stripslashes($display_option['option_text']) . "</span><br /><img src=\"./media/" . $display_option['o_media'] . "\" width=\"" . $display_option['o_media_width'] . "\" height=\"" . $display_option['o_media_height'] . "\" border=\"0\"/>";
             echo "</td><td>&nbsp;</td><td>\n";
-            echo reviewScale('mrq', $q_id, $question_no, $part_id, $std_method, $tmp_reviews, substr($exclude,0,1));
-            echo reviewScale2($question_no, $part_id, $std_method, $qn_excluded, $review_val, $stdID, $is_group);
+            echo reviewScale($question_no, $part_id, $std_method, $qn_excluded, $review_val, $stdID, $is_group);
             echo "</td></tr>\n";
           }
         } else {
@@ -550,8 +546,7 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
         } else {
           echo "<tr><td><input type=\"checkbox\" name=\"q" . $question_no . "_" . $part_id . "\" value=\"y\" /><img src=\"./media/" . $display_option['o_media'] . "\" width=\"" . $display_option['o_media_width'] . "\" height=\"" . stripslashes($display_option['o_media_height']) . "\" border=\"0\"/>";
           echo "</td><td>&nbsp;</td><td>\n";
-          echo reviewScale('mrq', $q_id, $question_no, $part_id, $std_method, $tmp_reviews, substr($exclude,0,1));
-          echo reviewScale2($question_no, $part_id, $std_method, $qn_excluded, $review_val, $stdID, $is_group);
+          echo reviewScale($question_no, $part_id, $std_method, $qn_excluded, $review_val, $stdID, $is_group);
           echo "</td></tr>\n";
         }
       }
@@ -601,8 +596,7 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
       
       if ($display_option['correct'] != 0 or $display_option['score_method'] == 'StrictOrder') {
         echo "<td>";
-        echo reviewScale('rank', $q_id, $question_no, $part_id, $std_method, $tmp_reviews, substr($exclude,0,1));
-        echo reviewScale2($question_no, $part_id, $std_method, $qn_excluded, $review_val, $stdID, $is_group);
+        echo reviewScale($question_no, $part_id, $std_method, $qn_excluded, $review_val, $stdID, $is_group);
         echo "</td>\n";
       } else {
         echo "<td></td>\n";
@@ -807,8 +801,7 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
       echo "</p>\n";
 
       echo "<div>";
-      echo reviewScale('timedate', $q_id, $question_no, $part_id, $std_method, $tmp_reviews, substr($exclude,0,1));
-      echo reviewScale2($question_no, '', $std_method, $qn_excluded, $review_val, $stdID, $is_group);
+      echo reviewScale($question_no, '', $std_method, $qn_excluded, $review_val, $stdID, $is_group);
       echo "</div>\n";
       $marks++;
       break;
@@ -835,8 +828,7 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
           $blank_mark[$blank_count] = 1;
         }
         $review_val = get_review('blank', $std_method, $q_id, $blank_count, $tmp_reviews, $is_group);
-        $reviewScale = reviewScale('blank', $q_id, $question_no, $blank_count, $std_method, $tmp_reviews, substr($exclude,$blank_count-1,1));
-        $reviewScale .= reviewScale2($question_no, $blank_count, $std_method, substr($exclude,$blank_count-1,1), $review_val, $stdID, $is_group);
+        $reviewScale .= reviewScale($question_no, $blank_count, $std_method, substr($exclude,$blank_count-1,1), $review_val, $stdID, $is_group);
         $exclude_str = '';
         if(substr($exclude,$blank_count-1,1) == '1') {
           $exclude_str =  ' style="background-color:#FFC0C0; color:#800000"';
@@ -885,8 +877,7 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
           }
           echo '</select> ';
           $review_val = get_review('blank', $std_method, $q_id, $blank_count, $tmp_reviews, $is_group);
-          echo reviewScale('blank', $q_id, $question_no, $part_id, $std_method, $tmp_reviews, substr($exclude,$blank_count-1,1));
-          echo reviewScale2($question_no, $part_id, $std_method, substr($exclude,$blank_count-1,1), $review_val, $stdID, $is_group);
+          echo reviewScale($question_no, $part_id, $std_method, substr($exclude,$blank_count-1,1), $review_val, $stdID, $is_group);
           
           echo $answer_options[1]; // Bit after the closing [/blank] tag.
           $blank_count++;
@@ -920,17 +911,11 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
   </div>
 <?php
       $layers = explode('|', $firstoption['correct']);
-//      echo "<table summary=\"Options for Hotspot question\">\n";
       for ($i=1; $i<=$display_option['marks']; $i++) {
         $matching_options[] = substr($layers[$i-1], 0, strpos($layers[$i-1], '~'));
-//        echo "<tbody><tr><td style=\"padding-right: 12px\">" .  chr($i+64) . ')&nbsp;' . substr($layers[$i-1], 0, strpos($layers[$i-1], '~')) . "</td><td>";
-//        echo reviewScale('hotspot', $q_id, $question_no, $i, $std_method, $tmp_reviews, substr($exclude,$i-1,1));
-//        echo reviewScale2($question_no, $part_id, $std_method, $qn_excluded, $review_val, $stdID);
-//        echo "</td></tr></tbody>\n";
       }
       echo "<input type=\"hidden\" name=\"q" . $question_no . "\" value=\"u\" />\n";
       $marks = $display_option['marks'];
-//      echo '</table>';
       break;
     case 'labelling':
       $tmp_first_split = explode(';', $firstoption['correct']);
@@ -1006,8 +991,7 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
 
 <?php
       echo "<div>";
-      echo reviewScale('flash', $q_id, $question_no, '', $std_method, $tmp_reviews, substr($exclude,0,1));
-      echo reviewScale2($question_no, '', $std_method, $qn_excluded, $review_val, $stdID, $is_group);
+      echo reviewScale($question_no, '', $std_method, $qn_excluded, $review_val, $stdID, $is_group);
       echo "</div>\n";
       echo "<input type=\"hidden\" name=\"q" . $question_no . "\" value=\"0,0\" />\n";
       $marks += $display_option['marks'];
@@ -1017,85 +1001,7 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
   }                  // End switch
 }
 
-function reviewScale($q_type, $tmp_q_id, $q_no, $tmp_part_no, $set_method, $prev_reviews, $status) {
-  global $mrq_part, $stdID, $std_excluded;
-  $html = '';
-//  if (strpos($status,'1') !== false) {
-//    $bgcolor = '#FFC0C0';
-//    $fgcolor = '#800000';
-//    $std_excluded++;
-//  } else {
-//    $bgcolor = '#D6DFF7';
-//    $fgcolor = 'black';
-//  }
-//
-//  $qID = $q_no;
-//  $extra = '';
-//  if ($tmp_part_no != '') $qID .= '_' . $tmp_part_no;
-//  switch ($set_method) {
-//    case 'modified_angoff':
-//      $html = "<select name=\"std$qID\" style=\"background-color:$bgcolor; color:$fgcolor\">\n<option value=\"\"></option>";
-//      if (isset($prev_reviews[$tmp_q_id]) and $prev_reviews[$tmp_q_id] != '') {
-//        $sub_reviews = explode(',', $prev_reviews[$tmp_q_id]);
-//      } else {
-//        $sub_reviews = array('','','','','','','','','','','','','','','');
-//      }
-//      if ($q_type == 'mrq') {
-//        $current_review = $sub_reviews[$mrq_part - 1];
-//      } elseif ($q_type == 'dichotomous' or $q_type == 'rank' or $q_type == 'extmatch' or $q_type == 'matrix' or $q_type == 'blank' or $q_type == 'labelling' or $q_type == 'hotspot') {
-//        $current_review = (!empty($sub_reviews[$tmp_part_no - 1])) ? $sub_reviews[$tmp_part_no - 1] : '';
-//      } elseif ($q_type == 'textbox') {
-//        $current_review = $sub_reviews[count($sub_reviews)-$tmp_part_no];
-//      } else {
-//        $current_review = $prev_reviews[$tmp_q_id];
-//      }
-//
-//      for ($i=0; $i<=100; $i+=5) {
-//        if ($current_review == $i and $current_review != '') {
-//          $html .= "<option value=\"$i\" selected>$i%</option>\n";
-//        } else {
-//          $html .= "<option value=\"$i\">$i%</option>\n";
-//        }
-//      }
-//      $html .=  "</select>\n";
-//      break;
-//    case 'ebel':
-//      if ($q_type == 'dichotomous' or $q_type == 'extmatch' or $q_type == 'mrq' or $q_type == 'matrix' or $q_type == 'blank' or $q_type == 'rank' or $q_type == 'labelling' or $q_type == 'hotspot') {
-//        if (isset($prev_reviews[$tmp_q_id])) {
-//          $sub_reviews = explode(',', $prev_reviews[$tmp_q_id]);
-//        } else {
-//          $sub_reviews = array('','','','','','','','','','','','','','','');
-//        }
-//        if ($q_type == 'rank') {
-//          $current_review = (empty($sub_reviews[$mrq_part - 1])) ? '' : $sub_reviews[$mrq_part - 1];
-//        } else {
-//          $current_review = (empty($sub_reviews[$tmp_part_no - 1])) ? '' : $sub_reviews[$tmp_part_no - 1];
-//        }
-//      } else {
-//        if (isset($prev_reviews[$tmp_q_id])) {
-//          $current_review = $prev_reviews[$tmp_q_id];
-//        } else {
-//          $current_review = '';
-//        }
-//      }
-//      $html .= "<select onchange=\"recountCategories();\" id=\"valstd$stdID\" name=\"std$qID\" style=\"background-color:$bgcolor; color:$fgcolor\">\n<option value=\"\"></option>";
-//      $options = array('EE'=>'Easy - Essential','EI'=>'Easy - Important','EN'=>'Easy - Nice to know','ME'=>'Medium - Essential','MI'=>'Medium - Important','MN'=>'Medium - Nice to know','HE'=>'Hard - Essential','HI'=>'Hard - Important','HN'=>'Hard - Nice to know');
-//      foreach ($options as $value=>$title) {
-//        if (strpos($status,'1') !== false) $extra = 'exclude_';
-//        if (str_replace('exclude_','',$current_review) == $value) {
-//          $html .= "<option value=\"" . $extra . $value . "\" selected>$value: $title</option>";
-//        } else {
-//          $html .= "<option value=\"" . $extra . $value . "\">$value: $title</option>";
-//        }
-//      }
-//      $html .= "</select>\n";
-//      break;
-//  }
-//  $stdID++;
-  return $html;
-}
-
-function reviewScale2($q_no, $part_no, $method, $excluded, $value, &$stdID, $is_group = false) {
+function reviewScale($q_no, $part_no, $method, $excluded, $value, &$stdID, $is_group = false) {
   $html = '';
   $review_string = '';
   $valid = true;
