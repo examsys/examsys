@@ -32,12 +32,10 @@ require '../include/errors.inc';
   $result->close();
 
   // Delete from ebel table.
-  $result = $mysqli->prepare("DELETE FROM ebel WHERE setter=? and date_set=?");
+  $result = $mysqli->prepare("DELETE FROM ebel WHERE setterID=? and date_set=?");
   $result->bind_param('ss', $_POST['setterID'], $_POST['dateID']);
   $result->execute();  
   $result->close();
-
-  $mysqli->close;
 ?>
 <html>
 <head>
