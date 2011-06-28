@@ -86,6 +86,38 @@
   }
   $result->close();
 
+  
+  // Get a list of reviews where group = 'Yes'
+  $group_reviews = $mysqli->prepare("SELECT DISTINCT paperID FROM standards_setting WHERE group_review = 'Yes' AND paperID > 0");
+  $group_reviews->execute();
+  $group_reviews->store_result();
+  $group_reviews->bind_result($paperID);
+  while($group_reviews->fetch()) {
+    $group_list = '';
+    // Get a list of other ANGOFF reviews for the paper
+    $individual_reviews = $mysqli->prepare("SELECT DISTINCT setterID, std_set FROM standards_setting WHERE paperID = ? AND method = 'Modified Angoff' AND group_review = 'No'");
+    $individual_reviews->bind_param('i', $paperID);
+    $individual_reviews->execute();
+    $individual_reviews->store_result();
+    $individual_reviews->bind_result($setterID, $std_set);
+    while($individual_reviews->fetch()) {
+      // Add to list of user IDs/dates <user_id>,<date>;<user_id>,<date>
+      $group_list .= $setterID . ',' . str_replace(array(' ', '-', ':'), '', $std_set) . ';';
+    }
+    $individual_reviews->close();  
+    $group_list = rtrim($group_list, ';');
+    
+    // Update the group review setting group field to name/date string
+    if($group_list != ''){
+      $update = $mysqli->prepare("UPDATE standards_setting SET group_review = ? WHERE paperID = ? AND method = 'Modified Angoff' AND group_review = 'Yes'");
+      $update->bind_param('si', $group_list, $paperID);
+      $update->execute();
+      $update->close();
+      echo "<div>UPDATE standards_setting SET group_review = '$group_list' WHERE paperID = $paperID AND method = 'Modified Angoff' AND group_review = 'Yes'</div>\n";
+    }
+  }
+  $group_reviews->close();  
+  
   //Close the database
   $mysqli->close();
   ob_end_flush();
