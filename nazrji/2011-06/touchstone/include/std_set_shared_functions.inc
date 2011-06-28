@@ -376,7 +376,6 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
     case 'textbox':
       $textbox_size = explode('x',$display_option['score_method']);
       echo "<blockquote><textarea style=\"font-family:Arial,sans-serif\" cols=\"" . $textbox_size[0] . "\" rows=\"" . $textbox_size[1] . "\"></textarea></blockquote>\n";
-      echo "<pre style=\"width:90%; font-family:Arial,sans-serif; font-style:italic; color:#C00000\">" . wordwrap($old_correct_fback, 150) . "</pre>";
       $marks = $display_option['marks'];
        
       if ($std_method == 'modified_angoff') {
@@ -1013,6 +1012,8 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
       echo "<input type=\"hidden\" name=\"q" . $question_no . "\" value=\"0,0\" />\n";
       $marks += $display_option['marks'];
       break;
+    case 'sct':
+      if($part_id == 1) echo "<div style=\"color:#C00000\"><strong>Note:</strong> It is not possible to standard set Script Concordance questions.</div>\n";
   }                  // End switch
 }
 
