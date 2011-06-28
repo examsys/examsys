@@ -369,7 +369,7 @@ function ss_get_marks($mysqli, $paper_id, $exclude, &$marks_array) {
   }
 }
 
-function display_option($firstoption, $q_id, $question_no, &$part_id, $display_option, $std_method, $is_group, &$marks, $exclude, $review_val, &$matching_options, $review_mean, $tmp_reviews, $tmp_exclude, $option_no, $total_rank_no, $require_na, $bgcolor) {
+function display_option($firstoption, $q_id, $question_no, &$part_id, $display_option, $std_method, $is_group, &$marks, $exclude, $review_val, &$matching_options, $review_mean, $tmp_reviews, $option_no, $total_rank_no, $require_na, $bgcolor) {
   $qn_excluded = ($exclude == '1');
   
   switch ($firstoption['q_type']) {
@@ -381,7 +381,7 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
        
       if ($std_method == 'modified_angoff') {
         for ($mark_part=$marks; $mark_part>0; $mark_part--) {
-          echo reviewScale('textbox', $q_id, $question_no, $mark_part, $std_method, $tmp_reviews, substr($tmp_exclude,$mark_part,1)) . " $mark_part marks<br />\n";
+          echo reviewScale('textbox', $q_id, $question_no, $mark_part, $std_method, $tmp_reviews, substr($exclude,$mark_part,1)) . " $mark_part marks<br />\n";
           echo reviewScale2($question_no, $mark_part, $std_method, $qn_excluded, $review_val, $stdID, $is_group);
         }
       } else {
@@ -403,7 +403,7 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
       } else {
         echo '<input type="radio" name="q' . $question_no . '_' . $part_id . '" value="t" /></td><td align="center"><input type="radio" name="q' . $question_no . '_' . $part_id . '" value="f" /></td>';
       }
-      if (substr($tmp_exclude,$part_id-1,1) == '1') {
+      if (substr($exclude,$part_id-1,1) == '1') {
         echo '<td style="color:red; text-decoration:line-through">';
       } else {
         echo '<td>';
@@ -415,8 +415,8 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
       }
       echo "</td>";
       echo '<td>';
-      echo reviewScale('dichotomous', $q_id, $question_no, $part_id, $std_method, $tmp_reviews, substr($tmp_exclude,$part_id-1,1));
-      echo reviewScale2($question_no, $part_id, $std_method, $qn_excluded, $review_val, $stdID, $is_group);
+      echo reviewScale('dichotomous', $q_id, $question_no, $part_id, $std_method, $tmp_reviews, substr($exclude,$part_id-1,1));
+      echo reviewScale2($question_no, $part_id, $std_method, substr($exclude,$part_id-1,1), $review_val, $stdID, $is_group);
       echo '</td>';
       echo "</tr>\n";
       $marks++;
@@ -515,39 +515,35 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
       }
       break;
     case 'mrq':
+      $excl_string = '';
+      if (substr($exclude,0,1) == '1') $excl_string = ' style="color:red; text-decoration:line-through"';
       if ($display_option['option_text'] != '' and $display_option['o_media'] == '') {        // Text and No image
         if ($display_option['correct'] == 'y') {
           if ($display_option['score_method'] == 'AllItemsCorrect') {
-            echo "<tr><td><input type=\"checkbox\" name=\"q" . $question_no . "_" . $part_id . "\" value=\"y\" checked=\"checked\" /></td><td";
-            if ($qn_excluded) echo ' style="color:red; text-decoration:line-through"';
-            echo ">" . stripslashes($display_option['option_text']) . "</td><td>&nbsp;</td><td>&nbsp;</td></tr>\n";
+            echo "<tr><td><input type=\"checkbox\" name=\"q" . $question_no . "_" . $part_id . "\" value=\"y\" checked=\"checked\" /></td><td$excl_string>" . stripslashes($display_option['option_text']) . "</td><td>&nbsp;</td><td>&nbsp;</td></tr>\n";
           } else {
             echo "<tr>";
-            echo "<td><input type=\"checkbox\" name=\"q" . $question_no . "_" . $part_id . "\" value=\"y\" checked=\"checked\" /></td><td";
-            if ($qn_excluded) echo ' style="color:red; text-decoration:line-through"';
-            echo ">" . stripslashes($display_option['option_text']) . "</td><td>&nbsp;</td><td>\n";
-            echo reviewScale('mrq', $q_id, $question_no, $part_id, $std_method, $tmp_reviews, substr($tmp_exclude,0,1));
+            echo "<td><input type=\"checkbox\" name=\"q" . $question_no . "_" . $part_id . "\" value=\"y\" checked=\"checked\" /></td><td$excl_string>" . stripslashes($display_option['option_text']) . "</td><td>&nbsp;</td><td>\n";
+            echo reviewScale('mrq', $q_id, $question_no, $part_id, $std_method, $tmp_reviews, substr($exclude,0,1));
             echo reviewScale2($question_no, $part_id, $std_method, $qn_excluded, $review_val, $stdID, $is_group);
             echo "</td></tr>\n";
           }
         } else {
-          echo "<tr><td><input type=\"checkbox\" name=\"q" . $question_no . "_" . $part_id . "\" id=\"q" . $question_no . "_" . $part_id . "\" value=\"y\" /></td><td";
-          if ($qn_excluded) echo ' style="color:red; text-decoration:line-through"';
-          echo "><span id=\"$question_no" . "_" . "$part_id\">" . stripslashes($display_option['option_text']) . "</span></td><td>&nbsp;</td><td>&nbsp;</td></tr>\n";
+          echo "<tr><td><input type=\"checkbox\" name=\"q" . $question_no . "_" . $part_id . "\" id=\"q" . $question_no . "_" . $part_id . "\" value=\"y\" /></td><td$excl_string><span id=\"$question_no" . "_" . "$part_id\">" . stripslashes($display_option['option_text']) . "</span></td><td>&nbsp;</td><td>&nbsp;</td></tr>\n";
         }
       } elseif ($display_option['option_text'] != '' and $display_option['o_media'] != '') {  // Text and image
         if ($display_option['correct'] == 'y') {
           if ($display_option['score_method'] == 'AllItemsCorrect') {
-            echo "<tr><td><input type=\"checkbox\" name=\"q" . $question_no . "_" . $part_id . "\" id=\"q" . $question_no . "_" . $part_id . "\" value=\"y\" checked=\"checked\" /><span class=\"active\" id=\"$question_no" . "_" . "$part_id\">" . stripslashes($display_option['option_text']) . "</span><br /><img src=\"./media/" . $display_option['o_media'] . "\" width=\"" . $display_option['o_media_width'] . "\" height=\"" . $display_option['o_media_height'] . "\" border=\"0\"/></td><td>&nbsp;</td><td>&nbsp;</td></tr>\n";
+            echo "<tr><td><input type=\"checkbox\" name=\"q" . $question_no . "_" . $part_id . "\" id=\"q" . $question_no . "_" . $part_id . "\" value=\"y\" checked=\"checked\" /><span class=\"active\" id=\"$question_no" . "_" . "$part_id\"$excl_string>" . stripslashes($display_option['option_text']) . "</span><br /><img src=\"./media/" . $display_option['o_media'] . "\" width=\"" . $display_option['o_media_width'] . "\" height=\"" . $display_option['o_media_height'] . "\" border=\"0\"/></td><td>&nbsp;</td><td>&nbsp;</td></tr>\n";
           } else {
-            echo "<tr><td><input type=\"checkbox\" name=\"q" . $question_no . "_" . $part_id . "\" id=\"q" . $question_no . "_" . $part_id . "\" value=\"y\" checked=\"checked\" /><span class=\"active\" id=\"$question_no" . "_" . "$part_id\">" . stripslashes($display_option['option_text']) . "</span><br /><img src=\"./media/" . $display_option['o_media'] . "\" width=\"" . $display_option['o_media_width'] . "\" height=\"" . $display_option['o_media_height'] . "\" border=\"0\"/>";
+            echo "<tr><td><input type=\"checkbox\" name=\"q" . $question_no . "_" . $part_id . "\" id=\"q" . $question_no . "_" . $part_id . "\" value=\"y\" checked=\"checked\" /><span class=\"active\" id=\"$question_no" . "_" . "$part_id\"$excl_string>" . stripslashes($display_option['option_text']) . "</span><br /><img src=\"./media/" . $display_option['o_media'] . "\" width=\"" . $display_option['o_media_width'] . "\" height=\"" . $display_option['o_media_height'] . "\" border=\"0\"/>";
             echo "</td><td>&nbsp;</td><td>\n";
-            echo reviewScale('mrq', $q_id, $question_no, $part_id, $std_method, $tmp_reviews, substr($tmp_exclude,0,1));
+            echo reviewScale('mrq', $q_id, $question_no, $part_id, $std_method, $tmp_reviews, substr($exclude,0,1));
             echo reviewScale2($question_no, $part_id, $std_method, $qn_excluded, $review_val, $stdID, $is_group);
             echo "</td></tr>\n";
           }
         } else {
-          echo "<tr><td><input type=\"checkbox\" name=\"q" . $question_no . "_" . $part_id . "\" id=\"q" . $question_no . "_" . $part_id . "\" value=\"y\" /><span class=\"active\" id=\"$question_no" . "_" . "$part_id\">" . stripslashes($display_option['option_text']) . "</span><br /><img src=\"./media/" . $display_option['o_media'] . "\" width=\"" . $display_option['o_media_width'] . "\" height=\"" . $display_option['o_media_height'] . "\" border=\"0\"/></td><td>&nbsp;</td><td>&nbsp;</td></tr>\n";
+          echo "<tr><td><input type=\"checkbox\" name=\"q" . $question_no . "_" . $part_id . "\" id=\"q" . $question_no . "_" . $part_id . "\" value=\"y\" /><span class=\"active\" id=\"$question_no" . "_" . "$part_id\"$excl_string>" . stripslashes($display_option['option_text']) . "</span><br /><img src=\"./media/" . $display_option['o_media'] . "\" width=\"" . $display_option['o_media_width'] . "\" height=\"" . $display_option['o_media_height'] . "\" border=\"0\"/></td><td>&nbsp;</td><td>&nbsp;</td></tr>\n";
         }
       } elseif ($display_option['option_text'] == '' and $display_option['o_media'] != '') {  // No Text and image
         if ($display_option['correct'] == 'y' and $display_option['score_method'] != 'AllItemsCorrect') {
@@ -555,7 +551,7 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
         } else {
           echo "<tr><td><input type=\"checkbox\" name=\"q" . $question_no . "_" . $part_id . "\" value=\"y\" /><img src=\"./media/" . $display_option['o_media'] . "\" width=\"" . $display_option['o_media_width'] . "\" height=\"" . stripslashes($display_option['o_media_height']) . "\" border=\"0\"/>";
           echo "</td><td>&nbsp;</td><td>\n";
-          echo reviewScale('mrq', $q_id, $question_no, $part_id, $std_method, $tmp_reviews, substr($tmp_exclude,0,1));
+          echo reviewScale('mrq', $q_id, $question_no, $part_id, $std_method, $tmp_reviews, substr($exclude,0,1));
           echo reviewScale2($question_no, $part_id, $std_method, $qn_excluded, $review_val, $stdID, $is_group);
           echo "</td></tr>\n";
         }
@@ -606,7 +602,7 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
       
       if ($display_option['correct'] != 0 or $display_option['score_method'] == 'StrictOrder') {
         echo "<td>";
-        echo reviewScale('rank', $q_id, $question_no, $part_id, $std_method, $tmp_reviews, substr($tmp_exclude,0,1));
+        echo reviewScale('rank', $q_id, $question_no, $part_id, $std_method, $tmp_reviews, substr($exclude,0,1));
         echo reviewScale2($question_no, $part_id, $std_method, $qn_excluded, $review_val, $stdID, $is_group);
         echo "</td>\n";
       } else {
@@ -624,6 +620,15 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
       }
       break;
     case 'timedate':
+      if($qn_excluded) {
+        $bgcolor = '#FFC0C0';
+        $fgcolor = '#800000';
+        $extra = 'exclude_';
+        } else {
+        $bgcolor = '#D6DFF7';
+        $fgcolor = 'black';
+      }
+              
       $date_details = explode('|',$display_option['score_method']);
       $answer_array = preg_split('/[\/\s:]+/',$display_option['correct']);
       if ($date_details[0] == 1 or $date_details[0] == 2 or $date_details[0] == 3 or $date_details[0] == 5) {
@@ -650,18 +655,18 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
       if ($date_details[0] == 4) {
         $answer_day = $answer_array[1];
         $answer_month = $answer_array[0];
-        echo '<select name="q' . $question_no . '_month">';
+        echo '<select name="q' . $question_no . '_month" style="background-color:' . $bgcolor . '; color:' . $fgcolor . '">';
         echo "\n<option value=\"\"></option>\n";
         for ($tmp_month=1; $tmp_month<=12; $tmp_month++) {
           if ($tmp_month < 10) {
             if (intval($answer_month) == $tmp_month) {
-              echo "<option value=\"0$tmp_month\" selected>0$tmp_month</option>\n";
+              echo "<option value=\"0$tmp_month\" selected=\"selected\">0$tmp_month</option>\n";
             } else {
               echo "<option value=\"0$tmp_month\">0$tmp_month</option>\n";
             }
           } else {
             if (intval($answer_month) == $tmp_month) {
-              echo "<option value=\"$tmp_month\" selected>$tmp_month</option>\n";
+              echo "<option value=\"$tmp_month\" selected=\"selected\">$tmp_month</option>\n";
             } else {
               echo "<option value=\"$tmp_month\">$tmp_month</option>\n";
             }
@@ -670,18 +675,18 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
         echo '</select> / ';
       }
       if ($date_details[0] == 1 or $date_details[0] == 2 or $date_details[0] == 3 or $date_details[0] == 4 or $date_details[0] == 5) {
-        echo '<select name="q' . $question_no . '_day">';
+        echo '<select name="q' . $question_no . '_day" style="background-color:' . $bgcolor . '; color:' . $fgcolor . '">';
         echo "\n<option value=\"\"></option>\n";
         for ($tmp_day=1; $tmp_day<=31; $tmp_day++) {
           if ($tmp_day < 10) {
             if (intval($answer_day) == $tmp_day) {
-              echo "<option value=\"0$tmp_day\" selected>0$tmp_day</option>\n";
+              echo "<option value=\"0$tmp_day\" selected=\"selected\">0$tmp_day</option>\n";
             } else {
               echo "<option value=\"0$tmp_day\">0$tmp_day</option>\n";
             }
           } else {
             if (intval($answer_day) == $tmp_day) {
-              echo "<option value=\"$tmp_day\" selected>$tmp_day</option>\n";
+              echo "<option value=\"$tmp_day\" selected=\"selected\">$tmp_day</option>\n";
             } else {
               echo "<option value=\"$tmp_day\">$tmp_day</option>\n";
             }
@@ -689,18 +694,18 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
         }
         echo '</select>';
         if ($date_details[0] != 4 and $date_details[0] != 5) {
-          echo ' / <select name="q' . $question_no . '_month">';
+          echo ' / <select name="q' . $question_no . '_month" style="background-color:' . $bgcolor . '; color:' . $fgcolor . '">';
           echo "\n<option value=\"\"></option>\n";
           for ($tmp_month=1; $tmp_month<=12; $tmp_month++) {
             if ($tmp_month < 10) {
               if (intval($answer_month) == $tmp_month) {
-                echo "<option value=\"0$tmp_month\" selected>0$tmp_month</option>\n";
+                echo "<option value=\"0$tmp_month\" selected=\"selected\">0$tmp_month</option>\n";
               } else {
                 echo "<option value=\"0$tmp_month\">0$tmp_month</option>\n";
               }
             } else {
               if (intval($answer_month) == $tmp_month) {
-                echo "<option value=\"$tmp_month\" selected>$tmp_month</option>\n";
+                echo "<option value=\"$tmp_month\" selected=\"selected\">$tmp_month</option>\n";
               } else {
                 echo "<option value=\"$tmp_month\">$tmp_month</option>\n";
               }
@@ -710,18 +715,18 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
         } elseif ($date_details[0] == 5) {
           $month_array = array('January','February','March','April','May','June','July','August','September','October','November','December');
           $tmp_month = 1;
-          echo ' / <select name="q' . $question_no . '_month">';
+          echo ' / <select name="q' . $question_no . '_month" style="background-color:' . $bgcolor . '; color:' . $fgcolor . '">';
           echo "\n<option value=\"\"></option>\n";
           foreach ($month_array as $individual_month) {
             if ($tmp_month < 10) {
               if (intval($answer_month) == $tmp_month) {
-                echo "<option value=\"0$tmp_month\" selected>$individual_month</option>\n";
+                echo "<option value=\"0$tmp_month\" selected=\"selected\">$individual_month</option>\n";
               } else {
                 echo "<option value=\"0$tmp_month\">$individual_month</option>\n";
               }
             } else {
               if (intval($answer_month) == $tmp_month) {
-                echo "<option value=\"$tmp_month\" selected>$individual_month</option>\n";
+                echo "<option value=\"$tmp_month\" selected=\"selected\">$individual_month</option>\n";
               } else {
                 echo "<option value=\"$tmp_month\">$individual_month</option>\n";
               }
@@ -730,11 +735,11 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
           }
           echo '</select>';
         }
-        echo ' / <select name="q' . $question_no . '_year">';
+        echo ' / <select name="q' . $question_no . '_year" style="background-color:' . $bgcolor . '; color:' . $fgcolor . '">';
         echo "\n<option value=\"\"></option>\n";
         for ($tmp_year=$date_details[1]; $tmp_year<=$date_details[2]; $tmp_year++) {
           if (intval($answer_year) == $tmp_year) {
-            echo "<option value=\"$tmp_year\" selected>$tmp_year</option>\n";
+            echo "<option value=\"$tmp_year\" selected=\"selected\">$tmp_year</option>\n";
           } else {
             echo "<option value=\"$tmp_year\">$tmp_year</option>\n";
           }
@@ -743,36 +748,36 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
       }
       if ($date_details[0] == 1 or $date_details[0] == 2 or $date_details[0] == 6 or $date_details[0] == 7) {
         if ($date_details[0] < 6) echo '&nbsp;&nbsp;&nbsp;';
-        echo '<select name="q' . $question_no . '_hour">';
+        echo '<select name="q' . $question_no . '_hour" style="background-color:' . $bgcolor . '; color:' . $fgcolor . '">';
         echo "\n<option value=\"\"></option>\n";
         for ($tmp_hour=0; $tmp_hour<=23; $tmp_hour++) {
           if ($tmp_hour < 10) {
             if (intval($answer_hour) == $tmp_hour) {
-              echo "<option value=\"0$tmp_hour\" selected>0$tmp_hour</option>\n";
+              echo "<option value=\"0$tmp_hour\" selected=\"selected\">0$tmp_hour</option>\n";
             } else {
               echo "<option value=\"0$tmp_hour\">0$tmp_hour</option>\n";
             }
           } else {
             if (intval($answer_hour) == $tmp_hour) {
-              echo "<option value=\"$tmp_hour\" selected>$tmp_hour</option>\n";
+              echo "<option value=\"$tmp_hour\" selected=\"selected\">$tmp_hour</option>\n";
             } else {
               echo "<option value=\"$tmp_hour\">$tmp_hour</option>\n";
             }
           }
         }
         echo "</select>\n";
-        echo ' : <select name="q' . $question_no . '_minute">';
+        echo ' : <select name="q' . $question_no . '_minute" style="background-color:' . $bgcolor . '; color:' . $fgcolor . '">';
         echo "\n<option value=\"\"></option>\n";
         for ($tmp_min=0; $tmp_min<=60; $tmp_min++) {
           if ($tmp_min < 10) {
             if (intval($answer_minutes) == $tmp_min) {
-              echo "<option value=\"0$tmp_min\" selected>0$tmp_min</option>\n";
+              echo "<option value=\"0$tmp_min\" selected=\"selected\">0$tmp_min</option>\n";
             } else {
               echo "<option value=\"0$tmp_min\">0$tmp_min</option>\n";
             }
           } else {
             if (intval($answer_minutes) == $tmp_min) {
-              echo "<option value=\"$tmp_min\" selected>$tmp_min</option>\n";
+              echo "<option value=\"$tmp_min\" selected=\"selected\">$tmp_min</option>\n";
             } else {
               echo "<option value=\"$tmp_min\">$tmp_min</option>\n";
             }
@@ -780,18 +785,18 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
         }
         echo "</select>\n";
         if ($date_details[0] == 1 or $date_details[0] == 6) {
-          echo ' : <select name="q' . $question_no . '_second">';
+          echo ' : <select name="q' . $question_no . '_second" style="background-color:' . $bgcolor . '; color:' . $fgcolor . '">';
           echo "\n<option value=\"\"></option>\n";
           for ($tmp_sec=0; $tmp_sec<=60; $tmp_sec++) {
             if ($tmp_sec < 10) {
               if (intval($answer_seconds) == $tmp_sec) {
-                echo "<option value=\"0$tmp_sec\" selected>0$tmp_sec</option>\n";
+                echo "<option value=\"0$tmp_sec\" selected=\"selected\">0$tmp_sec</option>\n";
               } else {
                 echo "<option value=\"0$tmp_sec\">0$tmp_sec</option>\n";
               }
             } else {
               if (intval($answer_seconds) == $tmp_sec) {
-                echo "<option value=\"$tmp_sec\" selected>$tmp_sec</option>\n";
+                echo "<option value=\"$tmp_sec\" selected=\"selected\">$tmp_sec</option>\n";
               } else {
                 echo "<option value=\"$tmp_sec\">$tmp_sec</option>\n";
               }
@@ -803,36 +808,41 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
       echo "</p>\n";
 
       echo "<div>";
-      echo reviewScale('timedate', $q_id, $question_no, $part_id, $std_method, $tmp_reviews, substr($tmp_exclude,0,1));
+      echo reviewScale('timedate', $q_id, $question_no, $part_id, $std_method, $tmp_reviews, substr($exclude,0,1));
       echo reviewScale2($question_no, '', $std_method, $qn_excluded, $review_val, $stdID, $is_group);
       echo "</div>\n";
       $marks++;
       break;
     case 'blank':
       if ($display_option['score_method'] == 'textboxes') {
-      $blank_details = explode('[blank',$display_option['option_text']);
+      $blank_details = explode('[blank]',$display_option['option_text']);
       $array_size = count($blank_details);
       $blank_count = 1;
       while ($blank_count < $array_size) {
-        $blank_details[$blank_count] = '[blank' . $blank_details[$blank_count];
+        $blank_parts = explode("[/blank]", $blank_details[$blank_count]);
         $results = array();
-        $not_used = ereg("size=\"([0-9]{1,3})\"",$blank_details[$blank_count],$results);
+        $not_used = preg_match("|size=\"([0-9]{1,3})\"|", $blank_details[$blank_count], $results);
 
-        if ($results[1]) {
+        if (isset($results[1]) and $results[1] != '') {
           $blank_size[$blank_count] = $results[1];
         } else {
           $blank_size[$blank_count] = 15;
         }
         $results=array();
-        $not_used = ereg("mark=\"([0-9]{1,3})\"",$blank_details[$blank_count],$results);
-        if ($results[1]) {
+        $not_used = preg_match("|mark=\"([0-9]{1,3})\"|",$blank_details[$blank_count],$results);
+        if (isset($results[1])) {
           $blank_mark[$blank_count] = $results[1];
         } else {
           $blank_mark[$blank_count] = 1;
         }
-        $reviewScale = reviewScale('blank', $q_id, $question_no, $blank_count, $std_method, $tmp_reviews, substr($tmp_exclude,$blank_count-1,1));
-        $reviewScale .= reviewScale2($question_no, $part_id, $std_method, $qn_excluded, $review_val, $stdID, $is_group);
-        $screen_output[$blank_count] = preg_replace("/\[blank.*\].*\[/blank\]/","<input type=\"text\" name=\"q" . $question_no . "_" . $blank_count . "\" size=\"$blank_size[$blank_count]\" />$reviewScale",$blank_details[$blank_count]);
+        $review_val = get_review('blank', $std_method, $q_id, $blank_count, $tmp_reviews, $is_group);
+        $reviewScale = reviewScale('blank', $q_id, $question_no, $blank_count, $std_method, $tmp_reviews, substr($exclude,$blank_count-1,1));
+        $reviewScale .= reviewScale2($question_no, $blank_count, $std_method, substr($exclude,$blank_count-1,1), $review_val, $stdID, $is_group);
+        $exclude_str = '';
+        if(substr($exclude,$blank_count-1,1) == '1') {
+          $exclude_str =  ' style="background-color:#FFC0C0; color:#800000"';
+        }
+        $screen_output[$blank_count] = "<input type=\"text\" name=\"q" . $question_no . "_" . $blank_count . "\" value=\"" . $blank_parts[0] . "\" size=\"$blank_size[$blank_count]\"$exclude_str />" . $reviewScale . $blank_parts[1];
         $blank_count++;
       }
       $screen_output_all = '';
@@ -849,9 +859,7 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
         // Dropdown lists.
         $blank_details = explode('[blank',$display_option['option_text']);
         $no_blanks = count($blank_details);
-        echo '<p><span';
-        if (substr($tmp_exclude,0,1) == '1') echo ' style="color:red; text-decoration:line-through"';
-        echo '>' . $blank_details[0];
+        echo '<p>' . $blank_details[0];
         $blank_count = 1;
         while ($blank_count < $no_blanks) {
         $not_used = preg_match("/mark=\"[0-9]{1,3}\"/",$blank_details[$blank_count],$results);
@@ -863,28 +871,29 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
           $blank_details[$blank_count] = substr($blank_details[$blank_count], (strpos($blank_details[$blank_count],']') + 1));
           $answer_options = explode('[/blank]',$blank_details[$blank_count]);
           $answer_list = explode(',',$answer_options[0]);
-          echo "</span><select name=\"q" . $question_no . "_" . $part_id . "\">\n";
+          echo "<select name=\"q" . $question_no . "_" . $part_id . "\"";
+          if (substr($exclude,$blank_count-1,1) == '1') echo ' style="background-color: rgb(255, 192, 192); color: rgb(128, 0, 0);"';
+          echo ">\n";
           echo "<option value=\"u\"></option>\n";
           $correct_answer = $answer_list[0];
           shuffle($answer_list);
           for ($i=1; $i<=count($answer_list); $i++) {
             if (trim($answer_list[$i-1]) == trim($correct_answer)) {
-              echo "<option value=\"" . trim($answer_list[$i-1]) . "\" selected>" . trim($answer_list[$i-1]) . "</option>\n";
+              echo "<option value=\"" . trim($answer_list[$i-1]) . "\" selected=\"selected\">" . trim($answer_list[$i-1]) . "</option>\n";
             } else {
               echo "<option value=\"" . trim($answer_list[$i-1]) . "\">" . trim($answer_list[$i-1]) . "</option>\n";
             }
           }
           echo '</select> ';
-          echo reviewScale('blank', $q_id, $question_no, $part_id, $std_method, $tmp_reviews, substr($tmp_exclude,$blank_count-1,1));
-          echo reviewScale2($question_no, $part_id, $std_method, $qn_excluded, $review_val, $stdID, $is_group);
+          $review_val = get_review('blank', $std_method, $q_id, $blank_count, $tmp_reviews, $is_group);
+          echo reviewScale('blank', $q_id, $question_no, $part_id, $std_method, $tmp_reviews, substr($exclude,$blank_count-1,1));
+          echo reviewScale2($question_no, $part_id, $std_method, substr($exclude,$blank_count-1,1), $review_val, $stdID, $is_group);
           
-          echo '<span';
-          if (substr($tmp_exclude,$blank_count,1) == '1') echo ' style="color:red; text-decoration:line-through"';
-          echo '>' .  $answer_options[1]; // Bit after the closing [/blank] tag.
+          echo $answer_options[1]; // Bit after the closing [/blank] tag.
           $blank_count++;
           $part_id++;
         }
-        echo '</span></p>';
+        echo '</p>';
         if (count($blank_mark) > 0) {
           foreach ($blank_mark as $individual_mark) {
             $marks += $individual_mark;
@@ -916,7 +925,7 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
       for ($i=1; $i<=$display_option['marks']; $i++) {
         $matching_options[] = substr($layers[$i-1], 0, strpos($layers[$i-1], '~'));
 //        echo "<tbody><tr><td style=\"padding-right: 12px\">" .  chr($i+64) . ')&nbsp;' . substr($layers[$i-1], 0, strpos($layers[$i-1], '~')) . "</td><td>";
-//        echo reviewScale('hotspot', $q_id, $question_no, $i, $std_method, $tmp_reviews, substr($tmp_exclude,$i-1,1));
+//        echo reviewScale('hotspot', $q_id, $question_no, $i, $std_method, $tmp_reviews, substr($exclude,$i-1,1));
 //        echo reviewScale2($question_no, $part_id, $std_method, $qn_excluded, $review_val, $stdID);
 //        echo "</td></tr></tbody>\n";
       }
@@ -998,7 +1007,7 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
 
 <?php
       echo "<div>";
-      echo reviewScale('flash', $q_id, $question_no, '', $std_method, $tmp_reviews, substr($tmp_exclude,0,1));
+      echo reviewScale('flash', $q_id, $question_no, '', $std_method, $tmp_reviews, substr($exclude,0,1));
       echo reviewScale2($question_no, '', $std_method, $qn_excluded, $review_val, $stdID, $is_group);
       echo "</div>\n";
       echo "<input type=\"hidden\" name=\"q" . $question_no . "\" value=\"0,0\" />\n";

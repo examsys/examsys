@@ -104,7 +104,9 @@ function display_options($options,$q_id, $current_theme, $current_scenario, $cur
     foreach ($options as $display_option) {
       $part_id++;
       $review_val = (in_array($options[0]['q_type'], $display_inline)) ? get_review($options[0]['q_type'], $std_method, $q_id, $part_id, $tmp_reviews, $is_group) : 0;
-      display_option($options[0], $q_id, $question_no, $part_id, $display_option, $std_method, $is_group, $marks, $tmp_exclude, $review_val, $matching_options, 0, $tmp_reviews, $tmp_exclude, $option_no, $total_rank_no, $require_na, $bgcolor);
+      // MRQs have multiple parts but are excluded as a whole
+      $exclude_this = ($options[0]['q_type'] != 'mrq') ? substr($tmp_exclude,($part_id-1),1) : substr($tmp_exclude,0,1);
+      display_option($options[0], $q_id, $question_no, $part_id, $display_option, $std_method, $is_group, $marks, $exclude_this, $review_val, $matching_options, 0, $tmp_reviews, $tmp_exclude, $option_no, $total_rank_no, $require_na, $bgcolor);
       $i++;
     }                    // End foreach loop
   }
@@ -141,7 +143,9 @@ function display_options($options,$q_id, $current_theme, $current_scenario, $cur
       //eval("$new_leadin;");
       $search = array('$A','$B','$C','$D','$E','$F','$G','$H');
       $replace = array($A,$B,$C,$D,$E,$F,$G,$H);
-      echo "<p>" . str_ireplace($search,$replace,$current_leadin) . "</p>\n";
+      echo "<p";
+      if(isset($exclude[$q_id])) echo ' style="color:red; text-decoration:line-through"';
+      echo ">" . str_ireplace($search,$replace,$current_leadin) . "</p>\n";
       
       echo "<p><input type=\"text\" style=\"text-align:right\" name=\"q" . $question_no . "\" size=\"10\" />" . $score_array[2] .  "</p>\n";
       echo "<div>";
@@ -166,7 +170,7 @@ function display_options($options,$q_id, $current_theme, $current_scenario, $cur
           $review_val = get_review($options[0]['q_type'], $std_method, $q_id, 1, $tmp_reviews, $is_group);
           echo "<div>";
           echo reviewScale('mrq', $q_id, $question_no, 1, $std_method, $tmp_reviews, substr($tmp_exclude,0,1));
-          echo reviewScale2($question_no, 1, $std_method, substr($tmp_exclude,0,1), $review_val, $stdID, $is_group);
+          echo reviewScale2($question_no, 1, $std_method, substr($tmp_exclude,1,1), $review_val, $stdID, $is_group);
           echo "</div>\n";
         }
       } elseif ($options[0]['q_type'] == 'rank') {
@@ -249,7 +253,7 @@ function display_options($options,$q_id, $current_theme, $current_scenario, $cur
         if ($answer_no == 1) {
           echo '&nbsp;';
           echo reviewScale('extmatch', $q_id, $question_no, $rating_part+1, $std_method, $tmp_reviews, substr($tmp_exclude,$rating_part,1));
-          echo reviewScale2($question_no, $part_id, $std_method, (isset($exclude[$q_id])), $review_val, $stdID, $is_group);
+          echo reviewScale2($question_no, $part_id, $std_method, substr($tmp_exclude,($part_id - 1),1), $review_val, $stdID, $is_group);
           echo '</div></li>';
           $rating_part++;
         } else {
@@ -274,7 +278,7 @@ function display_options($options,$q_id, $current_theme, $current_scenario, $cur
         $review_val = get_review($options[0]['q_type'], $std_method, $q_id, $part_id, $tmp_reviews, $is_group);
         echo "<tr><td>" . chr($part_id + 64) . ".</td><td>" . $single_option . "</td><td>&nbsp;</td><td>";
         echo reviewScale('labelling', $q_id, $question_no, $part_id, $std_method, $tmp_reviews, substr($tmp_exclude,$part_id-1,1));
-        echo reviewScale2($question_no, $part_id, $std_method, substr($tmp_exclude,$part_id,1), $review_val, $stdID, $is_group);
+        echo reviewScale2($question_no, $part_id, $std_method, substr($tmp_exclude,$part_id - 1,1), $review_val, $stdID, $is_group);
         echo "</td></tr>\n";
         $part_id++;
         $marks++;
@@ -284,11 +288,15 @@ function display_options($options,$q_id, $current_theme, $current_scenario, $cur
     case 'hotspot':
       $part_id = 1;
       echo "<table summary=\"Options for Hotspot question\">\n";
+      $excl_string = '';
+      if (isset($exclude[$q_id])) {
+        $excl_string = ' ;color:red; text-decoration:line-through';
+      }
       foreach ($matching_options as $single_option) {
         $review_val = get_review($options[0]['q_type'], $std_method, $q_id, $part_id, $tmp_reviews, $is_group);
-        echo "<tbody><tr><td style=\"padding-right: 12px\">" .  chr($part_id+64) . ')&nbsp;' . $single_option . "</td><td>&nbsp;</td><td>";
+        echo "<tbody><tr><td style=\"padding-right: 12px$excl_string\">" .  chr($part_id+64) . ')&nbsp;' . $single_option . "</td><td>&nbsp;</td><td>";
         echo reviewScale('hotspot', $q_id, $question_no, $part_id, $std_method, $tmp_reviews, substr($tmp_exclude,$part_id-1,1));
-        echo reviewScale2($question_no, $part_id, $std_method, substr($tmp_exclude,$part_id,1), $review_val, $stdID, $is_group);
+        echo reviewScale2($question_no, $part_id, $std_method, (isset($exclude[$q_id])), $review_val, $stdID, $is_group);
         echo "</td></tr></tbody>\n";
         $part_id++;
       }
@@ -324,7 +332,7 @@ function display_options($options,$q_id, $current_theme, $current_scenario, $cur
           }
           echo '<td>';
           echo reviewScale('matrix',$q_id, $question_no, $part_id, $std_method, $tmp_reviews, substr($tmp_exclude,$part_id-1,1));
-          echo reviewScale2($question_no, $part_id, $std_method, (isset($exclude[$q_id])), $review_val, $stdID, $is_group);
+          echo reviewScale2($question_no, $part_id, $std_method, substr($tmp_exclude,$part_id - 1,1), $review_val, $stdID, $is_group);
           echo '</td>';
           echo "</tr>\n";
           $part_id++;
