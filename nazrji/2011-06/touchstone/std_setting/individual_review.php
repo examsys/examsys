@@ -639,12 +639,12 @@ $current_screen = 1;
     echo '<input type="checkbox" name="banksave" value="1" />&nbsp;Save ratings into question bank';
   }
   $mysqli->close();
+  
 ?>
 </td><td colspan="2"></td></tr>
 </table>
 </div>
 <br />
-<input type="hidden" name="total_marks" id="total_marks" value="<?php echo $total_marks - $std_excluded; ?>" />
 </form>
 </body>
 </html>

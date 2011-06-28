@@ -103,8 +103,8 @@ function display_options($options,$q_id, $current_theme, $current_scenario, $cur
     foreach ($options as $display_option) {
       $part_id++;
       $review_val = (in_array($options[0]['q_type'], $display_inline)) ? get_review($options[0]['q_type'], $std_method, $q_id, $part_id, $tmp_reviews, $is_group) : 0;
-      // MRQs have multiple parts but are excluded as a whole
-      $exclude_this = ($options[0]['q_type'] != 'mrq') ? substr($tmp_exclude,($part_id-1),1) : substr($tmp_exclude,0,1);
+      // MRQs and MCQs have multiple parts but are excluded as a whole
+      $exclude_this = ($options[0]['q_type'] != 'mcq' and $options[0]['q_type'] != 'mrq') ? substr($tmp_exclude,($part_id-1),1) : substr($tmp_exclude,0,1);
       display_option($options[0], $q_id, $question_no, $part_id, $display_option, $std_method, $is_group, $marks, $exclude_this, $review_val, $matching_options, 0, $tmp_reviews, $tmp_exclude, $option_no, $total_rank_no, $require_na, $bgcolor);
       $i++;
     }                    // End foreach loop

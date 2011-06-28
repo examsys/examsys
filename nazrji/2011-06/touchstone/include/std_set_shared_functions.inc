@@ -401,7 +401,7 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
       } else {
         echo '<input type="radio" name="q' . $question_no . '_' . $part_id . '" value="t" /></td><td align="center"><input type="radio" name="q' . $question_no . '_' . $part_id . '" value="f" /></td>';
       }
-      if (substr($exclude,$part_id-1,1) == '1') {
+      if ($exclude == '1') {
         echo '<td style="color:red; text-decoration:line-through">';
       } else {
         echo '<td>';
@@ -413,7 +413,7 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
       }
       echo "</td>";
       echo '<td>';
-      echo reviewScale($question_no, $part_id, $std_method, substr($exclude,$part_id-1,1), $review_val, $stdID, $is_group);
+      echo reviewScale($question_no, $part_id, $std_method, ($exclude == '1'), $review_val, $stdID, $is_group);
       echo '</td>';
       echo "</tr>\n";
       $marks++;
