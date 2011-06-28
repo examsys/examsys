@@ -34,9 +34,9 @@ if (isset($_GET['reviewers'])) {
   $paperID = $_GET['paperID'];
   $module = (isset($_GET['module'])) ? $_GET['module'] : '';
   $folder = (isset($_GET['folder'])) ? $_GET['folder'] : '';
-  $reviews = explode(';',$_GET['reviewers']);
+  $prev_reviews = explode(';',$_GET['reviewers']);
   $row_no = 0;
-  foreach ($reviews as $individual_review) {
+  foreach ($prev_reviews as $individual_review) {
     $parts = explode(',',$individual_review);
     if ($row_no == 0) {
       $setterID = $parts[0];
@@ -101,8 +101,8 @@ if ($rater_query != '') {
   $stmt->bind_result($rating, $setter_id, $method, $title, $surname, $questionID);
   while($stmt->fetch()) {
     $tmp_userID = $setter_id;
-    $reviews[$tmp_userID][$questionID] = $rating;
-    $reviews[$tmp_userID]['name'] = $title . ' ' .$surname;
+    $reviews['user'][$tmp_userID][$questionID] = $rating;
+    $reviews['user'][$tmp_userID]['name'] = $title . ' ' .$surname;
   }
   $stmt->close();
 }
@@ -176,9 +176,20 @@ if (!isset($no_screens)) {
   <td style="margin:0px">Use the light blue dropdown lists next to each question to indicate the percentage of <strong>borderline</strong> candidates expected to get each question correct.<br /><br /><img src="../artwork/small_yellow_warning_icon.gif" width="16" height="16" alt="!" /> = reviews differ by more than 10%</td>
   </tr>
   </table>
+<?php
+if(count($rater_names) > count($reviews['user'])) {
+?>
+  </div>
+  <div align="center" style="margin-top: 12px">
+  <table cellpadding="4" cellspacing="0" border="0" width="90%" style="background-color:#DFE8FF; border:1px solid #5582D2;">
+  <tr>
+  <td style="background-color: #FFC0C0; margin:0px"><img src="../artwork/small_yellow_warning_icon.gif" width="16" height="16" alt="!" /> <strong>Warning</strong>: One or more of the individual reviews on which this group review is based has changed since the review took place. These reviews are not included in the mean values shown below.</td>
+  </tr>
+  </table>
   </div>
   <br />
 <?php
+}
 // Get any questions to exclude.
 $excluded = array();
 $result = $mysqli->prepare("SELECT q_id, parts FROM question_exclude WHERE q_paper=?");

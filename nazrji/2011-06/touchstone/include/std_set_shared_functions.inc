@@ -1201,24 +1201,22 @@ function get_review($q_type, $method, $q_id, $part_no, $prev_reviews, $is_group 
     $ratings_array = array();
     $rating_total = 0;
     $min = 100; $max = 0;
-    foreach ($prev_reviews as $individual_rater) {
-      if(is_array($individual_rater)) {
-        if ($q_type == 'dichotomous' or $q_type == 'extmatch' or $q_type == 'mrq' or $q_type == 'matrix' or $q_type == 'blank' or $q_type == 'rank' or $q_type == 'labelling' or $q_type == 'hotspot') {
-          $ratings_parts = explode(',',$individual_rater[$q_id]);
-          $this_rating = $ratings_parts[$part_no - 1];
-        } else {
-          $this_rating = $individual_rater[$q_id];
-        }
-        $ratings_array[] = $this_rating;
-        $rating_total += $this_rating;
-        $min = ($this_rating < $min) ? $this_rating : $min;
-        $max = ($this_rating > $max) ? $this_rating : $max;
-        $rater_name = $individual_rater['name'];
-        if ($rating_string == '') {
-          $rating_string = $rater_name . '=' . $this_rating . '%';
-        } else {
-          $rating_string .= ', ' . $rater_name . '=' . $this_rating . '%';
-        }
+    foreach ($prev_reviews['user'] as $individual_rater) {
+      if ($q_type == 'dichotomous' or $q_type == 'extmatch' or $q_type == 'mrq' or $q_type == 'matrix' or $q_type == 'blank' or $q_type == 'rank' or $q_type == 'labelling' or $q_type == 'hotspot') {
+        $ratings_parts = explode(',',$individual_rater[$q_id]);
+        $this_rating = $ratings_parts[$part_no - 1];
+      } else {
+        $this_rating = $individual_rater[$q_id];
+      }
+      $ratings_array[] = $this_rating;
+      $rating_total += $this_rating;
+      $min = ($this_rating < $min) ? $this_rating : $min;
+      $max = ($this_rating > $max) ? $this_rating : $max;
+      $rater_name = $individual_rater['name'];
+      if ($rating_string == '') {
+        $rating_string = $rater_name . '=' . $this_rating . '%';
+      } else {
+        $rating_string .= ', ' . $rater_name . '=' . $this_rating . '%';
       }
     }
     $raw_mean = round($rating_total / count($ratings_array));
