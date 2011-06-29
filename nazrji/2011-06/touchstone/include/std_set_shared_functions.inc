@@ -369,18 +369,23 @@ function ss_get_marks($mysqli, $paper_id, $exclude, &$marks_array) {
   }
 }
 
-function display_option($firstoption, $q_id, $question_no, &$part_id, $display_option, $std_method, $is_group, &$marks, $exclude, $review_val, &$matching_options, $review_mean, $tmp_reviews, $option_no, $total_rank_no, $require_na, $bgcolor) {
+function display_option($firstoption, $q_id, $question_no, &$part_id, $display_option, $std_method, $is_group, &$marks, $exclude, $review_val, &$matching_options, $review_mean, $tmp_reviews, $option_no, $total_rank_no, $require_na, $bgcolor, $feedback) {
   $qn_excluded = ($exclude == '1');
   
   switch ($firstoption['q_type']) {
     case 'textbox':
       $textbox_size = explode('x',$display_option['score_method']);
       echo "<blockquote><textarea style=\"font-family:Arial,sans-serif\" cols=\"" . $textbox_size[0] . "\" rows=\"" . $textbox_size[1] . "\"></textarea></blockquote>\n";
+      echo "<pre style=\"width:90%; font-family:Arial,sans-serif; font-style:italic; color:#C00000\">" . wordwrap($feedback, 150) . "</pre>";
       $marks = $display_option['marks'];
-       
+      
+      $plural = 's';
       if ($std_method == 'modified_angoff') {
         for ($mark_part=$marks; $mark_part>0; $mark_part--) {
+          $review_val = get_review('textbox', $std_method, $q_id, $mark_part, $tmp_reviews, $is_group);
           echo reviewScale($question_no, $mark_part, $std_method, $qn_excluded, $review_val, $stdID, $is_group);
+          if($mark_part == 1) $plural = '';
+          echo "<span class=\"part-mark\">$mark_part mark$plural</span><br />\n";
         }
       } else {
         echo "<div style=\"color:#C00000\"><strong>Note:</strong> Ebel method cannot be used to standard set textbox questions.</div>\n";
@@ -1108,7 +1113,16 @@ function get_review($q_type, $method, $q_id, $part_no, $prev_reviews, $is_group 
     $rating_total = 0;
     $min = 100; $max = 0;
     foreach ($prev_reviews['user'] as $individual_rater) {
-      if ($q_type == 'dichotomous' or $q_type == 'extmatch' or $q_type == 'mrq' or $q_type == 'matrix' or $q_type == 'blank' or $q_type == 'rank' or $q_type == 'labelling' or $q_type == 'hotspot') {
+      if ($q_type == 'textbox') {
+        $ratings_parts = explode(',',$individual_rater[$q_id]);
+        if(isset($ratings_parts[$part_no - 1])) {
+          $this_rating = $ratings_parts[count($ratings_parts) - $part_no];
+        } else {
+          // This is bad missing data, maybe as the result of changes to the question.  Fill in missing values with 0 temporarily
+          $this_rating = 0;
+          $individual_rater[$q_id] .= ',0';
+        }
+      } elseif ($q_type == 'dichotomous' or $q_type == 'extmatch' or $q_type == 'mrq' or $q_type == 'matrix' or $q_type == 'blank' or $q_type == 'rank' or $q_type == 'labelling' or $q_type == 'hotspot') {
         $ratings_parts = explode(',',$individual_rater[$q_id]);
         $this_rating = $ratings_parts[$part_no - 1];
       } else {

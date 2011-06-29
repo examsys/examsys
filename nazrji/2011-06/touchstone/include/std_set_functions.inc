@@ -35,7 +35,7 @@ function checkVariables($number) {
 function display_options($options,$q_id, $current_theme, $current_scenario, $current_leadin, $current_notes, $q_type, $std_method, $tmp_reviews, $exclude, $is_group) {
   global $marking, $question_no, $question_offset, $part_id, $labelcolor, $old_likert_label, $A, $B, $C, $D, $E, $F, $G, $H, $li_set, $bgcolor, $total_marks, $old_correct_fback, $stdID;
   
-  $display_inline = array('textbox', 'dichotomous', 'mrq', 'rank', 'timedate', 'blank', 'flash');
+  $display_inline = array('dichotomous', 'mrq', 'rank', 'timedate', 'flash');
   
   if (array_key_exists($q_id,$exclude)) {
     $tmp_exclude = $exclude[$q_id];
@@ -105,7 +105,8 @@ function display_options($options,$q_id, $current_theme, $current_scenario, $cur
       $review_val = (in_array($options[0]['q_type'], $display_inline)) ? get_review($options[0]['q_type'], $std_method, $q_id, $part_id, $tmp_reviews, $is_group) : 0;
       // MRQs and MCQs have multiple parts but are excluded as a whole
       $exclude_this = ($options[0]['q_type'] != 'mcq' and $options[0]['q_type'] != 'mrq') ? substr($tmp_exclude,($part_id-1),1) : substr($tmp_exclude,0,1);
-      display_option($options[0], $q_id, $question_no, $part_id, $display_option, $std_method, $is_group, $marks, $exclude_this, $review_val, $matching_options, 0, $tmp_reviews, $tmp_exclude, $option_no, $total_rank_no, $require_na, $bgcolor);
+      $feedback = ($options[0]['q_type'] == 'textbox') ? $old_correct_fback : '';
+      display_option($options[0], $q_id, $question_no, $part_id, $display_option, $std_method, $is_group, $marks, $exclude_this, $review_val, $matching_options, 0, $tmp_reviews, $option_no, $total_rank_no, $require_na, $bgcolor, $feedback);
       $i++;
     }                    // End foreach loop
   }
