@@ -28,7 +28,7 @@
 
   header('Content-disposition: attachment; filename=report.xml');
   header('Content-type: text/xml');
-
+  
   function displayQuestion($q_id, $theme, $scenario, $leadin, $q_type, $correct, $q_media, $q_media_width, $q_media_height, $options, $log, $correct_buf, $screen, $question_number, $candidates) {
     global $old_likert_scale, $old_score_method, $table_on;
 
@@ -205,6 +205,41 @@
             $i++;
           }
           $table_on = 0;
+          break;
+        case 'matrix':
+          if ($table_on == 1) echo '</w:tbl>';
+          echo "<w:p><w:r><w:t>$question_number. $leadin</w:t></w:r></w:p><w:p/>";
+          // Define the table grid
+          echo '<w:tbl><w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="0" w:type="auto"/><w:tblLook w:val="01E0"/></w:tblPr><w:tblGrid><w:gridCol w:w="2500"/>';
+          foreach ($options as $option) {
+            echo '<w:gridCol w:w="1500"/>';
+          }
+          echo '</w:tblGrid>';
+          
+          // Write out the header row of the table
+          echo '<w:tr><w:tc><w:tcPr><w:tcW w:w="0" w:type="auto"/><w:shd w:val="clear" w:color="auto" w:fill="E0E0E0"/></w:tcPr><w:p><w:r><w:t></w:t></w:r></w:p></w:tc>';
+          foreach ($options as $option) {
+            echo '<w:tc><w:tcPr><w:tcW w:w="0" w:type="auto"/><w:shd w:val="clear" w:color="auto" w:fill="E0E0E0"/></w:tcPr><w:p><w:r><w:t>' . $option . '</w:t></w:r></w:p></w:tc>';
+          }
+          echo '</w:tr>';
+          
+          // Write out the contents of the table
+          $row_data = explode('|',$scenario);
+          $option_no = count($options);
+          $row_no = 0;
+          foreach ($row_data as $row) {
+            echo '<w:tr><w:tc><w:tcPr><w:tcW w:w="0" w:type="auto"/></w:tcPr><w:p><w:r><w:t>' . $row . '</w:t></w:r></w:p></w:tc>';
+            for ($i=1; $i<=$option_no; $i++) {
+              if (isset($log[$screen][$q_id][$row_no][$i])) {
+                echo '<w:tc><w:tcPr><w:tcW w:w="0" w:type="auto"/></w:tcPr><w:p><w:r><w:t>' . $log[$screen][$q_id][$row_no][$i] . '(' . number_format(($log[$screen][$q_id][$row_no][$i]/$candidates)*100,0) . '%)</w:t></w:r></w:p></w:tc>';
+              } else {
+                echo '<w:tc><w:tcPr><w:tcW w:w="0" w:type="auto"/></w:tcPr><w:p><w:r><w:t>0 (0%)</w:t></w:r></w:p></w:tc>';
+              }
+            }
+            echo '</w:tr>';
+            $row_no++;
+          }
+          echo '</w:tbl>';
           break;
       }
     } else {
@@ -429,17 +464,18 @@
         }
         break;
       case 'matrix':
-        $tmp_answer = substr($tmp_answer, 1);
         $tmp_answer_parts = array();
         $tmp_answer_parts = explode('|',$tmp_answer);
-        $i = 0;
+        $row_no = 0;
         foreach ($tmp_answer_parts as $tmp_individual_answer) {
-          $i++;
-          if (isset($log_array[$screen][$question_ID][$i][$tmp_individual_answer])) {
-            $log_array[$screen][$question_ID][$i][$tmp_individual_answer]++;
-          } else {
-            $log_array[$screen][$question_ID][$i][$tmp_individual_answer] = 1;
+          if ($tmp_individual_answer != '') {
+            if (isset($log_array[$screen][$question_ID][$row_no][$tmp_individual_answer])) {
+              $log_array[$screen][$question_ID][$row_no][$tmp_individual_answer]++;
+            } else {
+              $log_array[$screen][$question_ID][$row_no][$tmp_individual_answer] = 1;
+            }
           }
+          $row_no++;
         }
         break;
       case 'rank':
@@ -489,6 +525,9 @@
     $result->execute();
     $result->bind_result($screen, $q_id, $q_type, $theme, $scenario, $leadin, $option_text, $score_method, $q_media, $q_media_width, $q_media_height, $correct);
     while ($row = $result->fetch()) {
+      $scenario = str_replace('&nbsp;',' ',$scenario);
+      $leadin = str_replace('&nbsp;',' ',$leadin);
+    
       // Replace & characters.
       $theme = str_replace('&','&amp;',$theme);
       $scenario = str_replace('&','&amp;',$scenario);

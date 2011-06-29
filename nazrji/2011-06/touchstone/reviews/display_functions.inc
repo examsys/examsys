@@ -336,7 +336,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
             echo "<tr><td><input type=\"checkbox\" onclick=\"checkMRQ($question_no,$part_id,$option_no,$mrq_correct);\" name=\"q" . $question_no . "_" . $part_id . "\" id=\"q" . $question_no . "_" . $part_id . "\" value=\"y\" /></td><td>";
           }
         }
-        if ($display_option['option_text'] != '') echo "<span class=\"active\" onclick=\"dismissItem('$question_no" . "_" . "$part_id')\" id=\"$question_no" . "_" . "$part_id\">" . stripslashes($display_option['option_text']) . '</span>';
+        if ($display_option['option_text'] != '') echo "<span class=\"active\" onclick=\"dismissItem('$question_no" . "_" . "$part_id')\" id=\"$question_no" . "_" . "$part_id\">" . $display_option['option_text'] . '</span>';
         if ($display_option['o_media'] != '') {
           if ($display_option['option_text'] != '') echo '<br />';
           echo display_media($display_option['o_media'],$display_option['o_media_width'],$display_option['o_media_height']);
@@ -353,7 +353,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
       case 'extmatch':
       case 'matrix':
         $matching_options[] = $display_option['option_text'];
-	break;
+        break;
       case 'rank':
         $total_rank_no = 0;
         $require_na = false;
@@ -986,7 +986,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
       } else {
         echo '<span style="color:#C00000">';
       }
-      echo $reviews_array[$q_id]['action'] . "</span></strong><br /><textarea cols=\"80\" rows=\"3\" style=\"font-family:Arial,sans-serif; width:898px\" name=\"extreponse$question_no\">" . stripslashes($reviews_array[$q_id]['response']) . "</textarea></td></tr>";
+      echo $reviews_array[$q_id]['action'] . "</span></strong><br /><textarea cols=\"80\" rows=\"3\" style=\"font-family:Arial,sans-serif; width:898px\" name=\"extreponse$question_no\">" . $reviews_array[$q_id]['response'] . "</textarea></td></tr>";
     }    
     echo "<tr><td colspan=\"4\">&nbsp;</td></tr>\n</table>\n";
       

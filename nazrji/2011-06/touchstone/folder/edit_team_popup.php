@@ -152,7 +152,7 @@
     } else {
       $display_text = $row['initials'];
     }
-    echo "&nbsp;" . stripslashes($row['surname']) . '<span style="color:#808080">, ' . $display_text . '. ' . $row['title'] . "</span></div>\n";
+    echo "&nbsp;" . $row['surname'] . '<span style="color:#808080">, ' . $display_text . '. ' . $row['title'] . "</span></div>\n";
     $old_letter = strtoupper(substr($row['surname'],0,1));
     $staff_no++;
   }

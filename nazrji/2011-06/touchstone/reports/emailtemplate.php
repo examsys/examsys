@@ -86,7 +86,7 @@ textarea, input[type=text], select {font-family:Arail,sans-serif; font-size:90%;
 <td>&nbsp;&nbsp;Subject</td><td><input type="text" size="70" name="subject" value="<?php echo $subject; ?>" /></td>
 </tr>
 <tr>
-<td colspan="3"><p><?php echo wysiwyg_editor('oEdit1','template',stripslashes($message),748,350); ?></p></td>
+<td colspan="3"><p><?php echo wysiwyg_editor('oEdit1','template',$message,748,350); ?></p></td>
 </tr>
 <tr><td colspan="3">&nbsp;</td></tr>
 <tr>

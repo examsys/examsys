@@ -76,8 +76,8 @@ body {color:black; background-color:white; font-family:Arial,sans-serif}
 <?php
 if (isset($_POST['submit'])) {
   // Update the temp_user table with the completed student details.
-  $tmp_first_names = stripslashes(trim($_POST['first_names']));
-  $tmp_surname = stripslashes(trim($_POST['surname']));
+  $tmp_first_names = trim($_POST['first_names']);
+  $tmp_surname = trim($_POST['surname']);
   $tmp_student_id = trim($_POST['student_id']);
   
   $stmt = $mysqli->prepare("UPDATE temp_users SET first_names=?, surname=?, title=?, student_id=? WHERE id=?");

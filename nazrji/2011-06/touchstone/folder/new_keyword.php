@@ -26,7 +26,7 @@ require '../include/staff_auth.inc';
 require '../include/errors.inc';
   
   if (isset($_POST['ok']) or (isset($_POST['returnhit']) and $_POST['returnhit'] == '1')) {
-    $new_keyword = trim(stripslashes($_POST['new_keyword']));
+    $new_keyword = trim($_POST['new_keyword']);
     if ($new_keyword != '') {
       if ($_POST['module'] == '') {
         $result = $mysqli->prepare("INSERT INTO keywords_user VALUES (NULL,$userID,?,'personal')");

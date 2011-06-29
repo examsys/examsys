@@ -154,7 +154,7 @@ if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
     $part_names = array('theme','scenario','leadin','feedback','notes','bloom','format','start_year','end_year','terms','answer_day','answer_month','answer_year','answer_hour','answer_minute','answer_second','status','question_terms');
     foreach($part_names as $section_name) {
       if(isset($_POST["$section_name"])) {
-        $$section_name = stripslashes($_POST["$section_name"]);
+        $$section_name = $_POST["$section_name"];
       } else {
         $$section_name = '';
       }
@@ -163,7 +163,7 @@ if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
     $part_names = array('old_theme','old_scenario','old_leadin','old_feedback','old_correct','old_notes','old_bloom','old_format','old_start_year','old_end_year','old_score_method','old_terms','old_answer_day','old_answer_month','old_answer_year','old_answer_hour','old_answer_minute','old_answer_second','old_status','old_question_terms');
     foreach($part_names as $section_name) {
       if(isset($_POST["$section_name"])) {
-        $$section_name = stripslashes(html_entity_decode($_POST["$section_name"]));
+        $$section_name = html_entity_decode($_POST["$section_name"]);
       } else {
         $$section_name = '';
       }

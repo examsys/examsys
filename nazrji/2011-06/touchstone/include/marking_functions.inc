@@ -128,7 +128,7 @@ function record_marks($paper_id, $screen_no, $dblink, $posted_vars, $userid, $ex
   // Set up new insert query ready.
   if (count($log_ids) > 0) {
     $save_answers = $dblink->prepare("UPDATE log$paper_type SET mark=?, user_answer=?, duration=?, updated=NOW(), dismiss=? WHERE id=?");
-    $save_answers->bind_param('isisi', $mark, $saved_response, $tmp_duration, $dismiss, $q_log_id);
+    $save_answers->bind_param('dsisi', $mark, $saved_response, $tmp_duration, $dismiss, $q_log_id);
   } else {
     if ($screen_no == 1) {       // Write log_metadata first on screen 1 only
       $tmp_ip_address = NetworkUtils::get_ipaddress();
@@ -138,7 +138,7 @@ function record_marks($paper_id, $screen_no, $dblink, $posted_vars, $userid, $ex
       $save_answers->close();
     }
     $save_answers = $dblink->prepare("INSERT INTO log$paper_type VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?, ?)");
-    $save_answers->bind_param('isiiiisiiss', $userid, $posted_vars['sessionid'], $paper_id, $log_id, $mark, $totalpos, $saved_response, $screen_no, $tmp_duration, $dismiss, $option_order);
+    $save_answers->bind_param('isiidisiiss', $userid, $posted_vars['sessionid'], $paper_id, $log_id, $mark, $totalpos, $saved_response, $screen_no, $tmp_duration, $dismiss, $option_order);
   }
     
   // Use the new structure to look for posted responses.

@@ -125,12 +125,12 @@ if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
     $scenario =  $_POST['scenario'];
     $part_names = array('theme','notes','bloom','correct_fback','incorrect_fback','score_method','status','option_order');
     foreach($part_names as $section_name) {
-      $$section_name = stripslashes($_POST["$section_name"]);
+      $$section_name = $_POST["$section_name"];
     }
     if (trim(strip_tags($scenario)) == '') $scenario = '';
     $part_names = array('old_theme','old_scenario','old_leadin','old_notes','old_bloom','old_correct_fback','old_incorrect_fback','old_score_method','old_status','old_option_order');
     foreach($part_names as $section_name) {
-      $$section_name = stripslashes($_POST["$section_name"]);
+      $$section_name = $_POST["$section_name"];
     }
 
     // Strip MS Office HTML.
@@ -172,8 +172,8 @@ if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
     record_trackChanges('Edit Question', $q_id, $_POST['old_teams'], $question_teams, 'teams', $userID, $changes);
   
     for ($option_no=1; $option_no<=20; $option_no++) {
-      $new_option_text = stripslashes($_POST["new_option_text$option_no"]);
-      $old_option_text = stripslashes($_POST["old_option_text$option_no"]);
+      $new_option_text = $_POST["new_option_text$option_no"];
+      $old_option_text = $_POST["old_option_text$option_no"];
   
       if ($new_option_text == '' and $old_option_text != '') {
         // Delete operation.

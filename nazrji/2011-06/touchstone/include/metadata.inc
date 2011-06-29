@@ -274,7 +274,7 @@
       }
     }
     sort($tmp_list);
-    return stripslashes(implode(';', $tmp_list));
+    return implode(';', $tmp_list);
   }
   
   function getDefaultTeam() {

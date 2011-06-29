@@ -21,7 +21,7 @@
   }
 
   if (isset($_POST['save_changes'])) {
-    $tmp_title = stripslashes($_POST['title']);
+    $tmp_title = $_POST['title'];
     // Check to see if dummy parent record exists for title.
     if (strpos($tmp_title,'/') !== false) {
       $parts = explode('/',$tmp_title);
@@ -43,7 +43,7 @@
     }
   
     // Update help file record
-    $tmp_body = stripslashes($_POST['edit1']);
+    $tmp_body = $_POST['edit1'];
     $tmp_body_plain = strip_tags($tmp_body);
 
     $result = $mysqli->prepare("INSERT INTO student_help VALUES (NULL,?,?,?,'page',NULL,NULL,NULL)");

@@ -31,9 +31,12 @@
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
   <link rel="icon" href="favicon.ico" type="image/x-icon"/>
 </head>
-  <frameset cols="50%,50%">
-    <frame src="textbox_display_paper.php?<?php echo $_SERVER['QUERY_STRING']; ?>" name="menu">
-    <frame src="textbox_marking.php?<?php echo $_SERVER['QUERY_STRING']; ?>" name="body">
+  <frameset rows="55,*" frameborder="0">
+    <frame src="textbox_header.php?<?php echo $_SERVER['QUERY_STRING']; ?>" name="header" scrolling="no">
+    <frameset cols="50%,50%">
+      <frame src="textbox_display_paper.php?<?php echo $_SERVER['QUERY_STRING']; ?>" name="menu">
+      <frame src="textbox_marking.php?<?php echo $_SERVER['QUERY_STRING']; ?>" name="body">
+    </frameset>
   </frameset>
   <noframes>
     Sorry, you need frames to use the TouchStone.

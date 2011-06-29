@@ -86,7 +86,6 @@ function ldap_auth($u, $p, &$data){
  * This is function db_auth looks up a user in the local database and populates: 
  * 
  *  $userID, $userroles, $faculty, $title, $surname, $username, $grade, $year
- * 
  *
  * @param string $u username
  * @param string $p password
@@ -115,7 +114,7 @@ function db_auth($u, $p, $db) {
   $stmt->bind_param('s', $tmp_u);
   $stmt->execute();
   $stmt->store_result();
-  $stmt->bind_result($password,$userID, $userroles, $faculty, $title, $initials, $surname, $username, $grade, $year, $special_needs);
+  $stmt->bind_result($password, $userID, $userroles, $faculty, $title, $initials, $surname, $username, $grade, $year, $special_needs);
   $stmt->fetch();
   if ($stmt->num_rows > 0) {
     if ($p != '' AND crypt($p,$password) == $password) {

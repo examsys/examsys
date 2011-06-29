@@ -89,11 +89,11 @@ td {font-size:80%}
   $result->bind_result($property_id, $paper_title, $start_date, $end_date, $paper_type);
   while ($row = $result->fetch()) {
     if (($paper_type == '2' or $paper_type == '4') and date("Y-m-d H:i:s") > $end_date) {
-      echo "<tr><td style=\"width:20px\"><img src=\"../../artwork/small_padlock.png\" width=\"16\" height=\"16\" alt=\"WARNING: Locked paper!\" border=\"0\" /></td><td><input type=\"radio\" name=\"property_id\" value=\"$paper_title\" disabled><span style=\"color:#808080\">" . stripslashes($paper_title) . "</span></td></tr>\n";
+      echo "<tr><td style=\"width:20px\"><img src=\"../../artwork/small_padlock.png\" width=\"16\" height=\"16\" alt=\"WARNING: Locked paper!\" border=\"0\" /></td><td><input type=\"radio\" name=\"property_id\" value=\"$paper_title\" disabled><span style=\"color:#808080\">$paper_title</span></td></tr>\n";
     } elseif ($start_date < date("Y-m-d H:i:s") and $end_date > date("Y-m-d H:i:s")) {
-      echo "<tr><td style=\"width:20px\"><img src=\"../../artwork/small_warning_16.png\" width=\"16\" height=\"16\" alt=\"WARNING: Active paper!\" border=\"0\" /></td><td><input type=\"radio\" name=\"property_id\" value=\"$paper_title\" disabled><span style=\"color:#808080\">" . stripslashes($paper_title) . "</span></td></tr>\n";
+      echo "<tr><td style=\"width:20px\"><img src=\"../../artwork/small_warning_16.png\" width=\"16\" height=\"16\" alt=\"WARNING: Active paper!\" border=\"0\" /></td><td><input type=\"radio\" name=\"property_id\" value=\"$paper_title\" disabled><span style=\"color:#808080\">$paper_title</span></td></tr>\n";
     } else {
-      echo "<tr><td style=\"width:20px\">&nbsp;</td><td><input type=\"radio\" name=\"property_id\" value=\"$property_id\">" . stripslashes($paper_title) . "</td></tr>\n";
+      echo "<tr><td style=\"width:20px\">&nbsp;</td><td><input type=\"radio\" name=\"property_id\" value=\"$property_id\">$paper_title</td></tr>\n";
     }
   }
   $result->close();
@@ -113,7 +113,7 @@ td {font-size:80%}
   if ($property_id == '-new-assessment-paper-') {
     // Check that paper name is not already in use.
     $result = $mysqli->prepare("SELECT property_id FROM properties WHERE paper_title=? LIMIT 1");
-    $np_name = stripslashes($_POST['new_paper']);
+    $np_name = $_POST['new_paper'];
     $result->bind_param('s', $np_name);
     $result->execute();  
     $result->store_result();
@@ -122,7 +122,7 @@ td {font-size:80%}
     $result->free_result();
     $result->close();
     if ($rows_found > 0) {
-      echo "Sorry <strong>'" . stripslashes($_POST['new_paper']) . "'</strong> is a name already in use.";
+      echo "Sorry <strong>'" . $_POST['new_paper'] . "'</strong> is a name already in use.";
       echo "<p><input type=\"button\" value=\"Back\" style=\"width:100px\" onclick=\"history.back();\" /></p>\n</body>\n</html>\n";
       exit;
     }
@@ -130,7 +130,7 @@ td {font-size:80%}
     // Calculate what the current academic session is.
 		$session = DateUtils::get_current_academic_year();
         
-    $tmp_paper_title = stripslashes($_POST['new_paper']);
+    $tmp_paper_title = $_POST['new_paper'];
     
     // Create the new paper.
     $result = $mysqli->prepare("INSERT INTO properties VALUES (NULL,?,'20030101090000','20250101090000','Europe/London','0','','','white','black','#316AC5','#C00000','0',1,'0',40,70,?,'','','',0,'',NULL,NULL,NOW(),0,0,'1','1','1','1','0',NULL,?,'',NULL,NULL,'0',0,'')");

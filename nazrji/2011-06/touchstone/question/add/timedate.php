@@ -38,7 +38,7 @@ if (isset($_POST['addbank']) or isset($_POST['addpaper'])) {
 
   $tmp_leadin = clearMSOtags($_POST['leadin']);
 
-  $tmp_correct_fback = stripslashes($_POST['correct_fback']);
+  $tmp_correct_fback = $_POST['correct_fback'];
 
   $score_method = $_POST['format'] . '|' . $_POST['start_year'] . '|' . $_POST['end_year'];
   // Insert into Questions

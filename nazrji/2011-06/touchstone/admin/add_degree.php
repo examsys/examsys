@@ -43,7 +43,7 @@ if (isset($_POST['submit'])) {
 if (isset($_POST['submit']) and $unique_degree == true) {
   $tmp_school = $_POST['school'];
   $tmp_degree = trim($_POST['degree']);
-  $tmp_description = trim(stripslashes($_POST['description']));
+  $tmp_description = trim($_POST['description']);
   
   $result = $mysqli->prepare("INSERT INTO degrees VALUES (NULL,?,?,?)");
   $result->bind_param('sss', $tmp_school, $tmp_degree, $tmp_description);
@@ -99,7 +99,7 @@ if (isset($_POST['submit']) and $unique_degree == true) {
     <?php
     }
     ?>
-    <tr><td class="field">Title</td><td><input type="text" size="70" name="description" value="<?php if (isset($_POST['description'])) echo stripslashes($_POST['description']); ?>" /></td></tr>
+    <tr><td class="field">Title</td><td><input type="text" size="70" name="description" value="<?php if (isset($_POST['description'])) echo $_POST['description']; ?>" /></td></tr>
     <tr><td class="field">School</td><td><select name="school">
     <option value=""></option>
     <?php

@@ -643,7 +643,7 @@ function display_options($options,$q_id, $current_theme) {
     echo '<table cellpadding="2" cellspacing="0" border="1">';
     echo "<tr>\n<td colspan=\"2\">&nbsp;</td>";
     foreach ($matching_options as $single_option) {
-      echo '<td>' . stripslashes($single_option) . '</td>';
+      echo "<td>$single_option</td>";
     }
     echo "<tr>\n";
     $numerals = array('i','ii','iii','iv','v','vi','vii','viii','ix','x');

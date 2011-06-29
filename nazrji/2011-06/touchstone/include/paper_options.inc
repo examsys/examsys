@@ -286,16 +286,28 @@ if ($paper_ownerID == $userID or strpos($userroles,'Admin') !== false or strpos(
     if (strpos($paper_moduleID,$individual_team) !== false) $team_member = true;
   }
 }
+
+$stmt = $mysqli->prepare("SELECT COUNT(p_id) FROM papers WHERE paper=?");
+$stmt->bind_param('i', $_GET['paperID']);
+$stmt->execute();
+$stmt->bind_result($p_id_count);
+$stmt->fetch();
+$stmt->close();
+
 ?>
 <table id="papertasks" cellpadding="0" cellspacing="0" border="0" width="185" style="margin-left:2px; font-size:100%">
 <tr><td style="font-weight:bold">Paper Tasks</td></tr>
 <tr><td style="margin:4px">
 <?php
   echo "<table cellpadding=\"3\" cellspacing=\"0\" border=\"0\" id=\"menu1\" style=\"margin-left:7px; font-size:90%; display:block\">\n";
-  if ($paper_type != '5') {      // Offline
-    echo "<tr><td style=\"width:20px><a href=\"#\" onclick=\"startPaper($fullscreen); return false;\"><img src=\"/touchstone/artwork/small_play.png\" width=\"16\" height=\"16\" alt=\"Arrow\" border=\"0\" /></a></td><td class=\"menuitem\" style=\"width:166px\"><a href=\"#\" onclick=\"startPaper($fullscreen); return false;\">Test &amp; Preview</a></td></tr>\n";
+  if ($paper_type == '5') {      // Offline
+    echo "<tr><td style=\"width:20px>3<img src=\"/touchstone/artwork/small_play_grey.png\" width=\"16\" height=\"16\" alt=\"Arrow\" border=\"0\" /></td><td class=\"greymenuitem\" style=\"width:166px\">Test &amp; Preview</td></tr>\n";
   } else {
-    echo "<tr><td style=\"width:20px><img src=\"/touchstone/artwork/small_play_grey.png\" width=\"16\" height=\"16\" alt=\"Arrow\" border=\"0\" /></td><td class=\"greymenuitem\" style=\"width:166px\">Test &amp; Preview</td></tr>\n";
+    if ($p_id_count > 0) {
+      echo "<tr><td style=\"width:20px\"><a href=\"#\" onclick=\"startPaper($fullscreen); return false;\"><img src=\"/touchstone/artwork/small_play.png\" width=\"16\" height=\"16\" alt=\"Arrow\" border=\"0\" /></a></td><td class=\"menuitem\" style=\"width:166px\"><a href=\"#\" onclick=\"startPaper($fullscreen); return false;\">Test &amp; Preview</a></td></tr>\n";
+    } else {
+      echo "<tr><td style=\"width:20px\"><img src=\"/touchstone/artwork/small_play_grey.png\" width=\"16\" height=\"16\" alt=\"Arrow\" border=\"0\" /></td><td class=\"greymenuitem\" style=\"width:166px\">Test &amp; Preview</td></tr>\n";
+    }
   }
 
   if ($team_member == true) {
@@ -312,7 +324,11 @@ if ($paper_ownerID == $userID or strpos($userroles,'Admin') !== false or strpos(
       echo "<tr><td><a href=\"\" onclick=\"paperProperties(); return false;\"><img src=\"/touchstone/artwork/properties_icon.gif\" width=\"16\" height=\"16\" alt=\"Properties\" border=\"0\" /></a></td><td class=\"menuitem\"><a href=\"\" onclick=\"paperProperties(); return false;\">Edit Properties</a></td></tr>\n";
     }
     if ($paper_type == '0' or $paper_type == '1' or $paper_type == '2' or $paper_type == '5') {
+      if ($p_id_count == 0) {
+        echo "<tr><td><img src=\"/touchstone/artwork/statistics_icon_grey.gif\" width=\"16\" height=\"16\" alt=\"Reports\" border=\"0\" /></td><td class=\"greymenuitem\"><span id=\"reports\">Reports</span></td></tr>\n";
+      } else {
         echo "<tr><td><img src=\"/touchstone/artwork/statistics_icon.gif\" width=\"16\" height=\"16\" alt=\"Reports\" border=\"0\" /></td><td class=\"menuitem\"><a onclick=\"showAssStatsMenu(event); return false;\" href=\"#\"><span id=\"reports\">Reports</span></a><img src=\"/touchstone/artwork/submenu_arrow.png\" width=\"16\" height=\"16\" alt=\">\" border=\"0\" /></td></tr>\n";
+      }
       if (strpos($checklist,'mapping') !== false) {
         echo "<tr><td><a href=\"/touchstone/mapping/paper_mappings_by_session.php?paperID=$paperID&paper_title=$paper_title&sd=$start_date&ed=$end_date&module=" . $module . "&folder=" . $folder . "\"><img src=\"/touchstone/artwork/curriculum_map_small.png\" width=\"16\" height=\"16\" alt=\"Statistics\" border=\"0\" /></a></td><td class=\"menuitem\"><a href=\"/touchstone/mapping/paper_mappings_by_session.php?paperID=$paperID&paper_title=$paper_title&sd=$start_date&ed=$end_date&module=" . $module . "&folder=" . $folder . "\">Mapped Objectives</a></td></tr>\n";
       }
@@ -336,12 +352,12 @@ if ($paper_ownerID == $userID or strpos($userroles,'Admin') !== false or strpos(
     echo "<tr><td><img src=\"/touchstone/artwork/add_questions_grey.gif\" width=\"16\" height=\"16\" alt=\"Add\" /></td><td class=\"greymenuitem\">Add Questions to Paper</td></tr>\n";
     echo "<tr><td><img src=\"/touchstone/artwork/properties_icon_grey.gif\" width=\"16\" height=\"16\" alt=\"Properties\" /></td><td class=\"greymenuitem\">Edit Properties</td></tr>\n";
     if ($paper_type == '0' or $paper_type == '1' or $paper_type == '2') {
-      echo "<tr><td><img src=\"/touchstone/artwork/statistics_icon_grey.gif\" width=\"16\" height=\"16\" alt=\"Statistics\" border=\"0\" /></td><td class=\"greymenuitem\">Analysis Menu</td></tr>\n";
+      echo "<tr><td><img src=\"/touchstone/artwork/statistics_icon_grey.gif\" width=\"16\" height=\"16\" alt=\"Statistics\" border=\"0\" /></td><td class=\"greymenuitem\">Reports</td></tr>\n";
       if (strpos($checklist,'stdset') !== false) {
         echo "<tr><td><a href=\"/touchstone/std_setting/index.php?paperID=$paperID&module=" . $module . "&folder=" . $folder . "\"><img src=\"/touchstone/artwork/std_set_icon_16.gif\" width=\"16\" height=\"16\" alt=\"Standards Setting\" border=\"0\" /></a></td><td class=\"menuitem\"><a href=\"/touchstone/std_setting/index.php?paperID=$paperID&module=" . $module . "&folder=" . $folder . "\">Standards Setting</a></td></tr>\n";
       }
     } else {
-      echo "<tr><td><img src=\"/touchstone/artwork/statistics_icon_grey.gif\" width=\"16\" height=\"16\" alt=\"Statistics\" border=\"0\" /></td><td class=\"greymenuitem\">Analysis Menu</td></tr>\n";
+      echo "<tr><td><img src=\"/touchstone/artwork/statistics_icon_grey.gif\" width=\"16\" height=\"16\" alt=\"Statistics\" border=\"0\" /></td><td class=\"greymenuitem\">Reports</td></tr>\n";
     }
   }
 ?>
@@ -353,10 +369,14 @@ if ($paper_ownerID == $userID or strpos($userroles,'Admin') !== false or strpos(
     echo '<tr><td><img src="/touchstone/artwork/delete_paper_grey_16.gif" width="16" height="16" alt="Delete Icon" /></td><td class="greymenuitem">Delete Paper</td></tr>';
   }
 
-  if ($paper_type == '4') {
-    echo "<tr><td><a href=\"/osce/print.php?paperID=$paperID\"><img src=\"/touchstone/artwork/print_icon_16.png\" width=\"16\" height=\"16\" alt=\"Print Icon\" border=\"0\" /></a></td><td class=\"menuitem\"><a href=\"/osce/print.php?paperID=$paperID\">Print Hardcopy version</a></td></tr>\n";
+  if ($p_id_count == 0) {
+    echo "<tr><td><img src=\"/touchstone/artwork/print_icon_16.png\" width=\"16\" height=\"16\" alt=\"Print Icon\" border=\"0\" /></td><td class=\"greymenuitem\">Print Hardcopy version</td></tr>\n";
   } else {
-    echo "<tr><td><a href=\"/touchstone/paper/print.php?paperID=$paperID\"><img src=\"/touchstone/artwork/print_icon_16.png\" width=\"16\" height=\"16\" alt=\"Print Icon\" border=\"0\" /></a></td><td class=\"menuitem\"><a href=\"/touchstone/paper/print.php?paperID=$paperID\">Print Hardcopy version</a></td></tr>\n";
+    if ($paper_type == '4') {
+      echo "<tr><td><a href=\"/osce/print.php?paperID=$paperID\"><img src=\"/touchstone/artwork/print_icon_16.png\" width=\"16\" height=\"16\" alt=\"Print Icon\" border=\"0\" /></a></td><td class=\"menuitem\"><a href=\"/osce/print.php?paperID=$paperID\">Print Hardcopy version</a></td></tr>\n";
+    } else {
+      echo "<tr><td><a href=\"/touchstone/paper/print.php?paperID=$paperID\"><img src=\"/touchstone/artwork/print_icon_16.png\" width=\"16\" height=\"16\" alt=\"Print Icon\" border=\"0\" /></a></td><td class=\"menuitem\"><a href=\"/touchstone/paper/print.php?paperID=$paperID\">Print Hardcopy version</a></td></tr>\n";
+    }
   }
 ?>
 <tr><td width="16"><img src="/touchstone/artwork/ims_16.png" width="16" height="16" alt="qti" border="0" /></td><td class="menuitem"><a href="#" onclick="hideAssStatsMenu(event); showMenu('popup6','papertasks','qti',myOptions6,myURLs6,event); return false;"><span id="qti">QTI Import/Export</span><img src="/touchstone/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></a></td></tr>

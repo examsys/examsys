@@ -77,7 +77,7 @@
 
         <?php
         //get a list of touchstone modules
-        $SQL = "SELECT DISTINCT moduleid FROM touchstone.modules";
+        $SQL = "SELECT DISTINCT moduleid FROM modules";
         $res = $mysqli->query($SQL) OR die(mysql_error());
         $touchstone_modules = Array();
         while($row = $res->fetch_assoc()) {

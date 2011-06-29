@@ -137,9 +137,9 @@
     }
     if ($grade == 'inactive') $tmp_roles = 'inactive';
 
-    $tmp_first_names = stripslashes($_POST['first_names']);
-    $tmp_surname = stripslashes($_POST['surname']);
-    $tmp_email = stripslashes($_POST['email']);
+    $tmp_first_names = $_POST['first_names'];
+    $tmp_surname = $_POST['surname'];
+    $tmp_email = $_POST['email'];
         
     if (isset($_POST['password']) and $_POST['password'] != '') {
       $result = $mysqli->prepare("UPDATE users SET roles=?, title=?, initials=?, surname=?, grade=?, yearofstudy=?, username=?, password=?, email=?, first_names=?, gender=?, faculty=? WHERE id=?");
@@ -153,7 +153,7 @@
 
     //Remove from teams if 'left'.
     if ($grade == 'left') {
-      $result = $mysqli->prepare("DELETE FROM touchstone.teams WHERE memberID=?");
+      $result = $mysqli->prepare("DELETE FROM teams WHERE memberID=?");
       $result->bind_param('i', $_POST['old_userID']);
       $result->execute();
       $result->close();
@@ -185,14 +185,14 @@
     $labelcolor = $_POST['labelcolor'];
     if ($_POST['labels_radio'] == '0') $labelcolor = 'NULL';
 
-    $result = $mysqli->prepare("DELETE FROM touchstone.special_needs WHERE userID=?");
+    $result = $mysqli->prepare("DELETE FROM special_needs WHERE userID=?");
     $result->bind_param('i', $_GET['userID']);
     $result->execute();
     $result->close();
 
     if ($background != 'NULL' or $foreground != 'NULL' or $marks_color != 'NULL' or $textsize != 'null' or $extra_time != 'null' or $themecolor != 'NULL' or $labelcolor != 'NULL') {
       //echo "Database update<br />";
-      $result = $mysqli->prepare("INSERT INTO touchstone.special_needs VALUES (NULL,?,?,?,?,?,?,?,?,?)");
+      $result = $mysqli->prepare("INSERT INTO special_needs VALUES (NULL,?,?,?,?,?,?,?,?,?)");
       $result->bind_param('issiissss', $_GET['userID'], $background, $foreground, $textsize, $extra_time, $marks_color, $themecolor, $labelcolor, $_POST['font']);
       $result->execute();
       $result->close();
@@ -309,7 +309,7 @@ a.access:hover {color:white}
 <table cellpadding="0" cellspacing="0" border="0" style="background-color:#F1F5FB; width:100%">
 <form name="myform" action="<?php echo $_SERVER['PHP_SELF']; ?>?userID=<?php echo $_GET['userID']; ?>" method="post">
 <?php
-  $needs_result = $mysqli->prepare("SELECT special_id FROM touchstone.special_needs WHERE userID=?");
+  $needs_result = $mysqli->prepare("SELECT special_id FROM special_needs WHERE userID=?");
   $needs_result->bind_param('i', $_GET['userID']);
   $needs_result->execute();
   $needs_result->bind_result($special_id);
@@ -336,7 +336,7 @@ a.access:hover {color:white}
   
   $tmp_name = $tmp_title . ' ' . $tmp_initials . ' ' . $tmp_surname;
    
-  $user_query = $mysqli->query("SELECT DISTINCT description FROM touchstone.degrees WHERE degree='$grade'");
+  $user_query = $mysqli->query("SELECT DISTINCT description FROM degrees WHERE degree='$grade'");
   while ($row = $user_query->fetch_assoc()) {
     $description = $row['description'];
   }

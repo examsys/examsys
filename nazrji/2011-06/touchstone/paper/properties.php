@@ -166,18 +166,18 @@ if (isset($_POST['Submit'])) {
       }
     }
     
-    $tmp_prologue = stripslashes($_POST['paper_prologue']);
+    $tmp_prologue = $_POST['paper_prologue'];
     $tmp_prologue = clearMSOtags($tmp_prologue);
     
     if ($_POST['paper_type'] == '4') {
-      $tmp_postscript = stripslashes($_POST['osce_marking_guidance']);
+      $tmp_postscript = $_POST['osce_marking_guidance'];
       $tmp_postscript = clearMSOtags($tmp_postscript);
     } else {
-      $tmp_postscript = stripslashes($_POST['paper_postscript']);
+      $tmp_postscript = $_POST['paper_postscript'];
       $tmp_postscript = clearMSOtags($tmp_postscript);
     }
     
-    $tmp_rubric = stripslashes($_POST['rubric_text']);
+    $tmp_rubric = $_POST['rubric_text'];
     $tmp_rubric = clearMSOtags($tmp_rubric);
     
     $tmp_marking = $_POST['marking'];
@@ -202,7 +202,7 @@ if (isset($_POST['Submit'])) {
       $tmp_sound_demo = 0;
     }
     
-    $paper_title = stripslashes($_POST['paper_title']);
+    $paper_title = $_POST['paper_title'];
     $paper_type = $_POST['paper_type'];
     $tmp_start_date = $start_date->format("YmdHis");
     $tmp_end_date = $end_date->format("YmdHis");

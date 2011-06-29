@@ -115,9 +115,9 @@ input, textarea {font-family:Arial,sans-serif; line-height:140%}
   echo " />Low&nbsp;&nbsp;&nbsp;<input type=\"radio\" name=\"low_bandwidth\" value=\"0\" ";
   if ($low_bandwidth == 0) echo ' checked';
   echo "/>High</div>\n";
-  echo "<br /><div><strong>Timetabling</strong></div>\n<div><textarea name=\"timetabling\" rows=\"3\" cols=\"100\">" . stripslashes($timetabling) . "</textarea></div>\n";
-  echo "<br /><div><strong>IT Support</strong></div>\n<div><textarea name=\"it_support\" rows=\"3\" cols=\"100\">" . stripslashes($it_support). "</textarea></div>\n";
-  echo "<br /><div><strong>Plagarism</strong></div>\n<div><textarea name=\"plagarism\" rows=\"3\" cols=\"100\">" . stripslashes($plagarism) . "</textarea></div>\n";
+  echo "<br /><div><strong>Timetabling</strong></div>\n<div><textarea name=\"timetabling\" rows=\"3\" cols=\"100\">$timetabling</textarea></div>\n";
+  echo "<br /><div><strong>IT Support</strong></div>\n<div><textarea name=\"it_support\" rows=\"3\" cols=\"100\">$it_support</textarea></div>\n";
+  echo "<br /><div><strong>Plagarism</strong></div>\n<div><textarea name=\"plagarism\" rows=\"3\" cols=\"100\">$plagarism</textarea></div>\n";
   echo "<br /><br /><input type=\"submit\" name=\"submit\" value=\"Save\" style=\"width:120px\" />\n";
   echo "</td></tr>\n</table>\n";
 ?>

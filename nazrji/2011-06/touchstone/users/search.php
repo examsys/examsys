@@ -211,7 +211,7 @@ input[type=text], select {font-family:Arail,sans-serif; border: 1px solid #7F9DB
 <?php
   echo "<tr><td style=\"background-color:#F1F5FB\" colspan=\"7\"><div class=\"breadcrumb\"><a href=\"../index.php\">Home</a></div><div onclick=\"qOff()\" style=\"font-size:200%; margin-left:10px\"><strong>Users ($user_no):&nbsp;</strong>";
   if (isset($_GET['search_surname']) and $_GET['search_surname'] != '') {
-    echo stripslashes($_GET['search_surname']);
+    echo $_GET['search_surname'];
   } elseif (isset($_GET['moduleID']) and $_GET['moduleID'] != '%') {
     echo $_GET['moduleID'];
     if (isset($_GET['calendar_year']) and $_GET['calendar_year'] != '' and isset($_GET['students']) and $_GET['students'] != '') {

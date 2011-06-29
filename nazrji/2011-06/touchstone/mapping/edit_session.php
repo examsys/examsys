@@ -254,7 +254,7 @@ require '../include/staff_auth.inc';
 
 	echo "<form name=\"editObj\" action=\"" . $_SERVER['PHP_SELF'] . "?module=" . $_GET['module'] . "\" method=\"post\" onsubmit=\"return checkForm();\">\n<div align=\"center\"><table cellpadding=\"2\" cellspacing=\"0\" border=\"0\" style=\"width:80%; text-align:left\">\n";
 	
-  echo "<tr><td style=\"width:92px\" class=\"field\">Title</td><td><input type=\"text\" name=\"session_title\" id=\"session_title\" size=\"60\" value=\"" . stripslashes($sess['title']) . "\"/></td></tr>\n";
+  echo "<tr><td style=\"width:92px\" class=\"field\">Title</td><td><input type=\"text\" name=\"session_title\" id=\"session_title\" size=\"60\" value=\"" . $sess['title'] . "\"/></td></tr>\n";
 
 	echo '<tr><td class="field">Session</td><td>';
   $validfrom = '<select name="session" disablied="disabled">'."\n";
@@ -347,7 +347,7 @@ require '../include/staff_auth.inc';
   foreach($sess['objectives'] as $id => $obj) {
     echo "\t<li id=\"li_$id\" style=\"margin:0.5em; margin-left:3.5em\">";
     echo '<img src="./up_on.png" onclick="promote( \'li_' . $id . '\' )" />&nbsp<img src="./down_on.png" onclick="demote( \'li_' . $id . '\' )" />&nbsp';
-    echo "<input class='editBox' onfocus=\"clearTextbox('obj_" . $id . "');\" id=\"obj_" . $id . "\" name=\"obj_" . $id . "\" type=\"text\" value=\"" . stripslashes($obj) . "\" />";
+    echo "<input class='editBox' onfocus=\"clearTextbox('obj_" . $id . "');\" id=\"obj_" . $id . "\" name=\"obj_" . $id . "\" type=\"text\" value=\"$obj\" />";
     echo "</li>\n";
   }
   echo '<li style="margin: 0.5em; margin-left: 6em"><input style="width: 80px" type="button" value="New..."  onclick="addNew(\'objList\')"></li>';

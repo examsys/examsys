@@ -308,6 +308,16 @@
 
     echo "<div style=\"margin-left:25px; line-height:150%; margin-top:10px; font-weight:bold\">Reviews</div>\n";
     echo "<div style=\"margin-left:25px; line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../reports/review_comments.php?type=internal&',event)\">Internal Peer Review</a></div>\n";
+    
+    $result = $mysqli->prepare("SELECT COUNT(q_id) AS sct_no FROM (papers, questions) WHERE papers.paper=? AND papers.question=questions.q_id AND q_type='sct'");
+    $result->bind_param('i', $_GET['paperID']);
+    $result->execute();
+    $result->bind_result($sct_no);
+    $result->fetch();
+    $result->close();
+    if ($sct_no > 0) {
+      echo "<div style=\"margin-left:25px; line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../reports/review_sct_answers.php?type=external&',event)\">SCT Responses/Reasons</a></div>\n";
+    }
     echo "<div style=\"margin-left:25px; line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../reports/review_comments.php?type=external&',event)\">External Examiners</a></div>\n";
     echo "<div style=\"margin-left:25px; line-height:150%; margin-top:10px; font-weight:bold\">Cohort Reports</div>\n";
     echo "<div style=\"margin-left:25px; line-height:150%\">inc. absent candidates&nbsp;<input type=\"checkbox\" name=\"absent\" value=\"1\" /></div>\n";

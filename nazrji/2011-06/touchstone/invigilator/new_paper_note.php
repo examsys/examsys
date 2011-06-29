@@ -12,7 +12,7 @@
   
   if (isset($_POST['submit'])) {
     if ($_POST['note_id'] == '' or $_POST['note_id'] == '0') {
-      $note = stripslashes($_POST['note']);
+      $note = $_POST['note'];
       $current_ipaddress = NetworkUtils::get_ipaddress();
     
       $result = $mysqli->prepare("INSERT INTO paper_notes VALUES (NULL,?,NOW(),?,?,?)");
@@ -21,7 +21,7 @@
       $result->close();
     } else {
       $result = $mysqli->prepare("UPDATE paper_notes SET note=? WHERE note_id=?");
-      $result->bind_param('si', stripslashes($_POST['note']), $_POST['note_id']);
+      $result->bind_param('si', $_POST['note'], $_POST['note_id']);
       $result->execute();  
       $result->close();
     }

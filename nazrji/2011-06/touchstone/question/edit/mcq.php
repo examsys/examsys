@@ -182,29 +182,31 @@ $q_id = $_GET['q_id'];
           // Add operation.
           $tmp_width = 0;
           $tmp_height = 0;
-          if ($tmp_option_media != '') {
-            $tmp_option_media = uploadFile("new_option_media$option_no",$tmp_width,$tmp_height);
-          }
+          $tmp_option_media = uploadFile("new_option_media$option_no", $tmp_width, $tmp_height);
+          
           $option_changes = true;
+          $tmp_new_option_text = $_POST["new_option_text$option_no"];
+          $tmp_feedback_right = $_POST["feedback_right$option_no"];
           $result = $mysqli->prepare("INSERT INTO options VALUES (?,?,?, '$tmp_width', '$tmp_height', ?, '',?, NULL, 1)");
-          $result->bind_param('issss', $q_id, $_POST["new_option_text$option_no"], $tmp_option_media, $_POST["feedback_right$option_no"],$_POST['correct']);
+          $result->bind_param('issss', $q_id, $tmp_new_option_text, $tmp_option_media, $tmp_feedback_right,$_POST['correct']);
           $result->execute();  
           $option_id = $mysqli->insert_id;
           $result->close();
     
           $result = $mysqli->prepare("INSERT INTO track_changes VALUES (NULL,'New Option',?,$userID,'',?,NOW(),'Option #" . $option_no . "')");
-          $result->bind_param('is', $q_id, $_POST["new_option_text$option_no"]);
+          $result->bind_param('is', $q_id, $tmp_new_option_text);
           $result->execute();  
           $result->close();
         }
-        if($option_changes == true) {
+        if ($option_changes == true) {
           $temp_id = $_POST["optionid$option_no"];
           $result = $mysqli->prepare("UPDATE options SET option_text=?, o_media=?, o_media_width='$tmp_width', o_media_height='$tmp_height', correct=?, feedback_right=? WHERE id_num=?");
           $tmp_option_text =  $_POST["new_option_text$option_no"];
-          $result->bind_param('ssssi',$tmp_option_text, $tmp_option_media, $_POST['correct'], $_POST["feedback_right$option_no"], $temp_id);
+          $tmp_feedback_right =  $_POST["feedback_right$option_no"];
+          $result->bind_param('ssssi',$tmp_option_text, $tmp_option_media, $_POST['correct'], $tmp_feedback_right, $temp_id);
           $result->execute();  
           $result->close();
-          record_trackChanges('Edit Question', $q_id, $old_option_text, $_POST["new_option_text$option_no"], 'Option #' . $option_no, $userID, $changes);
+          record_trackChanges('Edit Question', $q_id, $old_option_text, $tmp_option_text, 'Option #' . $option_no, $userID, $changes);
         }
       }
       
@@ -402,7 +404,7 @@ $q_id = $_GET['q_id'];
     <td colspan="2"><input id="nextOption" type="button" value="Add More Options..." onclick="showNextOption(4)"/></td>
   </tr>
   <?php
-    echo "<tr>\n<td class=\"field\">General Feedback</td>\n<td colspan=\"2\"><textarea name=\"correct_fback\" cols=\"100\" style=\"width:700px\" rows=\"4\" wrap=\"virtual\">" . stripslashes($correct_fback) . "</textarea><input type=\"hidden\" name=\"old_correct_fback\" value=\"" . htmlentities(stripslashes($correct_fback),ENT_NOQUOTES,'UTF-8') . "\" /></td>\n</tr>\n";
+    echo "<tr>\n<td class=\"field\">General Feedback</td>\n<td colspan=\"2\"><textarea name=\"correct_fback\" cols=\"100\" style=\"width:700px\" rows=\"4\" wrap=\"virtual\">$correct_fback</textarea><input type=\"hidden\" name=\"old_correct_fback\" value=\"" . htmlentities($correct_fback,ENT_NOQUOTES,'UTF-8') . "\" /></td>\n</tr>\n";
     echo echoMetadata($bloom, $q_id, $q_group, 3, $mysqli, true, $status, $disabled);
   ?>
   <tr>

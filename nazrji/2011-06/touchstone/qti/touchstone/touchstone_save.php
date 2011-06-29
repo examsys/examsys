@@ -179,8 +179,8 @@ class IE_touchstone_Save extends IE_Main
 				$this->q_row['scenario'] = '';
 
 			// create plain version of scenario and leadin
-			$this->q_row['scenario_plain'] = (empty($this->q_row['scenario'])) ? '' : trim(strip_tags(stripslashes($this->q_row['scenario'])));
-			$this->q_row['leadin_plain'] = (empty($this->q_row['leadin'])) ? '' : trim(strip_tags(stripslashes($this->q_row['leadin'])));
+			$this->q_row['scenario_plain'] = (empty($this->q_row['scenario'])) ? '' : trim(strip_tags($this->q_row['scenario']));
+			$this->q_row['leadin_plain'] = (empty($this->q_row['leadin'])) ? '' : trim(strip_tags($this->q_row['leadin']));
 			
 			if (!empty($this->q_row['correct_fback']) && !empty($this->q_row['incorrect_fback']) && $this->q_row['correct_fback'] == $this->q_row['incorrect_fback'])
 				$this->q_row['incorrect_fback'] = '';

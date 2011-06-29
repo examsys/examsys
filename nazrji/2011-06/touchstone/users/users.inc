@@ -24,11 +24,13 @@
 * @package
 */
 
+//TODO this function has been moved to userutils.class.inc
 function my_ucwords($s) { 
   $s = preg_replace_callback("/(\b[\w|']+\b)/s", fixcase_callback, $s); 
   return $s;         
 } 
-    
+
+//TODO this function has been moved to userutils.class.inc    
 function fixcase_callback($word) { 
   $word = $word[1]; 
   $word = strtolower($word); 
@@ -148,7 +150,8 @@ function add_users_from_file($fileName) {
     } else {
       $gender = 'NULL';
     }
-                        
+    
+    //TODO this function has been moved to userutils.class.inc  
     $stmt = $mysqli->prepare("SELECT id FROM users WHERE username=?");
     $stmt->bind_param('s', $username);
     $stmt->execute();
@@ -158,7 +161,9 @@ function add_users_from_file($fileName) {
     $invalid_user = false;
     if ($stmt->num_rows == 0 and $username != '' and stristr('ps_',$username) === false) {
       //add new users
+      //TODO this function has been moved to passwordutils.class.inc  
       $password =  gen_password();
+      //TODO this function has been moved to userutils.class.inc  
       $result = $mysqli->prepare("INSERT INTO users VALUES(?,?,?,?,?,?,?,?,'Student',NULL,?,?,?,NULL,0)");
       $result->bind_param('ssssssssssi', encpw($username, $password), $degree, $surname, $initials, $title, $username, $email, $faculty, $forname, $gender, $year);
       $result->execute();

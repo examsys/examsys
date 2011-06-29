@@ -41,9 +41,9 @@ if (isset($_POST['submit']) and $_POST['degree'] != $_POST['old_degree']) {
 }
 
 if (isset($_POST['submit']) and $unique_degree == true) {
-  $tmp_degree = trim(stripslashes($_POST['degree']));
+  $tmp_degree = trim($_POST['degree']);
   $tmp_school = $_POST['school'];
-  $tmp_description = trim(stripslashes($_POST['description']));
+  $tmp_description = trim($_POST['description']);
   $tmp_degreeID = $_POST['degreeID'];
 
   $result = $mysqli->prepare("UPDATE degrees SET degree=?, description=?, school=? WHERE id=?");

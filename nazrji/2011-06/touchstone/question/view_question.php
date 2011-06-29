@@ -44,6 +44,7 @@
   select, input {font-family:Arial,sans-serif; font-size:100%}
   table {font-size:100%}
   pre {font-family:Arial,sans-serif; font-size:100%}
+  p {margin-top:0px; padding-top:0px}
   .paper {margin-left:0px; font-size:180%; color:white; font-weight:bold}
   .q_no {width:40px; text-align:right; vertical-align:top}
   .theme {font-size:150%; padding-left:4px; font-weight:bold; color:#316AC5}

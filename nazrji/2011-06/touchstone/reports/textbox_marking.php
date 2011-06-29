@@ -178,20 +178,27 @@ td {line-height:150%; text-align:justify}
   }
   while ($row = $result->fetch()) {
     if ($phase == 1 or ($phase == 2 and in_array($tmp_userID, $second_mark))) {
+      $style = '';
       if (trim($user_answer) != '') {
         $answer_no++;
         if (is_numeric($mark)) {  // Marked previously so grey out.
-          echo "<tr><td style=\"color:#808080; vertical-align:top; text-align:right; border-bottom:1px solid #CBC7B8\">$answer_no.</td><td style=\"color:#808080; border-bottom:1px solid #CBC7B8\">" . nl2br($user_answer) . "<br />" . displayMarks($answer_no,$mark,$id,$logtype,$half_marks,$tmp_userID) . "</td></tr>\n";
-        } else {
-          echo "<tr><td style=\"vertical-align:top; text-align:right; border-bottom:1px solid #CBC7B8\">$answer_no.</td><td style=\"border-bottom:1px solid #CBC7B8\">" . nl2br($user_answer) . "<br />" . displayMarks($answer_no,$mark,$id,$logtype,$half_marks,$tmp_userID) . "</td></tr>\n";
+          if (isset($_COOKIE['hidemarked']) and $_COOKIE['hidemarked'] == 'checked') {
+            $style = ' style="display:none"';
+          } else {
+            $style = ' style="color:#808080"';
+          }
         }
+        echo "<tr" . $style . "><td style=\"vertical-align:top; text-align:right; border-bottom:1px solid #CBC7B8\">$answer_no.</td><td style=\"border-bottom:1px solid #CBC7B8\">" . nl2br($user_answer) . "<br />" . displayMarks($answer_no,$mark,$id,$logtype,$half_marks,$tmp_userID) . "</td></tr>\n";
       } else {
         $answer_no++;
         if (is_numeric($mark)) {  // Marked previously so grey out.
-          echo "<tr><td style=\"color:#808080; vertical-align:top; text-align:right; border-bottom:1px solid #CBC7B8\">$answer_no.</td><td style=\"color:#808080; border-bottom:1px solid #CBC7B8; color:#C00000\"><img src=\"../artwork/small_yellow_warning_icon.gif\" width=\"16\" height=\"16\" alt=\"Warning\" border=\"0\" /> No answer provided!<br />" . displayMarks($answer_no,$mark,$id,$logtype,$half_marks,$tmp_userID) . "</td></tr>\n";
-        } else {
-          echo "<tr><td style=\"vertical-align:top; text-align:right; border-bottom:1px solid #CBC7B8\">$answer_no.</td><td style=\"border-bottom:1px solid #CBC7B8; color:#C00000\"><img src=\"../artwork/small_yellow_warning_icon.gif\" width=\"16\" height=\"16\" alt=\"Warning\" border=\"0\" /> No answer provided!<br />" . displayMarks($answer_no,$mark,$id,$logtype,$half_marks,$tmp_userID) . "</td></tr>\n";
+          if (isset($_COOKIE['hidemarked']) and $_COOKIE['hidemarked'] == 'checked') {
+            $style = ' style=" display:none"';
+          } else {
+            $style = ' style="color:#808080"';
+          }
         }
+        echo "<tr" . $style . "><td style=\"vertical-align:top; text-align:right; border-bottom:1px solid #CBC7B8\">$answer_no.</td><td style=\"border-bottom:1px solid #CBC7B8; color:#C00000\"><img src=\"../artwork/small_yellow_warning_icon.gif\" width=\"16\" height=\"16\" alt=\"Warning\" border=\"0\" /> No answer provided!<br />" . displayMarks($answer_no,$mark,$id,$logtype,$half_marks,$tmp_userID) . "</td></tr>\n";
       }
     }
   }

@@ -28,7 +28,7 @@
 
   if (isset($_POST['submit'])) {
     $result = $mysqli->prepare("INSERT INTO student_notes VALUES (NULL,?,?,NOW(),?,?)");
-    $result->bind_param('isis', $_POST['tmp_userID'], stripslashes($_POST['note']), $_POST['paper'], $userID);
+    $result->bind_param('isis', $_POST['tmp_userID'], $_POST['note'], $_POST['paper'], $userID);
     $result->execute();  
     $result->close();
   ?>

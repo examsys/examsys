@@ -67,7 +67,7 @@
     if ($new == '') $new = '&nbsp;';
     if ($old == '') $old = '&nbsp;';
 
-    echo '<tr><td class="changerow">&nbsp;' . $display_changed . '&nbsp;</td><td class="changerow">' . $part . '</td><td class="changerow">' . stripslashes($old) . '</td><td class="changerow">' . stripslashes($new) . '</td><td class="changerow">' . $title . ' ' . $initials . ' ' . $surname . "</td></tr>\n";
+    echo '<tr><td class="changerow">&nbsp;' . $display_changed . '&nbsp;</td><td class="changerow">' . $part . '</td><td class="changerow">' . $old . '</td><td class="changerow">' . $new . '</td><td class="changerow">' . $title . ' ' . $initials . ' ' . $surname . "</td></tr>\n";
   }
   $changes->close();
   echo "</table>\n</td></tr>\n</table>";

@@ -79,7 +79,7 @@ if ($special_needs == 1) {
 if ($textsize == '') $textsize = 95;
 if ($font == '') $font = 'Arial';
   
-$paper = urldecode(stripslashes($_GET['paper']));
+$paper = urldecode($_GET['paper']);
 $person = $title . ' ' . $surname;
 $total_random_mark = 0;
 $total_marks = 0;
@@ -171,7 +171,7 @@ if (stripos($userroles,'Student') !== false AND stripos($_SERVER['PHP_AUTH_USER'
   }
 }
 
-$paper = stripslashes(urldecode($_GET['paper']));
+$paper = urldecode($_GET['paper']);
 ?>
 <!DOCTYPE html
 PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"

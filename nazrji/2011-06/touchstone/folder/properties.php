@@ -46,7 +46,7 @@ require '../include/staff_auth.inc';
   <title>Properties</title>
 
   <style>
-    body {font-family:Arial,sans-serif; color: black;margin:0px; background-color:#EEEEEE}
+    body {font-family:Arial,sans-serif; color: black;margin:0px; background-color:#F1F5FB}
     td {font-size:90%}
     input, textarea {font-family:Arial,sans-serif}
   </style>
@@ -95,7 +95,7 @@ require '../include/staff_auth.inc';
 if (isset($_POST['Submit'])) {
   $module_string = '';
   for ($i=0; $i<$_POST['module_no']; $i++) {
-    if ($_POST['module' . $i] != '') {
+    if (isset($_POST['module' . $i])) {
       if ($module_string == '') {
         $module_string = $_POST['module' . $i];
       } else {
@@ -128,12 +128,12 @@ if (isset($_POST['Submit'])) {
 
       // Alter the name of the folder in the 'folders' table first.
       $editProperties = $mysqli->prepare("UPDATE folders SET name=?, team_name=?, color=? WHERE name=? AND ownerID=?");
-      $editProperties->bind_param('ssssi', stripslashes($new_folder), $module_string, $_POST['color'], stripslashes($_POST['old_folder']), $userID);
+      $editProperties->bind_param('ssssi', $new_folder, $module_string, $_POST['color'], $_POST['old_folder'], $userID);
       $editProperties->execute();  
       $editProperties->close();
 
       // Alter the prefix of any child folders.
-      if (!$mysqli->query("UPDATE folders SET name=REPLACE(name,\"" . stripslashes($_POST['old_folder']) . ";\",\"" . stripslashes($new_folder) . ";\") WHERE name LIKE \"" . stripslashes($_POST['old_folder']) . ";%\" AND ownerID=$userID")) {
+      if (!$mysqli->query("UPDATE folders SET name=REPLACE(name,\"" . $_POST['old_folder'] . ";\",\"" . $new_folder . ";\") WHERE name LIKE \"" . $_POST['old_folder'] . ";%\" AND ownerID=$userID")) {
         echo "<p class=\"error\">Folders Edit Error 2</p>\n<p>Query: " . $editProperties . "</p>\n<p>" . mysql_error($link_id) . "</p>\n";
         echo "</body>\n</html>\n";
         exit;
@@ -141,7 +141,7 @@ if (isset($_POST['Submit'])) {
       
       // Next update the folder name in the 'properties' table (moves papers).
       $editProperties = $mysqli->prepare("UPDATE properties SET folder=? WHERE folder=? AND paper_ownerID=?");
-      $editProperties->bind_param('ssi', stripslashes($new_folder), stripslashes($_POST['old_folder']), $userID);
+      $editProperties->bind_param('ssi', $new_folder, $_POST['old_folder'], $userID);
       $editProperties->execute();  
       $editProperties->close();
     }
@@ -150,7 +150,7 @@ if (isset($_POST['Submit'])) {
   } else {
     
     $editProperties = $mysqli->prepare("UPDATE folders SET team_name=?, color=? WHERE name=? AND ownerID=?");
-    $editProperties->bind_param('sssi', $module_string, $_POST['color'], stripslashes($_POST['old_folder']), $userID);
+    $editProperties->bind_param('sssi', $module_string, $_POST['color'], $_POST['old_folder'], $userID);
     $editProperties->execute();  
     $editProperties->close();
   }
@@ -180,12 +180,12 @@ if (isset($_POST['Submit'])) {
       $result->close();
       $owner = $title . ' ' . $initials . ', ' . $surname;
 
-      $folder_array = explode(';',stripslashes($full_path));
-      $sections = substr_count(stripslashes($full_path),';');
+      $folder_array = explode(';',$full_path);
+      $sections = substr_count($full_path,';');
       $current_folder = $folder_array[$sections];
-      $prefix = substr(stripslashes($full_path),0,strrpos(stripslashes($full_path),';'));
+      $prefix = substr($full_path,0,strrpos($full_path,';'));
       echo "<table cellpadding=\"0\" cellspacing=\"4\" border=\"0\" style=\"width:100%\" >\n";
-      echo "<tr><td align=\"right\"><strong>Folder&nbsp;Name&nbsp;</strong></td><td colspan=\"3\"><input type=\"text\" size=\"50\" maxlength=\"255\" value=\"$current_folder\" name=\"folder\" onkeypress=\"if (event.keyCode == 38 || event.keyCode == 59 || event.keyCode == 63 || event.keyCode == 64 || event.keyCode == 94)  illegalChar(event.keyCode);\" /><input type=\"hidden\" name=\"old_folder\" value=\"" . stripslashes($full_path) . "\"></td></tr>\n";
+      echo "<tr><td align=\"right\"><strong>Folder&nbsp;Name&nbsp;</strong></td><td colspan=\"3\"><input type=\"text\" size=\"50\" maxlength=\"255\" value=\"$current_folder\" name=\"folder\" onkeypress=\"if (event.keyCode == 38 || event.keyCode == 59 || event.keyCode == 63 || event.keyCode == 64 || event.keyCode == 94)  illegalChar(event.keyCode);\" /><input type=\"hidden\" name=\"old_folder\" value=\"$full_path\"></td></tr>\n";
       echo "<input type=\"hidden\" name=\"folderID\" value=\"" . $_GET['folder'] . "\" />";
       echo "<tr><td align=\"right\" valign=\"middle\"><strong>Colour&nbsp;</strong></td><td>";
       echo "<input type=\"radio\" name=\"color\" value=\"yellow\"";
@@ -204,7 +204,7 @@ if (isset($_POST['Submit'])) {
       echo "<tr><td align=\"right\" valign=\"top\"><strong>Owner&nbsp;</strong></td><td>$owner</td></tr>\n";
       echo "<tr><td align=\"right\" valign=\"top\"><strong>Created&nbsp;</strong></td><td>$created</td></tr>\n";
        
-      echo "<tr><td align=\"right\"><strong>Team(s)&nbsp;</strong></td><td><div style=\"background-color:white; display:block; height:200px; width:100%; overflow-y:scroll; border:1px solid highlight; font-size:90%\">";
+      echo "<tr><td align=\"right\"><strong>Team(s)&nbsp;</strong></td><td><div style=\"background-color:white; display:block; height:200px; width:100%; overflow-y:scroll; border:1px solid #7F9DB9; font-size:90%\">";
       $modules_array = explode(',',$folder_team);
       $total_modules = array_merge($teams, $modules_array);
 	    $module_sql = implode("','", $total_modules);

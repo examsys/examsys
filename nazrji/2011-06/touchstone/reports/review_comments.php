@@ -452,10 +452,10 @@ if (isset($_GET['scrOfY'])) {
     
       $comments_array[$tmp_q_id][$tmp_reviewer]['name'] = $title . ' ' . $initials . ' ' . $surname;
       $comments_array[$tmp_q_id][$tmp_reviewer]['reviewed'] = $reviewed;
-      $comments_array[$tmp_q_id][$tmp_reviewer]['comment'] = stripslashes($comment);
+      $comments_array[$tmp_q_id][$tmp_reviewer]['comment'] = $comment;
       $comments_array[$tmp_q_id][$tmp_reviewer]['category'] = $category;
       $comments_array[$tmp_q_id][$tmp_reviewer]['action'] = $action;
-      $comments_array[$tmp_q_id][$tmp_reviewer]['response'] = stripslashes($response);
+      $comments_array[$tmp_q_id][$tmp_reviewer]['response'] = $response;
     }
     $result->close();
   

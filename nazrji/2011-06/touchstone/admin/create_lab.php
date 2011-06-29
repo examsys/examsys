@@ -29,13 +29,13 @@
     // Insert into Lab table.
     $result = $mysqli->prepare("INSERT INTO labs VALUES (NULL,?,?,?,?,?,?,?)");
     
-    $lab_name = stripslashes($_POST['lab_name']);
-    $campus = stripslashes($_POST['campus']);
-    $building = stripslashes($_POST['building']);
-    $room_no = stripslashes($_POST['room_no']);
-    $timetabling = stripslashes($_POST['timetabling']);
-    $it_support = stripslashes($_POST['it_support']);
-    $plagarism = stripslashes($_POST['plagarism']);
+    $lab_name = $_POST['lab_name'];
+    $campus = $_POST['campus'];
+    $building = $_POST['building'];
+    $room_no = $_POST['room_no'];
+    $timetabling = $_POST['timetabling'];
+    $it_support = $_POST['it_support'];
+    $plagarism = $_POST['plagarism'];
     
     $result->bind_param('sssssss', $lab_name,$campus,$building,$room_no,$timetabling,$it_support,$plagarism);
     $result->execute();  

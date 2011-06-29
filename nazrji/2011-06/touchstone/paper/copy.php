@@ -141,10 +141,14 @@
               if ($line == 0) {
                 $new_media_name = '';
                 if (trim($individual_media) != '' and trim($individual_media) != 'NULL') {
-                	$new_media_name = unique_filename($individual_media,FALSE);
-                  if (!copy("../media/$individual_media","../media/$new_media_name")) {
-                    $error[] = "Question Number $q_no) Copy Error (Question) File <strong>'$individual_media'</strong> could not be copied.";
-                    //if the image is missing dont put the file name in the new question
+                	$new_media_name = unique_filename($individual_media, FALSE);
+                  if (file_exists("../media/$individual_media")) {
+                    if (!copy("../media/$individual_media","../media/$new_media_name")) {
+                      $error[] = "Question Number $q_no) Copy Error (Question) File <strong>'$individual_media'</strong> could not be copied.";
+                      //if the image is missing dont put the file name in the new question
+                      $new_media_name = '';
+                    }
+                  } else {
                     $new_media_name = '';
                   }
                 }
@@ -168,10 +172,14 @@
           $new_o_media = '';
           foreach ($media_array as $individual_media) {
             if (trim($individual_media) != '' and trim($individual_media) != 'NULL') {
-							$new_media_name = unique_filename($individual_media,FALSE);
-              if (!copy("../media/$individual_media","../media/$new_media_name")) {
-                $error[] = "Question Number $q_no) Copy Error (Options) File <strong>'$individual_media'</strong> could not be copied.";
-                //if the image is missing dont put the file name in the new question
+							$new_media_name = unique_filename($individual_media, FALSE);
+              if (file_exists("../media/$individual_media")) {
+                if (!copy("../media/$individual_media","../media/$new_media_name")) {
+                  $error[] = "Question Number $q_no) Copy Error (Options) File <strong>'$individual_media'</strong> could not be copied.";
+                  //if the image is missing dont put the file name in the new question
+                  $new_media_name = '';
+                }
+              } else {
                 $new_media_name = '';
               }
               if ($new_o_media == '') {

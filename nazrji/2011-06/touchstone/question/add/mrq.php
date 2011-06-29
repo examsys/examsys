@@ -58,9 +58,7 @@ if (isset($_POST['addbank']) or isset($_POST['addpaper'])) {
   // Insert into Options
   for ($option_no = 1; $option_no <=20; $option_no++) {
     $tmp_option_text = $_POST["option_text$option_no"];
-    if(isset($_FILE['omedia' . $option_no])) {
-      $unique_name = uploadFile('omedia' . $option_no,$tmp_width,$tmp_height);
-    }
+    $unique_name = uploadFile('omedia' . $option_no, $tmp_width, $tmp_height);
     
     if ($tmp_option_text != '' or ($unique_name != 'none' and $unique_name != '')) {
       if ($_POST['mcqconvert'] == '0') {
@@ -72,7 +70,7 @@ if (isset($_POST['addbank']) or isset($_POST['addpaper'])) {
       }
       $current_correctfb = $_POST["correct_feedback$option_no"];
       $current_incorrectfb = $_POST["incorrect_feedback$option_no"];
-      insert_into_options($question_id,$tmp_option_text,$unique_name,$tmp_width,$tmp_height,$current_correctfb,$current_incorrectfb,$tmp_correct,1);
+      insert_into_options($question_id, $tmp_option_text, $unique_name, $tmp_width, $tmp_height, $current_correctfb, $current_incorrectfb, $tmp_correct,1);
     }
   }
 

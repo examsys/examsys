@@ -19,7 +19,7 @@
   function customErrorHandler($errno, $errstr, $errfile, $errline) {
     global $mysqli, $userID, $debug_pagestart;
     
-    if(isset($debug_pagestart)) {
+    if (isset($debug_pagestart)) {
       //we are in a debug session do not log errors to db just display them
       return false;
     }
@@ -54,7 +54,8 @@
     }
 
     if ($error_type != 'Notice') {  // Record errors that are not notices.
-      $log_error = $mysqli->prepare("INSERT INTO sys_errors VALUES(NULL, NOW(), ?, ?, ?, ?, ?, 0 , ?, ?, ?)");
+      $log_error = $mysqli->prepare("INSERT INTO sys_errors VALUES(NULL, NOW(), ?, ?, ?, ?, ?, NULL, ?, ?, ?)");
+      //echo "Error=" . $mysqli->error;
       $log_error->bind_param('isssssss', $userID, $error_type, $errstr, $errfile, $errline, $_SERVER['PHP_SELF'], $_SERVER['QUERY_STRING'], $_SERVER['REQUEST_METHOD']);
       $log_error->execute();
       $log_error->close();

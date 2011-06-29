@@ -24,7 +24,7 @@
 
 require '../include/staff_auth.inc';
 
-$paper = stripslashes($_GET['paper']);
+$paper = $_GET['paper'];
 $startdate = $_GET['startdate'];
 $enddate = $_GET['enddate'];
 ?>

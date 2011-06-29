@@ -82,7 +82,7 @@ if (isset($_POST['submit']) and ($_POST['submit'] == 'Save Changes' or $_POST['s
     $part_names = array('theme','notes','bloom','scttype','status','correct_fback');
     foreach($part_names as $section_name) {
       if(isset($_POST["$section_name"])) {
-        $$section_name = stripslashes($_POST["$section_name"]);
+        $$section_name = $_POST["$section_name"];
       } else {
         $$section_name ='';
       }
@@ -91,7 +91,7 @@ if (isset($_POST['submit']) and ($_POST['submit'] == 'Save Changes' or $_POST['s
     $part_names = array('old_theme','old_scenario','old_notes','old_bloom','old_scttype','old_status','old_correct_fback');
     foreach($part_names as $section_name) {
       if(isset($_POST["$section_name"])) {
-        $$section_name = stripslashes($_POST["$section_name"]);
+        $$section_name = $_POST["$section_name"];
       } else {
         $$section_name ='';
       }
@@ -352,7 +352,7 @@ if (isset($_POST['submit']) and ($_POST['submit'] == 'Save Changes' or $_POST['s
     echo "<tr class=\"option\"><td colspan=\"3\">&nbsp;</td></tr>\n";
     $option_no++;
   }
-  echo "<tr>\n<td class=\"field\">General<br />Feedback</span></td>\n<td colspan=\"2\"><textarea name=\"correct_fback\" cols=\"100\" style=\"width:700px\" rows=\"4\" wrap=\"virtual\">" . stripslashes($correct_fback) . "</textarea><input type=\"hidden\" name=\"old_correct_fback\" value=\"" . htmlentities(stripslashes($correct_fback),ENT_NOQUOTES,'UTF-8') . "\" /></td>\n</tr>\n";
+  echo "<tr>\n<td class=\"field\">General<br />Feedback</span></td>\n<td colspan=\"2\"><textarea name=\"correct_fback\" cols=\"100\" style=\"width:700px\" rows=\"4\" wrap=\"virtual\">$correct_fback</textarea><input type=\"hidden\" name=\"old_correct_fback\" value=\"" . htmlentities($correct_fback,ENT_NOQUOTES,'UTF-8') . "\" /></td>\n</tr>\n";
   echo "<tr><td colspan=\"3\">&nbsp;</td></tr>\n";
 
   echo echoMetadata($bloom, $q_id, $q_group, 3, $mysqli, true, $status, $disabled);

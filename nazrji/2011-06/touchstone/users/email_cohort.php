@@ -37,12 +37,12 @@
     $result->bind_result($student_id, $surname, $initials, $title, $username, $password, $email);
     while ($row = $result->fetch()) {
       // Perform replacement.
-      $message = stripslashes($_POST['message']);
-      $message = str_replace("{title}",$title,$message);
-      $message = str_replace("{initials}",$initials,$message);
-      $message = str_replace("{last_name}",$surname,$message);
-      $message = str_replace("{username}",$username,$message);
-      $message = str_replace("{password}",$password,$message);
+      $message = $_POST['message'];
+      $message = str_replace("{title}", $title, $message);
+      $message = str_replace("{initials}", $initials, $message);
+      $message = str_replace("{last_name}", $surname, $message);
+      $message = str_replace("{username}", $username, $message);
+      $message = str_replace("{password}", $password, $message);
      
       //$to = 'simon.wilkinson@nottingham.ac.uk';
       $to = $email;

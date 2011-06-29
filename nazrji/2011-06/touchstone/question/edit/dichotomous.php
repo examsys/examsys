@@ -89,13 +89,11 @@ if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
     $changes = false;
     $part_names = array('theme','scenario','leadin','notes','bloom','general_feedback','score_method','status','option_order');
     foreach($part_names as $section_name) {
-      //$$section_name = stripslashes($_POST["$section_name"]);
       $$section_name = $_POST["$section_name"];
     }
     if (trim(strip_tags($scenario)) == '') $scenario = '';
     $part_names = array('old_theme','old_scenario','old_leadin','old_notes','old_bloom','old_general_feedback','old_score_method','old_status','old_option_order');
     foreach($part_names as $section_name) {
-      //$$section_name = stripslashes($_POST["$section_name"]);
       $$section_name = $_POST["$section_name"];
     }
 

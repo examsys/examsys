@@ -135,7 +135,7 @@
       } else {
         echo "<tr style=\"cursor:pointer\" id=\"$id\" onmouseover=\"highlight($id)\" onmouseout=\"unhighlight($id)\" onclick=\"selSession('$id','$identifier','" . $session['calendar_year'] . "','" . $session['VLE'] . "',event);\" ondblclick=\"editSession('" . $session['identifier'] . "','" . $session['calendar_year'] . "');\">";
       }
-      echo "<td>&nbsp;" . $session['occurrance'] . "</td><td class=\"title\">" . stripslashes($session['title']) . "</td>";
+      echo "<td>&nbsp;" . $session['occurrance'] . "</td><td class=\"title\">" . $session['title'] . "</td>";
       if ($objectives_no == 0) {
         echo "<td class=\"zero_obj_no\"><img src=\"../artwork/small_yellow_warning_icon.gif\" width=\"16\" height=\"16\" alt=\"Warning\" border=\"0\" />&nbsp;$objectives_no</td>";
       } else {

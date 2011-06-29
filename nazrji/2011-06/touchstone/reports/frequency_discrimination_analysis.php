@@ -563,7 +563,6 @@
           $std_part = 0;
           foreach ($options as $individual_option) {
             $i++;
-            $individual_option = stripslashes($individual_option);
             if (!isset($log[$q_id][$i]['t'])) $log[$q_id][$i]['t'] = 0;
             if (!isset($log[$q_id][$i]['f'])) $log[$q_id][$i]['f'] = 0;
             if (!isset($freq_log[$q_id][$i]['t'])) $freq_log[$q_id][$i]['t'] = 0;
@@ -979,7 +978,7 @@
       echo "<p>\n<table cellpadding=\"2\" cellspacing=\"0\" border=\"1\">\n";
       echo '<tr><td colspan="7">&nbsp;</td><td>&nbsp;</td>';
       foreach ($options as $individual_option) {
-        echo '<td>' . stripslashes($individual_option) . '</td>';
+        echo '<td>' . $individual_option . '</td>';
       }
       echo "</tr>\n";
       for ($i=1; $i<=(substr_count($scenario,'|')+1); $i++) {

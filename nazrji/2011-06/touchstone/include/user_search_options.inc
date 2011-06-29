@@ -92,7 +92,7 @@ if (isset($_GET['calendar_year'])) {
 <tr><td>
 <div><strong>Search by any or all of the criteria below.</strong></div>
 <div style="font-size:50%">&nbsp;</div>
-<div>Name<br /><input type="text" name="search_surname" size="18" style="width:95%" value="<?php if (isset($_GET['search_surname'])) echo stripslashes($_GET['search_surname']); ?>" /></div>
+<div>Name<br /><input type="text" name="search_surname" size="18" style="width:95%" value="<?php if (isset($_GET['search_surname'])) echo $_GET['search_surname']; ?>" /></div>
 
 <table cellpadding="0" cellspacing="0" border="0" style="font-size:100%">
 <tr><td>Username</td><td>&nbsp;</td><td>Student ID</td></tr>

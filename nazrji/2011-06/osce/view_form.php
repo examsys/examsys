@@ -178,7 +178,7 @@
 
   <br />
   <div><strong>Feedback:</strong></div>
-  <textarea name="feedback" id="feedback" style="font-family:Arial,sans-serif; border:1px solid #7F9DB9; width:100%" cols="60" rows="4"><?php echo stripslashes($feedback); ?></textarea>
+  <textarea name="feedback" id="feedback" style="font-family:Arial,sans-serif; border:1px solid #7F9DB9; width:100%" cols="60" rows="4"><?php echo $feedback; ?></textarea>
 <?php
   $mysqli->close();
 ?>

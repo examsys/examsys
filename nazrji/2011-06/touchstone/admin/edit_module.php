@@ -53,7 +53,7 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
 
   // Update the properties of the module.
   $tmp_moduleid = trim($_POST['moduleid']);
-  $tmp_fullname = trim(stripslashes($_POST['fullname']));
+  $tmp_fullname = trim($_POST['fullname']);
   $tmp_school = $_POST['school'];
   $tmp_sms_api = $_POST['sms_api'];
   $tmp_vle_api = $_POST['vle_api'];

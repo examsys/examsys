@@ -77,7 +77,7 @@
   
   if ($keyword != '%' and $keyword != '' and $type == '%') {
     $parts = explode(';',$keyword);
-    $bank_type = ": '" . stripslashes($parts[1]) . "'";
+    $bank_type = ": '" . $parts[1] . "'";
   }
   if ($team != '') {
     $bank_type = ": team $team";

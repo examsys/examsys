@@ -117,12 +117,10 @@ if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
     //Get all the data first into temporay variables.
     $part_names = array('theme','leadin','notes','bloom','status','option_order');
     foreach($part_names as $section_name) {
-      //$$section_name = stripslashes($_POST["$section_name"]);
       $$section_name = $_POST["$section_name"];
     }
     $part_names = array('old_theme','old_leadin','old_notes','old_bloom','old_status','old_option_order');
     foreach($part_names as $section_name) {
-      //$$section_name = stripslashes($_POST["$section_name"]);
       $$section_name = $_POST["$section_name"];
     }
 
@@ -551,7 +549,7 @@ if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
         if ($question < 2) {
           echo '<span class="mandatory">*</span>&nbsp;';
         }
-        echo "Stem</td>\n<td><textarea style=\"display:none\" name=\"old_scenario_text$question\" id=\"old_scenario_text$question\">" . htmlentities(stripslashes($matching_scenarios[$question]),ENT_NOQUOTES,'UTF-8') . "</textarea>";
+        echo "Stem</td>\n<td><textarea style=\"display:none\" name=\"old_scenario_text$question\" id=\"old_scenario_text$question\">" . htmlentities($matching_scenarios[$question],ENT_NOQUOTES,'UTF-8') . "</textarea>";
         echo wysiwyg_editor("oEdit$question","scenario_text$question",$matching_scenarios[$question]);
         echo "</td>\n<td width=\"20\">&nbsp;</td>\n</tr>\n";
         if ($matching_media[$question + 1] != '') {

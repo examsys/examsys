@@ -180,11 +180,8 @@ if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
       } elseif (($_POST["option_text$option_no"] != '' or $tmp_option_media != '') and $_POST["old_option_text$option_no"] == '' and $_POST["old_option_media$option_no"] == '') {
         // Add operation.
         $changes = true;
-        $tmp_width = 0;
-        $tmp_height = 0;
-        if ($tmp_option_media != '') {
-          $tmp_option_media = uploadFile("new_option_media$option_no",$tmp_width,$tmp_height);
-        }
+        $tmp_option_media = uploadFile("new_option_media$option_no", $tmp_width, $tmp_height);
+        
         $result = $mysqli->prepare("INSERT INTO options VALUES (?,?,?,?,?,'','',?,NULL,1)");
         $result->bind_param('isssss', $q_id, $_POST["option_text$option_no"], $tmp_option_media, $tmp_width, $tmp_height, $tmp_correct);
         $result->execute();
@@ -199,11 +196,8 @@ if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
           if (isset($_POST["old_option_media$option_no"])) {
             deleteMedia($_POST["old_option_media$option_no"]);
           }
-          $tmp_width = 0;
-          $tmp_height = 0;
-          if ($tmp_option_media != '') {
-            $tmp_option_media = uploadFile("new_option_media$option_no",$tmp_width,$tmp_height);
-          }
+          $tmp_option_media = uploadFile("new_option_media$option_no", $tmp_width, $tmp_height);
+          
           $stem_changes = true;
         } else {
           $tmp_option_media = $_POST["old_option_media$option_no"];

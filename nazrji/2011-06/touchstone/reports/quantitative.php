@@ -318,24 +318,16 @@
         foreach ($options as $individual_option) {
           echo "<td>$individual_option</td>";
         }
-        echo "<td style=\"color:#808080\">unanswered</tr>\n";
+        echo "<td style=\"color:#808080\">unanswered</td></tr>\n";
         for ($i=1; $i<=(substr_count($scenario,'|')+1); $i++) {
           echo "<tr>\n";
           echo "<td>" . $tmp_ext_scenarios[$i-1] . "</td>";
           $option_no = 1;
           foreach ($options as $individual_option) {
-            if ($tmp_answers_array[$i-1] == $option_no) {
-              if ($log[$screen][$q_id][$i][$option_no] == '') {
-                echo "<td class=\"figures\" style=\"font-weight:bold\">0</td>";
-              } else {
-                echo "<td class=\"figures\" style=\"font-weight:bold\">" . $log[$screen][$q_id][$i][$option_no] . "</td>";
-              }
+            if (!isset($log[$screen][$q_id][$i][$option_no])) {
+              echo "<td class=\"figures\">0 (0%)</td>";
             } else {
-              if (!isset($log[$screen][$q_id][$i][$option_no])) {
-                echo "<td class=\"figures\">0</td>";
-              } else {
-                echo "<td class=\"figures\">" . $log[$screen][$q_id][$i][$option_no] . "</td>";
-              }
+              echo "<td class=\"figures\">" . $log[$screen][$q_id][$i][$option_no] . "&nbsp;(" . number_format(($log[$screen][$q_id][$i][$option_no]/$candidates)*100,0) . "%)</td>";
             }
             $option_no++;
           }
@@ -410,7 +402,7 @@ body {font-family:Arial,sans-serif; font-size:90%; background-color:white; color
 h1 {margin-left:15px; font-family:Arial,sans-serif; font-size:18pt; color:#316AC5}
 p {margin-right:15px}
 td {vertical-align:top}
-.figures {text-align:right; width:30px}
+.figures {text-align:right; width:60px}
 .q_no {text-align:right; width:40px}
 .h {background-color:#F1F5FB; color:black}
 .breadcrumb {margin-left:10px; font-size:90%}
@@ -626,7 +618,6 @@ td {vertical-align:top}
         }
         break;
       case 'matrix':
-        $tmp_answer = substr($tmp_answer, 1);
         $tmp_answer_parts = array();
         $tmp_answer_parts = explode('|',$tmp_answer);
         $i = 0;

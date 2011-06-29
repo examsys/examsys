@@ -117,7 +117,7 @@ td {font-size:80%}
   if ($property_id == '-new-assessment-paper-') {
     // Check that paper name is not already in use.
     $result = $mysqli->prepare("SELECT property_id FROM properties WHERE paper_title=? LIMIT 1");
-    $np_name = stripslashes($_POST['new_paper']);
+    $np_name = $_POST['new_paper'];
     $result->bind_param('s', $np_name);
     $result->execute();
     $result->store_result();
@@ -126,7 +126,7 @@ td {font-size:80%}
     $result->free_result();
     $result->close();
     if ($rows_found > 0) {
-      echo "Sorry <strong>'" . stripslashes($_POST['new_paper']) . "'</strong> is a name already in use.";
+      echo "Sorry <strong>'" . $_POST['new_paper'] . "'</strong> is a name already in use.";
       echo "<p><input type=\"button\" value=\"Back\" style=\"width:100px\" onclick=\"history.back();\" /></p>\n</body>\n</html>\n";
       exit;
     }
@@ -135,7 +135,7 @@ td {font-size:80%}
     // Calculate what the current academic session is.
 		$session = DateUtils::get_current_academic_year();
         
-    $tmp_paper_title = stripslashes($_POST['new_paper']);
+    $tmp_paper_title = $_POST['new_paper'];
 
     // Create the new paper.
     $result = $mysqli->prepare("INSERT INTO properties VALUES (NULL,?,'20030101090000','20250101090000','Europe/London','0','','','white','black','#316AC5','#C00000','0',1,'0',40,70,?,'','','',0,'',NULL,NULL,NOW(),0,0,'1','1','1','1','0',?,?,'',NULL,NULL,'0',0,'')");
@@ -252,7 +252,7 @@ td {font-size:80%}
       $keyword_result->close();
     }
     $addOption = $mysqli->prepare("INSERT INTO options VALUES(?,?,?,?,?,?,?,?,NULL,?)");
-    $addOption->bind_param('isssssssi', $question_id, $option_text, $new_o_media, $o_media_width, $o_media_height, $feedback_right, $feedback_wrong, $correct, $marks);
+    $addOption->bind_param('isssssssd', $question_id, $option_text, $new_o_media, $o_media_width, $o_media_height, $feedback_right, $feedback_wrong, $correct, $marks);
     $addOption->execute();
     $addOption->close();
     $line++;

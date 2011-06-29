@@ -36,12 +36,12 @@
 
   if (isset($_POST['save_changes'])) {
     // Update help file record
-    $tmp_body = stripslashes($_POST['edit1']);
+    $tmp_body = $_POST['edit1'];
     $tmp_body_plain = strip_tags($tmp_body);
     $order = array("\r\n", "\n", "\r", "\t");
     $tmp_body_plain = str_replace($order,' ',$tmp_body_plain);
     $tmp_body_plain = str_replace('  ',' ',$tmp_body_plain);
-    $tmp_title = stripslashes($_POST['page_title']);
+    $tmp_title = $_POST['page_title'];
     
     if ($_POST['edit_id'] == $_POST['original_id']) {
       // Editing normal page.

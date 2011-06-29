@@ -60,7 +60,7 @@
       $student_no++;
       if ($old_tmp_userID != '') {
         echo '<w:p wsp:rsidR="00472B21" wsp:rsidRDefault="00472B21" wsp:rsidP="00472B21"><w:pPr><w:spacing w:after="0"/><w:rPr><w:b/></w:rPr></w:pPr></w:p><w:p wsp:rsidR="000E6B7A" wsp:rsidRPr="000E6B7A" wsp:rsidRDefault="00472B21" wsp:rsidP="00ED0EA8"><w:pPr><w:rPr><w:b/></w:rPr></w:pPr><w:r wsp:rsidRPr="000E6B7A"><w:rPr><w:b/></w:rPr><w:t>Feedback:</w:t></w:r></w:p>';
-        echo '<w:p wsp:rsidR="000E6B7A" wsp:rsidRPr="00A11D0F" wsp:rsidRDefault="00273482" wsp:rsidP="00ED0EA8"><w:r><w:t>' . stripslashes($old_feedback) . '</w:t></w:r></w:p>';
+        echo '<w:p wsp:rsidR="000E6B7A" wsp:rsidRPr="00A11D0F" wsp:rsidRDefault="00273482" wsp:rsidP="00ED0EA8"><w:r><w:t>' . $old_feedback . '</w:t></w:r></w:p>';
         echo '</w:tbl></wx:sub-section>';
       }
       echo '<wx:sub-section><w:p wsp:rsidR="00A8714C" wsp:rsidRDefault="00A8714C" wsp:rsidP="0005490A"><w:pPr><w:pStyle w:val="Heading1"/></w:pPr>';
@@ -105,7 +105,7 @@
   $mysqli->close();
   if ($old_tmp_userID != '') {
     echo '<w:p wsp:rsidR="00472B21" wsp:rsidRDefault="00472B21" wsp:rsidP="00472B21"><w:pPr><w:spacing w:after="0"/><w:rPr><w:b/></w:rPr></w:pPr></w:p><w:p wsp:rsidR="000E6B7A" wsp:rsidRPr="000E6B7A" wsp:rsidRDefault="00472B21" wsp:rsidP="00ED0EA8"><w:pPr><w:rPr><w:b/></w:rPr></w:pPr><w:r wsp:rsidRPr="000E6B7A"><w:rPr><w:b/></w:rPr><w:t>Feedback:</w:t></w:r></w:p>';
-    echo '<w:p wsp:rsidR="000E6B7A" wsp:rsidRPr="00A11D0F" wsp:rsidRDefault="00273482" wsp:rsidP="00ED0EA8"><w:r><w:t>' . stripslashes($old_feedback) . '</w:t></w:r></w:p>';
+    echo '<w:p wsp:rsidR="000E6B7A" wsp:rsidRPr="00A11D0F" wsp:rsidRDefault="00273482" wsp:rsidP="00ED0EA8"><w:r><w:t>' . $old_feedback . '</w:t></w:r></w:p>';
     echo '</w:tbl></wx:sub-section>';
   }
   echo '<w:sectPr wsp:rsidR="0005490A" wsp:rsidRPr="0005490A" wsp:rsidSect="00A4626D"><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440" w:header="708" w:footer="708" w:gutter="0"/><w:cols w:space="708"/><w:docGrid w:line-pitch="360"/></w:sectPr></w:body></w:wordDocument>';

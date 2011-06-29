@@ -28,6 +28,7 @@ require_once '../classes/dateutils.class.php';
 $unique_moduleid = true;
 if (isset($_POST['submit'])) {
   // Check for unique moduleID
+  //TODO this has been moved to moduleutils
   $moduleid = trim($_POST['moduleid']);
   $result = $mysqli->prepare("SELECT moduleid FROM modules WHERE moduleid=?");
   $result->bind_param('s', $moduleid);
@@ -54,9 +55,10 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
   if (isset($_POST['stdset'])) $checklist .= ',stdset';
   if (isset($_POST['mapping'])) $checklist .= ',mapping';
 
-  $fullname = trim(stripslashes($_POST['fullname']));
+  $fullname = trim($_POST['fullname']);
   $tmp_checklist = substr($checklist,1);
   
+  //TODO this has been moved to moduleutils
   $result = $mysqli->prepare("INSERT INTO modules VALUES (NULL,?,?,?,?,?,?,?)");
   $result->bind_param('ssissss', $moduleid, $fullname, $active, $_POST['school'], $_POST['vle_api'], $tmp_checklist, $_POST['sms_api']);
   $result->execute();

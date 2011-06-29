@@ -52,7 +52,7 @@ if (isset($_POST['addbank']) or isset($_POST['addpaper'])) {
     $tmp_option_abstain_fback = '';
     $tmp_option_text = '';
     $tmp_option_text = html_entity_decode($_POST["option_text$option_no"]);
-    $unique_name = uploadFile('omedia' . $option_no,$tmp_width,$tmp_height);
+    $unique_name = uploadFile('omedia' . $option_no, $tmp_width, $tmp_height);
     if ($tmp_option_text != '' or ($unique_name != 'none' and $unique_name != '')) {
       if(isset($_POST['correct' . $option_no])) $tmp_correct = $_POST['correct' . $option_no];
       if(isset($_POST['option_correct_fback' . $option_no])) $tmp_option_correct_fback = $_POST['option_correct_fback' . $option_no];

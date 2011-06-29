@@ -24,9 +24,14 @@
 * @package
 */
 
+require_once $_SERVER['DOCUMENT_ROOT'] . '/touchstone/classes/userutils.class.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/touchstone/classes/moduleutils.class.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/touchstone/classes/schoolutils.class.php';
+
 Class InstallUtils {
 	
   public static $db;
+   public static $touchstone_path;
   
   //database config options
   public static $cfg_db_host;
@@ -36,6 +41,17 @@ Class InstallUtils {
   public static $cfg_db_name;
   public static $db_admin_username;
   public static $db_admin_passwd;
+  
+  public static $ts_version = '4.0';
+  public static $support_email;
+  public static $cfg_SysAdmin_username;
+  public static $emergency_support_numbers;
+  
+  public static $cfg_ldap_server;
+  public static $cfg_ldap_search_dn;
+  public static $cfg_ldap_bind_rdn;
+  public static $cfg_ldap_bind_password;
+  public static $cfg_use_ldap = 'false';
   
   static function displayForm() {
     ?>
@@ -56,8 +72,20 @@ Class InstallUtils {
         <div>Database port: <input type="text" value="3306" name="mysql_db_port" class="required" /> </div>
         <div>Database Name: <input type="text" value="" name="mysql_db_name" class="required" minlength="3" /> </div>
         <h3>Database user</h3>
-        <div>username: <input type="text" value="" name="mysql_sys_admin_username" class="required" minlength="3"/></div>
-        <div>password: <input type="password" value="" name="mysql_sys_admin_passwd" class="required" minlength="8" /></div>
+        <div>username: <input type="text" value="" name="mysql_touchstone_username" class="required" minlength="3"/></div>
+        <div>password: <input type="password" value="" name="mysql_touchstone_passwd" class="required" minlength="8" /></div>
+      </fieldset>
+      
+      <h2>TouchStone SysAdmin User</h2>
+      <fieldset>
+        <div></div>
+        <br />
+        <div>Title: <input type="text" value="" name="SysAdmin_title" class="required" /> </div>
+        <div>First Name: <input type="text" value="" name="SysAdmin_first" class="required" /> </div>
+        <div>Surname: <input type="text" value="" name="SysAdmin_last" class="required" minlength="3" /> </div>
+        <div>Email Address: <input type="text" value="" name="SysAdmin_email" class="required email" /></div>
+        <div>username: <input type="text" value="" name="SysAdmin_username" class="required" minlength="3"/></div>
+        <div>password: <input type="password" value="" name="SysAdmin_password" class="required" minlength="8" /></div>
       </fieldset>
       <div> <input type="submit" name="install" value="Install Touchstone" /> </div>
     </form>
@@ -72,11 +100,20 @@ Class InstallUtils {
     self::$cfg_db_name = $_POST['mysql_db_name'];
     self::$db_admin_username = $_POST['mysql_admin_user'];
     self::$db_admin_passwd = $_POST['mysql_admin_pass'];
+    self::$cfg_db_username = $_POST['mysql_touchstone_username'];
+    self::$cfg_db_password = $_POST['mysql_touchstone_passwd'];
+    
+    self::$cfg_SysAdmin_username = $_POST['SysAdmin_username'];
+
+    
+
     self::$db = new mysqli(self::$cfg_db_host , self::$db_admin_username, self::$db_admin_passwd,'',self::$cfg_db_port);
     if (mysqli_connect_error()) {
       self::displayError(array('001' => mysqli_connect_error()));  
     }
     self::createDatabase(self::$cfg_db_name);
+    
+    self::writeConfigFile();
   }
   
   /**
@@ -88,14 +125,14 @@ Class InstallUtils {
     $res = self::$db->prepare("SHOW DATABASES LIKE '$dbname'");
     $res->execute();
     $res->store_result();
-    if($res->num_rows > 0) {
+    if ($res->num_rows > 0) {
       self::displayError(array('010' => "The database name '$dbname' is in use please use a different one")); 
     }
     $res->close();
     
     $res = self::$db->prepare("CREATE DATABASE $dbname");
     $res->execute();
-    if(self::$db->errno != 0) {
+    if (self::$db->errno != 0) {
       self::displayError(array('011' => "The database '$dbname' could not be created please check the admin users permissions")); 
     }
     $res->close();
@@ -105,16 +142,96 @@ Class InstallUtils {
     
     //create tables
     $tables = new touchStoneTables();
-    while($sql = $tables->next()) {
+    while ($sql = $tables->next()) {
       $res = self::$db->query($sql);
-      if(self::$db->errno != 0) {
+      if (self::$db->errno != 0) {
         self::displayError(array('012' => "could not create table. " . self::$db->error )); 
       }
     }
-    //create user and grant permissions
     
-    //flush database
+    //create touchstone 'database user' and grant permissions
+    self::$db->query("CREATE USER  '" . self::$cfg_db_username . "'@'localhost'");
+    if (self::$db->errno != 0) {
+      self::displayWarning(array('013'=>'Database user ' . self::$cfg_db_username . ' could not be created'));
+    } 
     
+    self::$db->query("GRANT SELECT,INSERT,UPDATE,DELETE ON " . self::$cfg_db_name . ".* TO '" . self::$cfg_db_name . "'@'localhost' IDENTIFIED BY '" . self::$cfg_db_password . "'");
+    echo self::$db->error;
+    if (self::$db->errno != 0) {
+      self::displayWarning(array('013'=>'Database user ' . self::$cfg_db_username . ' could not set permissions'));
+    }  
+    
+    //create touchstone sysadmin user 
+    UserUtils::createUser(  $_POST['SysAdmin_username'], 
+                            $_POST['SysAdmin_password'], 
+                            $_POST['SysAdmin_title'],
+                            $_POST['SysAdmin_first'],
+                            $_POST['SysAdmin_last'], 
+                            $_POST['SysAdmin_email'], 
+                            'University Lecturer', 
+                            '',
+                            '', 
+                            '1', 
+                            'Staff,SysAdmin', 
+                            self::$db
+                          );
+    
+    //create 100 guest accounts
+    for ($i=1; $i<=100; $i++) {
+    
+      UserUtils::createUser(  'user' . $i, 
+                              '', //blank password will be generated
+                              'Dr',
+                              'A',
+                              'User' . $i, 
+                              '', 
+                              'none', 
+                              '',
+                              '', 
+                              '1', 
+                              'Student', 
+                               self::$db
+                            );
+     }
+     
+     //add traing school
+     SchoolUtils::addSchool(  'Administrative and Support Units',
+                              'Training',
+                               self::$db
+                            );
+     
+     //create special modules
+     ModuleUtils::addModules(  'TRAIN', 
+                                'Training Module', 
+                                1, 
+                                'Training', 
+                                '',
+                                '', 
+                                false, 
+                                false, 
+                                false, 
+                                true,
+                                self::$db
+                             );
+    
+    ModuleUtils::addModules(   'SYSTEM', 
+                                'Online Help', 
+                                1, 
+                                'Training', 
+                                '',
+                                '', 
+                                true, 
+                                true, 
+                                true, 
+                                true,
+                                self::$db
+                             );
+                          
+    //FLUSH PRIVILEGES
+    self::$db->query("FLUSH PRIVILEGES");
+    if (self::$db->errno != 0) {
+      self::displatWarning(array('014'=>'Unable to FLUSH PRIVILEGES'));
+    }  
   }
   
   /**
@@ -124,7 +241,7 @@ Class InstallUtils {
   static function configFile() {
     $touchstone_path = str_ireplace('/install/index.php','',$_SERVER['SCRIPT_FILENAME']);
     $errors = array();
-    if(file_exists($touchstone_path . '/config/config.inc')) {
+    if (file_exists($touchstone_path . '/config/config.inc')) {
       $errors['90'] = "<p>TouchStone has already been installed! remove/rename $touchstone_path/config/config.inc to run set up again.</p>";
       $errors['90'] .= "<p>or go to the <a href=\"/touchstone\">staff interfaces</a></p>";
     }
@@ -135,29 +252,29 @@ Class InstallUtils {
   *
   */
   static function checkDirPermissions() {
-    $touchstone_path = str_ireplace('/install/index.php','',$_SERVER['SCRIPT_FILENAME']);
+    self::$touchstone_path = str_ireplace('/install/index.php','',$_SERVER['SCRIPT_FILENAME']);
     $errors = array();
     //tmp
-    if(!is_writable('/tmp')) {
+    if (!is_writable('/tmp')) {
       $errors['100'] = "TouchStone requires /tmp to exist and be writeable to the webserver";
     }
     //media
-    if(!is_writable($touchstone_path . '/media')) {
+    if (!is_writable(self::$touchstone_path . '/media')) {
       $errors['102'] = "TouchStone requires $touchstone_path/media to exist and be writeable to the webserver";
     }    
     //qti imports
-    if(!is_writable($touchstone_path . '/qti/imports')) {
+    if (!is_writable(self::$touchstone_path . '/qti/imports')) {
       $errors['103'] = "TouchStone requires $touchstone_path/qti/imports to exist and be writeable to the webserver";
     }
     //qti exports
-    if(!is_writable($touchstone_path . '/qti/exports')) {
+    if (!is_writable(self::$touchstone_path . '/qti/exports')) {
       $errors['104'] = "TouchStone requires $touchstone_path/qti/exports to exist and be writeable to the webserver";
     }
     //temp
-    if(!is_writable($touchstone_path . '/temp')) {
+    if (!is_writable(self::$touchstone_path . '/temp')) {
       $errors['105'] = "TouchStone requires $touchstone_path/temp to exist and be writeable to the webserver";
     }
-    if(count($errors) > 0) {
+    if (count($errors) > 0) {
       self::displayError($errors);  
     }
   }
@@ -172,27 +289,27 @@ Class InstallUtils {
     //apache
     $apache = explode('/',$_SERVER['SERVER_SOFTWARE']);
     $apache_min_ver = '2.0';
-    if( isset($apache[0]) and isset($apache[1]) ) {
-      if($apache[0] != 'Apache') {
+    if ( isset($apache[0]) and isset($apache[1]) ) {
+      if ($apache[0] != 'Apache') {
         $errors['200'] = "TouchStone requires Apache version $apache_min_ver" . $apache[1];
       }
       $ver = explode(' ',$apache[1]);
-      if(isset($ver[0]) and $ver[0] < $apache_min_ver) {
+      if (isset($ver[0]) and $ver[0] < $apache_min_ver) {
         $errors['201'] = "TouchStone requires Apache version $apache_min_ver or above you have " . $ver[0];
       }
     }
     
     //php
     $php_min_ver = '5.0';
-    if(phpversion() < $php_min_ver) {
+    if (phpversion() < $php_min_ver) {
       $errors['202'] = "TouchStone requires PHP version $php_min_ver or above";
     }
     $phpModules = get_loaded_extensions();
-    if( !in_array('mysqli',$phpModules) ) {
+    if ( !in_array('mysqli',$phpModules) ) {
       $errors['203'] = "TouchStone requires the PHP mysqli moduel to function please install or activate it.";
     }
     
-    if(count($errors) > 0) {
+    if (count($errors) > 0) {
       self::displayError($errors);  
     }
   }
@@ -213,9 +330,9 @@ Class InstallUtils {
   * Display errors with a nice message 
   *
   */
-  static function displayError($error = '',$message = '') {
+  static function displayError($error = '') {
     echo "<div class=\"error\">\n";
-    if(is_array($error)) {
+    if (is_array($error)) {
       foreach($error as $errCode => $message) {
         echo "\t<div>Error $errCode:: $message</div>\n";
       }
@@ -223,6 +340,20 @@ Class InstallUtils {
     echo "</div>\n";
     self::displayFooter();
     exit;
+  }
+  
+  /**
+  * Display errors with a nice message 
+  *
+  */
+  static function displayWarning($warning = '') {
+    echo "<div class=\"error\">\n";
+    if (is_array($warning)) {
+      foreach($warning as $code => $message) {
+        echo "\t<div>Warning $code:: $message</div>\n";
+      }
+    }
+    echo "</div>\n";
   }
   
   /**
@@ -264,6 +395,100 @@ Class InstallUtils {
     <?php
   }
   
+  static function writeConfigFile() {
+  
+    $config = <<<CONFIG
+<?php
+/**
+* 
+* config file
+* 
+* @author Simon Wilkinson, Anthony Brown
+* @version 1.0
+* @copyright Copyright (c) 2011 The University of Nottingham
+* @package
+*/
+
+\$ts_version = '{ts_version}';
+define('TOUCHSTONE', 'true');
+define('DIR_SEPARATOR', '/');
+\$cfg_web_root = (substr(\$_SERVER['DOCUMENT_ROOT'], -1) == DIR_SEPARATOR) ? \$_SERVER['DOCUMENT_ROOT'] : \$_SERVER['DOCUMENT_ROOT'] . DIR_SEPARATOR;
+\$protocol = 'https://';
+
+\$news_msg = '';
+
+// Local database
+  \$cfg_db_username = '{cfg_db_username}';
+  \$cfg_db_passwd   = '{cfg_db_passwd}';
+  \$cfg_db_database = '{cfg_db_database}';
+  \$cfg_db_host 	   = '{cfg_db_host}';
+
+// SMS Imports
+  \$cfg_sms_sources = array('&lt;No lookup&gt;'=>'');
+  
+//LDAP
+  \$cfg_ldap_server        = '{cfg_ldap_server}';
+  \$cfg_ldap_search_dn     = '{cfg_ldap_search_dn}';
+  \$cfg_ldap_bind_rdn      = '{cfg_ldap_bind_rdn}';
+  \$cfg_ldap_bind_password = '{cfg_ldap_bind_password}';
+  \$cfg_use_ldap           = {cfg_use_ldap};
+
+//Editor
+  \$cfg_editor_name = 'tinymce';
+  \$cfg_editor_javascript = "<script language=\"JavaScript\" src=\"/touchstone/tools/tinymce/jscripts/tiny_mce/tiny_mce.js\"></script>\n<script language=\"JavaScript\" src=\"/touchstone/tools/tinymce/jscripts/tiny_mce/tiny_config.js\"></script>\n";
+
+//Server specific configuration basaed on hostname.
+switch (strtolower(\$_SERVER['HTTP_HOST'])) {
+  case '{SERVER_NAME}':
+    \$cfg_install_type = '';
+    break;
+}
+
+//Warnings
+  \$cfg_hour_warning = 10;       // Warning for summative exams
+  error_reporting(-1);          // PHP error reporting 
+  
+//Assistance
+  \$support_email = '{support_email}';
+  \$emergency_support_numbers = {emergency_support_numbers};
+
+//Global DEBUG OUTPUT
+  if (isset(\$_SERVER['PHP_AUTH_USER']) AND \$_SERVER['PHP_AUTH_USER'] == '{SysAdmin_username}') {
+    require_once \$_SERVER['DOCUMENT_ROOT'] . 'touchstone/include/debug.inc';
+  } else {
+    \$dbclass = 'mysqli';
+  }
+  ?>
+CONFIG;
+
+    $config = str_replace('{ts_version}',self::$ts_version,$config);
+    $config = str_replace('{SysAdmin_username}','');
+    $config = str_replace('{cfg_db_host}',self::$cfg_db_host,$config);
+    $config = str_replace('{cfg_db_port}',self::$cfg_db_port,$config);
+    $config = str_replace('{cfg_db_database}',self::$cfg_db_name,$config);
+    $config = str_replace('{cfg_db_username}',self::$cfg_db_username,$config);
+    $config = str_replace('{cfg_db_passwd}',self::$cfg_db_password,$config);
+    
+    $config = str_replace('{support_email}',self::$support_email,$config);
+    $config = str_replace('{emergency_support_numbers}',self::$emergency_support_numbers = '',$config);
+    
+    $config = str_replace('{cfg_ldap_server}',self::$cfg_ldap_server,$config);
+    $config = str_replace('{cfg_ldap_search_dn}',self::$cfg_ldap_search_dn,$config);
+    $config = str_replace('{cfg_ldap_bind_rdn}',self::$cfg_ldap_bind_rdn,$config);
+    $config = str_replace('{cfg_ldap_bind_password}',self::$cfg_ldap_bind_password,$config);
+    $config = str_replace('{cfg_use_ldap}',self::$cfg_use_ldap,$config);
+    
+    $config = str_replace('{SERVER_NAME}',$_SERVER['HTTP_HOST'],$config);
+    
+    if (file_exists(self::$touchstone_path . '/config/config.inc')) {
+      rename(self::$touchstone_path . '/config/config.inc', self::$touchstone_path . '/config/config.inc.old');
+    }
+    
+    if (file_put_contents(self::$touchstone_path . '/config/config.inc', $config) === false) {
+      self::displayError(array(300=>'Could not write config file !'));
+    }
+  }    
+
 }
 
 class touchStoneTables {
@@ -1034,7 +1259,7 @@ QUERY;
   }
   
   function next() {
-    if(count($this->tableList) > 0) {
+    if (count($this->tableList) > 0) {
       return array_pop($this->tableList);
     } else {
       return false;

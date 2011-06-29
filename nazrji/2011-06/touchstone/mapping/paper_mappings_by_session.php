@@ -214,7 +214,7 @@
                 }
                 if ($i != 0) echo ', ';
                 $i++;
-                echo "<a class=\"$class\" href=\"preview_question.php?q_id=" . $q_id . "&qNo=" . $temp_array[$q_id]['qnumber'] . "\" target=\"_blank\">Q" . $temp_array[$q_id]['qnumber'] . "</a>";
+                echo "<a class=\"$class\" href=\"../question/view_question.php?q_id=" . $q_id . "&qNo=" . $temp_array[$q_id]['qnumber'] . "\" target=\"_blank\">Q" . $temp_array[$q_id]['qnumber'] . "</a>";
               }
               echo'</span></li>';
             } else {

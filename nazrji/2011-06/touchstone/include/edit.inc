@@ -66,9 +66,9 @@ function do_limitedSave($q_id, $mysqli, $userID) {
   
   $part_names = array('bloom','status');
   foreach($part_names as $section_name) {
-    if ($section_name != 'keywords') $$section_name = stripslashes($_POST["$section_name"]);
+    if ($section_name != 'keywords') $$section_name = $_POST["$section_name"];
     $old_section_name = 'old_' . $section_name;
-    $$old_section_name = stripslashes($_POST["$old_section_name"]);
+    $$old_section_name = $_POST["$old_section_name"];
     record_trackChanges('Edit Question', $q_id, $$old_section_name, $$section_name, $section_name, $userID, $changes);
   }
   
@@ -99,7 +99,7 @@ function redirect() {
 
   if (substr($_POST['paperID'],0,5) == 'list:') {
     $type = substr($_POST['paperID'],5);
-    header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/touchstone/question/list.php?keyword=" . stripslashes($_POST['keyword']) . "&team=" . $_POST['team']);
+    header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/touchstone/question/list.php?keyword=" . $_POST['keyword'] . "&team=" . $_POST['team']);
   } elseif ($_POST['calling'] == 'find') {
     header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/touchstone/question/search.php");
   } elseif ($_POST['calling'] == 'paper') {
@@ -116,7 +116,7 @@ function redirect() {
 function save_external_responses($dblink) {
   // Record responses to external examiner comments.
   for ($i=0; $i<$_POST['comment_no']; $i++) {
-    $tmp_response = stripslashes($_POST["response$i"]);
+    $tmp_response = $_POST["response$i"];
   
     $result = $dblink->prepare("UPDATE review_comments SET action=?, response=? WHERE id=?");
     $result->bind_param('ssi', $_POST["action$i"], $tmp_response, $_POST["commentid$i"]);
@@ -221,7 +221,7 @@ function hidden_edit_fields() {
   }
  
   if (isset($_GET['keyword'])) {
-    $html .= '<input type="hidden" name="keyword" value="' . str_replace('"','&quot;',stripslashes($_GET['keyword'])) . '" />';
+    $html .= '<input type="hidden" name="keyword" value="' . str_replace('"', '&quot;', $_GET['keyword']) . '" />';
   } else {
     $html .= '<input type="hidden" name="keyword" value="" />';
   }

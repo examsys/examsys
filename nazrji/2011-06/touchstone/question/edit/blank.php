@@ -250,7 +250,7 @@ while ($row = $result->fetch()) {
     <tr>
       <td valign="top" align="right" class="field"><span class="mandatory">*</span>&nbsp;Question</td>
       <td><?php echo wysiwyg_editor('oEdit1','stem',$option_text,700,250); ?>
-      <textarea style="display:none" name="old_stem" id="old_stem" cols="1" rows="1"><?php echo encodeHTML(stripslashes($option_text)); ?></textarea>
+      <textarea style="display:none" name="old_stem" id="old_stem" cols="1" rows="1"><?php echo encodeHTML($option_text); ?></textarea>
       </td>
     </tr>
     <tr>

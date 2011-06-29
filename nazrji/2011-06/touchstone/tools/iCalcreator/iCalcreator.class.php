@@ -6814,7 +6814,7 @@ class calendarComponent {
     switch( $this->format ) {
       case 'xcal':
         $string = str_replace( '\n',  $this->nl, $string);
-        $string = htmlspecialchars( strip_tags( stripslashes( urldecode ( $string ))));
+        $string = htmlspecialchars( strip_tags(  urldecode ( $string )));
         break;
       default:
         $pos = 0;

@@ -159,7 +159,7 @@ require '../include/staff_auth.inc';
   }
   
   if (isset($_POST['paper_name'])) {
-    $paper_name = stripslashes($_POST['paper_name']);
+    $paper_name = $_POST['paper_name'];
   } else {
     echo "Error, no paper name.";
     exit;

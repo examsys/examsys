@@ -895,7 +895,7 @@ a.user:hover {color:white; background-color:#000080}
 
         // Perform replacement.
         $message = "<!doctype html public \"-//w3c//dtd html 4.0 transitional//en\">\n<html><head>\n<title>$paper</title>\n<style>\nbody {font-family: Arial,sans-serif; background-color: white; color:black}</style>\n</head>\n<body>";
-        $message .= stripslashes($_POST['emailtemplate']);
+        $message .= $_POST['emailtemplate'];
         $message = str_replace("{student-title}",$user_results[$i]['title'],$message);
         $message = str_replace("{student-last-name}",$user_results[$i]['surname'],$message);
         $message = str_replace("{student-mark}",$user_results[$i]['mark'],$message);
@@ -917,7 +917,7 @@ a.user:hover {color:white; background-color:#000080}
 
         $to = $user_results[$i]['username'] . '@nottingham.ac.uk';
 
-        $subject = stripslashes($_POST['subject']);
+        $subject = $_POST['subject'];
         $subject = str_replace("{total-paper-mark}",$total_marks,$subject);
         $subject = str_replace("{class-mean-mark}",round($total_mark / $completed_no, 1),$subject);
         $subject = str_replace("{class-mean-percent}",$mean_percent,$subject);

@@ -32,7 +32,7 @@
   require '../include/mapping.inc';
 
   if ($stmt = $mysqli->prepare("SELECT background, foreground, textsize, marks_color, themecolor, labelcolor, font FROM special_needs WHERE userid=?")) {
-    $stmt->bind_param('i',$userID);
+    $stmt->bind_param('i', $userID);
     $stmt->execute();
     $stmt->store_result();
     $stmt->bind_result($bgcolor, $fgcolor, $textsize, $marks_color, $themecolor, $labelcolor, $font);
@@ -156,6 +156,16 @@
       } else {
         $survey = 0;
       }
+      
+      if (strpos($userroles,'Staff') !== false and isset($_GET['userid']) and $_GET['userid'] != $userID) {
+        // Turn on all feedback if staff and a student exam script is being reviewed.
+        $display_correct_answer = 1;
+        $display_question_mark = 1;
+        $display_students_response = 1;
+        $display_feedback = 1;
+        $hide_if_unanswered = 0;
+      }
+
       if ($userroles == 'Student') {
         if ($paper_type == 2) $latex_needed = 0;  // Students get no feedback for summative exams so don't load the Latex library
 
@@ -255,7 +265,7 @@ table {font-size:100%}
 .theme {margin-left:15px;font-size:150%;font-weight:bold;color:<?php echo $themecolor; ?>}
 .objH {font-weight:bold;color:<?php echo $themecolor; ?>}
 .notes {color:<?php echo $labelcolor; ?>}
-.feedback {font-family:<?php echo $font; ?>,sans-serif;font-style:italic;color:<?php echo $labelcolor; ?>;white-space: pre}
+.feedback {font-family:<?php echo $font; ?>,sans-serif; font-style:italic; color:<?php echo $labelcolor; ?>}
 .label {color:<?php echo $labelcolor; ?>}
 .mk {background-color:#FFFF00;font-weight:bold}
 .answerindent {margin-left:17px;margin-right:15px}
@@ -342,9 +352,9 @@ table {font-size:100%}
         echo '<blockquote><p><img src="../artwork/thankyou.gif" width="238" height="76" alt="Thank You" /></p><p>Thank you for completing <strong>' . $paper_title . '</strong>. Your responses have been recorded.</p><br />';
         if ($paper_postscript != '') echo "<p>$paper_postscript</p>\n";
         echo '</blockquote>';
-        echo '<table cellpadding="0" cellspacing="1" width="100%" border="0">';
-        echo "<tr>\n<td width=\"21\" style=\"border-bottom:dotted red 1px; font-size:90%; font-weight:bold\">&nbsp;</td><td style=\"border-bottom: dotted red 1px; color:red; font-size:90%; font-weight:bold\">Student view ends here&nbsp;</td></tr>\n";
-        echo "<tr>\n<td width=\"21\">&nbsp;</td><td style=\"color:red; font-size:90%\"><strong>Staff only view below here </strong>(students will not see this)</td></tr>\n";
+        echo '<table cellpadding="0" cellspacing="0" width="100%" border="0">';
+        echo "<tr>\n<td width=\"21\" style=\"font-weight:bold\">&nbsp;</td><td style=\"color:#800000; font-size:90%; font-weight:bold\">Student view ends here&nbsp;</td></tr>\n";
+        echo "<tr style=\"height:55px; background-image:url(../artwork/no_questions_gradient.png); repeat:repeat-x\">\n<td width=\"21\">&nbsp;</td><td style=\"color:#800000; font-size:90%\"><strong>Staff only view below here </strong>(students will not see this)</td></tr>\n";
         echo '</table>';
       }
     }
@@ -1947,11 +1957,11 @@ table {font-size:100%}
           echo '<script language="JavaScript">';
           if ($tmp_display_correct_answer == '0' or $tmp_display_students_response == '0') {
           	if(!empty($paper[$question]['user_answer'])) {
-	            $paper[$question]['user_answer'] = str_replace('"','&#034;',stripslashes($paper[$question]['user_answer']));
-	            $paper[$question]['user_answer'] = str_replace("'",'&#039;',stripslashes($paper[$question]['user_answer']));
+	            $paper[$question]['user_answer'] = str_replace('"','&#034;',$paper[$question]['user_answer']);
+	            $paper[$question]['user_answer'] = str_replace("'",'&#039;',$paper[$question]['user_answer']);
           	}
-            $paper[$question]['correct'][0] = str_replace('"','&#034;',stripslashes($paper[$question]['correct'][0]));
-            $paper[$question]['correct'][0] = str_replace("'",'&#039;',stripslashes($paper[$question]['correct'][0]));
+            $paper[$question]['correct'][0] = str_replace('"','&#034;',$paper[$question]['correct'][0]);
+            $paper[$question]['correct'][0] = str_replace("'",'&#039;',$paper[$question]['correct'][0]);
 ?> 
       function swfLoaded<?php echo $question_no; ?>(message) {
         var num = message.substring(5,message.length);
@@ -1978,11 +1988,11 @@ table {font-size:100%}
     }
 
     if (isset($paper[$question]['user_answer'])) {
-      $paper[$question]['user_answer'] = str_replace('"','&#034;',stripslashes($paper[$question]['user_answer']));
-      $paper[$question]['user_answer'] = str_replace("'",'&#039;',stripslashes($paper[$question]['user_answer']));
+      $paper[$question]['user_answer'] = str_replace('"','&#034;',$paper[$question]['user_answer']);
+      $paper[$question]['user_answer'] = str_replace("'",'&#039;',$paper[$question]['user_answer']);
     }
-    $paper[$question]['correct'][0] = str_replace('"','&#034;',stripslashes($paper[$question]['correct'][0]));
-    $paper[$question]['correct'][0] = str_replace("'",'&#039;',stripslashes($paper[$question]['correct'][0]));
+    $paper[$question]['correct'][0] = str_replace('"','&#034;',$paper[$question]['correct'][0]);
+    $paper[$question]['correct'][0] = str_replace("'",'&#039;',$paper[$question]['correct'][0]);
 ?> 
     function swfLoaded<?php echo $question_no; ?>(message) {
       var num = message.substring(5,message.length);
@@ -2040,7 +2050,7 @@ table {font-size:100%}
           foreach($module_list as $thisModuleid) {
             if(isset($objByModule[$thisModuleid])) {
               foreach($objByModule[$thisModuleid] as $id => $mappingData) {
-                echo "<li>" . stripslashes($mappingData['content']);
+                echo "<li>" . $mappingData['content'];
                 if ($mappingData['session']['source_url'] != '') echo "&nbsp;&nbsp;<a target=\"_blank\" href=\"" . $mappingData['session']['source_url'] . "\"><img src=\"../artwork/small_link.png\" width=\"12\" height=\"12\" border=\"0\" /></a>&nbsp;<a href=\"" . $mappingData['session']['source_url'] . "\" target=\"_blank\">" . $mappingData['session']['title'] . "</a>";
                 echo "</li>\n";
               }
@@ -2076,7 +2086,7 @@ table {font-size:100%}
     }
     echo "</table>\n";
 
-    // Division by zero check.
+    // Marks summary
     if ($total_marks > 0 and $survey == 0) {
       echo '<br /><div align="center"><table cellpadding="4" cellspacing="0" border="0" width="90%" style="background-color:#E4EEFC; border:1px solid #B5C4DF">';
       echo '<tr><td><table cellpadding="2" cellspacing="0" border="0" style="text-align:left">';
@@ -2089,7 +2099,7 @@ table {font-size:100%}
         if (isset($_GET['percent'])) {
           echo $_GET['percent'];
         } else {
-          if ((($user_mark-$total_random_mark)/($total_marks-$total_random_mark))*100 > 0) {
+          if ( ($total_marks-$total_random_mark) > 0 and (($user_mark-$total_random_mark)/($total_marks-$total_random_mark))*100 > 0) {
             echo number_format((($user_mark-$total_random_mark)/($total_marks-$total_random_mark))*100, 1, '.', ',');
           } else {
             echo '0';

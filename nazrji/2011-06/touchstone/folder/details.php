@@ -159,7 +159,7 @@ function displayPaperIcon($row) {
 
     if ($duplicate_name == 0) {
       if ($folder_query = $mysqli->prepare("INSERT INTO folders VALUES (NULL,$userID, ?,?,NOW(),'yellow',NULL)")) {
-        $folder_query->bind_param('ss', stripslashes($new_folder_name), $_GET['newteam']);
+        $folder_query->bind_param('ss', $new_folder_name, $_GET['newteam']);
         $folder_query->execute();
         $folder_query->close();
       } else {
@@ -287,7 +287,7 @@ if ($folder != '') {
     $tmp_string = " OR team_name IN ('" . implode("','",$teams) . "')";
   }
 
-  $folder_details = $mysqli->query("SELECT id, name, team_name, color FROM folders WHERE (ownerID=$userID $tmp_string) AND name LIKE \"$folder_name;%\" AND deleted IS NULL ORDER BY name, id");
+  $folder_details = $mysqli->query("SELECT id, name, team_name, color FROM folders WHERE (ownerID=$userID $tmp_string) AND name LIKE \"" .  mysql_real_escape_string($folder_name) . ";%\" AND deleted IS NULL ORDER BY name, id");
   while ($row = $folder_details->fetch_assoc()) {
     $display_name = str_replace("$folder_name;","",$row['name']);
     if (substr_count($display_name,';') == 0) {
@@ -303,7 +303,7 @@ if ($folder != '') {
 
 // New folder.
 if (isset($_GET['newfolder']) AND $_GET['newfolder'] == 'y' AND !isset($_POST['submit'])) {
-  echo "<div class=\"f\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"width:60px\" align=\"center\"><img src=\"../artwork/folder.png\" width=\"48\" height=\"48\" alt=\"Folder\" border=\"0\" align=\"middle\" /></td><td><input type=\"text\" size=\"30\" name=\"folder_name\" value=\"New Folder\" onkeypress=\"if (event.keyCode == 38 || event.keyCode == 59 || event.keyCode == 63 || event.keyCode == 64 || event.keyCode == 94 || event.keyCode == 126) illegalChar(event.keyCode);\" /><input type=\"hidden\" name=\"newteam\" value=\"" . $_GET['newteam'] . "\" /><input type=\"submit\" name=\"submit\" value=\"Create\" /></td></tr></table></div>\n";
+  echo "<div class=\"f\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"width:60px\" align=\"center\"><img src=\"../artwork/yellow_folder.png\" width=\"48\" height=\"48\" alt=\"Folder\" border=\"0\" align=\"middle\" /></td><td><input type=\"text\" size=\"30\" name=\"folder_name\" value=\"New Folder\" onkeypress=\"if (event.keyCode == 38 || event.keyCode == 59 || event.keyCode == 63 || event.keyCode == 64 || event.keyCode == 94 || event.keyCode == 126) illegalChar(event.keyCode);\" /><input type=\"hidden\" name=\"newteam\" value=\"" . $_GET['newteam'] . "\" /><input type=\"submit\" name=\"submit\" value=\"Create\" /></td></tr></table></div>\n";
 }
 
 // Get current owner papers.
