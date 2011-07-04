@@ -465,9 +465,10 @@ if (isset($_GET['change_screen'])) {
   $old_scenario  = '';
   $total_random_mark = 0;
   $total_marks  = 0;
+  $options = 0;
   
   // Get the questions (if any).
-  $result = $mysqli->prepare("SELECT theme, q_group, ownerID, p_id, q_id, q_type, screen, leadin, scenario, option_text, correct, score_method, q_media, q_media_width, q_media_height, marks, DATE_FORMAT(last_edited,'%d/%m/%y') AS display_last_edited, display_pos, status, correct_fback, feedback_right, locked FROM (papers, questions, options) WHERE paper=? AND papers.question=questions.q_id AND questions.q_id=options.o_id ORDER BY screen, display_pos, o_id");
+  $result = $mysqli->prepare("SELECT theme, q_group, ownerID, p_id, q_id, q_type, screen, leadin, scenario, option_text, correct, score_method, q_media, q_media_width, q_media_height, marks, DATE_FORMAT(last_edited,'%d/%m/%y') AS display_last_edited, display_pos, status, correct_fback, feedback_right, locked FROM (papers, questions) LEFT JOIN options ON questions.q_id = options.o_id WHERE paper=? AND papers.question=questions.q_id ORDER BY screen, display_pos, o_id");
   $result->bind_param('i', $paperID);
   $result->execute();
   $result->store_result();
@@ -488,6 +489,10 @@ if (isset($_GET['change_screen'])) {
     }
 
     if ($old_q_id != $q_id or $old_display_pos != $display_pos) {
+      if($old_display_pos != -1) {
+        $temp_array[$row_no2]['options'] = $options;
+      }
+      $options = 0;
       if ($old_q_type == 'random') {
         $temp_array[$row_no2]['original_marks'] = random_qMarks($temp_array[$row_no2]['random']);
         if ($temp_array[$row_no2]['status'] != 'Experimental') {
@@ -594,10 +599,12 @@ if (isset($_GET['change_screen'])) {
     $old_q_media_height = $q_media_height;
     $old_option_text[] = $option_text;
     $old_marks = $marks;
+    if(!empty($option_text)) $options++;
   }
   $result->close();
 
   if ($row_no > 0) {
+    $temp_array[$row_no]['options'] = $options;
     if ($old_q_type == 'random') {
       $temp_array[$row_no2]['original_marks'] = random_qMarks($temp_array[$row_no2]['random']);
       if ($temp_array[$row_no2]['status'] != 'Experimental') {
@@ -723,6 +730,7 @@ if (isset($_GET['change_screen'])) {
   $marks_error = false;
   $paper_warnings = array();
   for ($x=1; $x<=$row_no; $x++) {
+    if($temp_array[$x]['options'] == 0) $temp_array[$x]['warnings'] .= 'No options defined for question';
     if ($temp_array[$x]['status'] == 'Incomplete') $paper_warnings['Incomplete'][] = $question_number + 1;
     if ($temp_array[$x]['status'] == 'Beta') $paper_warnings['Beta'][] = $question_number + 1;
     if ($temp_array[$x]['status'] == 'Retired') $paper_warnings['Retired'][] = $question_number + 1;

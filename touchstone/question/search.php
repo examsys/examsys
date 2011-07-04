@@ -241,9 +241,9 @@ if (isset($_POST['submit'])) {
   }
   
   if ($keywordsSQL == '') {
-    $result = $mysqli->prepare("SELECT DISTINCT option_text, title, initials, surname, q_type, q_id, theme, scenario_plain, leadin_plain, DATE_FORMAT(last_edited,'%d/%m/%y') AS last_edited, ownerID, locked FROM (questions, options, users) WHERE questions.ownerID=users.id AND questions.q_id=options.o_id $search_string $team_string $user_string $status_string $locked_string $last_edited $q_type $bloom AND deleted IS NULL ORDER BY leadin_plain, o_id");
+    $result = $mysqli->prepare("SELECT DISTINCT option_text, title, initials, surname, q_type, q_id, theme, scenario_plain, leadin_plain, DATE_FORMAT(last_edited,'%d/%m/%y') AS last_edited, ownerID, locked FROM (questions, users) LEFT JOIN options ON questions.q_id = options.o_id WHERE questions.ownerID=users.id $search_string $team_string $user_string $status_string $locked_string $last_edited $q_type $bloom AND deleted IS NULL ORDER BY leadin_plain, o_id");
   } else {
-    $result = $mysqli->prepare("SELECT DISTINCT option_text, title, initials, surname, q_type, questions.q_id, theme, scenario_plain, leadin_plain, DATE_FORMAT(last_edited,'%d/%m/%y') AS last_edited, ownerID, locked FROM (questions, options, users, keywords_question) WHERE questions.q_id=keywords_question.q_id $keywordsSQL AND questions.ownerID=users.id AND questions.q_id=options.o_id $search_string $team_string $user_string $status_string $locked_string $last_edited $q_type $bloom AND deleted IS NULL ORDER BY leadin_plain, o_id");
+    $result = $mysqli->prepare("SELECT DISTINCT option_text, title, initials, surname, q_type, questions.q_id, theme, scenario_plain, leadin_plain, DATE_FORMAT(last_edited,'%d/%m/%y') AS last_edited, ownerID, locked FROM (questions, users, keywords_question) LEFT JOIN options ON questions.q_id = options.o_id WHERE questions.q_id=keywords_question.q_id $keywordsSQL AND questions.ownerID=users.id $search_string $team_string $user_string $status_string $locked_string $last_edited $q_type $bloom AND deleted IS NULL ORDER BY leadin_plain, o_id");
   }
   array_unshift($variables, $params);
   foreach($variables as $key => $value) $tmp[$key] = &$variables[$key];
