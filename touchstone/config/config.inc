@@ -51,6 +51,7 @@ switch (strtolower($_SERVER['HTTP_HOST'])) {
     $cfg_install_type = '(dev)';
     break;
   case 'touchstone.local':
+  case 'touchstone.local:8080':
     $cfg_install_type = '(local)';
   	$cfg_db_passwd   = 'touchstone';
     break;
@@ -58,7 +59,7 @@ switch (strtolower($_SERVER['HTTP_HOST'])) {
 
 //Warnings
   $cfg_hour_warning = 10;       // Warning for summative exams
-  error_reporting(0);           // PHP error reporting 
+  error_reporting(-1);           // PHP error reporting 
   
 //Assistance
   $support_email = 'learning-team-support@nottingham.ac.uk';
