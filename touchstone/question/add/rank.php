@@ -73,61 +73,93 @@ if (isset($_POST['addbank']) or isset($_POST['addpaper'])) {
 <title>New Ranking Question<?php echo " $cfg_install_type"; ?></title>
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <link rel="stylesheet" href="../../css/add_edit.css" type="text/css">
-<script language="JavaScript">
-  var cancel = 0;
-  function formCancel() {
-    cancel = 1;
-  }
-
-  function checkForm() {
-
-    if (cancel != 0) {
-      return true;
-    }
-    if (document.getElementById('leadin').value == "" || document.getElementById('leadin').value == "&nbsp;" || document.getElementById('leadin').value == "<p>&nbsp;</p>" || document.getElementById('leadin').value == "<div>&nbsp;</div>" || document.getElementById('leadin').value == "<br />") {
-      alert ("Please enter a Lead-in for the question.");
-      return false;
-    }
-    if(submit != '') {
-      var modules = document.getElementById('modules').value;
-      var modulesArray = modules.split(',');
-      for(var j = 0; j < modulesArray.length; j++) {
-        var objcount = document.getElementById(modulesArray[j] + '_objectiveCount').value;
-        for(var i = 0; i < objcount; i++) {
-          var cb = document.getElementById(modulesArray[j] + 'obj' + i).checked;
-          if(cb == true) {
-            submit = '';
-            return confirm("WARNING: All mappings will be lost if this question is not added to the paper !");
-          }
-        }
-      }
-      submit = '';
-    }
-    return true;
-  }
-
-  var submit = '';
-  function AddToBank() {
-    submit = 'AddToBank';
-  }
-  function showTab(tabID) {
-    if (tabID == 'editortab') {
-      document.getElementById('editortab').style.display = 'block';
-      document.getElementById('mappingtab').style.display = 'none';
-    } else if (tabID == 'mappingtab') {
-      document.getElementById('editortab').style.display = 'none';
-      document.getElementById('mappingtab').style.display = 'block';
-    }
-  }
-</script>
 <script language="JavaScript" src="../../javascript/mapping_tab.js"></script>
 <script language="JavaScript" src="../../javascript/metadata.js"></script>
 <?php echo $cfg_editor_javascript; ?>
 <script language="JavaScript" src="../../javascript/staff_help.js"></script>
+<script language="JavaScript" src="../../javascript/jquery-1.6.1.min.js"></script>
+<script language="JavaScript">
+$(function() { $('#add_form').submit(checkForm); });
+
+var cancel = 0;
+function formCancel() {
+  cancel = 1;
+}
+
+function checkForm() {
+
+  if (cancel != 0) {
+    return true;
+  }
+
+<?php
+  if($cfg_editor_name == 'tinymce') {
+    echo "\t tinyMCE.triggerSave();";
+  }
+?>
+      
+  var editorText = $('#leadin').val();
+  if (editorText == "" || editorText == "&nbsp;" || editorText == "<p>&nbsp;</p>" || editorText == "<p><br/></p>" || editorText == "<div>&nbsp;</div>" || editorText == "<br />") {
+    alert ("Please enter a Lead-in for the question.");
+    return false;
+  }
+  
+  // Check all options with text have a value in the drop-down
+  var missingAnswers = [];
+  $('.rankoption').each(function(index) {
+		if($(this).val() != '' && $(this).nextAll('.rankanswer').val() == '') {
+		  missingAnswers[missingAnswers.length] = index + 1;
+		}
+  });
+  
+  if (missingAnswers.length > 0) {
+      var answers = '';
+      var plural = (missingAnswers.length > 1) ? 's' : '';
+      for (i = 0; i < missingAnswers.length; i++) {
+        if (i > 0 && i == missingAnswers.length - 1) answers += ' and ';
+        answers += missingAnswers[i];
+        if (i < missingAnswers.length - 2) answers += ', ';
+      }
+      alert('Missing answer' + plural + ' for option' + plural + ' ' + answers + '. Please select a correct answer for all options. Use \'N/A\' for distractors.');
+      return false;
+  }
+
+  if(submit != '') {
+    var modules = document.getElementById('modules').value;
+    var modulesArray = modules.split(',');
+    for(var j = 0; j < modulesArray.length; j++) {
+      var objcount = document.getElementById(modulesArray[j] + '_objectiveCount').value;
+      for(var i = 0; i < objcount; i++) {
+        var cb = document.getElementById(modulesArray[j] + 'obj' + i).checked;
+        if(cb == true) {
+          submit = '';
+          return confirm("WARNING: All mappings will be lost if this question is not added to the paper !");
+        }
+      }
+    }
+    submit = '';
+  }
+  return true;
+}
+
+var submit = '';
+function AddToBank() {
+  submit = 'AddToBank';
+}
+function showTab(tabID) {
+  if (tabID == 'editortab') {
+    document.getElementById('editortab').style.display = 'block';
+    document.getElementById('mappingtab').style.display = 'none';
+  } else if (tabID == 'mappingtab') {
+    document.getElementById('editortab').style.display = 'none';
+    document.getElementById('mappingtab').style.display = 'block';
+  }
+}
+</script>
 </head>
 
 <body onload="document.add_form.theme.focus();">
-<form name="add_form" method="post" onsubmit="return checkForm()" action="<?php echo $_SERVER['PHP_SELF']; ?>" enctype="multipart/form-data">
+<form id="add_form" name="add_form" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>" enctype="multipart/form-data">
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
   <tr height="70" style="background-color:#DFECFF">
     <td width="400">
@@ -211,9 +243,9 @@ if (isset($_POST['addbank']) or isset($_POST['addpaper'])) {
           echo "<span class=\"mandatory\">*</span>&nbsp;";
         }
         echo "<strong>" . $option_no . ".&nbsp;</strong></td>";
-        echo "<td><input type=\"text\" name=\"option_text" . $option_no . "\" size=\"95\" />&nbsp;";
+        echo "<td><input type=\"text\" name=\"option_text" . $option_no . "\" size=\"95\" class=\"rankoption\" />&nbsp;";
 
-        echo "<select name=\"answer" . $option_no . "\">\n<option value=\"0\"></option>\n";
+        echo "<select name=\"answer" . $option_no . "\" class=\"rankanswer\">\n<option value=\"\"></option>\n";
         echo "<option value=\"0\">N/A</option>\n";
         for ($possibility=1; $possibility <=15; $possibility++) {
           echo "<option value=\"" . $possibility . "\">" . $possibility;

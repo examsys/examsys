@@ -238,13 +238,22 @@ if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-   <html>
-   <head>
+<html>
+<head>
    <title>Edit Rank Question<?php echo " $cfg_install_type"; ?></title>
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
    <link rel="stylesheet" href="../../css/add_edit.css" type="text/css">
 
+   <script language="JavaScript" src="../../javascript/edit_tabs.js"></script>
+   <script language="JavaScript" src="../../javascript/metadata.js"></script>
+   <script language="JavaScript" src="../../javascript/mapping_tab.js"></script>
+   <?php echo $cfg_editor_javascript; ?>
+   <script language="JavaScript" src="../../javascript/staff_help.js"></script>
+   <script language="JavaScript" src="../../javascript/jquery-1.6.1.min.js"></script>
    <script language="JavaScript">
+
+   $(function() { $('#edit_form').submit(checkForm); });
+   
   var cancel = 0;
   function formCancel() {
     cancel = 1;
@@ -260,26 +269,21 @@ if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
       echo "\t tinyMCE.triggerSave();";
     }
     ?>
-    if (document.getElementById('leadin').value == "" || document.getElementById('leadin').value == "&nbsp;" || document.getElementById('leadin').value == "<p>&nbsp;</p>" || document.getElementById('leadin').value == "<div>&nbsp;</div>" || document.getElementById('leadin').value == "<br />") {
+    
+    var editorText = $('#leadin').val();
+    if (editorText == "" || editorText == "&nbsp;" || editorText == "<p>&nbsp;</p>" || editorText == "<div>&nbsp;</div>" || editorText == "<br />") {
        alert ("Please enter a Leadin for the question.");
        return false;
      }
 
     // Check all options with text have a value in the drop-down
     var missingAnswers = [];
-    for (var i = 1; i <= 20; i++) {
-    	var text;
-    	var ddl;
-
-    	text = document.getElementById('new_option_text' + i);
-    	if (text != null) {
-				ddl = document.getElementById('answer' + i);
-				if (ddl != null && ddl.options[ddl.selectedIndex].value == '') {
-					missingAnswers[missingAnswers.length] = i;
-				}
-    	}
-    }
-
+    $('.rankoption').each(function(index) {
+			if($(this).val() != '' && $(this).nextAll('.rankanswer').val() == '') {
+			  missingAnswers[missingAnswers.length] = index + 1;
+			}
+    });
+    
     if (missingAnswers.length > 0) {
         var answers = '';
         var plural = (missingAnswers.length > 1) ? 's' : '';
@@ -295,11 +299,6 @@ if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
     return true;
    }
    </script>
-   <script language="JavaScript" src="../../javascript/edit_tabs.js"></script>
-   <script language="JavaScript" src="../../javascript/metadata.js"></script>
-   <script language="JavaScript" src="../../javascript/mapping_tab.js"></script>
-   <?php echo $cfg_editor_javascript; ?>
-   <script language="JavaScript" src="../../javascript/staff_help.js"></script>
    </head>
 
    <body style="background-color:white">
@@ -313,7 +312,7 @@ if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
    while ($row = $result->fetch()) {
      if ($option_no == 1) {
      ?>
-<form name="edit_form" method="post" onsubmit="return checkForm()" action="<?php echo $_SERVER['PHP_SELF'] . '?q_id=' . $q_id; ?>" enctype="multipart/form-data">
+<form id="edit_form" name="edit_form" method="post" action="<?php echo $_SERVER['PHP_SELF'] . '?q_id=' . $q_id; ?>" enctype="multipart/form-data">
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
   <tr height="70" style="background-color:#DFECFF">
     <td width="400">
@@ -391,8 +390,8 @@ if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
          }
 
          echo "<tr>\n<td style=\"text-align: right\"><strong>" . $option_no . ".&nbsp;</strong></td>\n";
-         echo "<td><input type=\"text\" name=\"new_option_text" . $option_no . "\" id=\"new_option_text" . $option_no . "\" size=\"73\" style=\"width:650px\" value=\"" . htmlentities($option_text,ENT_NOQUOTES,'UTF-8') . "\" /><input type=\"hidden\" name=\"old_option_text" . $option_no . "\" value=\"" . htmlentities($option_text,ENT_NOQUOTES,'UTF-8') . "\" /><input type=\"hidden\" name=\"optionid$option_no\" value=\"" . $id_num . "\" />&nbsp;";
-         echo "<input type=\"hidden\" name=\"old_answer" . $option_no . "\" value=\"$correct\" /><select name=\"answer" . $option_no . "\" id=\"answer" . $option_no . "\">\n<option value=\"\"></option>\n";
+         echo "<td><input type=\"hidden\" name=\"old_option_text" . $option_no . "\" value=\"" . htmlentities($option_text,ENT_NOQUOTES,'UTF-8') . "\" /><input type=\"hidden\" name=\"optionid$option_no\" value=\"" . $id_num . "\" /><input type=\"text\" name=\"new_option_text" . $option_no . "\" id=\"new_option_text" . $option_no . "\" size=\"73\" style=\"width:650px\" value=\"" . htmlentities($option_text,ENT_NOQUOTES,'UTF-8') . "\" class=\"rankoption\" />&nbsp;";
+         echo "<input type=\"hidden\" name=\"old_answer" . $option_no . "\" value=\"$correct\" /><select name=\"answer" . $option_no . "\" id=\"answer" . $option_no . "\" class=\"rankanswer\">\n<option value=\"\"></option>\n";
          if ($correct == '0') {
            echo "<option value=\"0\" selected>N/A</option>\n";
          } else {
@@ -420,8 +419,8 @@ if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
        }
        for ($i=$option_no; $i<=20;$i++) {
   	    $hidden = 'style="display:none"'; 
-        echo "<tr class=\"option\" $hidden><td style=\"text-align:right\"><strong>" . $i . ".&nbsp;</strong></td>\n<td><input type=\"text\" name=\"new_option_text" . $i. "\" size=\"73\" style=\"width:650px\" value=\"\" /><input type=\"hidden\" name=\"old_option_text" . $i. "\" value=\"\" />&nbsp;";
-         echo "<select name=\"answer" . $i . "\">\n<option value=\"\"></option>\n";
+        echo "<tr class=\"option\" $hidden><td style=\"text-align:right\"><strong>" . $i . ".&nbsp;</strong></td>\n<td><input type=\"hidden\" name=\"old_option_text" . $i. "\" value=\"\" /><input type=\"text\" name=\"new_option_text" . $i. "\" size=\"73\" style=\"width:650px\" value=\"\" class=\"rankoption\" />&nbsp;";
+         echo "<select name=\"answer" . $i . "\" class=\"rankanswer\">\n<option value=\"\"></option>\n";
          echo "<option value=\"0\">N/A</option>\n";
          for ($possibility=1; $possibility <=20; $possibility++) {
            echo "<option value=\"" . $possibility . "\">" . $possibility;
