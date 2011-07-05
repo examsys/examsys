@@ -75,9 +75,9 @@
   $module_block = false;
   $block_id=0;
   if (strpos($userroles,'SysAdmin') !== false) {
-    $results = $mysqli->query("SELECT DISTINCT faculty, schools.school, moduleid, fullname FROM schools LEFT JOIN modules ON schools.school=modules.school ORDER BY faculty, school, moduleid");
+    $results = $mysqli->query("SELECT DISTINCT faculty, schools.school, moduleid, fullname FROM schools LEFT JOIN modules ON schools.id=modules.schoolid ORDER BY faculty, school, moduleid");
   } else {
-    $results = $mysqli->query("SELECT DISTINCT faculty, schools.school, moduleid, fullname FROM schools LEFT JOIN modules ON schools.school=modules.school WHERE faculty='$faculty' ORDER BY school, moduleid");
+    $results = $mysqli->query("SELECT DISTINCT faculty, schools.school, moduleid, fullname FROM (schools, admin_access, modules) WHERE schools.id=modules.schoolid AND schools.id=admin_access.schools_id AND admin_access.userID=$userID ORDER BY school, moduleid");
   }
   while ($row = $results->fetch_assoc()) {
     if ($old_faculty != $row['faculty'] or $old_school != $row['school']) {
@@ -88,8 +88,6 @@
     }
     if ($old_faculty != $row['faculty']) {
       echo "<table border=\"0\" style=\"padding-top:10px; padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>" . $row['faculty'] . "</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
-
-      //echo "<br />\n<div class=\"divider\">" . $row['faculty'] . "</div>\n<img src=\"../artwork/divider_bar.gif\" width=\"290\" height=\"1\" alt=\"Divider Bar\" /><br />\n";
     }
     if ($old_school != $row['school']) {
       if ($row['moduleid'] == '') {
@@ -116,17 +114,15 @@
 ?>
 </td><td style="vertical-align:top; width:50%">
 <?php
-  //echo "<br />\n<div class=\"divider\">By Module Code</div>\n<img src=\"../artwork/divider_bar.gif\" width=\"290\" height=\"1\" alt=\"Divider Bar\" /><br />\n";
   echo "<table border=\"0\" style=\"padding-top:10px; padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>By Module Code</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
 
   $old_faculty = '';
   $old_letter = '';
   $module_block = false;
-  //$block_id=0;
   if (strpos($userroles,'SysAdmin') !== false) {
-    $results = $mysqli->query("SELECT DISTINCT faculty, schools.school, moduleid, fullname FROM schools LEFT JOIN modules ON schools.school=modules.school ORDER BY moduleid");
+    $results = $mysqli->query("SELECT DISTINCT faculty, schools.school, moduleid, fullname FROM schools LEFT JOIN modules ON schools.id=modules.schoolid ORDER BY moduleid");
   } else {
-    $results = $mysqli->query("SELECT DISTINCT faculty, schools.school, moduleid, fullname FROM schools LEFT JOIN modules ON schools.school=modules.school WHERE faculty='$faculty' ORDER BY moduleid");
+    $results = $mysqli->query("SELECT DISTINCT faculty, schools.school, moduleid, fullname FROM (schools, admin_access, modules) WHERE schools.id=modules.schoolid AND schools.id=admin_access.schools_id AND admin_access.userID=$userID ORDER BY moduleid");
   }
   while ($row = $results->fetch_assoc()) {
     if ($old_letter != substr($row['moduleid'],0,1)) {

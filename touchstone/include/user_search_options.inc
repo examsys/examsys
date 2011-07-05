@@ -24,6 +24,8 @@
 * @package
 */
 
+require_once '../classes/schoolutils.class.php';
+
 if (isset($_GET['moduleID'])) {
   $moduleID = $_GET['moduleID'];
 } else {
@@ -107,7 +109,8 @@ if (isset($_GET['calendar_year'])) {
   if (strpos($userroles,'SysAdmin') !== false) {
     $search_results = $mysqli->query("SELECT DISTINCT moduleid, fullname FROM modules, schools ORDER BY moduleID");
   } elseif (strpos($userroles,'Admin') !== false) {
-    $search_results = $mysqli->query("SELECT DISTINCT moduleid, fullname FROM modules, schools WHERE modules.school=schools.school AND faculty='$faculty' ORDER BY moduleID");
+    $schoolIDs = implode(',', SchoolUtils::getAdminSchools($userID, $mysqli));
+    $search_results = $mysqli->query("SELECT DISTINCT moduleid, fullname FROM modules WHERE schoolid IN ($schoolIDs) ORDER BY moduleID");
   } else {
     $search_results = $mysqli->query("SELECT DISTINCT moduleid, fullname FROM modules WHERE moduleid IN($team_sql) ORDER BY moduleID");
   }
