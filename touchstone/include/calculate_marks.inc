@@ -214,7 +214,7 @@ function qRandomMarks($question_type, $tmp_exclude, $option_text, $correct, $sco
           $i++;
         }
       }
-      $random_mark += ($placeholders / ($label_count - $excluded_no));
+      $random_mark += (($label_count - $excluded_no) == 0) ? 0 : ($placeholders / ($label_count - $excluded_no));
       break;
     case 'mcq':
       if (substr($tmp_exclude,0,1) == '0') {
