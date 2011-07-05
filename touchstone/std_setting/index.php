@@ -360,7 +360,7 @@
           $cut_marks += $ebel_marks['HN'] * $ebel_percents['HN'] * 100;
           $review_total = $ebel_marks['EE'] + $ebel_marks['EI'] + $ebel_marks['EN'] + $ebel_marks['ME'] + $ebel_marks['MI'] + $ebel_marks['MN'] + $ebel_marks['HE'] + $ebel_marks['HI'] + $ebel_marks['HN'];
          
-          $pass_score = ($cut_marks / ($total_marks  * 100)) * 100;
+          $pass_score = ($total_marks == 0) ? $total_marks : ($cut_marks / ($total_marks  * 100)) * 100;
           $pass_score = round($pass_score,1);
 
           $cut_marks2 = 0.0;
@@ -373,7 +373,7 @@
           $cut_marks2 += $ebel_marks['HE'] * $ebel_percents['HE2'] * 100;
           $cut_marks2 += $ebel_marks['HI'] * $ebel_percents['HI2'] * 100;
           $cut_marks2 += $ebel_marks['HN'] * $ebel_percents['HN2'] * 100;
-          $distinction_score = (($cut_marks2 / ($total_marks * 100)) * 100);
+          $distinction_score = ($total_marks == 0) ? $total_marks : (($cut_marks2 / ($total_marks * 100)) * 100);
           $distinction_score = round($distinction_score,1);
         }
         if($old_group_review == 'No') $no_reviews++;
@@ -458,7 +458,7 @@
       $cut_marks += $ebel_marks['HI'] * $ebel_percents['HI'] * 100;
       $cut_marks += $ebel_marks['HN'] * $ebel_percents['HN'] * 100;
       $review_total = $ebel_marks['EE'] + $ebel_marks['EI'] + $ebel_marks['EN'] + $ebel_marks['ME'] + $ebel_marks['MI'] + $ebel_marks['MN'] + $ebel_marks['HE'] + $ebel_marks['HI'] + $ebel_marks['HN'];
-      $pass_score = (($cut_marks / ($total_marks * 100)) * 100);
+      $pass_score = ($total_marks == 0) ? $total_marks : (($cut_marks / ($total_marks * 100)) * 100);
       $pass_score = round($pass_score,1);
 
       $cut_marks2 = 0.0;
@@ -471,7 +471,7 @@
       $cut_marks2 += $ebel_marks['HE'] * $ebel_percents['HE2'] * 100;
       $cut_marks2 += $ebel_marks['HI'] * $ebel_percents['HI2'] * 100;
       $cut_marks2 += $ebel_marks['HN'] * $ebel_percents['HN2'] * 100;
-      $distinction_score = (($cut_marks2 / ($total_marks * 100)) * 100);
+      $distinction_score = ($total_marks == 0) ? $total_marks : (($cut_marks2 / ($total_marks * 100)) * 100);
       $distinction_score = round($distinction_score,1);
     }
     if($old_group_review == 'No') $no_reviews++;
