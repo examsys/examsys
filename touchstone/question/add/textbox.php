@@ -271,8 +271,8 @@ if (isset($_POST['addbank']) or isset($_POST['addpaper'])) {
   ?>
 </form>
 <?php
-}
 $mysqli->close();
+}
 ?>
 </body>
 </html>
