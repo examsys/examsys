@@ -14,47 +14,57 @@
 // You should have received a copy of the GNU General Public License
 // along with TouchStone.  If not, see <http://www.gnu.org/licenses/>.
 
-  set_error_handler("customErrorHandler");
+$root = (substr($_SERVER['DOCUMENT_ROOT'], -1) == '/') ? $_SERVER['DOCUMENT_ROOT'] : $_SERVER['DOCUMENT_ROOT'] . '/';
+require_once $root . 'touchstone/config/config.inc';
 
-  function customErrorHandler($errno, $errstr, $errfile, $errline) {
-    global $mysqli, $userID;
-          
-    switch ($errno) {
-      case E_NOTICE:
-      case E_USER_NOTICE:
-        $error_type = "Notice";
-        break;
-      case E_WARNING:
-      case E_USER_WARNING:
-        $error_type = "Warning";
-        break;
-      case E_ERROR:
-      case E_USER_ERROR:
-        $error_type = "Fatal Error";
-        break;
-      default:
-        $error_type = "Unknown";
-        break;
-    }
-    
-    // Errors we do not want to log.
-    if ($error_type == 'Warning') {
-      if (strpos($errstr,'The device is not ready.') !== false) {
-        return true;
-      } elseif (strpos($errstr,'Access is denied.') !== false) {
-        return true;
-      } elseif (strpos($errstr,'ldap_bind()') !== false) {
-        return true;
-      }
-    }
+set_error_handler("customErrorHandler");
 
-    if ($error_type != 'Notice') {  // Record errors that are not notices.
+function customErrorHandler($errno, $errstr, $errfile, $errline) {
+  global $mysqli, $userID, $debug_pagestart, $dbclass, $cfg_db_host , $cfg_db_username, $cfg_db_passwd, $cfg_db_database;
+
+  switch ($errno) {
+    case E_NOTICE:
+    case E_USER_NOTICE:
+      $error_type = "Notice";
+      break;
+    case E_WARNING:
+    case E_USER_WARNING:
+      $error_type = "Warning";
+      break;
+    case E_ERROR:
+    case E_USER_ERROR:
+      $error_type = "Fatal Error";
+      break;
+    default:
+      $error_type = "Unknown";
+      break;
+  }
+  
+  // Errors we do not want to log.
+  if ($error_type == 'Warning') {
+    if (strpos($errstr,'The device is not ready.') !== false) {
+      return true;
+    } elseif (strpos($errstr,'Access is denied.') !== false) {
+      return true;
+    } elseif (strpos($errstr,'ldap_bind()') !== false) {
+      return true;
+    }
+  }
+
+  if ($error_type != 'Notice') {  // Record errors that are not notices.
+    if(is_object($mysqli)) {
+      // Query may fail if we try to insert while another statement is open.
+      // Since we don't have a handle on the original statement, close the DB link and create another
+      $mysqli->close();
+      $mysqli = new $dbclass($cfg_db_host , $cfg_db_username, $cfg_db_passwd, $cfg_db_database);
+      
       $log_error = $mysqli->prepare("INSERT INTO sys_errors VALUES(NULL, NOW(), ?, ?, ?, ?, ?, 0 , ?, ?, ?)");
       $log_error->bind_param('isssssss', $userID, $error_type, $errstr, $errfile, $errline, $_SERVER['PHP_SELF'], $_SERVER['QUERY_STRING'], $_SERVER['REQUEST_METHOD']);
       $log_error->execute();
       $log_error->close();
     }
-   
-    return false;
   }
+ 
+  return false;
+}
 ?>
