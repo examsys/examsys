@@ -36,7 +36,7 @@
   $mysqli = new $dbclass($cfg_db_host , $cfg_db_username, $cfg_db_passwd, $cfg_db_database);
 
   // Calculate what the current academic session is.
-  $session = DateUtils::get_current_academic_year();
+  $session = (isset($_GET['session']) and $_GET['session'] != '') ? $_GET['session'] : DateUtils::get_current_academic_year();
   $session_parts = explode('/',$session);
 
   $module_data = $mysqli->prepare("SELECT moduleid, sms FROM modules WHERE sms != ''");
