@@ -374,8 +374,8 @@ if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
       $matching_correct_fback = explode("|", $correct_fback);
       $matching_incorrect_fback = explode("|", $incorrect_fback);
       
-      $loop_limit = min(array(count($matching_scenarios), count($matching_media)));
-      for($i = 0; $i < $loop_limit; $i++) {
+      $loop_limit = max(count($matching_scenarios), count($matching_media));
+      for($i = 0; $i <= $loop_limit; $i++) {
         if (trim($matching_scenarios[$i]) != '' or (isset($matching_media[$i + 1]) and trim($matching_media[$i + 1]) != '')) $question_no++;
       }
 
@@ -384,7 +384,7 @@ if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
     $matching_options[] = $option_text;
     $option_no++;
   }
-  
+     
   for ($i=0; $i<=20; $i++) {
     if (!isset($matching_scenarios[$i])) $matching_scenarios[$i] = '';
     if (!isset($matching_scenarios_plain[$i])) $matching_scenarios_plain[$i] = '';
