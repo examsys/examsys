@@ -27,15 +27,16 @@ require '../include/errors.inc';
 require '../include/media.inc';
 require '../classes/dateutils.class.php';
 
+check_var('q_id', 'GET', true, false);
+
 if (!isset($_POST['submit'])) {
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html style="margin:0px; width:100%; height:100%;">
 <head>
 <title>Add new Question</title>
 <style>
-body {font-family:Arial,sans-serif; margin:0px}
+body {font-family:Arial,sans-serif; margin:0px; background-color:#F1F5FB}
 td {font-size:80%}
 </style>
 
@@ -61,20 +62,42 @@ td {font-size:80%}
       }
     }
   }
+  
+  function resizeList() {
+    var winW = 630, winH = 460;
+    if (document.body && document.body.offsetWidth) {
+      winW = document.body.offsetWidth;
+      winH = document.body.offsetHeight;
+    }
+    if (document.compatMode=='CSS1Compat' && document.documentElement && document.documentElement.offsetWidth ) {
+      winW = document.documentElement.offsetWidth;
+      winH = document.documentElement.offsetHeight;
+    }
+    if (window.innerWidth && window.innerHeight) {
+      winW = window.innerWidth;
+      winH = window.innerHeight;
+    }
+    winH -= 160;
+    document.getElementById('paperlist').style.height = winH + 'px';
+  }
+
 </script>
 </head>
 
-<body>
-<table cellpadding="0" cellspacing="0" border="0" width="100%">
-<tr><td style="background-color:#EBEADB; border-left:solid white 1px; border-right:solid #D8D2BD 1px; border-top:solid white 1px; border-bottom:solid #D8D2BD 1px; font-size:200%; font-weight:bold; color:black\">&nbsp;Select Paper</td></tr>
-</table>
+<body onload="resizeList();" onresize="resizeList();">
+
 <?php
   echo "<form style=\"width:100%; height:100%;\" method=\"post\" name=\"theForm\" onsubmit=\"return checkForm()\" action=\"" . $_SERVER['PHP_SELF'] . "?q_id=" . $_GET['q_id'] . "\">\n";
 ?>
+  <table cellpadding="6" cellspacing="0" border="0" width="100%">
+  <tr><td style="width:32px; background-color:white; border-bottom:1px solid #CCD9EA"><img src="../artwork/copy_onto_paper.png" width="32" height="32 alt="Paper" /></td><td style="background-color:white; font-size:150%; font-weight:bold; color:#5582D2; border-bottom:1px solid #CCD9EA">Copy onto Paper</td></tr>
+  </table>
 
-  <p style="width:98%; margin:4px; text-align:justify; font-size:70%"><img src="../artwork/small_warning_16.png" width="16" height="16" alt="WARNING: Active paper!" border="0" /> = A paper is currently 'active'. The current date lies between its start and end dates. This is a safety feature so active papers cannot be altered.</p>
-  <p style="width:98%; margin:4px; text-align:justify; font-size:70%"><img src="../artwork/small_padlock.png" width="16" height="16" alt="WARNING: Locked paper!" border="0" /> = A summative paper is locked and cannot be altered.</p>
-  <div style="width:100%;">
+
+  <p style="margin:4px; text-align:justify; font-size:70%"><img src="../artwork/small_warning_16.png" width="16" height="16" alt="WARNING: Active paper!" border="0" /> = A paper is currently 'active'. The current date lies between its start and end dates. This is a safety feature so active papers cannot be altered.</p>
+  <p style="margin:4px; text-align:justify; font-size:70%"><img src="../artwork/small_padlock.png" width="16" height="16" alt="WARNING: Locked paper!" border="0" /> = A summative paper is locked and cannot be altered.</p>
+  
+  <div style="height:200px; overflow:auto; background-color:white; border:1px solid #CCD9EA; margin:4px" id="paperlist">
   <table cellpadding="0" cellspacing="1" border="0" width="95%">
 <?php
   $result = $mysqli->prepare("SELECT DISTINCT property_id, paper_title, start_date, end_date, paper_type FROM properties WHERE (paper_ownerID=? OR moduleID IN ('" . implode("','",$teams) . "')) AND deleted IS NULL  ORDER BY paper_title");
@@ -104,11 +127,12 @@ td {font-size:80%}
   echo "<div align=\"center\"><input type=\"submit\" style=\"width:120px\" name=\"submit\" value=\"OK\" />&nbsp;&nbsp;<input type=\"button\" style=\"width:120px\" name=\"cancel\" onclick=\"window.close();\" value=\"Cancel\" /></div>\n</form>\n";
 } else {
 ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
 <title>Add new Question</title>
 </head>
-<body style="font-family:Arial,sans-serif; background-color:EEECDC; text-align:center">
+<body style="font-family:Arial,sans-serif; background-color:white; text-align:center">
 <?php
   $property_id = $_POST['property_id'];
   $q_id = $_GET['q_id'];

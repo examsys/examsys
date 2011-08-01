@@ -18,31 +18,33 @@
 * 
 * @author Simon Wilkinson
 * @version 1.0
-* @copyright Copyright (c) 2010 The University of Nottingham
+* @copyright Copyright (c) 2011 The University of Nottingham
 * @package
 */
 
-require('../include/sysadmin_auth.inc');
+require '../include/sysadmin_auth.inc';
 
 if (isset($_POST['submit'])) {
-  $addSchool = "INSERT INTO schools VALUES (NULL, \"" . $_POST['faculty'] . "\", '" . $_POST['school'] . "')";
-  if (!mysql_query($addSchool, $link_id)) {
-    echo "<p class=\"error\">School Add Error</p>\n<p>Query: " . $addSchool . "</p>\n<p>" . mysql_error($link_id) . "</p>\n";
-    echo "</body>\n</html>\n";
-    exit();
-  }
-  
-  header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/touchstone/admin/school_list.php");
+  $school = trim( $_POST['school']);
+  $faculty = trim( $_POST['faculty']);
+
+  $result = $mysqli->prepare("INSERT INTO schools VALUES (NULL, ?, ?)");
+  $result->bind_param('ss', $faculty, $school);
+  $result->execute();
+  $result->close();
+
+  header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/touchstone/admin/list_schools.php");
 } else {
 ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
   <html>
   <head>
-  <title>Add School</title>
-
+  <title>Add School<?php echo " $cfg_install_type"; ?></title>
+  <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
   <style>
-    body {font-family:Arial,Helvetica,sans-serif; color:black; background-color:white; margin:0px}
-    td {font-size:90%}
-    input, textarea {font-family:Arial,Helvetica,sans-serif; color:black}
+    body {font-family:Arial,sans-serif; color:black; background-color:white; margin:0px}
+    td {text-align:left}
+    input, textarea {font-family:Arial,sans-serif; color:black}
     .field {font-weight:bold; text-align:right; padding-right:10px}
   </style>
 
@@ -55,11 +57,20 @@ if (isset($_POST['submit'])) {
   }
   </script>
   </head>
-  <body>
-  <table cellpadding="0" cellspacing="0" border="0" width="100%">
-  <tr><td style="background-color:#EBEADB"><div style="font-size:220%; font-weight:bold"><a onmouseover="move_in('image1','../artwork/up_folder_icon_on.gif')" onmouseout="move_out('image1','../artwork/up_folder_icon_off.gif')" href="degree_list.php"><img name="image1" src="../artwork/up_folder_icon_off.gif" width="32" height="38" alt="Up" border="0" /></a>&nbsp;Add Degree</div></td></tr>
-  <tr><td style="height:3px"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" /></td></tr>
-  </table>
+<body onclick="deselSch()">
+<?php
+  require '../include/school_options.inc';
+?>
+<div id="content" class="content" style="font-size:80%">
+  
+<table cellpadding="0" cellspacing="0" border="0" width="100%">
+<tr>
+<td style="background-color:#F1F5FB"><div class="breadcrumb"><a href="../index.php">Home</a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php">Administrative Tools</a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="list_schools.php">Schools</a></div><div style="margin-left:10px; font-size:200%; font-weight:bold">Add Schools</td>
+<td style="background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(233); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="Help" border="0" /></a></td>
+</tr>
+<tr><td colspan="2" style="height:3px"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td></tr>
+</table>  
+  
   <br />
   <div align="center">
   <form name="add_school" method="post" onsubmit="return checkForm()" action="<?php echo $_SERVER['PHP_SELF']; ?>">
@@ -68,10 +79,13 @@ if (isset($_POST['submit'])) {
     <tr><td class="field">Faculty</td><td><select name="faculty">
     <option value=""></option>
     <?php
-      $school_details = mysql_query("SELECT DISTINCT faculty FROM schools ORDER BY faculty, id",$link_id);
-      while ($school_row = mysql_fetch_array($school_details)) {
-        echo "<option value=\"" . $school_row['faculty'] . "\">" . $school_row['faculty'] . "</option>\n";
+      $result = $mysqli->prepare("SELECT name FROM faculty ORDER BY name");
+      $result->execute();
+      $result->bind_result($name);
+      while ($result->fetch()) {
+        echo "<option value=\"$name\">$name</option>\n";
       }
+      $result->close();
     ?>
     </select></td></tr>
     </table>
@@ -81,5 +95,6 @@ if (isset($_POST['submit'])) {
 <?php
 }
 ?>
+</div>
 </body>
 </html>

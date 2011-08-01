@@ -56,15 +56,7 @@ if (isset($_POST['submit']) and ($_POST['submit'] == 'Save Changes' or $_POST['s
         unlink("../media/" . $_POST['old_q_media']); 
       }
       $unique_question_name = uploadFile('new_question_swf', $tmp_q_width, $tmp_q_height);
-      //$unique_question_name = unique_filename($_FILES['new_question_swf']['name']);
-      //if (!move_uploaded_file($_FILES['new_question_swf']['tmp_name'], "../media/$unique_question_name"))  {
-      //  echo uploadError($_FILES['new_question_swf']['error']);
-      //  exit;
-      //} else {
-      //  $identifier_size = GetImageSize("../media/$unique_question_name");
-      //  $tmp_q_width = $identifier_size[0];
-      //  $tmp_q_height = $identifier_size[1];
-      //}
+
       $changes = true;
       $result = $mysqli->prepare("INSERT INTO track_changes VALUES (NULL,'Edit Question',?,$userID,?,?,NOW(),'Question SWF')");
       $result->bind_param('iss', $q_id, $_POST['old_q_media'], $unique_question_name);
@@ -209,20 +201,12 @@ if (isset($_POST['submit']) and ($_POST['submit'] == 'Save Changes' or $_POST['s
 </table>
     <?php
       echo displayEditTab($created, $modified, $locked);
-      if ($locked != '') {
-        echo "<table border=\"0\" cellpadding=\"3\" cellspacing=\"0\" style=\"width:100%; font-size:90%\">\n";
-        echo "<tr><td style=\"width:35px; height:32px; text-align:right; background-image:url('../../artwork/locked_gradient.png'); background-repeat:repeat-x\"><img src=\"../../artwork/paper_locked_padlock.png\" width=\"19\" height=\"24\" alt=\"Locked\" />&nbsp;&nbsp;</td><td colspan=\"7\" style=\"height:32px; vertical-align:middle; background-image:url('../../artwork/locked_gradient.png'); background-repeat:repeat-x\"><strong>Question Locked</strong>&nbsp;&nbsp;&nbsp;This question is now locked and cannot be modified. <a style=\"color:black\" href=\"#\" onclick=\"launchHelp(161); return false;\">Click for more details.</a></td></tr>\n";
-        echo "</table>\n";
-        $disabled = ' disabled';
-      } else {
-        $disabled = check_edit_rights($tmp_ownerID, $mysqli);
-        $checkout_author = check_lock_status($checkout_authorID, $checkout_time, $disabled, $mysqli, $q_id);
-      }
+      $disabled = check_edit_rights($q_id, $checkout_authorID, $checkout_time, $locked, $mysqli);
 
       echo "<table cellpadding=\"3\" cellspacing=\"0\" border=\"0\" align=\"center\">\n";
       echo "<tr><td class=\"field\">Theme/Heading</td><td colspan=\"3\"><input type=\"text\" name=\"theme\" size=\"75\" value=\"$theme\" /><input type=\"hidden\" name=\"old_theme\" value=\"" . htmlentities($theme,ENT_NOQUOTES,'UTF-8') . "\" /></td></tr>\n";
       echo "<tr><td class=\"field\">Notes<br /><span class=\"note\">(visible to students)</span></td><td colspan=\"3\"><textarea name=\"notes\" cols=\"100\" style=\"width:700px\" rows=\"2\" wrap=\"virtual\">$notes</textarea><input type=\"hidden\" name=\"old_notes\" value=\"" . htmlentities($notes,ENT_NOQUOTES,'UTF-8') . "\" /></td></tr>\n";
-      echo "<tr>\n<td class=\"field\"><span class=\"mandatory\">*</span>&nbsp;Lead-in<br /><span style=\"font-weight:normal; font-size:90%; color:#808080\">(the question)</span></td>\n<td colspan=\"3\">\n<textarea style=\"display:none\" name=\"old_leadin\" id=\"old_leadin\">" . encodeHTML($leadin) . "</textarea>";
+      echo "<tr>\n<td class=\"field\"><span class=\"mandatory\">*</span>&nbsp;Lead-in<br /><span style=\"font-weight:normal; font-size:90%; color:#808080\">(the question)</span></td>\n<td colspan=\"3\">\n<textarea style=\"display:none\" name=\"old_leadin\" id=\"old_leadin\">" . htmlentities($leadin) . "</textarea>";
       echo wysiwyg_editor('oEdit1','leadin',$leadin);
       echo "</td>\n</tr>";
       echo "<tr><td class=\"field\">Current Question SWF</td><td colspan=\"3\">" . display_media($q_media,$q_media_width,$q_media_height,1) . "</td></tr>\n";

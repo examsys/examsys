@@ -22,6 +22,9 @@
 * @package
 */
 
+  require_once '../../classes/searchutils.class.php';
+  require_once '../../classes/schoolutils.class.php';
+
   function echoMetadata($blooms, $questionID, $team, $colspan, $mysqlidb, $bloom_on, $current_status, $disabled) {
     global $teams, $userID, $userroles, $faculty;
 
@@ -152,23 +155,23 @@
       $extra_modules = '';
     }
     
-    if (strpos($userroles,'SysAdmin') !== false) {
-      $team_query = $mysqlidb->query("SELECT DISTINCT moduleid AS name, fullname FROM modules ORDER BY moduleID");
-    } elseif (strpos($userroles,'Admin') !== false) {
-      $team_query = $mysqlidb->query("SELECT DISTINCT moduleid AS name, fullname FROM modules, schools WHERE (modules.school=schools.school AND faculty='$faculty' AND active=1)$extra_modules ORDER BY moduleID");
-    } else {
-      $team_query = $mysqlidb->query("SELECT name, fullname FROM teams LEFT JOIN modules ON teams.name=modules.moduleID WHERE (memberID=$userID AND active=1)$extra_teams ORDER BY name");
-    }
+    $teams_array = SearchUtils::getTeams($teams, $userroles, $userID, $mysqlidb);
 
-    $teams_array = array();
     $found = false;
-    while ($team_row = $team_query->fetch_assoc()) {
-      $teams_array[$team_row['name']] = $team_row['fullname'];
-      if ($team_row['name'] == $team) $found = true;
+    foreach($teams_array as $individual_team) {
+      if ($individual_team['id'] == $team) $found = true;
     }
     
     $team_no = 0;
-    foreach ($teams_array as $team_name=>$fullname) {
+    $old_school = '';
+    foreach ($teams_array as $individual_team) {
+      $team_name = $individual_team['id'];
+      $fullname = $individual_team['fullname'];
+      
+      if ($individual_team['school'] != $old_school) {
+        $html .= "<div style=\"font-weight:bold; padding-top:4px\">" . $individual_team['school'] . "</div>\n";
+      }
+      
       if ((isset($_GET['module']) and $team_name == $_GET['module'] and $team == '') or (isset($_COOKIE['default_team']) and $team_name == $_COOKIE['default_team'] and $team == '')) $match = true;
       
       if (isset($_GET['module']) and $team_name == $_GET['module']) {
@@ -181,9 +184,9 @@
         $html .= "<div style=\"background-color:white; color:black\" id=\"divteam$team_no\"><input type=\"checkbox\" onclick=\"toggle('divteam$team_no'); updateList();\" id=\"team$team_no\" name=\"team$team_no\" value=\"$team_name\">&nbsp;$team_name: $fullname</div>\n";
       }
       $team_no++;
+      $old_school = $individual_team['school'];
     }
-    if ($team_query->num_rows > 0) $html .= "</div><input type=\"hidden\" name=\"team_no\" id=\"teamno\" value=\"$team_no\" /><input type=\"hidden\" name=\"old_teams\" value=\"$team\" />\n</td>\n</tr>\n";
-    $team_query->close();
+    if (count($teams_array) > 0) $html .= "</div><input type=\"hidden\" name=\"team_no\" id=\"teamno\" value=\"$team_no\" /><input type=\"hidden\" name=\"old_teams\" value=\"$team\" />\n</td>\n</tr>\n";
     
     $html .= "</table></td></tr>\n";
     return $html;

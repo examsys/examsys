@@ -35,15 +35,15 @@
     $username_sql = '';
     $title_sql = '';
     $surname_sql = '';
-	$initials_sql = '';
+    $initials_sql = '';
     $student_id_sql = '';
   
     $title = '';
 
     if (isset($_GET['sortby'])) $sortby = $_GET['sortby'];
     if (isset($_GET['ordering'])) $ordering = $_GET['ordering'];
-    if (isset($_GET['moduleID'])) $moduleID = $_GET['moduleID'];
-    if (isset($_GET['calendar_year'])) $calendar_year = $_GET['calendar_year'];
+    if (isset($_GET['team']) and $_GET['team'] != '') $moduleID = $_GET['team'];
+    if (isset($_GET['calendar_year']) and $_GET['calendar_year'] != '') $calendar_year = $_GET['calendar_year'];
     
     if (isset($_GET['search_surname']) and $_GET['search_surname'] != '') {
       $tmp_surname = str_replace("*","%",trim($_GET['search_surname']));
@@ -90,6 +90,7 @@
     $roles_sql = '';
     if ((isset($_GET['students']) and $_GET['students'] != '') or (isset($_GET['student_id']) and $_GET['student_id'] != '') ) $roles_sql .= " OR roles='Student'";
     if (isset($_GET['staff']) and $_GET['staff'] != '') $roles_sql .= " OR roles LIKE '%Staff%'";
+    if (isset($_GET['adminstaff']) and $_GET['adminstaff'] != '') $roles_sql .= " OR roles LIKE '%,Admin%'";
     if (isset($_GET['inactive']) and $_GET['inactive'] != '') $roles_sql .= " OR roles LIKE '%inactive%'";
     if (isset($_GET['externals']) and $_GET['externals'] != '') $roles_sql .= " OR (roles = 'External Examiner' AND grade != 'left')";
     if (isset($_GET['invigilators']) and $_GET['invigilators'] != '') $roles_sql .= " OR roles = 'Invigilator'";
@@ -107,8 +108,8 @@
     
     $user_no = 0;
     if ($roles_sql != '') {
-      if (isset($_GET['staff']) and $_GET['staff'] != '') {
-        $query_string = "SELECT DISTINCT users.id, roles, NULL AS student_id, surname, initials, first_names, title, users.username, grade, yearofstudy, email FROM users LEFT JOIN teams ON users.id=teams.memberID AND teams.name LIKE '" . $_GET['moduleID'] . "' WHERE $roles_sql$surname_sql$title_sql$username_sql$initials_sql ORDER BY " . $sortby . " " . $ordering;
+      if ((isset($_GET['staff']) and $_GET['staff'] != '') or (isset($_GET['inactive']) and $_GET['inactive'] != '') or (isset($_GET['adminstaff']) and $_GET['adminstaff'] != '') or (isset($_GET['invigilators']) and $_GET['invigilators'] != '')) {
+        $query_string = "SELECT DISTINCT users.id, roles, NULL AS student_id, surname, initials, first_names, title, users.username, grade, yearofstudy, email FROM users LEFT JOIN teams ON users.id=teams.memberID AND teams.name LIKE '" . $_GET['team'] . "' WHERE $roles_sql$surname_sql$title_sql$username_sql$initials_sql ORDER BY " . $sortby . " " . $ordering;
       } elseif (isset($_GET['externals']) and $_GET['externals'] != '') {
         $query_string = "SELECT DISTINCT users.id, roles, NULL AS student_id, surname, initials, first_names, title, users.username, grade, yearofstudy, email FROM users WHERE $roles_sql$surname_sql$title_sql$username_sql$initials_sql ORDER BY " . $sortby . " " . $ordering;
       } else {
@@ -117,7 +118,17 @@
           $query_string = "SELECT DISTINCT users.id, roles, student_id, surname, initials, first_names, title, users.username, grade, yearofstudy, email FROM users LEFT JOIN sid ON users.id=sid.userID WHERE $roles_sql$surname_sql$title_sql$username_sql$student_id_sql$initials_sql ORDER BY " . $sortby . " " . $ordering;
         } else {
           $roles_sql = 'AND ' . $roles_sql;
-          $query_string = "SELECT DISTINCT users.id, roles, student_id, surname, initials, first_names, title, users.username, grade, yearofstudy, email FROM (users, student_modules) LEFT JOIN sid ON users.id=sid.userID WHERE users.id=student_modules.userID AND moduleid LIKE '$moduleID' AND calendar_year LIKE '$calendar_year' $roles_sql$surname_sql$title_sql$username_sql$student_id_sql$initials_sql ORDER BY " . $sortby . " " . $ordering;
+          if ($moduleID == '%') {
+            $module_sql = '';
+          } else {
+            $module_sql = " AND moduleid LIKE '$moduleID'";
+          }
+          if ($calendar_year == '%') {
+            $calendar_year_sql = '';
+          } else {
+            $calendar_year_sql = " AND calendar_year LIKE '$calendar_year'";
+          }
+          $query_string = "SELECT DISTINCT users.id, roles, student_id, surname, initials, first_names, title, users.username, grade, yearofstudy, email FROM (users, student_modules) LEFT JOIN sid ON users.id=sid.userID WHERE users.id=student_modules.userID $module_sql$calendar_year_sql$roles_sql$surname_sql$title_sql$username_sql$student_id_sql$initials_sql ORDER BY " . $sortby . " " . $ordering;
         }
       }
       $user_data = $mysqli->query($query_string);
@@ -184,7 +195,7 @@ input[type=text], select {font-family:Arail,sans-serif; border: 1px solid #7F9DB
   }
 
   function viewProfile(userID) {
-    document.location.href='details.php?search_surname=<?php if (isset($_GET['search_surname'])) echo $_GET['search_surname']; ?>&search_username=<?php if (isset($_GET['username']))  echo $_GET['search_username']; ?>&student_id=<?php if (isset($_GET['student_id'])) echo $_GET['student_id']; ?>&moduleID=<?php if (isset($_GET['moduleID'])) echo $_GET['moduleID']; ?>&calendar_year=<?php if (isset($_GET['calendar_year'])) echo $_GET['calendar_year']; ?>&students=<?php if (isset($_GET['students'])) echo $_GET['students']; ?>&submit=Search&userID=' + userID + '&email=<?php if (isset($_GET['email'])) echo $_GET['email']; ?>&oldUserID=<?php if (isset($_GET['oldUserID'])) echo $_GET['oldUserID']; ?>&tmp_surname=<?php if (isset($_GET['tmp_surname'])) echo $_GET['tmp_surname']; ?>&tmp_degreeID=<?php if (isset($_GET['tmp_degreeID'])) echo $_GET['tmp_degreeID']; ?>&tmp_yearID=<?php if (isset($_GET['tmp_yearID'])) echo $_GET['tmp_yearID']; ?>';
+    document.location.href='details.php?search_surname=<?php if (isset($_GET['search_surname'])) echo $_GET['search_surname']; ?>&search_username=<?php if (isset($_GET['username']))  echo $_GET['search_username']; ?>&student_id=<?php if (isset($_GET['student_id'])) echo $_GET['student_id']; ?>&moduleID=<?php if (isset($_GET['team'])) echo $_GET['team']; ?>&calendar_year=<?php if (isset($_GET['calendar_year'])) echo $_GET['calendar_year']; ?>&students=<?php if (isset($_GET['students'])) echo $_GET['students']; ?>&submit=Search&userID=' + userID + '&email=<?php if (isset($_GET['email'])) echo $_GET['email']; ?>&oldUserID=<?php if (isset($_GET['oldUserID'])) echo $_GET['oldUserID']; ?>&tmp_surname=<?php if (isset($_GET['tmp_surname'])) echo $_GET['tmp_surname']; ?>&tmp_degreeID=<?php if (isset($_GET['tmp_degreeID'])) echo $_GET['tmp_degreeID']; ?>&tmp_yearID=<?php if (isset($_GET['tmp_yearID'])) echo $_GET['tmp_yearID']; ?>';
   }
 </script>
 </head>
@@ -212,8 +223,8 @@ input[type=text], select {font-family:Arail,sans-serif; border: 1px solid #7F9DB
   echo "<tr><td style=\"background-color:#F1F5FB\" colspan=\"7\"><div class=\"breadcrumb\"><a href=\"../index.php\">Home</a></div><div onclick=\"qOff()\" style=\"font-size:200%; margin-left:10px\"><strong>Users ($user_no):&nbsp;</strong>";
   if (isset($_GET['search_surname']) and $_GET['search_surname'] != '') {
     echo $_GET['search_surname'];
-  } elseif (isset($_GET['moduleID']) and $_GET['moduleID'] != '%') {
-    echo $_GET['moduleID'];
+  } elseif (isset($_GET['team']) and $_GET['team'] != '%') {
+    echo $_GET['team'];
     if (isset($_GET['calendar_year']) and $_GET['calendar_year'] != '' and isset($_GET['students']) and $_GET['students'] != '') {
       echo ' (' . $_GET['calendar_year'] . ')';
     }

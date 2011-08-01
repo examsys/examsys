@@ -77,11 +77,13 @@
   
   //get faculty and school info
   $schools = array("Default"=>array('-1'=>'&lt;All Schools&gt;'));
-  $results = $mysqli->query("SELECT id, faculty, school FROM schools ORDER BY faculty,school");
-  while ($row = $results->fetch_assoc()) {
-    $schools[$row['faculty']][$row['id']] = $row['school'];
+  $stmt = $mysqli->prepare("SELECT id, faculty, school FROM schools ORDER BY faculty, school");
+  $stmt->execute();
+  $stmt->bind_result($id, $faculty, $school);
+  while ($stmt->fetch()) {
+    $schools[$faculty][$id] = $school;
   }
-  $results->close();
+  $stmt->close();
 ?>
 
 <div id="content" class="content" style="font-size:80%">
@@ -134,20 +136,21 @@
 
   // Get lab information.
   $labs = array();
-  $results = $mysqli->query("SELECT id, room_no, name FROM labs");
-  while ($row = $results->fetch_assoc()) {
-    $lab_id = $row['id'];
-    $labs[$lab_id]['room_no'] = $row['room_no'];
-    $labs[$lab_id]['name'] = $row['name'];
+  $stmt = $mysqli->prepare("SELECT id, room_no, name FROM labs");
+  $stmt->execute();
+  $stmt->bind_result($lab_id, $room_no, $name);
+  while ($stmt->fetch()) {
+    $labs[$lab_id]['room_no'] = $room_no;
+    $labs[$lab_id]['name'] = $name;
   }
-  $results->close();
+  $stmt->close();
   
   //show only exams in a particular school
   $schools_sql = '';
-  if(isset($_GET['school']) and $_GET['school'] != '') {
-    foreach($schools as $fac => $sch) {
-      foreach($sch as $id => $title) {
-        if($id == $_GET['school']) {
+  if (isset($_GET['school']) and $_GET['school'] != '') {
+    foreach ($schools as $fac => $sch) {
+      foreach ($sch as $id => $title) {
+        if ($id == $_GET['school']) {
           $school_name = $title;
           break 2;
         }
@@ -155,18 +158,23 @@
     }
     //get the module list
     $schools_sql = '';
-    $results = $mysqli->query("SELECT moduleid FROM modules WHERE school=\"$school_name\"");
-    while ($row = $results->fetch_assoc()) {
+    $stmt = $mysqli->prepare("SELECT moduleid FROM modules WHERE schoolid=?");
+    $stmt->bind_param('i', $_GET['school']);
+    $stmt->execute();
+    $stmt->bind_result($moduleid);
+    while ($stmt->fetch()) {
       if($schools_sql == '') {
         $schools_sql = ' AND (';
       } else {
         $schools_sql .= ' OR ';
       }
-      $schools_sql .= ' moduleID LIKE \'%' . $row['moduleid'] . '%\' ';
+      $schools_sql .= " moduleID LIKE '%$moduleid%' ";
     }
-    $results->close();
-    if($schools_sql != '') $schools_sql .= ')';
+    $stmt->close();
+    if ($schools_sql != '') $schools_sql .= ')';
   }
+
+  
   $paper_no = 0;
   $paper_details = array();
   if ($schools_sql != '' OR !isset($_GET['school']) OR (isset($_GET['school']) AND ($_GET['school'] == -1 OR $_GET['school'] == ''))) {

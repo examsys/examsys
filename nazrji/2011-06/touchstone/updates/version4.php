@@ -11,7 +11,7 @@
   if (!defined('STDIN')) {
 //    exit;
   }
-  require_once '../config/config.inc';
+  //require '../config/config.inc';
   set_time_limit(0);
   $mysqli = new $dbclass($cfg_db_host , $cfg_db_username, $cfg_db_passwd, $cfg_db_database);
   echo "\nStarting update from version 4.0 to 4.1\n";
@@ -117,6 +117,169 @@
     }
   }
   $group_reviews->close();  
+  
+  // 29/06/2011
+  $result = $mysqli->prepare("SELECT COLUMN_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='modules' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='selfenroll'");
+  $result->execute();
+  $result->store_result();
+  $result->bind_result($column_type);
+  $result->fetch();
+  if ($result->num_rows() == 0) {
+    $adjust = $mysqli->prepare("ALTER TABLE modules ADD COLUMN selfenroll tinyint");
+    $adjust->execute();
+    $adjust->close();
+    echo "<div>ALTER TABLE modules ADD COLUMN selfenroll tinyint</div>\n";
+
+    $adjust = $mysqli->prepare("UPDATE modules SET selfenroll=0");
+    $adjust->execute();
+    $adjust->close();
+    echo "<div>UPDATE modules SET selfenroll=0</div>\n";
+  }
+  
+  // 30/06/2011 - Change schools from text to integers
+  $result = $mysqli->prepare("SELECT COLUMN_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='modules' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='schoolid'");
+  $result->execute();
+  $result->store_result();
+  $result->bind_result($column_type);
+  $result->fetch();
+  if ($result->num_rows() == 0) {
+    // Add new integer column
+    $adjust = $mysqli->prepare("ALTER TABLE modules ADD COLUMN schoolid int");
+    $adjust->execute();
+    $adjust->close();
+    echo "<div>ALTER TABLE modules ADD COLUMN schoolid int</div>\n";
+
+    // Look up existing school names
+    $schools = array();
+    $sch_data = $mysqli->prepare("SELECT id, school FROM schools");
+    $sch_data->execute();
+    $sch_data->store_result();
+    $sch_data->bind_result($schoolid, $school_name);
+    while ($sch_data->fetch()) {
+      $schools[$school_name] = $schoolid; 
+    }
+    $sch_data->close();
+    
+    // Populate the new field
+    foreach($schools as $school_name=>$schoolid) {
+      $adjust = $mysqli->prepare("UPDATE modules SET schoolid=? WHERE school=?");
+      $adjust->bind_param('is', $schoolid, $school_name);
+      $adjust->execute();
+      $adjust->close();
+    }
+    // Drop the old textual column
+    $adjust = $mysqli->prepare("ALTER TABLE modules DROP COLUMN school");
+    $adjust->execute();
+    $adjust->close();
+    echo "<div>ALTER TABLE modules DROP COLUMN school</div>\n";
+  }
+  
+
+  // 04/07/2011 - Drop 'Faculty' column from users.
+  $result = $mysqli->prepare("SELECT COLUMN_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='users' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='faculty'");
+  $result->execute();
+  $result->store_result();
+  $result->bind_result($column_type);
+  $result->fetch();
+  if ($result->num_rows() == 1) {
+    $adjust = $mysqli->prepare("ALTER TABLE users DROP COLUMN faculty");
+    $adjust->execute();
+    $adjust->close();
+    echo "<div>ALTER TABLE users DROP COLUMN faculty</div>\n";
+  }
+  
+  // 04/07/2011 - Create new 'admin_access' table to hold which modules 'Admin' can access.
+  $result = $mysqli->prepare("SELECT COLUMN_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='admin_access' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='adminID'");
+  $result->execute();
+  $result->store_result();
+  $result->bind_result($column_type);
+  $result->fetch();
+  if ($result->num_rows() == 0) {
+    $adjust = $mysqli->prepare("CREATE TABLE admin_access (adminID int not null primary key auto_increment, userID int, schools_id int)");
+    $adjust->execute();
+    $adjust->close();
+    echo "<div>CREATE TABLE admin_access (adminID int not null primary key auto_increment, userID int, schools_id int)</div>\n";
+  }
+  
+  // 04/07/2011 - New table to handle forgotten password requests.
+  $result = $mysqli->prepare("SELECT COLUMN_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='password_tokens' AND TABLE_SCHEMA='touchstone' AND COLUMN_NAME='id'");
+  $result->execute();
+  $result->store_result();
+  $result->bind_result($column_type);
+  $result->fetch();
+  if ($result->num_rows() == 0) {
+    $adjust = $mysqli->prepare("CREATE TABLE password_tokens (id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, user_id INT NOT NULL, token CHAR(16) NOT NULL, time DATETIME NOT NULL);");
+    $adjust->execute();
+    $adjust->close();
+    echo "<div>CREATE TABLE password_tokens (id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, user_id INT NOT NULL, token CHAR(16) NOT NULL, time DATETIME NOT NULL);</div>\n";
+    ob_flush();
+    flush();
+  }
+  $result->close();
+
+  // 06/07/2011 - New table users_metadata.
+  $result = $mysqli->prepare("SELECT COLUMN_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='users_metadata' AND TABLE_SCHEMA='touchstone' AND COLUMN_NAME='id'");
+  $result->execute();
+  $result->store_result();
+  $result->bind_result($column_type);
+  $result->fetch();
+  if ($result->num_rows() == 0) {
+    $adjust = $mysqli->prepare("CREATE TABLE users_metadata (id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, userID INT, moduleID int, type varchar(255), value varchar(255), calendar_year enum('2010/11','2011/12','2012/13','2013/14','2014/15','2015/16','2016/17','2017/18','2018/19','2019/20'));");
+    $adjust->execute();
+    $adjust->close();
+    echo "<div>CREATE TABLE users_metadata (id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, userID INT, moduleID int, type varchar(255), value varchar(255), calendar_year enum('2010/11','2011/12','2012/13','2013/14','2014/15','2015/16','2016/17','2017/18','2018/19','2019/20'));</div>\n";
+    ob_flush();
+    flush();
+  }
+  $result->close();
+
+  // 11/07/2011 - Add new column for retiring papers.
+  $result = $mysqli->prepare("SELECT COLUMN_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='properties' AND TABLE_SCHEMA='touchstone' AND COLUMN_NAME='retired'");
+  $result->execute();
+  $result->store_result();
+  $result->bind_result($column_type);
+  $result->fetch();
+  if ($result->num_rows() == 0) {
+    $adjust = $mysqli->prepare("ALTER TABLE properties ADD COLUMN retired datetime");
+    $adjust->execute();
+    $adjust->close();
+    echo "<div>ALTER TABLE properties ADD COLUMN retired datetime</div>\n";
+    ob_flush();
+    flush();
+  }
+  $result->close();
+
+  // 25/07/2011 - New table paper_metadata_security.
+  $result = $mysqli->prepare("SELECT COLUMN_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='paper_metadata_security' AND TABLE_SCHEMA='touchstone' AND COLUMN_NAME='id'");
+  $result->execute();
+  $result->store_result();
+  $result->bind_result($column_type);
+  $result->fetch();
+  if ($result->num_rows() == 0) {
+    $adjust = $mysqli->prepare("CREATE TABLE paper_metadata_security (id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, paperID int, name varchar(255), value varchar(255))");
+    $adjust->execute();
+    $adjust->close();
+    echo "<div>CREATE TABLE paper_metadata_security (id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, paperID int, name varchar(255), value varchar(255))</div>\n";
+    ob_flush();
+    flush();
+  }
+  $result->close();
+  
+  // 27/07/2011 - New table questions_metadata.
+  $result = $mysqli->prepare("SELECT COLUMN_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='questions_metadata' AND TABLE_SCHEMA='touchstone' AND COLUMN_NAME='id'");
+  $result->execute();
+  $result->store_result();
+  $result->bind_result($column_type);
+  $result->fetch();
+  if ($result->num_rows() == 0) {
+    $adjust = $mysqli->prepare("CREATE TABLE questions_metadata (id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, questionID int, type varchar(255), value varchar(255))");
+    $adjust->execute();
+    $adjust->close();
+    echo "<div>CREATE TABLE questions_metadata (id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, questionID int, type varchar(255), value varchar(255))</div>\n";
+    ob_flush();
+    flush();
+  }
+  $result->close();
   
   //Close the database
   $mysqli->close();

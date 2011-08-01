@@ -26,11 +26,35 @@
 
 
 /**
+ * This function will output an access denied warning and terminate script execution
+ *
+ * @param string $message string message to display
+ * @param string $output_header if true output 401 headers
+ *
+ */
+function access_denied($message, $output_header = false) {
+  global $mysqli;
+  
+  if ($output_header == true) {
+    Header("WWW-authenticate: basic realm=\"TouchStone\"");
+    Header("HTTP/1.0 401 Unauthorised");
+  }
+  echo "<html>\n<head>\n<title>Access Denied</title>\n<style>\nbody {font-size:90%; font-family:Arial,sans-serif;background-color:#FCFCFC;color:#575757}\nh1 {font-weight:normal;color:#BF0000;font-size:140%}\n</style>\n</head>\n<body>\n";
+  echo "<div style=\"position:absolute; left:10px; top:10px\"><img src=\"/touchstone/artwork/access_denied.png\" width=\"48\" height=\"48\" /></div>\n";
+  echo "<h1 style=\"margin-left:60px\">Access Denied</h1>\n";
+  echo "<hr size=\"1\" align=\"left\" width=\"500\" style=\"margin-left:60px; color:#C0C0C0; background-color:#C0C0C0\" />\n<p style=\"margin-left:60px\">$message</p>\n</body>\n</html>"; 
+  
+  $mysqli->close();
+  exit;
+}
+
+
+/**
  * This is function ad_auth authenticat a user agenat LDAP or AD
  *
  * @param string $u username
  * @param string $p password
- 8 @param string $data used to pass userdata back from the LDAP for updates
+ * @param string $data used to pass userdata back from the LDAP for updates
  * @return Bool TRUE on sucsess FALSE on failure
  *
  */
@@ -106,15 +130,11 @@ function db_auth($u, $p, $db) {
   $split_username = explode('_', $u);
   $tmp_u = $split_username[0];
   
-  // Check for additional password on the end.
-  //$split_password = explode('_', $p);
-  //$tmp_p = $split_password[0];
-
-  $stmt = $db->prepare("SELECT password, id, roles, faculty, title, initials, surname, username, grade, yearofstudy, special_needs FROM users WHERE username=?");
+  $stmt = $db->prepare("SELECT password, id, roles, title, initials, surname, username, grade, yearofstudy, special_needs FROM users WHERE username=?");
   $stmt->bind_param('s', $tmp_u);
   $stmt->execute();
   $stmt->store_result();
-  $stmt->bind_result($password, $userID, $userroles, $faculty, $title, $initials, $surname, $username, $grade, $year, $special_needs);
+  $stmt->bind_result($password, $userID, $userroles, $title, $initials, $surname, $username, $grade, $year, $special_needs);
   $stmt->fetch();
   if ($stmt->num_rows > 0) {
     if ($p != '' AND crypt($p,$password) == $password) {
@@ -129,10 +149,10 @@ function db_auth($u, $p, $db) {
           $userroles .= 'Demo';
         } else {
           // Look up all the authentication details of the user you are pretending to log in as.
-          $result = $db->prepare("SELECT password, id, roles, faculty, title, surname, username, grade, yearofstudy FROM users WHERE username=?");
+          $result = $db->prepare("SELECT password, id, roles, title, surname, username, grade, yearofstudy FROM users WHERE username=?");
           $result->bind_param('s', $split_username[1]);
           $result->execute();
-          $result->bind_result($password, $userID, $userroles, $faculty, $title, $surname, $username, $grade, $year);
+          $result->bind_result($password, $userID, $userroles, $title, $surname, $username, $grade, $year);
           $result->fetch();
           $result->close();
           $cfg_install_type .= " as $title $surname";
@@ -144,7 +164,7 @@ function db_auth($u, $p, $db) {
       return false;
     }
   } else {
-    $password = $userID = $userroles = $faculty = $title = $surname = $username = $grade = $year = '';
+    $password = $userID = $userroles = $title = $surname = $username = $grade = $year = '';
     if ($stmt->num_rows == 0) {
       $db_errors = '<strong>No TouchStone account found!</strong>';
     }
@@ -186,6 +206,22 @@ function gen_password() {
     $pass .= substr($chars[$i],rand(0,51),1);
   }
   return $pass;
+}
+
+function getUserTeams($userID, $db) {
+  $teams = array();
+
+  $result = $db->prepare("SELECT name FROM teams WHERE memberID=? AND name IS NOT NULL ORDER BY name");
+  $result->bind_param('i', $userID);
+  $result->execute();
+  $result->bind_result($team_name);
+  while ($result->fetch()) {
+    $team_name = strtoupper($team_name);
+    $teams[$team_name] = $team_name;
+  }
+  $result->close();
+  
+  return $teams;
 }
 
 ?>

@@ -34,8 +34,10 @@
     exit;
   } elseif ($userroles == 'External Examiner') {
     header("location: " . $protocol. $_SERVER['HTTP_HOST'] . "/touchstone/reviews/");
+    exit;
   } elseif ($userroles == 'Invigilator') {
     header("location: " . $protocol. $_SERVER['HTTP_HOST'] . "/touchstone/invigilator/");
+    exit;
   }
 
 // If we're still here we should be staff
@@ -70,7 +72,7 @@ require './include/staff_auth.inc';
   }
 
   function newPaper(paperID) {
-    notice = window.open("./paper/new_paper1.php?folder=","properties","width=700,height=500,left="+(screen.width/2-325)+",top="+(screen.height/2-250)+",scrollbars=no,toolbar=no,location=no,directories=no,status=yes,menubar=no,resizable");
+    notice = window.open("./paper/new_paper1.php?folder=","properties","width=700,height=500,left="+(screen.width/2-325)+",top="+(screen.height/2-250)+",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
     if (window.focus) {
       notice.focus();
     }
@@ -265,7 +267,7 @@ require './include/staff_auth.inc';
   // -- Display personal folders --------------------------------------
   $module_sql = '';
   foreach ($teams as $individual_team){
-    $module_sql .= " OR team_name LIKE '%$individual_team%'";
+    if (trim($individual_team) != '') $module_sql .= " OR team_name LIKE '%$individual_team%'";
   }
 
   $folder_details = $mysqli->query("SELECT id, name, team_name, color FROM folders WHERE (ownerID=$userID $module_sql) AND name NOT LIKE '%;%' AND deleted IS NULL ORDER BY name, id");
@@ -305,7 +307,7 @@ require './include/staff_auth.inc';
     if (strpos($userroles,'SysAdmin') !== false) {
       echo "<div class=\"f\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"width:60px\" align=\"center\"><a href=\"./folder/all.php\"><img src=\"./artwork/yellow_folder.png\" width=\"48\" height=\"48\" alt=\"Folder\" border=\"0\" align=\"middle\" /></a>&nbsp;</td><td><a href=\"./folder/all.php\" class=\"blacklink\"><strong>All Modules...</strong></a><br /><span style=\"color:#C00000\">(SysAdmin only)</span></td></tr></table></div>\n";
     } elseif (strpos($userroles,'Admin') !== false) {
-      echo "<div class=\"f\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"width:60px\" align=\"center\"><a href=\"./folder/all.php\"><img src=\"./artwork/yellow_folder.png\" width=\"48\" height=\"48\" alt=\"Folder\" border=\"0\" align=\"middle\" /></a>&nbsp;</td><td><a href=\"./folder/all.php\" class=\"blacklink\"><strong>All Modules in Faculty...</strong></a><br /><span style=\"color:#C00000\">(Admin only)</span></td></tr></table></div>\n";
+      echo "<div class=\"f\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"width:60px\" align=\"center\"><a href=\"./folder/all.php\"><img src=\"./artwork/yellow_folder.png\" width=\"48\" height=\"48\" alt=\"Folder\" border=\"0\" align=\"middle\" /></a>&nbsp;</td><td><a href=\"./folder/all.php\" class=\"blacklink\"><strong>All Modules in School...</strong></a><br /><span style=\"color:#C00000\">(Admin only)</span></td></tr></table></div>\n";
       //echo '<div style="font-weight:normal">&nbsp;<a style="color:blue" href="/folder/all.php">All modules</a> (Admin)</div>';
     }
     foreach ($modules_array as $folder_title => $url) {

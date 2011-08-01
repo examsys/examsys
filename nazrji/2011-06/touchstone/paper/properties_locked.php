@@ -32,22 +32,22 @@ function modulo($n,$b) {
 }
 
 if (isset($_POST['Submit'])) {
-  if ($_POST['display_correct_answer'] == 1) {
+  if (isset($_POST['display_correct_answer']) and $_POST['display_correct_answer'] == 1) {
     $display_correct_answer = 1;
   } else {
     $display_correct_answer = 0;
   }
-  if ($_POST['display_students_response'] == 1) {
+  if (isset($_POST['display_students_response']) and $_POST['display_students_response'] == 1) {
     $display_students_response = 1;
   } else {
     $display_students_response = 0;
   }
-  if ($_POST['display_question_mark'] == 1) {
+  if (isset($_POST['display_question_mark']) and $_POST['display_question_mark'] == 1) {
     $display_question_mark = 1;
   } else {
     $display_question_mark = 0;
   }
-  if ($_POST['display_feedback'] == 1) {
+  if (isset($_POST['display_feedback']) and $_POST['display_feedback'] == 1) {
     $display_feedback = 1;
   } else {
     $display_feedback = 0;
@@ -72,7 +72,7 @@ if (isset($_POST['Submit'])) {
   $editProperties->bind_param('i', $_POST['paperID']);
   $editProperties->execute();
   $editProperties->close();
-  if ($_POST['objectives_report'] == 1) {
+  if (isset($_POST['objectives_report']) and $_POST['objectives_report'] == 1) {
     $editProperties = $mysqli->prepare("INSERT INTO feedback_release VALUES (NULL,?,NOW())");
     $editProperties->bind_param('i', $_POST['paperID']);
     $editProperties->execute();
@@ -84,28 +84,25 @@ if (isset($_POST['Submit'])) {
     <script language="JavaScript">
       function closeWindow() {
         <?php
-          if ($_POST['noadd'] == 'y') {
+          if (isset($_POST['noadd']) and $_POST['noadd'] == 'y') {
         ?>
-        window.opener.location = "paper_details.php?paperID=<?php echo $_POST['paperID']; ?>&module=<?php echo $first_module; ?>&folder=<?php echo $_POST['folderID']; ?>&school=";
+        window.opener.location.reload();
         window.opener.close();
         window.close();
         <?php
           } else {
         ?>
-        window.opener.location = "paper_details.php?paperID=<?php echo $_POST['paperID']; ?>&module=<?php echo $first_module; ?>&folder=<?php echo $_POST['folderID']; ?>&school=";
+        window.opener.location.reload();
         window.close();
         <?php
           }
         ?>
       }
-      function updateParent() {
-        window.opener.parent.location = "paper_details.php?paperID=<?php echo $_POST['paperID']; ?>&module=<?php echo $first_module; ?>";
-        window.close();
-      }
-    </script></head>
+    </script>
+    </head>
     <body onload="closeWindow();">
     <form>
-      <br />&nbsp;<div align="center"><input type="button" name="home" value="   OK   " onclick="updateParent();" /></div>
+      <br />&nbsp;<div align="center"><input type="button" name="home" value="   OK   " onclick="closeWindow();" /></div>
     </form>
   <?php
 } else {
@@ -121,22 +118,25 @@ if (isset($_POST['Submit'])) {
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-  <title>Properties</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Properties<?php echo " $cfg_install_type"; ?></title>
 
   <style>
-    body {font-family:Arial,sans-serif; color:black; background-color:#ECE9D8; margin:0px; font-size:90%}
-    table {font-size:100%}
+    body {font-family:Arial,sans-serif; color:black; background-color:#F1F5FB; margin:0px; font-size:100%}
+    table {font-size:100%; text-align:left}
     input,textarea {font-family:Arial,sans-serif; color:black}
+    .indenton {text-indent:-23px; padding-left:23px; background-color:#B3C8E8}
+    .indentoff {text-indent:-23px; padding-left:23px; background-color:white}
   </style>
 
   <script language="JavaScript">
     function launchHelp(pageID) {
       var winheight = screen.height-100;
       if (screen.width == 800) {
-        notice=window.open("./staff_help/index.php?id=" + pageID + "","help","width=770,height="+winheight+",scrollbars=yes,resizable=yes,toolbar=no,location=no,directories=no,status=no,menubar=no");
+        notice=window.open("../help/staff/index.php?id=" + pageID + "","help","width=770,height="+winheight+",scrollbars=yes,resizable=yes,toolbar=no,location=no,directories=no,status=no,menubar=no");
         notice.moveTo(10,10);
       } else {
-        notice=window.open("./staff_help/index.php?id=" + pageID + "","help","width=950,height="+winheight+",scrollbars=yes,resizable=yes,toolbar=no,location=no,directories=no,status=no,menubar=no");
+        notice=window.open("../help/staff/index.php?id=" + pageID + "","help","width=950,height="+winheight+",scrollbars=yes,resizable=yes,toolbar=no,location=no,directories=no,status=no,menubar=no");
         notice.moveTo(10,10);
       }
     }
@@ -145,11 +145,11 @@ if (isset($_POST['Submit'])) {
 <body onload="window.focus();">
 <form name="edit_form" method="post" onsubmit="return checkForm()" action="<?php echo $_SERVER['PHP_SELF']; ?>">
 
-<table border="0" cellpadding="1" cellspacing="5" style="background-color:#ECE9D8; width:100%; height:100%">
+<table border="0" cellpadding="1" cellspacing="5" style="width:100%; height:100%; font-size:90%">
 <tr><td valign="top" style="background-color:white; border:1px solid #7F9DB9; width:120px">
 
-<table cellspacing="0" cellpadding="2" style="font-size:90%; width:120px">
-<tr><td style="background-image:url('./artwork/2007_button_on.png'); height:25px; color:#00156E" valign="middle">&nbsp;General</td></tr>
+<table cellspacing="0" cellpadding="0" border="0" style="font-size:90%; width:120px">
+<tr><td style="background-image:url('../artwork/2007_button_on.png'); height:25px; color:#00156E" valign="middle">&nbsp;General</td></tr>
 <tr><td style="height:25px; color:#808080" valign="middle">&nbsp;Security</td></tr>
 <tr><td style="height:25px; color:#808080" valign="middle">&nbsp;Reviewers</td></tr>
 <tr><td style="height:25px; color:#808080" valign="middle">&nbsp;Exam Rubric</td></tr>
@@ -161,8 +161,8 @@ if (isset($_POST['Submit'])) {
 
 <td style="background-color:white; border:1px solid #7F9DB9" valign="top">
 
-<table id="general" style="height:460px; width:684; font-size:90%<?php if ($_GET['noadd'] == 'y') echo ';display:none'; ?>"cellpadding="0" cellspacing="0" border="0">
-<tr><td style="background-image:url('./artwork/blank_heading.png'); color:#001687; height:49px; font-size:110%" colspan="2">&nbsp;&nbsp;&nbsp;&nbsp;<img src="./artwork/general_heading_icon.png" width="28" height="31" alt="Icon" align="middle" />&nbsp;&nbsp;Paper name, marking and display options</td></tr>
+<table id="general" style="height:460px; width:100%; font-size:90%<?php if (isset($_GET['noadd']) and $_GET['noadd'] == 'y') echo ';display:none'; ?>"cellpadding="0" cellspacing="0" border="0">
+<tr><td style="background-image:url('../artwork/blank_heading.png'); color:#001687; height:49px; font-size:110%" colspan="2">&nbsp;&nbsp;&nbsp;&nbsp;<img src="../artwork/general_heading_icon.png" width="28" height="31" alt="Icon" align="middle" />&nbsp;&nbsp;Paper name, marking and display options</td></tr>
 <td style="text-align:left; vertical-align:top" colspan="2">
    <?php
      echo "<table cellpadding=\"2\" cellspacing=\"0\" border=\"0\" width=\"100%\">\n";
@@ -181,7 +181,7 @@ if (isset($_POST['Submit'])) {
    <?php
      echo "<td align=\"right\" valign=\"top\">Folder&nbsp;</td><td valign=\"top\">\n<select style=\"width:210px\" name=\"folderID\" disabled>\n";
      echo "<option value=\"\"></option>";
-     $additonal = '';
+     $additional = '';
      
      $team_query = $mysqli->prepare("SELECT DISTINCT name FROM teams WHERE memberID=? ORDER BY name");
      $team_query->bind_param('s', $userID);
@@ -245,7 +245,7 @@ if (isset($_POST['Submit'])) {
      <tr><td><input type="checkbox" name="display_students_response" value="1"<?php if ($display_students_response == '1') echo ' checked'; ?> />&nbsp;Ticks/Crosses</td><td><input type="checkbox" name="display_question_mark" value="1"<?php if ($display_question_mark == '1') echo ' checked'; ?> />&nbsp;Question Marks</td></tr>
      <tr><td><input type="checkbox" name="display_correct_answer" value="1"<?php if ($display_correct_answer == '1') echo ' checked'; ?> />&nbsp;Correct Answer Highlight</td><td><input type="checkbox" name="display_feedback" value="1"<?php if ($display_feedback == '1') echo ' checked'; ?> />&nbsp;Text Feedback</td></tr>
      </table>
-     <?
+     <?php
      }
      if ($paper_type != '0') {
        echo '<div id="feedback_off">';
@@ -430,7 +430,7 @@ if (isset($_POST['Submit'])) {
 <tr><td colspan="2" align="right"><input type="submit" style="width:100px" name="Submit" value="OK">&nbsp;<input type="button" name="home" style="width:100px" value="Cancel" onclick="javascript:window.close();" /></td></tr>
 </table>
 
-<input type="hidden" name="noadd" value="<?php echo $_GET['noadd']; ?>" />
+<input type="hidden" name="noadd" value="<?php if (isset($_GET['noadd'])) echo $_GET['noadd']; ?>" />
 </form>
 <?php
   }

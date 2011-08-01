@@ -1,0 +1,12 @@
+.error {color: #c00000}
+li.error {
+	list-style: none;
+	background: url('../artwork/small_yellow_warning_icon.gif') no-repeat left -1px;
+	padding-left: 20px;
+}
+input.error {
+	border: 1px solid #c00000;
+}
+label.error {
+	display: none;
+}

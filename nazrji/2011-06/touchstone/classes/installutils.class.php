@@ -31,7 +31,9 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/touchstone/classes/schoolutils.class.
 Class InstallUtils {
 	
   public static $db;
-   public static $touchstone_path;
+  public static $touchstone_path;
+  
+  public static $warnings;
   
   //database config options
   public static $cfg_db_host;
@@ -45,7 +47,6 @@ Class InstallUtils {
   public static $ts_version = '4.0';
   public static $support_email;
   public static $cfg_SysAdmin_username;
-  public static $emergency_support_numbers;
   
   public static $cfg_ldap_server;
   public static $cfg_ldap_search_dn;
@@ -53,47 +54,92 @@ Class InstallUtils {
   public static $cfg_ldap_bind_password;
   public static $cfg_use_ldap = 'false';
   
+  public static $cfg_support_email;
+  public static $emergency_support_numbers;
+    
+  
   static function displayForm() {
     ?>
+    <script>
+      $(document).ready(function(){
+          $("#installForm").validate();
+      });
+      
+      $(document).ready(function() {
+        $('#useLdap').change(function() {
+            $('#ldapOptions').toggle();
+          });
+      });
+    </script> 
     <form id="installForm" class="cmxform" method="post" action="<?php echo $_SERVER['PHP_SELF'];?>">
-      <h2>Database Admin User</h2>
-      <fieldset>
+      
+      <table class="header"><tr><td><nobr>Database Admin User</nobr></td><td class="line"><hr /></td></tr></table> 
         <div>The installer need the username and password of a MySQL admin user to create the database and required tables. This username is not saved to the server and is only used by this install script.</div>
         <br />
-        <div>Username: <input type="text" value="" name="mysql_admin_user" class="required" minlength="2" /> </div>
-        <div>Password: <input type="password" value="" name="mysql_admin_pass"/></div>
-      </fieldset>
+        <div><label for="mysql_admin_user">DB Username:</label> <input type="text" value="" name="mysql_admin_user" class="required" minlength="2" /> </div>
+        <div><label for="mysql_admin_pass">DB Password:</label> <input type="password" value="" name="mysql_admin_pass"/></div>
       
-      <h2>Database Setup</h2>
-      <fieldset>
+      <table class="header"><tr><td><nobr>Database Setup</nobr></td><td class="line"><hr /></td></tr></table>
         <div></div>
         <br />
-        <div>Database host: <input type="text" value="127.0.0.1" name="mysql_db_host" class="required" /> </div>
-        <div>Database port: <input type="text" value="3306" name="mysql_db_port" class="required" /> </div>
-        <div>Database Name: <input type="text" value="" name="mysql_db_name" class="required" minlength="3" /> </div>
-        <h3>Database user</h3>
-        <div>username: <input type="text" value="" name="mysql_touchstone_username" class="required" minlength="3"/></div>
-        <div>password: <input type="password" value="" name="mysql_touchstone_passwd" class="required" minlength="8" /></div>
-      </fieldset>
+        <div><label for="mysql_db_host">Database host:</label> <input type="text" value="127.0.0.1" name="mysql_db_host" class="required" /> </div>
+        <div><label for="mysql_db_port">Database port:</label> <input type="text" value="3306" name="mysql_db_port" class="required" /> </div>
+        <div><label for="mysql_db_name">Database Name:</label> <input type="text" value="" name="mysql_db_name" class="required" minlength="3" /> </div>
       
-      <h2>TouchStone SysAdmin User</h2>
-      <fieldset>
+      <table class="header"><tr><td><nobr>TouchStone Database user</nobr></td><td class="line"><hr /></td></tr></table>
+        <div><label for="mysql_touchstone_username">Username</label> <input type="text" value="" name="mysql_touchstone_username" class="required" minlength="3"/></div>
+        <div><label for="mysql_touchstone_passwd">Password:</label> <input type="password" value="" name="mysql_touchstone_passwd" class="required" minlength="8" /></div>
+      
+      <table class="header"><tr><td><nobr>TouchStone LDAP configuration</nobr></td><td class="line"><hr /></td></tr></table>
+        <div><label for="useLdap">Use LDAP:</label><input id="useLdap" name="useLdap" type="checkbox" /></div>
+        <div id="ldapOptions" style="display:none;">
+          <br/>
+          <div><label for="ldap_server">LDAP server:</label> <input type="text" value="" name="ldap_server" /> </div>
+          <div><label for="ldap_search_dn">Search dn:</label> <input type="text" value="" name="ldap_search_dn" /> </div>
+          <div><label for="ldap_bind_rdn">bind username:</label> <input type="text" value="" name="ldap_bind_rdn" /> </div>
+          <div><label for="ldap_bind_password">bind password:</label> <input type="password" value="" name="ldap_bind_password" /> </div>
+        </div>
+      
+      <table class="header"><tr><td><nobr>TouchStone SysAdmin User</nobr></td><td class="line"><hr /></td></tr></table>
         <div></div>
         <br />
-        <div>Title: <input type="text" value="" name="SysAdmin_title" class="required" /> </div>
-        <div>First Name: <input type="text" value="" name="SysAdmin_first" class="required" /> </div>
-        <div>Surname: <input type="text" value="" name="SysAdmin_last" class="required" minlength="3" /> </div>
-        <div>Email Address: <input type="text" value="" name="SysAdmin_email" class="required email" /></div>
-        <div>username: <input type="text" value="" name="SysAdmin_username" class="required" minlength="3"/></div>
-        <div>password: <input type="password" value="" name="SysAdmin_password" class="required" minlength="8" /></div>
-      </fieldset>
-      <div> <input type="submit" name="install" value="Install Touchstone" /> </div>
+        <div><label for="SysAdmin_title">Title:</label> 
+          <select name="SysAdmin_title" class="required">
+            <option value=""></option>
+            <option value="Dr">Dr</option>
+            <option value="Mr">Mr</option>
+            <option value="Mrs">Mrs</option>
+            <option value="Miss">Miss</option>
+            <option value="Ms">Ms</option>
+            <option value="Professor">Professor</option>
+          </select>
+        </div>
+        <div><label for="SysAdmin_first">First Name:</label> <input type="text" value="" name="SysAdmin_first" class="required" /> </div>
+        <div><label for="SysAdmin_last">Surname:</label> <input type="text" value="" name="SysAdmin_last" class="required" minlength="3" /> </div>
+        <div><label for="SysAdmin_email">Email Address:</label> <input type="text" value="" name="SysAdmin_email" class="required email" /></div>
+        <div><label for="SysAdmin_username">username:</label> <input type="text" value="" name="SysAdmin_username" class="required" minlength="3"/></div>
+        <div><label for="SysAdmin_password">password:</label> <input type="password" value="" name="SysAdmin_password" class="required" minlength="8" /></div>
+      
+      <table class="header"><tr><td><nobr>TouchStone Help Database</nobr></td><td class="line"><hr /></td></tr></table>
+        <div><label for="loadHelp">Load Help:</label> <input id="loadHelp" name="loadHelp" type="checkbox" checked="checked"/></div>
+      
+      <table class="header"><tr><td><nobr>Support Email</nobr></td><td class="line"><hr /></td></tr></table>
+        <div></div>
+        <br />
+        <div><label for="">Support Email:</label> <input type="text" value="" name="support_email" class="" class="email"/> </div>
+      
+      <table class="header"><tr><td><nobr>Emergency Support Numbers</nobr></td><td class="line"><hr /></td></tr></table>
+        <div><label for="emergency_support1">Type:</label> <input type="text" value="" name="emergency_support1" class="" /> Number: <input type="text" value="" name="emergency_support_number1" class="" /></div>
+        <div><label for="emergency_support2">Type:</label> <input type="text" value="" name="emergency_support2" class="" /> Number: <input type="text" value="" name="emergency_support_number2" class="" /></div>
+        <div><label for="emergency_support3">Type:</label> <input type="text" value="" name="emergency_support3" class="" /> Number: <input type="text" value="" name="emergency_support_number3" class="" /></div>
+        
+      <div class="submit"> <input type="submit" name="install" value="Install Touchstone" /> </div>
     </form>
     <?php
   }
   
   static function  processForm() {
-    
+     
     //check admin database user name and password and create the connection
     self::$cfg_db_host = $_POST['mysql_db_host'];
     self::$cfg_db_port = $_POST['mysql_db_port'];
@@ -102,18 +148,84 @@ Class InstallUtils {
     self::$db_admin_passwd = $_POST['mysql_admin_pass'];
     self::$cfg_db_username = $_POST['mysql_touchstone_username'];
     self::$cfg_db_password = $_POST['mysql_touchstone_passwd'];
-    
     self::$cfg_SysAdmin_username = $_POST['SysAdmin_username'];
-
     
+    //LDAP
+    self::$cfg_ldap_server = $_POST['ldap_server'];
+    self::$cfg_ldap_search_dn = $_POST['ldap_search_dn'];
+    self::$cfg_ldap_bind_rdn = $_POST['ldap_bind_rdn'];
+    self::$cfg_ldap_bind_password = $_POST['ldap_bind_password'];
+    if( self::$cfg_ldap_server != '' ) { 
+      self::$cfg_use_ldap = 'true';
+    } else {
+      self::$cfg_use_ldap = 'false';
+    }
+    
+    //ASISTANCE
+    self::$cfg_support_email = $_POST['support_email'];
+    self::$emergency_support_numbers = 'array(';
+    for($i = 1; $i<=3; $i++) {
+      if($_POST["emergency_support$i"] != '') {
+        self::$emergency_support_numbers .= "'" . $_POST["emergency_support$i"] . "'=>'" . $_POST["emergency_support_number$i"] . "'";
+      }
+    }
+    self::$emergency_support_numbers .= ')';
 
+    //CREATE and populate DB
     self::$db = new mysqli(self::$cfg_db_host , self::$db_admin_username, self::$db_admin_passwd,'',self::$cfg_db_port);
     if (mysqli_connect_error()) {
       self::displayError(array('001' => mysqli_connect_error()));  
     }
     self::createDatabase(self::$cfg_db_name);
     
+    //LOAD help if requested
+    if(isset($_POST['loadHelp'])) {
+      self::loadHelp();
+    }
+    
+    //Write out the config file
     self::writeConfigFile();
+    
+    echo "<h1>Touchstone Installed</h1>";
+    
+    self::displayWarnings();
+    
+  }
+  
+  
+  /**
+  * Load the UoN help databases
+  *
+  */
+  static function loadHelp() {
+    $staff_help = './staff_help.sql';
+    $student_help = './student_help.sql';
+    
+    //make sure we are using the right DB
+    self::$db->select_db(self::$cfg_db_name);
+    
+    if (file_exists($staff_help)) {
+      $query = file_get_contents($staff_help);
+      self::$db->query("TRUNCATE staff_help");
+      self::$db->query($query);
+      if (self::$db->errno != 0) {
+        self::logWarning(array('501' => "could not load staff_hlep.sql, could not install staff help" . self::$db->error )); 
+      }
+    } else {
+      self::logWarning(array('502'=>'cannot find staff_hlep.sql, could not install staff help'));
+    }
+    
+    if (file_exists($student_help)) {
+      $query = file_get_contents($student_help);
+      self::$db->query("TRUNCATE student_help");
+      self::$db->query($query);
+      if (self::$db->errno != 0) {
+        self::logWarning(array('503' => "could not load student_help.sql, could not install student help " . self::$db->error )); 
+      }
+    } else {
+      self::logWarning(array('504'=>'cannot find student_help.sql, could not install student help'));
+    }
+    
   }
   
   /**
@@ -129,13 +241,11 @@ Class InstallUtils {
       self::displayError(array('010' => "The database name '$dbname' is in use please use a different one")); 
     }
     $res->close();
-    
-    $res = self::$db->prepare("CREATE DATABASE $dbname");
-    $res->execute();
+  
+    self::$db->query("CREATE DATABASE $dbname"); //have to use query here oldvers of php throw an error 
     if (self::$db->errno != 0) {
       self::displayError(array('011' => "The database '$dbname' could not be created please check the admin users permissions")); 
     }
-    $res->close();
     
     //select the newly created database
     self::$db->change_user(self::$db_admin_username, self::$db_admin_passwd,self::$cfg_db_name);
@@ -152,13 +262,13 @@ Class InstallUtils {
     //create touchstone 'database user' and grant permissions
     self::$db->query("CREATE USER  '" . self::$cfg_db_username . "'@'localhost'");
     if (self::$db->errno != 0) {
-      self::displayWarning(array('013'=>'Database user ' . self::$cfg_db_username . ' could not be created'));
+      self::logWarning(array('013'=>'Database user ' . self::$cfg_db_username . ' could not be created'));
     } 
     
-    self::$db->query("GRANT SELECT,INSERT,UPDATE,DELETE ON " . self::$cfg_db_name . ".* TO '" . self::$cfg_db_name . "'@'localhost' IDENTIFIED BY '" . self::$cfg_db_password . "'");
+    self::$db->query("GRANT SELECT,INSERT,UPDATE,DELETE ON " . self::$cfg_db_name . ".* TO '" . self::$cfg_db_username . "'@'localhost' IDENTIFIED BY '" . self::$cfg_db_password . "'");
     echo self::$db->error;
     if (self::$db->errno != 0) {
-      self::displayWarning(array('013'=>'Database user ' . self::$cfg_db_username . ' could not set permissions'));
+      self::logWarning(array('013'=>'Database user ' . self::$cfg_db_username . ' could not set permissions'));
     }  
     
     //create touchstone sysadmin user 
@@ -169,44 +279,44 @@ Class InstallUtils {
                             $_POST['SysAdmin_last'], 
                             $_POST['SysAdmin_email'], 
                             'University Lecturer', 
-                            '',
                             '', 
                             '1', 
-                            'Staff,SysAdmin', 
+                            'Staff,SysAdmin',
+                            '',
                             self::$db
                           );
     
     //create 100 guest accounts
     for ($i=1; $i<=100; $i++) {
-    
       UserUtils::createUser(  'user' . $i, 
                               '', //blank password will be generated
                               'Dr',
                               'A',
                               'User' . $i, 
                               '', 
-                              'none', 
-                              '',
+                              'none',
                               '', 
                               '1', 
-                              'Student', 
-                               self::$db
+                              'Student',
+                              '',                              
+                              self::$db
                             );
      }
      
      //add traing school
-     SchoolUtils::addSchool(  'Administrative and Support Units',
-                              'Training',
-                               self::$db
-                            );
+     $scoolID = SchoolUtils::addSchool(  'Administrative and Support Units',
+                                         'Training',
+                                         self::$db
+                                      );
      
      //create special modules
      ModuleUtils::addModules(  'TRAIN', 
                                 'Training Module', 
                                 1, 
-                                'Training', 
+                                $scoolID, 
                                 '',
                                 '', 
+                                0, 
                                 false, 
                                 false, 
                                 false, 
@@ -217,9 +327,10 @@ Class InstallUtils {
     ModuleUtils::addModules(   'SYSTEM', 
                                 'Online Help', 
                                 1, 
-                                'Training', 
+                                $scoolID, 
                                 '',
-                                '', 
+                                '',
+                                0,                                
                                 true, 
                                 true, 
                                 true, 
@@ -230,7 +341,7 @@ Class InstallUtils {
     //FLUSH PRIVILEGES
     self::$db->query("FLUSH PRIVILEGES");
     if (self::$db->errno != 0) {
-      self::displatWarning(array('014'=>'Unable to FLUSH PRIVILEGES'));
+      self::logWarning(array('014'=>'Unable to FLUSH PRIVILEGES'));
     }  
   }
   
@@ -343,17 +454,32 @@ Class InstallUtils {
   }
   
   /**
-  * Display errors with a nice message 
+  * Log warnings with a nice message 
   *
   */
-  static function displayWarning($warning = '') {
-    echo "<div class=\"error\">\n";
+  static function logWarning($warning = '') {
     if (is_array($warning)) {
-      foreach($warning as $code => $message) {
-        echo "\t<div>Warning $code:: $message</div>\n";
+      foreach($warning as $key => $val) {
+        self::$warnings[$key] = $val;
       }
     }
-    echo "</div>\n";
+  }
+  
+  /**
+  * Display warnings with a nice message 
+  *
+  */
+  static function displayWarnings() {
+    
+    if (is_array(self::$warnings)) {
+      echo "<h2>The folowing warnings were generated</h2>";
+      echo "<div class=\"warning\">\n";
+      foreach(self::$warnings as $code => $message) {
+        echo "\t<div>Warning $code:: $message</div>\n";
+      }
+      echo "</div>\n";
+    }
+    
   }
   
   /**
@@ -366,21 +492,37 @@ Class InstallUtils {
     <head>
       <title>TouchStone Install script</title>
       <style type="text/css">
-        label { width: 10em; float: left; }
-        label.error { float: none; color: red; padding-left: .5em; vertical-align: top; }
+        html { padding: 0em; margin: 0em; width: 100%}
+        body { padding: 0em; margin: 0em; width: 100%; font-family:Arial,sans-serif; font-size:100%; background-color:white; color:black }
+        .error { float: none; color: red; padding-left: .5em; vertical-align: top; }
+        .warning { float: none; color: red; padding-left: .5em; vertical-align: top; }
+        label { float:left; width:7.5em; padding-left:0em; text-align:left;}
         p { clear: both; }
-        .submit { margin-left: 12em; }
-        em { font-weight: bold; padding-right: 1em; vertical-align: top; }
+        .submit { margin-left: 42%; padding-top:2em; }
+        table {border:none;}
+        table.topbar {font-weight: bold; width:100%; border-collapse:collapse;}
+        .topbar td {background-color:#F1F5FB;}
+        .header {font-weight: bold; margin-top:1.5em;  margin-bottom:0.5em;  width:97%; color:#1E3287}
+        .header hr  {border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:97%;}
+        td.line {width:98%}
+        
+        input {width:200px}
+        form {padding: 1em}
+        form div {padding-left: 2em}
       </style>
       <script language="text/javascript" type="text/javascript" src="../javascript/jquery-1.6.1.min.js"></script>
       <script language="text/javascript" type="text/javascript" src="../javascript/jquery.validate.min.js"></script>
-      <script>
-        $(document).ready(function(){
-          $("#installForm").validate();
-        });
-      </script>
     </head>
     <body>
+    <table class="topbar"> 
+      <tr> 
+        <td><div style="font-size:22pt; font-weight:bold">&nbsp;TouchStone </div><div style="position:relative; left:12px; top:-3px; font-size:8pt">Assessment Management System</div></td> 
+        <td style="text-align:right"><img src="../artwork/touchstone_logo_330_85.png" width="330" height="85" alt="Logo" border="0" />&nbsp;&nbsp;</td> 
+      </tr> 
+      <tr> 
+        <td colspan="2" style="height:3px"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td> 
+      </tr> 
+    </table> 
     <?php
   }
   
@@ -424,7 +566,7 @@ define('DIR_SEPARATOR', '/');
   \$cfg_db_host 	   = '{cfg_db_host}';
 
 // SMS Imports
-  \$cfg_sms_sources = array('&lt;No lookup&gt;'=>'');
+  \$cfg_sms_api = '';
   
 //LDAP
   \$cfg_ldap_server        = '{cfg_ldap_server}';
@@ -433,6 +575,11 @@ define('DIR_SEPARATOR', '/');
   \$cfg_ldap_bind_password = '{cfg_ldap_bind_password}';
   \$cfg_use_ldap           = {cfg_use_ldap};
 
+// Institutional email domains
+// If using external authentication (e.g. LDAP) list the domains that will authenticate against the external system
+// This will allow you to change the password of any users that do not match against those domains (e.g. external examiners)
+  \$cfg_institutional_domains = array('nottingham.ac.uk');
+  
 //Editor
   \$cfg_editor_name = 'tinymce';
   \$cfg_editor_javascript = "<script language=\"JavaScript\" src=\"/touchstone/tools/tinymce/jscripts/tiny_mce/tiny_mce.js\"></script>\n<script language=\"JavaScript\" src=\"/touchstone/tools/tinymce/jscripts/tiny_mce/tiny_config.js\"></script>\n";
@@ -449,7 +596,7 @@ switch (strtolower(\$_SERVER['HTTP_HOST'])) {
   error_reporting(-1);          // PHP error reporting 
   
 //Assistance
-  \$support_email = '{support_email}';
+  \$support_email = '{cfg_support_email}';
   \$emergency_support_numbers = {emergency_support_numbers};
 
 //Global DEBUG OUTPUT
@@ -462,15 +609,15 @@ switch (strtolower(\$_SERVER['HTTP_HOST'])) {
 CONFIG;
 
     $config = str_replace('{ts_version}',self::$ts_version,$config);
-    $config = str_replace('{SysAdmin_username}','');
+    $config = str_replace('{SysAdmin_username}','USERNMAE_FOR_DEBUG',$config);
     $config = str_replace('{cfg_db_host}',self::$cfg_db_host,$config);
     $config = str_replace('{cfg_db_port}',self::$cfg_db_port,$config);
     $config = str_replace('{cfg_db_database}',self::$cfg_db_name,$config);
     $config = str_replace('{cfg_db_username}',self::$cfg_db_username,$config);
     $config = str_replace('{cfg_db_passwd}',self::$cfg_db_password,$config);
     
-    $config = str_replace('{support_email}',self::$support_email,$config);
-    $config = str_replace('{emergency_support_numbers}',self::$emergency_support_numbers = '',$config);
+    $config = str_replace('{cfg_support_email}',self::$cfg_support_email,$config);
+    $config = str_replace('{emergency_support_numbers}',self::$emergency_support_numbers,$config);
     
     $config = str_replace('{cfg_ldap_server}',self::$cfg_ldap_server,$config);
     $config = str_replace('{cfg_ldap_search_dn}',self::$cfg_ldap_search_dn,$config);
@@ -801,10 +948,11 @@ QUERY;
           `moduleid` char(25) default NULL,
           `fullname` text,
           `active` tinyint(4) default NULL,
-          `school` varchar(255) default NULL,
           `vle_api` varchar(255) default NULL,
           `checklist` varchar(255) default NULL,
           `sms` varchar(255) default NULL,
+          `selfenroll` tinyint default NULL,
+          `schoolid` int default NULL,
           PRIMARY KEY  (`id`),
           KEY `guideid` (`moduleid`)
         ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=latin1 PACK_KEYS=1
@@ -1245,7 +1393,6 @@ QUERY;
           `email` char(65) default NULL,
           `roles` char(40) default NULL,
           `id` smallint(6) NOT NULL auto_increment,
-          `faculty` varchar(80) default NULL,
           `first_names` char(60) default NULL,
           `gender` enum('Male','Female') default NULL,
           `last_login` datetime default NULL,
@@ -1254,6 +1401,37 @@ QUERY;
           PRIMARY KEY  (`id`),
           KEY `username_index` (`username`)
         ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=latin1 PACK_KEYS=1
+QUERY;
+
+    $this->tableList['admin_access'] = <<<QUERY
+      CREATE TABLE `admin_access` (
+        `adminID` int(11) NOT NULL AUTO_INCREMENT,
+        `userID` int(11) DEFAULT NULL,
+        `schools_id` int(11) DEFAULT NULL,
+        PRIMARY KEY (`adminID`)
+      ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1
+QUERY;
+
+    $this->tableList['password_tokens'] = <<<QUERY
+      CREATE TABLE `password_tokens` (
+        `id` int(11) NOT NULL auto_increment,
+        `user_id` int(11) NOT NULL,
+        `token` char(16) NOT NULL,
+        `time` datetime NOT NULL,
+        PRIMARY KEY  (`id`)
+      ) ENGINE=MyISAM DEFAULT CHARSET=latin1
+QUERY;
+
+    $this->tableList['users_metadata'] = <<<QUERY
+      CREATE TABLE `users_metadata` (
+        `id` int(11) NOT NULL auto_increment,
+        `userID` int(11) default NULL,
+        `moduleID` int(11) default NULL,
+        `type` varchar(255) default NULL,
+        `value` varchar(255) default NULL,
+        `calendar_year` enum('2010/11','2011/12','2012/13','2013/14','2014/15','2015/16','2016/17','2017/18','2018/19','2019/20') default NULL,
+        PRIMARY KEY  (`id`)
+      ) ENGINE=MyISAM DEFAULT CHARSET=latin1
 QUERY;
 
   }

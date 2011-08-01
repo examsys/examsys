@@ -28,11 +28,6 @@
 ?>
 <script src="/touchstone/javascript/sidebar.js" type="text/javascript"></script>
 <script language="JavaScript">
-  function addToPaper(questionID) {
-    notice=window.open("add_question_to_paper.php?q_id="+questionID+"","properties","width=420,height=500,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
-    notice.moveTo(screen.width/2-210,screen.height/2-250);
-  }
-
   function updateCookies() {
     if (document.getElementById('myquestions').checked == 1) {
       setting = " checked";
@@ -87,16 +82,16 @@
   }
 
   function copyToPaper() {
-    notice=window.open("/touchstone/question/copy_onto_paper.php?q_id=" + document.PapersMenu.questionID.value + "","notice","width=500,height=" + (screen.height-100) + ",scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
-    notice.moveTo(screen.width/2-250,10);
+    notice=window.open("/touchstone/question/copy_onto_paper.php?q_id=" + document.PapersMenu.questionID.value + "","notice","width=600,height=" + (screen.height-100) + ",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+    notice.moveTo(screen.width/2-300,20);
     if (window.focus) {
       notice.focus();
     }
   }
 
   function linkToPaper() {
-    notice=window.open("/touchstone/question/add/add_question_to_paper.php?q_id=" + document.PapersMenu.questionID.value + "","properties","width=420,height=500,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
-    notice.moveTo(screen.width/2-210,screen.height/2-250);
+    notice=window.open("/touchstone/question/add/add_question_to_paper.php?q_id=" + document.PapersMenu.questionID.value + "","properties","width=600,height=" + (screen.height-100) + ",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+    notice.moveTo(screen.width/2-300,20);
     if (window.focus) {
       notice.focus();
     }
@@ -154,7 +149,7 @@
 <tr><td><img src="/touchstone/artwork/edit_icon_16_grey.png" width="16" height="16" alt="Edit" /></td><td class="greymenuitem">Edit Question</td></tr>
 <tr><td><img src="/touchstone/artwork/information_icon_grey.gif" width="16" height="16" alt="Information" /></td><td class="greymenuitem">Information</td></tr>
 <tr><td><img src="/touchstone/artwork/copy_icon_grey.gif" width="16" height="16" alt="Copy" /></td><td class="greymenuitem">Copy onto Paper X...</td></tr>
-<tr><td><img src="/touchstone/artwork/link_grey.png" width="16" height="16" alt="Link 2 Paper" /></td><td class="greymenuitem">Link to paper</td></tr>
+<tr><td><img src="/touchstone/artwork/link_grey.png" width="16" height="16" alt="Link 2 Paper" /></td><td class="greymenuitem">Link to Paper X...</td></tr>
 <tr><td><img src="/touchstone/artwork/red_cross_grey.png" width="16" height="16" alt="Delete" /></td><td class="greymenuitem">Delete Question</td></tr>
 </table>
 
@@ -162,7 +157,7 @@
 <tr><td><a id="edit" onclick="editQuestion(); return false;" href="#"><img src="/touchstone/artwork/new_question_menu_icon.gif" width="16" height="16" alt="Edit" border="0" /></a></td><td class="menuitem"><a id="edit" onclick="editQuestion(); return false;" href="#">Edit Question</a></td></tr>
 <tr><td><a id="information" href="#" onclick="questionInfo(); return false;"><img src="/touchstone/artwork/information_icon.gif" width="16" height="16" alt="Information" border="0" /></a></td><td class="menuitem"><a id="information" href="#" onclick="questionInfo(); return false;">Information</a></td></tr>
 <tr><td><a id="copy" href="#" onclick="copyToPaper(); return false;"><img src="/touchstone/artwork/copy_icon.gif" width="16" height="16" alt="Copy" border="0" /></a></td><td class="menuitem"><a id="copy" href="#" onclick="copyToPaper(); return false;">Copy onto Paper X...</a></td></tr>
-<tr><td><a id="link" href="#" onclick="linkToPaper(); return false;"><img src="/touchstone/artwork/link.png" width="16" height="16" alt="Link 2 Paper" border="0" /></a></td><td class="menuitem"><a id="link" href="#" onclick="linkToPaper(); return false;">Link to paper</a></td></tr>
+<tr><td><a id="link" href="#" onclick="linkToPaper(); return false;"><img src="/touchstone/artwork/link.png" width="16" height="16" alt="Link 2 Paper" border="0" /></a></td><td class="menuitem"><a id="link" href="#" onclick="linkToPaper(); return false;">Link to Paper X...</a></td></tr>
 <tr><td><a id="delete" href="#" onclick="deleteQuestion(); return false;"><img src="/touchstone/artwork/red_cross.png" width="16" height="16" alt="Delete" border="0" /></a></td><td class="menuitem"><a id="delete" href="#" onclick="deleteQuestion(); return false;">Delete Question</a></td></tr>
 </table>
 
@@ -170,7 +165,7 @@
 <tr><td><a id="edit" onclick="editQuestion(); return false;" href="#"><img src="/touchstone/artwork/new_question_menu_icon.gif" width="16" height="16" alt="Edit" border="0" /></a></td><td class="menuitem"><a id="edit" onclick="editQuestion(); return false;" href="#">Edit Question</a></td></tr>
 <tr><td><a id="information" href="#" onclick="questionInfo(); return false;"><img src="/touchstone/artwork/information_icon.gif" width="16" height="16" alt="Information" border="0" /></a></td><td class="menuitem"><a id="information" href="#" onclick="questionInfo(); return false;">Information</a></td></tr>
 <tr><td><a id="copy" href="#" onclick="copyToPaper(); return false;"><img src="/touchstone/artwork/copy_icon.gif" width="16" height="16" alt="Copy" border="0" /></a></td><td class="menuitem"><a id="copy" href="#" onclick="copyToPaper(); return false;">Copy onto Paper X...</a></td></tr>
-<tr><td><a id="link" href="#" onclick="linkToPaper(); return false;"><img src="/touchstone/artwork/link.png" width="16" height="16" alt="Link 2 Paper" border="0" /></a></td><td class="menuitem"><a id="link" href="#" onclick="linkToPaper(); return false;">Link to paper</a></td></tr>
+<tr><td><a id="link" href="#" onclick="linkToPaper(); return false;"><img src="/touchstone/artwork/link.png" width="16" height="16" alt="Link 2 Paper" border="0" /></a></td><td class="menuitem"><a id="link" href="#" onclick="linkToPaper(); return false;">Link to Paper X...</a></td></tr>
 <tr><td><img src="/touchstone/artwork/red_cross_grey.png" width="16" height="16" alt="Delete" border="0" /></td><td class="greymenuitem">Delete Question</td></tr>
 </table>
 

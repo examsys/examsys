@@ -1,7 +1,6 @@
 <?php
 
-class ST_Paper
-{
+class ST_Paper {
 	var $load_id;
 	var $save_id;
 
@@ -12,22 +11,19 @@ class ST_Paper
 	var $nextscreen = 1;
 	var $nextquestion = 1;
 	
-	function GetNextScreenID()
-	{
+	function GetNextScreenID() {
 		$i = $this->nextscreen;
 		$this->nextscreen++;
 		return $i;	
 	}
 	
-	function GetNextQuestionID()
-	{
+	function GetNextQuestionID() {
 		$i = $this->nextquestion;
 		$this->nextquestion++;
 		return $i;	
 	}
 }
 
-class ST_Paper_Screen
-{
+class ST_Paper_Screen {
 	var $question_ids = array(); // array of question ids key by ordering
 }

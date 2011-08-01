@@ -70,6 +70,5 @@ $session = DateUtils::get_current_academic_year();
 
 <input type="hidden" name="moduleID" id="moduleID" value="" />
 <input type="hidden" name="divID" value="" />
-<input type="hidden" name="oldDivID" value="" />
 </form>
 </div>

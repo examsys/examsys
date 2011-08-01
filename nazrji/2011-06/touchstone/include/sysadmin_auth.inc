@@ -27,13 +27,7 @@
 require_once 'staff_student_auth.inc';
   
   if (strpos($userroles,'SysAdmin') === false) {
-    Header("WWW-authenticate: basic realm=\"TouchStone\"");
-    Header("HTTP/1.0 401 Unauthorised");
-    echo "<html>\n<head>\n<title>Access Denied</title>\n<style>\nbody {font-size:90%; font-family:Arial,sans-serif; background-color:#FCFCFC; color:#575757}\nh1 {font-weight:normal; color:#BF0000; font-size:140%}\n</style>\n</head>\n<body>\n";
-    echo "<div style=\"position:absolute; left:10px; top:10px\"><img src=\"/touchstone/artwork/access_denied.png\" width=\"48\" height=\"48\" /></div>\n";
-    echo "<h1 style=\"margin-left:60px\">Access Denied</h1>\n";
-    echo "<hr size=\"1\" align=\"left\" width=\"500\" style=\"margin-left:60px; color:#C0C0C0; background-color:#C0C0C0\" />\n<p style=\"margin-left:60px\"><strong>Access Denied</strong><br />you are attempting to access a system admin only screen.</p>\n</body>\n</html>";
-    exit;
+    access_denied('<strong>Access Denied</strong><br />you are attempting to access a system admin only screen.',true);
   } 
 
   // Get teams.

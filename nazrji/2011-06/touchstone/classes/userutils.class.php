@@ -28,7 +28,7 @@ require_once ($_SERVER['DOCUMENT_ROOT'] . '/touchstone/classes/passwordutils.cla
 
 Class UserUtils {
 
-  static function createUser($username, $password, $title, $forname, $surname, $email, $degree, $faculty, $gender, $year, $role, $db) {
+  static function createUser($username, $password, $title, $forname, $surname, $email, $degree, $gender, $year, $role, $sid, $db) {
     
     if (!self::usernameExists($username, $db) and $username != '' and stristr('ps_',$username) === false) {
       $initial = explode(' ',$forname);
@@ -41,18 +41,19 @@ Class UserUtils {
       $title = self::my_ucwords(trim($title));  
 
       //if there is no password georate one
-      if($password == '') {
+      if ($password == '') {
         $password =  PasswordUtils::gen_password();
       }
       
       //add new users
-      $result = $db->prepare("INSERT INTO users VALUES(?,?,?,?,?,?,?,?,NULL,?,?,?,NULL,0,?)");
-      $result->bind_param('sssssssssssi', PasswordUtils::encpw($username, $password), $degree, $surname, $initials, $title, $username, $email, $role, $faculty,  $forname, $gender, $year);
+      $result = $db->prepare("INSERT INTO users VALUES(?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, NULL, 0, ?)");
+      $password = PasswordUtils::encpw($username, $password);
+      $result->bind_param('ssssssssssi', $password, $degree, $surname, $initials, $title, $username, $email, $role, $forname, $gender, $year);
       $result->execute();
       $result->close();
       $userID = $db->insert_id;
-      if(isset($sid) and $sid != '') {
-        $result = $db->prepare("INSERT INTO sid VALUES(?,?)");
+      if (isset($sid) and $sid != '') {
+        $result = $db->prepare("INSERT INTO sid VALUES(?, ?)");
         $result->bind_param('si', $sid, $userID);
         $result->execute();
         $result->close();
@@ -61,22 +62,60 @@ Class UserUtils {
     }
     
     return false;
-    
   }
   
+  /**
+   * Check if username exists and if so return ID.
+   *
+   * @param string $username username
+   * @param object $db mysqli database connection
+   * @return mixed user ID if exists, otherwise false
+   *
+   */
   static function usernameExists($username, $db) {
     $stmt = $db->prepare("SELECT id FROM users WHERE username=?");
     $stmt->bind_param('s', $username);
     $stmt->execute();
     $stmt->store_result();
-    $stmt->bind_result($userID);
+    $stmt->bind_result($tmp_userID);
     $stmt->fetch();
-    if($stmt->num_rows == 0) {
+    if ($stmt->num_rows == 0) {
       return false;
     } else {
-      return true;
+      return $tmp_userID;
     }
+  }
+
+  /**
+   * Enrole a student on a module.
+   *
+   * @param int $userID ID of the student to be enroled.
+   * @param string $module Module ID for the enrolement.
+   * @param object $db $mysqli database connection.
+   * @return bool return true if successful.
+   *
+   */
+  static function addUserToModule($userID, $module, $session, $db) {
+    $result = $db->prepare("INSERT INTO student_modules VALUES(NULL, ?, ?, ?, 1, 0)");
+    $result->bind_param('iss', $userID, $module, $session);
+    $result->execute();
+    $result->close();
+    if ($db->errno != 0) {
+      return false;
+    }
+    return true;
   } 
+
+  static function removeUserFromModule($userID, $module, $session, $db) {
+    $result = $db->prepare("DELETE FROM student_modules WHERE userID=? AND moduleid=?");
+    $result->bind_param('is', $userID, $module);
+    $result->execute();
+    $result->close();
+    if ($db->errno != 0) {
+      return false;
+    }
+    return true;
+  }   
  
   static function fixcase_callback($word) { 
     $word = $word[1]; 
@@ -101,6 +140,5 @@ Class UserUtils {
     $s = preg_replace_callback("/(\b[\w|']+\b)/s", array('UserUtils','fixcase_callback'), $s); 
     return $s;         
   }
-  
 }
 ?>

@@ -10,9 +10,9 @@
 
 (function() {
 	// Load plugin specific language pack
-	tinymce.PluginManager.requireLangPack('insertcaptivate');
+	tinymce.PluginManager.requireLangPack('insertcaptivatestudent');
 
-	tinymce.create('tinymce.plugins.insertcaptivatePlugin', {
+	tinymce.create('tinymce.plugins.insertcaptivatestudentPlugin', {
 		/**
 		 * Initializes the plugin, this will be executed after the plugin has been created.
 		 * This call is done before the editor instance has finished it's initialization so use the onInit event
@@ -22,12 +22,12 @@
 		 * @param {string} url Absolute URL to where the plugin is located.
 		 */
 		init : function(ed, url) {
-			// Register the command so that it can be invoked by using tinyMCE.activeEditor.execCommand('mceinsertcaptivate');
-			ed.addCommand('mceinsertcaptivate', function() {
+			// Register the command so that it can be invoked by using tinyMCE.activeEditor.execCommand('mceinsertcaptivatestudent');
+			ed.addCommand('mceinsertcaptivatestudent', function() {
 				ed.windowManager.open({
 					file : url + '/dialog.php',
-					width : 320 + parseInt(ed.getLang('insertcaptivate.delta_width', 0)),
-					height : 120 + parseInt(ed.getLang('insertcaptivate.delta_height', 0)),
+					width : 320 + parseInt(ed.getLang('insertcaptivatestudent.delta_width', 0)),
+					height : 120 + parseInt(ed.getLang('insertcaptivatestudent.delta_height', 0)),
 					inline : 1
 				}, {
 					plugin_url : url, // Plugin absolute URL
@@ -35,16 +35,16 @@
 				});
 			});
 
-			// Register insertcaptivate button
-			ed.addButton('insertcaptivate', {
-				title : 'insertcaptivate.desc',
-				cmd : 'mceinsertcaptivate',
+			// Register insertcaptivatestudent button
+			ed.addButton('insertcaptivatestudent', {
+				title : 'insertcaptivatestudent.desc',
+				cmd : 'mceinsertcaptivatestudent',
 				image : url + '/img/captivate.gif'
 			});
 
 			// Add a node change handler, selects the button in the UI when a image is selected
 			ed.onNodeChange.add(function(ed, cm, n) {
-				cm.setActive('insertcaptivate', n.nodeName == 'IMG');
+				cm.setActive('insertcaptivatestudent', n.nodeName == 'IMG');
 			});
 		},
 
@@ -70,15 +70,15 @@
 		 */
 		getInfo : function() {
 			return {
-				longname : 'insertcaptivate plugin',
+				longname : 'insertcaptivatestudent plugin',
 				author : 'Simon Wilkinson',
 				authorurl : 'http://tinymce.moxiecode.com',
-				infourl : 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/insertcaptivate',
+				infourl : 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/insertcaptivatestudent',
 				version : "1.0"
 			};
 		}
 	});
 
 	// Register plugin
-	tinymce.PluginManager.add('insertcaptivate', tinymce.plugins.insertcaptivatePlugin);
+	tinymce.PluginManager.add('insertcaptivatestudent', tinymce.plugins.insertcaptivatestudentPlugin);
 })();

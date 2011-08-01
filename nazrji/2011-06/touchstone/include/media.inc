@@ -113,8 +113,11 @@ function uploadFile($fileID, &$file_width, &$file_height) {
   global $cfg_web_root;
   $file_width = 0;
   $file_height = 0;
+  if(!isset($_FILES[$fileID])) {
+    return '';
+  }
+  
   $unique_name = unique_filename($_FILES[$fileID]['name']);
-
   if ($unique_name != 'none' and $unique_name != '') {
     if (!move_uploaded_file($_FILES[$fileID]['tmp_name'], $cfg_web_root . "touchstone/media/$unique_name"))  {
       echo uploadError($_FILES[$fileID]['error']);

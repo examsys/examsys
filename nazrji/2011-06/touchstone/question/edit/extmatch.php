@@ -166,7 +166,7 @@ if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
     $tmp_old_scenario = '';
 
     for ($qcount=0; $qcount<10; $qcount++) {
-      if (isset($_FILES["media$qcount"])) {
+      if (isset($_FILES["media$qcount"]) and $_FILES["media$qcount"]['error'] != 4) {
         $media_name = $_FILES["media$qcount"]['name'];
         $media_type = $_FILES["media$qcount"]['type'];
       } else {
@@ -236,15 +236,21 @@ if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
       if (trim(strip_tags(nl2br(str_replace('&nbsp;','',$_POST["scenario_text$qcount"])))) != '' or $media_name != '' or (isset($_POST["old_media$qcount"]) and $_POST["old_media$qcount"] != '') ) {
         $tmp_scenario .= '|' . clearMSOtags($_POST["scenario_text$qcount"]);
         $tmp_old_scenario .= '|' . $_POST["old_scenario_text$qcount"];
-        $addr = $_POST["correct_options$qcount"];
-        $count = count($addr);
-        for ($i=0; $i<$count; $i++) {
-          if ($i == 0) {
-            $store_answer = ($addr[$i] + 1);
-          } else {
-            $store_answer .= '$' . ($addr[$i] + 1);
+        if(isset($_POST["correct_options$qcount"])) {
+          $addr = $_POST["correct_options$qcount"];
+          $count = count($addr);
+          for ($i=0; $i<$count; $i++) {
+            if ($i == 0) {
+              $store_answer = ($addr[$i] + 1);
+            } else {
+              $store_answer .= '$' . ($addr[$i] + 1);
+            }
           }
+        } else {
+          $addr = '';
+          $store_answer = 0;
         }
+        
         $tmp_answer .= '|' . $store_answer;
         $old_tmp_answer .= '|' . $_POST["old_correct_options$qcount"];
         if ($tmp_correct_feedback == '') {
@@ -293,7 +299,7 @@ if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
     record_trackChanges('Edit Question', $q_id, $_POST['old_teams'], $question_teams, 'teams', $userID, $changes);
   
     for ($ocount=0; $ocount<26; $ocount++) {
-      if (html_entity_decode($_POST["option_text$ocount"]) != html_entity_decode($_POST["old_option_text$ocount"])) $changes = true;
+      if ($_POST["option_text$ocount"] != $_POST["old_option_text$ocount"]) $changes = true;
     }
   
     save_external_responses($mysqli);
@@ -301,9 +307,9 @@ if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
     if ($changes == true) {
       $bloom = (empty($bloom)) ? NULL : $bloom;
     	$result = $mysqli->prepare("UPDATE questions SET theme=?, scenario=?, leadin=?, correct_fback=?, incorrect_fback=?, notes=?, q_media=?, q_media_width=?, q_media_height=?, q_group=?, bloom=?, scenario_plain=?, leadin_plain=?, last_edited=NOW(), status=?, q_option_order=? WHERE q_id=?");
-      $tmp_scenario = trim(strip_tags($tmp_scenario));
-      $tmp_leadin = trim(strip_tags($tmp_leadin));
-      $result->bind_param('sssssssssssssssi', $tmp_theme, $tmp_scenario, $tmp_leadin, $tmp_correct_feedback, $tmp_incorrect_feedback, $tmp_notes, $tmp_media, $tmp_media_width, $tmp_media_height, $question_teams, $bloom, $tmp_scenario, $tmp_leadin, $status, $option_order, $_GET['q_id']);
+      $tmp_scenario_plain = trim(strip_tags($tmp_scenario));
+      $tmp_leadin_plain = trim(strip_tags($tmp_leadin));
+      $result->bind_param('sssssssssssssssi', $tmp_theme, $tmp_scenario, $tmp_leadin, $tmp_correct_feedback, $tmp_incorrect_feedback, $tmp_notes, $tmp_media, $tmp_media_width, $tmp_media_height, $question_teams, $bloom, $tmp_scenario_plain, $tmp_leadin_plain, $status, $option_order, $_GET['q_id']);
       $result->execute();  
       $result->close();
       $question_id = $_GET['q_id'];
@@ -325,9 +331,9 @@ if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
     }
   
     for ($ocount=0; $ocount<26; $ocount++) {
-      if (isset($_POST["option_text$ocount"]) and html_entity_decode($_POST["option_text$ocount"]) != html_entity_decode($_POST["old_option_text$ocount"])) {
+      if (isset($_POST["option_text$ocount"]) and $_POST["option_text$ocount"] != $_POST["old_option_text$ocount"]) {
         $result = $mysqli->prepare("INSERT INTO track_changes VALUES (NULL,'Edit Question',?,$userID,?,?,NOW(),'Option " . chr($ocount + 65) . "')");
-        $tmp_old_option_text = html_entity_decode($_POST["old_option_text$ocount"]);
+        $tmp_old_option_text = $_POST["old_option_text$ocount"];
         $result->bind_param('iss', $_GET['q_id'],  $tmp_old_option_text, $_POST["option_text$ocount"]);
         $result->execute();  
         $result->close();
@@ -368,26 +374,17 @@ if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
       $matching_correct_fback = explode("|", $correct_fback);
       $matching_incorrect_fback = explode("|", $incorrect_fback);
       
-      $tmp_text_no = 0;
-      $tmp_media_no = 0;
-      foreach ($matching_scenarios as $single_scenario) {
-        if (trim($single_scenario) != '') $tmp_text_no++;
-      }          
-      foreach ($matching_media as $single_media) {
-        if (trim($single_media) != '') $tmp_media_no++;
+      $loop_limit = max(count($matching_scenarios), count($matching_media));
+      for($i = 0; $i <= $loop_limit; $i++) {
+        if (isset($matching_scenarios[$i]) and trim($matching_scenarios[$i]) != '' or (isset($matching_media[$i + 1]) and trim($matching_media[$i + 1]) != '')) $question_no++;
       }
-      if ($tmp_text_no > $tmp_media_no) {
-        $question_no = $tmp_text_no;
-      } else {
-        $question_no = $tmp_media_no;
-      }
-      
+
       $group = $q_group;
     }
     $matching_options[] = $option_text;
     $option_no++;
   }
-  
+    
   for ($i=0; $i<=20; $i++) {
     if (!isset($matching_scenarios[$i])) $matching_scenarios[$i] = '';
     if (!isset($matching_scenarios_plain[$i])) $matching_scenarios_plain[$i] = '';
@@ -466,17 +463,9 @@ if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
   echo displayEditTab($created, $modified, $locked);
 ?>
 </table>
-      <?php
-      if ($locked != '') {
-        echo "<table border=\"0\" cellpadding=\"3\" cellspacing=\"0\" style=\"width:100%; font-size:90%\">\n";
-        echo "<tr><td style=\"width:35px; height:32px; text-align:right; background-image:url('../../artwork/locked_gradient.png'); background-repeat:repeat-x\"><img src=\"../../artwork/paper_locked_padlock.png\" width=\"19\" height=\"24\" alt=\"Locked\" />&nbsp;&nbsp;</td><td colspan=\"7\" style=\"height:32px; vertical-align:middle; background-image:url('../../artwork/locked_gradient.png'); background-repeat:repeat-x\"><strong>Question Locked</strong>&nbsp;&nbsp;&nbsp;This question is now locked and cannot be modified. <a style=\"color:black\" href=\"#\" onclick=\"launchHelp(161); return false;\">Click for more details.</a></td></tr>\n";
-        echo "</table>\n";
-        $disabled = ' disabled';
-      } else {
-        $disabled = check_edit_rights($tmp_ownerID, $mysqli);
-        $checkout_author = check_lock_status($checkout_authorID, $checkout_time, $disabled, $mysqli, $q_id);
-      }
-      ?>
+  <?php
+    $disabled = check_edit_rights($q_id, $checkout_authorID, $checkout_time, $locked, $mysqli);
+  ?>
   <table cellpadding="3" cellspacing="0" border="0" align="center">
     <tr>
       <td class="section" colspan="2">General Details</td>
@@ -485,7 +474,7 @@ if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
     </tr>
     <tr>
       <td class="field" style="text-align:right">Theme/Heading</td>
-      <td><input type="text" name="theme" size="65" value="<?php echo $theme; ?>" /><input type="hidden" name="old_theme" value="<?php echo $theme; ?>" /></td>
+      <td><textarea name="theme" cols="83" rows="2" wrap="virtual" ><?php echo $theme; ?></textarea><textarea style="display:none" name="old_theme" ><?php echo $theme; ?></textarea></td>
       <td width="20">&nbsp;</td>
       <td rowspan="67" valign="top" style="text-align:right; padding-right:6px">
         <?php
@@ -494,9 +483,9 @@ if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
               echo '<span class="mandatory">*</span>&nbsp;';
             }
             if ($option < $option_no) {
-              echo "<span style=\"font-weight:bold; font-size:90%\">" . chr($option + 65) . ".&nbsp;</span><input onblur=\"updateoptions(" . $option . ")\" onchange=\"updateoptions(" . $option . ")\" type=\"text\" id=\"option_text" . $option . "\" name=\"option_text" . $option . "\" size=\"25\" value=\"" . $matching_options[$option] . "\" /><input type=\"hidden\" name=\"old_option_text" . $option . "\" value=\"" . $matching_options[$option] . "\" /><br />\n";
+              echo "<span style=\"font-weight:bold; font-size:90%\">" . chr($option + 65) . ".&nbsp;</span><textarea style=\"width:150px\" rows=\"1\" onblur=\"updateoptions(" . $option . ")\" onchange=\"updateoptions(" . $option . ")\"  id=\"option_text" . $option . "\" name=\"option_text" . $option . "\" >" . $matching_options[$option] . "</textarea><textarea style=\"display:none\" name=\"old_option_text" . $option . "\" >" . $matching_options[$option] . "</textarea><br />\n";
             } else {
-              echo "<span style=\"font-weight:bold; font-size:90%\">" . chr($option + 65) . ".&nbsp;</span><input onblur=\"updateoptions(" . $option . ")\" onchange=\"updateoptions(" . $option . ")\" type=\"text\" id=\"option_text" . $option . "\" name=\"option_text" . $option . "\" size=\"25\" /><input type=\"hidden\" name=\"old_option_text" . $option . "\" value=\"\" /><br />\n";
+              echo "<span style=\"font-weight:bold; font-size:90%\">" . chr($option + 65) . ".&nbsp;</span><textarea style=\"width:150px\" rows=\"1\" onblur=\"updateoptions(" . $option . ")\" onchange=\"updateoptions(" . $option . ")\"  id=\"option_text" . $option . "\" name=\"option_text" . $option . "\" ></textarea><input type=\"hidden\" name=\"old_option_text" . $option . "\" value=\"\"/><br />\n";
             }
           }
         ?>
@@ -508,7 +497,7 @@ if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
 <td width="20">&nbsp;</td>
 </tr>
 <tr>
-      <td class="field" style="text-align:right"><span class="mandatory">*</span>&nbsp;Lead-in<textarea style="display:none" name="old_leadin" id="old_leadin"><?php echo htmlentities($leadin,ENT_NOQUOTES,'UTF-8');?>"</textarea></td>
+      <td class="field" style="text-align:right"><span class="mandatory">*</span>&nbsp;Lead-in<textarea style="display:none" name="old_leadin" id="old_leadin"><?php echo htmlentities($leadin);?></textarea></td>
       <td><?php echo wysiwyg_editor('oEditLeadin','leadin',$leadin); ?>         
       </td>
       <td width="20">&nbsp;</td>
@@ -549,7 +538,7 @@ if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
         if ($question < 2) {
           echo '<span class="mandatory">*</span>&nbsp;';
         }
-        echo "Stem</td>\n<td><textarea style=\"display:none\" name=\"old_scenario_text$question\" id=\"old_scenario_text$question\">" . htmlentities($matching_scenarios[$question],ENT_NOQUOTES,'UTF-8') . "</textarea>";
+        echo "Stem</td>\n<td><textarea style=\"display:none\" name=\"old_scenario_text$question\" id=\"old_scenario_text$question\">" . htmlentities($matching_scenarios[$question]) . "</textarea>";
         echo wysiwyg_editor("oEdit$question","scenario_text$question",$matching_scenarios[$question]);
         echo "</td>\n<td width=\"20\">&nbsp;</td>\n</tr>\n";
         if ($matching_media[$question + 1] != '') {
@@ -559,7 +548,7 @@ if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
         }
         echo "<tr>\n<td class=\"field\">Change Media</td>\n<td><input type=\"file\" name=\"media$question\" size=\"68\" value=\"\" /></td>\n";
         echo "<td width=\"20\">&nbsp;<input type=\"hidden\" name=\"old_media$question\" value=\"" . $matching_media[$question + 1] . "\" /><input type=\"hidden\" name=\"old_media_width$question\" value=\"" . $matching_media_width[$question + 1] . "\" /><input type=\"hidden\" name=\"old_media_height$question\" value=\"" . $matching_media_height[$question + 1] . "\" /></td>\n</tr>\n";
-        echo "<tr>\n<td class=\"field\">Feedback</td>\n<td><textarea name=\"correct_fback" . $question . "\" cols=\"83\" rows=\"3\" wrap=\"virtual\">" . $matching_correct_fback[$question] . "</textarea></td>\n<td width=\"20\">&nbsp;<input type=\"hidden\" name=\"old_correct_fback" . $question . "\" value=\"" . htmlentities($matching_correct_fback[$question],ENT_NOQUOTES,'UTF-8') . "\" /></td>\n</tr>\n";
+        echo "<tr>\n<td class=\"field\">Feedback</td>\n<td><textarea name=\"correct_fback" . $question . "\" cols=\"83\" rows=\"3\" wrap=\"virtual\">" . $matching_correct_fback[$question] . "</textarea></td>\n<td width=\"20\">&nbsp;<textarea style=\"display:none\" name=\"old_correct_fback" . $question . "\">" .$matching_correct_fback[$question] . "</textarea></td>\n</tr>\n";
         echo "<tr>\n<td class=\"field\">";
         if ($question < 2) {
           echo '<span class="mandatory">*</span>&nbsp;';
@@ -585,7 +574,7 @@ if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
             echo "<option value=\"$option\">" . chr($option + 65) . ".</option>\n";
           }
         }
-        echo "</select></td><td><input type=\"hidden\" name=\"old_correct_options" . $question . "\" value=\"$matching_correct[$question]\" /></td>\n</tr>\n";
+        echo "</select></td><td><textarea style=\"display:none\" name=\"old_correct_options" . $question . "\" >" . $matching_correct[$question] . "</textarea></td>\n</tr>\n";
       } else {
         $hidden = 'style="display:none"';
         echo "<tr class=\"option\" $hidden>\n<td colspan=\"3\">&nbsp;</td>\n</tr>\n";

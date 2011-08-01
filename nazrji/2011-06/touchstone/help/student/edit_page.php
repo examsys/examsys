@@ -11,13 +11,6 @@
   require '../../include/errors.inc';
   header('Content-Type: text/html; charset=UTF-8');
   
-  function encodeHTML($sHTML) {
-    $sHTML=str_replace('&','&amp;',$sHTML);
-    $sHTML=str_replace('<','&lt;',$sHTML);
-    $sHTML=str_replace('>','&gt;',$sHTML);
-    return $sHTML;
-  }
-
   if (isset($_POST['save_changes'])) {
     // Update help file record
     $tmp_body = $_POST['edit1'];
@@ -80,7 +73,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
   </style>
   
   <script language="JavaScript" src="/touchstone/tools/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
-  <script language="JavaScript" src="/touchstone/tools/tinymce/jscripts/tiny_mce/tiny_config_help_staff.js"></script>
+  <script language="JavaScript" src="/touchstone/tools/tinymce/jscripts/tiny_mce/tiny_config_help_student.js"></script>
   <script language="JavaScript">
     function getSize() {
       if (parseInt(navigator.appVersion)>3) {
@@ -128,7 +121,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
   }
 
   echo "<p style=\"margin-left:20px\"><input type=\"text\" style=\"font-family:Verdana,sans-serif; color:#7598C4; font-size:160%; border: 1px solid #C0C0C0; font-weight:bold\" size=\"50\" name=\"page_title\" value=\"$page_title\" /></p>\n";
-  echo "<textarea class=\"mceEditor\" id=\"edit1\" name=\"edit1\" style=\"width:100%; height:500px\">" . encodeHTML($body) . "</textarea>\n";
+  echo "<textarea class=\"mceEditor\" id=\"edit1\" name=\"edit1\" style=\"width:100%; height:500px\">" . $body . "</textarea>\n";
 
   // Check for lockout.
   $current_time = date('YmdHis');

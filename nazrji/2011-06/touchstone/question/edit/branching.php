@@ -68,9 +68,7 @@ if ($_POST['submit'] == 'Save Changes') {
 
   setcookie("default_team", $_POST['team'], time()+31536000);
 
-  $mysqli->close();
-
-  redirect($paperID);
+  redirect();
 } else {
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"

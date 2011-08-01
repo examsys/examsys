@@ -428,8 +428,7 @@ class Database
 		
 		$results = array();
 		
-		while ($stmt->fetch())
-		{
+		while ($stmt->fetch()) {
 			$row = array();
 			foreach ($out as $key => $value)
 				$row[$key] = $value;
@@ -439,11 +438,9 @@ class Database
 		return $results;	
 	}
 	
-	function GetBlankTableRow($table)
-	{
+	function GetBlankTableRow($table)	{
 		return array();
-		if (array_key_exists($table,$this->blankrows))
-		{
+		if (array_key_exists($table,$this->blankrows)) {
 			return $this->blankrows[$table];	
 		}
 		$this->SetTable($table);
@@ -452,10 +449,8 @@ class Database
 		$q_row = $this->GetSingleRow();
 		
 		$output = array();
-		foreach($q_row as $field => $value)
-		{
-			if (is_int($value) || $value == '0')
-			{
+		foreach($q_row as $field => $value)	{
+			if (is_int($value) || $value == '0') {
 				$output[$field] = 0;	
 			} else {
 				$output[$field] = "";
@@ -465,8 +460,7 @@ class Database
 		return $output;
 	}
 	
-	function InsertRow($table, $pri_key, &$row)
-	{
+	function InsertRow($table, $pri_key, &$row) {
 		global $mysqli;
 
 		$query = "INSERT INTO $table (";
@@ -477,21 +471,17 @@ class Database
 		$params[0] = '';
 		$params[1] = "";
 
-		foreach($row as $field => $value)
-		{
-			if ($field != $pri_key && !empty($value))
-			{
+		foreach($row as $field => $value) {
+			if ($field != $pri_key && !empty($value)) {
 				$fieldnames[] = $field;
 				
 				// Params to mysqli_stmt_bind_param now need to be reference
 				$params[] = &$row[$field];
 				
 				$qmarks[] = '?';
-				if (is_int($value))
-				{
+				if (is_int($value))	{
 					$params[1] .= "i";
-				} else if (is_numeric($value))
-				{
+				} else if (is_numeric($value)) {
 					$params[1] .= "d";					
 				} else {
 					$params[1] .= "s";					
@@ -503,7 +493,6 @@ class Database
 		$query .= implode(",",$qmarks);
 		$query .= ")";
 		
-		//echo "QRY : " . $query . "<BR>";
 		$stmt = $mysqli->prepare($query);
 		$params[0] = $stmt;
 		call_user_func_array('mysqli_stmt_bind_param', $params);	

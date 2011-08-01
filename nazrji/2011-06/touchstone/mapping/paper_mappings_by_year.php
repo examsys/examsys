@@ -251,7 +251,7 @@ foreach($allsession as $moduleID => $module) {
       echo "<tr>\n\t<td style=\"width:2%\">&nbsp;</td><td style=\"width:48%\" class=\"obj\"><li>" . $obj['content'] . "</li></td>\n";
       $objID = $obj['id'];
       foreach($objsBySession as $p_id => $s) {
-        if (array_key_exists($identifier,$s[$moduleID])) {
+        if (isset($s[$moduleID]) and array_key_exists($identifier,$s[$moduleID])) {
           $mapped = false;
           if(isset($s[$moduleID][$identifier]['objectives'])) {
             foreach ($s[$moduleID][$identifier]['objectives'] as $tmpObj) {

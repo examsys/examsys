@@ -22,15 +22,13 @@
 * @package
 */
 
-class IE_qti12_Load extends IE_Main
-{	
+class IE_qti12_Load extends IE_Main {	
 	var $likert_values = array();
 	var $dich_values = array();
 	var $abstainvalues = array();
 	var $result;
 	
-	function __construct()
-	{
+	function __construct() {
 		$this->ll = array();
 		for ($i = 1 ; $i < 27 ; $i++)
 		{
@@ -43,8 +41,7 @@ class IE_qti12_Load extends IE_Main
 		$this->result = new stdClass();
 	}
 	
-	function BuildMatchArrays()
-	{
+	function BuildMatchArrays()	{
 		// some values for abstaining and not applicable
 		$this->abstainvalues = explode("|",strtolower("N/A|Abstain|Not Applicable"));
 		
@@ -82,16 +79,14 @@ class IE_qti12_Load extends IE_Main
 		ExplodeToArray($this->dich_values,"Yes|No");
 	}
 	
-	function Load($params)
-	{
+	function Load($params) {
 		$file = $params->sourcefile;
 		$this->params = $params;
 		
 		$xmlStr = file_get_contents($file);
 		$xml = @simplexml_load_string($xmlStr);
 		
-		if (!$xml)
-		{	
+		if (!$xml) {	
 			$this->AddError("$file is an invalid XML file");
 			return;
 		}
@@ -101,15 +96,13 @@ class IE_qti12_Load extends IE_Main
 			$this->LoadAssessment($xml->assessment);
 		
 		// multiple xml section objects possible
-		if ($xml->section)
-		{
+		if ($xml->section) {
 			foreach($xml->section as $section)
 				$this->LoadSection($section);
 		}
 		
 		// multiple xml item objects possible
-		if ($xml->item)
-		{
+		if ($xml->item)	{
 			foreach ($xml->item as $item)
 				$this->LoadItem($item);
 		}
@@ -119,29 +112,25 @@ class IE_qti12_Load extends IE_Main
 		return $this->result;
 	}
 	
-	function LoadAssessment($xml)
-	{
+	function LoadAssessment($xml)	{
 		$paper = new ST_Paper();
 		$paper->load_id = (string)$xml->attributes()->ident;
 		$paper->title = (string)$xml->attributes()->title;
 
 		$this->result->papers[] = $paper;
 		$paper->screens[0] = "";
-		foreach($xml->section as $section)
-		{
+		foreach($xml->section as $section) {
 			$screen = $this->LoadSection($section);
 		}
 		
 		unset($paper->screens[0]);
 	}
 	
-	function LoadSection($xml)
-	{
+	function LoadSection($xml) {
 		$screen = new ST_Paper_Screen();
 		
 		echo "Loading section<br>";
-		foreach($this->result->papers as &$p)
-		{
+		foreach($this->result->papers as &$p)	{
 			$paper = $p;
 			break;	
 		}
@@ -149,8 +138,7 @@ class IE_qti12_Load extends IE_Main
 		$screen = new ST_Paper_Screen();
 		$this->result->screens[] = &$screen;	
 			
-		foreach ($xml->item as $item)
-		{
+		foreach ($xml->item as $item)	{
 			$id = $this->LoadItem($item);	
 			$screen->question_ids[$paper->GetNextQuestionID()] = $id;
 		}	
@@ -158,8 +146,7 @@ class IE_qti12_Load extends IE_Main
 		$paper->screens[$paper->GetNextScreenID()] = $screen;		
 	}
 	
-	function LoadItem($item)
-	{
+	function LoadItem($item) {
 		global $q_warnings;
 		global $q_errors;
 
@@ -178,13 +165,10 @@ class IE_qti12_Load extends IE_Main
 		$marks = '';
 		
 		// parse for (xx marks) or (1 mark) and strip it out of the material
-		foreach($q_imp->material->chunks as &$chunk)
-		{
-			foreach($chunk->data as &$data)
-			{
+		foreach($q_imp->material->chunks as &$chunk) {
+			foreach($chunk->data as &$data) {
 				$regexp = "/\((\d{1,3}) mark[s]*\)/i";
-				if (preg_match($regexp,$data,$out))
-				{
+				if (preg_match($regexp,$data,$out)) {
 					echo "Match marks:<br>";
 					echo "<pre>".htmlentities($data)."</pre>";
 					print_p($out);
@@ -234,28 +218,24 @@ class IE_qti12_Load extends IE_Main
 			$this->AddError("Question type $type not yet supported",$q_imp->load_id);	
 		}
 		
-		if (!empty($q_imp->material->media))
-		{
+		if (!empty($q_imp->material->media)) {
 			$question->media = $q_imp->material->media;
 			$question->media_width = $q_imp->material->media_width;
 			$question->media_height = $q_imp->material->media_height;
 		}
 		
 		// load taxinomy and keywords
-		if (array_key_exists('BLOOMS',$q_imp->params))
-		{
+		if (array_key_exists('BLOOMS',$q_imp->params)) {
 			$question->bloom = $q_imp->params['BLOOMS'];	
 		}
 		
-		foreach($q_imp->params['KEYWORD'] as $keyword)
-		{
+		foreach($q_imp->params['KEYWORD'] as $keyword) {
 			$question->keywords[] = $keyword;	
 		}
 		
 		
 		
-		if ($question->marks != $marks && $marks > 0)
-		{
+		if ($question->marks != $marks && $marks > 0)	{
 			$this->AddWarning("This question may have been imported with a different number of marks. Import specified $marks, imported with " . $question->marks,$q_imp->load_id);	
 		}
 		
@@ -265,8 +245,7 @@ class IE_qti12_Load extends IE_Main
 		foreach($q_errors as $error)
 			$this->AddError($error,$q_imp->load_id);
 		
-		if ($question)
-		{
+		if ($question) {
 			$this->result->questions[$question->load_id] = $question;
 		} else {
 			$this->result->questions[] = '';
@@ -283,36 +262,30 @@ class IE_qti12_Load extends IE_Main
 		return $question->load_id;
 	}
 	
-	function LoadQuestion(&$item)
-	{
+	function LoadQuestion(&$item) {
 		$q = new ST_QTI12_Question($item);
 		$q->CountStuff();
 
 		return $q;
 	}
 	
-	function DetermineQType(&$question)
-	{
-		//print_p($question);
+	function DetermineQType(&$question)	{
 		// no input stuff so this is an info question
 		if (empty($question->counts['response']))
 			return "info";
 	
-		if (isset($question->counts['hotspot']) && $question->counts['hotspot'] > 0)
-		{
+		if (isset($question->counts['hotspot']) && $question->counts['hotspot'] > 0) {
 			if ($question->cardinality == "Multi")
 				return "labelling";
 			return "hotspot";
 		}
 		
-		if (isset($question->counts['grp']) && $question->counts['grp'] > 0)
-		{
+		if (isset($question->counts['grp']) && $question->counts['grp'] > 0) {
 			$this->AddError("Response groups are not currently supported.",$question->load_id);
 			return "error";
 		}
 		
-		if (isset($question->counts['extension']) && $question->counts['extension'] > 0)
-		{
+		if (isset($question->counts['extension']) && $question->counts['extension'] > 0) {
 			$this->AddError("Render extensions are not currently supported.",$question->load_id);
 			return "error";
 		}
@@ -321,19 +294,17 @@ class IE_qti12_Load extends IE_Main
 			return "mrq";
 			
 		// do we have differing labels for each part of the question?? if so only thing we can possibly import as is 'blank'
-		if (!$question->labelsets)
-		{
+		if (!$question->labelsets) {
 			// if we dont have single cardinality, then we cant import a blank with dropdowns
-			if ($question->cardinality != "Single")
-			{
+			if ($question->cardinality != 'Single')	{
 				$this->AddError("All sets of labels are different and we have multiple cardinality, question is not supported in touchstone.",$question->load_id);
-				return "error";					
+				return 'error';					
 			}
 			
 			if ($this->IsTimeDateQuestion($question))
-				return "timedate";
+				return 'timedate';
 				
-			return "blank";
+			return 'blank';
 		}
 			
 		// if we have multiple materials in our question, things are all odd, so process seperatly, 'blank' only i think
@@ -343,14 +314,11 @@ class IE_qti12_Load extends IE_Main
 			
 		
 		// single field entry
-		if ($question->counts['fib'] == 1)
-		{
+		if ($question->counts['fib'] == 1) {
 			$rows = 0;
 			$responses = $this->GetResponses($question,'','fib');
-			foreach ($responses as $response)
-			{
-				if ($response->fibtype == 'String')
-				{
+			foreach ($responses as $response)	{
+				if ($response->fibtype == 'String')	{
 					$rows = $response->rows;
 					break;
 				}
@@ -364,13 +332,7 @@ class IE_qti12_Load extends IE_Main
 				return "calculation";
 			
 			list($positive,$zero,$negative) = $this->GetRespConditionMarkCounts($question);
-			/*if ($positive == 1)
-				return "blank";
 			
-			if ($positive == 0)
-				return "textbox";*/
-			
-			//$this->AddError("Single line text entry box, multiple correct answers.",$question->load_id);
 			return "blank";
 		}
 
@@ -380,8 +342,7 @@ class IE_qti12_Load extends IE_Main
 		// single material in question, good for all qmp exported things except 'blank'
 				
 		// single response lid, possible are mrq, dichotomous, likert, mcq
-		if ($question->counts['lid'] == 1)
-		{
+		if ($question->counts['lid'] == 1) {
 			// check cardinality
 			// cant be varies as only single lid
 			if ($question->cardinality == "Multi")
@@ -410,8 +371,7 @@ class IE_qti12_Load extends IE_Main
 		} 
 		
 		// multiple lid, possible are extmatching, ranking, matrix, dichotomous
-		if ($question->counts['lid'] > 1)
-		{
+		if ($question->counts['lid'] > 1)	{
 			// should be checking to see if each of the sets of answers are the same
 			if (!$question->labelsets)
 			{
@@ -423,8 +383,7 @@ class IE_qti12_Load extends IE_Main
 			
 			// check cardinality
 			// if single then ranking or matrix
-			if ($question->cardinality == "Single")
-			{
+			if ($question->cardinality == "Single")	{
 				$response_list = $this->GetResponseLabelList($question);
 				
 				//print_p($response_list);
@@ -451,68 +410,54 @@ class IE_qti12_Load extends IE_Main
 			return "calculation";
 		
 		// multiple numeric, not supported
-		if ($question->counts['num'] > 1)
-		{
+		if ($question->counts['num'] > 1)	{
 			$this->AddError("Questions with multiple numeric imputs cannot be imported",$question->load_id);
 			return "error";		
 		}
 				
-		if ($question->counts['str'] > 0)
-		{
+		if ($question->counts['str'] > 0)	{
 			//$this->AddError("Multiple Text inputs! This is probably a fill in the blanks but not sure yet",$question->load_id);
 			return "blank";		
 		}
 		// multiple string, but only 1 material, could this be a blank question??
-		if ($question->counts['str'] > 1)
-		{
+		if ($question->counts['str'] > 1)	{
 			//$this->AddError("Questions with multiple numeric imputs cannot be imported",$question->load_id);
 			return "blank";		
 		}
 		
 		// hotspot, labelling
-		if ($question->counts['xy'] > 0)
-		{
+		if ($question->counts['xy'] > 0) {
 			// either hotspot or labelling, not sure how to pick yet
 		}
 		
 		return "unknown";
 	}
 	
-	function IsRankingQuestion(&$response_list)
-	{
+	function IsRankingQuestion(&$response_list)	{
 		if (count($response_list) < 3)
 			return false;
 			
 		// check for all but 2 of the items matching 1st/2nd/3rd etc
 		$match_str = array();
 		$match_num = array();
-		for ($i = 1 ; $i < count($response_list) - 1 ; $i++)
-		{
+		for ($i = 1 ; $i < count($response_list) - 1 ; $i++) {
 			$item = OrderToStr($i);
 			$match_num[$i] = 0;
 			$match_str[$item] = 0;
 		}
 		
-		/*print_p($match_num);
-		print_p($match_str);*/
-		
-		foreach($response_list as $item)
-		{
+		foreach($response_list as $item) {
 			if (array_key_exists($item,$match_str))
 				$match_str[$item] = 1;
 			if (array_key_exists($item,$match_num))
 				$match_num[$item] = 1;
 		}
 		
-		/*print_p($match_num);
-		print_p($match_str);*/
-		
 		$str_ok = true;
 		foreach($match_str as $isok)
 			if ($isok == 0) $str_ok = false;
 			
-		if ($str_ok)	
-		{
+		if ($str_ok) {
 			echo "Found ranking based on 1st, 2nd, 3rd etc<br>";
 			return true;
 		}
@@ -521,18 +466,15 @@ class IE_qti12_Load extends IE_Main
 		foreach($match_num as $isok)
 			if ($isok == 0) $num_ok = false;
 		
-		if ($num_ok)	
-		{
+		if ($num_ok) {
 			echo "Found ranking based on 1, 2, 3 etc<br>";
 			return true;
 		}
 
 		return false;
-		//print_p($question);
 	}
 	
-	function IsTimeDateQuestion(&$question)
-	{
+	function IsTimeDateQuestion(&$question)	{
 		if ($question->counts['lid'] < 3)
 			return false;
 		if ($question->counts['lid'] > 6)
@@ -545,8 +487,7 @@ class IE_qti12_Load extends IE_Main
 		
 		$allcounts = array();
 		
-		foreach($question->responses as $response)
-		{
+		foreach($question->responses as $response) {
 			$labelcount = count($response->labels);
 			if ($labelcount == 12)
 				$labelcounts[12]++;
@@ -564,10 +505,7 @@ class IE_qti12_Load extends IE_Main
 				$allcounts[$labelcount]++;
 			}
 		}	
-		
-		/*print_p($labelcounts);
-		print_p($allcounts);*/
-		
+				
 		if ($labelcounts[60] > 0 && $labelcounts[24] > 0)
 			return true;
 			
@@ -577,51 +515,35 @@ class IE_qti12_Load extends IE_Main
 		return false;
 	}
 	
-	function GenerateQuestionInfo(&$question,$material,$title,$responsemat = '')
-	{
+	function GenerateQuestionInfo(&$question,$material,$title,$responsemat = '') {
 		$notes = '';
-		foreach($material->chunks as &$chunk)
-		{
-			if ($chunk->label == "theme")
-			{
+		foreach($material->chunks as &$chunk)	{
+			if ($chunk->label == "theme")	{
 				$question->theme .= strip_tags($chunk->GetHTML());
-			} else if ($chunk->label == "notes")
-			{
+			} else if ($chunk->label == "notes") {
 				$notes .= strip_tags($chunk->GetHTML());
 				$question->notes .= trim(str_ireplace("note:","",$notes));
-			} else if ($chunk->label == "scenario")
-			{
+			} else if ($chunk->label == "scenario")	{
 				$question->scenario .= 	$chunk->GetHTML();
-			} else // anything else or leadin
-			{
+			} else { // anything else or leadin
 				$question->leadin .= $chunk->GetHTML();
 			} 
 		}
 		
-		if ($responsemat)
-		{
+		if ($responsemat)	{
 			$question->leadin .= $responsemat->GetHTML();
 		}
 		
 		$question->leadin = RemoveLoneP($question->leadin);
 	}
 	
-	function ReplaceTitle(&$title,$scn)
-	{
+	function ReplaceTitle(&$title, $scn) {
 		$scn = NX_ChangePreSetCharsToRaw($scn);
-	
-		/*echo "TITLE:<br>";
-		echo $title."<br>";
-		echo "SCENARIO:<br>";
-		echo "<pre>";
-		echo htmlentities($scn);
-		echo "</pre>";*/
-	
+		
 		// parse scenario into xml chunks
 		$bits = explode("<",$scn);
 		
 		$to_remove = array();
-		//print_p($bits);
 		// for each chunk
 		$newtitle = "";
 		$removed_count = 0;
@@ -639,8 +561,7 @@ class IE_qti12_Load extends IE_Main
 			
 			//echo "CHUNK : " . htmlentities($bit) . "<br>";
 			
-			if (stripos(" ".$title,$bit) > 0)
-			{
+			if (stripos(" ".$title,$bit) > 0)	{
 				$to_remove[] = $bit;
 				$removed_count += strlen($bit);
 				$newtitle .= $bit . " ";
@@ -659,8 +580,7 @@ class IE_qti12_Load extends IE_Main
 		}
 		
 		
-		foreach($to_remove as $remove)
-		{
+		foreach($to_remove as $remove) {
 			// bodge to limit title to around 50 characters. Once we have removed 50 characters worth of cunks, replace the title
 			$scn = str_ireplace($remove,"",$scn);
 		}
@@ -674,13 +594,6 @@ class IE_qti12_Load extends IE_Main
 		
 		if (strlen($scn) < 3) $scn = "";
 		
-		/*echo "TITLE:<br>";
-		echo $title."<br>";
-		echo "SCENARIO:<br>";
-		echo "<pre>";
-		echo htmlentities($scn);
-		echo "</pre>";*/
-
 		return $scn;	
 	}
 	
@@ -689,8 +602,7 @@ class IE_qti12_Load extends IE_Main
 	//////////////////////////////////
 	
 	// DONE
-	function LoadBlank(&$source)
-	{
+	function LoadBlank(&$source)	{
 		// easy to do, no feedback in touchstone so goes the way of the dinosar
 		$dest = new ST_Question_Blank();
 		
@@ -701,20 +613,16 @@ class IE_qti12_Load extends IE_Main
 		$this->GenerateQuestionInfo($dest,$source->material,$source->title);
 		$dest->scenario = "";
 		$dest->leadin = "";
-		foreach($source->material->chunks as &$chunk)
-		{
-			if ($chunk->label == "leadin")
-			{
+		foreach($source->material->chunks as &$chunk)	{
+			if ($chunk->label == "leadin") {
 				$dest->leadin .=  $chunk->GetHTML();
 			}
 		}
 		
 		// determine if strings or if dropdowns and call appropriate function
-		if ($source->counts['lid'] > 0)
-		{
+		if ($source->counts['lid'] > 0)	{
 			$this->BlankDropdowns($dest,$source);
-		} else if ($source->counts['fib'] > 0)
-		{
+		} else if ($source->counts['fib'] > 0) {
 			$this->BlankString($dest,$source);
 		} else {
 			$this->AddError("Blank type question with not dropdowns or text entrys",$source->load_id);	
@@ -725,8 +633,7 @@ class IE_qti12_Load extends IE_Main
 		$fb = $this->GetAllFeedbacks($source);
 		$dest->feedback = $this->GetFeedbackFromArray($source,$fb);
 
-		foreach($dest->question as &$chunk)
-		{
+		foreach($dest->question as &$chunk)	{
 			if (substr($chunk,0,1) != "%")
 				$chunk = " ".$chunk." ";	
 		}
@@ -734,43 +641,35 @@ class IE_qti12_Load extends IE_Main
 		return $dest;
 	}
 	
-	function BlankString(&$dest, &$source)
-	{
+	function BlankString(&$dest, &$source) {
 		echo "Loading blank string<br>";
 		$qtext = array();
 		$optionid = 1;
 		foreach ($source->presentation->children() as $child) {
 			$this->ProcessBlankChild($dest,$source,$qtext,$optionid,$child,false);
 		}	
-		//print_p($qtext);
+
 		$dest->question = $qtext;
 		$dest->displaymode = "textboxes";
-		
-		//print_p($qtext);			
 	}
 	
-	function ProcessBlankChild(&$dest, &$source,&$qtext,&$optionid,&$child,$inflow)
-	{
+	function ProcessBlankChild(&$dest, &$source, &$qtext, &$optionid, &$child, $inflow)	{
 		$name = $child->getName();
 		echo "Name : $name<br>";
-		if ($name == "flow")
-		{
+		if ($name == "flow") {
 			$qtext[] = "<div>";
 			echo "Found flow node, processing its children<br>";
-			foreach($child->children() as $subchild)
-			{
+			foreach($child->children() as $subchild) {
 				$this->ProcessBlankChild($dest,$source,$qtext,$optionid,$subchild,true);
 			}
 			$qtext[] = "</div>";
 		}
 		
-		if ($name == 'material')
-		{
+		if ($name == 'material') {
 			if ($child->attributes()->label != "") return;
 			$material = new ST_QTI12_Material();
 			$material->add($child);
-			if ($dest->leadin == "")
-			{
+			if ($dest->leadin == "") {
 				$dest->leadin = $material->GetHTML();
 			} else {
 				if (!$inflow)
@@ -781,25 +680,21 @@ class IE_qti12_Load extends IE_Main
 			}
 		}
 		
-		if ($name == 'response_str')
-		{
+		if ($name == 'response_str') {
 			$qtext_i = array();
 			
 			$response = new ST_QTI12_Response('str',$child);
 			
-			foreach($child->children() as $chunk) 
-			{
+			foreach($child->children() as $chunk) {
 				$name = $chunk->getName();
 				
-				if ($name == "material")
-				{
+				if ($name == "material") {
 					$material = new ST_QTI12_Material();
 					$material->add($chunk);
 					$qtext_i[] = $material->GetHTML();
 					if (!$inflow)
 						$qtext_i[] = "<br />";
-				} else if ($name == "render_fib")
-				{
+				} else if ($name == "render_fib")	{
 					if (count($chunk->children()) == 0)
 					{
 						echo "Adding sub item - render_fib with no childred<br>";
@@ -815,10 +710,8 @@ class IE_qti12_Load extends IE_Main
 						print_r($conds);
 						echo "</pre>";
 						
-						foreach($conds as $cond)
-						{
-							foreach($cond->conditions as $opt)
-							{
+						foreach($conds as $cond) {
+							foreach($cond->conditions as $opt) {
 								$blank = new STQ_Blank_Option();
 								$blank->display = strip_tags($opt->value);
 								$blank->correct = 1;
@@ -836,31 +729,24 @@ class IE_qti12_Load extends IE_Main
 					} else {
 						$index = 1;
 						echo "Adding sub item - render_fib<br>";
-						foreach($chunk->children() as $subchunk)
-						{
+						foreach($chunk->children() as $subchunk) {
 							$subname = $subchunk->getName();
 							//echo "Sub chunk name : $subname<br>";
-							if ($subname == "material")
-							{
+							if ($subname == "material") {
 								$material = new ST_QTI12_Material();
 								$material->add($subchunk);
 								$text = $material->GetHTML();
-								//print_p($material);
-								//echo "<pre>".htmlentities($text)."</pre>";
 								$qtext_i[] = $text;
-							} else if ($subname == "response_label")
-							{
+							} else if ($subname == "response_label") {
 								// create a new blank for the label
 								
 								$blankid = "%" . sprintf("BLANK_%d",$optionid) . "%";
 								
 								$blankoptions = array();
 
-								foreach($source->respconditions as $respcondition)
-								{
+								foreach($source->respconditions as $respcondition) {
 									if ($respcondition->mark < 1) continue;
-									foreach($respcondition->conditions as $condition)
-									{
+									foreach($respcondition->conditions as $condition) {
 										if ($condition->not) continue;
 										if ($condition->index && $condition->index != $index) continue;
 										if ($condition->respident != $response->id) continue;
@@ -872,7 +758,6 @@ class IE_qti12_Load extends IE_Main
 									}
 								}
 								
-								//print_p($blankoptions);
 								$dest->options[$blankid] = $blankoptions;
 								$qtext_i[] = " ";
 								$qtext_i[] = $blankid;
@@ -886,52 +771,38 @@ class IE_qti12_Load extends IE_Main
 					echo "Unknown Element : $name<br>";
 				}
 			}
-			//echo "end children<br>";
-			//}
 			
-			if (count($qtext_i) > 0)
-			{
-				//if (!$inflow)
-				//	$qtext[] = "<p>";
+			if (count($qtext_i) > 0) {
 				foreach ($qtext_i as $text)
 					$qtext[] = $text;
-				//if (!$inflow)
-				//	$qtext[] = "</p>";	
 			}
 		}
 	}
-	function BlankDropdowns(&$dest, &$source)
-	{
+	function BlankDropdowns(&$dest, &$source) {
 		echo "Loading blank dropdown<br>";
 		$qtext = array();
 		$optionid = 1;
 		foreach ($source->presentation->children() as $child) {
 			$name = $child->getName();
-			//echo "Name : $name<br>";
 			
-			if ($name == 'material')
-			{
+			if ($name == 'material') {
 				if ($child->attributes()->label != "") continue;
 				$material = new ST_QTI12_Material();
 				$material->add($child);
 				$qtext[] = $material->GetHTML();
 			}
 			
-			if ($name == 'response_lid')
-			{
+			if ($name == 'response_lid') {
 				$response = new ST_QTI12_Response('lid',$child);
 				
 				$blankid = "%" . sprintf("BLANK_%d",$optionid) . "%";
 				
 				$blankoptions = array();
 				
-				//print_p($response);
 				// get all conditions that are related to this response
 				$conds = $this->GetRespConditions($source,1,$response->id);
-				//print_p($conds);
 				
-				foreach($response->labels as $id => $label)
-				{
+				foreach($response->labels as $id => $label)	{
 					$blank = new STQ_Blank_Option();
 					$blank->display = $label->material->GetText();
 					$blank->id = $id;
@@ -939,20 +810,15 @@ class IE_qti12_Load extends IE_Main
 					
 					//echo "Checking for blank " . $id . " - ";
 					// need to work out if this label is correct or not
-					foreach($conds as $cond)
-					{
-						//echo "Comparing cond value " . reset($cond->conditions)->value . " with blank id . " . $blank->id ."<br>";
-						foreach($cond->conditions as $condvar)
-						{
+					foreach($conds as $cond) {
+						foreach($cond->conditions as $condvar) {
 							if ($condvar->value != $blank->id) continue;
 							if ($condvar->respident != $response->id) continue;
 							if ($condvar->not) continue;
 							
 							$blank->correct = 1;
-							//echo "Correct";
 						}
 					}
-					//echo "<br>";
 				}
 				
 				$dest->options[$blankid] = $blankoptions;
@@ -963,13 +829,10 @@ class IE_qti12_Load extends IE_Main
 			$dest->question = $qtext;
 		}	
 		$dest->displaymode = "dropdown";
-		
-		//print_p($qtext);	
 	}
 	
 	// DONE
-	function LoadCalculation(&$source)
-	{
+	function LoadCalculation(&$source) {
 		// easy to do, no feedback in touchstone so goes the way of the dinosar
 		$dest = new ST_Question_Calculation();
 		
@@ -980,25 +843,19 @@ class IE_qti12_Load extends IE_Main
 		$response = reset($source->responses);
 		$this->GenerateQuestionInfo($dest,$source->material,$source->title,$response->material);
 
-
 		// get positive marked outcomes
 		$respconds = $this->GetRespConditions($source,1);
 		$lessthan = '';
 		$morethan = '';
 		
-		foreach ($respconds as $respcond)
-		{
-			foreach ($respcond->conditions as $cond)
-			{
-				if ($cond->type == "varequal")
-				{
+		foreach ($respconds as $respcond) {
+			foreach ($respcond->conditions as $cond) {
+				if ($cond->type == "varequal") {
 					$dest->formula = $cond->value;
 					break;
-				} else if ($cond->type == "vargte" || $cond->type == "vargt")
-				{
+				} else if ($cond->type == "vargte" || $cond->type == "vargt")	{
 					$morethan = $cond->value;	
-				} else if ($cond->type == "varlte" || $cond->type == "varlt")
-				{
+				} else if ($cond->type == "varlte" || $cond->type == "varlt") {
 					$lessthan = $cond->value;	
 				}
 			}
@@ -1006,27 +863,22 @@ class IE_qti12_Load extends IE_Main
 			if ($dest->formula)
 				break;
 		}
-		if (!$dest->formula)
-		{
-			if ($lessthan != '' && $morethan != '')
-			{
+		if (!$dest->formula) {
+			if ($lessthan != '' && $morethan != '') {
 				$dest->formula = ($lessthan + $morethan) / 2;
 			}	
 		}		
 
 		$feedback = $this->GetAllFeedbacks($source);		
 		$dest->feedback = $this->GetFeedbackFromArray($source,$feedback);
-		
-		
-		
+				
 		// if we have question metadata containing variables and formula, then load em
 		if (array_key_exists("VARIABLE",$source->params) &&
 			array_key_exists("FORMULA",$source->params) &&
 			array_key_exists("QUESTION",$source->params))
 		{
 			echo "Calculation importing variables<br>";
-			foreach($source->params['VARIABLE'] as $var)
-			{
+			foreach($source->params['VARIABLE'] as $var) {
 				$varc = new STQ_Calc_Vars();
 				list($var_id,$varc->min,$varc->max,$varc->dec,$varc->inc) = explode("|",$var);
 				$dest->variables[$var_id] = $varc;
@@ -1047,8 +899,7 @@ class IE_qti12_Load extends IE_Main
 	}
 	
 	// DONE
-	function LoadDichotomous(&$source)
-	{
+	function LoadDichotomous(&$source) {
 		// easy to do, no feedback in touchstone so goes the way of the dinosar
 		$dest = new ST_Question_Dichotomous();
 		
@@ -1068,10 +919,8 @@ class IE_qti12_Load extends IE_Main
 		$mark_negative = false;
 				
 		// do we have a N/A value?
-		foreach ($responses_clean as $rid => $resp)
-		{
-			if (ItemInArray($this->abstainvalues,$resp))
-			{
+		foreach ($responses_clean as $rid => $resp)	{
+			if (ItemInArray($this->abstainvalues,$resp)) {
 				unset($responses_clean[$rid]);
 				$mark_abstain = true;	
 			}
@@ -1088,48 +937,33 @@ class IE_qti12_Load extends IE_Main
 			$mark_negative = true;
 			
 		// pick the correct mark type
-				
-		//<select name="score_method" size="1" onchange="updatelabels(this)">
-		//<option value="TF_NegativeAbstain" style="color:red">True/False/Abstain (Negative Marking -1)</option>
-		//<option value="TF_NegativeAbstainHalf" style="color:red">True/False/Abstain (Negative Marking -0.5)</option>
-		//<option value="TF_Positive">True/False</option>
-		//<option value="YN_NegativeAbstain" style="color:red">Yes/No/Abstain (Negative Marking -1)</option>
-		//<option value="YN_Positive">Yes/No</option>
-		//</select>
-
-		if ($mark_tf)
-		{
-			if (!$mark_abstain)
-			{
+		if ($mark_tf)	{
+			if (!$mark_abstain)	{
 				$dest->score_method = "TF_Positive";
 			} else {
 				$dest->score_method = "TF_NegativeAbstain";
 			}	
 		} else {
-			if (!$mark_abstain)
-			{
+			if (!$mark_abstain)	{
 				$dest->score_method = "YN_Positive";
 			} else {
 				$dest->score_method = "YN_NegativeAbstain";
 			}	
 		}
 		
-		if ($mark_abstain)
-		{
+		if ($mark_abstain) {
 			if (array_key_exists('MARKING',$source->params))
 				$dest->score_method = $source->params['MARKING'];	
 		}		
 		// load all options into the dest
 		$optionid = 1;
-		foreach($source->responses as $response)
-		{
+		foreach($source->responses as $response) {
 			$option = new STQ_Dic_Options();
 			$option->text = strip_tags($response->material->GetHTML());
 			$option->response_id = $response->id;
 			$option->iscorrect = 0;
 			
-			foreach($response->labels as $id => $label)
-			{
+			foreach($response->labels as $id => $label) {
 				$text = strtolower($label->material->GetText());
 				if ($text == "yes" || $text == "true")
 					$option->value_true = $id;
@@ -1137,8 +971,7 @@ class IE_qti12_Load extends IE_Main
 					$option->value_false = $id;
 			}			
 			
-			if (!empty($response->material->media))
-			{
+			if (!empty($response->material->media))	{
 				$option->media = $response->material->media;
 				$option->media_width = $response->material->media_width;
 				$option->media_height = $response->material->media_height;
@@ -1150,10 +983,8 @@ class IE_qti12_Load extends IE_Main
 				
 		// attempt to work out the correct answers
 		$conds = $this->GetRespConditions($source,1);
-		foreach($conds as $condition)
-		{
-			if (count($condition->conditions) == 0)
-			{
+		foreach($conds as $condition) {
+			if (count($condition->conditions) == 0)	{
 				$this->AddWarning("Positive outcome with no condition, unable to work out correct answer",$source->load_id);	
 			} else {
 				if (count($condition->conditions) > 1)
@@ -1163,8 +994,7 @@ class IE_qti12_Load extends IE_Main
 				$id = $condition->conditions[0]->respident;
 				
 				//echo "Response $id - correct value is $correctvalue<br>";
-				foreach($dest->options as &$option)
-				{
+				foreach($dest->options as &$option)	{
 					if ($option->response_id != $id)
 						continue;
 						
@@ -1175,15 +1005,12 @@ class IE_qti12_Load extends IE_Main
 			
 		}
 				
-		//print_p($positive_responses);
-				
 		// sort out feedback
 			
 		$generalfb = array();
 				
 		// for each answer
-		foreach ($dest->options as &$option)
-		{
+		foreach ($dest->options as &$option) {
 			// get list of feedbacks for when correct
 			$correctfb1 = $this->GetFeedbacks($source, $option->response_id, $option->value_true, $option->iscorrect);
 			$incorrectfb1 = $this->GetFeedbacks($source, $option->response_id, $option->value_true, !$option->iscorrect);
@@ -1223,26 +1050,24 @@ class IE_qti12_Load extends IE_Main
 	}
 
 	// DONE
-	function LoadExtmatch(&$source)
-	{
+	function LoadExtmatch(&$source) {
 		// easy to do, no feedback in touchstone so goes the way of the dinosar
 		$dest = new ST_Question_Extmatch();
 		
 		$dest->load_id = $source->load_id;
 		$dest->status = $source->qmd_status;
 		$dest->type = "extmatch";
-    if($source->responses[1]->shuffle == 1) {
+    if ($source->responses[1]->shuffle == 1) {
       $dest->q_option_order = 'random';	
     }
 		
-		$this->GenerateQuestionInfo($dest,$source->material,$source->title);
+		$this->GenerateQuestionInfo($dest, $source->material, $source->title);
 		
 		// load option list
-		$optionlist = $this->GetResponseLabelList($source,false);
+		$optionlist = $this->GetResponseLabelList($source, false);
 		$optid = 1;
 		
-		foreach($optionlist as $id => $option)
-		{
+		foreach($optionlist as $id => $option) {
 			$opt = new STQ_Extm_Option();
 			$opt->option = strip_tags($option);
 			$opt->id = $id;
@@ -1260,15 +1085,13 @@ class IE_qti12_Load extends IE_Main
 		
 		$dest->marks = 0;
 		
-		foreach($source->responses as $rid => $response)
-		{
+		foreach($source->responses as $rid => $response) {
 			
 			$stem = new STQ_Extm_Scenario();
 			$stem->stem = MakeValidHTML(RemoveLoneP($response->material->GetHTML()));
 			$stem->base_response_id = $rid;
 			
-			if (!empty($response->material->media))
-			{
+			if (!empty($response->material->media)) {
 				$stem->media = $response->material->media;
 				$stem->media_width = $response->material->media_width;
 				$stem->media_height = $response->material->media_height;
@@ -1277,10 +1100,8 @@ class IE_qti12_Load extends IE_Main
 			$dest->scenarios[$stemid++] = $stem;			
 			
 			$correct = array();
-			foreach($respcond as $cond)
-			{
-				foreach($cond->conditions as $condvar)
-				{
+			foreach($respcond as $cond) {
+				foreach($cond->conditions as $condvar) {
 					// 1 mark per correct answer so skip ones that have a diff respident and mark correct rest
 					if ($condvar->respident != $rid) continue;
 					if ($condvar->not) continue;
@@ -1291,47 +1112,24 @@ class IE_qti12_Load extends IE_Main
 			// work out correct answers for this stem
 			
 			$correct_mapped = array();
-			foreach($correct as $answer)
-			{
-				foreach($dest->optionlist as $oid => $option)
-				{
+			foreach($correct as $answer) {
+				foreach($dest->optionlist as $oid => $option) {
 					if ($option->id == $answer)
 						$stem->correctans[] = $oid;
 				}	
 			}
 			
-			//print_p($correct);
-			//print_p($stem->correctans);
-			
 			// get feedback for this stem
 			$fb = $this->GetFeedbacks($source,$rid);
 			
 			$stem->feedback = $this->GetFeedbackFromArray($source,$fb);
-			
-			/* GENERAL FEEDBACK NOT NEEDED ON EXT MATCHING 
-			// mark feedbacks for each item
-			foreach ($fb as $fbitem)
-				$usedfb[$fbitem] = $fbitem;
-			//print_p($fb);*/
 		}
-		
-		/* GENERAL FEEDBACK NOT NEEDED ON EXT MATCHING 
-		$generalfb = array();
-		// work out feedback for each bit as necessary
-		foreach($source->itemfeedback as $id => $feedback)
-		{
-			if (array_key_exists($id,$usedfb)) continue;
-			$generalfb[$id] = $id;
-		}
-		
-		$dest->feedback_swf = $this->GetFeedbackFromArray($source,$generalfb);*/
 		
 		return $dest;		
 	}
 	
 	// NEW
-	function LoadFlash(&$source)
-	{
+	function LoadFlash(&$source) {
 		// easy to do, no feedback in touchstone so goes the way of the dinosar
 		$dest = new ST_Question_Flash();
 		
@@ -1346,8 +1144,7 @@ class IE_qti12_Load extends IE_Main
 	}
 	
 	// NEW
-	function LoadHotspot(&$source)
-	{
+	function LoadHotspot(&$source) {
 		// easy to do, no feedback in touchstone so goes the way of the dinosar
 		$dest = new ST_Question_Hotspot();
 		
@@ -1358,8 +1155,7 @@ class IE_qti12_Load extends IE_Main
 		$response = reset($source->responses);
 		$this->GenerateQuestionInfo($dest,$source->material,$source->title,$response->material);
 
-		if (!empty($response->material->media))
-		{
+		if (!empty($response->material->media))	{
 			$dest->media = $response->material->media;
 			$dest->media_width = $response->material->media_width;
 			$dest->media_height = $response->material->media_height;
@@ -1369,10 +1165,8 @@ class IE_qti12_Load extends IE_Main
 		// get back the single positive response for the question
 		$dest->hotspots[0] = 1;
 		$conds = $this->GetRespConditions($source,1);
-		foreach ($conds as &$conds)
-		{
-			foreach($conds->conditions as $condition)
-			{
+		foreach ($conds as &$conds)	{
+			foreach($conds->conditions as $condition)	{
 				if ($condition->not) continue;
 				$coords = str_replace(" ", ",", $condition->value);
 				$type = strtolower($condition->areatype);
@@ -1388,8 +1182,7 @@ class IE_qti12_Load extends IE_Main
 		unset($dest->hotspots[0]);
 		
 		// load in any raw option data when a touchstone export
-		if (array_key_exists("RAW_HOTSPOT",$source->params))
-		{
+		if (array_key_exists("RAW_HOTSPOT",$source->params)) {
 			$dest->hotspots = array();
 			$dest->raw_option = $source->params['RAW_HOTSPOT'];		
 		}
@@ -1402,8 +1195,7 @@ class IE_qti12_Load extends IE_Main
 	}
 	
 	// DONE
-	function LoadInfo(&$source)
-	{
+	function LoadInfo(&$source)	{
 		// easy to do, no feedback in touchstone so goes the way of the dinosar
 		$dest = new ST_Question_Info();
 		
@@ -1418,8 +1210,7 @@ class IE_qti12_Load extends IE_Main
 	}
 
 	// NEW	
-	function LoadLabelling(&$source)
-	{
+	function LoadLabelling(&$source) {
 		// easy to do, no feedback in touchstone so goes the way of the dinosar
 		$dest = new ST_Question_Labelling();
 		
@@ -1435,21 +1226,18 @@ class IE_qti12_Load extends IE_Main
 		$max_height = 0;
 
 		// get main image for question
-		if (!empty($response->material->media))
-		{
+		if (!empty($response->material->media))	{
 			$dest->media = $response->material->media;
 			$dest->media_width = $response->material->media_width;
 			$dest->media_height = $response->material->media_height;
 		}
 		
 		// build a list of all the labels and their coordinates
-		foreach($source->responses as $response)
-		{
-			foreach($response->labels as $label)
-			{
+		foreach($source->responses as $response) {
+			foreach($response->labels as $label) {
 				$mylabel = new stdClass();
 				$mylabel->id = $label->id;
-				if(!empty($label->material->media)) {
+				if (!empty($label->material->media)) {
 					$mylabel->media = $label->material->media;
 					$mylabel->media_width = $label->material->media_width;
 					$mylabel->media_height = $label->material->media_height;
@@ -1463,18 +1251,15 @@ class IE_qti12_Load extends IE_Main
 
 				$mylabel->text = $label->material->GetText();
 				
-				foreach($source->respconditions as $respcondition)
-				{
-					foreach($respcondition->conditions as $condition)
-					{
+				foreach($source->respconditions as $respcondition) {
+					foreach($respcondition->conditions as $condition)	{
 						if ($condition->respident != $mylabel->id) continue;
 						if ($condition->not) continue;
 						$mylabel->coords = str_replace(" ", ",", $condition->value);
 					}
 				}
 				
-				if (trim($mylabel->text) == "")
-				{
+				if (trim($mylabel->text) == "")	{
 					$mylabel->text = $mylabel->media;
 				}
 				$labels[] = $mylabel;
@@ -1492,10 +1277,8 @@ class IE_qti12_Load extends IE_Main
 		
 		$label_match = 0;
 		// remap coordinates to top left
-		foreach($labels as &$label)
-		{
-			if (empty($label->coords))
-			{
+		foreach($labels as &$label)	{
+			if (empty($label->coords)) {
 				$label->left = -1;
 				$label->top = -1;
 			} else {
@@ -1514,11 +1297,9 @@ class IE_qti12_Load extends IE_Main
 			
 			$dest->labels[] = $destlabel;
 		}
-		//print_p($labels);
 		
 		// load in any raw option data when a touchstone export
-		if (array_key_exists("RAW_LABELLING",$source->params))
-		{
+		if (array_key_exists("RAW_LABELLING", $source->params)) {
 			unset($dest->labels);
 			$dest->raw_option = $source->params['RAW_LABELLING'];		
 		}
@@ -1527,8 +1308,7 @@ class IE_qti12_Load extends IE_Main
 		$fb = $this->GetAllFeedbacks($source);
 		$dest->feedback = $this->GetFeedbackFromArray($source,$fb);
 	
-		if ($label_match == 0)
-		{
+		if ($label_match == 0) {
 			$this->AddError("Unable to find label matching information",$source->load_id);
 			$dest->type = "error";
 		}
@@ -1537,8 +1317,7 @@ class IE_qti12_Load extends IE_Main
 	}
 	
 	// DONE
-	function LoadLikert(&$source)
-	{
+	function LoadLikert(&$source) {
 		// easy to do, no feedback in touchstone so goes the way of the dinosar
 		$dest = new ST_Question_Likert();
 		
@@ -1557,8 +1336,7 @@ class IE_qti12_Load extends IE_Main
 		
 		
 		// do we have a N/A value?
-		foreach($responses_clean as $key => $isna)
-		{
+		foreach($responses_clean as $key => $isna) {
 			if (ItemInArray($this->abstainvalues,$isna))
 			{
 				$dest->hasna = 1;
@@ -1567,8 +1345,7 @@ class IE_qti12_Load extends IE_Main
 		}
 				
 		// build up scale
-		foreach($responses_html as $response)
-		{
+		foreach($responses_html as $response)	{
 			$dest->scale[] = $response;	
 		}
 		
@@ -1578,8 +1355,7 @@ class IE_qti12_Load extends IE_Main
 	}
 
 	// DONE
-	function LoadMatrix(&$source)
-	{
+	function LoadMatrix(&$source)	{
 		// easy to do, no feedback in touchstone so goes the way of the dinosar
 		$dest = new ST_Question_Matrix();
 		
@@ -1598,10 +1374,8 @@ class IE_qti12_Load extends IE_Main
 		// build option list
 				
 		$oid = 1;
-		foreach($source->responses as $response)
-		{
-			foreach($response->labels as $id => $label)
-			{
+		foreach($source->responses as $response) {
+			foreach($response->labels as $id => $label) {
 				$dest->options[$oid] = $label->material->GetText();
 				$optionmapping[$id] = $oid;
 				$oid++;
@@ -1611,17 +1385,14 @@ class IE_qti12_Load extends IE_Main
 				
 		// build stem list
 		$scnid = 1;
-		foreach($source->responses as $response)
-		{
+		foreach($source->responses as $response) {
 			$qr = new STQ_Matrix_Scenario();
 			$qr->scenario = $response->material->GetText();
 			
 			// work out correct answers
-			foreach ($source->respconditions as $condition)
-			{
+			foreach ($source->respconditions as $condition) {
 				if (count($condition->conditions) < 1) continue;
-				foreach ($condition->conditions as $cond)
-				{
+				foreach ($condition->conditions as $cond) {
 					if ($cond->respident != $response->id) continue;
 					if ($cond->not) continue;
 					
@@ -1641,9 +1412,7 @@ class IE_qti12_Load extends IE_Main
 	}
 
 	// DONE
-	function LoadMCQ(&$source)
-	{
-	  
+	function LoadMCQ(&$source) {
 		$dest = new ST_Question_Mcq();
 		
 		$dest->load_id = $source->load_id;
@@ -1659,20 +1428,17 @@ class IE_qti12_Load extends IE_Main
 		$this->GenerateQuestionInfo($dest,$source->material,$source->title,$response->material);
 
 		$choiceno=1;
-		foreach($response->labels as $label)
-		{
+		foreach($response->labels as $label) {
 			$choice = new STQ_Mcq_Option();
 			$choice->stem = $label->material->GetText();
 			$choice->base_id = $label->id;
 			
 			
-			if (!empty($label->material->media))
-			{
+			if (!empty($label->material->media)) {
 				$choice->media = $label->material->media;
 				$choice->media_width = $label->material->media_width;
 				$choice->media_height = $label->material->media_height;
 			}
-			
 			
 			$dest->options[$choiceno] = $choice;
 			$choiceno++;			
@@ -1682,11 +1448,9 @@ class IE_qti12_Load extends IE_Main
 		// count up response conditions
 		list($positive,$zero,$negative) = $this->GetRespConditionMarkCounts($source);
 		
-		if ($positive == 0)
-		{
+		if ($positive == 0)	{
 			$this->AddWarning("Unable to find a correct answer",$source->load_id);
-		} else if ($positive > 1)
-		{
+		} else if ($positive > 1)	{
 			$this->AddWarning("Found multiple conditions that are scoring the question, ignoring all but the 1st",$source->load_id);
 		}
 		
@@ -1701,18 +1465,15 @@ class IE_qti12_Load extends IE_Main
 		if (count($conds->conditions) > 0)
 			$corid = reset($conds->conditions)->value;
 		
-		foreach($dest->options as $id => $option)
-		{
-			if ($option->base_id == $corid)
-			{
+		foreach($dest->options as $id => $option)	{
+			if ($option->base_id == $corid)	{
 				$dest->correct = $id;
 				break;	
 			}	
 		}	
 		
 		// SW amendment 16/11/2010
-		foreach ($dest->options as &$option)
-		{
+		foreach ($dest->options as &$option) {
 			$correctfb = $this->GetFeedbacks($source, 1, $option->base_id, 1);
 			$incorrectfb = explode('<br />', $this->GetFeedbackFromArray($source,$correctfb));
 			
@@ -1748,13 +1509,11 @@ class IE_qti12_Load extends IE_Main
 	}
 	
 	// DONE
-	function LoadMRQ(&$source)
-	{
+	function LoadMRQ(&$source) {
 		// count up response conditions
 		list($positive,$zero,$negative) = $this->GetRespConditionMarkCounts($source);
 
-		if ($negative > 0) // negative marks in the answer, must be negative marking option
-		{
+		if ($negative > 0) { // negative marks in the answer, must be negative marking option
 			return $this->MRQ_LoadAsDich($dest,$source);
 		}
 		
@@ -1764,7 +1523,7 @@ class IE_qti12_Load extends IE_Main
 		$dest->status = $source->qmd_status;
 		$dest->presentation = "vertical";
 		$dest->type = "mrq";
-    if($source->responses[1]->shuffle == 1) {
+    if ($source->responses[1]->shuffle == 1) {
       $dest->q_option_order = 'random';	
     }
 		
@@ -1774,22 +1533,18 @@ class IE_qti12_Load extends IE_Main
 		// load option list into dest
 		// should only be 1
 		$choiceno = 1;
-		foreach ($source->responses as $response)
-		{
-			if (!$response->ismulti)
-			{
+		foreach ($source->responses as $response)	{
+			if (!$response->ismulti) {
 				$this->AddWarning("Trying to load MRQ without ismulti set! No idea whats going on here",$source->load_id);	
 			}
 			
-			foreach($response->labels as $label)
-			{
+			foreach($response->labels as $label) {
 				$choice = new STQ_Mrq_Option();
 				$choice->stem = $label->material->GetText();
 				$choice->base_id = $label->id;
 				
 
-				if (!empty($label->material->media))
-				{
+				if (!empty($label->material->media)) {
 					$choice->media = $label->material->media;
 					$choice->media_width = $label->material->media_width;
 					$choice->media_height = $label->material->media_height;
@@ -1803,8 +1558,7 @@ class IE_qti12_Load extends IE_Main
 		// work out marking type, and which items are correct
 		// allnegative / selectedpositive / allitemscorrect
 		// single positive answer		
-		if ($positive == 1)
-		{
+		if ($positive == 1)	{
 			$this->MRQ_GetCorrect_allitemscorrect($dest,$source);
 		} else { // multiple positive answers, no negatives, so assume 1 mark per correct option
 			$this->MRQ_GetCorrect_selectedpositive($dest,$source);
@@ -1817,8 +1571,7 @@ class IE_qti12_Load extends IE_Main
 		$generalfb = array();
 		
 		// for each answer
-		foreach ($dest->options as &$option)
-		{
+		foreach ($dest->options as &$option) {
 			// get list of feedbacks for when correct
 			$correctfb = $this->GetFeedbacks($source, 1, $option->base_id, $option->is_correct);
 			
@@ -1848,8 +1601,7 @@ class IE_qti12_Load extends IE_Main
 	}
 	
 	// DONE
-	function MRQ_LoadAsDich(&$dest, &$source)
-	{
+	function MRQ_LoadAsDich(&$dest, &$source) {
 		$this->AddWarning("Loading negativly marked multiple response as dichotomous",$source->load_id);	
 		// easy to do, no feedback in touchstone so goes the way of the dinosar
 		
@@ -1868,20 +1620,17 @@ class IE_qti12_Load extends IE_Main
 		$choiceno = 1;
 		foreach ($source->responses as $response)
 		{
-			if (!$response->ismulti)
-			{
+			if (!$response->ismulti) {
 				$this->AddWarning("Trying to load MRQ without ismulti set! No idea whats going on here",$source->load_id);	
 			}
 			
-			foreach($response->labels as $label)
-			{
+			foreach($response->labels as $label) {
 				$choice = new STQ_Dic_Options();
 				$choice->text = $label->material->GetText();
 				$choice->base_id = $label->id;
 				
 
-				if (!empty($label->material->media))
-				{
+				if (!empty($label->material->media)) {
 					$choice->media = $label->material->media;
 					$choice->media_width = $label->material->media_width;
 					$choice->media_height = $label->material->media_height;
@@ -1898,15 +1647,12 @@ class IE_qti12_Load extends IE_Main
 		
 		$dest->marks = 0;
 		
-		foreach ($conds as &$cond)
-		{
-			if (count($cond->conditions) > 1)
-			{
+		foreach ($conds as &$cond) {
+			if (count($cond->conditions) > 1) {
 				$this->AddWarning("Multiple positive outcomes, with multiple options on an outcome, correct answer may be wrong",$source->load_id);		
 			}
 			
-			if (count($cond->conditions) == 0)
-			{
+			if (count($cond->conditions) == 0) {
 				$this->AddWarning("Positive outcome with no condition, ignoring",$source->load_id);	
 				continue;	
 			}
@@ -1914,11 +1660,8 @@ class IE_qti12_Load extends IE_Main
 			$value = $cond->conditions[0]->value;
 			
 			// find the option and mark it as correct
-			foreach ($dest->options as &$option)
-			{
-				if ($option->base_id == $value)
-				{
-					//echo "Setting correct for $value<br>";
+			foreach ($dest->options as &$option) {
+				if ($option->base_id == $value) {
 					$option->iscorrect = true;
 					$dest->marks++;
 				}	
@@ -1932,8 +1675,7 @@ class IE_qti12_Load extends IE_Main
 		$generalfb = array();
 		
 		// for each answer
-		foreach ($dest->options as &$option)
-		{
+		foreach ($dest->options as &$option) {
 			// get list of feedbacks for when correct
 			$correctfb = $this->GetFeedbacks($source, 1, $option->base_id, $option->iscorrect);
 			
@@ -1944,10 +1686,6 @@ class IE_qti12_Load extends IE_Main
 			// remove common ones from the list
 			RemoveCommonInArray($correctfb,$incorrectfb,$generalfb);
 			
-			/*echo "Getting correct feedbacks for " . $option->base_id . "<br>";
-			print_p($correctfb);
-			echo "Getting incorrect feedbacks for " . $option->base_id . "<br>";
-			print_p($incorrectfb);*/
 			// store whats left in positive and negative feedbacks
 			
 			$option->fb_correct = $this->GetFeedbackFromArray($source,$correctfb);
@@ -1963,22 +1701,18 @@ class IE_qti12_Load extends IE_Main
 	}
 	
 	// DONE
-	function MRQ_GetCorrect_allnegative(&$dest, &$source)
-	{
+	function MRQ_GetCorrect_allnegative(&$dest, &$source)	{
 		echo "Some negatives - 1 mark per true option with negative<br>";
 		$dest->score_method = 'AllNegative';
 		
 		$conds = $this->GetRespConditions($source,1);
 		
-		foreach ($conds as &$cond)
-		{
-			if (count($cond->conditions) > 1)
-			{
+		foreach ($conds as &$cond) {
+			if (count($cond->conditions) > 1) {
 				$this->AddWarning("Multiple positive outcomes, with multiple options on an outcome, correct answer may be wrong",$source->load_id);		
 			}
 			
-			if (count($cond->conditions) == 0)
-			{
+			if (count($cond->conditions) == 0) {
 				$this->AddWarning("Positive outcome with no condition, ignoring",$source->load_id);	
 				continue;	
 			}
@@ -1990,11 +1724,8 @@ class IE_qti12_Load extends IE_Main
 			
 			
 			// find the option and mark it as correct
-			foreach ($dest->options as &$option)
-			{
-				if ($option->base_id == $value)
-				{
-					//echo "Setting correct for $value<br>";
+			foreach ($dest->options as &$option) {
+				if ($option->base_id == $value)	{
 					$option->is_correct = true;
 				}	
 			}		
@@ -2004,8 +1735,7 @@ class IE_qti12_Load extends IE_Main
 	}
 	
 	// DONE
-	function MRQ_GetCorrect_selectedpositive(&$dest, &$source)
-	{
+	function MRQ_GetCorrect_selectedpositive(&$dest, &$source) {
 		echo "No negatives and multiple positives, 1 mark per true option<br>";
 		$dest->score_method = 'SelectedPositive';
 		
@@ -2013,15 +1743,12 @@ class IE_qti12_Load extends IE_Main
 		
 		$dest->marks = 0;
 		
-		foreach ($conds as &$cond)
-		{
-			if (count($cond->conditions) > 1)
-			{
+		foreach ($conds as &$cond) {
+			if (count($cond->conditions) > 1) {
 				$this->AddWarning("Multiple positive outcomes, with multiple options on an outcome, correct answer may be wrong",$source->load_id);		
 			}
 			
-			if (count($cond->conditions) == 0)
-			{
+			if (count($cond->conditions) == 0) {
 				$this->AddWarning("Positive outcome with no condition, ignoring",$source->load_id);	
 				continue;	
 			}
@@ -2029,44 +1756,31 @@ class IE_qti12_Load extends IE_Main
 			$value = $cond->conditions[0]->value;
 			
 			// find the option and mark it as correct
-			foreach ($dest->options as &$option)
-			{
-				if ($option->base_id == $value)
-				{
-					//echo "Setting correct for $value<br>";
+			foreach ($dest->options as &$option) {
+				if ($option->base_id == $value) {
 					$option->is_correct = true;
 					$dest->marks++;
 				}	
 			}		
 		}
 		
-		
 	}
 	
 	// DONE
-	function MRQ_GetCorrect_allitemscorrect(&$dest, &$source)
-	{
-		//echo "Single Positive - 1 mark for all correct<br>";
+	function MRQ_GetCorrect_allitemscorrect(&$dest, &$source)	{
 		$dest->score_method = 'AllItemsCorrect';
-		
 		$conds = $this->GetRespConditions($source,1);
 		$conds = $conds[0];
 		// can work out the correct answers from $resps;
 		
-		foreach($conds->conditions as $cond)
-		{
+		foreach($conds->conditions as $cond) {
 			// if condition not is 1, this item should be unchecked to be correct
-			//print_p($cond);
-			if ($cond->not == 0)
-			{ // item should be checked to be correct
+			if ($cond->not == 0) { // item should be checked to be correct
 				$value = $cond->value;
 				
 				// find the option and mark it as correct
-				foreach ($dest->options as &$option)
-				{
-					if ($option->base_id == $value)
-					{
-						//echo "Setting correct for $value<br>";
+				foreach ($dest->options as &$option) {
+					if ($option->base_id == $value)	{
 						$option->is_correct = true;
 					}	
 				}
@@ -2075,15 +1789,14 @@ class IE_qti12_Load extends IE_Main
 	}
 		
 	// DONE
-	function LoadRank(&$source)
-	{
+	function LoadRank(&$source)	{
 		// easy to do, no feedback in touchstone so goes the way of the dinosar
 		$dest = new ST_Question_Rank();
 		
 		$dest->load_id = $source->load_id;
 		$dest->status = $source->qmd_status;
 		$dest->type = "rank";
-    if($source->responses[1]->shuffle == 1) {
+    if ($source->responses[1]->shuffle == 1) {
       $dest->q_option_order = 'random';	
     }
 		
@@ -2094,10 +1807,8 @@ class IE_qti12_Load extends IE_Main
 		$optionmapping = array();
 		
 		$oid = 1;
-		foreach($source->responses as $response)
-		{
-			foreach($response->labels as $id => $label)
-			{
+		foreach($source->responses as $response) {
+			foreach($response->labels as $id => $label) {
 				$optionmapping[$id] = $label->material->GetText();
 				$oid++;
 			}
@@ -2105,18 +1816,15 @@ class IE_qti12_Load extends IE_Main
 		}
 
 		$optid = 1;	
-		foreach($source->responses as $response)
-		{
+		foreach($source->responses as $response) {
 			$rankopt = new STQ_Rank_Options();
 			$rankopt->stem = $response->material->GetText();	
 
 			$value = '';
 			// work out correct answers
-			foreach ($source->respconditions as $condition)
-			{
+			foreach ($source->respconditions as $condition)	{
 				if (count($condition->conditions) < 1) continue;
-				foreach ($condition->conditions as $cond)
-				{
+				foreach ($condition->conditions as $cond)	{
 					if ($cond->respident != $response->id) continue;
 					if ($cond->not) continue;
 					
@@ -2128,12 +1836,9 @@ class IE_qti12_Load extends IE_Main
 		}
 		
 		// dig out feedbacks
-		foreach ($source->respconditions as $condition)
-		{
-			if (count($condition->conditions) > 1)
-			{
-				if ($condition->conditions[0]->not)
-				{
+		foreach ($source->respconditions as $condition)	{
+			if (count($condition->conditions) > 1) {
+				if ($condition->conditions[0]->not)	{
 					$dest->fb_incorrect = $source->itemfeedback[$condition->feedback]->material->GetHTML();
 				} else {
 					$dest->fb_correct = $source->itemfeedback[$condition->feedback]->material->GetHTML();
@@ -2144,8 +1849,7 @@ class IE_qti12_Load extends IE_Main
 		// decide if 1 per correct or 1 for all
 		list($positive,$zero,$negative) = $this->GetRespConditionMarkCounts($source);
 	
-		if ($positive == 1)
-		{
+		if ($positive == 1)	{
 			$dest->score_method = 'AllItemsCorrect';
 		} else {
 			$dest->score_method = 'StrictOrder';
@@ -2155,8 +1859,7 @@ class IE_qti12_Load extends IE_Main
 	}
 
 	// DONE	
-	function LoadTextbox(&$source)
-	{
+	function LoadTextbox(&$source) {
 		// easy to do, no feedback in touchstone so goes the way of the dinosar
 		$dest = new ST_Question_Textbox();
 		
@@ -2180,10 +1883,8 @@ class IE_qti12_Load extends IE_Main
 			$this->AddWarning("Importing text entry question with marking criteria. This will not be automatically marked in touchstone",$source->load_id);		
 
 		$dest->marks = 0;
-		foreach($conditions as $condition)
-		{
-			foreach($condition->conditions as $value)
-			{
+		foreach($conditions as $condition) {
+			foreach($condition->conditions as $value) {
 				$dest->terms[] = strip_tags($value->value);
 			}
 			$dest->marks += $condition->mark;
@@ -2197,8 +1898,7 @@ class IE_qti12_Load extends IE_Main
 		$dest->feedback = $this->GetFeedbackFromArray($source,$fb);
 		
 		// load taxinomy and keywords
-		if (array_key_exists('EDITOR',$source->params))
-		{
+		if (array_key_exists('EDITOR',$source->params))	{
 			$dest->editor = $source->params['EDITOR'];	
 		}
 		
@@ -2206,8 +1906,7 @@ class IE_qti12_Load extends IE_Main
 	}
 
 	// NEW
-	function LoadTimedate(&$source)
-	{
+	function LoadTimedate(&$source) {
 		// easy to do, no feedback in touchstone so goes the way of the dinosar
 		$dest = new ST_Question_Timedate();
 		
@@ -2224,8 +1923,7 @@ class IE_qti12_Load extends IE_Main
 		$r_counts = array();
 		$rid_map = array();
 		
-		foreach($source->responses as $response)
-		{
+		foreach($source->responses as $response) {
 			$rid_map[] = $response->id;
 			$label_count = count($response->labels);
 			if ($label_count >= 28 && $label_count <= 31)
@@ -2233,21 +1931,15 @@ class IE_qti12_Load extends IE_Main
 				
 			$r_counts[] = $label_count;
 			
-			if ($label_count == 12)
-			{
-				foreach	($response->labels as $label)	
-				{
-					if (!is_numeric($label->material->GetText()))
-					{
+			if ($label_count == 12)	{
+				foreach	($response->labels as $label)	{
+					if (!is_numeric($label->material->GetText()))	{
 						$num_month = false;	
 						break;	
 					}
 				}
 			}
 		}
-		
-		/*print_p($r_counts);
-		print_p($rid_map);*/
 		
 		$parts = count($r_counts);
 		
@@ -2263,8 +1955,7 @@ class IE_qti12_Load extends IE_Main
 */			
 			if ($r_counts[0] == 24 && $r_counts[1] == 60)
 				$type = 7;
-		} else if ($parts == 3)
-		{
+		} else if ($parts == 3)	{
 /*		case 3:	// dd/MM/yyyy
 			$sets[] = $this->GetTDSet('dd',$day);	
 			$sets[] = $this->GetTDSet('MM',$month);	
@@ -2286,20 +1977,16 @@ class IE_qti12_Load extends IE_Main
 			$sets[] = $this->GetTDSet('ss',$secs);	
 			break;
 		*/	
-			if ($r_counts[0] == 30 && $r_counts[1] == 12)
-			{
+			if ($r_counts[0] == 30 && $r_counts[1] == 12)	{
 				// determine if text months or not (3 or 5)
-				if ($num_month)
-				{
+				if ($num_month)	{
 					$type = 3;	
 				} else {
 					$type = 5;	
 				}
-			} else if ($r_counts[0] == 12 && $r_counts[1] == 30)
-			{
+			} else if ($r_counts[0] == 12 && $r_counts[1] == 30) {
 				$type = 4;	
-			} else if ($r_counts[0] == 24 && $r_counts[1] == 60 && $r_counts[2] == 60)
-			{
+			} else if ($r_counts[0] == 24 && $r_counts[1] == 60 && $r_counts[2] == 60) {
 				$type = 6;	
 			}
 		} else if ($parts == 5)
@@ -2327,8 +2014,7 @@ class IE_qti12_Load extends IE_Main
 				$type = 1;
 		}
 		
-		if ($type == 0)
-		{
+		if ($type == 0)	{
 			$this->AddError("Unable to determine information for timedate question",$source->load_id);	
 			$dest->type = "unknown";
 			return $dest;
@@ -2339,24 +2025,17 @@ class IE_qti12_Load extends IE_Main
 		$correct = array();
 		
 		// work out correct answer for each of the responses
-		foreach ($source->respconditions as $respcondition)
-		{
+		foreach ($source->respconditions as $respcondition) {
 			if ($respcondition->mark < 1) contine;
 			
-			foreach ($respcondition->conditions as $condition)
-			{
+			foreach ($respcondition->conditions as $condition) {
 				if ($condition->not) continue;
 				$correct[$condition->respident] = $condition->value;
-				//echo "Setting correct response for " . $condition->respident . " as " . $condition->value . "<br>";
 			}			
 		}
 		
-		/*print_p($correct);
-		print_p($rid_map);*/
-		
 		// format as dd/mm/yyyy hh:mm:ss
-		if ($type == 1)
-		{
+		if ($type == 1)	{
 			$dest->correct =	
 				$this->GetCorrectDTValue($source,$correct,$rid_map,0,'%02d') . "/" .
 				$this->GetCorrectDTValue($source,$correct,$rid_map,1,'%02d') . "/" . 
@@ -2365,8 +2044,7 @@ class IE_qti12_Load extends IE_Main
 				$this->GetCorrectDTValue($source,$correct,$rid_map,4,'%02d') . ":" . 
 				$this->GetCorrectDTValue($source,$correct,$rid_map,5,'%02d');
 			list($dest->startyear,$dest->endyear) = $this->GetTDYearSpan($source,$correct,$rid_map,2);			
-		} else if ($type == 2) // dd/MM/yyyy hh:mm
-		{
+		} else if ($type == 2) { // dd/MM/yyyy hh:mm
 			$dest->correct =	
 				$this->GetCorrectDTValue($source,$correct,$rid_map,0,'%02d') . "/" .
 				$this->GetCorrectDTValue($source,$correct,$rid_map,1,'%02d') . "/" . 
@@ -2374,38 +2052,33 @@ class IE_qti12_Load extends IE_Main
 				$this->GetCorrectDTValue($source,$correct,$rid_map,3,'%02d') . ":" .
 				$this->GetCorrectDTValue($source,$correct,$rid_map,4,'%02d');
 			list($dest->startyear,$dest->endyear) = $this->GetTDYearSpan($source,$correct,$rid_map,2);			
-		} else if ($type == 3) // dd/MM/yyyy
-		{
+		} else if ($type == 3) { // dd/MM/yyyy
 			$dest->correct =	
 				$this->GetCorrectDTValue($source,$correct,$rid_map,0,'%02d') . "/" .
 				$this->GetCorrectDTValue($source,$correct,$rid_map,1,'%02d') . "/" . 
 				$this->GetCorrectDTValue($source,$correct,$rid_map,2,'%04d');
 			list($dest->startyear,$dest->endyear) = $this->GetTDYearSpan($source,$correct,$rid_map,2);			
-		} else if ($type == 4) // mm/dd/yyyy
-		{
+		} else if ($type == 4) { // mm/dd/yyyy
 			$dest->correct =	
 				$this->GetCorrectDTValue($source,$correct,$rid_map,1,'%02d') . "/" .
 				$this->GetCorrectDTValue($source,$correct,$rid_map,0,'%02d') . "/" . 
 				$this->GetCorrectDTValue($source,$correct,$rid_map,2,'%04d');
 			list($dest->startyear,$dest->endyear) = $this->GetTDYearSpan($source,$correct,$rid_map,2);			
-		} else if ($type == 5) // dd/MMMM/yyyy
-		{
+		} else if ($type == 5) { // dd/MMMM/yyyy
 			$dest->correct =	
 				$this->GetCorrectDTValue($source,$correct,$rid_map,0,'%02d') . "/" .
 				$this->GetCorrectDTValue($source,$correct,$rid_map,1,'%02d') . "/" . 
 				$this->GetCorrectDTValue($source,$correct,$rid_map,2,'%04d');
 			list($dest->startyear,$dest->endyear) = $this->GetTDYearSpan($source,$correct,$rid_map,2);			
-		} else if ($type == 6) // hh:mm:ss
-		{
+		} else if ($type == 6) { // hh:mm:ss
 			$dest->correct =	
 				$this->GetCorrectDTValue($source,$correct,$rid_map,0,'%02d') . ":" .
 				$this->GetCorrectDTValue($source,$correct,$rid_map,1,'%02d') . ":" . 
 				$this->GetCorrectDTValue($source,$correct,$rid_map,2,'%02d');
-		} else if ($type == 7 || $type == 8) // hh:mm:ss
-		{
+		} else if ($type == 7 || $type == 8) { // hh:mm:ss
 			$dest->correct =	
-				$this->GetCorrectDTValue($source,$correct,$rid_map,0,'%02d') . ":" .
-				$this->GetCorrectDTValue($source,$correct,$rid_map,1,'%02d');
+			$this->GetCorrectDTValue($source,$correct,$rid_map,0,'%02d') . ":" .
+			$this->GetCorrectDTValue($source,$correct,$rid_map,1,'%02d');
 		}
 		$dest->format = $type;
 		
@@ -2416,43 +2089,32 @@ class IE_qti12_Load extends IE_Main
 		return $dest;		
 	}
 	
-	function GetCorrectDTValue(&$question,&$correct,&$rid_map,$offset,$format)
-	{
+	function GetCorrectDTValue(&$question,&$correct,&$rid_map,$offset,$format) {
 		$response_id = $rid_map[$offset];
 		$correct_value = $correct[$response_id];
 		//echo "Checking $response_id for correct value $correct_value<br>";
-		foreach($question->responses[$response_id]->labels as $lid => $label)
-		{
-			if ($correct_value == $label->id)
-			{	
+		foreach($question->responses[$response_id]->labels as $lid => $label) {
+			if ($correct_value == $label->id)	{	
 				$result = $label->material->GetText();
-				//echo "Found result $result<br>";
-				if (!is_numeric($result))
-				{
+				if (!is_numeric($result)) {
 					$result = MonthToNumeric($result);	
-					//echo "Converted to number month $result<br>";
 				}
 				return sprintf($format,$result);
 			}
 		}
 		
-		//echo "Not found value in labels<br>";
-		//print_p($question->responses[$response_id]->labels);
-		
 		return sprintf($format,0);
 	}
 	
-	function GetTDYearSpan(&$question,&$correct,&$rid_map,$offset)
-	{
+	function GetTDYearSpan(&$question,&$correct,&$rid_map,$offset) {
 		$response_id = $rid_map[$offset];
 		$correct_value = $correct[$response_id];
-		//echo "Checking $response_id for correct min and max year<br>";
+
 		
 		$minyear = 9999;
 		$maxyear = 0;
 		
-		foreach($question->responses[$response_id]->labels as $lid => $label)
-		{
+		foreach($question->responses[$response_id]->labels as $lid => $label)	{
 			$year = (int)$label->material->GetText();
 			if ($year < 1) continue;
 			
@@ -2460,12 +2122,10 @@ class IE_qti12_Load extends IE_Main
 			if ($year < $minyear) $minyear = $year;
 		}
 		
-		//echo "Range $minyear,$maxyear<br>";
 		return array($minyear,$maxyear);
 	}
 	
-	function LoadUnknown(&$source)
-	{
+	function LoadUnknown(&$source)	{
 		// easy to do, no feedback in touchstone so goes the way of the dinosar
 		$dest = new ST_Question();
 		
@@ -2478,8 +2138,7 @@ class IE_qti12_Load extends IE_Main
 		return $dest;
 	}
 	
-	function LoadError(&$source)
-	{
+	function LoadError(&$source)	{
 		// easy to do, no feedback in touchstone so goes the way of the dinosar
 		$dest = new ST_Question();
 		
@@ -2498,16 +2157,12 @@ class IE_qti12_Load extends IE_Main
 	///////////////////////////////////////////////
 
 	// gets a list of the possible responses in the question and returns it as an array
-	function GetResponseLabelList(&$question,$clean = true)
-	{
+	function GetResponseLabelList(&$question,$clean = true)	{
 		$resplist = array();
 		
-		foreach ($question->responses as $response)
-		{
-			foreach ($response->labels as $label)
-			{
-				if ($clean)
-				{
+		foreach ($question->responses as $response)	{
+			foreach ($response->labels as $label)	{
+				if ($clean)	{
 					$value = strtolower($label->material->GetText());	
 				} else {
 					$value = $label->material->GetHTML();	
@@ -2521,16 +2176,13 @@ class IE_qti12_Load extends IE_Main
 	}
 	
 	// gets a list of the possible responses in the question and returns it as an array based on response id
-	function GetResponseLabelListByID(&$question,$rid,$clean = true)
-	{
+	function GetResponseLabelListByID(&$question,$rid,$clean = true)	{
 		$resplist = array();
 		
-		foreach ($question->responses as $response)
-		{
+		foreach ($question->responses as $response)	{
 			if ($response->id != $rid) return;
 			
-			foreach ($response->labels as $label)
-			{
+			foreach ($response->labels as $label)	{
 				if ($clean)
 				{
 					$value = strtolower($label->material->GetText());	
@@ -2547,14 +2199,12 @@ class IE_qti12_Load extends IE_Main
 	
 	// get counts of each type of response ident
 	// return array($positive,$zero,$negative)
-	function GetRespConditionMarkCounts(&$data)
-	{
+	function GetRespConditionMarkCounts(&$data)	{
 		$positive = 0;
 		$zero = 0;
 		$negative = 0;
 		
-		foreach ($data->respconditions as &$respconditions)
-		{
+		foreach ($data->respconditions as &$respconditions)	{
 			if ($respconditions->mark == 0)
 				$zero++;
 			else if ($respconditions->mark > 0)
@@ -2574,11 +2224,9 @@ class IE_qti12_Load extends IE_Main
 	{
 		//echo "<strong>Processing respconditions for $mark and $respident</strong><br>";
 		$resps = array();
-		foreach ($data->respconditions as &$condition)
-		{
+		foreach ($data->respconditions as &$condition) {
 			//print_p($condition);
-			if ($mark == 0 && $condition->mark != 0)			
-			{
+			if ($mark == 0 && $condition->mark != 0) {
 				//echo "Skipping Respcondition - MARK NOT 0 : " . $condition->__toString() . "<br>";
 				continue;
 			}
@@ -2609,14 +2257,10 @@ class IE_qti12_Load extends IE_Main
 					if ($cond->respident == $respident)
 						$valid = true;
 				
-				if (!$valid)
-				{
-					//echo "Skipping Respcondition - BAD IDENT : " . $condition->__toString() . "<br>";
+				if (!$valid){
 					continue;
 				}
 			}	
-
-			//echo "RespCondition OK : " . $condition->__toString() . "<br>";
 
 			$resps[] = $condition;
 		}	
@@ -2626,14 +2270,11 @@ class IE_qti12_Load extends IE_Main
 	// return array of responses based on type
 	// type returns conditions with specific type (lid / str / num / xy)
 	// render returns conditions with sepecific render type (choice / hotspot / slider / fib )
-	function GetResponses(&$data,$type = '', $render = '')
-	{
+	function GetResponses(&$data,$type = '', $render = '') {
 		$resps = array();
-		foreach ($data->responses as &$response)
-		{
+		foreach ($data->responses as &$response) {
 			if ($type && $response->type != $type) continue;
 			if ($render && $response->render != $render) continue;
-			
 			
 			$resps[] = $response;
 		}	
@@ -2644,22 +2285,19 @@ class IE_qti12_Load extends IE_Main
 	// respident = id of the input
 	// value = value to calculate for
 	// match - if 0, then will only match items with <not>
-	function GetFeedbacks(&$source, $respident, $value = '', $match = 1)
-	{
+	function GetFeedbacks(&$source, $respident, $value = '', $match = 1) {
 		//echo "Getting feedback list for $respident - $value - $match<br>";
 		
 		$feedbacks = array();
 		
-		foreach ($source->respconditions as &$respcondition)
-		{
+		foreach ($source->respconditions as &$respcondition) {
 			if (count($respcondition->conditions) > 0 &&
 				$respcondition->conditions[0]->respident != $respident)
 				continue;
 			
 			//print_p($respcondition);
 			// no value provided so just output feedback
-			if ($value == '')
-			{
+			if ($value == '') {
 				if ($respcondition->feedback)
 					$feedbacks[$respcondition->feedback] = $respcondition->feedback;
 				continue;
@@ -2668,23 +2306,20 @@ class IE_qti12_Load extends IE_Main
 			$is_match = true;	
 			
 			// if its an empty condition, output the feedback
-			if (count($respcondition->conditions) == 0)
-			{
+			if (count($respcondition->conditions) == 0) {
 				//echo "Count is 0<br>";
 				if ($respcondition->feedback)
 					$feedbacks[$respcondition->feedback] = $respcondition->feedback;
 			}
 			
-			foreach ($respcondition->conditions as $cond)
-			{
+			foreach ($respcondition->conditions as $cond) {
 				if ($cond->value != $value) $is_match = false;
 				
 				if ($cond->not == $match) $is_match = false;	
 			}
 			
 			// do we have a matching condition?
-			if ($is_match)
-			{
+			if ($is_match) {
 				if ($respcondition->feedback)
 					$feedbacks[$respcondition->feedback] = $respcondition->feedback;
 				
@@ -2693,19 +2328,14 @@ class IE_qti12_Load extends IE_Main
 			}
 		}
 		
-		//print_p($feedbacks);
 		return $feedbacks;
 	}	
 	
 	// return array of all used feedbacks
-	function GetAllFeedbacks(&$source)
-	{
-		//echo "Getting feedback list for $respident - $value - $match<br>";
-		
+	function GetAllFeedbacks(&$source) {
 		$feedbacks = array();
 		
-		foreach ($source->itemfeedback as $key => &$feedback)
-		{
+		foreach ($source->itemfeedback as $key => &$feedback) {
 			$feedbacks[$key] = $key;
 		}
 		
@@ -2713,20 +2343,16 @@ class IE_qti12_Load extends IE_Main
 	}
 	
 	// returns html feedback based on an array of feedback ids passed in
-	function GetFeedbackFromArray(&$source, &$feedbacks)
-	{
+	function GetFeedbackFromArray(&$source, &$feedbacks) {
 		$output = array();
-		foreach ($feedbacks as $feedback)
-		{	
-			if (array_key_exists($feedback,$source->itemfeedback))
-			{
+		foreach ($feedbacks as $feedback) {	
+			if (array_key_exists($feedback,$source->itemfeedback)) {
 				$fbtext = trim($source->itemfeedback[$feedback]->material->GetHTML());
 				if ($fbtext)
 					$output[] = $fbtext;
 			}
 		}	
-				
-		//print_p($output);	
+
 		return implode("<br />",$output);
 	}
 }

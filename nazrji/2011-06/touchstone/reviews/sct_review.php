@@ -1,4 +1,19 @@
 <?php
+// This file is part of TouchStone
+//
+// TouchStone is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// TouchStone is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with TouchStone.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
 * 
 * @author Simon Wilkinson
@@ -7,55 +22,18 @@
 * @package
 */
 
-  require_once $_SERVER['DOCUMENT_ROOT'] . 'touchstone/config/config.inc';
+  $root = (substr($_SERVER['DOCUMENT_ROOT'], -1) == '/') ? $_SERVER['DOCUMENT_ROOT'] : $_SERVER['DOCUMENT_ROOT'] . '/';
+  require_once $root . 'touchstone/config/config.inc';
   require '../include/media.inc';
   require '../include/errors.inc';
-  
-  $mysqli = new $dbclass($cfg_db_host , $cfg_db_username, $cfg_db_passwd, $cfg_db_database);
-  check_var('paperID', 'GET', true, false);
-  
-  $stmt = $mysqli->prepare("SELECT password FROM properties WHERE property_id=?");
-  $stmt->bind_param('i',$_GET['paperID']);
-  $stmt->execute();
-  $stmt->bind_result($paper_password);
-  $stmt->fetch();
-  $stmt->close();
-  
-  if ($paper_password == '') {
-    echo "<html>\n<head>\n<title>Access Denied</title>\n<style>\nbody {font-size:90%; font-family:Arial,sans-serif; background-color:#FCFCFC; color:#575757}\nh1 {font-weight:normal; color:#BF0000; font-size:140%}\n</style>\n</head>\n<body>\n";
-    echo "<div style=\"position:absolute; left:10px; top:10px\"><img src=\"/touchstone/artwork/access_denied.png\" width=\"48\" height=\"48\" /></div>\n";
-    echo "<h1 style=\"margin-left:60px\">Access Denied</h1>\n";
-    echo "<hr size=\"1\" align=\"left\" width=\"500\" style=\"margin-left:60px; color:#C0C0C0; background-color:#C0C0C0\" />\n<p style=\"margin-left:60px\">Access to this paper is not currently allowed.</p>\n";
-    echo "</body>\n</html>\n";
-    $mysqli->close();
-    exit;
-  }
-  
-  if (!isset($_SERVER['PHP_AUTH_USER'])) {
-    Header("WWW-authenticate: basic realm=\"TouchStone\"");
-    Header("HTTP/1.0 401 Unauthorised");
-    echo "<html>\n<head>\n<title>Access Denied</title>\n<style>\nbody {font-size:90%; font-family:Arial,sans-serif; background-color:#FCFCFC; color:#575757}\nh1 {font-weight:normal; color:#BF0000; font-size:140%}\n</style>\n</head>\n<body>\n";
-    echo "<div style=\"position:absolute; left:10px; top:10px\"><img src=\"/touchstone/artwork/access_denied.png\" width=\"48\" height=\"48\" /></div>\n";
-    echo "<h1 style=\"margin-left:60px\">Access Denied</h1>\n";
-    echo "<hr size=\"1\" align=\"left\" width=\"500\" style=\"margin-left:60px; color:#C0C0C0; background-color:#C0C0C0\" />\n<p style=\"margin-left:60px\">Authentication with TouchStone has failed.</p>\n";
-    echo "</body>\n</html>\n";
-    $mysqli->close();
-    exit;
-  } else {
-    if ($_SERVER['PHP_AUTH_USER'] != 'sctreviewer' or $_SERVER['PHP_AUTH_PW'] != $paper_password) {
-      Header("WWW-authenticate: basic realm=\"TouchStone\"");
-      Header("HTTP/1.0 401 Unauthorised");
-      echo "<html>\n<head>\n<title>Access Denied</title>\n<style>\nbody {font-size:90%; font-family:Arial,sans-serif; background-color:#FCFCFC; color:#575757}\nh1 {font-weight:normal; color:#BF0000; font-size:140%}\n</style>\n</head>\n<body>\n";
-      echo "<div style=\"position:absolute; left:10px; top:10px\"><img src=\"/touchstone/artwork/access_denied.png\" width=\"48\" height=\"48\" /></div>\n";
-      echo "<h1 style=\"margin-left:60px\">Access Denied</h1>\n";
-      echo "<hr size=\"1\" align=\"left\" width=\"500\" style=\"margin-left:60px; color:#C0C0C0; background-color:#C0C0C0\" />\n<p style=\"margin-left:60px\">Authentication with TouchStone has failed.</p>\n";
-      echo "</body>\n</html>\n";
-      $mysqli->close();
-      exit;
-    }
-  }
+  require '../include/sct_review.inc';
       
-  function display_question($question, &$question_no) {
+  // Check for key parameters
+  check_var('paperID', 'POST', true, false);
+  check_var('reviewer_name', 'POST', true, false);
+  check_var('reviewer_email', 'POST', true, false);
+
+  function display_question($question, &$question_no, $answers) {
     $question_no++;
 
     if ($question['scenario'] != '') {
@@ -98,11 +76,17 @@
     $part_id = 0;
     foreach ($question['options'] as $option_text) {
       $part_id++;
-      echo "<tr><td><input type=\"radio\" name=\"q" . $question_no . "\" value=\"$part_id\" /></td><td>$option_text</td></tr>\n";
+      if (isset($answers[$question['q_id']]['answer']) and $part_id == $answers[$question['q_id']]['answer']) {
+        echo "<tr><td><input type=\"radio\" name=\"q" . $question_no . "\" value=\"$part_id\" checked /></td><td>$option_text</td></tr>\n";
+      } else {
+        echo "<tr><td><input type=\"radio\" name=\"q" . $question_no . "\" value=\"$part_id\" /></td><td>$option_text</td></tr>\n";
+      }
     }
     echo "</table>\n</blockquote>\n";
     
-    echo "<span style=\"color:#808080\">Brief reason why?</span><br /><textarea name=\"reason$question_no\" cols=\"80\" rows=\"3\" /></textarea>\n";
+    echo "<span style=\"color:#808080\">Brief reason why?</span><br /><textarea name=\"reason$question_no\" cols=\"100\" rows=\"3\" />";
+    if (isset($answers[$question['q_id']]['reason'])) echo $answers[$question['q_id']]['reason'];
+    echo "</textarea>\n";
     echo "</td></tr>\n";
     echo "<tr><td colspan=\"2\">&nbsp;</td></tr>\n";
   }
@@ -112,13 +96,13 @@
 
     // Clear previous ratings for current reviewer and current paper
     $stmt = $mysqli->prepare("DELETE FROM sct_reviews WHERE paperID=? AND reviewer_name=? AND reviewer_email=?");
-    $stmt->bind_param('iss',$_GET['paperID'], $_POST['reviewer_name'], $_POST['reviewer_email']);
+    $stmt->bind_param('iss', $paperID, $_POST['reviewer_name'], $_POST['reviewer_email']);
     $stmt->execute();
     $stmt->close();
 
     // Loop through the structure of the paper
     $stmt = $mysqli->prepare("SELECT q_id FROM (papers, questions) WHERE papers.paper=? AND papers.question=questions.q_id AND q_type='sct' ORDER BY display_pos");
-    $stmt->bind_param('i',$_GET['paperID']);
+    $stmt->bind_param('i', $paperID);
     $stmt->execute();
     $stmt->store_result();
     $stmt->bind_result($q_id);
@@ -126,7 +110,7 @@
       // Store experts' reviews in sct_reviews table
 
       $update = $mysqli->prepare("INSERT INTO sct_reviews VALUES (NULL, ?, ?, ?, ?, ?, ?)");
-      $update->bind_param('ssiiis', $_POST['reviewer_name'], $_POST['reviewer_email'], $_GET['paperID'], $q_id, $_POST['q' . $question_no], $_POST['reason' . $question_no]);
+      $update->bind_param('ssiiis', $_POST['reviewer_name'], $_POST['reviewer_email'], $paperID, $q_id, $_POST['q' . $question_no], $_POST['reason' . $question_no]);
       $update->execute();
       $update->close();
 
@@ -140,8 +124,19 @@
 <html>
 <head>
 <title>SCT Review</title>
+<script language="JavaScript" src="../javascript/jquery-1.6.1.min.js"></script>
+<?php
+  if (isset($_POST['submit'])) {
+?>
+<script language="JavaScript">
+   $(function() { alert('Your answers and reasons have been saved. You can make further changes or close the browser down to exit.'); });
+ </script>
+ <?php
+  }
+?>
 <style type="text/css">
 body {background-color:white;color:black;padding:0px;margin:0px;border:0px;font-family:Arial,sans-serif;font-size:90%}
+textarea {font-family:Arial,sans-serif}
 li {margin-left:15px;margin-right:15px;font-size:100%}
 select,input{font-family:$font,sans-serif;font-size:100%}
 table {font-size:100%}
@@ -155,40 +150,29 @@ pre {font-family:Arial,sans-serif; font-size:100%}
 
 <body>
 <?php
-  $stmt = $mysqli->prepare("SELECT paper_title FROM properties WHERE property_id=?");
-  $stmt->bind_param('i',$_GET['paperID']);
+  // Get any previous answers for the current reviewer.
+  $saved_data = array();
+  $stmt = $mysqli->prepare("SELECT q_id, answer, reason FROM sct_reviews WHERE paperID=? AND reviewer_name=? AND reviewer_email=?");
+  $stmt->bind_param('iss', $paperID, $_POST['reviewer_name'], $_POST['reviewer_email']);
   $stmt->execute();
-  $stmt->store_result();
-  $stmt->bind_result($paper_title);
-  $stmt->fetch();
+  $stmt->bind_result($q_id, $answer, $reason);
+  while ($stmt->fetch()) {
+    $saved_data[$q_id]['answer'] = $answer;
+    $saved_data[$q_id]['reason'] = $reason;
+  }
   $stmt->close();
   
   // Output the top logo banner.
   echo $top_table_html;
-  echo '<tr><td><div style="margin-left:0px;font-size:180%;color:white;font-weight:bold">' . $paper_title . '</div></td>';
+  echo '<tr><td><div style="margin-left:0px;font-size:180%;color:white;font-weight:bold">' . getPaperTitle($paperID, $mysqli) . '</div></td>';
   echo $logo_html;
   
-  if (isset($_POST['submit'])) {
-    ?>
-    <blockquote>
-    <table cellpadding="2" cellspacing="0" border="0" style="padding:10px; border: 1px solid #C0C000; background-color:#FFFFC0; width:100%; font-size:100%">
-    <tr><td>Thank you. Your answers and explanations have been stored.</td></tr>
-    </table>
-    </blockquote>
-    </body>
-    </html>
-    <?php
-    exit;
-  }
-
-  echo "<form name=\"myform\" action=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "\" method=\"post\">\n";
+  echo "<form name=\"myform\" action=\"" . $_SERVER['PHP_SELF'] . "\" method=\"post\">\n";
   echo "<br />\n";
   
   echo "<blockquote>\n<table cellpadding=\"2\" cellspacing=\"0\" border=\"0\" style=\"padding:10px; border: 1px solid #C0C000; background-color:#FFFFC0; width:100%; font-size:100%\">\n";
   echo "<col width=\"80\"><col>\n";
   echo "<tr><td colspan=\"2\">This screen is designed to allow you to answer the following Script Concordance Test questions. Please provide a brief reason why you believe each answer is correct.</td></tr>\n";
-  echo "<tr><td><strong>Name</strong></td><td><input type=\"text\" name=\"reviewer_name\" size=\"50\" /></td></tr>\n";
-  echo "<tr><td><strong>Email</strong></td><td><input type=\"text\" name=\"reviewer_email\" size=\"50\" /></td></tr>\n";
   echo "</table>\n</blockquote>\n";
   
   echo "<table cellspacing=\"0\" cellpadding=\"2\" border=\"0\" style=\"width:100%; font-size:100%\">\n<col width=\"40\"><col>\n";
@@ -199,7 +183,7 @@ pre {font-family:Arial,sans-serif; font-size:100%}
   $question_no = 0;
 
   $stmt = $mysqli->prepare("SELECT q_id, theme, leadin, scenario, notes, score_method, q_media, q_media_width, q_media_height, q_option_order, option_text FROM (papers, questions, options) WHERE papers.paper=? AND papers.question=questions.q_id AND questions.q_id=options.o_id AND q_type='sct' ORDER BY display_pos, id_num");
-  $stmt->bind_param('i',$_GET['paperID']);
+  $stmt->bind_param('i', $paperID);
   $stmt->execute();
   $stmt->store_result();
   $stmt->bind_result($q_id, $theme, $leadin, $scenario, $notes, $score_method, $q_media, $q_media_width, $q_media_height, $q_option_order, $option_text);
@@ -226,13 +210,16 @@ pre {font-family:Arial,sans-serif; font-size:100%}
   //display the questions
   foreach($questions_array as &$question) {
     if ($question['theme'] == '') echo "<tr><td colspan=\"2\">&nbsp;</td></tr>\n";
-    display_question($question, $question_no);	
+    display_question($question, $question_no, $saved_data);	
   }
 
 ?>
 </table>
 
 <div style="text-align:center"><input type="submit" name="submit" value="Save" style="width:100px" /></div>
+<input type="hidden" name="paperID" value="<?php echo $paperID; ?>" />
+<input type="hidden" name="reviewer_name" value="<?php echo $_POST['reviewer_name']; ?>" />
+<input type="hidden" name="reviewer_email" value="<?php echo $_POST['reviewer_email']; ?>" />
 <br />
 </form>
 <?php

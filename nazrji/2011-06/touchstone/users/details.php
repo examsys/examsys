@@ -29,7 +29,17 @@
   require '../include/staff_auth.inc';
   require '../include/errors.inc';
   require '../include/demo_replace.inc';
+  require_once '../classes/schoolutils.class.php';
 
+  function check_email_domain($output, $domain) {
+    global $email;
+    
+    if($output !== true) {
+      $output = (substr($email, (strlen($domain) * -1)) == $domain);
+    }
+    return $output;
+  }
+  
   check_var('userID', 'GET', true, false);
 
   if (strpos($userroles,'Demo') !== false) {
@@ -47,16 +57,18 @@
     $html = "<tr><td colspan=\"" . ($col_span - 1) . "\" style=\"background-color:#F1F5FB\">";
     $html .= '<table cellpadding="0" cellspacing="0" border="0" style="font-size:100%"><tr>';
     $tab_array = array('Log','Modules','Notes','Accessibility');
-    if (strpos($user_roles,'Admin') !== false or strpos($user_roles,'SysAdmin') !== false or strpos($user_roles,'Staff') !== false) {
+    if (strpos($user_roles,'Admin') !== false and strpos($user_roles,'SysAdmin') === false) {
+      $tab_array = array('Log','Teams','Admin','Notes','Accessibility');
+    } elseif (strpos($user_roles,'Staff') !== false) {
       $tab_array = array('Log','Teams','Notes','Accessibility');
     } else {
-      $tab_array = array('Log','Modules','Notes','Accessibility');
+      $tab_array = array('Log','Modules','Notes','Accessibility','Metadata');
     }
     foreach($tab_array as $individual_tab) {
       if ($individual_tab == $current_tab) {
-        $html .= "<td style=\"padding-top:0px; cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_on.gif)\" onclick=\"showTab('$individual_tab')\">$individual_tab</td>";
+        $html .= "<td style=\"padding-top:0px; cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_on.gif)\" onclick=\"showTab('" . $individual_tab . "_tab')\">$individual_tab</td>";
       } else {
-        $html .= "<td style=\"padding-top:0px; cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_off.gif)\" onclick=\"showTab('$individual_tab')\">$individual_tab</td>";
+        $html .= "<td style=\"padding-top:0px; cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_off.gif)\" onclick=\"showTab('" . $individual_tab . "_tab')\">$individual_tab</td>";
       }
     }
     $html .= "</tr></table></td><td align=\"right\" style=\"background-color:#F1F5FB\">$right_text</td></tr>\n";
@@ -115,7 +127,6 @@
   }
 
   if (isset($_POST['update']) and $demo == false) {
-    
     $initials = '';
     $first_names_array = explode(' ',$_POST['first_names']);
     foreach ($first_names_array as $individual_name) {
@@ -142,11 +153,11 @@
     $tmp_email = $_POST['email'];
         
     if (isset($_POST['password']) and $_POST['password'] != '') {
-      $result = $mysqli->prepare("UPDATE users SET roles=?, title=?, initials=?, surname=?, grade=?, yearofstudy=?, username=?, password=?, email=?, first_names=?, gender=?, faculty=? WHERE id=?");
-      $result->bind_param('sssssissssssi', $tmp_roles, $_POST['title'], $initials, $tmp_surname, $grade, $_POST['year'], $_POST['username'], $_POST['password'], $tmp_email, $tmp_first_names, $_POST['gender'], $_POST['faculty'], $_POST['old_userID']); 
+      $result = $mysqli->prepare("UPDATE users SET roles=?, title=?, initials=?, surname=?, grade=?, yearofstudy=?, username=?, password=?, email=?, first_names=?, gender=? WHERE id=?");
+      $result->bind_param('sssssisssssi', $tmp_roles, $_POST['title'], $initials, $tmp_surname, $grade, $_POST['year'], $_POST['username'], $_POST['password'], $tmp_email, $tmp_first_names, $_POST['gender'], $_POST['old_userID']); 
     } else {
-      $result = $mysqli->prepare("UPDATE users SET roles=?, title=?, initials=?, surname=?, grade=?, yearofstudy=?, username=?, email=?, first_names=?, gender=?, faculty=? WHERE id=?");
-      $result->bind_param('sssssisssssi', $tmp_roles, $_POST['title'], $initials, $tmp_surname, $grade, $_POST['year'], $_POST['username'], $tmp_email, $tmp_first_names, $_POST['gender'], $_POST['faculty'], $_POST['old_userID']);
+      $result = $mysqli->prepare("UPDATE users SET roles=?, title=?, initials=?, surname=?, grade=?, yearofstudy=?, username=?, email=?, first_names=?, gender=? WHERE id=?");
+      $result->bind_param('sssssissssi', $tmp_roles, $_POST['title'], $initials, $tmp_surname, $grade, $_POST['year'], $_POST['username'], $tmp_email, $tmp_first_names, $_POST['gender'], $_POST['old_userID']);
     }
     $result->execute();
     $result->close();
@@ -170,6 +181,20 @@
       $result->bind_param('si', $_POST['sid'], $_POST['old_userID']);
       $result->execute();
       $result->close();
+    }
+  } elseif (isset($_POST['updateadmin'])) {
+    $result = $mysqli->prepare("DELETE FROM admin_access WHERE userID=?");
+    $result->bind_param('i', $_GET['userID']);
+    $result->execute();
+    $result->close();
+    
+    for ($i=0; $i<$_POST['admin_school_no']; $i++) {
+      if (isset($_POST["sch$i"])) {
+        $result = $mysqli->prepare("INSERT INTO admin_access VALUES (NULL, ?, ?)");
+        $result->bind_param('ii', $_GET['userID'], $_POST["sch$i"]);
+        $result->execute();
+        $result->close();
+      }
     }
   } elseif (isset($_POST['updateaccess'])) {
     $background = $_POST['background'];
@@ -202,6 +227,14 @@
       $result->execute();
       $result->close();
     }
+  } elseif (isset($_POST['save_metadata'])) {
+    for ($i=0; $i<$_POST['metadata_no']; $i++) {
+      //echo $i . '=' . $_POST["meta_value$i"] . ' (' . $_POST["meta_id$i"] . ')<br />';
+      $result = $mysqli->prepare("UPDATE users_metadata SET value=? WHERE id=?");
+      $result->bind_param('si', $_POST["meta_value$i"], $_POST["meta_id$i"]);
+      $result->execute();
+      $result->close();
+    }
   }
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -214,6 +247,7 @@
 body {font-size:100%}
 td {padding-top:1px}
 .coltitle {cursor:hand; background-color:#1E3C7B; color:white}
+.sch_check {text-align:right; width:40px; padding-right:6px}
 a.paper {color:black}
 a.paper:hover {color:white; background-color:#000080}
 a.access:link {color:blue}
@@ -229,37 +263,15 @@ a.access:hover {color:white}
   }
 
   function showTab(tabID) {
-    if (tabID == 'Log') {
-      document.getElementById('Log').style.display = '';
-      document.getElementById('Modules').style.display = 'none';
-      document.getElementById('Notes').style.display = 'none';
-      document.getElementById('Accessibility').style.display = 'none';
-      document.getElementById('Teams').style.display = 'none';
-    } else if (tabID == 'Modules') {
-      document.getElementById('Log').style.display = 'none';
-      document.getElementById('Modules').style.display = '';
-      document.getElementById('Notes').style.display = 'none';
-      document.getElementById('Accessibility').style.display = 'none';
-      document.getElementById('Teams').style.display = 'none';
-    } else if (tabID == 'Notes') {
-      document.getElementById('Log').style.display = 'none';
-      document.getElementById('Modules').style.display = 'none';
-      document.getElementById('Notes').style.display = '';
-      document.getElementById('Accessibility').style.display = 'none';
-      document.getElementById('Teams').style.display = 'none';
-    } else if (tabID == 'Accessibility') {
-      document.getElementById('Log').style.display = 'none';
-      document.getElementById('Modules').style.display = 'none';
-      document.getElementById('Notes').style.display = 'none';
-      document.getElementById('Teams').style.display = 'none';
-      document.getElementById('Accessibility').style.display = '';
-    } else {
-      document.getElementById('Log').style.display = 'none';
-      document.getElementById('Modules').style.display = 'none';
-      document.getElementById('Notes').style.display = 'none';
-      document.getElementById('Accessibility').style.display = 'none';
-      document.getElementById('Teams').style.display = '';
-    }
+    document.getElementById('Log_tab').style.display = 'none';
+    document.getElementById('Modules_tab').style.display = 'none';
+    document.getElementById('Admin_tab').style.display = 'none';
+    document.getElementById('Notes_tab').style.display = 'none';
+    document.getElementById('Accessibility_tab').style.display = 'none';
+    document.getElementById('Teams_tab').style.display = 'none';
+    document.getElementById('Metadata_tab').style.display = 'none';
+    
+    document.getElementById(tabID).style.display = '';
   }
 
   function newStudentNote() {
@@ -290,8 +302,15 @@ a.access:hover {color:white}
     }  
   }
   
-  function resetPassword(username) {
-    editwin=window.open("reset_password.php?userID=<?php echo $_GET['userID']; ?>&username=" + username + "","editmodule","width=450,height=400,left="+(screen.width/2-200)+",top="+(screen.height/2-375)+",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+  function forceResetPassword(username) {
+    editwin=window.open("reset_pwd.php?userID=<?php echo $_GET['userID']; ?>&username=" + username + "","editmodule","width=450,height=400,left="+(screen.width/2-200)+",top="+(screen.height/2-375)+",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+    if (window.focus) {
+      editwin.focus();
+    }
+  }    
+
+  function resetPassword(email) {
+    editwin=window.open("forgotten_password.php?email=" + email + "","editmodule","width=600,height=400,left="+(screen.width/2-250)+",top="+(screen.height/2-375)+",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
     if (window.focus) {
       editwin.focus();
     }    
@@ -316,10 +335,10 @@ a.access:hover {color:white}
   if ($needs_result->num_rows > 0) $special_needs = true;
   $needs_result->close();
 
-  $user_result = $mysqli->prepare("SELECT DISTINCT id, roles, grade, title, initials, first_names, surname, email, yearofstudy, grade, password, gender, username, faculty, student_id FROM users LEFT JOIN sid ON users.id=sid.userID WHERE users.id=?");
+  $user_result = $mysqli->prepare("SELECT DISTINCT id, roles, grade, title, initials, first_names, surname, email, yearofstudy, grade, password, gender, username, student_id FROM users LEFT JOIN sid ON users.id=sid.userID WHERE users.id=?");
   $user_result->bind_param('i', $_GET['userID']);
   $user_result->execute();
-  $user_result->bind_result($tmp_id, $tmp_roles, $tmp_grade, $tmp_title, $tmp_initials, $tmp_first_names, $tmp_surname, $email, $tmp_year, $grade, $password, $gender, $username, $faculty, $student_id);
+  $user_result->bind_result($tmp_id, $tmp_roles, $tmp_grade, $tmp_title, $tmp_initials, $tmp_first_names, $tmp_surname, $email, $tmp_year, $grade, $password, $gender, $username, $student_id);
   $user_result->fetch();
   $user_result->close();
   
@@ -414,17 +433,7 @@ a.access:hover {color:white}
       }
       if ($found == 0) echo "<option value=\"" . $grade . "\" selected>" . $grade . ": &lt;unknown degree&gt;</option>\n";
       $degree_details->close();
-      echo "</select></td><td>&nbsp;Faculty</td><td colspan=\"2\"><select name=\"faculty\">\n<option value=\"\"></option>\n";
-      $faculty_details = $mysqli->query("SELECT name FROM faculty ORDER BY name");
-      while ($faculty_row = $faculty_details->fetch_assoc()) {
-        if ($faculty_row['name'] == $faculty) {
-          echo "<option value=\"" . $faculty_row['name'] . "\" selected>" . $faculty_row['name'] . "</option>\n";
-        } else {
-          echo "<option value=\"" . $faculty_row['name'] . "\">" . $faculty_row['name'] . "</option>\n";
-        }
-      }
-      
-      echo "</select></td></tr>\n";
+      echo "</select></td><td colspan=\"3\">&nbsp;</td></tr>\n";
       echo "<tr><td>&nbsp;Year of Study</td><td><select name=\"year\">";
       for ($i=1; $i<=6; $i++) {
         if ($i == $tmp_year) {
@@ -445,7 +454,7 @@ a.access:hover {color:white}
       echo "</select></td></tr>\n";
     } else {
       // Staff editing
-      echo "<tr><td>&nbsp;Type</td><td>";
+      echo "<tr><td>&nbsp;Type<input type=\"hidden\" name=\"year\" value=\"$tmp_year\" /></td><td>";
       echo "<select name=\"grade\">\n<option value=\"\"></option>\n";
       ?>
       <option value="University Lecturer"<?php if ($grade == 'University Lecturer' and $tmp_roles != 'inactive') echo ' selected'; ?>>University Lecturer</option>
@@ -478,24 +487,21 @@ a.access:hover {color:white}
       
       echo "<input type=\"hidden\" name=\"roles\" value=\"$tmp_roles\" /></td>\n";
       
-      echo "<td>&nbsp;Faculty</td><td colspan=\"2\"><select name=\"faculty\">\n<option value=\"\"></option>\n";
-      $faculty_details = $mysqli->query("SELECT name FROM faculty ORDER BY name");
-      while ($faculty_row = $faculty_details->fetch_assoc()) {
-        if ($faculty_row['name'] == $faculty) {
-          echo "<option value=\"" . $faculty_row['name'] . "\" selected>" . $faculty_row['name'] . "</option>\n";
-        } else {
-          echo "<option value=\"" . $faculty_row['name'] . "\">" . $faculty_row['name'] . "</option>\n";
-        }
-      }
-      echo "</select></td></tr>\n";
+      echo "<td colspan=\"3\">&nbsp;</td></tr>\n";
     }
 
     if (strpos($userroles,'SysAdmin') !== false ) {
       echo "<tr><td>&nbsp;Username&nbsp;</td><td><input type=\"text\" size=\"15\" name=\"username\" value=\"$username\" /></td><td>&nbsp;Password</td><td colspan=\"2\">";
-      if( strpos($email,'nottingham.ac.uk') === false ) {
-        echo "<input type=\"button\" onclick=\"resetPassword('$username')\" value=\"Reset\" />";
+      if($cfg_use_ldap and array_reduce($cfg_institutional_domains, 'check_email_domain')) {
+        echo "[Using external auth]";
       } else {
-        echo "[Using LDAP]";
+        $url_email = urlencode($email);
+        echo "<input type=\"button\" onclick=\"resetPassword('$url_email')\" value=\"Reset\" />";
+
+        if(strpos($userroles, 'SysAdmin')) {
+          echo "&nbsp;<input type=\"button\" onclick=\"forceResetPassword('$username')\" value=\"Force reset\" />";
+        }
+        
       } 
       echo "<input type=\"hidden\" name=\"old_userID\" value=\"$tmp_id\" /></td></tr>\n";
     } else {
@@ -544,9 +550,9 @@ a.access:hover {color:white}
 </table>
 <?php
   if ($tab == 'log') {
-    echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"Log\" style=\"width:100%\">\n";
+    echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"Log_tab\" style=\"width:100%\">\n";
   } else {
-    echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"Log\" style=\"width:100%; display:none\">\n";
+    echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"Log_tab\" style=\"width:100%; display:none\">\n";
   }
   echo drawTabs('Log',6,'',$tmp_roles);
   
@@ -692,9 +698,9 @@ a.access:hover {color:white}
 
 <?php
   if ($tab == 'modules') {
-    echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"Modules\" style=\"width:100%\">\n";
+    echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"Modules_tab\" style=\"width:100%\">\n";
   } else {
-    echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"Modules\" style=\"width:100%; display:none\">\n";
+    echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"Modules_tab\" style=\"width:100%; display:none\">\n";
   }
   $results = $mysqli->query("SELECT MAX(calendar_year) AS calendar_year FROM student_modules");
   $row = $results->fetch_assoc();
@@ -736,10 +742,50 @@ a.access:hover {color:white}
 </table>
 
 <?php
-  if ($tab == 'notes') {
-    echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"Notes\" style=\"width:100%\">\n";
+  if ($tab == 'admin') {
+    echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"Admin_tab\" style=\"width:100%\">\n";
   } else {
-    echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"Notes\" style=\"width:100%; display:none\">\n";
+    echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"Admin_tab\" style=\"width:100%; display:none\">\n";
+  }
+  echo "<form name=\"accessibility\" action=\"" . $_SERVER['PHP_SELF'] . "?userID=$tmp_id&tab=admin\" method=\"post\">";
+  
+  echo drawTabs('Admin',1,'',$tmp_roles);
+  echo "<tr><td class=\"coltitle\">&nbsp;</td></tr>\n";
+  echo "<tr><td><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"width:100%\">\n";
+  
+  $current_schools = SchoolUtils::getAdminSchools($_GET['userID'], $mysqli);
+   
+  $old_faculty = '';
+  $admin_school_no = 0;
+  $result = $mysqli->prepare("SELECT id, faculty, school FROM schools ORDER BY faculty, school");
+  $result->execute();  
+  $result->bind_result($schoolID, $faculty, $school);
+  while ($result->fetch()) {
+    if ($old_faculty != $faculty) {
+      echo '<tr><td colspan="2"><table border="0" style="padding-top:5px; width:100%; color:#1E3287"><tr><td><nobr>' . $faculty . '</nobr></td><td style="width:98%"><hr noshade="noshade" style="border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%" /></td></tr></table></td></tr>';
+    }
+    echo '<tr><td class="sch_check">';
+    if (in_array($schoolID,$current_schools)) {
+      echo "<input type=\"checkbox\" name=\"sch" . $admin_school_no . "\" value=\"$schoolID\" checked />";
+    } else {
+      echo "<input type=\"checkbox\" name=\"sch" . $admin_school_no . "\" value=\"$schoolID\" />";
+    }
+    echo "</td><td>$school</td></tr>\n";
+    $old_faculty = $faculty;
+    $admin_school_no++;
+  }
+  $result->close();
+  echo "</table>\n</td></tr>\n";
+  ?>
+  <tr><td colspan="2" align="center"><input type="submit" name="updateadmin" value="Save" style="width:100px" /><input type="hidden" name="admin_school_no" value="<?php echo $admin_school_no; ?>" /></td></tr>
+  </form>
+  </table>
+  <?php
+
+  if ($tab == 'notes') {
+    echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"Notes_tab\" style=\"width:100%\">\n";
+  } else {
+    echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"Notes_tab\" style=\"width:100%; display:none\">\n";
   }
   $link_html = '<img src="../artwork/shortcut.png" onclick="newStudentNote()" width="10" height="10" border="0" />&nbsp;<a href="" onclick="newStudentNote(); return false;" class="access">create New Note</a>&nbsp;';
   echo drawTabs('Notes',4,$link_html,$tmp_roles);
@@ -755,9 +801,9 @@ a.access:hover {color:white}
 
 <?php
   if ($tab == 'accessibility') {
-    echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"Accessibility\" style=\"width:100%; text-align:left\">\n";
+    echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"Accessibility_tab\" style=\"width:100%; text-align:left\">\n";
   } else {
-    echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"Accessibility\" style=\"width:100%; text-align:left; display:none\">\n";
+    echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"Accessibility_tab\" style=\"width:100%; text-align:left; display:none\">\n";
   }
   echo "<form name=\"accessibility\" action=\"" . $_SERVER['PHP_SELF'] . "?userID=$tmp_id&tab=accessibility\" method=\"post\">";
   echo drawTabs('Accessibility',1,'',$tmp_roles);
@@ -923,18 +969,61 @@ a.access:hover {color:white}
 </table>
 
 <?php
-  if ($tab == 'teams') {
-    echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"Teams\" style=\"width:100%\" onclick=\"hideAll()\">\n";
+  $metadata_no = 0;
+  if ($tab == 'metadata') {
+    echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"Metadata_tab\" style=\"width:100%\">\n";
   } else {
-    echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"Teams\" style=\"width:100%; display:none\" onclick=\"hideAll()\">\n";
+    echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"Metadata_tab\" style=\"width:100%; display:none\">\n";
+  }
+  echo "<form name=\"metadata\" action=\"" . $_SERVER['PHP_SELF'] . "?userID=$tmp_id&tab=metadata\" method=\"post\">";
+  echo drawTabs('Metadata',5,'',$tmp_roles);
+  echo "<tr><td class=\"coltitle\">&nbsp;Module ID</td><td class=\"coltitle\">Academic Year</td><td class=\"coltitle\">Type</td><td class=\"coltitle\">Value</td><td class=\"coltitle\" style=\"width:30%\">&nbsp;</td></tr>\n";
+  $stmt = $mysqli->prepare("SELECT users_metadata.id, modules.id, modules.moduleID, fullname, calendar_year, type, value FROM users_metadata, modules WHERE users_metadata.moduleID=modules.id AND userID=?");
+  $stmt->bind_param('i', $_GET['userID']);
+  $stmt->execute();
+  $stmt->store_result();
+  $stmt->bind_result($meta_id, $mod_id, $moduleID, $fullname, $calendar_year, $type, $value);
+  while ($stmt->fetch()) {
+    echo "<tr><td>&nbsp;$moduleID: $fullname</td><td>$calendar_year</td><td>$type</td><td><input type=\"hidden\" name=\"meta_id$metadata_no\" value=\"$meta_id\" /><select name=\"meta_value$metadata_no\">";
+    $result = $mysqli->prepare("SELECT DISTINCT value FROM users_metadata WHERE calendar_year=? AND moduleID=? AND type=?");
+    $result->bind_param('sis', $calendar_year, $mod_id, $type);
+    $result->execute();
+    $result->store_result();
+    $result->bind_result($unique_value);
+    while($result->fetch()) {
+      if ($unique_value == $value) {
+        echo "<option value=\"$unique_value\" selected>$unique_value</option>\n";
+      } else {
+        echo "<option value=\"$unique_value\">$unique_value</option>\n";
+      }
+    }
+    $result->close();
+    echo "</select></td><td></td></tr>\n";
+    $metadata_no++;
+  }
+  $stmt->close();
+
+  echo "<tr><td colspan=\"5\">&nbsp;</td></tr>\n";
+  echo "<tr><td colspan=\"5\" style=\"text-align:center\"><input type=\"submit\" name=\"save_metadata\" value=\"Save\" style=\"width:100px\" /><input type=\"hidden\" name=\"metadata_no\" value=\"$metadata_no\" /></td></tr>\n";
+?>
+</form>
+</table>
+
+<?php
+  if ($tab == 'teams') {
+    echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"Teams_tab\" style=\"width:100%\">\n";
+  } else {
+    echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"Teams_tab\" style=\"width:100%; display:none\">\n";
   }
   echo drawTabs('Teams',3,'',$tmp_roles);
   echo "<tr><td class=\"coltitle\">&nbsp;Team</td><td class=\"coltitle\">Date Added</td><td class=\"coltitle\">Type</td></tr>\n";
-  echo "<tr><td colspan=\"3\"><a href=\"\" onclick=\"editMultiTeams(); return false;\">Edit Teams...</a></td></tr>\n";
-  $query_string = "SELECT name, DATE_FORMAT(added,'%d/%m/%Y') AS added, type FROM teams WHERE memberID=$tmp_id ORDER BY name";
+  if (strpos($userroles,'Admin') !== false) {
+  echo "<tr><td colspan=\"3\"><a href=\"\" onclick=\"editMultiTeams(); return false;\">&nbsp;Edit Teams...</a></td></tr>\n";
+  }
+  $query_string = "SELECT name, fullname, DATE_FORMAT(added,'%d/%m/%Y') AS added, type FROM teams, modules WHERE teams.name=modules.moduleid AND memberID=$tmp_id ORDER BY name";
   $results = $mysqli->query($query_string);
   while ($row = $results->fetch_assoc()) {
-    echo "<tr><td>&nbsp;" . $row['name'] . "</td><td>" . $row['added'] . "</td><td>" . $row['type'] . "</td></tr>\n";
+    echo "<tr><td>&nbsp;" . $row['name'] . ": " . $row['fullname'] . "</td><td>" . $row['added'] . "</td><td>" . $row['type'] . "</td></tr>\n";
   }
   $mysqli->close();
 ?>

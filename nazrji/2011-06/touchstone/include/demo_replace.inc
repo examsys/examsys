@@ -22,9 +22,18 @@
 * @package
 */
 
+/**
+* This is function demo_replace takes a string and obscures it. Useful for demonstrating TouchStone
+* at conferences and other meetings. 
+* 
+* @param string $text the string to be obscured
+* @param string $demo_on whether demo mode is on or off
+* @return the string obscured as 'Abcde' for as long as the original string was
+*
+*/
 function demo_replace($text, $demo_on) {
   if ($demo_on == true) {
-    $new_text;
+    $new_text = '';
     $upper_flag = true;
     for ($i=0; $i<strlen($text); $i++) {
       if (substr($text,$i,1) == ' ') {
@@ -38,12 +47,20 @@ function demo_replace($text, $demo_on) {
       }
     }
     return $new_text;
-    //return str_repeat('~',strlen($text));
   } else {
     return $text;
   }
 }
 
+/**
+* This is function demo_replace_number takes a number and obscures it. Useful for
+* demonstrating TouchStone at conferences and other meetings. 
+* 
+* @param integer $number the number to be obscured
+* @param string $demo_on whether demo mode is on or off
+* @return the number obscured as '12345678'
+*
+*/
 function demo_replace_number($number, $demo_on) {
   if ($demo_on == true) {
     return '12345678';
@@ -52,14 +69,20 @@ function demo_replace_number($number, $demo_on) {
   }
 }
 
+/**
+* This is function demo_replace_username takes a username and obscures by replacing characters with hashes.
+* Useful for demonstrating TouchStone at conferences and other meetings. 
+* 
+* @param string $username the username to be obscured
+* @param string $demo_on whether demo mode is on or off
+* @return the string obscured as a number of hashes
+*
+*/
 function demo_replace_username($username, $demo_on) {
   if ($demo_on == true) {
     $split_username = explode('@',$username);
-    if (substr($username,0,3) == 'mzy') {
-      $username = 'mzy####';
-    } else {
-      $username = '#######';
-    }
+    $username = '#######';
+    
     if (count($split_username) > 1) $username .= '@' . $split_username[1];
   }
   return $username;

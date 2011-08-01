@@ -27,13 +27,6 @@
   require '../../include/help.inc';
   header('Content-Type: text/html; charset=UTF-8');
 
-  function encodeHTML($sHTML) {
-    $sHTML=str_replace('&','&amp;',$sHTML);
-    $sHTML=str_replace('<','&lt;',$sHTML);
-    $sHTML=str_replace('>','&gt;',$sHTML);
-    return $sHTML;
-  }
-
   if (isset($_POST['save_changes'])) {
     // Update help file record
     $tmp_body = $_POST['edit1'];
@@ -163,7 +156,7 @@
   
   echo "</select>\n</td></tr></table>\n<br />\n";
   
-  echo "<textarea class=\"mceEditor\" id=\"edit1\" name=\"edit1\" style=\"width:100%; height:500px\">" . encodeHTML($body) . "</textarea>\n";
+  echo "<textarea class=\"mceEditor\" id=\"edit1\" name=\"edit1\" style=\"width:100%; height:500px\">" . $body . "</textarea>\n";
   
   // Check for lockout.
   $current_time = date('YmdHis');

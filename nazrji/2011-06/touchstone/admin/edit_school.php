@@ -23,74 +23,92 @@
 */
 
 require '../include/sysadmin_auth.inc';
+require '../include/errors.inc';
+check_var('schoolid', 'GET', true, false);
 
 if (isset($_POST['submit'])) {
-  $editSchool = "UPDATE schools SET school='" . $_POST['school'] . "', faculty=\"" . $_POST['faculty'] . "\" WHERE id=" . $_POST['schoolID'];
-  if (!mysql_query($editSchool, $link_id)) {
-    echo "<p class=\"error\">School Edit Error</p>\n<p>Query: " . $editSchool . "</p>\n<p>" . mysql_error($link_id) . "</p>\n";
-    echo "</body>\n</html>\n";
-    exit();
-  }
-  
-  if ($_SERVER['SERVER_PORT'] == 443) {
-    $protocol = 'https://';
-  } else {
-    $protocol = 'http://';
-  }
-  header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/touchstone/admin/school_list.php");
+  $school = trim( $_POST['school']);
+  $faculty = trim( $_POST['faculty']);
+
+  $result = $mysqli->prepare("UPDATE schools SET faculty=?, school=? WHERE id=?");
+  $result->bind_param('ssi', $faculty, $school, $_GET['schoolid']);
+  $result->execute();
+  $result->close();
+
+  header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/touchstone/admin/list_schools.php");
 } else {
-  $school_details = mysql_query("SELECT school, faculty FROM schools WHERE id=" . $_GET['schoolID'] .  " LIMIT 1",$link_id);
-  $row = mysql_fetch_array($school_details)
 ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
   <html>
   <head>
-  <title>Edit School</title>
-
+  <title>Edit School<?php echo " $cfg_install_type"; ?></title>
+  <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
   <style>
-    body {font-family:Arial,Helvetica,sans-serif; color:black; background-color:white; margin:0px}
-    td {font-size:90%}
-    input, textarea {font-family:Arial,Helvetica,sans-serif; color:black}
+    body {font-family:Arial,sans-serif; color:black; background-color:white; margin:0px}
+    td {text-align:left}
+    input, textarea {font-family:Arial,sans-serif; color:black}
     .field {font-weight:bold; text-align:right; padding-right:10px}
   </style>
 
   <script language="JavaScript">
   function checkForm() {
-    if (edit_school.school.value == "") {
-      alert ("Please enter a code for the degree.");
+    if (add_school.school.value == "" or add_school.school.value == "School of") {
+      alert ("Please enter name for the school.");
       return false;
     }
   }
   </script>
   </head>
-  <body>
-  <table cellpadding="0" cellspacing="0" border="0" width="100%">
-  <tr><td style="background-color:#EBEADB"><div style="font-size:220%; font-weight:bold"><a onmouseover="move_in('image1','../artwork/up_folder_icon_on.gif')" onmouseout="move_out('image1','../artwork/up_folder_icon_off.gif')" href="school_list.php"><img name="image1" src="../artwork/up_folder_icon_off.gif" width="32" height="38" alt="Up" border="0" /></a>&nbsp;Edit School</div></td></tr>
-  <tr><td style="height:3px"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" /></td></tr>
-  </table>
+<body onclick="deselSch()">
+<?php
+  require '../include/school_options.inc';
+  
+  $result = $mysqli->prepare("SELECT school, faculty FROM schools WHERE id=?");
+  $result->bind_param('i', $_GET['schoolid']);
+  $result->execute();
+  $result->bind_result($school, $faculty);
+  $result->fetch();
+  $result->close();
+ 
+?>
+<div id="content" class="content" style="font-size:80%">
+  
+<table cellpadding="0" cellspacing="0" border="0" width="100%">
+<tr>
+<td style="background-color:#F1F5FB"><div class="breadcrumb"><a href="../index.php">Home</a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php">Administrative Tools</a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="list_schools.php">Schools</a></div><div style="margin-left:10px; font-size:200%; font-weight:bold">Edit School</td>
+<td style="background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(233); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="Help" border="0" /></a></td>
+</tr>
+<tr><td colspan="2" style="height:3px"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td></tr>
+</table>  
+  
   <br />
   <div align="center">
-  <form name="edit_school" method="post" onsubmit="return checkForm()" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+  <form name="add_school" method="post" onsubmit="return checkForm()" action="<?php echo $_SERVER['PHP_SELF'] . '?schoolid=' . $_GET['schoolid']; ?>">
     <table cellpadding="0" cellspacing="2" border="0">
-    <tr><td class="field">School</td><td><input type="text" size="70" name="school" value="<?php echo $row['school']; ?>" /></td></tr>
+    <tr><td class="field">School</td><td><input type="text" size="70" name="school" value="<?php echo $school; ?>" /></td></tr>
     <tr><td class="field">Faculty</td><td><select name="faculty">
+    <option value=""></option>
     <?php
-      $school_details = mysql_query("SELECT DISTINCT faculty FROM schools ORDER BY faculty, id",$link_id);
-      while ($school_row = mysql_fetch_array($school_details)) {
-        if ($row['faculty'] == $school_row['faculty']) {
-          echo "<option value=\"" . $school_row['faculty'] . "\" selected>" . $school_row['faculty'] . "</option>\n";
+      $result = $mysqli->prepare("SELECT name FROM faculty ORDER BY name");
+      $result->execute();
+      $result->bind_result($name);
+      while ($result->fetch()) {
+        if ($name == $faculty) {
+          echo "<option value=\"$name\" selected>$name</option>\n";
         } else {
-          echo "<option value=\"" . $school_row['faculty'] . "\">" . $school_row['faculty'] . "</option>\n";
+          echo "<option value=\"$name\">$name</option>\n";
         }
       }
+      $result->close();
     ?>
     </select></td></tr>
     </table>
-    <input type="hidden" name="schoolID" value="<?php echo $_GET['schoolID']; ?>" />
-    <p><input type="submit" style="width:100px" name="submit" value="Save">&nbsp;&nbsp;<input type="button" style="width:100px" name="home" value="Cancel" onclick="javascript:history.back();" /></p>
+    <p><input type="submit" style="width:100px" name="submit" value="Save">&nbsp;&nbsp;<input style="width:100px" type="button" name="home" value="Cancel" onclick="javascript:history.back();" /></p>
   </form>
   </div>
 <?php
 }
 ?>
+</div>
 </body>
 </html>

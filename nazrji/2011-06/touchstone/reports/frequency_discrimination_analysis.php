@@ -217,29 +217,35 @@
         }
         break;
       case 'hotspot':
-        if (substr($answer,0,1) == '1') {
-          if (isset($log_array[$qID][1]['1'])) {
-            $log_array[$qID][1]['1']++;
+        $layer_answers = explode('|', $answer);
+        
+        $layer = 1;
+        foreach ($layer_answers as $layer_answer) {
+          if (substr($layer_answer,0,1) == '1') {
+            if (isset($log_array[$qID][$layer]['1'])) {
+              $log_array[$qID][$layer]['1']++;
+            } else {
+              $log_array[$qID][$layer]['1'] = 1;
+            }
+          } elseif (substr($layer_answer,0,1) == '0') {
+            if (isset($log_array[$qID][$layer]['0'])) {
+              $log_array[$qID][$layer]['0']++;
+            } else {
+              $log_array[$qID][$layer]['0'] = 1;
+            }
           } else {
-            $log_array[$qID][1]['1'] = 1;
+            if (isset($log_array[$qID][$layer]['u'])) {
+              $log_array[$qID][$layer]['u']++;
+            } else {
+              $log_array[$qID][$layer]['u'] = 1;
+            }
           }
-        } elseif (substr($answer,0,1) == '0') {
-          if (isset($log_array[$qID][1]['0'])) {
-            $log_array[$qID][1]['0']++;
+          if (!isset($log_array[$qID][$layer]['coords'])) {
+            $log_array[$qID][$layer]['coords'] = substr($layer_answer,2);
           } else {
-            $log_array[$qID][1]['0'] = 1;
+            $log_array[$qID][$layer]['coords'] .= ';' . substr($layer_answer,2);
           }
-        } else {
-          if (isset($log_array[$qID][1]['u'])) {
-            $log_array[$qID][1]['u']++;
-          } else {
-            $log_array[$qID][1]['u'] = 1;
-          }
-        }
-        if (!isset($log_array[$qID][1]['coords'])) {
-          $log_array[$qID][1]['coords'] = substr($answer,2);
-        } else {
-          $log_array[$qID][1]['coords'] .= ';' . substr($answer,2);
+          $layer++;
         }
         break;
       case 'mcq':
@@ -667,13 +673,13 @@
           }
           break;
         case 'hotspot':
-          echo "<p id=\"q_" . ($ex_no + 1) . "_1\"";
-          if (isset($excluded[$q_id]) and $excluded[$q_id] == '1') {
-            echo ' style="color:red; text-decoration:line-through">' . excludeButton($ex_no, $q_id, 1, 1, 1);
-          } else {
-            echo '>' . excludeButton($ex_no, $q_id, 0, 1, 1);
+          $layers = explode('|', $correct);
+          $coords = '';
+          for ($i = 1; $i <= count($layers); $i++) {
+            $coords .= $freq_log[$q_id][$i]['coords'] . '|';
           }
-          echo "&nbsp;<strong>$std</strong>&nbsp;$leadin</p>\n";
+          $coords = rtrim($coords, '|');
+          
           $tmp_width = ($q_media_width + 2);
           if ($tmp_width < 375) $tmp_width = 375;
           ?>
@@ -681,7 +687,7 @@
           <script language="JavaScript">
       			function swfLoaded<?php echo $q_no; ?>(message) {
       				var num = message.substring(5,message.length);
-      				setUpFlash(num, message, '<?php echo $q_media; ?>', '<?php echo trim($correct); ?>', '<?php echo $freq_log[$q_id][1]['coords']; ?>','0');
+      				setUpFlash(num, message, '<?php echo $q_media; ?>', '<?php echo trim($correct); ?>', '<?php echo $coords; ?>','0');
       			}
       			write_string('<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="https://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0" id="flash<?php echo $q_no; ?>" width="<?php echo ($q_media_width + 300); ?>" height="<?php echo ($q_media_height + 2); ?>" align="middle">');
       			write_string('<param name="allowScriptAccess" value="always" />');
@@ -693,13 +699,28 @@
           </script>
           </div>
           <?php
-          $d = calcDiscrimination($candidate_no,$top_log[$q_id],$bottom_log[$q_id],1,1);
-          $tmp_correct_no = (isset($freq_log[$q_id][1][1])) ? $freq_log[$q_id][1][1] : 0;
-          $tmp_top_no = (isset($top_log[$q_id][1][1])) ? $top_log[$q_id][1][1] : 0;
-          $tmp_bottom_no = (isset($bottom_log[$q_id][1][1])) ? $bottom_log[$q_id][1][1] : 0;
-          echo "<p>\n<table cellpadding=\"4\" cellspacing=\"0\" border=\"0\">\n";
-          echo "<tr style=\"font-weight:bold\"><td class=\"figures\">t=" . number_format(($tmp_correct_no/$user_total)*100,0) . "%</td><td class=\"figures\">u=" . number_format(($tmp_top_no/$candidate_no)*100,0) . "%</td><td class=\"figures\">l=" . number_format(($tmp_bottom_no/$candidate_no)*100,0) . "%</td></tr>\n";
-          echo "<tr><td>" . pStats($tmp_correct_no/$user_total) . "</td><td colspan=\"2\">" . dStats($d) . "</td></tr>\n";
+          $layers = explode('|', $correct);
+          $std_parts = explode(',', $std);
+          
+          echo "<p><table cellpadding=\"4\" cellspacing=\"0\" border=\"0\">\n";
+          for ($i = 1; $i <= count($layers); $i++) {
+            echo "<tr><td>" . chr($i + 64) . ".</td>";
+            $label = substr($layers[$i - 1], 0, strpos($layers[$i - 1], '~'));
+            
+            $std_rating = (isset($std_parts[$i - 1])) ? $std_parts[$i - 1] : '';
+          
+            $d = calcDiscrimination($candidate_no,$top_log[$q_id],$bottom_log[$q_id],$i,1);
+            $tmp_correct_no = (isset($freq_log[$q_id][$i][1])) ? $freq_log[$q_id][$i][1] : 0;
+            $tmp_top_no = (isset($top_log[$q_id][$i][1])) ? $top_log[$q_id][$i][1] : 0;
+            $tmp_bottom_no = (isset($bottom_log[$q_id][$i][1])) ? $bottom_log[$q_id][$i][1] : 0;
+            if (isset($excluded[$q_id])) {
+              echo "<td>" . excludeButton($ex_no, $q_id, substr($excluded[$q_id],$i-1,1), 1, 1) . "</td><td>" . pStats($tmp_correct_no/$user_total) . "</td><td>" . dStats($d) . "</td><td>t=" . number_format(($tmp_correct_no/$user_total)*100,0) . "%</td><td>u=" . number_format(($tmp_top_no/$candidate_no)*100,0) . "%</td><td>l=" . number_format(($tmp_bottom_no/$candidate_no)*100,0) . "%</td><td>$std_rating</td><td id=\"q_" . $ex_no . "_1\"";
+            } else {
+              echo "<td>" . excludeButton($ex_no, $q_id, '', 1, 1) . "</td><td>" . pStats($tmp_correct_no/$user_total) . "</td><td>" . dStats($d) . "</td><td>t=" . number_format(($tmp_correct_no/$user_total)*100,0) . "%</td><td>u=" . number_format(($tmp_top_no/$candidate_no)*100,0) . "%</td><td>l=" . number_format(($tmp_bottom_no/$candidate_no)*100,0) . "%</td><td>$std_rating</td><td id=\"q_" . $ex_no . "_1\"";
+            }
+            if (isset($excluded[$q_id]) and substr($excluded[$q_id],$i-1,1) == '1') echo ' style="color:red; text-decoration:line-through"';
+            echo "><strong>$label</strong></td></tr>\n";
+          }
           break;
         case 'mcq':
           if (isset($excluded[$q_id])) {

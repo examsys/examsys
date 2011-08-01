@@ -32,9 +32,9 @@
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
 <style>
 .divider {padding-left:16px; padding-bottom:2px; font-weight:bold}
-.sch {padding-left:12px}
+.sch {padding-left:32px; text-indent:-20px}
 .greysch {padding-left:12px; color:#808080}
-.mod {padding-left:32px}
+.mod {padding-left:60px; text-indent:-20px}
 </style>
 
 <script src="../javascript/staff_help.js" type="text/javascript"></script>
@@ -75,9 +75,9 @@
   $module_block = false;
   $block_id=0;
   if (strpos($userroles,'SysAdmin') !== false) {
-    $results = $mysqli->query("SELECT DISTINCT faculty, schools.school, moduleid, fullname FROM schools LEFT JOIN modules ON schools.school=modules.school ORDER BY faculty, school, moduleid");
+    $results = $mysqli->query("SELECT DISTINCT faculty, schools.school, moduleid, fullname FROM schools LEFT JOIN modules ON schools.id=modules.schoolid ORDER BY faculty, school, moduleid");
   } else {
-    $results = $mysqli->query("SELECT DISTINCT faculty, schools.school, moduleid, fullname FROM schools LEFT JOIN modules ON schools.school=modules.school WHERE faculty='$faculty' ORDER BY school, moduleid");
+    $results = $mysqli->query("SELECT DISTINCT faculty, schools.school, moduleid, fullname FROM (schools, admin_access, modules) WHERE schools.id=modules.schoolid AND schools.id=admin_access.schools_id AND admin_access.userID=$userID ORDER BY school, moduleid");
   }
   while ($row = $results->fetch_assoc()) {
     if ($old_faculty != $row['faculty'] or $old_school != $row['school']) {
@@ -88,8 +88,6 @@
     }
     if ($old_faculty != $row['faculty']) {
       echo "<table border=\"0\" style=\"padding-top:10px; padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>" . $row['faculty'] . "</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
-
-      //echo "<br />\n<div class=\"divider\">" . $row['faculty'] . "</div>\n<img src=\"../artwork/divider_bar.gif\" width=\"290\" height=\"1\" alt=\"Divider Bar\" /><br />\n";
     }
     if ($old_school != $row['school']) {
       if ($row['moduleid'] == '') {
@@ -116,27 +114,25 @@
 ?>
 </td><td style="vertical-align:top; width:50%">
 <?php
-  //echo "<br />\n<div class=\"divider\">By Module Code</div>\n<img src=\"../artwork/divider_bar.gif\" width=\"290\" height=\"1\" alt=\"Divider Bar\" /><br />\n";
   echo "<table border=\"0\" style=\"padding-top:10px; padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>By Module Code</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
 
   $old_faculty = '';
   $old_letter = '';
   $module_block = false;
-  //$block_id=0;
   if (strpos($userroles,'SysAdmin') !== false) {
-    $results = $mysqli->query("SELECT DISTINCT faculty, schools.school, moduleid, fullname FROM schools LEFT JOIN modules ON schools.school=modules.school ORDER BY moduleid");
+    $results = $mysqli->query("SELECT DISTINCT moduleid, fullname FROM modules ORDER BY moduleid");
   } else {
-    $results = $mysqli->query("SELECT DISTINCT faculty, schools.school, moduleid, fullname FROM schools LEFT JOIN modules ON schools.school=modules.school WHERE faculty='$faculty' ORDER BY moduleid");
+    $results = $mysqli->query("SELECT DISTINCT moduleid, fullname FROM (schools, admin_access, modules) WHERE schools.id=modules.schoolid AND schools.id=admin_access.schools_id AND admin_access.userID=$userID ORDER BY moduleid");
   }
   while ($row = $results->fetch_assoc()) {
-    if ($old_letter != substr($row['moduleid'],0,1)) {
+    if ($old_letter !== substr($row['moduleid'],0,1)) {
       if ($module_block == true) {
         echo "</div>\n";
         $module_block = false;
       }
     }
-    if ($old_letter != substr($row['moduleid'],0,1)) {
-      if ($row['moduleid'] == '') {
+    if ($old_letter !== substr($row['moduleid'],0,1)) {
+      if ($row['moduleid'] === '') {
         echo "<div class=\"greysch\"><img src=\"../artwork/folder_16_grey.png\" width=\"16\" height=\"16\" alt=\"folder\" border=\"0\" />&nbsp;" . substr($row['moduleid'],0,1) . "</div>\n";
       } else {
         echo "<div class=\"sch\"><img src=\"../artwork/folder_16.png\" width=\"16\" height=\"16\" alt=\"folder\" border=\"0\" onclick=\"showHide($block_id)\" />&nbsp;<a href=\"\" style=\"color:blue\" onclick=\"showHide($block_id); return false;\">" . substr($row['moduleid'],0,1) . "</a></div>\n";
@@ -147,7 +143,7 @@
         $block_id++;
       }
     }
-    if ($row['moduleid'] != '') {
+    if ($row['moduleid'] !== '') {
       echo "<div class=\"mod\"><a href=\"details.php?module=" . $row['moduleid'] . "\"><img src=\"../artwork/folder_16.png\" width=\"16\" height=\"16\" alt=\"folder\" border=\"0\" /></a>&nbsp;<a href=\"details.php?module=" . $row['moduleid'] . "\" target=\"_top\">" . $row['moduleid'] . ": " . $row['fullname'] . "</a></div>\n";
     }
     $old_letter = substr($row['moduleid'],0,1);

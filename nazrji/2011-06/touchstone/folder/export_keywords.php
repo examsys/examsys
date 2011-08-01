@@ -24,18 +24,31 @@
 
 require '../include/staff_auth.inc';
 require '../include/errors.inc';
-check_var('module', 'GET', true, false);
 
 header('Content-Type: text/plain');
 header('Content-Disposition: attachment; filename=keywords.txt');
 
-$result = $mysqli->prepare("SELECT keywords_user.id, keyword FROM keywords_user, modules WHERE keywords_user.userID=modules.id AND keyword_type='team' AND moduleid=? ORDER BY keyword");
-$result->bind_param('s', $_GET['module']);
-$result->execute();
-$result->bind_result($keywordID, $keyword);
-while ($result->fetch()) {
-  echo "$keyword\r\n";
+if ($_GET['module'] != '') {
+  // Look up team keywords
+  $result = $mysqli->prepare("SELECT keywords_user.id, keyword FROM keywords_user, modules WHERE keywords_user.userID=modules.id AND keyword_type='team' AND moduleid=? ORDER BY keyword");
+  $result->bind_param('s', $_GET['module']);
+  $result->execute();
+  $result->bind_result($keywordID, $keyword);
+  while ($result->fetch()) {
+    echo "$keyword\r\n";
+  }
+  $result->close();
+} else {
+  // Lookup personal keywords
+  $result = $mysqli->prepare("SELECT keyword FROM keywords_user WHERE keyword_type='personal' AND userID=? ORDER BY keyword");
+  $result->bind_param('s', $userID);
+  $result->execute();
+  $result->bind_result($keyword);
+  while ($result->fetch()) {
+    echo "$keyword\r\n";
+  }
+  $result->close();
 }
-$result->close();
+
 $mysqli->close();
 ?>

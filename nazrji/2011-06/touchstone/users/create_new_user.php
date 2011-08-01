@@ -91,14 +91,15 @@
     }
     $initials = strtoupper($initials);
   
+    //TODO this function has been moved to passwordutils.class.php
     $new_password = encpw($_POST['new_username'],trim($_POST['new_password']));
     $new_surname = my_ucwords(trim($_POST['new_surname']));
     $new_username = trim($_POST['new_username']);
     $new_email = trim($_POST['new_email']);
     $new_first_names = my_ucwords(trim($_POST['new_first_names']));
   
-    $result = $mysqli->prepare("INSERT INTO users VALUES (?,?,?,?,?,?,?,?,NULL,?,?,?,NULL,0,?)");
-    $result->bind_param('sssssssssssi', $new_password, $_POST['new_grade'], $new_surname , $initials, $_POST['new_users_title'], $new_username, $new_email, $tmp_roles, $_POST['new_faculty'], $new_first_names, $_POST['new_gender'], $_POST['new_year']);
+    $result = $mysqli->prepare("INSERT INTO users VALUES (?,?,?,?,?,?,?,?,NULL,?,?,NULL,0,?)");
+    $result->bind_param('ssssssssssi', $new_password, $_POST['new_grade'], $new_surname , $initials, $_POST['new_users_title'], $new_username, $new_email, $tmp_roles, $new_first_names, $_POST['new_gender'], $_POST['new_year']);
     $result->execute();  
     $result->close();
     $userid = $mysqli->insert_id;
@@ -112,7 +113,7 @@
     }
     
     // Send out email welcome.
-    if (isset($_POST['welcome']) and $_POST['welcome'] != '') {
+    if (isset($_POST['new_welcome']) and $_POST['new_welcome'] != '') {
       $result = $mysqli->query("SELECT email FROM users WHERE username='" . $_SERVER['PHP_AUTH_USER'] . "'");
       $row = $result->fetch_assoc();
       $result->close();
@@ -131,20 +132,20 @@ h2 {font-size:120%}
 </style>
 </head>
 <body>
-<p>Dear " . $_POST['users_title'] . " " . ucwords($_POST['surname']) . ",</p>
+<p>Dear " . $_POST['new_users_title'] . " " . ucwords($_POST['new_surname']) . ",</p>
 <p>A new account has been created to access the online assessment and survey system TouchStone. Your personal authentication details are:</p>
-<p>Username: " . $_POST['username'] . "<br />
-Password: " . $_POST['password'] . "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"color:#808080\">(case-sensitive)</span></p>";
+<p>Username: " . $_POST['new_username'] . "<br />
+Password: " . $_POST['new_password'] . "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"color:#808080\">(case-sensitive)</span></p>";
 
       if (strpos($tmp_roles,'Staff') !== false) {
-        $message .= "<p>To log into the system goto: <a href=\"https://touchstone.nottingham.ac.uk/touchstone/\">https://touchstone.nottingham.ac.uk/touchstone/</a></p>";
+        $message .= "<p>To log into the system goto: <a href=\"https://{$_SERVER['HTTP_HOST']}/touchstone/\">https://{$_SERVER['HTTP_HOST']}/touchstone/</a></p>";
       } elseif (strpos($tmp_roles,'Student') !== false) {
       } else {
-        $message .= "<p>To log into the system goto: <a href=\"https://touchstone.nottingham.ac.uk/touchstone/\">https://touchstone.nottingham.ac.uk/touchstone/</a></p>";
+        $message .= "<p>To log into the system goto: <a href=\"https://{$_SERVER['HTTP_HOST']}/touchstone/\">https://{$_SERVER['HTTP_HOST']}/touchstone/</a></p>";
         $message .= "<p>When you log in you will be taken to a personal screen listing all the papers that require your attention for review.</p>";
       }
       $message .= "</body>\n</html>";
-      mail ($to, $subject, $message, $headers) or print "<p>Could not send mail to <strong>" . $_POST['email'] . "</strong>.</p>";
+      mail ($to, $subject, $message, $headers) or print "<p>Could not send mail to <strong>" . $_POST['new_email'] . "</strong>.</p>";
     }
     ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -211,11 +212,6 @@ function checkForm() {
     alert("Please enter a default Password for the user.");
     return false;
   }
-  if (document.newUser.new_faculty.options[document.newUser.new_faculty.selectedIndex].value == "") {
-    alert("Please select a Faculty for the user.");
-    return false;
-  }
-  
 }
 
 function ldaplookup() {
@@ -297,11 +293,7 @@ function ldaplookup() {
 <option value="Invigilator">Invigilator</option>
 <?php
   $old_school = '';
-  if (strpos($userroles,'SysAdmin') !== false) {
-    $degree_details = $mysqli->query("SELECT DISTINCT degree, description, school FROM degrees WHERE school NOT IN ('university','NHS','N/A') ORDER BY school, degree");
-  } else {
-    $degree_details = $mysqli->query("SELECT DISTINCT degree, description, degrees.school FROM degrees, schools WHERE degrees.school=schools.school AND degrees.school NOT IN ('university','NHS','N/A') AND faculty='$faculty' ORDER BY school, degree");
-  }  
+  $degree_details = $mysqli->query("SELECT DISTINCT degree, description, school FROM degrees WHERE school NOT IN ('university','NHS','N/A') ORDER BY school, degree");
   while ($degree_row = $degree_details->fetch_assoc()) {
     if ($old_school != $degree_row['school']) {
       echo "</optgroup>\n<optgroup label=\"Students - " . $degree_row['school'] . "\">\n";    
@@ -314,29 +306,6 @@ function ldaplookup() {
 </optgroup>
 </select>
 </td></tr>
-
-<tr>
-<td align="right"><span class="field">Faculty</span></td><td>
-<select id="new_faculty" name="new_faculty" size="1">
-<?php
-  if (strpos($userroles,'SysAdmin') !== false) {
-    echo "<option value=\"\"></option>\n";
-    $faculty_details = $mysqli->query("SELECT name FROM faculty ORDER BY name");
-    while ($faculty_row = $faculty_details->fetch_assoc()) {
-      if (isset($_POST['faculty']) and $faculty_row['name'] == $_POST['faculty']) {
-        echo "<option value=\"" . $faculty_row['name'] . "\" selected>" . $faculty_row['name'] . "/option>\n";
-      } else {
-        echo "<option value=\"" . $faculty_row['name'] . "\">" . $faculty_row['name'] . "</option>\n";
-      }
-    }
-    $faculty_details->close();
-  } else {
-    echo "<option value=\"$faculty\" selected>$faculty</option>\n";
-  }
-?>
-</select>
-</td>
-</tr>
 
 <tr>
 <td align="right"><span class="field">Gender</span></td><td>

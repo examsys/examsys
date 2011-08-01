@@ -197,19 +197,23 @@ class IE_touchstone_Save extends IE_Main
 			$question->save_id = $this->q_row['q_id'];
 			
 			$new_keywords = array();
-			if($module_id != -1)
-			{
+			if ($module_id != -1) {
 				$new_keywords = $this->SaveKeywords($this->q_row['q_id'], $question->keywords, $module_id, $user_keywords);
 			}
 			
 			// store option rows
-			foreach($this->o_rows as &$o_row)
-			{
+			foreach($this->o_rows as &$o_row)	{
 				$o_row['o_id'] = $this->q_row['q_id'];
 				if (!empty($o_row['feedback_right']) && $o_row['feedback_right'] == $o_row['feedback_wrong'])
 					$o_row['feedback_wrong'] = "";
 				$this->db->InsertRow("options","id_num",$o_row);
 			}
+      
+      // store additional metadata
+      if ($question->load_id != '') {
+        $meta_row = array('id'=>null, 'questionID'=>$question->save_id, 'type'=>'QTI Ident', 'value'=>$question->load_id);
+      }
+      $this->db->InsertRow("questions_metadata","id",$meta_row);
 			
 			echo "<h4>Question Tables</h4>";
 			echo "<div>questions row</div>";

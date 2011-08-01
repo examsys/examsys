@@ -185,7 +185,7 @@ if (isset($_POST['Corrected']) and $_POST['Corrected'] == 'OK') {
     if (trim(strip_tags($scenario)) == '') $scenario = '';
     $part_names = array('old_theme','old_scenario','old_notes','old_bloom','old_feedback','old_points','old_status');
     foreach($part_names as $section_name) {
-      $$section_name = html_entity_decode($_POST["$section_name"]);
+      $$section_name = $_POST["$section_name"];
     }
 
     // Strip MS Office HTML.
@@ -289,30 +289,22 @@ $qNo_parm = (isset($_GET['qNo'])) ? '&qNo=' . $_GET['qNo'] : '';
   </tr>
 </table>
 
-<?php
+  <?php
     echo displayEditTab($created, $modified, $locked);
-    if ($locked != '') {
-      echo "<table border=\"0\" cellpadding=\"3\" cellspacing=\"0\" style=\"width:100%; font-size:90%\">\n";
-      echo "<tr><td style=\"width:35px; height:32px; text-align:right; background-image:url('../../artwork/locked_gradient.png'); background-repeat:repeat-x\"><img src=\"../../artwork/paper_locked_padlock.png\" width=\"19\" height=\"24\" alt=\"Locked\" />&nbsp;&nbsp;</td><td colspan=\"7\" style=\"height:32px; vertical-align:middle; background-image:url('../../artwork/locked_gradient.png'); background-repeat:repeat-x\"><strong>Question Locked</strong>&nbsp;&nbsp;&nbsp;This question is now locked and cannot be modified. <a style=\"color:black\" href=\"#\" onclick=\"launchHelp(161); return false;\">Click for more details.</a></td></tr>\n";
-      echo "</table>\n";
-      $disabled = ' disabled';
-    } else {
-      $disabled = check_edit_rights($tmp_ownerID, $mysqli);
-      $checkout_author = check_lock_status($checkout_authorID, $checkout_time, $disabled, $mysqli, $q_id);
-    }
-    ?>
+    $disabled = check_edit_rights($q_id, $checkout_authorID, $checkout_time, $locked, $mysqli);
+  ?>
     <table cellpadding="3" cellspacing="0" border="0" align="center">
     <tr>
       <td class="field">Theme/Heading&nbsp;</td>
-      <td><input type="text" name="theme" value="<?php echo $theme; ?>" size="80" /><input type="hidden" name="old_theme" value="<?php echo htmlentities($theme,ENT_NOQUOTES,'UTF-8'); ?>" /><input type="hidden" name="checkout_author" value="<?php echo $checkout_authorID; ?>" /></td>
+        <td><textarea name="theme" cols="100" style="width:700px" ><?php echo $theme; ?></textarea><textarea style="display:none" name="old_theme"/><?php echo $theme; ?></textarea><input type="hidden" name="checkout_author" value="<?php echo $checkout_authorID; ?>" /></td>
     </tr>
     <tr>
       <td class="field">Notes<br /><span class="note">(visible to students)</span></td>
-      <td><textarea name="notes" cols="100" style="width:700px" rows="2" wrap="virtual"><?php echo $notes; ?></textarea><input type="hidden" name="old_notes" value="<?php echo htmlentities($notes,ENT_NOQUOTES,'UTF-8'); ?>" /></td>
+      <td><textarea name="notes" cols="100" style="width:700px" rows="2" wrap="virtual"><?php echo $notes; ?></textarea><textarea style="display:none" name="old_notes" /><?php echo $notes; ?></textarea></td>
     </tr>
     <tr>
     <td class="field">Scenario<br /><span class="note">(background info)</span></td>
-        <td><textarea style="display:none" name="old_scenario" id="old_scenario"><?php echo htmlentities($scenario,ENT_NOQUOTES,'UTF-8'); ?></textarea>
+        <td><textarea style="display:none" name="old_scenario" id="old_scenario"><?php echo htmlentities($scenario); ?></textarea>
         <?php echo wysiwyg_editor('oEdit1','scenario',$scenario);?>          
     </td>
     </tr>
@@ -327,7 +319,7 @@ $qNo_parm = (isset($_GET['qNo'])) ? '&qNo=' . $_GET['qNo'] : '';
     <script language="JavaScript">
       function swfLoaded1(message) {
         var num = message.substring(5,message.length);
-        setUpFlash(num, message, '<?php echo $q_media; ?>', '<?php echo trim($correct); ?>');
+        setUpFlash(num, message, '<?php echo $q_media; ?>', '<?php echo str_replace("'", "\'", trim($correct)); ?>');
       }
       write_string('<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="https://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0" id="flash1" width="<?php echo ($q_media_width + 306); ?>" height="<?php echo $plugin_height; ?>" align="middle">');
       write_string('<param name="allowScriptAccess" value="always" />');
@@ -341,7 +333,7 @@ $qNo_parm = (isset($_GET['qNo'])) ? '&qNo=' . $_GET['qNo'] : '';
 </tr>
     <tr>
       <td valign="top" align="right" class="field">General Feedback</td>
-      <td><textarea name="feedback" cols="100" style="width:700px" rows="4" wrap="virtual"><?php echo $correct_fback; ?></textarea><input type="hidden" name="old_feedback" value="<?php echo htmlentities($correct_fback,ENT_NOQUOTES,'UTF-8'); ?>" /></td>
+      <td><textarea name="feedback" cols="100" style="width:700px" rows="4" wrap="virtual"><?php echo $correct_fback; ?></textarea><textarea style="display:none" name="old_feedback"><?php echo $correct_fback; ?></textarea></td>
     </tr>
     <?php
       echo echoMetadata($bloom, $q_id, $q_group, 1, $mysqli, true, $status, $disabled);

@@ -83,6 +83,9 @@ class ST_QTI12_Question // <item
 		
 		$this->title = (string)$xml->attributes()->title;
 		$this->load_id = (string)$xml->attributes()->ident;
+    
+    //echo $this->load_id;
+    //exit;
 		
 		$this->material = new ST_QTI12_Material();
 		

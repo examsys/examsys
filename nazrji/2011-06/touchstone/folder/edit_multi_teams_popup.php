@@ -35,7 +35,7 @@
     // Insert a record for each team member.
     for ($i=0; $i<$_POST['module_no']; $i++) {
       if (isset($_POST["mod$i"]) and $_POST["mod$i"] != '') {
-        $result = $mysqli->prepare("INSERT INTO teams VALUES (NULL,?,?,NULL,'System')");
+        $result = $mysqli->prepare("INSERT INTO teams VALUES (NULL, ?, ?, NULL, 'System')");
         $result->bind_param('si', $_POST["mod$i"], $_POST['userID']);
         $result->execute();  
         $result->close();
@@ -91,15 +91,14 @@
 
   $old_school = '';
   $mod_no = 0;
-  echo "<div style=\"width:100%;height:660px;overflow-y:scroll;border:1px solid #1E3287;font-size:90%\">";
+  echo "<div style=\"width:100%; height:660px; overflow-y:scroll; border:1px solid #7F9DB9; font-size:90%; background-color:white\">";
 
-  $result = $mysqli->prepare("SELECT school, moduleid, fullname FROM modules WHERE active=1 ORDER BY school, moduleid");
+  $result = $mysqli->prepare("SELECT school, moduleid, fullname FROM modules, schools WHERE modules.schoolid=schools.id AND active=1 ORDER BY school, moduleid");
   $result->execute();
   $result->bind_result($school, $moduleid, $fullname);
   while ($result->fetch()) {
     if ($old_school != $school) {
-      //echo "<div style=\"background-color:white; font-weight:bold\">&nbsp;$school</div>\n<div style=\"background-color:white; padding-top:2px\"><img src=\"../artwork/divider_bar.gif\" width=\"290\" height=\"1\" /></div>\n";
-      echo "<table border=\"0\" style=\"padding-bottom:5px; width:100%; background-color:white; color:#1E3287\"><tr><td><nobr>$school</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
+      echo "<table border=\"0\" style=\"margin-top:10px; width:100%; background-color:white; color:#1E3287\"><tr><td><nobr>$school</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
     }
   
     $match = false;

@@ -48,30 +48,32 @@
   function displayComments($questionID, $comments_data, $qtype, $qno) {
     global $incomplete_names, $type;
     $html = "<tr><td></td><td><table cellpadding=\"2\" cellspacing=\"0\" border=\"0\" style=\"width:98%\">\n";
-    $html .= "<tr><td colspan=\"5\"><strong>" . ucfirst($type) ." comments Q$qno<strong>&nbsp;<img onclick=\"editQuestion('$qtype',$questionID,$qno)\" style=\"cursor:pointer\" src=\"../artwork/edit_icon_16.gif\" width=\"16\" height=\"16\" alt=\"Edit Question\" border=\"0\" /></td></tr>\n";
+    $html .= "<tr><td colspan=\"5\"><strong>" . ucfirst($type) ." comments Q$qno</strong>&nbsp;<img onclick=\"editQuestion('$qtype',$questionID,$qno)\" style=\"cursor:pointer\" src=\"../artwork/edit_icon_16.gif\" width=\"16\" height=\"16\" alt=\"Edit Question\" border=\"0\" /></td></tr>\n";
     $html .= "<tr style=\"background-image:url('../artwork/gradient_heading.png'); background-repeat:repeat-x; background-color:#E3EFFF\"><td style=\"width:20px; border-top:1px solid #6593CF; border-bottom:1px solid #6593CF\">&nbsp;</td><td style=\"width:20%; border-top:1px solid #6593CF; border-bottom:1px solid #6593CF\">Reviewer</td><td style=\"width:35%; border-top:1px solid #6593CF; border-bottom:1px solid #6593CF\">Comment</td><td style=\"width:10%; border-top:1px solid #6593CF; border-bottom:1px solid #6593CF\">Action</td><td style=\"width:35%; border-top: 1px solid #6593CF; border-bottom:1px solid #6593CF\">Response</td></tr>\n";
-    foreach ($comments_data[$questionID] as $reviewer => $index) {
-      $image = 'ok_comment.png';
-      $status = 'OK';
-      if ($comments_data[$questionID][$reviewer]['category'] == 2) {
-        $image = 'minor_comment.png';
-        $status = 'Minor';
-      } elseif ($comments_data[$questionID][$reviewer]['category'] == 3) {
-        $image = 'major_comment.png';
-        $status = 'Major';
+    if (isset($comments_data[$questionID])) {
+      foreach ($comments_data[$questionID] as $reviewer => $index) {
+        $image = 'ok_comment.png';
+        $status = 'OK';
+        if ($comments_data[$questionID][$reviewer]['category'] == 2) {
+          $image = 'minor_comment.png';
+          $status = 'Minor';
+        } elseif ($comments_data[$questionID][$reviewer]['category'] == 3) {
+          $image = 'major_comment.png';
+          $status = 'Major';
+        }
+        $tmp_comment = nl2br($comments_data[$questionID][$reviewer]['comment']);
+        if (trim($tmp_comment) == '') {
+          $tmp_comment = '<span style="color:#808080">No comment</span>';
+          $tmp_action = '<span style="color:#808080">N/A</span>';
+          $tmp_response = '<span style="color:#808080">N/A</span>';
+        } else {
+          $tmp_action = str_replace(' ','&nbsp;',$comments_data[$questionID][$reviewer]['action']);
+          $tmp_response = nl2br($comments_data[$questionID][$reviewer]['response']);
+        }
+        
+        if (trim($tmp_response) == '') $tmp_response = '<span style="color:#808080">No response made</span>';
+        $html .= "<tr class=\"$status\" style=\"border-bottom:solid 1px #E3EFFF\"><td style=\"border-bottom:solid 1px #E3EFFF\"><img src=\"../artwork/$image\" width=\"16\" height=\"16\" alt=\"$status\" /></td><td style=\"border-bottom:solid 1px #E3EFFF\">" . $comments_data[$questionID][$reviewer]['name'] . "</td><td style=\"border-bottom:solid 1px #E3EFFF\">$tmp_comment</td><td style=\"border-bottom:solid 1px #E3EFFF\">$tmp_action</td><td style=\"border-bottom:solid 1px #E3EFFF\">$tmp_response</td></tr>\n";
       }
-      $tmp_comment = nl2br($comments_data[$questionID][$reviewer]['comment']);
-      if (trim($tmp_comment) == '') {
-        $tmp_comment = '<span style="color:#808080">No comment</span>';
-        $tmp_action = '<span style="color:#808080">N/A</span>';
-        $tmp_response = '<span style="color:#808080">N/A</span>';
-      } else {
-        $tmp_action = str_replace(' ','&nbsp;',$comments_data[$questionID][$reviewer]['action']);
-        $tmp_response = nl2br($comments_data[$questionID][$reviewer]['response']);
-      }
-      
-      if (trim($tmp_response) == '') $tmp_response = '<span style="color:#808080">No response made</span>';
-      $html .= "<tr class=\"$status\" style=\"border-bottom:solid 1px #E3EFFF\"><td style=\"border-bottom:solid 1px #E3EFFF\"><img src=\"../artwork/$image\" width=\"16\" height=\"16\" alt=\"$status\" /></td><td style=\"border-bottom:solid 1px #E3EFFF\">" . $comments_data[$questionID][$reviewer]['name'] . "</td><td style=\"border-bottom:solid 1px #E3EFFF\">$tmp_comment</td><td style=\"border-bottom:solid 1px #E3EFFF\">$tmp_action</td><td style=\"border-bottom:solid 1px #E3EFFF\">$tmp_response</td></tr>\n";
     }
     if (isset($incomplete_names)) {
       foreach ($incomplete_names as $single_incomplete) {
@@ -363,7 +365,7 @@
 <style type="text/css">
 body {font-family:Arial,sans-serif; font-size:90%; background-color:white; color:black; margin:0px}
 h1 {margin-left:15px; font-size:18pt}
-p {margin-left:0px; margin-right:15px}
+p {margin-left:0px; margin-right:15px; margin-top:0px; padding-top:0px}
 .h {background-color:#F1F5FB; color:black}
 .figures {text-align:right}
 .q_no {text-align:right; vertical-align:top; width:50px}

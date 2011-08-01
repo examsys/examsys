@@ -25,14 +25,9 @@
 */
 
   require_once 'staff_student_auth.inc';
+  
   if (strpos($userroles,'Staff') === false AND strpos($userroles,'External Examiner') === false) {
-    Header("WWW-authenticate: basic realm=\"TouchStone\"");
-    Header("HTTP/1.0 401 Unauthorised");
-    echo "<html>\n<head>\n<title>Access Denied</title>\n<style>\nbody {font-size:90%; font-family:Arial,sans-serif;background-color:#FCFCFC;color:#575757}\nh1 {font-weight:normal;color:#BF0000;font-size:140%}\n</style>\n</head>\n<body>\n";
-    echo "<div style=\"position:absolute; left:10px; top:10px\"><img src=\"/touchstone/artwork/access_denied.png\" width=\"48\" height=\"48\" /></div>\n";
-    echo "<h1 style=\"margin-left:60px\">Access Denied</h1>\n";
-    echo "<hr size=\"1\" align=\"left\" width=\"500\" style=\"margin-left:60px; color:#C0C0C0; background-color:#C0C0C0\" />\n<p style=\"margin-left:60px\">You are attempting to access a <strong>Staff Only</strong> page.</p>\n</body>\n</html>";
-    exit;
+    access_denied('You are attempting to access a <strong>Staff Only</strong> page.',true);
   }
   
   // Redirect External Examiners if they are straying
@@ -43,13 +38,8 @@
   }
 
   // Get teams.
-  $teams = array();
-  $team_details = $mysqli->query("SELECT name FROM teams WHERE memberID=$userID ORDER BY name");
-  while ($team_row = $team_details->fetch_assoc()) {
-    $teams[strtoupper($team_row['name'])] = strtoupper($team_row['name']);
-  }
-  $team_details->close();
-
+  $teams = getUserTeams($userID, $mysqli);
+  
   $types_array = array('Formative Self-Assessments','Progress Tests','Summative Exams','Surveys','OSCE Stations','Offline Papers');
 
   //
@@ -60,10 +50,10 @@
     //sysadmin can access any thing !!!
 
   } elseif (strpos($userroles,'Admin') !== false) {
-    //admin users have rights in there facalty
+    //For 'Admin' users look up permissions from 'admin_access' table.
     
     //Can the user access the paper?
-    if (isset($_GET['paperID']) or isset($_POST['paperID'])) {
+    if ((isset($_GET['paperID']) and $_GET['paperID'] != '') or (isset($_POST['paperID']) and $_POST['paperID'] != '')) {
       $on_team = false;
 
       if (isset($_GET['paperID'])) {
@@ -71,42 +61,65 @@
       } else {
         $tmp_paperID = $_POST['paperID'];
       }
-
       if (substr($tmp_paperID,0,5) != 'find:') {
         // Get the moduleID of the paper
         $result = $mysqli->prepare("SELECT moduleID, paper_ownerID FROM properties WHERE property_id=?");
-        $result->bind_param('i',$tmp_paperID);
+        $result->bind_param('i', $tmp_paperID);
         $result->execute();  
         $result->bind_result($moduleID, $paper_ownerID);
         $result->fetch();
         $result->close();
       
-        // Check which Faculty the moduleID(s) are in.
-        $result = $mysqli->prepare("SELECT faculty FROM schools, modules WHERE schools.school=modules.school AND moduleid IN ('" . str_replace(",","','",$moduleID). "')");
-        $result->execute();  
-        $result->bind_result($paper_faculty);
-        while ($result->fetch()) {
-          if ($faculty == $paper_faculty) $on_team = true;
+        // Check which Schools the moduleID(s) are in.
+        $result = $mysqli->prepare("SELECT school FROM schools, modules, admin_access WHERE admin_access.userID=$userID AND admin_access.schools_id=schools.id AND schools.id=modules.schoolid AND moduleid IN ('" . str_replace(",","','",$moduleID). "')");
+        $result->execute();
+        $result->store_result();
+        $result->bind_result($paper_school);
+        if ($result->num_rows() > 0) {
+          $on_team = true;
+        } else {
+          $on_team = false;
         }
         $result->close();
-      
-        if (!$on_team) {
-          // Check if 'Admin' is on the team outside of the module.
-          $paper_modules = explode(',',$moduleID);
-          foreach ($paper_modules as $individual_module) {
-            if (isset($teams[$individual_module])) $on_team = true;
-          }
-        }
-    
+        
         // Override access for the system training module.
         if ($on_team == false and strpos($moduleID,'SYSTEM') === false) {
-          echo "<html>\n<head>\n<title>Access Denied</title>\n<style>\nbody {font-size:90%; font-family:Arial,sans-serif;background-color:#FCFCFC;color:#575757}\nh1 {font-weight:normal;color:#BF0000;font-size:140%}\n</style>\n</head>\n<body>\n";
-          echo "<div style=\"position:absolute; left:10px; top:10px\"><img src=\"/touchstone/artwork/access_denied.png\" width=\"48\" height=\"48\" /></div>\n";
-          echo "<h1 style=\"margin-left:60px\">Access Denied</h1>\n";
-          echo "<hr size=\"1\" align=\"left\" width=\"500\" style=\"margin-left:60px; color:#C0C0C0; background-color:#C0C0C0\" />\n<p style=\"margin-left:60px\">You are attempting to access a <strong>paper you do not have rights to</strong>!</p>\n</body>\n</html>"; 
-          $mysqli->close();
-          exit;
+          access_denied('You are attempting to access a <strong>paper you do not have rights to</strong>!',false);
         }
+      }
+    }
+    
+    if (isset($_GET['module']) and $_GET['module'] != '') {
+      // Is 'Admin' on the module as normal
+      $result = $mysqli->prepare("SELECT groupID FROM teams WHERE memberID=? AND name=?");
+      $result->bind_param('is', $userID, $_GET['module']);
+      $result->execute();
+      $result->store_result();
+      $result->bind_result($groupID);
+      if ($result->num_rows() > 0) {
+        $on_team = true;
+      } else {
+        $on_team = false;
+      }
+      $result->close();
+      
+      if ($on_team == false) { // Check which Schools the moduleID(s) are in and match school to 'Admin' person.
+        $result = $mysqli->prepare("SELECT school FROM schools, modules, admin_access WHERE admin_access.userID=? AND admin_access.schools_id=schools.id AND schools.id=modules.schoolid AND moduleid=?");
+        $result->bind_param('is', $userID, $_GET['module']);
+        $result->execute();
+        $result->store_result();
+        $result->bind_result($paper_school);
+        if ($result->num_rows() > 0) {
+          $on_team = true;
+        } else {
+          $on_team = false;
+        }
+        $result->close();
+      }
+        
+      // Override access for the system training module.
+      if ($on_team == false and strpos($_GET['module'],'SYSTEM') === false) {
+        access_denied('You are attempting to access a <strong>folder you do not have rights to</strong>!',false);
       }
     }
     
@@ -117,19 +130,14 @@
       } else {
         $tmp_q_id = $_POST['q_id'];
       }
-      $result = $mysqli->prepare("SELECT q_group, ownerID, faculty FROM questions LEFT JOIN modules ON q_group=modules.moduleid LEFT JOIN schools ON modules.school=schools.school WHERE q_id=?");
-      $result->bind_param('i',$tmp_q_id);
+      $result = $mysqli->prepare("SELECT q_group, ownerID, faculty FROM questions LEFT JOIN modules ON q_group=modules.moduleid LEFT JOIN schools ON modules.schoolid=schools.id WHERE q_id=?");
+      $result->bind_param('i', $tmp_q_id);
       $result->execute();  
       $result->bind_result($q_group, $ownerID, $question_faculty);
       while ($result->fetch()) {
         if ($ownerID != $userID AND !in_array($q_group,$teams) AND $faculty != $question_faculty AND !in_array('SYSTEM', $paper_modules)) {   //allow acsess to the SYSTEM module for training!
-          echo "<html>\n<head>\n<title>Access Denied</title>\n<style>\nbody {font-size:90%;font-family:Arial,sans-serif;background-color:#FCFCFC;color:#575757}\nh1 {font-weight:normal;color:#BF0000;font-size:140%}\n</style>\n</head>\n<body>\n";
-          echo "<div style=\"position:absolute; left:10px; top:10px\"><img src=\"/touchstone/artwork/access_denied.png\" width=\"48\" height=\"48\" /></div>\n";
-          echo "<h1 style=\"margin-left:60px\">Access Denied</h1>\n";
-          echo "<hr size=\"1\" align=\"left\" width=\"500\" style=\"margin-left:60px;color:#C0C0C0;background-color:#C0C0C0\" />\n<p style=\"margin-left:60px\">You are attempting to access a <strong>question you do not have rights to</strong>!</p>\n</body>\n</html>";       
           $result->close();
-          $mysqli->close();
-          exit;
+          access_denied('You are attempting to access a <strong>question you do not have rights to</strong>!',false);
         } 
       }
       $result->close();
@@ -145,11 +153,7 @@
         if (in_array(strtoupper($paper_module), $teams)) $team_match = true;
       }
       if ($team_match == false) {
-        echo "<html>\n<head>\n<title>Access Denied</title>\n<style>\nbody {font-size:90%;font-family:Arial,sans-serif;background-color:#FCFCFC;color:#575757}\nh1 {font-weight:normal;color:#BF0000;font-size:140%}\n</style>\n</head>\n<body>\n";
-        echo "<div style=\"position:absolute; left:10px; top:10px\"><img src=\"/touchstone/artwork/access_denied.png\" width=\"48\" height=\"48\" /></div>\n";
-        echo "<h1 style=\"margin-left:60px\">Access Denied</h1>\n";
-        echo "<hr size=\"1\" align=\"left\" width=\"500\" style=\"margin-left:60px; color:#C0C0C0; background-color:#C0C0C0\" />\n<p style=\"margin-left:60px\">You are not a member of the <strong>" . $_GET['module'] . "</strong> module team.</p>\n</body>\n</html>";
-        exit;
+        access_denied('You are not a member of the <strong>' . $_GET['module'] . '</strong> module team.',false);
       }    
     }
     
@@ -176,13 +180,7 @@
               }
             }            //allow acsess to the SYSTEM module for training!
             if ($on_team == false and strpos($moduleID,'SYSTEM') === false) {
-              echo "<html>\n<head>\n<title>Access Denied</title>\n<style>\nbody {font-size:90%; font-family:Arial,sans-serif; background-color:#FCFCFC; color:#575757}\nh1 {font-weight:normal; color:#BF0000; font-size:140%}\n</style>\n</head>\n<body>\n";
-              echo "<div style=\"position:absolute; left:10px; top:10px\"><img src=\"/touchstone/artwork/access_denied.png\" width=\"48\" height=\"48\" /></div>\n";
-              echo "<h1 style=\"margin-left:60px\">Access Denied</h1>\n";
-              echo "<hr size=\"1\" align=\"left\" width=\"500\" style=\"margin-left:60px; color:#C0C0C0; background-color:#C0C0C0\" />\n<p style=\"margin-left:60px\">You are attempting to access a <strong>paper you do not have rights to</strong>!</p>\n</body>\n</html>";       
-              $result->close();
-              $mysqli->close();
-              exit;
+              access_denied('You are attempting to access a <strong>paper you do not have rights to</strong>!',false);
             }
           }
         }
@@ -204,20 +202,15 @@
       $result->close();
       
       $access = false;
-	  $moduleIDs = explode(';',$q_group);
-      //$question_teams = explode(';',$q_group);
+      $moduleIDs = explode(';',$q_group);
+      //$question_teams = explode(';', $q_group);
       foreach ($moduleIDs as $question_team) {
         if (isset($teams[$question_team])) $access = true;
       }
       
       //allow acsess to the TRAIN module for training!
       if ($ownerID != $userID AND $access == false AND !in_array('SYSTEM', $moduleIDs)) {
-        echo "<html>\n<head>\n<title>Access Denied</title>\n<style>\nbody {font-size:90%; font-family:Arial,sans-serif; background-color:#FCFCFC; color:#575757}\nh1 {font-weight:normal; color:#BF0000; font-size:140%}\n</style>\n</head>\n<body>\n";
-        echo "<div style=\"position:absolute; left:10px; top:10px\"><img src=\"/touchstone/artwork/access_denied.png\" width=\"48\" height=\"48\" /></div>\n";
-        echo "<h1 style=\"margin-left:60px\">Access Denied</h1>\n";
-        echo "<hr size=\"1\" align=\"left\" width=\"500\" style=\"margin-left:60px; color:#C0C0C0; background-color:#C0C0C0\" />\n<p style=\"margin-left:60px\">You are attempting to access a <strong>question you do not have right to</strong>!</p>\n</body>\n</html>";       
-        $mysqli->close();
-        exit;
+        access_denied('You are attempting to access a <strong>question you do not have right to</strong>!',false);
       } 
     } 
   }

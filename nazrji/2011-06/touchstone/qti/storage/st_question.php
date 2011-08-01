@@ -1,7 +1,28 @@
 <?php
+// This file is part of TouchStone
+//
+// TouchStone is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// TouchStone is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with TouchStone.  If not, see <http://www.gnu.org/licenses/>.
 
-class ST_Question
-{
+/**
+* 
+* @author Adam Clarke
+* @version 1.0
+* @copyright Copyright (c) 2011 The University of Nottingham
+* @package
+*/
+
+class ST_Question {
 	var $type;
 	var $load_id;
 	var $save_id;
@@ -25,40 +46,34 @@ class ST_Question
   var $q_option_order = 'display order'; //stem/option randomisation
 }
 
-class STQ_Blank_Option
-{
+class STQ_Blank_Option {
 	var $display = '';
 	var $correct = 0;
 	
-	function __toString()
-	{
+	function __toString()	{
 		return $this->display."=". ($this->correct?"True":"False" );	
 	}
 }
 
-class ST_Question_Blank extends ST_Question
-{
+class ST_Question_Blank extends ST_Question {
 	var $displaymode = 0;
 	var $question = '';
 	var $feedback = '';
 	var $options = array(); // array of STQ_Blank_Option, key as blank id in text ($BLANK_1$ etc)
 }
 
-class STQ_Calc_Vars
-{
+class STQ_Calc_Vars {
 	var $min = 0;
 	var $max = 0;
 	var $dec = 0;
 	var $inc = 1;
 	
-	function __toString()
-	{
+	function __toString()	{
 		return $this->min.",".$this->max.",".$this->dec.",".$this->inc;	
 	}
 }
 
-class ST_Question_Calculation extends ST_Question
-{
+class ST_Question_Calculation extends ST_Question {
 	var $scenario = '';
 	var $variables = array(); // array of STQ_Calc_Vars, key as variable stored as (A-H)
 	var $formula;
@@ -68,8 +83,7 @@ class ST_Question_Calculation extends ST_Question
 	var $feedback;
 }
 
-class STQ_Dic_Options 
-{
+class STQ_Dic_Options {
 	var $text;
 	var $iscorrect;
 	var $media;
@@ -79,22 +93,19 @@ class STQ_Dic_Options
 	var $fb_correct;
 	var $fb_incorrect;
 	
-	function __toString()
-	{
+	function __toString()	{
 		return $this->text."=". ($this->iscorrect?"True":"False" );	
 	}
 }
 
-class ST_Question_Dichotomous extends ST_Question
-{
+class ST_Question_Dichotomous extends ST_Question {
 	var $scenario = '';
 	var $feedback = '';
 	var $score_method = 0;
 	var $options = array();
 }
 
-class STQ_Extm_Scenario
-{
+class STQ_Extm_Scenario {
 	var $stem = '';	
 	var $media;
 	var $media_width;
@@ -103,31 +114,26 @@ class STQ_Extm_Scenario
 	var $feedback;
 	var $correctans = array(); // array of Keys for correct answers based on optionlist
 	
-	function __toString()
-	{
+	function __toString() {
 		return $this->stem."=". implode("|",$this->correctans);	
 	}
 }
 
-class STQ_Extm_Option
-{
+class STQ_Extm_Option {
 	var $option;
 	var $id;	
 	
-	function __toString()
-	{
+	function __toString() {
 		return $this->id."=".$this->option;	
 	}
 }
 
-class ST_Question_Extmatch extends ST_Question
-{
+class ST_Question_Extmatch extends ST_Question {
 	var $optionlist = array(); // string array of STQ_Extm_Option options by Key (A-Z)
 	var $scenarios = array(); // array of STQ_Extm_Scenario, key as scenarion no
 }
 
-class ST_Question_Flash extends ST_Question
-{
+class ST_Question_Flash extends ST_Question {
 	// NO SCENARIO
 	var $question_swf = '';
 	var $question_swf_width = '';
@@ -138,19 +144,16 @@ class ST_Question_Flash extends ST_Question
 	var $marks = 1;
 }
 
-class STQ_Hotspot_Spot
-{
+class STQ_Hotspot_Spot {
 	var $type;
 	var $coords = array();
 	
-	function __toString()
-	{
+	function __toString()	{
 		return $this->type . "=" . implode(",",$this->coords);	
 	}
 }
 
-class ST_Question_Hotspot extends ST_Question
-{
+class ST_Question_Hotspot extends ST_Question {
 	var $scenario = '';
 	var $feedback = '';
 	var $hotspots = array(); // array of STQ_Hotspot_Spot
@@ -158,26 +161,22 @@ class ST_Question_Hotspot extends ST_Question
 	var $raw_option = '';
 }
 
-class ST_Question_Info extends ST_Question
-{
+class ST_Question_Info extends ST_Question {
 	// nothing in this question type
 }
 
 
-class STQ_Labelling_Label
-{
+class STQ_Labelling_Label {
 	var $tag;
 	var $left;
 	var $top;
 	
-	function __toString()
-	{
+	function __toString() {
 		return $this->tag . "=" . $this->left . "," . $this->top . "=" . count($this->matches);	
 	}
 }
 
-class STQ_Labelling_Arrow
-{
+class STQ_Labelling_Arrow {
 	var $type;
 	var $coords = array();
 	
@@ -187,8 +186,7 @@ class STQ_Labelling_Arrow
 	}
 }
 
-class ST_Question_Labelling extends ST_Question
-{
+class ST_Question_Labelling extends ST_Question {
 	var $scenario = '';
 	var $feedback = '';
 	
@@ -216,33 +214,28 @@ class ST_Question_Labelling extends ST_Question
 	// STORE LABELING INFO IN HERE!!!!
 }
 
-class ST_Question_Likert extends ST_Question
-{
+class ST_Question_Likert extends ST_Question {
 	var $scenario = '';
 	var $scale = array(); // string array of poss values
 	var $hasna = 0;
 }
 
-class STQ_Matrix_Scenario 
-{
+class STQ_Matrix_Scenario {
 	var $scenario;
 	var $answer;	
 	
-	function __toString()
-	{
+	function __toString()	{
 		return $this->scenario . "=" . $this->answer;	
 	}
 }
 
-class ST_Question_Matrix extends ST_Question
-{
+class ST_Question_Matrix extends ST_Question {
 	var $options = array();
 	// Store matrix as $matrix[TOP][LEFT] = T/F
 	var $scenarios = array(); // array of STQ_Matrix_Scenario, key as row
 }
 
-class STQ_Mcq_Option
-{
+class STQ_Mcq_Option {
 	var $stem = '';
 	
 	var $media = '';
@@ -256,8 +249,7 @@ class STQ_Mcq_Option
 	}
 }
 
-class ST_Question_Mcq extends ST_Question
-{
+class ST_Question_Mcq extends ST_Question {
 	var $scenario = '';
 	var $presentation = 0;
 	var $correct = 0;
@@ -268,8 +260,7 @@ class ST_Question_Mcq extends ST_Question
 	var $fb_incorrect;
 }
 
-class STQ_Mrq_Option 
-{
+class STQ_Mrq_Option {
 	var $stem = '';
 	var $is_correct = 0;
 	var $media = '';
@@ -279,14 +270,12 @@ class STQ_Mrq_Option
 	var $fb_correct;
 	var $fb_incorrect;
 	
-	function __toString()
-	{
+	function __toString()	{
 		return $this->stem."=". ($this->is_correct?"True":"False" );	
 	}
 }
 
-class ST_Question_Mrq extends ST_Question
-{
+class ST_Question_Mrq extends ST_Question {
 	var $scenario = '';
 	var $score_method = 0;
 	var $include_other = 0;
@@ -294,20 +283,17 @@ class ST_Question_Mrq extends ST_Question
 	var $feedback;
 }
 
-class STQ_Rank_Options
-{
+class STQ_Rank_Options {
 	var $stem = '';
 	var $order = 9990;
 	// order - 1-15, or 0 as blank, and 9990 as N/A
 	
-	function __toString()
-	{
+	function __toString()	{
 		return $this->stem."=".$this->order;	
 	}
 }
 
-class ST_Question_Rank extends ST_Question
-{
+class ST_Question_Rank extends ST_Question {
 	var $scenario = '';
 	var $score_method = 0;
 	var $options = array(); // array of STQ_Rank_Options, key as option no
@@ -315,8 +301,7 @@ class ST_Question_Rank extends ST_Question
 	var $fb_incorrect;
 }
 
-class ST_Question_Textbox extends ST_Question
-{
+class ST_Question_Textbox extends ST_Question {
 	var $scenario = '';
 	var $columns = 100;
 	var $rows = 3;
@@ -326,14 +311,12 @@ class ST_Question_Textbox extends ST_Question
 	var $terms = array(); // array of strings
 }
 
-class ST_Question_Timedate_set
-{
+class ST_Question_Timedate_set {
 	var $values = array();
 	var $correct;	
 }
 
-class ST_Question_Timedate extends ST_Question
-{
+class ST_Question_Timedate extends ST_Question {
 	var $scenario = '';
 	var $format = 0;
 	var $startyear = 1970;
@@ -342,13 +325,11 @@ class ST_Question_Timedate extends ST_Question
 	var $feedback = '';
 }
 
-class ST_Question_Sct extends ST_Question
-{
+class ST_Question_Sct extends ST_Question {
 	// NO EXTENSIONS
 }
 
-class ST_Question_Random extends ST_Question
-{
+class ST_Question_Random extends ST_Question {
 	// NO EXTENSIONS
 }
 

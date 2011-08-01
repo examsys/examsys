@@ -126,7 +126,7 @@ $stmt->close();
   }
 
   function paperProperties() {
-    notice=window.open("/touchstone/paper/properties.php?paperID=<?php echo $paperID; ?>","properties","width=822,height=515,left="+(screen.width/2-412)+",top="+(screen.height/2-250)+",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+    notice=window.open("/touchstone/paper/properties.php?paperID=<?php echo $paperID; ?>","properties","width=832,height=650,left="+(screen.width/2-412)+",top="+(screen.height/2-325)+",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
     if (window.focus) {
       notice.focus();
     }
@@ -153,6 +153,14 @@ $stmt->close();
 
   function deletePaper() {
     notice=window.open("/touchstone/delete/check_delete_paper.php?paperID=<?php echo $_GET['paperID']; ?>&module=<?php echo $module; ?>&folder=<?php echo $folder; ?>","notice","width=420,height=170,scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+    notice.moveTo(screen.width/2-210,screen.height/2-85);
+    if (window.focus) {
+      notice.focus();
+    }
+  }
+
+  function retirePaper() {
+    notice=window.open("check_retire_paper.php?paperID=<?php echo $_GET['paperID']; ?>&module=<?php echo $module; ?>&folder=<?php echo $folder; ?>","notice","width=420,height=170,scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
     notice.moveTo(screen.width/2-210,screen.height/2-85);
     if (window.focus) {
       notice.focus();
@@ -368,6 +376,8 @@ $stmt->close();
   } else {
     echo '<tr><td><img src="/touchstone/artwork/delete_paper_grey_16.gif" width="16" height="16" alt="Delete Icon" /></td><td class="greymenuitem">Delete Paper</td></tr>';
   }
+  
+  echo '<tr><td><a href="#" onclick="retirePaper(); return false;"><img src="/touchstone/artwork/retire_16.png" width="16" height="16" border="0" alt="Retire Icon" /></a></td><td class="menuitem"><a href="#" onclick="retirePaper(); return false;">Retire Paper</a></td></tr>';
 
   if ($p_id_count == 0) {
     echo "<tr><td><img src=\"/touchstone/artwork/print_icon_16.png\" width=\"16\" height=\"16\" alt=\"Print Icon\" border=\"0\" /></td><td class=\"greymenuitem\">Print Hardcopy version</td></tr>\n";
@@ -522,7 +532,7 @@ if ($paper_type == '2') {
         }
         echo "<tr><td style=\"width:18px\"><img src=\"/touchstone/artwork/small_yellow_warning_icon.gif\" width=\"16\" height=\"16\" alt=\"!\" border=\"0\" /></td><td><a style=\"color:black\" href=\"/touchstone/reports/review_comments.php?type=internal&paperID=" . $_GET['paperID'] . "&startdate=&enddate=&repdegree=%&repyear=%&sortby=name&module=" . $module . "&folder=" . $folder . "&percent=100&absent=0&direction=asc\">Peer Reviews</a></td><td style=\"color:$tmp_color\"><strong>$reviews_complete/" . count($internal_array) . "</strong></td></tr>\n";
       } else {
-        echo "<tr><td style=\"width:18px\"><img src=\"/touchstone/artwork/bullet_icon.gif\" width=\"16\" height=\"16\" alt=\".\" border=\"0\" /></td><td><a style=\"color:black\" href=\"/touchstone/reports/review_comments.php?type=external&paperID=" . $_GET['paperID'] . "&startdate=&enddate=&repdegree=%&repyear=%&sortby=name&module=" . $module . "&folder=" . $folder . "&percent=100&absent=0&direction=asc\">Peer Reviews</a></td><td style=\"color:#008000\"><strong>OK</strong></td></tr>\n";
+        echo "<tr><td style=\"width:18px\"><img src=\"/touchstone/artwork/bullet_icon.gif\" width=\"16\" height=\"16\" alt=\".\" border=\"0\" /></td><td><a style=\"color:black\" href=\"/touchstone/reports/review_comments.php?type=internal&paperID=" . $_GET['paperID'] . "&startdate=&enddate=&repdegree=%&repyear=%&sortby=name&module=" . $module . "&folder=" . $folder . "&percent=100&absent=0&direction=asc\">Peer Reviews</a></td><td style=\"color:#008000\"><strong>OK</strong></td></tr>\n";
       }
     }
   }
@@ -556,7 +566,7 @@ if ($paper_type == '2') {
 		} else {
 		  $tmp_color = '#F27000';
 		}
-        echo "<tr><td><img src=\"/touchstone/artwork/small_yellow_warning_icon.gif\" width=\"16\" height=\"16\" alt=\"!\" border=\"0\" /></td><td><a style=\"color:black\" href=\"/touchstone/reports/external_comments.php?paperID=" . $_GET['paperID'] . "&startdate=&enddate=&repdegree=%&repyear=%&sortby=name&module=" . $module . "&folder=" . $folder . "&percent=100&absent=0&direction=asc\">External Reviews</a></td><td style=\"color:$tmp_color\"><strong>$reviews_complete/" . count($external_array) . "</strong></td></tr>\n";
+        echo "<tr><td><img src=\"/touchstone/artwork/small_yellow_warning_icon.gif\" width=\"16\" height=\"16\" alt=\"!\" border=\"0\" /></td><td><a style=\"color:black\" href=\"/touchstone/reports/review_comments.php?type=external&paperID=" . $_GET['paperID'] . "&startdate=&enddate=&repdegree=%&repyear=%&sortby=name&module=" . $module . "&folder=" . $folder . "&percent=100&absent=0&direction=asc\">External Reviews</a></td><td style=\"color:$tmp_color\"><strong>$reviews_complete/" . count($external_array) . "</strong></td></tr>\n";
       } else {
         echo "<tr><td><img src=\"/touchstone/artwork/bullet_icon.gif\" width=\"16\" height=\"16\" alt=\".\" border=\"0\" /></td><td><a style=\"color:black\" href=\"/touchstone/reports/review_comments.php?type=external&paperID=" . $_GET['paperID'] . "&startdate=&enddate=&repdegree=%&repyear=%&sortby=name&module=" . $module . "&folder=" . $folder . "&percent=100&absent=0&direction=asc\">External Reviews</a></td><td style=\"color:#008000\"><strong>OK</strong></td></tr>\n";
       }

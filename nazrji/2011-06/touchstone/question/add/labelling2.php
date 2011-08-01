@@ -260,7 +260,7 @@ if (isset($_POST['submit1'])) {
   }
 
   setcookie("default_team", getDefaultTeam(), time()+31536000);
-  $mysqli->close();
+
   redirect($paperID);
 }
 ?>

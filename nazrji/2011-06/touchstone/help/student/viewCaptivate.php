@@ -28,7 +28,9 @@
 <html>
 <head>
 <title>TouchStone Tutorial<?php echo " $cfg_install_type"; ?></title>
-</head>
+<style>
+  html, body {margin:0;	padding:0; height:100%; width:100%}
+</style></head>
 <body>
 <?php
    
@@ -42,3 +44,4 @@
   }
 ?>
 </body>
+</html>

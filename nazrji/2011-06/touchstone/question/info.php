@@ -25,7 +25,6 @@
   require '../include/staff_auth.inc';
   require '../include/errors.inc';
   
-  
   check_var('q_id', 'GET', true, false);
     
   function check4Copies() {
@@ -57,9 +56,9 @@
       }
       $copy_data->close();
       if ($copy_question_no == 0) {
-        echo "<tr><td><strong>Copy of</strong></td><td>Question ID #$copyID</td></tr>\n";
+        echo "<tr><td>Copy of</td><td>Question ID #$copyID</td></tr>\n";
       } else {
-        echo "<tr><td><strong>Copy of</strong></td><td>Question No $copy_question_no. on <a href=\"\" onclick=\"loadPaper('$copy_paperID')\">$copy_paper_title</a></td></tr>\n";
+        echo "<tr><td>Copy of</td><td>Question No $copy_question_no. on <a href=\"\" onclick=\"loadPaper('$copy_paperID')\">$copy_paper_title</a></td></tr>\n";
       }
     }
   }
@@ -101,15 +100,16 @@
   $line_no = 0;
   $icons = array('formative','progress','summative','survey','osce','offline');
 
-  $result = $mysqli->prepare("SELECT email, title, surname, initials, paper_title, paper_type, paper, screen, DATE_FORMAT(creation_date,\"%d/%m/%Y %H:%i\") AS creation_date, DATE_FORMAT(last_edited,\"%d/%m/%Y %H:%i\") AS last_edited, q_group, DATE_FORMAT(locked,\"%d/%m/%Y %H:%i\") AS locked, properties.deleted FROM (users, papers, questions, properties) WHERE properties.property_id=papers.paper AND users.id=questions.ownerID AND question=? AND papers.question=questions.q_id");
+  $result = $mysqli->prepare("SELECT email, title, surname, initials, paper_title, paper_type, paper, screen, DATE_FORMAT(creation_date,\"%d/%m/%Y %H:%i\") AS creation_date, DATE_FORMAT(last_edited,\"%d/%m/%Y %H:%i\") AS last_edited, q_group, DATE_FORMAT(locked,\"%d/%m/%Y %H:%i\") AS locked, properties.deleted, status FROM (users, papers, questions, properties) WHERE properties.property_id=papers.paper AND users.id=questions.ownerID AND question=? AND papers.question=questions.q_id");
   $result->bind_param('i', $_GET['q_id']);
   $result->execute();
-  $result->bind_result($email, $title, $surname, $initials, $paper_title, $paper_type, $paper, $screen, $creation_date, $last_edited, $q_group, $locked, $deleted);
+  $result->bind_result($email, $title, $surname, $initials, $paper_title, $paper_type, $paper, $screen, $creation_date, $last_edited, $q_group, $locked, $deleted, $status);
   $result->store_result();
   if ($result->num_rows > 0) {
     while ($row = $result->fetch()) {
       if ($line_no == 0) {
         echo "<tr><td width=\"60\" style=\"vertical-align:top\">Author</td><td>$title $initials $surname (<a href=\"mailto:$email\">$email</a>)</td></tr>\n";
+        echo "<tr><td>Status</td><td>$status</td></tr>\n";
         echo "<tr><td>Created</td><td>$creation_date</td></tr>\n";
         echo "<tr><td>Modified</td><td>$last_edited</td></tr>\n";
         if ($row['locked'] != '') {

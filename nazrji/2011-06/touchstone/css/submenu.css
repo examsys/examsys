@@ -16,6 +16,10 @@
  a.blacklink:visited {color:black}
  a.blacklink:hover {color:black}
 
+ a.greylink:link {color:#808080}
+ a.greylink:visited {color:#808080}
+ a.greylink:hover {color:#808080}
+
 .menuheading {padding-left:6px; color:#215DC6; font-weight:bold; cursor:pointer}
 .menuheading a:link {color:#215DC6; cursor:pointer}
 .menuheading a:visited {color:#215DC6; cursor:pointer}

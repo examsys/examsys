@@ -42,7 +42,7 @@ if (isset($_POST['submit']) and ($_POST['submit'] == 'Save Changes' or $_POST['s
     }
     $part_names = array('old_theme','old_leadin','old_stem','old_notes','old_bloom','old_correct_fback','old_score_method','old_status');
     foreach($part_names as $section_name) {
-      $$section_name = html_entity_decode($_POST["$section_name"]);
+      $$section_name = $_POST["$section_name"];
     }
 
     // Strip MS Office HTML.
@@ -189,25 +189,17 @@ while ($row = $result->fetch()) {
   </tr>
 </table>
     <?php
-      echo displayEditTab($created, $modified, $locked);
-      if ($locked != '') {
-        echo "<table border=\"0\" cellpadding=\"3\" cellspacing=\"0\" style=\"width:100%; font-size:90%\">\n";
-        echo "<tr><td style=\"width:35px; height:32px; text-align:right; background-image:url('../../artwork/locked_gradient.png'); background-repeat:repeat-x\"><img src=\"../../artwork/paper_locked_padlock.png\" width=\"19\" height=\"24\" alt=\"Locked\" />&nbsp;&nbsp;</td><td colspan=\"7\" style=\"height:32px; vertical-align:middle; background-image:url('../../artwork/locked_gradient.png'); background-repeat:repeat-x\"><strong>Question Locked</strong>&nbsp;&nbsp;&nbsp;This question is now locked and cannot be modified. <a style=\"color:black\" href=\"#\" onclick=\"launchHelp(161); return false;\">Click for more details.</a></td></tr>\n";
-        echo "</table>\n";
-        $disabled = ' disabled';
-      } else {
-        $disabled = check_edit_rights($tmp_ownerID, $mysqli);
-        $checkout_author = check_lock_status($checkout_authorID, $checkout_time, $disabled, $mysqli, $q_id);
-      }
+    echo displayEditTab($created, $modified, $locked);
+    $disabled = check_edit_rights($q_id, $checkout_authorID, $checkout_time, $locked, $mysqli);
     ?>
     <table cellpadding="3" cellspacing="0" border="0" align="center">
     <tr>
       <td class="field">Theme/Heading&nbsp;</td>
-      <td><input type="text" name="theme" value="<?php echo $theme; ?>" size="80" /><input type="hidden" name="old_theme" value="<?php echo htmlentities($theme,ENT_NOQUOTES,'UTF-8'); ?>" /></td>
-    </tr>
+        <td><textarea name="theme" cols="100" style="width:700px" ><?php echo $theme; ?></textarea><textarea style="display:none" name="old_theme"/><?php echo $theme; ?></textarea><input type="hidden" name="checkout_author" value="<?php echo $checkout_authorID; ?>" /></td>
+     </tr>
     <tr>
       <td class="field">Notes<br /><span class="note">(visible to students)</span></td>
-      <td><textarea name="notes" cols="100" style="width:700px" rows="2" wrap="virtual"><?php echo $notes; ?></textarea><input type="hidden" name="old_notes" value="<?php echo htmlentities($notes,ENT_NOQUOTES,'UTF-8'); ?>" /></td>
+      <td><textarea name="notes" cols="100" style="width:700px" rows="2" wrap="virtual"><?php echo $notes; ?></textarea><textarea style="display:none" name="old_notes" /><?php echo $notes; ?></textarea></td>
     </tr>
       <?php
          if ($q_media != '') {
@@ -221,7 +213,7 @@ while ($row = $result->fetch()) {
 </tr>
 <tr>
 <td class="field"><span class="mandatory">*</span>&nbsp;Lead-in</td>
-      <td><textarea name="leadin" id="leadin" cols="100" style="width:700px" rows="2" wrap="virtual"><?php echo $leadin; ?></textarea><input type="hidden" name="old_leadin" value="<?php echo htmlentities($leadin,ENT_NOQUOTES,'UTF-8'); ?>" /></td>
+      <td><textarea name="leadin" id="leadin" cols="100" style="width:700px" rows="2" wrap="virtual"><?php echo $leadin; ?></textarea><textarea style="display:none" name="old_leadin"><?php echo $leadin; ?></textarea></td>
     </tr>
     <tr>
       <td class="field">Display Mode<input type="hidden" name="old_score_method" value="<?php echo $score_method; ?>" /></td><td><select name="score_method" onchange="alterInstructions()">
@@ -250,19 +242,17 @@ while ($row = $result->fetch()) {
     <tr>
       <td valign="top" align="right" class="field"><span class="mandatory">*</span>&nbsp;Question</td>
       <td><?php echo wysiwyg_editor('oEdit1','stem',$option_text,700,250); ?>
-      <textarea style="display:none" name="old_stem" id="old_stem" cols="1" rows="1"><?php echo encodeHTML($option_text); ?></textarea>
+      <textarea style="display:none" name="old_stem" id="old_stem" cols="1" rows="1"><?php echo htmlentities($option_text); ?></textarea>
       </td>
     </tr>
     <tr>
       <td valign="top" align="right" class="field">Feedback</td>
       <?php
         $tmp_correct_fback = str_replace('<br />','',$correct_fback);
-        $tmp_correct_fback = htmlentities($tmp_correct_fback,ENT_NOQUOTES,'UTF-8');
       ?>
       <td><textarea name="correct_fback" cols="100" style="width:700px" rows="6" wrap="virtual"><?php echo $tmp_correct_fback; ?></textarea><input type="hidden" name="old_correct_fback" value="<?php echo $tmp_correct_fback; ?>" /></td>
     </tr>
     <?php 
-      echo $q_group;
       echo echoMetadata($bloom, $q_id, $q_group, 1, $mysqli, true, $status, $disabled);
     ?>
     <tr>

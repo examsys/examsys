@@ -70,8 +70,6 @@ if (isset($_POST['addbank']) or isset($_POST['addpaper'])) {
 
   setcookie("default_team", $_POST['team'], time()+31536000);
 
-  $mysqli->close();
-
   redirect($paperID);
 } else {
 ?>

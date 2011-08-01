@@ -24,43 +24,69 @@
 * @package
 */
 
-  require '../include/staff_auth.inc';
+  require '../include/admin_auth.inc';
   require '../include/errors.inc';
-  require './users.inc';
+  require '../include/import_users.inc';
+  
+  set_time_limit(0);
+  ob_start();
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
 <title>TouchStone: Load Students<?php echo " $cfg_install_type"; ?></title>
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
+<script language="JavaScript">
+  function updateMsg() {
+    document.getElementById('msg').innerHTML = 'Finished';
+  }
+</script>
 </head>
 
-<body>
-<?php
-  include '../include/user_search_options.inc';
-?>
-<div id="content" class="content" style="font-size:80%">
 <?php
   if (isset($_POST['submit'])) {
+    echo "<body onload=\"updateMsg()\">\n";
+  } else {
+    echo "<body>\n";
+  }
+
+  require '../include/user_search_options.inc';
+?>
+<div id="content" class="content" style="font-size:80%; padding-left:10px">
+<br />
+<?php
+  if (isset($_POST['submit'])) {
+    echo "<div id=\"msg\">Loading...</div>\n<br />\n";
+    ob_flush();
+    flush();
+
     if ($_FILES['csvfile']['name'] != 'none' and $_FILES['csvfile']['name'] != '') {
-      if (!move_uploaded_file($_FILES['csvfile']['tmp_name'], "/tmp/new_cohort.csv"))  {
+      if (!move_uploaded_file($_FILES['csvfile']['tmp_name'], "/tmp/" . $userID . "_new_cohort.csv"))  {
         echo uploadError($_FILES['csvfile']['error']);
         exit;
       } else {
-        $users = add_users_from_file('/tmp/new_cohort.csv');
-        unlink('/tmp/new_cohort.csv');
-	if (isset($users['error'])) {
-	  echo "<p>No users added due to the following errors:</p><ul>";
-	  foreach ($users['error'] as $msg) {
-	    echo $msg;
+        $users = add_users_from_file('/tmp/' . $userID . '_new_cohort.csv');
+        unlink('/tmp/' . $userID . '_new_cohort.csv');
+        if (isset($users['error'])) {
+          echo "<p>No users added due to the following errors:</p><ul>";
+          foreach ($users['error'] as $msg) {
+            echo $msg;
           }
           echo "</ul>";
-	} else {
-	  echo "<ul>\n";
-	  echo "<li>" . count($users['added']) . " users added</li>\n";
-	  echo "<li>" . count($users['updated']) . " existing users updated</li>\n";
-	  echo "</ul>\n";
-	}
+        } else {
+          echo "<ul>\n";
+          if (isset($users['added'])) {
+            echo "<li>" . count($users['added']) . " users added</li>\n";
+          } else {
+            echo "<li>0 users added</li>\n";
+          }
+          if (isset($users['updated'])) {
+            echo "<li>" . count($users['updated']) . " existing users updated</li>\n";
+          } else {
+            echo "<li>0 existing users updated</li>\n";
+          }
+          echo "</ul>\n";
+        }
       }
     }
   } else {
@@ -68,25 +94,24 @@
 ?>
 <br />
 <br />
-<table border="0" width="100%" height="100%" style="font-size:120%">
-<tr><td valign="middle">
-<div align="center">
 
-<table border="0" cellpadding="4" cellspacing="0" style="border:1px solid #5582D2; width:85%">
+<table border="0" cellpadding="4" cellspacing="0" style="border:1px solid #95AEC8; width:730px; margin-left:auto; margin-right:auto">
 <tr>
-<td valign="middle" align="left" style="background-color:white"><img src="../artwork/user_female_32.png" width="32" height="26" alt="Icon" />&nbsp;&nbsp;<span style="font-family:Arial,sans-serif; font-size:140%; font-weight:bold; color:#5582D2">Import Students</span></td>
+<td style="width:56px; background-color:white"><img src="../artwork/import_48.gif" width="48" height="48" alt="Icon" /></td><td style="text-align:left; font-size:150%; font-weight:bold; color:#5582D2; width:90%">Import Students</span></td>
 </tr>
 <tr>
-<td align="left" style="background-color:#DFE8FF">
+<td align="left" style="background-color:#F1F5FB" colspan="2">
 
-<p>CSV file should contain the columns in the following order: student_id, Full name, First names, surname, title , Course code, Degree qual aim, Degree Title, Year of course, Mode of study, School, Subject, Attendance status, Registered, Fee Status, Fee band, Date of entry, Local email (NB this is the SATURN export format).</p>
+<p>TouchStone can bulk upload student details and create new accounts from CSV files. The first row should be a header row containing the following fields:</p>
+<blockquote>ID, First Names, Family Name, Title, Degree, Year of Study and Email</blockquote>
+<p>The extra fields 'Modules' and 'Session' can be added to enrol the new students on the specified module at the same time.</p> 
 
-<div>Please select the CVS file you wish to load:</div>
-
-
-<div align="center">
+<div style="text-align:center"><img src="../artwork/student_import_headings.png" width="695" height="59" alt="Headings" border="1" /></div>
+<br />
+<br />
+<div style="text-align:center">
 <form name="import" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>" enctype="multipart/form-data">
-<p><input type="file" size="50" name="csvfile" /></p>
+<p><strong>CSV File:</strong> <input type="file" size="50" name="csvfile" /></p>
 
 <div align="center"><input type="checkbox" name="welcome" value="1" />&nbsp;Send welcome email to user</div>
 <p><input type="submit" style="width:100px" value="Import" name="submit" />&nbsp;<input style="width:100px" type="button" value="Cancel" name="cancel" onclick="history.go(-1)" /></p>
@@ -96,9 +121,6 @@
 </tr>
 </table>
 
-</div>
-</td></tr>
-</table>
 <?php
   }
   $mysqli->close();

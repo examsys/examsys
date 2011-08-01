@@ -24,6 +24,9 @@
 * @package
 */
 
+require_once '../classes/schoolutils.class.php';
+require_once '../classes/searchutils.class.php';
+
 if (isset($_GET['moduleID'])) {
   $moduleID = $_GET['moduleID'];
 } else {
@@ -92,35 +95,13 @@ if (isset($_GET['calendar_year'])) {
 <tr><td>
 <div><strong>Search by any or all of the criteria below.</strong></div>
 <div style="font-size:50%">&nbsp;</div>
-<div>Name<br /><input type="text" name="search_surname" size="18" style="width:95%" value="<?php if (isset($_GET['search_surname'])) echo $_GET['search_surname']; ?>" /></div>
+<div>Name<br /><input type="text" name="search_surname" size="18" style="width:95%" value="<?php if (isset($_GET['search_surname'])) echo stripslashes($_GET['search_surname']); ?>" /></div>
 
 <table cellpadding="0" cellspacing="0" border="0" style="font-size:100%">
 <tr><td>Username</td><td>&nbsp;</td><td>Student ID</td></tr>
 <tr><td><input type="text" name="search_username" size="9" value="<?php if (isset($_GET['search_username'])) echo $_GET['search_username']; ?>" /></td><td>&nbsp;</td><td><input type="text" name="student_id" size="9" value="<?php if (isset($_GET['student_id'])) echo $_GET['student_id']; ?>" /></td></tr>
 </table>
-<div>Module<br /><select name="moduleID" style="width:185px">
-<option value="%">Any Module</option>
-<?php
-  $old_year = '';
-  $team_sql = implode("','", $teams);
-  if ($team_sql != '') $team_sql = "'$team_sql'";
-  if (strpos($userroles,'SysAdmin') !== false) {
-    $search_results = $mysqli->query("SELECT DISTINCT moduleid, fullname FROM modules, schools ORDER BY moduleID");
-  } elseif (strpos($userroles,'Admin') !== false) {
-    $search_results = $mysqli->query("SELECT DISTINCT moduleid, fullname FROM modules, schools WHERE modules.school=schools.school AND faculty='$faculty' ORDER BY moduleID");
-  } else {
-    $search_results = $mysqli->query("SELECT DISTINCT moduleid, fullname FROM modules WHERE moduleid IN($team_sql) ORDER BY moduleID");
-  }
-  while ($row = $search_results->fetch_assoc()) {
-    if ($row['moduleid'] == $moduleID) {
-      echo "<option value=\"" . $row['moduleid'] . "\" selected>" . $row['moduleid'] . ": " . $row['fullname'] . "</option>\n";
-    } else {
-      echo "<option value=\"" . $row['moduleid'] . "\">" . $row['moduleid'] . ": " . $row['fullname'] . "</option>\n";
-    }
-  }
-  $search_results->close();
-?>
-</select></div>
+<div>Module<br /><?php SearchUtils::displayTeamDropdown($teams, $userroles, $userID, $mysqli); ?></div>
 
 <div>Academic Year<br /><select name="calendar_year">
 <option value="%">Any Year</option>
@@ -176,11 +157,18 @@ if (isset($_GET['calendar_year'])) {
     echo "<div><input type=\"checkbox\" id=\"checkbox10\" onclick=\"updateCookies(10);\" name=\"suspended\" /> search Suspended</div>\n";
   }
   //----------------------------
-  echo "<hr noshade=\"noshade\" style=\"height:1px; border:none; background-color:white; color:white\" />\n";
+  echo "<hr noshade=\"noshade\" style=\"height:1px; border:none; background-color:#95AEC8; color:#95AEC8\" />\n";
   if (isset($_COOKIE['caausermgt'][5]) and $_COOKIE['caausermgt'][5] == 'checked') {
     echo "<div><input type=\"checkbox\" id=\"checkbox5\" onclick=\"updateCookies(5);\" name=\"staff\" checked /> search Staff</div>\n";
   } else {
     echo "<div><input type=\"checkbox\" id=\"checkbox5\" onclick=\"updateCookies(5);\" name=\"staff\" /> search Staff</div>\n";
+  }
+  if (strpos($userroles,'Admin') !== false) {
+    if (isset($_COOKIE['caausermgt'][12]) and $_COOKIE['caausermgt'][12] == 'checked') {
+      echo "<div><input type=\"checkbox\" id=\"checkbox12\" onclick=\"updateCookies(12);\" name=\"adminstaff\" checked /> search Staff (Admin)</div>\n";
+    } else {
+      echo "<div><input type=\"checkbox\" id=\"checkbox12\" onclick=\"updateCookies(12);\" name=\"adminstaff\" /> search Staff (Admin)</div>\n";
+    }
   }
   if (isset($_COOKIE['caausermgt'][9]) and $_COOKIE['caausermgt'][9] == 'checked') {
     echo "<div><input type=\"checkbox\" id=\"checkbox9\" onclick=\"updateCookies(9);\" name=\"inactive\" checked /> search Inactive Staff</div>\n";
@@ -192,7 +180,7 @@ if (isset($_GET['calendar_year'])) {
   } else {
     echo "<div><input type=\"checkbox\" id=\"checkbox6\" onclick=\"updateCookies(6);\" name=\"externals\" /> search External Examiners</div>\n";
   }
-  if (isset($_COOKIE['caausermgt'][113]) and $_COOKIE['caausermgt'][11] == 'checked') {
+  if (isset($_COOKIE['caausermgt'][11]) and $_COOKIE['caausermgt'][11] == 'checked') {
     echo "<div><input type=\"checkbox\" id=\"checkbox11\" onclick=\"updateCookies(11);\" name=\"invigilators\" checked /> search Invigilators</div>\n";
   } else {
     echo "<div><input type=\"checkbox\" id=\"checkbox11\" onclick=\"updateCookies(11);\" name=\"invigilators\" /> search Invigilators</div>\n";
@@ -218,14 +206,14 @@ if (isset($_GET['calendar_year'])) {
   }
 
   if (isset($_GET['paperID'])) {
-    echo '<input style="width:80px" type="button" name="back" value="Back" onclick="parent.window.location=\'/touchstone/paper/details.php?paperID=' . $_GET['paperID'] . '&module=' . $module . '&folder=' . $folder . '\'"/>';
+    echo '<input style="width:90px" type="button" name="back" value="Back" onclick="parent.window.location=\'/touchstone/paper/details.php?paperID=' . $_GET['paperID'] . '&module=' . $module . '&folder=' . $folder . '\'"/>';
   } elseif (isset($_GET['module']) and $_GET['module'] != '') {
-    echo '<input style="width:80px" type="button" name="back" value="Back" onclick="parent.window.location=\'/touchstone/folder/details.php?module=' . $module . '&folder=' . $folder . '\'"/>';
+    echo '<input style="width:90px" type="button" name="back" value="Back" onclick="parent.window.location=\'/touchstone/folder/details.php?module=' . $module . '&folder=' . $folder . '\'"/>';
   } else {
-    echo '<input style="width:80px" type="button" name="back" value="Back" onclick="parent.window.location=\'/touchstone/index.php\'"/>';
+    echo '<input style="width:90px" type="button" name="back" value="Back" onclick="parent.window.location=\'/touchstone/index.php\'"/>';
   }
 ?>
-&nbsp;<input style="width:80px" type="submit" name="submit" onclick="document.PapersMenu.oldUserID.value='';" value="Search" /></div>
+&nbsp;<input style="width:90px" type="submit" name="submit" onclick="document.PapersMenu.oldUserID.value='';" value="Search" /></div>
 </td></tr>
 </table>
 
@@ -286,8 +274,8 @@ if (isset($_GET['calendar_year'])) {
 <table style="font-size:100%; line-height: 160%; display:block" cellpadding="3" cellspacing="0" border="0" id="menu3a">
 <?php
   if (strpos($userroles,'Admin') !== false) {
-    echo '<tr><td><a href="load_cohort.php" target="body"><img src="../artwork/import_16.gif" width="16" height="16" alt="Import Students" border="0" /></a></td><td class="menuitem"><a href="import_students.php">Import Students (.CSV)</a></td></tr>';
-    echo '<tr><td><a href="import_student_module_info.php" target="body"><img src="../artwork/import_16.gif" width="16" height="16" alt="Import Modules" border="0" /></a></td><td class="menuitem"><a href="import_modules.php">Import Modules (.CSV)</a></td></tr>';
+    echo '<tr><td><a href="load_cohort.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="Import Students" border="0" /></a></td><td class="menuitem"><a href="import_students.php">Import Students (.CSV)</a></td></tr>';
+    echo '<tr><td><a href="import_student_module_info.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="Import Modules" border="0" /></a></td><td class="menuitem"><a href="import_modules.php">Import Modules (.CSV)</a></td></tr>';
   } else {
     echo '<tr><td><img src="../artwork/import_grey_16.gif" width="16" height="16" alt="Import Students" /></td><td class="greymenuitem">Import Students (.CSV)</td></tr>';
   }
@@ -298,8 +286,8 @@ if (isset($_GET['calendar_year'])) {
 <table style="font-size:100%; line-height:160%; display:none" cellpadding="3" cellspacing="0" border="0" id="menu3b">
 <?php
   if (strpos($userroles,'Admin') !== false) {
-    echo '<tr><td><img src="../artwork/load_cohort_icon_grey_16.gif" width="16" height="16" alt="Import Students" /></td><td class="greymenuitem">Import Students (.CSV)</td></tr>';
-    echo '<tr><td><a href="import_student_module_info.php" target="body"><img src="../artwork/import_16.gif" width="16" height="16" alt="Update Cohort" border="0" /></a></td><td class="menuitem"><a href="import_student_module_info.php">Import Modules (.CSV)</a></td></tr>';
+    echo '<tr><td><a href="load_cohort.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="Import Students" border="0" /></a></td><td class="menuitem"><a href="import_students.php">Import Students (.CSV)</a></td></tr>';
+    echo '<tr><td><a href="import_student_module_info.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="Update Cohort" border="0" /></a></td><td class="menuitem"><a href="import_student_module_info.php">Import Modules (.CSV)</a></td></tr>';
   }
 ?>
 <tr><td><a id="copy" href="#" onclick="emailCohort(); return false;"><img src="../artwork/small_email.png" width="16" height="16" alt="Email" border="0" /></a></td><td class="menuitem"><a id="copy" href="#" onclick="emailCohort(); return false;">Email Cohort</a></td></tr>
@@ -308,8 +296,8 @@ if (isset($_GET['calendar_year'])) {
 <table style="font-size:100%; line-height:160%; display:none" cellpadding="3" cellspacing="0" border="0" id="menu3c">
 <?php
   if (strpos($userroles,'Admin') !== false) {
-    echo '<tr><td><a href="load_cohort.php" target="body"><img src="../artwork/import_16.gif" width="16" height="16" alt="Import Students" border="0" /></a></td><td class="menuitem"><a href="import_students.php">Import Students (.CSV)</a></td></tr>';
-    echo '<tr><td><a href="import_student_module_info.php" target="body"><img src="../artwork/import_16.gif" width="16" height="16" alt="Update Cohort" border="0" /></a></td><td class="menuitem"><a href="import_modules.php">Import Modules (.CSV)</a></td></tr>';
+    echo '<tr><td><a href="load_cohort.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="Import Students" border="0" /></a></td><td class="menuitem"><a href="import_students.php">Import Students (.CSV)</a></td></tr>';
+    echo '<tr><td><a href="import_student_module_info.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="Update Cohort" border="0" /></a></td><td class="menuitem"><a href="import_modules.php">Import Modules (.CSV)</a></td></tr>';
   }
 ?>
 <tr><td><a id="copy" href="#" onclick="emailCohort(); return false;"><img src="../artwork/small_email.png" width="16" height="16" alt="Email" border="0" /></a></td><td class="menuitem"><a id="copy" href="#" onclick="emailCohort(); return false;">Email Cohort</a></td></tr>

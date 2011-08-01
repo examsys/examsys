@@ -41,11 +41,19 @@
   } else {
 ?>
   function go(url, evt) {
+    var extra_data = '';
+
+    for (i=1; i<document.getElementById('meta_no').value; i++) {
+      meta_ref = 'meta' + i;
+      extra_data += '&meta' + i + '=' + document.getElementById(meta_ref).value;
+    }
+
+    
     document.getElementById('stats_menu').style.display='none';
     if (document.stats_menu.absent.checked == true) {
-      window.location.href = url + "paperID=" + document.stats_menu.paperID.value + "&startdate=" + document.stats_menu.start_year.value + document.stats_menu.start_month.value + document.stats_menu.start_day.value + document.stats_menu.start_time.value + "&enddate=" + document.stats_menu.end_year.value + document.stats_menu.end_month.value + document.stats_menu.end_day.value + document.stats_menu.end_time.value + "&repmodule=" + document.stats_menu.repmodule.value + "&repdegree=" + document.stats_menu.repdegree.value + "&sortby=name&module=<?php echo $module; ?>&folder=<?php echo $folder; ?>&percent=" + document.stats_menu.percent.value + "&absent=1&direction=" + document.stats_menu.direction.value;
+      window.location.href = url + "paperID=" + document.stats_menu.paperID.value + "&startdate=" + document.stats_menu.start_year.value + document.stats_menu.start_month.value + document.stats_menu.start_day.value + document.stats_menu.start_time.value + "&enddate=" + document.stats_menu.end_year.value + document.stats_menu.end_month.value + document.stats_menu.end_day.value + document.stats_menu.end_time.value + "&repmodule=" + document.stats_menu.repmodule.value + "&repdegree=" + document.stats_menu.repdegree.value + "&sortby=name&module=<?php echo $module; ?>&folder=<?php echo $folder; ?>&percent=" + document.stats_menu.percent.value + "&absent=1&direction=" + document.stats_menu.direction.value + extra_data;
     } else {
-      window.location.href = url + "paperID=" + document.stats_menu.paperID.value + "&startdate=" + document.stats_menu.start_year.value + document.stats_menu.start_month.value + document.stats_menu.start_day.value + document.stats_menu.start_time.value + "&enddate=" + document.stats_menu.end_year.value + document.stats_menu.end_month.value + document.stats_menu.end_day.value + document.stats_menu.end_time.value + "&repmodule=" + document.stats_menu.repmodule.value + "&repdegree=" + document.stats_menu.repdegree.value + "&sortby=name&module=<?php echo $module; ?>&folder=<?php echo $folder; ?>&percent=" + document.stats_menu.percent.value + "&absent=0&direction=" + document.stats_menu.direction.value;
+      window.location.href = url + "paperID=" + document.stats_menu.paperID.value + "&startdate=" + document.stats_menu.start_year.value + document.stats_menu.start_month.value + document.stats_menu.start_day.value + document.stats_menu.start_time.value + "&enddate=" + document.stats_menu.end_year.value + document.stats_menu.end_month.value + document.stats_menu.end_day.value + document.stats_menu.end_time.value + "&repmodule=" + document.stats_menu.repmodule.value + "&repdegree=" + document.stats_menu.repdegree.value + "&sortby=name&module=<?php echo $module; ?>&folder=<?php echo $folder; ?>&percent=" + document.stats_menu.percent.value + "&absent=0&direction=" + document.stats_menu.direction.value + extra_data;
     }
     evt.cancelBubble = true;
     return false;
@@ -256,18 +264,20 @@
   }
   $result->close();
   echo "</select></td></tr>\n";
-
+  
+  //get the paper modules
+  $result = $mysqli->prepare("SELECT moduleID FROM properties WHERE property_id=?");
+  $result->bind_param('i', $_GET['paperID']);
+  $result->execute();
+  $result->bind_result($moduleID);
+  $result->fetch();
+  $result->close();
+  $moduleIDs = explode(',',$moduleID);
+  
   //module drop down
   if ($paper_type != '3') {
     echo "<tr><td>Module</td><td><select name=\"repmodule\" style=\"width:150px\">\n";
     echo "<option value=\"\">&lt;Any Module&gt;</option>\n";
-    $result = $mysqli->prepare("SELECT moduleID FROM properties WHERE property_id=?");
-    $result->bind_param('i', $_GET['paperID']);
-    $result->execute();
-    $result->bind_result($moduleID);
-    $result->fetch();
-    $result->close();
-    $moduleIDs = explode(',',$moduleID);
     foreach ($moduleIDs as $mod) {
       echo "<option value=\"" . $mod . "\">" . $mod . "</option>\n";
     }
@@ -301,7 +311,33 @@
     echo "<tr><td>&nbsp;</td><td><input type=\"checkbox\" id=\"completerpt\" name=\"completerpt\" value\"1\" />&nbsp;Show complete datasets only</td></tr>\n";
   }
   
-  echo "</table><input type=\"hidden\" name=\"paperID\" value=\"" . $_GET['paperID'] . "\" />";
+  // Get any metadata fields
+  $metadata = array();
+  if (count($moduleIDs) > 0) {
+    $result = $mysqli->prepare("SELECT DISTINCT type, value FROM users_metadata, modules WHERE users_metadata.moduleID=modules.id AND modules.moduleid IN ('" . implode("','",$moduleIDs) . "') ORDER BY type, value");
+    $result->execute();
+    $result->bind_result($meta_type, $meta_value);
+    while ($result->fetch()) {
+      $metadata[$meta_type][] = $meta_value;
+    }
+    $result->close();
+  }
+  $meta_no = 1;
+  if (count($metadata) > 0) {
+    echo "<tr><td colspan=\"2\"><hr style=\"height:1px; color:#C0C0C0; background-color:#C0C0C0\" /></td></tr>\n";
+  }
+  foreach ($metadata as $meta_type=>$value_array) {
+    echo "<tr><td>$meta_type</td><td><select name=\"meta$meta_no\" id=\"meta$meta_no\">";
+    echo "<option value=\"$meta_type=%\">&lt;all&gt;</option>";
+    foreach ($value_array as $meta_value) {
+      echo "<option value=\"$meta_type=$meta_value\">$meta_value</option>\n";
+    }
+    echo "</select></td></tr>\n";
+    $meta_no++;
+  }
+ 
+  
+  echo "</table><input type=\"hidden\" name=\"meta_no\" id=\"meta_no\" value=\"$meta_no\" /><input type=\"hidden\" name=\"paperID\" value=\"" . $_GET['paperID'] . "\" />";
 
   if ($paper_type == '0' or $paper_type == '1' or $paper_type == '2' or $paper_type == '5') {
     // display Assessment stats options

@@ -69,10 +69,10 @@ a.user:hover {color:white; background-color:#000080}
   // POP UP MENU
   function ItemSelMenu(tmpStarted, tmpUserID, tmpUsername, tmpDisplayName, tmpLogType, tmpReassign, tmpLogLate, tmpPercent, e) {
     if (!e) var e = window.event;
-	var currentX = e.clientX;
-	var currentY = e.clientY;
+    var currentX = e.clientX;
+    var currentY = e.clientY;
     var scrOfX = getScrollX();
-	var scrOfY = getScrollY();
+    var scrOfY = getScrollY();
 
     document.getElementById('started').value = tmpStarted;
     document.getElementById('userID').value = tmpUserID;
@@ -336,7 +336,7 @@ a.user:hover {color:white; background-color:#000080}
 </div>
 <?php
   for ($i=1; $i<=100; $i++) $distribution[$i] = 0;
-
+  
   $notes = array();
   // Query any student notes for the current paper
   $result = $mysqli->prepare("SELECT userID FROM student_notes WHERE paper_id=?");
@@ -371,14 +371,33 @@ a.user:hover {color:white; background-color:#000080}
   
   if ($marking == '0') {
     $marking_label = '%';
+    $marking_key = 'percent';
   } else {
     $marking_label = 'Adjusted %';
+    $marking_key = 'adj_percent';
   }
+  
+  //output table heading
+  $table_order = array(''=>'','Name'=>'name','Student ID'=>'student_id','Course'=>'student_grade','Mark'=>'mark',$marking_label=>$marking_key,'Clasification'=>'mark','Start Time'=>'started','Duration'=>'duration','IP Address'=>'ipaddress');
+  if ($paper_type == 2) $table_order['Room'] = 'room';
+  $metadata_cols = array();
+  if (isset($user_results[0])){
+    foreach($user_results[0] as $key => $val) {
+      if(strrpos($key,'meta_') !== false) {
+        $key_display = ucfirst(str_replace('meta_','',$key));
+        $table_order[$key_display] = $key;
+        $metadata_cols[$key] = $key;
+      }
+    }
+  }
+  
+  $cols = count($table_order);
+ 
   echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">\n";
-  if ($paper_type == 2) {
-    echo "<tr><td class=\"h\" colspan=\"10\">";
+  if ($paper_type == '2') {
+    echo "<tr><td class=\"h\" colspan=\"" . ($cols - 1) . "\">";
   } else {
-    echo "<tr><td class=\"h\" colspan=\"9\">";
+    echo "<tr><td class=\"h\" colspan=\"" . ($cols - 1) . "\">";
   }
   if(isset($_GET['repmodule']) and $_GET['repmodule'] != '') {
     $report_title = 'Class Totals (' . $_GET['repmodule'] . ' students only)';
@@ -405,111 +424,22 @@ a.user:hover {color:white; background-color:#000080}
   echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../paper/details.php?paperID=' . $_GET['paperID'] . '">' . $paper . '</a></div>';
   
   echo "<span style=\"margin-left:10px; font-size:200%; color:black; font-weight:bold\">$report_title</span></td><td class=\"h\" style=\"text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(30); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"Help\" border=\"0\" /></a></td></tr>\n";
-
-  // Name
-  echo '<tr><td class="h" style="width:16px">&nbsp;</td><td class="h"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;';
-  if ($sortby == 'name' and $ordering == 'asc') {
-    echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repdegree=" . $_GET['repdegree'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=name&ordering=desc&percent=$percent&direction=$direction&absent=$absent\">Name</a>&nbsp;<img src=\"../artwork/desc.gif\" width=\"9\" height=\"7\" border=\"0\" /></td>";
-  } elseif ($sortby == 'name' and $ordering == 'desc') {
-    echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repdegree=" . $_GET['repdegree'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=name&ordering=asc&percent=$percent&direction=$direction&absent=$absent\">Name</a>&nbsp;<img src=\"../artwork/asc.gif\" width=\"9\" height=\"7\" border=\"0\" /></td>";
-  } else {
-    echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repdegree=" . $_GET['repdegree'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=name&ordering=asc&percent=$percent&direction=$direction&absent=$absent\">Name</a>&nbsp;</td>";
-  }
-
-  // Student ID
-  echo "<td class=\"h\"><img src=\"../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;";
-  if ($sortby == 'student_id' and $ordering == 'asc') {
-    echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repdegree=" . $_GET['repdegree'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=student_id&ordering=desc&percent=$percent&direction=$direction&absent=$absent\">Student ID</a>&nbsp;<img src=\"../artwork/desc.gif\" width=\"9\" height=\"7\" border=\"0\" /></td>";
-  } elseif ($sortby == 'student_id' and $ordering == 'desc') {
-    echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repdegree=" . $_GET['repdegree'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=student_id&ordering=asc&percent=$percent&direction=$direction&absent=$absent\">Student ID</a>&nbsp;<img src=\"../artwork/asc.gif\" width=\"9\" height=\"7\" border=\"0\" /></td>";
-  } else {
-    echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repdegree=" . $_GET['repdegree'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=student_id&ordering=asc&percent=$percent&direction=$direction&absent=$absent\">Student ID</a>&nbsp;</td>";
-  }
-
-  // Course
-  echo "<td class=\"h\"><img src=\"../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;";
-  if ($sortby == 'student_grade' and $ordering == 'asc') {
-    echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repdegree=" . $_GET['repdegree'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=student_grade&ordering=desc&percent=$percent&direction=$direction&absent=$absent\">Course</a>&nbsp;<img src=\"../artwork/desc.gif\" width=\"9\" height=\"7\" border=\"0\" /></td>";
-  } elseif ($sortby == 'student_grade' and $ordering == 'desc') {
-    echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repdegree=" . $_GET['repdegree'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=student_grade&ordering=asc&percent=$percent&direction=$direction&absent=$absent\">Course</a>&nbsp;<img src=\"../artwork/asc.gif\" width=\"9\" height=\"7\" border=\"0\" /></td>";
-  } else {
-    echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repdegree=" . $_GET['repdegree'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=student_grade&ordering=asc&percent=$percent&direction=$direction&absent=$absent\">Course</a>&nbsp;</td>";
-  }
-
-  // Mark
-  echo "<td class=\"h\"><img src=\"../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;";
-  if ($sortby == 'mark' and $ordering == 'asc') {
-    echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repdegree=" . $_GET['repdegree'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=mark&ordering=desc&percent=$percent&direction=$direction&absent=$absent\">Mark</a>&nbsp;<img src=\"../artwork/desc.gif\" width=\"9\" height=\"7\" border=\"0\" /></td>";
-  } elseif ($sortby == 'mark' and $ordering == 'desc') {
-    echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repdegree=" . $_GET['repdegree'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=mark&ordering=asc&percent=$percent&direction=$direction&absent=$absent\">Mark</a>&nbsp;<img src=\"../artwork/asc.gif\" width=\"9\" height=\"7\" border=\"0\" /></td>";
-  } else {
-    echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repdegree=" . $_GET['repdegree'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=mark&ordering=asc&percent=$percent&direction=$direction&absent=$absent\">Mark</a>&nbsp;</td>";
-  }
-
-  // Percent
-  echo "<td class=\"h\"><img src=\"../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;";
-  if ($sortby == 'percent' and $ordering == 'asc') {
-    echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repdegree=" . $_GET['repdegree'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=percent&ordering=desc&percent=$percent&direction=$direction&absent=$absent\">$marking_label</a>&nbsp;<img src=\"../artwork/desc.gif\" width=\"9\" height=\"7\" border=\"0\" /></td>";
-  } elseif ($sortby == 'percent' and $ordering == 'desc') {
-    echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repdegree=" . $_GET['repdegree'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=percent&ordering=asc&percent=$percent&direction=$direction&absent=$absent\">$marking_label</a>&nbsp;<img src=\"../artwork/asc.gif\" width=\"9\" height=\"7\" border=\"0\" /></td>";
-  } else {
-    echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repdegree=" . $_GET['repdegree'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=percent&ordering=asc&percent=$percent&direction=$direction&absent=$absent\">$marking_label</a>&nbsp;</td>";
-  }
-
-  // Result
-  echo "<td class=\"h\"><img src=\"../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;";
-  if ($sortby == 'result' and $ordering == 'asc') {
-    echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repdegree=" . $_GET['repdegree'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=result&ordering=desc&percent=$percent&direction=$direction&absent=$absent\">Classification</a>&nbsp;<img src=\"../artwork/desc.gif\" width=\"9\" height=\"7\" border=\"0\" /></td>";
-  } elseif ($sortby == 'result' and $ordering == 'desc') {
-    echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repdegree=" . $_GET['repdegree'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=result&ordering=asc&percent=$percent&direction=$direction&absent=$absent\">Classification</a>&nbsp;<img src=\"../artwork/asc.gif\" width=\"9\" height=\"7\" border=\"0\" /></td>";
-  } else {
-    echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repdegree=" . $_GET['repdegree'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=result&ordering=asc&percent=$percent&direction=$direction&absent=$absent\">Classification</a>&nbsp;</td>";
-  }
-
-  // Start time/date
-  echo "<td class=\"h\"><img src=\"../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;";
-  if ($sortby == 'started' and $ordering == 'asc') {
-    echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repdegree=" . $_GET['repdegree'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=started&ordering=desc&percent=$percent&direction=$direction&absent=$absent\">Start Time/Date</a>&nbsp;<img src=\"../artwork/desc.gif\" width=\"9\" height=\"7\" border=\"0\" /></td>";
-  } elseif ($sortby == 'started' and $ordering == 'desc') {
-    echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repdegree=" . $_GET['repdegree'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=started&ordering=asc&percent=$percent&direction=$direction&absent=$absent\">Start Time/Date</a>&nbsp;<img src=\"../artwork/asc.gif\" width=\"9\" height=\"7\" border=\"0\" /></td>";
-  } else {
-    echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repdegree=" . $_GET['repdegree'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=started&ordering=asc&percent=$percent&direction=$direction&absent=$absent\">Start Time/Date</a>&nbsp;</td>";
-  }
-
-  // Duration
-  echo "<td class=\"h\"><img src=\"../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;";
-  if ($sortby == 'duration' and $ordering == 'asc') {
-    echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repdegree=" . $_GET['repdegree'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=duration&ordering=desc&percent=$percent&direction=$direction&absent=$absent\">Duration</a>&nbsp;<img src=\"../artwork/desc.gif\" width=\"9\" height=\"7\" border=\"0\" /></td>";
-  } elseif ($sortby == 'duration' and $ordering == 'desc') {
-    echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repdegree=" . $_GET['repdegree'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=duration&ordering=asc&percent=$percent&direction=$direction&absent=$absent\">Duration</a>&nbsp;<img src=\"../artwork/asc.gif\" width=\"9\" height=\"7\" border=\"0\" /></td>";
-  } else {
-    echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repdegree=" . $_GET['repdegree'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=duration&ordering=asc&percent=$percent&direction=$direction&absent=$absent\">Duration</a>&nbsp;</td>";
-  }
-
-  // IP Address
-  echo "<td class=\"h\"><img src=\"../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;";
-  if ($sortby == 'ipaddress' and $ordering == 'asc') {
-    echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repdegree=" . $_GET['repdegree'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=ipaddress&ordering=desc&percent=$percent&direction=$direction&absent=$absent\">IP Address</a>&nbsp;<img src=\"../artwork/desc.gif\" width=\"9\" height=\"7\" border=\"0\" /></td>";
-  } elseif ($sortby == 'ipaddress' and $ordering == 'desc') {
-    echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repdegree=" . $_GET['repdegree'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=ipaddress&ordering=asc&percent=$percent&direction=$direction&absent=$absent\">IP Address</a>&nbsp;<img src=\"../artwork/asc.gif\" width=\"9\" height=\"7\" border=\"0\" /></td>";
-  } else {
-    echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repdegree=" . $_GET['repdegree'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=ipaddress&ordering=asc&percent=$percent&direction=$direction&absent=$absent\">IP Address</a>&nbsp;</td>";
-  }
-
-  if ($paper_type == 2) {
-    // Room (for summative exams)
-    echo "<td class=\"h\"><img src=\"../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;";
-    if ($sortby == 'room' and $ordering == 'asc') {
-      echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repdegree=" . $_GET['repdegree'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=room&ordering=desc&percent=$percent&direction=$direction&absent=$absent\">Room</a>&nbsp;<img src=\"../artwork/desc.gif\" width=\"9\" height=\"7\" border=\"0\" /></td>";
-    } elseif ($sortby == 'room' and $ordering == 'desc') {
-      echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repdegree=" . $_GET['repdegree'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=room&ordering=asc&percent=$percent&direction=$direction&absent=$absent\">Room</a>&nbsp;<img src=\"../artwork/asc.gif\" width=\"9\" height=\"7\" border=\"0\" /></td>";
-    } else {
-      echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repdegree=" . $_GET['repdegree'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=room&ordering=asc&percent=$percent&direction=$direction&absent=$absent\">Room</a>&nbsp;</td>";
+  
+  // output table header
+  if (isset($user_results[0])){
+    foreach($table_order as $display => $key) {
+      echo "<td class=\"h\"><img src=\"../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;";
+      if ($sortby == $key and $ordering == 'asc') {
+        echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repdegree=" . $_GET['repdegree'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=$key&ordering=desc&percent=$percent&direction=$direction&absent=$absent\">$display</a>&nbsp;<img src=\"../artwork/desc.gif\" width=\"9\" height=\"7\" border=\"0\" /></td>";
+      } elseif ($sortby == $key and $ordering == 'desc') {
+        echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repdegree=" . $_GET['repdegree'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=$key&ordering=asc&percent=$percent&direction=$direction&absent=$absent\">$display</a>&nbsp;<img src=\"../artwork/asc.gif\" width=\"9\" height=\"7\" border=\"0\" /></td>";
+      } else {
+        echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repdegree=" . $_GET['repdegree'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=$key&ordering=asc&percent=$percent&direction=$direction&absent=$absent\">$display</a>&nbsp;</td>";
+      }
     }
   }
-
-  echo '</tr>';
-  echo '<tr style="height:4px"><td valign="top" colspan="11"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td></tr>';
+  
+  echo '<tr style="height:4px"><td valign="top" colspan="' . ($cols) . '"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td></tr>';
 
   // Check for any temporary accounts and if so display warning banner
   $temp_user_no = 0;
@@ -686,6 +616,18 @@ a.user:hover {color:white; background-color:#000080}
           }
           echo "<td style=\"border-bottom:solid $line_color 1px; background-color:$bg_color\">&nbsp;" . $user_results[$i]['room'] . "</td>";
         }
+        
+        // Display any associated metadata
+        if (count($metadata_cols) > 0) {
+          foreach ( $metadata_cols as $type) {
+            if ($_GET['sortby'] == $type) {
+              $bg_color = '#F7F7F7';
+            } else {
+              $bg_color = 'white';
+            }
+            echo "<td style=\"border-bottom:solid $line_color 1px; background-color:$bg_color\">&nbsp;" . $user_results[$i][$type] . "</td>";
+          }
+        }
         echo "</tr>\n";
 
         if ($completed_no > 0) {
@@ -711,15 +653,15 @@ a.user:hover {color:white; background-color:#000080}
 
   if ($user_no > 0) {
     //Check for any paper notes
-    echo "<tr><td colspan=\"11\" height=\"9\">&nbsp;</td></tr>\n";
-    echo "<tr><td colspan=\"11\" height=\"9\">&nbsp;</td></tr>\n";
-    echo "<tr><td colspan=\"11\"><table border=\"0\" style=\"padding-left:10px; padding-right:2px; padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>Paper Notes</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table></td></tr>\n";
+    echo "<tr><td colspan=\"" . ($cols) . "\" height=\"9\">&nbsp;</td></tr>\n";
+    echo "<tr><td colspan=\"" . ($cols) . "\" height=\"9\">&nbsp;</td></tr>\n";
+    echo "<tr><td colspan=\"" . ($cols) . "\"><table border=\"0\" style=\"padding-left:10px; padding-right:2px; padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>Paper Notes</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table></td></tr>\n";
     $result = $mysqli->prepare("SELECT note, DATE_FORMAT(note_date,'%d/%m/%Y %H:%i'), note_workstation FROM paper_notes WHERE paper_id=?");
     $result->bind_param('i', $paperID);
     $result->execute();
     $result->store_result();
     $result->bind_result($note, $note_date, $note_workstation);
-    echo "<tr><td colspan=\"11\">";
+    echo "<tr><td colspan=\"" . (11 + $meta_col_count) . "\">";
     while ($row = $result->fetch()) {
       $lab_name = '';
       $result2 = $mysqli->prepare("SELECT name FROM labs, ip_addresses WHERE labs.id=ip_addresses.lab AND address=?");
@@ -737,19 +679,19 @@ a.user:hover {color:white; background-color:#000080}
   
   
   
-    echo "<tr><td colspan=\"11\" height=\"9\">&nbsp;</td></tr>\n";
-    echo "<tr><td colspan=\"11\" height=\"9\">&nbsp;</td></tr>\n";
-    echo "<tr><td colspan=\"11\"><table border=\"0\" style=\"padding-left:10px; padding-right:2px; padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>Distribution Chart</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table></td></tr>\n";
+    echo "<tr><td colspan=\"" . (11 + $cols) . "\" height=\"9\">&nbsp;</td></tr>\n";
+    echo "<tr><td colspan=\"" . (11 + $cols) . "\" height=\"9\">&nbsp;</td></tr>\n";
+    echo "<tr><td colspan=\"" . (11 + $cols) . "\"><table border=\"0\" style=\"padding-left:10px; padding-right:2px; padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>Distribution Chart</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table></td></tr>\n";
 
     echo "<tr><td>&nbsp;</td><td colspan=\"10\"><img src=\"draw_distribution_chart.php?adjust=" . substr($marking,0,1) . "&pmk=$pass_mark&distinction_mark=$distinction_mark\" width=\"830\" height=\"300\" border=\"0\" alt=\"Distribution Chart\" /></td></tr>\n";
 
-    echo "<tr><td colspan=\"11\" height=\"9\">&nbsp;</td></tr>\n";
-    echo "<tr><td colspan=\"11\"><table border=\"0\" style=\"padding-left:10px; padding-right:2px; padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>Scatter Plot</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table></td></tr>\n";
+    echo "<tr><td colspan=\"" . (11 + $cols) . "\" height=\"9\">&nbsp;</td></tr>\n";
+    echo "<tr><td colspan=\"" . (11 + $cols) . "\"><table border=\"0\" style=\"padding-left:10px; padding-right:2px; padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>Scatter Plot</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table></td></tr>\n";
     echo "<tr><td>&nbsp;</td><td colspan=\"10\"><img src=\"draw_scatter_plot.php?adjust=" . substr($marking,0,1) . "&pmk=$pass_mark&distinction_mark=$distinction_mark\" width=\"830\" height=\"300\" border=\"0\" alt=\"Distribution Chart\" /></td></tr>\n";
 
     // Display summary -------------------------------------------------------------------------------------
-    echo "<tr><td colspan=\"11\" height=\"9\">&nbsp;</td></tr>\n";
-    echo "<tr><td colspan=\"11\"><table border=\"0\" style=\"padding-left:10px; padding-right:2px; padding-bottom:5px; width:100%; color:#1E3287\"><tr><td>Summary</td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table></td></tr>\n";
+    echo "<tr><td colspan=\"" . (11 + $cols) . "\" height=\"9\">&nbsp;</td></tr>\n";
+    echo "<tr><td colspan=\"" . (11 + $cols) . "\"><table border=\"0\" style=\"padding-left:10px; padding-right:2px; padding-bottom:5px; width:100%; color:#1E3287\"><tr><td>Summary</td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table></td></tr>\n";
 
     echo "<tr><td>&nbsp;</td><td colspan=\"10\">\n";
     echo "<table cellpadding=\"2\" cellspacing=\"0\" border=\"0\">\n";
@@ -762,9 +704,9 @@ a.user:hover {color:white; background-color:#000080}
         echo ' (bottom ' . $_GET['percent'] . '%)';
       }
     }
-    echo ":</td><td align=\"right\">$cohort_size</td>";
-    if ($completed_no < $cohort_size) {
-      echo '<td>(' . ($cohort_size - $completed_no). ' candidates did not complete all screens)</td>';
+    echo ":</td><td align=\"right\">$display_no</td>";
+    if ($completed_no < $display_no) {
+      echo '<td>(' . ($display_no - $completed_no). ' candidates did not complete all screens)</td>';
     } else {
       echo '<td>';
       if ($absent_no == 1) {
@@ -849,7 +791,7 @@ a.user:hover {color:white; background-color:#000080}
       echo ")</td></tr>\n";
    	}
     echo "</table>\n</td></tr>\n";
-    echo "<tr><td colspan=\"10\" height=\"9\">&nbsp;</td></tr>\n";
+    echo "<tr><td colspan=\"" . (11 + $meta_col_count) . "\" height=\"9\">&nbsp;</td></tr>\n";
 
     // Email Class -----------------------------------------------------------------------------------------
     if (isset($_POST['emailclass']) and $_POST['emailclass'] == 'yes') {

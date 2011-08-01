@@ -26,15 +26,16 @@ require '../../include/staff_auth.inc';
 require '../../include/errors.inc';
 require '../../classes/dateutils.class.php';
 
+check_var('q_id', 'GET', true, false);
+
 if (!isset($_POST['submit'])) {
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
 <title>Add new Question</title>
 <style>
-body {font-family:Arial,sans-serif}
+body {font-family:Arial,sans-serif; margin:0px; background-color:#F1F5FB}
 td {font-size:80%}
 </style>
 
@@ -60,21 +61,40 @@ td {font-size:80%}
       }
     }
   }
+    
+  function resizeList() {
+    var winW = 630, winH = 460;
+    if (document.body && document.body.offsetWidth) {
+      winW = document.body.offsetWidth;
+      winH = document.body.offsetHeight;
+    }
+    if (document.compatMode=='CSS1Compat' && document.documentElement && document.documentElement.offsetWidth ) {
+      winW = document.documentElement.offsetWidth;
+      winH = document.documentElement.offsetHeight;
+    }
+    if (window.innerWidth && window.innerHeight) {
+      winW = window.innerWidth;
+      winH = window.innerHeight;
+    }
+    winH -= 160;
+    document.getElementById('paperlist').style.height = winH + 'px';
+  }
 </script>
 </head>
 
-<body style="margin:0px">
+<body onload="resizeList();" onresize="resizeList();">
 <?php
   echo "<form method=\"post\" name=\"theForm\" onsubmit=\"return checkForm()\" action=\"" . $_SERVER['PHP_SELF'] . "?q_id=" . $_GET['q_id'] . "\">\n";
 ?>  
 
-  <table cellpadding="2" cellspacing="0" border="0" width="100%">
-  <tr><td style="background-color:#EBEADB; border-left:solid white 1px; border-right:solid #D8D2BD 1px; border-top:solid white 1px; border-bottom:solid #D8D2BD 1px; font-size:200%; font-weight:bold; color:black\">&nbsp;Select Paper</td></tr>
+  <table cellpadding="6" cellspacing="0" border="0" width="100%">
+  <tr><td style="width:32px; background-color:white; border-bottom:1px solid #CCD9EA"><img src="../../artwork/link_to_paper.png" width="32" height="32 alt="Paper" /></td><td style="background-color:white; font-size:150%; font-weight:bold; color:#5582D2; border-bottom:1px solid #CCD9EA">Link to Paper</td></tr>
   </table>
 
   <p style="margin:4px; text-align:justify; font-size:70%"><img src="../../artwork/small_warning_16.png" width="16" height="16" alt="WARNING: Active paper!" border="0" /> = A paper is currently 'active'. The current date lies between its start and end dates. This is a safety feature so active papers cannot be altered.</p>
   <p style="margin:4px; text-align:justify; font-size:70%"><img src="../../artwork/small_padlock.png" width="16" height="16" alt="WARNING: Locked paper!" border="0" /> = A summative paper is locked and cannot be altered.</p>
 
+  <div style="height:200px; overflow:auto; background-color:white; border:1px solid #CCD9EA; margin:4px" id="paperlist">
   <table cellpadding="0" cellspacing="1" border="0">
 <?php
   $teamSQL = '';
@@ -82,7 +102,6 @@ td {font-size:80%}
     $teamSQL .= " OR moduleID LIKE '%$team%'";
   }
 
- // echo "SELECT DISTINCT property_id, paper_title, start_date, end_date, paper_type FROM properties WHERE (paper_ownerID=? $teamSQL) AND deleted IS NULL ORDER BY paper_title";
   $result = $mysqli->prepare("SELECT DISTINCT property_id, paper_title, start_date, end_date, paper_type FROM properties WHERE (paper_ownerID=? $teamSQL) AND deleted IS NULL ORDER BY paper_title");
   $result->bind_param('s', $userID);
   $result->execute();
@@ -97,10 +116,11 @@ td {font-size:80%}
     }
   }
   $result->close();
-  echo "<tr><td>&nbsp;</td><td><input type=\"radio\" name=\"property_id\" value=\"-new-assessment-paper-\"><input type=\"text\" size=\"40\" name=\"new_paper\" value=\"New Assessment Paper\" /></td></tr>\n</table>\n<br />";
-  echo "<div align=\"center\"><input type=\"submit\" style=\"width:120px\" name=\"submit\" value=\"Add to Paper\" />&nbsp;&nbsp;<input type=\"button\" style=\"width:120px\" name=\"cancel\" onclick=\"window.close();\" value=\"Cancel\" /></div>\n</form>\n";
+  echo "<tr><td>&nbsp;</td><td><input type=\"radio\" name=\"property_id\" value=\"-new-assessment-paper-\"><input type=\"text\" size=\"40\" name=\"new_paper\" value=\"New Assessment Paper\" /></td></tr>\n</table>\n</div>\n";
+  echo "<div style=\"text-align:center; padding-top:4px;\"><input type=\"submit\" style=\"width:120px\" name=\"submit\" value=\"Add to Paper\" />&nbsp;&nbsp;<input type=\"button\" style=\"width:120px\" name=\"cancel\" onclick=\"window.close();\" value=\"Cancel\" /></div>\n</form>\n";
 } else {
 ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
 <title>Add new Question</title>
@@ -133,7 +153,7 @@ td {font-size:80%}
     $tmp_paper_title = $_POST['new_paper'];
     
     // Create the new paper.
-    $result = $mysqli->prepare("INSERT INTO properties VALUES (NULL,?,'20030101090000','20250101090000','Europe/London','0','','','white','black','#316AC5','#C00000','0',1,'0',40,70,?,'','','',0,'',NULL,NULL,NOW(),0,0,'1','1','1','1','0',NULL,?,'',NULL,NULL,'0',0,'')");
+    $result = $mysqli->prepare("INSERT INTO properties VALUES (NULL,?,'20030101090000','20250101090000','Europe/London','0','','','white','black','#316AC5','#C00000','0',1,'0',40,70,?,'','','',0,'',NULL,NULL,NOW(),0,0,'1','1','1','1','0',NULL,?,'',NULL,NULL,'0',0,'',NULL)");
     $result->bind_param('sis', $tmp_paper_title, $userID, $session);
     $result->execute();  
     $property_id = $mysqli->insert_id;

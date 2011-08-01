@@ -24,7 +24,13 @@
 
 require '../include/sysadmin_auth.inc';
 require_once '../classes/dateutils.class.php';
+require_once '../classes/smsutils.class.php';
+require_once '../classes/moduleutils.class.php';
+require_once '../classes/userutils.class.php';
 
+$SMS = SMSutils::GetSmsUtils();
+$cfg_sms_sources =  $SMS->getModuleSources();
+  
 $unique_moduleid = true;
 if (isset($_POST['submit'])) {
   // Check for unique moduleID
@@ -49,24 +55,27 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
   } else {
     $active = 0;
   }
-  $checklist = '';
-  if (isset($_POST['peer'])) $checklist .= ',peer';
-  if (isset($_POST['external'])) $checklist .= ',external';
-  if (isset($_POST['stdset'])) $checklist .= ',stdset';
-  if (isset($_POST['mapping'])) $checklist .= ',mapping';
-
-  $fullname = trim($_POST['fullname']);
-  $tmp_checklist = substr($checklist,1);
+  if (isset($_POST['selfenroll'])) {
+    $selfenroll = 1;
+  } else {
+    $selfenroll = 0;
+  }
+  $fullname = $schoolid = $vle_api = $sms_api = '';
+  $peer = $stdset = $mapping = false;
   
-  //TODO this has been moved to moduleutils
-  $result = $mysqli->prepare("INSERT INTO modules VALUES (NULL,?,?,?,?,?,?,?)");
-  $result->bind_param('ssissss', $moduleid, $fullname, $active, $_POST['school'], $_POST['vle_api'], $tmp_checklist, $_POST['sms_api']);
-  $result->execute();
-  $result->close();
-
+  if (isset($_POST['fullname']))  $fullname = trim($_POST['fullname']);
+  if (isset($_POST['peer']))      $peer = true;
+  if (isset($_POST['external']))  $external = true;
+  if (isset($_POST['stdset']))    $stdset = true;
+  if (isset($_POST['mapping']))   $mapping = true;
+  if (isset($_POST['schoolid']))  $schoolid = $_POST['schoolid'];
+  if (isset($_POST['vle_api']))   $vle_api = $_POST['vle_api'];
+  if (isset($_POST['sms_api']))   $sms_api = $_POST['sms_api'];
+  
+  ModuleUtils::addModules($moduleid, $fullname, $active, $schoolid, $vle_api, $sms_api, $selfenroll, $peer, $external, $stdset, $mapping, $mysqli);
+  
   if (isset($_POST['sms_api']) and $_POST['sms_api'] != '') {
-    // Look up SATURN
-    $enrolments = 0;
+    $enrolements = 0;
       
     // Get the current academic session
     $session = DateUtils::get_current_academic_year();
@@ -80,67 +89,47 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
     //------------------------------------
     
     $url = $_POST['sms_api'] . "&code=$replaced_module&year=" . $session_parts[0];
-    $returned_data = file_get_contents($url);
-    $xml = new SimpleXMLElement($returned_data);
-    $enrolement_details = '';
+    $returned_data = @file_get_contents($url);
+    if ($returned_data !== false) {
+      $xml = new SimpleXMLElement($returned_data);
+      $enrolement_details = '';
 
-    foreach ($xml->Module->Membership->Student as $student) {
-      $student->Title = trim($student->Title);
-      $student->Surname = trim($student->Surname);
-      $student->Forename = trim($student->Forename);
-      $student->CourseCode = trim($student->CourseCode);
-      $student->Username = trim($student->Username);
-      $student->Email = trim($student->Email);
-      $student->Faculty = trim($student->Faculty);
-      $student->Gender = trim($student->Gender);
-      $student->YearofStudy = trim($student->YearofStudy);
-      $student->Faculty = trim($student->Faculty);
-     
-      $student_data = $mysqli->prepare("SELECT id FROM users WHERE username=? LIMIT 1");            // Do they have a TouchStone user record?
-      $student_data->bind_param('s', $student->Username);
-      $student_data->execute();
-      $student_data->store_result();
-      $student_data->bind_result($tmp_userID);
-      $student_data->fetch();
-      if ($student_data->num_rows == 0) {
+      foreach ($xml->Module->Membership->Student as $student) {
+        $student->Title = trim($student->Title);
+        $student->Surname = trim($student->Surname);
+        $student->Forename = trim($student->Forename);
+        $student->CourseCode = trim($student->CourseCode);
+        $student->Username = trim($student->Username);
+        $student->Email = trim($student->Email);
+        $student->Faculty = trim($student->Faculty);
+        $student->Gender = trim($student->Gender);
+        $student->YearofStudy = trim($student->YearofStudy);
+        $student->Faculty = trim($student->Faculty);
+        
         // Create new account for the user
-        $tmp_year = 'year' . $student->YearofStudy;
         $names = explode(' ',$student->Forename);
         $initials = '';
         foreach ($names as $tmp_name) {
           $initials .= substr($tmp_name,0,1);
         }
+        $tmp_userID = UserUtils::usernameExists($student->Username, $mysqli);
+        if ($tmp_userID === false) {
+          $tmp_userID = UserUtils::createUser($student->Username, '', $student->Title, $student->Forename, $student->Surname, $student->Email, $student->CourseCode, $student->Gender, $student->YearofStudy, 'Student', $student->StudentID, $mysqli);
+        }
+        // Add student onto the module
+        UserUtils::addUserToModule($tmp_userID, $module, $session, $mysqli);
         
-        $result = $mysqli->prepare("INSERT INTO users VALUES ('',?,?,?,?,?,?,'Student',NULL,?,?,?,NULL,0,?)");
-        $result->bind_param('sssssssssi', $student->CourseCode, $student->Surname, $initials, $student->Title, $student->Username, $student->Email, $student->Faculty, $student->Forename, $student->Gender, $sms->YearofStudy);
-        $result->execute();
-        $result->close();
-         
-        $tmp_userID = $mysqli->insert_id;    // Get the new TouchStone userID
-      }
-      $student_data->close();
-      
-      $tmp_studentID = trim($student->StudentID);
-      $result = $mysqli->prepare("INSERT INTO sid VALUES (?,?)");
-      $result->bind_param('si', $tmp_studentID, $tmp_userID);
-      $result->execute();
-      $result->close();
-
-      // Add student onto the module
-      $result = $mysqli->prepare("INSERT INTO student_modules VALUES (NULL,?,?,?,1,1)");
-      $result->bind_param('iss', $tmp_userID, $module, $session);
-      $result->execute();
-      $result->close();
-      $enrolments++;
-      if ($enrolement_details == '') {
-        $enrolement_details = $student->Username;
-      } else {
-        $enrolement_details .= ',' . $student->Username;
+        $enrolements++;
+        if ($enrolement_details == '') {
+          $enrolement_details = $student->Username;
+        } else {
+          $enrolement_details .= ',' . $student->Username;
+        }
       }
     }
 
     // Write in a record to sms_imports table
-    if ($enrolments > 0) {
+    if ($enrolements > 0) {
       if ($_POST['sms_api'] == 'http://saturn-exports.nottingham.ac.uk/touchstone.ashx?campus=malaysia') {
         $import_type = 'SATURN Malaysia';
       } elseif ($_POST['sms_api'] == 'http://saturn-exports.nottingham.ac.uk/touchstone.ashx?campus=china') {
@@ -149,7 +138,7 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
         $import_type = 'SATURN UK';
       }
       
-      $result = $mysqli->prepare("INSERT INTO sms_imports VALUES (NULL,NOW(),?,?,?,0,'',?)");
+      $result = $mysqli->prepare("INSERT INTO sms_imports VALUES (NULL, NOW(), ?, ?, ?, 0, '', ?)");
       $result->bind_param('siss', $module, $enrolements, $enrolement_details, $import_type);
       $result->execute();
       $result->close();
@@ -163,7 +152,7 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
   <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
   <html>
   <head>
-  <title>Create new Module</title>
+  <title>Create new Module<?php echo " $cfg_install_type"; ?></title>
   <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
 
   <style>
@@ -212,18 +201,18 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
     
 <?php
   $old_faculty = '';
-  echo "<tr><td class=\"field\">School</td><td><select name=\"school\">\n<option value=\"\"></option>\n";
-  $query_string = "SELECT school, faculty FROM schools ORDER BY faculty, school";
+  echo "<tr><td class=\"field\">School</td><td><select name=\"schoolid\">\n<option value=\"\"></option>\n";
+  $query_string = "SELECT id, school, faculty FROM schools ORDER BY faculty, school";
   $results = $mysqli->query($query_string);
   while ($row = $results->fetch_assoc()) {
     if ($old_faculty != $row['faculty']) {
       if ($old_faculty != '') echo "</optgroup>\n";
       echo "<optgroup label=\"" . $row['faculty'] . "\">\n";
     }
-    if (isset($_POST['school']) and $_POST['school'] == $row['school']) {
-      echo "<option value=\"" . $row['school'] . "\" selected>" . $row['school'] . "</option>\n";
+    if (isset($_POST['schoolid']) and $_POST['schoolid'] == $row['id']) {
+      echo "<option value=\"" . $row['id'] . "\" selected>" . $row['school'] . "</option>\n";
     } else {
-      echo "<option value=\"" . $row['school'] . "\">" . $row['school'] . "</option>\n";
+      echo "<option value=\"" . $row['id'] . "\">" . $row['school'] . "</option>\n";
     }
     $old_faculty = $row['faculty'];
   }
@@ -241,6 +230,7 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
     </select></td></tr>
     <tr><td class="field">Summative Checklist</td><td><input type="checkbox" name="peer" checked /> Peer Review, <input type="checkbox" name="external" checked /> External Examiners, <input type="checkbox" name="stdset" /> Standards Setting, <input type="checkbox" name="mapping" /> Mapping</td></tr>
     <tr><td class="field">Active</td><td><input type="checkbox" name="active" checked /></td></tr>
+    <tr><td class="field">allow Self-enroll</td><td><input type="checkbox" name="selfenroll" /></td></tr>
     </table>
     <p><input type="submit" style="width:100px" name="submit" value="Add">&nbsp;&nbsp;<input style="width:100px" type="button" name="home" value="Cancel" onclick="javascript:history.back();" /></p>
   </form>

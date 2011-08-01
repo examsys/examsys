@@ -113,20 +113,25 @@ if (isset($_POST['addbank']) or isset($_POST['addpaper'])) {
       while ($stmt->fetch()) {
         if ($old_moduleID != $moduleID) {
         if ($old_moduleID != '') echo "</optgroup>\n";
-        echo "<optgroup label=\"$moduleID\">\n";
-      }
+          echo "<optgroup label=\"$moduleID\">\n";
+        }
         if (isset($_POST['keywordID']) and $_POST['keywordID'] == $keywordID) {
           echo "<option value=\"$keywordID|$keyword\" selected>$keyword</option>\n";
         } else {
           echo "<option value=\"$keywordID|$keyword\">$keyword</option>\n";
         }
-      $old_moduleID = $moduleID;
+        $old_moduleID = $moduleID;
       }
-      if ($stmt->num_rows > 0) echo "</optgroup>\n";
+      if ($stmt->num_rows > 0) {
+        echo "</optgroup>\n</select></td>\n";
+        $found_keywords = true;
+      } else {
+        echo "</select> <img src=\"../../artwork/small_yellow_warning_icon.gif\" width=\"16\" height=\"16\" alt=\"!\" /> <span style=\"color:#C00000\">Warning no keywords found, cannot create question.</span></td>\n";
+        $found_keywords = false;
+      }
       $stmt->close();
       
       ?>
-      </select></td>
     </tr>
     <tr>
     <td colspan="2">&nbsp;</td></tr>
@@ -140,7 +145,9 @@ if (isset($_POST['addbank']) or isset($_POST['addpaper'])) {
     </tr>
     <tr>
     <?php
-      if (isset($_GET['paperID']) and $_GET['paperID'] != '' and substr($_GET['paperID'],0,5) != 'list:') {
+      if ($found_keywords == false) {
+        echo '<td colspan="2" style="text-align:center"><input style="width:150px" type="submit" name="addbankdisabled" value="Add to Bank" disabled>&nbsp;&nbsp;&nbsp;&nbsp;<input style="width:100px" type="button" name="cancel" value="Cancel" onclick="history.back()" /></td>';
+      } elseif (isset($_GET['paperID']) and $_GET['paperID'] != '' and substr($_GET['paperID'],0,5) != 'list:') {
         echo '<td colspan="2" style="text-align:center"><input style="width:150px" type="submit" name="addbank" value="Add to Bank">&nbsp;<input style="width:150px" type="submit" name="addpaper" value="Add to Bank &amp; Paper">&nbsp;&nbsp;&nbsp;&nbsp;<input style="width:100px" type="button" name="cancel" value="Cancel" onclick="history.back()" /></td>';
       } else {
         echo '<td colspan="2" style="text-align:center"><input style="width:150px" type="submit" name="addbank" value="Add to Bank">&nbsp;&nbsp;&nbsp;&nbsp;<input style="width:100px" type="button" name="cancel" value="Cancel" onclick="history.back()" /></td>';

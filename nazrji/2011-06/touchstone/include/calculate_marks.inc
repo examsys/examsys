@@ -157,9 +157,7 @@ function qMarks($question_type, $tmp_exclude, $question_marks, $option_text, $co
       }
       break;
     case 'hotspot':
-      if (substr($tmp_exclude,0,1) == '0' and $correct[0] != '') {
-        $marks += (substr_count($correct[0],'|') + 1);
-      }
+      $marks += (substr_count($correct[0],'|') + 1) - substr_count($tmp_exclude, '1');
       break;
   }
   return $marks;
@@ -206,7 +204,7 @@ function qRandomMarks($question_type, $tmp_exclude, $option_text, $correct, $sco
           $i++;
         }
       }
-      $random_mark += ($placeholders / ($label_count - $excluded_no));
+      $random_mark += (($label_count - $excluded_no) == 0) ? 0 : ($placeholders / ($label_count - $excluded_no));
       break;
     case 'mcq':
       if (substr($tmp_exclude,0,1) == '0') {

@@ -90,9 +90,9 @@
     $lab = '';
   }
   $moduleid = '';
-  if (isset($_POST['moduleid']) and $_POST['moduleid'] != '') {
+  if (isset($_POST['team']) and $_POST['team'] != '') {
     $moduleid = 'AND moduleid LIKE ?';
-    $variables[] = '%' . $_POST['moduleid'] . '%';
+    $variables[] = '%' . $_POST['team'] . '%';
     $params .= 's';
   } else {
     if (strpos($userroles,'SysAdmin') === false) {
@@ -119,9 +119,11 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>TouchStone</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>TouchStone<?php echo " $cfg_install_type"; ?></title>
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
 <style style="text/css">
+input[type=text], select {font-family:Arail,sans-serif; border: 1px solid #7F9DB9}
 .f a {color:black}
 .f {float:left; width:375px; height:74px; padding-left:12px}
 </style>

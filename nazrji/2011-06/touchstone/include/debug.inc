@@ -26,8 +26,6 @@
 
 //global debug settings
 $debug_pagestart = microtime();
-ini_set('display_errors', 1);
-//error_reporting( E_ALL );
 register_shutdown_function('outputLoadTimes');
 $dbclass = 'debug_mysqli';
   

@@ -119,45 +119,55 @@ echo '<tr><td colspan="4" style="background-color:#F1F5FB"><div class="breadcrum
 
 $recycle_bin = array();
 
+//var_dump($teams);
+//exit;
+
 // Query the TouchStone papers tables.
-$query_string = "SELECT property_id AS id, paper_type, paper_title, DATE_FORMAT(deleted,'%Y%m%d%H%i') AS deleted FROM properties WHERE paper_ownerID=$userID AND deleted IS NOT NULL";
-$result = $mysqli->query($query_string);
 $i = 0;
-while ($row = $result->fetch_assoc()) {
-  $recycle_bin[$i]['id'] = $row['id'];
+$stmt = $mysqli->prepare("SELECT property_id AS id, paper_type, paper_title, DATE_FORMAT(deleted,'%Y%m%d%H%i') AS deleted FROM properties WHERE (paper_ownerID=? OR moduleID IN ('" . implode("','",$teams) . "')) AND deleted IS NOT NULL");
+$stmt->bind_param('i', $userID);
+$stmt->execute();
+$stmt->bind_result($id, $paper_type, $paper_title, $deleted);
+while ($stmt->fetch()) {
+  $recycle_bin[$i]['id'] = $id;
   $recycle_bin[$i]['type'] = 'paper';
-  $recycle_bin[$i]['name'] = $row['paper_title'];
-  $recycle_bin[$i]['deleted'] = $row['deleted'];
-  $recycle_bin[$i]['subtype'] = $row['paper_type'];
+  $recycle_bin[$i]['name'] = $paper_title;
+  $recycle_bin[$i]['deleted'] = $deleted;
+  $recycle_bin[$i]['subtype'] = $paper_type;
   $i++;
 }
-$result->close();
+$stmt->close();
 
 // Query the TouchStone questions tables.
-$query_string = "SELECT q_id AS id, q_type, leadin_plain, DATE_FORMAT(deleted,'%Y%m%d%H%i') AS deleted FROM questions WHERE ownerID=$userID AND deleted IS NOT NULL";
-$result = $mysqli->query($query_string);
-while ($row = $result->fetch_assoc()) {
-  $recycle_bin[$i]['id'] = $row['id'];
+$stmt = $mysqli->prepare("SELECT q_id AS id, q_type, leadin_plain, DATE_FORMAT(deleted,'%Y%m%d%H%i') AS deleted FROM questions WHERE (ownerID=? OR q_group IN ('" . implode("','",$teams) . "')) AND deleted IS NOT NULL");
+$stmt->bind_param('i', $userID);
+$stmt->execute();
+$stmt->bind_result($id, $q_type, $leadin_plain, $deleted);
+while ($stmt->fetch()) {
+  $recycle_bin[$i]['id'] = $id;
   $recycle_bin[$i]['type'] = 'question';
-  $recycle_bin[$i]['name'] = $row['leadin_plain'];
-  $recycle_bin[$i]['deleted'] = $row['deleted'];
-  $recycle_bin[$i]['subtype'] = $row['q_type'];
+  $recycle_bin[$i]['name'] = $leadin_plain;
+  $recycle_bin[$i]['deleted'] = $deleted;
+  $recycle_bin[$i]['subtype'] = $q_type;
   $i++;
 }
-$result->close();
+$stmt->close();
 
 // Query the TouchStone folder tables.
-$query_string = "SELECT id, name, DATE_FORMAT(deleted,'%Y%m%d%H%i') AS deleted FROM folders WHERE ownerID=$userID AND deleted IS NOT NULL";
-$result = $mysqli->query($query_string);
-while ($row = $result->fetch_assoc()) {
-  $recycle_bin[$i]['id'] = $row['id'];
+$stmt = $mysqli->prepare("SELECT id, name, DATE_FORMAT(deleted,'%Y%m%d%H%i') AS deleted FROM folders WHERE (ownerID=? OR team_name IN ('" . implode("','",$teams) . "')) AND deleted IS NOT NULL");
+$stmt->bind_param('i', $userID);
+$stmt->execute();
+$stmt->bind_result($id, $name, $deleted);
+while ($stmt->fetch()) {
+  $recycle_bin[$i]['id'] = $id;
   $recycle_bin[$i]['type'] = 'folder';
-  $recycle_bin[$i]['name'] = str_replace(';','\\',$row['name']);
-  $recycle_bin[$i]['deleted'] = $row['deleted'];
+  $recycle_bin[$i]['name'] = str_replace(';','\\',$name);
+  $recycle_bin[$i]['deleted'] = $deleted;
   $recycle_bin[$i]['subtype'] = '';
   $i++;
 }
-$result->close();
+$stmt->close();
+
 $mysqli->close();
 
 $sortby = 'name';
@@ -196,11 +206,11 @@ for ($item=0; $item<$i; $item++) {
   if ($recycle_bin[$item]['type'] == 'paper') {
     $temp_type = $recycle_bin[$item]['subtype'];
     $split_name = explode('[deleted',$recycle_bin[$item]['name']);
-    echo "<tr id=\"line$item\" onmouseover=\"lon('line$item')\" onmouseout=\"loff('line$item')\" style=\"cursor:pointer\" onclick=\"selQ('line$item'," . $recycle_bin[$item]['id'] . ",'paper'); event.cancelBubble=true;\"><td style=\"width:20px; text-align:right\"><img src=\"../artwork/" . $paper_icons[$temp_type] . "\" width=\"16\" height=\"16\" border=\"0\" /></td><td>&nbsp;" . $split_name[0] . "</td><td>&nbsp;" . dateDisplay($recycle_bin[$item]['deleted']) . "</td><td>&nbsp;" . $paper_types[$temp_type] . "</td></tr>\n";
+    echo "<tr id=\"line$item\" onmouseover=\"lon('line$item')\" onmouseout=\"loff('line$item')\" style=\"cursor:pointer\" onclick=\"selQ('line$item'," . $recycle_bin[$item]['id'] . ",'paper'); event.cancelBubble=true;\"><td style=\"width:20px; text-align:right\"><img src=\"../artwork/" . $paper_icons[$temp_type] . "\" width=\"16\" height=\"16\" border=\"0\" /></td><td>&nbsp;" . $split_name[0] . "</td><td><nobr>&nbsp;" . dateDisplay($recycle_bin[$item]['deleted']) . "</nobr></td><td><nobr>&nbsp;" . $paper_types[$temp_type] . "</nobr></td></tr>\n";
   } elseif ($recycle_bin[$item]['type'] == 'folder') {
-    echo "<tr id=\"line$item\" onmouseover=\"lon('line$item')\" onmouseout=\"loff('line$item')\" style=\"cursor:pointer\" onclick=\"selQ('line$item'," . $recycle_bin[$item]['id'] . ",'folder'); event.cancelBubble=true;\"><td style=\"width:20px; text-align:right\"><img src=\"../artwork/yellow_folder.png\" width=\"16\" height=\"16\" border=\"0\" /></td><td>&nbsp;" . $recycle_bin[$item]['name'] . "</td><td>&nbsp;" . dateDisplay($recycle_bin[$item]['deleted']) . "</td><td>&nbsp;Folder</td></tr>\n";
+    echo "<tr id=\"line$item\" onmouseover=\"lon('line$item')\" onmouseout=\"loff('line$item')\" style=\"cursor:pointer\" onclick=\"selQ('line$item'," . $recycle_bin[$item]['id'] . ",'folder'); event.cancelBubble=true;\"><td style=\"width:20px; text-align:right\"><img src=\"../artwork/yellow_folder.png\" width=\"16\" height=\"16\" border=\"0\" /></td><td>&nbsp;" . $recycle_bin[$item]['name'] . "</td><td><nobr>&nbsp;" . dateDisplay($recycle_bin[$item]['deleted']) . "</nobr></td><td><nobr>&nbsp;Folder</nobr></td></tr>\n";
   } else {
-    echo "<tr id=\"line$item\" onmouseover=\"lon('line$item')\" onmouseout=\"loff('line$item')\" style=\"cursor:pointer\" onclick=\"selQ('line$item'," . $recycle_bin[$item]['id'] . ",'question'); event.cancelBubble=true;\"><td style=\"width:20px; text-align:right\"><img src=\"../artwork/question_item_icon.gif\" width=\"16\" height=\"16\" border=\"0\" /></td><td>&nbsp;" . $recycle_bin[$item]['name'] . "</td><td>&nbsp;" . dateDisplay($recycle_bin[$item]['deleted']) . "</td><td>&nbsp;" . fullQuestionType($recycle_bin[$item]['subtype']) . "</td></tr>\n";
+    echo "<tr id=\"line$item\" onmouseover=\"lon('line$item')\" onmouseout=\"loff('line$item')\" style=\"cursor:pointer\" onclick=\"selQ('line$item'," . $recycle_bin[$item]['id'] . ",'question'); event.cancelBubble=true;\"><td style=\"width:20px; text-align:right\"><img src=\"../artwork/question_item_icon.gif\" width=\"16\" height=\"16\" border=\"0\" /></td><td>&nbsp;" . $recycle_bin[$item]['name'] . "</td><td><nobr>&nbsp;" . dateDisplay($recycle_bin[$item]['deleted']) . "</nobr></td><td><nobr>&nbsp;" . fullQuestionType($recycle_bin[$item]['subtype']) . "</nobr></td></tr>\n";
   }
 }
 echo "</table>\n";

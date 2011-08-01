@@ -18,7 +18,7 @@
 * 
 * Utility class for installer related functionality
 * 
-* @author Anthony Brown
+* @author Anthony Brown, Simon Wilkinson
 * @version 1.0
 * @copyright Copyright (c) 2011 The University of Nottingham
 * @package
@@ -37,7 +37,21 @@ Class SchoolUtils {
       return false;
     }
     
-    return true;
+    return $db->insert_id;
   }  
   
+  static function getAdminSchools($admin_userid, $db) {
+    $school_list = array();
+    
+    $stmt = $db->prepare("SELECT schools_id FROM admin_access WHERE userID=?");
+    $stmt->bind_param('i', $admin_userid);
+    $stmt->execute();
+    $stmt->bind_result($school);
+    while ($stmt->fetch()) {
+      $school_list[] = $school;
+    }
+    $stmt->close();
+  
+    return $school_list;
+  }
 }

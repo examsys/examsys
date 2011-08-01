@@ -167,7 +167,7 @@
   $modules = array();
   $mod_count = 0;
   
-  $result = $mysqli->prepare("SELECT moduleid, fullname FROM modules, schools WHERE modules.school=schools.school AND active=1 ORDER BY moduleid");
+  $result = $mysqli->prepare("SELECT moduleid, fullname FROM modules, schools WHERE modules.schoolid=schools.id AND active=1 ORDER BY moduleid");
   $result->execute();
   $result->store_result();
   $result->bind_result($moduleid, $fullname);

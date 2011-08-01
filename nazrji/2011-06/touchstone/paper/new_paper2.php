@@ -23,6 +23,7 @@
 */
 
 require '../include/staff_auth.inc';
+require_once '../classes/schoolutils.class.php';
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -165,7 +166,7 @@ require '../include/staff_auth.inc';
     exit;
   }
   
-  $result = $mysqli->prepare("INSERT INTO properties VALUES (NULL,?,'20030101090000','20250101090000','Europe/London',?,'','','white','black','#316AC5','#C00000','1','1','1',40,70,?,?,'',?,1,'',NULL,'00000000000000',NOW(),0,0,'1','1','1','1','0',NULL,'$session','',NULL,NULL,'0',0,'')");
+  $result = $mysqli->prepare("INSERT INTO properties VALUES (NULL,?,'20030101090000','20250101090000','Europe/London',?,'','','white','black','#316AC5','#C00000','1','1','1',40,70,?,?,'',?,1,'',NULL,'00000000000000',NOW(),0,0,'1','1','1','1','0',NULL,'$session','',NULL,NULL,'0',0,'',NULL)");
   $result->bind_param('sssss', $paper_name, $paper_types[$_POST['paper_type']], $userID, $folder, $default_rubric);
   $result->execute();  
   $property_id = $mysqli->insert_id;
@@ -409,9 +410,10 @@ require '../include/staff_auth.inc';
   if (strpos($userroles,'SysAdmin') !== false) {
     $result = $mysqli->prepare("SELECT DISTINCT moduleid, fullname FROM modules, schools ORDER BY moduleID");
   } elseif (strpos($userroles,'Admin') !== false) {
-    $result = $mysqli->prepare("SELECT DISTINCT moduleid, fullname FROM modules, schools WHERE modules.school=schools.school AND faculty='$faculty' ORDER BY moduleID");
+    $schoolIDs = implode(',', SchoolUtils::getAdminSchools($userID, $mysqli));
+    $result = $mysqli->prepare("SELECT DISTINCT moduleid, fullname FROM modules WHERE schoolid IN ($schoolIDs) ORDER BY moduleID");
   } else {
-    $result = $mysqli->prepare("SELECT DISTINCT moduleid, fullname FROM modules WHERE moduleid IN($team_sql) ORDER BY moduleID");
+    $result = $mysqli->prepare("SELECT DISTINCT moduleid, fullname FROM modules WHERE moduleid IN ($team_sql) ORDER BY moduleID");
   }
   $result->execute();
   $result->bind_result($module_id, $module_name);
@@ -434,7 +436,7 @@ require '../include/staff_auth.inc';
   echo "<input type=\"hidden\" name=\"folder\" value=\"" . $_POST['folder'] . "\" />\n";
 ?>
 <br />
-<div style="text-align:right"><input type="submit" name="back2" value="&lt Back" style="width:100px" />&nbsp;&nbsp;<input type="submit" name="submit2" value="Finish" style="width:100px" /></div>
+<div style="text-align:right"><input type="submit" name="submit2" value="Finish" style="width:100px" /></div>
 
 </td>
 </tr>

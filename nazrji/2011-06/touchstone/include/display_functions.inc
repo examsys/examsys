@@ -782,6 +782,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
         break;
       case 'blank':
         $ans = '';
+        $blank_mark = array();
         $display_option['option_text'] = str_replace('&nbsp;',' ',$display_option['option_text']);
         $blank_details = explode('[blank',$display_option['option_text']);
         if (isset($user_answers[$current_screen][$q_id])) {
@@ -795,6 +796,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
         }
         
         if ($question['score_method'] == 'textboxes') {
+          $screen_output = array();
           $array_size = count($blank_details);
           $blank_count = 1;
           while ($blank_count < $array_size) {
@@ -826,10 +828,12 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
             $blank_count++;
           }
           $screen_output_all = '';
-          foreach ($screen_output as $value) {
-            $screen_output_all .= $value;
+          if (count($screen_output) > 0) {     // Check there are actually some blanks
+            foreach ($screen_output as $value) {
+              $screen_output_all .= $value;
+            }
           }
-          echo "<p class=\"stem\">" . $blank_details[0].$screen_output_all . "</p>\n";
+          echo "<p class=\"stem\">" . $blank_details[0] . $screen_output_all . "</p>\n";
         } else {
           // Dropdown lists.
           $no_blanks = count($blank_details);
@@ -907,11 +911,15 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
         $hotspot_no = substr_count($question['options'][0]['correct'],'|') + 1;
         $tmp_height = $question['q_media_height'] + 30;
         if ($tmp_height < (($hotspot_no * 36) + 25)) $tmp_height = (($hotspot_no * 36) + 25);
+
+        $tmp_correct = str_replace("'", "\'", trim($question['options'][0]['correct']));
+        $tmp_correct = str_replace("&nbsp;", " ", $tmp_correct);
         ?>
         <script language="JavaScript">
           function swfLoaded<?php echo $question_no; ?>(message) {
             var num = message.substring(5,message.length);
-            setUpFlash(num, message, '<?php echo $question['q_media']; ?>', '<?php echo trim($question['options'][0]['correct']); ?>', '<?php if(isset($user_answers[$current_screen][$q_id])) echo trim($user_answers[$current_screen][$q_id]); ?>','<?php echo $screen_pre_submitted; ?>');
+            
+            setUpFlash(num, message, '<?php echo $question['q_media']; ?>', '<?php echo $tmp_correct; ?>', '<?php if(isset($user_answers[$current_screen][$q_id])) echo trim($user_answers[$current_screen][$q_id]); ?>','<?php echo $screen_pre_submitted; ?>');
           }
           write_string('<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="https://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0" id="flash<?php echo $question_no; ?>" width="<?php echo ($question['q_media_width'] + 335); ?>" height="<?php echo $tmp_height; ?>" align="middle">');
           write_string('<param name="allowScriptAccess" value="always" />');

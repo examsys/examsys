@@ -144,8 +144,18 @@ if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
 
     $stem_changes = false;
     for ($option_no=1; $option_no<=15; $option_no++) {
+      $old_media_deleted = false;
+  
+      if (isset($_POST["delete_media$option_no"]) and $_POST["delete_media$option_no"] == '1') {
+        deleteMedia($_POST["old_option_media$option_no"]);
+        $tmp_option_media = '';
+        $tmp_width = 0;
+        $tmp_height = 0;
+        $old_media_deleted = true;
+      }
+    
       $tmp_option_media = unique_filename($_FILES["option_media$option_no"]['name']);
-      if ($_POST["option_text$option_no"] == '' and $tmp_option_media == '' and $_POST["old_option_text$option_no"] != '') {
+      if (isset($_POST["optionid$option_no"]) and $_POST["optionid$option_no"] != '' and $_POST["option_text$option_no"] == '' and $tmp_option_media == '' and ($_POST["old_option_media$option_no"] == '' or $old_media_deleted)) {
         // Delete operation.
         $changes = true;
         $temp_id = $_POST["optionid$option_no"];
@@ -176,10 +186,10 @@ if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
         $result->bind_param('is', $q_id, $_POST["option_text$option_no"]);
         $result->execute();  
         $result->close();
-      } elseif ($_POST["option_text$option_no"] != '' or ( isset($_POST["old_option_media$option_no"]) and html_entity_decode($_FILES["option_media$option_no"]['name']) != html_entity_decode($_POST["old_option_media$option_no"]) ) ) {
+      } elseif ($_POST["option_text$option_no"] != '' or ( isset($_POST["old_option_media$option_no"]) and $_FILES["option_media$option_no"]['name'] != $_POST["old_option_media$option_no"] ) ) {
         // Edit operation.
-        if ($_FILES["option_media$option_no"]['name'] != '' and html_entity_decode($_FILES["option_media$option_no"]['name']) != html_entity_decode($_POST["old_option_media$option_no"])) {
-          if (isset($_POST["old_option_media$option_no"]) and $_POST["old_option_media$option_no"] != '') {
+        if ($_FILES["option_media$option_no"]['name'] != '' and $_FILES["option_media$option_no"]['name'] != $_POST["old_option_media$option_no"]) {
+          if (!$old_media_deleted and isset($_POST["old_option_media$option_no"]) and $_POST["old_option_media$option_no"] != '') {
             deleteMedia ("../media/" . $_POST["old_option_media$option_no"]);
           }
           $tmp_option_media = uploadFile("option_media$option_no",$tmp_width,$tmp_height);
@@ -192,11 +202,7 @@ if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
           $tmp_option_media = $_POST["old_option_media$option_no"];
           $tmp_width = $_POST["old_option_media_width$option_no"];
           $tmp_height = $_POST["old_option_media_height$option_no"];
-          if (isset($_POST["delete_media$option_no"]) and $_POST["delete_media$option_no"] == '1') {
-            deleteMedia($_POST["old_option_media$option_no"]);
-            $tmp_option_media = '';
-            $tmp_width = 0;
-            $tmp_height = 0;
+          if($old_media_deleted) {
             $stem_changes = true;
             $result = $mysqli->prepare("INSERT INTO track_changes VALUES (NULL, 'Media $option_no',?,$userID,?,'Deleted',NOW(),'Media $option_no')");
             $result->bind_param('is', $_GET['q_id'], $_POST["old_option_media$option_no"]);
@@ -208,10 +214,10 @@ if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
         $part_names = array('option_text','option_right_fback','option_wrong_fback','correct');
         foreach($part_names as $section_name) {
           $new_section_name = $section_name . "$option_no";
-          $new_section_name = html_entity_decode($_POST[$new_section_name]);
+          $new_section_name = (isset($_POST[$new_section_name])) ? $_POST[$new_section_name] : '';
           $old_section_name = 'old_' . $section_name . "$option_no";
-          $old_section_name = html_entity_decode($_POST[$old_section_name]);
-          if ($new_section_name != $old_section_name) {
+          $old_section_name = $_POST[$old_section_name];
+          if (trim($new_section_name) != trim($old_section_name)) {
             $changes = true;
             $stem_changes = true;
             $result = $mysqli->prepare("INSERT INTO track_changes VALUES (NULL,'Edit Question',?,$userID,?,?,NOW(),'$section_name #$option_no')");
@@ -368,30 +374,23 @@ if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
 </table>
 <?php
     echo displayEditTab($created, $modified, $locked);
-    if ($locked != '') {
-      echo "<table border=\"0\" cellpadding=\"3\" cellspacing=\"0\" style=\"width:100%; font-size:90%\">\n";
-      echo "<tr><td style=\"width:35px; height:32px; text-align:right; background-image:url('../../artwork/locked_gradient.png'); background-repeat:repeat-x\"><img src=\"../../artwork/paper_locked_padlock.png\" width=\"19\" height=\"24\" alt=\"Locked\" />&nbsp;&nbsp;</td><td colspan=\"7\" style=\"height:32px; vertical-align:middle; background-image:url('../../artwork/locked_gradient.png'); background-repeat:repeat-x\"><strong>Question Locked</strong>&nbsp;&nbsp;&nbsp;This question is now locked and cannot be modified. <a style=\"color:black\" href=\"#\" onclick=\"launchHelp(161); return false;\">Click for more details.</a></td></tr>\n";
-      echo "</table>\n";
-      $disabled = ' disabled';
-    } else {
-      $disabled = check_edit_rights($tmp_ownerID, $mysqli);
-      $checkout_author = check_lock_status($checkout_authorID, $checkout_time, $disabled, $mysqli, $q_id);
-    }
+    $disabled = check_edit_rights($q_id, $checkout_authorID, $checkout_time, $locked, $mysqli);
+
     echo "<table cellpadding=\"3\" cellspacing=\"0\" border=\"0\" align=\"center\">\n";
     echo "<tr><td colspan=\"2\"><div class=\"section\">General Information</div></td></tr>\n";
-    echo "<tr><td class=\"field\">Theme/Heading</td><td><input type=\"text\" size=\"80\" name=\"theme\" value=\"$theme\" /><input type=\"hidden\" name=\"old_theme\" value=\"" . htmlentities($theme,ENT_NOQUOTES,'UTF-8') . "\" /></td></tr>\n";
-    echo "<tr><td align=\"right\" class=\"field\">Notes<br /><span class=\"note\">(visible to students)</span></td><td><textarea name=\"notes\" cols=\"100\" rows=\"2\" style=\"width:700px\">$notes</textarea><input type=\"hidden\"name=\"old_notes\" value=\"" . htmlentities($notes,ENT_NOQUOTES,'UTF-8') . "\" /></td></tr>\n";
-    echo "<tr><td class=\"field\">Scenario<br /><span class=\"note\">(background info)</span></td><td>\n<textarea style=\"display:none\" name=\"old_scenario\" id=\"old_scenario\">" . htmlentities($scenario,ENT_NOQUOTES,'UTF-8') . "</textarea>";
+    echo "<tr>\n<td class=\"field\">Theme/Heading</td>\n<td colspan=\"6\"><textarea name=\"theme\" cols=\"100\" style=\"width:700px\" >$theme</textarea><textarea style=\"display:none\" name=\"old_theme\"/>$theme</textarea><input type=\"hidden\" name=\"checkout_author\" value=\"$checkout_authorID\" /></td>\n</tr>\n";
+    echo "<tr>\n<td class=\"field\">Notes<br /><span class=\"note\">(visible to students)</span></td><td colspan=\"6\"><textarea name=\"notes\" cols=\"100\" style=\"width:700px\" rows=\"2\" wrap=\"virtual\">" . $notes . "</textarea><textarea style=\"display:none\" name=\"old_notes\" />$notes</textarea></td>\n</tr>\n";
+    echo "<tr><td class=\"field\">Scenario<br /><span class=\"note\">(background info)</span></td><td>\n<textarea style=\"display:none\" name=\"old_scenario\" id=\"old_scenario\">" . htmlentities($scenario) . "</textarea>";
     echo wysiwyg_editor('oEdit1','scenario',$scenario);
     echo "<input type=\"hidden\" name=\"old_q_media\" value=\"$q_media\"><input type=\"hidden\" name=\"old_q_media_width\" value=\"$q_media_width\"><input type=\"hidden\" name=\"old_q_media_height\" value=\"$q_media_height\"></td></tr>\n";
     if ($q_media != '') {
       echo "<tr><td class=\"field\">Current Media</td><td>" . display_media($q_media,$q_media_width,$q_media_height,0) . "</td></tr>\n";
     }
     echo "<tr><td class=\"field\">Change Media</td><td><input type=\"file\" size=\"65\" name=\"q_media\" /></td></tr>\n";
-    echo "<tr><td class=\"field\"><span class=\"mandatory\">*</span>&nbsp;Leadin<br /><span class=\"note\">(the question)</span></td><td>\n<textarea style=\"display:none\" name=\"old_leadin\" id=\"old_leadin\">" . htmlentities($leadin,ENT_NOQUOTES,'UTF-8') . "</textarea>";
+    echo "<tr><td class=\"field\"><span class=\"mandatory\">*</span>&nbsp;Leadin<br /><span class=\"note\">(the question)</span></td><td>\n<textarea style=\"display:none\" name=\"old_leadin\" id=\"old_leadin\">" . htmlentities($leadin) . "</textarea>";
     echo wysiwyg_editor('oEdit2','leadin',$leadin);
     echo "</td></tr>\n";
-    echo "<tr><td class=\"field\">General Feedback</td><td><textarea name=\"general_feedback\" rows=\"3\" cols=\"100\" style=\"width:700px\" wrap=\"virtual\">$correct_fback</textarea><input type=\"hidden\"name=\"old_general_feedback\" value=\"" . htmlentities($correct_fback,ENT_NOQUOTES,'UTF-8') . "\" /></td></tr>\n";
+    echo "<tr><td class=\"field\">General Feedback</td><td><textarea name=\"general_feedback\" rows=\"3\" cols=\"100\" style=\"width:700px\" wrap=\"virtual\">$correct_fback</textarea><textarea style=\"display:none\" name=\"old_general_feedback\">$correct_fback</textarea></td></tr>\n";
     echo "<tr><td class=\"field\"><span class=\"mandatory\">*</span>&nbsp;Scoring method</td><td><input type=\"hidden\" name=\"old_score_method\" value=\"$score_method\" /><select name=\"score_method\" size=\"1\" onchange=\"updatelabels(this)\">\n";
     if ($score_method == 'TF_NegativeAbstain') {
       echo "<option value=\"TF_NegativeAbstain\" style=\"color:red\">True/False/Abstain (Negative Marking -1)</option>\n";
@@ -449,7 +448,7 @@ if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
 
   echo "<tr><td colspan=\"2\"><div class=\"section\">Stem #" . $question_no . "</div><input type=\"hidden\" name=\"optionid$question_no\" value=\"$id_num\" /></td></tr>\n";
   echo "<tr><td class=\"field\">Question</td>";
-  echo "<td><input type=\"text\" name=\"option_text$question_no\" size=\"70\" style=\"width:650px\" value=\"" . htmlentities($option_text,ENT_NOQUOTES,'UTF-8') . "\" /><input type=\"hidden\" name=\"old_option_text$question_no\" value=\"" . htmlentities($option_text,ENT_NOQUOTES,'UTF-8') . "\" />&nbsp;";
+  echo "<td><textarea name=\"option_text$question_no\" rows=\"1\" style=\"width:600px\">$option_text</textarea><textarea style=\"display:none\" name=\"old_option_text$question_no\" >$option_text</textarea>&nbsp;";
 
   if ($correct == 't') {
     echo "<input type=\"radio\" id=\"correct$question_no\" name=\"correct$question_no\" value=\"t\" checked />&nbsp;<span id=\"true$question_no\" style=\"font-weight:bold; font-size:10pt\">$label_true</span>&nbsp;&nbsp;&nbsp;<input type=\"radio\" name=\"correct$question_no\" value=\"f\" />&nbsp;<span id=\"false$question_no\" style=\"font-family:Arial,sans-serif; font-weight:bold; font-size:10pt\">$label_false</span>";
@@ -467,10 +466,10 @@ if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
   echo "<tr>\n<td class=\"field\">Change Media</td><td><input type=\"file\" size=\"65\" name=\"option_media" . $question_no . "\" /></td>\n</tr>\n";
 
   echo "<tr><td class=\"field\">Feedback if Right<br /><span style=\"font-weight:normal; font-size:9pt; color:red\">(default feedback)</span></td>";
-  echo "<td><textarea name=\"option_right_fback$question_no\" rows=\"2\" cols=\"100\" style=\"width:700px\" wrap=\"virtual\">" . htmlentities($feedback_right,ENT_NOQUOTES,'UTF-8') . "</textarea><input type=\"hidden\" name=\"old_option_right_fback$question_no\" value=\"" . htmlentities($feedback_right,ENT_NOQUOTES,'UTF-8') . "\" /></td></tr>\n";
+  echo "<td><textarea name=\"option_right_fback$question_no\" rows=\"2\" cols=\"100\" style=\"width:700px\" wrap=\"virtual\">" . $feedback_right . "</textarea><textarea style=\"display:none\" name=\"old_option_right_fback$question_no\"> $feedback_right</textarea></td></tr>\n";
 
   echo "<tr><td class=\"field\">Feedback if Wrong<br /><span style=\"font-weight:normal; font-size:9pt; color:#808080\">(leave blank to use default)</span></td>";
-  echo "<td><textarea name=\"option_wrong_fback$question_no\" rows=\"2\" cols=\"100\" style=\"width:700px\" wrap=\"virtual\">" . htmlentities($feedback_wrong,ENT_NOQUOTES,'UTF-8') . "</textarea><input type=\"hidden\" name=\"old_option_wrong_fback$question_no\" value=\"" . htmlentities($feedback_wrong,ENT_NOQUOTES,'UTF-8') . "\" /></td></tr>\n";
+  echo "<td><textarea name=\"option_wrong_fback$question_no\" rows=\"2\" cols=\"100\" style=\"width:700px\" wrap=\"virtual\">" . $feedback_wrong . "</textarea><textarea style=\"display:none\" name=\"old_option_wrong_fback$question_no\">$feedback_wrong</textarea></td></tr>\n";
   $question_no++;
 }
 
@@ -483,7 +482,7 @@ for ($i=$question_no; $i<=15; $i++) {
   echo "<input type=\"radio\" id=\"correct$i\" name=\"correct$i\" value=\"t\" />&nbsp;<span id=\"true$i\" style=\"font-weight:bold; font-size:90%\">$label_true</span>&nbsp;&nbsp;&nbsp;<input type=\"radio\" name=\"correct$i\" value=\"f\" />&nbsp;<span id=\"false$i\" style=\"font-family:Arial,sans-serif; font-weight:bold; font-size:10pt\">$label_false</span>";
   echo "</td></tr>\n";
 
-  echo "<tr class=\"option\" $hidden>\n<td class=\"field\">Media</td><td><input type=\"file\" size=\"65\" name=\"option_media" . $i . "\" /></td>\n</tr>\n";
+  echo "<tr class=\"option\" $hidden>\n<td class=\"field\">Media</td><td><input type=\"file\" size=\"65\" name=\"option_media" . $i . "\" /><input type=\"hidden\"  name=\"old_option_media" . $i . "\" value=\"\" /></td>\n</tr>\n";
 
   echo "<tr class=\"option\" $hidden><td class=\"field\">Feedback if Right<br /><span style=\"font-weight:normal; font-size:90%; color:red\">(default feedback)</span></td>";
   echo "<td><textarea name=\"option_right_fback$i\" rows=\"2\" cols=\"100\" style=\"width:700px\" wrap=\"virtual\"></textarea><input type=\"hidden\" name=\"old_option_right_fback$i\" value=\"\" /></td></tr>\n";

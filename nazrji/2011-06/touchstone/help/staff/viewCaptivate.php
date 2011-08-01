@@ -28,17 +28,21 @@
 <html>
 <head>
 <title>TouchStone Tutorial<?php echo " $cfg_install_type"; ?></title>
+<style>
+  html, body {margin:0;	padding:0; height:100%; width:100%}
+</style>
 </head>
 <body>
 <?php
    
-   echo "<embed width=\"100%\" height=\"100%\" src='./images/" . $_GET['tutorial'] . "' />";
+   echo "<embed width=\"100%\" height=\"100%\" src=\"./images/" . $_GET['tutorial'] . "\" />";
   
    if (strpos($userroles,'SysAdmin') === false) {   // Don't record the homepage or SysAdmin activities.
-    $result = $mysqli->prepare("INSERT INTO help_tutorial_log VALUES (NULL,?,?,NOW(),?)");
+    $result = $mysqli->prepare("INSERT INTO help_tutorial_log VALUES (NULL, ?, ?, NOW(), ?)");
     $result->bind_param('sis', 'staff', $userID, $_GET['tutorial']);
     $result->execute();  
     $result->close();
   }
 ?>
 </body>
+</html>

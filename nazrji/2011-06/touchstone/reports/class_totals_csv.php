@@ -35,47 +35,78 @@
   if($cohort_size > 0) {
     if ($marking == '0') {
       $marking_label = '%';
+      $marking_key = 'percent';
     } else {
       $marking_label = 'Adjusted %';
+      $marking_key = 'adj_percent';
     }
   
     $total_time = 0;
-    echo "Title,Surname$user_no,First Names,Student ID,Course,Mark,$marking_label,Classification,Start Date,Duration,IP Address,Room\n";
-    for ($i=0; $i<$user_no; $i++) {
-      $total_time += $user_results[$i]['duration'];
-      echo $user_results[$i]['title'] . "," . $user_results[$i]['surname'] . "," . $user_results[$i]['first_names'] . ",";
-      if ($user_results[$i]['student_id'] == '') {
-        echo "Unknown,";
-      } else {
-        echo $user_results[$i]['student_id'] . ",";
-      }
-      if ($user_results[$i]['display_started'] == '') {  // Student did not take exam.
-        echo $user_results[$i]['module'] . ",,,,No Attendance,,,\n";
-      } else {
-  	  	// If room is unknown then it will contain HTML that we want to discard
-  	  	$user_results[$i]['room'] = (strpos($user_results[$i]['room'], 'unknown') !== false) ? 'unknown' : $user_results[$i]['room'];
-  
-      	echo $user_results[$i]['module'] . "," . $user_results[$i]['mark'] . "," . $user_results[$i]['adj_percent'] . "%,";
-        
-        
-        if ($user_results[$i]['adj_percent'] < $pass_mark) {
-          echo "Fail,";
-        } else {
-          if (isset($ss_hon) and $user_results[$i]['percent'] >= $ss_hon) {
-            echo "Distinction,";
-          } else {
-            echo "Pass,";
-          }
+    
+    //output table heading
+    $table_order = array('Title'=>'title', 'Surname'=>'Surname' ,'First Names'=>'First_Names','Student ID'=>'student_id','Course'=>'student_grade','Mark'=>'mark',$marking_label=>$marking_key,'Clasification'=>'mark','Start Time'=>'started','Duration'=>'duration','IP Address'=>'ipaddress');
+    $table_order['Room'] = 'room';
+    $metadata_cols = array();
+    if (isset($user_results[0])){
+      foreach($user_results[0] as $key => $val) {
+        if(strrpos($key,'meta_') !== false) {
+          $key_display = ucfirst(str_replace('meta_','',$key));
+          $table_order[$key_display] = $key;
+          $metadata_cols[$key] = $key;
         }
-        echo $user_results[$i]['display_started'] . "," . formatsec($user_results[$i]['duration']) . "," . $user_results[$i]['ipaddress'] . "," . $user_results[$i]['room'] . "\n";
+      }
+    }
+    
+    foreach($table_order as $display => $key) {
+      echo $display . ',';
+    }
+    echo "\n";
+    
+    for ($i=0; $i<$user_no; $i++) {
+      if ($user_results[$i]['visible'] == 1) {
+        $total_time += $user_results[$i]['duration'];
+        echo $user_results[$i]['title'] . "," . $user_results[$i]['surname'] . "," . $user_results[$i]['first_names'] . ",";
+        if ($user_results[$i]['student_id'] == '') {
+          echo "Unknown,";
+        } else {
+          echo $user_results[$i]['student_id'] . ",";
+        }
+        if ($user_results[$i]['display_started'] == '') {  // Student did not take exam.
+          echo $user_results[$i]['module'] . ",,,,No Attendance,,,\n";
+        } else {
+          // If room is unknown then it will contain HTML that we want to discard
+          $user_results[$i]['room'] = (strpos($user_results[$i]['room'], 'unknown') !== false) ? 'unknown' : $user_results[$i]['room'];
+    
+          echo $user_results[$i]['module'] . "," . $user_results[$i]['mark'] . "," . $user_results[$i]['adj_percent'] . "%,";
+          
+          
+          if ($user_results[$i]['adj_percent'] < $pass_mark) {
+            echo "Fail,";
+          } else {
+            if (isset($ss_hon) and $user_results[$i]['percent'] >= $ss_hon) {
+              echo "Distinction,";
+            } else {
+              echo "Pass,";
+            }
+          }
+          echo $user_results[$i]['display_started'] . "," . formatsec($user_results[$i]['duration']) . "," . $user_results[$i]['ipaddress'] . "," . $user_results[$i]['room'];
+          
+          // Display any associated metadata
+          if (count($metadata_cols) > 0) {
+            foreach ( $metadata_cols as $type) {
+              echo "," . $user_results[$i][$type];
+            }
+          }
+          echo "\n";
+        }
       }
     }
     echo ",,,,,,,,,,,\n";
   
-    echo "Cohort Size,$cohort_size,,,,,,,,,,\n";
-    echo "# Failures,$failures,(" . round(($failures / $cohort_size) * 100) . "% of cohort),,,,,,,,,\n";
+    echo "Cohort Size,$display_no,,,,,,,,,,\n";
+    echo "# Failures,$failures,(" . round(($failures / $display_no) * 100) . "% of cohort),,,,,,,,,\n";
     if (isset($ss_hon)) {
-      echo "# Distinction,$honours,(" . round(($honours / $cohort_size) * 100) . "% of cohort),,,,,,,,,\n";
+      echo "# Distinction,$honours,(" . round(($honours / $display_no) * 100) . "% of cohort),,,,,,,,,\n";
     }
     echo "Total available marks,$total_marks,,,,,,,,,,\n";
     echo "Pass Mark,$pass_mark%,,,,,,,,,,\n";

@@ -32,7 +32,7 @@
       notice.focus();
     }
   }
-  function editReview(groupReview) {
+  function editReview() {
     var methodType = '';
     if (document.StdSetMenu.method.value == 'Angoff (Yes/No)') {
       methodType = 'angoff_yes_no';

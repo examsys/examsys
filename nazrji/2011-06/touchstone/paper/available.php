@@ -80,6 +80,7 @@ AND p.moduleID LIKE ? AND (p.calendar_year = ? OR p.calendar_year = '' OR p.cale
 AND p.start_date < NOW() AND p.end_date > NOW()
 AND p.deleted IS NULL
 GROUP BY p.property_id
+ORDER BY p.paper_title
 QUERY;
 
 for($i = 0; $i < count($modules); $i++) {
@@ -90,18 +91,18 @@ for($i = 0; $i < count($modules); $i++) {
 	  $stmt->execute();
 	  $stmt->bind_result($paper_title, $paper_type, $labs, $start_date, $end_date, $screens, $calendar_year);
 	  $stmt->store_result();
-	  while($stmt->fetch()) {
+	  while ($stmt->fetch()) {
 	  	// Check if the user is able to access the paper from their current location
 	  	$lab_arr = (empty($labs)) ? array() : explode(',', $labs);
-	  	if(empty($lab_arr) or ($lab != -1 and in_array($lab, $lab_arr))) {
+	  	if (empty($lab_arr) or ($lab != -1 and in_array($lab, $lab_arr))) {
 	  		$screens = (empty($screens)) ? 0 : $screens;
 	  		
 	  		// Don't show if 0 screens
-	  		if($screens > 0) {
+	  		if ($screens > 0) {
 					$modules[$i]['papers'][] = array('title' =>$paper_title, 'type' => $paper_type, 'start' => $start_date, 'end' => $end_date, 'screens' => $screens);
 					$papers++;
 					
-					if(!in_array($modules[$i]['year'], $sessions_with_papers)) {
+					if (!in_array($modules[$i]['year'], $sessions_with_papers)) {
 						$sessions_with_papers[] = $modules[$i]['year'];
 					}
 	  		}
@@ -128,9 +129,9 @@ function switchYear(toShow) {
 	for(var i = 0; i < years.length; i++) {
 		target = document.getElementById('papers-' + years[i].replace('/', '-'));
 		link = document.getElementById('button-' + years[i].replace('/', '-'));
-		if(target != null) {
+		if (target != null) {
 			target.style.display = (years[i] == toShow) ? 'block' : 'none';
-			if(link != null) {
+			if (link != null) {
 				link.style.backgroundImage = (years[i] == toShow) ? 'url(../artwork/tab_on.gif)' : 'url(../artwork/tab_off.gif)';
 			}
 		}
@@ -150,7 +151,7 @@ function switchYear(toShow) {
 	    <td style="background-color:#F1F5FB; text-align:right; vertical-align: bottom">
 <?php
 $default_session = '';
-if(count($sessions_with_papers) > 0) {
+if (count($sessions_with_papers) > 0) {
 	$default_session = $sessions_with_papers[count($sessions_with_papers) - 1];
 	echo drawTabs($sessions_with_papers, $default_session);
 }
@@ -165,11 +166,9 @@ if(count($sessions_with_papers) > 0) {
 if($papers > 0) {
 	$last_session = '';
 	
-	foreach($modules as $module)
-	{
+	foreach($modules as $module) {
 	  $mod_id = $module['id'];
-		if(!empty($module['papers']))
-		{
+		if (!empty($module['papers']))	{
 			if($module['year'] != $last_session) {
 				$visibility = 'style="display: none"';
 				if($module['year'] == $default_session) {

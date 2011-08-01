@@ -48,6 +48,14 @@ $module_details->close();
   }
   if (isset($_GET['module'])) {
     $module = $_GET['module'];
+    
+    $module_data = $mysqli->prepare("SELECT fullname, checklist, selfenroll FROM modules WHERE moduleid=?");
+    $module_data->bind_param('s', $module);
+    $module_data->execute();
+    $module_data->store_result();
+    $module_data->bind_result($module_fullname, $checklist, $selfenrol);
+    $module_data->fetch();
+    $module_data->close();
   } else {
     $module = '';
   }
@@ -93,6 +101,7 @@ $module_details->close();
     echo "<tr><td width=\"16\"><img src=\"../artwork/module_icon_grey_16.png\" width=\"16\" height=\"16\" alt=\"modules\" border=\"0\" /></td><td class=\"menuitem\" style=\"color:#808080\">Manage Objectives</td></tr>\n";
   }
   echo "<tr><td width=\"16\"><a href=\"list_keywords.php?module=$module\"><img src=\"../artwork/key.png\" width=\"16\" height=\"16\" alt=\"key\" border=\"0\" /></a></td><td class=\"menuitem\"><a href=\"list_keywords.php?module=$module\">Manage Keywords</a></td></tr>";
+  echo '<tr><td><a href="../users/load_users_metadata.php?module=' . $_GET['module'] . '"><img src="../artwork/import_16.gif" width="16" height="16" alt="Import Metadata" border="0" /></a></td><td class="menuitem"><a href="../users/import_users_metadata.php?module=' . $_GET['module'] . '">Import Student metadata</a></td></tr>';
 ?>
 </table>
 </td></tr>

@@ -37,7 +37,7 @@
 ?>
 <tr><td width="16"><a href="/touchstone/users/search.php"><img src="/touchstone/artwork/small_user_icon.gif" width="16" height="16" alt="Users" border="0" /></a></td><td class="menuitem"><a href="/touchstone/users/search.php">User Management</a></td></tr>
 <tr><td width="16"><a href="/touchstone/index.php?newfolder=y"><img src="/touchstone/artwork/folder_16.png" width="16" height="16" alt="New Folder" border="0" /></a></td><td class="menuitem"><a href="/touchstone/index.php?newfolder=y">Make a new folder</a></td></tr>
-<tr><td width="16"><a href="/touchstone/folder/list_keywords.php?module="><img src="/touchstone/artwork/key.png" width="16" height="16" alt="key" border=\"0\" /></a></td><td class="menuitem"><a href="/touchstone/folder/list_keywords.php?module=">My Personal Keywords</a></td></tr>
+<tr><td width="16"><a href="/touchstone/folder/list_keywords.php"><img src="/touchstone/artwork/key.png" width="16" height="16" alt="key" border=\"0\" /></a></td><td class="menuitem"><a href="/touchstone/folder/list_keywords.php">My Personal Keywords</a></td></tr>
 </table>
 <br />
 
@@ -159,7 +159,6 @@
     $full_modules_array = $modules_array;
   }
   
-  //if (count($full_modules_array) > 0) makeMenu($full_modules_array);
   makeMenu($full_modules_array);
   makeMenu(array('Information Block'=>'/touchstone/question/list.php?type=info','Keyword-based Question'=>'/touchstone/question/list.php?type=keyword','Random Question Block'=>'/touchstone/question/list.php?type=random','-'=>'-','Calculation'=>'./question/list.php?type=calculation','Dichotomous (Yes/No and True/False)'=>'/touchstone/question/list.php?type=dichotomous','Extended Matching'=>'/touchstone/question/list.php?type=extmatch','Fill-in-the-Blank'=>'/touchstone/question/list.php?type=blank','Flash Interface'=>'/touchstone/question/list.php?type=flash','Image Hotspot'=>'/touchstone/question/list.php?type=hotspot','Labelling'=>'/touchstone/question/list.php?type=labelling','Likert Scale'=>'/touchstone/question/list.php?type=likert','Matrix'=>'/touchstone/question/list.php?type=matrix','Multiple Choice (MCQ)'=>'/touchstone/question/list.php?type=mcq','Multiple Response (MRQ)'=>'/touchstone/question/list.php?type=mrq','Ranking'=>'/touchstone/question/list.php?type=rank','Script Concordance Test (SCT)'=>'/touchstone/question/list.php?type=sct','Text Box'=>'/touchstone/question/list.php?type=textbox','Time/Date'=>'/touchstone/question/list.php?type=timedate'));
   makeMenu($teams_array);

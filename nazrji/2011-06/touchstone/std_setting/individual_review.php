@@ -484,6 +484,7 @@ $current_screen = 1;
   $old_correct_fback = '';
   $question_offset = 1;
   $total_marks = 0;
+  $std_excluded = 0;
   $prologue_show = 1;
   echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">\n";
   while ($row = $result->fetch()) {
@@ -645,6 +646,7 @@ $current_screen = 1;
 </table>
 </div>
 <br />
+<input type="hidden" name="total_marks" id="total_marks" value="<?php echo $total_marks - $std_excluded ?>" />
 </form>
 </body>
 </html>

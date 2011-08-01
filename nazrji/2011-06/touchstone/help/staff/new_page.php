@@ -28,13 +28,6 @@
 
   header('Content-Type: text/html; charset=UTF-8');
 
-  function encodeHTML($sHTML) {
-    $sHTML=str_replace('&','&amp;',$sHTML);
-    $sHTML=str_replace('<','&lt;',$sHTML);
-    $sHTML=str_replace('>','&gt;',$sHTML);
-    return $sHTML;
-  }
-
   if (isset($_POST['save_changes'])) {
     $tmp_title = $_POST['title'];
     // Check to see if dummy parent record exists for title.

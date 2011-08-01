@@ -47,6 +47,10 @@ function displayEditTab($created, $modified, $locked) {
 }
 
 function check_fullSave($q_id, $mysqli) {
+  if ($_POST['submit'] == 'Limited Save') {
+    return false;
+  }
+
   $result = $mysqli->prepare("SELECT locked FROM questions WHERE q_id=?");
   $result->bind_param('i',$q_id);
   $result->execute();  
@@ -76,6 +80,7 @@ function do_limitedSave($q_id, $mysqli, $userID) {
     
   $question_teams = getTeams();
   record_trackChanges('Edit Question', $q_id, $_POST['old_teams'], $question_teams, 'teams', $userID, $changes);
+  
 
   if ($changes == true) {
     $result = $mysqli->prepare("UPDATE questions SET bloom=?, q_group=?, status=?, last_edited=NOW() WHERE q_id=?");
@@ -111,6 +116,8 @@ function redirect() {
   } else {
     header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/touchstone/");
   }
+  $mysqli->close();
+  exit;   // Stop script execution after the redirect.
 }
 
 function save_external_responses($dblink) {
@@ -125,12 +132,45 @@ function save_external_responses($dblink) {
   }
 }
 
-function check_edit_rights($owner, $dblink) {
-
-  echo "<div style=\"font-size:90%; color:#808080; text-align:center\"><span class=\"mandatory\">*</span> Indicates a <strong>mandatory</strong> field that must be completed.</div>\n";
+function check_edit_rights($q_id, $checkout_authorID, $checkout_time, $locked, $dblink) {
+  global $tmp_ownerID;
   $disabled = '';
+  
+  if (check_MSCAA($q_id, $dblink)) {    // Check for MSC-AA question
+    echo "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"width:100%; height:32px; font-size:90%\">\n";
+    echo "<tr><td style=\"width:60px; height:32px; text-align:right; background-image:url('../../artwork/mscaa_gradient.png'); background-repeat:repeat-x\"><img src=\"../../artwork/mscaa_logo_small.png\" width=\"49\" height=\"30\" alt=\"MSC-AA\" /></td><td style=\"height:32px; vertical-align:middle; background-image:url('../../artwork/mscaa_gradient.png'); background-repeat:repeat-x\">&nbsp;&nbsp;<strong>MSC-AA Question</strong>&nbsp;&nbsp;&nbsp;This question has been imported from the MSC-AA and cannot be modified.</td></tr>\n";
+    echo "</table>\n";
+    $disabled = ' disabled';
+  } elseif ($locked != '') {            // Check if locked
+    echo "<table border=\"0\" cellpadding=\"3\" cellspacing=\"0\" style=\"width:100%; font-size:90%\">\n";
+    echo "<tr><td style=\"width:35px; height:32px; text-align:right; background-image:url('../../artwork/locked_gradient.png'); background-repeat:repeat-x\"><img src=\"../../artwork/paper_locked_padlock.png\" width=\"19\" height=\"24\" alt=\"Locked\" />&nbsp;&nbsp;</td><td colspan=\"7\" style=\"height:32px; vertical-align:middle; background-image:url('../../artwork/locked_gradient.png'); background-repeat:repeat-x\"><strong>Question Locked</strong>&nbsp;&nbsp;&nbsp;This question is now locked and cannot be modified. <a style=\"color:black\" href=\"#\" onclick=\"launchHelp(161); return false;\">Click for more details.</a></td></tr>\n";
+    echo "</table>\n";
+    $disabled = ' disabled';
+  } else {                              // Check out editing rights against current user
+    $checkout_author = check_lock_status($checkout_authorID, $checkout_time, $disabled, $dblink, $q_id);
+  }
+  
+  if ($disabled == '') {
+    echo "<div style=\"font-size:90%; color:#808080; text-align:center\"><span class=\"mandatory\">*</span> Indicates a <strong>mandatory</strong> field that must be completed.</div>\n";
+  }
 
   return $disabled;
+}
+
+function check_MSCAA($q_id, $dblink) {
+  $mscaa = false;
+
+  $stmt = $dblink->prepare("SELECT id FROM questions_metadata WHERE questionID=? AND type='QTI Ident' AND value LIKE 'MSC_AA%'");
+  $stmt->bind_param('i', $q_id);
+  $stmt->execute();
+  $stmt->store_result();
+  $stmt->bind_result($id);
+  if ($stmt->num_rows() > 0) {
+    $mscaa = true;
+  }
+  $stmt->close();
+  
+  return $mscaa;
 }
 
 function check_lock_status($checkout_author, $checkout_time, &$disabled, $dblink, $questionID) {

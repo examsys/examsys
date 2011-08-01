@@ -24,6 +24,8 @@
 * @package
 */
 
+require_once '../classes/schoolutils.class.php';
+require_once '../classes/searchutils.class.php';
 ?>
 <script language="JavaScript">
   function checkForm() {
@@ -308,74 +310,11 @@
   }
 ?>
   <tr><td>
-  <div style="margin-left:4px">Team: <select style="width:175px" onchange="updateCookieOwner(this,'team')" name="team"><br />
-  <option value="">(any team)</option>
-<?php
-
-  foreach ($teams as $individual_team) {
-    if (isset($_COOKIE['team']) and $_COOKIE['team'] == $individual_team) {
-      echo "<option value=\"$individual_team\" selected>$individual_team</option>\n";
-    } else {
-      echo "<option value=\"$individual_team\">$individual_team</option>\n";
-    }
-  }
-?>
-  </select></div>
-  <div style="margin-left:4px">Owner: <select style="width:175px" onchange="updateCookieOwner(this,'owner')" name="owner"><br />
-  <option value="">(any owner)</option>
-  <option value="<?php echo $userID; ?>">(my questions only)</option>
-  <option value="%" style="background-color:#ECE9D8"></option>
-<?php
-  $old_letter = '';
-  if (strpos($userroles,'Admin') !== false) {
-    $stmt = $mysqli->prepare("SELECT DISTINCT id, REPLACE(title,'Professor','Prof') AS title, initials, surname FROM users WHERE (roles LIKE 'Staff%' OR roles LIKE '%Admin%') AND faculty='$faculty' ORDER BY surname, initials");
-  } else {
-    $stmt = $mysqli->prepare("SELECT DISTINCT id, REPLACE(title,'Professor','Prof') AS title, initials, surname FROM users, teams WHERE users.id=teams.memberID AND name IN (\"" . implode('","', $teams) . "\") AND (roles LIKE 'Staff%' OR roles LIKE '%SysAdmin%') ORDER BY surname, initials");
-  }
-  $stmt->execute();
-  $stmt->bind_result($id, $title, $initials, $surname);
-  while ($stmt->fetch()) {
-    if ($old_letter != strtoupper(substr($surname,0,1))) {
-      if ($old_letter != '') echo "</optgroup>\n";
-      echo "<optgroup label=\"" . strtoupper(substr($surname,0,1)) . "\">\n";
-    }
-    if (isset($_COOKIE['owner']) and $_COOKIE['owner'] == $id) {
-      echo "<option value=\"$id\" selected>" . ucwords(strtolower($surname)) . ", $initials. $title</option>\n";
-    } else {
-      echo "<option value=\"$id\">" . ucwords(strtolower($surname)) . ", $initials. $title</option>\n";
-    }
-    $old_letter = strtoupper(substr($surname,0,1));
-  }
-  $stmt->close();
-?>
-  </select>
-  </div>
-  <div style="margin-left:4px">Status:<br /><select style="width:175px" onchange="updateCookieOwner(this,'status')" name="status">
-  <option value="%">(any status)</option>
-  <?php
-    $status_array = array('Normal','Retired','Incomplete','Experimental','Beta');
-    foreach ($status_array as $individual_status) {
-      if (isset($_COOKIE['status']) and $_COOKIE['status'] == $individual_status) {
-        echo "<option value=\"$individual_status\" selected>$individual_status</option>"; 
-      } else {
-        echo "<option value=\"$individual_status\">$individual_status</option>"; 
-      }
-    }
-  ?>
-  </select></div>
-  <div style="margin-left:4px">Blooms:<br /><select style="width:175px" onchange="updateCookieOwner(this,'bloom')" name="bloom">
-  <option value="%">(all levels)</option>
-  <?php
-    $blooms_array = array('Knowledge','Comprehension','Application','Analysis','Synthesis','Evaluation');
-    foreach ($blooms_array as $individual_bloom) {
-      if (isset($_COOKIE['bloom']) and $_COOKIE['bloom'] == $individual_bloom) {
-        echo "<option value=\"$individual_bloom\" selected>$individual_bloom</option>"; 
-      } else {
-        echo "<option value=\"$individual_bloom\">$individual_bloom</option>"; 
-      }
-    }
-  ?>
-  </select></div>
+  <div style="margin-left:4px">Module: <?php SearchUtils::displayTeamDropdown($teams, $userroles, $userID, $mysqli); ?></div>
+  <div style="margin-left:4px">Owner: <?php SearchUtils::displayOwnersDropdown($teams, $userroles, $userID, $mysqli, 'questions'); ?></div>
+  <div style="margin-left:4px">Status:<br /><?php SearchUtils::displayStatusDropdown(); ?></div>
+  <div style="margin-left:4px">Blooms:<br /><?php SearchUtils::displayBloomsDropdown(); ?></div>
+  
   <div style="margin-left:4px">Keyword: <select style="width:175px" name="keywordID"><br />
   <option value=""></option>
 <?php

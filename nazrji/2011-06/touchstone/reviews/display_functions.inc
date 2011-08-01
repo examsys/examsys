@@ -22,7 +22,7 @@
 * @package
 */
 
-require_once realpath(dirname(__FILE__).DIR_SEPARATOR.'../classes/networkutils.class.php');
+require_once realpath(dirname(__FILE__).DIR_SEPARATOR.'../classes/mathsutils.class.php');
 
 function checkVariables($number) {
   global $A, $B, $C, $D, $E, $F, $G, $H;
@@ -576,39 +576,40 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
         $marks++;
         break;
       case 'blank':
+        $blank_mark = array();
         $blank_details = explode("[blank",$display_option['option_text']);
         if ($question['score_method'] == 'textboxes') {
           $array_size = count($blank_details);
           $blank_count = 1;
           while ($blank_count < $array_size) {
             $blank_details[$blank_count] = '[blank' . $blank_details[$blank_count];
-                  $answer_list = explode(',',$blank_details[$i]);
-                  $answer_list[0] = str_replace("[/blank]",'',$answer_list[0]);
-
-
+            $answer_options = explode('[/blank]',$blank_details[$blank_count]);
+            $answer_list = explode(',',str_replace('[blank]', '', $answer_options[0]));
+            
             $results = array();
-            $not_used = ereg("size=\"([0-9]{1,3})\"",$blank_details[$blank_count],$results);
-         
-            if ($results[1]) {
+            $not_used = preg_match("|size=\"([0-9]{1,3})\"|",$blank_details[$blank_count],$results);         
+            if (isset($results[1]) and $results[1] != '') {
               $blank_size[$blank_count] = $results[1];
             } else {
               $blank_size[$blank_count] = 15;
             }
             $results=array();
             $not_used = preg_match("|mark=\"([0-9]{1,3})\"|",$blank_details[$blank_count],$results);
-            if ($results[1]) {
+            if (isset($results[1]) and $results[1] != '') {
               $blank_mark[$blank_count] = $results[1];
             } else {
               $blank_mark[$blank_count] = 1;
             }
-            $screen_output[$blank_count] = preg_replace("|\[blank.*\].*\[/blank\]|","<input type=\"text\" name=\"q" . $question_no . "_" . $blank_count . "\" value=\"" . $ans. "\" size=\"$blank_size[$blank_count]\" />",$blank_details[$blank_count]);
+            $screen_output[$blank_count] = preg_replace("|\[blank.*\].*\[/blank\]|","<input type=\"text\" name=\"q" . $question_no . "_" . $blank_count . "\" value=\"" . $answer_list[0] . "\" size=\"$blank_size[$blank_count]\" />",$blank_details[$blank_count]);
             $blank_count++;
           }
           $screen_output_all = '';
-          foreach ($screen_output as $value) {
-            $screen_output_all .= $value;
+          if (count($screen_output) > 0) {     // Check there are actually some blanks
+            foreach ($screen_output as $value) {
+              $screen_output_all .= $value;
+            }
           }
-          echo "<p class=\"stem\">" . $blank_details[0].$screen_output_all . "</p>\n";
+          echo "<p class=\"stem\">" . $blank_details[0] . $screen_output_all . "</p>\n";
         } else {
           // Dropdown lists.
           $no_blanks = count($blank_details);
@@ -657,9 +658,9 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
         } else {
           include_once('wysiwyg_editor.inc');
           echo "<p><textarea style=\"font-family:Arial,sans-serif\" name=\"q" . $question_no . "\" id=\"q" . $question_no . "\" cols=\"" . $textbox_size[0] . "\" rows=\"" . $textbox_size[1] . "\"></textarea></p>\n";
-	  echo "<script>\n";
-	  echo "var oEdit$question_no = new InnovaEditor(\"oEdit$question_no\");\n";
-	  echo "oEdit$question_no.mode=\"XHTMLBody\";\n";
+          echo "<script>\n";
+          echo "var oEdit$question_no = new InnovaEditor(\"oEdit$question_no\");\n";
+          echo "oEdit$question_no.mode=\"XHTMLBody\";\n";
           echo "oEdit$question_no.useTagSelector=false;\n";
           echo "oEdit$question_no.useBR=false;\n";
           echo "oEdit$question_no.width=\"" . ($textbox_size[0] * 7). "px\";\n";
@@ -667,7 +668,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
           echo "oEdit$question_no.features=[\"StyleAndFormatting\",\"TextFormatting\",\"ListFormatting\",\"BoxFormatting\",\"ParagraphFormatting\",\"CssText\",\"|\",\"Cut\",\"Copy\",\"PasteText\",\"|\",\"Undo\",\"|\",\"Bold\",\"Italic\",\"Underline\",\"|\",\"Superscript\",\"Subscript\",\"|\",\"JustifyLeft\",\"JustifyCenter\",\"JustifyRight\",\"|\",\"Numbering\",\"Bullets\",\"|\",\"Table\",\"Characters\"];\n";
           echo "oEdit$question_no.arrStyle = [[\"BODY\",false,\"\",\"background:white; margin:2px; color:black; font-size:90%; font-family:Arial\"]];\n";
           echo "oEdit$question_no.btnStyles = true;\n";
-	  echo "oEdit$question_no.REPLACE(\"q$question_no\");\n</script>\n";
+          echo "oEdit$question_no.REPLACE(\"q$question_no\");\n</script>\n";
         }
         
         echo "</blockquote>\n";
@@ -680,11 +681,13 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
         $hotspot_no = substr_count($question['options'][0]['correct'],'|') + 1;
         $tmp_height = $question['q_media_height'] + 30;
         if ($tmp_height < (($hotspot_no * 36) + 25)) $tmp_height = (($hotspot_no * 36) + 25);
+        $tmp_correct = str_replace("'", "\'", trim($question['options'][0]['correct']));
+        $tmp_correct = str_replace("&nbsp;", " ", $tmp_correct);
         ?>
         <script language="JavaScript">
           function swfLoaded<?php echo $question_no; ?>(message) {
             var num = message.substring(5,message.length);
-            setUpFlash(num, message, '<?php echo $question['q_media']; ?>', '<?php echo trim($question['options'][0]['correct']); ?>', '');
+            setUpFlash(num, message, '<?php echo $question['q_media']; ?>', '<?php echo $tmp_correct; ?>', '', '1,1,0000000000000000000000000000000000000000');
           }
           write_string('<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="https://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0" id="flash<?php echo $question_no; ?>" width="<?php echo ($question['q_media_width'] + 300); ?>" height="<?php echo $tmp_height; ?>" align="middle">');
           write_string('<param name="allowScriptAccess" value="always" />');

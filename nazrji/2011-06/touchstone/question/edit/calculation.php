@@ -377,20 +377,12 @@ if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
   <tr>
     <td style="text-align:center">
     <?php
-      if ($locked != '') {
-        echo "<table border=\"0\" cellpadding=\"3\" cellspacing=\"0\" style=\"width:100%; font-size:90%\">\n";
-        echo "<tr><td style=\"width:35px; height:32px; text-align:right; background-image:url('../../artwork/locked_gradient.png'); background-repeat:repeat-x\"><img src=\"../../artwork/paper_locked_padlock.png\" width=\"19\" height=\"24\" alt=\"Locked\" />&nbsp;&nbsp;</td><td colspan=\"7\" style=\"height:32px; vertical-align:middle; background-image:url('../../artwork/locked_gradient.png'); background-repeat:repeat-x\"><strong>Question Locked</strong>&nbsp;&nbsp;&nbsp;This question is now locked and cannot be modified. <a style=\"color:black\" href=\"#\" onclick=\"launchHelp(161); return false;\">Click for more details.</a></td></tr>\n";
-        echo "</table>\n";
-        $disabled = ' disabled';
-      } else {
-        $disabled = check_edit_rights($tmp_ownerID, $mysqli);
-        $checkout_author = check_lock_status($checkout_authorID, $checkout_time, $disabled, $mysqli, $q_id);
-      }
+      $disabled = check_edit_rights($q_id, $checkout_authorID, $checkout_time, $locked, $mysqli);
 
       echo "<table border=\"0\" cellpadding=\"3\" cellspacing=\"0\" align=\"center\">\n";
-      echo "<tr>\n<td class=\"field\">Theme/Heading</td>\n<td colspan=\"6\"><input type=\"text\" name=\"theme\" size=\"80\" value=\"$theme\" /><input type=\"hidden\" name=\"old_theme\" value=\"" . htmlentities($theme,ENT_NOQUOTES,'UTF-8') . "\" /><input type=\"hidden\" name=\"checkout_author\" value=\"$checkout_authorID\" /></td>\n</tr>\n";
-      echo "<tr>\n<td class=\"field\">Notes<br /><span class=\"note\">(visible to students)</span></td><td colspan=\"6\"><textarea name=\"notes\" cols=\"100\" style=\"width:700px\" rows=\"2\" wrap=\"virtual\">" . htmlentities($notes,ENT_NOQUOTES,'UTF-8') . "</textarea><input type=\"hidden\" name=\"old_notes\" value=\"$notes\" /></td>\n</tr>\n";
-      echo "<tr>\n<td class=\"field\">Scenario<br /><span class=\"note\">(background info)</span></td>\n<td colspan=\"6\">\n<textarea style=\"display:none\" name=\"old_scenario\" id=\"old_scenario\">" . encodeHTML($scenario) . "</textarea>";
+      echo "<tr>\n<td class=\"field\">Theme/Heading</td>\n<td colspan=\"6\"><textarea name=\"theme\" cols=\"100\" style=\"width:700px\" >$theme</textarea><textarea style=\"display:none\" name=\"old_theme\"/>$theme</textarea><input type=\"hidden\" name=\"checkout_author\" value=\"$checkout_authorID\" /></td>\n</tr>\n";
+      echo "<tr>\n<td class=\"field\">Notes<br /><span class=\"note\">(visible to students)</span></td><td colspan=\"6\"><textarea name=\"notes\" cols=\"100\" style=\"width:700px\" rows=\"2\" wrap=\"virtual\">" . $notes . "</textarea><textarea style=\"display:none\" name=\"old_notes\" />$notes</textarea></td>\n</tr>\n";
+      echo "<tr>\n<td class=\"field\">Scenario<br /><span class=\"note\">(background info)</span></td>\n<td colspan=\"6\">\n<textarea style=\"display:none\" name=\"old_scenario\" id=\"old_scenario\">" . htmlentities($scenario) . "</textarea>";
       echo wysiwyg_editor('oEdit1','scenario',$scenario);
 	  
       echo "</td>\n</tr>\n";
@@ -398,7 +390,7 @@ if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
         echo "<tr>\n<td class=\"field\">Current Media</td><td colspan=\"6\">" . display_media($q_media,$q_media_width,$q_media_height,0) . "</td>\n</tr>\n";
       }
       echo "<tr>\n<td class=\"field\">Change Media</td><td colspan=\"6\"><input type=\"hidden\" name=\"old_q_media\" value=\"$q_media\" /><input type=\"hidden\" name=\"old_q_media_width\" value=\"$q_media_width\" /><input type=\"hidden\" name=\"old_q_media_height\" value=\"$q_media_height\" /><input type=\"file\" name=\"q_media\" size=\"65\" accept=\"image/jpg, image/gif\" /></td>\n</tr>\n";
-      echo "<tr>\n<td class=\"field\"><span class=\"mandatory\">*</span>&nbsp;Lead-in<br /><span style=\"font-weight:normal; font-size:90%; color: #808080\">(the question)</span></td>\n<td colspan=\"6\">\n<textarea style=\"display:none\" name=\"old_leadin\" id=\"old_leadin\">" . encodeHTML($leadin) . "</textarea>";
+      echo "<tr>\n<td class=\"field\"><span class=\"mandatory\">*</span>&nbsp;Lead-in<br /><span style=\"font-weight:normal; font-size:90%; color: #808080\">(the question)</span></td>\n<td colspan=\"6\">\n<textarea style=\"display:none\" name=\"old_leadin\" id=\"old_leadin\">" . htmlentities($leadin) . "</textarea>";
       echo wysiwyg_editor('oEdit2','leadin',$leadin);
     ?>
   </td></tr>
@@ -499,7 +491,7 @@ $option_no--; // Correct for the actual number
   }
   echo "</select>\n<input type=\"hidden\" name=\"old_answer_decs\" value=\"$score_array[0]\" />";
   echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"font-weight:bold; font-size:85%; color:black\">Tolerance&nbsp;</span><input type=\"text\" name=\"tolerance\" size=\"10\" value=\"$score_array[1]\" /><input type=\"hidden\" name=\"old_tolerance\" value=\"$score_array[1]\" />\n</td>\n</tr>\n";
-  echo "<tr>\n<td class=\"field\">Feedback</td>\n<td colspan=\"6\"><textarea name=\"feedback\" cols=\"100\" style=\"width:700px\" rows=\"4\" wrap=\"virtual\">$correct_fback</textarea><input type=\"hidden\" name=\"old_feedback\" value=\"" . htmlentities($correct_fback,ENT_NOQUOTES,'UTF-8') . "\" /></td>\n</tr>\n";
+  echo "<tr>\n<td class=\"field\">Feedback</td>\n<td colspan=\"6\"><textarea name=\"feedback\" cols=\"100\" style=\"width:700px\" rows=\"4\" wrap=\"virtual\">$correct_fback</textarea><textarea style=\"display:none\" name=\"old_feedback\">$correct_fback</textarea></td>\n</tr>\n";
   echo "<tr>\n<td class=\"field\">Marks</td>\n<td colspan=\"6\">\n<select name=\"marks\">\n";
   for ($i=1; $i<=20; $i++) {
     if ($i == $marks) {

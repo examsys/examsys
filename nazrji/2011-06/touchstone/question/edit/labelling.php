@@ -95,9 +95,9 @@ if (isset($_POST['submit']) and ($_POST['submit'] == 'Save Changes' or $_POST['s
     if ($changes == true) {
       $bloom = (empty($bloom)) ? NULL : $bloom;
     	$result = $mysqli->prepare("UPDATE questions SET theme=?, scenario=?, leadin=?, notes=?, correct_fback=?, last_edited=NOW(), bloom=?, q_group=?, scenario_plain=?, leadin_plain=?, status=? WHERE q_id=?");
-      $scenario = trim(strip_tags($scenario));
-      $leadin = trim(strip_tags($leadin));
-      $result->bind_param('ssssssssssi', $theme, $scenario, $leadin, $notes, $feedback, $bloom, $question_teams, $scenario, $leadin, $status, $_GET['q_id']);
+      $scenario_plain = trim(strip_tags($scenario));
+      $leadin_plain = trim(strip_tags($leadin));
+      $result->bind_param('ssssssssssi', $theme, $scenario, $leadin, $notes, $feedback, $bloom, $question_teams, $scenario_plain, $leadin_plain, $status, $_GET['q_id']);
       $result->execute();  
       $result->close();
 
@@ -183,26 +183,17 @@ while ($row = $result->fetch()) {
 </table>
 <?php
     echo displayEditTab($created, $modified, $locked);
-    if ($locked != '') {
-      echo "<table border=\"0\" cellpadding=\"3\" cellspacing=\"0\" style=\"width:100%; font-size:90%\">\n";
-      echo "<tr><td style=\"width:35px; height:32px; text-align:right; background-image:url('../../artwork/locked_gradient.png'); background-repeat:repeat-x\"><img src=\"../../artwork/paper_locked_padlock.png\" width=\"19\" height=\"24\" alt=\"Locked\" />&nbsp;&nbsp;</td><td colspan=\"7\" style=\"height:32px; vertical-align:middle; background-image:url('../../artwork/locked_gradient.png'); background-repeat:repeat-x\"><strong>Question Locked</strong>&nbsp;&nbsp;&nbsp;This question is now locked and cannot be modified. <a style=\"color:black\" href=\"#\" onclick=\"launchHelp(161); return false;\">Click for more details.</a></td></tr>\n";
-      echo "</table>\n";
-      $disabled = ' disabled';
-      $checkout_author = '';
-    } else {
-      $disabled = check_edit_rights($tmp_ownerID, $mysqli);
-      $checkout_author = check_lock_status($checkout_authorID, $checkout_time, $disabled, $mysqli, $q_id);
-    }
+    $disabled = check_edit_rights($q_id, $checkout_authorID, $checkout_time, $locked, $mysqli);
     ?>
     <div align="center">
     <table cellpadding="3" cellspacing="0" border="0">
     <tr>
       <td class="field">Theme/Heading&nbsp;</td>
-      <td><input type="text" name="theme" value="<?php echo $theme; ?>" size="80" /><input type="hidden" name="old_theme" value="<?php echo htmlentities($theme,ENT_NOQUOTES,'UTF-8'); ?>" /><input type="hidden" name="checkout_author" value="<?php echo $checkout_author; ?>" /></td>
+        <td><textarea name="theme" cols="100" style="width:700px" ><?php echo $theme; ?></textarea><textarea style="display:none" name="old_theme"/><?php echo $theme; ?></textarea><input type="hidden" name="checkout_author" value="<?php echo $checkout_authorID; ?>" /></td>
     </tr>
     <tr>
       <td class="field">Notes<br /><span class="note">(visible to students)</span></td>
-      <td><textarea name="notes" cols="100" rows="2" style="width:700px" wrap="virtual"><?php echo $notes; ?></textarea><input type="hidden" name="old_notes" value="<?php echo htmlentities($notes,ENT_NOQUOTES,'UTF-8'); ?>" /></td>
+      <td><textarea name="notes" cols="100" style="width:700px" rows="2" wrap="virtual"><?php echo $notes; ?></textarea><textarea style="display:none" name="old_notes" /><?php echo $notes; ?></textarea></td>
     </tr>
     <tr>
     <td class="field"><span class="mandatory">*</span>&nbsp;Image</td>
@@ -228,19 +219,19 @@ while ($row = $result->fetch()) {
 </tr>
 <tr>
 <td class="field">Scenario<br /><span class="note">(background info)</span></td>
-    <td><textarea style="display:none" name="old_scenario" id="old_scenario"><?php echo htmlentities($scenario,ENT_NOQUOTES,'UTF-8'); ?></textarea>
+    <td><textarea style="display:none" name="old_scenario" id="old_scenario"><?php echo htmlentities($scenario) ?></textarea>
     <?php echo wysiwyg_editor('oEdit1','scenario',$scenario); ?>         
 </td>
 </tr>
 <tr>
 <td class="field"><span class="mandatory">*</span>&nbsp;Lead-in<br /><span class="note">(the question)</span></td>
-      <td><textarea style="display:none" name="old_leadin" id="old_leadin"><?php echo htmlentities($leadin,ENT_NOQUOTES,'UTF-8'); ?></textarea>
+      <td><textarea style="display:none" name="old_leadin" id="old_leadin"><?php echo htmlentities($leadin); ?></textarea>
        <?php echo wysiwyg_editor('oEdit2','leadin',$leadin); ?>         
       </td>
     </tr>
     <tr>
       <td valign="top" align="right" class="field">Feedback</td>
-      <td><textarea style="display:none" name="old_feedback"><?php echo htmlentities($correct_fback,ENT_NOQUOTES,'UTF-8'); ?></textarea>
+      <td><textarea style="display:none" name="old_feedback"><?php echo $correct_fback; ?></textarea>
       <?php echo wysiwyg_editor('oEdit3','feedback',$correct_fback); ?> 
       </td>
     </tr>

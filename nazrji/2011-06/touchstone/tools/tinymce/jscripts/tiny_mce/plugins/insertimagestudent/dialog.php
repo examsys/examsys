@@ -8,7 +8,8 @@
 */
 
   require  '../../../../../../include/staff_auth.inc';
-  $path = $cfg_web_root . 'touchstone/help/staff/images/';
+  $path = $cfg_web_root . 'touchstone/help/student/images/';
+  
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>

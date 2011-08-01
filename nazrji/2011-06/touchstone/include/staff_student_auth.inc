@@ -24,9 +24,12 @@
 * @package
 */
 
-require_once $_SERVER['DOCUMENT_ROOT'] . 'touchstone/config/config.inc';
+$root = (substr($_SERVER['DOCUMENT_ROOT'], -1) == '/') ? $_SERVER['DOCUMENT_ROOT'] : $_SERVER['DOCUMENT_ROOT'] . '/';
+require_once $root . 'touchstone/config/config.inc';
 require_once $cfg_web_root . 'touchstone/include/auth.inc';
 require_once $cfg_web_root . 'touchstone/include/custom_error_handler.inc';
+
+$fp_link = "<p style=\"margin-left:60px\"><a href=\"/touchstone/users/forgotten_password.php\">Forgotten Password</p>\n";
 
 if ($_SERVER['SERVER_PORT'] != 443 and $_SERVER['SERVER_PORT'] != 8080) {
   echo "<html>\n<body style=\"font-family:Arial,sans-serif;font-size:100%;color:#C00000\">\n<p><strong>WARNING:</strong> TouchStone can only be accessed through a secure web connection.</p>\n<p>Instead use: <a href=\"https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . "\">https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . "</a>.\n</body>\n</html>\n";
@@ -43,18 +46,15 @@ if (preg_match( '|MSIE ([5-9].[0-9]{1,2})|',$_SERVER['HTTP_USER_AGENT'],$log_ver
   }
 
   if (!isset($_SERVER['PHP_AUTH_USER'])) {
-    Header("WWW-authenticate: basic realm=\"TouchStone\"");
-    Header("HTTP/1.0 401 Unauthorised");
-    echo "<html>\n<head>\n<title>Access Denied</title>\n<style>\nbody {font-size:90%; font-family:Arial,sans-serif; background-color:#FCFCFC; color:#575757}\nh1 {font-weight:normal; color:#BF0000; font-size:140%}\n</style>\n</head>\n<body>\n";
-    echo "<div style=\"position:absolute; left:10px; top:10px\"><img src=\"/touchstone/artwork/access_denied.png\" width=\"48\" height=\"48\" /></div>\n";
-    echo "<h1 style=\"margin-left:60px\">Access Denied</h1>\n";
-    echo "<hr size=\"1\" align=\"left\" width=\"500\" style=\"margin-left:60px; color:#C0C0C0; background-color:#C0C0C0\" />\n<p style=\"margin-left:60px\">Authentication with TouchStone has failed, please remember:</p>\n<ul style=\"margin-left:80px\">\n<li>Usernames/passwords are case-sensitive</li>\n<li>TouchStone now uses the LDAP passwords</li>\n<li>Press 'F5' on the keyboard to try logging in again</li>";
-    if ($_SERVER['PHP_SELF'] == '/index.php') {
-      echo "<li>If you are still stuck ask an invigilator for a <a href=\"guest_account.php\" style=\"color:blue\"><strong>Temporary Account</strong></a></li>";
+    $message = "Authentication with TouchStone has failed, please remember:</p>\n<ul style=\"margin-left:80px\">\n<li>Usernames/passwords are case-sensitive</li>\n";
+    if ($cfg_use_ldap == true) $message .= "<li>TouchStone now uses the LDAP passwords</li>\n";
+    $message .= "<li>Press 'F5' on the keyboard to try logging in again</li>";
+     if ($_SERVER['PHP_SELF'] == '/index.php') {
+      $message .= "<li>If you are still stuck ask an invigilator for a <a href=\"guest_account.php\" style=\"color:blue\"><strong>Temporary Account</strong></a></li>";
     }
-    echo "</ul>\n</body>\n</html>\n";
-    $mysqli->close();
-    exit;
+    $message .= "</ul>";
+    if ($cfg_use_ldap != true) $message .= $fp_link;
+    access_denied($message, true);
   } else {
     //
     //  MAIN AUTHENTICATION ROUTINES
@@ -69,57 +69,50 @@ if (preg_match( '|MSIE ([5-9].[0-9]{1,2})|',$_SERVER['HTTP_USER_AGENT'],$log_ver
           $stmt = $mysqli->prepare("UPDATE users SET password = ? WHERE username = ?");
           $stmt->bind_param('ss', $encpw_details, $_SERVER['PHP_AUTH_USER']);
           $stmt->execute();
-          if($stmt->affected_rows == 0) {
+          if ($stmt->affected_rows == 0) {
             //user has no touchstone account but valid LDAP
-            echo "<html>\n<head>\n<title>Access Denied</title>\n<style>\nbody {font-size:90%; font-family:Arial,sans-serif; background-color:#FCFCFC; color:#575757}\nh1 {font-weight:normal; color:#BF0000; font-size:140%}\n</style>\n</head>\n<body>\n";
-            echo "<div style=\"position:absolute; left:10px; top:10px\"><img src=\"/touchstone/artwork/access_denied.png\" width=\"48\" height=\"48\" /></div>\n";
-            echo "<h1 style=\"margin-left:60px\">Access Denied</h1>\n";
-            echo "<hr size=\"1\" align=\"left\" width=\"500\" style=\"margin-left:60px; color:#C0C0C0; background-color:#C0C0C0\" />\n<p style=\"margin-left:60px\">No TouchStone account found</p>\n<ul style=\"margin-left:80px\">\n<li>Please contact <a href=\"mailto:$support_email\">$support_email</a> if you believe you should have access.</li>\n";
-            if ($_SERVER['PHP_SELF'] == '/index.php') {
-              echo "<li>If you are still stuck ask an invigilator for a <a href=\"guest_account.php\" style=\"color:blue\"><strong>Temporary Account</strong></a></li>";
-            }
-            echo "</ul>\n</body>\n</html>";
             $stmt->close();
-            $mysqli->close();
-            exit;
+            $message = "No TouchStone account found</p>\n<ul style=\"margin-left:80px\">\n<li>Please contact <a href=\"mailto:$support_email\">$support_email</a> if you believe you should have access.</li>\n";
+             if ($_SERVER['PHP_SELF'] == '/index.php') {
+              $message .= "If you are still stuck ask an invigilator for a <a href=\"guest_account.php\" style=\"color:blue\"><strong>Temporary Account</strong></a></li>";
+            }
+            $message .= "</ul>";
+            access_denied($message, true);
           }
           $stmt->close();
           db_auth($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'], $mysqli, $ldap_user_data);
+          
         } else {
           //Ad Account NOT OK
-          Header("WWW-authenticate: basic realm=\"TouchStone\"");
-          Header("HTTP/1.0 401 Unauthorised");
-          echo "<html>\n<head>\n<title>Access Denied</title>\n<style>\nbody {font-size:90%; font-family:Arial,sans-serif; background-color:#FCFCFC; color:#575757}\nh1 {font-weight:normal; color:#BF0000; font-size:140%}\n</style>\n</head>\n<body>\n";
-          echo "<div style=\"position:absolute; left:10px; top:10px\"><img src=\"/touchstone/artwork/access_denied.png\" width=\"48\" height=\"48\" /></div>\n";
-          echo "<h1 style=\"margin-left:60px\">Access Denied</h1>\n";
-          echo "<hr size=\"1\" align=\"left\" width=\"500\" style=\"margin-left:60px; color:#C0C0C0; background-color:#C0C0C0\" />\n<p style=\"margin-left:60px\">Authentication with TouchStone has failed, please remember:</p>\n<ul style=\"margin-left:80px\">\n<li>Usernames/passwords are case-sensitive</li>\n<li>TouchStone now uses the LDAP passwords</li>\n<li>Press 'F5' on the keyboard to try logging in again</li>";
-          if ($_SERVER['PHP_SELF'] == '/index.php') {
-            echo "<li>If you are still stuck ask an invigilator for a <a href=\"guest_account.php\" style=\"color:blue\"><strong>Temporary Account</strong></a></li>";
+          $message = "Authentication with TouchStone has failed, please remember:</p>\n<ul style=\"margin-left:80px\">\n<li>Usernames/passwords are case-sensitive</li>\n";
+          if ($cfg_use_ldap == true) {
+            $message .= "<li>TouchStone now uses the LDAP passwords</li>\n";
           }
-          echo "<li>" . $ldap_user_data['error'] . "</li>";
-          echo "</ul>\n</body>\n</html>\n";
-          exit;
+          $message .= "<li>Press 'F5' on the keyboard to try logging in again</li>";
+           if ($_SERVER['PHP_SELF'] == '/index.php') {
+            $message .= "<li>If you are still stuck ask an invigilator for a <a href=\"guest_account.php\" style=\"color:blue\"><strong>Temporary Account</strong></a></li>";
+          }
+          $message .= "<li>" . $ldap_user_data['error'] . "</li></ul>";
+          access_denied($message, true);
         }
       } else {
-        // Internal DB authentication failed and not to use LDAP.
-        Header("WWW-authenticate: basic realm=\"TouchStone\"");
-        Header("HTTP/1.0 401 Unauthorised");
-        echo "<html>\n<head>\n<title>Access Denied</title>\n<style>\nbody {font-size:90%; font-family:Arial,sans-serif; background-color:#FCFCFC; color:#575757}\nh1 {font-weight:normal; color:#BF0000; font-size:140%}\n</style>\n</head>\n<body>\n";
-        echo "<div style=\"position:absolute; left:10px; top:10px\"><img src=\"/touchstone/artwork/access_denied.png\" width=\"48\" height=\"48\" /></div>\n";
-        echo "<h1 style=\"margin-left:60px\">Access Denied</h1>\n";
-        echo "<hr size=\"1\" align=\"left\" width=\"500\" style=\"margin-left:60px; color:#C0C0C0; background-color:#C0C0C0\" />\n<p style=\"margin-left:60px\">Authentication with TouchStone has failed, please remember:</p>\n<ul style=\"margin-left:80px\">\n<li>Usernames/passwords are case-sensitive</li>\n<li>Press 'F5' on the keyboard to try logging in again</li>";
-        if ($db_errors != '') {
-          echo "<li>$db_errors</li>\n";
+        // Internal DB authentication failed.
+        if ($cfg_use_ldap == true and  ldap_auth($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'], $ldap_user_data) == true and  strpos($_SERVER['SCRIPT_FILENAME'],'self_enroll.php') !== FALSE ) {
+          //we have a valid LDAP account - we are in the self enrol script allow execution to continue
+          //continue
+        } else {
+          $message = "Authentication with TouchStone has failed, please remember:</p>\n<ul style=\"margin-left:80px\">\n<li>Usernames/passwords are case-sensitive</li>\n<li>Press 'F5' on the keyboard to try logging in again</li>";
+          if ($db_errors != '') {
+            $message .= "<li>$db_errors</li>\n";
+          }
+          if ($_SERVER['PHP_SELF'] == '/index.php') {
+            $message .= "<li>If you are still stuck as an invigilator for a <a href=\"guest_account.php\" style=\"color:blue\"><strong>Temporary Account</strong></a></li>\n</ul>";
+          }
+          $message .= $fp_link;
+          access_denied($message, true);
         }
-        if ($_SERVER['PHP_SELF'] == '/index.php') {
-          echo "<li>If you are still stuck as an invigilator for a <a href=\"guest_account.php\" style=\"color:blue\"><strong>Temporary Account</strong></a></li>";
-        }
-        echo "</ul>\n</body>\n</html>\n";
-        exit;
       }
     } 
-    //pasword strength check could be added here!!
-    
   }
 } else {
   echo "<html>\n<body style=\"font-family:Arial,sans-serif\">\n<p style=\"font-size:150%;color:#C00000\"><strong>WARNING:</strong> Incompatible Browser</p>\n<p><strong>TouchStone currently requires MS Internet Explorer 5 (or above) or Firefox 2 (or above).</strong></p>\n<p><strong>You are running </strong>" . $_SERVER['HTTP_USER_AGENT'] . "</p>\n</body>\n</html>\n";

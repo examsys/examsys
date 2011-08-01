@@ -26,11 +26,11 @@
   require '../include/media.inc';
   require '../include/errors.inc';
 
-  function saveResponseData($optID, $experts) {
+  function saveResponseData($optID, $experts, $max_experts) {
     global $mysqli;
-  
-    $stmt = $mysqli->prepare("UPDATE options SET correct=? WHERE id_num=?");
-    $stmt->bind_param('si', $experts, $optID);
+    $marks = ($max_experts > 0) ? $experts / $max_experts : 0;
+    $stmt = $mysqli->prepare("UPDATE options SET correct=?, marks=? WHERE id_num=?");
+    $stmt->bind_param('sdi', $experts, $marks, $optID);
     $stmt->execute();
     $stmt->close();
   }
@@ -76,9 +76,11 @@
     echo '<blockquote><table cellpadding="2" cellspacing="0" border="0">';
     
     $no_experts = 0;
+    $max_experts = 0;
     for ($i=1; $i<=count($question['options']); $i++) {
       if (isset($reviews[$question['q_id']][$i])) {
         $no_experts += $reviews[$question['q_id']][$i];
+        if($reviews[$question['q_id']][$i] > $max_experts) $max_experts = $reviews[$question['q_id']][$i];
       }
     }
     
@@ -94,7 +96,7 @@
       echo $review_no . ' out of ' . $no_experts;
       echo "</td><td>$option_text</td></tr>\n";
       if (isset($_POST['submit'])) {
-        saveResponseData($optionID, $review_no);
+        saveResponseData($optionID, $review_no, $max_experts);
       }
     }
     echo "</table>\n</blockquote>\n";

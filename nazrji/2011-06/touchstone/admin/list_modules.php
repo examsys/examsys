@@ -37,15 +37,13 @@
 <script src="../javascript/staff_help.js" type="text/javascript"></script>
 <script language="javascript">
   function selMod(divID, moduleID, evt) {
-    tmp_ID = document.myform.oldDivID.value;
+    tmp_ID = document.myform.divID.value;
     if (tmp_ID != '') {
       document.getElementById(tmp_ID).style.backgroundColor = 'white';
     }
 
     document.getElementById('menu1a').style.display = 'none';
     document.getElementById('menu1b').style.display = 'block';
-    
-    document.myform.oldDivID.value = divID;
     document.myform.divID.value = divID;
     
     document.myform.moduleID.value = moduleID;
@@ -55,23 +53,23 @@
   }
   
   function deselMod() {
-    tmp_ID = document.myform.oldDivID.value;
+    tmp_ID = document.myform.divID.value;
     if (tmp_ID != '') {
       document.getElementById(tmp_ID).style.backgroundColor = 'white';
     }
-    document.myform.oldDivID.value = '';
+    document.myform.divID.value = '';
     document.getElementById('menu1b').style.display = 'none';
     document.getElementById('menu1a').style.display = 'block';
   }
 
   function lon(lineID) {
-    if (lineID != document.myform.oldDivID.value) {
+    if (lineID != document.myform.divID.value) {
       document.getElementById(lineID).style.backgroundColor = '#EEEEEE';
     }
   }
 
   function loff(lineID) {
-    if (lineID != document.myform.oldDivID.value) {
+    if (lineID != document.myform.divID.value) {
       document.getElementById(lineID).style.backgroundColor = '';
     }
   }
@@ -102,7 +100,7 @@
 $old_school = '';
 $id = 0;
 
-$result = $mysqli->prepare("SELECT moduleid, fullname, school, active FROM modules ORDER BY school, moduleid");
+$result = $mysqli->prepare("SELECT moduleid, fullname, school, active FROM modules, schools WHERE modules.schoolid=schools.id ORDER BY school, moduleid");
 $result->execute();
 $result->bind_result($moduleid, $fullname, $school, $active);
 while ($result->fetch()) {

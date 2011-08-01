@@ -26,13 +26,6 @@
 
 require_once 'errors.inc';
 
-function encodeHTML($sHTML) {
-  $sHTML=str_replace("&","&amp;",$sHTML);
-  $sHTML=str_replace("<","&lt;",$sHTML);
-  $sHTML=str_replace(">","&gt;",$sHTML);
-  return $sHTML;
-}
-
 /**
  * Takes in an HTML string and trys to remove as much superfluous formatting as possible.
  *
@@ -82,10 +75,10 @@ function clearMSOtags($sHTML) {
   return $sHTML;
 }
 
-function insert_into_options($o_id,$option_text,$o_media,$o_media_width,$o_media_height,$feedback_right,$feedback_wrong,$correct,$marks) {
+function insert_into_options($o_id, $option_text, $o_media, $o_media_width, $o_media_height, $feedback_right, $feedback_wrong, $correct, $marks) {
   global $mysqli;
-  if ($result = $mysqli->prepare("INSERT INTO options VALUES (?,?,?,?,?,?,?,?,NULL,?)")) {
-    $result->bind_param('isssssssd', $o_id,$option_text,$o_media,$o_media_width,$o_media_height,$feedback_right,$feedback_wrong,$correct,$marks);
+  if ($result = $mysqli->prepare("INSERT INTO options VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL, ?)")) {
+    $result->bind_param('isssssssd', $o_id, $option_text, $o_media, $o_media_width, $o_media_height, $feedback_right, $feedback_wrong, $correct, $marks);
     $result->execute();
     $result->close();
   } else {
@@ -94,10 +87,10 @@ function insert_into_options($o_id,$option_text,$o_media,$o_media_width,$o_media
   return $mysqli->insert_id;
 }
 
-function wysiwyg_editor($name,$replace,$content='',$width=700,$height=70) {
+function wysiwyg_editor($name, $replace, $content='', $width=700, $height=70) {
   global $cfg_editor_name;
 
-  $html = "";
+  $html = '';
   
   if ($cfg_editor_name == 'tinymce') {
     $html .= "<textarea class=\"mceEditor\" id=\"$replace\" name=\"$replace\" style=\"width:" . $width . "px; height:" . $height . "px\">$content</textarea>\n";

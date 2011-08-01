@@ -24,38 +24,56 @@
 
 require '../include/staff_auth.inc';
 
-  function marks_from_file($fileName) {
-    global $mysqli;
+  function keywords_from_file($fileName) {
+    global $mysqli, $userID;
   
-    // Get the ID of the module
-    $result = $mysqli->prepare("SELECT id FROM modules WHERE moduleid=?");
-    $result->bind_param('s', $_GET['module']);
-    $result->execute();
-    $result->bind_result($tmp_userID);
-    $result->fetch();
-    $result->close();
+    if ($_GET['module'] == '') {
+      $type = 'personal';
+      $tmp_userID = $userID;
+      
+      // Get the existing personal keywords.
+      $existing_keywords = array();
+      $result = $mysqli->prepare("SELECT keyword FROM keywords_user WHERE userID=?");
+      $result->bind_param('i', $userID);
+      $result->execute();
+      $result->bind_result($keyword);
+      while ($result->fetch()) {
+        $existing_keywords[$keyword] = $keyword;
+      }
+      $result->close();
+    } else {
+      $type = 'team';
+      // Get the ID of the module
+      $result = $mysqli->prepare("SELECT id FROM modules WHERE moduleid=?");
+      $result->bind_param('s', $_GET['module']);
+      $result->execute();
+      $result->bind_result($tmp_userID);
+      $result->fetch();
+      $result->close();
 
-    // Get the existing team keywords for the folder.
-    $existing_keywords = array();
-    $result = $mysqli->prepare("SELECT keyword FROM keywords_user WHERE userID=?");
-    $result->bind_param('i', $tmp_userID);
-    $result->execute();
-    $result->bind_result($keyword);
-    while ($result->fetch()) {
-      $existing_keywords[$keyword] = $keyword;
+      // Get the existing team keywords for the folder.
+      $existing_keywords = array();
+      $result = $mysqli->prepare("SELECT keyword FROM keywords_user WHERE userID=?");
+      $result->bind_param('i', $tmp_userID);
+      $result->execute();
+      $result->bind_result($keyword);
+      while ($result->fetch()) {
+        $existing_keywords[$keyword] = $keyword;
+      }
+      $result->close();
     }
-    $result->close();
     
-    $lines = file($fileName);
+    // Process the file
+    $lines = file($fileName);    
     foreach ($lines as $separate_line) {
       $separate_line = trim($separate_line);
       if (!isset($existing_keywords[$separate_line])) {
-        $result = $mysqli->prepare("INSERT INTO keywords_user VALUES(NULL,?,?,'team')");
-        $result->bind_param('is', $tmp_userID, $separate_line);
+        $result = $mysqli->prepare("INSERT INTO keywords_user VALUES(NULL, ?, ?, ?)");
+        $result->bind_param('iss', $tmp_userID, $separate_line, $type);
         $result->execute();
         $result->close();
       }
-    }
+    }    
   }
 
   if (isset($_POST['submit']) and $_POST['submit']) {
@@ -64,7 +82,7 @@ require '../include/staff_auth.inc';
         echo uploadError($_FILES['txtfile']['error']);
         exit;
       } else {
-        marks_from_file('/tmp/' . $userID . '_keywords.txt');
+        keywords_from_file('/tmp/' . $userID . '_keywords.txt');
         unlink('/tmp/' . $userID . '_keywords.txt');
         header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/touchstone/folder/list_keywords.php?paperID=". $_GET['paperID'] . "&module=" . $_GET['module'] . "&folder=" . $_GET['folder']);
       }
@@ -74,7 +92,7 @@ require '../include/staff_auth.inc';
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Load Spotter Marks</title>
+<title>Load Keywords</title>
 <link rel="stylesheet" href="../css/submenu.css" type="text/css">
 <style>
   body, p {color:#003366; font-family:Arial,sans-serif}

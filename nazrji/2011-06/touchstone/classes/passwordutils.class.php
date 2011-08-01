@@ -16,7 +16,7 @@
 
 /**
 * 
-* Utility class for user related functions
+* Utility class for password related functions
 * 
 * @author Anthony Brown
 * @version 1.0

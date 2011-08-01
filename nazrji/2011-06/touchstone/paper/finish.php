@@ -16,7 +16,7 @@
 
 /**
 * 
-* Completes final log of the last screen to the ‘log’ table and then will display feedback if the paper is in ‘formative’ 
+* Completes final log of the last screen to the ‘logX’ table and then will display feedback if the paper is in ‘formative’ 
 * mode or will display a confirmation notice to the examinee stating all answers and marks have been successfully recorded.
 * 
 * @author Simon Wilkinson, Anthony Brown
@@ -172,23 +172,13 @@
         // Check for additional password on the paper
         if ($password != '') {
           if ($password != $_COOKIE['paperpwd']) {
-            Header("WWW-authenticate: basic realm=\"TouchStone\"");
-            Header("HTTP/1.0 401 Unauthorised");
-            echo "<html><head>\n<title>Access Denied</title>\n<style>\nbody {font-size:90%;font-family:$font,sans-serif;background-color:#FCFCFC;color:#575757}\nh1 {font-weight:normal;color:#4465A2;font-size:140%}\n</style></head>\n<body style=\"font-family:$font,sans-serif\"><div style=\"position:absolute;left:10px;top:10px\"><img src=\"/touchstone/artwork/access_denied.png\" width=\"48\" height=\"48\" /></div>\n";
-            echo "<h1 style=\"margin-left:60px\">Access Denied</h1>\n";
-            echo "<hr size=\"1\" align=\"left\" width=\"500\" style=\"margin-left:60px;color:#C0C0C0;background-color:#C0C0C0\" />\n<p style=\"margin-left:60px\">There is a specific password assigned to this paper.</p>\n<p style=\"margin-left:60px\"v><form><input type=\"button\" value=\"OK\" style=\"width:100px\" name=\"ok\" onclick=\"window.close();\"></form></p>\n</body>\n</html>";
-            $mysqli->close();
-            exit;
+            access_denied('There is a specific password assigned to this paper.', $output_header = false);
           }
         }
  
         // Check time security
         if ((time()+120) < $start_date or (time()-3600) > $end_date) {
-          echo "<html><head>\n<title>Access Denied</title>\n<style>\nbody {font-size:90%; font-family:$font,sans-serif; background-color:#FCFCFC; color:#575757}\nh1 {font-weight:normal; color:#4465A2; font-size:140%}\n</style></head>\n<body style=\"font-family:$font,sans-serif\"><div style=\"position:absolute; left:10px; top:10px\"><img src=\"/touchstone/artwork/clock_48.png\" width=\"48\" height=\"48\" /></div>\n";
-          echo "<h1 style=\"margin-left:60px\">Access Denied</h1>\n";
-          echo "<hr size=\"1\" align=\"left\" width=\"500\" style=\"margin-left:60px; color:#C0C0C0; background-color:#C0C0C0\" />\n<p style=\"margin-left:60px\">The paper you are attempting to access is only available between the following times:</p>\n<ul style=\"margin-left:80px\">\n<li>From - " . date('d/m/Y H:i',$start_date) . "</li>\n<li>To - " . date('d/m/Y H:i',$end_date) . "</li>\n</ul>\n<br /><p style=\"margin-left:60px\"v><form><input type=\"button\" value=\"OK\" style=\"width:100px\" name=\"ok\" onclick=\"window.close();\"></form></p>\n</body>\n</html>";
-          $mysqli->close();
-          exit;
+          access_denied('The paper you are attempting to access is only available between ' . date('d/m/Y H:i',$start_date) . ' and ' . date('d/m/Y H:i',$end_date), $output_header = false);
         }
         //Check room security
         if ($labs != '') {
@@ -199,26 +189,19 @@
           $lab_info->store_result();
           $lab_info->fetch();
           if ($lab_info->num_rows == 0) {
-            echo "<html><head>\n<title>Access Denied</title>\n<style>\nbody {font-size:90%;font-family:$font,sans-serif;background-color:#FCFCFC;color:#575757}\nh1 {font-weight:normal;color:#4465A2;font-size:140%}\n</style></head>\n<body style=\"font-family:$font,sans-serif\"><div style=\"position:absolute; left:10px; top:10px\"><img src=\"./artwork/access_denied.png\" width=\"48\" height=\"48\" /></div>\n";
-            echo "<h1 style=\"margin-left:60px\">Access Denied</h1>\n";
-            echo "<hr size=\"1\" align=\"left\" width=\"500\" style=\"margin-left:60px;color:#C0C0C0;background-color:#C0C0C0\" />\n<p style=\"margin-left:60px\">Access to this paper is not permitted from your current location.</p>\n</body>\n</html>";
-            exit;
+            access_denied('Access to this paper is not permitted from your current location.', $output_header = false);
           }
           $lab_info->close();
         }
         
-        //get modules if the user is a student and the paper is not formative
+        // get modules if the user is a student and the paper is not formative
         if (stripos($_SERVER['PHP_AUTH_USER'], 'user') !== 0) {
            if ($moduleID != '') {
             $cal_year_sql = '';
             if($calendar_year != '') $cal_year_sql = "AND calendar_year = '$calendar_year'";
             $module_info = $mysqli->query("SELECT moduleid,attempt FROM student_modules WHERE userID=$userID AND moduleid IN ('" . str_replace(",","','",$moduleID) . "') $cal_year_sql");
             if ($module_info->num_rows == 0) {
-              echo "<html>\n<head>\n<title>Access Denied - Title</title>\n<style>\nbody {font-size:90%; font-family:Arial,sans-serif; background-color:#FCFCFC; color:#575757}\nh1 {font-weight:normal; color:#BF0000; font-size:140%}\n</style>\n</head>\n<body>\n";
-              echo "<div style=\"position:absolute; left:10px; top:10px\"><img src=\"/touchstone/artwork/access_denied.png\" width=\"48\" height=\"48\" /></div>\n";
-              echo "<h1 style=\"margin-left:60px\">Access Denied</h1>\n";
-              echo "<hr size=\"1\" align=\"left\" width=\"500\" style=\"margin-left:60px; color:#C0C0C0; background-color:#C0C0C0\" />\n<p style=\"margin-left:60px\">$title $surname ($username) is not registered on <strong>$moduleID</strong> in <strong>$calendar_year</strong>.</p>\n</body>\n</html>";
-              exit;
+              access_denied("$title $surname ($username) is not registered on <strong>$moduleID</strong> in <strong>$calendar_year</strong>.", $output_header = false);
             } else {
               $row = $module_info->fetch_array(MYSQLI_ASSOC);
               if(is_array($row)) {
@@ -227,16 +210,31 @@
             }
             $module_info->close();
           } else {
-            echo "<html>\n<head>\n<title>Access Denied - Year</title>\n<style>\nbody {font-size:90%; font-family:Arial,sans-serif; background-color:#FCFCFC; color:#575757}\nh1 {font-weight:normal; color:#BF0000; font-size:140%}\n</style>\n</head>\n<body>\n";
-            echo "<div style=\"position:absolute; left:10px; top:10px\"><img src=\"/touchstone/artwork/access_denied.png\" width=\"48\" height=\"48\" /></div>\n";
-            echo "<h1 style=\"margin-left:60px\">Access Denied</h1>\n";
-            echo "<hr size=\"1\" align=\"left\" width=\"500\" style=\"margin-left:60px; color:#C0C0C0; background-color:#C0C0C0\" />\n<p style=\"margin-left:60px\">This paper is not on any module.</p>\n</body>\n</html>";
-            exit;
+            access_denied('This paper is not on any module.', $output_header = false);
           }
         }
         if (time() > $end_date and ($paper_type == '1' or $paper_type == '2')) {
           $paper_type = '_late';
         }
+        
+        // Check for any metadata security restrictions
+        $metadata_security = $mysqli->prepare("SELECT name, value FROM paper_metadata_security WHERE paperID=?");
+        $metadata_security->bind_param('i', $_GET['paperID']);
+        $metadata_security->execute();
+        $metadata_security->bind_result($security_type, $security_value);
+        $metadata_security->store_result();
+        while ($metadata_security->fetch()) {
+          $check_security = $mysqli->prepare("SELECT users_metadata.id FROM users_metadata, modules WHERE users_metadata.moduleid=modules.id AND modules.moduleid IN ('" . str_replace(",", "','", $moduleID) . "') AND userID=? AND type=? AND value=?");
+          $check_security->bind_param('iss', $userID, $security_type, $security_value);
+          $check_security->execute();
+          $check_security->store_result();
+          if ($check_security->num_rows == 0) {
+            access_denied('User metadata does not match <strong>' . $security_type . ': ' . $security_value . '</strong>', $output_header = false);
+          }
+          $check_security->close();
+        }      
+        $metadata_security->close();
+        
       }
       if (isset($_GET['type'])) $log_type = $_GET['type'];
     }
@@ -309,7 +307,6 @@ table {font-size:100%}
     record_marks($paperID, $_POST['old_screen'], $mysqli, $_POST, $userID, $_POST['previous_duration'], $paper_type, $grade, $year, $attempt);
   }
 
-  // Delete any duplicate entries from the database.
   if (isset($_GET['userid'])) {
     $temp_userID = $_GET['userid'];
   } else {
@@ -1646,7 +1643,7 @@ table {font-size:100%}
               $tmp_answer = str_ireplace($single_answer, '<span style="background-color:#FFFF00">' . $single_answer . '</span>', $tmp_answer);
             }
           }
-          echo "<blockquote style=\"border:1px solid #164994\"><pre>" . $tmp_answer . "</pre></blockquote>\n<br />\n";
+          echo "<div style=\"border:1px solid #164994; padding:12px; text-align:justify; line-height:150%\">" . $tmp_answer . "</div>\n<br />\n";
           if ($paper[$question]['correct_fback'] != '') {
             echo '<p class="feedback" style="margin-left:17px">&nbsp;' . nl2br($paper[$question]['correct_fback']) . "</p>\n";
           }
@@ -1736,7 +1733,7 @@ table {font-size:100%}
           $blank_count = 1;
           
           while ($blank_count < $no_blanks) {
-            if ($user_choices[$blank_count] == 'u') {
+            if (!isset($user_choices[$blank_count]) or $user_choices[$blank_count] == 'u') {
               reset_feedback($hide_if_unanswered);
             }
           
@@ -1779,7 +1776,7 @@ table {font-size:100%}
               }
               echo "<select name=\"\">\n<option value=\"\"></option>";
               foreach ($answer_list as $answer_option) {
-                if (html_entity_decode(trim($answer_option)) == html_entity_decode(trim($user_choices[$blank_count]))) {
+                if (isset($user_choices[$blank_count]) and html_entity_decode(trim($answer_option)) == html_entity_decode(trim($user_choices[$blank_count]))) {
                   echo "<option value=\"\" selected>$answer_option</option>\n";
                 } else {
                   echo "<option value=\"\">$answer_option</option>\n";
@@ -1787,13 +1784,13 @@ table {font-size:100%}
               }
               echo "</select>\n";
 
-              if (str_replace('&nbsp;',' ',html_entity_decode(trim($answer_list[0]))) == str_replace('&nbsp;',' ',html_entity_decode(trim($user_choices[$blank_count])))) {
+              if (isset($user_choices[$blank_count]) and str_replace('&nbsp;',' ',html_entity_decode(trim($answer_list[0]))) == str_replace('&nbsp;',' ',html_entity_decode(trim($user_choices[$blank_count])))) {
                 if (substr($tmp_exclude,$blank_count-1,1) == '0') {
                   $paper[$question]['mark']++;
                   if ($tmp_display_students_response == '1') echo  '<img src="../artwork/tick.gif" width="17" height="16" alt="Tick" />';
                 }
               } else {
-                if ($tmp_display_students_response == '1'and substr($tmp_exclude,$blank_count-1,1) == '0' and html_entity_decode(trim($user_choices[$blank_count])) != 'u') {
+                if ($tmp_display_students_response == '1'and substr($tmp_exclude,$blank_count-1,1) == '0' and isset($user_choices[$blank_count]) and html_entity_decode(trim($user_choices[$blank_count])) != 'u') {
                   echo '<img src="../artwork/cross.gif" width="17" height="16" alt="Cross" />';
                 } else {
                   echo '<img src="../artwork/blank_tick_cross.gif" width="17" height="16" alt="" />';
@@ -1818,46 +1815,28 @@ table {font-size:100%}
             reset_feedback($hide_if_unanswered);
           }
           $paper[$question]['mark'] = 0;
-          if (isset($paper[$question]['user_answer']) and substr($tmp_exclude,0,1) == '0') {
+          if (isset($paper[$question]['user_answer'])) {
             $parts = explode('|',$paper[$question]['user_answer']);
+            $i = 0;
             foreach ($parts as $part) {
-              $paper[$question]['mark'] += substr($part,0,1);
+              if (substr($tmp_exclude, $i, 1) == '0') {
+                $paper[$question]['mark'] += substr($part,0,1);
+              }
+              $i++;
             }            
           }
           
           if ($paper[$question]['scenario'] != '') {
             echo '<p class="leadin">' . $paper[$question]['scenario'] . "</p>\n";
           }
-          echo '<p';
-          if (substr($tmp_exclude,0,1) == '1') {
-            echo ' style="color:red; text-decoration:line-through"';
-            $paper[$question]['mark'] = 0;
-          }
-          if ($tmp_display_correct_answer == '0') {
-?>
-    <div>
-		<script language="JavaScript">
-			function swfLoaded<?php echo $question_no; ?>(message) {
-				var num = message.substring(5,message.length);
-				setUpFlash(num, message, '<?php echo $paper[$question]['q_media']; ?>', '<?php echo trim($paper[$question]['correct'][0]); ?>', '<?php if (isset($paper[$question]['user_answer'])) echo trim($paper[$question]['user_answer']); ?>','0');
-			}
-			write_string('<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="https://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0" id="flash<?php echo $question_no; ?>" width="<?php echo ($paper[$question]['q_media_width'] + 300); ?>" height="<?php echo ($paper[$question]['q_media_height'] + 2); ?>" align="middle">');
-			write_string('<param name="allowScriptAccess" value="always" />');
-			write_string('<param name="movie" value="/touchstone/paper/hotspot_question.swf" />');
-			write_string('<param name="quality" value="high" />');
-			write_string('<param name="bgcolor" value="<?php echo $bgcolor; ?>" />');
-			write_string('<embed src="/touchstone/paper/hotspot_question.swf" quality="high" bgcolor="<?php echo $bgcolor; ?>" width="<?php echo ($paper[$question]['q_media_width'] + 300); ?>" height="<?php echo ($paper[$question]['q_media_height'] + 2); ?>" swliveconnect="true" id="flash<?php echo $question_no; ?>" name="flash<?php echo $question_no; ?>" align="middle" allowScriptAccess="always" type="application/x-shockwave-flash" pluginspage="https://www.macromedia.com/go/getflashplayer" />');
-			write_string('</object>');
-		</script>
-    </div>
-<?php
-          } else {
+          
+          $extra = $tmp_display_students_response . ',' . $tmp_display_correct_answer . ',' . $tmp_exclude;
 ?>
     <div>
     <script language="JavaScript">
       function swfLoaded<?php echo $question_no; ?>(message) {
         var num = message.substring(5,message.length);
-        setUpFlash(num, message, '<?php echo $paper[$question]['q_media']; ?>', '<?php echo trim($paper[$question]['correct'][0]); ?>', '<?php if (isset($paper[$question]['user_answer'])) echo trim($paper[$question]['user_answer']); ?>');
+        setUpFlash(num, message, '<?php echo $paper[$question]['q_media']; ?>', '<?php echo trim($paper[$question]['correct'][0]); ?>', '<?php if (isset($paper[$question]['user_answer'])) echo trim($paper[$question]['user_answer']); ?>', '<?php echo $extra; ?>');
       }
       write_string('<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="https://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0" id="flash<?php echo $question_no; ?>" width="<?php echo ($paper[$question]['q_media_width'] + 300); ?>" height="<?php echo ($paper[$question]['q_media_height'] + 2); ?>" align="middle">');
       write_string('<param name="allowScriptAccess" value="always" />');
@@ -1869,7 +1848,6 @@ table {font-size:100%}
     </script>
     </div>
 <?php
-          }
 
           if ($tmp_display_correct_answer == '1') {
             echo '<br />';

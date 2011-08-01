@@ -47,9 +47,9 @@
     
     $html = '';
     if ($setter_id == $userID or strpos($userroles,'SysAdmin') !== false) {
-      $html .= "<tr id=\"review{$review['review_no']}\" style=\"cursor:hand\" onmouseover=\"highlight({$review['review_no']})\" onmouseout=\"unhighlight({$review['review_no']})\" onclick=\"selReview('$setter_id','{$review['date']}',{$review['review_no']},'{$review['method']}','menu2b',event); return false;\" ondblclick=\"editReview('{$review['group_review']}'); return false;\"><td align=\"center\"><img src=\"$icon\" width=\"16\" height=\"16\" alt=\"icon\" border=\"0\" /></td><td>&nbsp;";
+      $html .= "<tr id=\"review{$review['review_no']}\" style=\"cursor:hand\" onmouseover=\"highlight({$review['review_no']})\" onmouseout=\"unhighlight({$review['review_no']})\" onclick=\"selReview('$setter_id','{$review['date']}',{$review['review_no']},'{$review['method']}','menu2b','{$review['group_review']}',event); return false;\" ondblclick=\"editReview(); return false;\"><td align=\"center\"><img src=\"$icon\" width=\"16\" height=\"16\" alt=\"icon\" border=\"0\" /></td><td>&nbsp;";
     } else {
-      $html .= "<tr id=\"review{$review['review_no']}\" style=\"cursor:hand\" onmouseover=\"highlight({$review['review_no']})\" onmouseout=\"unhighlight({$review['review_no']})\" onclick=\"selReview('$setter_id','{$review['date']}',{$review['review_no']},'{$review['method']}','menu2c',event); return false;\" ondblclick=\"editReview('{$review['group_review']}'); return false;\"><td align=\"center\"><img src=\"$icon\" width=\"16\" height=\"16\" alt=\"icon\" border=\"0\" /></td><td>&nbsp;";
+      $html .= "<tr id=\"review{$review['review_no']}\" style=\"cursor:hand\" onmouseover=\"highlight({$review['review_no']})\" onmouseout=\"unhighlight({$review['review_no']})\" onclick=\"selReview('$setter_id','{$review['date']}',{$review['review_no']},'{$review['method']}','menu2c','{$review['group_review']}',event); return false;\" ondblclick=\"editReview(); return false;\"><td align=\"center\"><img src=\"$icon\" width=\"16\" height=\"16\" alt=\"icon\" border=\"0\" /></td><td>&nbsp;";
     }
     if ($review['distinction_score'] != 'n/a') $review['distinction_score'] .= '%';
     if ($review['group_review'] != 'No') {
@@ -74,7 +74,11 @@
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
 <script src="../javascript/staff_help.js" type="text/javascript"></script>
 <script language="JavaScript" type="text/javascript">
-  function selReview(setterID, dateID, reviewID, methodType, menuID, evt) {
+var groupReview;
+
+  function selReview(setterID, dateID, reviewID, methodType, menuID, group, evt) {
+    groupReview = group;
+    
     tmp_ID = document.StdSetMenu.oldReviewID.value;
     if (tmp_ID != '') {
       document.getElementById('review' + tmp_ID).style.backgroundColor = 'white';

@@ -62,7 +62,7 @@ textarea, input[type=text], select {font-family:Arail,sans-serif; border: 1px so
     }
   }
   
-  function writeDetails(user_title, first_names, surname, username, email, faculty) {
+  function writeDetails(user_title, first_names, surname, username, email) {
     window.opener.document.getElementById('new_surname').value = surname;
     window.opener.document.getElementById('new_first_names').value = first_names;
     window.opener.document.getElementById('new_username').value = username;
@@ -72,7 +72,7 @@ textarea, input[type=text], select {font-family:Arail,sans-serif; border: 1px so
     } else {
       setSelectedIndex(window.opener.document.getElementById('new_users_title'),user_title);
     }
-    setSelectedIndex(window.opener.document.getElementById('new_faculty'),faculty);
+    
     if (user_title == 'Mr') {
       setSelectedIndex(window.opener.document.getElementById('new_gender'),'Male');
     } else if (user_title == 'Miss' || user_title == 'Mrs' || user_title == 'Ms') {
@@ -84,17 +84,6 @@ textarea, input[type=text], select {font-family:Arail,sans-serif; border: 1px so
 
 <?php
   if (isset($_POST['submit'])) {
-    $school_data = array();
-    $stmt = $mysqli->prepare("SELECT faculty, school FROM schools");
-    $stmt->execute();
-    $stmt->bind_result($faculty, $school);
-    while ($stmt->fetch()) {
-      $school = str_replace('School of ','',$school);
-      $school_data[$school] = $faculty;
-    }
-    $stmt->close();
-    $school_data[''] = '';
-    
     $ldap = ldap_connect( $cfg_ldap_server );
     ldap_set_option($ldap, LDAP_OPT_PROTOCOL_VERSION, 3);
     ldap_set_option($ldap, LDAP_OPT_REFERRALS, 0);
@@ -194,7 +183,7 @@ textarea, input[type=text], select {font-family:Arail,sans-serif; border: 1px so
       $email = $user_data[$i]['email'];
       $school = $user_data[$i]['school'];
       $role = $user_data[$i]['role'];
-      echo "<tr style=\"cursor:pointer\"><td onclick=\"writeDetails('$title','$first_names','$surname','$username','$email','" . $school_data[$school] . "')\">$title</td><td onclick=\"writeDetails('$title','$first_names','$surname','$username','$email','" . $school_data[$school] . "')\">$first_names</td><td onclick=\"writeDetails('$title','$first_names','$surname','$username','$email','" . $school_data[$school] . "')\">$surname</td><td onclick=\"writeDetails('$title','$first_names','$surname','$username','$email','" . $school_data[$school] . "')\">$username</td><td onclick=\"writeDetails('$title','$first_names','$surname','$username','$email','" . $school_data[$school] . "')\">$email</td><td onclick=\"writeDetails('$title','$first_names','$surname','$username','$email','" . $school_data[$school] . "')\">$role</td></tr>\n";
+      echo "<tr style=\"cursor:pointer\"><td onclick=\"writeDetails('$title','$first_names','$surname','$username','$email')\">$title</td><td onclick=\"writeDetails('$title','$first_names','$surname','$username','$email','" . $school_data[$school] . "')\">$first_names</td><td onclick=\"writeDetails('$title','$first_names','$surname','$username','$email','" . $school_data[$school] . "')\">$surname</td><td onclick=\"writeDetails('$title','$first_names','$surname','$username','$email','" . $school_data[$school] . "')\">$username</td><td onclick=\"writeDetails('$title','$first_names','$surname','$username','$email','" . $school_data[$school] . "')\">$email</td><td onclick=\"writeDetails('$title','$first_names','$surname','$username','$email','" . $school_data[$school] . "')\">$role</td></tr>\n";
     }
     echo "</table>\n";
   }

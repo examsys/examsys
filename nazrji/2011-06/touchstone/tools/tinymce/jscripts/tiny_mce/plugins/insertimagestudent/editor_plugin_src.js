@@ -10,9 +10,9 @@
 
 (function() {
 	// Load plugin specific language pack
-	tinymce.PluginManager.requireLangPack('insertimage');
+	tinymce.PluginManager.requireLangPack('insertimagestudent');
 
-	tinymce.create('tinymce.plugins.insertimagePlugin', {
+	tinymce.create('tinymce.plugins.insertimagestudentPlugin', {
 		/**
 		 * Initializes the plugin, this will be executed after the plugin has been created.
 		 * This call is done before the editor instance has finished it's initialization so use the onInit event
@@ -22,12 +22,12 @@
 		 * @param {string} url Absolute URL to where the plugin is located.
 		 */
 		init : function(ed, url) {
-			// Register the command so that it can be invoked by using tinyMCE.activeEditor.execCommand('mceinsertimage');
-			ed.addCommand('mceinsertimage', function() {
+			// Register the command so that it can be invoked by using tinyMCE.activeEditor.execCommand('mceinsertimagestudent');
+			ed.addCommand('mceinsertimagestudent', function() {
 				ed.windowManager.open({
 					file : url + '/dialog.php',
-					width : 320 + parseInt(ed.getLang('insertimage.delta_width', 0)),
-					height : 120 + parseInt(ed.getLang('insertimage.delta_height', 0)),
+					width : 320 + parseInt(ed.getLang('insertimagestudent.delta_width', 0)),
+					height : 120 + parseInt(ed.getLang('insertimagestudent.delta_height', 0)),
 					inline : 1
 				}, {
 					plugin_url : url, // Plugin absolute URL
@@ -35,16 +35,16 @@
 				});
 			});
 
-			// Register insertimage button
-			ed.addButton('insertimage', {
-				title : 'insertimage.desc',
-				cmd : 'mceinsertimage',
+			// Register insertimagestudent button
+			ed.addButton('insertimagestudent', {
+				title : 'insertimagestudent.desc',
+				cmd : 'mceinsertimagestudent',
 				image : url + '/img/image.gif'
 			});
 
 			// Add a node change handler, selects the button in the UI when a image is selected
 			ed.onNodeChange.add(function(ed, cm, n) {
-				cm.setActive('insertimage', n.nodeName == 'IMG');
+				cm.setActive('insertimagestudent', n.nodeName == 'IMG');
 			});
 		},
 
@@ -70,15 +70,15 @@
 		 */
 		getInfo : function() {
 			return {
-				longname : 'insertimage plugin',
+				longname : 'insertimagestudent plugin',
 				author : 'Simon Wilkinson',
 				authorurl : 'http://tinymce.moxiecode.com',
-				infourl : 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/insertimage',
+				infourl : 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/insertimagestudent',
 				version : "1.0"
 			};
 		}
 	});
 
 	// Register plugin
-	tinymce.PluginManager.add('insertimage', tinymce.plugins.insertimagePlugin);
+	tinymce.PluginManager.add('insertimagestudent', tinymce.plugins.insertimagestudentPlugin);
 })();

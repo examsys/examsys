@@ -239,7 +239,7 @@ if (isset($_POST['submit1'])) {
 <?php
 } elseif (isset($_POST['cancel'])) {
   // Delete the file as the Canel button is pressed.
-  unlink("../media/" . $_POST['image_name']);
+  unlink("../../media/" . $_POST['image_name']);
   redirect($_POST['paperID']);
 } else {
   $points = $_POST['q1'];
@@ -278,7 +278,7 @@ if (isset($_POST['submit1'])) {
   }
 
   setcookie("default_team", getDefaultTeam(), time()+31536000);
-  $mysqli->close();
+
   redirect($paperID);
 }
 ?>

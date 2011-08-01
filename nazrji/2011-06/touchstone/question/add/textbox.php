@@ -61,7 +61,6 @@ if (isset($_POST['addbank']) or isset($_POST['addpaper'])) {
 
   setcookie("default_team", getDefaultTeam(), time()+31536000);
 
-  $mysqli->close();
   redirect($paperID);
 } else {
 ?>
@@ -271,8 +270,8 @@ if (isset($_POST['addbank']) or isset($_POST['addpaper'])) {
   ?>
 </form>
 <?php
-}
 $mysqli->close();
+}
 ?>
 </body>
 </html>

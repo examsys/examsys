@@ -86,7 +86,6 @@ if (isset($_POST['addbank']) or isset($_POST['addpaper'])) {
   }
 
   setcookie("default_team", getDefaultTeam(), time()+31536000);
-  $mysqli->close();
 
   redirect($paperID);
 } else {
@@ -97,96 +96,96 @@ if (isset($_POST['addbank']) or isset($_POST['addpaper'])) {
 <title>New Multiple Response Question<?php echo " $cfg_install_type"; ?></title>
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <link rel="stylesheet" href="../../css/add_edit.css" type="text/css">
-<script language="JavaScript">
-  var cancel = 0;
-  function formCancel() {
-    cancel = 1;
-  }
-
-  function checkForm() {
-    if (cancel != 0) {
-      return true;
-    }
-    <?php
-    if($cfg_editor_name == 'tinymce') {
-      echo "\t tinyMCE.triggerSave();";
-    }
-    ?>
-    if (oEdit2.getXHTMLBody() == "" || oEdit2.getXHTMLBody() == "&nbsp;" || oEdit2.getXHTMLBody() == "<p>&nbsp;</p>" || oEdit2.getXHTMLBody() == "<div>&nbsp;</div>" || oEdit2.getXHTMLBody() == "<br />") {
-      alert ("Please enter a Leadin.");
-      return false;
-    }
-
-    var correct_no = 0;
-    for (var i=1; i<=20; i++) {
-      if (document.getElementById('correct' + i).checked == true) {
-        correct_no++;
-      }
-    }
-    if (correct_no == 1) {
-      if (confirm("There is only one correct answer, this would be better as a MCQ question type.\rDo you wish to convert this question to MCQ?")) {
-        document.getElementById('mcqconvert').value = 1;
-      }
-    }
-
-    if (document.add_form.score_method.options[document.add_form.score_method.selectedIndex].value == 1) {
-      checkedOptions = 0;
-      textOptions = 0;
-      for (i=1; i<=20; i++) {
-        if (eval("this.add_form.option_text" + i + ".value") != '') {
-          textOptions++;
-          if (eval("this.add_form.correct" + i + ".checked") == true) {
-            checkedOptions++;
-          }
-        }
-      }
-
-      if ((textOptions / 2) < checkedOptions) {
-        alert ("WARNING: You have " + textOptions + " options of which " + checkedOptions + " are correct.\nThe examinee will automatically gain " + (checkedOptions - (textOptions - checkedOptions))  + " point(s).\n\nDecrease the number of correct answers or add more\ndistractors.");
-        return false;
-      }
-    }
-    if(submit != '') {
-      var modules = document.getElementById('modules').value;
-      var modulesArray = modules.split(',');
-      for(var j = 0; j < modulesArray.length; j++) {
-        var objcount = document.getElementById(modulesArray[j] + '_objectiveCount').value;
-        for(var i = 0; i < objcount; i++) {
-          var cb = document.getElementById(modulesArray[j] + 'obj' + i).checked;
-          if(cb == true) {
-            submit = '';
-            return confirm("WARNING: All mappings will be lost if this question is not added to the paper !");
-          }
-        }
-      }
-      submit = '';
-    }
-    return true;
-  }
-
-  var submit = '';
-  function AddToBank() {
-    submit = 'AddToBank';
-  }
-
-  function showTab(tabID) {
-    if (tabID == 'editortab') {
-      document.getElementById('editortab').style.display = 'block';
-      document.getElementById('mappingtab').style.display = 'none';
-    } else if (tabID == 'mappingtab') {
-      document.getElementById('editortab').style.display = 'none';
-      document.getElementById('mappingtab').style.display = 'block';
-    }
-  }
-</script>
 <script language="JavaScript" src="../../javascript/mapping_tab.js"></script>
 <script language="JavaScript" src="../../javascript/metadata.js"></script>
 <?php echo $cfg_editor_javascript; ?>
 <script language="JavaScript" src="../../javascript/staff_help.js"></script>
+<script language="JavaScript" src="../../javascript/jquery-1.6.1.min.js"></script>
+<script language="JavaScript">
+$(function() { $('#add_form').submit(checkForm); });
+
+var cancel = 0;
+function formCancel() {
+  cancel = 1;
+}
+
+function checkForm() {
+  if (cancel != 0) {
+    return true;
+  }
+  <?php
+  if($cfg_editor_name == 'tinymce') {
+    echo "\t tinyMCE.triggerSave();";
+  }
+  ?>
+  if ($('#leadin').val() == "" || $('#leadin').val() == "&nbsp;" || $('#leadin').val() == "<p>&nbsp;</p>" || $('#leadin').val() == "<div>&nbsp;</div>" || $('#leadin').val() == "<br />") {
+    alert ("Please enter a Leadin.");
+    return false;
+  }
+
+  var correct_no = 0;
+  var options_used = 0;
+  for (var i=1; i<=20; i++) {
+    if ($('#correct' + i).prop('checked') == true) {
+    	correct_no++;
+    }
+    if ($('#option_text' + i).val() != "" || $('#omedia' + i).val() != "") {
+	    options_used++;
+    }
+  }
+
+  if (options_used < 2) {
+    alert ("Please enter at least one option for this question. Although only one does make the question quite easy!");
+    return false;
+  }
+  if (correct_no == 1) {
+    if (confirm("There is only one correct answer, this would be better as a MCQ question type.\rDo you wish to convert this question to MCQ?")) {
+	    $('#mcqconvert').val(1);
+    }
+  }
+
+  if ((options_used / 2) < correct_no) {
+    alert ("WARNING: You have " + options_used + " options of which " + correct_no + " are correct.\nThe examinee will automatically gain " + (correct_no - (options_used - correct_no))  + " point(s).\n\nDecrease the number of correct answers or add more\ndistractors.");
+    return false;
+  }
+
+  if(submit != '') {
+    var modules = $('#modules').val();
+    var modulesArray = modules.split(',');
+    for(var j = 0; j < modulesArray.length; j++) {
+      var objcount = $('#' + modulesArray[j] + '_objectiveCount').val();
+      for(var i = 0; i < objcount; i++) {
+        var cb = $('#' + modulesArray[j] + 'obj' + i).prop('checked');
+        if(cb == true) {
+          submit = '';
+          return confirm("WARNING: All mappings will be lost if this question is not added to the paper !");
+        }
+      }
+    }
+    submit = '';
+  }
+  return true;
+}
+
+var submit = '';
+function AddToBank() {
+  submit = 'AddToBank';
+}
+
+function showTab(tabID) {
+  if (tabID == 'editortab') {
+    document.getElementById('editortab').style.display = 'block';
+    document.getElementById('mappingtab').style.display = 'none';
+  } else if (tabID == 'mappingtab') {
+    document.getElementById('editortab').style.display = 'none';
+    document.getElementById('mappingtab').style.display = 'block';
+  }
+}
+</script>
 </head>
 
 <body onLoad="document.add_form.theme.focus();">
-<form name="add_form" method="post" onsubmit="return checkForm()" action="<?php echo $_SERVER['PHP_SELF']; ?>" enctype="multipart/form-data">
+<form id="add_form" name="add_form" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>" enctype="multipart/form-data">
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
   <tr height="70" style="background-color:#DFECFF">
     <td width="400">
@@ -264,8 +263,8 @@ if (isset($_POST['addbank']) or isset($_POST['addpaper'])) {
         echo "<tr class=\"option\" $hidden>\n<td colspan=\"2\" style=\"text-align:right; font-size:90%\"><strong>Correct?</strong></td>\n</tr>\n";
         echo "<tr class=\"option\" $hidden>\n<td class=\"field\">";
         if ($option_no <= 3) echo '<span class="mandatory">*</span>&nbsp;';
-        echo "Option Text</td>\n<td><textarea name=\"option_text" . $option_no . "\" cols=\"100\" style=\"width:700px\" rows=\"1\"></textarea>\n<input type=\"checkbox\" name=\"correct" . $option_no . "\" id=\"correct" . $option_no . "\" value=\"1\" />\n</td>\n</tr>\n";
-        echo "<tr class=\"option\" $hidden>\n<td class=\"field\">Media</td><td><input type=\"file\" size=\"70\" name=\"omedia$option_no\" /></td>\n</tr>\n";
+        echo "Option Text</td>\n<td><textarea id=\"option_text" . $option_no . "\" name=\"option_text" . $option_no . "\" cols=\"100\" style=\"width:700px\" rows=\"1\"></textarea>\n<input type=\"checkbox\" id=\"correct" . $option_no . "\" name=\"correct" . $option_no . "\" id=\"correct" . $option_no . "\" value=\"1\" />\n</td>\n</tr>\n";
+        echo "<tr class=\"option\" $hidden>\n<td class=\"field\">Media</td><td><input type=\"file\" size=\"70\" id=\"omedia$option_no\" name=\"omedia$option_no\" /></td>\n</tr>\n";
         echo "<tr class=\"option\" $hidden>\n<td class=\"field\">Feedback if Right</td><td><textarea name=\"correct_feedback" . $option_no . "\" cols=\"100\" style=\"width:700px\" rows=\"2\"></textarea></td>\n</tr>\n";
         echo "<tr class=\"option\" $hidden>\n<td class=\"field\">Feedback if Wrong</td><td><textarea name=\"incorrect_feedback" . $option_no . "\" cols=\"100\" style=\"width:700px\" rows=\"2\"></textarea></td>\n</tr>\n";
       }
