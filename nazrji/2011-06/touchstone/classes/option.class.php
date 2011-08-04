@@ -39,21 +39,42 @@ Class Option {
   public $correct = '';
   public $marks = null;
   
+  private static $_fields = array('question_id', 'text', 'media', 'media_width', 'media_height', 'correct_fback', 'incorrect_fback', 'correct', 'marks');
   private $_required_fields = array('question_id', 'correct', 'marks');
+  private $_mysqli = null;
+  private $_data = array();
   
   /**
    * Create a new option object by either loading an existing option from the database or populating
    * properties from an associative array
    * @param mixed $data
    */
-  function __construct($data = -1) {
+  function __construct($mysqli, $data = -1) {
+    // Store the database connection reference
+    $this->_mysqli = $mysqli;
+    
+    // Array of references to the fields.  Allows succinct use of call_user_func_array
+    foreach(self::$_fields as $field) {
+      $this->_data[] = &$this->$field;
+    }
+    
     // Check the type of $data
-    
-    // If it is an int use it as an ID for the database lookup
-    
-    // If it is an array, assume an associative array of fields for creating a new object (but not saving it to the database
-    
-    // If it is -1 (i.e. not specified) create a new empty object
+    if(is_array($data)) {
+      // If it is an array, assume an associative array of fields for creating a new object (but not 
+      // saving it to the database)
+      foreach($data as $field => $val) {
+        $this->$field = $val;
+      }
+    } elseif(is_int($data)) {
+      // If it is an int use it as an ID for the database lookup
+      // If it is -1 (i.e. not specified) create a new empty object
+      if($data != -1) {
+        $this->id = $data;
+        $this->get_option();
+      }
+    } else {
+      throw new DataTypeException('Invalid type for constructor data');
+    }
   }
   
   /**
@@ -75,7 +96,15 @@ Class Option {
     return true;
   }
   
-  // STATIC FUNCTIONS
+  // STATIC METHODS
+  
+  /**
+   * Get an array with the names of the properties of this class
+   * @return array Array of property names
+   */
+  public static function get_field_array() {
+    return self::$_fields;
+  }
   
   /**
    * Get a list of options for the given question
@@ -97,7 +126,24 @@ Class Option {
     return true;
   }
   
-  // PRIVATE FUNCTIONS
+  // PRIVATE METHODS
+  
+  /**
+   * Get the actual data for the option from the database
+   */
+  private function get_option() {
+    $o_query = <<< QUERY
+SELECT o_id, option_text, o_media, o_media_width, o_media_height, feedback_right, feedback_wrong, correct, marks
+FROM options
+WHERE id_num = ?
+QUERY;
+    $result = $this->_mysqli->prepare($o_query);
+    $result->bind_param('i', $this->id);
+    $result->execute();
+    $result->store_result();
+    call_user_func_array(array($result, "bind_result"), $this->_data);
+    $result->fetch();
+  }
   
   private function validate() {
     $rval = true;
