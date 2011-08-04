@@ -10,3 +10,19 @@ input.error {
 label.error {
 	display: none;
 }
+
+#major-error {
+	width: 400px;
+  margin: 0 auto;
+  padding: 12px;
+  border: 1px solid #ccc;
+  background: url('../artwork/orange_alert_48.png') no-repeat 12px 12px;
+}
+
+#major-error-inner {
+  margin-left: 60px;
+}
+
+#major-error-inner h1 {
+  color: #c80000;
+}

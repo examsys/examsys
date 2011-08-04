@@ -62,12 +62,14 @@ Class Question {
   private $_mysqli = null;
   private $_data = array();
   
+  public static $types = array('blank' => 'Fill in the Blank', 'calculation' => 'calculation', 'dichotomous' => 'Dichotomous', 'extmatch' => 'Extended Matching', 'flash' => 'Flash', 'hotspot' => 'Image Hotspot', 'info' => 'Information Block', 'keyword_based' => 'Keyword Based', 'labelling' => 'Labelling', 'likert' => 'Likert Scale', 'matrix' => 'Matrix', 'mcq' => 'Multiple Choice', 'mrq' => 'Multiple Response', 'random' => 'Random', 'rank' => 'Ranking', 'sct' => 'Script COncordance', 'textbox' => 'Text Box', 'timedate' => 'Time / Date');
+  
   /**
    * Create a new question object by either loading an existing question from the database or populating
    * properties from an associative array
    * @param mixed $data
    */
-  function __construct($mysqli, $data = -1) {
+  function __construct($mysqli, $data = null) {
     // Store the database connection reference
     $this->_mysqli = $mysqli;
     
@@ -83,14 +85,11 @@ Class Question {
       foreach($data as $field => $val) {
         $this->$field = $val;
       }
-    } elseif(is_int($data)) {
+    } elseif(ctype_digit($data)) {
       // If it is an int use it as an ID for the database lookup
-      // If it is -1 (i.e. not specified) create a new empty object
-      if($data != -1) {
-        $this->id = $data;
-        $this->get_question();
-      }
-    } else {
+      $this->id = $data;
+      $this->get_question();
+    } elseif ($data !== null) {
       throw new DataTypeException('Invalid type for constructor data');
     }
   }

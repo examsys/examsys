@@ -1,0 +1,336 @@
+html, body {
+	height: 100%;
+	max-height: 100%;
+}
+
+body {
+	background-color:#F1F5FB;
+	font-family:Arial,sans-serif;
+	font-size:100%;
+	margin:0px
+}
+
+h1 {
+  margin: 0;
+  color: black;
+  font: 32px/36px 'Arial Black', Arial, sans-serif;
+}
+
+h2 {
+  font-family:Arial,sans-serif; 
+  font-weight:bold;
+  font-size:130%;
+  color:#6487DC;
+}
+
+h3 {
+  font-family: Arial,sans-serif; 
+  font-weight: bold;
+  font-size: 100%;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+table {
+	 border-collapse:collapse;
+}
+
+th, td {
+  margin:0;
+  padding: 2px 3px;
+}
+
+ul {
+  padding: 0;
+}
+
+p {
+	font-size: 90%;
+}
+
+/* General classes */
+.hide {
+	display: none;
+}
+
+.clearfix:after {
+    content: ".";
+    display: block;
+    height: 0;
+    font-size: 0;
+    clear: both;
+    visibility: hidden;
+}
+
+.message {
+  color: #666;
+  text-align: center;
+  font-size: 90%;
+}
+
+.note {
+  font-family: Arial,sans-serif;
+  font-size:90%;
+  font-weight:normal;
+  color:#808080;
+}
+
+.subheading {
+  font: 18px/18px Arial, sans-serif;
+  font-weight:normal;
+  padding-bottom: 6px;
+}
+
+.mandatory {
+  font-family:'Courier New';
+  font-weight:bold;
+  color:#C00000
+}
+
+.warning {
+	color: #800000;
+}
+	
+.alt {
+  background-color: #e3e3e3;
+}
+
+#major-error.edit-spacer {
+	margin-top: 80px;
+}
+
+#page-header {
+	width: 100%;
+	padding: 4px 0 0 0;
+  background: #dfecff url('../artwork/edit_question_small.png') no-repeat 8px 2px;
+  position: fixed;
+  top: 0;
+}
+
+#page-header-inner {
+  padding: 0 0 12px 64px;
+}
+
+#page-header-inner p {
+  margin: 0;
+  font-weight: bold;
+}
+
+#page-help {
+	float: right;
+	margin: 2px 5px 0 0;
+}
+
+.question-stats {
+	margin: 2px 4px 0 0;
+	float: right;
+	font-size: 90%;
+}
+
+/* Tabs */
+.tab-bar {
+  height: 34px;
+  background-color: #1e3c7b;
+}
+
+.tab-holder {
+  height: 21px;
+  background-color: #dfecff;
+}
+
+.tabs {
+  margin: 0;
+  padding: 0;
+}
+
+.tabs li {
+	padding-top: 2px;
+  width: 126px;
+  height: 19px;
+  float: left;
+  list-style: none;
+  text-align: center;
+  background: #dfecff url('../artwork/tab_off.gif') no-repeat top left;
+}
+
+.tabs li.on {
+  background-image: url('../artwork/tab_on.gif');
+}
+
+.tabs li a {
+	display: block;
+  color: white;
+  font-weight: bold;
+  font-size: 90%;
+  text-decoration: none;
+}
+
+#changes, #comments, #mapping {
+	display: none;
+}
+
+#tabbed-content {
+  height: 100%;
+  overflow: auto;
+  padding: 95px 10px 80px 10px;
+}
+
+#button-bar {
+	width: 100%;
+	padding: 20px 0 20px 0;
+	text-align: center;
+	position: fixed;
+	bottom: 0;
+	background-color: #dfecff;
+	border-top: 1px solid #1e3c7b;
+}
+
+/* Form */
+.form {
+	width: 800px;
+	margin: 0 auto 24px auto;
+}
+
+.form input.form-old, .form textarea.form-old {
+	display: none;
+}
+
+.form-large {
+  width: 643px;
+}
+
+.form-med-large {
+  width: 554px;
+}
+
+.form-med {
+  width: 410px;
+}
+
+.form-small {
+  width: 190px;
+}
+
+.form th {
+  width: 134px;
+  text-align: right;
+  font-weight: bold;
+  font-size: 85%;
+  color: #333;
+  padding-right: 6px;
+}
+
+.form.vertical th {
+  width: auto;
+  text-align: left;
+}
+
+.form .small {
+	width: 60px;
+	text-align: center;
+}
+
+textarea, input[type=text], select {
+	font-family:Arail,sans-serif;
+	font-size:90%;
+	border: 1px solid #7F9DB9
+}
+
+.radio-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.radio-list.horizontal li {
+  float: left;
+  padding-right: 12px;
+}
+
+.radio-list label {
+	width: 100%;
+  font-size: 90%;
+}
+
+.radio-list label.fullwidth {
+  display: block;
+  float: left;
+}
+
+.radio-list label.fullwidth:hover {
+  background-color: #eee;
+}
+
+.radio-list label.fullwidth.on {
+	background-color: #b3c8e8;
+}
+	
+.select-area {
+  float: left;
+}
+
+.select-group {
+	height: 300px;
+	max-height: 300px;
+	overflow: auto;
+	background-color: #fff;
+	border: 1px solid #7f9db9;
+	
+}
+
+.select-group h4 {
+	color: #1e3287;
+	padding: 0;
+	margin: 8px 0;
+	font-size: 80%;
+	line-height: 100%;
+	border-bottom: 1px solid #d9d9d9;
+}
+
+#keyword-select {
+	width: 270px;
+	margin-right: 12px;
+}
+
+#team-select {
+	width: 518px;
+}
+
+/* 'data' tables */
+.data {
+	width: 100%;
+  font-size: 90%;
+	border: 1px solid #ccc;
+}
+
+.data th {
+	text-align: left;
+  border-bottom: 1px solid #ccc;
+}
+
+.data-small {
+	width: 12%;
+}
+
+/* Mapping */
+.objectives li {
+	margin: 0;
+	list-style: none;
+  font-size: 90%;
+}
+
+.objectives .top {
+  background: url('../artwork/plus.png') no-repeat 0px 2px;
+  padding-left: 16px;
+  margin-bottom: 6px;
+}
+
+.objectives .top.open {
+  background: url('../artwork/minus.png') no-repeat 0px 2px;
+}
+
+.objectives .top a {
+	color: #316AC5;
+	font-weight: bold;
+	text-decoration: none;
+}
