@@ -22,15 +22,17 @@
 * @package
 */
 
-// TODO: handle errors (i.e. question not found)
 // TODO: handle keyword based and random
 // TODO: validation in JS
 // TODO: replace comment OK etc. icons with CSS BG image?
 
 require '../../include/staff_auth.inc';
 require_once '../../classes/question.class.php';
+require_once '../../classes/logger.class.php';
+require '../../include/edit.inc';
 
 $question = null;
+$logger = new Logger($mysqli);
 
 $critical_error = '';
 
@@ -52,7 +54,226 @@ if(empty($_REQUEST['q_id'])) {
 } else {
   // We're editing an existion question
   
-  $question = new Question($mysqli, $_REQUEST['q_id']);
+  try {
+    $question = new Question($mysqli, $_REQUEST['q_id']);
+  } catch (Exception $ex) {
+    $critical_error = $ex->getMessage();
+  }
+}
+
+if($critical_error == '') {
+  // Populate an array containing existing values so that we can track changes
+  $part_names = $question->get_editable_fields();
+  $old_values = populate_old_values($question, $part_names);
+  
+  
+  // Save data
+  // TODO: Save 'Correct'
+  // TODO: 'Limited Save'
+  if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
+  //  if ($_POST['correct'] != $_POST['old_correct']) {
+  //    // Update the 'options' table with the new correct answer.
+  //    $result = $mysqli->prepare("UPDATE options SET correct=? WHERE o_id=?");
+  //    $result->bind_param('si', $_POST['correct'], $q_id);
+  //    $result->execute();  
+  //    $result->close();
+  //
+  //    // Record the change in 'track_changes'.
+  //    $result = $mysqli->prepare("INSERT INTO track_changes VALUES (NULL, 'Post Exam Answer change',?,$userID,?,?,NOW(),'Correct Answer')");
+  //    $result->bind_param('iss', $q_id, $_POST['old_correct'], $_POST['correct']);
+  //    $result->execute();  
+  //    $result->close();
+  //
+  //    // Remark the student's answers in 'log2'.
+  //    $result = $mysqli->prepare("SELECT DISTINCT user_answer FROM log2 WHERE q_id=? AND q_paper=?");
+  //    $result->bind_param('ii', $q_id, $_POST['paperID']);
+  //    $result->execute();  
+  //    $result->store_result();
+  //    $result->bind_result($user_answer);
+  //    while ($row = $result->fetch()) {
+  //      if ($user_answer == $_POST['correct']) {
+  //        $updateLog = $mysqli->prepare("UPDATE log2 SET mark=1 WHERE user_answer=? AND q_id=? AND q_paper=?");
+  //        $updateLog->bind_param('sii', $user_answer, $q_id, $_POST['paperID']);
+  //        $updateLog->execute();  
+  //        $updateLog->close();
+  //      } else {
+  //        $updateLog = $mysqli->prepare("UPDATE log2 SET mark=0 WHERE user_answer=? AND q_id=? AND q_paper=?");
+  //        $updateLog->bind_param('sii', $user_answer, $q_id, $_POST['paperID']);
+  //        $updateLog->execute();  
+  //        $updateLog->close();
+  //      }
+  //    }
+  //    $result->free_result();
+  //    $result->close();
+  //  }
+  //  redirect();
+  } elseif (isset($_POST['submit']) and ($_POST['submit'] == 'Save Changes' or $_POST['submit'] == 'Limited Save')) {
+    if ($question->id == -1 or check_fullSave($question->id,$mysqli)) {
+      // Write out curriculum mapping.
+  //    saveObjMappings($_POST['paperID'],$q_id,$mysqli);
+  //
+      $changes = false;
+      $part_names = $question->get_editable_fields();
+      foreach($part_names as $section_name) {
+        if(isset($_POST["$section_name"])) {
+          $question->$section_name = $_POST["$section_name"];
+        }
+      }
+      $question->scenario = (trim(strip_tags($question->scenario)) == '') ? '' : $question->scenario;
+      
+      // Strip MS Office HTML.
+      $question->scenario = clearMSOtags($question->scenario);
+      $question->leadin = clearMSOtags($question->leadin);
+  // 
+  //    // Upload Image (if exists) onto server
+  //    if ($_FILES['q_media']['name'] != $_POST['old_q_media'] and ($_FILES['q_media']['name'] != 'none' and $_FILES['q_media']['name'] != '')) {
+  //      if ($_POST['old_q_media'] != '') {
+  //        deleteMedia($_POST['old_q_media']);
+  //      }
+  //      $unique_name = uploadFile('q_media',$tmp_media_width,$tmp_media_height);
+  //      $changes = true;
+  //    } else {
+  //      // If the media has not changed set the variables back to the old media settings before the update query.
+  //      $unique_name = $_POST['old_q_media'];
+  //      $tmp_media_width = $_POST['old_q_media_width'];
+  //      $tmp_media_height = $_POST['old_q_media_height'];
+  //      if (isset($_POST['delete_media0']) AND $_POST['delete_media0'] == '1') {
+  //        deleteMedia($_POST['old_q_media']);
+  //        $unique_name = '';
+  //        $tmp_media_width = 0;
+  //        $tmp_media_height = 0;
+  //        $changes = true;
+  //      }
+  //    }
+  //    
+  //    $old_q_media = $_POST['old_q_media'];
+  //    $q_media = $unique_name;
+  //
+  //    if ($tmp_media_width == '') {
+  //      $tmp_media_width = 0;
+  //      $tmp_media_height = 0;
+  //    }
+  //
+      foreach($part_names as $section_name) {
+        if ($old_values[$section_name] != $question->$section_name) $changes = true;
+      }
+  //
+  //    saveKeywords($q_id, $userID, $changes, true, $mysqli);
+  //    
+  //    $question_teams = getTeams();
+  //    record_trackChanges('Edit Question', $q_id, $_POST['old_teams'], $question_teams, 'teams', $userID, $changes);
+  //   
+  //    for ($option_no=1; $option_no<20; $option_no++) {
+  //      $option_changes = false;
+  //      $old_media_deleted = false;
+  //
+  //      $old_option_text = $_POST["old_option_text$option_no"];
+  //      $old_option_media = $_POST["old_option_media$option_no"];
+  //      
+  //      if (isset($_POST["delete_media$option_no"]) AND $_POST["delete_media$option_no"] == '1') {
+  //        deleteMedia($old_option_media);
+  //        $tmp_option_media = '';
+  //        $tmp_width = 0;
+  //        $tmp_height = 0;
+  //        $old_media_deleted = true;
+  //      }
+  //      
+  //      $tmp_option_media = $_FILES["new_option_media$option_no"]['name'];
+  //      if ($_POST["optionid$option_no"] != '' and $_POST["new_option_text$option_no"] == '' and $tmp_option_media == '' and ($old_option_media == '' or $old_media_deleted)) {
+  //        // Delete operation.
+  //        $temp_id = $_POST["optionid$option_no"];
+  //        $result = $mysqli->prepare("DELETE FROM options WHERE id_num=?");
+  //        $result->bind_param('i', $temp_id);
+  //        $result->execute();  
+  //        $result->close();
+  //  
+  //        $result = $mysqli->prepare("INSERT INTO track_changes VALUES (NULL, 'Deleted Option',?,$userID,?, '',NOW(),'Option #" . $option_no . "')");
+  //        $result->bind_param('is', $q_id, $_POST["old_option_text$option_no"]);
+  //        $result->execute();  
+  //        $result->close();
+  //        $option_changes = true;
+  //      } elseif ($_POST["optionid$option_no"] != '' and ($_POST["new_option_text$option_no"] !== $old_option_text or $_POST["feedback_right$option_no"] != $_POST["old_feedback_right$option_no"] or $_FILES["new_option_media$option_no"]['name'] != $_POST["old_option_media$option_no"])) {
+  //        // Edit operation.
+  //        if ($_FILES["new_option_media$option_no"]['name'] != '' and $_FILES["new_option_media$option_no"]['name'] != $_POST["old_option_media$option_no"]) {
+  //          if(!$old_media_deleted and isset($_POST["old_option_media$option_no"]) and $_POST["old_option_media$option_no"] != '') {
+  //            deleteMedia($_POST["old_option_media$option_no"]);
+  //          }
+  //          if ($tmp_option_media != '') {
+  //            $tmp_option_media = uploadFile("new_option_media$option_no",$tmp_width,$tmp_height);
+  //            $option_changes = true;
+  //          }
+  //        } else {
+  //          if(!$old_media_deleted) {
+  //            $tmp_option_media = $_POST["old_option_media$option_no"];
+  //            $tmp_width = $_POST["old_option_media_width$option_no"];
+  //            $tmp_height = $_POST["old_option_media_height$option_no"];
+  //          }
+  //          $option_changes = true;
+  //        }
+  //      } elseif (($_POST["new_option_text$option_no"] != '' or $tmp_option_media != '') and $old_option_text == '' and $_POST["old_option_media$option_no"] == '') {
+  //        // Add operation.
+  //        $tmp_width = 0;
+  //        $tmp_height = 0;
+  //        $tmp_option_media = uploadFile("new_option_media$option_no", $tmp_width, $tmp_height);
+  //        
+  //        $option_changes = true;
+  //        $tmp_new_option_text = $_POST["new_option_text$option_no"];
+  //        $tmp_feedback_right = $_POST["feedback_right$option_no"];
+  //        $result = $mysqli->prepare("INSERT INTO options VALUES (?,?,?, '$tmp_width', '$tmp_height', ?, '',?, NULL, 1)");
+  //        $result->bind_param('issss', $q_id, $tmp_new_option_text, $tmp_option_media, $tmp_feedback_right,$_POST['correct']);
+  //        $result->execute();  
+  //        $option_id = $mysqli->insert_id;
+  //        $result->close();
+  //  
+  //        $result = $mysqli->prepare("INSERT INTO track_changes VALUES (NULL,'New Option',?,$userID,'',?,NOW(),'Option #" . $option_no . "')");
+  //        $result->bind_param('is', $q_id, $tmp_new_option_text);
+  //        $result->execute();  
+  //        $result->close();
+  //      }
+  //      if ($option_changes == true) {
+  //        $temp_id = $_POST["optionid$option_no"];
+  //        $result = $mysqli->prepare("UPDATE options SET option_text=?, o_media=?, o_media_width='$tmp_width', o_media_height='$tmp_height', correct=?, feedback_right=? WHERE id_num=?");
+  //        $tmp_option_text =  $_POST["new_option_text$option_no"];
+  //        $tmp_feedback_right =  $_POST["feedback_right$option_no"];
+  //        $result->bind_param('ssssi',$tmp_option_text, $tmp_option_media, $_POST['correct'], $tmp_feedback_right, $temp_id);
+  //        $result->execute();  
+  //        $result->close();
+  //        record_trackChanges('Edit Question', $q_id, $old_option_text, $tmp_option_text, 'Option #' . $option_no, $userID, $changes);
+  //      }
+  //    }
+  //    
+  //    if ($_POST['correct'] != $_POST['old_correct']) {
+  //      $result = $mysqli->prepare("UPDATE options SET correct=? WHERE o_id=?");
+  //      $result->bind_param('si', $_POST['correct'], $q_id);
+  //      $result->execute();  
+  //      $result->close();
+  //      record_trackChanges('Edit Question', $q_id, $_POST['old_correct'], $_POST['correct'], 'Correct Answer', $userID, $changes);
+  //    }
+  //    
+  //    save_external_responses($mysqli);
+  // 
+      if ($changes) {
+        try {
+      	  if (!$question->save()) {
+      	    $errors[] = 'Error saving data. Please try again';
+      	  }
+  
+          // Record changes
+          foreach($part_names as $section_name) {
+            $logger->check_and_track_change('Edit Question', $question->id, $userID, $old_values[$section_name], $question->$section_name, $section_name, $changes);
+          }
+      	} catch (ValidationException $vex) {
+      	  $errors[] = $vex->getMessage();
+      	}
+      }
+    } else {
+      // Limited save
+  //    do_limitedSave($q_id, $mysqli, $userID);
+    }
+  //  redirect();
+  } elseif (isset($_POST['submit']) and $_POST['submit'] == 'Cancel') {
+    redirect();
+  }
 }
 
 $mode = (empty($_REQUEST['q_id'])) ? 'Add' : 'Edit';
@@ -68,15 +289,14 @@ if (!empty($question->type)) {
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<title>Edit MCQ Question (new)</title>
+<title><?php echo $mode . ' Question - ' . $q_type_full ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
 <link rel="stylesheet" href="../../css/screen.css" type="text/css" />
 <link rel="stylesheet" href="../../css/add_edit_new.css" type="text/css" />
 
-<script type="text/javascript" src="../../javascript/tiny_mce.js"></script>
-<script type="text/javascript" src="../../javascript/tiny_config.js"></script>
+<?php echo $cfg_editor_javascript; ?>
 <script type="text/javascript" src="../../javascript/staff_help.js"></script>
 <script type="text/javascript" src="../../javascript/jquery-1.6.1.min.js"></script>
 <script type="text/javascript" src="../../javascript/jquery.addedit.js"></script>
@@ -124,9 +344,14 @@ if($critical_error != '') {
   </div>
 <?php
 } else {
+  $query_string = '';
+  if($question->id != -1) {
+    $query_string = '?q_id=' . $question->id;
+    $query_string .= (isset($_REQUEST['q_no'])) ? '&q_no=' . $_REQUEST['q_no'] : '';
+  }
 ?>
 
-	<form name="edit_form" method="post" onsubmit="return checkForm()" action="/touchstone/question/edit/mcq.php?q_id=53669" enctype="multipart/form-data">
+	<form name="edit_form" method="post" onsubmit="return checkForm()" action="./<?php echo $query_string ?>" enctype="multipart/form-data">
     <div id="tabbed-content">
 			<div id="editor" class="tab-area">
         
@@ -135,270 +360,8 @@ if($critical_error != '') {
 						<span class="mandatory">*</span> Indicates a <strong>mandatory</strong> field that must be completed.
 					</p>
 				</div>
-
-				<table id="q-details" class="form" summary="Edit question details">
-					<tbody>
-            <tr>
-              <th><label for="theme">Theme/Heading</label></th>
-              <td>
-                <textarea id="theme" name="theme" cols="100" rows="5" class="form-large"></textarea>
-                <textarea name="old_theme" cols="100" rows="5" class="form-old"></textarea>
-                <input name="checkout_author" value="17276" type="hidden" class="form-old" />
-              </td>
-            </tr>
-            <tr>
-              <th><label for="notes">Notes</label><br /><span class="note">(visible to students)</span></th>
-              <td>
-                <textarea id="notes" name="notes" cols="100" rows="2" class="form-large"></textarea>
-                <textarea name="old_notes" class="form-old" rows="2" cols="40"></textarea>
-              </td>
-            </tr>
-            <tr>
-              <th class="field"><label for="scenario">Scenario</label><br /><span class="note">(background info)</span></th>
-              <td colspan="2">
-                <textarea id="scenario" name="scenario" cols="100" rows="5" class="mceEditor form-large">&lt;p&gt;&lt;br _mce_bogus="1"&gt;&lt;/p&gt;</textarea>
-                <textarea id="old_scenario" name="old_scenario" cols="100" rows="5" class="form-old"></textarea>
-              </td>
-            </tr>
-            <tr>
-              <th><label for="q_media">Change Media</label></th>
-              <td>
-                <input id="q_media" name="q_media" size="65" type="file" />
-                <input name="old_q_media" value="" type="hidden" />
-                <input name="old_q_media_width" value="0" type="hidden" />
-                <input name="old_q_media_height" value="0" type="hidden" />
-              </td>
-            </tr>
-            <tr>
-              <th><span class="mandatory">*</span> <label for="leadin">Lead-in</label><br /><span class="note">(the question)</span></th>
-              <td>
-                <textarea id="leadin" name="leadin" cols="100" rows="5" class="mceEditor form-large">&lt;p&gt;xxxxxxxAn
-                  otherwise healthy 33-year-old man has mild weakness and occasional 
-                  episodes of steady, severe abdominal pain with some cramping but no 
-                  diarrhea. One aunt and a cousin have had similar episodes. During an 
-                  episode, his abdomen is distended, and bowel sounds are decreased. 
-                  Neurologic examination shows mild weakness in the upper arms. These 
-                  findings suggest a defect in the biosynthetic pathway for:&lt;/p&gt;
-                </textarea>
-                <textarea name="old_leadin" id="old_leadin" cols="100" rows="5" class="form-old">
-                  xxxxxxxAn
-                  otherwise healthy 33-year-old man has mild weakness and occasional 
-                  episodes of steady, severe abdominal pain with some cramping but no 
-                  diarrhea. One aunt and a cousin have had similar episodes. During an 
-                  episode, his abdomen is distended, and bowel sounds are decreased. 
-                  Neurologic examination shows mild weakness in the upper arms. These 
-                  findings suggest a defect in the biosynthetic pathway for:</textarea>
-              </td>
-            </tr>
-            <tr>
-              <th><label for="score_method">Presentation</label></th>
-              <td>
-                <select id="score_method" name="score_method">
-                  <option value="vertical" selected="selected">Vertical Option Button</option>
-                  <option value="vertical_other">Vertical Option Buttons (with 'other' textbox)</option>
-                  <option value="horizontal">Horizontal Option Button</option>
-                  <option value="dropdown">Dropdown List</option>
-                </select>
-                <input name="old_score_method" value="vertical" type="hidden" />
-              </td>
-            </tr>
-            <tr>
-              <th><label for="option_order">Option Order</label></th>
-              <td>
-                <select id="option_order" name="option_order">
-                  <option value="display order" selected="selected">Display Order</option>
-                  <option value="alphabetic">Alphabetic</option>
-                  <option value="random">Random</option>
-                </select>
-                <input name="old_option_order" value="display order" type="hidden" />
-              </td>
-            </tr>
-					</tbody>
-				</table>
         
-        <table id="q-options" class="form" summary="Edit question options">
-          <tbody>
-            <tr>
-              <th colspan="3">&nbsp;</th>
-              <th class="small"><strong>Correct Answer</strong></th>
-            </tr>
-          </tbody>
-          <tbody class="option">
-            <tr>
-              <th><span class="mandatory">*</span><label for="new_option_text1"><strong>1.</strong></label></th>
-              <td colspan="2">
-                <textarea name="new_option_text1" id="new_option_text1" cols="90" rows="2" class="form-med-large">collagen</textarea>
-                <textarea name="old_option_text1" cols="90" rows="2" class="form-old">collagen</textarea>
-                <input name="optionid1" value="280288" type="hidden" />
-              </td>
-              <td class="small"><input id="correct1" name="correct" value="1" type="radio" /></td>
-            </tr>
-            <tr>
-              <td>&nbsp;</td>
-              <th><label for="feedback_right1">Feedback:</label></th>
-              <td>
-                <textarea cols="85" rows="2" id="feedback_right1" name="feedback_right1" class="form-med"></textarea>
-                <textarea name="old_feedback_right1" class="form-old" rows="2" cols="40"></textarea>
-              </td>
-              <td>&nbsp;</td>
-            </tr>
-            <tr>
-              <td>&nbsp;</td>
-              <th><label for="new_option_media1">Change Media:</label></th>
-              <td>
-                <input id="new_option_media1" name="new_option_media1" type="file" size="50" />
-                <input name="old_option_media1" id="old_option_media1" value="" type="hidden" />
-                <input name="old_option_media_width1" value="0" type="hidden" />
-                <input name="old_option_media_height1" value="0" type="hidden" />
-              </td>
-              <td>&nbsp;</td>
-            </tr>
-          </tbody>
-          <tbody class="option">
-            <tr>
-              <th><span class="mandatory">*</span><label for="new_option_text2"><strong>2.</strong></label></th>
-              <td colspan="2">
-                <textarea name="new_option_text2" id="new_option_text2" cols="90" rows="2" class="form-med-large">corticosteroid</textarea>
-                <textarea name="old_option_text2" cols="90" rows="2" class="form-old">corticosteroid</textarea>
-                <input name="optionid1" value="280288" type="hidden" />
-              </td>
-              <td class="small"><input id="correct2" name="correct" value="2" type="radio" /></td>
-            </tr>
-            <tr>
-              <td>&nbsp;</td>
-              <th><label for="feedback_right2">Feedback:</label></th>
-              <td>
-                <textarea cols="85" rows="2" id="feedback_right2" name="feedback_right2" class="form-med"></textarea>
-                <textarea name="old_feedback_right2" class="form-old" rows="2" cols="40"></textarea>
-              </td>
-              <td>&nbsp;</td>
-            </tr>
-            <tr>
-              <td>&nbsp;</td>
-              <th><label for="new_option_media2">Change Media:</label></th>
-              <td>
-                <input id="new_option_media2" name="new_option_media2" type="file" size="50" />
-                <input name="old_option_media2" id="old_option_media2" value="" type="hidden" />
-                <input name="old_option_media_width2" value="0" type="hidden" />
-                <input name="old_option_media_height2" value="0" type="hidden" />
-              </td>
-              <td>&nbsp;</td>
-            </tr>
-          </tbody>
-          <tbody class="option">
-            <tr>
-              <th><span class="mandatory">*</span><label for="new_option_text3"><strong>3.</strong></label></th>
-              <td colspan="2">
-                <textarea name="new_option_text3" id="new_option_text3" cols="90" rows="2" class="form-med-large">fatty acid</textarea>
-                <textarea name="old_option_text3" cols="90" rows="2" class="form-old">fatty acid</textarea>
-                <input name="optionid1" value="280288" type="hidden" />
-              </td>
-              <td class="small"><input id="correct3" name="correct" value="3" type="radio" /></td>
-            </tr>
-            <tr>
-              <td>&nbsp;</td>
-              <th><label for="feedback_right3">Feedback:</label></th>
-              <td>
-                <textarea cols="85" rows="2" id="feedback_right3" name="feedback_right3" class="form-med"></textarea>
-                <textarea name="old_feedback_right3" class="form-old" rows="2" cols="40"></textarea>
-              </td>
-              <td>&nbsp;</td>
-            </tr>
-            <tr>
-              <td>&nbsp;</td>
-              <th><label for="new_option_media3">Change Media:</label></th>
-              <td>
-                <input id="new_option_media3" name="new_option_media3" type="file" size="50" />
-                <input name="old_option_media3" id="old_option_media3" value="" type="hidden" />
-                <input name="old_option_media_width3" value="0" type="hidden" />
-                <input name="old_option_media_height3" value="0" type="hidden" />
-              </td>
-              <td>&nbsp;</td>
-            </tr>
-          </tbody>
-          <tbody class="option hide">
-            <tr>
-              <th><label for="new_option_text4"><strong>4.</strong></label></th>
-              <td colspan="2">
-                <textarea name="new_option_text4" id="new_option_text4" cols="90" rows="2" class="form-med-large">glucose</textarea>
-                <textarea name="old_option_text4" cols="90" rows="2" class="form-old">glucose</textarea>
-                <input name="optionid1" value="280288" type="hidden" />
-              </td>
-              <td class="small"><input id="correct4" name="correct" value="4" type="radio" /></td>
-            </tr>
-            <tr>
-              <td>&nbsp;</td>
-              <th><label for="feedback_right4">Feedback:</label></th>
-              <td>
-                <textarea cols="85" rows="2" id="feedback_right4" name="feedback_right4" class="form-med"></textarea>
-                <textarea name="old_feedback_right4" class="form-old" rows="2" cols="40"></textarea>
-              </td>
-              <td>&nbsp;</td>
-            </tr>
-            <tr>
-              <td>&nbsp;</td>
-              <th><label for="new_option_media4">Change Media:</label></th>
-              <td>
-                <input id="new_option_media4" name="new_option_media4" type="file" size="50" />
-                <input name="old_option_media4" id="old_option_media4" value="" type="hidden" />
-                <input name="old_option_media_width4" value="0" type="hidden" />
-                <input name="old_option_media_height4" value="0" type="hidden" />
-              </td>
-              <td>&nbsp;</td>
-            </tr>
-          </tbody>
-          <tbody class="option hide">
-            <tr>
-              <th><label for="new_option_text5"><strong>5.</strong></label></th>
-              <td colspan="2">
-                <textarea name="new_option_text5" id="new_option_text5" cols="90" rows="2" class="form-med-large">heme</textarea>
-                <textarea name="old_option_text5" cols="90" rows="2" class="form-old">heme</textarea>
-                <input name="optionid1" value="280288" type="hidden" />
-              </td>
-              <td class="small"><input id="correct5" name="correct" value="5" type="radio" /></td>
-            </tr>
-            <tr>
-              <td>&nbsp;</td>
-              <th><label for="feedback_right5">Feedback:</label></th>
-              <td>
-                <textarea cols="85" rows="2" id="feedback_right5" name="feedback_right5" class="form-med"></textarea>
-                <textarea name="old_feedback_right5" class="form-old" rows="2" cols="40"></textarea>
-              </td>
-              <td>&nbsp;</td>
-            </tr>
-            <tr>
-              <td>&nbsp;</td>
-              <th><label for="new_option_media5">Change Media:</label></th>
-              <td>
-                <input id="new_option_media5" name="new_option_media5" type="file" size="50" />
-                <input name="old_option_media5" id="old_option_media5" value="" type="hidden" />
-                <input name="old_option_media_width5" value="0" type="hidden" />
-                <input name="old_option_media_height5" value="0" type="hidden" />
-              </td>
-              <td>&nbsp;</td>
-            </tr>
-          </tbody>
-          <tbody id="next-option-holder">
-            <tr>
-              <th>&nbsp;</th>
-              <td colspan="3">
-                <input id="next-option" value="Add More Options..." type="button" />
-              </td>
-            </tr>
-          </tbody>
-        </table>
-
-        <table id="q-feedback" class="form" summary="Edit question feedback">
-          <tbody>
-            <tr>
-              <th><label for="correct_fback">General Feedback</label></th>
-              <td>
-                <textarea id="correct_fback" name="correct_fback" cols="100" rows="3" class="form-large">right</textarea>
-                <input name="old_correct_fback" value="right" type="hidden" />
-              </td>
-            </tr>
-          </tbody>
-        </table>
+<?php require_once '../../include/question/addedit/' . $question->type . '.php' ?>
 
         <div class="form">
           <h2>Metadata</h2>
@@ -670,11 +633,22 @@ if($critical_error != '') {
     </div>
 
     <div id="button-bar">
-      <input id="submit-save" name="submit-save" value="Save Changes" type="submit" class="submit" />
+      <input type="hidden" name="q_id" value="<?php echo $question->id ?>" />
+      <input id="submit-save" name="submit" value="Save Changes" type="submit" class="submit" />
       <input id="submit-cancel" name="submit-cancel" value="Cancel" onclick="formCancel();" type="submit" class="submit" />
     </div>
   </form>
 <?php
+}
+
+function populate_old_values($question, $part_names) {
+  $old_values = array();
+  
+  foreach ($part_names as $key) {
+    $old_values[$key] = $question->$key;
+  }
+  
+  return $old_values;
 }
 ?>
 </body>

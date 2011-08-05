@@ -1,4 +1,4 @@
-<?php
+  <?php
 // This file is part of TouchStone
 //
 // TouchStone is free software: you can redistribute it and/or modify
@@ -58,6 +58,7 @@ Class Question {
   public $options = array();
   
   private $_fields = array('type', 'theme', 'scenario', 'scenario_plain', 'leadin', 'leadin_plain', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'option_order', 'standards_setting', 'bloom', 'owner_id', 'media', 'media_width', 'media_height', 'group', 'checkout_time', 'checkout_author_id', 'created', 'last_edited', 'locked', 'deleted', 'status');
+  private $_fields_editable = array('theme', 'scenario', 'leadin', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'option_order', 'bloom', 'media', 'status');
   private $_required_fields = array('type', 'leadin', 'score_method', 'option_order', 'owner_id', 'status');
   private $_mysqli = null;
   private $_data = array();
@@ -88,9 +89,11 @@ Class Question {
     } elseif(ctype_digit($data)) {
       // If it is an int use it as an ID for the database lookup
       $this->id = $data;
-      $this->get_question();
+      if (!$this->get_question()) {
+        throw new DatabaseException('Error loading question data.');
+      }
     } elseif ($data !== null) {
-      throw new DataTypeException('Invalid type for constructor data');
+      throw new DataTypeException('Invalid question ID.');
     }
   }
   
@@ -226,6 +229,14 @@ QUERY;
     return $this->leadin_plain;
   }
   
+  /**
+   * The the array of fields (properties) for this class
+   * @return multitype:string 
+   */
+  public function get_editable_fields() {
+    return $this->_fields_editable;
+  }
+  
   
   // STATIC METHODS
   
@@ -276,7 +287,6 @@ QUERY;
     return $qn_arr;
   }
   
-  
   // PRIVATE METHODS
   
   /**
@@ -284,6 +294,9 @@ QUERY;
    */
   private function get_question() {
     // Get the question
+    $found = 0;
+    $success = false;
+    
     $q_query = <<< QUERY
 SELECT q_type, theme, scenario, scenario_plain, leadin, leadin_plain, notes, correct_fback, incorrect_fback, score_method, q_option_order,
  std, bloom, ownerID, q_media, q_media_width, q_media_height, q_group, checkout_time, checkout_authorID, creation_date, last_edited,
@@ -296,33 +309,43 @@ QUERY;
     $result->execute();
     $result->store_result();
     call_user_func_array(array($result, "bind_result"), $this->_data);
-    $result->fetch();
+    if ($result->fetch()) {
+      $success = true;
+      $found = $result->num_rows;
+    }
     $result->close();
     
-    // Build array of references to option data for use in call_user_func_array
-    $opt_fields = Option::get_field_array();
-    $opt_data = array();
-    $params = array();
-    $params[] = &$opt_data['id'];
-    foreach($opt_fields as $field) {
-      $params[] = &$opt_data[$field];
+    if($found > 0) {
+      // Build array of references to option data for use in call_user_func_array
+      $opt_fields = Option::get_field_array();
+      $opt_data = array();
+      $params = array();
+      $params[] = &$opt_data['id'];
+      foreach($opt_fields as $field) {
+        $params[] = &$opt_data[$field];
+      }
+      
+      // Get the options
+      $o_query = <<< QUERY
+  SELECT id_num, o_id, option_text, o_media, o_media_width, o_media_height, feedback_right, feedback_wrong, correct, marks
+  FROM options
+  WHERE o_id = ?
+QUERY;
+      $result = $this->_mysqli->prepare($o_query);
+      $result->bind_param('i', $this->id);
+      $result->execute();
+      $result->store_result();
+      call_user_func_array(array($result, "bind_result"), $opt_data);
+      // TODO: handle 'correctness' more nicely
+      while($success == true and $success = $result->fetch()) {
+        $this->options[$opt_data['id']] = new Option($this->_mysqli, $opt_data);
+      }
+      $x = 3;
+    } else {
+      throw new RecordNotFoundException('Question with ID ' . $this->id . ' not found.');
     }
     
-    // Get the options
-    $o_query = <<< QUERY
-SELECT id_num, o_id, option_text, o_media, o_media_width, o_media_height, feedback_right, feedback_wrong, correct, marks
-FROM options
-WHERE o_id = ?
-QUERY;
-    $result = $this->_mysqli->prepare($o_query);
-    $result->bind_param('i', $this->id);
-    $result->execute();
-    $result->store_result();
-    call_user_func_array(array($result, "bind_result"), $opt_data);
-    // TODO: handle 'correctness' more nicely
-    while($result->fetch()) {
-      $this->options[$opt_data['id']] = new Option($this->_mysqli, $opt_data);
-    }
+    return ($success !== false);
   }
   
   /**
@@ -364,7 +387,6 @@ QUERY;
     
     return $success;
   }
-  
 }
 
 ?>

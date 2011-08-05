@@ -87,13 +87,13 @@ function insert_into_options($o_id, $option_text, $o_media, $o_media_width, $o_m
   return $mysqli->insert_id;
 }
 
-function wysiwyg_editor($name, $replace, $content='', $width=700, $height=70) {
+function wysiwyg_editor($name, $replace, $content='', $width=695, $height=70) {
   global $cfg_editor_name;
 
   $html = '';
   
   if ($cfg_editor_name == 'tinymce') {
-    $html .= "<textarea class=\"mceEditor\" id=\"$replace\" name=\"$replace\" style=\"width:" . $width . "px; height:" . $height . "px\">$content</textarea>\n";
+    $html .= "<textarea class=\"mceEditor\" id=\"$replace\" name=\"$replace\" style=\"width:" . $width . "px; height:" . $height . "px; margin: 0\">$content</textarea>\n";
   } else {
     //If no editor is specified, output plain textarea.
     $height = $height - 6;
@@ -106,7 +106,7 @@ function wysiwyg_editor($name, $replace, $content='', $width=700, $height=70) {
 function option_order($selected = '') {
   $items = array('Display Order','Alphabetic','Random');
   
-  $html = "<select name=\"option_order\">\n";
+  $html = "<select id=\"option_order\" name=\"option_order\">\n";
   foreach ($items as $item) {
     if ($selected == strtolower($item)) {
       $html .= "<option value=\"" . strtolower($item) . "\" selected>$item</option>\n";

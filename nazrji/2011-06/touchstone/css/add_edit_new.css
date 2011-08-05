@@ -37,6 +37,7 @@ table {
 
 th, td {
   margin:0;
+  padding: 0;
   padding: 2px 3px;
 }
 
@@ -105,6 +106,7 @@ p {
   background: #dfecff url('../artwork/edit_question_small.png') no-repeat 8px 2px;
   position: fixed;
   top: 0;
+  z-index: 25;
 }
 
 #page-header-inner {
@@ -183,12 +185,17 @@ p {
 	bottom: 0;
 	background-color: #dfecff;
 	border-top: 1px solid #1e3c7b;
+  z-index: 25;
 }
 
 /* Form */
 .form {
-	width: 800px;
+	width: 846px;
 	margin: 0 auto 24px auto;
+}
+
+.form textarea {
+	padding: 0;
 }
 
 .form input.form-old, .form textarea.form-old {
@@ -196,15 +203,15 @@ p {
 }
 
 .form-large {
-  width: 643px;
+  width: 693px;
 }
 
 .form-med-large {
-  width: 554px;
+  width: 610px;
 }
 
 .form-med {
-  width: 410px;
+  width: 470px;
 }
 
 .form-small {
@@ -212,7 +219,7 @@ p {
 }
 
 .form th {
-  width: 134px;
+  width: 131px;
   text-align: right;
   font-weight: bold;
   font-size: 85%;
