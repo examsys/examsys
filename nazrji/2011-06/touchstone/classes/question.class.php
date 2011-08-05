@@ -26,42 +26,48 @@
 
 require_once 'exceptions.inc.php';
 require_once 'option.class.php';
+require_once 'logger.class.php';
 
 Class Question {
 
   public $id = -1;
-  public $type = null;
-  public $theme = '';
-  public $scenario = '';
+  private $type = null;
+  private $theme = '';
+  private $scenario = '';
   private $scenario_plain = '';
-  public $leadin = '';
+  private $leadin = '';
   private $leadin_plain = '';
-  public $notes = '';
-  public $correct_fback = '';
-  public $incorrect_fback = '';
-  public $score_method = '';
-  public $option_order = null;
-  public $standards_setting = '';
-  public $bloom = null;
-  public $owner_id = null;
-  public $media = '';
-  public $media_width = '';
-  public $media_height = '';
-  public $group = '';
-  public $checkout_time = null;
-  public $checkout_author_id = '';
-  public $created = null;
-  public $last_edited = null;
-  public $locked = null;
-  public $deleted = null;
-  public $status = null;
+  private $notes = '';
+  private $correct_fback = '';
+  private $incorrect_fback = '';
+  private $score_method = '';
+  private $option_order = null;
+  private $standards_setting = '';
+  private $bloom = null;
+  private $owner_id = null;
+  private $media = '';
+  private $media_width = '';
+  private $media_height = '';
+  private $group = '';
+  private $checkout_time = null;
+  private $checkout_author_id = '';
+  private $created = null;
+  private $last_edited = null;
+  private $locked = null;
+  private $deleted = null;
+  private $status = null;
   public $options = array();
   
+  private $_user_id;
   private $_fields = array('type', 'theme', 'scenario', 'scenario_plain', 'leadin', 'leadin_plain', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'option_order', 'standards_setting', 'bloom', 'owner_id', 'media', 'media_width', 'media_height', 'group', 'checkout_time', 'checkout_author_id', 'created', 'last_edited', 'locked', 'deleted', 'status');
   private $_fields_editable = array('theme', 'scenario', 'leadin', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'option_order', 'bloom', 'media', 'status');
   private $_required_fields = array('type', 'leadin', 'score_method', 'option_order', 'owner_id', 'status');
   private $_mysqli = null;
   private $_data = array();
+  private $_modified_fields = array();
+  
+  // Map our 'nice' property names to the database fields
+  private $_field_map = array('type' => 'q_type', 'option_order' => 'q_option_order', 'standards_setting' => 'std', 'owner_id' => 'ownerID', 'media' => 'q_media', 'media_width' => 'q_media_width', 'media_height' => 'q_media_height', 'group' => 'q_group', 'checkout_author_id' => 'checkout_authorID', 'created' => 'creation_date');
   
   public static $types = array('blank' => 'Fill in the Blank', 'calculation' => 'calculation', 'dichotomous' => 'Dichotomous', 'extmatch' => 'Extended Matching', 'flash' => 'Flash', 'hotspot' => 'Image Hotspot', 'info' => 'Information Block', 'keyword_based' => 'Keyword Based', 'labelling' => 'Labelling', 'likert' => 'Likert Scale', 'matrix' => 'Matrix', 'mcq' => 'Multiple Choice', 'mrq' => 'Multiple Response', 'random' => 'Random', 'rank' => 'Ranking', 'sct' => 'Script COncordance', 'textbox' => 'Text Box', 'timedate' => 'Time / Date');
   
@@ -70,9 +76,10 @@ Class Question {
    * properties from an associative array
    * @param mixed $data
    */
-  function __construct($mysqli, $data = null) {
-    // Store the database connection reference
+  function __construct($mysqli, $user_id, $data = null) {
+    // Store the database connection reference and current user
     $this->_mysqli = $mysqli;
+    $this->_user_id = $user_id;
     
     // Array of references to the fields.  Allows succinct use of call_user_func_array for saving
     foreach($this->_fields as $field) {
@@ -104,6 +111,7 @@ Class Question {
    */
   public function save($clear_checkout = true) {
     $success = false;
+    $logger = new Logger($this->_mysqli);
     
     $valid = $this->validate();
     
@@ -118,37 +126,46 @@ Class Question {
       $this->get_scenario_plain();
       $this->get_leadin_plain();
       
+      
       // If $id is -1 we're inserting a new record
       if($this->id == -1) {
         $params = array_merge(array('sssssssssssisisiississsss'), $this->_data);
-        $i_query = <<< QUERY
+        $query = <<< QUERY
 INSERT INTO questions(q_type, theme, scenario, scenario_plain, leadin, leadin_plain, notes, correct_fback, incorrect_fback, score_method, 
 q_option_order, std, bloom, ownerID, q_media, q_media_width, q_media_height, q_group, checkout_time, checkout_authorID, creation_date, 
 last_edited, locked, deleted, status)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 QUERY;
-        $result = $this->_mysqli->prepare($i_query);
-        call_user_func_array (array($result,'bind_param'), $params);
-        $success = $result->execute();
-        if($success)  $this->id = $this->_mysqli->insert_id;
-        $result->close();
       } else {
         // Otherwise we're updating an existing one
         $params = array_merge(array('sssssssssssisisiississsssi'), $this->_data, array(&$this->id));
         $this->last_edited = date("Y-m-d H:i:s");
-        $u_query = <<< QUERY
+        $query = <<< QUERY
 UPDATE questions
 SET q_type = ?, theme = ?, scenario = ?, scenario_plain = ?, leadin = ?, leadin_plain = ?, notes = ?, correct_fback = ?, incorrect_fback = ?, 
 score_method = ?, q_option_order = ?, std = ?, bloom = ?, ownerID = ?, q_media = ?, q_media_width = ?, q_media_height = ?, q_group = ?, 
 checkout_time = ?, checkout_authorID = ?, creation_date = ?, last_edited = ?, locked = ?, deleted = ?, status = ?
 WHERE q_id = ?
 QUERY;
-        $result = $this->_mysqli->prepare($u_query);
-        call_user_func_array (array($result,'bind_param'), $params);
-        $success = $result->execute();
-        $result->close();
       }
+      $result = $this->_mysqli->prepare($query);
+      call_user_func_array (array($result,'bind_param'), $params);
+      $result->execute();
+      $success = ($result->affected_rows > 0);
       
+      if($success) {
+        if($this->id == -1) {
+          $this->id = $this->_mysqli->insert_id;
+        } else {
+          // Log any changes
+          foreach($this->_modified_fields as $field => $value) {
+            $db_field = (in_array($field, array_keys($this->_field_map))) ? $this->_field_map[$field] : $field;
+            $logger->track_change('Edit Question', $this->id, $this->_user_id, $value, $this->$field, $db_field);
+          }
+        }
+      }
+      $result->close();
+            
       if($success) {
         // Call save() on the options too if successful
         foreach($this->options as $oid => $option)
@@ -156,6 +173,8 @@ QUERY;
           $option->save();
         }
       }
+      
+      $this->_modified_fields = array();
     } else {
       throw new ValidationException($valid);
     }
@@ -209,9 +228,68 @@ QUERY;
     return $success;
   }
   
+  public function has_changes() {
+    return (count($this->_modified_fields) > 0);
+  }
+  
   // ACCESSORS
   
   /**
+   * Get the question type
+   * @return string
+   */
+  public function get_type() {
+    return $this->type;
+  }
+  
+  /**
+   * Set the question type
+   * @param string $value
+   */
+  public function set_type($value) {
+    $this->type = $value;
+  }
+  
+  /**
+   * Get the question theme
+   * @return string
+   */
+  public function get_theme() {
+    return $this->theme;
+  }
+  
+  /**
+   * Set the question theme
+   * @param string $value
+   */
+  public function set_theme($value) {
+    if($value != $this->theme) {
+      $this->set_modified_field('theme', $this->theme);
+      $this->theme = $value;
+    }
+  }
+  
+  /**
+   * Get the question scenario
+   * @return string
+   */
+  public function get_scenario() {
+    return $this->scenario;
+  }
+  
+  /**
+   * Set the question scenario
+   * @param string $value
+   */
+  public function set_scenario($value) {
+    $scenario = (trim(strip_tags($value)) == '') ? '' : $value;
+    if($scenario != $this->scenario) {
+      $this->set_modified_field('scenario', $this->scenario);
+      $this->scenario = $value;
+    }
+  }
+  
+	/**
    * Get the 'plain' version of the scenario, i.e. stripped of HTML and special characters
    * @return string
    */
@@ -221,12 +299,306 @@ QUERY;
   }
   
   /**
+   * Get the question leadin
+   * @return string
+   */
+  public function get_leadin() {
+    return $this->leadin;
+  }
+  
+  /**
+   * Set the question leadin
+   * @param string $value
+   */
+  public function set_leadin($value) {
+    if($value != $this->leadin) {
+      $this->set_modified_field('leadin', $this->leadin);
+      $this->leadin = $value;
+    }
+  }
+  
+  /**
    * Get the 'plain' version of the leadin, i.e. stripped of HTML and special characters
    * @return string
    */
   public function get_leadin_plain() {
     $this->leadin_plain = trim(strip_tags($this->leadin));
     return $this->leadin_plain;
+  }
+  
+  /**
+   * Get the question notes
+   * @return string
+   */
+  public function get_notes() {
+    return $this->notes;
+  }
+  
+  /**
+   * Set the question notes
+   * @param string $value
+   */
+  public function set_notes($value) {
+    if($value != $this->notes) {
+      $this->set_modified_field('notes', $this->notes);
+      $this->notes = $value;
+    }
+  }
+  
+  /**
+   * Get the question correct feedback
+   * @return string
+   */
+  public function get_correct_fback() {
+    return $this->correct_fback;
+  }
+  
+  /**
+   * Set the question correct feedback
+   * @param string $value
+   */
+  public function set_correct_fback($value) {
+    if($value != $this->correct_fback) {
+      $this->set_modified_field('correct_fback', $this->correct_fback);
+      $this->correct_fback = $value;
+    }
+  }
+  
+    /**
+   * Get the question incorrect feedback
+   * @return string
+   */
+  public function get_incorrect_fback() {
+    return $this->incorrect_fback;
+  }
+  
+  /**
+   * Set the question incorrect feedback
+   * @param string $value
+   */
+  public function set_incorrect_fback($value) {
+    if($value != $this->incorrect_fback) {
+      $this->set_modified_field('incorrect_fback', $this->incorrect_fback);
+      $this->incorrect_fback = $value;
+    }
+  }
+  
+  /**
+   * Get the question score method
+   * @return string
+   */
+  public function get_score_method() {
+    return $this->score_method;
+  }
+  
+  /**
+   * Set the question score method
+   * @param string $value
+   */
+  public function set_score_method($value) {
+    if($value != $this->score_method) {
+      $this->set_modified_field('score_method', $this->score_method);
+      $this->score_method = $value;
+    }
+  }
+  
+  /**
+   * Get the question option order
+   * @return string
+   */
+  public function get_option_order() {
+    return $this->option_order;
+  }
+  
+  /**
+   * Set the question option order
+   * @param string $value
+   */
+  public function set_option_order($value) {
+    if($value != $this->option_order) {
+      $this->set_modified_field('option_order', $this->option_order);
+      $this->option_order = $value;
+    }
+  }
+  
+  /**
+   * Get the question standards setting mark
+   * @return float
+   */
+  public function get_standards_setting() {
+    return $this->standards_setting;
+  }
+  
+  /**
+   * Set the question standards setting mark
+   * @param integer $value
+   */
+  public function set_standards_setting($value) {
+    if($value != $this->standards_setting) {
+      $this->set_modified_field('standards_setting', $this->standards_setting);
+      $this->standards_setting = $value;
+    }
+  }
+  
+  /**
+   * Get the question Bloom's Taxonomy setting
+   * @return string
+   */
+  public function get_bloom() {
+    return $this->bloom;
+  }
+  
+  /**
+   * Set the question Bloom's Taxonomy setting
+   * @param string $value
+   */
+  public function set_bloom($value) {
+    if($value != $this->bloom) {
+      $this->set_modified_field('bloom', $this->bloom);
+      $this->bloom = $value;
+    }
+  }
+  
+  /**
+   * Get the question owner ID
+   * @return integer
+   */
+  public function get_owner_id() {
+    return $this->owner_id;
+  }
+  
+  /**
+   * Set the question owner ID
+   * @param integer $value
+   */
+  public function set_owner_id($value) {
+    if($value != $this->owner_id) {
+      $this->set_modified_field('owner_id', $this->owner_id);
+      $this->owner_id = $value;
+    }
+  }
+  
+  /**
+   * Get the question media as an array containing filename, width and height
+   * @return array
+   */
+  public function get_media() {
+    return array('filename' => $this->media, 'width' => $this->media_width, 'height' => $this->media_height);
+  }
+  
+  /**
+   * Set the question media as an array containing filename, width and height
+   * @param mixed $value Array containing filename, width and height
+   */
+  public function set_media($value) {
+    if($value != $this->media) {
+      $this->set_modified_field('media', $this->media);
+      $this->media = $value['filename'];
+      $this->media_width = $value['width'];
+      $this->media_height = $value['height'];
+    }
+  }
+  
+  /**
+   * Get the group to which the question belongs
+   * @return string
+   */
+  public function get_group() {
+    return $this->group;
+  }
+  
+  /**
+   * Set the group to which the question belongs
+   * @param string $value
+   */
+  public function set_group($value) {
+    if($value != $this->group) {
+      $this->set_modified_field('group', $this->group);
+      $this->group = $value;
+    }
+  }
+  
+  /**
+   * Get the question checkout time
+   * @return datetime
+   */
+  public function get_checkout_time() {
+    return $this->checkout_time;
+  }
+  
+  /**
+   * Set the question checkout time
+   * @param datetime $value
+   */
+  public function set_checkout_time($value) {
+    $this->checkout_time = $value;
+  }
+  
+  /**
+   * Get the user to whom the question is checked out
+   * @return integer
+   */
+  public function get_checkout_author_id() {
+    return $this->checkout_author_id;
+  }
+  
+  /**
+   * Set the user to whom the question is checked out
+   * @param integer $value
+   */
+  public function set_checkout_author_id($value) {
+    $this->checkout_author_id = $value;
+  }
+  
+  /**
+   * Get the time at which the question was created
+   * @return datetime
+   */
+  public function get_created() {
+    return $this->created;
+  }
+  
+  /**
+   * Get the time at which the question was last edited
+   * @return datetime
+   */
+  public function get_last_edited() {
+    return $this->last_edited;
+  }
+  
+  /**
+   * Get the time at which the question was locked, if set
+   * @return datetime
+   */
+  public function get_locked() {
+    return $this->locked;
+  }
+  
+  /**
+   * Get whether the question is set as deleted
+   * @return boolean
+   */
+  public function get_deleted() {
+    return $this->deleted;
+  }
+  
+  /**
+   * Get the status of the question
+   * @return string
+   */
+  public function get_status() {
+    return $this->status;
+  }
+  
+  /**
+   * Set the status of the question
+   * @param string $value
+   */
+  public function set_status($value) {
+    if($value != $this->status) {
+      $this->set_modified_field('status', $this->status);
+      $this->status = $value;
+    }
   }
   
   /**
@@ -386,6 +758,17 @@ QUERY;
     $result->close();
     
     return $success;
+  }
+  
+  /**
+   * Record the value of a modified field so that it can be used for change tracking
+   * @param string $name
+   * @param string $value
+   */
+  private function set_modified_field($name, $value) {
+    if(!array_key_exists($name, $this->_modified_fields)) {
+      $this->_modified_fields[$name] = $value;
+    }
   }
 }
 

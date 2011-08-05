@@ -42,20 +42,20 @@ $q_type_full = '';
  
 if(empty($_REQUEST['q_id'])) {
   // We're adding a new question
-  $question = new Question($mysqli);
+  $question = new Question($mysqli, $userID);
   
   if (empty($_GET['type'])) {
     $critical_error = 'No question type defined.';
   } elseif (!in_array($_GET['type'], array_keys(Question::$types))) {
     $critical_error = 'Unknown question type <em>' . htmlentities($_GET['type']) . '</em>.';
   } else {
-    $question->type = $_GET['type'];
+    $question->set_type($_GET['type']);
   }
 } else {
   // We're editing an existion question
   
   try {
-    $question = new Question($mysqli, $_REQUEST['q_id']);
+    $question = new Question($mysqli, $userID, $_REQUEST['q_id']);
   } catch (Exception $ex) {
     $critical_error = $ex->getMessage();
   }
@@ -116,14 +116,14 @@ if($critical_error == '') {
       $part_names = $question->get_editable_fields();
       foreach($part_names as $section_name) {
         if(isset($_POST["$section_name"])) {
-          $question->$section_name = $_POST["$section_name"];
+          $method = "set_$section_name";
+          $question->$method($_POST["$section_name"]);
         }
       }
-      $question->scenario = (trim(strip_tags($question->scenario)) == '') ? '' : $question->scenario;
       
       // Strip MS Office HTML.
-      $question->scenario = clearMSOtags($question->scenario);
-      $question->leadin = clearMSOtags($question->leadin);
+      $question->set_scenario(clearMSOtags($question->get_scenario()));
+      $question->set_leadin(clearMSOtags($question->get_leadin()));
   // 
   //    // Upload Image (if exists) onto server
   //    if ($_FILES['q_media']['name'] != $_POST['old_q_media'] and ($_FILES['q_media']['name'] != 'none' and $_FILES['q_media']['name'] != '')) {
@@ -154,9 +154,6 @@ if($critical_error == '') {
   //      $tmp_media_height = 0;
   //    }
   //
-      foreach($part_names as $section_name) {
-        if ($old_values[$section_name] != $question->$section_name) $changes = true;
-      }
   //
   //    saveKeywords($q_id, $userID, $changes, true, $mysqli);
   //    
@@ -252,20 +249,14 @@ if($critical_error == '') {
   //    
   //    save_external_responses($mysqli);
   // 
-      if ($changes) {
-        try {
-      	  if (!$question->save()) {
-      	    $errors[] = 'Error saving data. Please try again';
-      	  }
   
-          // Record changes
-          foreach($part_names as $section_name) {
-            $logger->check_and_track_change('Edit Question', $question->id, $userID, $old_values[$section_name], $question->$section_name, $section_name, $changes);
-          }
-      	} catch (ValidationException $vex) {
-      	  $errors[] = $vex->getMessage();
-      	}
-      }
+      try {
+    	  if (!$question->save()) {
+    	    $errors[] = 'Error saving data. Please try again';
+    	  }
+    	} catch (ValidationException $vex) {
+    	  $errors[] = $vex->getMessage();
+    	}
     } else {
       // Limited save
   //    do_limitedSave($q_id, $mysqli, $userID);
@@ -279,8 +270,8 @@ if($critical_error == '') {
 $mode = (empty($_REQUEST['q_id'])) ? 'Add' : 'Edit';
 
 $q_type_display = (!empty($_REQUEST['q_no'])) ? ' ' . $_REQUEST['q_no'] : '';
-if (!empty($question->type)) {
-  $q_type_full = Question::$types[$question->type];
+if ($question->get_type() != '') {
+  $q_type_full = Question::$types[$question->get_type()];
   $q_type_display .= " &ndash; $q_type_full";
 }
 
@@ -361,7 +352,9 @@ if($critical_error != '') {
 					</p>
 				</div>
         
-<?php require_once '../../include/question/addedit/' . $question->type . '.php' ?>
+<?php 
+$x = $question->get_type();
+require_once '../../include/question/addedit/' . $question->get_type() . '.php' ?>
 
         <div class="form">
           <h2>Metadata</h2>
@@ -645,7 +638,8 @@ function populate_old_values($question, $part_names) {
   $old_values = array();
   
   foreach ($part_names as $key) {
-    $old_values[$key] = $question->$key;
+    $method = "get_$key";
+    $old_values[$key] = $question->$method();
   }
   
   return $old_values;

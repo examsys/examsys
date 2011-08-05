@@ -8,7 +8,7 @@
 <?php
 $score_methods = array('vertical' => 'Vertical Option Button', 'vertical_other' => 'Vertical Option Buttons (with \'other\' textbox)', 'horizontal' => 'Horizontal Option Button', 'dropdown' => 'Dropdown List');
 foreach ($score_methods as $val => $display) {
-  $selected = ($question->score_method == $val) ? ' selected="selected"' : '';
+  $selected = ($question->get_score_method() == $val) ? ' selected="selected"' : '';
 ?>
                   <option value="<?php echo $val ?>"<?php echo $selected ?>><?php echo $display ?></option>
 <?php
@@ -21,7 +21,7 @@ foreach ($score_methods as $val => $display) {
             <tr>
               <th><label for="option_order">Option Order</label></th>
               <td>
-                <?php echo option_order($question->option_order) ?>
+                <?php echo option_order($question->get_option_order()) ?>
               </td>
             </tr>
 					</tbody>
