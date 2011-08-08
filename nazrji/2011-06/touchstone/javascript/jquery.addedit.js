@@ -12,6 +12,16 @@ $(function () {
     $(this).parent('li').toggleClass('open');
     return false;
   });
+  
+  $('.media-delete').click(function () {
+    var id = $(this).attr('rel');
+    $('#media' + id).slideUp('slow', function () {
+      $(this).html('<span class="warning">Current media will be deleted on save</span>');
+      $(this).fadeIn();
+    });
+    $('#delete_media' + id).prop('checked', true);
+    return false;
+  });
 });
 
 function changeTab() {

@@ -25,10 +25,11 @@
  */
 
 require_once 'exceptions.inc.php';
+require_once 'touchstone_object.class.php';
 require_once 'option.class.php';
 require_once 'logger.class.php';
 
-Class Question {
+Class Question extends TouchStoneObject {
 
   public $id = -1;
   private $type = null;
@@ -46,8 +47,8 @@ Class Question {
   private $bloom = null;
   private $owner_id = null;
   private $media = '';
-  private $media_width = '';
-  private $media_height = '';
+  private $media_width = 0;
+  private $media_height = 0;
   private $group = '';
   private $checkout_time = null;
   private $checkout_author_id = '';
@@ -60,14 +61,13 @@ Class Question {
   
   private $_user_id;
   private $_fields = array('type', 'theme', 'scenario', 'scenario_plain', 'leadin', 'leadin_plain', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'option_order', 'standards_setting', 'bloom', 'owner_id', 'media', 'media_width', 'media_height', 'group', 'checkout_time', 'checkout_author_id', 'created', 'last_edited', 'locked', 'deleted', 'status');
-  private $_fields_editable = array('theme', 'scenario', 'leadin', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'option_order', 'bloom', 'media', 'status');
   private $_required_fields = array('type', 'leadin', 'score_method', 'option_order', 'owner_id', 'status');
   private $_mysqli = null;
   private $_data = array();
-  private $_modified_fields = array();
   
   // Map our 'nice' property names to the database fields
   private $_field_map = array('type' => 'q_type', 'option_order' => 'q_option_order', 'standards_setting' => 'std', 'owner_id' => 'ownerID', 'media' => 'q_media', 'media_width' => 'q_media_width', 'media_height' => 'q_media_height', 'group' => 'q_group', 'checkout_author_id' => 'checkout_authorID', 'created' => 'creation_date');
+  private $_pretty_names = array('type' => 'Type', 'leadin' => 'Lead-in', 'score_method' => 'Scoring Method', 'option_order' => 'Option Order', 'owner_id' => 'Owner', 'status' => 'Status');
   
   public static $types = array('blank' => 'Fill in the Blank', 'calculation' => 'calculation', 'dichotomous' => 'Dichotomous', 'extmatch' => 'Extended Matching', 'flash' => 'Flash', 'hotspot' => 'Image Hotspot', 'info' => 'Information Block', 'keyword_based' => 'Keyword Based', 'labelling' => 'Labelling', 'likert' => 'Likert Scale', 'matrix' => 'Matrix', 'mcq' => 'Multiple Choice', 'mrq' => 'Multiple Response', 'random' => 'Random', 'rank' => 'Ranking', 'sct' => 'Script COncordance', 'textbox' => 'Text Box', 'timedate' => 'Time / Date');
   
@@ -80,6 +80,9 @@ Class Question {
     // Store the database connection reference and current user
     $this->_mysqli = $mysqli;
     $this->_user_id = $user_id;
+    
+    // Define editable fields for this object
+    $this->_fields_editable = array('theme', 'scenario', 'leadin', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'option_order', 'bloom', 'media', 'status');
     
     // Array of references to the fields.  Allows succinct use of call_user_func_array for saving
     foreach($this->_fields as $field) {
@@ -364,7 +367,7 @@ QUERY;
     }
   }
   
-    /**
+  /**
    * Get the question incorrect feedback
    * @return string
    */
@@ -494,8 +497,8 @@ QUERY;
     if($value != $this->media) {
       $this->set_modified_field('media', $this->media);
       $this->media = $value['filename'];
-      $this->media_width = $value['width'];
-      $this->media_height = $value['height'];
+      $this->media_width = (empty($value['width'])) ? 0 : $value['width'];
+      $this->media_height = (empty($value['height'])) ? 0 : $value['height'];
     }
   }
   
@@ -710,7 +713,7 @@ QUERY;
       call_user_func_array(array($result, "bind_result"), $opt_data);
       // TODO: handle 'correctness' more nicely
       while($success == true and $success = $result->fetch()) {
-        $this->options[$opt_data['id']] = new Option($this->_mysqli, $opt_data);
+        $this->options[$opt_data['id']] = new Option($this->_mysqli, $this->_user_id, $opt_data);
       }
       $x = 3;
     } else {
@@ -730,7 +733,7 @@ QUERY;
     // If there are errors return an appropriate message
     $missing_fields = '';
     foreach($this->_required_fields as $req) {
-      if(empty($this->$req)) $missing_fields .= $req . ',';
+      if(empty($this->$req)) $missing_fields .= $this->_pretty_names[$req] . ',';
     }
     if($missing_fields != '') {
       $rval = 'The following required fields have not been supplied: ' . rtrim($missing_fields, ',');
@@ -758,17 +761,6 @@ QUERY;
     $result->close();
     
     return $success;
-  }
-  
-  /**
-   * Record the value of a modified field so that it can be used for change tracking
-   * @param string $name
-   * @param string $value
-   */
-  private function set_modified_field($name, $value) {
-    if(!array_key_exists($name, $this->_modified_fields)) {
-      $this->_modified_fields[$name] = $value;
-    }
   }
 }
 

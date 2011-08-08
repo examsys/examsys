@@ -33,40 +33,53 @@
  */
 function display_media($filename, $width, $height, $imageid=-1) {
   $html = '';
-  if ($imageid > -1) $html .= "<span style=\"display:block\" id=\"media$imageid\">";
+  
+  $fn_parts = pathinfo($filename);
+  
+  if ($imageid > -1) $html .= "<div id=\"media$imageid\" class=\"media\">";
   // Is the file an image or something else (e.g. RasMol)?
-  if (strtolower(substr($filename, -4)) == '.gif' or strtolower(substr($filename, -4)) == '.jpg' or strtolower(substr($filename, -4)) == 'jpeg' or strtolower(substr($filename, -4)) == '.png') {
+  if (in_array($fn_parts['extension'], array('gif', 'jpg', 'jpeg', 'png'))) {
     $html .= "<img src=\"/touchstone/media/$filename\" width=\"$width\" height=\"$height\" border=\"0\" alt=\"Image\" />";
-  } elseif (strtolower(substr($filename, -4)) == '.wav' or strtolower(substr($filename, -4)) == '.wma' or strtolower(substr($filename, -4)) == '.mid') {
+  } elseif (in_array($fn_parts['extension'], array('wav', 'wma', 'mid'))) {
     $html .= "<img src=\"audio_icon_32.gif\" width=\"32\" height=\"32\" alt=\"Audio File\" /><a href=\"/touchstone/media/$filename\">Audio Clip</a>";
-  } elseif (strtolower(substr($filename, -4)) == '.doc' or strtolower(substr($filename, -4)) == '.ppt' or strtolower(substr($filename, -4)) == '.xls' or strtolower(substr($filename, -4)) == '.pdf') {
+  } elseif (in_array($fn_parts['extension'], array('doc', 'ppt', 'xls', 'pdf'))) {
     $html .= "<iframe src=\"/touchstone/media/$filename\" width=\"$width\" height=\"$height\" align=\"center\">Your browser does not support iframes!</iframe>";
-  } elseif (strtolower(substr($filename, -4)) == '.flv') {
+  } elseif ($fn_parts['extension'] == 'flv') {
     if ($width == 0 or $height == 0) {
       $width = 320;
       $height = 260;
     }
-    $html .= "<object type=\"application/x-shockwave-flash\" data=\"/touchstone/paper/player_flv_maxi.swf\" width=\"$width\" height=\"$height\">\n";
-    $html .= "<param name=\"movie\" value=\"/touchstone/paper/player_flv_maxi.swf\" />\n";
-    $html .= "<param name=\"FlashVars\" value=\"flv=/touchstone/media/$filename&amp;buffermessage=&amp;showplayer=always&amp;showvolume=1&amp;showstop=1&amp;showtime=1&amp;margin=1\" />\n";
-    $html .= "</object>\n";  
-  } elseif (strtolower(substr($filename, -4)) == '.mp3') {     //Embed MP3 using a Flash plugin
+    $html .= <<< OBJEMBED
+<object type="application/x-shockwave-flash" data="/touchstone/paper/player_flv_maxi.swf" width="{$width}" height="{$height}">
+<param name="movie" value="/touchstone/paper/player_flv_maxi.swf" />
+<param name="FlashVars" value="flv=/touchstone/media/{$filename}&amp;buffermessage=&amp;showplayer=always&amp;showvolume=1&amp;showstop=1&amp;showtime=1&amp;margin=1" />
+</object>  
+OBJEMBED;
+    
+  } elseif ($fn_parts['extension'] == 'mp3') {     //Embed MP3 using a Flash plugin
     
     if (strpos($_SERVER['PHP_SELF'],'/edit/') !== false or strpos($_SERVER['PHP_SELF'],'/add/') !== false) {  // Display filename if add or edit script
       $html .= $filename . '&nbsp;';
     }
     
-    $html .= "<object type=\"application/x-shockwave-flash\" data=\"/touchstone/paper/player_mp3_maxi.swf\" width=\"200\" height=\"20\">\n";
-    $html .= "<param name=\"wmode\" value=\"transparent\" />\n";
-    $html .= "<param name=\"movie\" value=\"/touchstone/paper/player_mp3_maxi.swf\" />\n";
-    $html .= "<param name=\"FlashVars\" value=\"mp3=/touchstone/media/$filename&amp;showstop=1&amp;showvolume=1&amp;bgcolor1=ffa50b&amp;bgcolor2=d07600\" />\n";
-    $html .= "</object>\n";  
-  } elseif (strtolower(substr($filename, -4)) == '.avi' or strtolower(substr($filename, -4)) == '.wmv') {
+    $html .= <<< OBJEMBED
+<object type="application/x-shockwave-flash" data="/touchstone/paper/player_mp3_maxi.swf" width="200" height="20">
+<param name="wmode" value="transparent" />
+<param name="movie" value="/touchstone/paper/player_mp3_maxi.swf" />
+<param name="FlashVars" value="mp3=/touchstone/media/{$filename}&amp;showstop=1&amp;showvolume=1&amp;bgcolor1=ffa50b&amp;bgcolor2=d07600" />
+</object>  
+OBJEMBED;
+  } elseif ($fn_parts['extension'] == 'avi' or $fn_parts['extension'] == 'wmv') {
     $html .= "<embed src=\"/touchstone/media/$filename\" width=\"$width\" height=\"$height\" border=\"1\" autoplay=\"true\" loop=\"false\" alt=\"Data File\"></embed>";
   } else {
     $html .= "<embed src=\"/touchstone/media/$filename\" width=\"$width\" height=\"$height\" border=\"1\" alt=\"Data File\"></embed>";
   }
-  if ($imageid > -1) $html .= " <img src=\"/touchstone/artwork/red_cross.png\" style=\"cursor:hand\" width=\"16\" height=\"16\" alt=\"Delete\" border=\"0\" onclick=\"deleteMedia('media$imageid')\"><input type=\"hidden\" id=\"delete_media$imageid\" name=\"delete_media$imageid\" value=\"0\" /></span>";
+  if ($imageid > -1) {
+    $html .= <<< DELETE
+<a href="#" class="media-delete" rel="{$imageid}"><img src="/touchstone/artwork/red_cross.png" width="16" height="16" alt="Delete" /></a></div>
+<label class="hide"><input type="checkbox" id="delete_media{$imageid}" name="delete_media{$imageid}" /> Delete image {$imageid}</label>
+DELETE;
+  }
 
   return $html;
 }
@@ -104,15 +117,16 @@ function unique_filename($filename, $strip = TRUE) {
 /**
  * Uploads a file onto the server from an HTML form and return its width and height.
  *
- * @param mixed $fileID 
- * @param mixed $file_width 
- * @param mixed $file_height 
+ * @param mixed $fileID
+ * @return array containing new media details as 'filename', 'width', and 'height'
  *
  */
-function uploadFile($fileID, &$file_width, &$file_height) {
+function uploadFile($fileID) {
   global $cfg_web_root;
+  
   $file_width = 0;
   $file_height = 0;
+  
   if(!isset($_FILES[$fileID])) {
     return '';
   }
@@ -187,7 +201,7 @@ function uploadFile($fileID, &$file_width, &$file_height) {
       }
     }
   }
-  return $unique_name;
+  return array('filename' => $unique_name, 'width' => $file_width, 'height' => $file_height);
 }
 
 function deleteMedia($filename) {

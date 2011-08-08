@@ -96,6 +96,19 @@ p {
   background-color: #e3e3e3;
 }
 
+#errors {
+	width: 790px;
+	padding: 4px 4px 4px 52px;
+	border: 1px solid #ccc;
+	background: #c00000 url('../artwork/orange_alert_32.png') no-repeat 6px 8px;
+}
+
+#errors li {
+	list-style: none;
+	color: #fff;
+	font-weight: bold;
+}
+
 #major-error.edit-spacer {
 	margin-top: 80px;
 }
@@ -194,12 +207,12 @@ p {
 	margin: 0 auto 24px auto;
 }
 
-.form textarea {
-	padding: 0;
+.form td {
+	font-size: 90%;
 }
 
-.form input.form-old, .form textarea.form-old {
-	display: none;
+.form textarea {
+	padding: 0;
 }
 
 .form-large {
@@ -243,6 +256,13 @@ textarea, input[type=text], select {
 	border: 1px solid #7F9DB9
 }
 
+/* Media */
+.media-delete {
+	margin-left: 8px;
+}
+
+
+/* Metadata */
 .radio-list {
   margin: 0;
   padding: 0;

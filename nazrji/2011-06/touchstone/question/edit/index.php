@@ -30,9 +30,11 @@ require '../../include/staff_auth.inc';
 require_once '../../classes/question.class.php';
 require_once '../../classes/logger.class.php';
 require '../../include/edit.inc';
+require '../../include/media.inc';
 
 $question = null;
 $logger = new Logger($mysqli);
+$paper_id = (empty($_GET['paper_id'])) ? -1 : $_GET['paper_id'];
 
 $critical_error = '';
 
@@ -53,18 +55,22 @@ if(empty($_REQUEST['q_id'])) {
   }
 } else {
   // We're editing an existion question
-  
-  try {
-    $question = new Question($mysqli, $userID, $_REQUEST['q_id']);
-  } catch (Exception $ex) {
-    $critical_error = $ex->getMessage();
+  if($paper_id == -1) {
+    $critical_error = 'No paper defined for question.';
+  } elseif(!ctype_digit($paper_id)) {
+    $critical_error = 'Invalid paper ID.';
+  } else {
+    try {
+      $question = new Question($mysqli, $userID, $_REQUEST['q_id']);
+    } catch (Exception $ex) {
+      $critical_error = $ex->getMessage();
+    }
   }
 }
 
 if($critical_error == '') {
   // Populate an array containing existing values so that we can track changes
   $part_names = $question->get_editable_fields();
-  $old_values = populate_old_values($question, $part_names);
   
   
   // Save data
@@ -124,35 +130,22 @@ if($critical_error == '') {
       // Strip MS Office HTML.
       $question->set_scenario(clearMSOtags($question->get_scenario()));
       $question->set_leadin(clearMSOtags($question->get_leadin()));
-  // 
-  //    // Upload Image (if exists) onto server
-  //    if ($_FILES['q_media']['name'] != $_POST['old_q_media'] and ($_FILES['q_media']['name'] != 'none' and $_FILES['q_media']['name'] != '')) {
-  //      if ($_POST['old_q_media'] != '') {
-  //        deleteMedia($_POST['old_q_media']);
-  //      }
-  //      $unique_name = uploadFile('q_media',$tmp_media_width,$tmp_media_height);
-  //      $changes = true;
-  //    } else {
-  //      // If the media has not changed set the variables back to the old media settings before the update query.
-  //      $unique_name = $_POST['old_q_media'];
-  //      $tmp_media_width = $_POST['old_q_media_width'];
-  //      $tmp_media_height = $_POST['old_q_media_height'];
-  //      if (isset($_POST['delete_media0']) AND $_POST['delete_media0'] == '1') {
-  //        deleteMedia($_POST['old_q_media']);
-  //        $unique_name = '';
-  //        $tmp_media_width = 0;
-  //        $tmp_media_height = 0;
-  //        $changes = true;
-  //      }
-  //    }
-  //    
-  //    $old_q_media = $_POST['old_q_media'];
-  //    $q_media = $unique_name;
-  //
-  //    if ($tmp_media_width == '') {
-  //      $tmp_media_width = 0;
-  //      $tmp_media_height = 0;
-  //    }
+   
+      // Handle changes in media
+      $old_media = $question->get_media();
+      if ($_FILES['q_media']['name'] != $old_media['filename'] and ($_FILES['q_media']['name'] != 'none' and $_FILES['q_media']['name'] != '')) {
+        if ($old_media['filename'] != '') {
+          deleteMedia($old_media['filename']);
+        }
+        $question->set_media(uploadFile('q_media'));
+      } else {
+        // Delete existing media if asked
+        if (isset($_POST['delete_media0']) AND $_POST['delete_media0'] == 'on') {
+          deleteMedia($old_media['filename']);
+          $question->set_media(array('filename' => '', 'width' => 0, 'height' => 0));
+        }
+      }
+      
   //
   //
   //    saveKeywords($q_id, $userID, $changes, true, $mysqli);
@@ -265,15 +258,19 @@ if($critical_error == '') {
   } elseif (isset($_POST['submit']) and $_POST['submit'] == 'Cancel') {
     redirect();
   }
+
+
+  $q_type_display = (!empty($_REQUEST['q_no'])) ? ' ' . $_REQUEST['q_no'] : '';
+  if ($question->get_type() != '') {
+    $q_type_full = Question::$types[$question->get_type()];
+    $q_type_display .= " &ndash; $q_type_full";
+  }
+} else {
+  // Bad things have happened
+  $q_type_display = '';
 }
 
 $mode = (empty($_REQUEST['q_id'])) ? 'Add' : 'Edit';
-
-$q_type_display = (!empty($_REQUEST['q_no'])) ? ' ' . $_REQUEST['q_no'] : '';
-if ($question->get_type() != '') {
-  $q_type_full = Question::$types[$question->get_type()];
-  $q_type_display .= " &ndash; $q_type_full";
-}
 
 ?>
 <?xml version="1.0" encoding="UTF-8" ?>
@@ -339,10 +336,13 @@ if($critical_error != '') {
   if($question->id != -1) {
     $query_string = '?q_id=' . $question->id;
     $query_string .= (isset($_REQUEST['q_no'])) ? '&q_no=' . $_REQUEST['q_no'] : '';
+    $query_string .= (isset($_REQUEST['paper_id'])) ? '&paper_id=' . $_REQUEST['paper_id'] : '';
   }
+  
+  // TODO: client side validation
 ?>
 
-	<form name="edit_form" method="post" onsubmit="return checkForm()" action="./<?php echo $query_string ?>" enctype="multipart/form-data">
+	<form name="edit_form" method="post" action="./<?php echo $query_string ?>" enctype="multipart/form-data">
     <div id="tabbed-content">
 			<div id="editor" class="tab-area">
         
@@ -352,9 +352,33 @@ if($critical_error != '') {
 					</p>
 				</div>
         
+<?php
+if(!empty($errors)) {
+?>
+        <div id="errors" class="form">
+          <ul>
+<?php
+  foreach($errors as $error) {
+?>
+            <li><?php echo $error ?></li>
+<?php
+  }
+?>
+          </ul>
+        </div>
+
+<?php
+}
+?>
+        
+        <div class="form">
+          <h2>Question</h2>
+        </div>
+        
 <?php 
 $x = $question->get_type();
-require_once '../../include/question/addedit/' . $question->get_type() . '.php' ?>
+require_once '../../include/question/addedit/' . $question->get_type() . '.php'
+?>
 
         <div class="form">
           <h2>Metadata</h2>
@@ -616,11 +640,15 @@ require_once '../../include/question/addedit/' . $question->get_type() . '.php' 
         
         <p class="warning"><input value="-1" id="none_of_the_above" name="none_of_the_above" type="checkbox" /><label for="none_of_the_above"><strong>None of the Above</strong></label><br />Check here if the current question does not match any of the above objectives from SYSTEM.</p>
         
+<?php 
+// TODO: All of these need to use the dynamic value
+?>        
+        <input name="checkout_author" value="<?php echo $userID ?>" type="hidden" />
         <input id="SYSTEM_objectiveCount" name="SYSTEM_objectiveCount" value="9" type="hidden" />
         <input name="SYSTEM_session" value="2010/11" type="hidden" />
         <input name="SYSTEM_old_mappings" value="" type="hidden" />
-        <input id="paperID" name="paperID" value="3515" type="hidden" />
-        <input id="questionID" name="questionID" value="53669" type="hidden" />
+        <input id="paper_id" name="paperID" value="<?php echo $paper_id ?>" type="hidden" />
+        <input id="questionID" name="questionID" value="<?php echo $question->id ?>" type="hidden" />
         <input id="modules" name="modules" value="SYSTEM" type="hidden" />
       </div>
     </div>
@@ -632,17 +660,6 @@ require_once '../../include/question/addedit/' . $question->get_type() . '.php' 
     </div>
   </form>
 <?php
-}
-
-function populate_old_values($question, $part_names) {
-  $old_values = array();
-  
-  foreach ($part_names as $key) {
-    $method = "get_$key";
-    $old_values[$key] = $question->$method();
-  }
-  
-  return $old_values;
 }
 ?>
 </body>

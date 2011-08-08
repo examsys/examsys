@@ -15,7 +15,6 @@ foreach ($score_methods as $val => $display) {
 }
 ?>
                 </select>
-                <input name="old_score_method" value="<?php echo $old_values['score_method'] ?>" type="hidden" />
               </td>
             </tr>
             <tr>
@@ -33,11 +32,14 @@ foreach ($score_methods as $val => $display) {
               <th><label for="correct_fback">General Feedback</label></th>
               <td>
                 <textarea id="correct_fback" name="correct_fback" cols="100" rows="3" class="form-large">right</textarea>
-                <input name="old_correct_fback" value="<?php echo $old_values['correct_fback'] ?>" type="hidden" />
               </td>
             </tr>
           </tbody>
         </table>
+        
+        <div class="form">
+          <h2>Options</h2>
+        </div>
         
         <table id="q-options" class="form" summary="Edit question options">
           <tbody>

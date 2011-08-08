@@ -25,18 +25,19 @@
  */
 
 require_once 'exceptions.inc.php';
+require_once 'touchstone_object.class.php';
 
-Class Option {
+Class Option extends TouchStoneObject {
 
   public $id = -1;
   public $question_id = null;
-  public $text = '';
-  public $media = '';
-  public $media_width = '';
-  public $media_height = '';
-  public $correct_fback = '';
-  public $incorrect_fback = '';
-  public $correct = '';
+  private $text = '';
+  private $media = '';
+  private $media_width = '';
+  private $media_height = '';
+  private $correct_fback = '';
+  private $incorrect_fback = '';
+  private $correct = '';
   public $marks = null;
   
   private static $_fields = array('question_id', 'text', 'media', 'media_width', 'media_height', 'correct_fback', 'incorrect_fback', 'correct', 'marks');
@@ -49,9 +50,13 @@ Class Option {
    * properties from an associative array
    * @param mixed $data
    */
-  function __construct($mysqli, $data = -1) {
+  function __construct($mysqli, $user_id, $data = -1) {
     // Store the database connection reference
     $this->_mysqli = $mysqli;
+    $this->_user_id = $user_id;
+    
+    // Define editable fields for this object
+    $this->_fields_editable = self::$_fields;
     
     // Array of references to the fields.  Allows succinct use of call_user_func_array
     foreach(self::$_fields as $field) {
@@ -65,15 +70,14 @@ Class Option {
       foreach($data as $field => $val) {
         $this->$field = $val;
       }
-    } elseif(is_int($data)) {
+    } elseif(ctype_digit($data)) {
       // If it is an int use it as an ID for the database lookup
-      // If it is -1 (i.e. not specified) create a new empty object
-      if($data != -1) {
-        $this->id = $data;
-        $this->get_option();
+      $this->id = $data;
+      if (!$this->get_option()) {
+        throw new DatabaseException('Error loading option data.');
       }
-    } else {
-      throw new DataTypeException('Invalid type for constructor data');
+    } elseif ($data !== null) {
+      throw new DataTypeException('Invalid option ID.');
     }
   }
   
@@ -94,6 +98,124 @@ Class Option {
     }
     
     return true;
+  }
+  
+  // ACCESSORS
+  
+  /**
+   * Get the option text
+   * @return string
+   */
+  public function get_text() {
+    return $this->text;
+  }
+
+  /**
+   * Set the option text
+   * @param string $value
+   */
+  public function set_text($value) {
+    if($value != $this->text) {
+      $this->set_modified_field('text', $this->text);
+      $this->text = $value;
+    }
+  }
+  
+  /**
+   * Get the question media as an array containing filename, width and height
+   * @return array
+   */
+  public function get_media() {
+    return array('filename' => $this->media, 'width' => $this->media_width, 'height' => $this->media_height);
+  }
+  
+  /**
+   * Set the question media as an array containing filename, width and height
+   * @param mixed $value Array containing filename, width and height
+   */
+  public function set_media($value) {
+    if($value != $this->media) {
+      $this->set_modified_field('media', $this->media);
+      $this->media = $value['filename'];
+      $this->media_width = (empty($value['width'])) ? 0 : $value['width'];
+      $this->media_height = (empty($value['height'])) ? 0 : $value['height'];
+    }
+  }
+  
+  /**
+   * Get the option correct feedback
+   * @return string
+   */
+  public function get_correct_fback() {
+    return $this->correct_fback;
+  }
+  
+  /**
+   * Set the option correct feedback
+   * @param string $value
+   */
+  public function set_correct_fback($value) {
+    if($value != $this->correct_fback) {
+      $this->set_modified_field('correct_fback', $this->correct_fback);
+      $this->correct_fback = $value;
+    }
+  }
+  
+  /**
+   * Get the option incorrect feedback
+   * @return string
+   */
+  public function get_incorrect_fback() {
+    return $this->incorrect_fback;
+  }
+  
+  /**
+   * Set the option incorrect feedback
+   * @param string $value
+   */
+  public function set_incorrect_fback($value) {
+    if($value != $this->incorrect_fback) {
+      $this->set_modified_field('incorrect_fback', $this->incorrect_fback);
+      $this->incorrect_fback = $value;
+    }
+  }
+  
+  /**
+   * Get the option correct answer
+   * @return string
+   */
+  public function get_correct() {
+    return $this->correct;
+  }
+  
+  /**
+   * Set the option correct answer
+   * @param string $value
+   */
+  public function set_correct($value) {
+    if($value != $this->correct) {
+      $this->set_modified_field('correct', $this->correct);
+      $this->correct = $value;
+    }
+  }
+  
+  /**
+   * Get the option marks
+   * @return string
+   */
+  public function get_marks() {
+    return $this->marks;
+  }
+  
+  /**
+   * Set the option marks
+   * @param string $value
+   */
+  public function set_marks($value) {
+    if($value != $this->marks) {
+      $this->set_modified_field('marks', $this->marks);
+      $this->marks = $value;
+    }
   }
   
   // STATIC METHODS
