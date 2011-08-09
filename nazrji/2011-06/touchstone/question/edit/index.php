@@ -119,6 +119,7 @@ if($critical_error == '') {
   //    saveObjMappings($_POST['paperID'],$q_id,$mysqli);
   //
       $changes = false;
+      
       $part_names = $question->get_editable_fields();
       foreach($part_names as $section_name) {
         if(isset($_POST["$section_name"])) {
@@ -148,97 +149,69 @@ if($critical_error == '') {
       
   //
   //
-  //    saveKeywords($q_id, $userID, $changes, true, $mysqli);
+//    saveKeywords($q_id, $userID, $changes, true, $mysqli);
   //    
   //    $question_teams = getTeams();
   //    record_trackChanges('Edit Question', $q_id, $_POST['old_teams'], $question_teams, 'teams', $userID, $changes);
   //   
-  //    for ($option_no=1; $option_no<20; $option_no++) {
-  //      $option_changes = false;
-  //      $old_media_deleted = false;
-  //
-  //      $old_option_text = $_POST["old_option_text$option_no"];
-  //      $old_option_media = $_POST["old_option_media$option_no"];
-  //      
-  //      if (isset($_POST["delete_media$option_no"]) AND $_POST["delete_media$option_no"] == '1') {
-  //        deleteMedia($old_option_media);
-  //        $tmp_option_media = '';
-  //        $tmp_width = 0;
-  //        $tmp_height = 0;
-  //        $old_media_deleted = true;
-  //      }
-  //      
-  //      $tmp_option_media = $_FILES["new_option_media$option_no"]['name'];
-  //      if ($_POST["optionid$option_no"] != '' and $_POST["new_option_text$option_no"] == '' and $tmp_option_media == '' and ($old_option_media == '' or $old_media_deleted)) {
-  //        // Delete operation.
-  //        $temp_id = $_POST["optionid$option_no"];
-  //        $result = $mysqli->prepare("DELETE FROM options WHERE id_num=?");
-  //        $result->bind_param('i', $temp_id);
-  //        $result->execute();  
-  //        $result->close();
-  //  
-  //        $result = $mysqli->prepare("INSERT INTO track_changes VALUES (NULL, 'Deleted Option',?,$userID,?, '',NOW(),'Option #" . $option_no . "')");
-  //        $result->bind_param('is', $q_id, $_POST["old_option_text$option_no"]);
-  //        $result->execute();  
-  //        $result->close();
-  //        $option_changes = true;
-  //      } elseif ($_POST["optionid$option_no"] != '' and ($_POST["new_option_text$option_no"] !== $old_option_text or $_POST["feedback_right$option_no"] != $_POST["old_feedback_right$option_no"] or $_FILES["new_option_media$option_no"]['name'] != $_POST["old_option_media$option_no"])) {
-  //        // Edit operation.
-  //        if ($_FILES["new_option_media$option_no"]['name'] != '' and $_FILES["new_option_media$option_no"]['name'] != $_POST["old_option_media$option_no"]) {
-  //          if(!$old_media_deleted and isset($_POST["old_option_media$option_no"]) and $_POST["old_option_media$option_no"] != '') {
-  //            deleteMedia($_POST["old_option_media$option_no"]);
-  //          }
-  //          if ($tmp_option_media != '') {
-  //            $tmp_option_media = uploadFile("new_option_media$option_no",$tmp_width,$tmp_height);
-  //            $option_changes = true;
-  //          }
-  //        } else {
-  //          if(!$old_media_deleted) {
-  //            $tmp_option_media = $_POST["old_option_media$option_no"];
-  //            $tmp_width = $_POST["old_option_media_width$option_no"];
-  //            $tmp_height = $_POST["old_option_media_height$option_no"];
-  //          }
-  //          $option_changes = true;
-  //        }
-  //      } elseif (($_POST["new_option_text$option_no"] != '' or $tmp_option_media != '') and $old_option_text == '' and $_POST["old_option_media$option_no"] == '') {
-  //        // Add operation.
-  //        $tmp_width = 0;
-  //        $tmp_height = 0;
-  //        $tmp_option_media = uploadFile("new_option_media$option_no", $tmp_width, $tmp_height);
-  //        
-  //        $option_changes = true;
-  //        $tmp_new_option_text = $_POST["new_option_text$option_no"];
-  //        $tmp_feedback_right = $_POST["feedback_right$option_no"];
-  //        $result = $mysqli->prepare("INSERT INTO options VALUES (?,?,?, '$tmp_width', '$tmp_height', ?, '',?, NULL, 1)");
-  //        $result->bind_param('issss', $q_id, $tmp_new_option_text, $tmp_option_media, $tmp_feedback_right,$_POST['correct']);
-  //        $result->execute();  
-  //        $option_id = $mysqli->insert_id;
-  //        $result->close();
-  //  
-  //        $result = $mysqli->prepare("INSERT INTO track_changes VALUES (NULL,'New Option',?,$userID,'',?,NOW(),'Option #" . $option_no . "')");
-  //        $result->bind_param('is', $q_id, $tmp_new_option_text);
-  //        $result->execute();  
-  //        $result->close();
-  //      }
-  //      if ($option_changes == true) {
-  //        $temp_id = $_POST["optionid$option_no"];
-  //        $result = $mysqli->prepare("UPDATE options SET option_text=?, o_media=?, o_media_width='$tmp_width', o_media_height='$tmp_height', correct=?, feedback_right=? WHERE id_num=?");
-  //        $tmp_option_text =  $_POST["new_option_text$option_no"];
-  //        $tmp_feedback_right =  $_POST["feedback_right$option_no"];
-  //        $result->bind_param('ssssi',$tmp_option_text, $tmp_option_media, $_POST['correct'], $tmp_feedback_right, $temp_id);
-  //        $result->execute();  
-  //        $result->close();
-  //        record_trackChanges('Edit Question', $q_id, $old_option_text, $tmp_option_text, 'Option #' . $option_no, $userID, $changes);
-  //      }
-  //    }
-  //    
-  //    if ($_POST['correct'] != $_POST['old_correct']) {
-  //      $result = $mysqli->prepare("UPDATE options SET correct=? WHERE o_id=?");
-  //      $result->bind_param('si', $_POST['correct'], $q_id);
-  //      $result->execute();  
-  //      $result->close();
-  //      record_trackChanges('Edit Question', $q_id, $_POST['old_correct'], $_POST['correct'], 'Correct Answer', $userID, $changes);
-  //    }
+      for ($option_no = 1; $option_no < $question->max_options; $option_no++) {
+        $option = null;
+        
+        if (isset($_POST["optionid$option_no"]) and $_POST["optionid$option_no"] != -1) {
+          // Editing existing option
+          $option = $question->options[$_POST["optionid$option_no"]];
+          
+          // Save individual fields
+          $part_names = $option->get_editable_fields();
+          foreach ($part_names as $section_name) {
+            $field = ($section_name != 'correct') ? 'option_' . $section_name . $option_no : 'correct';
+            if (isset($_POST[$field])) {
+              $method = "set_$section_name";
+              $option->$method($_POST[$field]);
+            }
+          }
+          
+          // Save fields that are the same across options
+          $part_names = $option->get_unified_fields();
+          foreach ($part_names as $section_name => $section_label) {
+            $field = 'option_' . $section_name;
+            $get_method = "get_$section_name";
+            $old_value = $option->$get_method();
+            if (isset($_POST[$field]) and $_POST[$field] != $old_value) {
+              $set_method = "set_$section_name";
+              $option->$set_method($_POST[$field]);
+              $question->add_unified_field_modification($section_name, $section_label, $old_value, $_POST[$field]);
+            }
+          }
+        } else {
+          // Create new option if have text or media
+          if (!empty($_POST["option_text$option_no"]) or ($_FILES["option_media$option_no"]['name'] != 'none' and $_FILES["option_media$option_no"]['name'] != '')) {
+            $correct_fb = (isset($_POST["option_correct_fback$option_no"])) ? $_POST["option_correct_fback$option_no"] : '';
+            $incorrect_fb = (isset($_POST["option_incorrect_fback$option_no"])) ? $_POST["option_incorrect_fback$option_no"] : '';
+            $data = array('question_id' => $question->id, 'text' => $_POST["option_text$option_no"], 'correct_fback' => $correct_fb, 'incorrect_fback' => $incorrect_fb, 'correct' => $_POST['option_correct'], 'marks' => 1);
+            $option = new Option($mysqli, $userID, $data);
+            $question->options[] = $option;
+          }
+        }
+        
+        if ($option != null) {
+          // Handle changes in media
+          $old_media = $option->get_media();
+          if ($_FILES["option_media$option_no"]['name'] != $old_media['filename'] and ($_FILES["option_media$option_no"]['name'] != 'none' and $_FILES["option_media$option_no"]['name'] != '')) {
+            if ($old_media['filename'] != '') {
+              deleteMedia($old_media['filename']);
+            }
+            $option->set_media(uploadFile("option_media$option_no"));
+          } else {
+            // Delete existing media if asked
+            if (isset($_POST["delete_media$option_no"]) AND $_POST["delete_media$option_no"] == 'on') {
+              deleteMedia($old_media['filename']);
+              $option->set_media(array('filename' => '', 'width' => 0, 'height' => 0));
+            }
+          }
+        }
+        
+      }
   //    
   //    save_external_responses($mysqli);
   // 
@@ -277,7 +250,7 @@ $mode = (empty($_REQUEST['q_id'])) ? 'Add' : 'Edit';
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<title><?php echo $mode . ' Question - ' . $q_type_full ?></title>
+<title><?php echo $mode . ' Question - ' . $q_type_full .  ' ' . $cfg_install_type ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 

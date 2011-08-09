@@ -40,5 +40,21 @@ Class TouchStoneObject {
       $this->_modified_fields[$name] = $value;
     }
   }
+  
+  /**
+   * The the array of fields (properties) for this class
+   * @return multitype:string 
+   */
+  public function get_editable_fields() {
+    return $this->_fields_editable;
   }
+  
+  /**
+   * Has the question been changed?
+   * @return boolean
+   */
+  public function has_changes() {
+    return (count($this->_modified_fields) > 0);
+  }
+}
 

@@ -48,161 +48,18 @@ foreach ($score_methods as $val => $display) {
               <th class="small"><strong>Correct Answer</strong></th>
             </tr>
           </tbody>
-          <tbody class="option">
-            <tr>
-              <th><span class="mandatory">*</span><label for="new_option_text1"><strong>1.</strong></label></th>
-              <td colspan="2">
-                <textarea name="new_option_text1" id="new_option_text1" cols="90" rows="2" class="form-med-large">collagen</textarea>
-                <textarea name="old_option_text1" cols="90" rows="2" class="form-old">collagen</textarea>
-                <input name="optionid1" value="280288" type="hidden" />
-              </td>
-              <td class="small"><input id="correct1" name="correct" value="1" type="radio" /></td>
-            </tr>
-            <tr>
-              <td>&nbsp;</td>
-              <th><label for="feedback_right1">Feedback:</label></th>
-              <td>
-                <textarea cols="85" rows="2" id="feedback_right1" name="feedback_right1" class="form-med"></textarea>
-                <textarea name="old_feedback_right1" class="form-old" rows="2" cols="40"></textarea>
-              </td>
-              <td>&nbsp;</td>
-            </tr>
-            <tr>
-              <td>&nbsp;</td>
-              <th><label for="new_option_media1">Change Media:</label></th>
-              <td>
-                <input id="new_option_media1" name="new_option_media1" type="file" size="50" />
-                <input name="old_option_media1" id="old_option_media1" value="" type="hidden" />
-                <input name="old_option_media_width1" value="0" type="hidden" />
-                <input name="old_option_media_height1" value="0" type="hidden" />
-              </td>
-              <td>&nbsp;</td>
-            </tr>
-          </tbody>
-          <tbody class="option">
-            <tr>
-              <th><span class="mandatory">*</span><label for="new_option_text2"><strong>2.</strong></label></th>
-              <td colspan="2">
-                <textarea name="new_option_text2" id="new_option_text2" cols="90" rows="2" class="form-med-large">corticosteroid</textarea>
-                <textarea name="old_option_text2" cols="90" rows="2" class="form-old">corticosteroid</textarea>
-                <input name="optionid1" value="280288" type="hidden" />
-              </td>
-              <td class="small"><input id="correct2" name="correct" value="2" type="radio" /></td>
-            </tr>
-            <tr>
-              <td>&nbsp;</td>
-              <th><label for="feedback_right2">Feedback:</label></th>
-              <td>
-                <textarea cols="85" rows="2" id="feedback_right2" name="feedback_right2" class="form-med"></textarea>
-                <textarea name="old_feedback_right2" class="form-old" rows="2" cols="40"></textarea>
-              </td>
-              <td>&nbsp;</td>
-            </tr>
-            <tr>
-              <td>&nbsp;</td>
-              <th><label for="new_option_media2">Change Media:</label></th>
-              <td>
-                <input id="new_option_media2" name="new_option_media2" type="file" size="50" />
-                <input name="old_option_media2" id="old_option_media2" value="" type="hidden" />
-                <input name="old_option_media_width2" value="0" type="hidden" />
-                <input name="old_option_media_height2" value="0" type="hidden" />
-              </td>
-              <td>&nbsp;</td>
-            </tr>
-          </tbody>
-          <tbody class="option">
-            <tr>
-              <th><span class="mandatory">*</span><label for="new_option_text3"><strong>3.</strong></label></th>
-              <td colspan="2">
-                <textarea name="new_option_text3" id="new_option_text3" cols="90" rows="2" class="form-med-large">fatty acid</textarea>
-                <textarea name="old_option_text3" cols="90" rows="2" class="form-old">fatty acid</textarea>
-                <input name="optionid1" value="280288" type="hidden" />
-              </td>
-              <td class="small"><input id="correct3" name="correct" value="3" type="radio" /></td>
-            </tr>
-            <tr>
-              <td>&nbsp;</td>
-              <th><label for="feedback_right3">Feedback:</label></th>
-              <td>
-                <textarea cols="85" rows="2" id="feedback_right3" name="feedback_right3" class="form-med"></textarea>
-                <textarea name="old_feedback_right3" class="form-old" rows="2" cols="40"></textarea>
-              </td>
-              <td>&nbsp;</td>
-            </tr>
-            <tr>
-              <td>&nbsp;</td>
-              <th><label for="new_option_media3">Change Media:</label></th>
-              <td>
-                <input id="new_option_media3" name="new_option_media3" type="file" size="50" />
-                <input name="old_option_media3" id="old_option_media3" value="" type="hidden" />
-                <input name="old_option_media_width3" value="0" type="hidden" />
-                <input name="old_option_media_height3" value="0" type="hidden" />
-              </td>
-              <td>&nbsp;</td>
-            </tr>
-          </tbody>
-          <tbody class="option hide">
-            <tr>
-              <th><label for="new_option_text4"><strong>4.</strong></label></th>
-              <td colspan="2">
-                <textarea name="new_option_text4" id="new_option_text4" cols="90" rows="2" class="form-med-large">glucose</textarea>
-                <textarea name="old_option_text4" cols="90" rows="2" class="form-old">glucose</textarea>
-                <input name="optionid1" value="280288" type="hidden" />
-              </td>
-              <td class="small"><input id="correct4" name="correct" value="4" type="radio" /></td>
-            </tr>
-            <tr>
-              <td>&nbsp;</td>
-              <th><label for="feedback_right4">Feedback:</label></th>
-              <td>
-                <textarea cols="85" rows="2" id="feedback_right4" name="feedback_right4" class="form-med"></textarea>
-                <textarea name="old_feedback_right4" class="form-old" rows="2" cols="40"></textarea>
-              </td>
-              <td>&nbsp;</td>
-            </tr>
-            <tr>
-              <td>&nbsp;</td>
-              <th><label for="new_option_media4">Change Media:</label></th>
-              <td>
-                <input id="new_option_media4" name="new_option_media4" type="file" size="50" />
-                <input name="old_option_media4" id="old_option_media4" value="" type="hidden" />
-                <input name="old_option_media_width4" value="0" type="hidden" />
-                <input name="old_option_media_height4" value="0" type="hidden" />
-              </td>
-              <td>&nbsp;</td>
-            </tr>
-          </tbody>
-          <tbody class="option hide">
-            <tr>
-              <th><label for="new_option_text5"><strong>5.</strong></label></th>
-              <td colspan="2">
-                <textarea name="new_option_text5" id="new_option_text5" cols="90" rows="2" class="form-med-large">heme</textarea>
-                <textarea name="old_option_text5" cols="90" rows="2" class="form-old">heme</textarea>
-                <input name="optionid1" value="280288" type="hidden" />
-              </td>
-              <td class="small"><input id="correct5" name="correct" value="5" type="radio" /></td>
-            </tr>
-            <tr>
-              <td>&nbsp;</td>
-              <th><label for="feedback_right5">Feedback:</label></th>
-              <td>
-                <textarea cols="85" rows="2" id="feedback_right5" name="feedback_right5" class="form-med"></textarea>
-                <textarea name="old_feedback_right5" class="form-old" rows="2" cols="40"></textarea>
-              </td>
-              <td>&nbsp;</td>
-            </tr>
-            <tr>
-              <td>&nbsp;</td>
-              <th><label for="new_option_media5">Change Media:</label></th>
-              <td>
-                <input id="new_option_media5" name="new_option_media5" type="file" size="50" />
-                <input name="old_option_media5" id="old_option_media5" value="" type="hidden" />
-                <input name="old_option_media_width5" value="0" type="hidden" />
-                <input name="old_option_media_height5" value="0" type="hidden" />
-              </td>
-              <td>&nbsp;</td>
-            </tr>
-          </tbody>
+<?php
+$i = 1;
+foreach ($question->options as $o_id => $option) {
+  echo render_option($option, $i, count($question->options));
+  $i++;
+}
+
+for ($i = count($question->options) + 1; $i <= $question->max_options; $i++) {
+  $option = new Option($mysqli, $userID);
+  echo render_option($option, $i, count($question->options));
+}
+?>
           <tbody id="next-option-holder">
             <tr>
               <th>&nbsp;</th>
@@ -212,3 +69,62 @@ foreach ($score_methods as $val => $display) {
             </tr>
           </tbody>
         </table>
+
+<?php
+
+function render_option($option, $index, $current_options) {
+  $mandatory = ($index <= 3) ? '<span class="mandatory">*</span>' : '';
+  $hidden = ($index > 5 and $index > $current_options) ? ' hide' : '';
+  $spaced = ($index > 1) ? ' class="spaced"' : '';
+  $correct = ($option->get_correct() == $index) ? ' checked="checked"' : '';
+  $html = <<< OPTION
+          <tbody class="option{$hidden}">
+            <tr{$spaced}>
+              <th{$spaced}>{$mandatory}<label for="option_text{$index}"><strong>{$index}.</strong></label></th>
+              <td colspan="2"{$spaced}>
+                <textarea name="option_text{$index}" id="option_text{$index}" cols="90" rows="2" class="form-med-large">{$option->get_text()}</textarea>
+                <input name="optionid{$index}" value="{$option->id}" type="hidden" />
+              </td>
+              <td class="small"><input id="option_correct{$index}" name="option_correct" value="{$index}" type="radio"{$correct} /></td>
+            </tr>
+            <tr>
+              <td>&nbsp;</td>
+              <th><label for="option_correct_fback{$index}">Feedback:</label></th>
+              <td>
+                <textarea cols="85" rows="2" id="option_correct_fback{$index}" name="option_correct_fback{$index}" class="form-med">{$option->get_correct_fback()}</textarea>
+              </td>
+              <td>&nbsp;</td>
+            </tr>
+OPTION;
+
+  if ($option->id != -1) {
+    $media = $option->get_media();
+    if ($media['filename'] != '') {
+      $current_media_html =  display_media($media['filename'], $media['width'], $media['height'], $index); 
+      $html .= <<< OPTION
+              <tr>
+                <td>&nbsp;</td>
+                <th>Current Media:</th>
+                <td>{$current_media_html}</td>
+                <td>&nbsp;</td>
+              </tr>
+OPTION;
+    }
+  }
+
+  $html .= <<< OPTION
+            <tr>
+              <td>&nbsp;</td>
+              <th><label for="option_media{$index}">Change Media:</label></th>
+              <td>
+                <input id="option_media{$index}" name="option_media{$index}" type="file" size="50" />
+              </td>
+              <td>&nbsp;</td>
+            </tr>
+          </tbody>
+
+OPTION;
+
+  return $html;
+}
+?>        

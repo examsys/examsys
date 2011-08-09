@@ -58,17 +58,22 @@ Class Question extends TouchStoneObject {
   private $deleted = null;
   private $status = null;
   public $options = array();
+  public $max_options = 20;
   
   private $_user_id;
   private $_fields = array('type', 'theme', 'scenario', 'scenario_plain', 'leadin', 'leadin_plain', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'option_order', 'standards_setting', 'bloom', 'owner_id', 'media', 'media_width', 'media_height', 'group', 'checkout_time', 'checkout_author_id', 'created', 'last_edited', 'locked', 'deleted', 'status');
+  protected $_fields_editable = array('theme', 'scenario', 'leadin', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'option_order', 'bloom', 'status');
   private $_required_fields = array('type', 'leadin', 'score_method', 'option_order', 'owner_id', 'status');
   private $_mysqli = null;
+  private $_logger = null;
   private $_data = array();
+  
+  // Facilitate tracking of changes to unified fields in the options
+  private $_unified_field_modifications = array();
   
   // Map our 'nice' property names to the database fields
   private $_field_map = array('type' => 'q_type', 'option_order' => 'q_option_order', 'standards_setting' => 'std', 'owner_id' => 'ownerID', 'media' => 'q_media', 'media_width' => 'q_media_width', 'media_height' => 'q_media_height', 'group' => 'q_group', 'checkout_author_id' => 'checkout_authorID', 'created' => 'creation_date');
   private $_pretty_names = array('type' => 'Type', 'leadin' => 'Lead-in', 'score_method' => 'Scoring Method', 'option_order' => 'Option Order', 'owner_id' => 'Owner', 'status' => 'Status');
-  
   public static $types = array('blank' => 'Fill in the Blank', 'calculation' => 'calculation', 'dichotomous' => 'Dichotomous', 'extmatch' => 'Extended Matching', 'flash' => 'Flash', 'hotspot' => 'Image Hotspot', 'info' => 'Information Block', 'keyword_based' => 'Keyword Based', 'labelling' => 'Labelling', 'likert' => 'Likert Scale', 'matrix' => 'Matrix', 'mcq' => 'Multiple Choice', 'mrq' => 'Multiple Response', 'random' => 'Random', 'rank' => 'Ranking', 'sct' => 'Script COncordance', 'textbox' => 'Text Box', 'timedate' => 'Time / Date');
   
   /**
@@ -81,22 +86,19 @@ Class Question extends TouchStoneObject {
     $this->_mysqli = $mysqli;
     $this->_user_id = $user_id;
     
-    // Define editable fields for this object
-    $this->_fields_editable = array('theme', 'scenario', 'leadin', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'option_order', 'bloom', 'media', 'status');
-    
     // Array of references to the fields.  Allows succinct use of call_user_func_array for saving
     foreach($this->_fields as $field) {
       $this->_data[] = &$this->$field;
     }
     
     // Check the type of $data
-    if(is_array($data)) {
+    if (is_array($data)) {
       // If it is an array, assume an associative array of fields for creating a new object (but not 
       // saving it to the database)
       foreach($data as $field => $val) {
         $this->$field = $val;
       }
-    } elseif(ctype_digit($data)) {
+    } elseif (ctype_digit($data)) {
       // If it is an int use it as an ID for the database lookup
       $this->id = $data;
       if (!$this->get_question()) {
@@ -114,13 +116,13 @@ Class Question extends TouchStoneObject {
    */
   public function save($clear_checkout = true) {
     $success = false;
-    $logger = new Logger($this->_mysqli);
+    if ($this->_logger == null ) $this->_logger =  new Logger($this->_mysqli);
     
     $valid = $this->validate();
     
-    if($valid === true) {
+    if ($valid === true) {
       // Clear any existing checkout
-      if($clear_checkout) {
+      if ($clear_checkout) {
         $this->checkout_author_id = null;
         $this->checkout_time = null;
       }
@@ -131,7 +133,7 @@ Class Question extends TouchStoneObject {
       
       
       // If $id is -1 we're inserting a new record
-      if($this->id == -1) {
+      if ($this->id == -1) {
         $params = array_merge(array('sssssssssssisisiississsss'), $this->_data);
         $query = <<< QUERY
 INSERT INTO questions(q_type, theme, scenario, scenario_plain, leadin, leadin_plain, notes, correct_fback, incorrect_fback, score_method, 
@@ -156,25 +158,22 @@ QUERY;
       $result->execute();
       $success = ($result->affected_rows > 0);
       
-      if($success) {
-        if($this->id == -1) {
+      if ($success) {
+        if ($this->id == -1) {
           $this->id = $this->_mysqli->insert_id;
+          $logger->track_change('New Question', $this->question_id, $this->_user_id, $this->text, '', '');
         } else {
           // Log any changes
           foreach($this->_modified_fields as $field => $value) {
             $db_field = (in_array($field, array_keys($this->_field_map))) ? $this->_field_map[$field] : $field;
-            $logger->track_change('Edit Question', $this->id, $this->_user_id, $value, $this->$field, $db_field);
+            $this->_logger->track_change('Edit Question', $this->id, $this->_user_id, $value, $this->$field, $db_field);
           }
         }
       }
       $result->close();
             
-      if($success) {
-        // Call save() on the options too if successful
-        foreach($this->options as $oid => $option)
-        {
-          $option->save();
-        }
+      if ($success) {
+        $success = $this->save_options();
       }
       
       $this->_modified_fields = array();
@@ -231,8 +230,16 @@ QUERY;
     return $success;
   }
   
-  public function has_changes() {
-    return (count($this->_modified_fields) > 0);
+  /**
+   * Add a change to a unified field. This is a field that is the same across all options and so changes are logged at the question level 
+   * @param unknown_type $label
+   * @param unknown_type $old_value
+   * @param unknown_type $new_value
+   */
+  public function add_unified_field_modification($field, $label, $old_value, $new_value) {
+    if (!in_array($field, $this->_unified_field_modifications)) {
+      $this->_unified_field_modifications[$field] = array($label, $old_value, $new_value);
+    }
   }
   
   // ACCESSORS
@@ -266,7 +273,7 @@ QUERY;
    * @param string $value
    */
   public function set_theme($value) {
-    if($value != $this->theme) {
+    if ($value != $this->theme) {
       $this->set_modified_field('theme', $this->theme);
       $this->theme = $value;
     }
@@ -286,7 +293,7 @@ QUERY;
    */
   public function set_scenario($value) {
     $scenario = (trim(strip_tags($value)) == '') ? '' : $value;
-    if($scenario != $this->scenario) {
+    if ($scenario != $this->scenario) {
       $this->set_modified_field('scenario', $this->scenario);
       $this->scenario = $value;
     }
@@ -314,7 +321,7 @@ QUERY;
    * @param string $value
    */
   public function set_leadin($value) {
-    if($value != $this->leadin) {
+    if ($value != $this->leadin) {
       $this->set_modified_field('leadin', $this->leadin);
       $this->leadin = $value;
     }
@@ -342,7 +349,7 @@ QUERY;
    * @param string $value
    */
   public function set_notes($value) {
-    if($value != $this->notes) {
+    if ($value != $this->notes) {
       $this->set_modified_field('notes', $this->notes);
       $this->notes = $value;
     }
@@ -361,7 +368,7 @@ QUERY;
    * @param string $value
    */
   public function set_correct_fback($value) {
-    if($value != $this->correct_fback) {
+    if ($value != $this->correct_fback) {
       $this->set_modified_field('correct_fback', $this->correct_fback);
       $this->correct_fback = $value;
     }
@@ -380,7 +387,7 @@ QUERY;
    * @param string $value
    */
   public function set_incorrect_fback($value) {
-    if($value != $this->incorrect_fback) {
+    if ($value != $this->incorrect_fback) {
       $this->set_modified_field('incorrect_fback', $this->incorrect_fback);
       $this->incorrect_fback = $value;
     }
@@ -399,7 +406,7 @@ QUERY;
    * @param string $value
    */
   public function set_score_method($value) {
-    if($value != $this->score_method) {
+    if ($value != $this->score_method) {
       $this->set_modified_field('score_method', $this->score_method);
       $this->score_method = $value;
     }
@@ -418,7 +425,7 @@ QUERY;
    * @param string $value
    */
   public function set_option_order($value) {
-    if($value != $this->option_order) {
+    if ($value != $this->option_order) {
       $this->set_modified_field('option_order', $this->option_order);
       $this->option_order = $value;
     }
@@ -437,7 +444,7 @@ QUERY;
    * @param integer $value
    */
   public function set_standards_setting($value) {
-    if($value != $this->standards_setting) {
+    if ($value != $this->standards_setting) {
       $this->set_modified_field('standards_setting', $this->standards_setting);
       $this->standards_setting = $value;
     }
@@ -456,7 +463,7 @@ QUERY;
    * @param string $value
    */
   public function set_bloom($value) {
-    if($value != $this->bloom) {
+    if ($value != $this->bloom) {
       $this->set_modified_field('bloom', $this->bloom);
       $this->bloom = $value;
     }
@@ -475,7 +482,7 @@ QUERY;
    * @param integer $value
    */
   public function set_owner_id($value) {
-    if($value != $this->owner_id) {
+    if ($value != $this->owner_id) {
       $this->set_modified_field('owner_id', $this->owner_id);
       $this->owner_id = $value;
     }
@@ -494,7 +501,7 @@ QUERY;
    * @param mixed $value Array containing filename, width and height
    */
   public function set_media($value) {
-    if($value != $this->media) {
+    if ($value != $this->media) {
       $this->set_modified_field('media', $this->media);
       $this->media = $value['filename'];
       $this->media_width = (empty($value['width'])) ? 0 : $value['width'];
@@ -515,7 +522,7 @@ QUERY;
    * @param string $value
    */
   public function set_group($value) {
-    if($value != $this->group) {
+    if ($value != $this->group) {
       $this->set_modified_field('group', $this->group);
       $this->group = $value;
     }
@@ -598,18 +605,10 @@ QUERY;
    * @param string $value
    */
   public function set_status($value) {
-    if($value != $this->status) {
+    if ($value != $this->status) {
       $this->set_modified_field('status', $this->status);
       $this->status = $value;
     }
-  }
-  
-  /**
-   * The the array of fields (properties) for this class
-   * @return multitype:string 
-   */
-  public function get_editable_fields() {
-    return $this->_fields_editable;
   }
   
   
@@ -634,6 +633,7 @@ QUERY;
    * @return bool True or false depending on success or failure of the delete operation
    */
   public static function delete($id) {
+    // TODO: Track changes
     $success = false;
     
     return Question::update_deletion_status($id, date ("Y-m-d H:i:s"));
@@ -690,7 +690,7 @@ QUERY;
     }
     $result->close();
     
-    if($found > 0) {
+    if ($found > 0) {
       // Build array of references to option data for use in call_user_func_array
       $opt_fields = Option::get_field_array();
       $opt_data = array();
@@ -733,16 +733,54 @@ QUERY;
     // If there are errors return an appropriate message
     $missing_fields = '';
     foreach($this->_required_fields as $req) {
-      if(empty($this->$req)) $missing_fields .= $this->_pretty_names[$req] . ',';
+      if (empty($this->$req)) $missing_fields .= $this->_pretty_names[$req] . ', ';
     }
-    if($missing_fields != '') {
-      $rval = 'The following required fields have not been supplied: ' . rtrim($missing_fields, ',');
+    if ($missing_fields != '') {
+      $rval = 'The following required fields have not been supplied: ' . rtrim($missing_fields, ', ');
     }
     
     return $rval;
   }
+  
+  /**
+   * Save the options for this question, deleting any that are empty
+   * @return boolean
+   */
+  private function save_options() {
+    $success = true;
+    
+    // Call save() on the options too if successful
+    $i = 1;
+    foreach($this->options as $oid => $option)
+    {
+      $media = $option->get_media();
+      if ($option->get_text() == '' and $media['filename'] == '') {
+        $success = Option::delete($this->_mysqli, $this->_user_id, $oid, $i, $this->id);
+        if ($success) {
+          unset($this->options[$oid]);
+        }
+      } else {
+        $option->save($i);
+      }
+      
+      if (!$success) break;
+      
+      $i++;
+    }
+    
+    if ($success) $this->log_unified_field_modifications();
+    
+    return $success;
+  }
+  
+  private function log_unified_field_modifications() {
+    foreach ($this->_unified_field_modifications as $mod) {
+      $this->_logger->track_change('Edit Question', $this->id, $this->_user_id, $mod[1], $mod[2], $mod[0]);
+    }
+    $this->_unified_field_modifications = array();
+  }
 
-    /**
+  /**
    * Perform delete or restore operation
    * @param int $id
    * @return bool True or false depending on success or failure of the operation

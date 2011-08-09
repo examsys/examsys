@@ -53,7 +53,7 @@ INSERT INTO track_changes(type, typeID, editor, old, new, changed, part)
 VALUES (?,?,?,?,?,NOW(),?)
 QUERY;
     $result = $this->_mysqli->prepare($query);
-    $result->bind_param('siisss', $message, $q_id, $user_id, $orig_val, $new_val, $part);
+    $result->bind_param('siisss', $message, $object_id, $user_id, $orig_val, $new_val, $part);
     $success = $result->execute();  
     $result->close();
     

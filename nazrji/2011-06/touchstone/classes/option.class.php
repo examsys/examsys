@@ -30,7 +30,7 @@ require_once 'touchstone_object.class.php';
 Class Option extends TouchStoneObject {
 
   public $id = -1;
-  public $question_id = null;
+  private $question_id = null;
   private $text = '';
   private $media = '';
   private $media_width = '';
@@ -41,22 +41,27 @@ Class Option extends TouchStoneObject {
   public $marks = null;
   
   private static $_fields = array('question_id', 'text', 'media', 'media_width', 'media_height', 'correct_fback', 'incorrect_fback', 'correct', 'marks');
+  protected $_fields_editable = array('text', 'media', 'correct_fback', 'incorrect_fback', 'marks');
   private $_required_fields = array('question_id', 'correct', 'marks');
+  // 'Unified' fields are the same for all options
+  protected $_fields_unified = array('correct' => 'Correct Answer');
+  
   private $_mysqli = null;
   private $_data = array();
+  
+  // Map our 'nice' property names to the database fields
+  private $_field_map = array('question_id' => 'o_id', 'text' => 'option_text', 'media' => 'o_media', 'media_width' => 'o_media_width', 'media_height' => 'o_media_height', 'correct_fback' => 'feedback_right', 'incorrect_fback' => 'feedback_wrong');
+  private $_pretty_names = array('question_id' => 'Question ID', 'text' => '', 'correct_fback' => 'Correct Feedback', 'incorrect_fback' => 'Incorrect Feedback', 'correct' => 'Correct Value', 'marks' => 'Marks');
   
   /**
    * Create a new option object by either loading an existing option from the database or populating
    * properties from an associative array
    * @param mixed $data
    */
-  function __construct($mysqli, $user_id, $data = -1) {
+  function __construct($mysqli, $user_id, $data = null) {
     // Store the database connection reference
     $this->_mysqli = $mysqli;
     $this->_user_id = $user_id;
-    
-    // Define editable fields for this object
-    $this->_fields_editable = self::$_fields;
     
     // Array of references to the fields.  Allows succinct use of call_user_func_array
     foreach(self::$_fields as $field) {
@@ -85,23 +90,76 @@ Class Option extends TouchStoneObject {
    * Persist the object to the database
    * @return boolean Success or failure of the save operation
    */
-  public function save() {
+  public function save($option_number = 0) {
+    $success = false;
+    $logger = new Logger($this->_mysqli);
+    
     $valid = $this->validate();
     
     if($valid === true) {
       // If $id is -1 we're inserting a new record
+      if($this->id == -1) {
+        $params = array_merge(array('issiisssd'), $this->_data);
+        $query = <<< QUERY
+INSERT INTO options(o_id, option_text, o_media, o_media_width, o_media_height, feedback_right, feedback_wrong, correct, marks)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+QUERY;
+      } else {
+        // Otherwise we're updating an existing one
+        $params = array_merge(array('issiisssdi'), $this->_data, array(&$this->id));
+        $this->last_edited = date("Y-m-d H:i:s");
+        $query = <<< QUERY
+UPDATE options
+SET o_id = ?, option_text = ?, o_media = ?, o_media_width = ?, o_media_height = ?, feedback_right = ?, feedback_wrong = ?, correct = ?, marks = ? 
+WHERE id_num = ?
+QUERY;
+      }
+      $result = $this->_mysqli->prepare($query);
+      call_user_func_array (array($result,'bind_param'), $params);
+      $result->execute();
+      $success = ($result->affected_rows > 0);
       
-      // Otherwise we're updating an existing one
-    
+      if($success) {
+        if($this->id == -1) {
+          $this->id = $this->_mysqli->insert_id;
+          $logger->track_change('New Option', $this->question_id, $this->_user_id, $this->text, '', 'Option #' . $option_number);
+        } else {
+          // Log any changes
+          foreach($this->_modified_fields as $field => $value) {
+            $db_field = (in_array($field, array_keys($this->_field_map))) ? $this->_field_map[$field] : $field;
+            $logger->track_change('Edit Question', $this->question_id, $this->_user_id, $value, $this->$field, $db_field);
+          }
+        }
+      }
+      $result->close();
+            
+      $this->_modified_fields = array();
     } else {
       throw new ValidationException($valid);
     }
     
-    return true;
+    return $success;
   }
+  
+  /**
+   * The the array of fields (properties) for this class
+   * @return multitype:string 
+   */
+  public function get_unified_fields() {
+    return $this->_fields_unified;
+  }
+  
   
   // ACCESSORS
   
+  /**
+   * Get the ID of the question to which this option relates
+   * @return string
+   */
+  public function get_question_id() {
+    return $this->question_id;
+  }
+
   /**
    * Get the option text
    * @return string
@@ -193,10 +251,7 @@ Class Option extends TouchStoneObject {
    * @param string $value
    */
   public function set_correct($value) {
-    if($value != $this->correct) {
-      $this->set_modified_field('correct', $this->correct);
-      $this->correct = $value;
-    }
+    $this->correct = $value;
   }
   
   /**
@@ -244,8 +299,22 @@ Class Option extends TouchStoneObject {
    * @param int $id
    * @return bool True of false depending on success or failure of the delete operation
    */
-  public static function delete($id) {
-    return true;
+  public static function delete($mysqli, $user_id, $id, $number, $q_id) {
+    $query = <<< QUERY
+DELETE FROM options WHERE id_num = ?
+QUERY;
+    $result = $mysqli->prepare($query);
+    $result->bind_param('i', $id);
+    $result->execute();
+    
+    $success = ($result->affected_rows > 0);
+    
+    if($success) {
+      $logger = new Logger($mysqli);
+      $logger->track_change('Deleted Option', $q_id, $user_id, '', '', 'Option #' . $number);
+    }
+    
+    return $success;
   }
   
   // PRIVATE METHODS
@@ -273,15 +342,14 @@ QUERY;
     // If there are errors return an appropriate message
     $missing_fields = '';
     foreach($this->_required_fields as $req) {
-      if(empty($this->$req)) $missing_fields .= $req . ',';
+      if(empty($this->$req)) $missing_fields .= $this->_pretty_names[$req] . ', ';
     }
     if($missing_fields != '') {
-      $rval = 'The following required fields have not been supplied' . rtrim($missing_fields, ',');
+      $rval = 'The following required fields have not been supplied: ' . rtrim($missing_fields, ', ');
     }
     
     return $rval;
   }
-  
 }
 
 ?>
