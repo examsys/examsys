@@ -49,7 +49,7 @@ Class Question extends TouchStoneObject {
   private $media = '';
   private $media_width = 0;
   private $media_height = 0;
-  private $group = '';
+  private $teams = '';
   private $checkout_time = null;
   private $checkout_author_id = '';
   private $created = null;
@@ -60,6 +60,9 @@ Class Question extends TouchStoneObject {
   public $options = array();
   public $max_options = 20;
   
+  // Imploded DB version of teams
+  private $group = '';
+  
   private $_user_id;
   private $_fields = array('type', 'theme', 'scenario', 'scenario_plain', 'leadin', 'leadin_plain', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'option_order', 'standards_setting', 'bloom', 'owner_id', 'media', 'media_width', 'media_height', 'group', 'checkout_time', 'checkout_author_id', 'created', 'last_edited', 'locked', 'deleted', 'status');
   protected $_fields_editable = array('theme', 'scenario', 'leadin', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'option_order', 'bloom', 'status');
@@ -68,11 +71,16 @@ Class Question extends TouchStoneObject {
   private $_logger = null;
   private $_data = array();
   
+  // These properties will be lazily loaded
+  private $keywords = null;
+  private $changes = null;
+  
   // Facilitate tracking of changes to unified fields in the options
   private $_unified_field_modifications = array();
   
-  // Map our 'nice' property names to the database fields
+  // Map our 'nice' property names to the database fields and 'parts' in track changes
   private $_field_map = array('type' => 'q_type', 'option_order' => 'q_option_order', 'standards_setting' => 'std', 'owner_id' => 'ownerID', 'media' => 'q_media', 'media_width' => 'q_media_width', 'media_height' => 'q_media_height', 'group' => 'q_group', 'checkout_author_id' => 'checkout_authorID', 'created' => 'creation_date');
+  private $_change_field_map = array('group' => 'teams');
   private $_pretty_names = array('type' => 'Type', 'leadin' => 'Lead-in', 'score_method' => 'Scoring Method', 'option_order' => 'Option Order', 'owner_id' => 'Owner', 'status' => 'Status');
   public static $types = array('blank' => 'Fill in the Blank', 'calculation' => 'calculation', 'dichotomous' => 'Dichotomous', 'extmatch' => 'Extended Matching', 'flash' => 'Flash', 'hotspot' => 'Image Hotspot', 'info' => 'Information Block', 'keyword_based' => 'Keyword Based', 'labelling' => 'Labelling', 'likert' => 'Likert Scale', 'matrix' => 'Matrix', 'mcq' => 'Multiple Choice', 'mrq' => 'Multiple Response', 'random' => 'Random', 'rank' => 'Ranking', 'sct' => 'Script COncordance', 'textbox' => 'Text Box', 'timedate' => 'Time / Date');
   
@@ -166,7 +174,8 @@ QUERY;
           // Log any changes
           foreach($this->_modified_fields as $field => $value) {
             $db_field = (in_array($field, array_keys($this->_field_map))) ? $this->_field_map[$field] : $field;
-            $this->_logger->track_change('Edit Question', $this->id, $this->_user_id, $value, $this->$field, $db_field);
+            $change_field = (in_array($field, array_keys($this->_change_field_map))) ? $this->_change_field_map[$field] : $field;
+            $this->_logger->track_change('Edit Question', $this->id, $this->_user_id, $value, $this->$field, $change_field);
           }
         }
       }
@@ -510,21 +519,29 @@ QUERY;
   }
   
   /**
-   * Get the group to which the question belongs
-   * @return string
+   * Get the teams to which the question belongs
+   * @return array
    */
-  public function get_group() {
-    return $this->group;
+  public function get_teams() {
+    if (!is_array($this->teams)) {
+      $this->teams = ($this->group != '') ? explode(';', $this->group) : array();
+    }
+    
+    return $this->teams;
   }
   
   /**
    * Set the group to which the question belongs
    * @param string $value
    */
-  public function set_group($value) {
-    if ($value != $this->group) {
+  public function set_teams($value) {
+    $this->get_teams();
+    
+    if (count(array_diff($this->teams, $value)) > 0) {
       $this->set_modified_field('group', $this->group);
-      $this->group = $value;
+      sort($value);
+      $this->group = implode(';', $value);
+      $this->teams = $value;
     }
   }
   
@@ -611,6 +628,52 @@ QUERY;
     }
   }
   
+  /**
+   * Get the change history of the question 
+   * @return array Associative array containing date, section, old value, new value and user for the change
+   */
+  public function get_changes() {
+    if(!is_array($this->changes)) {
+      $this->changes = array();
+      // Load the changes into an array
+      $result = $this->_mysqli->prepare("SELECT part, old, new, DATE_FORMAT(changed, '%d/%m/%Y') AS display_changed, title, initials, surname FROM (track_changes, users) WHERE track_changes.editor=users.id AND typeID=? ORDER BY changed DESC, users.id LIMIT 200");
+      $result->bind_param('i', $this->id);
+      $result->execute();
+      $result->bind_result($part, $old, $new, $display_changed, $title, $initials, $surname);
+      while ($result->fetch()) {
+        $this->changes[] = array('date' => $display_changed, 'section' => $part, 'old' => $old, 'new' => $new, 'user' => $title . ' ' . $initials . ' ' . $surname);
+      }
+    }
+    
+    return $this->changes;
+  }
+  
+  public function get_keywords() {
+    if(!is_array($this->keywords)) {
+      $this->keywords = array();
+      
+      // Load the keywords into an array
+      $result = $this->_mysqli->prepare("SELECT keywordID FROM keywords_question WHERE q_id=?");
+      $result->bind_param('i', $this->id);
+      $result->execute();
+      $result->bind_result($keyword_id);
+      while ($result->fetch()) {
+        $this->keywords[] = $keyword_id;
+      }
+    }
+    
+    return $this->keywords;
+  }
+
+  /**
+   * Set the keywords for the question
+   * @param unknown_type $value
+   */
+  public function set_keywords($value) {
+    // Question class is not currently handling the persisting of keywords to the database
+    $this->keywords = $value;
+  }
+
   
   // STATIC METHODS
   

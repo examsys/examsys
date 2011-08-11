@@ -122,3 +122,53 @@ function option_order($selected = '') {
   
   return $html;
 }
+
+function render_changes($changes) {
+  $i = 0;
+  if (count($changes) > 0) {
+    $html = <<< HTML
+        <table class="data">
+          <thead>
+            <tr>
+              <th class="data-small">Date</th>
+              <th>Section</th>
+              <th class="data-small">Old</th>
+              <th class="data-small">New</th>
+              <th class="data-small">Editor</th>
+            </tr>
+          </thead>
+          <tbody>
+
+HTML;
+
+    foreach($changes as $change) {
+      $alt = ($i++ % 2 == 1) ? ' class="alt"' : '';
+      $html .= <<< HTML
+            <tr{$alt}>
+              <td>{$change['date']}</td>
+              <td>{$change['section']}</td>
+              <td>{$change['old']}</td>
+              <td>{$change['new']}</td>
+              <td>{$change['user']}</td>
+            </tr>
+
+HTML;
+    }
+  
+    $html .= <<< HTML
+
+  				</tbody>
+        </table>
+        
+HTML;
+  } else {
+    // Shouldn't happen if we're recording question creation as a change
+    $html = <<< HTML
+        <p>No changes recorded for this question</p>
+
+HTML;
+  
+  }
+  
+  return $html;
+}

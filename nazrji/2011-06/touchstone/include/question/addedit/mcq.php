@@ -95,6 +95,7 @@ function render_option($option, $index, $current_options) {
               </td>
               <td>&nbsp;</td>
             </tr>
+
 OPTION;
 
   if ($option->id != -1) {
@@ -108,6 +109,7 @@ OPTION;
                 <td>{$current_media_html}</td>
                 <td>&nbsp;</td>
               </tr>
+
 OPTION;
     }
   }

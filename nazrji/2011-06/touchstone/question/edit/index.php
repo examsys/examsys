@@ -25,20 +25,23 @@
 // TODO: handle keyword based and random
 // TODO: validation in JS
 // TODO: replace comment OK etc. icons with CSS BG image?
+// TODO: disable mapping tab for info and likert
 
 require '../../include/staff_auth.inc';
 require_once '../../classes/question.class.php';
 require_once '../../classes/logger.class.php';
 require '../../include/edit.inc';
 require '../../include/media.inc';
+require '../../include/metadata.inc';
 
 $question = null;
 $logger = new Logger($mysqli);
 $paper_id = (empty($_GET['paper_id'])) ? -1 : $_GET['paper_id'];
+$module = (empty($_GET['module'])) ? '' : $_GET['module'];
 
 $critical_error = '';
 
-$q_no = (empty($_GET['qNo'])) ? '' : $_GET['qNo'];
+$q_no = (empty($_GET['q_no'])) ? '' : $_GET['q_no'];
 $q_type = '';
 $q_type_full = '';
  
@@ -147,13 +150,15 @@ if($critical_error == '') {
         }
       }
       
-  //
-  //
-//    saveKeywords($q_id, $userID, $changes, true, $mysqli);
-  //    
-  //    $question_teams = getTeams();
-  //    record_trackChanges('Edit Question', $q_id, $_POST['old_teams'], $question_teams, 'teams', $userID, $changes);
-  //   
+
+      // TODO: check usage of old saveKeywords function - USED IN LIMITED SAVE FUNCTION
+      save_keywords($question, $userID, true, $mysqli);
+      
+      // TODO: check usage of old getTeams function - USED IN LIMITED SAVE FUNCTION
+      if (isset($_POST['teams'])) {
+        $question->set_teams($_POST['teams']);
+      }
+      
       for ($option_no = 1; $option_no < $question->max_options; $option_no++) {
         $option = null;
         
@@ -305,11 +310,14 @@ if($critical_error != '') {
   </div>
 <?php
 } else {
+  $disabled = check_edit_rights($question->id, $question->get_checkout_author_id(), $question->get_checkout_time(), $question->get_locked(), $mysqli);
+  
   $query_string = '';
   if($question->id != -1) {
     $query_string = '?q_id=' . $question->id;
-    $query_string .= (isset($_REQUEST['q_no'])) ? '&q_no=' . $_REQUEST['q_no'] : '';
-    $query_string .= (isset($_REQUEST['paper_id'])) ? '&paper_id=' . $_REQUEST['paper_id'] : '';
+    $query_string .= ($q_no != '') ? '&q_no=' . $q_no : '';
+    $query_string .= ($paper_id != -1) ? '&paper_id=' . $paper_id : '';
+    $query_string .= ($module != '') ? '&module=' . $module : '';
   }
   
   // TODO: client side validation
@@ -357,121 +365,19 @@ require_once '../../include/question/addedit/' . $question->get_type() . '.php'
           <h2>Metadata</h2>
         </div>
         
-        <table id="q-metadata-basic" class="form" summary="Edit basic question metadata">
-          <tbody>
-            <tr>
-              <th>Status</th>
-              <td>
-                <ul class="radio-list horizontal">
-                  <li><input id="status-normal" name="status" value="Normal" checked="checked" type="radio" /> <label for="status-normal">Normal</label></li>
-                  <li><input id="status-retired" name="status" value="Retired" type="radio" /> <label for="status-retired">Retired</label></li>
-                  <li><input id="status-inc" name="status" value="Incomplete" type="radio" /> <label for="status-inc">Incomplete</label></li>
-                  <li><input id="status-exp" name="status" value="Experimental" type="radio" /> <label for="status-exp">Experimental</label></li>
-                  <li><input id="status-beta" name="status" value="Beta" type="radio" /> <label for="status-beta">Beta</label></li>
-                </ul>
-                <input name="old_status" value="Normal" type="hidden" />
-              </td>
-            </tr>
-            <tr>
-              <th>Bloom's Taxonomy</th>
-              <td>
-                <select name="bloom">
-                  <option selected="selected" value=""></option>
-                  <option value="Knowledge">Knowledge</option>
-                  <option value="Comprehension">Comprehension</option>
-                  <option value="Application">Application</option>
-                  <option value="Analysis">Analysis</option>
-                  <option value="Synthesis">Synthesis</option>
-                  <option value="Evaluation">Evaluation</option>
-                </select>
-                <input name="old_bloom" value="" type="hidden" />
-              </td>
-            </tr>
-          </tbody>
-        </table>
+<?php
+// TODO: check usage of old echoMetadata function - SAFE TO REMOVE
+echo echo_metadata($mysqli, $question, true, $module, $disabled);
+?>        
         
-        <div class="form">
-          <div id="keyword-select" class="select-area">
-            <h3>Keywords</h3>
-            <!-- TODO: check what the old UpdateList function did -->
-            <div id="q-keywords" class="select-group">
-              <h4>SYSTEM</h4>
-              <ul class="radio-list clearfix">
-                <li><label for="keyword0" class="fullwidth"><input id="keyword0" name="keyword0" value="1268" type="checkbox" /> Cat</label></li>
-              </ul>
-  
-              <h4>Personal Keywords</h4>
-              <ul class="radio-list clearfix">
-                <li><label for="keyword1" class="fullwidth"><input id="keyword1" name="keyword1" value="1094" type="checkbox" /> Training</label></li>
-              </ul>
-            </div>
-          </div>
-          
-          <div id="team-select" class="select-area">
-            <h3>Teams</h3>
-            <div id="q-teams" class="select-group">
-              <h4>Department of Mechanical, Materials and Manufacturing Engineering</h4>
-              <ul class="radio-list clearfix">
-                <li><label for="team0" class="fullwidth"><input id="team0" name="team0" value="MM1EM1" type="checkbox" /> MM1EM1: Electromechanical Systems 1</label></li>
-                <li><label for="team1" class="fullwidth"><input id="team1" name="team1" value="MM1EM1_UNMC" type="checkbox" /> MM1EM1_UNMC: Electromechanical Systems 1</label></li>
-                <li><label for="team2" class="fullwidth"><input id="team2" name="team2" value="MM1MS1" type="checkbox" /> MM1MS1: Mechanics of Solids 1</label></li>
-                <li><label for="team3" class="fullwidth"><input id="team3" name="team3" value="MM1MSY" type="checkbox" /> MM1MSY: Mechanical Systems</label></li>
-                <li><label for="team4" class="fullwidth"><input id="team4" name="team4" value="MM1TF1" type="checkbox" /> MM1TF1: Thermodynamics and Fluid Mechanics</label></li>
-                <li><label for="team5" class="fullwidth"><input id="team5" name="team5" value="MM2TF2" type="checkbox" /> MM2TF2: Thermodynamics &amp; Fluid Mechanics 2</label></li>
-                <li><label for="team6" class="fullwidth"><input id="team6" name="team6" value="MM3HTR" type="checkbox" /> MM3HTR: Heat Transfer</label></li>
-                <li><label for="team7" class="fullwidth"><input id="team7" name="team7" value="MM3HTR_UNMC" type="checkbox" /> MM3HTR_UNMC: Heat Transfer</label></li>
-              </ul>
-              <h4>Faculty of Medicine</h4>
-              <ul class="radio-list clearfix">
-                <li><label for="team8" class="fullwidth"><input id="team8" name="team8" value="A11BHS" type="checkbox" /> A11BHS: Behavioural Sciences</label></li>
-                <li><label for="team9" class="fullwidth"><input id="team9" name="team9" value="A11CLS" type="checkbox" /> A11CLS: Clinical Laboratory Sciences</label></li>
-                <li><label for="team10" class="fullwidth"><input id="team10" name="team10" value="A11CRH" type="checkbox" /> A11CRH: Cardiovascular, Respiratory and Haematology</label></li>
-                <li><label for="team11" class="fullwidth"><input id="team11" name="team11" value="A11CS1" type="checkbox" /> A11CS1: Communication Skills (1)</label></li>
-                <li><label for="team12" class="fullwidth"><input id="team12" name="team12" value="A11EXT" type="checkbox" /> A11EXT: Structure, function and pharmacology of excitable tissues</label></li>
-                <li><label for="team13" class="fullwidth"><input id="team13" name="team13" value="A11HDT" type="checkbox" /> A11HDT: Human Development and Tissue Differentiation</label></li>
-                <li><label for="team14" class="fullwidth"><input id="team14" name="team14" value="A11MBM" type="checkbox" /> A11MBM: Molecular Basis of Medicine</label></li>
-                <li><label for="team15" class="fullwidth"><input id="team15" name="team15" value="A11PD1" type="checkbox" /> A11PD1: Early Clinical and Professional Development</label></li>
-              </ul>
-            </div>
-          </div>
-        </div>
       </div>
 
       <div id="changes" class="tab-area">
-        <table class="data">
-          <thead>
-            <tr>
-              <th class="data-small">Date</th>
-              <th>Section</th>
-              <th class="data-small">Old</th>
-              <th class="data-small">New</th>
-              <th class="data-small">Editor</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>03/08/2011</td>
-              <td>Frigged more test data</td>
-              <td>53657</td>
-              <td>53669</td>
-              <td>Dr R ingram</td>
-            </tr>
-            <tr class="alt">
-              <td>03/08/2011</td>
-              <td>Frigged some test data</td>
-              <td>53657</td>
-              <td>53669</td>
-              <td>Dr R ingram</td>
-            </tr>
-            <tr>
-              <td>12/04/2011</td>
-              <td>Copied Question</td>
-              <td>53657</td>
-              <td>53669</td>
-              <td>Miss A Rockcliffe</td>
-            </tr>
-          </tbody>
-        </table>
+<?php
+$changes = $question->get_changes();
+// TODO: remove 'changes_tab.inc'?
+echo render_changes($changes);
+?>
       </div>
 
       <div id="comments" class="tab-area">
@@ -614,7 +520,7 @@ require_once '../../include/question/addedit/' . $question->get_type() . '.php'
         <p class="warning"><input value="-1" id="none_of_the_above" name="none_of_the_above" type="checkbox" /><label for="none_of_the_above"><strong>None of the Above</strong></label><br />Check here if the current question does not match any of the above objectives from SYSTEM.</p>
         
 <?php 
-// TODO: All of these need to use the dynamic value
+// TODO: All of these need to use the dynamic value. Most come from mapping tab
 ?>        
         <input name="checkout_author" value="<?php echo $userID ?>" type="hidden" />
         <input id="SYSTEM_objectiveCount" name="SYSTEM_objectiveCount" value="9" type="hidden" />
