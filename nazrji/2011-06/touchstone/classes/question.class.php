@@ -74,6 +74,7 @@ Class Question extends TouchStoneObject {
   // These properties will be lazily loaded
   private $keywords = null;
   private $changes = null;
+  private $comments = null;
   
   // Facilitate tracking of changes to unified fields in the options
   private $_unified_field_modifications = array();
@@ -629,7 +630,7 @@ QUERY;
   }
   
   /**
-   * Get the change history of the question 
+   * Get the change history of the question, lazily loaded
    * @return array Associative array containing date, section, old value, new value and user for the change
    */
   public function get_changes() {
@@ -643,11 +644,16 @@ QUERY;
       while ($result->fetch()) {
         $this->changes[] = array('date' => $display_changed, 'section' => $part, 'old' => $old, 'new' => $new, 'user' => $title . ' ' . $initials . ' ' . $surname);
       }
+      $result->close();
     }
     
     return $this->changes;
   }
   
+  /**
+   * Get the keywords for the question, lazily loaded
+   * @return array Array of keyword IDs
+   */
   public function get_keywords() {
     if(!is_array($this->keywords)) {
       $this->keywords = array();
@@ -660,6 +666,7 @@ QUERY;
       while ($result->fetch()) {
         $this->keywords[] = $keyword_id;
       }
+      $result->close();
     }
     
     return $this->keywords;
@@ -672,6 +679,48 @@ QUERY;
   public function set_keywords($value) {
     // Question class is not currently handling the persisting of keywords to the database
     $this->keywords = $value;
+  }
+    
+  /**
+   * Get external examiner comments on the question. Lazily loaded.
+   * @param unknown_type $paper_id
+   * @return array Array of comments indexed by comment ID and containing paper ID, category,  comment text, date, reviewer name, action, response and type
+   */
+  public function get_comments($paper_id = -1) {
+    if(!is_array($this->comments)) {
+      $this->comments = array();
+      
+      if ($paper_id != -1) {
+        $query = <<< QUERY
+SELECT paper_title, review_comments.id, category, comment, reviewed, title, initials, surname, action, response, review_type 
+FROM (review_comments, users) LEFT JOIN properties ON review_comments.q_paper=properties.property_id 
+WHERE review_comments.reviewer=users.id AND q_id=? AND q_paper=? ORDER BY surname
+QUERY;
+        $result = $this->_mysqli->prepare($query);
+        $result->bind_param('ii', $this->id, $paper_id);
+      } else {
+        $query = <<< QUERY
+SELECT paper_title, review_comments.id, category, comment, reviewed, title, initials, surname, action, response, review_type 
+FROM (review_comments, users) LEFT JOIN properties ON review_comments.q_paper=properties.property_id 
+WHERE review_comments.reviewer=users.id AND q_id=? ORDER BY q_paper, surname
+QUERY;
+        $result = $this->_mysqli->prepare($query);
+        $result->bind_param('i', $this->id);
+      }
+      $result->execute();
+      $result->bind_result($paper_title, $id, $category, $comment, $reviewed, $title, $initials, $surname, $action, $response, $review_type);
+      while ($result->fetch()) {
+        $this->comments[$id] = array('paper' => $paper_title, 'category' => $category, 'comment' => $comment, 'date' => $reviewed, 'name' => $title . ' ' . $initials . ' ' . $surname, 'action' => $action, 'response' => $response, 'type' => $review_type);
+      }
+      $result->close();
+    }
+    
+    return $this->comments;
+  }
+  
+  public function set_comments($value) {
+    // Question class is not currently handling the persisting of comments to the database
+    $this->comments = $value;
   }
 
   
@@ -778,7 +827,7 @@ QUERY;
       while($success == true and $success = $result->fetch()) {
         $this->options[$opt_data['id']] = new Option($this->_mysqli, $this->_user_id, $opt_data);
       }
-      $x = 3;
+      $result->close();
     } else {
       throw new RecordNotFoundException('Question with ID ' . $this->id . ' not found.');
     }

@@ -338,12 +338,21 @@ textarea, input[type=text], select {
 }
 
 .data th {
+	width: 40%;
 	text-align: left;
   border-bottom: 1px solid #ccc;
 }
 
-.data-small {
-	width: 12%;
+.data th.data-medium {
+  width: 16%;
+}
+
+.data th.data-small {
+  width: 12%;
+}
+
+.data th.data-tiny {
+  width: 3%;
 }
 
 /* Mapping */
@@ -351,20 +360,26 @@ textarea, input[type=text], select {
 	margin: 0;
 	list-style: none;
   font-size: 90%;
-}
-
-.objectives .top {
-  background: url('../artwork/plus.png') no-repeat 0px 2px;
-  padding-left: 16px;
-  margin-bottom: 6px;
-}
-
-.objectives .top.open {
-  background: url('../artwork/minus.png') no-repeat 0px 2px;
+  margin-bottom: 8px;
 }
 
 .objectives .top a {
+  background: url('../artwork/plus.png') no-repeat 0px 2px;
+  padding-left: 16px;
+  margin-bottom: 6px;
 	color: #316AC5;
 	font-weight: bold;
 	text-decoration: none;
+}
+
+.objectives .top.open a {
+  background: url('../artwork/minus.png') no-repeat 0px 2px;
+}
+
+.objectives .top ul {
+	padding-left: 18px;
+}
+
+.objectives .top ul li {
+	margin: 0px;
 }

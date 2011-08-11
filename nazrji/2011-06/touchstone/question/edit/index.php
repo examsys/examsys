@@ -24,6 +24,7 @@
 
 // TODO: handle keyword based and random
 // TODO: validation in JS
+// TODO: contextual save buttons
 // TODO: replace comment OK etc. icons with CSS BG image?
 // TODO: disable mapping tab for info and likert
 
@@ -33,6 +34,7 @@ require_once '../../classes/logger.class.php';
 require '../../include/edit.inc';
 require '../../include/media.inc';
 require '../../include/metadata.inc';
+require '../../include/mapping.inc';
 
 $question = null;
 $logger = new Logger($mysqli);
@@ -151,9 +153,6 @@ if($critical_error == '') {
       }
       
 
-      // TODO: check usage of old saveKeywords function - USED IN LIMITED SAVE FUNCTION
-      save_keywords($question, $userID, true, $mysqli);
-      
       // TODO: check usage of old getTeams function - USED IN LIMITED SAVE FUNCTION
       if (isset($_POST['teams'])) {
         $question->set_teams($_POST['teams']);
@@ -217,13 +216,23 @@ if($critical_error == '') {
         }
         
       }
-  //    
-  //    save_external_responses($mysqli);
-  // 
-  
+
       try {
     	  if (!$question->save()) {
     	    $errors[] = 'Error saving data. Please try again';
+    	  } else {
+          // TODO: check usage of old saveKeywords function - USED IN LIMITED SAVE FUNCTION
+          save_keywords($question, $userID, true, $mysqli);
+      
+    	    // TODO: check usage of old save_external_responses function - USED IN LIMITED SAVE FUNCTION
+    	    if(isset($_POST['comment_ids']) and isset($_POST['actions']) and isset($_POST['responses'])) {
+    	      save_external_responses_new($mysqli, $question, $_POST['comment_ids'], $_POST['actions'], $_POST['responses'], $paper_id);
+    	    }
+    	    
+    	    if (isset($_POST['objective_modules'])) {
+    	      save_objective_mappings($mysqli, $_POST['objective_modules'], $paper_id, $question->id);
+    	    }
+    	    
     	  }
     	} catch (ValidationException $vex) {
     	  $errors[] = $vex->getMessage();
@@ -367,7 +376,7 @@ require_once '../../include/question/addedit/' . $question->get_type() . '.php'
         
 <?php
 // TODO: check usage of old echoMetadata function - SAFE TO REMOVE
-echo echo_metadata($mysqli, $question, true, $module, $disabled);
+echo render_metadata($mysqli, $question, true, $module, $disabled);
 ?>        
         
       </div>
@@ -381,154 +390,20 @@ echo render_changes($changes);
       </div>
 
       <div id="comments" class="tab-area">
-        <table class="data">
-          <thead>
-            <tr>
-              <th style="width:16px"></th>
-              <th style="width:14%">Reviewer</th>
-              <th style="width:39%">Comments</th>
-              <th style="width:5%">Action&nbsp;Taken</th>
-              <th style="width:39%">Internal Response</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-              <td><img src="../../artwork/ok_comment.png" width="16" height="16" alt="OK" /></td>
-              <td>Dr T Boswell<br /><span class="note">Internal</span></td>
-              <td><span class="note">No Comments</span></td>
-              <td>
-                <select name="action0">
-                  <option value="Not actioned" selected="selected">Not actioned</option>
-                  <option value="Read - disagree">Read - disagree</option>
-                  <option value="Read - actioned">Read - actioned</option>
-                </select>
-                <input type="hidden" name="commentid0" value="34725" />
-              </td>
-              <td>
-                <textarea cols="60" rows="3" name="response0"></textarea>
-              </td>
-            </tr>
-            <tr class="alt">
-              <td><img src="../../artwork/ok_comment.png" width="16" height="16" alt="OK" /></td>
-              <td>Dr S Crusz<br /><span class="note">Internal</span></td>
-              <td><span class="note">No Comments</span></td>
-              <td>
-                <select name="action1">
-                  <option value="Not actioned" selected="selected">Not actioned</option>
-                  <option value="Read - disagree">Read - disagree</option>
-                  <option value="Read - actioned">Read - actioned</option>
-                </select>
-                <input type="hidden" name="commentid1" value="34887" />
-              </td>
-              <td>
-                <textarea cols="60" rows="3" name="response1"></textarea>
-              </td>
-            </tr>
-            <tr>
-              <td><img src="../../artwork/ok_comment.png" width="16" height="16" alt="OK" /></td>
-              <td>Professor W Irving<br /><span class="note">Internal</span></td>
-              <td><span class="note">No Comments</span></td>
-              <td>
-                <select name="action2">
-                  <option value="Not actioned" selected="selected">Not actioned</option>
-                  <option value="Read - disagree">Read - disagree</option>
-                  <option value="Read - actioned">Read - actioned</option>
-                </select>
-                <input type="hidden" name="commentid2" value="34782" />
-              </td>
-              <td>
-                <textarea cols="60" rows="3" name="response2"></textarea>
-              </td>
-            </tr>
-            <tr class="alt">
-              <td><img src="../../artwork/ok_comment.png" width="16" height="16" alt="OK" /></td>
-              <td>Professor R James<br /><span class="note">Internal</span></td>
-              <td><span class="note">No Comments</span></td>
-              <td>
-                <select name="action3">
-                  <option value="Not actioned" selected="selected">Not actioned</option>
-                  <option value="Read - disagree">Read - disagree</option>
-                  <option value="Read - actioned">Read - actioned</option>
-                </select>
-                <input type="hidden" name="commentid3" value="36913" />
-              </td>
-              <td>
-                <textarea cols="60" rows="3" name="response3"></textarea>
-              </td>
-            </tr>
-            <tr>
-              <td><img src="../../artwork/ok_comment.png" width="16" height="16" alt="OK" /></td>
-              <td>Professor D Mack<br /><span class="note">External</span></td>
-              <td><span class="note">No Comments</span></td>
-              <td>
-                <input type="hidden" name="commentid4" value="37078" />
-                <select name="action4">
-                  <option value="Not actioned" selected="selected">Not actioned</option>
-                  <option value="Read - disagree">Read - disagree</option>
-                  <option value="Read - actioned">Read - actioned</option>
-                </select>
-              </td>
-              <td>
-                <textarea cols="60" rows="3" name="response4"></textarea>
-              </td>
-            </tr>
-            <tr class="alt">
-              <td><img src="../../artwork/ok_comment.png" width="16" height="16" alt="OK" /></td>
-              <td>Dr V Weston<br /><span class="note">Internal</span></td>
-              <td><span class="note">No Comments</span></td>
-              <td>
-                <input type="hidden" name="commentid5" value="34719" />
-                <select name="action5">
-                  <option value="Not actioned" selected="selected">Not actioned</option>
-                  <option value="Read - disagree">Read - disagree</option>
-                  <option value="Read - actioned">Read - actioned</option>
-                </select>
-              </td>
-              <td>
-                <textarea rows="3" cols="60" name="response5"></textarea>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+<?php
+$comments = $question->get_comments($paper_id);
+// TODO: remove 'comments_tab.inc'?
+echo render_comments($comments);
+?>
       </div>
 
       <div id="mapping" class="tab-area">
-        <h2>SYSTEM Objectives</h2>
+<?php
+// TODO: remove 'mapping_tab.inc'?
+// TODO: how does it work in add? What if the question isn't on a paper?
+echo render_objectives_mapping_form($mysqli, $paper_id);
+?>
         
-        <ul class="objectives">
-          <li class="top">
-            <a href="#">Set internally held objectives <span class="note">10/03/11</span></a>
-            <ul class="hide">
-              <li><input id="SYSTEMobj0" name="SYSTEMobj0" value="861" type="checkbox" /> <label for="SYSTEMobj0">Objective1</label></li>
-              <li><input id="SYSTEMobj1" name="SYSTEMobj1" value="862" type="checkbox" /> <label for="SYSTEMobj1">Objective2</label></li>
-              <li><input id="SYSTEMobj2" name="SYSTEMobj2" value="863" type="checkbox" /> <label for="SYSTEMobj2">Objective3</label></li>
-              <li><input id="SYSTEMobj3" name="SYSTEMobj3" value="864" type="checkbox" /> <label for="SYSTEMobj3">Objective4</label></li>
-            </ul>
-          </li>
-          <li class="top">
-            <a href="#">Session2 Set internally held objectives <span class="note">11/03/11</span></a>
-            <ul class="hide">
-              <li><input id="SYSTEMobj4" name="SYSTEMobj4" value="865" type="checkbox" /> <label for="SYSTEMobj4">Session2 Objective1</label></li>
-              <li><input id="SYSTEMobj5" name="SYSTEMobj5" value="866" type="checkbox" /> <label for="SYSTEMobj5">Session2 Objective2</label></li>
-              <li><input id="SYSTEMobj6" name="SYSTEMobj6" value="867" type="checkbox" /> <label for="SYSTEMobj6">Session2 Objective3</label></li>
-              <li><input id="SYSTEMobj7" name="SYSTEMobj7" value="868" type="checkbox" /> <label for="SYSTEMobj7">Session2 Objective4</label></li>
-              <li><input id="SYSTEMobj8" name="SYSTEMobj8" value="869" type="checkbox" /> <label for="SYSTEMobj8">Session2 Objective5</label></li>
-            </ul>
-          </li>
-        </ul>
-        
-        <p class="warning"><input value="-1" id="none_of_the_above" name="none_of_the_above" type="checkbox" /><label for="none_of_the_above"><strong>None of the Above</strong></label><br />Check here if the current question does not match any of the above objectives from SYSTEM.</p>
-        
-<?php 
-// TODO: All of these need to use the dynamic value. Most come from mapping tab
-?>        
-        <input name="checkout_author" value="<?php echo $userID ?>" type="hidden" />
-        <input id="SYSTEM_objectiveCount" name="SYSTEM_objectiveCount" value="9" type="hidden" />
-        <input name="SYSTEM_session" value="2010/11" type="hidden" />
-        <input name="SYSTEM_old_mappings" value="" type="hidden" />
-        <input id="paper_id" name="paperID" value="<?php echo $paper_id ?>" type="hidden" />
-        <input id="questionID" name="questionID" value="<?php echo $question->id ?>" type="hidden" />
-        <input id="modules" name="modules" value="SYSTEM" type="hidden" />
       </div>
     </div>
 
@@ -536,6 +411,12 @@ echo render_changes($changes);
       <input type="hidden" name="q_id" value="<?php echo $question->id ?>" />
       <input id="submit-save" name="submit" value="Save Changes" type="submit" class="submit" />
       <input id="submit-cancel" name="submit-cancel" value="Cancel" onclick="formCancel();" type="submit" class="submit" />
+<?php 
+// TODO: All of these need to use the dynamic value. Most come from mapping tab
+?>        
+      <input name="checkout_author" value="<?php echo $userID ?>" type="hidden" />
+      <input id="paper_id" name="paperID" value="<?php echo $paper_id ?>" type="hidden" />
+      <input id="questionID" name="questionID" value="<?php echo $question->id ?>" type="hidden" />
     </div>
   </form>
 <?php

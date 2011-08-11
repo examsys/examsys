@@ -33,7 +33,176 @@
  */
  
 require $cfg_web_root . 'touchstone/webServices/RestRequest.class';
- 
+require $cfg_web_root . 'touchstone/classes/dateutils.class.php';
+
+function render_objectives_mapping_form($db, $paper_id) {
+  //get module and session form paper id
+  $result = $db->prepare("SELECT moduleID, calendar_year, paper_type FROM properties WHERE property_id=?");
+  $result->bind_param('i', $paper_id);
+  $result->execute();
+  $result->store_result();
+  $result->bind_result($modules, $session, $paper_type);
+  $result->fetch();
+  if ($result->num_rows == 0) {
+    return 0;
+  }
+  $result->close();
+
+  if (isset($_GET['q_id'])) {
+    $q_id = $_GET['q_id'];
+  } else {
+    $q_id = '';
+  }
+  
+  $objsByModuleSession = getObjectives($modules,$session,$paper_id,$q_id,$db);
+
+  if (isset($objsByModuleSession['none_of_the_above'])) {
+    $none_of_the_above = $objsByModuleSession['none_of_the_above'];
+    unset($objsByModuleSession['none_of_the_above']);
+  }
+  
+  $html = '';
+  
+
+  foreach ($objsByModuleSession as $moduleid => $objsBySession) {
+    $html .= <<< HTML
+        <h2>{$moduleid} Objectives</h2>
+        
+        <ul class="objectives">
+
+HTML;
+    
+    $old_mappings = '';
+    $objcount = 0;
+    foreach($objsBySession as $id => $class) {
+      $heading = '';
+      if ($class['class_code'] != '') {
+        $heading .= $class['class_code'] . ' - ';
+      }
+      $heading .= $class['title'];
+      if ($class['occurrance'] != '') {
+        $heading .= '<span class="note">' . $class['occurrance'] . '</span>';
+      }
+      
+      $html .= <<< HTML
+    			<li class="top">
+            <a href="#">$heading</a>
+            <ul class="hide">
+
+HTML;
+      
+      foreach ($class['objectives'] as $objectives) {
+        if ($objectives['mapped'] != 0) {
+          $checked = ' checked="checked"';
+          $old_mappings .= $objectives['id'] . ',';
+        } else {
+          $checked = '';
+        }
+        $html .= <<< HTML
+      				<li><input id="objective{$objcount}" name="{$moduleid}_objectives[]" value="{$objectives['id']}" type="checkbox"{$checked} /> <label for="objective{$objcount}">{$objectives['content']}</label></li>
+
+HTML;
+        $objcount++;
+      }
+        
+      $html .= <<< HTML
+            </ul>
+          </li>
+
+HTML;
+    }
+    
+    $html .= <<< HTML
+        </ul>
+
+HTML;
+
+    $html .= <<< HTML
+    		<input name="{$moduleid}_old_mappings" type="hidden" value="{$old_mappings}" />
+
+HTML;
+  }
+  
+  $checked = (isset($none_of_the_above['mapped'])) ? ' checked="checked"' : '';
+  $html .= <<< HTML
+        <p class="warning"><input value="-1" id="none_of_the_above" name="none_of_the_above" type="checkbox"{$checked} /><label for="none_of_the_above"><strong>None of the Above</strong></label><br />Check here if the current question does not match any of the above objectives from {$modules}.</p>
+    		<input name="objective_session" type="hidden" value="{$session}"/>
+        <input id="objective_modules" name="objective_modules" type="hidden" value="{$modules}" />
+        
+HTML;
+    
+  
+//  foreach ($objsByModuleSession as $moduleid => $objsBySession) {
+//    $html .= "<h1>$moduleid Objectives</h1>";
+//    $old_mappings = '';
+//    $objcount = 0;
+//    foreach($objsBySession as $id => $class) {
+//      if (isset($class['objectives']) and count($class['objectives']) > 0) {
+//        $html .= "<div style=\"cursor:pointer; color:#316AC5; font-weight:bold; margin-top:6px\" onclick=\"showHide('$moduleid$id')\">";
+//        if($class['mapped'] == 0) {
+//          $html .= "<img id=\"img_$moduleid$id\" src='/touchstone/artwork/plus.png' />&nbsp;";
+//          $display = 'none';
+//        } else {
+//          $html .= "<img id=\"img_$moduleid$id\" src='/touchstone/artwork/minus.png' />&nbsp;";
+//          $display = 'block';
+//        }
+//
+//        if ($class['class_code'] != '') {
+//          $html .= $class['class_code'] . ' - ';
+//        }
+//        $html .= $class['title'];
+//        if ($class['occurrance'] != '') {
+//          $html .= '&nbsp;<span style="color:#808080; font-size:70%; font-weight:normal">' . $class['occurrance'] . '</span>';
+//        }
+//        $html .= "</div>\n<div id=\"div_$moduleid$id\" style=\"display:$display; font-size:90%\">\n";
+//        //write out the objetives for this session
+//        foreach ($class['objectives'] as $objectives) {
+//          if ($objectives['mapped'] != 0) {
+//            $checked = 'checked';
+//            $old_mappings .= $objectives['id'] . ',';
+//          } else {
+//            $checked = '';
+//          }
+//          $html .= "\t<div style=\"margin-left:15px\"><input id=\"" . $moduleid . "obj$objcount\" name=\"" . $moduleid . "obj$objcount\" type=\"checkbox\" value=\"" . $objectives['id'] . "\" $checked />&nbsp;" . $objectives['content'] . "</div>\n";
+//          $objcount++;
+//        }
+//        $html .= "</div>\n";
+//      } else {
+//        $html .= "<div style=\"color:#808080; font-weight:bold; margin-top:6px\"><img src='/touchstone/artwork/grey_plus.gif' />&nbsp;";
+//        if($class['class_code'] != '') {
+//          $html .= $class['class_code'] . ' - ';
+//        }
+//        $html .= $class['title'];
+//        if ($class['occurrance'] != '') {
+//          $html .= '&nbsp;<span style="color:#808080; font-size:70%; font-weight:normal">' . $class['occurrance'] . '</span>';
+//        }
+//        $html .= "</div>\n";
+//      }
+//    }
+//    $html .= "<input id=\"" . $moduleid . "_objectiveCount\" name=\"" . $moduleid . "_objectiveCount\" type=\"hidden\" value=\"$objcount\"/>\n";
+//    $html .= "<input name=\"" . $moduleid . "_session\" type=\"hidden\" value=\"$session\"/>\n";
+//    $html .= "<input name=\"" . $moduleid . "_old_mappings\" type=\"hidden\" value=\"$old_mappings\"/>\n";
+//  }
+//
+//  //display none of the above !
+//  $html .= "<hr noshade=\"noshade\" style=\"border:0px; height:1px; text-align:left; background-color:#C0C0C0; color:#C0C0C0; width:40%\" />";
+//  $html .= "<div style=\"color:#800000\">";
+//  $checked = '';
+//  if(isset($none_of_the_above['mapped'])) $checked = ' checked';
+//  $html .= "<input type=\"checkbox\" value =\"-1\" name=\"none_of_the_above\"$checked /> <strong>None of the Above</strong><br />Check here if the current question does not match any of the above objectives from $modules.";
+//  $html .= "</div>";
+//
+//
+//  $html .= "<input id=\"paperID\" name=\"paperID\" type=\"hidden\" value=\"$paper_id\" />\n";
+//  if (isset($_GET['q_id'])) {
+//    $html .= "<input id=\"questionID\" name=\"questionID\" type=\"hidden\" value=\"" . $_GET['q_id'] . "\" />\n";
+//  } else {
+//    $html .= "<input id=\"questionID\" name=\"questionID\" type=\"hidden\" value=\"\" />\n";
+//  }
+//  $html .= "<input id=\"modules\" name=\"modules\" type=\"hidden\" value=\"$modules\" />\n";
+  return $html;
+}
+
 function displayObjectivesMappingForm($paper_id,$touchstonedb) {
   //get module and session form paper id
   $result = $touchstonedb->prepare("SELECT moduleID, calendar_year, paper_type FROM properties WHERE property_id=?");
@@ -132,6 +301,56 @@ function displayObjectivesMappingForm($paper_id,$touchstonedb) {
   return $html;
 }
 
+
+/**
+ * This is function saveObjMappings it saves mappings to the relationships table in the touchstone database
+ *
+ * @param int $paper_id 
+ * @param int $question_id 
+ * @param object $touchstonedb 
+ * 
+ */
+function save_objective_mappings($db, $modules, $paper_id, $question_id) {
+  if ($paper_id != '' and substr($paper_id,0,5) != 'find:') {
+    $modules = explode(',',$modules);
+    $session = $_POST['objective_session'];
+    $old_mappings = '';
+    $new_mappings = '';
+
+    $sql = array();
+
+    foreach ($modules as $moduleid) {
+      $old_mappings = $_POST[$moduleid . '_old_mappings'];
+      if(isset($_POST[$moduleid . '_objectives'])) {
+        foreach ($_POST[$moduleid . '_objectives'] as $objective_id) {
+          $sql[] = "INSERT INTO relationships VALUES (NULL, '$moduleid', $paper_id, $question_id, $objective_id, '$session')";
+          $new_mappings .= $objective_id . ',';
+        }
+      }
+    }
+    
+    //check for none of the above
+    if (isset($_POST['none_of_the_above']) and $_POST['none_of_the_above'] == -1 AND count($sql) == 0) {
+      $sql[] = "INSERT INTO relationships VALUES (NULL, '$moduleid', $paper_id, $question_id, -1, '$session')";
+      $new_mappings .= '-1,';
+    } else {
+      $old_mappings .= '-1,';
+    }
+
+    if ($new_mappings != $old_mappings) {
+      // prepend the delete
+      if ($old_mappings != '') {
+        $delete = "DELETE FROM relationships WHERE module_id = '$moduleid' AND paper_id = $paper_id AND question_id = $question_id AND calendar_year = '$session'";
+        array_unshift($sql,$delete);
+      }
+      foreach($sql as $query) {
+        if (!$result = $db->query($query)) {
+          echo "Question Mapping Error #1 " . $db->error . "<br/> $query <br/>";
+        }
+      }
+    }
+  }
+}
 
 /**
  * This is function saveObjMappings it saves mappings to the relationships table in the touchstone database

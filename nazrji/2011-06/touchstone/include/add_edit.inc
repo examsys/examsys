@@ -172,3 +172,87 @@ HTML;
   
   return $html;
 }
+
+function render_comments($comments) {
+  if(count($comments) > 0) {
+    $html = <<< HTML
+        <table class="data" summary="Reviewer's comments">
+          <thead>
+            <tr>
+              <th class="data-tiny"></th>
+              <th class="data-medium">Reviewer</th>
+              <th>Comments</th>
+              <th class="data-small">Action&nbsp;Taken</th>
+              <th>Internal Response</th>
+            </tr>
+        </thead>
+        <tbody>
+
+HTML;
+
+    $i = 0;
+    foreach ($comments as $id => $comment) {
+      switch ($comment['category']) {
+        case 1:
+          $status = 'OK';
+          break;
+        case 2:
+          $status = 'Minor';
+          break;
+        case 3:
+          $status = 'Major';
+          break;
+      }
+      $img_status = strtolower($status);
+      
+      $alt = ($i % 2 == 0) ? ' class="alt"' : '';
+      $comment_str = ($comment['comment'] == '') ? 'No comments' : nl2br($comment['comment']);
+      
+      $html .= <<< HTML
+  					<tr{$alt}>
+              <td><img src="../../artwork/{$img_status}_comment.png" width="16" height="16" alt="{$status}" /></td>
+              <td>{$comment['name']}<br /><span class="note">{$comment['type']}</span></td>
+              <td><span class="note">{$comment_str}</span></td>
+              <td>
+                <select name="actions[]">
+
+HTML;
+    
+      $actions = array('Not actioned', 'Read - disagree', 'Read - actioned');
+      
+      foreach ($actions as $action) {
+        $sel = ($comment['action'] == $action) ? ' selected="selected"' : '';
+        $html .= <<< HTML
+      						<option value="{$action}"{$sel}>{$action}</option>
+
+HTML;
+      }
+    
+      $html .= <<< HTML
+                  </select>
+                <input type="hidden" name="comment_ids[]" value="{$id}" />
+              </td>
+              <td>
+                <textarea cols="60" rows="3" name="responses[]">{$comment['response']}</textarea>
+              </td>
+            </tr>
+
+HTML;
+      $i++;
+    }
+    
+    $html .= <<< HTML
+            </tbody>
+        </table>
+
+HTML;
+  } else {
+    $html = <<< HTML
+        <p>No comments recorded for this question.</p>
+
+HTML;
+  }
+  
+  return $html;
+}
+

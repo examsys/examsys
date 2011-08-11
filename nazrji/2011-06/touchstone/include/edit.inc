@@ -132,6 +132,32 @@ function save_external_responses($dblink) {
   }
 }
 
+function save_external_responses_new($dblink, $question, $ids, $actions, $responses, $paper_id = -1) {
+  // Record responses to external examiner comments.
+    $comments = $question->get_comments($paper_id);
+    $changed = false;
+    
+    $i = 0;
+    foreach ($ids as $id) {
+      $action = $actions[$i];
+      $response = $responses[$i];
+      
+      if($action != $comments[$id]['action'] or $response != $comments[$id]['response']) {
+        $result = $dblink->prepare("UPDATE review_comments SET action=?, response=? WHERE id=?");
+        $result->bind_param('ssi', $action, $response, $id);
+        $result->execute();  
+        $result->close();
+        
+        $comments[$id]['action'] = $action;
+        $comments[$id]['response'] = $response;
+        $changed = true;
+      }
+      $i++;
+    }
+    
+    if($changed) $question->set_comments($comments);
+  }
+
 function check_edit_rights($q_id, $checkout_authorID, $checkout_time, $locked, $dblink) {
   global $tmp_ownerID;
   $disabled = '';

@@ -26,7 +26,7 @@
   require_once '../../classes/schoolutils.class.php';
   require_once '../../classes/logger.class.php';
   
-  function echo_metadata($mysqlidb, $question, $bloom_on, $module, $disabled) {
+  function render_metadata($mysqlidb, $question, $bloom_on, $module, $disabled) {
     global $teams, $userID, $userroles, $faculty;
 
     if ($disabled) {
