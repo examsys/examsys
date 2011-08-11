@@ -220,14 +220,17 @@ HEADING;
       }
       
       // Selected if: in existing teams for the question OR we have a module ID passed and the user is on that team (or is sysadmin)
-      $checked = $on = '';
-      if (in_array($team_name, $current_teams) or ($team_name == $module and (in_array($team_name, $teams) or strpos($userroles,'SysAdmin') !== false))) {
+      $checked = $on = $disabled = '';
+      if (in_array($team_name, $current_teams) or $team_name == $module) {
         $checked = ' checked="checked"';
         $on = ' on';
       }
+      if (!in_array($team_name, $teams) and strpos($userroles,'SysAdmin') === false) {
+        $disabled = ' disabled="disabled"';
+      }
       
       $html .= <<< META
-                <li><label for="team{$i}" class="fullwidth{$on}"><input id="team{$i}" name="teams[]" value="{$team_name}" type="checkbox"{$checked} /> {$team_name}: {$fullname}</label></li>
+                <li><label for="team{$i}" class="fullwidth{$on}"><input id="team{$i}" name="teams[]" value="{$team_name}" type="checkbox"{$checked}{$disabled} /> {$team_name}: {$fullname}</label></li>
 
 META;
 
