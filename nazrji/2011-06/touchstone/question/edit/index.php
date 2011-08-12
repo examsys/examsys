@@ -124,41 +124,6 @@ if($critical_error == '') {
     	}
     }
     
-  //  if ($_POST['correct'] != $_POST['old_correct']) {
-  //    // Update the 'options' table with the new correct answer.
-  //    $result = $mysqli->prepare("UPDATE options SET correct=? WHERE o_id=?");
-  //    $result->bind_param('si', $_POST['correct'], $q_id);
-  //    $result->execute();  
-  //    $result->close();
-  //
-  //    // Record the change in 'track_changes'.
-  //    $result = $mysqli->prepare("INSERT INTO track_changes VALUES (NULL, 'Post Exam Answer change',?,$userID,?,?,NOW(),'Correct Answer')");
-  //    $result->bind_param('iss', $q_id, $_POST['old_correct'], $_POST['correct']);
-  //    $result->execute();  
-  //    $result->close();
-  //
-  //    // Remark the student's answers in 'log2'.
-  //    $result = $mysqli->prepare("SELECT DISTINCT user_answer FROM log2 WHERE q_id=? AND q_paper=?");
-  //    $result->bind_param('ii', $q_id, $_POST['paperID']);
-  //    $result->execute();  
-  //    $result->store_result();
-  //    $result->bind_result($user_answer);
-  //    while ($row = $result->fetch()) {
-  //      if ($user_answer == $_POST['correct']) {
-  //        $updateLog = $mysqli->prepare("UPDATE log2 SET mark=1 WHERE user_answer=? AND q_id=? AND q_paper=?");
-  //        $updateLog->bind_param('sii', $user_answer, $q_id, $_POST['paperID']);
-  //        $updateLog->execute();  
-  //        $updateLog->close();
-  //      } else {
-  //        $updateLog = $mysqli->prepare("UPDATE log2 SET mark=0 WHERE user_answer=? AND q_id=? AND q_paper=?");
-  //        $updateLog->bind_param('sii', $user_answer, $q_id, $_POST['paperID']);
-  //        $updateLog->execute();  
-  //        $updateLog->close();
-  //      }
-  //    }
-  //    $result->free_result();
-  //    $result->close();
-  //  }
   //  redirect();
   } elseif (isset($_POST['submit']) and ($_POST['submit'] == 'Save Changes' or $_POST['submit'] == 'Limited Save')) {
     if ($question->id == -1 or check_fullSave($question->id,$mysqli)) {
