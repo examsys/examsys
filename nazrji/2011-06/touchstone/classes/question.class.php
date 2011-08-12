@@ -538,9 +538,12 @@ QUERY;
   public function set_teams($value) {
     $this->get_teams();
     
-    if (count(array_diff($this->teams, $value)) > 0) {
+    // Sort the arrays so that we can compare directly. Should have few members so overhead will be small
+    sort($this->teams);
+    sort($value);
+    
+    if (count($this->teams) != count($value) or $this->teams != $value) {
       $this->set_modified_field('group', $this->group);
-      sort($value);
       $this->group = implode(';', $value);
       $this->teams = $value;
     }
