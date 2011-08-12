@@ -325,7 +325,7 @@ function save_buttons_new($disabled, $locked, $userID, $checkout_author, $paper_
   $name = 'submit';
   
   if ($disabled != '') {
-    if ($checkout_author == '') {
+    if ($locked != '' or $checkout_author == '') {
       $value = 'Limited Save';
     } elseif ($checkout_author != $userID) {
       $save_disabled = ' disabled="disabled"';
