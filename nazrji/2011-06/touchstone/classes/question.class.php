@@ -553,8 +553,12 @@ QUERY;
    * Get the question checkout time
    * @return datetime
    */
-  public function get_checkout_time() {
-    return $this->checkout_time;
+  public function get_checkout_time($format = 'string') {
+    if ($format == 'timestamp') {
+      return strtotime($this->checkout_time);
+    } else {
+      return $this->checkout_time;
+    }
   }
   
   /**
@@ -585,32 +589,48 @@ QUERY;
    * Get the time at which the question was created
    * @return datetime
    */
-  public function get_created() {
-    return $this->created;
+  public function get_created($format = 'string') {
+    if ($format == 'timestamp') {
+      return strtotime($this->created);
+    } else {
+      return $this->created;
+    }
   }
   
   /**
    * Get the time at which the question was last edited
    * @return datetime
    */
-  public function get_last_edited() {
-    return $this->last_edited;
+  public function get_last_edited($format = 'string') {
+    if ($format == 'timestamp') {
+      return strtotime($this->last_edited);
+    } else {
+      return $this->last_edited;
+    }
   }
   
   /**
    * Get the time at which the question was locked, if set
    * @return datetime
    */
-  public function get_locked() {
-    return $this->locked;
+  public function get_locked($format = 'string') {
+    if ($format == 'timestamp') {
+      return strtotime($this->locked);
+    } else {
+      return $this->locked;
+    }
   }
   
   /**
    * Get whether the question is set as deleted
    * @return boolean
    */
-  public function get_deleted() {
-    return $this->deleted;
+  public function get_deleted($format = 'string') {
+    if ($format == 'timestamp') {
+      return strtotime($this->deleted);
+    } else {
+      return $this->deleted;
+    }
   }
   
   /**

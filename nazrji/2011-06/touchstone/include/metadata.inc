@@ -29,15 +29,7 @@
   function render_metadata($mysqlidb, $question, $bloom_on, $module, $disabled) {
     global $teams, $userID, $userroles, $faculty;
 
-    if ($disabled) {
-      $disabled_mod = ' disabled="disabled"';
-      $disabled_class = ' class="disabled';
-    } else {
-      $disabled_mod = $disabled_class = '';
-    }
-    
     $current_status = ($question->get_status() == '') ? 'Normal' : $question->get_status();
-    
     
     $html = <<< META
         <table id="q-metadata-basic" class="form" summary="Edit basic question metadata">
@@ -52,6 +44,13 @@ META;
     $status_array = array('Normal','Retired','Incomplete','Experimental','Beta');
     foreach ($status_array as $status) {
       $checked = ($current_status == $status) ? ' checked="checked"' : '';
+      if ($disabled != '' and $status != 'Normal' and $status != 'Retired') {
+        $disabled_mod = ' disabled="disabled"';
+        $disabled_class = ' class="disabled"';
+      } else {
+        $disabled_mod = $disabled_class = '';
+      }
+      
       $status_str = strtolower($status);
       $html .= <<< STATUS
 									<li><input id="status-{$status_str}" name="status" value="{$status}"{$checked} type="radio"{$disabled_mod} /> <label for="status-{$status_str}"{$disabled_class}>{$status}</label></li>
@@ -220,17 +219,17 @@ HEADING;
       }
       
       // Selected if: in existing teams for the question OR we have a module ID passed and the user is on that team (or is sysadmin)
-      $checked = $on = $disabled = '';
+      $checked = $on = $disabled_mod = '';
       if (in_array($team_name, $current_teams) or $team_name == $module) {
         $checked = ' checked="checked"';
         $on = ' on';
       }
       if (!in_array($team_name, $teams) and strpos($userroles,'SysAdmin') === false) {
-        $disabled = ' disabled="disabled"';
+        $disabled_mod = ' disabled="disabled"';
       }
       
       $html .= <<< META
-                <li><label for="team{$i}" class="fullwidth{$on}"><input id="team{$i}" name="teams[]" value="{$team_name}" type="checkbox"{$checked}{$disabled} /> {$team_name}: {$fullname}</label></li>
+                <li><label for="team{$i}" class="fullwidth{$on}"><input id="team{$i}" name="teams[]" value="{$team_name}" type="checkbox"{$checked}{$disabled_mod} /> {$team_name}: {$fullname}</label></li>
 
 META;
 

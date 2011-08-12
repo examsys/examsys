@@ -159,7 +159,7 @@ function save_external_responses_new($dblink, $question, $ids, $actions, $respon
   }
 
 function check_edit_rights($q_id, $checkout_authorID, $checkout_time, $locked, $dblink) {
-  global $tmp_ownerID;
+  global $tmp_ownerID, $userID;
   $disabled = '';
   
   if (check_MSCAA($q_id, $dblink)) {    // Check for MSC-AA question
@@ -172,6 +172,7 @@ function check_edit_rights($q_id, $checkout_authorID, $checkout_time, $locked, $
     echo "<tr><td style=\"width:35px; height:32px; text-align:right; background-image:url('../../artwork/locked_gradient.png'); background-repeat:repeat-x\"><img src=\"../../artwork/paper_locked_padlock.png\" width=\"19\" height=\"24\" alt=\"Locked\" />&nbsp;&nbsp;</td><td colspan=\"7\" style=\"height:32px; vertical-align:middle; background-image:url('../../artwork/locked_gradient.png'); background-repeat:repeat-x\"><strong>Question Locked</strong>&nbsp;&nbsp;&nbsp;This question is now locked and cannot be modified. <a style=\"color:black\" href=\"#\" onclick=\"launchHelp(161); return false;\">Click for more details.</a></td></tr>\n";
     echo "</table>\n";
     $disabled = ' disabled';
+    $checkout_author = check_out_paper($dblink, $q_id, $userID);
   } else {                              // Check out editing rights against current user
     $checkout_author = check_lock_status($checkout_authorID, $checkout_time, $disabled, $dblink, $q_id);
   }
@@ -220,12 +221,7 @@ function check_lock_status($checkout_author, $checkout_time, &$disabled, $dblink
       echo "</script>\n";
       $disabled = ' disabled';
     } else {
-      // Set the lock to the current time/author.
-      $editLock = $dblink->prepare("UPDATE questions SET checkout_time=NOW(), checkout_authorID=? WHERE q_id=?");
-      $editLock->bind_param('ii', $userID, $questionID);
-      $editLock->execute();  
-      $editLock->close();
-      $checkout_author = $userID;
+      $checkout_author = check_out_paper($dblink, $questionID, $userID);
     }
   } elseif ($disabled == '' and $userID == $checkout_author) {
     // Set the lock to the current time/author.
@@ -233,10 +229,24 @@ function check_lock_status($checkout_author, $checkout_time, &$disabled, $dblink
     $editLock->bind_param('ii', $userID, $questionID);
     $editLock->execute();  
     $editLock->close();
-    $checkout_author = $userID;
+    $checkout_author = check_out_paper($dblink, $questionID, $userID);
   }
   
   return $checkout_author;
+}
+
+/**
+ * Set the edit lock to the current time and given author
+ * @param object $dblink mysqli link to database
+ * @param integer $q_id ID of question to be locked
+ * @param integer $user_id ID of the user to assign the lock
+ */
+function check_out_paper($dblink, $q_id, $user_id) {
+  $editLock = $dblink->prepare("UPDATE questions SET checkout_time=NOW(), checkout_authorID=? WHERE q_id=?");
+  $editLock->bind_param('ii', $user_id, $q_id);
+  $editLock->execute();  
+  $editLock->close();
+  return $user_id;
 }
 
 function record_trackChanges($type, $questionID, $old_value, $new_value, $part, $current_userID, &$changes) {
@@ -322,15 +332,24 @@ function save_buttons_new($disabled, $locked, $userID, $checkout_author, $paper_
       $name = 'bogus';
     }
   }
-  if ($locked != '' and $paper_id != -1) {
-    $value = 'Correct';
-  }
   
   $html .= <<< HTML
       <input id="submit-save" name="{$name}" value="{$value}" type="submit" class="submit"{$save_disabled} />
-      <input id="submit-cancel" name="submit-cancel" value="Cancel" onclick="formCancel();" type="submit" class="submit" />
+
 HTML;
 
+  if ($locked != '' and $paper_id != -1) {
+    $html .= <<< HTML
+      <input id="submit-correct" name="submit" value="Correct" type="submit" class="submit" />
+
+HTML;
+  }
+  
+  $html .= <<< HTML
+      <input id="submit-cancel" name="submit-cancel" value="Cancel" onclick="formCancel();" type="submit" class="submit" />
+
+HTML;
+    
   return $html;
 }
 

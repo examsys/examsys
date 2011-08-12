@@ -46,6 +46,8 @@ $critical_error = '';
 $q_no = (empty($_GET['q_no'])) ? '' : $_GET['q_no'];
 $q_type = '';
 $q_type_full = '';
+
+$errors = array();
  
 if(empty($_REQUEST['q_id'])) {
   // We're adding a new question
@@ -120,10 +122,6 @@ if($critical_error == '') {
   //  redirect();
   } elseif (isset($_POST['submit']) and ($_POST['submit'] == 'Save Changes' or $_POST['submit'] == 'Limited Save')) {
     if ($question->id == -1 or check_fullSave($question->id,$mysqli)) {
-      // Write out curriculum mapping.
-  //    saveObjMappings($_POST['paperID'],$q_id,$mysqli);
-  //
-      $changes = false;
       
       $part_names = $question->get_editable_fields();
       foreach($part_names as $section_name) {
@@ -217,11 +215,26 @@ if($critical_error == '') {
         
       }
 
+    } else {
+      // Limited save
+//      do_limitedSave($q_id, $mysqli, $userID);
+
+      $part_names = array('bloom','status');
+      foreach($part_names as $section_name) {
+        if(isset($_POST["$section_name"])) {
+          $method = "set_$section_name";
+          $question->$method($_POST["$section_name"]);
+        }
+      }
+    }
+    
+    // If not errored then save the question
+    if (count($errors) == 0) {
       try {
-    	  if (!$question->save()) {
+    	  if(!$question->save()) {
     	    $errors[] = 'Error saving data. Please try again';
     	  } else {
-          // TODO: check usage of old saveKeywords function - USED IN LIMITED SAVE FUNCTION
+        	// TODO: check usage of old saveKeywords function - USED IN LIMITED SAVE FUNCTION
           save_keywords($question, $userID, true, $mysqli);
       
     	    // TODO: check usage of old save_external_responses function - USED IN LIMITED SAVE FUNCTION
@@ -230,17 +243,15 @@ if($critical_error == '') {
     	    }
     	    
     	    if (isset($_POST['objective_modules'])) {
+    	      // Write out curriculum mapping.
     	      save_objective_mappings($mysqli, $_POST['objective_modules'], $paper_id, $question->id);
     	    }
-    	    
     	  }
     	} catch (ValidationException $vex) {
     	  $errors[] = $vex->getMessage();
     	}
-    } else {
-      // Limited save
-  //    do_limitedSave($q_id, $mysqli, $userID);
     }
+    
   //  redirect();
   } elseif (isset($_POST['submit']) and $_POST['submit'] == 'Cancel') {
     redirect();
@@ -319,7 +330,7 @@ if($critical_error != '') {
   </div>
 <?php
 } else {
-  $disabled = check_edit_rights($question->id, $question->get_checkout_author_id(), $question->get_checkout_time(), $question->get_locked(), $mysqli);
+  $disabled = check_edit_rights($question->id, $question->get_checkout_author_id(), $question->get_checkout_time('timestamp'), $question->get_locked(), $mysqli);
   
   $query_string = '';
   if($question->id != -1) {
@@ -343,12 +354,12 @@ if($critical_error != '') {
 				</div>
         
 <?php
-if(!empty($errors)) {
+if (count($errors) > 0) {
 ?>
         <div id="errors" class="form">
           <ul>
 <?php
-  foreach($errors as $error) {
+  foreach ($errors as $error) {
 ?>
             <li><?php echo $error ?></li>
 <?php
