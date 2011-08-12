@@ -259,8 +259,8 @@ if($critical_error == '') {
 
 $mode = (empty($_REQUEST['q_id'])) ? 'Add' : 'Edit';
 
+echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
 ?>
-<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
@@ -408,12 +408,12 @@ echo render_objectives_mapping_form($mysqli, $paper_id);
     </div>
 
     <div id="button-bar">
+<?php
+// TODO: check old save_buttons function - SAFE TO REMOVE
+echo save_buttons_new($disabled, $question->get_locked(), $userID, $question->get_checkout_author_id(), $paper_id);
+// TODO: make cancel jQuery
+?>
       <input type="hidden" name="q_id" value="<?php echo $question->id ?>" />
-      <input id="submit-save" name="submit" value="Save Changes" type="submit" class="submit" />
-      <input id="submit-cancel" name="submit-cancel" value="Cancel" onclick="formCancel();" type="submit" class="submit" />
-<?php 
-// TODO: All of these need to use the dynamic value. Most come from mapping tab
-?>        
       <input name="checkout_author" value="<?php echo $userID ?>" type="hidden" />
       <input id="paper_id" name="paperID" value="<?php echo $paper_id ?>" type="hidden" />
       <input id="questionID" name="questionID" value="<?php echo $question->id ?>" type="hidden" />

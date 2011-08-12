@@ -307,6 +307,33 @@ function hidden_edit_fields() {
   return $html;
 }
 
+function save_buttons_new($disabled, $locked, $userID, $checkout_author, $paper_id) {
+  $html = '';
+  
+  $save_disabled = '';
+  $value = 'Save Changes';
+  $name = 'submit';
+  
+  if ($disabled != '') {
+    if ($checkout_author == '') {
+      $value = 'Limited Save';
+    } elseif ($checkout_author != $userID) {
+      $save_disabled = ' disabled="disabled"';
+      $name = 'bogus';
+    }
+  }
+  if ($locked != '' and $paper_id != -1) {
+    $value = 'Correct';
+  }
+  
+  $html .= <<< HTML
+      <input id="submit-save" name="{$name}" value="{$value}" type="submit" class="submit"{$save_disabled} />
+      <input id="submit-cancel" name="submit-cancel" value="Cancel" onclick="formCancel();" type="submit" class="submit" />
+HTML;
+
+  return $html;
+}
+
 function save_buttons($disabled, $locked, $userID, $checkout_author) {
   $html = '';
   
