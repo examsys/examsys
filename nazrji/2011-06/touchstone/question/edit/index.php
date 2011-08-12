@@ -81,9 +81,49 @@ if($critical_error == '') {
   
   
   // Save data
-  // TODO: Save 'Correct'
-  // TODO: 'Limited Save'
   if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
+    // TODO: check how this generalises to all question types
+    $first = reset($question->options);
+    $old_correct = $first->get_correct();
+    if ($_POST['option_correct'] != $old_correct) {
+      foreach ($question->options as $option) {
+        $option->set_correct($_POST['option_correct']);
+      }
+      
+      $unified_fields = $first->get_unified_fields();
+      $question->add_unified_field_modification('correct', $unified_fields['correct'], $old_correct, $_POST['option_correct']);
+    
+      try {
+    	  if(!$question->save()) {
+    	    $errors[] = 'Error saving data. Please try again';
+    	  } else {
+          // Remark the student's answers in 'log2'.
+          $result = $mysqli->prepare("SELECT DISTINCT user_answer FROM log2 WHERE q_id=? AND q_paper=?");
+          $result->bind_param('ii', $question->id, $paper_id);
+          $result->execute();  
+          $result->store_result();
+          $result->bind_result($user_answer);
+          while ($row = $result->fetch()) {
+            if ($user_answer == $_POST['option_correct']) {
+              $updateLog = $mysqli->prepare("UPDATE log2 SET mark=1 WHERE user_answer=? AND q_id=? AND q_paper=?");
+              $updateLog->bind_param('sii', $user_answer, $question->id, $paper_id);
+              $updateLog->execute();  
+              $updateLog->close();
+            } else {
+              $updateLog = $mysqli->prepare("UPDATE log2 SET mark=0 WHERE user_answer=? AND q_id=? AND q_paper=?");
+              $updateLog->bind_param('sii', $user_answer, $question->id, $paper_id);
+              $updateLog->execute();  
+              $updateLog->close();
+            }
+          }
+          $result->free_result();
+          $result->close();
+    	  }
+    	} catch (ValidationException $vex) {
+    	  $errors[] = $vex->getMessage();
+    	}
+    }
+    
   //  if ($_POST['correct'] != $_POST['old_correct']) {
   //    // Update the 'options' table with the new correct answer.
   //    $result = $mysqli->prepare("UPDATE options SET correct=? WHERE o_id=?");

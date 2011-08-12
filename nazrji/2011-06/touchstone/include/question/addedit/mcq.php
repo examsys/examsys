@@ -59,6 +59,8 @@ for ($i = count($question->options) + 1; $i <= $question->max_options; $i++) {
   $option = new Option($mysqli, $userID);
   echo render_option($option, $i, count($question->options));
 }
+
+if($question->get_locked() == '') {
 ?>
           <tbody id="next-option-holder">
             <tr>
@@ -68,6 +70,9 @@ for ($i = count($question->options) + 1; $i <= $question->max_options; $i++) {
               </td>
             </tr>
           </tbody>
+<?php
+}
+?>          
         </table>
 
 <?php
