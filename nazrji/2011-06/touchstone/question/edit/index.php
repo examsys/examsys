@@ -23,8 +23,8 @@
 */
 
 // TODO: handle keyword based and random
+// TODO: message for locked questions - spacing
 // TODO: validation in JS
-// TODO: contextual save buttons
 // TODO: replace comment OK etc. icons with CSS BG image?
 // TODO: disable mapping tab for info and likert
 
@@ -222,8 +222,6 @@ if($critical_error == '') {
 
     } else {
       // Limited save
-//      do_limitedSave($q_id, $mysqli, $userID);
-
       $part_names = array('bloom','status');
       foreach($part_names as $section_name) {
         if(isset($_POST["$section_name"])) {
@@ -319,6 +317,26 @@ if ($critical_error == '') {
       </div>
     </div>
 <?php
+  $banner_spacer = '';
+  $disabled = check_edit_rights($question->id, $question->get_checkout_author_id(), $question->get_checkout_time('timestamp'), $question->get_locked(), $mysqli);
+
+  if ($disabled != '') {
+    $banner_spacer = ' class="banner-spaced"';
+    
+    if ($disabled == 'mscaa') {
+?>
+    <div class="banner mscaa">
+      <p><strong>MSC-AA Question</strong> This question has been imported from the MSC-AA and cannot be modified.</p>
+    </div>
+<?php
+    } elseif ($disabled == 'locked') {
+?>
+    <div class="banner">
+      <p><strong>Question Locked</strong> This question is now locked and cannot be modified. <a href="#" onclick="launchHelp(161); return false;">Click for more details.</a></p>
+    </div>
+<?php
+    }
+  }
 }
 ?>
 	</div>
@@ -335,7 +353,6 @@ if($critical_error != '') {
   </div>
 <?php
 } else {
-  $disabled = check_edit_rights($question->id, $question->get_checkout_author_id(), $question->get_checkout_time('timestamp'), $question->get_locked(), $mysqli);
   
   $query_string = '';
   if($question->id != -1) {
@@ -349,7 +366,7 @@ if($critical_error != '') {
 ?>
 
 	<form name="edit_form" method="post" action="./<?php echo $query_string ?>" enctype="multipart/form-data">
-    <div id="tabbed-content">
+    <div id="tabbed-content"<?php echo $banner_spacer ?>>
 			<div id="editor" class="tab-area">
         
 				<div class="message">

@@ -67,7 +67,7 @@ p {
 }
 
 .spaced {
-	padding-top: 12px;
+  padding-top: 12px;
 }
 
 .message {
@@ -197,6 +197,10 @@ p {
   padding: 85px 10px 0px 10px;
 }
 
+#tabbed-content.banner-spaced {
+  padding-top: 115px;
+}
+
 #button-bar {
 	width: 100%;
 	padding: 20px 0 20px 0;
@@ -206,6 +210,29 @@ p {
 	background-color: #dfecff;
 	border-top: 1px solid #1e3c7b;
   z-index: 25;
+}
+
+/* Banners */
+.banner {
+	height: 32px;
+  background: #dfecff url('../artwork/locked_gradient.png') repeat-x top left;
+}
+
+.banner p {
+  background: transparent url('../artwork/paper_locked_padlock.png') no-repeat 4px 3px;
+	height: 32px;
+  line-height: 32px;
+  margin: 0;
+  padding-left: 28px
+}
+
+.banner.mscaa {
+  background: #dfecff url('../artwork/mscaa_gradient.png') repeat-x top left;
+}
+
+.banner.mscaa p {
+  background: transparent url('../artwork/mscaa_logo_small.png') no-repeat 4px 1px;
+  padding-left: 68px
 }
 
 /* Form */
