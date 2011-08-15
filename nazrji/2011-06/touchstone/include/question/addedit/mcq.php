@@ -45,7 +45,7 @@ foreach ($score_methods as $val => $display) {
           <tbody>
             <tr>
               <th colspan="3">&nbsp;</th>
-              <th class="small"><strong>Correct Answer</strong></th>
+              <th class="small"><strong>Answer</strong></th>
             </tr>
           </tbody>
 <?php
