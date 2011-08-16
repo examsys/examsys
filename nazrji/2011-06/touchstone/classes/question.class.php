@@ -68,7 +68,7 @@ Class Question extends TouchStoneObject {
   protected static $_fields_editable = array('theme', 'scenario', 'leadin', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'option_order', 'bloom', 'status');
   private $_required_fields = array('type', 'leadin', 'score_method', 'option_order', 'owner_id', 'status');
   protected $_score_methods = array();
-  private $_mysqli = null;
+  protected $_mysqli = null;
   private $_logger = null;
   private $_data = array();
   
@@ -274,6 +274,56 @@ QUERY;
     return $this->_fields_unified;
   }
   
+  
+  /**
+   * Change the correct answer after the question has been locked. Update user marks in summative log table
+   * @param integer $new_correct new correct answer
+   * @param integer $paper_id
+   */
+  public function update_correct($new_correct, $paper_id) {
+    $errors = array();
+    $changes = false;
+    
+    $first = reset($this->options);
+    $old_correct = $first->get_correct();
+        
+    if ($new_correct != $old_correct) {
+      foreach ($this->options as $option) {
+        $option->set_correct($new_correct);
+      }
+    
+      $this->add_unified_field_modification('correct', $this->_fields_unified['correct'], $old_correct, $new_correct);
+      $changes = true;
+    }
+    
+    if ($changes) {
+      try {
+    	  if(!$this->save()) {
+    	    $errors[] = 'Error saving data. Please try again';
+    	  } else {
+          // Remark the student's answers in 'log2'.
+          $result = $this->_mysqli->prepare("SELECT DISTINCT user_answer FROM log2 WHERE q_id=? AND q_paper=?");
+          $result->bind_param('ii', $this->id, $paper_id);
+          $result->execute();  
+          $result->store_result();
+          $result->bind_result($user_answer);
+          while ($row = $result->fetch()) {
+            $new_mark = ($user_answer == $new_correct) ? 1 : 0;
+            $updateLog = $this->_mysqli->prepare("UPDATE log2 SET mark=? WHERE user_answer=? AND q_id=? AND q_paper=?");
+            $updateLog->bind_param('isii', $new_mark, $user_answer, $this->id, $paper_id);
+            $updateLog->execute();  
+            $updateLog->close();
+          }
+          $result->free_result();
+          $result->close();
+    	  }
+    	} catch (ValidationException $vex) {
+    	  $errors[] = $vex->getMessage();
+    	}
+    }
+    
+    return $errors;
+  }
   
   // ACCESSORS
   

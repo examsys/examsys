@@ -34,5 +34,88 @@ Class QuestionMRQ extends Question {
     // 'correct' is not a unified field for MRQ
     self::$_fields_editable[] = 'correct';
   }
+
+  /**
+   * Change the correct answer after the question has been locked. Update user marks in summative log table
+   * @param integer $new_correct array of new correct answers
+   * @param integer $paper_id
+   */
+  public function update_correct($new_correct, $paper_id) {
+    $errors = array();
+    $changes = false;
+    
+    $i = 0;
+    foreach ($this->options as $option) {
+      if ($new_correct[$i] != $option->get_correct()) {
+        $option->set_correct($new_correct[$i]);
+        $changes = true;
+      }
+      $i++;
+    }
+    
+    if ($this->get_score_method() == 'other') {
+      $new_correct[] = 'n';
+    }
+        
+    if ($changes) {
+      try {
+    	  if(!$this->save()) {
+    	    $errors[] = 'Error saving data. Please try again';
+    	  } else {
+          // Remark the student's answers in 'log2'.
+          $totalpos = 0;
+          $score_method = $this->get_score_method();
+        
+          for ($i=0; $i < count($new_correct); $i++) {
+            if ($new_correct[$i] == 'y') $totalpos++;
+          }
+          
+    	    $result = $this->_mysqli->prepare("SELECT DISTINCT user_answer FROM log2 WHERE q_id=? AND q_paper=?");
+          $result->bind_param('ii', $this->id, $paper_id);
+          $result->execute();  
+          $result->store_result();
+          $result->bind_result($user_answer);
+          while ($row = $result->fetch()) {
+            $user_answers = str_split($user_answer);
+
+            $mark = 0;
+            $all_correct = true;
+            
+            for ($i=0; $i < count($new_correct); $i++) {
+              if ($score_method == 'AllNegative') {
+                $mark += ($new_correct[$i] == $user_answers[$i]) ? 1 : -1;
+              } elseif ($new_correct[$i] == $user_answers[$i]) {
+                if ($new_correct[$i] == 'y') {
+                  $mark++;
+                }
+              } else {
+                $all_correct = false;
+              }
+            }
+            
+            if ($score_method == 'AllItemsCorrect' and $all_correct == false) $mark = 0;
+        
+            // Recalculate total possible marks if 'all correct' or 'negative'.
+            if ($score_method == 'AllItemsCorrect') {
+              $totalpos = 1;
+            } elseif ($score_method == 'AllNegative') {
+              $totalpos = count($new_correct);
+            }
+        
+            $updateLog = $this->_mysqli->prepare("UPDATE log2 SET mark=?, totalpos=? WHERE user_answer=? AND q_id=? AND q_paper=?");
+            $updateLog->bind_param('disii', $mark, $totalpos, $user_answer, $this->id, $paper_id);
+            $updateLog->execute();
+            $updateLog->close();
+          }
+          $result->free_result();
+          $result->close();
+    	  }
+    	} catch (ValidationException $vex) {
+    	  $errors[] = $vex->getMessage();
+    	}
+    }
+    
+    return $errors;
+  }
 }
 
