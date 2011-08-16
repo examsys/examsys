@@ -67,6 +67,7 @@ Class Question extends TouchStoneObject {
   private $_fields = array('type', 'theme', 'scenario', 'scenario_plain', 'leadin', 'leadin_plain', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'option_order', 'standards_setting', 'bloom', 'owner_id', 'media', 'media_width', 'media_height', 'group', 'checkout_time', 'checkout_author_id', 'created', 'last_edited', 'locked', 'deleted', 'status');
   protected $_fields_editable = array('theme', 'scenario', 'leadin', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'option_order', 'bloom', 'status');
   private $_required_fields = array('type', 'leadin', 'score_method', 'option_order', 'owner_id', 'status');
+  protected $_score_methods = array();
   private $_mysqli = null;
   private $_logger = null;
   private $_data = array();
@@ -76,7 +77,8 @@ Class Question extends TouchStoneObject {
   private $changes = null;
   private $comments = null;
   
-  // Facilitate tracking of changes to unified fields in the options
+  // 'Unified' fields are the same for all options
+  protected $_fields_unified = array('correct' => 'Correct Answer');
   private $_unified_field_modifications = array();
   
   // Map our 'nice' property names to the database fields and 'parts' in track changes
@@ -251,6 +253,15 @@ QUERY;
       $this->_unified_field_modifications[$field] = array($label, $old_value, $new_value);
     }
   }
+  
+  /**
+   * The the array of fields (properties) for this class
+   * @return multitype:string 
+   */
+  public function get_unified_fields() {
+    return $this->_fields_unified;
+  }
+  
   
   // ACCESSORS
   
@@ -653,6 +664,14 @@ QUERY;
   }
   
   /**
+   * Return the scoring methods of this question. The array is expected to be overridden in sub-classes
+   * @return array array of scoring method key => value strings
+   */
+  public function get_score_methods() {
+    return $this->_score_methods;
+  }
+  
+  /**
    * Get the change history of the question, lazily loaded
    * @return array Associative array containing date, section, old value, new value and user for the change
    */
@@ -750,18 +769,6 @@ QUERY;
   // STATIC METHODS
   
   /**
-   * Get a list of questions for the given paper
-   * @param int $paper_id
-   * @return multitype: an array of question objects
-   */
-  public static function get_questions($paper_id) {
-    //TODO: Get questions
-    $questions = array();
-    
-    return $questions;
-  }
-  
-  /**
    * Delete the question with the given ID. Will not actually delete the question from the database, just mark 
    * it as deleted
    * @param int $id
@@ -791,10 +798,45 @@ QUERY;
    * @param array $questions An array of question IDs to build
    * @return array An array of complete question objects 
    */
-  public static function build($questions) {
-    $qn_arr = array();
+  public static function question_factory($mysqli, $user_id, $data) {
+    $object = null;
     
-    return $qn_arr;
+    if(ctype_digit($data)) {
+      // Extra DB query here but easiest way to return a question of correct type for now
+      $q_query = <<< QUERY
+SELECT q_type
+FROM questions
+WHERE q_id = ?
+QUERY;
+      $result = $mysqli->prepare($q_query);
+      $result->bind_param('i', $data);
+      $result->execute();
+      $result->bind_result($type);
+      if ($result->fetch()) {
+        $result->close();
+        $classname = 'Question' . strtoupper($type);
+        $classfile = 'questions/' . strtolower($type) . '.class.php';
+        try {
+          include $classfile;
+          $object = new $classname($mysqli, $user_id, $data);
+        } catch (Exception $ex) {
+          throw new ClassFoundException("No class matching type <code>$data</code>");
+        }
+      } else {
+        $result->close();
+      }
+    } else {
+      $classname = 'Question' . strtoupper($data);
+      $classfile = 'questions/' . strtolower($data) . '.class.php';
+      try {
+        include $classfile;
+        $object = new $classname($mysqli, $user_id);
+      } catch (Exception $ex) {
+        throw new ClassFoundException("No class matching type <code>$data</code>");
+      }
+    }
+    
+    return $object;
   }
   
   // PRIVATE METHODS

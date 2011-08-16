@@ -43,8 +43,6 @@ Class Option extends TouchStoneObject {
   private static $_fields = array('question_id', 'text', 'media', 'media_width', 'media_height', 'correct_fback', 'incorrect_fback', 'correct', 'marks');
   protected $_fields_editable = array('text', 'media', 'correct_fback', 'incorrect_fback', 'marks');
   private $_required_fields = array('question_id', 'correct', 'marks');
-  // 'Unified' fields are the same for all options
-  protected $_fields_unified = array('correct' => 'Correct Answer');
   
   private $_mysqli = null;
   private $_data = array();
@@ -139,14 +137,6 @@ QUERY;
     }
     
     return $success;
-  }
-  
-  /**
-   * The the array of fields (properties) for this class
-   * @return multitype:string 
-   */
-  public function get_unified_fields() {
-    return $this->_fields_unified;
   }
   
   

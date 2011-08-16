@@ -46,8 +46,6 @@ function showNextOption() {
     if(hiddenOptions.length == 1) {
       $('#next-option-holder').fadeOut('fast');
     }
-    hiddenOptions.eq(0).fadeIn('slow', function () {
-      $(this).removeClass('hide');
-    });
+    hiddenOptions.eq(0).removeClass('hide');
   }
 }

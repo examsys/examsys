@@ -23,14 +23,12 @@
 */
 
 $num_options = count($question->options);
-//$score_methods = array('vertical' => 'Vertical Option Button', 'vertical_other' => 'Vertical Option Buttons (with \'other\' textbox)', 'horizontal' => 'Horizontal Option Button', 'dropdown' => 'Dropdown List');
-
 ?>
 				<table id="q-details" class="form" summary="Edit question details">
 					<tbody>
 <?php require_once 'details_common.php' ?>
             <tr>
-              <th><label for="score_method">Presentation</label></th>
+              <th><label for="score_method">Scoring Method</label></th>
               <td>
                 <select id="score_method" name="score_method">
 <?php
@@ -42,6 +40,15 @@ foreach ($question->get_score_methods() as $val => $display) {
 }
 ?>
                 </select>
+              </td>
+            </tr>
+            <tr>
+              <th>Presentation</th>
+              <td>
+<?php
+$checked = ($question->get_score_method() == 'other') ? ' checked="checked"' : '';
+?>
+                <input type="checkbox" id="other" name="other" value="1"<?php echo $checked ?> /> <label for="other">include 'other' textbox <span class="note">(use with surveys)</span></label>
               </td>
             </tr>
             <tr>
@@ -69,13 +76,13 @@ foreach ($question->get_score_methods() as $val => $display) {
 <?php
 $index = 1;
 foreach ($question->options as $o_id => $option) {
-  include 'options/mcq.php';
+  include 'options/mrq.php';
   $index++;
 }
 
 for ($index = $num_options + 1; $index <= $question->max_options; $index++) {
   $option = new Option($mysqli, $userID);
-  include 'options/mcq.php';
+  include 'options/mrq.php';
 }
 
 if($question->get_locked() == '') {
@@ -83,7 +90,7 @@ if($question->get_locked() == '') {
           <tbody id="add-option-holder">
             <tr>
               <th>&nbsp;</th>
-              <td colspan="2">
+              <td colspan="3">
                 <input id="next-option" value="Add More Options..." type="button" />
               </td>
             </tr>
@@ -92,4 +99,3 @@ if($question->get_locked() == '') {
 }
 ?>          
         </table>
-

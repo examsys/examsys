@@ -23,7 +23,6 @@
 */
 
 // TODO: handle keyword based and random
-// TODO: message for locked questions - spacing
 // TODO: validation in JS
 // TODO: replace comment OK etc. icons with CSS BG image?
 // TODO: disable mapping tab for info and likert
@@ -51,14 +50,18 @@ $errors = array();
  
 if(empty($_REQUEST['q_id'])) {
   // We're adding a new question
-  $question = new Question($mysqli, $userID);
   
   if (empty($_GET['type'])) {
     $critical_error = 'No question type defined.';
   } elseif (!in_array($_GET['type'], array_keys(Question::$types))) {
     $critical_error = 'Unknown question type <em>' . htmlentities($_GET['type']) . '</em>.';
   } else {
-    $question->set_type($_GET['type']);
+    try {
+      $question = Question::question_factory($mysqli, $userID, $_GET['type']);
+      $question->set_type($_GET['type']);
+    } catch (ClassFoundException $ex) {
+      $critical_error = $ex->getMessage();
+    }
   }
 } else {
   // We're editing an existion question
@@ -68,7 +71,7 @@ if(empty($_REQUEST['q_id'])) {
     $critical_error = 'Invalid paper ID.';
   } else {
     try {
-      $question = new Question($mysqli, $userID, $_REQUEST['q_id']);
+      $question = Question::question_factory($mysqli, $userID, $_REQUEST['q_id']);
     } catch (Exception $ex) {
       $critical_error = $ex->getMessage();
     }
@@ -179,7 +182,7 @@ if($critical_error == '') {
           }
           
           // Save fields that are the same across options
-          $part_names = $option->get_unified_fields();
+          $part_names = $question->get_unified_fields();
           foreach ($part_names as $section_name => $section_label) {
             $field = 'option_' . $section_name;
             $get_method = "get_$section_name";
