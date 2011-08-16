@@ -83,56 +83,70 @@ if($critical_error == '') {
   // Save data
   if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
     // TODO: check how this generalises to all question types
-    $first = reset($question->options);
-    $old_correct = $first->get_correct();
-    if ($_POST['option_correct'] != $old_correct) {
+    $changes = false;
+    
+    $unified_part_names = $question->get_unified_fields();
+    $save_individual = in_array('correct', array_keys($unified_part_names));
+    
+    if ($save_individual) {
+      $first = reset($question->options);
+      $old_correct = $first->get_correct();
+      
+      $correct_answers = array($_POST['option_correct']);
+      
+      if ($correct_answers[0] != $old_correct) {
+        foreach ($question->options as $option) {
+          $option->set_correct($correct_answers[0]);
+        }
+      
+        $question->add_unified_field_modification('correct', $unified_part_names['correct'], $old_correct, $_POST['option_correct']);
+        $changes = true;
+      }
+    } else {
+      $correct_answers = array();
+      $i = 1;
       foreach ($question->options as $option) {
-        $option->set_correct($_POST['option_correct']);
+        $correct_answer = (isset($_POST['option_correct' . $i])) ? $_POST['option_correct' . $i] : 'n';
+        if ($correct_answer != $option->get_correct()) {
+          $option->set_correct($correct_answer);
+          $changes = true;
+        }
+        $correct_answers[] = $correct_answer;
+        $i++;
       }
       
-      $unified_fields = $first->get_unified_fields();
-      $question->add_unified_field_modification('correct', $unified_fields['correct'], $old_correct, $_POST['option_correct']);
+      if ($question->get_score_method() == 'other') {
+        $correct_answers[] = 'n';
+      }
     
+    }
+    
+    if ($changes) {
       try {
     	  if(!$question->save()) {
     	    $errors[] = 'Error saving data. Please try again';
     	  } else {
           // Remark the student's answers in 'log2'.
-          $result = $mysqli->prepare("SELECT DISTINCT user_answer FROM log2 WHERE q_id=? AND q_paper=?");
-          $result->bind_param('ii', $question->id, $paper_id);
-          $result->execute();  
-          $result->store_result();
-          $result->bind_result($user_answer);
-          while ($row = $result->fetch()) {
-            if ($user_answer == $_POST['option_correct']) {
-              $updateLog = $mysqli->prepare("UPDATE log2 SET mark=1 WHERE user_answer=? AND q_id=? AND q_paper=?");
-              $updateLog->bind_param('sii', $user_answer, $question->id, $paper_id);
-              $updateLog->execute();  
-              $updateLog->close();
-            } else {
-              $updateLog = $mysqli->prepare("UPDATE log2 SET mark=0 WHERE user_answer=? AND q_id=? AND q_paper=?");
-              $updateLog->bind_param('sii', $user_answer, $question->id, $paper_id);
-              $updateLog->execute();  
-              $updateLog->close();
-            }
-          }
-          $result->free_result();
-          $result->close();
+          correct_update_log($mysqli, $question, $paper_id, $correct_answers, $save_individual);
     	  }
     	} catch (ValidationException $vex) {
     	  $errors[] = $vex->getMessage();
     	}
     }
-    
-  //  redirect();
+  
+    //  redirect();
   } elseif (isset($_POST['submit']) and ($_POST['submit'] == 'Save Changes' or $_POST['submit'] == 'Limited Save')) {
     if ($question->id == -1 or check_fullSave($question->id,$mysqli)) {
       
       $part_names = Question::get_editable_fields();
       foreach($part_names as $section_name) {
         if(isset($_POST["$section_name"])) {
+          $value = $_POST["$section_name"];
+          
+          if ($section_name == 'score_method' and isset($_POST['other']) and $_POST['other'] == 1) $value = 'other';
+          
           $method = "set_$section_name";
-          $question->$method($_POST["$section_name"]);
+          $question->$method($value);
         }
       }
       
@@ -480,3 +494,66 @@ echo save_buttons_new($disabled, $question->get_locked(), $userID, $question->ge
 ?>
 </body>
 </html>
+
+<?php
+function correct_update_log($mysqli, $question, $paper_id, $correct_answers, $save_individual) {
+
+  $result = $mysqli->prepare("SELECT DISTINCT user_answer FROM log2 WHERE q_id=? AND q_paper=?");
+  $result->bind_param('ii', $question->id, $paper_id);
+  $result->execute();  
+  $result->store_result();
+  $result->bind_result($user_answer);
+  while ($row = $result->fetch()) {
+    if ($save_individual) {
+      if ($user_answer == $correct_answers[0]) {
+        $updateLog = $mysqli->prepare("UPDATE log2 SET mark=1 WHERE user_answer=? AND q_id=? AND q_paper=?");
+        $updateLog->bind_param('sii', $user_answer, $question->id, $paper_id);
+        $updateLog->execute();  
+        $updateLog->close();
+      } else {
+        $updateLog = $mysqli->prepare("UPDATE log2 SET mark=0 WHERE user_answer=? AND q_id=? AND q_paper=?");
+        $updateLog->bind_param('sii', $user_answer, $question->id, $paper_id);
+        $updateLog->execute();  
+        $updateLog->close();
+      }
+    } else {
+      $totalpos = 0;
+      $user_answers = str_split($user_answer);
+      $score_method = $question->get_score_method();
+              
+      $mark = 0;
+      $all_correct = true;
+      for ($i=0; $i < count($correct_answers); $i++) {
+        if ($correct_answers[$i] == 'y') $totalpos++;
+        
+        if ($score_method == 'AllNegative') {
+          $mark += ($correct_answers[$i] == $user_answers[$i]) ? 1 : -1;
+        } elseif ($correct_answers[$i] == $user_answers[$i]) {
+          if ($correct_answers[$i] == 'y') {
+            $mark++;
+          }
+        } else {
+          $all_correct = false;
+        }
+      }
+      
+      if ($score_method == 'AllItemsCorrect' and $all_correct == false) $mark = 0;
+  
+      // Recalculate total possible marks if 'all correct' or 'negative'.
+      if ($score_method == 'AllItemsCorrect') {
+        $totalpos = 1;
+      } elseif ($score_method == 'AllNegative') {
+        $totalpos = count($correct_answers);
+      }
+  
+      $updateLog = $mysqli->prepare("UPDATE log2 SET mark=?, totalpos=? WHERE user_answer=? AND q_id=? AND q_paper=?");
+      $updateLog->bind_param('disii', $mark, $totalpos, $user_answer, $question->id, $paper_id);
+      $updateLog->execute();
+      $updateLog->close();
+    }
+  }
+  $result->free_result();
+  $result->close();
+}
+
+?>

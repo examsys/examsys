@@ -48,7 +48,7 @@ foreach ($question->get_score_methods() as $val => $display) {
 <?php
 $checked = ($question->get_score_method() == 'other') ? ' checked="checked"' : '';
 ?>
-                <input type="checkbox" id="other" name="other" value="1"<?php echo $checked ?> /> <label for="other">include 'other' textbox <span class="note">(use with surveys)</span></label>
+                <input type="checkbox" id="score_method_other" name="score_method_other" value="1"<?php echo $checked ?> /> <label for="score_method_other">include 'other' textbox <span class="note">(use with surveys)</span></label>
               </td>
             </tr>
             <tr>
