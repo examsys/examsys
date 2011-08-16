@@ -65,7 +65,7 @@ Class Question extends TouchStoneObject {
   
   private $_user_id;
   private $_fields = array('type', 'theme', 'scenario', 'scenario_plain', 'leadin', 'leadin_plain', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'option_order', 'standards_setting', 'bloom', 'owner_id', 'media', 'media_width', 'media_height', 'group', 'checkout_time', 'checkout_author_id', 'created', 'last_edited', 'locked', 'deleted', 'status');
-  protected $_fields_editable = array('theme', 'scenario', 'leadin', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'option_order', 'bloom', 'status');
+  protected static $_fields_editable = array('theme', 'scenario', 'leadin', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'option_order', 'bloom', 'status');
   private $_required_fields = array('type', 'leadin', 'score_method', 'option_order', 'owner_id', 'status');
   protected $_score_methods = array();
   private $_mysqli = null;
@@ -175,10 +175,14 @@ QUERY;
           $logger->track_change('New Question', $this->question_id, $this->_user_id, $this->text, '', '');
         } else {
           // Log any changes
-          foreach($this->_modified_fields as $field => $value) {
-            $db_field = (in_array($field, array_keys($this->_field_map))) ? $this->_field_map[$field] : $field;
-            $change_field = (in_array($field, array_keys($this->_change_field_map))) ? $this->_change_field_map[$field] : $field;
-            $this->_logger->track_change('Edit Question', $this->id, $this->_user_id, $value, $this->$field, $change_field);
+          foreach($this->_modified_fields as $key => $value) {
+            $db_field = (in_array($key, array_keys($this->_field_map))) ? $this->_field_map[$key] : $key;
+            $change_field = (in_array($key, array_keys($this->_change_field_map))) ? $this->_change_field_map[$key] : $key;
+            if ($value['message'] == '') {
+              $this->_logger->track_change('Edit Question', $this->id, $this->_user_id, $value['value'], $this->$key, $db_field);
+            } else {
+              $this->_logger->track_change($value['message'], $this->id, $this->_user_id, $value['value'], $this->$key, $db_field);
+            }
           }
         }
       }
@@ -240,6 +244,14 @@ QUERY;
     $result->close();
     
     return $success;
+  }
+  
+  /**
+   * The the array of fields (properties) for this class
+   * @return multitype:string 
+   */
+  public static function get_editable_fields() {
+    return self::$_fields_editable;
   }
   
   /**
@@ -889,8 +901,10 @@ QUERY;
       $result->store_result();
       call_user_func_array(array($result, "bind_result"), $opt_data);
       // TODO: handle 'correctness' more nicely
+      $i = 1;
       while($success == true and $success = $result->fetch()) {
-        $this->options[$opt_data['id']] = new Option($this->_mysqli, $this->_user_id, $opt_data);
+        $this->options[$opt_data['id']] = new Option($this->_mysqli, $this->_user_id, $this, $i, $opt_data);
+        $i++;
       }
       $result->close();
     } else {

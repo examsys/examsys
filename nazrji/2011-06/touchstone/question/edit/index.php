@@ -22,6 +22,7 @@
 * @package
 */
 
+// TODO: convert MRQ to MCQ?
 // TODO: handle keyword based and random
 // TODO: validation in JS
 // TODO: replace comment OK etc. icons with CSS BG image?
@@ -79,10 +80,6 @@ if(empty($_REQUEST['q_id'])) {
 }
 
 if($critical_error == '') {
-  // Populate an array containing existing values so that we can track changes
-  $part_names = $question->get_editable_fields();
-  
-  
   // Save data
   if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
     // TODO: check how this generalises to all question types
@@ -131,7 +128,7 @@ if($critical_error == '') {
   } elseif (isset($_POST['submit']) and ($_POST['submit'] == 'Save Changes' or $_POST['submit'] == 'Limited Save')) {
     if ($question->id == -1 or check_fullSave($question->id,$mysqli)) {
       
-      $part_names = $question->get_editable_fields();
+      $part_names = Question::get_editable_fields();
       foreach($part_names as $section_name) {
         if(isset($_POST["$section_name"])) {
           $method = "set_$section_name";
@@ -164,6 +161,8 @@ if($critical_error == '') {
         $question->set_teams($_POST['teams']);
       }
       
+      $part_names = Option::get_editable_fields();
+  
       for ($option_no = 1; $option_no < $question->max_options; $option_no++) {
         $option = null;
         
@@ -171,19 +170,25 @@ if($critical_error == '') {
           // Editing existing option
           $option = $question->options[$_POST["optionid$option_no"]];
           
-          // Save individual fields
-          $part_names = $option->get_editable_fields();
+          // Save editable fields that aren't unified
+          $unified_part_names = $question->get_unified_fields();
           foreach ($part_names as $section_name) {
-            $field = ($section_name != 'correct') ? 'option_' . $section_name . $option_no : 'correct';
-            if (isset($_POST[$field])) {
-              $method = "set_$section_name";
-              $option->$method($_POST[$field]);
+            if (!in_array($section_name, array_keys($unified_part_names))) {
+//            $field = ($section_name != 'correct') ? 'option_' . $section_name . $option_no : 'correct';
+              $field = 'option_' . $section_name . $option_no;
+              
+              // If 'correct' is not a unified field then its value if not in POST is 'n'
+              if ($section_name == 'correct' and !isset($_POST[$field])) $_POST[$field] = 'n';
+              
+              if (isset($_POST[$field])) {
+                $method = "set_$section_name";
+                $option->$method($_POST[$field]);
+              }
             }
           }
           
           // Save fields that are the same across options
-          $part_names = $question->get_unified_fields();
-          foreach ($part_names as $section_name => $section_label) {
+          foreach ($unified_part_names as $section_name => $section_label) {
             $field = 'option_' . $section_name;
             $get_method = "get_$section_name";
             $old_value = $option->$get_method();
@@ -198,8 +203,23 @@ if($critical_error == '') {
           if (!empty($_POST["option_text$option_no"]) or ($_FILES["option_media$option_no"]['name'] != 'none' and $_FILES["option_media$option_no"]['name'] != '')) {
             $correct_fb = (isset($_POST["option_correct_fback$option_no"])) ? $_POST["option_correct_fback$option_no"] : '';
             $incorrect_fb = (isset($_POST["option_incorrect_fback$option_no"])) ? $_POST["option_incorrect_fback$option_no"] : '';
-            $data = array('question_id' => $question->id, 'text' => $_POST["option_text$option_no"], 'correct_fback' => $correct_fb, 'incorrect_fback' => $incorrect_fb, 'correct' => $_POST['option_correct'], 'marks' => 1);
-            $option = new Option($mysqli, $userID, $data);
+            $data = array('question_id' => $question->id, 'marks' => 1);
+            
+            foreach ($part_names as $section_name) {
+              if (!in_array($section_name, array_keys($unified_part_names))) {
+                $field = 'option_' . $section_name . $option_no;
+                
+                // If 'correct' is not a unified field then its value if not in POST is 'n'
+                if ($section_name == 'correct' and !isset($_POST[$field])) $_POST[$field] = 'n';
+                
+                if (isset($_POST[$field])) {
+                  $data[$section_name] = $_POST[$field];
+                }
+              }
+            }
+                        
+//            $data = array('question_id' => $question->id, 'text' => $_POST["option_text$option_no"], 'correct_fback' => $correct_fb, 'incorrect_fback' => $incorrect_fb, 'correct' => $_POST['option_correct'], 'marks' => 1);
+            $option = new Option($mysqli, $userID, $question, $option_no, $data);
             $question->options[] = $option;
           }
         }

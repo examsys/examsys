@@ -74,7 +74,7 @@ foreach ($question->options as $o_id => $option) {
 }
 
 for ($index = $num_options + 1; $index <= $question->max_options; $index++) {
-  $option = new Option($mysqli, $userID);
+  $option = new Option($mysqli, $userID, $question, $index);
   include 'options/mcq.php';
 }
 

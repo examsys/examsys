@@ -41,9 +41,12 @@ Class Option extends TouchStoneObject {
   public $marks = null;
   
   private static $_fields = array('question_id', 'text', 'media', 'media_width', 'media_height', 'correct_fback', 'incorrect_fback', 'correct', 'marks');
-  protected $_fields_editable = array('text', 'media', 'correct_fback', 'incorrect_fback', 'marks');
+  protected static $_fields_editable = array('text', 'media', 'correct_fback', 'incorrect_fback', 'correct', 'marks');
   private $_required_fields = array('question_id', 'correct', 'marks');
+  private $_fields_unified = array();
   
+  private $_question = null;
+  private $_number = -1;
   private $_mysqli = null;
   private $_data = array();
   
@@ -56,10 +59,13 @@ Class Option extends TouchStoneObject {
    * properties from an associative array
    * @param mixed $data
    */
-  function __construct($mysqli, $user_id, $data = null) {
+  function __construct($mysqli, $user_id, $question, $number, $data = null) {
     // Store the database connection reference
     $this->_mysqli = $mysqli;
     $this->_user_id = $user_id;
+    $this->_question = $question;
+    $this->_number = $number;
+    $this->_fields_unified = $question->get_unified_fields();
     
     // Array of references to the fields.  Allows succinct use of call_user_func_array
     foreach(self::$_fields as $field) {
@@ -123,9 +129,13 @@ QUERY;
           $logger->track_change('New Option', $this->question_id, $this->_user_id, $this->text, '', 'Option #' . $option_number);
         } else {
           // Log any changes
-          foreach($this->_modified_fields as $field => $value) {
-            $db_field = (in_array($field, array_keys($this->_field_map))) ? $this->_field_map[$field] : $field;
-            $logger->track_change('Edit Question', $this->question_id, $this->_user_id, $value, $this->$field, $db_field);
+          foreach($this->_modified_fields as $key => $value) {
+            $db_field = (in_array($key, array_keys($this->_field_map))) ? $this->_field_map[$key] : $key;
+            if ($value['message'] == '') {
+              $logger->track_change('Edit Question', $this->question_id, $this->_user_id, $value['value'], $this->$key, $db_field);
+            } else {
+              $logger->track_change('Edit Question', $this->question_id, $this->_user_id, $value['value'], $this->$key, $value['message']);
+            }
           }
         }
       }
@@ -241,6 +251,9 @@ QUERY;
    * @param string $value
    */
   public function set_correct($value) {
+    if($value != $this->correct and !in_array('correct', array_keys($this->_fields_unified))) {
+      $this->set_modified_field('correct', $this->correct, "Option #{$this->_number} Answer");
+    }
     $this->correct = $value;
   }
   
@@ -261,6 +274,14 @@ QUERY;
       $this->set_modified_field('marks', $this->marks);
       $this->marks = $value;
     }
+  }
+  
+  /**
+   * The the array of fields (properties) for this class
+   * @return multitype:string 
+   */
+  public static function get_editable_fields() {
+    return self::$_fields_editable;
   }
   
   // STATIC METHODS

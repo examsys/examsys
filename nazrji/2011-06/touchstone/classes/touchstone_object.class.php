@@ -27,7 +27,7 @@
 require_once 'exceptions.inc.php';
 
 Class TouchStoneObject {
-  protected $_fields_editable = array();
+  protected static $_fields_editable = array();
   protected $_modified_fields = array();
   
   /**
@@ -35,18 +35,20 @@ Class TouchStoneObject {
    * @param string $name
    * @param string $value
    */
-  protected function set_modified_field($name, $value) {
+  protected function set_modified_field($name, $value, $message = '') {
     if(!array_key_exists($name, $this->_modified_fields)) {
-      $this->_modified_fields[$name] = $value;
+      $this->_modified_fields[$name]['value'] = $value;
+      $this->_modified_fields[$name]['message'] = $message;
     }
   }
   
   /**
    * The the array of fields (properties) for this class
+   * MUST be implemented by sub-classes
    * @return multitype:string 
    */
-  public function get_editable_fields() {
-    return $this->_fields_editable;
+  public static function get_editable_fields() {
+    throw new MethodNotImplementedException("Method 'get_editable_fields' not implemented.");
   }
   
   /**

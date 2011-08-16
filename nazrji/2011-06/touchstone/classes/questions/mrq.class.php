@@ -25,6 +25,14 @@
  */
 
 Class QuestionMRQ extends Question {
+  protected $_fields_unified = array();
   protected $_score_methods = array('AllNegative' => '1 Mark per Option (with Negative Marking)', 'AllItemsCorrect' => 'All Options must be Correct (1 mark in total)', 'SelectedPositive' => '1 Mark per True Option');
+  
+  function __construct($mysqli, $user_id, $data = null) {
+    parent::__construct($mysqli, $user_id, $data);
+    
+    // 'correct' is not a unified field for MRQ
+    self::$_fields_editable[] = 'correct';
+  }
 }
 
