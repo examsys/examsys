@@ -22,7 +22,7 @@
 * @package
 */
 
-// TODO: Should 'correct' be a required field for options?
+// TODO: Rank question has two answers selected if blank
 // TODO: JS for convert MRQ to MCQ
 // TODO: JS for changing labels for Dichotomous if score method changes
 // TODO: handle keyword based and random

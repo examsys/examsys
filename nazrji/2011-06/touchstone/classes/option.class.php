@@ -42,7 +42,7 @@ Class Option extends TouchStoneObject {
   
   private static $_fields = array('question_id', 'text', 'media', 'media_width', 'media_height', 'correct_fback', 'incorrect_fback', 'correct', 'marks');
   protected static $_fields_editable = array('text', 'media', 'correct_fback', 'incorrect_fback', 'correct', 'marks');
-  private $_required_fields = array('question_id', 'correct', 'marks');
+  private $_required_fields = array('question_id', 'marks');
   private $_fields_unified = array();
   
   private $_question = null;
