@@ -25,6 +25,11 @@
  */
 
 Class QuestionDICHOTOMOUS extends Question {
+  
+  public $max_options = 15;
+  protected $_answer_positive = 't';
+  protected $_answer_negative = 'f';
+  
   protected $_fields_unified = array();
   protected $_score_methods = array('TF_NegativeAbstain' => 'True/False/Abstain (Negative Marking -1)', 'TF_NegativeAbstainHalf' => 'True/False/Abstain (Negative Marking -0.5)', 'TF_Positive' => 'True/False', 'YN_NegativeAbstain' => 'Yes/No/Abstain (Negative Marking -1)', 'YN_Positive' => 'Yes/No');
   
@@ -46,6 +51,78 @@ Class QuestionDICHOTOMOUS extends Question {
     }
     
     return $labels;
+  }
+
+  /**
+   * Change the correct answer after the question has been locked. Update user marks in summative log table
+   * @param integer $new_correct array of new correct answers
+   * @param integer $paper_id
+   */
+  public function update_correct($new_correct, $paper_id) {
+    $errors = array();
+    $changes = false;
+    
+    $i = 0;
+    foreach ($this->options as $option) {
+      if ($new_correct[$i] != $option->get_correct()) {
+        $option->set_correct($new_correct[$i]);
+        $changes = true;
+      }
+      $i++;
+    }
+    
+    if ($changes) {
+      try {
+    	  if(!$this->save()) {
+    	    $errors[] = 'Error saving data. Please try again';
+    	  } else {
+          // Remark the student's answers in 'log2'.
+          $score_method = $this->get_score_method();
+          switch ($score_method) {
+            case 'TF_NegativeAbstain':
+            case 'YN_NegativeAbstain':
+              $negative = 1;
+              break;
+            case 'TF_NegativeAbstainHalf':
+              $negative = 0.5;
+              break;
+            default:
+              $negative = 0;
+              break;
+          }
+        
+    	    $result = $this->_mysqli->prepare("SELECT DISTINCT user_answer FROM log2 WHERE q_id=? AND q_paper=?");
+          $result->bind_param('ii', $this->id, $paper_id);
+          $result->execute();  
+          $result->store_result();
+          $result->bind_result($user_answer);
+          while ($row = $result->fetch()) {
+            $user_answers = str_split($user_answer);
+            $mark = 0;
+            
+            for ($i=0; $i < count($new_correct); $i++) {
+              if ($new_correct[$i] == $user_answers[$i]) {
+                $mark++;
+              } elseif ($user_answers[$i] == $this->get_answer_positive() or $user_answers[$i] == $this->get_answer_negative()) {
+                // Don't subtract for unanswered/abstain
+                $mark -= $negative;
+              }
+            }
+            
+            $updateLog = $this->_mysqli->prepare("UPDATE log2 SET mark=? WHERE user_answer=? AND q_id=? AND q_paper=?");
+            $updateLog->bind_param('dsii', $mark, $user_answer, $this->id, $paper_id);
+            $updateLog->execute();  
+            $updateLog->close();
+          }
+          $result->free_result();
+          $result->close();
+    	  }
+    	} catch (ValidationException $vex) {
+    	  $errors[] = $vex->getMessage();
+    	}
+    }
+    
+    return $errors;
   }
 }
 

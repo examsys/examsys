@@ -59,6 +59,8 @@ Class Question extends TouchStoneObject {
   private $status = null;
   public $options = array();
   public $max_options = 20;
+  protected $_answer_positive = 'y';
+  protected $_answer_negative = 'n';
   
   // Imploded DB version of teams
   private $group = '';
@@ -740,6 +742,22 @@ QUERY;
       $this->set_modified_field('status', $this->status);
       $this->status = $value;
     }
+  }
+  
+  /**
+   * Get the positive answer for this question 
+   * @return string
+   */
+  public function get_answer_positive() {
+    return $this->_answer_positive;
+  }
+  
+  /**
+   * Get the negative answer for this question 
+   * @return string
+   */
+  public function get_answer_negative() {
+    return $this->_answer_negative;
   }
   
   /**

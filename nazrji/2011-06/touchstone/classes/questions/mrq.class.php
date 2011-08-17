@@ -27,6 +27,7 @@
 require_once 'mcq.class.php';
 
 Class QuestionMRQ extends Question {
+  
   protected $_fields_unified = array();
   protected $_score_methods = array('AllNegative' => '1 Mark per Option (with Negative Marking)', 'AllItemsCorrect' => 'All Options must be Correct (1 mark in total)', 'SelectedPositive' => '1 Mark per True Option');
   
@@ -56,7 +57,7 @@ Class QuestionMRQ extends Question {
     }
     
     if ($this->get_score_method() == 'other') {
-      $new_correct[] = 'n';
+      $new_correct[] = $this->get_answer_negative();
     }
         
     if ($changes) {
@@ -69,7 +70,7 @@ Class QuestionMRQ extends Question {
           $score_method = $this->get_score_method();
         
           for ($i=0; $i < count($new_correct); $i++) {
-            if ($new_correct[$i] == 'y') $totalpos++;
+            if ($new_correct[$i] == $this->get_answer_positive()) $totalpos++;
           }
           
     	    $result = $this->_mysqli->prepare("SELECT DISTINCT user_answer FROM log2 WHERE q_id=? AND q_paper=?");
@@ -87,7 +88,7 @@ Class QuestionMRQ extends Question {
               if ($score_method == 'AllNegative') {
                 $mark += ($new_correct[$i] == $user_answers[$i]) ? 1 : -1;
               } elseif ($new_correct[$i] == $user_answers[$i]) {
-                if ($new_correct[$i] == 'y') {
+                if ($new_correct[$i] == $this->get_answer_positive()) {
                   $mark++;
                 }
               } else {

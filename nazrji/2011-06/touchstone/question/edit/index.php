@@ -23,6 +23,7 @@
 */
 
 // TODO: JS for convert MRQ to MCQ
+// TODO: JS for changing labels for Dichotomous if score method changes
 // TODO: handle keyword based and random
 // TODO: check - was leadin/scenarion change tracking looking at the plain version?
 // TODO: validation in JS
@@ -94,7 +95,7 @@ if($critical_error == '') {
       $correct_answers = array();
       $i = 1;
       foreach ($question->options as $option) {
-        $correct_answers[] = (isset($_POST['option_correct' . $i])) ? $_POST['option_correct' . $i] : 'n';
+        $correct_answers[] = (isset($_POST['option_correct' . $i])) ? $_POST['option_correct' . $i] : $query_string->get_answer_negative();
         $i++;
       }
       

@@ -41,8 +41,8 @@ $spaced = ($index > 1) ? " class=\"spaced-top{$alt}\"" : $alt_c;
                 <input name="optionid<?php echo $index ?>" value="<?php echo $option->id ?>" type="hidden" />
               </td>
               <td class="small">
-                <input type="radio" id="option_correct<?php echo $index ?>_t" name="option_correct<?php echo $index ?>" value="t"<?php echo $correct_t ?> /> <label for="option_correct<?php echo $index ?>_t" class="heavy spaced-right"><?php echo $labels['true'] ?></label>
-                <input type="radio" id="option_correct<?php echo $index ?>_f" name="option_correct<?php echo $index ?>" value="f"<?php echo $correct_f ?> /> <label for="option_correct<?php echo $index ?>_f" class="heavy"><?php echo $labels['false'] ?></label>
+                <input type="radio" id="option_correct<?php echo $index ?>_<?php echo $question->get_answer_positive() ?>" name="option_correct<?php echo $index ?>" value="<?php echo $question->get_answer_positive() ?>"<?php echo $correct_t ?> /> <label for="option_correct<?php echo $index ?>_t" class="heavy spaced-right"><?php echo $labels['true'] ?></label>
+                <input type="radio" id="option_correct<?php echo $index ?>_<?php echo $question->get_answer_negative() ?>" name="option_correct<?php echo $index ?>" value="<?php echo $question->get_answer_negative() ?>"<?php echo $correct_f ?> /> <label for="option_correct<?php echo $index ?>_f" class="heavy"><?php echo $labels['false'] ?></label>
             </tr>
 <?php
 
