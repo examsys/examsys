@@ -68,6 +68,7 @@ Class Question extends TouchStoneObject {
   protected static $_fields_editable = array('theme', 'scenario', 'leadin', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'option_order', 'bloom', 'status');
   private $_required_fields = array('type', 'leadin', 'score_method', 'option_order', 'owner_id', 'status');
   protected $_score_methods = array();
+  protected $_option_orders = array('display order' => 'Display Order', 'alphabetic' => 'Alphabetic', 'random' => 'Random');
   protected $_mysqli = null;
   private $_logger = null;
   private $_data = array();
@@ -496,6 +497,14 @@ QUERY;
   }
   
   /**
+   * Return the scoring methods of this question. The array is expected to be overridden in sub-classes
+   * @return array array of scoring method key => value strings
+   */
+  public function get_score_methods() {
+    return $this->_score_methods;
+  }
+  
+  /**
    * Get the question option order
    * @return string
    */
@@ -512,6 +521,14 @@ QUERY;
       $this->set_modified_field('option_order', $this->option_order);
       $this->option_order = $value;
     }
+  }
+  
+  /**
+   * Return the option orders available for this question
+   * @return array array of scoring method key => value strings
+   */
+  public function get_option_orders() {
+    return $this->_option_orders;
   }
   
   /**
@@ -723,14 +740,6 @@ QUERY;
       $this->set_modified_field('status', $this->status);
       $this->status = $value;
     }
-  }
-  
-  /**
-   * Return the scoring methods of this question. The array is expected to be overridden in sub-classes
-   * @return array array of scoring method key => value strings
-   */
-  public function get_score_methods() {
-    return $this->_score_methods;
   }
   
   /**

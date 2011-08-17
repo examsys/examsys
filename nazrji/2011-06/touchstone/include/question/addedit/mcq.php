@@ -23,8 +23,6 @@
 */
 
 $num_options = count($question->options);
-//$score_methods = array('vertical' => 'Vertical Option Button', 'vertical_other' => 'Vertical Option Buttons (with \'other\' textbox)', 'horizontal' => 'Horizontal Option Button', 'dropdown' => 'Dropdown List');
-
 ?>
 				<table id="q-details" class="form" summary="Edit question details">
 					<tbody>
@@ -34,12 +32,7 @@ $num_options = count($question->options);
               <td>
                 <select id="score_method" name="score_method">
 <?php
-foreach ($question->get_score_methods() as $val => $display) {
-  $selected = ($question->get_score_method() == $val) ? ' selected="selected"' : '';
-?>
-                  <option value="<?php echo $val ?>"<?php echo $selected ?>><?php echo $display ?></option>
-<?php
-}
+echo ViewHelper::render_options($question->get_score_methods(), $question->get_score_method(), 3);
 ?>
                 </select>
               </td>
@@ -47,7 +40,11 @@ foreach ($question->get_score_methods() as $val => $display) {
             <tr>
               <th><label for="option_order">Option Order</label></th>
               <td>
-                <?php echo option_order($question->get_option_order()) ?>
+                <select id="option_order" name="option_order">
+<?php 
+echo ViewHelper::render_options($question->get_option_orders(), $question->get_option_order(), 3);
+?>
+                </select>
               </td>
             </tr>
 					</tbody>

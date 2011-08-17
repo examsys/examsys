@@ -31,6 +31,7 @@
 require '../../include/staff_auth.inc';
 require_once '../../classes/question.class.php';
 require_once '../../classes/logger.class.php';
+require_once '../../classes/viewhelper.class.php';
 require '../../include/edit.inc';
 require '../../include/media.inc';
 require '../../include/metadata.inc';
