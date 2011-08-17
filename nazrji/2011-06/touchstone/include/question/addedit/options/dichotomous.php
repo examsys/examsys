@@ -22,9 +22,9 @@
 * @package
 */
 
-$mandatory = ($index <= 3) ? '<span class="mandatory">*</span>' : '';
 $hidden = ($index > $num_options) ? ' hide' : '';
-$correct = ($option->get_correct() == 'y') ? ' checked="checked"' : '';
+$correct_t = ($option->get_correct() == 't') ? ' checked="checked"' : '';
+$correct_f = ($option->get_correct() == 'f') ? ' checked="checked"' : '';
 if ($index %2 == 0) {
   $alt = ' alt';
   $alt_c = ' class="alt"';
@@ -35,12 +35,14 @@ $spaced = ($index > 1) ? " class=\"spaced-top{$alt}\"" : $alt_c;
 ?>
           <tbody class="option<?php echo $hidden ?>">
             <tr<?php echo $spaced ?>>
-              <th<?php echo $spaced ?>><?php echo $mandatory ?><label for="option_text<?php echo $index ?>">Option <?php echo $index ?> Text</label></th>
+              <th<?php echo $spaced ?>><label for="option_text<?php echo $index ?>">Stem #<?php echo $index ?></label></th>
               <td<?php echo $spaced ?>>
                 <textarea name="option_text<?php echo $index ?>" id="option_text<?php echo $index ?>" cols="90" rows="2" class="form-med-large"><?php echo $option->get_text() ?></textarea>
                 <input name="optionid<?php echo $index ?>" value="<?php echo $option->id ?>" type="hidden" />
               </td>
-              <td class="small"><input id="option_correct<?php echo $index ?>" name="option_correct<?php echo $index ?>" value="y" type="checkbox"<?php echo $correct ?> /></td>
+              <td class="small">
+                <input type="radio" id="option_correct<?php echo $index ?>_t" name="option_correct<?php echo $index ?>" value="t"<?php echo $correct_t ?> /> <label for="option_correct<?php echo $index ?>_t" class="heavy spaced-right"><?php echo $labels['true'] ?></label>
+                <input type="radio" id="option_correct<?php echo $index ?>_f" name="option_correct<?php echo $index ?>" value="f"<?php echo $correct_f ?> /> <label for="option_correct<?php echo $index ?>_f" class="heavy"><?php echo $labels['false'] ?></label>
             </tr>
 <?php
 

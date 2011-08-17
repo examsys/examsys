@@ -66,12 +66,20 @@ p {
     visibility: hidden;
 }
 
+.heavy {
+	font-weight: bold;
+}
+
 .spaced-top {
   padding-top: 12px;
 }
 
 .spaced-bottom {
   padding-bottom: 12px;
+}
+
+.spaced-right {
+  margin-right: 8px;
 }
 
 .message {
@@ -245,7 +253,7 @@ p {
 
 /* Form */
 .form {
-	width: 866px;
+	width: 882px;
 	margin: 0 auto 24px auto;
 }
 
@@ -288,8 +296,8 @@ p {
 }
 
 .form .small {
-	width: 60px;
-	text-align: center;
+  width: 76px;
+  text-align: center;
 }
 
 textarea, input[type=text], select {

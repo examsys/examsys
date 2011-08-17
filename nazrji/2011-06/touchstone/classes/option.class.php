@@ -193,7 +193,7 @@ QUERY;
    */
   public function set_media($value) {
     if($value != $this->media) {
-      $this->set_modified_field('media', $this->media);
+      $this->set_modified_field('media', $this->media, "Option #{$this->_number} Media");
       $this->media = $value['filename'];
       $this->media_width = (empty($value['width'])) ? 0 : $value['width'];
       $this->media_height = (empty($value['height'])) ? 0 : $value['height'];
@@ -214,7 +214,7 @@ QUERY;
    */
   public function set_correct_fback($value) {
     if($value != $this->correct_fback) {
-      $this->set_modified_field('correct_fback', $this->correct_fback);
+      $this->set_modified_field('correct_fback', $this->correct_fback, "Option #{$this->_number} Correct Feedback");
       $this->correct_fback = $value;
     }
   }
@@ -233,7 +233,7 @@ QUERY;
    */
   public function set_incorrect_fback($value) {
     if($value != $this->incorrect_fback) {
-      $this->set_modified_field('incorrect_fback', $this->incorrect_fback);
+      $this->set_modified_field('incorrect_fback', $this->incorrect_fback, "Option #{$this->_number} Incorrect Feedback");
       $this->incorrect_fback = $value;
     }
   }

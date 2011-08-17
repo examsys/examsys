@@ -31,15 +31,21 @@ class ViewHelper {
    * @param array $options options as $value => $text associative array
    * @param string $selected the value to be selected in the options
    * @param int $tablevel number of tab characters to use at the start of the option string
-   * @param string $css_class a CSS class to be applied to ALL options 
+   * @param string $css_class a CSS class to be applied to ALL options or an array of classes to be applied to each option individually
    */
   public static function render_options($options, $selected = '', $tablevel = 0, $css_class = '') {
     $html = '';
+    $i = 0;
     foreach ($options as $value => $text) {
       $html .= str_repeat("\t", $tablevel);
       $sel = ($selected == $value) ? ' selected="selected"' : '';
-      $css_class = ($css_class != '') ? " $css_class" : $css_class;
-      $html .= "<option value=\"$value\"{$sel}{$css_class}>$text</option>\n";
+      if (!is_array($css_class)) {
+        $class = ($css_class != '') ? ' class="' . $css_class . '"' : '';
+      } else {
+        $class = ($css_class[$i] != '') ? ' class="' . $css_class[$i] . '"' : '';
+      }
+      $html .= "<option value=\"$value\"{$sel}{$class}>$text</option>\n";
+      $i++;
     }
     return $html;
   }

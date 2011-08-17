@@ -35,7 +35,7 @@ $spaced = ($index > 1) ? " class=\"spaced-top{$alt}\"" : $alt_c;
 ?>
           <tbody class="option<?php echo $hidden ?>">
             <tr<?php echo $spaced ?>>
-              <th<?php echo $spaced ?>><?php echo $mandatory ?><label for="option_text<?php echo $index ?>"><strong>Option <?php echo $index ?> Text</strong></label></th>
+              <th<?php echo $spaced ?>><?php echo $mandatory ?><label for="option_text<?php echo $index ?>">Option <?php echo $index ?> Text</label></th>
               <td<?php echo $spaced ?>>
                 <textarea name="option_text<?php echo $index ?>" id="option_text<?php echo $index ?>" cols="90" rows="2" class="form-med-large"><?php echo $option->get_text() ?></textarea>
                 <input name="optionid<?php echo $index ?>" value="<?php echo $option->id ?>" type="hidden" />

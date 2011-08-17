@@ -24,6 +24,7 @@
 
 // TODO: JS for convert MRQ to MCQ
 // TODO: handle keyword based and random
+// TODO: check - was leadin/scenarion change tracking looking at the plain version?
 // TODO: validation in JS
 // TODO: replace comment OK etc. icons with CSS BG image?
 // TODO: disable mapping tab for info and likert
