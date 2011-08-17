@@ -63,7 +63,7 @@ Class Question extends TouchStoneObject {
   // Imploded DB version of teams
   private $group = '';
   
-  private $_user_id;
+  protected $_user_id;
   private $_fields = array('type', 'theme', 'scenario', 'scenario_plain', 'leadin', 'leadin_plain', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'option_order', 'standards_setting', 'bloom', 'owner_id', 'media', 'media_width', 'media_height', 'group', 'checkout_time', 'checkout_author_id', 'created', 'last_edited', 'locked', 'deleted', 'status');
   protected static $_fields_editable = array('theme', 'scenario', 'leadin', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'option_order', 'bloom', 'status');
   private $_required_fields = array('type', 'leadin', 'score_method', 'option_order', 'owner_id', 'status');
@@ -882,7 +882,7 @@ QUERY;
           include $classfile;
           $object = new $classname($mysqli, $user_id, $data);
         } catch (Exception $ex) {
-          throw new ClassFoundException("No class matching type <code>$data</code>");
+          throw new ClassNotFoundException("No class matching type <code>$data</code>");
         }
       } else {
         $result->close();
@@ -894,7 +894,7 @@ QUERY;
         include $classfile;
         $object = new $classname($mysqli, $user_id);
       } catch (Exception $ex) {
-        throw new ClassFoundException("No class matching type <code>$data</code>");
+        throw new ClassNotFoundException("No class matching type <code>$data</code>");
       }
     }
     

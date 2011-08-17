@@ -24,6 +24,8 @@
  * @package
  */
 
+require_once 'mcq.class.php';
+
 Class QuestionMRQ extends Question {
   protected $_fields_unified = array();
   protected $_score_methods = array('AllNegative' => '1 Mark per Option (with Negative Marking)', 'AllItemsCorrect' => 'All Options must be Correct (1 mark in total)', 'SelectedPositive' => '1 Mark per True Option');
@@ -116,6 +118,20 @@ Class QuestionMRQ extends Question {
     }
     
     return $errors;
+  }
+  
+  public function convert_to_mcq($correct_answer) {
+    // TODO: update question and get new MCQ object based on it
+    $this->set_type('mcq');
+    $this->set_option_order('vertical');
+
+    foreach ($this->options as $option) {
+      $option->set_correct($correct_answer);
+    }
+    
+    $this->save();
+    
+    return new QuestionMCQ($this->_mysqli, $this->_user_id, $this->id);
   }
 }
 

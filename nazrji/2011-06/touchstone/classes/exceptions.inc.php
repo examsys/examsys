@@ -7,7 +7,7 @@ class RecordNotFoundException extends Exception { }
 
 class DatabaseException extends Exception { }
 
-class ClassFoundException extends Exception { }
+class ClassNotFoundException extends Exception { }
 
 class MethodNotImplementedException extends Exception { }
 

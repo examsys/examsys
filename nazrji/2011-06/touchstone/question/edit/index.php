@@ -22,7 +22,7 @@
 * @package
 */
 
-// TODO: convert MRQ to MCQ?
+// TODO: JS for convert MRQ to MCQ
 // TODO: handle keyword based and random
 // TODO: validation in JS
 // TODO: replace comment OK etc. icons with CSS BG image?
@@ -60,7 +60,7 @@ if(empty($_REQUEST['q_id'])) {
     try {
       $question = Question::question_factory($mysqli, $userID, $_GET['type']);
       $question->set_type($_GET['type']);
-    } catch (ClassFoundException $ex) {
+    } catch (ClassNotFoundException $ex) {
       $critical_error = $ex->getMessage();
     }
   }
@@ -239,6 +239,20 @@ if($critical_error == '') {
     	  if(!$question->save()) {
     	    $errors[] = 'Error saving data. Please try again';
     	  } else {
+    	    // Possibility that we might be converting a MRQ to MCQ
+    	    if(isset($_POST['mcqconvert']) and $_POST['mcqconvert'] == '1') {
+    	      $i = 1;
+    	      $correct_option = 0;
+    	      foreach ($question->options as $option) {
+    	        if ($option->get_correct() == 'y') {
+    	          $correct_option = $i;
+    	          break;
+    	        }
+    	        $i++;
+    	      }
+    	      $question = $question->convert_to_mcq($correct_option);
+    	    }
+    	    
         	// TODO: check usage of old saveKeywords function - USED IN LIMITED SAVE FUNCTION
           save_keywords($question, $userID, true, $mysqli);
       

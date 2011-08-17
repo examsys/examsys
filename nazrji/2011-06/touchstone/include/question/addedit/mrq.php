@@ -99,3 +99,4 @@ if($question->get_locked() == '') {
 }
 ?>          
         </table>
+        <input type="hidden" name="mcqconvert" id="mcqconvert" value="0" />
