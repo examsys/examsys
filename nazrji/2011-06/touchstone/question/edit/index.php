@@ -144,7 +144,7 @@ if($critical_error == '') {
       }
       
       $part_names = Option::get_editable_fields();
-  
+
       for ($option_no = 1; $option_no < $question->max_options; $option_no++) {
         $option = null;
         
@@ -156,11 +156,10 @@ if($critical_error == '') {
           $unified_part_names = $question->get_unified_fields();
           foreach ($part_names as $section_name) {
             if (!in_array($section_name, array_keys($unified_part_names))) {
-//            $field = ($section_name != 'correct') ? 'option_' . $section_name . $option_no : 'correct';
               $field = 'option_' . $section_name . $option_no;
               
-              // If 'correct' is not a unified field then its value if not in POST is 'n'
-              if ($section_name == 'correct' and !isset($_POST[$field])) $_POST[$field] = 'n';
+              // If 'correct' is not a unified field then its value if not in POST is negative
+              if ($section_name == 'correct' and !isset($_POST[$field])) $_POST[$field] = $question->get_answer_negative();
               
               if (isset($_POST[$field])) {
                 $method = "set_$section_name";
@@ -182,7 +181,7 @@ if($critical_error == '') {
           }
         } else {
           // Create new option if have text or media
-          if (!empty($_POST["option_text$option_no"]) or ($_FILES["option_media$option_no"]['name'] != 'none' and $_FILES["option_media$option_no"]['name'] != '')) {
+          if (!empty($_POST["option_text$option_no"]) or (isset($_FILES["option_media$option_no"]) and ($_FILES["option_media$option_no"]['name'] != 'none' and $_FILES["option_media$option_no"]['name'] != ''))) {
             $correct_fb = (isset($_POST["option_correct_fback$option_no"])) ? $_POST["option_correct_fback$option_no"] : '';
             $incorrect_fb = (isset($_POST["option_incorrect_fback$option_no"])) ? $_POST["option_incorrect_fback$option_no"] : '';
             $data = array('question_id' => $question->id, 'marks' => 1);
@@ -209,7 +208,7 @@ if($critical_error == '') {
         if ($option != null) {
           // Handle changes in media
           $old_media = $option->get_media();
-          if ($_FILES["option_media$option_no"]['name'] != $old_media['filename'] and ($_FILES["option_media$option_no"]['name'] != 'none' and $_FILES["option_media$option_no"]['name'] != '')) {
+          if (isset($_FILES["option_media$option_no"]) and $_FILES["option_media$option_no"]['name'] != $old_media['filename'] and ($_FILES["option_media$option_no"]['name'] != 'none' and $_FILES["option_media$option_no"]['name'] != '')) {
             if ($old_media['filename'] != '') {
               deleteMedia($old_media['filename']);
             }

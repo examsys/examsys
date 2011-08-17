@@ -16,7 +16,7 @@
 
 /**
  *
- * Class for Multiple Choice questions
+ * Class for Multiple Response questions
  *
  * @author Rob Ingram
  * @version 1.0
@@ -24,33 +24,18 @@
  * @package
  */
 
-Class QuestionDICHOTOMOUS extends Question {
+Class QuestionRANK extends Question {
   
-  public $max_options = 15;
-  protected $_answer_positive = 't';
-  protected $_answer_negative = 'f';
+  protected $_answer_negative = 0;
   
   protected $_fields_unified = array();
-  protected $_score_methods = array('TF_NegativeAbstain' => 'True/False/Abstain (Negative Marking -1)', 'TF_NegativeAbstainHalf' => 'True/False/Abstain (Negative Marking -0.5)', 'TF_Positive' => 'True/False', 'YN_NegativeAbstain' => 'Yes/No/Abstain (Negative Marking -1)', 'YN_Positive' => 'Yes/No');
+  protected $_score_methods = array('StrictOrder' => 'Strict Order (mark per option)', 'AllItemsCorrect' => 'All Options must be Correct (1 mark in total)', 'OrderNeighbours' => 'Strict Order with half marks for neighbours', 'BonusMark' => 'Correct items with bonus for overall order');
   
   function __construct($mysqli, $user_id, $data = null) {
     parent::__construct($mysqli, $user_id, $data);
     
-    // 'correct' is not a unified field for Dichotomous questions
+    // 'correct' is not a unified field for Rank questions
     self::$_fields_editable[] = 'correct';
-  }
-
-  /**
-   * Get the labels for true/false options. These change depending on the score method
-   */
-  public function get_tf_labels() {
-    if (substr($this->get_score_method(), 0, 2) == 'YN') {
-      $labels = array('true' => 'Y', 'false' => 'N');
-    } else {
-      $labels = array('true' => 'T', 'false' => 'F');
-    }
-    
-    return $labels;
   }
 
   /**
@@ -69,7 +54,7 @@ Class QuestionDICHOTOMOUS extends Question {
         $changes = true;
         
         $opt_no = $i + 1;
-        $this->add_unified_field_modification('correct', "Correct Option $opt_no", $old_correct, $new_correct, 'Post Exam Answer change');
+        $this->add_unified_field_modification('correct', "Correct Option $opt_no", $option->get_correct(), $new_correct[$i], 'Post Exam Answer change');
       }
       $i++;
     }
@@ -80,41 +65,49 @@ Class QuestionDICHOTOMOUS extends Question {
     	    $errors[] = 'Error saving data. Please try again';
     	  } else {
           // Remark the student's answers in 'log2'.
+          $totalpos = 0;
           $score_method = $this->get_score_method();
-          switch ($score_method) {
-            case 'TF_NegativeAbstain':
-            case 'YN_NegativeAbstain':
-              $negative = 1;
-              break;
-            case 'TF_NegativeAbstainHalf':
-              $negative = 0.5;
-              break;
-            default:
-              $negative = 0;
-              break;
-          }
+          $correct_rank = true;
         
+          
     	    $result = $this->_mysqli->prepare("SELECT DISTINCT user_answer FROM log2 WHERE q_id=? AND q_paper=?");
           $result->bind_param('ii', $this->id, $paper_id);
           $result->execute();  
           $result->store_result();
           $result->bind_result($user_answer);
           while ($row = $result->fetch()) {
-            $user_answers = str_split($user_answer);
+            $user_answers = explode(',', $user_answer);
             $mark = 0;
             
             for ($i=0; $i < count($new_correct); $i++) {
-              if ($new_correct[$i] == $user_answers[$i]) {
-                $mark++;
-              } elseif ($user_answers[$i] == $this->get_answer_positive() or $user_answers[$i] == $this->get_answer_negative()) {
-                // Don't subtract for unanswered/abstain
-                $mark -= $negative;
+              if ($new_correct[$i] != 0 and $new_correct[$i] != '') $totalpos++;
+              
+              switch ($score_method) {
+                case 'OrderNeighbours':
+                case 'BonusMark':
+                  if($user_answers[$i] != 0 and $user_answers[$i] != 'u') {
+                    if ($new_correct[$i] == $user_answers[$i]) $mark++;
+                    if ($score_method == 'OrderNeighbours' and abs($new_correct[$i] - $user_answers[$i]) == 1) $mark += 0.5;
+                  }
+                  break;
+                default:
+                  if ($new_correct[$i] == $user_answers[$i]) $mark++;
+                  break;
               }
             }
             
-            $updateLog = $this->_mysqli->prepare("UPDATE log2 SET mark=? WHERE user_answer=? AND q_id=? AND q_paper=?");
-            $updateLog->bind_param('dsii', $mark, $user_answer, $this->id, $paper_id);
-            $updateLog->execute();  
+            // Recalculate total possible marks if 'all correct' or 'bonus mark'.
+            if ($score_method == 'AllItemsCorrect') {
+              $mark = ($mark == $totalpos) ? 1 : 0;
+              $totalpos = 1;
+            } elseif ($score_method == 'BonusMark') {
+              $totalpos++;
+              $mark = ($mark == $totalpos - 1) ? $totalpos : $mark;
+            }
+                    
+            $updateLog = $this->_mysqli->prepare("UPDATE log2 SET mark=?, totalpos=? WHERE user_answer=? AND q_id=? AND q_paper=?");
+            $updateLog->bind_param('disii', $mark, $totalpos, $user_answer, $this->id, $paper_id);
+            $updateLog->execute();
             $updateLog->close();
           }
           $result->free_result();
@@ -126,6 +119,20 @@ Class QuestionDICHOTOMOUS extends Question {
     }
     
     return $errors;
+  }
+  
+  public function convert_to_mcq($correct_answer) {
+    // TODO: update question and get new MCQ object based on it
+    $this->set_type('mcq');
+    $this->set_option_order('vertical');
+
+    foreach ($this->options as $option) {
+      $option->set_correct($correct_answer);
+    }
+    
+    $this->save();
+    
+    return new QuestionMCQ($this->_mysqli, $this->_user_id, $this->id);
   }
 }
 

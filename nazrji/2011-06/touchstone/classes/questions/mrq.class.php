@@ -52,6 +52,9 @@ Class QuestionMRQ extends Question {
       if ($new_correct[$i] != $option->get_correct()) {
         $option->set_correct($new_correct[$i]);
         $changes = true;
+        
+        $opt_no = $i + 1;
+        $this->add_unified_field_modification('correct', "Correct Option $opt_no", $old_correct, $new_correct, 'Post Exam Answer change');
       }
       $i++;
     }

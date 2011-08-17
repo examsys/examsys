@@ -263,9 +263,9 @@ QUERY;
    * @param unknown_type $old_value
    * @param unknown_type $new_value
    */
-  public function add_unified_field_modification($field, $label, $old_value, $new_value) {
+  public function add_unified_field_modification($field, $label, $old_value, $new_value, $category='Edit Question') {
     if (!in_array($field, $this->_unified_field_modifications)) {
-      $this->_unified_field_modifications[$field] = array($label, $old_value, $new_value);
+      $this->_unified_field_modifications[$field] = array($category, $label, $old_value, $new_value);
     }
   }
   
@@ -295,7 +295,7 @@ QUERY;
         $option->set_correct($new_correct);
       }
     
-      $this->add_unified_field_modification('correct', $this->_fields_unified['correct'], $old_correct, $new_correct);
+      $this->add_unified_field_modification('correct', 'Correct Answer', $old_correct, $new_correct, 'Post Exam Answer change');
       $changes = true;
     }
     
@@ -1043,7 +1043,7 @@ QUERY;
   
   private function log_unified_field_modifications() {
     foreach ($this->_unified_field_modifications as $mod) {
-      $this->_logger->track_change('Edit Question', $this->id, $this->_user_id, $mod[1], $mod[2], $mod[0]);
+      $this->_logger->track_change($mod[0], $this->id, $this->_user_id, $mod[2], $mod[3], $mod[1]);
     }
     $this->_unified_field_modifications = array();
   }
