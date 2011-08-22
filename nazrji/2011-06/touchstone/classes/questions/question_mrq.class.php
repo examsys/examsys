@@ -24,7 +24,7 @@
  * @package
  */
 
-require_once 'mcq.class.php';
+require_once 'question_mcq.class.php';
 
 Class QuestionMRQ extends Question {
   

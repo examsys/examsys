@@ -906,24 +906,24 @@ QUERY;
       if ($result->fetch()) {
         $result->close();
         $classname = 'Question' . strtoupper($type);
-        $classfile = 'questions/' . strtolower($type) . '.class.php';
+        $classfile = 'questions/question_' . strtolower($type) . '.class.php';
         try {
           include $classfile;
           $object = new $classname($mysqli, $user_id, $data);
         } catch (Exception $ex) {
-          throw new ClassNotFoundException("No class matching type <code>$data</code>");
+          throw new ClassNotFoundException("No class matching type <code>$classname</code>");
         }
       } else {
         $result->close();
       }
     } else {
       $classname = 'Question' . strtoupper($data);
-      $classfile = 'questions/' . strtolower($data) . '.class.php';
+      $classfile = 'questions/question_' . strtolower($data) . '.class.php';
       try {
         include $classfile;
         $object = new $classname($mysqli, $user_id);
       } catch (Exception $ex) {
-        throw new ClassNotFoundException("No class matching type <code>$data</code>");
+        throw new ClassNotFoundException("No class matching type <code>$classname</code>");
       }
     }
     

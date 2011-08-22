@@ -333,7 +333,7 @@ QUERY;
     
     $question_type = $question->get_type();
     $classname = 'Option' . strtoupper($question_type);
-    $classfile = 'options/' . strtolower($question_type) . '.class.php';
+    $classfile = 'options/option_' . strtolower($question_type) . '.class.php';
     include_once $classfile;
     if($data != -1 and ctype_digit($data)) {
         try {
