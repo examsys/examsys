@@ -16,7 +16,7 @@
 
 /**
  *
- * Class for Multiple Response questions
+ * Class for Ranking questions
  *
  * @author Rob Ingram
  * @version 1.0

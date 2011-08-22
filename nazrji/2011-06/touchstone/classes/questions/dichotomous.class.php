@@ -16,7 +16,7 @@
 
 /**
  *
- * Class for Multiple Choice questions
+ * Class for Dichotomous questions
  *
  * @author Rob Ingram
  * @version 1.0

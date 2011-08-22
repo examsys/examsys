@@ -328,6 +328,34 @@ QUERY;
     return $success;
   }
   
+  public static function option_factory($mysqli, $user_id, $question, $number, $data=-1) {
+    $object = null;
+    
+    $question_type = $question->get_type();
+    $classname = 'Option' . strtoupper($question_type);
+    $classfile = 'options/' . strtolower($question_type) . '.class.php';
+    include_once $classfile;
+    if($data != -1 and ctype_digit($data)) {
+        try {
+          $object = new $classname($mysqli, $user_id, $question, $number, $data);
+        } catch (Exception $ex) {
+          throw new ClassNotFoundException("No class matching type <code>$classname</code>");
+        }
+    } else {
+      try {
+        if (is_array($data)) {
+          $object = new $classname($mysqli, $user_id, $question, $number, $data);
+        } else {
+          $object = new $classname($mysqli, $user_id, $question, $number);
+        }
+      } catch (Exception $ex) {
+        throw new ClassNotFoundException("No class matching type <code>$classname</code>");
+      }
+    }
+    
+    return $object;
+  }
+  
   // PRIVATE METHODS
   
   /**

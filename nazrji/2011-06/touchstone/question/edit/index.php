@@ -201,7 +201,7 @@ if($critical_error == '') {
             }
                         
 //            $data = array('question_id' => $question->id, 'text' => $_POST["option_text$option_no"], 'correct_fback' => $correct_fb, 'incorrect_fback' => $incorrect_fb, 'correct' => $_POST['option_correct'], 'marks' => 1);
-            $option = new Option($mysqli, $userID, $question, $option_no, $data);
+            $option = Option::option_factory($mysqli, $userID, $question, $option_no, $data);
             $question->options[] = $option;
           }
         }

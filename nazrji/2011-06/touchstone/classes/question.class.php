@@ -882,10 +882,12 @@ QUERY;
   }
   
   /**
-   * Build an array of question objects with options already in place. This will allow a bunch questions to be 
-   * built up from a single query rather than requiring queries for each of the questions and their options
-   * @param array $questions An array of question IDs to build
-   * @return array An array of complete question objects 
+   * Return a question object of the correct type
+   * @param object $mysqli database link
+   * @param int $user_id
+   * @param mixed $data either ID of an existing question or the type if a new question is to be created
+   * @throws ClassNotFoundException
+   * @return object a question object of the correct type
    */
   public static function question_factory($mysqli, $user_id, $data) {
     $object = null;
@@ -980,7 +982,7 @@ QUERY;
       // TODO: handle 'correctness' more nicely
       $i = 1;
       while($success == true and $success = $result->fetch()) {
-        $this->options[$opt_data['id']] = new Option($this->_mysqli, $this->_user_id, $this, $i, $opt_data);
+        $this->options[$opt_data['id']] = Option::option_factory($this->_mysqli, $this->_user_id, $this, $i, $opt_data);
         $i++;
       }
       $result->close();
