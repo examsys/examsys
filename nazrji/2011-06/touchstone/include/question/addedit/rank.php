@@ -70,13 +70,13 @@ require_once 'details_general_feedback.php';
 <?php
 $index = 1;
 foreach ($question->options as $o_id => $option) {
-  include 'options/rank.php';
+  include 'options/opt_rank.php';
   $index++;
 }
 
 for ($index = $num_options + 1; $index <= $question->max_options; $index++) {
   $option = Option::option_factory($mysqli, $userID, $question, $index);
-  include 'options/rank.php';
+  include 'options/opt_rank.php';
 }
 
 if($question->get_locked() == '') {

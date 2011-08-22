@@ -66,13 +66,13 @@ echo ViewHelper::render_options($question->get_option_orders(), $question->get_o
 <?php
 $index = 1;
 foreach ($question->options as $o_id => $option) {
-  include 'options/mcq.php';
+  include 'options/opt_mcq.php';
   $index++;
 }
 
 for ($index = $num_options + 1; $index <= $question->max_options; $index++) {
   $option = Option::option_factory($mysqli, $userID, $question, $index);
-  include 'options/mcq.php';
+  include 'options/opt_mcq.php';
 }
 
 if($question->get_locked() == '') {
