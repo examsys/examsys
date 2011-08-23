@@ -131,6 +131,7 @@ function render_changes($changes) {
           <thead>
             <tr>
               <th class="data-small">Date</th>
+              <th class="data-small">Action</th>
               <th>Section</th>
               <th class="data-small">Old</th>
               <th class="data-small">New</th>
@@ -146,6 +147,7 @@ HTML;
       $html .= <<< HTML
             <tr{$alt}>
               <td>{$change['date']}</td>
+              <td>{$change['action']}</td>
               <td>{$change['section']}</td>
               <td>{$change['old']}</td>
               <td>{$change['new']}</td>

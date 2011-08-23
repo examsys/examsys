@@ -95,8 +95,8 @@ if($critical_error == '') {
     } else {
       $correct_answers = array();
       $i = 1;
-      foreach ($question->options as $option) {
-        $correct_answers[] = (isset($_POST['option_correct' . $i])) ? $_POST['option_correct' . $i] : $query_string->get_answer_negative();
+      foreach ($question->options as $option_id => $option) {
+        $correct_answers[] = (isset($_POST['option_correct' . $i])) ? $_POST['option_correct' . $i] : $option->get_answer_negative();
         $i++;
       }
       
@@ -107,7 +107,7 @@ if($critical_error == '') {
   } elseif (isset($_POST['submit']) and ($_POST['submit'] == 'Save Changes' or $_POST['submit'] == 'Limited Save')) {
     if ($question->id == -1 or check_fullSave($question->id,$mysqli)) {
       
-      $part_names = Question::get_editable_fields();
+      $part_names = $question->get_editable_fields();
       foreach($part_names as $section_name) {
         if(isset($_POST["$section_name"])) {
           $value = $_POST["$section_name"];
@@ -144,69 +144,58 @@ if($critical_error == '') {
         $question->set_teams($_POST['teams']);
       }
       
-      $part_names = Option::get_editable_fields();
-
+      $unified_part_names = $question->get_unified_fields();
+      
       for ($option_no = 1; $option_no < $question->max_options; $option_no++) {
         $option = null;
         
         if (isset($_POST["optionid$option_no"]) and $_POST["optionid$option_no"] != -1) {
           // Editing existing option
           $option = $question->options[$_POST["optionid$option_no"]];
+          $part_names = $option->get_editable_fields();
           
           // Save editable fields that aren't unified
-          $unified_part_names = $question->get_unified_fields();
-          foreach ($part_names as $section_name) {
-            if (!in_array($section_name, array_keys($unified_part_names))) {
-              $field = 'option_' . $section_name . $option_no;
-              
-              // If 'correct' is not a unified field then its value if not in POST is negative
-              if ($section_name == 'correct' and !isset($_POST[$field])) $_POST[$field] = $question->get_answer_negative();
-              
-              if (isset($_POST[$field])) {
-                $method = "set_$section_name";
-                $option->$method($_POST[$field]);
-              }
-            }
-          }
+          $option->populate($part_names, $option_no, $_POST, $unified_part_names, 'option_');
           
           // Save fields that are the same across options
-          foreach ($unified_part_names as $section_name => $section_label) {
-            $field = 'option_' . $section_name;
-            $get_method = "get_$section_name";
-            $old_value = $option->$get_method();
-            if (isset($_POST[$field]) and $_POST[$field] != $old_value) {
-              $set_method = "set_$section_name";
-              $option->$set_method($_POST[$field]);
-              $question->add_unified_field_modification($section_name, $section_label, $old_value, $_POST[$field]);
-            }
-          }
+          $option->populate_unified($unified_part_names, $_POST, 'option_');
         } else {
-          // Create new option if have text or media
-          if (!empty($_POST["option_text$option_no"]) or (isset($_FILES["option_media$option_no"]) and ($_FILES["option_media$option_no"]['name'] != 'none' and $_FILES["option_media$option_no"]['name'] != ''))) {
+          // TODO: test this and rationalise
+          
+          // Create new option if have required data
+          $option = Option::option_factory($mysqli, $userID, $question, $option_no, array('marks' => 1));
+          
+          if ($option->minimum_fields_exist($_POST, $_FILES, $option_no)) {
             $correct_fb = (isset($_POST["option_correct_fback$option_no"])) ? $_POST["option_correct_fback$option_no"] : '';
             $incorrect_fb = (isset($_POST["option_incorrect_fback$option_no"])) ? $_POST["option_incorrect_fback$option_no"] : '';
-            $data = array('question_id' => $question->id, 'marks' => 1);
             
-            foreach ($part_names as $section_name) {
-              if (!in_array($section_name, array_keys($unified_part_names))) {
-                $field = 'option_' . $section_name . $option_no;
-                
-                // If 'correct' is not a unified field then its value if not in POST is 'n'
-                if ($section_name == 'correct' and !isset($_POST[$field])) $_POST[$field] = 'n';
-                
-                if (isset($_POST[$field])) {
-                  $data[$section_name] = $_POST[$field];
-                }
-              }
-            }
+            $part_names = $option->get_editable_fields();
+            
+            // Save editable fields that aren't unified
+            $option->populate($part_names, $option_no, $_POST, $unified_part_names, 'option_');
+            
+            // Save fields that are the same across options
+            $option->populate_unified($unified_part_names, $_POST, 'option_');
+            
+//            foreach ($part_names as $section_name) {
+//              if (!in_array($section_name, array_keys($unified_part_names))) {
+//                $field = 'option_' . $section_name . $option_no;
+//                
+//                // If 'correct' is not a unified field then its value if not in POST is negative
+//                if ($section_name == 'correct' and !isset($_POST[$field])) $_POST[$field] = 'n';
+//                
+//                if (isset($_POST[$field])) {
+//                  $data[$section_name] = $_POST[$field];
+//                }
+//              }
+//            }
                         
 //            $data = array('question_id' => $question->id, 'text' => $_POST["option_text$option_no"], 'correct_fback' => $correct_fb, 'incorrect_fback' => $incorrect_fb, 'correct' => $_POST['option_correct'], 'marks' => 1);
-            $option = Option::option_factory($mysqli, $userID, $question, $option_no, $data);
             $question->options[] = $option;
           }
         }
         
-        if ($option != null) {
+        if ($option != null and !$option->is_blank()) {
           // Handle changes in media
           $old_media = $option->get_media();
           if (isset($_FILES["option_media$option_no"]) and $_FILES["option_media$option_no"]['name'] != $old_media['filename'] and ($_FILES["option_media$option_no"]['name'] != 'none' and $_FILES["option_media$option_no"]['name'] != '')) {
@@ -307,7 +296,9 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
 <?php echo $cfg_editor_javascript; ?>
 <script type="text/javascript" src="../../javascript/staff_help.js"></script>
 <script type="text/javascript" src="../../javascript/jquery-1.6.1.min.js"></script>
+<script type="text/javascript" src="../../javascript/jquery.touchstone.js"></script>
 <script type="text/javascript" src="../../javascript/jquery.addedit.js"></script>
+<script type="text/javascript" src="../../javascript/staff_help.js"></script>
 </head>
 <body>
 	<div id="page-header">
@@ -468,7 +459,7 @@ echo save_buttons_new($disabled, $question->get_locked(), $userID, $question->ge
       <input type="hidden" name="q_id" value="<?php echo $question->id ?>" />
       <input name="checkout_author" value="<?php echo $userID ?>" type="hidden" />
       <input id="paper_id" name="paperID" value="<?php echo $paper_id ?>" type="hidden" />
-      <input id="questionID" name="questionID" value="<?php echo $question->id ?>" type="hidden" />
+      <input id="question_id" name="questionID" value="<?php echo $question->id ?>" type="hidden" />
     </div>
   </form>
 <?php

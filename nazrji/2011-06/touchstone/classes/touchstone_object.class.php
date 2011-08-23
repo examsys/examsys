@@ -27,7 +27,7 @@
 require_once 'exceptions.inc.php';
 
 Class TouchStoneObject {
-  protected static $_fields_editable = array();
+  protected $_fields_editable = array();
   protected $_modified_fields = array();
   
   /**
@@ -47,7 +47,7 @@ Class TouchStoneObject {
    * MUST be implemented by sub-classes
    * @return multitype:string 
    */
-  public static function get_editable_fields() {
+  public function get_editable_fields() {
     throw new MethodNotImplementedException("Method 'get_editable_fields' not implemented.");
   }
   

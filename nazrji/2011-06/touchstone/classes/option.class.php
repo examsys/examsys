@@ -30,29 +30,30 @@ require_once 'touchstone_object.class.php';
 Class Option extends TouchStoneObject {
 
   public $id = -1;
-  private $question_id = null;
-  private $text = '';
-  private $media = '';
-  private $media_width = '';
-  private $media_height = '';
-  private $correct_fback = '';
-  private $incorrect_fback = '';
-  private $correct = '';
+  protected $question_id = null;
+  protected $text = '';
+  protected $media = '';
+  protected $media_width = '';
+  protected $media_height = '';
+  protected $correct_fback = '';
+  protected $incorrect_fback = '';
+  protected $correct = '';
   public $marks = null;
   
-  private static $_fields = array('question_id', 'text', 'media', 'media_width', 'media_height', 'correct_fback', 'incorrect_fback', 'correct', 'marks');
-  protected static $_fields_editable = array('text', 'media', 'correct_fback', 'incorrect_fback', 'correct', 'marks');
-  private $_required_fields = array('question_id', 'marks');
-  private $_fields_unified = array();
+  protected static $_fields = array('question_id', 'text', 'media', 'media_width', 'media_height', 'correct_fback', 'incorrect_fback', 'correct', 'marks');
+  protected $_fields_editable = array('text', 'media', 'correct_fback', 'incorrect_fback', 'correct', 'marks');
+  protected $_required_fields = array('question_id', 'marks');
+  protected $_fields_unified = array();
   
-  private $_question = null;
-  private $_number = -1;
-  private $_mysqli = null;
-  private $_data = array();
+  protected $_question = null;
+  protected $_number = -1;
+  protected $_mysqli = null;
+  protected $_user_id;
+  protected $_data = array();
   
   // Map our 'nice' property names to the database fields
-  private $_field_map = array('question_id' => 'o_id', 'text' => 'option_text', 'media' => 'o_media', 'media_width' => 'o_media_width', 'media_height' => 'o_media_height', 'correct_fback' => 'feedback_right', 'incorrect_fback' => 'feedback_wrong');
-  private $_pretty_names = array('question_id' => 'Question ID', 'text' => '', 'correct_fback' => 'Correct Feedback', 'incorrect_fback' => 'Incorrect Feedback', 'correct' => 'Correct Value', 'marks' => 'Marks');
+  protected $_field_map = array('question_id' => 'o_id', 'text' => 'option_text', 'media' => 'o_media', 'media_width' => 'o_media_width', 'media_height' => 'o_media_height', 'correct_fback' => 'feedback_right', 'incorrect_fback' => 'feedback_wrong');
+  protected $_pretty_names = array('question_id' => 'Question ID', 'text' => '', 'correct_fback' => 'Correct Feedback', 'incorrect_fback' => 'Incorrect Feedback', 'correct' => 'Correct Value', 'marks' => 'Marks');
   
   /**
    * Create a new option object by either loading an existing option from the database or populating
@@ -64,6 +65,7 @@ Class Option extends TouchStoneObject {
     $this->_mysqli = $mysqli;
     $this->_user_id = $user_id;
     $this->_question = $question;
+    $this->question_id = $question->id;
     $this->_number = $number;
     $this->_fields_unified = $question->get_unified_fields();
     
@@ -90,6 +92,35 @@ Class Option extends TouchStoneObject {
     }
   }
   
+  public function populate($fields, $index, $data, $exclude=array(), $prefix='') {
+    foreach ($fields as $section_name) {
+      if (!in_array($section_name, array_keys($exclude))) {
+        $field = $prefix . $section_name . $index;
+        
+        // If 'correct' is not a unified field then its value if not in POST is negative
+        if ($section_name == 'correct' and !isset($data[$field])) $data[$field] = $this->_question->get_answer_negative();
+        
+        if (isset($data[$field])) {
+          $method = "set_$section_name";
+          $this->$method($data[$field]);
+        }
+      }
+    }
+  }
+  
+  public function populate_unified($fields, $data, $prefix='') {
+    foreach ($fields as $section_name => $section_label) {
+      $field = $prefix . $section_name;
+      $get_method = "get_$section_name";
+      $old_value = $this->$get_method();
+      if (isset($data[$field]) and $data[$field] != $old_value) {
+        $set_method = "set_$section_name";
+        $this->$set_method($data[$field]);
+        $this->_question->add_unified_field_modification($section_name, $section_label, $old_value, $data[$field]);
+      }
+    }
+  }
+  
   /**
    * Persist the object to the database
    * @return boolean Success or failure of the save operation
@@ -111,7 +142,6 @@ QUERY;
       } else {
         // Otherwise we're updating an existing one
         $params = array_merge(array('issiisssdi'), $this->_data, array(&$this->id));
-        $this->last_edited = date("Y-m-d H:i:s");
         $query = <<< QUERY
 UPDATE options
 SET o_id = ?, option_text = ?, o_media = ?, o_media_width = ?, o_media_height = ?, feedback_right = ?, feedback_wrong = ?, correct = ?, marks = ? 
@@ -120,19 +150,20 @@ QUERY;
       }
       $result = $this->_mysqli->prepare($query);
       call_user_func_array (array($result,'bind_param'), $params);
-      $result->execute();
-      $success = ($result->affected_rows > 0);
+      $x = $result->execute();
+      $success = ($result->affected_rows > -1);
       
       if($success) {
         if($this->id == -1) {
           $this->id = $this->_mysqli->insert_id;
-          $logger->track_change('New Option', $this->question_id, $this->_user_id, $this->text, '', 'Option #' . $option_number);
+          $this->track_new($logger, $option_number);
         } else {
           // Log any changes
           foreach($this->_modified_fields as $key => $value) {
             $db_field = (in_array($key, array_keys($this->_field_map))) ? $this->_field_map[$key] : $key;
             if ($value['message'] == '') {
-              $logger->track_change('Edit Question', $this->question_id, $this->_user_id, $value['value'], $this->$key, $db_field);
+              $this->track_change($logger, $option_number, $value['value'], $this->$key, $db_field);
+//              $logger->track_change('Edit Question', $this->question_id, $this->_user_id, $value['value'], $this->$key, $db_field);
             } else {
               $logger->track_change('Edit Question', $this->question_id, $this->_user_id, $value['value'], $this->$key, $value['message']);
             }
@@ -149,8 +180,57 @@ QUERY;
     return $success;
   }
   
+  /**
+   * Delete this option
+   * @return bool True of false depending on success or failure of the delete operation
+   */
+  public function delete() {
+    $query = <<< QUERY
+DELETE FROM options WHERE id_num = ?
+QUERY;
+    $result = $this->_mysqli->prepare($query);
+    $result->bind_param('i', $this->id);
+    $result->execute();
+    
+    $success = ($result->affected_rows > -1);
+    
+    if($success) {
+      $logger = new Logger($this->_mysqli);
+      $this->track_delete($logger, $this->_number);
+    }
+    
+    return $success;
+  }
+  
+  
+  /**
+   * Is this option blank?
+   * @return boolean
+   */
+  public function is_blank() {
+    return ($this->text == '' and $this->media == '');
+  }
+  
+  /**
+   * Check that the minimum set of fields exist in the given data to create a new option 
+   * @param array $data
+   * @param array $files expects PHP FILES array
+   * @param integer $index option number
+   * @return boolean
+   */
+  public function minimum_fields_exist($data, $files, $index) {
+    return (!empty($data["option_text$index"]) or (isset($files["option_media$index"]) and ($files["option_media$index"]['name'] != 'none' and $files["option_media$index"]['name'] != '')));
+  }
   
   // ACCESSORS
+  
+  /**
+   * The the array of fields (properties) for this class
+   * @return multitype:string 
+   */
+  public function get_editable_fields() {
+    return $this->_fields_editable;
+  }
   
   /**
    * Get the ID of the question to which this option relates
@@ -276,14 +356,6 @@ QUERY;
     }
   }
   
-  /**
-   * The the array of fields (properties) for this class
-   * @return multitype:string 
-   */
-  public static function get_editable_fields() {
-    return self::$_fields_editable;
-  }
-  
   // STATIC METHODS
   
   /**
@@ -303,29 +375,6 @@ QUERY;
     $options = array();
     
     return $options;
-  }
-  
-  /**
-   * Delete the option with the given ID
-   * @param int $id
-   * @return bool True of false depending on success or failure of the delete operation
-   */
-  public static function delete($mysqli, $user_id, $id, $number, $q_id) {
-    $query = <<< QUERY
-DELETE FROM options WHERE id_num = ?
-QUERY;
-    $result = $mysqli->prepare($query);
-    $result->bind_param('i', $id);
-    $result->execute();
-    
-    $success = ($result->affected_rows > 0);
-    
-    if($success) {
-      $logger = new Logger($mysqli);
-      $logger->track_change('Deleted Option', $q_id, $user_id, '', '', 'Option #' . $number);
-    }
-    
-    return $success;
   }
   
   public static function option_factory($mysqli, $user_id, $question, $number, $data=-1) {
@@ -356,6 +405,7 @@ QUERY;
     return $object;
   }
   
+
   // PRIVATE METHODS
   
   /**
@@ -388,6 +438,36 @@ QUERY;
     }
     
     return $rval;
+  }
+  
+  /**
+   * Track the addition of a new option.  The message may be different in other question types so allow this method to be overridden
+   * @param Logger $option_number
+   * @param integer $option_number
+   */
+  protected function track_new($logger, $option_number) {
+    $logger->track_change('New Option', $this->question_id, $this->_user_id, $this->text, '', 'Option #' . $option_number);
+  }
+    
+  /**
+   * Track the change of an option.  The message may be different in other question types so allow this method to be overridden
+   * @param Logger $option_number
+   * @param integer $option_number
+   * @param mixed $old
+   * @param mixed $new
+   * @param string $field
+   */
+  protected function track_change($logger, $option_number, $old, $new, $field) {
+    $logger->track_change('Edit Question', $this->question_id, $this->_user_id, $old, $new, $field);
+  }
+
+  /**
+   * Track the deletion of an option.  The message may be different in other question types so allow this method to be overridden
+   * @param Logger $option_number
+   * @param integer $option_number
+   */
+  protected function track_delete($logger, $option_number) {
+    $logger->track_change('Deleted Option', $this->question_id, $this->_user_id, $this->text, '', 'Option #' . $option_number);
   }
 }
 

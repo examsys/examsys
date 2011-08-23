@@ -61,12 +61,12 @@ require_once 'details_general_feedback.php';
         </div>
         
         <table id="q-options" class="form" summary="Edit question options">
-          <tbody>
+          <thead>
             <tr>
               <th colspan="2">&nbsp;</th>
               <th class="small"><strong>Answer</strong></th>
             </tr>
-          </tbody>
+          </thead>
 <?php
 $index = 1;
 foreach ($question->options as $o_id => $option) {

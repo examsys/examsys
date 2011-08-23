@@ -41,7 +41,7 @@ Class Question extends TouchStoneObject {
   private $notes = '';
   private $correct_fback = '';
   private $incorrect_fback = '';
-  private $score_method = '';
+  protected $score_method = '';
   private $option_order = null;
   private $standards_setting = '';
   private $bloom = null;
@@ -67,7 +67,7 @@ Class Question extends TouchStoneObject {
   
   protected $_user_id;
   private $_fields = array('type', 'theme', 'scenario', 'scenario_plain', 'leadin', 'leadin_plain', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'option_order', 'standards_setting', 'bloom', 'owner_id', 'media', 'media_width', 'media_height', 'group', 'checkout_time', 'checkout_author_id', 'created', 'last_edited', 'locked', 'deleted', 'status');
-  protected static $_fields_editable = array('theme', 'scenario', 'leadin', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'option_order', 'bloom', 'status');
+  protected $_fields_editable = array('theme', 'scenario', 'leadin', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'option_order', 'bloom', 'status');
   private $_required_fields = array('type', 'leadin', 'score_method', 'option_order', 'owner_id', 'status');
   protected $_score_methods = array();
   protected $_option_orders = array('display order' => 'Display Order', 'alphabetic' => 'Alphabetic', 'random' => 'Random');
@@ -170,7 +170,7 @@ QUERY;
       $result = $this->_mysqli->prepare($query);
       call_user_func_array (array($result,'bind_param'), $params);
       $result->execute();
-      $success = ($result->affected_rows > 0);
+      $success = ($result->affected_rows > -1);
       
       if ($success) {
         if ($this->id == -1) {
@@ -250,14 +250,6 @@ QUERY;
   }
   
   /**
-   * The the array of fields (properties) for this class
-   * @return multitype:string 
-   */
-  public static function get_editable_fields() {
-    return self::$_fields_editable;
-  }
-  
-  /**
    * Add a change to a unified field. This is a field that is the same across all options and so changes are logged at the question level 
    * @param unknown_type $label
    * @param unknown_type $old_value
@@ -268,16 +260,7 @@ QUERY;
       $this->_unified_field_modifications[$field] = array($category, $label, $old_value, $new_value);
     }
   }
-  
-  /**
-   * The the array of fields (properties) for this class
-   * @return multitype:string 
-   */
-  public function get_unified_fields() {
-    return $this->_fields_unified;
-  }
-  
-  
+    
   /**
    * Change the correct answer after the question has been locked. Update user marks in summative log table
    * @param integer $new_correct new correct answer
@@ -329,6 +312,22 @@ QUERY;
   }
   
   // ACCESSORS
+  
+  /**
+   * The the array of fields (properties) for this class
+   * @return multitype:string 
+   */
+  public function get_editable_fields() {
+    return $this->_fields_editable;
+  }
+  
+  /**
+   * The the array of unified fields (properties) for this class
+   * @return multitype:string 
+   */
+  public function get_unified_fields() {
+    return $this->_fields_unified;
+  }
   
   /**
    * Get the question type
@@ -768,12 +767,12 @@ QUERY;
     if(!is_array($this->changes)) {
       $this->changes = array();
       // Load the changes into an array
-      $result = $this->_mysqli->prepare("SELECT part, old, new, DATE_FORMAT(changed, '%d/%m/%Y') AS display_changed, title, initials, surname FROM (track_changes, users) WHERE track_changes.editor=users.id AND typeID=? ORDER BY changed DESC, users.id LIMIT 200");
+      $result = $this->_mysqli->prepare("SELECT type, part, old, new, DATE_FORMAT(changed, '%d/%m/%Y') AS display_changed, title, initials, surname FROM (track_changes, users) WHERE track_changes.editor=users.id AND typeID=? ORDER BY changed DESC, users.id LIMIT 200");
       $result->bind_param('i', $this->id);
       $result->execute();
-      $result->bind_result($part, $old, $new, $display_changed, $title, $initials, $surname);
+      $result->bind_result($type, $part, $old, $new, $display_changed, $title, $initials, $surname);
       while ($result->fetch()) {
-        $this->changes[] = array('date' => $display_changed, 'section' => $part, 'old' => $old, 'new' => $new, 'user' => $title . ' ' . $initials . ' ' . $surname);
+        $this->changes[] = array('date' => $display_changed, 'action' => $type, 'section' => $part, 'old' => $old, 'new' => $new, 'user' => $title . ' ' . $initials . ' ' . $surname);
       }
       $result->close();
     }
@@ -973,6 +972,7 @@ QUERY;
   SELECT id_num, o_id, option_text, o_media, o_media_width, o_media_height, feedback_right, feedback_wrong, correct, marks
   FROM options
   WHERE o_id = ?
+  ORDER BY id_num ASC
 QUERY;
       $result = $this->_mysqli->prepare($o_query);
       $result->bind_param('i', $this->id);
@@ -1024,13 +1024,13 @@ QUERY;
     foreach($this->options as $oid => $option)
     {
       $media = $option->get_media();
-      if ($option->get_text() == '' and $media['filename'] == '') {
-        $success = Option::delete($this->_mysqli, $this->_user_id, $oid, $i, $this->id);
+      if ($option->is_blank()) {
+        $success = $option->delete();
         if ($success) {
           unset($this->options[$oid]);
         }
       } else {
-        $option->save($i);
+        $success = $option->save($i);
       }
       
       if (!$success) break;

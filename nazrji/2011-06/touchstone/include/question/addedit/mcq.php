@@ -57,12 +57,12 @@ echo ViewHelper::render_options($question->get_option_orders(), $question->get_o
         </div>
         
         <table id="q-options" class="form" summary="Edit question options">
-          <tbody>
+          <thead>
             <tr>
               <th colspan="2">&nbsp;</th>
               <th class="small"><strong>Answer</strong></th>
             </tr>
-          </tbody>
+          </thead>
 <?php
 $index = 1;
 foreach ($question->options as $o_id => $option) {

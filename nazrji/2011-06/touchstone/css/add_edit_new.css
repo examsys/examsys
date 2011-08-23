@@ -70,6 +70,14 @@ p {
 	font-weight: bold;
 }
 
+.align-right {
+  text-align: right!important;
+}
+
+.align-left {
+  text-align: left!important;
+}
+
 .spaced-top {
   padding-top: 12px;
 }
@@ -281,6 +289,14 @@ p {
   width: 140px;
 }
 
+.form-tiny {
+  width: 80px;
+}
+
+.form-img {
+	vertical-align: bottom;
+}
+
 .form th {
   width: 156px;
   text-align: right;
@@ -297,13 +313,13 @@ p {
 
 .form .small {
   width: 82px;
-  text-align: center;
+/*  text-align: center; */
 }
 
 textarea, input[type=text], select {
 	font-family:Arail,sans-serif;
 	font-size:90%;
-	border: 1px solid #7F9DB9
+	border: 1px solid #7F9DB9;
 }
 
 /* Media */

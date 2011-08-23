@@ -22,7 +22,7 @@
 * @package
 */
 
-$hidden = ($index > 6 or $index > $num_options) ? ' hide' : '';
+$hidden = ($index > 6 and $index > $num_options) ? ' hide' : '';
 //$correct = ($option->get_correct() == $index) ? ' checked="checked"' : '';
 $correct_vals = array('' => '', '0' => 'N/A');
 for ($i = 1; $i <= 20; $i++) {

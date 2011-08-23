@@ -35,18 +35,38 @@ class ViewHelper {
    */
   public static function render_options($options, $selected = '', $tablevel = 0, $css_class = '') {
     $html = '';
-    $i = 0;
-    foreach ($options as $value => $text) {
+    
+    // Handle both associative and indexed arrays as $options
+    if (self::is_assoc($options)) {
+      $values = array_keys($options);
+      $texts = array_values($options);
+    } else {
+      $values = $texts = $options;
+    }
+    
+    for ($i = 0; $i < count($values); $i++) {
+      $value = $values[$i];
+      $text = $texts[$i];
+      
       $html .= str_repeat("\t", $tablevel);
-      $sel = ($selected == $value) ? ' selected="selected"' : '';
+      $sel = (strval($selected) == strval($value)) ? ' selected="selected"' : '';
       if (!is_array($css_class)) {
         $class = ($css_class != '') ? ' class="' . $css_class . '"' : '';
       } else {
         $class = ($css_class[$i] != '') ? ' class="' . $css_class[$i] . '"' : '';
       }
       $html .= "<option value=\"$value\"{$sel}{$class}>$text</option>\n";
-      $i++;
     }
+    
     return $html;
+  }
+  
+  /**
+   * Determine if an array is associative. It does this by camparing array_keys($a) with array_keys(array_keys($a)), which will always be 0,1,2 etc.
+   * @param unknown_type $a
+   * @return boolean
+   */
+  private static function is_assoc(array $a){
+   return (array_keys($a) != array_keys(array_keys($a)));
   }
 }

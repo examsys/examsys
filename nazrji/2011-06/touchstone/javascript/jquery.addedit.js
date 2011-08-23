@@ -22,6 +22,8 @@ $(function () {
     $('#delete_media' + id).prop('checked', true);
     return false;
   });
+  
+  addVariableLinks();
 });
 
 function changeTab() {
@@ -48,4 +50,21 @@ function showNextOption() {
     }
     hiddenOptions.eq(0).removeClass('hide');
   }
+}
+
+function addVariableLinks() {
+  $('.variable-link').each(function () {
+    if ($(this).attr('rel') != undefined) {
+      var target = $(this).attr('rel');
+      var icon = $(this).children(':first-child').attr('id');
+      $(this).bind('click', { elementID: target, iconID: icon }, variableLink);
+    }
+  });
+}
+
+function variableLink(event) {
+  var questionID = $('#question_id').val();
+  var paperID = $('#paper_id').val();
+  window.open("variable_link.php?paperID=" + paperID + "&elementID=" + event.data.elementID + "&q_id=" + questionID + "&iconID=" + event.data.iconID + "","paper","width=600,height=400,left=20,top=10,scrollbars=yes,toolbar=no,location=no,directories=no,status=yes,menubar=no,resizable");
+  return false;
 }
