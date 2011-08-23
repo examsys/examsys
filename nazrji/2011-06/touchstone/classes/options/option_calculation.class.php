@@ -49,6 +49,7 @@ Class OptionCALCULATION extends Option {
    * @return boolean
    */
   public function is_blank() {
+    $this->get_text();
     return ($this->min == '' and $this->max == '');
   } 
     

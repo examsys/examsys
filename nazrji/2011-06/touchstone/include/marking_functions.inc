@@ -202,7 +202,7 @@ function record_marks($paper_id, $screen_no, $dblink, $posted_vars, $userid, $ex
       } else {
         $option_order = '';
       }
-      if ($question_no > 0 and $q_type != 'info') {
+      if ($question_no > 0 and $old_type != 'info') {
         $tmp_duration = time_to_seconds($submit_time) - time_to_seconds($posted_vars['page_start']);
         if ($tmp_duration < 0) $tmp_duration += 86400;
         $tmp_duration += $extra_duration;

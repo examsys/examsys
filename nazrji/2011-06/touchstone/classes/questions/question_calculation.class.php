@@ -32,7 +32,8 @@ Class QuestionCALCULATION extends Question {
   public $max_options = 10;
   
   protected $_fields_editable = array('theme', 'scenario', 'leadin', 'notes', 'correct_fback', 'incorrect_fback', 'units', 'answer_decimals', 'tolerance', 'bloom', 'status');
-  protected $_fields_unified = array('marks' => 'Marks');
+  protected $_fields_unified = array('correct' => 'Correct Answer', 'marks' => 'Marks');
+  protected $_fields_change = array('option_correct', 'answer_decimals', 'tolerance');
   
   private $_variables = null;
   
@@ -60,6 +61,79 @@ Class QuestionCALCULATION extends Question {
    */
   public function update_correct($new_correct, $paper_id) {
     $errors = array();
+    
+    $first = reset($this->options);
+    $old_correct = $first->get_correct();
+        
+    if ($new_correct['option_correct'] != $old_correct) {
+      foreach ($this->options as $option) {
+        $option->set_correct($new_correct['option_correct']);
+      }
+    
+      $this->add_unified_field_modification('correct', 'formula', $old_correct, $new_correct['option_correct'], 'Post Exam Answer change');
+      $changes = true;
+    }
+    
+    $old_decimals = $this->get_answer_decimals();
+    if ($new_correct['answer_decimals'] != $old_decimals) {
+      $this->set_tolerance($new_correct['answer_decimals']);
+    
+      $this->add_unified_field_modification('answer_decimals', 'answer_decs ', $old_decimals, $new_correct['answer_decimals'], 'Post Exam Answer change');
+      $changes = true;
+    }
+    
+    $old_tolerance = $this->get_tolerance();
+    if ($new_correct['tolerance'] != $old_tolerance) {
+      $this->set_tolerance($new_correct['tolerance']);
+    
+      $this->add_unified_field_modification('tolerance', 'tolerance', $old_tolerance, $new_correct['tolerance'], 'Post Exam Answer change');
+      $changes = true;
+    }
+    
+    if ($changes) {
+      try {
+    	  if(!$this->save()) {
+    	    $errors[] = 'Error saving data. Please try again';
+    	  } else {
+          // Remark the student's answers in 'log2'.
+          $result = $this->_mysqli->prepare("SELECT user_answer, id FROM log2 WHERE q_id=? AND q_paper=?");
+          $result->bind_param('ii', $this->id, $paper_id);
+          $result->execute();
+          $result->store_result();
+          $result->bind_result($user_answer, $id);
+          while ($row = $result->fetch()) {
+            // Split up the user answer into its constituent parts.
+            $answer_parts = explode('|',$user_answer);
+            $variable_array = explode(',',$answer_parts[2]);
+            $saved_response = $answer_parts[0];
+            $var_no = 1;
+            foreach($variable_array as $individual_variable) {
+              $var = chr(64 + $var_no);
+              $$var = $individual_variable;
+              $var_no++;
+            }
+            $mark = 0;
+            $answer_equation = $first->get_correct();
+            eval ("\$answer = $answer_equation;");
+            $answer = round($answer, $this->get_answer_decimals());
+            if ($saved_response == $answer) {
+              $mark = 1;
+            } elseif (abs($saved_response - $answer) <= $this->get_tolerance()) {
+              $mark = 1;
+            }
+            $saved_response .= '|' . $answer . '|' . $answer_parts[2];
+          
+            $updateLog = $this->_mysqli->prepare("UPDATE log2 SET mark=?, user_answer=? WHERE id=? AND q_paper=?");
+            $updateLog->bind_param("dsii", $mark, $saved_response, $id, $paper_id);
+            $updateLog->execute();  
+            $updateLog->close();
+          }
+    	  }
+    	} catch (ValidationException $vex) {
+    	  $errors[] = $vex->getMessage();
+    	}
+    }
+    
     
     return $errors;
   }

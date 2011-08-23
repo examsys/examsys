@@ -32,62 +32,65 @@ require_once 'logger.class.php';
 Class Question extends TouchStoneObject {
 
   public $id = -1;
-  private $type = null;
-  private $theme = '';
-  private $scenario = '';
-  private $scenario_plain = '';
-  private $leadin = '';
-  private $leadin_plain = '';
-  private $notes = '';
-  private $correct_fback = '';
-  private $incorrect_fback = '';
+  protected $type = null;
+  protected $theme = '';
+  protected $scenario = '';
+  protected $scenario_plain = '';
+  protected $leadin = '';
+  protected $leadin_plain = '';
+  protected $notes = '';
+  protected $correct_fback = '';
+  protected $incorrect_fback = '';
   protected $score_method = '';
-  private $option_order = null;
-  private $standards_setting = '';
-  private $bloom = null;
-  private $owner_id = null;
-  private $media = '';
-  private $media_width = 0;
-  private $media_height = 0;
-  private $teams = '';
-  private $checkout_time = null;
-  private $checkout_author_id = '';
-  private $created = null;
-  private $last_edited = null;
-  private $locked = null;
-  private $deleted = null;
-  private $status = null;
+  protected $option_order = null;
+  protected $standards_setting = '';
+  protected $bloom = null;
+  protected $owner_id = null;
+  protected $media = '';
+  protected $media_width = 0;
+  protected $media_height = 0;
+  protected $teams = '';
+  protected $checkout_time = null;
+  protected $checkout_author_id = '';
+  protected $created = null;
+  protected $last_edited = null;
+  protected $locked = null;
+  protected $deleted = null;
+  protected $status = null;
   public $options = array();
   public $max_options = 20;
   protected $_answer_positive = 'y';
   protected $_answer_negative = 'n';
   
   // Imploded DB version of teams
-  private $group = '';
+  protected $group = '';
   
   protected $_user_id;
-  private $_fields = array('type', 'theme', 'scenario', 'scenario_plain', 'leadin', 'leadin_plain', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'option_order', 'standards_setting', 'bloom', 'owner_id', 'media', 'media_width', 'media_height', 'group', 'checkout_time', 'checkout_author_id', 'created', 'last_edited', 'locked', 'deleted', 'status');
+  protected $_fields = array('type', 'theme', 'scenario', 'scenario_plain', 'leadin', 'leadin_plain', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'option_order', 'standards_setting', 'bloom', 'owner_id', 'media', 'media_width', 'media_height', 'group', 'checkout_time', 'checkout_author_id', 'created', 'last_edited', 'locked', 'deleted', 'status');
   protected $_fields_editable = array('theme', 'scenario', 'leadin', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'option_order', 'bloom', 'status');
-  private $_required_fields = array('type', 'leadin', 'score_method', 'option_order', 'owner_id', 'status');
+  protected $_required_fields = array('type', 'leadin', 'score_method', 'option_order', 'owner_id', 'status');
   protected $_score_methods = array();
   protected $_option_orders = array('display order' => 'Display Order', 'alphabetic' => 'Alphabetic', 'random' => 'Random');
   protected $_mysqli = null;
-  private $_logger = null;
-  private $_data = array();
+  protected $_logger = null;
+  protected $_data = array();
   
   // These properties will be lazily loaded
-  private $keywords = null;
-  private $changes = null;
-  private $comments = null;
+  protected $keywords = null;
+  protected $changes = null;
+  protected $comments = null;
   
   // 'Unified' fields are the same for all options
   protected $_fields_unified = array('correct' => 'Correct Answer');
-  private $_unified_field_modifications = array();
+  protected $_unified_field_modifications = array();
+  
+  // These are the fields that are relevant for post-exam corrections
+  protected $_fields_change = array('option_correct');
   
   // Map our 'nice' property names to the database fields and 'parts' in track changes
-  private $_field_map = array('type' => 'q_type', 'option_order' => 'q_option_order', 'standards_setting' => 'std', 'owner_id' => 'ownerID', 'media' => 'q_media', 'media_width' => 'q_media_width', 'media_height' => 'q_media_height', 'group' => 'q_group', 'checkout_author_id' => 'checkout_authorID', 'created' => 'creation_date');
-  private $_change_field_map = array('group' => 'teams', 'correct' => 'Correct Answer');
-  private $_pretty_names = array('type' => 'Type', 'leadin' => 'Lead-in', 'score_method' => 'Scoring Method', 'option_order' => 'Option Order', 'owner_id' => 'Owner', 'status' => 'Status');
+  protected $_field_map = array('type' => 'q_type', 'option_order' => 'q_option_order', 'standards_setting' => 'std', 'owner_id' => 'ownerID', 'media' => 'q_media', 'media_width' => 'q_media_width', 'media_height' => 'q_media_height', 'group' => 'q_group', 'checkout_author_id' => 'checkout_authorID', 'created' => 'creation_date');
+  protected $_change_field_map = array('group' => 'teams', 'correct' => 'Correct Answer');
+  protected $_pretty_names = array('type' => 'Type', 'leadin' => 'Lead-in', 'score_method' => 'Scoring Method', 'option_order' => 'Option Order', 'owner_id' => 'Owner', 'status' => 'Status');
   public static $types = array('blank' => 'Fill in the Blank', 'calculation' => 'calculation', 'dichotomous' => 'Dichotomous', 'extmatch' => 'Extended Matching', 'flash' => 'Flash', 'hotspot' => 'Image Hotspot', 'info' => 'Information Block', 'keyword_based' => 'Keyword Based', 'labelling' => 'Labelling', 'likert' => 'Likert Scale', 'matrix' => 'Matrix', 'mcq' => 'Multiple Choice', 'mrq' => 'Multiple Response', 'random' => 'Random', 'rank' => 'Ranking', 'sct' => 'Script COncordance', 'textbox' => 'Text Box', 'timedate' => 'Time / Date');
   
   /**
@@ -273,12 +276,12 @@ QUERY;
     $first = reset($this->options);
     $old_correct = $first->get_correct();
         
-    if ($new_correct != $old_correct) {
+    if ($new_correct['option_correct'] != $old_correct) {
       foreach ($this->options as $option) {
-        $option->set_correct($new_correct);
+        $option->set_correct($new_correct['option_correct']);
       }
     
-      $this->add_unified_field_modification('correct', 'Correct Answer', $old_correct, $new_correct, 'Post Exam Answer change');
+      $this->add_unified_field_modification('correct', 'Correct Answer', $old_correct, $new_correct['option_correct'], 'Post Exam Answer change');
       $changes = true;
     }
     
@@ -294,7 +297,7 @@ QUERY;
           $result->store_result();
           $result->bind_result($user_answer);
           while ($row = $result->fetch()) {
-            $new_mark = ($user_answer == $new_correct) ? 1 : 0;
+            $new_mark = ($user_answer == $new_correct['option_correct']) ? 1 : 0;
             $updateLog = $this->_mysqli->prepare("UPDATE log2 SET mark=? WHERE user_answer=? AND q_id=? AND q_paper=?");
             $updateLog->bind_param('isii', $new_mark, $user_answer, $this->id, $paper_id);
             $updateLog->execute();  
@@ -328,7 +331,15 @@ QUERY;
   public function get_unified_fields() {
     return $this->_fields_unified;
   }
-  
+
+    /**
+   * The the array of unified fields (properties) for this class
+   * @return multitype:string 
+   */
+  public function get_change_fields() {
+    return $this->_fields_change;
+  }
+
   /**
    * Get the question type
    * @return string

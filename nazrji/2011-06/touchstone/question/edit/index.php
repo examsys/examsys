@@ -91,8 +91,15 @@ if($critical_error == '') {
     $save_individual = in_array('correct', array_keys($unified_part_names));
     
     if ($save_individual) {
-      $errors = $question->update_correct($_POST['option_correct'], $paper_id);
+      // calculation, mcq
+      $part_names = $question->get_change_fields();
+      $fields = array();
+      foreach ($part_names as $field) {
+        if (isset($_POST[$field])) $fields[$field] = $_POST[$field];
+      }
+      $errors = $question->update_correct($fields, $paper_id);
     } else {
+      // dichotomous, mrq, rank
       $correct_answers = array();
       $i = 1;
       foreach ($question->options as $option_id => $option) {
