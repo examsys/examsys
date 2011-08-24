@@ -41,7 +41,7 @@ if (count($question->options) > 0) {
 					</tbody>
 				</table>
 
-<?php require_once 'details_general_feedback.php' ?>
+<?php require_once 'detail_parts/details_general_feedback.php' ?>
         
         <div class="form">
           <h2>Variables</h2>

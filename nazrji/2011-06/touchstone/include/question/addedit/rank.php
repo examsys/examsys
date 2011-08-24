@@ -53,7 +53,7 @@ echo ViewHelper::render_options($question->get_option_orders(), $question->get_o
 <?php
 $label_correct = 'Feedback if Correct<br /><span class="note warning-severe">(default feedback)</span>';
 $show_incorrect = true;
-require_once 'details_general_feedback.php';
+require_once 'detail_parts/details_general_feedback.php';
 ?>
         
         <div class="form">

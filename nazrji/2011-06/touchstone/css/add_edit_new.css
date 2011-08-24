@@ -71,6 +71,10 @@ p {
 	font-weight: bold;
 }
 
+.align-top {
+  vertical-align: top!important;
+}
+
 .align-right {
   text-align: right!important;
 }

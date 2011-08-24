@@ -97,5 +97,5 @@ echo ViewHelper::render_options(range(1, 20), $marks, 3);
 <?php
 $label_correct = 'Feedback<br /><span class="note">(model answer for assessments)</span>';
 $feedback_rows = 4;
-require_once 'details_general_feedback.php';
+require_once 'detail_parts/details_general_feedback.php';
 ?>

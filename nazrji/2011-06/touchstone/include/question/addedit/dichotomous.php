@@ -51,7 +51,7 @@ echo ViewHelper::render_options($question->get_option_orders(), $question->get_o
 					</tbody>
 				</table>
 
-<?php require_once 'details_general_feedback.php' ?>
+<?php require_once 'detail_parts/details_general_feedback.php' ?>
         
         <div class="form">
           <h2>Options</h2>

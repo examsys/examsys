@@ -22,9 +22,9 @@
 * @package
 */
 
-// TODO: Rank question has two answers selected if blank
 // TODO: JS for convert MRQ to MCQ
 // TODO: JS for changing labels for Dichotomous if score method changes
+// TODO: JS for changing message in fill-in-the-blank if score method changes
 // TODO: handle keyword based and random
 // TODO: check - was leadin/scenario change tracking looking at the plain version?
 // TODO: validation in JS
@@ -167,8 +167,6 @@ if($critical_error == '') {
           // Save fields that are the same across options
           $option->populate_unified($unified_part_names, $_POST, 'option_');
         } else {
-          // TODO: test this and rationalise
-          
           // Create new option if have required data
           $option = Option::option_factory($mysqli, $userID, $question, $option_no, array('marks' => 1));
           
@@ -183,21 +181,7 @@ if($critical_error == '') {
             
             // Save fields that are the same across options
             $option->populate_unified($unified_part_names, $_POST, 'option_');
-            
-//            foreach ($part_names as $section_name) {
-//              if (!in_array($section_name, array_keys($unified_part_names))) {
-//                $field = 'option_' . $section_name . $option_no;
-//                
-//                // If 'correct' is not a unified field then its value if not in POST is negative
-//                if ($section_name == 'correct' and !isset($_POST[$field])) $_POST[$field] = 'n';
-//                
-//                if (isset($_POST[$field])) {
-//                  $data[$section_name] = $_POST[$field];
-//                }
-//              }
-//            }
-                        
-//            $data = array('question_id' => $question->id, 'text' => $_POST["option_text$option_no"], 'correct_fback' => $correct_fb, 'incorrect_fback' => $incorrect_fb, 'correct' => $_POST['option_correct'], 'marks' => 1);
+
             $question->options[] = $option;
           }
         }
