@@ -263,7 +263,15 @@ QUERY;
       $this->_unified_field_modifications[$field] = array($category, $label, $old_value, $new_value);
     }
   }
-    
+  
+  /**
+   * Does this question type allow changes to the correct answer after it is locked
+   * @return boolean
+   */
+  public function allow_correction() {
+    return true;
+  }
+  
   /**
    * Change the correct answer after the question has been locked. Update user marks in summative log table
    * @param integer $new_correct new correct answer

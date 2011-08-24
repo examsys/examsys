@@ -33,7 +33,7 @@ class ViewHelper {
    * @param int $tablevel number of tab characters to use at the start of the option string
    * @param string $css_class a CSS class to be applied to ALL options or an array of classes to be applied to each option individually
    */
-  public static function render_options($options, $selected = '', $tablevel = 0, $css_class = '') {
+  public static function render_options($options, $selected = '', $tablevel = 0, $css_class = '', $label_prefix='', $label_postfix='') {
     $html = '';
     
     // Handle both associative and indexed arrays as $options
@@ -55,7 +55,8 @@ class ViewHelper {
       } else {
         $class = ($css_class[$i] != '') ? ' class="' . $css_class[$i] . '"' : '';
       }
-      $html .= "<option value=\"$value\"{$sel}{$class}>$text</option>\n";
+      
+      $html .= "<option value=\"$value\"{$sel}{$class}>{$label_prefix}{$text}{$label_postfix}</option>\n";
     }
     
     return $html;

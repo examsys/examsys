@@ -307,7 +307,7 @@ function hidden_edit_fields() {
   return $html;
 }
 
-function save_buttons_new($disabled, $locked, $userID, $checkout_author, $paper_id) {
+function save_buttons_new($disabled, $locked, $allow_correct, $userID, $checkout_author, $paper_id) {
   $html = '';
   
   $save_disabled = '';
@@ -328,7 +328,7 @@ function save_buttons_new($disabled, $locked, $userID, $checkout_author, $paper_
 
 HTML;
 
-  if ($locked != '' and $paper_id != -1) {
+  if ($allow_correct and $locked != '' and $paper_id != -1) {
     $html .= <<< HTML
       <input id="submit-correct" name="submit" value="Correct" type="submit" class="submit" />
 

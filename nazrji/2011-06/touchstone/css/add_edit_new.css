@@ -21,6 +21,7 @@ h2 {
   font-weight: bold;
   font-size: 130%;
   color: #6487DC;
+  margin-bottom: 4px;
 }
 
 h3 {
@@ -88,6 +89,10 @@ p {
 
 .spaced-right {
   margin-right: 8px;
+}
+
+.spaced-right-large {
+  margin-right: 48px;
 }
 
 .message {
@@ -263,6 +268,10 @@ p {
 .form {
 	width: 888px;
 	margin: 0 auto 24px auto;
+}
+
+div.form {
+	margin-bottom: 0;
 }
 
 .form td {

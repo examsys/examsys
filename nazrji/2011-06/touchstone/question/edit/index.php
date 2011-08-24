@@ -26,7 +26,7 @@
 // TODO: JS for convert MRQ to MCQ
 // TODO: JS for changing labels for Dichotomous if score method changes
 // TODO: handle keyword based and random
-// TODO: check - was leadin/scenarion change tracking looking at the plain version?
+// TODO: check - was leadin/scenario change tracking looking at the plain version?
 // TODO: validation in JS
 // TODO: replace comment OK etc. icons with CSS BG image?
 // TODO: disable mapping tab for info and likert
@@ -349,7 +349,7 @@ if ($critical_error == '') {
     } elseif ($disabled == 'locked') {
 ?>
     <div class="banner">
-      <p><strong>Question Locked</strong> This question is now locked and cannot be modified. <a href="#" onclick="launchHelp(161); return false;">Click for more details.</a></p>
+      <p><strong>Question Locked</strong> This question is now locked and cannot be modified. <a href="#" class="help-link" rel="161">Click for more details.</a></p>
     </div>
 <?php
     }
@@ -460,7 +460,7 @@ echo render_objectives_mapping_form($mysqli, $paper_id);
     <div id="button-bar">
 <?php
 // TODO: check old save_buttons function - SAFE TO REMOVE
-echo save_buttons_new($disabled, $question->get_locked(), $userID, $question->get_checkout_author_id(), $paper_id);
+echo save_buttons_new($disabled, $question->get_locked(), $question->allow_correction(), $userID, $question->get_checkout_author_id(), $paper_id);
 // TODO: make cancel jQuery
 ?>
       <input type="hidden" name="q_id" value="<?php echo $question->id ?>" />

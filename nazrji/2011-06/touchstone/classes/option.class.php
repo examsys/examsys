@@ -253,10 +253,10 @@ QUERY;
    * @param string $value
    */
   public function set_text($value) {
-    if($value != $this->text) {
+    if($value != $this->text and !in_array('text', array_keys($this->_fields_unified))) {
       $this->set_modified_field('text', $this->text);
-      $this->text = $value;
     }
+    $this->text = $value;
   }
   
   /**
@@ -350,10 +350,10 @@ QUERY;
    * @param string $value
    */
   public function set_marks($value) {
-    if($value != $this->marks) {
+    if($value != $this->marks and !in_array('marks', array_keys($this->_fields_unified))) {
       $this->set_modified_field('marks', $this->marks);
-      $this->marks = $value;
     }
+    $this->marks = $value;
   }
   
   // STATIC METHODS
