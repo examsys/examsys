@@ -59,6 +59,7 @@ Class Question extends TouchStoneObject {
   protected $status = null;
   public $options = array();
   public $max_options = 20;
+  public $max_stems = 0;
   protected $_answer_positive = 'y';
   protected $_answer_negative = 'n';
   
@@ -127,6 +128,115 @@ Class Question extends TouchStoneObject {
   }
   
   /**
+   * Populate the 'standard' fields for this question
+   * @param array $fields list of fields to populate
+   * @param array $data source from which to extract field data, normally the $_POST array
+   * @param array $exclude a list of fields to exclude from the population process
+   * @param string $prefix a prefix to apply to field names when used as keys into data array
+   */
+  public function populate($fields, $data, $exclude=array(), $prefix='') {
+    foreach($fields as $section_name) {
+      if(!in_array($section_name, $exclude) and isset($data["$section_name"])) {
+        $value = $data["$section_name"];
+        
+        if ($section_name == 'score_method' and isset($data['other']) and $data['other'] == 1) $value = 'other';
+        
+        $method = "set_$section_name";
+        $this->$method($value);
+      }
+    }
+  }
+  
+  /**
+   * Populate media for this question
+   * @param string $field name of the field to use in $media_data array
+   * @param array $media_data the data source for the media information, normally the $_FILES array
+   * @param array $deletion_data the data source for flagging media to be deleted, normally the $_POST array
+   */
+  public function populate_media($field, $media_data, $deletion_data) {
+    $old_media = $this->get_media();
+    if ($media_data[$field]['name'] != $old_media['filename'] and ($media_data[$field]['name'] != 'none' and $media_data[$field]['name'] != '')) {
+      if ($old_media['filename'] != '') {
+        deleteMedia($old_media['filename']);
+      }
+      $this->set_media(uploadFile($field));
+    } else {
+      // Delete existing media if asked
+      if (isset($deletion_data['delete_media0']) AND $deletion_data['delete_media0'] == 'on') {
+        deleteMedia($old_media['filename']);
+        $this->set_media(array('filename' => '', 'width' => 0, 'height' => 0));
+      }
+    }
+  }
+  
+  /**
+   * Populate the 'compound' fields for this question. These fields are a concatenated version of number of form fields
+   * @param array $fields list of fields to populate
+   * @param array $data source from which to extract field data, normally the $_POST array
+   * @param array $exclude a list of fields to exclude from the population process
+   * @param string $prefix a prefix to apply to field names when used as keys into data array
+   */
+  public function populate_compound($fields, $data, $exclude=array(), $prefix='') {
+    foreach ($fields as $section_name) {
+      if (!in_array($section_name, $exclude)) {
+        $get_method = "get_all_{$section_name}s";
+        $original_vals = $this->$get_method();
+        for ($i = 1; $i <= $this->max_stems; $i++) {
+          if (isset($data["{$prefix}{$section_name}{$i}"]) and $data["{$prefix}{$section_name}{$i}"] != '') {
+            $old_val = (isset($original_vals[$i - 1])) ? $original_vals[$i - 1] : '';
+            ${$section_name}[] = $data["{$prefix}{$section_name}{$i}"];
+            if (!isset($old_val) or $data["{$prefix}{$section_name}{$i}"] != $old_val) {
+              $this->add_unified_field_modification($section_name . $i, $section_name . $i, $old_val, $data["{$prefix}{$section_name}{$i}"], 'Edit Scenario');
+            }
+          } else {
+            ${$section_name}[] = '';
+          }
+        }
+        $method = "set_all_{$section_name}s";
+        $this->$method($$section_name);
+      }
+    }
+  }
+  
+  /**
+   * Populate 'compound' media for this question. These fields are a concatenated version of number of form fields.
+   * Assumes the the first item in the compound field will be the general question media
+   * @param array $media_data the data source for the media information, normally the $_FILES array
+   * @param array $deletion_data the data source for flagging media to be deleted, normally the $_POST array
+   * @param string $general_field name of the field to use for the general question details media
+   * @param string $prefix a prefix to apply to field names when used as keys into data array
+   */
+  public function populate_compound_media($media_data, $deletion_data, $general_field='q_media', $prefix='question_media') {
+    $old_media = $this->get_all_media();
+    $media_change = false;
+    for ($i = 0; $i <= $this->max_stems; $i++) {
+      $post_field = ($i == 0) ? $general_field : "{$prefix}$i";
+      
+      if ($media_data[$post_field]['name'] != $old_media['filenames'][$i] and ($media_data[$post_field]['name'] != 'none' and $media_data[$post_field]['name'] != '')) {
+        if ($old_media['filenames'][$i] != '') {
+          deleteMedia($old_media['filenames'][$i]);
+        }
+        $new_media = uploadFile($post_field);
+        $old_media['filenames'][$i] = $new_media['filename'];
+        $old_media['widths'][$i] = $new_media['width'];
+        $old_media['heights'][$i] = $new_media['height'];
+        $this->add_unified_field_modification('q_media' . $i, 'q_media' . $i, $old_media['filenames'][$i], $new_media['filename'], 'Edit Scenario');
+      } else {
+        // Delete existing media if asked
+        if (isset($deletion_data["delete_media$i"]) AND $deletion_data["delete_media$i"] == 'on') {
+          deleteMedia($old_media['filenames'][$i]);
+          $this->add_unified_field_modification('q_media' . $i, 'q_media' . $i, $old_media['filenames'][$i], '', 'Media Deleted');
+          $old_media['filenames'][$i] = '';
+          $old_media['widths'][$i] = 0;
+          $old_media['heights'][$i] = 0;
+        }
+      }
+    }
+    $this->set_all_media($old_media);
+  }
+  
+  
+  /**
    * Persist the object to the database
    * @return boolean Success or failure of the save operation
    * @throws ValidationException
@@ -151,7 +261,7 @@ Class Question extends TouchStoneObject {
       
       // If $id is -1 we're inserting a new record
       if ($this->id == -1) {
-        $params = array_merge(array('sssssssssssisisiississsss'), $this->_data);
+        $params = array_merge(array('sssssssssssisisssssisssss'), $this->_data);
         $query = <<< QUERY
 INSERT INTO questions(q_type, theme, scenario, scenario_plain, leadin, leadin_plain, notes, correct_fback, incorrect_fback, score_method, 
 q_option_order, std, bloom, ownerID, q_media, q_media_width, q_media_height, q_group, checkout_time, checkout_authorID, creation_date, 
@@ -160,7 +270,7 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
 QUERY;
       } else {
         // Otherwise we're updating an existing one
-        $params = array_merge(array('sssssssssssisisiississsssi'), $this->_data, array(&$this->id));
+        $params = array_merge(array('sssssssssssisisssssisssssi'), $this->_data, array(&$this->id));
         $this->last_edited = date("Y-m-d H:i:s");
         $query = <<< QUERY
 UPDATE questions
@@ -340,8 +450,8 @@ QUERY;
     return $this->_fields_unified;
   }
 
-    /**
-   * The the array of unified fields (properties) for this class
+  /**
+   * The the array of fields (properties) that are relevant for post-exam corrections for this class
    * @return multitype:string 
    */
   public function get_change_fields() {

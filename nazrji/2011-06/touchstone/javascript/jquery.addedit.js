@@ -43,10 +43,10 @@ function changeTab() {
 }
 
 function showNextOption() {
-  var hiddenOptions = $('tbody.option.hide');
+  var hiddenOptions = $('.option.hide');
   if(hiddenOptions.length > 0) {
     if(hiddenOptions.length == 1) {
-      $('#next-option-holder').fadeOut('fast');
+      $('#add-option-holder').fadeOut('fast');
     }
     hiddenOptions.eq(0).removeClass('hide');
   }

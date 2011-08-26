@@ -60,21 +60,21 @@ $spaced = ($index > 1) ? " class=\"spaced-top{$alt}\"" : $alt_c;
 
 ?>
             <tr<?php echo $alt_c ?>>
-              <th><label for="option_media<?php echo $index ?>">Change Media:</label></th>
+              <th><label for="option_media<?php echo $index ?>">Change Media</label></th>
               <td>
                 <input id="option_media<?php echo $index ?>" name="option_media<?php echo $index ?>" type="file" size="50" />
               </td>
               <td>&nbsp;</td>
             </tr>
             <tr<?php echo $alt_c ?>>
-              <th><label for="option_correct_fback<?php echo $index ?>">Feedback if Correct:</label><br /><span class="note warning-severe">(default feedback)</span></label></th>
+              <th><label for="option_correct_fback<?php echo $index ?>">Feedback if Correct:</label><br /><span class="note warning-severe">(default feedback)</span></th>
               <td>
                 <textarea cols="85" rows="2" id="option_correct_fback<?php echo $index ?>" name="option_correct_fback<?php echo $index ?>" class="form-med-large"><?php echo $option->get_correct_fback() ?></textarea>
               </td>
               <td>&nbsp;</td>
             </tr>
             <tr<?php echo $alt_c ?>>
-              <th class="spaced-bottom"><label for="option_incorrect_fback<?php echo $index ?>">Feedback if Incorrect:</label><br /><span class="note">(leave blank to use default)</span></label></th>
+              <th class="spaced-bottom"><label for="option_incorrect_fback<?php echo $index ?>">Feedback if Incorrect:</label><br /><span class="note">(leave blank to use default)</span></th>
               <td class="spaced-bottom">
                 <textarea cols="85" rows="2" id="option_incorrect_fback<?php echo $index ?>" name="option_incorrect_fback<?php echo $index ?>" class="form-med-large"><?php echo $option->get_incorrect_fback() ?></textarea>
               </td>

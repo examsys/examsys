@@ -33,11 +33,11 @@ class ViewHelper {
    * @param int $tablevel number of tab characters to use at the start of the option string
    * @param string $css_class a CSS class to be applied to ALL options or an array of classes to be applied to each option individually
    */
-  public static function render_options($options, $selected = '', $tablevel = 0, $css_class = '', $label_prefix='', $label_postfix='') {
+  public static function render_options($options, $selected = '', $tablevel = 0, $force_assoc = false, $css_class = '', $label_prefix='', $label_postfix='') {
     $html = '';
     
     // Handle both associative and indexed arrays as $options
-    if (self::is_assoc($options)) {
+    if ($force_assoc or self::is_assoc($options)) {
       $values = array_keys($options);
       $texts = array_values($options);
     } else {
@@ -49,7 +49,7 @@ class ViewHelper {
       $text = $texts[$i];
       
       $html .= str_repeat("\t", $tablevel);
-      $sel = (strval($selected) == strval($value)) ? ' selected="selected"' : '';
+      $sel = ((is_array($selected) and in_array($value, $selected)) or strval($selected) == strval($value)) ? ' selected="selected"' : '';
       if (!is_array($css_class)) {
         $class = ($css_class != '') ? ' class="' . $css_class . '"' : '';
       } else {
@@ -68,6 +68,6 @@ class ViewHelper {
    * @return boolean
    */
   private static function is_assoc(array $a){
-   return (array_keys($a) != array_keys(array_keys($a)));
+   return (array_keys($a) !== array_keys(array_keys($a)));
   }
 }

@@ -22,6 +22,7 @@
 * @package
 */
 
+// TODO: check all options work for EITHER text or media
 // TODO: JS for convert MRQ to MCQ
 // TODO: JS for changing labels for Dichotomous if score method changes
 // TODO: JS for changing message in fill-in-the-blank if score method changes
@@ -115,36 +116,28 @@ if($critical_error == '') {
     if ($question->id == -1 or check_fullSave($question->id,$mysqli)) {
       
       $part_names = $question->get_editable_fields();
-      foreach($part_names as $section_name) {
-        if(isset($_POST["$section_name"])) {
-          $value = $_POST["$section_name"];
-          
-          if ($section_name == 'score_method' and isset($_POST['other']) and $_POST['other'] == 1) $value = 'other';
-          
-          $method = "set_$section_name";
-          $question->$method($value);
-        }
+      $compound_fields = $question->get_compound_fields();
+      $question->populate($part_names, $_POST, $compound_fields);
+      
+      // Handle changes in media if not a compound field
+      if (!in_array('media', $question->get_compound_fields())) {
+        $question->populate_media('q_media', $_FILES, $_POST);
+      }
+      
+      // TODO: track changes for compound field delete?
+      
+      // Save compound fields
+      $question->populate_compound($compound_fields, $_POST, array('media'), $prefix='question_');
+
+      // Handle changes in media for compound fields
+      if (in_array('media', $compound_fields)) {
+        $question->populate_compound_media($_FILES, $_POST, 'q_media', 'question_media');
       }
       
       // Strip MS Office HTML.
       $question->set_scenario(clearMSOtags($question->get_scenario()));
       $question->set_leadin(clearMSOtags($question->get_leadin()));
    
-      // Handle changes in media
-      $old_media = $question->get_media();
-      if ($_FILES['q_media']['name'] != $old_media['filename'] and ($_FILES['q_media']['name'] != 'none' and $_FILES['q_media']['name'] != '')) {
-        if ($old_media['filename'] != '') {
-          deleteMedia($old_media['filename']);
-        }
-        $question->set_media(uploadFile('q_media'));
-      } else {
-        // Delete existing media if asked
-        if (isset($_POST['delete_media0']) AND $_POST['delete_media0'] == 'on') {
-          deleteMedia($old_media['filename']);
-          $question->set_media(array('filename' => '', 'width' => 0, 'height' => 0));
-        }
-      }
-      
 
       // TODO: check usage of old getTeams function - USED IN LIMITED SAVE FUNCTION
       if (isset($_POST['teams'])) {
@@ -154,6 +147,8 @@ if($critical_error == '') {
       $unified_part_names = $question->get_unified_fields();
       
       for ($option_no = 1; $option_no < $question->max_options; $option_no++) {
+        // TODO: rationalise
+        // TODO: fix change tracking
         $option = null;
         
         if (isset($_POST["optionid$option_no"]) and $_POST["optionid$option_no"] != -1) {
@@ -161,11 +156,16 @@ if($critical_error == '') {
           $option = $question->options[$_POST["optionid$option_no"]];
           $part_names = $option->get_editable_fields();
           
+          // Build arrays for compound fields
+          $compound_fields = $option->get_compound_fields();
+          if (!isset($existing_values)) $existing_values = array();
+          $option->populate_compound(array_keys($compound_fields), $_POST, $existing_values, 'option_');
+          
           // Save editable fields that aren't unified
-          $option->populate($part_names, $option_no, $_POST, $unified_part_names, 'option_');
+          $option->populate($part_names, $option_no, $_POST, array_merge(array_keys($unified_part_names), $compound_fields), 'option_');
           
           // Save fields that are the same across options
-          $option->populate_unified($unified_part_names, $_POST, 'option_');
+          $option->populate_unified($unified_part_names, $_POST, array_merge(array_keys($unified_part_names), $compound_fields), 'option_');
         } else {
           // Create new option if have required data
           $option = Option::option_factory($mysqli, $userID, $question, $option_no, array('marks' => 1));
@@ -176,17 +176,22 @@ if($critical_error == '') {
             
             $part_names = $option->get_editable_fields();
             
+            // Build arrays for compound fields
+            $compound_fields = $option->get_compound_fields();
+            if (!isset($existing_values)) $existing_values = array();
+            $option->populate_compound(array_keys($compound_fields), $_POST, $existing_values, 'option_');
+                                    
             // Save editable fields that aren't unified
-            $option->populate($part_names, $option_no, $_POST, $unified_part_names, 'option_');
+            $option->populate($part_names, $option_no, $_POST, array_merge(array_keys($unified_part_names), $compound_fields), 'option_');
             
             // Save fields that are the same across options
-            $option->populate_unified($unified_part_names, $_POST, 'option_');
+            $option->populate_unified($unified_part_names, $_POST, array_merge(array_keys($unified_part_names), $compound_fields), 'option_');
 
             $question->options[] = $option;
           }
         }
         
-        if ($option != null and !$option->is_blank()) {
+        if ($option != null and !$option->is_blank() and !in_array('media', $question->get_compound_fields())) {
           // Handle changes in media
           $old_media = $option->get_media();
           if (isset($_FILES["option_media$option_no"]) and $_FILES["option_media$option_no"]['name'] != $old_media['filename'] and ($_FILES["option_media$option_no"]['name'] != 'none' and $_FILES["option_media$option_no"]['name'] != '')) {
@@ -394,25 +399,25 @@ if (count($errors) > 0) {
 <?php
 }
 ?>
-        
-        <div class="form">
-          <h2>Question</h2>
-        </div>
+        <div id="question-holder">
+          <div class="form">
+            <h2>Question</h2>
+          </div>
         
 <?php 
 $x = $question->get_type();
 require_once '../../include/question/addedit/' . $question->get_type() . '.php'
 ?>
 
-        <div class="form">
-          <h2>Metadata</h2>
-        </div>
+          <div class="form">
+            <h2>Metadata</h2>
+          </div>
         
 <?php
 // TODO: check usage of old echoMetadata function - SAFE TO REMOVE
 echo render_metadata($mysqli, $question, true, $module, $disabled);
-?>        
-        
+?>
+        </div>
       </div>
 
       <div id="changes" class="tab-area">

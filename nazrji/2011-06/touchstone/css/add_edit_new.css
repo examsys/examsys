@@ -53,6 +53,19 @@ p {
 	font-size: 90%;
 }
 
+dt {
+	float: left;
+	font-weight: bold;
+	text-align: right;
+	width: 26px;
+	padding: 0 4px 4px 0;
+}
+
+dd {
+	margin-left: 30px;
+  padding: 0 0 4px 0;
+}
+
 /* General classes */
 .hide {
 	display: none;
@@ -268,6 +281,11 @@ p {
   padding-left: 68px
 }
 
+#question-holder {
+	width: 888px;
+	margin: 0 auto;
+}
+
 /* Form */
 .form {
 	width: 888px;
@@ -455,3 +473,22 @@ textarea, input[type=text], select {
 .objectives .top ul li {
 	margin: 0px;
 }
+
+#extmatch-options {
+  margin-top: -30px;
+  margin-right: -180px;
+	float: right;
+}
+
+#extmatch-options h2 {
+	margin-top: 0px;
+}
+
+#extmatch-option-list {
+	font-size: 90%;
+}
+
+#question-holder.wide {
+	padding-right: 180px;
+}
+

@@ -1,10 +1,10 @@
 <?php
-$media = $question->get_media();
-if ($media['filename'] != '') {
+$general_media = (isset($general_media)) ? $general_media : $question->get_media();
+if ($general_media['filename'] != '') {
 ?>
             <tr>
               <th>Current Media</th>
-              <td><?php echo display_media($media['filename'], $media['width'], $media['height'], '0'); ?></td>
+              <td><?php echo display_media($general_media['filename'], $general_media['width'], $general_media['height'], '0'); ?></td>
             </tr>
 <?php      
 }

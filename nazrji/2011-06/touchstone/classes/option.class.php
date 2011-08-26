@@ -92,9 +92,17 @@ Class Option extends TouchStoneObject {
     }
   }
   
+  /**
+   * Populate the 'standard' fields for this option
+   * @param array $fields list of fields to populate
+   * @param integer $index index into list of options
+   * @param array $data source from which to extract field data, normally the $_POST array
+   * @param array $exclude a list of fields to exclude from the population process
+   * @param string $prefix a prefix to apply to field names when used as keys into data array
+   */
   public function populate($fields, $index, $data, $exclude=array(), $prefix='') {
     foreach ($fields as $section_name) {
-      if (!in_array($section_name, array_keys($exclude))) {
+      if (!in_array($section_name, $exclude)) {
         $field = $prefix . $section_name . $index;
         
         // If 'correct' is not a unified field then its value if not in POST is negative
@@ -108,16 +116,56 @@ Class Option extends TouchStoneObject {
     }
   }
   
-  public function populate_unified($fields, $data, $prefix='') {
+  /**
+   * Populate the 'unified' fields for this option, which will come from data fields without a numeric index
+   * @param array $fields list of fields to populate
+   * @param array $data source from which to extract field data, normally the $_POST array
+   * @param array $exclude a list of fields to exclude from the population process
+   * @param string $prefix a prefix to apply to field names when used as keys into data array
+   */
+  public function populate_unified($fields, $data, $exclude=array(), $prefix='') {
     foreach ($fields as $section_name => $section_label) {
-      $field = $prefix . $section_name;
-      $get_method = "get_$section_name";
-      $old_value = $this->$get_method();
-      if (isset($data[$field]) and $data[$field] != $old_value) {
-        $set_method = "set_$section_name";
-        $this->$set_method($data[$field]);
-        $this->_question->add_unified_field_modification($section_name, $section_label, $old_value, $data[$field]);
+      if (!in_array($section_name, $exclude)) {
+        $field = $prefix . $section_name;
+        $get_method = "get_$section_name";
+        $old_value = $this->$get_method();
+        if (isset($data[$field]) and $data[$field] != $old_value) {
+          $set_method = "set_$section_name";
+          $this->$set_method($data[$field]);
+          $this->_question->add_unified_field_modification($section_name, $section_label, $old_value, $data[$field]);
+        }
       }
+    }
+  }
+  
+  /**
+   * Populate the 'compound' fields for this option, which will come from data fields without a numeric index
+   * Assumes that compound fields are unified so will only actually calculate the value for the first option
+   * @param array $fields list of fields to populate
+   * @param array $data source from which to extract field data, normally the $_POST array
+   * @param array $existing_values an array of values that will be calculated and populated for the first option and then re-used
+   * @param string $prefix a prefix to apply to field names when used as keys into data array
+   */
+  public function populate_compound($fields, $data, &$existing_values, $prefix='') {
+    foreach ($fields as $section_name) {
+      if (!isset($existing_values[$section_name])) {
+        $get_method = "get_all_{$section_name}s";
+        $original_vals = $this->$get_method();
+        for ($i = 1; $i <= $this->_question->max_stems; $i++) {
+          if (isset($_POST["{$prefix}{$section_name}{$i}"]) and $data["{$prefix}{$section_name}{$i}"] != '') {
+            $old_val = (isset($original_vals[$i - 1])) ? $original_vals[$i - 1] : '';
+            ${$section_name}[] = $data["{$prefix}{$section_name}{$i}"];
+            if (!isset($old_val) or $data["{$prefix}{$section_name}{$i}"] != $old_val) {
+              $this->log_compound_field_change($section_name, $section_name, $i, $old_val, $data["{$prefix}{$section_name}{$i}"], 'Edit Scenario');
+            }
+          } else {
+            ${$section_name}[] = '';
+          }
+        }
+        $existing_values[$section_name] = $$section_name;
+      }
+      $method = "set_all_{$section_name}s";
+      $this->$method($existing_values[$section_name]);
     }
   }
   
@@ -468,6 +516,49 @@ QUERY;
    */
   protected function track_delete($logger, $option_number) {
     $logger->track_change('Deleted Option', $this->question_id, $this->_user_id, $this->text, '', 'Option #' . $option_number);
+  }
+  
+  /**
+   * Log a change to a compound field. The actual value logged will depend on the conversion type defined in $_fields_compound.
+   * Also be aware that the field may be an array o must be converted to a string
+   * @param string $field name of field for which to log a change
+   * @param string $label the label to use when logging the change
+   * @param integer $index index value that will be added to the log to identify the option that has been changed
+   * @param mixed $old_value the old value to log
+   * @param mixed $new_value the new value to log
+   * @param string $category category label to use in the log
+   */
+  protected function log_compound_field_change($field, $label, $index, $old_value, $new_value, $category='Edit Question') {
+    $log_value_old = $log_value_new = '';
+    
+    if (is_array($old_value)) {
+      foreach ($old_value as $value) {
+        $log_value_old .= $this->convert_compound_field_value($value, $this->_fields_compound[$field]) . ',';
+      }
+      $log_value_old = rtrim($log_value_old, ',');
+    } else {
+      $log_value_old .= $this->convert_compound_field_value($old_value, $this->_fields_compound[$field]);
+    }
+    if (is_array($new_value)) {
+      foreach ($new_value as $value) {
+        $log_value_new .= $this->convert_compound_field_value($value, $this->_fields_compound[$field]) . ',';
+      }
+      $log_value_new = rtrim($log_value_new, ',');
+    } else {
+      $log_value_new .= $this->convert_compound_field_value($new_value, $this->_fields_compound[$field]);
+    }
+    
+    $this->_question->add_unified_field_modification($field . $index, $field . $index, $log_value_old, $log_value_new, $category);
+  }
+  
+  protected function convert_compound_field_value($value, $type) {
+    $converted = '';
+    switch ($type) {
+      case 'ucalpha':
+        $converted .= chr(64 + $value);
+        break;
+    }
+    return $converted;
   }
 }
 

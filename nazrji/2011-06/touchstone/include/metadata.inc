@@ -32,12 +32,12 @@
     $current_status = ($question->get_status() == '') ? 'Normal' : $question->get_status();
     
     $html = <<< META
-        <table id="q-metadata-basic" class="form" summary="Edit basic question metadata">
-          <tbody>
-            <tr>
-              <th>Status</th>
-              <td>
-                <ul class="radio-list horizontal">
+          <table id="q-metadata-basic" class="form" summary="Edit basic question metadata">
+            <tbody>
+              <tr>
+                <th>Status</th>
+                <td>
+                  <ul class="radio-list horizontal">
 
 META;
 
@@ -53,25 +53,25 @@ META;
       
       $status_str = strtolower($status);
       $html .= <<< STATUS
-									<li><input id="status-{$status_str}" name="status" value="{$status}"{$checked} type="radio"{$disabled_mod} /> <label for="status-{$status_str}"{$disabled_class}>{$status}</label></li>
+										<li><input id="status-{$status_str}" name="status" value="{$status}"{$checked} type="radio"{$disabled_mod} /> <label for="status-{$status_str}"{$disabled_class}>{$status}</label></li>
 
 STATUS;
     }
     
     $html .= <<< META
-                </ul>
-              </td>
-            </tr>
+                  </ul>
+                </td>
+              </tr>
 
 META;
 
     
     if ($bloom_on) {
       $html .= <<< META
-            <tr>
-              <th><label for="bloom">Bloom's Taxonomy</label></th>
-              <td>
-								<select id="bloom" name="bloom">
+              <tr>
+                <th><label for="bloom">Bloom's Taxonomy</label></th>
+                <td>
+  								<select id="bloom" name="bloom">
 
 META;
 
@@ -80,21 +80,21 @@ META;
       foreach ($bloom_array as $individual_bloom) {
         $selected =  ($individual_bloom == $blooms) ? ' selected="selected"' : '';
         $html .= <<< BLOOM
-									<option{$selected} value="{$individual_bloom}">{$individual_bloom}</option>
+										<option{$selected} value="{$individual_bloom}">{$individual_bloom}</option>
 
 BLOOM;
       }
       $html .= <<< META
-								</select>
-							</td>
-						</tr>
+  								</select>
+  							</td>
+  						</tr>
 
 META;
     }
     
     $html .= <<< META
-					</tbody>
-				</table>
+  					</tbody>
+  				</table>
 
 META;
     
@@ -110,10 +110,10 @@ META;
     }
     
     $html .= <<< META
-        <div class="form">
-          <div id="keyword-select" class="select-area">
-          <h3>Keywords</h3>
-            <div id="q-keywords" class="select-group">
+          <div class="form">
+            <div id="keyword-select" class="select-area">
+            <h3>Keywords</h3>
+              <div id="q-keywords" class="select-group">
 
 META;
 
@@ -127,15 +127,15 @@ META;
         foreach ($keywords['team'] as $keyword) {
           if ($prev_heading != '') {
           $html .= <<< META
-              </ul>
+              	</ul>
 
 META;
           }
           
           if ($keyword['module_id'] != $prev_heading) {
           $html .= <<< META
-    					<h4>{$keyword['module_id']}</h4>
-              <ul class="radio-list clearfix">
+      					<h4>{$keyword['module_id']}</h4>
+                <ul class="radio-list clearfix">
 
 META;
           }
@@ -146,22 +146,22 @@ META;
             $on = ' on';
           }
           $html .= <<< META
-      					<li><label for="keyword{$i}" class="fullwidth{$on}"><input id="keyword{$i}" name="keywords[]" value="{$keyword['keyword_id']}" type="checkbox"{$checked} />{$keyword['keyword']}</label></li>
+      						<li><label for="keyword{$i}" class="fullwidth{$on}"><input id="keyword{$i}" name="keywords[]" value="{$keyword['keyword_id']}" type="checkbox"{$checked} />{$keyword['keyword']}</label></li>
 
 META;
           $i++;
         }
               
         $html .= <<< META
-      				</ul>
+      					</ul>
 
 META;
       }
       
       if (count($keywords['personal']) > 0) {
         $html .= <<< META
-              <h4>Personal Keywords</h4>
-              <ul class="radio-list clearfix">
+                <h4>Personal Keywords</h4>
+                <ul class="radio-list clearfix">
 
 META;
 
@@ -172,28 +172,28 @@ META;
             $on = ' on';
           }
           $html .= <<< META
-      					<li><label for="keyword{$i}" class="fullwidth{$on}"><input id="keyword{$i}" name="keywords[]" value="{$keyword['keyword_id']}" type="checkbox"{$checked} />{$keyword['keyword']}</label></li>
+      						<li><label for="keyword{$i}" class="fullwidth{$on}"><input id="keyword{$i}" name="keywords[]" value="{$keyword['keyword_id']}" type="checkbox"{$checked} />{$keyword['keyword']}</label></li>
           
 META;
         }
         
         $html .= <<< META
-        			</ul>
-            </div>
+          			</ul>
+              </div>
 
 META;
       }
       
       $html .= <<< META
-      		</div>
+      			</div>
 
 META;
     }
       
     $html .= <<< META
-      		<div id="team-select" class="select-area">
-            <h3>Teams</h3>
-            <div id="q-teams" class="select-group">
+        		<div id="team-select" class="select-area">
+              <h3>Teams</h3>
+              <div id="q-teams" class="select-group">
 
 META;
 
@@ -206,13 +206,13 @@ META;
       if ($individual_team['school'] != $prev_heading) {
         if ($prev_heading != '') {
           $html .= <<< META
-              </ul>
+              	</ul>
 
 META;
         }
         $html .= <<< HEADING
-							<h4>{$individual_team['school']}</h4>
-              <ul class="radio-list clearfix">
+  							<h4>{$individual_team['school']}</h4>
+                <ul class="radio-list clearfix">
 
 HEADING;
         $prev_heading = $individual_team['school'];
@@ -229,7 +229,7 @@ HEADING;
       }
       
       $html .= <<< META
-                <li><label for="team{$i}" class="fullwidth{$on}"><input id="team{$i}" name="teams[]" value="{$team_name}" type="checkbox"{$checked}{$disabled_mod} /> {$team_name}: {$fullname}</label></li>
+                	<li><label for="team{$i}" class="fullwidth{$on}"><input id="team{$i}" name="teams[]" value="{$team_name}" type="checkbox"{$checked}{$disabled_mod} /> {$team_name}: {$fullname}</label></li>
 
 META;
 
@@ -238,10 +238,10 @@ META;
     
 
     $html .= <<< META
-    					</ul>
+      					</ul>
+              </div>
             </div>
           </div>
-        </div>
     
 META;
     

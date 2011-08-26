@@ -48,13 +48,13 @@ if(count($question->options) > 0) {
               <td>
                 <select id="columns" name="columns" class="spaced-right">
 <?php
-echo ViewHelper::render_options($columns, $question->get_columns(), 3, '', '', ' cols');
+echo ViewHelper::render_options($columns, $question->get_columns(), 3, false, '', '', ' cols');
 ?>
                 </select>
                 <label for="rows" class="spaced-right"><strong>x</strong></label>
                 <select id="rows" name="rows" class="spaced-right-large">
 <?php 
-echo ViewHelper::render_options($rows, $question->get_rows(), 3, '', '', ' rows');
+echo ViewHelper::render_options($rows, $question->get_rows(), 3, false, '', '', ' rows');
 ?>
                 </select>
                 <label for="editor"><strong>Editor</strong></label>
