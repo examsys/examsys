@@ -45,7 +45,7 @@ if ($all_media['filenames'][$index] != '') {
             <tr<?php echo $alt_c ?>>
               <th><label for="option_correct<?php echo $index ?>">Correct Answers</label><br /><span class="note">(Use &lt;ctrl&gt; plus mouse<br />to select several items)</span></th>
               <td>
-                <select id="option_correct<?php echo $index ?>" name="option_correct<?php echo $index ?>[]" multiple="multiple" size="<?php echo $select_size ?>">
+                <select id="option_correct<?php echo $index ?>" name="option_correct<?php echo $index ?>[]" multiple="multiple" size="<?php echo $select_size ?>" class="extmatch-correct">
 <?php
 echo ViewHelper::render_options($option_texts, $selected, 3);
 ?>

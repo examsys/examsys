@@ -23,6 +23,8 @@ $(function () {
     return false;
   });
   
+  $('.extmatch-option').blur(updateExtMatchOptions);
+  
   addVariableLinks();
 });
 
@@ -67,4 +69,27 @@ function variableLink(event) {
   var paperID = $('#paper_id').val();
   window.open("variable_link.php?paperID=" + paperID + "&elementID=" + event.data.elementID + "&q_id=" + questionID + "&iconID=" + event.data.iconID + "","paper","width=600,height=400,left=20,top=10,scrollbars=yes,toolbar=no,location=no,directories=no,status=yes,menubar=no,resizable");
   return false;
+}
+
+function updateExtMatchOptions() {
+  var index = $(this).attr('rel');
+  var raw_text = $(this).val();
+  var text = String.fromCharCode(parseInt(index) + 64) + '. ' + raw_text;
+  var opt_text = '';
+
+  if(index != undefined) {
+    $('.extmatch-correct').each(function () {
+      options = $(this).children('option');
+      if (index > options.length) {
+        if (raw_text != '') {
+          for (i = options.length + 1; i <= index; i++) {
+            opt_text = (i == index) ? text : String.fromCharCode(i + 64) + '.';
+            $(this).append('<option value="' + i + '">' + opt_text + '</option>');
+          }
+        }
+      } else {
+        options.get(index - 1).text = text;
+      }
+    });
+  }
 }
