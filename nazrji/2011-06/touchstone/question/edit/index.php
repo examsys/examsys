@@ -162,10 +162,10 @@ if($critical_error == '') {
           $option->populate_compound(array_keys($compound_fields), $_POST, $existing_values, 'option_');
           
           // Save editable fields that aren't unified
-          $option->populate($part_names, $option_no, $_POST, array_merge(array_keys($unified_part_names), $compound_fields), 'option_');
+          $option->populate($part_names, $option_no, $_POST, array_merge(array_keys($unified_part_names), array_keys($compound_fields)), 'option_');
           
           // Save fields that are the same across options
-          $option->populate_unified($unified_part_names, $_POST, array_merge(array_keys($unified_part_names), $compound_fields), 'option_');
+          $option->populate_unified($unified_part_names, $_POST, array_merge(array_keys($unified_part_names), array_keys($compound_fields)), 'option_');
         } else {
           // Create new option if have required data
           $option = Option::option_factory($mysqli, $userID, $question, $option_no, array('marks' => 1));
@@ -182,10 +182,10 @@ if($critical_error == '') {
             $option->populate_compound(array_keys($compound_fields), $_POST, $existing_values, 'option_');
                                     
             // Save editable fields that aren't unified
-            $option->populate($part_names, $option_no, $_POST, array_merge(array_keys($unified_part_names), $compound_fields), 'option_');
+            $option->populate($part_names, $option_no, $_POST, array_merge(array_keys($unified_part_names), array_keys($compound_fields)), 'option_');
             
             // Save fields that are the same across options
-            $option->populate_unified($unified_part_names, $_POST, array_merge(array_keys($unified_part_names), $compound_fields), 'option_');
+            $option->populate_unified($unified_part_names, $_POST, array_merge(array_keys($unified_part_names), array_keys($compound_fields)), 'option_');
 
             $question->options[] = $option;
           }

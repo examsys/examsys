@@ -39,7 +39,6 @@ Class QuestionEXTMATCH extends Question {
   
   protected $_required_fields = array('type', 'leadin', 'option_order', 'owner_id', 'status');
   protected $_fields_editable = array('theme', 'leadin', 'notes', 'option_order', 'bloom', 'status');
-  protected $_fields_unified = array('correct');
   protected $_fields_compound = array('stem', 'media', 'correct_fback');
   
   // ACCESSORS

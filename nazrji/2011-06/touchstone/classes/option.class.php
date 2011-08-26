@@ -102,7 +102,7 @@ Class Option extends TouchStoneObject {
    */
   public function populate($fields, $index, $data, $exclude=array(), $prefix='') {
     foreach ($fields as $section_name) {
-      if (!in_array($section_name, $exclude)) {
+      if (!in_array($section_name, $exclude, true)) {
         $field = $prefix . $section_name . $index;
         
         // If 'correct' is not a unified field then its value if not in POST is negative
@@ -125,7 +125,7 @@ Class Option extends TouchStoneObject {
    */
   public function populate_unified($fields, $data, $exclude=array(), $prefix='') {
     foreach ($fields as $section_name => $section_label) {
-      if (!in_array($section_name, $exclude)) {
+      if (!in_array($section_name, $exclude, true)) {
         $field = $prefix . $section_name;
         $get_method = "get_$section_name";
         $old_value = $this->$get_method();
@@ -302,7 +302,7 @@ QUERY;
    */
   public function set_text($value) {
     if($value != $this->text and !in_array('text', array_keys($this->_fields_unified))) {
-      $this->set_modified_field('text', $this->text);
+      $this->set_modified_field('text', $this->text, "Option #{$this->_number} Text");
     }
     $this->text = $value;
   }

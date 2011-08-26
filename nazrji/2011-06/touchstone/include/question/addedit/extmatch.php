@@ -76,7 +76,7 @@ $(function () {
 ?>
             <dt><?php echo $mandatory . ' ' . chr($index + 65) ?>.</dt>
             <dd>
-              <textarea rows="1" id="option_text<?php echo $index ?>" name="option_text<?php echo $index ?>" class="form-small"><?php echo $option_text ?></textarea>
+              <textarea rows="1" id="option_text<?php echo $index + 1 ?>" name="option_text<?php echo $index + 1 ?>" rel="<?php echo $index + 1 ?>" class="extmatch-option form-small"><?php echo $option_text ?></textarea>
               <input name="optionid<?php echo $index + 1 ?>" value="<?php echo $option_id ?>" type="hidden" />
             </dd>
 <?php
@@ -114,7 +114,7 @@ for ($index = 1; $index <= $question->max_stems; $index++):
             <h2>Scenario <?php echo $roman[$index - 1] ?></h2>
           </div>
           
-          <table id="q-options" class="form" summary="Edit question options">
+          <table id="q-options" class="form" summary="Edit scenario <?php echo $roman[$index - 1] ?>">
 <?php
   include 'options/opt_extmatch.php';
 ?>
@@ -127,7 +127,7 @@ endfor;
 <?php
 if($question->get_locked() == '') {
 ?>
-        <table id="q-options" class="form" summary="Edit question options">
+        <table id="q-options" class="form" summary="Add more options">
           <tbody id="add-option-holder">
             <tr>
               <th>&nbsp;</th>
