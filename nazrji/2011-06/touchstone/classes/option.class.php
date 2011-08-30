@@ -152,13 +152,16 @@ Class Option extends TouchStoneObject {
         $get_method = "get_all_{$section_name}s";
         $original_vals = $this->$get_method();
         for ($i = 1; $i <= $this->_question->max_stems; $i++) {
+          $old_val = (isset($original_vals[$i - 1])) ? $original_vals[$i - 1] : '';
           if (isset($_POST["{$prefix}{$section_name}{$i}"]) and $data["{$prefix}{$section_name}{$i}"] != '') {
-            $old_val = (isset($original_vals[$i - 1])) ? $original_vals[$i - 1] : '';
             ${$section_name}[] = $data["{$prefix}{$section_name}{$i}"];
             if (!isset($old_val) or $data["{$prefix}{$section_name}{$i}"] != $old_val) {
               $this->log_compound_field_change($section_name, $section_name, $i, $old_val, $data["{$prefix}{$section_name}{$i}"], 'Edit Scenario');
             }
           } else {
+            if (isset($old_val) and $old_val != '') {
+              $this->log_compound_field_change($section_name, $section_name, $i, $old_val, '', 'Edit Scenario');
+            } 
             ${$section_name}[] = '';
           }
         }
@@ -427,11 +430,18 @@ QUERY;
   
   public static function option_factory($mysqli, $user_id, $question, $number, $data=-1) {
     $object = null;
+    $root = (substr($_SERVER['DOCUMENT_ROOT'], -1) == DIR_SEPARATOR) ? $_SERVER['DOCUMENT_ROOT'] : $_SERVER['DOCUMENT_ROOT'] . DIR_SEPARATOR;
+    $root .= 'touchstone/classes/';
     
     $question_type = $question->get_type();
     $classname = 'Option' . strtoupper($question_type);
     $classfile = 'options/option_' . strtolower($question_type) . '.class.php';
-    include_once $classfile;
+    if (file_exists($root . $classfile)) {
+      include_once $classfile;
+    } else {
+      $classname = 'Option';
+    }
+      
     if($data != -1 and ctype_digit($data)) {
         try {
           $object = new $classname($mysqli, $user_id, $question, $number, $data);
@@ -515,7 +525,14 @@ QUERY;
    * @param integer $option_number
    */
   protected function track_delete($logger, $option_number) {
-    $logger->track_change('Deleted Option', $this->question_id, $this->_user_id, $this->text, '', 'Option #' . $option_number);
+    $old_val = '';
+    if ($this->text != '') {
+      $old_val = $this->text;
+    } elseif (isset($this->_modified_fields['text'])) {
+      $old_val = $this->_modified_fields['text']['value'];
+    }
+    
+    $logger->track_change('Deleted Option', $this->question_id, $this->_user_id, $old_val, '', 'Option #' . $option_number);
   }
   
   /**
@@ -548,15 +565,22 @@ QUERY;
       $log_value_new .= $this->convert_compound_field_value($new_value, $this->_fields_compound[$field]);
     }
     
-    $this->_question->add_unified_field_modification($field . $index, $field . $index, $log_value_old, $log_value_new, $category);
+    if ($log_value_old != '' or $log_value_new != '') {
+      $this->_question->add_unified_field_modification($field . $index, $field . $index, $log_value_old, $log_value_new, $category);
+    }
   }
   
   protected function convert_compound_field_value($value, $type) {
     $converted = '';
-    switch ($type) {
-      case 'ucalpha':
-        $converted .= chr(64 + $value);
-        break;
+    if ($value != '') {
+      switch ($type) {
+        case 'ucalpha':
+          $converted .= chr(64 + $value);
+          break;
+        default:
+          $converted = $value;
+          break;
+      }
     }
     return $converted;
   }

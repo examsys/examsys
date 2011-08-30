@@ -96,6 +96,10 @@ dd {
   text-align: left!important;
 }
 
+.align-centre {
+  text-align: center!important;
+}
+
 .spaced-top {
   padding-top: 12px;
 }
@@ -322,6 +326,10 @@ div.form {
 
 .form-tiny {
   width: 80px;
+}
+
+.form-minute {
+  width: 70px;
 }
 
 .form-img {

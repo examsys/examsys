@@ -10,9 +10,8 @@ $stem = (isset($stems[$index - 1])) ? $stems[$index - 1] : '';
 $feedback = (isset($all_feedback[$index - 1])) ? $all_feedback[$index - 1] : '';
 $selected = (isset($correct_answers[$index - 1])) ? $correct_answers[$index - 1] : '';
 $select_size = (count($option_texts) < 10) ? count($option_texts) : 10;
-
-// TODO: put proper values into these fields
-?>          <tr<?php echo $alt_c ?>>
+?>
+            <tr<?php echo $alt_c ?>>
               <th><?php echo $mandatory ?><label for="edit_extmatch<?php echo $index ?>">Stem</label></th>
               <td>
                 <?php echo wysiwyg_editor('edit_extmatch' . $index, 'question_stem' . strval($index), $stem); ?>

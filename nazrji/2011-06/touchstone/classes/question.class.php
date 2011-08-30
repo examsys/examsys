@@ -182,13 +182,16 @@ Class Question extends TouchStoneObject {
         $get_method = "get_all_{$section_name}s";
         $original_vals = $this->$get_method();
         for ($i = 1; $i <= $this->max_stems; $i++) {
+          $old_val = (isset($original_vals[$i - 1])) ? $original_vals[$i - 1] : '';
           if (isset($data["{$prefix}{$section_name}{$i}"]) and $data["{$prefix}{$section_name}{$i}"] != '') {
-            $old_val = (isset($original_vals[$i - 1])) ? $original_vals[$i - 1] : '';
             ${$section_name}[] = $data["{$prefix}{$section_name}{$i}"];
             if (!isset($old_val) or $data["{$prefix}{$section_name}{$i}"] != $old_val) {
               $this->add_unified_field_modification($section_name . $i, $section_name . $i, $old_val, $data["{$prefix}{$section_name}{$i}"], 'Edit Scenario');
             }
           } else {
+            if (isset($old_val) and $old_val != '') {
+              $this->add_unified_field_modification($section_name . $i, $section_name . $i, $old_val, '', 'Edit Scenario');
+            } 
             ${$section_name}[] = '';
           }
         }
@@ -1160,6 +1163,11 @@ QUERY;
         }
       } else {
         $success = $option->save($i);
+        if ($success and $option->id != $oid) {
+          // Unset temporary option index
+          $this->options[$option->id] = $this->options[$oid];
+          unset($this->options[$oid]);
+        }
       }
       
       if (!$success) break;

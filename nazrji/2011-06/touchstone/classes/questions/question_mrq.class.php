@@ -35,7 +35,7 @@ Class QuestionMRQ extends Question {
     parent::__construct($mysqli, $user_id, $data);
     
     // 'correct' is not a unified field for MRQ
-    self::$_fields_editable[] = 'correct';
+    $this->_fields_editable[] = 'correct';
   }
 
   /**

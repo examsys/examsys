@@ -57,7 +57,6 @@ Class QuestionEXTMATCH extends Question {
    * @return multitype:
    */
   public function set_all_stems($value) {
-    // TODO: Track changes
     $this->stems = $value;
     $this->set_scenario();
   }
@@ -95,7 +94,6 @@ Class QuestionEXTMATCH extends Question {
    * @return multitype:
    */
   public function set_all_medias($value) {
-    // TODO: Track changes
     $this->all_media_names = $value;
     $this->set_media();
   }
@@ -114,7 +112,6 @@ Class QuestionEXTMATCH extends Question {
    * @return multitype:
    */
   public function set_all_media_widths($value) {
-    // TODO: Track changes
     $this->all_media_widths = $value;
     $this->set_media();
   }
@@ -133,7 +130,6 @@ Class QuestionEXTMATCH extends Question {
    * @return multitype:
    */
   public function set_all_media_heights($value) {
-    // TODO: Track changes
     $this->all_media_heights = $value;
     $this->set_media();
   }
@@ -152,7 +148,6 @@ Class QuestionEXTMATCH extends Question {
    * @return multitype:
    */
   public function set_all_correct_fbacks($value) {
-    // TODO: Track changes
     $this->all_feedback = $value;
     $this->set_correct_fback();
   }

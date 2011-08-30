@@ -24,10 +24,10 @@
  * @package
  */
 
-Class OptionEXTMATCH extends Option {
+Class OptionMATRIX extends Option {
   
   protected $all_corrects = array();
-  protected $_fields_compound = array('correct' => 'ucalpha');
+  protected $_fields_compound = array('correct' => 'raw');
   
   // ACCESSORS
   
@@ -47,19 +47,12 @@ Class OptionEXTMATCH extends Option {
   }
 
   public function get_correct() {
-    $stems = explode('|', $this->correct);
-    foreach ($stems as $stem) {
-      $this->all_corrects[] = explode('$', $stem);
-    }
+    $this->all_corrects = explode('|', $this->correct);
     return $this->correct;
   }
   
   public function set_correct($value=-1) {
-    $tmp = array();
-    foreach ($this->all_corrects as $correct) {
-      $tmp[] = (is_array($correct)) ? implode('$', $correct) : '';
-    }
-    $this->correct = implode('|', $tmp);
+    $this->correct = implode('|', $this->all_corrects);
   }
 }
 

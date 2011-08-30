@@ -71,8 +71,6 @@ $(function () {
       $option_id = -1;
     }
     if ($option_text != '') $option_texts[$index + 1] = chr($index + 65) . '. ' . $option_text;
-    
-    // TODO: check what the updateoptions JS does
 ?>
             <dt><?php echo $mandatory . ' ' . chr($index + 65) ?>.</dt>
             <dd>
@@ -136,9 +134,9 @@ if($question->get_locked() == '') {
               </td>
             </tr>
           </tbody>
+        </table>
 <?php
 }
 ?>          
-        </table>
 
         
