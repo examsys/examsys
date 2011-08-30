@@ -42,7 +42,7 @@ Class Option extends TouchStoneObject {
   
   protected static $_fields = array('question_id', 'text', 'media', 'media_width', 'media_height', 'correct_fback', 'incorrect_fback', 'correct', 'marks');
   protected $_fields_editable = array('text', 'media', 'correct_fback', 'incorrect_fback', 'correct', 'marks');
-  protected $_required_fields = array('question_id', 'marks');
+  protected $_fields_required = array('question_id', 'marks');
   protected $_fields_unified = array();
   
   protected $_question = null;
@@ -488,8 +488,8 @@ QUERY;
     
     // If there are errors return an appropriate message
     $missing_fields = '';
-    foreach($this->_required_fields as $req) {
-      if(empty($this->$req)) $missing_fields .= $this->_pretty_names[$req] . ', ';
+    foreach($this->_fields_required as $req) {
+      if($this->$req === '' or $this->$req === null) $missing_fields .= $this->_pretty_names[$req] . ', ';
     }
     if($missing_fields != '') {
       $rval = 'The following required fields have not been supplied: ' . rtrim($missing_fields, ', ');

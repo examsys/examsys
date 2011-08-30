@@ -60,7 +60,7 @@ echo ViewHelper::render_options($question->get_option_orders(), $question->get_o
           <thead>
             <tr>
               <th colspan="2">&nbsp;</th>
-              <th class="small"><strong>Answer</strong></th>
+              <th class="small">Answer</th>
             </tr>
           </thead>
 <?php

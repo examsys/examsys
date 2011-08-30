@@ -26,6 +26,7 @@
 // TODO: JS for convert MRQ to MCQ
 // TODO: JS for changing labels for Dichotomous if score method changes
 // TODO: JS for changing message in fill-in-the-blank if score method changes
+// TODO: SCT - old SCT type
 // TODO: handle keyword based and random
 // TODO: check - was leadin/scenario change tracking looking at the plain version?
 // TODO: validation in JS
@@ -147,8 +148,6 @@ if($critical_error == '') {
       $unified_part_names = $question->get_unified_fields();
       
       for ($option_no = 1; $option_no < $question->max_options; $option_no++) {
-        // TODO: rationalise
-        // TODO: fix change tracking
         $option = null;
         
         if (isset($_POST["optionid$option_no"]) and $_POST["optionid$option_no"] != -1) {

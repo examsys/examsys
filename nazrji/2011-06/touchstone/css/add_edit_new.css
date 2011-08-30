@@ -350,6 +350,12 @@ div.form {
 	vertical-align: bottom;
 }
 
+.form-fixed {
+	background-color: #d6dff7;
+	overflow: hidden;
+	resize: none;
+}
+
 .form th {
   width: 156px;
   text-align: right;

@@ -25,6 +25,8 @@ $(function () {
   
   $('.extmatch-option').blur(updateExtMatchOptions);
   
+  $('.sct-type').change(updateSctType);
+  
   addVariableLinks();
 });
 
@@ -92,4 +94,13 @@ function updateExtMatchOptions() {
       }
     });
   }
+}
+
+function updateSctType() {
+  var type_index = $(this).val() - 1;
+  $('#sct-hypothesis').text(sct_types[type_index][0]);
+  
+  $('.sct-option').each(function (i) {
+    $(this).val(sct_types[type_index][i + 1]);
+  })
 }

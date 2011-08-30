@@ -22,6 +22,9 @@
 * @package
 */
 
+
+// TODO: fix use of 'rel' on textarea
+
 $options = $question->options;
 $option_ids = array_keys($options);
 $num_options = count($options);
