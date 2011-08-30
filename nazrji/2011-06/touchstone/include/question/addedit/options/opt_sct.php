@@ -22,7 +22,7 @@
 * @package
 */
 
-$mandatory = ($index <= 3) ? '<span class="mandatory">*</span>' : '';
+$mandatory = '<span class="mandatory">*</span>';
 if ($index %2 == 0) {
   $alt = ' alt';
   $alt_c = ' class="alt"';
