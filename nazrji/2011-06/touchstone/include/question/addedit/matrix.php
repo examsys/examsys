@@ -60,7 +60,7 @@ echo ViewHelper::render_options($question->get_option_orders(), $question->get_o
           <h2>Options</h2>
         </div>
 
-        <table id="q-options" class="form align-centre" summary="Edit question options">
+        <table id="q-options" class="form align-centre bordered" summary="Edit question options">
           <tr>
             <th>&nbsp;</th>
 <?php

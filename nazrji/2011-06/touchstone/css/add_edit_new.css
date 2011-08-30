@@ -153,6 +153,20 @@ dd {
   background-color: #e3e3e3;
 }
 
+.bordered {
+  border: 1px solid #7f9db9;
+}
+
+.separated {
+  border-right: 1px solid #cfcfcf;
+  border-top: 1px solid #cfcfcf;
+}
+
+td.separated:last-child {
+  border-right: none;
+	border-top: 1px solid #cfcfcf;
+}
+
 #errors {
 	width: 790px;
 	padding: 4px 4px 4px 52px;
