@@ -27,6 +27,8 @@ $(function () {
   
   $('.sct-type').change(updateSctType);
   
+  $('#scale_type').change(checkShowLikertCustom);
+  
   addVariableLinks();
 });
 
@@ -103,4 +105,13 @@ function updateSctType() {
   $('.sct-option').each(function (i) {
     $(this).val(sct_types[type_index][i + 1]);
   })
+}
+
+function checkShowLikertCustom() {
+  if ($(this).val() == 'custom') {
+    $('#extended-option-list').slideDown();
+  } else {
+    $('#extended-option-list').slideUp();
+  }
+  
 }

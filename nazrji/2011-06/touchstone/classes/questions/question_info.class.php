@@ -37,5 +37,13 @@ Class QuestionINFO extends Question {
   public function use_bloom() {
     return false;
   }
+
+  /**
+   * Does this question type allow changes to the correct answer after it is locked?
+   * @return boolean
+   */
+  public function allow_correction() {
+    return false;
+  }
 }
 

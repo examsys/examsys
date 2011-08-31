@@ -61,7 +61,7 @@ $(function () {
 
         <div id="extmatch-options">
           <h2>Available Options</h2>
-          <dl id="extmatch-option-list">
+          <dl id="extended-option-list">
 <?php
   
   for ($index = 0; $index < $question->max_options; $index++) {
