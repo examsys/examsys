@@ -24,11 +24,9 @@
  * @package
  */
 
-// TODO: deletion of layers - requires Flash change?
-
 require_once realpath(dirname(__FILE__).DIR_SEPARATOR.'../options/option_hotspot.class.php');
 
-Class QuestionHOTSPOT extends Question {
+Class QuestionLABELLING extends Question {
   
   protected $_fields_required = array('type', 'leadin', 'option_order', 'owner_id', 'status');
       
@@ -56,32 +54,41 @@ Class QuestionHOTSPOT extends Question {
   }
   
   public function set_points1($value) {
-    if ($value != $this->get_points1()) {
-      $this->set_modified_field('points1', $this->points1);
-      $this->points1 = $value;
+    // Correct label locations if too far over.
+    $first_split = explode(';',$value);
+    $second_split = explode('$',$first_split[8]);
+    $tmp_coords = '';
+    $a = 0;
+    $b = 0;
+    foreach ($second_split as $stuff) {
+      if ($a == 2 and $stuff < 150 and $b == 0) $stuff = 8;
+      if ($a == 2 and $stuff < 150 and $b == 9) $stuff = 110;
+      if ($tmp_coords == '') {
+        $tmp_coords = $stuff;
+      } else {
+        $tmp_coords .= '$' . $stuff;
+      }
+      $a++;
+      if ($a == 4) {
+        $a = 0;
+        $b++;
+      }
+    }
+    $tmp_points = $first_split[0] . ';' . $first_split[1] . ';' . $first_split[2] . ';' . $first_split[3] . ';' . $first_split[4] . ';' . $first_split[5] . ';' . $first_split[6] . ';' . $first_split[7] . ';' . $tmp_coords;
+    for ($i=9; $i<count($first_split); $i++) {
+      $tmp_points .= ';' . $first_split[$i];
     }
     
-    $leadin = '';
-    $layers = explode('|',$value);
-    $i = 0;
-    foreach ($layers as $layer) {
-      $parts = explode('~',$layer);
-      if ($leadin == '') {
-        $leadin = chr(65 + $i) . ') ' . $parts[0];
-      } else {
-        $leadin .= ', ' . chr(65 + $i) . ') ' . $parts[0];
-      }
-      $i++;
+    if ($tmp_points != $this->get_points1()) {
+      $this->set_modified_field('points1', $this->points1);
+      $this->points1 = $tmp_points;
     }
-    $marks = $i;
-
-    $this->leadin = $this->leadin_plain = $leadin;
+    
     if (count($this->options) > 0) {
       $option = reset($this->options);
-      $option->set_correct($value);
-      $option->set_marks($marks);
+      $option->set_correct($this->points1);
     } else {
-      $this->options[] = new OptionHOTSPOT($this->_mysqli, $this->_user_id, $this, 1, array('correct' => $value, 'marks' => $marks));
+      $this->options[] = new OptionHOTSPOT($this->_mysqli, $this->_user_id, $this, 1, array('correct' => $this->points1));
     }
   }
 }

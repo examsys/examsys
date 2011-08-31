@@ -38,7 +38,7 @@ Class Option extends TouchStoneObject {
   protected $correct_fback = '';
   protected $incorrect_fback = '';
   protected $correct = '';
-  public $marks = null;
+  public $marks = 1;
   
   protected static $_fields = array('question_id', 'text', 'media', 'media_width', 'media_height', 'correct_fback', 'incorrect_fback', 'correct', 'marks');
   protected $_fields_editable = array('text', 'media', 'correct_fback', 'incorrect_fback', 'correct', 'marks');
