@@ -62,6 +62,8 @@ Class Question extends TouchStoneObject {
   public $max_stems = 0;
   protected $_answer_positive = 'y';
   protected $_answer_negative = 'n';
+  protected $_requires_media = false;
+  protected $_requires_flash = false;
   
   // Imploded DB version of teams
   protected $group = '';
@@ -298,9 +300,9 @@ QUERY;
             $db_field = (in_array($key, array_keys($this->_field_map))) ? $this->_field_map[$key] : $key;
             $change_field = (in_array($key, array_keys($this->_change_field_map))) ? $this->_change_field_map[$key] : $key;
             if ($value['message'] == '') {
-              $this->_logger->track_change('Edit Question', $this->id, $this->_user_id, $value['value'], $this->$key, $db_field);
+              $this->_logger->track_change('Edit Question', $this->id, $this->_user_id, $value['value'], $this->$key, $change_field);
             } else {
-              $this->_logger->track_change($value['message'], $this->id, $this->_user_id, $value['value'], $this->$key, $db_field);
+              $this->_logger->track_change($value['message'], $this->id, $this->_user_id, $value['value'], $this->$key, $change_field);
             }
           }
         }
@@ -433,6 +435,22 @@ QUERY;
     }
     
     return $errors;
+  }
+  
+  /**
+   * Does this question type require a media upload?
+   * @return boolean
+   */
+  public function requires_media() {
+    return $this->_requires_media;
+  }
+  
+  /**
+   * Does this question type require the Flash JavaScript includes?
+   * @return boolean
+   */
+  public function requires_flash() {
+    return $this->_requires_flash;
   }
   
   // ACCESSORS
@@ -980,6 +998,10 @@ QUERY;
     return $this->comments;
   }
   
+  /**
+   * Set the comments list for the question
+   * @param unknown_type $value
+   */
   public function set_comments($value) {
     // Question class is not currently handling the persisting of comments to the database
     $this->comments = $value;

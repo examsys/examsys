@@ -135,7 +135,7 @@ function uploadFile($fileID) {
   if ($unique_name != 'none' and $unique_name != '') {
     if (!move_uploaded_file($_FILES[$fileID]['tmp_name'], $cfg_web_root . "touchstone/media/$unique_name"))  {
       echo uploadError($_FILES[$fileID]['error']);
-      exit;
+      return false;
     } else {
       chmod($cfg_web_root . "touchstone/media/$unique_name", 0664);
       switch ($_FILES[$fileID]['type']) {

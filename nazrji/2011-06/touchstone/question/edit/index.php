@@ -50,7 +50,6 @@ $module = (empty($_GET['module'])) ? '' : $_GET['module'];
 $critical_error = '';
 
 $q_no = (empty($_GET['q_no'])) ? '' : $_GET['q_no'];
-$q_type = '';
 $q_type_full = '';
 
 $errors = array();
@@ -85,9 +84,24 @@ if(empty($_REQUEST['q_id'])) {
   }
 }
 
-if($critical_error == '') {
-  // Save data
-  if (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
+// Handle upload of files for question types that require it
+if ($critical_error == '' and isset($_POST['submit_media'])) {
+  $new_media = uploadFile('q_media');
+  if ($new_media !== false) {
+    $question->set_media($new_media);
+  } else {
+    $critical_error = 'Error uploading media file. Please click <a href="#" onclick="javascript: history.back();">Back</a> and try again.';
+  }
+}
+
+if($critical_error == '') {  
+  // Get any existing media
+  $current_media = $question->get_media();
+  
+  $show_media_upload = false;
+  if ($question->requires_media() and $current_media['filename'] == '') {
+    $show_media_upload = true;
+  } elseif (isset($_POST['submit']) and $_POST['submit'] == 'Correct') {
     // TODO: check how this generalises to all question types
     $unified_part_names = $question->get_unified_fields();
     $save_individual = in_array('correct', array_keys($unified_part_names));
@@ -114,6 +128,7 @@ if($critical_error == '') {
   
     //  redirect();
   } elseif (isset($_POST['submit']) and ($_POST['submit'] == 'Save Changes' or $_POST['submit'] == 'Limited Save')) {
+    // Save data
     if ($question->id == -1 or check_fullSave($question->id,$mysqli)) {
       
       $part_names = $question->get_editable_fields();
@@ -294,6 +309,13 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
 <script type="text/javascript" src="../../javascript/jquery.touchstone.js"></script>
 <script type="text/javascript" src="../../javascript/jquery.addedit.js"></script>
 <script type="text/javascript" src="../../javascript/staff_help.js"></script>
+<?php
+if ($question->requires_flash()) {
+?>
+<script language="JavaScript" src="../../javascript/ie_fix.js"></script>
+<script type="text/javascript" src="../../javascript/flash_include.js"></script>
+<?php
+}?>
 </head>
 <body>
 	<div id="page-header">
@@ -362,12 +384,18 @@ if($critical_error != '') {
   $query_string = '';
   if($question->id != -1) {
     $query_string = '?q_id=' . $question->id;
-    $query_string .= ($q_no != '') ? '&q_no=' . $q_no : '';
-    $query_string .= ($paper_id != -1) ? '&paper_id=' . $paper_id : '';
-    $query_string .= ($module != '') ? '&module=' . $module : '';
+  } else {
+    $query_string .= '?type=' . $question->get_type();;
   }
-  
+  $query_string .= ($q_no != '') ? '&q_no=' . $q_no : '';
+  $query_string .= ($paper_id != -1) ? '&paper_id=' . $paper_id : '';
+  $query_string .= ($module != '') ? '&module=' . $module : '';
+
   // TODO: client side validation
+  
+  if ($show_media_upload) {
+    include '../../include/question/addedit/media_upload.php';
+  }
 ?>
 
 	<form name="edit_form" method="post" action="./<?php echo $query_string ?>" enctype="multipart/form-data">
