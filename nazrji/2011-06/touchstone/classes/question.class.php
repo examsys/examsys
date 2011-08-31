@@ -380,7 +380,15 @@ QUERY;
   }
   
   /**
-   * Does this question type allow changes to the correct answer after it is locked
+   * Does this question type use Bloom's Taxonomy?
+   * @return boolean
+   */
+  public function use_bloom() {
+    return true;
+  }
+  
+  /**
+   * Does this question type allow changes to the correct answer after it is locked?
    * @return boolean
    */
   public function allow_correction() {
@@ -528,9 +536,10 @@ QUERY;
    */
   public function set_scenario($value) {
     $scenario = (trim(strip_tags($value)) == '') ? '' : $value;
-    if ($scenario != $this->scenario) {
-      $this->set_modified_field('scenario', $this->scenario);
-      $this->scenario = $value;
+    $tmp_scenario = trim($this->scenario);
+    if ($scenario != $tmp_scenario) {
+      $this->set_modified_field('scenario', $tmp_scenario);
+      $this->scenario = $scenario;
     }
   }
   

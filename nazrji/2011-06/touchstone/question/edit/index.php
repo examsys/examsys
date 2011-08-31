@@ -442,7 +442,7 @@ require_once '../../include/question/addedit/' . $question->get_type() . '.php'
         
 <?php
 // TODO: check usage of old echoMetadata function - SAFE TO REMOVE
-echo render_metadata($mysqli, $question, true, $module, $disabled);
+echo render_metadata($mysqli, $question, $question->use_bloom(), $module, $disabled);
 ?>
         </div>
       </div>
