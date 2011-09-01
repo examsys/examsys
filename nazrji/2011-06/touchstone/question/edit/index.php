@@ -309,6 +309,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
 <script type="text/javascript" src="../../javascript/jquery.touchstone.js"></script>
 <script type="text/javascript" src="../../javascript/jquery.addedit.js"></script>
 <script type="text/javascript" src="../../javascript/staff_help.js"></script>
+<script type="text/javascript" src="../../javascript/jquery.formhelpers.js"></script>
 <?php
 if ($question->requires_flash()) {
 ?>
@@ -398,7 +399,7 @@ if($critical_error != '') {
   }
 ?>
 
-	<form name="edit_form" method="post" action="./<?php echo $query_string ?>" enctype="multipart/form-data">
+	<form name="edit_form" method="post" action="./<?php echo $query_string ?>" enctype="multipart/form-data" class="clearinput">
     <div id="tabbed-content"<?php echo $banner_spacer ?>>
 			<div id="editor" class="tab-area">
         
