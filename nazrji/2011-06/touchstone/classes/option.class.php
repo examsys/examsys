@@ -504,7 +504,7 @@ QUERY;
    * @param integer $option_number
    */
   protected function track_new($logger, $option_number) {
-    $logger->track_change('New Option', $this->question_id, $this->_user_id, $this->text, '', 'Option #' . $option_number);
+    $logger->track_change('New Option', $this->question_id, $this->_user_id, '', $this->text, 'Option #' . $option_number);
   }
     
   /**

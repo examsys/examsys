@@ -205,7 +205,8 @@ if($critical_error == '') {
           }
         }
         
-        if ($option != null and !$option->is_blank() and !in_array('media', $question->get_compound_fields())) {
+        // TODO: have removed 'and !$option->is_blank()' - check if this is needed here
+        if ($option != null and !in_array('media', $question->get_compound_fields())) {
           // Handle changes in media
           $old_media = $option->get_media();
           if (isset($_FILES["option_media$option_no"]) and $_FILES["option_media$option_no"]['name'] != $old_media['filename'] and ($_FILES["option_media$option_no"]['name'] != 'none' and $_FILES["option_media$option_no"]['name'] != '')) {

@@ -42,7 +42,7 @@ $roman = array('i','ii','iii','iv','v','vi','vii','viii','ix','x');
 $all_media = $question->get_all_media();
 $stems = $question->get_all_stems();
 $all_feedback = $question->get_all_correct_fbacks();
-$general_media = array('filename' => $all_media['filenames'][0], 'width' => $all_media['widths'][0], 'height' => $all_media['heights'][0]);
+$current_media = array('filename' => $all_media['filenames'][0], 'width' => $all_media['widths'][0], 'height' => $all_media['heights'][0]);
 
 // Work out how many 'questions' to show
 $visible_questions = 0;
