@@ -83,6 +83,9 @@ Class Question extends TouchStoneObject {
   protected $changes = null;
   protected $comments = null;
   
+  // These fields will be forced to the negative answer value. Useful for checkboxes that won't have a value posted if unset
+  protected $_fields_force = array();
+  
   // 'Unified' fields are the same for all options
   protected $_fields_unified = array('correct' => 'Correct Answer');
   protected $_unified_field_modifications = array();
@@ -138,8 +141,12 @@ Class Question extends TouchStoneObject {
    */
   public function populate($fields, $data, $exclude=array(), $prefix='') {
     foreach($fields as $section_name) {
-      if(!in_array($section_name, $exclude) and isset($data["$section_name"])) {
-        $value = $data["$section_name"];
+      if (count($this->_fields_force) > 0 and !isset($data[$section_name]) and in_array($section_name, $this->_fields_force)) {
+        $data[$section_name] = $this->_answer_negative;
+      }
+      
+      if(!in_array($section_name, $exclude) and isset($data[$section_name])) {
+        $value = $data[$section_name];
         
         if ($section_name == 'score_method' and isset($data['other']) and $data['other'] == 1) $value = 'other';
         

@@ -22,12 +22,10 @@
 * @package
 */
 
-
-
-
 $scales = $question->get_scale_types();
 $scale_value = $question->get_scale_type();
-$na_checked = ($question->get_not_applicable()) ? ' checked="checked"' : '';
+$na_checked = ($question->get_not_applicable() == 'true') ? ' checked="checked"' : '';
+
 ?>
 				<table id="q-details" class="form" summary="Edit question details">
 					<tbody>
@@ -37,12 +35,12 @@ $na_checked = ($question->get_not_applicable()) ? ' checked="checked"' : '';
               <td>
                 <select id="scale_type" name="scale_type">
 <?php 
+$scale_found = false;
 foreach ($scales as $scale_group => $scale):
 ?>
                   <optgroup label="<?php echo $scale_group ?>">
 <?php 
   foreach ($scale as $value => $text):
-    $scale_found = false;
     if ($value == $scale_value) {
       $sel = ' selected="selected"';
       $scale_found = true;
@@ -63,6 +61,7 @@ if (!$scale_found) {
   $show_custom = '';
 } else {
   $sel = '';
+  $show_custom = ' class="hide"';
 }
 ?>
                   <optgroup label="Custom">
@@ -82,15 +81,13 @@ if (!$scale_found) {
               <td>
                 <dl id="extended-option-list"<?php echo $show_custom ?>>
 <?php
-if (!$scale_found) {
-  $custom_scales = explode('|', $scale_value);
-}
-for ($i = 1; $i <= 10; $i++):
-  $val = (isset($custom_scales[$i])) ? $custom_scales[$i] : '';
+$custom_scale = $question->get_all_custom_scales();
+for ($i = 1; $i <= $question->max_stems; $i++):
+  $val = (isset($custom_scale[$i - 1])) ? $custom_scale[$i - 1] : '';
 ?>
-                  <dt><label for="custom<?php echo $i ?>"><?php echo $i ?>.</label></dt>
+                  <dt><label for="question_custom_scale<?php echo $i ?>"><?php echo $i ?>.</label></dt>
                   <dd>
-                    <input type="text" id="custom<?php echo $i ?>" name="custom<?php echo $i ?>" value="<?php echo $val ?>" class="form-small">
+                    <input type="text" id="question_custom_scale<?php echo $i ?>" name="question_custom_scale<?php echo $i ?>" value="<?php echo $val ?>" class="form-small">
                   </dd>
 
 <?php
