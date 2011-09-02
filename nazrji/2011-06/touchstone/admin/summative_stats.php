@@ -28,7 +28,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Summative Exam Stats<?php echo " $cfg_install_type"; ?></title>
+<title><?php echo $string['summativeexamstats'] . ' ' . $cfg_install_type; ?></title>
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
 <style>
 .n {text-align:right}
@@ -48,18 +48,18 @@
 <div id="content" class="content" style="font-size:80%">
 <table cellpadding="0" cellspacing="0" border="0" width="100%">
 <tr>
-<td colspan="2" style="background-color:#F1F5FB"><div class="breadcrumb"><a href="../index.php">Home</a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php">Administrative Tools</a></div></td>
+<td colspan="2" style="background-color:#F1F5FB"><div class="breadcrumb"><a href="../index.php"><?php echo $string['home']; ?></a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php"><?php echo $string['administrativetools']; ?></a></a></div></td>
 <td style="background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(233); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="Help" border="0" /></a></td>
 </tr>
 <tr>
-<td colspan="2" style="background-color:#F1F5FB"><div style="margin-left:10px; font-size:200%; font-weight:bold"><?php echo $_GET['year']; ?> Summative Exam Stats</td>
+<td colspan="2" style="background-color:#F1F5FB"><div style="margin-left:10px; font-size:200%; font-weight:bold"><?php echo $_GET['year']; ?>/<?php echo (substr($_GET['year'],2,2)+1); ?> <?php echo $string['summativeexamstats']; ?></td>
 <td style="background-color:#F1F5FB; text-align:right; vertical-align:bottom; padding-bottom:2px; padding-right:6px"><select name="year" id="year" onchange="jumpTo()">
 <?php
 for ($i=2005; $i<=date('Y'); $i++) {
   if ($i == $_GET['year']) {
-    echo "<option value=\"$i\" selected>$i</option>\n";
+    echo "<option value=\"$i\" selected>$i/" . substr(($i+1),2,2) . "</option>\n";
   } else {
-    echo "<option value=\"$i\">$i</option>\n";
+    echo "<option value=\"$i\">$i/" . substr(($i+1),2,2) . "</option>\n";
   }
 }
 ?>
@@ -70,8 +70,8 @@ for ($i=2005; $i<=date('Y'); $i++) {
 
 <blockquote>
 <table cellpadding="2" cellspacing="0" border="1" style="width:400px">
-<tr><th colspan="2">&nbsp;</th><th colspan="3">Cohort Sizes</th><th>&nbsp;</th></tr>
-<tr><th>Month</th><th>Papers</th><th>Mean</th><th>Min</th><th>Max</th><th>Student/Papers</th></tr>
+<tr><th colspan="2">&nbsp;</th><th colspan="3"><?php echo $string['cohortsizes']; ?></th><th>&nbsp;</th></tr>
+<tr><th><?php echo $string['month']; ?></th><th><?php echo $string['papers']; ?></th><th><?php echo $string['mean']; ?></th><th><?php echo $string['min']; ?></th><th><?php echo $string['max']; ?></th><th><?php echo $string['studentpapers']; ?></th></tr>
 <?php
 $total_paper_no = 0;
 $total_student_no = 0;
@@ -82,7 +82,7 @@ $month_max = 0;
 $old_month = '';
 $distinct_users = array();
 
-$result = $mysqli->prepare("SELECT property_id, paper_title, DATE_FORMAT(start_date,'%M'), start_date, end_date, labs FROM properties WHERE start_date > " . $year . "0101000000 AND end_date < " . $year . "1231235959 AND labs != '' AND deleted IS NULL ORDER BY start_date");
+$result = $mysqli->prepare("SELECT property_id, paper_title, DATE_FORMAT(start_date,'%M'), start_date, end_date, labs FROM properties WHERE start_date > " . $year . "0901000000 AND end_date < " . ($year+1) . "0831235959 AND labs != '' AND deleted IS NULL ORDER BY start_date");
 $result->execute();
 $result->store_result();
 $result->bind_result($property_id, $paper_title, $month, $start_date, $end_date, $labs);
@@ -107,18 +107,14 @@ while ($result->fetch()) {
         echo "<tr><td>$old_month</td><td class=\"n\">$month_paper_no</td><td class=\"n\">" . round($month_student_no/$month_paper_no,1) . "</td><td class=\"n\">$month_min</td><td class=\"n\">$month_max</td><td class=\"n\">" . number_format($month_student_no) . "</td></tr>\n";
       }
     }
-    //echo "<tr><td colspan=\"4\"><strong>$month</strong></td></tr>\n";
     $month_paper_no = 0;
     $month_student_no = 0;
     $month_min = 99999;
     $month_max = 0;
   }
   
-  if ($paper_count == 0) {
-    //echo "<tr style=\"color:red\"><td>$property_id $paper_title</td><td>$start_date</td><td class=\"n\">$paper_count</td></tr>\n";
-  } else {
+  if ($paper_count > 0) {
     $lab_no = substr_count($labs, ',') + 1;
-    //echo "<tr><td><a href=\"../paper/details.php?paperID=$property_id\">$paper_title</a></td><td>$start_date</td><td class=\"n\">$paper_count</td><td class=\"n\">$lab_no</td></tr>\n";
     $total_paper_no++;
     $total_student_no += $paper_count;
     $month_paper_no++;
@@ -139,7 +135,7 @@ $mysqli->close();
 </table>
 <br />
 <?php
-  echo 'Unique students = ' . number_format(count($distinct_users));
+  printf($string['uniquestudents'], number_format(count($distinct_users)));
 ?>
 </blockquote>
 </div>

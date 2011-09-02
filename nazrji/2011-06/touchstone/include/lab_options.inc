@@ -48,15 +48,15 @@
 <tr><td>
 
 <table style="display:block" cellpadding="4" cellspacing="0" border="0" id="menu1a">
-<tr><td><a href="create_lab.php" target="body"><img src="../artwork/new_lab_16.png" width="16" height="16" alt="" border="0" /></a></td><td class="menuitem"><a href="create_lab.php">Create new lab</a></td></tr>
-<tr><td><img src="../artwork/edit_grey.png" width="16" height="16" alt="" border="0" /></td><td class="greymenuitem">View/Edit Details</td></tr>
-<tr><td><img src="../artwork/red_cross_grey.png" width="16" height="16" alt="" border="0" /></td><td class="greymenuitem">Delete Lab</td></tr>
+<tr><td><a href="create_lab.php" target="body"><img src="../artwork/new_lab_16.png" width="16" height="16" alt="" border="0" /></a></td><td class="menuitem"><a href="create_lab.php"><?php echo $string['createnewlab']; ?></a></td></tr>
+<tr><td><img src="../artwork/edit_grey.png" width="16" height="16" alt="" border="0" /></td><td class="greymenuitem"><?php echo $string['vieweditdetails']; ?></td></tr>
+<tr><td><img src="../artwork/red_cross_grey.png" width="16" height="16" alt="" border="0" /></td><td class="greymenuitem"><?php echo $string['deletelab']; ?></td></tr>
 </table>
 
 <table style="display:none" cellpadding="4" cellspacing="0" border="0" id="menu1b">
-<tr><td><a href="create_lab.php" target="body"><img src="../artwork/new_lab_16.png" width="16" height="16" alt="" border="0" /></a></td><td class="menuitem"><a href="create_lab.php">Create new lab</a></td></tr>
-<tr><td><img onclick="viewDetails()" src="../artwork/edit.png" width="16" height="16" alt="" border="0" /></td><td class="menuitem"><a href="" onclick="viewDetails(); return false;">View/Edit Details</a></td></tr>
-<tr><td><img onclick="deleteLab()" src="../artwork/red_cross.png" width="16" height="16" alt="" border="0" /></td><td class="menuitem"><a href="" onclick="deleteLab(); return false;">Delete Lab</a></td></tr>
+<tr><td><a href="create_lab.php" target="body"><img src="../artwork/new_lab_16.png" width="16" height="16" alt="" border="0" /></a></td><td class="menuitem"><a href="create_lab.php"><?php echo $string['createnewlab']; ?></a></td></tr>
+<tr><td><img onclick="viewDetails()" src="../artwork/edit.png" width="16" height="16" alt="" border="0" /></td><td class="menuitem"><a href="" onclick="viewDetails(); return false;"><?php echo $string['vieweditdetails']; ?></a></td></tr>
+<tr><td><img onclick="deleteLab()" src="../artwork/red_cross.png" width="16" height="16" alt="" border="0" /></td><td class="menuitem"><a href="" onclick="deleteLab(); return false;"><?php echo $string['deletelab']; ?></a></td></tr>
 </table>
 </td></tr>
 </table>

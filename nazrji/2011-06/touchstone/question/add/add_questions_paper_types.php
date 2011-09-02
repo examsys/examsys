@@ -40,14 +40,14 @@ a:hover {color:black}
 
 <body>
 <br />
-<table border="0" style="padding-left:10px; padding-right:2px; padding-bottom:5px; width:100%; color:#1E3287"><tr><td><nobr>Papers by Type (6)</nobr></td><td style="width:98%"><hr noshade="noshade" style="border:0px; height:1px; color:#CCCCCC; background-color:#CCCCCC; width:100%" /></td></tr></table>
+<table border="0" style="padding-left:10px; padding-right:2px; padding-bottom:5px; width:100%; color:#1E3287"><tr><td><nobr><?php echo $string['papersbytype']; ?> (6)</nobr></td><td style="width:98%"><hr noshade="noshade" style="border:0px; height:1px; color:#CCCCCC; background-color:#CCCCCC; width:100%" /></td></tr></table>
 <br />
-<div class="f"><a href="add_questions_paper_list.php?paper_type=0" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_paper_list.php?paper_type=0">Formative</a></div>
-<div class="f"><a href="add_questions_paper_list.php?paper_type=1" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_paper_list.php?paper_type=1">Progress Test</a></div>
-<div class="f"><a href="add_questions_paper_list.php?paper_type=2" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_paper_list.php?paper_type=2">Summative Exams</a></div>
-<div class="f"><a href="add_questions_paper_list.php?paper_type=3" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_paper_list.php?paper_type=3">Surveys</a></div>
-<div class="f"><a href="add_questions_paper_list.php?paper_type=4" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_paper_list.php?paper_type=4">OSCE Stations</a></div>
-<div class="f"><a href="add_questions_paper_list.php?paper_type=5" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_paper_list.php?paper_type=5">Offline Papers</a></div>
+<div class="f"><a href="add_questions_paper_list.php?paper_type=0" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_paper_list.php?paper_type=0"><?php echo $string['formative self-assessment']; ?></a></div>
+<div class="f"><a href="add_questions_paper_list.php?paper_type=1" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_paper_list.php?paper_type=1"><?php echo $string['progress test']; ?></a></div>
+<div class="f"><a href="add_questions_paper_list.php?paper_type=2" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_paper_list.php?paper_type=2"><?php echo $string['summative exam']; ?></a></div>
+<div class="f"><a href="add_questions_paper_list.php?paper_type=3" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_paper_list.php?paper_type=3"><?php echo $string['survey']; ?></a></div>
+<div class="f"><a href="add_questions_paper_list.php?paper_type=4" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_paper_list.php?paper_type=4"><?php echo $string['osce station']; ?></a></div>
+<div class="f"><a href="add_questions_paper_list.php?paper_type=5" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_paper_list.php?paper_type=5"><?php echo $string['offline paper']; ?></a></div>
 <br clear="all" />
 
 <?php
@@ -60,7 +60,7 @@ a:hover {color:black}
   }
 ?>
 <br />
-<table border="0" style="padding-left:10px; padding-right:2px; padding-bottom:5px; width:100%; color:#1E3287"><tr><td><nobr>Papers by Team (<?php echo count($team_list); ?>)</nobr></td><td style="width:98%"><hr noshade="noshade" style="border:0px; height:1px; color:#CCCCCC; background-color:#CCCCCC; width:100%" /></td></tr></table>
+<table border="0" style="padding-left:10px; padding-right:2px; padding-bottom:5px; width:100%; color:#1E3287"><tr><td><nobr><?php echo $string['papersbyteam']; ?> (<?php echo count($team_list); ?>)</nobr></td><td style="width:98%"><hr noshade="noshade" style="border:0px; height:1px; color:#CCCCCC; background-color:#CCCCCC; width:100%" /></td></tr></table>
 <br />
 <?php
   foreach($team_list as $team_name) {

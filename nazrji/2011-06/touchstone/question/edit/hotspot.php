@@ -34,7 +34,7 @@ if (isset($_POST['Corrected']) and $_POST['Corrected'] == 'OK') {
   $points = $_POST['old_points'];
 
   // Record the change in 'track_changes'.
-  $result = $mysqli->prepare("INSERT INTO track_changes VALUES (NULL,'Post Exam Answer change',?,$userID,?,?,NOW(),'Correct Answer')");
+  $result = $mysqli->prepare("INSERT INTO track_changes VALUES (NULL, 'Post Exam Answer change', ?, $userID, ?, ?, NOW(), 'Correct Answer')");
   $result->bind_param('iss', $q_id, $_POST['old_points'], $points);
   $result->execute();  
   $result->close();

@@ -45,7 +45,7 @@
 
 <div id="content" class="content" style="font-size:80%">
 <table cellpadding="0" cellspacing="0" border="0" width="100%">
-<tr><td style="background-color:#F1F5FB"><div class="breadcrumb"><a href="../index.php">Home</a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php">Administrative Tools</a></div><div style="font-size:200%; margin-left:10px; font-weight:bold">Clear Guest Accounts</div></td><td style="background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(243); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="Help" border="0" /></a></td></tr>
+<tr><td style="background-color:#F1F5FB"><div class="breadcrumb"><a href="../index.php"><?php echo $string['home']; ?></a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php"><?php echo $string['administrativetools']; ?></a></div><div style="font-size:200%; margin-left:10px; font-weight:bold"><?php echo $string['clearguestaccounts']; ?></div></td><td style="background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(243); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="<?php echo $string['help']; ?>" border="0" /></a></td></tr>
 <tr><td colspan="2" style="height:3px"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td></tr>
 </table>
 <br />
@@ -64,7 +64,7 @@
 <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
 <blockquote>
 <table cellpadding="2" cellspacing="0" border="0" style="font-size:100%; width:100%">
-<tr><td class="sechead">Clear</td><td class="sechead">User</td><td class="sechead">Password</td><td class="sechead">Surname</td><td class="sechead">First Names</td><td class="sechead">Title</td><td class="sechead">Student ID</td><td class="sechead">Date Account Reserved</td><td class="sechead">Assessment Taken</td></tr>
+<tr><td class="sechead"><?php echo $string['clear']; ?></td><td class="sechead"><?php echo $string['user']; ?></td><td class="sechead"><?php echo $string['password']; ?></td><td class="sechead"><?php echo $string['surname']; ?></td><td class="sechead"><?php echo $string['firstnames']; ?></td><td class="sechead"><?php echo $string['title']; ?></td><td class="sechead"><?php echo $string['studentid']; ?></td><td class="sechead"><?php echo $string['datereserved']; ?></td><td class="sechead"><?php echo $string['assessmenttaken']; ?></td></tr>
 <?php
   $used = array();
 
@@ -93,10 +93,10 @@
       $result->fetch();
       $result->close();
     
-      if ($used[$i]['surname'] == '') $used[$i]['surname'] = '<span style="color:#C00000">&lt;unset&gt;</span>';
-      if ($used[$i]['first_names'] == '') $used[$i]['first_names'] = '<span style="color:#C00000">&lt;unset&gt;</span>';
-      if ($used[$i]['title'] == '') $used[$i]['title'] = '<span style="color:#C00000">&lt;unset&gt;</span>';
-      if ($used[$i]['student_id'] == '') $used[$i]['student_id'] = '<span style="color:#C00000">&lt;unset&gt;</span>';
+      if ($used[$i]['surname'] == '') $used[$i]['surname'] = '<span style="color:#C00000">' . $string['unset'] . '</span>';
+      if ($used[$i]['first_names'] == '') $used[$i]['first_names'] = '<span style="color:#C00000">' . $string['unset'] . '</span>';
+      if ($used[$i]['title'] == '') $used[$i]['title'] = '<span style="color:#C00000">' . $string['unset'] . '</span>';
+      if ($used[$i]['student_id'] == '') $used[$i]['student_id'] = '<span style="color:#C00000">' . $string['unset'] . '</span>';
     
       echo "<tr><td class=\"l\">";
       if ($paper_title == '') {
@@ -112,12 +112,12 @@
       }
       echo "</tr>";
     } else {
-      echo "<tr><td class=\"loff\"><input type=\"checkbox\" name=\"clear$i\" value=\"\" disabled /></td><td class=\"loff\">user$i</td><td class=\"loff\">guest$i</td><td colspan=\"6\" class=\"loff\" style=\"text-align:center\">free</td></tr>";
+      echo "<tr><td class=\"loff\"><input type=\"checkbox\" name=\"clear$i\" value=\"\" disabled /></td><td class=\"loff\">user$i</td><td class=\"loff\">guest$i</td><td colspan=\"6\" class=\"loff\" style=\"text-align:center\">" . $string['free'] . "</td></tr>";
     }
   }
   $mysqli->close();
 ?>
-<tr><td colspan="9" style="text-align:center"><input style="width:120px" type="submit" name="submit" value="Clean Up" /></td></tr>
+<tr><td colspan="9" style="text-align:center"><input style="width:120px" type="submit" name="submit" value="<?php echo $string['cleanup']; ?>" /></td></tr>
 </table>
 </blockquote>
 </form>

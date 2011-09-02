@@ -133,19 +133,19 @@ h2 {font-size:120%}
 </head>
 <body>
 <p>Dear " . $_POST['new_users_title'] . " " . ucwords($_POST['new_surname']) . ",</p>
-<p>A new account has been created to access the online assessment and survey system TouchStone. Your personal authentication details are:</p>
-<p>Username: " . $_POST['new_username'] . "<br />
-Password: " . $_POST['new_password'] . "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"color:#808080\">(case-sensitive)</span></p>";
+<p>" . $string['email1'] . "</p>
+<p>" . $string['username'] . ": " . $_POST['new_username'] . "<br />
+" . $string['password'] . ": " . $_POST['new_password'] . "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"color:#808080\">" . $string['casesensitive'] . "</span></p>";
 
       if (strpos($tmp_roles,'Staff') !== false) {
-        $message .= "<p>To log into the system goto: <a href=\"https://{$_SERVER['HTTP_HOST']}/touchstone/\">https://{$_SERVER['HTTP_HOST']}/touchstone/</a></p>";
+        $message .= "<p>" . $string['email2'] . " <a href=\"https://{$_SERVER['HTTP_HOST']}/touchstone/\">https://{$_SERVER['HTTP_HOST']}/touchstone/</a></p>";
       } elseif (strpos($tmp_roles,'Student') !== false) {
       } else {
-        $message .= "<p>To log into the system goto: <a href=\"https://{$_SERVER['HTTP_HOST']}/touchstone/\">https://{$_SERVER['HTTP_HOST']}/touchstone/</a></p>";
-        $message .= "<p>When you log in you will be taken to a personal screen listing all the papers that require your attention for review.</p>";
+        $message .= "<p>" . $string['email2'] . " <a href=\"https://{$_SERVER['HTTP_HOST']}/touchstone/\">https://{$_SERVER['HTTP_HOST']}/touchstone/</a></p>";
+        $message .= "<p>" . $string['email3'] . "</p>";
       }
       $message .= "</body>\n</html>";
-      mail ($to, $subject, $message, $headers) or print "<p>Could not send mail to <strong>" . $_POST['new_email'] . "</strong>.</p>";
+      mail ($to, $subject, $message, $headers) or print "<p>" . $string['couldnotsend'] . " <strong>" . $_POST['new_email'] . "</strong>.</p>";
     }
     ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -235,37 +235,37 @@ function ldaplookup() {
 <table border="0" cellspacing="1" cellpadding="0" style="background-color:#95AEC8; text-align:left">
 <tr><td>
 <table border="0" cellspacing="6" cellpadding="0" width="100%" style="background-color:white">
-<tr><td width="32"><img src="../artwork/user_female_32.png" width="32" height="32" alt="User Icon" /></td><td class="title">Create new User</td></tr>
+<tr><td width="32"><img src="../artwork/user_female_32.png" width="32" height="32" alt="User Icon" /></td><td class="title"><?php echo $string['createnewuser']; ?></td></tr>
 </table>
 </td></tr>
 <tr><td>
 <table border="0" cellspacing="6" cellpadding="0" style="background-color:#F1F5FB">
 <?php
   if ($cfg_use_ldap == true) {
-    echo '<tr><td colspan=\"4\"><input type="button" name="lookup" value="Get LDAP details" onclick="ldaplookup();" /><td></tr>';
+    echo '<tr><td colspan=\"4\"><input type="button" name="lookup" value="' . $string['getldapdetails'] . '" onclick="ldaplookup();" /><td></tr>';
   }
 ?>
-<tr><td align="right"><span class="field">Title</span></td><td>
+<tr><td align="right"><span class="field"><?php echo $string['title']; ?></span></td><td>
 <select id="new_users_title" name="new_users_title" size="1">
-<option value="Dr">Dr</option>
-<option value="Mr" selected>Mr</option>
-<option value="Mrs">Mrs</option>
-<option value="Miss">Miss</option>
-<option value="Ms">Ms</option>
-<option value="Professor">Professor</option>
+<option value="Dr"><?php echo $string['dr']; ?></option>
+<option value="Mr" selected><?php echo $string['mr']; ?></option>
+<option value="Mrs"><?php echo $string['mrs']; ?></option>
+<option value="Miss"><?php echo $string['miss']; ?></option>
+<option value="Ms"><?php echo $string['ms']; ?></option>
+<option value="Professor"><?php echo $string['professor']; ?></option>
 </select></td></tr>
-<tr><td align="right"><span class="field">Last Name</span></td><td><input type="text" id="new_surname" name="new_surname" size="40" value="<?php if (isset($_POST['surname'])) echo $_POST['surname']; ?>" /></td></tr>
-<tr><td align="right"><span class="field">First Name(s)</span></td><td><input type="text" id="new_first_names" name="new_first_names" size="40" value="<?php if (isset($_POST['first_names'])) echo $_POST['first_names']; ?>" /></td></tr>
-<tr><td align="right"><span class="field">Email</span></td><td><input type="text" id="new_email" name="new_email" size="40" value="<?php if (isset($_POST['email'])) { echo $_POST['email']; } else { echo '@nottingham.ac.uk'; } ?>" /></td></tr>
-<tr><td align="right"><span class="field">Username</span></td><td><input type="text" id="new_username" name="new_username" size="12" <?php if (isset($_POST['username']) and $unique_username != true) echo ' style="background-color:#FFD9D9; color:#800000; border:1px solid #800000" value="' . $_POST['username'] . '"'; ?>/>
-&nbsp;&nbsp;&nbsp;<span class="field">Password</span> <input type="text" id="new_password" name="new_password" value="<?php
+<tr><td align="right"><span class="field"><?php echo $string['lastname']; ?></span></td><td><input type="text" id="new_surname" name="new_surname" size="40" value="<?php if (isset($_POST['surname'])) echo $_POST['surname']; ?>" /></td></tr>
+<tr><td align="right"><span class="field"><?php echo $string['firstnames']; ?></span></td><td><input type="text" id="new_first_names" name="new_first_names" size="40" value="<?php if (isset($_POST['first_names'])) echo $_POST['first_names']; ?>" /></td></tr>
+<tr><td align="right"><span class="field"><?php echo $string['email']; ?></span></td><td><input type="text" id="new_email" name="new_email" size="40" value="<?php if (isset($_POST['email'])) { echo $_POST['email']; } else { echo '@nottingham.ac.uk'; } ?>" /></td></tr>
+<tr><td align="right"><span class="field"><?php echo $string['username']; ?></span></td><td><input type="text" id="new_username" name="new_username" size="12" <?php if (isset($_POST['username']) and $unique_username != true) echo ' style="background-color:#FFD9D9; color:#800000; border:1px solid #800000" value="' . $_POST['username'] . '"'; ?>/>
+&nbsp;&nbsp;&nbsp;<span class="field"><?php echo $string['password']; ?></span> <input type="text" id="new_password" name="new_password" value="<?php
   if (isset($_POST['password'])) {
     echo $_POST['password'];
   } else {
     echo gen_password();
   }
 ?>" size="12" /></td></tr>
-<tr><td align="right"><span class="field">Year of Study</span></td><td>
+<tr><td align="right"><span class="field"><?php echo $string['yearofstudy']; ?></span></td><td>
 <select name="new_year">
 <?php
   for ($tmp_year=1; $tmp_year<=6; $tmp_year++) {
@@ -278,50 +278,56 @@ function ldaplookup() {
 ?>
 </select>
 </td></tr>
-<tr><td align="right"><span class="field">Type/Course</span></td><td>
+<tr><td align="right"><span class="field"><?php echo $string['typecourse']; ?></span></td><td>
 <select name="new_grade" size="1" style="width:350px">
 <option value=""></option>
-<optgroup label="University Staff">
-<option value="University Lecturer">Academic Lecturer</option>
-<option value="University Admin">Administrator</option>
-<option value="Technical Staff">IT/Technical</option>
+<optgroup label="<?php echo $string['universitystaff']; ?>">
+<option value="University Lecturer"><?php echo $string['academiclecturer']; ?></option>
+<option value="University Admin"><?php echo $string['administrator']; ?></option>
+<option value="Technical Staff"><?php echo $string['ittechnical']; ?></option>
 </optgroup>
-<optgroup label="External Staff">
-<option value="NHS Lecturer">NHS Lecturer/Consultant</option>
-<option value="NHS Admin">NHS Admin</option>
-<option value="Staff External Examiner">External Examiner</option>
-<option value="Invigilator">Invigilator</option>
+<optgroup label="<?php echo $string['externalstaff']; ?>">
+<?php
+if (strpos($_SERVER['HTTP_HOST'],'.uk') !== false) {
+  echo "<option value=\"NHS Lecturer\">" . $string['nhslecturer'] . "</option>\n";
+  echo "<option value=\"NHS Admin\">" . $string['nhsadmin'] . "</option>\n";
+}
+?>
+<option value="Staff External Examiner"><?php echo $string['externalexaminer']; ?></option>
+<option value="Invigilator"><?php echo $string['invigilator']; ?></option>
 <?php
   $old_school = '';
-  $degree_details = $mysqli->query("SELECT DISTINCT degree, description, school FROM degrees WHERE school NOT IN ('university','NHS','N/A') ORDER BY school, degree");
-  while ($degree_row = $degree_details->fetch_assoc()) {
-    if ($old_school != $degree_row['school']) {
-      echo "</optgroup>\n<optgroup label=\"Students - " . $degree_row['school'] . "\">\n";    
+  $result = $mysqli->prepare("SELECT DISTINCT degree, description, school FROM degrees WHERE school NOT IN ('university','NHS','N/A') ORDER BY school, degree");
+  $result->execute();
+  $result->bind_result($degree, $description, $school);
+  while ($result->fetch()) {
+    if ($old_school != $school) {
+      echo "</optgroup>\n<optgroup label=\"" . $string['students'] . " - $school\">\n";    
     }
-    echo "<option value=\"" . $degree_row['degree'] . "\">" . $degree_row['degree'] . ": " . $degree_row['description'] . "</option>\n";
-    $old_school = $degree_row['school'];
+    echo "<option value=\"$degree\">$degree: $description</option>\n";
+    $old_school = $school;
   }
-  $degree_details->close();
+  $result->close();
 ?>
 </optgroup>
 </select>
 </td></tr>
 
 <tr>
-<td align="right"><span class="field">Gender</span></td><td>
+<td align="right"><span class="field"><?php echo $string['gender']; ?></span></td><td>
 <select id="new_gender" name="new_gender" size="1">
 <option value=""></option>
-<option value="Male"<?php if (isset($_POST['gender']) and $_POST['gender'] == 'Male') echo ' selected'; ?>>Male</option>
-<option value="Female"<?php if (isset($_POST['gender']) and $_POST['gender'] == 'Female') echo ' selected'; ?>>Female</option>
+<option value="Male"<?php if (isset($_POST['gender']) and $_POST['gender'] == 'Male') echo ' selected'; ?>><?php echo $string['male']; ?></option>
+<option value="Female"<?php if (isset($_POST['gender']) and $_POST['gender'] == 'Female') echo ' selected'; ?>><?php echo $string['female']; ?></option>
 </select>
 </td>
 </tr>
-<tr><td align="right"><span class="field">Student ID</span></td><td><input type="text" size="15" name="new_sid" /></td></tr>
-<tr><td align="right">&nbsp;</td><td style="color:#808080">(only if student)</td></tr>
+<tr><td align="right"><span class="field"><?php echo $string['studentid']; ?></span></td><td><input type="text" size="15" name="new_sid" /></td></tr>
+<tr><td align="right">&nbsp;</td><td style="color:#808080"><?php echo $string['onlyifstudent']; ?></td></tr>
 <tr><td colspan="2">&nbsp;</td></tr>
-<tr><td>&nbsp;</td><td><input type="checkbox" name="new_welcome" value="1" />&nbsp;Send welcome email to user (inc. password)</td></tr>
+<tr><td>&nbsp;</td><td><input type="checkbox" name="new_welcome" value="1" />&nbsp;<?php echo $string['sendwelcomeemail']; ?></td></tr>
 <tr><td colspan="2" align="center">
-<input type="submit" name="submit" value="Create Account" /></td></tr>
+<input type="submit" name="submit" value="<?php echo $string['createaccount']; ?>" /></td></tr>
 </table>
 </td></tr>
 </table>

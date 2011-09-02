@@ -52,7 +52,7 @@
   }
 
   function pStats($value) {
-    global $pstats;
+    global $pstats, $string;
 		
     $html = '';
     
@@ -79,7 +79,7 @@
     }
 	
     if ($value < 0.2) {
-      $html = '<span style="color:#C00000">p=' . number_format($value,2) . '</span><img src="../artwork/red_flag.png" width="14" height="14" alt="Warning: Difficulty is less than 0.2" border="0" />';
+      $html = '<span style="color:#C00000">p=' . number_format($value,2) . '</span><img src="../artwork/red_flag.png" width="14" height="14" alt="' . $string['warning1'] . '" border="0" />';
     } else {
       $html = 'p=' . number_format($value,2);
     }
@@ -87,7 +87,7 @@
   }
 
   function dStats($value) {
-    global $dstats;
+    global $dstats, $string;
     if ($value >= 0.35) {
       $dstats['highest']++;
     } elseif ($value >= 0.25 and $value < 0.35) {
@@ -108,7 +108,7 @@
       $dstats['no'] = 1;
     }
     if ($value < 0.15) {
-      $html = '<span style="color:#C00000">d=' . number_format($value,2) . '</span><img src="../artwork/red_flag.png" width="14" height="14" alt="Warning: Discrimination less than 0.15" border="0" />';
+      $html = '<span style="color:#C00000">d=' . number_format($value,2) . '</span><img src="../artwork/red_flag.png" width="14" height="14" alt="' . $string['warning2'] . '" border="0" />';
     } else {
       $html = 'd=' . number_format($value,2);
     }
@@ -127,7 +127,7 @@
     return number_format($top_ratio - $bottem_ratio,2);
   }
 
-  function storeData(&$log_array, $qID, $answer, $q_type, $scoring, $mark, $totalpos, $opt_order, $analysis_type) {
+  function storeData(&$log_array, $qID, $answer, $q_type, $scoring, $display, $mark, $totalpos, $opt_order, $analysis_type) {
     global $stop_words;
     
     if (!isset($log_array[$qID]['mark'])) $log_array[$qID]['mark'] = 0;
@@ -158,7 +158,7 @@
         break;
       case 'calculation':
         $tmp_score_method = array();
-        $tmp_score_method = explode(',',$scoring);
+        $tmp_score_method = explode(',',$display);
         $tolerance = $tmp_score_method[1];
         $tmp_first_split = explode('|', $answer);
         $user_ans_clean = $saved_response_clean = str_replace(',', '', str_replace(' ', '', $tmp_first_split[0]));
@@ -448,7 +448,7 @@
     return $html;
   }
 
-  function displayQuestion($q_no, $q_id, $theme, $scenario, $leadin, $q_type, $correct, $q_media, $q_media_width, $q_media_height, $options, $bottom_log, $top_log, $freq_log, $correct_buf, $candidate_no, $score_method, $labelcolor, $themecolor, $std) {
+  function displayQuestion($q_no, $q_id, $theme, $scenario, $leadin, $q_type, $correct, $q_media, $q_media_width, $q_media_height, $options, $bottom_log, $top_log, $freq_log, $correct_buf, $candidate_no, $score_method, $display_method, $labelcolor, $themecolor, $std) {
     global $user_no, $ex_no, $d_no, $d_total, $excluded, $user_total;
     if ($theme != '') echo "<tr><td colspan=\"2\"><h1 style=\"color:$themecolor\">$theme</h1></td></tr>\n";
     echo "<tr>\n";
@@ -500,7 +500,7 @@
               if (isset($excluded[$q_id]) and substr($excluded[$q_id],$blank_count-1,1) == '1') echo '; color:red; text-decoration:line-through';
               echo '">';
               
-              if ($score_method == 'dropdown') {
+              if ($display_method == 'dropdown') {
                 $options_array = array();
                 $options_array = explode(',',$blank_options);
                 $i = 0;
@@ -689,12 +689,12 @@
       				var num = message.substring(5,message.length);
       				setUpFlash(num, message, '<?php echo $q_media; ?>', '<?php echo trim($correct); ?>', '<?php echo $coords; ?>','0');
       			}
-      			write_string('<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="https://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0" id="flash<?php echo $q_no; ?>" width="<?php echo ($q_media_width + 300); ?>" height="<?php echo ($q_media_height + 2); ?>" align="middle">');
+      			write_string('<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="https://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0" id="flash<?php echo $q_no; ?>" width="<?php echo ($q_media_width + 301); ?>" height="<?php echo ($q_media_height + 25); ?>" align="middle">');
       			write_string('<param name="allowScriptAccess" value="always" />');
       			write_string('<param name="movie" value="/touchstone/reports/hotspot_analysis.swf" />');
       			write_string('<param name="quality" value="high" />');
       			write_string('<param name="bgcolor" value="#ffffff" />');
-      			write_string('<embed src="/touchstone/reports/hotspot_analysis.swf" quality="high" bgcolor="#ffffff" width="<?php echo ($q_media_width + 300); ?>" height="<?php echo ($q_media_height + 2); ?>" swliveconnect="true" id="flash<?php echo $q_no; ?>" name="flash<?php echo $q_no; ?>" align="middle" allowScriptAccess="always" type="application/x-shockwave-flash" pluginspage="https://www.macromedia.com/go/getflashplayer" />');
+      			write_string('<embed src="/touchstone/reports/hotspot_analysis.swf" quality="high" bgcolor="#ffffff" width="<?php echo ($q_media_width + 301); ?>" height="<?php echo ($q_media_height + 25); ?>" swliveconnect="true" id="flash<?php echo $q_no; ?>" name="flash<?php echo $q_no; ?>" align="middle" allowScriptAccess="always" type="application/x-shockwave-flash" pluginspage="https://www.macromedia.com/go/getflashplayer" />');
       			write_string('</object>');
           </script>
           </div>
@@ -1333,22 +1333,22 @@ p {margin-left:0px; margin-right:0px}
   $bottom_log_array = array();
   $top_log_array = array();
   if ($paper_type == '0') {
-    $result = $mysqli->prepare("(SELECT username, log0.userID, log0.q_id, user_answer, q_type, score_method, mark, totalpos, option_order, started FROM log0, questions, users WHERE log0.q_id=questions.q_id AND q_paper=? AND grade LIKE ? AND users.id=log0.userID AND (users.roles='Student' OR users.roles='graduate') AND started>=? AND started<=? $student_modules_sql) UNION ALL (SELECT username, log1.userID, log1.q_id, user_answer, q_type, score_method, mark, totalpos, option_order, started FROM log1, questions,  users WHERE log1.q_id=questions.q_id AND q_paper=? AND users.id=log1.userID AND (users.roles='Student' OR users.roles='graduate') AND started>=? AND started<=? " . str_replace('log0', 'log1', $student_modules_sql) . ")");
+    $result = $mysqli->prepare("(SELECT username, log0.userID, log0.q_id, user_answer, q_type, score_method, display_method, mark, totalpos, option_order, started FROM log0, questions, users WHERE log0.q_id=questions.q_id AND q_paper=? AND grade LIKE ? AND users.id=log0.userID AND (users.roles='Student' OR users.roles='graduate') AND started>=? AND started<=? $student_modules_sql) UNION ALL (SELECT username, log1.userID, log1.q_id, user_answer, q_type, score_method, display_method, mark, totalpos, option_order, started FROM log1, questions,  users WHERE log1.q_id=questions.q_id AND q_paper=? AND users.id=log1.userID AND (users.roles='Student' OR users.roles='graduate') AND started>=? AND started<=? " . str_replace('log0', 'log1', $student_modules_sql) . ")");
     $result->bind_param('isssiss', $paperID, $_GET['repdegree'], $startdate, $enddate, $paperID, $startdate, $enddate);
   } else {
-    $result = $mysqli->prepare("SELECT username, log$paper_type.userID, log$paper_type.q_id, user_answer, q_type, score_method, mark, totalpos, option_order, started FROM log$paper_type, questions, users WHERE log$paper_type.q_id=questions.q_id AND q_paper=? AND grade LIKE ? AND users.id=log$paper_type.userID AND (users.roles='Student' OR users.roles='graduate') AND DATE_ADD(started, INTERVAL 2 MINUTE)>=? AND started<=? $student_modules_sql");
+    $result = $mysqli->prepare("SELECT username, log$paper_type.userID, log$paper_type.q_id, user_answer, q_type, score_method, display_method, mark, totalpos, option_order, started FROM log$paper_type, questions, users WHERE log$paper_type.q_id=questions.q_id AND q_paper=? AND grade LIKE ? AND users.id=log$paper_type.userID AND (users.roles='Student' OR users.roles='graduate') AND DATE_ADD(started, INTERVAL 2 MINUTE)>=? AND started<=? $student_modules_sql");
     $result->bind_param('isss', $paperID, $_GET['repdegree'], $startdate, $enddate);
   }
   $result->execute();
-  $result->bind_result($username, $tmp_userID, $question_ID, $tmp_answer, $q_type, $score_method, $mark, $totalpos, $option_order, $started);
+  $result->bind_result($username, $tmp_userID, $question_ID, $tmp_answer, $q_type, $score_method, $display_method, $mark, $totalpos, $option_order, $started);
   
   while ($row = $result->fetch()) {
-    storeData($freq_array, $question_ID, $tmp_answer, $q_type, $score_method, $mark, $totalpos, $option_order, 'all');
+    storeData($freq_array, $question_ID, $tmp_answer, $q_type, $score_method, $display_method, $mark, $totalpos, $option_order, 'all');
     if (isset($bottom_cohort[$started][$username])) {
-      storeData($bottom_log_array, $question_ID, $tmp_answer, $q_type, $score_method, $mark, $totalpos, $option_order, 'bottom');
+      storeData($bottom_log_array, $question_ID, $tmp_answer, $q_type, $score_method, $display_method, $mark, $totalpos, $option_order, 'bottom');
     }
     if (isset($top_cohort[$started][$username])) {
-      storeData($top_log_array, $question_ID, $tmp_answer, $q_type, $score_method, $mark, $totalpos, $option_order, 'top');
+      storeData($top_log_array, $question_ID, $tmp_answer, $q_type, $score_method, $display_method, $mark, $totalpos, $option_order, 'top');
     }
   }
   $result->close();
@@ -1368,7 +1368,7 @@ p {margin-left:0px; margin-right:0px}
     // No one has taken the paper yet.
     echo '<tr><td class="h">';
     
-    echo '<div class="breadcrumb"><a href="../index.php">Home</a>';
+    echo '<div class="breadcrumb"><a href="../index.php">' . $string['home'] . '</a>';
     if ($folder != '') {
       echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?folder=' . $folder . '">' . $folder_name . '</a>';
     } elseif (isset($_GET['module']) and $_GET['module'] != '') {
@@ -1376,13 +1376,13 @@ p {margin-left:0px; margin-right:0px}
     }
     echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../paper/details.php?paperID=' . $_GET['paperID'] . '">' . $paper_title . '</a></div>';
     
-    echo "<span style=\"margin-left:10px; font-size:200%; color:black; font-weight:bold\">Frequency &amp; Discrimination (U-L) Analysis Report</span></td><td class=\"h\" style=\"text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(30); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"Help\" border=\"0\" /></a></td></tr>\n";
+    echo "<span style=\"margin-left:10px; font-size:200%; color:black; font-weight:bold\">" . $string['reporttitle'] . "</span></td><td class=\"h\" style=\"text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(30); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"Help\" border=\"0\" /></a></td></tr>\n";
     echo "<tr style=\"height:4px\"><td valign=\"top\" colspan=\"2\"><img src=\"../artwork/header_horizontal_line.gif\" width=\"100%\" height=\"3\" alt=\"Line\" /></td></tr>\n</table>\n<table cellpadding=\"1\" cellspacing=\"1\" border=\"0\" style=\"margin: 0px auto; width:75%; border: 1px solid #C0C0C0; text-align:left\">\n<tr><td colspan=\"2\" style=\"background-color:#F2B100; height:3px\"> </td></tr>\n<tr><td style=\"width:16px; padding-top:5px; padding-bottom:5px\"><img src=\"../artwork/information_icon.gif\" width=\"16\" height=\"16\" alt=\"i\" border=\"0\" /></td><td style=\"padding-top:5px; padding-bottom:5px\">&nbsp;This paper has not been attempted by anyone.</td></tr></table>\n";  
   } elseif ($user_no == 0) {
     // Not enough data for relevant cohort at selected percentage
     echo '<tr><td class="h">';
     
-    echo '<div class="breadcrumb"><a href="../index.php">Home</a>';
+    echo '<div class="breadcrumb"><a href="../index.php">' . $string['home'] . '</a>';
     if ($folder != '') {
       echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?folder=' . $folder . '">' . $folder_name . '</a>';
     } elseif (isset($_GET['module']) and $_GET['module'] != '') {
@@ -1390,7 +1390,7 @@ p {margin-left:0px; margin-right:0px}
     }
     echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../paper/details.php?paperID=' . $_GET['paperID'] . '">' . $paper_title . '</a></div>';
     
-    echo "<span style=\"margin-left:10px; font-size:200%; color:black; font-weight:bold\">Frequency &amp; Discrimination (U-L) Analysis Report</span></td><td class=\"h\" style=\"text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(30); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"Help\" border=\"0\" /></a></td></tr>\n";
+    echo "<span style=\"margin-left:10px; font-size:200%; color:black; font-weight:bold\">" . $string['reporttitle'] . "</span></td><td class=\"h\" style=\"text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(30); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"Help\" border=\"0\" /></a></td></tr>\n";
     echo "<tr style=\"height:4px\"><td valign=\"top\" colspan=\"2\"><img src=\"../artwork/header_horizontal_line.gif\" width=\"100%\" height=\"3\" alt=\"Line\" /></td></tr>\n</table>\n<table cellpadding=\"1\" cellspacing=\"1\" border=\"0\" style=\"margin: 0px auto; width:75%; border: 1px solid #C0C0C0; text-align:left\">\n<tr><td colspan=\"2\" style=\"background-color:#F2B100; height:3px\"> </td></tr>\n<tr><td style=\"width:16px; padding-top:5px; padding-bottom:5px\"><img src=\"../artwork/information_icon.gif\" width=\"16\" height=\"16\" alt=\"i\" border=\"0\" /></td><td style=\"padding-top:5px; padding-bottom:5px\">&nbsp;Not enough data to calculate upper and lower groups. Please select a higher percentage.</td></tr></table>\n";  
   } else {
   	// Capture the paper makeup.
@@ -1404,15 +1404,15 @@ p {margin-left:0px; margin-right:0px}
     if (isset($_GET['q_ids']) and $_GET['q_ids'] != '') {
       $qids_instring = ' AND q_id IN(' . $_GET['q_ids']. ')';
 	  }
-    $result = $mysqli->prepare("SELECT screen, q_id, q_type, theme, scenario, leadin, option_text, score_method, q_media, q_media_width, q_media_height, correct, std FROM (papers, questions, options) WHERE  papers.paper=? AND papers.question=questions.q_id AND questions.q_id = options.o_id $qids_instring ORDER BY screen, display_pos, id_num");
+    $result = $mysqli->prepare("SELECT screen, q_id, q_type, theme, scenario, leadin, option_text, score_method, display_method, q_media, q_media_width, q_media_height, correct, std FROM (papers, questions, options) WHERE  papers.paper=? AND papers.question=questions.q_id AND questions.q_id = options.o_id $qids_instring ORDER BY screen, display_pos, id_num");
     $result->bind_param('i', $paperID);
     $result->execute();
-    $result->bind_result($screen, $q_id, $q_type, $theme, $scenario, $leadin, $option_text, $score_method, $q_media, $q_media_width, $q_media_height, $correct, $std);
+    $result->bind_result($screen, $q_id, $q_type, $theme, $scenario, $leadin, $option_text, $score_method, $display_method, $q_media, $q_media_width, $q_media_height, $correct, $std);
     $result->store_result();
     while ($row = $result->fetch()) {
       if ($display_header == true) {
         echo '<tr><td class="h">';
-        echo '<div class="breadcrumb"><a href="../index.php">Home</a>';
+        echo '<div class="breadcrumb"><a href="../index.php">' . $string['home'] . '</a>';
         if ($folder != '') {
           echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?folder=' . $folder . '">' . $folder_name . '</a>';
         } elseif (isset($_GET['module']) and $_GET['module'] != '') {
@@ -1420,19 +1420,19 @@ p {margin-left:0px; margin-right:0px}
         }
         echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../paper/details.php?paperID=' . $_GET['paperID'] . '">' . $paper_title . '</a></div>';
         
-        echo "<span style=\"margin-left:10px; font-size:200%; color:black; font-weight:bold\">Frequency &amp; Discrimination (U-L) Analysis Report</span></td><td class=\"h\" style=\"text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(30); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"Help\" border=\"0\" /></a></td></tr>\n";
+        echo "<span style=\"margin-left:10px; font-size:200%; color:black; font-weight:bold\">" . $string['reporttitle'] . "</span></td><td class=\"h\" style=\"text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(30); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['help'] . "\" border=\"0\" /></a></td></tr>\n";
         echo "<tr style=\"height:4px\"><td valign=\"top\" colspan=\"2\"><img src=\"../artwork/header_horizontal_line.gif\" width=\"100%\" height=\"3\" alt=\"Line\" /></td></tr>\n</table>\n";
 
         echo '<br /><div align="center"><table cellpadding="4" cellspacing="0" border="0" width="95%" style="background-color:#E4EEFC; border:1px solid #B5C4DF">';
         echo '<tr><td style="text-align:left"><table cellpadding="2" cellspacing="0" border="0">';
-        echo '<tr><td style="margin:0px; font-weight:bold; text-align:right">Total&nbsp;candidate&nbsp;number</td><td style="width:500px">' . number_format($user_total) . '</td><td><img src="../artwork/red_flag.png" width="14" height="14" alt="Warning" /> Warning: <strong>p &lt; 0.2</strong> (i.e. very hard)</td></tr>';
-        echo '<tr><td style="margin:0px; font-weight:bold; text-align:right">Upper/lower&nbsp;group&nbsp;sizes</td><td>' . $cohort_percent . '% (' . $user_no . ' per group)</td><td rowspan="7" style="vertical-align:top"><img src="../artwork/red_flag.png" width="14" height="14" alt="Warning" /> Warning: <strong>d &lt; 0.15</strong> (i.e. low)<br />Investigate the red flags and if you conclude that the item is poor, exclude using the <img src="../artwork/exclude_off.gif" style="cursor:pointer" width="23" height="22" border="0" alt="Exclude" /> icon and then click \'Save\' at the bottom.</td></tr>';
-        echo '<tr><td style="margin:0px; font-weight:bold; text-align:right">Bold stems</td><td>represent correct answer(s)</td></tr>';
-        echo '<tr><td style="margin:0px; font-weight:bold; text-align:right">p=</td><td>Item Difficulty (proportion of students answering item correctly)</td></tr>';
-        echo '<tr><td style="margin:0px; font-weight:bold; text-align:right">d=</td><td>discrimination value</td></tr>';
-        echo '<tr><td style="margin:0px; font-weight:bold; text-align:right">t=</td><td>percentage of the <strong>total</strong> cohort answering item</td></tr>';
-        echo '<tr><td style="margin:0px; font-weight:bold; text-align:right">u=</td><td>percent of <strong>upper</strong> group answering item</td></tr>';
-        echo '<tr><td style="margin:0px; font-weight:bold; text-align:right">l=</td><td>percentage of <strong>lower</strong> group answering item</td></tr>';
+        echo '<tr><td style="margin:0px; font-weight:bold; text-align:right">' . $string['totalcandidatenumber'] . '</td><td style="width:500px">' . number_format($user_total) . '</td><td><img src="../artwork/red_flag.png" width="14" height="14" alt="Warning" /> ' . $string['warning'] . ' ' . $string['p_warning'] . '</td></tr>';
+        echo '<tr><td style="margin:0px; font-weight:bold; text-align:right"><nobr>' . $string['groupsizes'] . '</nobr></td><td>' . $cohort_percent . '% (' . $user_no . ' ' . $string['pergroup'] . ')</td><td rowspan="7" style="vertical-align:top"><img src="../artwork/red_flag.png" width="14" height="14" alt="Warning" /> ' . $string['warning'] . ' ' . $string['d_warning'] . '</td></tr>';
+        echo '<tr><td style="margin:0px; font-weight:bold; text-align:right">' . $string['boldstems'] . '</td><td>' . $string['correctanswers'] . '</td></tr>';
+        echo '<tr><td style="margin:0px; font-weight:bold; text-align:right">p=</td><td>' . $string['p_definition'] . '</td></tr>';
+        echo '<tr><td style="margin:0px; font-weight:bold; text-align:right">d=</td><td>' . $string['d_definition'] . '</td></tr>';
+        echo '<tr><td style="margin:0px; font-weight:bold; text-align:right">t=</td><td>' . $string['t_definition'] . '</td></tr>';
+        echo '<tr><td style="margin:0px; font-weight:bold; text-align:right">u=</td><td>' . $string['u_definition'] . '</td></tr>';
+        echo '<tr><td style="margin:0px; font-weight:bold; text-align:right">l=</td><td>' . $string['l_definition'] . '</td></tr>';
         echo '</table></td></tr>';
         echo '</table></div><br />';
 
@@ -1446,13 +1446,13 @@ p {margin-left:0px; margin-right:0px}
       if ($old_q_id != $q_id and $old_q_id > 0) {   // New question.
         $question_no++;
         if ($old_q_type == 'info') $question_no--;
-        displayQuestion($question_no, $old_q_id, $old_theme, $old_scenario, $old_leadin, $old_q_type, $old_correct, $old_q_media, $old_q_media_width, $old_q_media_height, $options_buffer, $bottom_log_array, $top_log_array, $freq_array, $correct_buffer, $user_no, $old_score_method, $old_labelcolor, $old_themecolor, $old_std);
+        displayQuestion($question_no, $old_q_id, $old_theme, $old_scenario, $old_leadin, $old_q_type, $old_correct, $old_q_media, $old_q_media_width, $old_q_media_height, $options_buffer, $bottom_log_array, $top_log_array, $freq_array, $correct_buffer, $user_no, $old_score_method, $old_display_method, $old_labelcolor, $old_themecolor, $old_std);
         $options_buffer = array();
         $correct_buffer = array();
         if ($old_screen != $screen) {
           echo '<tr><td colspan="2"><table cellpadding="0" cellspacing="1" border="0" style="width:100%; height:70px; border-top:1px solid #B5C4DF; background-image:url(\'../artwork/screen_no_background.gif\'); background-repeat:repeat-x">';
           echo "<tr>\n<td width=\"20\">&nbsp;</td>\n";
-          echo "<td style=\"vertical-align:top; font-size:90%; font-weight:bold; color:#15428B\">Screen&nbsp;$screen</td>\n</tr>\n";
+          echo "<td style=\"vertical-align:top; font-size:90%; font-weight:bold; color:#15428B\">" . $string['screen'] . "&nbsp;$screen</td>\n</tr>\n";
           echo '</table></td></tr>';
         }
       }
@@ -1504,6 +1504,7 @@ p {margin-left:0px; margin-right:0px}
       $old_q_media_height = $q_media_height;
       $old_correct = $correct;
       $old_score_method = $score_method;
+      $old_display_method = $display_method;
       $old_std = $std;
       $old_screen = $screen;
     }
@@ -1511,43 +1512,43 @@ p {margin-left:0px; margin-right:0px}
     $mysqli->close();
     $question_no++;
     if ($old_q_type == 'info') $question_no--;
-    displayQuestion($question_no, $old_q_id, $old_theme, $old_scenario, $old_leadin, $old_q_type, $old_correct, $old_q_media, $old_q_media_width, $old_q_media_height, $options_buffer, $bottom_log_array, $top_log_array, $freq_array, $correct_buffer, $user_no, $old_score_method, $old_labelcolor, $old_themecolor, $old_std);
+    displayQuestion($question_no, $old_q_id, $old_theme, $old_scenario, $old_leadin, $old_q_type, $old_correct, $old_q_media, $old_q_media_width, $old_q_media_height, $options_buffer, $bottom_log_array, $top_log_array, $freq_array, $correct_buffer, $user_no, $old_score_method, $old_display_method, $old_labelcolor, $old_themecolor, $old_std);
   ?>
   </table>
   <br />
   
-  <table border="0" style="padding-left:10px; padding-right:2px; padding-bottom:5px; width:100%; color:#1E3287"><tr><td>Summary</td><td style="width:98%"><hr noshade="noshade" style="border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%" /></td></tr></table>
+  <table border="0" style="padding-left:10px; padding-right:2px; padding-bottom:5px; width:100%; color:#1E3287"><tr><td><?php echo $string['summary']; ?></td><td style="width:98%"><hr noshade="noshade" style="border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%" /></td></tr></table>
 
   <table cellpadding="0" cellspacing="0" border="0" style="width:650px; font-size:100%; margin-left:40px">
-  <tr><td colspan="2" style="padding-left:4px">The number of items can be more than the number of questions as dichotomous, labelling and extended matching questions are made up of multiple items each with their own p and d values.</td></tr>
+  <tr><td colspan="2" style="padding-left:4px"><?php echo $string['msg']; ?></td></tr>
   <tr>
   <td style="vertical-align:top">
   <table cellpadding="4" cellspacing="0" border="0" style="font-size:100%">
-  <tr style="font-weight:bold"><td>Difficulty</td><td style="text-align:center">p</td><td>No of items</td><td></td></tr>
-  <tr><td>Very Easy</td><td>&gt; 0.8</td><td style="text-align:right"><?php echo $pstats['ve']; ?></td><td></td></tr>
-  <tr><td>Easy</td><td>0.6-0.8</td><td style="text-align:right"><?php echo $pstats['e']; ?></td><td></td></tr>
-  <tr><td>Moderate</td><td>0.4-0.6</td><td style="text-align:right"><?php echo $pstats['m']; ?></td><td></td></tr>
-  <tr><td>Hard</td><td>0.2-0.4</td><td style="text-align:right"><?php echo $pstats['h']; ?></td><td></td></tr>
-  <tr style="color:#C00000"><td>Very Hard</td><td>&lt; 0.2</td><td style="text-align:right"><?php echo $pstats['vh']; ?></td><td><img src="../artwork/red_flag.png" width="14" height="14" alt="Warning: Discrimination less than 0.15" border="0" /></td></tr>
-  <tr><td>Mean</td><td style="text-align:right"><?php echo number_format($pstats['total']/$pstats['no'],2); ?></td><td></td><td></td></tr>
+  <tr style="font-weight:bold"><td><?php echo $string['difficulty']; ?></td><td style="text-align:center">p</td><td><?php echo $string['noofitems']; ?></td><td></td></tr>
+  <tr><td><?php echo $string['veryeasy']; ?></td><td>&gt; 0.8</td><td style="text-align:right"><?php echo $pstats['ve']; ?></td><td></td></tr>
+  <tr><td><?php echo $string['easy']; ?></td><td>0.6-0.8</td><td style="text-align:right"><?php echo $pstats['e']; ?></td><td></td></tr>
+  <tr><td><?php echo $string['moderate']; ?></td><td>0.4-0.6</td><td style="text-align:right"><?php echo $pstats['m']; ?></td><td></td></tr>
+  <tr><td><?php echo $string['hard']; ?></td><td>0.2-0.4</td><td style="text-align:right"><?php echo $pstats['h']; ?></td><td></td></tr>
+  <tr style="color:#C00000"><td><?php echo $string['veryhard']; ?></td><td>&lt; 0.2</td><td style="text-align:right"><?php echo $pstats['vh']; ?></td><td><img src="../artwork/red_flag.png" width="14" height="14" alt="<?php echo $string['warning1']; ?>" border="0" /></td></tr>
+  <tr><td><?php echo $string['mean']; ?></td><td style="text-align:right"><?php echo number_format($pstats['total']/$pstats['no'],2); ?></td><td></td><td></td></tr>
   </table>
   </td>
   <td style="vertical-align:top">
   <table cellpadding="4" cellspacing="0" border="0" style="font-size:100%">
-  <tr style="font-weight:bold"><td>Discrimination</td><td style="text-align:center">d</td><td>No of items</td><td></td></tr>
-  <tr><td>Highest</td><td>&gt;= 0.35</td><td style="text-align:right"><?php echo $dstats['highest']; ?></td><td></td></tr>
-  <tr><td>High</td><td>0.25-0.35</td><td style="text-align:right"><?php echo $dstats['high']; ?></td><td></td></tr>
-  <tr><td>Intermediate</td><td>0.15-0.25</td><td style="text-align:right"><?php echo $dstats['intermediate']; ?></td><td></td></tr>
-  <tr style="color:#C00000"><td>Low</td><td>&lt; 0.15</td><td style="text-align:right"><?php echo $dstats['low']; ?></td><td><img src="../artwork/red_flag.png" width="14" height="14" alt="Warning: Difficulty is below 0.15" border="0" /></td></tr>
+  <tr style="font-weight:bold"><td><?php echo $string['discrimination']; ?></td><td style="text-align:center">d</td><td><?php echo $string['noofitems']; ?></td><td></td></tr>
+  <tr><td><?php echo $string['highest']; ?></td><td>&gt;= 0.35</td><td style="text-align:right"><?php echo $dstats['highest']; ?></td><td></td></tr>
+  <tr><td><?php echo $string['high']; ?></td><td>0.25-0.35</td><td style="text-align:right"><?php echo $dstats['high']; ?></td><td></td></tr>
+  <tr><td><?php echo $string['intermediate']; ?></td><td>0.15-0.25</td><td style="text-align:right"><?php echo $dstats['intermediate']; ?></td><td></td></tr>
+  <tr style="color:#C00000"><td><?php echo $string['low']; ?></td><td>&lt; 0.15</td><td style="text-align:right"><?php echo $dstats['low']; ?></td><td><img src="../artwork/red_flag.png" width="14" height="14" alt="<?php echo $string['warning2']; ?>" border="0" /></td></tr>
   <tr><td>&nbsp;</td><td></td><td></td><td></td></tr>
-  <tr><td>Mean</td><td style="text-align:right"><?php echo number_format($dstats['total']/$dstats['no'],2); ?></td><td></td><td></td></tr>
+  <tr><td><?php echo $string['mean']; ?></td><td style="text-align:right"><?php echo number_format($dstats['total']/$dstats['no'],2); ?></td><td></td><td></td></tr>
   </table>
   </td>
   </tr>
   </table>
 
   <input type="hidden" name="question_no" value="<?php echo $ex_no; ?>" />
-  <div align="center"><input type="submit" name="submit" value="Save Exclusions" /></div>
+  <div align="center"><input type="submit" name="submit" value="<?php echo $string['save']; ?>" /></div>
   </form>
 <?php
 }

@@ -40,6 +40,16 @@ Class InstallUtils {
   public static $cfg_db_port;
   public static $cfg_db_username;
   public static $cfg_db_password;
+  
+  public static $cfg_db_student_user;
+  public static $cfg_db_student_passwd;
+  public static $cfg_db_staff_user;
+  public static $cfg_db_staff_passwd;
+  public static $cfg_db_external_user;
+  public static $cfg_db_external_passwd ;
+  public static $cfg_db_sysadmin_user;
+  public static $cfg_db_sysadmin_passwd;
+  
   public static $cfg_db_name;
   public static $db_admin_username;
   public static $db_admin_passwd;
@@ -146,8 +156,10 @@ Class InstallUtils {
     self::$cfg_db_name = $_POST['mysql_db_name'];
     self::$db_admin_username = $_POST['mysql_admin_user'];
     self::$db_admin_passwd = $_POST['mysql_admin_pass'];
+    
     self::$cfg_db_username = $_POST['mysql_touchstone_username'];
     self::$cfg_db_password = $_POST['mysql_touchstone_passwd'];
+    
     self::$cfg_SysAdmin_username = $_POST['SysAdmin_username'];
     
     //LDAP
@@ -255,21 +267,202 @@ Class InstallUtils {
     while ($sql = $tables->next()) {
       $res = self::$db->query($sql);
       if (self::$db->errno != 0) {
-        self::displayError(array('012' => "could not create table. " . self::$db->error )); 
+        self::displayError(array('012' => "could not create table. " . self::$db->error . "</br> $sql")); 
       }
     }
     
-    //create touchstone 'database user' and grant permissions
-    self::$db->query("CREATE USER  '" . self::$cfg_db_username . "'@'localhost'");
-    if (self::$db->errno != 0) {
-      self::logWarning(array('013'=>'Database user ' . self::$cfg_db_username . ' could not be created'));
-    } 
+    self::$cfg_db_student_user = self::$cfg_db_name . '_stu';
+    self::$cfg_db_student_passwd = PasswordUtils::gen_password() . PasswordUtils::gen_password();
+    self::$cfg_db_staff_user = self::$cfg_db_name . '_staff';
+    self::$cfg_db_staff_passwd = PasswordUtils::gen_password() . PasswordUtils::gen_password();
+    self::$cfg_db_external_user = self::$cfg_db_name . '_ext';
+    self::$cfg_db_external_passwd  = PasswordUtils::gen_password() . PasswordUtils::gen_password();
+    self::$cfg_db_sysadmin_user = self::$cfg_db_name . '_sys';
+    self::$cfg_db_sysadmin_passwd = PasswordUtils::gen_password() . PasswordUtils::gen_password();
     
-    self::$db->query("GRANT SELECT,INSERT,UPDATE,DELETE ON " . self::$cfg_db_name . ".* TO '" . self::$cfg_db_username . "'@'localhost' IDENTIFIED BY '" . self::$cfg_db_password . "'");
-    echo self::$db->error;
+    $priv_SQL = array();
+    //create touchstone 'database user authentication user' and grant permissions
+    self::$db->query("CREATE USER  '" . self::$cfg_db_username . "'@'". self::$cfg_db_host . "' IDENTIFIED BY '" . self::$cfg_db_password . "'");
     if (self::$db->errno != 0) {
-      self::logWarning(array('013'=>'Database user ' . self::$cfg_db_username . ' could not set permissions'));
-    }  
+      echo "CREATE USER  '" . self::$cfg_db_username . "'@'". self::$cfg_db_host . "' IDENTIFIED BY '" . self::$cfg_db_password . "'" . '<br/>';
+      echo self::$db->error . '<br/>';
+      self::logWarning(array('013'=>'Database user ' . self::$cfg_db_username . ' could not be created'));
+    }
+    //$priv_SQL[] = "REVOKE ALL PRIVILEGES ON $dbname.* FROM '". self::$cfg_db_username . "'@'" . self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, UPDATE ON " . $dbname . ".users TO '". self::$cfg_db_username . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".sid TO '". self::$cfg_db_username . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".student_modules TO '". self::$cfg_db_username . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".schools TO '". self::$cfg_db_username . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".paper_metadata_security TO 'notts_login'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, DELETE ON " . $dbname . ".password_tokens TO 'notts_login'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".special_needs TO '". self::$cfg_db_username . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".users_metadata TO '". self::$cfg_db_username . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".labs TO '". self::$cfg_db_username . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".admin_access TO '". self::$cfg_db_username . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT,INSERT ON " . $dbname . ".temp_users TO '". self::$cfg_db_username . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT INSERT ON " . $dbname . ".sys_errors TO '". self::$cfg_db_username . "'@'". self::$cfg_db_host . "'";    
+    $priv_SQL[] = "FLUSH PRIVILEGES";
+    foreach($priv_SQL as $sql) {
+      self::$db->query($sql);
+      if (self::$db->errno != 0) {
+        echo self::$db->error;
+        self::logWarning(array('013'=>'Database user ' . self::$cfg_db_username . ' could not set permissions'));
+      }  
+    }
+    
+    $priv_SQL = array();
+    //create touchstone 'database user student user' and grant permissions
+    self::$db->query("CREATE USER  '" . self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "' IDENTIFIED BY '" . self::$cfg_db_student_passwd . "'");
+    if (self::$db->errno != 0) {
+      echo self::$db->error;
+      self::logWarning(array('013'=>'Database user ' . self::$cfg_db_student_user . ' could not be created'));
+    }
+   //$priv_SQL[] = "REVOKE ALL PRIVILEGES ON $dbname.* FROM '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".student_help TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".papers TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".questions TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".options TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".properties TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".feedback_release TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".ip_addresses TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".modules TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".objectives TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".paper_metadata_security TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".relationships TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".special_needs TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".student_modules TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".users_metadata TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".labs TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".question_exclude TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".sessions TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, UPDATE ON " . $dbname . ".sid TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, UPDATE ON " . $dbname . ".users TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".help_log TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".help_searches TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".help_tutorial_log TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log0 TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log1 TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log2 TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log3 TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log4 TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log4_overall TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log5 TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log_late TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log_metadata TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT,INSERT ON " . $dbname . ".temp_users TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT INSERT ON " . $dbname . ".sys_errors TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";    
+    $priv_SQL[] = "FLUSH PRIVILEGES";
+    foreach($priv_SQL as $sql) {
+      self::$db->query($sql);
+      if (self::$db->errno != 0) {
+        echo self::$db->error;
+        self::logWarning(array('013'=>'Database user ' . self::$cfg_db_student_user . ' could not set permissions'));
+      }  
+    }
+    
+    $priv_SQL = array();
+    //create touchstone 'database user external user' and grant permissions
+    self::$db->query("CREATE USER  '" . self::$cfg_db_external_user . "'@'". self::$cfg_db_host . "' IDENTIFIED BY '" . self::$cfg_db_external_passwd . "'");
+    if (self::$db->errno != 0) {
+      self::logWarning(array('013'=>'Database user ' . self::$cfg_db_external_user . ' could not be created'));
+    }
+    //$priv_SQL[] = "REVOKE ALL PRIVILEGES ON $dbname.* FROM '". self::$cfg_db_external_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".papers TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".questions TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".options TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".properties TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".special_needs TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log0 TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log1 TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log2 TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log3 TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log4 TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log4_overall TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log5 TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log_late TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log_metadata TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".review_comments TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT INSERT ON " . $dbname . ".sys_errors TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_db_host . "'";  
+    $priv_SQL[] = "FLUSH PRIVILEGES";
+    foreach($priv_SQL as $sql) {
+      self::$db->query($sql);
+      if (self::$db->errno != 0) {
+        self::logWarning(array('013'=>'Database user ' . self::$cfg_db_external_user . ' could not set permissions'));
+      }  
+    }
+    
+    $priv_SQL = array();
+    //create touchstone 'database user staff user' and grant permissions
+    self::$db->query("CREATE USER  '" . self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "' IDENTIFIED BY '" . self::$cfg_db_staff_passwd . "'");
+    if (self::$db->errno != 0) {
+      self::logWarning(array('013'=>'Database user ' . self::$cfg_db_staff_user . ' could not be created'));
+    }
+    //$priv_SQL[] = "REVOKE ALL PRIVILEGES ON $dbname.* FROM '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".* TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".users TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".users_metadata TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".sid TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".password_tokens TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".special_needs TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".student_modules TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".student_notes TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".papers TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".questions TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".questions_metadata TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".options TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".properties TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".feedback_release TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".paper_metadata_security TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".paper_notes TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".ebel TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".question_exclude TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".keywords_question TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".keywords_user TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".objectives TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".relationships TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".review_comments TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".recent_papers TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";  
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".folders TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".teams TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".help_log TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".help_searches TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".help_tutorial_log TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log0 TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log1 TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log2 TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log3 TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log4 TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log4_overall TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log5 TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log_late TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log_metadata TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".textbox_marking TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".textbox_remark TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".track_changes TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".temp_users TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";  
+    $priv_SQL[] = "FLUSH PRIVILEGES";
+    foreach($priv_SQL as $sql) {
+      self::$db->query($sql);
+      if (self::$db->errno != 0) {
+        self::logWarning(array('013'=>'Database user ' . self::$cfg_db_staff_user . ' could not set permissions'));
+      }  
+    }
+    
+    $priv_SQL = array();
+    //create touchstone 'database user sysadmin user' and grant permissions
+    self::$db->query("CREATE USER  '" . self::$cfg_db_sysadmin_user . "'@'". self::$cfg_db_host . "' IDENTIFIED BY '" . self::$cfg_db_sysadmin_passwd . "'");
+    if (self::$db->errno != 0) {
+      self::logWarning(array('013'=>'Database user ' . self::$cfg_db_sysadmin_user . ' could not be created'));
+    }
+    //$priv_SQL[] = "REVOKE ALL PRIVILEGES ON $dbname.* FROM '". self::$cfg_db_sysadmin_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE, ALTER, DROP  ON " . $dbname . ".* TO '". self::$cfg_db_sysadmin_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "FLUSH PRIVILEGES";
+    foreach($priv_SQL as $sql) {
+      self::$db->query($sql);
+      if (self::$db->errno != 0) {
+        self::logWarning(array('013'=>'Database user ' . self::$cfg_db_sysadmin_user . ' could not set permissions'));
+      }  
+    }
     
     //create touchstone sysadmin user 
     UserUtils::createUser(  $_POST['SysAdmin_username'], 
@@ -352,14 +545,29 @@ Class InstallUtils {
   static function configFile() {
     $touchstone_path = str_ireplace('/install/index.php','',$_SERVER['SCRIPT_FILENAME']);
     $errors = array();
-    if (file_exists($touchstone_path . '/config/config.inc')) {
-      $errors['90'] = "<p>TouchStone has already been installed! remove/rename $touchstone_path/config/config.inc to run set up again.</p>";
+    if (file_exists($touchstone_path . '/config/config.inc.php')) {
+      $errors['90'] = "<p>TouchStone has already been installed! remove/rename $touchstone_path/config/config.inc.php to run set up again.</p>";
       $errors['90'] .= "<p>or go to the <a href=\"/touchstone\">staff interfaces</a></p>";
     }
   }
   
   /**
-  * Check for installed software versions PHP, Apache 
+  * Check that we do not have a config file and that we can write one 
+  *
+  */
+  static function configFileIsWriteable() {
+    $touchstone_path = str_ireplace('/install/index.php','',$_SERVER['SCRIPT_FILENAME']);
+    $touchstone_path = str_ireplace('/updates/version4.php','',$_SERVER['SCRIPT_FILENAME']);
+    $errors = array();
+    if (is_writable($touchstone_path . '/config/config.inc.php')) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  
+  /**
+  * Check Apache can write to the required directories 
   *
   */
   static function checkDirPermissions() {
@@ -460,7 +668,7 @@ Class InstallUtils {
   static function logWarning($warning = '') {
     if (is_array($warning)) {
       foreach($warning as $key => $val) {
-        self::$warnings[$key] = $val;
+        self::$warnings[] = $key . ':: ' . $val;
       }
     }
   }
@@ -474,8 +682,8 @@ Class InstallUtils {
     if (is_array(self::$warnings)) {
       echo "<h2>The folowing warnings were generated</h2>";
       echo "<div class=\"warning\">\n";
-      foreach(self::$warnings as $code => $message) {
-        echo "\t<div>Warning $code:: $message</div>\n";
+      foreach(self::$warnings as $message) {
+        echo "\t<div>Warning $message</div>\n";
       }
       echo "</div>\n";
     }
@@ -564,7 +772,19 @@ define('DIR_SEPARATOR', '/');
   \$cfg_db_passwd   = '{cfg_db_passwd}';
   \$cfg_db_database = '{cfg_db_database}';
   \$cfg_db_host 	   = '{cfg_db_host}';
-
+//student db user 
+  \$cfg_db_student_user = '{cfg_db_student_user}';
+  \$cfg_db_student_passwd = '{cfg_db_student_passwd}';
+//staff db user
+  \$cfg_db_staff_user = '{cfg_db_staff_user}';
+  \$cfg_db_staff_passwd = '{cfg_db_staff_passwd}';
+//external examiner db user
+  \$cfg_db_external = '{cfg_db_external}';
+  \$cfg_db_external_passwd = '{cfg_db_external_passwd}';
+//sysdamin db user
+  \$cfg_db_sysadmin_user = '{cfg_db_sysadmin_user}';
+  \$cfg_db_sysadmin_passwd = '{cfg_db_sysadmin_passwd}';
+  
 // SMS Imports
   \$cfg_sms_api = '';
   
@@ -593,7 +813,6 @@ switch (strtolower(\$_SERVER['HTTP_HOST'])) {
 
 //Warnings
   \$cfg_hour_warning = 10;       // Warning for summative exams
-  error_reporting(-1);          // PHP error reporting 
   
 //Assistance
   \$support_email = '{cfg_support_email}';
@@ -612,9 +831,18 @@ CONFIG;
     $config = str_replace('{SysAdmin_username}','USERNMAE_FOR_DEBUG',$config);
     $config = str_replace('{cfg_db_host}',self::$cfg_db_host,$config);
     $config = str_replace('{cfg_db_port}',self::$cfg_db_port,$config);
+    
     $config = str_replace('{cfg_db_database}',self::$cfg_db_name,$config);
     $config = str_replace('{cfg_db_username}',self::$cfg_db_username,$config);
     $config = str_replace('{cfg_db_passwd}',self::$cfg_db_password,$config);
+    $config = str_replace('{cfg_db_student_user}',self::$cfg_db_student_user,$config);
+    $config = str_replace('{cfg_db_student_passwd}',self::$cfg_db_student_passwd,$config);
+    $config = str_replace('{cfg_db_staff_user}',self::$cfg_db_staff_user,$config);
+    $config = str_replace('{cfg_db_staff_passwd}',self::$cfg_db_staff_passwd,$config);
+    $config = str_replace('{cfg_db_external}',self::$cfg_db_external_user,$config);
+    $config = str_replace('{cfg_db_external_passwd}',self::$cfg_db_external_passwd,$config);   
+    $config = str_replace('{cfg_db_sysadmin_user}',self::$cfg_db_sysadmin_user,$config);
+    $config = str_replace('{cfg_db_sysadmin_passwd}',self::$cfg_db_sysadmin_passwd,$config);
     
     $config = str_replace('{cfg_support_email}',self::$cfg_support_email,$config);
     $config = str_replace('{emergency_support_numbers}',self::$emergency_support_numbers,$config);
@@ -627,11 +855,11 @@ CONFIG;
     
     $config = str_replace('{SERVER_NAME}',$_SERVER['HTTP_HOST'],$config);
     
-    if (file_exists(self::$touchstone_path . '/config/config.inc')) {
-      rename(self::$touchstone_path . '/config/config.inc', self::$touchstone_path . '/config/config.inc.old');
+    if (file_exists(self::$touchstone_path . '/config/config.inc.php')) {
+      rename(self::$touchstone_path . '/config/config.inc.php', self::$touchstone_path . '/config/config.inc.old.php');
     }
     
-    if (file_put_contents(self::$touchstone_path . '/config/config.inc', $config) === false) {
+    if (file_put_contents(self::$touchstone_path . '/config/config.inc.php', $config) === false) {
       self::displayError(array(300=>'Could not write config file !'));
     }
   }    
@@ -1057,12 +1285,24 @@ QUERY;
           `sound_demo` enum('0','1') default NULL,
           `latex_needed` tinyint(4) default '0',
           `password` char(20) default NULL,
+          `retired` datetime,
           PRIMARY KEY  (`property_id`),
           KEY `paper_title` (`paper_title`),
           KEY `paper_owner` (`paper_ownerID`),
           KEY `question_type` (`paper_type`)
         ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=latin1
 QUERY;
+
+    $this->tableList['paper_metadata_security'] = <<<QUERY
+        CREATE TABLE `paper_metadata_security` (
+          `id` INT NOT NULL AUTO_INCREMENT, 
+          `paperID` int, 
+          `name` varchar(255), 
+          `value` varchar(255),
+          PRIMARY KEY  (`id`)
+        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=latin1
+QUERY;
+
 
     $this->tableList['question_exclude'] = <<<QUERY
         CREATE TABLE `question_exclude` (
@@ -1107,6 +1347,16 @@ QUERY;
           `q_option_order` enum('display order','alphabetic','random') default NULL,
           PRIMARY KEY  (`q_id`)
         ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=latin1 PACK_KEYS=1
+QUERY;
+
+$this->tableList['questions_metadata'] = <<<QUERY
+      CREATE TABLE `questions_metadata` (
+        `id` INT NOT NULL AUTO_INCREMENT, 
+        `questionID` int, 
+        `type` varchar(255), 
+        `value` varchar(255),
+        PRIMARY KEY  (`id`)
+       ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=latin1
 QUERY;
 
     $this->tableList['recent_papers'] = <<<QUERY
@@ -1310,6 +1560,8 @@ QUERY;
           `php_self` text,
           `query_string` text,
           `request_method` enum('GET','HEAD','POST','PUT','DELETE') default NULL,
+          `paperID` int,
+          `post_data` text,
           PRIMARY KEY  (`id`)
         ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=latin1
 QUERY;
@@ -1409,7 +1661,7 @@ QUERY;
         `userID` int(11) DEFAULT NULL,
         `schools_id` int(11) DEFAULT NULL,
         PRIMARY KEY (`adminID`)
-      ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1
+      ) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=latin1
 QUERY;
 
     $this->tableList['password_tokens'] = <<<QUERY

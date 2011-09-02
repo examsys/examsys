@@ -27,23 +27,23 @@
 <div id="left-sidebar" class="sidebar">
 <br />
 <table id="general" cellpadding="4" cellspacing="0" border="0" width="185" style="margin-left:2px; font-size:90%">
-<tr><td width="16"><a href="#" onclick="launchHelp(1); return false;"><img src="/touchstone/artwork/small_help_icon.gif" width="16" height="16" alt="Help" border="0" /></a></td><td class="menuitem"><a href="#" onclick="launchHelp(1); return false;">Help and Support</a></td></tr>
+<tr><td width="16"><a href="#" onclick="launchHelp(1); return false;"><img src="/touchstone/artwork/small_help_icon.gif" width="16" height="16" alt="Help" border="0" /></a></td><td class="menuitem"><a href="#" onclick="launchHelp(1); return false;"><?php echo $string['helpsupport']; ?></a></td></tr>
 <?php
   if (strpos($userroles,'SysAdmin') !== false) {
-    echo '<tr><td width="16"><a href="/touchstone/admin/index.php"><img src="/touchstone/artwork/admin_icon_16.gif" width="16" height="16" alt="Admin" border="0" /></a></td><td class="menuitem"><a href="/touchstone/admin/index.php">Administrative Tools</a></td></tr>';
+    echo '<tr><td width="16"><a href="/touchstone/admin/index.php"><img src="/touchstone/artwork/admin_icon_16.gif" width="16" height="16" alt="Admin" border="0" /></a></td><td class="menuitem"><a href="/touchstone/admin/index.php">' . $string['admintools'] . '</a></td></tr>';
   } elseif (strpos($userroles,'Admin') !== false) {
-    echo '<tr><td width="16"><a href="/touchstone/admin/calendar.php?calyear=' . date("Y") . '#' . date("n") . '"><img src="/touchstone/artwork/shortcut_calendar_icon.png" width="16" height="16" alt="Admin" border="0" /></a></td><td class="menuitem"><a href="/touchstone/admin/calendar.php?calyear=' . date("Y") . '#' . date("n") . '">Calendar</a></td></tr>';
+    echo '<tr><td width="16"><a href="/touchstone/admin/calendar.php?calyear=' . date("Y") . '#' . date("n") . '"><img src="/touchstone/artwork/shortcut_calendar_icon.png" width="16" height="16" alt="Admin" border="0" /></a></td><td class="menuitem"><a href="/touchstone/admin/calendar.php?calyear=' . date("Y") . '#' . date("n") . '">' . $string['calendar'] . '</a></td></tr>';
   }
 ?>
-<tr><td width="16"><a href="/touchstone/users/search.php"><img src="/touchstone/artwork/small_user_icon.gif" width="16" height="16" alt="Users" border="0" /></a></td><td class="menuitem"><a href="/touchstone/users/search.php">User Management</a></td></tr>
-<tr><td width="16"><a href="/touchstone/index.php?newfolder=y"><img src="/touchstone/artwork/folder_16.png" width="16" height="16" alt="New Folder" border="0" /></a></td><td class="menuitem"><a href="/touchstone/index.php?newfolder=y">Make a new folder</a></td></tr>
-<tr><td width="16"><a href="/touchstone/folder/list_keywords.php"><img src="/touchstone/artwork/key.png" width="16" height="16" alt="key" border=\"0\" /></a></td><td class="menuitem"><a href="/touchstone/folder/list_keywords.php">My Personal Keywords</a></td></tr>
+<tr><td width="16"><a href="/touchstone/users/search.php"><img src="/touchstone/artwork/small_user_icon.gif" width="16" height="16" alt="Users" border="0" /></a></td><td class="menuitem"><a href="/touchstone/users/search.php"><?php echo $string['usermanagement']; ?></a></td></tr>
+<tr><td width="16"><a href="/touchstone/index.php?newfolder=y"><img src="/touchstone/artwork/folder_16.png" width="16" height="16" alt="New Folder" border="0" /></a></td><td class="menuitem"><a href="/touchstone/index.php?newfolder=y"><?php echo $string['makeafolder']; ?></a></td></tr>
+<tr><td width="16"><a href="/touchstone/folder/list_keywords.php"><img src="/touchstone/artwork/key.png" width="16" height="16" alt="key" border=\"0\" /></a></td><td class="menuitem"><a href="/touchstone/folder/list_keywords.php"><?php echo $string['mypersonalkeywords']; ?></a></td></tr>
 </table>
 <br />
 
 <br />
 <table id="papertasks" cellpadding="0" cellspacing="0" border="0" width="185" style="margin-left:2px; font-size:100%">
-<tr><td style="font-weight:bold">Paper Tasks</td></tr>
+<tr><td style="font-weight:bold"><?php echo $string['papertasks']; ?></td></tr>
 <tr><td>
 <?php
   if (isset($_COOKIE['caamainmenu'][4])) {
@@ -52,12 +52,12 @@
     echo "<table cellpadding=\"4\" cellspacing=\"0\" border=\"0\" id=\"menu0\" style=\"font-size:90%; margin-left:6px; display:block\">\n";
   }
   if (count($teams) > 0 or strpos($userroles,'Admin') !== false) {    // Allow SysAdmin and Admin users not on any team to still create papers.
-    echo "<tr><td style=\"text-align:left\"><a href=\"#\" onclick=\"newPaper(); return false;\"><img style=\"text-align:center\" src=\"/touchstone/artwork/new_paper_icon_16.gif\" width=\"16\" height=\"16\" alt=\"New Paper\" border=\"0\" /></a></td><td class=\"menuitem\"><a href=\"#\" onclick=\"newPaper(); return false;\">Create new Paper</a></td></tr>\n";
+    echo "<tr><td style=\"text-align:left\"><a href=\"#\" onclick=\"newPaper(); return false;\"><img style=\"text-align:center\" src=\"/touchstone/artwork/new_paper_icon_16.gif\" width=\"16\" height=\"16\" alt=\"New Paper\" border=\"0\" /></a></td><td class=\"menuitem\"><a href=\"#\" onclick=\"newPaper(); return false;\">" . $string['createnewpaper'] . "</a></td></tr>\n";
   } else {
-    echo "<tr><td style=\"text-align:left; color:#808080\"><img style=\"text-align:center\" src=\"/touchstone/artwork/new_paper_icon_16.gif\" width=\"16\" height=\"16\" alt=\"New Paper\" border=\"0\" /></td><td class=\"menuitem\" style=\"color:#808080\">Create new Paper</td></tr>\n";
+    echo "<tr><td style=\"text-align:left; color:#808080\"><img style=\"text-align:center\" src=\"/touchstone/artwork/new_paper_icon_16.gif\" width=\"16\" height=\"16\" alt=\"New Paper\" border=\"0\" /></td><td class=\"menuitem\" style=\"color:#808080\">" . $string['createnewpaper'] . "</td></tr>\n";
   }
 ?>
-<tr><td width="16"><img src="/touchstone/artwork/list_papers_icon_16.gif" width="16" height="16" alt="List Papers" border="0" /></td><td class="menuitem"><a href="#" onclick="showMenu('popup0','papertasks','listpapers',myOptions0,myURLs0,event); return false;"><span id="listpapers">List Papers</span><img src="/touchstone/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></a></td></tr>
+<tr><td width="16"><img src="/touchstone/artwork/list_papers_icon_16.gif" width="16" height="16" alt="List Papers" border="0" /></td><td class="menuitem"><a href="#" onclick="showMenu('popup0','papertasks','listpapers',myOptions0,myURLs0,event); return false;"><span id="listpapers"><?php echo $string['listpapers']; ?></span><img src="/touchstone/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></a></td></tr>
 </table>
 
 </td></tr>
@@ -66,14 +66,14 @@
 
 <br />
 <table id="banktasks" cellpadding="0" cellspacing="0" border="0" width="185" style="margin-left:2px; font-size:100%">
-<tr><td style="font-weight:bold">Question Bank Tasks</td></tr>
+<tr><td style="font-weight:bold"><?php echo $string['questionbanktasks']; ?></td></tr>
 <tr><td>
 <table cellpadding="4" cellspacing="0" border="0" style="font-size:90%; margin-left:6px">
-<tr><td width="16"><img src="/touchstone/artwork/question_list_icon.gif" width="16" height="16" alt="List Papers" border="0" /></td><td class="menuitem"><a href="#" onclick="showMenu('popup1','banktasks','type',myOptions1,myURLs1,event); return false;"><span id="type">Questions by Type</span><img src="/touchstone/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></a></td></tr>
-<tr><td width="16"><img src="/touchstone/artwork/question_list_icon.gif" width="16" height="16" alt="List Teams" border="0" /></td><td class="menuitem"><a href="#" onclick="showMenu('popup2','banktasks','team',myOptions2,myURLs2,event); return false;"><span id="team">Questions by Team</span><img src="/touchstone/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></a></td></tr>
-<tr><td width="16"><img src="/touchstone/artwork/question_list_icon.gif" width="16" height="16" alt="List Keywords" border="0" /></td><td class="menuitem"><a href="#" onclick="showMenu('popup3','banktasks','keyword',myOptions3,myURLs3,event); return false;"><span id="keyword">Questions by Keyword</span><img src="/touchstone/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></a></td></tr>
-<tr><td width="16"><img src="/touchstone/artwork/xmag.png" width="16" height="16" alt="Search" border="0" /></td><td class="menuitem"><a href="#" onclick="showMenu('popup4','banktasks','search',myOptions4,myURLs4,event); return false;"><span id="search">Search</span><img src="/touchstone/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></a></td></tr>
-<tr><td width="16"><img src="/touchstone/artwork/new_question_menu_icon.gif" width="16" height="16" alt="newquestion" border="0" /></td><td class="menuitem"><a href="#" onclick="showMenu('popup5','banktasks','newquestion',myOptions5,myURLs5,event); return false;"><span id="newquestion">Create new Question</span><img src="/touchstone/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></a></td></tr>
+<tr><td width="16"><img src="/touchstone/artwork/question_list_icon.gif" width="16" height="16" alt="List Papers" border="0" /></td><td class="menuitem"><a href="#" onclick="showMenu('popup1','banktasks','type',myOptions1,myURLs1,event); return false;"><span id="type"><?php echo $string['questionsbytype']; ?></span><img src="/touchstone/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></a></td></tr>
+<tr><td width="16"><img src="/touchstone/artwork/question_list_icon.gif" width="16" height="16" alt="List Teams" border="0" /></td><td class="menuitem"><a href="#" onclick="showMenu('popup2','banktasks','team',myOptions2,myURLs2,event); return false;"><span id="team"><?php echo $string['questionsbyteam']; ?></span><img src="/touchstone/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></a></td></tr>
+<tr><td width="16"><img src="/touchstone/artwork/question_list_icon.gif" width="16" height="16" alt="List Keywords" border="0" /></td><td class="menuitem"><a href="#" onclick="showMenu('popup3','banktasks','keyword',myOptions3,myURLs3,event); return false;"><span id="keyword"><?php echo $string['questionsbykeyword']; ?></span><img src="/touchstone/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></a></td></tr>
+<tr><td width="16"><img src="/touchstone/artwork/xmag.png" width="16" height="16" alt="Search" border="0" /></td><td class="menuitem"><a href="#" onclick="showMenu('popup4','banktasks','search',myOptions4,myURLs4,event); return false;"><span id="search"><?php echo $string['search']; ?></span><img src="/touchstone/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></a></td></tr>
+<tr><td width="16"><img src="/touchstone/artwork/new_question_menu_icon.gif" width="16" height="16" alt="newquestion" border="0" /></td><td class="menuitem"><a href="#" onclick="showMenu('popup5','banktasks','newquestion',myOptions5,myURLs5,event); return false;"><span id="newquestion"><?php echo $string['createnewquestion']; ?></span><img src="/touchstone/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></a></td></tr>
 </table>
 
 </td></tr>
@@ -160,10 +160,10 @@
   }
   
   makeMenu($full_modules_array);
-  makeMenu(array('Information Block'=>'/touchstone/question/list.php?type=info','Keyword-based Question'=>'/touchstone/question/list.php?type=keyword','Random Question Block'=>'/touchstone/question/list.php?type=random','-'=>'-','Calculation'=>'./question/list.php?type=calculation','Dichotomous (Yes/No and True/False)'=>'/touchstone/question/list.php?type=dichotomous','Extended Matching'=>'/touchstone/question/list.php?type=extmatch','Fill-in-the-Blank'=>'/touchstone/question/list.php?type=blank','Flash Interface'=>'/touchstone/question/list.php?type=flash','Image Hotspot'=>'/touchstone/question/list.php?type=hotspot','Labelling'=>'/touchstone/question/list.php?type=labelling','Likert Scale'=>'/touchstone/question/list.php?type=likert','Matrix'=>'/touchstone/question/list.php?type=matrix','Multiple Choice (MCQ)'=>'/touchstone/question/list.php?type=mcq','Multiple Response (MRQ)'=>'/touchstone/question/list.php?type=mrq','Ranking'=>'/touchstone/question/list.php?type=rank','Script Concordance Test (SCT)'=>'/touchstone/question/list.php?type=sct','Text Box'=>'/touchstone/question/list.php?type=textbox','Time/Date'=>'/touchstone/question/list.php?type=timedate'));
+  makeMenu(array($string['info']=>'/touchstone/question/list.php?type=info',$string['keyword_based']=>'/touchstone/question/list.php?type=keyword',$string['random']=>'/touchstone/question/list.php?type=random','-'=>'-',$string['calculation']=>'/touchstone/question/list.php?type=calculation',$string['dichotomous']=>'/touchstone/question/list.php?type=dichotomous',$string['extmatch']=>'/touchstone/question/list.php?type=extmatch',$string['blank']=>'/touchstone/question/list.php?type=blank',$string['flash']=>'/touchstone/question/list.php?type=flash',$string['hotspot']=>'/touchstone/question/list.php?type=hotspot',$string['labelling']=>'/touchstone/question/list.php?type=labelling',$string['likert']=>'/touchstone/question/list.php?type=likert',$string['matrix']=>'/touchstone/question/list.php?type=matrix',$string['mcq']=>'/touchstone/question/list.php?type=mcq',$string['mrq']=>'/touchstone/question/list.php?type=mrq',$string['rank']=>'/touchstone/question/list.php?type=rank',$string['sct']=>'/touchstone/question/list.php?type=sct',$string['textbox']=>'/touchstone/question/list.php?type=textbox',$string['timedate']=>'/touchstone/question/list.php?type=timedate'));
   makeMenu($teams_array);
   makeMenu($keywords_array);
-  makeMenu(array('Questions'=>'/touchstone/question/search.php','Papers'=>'/touchstone/paper/search.php','People'=>'/touchstone/users/search.php'));
-  makeMenu(array('Information Block'=>'/touchstone/question/add/info.php','Keyword-based Question'=>'/touchstone/question/add/keyword_based.php','Random Question Block'=>'/touchstone/question/add/random.php','-'=>'-','Calculation'=>'/touchstone/question/add/calculation.php','Dichotomous (Yes/No and True/False)'=>'/touchstone/question/add/dichotomous.php','Extended Matching'=>'/touchstone/question/add/extmatch.php','Fill-in-the-Blank'=>'./question/add/blank.php','Flash Interface'=>'/touchstone/question/add/flash.php','Image Hotspot'=>'/touchstone/question/add/hotspot1.php','Labelling'=>'/touchstone/question/add/labelling1.php','Likert Scale'=>'/touchstone/question/add/likert.php','Matrix'=>'/touchstone/question/add/matrix.php','Multiple Choice (MCQ)'=>'/touchstone/question/add/mcq.php','Multiple Response (MRQ)'=>'/touchstone/question/add/mrq.php','Ranking'=>'./question/add/rank.php','Script Concordance Test (SCT)'=>'/touchstone/question/add/sct.php','Text Box'=>'./question/add/textbox.php','Time/Date'=>'/touchstone/question/add/timedate.php'));
+  makeMenu(array($string['questions']=>'/touchstone/question/search.php',$string['papers']=>'/touchstone/paper/search.php',$string['people']=>'/touchstone/users/search.php'));
+  makeMenu(array($string['info']=>"/touchstone/question/add/info.php",$string['keyword_based']=>"/touchstone/question/add/keyword_based.php",$string['random']=>"/touchstone/question/add/random.php","-"=>"-",$string['calculation']=>"/touchstone/question/add/calculation.php",$string['dichotomous']=>"/touchstone/question/add/dichotomous.php",$string['extmatch']=>"/touchstone/question/add/extmatch.php",$string['blank']=>"/touchstone/question/add/blank.php",$string['flash']=>"/touchstone/question/add/flash.php",$string['hotspot']=>"/touchstone/question/add/hotspot1.php",$string['labelling']=>"/touchstone/question/add/labelling1.php",$string['likert']=>"/touchstone/question/add/likert.php",$string['matrix']=>"/touchstone/question/add/matrix.php",$string['mcq']=>"/touchstone/question/add/mcq.php",$string['mrq']=>"/touchstone/question/add/mrq.php",$string['rank']=>"/touchstone/question/add/rank.php",$string['sct']=>"/touchstone/question/add/sct.php",$string['textbox']=>"/touchstone/question/add/textbox.php",$string['timedate']=>"/touchstone/question/add/timedate.php"));
 
   hideMenuScript($menuNo);

@@ -73,8 +73,8 @@ h1 {font-size:140%; margin-left:10px}
 <div id="content" class="content" style="font-size:80%">
 
 <table cellpadding="0" cellspacing="0" border="0" width="100%">
-<tr><td style="background-color:#F1F5FB"><div class="breadcrumb"><a href="../index.php">Home</a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php">Administrative Tools</a></div><div style="margin-left:10px; font-size:200%; font-weight:bold">Remove Orphan Media</div></td>
-<td style="background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(243); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="Help" border="0" /></a></td></tr>
+<tr><td style="background-color:#F1F5FB"><div class="breadcrumb"><a href="../index.php"><?php echo $string['home']; ?></a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php"><?php echo $string['administrativetools']; ?></a></div><div style="margin-left:10px; font-size:200%; font-weight:bold"><?php echo $string['removeorphanmedia']; ?></div></td>
+<td style="background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(243); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="<?php echo $string['help']; ?>" border="0" /></a></td></tr>
 <tr><td colspan="2" style="height:3px"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td></tr>
 </table>
 <?php
@@ -155,23 +155,23 @@ h1 {font-size:140%; margin-left:10px}
   $saved_space = 0;
   $deleted_files = 0;
   // Run through the array and remove any files not used.
-  echo "<h1>Deleting Files!</h1>\n<ul>\n"; 
+  echo "<h1>" . $string['deletingfiles'] . "</h1>\n<ul>\n"; 
   foreach ($file_array as $filename => $file_used) {
     if ($file_used == 0) {
       $file_date = date("Ymd", filectime("../media/$filename"));
 	    $current_date = date("Ymd",$tmp_date);  
       if (in_array($filename,$exempt)) {
-        echo "<li>NOT Removing: $filename <strong>in examptions list</strong>.</li>\n";	    
+        echo "<li>" . $string['notremoving'] .  " $filename <strong>" . $string['inexamptionslist'] . "</strong>.</li>\n";	    
       } elseif ($file_date < $current_date) {                // Fix for image hotspot and labelling.
         $saved_space += filesize("../media/$filename");
 		    if (!unlink("../media/$filename")) {
-          echo "<li>Delete Failed: ../media/$filename</li>\n";
+          echo "<li>" . $string['deletefailed'] . " ../media/$filename</li>\n";
         } else {        
-          echo "<li>Removed: $filename</li>\n";
+          echo "<li>" . $string['removed'] .  " $filename</li>\n";
           $deleted_files++;
         }
       } else {
-        echo "<li>NOT Removing: $filename <strong>It is to new</strong>.</li>\n";	    
+        echo "<li>" . $string['notremoving'] . " $filename <strong>" . $string['toonew'] .  "</strong>.</li>\n";	    
 	    }
     }
   }
@@ -181,7 +181,7 @@ h1 {font-size:140%; margin-left:10px}
 
   if (count($missing_array) > 0) {
     sort($missing_array);
-    echo "<h1>Missing Files!</h1>\n<ul>";
+    echo "<h1>" . $string['missingfiles'] . "</h1>\n<ul>";
     $old_filename = '';
     foreach ($missing_array as $filename) {
       if ($filename != '' and $filename != $old_filename) echo "<li>$filename</li>\n";
@@ -190,11 +190,11 @@ h1 {font-size:140%; margin-left:10px}
     echo "</ul>\n";
   }
 
-  echo "<h1>Clean-up Summary</h1>\n";
+  echo "<h1>" . $string['cleanupsummary'] . "</h1>\n";
 
   echo '<table cellpadding="4" cellspacing="0" border="0" style="margin-left:10px">';
-  echo "<tr><td style=\"width: 175px\"><strong>Files deleted</strong></td><td>" . number_format($deleted_files) . "</td></tr>\n";
-  echo "<tr><td><strong>Space reclaimed</strong></td><td>" . number_format($saved_space / 1024) . "Kb</td></tr>\n";
+  echo "<tr><td style=\"width: 175px\"><strong>" . $string['filedeleted'] . "</strong></td><td>" . number_format($deleted_files) . "</td></tr>\n";
+  echo "<tr><td><strong>" . $string['spacereclaimed'] . "</strong></td><td>" . number_format($saved_space / 1024) . "Kb</td></tr>\n";
   echo '</table>';
 ?>
 </div>

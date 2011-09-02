@@ -101,7 +101,7 @@ function getPaper($paperID) {
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>TouchStone: Mapping by Year<?php echo " $cfg_install_type"; ?></title>
+<title>TouchStone: <?php echo $string['mappingbyyear'] . " $cfg_install_type"; ?></title>
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
 <style style="text/css">
   img {border:none}
@@ -154,14 +154,14 @@ function getPaper($paperID) {
   while ($row = $result->fetch()) {
     echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"width:100%; font-size:80%\">\n";
     echo '<tr><td style="background-color:#F1F5FB">';
-    echo '<div class="breadcrumb"><a href="../index.php">Home</a>';
+    echo '<div class="breadcrumb"><a href="../index.php">' . $string['home'] . '</a>';
     if ($folder != '') {
       echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?folder=' . $folder . '">' . $folder_name . '</a>';
     } elseif (isset($_GET['module']) and $_GET['module'] != '') {
       echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?module=' . $_GET['module'] . '">' . $_GET['module'] . '</a>';
     }
     echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../paper/details.php?paperID=' . $_GET['paperID'] . '">' . $paper_title . '</a></div>';
-    echo "<div style=\"font-size:220%; font-weight:bold; margin-left:10px\">Mapped Objectives</div></td><td style=\"background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(147); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"Help\" border=\"0\" /></a></td></tr>\n</table>\n";
+    echo "<div style=\"font-size:220%; font-weight:bold; margin-left:10px\">" . $string['mappedobjectives'] . "</div></td><td style=\"background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(147); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"Help\" border=\"0\" /></a></td></tr>\n</table>\n";
   }
   $result->close();
   
@@ -169,9 +169,9 @@ function getPaper($paperID) {
 <table cellpadding="0" cellspacing="0" border="0" style="font-size:80%; background-color:white">
 <tr><td>
   <table cellpadding="0" cellspacing="0" border="0" style="font-size:100%; width:378px; background-color:#F1F5FB">
-  <td style="cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_off.gif)" onclick="window.location.href='paper_mappings_by_session.php?paperID=<?php echo $_GET['paperID']; ?>&folder=<?php echo $_GET['folder']; ?>&module=<?php echo $_GET['module']; ?>'">by Session</td>
-  <td style="cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_off.gif)" onclick="window.location.href='paper_mappings_by_question.php?paperID=<?php echo $_GET['paperID']; ?>&folder=<?php echo $_GET['folder']; ?>&module=<?php echo $_GET['module']; ?>'">by Question</td>
-  <td style="cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_on.gif)">Longitudinal</td>
+  <td style="cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_off.gif)" onclick="window.location.href='paper_mappings_by_session.php?paperID=<?php echo $_GET['paperID']; ?>&folder=<?php echo $_GET['folder']; ?>&module=<?php echo $_GET['module']; ?>'"><?php echo $string['bysession']; ?></td>
+  <td style="cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_off.gif)" onclick="window.location.href='paper_mappings_by_question.php?paperID=<?php echo $_GET['paperID']; ?>&folder=<?php echo $_GET['folder']; ?>&module=<?php echo $_GET['module']; ?>'"><?php echo $string['byquestion']; ?></td>
+  <td style="cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_on.gif)"><?php echo $string['longitudinal']; ?></td>
   </table>
 </td><td style="width:100%; background-color:#F1F5FB; text-align:right">&nbsp;</td>
 </tr>
@@ -240,7 +240,6 @@ foreach($papers as $p) {
 echo "</tr>";
 foreach($allsession as $moduleID => $module) {
   foreach($module as $identifier => $session) {
-    //echo '<tr><td colspan="' . ($pcount+2) . '" class="divider"></tr>';
     echo '<tr><td colspan="' . ($pcount+2) . '" class="divider">';
     if ($session['class_code'] != '') {
       echo $session['class_code'] . ': ';

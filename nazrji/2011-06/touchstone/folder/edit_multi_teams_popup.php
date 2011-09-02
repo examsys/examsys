@@ -62,8 +62,7 @@
 <head>
 <title>Manage Teams</title>
 <style>
-  body {font-family:Arial,sans-serif; font-size:90%; background-color:#F1F5FB; color:black; margin:8px 4px 4px 4px}
-  td {font-size:90%}
+  body {font-family:Arial,sans-serif; font-size:90%; background-color:#F1F5FB; color:black; margin:0px}
 </style>
 <script language="JavaScript">
   function toggle(objectID) {
@@ -73,11 +72,33 @@
       document.getElementById(objectID).style.backgroundColor = 'white';
     }
   }
+  
+  function resizeList() {
+    var winW = 630, winH = 460;
+    if (document.body && document.body.offsetWidth) {
+      winW = document.body.offsetWidth;
+      winH = document.body.offsetHeight;
+    }
+    if (document.compatMode=='CSS1Compat' && document.documentElement && document.documentElement.offsetWidth ) {
+      winW = document.documentElement.offsetWidth;
+      winH = document.documentElement.offsetHeight;
+    }
+    if (window.innerWidth && window.innerHeight) {
+      winW = window.innerWidth;
+      winH = window.innerHeight;
+    }
+    winH -= 105;
+    document.getElementById('list').style.height = winH + 'px';
+  }
 </script>
 </head>
-<body>
+<body onload="resizeList()" onresize="resizeList()">
 <form name="teamform" action="<?php echo $_SERVER['PHP_SELF'] . '?' . $_SERVER['QUERY_STRING']; ?>" method="post">
-<div style="font-weight:bold; color:#1E3287">Teams:</div>
+
+  <table cellpadding="6" cellspacing="0" border="0" width="100%">
+  <tr><td style="width:32px; background-color:white; border-bottom:1px solid #CCD9EA"><img src="../artwork/team_members.png" width="32" height="32 alt="Members" /></td><td style="background-color:white; font-size:150%; color:#5582D2; border-bottom:1px solid #CCD9EA"><strong><?php echo $string['teams']; ?></strong></td></tr>
+  </table>
+
 <?php
   $user_teams = array();
   $result = $mysqli->prepare("SELECT name FROM teams WHERE type='System' AND memberID=?");
@@ -91,8 +112,8 @@
 
   $old_school = '';
   $mod_no = 0;
-  echo "<div style=\"width:100%; height:660px; overflow-y:scroll; border:1px solid #7F9DB9; font-size:90%; background-color:white\">";
-
+  echo "<div style=\"height:200px; overflow:auto; background-color:white; border:1px solid #CCD9EA; margin:12px 4px 8px 4px; font-size:90%\" id=\"list\">";
+  
   $result = $mysqli->prepare("SELECT school, moduleid, fullname FROM modules, schools WHERE modules.schoolid=schools.id AND active=1 ORDER BY school, moduleid");
   $result->execute();
   $result->bind_result($school, $moduleid, $fullname);
@@ -118,8 +139,8 @@
   $result->close();
   echo "<input type=\"hidden\" name=\"module_no\" value=\"$mod_no\" /><input type=\"hidden\" name=\"userID\" value=\"" . $_GET['userID'] . "\" /></div></td>\n</tr>\n";
 ?>
-<br />
-<div align="center"><input style="width:120px" type="submit" name="submit" value="OK" />&nbsp;<input style="width:120px" type="submit" name="cancel" value="Cancel" onclick="window.close()" /></div>
+
+<div align="center"><input style="width:120px" type="submit" name="submit" value="<?php echo $string['ok']; ?>" />&nbsp;<input style="width:120px" type="submit" name="cancel" value="<?php echo $string['cancel']; ?>" onclick="window.close()" /></div>
 
 </form>
 </body>

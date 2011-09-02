@@ -29,7 +29,10 @@ require_once '../classes/moduleutils.class.php';
 require_once '../classes/userutils.class.php';
 
 $SMS = SMSutils::GetSmsUtils();
-$cfg_sms_sources =  $SMS->getModuleSources();
+$cfg_sms_sources = array();
+if(is_object($SMS)) {
+ $cfg_sms_sources =  $SMS->getModuleSources();
+}
   
 $unique_moduleid = true;
 if (isset($_POST['submit'])) {
@@ -60,6 +63,11 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
   } else {
     $selfenroll = 0;
   }
+  if (isset($_POST['neg_marking'])) {
+    $neg_marking = 1;
+  } else {
+    $neg_marking = 0;
+  }
   $fullname = $schoolid = $vle_api = $sms_api = '';
   $peer = $stdset = $mapping = false;
   
@@ -72,7 +80,7 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
   if (isset($_POST['vle_api']))   $vle_api = $_POST['vle_api'];
   if (isset($_POST['sms_api']))   $sms_api = $_POST['sms_api'];
   
-  ModuleUtils::addModules($moduleid, $fullname, $active, $schoolid, $vle_api, $sms_api, $selfenroll, $peer, $external, $stdset, $mapping, $mysqli);
+  ModuleUtils::addModules($moduleid, $fullname, $active, $schoolid, $vle_api, $sms_api, $selfenroll, $peer, $external, $stdset, $mapping, $neg_marking, $mysqli);
   
   if (isset($_POST['sms_api']) and $_POST['sms_api'] != '') {
     $enrolements = 0;
@@ -181,7 +189,7 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
   ?>
   <div id="content" class="content" style="font-size:80%">
   <table cellpadding="0" cellspacing="0" border="0" width="100%">
-  <tr><td style="background-color:#F1F5FB"><div class="breadcrumb"><a href="../index.php">Home</a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php">Administrative Tools</a></div><div style="margin-left:10px; font-size:200%; font-weight:bold">Create new Module</div></td><td style="background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(233); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="Help" border="0" /></a></td></tr>
+  <tr><td style="background-color:#F1F5FB"><div class="breadcrumb"><a href="../index.php"><?php echo $string['home']; ?></a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php"><?php echo $string['administrativetools']; ?></a></div><div style="margin-left:10px; font-size:200%; font-weight:bold"><?php echo $string['createmodule']; ?></div></td><td style="background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(233); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="Help" border="0" /></a></td></tr>
   <tr><td colspan="2" style="height:3px"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" /></td></tr>
   </table>
   <br />
@@ -190,49 +198,53 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
     <table cellpadding="0" cellspacing="2" border="0" style="text-align:left">
     <?php
     if ($unique_moduleid == false) {
-      echo "<tr><td class=\"field\">Module ID</td><td><input type=\"text\" size=\"10\" name=\"moduleid\" style=\"background-color:#FFD9D9; color:#800000; border:1px solid #800000\" value=\"$tmp_moduleid\" /></td></tr>\n";
+      echo "<tr><td class=\"field\">" . $string['moduleid'] . "</td><td><input type=\"text\" size=\"10\" name=\"moduleid\" style=\"background-color:#FFD9D9; color:#800000; border:1px solid #800000\" value=\"$tmp_moduleid\" /></td></tr>\n";
     } else {
-      echo "<tr><td class=\"field\">Module ID</td><td><input type=\"text\" size=\"10\" name=\"moduleid\" value=\"";
+      echo "<tr><td class=\"field\">" . $string['moduleid'] . "</td><td><input type=\"text\" size=\"10\" name=\"moduleid\" value=\"";
       if (isset($_GET['moduleid'])) echo $_GET['moduleid'];
       echo "\" /></td></tr>\n";
     }
     ?>
-    <tr><td class="field">Full name</td><td><input type="text" size="70" name="fullname" value="<?php if (isset($_POST['fullname'])) echo $_POST['fullname']; ?>" /></td></tr>
+    <tr><td class="field"><?php echo $string['name']; ?></td><td><input type="text" size="70" name="fullname" value="<?php if (isset($_POST['fullname'])) echo $_POST['fullname']; ?>" /></td></tr>
     
 <?php
   $old_faculty = '';
-  echo "<tr><td class=\"field\">School</td><td><select name=\"schoolid\">\n<option value=\"\"></option>\n";
-  $query_string = "SELECT id, school, faculty FROM schools ORDER BY faculty, school";
-  $results = $mysqli->query($query_string);
-  while ($row = $results->fetch_assoc()) {
-    if ($old_faculty != $row['faculty']) {
+  echo "<tr><td class=\"field\">" . $string['school'] . "</td><td><select name=\"schoolid\">\n<option value=\"\"></option>\n";
+  $result = $mysqli->prepare("SELECT schools.id, school, faculty.name FROM schools, faculty WHERE schools.facultyID=faculty.id ORDER BY faculty.name, school");
+  $result->execute();
+  $result->bind_result($id, $school, $faculty);
+  while ($result->fetch()) {
+    if ($old_faculty != $faculty) {
       if ($old_faculty != '') echo "</optgroup>\n";
-      echo "<optgroup label=\"" . $row['faculty'] . "\">\n";
+      echo "<optgroup label=\"$faculty\">\n";
     }
-    if (isset($_POST['schoolid']) and $_POST['schoolid'] == $row['id']) {
-      echo "<option value=\"" . $row['id'] . "\" selected>" . $row['school'] . "</option>\n";
+    if (isset($_POST['schoolid']) and $_POST['schoolid'] == $id) {
+      echo "<option value=\"$id\" selected>$school</option>\n";
     } else {
-      echo "<option value=\"" . $row['id'] . "\">" . $row['school'] . "</option>\n";
+      echo "<option value=\"$id\">$school</option>\n";
     }
-    $old_faculty = $row['faculty'];
+    $old_faculty = $faculty;
   }
+  $result->close();
   echo "</optgroup>\n</select></td></tr>\n";
   
-  echo '<tr><td class="field">SMS API</td><td><select name="sms_api">';
+  echo '<tr><td class="field">' . $string['smsapi'] . '</td><td><select name="sms_api">';
+  echo '<option value="">' . $string['nolookup'] . '</option>';
   foreach ($cfg_sms_sources as $key=>$value) {
     echo "<option value=\"$value\">$key</option>\n";
   }
   echo '</select></td></tr>';
 ?>
-    <tr><td class="field">Objectives API</td><td><select name="vle_api">
-    <option value="">&lt;No lookup&gt;</option>
+    <tr><td class="field"><?php echo $string['objapi']; ?></td><td><select name="vle_api">
+    <option value=""><?php echo $string['nolookup']; ?></option>
     <option value="NLE"<?php if (isset($_POST['vle_api']) and $_POST['vle_api'] == 'NLE') echo ' selected'; ?>>Networked Learning Environment (NLE)</option>
     </select></td></tr>
-    <tr><td class="field">Summative Checklist</td><td><input type="checkbox" name="peer" checked /> Peer Review, <input type="checkbox" name="external" checked /> External Examiners, <input type="checkbox" name="stdset" /> Standards Setting, <input type="checkbox" name="mapping" /> Mapping</td></tr>
-    <tr><td class="field">Active</td><td><input type="checkbox" name="active" checked /></td></tr>
-    <tr><td class="field">allow Self-enroll</td><td><input type="checkbox" name="selfenroll" /></td></tr>
+    <tr><td class="field"><?php echo $string['summativechecklist']; ?></td><td><input type="checkbox" name="peer" checked /> <?php echo $string['peerreview']; ?>, <input type="checkbox" name="external" checked /> <?php echo $string['externalexaminers']; ?>, <input type="checkbox" name="stdset" /> <?php echo $string['standardssetting']; ?>, <input type="checkbox" name="mapping" /> <?php echo $string['mapping']; ?></td></tr>
+    <tr><td class="field"><?php echo $string['active']; ?></td><td><input type="checkbox" name="active" checked /></td></tr>
+    <tr><td class="field"><?php echo $string['allowselfenrol']; ?></td><td><input type="checkbox" name="selfenroll" /></td></tr>
+    <tr><td class="field"><?php echo $string['negativemarking']; ?></td><td><input type="checkbox" name="neg_marking" checked /></td></tr>
     </table>
-    <p><input type="submit" style="width:100px" name="submit" value="Add">&nbsp;&nbsp;<input style="width:100px" type="button" name="home" value="Cancel" onclick="javascript:history.back();" /></p>
+    <p><input type="submit" style="width:100px" name="submit" value="<?php echo $string['add']; ?>">&nbsp;&nbsp;<input style="width:100px" type="button" name="home" value="<?php echo $string['cancel']; ?>" onclick="javascript:history.back();" /></p>
   </form>
   </div>
 </div>

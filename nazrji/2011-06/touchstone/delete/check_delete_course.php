@@ -32,7 +32,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Confirm Degree Delete</title>
+<title><?php echo $string['confirmdegreedelete']; ?></title>
 
 <style>
 body {margin:0px; background-color:#F1F5FB; font-family:Arial,sans-serif; font-size:90%; text-align:justifed}
@@ -43,16 +43,16 @@ body {margin:0px; background-color:#F1F5FB; font-family:Arial,sans-serif; font-s
 
 <table cellpadding="8" cellspacing="0" border="0" width="100%">
 <tr>
-<td valign="top"><img src="../artwork/delete_warning.png" width="48" height="48" border="0" alt="Recycle Bin" /></td>
+<td valign="top"><img src="../artwork/delete_warning.png" width="48" height="48" border="0" alt="<?php echo $string['recyclebin']; ?>" /></td>
 
-<td><p><strong>Are you sure you wish to delete this degree?</strong><p>
+<td><p><strong><?php echo $string['msg']; ?></strong><p>
 <br />
 <br />
 <div style="text-align:right">
-<form action="do_delete_degree.php" method="post">
+<form action="do_delete_course.php" method="post">
 <input type="hidden" name="degreeID" value="<?php echo $_GET['degreeID']; ?>" />
-<input style="width:140px" type="submit" name="submit" value="Delete" />&nbsp;
-<input style="width:80px" type="button" name="cancel" value=" Cancel " onclick="javascript:window.close();" />
+<input style="width:140px" type="submit" name="submit" value="<?php echo $string['delete']; ?>" />&nbsp;
+<input style="width:80px" type="button" name="cancel" value="<?php echo $string['cancel']; ?>" onclick="javascript:window.close();" />
 </form>
 </div>
 </td></tr>
