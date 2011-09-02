@@ -70,13 +70,13 @@
 <tr><td style="vertical-align:top; text-align:center" valign="top">
 
 <table cellspacing="0" cellpadding="2" style="font-size:90%; width:120px; background-white">
-<tr><td id="button_unused" style="background-image:url('../../artwork/2007_button_on.png'); height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('unused')" onmouseout="buttonout('unused')" onclick="buttonclick('unused','add_questions_list_unused.php')">&nbsp;My Unused</td></tr>
-<tr><td id="button_alphabetic" style="height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('alphabetic')" onmouseout="buttonout('alphabetic')" onclick="buttonclick('alphabetic','add_questions_list_all.php')">&nbsp;All My Questions</td></tr>
-<tr><td id="button_keywords" style="height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('keywords')" onmouseout="buttonout('keywords')" onclick="buttonclick('keywords','add_questions_keywords_frame.php')">&nbsp;by Keywords</td></tr>
-<tr><td id="button_status" style="height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('status')" onmouseout="buttonout('status')" onclick="buttonclick('status','add_questions_by_status.php')">&nbsp;by Status</td></tr>
-<tr><td id="button_papers" style="height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('papers')" onmouseout="buttonout('papers')" onclick="buttonclick('papers','add_questions_paper_types.php')">&nbsp;by Paper</td></tr>
-<tr><td id="button_team" style="height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('team')" onmouseout="buttonout('team')" onclick="buttonclick('team','add_questions_team_list.php')">&nbsp;by Team</td></tr>
-<tr><td id="button_search" style="height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('search')" onmouseout="buttonout('search')" onclick="buttonclick('search','add_questions_list_search.php')">&nbsp;Search</td></tr>
+<tr><td id="button_unused" style="background-image:url('../../artwork/2007_button_on.png'); height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('unused')" onmouseout="buttonout('unused')" onclick="buttonclick('unused','add_questions_list_unused.php')">&nbsp;<?php echo $string['myunused']; ?></td></tr>
+<tr><td id="button_alphabetic" style="height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('alphabetic')" onmouseout="buttonout('alphabetic')" onclick="buttonclick('alphabetic','add_questions_list_all.php')">&nbsp;<?php echo $string['allmyquestions']; ?></td></tr>
+<tr><td id="button_keywords" style="height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('keywords')" onmouseout="buttonout('keywords')" onclick="buttonclick('keywords','add_questions_keywords_frame.php')">&nbsp;<?php echo $string['bykeywords']; ?></td></tr>
+<tr><td id="button_status" style="height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('status')" onmouseout="buttonout('status')" onclick="buttonclick('status','add_questions_by_status.php')">&nbsp;<?php echo $string['bystatus']; ?></td></tr>
+<tr><td id="button_papers" style="height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('papers')" onmouseout="buttonout('papers')" onclick="buttonclick('papers','add_questions_paper_types.php')">&nbsp;<?php echo $string['bypaper']; ?></td></tr>
+<tr><td id="button_team" style="height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('team')" onmouseout="buttonout('team')" onclick="buttonclick('team','add_questions_team_list.php')">&nbsp;<?php echo $string['byteam']; ?></td></tr>
+<tr><td id="button_search" style="height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('search')" onmouseout="buttonout('search')" onclick="buttonclick('search','add_questions_list_search.php')">&nbsp;<?php echo $string['search']; ?></td></tr>
 </table>
 
 </td></tr>

@@ -92,7 +92,7 @@
 <tr>
 <td colspan="2" valign="middle" style="background-color:white; text-align:left; border-bottom:1px solid #CCD9EA">
 <table cellpadding="0" cellspacing="0" border="0">
-<tr><td><img src="../artwork/lrg_info_icon.png" width="37" height="37" alt="Information" /></td><td style="font-family:Arial,sans-serif; font-size:16pt; font-weight:bold; color:#5582D2">&nbsp;&nbsp;Question Information</td></tr>
+<tr><td><img src="../artwork/lrg_info_icon.png" width="37" height="37" alt="Information" /></td><td style="font-family:Arial,sans-serif; font-size:16pt; font-weight:bold; color:#5582D2">&nbsp;&nbsp;<?php echo $string['questioninformation']; ?></td></tr>
 </table>
 </td>
 </tr>
@@ -100,7 +100,7 @@
   $line_no = 0;
   $icons = array('formative','progress','summative','survey','osce','offline');
 
-  $result = $mysqli->prepare("SELECT email, title, surname, initials, paper_title, paper_type, paper, screen, DATE_FORMAT(creation_date,\"%d/%m/%Y %H:%i\") AS creation_date, DATE_FORMAT(last_edited,\"%d/%m/%Y %H:%i\") AS last_edited, q_group, DATE_FORMAT(locked,\"%d/%m/%Y %H:%i\") AS locked, properties.deleted, status FROM (users, papers, questions, properties) WHERE properties.property_id=papers.paper AND users.id=questions.ownerID AND question=? AND papers.question=questions.q_id");
+  $result = $mysqli->prepare("SELECT email, title, surname, initials, paper_title, paper_type, paper, screen, DATE_FORMAT(creation_date,\"$cfg_long_date_time\") AS creation_date, DATE_FORMAT(last_edited,\"$cfg_long_date_time\") AS last_edited, q_group, DATE_FORMAT(locked,\"$cfg_long_date_time\") AS locked, properties.deleted, status FROM (users, papers, questions, properties) WHERE properties.property_id=papers.paper AND users.id=questions.ownerID AND question=? AND papers.question=questions.q_id");
   $result->bind_param('i', $_GET['q_id']);
   $result->execute();
   $result->bind_result($email, $title, $surname, $initials, $paper_title, $paper_type, $paper, $screen, $creation_date, $last_edited, $q_group, $locked, $deleted, $status);
@@ -108,19 +108,15 @@
   if ($result->num_rows > 0) {
     while ($row = $result->fetch()) {
       if ($line_no == 0) {
-        echo "<tr><td width=\"60\" style=\"vertical-align:top\">Author</td><td>$title $initials $surname (<a href=\"mailto:$email\">$email</a>)</td></tr>\n";
-        echo "<tr><td>Status</td><td>$status</td></tr>\n";
-        echo "<tr><td>Created</td><td>$creation_date</td></tr>\n";
-        echo "<tr><td>Modified</td><td>$last_edited</td></tr>\n";
-        if ($row['locked'] != '') {
-          echo "<tr><td>Locked</td><td>$locked</td></tr>\n";
+        echo "<tr><td width=\"60\" style=\"vertical-align:top\">" . $string['author'] . "</td><td>$title $initials $surname (<a href=\"mailto:$email\">$email</a>)</td></tr>\n";
+        echo "<tr><td>" . $string['status'] . "</td><td>" . $string[strtolower($status)] . "</td></tr>\n";
+        echo "<tr><td>" . $string['created'] . "</td><td>$creation_date</td></tr>\n";
+        echo "<tr><td>" . $string['modified'] . "</td><td>$last_edited</td></tr>\n";
+        if ($locked != '') {
+          echo "<tr><td>" . $string['locked'] . "</td><td>$locked</td></tr>\n";
         }
         $split_group = explode(';',$q_group);
-        if (count($split_group) <= 1) {
-          echo "<tr><td style=\"vertical-align:top\">Team</td><td>";
-        } else {
-          echo "<tr><td style=\"vertical-align:top\">Teams</td><td>";
-        }
+        echo "<tr><td style=\"vertical-align:top\">" . $string['teams'] . "</td><td>";
         foreach ($split_group as $individual_group) {
           echo "<a href=\"\" onclick=\"loadModule('$individual_group')\">$individual_group</a><br />";
         }
@@ -129,7 +125,7 @@
         check4Copies();
       
         echo "<tr><td colspan=\"2\">&nbsp;</td></tr>\n";
-        echo "<tr><td colspan=\"2\">Used on the following papers:</td></tr>\n";
+        echo "<tr><td colspan=\"2\">" . $string['followingpapers'] . "</td></tr>\n";
         echo "</table>\n<div style=\"margin:5px; display:block; height:150px; overflow-y:scroll; border:1px solid #95AEC8; font-size:90%; background-color:white; padding-left:28px; text-indent:-24px\">\n";
       }
       $title_split = explode('[deleted',$paper_title);
@@ -141,7 +137,7 @@
       if ($deleted != '') {
         echo "<span style=\"color:red\">&lt;deleted " . str_replace(']','',$title_split[1]) . "&gt;";
       } else {
-        echo "<span class=\"screen\">(screen $screen)";
+        echo "<span class=\"screen\">(" . $string['screen'] . " $screen)";
       }
       echo "</span></div>\n";
       $line_no++;
@@ -153,21 +149,21 @@
     $question_data->execute();
     $question_data->bind_result($email, $title, $surname, $initials, $creation_date, $last_edited, $q_group);
     $question_data->store_result();
-    while ($row = $question_data->fetch()) {
-      echo "<tr><td width=\"90\" valign=\"top\"><strong>Author</strong></td><td>$title $initials $surname (<a href=\"mailto:$email\">$email</a>)</td></tr>\n";
-      echo "<tr><td><strong>Created</strong></td><td>$creation_date</td></tr>\n";
-      echo "<tr><td><strong>Modified</strong></td><td>$last_edited</td></tr>\n";
-      if ($row['locked'] != '') {
-        echo "<tr><td><strong>Locked</strong></td><td>$locked</td></tr>\n";
+    while ($question_data->fetch()) {
+      echo "<tr><td width=\"90\" valign=\"top\"><strong>" . $string['author'] . "</strong></td><td>$title $initials $surname (<a href=\"mailto:$email\">$email</a>)</td></tr>\n";
+      echo "<tr><td><strong>" . $string['created'] . "</strong></td><td>$creation_date</td></tr>\n";
+      echo "<tr><td><strong>" . $string['modified'] . "</strong></td><td>$last_edited</td></tr>\n";
+      if ($locked != '') {
+        echo "<tr><td><strong>" . $string['locked'] . "</strong></td><td>$locked</td></tr>\n";
       }
       if ($q_group == '') $q_group = '<span style="color:#808080">N/A</span>';
-      echo "<tr><td><strong>Team</strong></td><td>$q_group</td></tr>\n";
+      echo "<tr><td><strong>" . $string['teams'] . "</strong></td><td>$q_group</td></tr>\n";
 
       check4Copies();
       
       echo "<tr><td colspan=\"2\">&nbsp;</td></tr>\n";
-      echo "<tr><td colspan=\"2\"><strong>Linked to the following papers:</strong>\n";
-      echo "<br />(This question is not currently used on any paper)</td></tr>\n</table>";
+      echo "<tr><td colspan=\"2\"><strong>" . $string['followingpapers'] . "</strong>\n";
+      echo "<br />" . $string['notused'] . "</td></tr>\n</table>";
     }
     $question_data->close();
   }
@@ -177,7 +173,7 @@
 <br />
 <div align="center">
 <form>
-<input type="button" style="width: 120px" name="ok" onclick="javascript:window.close();" value="Close" />
+<input type="button" style="width: 120px" name="ok" onclick="javascript:window.close();" value="<?php echo $string['close']; ?>" />
 </form>
 </div>
 </body>

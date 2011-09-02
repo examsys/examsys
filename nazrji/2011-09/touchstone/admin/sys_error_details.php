@@ -29,11 +29,11 @@ require '../include/errors.inc';
 
 check_var('errorID', 'GET', true, false);
 
-$result = $mysqli->prepare("SELECT title, initials, surname, DATE_FORMAT(occurred,'%d/%m/%y&nbsp;%H:%i:%s'), userID, errtype, errstr, errfile, errline, php_self, query_string, request_method, DATE_FORMAT(fixed,'%d/%m/%y&nbsp;%H:%i:%s') FROM sys_errors, users WHERE sys_errors.userID=users.id AND sys_errors.id=?");
+$result = $mysqli->prepare("SELECT sys_errors.id, title, initials, surname, DATE_FORMAT(occurred,'%d/%m/%y&nbsp;%H:%i:%s'), userID, errtype, errstr, errfile, errline, php_self, query_string, request_method, DATE_FORMAT(fixed,'%d/%m/%y&nbsp;%H:%i:%s'), paperID, post_data FROM sys_errors, users WHERE sys_errors.userID=users.id AND sys_errors.id=?");
 $result->bind_param('i', $_GET['errorID']);
 $result->execute();
 $result->store_result();
-$result->bind_result($title, $initials, $surname, $occurred, $userID, $errtype, $errstr, $errfile, $errline, $php_self, $query_string, $request_method, $fixed);
+$result->bind_result($error_id, $title, $initials, $surname, $occurred, $userID, $errtype, $errstr, $errfile, $errline, $php_self, $query_string, $request_method, $fixed, $paperID, $post_data);
 $result->fetch();
 $result->close();
 
@@ -59,38 +59,41 @@ $mysqli->close();
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Error Details</title>
+<title><?php printf($string['errordetails'], $error_id); ?></title>
 
 <style>
-body {color:black; background-color:#EEEEEE; font-family:Arial; font-size:90%}
-table {border: 1px solid #7F9DB9; font-size:100%; border-collapse:collapse; background-color:white}
-td {border: 1px solid #7F9DB9; padding:2px}
+body {color:black; background-color:white; font-family:Arial; font-size:90%; margin:0px}
+table {font-size:100%; border-collapse:collapse; width:100%}
+td {border: 1px solid #C0C0C0; padding:2px}
+.f {background-color:#EEEEEE; width:250px}
 </style>
 </head>
 
 <body>
 
-<table>
-<tr><td style="width:250px">Date</td><td><?php echo $occurred; ?></td></tr>
-<tr><td>Staff</td><td><?php echo $title . ' ' . $initials . ' ' . $surname; ?></td></tr>
-<tr><td>Type</td><td><?php echo $errtype; ?></td></tr>
-<tr><td>Description</td><td><?php echo $errstr; ?></td></tr>
-<tr><td>File</td><td><?php echo $errfile . ' (line ' . $errline . ')'; ?></td></tr>
-<tr><td>$_SERVER['QUERY_STRING']</td><td><?php echo $query_string; ?></td></tr>
-<tr><td>$_SERVER['PHP_SELF']</td><td><?php echo $php_self; ?></td></tr>
-<tr><td>$_SERVER['REQUEST_METHOD']</td><td><?php echo $request_method; ?></td></tr>
-<tr><td>Occurrance of error</td><td><?php echo $similar_errors; ?></td></tr>
-<tr><td>Date fixed</td><td><?php echo ($fixed == '' ? 'n/a' : $fixed); ?></td></tr>
+<table style="">
+<tr><td class="f"><?php echo $string['date']; ?></td><td><?php echo $occurred; ?></td></tr>
+<tr><td class="f"><?php echo $string['staff']; ?></td><td><?php echo $title . ' ' . $initials . ' ' . $surname; ?></td></tr>
+<tr><td class="f"><?php echo $string['type']; ?></td><td><?php echo $errtype; ?></td></tr>
+<tr><td class="f"><?php echo $string['description']; ?></td><td><?php echo $errstr; ?></td></tr>
+<tr><td class="f"><?php echo $string['file']; ?></td><td><?php echo $errfile . ' (line ' . $errline . ')'; ?></td></tr>
+<tr><td class="f"><?php echo $string['paperid']; ?></td><td><?php echo $paperID; ?></td></tr>
+<tr><td class="f"><?php echo $string['querystring']; ?></td><td><?php echo $query_string; ?></td></tr>
+<tr><td class="f"><?php echo $string['post']; ?></td><td><?php echo $post_data; ?></td></tr>
+<tr><td class="f"><?php echo $string['phpself']; ?></td><td><?php echo $php_self; ?></td></tr>
+<tr><td class="f"><?php echo $string['requestmethod']; ?></td><td><?php echo $request_method; ?></td></tr>
+<tr><td class="f"><?php echo $string['occurranceoferror']; ?></td><td><?php echo $similar_errors; ?></td></tr>
+<tr><td class="f"><?php echo $string['datefixed']; ?></td><td><?php echo ($fixed == '' ? 'n/a' : $fixed); ?></td></tr>
 </table>
 
 <br />
 <form action="<?php echo $_SERVER['PHP_SELF']; ?>?errorID=<?php echo $_GET['errorID']; ?>" method="post" name="myform">
-<div style="text-align:center"><input type="button" name="close" value="Close" style="width:100px" onclick="javascript:window.close();" />&nbsp;&nbsp;
+<div style="text-align:center"><input type="button" name="close" value="<?php echo $string['close']; ?>" style="width:100px" onclick="javascript:window.close();" />&nbsp;&nbsp;
 <?php
 if ($fixed == '') {
-  echo '<input type="submit" name="submit" value="Fixed" style="width:100px" />';
+  echo '<input type="submit" name="submit" value="' . $string['fixed'] . '" style="width:100px" />';
 } else {
-  echo '<input type="submit" name="submit" value="Fixed" style="width:100px" disabled />';
+  echo '<input type="submit" name="submit" value="' . $string['fixed'] . '" style="width:100px" disabled />';
 }
 ?>
 </div>

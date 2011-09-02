@@ -29,7 +29,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>TouchStone: Mapping by Question<?php echo " $cfg_install_type"; ?></title>
+<title>TouchStone: <?php echo $string['mappingbyquestion'] . " $cfg_install_type"; ?></title>
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
 <style style="text/css">
   td {font-size:100%}
@@ -79,14 +79,14 @@
   while ($row = $result->fetch()) {
     echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"width:100%; font-size:80%\">\n";
     echo '<tr><td style="background-color:#F1F5FB">';
-    echo '<div class="breadcrumb"><a href="../index.php">Home</a>';
+    echo '<div class="breadcrumb"><a href="../index.php">' . $string['home'] . '</a>';
     if ($folder != '') {
       echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?folder=' . $folder . '">' . $folder_name . '</a>';
     } elseif (isset($_GET['module']) and $_GET['module'] != '') {
       echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?module=' . $_GET['module'] . '">' . $_GET['module'] . '</a>';
     }
     echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../paper/details.php?paperID=' . $_GET['paperID'] . '">' . $paper_title . '</a></div>';
-    echo "<div style=\"font-size:220%; font-weight:bold; margin-left:10px\">Mapped Objectives</div></td><td style=\"background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(147); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"Help\" border=\"0\" /></a></td></tr>\n</table>\n";
+    echo "<div style=\"font-size:220%; font-weight:bold; margin-left:10px\">" . $string['mappedobjectives'] . "</div></td><td style=\"background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(147); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"Help\" border=\"0\" /></a></td></tr>\n</table>\n";
   }
   $result->close();
 
@@ -107,9 +107,9 @@
     <table cellpadding="0" cellspacing="0" border="0" style="display:block; font-size:90%; background-color:white">
     <tr><td>
     <table cellpadding="0" cellspacing="0" border="0" style="font-size:90%; width:378px; background-color:#F1F5FB">
-    <td style="cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_off.gif)" onclick="window.location.href='paper_mappings_by_session.php?paperID=<?php echo $_GET['paperID']; ?>&folder=<?php echo $_GET['folder']; ?>&module=<?php echo $_GET['module']; ?>'">by Session</td>
-    <td style="cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_on.gif)">by Question</td>
-    <td style="cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_off.gif)" onclick="window.location.href='paper_mappings_by_year.php?paperID=<?php echo $_GET['paperID']; ?>&folder=<?php echo $_GET['folder']; ?>&module=<?php echo $_GET['module']; ?>'">Longitudinal</td>
+    <td style="cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_off.gif)" onclick="window.location.href='paper_mappings_by_session.php?paperID=<?php echo $_GET['paperID']; ?>&folder=<?php echo $_GET['folder']; ?>&module=<?php echo $_GET['module']; ?>'"><?php echo $string['bysession']; ?></td>
+    <td style="cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_on.gif)"><?php echo $string['byquestion']; ?></td>
+    <td style="cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_off.gif)" onclick="window.location.href='paper_mappings_by_year.php?paperID=<?php echo $_GET['paperID']; ?>&folder=<?php echo $_GET['folder']; ?>&module=<?php echo $_GET['module']; ?>'"><?php echo $string['longitudinal']; ?></td>
     </table>
     </td><td style="width:100%; background-color:#F1F5FB; text-align:right">&nbsp;</td>
     </tr>
@@ -131,8 +131,9 @@
       if ($year_in_title == true) {
         if ($tmp_match != $session) {
           echo "<table border=\"0\" cellpadding=\"1\" cellspacing=\"0\" style=\"width:100%; font-size:80%\">\n";
-          echo "<tr><td style=\"width:40px; height:32px; text-align:right; background-image:url('../artwork/non_owner_gradient.gif'); background-repeat:repeat-x\"><img src=\"../artwork/non_owner_icon.png\" width=\"25\" height=\"30\" alt=\"Warning\" />&nbsp;&nbsp;</td><td colspan=\"7\" style=\"height:32px; vertical-align:middle; background-image:url('../artwork/non_owner_gradient.gif'); background-repeat:repeat-x\"><strong>Warning</strong>&nbsp;&nbsp;&nbsp;The session in the paper title ($tmp_match) does not match the paper session ($session).</td></tr>\n";
-          echo "</table>\n";
+          echo "<tr><td style=\"width:40px; height:32px; text-align:right; background-image:url('../artwork/non_owner_gradient.gif'); background-repeat:repeat-x\"><img src=\"../artwork/non_owner_icon.png\" width=\"25\" height=\"30\" alt=\"Warning\" />&nbsp;&nbsp;</td><td colspan=\"7\" style=\"height:32px; vertical-align:middle; background-image:url('../artwork/non_owner_gradient.gif'); background-repeat:repeat-x\"><strong>" . $string['warning'] . "</strong>&nbsp;&nbsp;&nbsp;";
+          printf($string['nomatchsession'], $tmp_match, $session);
+          echo "</td></tr>\n</table>\n";
         }
       }
   echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"  style=\"width:100%; font-size:80%; background-color:white\">\n";
@@ -172,17 +173,16 @@
     $old_marks = 0;
     $row_no2 = 1;
     $stems = 0;
-    $result = $mysqli->prepare("SELECT q_type, q_id, marks, correct, score_method, q_media_height, q_media_width, option_text FROM (papers, questions, options) WHERE papers.paper=? AND papers.question=questions.q_id AND questions.q_id=options.o_id ORDER BY display_pos, o_id");
+    $result = $mysqli->prepare("SELECT q_type, q_id, correct, score_method, q_media_height, q_media_width, option_text FROM (papers, questions, options) WHERE papers.paper=? AND papers.question=questions.q_id AND questions.q_id=options.o_id ORDER BY display_pos, o_id");
     $result->bind_param('i', $paperID);
     $result->execute();
-    $result->bind_result($q_type, $q_id, $marks, $correct, $score_method, $q_media_height, $q_media_width, $option_text);
+    $result->bind_result($q_type, $q_id, $correct, $score_method, $q_media_height, $q_media_width, $option_text);
     while ($row = $result->fetch()) {
       if ($old_q_id != $q_id and $old_q_id != 0) {
         $old_marks = $total_marks;
         $temp_array[$row_no2]['marks'] = $total_marks - $old_marks;
         $stems = 0;
         $correct_no = 0;
-        $temp_marks = 0;
         $row_no2++;
       }
       $old_q_id = $q_id;
@@ -192,7 +192,6 @@
       $old_q_media_width = $q_media_width;
       $old_q_media_height = $q_media_height;
       $old_option_text = $option_text;
-      $temp_marks = $marks;
       if ($q_type == 'mrq') {
         if ($correct == 'y') $correct_no++;
       }

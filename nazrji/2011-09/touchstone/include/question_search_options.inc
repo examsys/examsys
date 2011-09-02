@@ -125,9 +125,9 @@ require_once '../classes/searchutils.class.php';
 
 <table cellpadding="4" cellspacing="0" border="0" width="185">
 <tr><td style="margin:4px">
-<div style="font-size:110%"><strong>Word or phrase</strong><br /><input type="text" name="searchterm" size="25" style="width:98%" value="<?php if (isset($_POST['searchterm'])) echo $_POST['searchterm']; ?>" /></div>
-<div style="font-size:110%"><strong>Question Type</strong><br /><select name="searchtype">
-<option value="%">(all types)</option>
+<div style="font-size:110%"><strong><?php echo $string['wordorphrase']; ?></strong><br /><input type="text" name="searchterm" size="25" style="width:98%" value="<?php if (isset($_POST['searchterm'])) echo $_POST['searchterm']; ?>" /></div>
+<div style="font-size:110%"><strong><?php echo $string['questiontype']; ?></strong><br /><select name="searchtype">
+<option value="%"><?php echo $string['alltypes']; ?></option>
 <?php
   $qTypes = array('calculation'=>'Calculation','dichotomous'=>'Dichotomous','extmatch'=>'Extended Matching','blank'=>'Fill-in-the-Blank','flash'=>'Flash Interface','hotspot'=>'Image Hotspot','info'=>'Information Block','labelling'=>'Labelling','likert'=>'Likert Scale','matrix'=>'Matrix','mcq'=>'Multiple Choice','mrq'=>'Multiple Response','rank'=>'Ranking','sct'=>'Script Concordance','textbox'=>'Textbox','timedate'=>'Time/Date');
   foreach ($qTypes as $tmp_type=>$tmp_title) {
@@ -141,15 +141,15 @@ require_once '../classes/searchutils.class.php';
 </select></div>
 <?php
   if (isset($_COOKIE['questionsearch'][10])) {
-    echo "<input type=\"checkbox\" id=\"checkbox10\" onclick=\"updateCookies(10);\" name=\"locked\" value=\"1\"" . $_COOKIE['questionsearch'][10] . " /> include Locked questions\n";
+    echo "<input type=\"checkbox\" id=\"checkbox10\" onclick=\"updateCookies(10);\" name=\"locked\" value=\"1\"" . $_COOKIE['questionsearch'][10] . " /> " . $string['inclockedquestions'];
   } else {
-    echo "<input type=\"checkbox\" id=\"checkbox10\" onclick=\"updateCookies(10);\" name=\"locked\" value=\"1\" /> include Locked questions\n";
+    echo "<input type=\"checkbox\" id=\"checkbox10\" onclick=\"updateCookies(10);\" name=\"locked\" value=\"1\" /> " . $string['inclockedquestions'];
   }
 ?>
 <br />
 
   <table cellpadding="4" cellspacing="0" border="0" width="100%">
-  <tr><td><a href="#" style="font-weight:bold; color:black" onclick="updateMenu(8);">Question Sections</a></td>
+  <tr><td><a href="#" style="font-weight:bold; color:black" onclick="updateMenu(8);"><?php echo $string['questionsections']; ?></a></td>
   <td align="right"><a href="#" onclick="updateMenu(8);"><?php
     if (isset($_COOKIE['questionsearch'][8]) and $_COOKIE['questionsearch'][8] == 'block') {
       echo "<img id=\"icon8\" src=\"../artwork/up_arrow_icon.gif\" width=\"9\" height=\"9\" alt=\"Hide\" border=\"0\" />";
@@ -167,31 +167,31 @@ require_once '../classes/searchutils.class.php';
   }
   echo '<tr><td>';
   if (isset($_COOKIE['questionsearch'][1])) {
-    echo "<div><input type=\"checkbox\" id=\"checkbox1\" onclick=\"updateCookies(1);\" name=\"theme\"" . $_COOKIE['questionsearch'][1] . " /> Theme/Heading</div>\n";
+    echo "<div><input type=\"checkbox\" id=\"checkbox1\" onclick=\"updateCookies(1);\" name=\"theme\"" . $_COOKIE['questionsearch'][1] . " /> " . $string['theme'] . "</div>\n";
   } else {
-    echo "<div><input type=\"checkbox\" id=\"checkbox1\" onclick=\"updateCookies(1);\" name=\"theme\" checked /> Theme</div>\n";
+    echo "<div><input type=\"checkbox\" id=\"checkbox1\" onclick=\"updateCookies(1);\" name=\"theme\" checked /> " . $string['theme'] . "</div>\n";
   }
   if (isset($_COOKIE['questionsearch'][2])) {
-    echo "<div><input type=\"checkbox\" id=\"checkbox2\" onclick=\"updateCookies(2);\" name=\"scenario\"" . $_COOKIE['questionsearch'][2] . " /> Scenario</div>\n";
+    echo "<div><input type=\"checkbox\" id=\"checkbox2\" onclick=\"updateCookies(2);\" name=\"scenario\"" . $_COOKIE['questionsearch'][2] . " /> " . $string['scenario'] . "</div>\n";
   } else {
-    echo "<div><input type=\"checkbox\" id=\"checkbox2\" onclick=\"updateCookies(2);\" name=\"scenario\" checked /> Scenario</div>\n";
+    echo "<div><input type=\"checkbox\" id=\"checkbox2\" onclick=\"updateCookies(2);\" name=\"scenario\" checked /> " . $string['scenario'] . "</div>\n";
   }
   if (isset($_COOKIE['questionsearch'][3])) {
-    echo "<div><input type=\"checkbox\" id=\"checkbox3\" onclick=\"updateCookies(3);\" name=\"leadin\"" . $_COOKIE['questionsearch'][3] . " /> Lead-in</div>\n";
+    echo "<div><input type=\"checkbox\" id=\"checkbox3\" onclick=\"updateCookies(3);\" name=\"leadin\"" . $_COOKIE['questionsearch'][3] . " /> " . $string['leadin'] . "</div>\n";
   } else {
-    echo "<div><input type=\"checkbox\" id=\"checkbox3\" onclick=\"updateCookies(3);\" name=\"leadin\" checked /> Lead-in</div>\n";
+    echo "<div><input type=\"checkbox\" id=\"checkbox3\" onclick=\"updateCookies(3);\" name=\"leadin\" checked /> " . $string['leadin'] . "</div>\n";
   }
   if (isset($_COOKIE['questionsearch'][4])) {
-    echo "<div><input type=\"checkbox\" id=\"checkbox4\" onclick=\"updateCookies(4);\" name=\"options\"" . $_COOKIE['questionsearch'][4] . " /> Options</div>\n";
+    echo "<div><input type=\"checkbox\" id=\"checkbox4\" onclick=\"updateCookies(4);\" name=\"options\"" . $_COOKIE['questionsearch'][4] . " /> " . $string['options'] . "</div>\n";
   } else {
-    echo "<div><input type=\"checkbox\" id=\"checkbox4\" onclick=\"updateCookies(4);\" name=\"options\" checked /> Options</div>\n";
+    echo "<div><input type=\"checkbox\" id=\"checkbox4\" onclick=\"updateCookies(4);\" name=\"options\" checked /> " . $string['options'] . "</div>\n";
   }
 ?>
 </td></tr>
 </table>
 
   <table cellpadding="4" cellspacing="0" border="0" width="100%">
-  <tr><td><a href="#" style="font-size:110%; font-weight:bold; color:black" onclick="updateMenu(6);">When was it modified?</a></td>
+  <tr><td><a href="#" style="font-size:110%; font-weight:bold; color:black" onclick="updateMenu(6);"><?php echo $string['whenmodified']; ?></a></td>
   <td align="right"><a href="#" onclick="updateMenu(6);"><?php
     if (isset($_COOKIE['questionsearch'][6]) and $_COOKIE['questionsearch'][6] == 'block') {
       echo '<img id="icon6" src="../artwork/up_arrow_icon.gif" width="9" height="9" alt="Hide" border="0" />';
@@ -209,16 +209,16 @@ require_once '../classes/searchutils.class.php';
   }
   
   $date_options = array("dont remember"=>"Don't remember","week"=>"Within the last week","month"=>"Past month","year"=>"Within the past year","specify"=>"Specify dates");
-  foreach($date_options as $date_value=>$date_label) {
+  foreach ($date_options as $date_value=>$date_label) {
     if ((isset($_POST['question_date']) and $_POST['question_date'] == $date_value) or (!isset($_POST['question_date']) and $date_value == 'dont remember')) {
-      echo "<tr><td colspan=\"2\"><input type=\"radio\" name=\"question_date\" value=\"$date_value\" checked />&nbsp;$date_label</td></tr>";
+      echo "<tr><td colspan=\"2\"><input type=\"radio\" name=\"question_date\" value=\"$date_value\" checked />&nbsp;" . $string[$date_value] . "</td></tr>";
     } else {
-      echo "<tr><td colspan=\"2\"><input type=\"radio\" name=\"question_date\" value=\"$date_value\" />&nbsp;$date_label</td></tr>";
+      echo "<tr><td colspan=\"2\"><input type=\"radio\" name=\"question_date\" value=\"$date_value\" />&nbsp;" . $string[$date_value] . "</td></tr>";
     }
   }
 ?>
 
-<tr><td style="text-align:right">from&nbsp;</td><td>
+<tr><td style="text-align:right"><?php echo $string['from']; ?>&nbsp;</td><td>
 <?php
   echo "<select name=\"fday\">\n";
   for ($i=1; $i<=31; $i++) {
@@ -243,7 +243,7 @@ require_once '../classes/searchutils.class.php';
 ?>
 </select>
 </td></tr>
-<tr><td style="text-align:right">to&nbsp;</td><td>
+<tr><td style="text-align:right"><?php echo $string['to']; ?>&nbsp;</td><td>
 <?php
   echo "<select name=\"tday\">\n";
   for ($i=1; $i<=31; $i++) {
@@ -292,7 +292,7 @@ require_once '../classes/searchutils.class.php';
 </table>
 
   <table cellpadding="4" cellspacing="0" border="0" width="100%">
-  <tr><td><a href="#" style="font-weight:bold; color: black" onclick="updateMenu(9);">Metadata</a></td>
+  <tr><td><a href="#" style="font-weight:bold; color: black" onclick="updateMenu(9);"><?php echo $string['metadata']; ?></a></td>
   <td align="right"><a href="#" onclick="updateMenu(9);"><?php
     if (isset($_COOKIE['questionsearch'][9]) and $_COOKIE['questionsearch'][9] == 'block') {
       echo "<img id=\"icon9\" src=\"../artwork/up_arrow_icon.gif\" width=\"9\" height=\"9\" alt=\"Hide\" border=\"0\" />";
@@ -310,12 +310,12 @@ require_once '../classes/searchutils.class.php';
   }
 ?>
   <tr><td>
-  <div style="margin-left:4px">Module: <?php SearchUtils::displayTeamDropdown($teams, $userroles, $userID, $mysqli); ?></div>
-  <div style="margin-left:4px">Owner: <?php SearchUtils::displayOwnersDropdown($teams, $userroles, $userID, $mysqli, 'questions'); ?></div>
-  <div style="margin-left:4px">Status:<br /><?php SearchUtils::displayStatusDropdown(); ?></div>
-  <div style="margin-left:4px">Blooms:<br /><?php SearchUtils::displayBloomsDropdown(); ?></div>
+  <div style="margin-left:4px"><?php echo $string['module']; SearchUtils::displayTeamDropdown($teams, $userroles, $userID, $mysqli); ?></div>
+  <div style="margin-left:4px"><?php echo $string['owner']; SearchUtils::displayOwnersDropdown($teams, $userroles, $userID, $mysqli, 'questions'); ?></div>
+  <div style="margin-left:4px"><br /><?php echo $string['status']; SearchUtils::displayStatusDropdown(); ?></div>
+  <div style="margin-left:4px"><br /><?php echo $string['blooms']; SearchUtils::displayBloomsDropdown(); ?></div>
   
-  <div style="margin-left:4px">Keyword: <select style="width:175px" name="keywordID"><br />
+  <div style="margin-left:4px"><?php echo $string['keyword']; ?> <select style="width:175px" name="keywordID"><br />
   <option value=""></option>
 <?php
   $old_moduleID = '';
@@ -362,46 +362,46 @@ require_once '../classes/searchutils.class.php';
 <div style="text-align:center">
 <?php
   if (isset($_GET['paperID'])) {
-    echo '<input style="width:80px" type="button" name="back" value="Back" onclick="window.location=\'/touchstone/paper/details.php?paperID=' . $_GET['paperID'] . '&module=' . $_GET['module'] . '&folder=' . $_GET['folder'] . '\'"/>';
+    echo '<input style="width:80px" type="button" name="back" value="' . $string['back'] . '" onclick="window.location=\'/touchstone/paper/details.php?paperID=' . $_GET['paperID'] . '&module=' . $_GET['module'] . '&folder=' . $_GET['folder'] . '\'"/>';
   } elseif (isset($_GET['module']) and $_GET['module'] != '') {
-    echo '<input style="width:80px" type="button" name="back" value="Back" onclick="window.location=\'/touchstone/folder/details.php?module=' . $_GET['module'] . '&folder=' . $_GET['folder'] . '\'"/>';
+    echo '<input style="width:80px" type="button" name="back" value="' . $string['back'] . '" onclick="window.location=\'/touchstone/folder/details.php?module=' . $_GET['module'] . '&folder=' . $_GET['folder'] . '\'"/>';
   } else {
-    echo '<input style="width:80px" type="button" name="back" value="Back" onclick="window.location=\'/touchstone/index.php\'"/>';
+    echo '<input style="width:80px" type="button" name="back" value="' . $string['back'] . '" onclick="window.location=\'/touchstone/index.php\'"/>';
   }
 ?>
-&nbsp;<input style="width:80px" type="submit" name="submit" value="Search" /></div>
+&nbsp;<input style="width:80px" type="submit" name="submit" value="<?php echo $string['search']; ?>" /></div>
 </td></tr>
 </table>
 
 <br />
 
 <table cellpadding="0" cellspacing="0" border="0" width="185" style="margin-left:2px; font-size:100%">
-<tr><td style="font-weight:bold">Current Question Tasks</td></tr>
+<tr><td style="font-weight:bold"><?php echo $string['currentquestiontasks']; ?></td></tr>
 <table cellpadding="0" cellspacing="0" border="0" style="margin-left:6px; font-size:90%">
 <tr><td>
 
 <table style="font-size:100%; line-height:160%; display:block" cellpadding="3" cellspacing="0" border="0" id="menu2a">
-<tr><td><img src="../artwork/edit_grey.png" width="16" height="16" alt="Edit" /></td><td class="greymenuitem">Edit Question</td></tr>
-<tr><td><img src="../artwork/information_icon_grey.gif" width="16" height="16" alt="Information" /></td><td class="greymenuitem">Information</td></tr>
-<tr><td><img src="../artwork/copy_icon_grey.gif" width="16" height="16" alt="Copy" /></td><td class="greymenuitem">Copy onto Paper X...</td></tr>
-<tr><td><img src="../artwork/link_grey.png" width="16" height="16" alt="Link 2 Paper" /></td><td class="greymenuitem">Link to paper</td></tr>
-<tr><td><img src="../artwork/red_cross_grey.png" width="16" height="16" alt="Delete" /></td><td class="greymenuitem">Delete Question</td></tr>
+<tr><td><img src="../artwork/edit_grey.png" width="16" height="16" alt="Edit" /></td><td class="greymenuitem"><?php echo $string['editquestion']; ?></td></tr>
+<tr><td><img src="../artwork/information_icon_grey.gif" width="16" height="16" alt="Information" /></td><td class="greymenuitem"><?php echo $string['information']; ?></td></tr>
+<tr><td><img src="../artwork/copy_icon_grey.gif" width="16" height="16" alt="Copy" /></td><td class="greymenuitem"><?php echo $string['copyontopaperx']; ?></td></tr>
+<tr><td><img src="../artwork/link_grey.png" width="16" height="16" alt="Link 2 Paper" /></td><td class="greymenuitem"><?php echo $string['linktopaper']; ?></td></tr>
+<tr><td><img src="../artwork/red_cross_grey.png" width="16" height="16" alt="Delete" /></td><td class="greymenuitem"><?php echo $string['deletequestion']; ?></td></tr>
 </table>
 
 <table style="font-size:100%; line-height:160%; display:none" cellpadding="3" cellspacing="0" border="0" id="menu2b">
-<tr><td><a id="edit" onclick="editQuestion(); return false;" href="#"><img src="../artwork/edit.png" width="16" height="16" alt="Edit" border="0" /></a></td><td class="menuitem"><a id="edit" onclick="editQuestion(); return false;" href="#">Edit Question</a></td></tr>
-<tr><td><a id="information" href="#" onclick="questionInfo(); return false;"><img src="../artwork/information_icon.gif" width="16" height="16" alt="Information" border="0" /></a></td><td class="menuitem"><a id="information" href="#" onclick="questionInfo(); return false;">Information</a></td></tr>
-<tr><td><a id="copy" href="#" onclick="copyToPaper(); return false;"><img src="../artwork/copy_icon.gif" width="16" height="16" alt="Copy" border="0" /></a></td><td class="menuitem"><a id="copy" href="#" onclick="copyToPaper(); return false;">Copy onto Paper X...</a></td></tr>
-<tr><td><a id="link" href="#" onclick="linkToPaper(); return false;"><img src="../artwork/link.png" width="16" height="16" alt="Link 2 Paper" border="0" /></a></td><td class="menuitem"><a id="link" href="#" onclick="linkToPaper(); return false;">Link to paper</a></td></tr>
-<tr><td><a id="delete" href="#" onclick="deleteQuestion(); return false;"><img src="../artwork/red_cross.png" width="16" height="16" alt="Delete" border="0" /></a></td><td class="menuitem"><a id="delete" href="#" onclick="deleteQuestion(); return false;">Delete Question</a></td></tr>
+<tr><td><a id="edit" onclick="editQuestion(); return false;" href="#"><img src="../artwork/edit.png" width="16" height="16" alt="Edit" border="0" /></a></td><td class="menuitem"><a id="edit" onclick="editQuestion(); return false;" href="#"><?php echo $string['editquestion']; ?></a></td></tr>
+<tr><td><a id="information" href="#" onclick="questionInfo(); return false;"><img src="../artwork/information_icon.gif" width="16" height="16" alt="Information" border="0" /></a></td><td class="menuitem"><a id="information" href="#" onclick="questionInfo(); return false;"><?php echo $string['information']; ?></a></td></tr>
+<tr><td><a id="copy" href="#" onclick="copyToPaper(); return false;"><img src="../artwork/copy_icon.gif" width="16" height="16" alt="Copy" border="0" /></a></td><td class="menuitem"><a id="copy" href="#" onclick="copyToPaper(); return false;"><?php echo $string['copyontopaperx']; ?></a></td></tr>
+<tr><td><a id="link" href="#" onclick="linkToPaper(); return false;"><img src="../artwork/link.png" width="16" height="16" alt="Link 2 Paper" border="0" /></a></td><td class="menuitem"><a id="link" href="#" onclick="linkToPaper(); return false;"><?php echo $string['linktopaper']; ?></a></td></tr>
+<tr><td><a id="delete" href="#" onclick="deleteQuestion(); return false;"><img src="../artwork/red_cross.png" width="16" height="16" alt="Delete" border="0" /></a></td><td class="menuitem"><a id="delete" href="#" onclick="deleteQuestion(); return false;"><?php echo $string['deletequestion']; ?></a></td></tr>
 </table>
 
 <table style="font-size:100%; line-height:160%; display:none" cellpadding="3" cellspacing="0" border="0" id="menu2c">
-<tr><td><a id="edit" onclick="editQuestion(); return false;" href="#"><img src="../artwork/edit.png" width="16" height="16" alt="Edit" border="0" /></a></td><td class="menuitem"><a id="edit" onclick="editQuestion(); return false;" href="#">Edit Question</a></td></tr>
-<tr><td><a id="information" href="#" onclick="questionInfo(); return false;"><img src="../artwork/information_icon.gif" width="16" height="16" alt="Information" border="0" /></a></td><td class="menuitem"><a id="information" href="#" onclick="questionInfo(); return false;">Information</a></td></tr>
-<tr><td><a id="copy" href="#" onclick="copyToPaper(); return false;"><img src="../artwork/copy_icon.gif" width="16" height="16" alt="Copy" border="0" /></a></td><td class="menuitem"><a id="copy" href="#" onclick="copyToPaper(); return false;">Copy onto Paper X...</a></td></tr>
-<tr><td><a id="link" href="#" onclick="linkToPaper(); return false;"><img src="../artwork/link.png" width="16" height="16" alt="Link 2 Paper" border="0" /></a></td><td class="menuitem"><a id="link" href="#" onclick="linkToPaper(); return false;">Link to paper</a></td></tr>
-<tr><td><img src="../artwork/red_cross_grey.png" width="16" height="16" alt="Delete" border="0" /></td><td class="greymenuitem">Delete Question</td></tr>
+<tr><td><a id="edit" onclick="editQuestion(); return false;" href="#"><img src="../artwork/edit.png" width="16" height="16" alt="Edit" border="0" /></a></td><td class="menuitem"><a id="edit" onclick="editQuestion(); return false;" href="#"><?php echo $string['editquestion']; ?></a></td></tr>
+<tr><td><a id="information" href="#" onclick="questionInfo(); return false;"><img src="../artwork/information_icon.gif" width="16" height="16" alt="Information" border="0" /></a></td><td class="menuitem"><a id="information" href="#" onclick="questionInfo(); return false;"><?php echo $string['information']; ?></a></td></tr>
+<tr><td><a id="copy" href="#" onclick="copyToPaper(); return false;"><img src="../artwork/copy_icon.gif" width="16" height="16" alt="Copy" border="0" /></a></td><td class="menuitem"><a id="copy" href="#" onclick="copyToPaper(); return false;"><?php echo $string['copyontopaperx']; ?></a></td></tr>
+<tr><td><a id="link" href="#" onclick="linkToPaper(); return false;"><img src="../artwork/link.png" width="16" height="16" alt="Link 2 Paper" border="0" /></a></td><td class="menuitem"><a id="link" href="#" onclick="linkToPaper(); return false;"><?php echo $string['linktopaper']; ?></a></td></tr>
+<tr><td><img src="../artwork/red_cross_grey.png" width="16" height="16" alt="Delete" border="0" /></td><td class="greymenuitem"><?php echo $string['deletequestion']; ?></td></tr>
 </table>
 
 </td></tr>

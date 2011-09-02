@@ -123,13 +123,13 @@ while ($row = $stmt->fetch()) {
 $stmt->free_result();
 $stmt->close();
 
-  echo "<html>\n<head>\n<title></title>\n</head>\n<body style=\"font-family:Arial,sans-serif; color:black\">\n";
-  echo "<form method=\"post\" name=\"questions\" action=\"start.php?paperID=" . $_GET['paperID'] . "&dont_record=true\">\n";
+echo "<html>\n<head>\n<title></title>\n</head>\n<body style=\"font-family:Arial,sans-serif; color:black\">\n";
+echo "<form method=\"post\" name=\"questions\" action=\"start.php?paperID=" . $_GET['paperID'] . "&dont_record=true\">\n";
 
-  record_marks($_GET['paperID'],$_POST['old_screen'],$mysqli,$_POST,$userID,$_POST['previous_duration'],$paper_type,$grade,$year,$attempt);
+record_marks($_GET['paperID'], $mysqli, $userID, $paper_type, $grade, $year, $attempt, $userroles);
 ?>
-  <p style="text-align:center; font-size:200%; color:#008000">Proceed now to the nearest Fire Exit</p>
-  <p style="text-align:center; font-weight:bold">Do not run!</p>
+  <p style="text-align:center; font-size:200%; color:#008000"><?php echo $string['top_msg']; ?></p>
+  <p style="text-align:center; font-weight:bold"><?php echo $string['donotrun']; ?></p>
   <p>&nbsp;</p>
   <p>&nbsp;</p>
   <p>&nbsp;</p>
@@ -142,7 +142,7 @@ $stmt->close();
   <p>&nbsp;</p>
   <p>&nbsp;</p>
   <p>&nbsp;</p>
-  <p style="text-align:center"><strong>If you clicked by mistake on the fire exit, click here: </strong><input type="submit" name="next" value="Continue Exam" /></p>
+  <p style="text-align:center"><strong><?php echo $string['bottom_msg']; ?> </strong><input type="submit" name="next" value="<?php echo $string['continue']; ?>" /></p>
 <?php
   echo "<input type=\"hidden\" name=\"current_screen\" value=\"" . ($_POST['current_screen'] - 1) . "\" />\n";
   if (!$_POST['sessionid']) {

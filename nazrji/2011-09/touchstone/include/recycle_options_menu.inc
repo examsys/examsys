@@ -33,16 +33,16 @@
 <form name="PapersMenu" action="">
 <br />
 <table id="banktasks" cellpadding="0" cellspacing="0" border="0" width="185" style="margin-left:2px; font-size:100%">
-<tr><td style="font-weight:bold">Recycle Bin Tasks</td></tr>
+<tr><td style="font-weight:bold"><?php echo $string['recyclebintasks']; ?></td></tr>
 <table cellpadding="0" cellspacing="0" border="0" id="menu1" style="margin-left:6px; font-size:90%">
 <tr><td>
 
 <table style="display:block" cellpadding="3" cellspacing="0" border="0" id="menu1a">
-<tr><td><img src="../artwork/restore_grey.png" width="16" height="16" alt="" border="0" /></td><td class="greymenuitem">Restore this item</td></tr>
+<tr><td><img src="../artwork/restore_grey.png" width="16" height="16" alt="" border="0" /></td><td class="greymenuitem"><?php echo $string['restorethisitem']; ?></td></tr>
 </table>
 
 <table style="display:none" cellpadding="3" cellspacing="0" border="0" id="menu1b">
-<tr><td><a id="restore" onclick="restoreItem(); return false;" href="#"><img src="../artwork/restore.png" width="16" height="16" alt="" border="0" /></a></td><td class="menuitem"><a id="restore" onclick="restoreItem(); return false;" href="#">Restore this item</a></td></tr>
+<tr><td><a id="restore" onclick="restoreItem(); return false;" href="#"><img src="../artwork/restore.png" width="16" height="16" alt="" border="0" /></a></td><td class="menuitem"><a id="restore" onclick="restoreItem(); return false;" href="#"><?php echo $string['restorethisitem']; ?></a></td></tr>
 </table>
 
 </td></tr>

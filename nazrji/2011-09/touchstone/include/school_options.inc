@@ -37,13 +37,13 @@
 <tr><td>
 
 <table style="display:block" cellpadding="3" cellspacing="0" border="0" id="menu1a">
-<tr><td><a href="add_school.php" target="body"><img src="../artwork/school_icon_16.png" width="16" height="16" alt="" border="0" /></a></td><td class="menuitem"><a href="add_school.php">Create new School</a></td></tr>
-<tr><td><img src="../artwork/edit_grey.png" width="16" height="16" alt="" border="0" /></td><td class="greymenuitem">Edit School</td></tr>
+<tr><td><a href="add_school.php" target="body"><img src="../artwork/school_icon_16.png" width="16" height="16" alt="<?php echo $string['createschool']; ?>" border="0" /></a></td><td class="menuitem"><a href="add_school.php"><?php echo $string['createschool']; ?></a></td></tr>
+<tr><td><img src="../artwork/edit_grey.png" width="16" height="16" alt="<?php echo $string['editschool']; ?>" border="0" /></td><td class="greymenuitem"><?php echo $string['editschool']; ?></td></tr>
 </table>
 
 <table style="display:none" cellpadding="3" cellspacing="0" border="0" id="menu1b">
-<tr><td><a href="add_school.php" target="body"><img src="../artwork/school_icon_16.png" width="16" height="16" alt="" border="0" /></a></td><td class="menuitem"><a href="add_school.php">Create new School</a></td></tr>
-<tr><td><img onclick="editSchool()" src="../artwork/edit.png" width="16" height="16" alt="" border="0" /></td><td class="menuitem"><a href="" onclick="editSchool(); return false;">Edit School</a></td></tr>
+<tr><td><a href="add_school.php" target="body"><img src="../artwork/school_icon_16.png" width="16" height="16" alt="<?php echo $string['createschool']; ?>" border="0" /></a></td><td class="menuitem"><a href="add_school.php"><?php echo $string['createschool']; ?></a></td></tr>
+<tr><td><img onclick="editSchool()" src="../artwork/edit.png" width="16" height="16" alt="<?php echo $string['editschool']; ?>" border="0" /></td><td class="menuitem"><a href="" onclick="editSchool(); return false;"><?php echo $string['editschool']; ?></a></td></tr>
 </table>
 </td></tr>
 </table>

@@ -67,7 +67,7 @@ $mysqli->close();
 ?>
 <html>
 <head>
-<title>Folder Deleted</title>
+<title><?php echo $string['folderdeleted']; ?></title>
 <script language="javascript">
   function closeWindow() {
     <?php
@@ -86,17 +86,17 @@ $mysqli->close();
 
 <table cellpadding="8" cellspacing="0" border="0" width="100%">
 <tr>
-<td valign="top"><img src="../artwork/assessment_bin.gif" width="32" height="32" border="0" alt="Recycle Bin" /></td>
+<td valign="top"><img src="../artwork/assessment_bin.gif" width="32" height="32" border="0" alt="<?php echo $string['recyclebin']; ?>" /></td>
 
-<td><p>Folder successfully deleted.<p>
+<td><p><?php echo $string['msg']; ?><p>
 
 <div style="text-align:center">
 <form action="" method="get">
 <?php
 if ($parent == '') {
-  echo "<input type=\"button\" name=\"cancel\" value=\"    OK    \" onclick=\"javascript:self.opener.location.href='../index.php';window.close();\" />\n";
+  echo "<input type=\"button\" name=\"cancel\" value=\"    " . $string['ok'] . "    \" onclick=\"javascript:self.opener.location.href='../index.php';window.close();\" />\n";
 } else {
-  echo "<input type=\"button\" name=\"cancel\" value=\"    OK    \" onclick=\"javascript:self.opener.location.href='../folder.php?folder=$parentID';window.close();\" />\n";
+  echo "<input type=\"button\" name=\"cancel\" value=\"    " . $string['ok'] . "    \" onclick=\"javascript:self.opener.location.href='../folder.php?folder=$parentID';window.close();\" />\n";
 }
 ?>
 </form>

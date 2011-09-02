@@ -48,7 +48,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Team Members: <?php echo $teamID; ?></title>
+<title><?php echo $string['teammembers'] . ' ' . $teamID; ?></title>
 <script language="JavaScript">
   function closeWindow() {
     window.opener.location.href = '../folder/details.php?module=<?php echo $teamID; ?>';
@@ -65,7 +65,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title><?php echo $_GET['teamID']; ?></title>
+<title><?php echo $string['teammembers'] . ' ' . $_GET['teamID']; ?></title>
 <style>
   body {font-family:Arial,sans-serif; font-size:90%; background-color:#F1F5FB; color:black; margin:0px}
 </style>
@@ -101,7 +101,7 @@
 <form name="teamform" action="<?php echo $_SERVER['PHP_SELF'] . '?' . $_SERVER['QUERY_STRING']; ?>" method="post">
 
   <table cellpadding="6" cellspacing="0" border="0" width="100%">
-  <tr><td style="width:32px; background-color:white; border-bottom:1px solid #CCD9EA"><img src="../artwork/team_members.png" width="32" height="32 alt="Members" /></td><td style="background-color:white; font-size:150%; color:#5582D2; border-bottom:1px solid #CCD9EA"><strong>Team Members: </strong><?php echo $_GET['teamID']; ?></td></tr>
+  <tr><td style="width:32px; background-color:white; border-bottom:1px solid #CCD9EA"><img src="../artwork/team_members.png" width="32" height="32 alt="Members" /></td><td style="background-color:white; font-size:150%; color:#5582D2; border-bottom:1px solid #CCD9EA"><strong><?php echo $string['teammembers']; ?> </strong><?php echo $_GET['teamID']; ?></td></tr>
   </table>
 
 <?php
@@ -147,7 +147,7 @@
   echo "<input type=\"hidden\" name=\"staff_no\" value=\"$staff_no\" /></div></td>\n</tr>\n";
 ?>
 
-<div style="text-align:center"><input style="width:120px" type="submit" name="submit" value="OK" />&nbsp;<input style="width:120px" type="submit" name="cancel" value="Cancel" onclick="window.close()" /></div>
+<div style="text-align:center"><input style="width:120px" type="submit" name="submit" value="<?php echo $string['ok']; ?>" />&nbsp;<input style="width:120px" type="submit" name="cancel" value="<?php echo $string['cancel']; ?>" onclick="window.close()" /></div>
 
 </form>
 </body>

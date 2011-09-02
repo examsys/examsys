@@ -27,7 +27,7 @@
 <br />
 
 <table cellpadding="0" cellspacing="0" border="0" width="185">
-<tr><td style="font-weight:bold">Calendar Years</td></tr>
+<tr><td style="font-weight:bold"><?php echo $string['calendaryears']; ?></td></tr>
 <tr><td>
 <table cellpadding="3" cellspacing="0" border="0" style="margin-left:6px; font-size:90%">
 <?php

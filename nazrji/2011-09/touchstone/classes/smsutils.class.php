@@ -29,9 +29,13 @@ Abstract Class SmsUtils {
   static function GetSmsUtils() {
     global $cfg_sms_api;
     
-    require_once ($_SERVER['DOCUMENT_ROOT'] . '/touchstone/config/config.inc');
-    require_once ($_SERVER['DOCUMENT_ROOT'] . "/touchstone/apis/" . $cfg_sms_api . ".class.php");
-    return new $cfg_sms_api();
+    require_once ($_SERVER['DOCUMENT_ROOT'] . '/touchstone/config/config.inc.php');
+    if(isset($cfg_sms_api) and $cfg_sms_api != '') {
+      require_once ($_SERVER['DOCUMENT_ROOT'] . "/touchstone/apis/" . $cfg_sms_api . ".class.php");
+      return new $cfg_sms_api();
+    }
+    
+    return false;
   }
   
   abstract protected function getUserData($username);

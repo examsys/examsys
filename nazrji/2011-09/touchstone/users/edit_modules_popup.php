@@ -24,8 +24,9 @@
 * @package
 */
 
-  require '../include/admin_auth.inc';
-  require '../include/errors.inc';
+  require_once '../include/admin_auth.inc';
+  require_once '../include/errors.inc';
+  require_once '../classes/dateutils.class.php';
   
   function drawTabs($current_tab) {
     $html = '<table cellpadding="0" cellspacing="0" border="0" style="font-size:100%"><tr><td style="width:264px"><strong>Modules for ' . $_GET['session'] . ':</strong></td>';
@@ -117,10 +118,17 @@
 </html>
 <?php
   } else {
+  
+  if (isset($_GET['session']) and $_GET['session'] != '') {
+    $session = $_GET['session'];
+  } else {
+    $session =  DateUtils::get_current_academic_year();
+
+  }
 ?>
 <html>
 <head>
-<title><?php echo $_GET['session']; ?> Modules</title>
+<title><?php echo $session; ?> Modules</title>
 <style>
   body {font-family:Arial,sans-serif; font-size:90%; background-color:#E3EFFF; color:black; margin:8px 4px 4px 4px}
   td {font-size:90%}
@@ -152,7 +160,7 @@
   $student_modules = array();
   $student_mod_count = 0;
   $result = $mysqli->prepare("SELECT moduleid, attempt FROM student_modules WHERE userID=? AND calendar_year=?");
-  $result->bind_param('is', $_GET['userID'], $_GET['session']);
+  $result->bind_param('is', $_GET['userID'], $session);
   $result->execute();
   $result->bind_result($moduleid, $attempt);
   while ($row = $result->fetch()) {
@@ -188,7 +196,7 @@
  
   echo "<input type=\"hidden\" name=\"mod_count\" value=\"$mod_count\" /></div></td>\n</tr>\n";
   echo "<input type=\"hidden\" name=\"userID\" value=\"" . $_GET['userID'] . "\" /></div></td>\n</tr>\n";
-  echo "<input type=\"hidden\" name=\"session\" value=\"" . $_GET['session'] . "\" /></div></td>\n</tr>\n";
+  echo "<input type=\"hidden\" name=\"session\" value=\"" . $session . "\" /></div></td>\n</tr>\n";
 ?>
 <br />
 <div align="center"><input style="width:120px" type="submit" name="submit" value="OK" />&nbsp;<input style="width:120px" type="submit" name="cancel" value="Cancel" onclick="window.close()" /></div>

@@ -56,7 +56,7 @@
 <br />
 <?php
   if (isset($_POST['submit'])) {
-    echo "<div id=\"msg\">Loading...</div>\n<br />\n";
+    echo "<div id=\"msg\">" . $string['loading'] . "</div>\n<br />\n";
     ob_flush();
     flush();
 
@@ -68,7 +68,7 @@
         $users = add_users_from_file('/tmp/' . $userID . '_new_cohort.csv');
         unlink('/tmp/' . $userID . '_new_cohort.csv');
         if (isset($users['error'])) {
-          echo "<p>No users added due to the following errors:</p><ul>";
+          echo "<p>" . $string['followingerrors'] . "</p><ul>";
           foreach ($users['error'] as $msg) {
             echo $msg;
           }
@@ -76,14 +76,14 @@
         } else {
           echo "<ul>\n";
           if (isset($users['added'])) {
-            echo "<li>" . count($users['added']) . " users added</li>\n";
+            echo "<li>" . count($users['added']) . " " . $string['usersadded'] . "</li>\n";
           } else {
-            echo "<li>0 users added</li>\n";
+            echo "<li>0 " . $string['usersadded'] . "</li>\n";
           }
           if (isset($users['updated'])) {
-            echo "<li>" . count($users['updated']) . " existing users updated</li>\n";
+            echo "<li>" . count($users['updated']) . " " . $string['usersupdated'] . "</li>\n";
           } else {
-            echo "<li>0 existing users updated</li>\n";
+            echo "<li>0 " . $string['usersupdated'] . "</li>\n";
           }
           echo "</ul>\n";
         }
@@ -97,24 +97,24 @@
 
 <table border="0" cellpadding="4" cellspacing="0" style="border:1px solid #95AEC8; width:730px; margin-left:auto; margin-right:auto">
 <tr>
-<td style="width:56px; background-color:white"><img src="../artwork/import_48.gif" width="48" height="48" alt="Icon" /></td><td style="text-align:left; font-size:150%; font-weight:bold; color:#5582D2; width:90%">Import Students</span></td>
+<td style="width:56px; background-color:white"><img src="../artwork/import_48.gif" width="48" height="48" alt="Icon" /></td><td style="text-align:left; font-size:150%; font-weight:bold; color:#5582D2; width:90%"><?php echo $string['importstudents']; ?></span></td>
 </tr>
 <tr>
 <td align="left" style="background-color:#F1F5FB" colspan="2">
 
-<p>TouchStone can bulk upload student details and create new accounts from CSV files. The first row should be a header row containing the following fields:</p>
+<p><?php echo $string['msg1']; ?></p>
 <blockquote>ID, First Names, Family Name, Title, Degree, Year of Study and Email</blockquote>
-<p>The extra fields 'Modules' and 'Session' can be added to enrol the new students on the specified module at the same time.</p> 
+<p><?php echo $string['msg2']; ?></p> 
 
 <div style="text-align:center"><img src="../artwork/student_import_headings.png" width="695" height="59" alt="Headings" border="1" /></div>
 <br />
 <br />
 <div style="text-align:center">
 <form name="import" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>" enctype="multipart/form-data">
-<p><strong>CSV File:</strong> <input type="file" size="50" name="csvfile" /></p>
+<p><strong><?php echo $string['csvfile']; ?></strong> <input type="file" size="50" name="csvfile" /></p>
 
-<div align="center"><input type="checkbox" name="welcome" value="1" />&nbsp;Send welcome email to user</div>
-<p><input type="submit" style="width:100px" value="Import" name="submit" />&nbsp;<input style="width:100px" type="button" value="Cancel" name="cancel" onclick="history.go(-1)" /></p>
+<div align="center"><input type="checkbox" name="welcome" value="1" />&nbsp;<?php echo $string['sendwelcomeemail']; ?>Send welcome email to user</div>
+<p><input type="submit" style="width:100px" value="<?php echo $string['import']; ?>" name="submit" />&nbsp;<input style="width:100px" type="button" value="<?php echo $string['cancel']; ?>" name="cancel" onclick="history.go(-1)" /></p>
 </form>
 </div>
 </td>

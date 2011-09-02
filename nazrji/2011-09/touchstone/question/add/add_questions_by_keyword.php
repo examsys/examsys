@@ -125,7 +125,7 @@ a:hover {color:black}
   }
   
   $old_id = '';
-  $sql = "SELECT questions.q_id, leadin_plain, q_type, DATE_FORMAT(last_edited,'%d/%m/%y') AS display_date, locked, parts FROM (questions, keywords_question) LEFT JOIN question_exclude ON questions.q_id=question_exclude.q_id WHERE questions.q_id=keywords_question.q_id AND keywords_question.keywordID IN ($keyword_ids) AND (ownerID=$userID OR q_group IN ($teams)) AND status != 'retired' AND deleted IS NULL ORDER BY $order $direction, questions.q_id";
+  $sql = "SELECT questions.q_id, leadin_plain, q_type, DATE_FORMAT(last_edited,'$cfg_short_date') AS display_date, locked, parts FROM (questions, keywords_question) LEFT JOIN question_exclude ON questions.q_id=question_exclude.q_id WHERE questions.q_id=keywords_question.q_id AND keywords_question.keywordID IN ($keyword_ids) AND (ownerID=$userID OR q_group IN ($teams)) AND status != 'retired' AND deleted IS NULL ORDER BY $order $direction, questions.q_id";
   $keywords = $mysqli->query($sql);
   $old_id;
   while($row = $keywords->fetch_assoc()) {

@@ -72,7 +72,7 @@
         <div align="center">
         <table border="0" cellpadding="4" cellspacing="0" style="border:1px solid #95AEC8; font-size:120%">
         <tr>
-        <td valign="middle" align="left" style="background-color:white"><img src="../artwork/import_48.gif" width="48" height="48" alt="Icon" />&nbsp;&nbsp;<span style="font-family:Arial,sans-serif; font-size:140%; font-weight:bold; color:#5582D2">Adding Modules From (<?php echo $_FILES['csvfile']['name'] ;?>)</span></td>
+        <td valign="middle" align="left" style="background-color:white"><img src="../artwork/import_48.gif" width="48" height="48" alt="Icon" />&nbsp;&nbsp;<span style="font-family:Arial,sans-serif; font-size:140%; font-weight:bold; color:#5582D2"><?php echo $string['addingmodules']; ?> (<?php echo $_FILES['csvfile']['name'] ;?>)</span></td>
         </tr>
         <tr>
         <td align="left" style="background-color:#F1F5FB">
@@ -81,13 +81,13 @@
         //get a list of touchstone modules
         $SQL = "SELECT DISTINCT moduleid FROM modules";
         $res = $mysqli->query($SQL) OR die(mysql_error());
-        $touchstone_modules = Array();
-        while($row = $res->fetch_assoc()) {
+        $touchstone_modules = array();
+        while ($row = $res->fetch_assoc()) {
           $touchstone_modules[] = $row['moduleid'];
         }
 
         $modulesAdded = 0;
-        $missing_users = Array();
+        $missing_users = array();
         $lines = file("/tmp/" . $userID . "_cohort_update.csv");
 
         // Build an array of unique student names.
@@ -130,7 +130,7 @@
           }
         }
 
-        foreach($lines as $separate_line) {
+        foreach ($lines as $separate_line) {
           if (strpos($separate_line,'"') !== false) {
             $separate_line = str_replace('","','~',$separate_line);
             $separate_line = str_replace('"','',$separate_line);
@@ -164,8 +164,8 @@
     }
     unlink("/tmp/" . $userID . "_cohort_update.csv");
 
-    echo "<h2>$modulesAdded Added Modules added</h2>";
-    echo "<p>" . count($missing_users) . " Missing users</p>";
+    echo "<h2>$modulesAdded " . $string['modulesadded'] . "</h2>";
+    echo "<p>" . count($missing_users) . " " . $string['missingusers'] . "</p>";
     foreach($missing_users as $sid => $module) {
       echo "<p>$sid:" . $module['surname'] . ', ' . $module['forname'] . "</p>";
       foreach($module['module'] as $moduleid) {
@@ -187,20 +187,20 @@
 ?>
 <table border="0" cellpadding="4" cellspacing="0" style="width:70%; border:1px solid #95AEC8; margin-left:auto; margin-right:auto">
 <tr>
-<td style="width:56px; background-color:white"><img src="../artwork/import_48.gif" width="48" height="48" alt="Icon" /></td><td style="text-align:left; font-size:150%; font-weight:bold; color:#5582D2; width:90%">Import Modules</span></td>
+<td style="width:56px; background-color:white"><img src="../artwork/import_48.gif" width="48" height="48" alt="Icon" /></td><td style="text-align:left; font-size:150%; font-weight:bold; color:#5582D2; width:90%"><?php echo $string['importmodules']; ?></span></td>
 </tr>
 <tr>
 <td align="left" style="background-color:#F1F5FB" colspan="2">
 
-<p style="text-align:justify">CSV file should be in the SATURN export format. Each csv file should contain all the students registered to the school. (Data can be obtained from SATURN using 'Student Exports / Modules II / Faculty of Medicine')</p>
+<p style="text-align:justify"><?php echo $string['msg1']; ?></p>
 <br />
-<div>Please select the CVS file you wish to load:</div>
+<div><?php echo $string['msg2']; ?></div>
 <br />
 <div align="center">
 <form name="import" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>" enctype="multipart/form-data">
 <p><input type="file" size="50" name="csvfile" /></p>
 <br />
-<p><input type="submit" style="width:100px" value="Import" name="submit" />&nbsp;<input style="width:100px" type="button" value="Cancel" name="cancel" onclick="history.go(-1)" /></p>
+<p><input type="submit" style="width:100px" value="<?php echo $string['import']; ?>" name="submit" />&nbsp;<input style="width:100px" type="button" value="<?php echo $string['cancel']; ?>" name="cancel" onclick="history.go(-1)" /></p>
 </form>
 </div>
 </td>

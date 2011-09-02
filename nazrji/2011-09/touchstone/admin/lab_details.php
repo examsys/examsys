@@ -27,7 +27,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Lab Details</title>
+<title><?php echo $string['labdetails']; ?></title>
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
 <style>
 .foldername {float:left; width:380px; height:60px; padding-left:12px; font-size:80%}
@@ -50,10 +50,10 @@
   while ($row = $results->fetch()) {
     if ($ip_no == 0) {
       echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">\n";
-      echo "<tr><td style=\"background-color:#F1F5FB\"><div class=\"breadcrumb\"><a href=\"../index.php\">Home</a>&nbsp;&nbsp;<img src=\"../artwork/breadcrumb_arrow.png\" width=\"4\" height=\"7\" alt=\"-\" />&nbsp;&nbsp;<a href=\"./index.php\">Administrative Tools</a>&nbsp;&nbsp;<img src=\"../artwork/breadcrumb_arrow.png\" width=\"4\" height=\"7\" alt=\"-\" />&nbsp;&nbsp;<a href=\"./list_labs.php\">Computer Labs</a></div><div style=\"font-size:220%; font-weight:bold; margin-left:10px\">$name</div></td>\n";
+      echo "<tr><td style=\"background-color:#F1F5FB\"><div class=\"breadcrumb\"><a href=\"../index.php\">" . $string['home'] . "</a>&nbsp;&nbsp;<img src=\"../artwork/breadcrumb_arrow.png\" width=\"4\" height=\"7\" alt=\"-\" />&nbsp;&nbsp;<a href=\"./index.php\">" . $string['administrativetools'] . "</a>&nbsp;&nbsp;<img src=\"../artwork/breadcrumb_arrow.png\" width=\"4\" height=\"7\" alt=\"-\" />&nbsp;&nbsp;<a href=\"./list_labs.php\">" . $string['computerlabs'] . "</a></div><div style=\"font-size:220%; font-weight:bold; margin-left:10px\">$name</div></td>\n";
       echo "<td style=\"background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(231); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"Help\" border=\"0\" /></a></td></tr>\n";
       echo "<tr><td colspan=\"2\" style=\"height:3px\"><img src=\"../artwork/header_horizontal_line.gif\" width=\"100%\" height=\"3\" alt=\"Line\" /></td></tr>\n</table>\n";
-      echo "<br />\n<table cellpadding=\"2\" cellspacing=\"0\" border=\"0\" style=\"font-size:100%; margin-left:10px; margin-right:10px\">\n<tr><td style=\"vertical-align:top; width:440px\"><div><strong>IP Addresses (" . $results->num_rows . ")</strong></div>\n<div style=\"height:590px; overflow-y:scroll; border: 1px solid #EEEDE5\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\n";
+      echo "<br />\n<table cellpadding=\"2\" cellspacing=\"0\" border=\"0\" style=\"font-size:100%; margin-left:10px; margin-right:10px\">\n<tr><td style=\"vertical-align:top; width:440px\"><div><strong>" . $string['ipaddresses'] . " (" . $results->num_rows . ")</strong></div>\n<div style=\"height:590px; overflow-y:scroll; border: 1px solid #EEEDE5\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\n";
     }
     
     if ($address == $hostname) {
@@ -66,19 +66,19 @@
   }
   $results->close();
   echo "</table></div></td><td style=\"width:50px\"></td><td style=\"vertical-align:top\">\n";
-  echo "<div><strong>Campus</strong></div>\n<div>$campus</div>\n";
-  echo "<br /><div><strong>Building</strong></div>\n<div>$building</div>\n";
-  echo "<br /><div><strong>Room Number</strong></div>\n<div>$room_no</div>\n";
+  echo "<div><strong>" . $string['campus'] . "</strong></div>\n<div>$campus</div>\n";
+  echo "<br /><div><strong>" . $string['building'] . "</strong></div>\n<div>$building</div>\n";
+  echo "<br /><div><strong>" . $string['roomnumber'] . "</strong></div>\n<div>$room_no</div>\n";
   if ($low_bandwidth == 0) {
-    echo "<br /><div><strong>Bandwidth</strong></div>\n<span style=\"background-color:#008000; color:white\">&nbsp;High&nbsp;</span><br />\n";
+    echo "<br /><div><strong>" . $string['bandwidth'] . "</strong></div>\n<span style=\"background-color:#008000; color:white\">&nbsp;" . $string['high'] . "&nbsp;</span><br />\n";
   } else {
-    echo "<br /><div><strong>Bandwidth</strong></div>\n<span style=\"background-color:#C00000; color:white\">&nbsp;Low&nbsp;</span><br />\n";
+    echo "<br /><div><strong>" . $string['bandwidth'] . "</strong></div>\n<span style=\"background-color:#C00000; color:white\">&nbsp;" . $string['low'] . "&nbsp;</span><br />\n";
   }
-  echo "<br /><div><strong>Timetabling</strong></div>\n<div>$timetabling</div>\n";
-  echo "<br /><div><strong>IT Support</strong></div>\n<div>$it_support</div>\n";
-  echo "<br /><div><strong>Plagarism</strong></div>\n<div>$plagarism</div>\n";
+  echo "<br /><div><strong>" . $string['timetabling'] . "</strong></div>\n<div>$timetabling</div>\n";
+  echo "<br /><div><strong>" . $string['itsupport'] . "</strong></div>\n<div>$it_support</div>\n";
+  echo "<br /><div><strong>" . $string['plagarism'] . "</strong></div>\n<div>$plagarism</div>\n";
   if (strpos($userroles,'SysAdmin') !== false or strpos($userroles,'Admin') !== false) {
-    echo "<br /><br /><input type=\"button\" onclick=\"window.location='edit_lab.php?labID=" . $_GET['labID'] . "'\" value=\"Edit\" style=\"width:120px\" />\n";
+    echo "<br /><br /><input type=\"button\" onclick=\"window.location='edit_lab.php?labID=" . $_GET['labID'] . "'\" value=\"" . $string['edit'] . "\" style=\"width:120px\" />\n";
   }
   echo "</td></tr>\n</table>\n";
   $mysqli->close();

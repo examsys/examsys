@@ -23,7 +23,7 @@
 */
 
 $root = (substr($_SERVER['DOCUMENT_ROOT'], -1) == '/') ? $_SERVER['DOCUMENT_ROOT'] : $_SERVER['DOCUMENT_ROOT'] . '/';
-require_once $root . 'touchstone/config/config.inc';
+require_once $root . 'touchstone/config/config.inc.php';
 require_once $cfg_web_root . 'touchstone/classes/formutils.class.php';
 
 $mysqli = new $dbclass($cfg_db_host , $cfg_db_username, $cfg_db_passwd, $cfg_db_database);

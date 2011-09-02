@@ -25,14 +25,16 @@
 */
 
 $root = (substr($_SERVER['DOCUMENT_ROOT'], -1) == '/') ? $_SERVER['DOCUMENT_ROOT'] : $_SERVER['DOCUMENT_ROOT'] . '/';
-require_once $root . 'touchstone/config/config.inc';
+require_once $root . 'touchstone/config/config.inc.php';
 require_once $cfg_web_root . 'touchstone/include/auth.inc';
 require_once $cfg_web_root . 'touchstone/include/custom_error_handler.inc';
+require_once $cfg_web_root . 'touchstone/classes/lang.class.php';
+require_once $cfg_web_root . 'touchstone/lang/' . $language . '/touchstone/include/common.inc';   // Include common language file that all scripts need
 
-$fp_link = "<p style=\"margin-left:60px\"><a href=\"/touchstone/users/forgotten_password.php\">Forgotten Password</p>\n";
+$fp_link = "<p style=\"margin-left:60px\"><a href=\"/touchstone/users/forgotten_password.php\">" . $string['forgottenpassword'] . "</p>\n";
 
 if ($_SERVER['SERVER_PORT'] != 443 and $_SERVER['SERVER_PORT'] != 8080) {
-  echo "<html>\n<body style=\"font-family:Arial,sans-serif;font-size:100%;color:#C00000\">\n<p><strong>WARNING:</strong> TouchStone can only be accessed through a secure web connection.</p>\n<p>Instead use: <a href=\"https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . "\">https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . "</a>.\n</body>\n</html>\n";
+  echo "<html>\n<body style=\"font-family:Arial,sans-serif;font-size:100%;color:#C00000\">\n<p><strong>" . $string['warning'] . "</strong> " . $string['secureconnection'] . " <a href=\"https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . "\">https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . "</a>.\n</body>\n</html>\n";
   exit;
 }
 if (preg_match( '|MSIE ([5-9].[0-9]{1,2})|',$_SERVER['HTTP_USER_AGENT'],$log_version) or preg_match( '|Netscape6|',$_SERVER['HTTP_USER_AGENT'],$log_version) or preg_match( '|Netscape\/7.0|',$_SERVER['HTTP_USER_AGENT'],$log_version) or preg_match('|Mozilla\/5.0|',$_SERVER['HTTP_USER_AGENT'],$log_version) or preg_match('|PHP-SOAP|',$_SERVER['HTTP_USER_AGENT'],$log_version)) {
@@ -46,11 +48,11 @@ if (preg_match( '|MSIE ([5-9].[0-9]{1,2})|',$_SERVER['HTTP_USER_AGENT'],$log_ver
   }
 
   if (!isset($_SERVER['PHP_AUTH_USER'])) {
-    $message = "Authentication with TouchStone has failed, please remember:</p>\n<ul style=\"margin-left:80px\">\n<li>Usernames/passwords are case-sensitive</li>\n";
-    if ($cfg_use_ldap == true) $message .= "<li>TouchStone now uses the LDAP passwords</li>\n";
-    $message .= "<li>Press 'F5' on the keyboard to try logging in again</li>";
+    $message = $string['authenticationfailed'] . "</p>\n<ul style=\"margin-left:80px\">\n<li>" . $string['usernamecasesensitive'] . "</li>\n";
+    if ($cfg_use_ldap == true) $message .= "<li>" . $string['tsonldap'] . "</li>\n";
+    $message .= '<li>' . $string['pressf5'] . '</li>';
      if ($_SERVER['PHP_SELF'] == '/index.php') {
-      $message .= "<li>If you are still stuck ask an invigilator for a <a href=\"guest_account.php\" style=\"color:blue\"><strong>Temporary Account</strong></a></li>";
+      $message .= "<li>" . $string['ifstuckinvigilator'] . " <a href=\"guest_account.php\" style=\"color:blue\"><strong>" . $string['tempaccount'] . "</strong></a></li>";
     }
     $message .= "</ul>";
     if ($cfg_use_ldap != true) $message .= $fp_link;
@@ -61,7 +63,7 @@ if (preg_match( '|MSIE ([5-9].[0-9]{1,2})|',$_SERVER['HTTP_USER_AGENT'],$log_ver
     //
     if (db_auth($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'],$mysqli) == false) {
       //try LDAP
-      if ($cfg_use_ldap == true and $db_errors != '<strong>No TouchStone account found!</strong>') {
+      if ($cfg_use_ldap == true and $db_errors != '<strong>' . $string['notsaccount'] . '</strong>') {
         $ldap_user_data = Array();
         if (ldap_auth($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'], $ldap_user_data) == true) {
           //Ad Account OK
@@ -72,9 +74,9 @@ if (preg_match( '|MSIE ([5-9].[0-9]{1,2})|',$_SERVER['HTTP_USER_AGENT'],$log_ver
           if ($stmt->affected_rows == 0) {
             //user has no touchstone account but valid LDAP
             $stmt->close();
-            $message = "No TouchStone account found</p>\n<ul style=\"margin-left:80px\">\n<li>Please contact <a href=\"mailto:$support_email\">$support_email</a> if you believe you should have access.</li>\n";
+            $message = $string['notsaccount'] . "</p>\n<ul style=\"margin-left:80px\">\n<li>Please contact <a href=\"mailto:$support_email\">$support_email</a> if you believe you should have access.</li>\n";
              if ($_SERVER['PHP_SELF'] == '/index.php') {
-              $message .= "If you are still stuck ask an invigilator for a <a href=\"guest_account.php\" style=\"color:blue\"><strong>Temporary Account</strong></a></li>";
+              $message .= $string['ifstuckinvigilator'] . " <a href=\"guest_account.php\" style=\"color:blue\"><strong>" . $string['tempaccount'] . "</strong></a></li>";
             }
             $message .= "</ul>";
             access_denied($message, true);
@@ -84,15 +86,16 @@ if (preg_match( '|MSIE ([5-9].[0-9]{1,2})|',$_SERVER['HTTP_USER_AGENT'],$log_ver
           
         } else {
           //Ad Account NOT OK
-          $message = "Authentication with TouchStone has failed, please remember:</p>\n<ul style=\"margin-left:80px\">\n<li>Usernames/passwords are case-sensitive</li>\n";
+          $message = $string['authenticationfailed'] . "</p>\n<ul style=\"margin-left:80px\">\n<li>" . $string['usernamecasesensitive'] . "</li>\n";
           if ($cfg_use_ldap == true) {
-            $message .= "<li>TouchStone now uses the LDAP passwords</li>\n";
+            $message .= "<li>" . $string['tsonldap'] . "</li>\n";
           }
-          $message .= "<li>Press 'F5' on the keyboard to try logging in again</li>";
+          $message .= '<li>' . $string['pressf5'] . '</li>';
            if ($_SERVER['PHP_SELF'] == '/index.php') {
-            $message .= "<li>If you are still stuck ask an invigilator for a <a href=\"guest_account.php\" style=\"color:blue\"><strong>Temporary Account</strong></a></li>";
+            $message .= "<li>" . $string['ifstuckinvigilator'] . " <a href=\"guest_account.php\" style=\"color:blue\"><strong>" . $string['tempaccount'] . "</strong></a></li>";
           }
           $message .= "<li>" . $ldap_user_data['error'] . "</li></ul>";
+          if(strpos($userroles,'External Examiner') !== false) $message .= $fp_link;
           access_denied($message, true);
         }
       } else {
@@ -101,12 +104,12 @@ if (preg_match( '|MSIE ([5-9].[0-9]{1,2})|',$_SERVER['HTTP_USER_AGENT'],$log_ver
           //we have a valid LDAP account - we are in the self enrol script allow execution to continue
           //continue
         } else {
-          $message = "Authentication with TouchStone has failed, please remember:</p>\n<ul style=\"margin-left:80px\">\n<li>Usernames/passwords are case-sensitive</li>\n<li>Press 'F5' on the keyboard to try logging in again</li>";
+          $message = $string['authenticationfailed'] . "</p>\n<ul style=\"margin-left:80px\">\n<li>" . $string['usernamecasesensitive'] . "</li>\n<li>" . $string['pressf5'] . "</li>";
           if ($db_errors != '') {
             $message .= "<li>$db_errors</li>\n";
           }
           if ($_SERVER['PHP_SELF'] == '/index.php') {
-            $message .= "<li>If you are still stuck as an invigilator for a <a href=\"guest_account.php\" style=\"color:blue\"><strong>Temporary Account</strong></a></li>\n</ul>";
+            $message .= "<li>" . $string['ifstuckinvigilator'] . " <a href=\"guest_account.php\" style=\"color:blue\"><strong>" . $string['tempaccount'] . "</strong></a></li>\n</ul>";
           }
           $message .= $fp_link;
           access_denied($message, true);

@@ -32,7 +32,7 @@ function encpw($u,$p) {
   return crypt($p,$salt);
 }
 
-require './touchstone/config/config.inc';
+require './touchstone/config/config.inc.php';
 $mysqli = new mysqli($cfg_db_host , $cfg_db_username, $cfg_db_passwd, $cfg_db_database);
 $protocol = 'https://';
 

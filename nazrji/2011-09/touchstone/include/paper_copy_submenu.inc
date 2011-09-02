@@ -52,7 +52,7 @@
 </tr>
 <tr><td colspan="5">&nbsp;</td></tr>
 <tr>
-<td style="text-align:right">Copy Name:</td>
+<td style="text-align:right"><?php echo $string['copyname']; ?></td>
 <td colspan="4"><input type="text" name="new_paper" maxlength="255" value="<?php echo $paper_title; ?>" size="65" onkeypress="if (event.keyCode == 38 || event.keyCode == 63 || event.keyCode == 64 || event.keyCode == 94 || event.keyCode == 126)  illegalChar(event.keyCode);" />
 <input type="hidden" name="paperID" value="<?php echo $paperID; ?>" />
 <input type="hidden" name="module" value="<?php echo $module; ?>" />
@@ -62,9 +62,9 @@
 <tr><td colspan="5">&nbsp;</td></tr>
 <tr>
 <td>&nbsp;</td>
-<td>&nbsp;<input type="radio" name="copytype" value="paperonly" />&nbsp;Paper Only</td>
+<td>&nbsp;<input type="radio" name="copytype" value="paperonly" />&nbsp;<?php echo $string['paperonly']; ?></td>
 <td>&nbsp;</td>
-<td>&nbsp;<input type="radio" name="copytype" value="paperquestions" checked />&nbsp;Paper and Questions</td>
+<td>&nbsp;<input type="radio" name="copytype" value="paperquestions" checked />&nbsp;<?php echo $string['paperandquestions']; ?></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -76,7 +76,7 @@
 </tr>
 <tr><td colspan="5">&nbsp;</td></tr>
 <tr>
-<td align="center" colspan="5"><input type="submit" style="width:100px" value="Copy Paper" name="submit" /></td>
+<td align="center" colspan="5"><input type="submit" style="width:100px" value="<?php echo $string['copypaper']; ?>" name="submit" /></td>
 </tr>
 <tr><td colspan="5">&nbsp;</td></tr>
 </table>

@@ -29,7 +29,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Optimize Tables</title>
+<title><?php echo $string['optimizetables']; ?></title>
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
 <script src="../javascript/staff_help.js" type="text/javascript"></script>
 </head>
@@ -42,8 +42,8 @@
 <div id="content" class="content" style="font-size:80%">
 <table cellpadding="0" cellspacing="0" border="0" width="100%">
 <tr>
-<td style="background-color:#F1F5FB"><div class="breadcrumb"><a href="../index.php">Home</a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php">Administrative Tools</a></div><div style="font-size:200%; margin-left:10px; font-weight:bold">Optimize Tables</div></td>
-<td style="background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(235); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="Help" border="0" /></a></td>
+<td style="background-color:#F1F5FB"><div class="breadcrumb"><a href="../index.php"><?php echo $string['home']; ?></a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php"><?php echo $string['administrativetools']; ?></a></div><div style="font-size:200%; margin-left:10px; font-weight:bold"><?php echo $string['optimizetables']; ?></div></td>
+<td style="background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(235); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="<?php echo $string['help']; ?>" border="0" /></a></td>
 </tr>
 <tr><td colspan="2" style="height:3px"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td></tr>
 </table>
@@ -60,20 +60,20 @@
         if (!$mysqli->query("OPTIMIZE TABLE " . $table[0])) {
           echo "<div>" . $mysqli->errno . ": " . $mysqli->error . "</div>\n";
         } else {
-          echo "<div>" . $table[0] . " optimized.</div>\n";
+          echo "<div>" . $table[0] . " " . $string['optimized'] . "</div>\n";
         }
         flush();
         ob_flush();
       }
     }
-    echo "<br /><br />Finished</blockquote>\n";
+    echo "<br /><br />" . $string['finished'] . "</blockquote>\n";
     
     ob_end_flush();
   } else {
 ?>
 <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
 <blockquote>
-<div><strong>Tables:</strong></div>
+<div><strong><?php echo $string['tables']; ?></strong></div>
 <?php
   $getTables = $mysqli->query("SHOW TABLES");
   while ($table = $getTables->fetch_array(MYSQLI_NUM)) {
@@ -81,7 +81,7 @@
   }
 ?>
 <br />
-<input style="width:120px" type="submit" name="submit" value="Optimize" />
+<input style="width:120px" type="submit" name="submit" value="<?php echo $string['optimize']; ?>" />
 </blockquote>
 </form>
 </div>
