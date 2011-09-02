@@ -1,0 +1,136 @@
+<?php
+// This file is part of TouchStone
+//
+// TouchStone is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// TouchStone is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with TouchStone.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+* 
+* @author Simon Wilkinson
+* @version 1.0
+* @copyright Copyright (c) 2011 The University of Nottingham
+* @package
+*/
+
+require '../include/staff_auth.inc';
+  
+  if (isset($_POST['submit']) and $_POST['submit'] == 'Second Mark') {
+    // Delete any previous remark records
+    $result = $mysqli->prepare("DELETE FROM textbox_remark WHERE paperID=?");
+    $result->bind_param('i', $_POST['paperID']);
+    $result->execute();
+    $result->close();
+
+    for ($student=1; $student<$_POST['student_no']; $student++) {
+      if (isset($_POST["student$student"]) and $_POST["student$student"] != '') {
+        $result = $mysqli->prepare("INSERT INTO textbox_remark VALUES (NULL,?,?)");
+        $result->bind_param('ii', $_POST['paperID'], $_POST["student$student"]);
+        $result->execute();
+        $result->close();
+      }
+    }
+    header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/touchstone/paper/details.php?paperID=" . $_GET['paperID'] . "&module=" . $_GET['module'] . "&folder=" . $_GET['folder']);
+  } elseif (isset($_POST['submit']) and $_POST['submit'] == 'Cancel') {
+    header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/touchstone/paper/details.php?paperID=" . $_GET['paperID'] . "&module=" . $_GET['module'] . "&folder=" . $_GET['folder']);
+  } else {
+?>
+
+<html>
+<head>
+<title>Second Mark Selection</title>
+<script src="../javascript/staff_help.js" type="text/javascript"></script>
+<style type="text/css">
+body {font-family:Arial,sans-serif; font-size:90%; background-color:white; color:black; margin:0px}
+table {font-size:100%}
+.h {background-color:#F1F5FB; color:black}
+.breadcrumb {margin-left:10px; font-size:90%}
+.breadcrumb a:link {color:blue; text-decoration:none; cursor:pointer}
+.breadcrumb a:visited {color:blue; text-decoration:none; cursor:pointer}
+.breadcrumb a:hover {color:blue; text-decoration:underline; cursor:pointer}
+.pad {padding-left:40px; width:20px}
+</style>
+</head>
+
+<body>
+<?php
+  // Get some paper properties
+  $result = $mysqli->prepare("SELECT paper_type, paper_title FROM properties WHERE property_id=?");
+  $result->bind_param('i', $_GET['paperID']);
+  $result->execute();
+  $result->bind_result($paper_type, $paper);
+  $result->fetch();
+  $result->close();
+
+  $folder = '';
+  if (isset($_GET['folder']) and $_GET['folder'] != '') {
+    $folder = $_GET['folder'];
+    $result = $mysqli->prepare("SELECT name FROM folders WHERE id=? LIMIT 1");
+    $result->bind_param('i', $folder);
+    $result->execute();
+    $result->bind_result($folder_name);
+    $result->fetch();
+    $result->close();
+  }
+
+  echo "<form action=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&module=" . $_GET['module'] . "&folder=" . $_GET['folder'] . "\" method=\"post\">\n";
+  echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">\n<tr><td class=\"h\" colspan=\"4\">";
+  echo '<div class="breadcrumb"><a href="../index.php">Home</a>';
+  if ($folder != '') {
+    echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?folder=' . $folder . '">' . $folder_name . '</a>';
+  } elseif (isset($_GET['module']) and $_GET['module'] != '') {
+    echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?module=' . $_GET['module'] . '">' . $_GET['module'] . '</a>';
+  }
+  echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../paper/details.php?paperID=' . $_GET['paperID'] . '">' . $paper . '</a></div><div style="margin-left:10px; font-size:180%; color:black; font-weight:bold">Second Mark Selection</div></td><td class="h" style="width:50%; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(0); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="Help" border="0" /></a></td></tr>';
+
+  echo "<tr style=\"height:4px\"><td colspan=\"5\" valign=\"top\"><img src=\"../artwork/header_horizontal_line.gif\" width=\"100%\" height=\"3\" alt=\"Line\" /></td></tr>\n";
+
+  $result = $mysqli->prepare("SELECT SUM(marks), pass_mark FROM (properties, papers, questions, options) WHERE property_id=? AND properties.property_id=papers.paper AND papers.question=questions.q_id AND questions.q_id=options.o_id AND q_type != 'info' GROUP BY paper");
+  $result->bind_param('i', $_GET['paperID']);
+  $result->execute();
+  $result->bind_result($paper_total, $pass_mark);
+  $result->fetch();
+  $result->close();
+
+  $student_no = 1;
+
+  $result = $mysqli->prepare("SELECT SUM(mark) AS total_mark, student_userID, users.id, student_id FROM textbox_marking, users, sid WHERE users.id=sid.userID AND users.id=textbox_marking.student_userID AND paperID=? AND phase=1 GROUP BY student_userID ORDER BY student_id");
+  $result->bind_param('i', $_GET['paperID']);
+  $result->execute();
+  $result->bind_result($total_mark, $username, $recordID, $student_id);
+  while ($row = $result->fetch()) {
+    if (round(($total_mark/$paper_total)*100) < $pass_mark) {
+      echo "<tr style=\"color:red\"><td class=\"pad\"><input type=\"checkbox\" name=\"student$student_no\" value=\"$recordID\" checked /></td><td>$student_id</td><td style=\"text-align:right\">$total_mark</td><td class=\"pad\">" . round(($total_mark/$paper_total)*100) . "%</td><td>&nbsp;</td></tr>\n";
+    } else {
+      echo "<tr><td class=\"pad\"><input type=\"checkbox\" name=\"student$student_no\" value=\"$recordID\" /></td><td>$student_id</td><td style=\"text-align:right\">$total_mark</td><td class=\"pad\">" . round(($total_mark/$paper_total)*100) . "%</td><td>&nbsp;</td></tr>\n";
+    }
+    $student_no++;
+  }
+  $result->close();
+?>
+
+<tr><td colspan="5">&nbsp;</td></tr>
+<tr><td colspan="4" style="text-align:center">
+<input type="hidden" name="student_no" value="<?php echo $student_no; ?>" />
+<input type="hidden" name="paperID" value="<?php echo $_GET['paperID']; ?>" />
+<input type="submit" name="submit" value="Second Mark" style="width:120px" />&nbsp;<input type="submit" name="submit" value="Cancel" style="width:120px" />
+</td><td>&nbsp;</td></tr>
+</table>
+<br />
+
+</form>
+</body>
+</html>
+
+<?php
+}
+?>
