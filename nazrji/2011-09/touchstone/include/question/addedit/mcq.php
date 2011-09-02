@@ -26,17 +26,10 @@ $num_options = count($question->options);
 ?>
 				<table id="q-details" class="form" summary="Edit question details">
 					<tbody>
-<?php require_once 'details_common.php' ?>
-            <tr>
-              <th><label for="score_method">Presentation</label></th>
-              <td>
-                <select id="score_method" name="score_method">
 <?php
-echo ViewHelper::render_options($question->get_score_methods(), $question->get_score_method(), 3);
+require_once 'details_common.php';
+require_once 'detail_parts/details_presentation.php';
 ?>
-                </select>
-              </td>
-            </tr>
             <tr>
               <th><label for="option_order">Option Order</label></th>
               <td>
@@ -50,8 +43,13 @@ echo ViewHelper::render_options($question->get_option_orders(), $question->get_o
 					</tbody>
 				</table>
 
-<?php require_once 'detail_parts/details_general_feedback.php' ?>
+<?php
+require_once 'detail_parts/details_marking.php';
+require_once 'detail_parts/details_general_feedback.php';
+?>
         
+
+
         <div class="form">
           <h2>Options</h2>
         </div>
@@ -60,7 +58,7 @@ echo ViewHelper::render_options($question->get_option_orders(), $question->get_o
           <thead>
             <tr>
               <th colspan="2">&nbsp;</th>
-              <th class="small">Answer</th>
+              <th class="small align-centre">Answer</th>
             </tr>
           </thead>
 <?php

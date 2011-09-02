@@ -45,7 +45,7 @@ Class QuestionTIMEDATE extends Question {
     parent::__construct($mysqli, $user_id, $data);
 
     // Populate the pseudo variables
-    $this->get_score_method();
+    $this->get_display_method();
     $this->get_correct();
   }
   
@@ -64,7 +64,7 @@ Class QuestionTIMEDATE extends Question {
    * @return integer
    */
   public function get_format() {
-    $this->get_score_method();
+    $this->get_display_method();
     return $this->format;
   }
   
@@ -85,7 +85,7 @@ Class QuestionTIMEDATE extends Question {
       $this->add_unified_field_modification('format', 'format', $this->formats[$this->format], $this->formats[$value]);
       $this->format = $value;
     }
-    $this->set_score_method();
+    $this->set_display_method();
   }
   
   /**
@@ -93,7 +93,7 @@ Class QuestionTIMEDATE extends Question {
    * @return string
    */
   public function get_start_year() {
-    $this->get_score_method();
+    $this->get_display_method();
     return $this->start_year;
   }
   
@@ -106,7 +106,7 @@ Class QuestionTIMEDATE extends Question {
       $this->set_modified_field('start_year', $this->start_year);
       $this->start_year = $value;
     }
-    $this->set_score_method();
+    $this->set_display_method();
   }
   
   /**
@@ -114,7 +114,7 @@ Class QuestionTIMEDATE extends Question {
    * @return string
    */
   public function get_end_year() {
-    $this->get_score_method();
+    $this->get_display_method();
     return $this->end_year;
   }
   
@@ -124,7 +124,7 @@ Class QuestionTIMEDATE extends Question {
    */
   public function set_end_year($value) {
     $this->end_year = $value;
-    $this->set_score_method();
+    $this->set_display_method();
   }
   
   /**
@@ -272,25 +272,25 @@ Class QuestionTIMEDATE extends Question {
   }
   
   /**
-   * Get the score method for this question and unpack into pseudo-properties
+   * Get the display method for this question and unpack into pseudo-properties
    * @return string
    */
-  public function get_score_method() {
-    if ($this->score_method != '') {
-      $parts = explode('|', $this->score_method);
+  public function get_display_method() {
+    if ($this->display_method != '') {
+      $parts = explode('|', $this->display_method);
       $this->format = $parts[0];
       $this->start_year = $parts[1];
       $this->end_year = $parts[2];
     }    
-    return $this->score_method;
+    return $this->display_method;
   }
   
   /**
-   * Set the score method for this question by building from pseudo-properties
+   * Set the display method for this question by building from pseudo-properties
    * @param string $value
    */
-  public function set_score_method($value=-1) {
-    $this->score_method = $this->format . '|' . $this->start_year . '|' . $this->end_year;
+  public function set_display_method($value=-1) {
+    $this->display_method = $this->format . '|' . $this->start_year . '|' . $this->end_year;
   }
   
   

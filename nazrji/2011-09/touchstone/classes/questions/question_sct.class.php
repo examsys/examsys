@@ -37,8 +37,8 @@ Class QuestionSCT extends Question {
     array('Treatment', 'contraindicated', 'less indicated', 'neither more or less indicated', 'indicated', 'strongly indicated')
   );
   
-  protected $_fields_editable = array('theme', 'scenario', 'hypothesis', 'new_information', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'option_order', 'bloom', 'status');
-  protected $_fields_required = array('type', 'leadin', 'score_method', 'owner_id', 'status');
+  protected $_fields_editable = array('theme', 'scenario', 'hypothesis', 'new_information', 'notes', 'correct_fback', 'incorrect_fback', 'display_method', 'option_order', 'bloom', 'status');
+  protected $_fields_required = array('type', 'leadin', 'display_method', 'owner_id', 'status');
   protected $_fields_unified = array();
   
   function __construct($mysqli, $user_id, $data = null) {
@@ -46,7 +46,7 @@ Class QuestionSCT extends Question {
 
     $i = 1;
     foreach ($this->sct_types as $type) {
-      $this->_score_methods[$i] = 'This ' . strtolower($type[0]) . ' becomes';
+      $this->_display_methods[$i] = 'This ' . strtolower($type[0]) . ' becomes';
       $i++;
     }
     

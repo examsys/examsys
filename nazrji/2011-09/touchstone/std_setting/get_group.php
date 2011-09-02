@@ -36,7 +36,7 @@ $exclude_query->close();
 
 // Calculate marks for the current paper.
 $marks_array = array();
-ss_get_marks($mysqli, $paperID, $exclude, $marks_array);
+ss_get_marks_correct($mysqli, $paperID, $exclude, $marks_array);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>

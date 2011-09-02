@@ -651,6 +651,10 @@ if (!isset($_POST['update'])) {
     $adjust->execute();
     $adjust->close();
     
+    $adjust = $mysqli->prepare("UPDATE questions SET score_method = 'Mark per Question' WHERE q_type = 'Calculation'");
+    $adjust->execute();
+    $adjust->close();
+    
     // Update the BonusMark setting
     $q_data = $mysqli->prepare("SELECT q_id FROM questions WHERE display_method='BonusMark'");
     $q_data->execute();
@@ -837,6 +841,23 @@ if (!isset($_POST['update'])) {
   }
   $result->close();
 
+  // 01/09/2011 - Fix 'question' foreign key field in 'papers' not being big enough to hold a question ID!
+  $result = $mysqli->prepare("SELECT COLUMN_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='papers' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='question'");
+  $result->execute();
+  $result->store_result();
+  $result->bind_result($column_type);
+  $result->fetch();
+  $result->close();
+  
+  if (strpos($column_type,'smallint') !== false) {
+    $result = $mysqli->prepare("ALTER TABLE papers CHANGE COLUMN question question INT(4) UNSIGNED NOT NULL DEFAULT 0;");
+    $result->execute();
+    $result->close();
+    echo "<div>ALTER TABLE papers CHANGE COLUMN question question INT(4) UNSIGNED NOT NULL DEFAULT 0;</div>\n";
+    ob_flush();
+    flush();
+  }
+  
   //Close the database
   $mysqli->close();
   ob_end_flush();

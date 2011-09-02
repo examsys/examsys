@@ -80,6 +80,7 @@ require_once 'detail_parts/details_leadin.php';
           </tbody>
         </table>
 
-<?php require_once 'detail_parts/details_general_feedback.php' ?>
-        
-
+<?php
+require_once 'detail_parts/details_marking.php';
+require_once 'detail_parts/details_general_feedback.php';
+?>

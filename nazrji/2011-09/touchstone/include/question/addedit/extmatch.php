@@ -107,6 +107,8 @@ echo ViewHelper::render_options($question->get_option_orders(), $question->get_o
 				</table>
         
 <?php
+require_once 'detail_parts/details_marking.php';
+
 for ($index = 1; $index <= $question->max_stems; $index++):
   $hidden = ($index > 2 and $index > $visible_questions) ? ' hide' : '';
 ?>

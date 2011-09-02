@@ -28,7 +28,7 @@ Class QuestionBLANK extends Question {
   
   protected $_answer_negative = null;
   
-  protected $_score_methods = array('dropdown' => 'Dropdown Lists (randomised)', 'textboxes' => 'Blank Textboxes');
+  protected $_display_methods = array('dropdown' => 'Dropdown Lists (randomised)', 'textboxes' => 'Blank Textboxes');
   
   protected $_fields_unified = array('text' => 'Question/Stem');
 

@@ -294,7 +294,7 @@ if (isset($_GET['change_screen'])) {
   }
 
   function edQ(questionNo, questionID, qType) {
-    document.location = "../question/edit/" +  qType + ".php?q_id=" + questionID + "&qNo=" + questionNo + "&paperID=<?php echo $paperID; ?>&folder=<?php if(isset($_GET['folder'])) echo $_GET['folder']; ?>&module=<?php if(isset($_GET['module'])) echo $_GET['module']; ?>&calling=paper&scrOfY=" + document.getElementById('scrOfY').value;
+    document.location = "../question/edit/?q_id=" + questionID + "&q_no=" + questionNo + "&paper_id=<?php echo $paperID; ?>&folder=<?php if(isset($_GET['folder'])) echo $_GET['folder']; ?>&module=<?php if(isset($_GET['module'])) echo $_GET['module']; ?>&calling=paper&scrOfY=" + document.getElementById('scrOfY').value;
   }
 
   function qOff() {

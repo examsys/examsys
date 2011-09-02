@@ -44,20 +44,23 @@ require '../../include/mapping.inc';
 
 $question = null;
 $logger = new Logger($mysqli);
-$paper_id = (empty($_GET['paper_id'])) ? -1 : $_GET['paper_id'];
-$module = (empty($_GET['module'])) ? '' : $_GET['module'];
+$paper_id = (!isset($_GET['paper_id'])) ? -1 : $_GET['paper_id'];
+$module = (!isset($_GET['module'])) ? '' : $_GET['module'];
+$folder = (!isset($_REQUEST['folder'])) ? '' : $_REQUEST['folder'];
+$scrofy = (!isset($_REQUEST['scrOfY'])) ? '' : $_REQUEST['scrOfY'];
+$calling = (!isset($_REQUEST['calling'])) ? '' : $_REQUEST['calling'];
 
 $critical_error = '';
 
-$q_no = (empty($_GET['q_no'])) ? '' : $_GET['q_no'];
+$q_no = (!isset($_GET['q_no'])) ? '' : $_GET['q_no'];
 $q_type_full = '';
 
 $errors = array();
  
-if(empty($_REQUEST['q_id'])) {
+if(!isset($_REQUEST['q_id'])) {
   // We're adding a new question
   
-  if (empty($_GET['type'])) {
+  if (!isset($_GET['type'])) {
     $critical_error = 'No question type defined.';
   } elseif (!in_array($_GET['type'], array_keys(Question::$types))) {
     $critical_error = 'Unknown question type <em>' . htmlentities($_GET['type']) . '</em>.';
@@ -126,7 +129,7 @@ if($critical_error == '') {
       $errors = $question->update_correct($correct_answers, $paper_id);
     }
   
-    //  redirect();
+//    redirect();
   } elseif (isset($_POST['submit']) and ($_POST['submit'] == 'Save Changes' or $_POST['submit'] == 'Limited Save')) {
     // Save data
     if ($question->id == -1 or check_fullSave($question->id,$mysqli)) {
@@ -179,7 +182,7 @@ if($critical_error == '') {
           $option->populate($part_names, $option_no, $_POST, array_merge(array_keys($unified_part_names), array_keys($compound_fields)), 'option_');
           
           // Save fields that are the same across options
-          $option->populate_unified($unified_part_names, $_POST, array_merge(array_keys($unified_part_names), array_keys($compound_fields)), 'option_');
+          $option->populate_unified($unified_part_names, $_POST, array_merge(array_keys($compound_fields)), 'option_');
         } else {
           // Create new option if have required data
           $option = Option::option_factory($mysqli, $userID, $question, $option_no, array('marks' => 1));
@@ -274,8 +277,8 @@ if($critical_error == '') {
     	}
     }
     
-  //  redirect();
-  } elseif (isset($_POST['submit']) and $_POST['submit'] == 'Cancel') {
+//    redirect();
+  } elseif (isset($_POST['submit-cancel']) and $_POST['submit-cancel'] == 'Cancel') {
     redirect();
   }
 
@@ -483,8 +486,12 @@ echo save_buttons_new($disabled, $question->get_locked(), $question->allow_corre
 ?>
       <input type="hidden" name="q_id" value="<?php echo $question->id ?>" />
       <input name="checkout_author" value="<?php echo $userID ?>" type="hidden" />
-      <input id="paper_id" name="paperID" value="<?php echo $paper_id ?>" type="hidden" />
-      <input id="question_id" name="questionID" value="<?php echo $question->id ?>" type="hidden" />
+      <input id="calling" name="calling" value="<?php echo $calling ?>" type="hidden" />
+      <input id="module" name="module" value="<?php echo $module ?>" type="hidden" />
+      <input id="folder" name="folder" value="<?php echo $folder ?>" type="hidden" />
+      <input id="scrOfY" name="scrOfY" value="<?php echo $scrofy ?>" type="hidden" />
+      <input id="paper_id" name="paper_id" value="<?php echo $paper_id ?>" type="hidden" />
+      <input id="question_id" name="question_id" value="<?php echo $question->id ?>" type="hidden" />
     </div>
   </form>
 <?php

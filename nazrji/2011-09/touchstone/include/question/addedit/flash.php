@@ -31,11 +31,11 @@ $num_options = count($options);
 if ($num_options > 0) {
   $option = reset($options);
   $option_media = $option->get_media();
-  $marks = $option->get_marks();
+  $marks_correct = $option->get_marks_correct();
   $option_id = $option->id;
 } else {
   $option_media = array('filename' => '', 'width' => '0', 'height' => '0');
-  $marks = 1;
+  $marks_correct = 1;
   $option_id = -1;
 }
 
@@ -64,13 +64,13 @@ $media_index = '1';
 require 'detail_parts/details_media.php';
 ?>
             <tr>
-              <th class="spaced-top"><label for="marks"><strong>Marks</strong></label></th>
+              <th class="spaced-top"><label for="option_marks_correct1"><strong>Marks</strong></label></th>
               <td class="spaced-top">
                 <input name="optionid1" value="<?php echo $option_id ?>" type="hidden" />
                 <input name="option_text1" value="Flash option placeholder text (non-editable, not displayed to students)" type="hidden" />
-                <select id="option_marks1" name="option_marks1">
+                <select id="option_marks_correct1" name="option_marks_correct1">
 <?php
-echo ViewHelper::render_options(range(1, 20), $marks, 3);
+echo ViewHelper::render_options(range(1, 20), $marks_correct, 3);
 ?>
                 </select>
               </td>

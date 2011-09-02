@@ -29,7 +29,6 @@ Class QuestionRANK extends Question {
   protected $_answer_negative = 0;
   
   protected $_fields_unified = array();
-  protected $_score_methods = array('StrictOrder' => 'Strict Order (mark per option)', 'AllItemsCorrect' => 'All Options must be Correct (1 mark in total)', 'OrderNeighbours' => 'Strict Order with half marks for neighbours', 'BonusMark' => 'Correct items with bonus for overall order');
   
   function __construct($mysqli, $user_id, $data = null) {
     parent::__construct($mysqli, $user_id, $data);

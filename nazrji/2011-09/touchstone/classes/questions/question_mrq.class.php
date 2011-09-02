@@ -28,8 +28,10 @@ require_once 'question_mcq.class.php';
 
 Class QuestionMRQ extends Question {
   
+  protected $score_method = 'Mark per Option';
+  
   protected $_fields_unified = array();
-  protected $_score_methods = array('AllNegative' => '1 Mark per Option (with Negative Marking)', 'AllItemsCorrect' => 'All Options must be Correct (1 mark in total)', 'SelectedPositive' => '1 Mark per True Option');
+  protected $_fields_force = array('display_method');
   
   function __construct($mysqli, $user_id, $data = null) {
     parent::__construct($mysqli, $user_id, $data);
@@ -136,6 +138,25 @@ Class QuestionMRQ extends Question {
     $this->save();
     
     return new QuestionMCQ($this->_mysqli, $this->_user_id, $this->id);
+  }
+  
+  // ACCESSORS
+  
+  /**
+   * Get the question display method
+   * @return string
+   */
+  public function get_display_method() {
+    return $this->display_method;
+  }
+  
+  /**
+   * Set the question display method
+   * @param string $value
+   */
+  public function set_display_method($value) {
+    if ($value == $this->_answer_negative) $value = '';
+    parent::set_display_method($value);
   }
 }
 

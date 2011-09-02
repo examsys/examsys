@@ -35,8 +35,6 @@ Class QuestionEXTMATCH extends Question {
   public $max_options = 26;
   public $max_stems = 10;
   
-  protected $_score_methods = array('vertical' => 'Vertical Option Button', 'vertical_other' => 'Vertical Option Buttons (with \'other\' textbox)', 'horizontal' => 'Horizontal Option Button', 'dropdown' => 'Dropdown List');
-  
   protected $_fields_required = array('type', 'leadin', 'option_order', 'owner_id', 'status');
   protected $_fields_editable = array('theme', 'leadin', 'notes', 'option_order', 'bloom', 'status');
   protected $_fields_compound = array('stem', 'media', 'correct_fback');

@@ -28,22 +28,12 @@ $num_options = count($question->options);
 					<tbody>
 <?php require_once 'details_common.php' ?>
             <tr>
-              <th><label for="score_method">Scoring Method</label></th>
-              <td>
-                <select id="score_method" name="score_method">
-<?php
-echo ViewHelper::render_options($question->get_score_methods(), $question->get_score_method(), 3);
-?>
-                </select>
-              </td>
-            </tr>
-            <tr>
               <th>Presentation</th>
               <td>
 <?php
-$checked = ($question->get_score_method() == 'other') ? ' checked="checked"' : '';
+$checked = ($question->get_display_method() == 'other') ? ' checked="checked"' : '';
 ?>
-                <input type="checkbox" id="score_method_other" name="score_method_other" value="1"<?php echo $checked ?> /> <label for="score_method_other">include 'other' textbox <span class="note">(use with surveys)</span></label>
+                <input type="checkbox" id="display_method" name="display_method" value="other"<?php echo $checked ?> /> <label for="display_method">include 'other' textbox <span class="note">(use with surveys)</span></label>
               </td>
             </tr>
             <tr>
@@ -59,7 +49,10 @@ echo ViewHelper::render_options($question->get_option_orders(), $question->get_o
 					</tbody>
 				</table>
 
-<?php require_once 'detail_parts/details_general_feedback.php' ?>
+<?php
+require_once 'detail_parts/details_marking.php';
+require_once 'detail_parts/details_general_feedback.php';
+?>
         
         <div class="form">
           <h2>Options</h2>
@@ -69,7 +62,7 @@ echo ViewHelper::render_options($question->get_option_orders(), $question->get_o
           <thead>
             <tr>
               <th colspan="2">&nbsp;</th>
-              <th class="small"><strong>Answer</strong></th>
+              <th class="small align-centre"><strong>Answer</strong></th>
             </tr>
           </thead>
 <?php

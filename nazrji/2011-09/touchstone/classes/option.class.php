@@ -38,11 +38,13 @@ Class Option extends TouchStoneObject {
   protected $correct_fback = '';
   protected $incorrect_fback = '';
   protected $correct = '';
-  public $marks = 1;
+  protected $marks_correct = 1;
+  protected $marks_incorrect = 0;
+  protected $marks_partial = 0;
   
-  protected static $_fields = array('question_id', 'text', 'media', 'media_width', 'media_height', 'correct_fback', 'incorrect_fback', 'correct', 'marks');
-  protected $_fields_editable = array('text', 'media', 'correct_fback', 'incorrect_fback', 'correct', 'marks');
-  protected $_fields_required = array('question_id', 'marks');
+  protected static $_fields = array('question_id', 'text', 'media', 'media_width', 'media_height', 'correct_fback', 'incorrect_fback', 'correct', 'marks_correct', 'marks_incorrect', 'marks_partial');
+  protected $_fields_editable = array('text', 'media', 'correct_fback', 'incorrect_fback', 'correct', 'marks_correct', 'marks_incorrect', 'marks_partial');
+  protected $_fields_required = array('question_id', 'marks_correct');
   protected $_fields_unified = array();
   
   protected $_question = null;
@@ -53,7 +55,7 @@ Class Option extends TouchStoneObject {
   
   // Map our 'nice' property names to the database fields
   protected $_field_map = array('question_id' => 'o_id', 'text' => 'option_text', 'media' => 'o_media', 'media_width' => 'o_media_width', 'media_height' => 'o_media_height', 'correct_fback' => 'feedback_right', 'incorrect_fback' => 'feedback_wrong');
-  protected $_pretty_names = array('question_id' => 'Question ID', 'text' => '', 'correct_fback' => 'Correct Feedback', 'incorrect_fback' => 'Incorrect Feedback', 'correct' => 'Correct Value', 'marks' => 'Marks');
+  protected $_pretty_names = array('question_id' => 'Question ID', 'text' => '', 'correct_fback' => 'Correct Feedback', 'incorrect_fback' => 'Incorrect Feedback', 'correct' => 'Correct Value', 'marks_correct' => 'Marks (correct)', 'marks_incorrect' => 'Marks (incorrect)', 'marks_partial' => 'Marks (partial)');
   
   /**
    * Create a new option object by either loading an existing option from the database or populating
@@ -185,17 +187,17 @@ Class Option extends TouchStoneObject {
     if($valid === true) {
       // If $id is -1 we're inserting a new record
       if($this->id == -1) {
-        $params = array_merge(array('issiisssd'), $this->_data);
+        $params = array_merge(array('issiisssddd'), $this->_data);
         $query = <<< QUERY
-INSERT INTO options(o_id, option_text, o_media, o_media_width, o_media_height, feedback_right, feedback_wrong, correct, marks)
+INSERT INTO options(o_id, option_text, o_media, o_media_width, o_media_height, feedback_right, feedback_wrong, correct, marks_correct, marks_incorrect, marks_partial)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
 QUERY;
       } else {
         // Otherwise we're updating an existing one
-        $params = array_merge(array('issiisssdi'), $this->_data, array(&$this->id));
+        $params = array_merge(array('issiisssdddi'), $this->_data, array(&$this->id));
         $query = <<< QUERY
 UPDATE options
-SET o_id = ?, option_text = ?, o_media = ?, o_media_width = ?, o_media_height = ?, feedback_right = ?, feedback_wrong = ?, correct = ?, marks = ? 
+SET o_id = ?, option_text = ?, o_media = ?, o_media_width = ?, o_media_height = ?, feedback_right = ?, feedback_wrong = ?, correct = ?, marks_correct = ?, marks_incorrect = ?, marks_partial = ? 
 WHERE id_num = ?
 QUERY;
       }
@@ -389,22 +391,60 @@ QUERY;
   }
   
   /**
-   * Get the option marks
+   * Get the option marks for correct answers
    * @return string
    */
-  public function get_marks() {
-    return $this->marks;
+  public function get_marks_correct() {
+    return $this->marks_correct;
   }
   
   /**
-   * Set the option marks
+   * Set the option marks for correct answers
    * @param string $value
    */
-  public function set_marks($value) {
-    if($value != $this->marks and !in_array('marks', array_keys($this->_fields_unified))) {
-      $this->set_modified_field('marks', $this->marks);
+  public function set_marks_correct($value) {
+    if($value != $this->marks_correct and !in_array('marks_correct', array_keys($this->_fields_unified))) {
+      $this->set_modified_field('marks_correct', $this->marks_correct);
     }
-    $this->marks = $value;
+    $this->marks_correct = $value;
+  }
+  
+  /**
+   * Get the option marks for incorrect answers
+   * @return string
+   */
+  public function get_marks_incorrect() {
+    return $this->marks_incorrect;
+  }
+  
+  /**
+   * Set the option marks for incorrect answers
+   * @param string $value
+   */
+  public function set_marks_incorrect($value) {
+    if($value != $this->marks_incorrect and !in_array('marks_incorrect', array_keys($this->_fields_unified))) {
+      $this->set_modified_field('marks_incorrect', $this->marks_incorrect);
+    }
+    $this->marks_incorrect = $value;
+  }
+  
+    /**
+   * Get the option marks for partially correct answers
+   * @return string
+   */
+  public function get_marks_partial() {
+    return $this->marks_partial;
+  }
+  
+  /**
+   * Set the option marks for partially correct answers
+   * @param string $value
+   */
+  public function set_marks_partial($value) {
+    if($value != $this->marks_partial and !in_array('marks_partial', array_keys($this->_fields_unified))) {
+      $this->set_modified_field('marks_partial', $this->marks_partial);
+    }
+    $this->marks_partial = $value;
   }
   
   // STATIC METHODS
@@ -471,7 +511,7 @@ QUERY;
    */
   private function get_option() {
     $o_query = <<< QUERY
-SELECT o_id, option_text, o_media, o_media_width, o_media_height, feedback_right, feedback_wrong, correct, marks
+SELECT o_id, option_text, o_media, o_media_width, o_media_height, feedback_right, feedback_wrong, correct, marks_correct, marks_incorrect, marks_partial
 FROM options
 WHERE id_num = ?
 QUERY;

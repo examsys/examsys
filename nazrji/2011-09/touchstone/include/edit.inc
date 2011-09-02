@@ -102,17 +102,17 @@ function redirect() {
     $result->close();
   }
 
-  if (substr($_POST['paperID'],0,5) == 'list:') {
-    $type = substr($_POST['paperID'],5);
+  if (substr($_POST['paper_id'],0,5) == 'list:') {
+    $type = substr($_POST['paper_id'],5);
     header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/touchstone/question/list.php?keyword=" . $_POST['keyword'] . "&team=" . $_POST['team']);
   } elseif ($_POST['calling'] == 'find') {
     header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/touchstone/question/search.php");
   } elseif ($_POST['calling'] == 'paper') {
-    header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/touchstone/paper/details.php?paperID=" . $_POST['paperID'] . "&module=" . $_POST['module'] . "&folder=" . $_POST['folder'] . "&scrOfY=" . $_POST['scrOfY']);
+    header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/touchstone/paper/details.php?paperID=" . $_POST['paper_id'] . "&module=" . $_POST['module'] . "&folder=" . $_POST['folder'] . "&scrOfY=" . $_POST['scrOfY']);
   } elseif ($_POST['calling'] == 'external_comments') {
-    header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/touchstone/reports/review_comments.php?type=external&paperID=" . $_POST['paperID'] . "&module=" . $_POST['module'] . "&folder=" . $_POST['folder'] . "&scrOfY=" . $_POST['scrOfY']);
+    header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/touchstone/reports/review_comments.php?type=external&paperID=" . $_POST['paper_id'] . "&module=" . $_POST['module'] . "&folder=" . $_POST['folder'] . "&scrOfY=" . $_POST['scrOfY']);
   } elseif ($_POST['calling'] == 'internal_comments') {
-    header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/touchstone/reports/review_comments.php?type=internal&paperID=" . $_POST['paperID'] . "&module=" . $_POST['module'] . "&folder=" . $_POST['folder'] . "&scrOfY=" . $_POST['scrOfY']);
+    header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/touchstone/reports/review_comments.php?type=internal&paperID=" . $_POST['paper_id'] . "&module=" . $_POST['module'] . "&folder=" . $_POST['folder'] . "&scrOfY=" . $_POST['scrOfY']);
   } else {
     header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/touchstone/");
   }

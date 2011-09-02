@@ -27,7 +27,7 @@ if($num_options > 0) {
   $option = reset($question->options);
   $option_id = $option->id;
   $scanario_text = $option->get_text();
-  if ($question->get_score_method() == 'textboxes') {
+  if ($question->get_display_method() == 'textboxes') {
     $inst1_hidden = ' hide';
     $inst2_hidden = '';
   } else {
@@ -55,11 +55,11 @@ require_once 'detail_parts/details_media.php';
 require_once 'detail_parts/details_leadin.php';
 ?>
             <tr>
-              <th><label for="score_method">Display Mode</label></th>
+              <th><label for="display_method">Display Mode</label></th>
               <td>
-                <select id="score_method" name="score_method">
+                <select id="display_method" name="display_method">
 <?php
-echo ViewHelper::render_options($question->get_score_methods(), $question->get_score_method(), 3);
+echo ViewHelper::render_options($question->get_display_methods(), $question->get_display_method(), 3);
 ?>
                 </select>
               </td>
@@ -78,4 +78,7 @@ echo ViewHelper::render_options($question->get_score_methods(), $question->get_s
 				</table>
         <input name="optionid1" value="<?php echo $option_id ?>" type="hidden" />
 
-<?php require_once 'detail_parts/details_general_feedback.php' ?>
+<?php
+require_once 'detail_parts/details_marking.php';
+require_once 'detail_parts/details_general_feedback.php';
+?>

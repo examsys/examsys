@@ -20,7 +20,7 @@ function get_reviews($mysqli, $mode, $paperID, $total_marks, &$no_reviews = 0) {
   
     // Calculate marks for the current paper.
     $marks_array = array();
-    ss_get_marks($mysqli, $paperID, $exclude, $marks_array);
+    ss_get_marks_correct($mysqli, $paperID, $exclude, $marks_array);
   
   
     $old_date = '';
@@ -205,7 +205,7 @@ function get_reviews($mysqli, $mode, $paperID, $total_marks, &$no_reviews = 0) {
 }
 
 
-function ss_get_marks($mysqli, $paper_id, $exclude, &$marks_array) {
+function ss_get_marks_correct($mysqli, $paper_id, $exclude, &$marks_array) {
   $partID = 0;
   $old_q_id = 0;
   $stems = 0;

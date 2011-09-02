@@ -23,7 +23,7 @@
 */
 
 $types = $question->get_sct_types();
-$type = $types[$question->get_score_method() - 1];
+$type = $types[$question->get_display_method() - 1];
 
 $sct_type_js = '[';
 foreach ($question->get_sct_types() as $typs_js) {
@@ -67,7 +67,10 @@ require 'detail_parts/details_editor.php';
           </tbody>
         </table>
 
-<?php require_once 'detail_parts/details_general_feedback.php' ?>
+<?php
+require_once 'detail_parts/details_marking.php';
+require_once 'detail_parts/details_general_feedback.php';
+?>
 
         <div class="form">
           <h2>Options</h2>
@@ -78,9 +81,9 @@ require 'detail_parts/details_editor.php';
             <tr>
               <th>Type</th>
               <td>
-                <select id="score_method" name="score_method" class="sct-type">
+                <select id="display_method" name="display_method" class="sct-type">
 <?php
-echo ViewHelper::render_options($question->get_score_methods(), $question->get_score_method(), 3);
+echo ViewHelper::render_options($question->get_display_methods(), $question->get_display_method(), 3);
 ?>
                 </select>
               </td>

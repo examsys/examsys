@@ -40,7 +40,7 @@ $spaced = ($index > 1) ? " class=\"spaced-top{$alt}\"" : $alt_c;
                 <textarea name="option_text<?php echo $index ?>" id="option_text<?php echo $index ?>" cols="90" rows="2" class="form-med-large"><?php echo $option->get_text() ?></textarea>
                 <input name="optionid<?php echo $index ?>" value="<?php echo $option->id ?>" type="hidden" />
               </td>
-              <td class="small"><input id="option_correct<?php echo $index ?>" name="option_correct<?php echo $index ?>" value="<?php echo $question->get_answer_positive() ?>" type="checkbox"<?php echo $correct ?> /></td>
+              <td class="small align-centre"><input id="option_correct<?php echo $index ?>" name="option_correct<?php echo $index ?>" value="<?php echo $question->get_answer_positive() ?>" type="checkbox"<?php echo $correct ?> /></td>
             </tr>
 <?php
 

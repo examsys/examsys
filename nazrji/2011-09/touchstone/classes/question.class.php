@@ -1,4 +1,4 @@
-  <?php
+<?php
 // This file is part of TouchStone
 //
 // TouchStone is free software: you can redistribute it and/or modify
@@ -41,7 +41,8 @@ Class Question extends TouchStoneObject {
   protected $notes = '';
   protected $correct_fback = '';
   protected $incorrect_fback = '';
-  protected $score_method = '';
+  protected $score_method = 'Mark per Question';
+  protected $display_method = '';
   protected $option_order = null;
   protected $standards_setting = '';
   protected $bloom = null;
@@ -69,10 +70,11 @@ Class Question extends TouchStoneObject {
   protected $group = '';
   
   protected $_user_id;
-  protected $_fields = array('type', 'theme', 'scenario', 'scenario_plain', 'leadin', 'leadin_plain', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'option_order', 'standards_setting', 'bloom', 'owner_id', 'media', 'media_width', 'media_height', 'group', 'checkout_time', 'checkout_author_id', 'created', 'last_edited', 'locked', 'deleted', 'status');
-  protected $_fields_editable = array('theme', 'scenario', 'leadin', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'option_order', 'bloom', 'status');
+  protected $_fields = array('type', 'theme', 'scenario', 'scenario_plain', 'leadin', 'leadin_plain', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'display_method', 'option_order', 'standards_setting', 'bloom', 'owner_id', 'media', 'media_width', 'media_height', 'group', 'checkout_time', 'checkout_author_id', 'created', 'last_edited', 'locked', 'deleted', 'status');
+  protected $_fields_editable = array('theme', 'scenario', 'leadin', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'display_method', 'option_order', 'bloom', 'status');
   protected $_fields_required = array('type', 'leadin', 'score_method', 'option_order', 'owner_id', 'status');
-  protected $_score_methods = array();
+  protected $_score_methods = array('Mark per Question', 'Mark per Option', 'Allow partial Marks', 'Bonus Mark');
+  protected $_display_methods = array();
   protected $_option_orders = array('display order' => 'Display Order', 'alphabetic' => 'Alphabetic', 'random' => 'Random');
   protected $_mysqli = null;
   protected $_logger = null;
@@ -96,7 +98,7 @@ Class Question extends TouchStoneObject {
   // Map our 'nice' property names to the database fields and 'parts' in track changes
   protected $_field_map = array('type' => 'q_type', 'option_order' => 'q_option_order', 'standards_setting' => 'std', 'owner_id' => 'ownerID', 'media' => 'q_media', 'media_width' => 'q_media_width', 'media_height' => 'q_media_height', 'group' => 'q_group', 'checkout_author_id' => 'checkout_authorID', 'created' => 'creation_date');
   protected $_change_field_map = array('group' => 'teams', 'correct' => 'Correct Answer');
-  protected $_pretty_names = array('type' => 'Type', 'leadin' => 'Lead-in', 'score_method' => 'Scoring Method', 'option_order' => 'Option Order', 'owner_id' => 'Owner', 'status' => 'Status');
+  protected $_pretty_names = array('type' => 'Type', 'leadin' => 'Lead-in', 'score_method' => 'Scoring Method', 'display_method' => 'Display Method', 'option_order' => 'Option Order', 'owner_id' => 'Owner', 'status' => 'Status');
   public static $types = array('blank' => 'Fill in the Blank', 'calculation' => 'calculation', 'dichotomous' => 'Dichotomous', 'extmatch' => 'Extended Matching', 'flash' => 'Flash', 'hotspot' => 'Image Hotspot', 'info' => 'Information Block', 'keyword_based' => 'Keyword Based', 'labelling' => 'Labelling', 'likert' => 'Likert Scale', 'matrix' => 'Matrix', 'mcq' => 'Multiple Choice', 'mrq' => 'Multiple Response', 'random' => 'Random', 'rank' => 'Ranking', 'sct' => 'Script Concordance', 'textbox' => 'Text Box', 'timedate' => 'Time / Date');
   
   /**
@@ -148,6 +150,8 @@ Class Question extends TouchStoneObject {
       if(!in_array($section_name, $exclude) and isset($data[$section_name])) {
         $value = $data[$section_name];
         
+        
+        // TODO: what does this do in light of marking changes?
         if ($section_name == 'score_method' and isset($data['other']) and $data['other'] == 1) $value = 'other';
         
         $method = "set_$section_name";
@@ -273,22 +277,22 @@ Class Question extends TouchStoneObject {
       
       // If $id is -1 we're inserting a new record
       if ($this->id == -1) {
-        $params = array_merge(array('sssssssssssisisssssisssss'), $this->_data);
+        $params = array_merge(array('ssssssssssssisisssssisssss'), $this->_data);
         $query = <<< QUERY
 INSERT INTO questions(q_type, theme, scenario, scenario_plain, leadin, leadin_plain, notes, correct_fback, incorrect_fback, score_method, 
-q_option_order, std, bloom, ownerID, q_media, q_media_width, q_media_height, q_group, checkout_time, checkout_authorID, creation_date, 
-last_edited, locked, deleted, status)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+display_method, q_option_order, std, bloom, ownerID, q_media, q_media_width, q_media_height, q_group, checkout_time, checkout_authorID, 
+creation_date, last_edited, locked, deleted, status)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 QUERY;
       } else {
         // Otherwise we're updating an existing one
-        $params = array_merge(array('sssssssssssisisssssisssssi'), $this->_data, array(&$this->id));
+        $params = array_merge(array('ssssssssssssisisssssisssssi'), $this->_data, array(&$this->id));
         $this->last_edited = date("Y-m-d H:i:s");
         $query = <<< QUERY
 UPDATE questions
 SET q_type = ?, theme = ?, scenario = ?, scenario_plain = ?, leadin = ?, leadin_plain = ?, notes = ?, correct_fback = ?, incorrect_fback = ?, 
-score_method = ?, q_option_order = ?, std = ?, bloom = ?, ownerID = ?, q_media = ?, q_media_width = ?, q_media_height = ?, q_group = ?, 
-checkout_time = ?, checkout_authorID = ?, creation_date = ?, last_edited = ?, locked = ?, deleted = ?, status = ?
+score_method = ?, display_method = ?, q_option_order = ?, std = ?, bloom = ?, ownerID = ?, q_media = ?, q_media_width = ?, q_media_height = ?, 
+q_group = ?, checkout_time = ?, checkout_authorID = ?, creation_date = ?, last_edited = ?, locked = ?, deleted = ?, status = ?
 WHERE q_id = ?
 QUERY;
       }
@@ -645,11 +649,15 @@ QUERY;
   }
   
   /**
-   * Get the question score method
+   * Get the question score method as an integer
    * @return string
    */
-  public function get_score_method() {
-    return $this->score_method;
+  public function get_score_method($style='int') {
+    if ($style != 'string') {
+      return array_search($this->score_method, $this->_score_methods);
+    } else {
+      return $this->score_method;
+    }
   }
   
   /**
@@ -657,6 +665,7 @@ QUERY;
    * @param string $value
    */
   public function set_score_method($value) {
+    $value = $this->_score_methods[$value];
     if ($value != $this->score_method) {
       $this->set_modified_field('score_method', $this->score_method);
       $this->score_method = $value;
@@ -664,11 +673,38 @@ QUERY;
   }
   
   /**
-   * Return the scoring methods of this question. The array is expected to be overridden in sub-classes
-   * @return array array of scoring method key => value strings
+   * Get the question display method
+   * @return string
+   */
+  public function get_display_method() {
+    return $this->display_method;
+  }
+  
+  /**
+   * Set the question display method
+   * @param string $value
+   */
+  public function set_display_method($value) {
+    if ($value != $this->display_method) {
+      $this->set_modified_field('display_method', $this->display_method);
+      $this->display_method = $value;
+    }
+  }
+  
+  /**
+   * Return the scoring methods questions. The array may be overridden in sub-classes that do not support certain marking styles
+   * @return array array of scoring method strings
    */
   public function get_score_methods() {
     return $this->_score_methods;
+  }
+  
+  /**
+   * Return the display methods of this question. The array is expected to be overridden in sub-classes
+   * @return array array of display method key => value strings
+   */
+  public function get_display_methods() {
+    return $this->_display_methods;
   }
   
   /**
@@ -1110,9 +1146,9 @@ QUERY;
     $success = false;
     
     $q_query = <<< QUERY
-SELECT q_type, theme, scenario, scenario_plain, leadin, leadin_plain, notes, correct_fback, incorrect_fback, score_method, q_option_order,
- std, bloom, ownerID, q_media, q_media_width, q_media_height, q_group, checkout_time, checkout_authorID, creation_date, last_edited,
- locked, deleted, status
+SELECT q_type, theme, scenario, scenario_plain, leadin, leadin_plain, notes, correct_fback, incorrect_fback, score_method, display_method, 
+ q_option_order, std, bloom, ownerID, q_media, q_media_width, q_media_height, q_group, checkout_time, checkout_authorID, creation_date, 
+ last_edited, locked, deleted, status
 FROM questions
 WHERE q_id = ?
 QUERY;
@@ -1139,7 +1175,7 @@ QUERY;
       
       // Get the options
       $o_query = <<< QUERY
-  SELECT id_num, o_id, option_text, o_media, o_media_width, o_media_height, feedback_right, feedback_wrong, correct, marks
+  SELECT id_num, o_id, option_text, o_media, o_media_width, o_media_height, feedback_right, feedback_wrong, correct, marks_correct, marks_incorrect, marks_partial
   FROM options
   WHERE o_id = ?
   ORDER BY id_num ASC

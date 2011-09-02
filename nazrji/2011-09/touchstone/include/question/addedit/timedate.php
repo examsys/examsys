@@ -70,6 +70,7 @@ echo ViewHelper::render_options($question->get_formats(), $question->get_format(
 				</table>
 
 <?php
+require_once 'detail_parts/details_marking.php';
 $label_correct = 'Feedback<br /><span class="note">(only for assessments)</span>';
 require_once 'detail_parts/details_general_feedback.php';
 ?>

@@ -46,11 +46,11 @@ Class QuestionCALCULATION extends Question {
   }
 
   /**
-   * Ensure that score_method is in correct format before calling parent save() function
+   * Ensure that display_method is in correct format before calling parent save() function
    * @return integer
    */
   public function save($clear_checkout = true) {
-    $this->set_score_method();
+    $this->set_display_method();
     return parent::save($clear_checkout);
   }
   
@@ -153,7 +153,7 @@ Class QuestionCALCULATION extends Question {
    * @return integer
    */
   public function get_units() {
-    $this->get_score_method();
+    $this->get_display_method();
     return $this->units;
   }
   
@@ -165,7 +165,7 @@ Class QuestionCALCULATION extends Question {
     if ($value != $this->get_units()) {
       $this->set_modified_field('units', $this->units);
       $this->units = $value;
-      $this->set_score_method();
+      $this->set_display_method();
     }
   }
 
@@ -174,7 +174,7 @@ Class QuestionCALCULATION extends Question {
    * @return integer
    */
   public function get_answer_decimals() {
-    $this->get_score_method();
+    $this->get_display_method();
     return $this->answer_decimals;
   }
   
@@ -186,7 +186,7 @@ Class QuestionCALCULATION extends Question {
     if ($value != $this->get_answer_decimals()) {
       $this->set_modified_field('answer_decimals', $this->answer_decimals);
       $this->answer_decimals = $value;
-      $this->set_score_method();
+      $this->set_display_method();
     }
   }
 
@@ -195,7 +195,7 @@ Class QuestionCALCULATION extends Question {
    * @return integer
    */
   public function get_tolerance() {
-    $this->get_score_method();
+    $this->get_display_method();
     return $this->tolerance;
   }
   
@@ -207,30 +207,30 @@ Class QuestionCALCULATION extends Question {
     if ($value != $this->get_tolerance()) {
       $this->set_modified_field('tolerance', $this->tolerance);
       $this->tolerance = $value;
-      $this->set_score_method();
+      $this->set_display_method();
     }
   }
 
   /**
-   * Get the question score method, populating pseudo-properties as we go
+   * Get the question display method, populating pseudo-properties as we go
    * @return string
    */
-  public function get_score_method() {
-    if ($this->score_method != '') {
-      $parts = explode(',', $this->score_method);
+  public function get_display_method() {
+    if ($this->display_method != '') {
+      $parts = explode(',', $this->display_method);
       $this->answer_decimals = $parts[0];
       $this->tolerance = $parts[1];
       $this->units = $parts[2];
     }
-    return $this->score_method;
+    return $this->display_method;
   }
   
   /**
-   * Set the score method for the question - this is a composite of decimals, tolerance and units
+   * Set the display method for the question - this is a composite of decimals, tolerance and units
    * @param unknown_type $value
    */
-  public function set_score_method($value=-1) {
-    $this->score_method = $this->answer_decimals . ',' . $this->tolerance . ',' . $this->units;
+  public function set_display_method($value=-1) {
+    $this->display_method = $this->answer_decimals . ',' . $this->tolerance . ',' . $this->units;
   }
 }
 
