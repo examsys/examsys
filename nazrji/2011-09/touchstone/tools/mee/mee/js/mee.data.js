@@ -127,7 +127,11 @@ $.Class.extend("MEE.Data",
             return 0;
         if (elem.length == 0)
             return 0;
-        var fontsize = $(elem).css('font-size').replace('px', '');
+
+        var fontsize = $(elem).css('font-size');
+        if (!fontsize)
+            return 0;
+        fontsize = fontsize.replace('px', '');
         fontsize = fontsize / 0.853;
         return Math.round(fontsize);
     }

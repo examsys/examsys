@@ -27,7 +27,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Computer Labs</title>
+<title><?php echo $string['computerlabs']; ?></title>
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
 <style>
 .foldername {float:left; width:380px; height:60px; padding-left:12px; font-size:90%}
@@ -76,8 +76,8 @@
 
 <table cellpadding="0" cellspacing="0" border="0" width="100%">
 <tr>
-<td style="background-color:#F1F5FB"><div class="breadcrumb"><a href="../index.php">Home</a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php">Administrative Tools</a></div><div style="font-size:200%; margin-left:10px; font-weight:bold">Computer Labs</div></td>
-<td style="background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(231); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="Help" border="0" /></a></td>
+<td style="background-color:#F1F5FB"><div class="breadcrumb"><a href="../index.php"><?php echo $string['home']; ?></a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php"><?php echo $string['administrativetools']; ?></a></div><div style="font-size:200%; margin-left:10px; font-weight:bold"><?php echo $string['computerlabs']; ?></div></td>
+<td style="background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(231); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="<?php echo $string['help']; ?>" border="0" /></a></td>
 </tr>
 <tr><td colspan="2" style="height:3px"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td></tr>
 </table>
@@ -116,14 +116,14 @@ if (count($labs) > 0) {
     echo "  <td style=\"width:290px; cursor:pointer\"><span id=\"lab$lab_no\" onclick=\"selLab('" . $lab['id'] . "','lab$lab_no',event)\" ondblclick=\"viewDetails('" . $lab['id'] . "')\">" . $lab['name'] . "</span><br />";
     echo '  <span style="color:#808080">' . $lab['pc_number'];
     if ($lab['pc_number'] == 1) {
-      echo ' machine';
+      echo ' ' . $string['machine'];
     } else {
-      echo ' machines';
+      echo ' '. $string['machines'];
     }  
     if ($lab['building'] != '') echo ', ' . $lab['building']; 
     echo '</span>';
     if ($lab['low_bandwidth'] == 1) {
-      echo '<br /><span style="background-color:#C00000; color:white">&nbsp;Low&nbsp;Bandwidth&nbsp;</span>';
+      echo '<br /><span style="background-color:#C00000; color:white">&nbsp;' . $string['lowbandwidth'] . '&nbsp;</span>';
     }
     echo '</td></tr></table>';
     echo "</div>\n";

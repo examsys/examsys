@@ -41,13 +41,12 @@ MEE.Data.extbrackets = {
     '&#x2225;': { top: '&#x2225;', mid: '&#x2225;', bottom: '&#x2225;' }, // lVert //rVert
     
 
-    '&#x221A;': { top: '&#xE001;', mid: '&#xE000;', bottom: '&#x23B7;' }, // sqrt
+    '&#x221A;': { top: '&#xE001;', mid: '&#x23B8;', bottom: '&#x23B7;' }, // sqrt
 
     '&#x23D0;': { top: '|', mid: '|', bottom: '|' }, // arrowvert 
     '&#x2016;': { top: '&#x2225;', mid: '&#x2225;', bottom: '&#x2225;' }, // Arrowvert 
     '&#x23AA;': { top: '&#x23AA;', mid: '&#x23AA;', bottom: '&#x23AA;' }, // bracevert 
 
-    // all wrong after here
     '&#x2191;': { top: '&#x2191;', mid: '&#x23D0;', bottom: '&#x23D0;', font: 'MathJax_Size1' }, // uparrow 
     '&#x21D1;': { top: '&#x21D1;', mid: '&#x2016;', bottom: '&#x2016;', font: 'MathJax_Size1' }, // Uparrow 
     '&#x2193;': { top: '&#x23D0;', mid: '&#x23D0;', bottom: '&#x2193;', font: 'MathJax_Size1' }, // downarrow 
@@ -95,7 +94,7 @@ MEE.Data.charsizes = {
     '|': { top: 1, height: 0.9 }, 
 
     // ||
-    '&#x2225;': { top: 1, height: 0.9 }, 
+    '&#x2225;': { top: 1.15, height: 0.62 }, 
 
     // updownarrow 
     '&#x2191;': { top: 0.25, height: 0.6 }, 
@@ -109,7 +108,7 @@ MEE.Data.charsizes = {
 
     // sqrt 
     '&#xE001;': { top: 1, height: 0.6 }, 
-    '&#xE000;': { top: 1.15, height: 0.62 }, 
+    '&#x23B8;': { top: 1.15, height: 0.62 }, 
     '&#x23B7;': { top: 0.83, height: 1.815 } 
 };
 //#endregion
@@ -119,7 +118,6 @@ MEE.Data.replace =  {
         '-':   '&#x2212;',
         '*':   '&#x2217;',
 	    "'":   '&#x02B9;',
-	    '~': '&nbsp;',
 	    '<': '&lt;',
 	    '>': '&gt;',
 	    // idotsint needs odd styling and spans etc, so change it when outputting. makes the code neater
@@ -452,6 +450,91 @@ MEE.Data.bracketheights = {
     '3': 2.4,
     '4': 3
 };
+//#endregion
+
+//#region sizes of end arrows for things like xoverarrow
+MEE.Data.arrowendwidths = {
+    '&#x2190;': 0.4,
+    '&#x2192;': 0.4,
+    '&#x21D0;': 0.4,
+    '&#x21D2;': 0.4,
+    '&#x21BD;': 0.4,
+    '&#x21BC;': 0.4,
+    '&#x21C1;': 0.4,
+    '&#x21C0;': 0.4,
+    '&#xE150;': 0.4,
+    '&#xE151;': 0.4,
+    '&#xE152;': 0.4,
+    '&#xE153;': 0.4,
+    '&#xE154;': 0.4,
+    '&#xE155;': 0.4,
+    '&#xE156;': 0.4
+};
+//#endregion
+
+//#region fraction and over arrow bars that are available.
+MEE.Data.bars = {
+    'single': {
+        'chars': {
+            1: '&#xE100;',
+            0.5: '&#xE101;',
+            0.25: '&#xE102;',
+            0.1: '&#xE103;',
+            0.05: '&#xE104;'
+        }
+    },
+    'double': {
+        'chars': {
+            1: '&#xE110;',
+            0.5: '&#xE111;',
+            0.25: '&#xE112;',
+            0.1: '&#xE113;',
+            0.05: '&#xE114;'
+        }
+    },
+    'doubleL': {
+        'chars': {
+            1: '&#xE120;',
+            0.05: '&#xE124;'
+        }
+    },
+    'sqrts': {
+        'chars': {
+            1: '&#xE160;',
+            0.5: '&#xE161;',
+            0.25: '&#xE162;',
+            0.1: '&#xE163;',
+            0.05: '&#xE164;'
+        }
+    },
+   'sqrt': {
+        'chars': {
+            1: '&#xE170;',
+            0.5: '&#xE171;',
+            0.25: '&#xE172;',
+            0.1: '&#xE173;',
+            0.05: '&#xE174;'
+        }
+    }
+};
+//#endregion
+
+//#region ce bond mappings
+MEE.Data.bonds = {
+    '-': '&#x2212;',
+    '=': '=',
+    '#': '&#x2261;',
+    '~': '&#xE905;',
+    '~-': '&#xE906;',
+    '~=': '&#xE903;',
+    '~--': '&#xE903;',
+    '&#xE906;-': '&#xE903;',
+    '-~-': '&#xE904;',
+    '...': '&#xE901;',
+    '....': '&#xE902;',
+    '->': '&#x2190;',
+    '<-': '&#x2192;'
+}
 //#endregion
 
 // build table of replacable named ops (ie someone types sin without the \ will turn it to a proper sin

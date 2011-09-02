@@ -76,8 +76,8 @@
   include '../include/calendar_options.inc';
   
   //get faculty and school info
-  $schools = array("Default"=>array('-1'=>'&lt;All Schools&gt;'));
-  $stmt = $mysqli->prepare("SELECT id, faculty, school FROM schools ORDER BY faculty, school");
+  $schools = array("Default"=>array('-1'=>$string['allschools']));
+  $stmt = $mysqli->prepare("SELECT schools.id, faculty.name, school FROM schools, faculty WHERE faculty.id=schools.facultyID ORDER BY faculty.name, school");
   $stmt->execute();
   $stmt->bind_result($id, $faculty, $school);
   while ($stmt->fetch()) {
@@ -92,16 +92,16 @@
 <tr style="background-color:#F1F5FB"><td>
 <?php
   if (isset($_GET['module'])) {
-    echo '<div class="breadcrumb"><a href="../index.php">Home</a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?module=' . $_GET['module'] . '">' . $_GET['module'] . '</a></div>';
+    echo '<div class="breadcrumb"><a href="../index.php">' . $string['home'] . '</a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?module=' . $_GET['module'] . '">' . $_GET['module'] . '</a></div>';
   } else {
     if (strpos($userroles,'SysAdmin') !== false) {
-      echo '<div class="breadcrumb"><a href="../index.php">Home</a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php">Administrative Tools</a></div>';
+      echo '<div class="breadcrumb"><a href="../index.php">' . $string['home'] . '</a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php">' . $string['administrativetools'] . '</a></div>';
     } else {
-      echo '<div class="breadcrumb"><a href="../index.php">Home</a></div>';
+      echo '<div class="breadcrumb"><a href="../index.php">' . $string['home'] . '</a></div>';
     }
   }
 ?>
-<div style="font-size:200%; margin-left:10px"><strong>Calendar:</strong> <?php echo $current_year; ?></div></td>
+<div style="font-size:200%; margin-left:10px"><strong><?php echo $string['calendar']; ?>:</strong> <?php echo $current_year; ?></div></td>
 <td style="text-align:right">
 <?php
   echo "<select name=\"school\" onchange=\"this.form.submit();\">";
@@ -109,13 +109,13 @@
     echo "<optgroup label=\"$fac\">";
     foreach($sch as $id => $title) {
       $selected = '';
-      if(isset($_GET['school']) and $id == $_GET['school']) $selected = 'selected '; 
+      if (isset($_GET['school']) and $id == $_GET['school']) $selected = 'selected '; 
       echo "<option value=\"$id\" $selected>$title</option>";
     }
     echo "</optgroup>";
   }
   echo "</select>&nbsp;";
-  echo "<input type=\"hidden\" name=\"calyear\" value=\"$current_year\" /><br/>";
+  echo "<input type=\"hidden\" name=\"calyear\" value=\"$current_year\" /><br />";
 ?>
 <input style="width:100px" type="button" onclick="window.location='<?php echo $_SERVER['PHP_SELF']; ?>?calyear=<?php echo $current_year-1; ?>&school=<?php if (isset($_GET['school'])) echo $_GET['school']; ?>&module=<?php if (isset($_GET['module'])) echo $_GET['module']; ?>'" value="&lt; <?php echo $current_year-1; ?>" />&nbsp;<input style="width:100px" type="button" onclick="window.location='<?php echo $_SERVER['PHP_SELF']; ?>?calyear=<?php echo $current_year+1; ?>&school=<?php if (isset($_GET['school'])) echo $_GET['school']; ?>&module=<?php if (isset($_GET['module'])) echo $_GET['module']; ?>'" value="<?php echo $current_year+1; ?> &gt;" />&nbsp;</td>
 </tr>
@@ -212,10 +212,11 @@
 
     echo "<div>";
     echo "<table cellpadding=\"0\" cellspacing=\"8\" border=\"0\" style=\"background-color:#E3EFFF; width:96%; margin-left:auto; margin-right:auto; text-align:left\">\n";
-    echo "<tr><td class=\"month\"><a name=\"$i\"></a>" . date("F", mktime(0, 0, 0, $current_month, 1, $current_year)) . "</td></tr>\n";
+    $tmp_month = strtolower(date("F", mktime(0, 0, 0, $current_month, 1, $current_year)));
+    echo "<tr><td class=\"month\"><a name=\"$i\"></a>" . $string[$tmp_month] . "</td></tr>\n";
     echo "<tr><td>";
     echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"width:100%; font-size:85%; margin-left:auto; margin-right:auto\">\n";
-    echo "<tr style=\"text-align:center; color:#6593CF; background-color:#E3EFFF\"><td style=\"border-left:1px solid #5D8CC9\">Monday</td><td style=\"border-left:1px solid #5D8CC9\">Tuesday</td><td style=\"border-left:1px solid #5D8CC9\">Wednesday</td><td style=\"border-left:1px solid #5D8CC9\">Thursday</td><td style=\"border-left:1px solid #5D8CC9; border-right:1px solid #5D8CC9\">Friday</td></tr>";
+    echo "<tr style=\"text-align:center; color:#6593CF; background-color:#E3EFFF\"><td style=\"border-left:1px solid #5D8CC9\">" . $string['monday'] . "</td><td style=\"border-left:1px solid #5D8CC9\">" . $string['tuesday'] . "</td><td style=\"border-left:1px solid #5D8CC9\">" . $string['wednesday'] . "</td><td style=\"border-left:1px solid #5D8CC9\">" . $string['thursday'] . "</td><td style=\"border-left:1px solid #5D8CC9; border-right:1px solid #5D8CC9\">" . $string['friday'] . "</td></tr>";
    
     $day_no = 1;
     $cell_no = 1;
@@ -240,7 +241,9 @@
             echo '"><strong>';
             if ($day_no >= $start_day) {
               if ($first_day == true) {
-                echo ($day_no-$subtract) . ' ' . date("M", mktime(0, 0, 0, $current_month, 1, $current_year));
+                $tmp_month = strtolower(date("F", mktime(0, 0, 0, $current_month, 1, $current_year)));
+                //echo ($day_no-$subtract) . ' ' . date("M", mktime(0, 0, 0, $current_month, 1, $current_year));
+                echo ($day_no-$subtract) . ' ' . substr($string[$tmp_month],0,3);
                 $first_day = false;
               } else {
                 echo ($day_no-$subtract);
@@ -330,7 +333,7 @@
             }
           
             if ($saturday_exams == true) {
-              echo "<br ><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"font-size:100%; width:100%\"><td style=\"height:17px; background-image:url('../artwork/cal_box_gradient.png'); background-repeat:repeat-x; border-top:1px solid #5D8CC9; border-bottom:1px solid #5D8CC9\"><strong>&nbsp;&nbsp;$day_number</strong> - Saturday</td></tr></table>";
+              echo "<br ><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"font-size:100%; width:100%\"><td style=\"height:17px; background-image:url('../artwork/cal_box_gradient.png'); background-repeat:repeat-x; border-top:1px solid #5D8CC9; border-bottom:1px solid #5D8CC9\"><strong>&nbsp;&nbsp;$day_number</strong> - " . $string['saturday'] . "</td></tr></table>";
 
               echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"padding-top:5px; font-size:100%; width:100%\">";            
               foreach ($paper_details as $individual_paper) {

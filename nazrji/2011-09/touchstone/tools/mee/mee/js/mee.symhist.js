@@ -16,7 +16,7 @@ $.Class.extend("MEE.SymHist",
 
     LoadFromCookie: function (name) {
         var ser = $.cookie(name);
-        var items = JSON.parse(ser);
+        var items = $.parseJSON(ser);
 
         if (!items)
             return;

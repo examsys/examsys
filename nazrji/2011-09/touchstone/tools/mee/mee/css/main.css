@@ -1,7 +1,7 @@
 /* For debug */
 body
 {
-    font-size: 14pt;
+    font-size: 12pt;
 }
 .indent
 {
@@ -163,7 +163,7 @@ div.mee
 .mee_sqrt_bar 
 {
     position: absolute;
-    border-top: 0.1em solid black;
+    /*border-top: 0.1em solid black;*/
 }
 .mee_sqrt_bar_big
 {
@@ -216,6 +216,20 @@ div.mee
 .mee_font_tt .mee_variable { font-family: MathJax_Typewriter; }
 .mee_font_oldstyle .mee_variable { font-family: MathJax_Caligraphic; }
 
+.mee_font_math .mee_elemsetbasic { font-family: MathJax_Math; }
+.mee_font_main .mee_elemsetbasic { font-family: MathJax_Main; }
+.mee_font_cal .mee_elemsetbasic { font-family: MathJax_Caligraphic; /*text-transform:uppercase;*/ }
+.mee_font_scr .mee_elemsetbasic { font-family: MathJax_Script; /*text-transform:uppercase;*/ }
+.mee_font_rm .mee_elemsetbasic { font-family: MathJax_Main; font-style: normal; }
+.mee_font_bf .mee_elemsetbasic { font-weight: bold; }
+.mee_font_bf_txt .mee_elemsetbasic { font-family: MathJax_Main; font-weight: bold; }
+.mee_font_bb .mee_elemsetbasic { font-family: MathJax_AMS; /*text-transform:uppercase;*/ }
+.mee_font_it .mee_elemsetbasic { /*font-style: italic;*/ }
+.mee_font_frak .mee_elemsetbasic { font-family: MathJax_Fraktur; }
+.mee_font_sf .mee_elemsetbasic { font-family: MathJax_SansSerif; }
+.mee_font_tt .mee_elemsetbasic { font-family: MathJax_Typewriter; }
+.mee_font_oldstyle .mee_elemsetbasic { font-family: MathJax_Caligraphic; }
+
 /* fractions */
 .mee_frac_upper 
 {
@@ -257,12 +271,12 @@ div.mee
     position: absolute;
     left:0px;
     top: 0px;
-    font-family: MathJax_Size4;
+    font-family: MathJax_Brackets;
 }
 
 .mee_bracket_part_mid
 {
-    font-family: MathJax_Size4;
+    font-family: MathJax_Brackets;
 }
 .mee_phantom
 {
@@ -283,7 +297,6 @@ div.mee
 {
     position: absolute;
     left: 0px;
-    border-top: 0.1em solid black;
 }
 .mee_array_border
 {
@@ -311,4 +324,14 @@ div.mee
     top:0px;
     display: block;
     color: transparent;
+}
+
+.mee_barend
+{
+    position:absolute;
+}
+
+.mee_iframe
+{
+    text-align: center;
 }

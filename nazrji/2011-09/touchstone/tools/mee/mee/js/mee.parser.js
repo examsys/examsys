@@ -749,6 +749,10 @@ $.Class.extend("MEE.Parser",
                     elem.AddArray(token, tokens[i + 1]);
                     elemdata.args -= 2;
                     i++;
+                } else if (elemdata.arg0_as_upper && argno == 0) {
+                    // should the 1st argument be the main text of the element
+                    elem.AddUpperLower(token, null);
+                    elemdata.args--;
                 } else if (elemdata.arg0_as_main && argno == 0) {
                     // should the 1st argument be the main text of the element
                     elem.SetMain(token);
@@ -784,6 +788,11 @@ $.Class.extend("MEE.Parser",
                         elem.SetScript(tokens[i + 1], "superscript");
                         i++;
                         elemdata.sarg = 0;
+                    } else if (elemdata.sarg_as_lower) {
+                        // should the sarg be set as superscript
+                        elem.AddUpperLower(null, tokens[i + 1]);
+                        i++;
+                        elemdata.sarg = 0;
                     } else if (elemdata.sarg > 0) {
 
                         elem.SetSArg(tokens[i + 1]);
@@ -807,10 +816,14 @@ $.Class.extend("MEE.Parser",
         // special case types
         if (token.type == "") {
             // case for single letters or numbers
-            if (this.isAlpha(token.latex)) {
-                return MEE.Data.commands.variable;
+            if (this.isTokenAlpha(token.latex)) {
+                var eldata = MEE.Data.commands.variable;
+                eldata._name = 'variable';
+                return eldata;
             } else if (this.isNumeric(token.latex)) {
-                return MEE.Data.commands.digit;
+                var eldata = MEE.Data.commands.digit;
+                eldata._name = 'digit';
+                return eldata;
             } /* else {
                 return MEE.Data.commands.digit;
             }*/
@@ -822,21 +835,44 @@ $.Class.extend("MEE.Parser",
         var el = MEE.Data.commands[latex];
 
         if (el) {
+            el._name = latex;
             return el;
         }
+        
 
-        if (token.type == "command")
-            return MEE.Data.commands['invalidcommand'];
+        if (token.type == "command") {
+            var eldata = MEE.Data.commands['invalidcommand'];
+            eldata._name = 'invalidcommand';
+            return eldata;
+        }
 
         el = new Object();
         el.args = 0;
         el.sarg = 0;
+        el._name = latex;
 
         return el;
     },
 
     // is the character a valid alpha numeric char
     isAlpha: function (sText) {
+        var ValidChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ<=>~-#";
+        var IsNumber = true;
+        var Ch;
+
+
+        for (i = 0; i < sText.length && IsNumber == true; i++) {
+            Ch = sText.charAt(i);
+            if (ValidChars.indexOf(Ch) == -1) {
+                IsNumber = false;
+            }
+        }
+        return IsNumber;
+
+    },
+
+    // is the character a valid alpha numeric char
+    isTokenAlpha: function (sText) {
         var ValidChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
         var IsNumber = true;
         var Ch;

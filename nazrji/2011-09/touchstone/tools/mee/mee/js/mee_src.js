@@ -21,7 +21,8 @@ function loadjscssfile(filename, filetype) {
 }
 
 var filesadded = "" //list of files already added
-var mee_baseurl = null;
+if (typeof mee_baseurl == "undefined")
+    var mee_baseurl = null;
 
 function checkloadjscssfile(filename, filetype) {
     if (!mee_baseurl)
@@ -59,7 +60,8 @@ checkloadjscssfile("jquery/jquery.textarea.js");
 checkloadjscssfile("jquery/jquery.xml2json.js");
 checkloadjscssfile("jquery/jquery.cookie.js");
 checkloadjscssfile("jquery/json2.js");
-checkloadjscssfile("jquery/debug.js");
+//checkloadjscssfile("jquery/debug.js");
+//checkloadjscssfile("jquery/IE9.js");
 
 checkloadjscssfile("js/mee.main.js");
 checkloadjscssfile("js/mee.main.edit.js");
@@ -76,6 +78,7 @@ checkloadjscssfile("js/mee.elem.boxed.js");
 checkloadjscssfile("js/mee.elem.space.js");
 checkloadjscssfile("js/mee.elem.input.js");
 checkloadjscssfile("js/mee.elem.answer.js");
+checkloadjscssfile("js/mee.elem.bond.js");
 
 checkloadjscssfile("js/mee.elemset.js");
 checkloadjscssfile("js/mee.elemset.normal.js");
@@ -89,6 +92,7 @@ checkloadjscssfile("js/mee.images.js");
 checkloadjscssfile("js/mee.undo.js");
 checkloadjscssfile("js/mee.symhist.js");
 checkloadjscssfile("js/mee.font.js");
+checkloadjscssfile("js/mee.maxima.js");
 
 checkloadjscssfile("css/toolbar.css");
 checkloadjscssfile("css/main.css");

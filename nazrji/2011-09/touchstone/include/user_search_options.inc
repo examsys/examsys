@@ -75,10 +75,6 @@ if (isset($_GET['calendar_year'])) {
     document.location.href='details.php?userID=' + document.PapersMenu.userID.value;
   }
 
-  function emailUser() {
-    window.location.href='mailto:' + document.PapersMenu.email.value + '@nottingham.ac.uk';
-  }
-
   function emailCohort() {
     var winwidth = 700;
     var winheight = 550;
@@ -93,18 +89,18 @@ if (isset($_GET['calendar_year'])) {
 
 <table cellpadding="0" cellspacing="0" border="0" width="190">
 <tr><td>
-<div><strong>Search by any or all of the criteria below.</strong></div>
+<div><strong><?php echo $string['genmsg']; ?></strong></div>
 <div style="font-size:50%">&nbsp;</div>
-<div>Name<br /><input type="text" name="search_surname" size="18" style="width:95%" value="<?php if (isset($_GET['search_surname'])) echo stripslashes($_GET['search_surname']); ?>" /></div>
+<div><?php echo $string['name']; ?><br /><input type="text" name="search_surname" size="18" style="width:95%" value="<?php if (isset($_GET['search_surname'])) echo stripslashes($_GET['search_surname']); ?>" /></div>
 
 <table cellpadding="0" cellspacing="0" border="0" style="font-size:100%">
-<tr><td>Username</td><td>&nbsp;</td><td>Student ID</td></tr>
+<tr><td><?php echo $string['username']; ?></td><td>&nbsp;</td><td><?php echo $string['studentid']; ?></td></tr>
 <tr><td><input type="text" name="search_username" size="9" value="<?php if (isset($_GET['search_username'])) echo $_GET['search_username']; ?>" /></td><td>&nbsp;</td><td><input type="text" name="student_id" size="9" value="<?php if (isset($_GET['student_id'])) echo $_GET['student_id']; ?>" /></td></tr>
 </table>
-<div>Module<br /><?php SearchUtils::displayTeamDropdown($teams, $userroles, $userID, $mysqli); ?></div>
+<div><?php echo $string['module']; ?><br /><?php SearchUtils::displayTeamDropdown($teams, $userroles, $userID, $mysqli); ?></div>
 
-<div>Academic Year<br /><select name="calendar_year">
-<option value="%">Any Year</option>
+<div><?php echo $string['academicyear']; ?><br /><select name="calendar_year">
+<option value="%"><?php echo $string['anyyear']; ?></option>
 <?php
   $year_details = $mysqli->query("SELECT DISTINCT calendar_year FROM student_modules ORDER BY calendar_year DESC");
   while ($year_row = $year_details->fetch_assoc()) {
@@ -119,7 +115,7 @@ if (isset($_GET['calendar_year'])) {
 <br />
 
   <table cellpadding="4" cellspacing="0" border="0" width="100%">
-  <tr><td><a href="#" style="font-weight:bold; color:black" onclick="updateMenu(3);">Advanced</a></td>
+  <tr><td><a href="#" style="font-weight:bold; color:black" onclick="updateMenu(3);"><?php echo $string['advanced']; ?></a></td>
   <td align="right"><a href="#" onclick="updateMenu(3);"><?php
     if (isset($_COOKIE['caausermgt'][3]) and $_COOKIE['caausermgt'][3] == 'block') {
       echo "<img id=\"icon3\" src=\"../artwork/up_arrow_icon.gif\" width=\"9\" height=\"9\" alt=\"Hide\" border=\"0\" />";
@@ -137,53 +133,53 @@ if (isset($_GET['calendar_year'])) {
   }
   echo '<tr><td>';
   if (isset($_COOKIE['caausermgt'][4]) and $_COOKIE['caausermgt'][4] != 'checked') {
-    echo "<div><input type=\"checkbox\" id=\"checkbox4\" onclick=\"updateCookies(4);\" name=\"students\" /> search Students</div>\n";
+    echo "<div><input type=\"checkbox\" id=\"checkbox4\" onclick=\"updateCookies(4);\" name=\"students\" /> " . $string['students'] . "</div>\n";
   } else {
-    echo "<div><input type=\"checkbox\" id=\"checkbox4\" onclick=\"updateCookies(4);\" name=\"students\" checked /> search Students</div>\n";
+    echo "<div><input type=\"checkbox\" id=\"checkbox4\" onclick=\"updateCookies(4);\" name=\"students\" checked /> " . $string['students'] . "</div>\n";
   }
   if (isset($_COOKIE['caausermgt'][7]) and $_COOKIE['caausermgt'][7] == 'checked') {
-    echo "<div><input type=\"checkbox\" id=\"checkbox7\" onclick=\"updateCookies(7);\" name=\"graduates\" checked /> search Graduates</div>\n";
+    echo "<div><input type=\"checkbox\" id=\"checkbox7\" onclick=\"updateCookies(7);\" name=\"graduates\" checked /> " . $string['graduates'] . "</div>\n";
   } else {
-    echo "<div><input type=\"checkbox\" id=\"checkbox7\" onclick=\"updateCookies(7);\" name=\"graduates\" /> search Graduates</div>\n";
+    echo "<div><input type=\"checkbox\" id=\"checkbox7\" onclick=\"updateCookies(7);\" name=\"graduates\" /> " . $string['graduates'] . "</div>\n";
   }
   if (isset($_COOKIE['caausermgt'][8]) and $_COOKIE['caausermgt'][8] == 'checked') {
-    echo "<div><input type=\"checkbox\" id=\"checkbox8\" onclick=\"updateCookies(8);\" name=\"leavers\" checked /> search Leavers</div>\n";
+    echo "<div><input type=\"checkbox\" id=\"checkbox8\" onclick=\"updateCookies(8);\" name=\"leavers\" checked /> " . $string['leavers'] . "</div>\n";
   } else {
-    echo "<div><input type=\"checkbox\" id=\"checkbox8\" onclick=\"updateCookies(8);\" name=\"leavers\" /> search Leavers</div>\n";
+    echo "<div><input type=\"checkbox\" id=\"checkbox8\" onclick=\"updateCookies(8);\" name=\"leavers\" /> " . $string['leavers'] . "</div>\n";
   }
   if (isset($_COOKIE['caausermgt'][10]) and $_COOKIE['caausermgt'][10] == 'Suspended') {
-    echo "<div><input type=\"checkbox\" id=\"checkbox10\" onclick=\"updateCookies(10);\" name=\"suspended\" checked /> search Suspended</div>\n";
+    echo "<div><input type=\"checkbox\" id=\"checkbox10\" onclick=\"updateCookies(10);\" name=\"suspended\" checked /> " . $string['suspended'] . "</div>\n";
   } else {
-    echo "<div><input type=\"checkbox\" id=\"checkbox10\" onclick=\"updateCookies(10);\" name=\"suspended\" /> search Suspended</div>\n";
+    echo "<div><input type=\"checkbox\" id=\"checkbox10\" onclick=\"updateCookies(10);\" name=\"suspended\" /> " . $string['suspended'] . "</div>\n";
   }
   //----------------------------
   echo "<hr noshade=\"noshade\" style=\"height:1px; border:none; background-color:#95AEC8; color:#95AEC8\" />\n";
   if (isset($_COOKIE['caausermgt'][5]) and $_COOKIE['caausermgt'][5] == 'checked') {
-    echo "<div><input type=\"checkbox\" id=\"checkbox5\" onclick=\"updateCookies(5);\" name=\"staff\" checked /> search Staff</div>\n";
+    echo "<div><input type=\"checkbox\" id=\"checkbox5\" onclick=\"updateCookies(5);\" name=\"staff\" checked /> " . $string['staff'] . "</div>\n";
   } else {
-    echo "<div><input type=\"checkbox\" id=\"checkbox5\" onclick=\"updateCookies(5);\" name=\"staff\" /> search Staff</div>\n";
+    echo "<div><input type=\"checkbox\" id=\"checkbox5\" onclick=\"updateCookies(5);\" name=\"staff\" /> " . $string['staff'] . "</div>\n";
   }
   if (strpos($userroles,'Admin') !== false) {
     if (isset($_COOKIE['caausermgt'][12]) and $_COOKIE['caausermgt'][12] == 'checked') {
-      echo "<div><input type=\"checkbox\" id=\"checkbox12\" onclick=\"updateCookies(12);\" name=\"adminstaff\" checked /> search Staff (Admin)</div>\n";
+      echo "<div><input type=\"checkbox\" id=\"checkbox12\" onclick=\"updateCookies(12);\" name=\"adminstaff\" checked /> " . $string['staffadmin'] . "</div>\n";
     } else {
-      echo "<div><input type=\"checkbox\" id=\"checkbox12\" onclick=\"updateCookies(12);\" name=\"adminstaff\" /> search Staff (Admin)</div>\n";
+      echo "<div><input type=\"checkbox\" id=\"checkbox12\" onclick=\"updateCookies(12);\" name=\"adminstaff\" /> " . $string['staffadmin'] . "</div>\n";
     }
   }
   if (isset($_COOKIE['caausermgt'][9]) and $_COOKIE['caausermgt'][9] == 'checked') {
-    echo "<div><input type=\"checkbox\" id=\"checkbox9\" onclick=\"updateCookies(9);\" name=\"inactive\" checked /> search Inactive Staff</div>\n";
+    echo "<div><input type=\"checkbox\" id=\"checkbox9\" onclick=\"updateCookies(9);\" name=\"inactive\" checked /> " . $string['inactivestaff'] . "</div>\n";
   } else {
-    echo "<div><input type=\"checkbox\" id=\"checkbox9\" onclick=\"updateCookies(9);\" name=\"inactive\" /> search Inactive Staff</div>\n";
+    echo "<div><input type=\"checkbox\" id=\"checkbox9\" onclick=\"updateCookies(9);\" name=\"inactive\" /> " . $string['inactivestaff'] . "</div>\n";
   }
   if (isset($_COOKIE['caausermgt'][6]) and $_COOKIE['caausermgt'][6] == 'checked') {
-    echo "<div><input type=\"checkbox\" id=\"checkbox6\" onclick=\"updateCookies(6);\" name=\"externals\" checked /> search External Examiners</div>\n";
+    echo "<div><input type=\"checkbox\" id=\"checkbox6\" onclick=\"updateCookies(6);\" name=\"externals\" checked /> " . $string['externalexaminers'] . "</div>\n";
   } else {
-    echo "<div><input type=\"checkbox\" id=\"checkbox6\" onclick=\"updateCookies(6);\" name=\"externals\" /> search External Examiners</div>\n";
+    echo "<div><input type=\"checkbox\" id=\"checkbox6\" onclick=\"updateCookies(6);\" name=\"externals\" /> " . $string['externalexaminers'] . "</div>\n";
   }
   if (isset($_COOKIE['caausermgt'][11]) and $_COOKIE['caausermgt'][11] == 'checked') {
-    echo "<div><input type=\"checkbox\" id=\"checkbox11\" onclick=\"updateCookies(11);\" name=\"invigilators\" checked /> search Invigilators</div>\n";
+    echo "<div><input type=\"checkbox\" id=\"checkbox11\" onclick=\"updateCookies(11);\" name=\"invigilators\" checked /> " . $string['invigilators'] . "</div>\n";
   } else {
-    echo "<div><input type=\"checkbox\" id=\"checkbox11\" onclick=\"updateCookies(11);\" name=\"invigilators\" /> search Invigilators</div>\n";
+    echo "<div><input type=\"checkbox\" id=\"checkbox11\" onclick=\"updateCookies(11);\" name=\"invigilators\" /> " . $string['invigilators'] . "</div>\n";
   }
 ?>
 </td></tr>
@@ -206,14 +202,14 @@ if (isset($_GET['calendar_year'])) {
   }
 
   if (isset($_GET['paperID'])) {
-    echo '<input style="width:90px" type="button" name="back" value="Back" onclick="parent.window.location=\'/touchstone/paper/details.php?paperID=' . $_GET['paperID'] . '&module=' . $module . '&folder=' . $folder . '\'"/>';
+    echo '<input style="width:90px" type="button" name="back" value="' . $string['back'] . '" onclick="parent.window.location=\'/touchstone/paper/details.php?paperID=' . $_GET['paperID'] . '&module=' . $module . '&folder=' . $folder . '\'"/>';
   } elseif (isset($_GET['module']) and $_GET['module'] != '') {
-    echo '<input style="width:90px" type="button" name="back" value="Back" onclick="parent.window.location=\'/touchstone/folder/details.php?module=' . $module . '&folder=' . $folder . '\'"/>';
+    echo '<input style="width:90px" type="button" name="back" value="' . $string['back'] . '" onclick="parent.window.location=\'/touchstone/folder/details.php?module=' . $module . '&folder=' . $folder . '\'"/>';
   } else {
-    echo '<input style="width:90px" type="button" name="back" value="Back" onclick="parent.window.location=\'/touchstone/index.php\'"/>';
+    echo '<input style="width:90px" type="button" name="back" value="' . $string['back'] . '" onclick="parent.window.location=\'/touchstone/index.php\'"/>';
   }
 ?>
-&nbsp;<input style="width:90px" type="submit" name="submit" onclick="document.PapersMenu.oldUserID.value='';" value="Search" /></div>
+&nbsp;<input style="width:90px" type="submit" name="submit" onclick="document.PapersMenu.oldUserID.value='';" value="<?php echo $string['search']; ?>" /></div>
 </td></tr>
 </table>
 
@@ -222,32 +218,29 @@ if (isset($_GET['calendar_year'])) {
 <br />
 
 <table cellpadding="0" cellspacing="0" border="0" width="185" style="margin-left:2px">
-<tr><td style="font-weight:bold">Current User Tasks</td></tr>
+<tr><td style="font-weight:bold"><?php echo $string['currentusertasks']; ?></td></tr>
 <table cellpadding="0" cellspacing="0" border="0" id="menu1" style="display:block; margin-left:6px; font-size:90%">
 <tr><td>
 
 <table style="font-size:100%; line-height:160%; display:block" cellpadding="3" cellspacing="0" border="0" id="menu2a">
-<tr><td><img src="../artwork/user_file_icon_grey_16.gif" width="16" height="16" alt="User Details" /></td><td class="greymenuitem">View user file</td></tr>
+<tr><td><img src="../artwork/user_file_icon_grey_16.gif" width="16" height="16" alt="User Details" /></td><td class="greymenuitem"><?php echo $string['viewuserfile']; ?></td></tr>
 <?php
   if (strpos($userroles,'Admin') !== false or strpos($userroles,'SysAdmin') !== false) {
-    echo '<tr><td><a href="create_new_user.php" target="body"><img src="../artwork/small_user_icon.gif" width="16" height="16" alt="Create User" border="0" /></td><td class="menuitem"><a href="create_new_user.php">Create new user</a></td></tr>';
+    echo '<tr><td><a href="create_new_user.php" target="body"><img src="../artwork/small_user_icon.gif" width="16" height="16" alt="Create User" border="0" /></td><td class="menuitem"><a href="create_new_user.php">' . $string['createnewuser'] . '</a></td></tr>';
   } else {
-    echo '<tr><td><img src="../artwork/small_user_icon_grey.gif" width="16" height="16" alt="Create User" /></td><td class="greymenuitem">Create new user</td></tr>';
+    echo '<tr><td><img src="../artwork/small_user_icon_grey.gif" width="16" height="16" alt="Create User" /></td><td class="greymenuitem">' . $string['createnewuser'] . '</td></tr>';
   }
 ?>
-<tr><td><img src="../artwork/small_email_grey.png" width="16" height="16" alt="Email" /></td><td class="greymenuitem">Email User</td></tr>
 </table>
 
 <table style="font-size:100%; line-height:160%; display:none" cellpadding="3" cellspacing="0" border="0" id="menu2b">
-<tr><td><a href="#" onclick="viewProfileSingle(); return false;"><img src="../artwork/user_file_icon_16.gif" width="16" height="16" alt="Edit" border="0" /></a></td><td class="menuitem"><a id="edit" onclick="viewProfileSingle(); return false;" href="#">View user file</a></td></tr>
-<tr><td><img src="../artwork/small_user_icon_grey.gif" width="16" height="16" alt="Create" border="0" /></td><td class="greymenuitem">Create new user</td></tr>
-<tr><td><a href="#" onclick="emailUser(); return false;"><img src="../artwork/small_email.png" width="16" height="16" alt="Copy" border="0" /></a></td><td class="menuitem"><a href="#" onclick="emailUser(); return false;">Email User</a></td></tr>
+<tr><td><a href="#" onclick="viewProfileSingle(); return false;"><img src="../artwork/user_file_icon_16.gif" width="16" height="16" alt="Edit" border="0" /></a></td><td class="menuitem"><a id="edit" onclick="viewProfileSingle(); return false;" href="#"><?php echo $string['viewuserfile']; ?></a></td></tr>
+<tr><td><img src="../artwork/small_user_icon_grey.gif" width="16" height="16" alt="Create" border="0" /></td><td class="greymenuitem"><?php echo $string['createnewuser']; ?></td></tr>
 </table>
 
 <table style="font-size:100%; line-height:160%; display:none" cellpadding="3" cellspacing="0" border="0" id="menu2c">
-<tr><td><a onclick="viewProfileSingle(); return false;" href="#"><img src="../artwork/user_file_icon_16.gif" width="16" height="16" alt="Edit" border="0" /></a></td><td class="menuitem"><a id="edit" onclick="viewProfileSingle(); return false;" href="#">View user file</a></td></tr>
-<tr><td><a href="create_new_user.php" target="body"><img src="../artwork/small_user_icon.gif" width="16" height="16" alt="Create" border="0" /></a></td><td class="menuitem"><a href="create_new_user.php">Create new user</a></td></tr>
-<tr><td><a href="#" onclick="emailUser(); return false;"><img src="../artwork/small_email.png" width="16" height="16" alt="Copy" border="0" /></a></td><td class="menuitem"><a href="#" onclick="emailUser(); return false;">Email User</a></td></tr>
+<tr><td><a onclick="viewProfileSingle(); return false;" href="#"><img src="../artwork/user_file_icon_16.gif" width="16" height="16" alt="Edit" border="0" /></a></td><td class="menuitem"><a id="edit" onclick="viewProfileSingle(); return false;" href="#"><?php echo $string['viewuserfile']; ?></a></td></tr>
+<tr><td><a href="create_new_user.php" target="body"><img src="../artwork/small_user_icon.gif" width="16" height="16" alt="Create" border="0" /></a></td><td class="menuitem"><a href="create_new_user.php"><?php echo $string['createnewuser']; ?></a></td></tr>
 </table>
 
 </td></tr>
@@ -260,7 +253,7 @@ if (isset($_GET['calendar_year'])) {
 <br />
 
 <table cellpadding="0" cellspacing="0" border="0" width="185" style="margin-left:2px">
-<tr><td style="font-weight:bold">Cohort Tasks</td></tr>
+<tr><td style="font-weight:bold"><?php echo $string['cohorttasks']; ?></td></tr>
 <?php
   if (isset($_COOKIE['caausermgt'][2])) {
     echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"menu2\" style=\"display:" . $_COOKIE['caausermgt'][2] . "; margin-left:6px; font-size:90%\">\n";
@@ -274,33 +267,33 @@ if (isset($_GET['calendar_year'])) {
 <table style="font-size:100%; line-height: 160%; display:block" cellpadding="3" cellspacing="0" border="0" id="menu3a">
 <?php
   if (strpos($userroles,'Admin') !== false) {
-    echo '<tr><td><a href="load_cohort.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="Import Students" border="0" /></a></td><td class="menuitem"><a href="import_students.php">Import Students (.CSV)</a></td></tr>';
-    echo '<tr><td><a href="import_student_module_info.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="Import Modules" border="0" /></a></td><td class="menuitem"><a href="import_modules.php">Import Modules (.CSV)</a></td></tr>';
+    echo '<tr><td><a href="load_cohort.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="' . $string['importstudents'] . '" border="0" /></a></td><td class="menuitem"><a href="import_students.php">' . $string['importstudents'] . '</a></td></tr>';
+    echo '<tr><td><a href="import_student_module_info.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="' . $string['importmodules'] . '" border="0" /></a></td><td class="menuitem"><a href="import_modules.php">' . $string['importmodules'] . '</a></td></tr>';
   } else {
-    echo '<tr><td><img src="../artwork/import_grey_16.gif" width="16" height="16" alt="Import Students" /></td><td class="greymenuitem">Import Students (.CSV)</td></tr>';
+    echo '<tr><td><img src="../artwork/import_grey_16.gif" width="16" height="16" alt="' . $string['importstudents'] . '" /></td><td class="greymenuitem">' . $string['importstudents'] . '</td></tr>';
   }
 ?>
-<tr><td><img src="../artwork/small_email_grey.png" width="16" height="16" alt="Email" border="0" /></td><td class="greymenuitem">Email Cohort</td></tr>
+<tr><td><img src="../artwork/small_email_grey.png" width="16" height="16" alt="<?php echo $string['emailcohort']; ?>" border="0" /></td><td class="greymenuitem"><?php echo $string['emailcohort']; ?></td></tr>
 </table>
 
 <table style="font-size:100%; line-height:160%; display:none" cellpadding="3" cellspacing="0" border="0" id="menu3b">
 <?php
   if (strpos($userroles,'Admin') !== false) {
-    echo '<tr><td><a href="load_cohort.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="Import Students" border="0" /></a></td><td class="menuitem"><a href="import_students.php">Import Students (.CSV)</a></td></tr>';
-    echo '<tr><td><a href="import_student_module_info.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="Update Cohort" border="0" /></a></td><td class="menuitem"><a href="import_student_module_info.php">Import Modules (.CSV)</a></td></tr>';
+    echo '<tr><td><a href="load_cohort.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="' . $string['importstudents'] . '" border="0" /></a></td><td class="menuitem"><a href="import_students.php">' . $string['importstudents'] . '</a></td></tr>';
+    echo '<tr><td><a href="import_student_module_info.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="' . $string['importmodules'] . '" border="0" /></a></td><td class="menuitem"><a href="import_student_module_info.php">' . $string['importmodules'] . '</a></td></tr>';
   }
 ?>
-<tr><td><a id="copy" href="#" onclick="emailCohort(); return false;"><img src="../artwork/small_email.png" width="16" height="16" alt="Email" border="0" /></a></td><td class="menuitem"><a id="copy" href="#" onclick="emailCohort(); return false;">Email Cohort</a></td></tr>
+<tr><td><a id="copy" href="#" onclick="emailCohort(); return false;"><img src="../artwork/small_email.png" width="16" height="16" alt="<?php echo $string['emailcohort']; ?>" border="0" /></a></td><td class="menuitem"><a id="copy" href="#" onclick="emailCohort(); return false;"><?php echo $string['emailcohort']; ?></a></td></tr>
 </table>
 
 <table style="font-size:100%; line-height:160%; display:none" cellpadding="3" cellspacing="0" border="0" id="menu3c">
 <?php
   if (strpos($userroles,'Admin') !== false) {
-    echo '<tr><td><a href="load_cohort.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="Import Students" border="0" /></a></td><td class="menuitem"><a href="import_students.php">Import Students (.CSV)</a></td></tr>';
-    echo '<tr><td><a href="import_student_module_info.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="Update Cohort" border="0" /></a></td><td class="menuitem"><a href="import_modules.php">Import Modules (.CSV)</a></td></tr>';
+    echo '<tr><td><a href="load_cohort.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="' . $string['importstudents'] . '" border="0" /></a></td><td class="menuitem"><a href="import_students.php">' . $string['importstudents'] . '</a></td></tr>';
+    echo '<tr><td><a href="import_student_module_info.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="' . $string['importmodules'] . '" border="0" /></a></td><td class="menuitem"><a href="import_modules.php">' . $string['importmodules'] . '</a></td></tr>';
   }
 ?>
-<tr><td><a id="copy" href="#" onclick="emailCohort(); return false;"><img src="../artwork/small_email.png" width="16" height="16" alt="Email" border="0" /></a></td><td class="menuitem"><a id="copy" href="#" onclick="emailCohort(); return false;">Email Cohort</a></td></tr>
+<tr><td><a id="copy" href="#" onclick="emailCohort(); return false;"><img src="../artwork/small_email.png" width="16" height="16" alt="<?php echo $string['emailcohort']; ?>" border="0" /></a></td><td class="menuitem"><a id="copy" href="#" onclick="emailCohort(); return false;"><?php echo $string['emailcohort']; ?></a></td></tr>
 </table>
 
 </td></tr>
@@ -317,6 +310,3 @@ if (isset($_GET['calendar_year'])) {
 <input type="hidden" name="tmp_yearID" value="" />
 </form>
 </div>
-
-</body>
-</html>

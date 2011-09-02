@@ -54,9 +54,9 @@ $.Class.extend("MEE.Elem",
     // this is used for things like \sqrt{x}, {x} will be the new main
     SetMain: function (token) {
         /*if (this.eldata.simplemain) {
-            this.main = new MEE.ElemSetBasic(token.latex, this.eldata, this);
+        this.main = new MEE.ElemSetBasic(token.latex, this.eldata, this);
         } else {*/
-            this.main = new MEE.ElemSetNormal(token.latex, this);
+        this.main = new MEE.ElemSetNormal(token.latex, this);
         //}
         this.argmap.push(this.main);
     },
@@ -75,7 +75,9 @@ $.Class.extend("MEE.Elem",
 
     // add a upper and lower part to the element and conver the main into a arry element set
     AddUpperLower: function (upper, lower) {
-        this.main = new MEE.ElemSetArray(this.eldata, null, this);
+        if (this.main._name != "MEE.ElemSetArray") {
+            this.main = new MEE.ElemSetArray(this.eldata, null, this);
+        }
         this.main.UpperLower(upper, lower);
         this.argmap.push(this.main.row0.col0);
         this.argmap.push(this.main.row1.col0);
@@ -220,12 +222,13 @@ $.Class.extend("MEE.Elem",
         this.html_rb_inner.html(this.eldata.rb);
 
         this.html_rb.append(this.html_rb_inner);
-        if (this.html_main) {
-            this.html_main.after(this.html_rb);
+        /*if (this.html_main) {
+        this.html_main.after(this.html_rb);
+        } else*/
+        if (this.html_superscript) {
+            this.html_superscript.before(this.html_rb);
         } else if (this.html_subscript) {
             this.html_subscript.before(this.html_rb);
-        } else if (this.html_superscript) {
-            this.html_superscript.before(this.html_rb);
         } else {
             this.html_elem.append(this.html_rb);
         }
@@ -316,7 +319,7 @@ $.Class.extend("MEE.Elem",
         if (this.html_sqrt) {
             var offset = 0;
             if (this.bsize == -1) {
-                var offset = 0.36;
+                /*var offset = 0.36;
                 offset = $(offset).toPx({ 'scope': this.html_elem });
                 var offset2 = 0.13;
                 offset2 = $(offset2).toPx({ 'scope': this.html_elem });
@@ -329,13 +332,33 @@ $.Class.extend("MEE.Elem",
 
                 // make sure the bar is at least 1px
                 if (parseInt(this.html_sqrt.css('font-size').replace('px', '')) < 20)
-                    this.html_sqrt.css('border-top', '1px solid black');
+                this.html_sqrt.css('border-top', '1px solid black');*/
 
+                // need to create a char string that fills the box
+                var width = this.main.align.width;
+                width = $(width).toEm({ 'scope': this.html_elem });
+                var sqrtbartxt = MEE.Tools.HTML.BuildBarText(width, "sqrts");
+                this.html_sqrt.html(sqrtbartxt);
+                var top = this.html_lb.children().css('top');
+                this.html_sqrt.css('top', top);
+                this.html_sqrt.css('font-family', 'MathJax_Size4');
+                this.html_lb.append(this.html_sqrt);
             } else {
-                if (this.bsize == 0)
-                    offset = 0.1;
+                var width = this.main.align.width;
+                width = $(width).toEm({ 'scope': this.html_elem });
+                var sqrtbartxt = MEE.Tools.HTML.BuildBarText(width, "sqrt");
+                this.html_sqrt.html(sqrtbartxt);
+                var children = this.html_lb.children();
+                var top = $(children[1]).css('top');
+                this.html_sqrt.css('left', lbwidth + 'px');
+                this.html_sqrt.css('top', top);
+                this.html_lb.append(this.html_sqrt);
+                if (this.bsize > 0)
+                    this.html_sqrt.css('font-family', 'MathJax_Size' + this.bsize);
+                /*if (this.bsize == 0)
+                offset = 0.1;
                 else if (this.bsize == 3)
-                    offset = 0.07;
+                offset = 0.07;
 
                 offset = $(offset).toPx({ 'scope': this.html_elem });
                 this.html_sqrt.css('top', -this.align.top + offset + 'px');
@@ -345,7 +368,7 @@ $.Class.extend("MEE.Elem",
 
                 // make sure the bar is at least 1px
                 if (parseInt(this.html_sqrt.css('font-size').replace('px', '')) < 20)
-                    this.html_sqrt.css('border-top', '1px solid black');
+                this.html_sqrt.css('border-top', '1px solid black');*/
             }
         }
 
@@ -387,10 +410,13 @@ $.Class.extend("MEE.Elem",
         $(this.html_elem).css('margin-bottom', this.align.bottom + 'px');*/
 
 
-        var padleft = parseInt($(this.html_elem).css('padding-left').replace('px', ''));
-        if (padleft > 0)
-            this.align.width += padleft;
+        var padleft = $(this.html_elem).css('padding-left');
+        if (padleft) {
+            padleft = parseInt(padleft.replace('px', ''));
+            if (padleft > 0)
+                this.align.width += padleft;
 
+        }
 
         if (this.args.length > 0) {
             for (var i = 0; i < this.args.length; i++) {
@@ -405,6 +431,16 @@ $.Class.extend("MEE.Elem",
 
         var marginr = parseInt($(this.html_elem).css('margin-right').replace('px', 'em'));
         if (marginr > 0) this.align.width += marginr;
+
+        /*if (this.depth == 1)
+        this.html_elem.css('color', 'red');
+        if (this.depth == 2)
+        this.html_elem.css('color', 'blue');
+        if (this.depth == 3)
+        this.html_elem.css('color', 'green');
+        if (this.depth == 4)
+        this.html_elem.css('color', 'yellow');*/
+
 
         return this.align;
     },
@@ -715,6 +751,55 @@ $.Class.extend("MEE.Elem",
                 $(this.html_superscript).css('top', -supup + 'px');
             }
             // end vert align
+
+            if (this.eldata.ssoffsets) {
+                // need to adjust the sub and super script positions based on any offsets specified
+
+                if (this.depth == 1) {
+                    this.eldata.suboffset = this.eldata.ssoffsets[1].sub;
+                    this.eldata.supoffset = this.eldata.ssoffsets[1].sup;
+                } else {
+                    this.eldata.suboffset = this.eldata.ssoffsets[2].sub;
+                    this.eldata.supoffset = this.eldata.ssoffsets[2].sup;
+
+                }
+
+                // work out px offset
+                if (!this.eldata.supoffset)
+                    this.eldata.supoffset = 0;
+                if (!this.eldata.suboffset)
+                    this.eldata.suboffset = 0;
+
+                this.eldata.suboffset = $(this.eldata.suboffset).toPx({ 'scope': this.html_elem });
+                this.eldata.supoffset = $(this.eldata.supoffset).toPx({ 'scope': this.html_elem });
+
+                // get main element width
+                var mainw = this.main.align.width;
+
+                // adjust script left
+                if (this.html_superscript)
+                    $(this.html_superscript).css('left', mainw + this.eldata.supoffset + 'px');
+
+                if (this.html_subscript)
+                    $(this.html_subscript).css('left', mainw + this.eldata.suboffset + 'px');
+
+                // work out max right offset
+
+
+                // adjust right padding of element?
+
+                // adjust sub and super widths accordingly
+                if (this.subscript) {
+                    this.subscript.align.width += this.eldata.suboffset;
+                    if (this.subscript.align.width < 0)
+                        this.subscript.align.width = 0;
+                }
+                if (this.superscript) {
+                    this.superscript.align.width += this.eldata.supoffset;
+                    if (this.superscript.align.width < 0)
+                        this.superscript.align.width = 0;
+                }
+            }
         }
     },
 
@@ -753,12 +838,7 @@ $.Class.extend("MEE.Elem",
         var bh = MEE.Data.getBaseSize($(scopeelem));
         var pad = Math.floor((mainh - bh) / 2);
 
-        // for some reason, in IE7, we need to add 33px to this
-        if ($.browser.msie && document.documentMode == 7) {
-            pad -= 33;
-        } else {
-            pad += 2;
-        }
+        //pad += 2;
 
         $(bracketelem).css('top', -pad + 'px');
         /*$(bracketelem).css('padding-top', pad + 'px');
@@ -957,6 +1037,12 @@ $.Class.extend("MEE.Elem",
         if (this._name == "MEE.ElemInput")
             return latex;
 
+        for (var i = 0; i < MEE.Data.pairs.length; i++) {
+            var pair = MEE.Data.pairs[i].pair;
+            if (this.latex == pair)
+                this.type = "extpair";
+        }
+
         // if we have a size
         if (this.size && this.type.substr(0, 3) == "ext") {
             // add size to output
@@ -1024,7 +1110,8 @@ $.Class.extend("MEE.Elem",
                 latex.AddText("\\end{" + this.latex + "}");
 
             } else if (this.type == "command") {
-                latex.AddText("\\" + this.latex);
+                if (this.latex != "")
+                    latex.AddText("\\" + this.latex);
                 if (this.eldata.foreclimits == "above")
                     latex.AddText("\\limits");
                 if ('foreclimits' in this.eldata && this.eldata.foreclimits == "")
@@ -1053,10 +1140,19 @@ $.Class.extend("MEE.Elem",
             if (this.argmap && this.argmap.length > 0) {
                 for (var i = 0; i < this.argmap.length; i++) {
                     if (this.argmap[i]) {
-                        if (i == 0 && this.type == "extpair") {
+                        if (/*i == 0 &&*/this.type == "extpair") {
                             latex.AddElem(this.argmap[i].toLatex());
                         } else {
-                            latex.AddArg(this.argmap[i].toLatex());
+                            var latex2 = this.argmap[i].toLatex();
+                            if (this.eldata.allowspaces) {
+                                var text = latex2.latex;
+                                var parser = new MEE.Parser();
+                                text = parser.replaceAll(text, "\\;", "&nbsp;");
+                                text = parser.replaceAll(text, " ", "");
+                                text = parser.replaceAll(text, "&nbsp;", " ");
+                                latex2.latex = text;
+                            }
+                            latex.AddArg(latex2);
                         }
                     }
                 }
@@ -1094,8 +1190,8 @@ $.Class.extend("MEE.Elem",
                 latex.AddSet(l);
             }
         }
-        if (this.type == "command" && !this.eldata.rest_as_arg0)
-            latex.AddText(" ");
+        //if (this.type == "command" && !this.eldata.rest_as_arg0)
+        latex.AddText(" ");
 
 
         return latex;

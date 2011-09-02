@@ -6,5 +6,5 @@
 
 tinyMCE.addI18n('en.mee', {
 	desc : 'Add block formula',
-	descinline : 'Add inline formula',
+	descinline : 'Add inline formula'
 });

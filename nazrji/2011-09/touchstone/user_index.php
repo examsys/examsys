@@ -93,13 +93,8 @@ $paper_info->store_result();
 $paper_info->fetch();
 
 if ($paper_info->num_rows == 0) {
-  echo "<html><head>\n<title>Access Denied</title>\n<style>\nbody {font-size:90%;font-family:$font,sans-serif;background-color:#FCFCFC;color:#575757}\nh1 {font-weight:normal;color:#C00000;font-size:140%}\n</style></head>\n<body style=\"font-family:$font,sans-serif\"><div style=\"position:absolute;left:10px;top:10px\"><img src=\"/touchstone/artwork/access_denied.png\" width=\"48\" height=\"48\" /></div>\n";
-  echo "<h1 style=\"margin-left:60px\">Page cannot be found</h1>\n";
-  echo "<hr size=\"1\" align=\"left\" width=\"500\" style=\"margin-left:60px;color:#C0C0C0;background-color:#C0C0C0\" />\n<p style=\"margin-left:60px\">The requested paper <strong>" . $_GET['paper'] . "</strong> cannot be found</p>\n</body>\n</html>";
-  $paper_info->free_result();
-  $paper_info->close();
-  $mysqli->close();
-  exit;
+  $tmp_string = sprintf($string['papernotfound'], $_GET['paper']);
+  access_denied($tmp_string, false);
 }
 $paper_info->free_result();
 $paper_info->close();
@@ -113,19 +108,20 @@ $display_end_date = new dateTime($display_end_date, $UK_time);
 $display_start_date->setTimezone($target_timezone);
 $display_end_date->setTimezone($target_timezone);
 
-$display_start_date = $display_start_date->format("d/m/Y H:i");
-$display_end_date = $display_end_date->format("d/m/Y H:i");
+$tmp_cfg_long_date_time = str_replace('%', '', $cfg_long_date_time);
+
+$display_start_date = $display_start_date->format($tmp_cfg_long_date_time);
+$display_end_date = $display_end_date->format($tmp_cfg_long_date_time);
+
+//$display_start_date = $display_start_date->format("d/m/Y H:i");
+//$display_end_date = $display_end_date->format("d/m/Y H:i");
 
 $previously_submitted = 0;
 
 // Check for additional password on the paper
 if ($password != '') {
-  if (!isset($_COOKIE['paperpwd']) or $password != $_COOKIE['paperpwd']) {      
-    echo "<html><head>\n<title>Access Denied</title>\n<style>\nbody {font-size:90%;font-family:$font,sans-serif;background-color:#FCFCFC;color:#575757}\nh1 {font-weight:normal;color:#4465A2;font-size:140%}\n</style></head>\n<body style=\"font-family:$font,sans-serif\"><div style=\"position:absolute;left:10px;top:10px\"><img src=\"/touchstone/artwork/access_denied.png\" width=\"48\" height=\"48\" /></div>\n";
-    echo "<h1 style=\"margin-left:60px\">Access Denied</h1>\n";
-    echo "<hr size=\"1\" align=\"left\" width=\"500\" style=\"margin-left:60px;color:#C0C0C0;background-color:#C0C0C0\" />\n<p style=\"margin-left:60px\">There is a specific password assigned to this paper.</p>\n<p style=\"margin-left:60px\"v><form><input type=\"button\" value=\"&lt Back\" style=\"width:100px\" name=\"ok\" onclick=\"history.back();\"></form></p>\n</body>\n</html>";
-    $mysqli->close();
-    exit;
+  if (!isset($_COOKIE['paperpwd']) or $password != $_COOKIE['paperpwd']) { 
+    access_denied($string['specificpassword'], false);  
   }
 }
 
@@ -139,10 +135,7 @@ if ($labs != '' and stripos($userroles,'Student') !== false) {
   $lab_info->store_result();
   $lab_info->fetch();
   if ($lab_info->num_rows == 0) {
-    echo "<html><head>\n<title>Access Denied</title>\n<style>\nbody {font-size:90%;font-family:$font,sans-serif;background-color:#FCFCFC;color:#575757}\nh1 {font-weight:normal;color:#4465A2;font-size:140%}\n</style></head>\n<body style=\"font-family:$font,sans-serif\"><div style=\"position:absolute; left:10px; top:10px\"><img src=\"./artwork/access_denied.png\" width=\"48\" height=\"48\" /></div>\n";
-    echo "<h1 style=\"margin-left:60px\">Access Denied</h1>\n";
-    echo "<hr size=\"1\" align=\"left\" width=\"500\" style=\"margin-left:60px;color:#C0C0C0;background-color:#C0C0C0\" />\n<p style=\"margin-left:60px\">Access to this paper is not permitted from your current location.</p>\n</body>\n</html>";
-    exit;
+    access_denied($string['denied_location'], false);
   }
   $lab_info->free_result();
   $lab_info->close();
@@ -155,19 +148,12 @@ if (stripos($userroles,'Student') !== false AND stripos($_SERVER['PHP_AUTH_USER'
     if ($calendar_year != '') $cal_year_sql = "AND calendar_year = '$calendar_year'";
     $module_info = $mysqli->query("SELECT moduleid FROM student_modules WHERE userID=$userID AND moduleid IN ('" . str_replace(",","','",$moduleID) . "') $cal_year_sql");
     if ($module_info->num_rows == 0) {
-      echo "<html>\n<head>\n<title>Access Denied</title>\n<style>\nbody {font-size:90%; font-family:Arial,sans-serif; background-color:#FCFCFC; color:#575757}\nh1 {font-weight:normal; color:#BF0000; font-size:140%}\n</style>\n</head>\n<body>\n";
-      echo "<div style=\"position:absolute; left:10px; top:10px\"><img src=\"/touchstone/artwork/access_denied.png\" width=\"48\" height=\"48\" /></div>\n";
-      echo "<h1 style=\"margin-left:60px\">Access Denied</h1>\n";
-      echo "<hr size=\"1\" align=\"left\" width=\"500\" style=\"margin-left:60px; color:#C0C0C0; background-color:#C0C0C0\" />\n<p style=\"margin-left:60px\">$title $surname ($username) is not registered on <strong>$moduleID</strong> in <strong>$calendar_year</strong>.</p>\n</body>\n</html>";
-      exit;
+      $tmp_string = sprintf($string['notregistered'],$title, $surname, $username, $moduleID, $calendar_year);
+      access_denied($tmp_string, false);
     }
     $module_info->close();
   } else {
-    echo "<html>\n<head>\n<title>Access Denied - Year</title>\n<style>\nbody {font-size:90%; font-family:Arial,sans-serif; background-color:#FCFCFC; color:#575757}\nh1 {font-weight:normal; color:#BF0000; font-size:140%}\n</style>\n</head>\n<body>\n";
-    echo "<div style=\"position:absolute; left:10px; top:10px\"><img src=\"/touchstone/artwork/access_denied.png\" width=\"48\" height=\"48\" /></div>\n";
-    echo "<h1 style=\"margin-left:60px\">Access Denied</h1>\n";
-    echo "<hr size=\"1\" align=\"left\" width=\"500\" style=\"margin-left:60px; color:#C0C0C0; background-color:#C0C0C0\" />\n<p style=\"margin-left:60px\">This paper is not on any module.</p>\n</body>\n</html>";
-    exit;
+    access_denied($string['error_module'], false);
   }
 }
 
@@ -178,7 +164,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Start Screen</title>
+<title><?php echo $string['startscreen']; ?></title>
 <style>
 body {font-family:<?php echo $font; ?>,sans-serif;color:black;font-size:<?php echo $textsize; ?>%}
 input {font-family:<?php echo $font; ?>,sans-serif;font-size:90%}
@@ -192,7 +178,7 @@ function startPaper() {
   if (window.focus) {
     exam.focus();
   }
-  document.getElementById('start').value = 'Re-Start >>';
+  document.getElementById('start').value = '<?php echo $string['restart']; ?>';
 }
 function reviewPaper(started,type) {
   exam=window.open("./paper/finish.php?paperID=<?php echo $property_id; ?>&previous="+started+"&log_type="+type+"","paper","fullscreen=<?php echo $fullscreen; ?>,width="+(screen.width-80)+",height="+(screen.height-80)+",left=30,top=20,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
@@ -212,7 +198,6 @@ function launchHelp() {
 <body>
 <form name="theform">
 <br />
-<div align="center">
 <?php
 if ($textsize > 120) {
   $table_width = 90;
@@ -222,14 +207,14 @@ if ($textsize > 120) {
   $button_width = 115;
 }
 ?>
-<table cellpadding="3" cellspacing="0" border="0" style="font-size:100%;border-top:1px solid #5582D2;border-left:1px solid #5582D2;border-right:1px solid #5582D2;background-color:white;width:<?php echo $table_width; ?>%">
+<table cellpadding="3" cellspacing="0" border="0" style="margin-left:auto; margin-right:auto;font-size:100%;border-top:1px solid #5582D2;border-left:1px solid #5582D2;border-right:1px solid #5582D2;background-color:white;width:<?php echo $table_width; ?>%">
 <tr>
 <?php
   $icon_types = array('formative.png','progress.png','summative.png','survey.png');
   echo '<td colspan="2"><table cellspacing="4" cellpadding="0" border="0"><tr><td style="vertical-align:top; width:54px">&nbsp;<img src="./artwork/' . $icon_types[$test_type] . '" width="48" height="48" alt="Icon" />';
   echo "</td><td><span style=\"font-size:8pt\">TouchStone $ts_version</span><br />\n";
-  echo "<span style=\"font-size:18pt; font-family:'Arial Black',sans-serif\">$paper</span></td>\n</tr></table></td></tr>";
-  echo "<tr>\n</table>\n<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"border:1px solid #5582D2;background-color:#DFE8FF\" width=\"$table_width%\">\n";
+  echo "<span style=\"font-size:20pt; font-weight:bold; font-family:Arial,sans-serif\">$paper</span></td>\n</tr></table></td></tr>";
+  echo "<tr>\n</table>\n<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"margin-left:auto; margin-right:auto;border:1px solid #5582D2;background-color:#DFE8FF\" width=\"$table_width%\">\n";
   echo '<tr><td colspan="4">&nbsp;</td>';
   if ($test_type == 2) {
     if (file_exists($cfg_web_root . 'touchstone/users/photos/' . $_SERVER['PHP_AUTH_USER'] . '.jpg')) {
@@ -243,34 +228,34 @@ if ($textsize > 120) {
     }
   }
   echo '</tr>';
-  if ($rubric != '') echo '<tr><td class="f">Rubric</td><td colspan="3">' . $rubric . "</td></tr>\n";
-  if ($test_type != 2) echo '<tr><td class="f">Availability</td><td colspan="3">' . $display_start_date . ' to '. $display_end_date;
+  if ($rubric != '') echo '<tr><td class="f"><nobr>' . $string['rubric'] . '</nobr></td><td colspan="3">' . $rubric . '</td></tr>';
+  if ($test_type != 2) echo '<tr><td class="f"><nobr>' . $string['availability'] .'</nobr></td><td colspan="3">' . $display_start_date . ' to '. $display_end_date;
   if ($timezone != 'Europe/London') echo ' (' . str_replace('_',' ',$timezone) . ')';
   echo '<input type="hidden" name="startdate" value="$display_start_date" /><input type="hidden" name="testtype" value="' . $test_type . "\" /></td></tr>\n";
-  echo "<tr><td class=\"f\">Candidates</td><td colspan=\"3\">" . str_replace(',',', ',$moduleID);
-  echo '</td></tr><tr><td class="f">Screens</td><td>' . $paper_screens . '</td>';
-  echo '<td class="f">Navigation</td><td>';
+  echo "<tr><td class=\"f\"><nobr>" . $string['candidates'] . "</nobr></td><td colspan=\"3\">" . str_replace(',',', ',$moduleID);
+  echo '</td></tr><tr><td class="f"><nobr>' . $string['screens'] . '</nobr></td><td>' . $paper_screens . '</td>';
+  echo '<td class="f">' . $string['navigation'] . '</td><td>';
   if ($navigation == 1) {
-    echo 'Bidirectional';
+    echo $string['bidirectional'];
   } else {
-    echo 'Unidirectional';
+    echo $string['unidirectional'];
   }
   echo '</td></tr>';
   if ($test_type < 3) {
-    echo '<tr><td class="f">Marks</td>';
+    echo '<tr><td class="f">' . $string['marks'] . '</td>';
     echo '<td colspan="3">' . $total_marks;
-    if ($marking == 1) echo ' (Adjusted using random mark of ' . number_format($total_random_mark, 2, '.', ',') . ')';
+    if ($marking == 1) echo ' (' . $string['adjusted'] . ' ' . number_format($total_random_mark, 2, '.', ',') . ')';
     echo '</td></tr>';
   }
-  echo "<tr><td class=\"f\">&nbsp;Current&nbsp;User</td><td>$person</td>";
+  echo "<tr><td class=\"f\"><nobr>&nbsp;" . $string['currentuser'] . "</nobr></td><td>$person</td>";
   if ($test_type == 2 and $exam_duration) {
-    echo '<td class="f">Duration</td><td>' . display_duration($exam_duration,$extra_time) . ' minutes</td>';
+    echo '<td class="f">' . $string['duration'] . '</td><td>' . display_duration($exam_duration,$extra_time) . ' ' . $string['minutes'] . '</td>';
   } else {
     echo '<td></td><td></td>';
   }
   
   if ($sound_demo == '1') {
-    echo "<tr><td colspan=\"4\" style=\"text-align:center\"><span style=\"color:#D27800;font-size:90%;font-weight:bold\">Test Clip</span>&nbsp;&nbsp;<object type=\"application/x-shockwave-flash\" data=\"./paper/player_mp3_maxi.swf\" width=\"200\" height=\"20\">\n";
+    echo "<tr><td colspan=\"4\" style=\"text-align:center\"><span style=\"color:#D27800;font-size:90%;font-weight:bold\">" . $string['testclip'] . "</span>&nbsp;&nbsp;<object type=\"application/x-shockwave-flash\" data=\"./paper/player_mp3_maxi.swf\" width=\"200\" height=\"20\">\n";
     echo "<param name=\"wmode\" value=\"transparent\" />\n";
     echo "<param name=\"movie\" value=\"./paper/player_mp3_maxi.swf\" />\n";
     echo "<param name=\"FlashVars\" value=\"mp3=/touchstone/paper/sound_demo.mp3&amp;showstop=1&amp;showvolume=1&amp;bgcolor1=ffa50b&amp;bgcolor2=d07600\" />\n";
@@ -284,8 +269,8 @@ if ($textsize > 120) {
   }
 
   echo '<tr><td style="text-align:center" colspan="4"><br />';
-  if ($test_type == 2) echo "<div style=\"color:#C00000;font-size:90%\">Do <strong>not</strong> click 'Start &gt;&gt;' until instructed to by an invigilator.</div>\n";
-  echo "<input type=\"button\" style=\"width:" . $button_width . "px\" value=\"Help\" name=\"help\" onclick=\"launchHelp();\" onkeypress=\"launchHelp();\" />\n";
+  if ($test_type == 2) echo "<div style=\"color:#C00000;font-size:90%\">" . $string['donotstart'] . "</div>\n";
+  echo "<input type=\"button\" style=\"width:" . $button_width . "px\" value=\"" . $string['help'] . "\" name=\"help\" onclick=\"launchHelp();\" onkeypress=\"launchHelp();\" />\n";
   if ($test_type == 2) {
     $switch_info = $mysqli->prepare("SELECT property_id FROM properties WHERE paper_type IN('1','2') AND start_date > DATE_SUB(NOW(), INTERVAL 4 HOUR) AND start_date < DATE_ADD(NOW(), INTERVAL 3 HOUR) AND end_date < DATE_ADD(NOW(), INTERVAL 6 HOUR) AND property_id != ?");
     $switch_info->bind_param('i',$property_id);
@@ -293,38 +278,38 @@ if ($textsize > 120) {
     $switch_info->bind_result($tmp_property_id);
     $switch_info->store_result();
     $switch_info->fetch();
-    if ($switch_info->num_rows > 0) echo "<input type=\"button\" style=\"width:" . $button_width . "px\" value=\"Switch Papers\" name=\"switch\" onclick=\"window.location='../index.php'\" />&nbsp;&nbsp;&nbsp;&nbsp;\n";
+    if ($switch_info->num_rows > 0) echo "<input type=\"button\" style=\"width:" . $button_width . "px\" value=\"" . $string['switchpapers'] . "\" name=\"switch\" onclick=\"window.location='../index.php'\" />&nbsp;&nbsp;&nbsp;&nbsp;\n";
     $switch_info->close();
   }
   if (strpos($userroles,'Staff') !== false or strpos($userroles,'QABME') !== false or strpos($userroles,'SysAdmin') !== false) {
     if (time() < $paper_start or time() > $paper_end) {
-      echo "<input type=\"button\" style=\"width:" . $button_width . "px; font-weight:bold\" value=\"Start &gt;&gt;\" name=\"start\" onclick=\"\" disabled />\n";
-      echo '<br /><div style="font-size:90%;color:#C00000"><img src="./artwork/small_warning_16.png" width="16" height="16" alt="!" />&nbsp;Paper not available at this time.</div>';
+      echo "<input type=\"button\" style=\"width:" . $button_width . "px; font-weight:bold\" value=\"" . $string['start'] . "\" name=\"start\" onclick=\"\" disabled />\n";
+      echo '<br /><div style="font-size:90%;color:#C00000"><img src="./artwork/small_warning_16.png" width="16" height="16" alt="!" />&nbsp;' . $string['papernotavailable'] . '</div>';
     } else {
-      echo "<input type=\"button\" style=\"width:" . $button_width . "px; font-weight:bold\" value=\"Start &gt;&gt;\" name=\"start\" id=\"start\" onclick=\"startPaper();\" onkeypress=\"startPaper();\" />\n";
+      echo "<input type=\"button\" style=\"width:" . $button_width . "px; font-weight:bold\" value=\"" . $string['start'] . "\" name=\"start\" id=\"start\" onclick=\"startPaper();\" onkeypress=\"startPaper();\" />\n";
     }
   } else {
     if ($test_type > 0 and $log_info->num_rows > 0) {
       $row = $log_info->fetch_assoc();
       if ($navigation == 1) {
         if (time() < $paper_end) {
-          echo " <input type=\"button\" id=\"start\" style=\"width:" . $button_width . "px; font-weight:bold\" onclick=\"startPaper();\" value=\"Re-Start &gt;&gt;\" name=\"restart\" id=\"start\" />";
+          echo " <input type=\"button\" id=\"start\" style=\"width:" . $button_width . "px; font-weight:bold\" onclick=\"startPaper();\" value=\"" . $string['restart'] . "\" name=\"restart\" id=\"start\" />";
         }
       } elseif ($navigation == 0) {
         if ($paper_screens > $row['screen']) {
-          echo " <input type=\"button\" id=\"start\" style=\"width:" . $button_width . "px; font-weight:bold\" onclick=\"startPaper();\" value=\"Re-Start &gt;&gt;\" name=\"restart\" id=\"start\" />";
+          echo " <input type=\"button\" id=\"start\" style=\"width:" . $button_width . "px; font-weight:bold\" onclick=\"startPaper();\" value=\"" . $string['restart'] . "\" name=\"restart\" id=\"start\" />";
         }
       } else {
-        echo "<input type=\"button\" id=\"start\" style=\"width:" . $button_width . "px\" value=\"Start &gt;&gt;\" name=\"start\" id=\"start\" disabled />\n";
+        echo "<input type=\"button\" id=\"start\" style=\"width:" . $button_width . "px\" value=\"" . $string['start'] . "\" name=\"start\" id=\"start\" disabled />\n";
       }
     } elseif ($test_type != 2 and (time() < $paper_start or time() > $paper_end)) {
-      echo "<input type=\"button\" style=\"width:" . $button_width . "px\" value=\"Start &gt;&gt;\" name=\"start\" disabled />\n";
-      echo '<br /><div class="w"><img src="./artwork/small_warning_16.png" width="16" height="16" alt="!" />&nbsp;Paper not available at this time.</div>';
+      echo "<input type=\"button\" style=\"width:" . $button_width . "px\" value=\"" . $string['start'] . "\" name=\"start\" disabled />\n";
+      echo '<br /><div class="w"><img src="./artwork/small_warning_16.png" width="16" height="16" alt="!" />&nbsp;' . $string['papernotavailable'] . '</div>';
     } elseif ($test_type == 2 and (time()+(15*60)) < $paper_start or time() > $paper_end) {
-      echo "<input type=\"button\" style=\"width:" . $button_width . "px\" value=\"Start &gt;&gt;\" name=\"start\" disabled />\n";
-      echo '<br /><div class="w"><img src="./artwork/small_warning_16.png" width="16" height="16" alt="!" />&nbsp;Paper not available at this time.</div>';
+      echo "<input type=\"button\" style=\"width:" . $button_width . "px\" value=\"" . $string['start'] . "\" name=\"start\" disabled />\n";
+      echo '<br /><div class="w"><img src="./artwork/small_warning_16.png" width="16" height="16" alt="!" />&nbsp;' . $string['papernotavailable'] . '</div>';
     } else {
-      echo "<input type=\"button\" style=\"width:" . $button_width . "px; font-weight:bold\" value=\"Start &gt;&gt;\" name=\"start\" id=\"start\" onclick=\"startPaper();\" onkeypress=\"startPaper();\" />\n";
+      echo "<input type=\"button\" style=\"width:" . $button_width . "px; font-weight:bold\" value=\"" . $string['start'] . "\" name=\"start\" id=\"start\" onclick=\"startPaper();\" onkeypress=\"startPaper();\" />\n";
     }
   }
   echo '<br />&nbsp;';
@@ -338,13 +323,12 @@ if ($textsize > 120) {
     $mark_total = 0;
     $adj_percent = 0;
     if ($log_info->num_rows > 0) {
-      //do {
       while ($row = $log_info->fetch_assoc()) {
         if ($temp_no == 0) {
           $old_started = $row['started'];
           echo '<hr style="background-color:#5582D2; color:#5582D2; height:1px; width:80%; border:0" />';
           echo '<table cellpadding="0" cellspacing="0" border="0" align="center">';
-          echo '<tr><td colspan="4" style="text-align:center"><strong>Previous Completions</strong></td></tr>';
+          echo '<tr><td colspan="4" style="text-align:center"><strong>' . $string['previouscompletions'] . '</strong></td></tr>';
           if ($row['screen'] > $old_screen) $old_screen = $row['screen'];
         }
         if ($old_started != $row['started'] and $old_started != '') {
@@ -367,7 +351,6 @@ if ($textsize > 120) {
         $display_date = $row['temp_date'];
         $rerun_date = $row['started'];
         $paper_type = $row['paper_type'];
-      //} while ($row = $log_info->fetch_assoc());
       }
       $log_info->close();
 
@@ -383,7 +366,7 @@ if ($textsize > 120) {
       }
       echo '</td></tr></table><br />';
     } else {
-      if ($test_type != 2) echo '<hr style="background-color:#5582D2; color:#5582D2; height:1px; width:80%; border:0" /><p style="color:#808080">(You have not yet taken this paper.)</p><br />';
+      if ($test_type != 2) echo '<hr style="background-color:#5582D2; color:#5582D2; height:1px; width:80%; border:0" /><p style="color:#808080">' . $string['nottakenpaper'] . '</p><br />';
     }
   }
   $mysqli->close();
@@ -391,7 +374,7 @@ if ($textsize > 120) {
 </td>
 </tr>
 </table>
-</div>
+
 </form>
 </body>
 </html>

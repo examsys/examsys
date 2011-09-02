@@ -51,7 +51,7 @@
       $result->execute();
       $result->close();
     } else {
-      display_error('Properties Update Error',$result->error);
+      display_error($string['updateerror'], $result->error);
     }
   }
   $mysqli->close();
@@ -59,7 +59,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Question Deleted</title>
+<title><?php echo $string['questiondeleted']; ?></title>
 <script language="javascript">
   function closeWindow() {
     window.opener.location.href='../paper/details.php?paperID=<?php echo $_POST['paperID']; ?>&module=<?php echo $_POST['module']; ?>&folder=<?php echo $_POST['folder']; ?>&scrOfY=<?php echo $_POST['scrOfY']; ?>';
@@ -72,13 +72,13 @@
 
 <table cellpadding="8" cellspacing="0" border="0" width="100%">
 <tr>
-<td valign="top"><img src="../artwork/delete_warning.png" width="48" height="48" border="0" alt="Recycle Bin" /></td>
+<td valign="top"><img src="../artwork/delete_warning.png" width="48" height="48" border="0" alt="<?php echo $string['recyclebin']; ?>" /></td>
 
-<td><p>Question pointer successfully deleted from question paper.<p>
+<td><p><?php echo $string['msg']; ?><p>
 
-<div style="text-align: center">
+<div style="text-align:center">
 <form action="" method="get">
-<input type="button" name="cancel" value="    OK    " onclick="javascript:window.opener.location.reload();window.close();" />
+<input type="button" name="cancel" value="<?php echo $string['ok']; ?>" style="width:100px" onclick="javascript:window.opener.location.reload();window.close();" />
 </form>
 </div>
 </td></tr>

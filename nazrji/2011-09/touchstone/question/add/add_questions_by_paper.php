@@ -30,6 +30,7 @@
 <title>by Paper</title>
 <style>
 body {margin:0px; background-color:white; color:black; font-family:Arial,sans-serif; font-size:90%}
+table {font-size:100%}
 a:link {color:black}
 a:visited {color:black}
 a:hover {color:black}
@@ -67,12 +68,12 @@ a:hover {color:black}
   echo "<form name=\"theform\" method=\"post\" action=\"\">\n";
   echo "<input type=\"hidden\" name=\"screen\" value=\"1\" />\n";
   echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"width:100%; font-size:100%\">\n";
-  echo "<tr style=\"background-color:#EBEADB\"><td valign=\"top\" colspan=\"7\" style=\"font-size:160%; font-weight:bold\">&nbsp;$paper_title</td></tr>\n";
-  echo "<tr style=\"background-color:#EBEADB\"><td></td><td></td><td style=\"text-align:right\"><img src=\"../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;</td><td>Question&nbsp;</td><td><img src=\"../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;Type&nbsp;</td><td><img src=\"../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;Modified&nbsp;</td></tr>\n";
-  echo "<tr style=\"height:4px\"><td valign=\"top\" colspan=\"7\"><img src=\"../artwork/header_horizontal_line.gif\" width=\"100%\" height=\"3\" alt=\"Line\" /></td></tr>\n";
+  echo "<tr style=\"background-color:#F1F5FB\"><td valign=\"top\" colspan=\"7\" style=\"font-size:160%; font-weight:bold\">&nbsp;$paper_title</td></tr>\n";
+  echo "<tr style=\"background-color:#F1F5FB\"><td></td><td></td><td style=\"text-align:right\"><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;</td><td>" . $string['question'] . "&nbsp;</td><td><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;" . $string['type'] . "&nbsp;</td><td><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;" . $string['modified'] . "&nbsp;</td></tr>\n";
+  echo "<tr style=\"height:4px\"><td valign=\"top\" colspan=\"7\"><img src=\"../../artwork/header_horizontal_line.gif\" width=\"100%\" height=\"3\" alt=\"Line\" /></td></tr>\n";
 
   // Get the questions in order off the paper.
-  $stmt = $mysqli->prepare("SELECT questions.q_id, leadin_plain, q_type, screen, DATE_FORMAT(last_edited,'%d/%m/%y') AS last_edited, locked, parts FROM (papers, questions) LEFT JOIN question_exclude ON questions.q_id=question_exclude.q_id WHERE papers.paper=? AND papers.question=questions.q_id ORDER BY screen, display_pos");
+  $stmt = $mysqli->prepare("SELECT questions.q_id, leadin_plain, q_type, screen, DATE_FORMAT(last_edited,'$cfg_short_date') AS last_edited, locked, parts FROM (papers, questions) LEFT JOIN question_exclude ON questions.q_id=question_exclude.q_id WHERE papers.paper=? AND papers.question=questions.q_id ORDER BY screen, display_pos");
   $stmt->bind_param('i', $_GET['question_paper']);
   $stmt->execute();
   $stmt->bind_result($q_id, $leadin_plain, $q_type, $screen, $last_edited, $locked, $parts);
@@ -82,8 +83,7 @@ a:hover {color:black}
     if ($q_type != 'info') $question_no++;
     if ($screen > $old_screen) {
       echo '<tr><td colspan="6" style="height:10px"></td></tr>';
-      echo '<tr><td colspan="6" class="divider">Screen ' . $screen . '</td></tr>';
-      echo '<tr><td colspan="6" style="height:5px"><img src="../artwork/divider_bar.gif" width="290" height="1" /></td></tr>';
+      echo '<tr><td colspan="6"><table border="0" style="padding-left:10px; padding-right:2px; padding-bottom:5px; width:100%; color:#1E3287"><tr><td><nobr>' . $string['screen'] . ' ' . $screen . '</nobr></td><td style="width:98%"><hr noshade="noshade" style="border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%" /></td></tr></table></td></tr>';
     }
     if ($q_type == 'info') {
       echo "<tr><td class=\"q_no\"><img src=\"../artwork/black_white_info_icon.png\" width=\"6\" height=\"12\" alt=\"Info\" />&nbsp;</td><td>";

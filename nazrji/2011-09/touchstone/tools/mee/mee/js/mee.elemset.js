@@ -32,12 +32,12 @@ $.Class.extend("MEE.ElemSet",
         }
 
         // sort out display of empty element set marker
-        if (this.html_elem.hasClass('mee_elemset_empty') || !this.haselements) {
+        if (this.isedit && (this.html_elem.hasClass('mee_elemset_empty') || !this.haselements)) {
             var minwidth = MEE.Data.emptywidth;
             minwidth = $(minwidth).toPx({ 'scope': this.html_elem });
             if (this.align.width < minwidth) {
                 this.html_elem.append(this.html_elem.find('.mee_elemset_empty_inner'));
-                this.html_elem.find('.mee_elemset_empty_inner').css('padding-right', (minwidth - this.align.width) - MEE.Data.blankspacesize(this.html_elem) + 'px');
+                this.html_elem.find('.mee_elemset_empty_inner').css('padding-right', (minwidth - this.align.width) - MEE.Data.blankspacesize(this.html_elem) - 2 + 'px');
                 this.align.width = minwidth;
             }
             // empty!
@@ -104,6 +104,11 @@ $.Class.extend("MEE.ElemSet",
     },
 
     removeInput: function () {
+        // parse bond if available
+        if (this.parent && this.parent.eldata && this.parent.eldata.object == 'Bond') {
+            this.parent.SortBondInner();
+        }
+
         for (var i = 0; i < this.elements.length; i++) {
             var curelem = this.elements[i];
             if (curelem._name == "MEE.ElemInput") {
@@ -112,6 +117,8 @@ $.Class.extend("MEE.ElemSet",
                 //return;
             }
         }
+
+        $('.mee_elem_input_box').val("");
 
         this.sortBlanks();
 
@@ -151,6 +158,33 @@ $.Class.extend("MEE.ElemSet",
         if (!this.isedit)
             return;
 
+        if (typeof this.selectStart == "number") {
+            var hldiv = $('.mee_edit_highlight_elem');
+            hldiv.css('display', 'none');
+
+            var hldiv = $('.mee_edit_highlight_multi');
+            hldiv.css('display', 'block');
+
+            var startelem = this.elements[this.selectStart].html_elem;
+            var inputpos = this.getInputPos();
+
+            var endelem = this.elements[inputpos].html_elem;
+
+            MEE.Tools.HTML.AlignElementOver([startelem, endelem], hldiv, this.align);
+
+            return;
+        }
+
+        var hldiv = $('.mee_edit_highlight_multi');
+        hldiv.css('display', 'none');
+
+        var elem = this.getElemBeforeInput();
+        /*if ($.browser.msie && document.documentMode == 7) {
+        $('.mee_ie7_highlight').removeClass('mee_ie7_highlight');
+        if (elem)
+        elem.html_elem.addClass('mee_ie7_highlight');
+        return;
+        }*/
         if (this.single && !this.inmatrix) {
             var hldiv = $('.mee_edit_highlight');
             MEE.Tools.HTML.AlignElementOver(this.html_elem, hldiv, this.align);
@@ -162,7 +196,6 @@ $.Class.extend("MEE.ElemSet",
         }
 
         // need to get the element before the input if there is one and highlight it
-        var elem = this.getElemBeforeInput();
         if (elem) {
 
             elem_html = elem.html_elem;
@@ -180,6 +213,42 @@ $.Class.extend("MEE.ElemSet",
                 return i;
         }
         return -1;
+    },
+
+    findElement: function (latex) {
+        if (this.elements && this.elements.length > 0) {
+            for (var i = 0; i < this.elements.length; i++) {
+                var elem = this.elements[i];
+                if (elem.latex == latex) {
+                    return { 'set': this, 'elem': elem };
+                }
+
+                if (elem.main) {
+                    var res = elem.main.findElement(latex);
+                    if (res) return res;
+                }
+                if (elem.sarg) {
+                    var res = elem.sarg.findElement(latex);
+                    if (res) return res;
+                }
+                if (elem.superscript) {
+                    var res = elem.superscript.findElement(latex);
+                    if (res) return res;
+                }
+                if (elem.subscript) {
+                    var res = elem.subscript.findElement(latex);
+                    if (res) return res;
+                }
+                if (elem.args && elem.args.length > 0) {
+                    for (var k = 0; k < elem.args.length; k++) {
+                        var res = elem.args[k].findElement(latex);
+                        if (res) return res;
+                    }
+                }
+            }
+        }
+
+        return null;
     },
 
     toLatex: function () {

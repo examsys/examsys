@@ -32,7 +32,7 @@ check_var('q_id', 'GET', true, false);
 
 <html>
 <head>
-<title>Delete Question?</title>
+<title><?php echo $string['deletequestion']; ?></title>
 
 <style>
 body {margin:0px; background-color:#F1F5FB; font-family:Arial,sans-serif; font-size:90%; text-align:justifed}
@@ -43,7 +43,7 @@ body {margin:0px; background-color:#F1F5FB; font-family:Arial,sans-serif; font-s
 
 <table cellpadding="8" cellspacing="0" border="0" width="100%">
 <tr>
-<td valign="top"><img src="../artwork/delete_warning.png" width="48" height="48" border="0" alt="Recycle Bin" /></td>
+<td valign="top"><img src="../artwork/delete_warning.png" width="48" height="48" border="0" alt="<?php echo $string['recyclebin']; ?>" /></td>
 
 <td>
 <?php
@@ -55,28 +55,28 @@ body {margin:0px; background-color:#F1F5FB; font-family:Arial,sans-serif; font-s
 
   if ($result->num_rows == 0) {
   ?>
-<p>You are attempting to delete a question from the question bank.</p><p><strong>Please confirm that this is your intention.</strong></p>
+<p><?php echo $string['msg']; ?></p>
 <br />
 <div style="text-align:right">
 <form action="do_delete_q_original.php" method="post">
 <input type="hidden" name="q_id" value="<?php echo $_GET['q_id']; ?>" />
-<input style="width:140px" type="submit" name="submit" value="Delete" />&nbsp;
-<input style="width:80px" type="button" name="cancel" value=" Cancel " onclick="javascript:window.close();" />
+<input style="width:140px" type="submit" name="submit" value="<?php echo $string['delete']; ?>" />&nbsp;
+<input style="width:90px" type="button" name="cancel" value="<?php echo $string['cancel']; ?>" onclick="javascript:window.close();" />
 </form>
 </div>
     <?php
   } else {
-    echo "<p>You cannot delete this question, it is used in the following papers:</p>\n<ul>\n";
+    echo "<p>" . $string['warning1'] . "</p>\n<ul>\n";
     while ($row = $result->fetch()) {
       echo "<li>" . $paper_title . "</li>\n";
     }
     echo "</ul>\n";
   ?>
-<p>Delete all pointers to this question before deleting the original.</p>
+<p><?php echo $string['warning2']; ?></p>
 <div style="text-align:right">
 <form action="do_delete_q_original.php" method="post">
 <input type="hidden" name="q_id" value="<?php echo $_GET['q_id']; ?>" />
-<input type="button" name="cancel" value=" Cancel " onclick="javascript:window.close();" />
+<input style="width:90px" type="button" name="cancel" value="<?php echo $string['cancel']; ?>" onclick="javascript:window.close();" />
 </form>
 </div>
     <?php

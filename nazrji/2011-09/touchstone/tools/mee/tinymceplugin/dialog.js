@@ -1,8 +1,27 @@
-
+var selelem = null;
 $().ready(function () {
     // fetch any selected item from the parent, and build an editor page for it
     var elem = tinyMCEPopup.editor.plugins["mee"].getCurrentElement();
-    var latex = $(elem).attr('title');
+    var latex = "";
+    var inline = false;
+    if (elem) {
+        selelem = elem;
+        var url = elem.src;
+        url = unescape(url);
+        
+        var data = url.substr(url.indexOf('?'));
+        var data = data.substr(1);
+        var data = $.parseJSON(data);
+
+        latex = data.latex;
+        inline = data.inline;
+    } else {
+        var url = document.URL;
+        var tail = url.substr(url.indexOf('?') + 1);
+        if (tail == "inline=1")
+            inline = true;
+    }
+
     var newinput = $('<input>');
 
     newinput.attr('name', 'eleminput');
@@ -12,11 +31,11 @@ $().ready(function () {
     $(newinput)[0].value = latex;
 
     // if we are coming from a span element
-    if ($(elem).is('span'))
+    if (inline)
         newinput.addClass('inline');
 
-    var url = document.documentURI
-    var tail = url.substr(url.indexOf('?')+1);
+    var url = document.URL;
+    var tail = url.substr(url.indexOf('?') + 1);
     if (!elem && tail == "inline=1")
         newinput.addClass('inline');
 
@@ -32,36 +51,46 @@ $().ready(function () {
 });
 
 function updateMME() {
-    var edit = MEE.Base.edits[0];
-    var html = "";
-    var elem = tinyMCEPopup.editor.plugins["mee"].getCurrentElement();
-    //$().remove();
-    if (edit.inline)
-    {
-        html = "<span class='mee'>" + edit.latex + "</span>";
-    } else {
-        html = "<div class='mee nocomp'>" + edit.latex + "</div>";
-    }
-    //html = "<iframe src='http://www.google.co.uk' width='300' height='200' />";
-    var newelem = $(html);
-    $(elem).after(newelem);
-    $(elem).remove();
-    //tinyMCEPopup.editor.selection.setContent(html);
-    tinyMCEPopup.editor.plugins["mee"].update();
-    tinyMCEPopup.close();
+    insertMME();
 }
 
 
 function insertMME() {
     var edit = MEE.Base.edits[0];
     var html = "";
-    if (edit.inline) {
-        html = "<span class='mee'>" + edit.latex + "</span>&nbsp;";
+
+    var node = tinyMCEPopup.editor.selection.getNode();
+    var fontsize = $(node).css('font-size');
+
+    var data = new Object();
+    data.inline = edit.inline;
+    data.latex = edit.latex;
+    data.fontsize = fontsize;
+
+    var datatxt = JSON.stringify(data);
+
+    var src = "tiny_mce/plugins/mee/frame.html?" + datatxt;
+    if (selelem) {
+        selelem.src = src;
+        $(selelem).attr('src', src);
+        //$selelem).refresh();
     } else {
-        html = "<div class='mee nocomp'>" + edit.latex + "</div>&nbsp;";
+
+        if (edit.inline) {
+            html = "<iframe class='mee_iframe' src='" + src + "' frameborder='0'></iframe>";
+        } else {
+            html = "<p><iframe class='mee_iframe' src='" + src + "' frameborder='0'></iframe></p>";
+        }
+
+        tinyMCEPopup.editor.execCommand('mceInsertContent', true, html);
     }
-    //html = "<iframe src='http://www.google.co.uk' width='300' height='200' />";
-    tinyMCEPopup.editor.selection.setContent(html);
-    tinyMCEPopup.editor.plugins["mee"].update();
+
+    tinyMCEPopup.editor.execCommand('mceRepaint');
     tinyMCEPopup.close();
+    
+
+    /*tinyMCEPopup.editor.execCommand('mceInsertContent', false, html);
+    //tinyMCEPopup.editor.selection.setContent(html);
+    //tinyMCEPopup.editor.plugins["mee"].update();
+    tinyMCEPopup.close();*/
 }

@@ -314,6 +314,20 @@ if (isset($_POST['Submit'])) {
 } else {
   $option_no = 1;
   
+  // Work out if any negative marking is used
+  $neg_marking = false;
+  $result = $mysqli->prepare("SELECT marks_incorrect FROM papers, questions, options WHERE papers.question=questions.q_id AND questions.q_id=options.o_id AND paper=?");
+  $result->bind_param('i', $_GET['paperID']);
+  $result->execute();
+  $result->bind_result($marks_incorrect);
+  while ($result->fetch()) {
+    if ($marks_incorrect < 0) {
+      $neg_marking = true;
+    }
+  }
+  $result->close();
+  
+  // Get the main properties of the paper
   $result = $mysqli->prepare("SELECT display_students_response, display_correct_answer, display_question_mark, display_feedback, hide_if_unanswered, paper_title, paper_type, start_date, end_date, timezone, paper_prologue, paper_postscript, bgcolor, fgcolor, themecolor, labelcolor, fullscreen, marking, bidirectional, pass_mark, distinction_mark, folder, labs, rubric, calculator, externals, exam_duration, moduleID, calendar_year, internal_reviewers, external_review_deadline, internal_review_deadline, sound_demo, password FROM properties WHERE property_id=?");
   $result->bind_param('i', $_GET['paperID']);
   $result->execute();
@@ -619,15 +633,15 @@ if (isset($_POST['Submit'])) {
 <tr><td valign="top" style="background-color:white; border:1px solid #7F9DB9; width:120px">
 
 <table cellspacing="0" cellpadding="0" border="0" style="font-size:90%; width:120px">
-<tr><td id="button_general" style="background-image:url('../artwork/2007_button_on.png'); height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('general')" onmouseout="buttonout('general')" onclick="buttonclick('general')">&nbsp;General</td></tr>
-<tr><td id="button_security" style="height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('security')" onmouseout="buttonout('security')" onclick="buttonclick('security')">&nbsp;Security</td></tr>
-<tr><td id="button_reviewers" style="height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('reviewers')" onmouseout="buttonout('reviewers')" onclick="buttonclick('reviewers')">&nbsp;Reviewers</td></tr>
+<tr><td id="button_general" style="background-image:url('../artwork/2007_button_on.png'); height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('general')" onmouseout="buttonout('general')" onclick="buttonclick('general')">&nbsp;<?php echo $string['generaltab']; ?></td></tr>
+<tr><td id="button_security" style="height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('security')" onmouseout="buttonout('security')" onclick="buttonclick('security')">&nbsp;<?php echo $string['securitytab']; ?></td></tr>
+<tr><td id="button_reviewers" style="height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('reviewers')" onmouseout="buttonout('reviewers')" onclick="buttonclick('reviewers')">&nbsp;<?php echo $string['reviewerstab']; ?></td></tr>
 <?php
 if ($paper_type != '4' and $paper_type != '5') {
 ?>
-<tr><td id="button_rubric" style="height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('rubric')" onmouseout="buttonout('rubric')" onclick="buttonclick('rubric')">&nbsp;Exam Rubric</td></tr>
-<tr><td id="button_prologue" style="height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('prologue')" onmouseout="buttonout('prologue')" onclick="buttonclick('prologue')">&nbsp;Prologue</td></tr>
-<tr><td id="button_postscript" style="height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('postscript')" onmouseout="buttonout('postscript')" onclick="buttonclick('postscript')">&nbsp;Postscript</td></tr>
+<tr><td id="button_rubric" style="height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('rubric')" onmouseout="buttonout('rubric')" onclick="buttonclick('rubric')">&nbsp;<?php echo $string['rubrictab']; ?></td></tr>
+<tr><td id="button_prologue" style="height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('prologue')" onmouseout="buttonout('prologue')" onclick="buttonclick('prologue')">&nbsp;<?php echo $string['prologuetab']; ?></td></tr>
+<tr><td id="button_postscript" style="height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('postscript')" onmouseout="buttonout('postscript')" onclick="buttonclick('postscript')">&nbsp;<?php echo $string['postscripttab']; ?></td></tr>
 <?php
 }
 ?>
@@ -638,23 +652,23 @@ if ($paper_type != '4' and $paper_type != '5') {
 <td style="background-color:white; border:1px solid #7F9DB9" valign="top">
 
 <table id="general" style="height:590px; width:100%; font-size:90%<?php if (isset($_GET['noadd']) and $_GET['noadd'] == 'y') echo ';display:none'; ?>" cellpadding="0" cellspacing="0" border="0">
-<tr><td style="background-image:url('../artwork/blank_heading.png'); color:#001687; height:49px; font-size:110%" colspan="2">&nbsp;&nbsp;&nbsp;&nbsp;<img src="../artwork/general_heading_icon.png" width="32" height="32" alt="Icon" align="middle" />&nbsp;&nbsp;Paper name, marking and display options</td></tr>
+<tr><td style="background-image:url('../artwork/blank_heading.png'); color:#001687; height:49px; font-size:110%" colspan="2">&nbsp;&nbsp;&nbsp;&nbsp;<img src="../artwork/general_heading_icon.png" width="32" height="32" alt="Icon" align="middle" />&nbsp;&nbsp;<?php echo $string['generalheading']; ?></td></tr>
 <td style="text-align:left; vertical-align:top" colspan="2">
    <?php
      echo "<table cellpadding=\"2\" cellspacing=\"0\" border=\"0\" width=\"100%\">\n";
      echo "<tr><td colspan=\"4\">&nbsp;</td></tr>\n";
-     echo "<tr><td colspan=\"4\" style=\"background-color:#E5EFFA; color:#00156E; border-bottom: 1px solid #CFDBEB\">&nbsp;Paper Details</td></tr>\n";
+     echo "<tr><td colspan=\"4\" style=\"background-color:#E5EFFA; color:#00156E; border-bottom: 1px solid #CFDBEB\">&nbsp;" . $string['paperdetails'] . "</td></tr>\n";
      echo "<tr><td colspan=\"4\">&nbsp;</td></tr>\n";
      if ($paper_type == '2') {
-       echo "<tr><td align=\"right\" valign=\"top\">URL&nbsp;</td><td colspan=\"3\"><a href=\"" . $protocol . $_SERVER['HTTP_HOST'] . "\" target=\"_blank\" style=\"color:blue\">" . $protocol . $_SERVER['HTTP_HOST'] . "</a> (only on exam day)</td></tr>\n";
+       echo "<tr><td align=\"right\" valign=\"top\">" . $string['url'] . "&nbsp;</td><td colspan=\"3\"><a href=\"" . $protocol . $_SERVER['HTTP_HOST'] . "\" target=\"_blank\" style=\"color:blue\">" . $protocol . $_SERVER['HTTP_HOST'] . "</a> " . $string['onlyonexamday'] . "</td></tr>\n";
      } elseif ($paper_type == '4') {
-       echo "<tr><td align=\"right\" valign=\"top\">URL&nbsp;</td><td colspan=\"3\"><a href=\"" . $protocol . $_SERVER['HTTP_HOST'] . "/osce/\" target=\"_blank\" style=\"color:blue\">" . $protocol . $_SERVER['HTTP_HOST'] . "/osce/</a> (only on exam day)</td></tr>\n";
+       echo "<tr><td align=\"right\" valign=\"top\">" . $string['url'] . "&nbsp;</td><td colspan=\"3\"><a href=\"" . $protocol . $_SERVER['HTTP_HOST'] . "/osce/\" target=\"_blank\" style=\"color:blue\">" . $protocol . $_SERVER['HTTP_HOST'] . "/osce/</a> " . $string['onlyonexamday'] . "</td></tr>\n";
      } else {
-       echo "<tr><td align=\"right\" valign=\"top\">URL&nbsp;</td><td colspan=\"3\"><a href=\"" . $protocol . $_SERVER['HTTP_HOST'] . "/touchstone/user_index.php?paper=" . urlencode($paper_title) ."\" target=\"_blank\" style=\"color:blue\">" . $protocol . $_SERVER['HTTP_HOST'] . "/touchstone/user_index.php?paper=" . urlencode($paper_title) ."</a></td></tr>\n";
+       echo "<tr><td align=\"right\" valign=\"top\">" . $string['url'] . "&nbsp;</td><td colspan=\"3\"><a href=\"" . $protocol . $_SERVER['HTTP_HOST'] . "/touchstone/user_index.php?paper=" . urlencode($paper_title) ."\" target=\"_blank\" style=\"color:blue\">" . $protocol . $_SERVER['HTTP_HOST'] . "/touchstone/user_index.php?paper=" . urlencode($paper_title) ."</a></td></tr>\n";
      }
-     echo "<tr><td align=\"right\" valign=\"top\">Name&nbsp;</td><td colspan=\"3\"><input type=\"text\" size=\"75\" maxlength=\"255\" value=\"$paper_title\" name=\"paper_title\" /><input type=\"hidden\" name=\"original_paper_title\" value=\"$paper_title\"><input type=\"hidden\" name=\"paperID\" value=\"" . $_GET['paperID'] . "\"></td></tr>\n";
+     echo "<tr><td align=\"right\" valign=\"top\">" . $string['name'] . "&nbsp;</td><td colspan=\"3\"><input type=\"text\" size=\"75\" maxlength=\"255\" value=\"$paper_title\" name=\"paper_title\" /><input type=\"hidden\" name=\"original_paper_title\" value=\"$paper_title\"><input type=\"hidden\" name=\"paperID\" value=\"" . $_GET['paperID'] . "\"></td></tr>\n";
    ?>
-     <tr><td align="right" valign="top">Type&nbsp;</td><td>
+     <tr><td align="right" valign="top"><?php echo $string['type']; ?>&nbsp;</td><td>
      <select name="paper_type" onclick="changeType();">
      <option value="0"<?php if ($paper_type == '0') echo ' selected'; ?> />Formative Self-Assessment</option>
      <option value="1"<?php if ($paper_type == '1') echo ' selected'; ?> />Progress Test</option>
@@ -663,7 +677,7 @@ if ($paper_type != '4' and $paper_type != '5') {
      <option value="4"<?php if ($paper_type == '4') echo ' selected'; ?> />OSCE</option>
      <option value="5"<?php if ($paper_type == '5') echo ' selected'; ?> />Offline Assessment</option>
    <?php
-     echo "<td align=\"right\" valign=\"top\">Folder&nbsp;</td><td valign=\"top\">\n<select style=\"width:210px\" name=\"folderID\">\n";
+     echo "<td align=\"right\" valign=\"top\">" . $string['folder'] . "&nbsp;</td><td valign=\"top\">\n<select style=\"width:210px\" name=\"folderID\">\n";
      echo "<option value=\"\"></option>";
      $additional = '';
      
@@ -704,7 +718,7 @@ if ($paper_type != '4' and $paper_type != '5') {
      echo "</select>\n</td></tr>\n";
      
      echo "<tr><td align=\"right\" valign=\"top\">";
-     if ($paper_type != '4') echo 'Feedback&nbsp';
+     if ($paper_type != '4') echo $string['feedback'] . '&nbsp';
      echo "</td><td colspan=\"3\">";
      if (in_array($paper_type, array('0', '1', '2', '5'))) {
        $feedback_details = $mysqli->prepare("SELECT idfeedback_release FROM feedback_release WHERE paper_id=?");
@@ -719,7 +733,7 @@ if ($paper_type != '4' and $paper_type != '5') {
        }
        $feedback_details->close();
      
-       echo "Objectives Report<br /><span id=\"objreport\"";
+       echo $string['objectivesreport'] . "<br /><span id=\"objreport\"";
        if ($idfeedback_release == '') {
          echo ' style="display:none"';
        } else {
@@ -754,110 +768,121 @@ if ($paper_type != '4' and $paper_type != '5') {
        echo '<input type="hidden" name="themecolor" value="' . $themecolor . '" />';
        echo '<input type="hidden" name="labelcolor" value="' . $labelcolor . '" />';
      } else {
-       echo "<tr><td colspan=\"4\" style=\"background-color:#E5EFFA;color:#00156E; border-bottom:1px solid #CFDBEB\">&nbsp;Display Options</td></tr>\n";
+       echo "<tr><td colspan=\"4\" style=\"background-color:#E5EFFA;color:#00156E; border-bottom:1px solid #CFDBEB\">&nbsp;" . $string['displayoptions'] ."</td></tr>\n";
        echo "<tr><td colspan=\"4\">&nbsp;</td></tr>\n";
        if ($fullscreen == 0) {
-         echo "<tr><td align=\"right\">Display&nbsp;</td><td><select name=\"fullscreen\">\n<option value=\"0\" selected>Windowed</option><option value=\"1\">Full Screen (IE only)</option>\n</select></td>";
+         echo "<tr><td align=\"right\">" . $string['display'] . "&nbsp;</td><td><select name=\"fullscreen\">\n<option value=\"0\" selected>" . $string['windowed'] ."</option><option value=\"1\">" . $string['fullscreen'] ."</option>\n</select></td>";
        } else {
-         echo "<tr><td align=\"right\">Display&nbsp;</td><td><select name=\"fullscreen\">\n<option value=\"0\">Windowed</option><option value=\"1\" selected>Full Screen (IE only)</option>\n</select></td>";
+         echo "<tr><td align=\"right\">" . $string['display'] . "&nbsp;</td><td><select name=\"fullscreen\">\n<option value=\"0\">" . $string['windowed'] ."</option><option value=\"1\" selected>" . $string['fullscreen'] ."</option>\n</select></td>";
        }
        if ($bidirectional == 1) {
-         echo "<td align=\"right\">Navigation&nbsp;</td><td><select name=\"bidirectional\"><option value=\"0\">Unidirectional (Linear)</option><option value=\"1\"selected>Bidirectional</option></select></td></tr>\n";
+         echo "<td align=\"right\">" . $string['navigation'] . "&nbsp;</td><td><select name=\"bidirectional\"><option value=\"0\">" . $string['unidirectional'] ."</option><option value=\"1\"selected>" . $string['bidirectional'] ."</option></select></td></tr>\n";
        } else {
-         echo "<td align=\"right\">Navigation&nbsp;</td><td><select name=\"bidirectional\"><option value=\"0\" selected>Unidirectional (Linear)</option><option value=\"1\">Bidirectional</option></select></td></tr>\n";
+         echo "<td align=\"right\">" . $string['navigation'] . "&nbsp;</td><td><select name=\"bidirectional\"><option value=\"0\" selected>" . $string['unidirectional'] ."</option><option value=\"1\">" . $string['bidirectional'] ."</option></select></td></tr>\n";
        }
        
        echo "<tr>\n";
-       echo "<td align=\"right\">Background&nbsp;</td><td><div onclick=\"showPicker('bgcolor',event)\" id=\"span_bgcolor\" style=\"border:1px solid #C5C5C5; width:20px; background-color:$bgcolor\">&nbsp;&nbsp;&nbsp;&nbsp;</div><input type=\"hidden\" id=\"bgcolor\" name=\"bgcolor\" value=\"$bgcolor\" /></td>";
-       echo "<td align=\"right\">Foreground&nbsp;</td><td><div onclick=\"showPicker('fgcolor',event)\" id=\"span_fgcolor\" style=\"border:1px solid #C5C5C5; width:20px; background-color:$fgcolor\">&nbsp;&nbsp;&nbsp;&nbsp;</div><input type=\"hidden\" id=\"fgcolor\" name=\"fgcolor\" value=\"$fgcolor\" /></td>";
+       echo "<td align=\"right\">" . $string['background'] ."&nbsp;</td><td><div onclick=\"showPicker('bgcolor',event)\" id=\"span_bgcolor\" style=\"border:1px solid #C5C5C5; width:20px; background-color:$bgcolor\">&nbsp;&nbsp;&nbsp;&nbsp;</div><input type=\"hidden\" id=\"bgcolor\" name=\"bgcolor\" value=\"$bgcolor\" /></td>";
+       echo "<td align=\"right\">" . $string['foreground'] ."&nbsp;</td><td><div onclick=\"showPicker('fgcolor',event)\" id=\"span_fgcolor\" style=\"border:1px solid #C5C5C5; width:20px; background-color:$fgcolor\">&nbsp;&nbsp;&nbsp;&nbsp;</div><input type=\"hidden\" id=\"fgcolor\" name=\"fgcolor\" value=\"$fgcolor\" /></td>";
        echo "</tr>\n";
    
        echo "<tr>\n";
-       echo "<td align=\"right\">Theme&nbsp;</td><td><div onclick=\"showPicker('themecolor',event)\" id=\"span_themecolor\" style=\"border:1px solid #C5C5C5; width:20px; background-color:$themecolor\">&nbsp;&nbsp;&nbsp;&nbsp;</div><input type=\"hidden\" id=\"themecolor\" name=\"themecolor\" value=\"$themecolor\" /></td>";
-       echo "<td align=\"right\">Labels/Notes&nbsp;</td><td><div onclick=\"showPicker('labelcolor',event)\" id=\"span_labelcolor\" style=\"border:1px solid #C5C5C5; width:20px; background-color:$labelcolor\">&nbsp;&nbsp;&nbsp;&nbsp;</div><input type=\"hidden\" id=\"labelcolor\" name=\"labelcolor\" value=\"$labelcolor\" /></td>";
+       echo "<td align=\"right\">" . $string['theme'] ."&nbsp;</td><td><div onclick=\"showPicker('themecolor',event)\" id=\"span_themecolor\" style=\"border:1px solid #C5C5C5; width:20px; background-color:$themecolor\">&nbsp;&nbsp;&nbsp;&nbsp;</div><input type=\"hidden\" id=\"themecolor\" name=\"themecolor\" value=\"$themecolor\" /></td>";
+       echo "<td align=\"right\">" . $string['labelsnotes'] ."&nbsp;</td><td><div onclick=\"showPicker('labelcolor',event)\" id=\"span_labelcolor\" style=\"border:1px solid #C5C5C5; width:20px; background-color:$labelcolor\">&nbsp;&nbsp;&nbsp;&nbsp;</div><input type=\"hidden\" id=\"labelcolor\" name=\"labelcolor\" value=\"$labelcolor\" /></td>";
        echo "</tr>\n";
 
        if ($calculator == 1) {
-         echo "<tr><td align=\"right\">Calculator&nbsp;</td><td><input type=\"checkbox\" value=\"1\" name=\"calculator\" checked /> display calculator</td>";
+         echo "<tr><td align=\"right\">" . $string['calculator'] ."&nbsp;</td><td><input type=\"checkbox\" value=\"1\" name=\"calculator\" checked /> " . $string['displaycalculator'] ."</td>";
        } else {
-         echo "<tr><td align=\"right\">Calculator&nbsp;</td><td><input type=\"checkbox\" value=\"1\" name=\"calculator\" /> display calculator</td>";
+         echo "<tr><td align=\"right\">" . $string['calculator'] ."&nbsp;</td><td><input type=\"checkbox\" value=\"1\" name=\"calculator\" /> " . $string['displaycalculator'] ."</td>";
        }
        if ($sound_demo == 1) {
-         echo "<td align=\"right\">Audio&nbsp;</td><td><input type=\"checkbox\" value=\"1\" name=\"sound_demo\" checked /> demo sound clip</td></tr>\n";
+         echo "<td align=\"right\">" . $string['audio'] ."&nbsp;</td><td><input type=\"checkbox\" value=\"1\" name=\"sound_demo\" checked /> " . $string['demosoundclip'] ."</td></tr>\n";
        } else {
-         echo "<td align=\"right\">Audio&nbsp;</td><td><input type=\"checkbox\" value=\"1\" name=\"sound_demo\" /> demo sound clip</td></tr>\n";
+         echo "<td align=\"right\">" . $string['audio'] ."&nbsp;</td><td><input type=\"checkbox\" value=\"1\" name=\"sound_demo\" /> " . $string['demosoundclip'] ."</td></tr>\n";
        }
        echo "<tr><td colspan=\"4\">&nbsp;</td></tr>\n";
      }
-     echo "<tr><td colspan=\"4\" style=\"background-color:#E5EFFA; color:#00156E; border-bottom:1px solid #CFDBEB\">&nbsp;Marking</td></tr>\n";
+     echo "<tr><td colspan=\"4\" style=\"background-color:#E5EFFA; color:#00156E; border-bottom:1px solid #CFDBEB\">&nbsp;" . $string['marking'] ."</td></tr>\n";
      echo "<tr><td colspan=\"4\">&nbsp;</td></tr>\n";
      if ($paper_type == '4') {
        echo "<tr><td align=\"right\" valign=\"top\">Overall&nbsp;Classification&nbsp;</td><td valign=\"top\" colspan=\"3\"><select name=\"marking\">";
-     ?>
-       <option value="5"<?php if ($marking == '5') echo ' selected'; ?> />&lt;Automatic&gt;</option>
-       <option value="3"<?php if ($marking == '3') echo ' selected'; ?> />Clear Fail | Borderline | Clear Pass</option>
-       <option value="4"<?php if ($marking == '4') echo ' selected'; ?> />Fail | Borderline fail | Borderline pass | Pass | Good pass</option>
-       <option value="6"<?php if ($marking == '6') echo ' selected'; ?> />Clear FAIL | BORDERLINE | Clear PASS | Honours PASS</option>
+    ?>
+      <option value="5"<?php if ($marking == '5') echo ' selected'; ?> />&lt;Automatic&gt;</option>
+      <option value="3"<?php if ($marking == '3') echo ' selected'; ?> />Clear Fail | Borderline | Clear Pass</option>
+      <option value="4"<?php if ($marking == '4') echo ' selected'; ?> />Fail | Borderline fail | Borderline pass | Pass | Good pass</option>
+      <option value="6"<?php if ($marking == '6') echo ' selected'; ?> />Clear FAIL | BORDERLINE | Clear PASS | Honours PASS</option>
   <?php
     echo "<tr><td colspan=\"4\">" . wysiwyg_editor('oEdit1','osce_marking_guidance',$paper_prologue,684,230);
   ?>
 </td></tr>
-     <?php
-       echo "</select></td></tr>\n";
-     } else {
-       echo "<tr><td align=\"right\" valign=\"top\">Pass&nbsp;Mark&nbsp;</td><td valign=\"top\"><select name=\"pass_mark\" id=\"pass_mark\"";
-       if ($paper_type == '3') echo ' disabled';
-       echo '>';
-       for ($i=0; $i<=100; $i++) {
-         if ($i == $pass_mark) {
-           echo "<option value=\"$i\" selected>$i%</option>\n";
-         } else {
-           echo "<option value=\"$i\">$i%</option>\n";
-         }
+    <?php
+      echo "</select></td></tr>\n";
+    } else {
+      echo "<tr><td align=\"right\" valign=\"top\">" . $string['passmark'] . "&nbsp;</td><td valign=\"top\"><select name=\"pass_mark\" id=\"pass_mark\"";
+      if ($paper_type == '3') echo ' disabled';
+      echo '>';
+      for ($i=0; $i<=100; $i++) {
+        if ($i == $pass_mark) {
+          echo "<option value=\"$i\" selected>$i%</option>\n";
+        } else {
+          echo "<option value=\"$i\">$i%</option>\n";
+        }
+      }
+      echo "</select></td><td rowspan=\"2\" style=\"text-align:right\" valign=\"top\">" . $string['method'] . "&nbsp;</td><td rowspan=\"2\">";
+    ?>
+       <input type="radio" id="marking1" name="marking" value="0"<?php if ($marking == '0') echo ' checked'; ?> /><?php echo $string['noadjustment']; ?><br />
+       <input type="radio" id="marking2" name="marking" value="1"<?php
+       if ($marking == '1') {
+          echo ' checked';
        }
-       echo "</select></td><td rowspan=\"2\" style=\"text-align:right\" valign=\"top\">Method&nbsp;</td><td rowspan=\"2\">";
-     ?>
-       <input type="radio" id="marking1" name="marking" value="0"<?php if ($marking == '0') echo ' checked'; ?> />No Adjustment<br />
-       <input type="radio" id="marking2" name="marking" value="1"<?php if ($marking == '1') echo ' checked'; ?> />Calculate Random Mark<br />
-     <?php
-       // Look for any Standard Setting reviews for the paper.
-       $std_set_details = $mysqli->prepare("SELECT DISTINCT title, surname, initials, setterID, DATE_FORMAT(std_set,'%d/%m/%y %H:%i') AS display_date, DATE_FORMAT(std_set,'%Y%m%d%H%i%s') AS std_set, group_review FROM standards_setting, users WHERE standards_setting.setterID=users.id AND paperID=? ORDER BY std_set DESC");
-       $std_set_details->bind_param('i', $_GET['paperID']);
-       $std_set_details->execute();
-       $std_set_details->store_result();
-       if ($std_set_details->num_rows > 0) {
-         echo "<input type=\"radio\" id=\"marking3\" name=\"marking\" value=\"2\"";
-         if (substr($marking,0,1) == '2') echo ' checked';
-         echo " />";
-         echo 'Std Set <select name="std_set">';
-         $std_set_details->bind_result($std_set_title, $std_set_surname, $std_set_initials, $std_set_reviewer, $std_set_display_date, $std_set_date, $group_review);
-         while ($row = $std_set_details->fetch()) {
-           if ($group_review == 'No') {
-             echo "<option value=\"2,$std_set_reviewer,$std_set_date\">$std_set_title $std_set_surname, $std_set_initials - $std_set_display_date</option>";
-           } else {
-             echo "<option value=\"2,$std_set_reviewer,$std_set_date\">Group Review - $std_set_display_date</option>";
-           }
-         }
-         echo "</select>\n";
-         $std_set_details->close();
+       if ($neg_marking) {
+        echo ' disabled';
+       }
+       if ($neg_marking) {
+         echo '><span style="color:#808080">' . $string['calculatrrandommark'] . '</span><br />';
        } else {
-         echo "<input type=\"radio\" id=\"marking3\" name=\"marking\" value=\"2\" disabled />";
-         echo '<span style="color:#808080">Std Set</span>';
+        echo '>' . $string['calculatrrandommark'] . '<br />';
        }
-     }
-     if ($paper_type == '0' or $paper_type == '1' or $paper_type == '2') {
-       echo "<tr><td align=\"right\" valign=\"top\">Distinction</td><td><select name=\"distinction_mark\">";
-       for ($i=0; $i<=100; $i++) {
-         if ($i == $distinction_mark) {
-           echo "<option value=\"$i\" selected>$i%</option>\n";
-         } else {
-           echo "<option value=\"$i\">$i%</option>\n";
-         }
-       }
-       echo "</select></td></tr>\n";
-     } else {
-       echo "<tr><td></td><td></td></tr>\n";
-     }
+     
+      // Look for any Standard Setting reviews for the paper.
+      $std_set_details = $mysqli->prepare("SELECT DISTINCT title, surname, initials, setterID, DATE_FORMAT(std_set,'%d/%m/%y %H:%i') AS display_date, DATE_FORMAT(std_set,'%Y%m%d%H%i%s') AS std_set, group_review FROM standards_setting, users WHERE standards_setting.setterID=users.id AND paperID=? ORDER BY std_set DESC");
+      $std_set_details->bind_param('i', $_GET['paperID']);
+      $std_set_details->execute();
+      $std_set_details->store_result();
+      if ($std_set_details->num_rows > 0) {
+        echo "<input type=\"radio\" id=\"marking3\" name=\"marking\" value=\"2\"";
+        if (substr($marking,0,1) == '2') echo ' checked';
+        echo " />";
+        echo $string['stdset'] . ' <select name="std_set">';
+        $std_set_details->bind_result($std_set_title, $std_set_surname, $std_set_initials, $std_set_reviewer, $std_set_display_date, $std_set_date, $group_review);
+        while ($row = $std_set_details->fetch()) {
+          if ($group_review == 'No') {
+            echo "<option value=\"2,$std_set_reviewer,$std_set_date\">$std_set_title $std_set_surname, $std_set_initials - $std_set_display_date</option>";
+          } else {
+            echo "<option value=\"2,$std_set_reviewer,$std_set_date\">Group Review - $std_set_display_date</option>";
+          }
+        }
+        echo "</select>\n";
+        $std_set_details->close();
+      } else {
+        echo "<input type=\"radio\" id=\"marking3\" name=\"marking\" value=\"2\" disabled />";
+        echo '<span style="color:#808080">Std Set</span>';
+      }
+    }
+    if ($paper_type == '0' or $paper_type == '1' or $paper_type == '2') {
+      echo "<tr><td align=\"right\" valign=\"top\">" . $string['distinction'] . "</td><td><select name=\"distinction_mark\">";
+      for ($i=0; $i<=100; $i++) {
+        if ($i == $distinction_mark) {
+          echo "<option value=\"$i\" selected>$i%</option>\n";
+        } else {
+          echo "<option value=\"$i\">$i%</option>\n";
+        }
+      }
+      echo "</select></td></tr>\n";
+    } else {
+      echo "<tr><td></td><td></td></tr>\n";
+    }
    ?>
    </table>
 </td>
@@ -865,7 +890,7 @@ if ($paper_type != '4' and $paper_type != '5') {
 </table>
 
 <table id="prologue" style="width:100%; height:590px; display:none" border="0" cellpadding="0" cellspacing="0">
-<tr><td style="background-image:url('../artwork/blank_heading.png'); color:#001687; height:49px; font-size:110%">&nbsp;&nbsp;&nbsp;&nbsp;<img src="../artwork/prologue_heading_icon.png" width="22" height="29" alt="Icon" align="middle" />&nbsp;&nbsp;Text displayed at the top of screen 1 when paper is started.</td></tr>
+<tr><td style="background-image:url('../artwork/blank_heading.png'); color:#001687; height:49px; font-size:110%">&nbsp;&nbsp;&nbsp;&nbsp;<img src="../artwork/prologue_heading_icon.png" width="22" height="29" alt="Icon" align="middle" />&nbsp;&nbsp;<?php echo $string['prologueheading']; ?></td></tr>
   <?php
     echo "<tr><td>" . wysiwyg_editor('oEdit2','paper_prologue',$paper_prologue,688,498);
   ?>
@@ -873,7 +898,7 @@ if ($paper_type != '4' and $paper_type != '5') {
 </table>
 
 <table id="postscript" style="width:100%; height:590px; display:none" border="0" cellpadding="0" cellspacing="0">
-<tr><td style="background-image:url('../artwork/blank_heading.png'); color:#001687; height:49px; font-size:110%">&nbsp;&nbsp;&nbsp;&nbsp;<img src="../artwork/postscript_heading_icon.png" width="22" height="29" alt="Icon" align="middle" />&nbsp;&nbsp;Text displayed after the student clicks 'Finish' at the end.</td></tr>
+<tr><td style="background-image:url('../artwork/blank_heading.png'); color:#001687; height:49px; font-size:110%">&nbsp;&nbsp;&nbsp;&nbsp;<img src="../artwork/postscript_heading_icon.png" width="22" height="29" alt="Icon" align="middle" />&nbsp;&nbsp;<?php echo $string['postscriptheading']; ?></td></tr>
 <?php
     echo "<tr><td>" . wysiwyg_editor('oEdit3','paper_postscript',$paper_postscript,688,498);
   ?>
@@ -887,12 +912,12 @@ if ($paper_type != '4' and $paper_type != '5') {
     echo '<table id="security" style="width:100%; font-size:90%; height:590px; display:none" border="0" cellpadding="0" cellspacing="0">';
   }
 ?>
-<tr><td style="background-image:url('../artwork/blank_heading.png'); color:#001687; height:49px; font-size:110%" colspan="2">&nbsp;&nbsp;&nbsp;&nbsp;<img src="../artwork/security_heading_icon.png" width="30" height="32" alt="Icon" align="middle" />&nbsp;&nbsp;Control the access rights over which students can see the paper.</td></tr>
+<tr><td style="background-image:url('../artwork/blank_heading.png'); color:#001687; height:49px; font-size:110%" colspan="2">&nbsp;&nbsp;&nbsp;&nbsp;<img src="../artwork/security_heading_icon.png" width="30" height="32" alt="Icon" align="middle" />&nbsp;&nbsp;<?php echo $string['securityheading']; ?></td></tr>
 <tr>
 <td style="text-align:center; vertical-align:top" colspan="2">
 <?php
     echo "<table cellpadding=\"0\" cellspacing=\"3\" border=\"0\" style=\"width:100%; padding-bottom:10px\">\n";
-    echo "<tr><td align=\"right\">Session</td><td><select name=\"calendar_year\" id=\"session\" onchange=\"getMetadataDropdowns();\">\n<option value=\"\">N/A</option>\n";
+    echo "<tr><td align=\"right\">" . $string['session'] . "</td><td><select name=\"calendar_year\" id=\"session\" onchange=\"getMetadataDropdowns();\">\n<option value=\"\">" . $string['na'] .  "</option>\n";
     $academic_years = array('2002/03','2003/04','2004/05','2005/06','2006/07','2007/08','2008/09','2009/10','2010/11','2011/12','2012/13','2013/14','2014/15','2015/16');
     foreach ($academic_years as $value) {
       echo "<option value=\"" . $value . "\"";
@@ -900,9 +925,9 @@ if ($paper_type != '4' and $paper_type != '5') {
       echo ">";
       echo $value . "</option>\n";
     }    
-    echo "</select></td><td align=\"right\">Password</td><td><input type=\"text\" size=\"20\" name=\"password\" value=\"$password\" /></td></tr>\n";
+    echo "</select></td><td align=\"right\">" . $string['password'] . "</td><td><input type=\"text\" size=\"20\" name=\"password\" value=\"$password\" /></td></tr>\n";
 
-    echo "<tr><td align=\"right\">Time Zone</td><td><select name=\"timezone\">";
+    echo "<tr><td align=\"right\">" . $string['timezone'] .  "</td><td><select name=\"timezone\">";
     $timezone_array = array('*Africa','Dakar','Johannesburg','*America','Anchorage','Denver','Chicago','Halifax','Los_Angeles','New_York','Mexico_City','*Asia','Dubai','Istanbul','Kuala_Lumpur','Shanghai','Singapore','Tokyo','*Australia','Adelaide','Perth','Sydney','Victoria','*Europe','Budapest','London','Moscow','Oslo','Paris','Vienna','*Pacific','Fiji','Auckland');
     $old_prefix = '';
     foreach ($timezone_array as $individual_zone) {
@@ -919,7 +944,7 @@ if ($paper_type != '4' and $paper_type != '5') {
       }
     }
     echo '</optgroup></select></td>';
-    echo '<td align="right">Duration</td><td><select name="exam_duration">';
+    echo '<td align="right">' . $string['duration'] . '</td><td><select name="exam_duration">';
     $minutes = array('NULL'=>'N/A','15'=>'15','20'=>'20','25'=>'25','30'=>'30','35'=>'35','40'=>'40','45'=>'45','50'=>'50','55'=>'55','60'=>'60','65'=>'65','70'=>'70','75'=>'75','80'=>'80','85'=>'85','90'=>'90','95'=>'95','100'=>'100','110'=>'110','120'=>'120','150'=>'150','180'=>'180');
     foreach ($minutes as $key => $value) {
       echo "<option value=\"" . $key . "\"";
@@ -927,8 +952,8 @@ if ($paper_type != '4' and $paper_type != '5') {
       echo ">";
       echo $value . "</option>\n";
     }
-    echo "</select> mins</td></tr>\n";
-    echo "<tr><td align=\"right\" valign=\"top\">Available From</td><td>";
+    echo "</select> " . $string['mins'] . "</td></tr>\n";
+    echo "<tr><td align=\"right\" valign=\"top\">" . $string['availablefrom'] . "</td><td>";
 
     // Split the start date
     $split_year = substr($start_date,0,4);
@@ -939,19 +964,20 @@ if ($paper_type != '4' and $paper_type != '5') {
 
     // Available from Month
     echo "<select name=\"fmonth\" onchange=\"dateCopy('fmonth')\">\n";
-    $months = array('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec');
+    $months = array('january','february','march','april','may','june','july','august','september','october','november','december');
     for ($i=0; $i<12; $i++) {
+      $trans_month = substr($string[$months[$i]],0,3);
       if (($split_month-1) == $i) {
         if ($i < 9) {
-          echo "<option value=\"0" . ($i+1) . "\" selected>" . $months[$i] . "</option>\n";
+          echo "<option value=\"0" . ($i+1) . "\" selected>$trans_month</option>\n";
         } else {
-          echo "<option value=\"" . ($i+1) . "\" selected>" . $months[$i] . "</option>\n";
+          echo "<option value=\"" . ($i+1) . "\" selected>$trans_month</option>\n";
         }
       } else {
         if ($i < 9) {
-          echo "<option value=\"0" . ($i+1) . "\">" . $months[$i] . "</option>\n";
+          echo "<option value=\"0" . ($i+1) . "\">$trans_month</option>\n";
         } else {
-          echo "<option value=\"" . ($i+1) . "\">" . $months[$i] . "</option>\n";
+          echo "<option value=\"" . ($i+1) . "\">$trans_month</option>\n";
         }
       }
     }
@@ -1011,21 +1037,23 @@ if ($paper_type != '4' and $paper_type != '5') {
     $split_hour = substr($end_date,11,2);
     $split_minute = substr($end_date,14,2);
 
-    echo "<td align=\"right\">To&nbsp;</td><td><select name=\"tmonth\" onchange=\"dateCopy('tmonth')\">\n";
+    echo "<td align=\"right\">" . $string['to'] . "&nbsp;</td><td><select name=\"tmonth\" onchange=\"dateCopy('tmonth')\">\n";
     // Available to Month
-    $months = array('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec');
+    //$months = array('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec');
+
     for ($i=0; $i<12; $i++) {
+      $trans_month = substr($string[$months[$i]],0,3);
       if (($split_month-1) == $i) {
         if ($i < 9) {
-          echo "<option value=\"0" . ($i+1) . "\" selected>" . $months[$i] . "</option>\n";
+          echo "<option value=\"0" . ($i+1) . "\" selected>$trans_month</option>\n";
         } else {
-          echo "<option value=\"" . ($i+1) . "\" selected>" . $months[$i] . "</option>\n";
+          echo "<option value=\"" . ($i+1) . "\" selected>$trans_month</option>\n";
         }
       } else {
         if ($i < 9) {
-          echo "<option value=\"0" . ($i+1) . "\">" . $months[$i] . "</option>\n";
+          echo "<option value=\"0" . ($i+1) . "\">$trans_month</option>\n";
         } else {
-          echo "<option value=\"" . ($i+1) . "\">" . $months[$i] . "</option>\n";
+          echo "<option value=\"" . ($i+1) . "\">$trans_month</option>\n";
         }
       }
     }
@@ -1080,7 +1108,7 @@ if ($paper_type != '4' and $paper_type != '5') {
      echo "</table>\n";
 
     echo "<table cellpadding=\"0\" cellspacing=\"4\" border=\"0\" width=\"100%\">\n";
-    echo "<tr><td style=\"background-color:#E5EFFA; color:#00156E; border-bottom:1px solid #CFDBEB; padding:2px; width:400px\">&nbsp;Module(s)</td><td style=\"background-color:#E5EFFA; color:#00156E; border-bottom:1px solid #CFDBEB; padding:2px\">&nbsp;Restrict to Labs</td></tr>";
+    echo "<tr><td style=\"background-color:#E5EFFA; color:#00156E; border-bottom:1px solid #CFDBEB; padding:2px; width:400px\">&nbsp;" . $string['modules'] . "</td><td style=\"background-color:#E5EFFA; color:#00156E; border-bottom:1px solid #CFDBEB; padding:2px\">&nbsp;" . $string['restricttolabs'] . "</td></tr>";
     echo "<tr><td rowspan=\"3\" style=\"vertical-align:top\">";
     
     echo "<div style=\"display:block; width:400px; height:425px; overflow-y:scroll; border:1px solid #7F9DB9; font-size:90%\">";
@@ -1151,14 +1179,14 @@ if ($paper_type != '4' and $paper_type != '5') {
     //echo "</table>\n";
   ?>
   </td></tr>
-  <tr><td style="background-color:#E5EFFA; color:#00156E; border-bottom:1px solid #CFDBEB; padding:2px" colspan="2">&nbsp;Restrict to Metadata</td></tr>
+  <tr><td style="background-color:#E5EFFA; color:#00156E; border-bottom:1px solid #CFDBEB; padding:2px" colspan="2">&nbsp;<?php echo $string['restricttometadata']; ?></td></tr>
   <tr><td style="vertical-align:top; height:110px" colspan="2"><div style="height:116px; overflow-y:scroll;border:1px solid #7F9DB9; font-size:90%" id="metadata_security"></div></td></tr>
   </table>
   </td></tr>
 </table>
 
 <table id="rubric" style="width:100%; font-size:90%; height:460px; display:none" border="0" cellpadding="0" cellspacing="0">
-<tr><td style="background-image:url('../artwork/blank_heading.png'); color:#001687; height:49px; font-size:110%" colspan="2">&nbsp;&nbsp;&nbsp;&nbsp;<img src="../artwork/rubric_heading_icon.png" width="34" height="34" alt="Icon" align="middle" />&nbsp;&nbsp;Exam rubric displayed to students before they start a summative exam.</td></tr>
+<tr><td style="background-image:url('../artwork/blank_heading.png'); color:#001687; height:49px; font-size:110%" colspan="2">&nbsp;&nbsp;&nbsp;&nbsp;<img src="../artwork/rubric_heading_icon.png" width="34" height="34" alt="Icon" align="middle" />&nbsp;&nbsp;<?php echo $string['rubricheading']; ?></td></tr>
   <?php
     echo "<tr><td>" . wysiwyg_editor('oEdit4','rubric_text',$rubric,686,498);
   ?>
@@ -1166,7 +1194,7 @@ if ($paper_type != '4' and $paper_type != '5') {
 </table>
 
 <table id="reviewers" style="width:100%; font-size:90%; height:460px; display:none" border="0" cellpadding="0" cellspacing="0">
-<tr><td style="background-image:url('../artwork/blank_heading.png'); color:#001687; height:49px; font-size:110%" colspan="2">&nbsp;&nbsp;&nbsp;&nbsp;<img src="../artwork/reviewers_heading_icon.png" width="32" height="32" alt="Icon" align="middle" />&nbsp;&nbsp;Set internal/external reviewers and deadlines.</td></tr>
+<tr><td style="background-image:url('../artwork/blank_heading.png'); color:#001687; height:49px; font-size:110%" colspan="2">&nbsp;&nbsp;&nbsp;&nbsp;<img src="../artwork/reviewers_heading_icon.png" width="32" height="32" alt="Icon" align="middle" />&nbsp;&nbsp;<?php echo $string['reviewersheading']; ?></td></tr>
 <tr>
 <td align="center" colspan="2">
 <table cellpadding="2" cellspacing="2" border="0" style="width:100%">
@@ -1182,35 +1210,36 @@ if ($paper_type != '4' and $paper_type != '5') {
   }
 
 ?></td></tr>
-<tr><td style="background-color:#E5EFFA; color:#00156E; border-bottom:1px solid #CFDBEB">&nbsp;Internal Reviewers</td><td>&nbsp;&nbsp;</td><td style="background-color:#E5EFFA; color:#00156E; border-bottom:1px solid #CFDBEB">&nbsp;External Examiners</td></tr>
-<tr><td>Deadline:&nbsp;
+<tr><td style="background-color:#E5EFFA; color:#00156E; border-bottom:1px solid #CFDBEB">&nbsp;<?php echo $string['internalreviewers']; ?></td><td>&nbsp;&nbsp;</td><td style="background-color:#E5EFFA; color:#00156E; border-bottom:1px solid #CFDBEB">&nbsp;<?php echo $string['externalexaminers']; ?></td></tr>
+<tr><td><?php echo $string['deadline']; ?>&nbsp;
 <?php
     // Split the end date
     $split_year = substr($internal_review_deadline,0,4);
     $split_month = substr($internal_review_deadline,5,2);
     $split_day = substr($internal_review_deadline,8,2);
 
-    echo "<select name=\"int_tmonth\">\n<option value=\"\">N/A</option>\n";
+    echo "<select name=\"int_tmonth\">\n<option value=\"\">" . $string['na'] . "</option>\n";
     // Available to Month
-    $months = array('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec');
+    //$months = array('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec');
     for ($i=0; $i<12; $i++) {
+      $trans_month = substr($string[$months[$i]],0,3);
       if (($split_month-1) == $i) {
         if ($i < 9) {
-          echo "<option value=\"0" . ($i+1) . "\" selected>" . $months[$i] . "</option>\n";
+          echo "<option value=\"0" . ($i+1) . "\" selected>$trans_month</option>\n";
         } else {
-          echo "<option value=\"" . ($i+1) . "\" selected>" . $months[$i] . "</option>\n";
+          echo "<option value=\"" . ($i+1) . "\" selected>$trans_month</option>\n";
         }
       } else {
         if ($i < 9) {
-          echo "<option value=\"0" . ($i+1) . "\">" . $months[$i] . "</option>\n";
+          echo "<option value=\"0" . ($i+1) . "\">$trans_month</option>\n";
         } else {
-          echo "<option value=\"" . ($i+1) . "\">" . $months[$i] . "</option>\n";
+          echo "<option value=\"" . ($i+1) . "\">$trans_month</option>\n";
         }
       }
     }
     echo "</select>\n";
     // Available to Day
-    echo "<select name=\"int_tday\">\n<option value=\"\">N/A</option>\n";
+    echo "<select name=\"int_tday\">\n<option value=\"\">" . $string['na'] . "</option>\n";
     for ($i = 1; $i < 32; $i++) {
       if ($i < 10) {
         if ($i == $split_day) {
@@ -1237,7 +1266,7 @@ if ($paper_type != '4' and $paper_type != '5') {
      }
      echo "</select>\n";
      // Available to Year
-     echo "<select name=\"int_tyear\">\n<option value=\"\">N/A</option>\n";
+     echo "<select name=\"int_tyear\">\n<option value=\"\">" . $string['na'] . "</option>\n";
      if ($split_year < date('Y') and $split_year > 1999) {
        $start_year = $split_year;
      } else {
@@ -1252,34 +1281,34 @@ if ($paper_type != '4' and $paper_type != '5') {
      }
 ?>
 </td><td></td>
-<td>Deadline:&nbsp;
+<td><?php echo $string['deadline']; ?>&nbsp;
 <?php
     // Split the end date
     $split_year = substr($external_review_deadline,0,4);
     $split_month = substr($external_review_deadline,5,2);
     $split_day = substr($external_review_deadline,8,2);
 
-    echo "<select name=\"ext_tmonth\">\n<option value=\"\">N/A</option>\n";
+    echo "<select name=\"ext_tmonth\">\n<option value=\"\">" . $string['na'] . "</option>\n";
     // Available to Month
-    $months = array('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec');
+    //$months = array('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec');
     for ($i=0; $i<12; $i++) {
       if (($split_month-1) == $i) {
         if ($i < 9) {
-          echo "<option value=\"0" . ($i+1) . "\" selected>" . $months[$i] . "</option>\n";
+          echo "<option value=\"0" . ($i+1) . "\" selected>$trans_month</option>\n";
         } else {
-          echo "<option value=\"" . ($i+1) . "\" selected>" . $months[$i] . "</option>\n";
+          echo "<option value=\"" . ($i+1) . "\" selected>$trans_month</option>\n";
         }
       } else {
         if ($i < 9) {
-          echo "<option value=\"0" . ($i+1) . "\">" . $months[$i] . "</option>\n";
+          echo "<option value=\"0" . ($i+1) . "\">$trans_month</option>\n";
         } else {
-          echo "<option value=\"" . ($i+1) . "\">" . $months[$i] . "</option>\n";
+          echo "<option value=\"" . ($i+1) . "\">$trans_month</option>\n";
         }
       }
     }
     echo "</select>\n";
     // Available to Day
-    echo "<select name=\"ext_tday\">\n<option value=\"\">N/A</option>\n";
+    echo "<select name=\"ext_tday\">\n<option value=\"\">" . $string['na'] . "</option>\n";
     for ($i = 1; $i < 32; $i++) {
       if ($i < 10) {
         if ($i == $split_day) {
@@ -1306,7 +1335,7 @@ if ($paper_type != '4' and $paper_type != '5') {
      }
      echo "</select>\n";
      // Available to Year
-     echo "<select name=\"ext_tyear\">\n<option value=\"\">N/A</option>\n";
+     echo "<select name=\"ext_tyear\">\n<option value=\"\">" . $string['na'] . "</option>\n";
      if ($split_year < date('Y') and $split_year > 1999) {
        $start_year = $split_year;
      } else {
@@ -1371,7 +1400,7 @@ if ($paper_type != '4' and $paper_type != '5') {
 
 </td>
 </tr>
-<tr><td colspan="2" align="right"><input type="submit" style="width:100px" name="Submit" value="OK">&nbsp;<input type="button" name="home" style="width:100px" value="Cancel" onclick="javascript:window.close();" /></td></tr>
+<tr><td colspan="2" align="right"><input type="submit" style="width:100px" name="Submit" value="<?php echo $string['ok']; ?>">&nbsp;<input type="button" name="home" style="width:100px" value="<?php echo $string['cancel']; ?>" onclick="javascript:window.close();" /></td></tr>
 </table>
 
 <input type="hidden" name="noadd" value="<?php if (isset($_GET['noadd'])) echo $_GET['noadd']; ?>" />
