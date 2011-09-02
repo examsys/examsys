@@ -39,7 +39,7 @@ function display_media($filename, $width, $height, $imageid=-1) {
   if ($imageid > -1) $html .= "<div id=\"media$imageid\" class=\"media\">";
   // Is the file an image or something else (e.g. RasMol)?
   if (in_array($fn_parts['extension'], array('gif', 'jpg', 'jpeg', 'png'))) {
-    $html .= "<img src=\"/touchstone/media/$filename\" width=\"$width\" height=\"$height\" border=\"0\" alt=\"Image\" style=\"vertical-align:text-top\" />";
+    $html .= "<img src=\"/touchstone/media/$filename\" width=\"$width\" height=\"$height\" border=\"0\" alt=\"Image\" />";
   } elseif (in_array($fn_parts['extension'], array('wav', 'wma', 'mid'))) {
     $html .= "<img src=\"audio_icon_32.gif\" width=\"32\" height=\"32\" alt=\"Audio File\" /><a href=\"/touchstone/media/$filename\">Audio Clip</a>";
   } elseif (in_array($fn_parts['extension'], array('doc', 'ppt', 'xls', 'pdf'))) {

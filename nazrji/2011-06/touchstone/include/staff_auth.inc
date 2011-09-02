@@ -39,6 +39,7 @@
 
   // Get teams.
   $teams = getUserTeams($userID, $mysqli);
+  
   $types_array = array('Formative Self-Assessments','Progress Tests','Summative Exams','Surveys','OSCE Stations','Offline Papers');
 
   //
@@ -83,7 +84,7 @@
         
         // Override access for the system training module.
         if ($on_team == false and strpos($moduleID,'SYSTEM') === false) {
-          access_denied($string['denied_paper'], false);
+          access_denied('You are attempting to access a <strong>paper you do not have rights to</strong>!',false);
         }
       }
     }
@@ -118,7 +119,7 @@
         
       // Override access for the system training module.
       if ($on_team == false and strpos($_GET['module'],'SYSTEM') === false) {
-        access_denied($string['denied_folder'], false);
+        access_denied('You are attempting to access a <strong>folder you do not have rights to</strong>!',false);
       }
     }
     
@@ -136,7 +137,7 @@
       while ($result->fetch()) {
         if ($ownerID != $userID AND !in_array($q_group,$teams) AND $faculty != $question_faculty AND !in_array('SYSTEM', $paper_modules)) {   //allow acsess to the SYSTEM module for training!
           $result->close();
-          access_denied($string['denied_question'], false);
+          access_denied('You are attempting to access a <strong>question you do not have rights to</strong>!',false);
         } 
       }
       $result->close();
@@ -152,7 +153,7 @@
         if (in_array(strtoupper($paper_module), $teams)) $team_match = true;
       }
       if ($team_match == false) {
-        access_denied(str_replace('%s',$_GET['module'],$string['denied_team']), false);
+        access_denied('You are not a member of the <strong>' . $_GET['module'] . '</strong> module team.',false);
       }    
     }
     
@@ -179,7 +180,7 @@
               }
             }            //allow acsess to the SYSTEM module for training!
             if ($on_team == false and strpos($moduleID,'SYSTEM') === false) {
-              access_denied($string['denied_paper'], false);
+              access_denied('You are attempting to access a <strong>paper you do not have rights to</strong>!',false);
             }
           }
         }
@@ -209,7 +210,7 @@
       
       //allow acsess to the TRAIN module for training!
       if ($ownerID != $userID AND $access == false AND !in_array('SYSTEM', $moduleIDs)) {
-        access_denied($string['denied_question'], false);
+        access_denied('You are attempting to access a <strong>question you do not have right to</strong>!',false);
       } 
     } 
   }

@@ -45,20 +45,21 @@ function time_to_seconds($seconds) {
  * @param mixed $paper_id 
  * @param mixed $screen_no 
  * @param mixed $dblink 
+ * @param mixed $posted_vars 
  * @param mixed $userid 
+ * @param mixed $extra_duration 
  * @param mixed $paper_type T
  * @param mixed $student_grade 
  * @param mixed $student_year
- * @param mixed $userroles 
+ * 
  *
  */
-function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, $student_year, $attempt, $userroles) {
-  $screen_no =  $_POST['old_screen'];
-  $extra_duration = $_POST['previous_duration'];
+function record_marks($paper_id, $screen_no, $dblink, $posted_vars, $userid, $extra_duration, $paper_type, $student_grade, $student_year, $attempt) {
+  global $userroles;
 
   $log_ids = array();
   $log_check = $dblink->prepare("SELECT id, q_id FROM log$paper_type WHERE userID=? AND q_paper=? AND screen=? AND started=?");
-  $log_check->bind_param('siis', $userid, $paper_id, $screen_no, $_POST['sessionid']);
+  $log_check->bind_param('siis', $userid, $paper_id, $screen_no, $posted_vars['sessionid']);
   $log_check->execute();
   $log_check->bind_result($tmp_id, $tmp_q_id);
   while ($row = $log_check->fetch()) {
@@ -75,11 +76,11 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
   $branch_no = 0;
   $option_order = '';
   $old_display_pos = 0;
-  $questions = $dblink->prepare("SELECT q_id, scenario, q_type, option_text, q_media, correct, display_method, score_method, marks_correct, marks_incorrect, marks_partial, display_pos FROM papers, questions, options WHERE paper=? AND screen=? AND papers.question=questions.q_id AND questions.q_id=options.o_id ORDER BY display_pos, id_num");
+  $questions = $dblink->prepare("SELECT q_id, scenario, q_type, option_text, q_media, correct, score_method, marks, display_pos FROM papers, questions, options WHERE paper=? AND screen=? AND papers.question=questions.q_id AND questions.q_id=options.o_id ORDER BY display_pos, id_num");
   $questions->bind_param('ii', $paper_id, $screen_no); 
   $questions->execute();
   $questions->store_result();
-  $questions->bind_result($q_id, $scenario, $q_type, $option_text, $q_media, $correct, $display_method, $score_method, $marks_correct, $marks_incorrect, $marks_partial, $display_pos);
+  $questions->bind_result($q_id, $scenario, $q_type, $option_text, $q_media, $correct, $score_method, $marks, $display_pos);
   while ($row = $questions->fetch()) {
     if ($old_q_id != $q_id or $old_display_pos != $display_pos) {
       if ($q_type != 'info') $tmp_question_no++;
@@ -89,9 +90,9 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
     }
     if ($q_type == 'random' or $q_type == 'branching' or $q_type == 'keyword_based') {
       if ($q_type == 'random' or $q_type == 'keyword_based') {
-        $selected_q_id[] = $_POST['q' . $tmp_question_no . '_randomID'];
+        $selected_q_id[] = $posted_vars["q" . $tmp_question_no . "_randomID"];
       } else {
-  	    if (isset($_POST['q' . $q_id . '_' . $branch_no . '_branchID'])) {
+  	    if (isset($posted_vars['q' . $q_id . '_' . $branch_no . '_branchID'])) {
 	        // the user went down branch $branch_no so saw the questions stored in option option_text
           // put thes in an array to lookup and add to the paper_array
 	        $selected_q_id = explode(',',$option_text);
@@ -102,13 +103,13 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
       if ($random_on == false and count($selected_q_id) > 0) {
         foreach($selected_q_id as &$used_qid) {
 	        // Look up database.
-          $random_data = $dblink->prepare("SELECT q_id, scenario, q_type, option_text, q_media, correct, display_method, score_method, marks_correct FROM questions, options WHERE q_id=? AND questions.q_id=options.o_id ORDER BY id_num");
+          $random_data = $dblink->prepare("SELECT q_id, scenario, q_type, option_text, q_media, correct, score_method, marks FROM questions, options WHERE q_id=? AND questions.q_id=options.o_id ORDER BY id_num");
           $random_data->bind_param('i', $used_qid); 
           $random_data->execute();
           $random_data->store_result();
-          $random_data->bind_result($new_q_id, $scenario, $q_type, $option_text, $q_media, $correct, $display_method, $score_method, $marks_correct);
+          $random_data->bind_result($new_q_id, $scenario, $q_type, $option_text, $q_media, $correct, $score_method, $marks);
           while ($random_row = $random_data->fetch()) {
-            $paper_array[] = array('q_id'=>$new_q_id,'scenario'=>$scenario,'q_type'=>$q_type,'option_text'=>$option_text,'q_media'=>$q_media,'correct'=>$correct,'display_method'=>$display_method,'score_method'=>$score_method,'marks_correct'=>$marks_correct,'marks_incorrect'=>$marks_incorrect,'marks_partial'=>$marks_partial,'question_no'=>$tmp_question_no,'display_pos'=>$display_pos);
+            $paper_array[] = array('q_id'=>$new_q_id,'scenario'=>$scenario,'q_type'=>$q_type,'option_text'=>$option_text,'q_media'=>$q_media,'correct'=>$correct,'score_method'=>$score_method,'marks'=>$marks,'question_no'=>$tmp_question_no,'display_pos'=>$display_pos);
           }
           $random_data->close();
         }
@@ -116,7 +117,7 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
         $random_on = true;
       }
     } else {
-      $paper_array[] = array('q_id'=>$q_id,'scenario'=>$scenario,'q_type'=>$q_type,'option_text'=>$option_text,'q_media'=>$q_media,'correct'=>$correct,'display_method'=>$display_method,'score_method'=>$score_method,'marks_correct'=>$marks_correct,'marks_incorrect'=>$marks_incorrect,'marks_partial'=>$marks_partial,'question_no'=>$tmp_question_no,'display_pos'=>$display_pos);
+      $paper_array[] = array('q_id'=>$q_id,'scenario'=>$scenario,'q_type'=>$q_type,'option_text'=>$option_text,'q_media'=>$q_media,'correct'=>$correct,'score_method'=>$score_method,'marks'=>$marks,'question_no'=>$tmp_question_no,'display_pos'=>$display_pos);
     }
     $old_q_type = $q_type;
     $old_q_id = $q_id;
@@ -132,12 +133,12 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
     if ($screen_no == 1) {       // Write log_metadata first on screen 1 only
       $tmp_ip_address = NetworkUtils::get_ipaddress();
       $save_answers = $dblink->prepare("INSERT INTO log_metadata VALUES (NULL, ?, ?, ?, ?, ?, ?, ?)");
-      $save_answers->bind_param('iisssii', $userid, $paper_id, $_POST['sessionid'], $tmp_ip_address, $student_grade, $student_year, $attempt);
+      $save_answers->bind_param('iisssii', $userid, $paper_id, $posted_vars['sessionid'], $tmp_ip_address, $student_grade, $student_year, $attempt);
       $save_answers->execute();
       $save_answers->close();
     }
     $save_answers = $dblink->prepare("INSERT INTO log$paper_type VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?, ?)");
-    $save_answers->bind_param('isiidisiiss', $userid, $_POST['sessionid'], $paper_id, $log_id, $mark, $totalpos, $saved_response, $screen_no, $tmp_duration, $dismiss, $option_order);
+    $save_answers->bind_param('isiidisiiss', $userid, $posted_vars['sessionid'], $paper_id, $log_id, $mark, $totalpos, $saved_response, $screen_no, $tmp_duration, $dismiss, $option_order);
   }
     
   // Use the new structure to look for posted responses.
@@ -157,7 +158,6 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
   $log_query = '';
   $display_pos = 0;
   $old_display_pos = 0;
-  $all_items_abstain = true;
   foreach ($paper_array as &$row){
     $q_log_id = 0;
     $q_id = $row['q_id'];
@@ -167,62 +167,51 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
     $q_media = $row['q_media'];
     $correct = $row['correct'];
     $score_method = $row['score_method'];
-    $marks_correct = $row['marks_correct'];
-    $marks_incorrect = $row['marks_incorrect'];
-    $marks_partial = $row['marks_partial'];
+    $marks = $row['marks'];
     $dismiss = '';
     $display_pos = $row['display_pos'];
-    if ($old_q_id != $q_id or $display_pos != $old_display_pos) {
-      if ($old_type == 'rank') {
-        if ($old_score_method == 'Bonus Mark') {
-          $totalpos++;
-          if ($correct_rank == true and $mark == ($totalpos - 1)) {
-            $mark++;  // Add one mark if the user has all options in the correct order
-          }
-        } elseif ($old_score_method == 'Mark per Question') {
-          $totalpos = $old_marks_correct;
-          if ($correct_rank) {
-            $mark = $old_marks_correct;
-          } else {
-            $mark = $old_marks_incorrect;
-          }
-        }
-      } elseif ($old_type == 'mrq') {
-        if ($old_score_method == 'Mark per Question') {
-          if ($correct_rank) {
+    if ($old_q_id != $q_id or  $display_pos != $old_display_pos) { 
+      if ($old_type == 'rank' and $correct_rank == true and $mark == ($totalpos - 1) and $old_score_method == 'BonusMark') {
+        $mark++;  // Add one mark if the user has all options in the correct order
+      } elseif ($old_type == 'rank' and $correct_rank == true and $old_score_method == 'AllItemsCorrect') {
+        $mark++;  // Add one mark if the user has all options in the correct order
+      }
+      if ($old_type == 'mrq') {
+        if ($old_score_method == 'AllItemsCorrect') {
+          if ($correct_rank == true) {
             $mark = 1;
           } else {
             $mark = 0;
           }
-        } elseif ($old_score_method == 'Mark per Option' and $mrq_options_selected > $totalpos) {
+        } elseif ($old_score_method == 'SelectedPositive' and $mrq_options_selected > $totalpos) {
           $mark = 0;
         } elseif ($old_score_method == 'other') {
           $question_part++;
           $qid = 'q' . $question_no . '_' . $question_part;
-          if (isset($_POST[$qid]) and $_POST[$qid] == 'y') {
+          if (isset($posted_vars[$qid]) and $posted_vars[$qid] == 'y') {
             $saved_response .= 'y';
             $qid = 'q' . $question_no . '_other';
-            $saved_response .= $_POST[$qid];
+            $saved_response .= $posted_vars[$qid];
           } else {
             $saved_response .= 'n';
           }
         }
       }
-      if (isset($_POST["order$question_no"])) {
-        $option_order = $_POST["order$question_no"];
+      if (isset($posted_vars["order$question_no"])) {
+        $option_order = $posted_vars["order$question_no"];
       } else {
         $option_order = '';
       }
       if ($question_no > 0 and $old_type != 'info') {
-        $tmp_duration = time_to_seconds($submit_time) - time_to_seconds($_POST['page_start']);
+        $tmp_duration = time_to_seconds($submit_time) - time_to_seconds($posted_vars['page_start']);
         if ($tmp_duration < 0) $tmp_duration += 86400;
         $tmp_duration += $extra_duration;
 
         if (isset($log_ids[$old_q_id])) {
           $q_log_id = $log_ids[$old_q_id];
         }
-        $save_answers->execute();     // Save to the database.
-     
+        $save_answers->execute();
+        
         $saved_response = '';
         $dismiss = '';
       }      
@@ -232,22 +221,16 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
       $old_type = $q_type;
       $old_score_method = $score_method;
       $old_display_pos = $display_pos;
-      
-      $old_marks_correct = $marks_correct;
-      $old_marks_incorrect = $marks_incorrect;
-      $old_marks_partial = $marks_partial;
-
       $correct_rank = true;
       $mrq_options_selected = 0;
       $mark = 0;
       $totalpos = 0;
       $saved_response = '';
-
     }  
 
     $log_id = $q_id;
-    if (isset($_POST["order$question_no"])) {
-      $option_order = explode(',',$_POST["order$question_no"]);
+    if (isset($posted_vars["order$question_no"])) {
+      $option_order = explode(',',$posted_vars["order$question_no"]);
     } else {
       $option_order = '';
     }
@@ -256,19 +239,19 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
     switch ($q_type) {
       case 'calculation':
         // Log format is 'users answer', 'correct answer', 'variable values used'.
-        $score_array = explode(',', $display_method);
+        $score_array = explode(',', $score_method);
       
         $qid = 'q' . $question_no;
-        if (isset($_POST[$qid])) {
-          $saved_response = $_POST[$qid];
+        if(isset($posted_vars[$qid])) {
+          $saved_response = $posted_vars[$qid];
         } else {
           $saved_response = '';
         }
         $saved_response = trim($saved_response);
 
         $qid = 'q' . $question_no . '_answer';
-        if (isset($_POST[$qid])) {
-          $question_variables = $_POST[$qid];
+        if(isset($posted_vars[$qid])) {
+          $question_variables = $posted_vars[$qid];
         } else {
           $question_variables = '';
         }
@@ -303,23 +286,17 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
               case 8:
                 $H = $individual_variable;
                 break;
-              case 9:
-                $I = $individual_variable;
-                break;
-              case 10:
-                $J = $individual_variable;
-                break;
             }
             $var_no++;
           }
           $answer_equation = $correct;
-          if ($score_array[2] == 'Formula') {
+          if($score_array[2] == 'Formula') {
             // formula answer just do a string comp on the useranswer and the correct one (replace with CAS system later)
             if ($answer_equation != '') {
               eval ("\$answer = \"" . $answer_equation . "\";");
             }
             if ($saved_response_clean == $answer) {
-              $mark = $marks_correct;
+              $mark = $marks;
             }
           } else {
             if ($answer_equation != '') {
@@ -327,11 +304,9 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
               $answer = round($answer, $score_array[0]);
             }
             if ($saved_response_clean == $answer) {
-              $mark = $marks_correct;
+              $mark = $marks;
             } elseif (abs($saved_response_clean - $answer) <= $score_array[1]) {
-              $mark = $marks_correct;
-            } else {
-              $mark = $marks_incorrect;
+              $mark = $marks;
             }
           }
         } else {
@@ -340,12 +315,12 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
         }
         
         $saved_response .= '|' . $answer . '|' . $question_variables;
-        $totalpos = $marks_correct;
+        $totalpos = $marks;
         break;
       case 'dichotomous':
         $qid = 'q' . $question_no . '_' . $question_part;
-        if (isset($_POST[$qid])) {
-          $user_response = $_POST[$qid];
+        if (isset($posted_vars[$qid])) {
+          $user_response = $posted_vars[$qid];
         } else {
           $user_response = '';
         }
@@ -357,9 +332,9 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
         if ($user_response == $correct) {
           $mark++;
         } else {
-          if (($display_method == 'TF_Negative' or $display_method == 'TF_NegativeAbstain' or $display_method == 'YN_NegativeAbstain') and $user_response != 'a' and $user_response != '') {
+          if (($score_method == 'TF_Negative' or $score_method == 'TF_NegativeAbstain' or $score_method == 'YN_NegativeAbstain') and $user_response != 'a' and $user_response != '') {
             $mark--;
-          } elseif ($display_method == 'TF_NegativeAbstainHalf' and $user_response != 'a' and $user_response != '') {
+          } elseif ($score_method == 'TF_NegativeAbstainHalf' and $user_response != 'a' and $user_response != '') {
             $mark-=0.5;
           }
         }
@@ -367,8 +342,8 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
         break;
       case 'likert':
         $qid = 'q' . $question_no . '_' . $question_part;
-        if (isset($_POST[$qid])) {
-          $user_response = $_POST[$qid];
+        if (isset($posted_vars[$qid])) {
+          $user_response = $posted_vars[$qid];
         } else {
           $user_response = '';
         }
@@ -380,29 +355,25 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
         }
         break;
       case 'mcq':
-        if (isset($_POST["dismiss$question_no"])) {
+        if(isset($_POST["dismiss$question_no"])) {
           $dismiss = $_POST["dismiss$question_no"];
         } else {
           $dismiss = '';
         }
         $qid = 'q' . $question_no;
-        if (isset($_POST[$qid])) {
-          $saved_response = $_POST[$qid];
+        if (isset($posted_vars[$qid])) {
+          $saved_response = $posted_vars[$qid];
         } else {
           $saved_response = '';
         }
         if ($saved_response == 'other') {      // Survey use - 'other' textbox.
           $qid = 'q' . $question_no . '_other';
-          $saved_response = 'other:' . $_POST[$qid];
+          $saved_response = 'other:' . $posted_vars[$qid];
         }
         if ($saved_response == '') $saved_response = '0';
         if ($totalpos == 0) {
-          if ($saved_response == $correct) {
-            $mark += $marks_correct;
-          } elseif ($saved_response != '0') {
-            $mark += $marks_incorrect;
-          }
-          $totalpos += $marks_correct;
+          if ($saved_response == $correct) $mark += $marks;
+          $totalpos += $marks;
         }
         break;
       case 'mrq':
@@ -412,25 +383,25 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
           $dismiss = '';
         }
         $qid = 'q' . $question_no . '_' . $question_part;
-        if (isset($_POST[$qid]) AND $_POST[$qid] == 'y') {
+        if (isset($posted_vars[$qid]) AND $posted_vars[$qid] == 'y') {
           $user_response = 'y';
           $mrq_options_selected++;
         } else {
           $user_response = 'n';
         }
         $saved_response .= $user_response;
-        if ($score_method == 'Mark per Option') {
-          if ($user_response == 'y' and $correct == 'y') $mark += $marks_correct;
+        if ($score_method == 'SelectedPositive') {
+          if ($user_response == 'y' and $correct == 'y') $mark++;
         } else {
           if ($user_response == $correct) {
-            $mark += $marks_correct;
+            $mark++;
           } else {
-            $mark += $marks_incorrect;
+            $mark--;
           }
         }
-        if ($score_method == 'Mark per Option') {
-          if ($correct == 'y') $totalpos += $marks_correct;
-        } elseif ($score_method == 'Mark per Question') {
+        if ($score_method == 'SelectedPositive') {
+          if ($correct == 'y') $totalpos++;
+        } elseif ($score_method == 'AllItemsCorrect') {
           $totalpos = 1;
           if (($user_response == 'y' and $correct == 'n') or ($user_response == 'n' and $correct == 'y')) {
             $correct_rank = false;
@@ -460,51 +431,34 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
             }
             $qid = 'q' . $question_no . '_' . $option_no;
             $correct_answers = explode('$',$correct_options[$option_no - 1]);
-            if (isset($_POST[$qid])) {
-              $answer_count = count($_POST[$qid]);
+            if (isset($posted_vars[$qid])) {
+              $answer_count = count($posted_vars[$qid]);
             } else {
               $answer_count = 0;
-            }
+            }    
               
             for ($i=0; $i<$answer_count; $i++) {
               if ($i == 0) {
                 if (count($correct_answers) == 1) {
-                  $saved_response .= $_POST[$qid];
+                  $saved_response .= $posted_vars[$qid];
                 } else {
-                  $saved_response .= $_POST[$qid][$i];
+                  $saved_response .= $posted_vars[$qid][$i];
                 }
               } else {
-                $saved_response .= '$' . $_POST[$qid][$i];
+                $saved_response .= '$' . $posted_vars[$qid][$i];
               }
               
               for ($x=0; $x<count($correct_answers); $x++) {
                 if ($answer_count == 1) {
-                  if ($_POST[$qid] == $correct_answers[0]) {
-                    $mark += $marks_correct;
-                    $all_items_abstain = false;
-                  } elseif ($_POST[$qid] != 'u') {
-                    $mark += $marks_incorrect;
-                    $all_items_abstain = false;
-                  }
+                  if ($posted_vars[$qid] == $correct_answers[0]) $mark++;
                 } else {
-                  if ($_POST[$qid][$i] == $correct_answers[$x]) $mark += $marks_correct;
+                  if ($posted_vars[$qid][$i] == $correct_answers[$x]) $mark++;
                 }
               }
             }
-            $totalpos += count($correct_answers) * $marks_correct;
+            $totalpos += count($correct_answers);
             $option_no++;
           }
-        }
-
-        if ($score_method == 'Mark per Question') {   // Override marks if 'Mark per Question' is set.
-          if ($mark == $totalpos) {
-            $mark = $marks_correct;
-          } elseif ($all_items_abstain) {
-            $mark = 0;
-          } else {
-            $mark = $marks_incorrect;
-          }
-          $totalpos = $marks_correct;
         }
         break;
       case 'matrix':
@@ -516,37 +470,21 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
           foreach ($matching_scenarios as $single_scenario) {
             if (trim($single_scenario) != '') {
               $qid = 'q' . $question_no . '_' . $option_no;
-              if (isset($_POST[$qid]) and $_POST[$qid] == $correct_options[$option_no - 1]) {
-                $mark += $marks_correct;
-              } elseif (isset($_POST[$qid]) and $_POST[$qid] != 'u') {
-                $mark += $marks_incorrect;
-                $all_items_abstain = false;
-              }
+              if (isset($posted_vars[$qid]) and $posted_vars[$qid] == $correct_options[$option_no - 1]) $mark++;
               if ($option_no == 1) {
-                if(isset($_POST[$qid])) {
-                  $saved_response = $_POST[$qid];
+                if(isset($posted_vars[$qid])) {
+                  $saved_response = $posted_vars[$qid];
                 } else {
                   $saved_response = '';
                 }
               } else {
                 $saved_response .= '|';
-                if(isset($_POST[$qid])) $saved_response .= $_POST[$qid];
+                if(isset($posted_vars[$qid])) $saved_response .= $posted_vars[$qid];
               }
               $option_no++;
             }
           }
           $totalpos = $option_no - 1;
-        }
-
-        if ($score_method == 'Mark per Question') {   // Override marks if 'Mark per Question' is set.
-          if ($mark == $totalpos) {
-            $mark = $marks_correct;
-          } elseif ($all_items_abstain) {
-            $mark = 0;
-          } else {
-            $mark = $marks_incorrect;
-          }
-          $totalpos = $marks_correct;
         }
         break;
       case 'rank':
@@ -558,35 +496,35 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
         if ($question_part == 1 and $score_method == 'BonusMark') $totalpos++;
         $qid = 'q' . $question_no . '_' . $question_part;
         if ($saved_response == '') {
-          $saved_response = $_POST[$qid];
+          $saved_response = $posted_vars[$qid];
         } else {
-          $saved_response .= ',' . $_POST[$qid];
+          $saved_response .= ',' . $posted_vars[$qid];
         }
-        if ($score_method == 'Mark per Option') {
-          if ($_POST[$qid] == $correct) $mark++;
-        } elseif ($score_method == 'Mark per Question') {
+        if ($score_method == 'StrictOrder') {
+          if ($posted_vars[$qid] == $correct) $mark++;
+        } elseif ($score_method == 'AllItemsCorrect') {
           if ($question_part == 1) $totalpos++;
-          if ($_POST[$qid] != 'u' and $_POST[$qid] <> $correct) $correct_rank = false;
-        } elseif ($score_method == 'Allow partial Marks') {
-          if ($_POST[$qid] != 0 and $correct != 0) {
-            if ($_POST[$qid] == $correct) {
+          if ($posted_vars[$qid] <> $correct) $correct_rank = false;
+        } elseif ($score_method == 'OrderNeighbours') {
+          if ($posted_vars[$qid] != 0 and $correct != 0) {
+            if ($posted_vars[$qid] == $correct) {
               $mark++;
-            } elseif ($_POST[$qid] == ($correct + 1)) {
+            } elseif ($posted_vars[$qid] == ($correct + 1)) {
               $mark = $mark + 0.5;
-            } elseif ($_POST[$qid] == ($correct - 1)) {
+            } elseif ($posted_vars[$qid] == ($correct - 1)) {
               $mark = $mark + 0.5;
             }
           }
-        } elseif ($score_method == 'Bonus Mark') {
-          if ($_POST[$qid] != 0) {
+        } elseif ($score_method == 'BonusMark') {
+          if ($posted_vars[$qid] != 0) {
             if ($correct != 0) $mark++;
-            if ($_POST[$qid] <> $correct) $correct_rank = false;
+            if ($posted_vars[$qid] <> $correct) $correct_rank = false;
           }
-          if ($_POST[$qid] == 0 and $correct != 0) $correct_rank = false;
+          if ($posted_vars[$qid] == 0 and $correct != 0) $correct_rank = false;
         }
-        if ($correct != 0 and $score_method != 'Mark per Question') {
+        if ($correct != 0 and $score_method != 'AllItemsCorrect') {
           $totalpos++;
-        } elseif ($score_method == 'Mark per Option') {
+        } elseif ($score_method == 'StrictOrder') {
           $totalpos++;
         }
         break;
@@ -597,18 +535,18 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
           $dismiss = '';
         }
         $qid = 'q' . $question_no;
-        if (isset($_POST[$qid])) {
-          $saved_response = $_POST[$qid];
+        if (isset($posted_vars[$qid])) {
+          $saved_response = $posted_vars[$qid];
         } else {
           $saved_response = '';
         }
         if ($saved_response == '') $saved_response = '0';
         
         if ($saved_response == $question_part) {
-          $mark = $marks_correct;
+          $mark = $marks;
         }
         if ($totalpos == 0) {
-          $totalpos += $marks_correct;
+          $totalpos += $marks;
         }
         break;
       case 'timedate':
@@ -616,68 +554,68 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
         switch ($date_details[0]) {
         	case '1':		// dd/MM/yyyy hh:mm:ss
 	          $qid = 'q' . $question_no . '_day';
-	          $saved_response .= $_POST[$qid] . '/';
+	          $saved_response .= $posted_vars[$qid] . '/';
 	          $qid = 'q' . $question_no . '_month';
-	          $saved_response .= $_POST[$qid] . '/';
+	          $saved_response .= $posted_vars[$qid] . '/';
 	          $qid = 'q' . $question_no . '_year';
-	          $saved_response .= $_POST[$qid];
+	          $saved_response .= $posted_vars[$qid];
 	          $qid = 'q' . $question_no . '_hour';
-	          $saved_response .= ' ' . $_POST[$qid];
+	          $saved_response .= ' ' . $posted_vars[$qid];
 	          $qid = 'q' . $question_no . '_minute';
-	          $saved_response .= ':' . $_POST[$qid];
+	          $saved_response .= ':' . $posted_vars[$qid];
 	          $qid = 'q' . $question_no . '_second';
-	          $saved_response .= ':' . $_POST[$qid];
+	          $saved_response .= ':' . $posted_vars[$qid];
 	          break;
         	case '2': 	// dd/MM/yyyy hh:mm
 	          $qid = 'q' . $question_no . '_day';
-	          $saved_response .= $_POST[$qid] . '/';
+	          $saved_response .= $posted_vars[$qid] . '/';
 	          $qid = 'q' . $question_no . '_month';
-	          $saved_response .= $_POST[$qid] . '/';
+	          $saved_response .= $posted_vars[$qid] . '/';
 	          $qid = 'q' . $question_no . '_year';
-	          $saved_response .= $_POST[$qid];
+	          $saved_response .= $posted_vars[$qid];
 	          $qid = 'q' . $question_no . '_hour';
-	          $saved_response .= ' ' . $_POST[$qid];
+	          $saved_response .= ' ' . $posted_vars[$qid];
 	          $qid = 'q' . $question_no . '_minute';
-	          $saved_response .= ':' . $_POST[$qid];
+	          $saved_response .= ':' . $posted_vars[$qid];
 	          break;
         	case '3':		// dd/MM/yyyy
 	          $qid = 'q' . $question_no . '_day';
-	          $saved_response .= $_POST[$qid] . '/';
+	          $saved_response .= $posted_vars[$qid] . '/';
 	          $qid = 'q' . $question_no . '_month';
-	          $saved_response .= $_POST[$qid] . '/';
+	          $saved_response .= $posted_vars[$qid] . '/';
 	          $qid = 'q' . $question_no . '_year';
-	          $saved_response .= $_POST[$qid];
+	          $saved_response .= $posted_vars[$qid];
 	          break;
         	case '4':		// mm/dd/yyyy
         		$qid = 'q' . $question_no . '_month';
-	          $saved_response .= $_POST[$qid] . '/';
+	          $saved_response .= $posted_vars[$qid] . '/';
 	          $qid = 'q' . $question_no . '_day';
-	          $saved_response .= $_POST[$qid] . '/';
+	          $saved_response .= $posted_vars[$qid] . '/';
 	          $qid = 'q' . $question_no . '_year';
-	          $saved_response .= $_POST[$qid];
+	          $saved_response .= $posted_vars[$qid];
 	          break;
         	case '5':		// dd/MMMM/yyyy
 	          $qid = 'q' . $question_no . '_day';
-	          $saved_response .= $_POST[$qid] . '/';
+	          $saved_response .= $posted_vars[$qid] . '/';
         		$qid = 'q' . $question_no . '_month';
-	          $saved_response .= $_POST[$qid] . '/';
+	          $saved_response .= $posted_vars[$qid] . '/';
 	          $qid = 'q' . $question_no . '_year';
-	          $saved_response .= $_POST[$qid];
+	          $saved_response .= $posted_vars[$qid];
 	          break;
         	case '6':		// hh:mm:ss
 	          $qid = 'q' . $question_no . '_hour';
-	          $saved_response = $_POST[$qid] . ':';
+	          $saved_response = $posted_vars[$qid] . ':';
 	          $qid = 'q' . $question_no . '_minute';
-	          $saved_response .= $_POST[$qid] . ':';
+	          $saved_response .= $posted_vars[$qid] . ':';
 	          $qid = 'q' . $question_no . '_second';
-	          $saved_response .= $_POST[$qid];
+	          $saved_response .= $posted_vars[$qid];
 	          break;
 	        case '7':		// hh:mm (date)
         	case '8':		// hh:mm (duration)
 	          $qid = 'q' . $question_no . '_hour';
-	          $saved_response = $_POST[$qid] . ':';
+	          $saved_response = $posted_vars[$qid] . ':';
 	          $qid = 'q' . $question_no . '_minute';
-	          $saved_response .= $_POST[$qid];
+	          $saved_response .= $posted_vars[$qid];
 	         	break;
         }
         if ($saved_response == $correct) {
@@ -692,11 +630,12 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
         $saved_response = '';
         for ($i=1; $i<=$no_answers; $i++) {
           $qid = 'q' . $question_no . '_' . $i;
-          if(isset($_POST[$qid])) {
-            if ($_POST[$qid] == '') {
+          if(isset($posted_vars[$qid])) {
+            if ($posted_vars[$qid] == '') {
               $saved_response .= '|u';
             } else {
-              $saved_response .= '|' . $_POST[$qid];
+              //$saved_response .= '|' . htmlentities($posted_vars[$qid]);
+              $saved_response .= '|' . $posted_vars[$qid];
             }
           }
           if (preg_match("|mark=\"([0-9]{1,3})\"|",$blank_details[$i],$mark_matches)) {
@@ -714,145 +653,103 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
           $answer_list[0] = str_replace("[/blank]",'',$answer_list[0]);
           if ($score_method == 'textboxes') {
             foreach ($answer_list as $individual_answer) {
-              if (isset($_POST[$qid]) and str_replace('&nbsp;',' ',trim($_POST[$qid])) == str_replace('&nbsp;',' ',trim($individual_answer))) $mark += $individual_q_mark;
+              if (isset($posted_vars[$qid]) and str_replace('&nbsp;',' ',trim($posted_vars[$qid])) == str_replace('&nbsp;',' ',trim($individual_answer))) $mark += $individual_q_mark;
             }
           } else {
-            if (isset($_POST[$qid]) and str_replace('&nbsp;',' ',trim($_POST[$qid])) == str_replace('&nbsp;',' ',($answer_list[0]))) $mark += $individual_q_mark;
+            if (isset($posted_vars[$qid]) and str_replace('&nbsp;',' ',trim($posted_vars[$qid])) == str_replace('&nbsp;',' ',($answer_list[0]))) $mark += $individual_q_mark;
           }
         }
         break;
       case 'textbox':
         $qid = 'q' . $question_no;
-        if(isset($_POST[$qid])) {
-          $saved_response = $_POST[$qid];
+        if(isset($posted_vars[$qid])) {
+          $saved_response = $posted_vars[$qid];
         } else {
           $saved_response = '';
         }
         $mark = 'NULL';
-        $totalpos += $marks_correct;
+        $totalpos += $marks;
         break;
       case 'hotspot':
         $qid = 'q' . $question_no;
         $mark = 0;
-        if (isset($_POST[$qid])) {
-          $saved_response = $_POST[$qid];
+        if (isset($posted_vars[$qid])) {
+          $saved_response = $posted_vars[$qid];
           $sub_parts = explode('|',$saved_response);
           foreach ($sub_parts as $sub_part) {
-            if ($sub_part{0} == 1) {
-              $mark += $marks_correct;
-            } else {
-              $mark += $marks_incorrect;
-            }
-            $totalpos += $marks_correct;
+            if ($sub_part{0} == 1) $mark++;
           }
         } else {
           $saved_response = '';
         }
-        if ($score_method == 'Mark per Question') {   // Override marks if 'Mark per Question' is set.
-          if ($mark == $totalpos) {
-            $mark = $marks_correct;
-          } elseif ($saved_response == 'u') {
-            $mark = 0;
-          } else {
-            $mark = $marks_incorrect;
-          }
-          $totalpos = $marks_correct;
-        }
+        $totalpos += $marks;
         break;
       case 'labelling':
         $qid = 'q' . $question_no;
-        if (isset($_POST[$qid])) {
-          $saved_response = $_POST[$qid];
+        if(isset($posted_vars[$qid])) {
+          $saved_response = $posted_vars[$qid];
         } else {
           $saved_response = '';
         }
-        if ($saved_response != '') {        
+        if($saved_response != '') {
           $tmp_first_split = explode(';',$saved_response);
           $tmp_second_split = explode('$',$tmp_first_split[0]);
-          if ($tmp_first_split[1] != '') {
-            $all_items_abstain = false;
-          }
           $mark += $tmp_second_split[0];
           $totalpos += $tmp_second_split[1];
-        }
-        
-        if ($score_method == 'Mark per Question') {   // Override marks if 'Mark per Question' is set.
-          if ($mark == $totalpos) {
-            $mark = $marks_correct;
-          } elseif (strlen($saved_response) < 6) {
-            $mark = 0;
-          } else {
-            $mark = $marks_incorrect;
-          }
-          $totalpos = $marks_correct;
         }
         break;
       case 'flash':
         $qid = 'q' . $question_no;
-        if(isset($_POST[$qid])) {
-          $saved_response = $_POST[$qid];
+        if(isset($posted_vars[$qid])) {
+          $saved_response = $posted_vars[$qid];
         } else {
           $saved_response = '';
         }
         $flash_args = explode(',',$saved_response);
         $mark = $flash_args[0];     // Get student marks from Flash.
-        $totalpos += $marks_correct;
+        $totalpos += $marks;
         break;
     }
   }                    // End of while loop.
 
   // Log the very last question block.
-  if ($old_type == 'rank') {
-    if ($correct_rank == true and $mark == ($totalpos - 1) and $old_score_method == 'Bonus Mark') {
-      $mark++;  // Add one mark if the user has all options in the correct order
-    } elseif ($old_score_method == 'Mark per Question') {
-      $totalpos = $old_marks_correct;
-      if ($correct_rank) {
-        $mark = $old_marks_correct;
-      } else {
-        $mark = $old_marks_incorrect;
-      }
-    }
-  } elseif ($old_type == 'mrq') {
-    if ($old_score_method == 'Mark per Question') {
-      if ($correct_rank) {
+  if ($old_type == 'rank' and $correct_rank == true and $mark == ($totalpos - 1) and $old_score_method == 'BonusMark') {
+    $mark++;  // Add one mark if the user has all options in the correct order
+  } elseif ($old_type == 'rank' and $correct_rank == true and $old_score_method == 'AllItemsCorrect') {
+    $mark++;  // Add one mark if the user has all options in the correct order
+  }
+  if ($old_type == 'mrq') {
+    if ($old_score_method == 'AllItemsCorrect') {
+      if ($correct_rank == true) {
         $mark = 1;
       } else {
         $mark = 0;
       }
-    } elseif ($old_score_method == 'Mark per Option' and $mrq_options_selected > $totalpos) {
+    } elseif ($old_score_method == 'SelectedPositive' and $mrq_options_selected > $totalpos) {
       $mark = 0;
     } elseif ($old_score_method == 'other') {
       $question_part++;
       $qid = 'q' . $question_no . '_' . $question_part;
-      if (isset($_POST[$qid]) and $_POST[$qid] == 'y') {
-        $saved_response .= 'y';
-        $qid = 'q' . $question_no . '_other';
-        $saved_response .= $_POST[$qid];
-      } else {
-        $saved_response .= 'n';
-      }
+      $saved_response .= (isset($posted_vars[$qid])) ? $posted_vars[$qid] : 'n';
+      $qid = 'q' . $question_no . '_other';
+      $saved_response .= ':' . $posted_vars[$qid];
     }
   }
-  if (isset($_POST["order$question_no"])) {
-    $option_order = $_POST["order$question_no"];
+  if(isset($posted_vars["order$question_no"])) {
+    $option_order = $posted_vars["order$question_no"];
   } else {
     $option_order = '';
-  }
-  if ($question_no > 0 and $q_type != 'info') {
-    $tmp_duration = time_to_seconds($submit_time) - time_to_seconds($_POST['page_start']);
-    if ($tmp_duration < 0) $tmp_duration += 86400;
-    $tmp_duration += $extra_duration;
-
+  } 
+  $tmp_duration = time_to_seconds($submit_time) - time_to_seconds($posted_vars['page_start']);
+  if ($tmp_duration < 0) $tmp_duration += 86400;
+  $tmp_duration += $extra_duration;
+  if ($old_q_type != 'info') {
     if (isset($log_ids[$old_q_id])) {
       $q_log_id = $log_ids[$old_q_id];
     }
-    $save_answers->execute();     // Save to the database.
- 
-    $saved_response = '';
-    $dismiss = '';
-  }      
-        
+    $save_answers->execute();
+  }
+  
   // Close still open database prepared queries
   $save_answers->close();
 }

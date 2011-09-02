@@ -54,8 +54,6 @@
     $tab = 'log';
   }
   function drawTabs($current_tab, $col_span, $right_text, $user_roles) {
-    global $string;
-  
     $html = "<tr><td colspan=\"" . ($col_span - 1) . "\" style=\"background-color:#F1F5FB\">";
     $html .= '<table cellpadding="0" cellspacing="0" border="0" style="font-size:100%"><tr>';
     $tab_array = array('Log','Modules','Notes','Accessibility');
@@ -68,9 +66,9 @@
     }
     foreach($tab_array as $individual_tab) {
       if ($individual_tab == $current_tab) {
-        $html .= "<td style=\"padding-top:0px; cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_on.gif)\" onclick=\"showTab('" . $individual_tab . "_tab')\">" . $string[strtolower($individual_tab)] . "</td>";
+        $html .= "<td style=\"padding-top:0px; cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_on.gif)\" onclick=\"showTab('" . $individual_tab . "_tab')\">$individual_tab</td>";
       } else {
-        $html .= "<td style=\"padding-top:0px; cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_off.gif)\" onclick=\"showTab('" . $individual_tab . "_tab')\">" . $string[strtolower($individual_tab)] . "</td>";
+        $html .= "<td style=\"padding-top:0px; cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_off.gif)\" onclick=\"showTab('" . $individual_tab . "_tab')\">$individual_tab</td>";
       }
     }
     $html .= "</tr></table></td><td align=\"right\" style=\"background-color:#F1F5FB\">$right_text</td></tr>\n";
@@ -116,6 +114,16 @@
       $timestring .= $diff_sec;
     }
     return $timestring;
+  }
+
+  function niceDate($tmp_date) {
+    if ($tmp_date == '') {
+      $nice_date = '<span style="color:red">Not&nbsp;Reviewed</span>';
+    } else {
+      $nice_date = substr($tmp_date, 6, 2) . '/' . substr($tmp_date, 4, 2) . '/' . substr($tmp_date, 0, 4);
+      $nice_date .= ' ' . substr($tmp_date, 8, 2) . ':' . substr($tmp_date, 10, 2);
+    }
+    return $nice_date;
   }
 
   if (isset($_POST['update']) and $demo == false) {
@@ -364,26 +372,26 @@ a.access:hover {color:white}
           echo "<tr><td valign=\"top\" rowspan=\"$row_no\" width=\"70\" align=\"center\"><img src=\"/touchstone/users/photos/$original_username.jpg\" width=\"180\" height=\"270\" alt=\"Student Photo\" border=\"0\" /></td><td>&nbsp;Name</td><td colspan=\"3\">";
         }
       } else {
-        echo "<tr><td valign=\"top\" rowspan=\"$row_no\" width=\"70\" align=\"center\"><img src=\"../artwork/user_icon.png\" width=\"58\" height=\"61\" alt=\"User Icon\" border=\"0\" /></td><td>&nbsp;" . $string['name'] . "</td><td colspan=\"3\">";
+        echo "<tr><td valign=\"top\" rowspan=\"$row_no\" width=\"70\" align=\"center\"><img src=\"../artwork/user_icon.png\" width=\"58\" height=\"61\" alt=\"User Icon\" border=\"0\" /></td><td>&nbsp;Name</td><td colspan=\"3\">";
       }
     } else {
       $row_no = 9;
-      echo "<tr><td valign=\"top\" rowspan=\"$row_no\" width=\"70\" align=\"center\"><img src=\"../artwork/user_icon.png\" width=\"58\" height=\"61\" alt=\"User Icon\" border=\"0\" /></td><td>&nbsp;" . $string['name'] . "</td><td colspan=\"3\">";
+      echo "<tr><td valign=\"top\" rowspan=\"$row_no\" width=\"70\" align=\"center\"><img src=\"../artwork/user_icon.png\" width=\"58\" height=\"61\" alt=\"User Icon\" border=\"0\" /></td><td>&nbsp;Name</td><td colspan=\"3\">";
     }
     $title_array = array('Dr','Mr','Mrs','Miss','Ms','Professor');
     echo '<select name="title">';
     foreach ($title_array as $individual_title) {
       if ($individual_title == $tmp_title) {
-        echo '<option value="' . $individual_title . '" selected>' . $string[strtolower($individual_title)] . '</option>';
+        echo '<option value="' . $individual_title . '" selected>' . $individual_title . '</option>';
       } else {
-        echo '<option value="' . $individual_title . '">' . $string[strtolower($individual_title)] . '</option>';
+        echo '<option value="' . $individual_title . '">' . $individual_title . '</option>';
       }
     }
-    echo "</select>&nbsp;<input type=\"text\" name=\"first_names\" size=\"20\" value=\"$tmp_first_names\" />&nbsp;<input type=\"text\" size=\"15\" name=\"surname\" value=\"$tmp_surname\" /></td><td style=\"text-align:right\"><input type=\"submit\" name=\"update\" value=\"" . $string['update'] . "\" /></td></td></tr>\n";
-    echo "<tr><td>&nbsp;" . $string['email'] . "</td><td><input type=\"text\" size=\"35\" name=\"email\" value=\"$email\" /></td>\n";
+    echo "</select>&nbsp;<input type=\"text\" name=\"first_names\" size=\"20\" value=\"$tmp_first_names\" />&nbsp;<input type=\"text\" size=\"15\" name=\"surname\" value=\"$tmp_surname\" /></td><td style=\"text-align:right\"><input type=\"submit\" name=\"update\" value=\"Update\" /></td></td></tr>\n";
+    echo "<tr><td>&nbsp;Email</td><td><input type=\"text\" size=\"35\" name=\"email\" value=\"$email\" /></td>\n";
     if (strpos($tmp_roles,'Student') !== false) {
       if ($student_id == '') $student_id = '&lt;unknown&gt;';
-      echo "<td>&nbsp;" . $string['studentid'] . "</td><td colspan=\"2\"><input type=\"text\" size=\"15\" name=\"sid\" value=\"$student_id\" /></td></tr>\n";
+      echo "<td>&nbsp;Student&nbsp;ID</td><td colspan=\"2\"><input type=\"text\" size=\"15\" name=\"sid\" value=\"$student_id\" /></td></tr>\n";
     } else {
       if ($cfg_use_ldap == true and strpos($grade,'University') !== false) {
         // Try and get the telephone number from LDAP.
@@ -392,27 +400,27 @@ a.access:hover {color:white}
         ldap_set_option($ldap, LDAP_OPT_REFERRALS, 0);
         if (ldap_bind($ldap, $cfg_ldap_bind_rdn, $cfg_ldap_bind_password)) {
           if (!($search=@ldap_search($ldap, $cfg_ldap_search_dn, 'cn=' . $username))) {
-            echo "<td>&nbsp;" . $string['telephone'] . "</td><td>" . $string['ldapunavailable'] .  "</td></tr>\n";
+            echo "<td>&nbsp;Telephone</td><td>LDAP Server Unavailable</td></tr>\n";
             return false;
           } else {
             $info = ldap_get_entries($ldap, $search);
             if (!isset($info[0]['telephonenumber'][0])) {
-              echo "<td>&nbsp;" . $string['telephone'] . "</td><td style=\"color:#808080\" colspan=\"2\">" . $string['unknown'] . "</td></tr>\n";
+              echo "<td>&nbsp;Telephone</td><td style=\"color:#808080\" colspan=\"2\">&lt;unknown&gt;</td></tr>\n";
             } else {
-              echo "<td>&nbsp;" . $string['telephone'] . "</td><td colspan=\"2\">" . $info[0]['telephonenumber'][0] . "</td></tr>\n";
+              echo "<td>&nbsp;Telephone</td><td colspan=\"2\">" . $info[0]['telephonenumber'][0] . "</td></tr>\n";
             }
           }
           ldap_unbind($ldap);
         }
       } elseif (strpos($grade,'NHS ') !== false) {
-        echo "<td>&nbsp;" . $string['telephone'] . "</td><td style=\"color:#808080\" colspan=\"2\">" . $string['unknown'] . "</td></tr>\n";
+        echo "<td>&nbsp;Telephone</td><td style=\"color:#808080\" colspan=\"2\">&lt;unknown&gt;</td></tr>\n";
       } else {
         echo "<td colspan=\"3\"></td></tr>\n";
       }
     }
     if (strpos($tmp_roles,'Student') !== false or strpos($tmp_roles,'graduate') !== false or strpos($tmp_roles,'left') !== false or strpos($tmp_roles,'suspended') !== false) {
       // Student editing
-      echo "<tr><td>&nbsp;" . $string['course'] . "</td><td><select name=\"grade\" style=\"width:300px\">";
+      echo "<tr><td>&nbsp;Degree</td><td><select name=\"grade\" style=\"width:300px\">";
       $found = 0;
       $degree_details = $mysqli->query("SELECT DISTINCT degree, description FROM degrees ORDER BY degree");
       while ($degree_row = $degree_details->fetch_assoc()) {
@@ -426,7 +434,7 @@ a.access:hover {color:white}
       if ($found == 0) echo "<option value=\"" . $grade . "\" selected>" . $grade . ": &lt;unknown degree&gt;</option>\n";
       $degree_details->close();
       echo "</select></td><td colspan=\"3\">&nbsp;</td></tr>\n";
-      echo "<tr><td>&nbsp;" . $string['yearofstudy'] . "</td><td><select name=\"year\">";
+      echo "<tr><td>&nbsp;Year of Study</td><td><select name=\"year\">";
       for ($i=1; $i<=6; $i++) {
         if ($i == $tmp_year) {
           echo "<option value=\"$i\" selected>Year $i</option>";
@@ -434,19 +442,19 @@ a.access:hover {color:white}
           echo "<option value=\"$i\">Year $i</option>";
         }
       }
-      echo "</select></td><td>&nbsp;" . $string['status'] . "</td><td colspan=\"2\"><select name=\"roles\">";
-      $roles_array = array('External Examiner'=>'ExternalExaminers','graduate'=>'Graduate','left'=>'LeftUniversity','suspended'=>'Suspended','Staff'=>'Staff','Student'=>'Student');
+      echo "</select></td><td>&nbsp;Status</td><td colspan=\"2\"><select name=\"roles\">";
+      $roles_array = array('External Examiner'=>'External Examiner','graduate'=>'Graduate','left'=>'Left University','suspended'=>'Suspended','Staff'=>'Staff','Student'=>'Student');
       foreach ($roles_array as $key => $value) {
         if ($key == $tmp_roles) {
-          echo "<option value=\"$key\" selected>" . $string[strtolower($value)] . "</option>";
+          echo "<option value=\"$key\" selected>$value</option>";
         } else {
-          echo "<option value=\"$key\">" . $string[strtolower($value)] . "</option>";
+          echo "<option value=\"$key\">$value</option>";
         }
       }
       echo "</select></td></tr>\n";
     } else {
       // Staff editing
-      echo "<tr><td>&nbsp;" . $string['type'] . "<input type=\"hidden\" name=\"year\" value=\"$tmp_year\" /></td><td>";
+      echo "<tr><td>&nbsp;Type<input type=\"hidden\" name=\"year\" value=\"$tmp_year\" /></td><td>";
       echo "<select name=\"grade\">\n<option value=\"\"></option>\n";
       ?>
       <option value="University Lecturer"<?php if ($grade == 'University Lecturer' and $tmp_roles != 'inactive') echo ' selected'; ?>>University Lecturer</option>
@@ -483,9 +491,9 @@ a.access:hover {color:white}
     }
 
     if (strpos($userroles,'SysAdmin') !== false ) {
-      echo "<tr><td>&nbsp;" . $string['username'] . "&nbsp;</td><td><input type=\"text\" size=\"15\" name=\"username\" value=\"$username\" /></td><td>&nbsp;" . $string['password'] . "</td><td colspan=\"2\">";
+      echo "<tr><td>&nbsp;Username&nbsp;</td><td><input type=\"text\" size=\"15\" name=\"username\" value=\"$username\" /></td><td>&nbsp;Password</td><td colspan=\"2\">";
       if($cfg_use_ldap and array_reduce($cfg_institutional_domains, 'check_email_domain')) {
-        echo $string['externalauth'];
+        echo "[Using external auth]";
       } else {
         $url_email = urlencode($email);
         echo "<input type=\"button\" onclick=\"resetPassword('$url_email')\" value=\"Reset\" />";
@@ -497,17 +505,17 @@ a.access:hover {color:white}
       } 
       echo "<input type=\"hidden\" name=\"old_userID\" value=\"$tmp_id\" /></td></tr>\n";
     } else {
-      echo "<tr><td>&nbsp;" . $string['username'] . "&nbsp;</td><td><input type=\"text\" size=\"15\" name=\"uneditableusername\" value=\"$username\" disabled /><input type=\"hidden\" name=\"username\" value=\"$username\" /></td><td colspan=\"2\">&nbsp;</td><td>&nbsp;<input type=\"hidden\" name=\"old_userID\" value=\"$tmp_id\" /></td></tr>\n";
+      echo "<tr><td>&nbsp;Username&nbsp;</td><td><input type=\"text\" size=\"15\" name=\"uneditableusername\" value=\"$username\" disabled /><input type=\"hidden\" name=\"username\" value=\"$username\" /></td><td colspan=\"2\">&nbsp;</td><td>&nbsp;<input type=\"hidden\" name=\"old_userID\" value=\"$tmp_id\" /></td></tr>\n";
     }
-    echo "<tr><td>&nbsp;" . $string['gender'] . "&nbsp;</td><td><select name=\"gender\">\n";
+    echo "<tr><td>&nbsp;Gender&nbsp;</td><td><select name=\"gender\">\n";
     if ($gender == 'Male') {
-      echo "<option value=\"Male\" selected>" . $string['male'] . "</option>\n<option value=\"Female\">" . $string['female'] . "</option>\n";
+      echo "<option value=\"Male\" selected>Male</option>\n<option value=\"Female\">Female</option>\n";
     } elseif ($gender == 'Female') {
-      echo "<option value=\"Male\">" . $string['male'] . "</option>\n<option value=\"Female\" selected>" . $string['female'] . "</option>\n";
+      echo "<option value=\"Male\">Male</option>\n<option value=\"Female\" selected>Female</option>\n";
     } else {
-      echo "<option value=\"\"></option>\n<option value=\"Male\">" . $string['male'] . "</option>\n<option value=\"Female\">" . $string['female'] . "</option>\n";
+      echo "<option value=\"\"></option>\n<option value=\"Male\">Male</option>\n<option value=\"Female\">Female</option>\n";
     }
-    echo "</select></td><td>&nbsp;" . $string['databaseid'] . "</td><td colspan=\"2\">" . $_GET['userID'] . "</td></tr>\n";
+    echo "</select></td><td>&nbsp;Database ID</td><td colspan=\"2\">" . $_GET['userID'] . "</td></tr>\n";
     echo "<tr><td colspan=\"5\">&nbsp;</td></tr>\n";
   } else {
     if (strpos($tmp_roles,'Student') !== false) {
@@ -523,17 +531,17 @@ a.access:hover {color:white}
       echo "<tr><td valign=\"top\" rowspan=\"$row_no\" width=\"70\" align=\"center\"><img src=\"../artwork/user_icon.png\" width=\"58\" height=\"61\" alt=\"User Icon\" border=\"0\" /></td><td width=\"110\">&nbsp;Name</td><td>$tmp_title $tmp_initials $tmp_surname</td></tr>\n";
     }
     if (strpos($tmp_roles,'Student') !== false) {
-      if ($student_id == '') $student_id = $string['unknown'];
+      if ($student_id == '') $student_id = '&lt;unknown&gt;';
       echo "<tr><td>&nbsp;Student ID</td><td>$student_id</td></tr>\n";
     }
     echo "<tr><td>&nbsp;Email</td><td><a href=\"mailto:$email\">$email</a></td></tr>\n";
     if ($tmp_roles == 'Student') {
-      echo "<tr><td>&nbsp;" . $string['yearofstudy'] . "</td><td>Year $year</td></tr>\n";
-      echo "<tr><td>&nbsp;" . $string['course'] . "</td><td>$grade - $description</td></tr>\n";
+      echo "<tr><td>&nbsp;Year</td><td>Year $year</td></tr>\n";
+      echo "<tr><td>&nbsp;Degree</td><td>$grade - $description</td></tr>\n";
     }
-    echo "<tr><td>&nbsp;" . $string['username'] . "</td><td>$username</td></tr>\n";
-    echo "<tr><td>&nbsp;" . $string['password'] . "</td><td style=\"color:#808080\">&lt;classified information&gt;</td></tr>\n";
-    echo "<tr><td>&nbsp;" . $string['gender'] . "</td><td>$gender</td></tr>\n";
+    echo "<tr><td>&nbsp;Username</td><td>$username</td></tr>\n";
+    echo "<tr><td>&nbsp;Password</td><td style=\"color:#808080\">&lt;classified information&gt;</td></tr>\n";
+    echo "<tr><td>&nbsp;Gender</td><td>$gender</td></tr>\n";
     echo "<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n";
     echo "<tr><td colspan=\"2\">&nbsp;</td></tr>\n";
   }
@@ -562,7 +570,7 @@ a.access:hover {color:white}
   $results_no = 0;
   $paper = array();
 
-  //$mysqli->select_db('touchstone');
+  $mysqli->select_db('touchstone');
   if (strpos($tmp_roles,'External Examiner') !== false) {      // Get the papers the External is down to review.
     $external_array = array();
 
@@ -584,14 +592,14 @@ a.access:hover {color:white}
     }
     $stmt->close();
 
-    $stmt = $mysqli->prepare("SELECT paper_title, paper_type, q_paper, DATE_FORMAT(reviewed,'%Y%m%d%H%i%s') AS started, DATE_FORMAT(reviewed,'$cfg_long_date_time') AS display_started, duration, screen, ipaddress FROM (properties, review_comments) WHERE properties.property_id=review_comments.q_paper AND reviewer=? ORDER BY q_paper, started, screen");
+    $stmt = $mysqli->prepare("SELECT paper_title, paper_type, q_paper, DATE_FORMAT(reviewed,'%Y%m%d%H%i%s') AS started, duration, screen, ipaddress FROM (properties, review_comments) WHERE properties.property_id=review_comments.q_paper AND reviewer=? ORDER BY q_paper, started, screen");
     $stmt->bind_param('i', $tmp_id);
   } else {
-    $query_sql = "(SELECT paper_title, 0 AS paper_type, q_paper, DATE_FORMAT(log_metadata.started,'%Y%m%d%H%i%s') AS started, DATE_FORMAT(log_metadata.started,'$cfg_long_date_time') AS display_started, duration, screen, ipaddress FROM properties, log0, log_metadata WHERE log0.q_paper=log_metadata.paperID AND log0.started=log_metadata.started AND log0.userID=log_metadata.userID AND properties.property_id=log0.q_paper AND log0.userID=?)";
-    $query_sql .= " UNION ALL (SELECT paper_title, 1 AS paper_type, q_paper, DATE_FORMAT(log_metadata.started,'%Y%m%d%H%i%s') AS started, DATE_FORMAT(log_metadata.started,'$cfg_long_date_time') AS display_started, duration, screen, ipaddress FROM properties, log1, log_metadata WHERE log1.q_paper=log_metadata.paperID AND log1.started=log_metadata.started AND log1.userID=log_metadata.userID AND properties.property_id=log1.q_paper AND log1.userID=?)";
-    $query_sql .= " UNION ALL (SELECT paper_title, 2 AS paper_type, q_paper, DATE_FORMAT(log_metadata.started,'%Y%m%d%H%i%s') AS started, DATE_FORMAT(log_metadata.started,'$cfg_long_date_time') AS display_started, duration, screen, ipaddress FROM properties, log2, log_metadata WHERE log2.q_paper=log_metadata.paperID AND log2.started=log_metadata.started AND log2.userID=log_metadata.userID AND properties.property_id=log2.q_paper AND log2.userID=?)";
-    $query_sql .= " UNION ALL (SELECT paper_title, 3 AS paper_type, q_paper, DATE_FORMAT(log_metadata.started,'%Y%m%d%H%i%s') AS started, DATE_FORMAT(log_metadata.started,'$cfg_long_date_time') AS display_started, duration, screen, ipaddress FROM properties, log3, log_metadata WHERE log3.q_paper=log_metadata.paperID AND log3.started=log_metadata.started AND log3.userID=log_metadata.userID AND properties.property_id=log3.q_paper AND log3.userID=?)";
-    $query_sql .= " UNION ALL (SELECT paper_title, 4 AS paper_type, q_paper, DATE_FORMAT(started,'%Y%m%d%H%i%s') AS started, DATE_FORMAT(started,'$cfg_long_date_time') AS display_started, NULL AS duration, NULL AS screen, NULL AS ipaddress FROM properties, log4_overall WHERE properties.property_id=log4_overall.q_paper AND userID=?)";
+    $query_sql = "(SELECT paper_title, 0 AS paper_type, q_paper, DATE_FORMAT(log_metadata.started,'%Y%m%d%H%i%s') AS started, duration, screen, ipaddress FROM properties, log0, log_metadata WHERE log0.q_paper=log_metadata.paperID AND log0.started=log_metadata.started AND log0.userID=log_metadata.userID AND properties.property_id=log0.q_paper AND log0.userID=?)";
+    $query_sql .= " UNION ALL (SELECT paper_title, 1 AS paper_type, q_paper, DATE_FORMAT(log_metadata.started,'%Y%m%d%H%i%s') AS started, duration, screen, ipaddress FROM properties, log1, log_metadata WHERE log1.q_paper=log_metadata.paperID AND log1.started=log_metadata.started AND log1.userID=log_metadata.userID AND properties.property_id=log1.q_paper AND log1.userID=?)";
+    $query_sql .= " UNION ALL (SELECT paper_title, 2 AS paper_type, q_paper, DATE_FORMAT(log_metadata.started,'%Y%m%d%H%i%s') AS started, duration, screen, ipaddress FROM properties, log2, log_metadata WHERE log2.q_paper=log_metadata.paperID AND log2.started=log_metadata.started AND log2.userID=log_metadata.userID AND properties.property_id=log2.q_paper AND log2.userID=?)";
+    $query_sql .= " UNION ALL (SELECT paper_title, 3 AS paper_type, q_paper, DATE_FORMAT(log_metadata.started,'%Y%m%d%H%i%s') AS started, duration, screen, ipaddress FROM properties, log3, log_metadata WHERE log3.q_paper=log_metadata.paperID AND log3.started=log_metadata.started AND log3.userID=log_metadata.userID AND properties.property_id=log3.q_paper AND log3.userID=?)";
+    $query_sql .= " UNION ALL (SELECT paper_title, 4 AS paper_type, q_paper, DATE_FORMAT(started,'%Y%m%d%H%i%s') AS started, NULL AS duration, NULL AS screen, NULL AS ipaddress FROM properties, log4_overall WHERE properties.property_id=log4_overall.q_paper AND userID=?)";
     $query_sql .= " ORDER BY q_paper, started, screen";
     
     $stmt = $mysqli->prepare($query_sql);
@@ -599,7 +607,7 @@ a.access:hover {color:white}
   }
   
   $stmt->execute();
-  $stmt->bind_result($paper_title, $paper_type, $q_paper, $started, $display_started, $duration, $screen, $ipaddress);
+  $stmt->bind_result($paper_title, $paper_type, $q_paper, $started, $duration, $screen, $ipaddress);
   while($stmt->fetch()) {
     if ($old_q_paper != $q_paper or $old_started != $started) {
       if ($old_q_paper != '') {
@@ -607,7 +615,6 @@ a.access:hover {color:white}
         $paper[$results_no]['id'] = $old_q_paper;
         $paper[$results_no]['paper_type'] = $old_paper_type;
         $paper[$results_no]['started'] = $old_started;
-        $paper[$results_no]['display_started'] = $old_display_started;
         $paper[$results_no]['duration'] = $old_duration;
         $paper[$results_no]['ipaddress'] = $old_ipaddress;
         $results_no++;
@@ -620,7 +627,6 @@ a.access:hover {color:white}
     }
     $old_q_paper = $q_paper;
     $old_started = $started;
-    $old_display_started = $display_started;
     $old_paper_type = $paper_type;
     $old_screen = $screen;
     $old_paper_title = $paper_title;
@@ -633,7 +639,6 @@ a.access:hover {color:white}
     $paper[$results_no]['id'] = $old_q_paper;
     $paper[$results_no]['paper_type'] = $old_paper_type;
     $paper[$results_no]['started'] = $old_started;
-    $paper[$results_no]['display_started'] = $old_display_started;
     $paper[$results_no]['duration'] = $old_duration;
     $paper[$results_no]['ipaddress'] = $old_ipaddress;
     $results_no++;
@@ -648,15 +653,15 @@ a.access:hover {color:white}
     }
 
     if ($sortby == 'q_paper') {
-      echo '<tr><td colspan="2" class="coltitle" style="width:240px" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=q_paper&ordering=' . $new_order . '\'">&nbsp;&nbsp;&nbsp;&nbsp;' . $string['papername'] . '&nbsp;<img src="../artwork/' . $new_order . '.gif" width="9" height="7" border="0" /></td><td class="coltitle" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=paper_type&ordering=asc\'">' . $string['type'] . '&nbsp;</td><td class="coltitle" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=started&ordering=asc\'">' . $string['started'] . '&nbsp;</td><td class="coltitle" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=duration&ordering=asc\'">' . $string['duration'] . '&nbsp;</td><td class="coltitle" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=ipaddress&ordering=asc\'">' . $string['ipaddress'] . '&nbsp;</td></tr>';
+      echo '<tr><td colspan="2" class="coltitle" style="width:240px" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=q_paper&ordering=' . $new_order . '\'">&nbsp;&nbsp;&nbsp;&nbsp;Paper Name&nbsp;<img src="../artwork/' . $new_order . '.gif" width="9" height="7" border="0" /></td><td class="coltitle" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=paper_type&ordering=asc\'">Type&nbsp;</td><td class="coltitle" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=started&ordering=asc\'">Started&nbsp;</td><td class="coltitle" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=duration&ordering=asc\'">Duration&nbsp;</td><td class="coltitle" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=ipaddress&ordering=asc\'">IP&nbsp;Address&nbsp;</td></tr>';
     } elseif ($sortby == 'paper_type') {
-      echo '<tr><td colspan="2" class="coltitle" style="width:240px" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=q_paper&ordering=asc\'">&nbsp;&nbsp;&nbsp;&nbsp;' . $string['papername'] . '&nbsp;</td><td class="coltitle" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=paper_type&ordering=' . $new_order . '\'">' . $string['type'] . '&nbsp;<img src="../artwork/' . $new_order . '.gif" width="9" height="7" border="0" /></td><td class="coltitle" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=started&ordering=asc\'">' . $string['started'] . '&nbsp;</td><td class="coltitle" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=duration&ordering=asc\'">' . $string['duration'] . '&nbsp;</td><td class="coltitle" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=ipaddress&ordering=asc\'">' . $string['ipaddress'] . '&nbsp;</td></tr>';
+      echo '<tr><td colspan="2" class="coltitle" style="width:240px" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=q_paper&ordering=asc\'">&nbsp;&nbsp;&nbsp;&nbsp;Paper Name&nbsp;</td><td class="coltitle" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=paper_type&ordering=' . $new_order . '\'">Type&nbsp;<img src="../artwork/' . $new_order . '.gif" width="9" height="7" border="0" /></td><td class="coltitle" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=started&ordering=asc\'">Started&nbsp;</td><td class="coltitle" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=duration&ordering=asc\'">Duration&nbsp;</td><td class="coltitle" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=ipaddress&ordering=asc\'">IP&nbsp;Address&nbsp;</td></tr>';
     } elseif ($sortby == 'started') {
-      echo '<tr><td colspan="2" class="coltitle" style="width:240px" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=q_paper&ordering=asc\'">&nbsp;&nbsp;&nbsp;&nbsp;' . $string['papername'] . '&nbsp;</td><td class="coltitle" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=paper_type&ordering=asc\'">' . $string['type'] . '&nbsp;</td><td class="coltitle" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=started&ordering=' . $new_order . '\'">' . $string['started'] . '&nbsp;<img src="../artwork/' . $new_order . '.gif" width="9" height="7" border="0" /></td><td class="coltitle" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=duration&ordering=asc\'">' . $string['duration'] . '&nbsp;</td><td class="coltitle" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=ipaddress&ordering=asc\'">' . $string['ipaddress'] . '&nbsp;</td></tr>';
+      echo '<tr><td colspan="2" class="coltitle" style="width:240px" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=q_paper&ordering=asc\'">&nbsp;&nbsp;&nbsp;&nbsp;Paper Name&nbsp;</td><td class="coltitle" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=paper_type&ordering=asc\'">Type&nbsp;</td><td class="coltitle" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=started&ordering=' . $new_order . '\'">Started&nbsp;<img src="../artwork/' . $new_order . '.gif" width="9" height="7" border="0" /></td><td class="coltitle" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=duration&ordering=asc\'">Duration&nbsp;</td><td class="coltitle" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=ipaddress&ordering=asc\'">IP&nbsp;Address&nbsp;</td></tr>';
     } elseif ($sortby == 'duration') {
-      echo '<tr><td colspan="2" class="coltitle" style="width:240px" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=q_paper&ordering=asc\'">&nbsp;&nbsp;&nbsp;&nbsp;' . $string['papername'] . '&nbsp;</td><td class="coltitle" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=paper_type&ordering=asc\'">' . $string['type'] . '&nbsp;</td><td class="coltitle" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=started&ordering=asc\'">' . $string['started'] . '&nbsp;</td><td class="coltitle" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=duration&ordering=' . $new_order . '\'">' . $string['duration'] . '&nbsp;<img src="../artwork/' . $new_order . '.gif" width="9" height="7" border="0" /></td><td class="coltitle" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=ipaddress&ordering=asc\'">' . $string['ipaddress'] . '&nbsp;</td></tr>';
+      echo '<tr><td colspan="2" class="coltitle" style="width:240px" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=q_paper&ordering=asc\'">&nbsp;&nbsp;&nbsp;&nbsp;Paper Name&nbsp;</td><td class="coltitle" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=paper_type&ordering=asc\'">Type&nbsp;</td><td class="coltitle" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=started&ordering=asc\'">Started&nbsp;</td><td class="coltitle" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=duration&ordering=' . $new_order . '\'">Duration&nbsp;<img src="../artwork/' . $new_order . '.gif" width="9" height="7" border="0" /></td><td class="coltitle" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=ipaddress&ordering=asc\'">IP&nbsp;Address&nbsp;</td></tr>';
     } elseif ($sortby == 'ipaddress') {
-      echo '<tr><td colspan="2" class="coltitle" style="width:240px" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=q_paper&ordering=asc\'">&nbsp;&nbsp;&nbsp;&nbsp;' . $string['papername'] . '&nbsp;</td><td class="coltitle" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=paper_type&ordering=asc\'">' . $string['type'] . '&nbsp;</td><td class="coltitle" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=started&ordering=asc\'">' . $string['started'] . '&nbsp;</td><td class="coltitle" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=duration&ordering=asc\'">' . $string['duration'] . '&nbsp;</td><td class="coltitle" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=ipaddress&ordering=' . $new_order . '\'">' . $string['ipaddress'] . '&nbsp;<img src="../artwork/' . $new_order . '.gif" width="9" height="7" border="0" />&nbsp;</td></tr>';
+      echo '<tr><td colspan="2" class="coltitle" style="width:240px" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=q_paper&ordering=asc\'">&nbsp;&nbsp;&nbsp;&nbsp;Paper Name&nbsp;</td><td class="coltitle" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=paper_type&ordering=asc\'">Type&nbsp;</td><td class="coltitle" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=started&ordering=asc\'">Started&nbsp;</td><td class="coltitle" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=duration&ordering=asc\'">Duration&nbsp;</td><td class="coltitle" onclick="window.location=\'details.php?userID=' . $_GET['userID'] . '&sortby=ipaddress&ordering=' . $new_order . '\'">IP&nbsp;Address&nbsp;<img src="../artwork/' . $new_order . '.gif" width="9" height="7" border="0" />&nbsp;</td></tr>';
     }
     for ($i=0; $i<$results_no; $i++) {
       if (strpos($paper[$i]['q_paper'],'[deleted') !== false ) {
@@ -664,29 +669,29 @@ a.access:hover {color:white}
       }
       switch ($paper[$i]['paper_type']) {
         case 0:
-          echo "<tr style=\"height:17px\"><td style=\"text-align:right\"><a href=\"#\" onclick=\"reviewPaper('" . $paper[$i]['started'] . "','" . $_GET['userID'] . "','" . str_replace("'","&#8217;",$tmp_surname) . "','" . $paper[$i]['id'] . "'," . $paper[$i]['paper_type'] . "); return false;\"><img src=\"../artwork/formative_16.gif\" width=\"16\" height=\"16\" alt=\"Display marked paper for " . $tmp_surname . "\" border=\"0\" /></a></td><td>&nbsp;<a href=\"../paper/details.php?paperID=" . $paper[$i]['id'] . "\" class=\"paper\">" . $paper[$i]['q_paper'] . "</a></td><td>" . $string['formative'] . "</td><td>" . $paper[$i]['display_started'] . "</td><td>" . formatsec($paper[$i]['duration']) . "</td><td>" . $paper[$i]['ipaddress'] . "</td></tr>\n";
+          echo "<tr style=\"height:17px\"><td style=\"text-align:right\"><a href=\"#\" onclick=\"reviewPaper('" . $paper[$i]['started'] . "','" . $_GET['userID'] . "','" . str_replace("'","&#8217;",$tmp_surname) . "','" . $paper[$i]['id'] . "'," . $paper[$i]['paper_type'] . "); return false;\"><img src=\"../artwork/formative_16.gif\" width=\"16\" height=\"16\" alt=\"Display marked paper for " . $tmp_surname . "\" border=\"0\" /></a></td><td>&nbsp;<a href=\"../paper/details.php?paperID=" . $paper[$i]['id'] . "\" class=\"paper\">" . $paper[$i]['q_paper'] . "</a></td><td>Formative</td><td>" . niceDate($paper[$i]['started']) . "</td><td>" . formatsec($paper[$i]['duration']) . "</td><td>" . $paper[$i]['ipaddress'] . "</td></tr>\n";
           break;
         case 1:
-          echo "<tr style=\"height:17px\"><td style=\"text-align:right\"><a href=\"#\" onclick=\"reviewPaper('" . $paper[$i]['started'] . "','" . $_GET['userID'] . "','" . str_replace("'","&#8217;",$tmp_surname) . "','" . $paper[$i]['id'] . "'," . $paper[$i]['paper_type'] . "); return false;\"><img src=\"../artwork/progress_16.gif\" width=\"16\" height=\"16\" alt=\"Display marked paper for " . $tmp_surname . "\" border=\"0\" /></a></td><td>&nbsp;<a href=\"../paper/details.php?paperID=" . $paper[$i]['id'] . "\" class=\"paper\">" . $paper[$i]['q_paper'] . "</a></td><td>" . $string['progresstest'] . "</td><td>" . $paper[$i]['display_started'] . "</td><td>" . formatsec($paper[$i]['duration']) . "</td><td>" . $paper[$i]['ipaddress'] . "</td></tr>\n";
+          echo "<tr style=\"height:17px\"><td style=\"text-align:right\"><a href=\"#\" onclick=\"reviewPaper('" . $paper[$i]['started'] . "','" . $_GET['userID'] . "','" . str_replace("'","&#8217;",$tmp_surname) . "','" . $paper[$i]['id'] . "'," . $paper[$i]['paper_type'] . "); return false;\"><img src=\"../artwork/progress_16.gif\" width=\"16\" height=\"16\" alt=\"Display marked paper for " . $tmp_surname . "\" border=\"0\" /></a></td><td>&nbsp;<a href=\"../paper/details.php?paperID=" . $paper[$i]['id'] . "\" class=\"paper\">" . $paper[$i]['q_paper'] . "</a></td><td>Progress Test</td><td>" . niceDate($paper[$i]['started']) . "</td><td>" . formatsec($paper[$i]['duration']) . "</td><td>" . $paper[$i]['ipaddress'] . "</td></tr>\n";
           break;
         case 2:
           echo "<tr style=\"height:17px\"><td style=\"text-align:right\"><a href=\"#\" onclick=\"reviewPaper('" . $paper[$i]['started'] . "','" . $_GET['userID'] . "','" . str_replace("'","&#8217;",$tmp_surname) . "','" . $paper[$i]['id'] . "'," . $paper[$i]['paper_type'] . "); return false;\"><img src=\"../artwork/summative_16.gif\" width=\"16\" height=\"16\" alt=\"Display marked paper for " . $tmp_surname . "\" border=\"0\" /></a></td><td>&nbsp;<a href=\"../paper/details.php?paperID=" . $paper[$i]['id'] . "\" class=\"paper\"";
           if ($paper[$i]['started'] == '') echo ' style="color:red"';
           echo ">" . $paper[$i]['q_paper'] . "</a></td><td";
           if ($paper[$i]['started'] == '') echo ' style="color:red"';
-          echo ">Summative</td><td>" . $paper[$i]['display_started'] . "</td><td>" . formatsec($paper[$i]['duration']) . "</td><td>" . $paper[$i]['ipaddress'] . "</td></tr>\n";
+          echo ">Summative</td><td>" . niceDate($paper[$i]['started']) . "</td><td>" . formatsec($paper[$i]['duration']) . "</td><td>" . $paper[$i]['ipaddress'] . "</td></tr>\n";
           break;
         case 3:
-          echo "<tr style=\"height:17px\"><td style=\"text-align:right\"><img src=\"../artwork/survey_16.gif\" width=\"16\" height=\"16\" alt=\"Survey data is anonymous, no entry.\" border=\"0\" /></td><td>&nbsp;<a href=\"../paper/details.php?paperID=" . $paper[$i]['id'] . "\" class=\"paper\">" . $paper[$i]['q_paper'] . "</a></td><td>Survey</td><td>" . $paper[$i]['display_started'] . "</td><td>" . formatsec($paper[$i]['duration']) . "</td><td>" . $paper[$i]['ipaddress'] . "</td></tr>\n";
+          echo "<tr style=\"height:17px\"><td style=\"text-align:right\"><img src=\"../artwork/survey_16.gif\" width=\"16\" height=\"16\" alt=\"Survey data is anonymous, no entry.\" border=\"0\" /></td><td>&nbsp;<a href=\"../paper/details.php?paperID=" . $paper[$i]['id'] . "\" class=\"paper\">" . $paper[$i]['q_paper'] . "</a></td><td>Survey</td><td>" . niceDate($paper[$i]['started']) . "</td><td>" . formatsec($paper[$i]['duration']) . "</td><td>" . $paper[$i]['ipaddress'] . "</td></tr>\n";
           break;
         case 4:
-          echo "<tr style=\"height:17px\"><td style=\"text-align:right\"><a href=\"#\" onclick=\"reviewOSCE('" . $paper[$i]['started'] . "','$username','" . str_replace("'","&#8217;",$tmp_surname) . "','" . $paper[$i]['id'] . "'," . $paper[$i]['paper_type'] . "); return false;\"><img src=\"../artwork/osce_16.gif\" width=\"16\" height=\"16\" alt=\"Display marked paper for " . $tmp_surname . "\" border=\"0\" /></a></td><td>&nbsp;<a href=\"../paper/details.php?paperID=" . $paper[$i]['id'] . "\" class=\"paper\">" . $paper[$i]['q_paper'] . "</a></td><td>" . $string['oscestation'] . "</td><td>" . $paper[$i]['display_started'] . "</td><td style=\"color:#808080\">" . $string['na'] . "</td><td style=\"color:#808080\">" . $string['na'] . "</td></tr>\n";
+          echo "<tr style=\"height:17px\"><td style=\"text-align:right\"><a href=\"#\" onclick=\"reviewOSCE('" . $paper[$i]['started'] . "','$username','" . str_replace("'","&#8217;",$tmp_surname) . "','" . $paper[$i]['id'] . "'," . $paper[$i]['paper_type'] . "); return false;\"><img src=\"../artwork/osce_16.gif\" width=\"16\" height=\"16\" alt=\"Display marked paper for " . $tmp_surname . "\" border=\"0\" /></a></td><td>&nbsp;<a href=\"../paper/details.php?paperID=" . $paper[$i]['id'] . "\" class=\"paper\">" . $paper[$i]['q_paper'] . "</a></td><td>OSCE Station</td><td>" . niceDate($paper[$i]['started']) . "</td><td style=\"color:#808080\">N/A</td><td style=\"color:#808080\">N/A</td></tr>\n";
           break;
      }
     }
   } else {
-    echo '<tr><td class="coltitle" align="right">&nbsp;</td><td class="coltitle" style="width:240px">&nbsp;&nbsp;&nbsp;&nbsp;' . $string['papername'] . '&nbsp;<img src="../artwork/desc.gif" width="9" height="7" border="0" /></td><td class="coltitle">' . $string['type'] . '&nbsp;</td><td class="coltitle">' . $string['started'] . '&nbsp;</td><td class="coltitle">' . $string['duration'] . '&nbsp;</td><td class="coltitle">' . $string['ipaddress'] . '&nbsp;</td></tr>';
-    echo "<tr><td colspan=\"8\" style=\"color:#808080; text-align:center\">" . $string[noassessmentstaken] . "</td></tr>\n";
+    echo '<tr><td class="coltitle" align="right">&nbsp;</td><td class="coltitle" style="width:240px">&nbsp;&nbsp;&nbsp;&nbsp;Paper Name&nbsp;<img src="../artwork/desc.gif" width="9" height="7" border="0" /></td><td class="coltitle">Type&nbsp;</td><td class="coltitle">Started&nbsp;</td><td class="coltitle">Duration&nbsp;</td><td class="coltitle">IP Address&nbsp;</td></tr>';
+    echo "<tr><td colspan=\"8\" style=\"color:#808080; text-align:center\">&lt;no assessments/surveys taken&gt;</td></tr>\n";
   }
 ?>
 </table>
@@ -697,44 +702,37 @@ a.access:hover {color:white}
   } else {
     echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"Modules_tab\" style=\"width:100%; display:none\">\n";
   }
-  
-  $results = $mysqli->prepare("SELECT MAX(calendar_year) AS calendar_year FROM student_modules");
-  $results->execute();
-  $results->bind_result($most_recent_year);
-  $results->fetch();
-  $results->close();
+  $results = $mysqli->query("SELECT MAX(calendar_year) AS calendar_year FROM student_modules");
+  $row = $results->fetch_assoc();
+  $most_recent_year = $row['calendar_year'];  
   
   echo drawTabs('Modules',4,'',$tmp_roles);
-  echo "<tr><td class=\"coltitle\" style=\"width:20px\">&nbsp;</td><td class=\"coltitle\">&nbsp;" . $string['moduleid'] . "</td><td class=\"coltitle\">" . $string['name'] . "</td><td class=\"coltitle\">" . $string['academicyear'] . "</td></tr>\n";
+  echo "<tr><td class=\"coltitle\" style=\"width:20px\">&nbsp;</td><td class=\"coltitle\">&nbsp;Module ID</td><td class=\"coltitle\">Name</td><td class=\"coltitle\">Academic Year</td></tr>\n";
   $old_year = '';
   $html = '';
   $row_no = 0;
-  $results = $mysqli->prepare("SELECT DISTINCT student_modules.moduleid, fullname, student_modules.calendar_year, attempt FROM (student_modules, modules) WHERE student_modules.moduleid=modules.moduleid AND userID=? ORDER BY student_modules.calendar_year DESC, student_modules.moduleid");
-  $results->bind_param('i', $tmp_id);
-  $results->execute();
-  $results->store_result();
-  $results->bind_result($moduleid, $fullname, $calendar_year, $attempt);
-  $results->fetch();
+  $query_string = "SELECT DISTINCT student_modules.moduleid, fullname, student_modules.calendar_year, attempt FROM (student_modules, modules) WHERE student_modules.moduleid=modules.moduleid AND userID=$tmp_id ORDER BY student_modules.calendar_year DESC, student_modules.moduleid";
+  $results = $mysqli->query($query_string);
   if ($results->num_rows == 0) {
-    $html .= "<tr><td colspan=\"4\"><table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>$most_recent_year&nbsp;&nbsp;<a href=\"#\" style=\"color:blue\" onclick=\"editModules('$most_recent_year','$grade'); return false;\">" . $string['editmodules'] . "</a></nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table></td></tr>\n";
+    $html .= "<tr><td colspan=\"4\"><table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>$most_recent_year&nbsp;&nbsp;<a href=\"#\" style=\"color:blue\" onclick=\"editModules('$most_recent_year','$grade'); return false;\">Edit Modules...</a></nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table></td></tr>\n";
   }
-  while ($results->fetch()) {
-    if ($row_no == 0 and $calendar_year != $most_recent_year and $tmp_roles == 'Student') {
-      $html .= "<tr><td colspan=\"4\"><table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>$most_recent_year&nbsp;&nbsp;<a href=\"#\" style=\"color:blue\" onclick=\"editModules('$most_recent_year','$grade'); return false;\">" . $string['editmodules'] . "</a></nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table></td></tr>\n";
+  while ($row = $results->fetch_assoc()) {
+    if ($row_no == 0 and $row['calendar_year'] != $most_recent_year and $tmp_roles == 'Student') {
+      $html .= "<tr><td colspan=\"4\"><table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>$most_recent_year&nbsp;&nbsp;<a href=\"#\" style=\"color:blue\" onclick=\"editModules('$most_recent_year','$grade'); return false;\">Edit Modules...</a></nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table></td></tr>\n";
     }
-    if ($calendar_year != $old_year) {
-      $html .= "<tr><td colspan=\"4\"><table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>" . $calendar_year;
-      if ($calendar_year == $most_recent_year) $html .= "&nbsp;&nbsp;<a href=\"#\" style=\"color:blue\" onclick=\"editModules('$calendar_year','$grade'); return false;\">" . $string['editmodules'] . "</a>";
+    if ($row['calendar_year'] != $old_year) {
+      $html .= "<tr><td colspan=\"4\"><table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>" . $row['calendar_year'];
+      if ($row['calendar_year'] == $most_recent_year) $html .= "&nbsp;&nbsp;<a href=\"#\" style=\"color:blue\" onclick=\"editModules('" . $row['calendar_year'] . "','$grade'); return false;\">Edit Modules...</a>";
       $html .= "</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table></td></tr>\n";
     }
     $html .= '<tr>';
-    if ($attempt == 1) {
+    if ($row['attempt'] == 1) {
       $html .= '<td></td>';
     } else {
       $html .= '<td><img src="../artwork/resit.png" width="16" height="16" alt="Resit" border="0" /></td>';
     }
-    $html .= "<td>&nbsp;<a styele=\"color:blue\" href=\"../folder/details.php?module=$moduleid\">$moduleid</a></td><td><a style=\"color:blue\" href=\"../folder/details.php?module=$moduleid\">$fullname</a></td><td>$calendar_year</td></tr>\n";
-    $old_year = $calendar_year;
+    $html .= "<td>&nbsp;<a style=\"color:blue\" href=\"../folder/details.php?module=" . $row['moduleid'] . "\">" . $row['moduleid'] . "</a></td><td><a style=\"color:blue\" href=\"../folder/details.php?module=" . $row['moduleid'] . "\" target=\"_top\">" . $row['fullname'] . "</a></td><td>" . $row['calendar_year'] . "</td></tr>\n";
+    $old_year = $row['calendar_year'];
     $row_no++;
   }
   
@@ -759,10 +757,10 @@ a.access:hover {color:white}
    
   $old_faculty = '';
   $admin_school_no = 0;
-  $results = $mysqli->prepare("SELECT schools.id, faculty.name, school FROM schools, faculty WHERE schools.facultyID=faculty.id ORDER BY faculty.name, school");
-  $results->execute();  
-  $results->bind_result($schoolID, $faculty, $school);
-  while ($results->fetch()) {
+  $result = $mysqli->prepare("SELECT id, faculty, school FROM schools ORDER BY faculty, school");
+  $result->execute();  
+  $result->bind_result($schoolID, $faculty, $school);
+  while ($result->fetch()) {
     if ($old_faculty != $faculty) {
       echo '<tr><td colspan="2"><table border="0" style="padding-top:5px; width:100%; color:#1E3287"><tr><td><nobr>' . $faculty . '</nobr></td><td style="width:98%"><hr noshade="noshade" style="border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%" /></td></tr></table></td></tr>';
     }
@@ -776,10 +774,10 @@ a.access:hover {color:white}
     $old_faculty = $faculty;
     $admin_school_no++;
   }
-  $results->close();
+  $result->close();
   echo "</table>\n</td></tr>\n";
   ?>
-  <tr><td colspan="2" align="center"><input type="submit" name="updateadmin" value="<?php echo $string['save']; ?>" style="width:100px" /><input type="hidden" name="admin_school_no" value="<?php echo $admin_school_no; ?>" /></td></tr>
+  <tr><td colspan="2" align="center"><input type="submit" name="updateadmin" value="Save" style="width:100px" /><input type="hidden" name="admin_school_no" value="<?php echo $admin_school_no; ?>" /></td></tr>
   </form>
   </table>
   <?php
@@ -789,19 +787,15 @@ a.access:hover {color:white}
   } else {
     echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"Notes_tab\" style=\"width:100%; display:none\">\n";
   }
-  $link_html = '<img src="../artwork/shortcut.png" onclick="newStudentNote()" width="10" height="10" border="0" />&nbsp;<a href="" onclick="newStudentNote(); return false;" class="access">' . $string['createnote'] . '</a>&nbsp;';
-  echo drawTabs('Notes', 4, $link_html, $tmp_roles);
-  echo "<tr><td class=\"coltitle\">&nbsp;&nbsp;&nbsp;" . $string['date'] . "</td><td class=\"coltitle\">" . $string['paper'] . "</td><td class=\"coltitle\">" . $string['note'] . "</td><td class=\"coltitle\">" . $string['author'] . "</td></tr>\n";
-  
-  $results = $mysqli->prepare("SELECT note, note_date, paper_id, moduleID, paper_title, CONCAT(title, ' ', initials, ' ', surname) AS note_author FROM (student_notes, properties, users) WHERE student_notes.paper_id=properties.property_id AND student_notes.note_authorID=users.id AND student_notes.userID=?");
-  $results->bind_param('i', $tmp_id);
-  $results->execute();
-  $results->store_result();
-  $results->bind_result($note, $note_date, $note_paper_id, $note_moduleID, $paper_title, $note_author);
-  while ($results->fetch()) {
-    echo "<tr><td>&nbsp;<img src=\"../artwork/notes_icon.gif\" width=\"14\" height=\"14\" alt=\"Note\" />&nbsp;$note_date</td><td><a href=\"../paper/details.php?paperID=" . $note_paper_id . "&module=" . $note_moduleID . "\">$paper_title</a></td><td>$note</td><td>$note_author</td></tr>";
+  $link_html = '<img src="../artwork/shortcut.png" onclick="newStudentNote()" width="10" height="10" border="0" />&nbsp;<a href="" onclick="newStudentNote(); return false;" class="access">create New Note</a>&nbsp;';
+  echo drawTabs('Notes',4,$link_html,$tmp_roles);
+  echo "<tr><td class=\"coltitle\">&nbsp;&nbsp;&nbsp;Date</td><td class=\"coltitle\">Paper</td><td class=\"coltitle\">Note</td><td class=\"coltitle\">Author</td></tr>\n";
+  $query = "SELECT note, note_date, paper_id, moduleID, paper_title, CONCAT(title, ' ', initials, ' ', surname) AS note_author FROM (student_notes, properties, users) WHERE student_notes.paper_id=properties.property_id AND student_notes.note_authorID=users.id AND student_notes.userID=$tmp_id";
+  $notes_results = $mysqli->query($query);
+  while ($row = $notes_results->fetch_assoc()) {
+    echo "<tr><td>&nbsp;<img src=\"../artwork/notes_icon.gif\" width=\"14\" height=\"14\" alt=\"Note\" />&nbsp;" . $row['note_date'] . "</td><td><a href=\"../paper/details.php?paperID=" . $row['paper_id'] . "&module=" . $row['moduleID'] . "\">" . $row['paper_title'] . "</a></td><td>" . $row['note'] . "</td><td>" . $row['note_author'] . "</td></tr>";
   }
-  $results->close();
+  $notes_results->close();
 ?>
 </table>
 
@@ -812,7 +806,7 @@ a.access:hover {color:white}
     echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"Accessibility_tab\" style=\"width:100%; text-align:left; display:none\">\n";
   }
   echo "<form name=\"accessibility\" action=\"" . $_SERVER['PHP_SELF'] . "?userID=$tmp_id&tab=accessibility\" method=\"post\">";
-  echo drawTabs('Accessibility', 1, '', $tmp_roles);
+  echo drawTabs('Accessibility',1,'',$tmp_roles);
   echo "<tr><td class=\"coltitle\">&nbsp;</td></tr>\n";
   echo "<tr><td align=\"center\"><table cellspacing=\"1\" cellpadding=\"1\" border=\"0\" style=\"text-align:left\">";
   $query = "SELECT * FROM special_needs WHERE userID=$tmp_id";
@@ -847,12 +841,12 @@ a.access:hover {color:white}
   $needs_query->close();
 ?>
 <tr>
-<td><?php echo $string['extratime']; ?></td>
+<td>Extra Time</td>
 <td colspan="2">
 <select name="extra_time">
-<option value="null"><?php echo $string['noextratime']; ?></option>
+<option value="null">no extra time</option>
 <?php
-  $times = array(10, 25, 33, 50, 100);
+  $times = array(10,25,33,50,100);
   foreach ($times as $individual_time) {
     if ($individual_time == $extra_time) {
       echo "<option value=\"$individual_time\" selected>$individual_time%</option>\n";
@@ -865,12 +859,12 @@ a.access:hover {color:white}
 </td>
 </tr>
 <tr>
-<td><?php echo $string['fontsize']; ?></td>
+<td>Font Size</td>
 <td colspan="2">
 <select name="textsize">
-<option value="null"><?php echo $string['angledefault']; ?></option>
+<option value="null">&lt;default&gt;</option>
 <?php
-  $fontsizes = array(90, 100, 120, 150, 200, 300, 400);
+  $fontsizes = array(90,100,120,150,200,300,400);
   foreach ($fontsizes as $individual_fontsize) {
     if ($individual_fontsize == $textsize) {
       echo "<option value=\"$individual_fontsize\" selected>$individual_fontsize%</option>\n";
@@ -883,10 +877,10 @@ a.access:hover {color:white}
 </td>
 </tr>
 <tr>
-<td><?php echo $string['typeface']; ?></td>
+<td>Typeface</td>
 <td colspan="2">
 <select name="font">
-<option value="null"><?php echo $string['angledefault']; ?></option>
+<option value="null">&lt;default&gt;</option>
 <?php
   $fontfamily = array('Arial','Arial Black','Calibri','Comic Sans MS','Courier New','Helvetica','Tahoma','Times New Roman','Verdana');
   foreach ($fontfamily as $individual_fontfamily) {
@@ -901,8 +895,8 @@ a.access:hover {color:white}
 </td>
 </tr>
 <tr>
-<td><?php echo $string['background']; ?></td>
-<td><input type="radio" name="bg_radio" value="0"<?php if ($background == '') echo ' checked'; ?> /><?php echo $string['default']; ?></td>
+<td>Background Colour</td>
+<td><input type="radio" name="bg_radio" value="0"<?php if ($background == '') echo ' checked'; ?> />Default</td>
 <td><input type="radio" name="bg_radio" value="1"<?php if ($background != '') echo ' checked'; ?> />
 <?php
   if ($background == '') {
@@ -914,8 +908,8 @@ a.access:hover {color:white}
 </td>
 </tr>
 <tr>
-<td><?php echo $string['foreground']; ?></td>
-<td><input type="radio" name="fg_radio" value="0"<?php if ($foreground == '') echo ' checked'; ?> /><?php echo $string['default']; ?></td>
+<td>Foreground Colour</td>
+<td><input type="radio" name="fg_radio" value="0"<?php if ($foreground == '') echo ' checked'; ?> />Default</td>
 <td><input type="radio" name="fg_radio" value="1"<?php if ($foreground != '') echo ' checked'; ?> />
 <?php
   if ($foreground == '') {
@@ -927,8 +921,8 @@ a.access:hover {color:white}
 </td>
 </tr>
 <tr>
-<td><?php echo $string['markscolour']; ?></td>
-<td><input type="radio" name="marks_radio" value="0"<?php if ($marks_color == '') echo ' checked'; ?> /><?php echo $string['default']; ?></td>
+<td>Marks Colour</td>
+<td><input type="radio" name="marks_radio" value="0"<?php if ($marks_color == '') echo ' checked'; ?> />Default</td>
 <td><input type="radio" name="marks_radio" value="1"<?php if ($marks_color != '') echo ' checked'; ?> />
 <?php
   if ($marks_color == '') {
@@ -940,8 +934,8 @@ a.access:hover {color:white}
 </td>
 </tr>
 <tr>
-<td><?php echo $string['themecolour']; ?></td>
-<td><input type="radio" name="theme_radio" value="0"<?php if ($themecolor == '') echo ' checked'; ?> /><?php echo $string['default']; ?></td>
+<td>Heading/Theme Colour</td>
+<td><input type="radio" name="theme_radio" value="0"<?php if ($themecolor == '') echo ' checked'; ?> />Default</td>
 <td><input type="radio" name="theme_radio" value="1"<?php if ($themecolor != '') echo ' checked'; ?> />
 <?php
   if ($themecolor == '') {
@@ -953,8 +947,8 @@ a.access:hover {color:white}
 </td>
 </tr>
 <tr>
-<td><?php echo $string['labelscolour']; ?></td>
-<td><input type="radio" name="labels_radio" value="0"<?php if ($labelcolor == '') echo ' checked'; ?> /><?php echo $string['default']; ?></td>
+<td>Labels Colour</td>
+<td><input type="radio" name="labels_radio" value="0"<?php if ($labelcolor == '') echo ' checked'; ?> />Default</td>
 <td><input type="radio" name="labels_radio" value="1"<?php if ($labelcolor != '') echo ' checked'; ?> />
 <?php
   if ($labelcolor == '') {
@@ -966,7 +960,7 @@ a.access:hover {color:white}
 </td>
 </tr>
 <tr><td colspan="3">&nbsp;</td></tr>
-<tr><td colspan="3" align="center"><input type="submit" name="updateaccess" value="<?php echo $string['save']; ?>" style="width:100px" /></td></tr>
+<tr><td colspan="3" align="center"><input type="submit" name="updateaccess" value="Save" style="width:100px" /></td></tr>
 </table>
 
 </td>
@@ -982,8 +976,8 @@ a.access:hover {color:white}
     echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"Metadata_tab\" style=\"width:100%; display:none\">\n";
   }
   echo "<form name=\"metadata\" action=\"" . $_SERVER['PHP_SELF'] . "?userID=$tmp_id&tab=metadata\" method=\"post\">";
-  echo drawTabs('Metadata', 5, '', $tmp_roles);
-  echo "<tr><td class=\"coltitle\">&nbsp;" . $string['moduleid'] . "</td><td class=\"coltitle\">" . $string['academicyear'] . "</td><td class=\"coltitle\">" . $string['type'] . "</td><td class=\"coltitle\">" . $string['value'] . "</td><td class=\"coltitle\" style=\"width:30%\">&nbsp;</td></tr>\n";
+  echo drawTabs('Metadata',5,'',$tmp_roles);
+  echo "<tr><td class=\"coltitle\">&nbsp;Module ID</td><td class=\"coltitle\">Academic Year</td><td class=\"coltitle\">Type</td><td class=\"coltitle\">Value</td><td class=\"coltitle\" style=\"width:30%\">&nbsp;</td></tr>\n";
   $stmt = $mysqli->prepare("SELECT users_metadata.id, modules.id, modules.moduleID, fullname, calendar_year, type, value FROM users_metadata, modules WHERE users_metadata.moduleID=modules.id AND userID=?");
   $stmt->bind_param('i', $_GET['userID']);
   $stmt->execute();
@@ -1010,7 +1004,7 @@ a.access:hover {color:white}
   $stmt->close();
 
   echo "<tr><td colspan=\"5\">&nbsp;</td></tr>\n";
-  echo "<tr><td colspan=\"5\" style=\"text-align:center\"><input type=\"submit\" name=\"save_metadata\" value=\"" . $string['save'] . "\" style=\"width:100px\" /><input type=\"hidden\" name=\"metadata_no\" value=\"$metadata_no\" /></td></tr>\n";
+  echo "<tr><td colspan=\"5\" style=\"text-align:center\"><input type=\"submit\" name=\"save_metadata\" value=\"Save\" style=\"width:100px\" /><input type=\"hidden\" name=\"metadata_no\" value=\"$metadata_no\" /></td></tr>\n";
 ?>
 </form>
 </table>
@@ -1021,15 +1015,15 @@ a.access:hover {color:white}
   } else {
     echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"Teams_tab\" style=\"width:100%; display:none\">\n";
   }
-  echo drawTabs('Teams', 3, '', $tmp_roles);
-  echo "<tr><td class=\"coltitle\">&nbsp;" . $string['team'] . "</td><td class=\"coltitle\">" . $string['dateadded'] . "</td><td class=\"coltitle\">" . $string['type'] . "</td></tr>\n";
+  echo drawTabs('Teams',3,'',$tmp_roles);
+  echo "<tr><td class=\"coltitle\">&nbsp;Team</td><td class=\"coltitle\">Date Added</td><td class=\"coltitle\">Type</td></tr>\n";
   if (strpos($userroles,'Admin') !== false) {
-  echo "<tr><td colspan=\"3\"><a href=\"\" onclick=\"editMultiTeams(); return false;\">&nbsp;" . $string['editteams'] . "</a></td></tr>\n";
+  echo "<tr><td colspan=\"3\"><a href=\"\" onclick=\"editMultiTeams(); return false;\">&nbsp;Edit Teams...</a></td></tr>\n";
   }
   $query_string = "SELECT name, fullname, DATE_FORMAT(added,'%d/%m/%Y') AS added, type FROM teams, modules WHERE teams.name=modules.moduleid AND memberID=$tmp_id ORDER BY name";
   $results = $mysqli->query($query_string);
   while ($row = $results->fetch_assoc()) {
-    echo "<tr><td>&nbsp;" . $row['name'] . ": " . $row['fullname'] . "</td><td>" . $row['added'] . "</td><td>" . $string[strtolower($row['type'])] . "</td></tr>\n";
+    echo "<tr><td>&nbsp;" . $row['name'] . ": " . $row['fullname'] . "</td><td>" . $row['added'] . "</td><td>" . $row['type'] . "</td></tr>\n";
   }
   $mysqli->close();
 ?>

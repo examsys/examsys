@@ -29,7 +29,7 @@ check_var('folderID', 'GET', true, false);
 ?>
 <html>
 <head>
-<title><?php echo $string['deletefolder']; ?></title>
+<title>Delete Folder?</title>
 
 <style>
 body {margin:0px; background-color:#F1F5FB; font-family:Arial,sans-serif; font-size:80%; text-align:justifed}
@@ -40,15 +40,16 @@ body {margin:0px; background-color:#F1F5FB; font-family:Arial,sans-serif; font-s
 
 <table cellpadding="8" cellspacing="0" border="0" width="100%">
 <tr>
-<td valign="top"><img src="../artwork/delete_warning.png" width="48" height="48" border="0" alt="<?php echo $string['recyclebin']; ?>" /></td>
+<td valign="top"><img src="../artwork/delete_warning.png" width="48" height="48" border="0" alt="Recycle Bin" /></td>
 
-<td><p><?php echo $string['msg']; ?></p>
+<td><p>Are you sure you wish to delete this folder?<p>
+<p>Deleting the folder will <strong>not</strong> delete the papers contained within.</p>
 
 <div style="text-align: right">
 <form action="do_delete_folder.php" method="post">
 <input type="hidden" name="folderID" value="<?php echo $_GET['folderID']; ?>" />
-<input type="submit" name="submit" value="<?php echo $string['deletefolder']; ?>" />&nbsp;
-<input type="button" name="cancel" value=" <?php echo $string['cancel']; ?> " onclick="javascript:window.close();" />
+<input type="submit" name="submit" value="Delete Folder" />&nbsp;
+<input type="button" name="cancel" value=" Cancel " onclick="javascript:window.close();" />
 </form>
 </div>
 </td></tr>

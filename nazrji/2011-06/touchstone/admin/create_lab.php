@@ -24,8 +24,7 @@
 
   require '../include/sysadmin_auth.inc';
   require '../include/errors.inc';
-  require '../config/campuses.inc';
-  
+
   if (isset($_POST['submit'])) {
     // Insert into Lab table.
     $result = $mysqli->prepare("INSERT INTO labs VALUES (NULL,?,?,?,?,?,?,?)");
@@ -62,7 +61,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title><?php echo $string['createnewlab']; ?></title>
+<title>Create new Computer Lab</title>
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
 <style>
@@ -84,35 +83,36 @@ input, textarea {font-family:Arial,sans-serif; line-height:140%}
 <div id="content" class="content" style="font-size:80%">
 <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
 <table cellpadding="0" cellspacing="0" border="0" width="100%">
-<tr><td style="background-color:#F1F5FB"><div class="breadcrumb"><a href="../index.php"><?php echo $string['home']; ?></a> - <a href="./index.php"><?php echo $string['administrativetools']; ?></a></div><div style="font-size:200%; margin-left:10px; font-weight:bold"><?php echo $string['createnewlab']; ?></div></td></tr>
+<tr><td style="background-color:#F1F5FB"><div class="breadcrumb"><a href="../index.php">Home</a> - <a href="./index.php">Administrative Tools</a></div><div style="font-size:200%; margin-left:10px; font-weight:bold">Create new Lab</div></td></tr>
 <tr><td style="height: 3px"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td></tr>
 </table>
 <br />
 <table cellpadding="2" cellspacing="0" border="0" style="font-size:100%; margin-left:10px; margin-right:10px">
-<tr><td style="vertical-align:top; width:200px"><div><strong><?php echo $string['ipaddresses']; ?></strong></div>
+<tr><td style="vertical-align:top; width:200px"><div><strong>IP Addresses</strong></div>
 <textarea cols="20" rows="28" style="width:200px; height:590px" name="addresses"></textarea></td><td style="width:50px"></td><td style="vertical-align:top">
 
-<div><strong><?php echo $string['name']; ?></strong></div>
+<div><strong>Name</strong></div>
 <div><input type="text" size="40" name="lab_name" value="" /></div>
 <?php
-  echo "<br /><div><strong>" . $string['campus'] . "</strong></div>\n<div><select name=\"campus\">\n<option value=\"\"></option>\n";
+  echo "<br /><div><strong>Campus</strong></div>\n<div><select name=\"campus\">\n<option value=\"\"></option>\n";
+  $choices = array("Derby","Jubilee","King's Meadow","Malaysia","Ningbo","Sutton Bonington","University Park","Other");
   foreach ($choices as $choice) {
     echo "<option value=\"$choice\">$choice</option>\n";
   }
   echo "</select></div>\n";
 ?>
-<br /><div><strong><?php echo $string['building']; ?></strong></div>
+<br /><div><strong>Building</strong></div>
 <div><input type="text" size="40" name="building" value="" /></div>
-<br /><div><strong><?php echo $string['roomnumber']; ?></strong></div>
+<br /><div><strong>Room Number</strong></div>
 <div><input type="text" size="10" name="room_no" value="" /></div>
-<br /><div><strong><?php echo $string['bandwidth']; ?></strong></div><div><input type="radio" name="low_bandwidth" value="1" /><?php echo $string['low']; ?>&nbsp;&nbsp;&nbsp;<input type="radio" name="low_bandwidth" value="0" checked /><?php echo $string['high']; ?></div>
-<br /><div><strong><?php echo $string['timetabling']; ?></strong></div>
+<br /><div><strong>Bandwidth</strong></div><div><input type="radio" name="low_bandwidth" value="1" />Low&nbsp;&nbsp;&nbsp;<input type="radio" name="low_bandwidth" value="0" checked />High</div>
+<br /><div><strong>Timetabling</strong></div>
 <div><textarea name="timetabling" rows="3" cols="100"></textarea></div>
-<br /><div><strong><?php echo $string['itsupport']; ?></strong></div>
+<br /><div><strong>IT Support</strong></div>
 <div><textarea name="it_support" rows="3" cols="100"></textarea></div>
-<br /><div><strong><?php echo $string['plagarism']; ?></strong></div>
+<br /><div><strong>Plagarism</strong></div>
 <div><textarea name="plagarism" rows="3" cols="100"></textarea></div>
-<br /><br /><input type="submit" name="submit" value="<?php echo $string['save']; ?>" style="width:120px" />
+<br /><br /><input type="submit" name="submit" value="Save" style="width:120px" />
 </td></tr></table>
 
 </form>

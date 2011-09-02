@@ -36,33 +36,34 @@ if (isset($_GET['module'])) {
 }
 
 function displayIcon($paper_type, $title, $initials, $surname, $shared, $locked, $retired) {
-  global $string, $type;
+  if ($retired != '') {
+    $retired = '_retired';
+  }
   switch ($paper_type) {
     case 0:
-      $html = "<img src=\"../artwork/formative" . $retired . ".png\" width=\"48\" height=\"48\" alt=\"" . $string['type'] . ": " . $string['formative self-assessment'] ."&#013;" . $string['author'] . ": $title $initials $surname\" border=\"0\" />";
+      $html = "<img src=\"../artwork/formative" . $retired . ".png\" width=\"48\" height=\"48\" alt=\"Type: Formative Self-Assessment&#013;Author: $title $initials $surname\" border=\"0\" />";
       break;
     case 1:
-      $html = "<img src=\"../artwork/progress" . $retired . ".png\" width=\"48\" height=\"48\" alt=\"" . $string['type'] . ": " . $string['progress test'] . "&#013;" . $string['author'] . ": $title $initials $surname\" border=\"0\" />";
+      $html = "<img src=\"../artwork/progress" . $retired . ".png\" width=\"48\" height=\"48\" alt=\"Type: Progress Test&#013;Author: $title $initials $surname\" border=\"0\" />";
       break;
     case 2:
-      $html = "<img src=\"../artwork/summative" . $retired . $locked . ".png\" width=\"48\" height=\"48\" alt=\"" . $string['type'] . ": " . $string['summative exam'] . "&#013;" . $string['author'] . ": $title $initials $surname\" border=\"0\" />";
+      $html = "<img src=\"../artwork/summative" . $retired . $locked . ".png\" width=\"48\" height=\"48\" alt=\"Type: Summative Exam&#013;Author: $title $initials $surname\" border=\"0\" />";
       break;
     case 3:
-      $html = "<img src=\"../artwork/survey" . $retired . ".png\" width=\"48\" height=\"48\" alt=\"" . $string['type'] . ": " . $string['survey'] . "&#013;" . $string['author'] . ": $title $initials $surname\" border=\"0\" />";
+      $html = "<img src=\"../artwork/survey" . $retired . ".png\" width=\"48\" height=\"48\" alt=\"Type: Survey&#013;Author: $title $initials $surname\" border=\"0\" />";
       break;
     case 4:
-      $html = "<img src=\"../artwork/osce" . $retired . ".png\" width=\"48\" height=\"48\" alt=\"" . $string['type'] . ": " . $string['osce station'] . "&#013;" . $string['author'] . ": $title $initials $surname\" border=\"0\" />";
+      $html = "<img src=\"../artwork/osce" . $retired . ".png\" width=\"48\" height=\"48\" alt=\"Type: OSCE Station&#013;Author: $title $initials $surname\" border=\"0\" />";
       break;
     case 5:
-      $html = "<img src=\"../artwork/offline" . $retired . ".png\" width=\"48\" height=\"48\" alt=\"" . $string['type'] . ": " . $string['offline paper'] . "&#013;" . $string['author'] . ": $title $initials $surname\" border=\"0\" />";
+      $html = "<img src=\"../artwork/offline" . $retired . ".png\" width=\"48\" height=\"48\" alt=\"Type: Offline Paper&#013;Author: $title $initials $surname\" border=\"0\" />";
       break;
   }
   return $html;
 }
 
-
 function displayPaperIcon($row) {
-  global $userroles, $type, $folder, $module, $mysqli, $userID, $teams, $string;
+  global $userroles, $type, $folder, $module, $mysqli, $userID, $teams;
   echo '<div class="file">';
   echo '<table cellpadding="0" cellspacing="0" border="0"><tr><td style="width:60px" align="center">';
   $icon_type = $row['paper_type'];
@@ -104,11 +105,11 @@ function displayPaperIcon($row) {
     echo '  <span style="color:#C0C0C0">';
   }
   if ($row['screens'] == NULL) {
-    echo '0 ' . $string['screens'] . ', ';
+    echo '0 Screens, ';
   } elseif ($row['screens'] == 1) {
-    echo $row['screens'] . ' ' . $string['screen'];
+    echo $row['screens'] . ' Screen';
   } else {
-    echo $row['screens'] . ' ' . $string['screens'];
+    echo $row['screens'] . ' Screens';
   }
   if ($row['moduleID'] == '') {
     echo ', <span style="color:red">No modules set</span>';
@@ -118,7 +119,7 @@ function displayPaperIcon($row) {
   echo '<br />';
   echo '  ' . $row['display_start_date'];
   if ($icon_type == 2) {
-    if ($row['exam_duration'] != '') echo ', ' . $row['exam_duration'] . $string['mins'];
+    if ($row['exam_duration'] != '') echo ', ' . $row['exam_duration'] . 'mins';
   } else {
     echo ' to ' . $row['display_end_date'];
   }
@@ -185,11 +186,9 @@ function displayPaperIcon($row) {
     $selfenrol = 0;
   }
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-     "DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html onclick="hideMenus()">
 <head>
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <title>TouchStone<?php echo " $cfg_install_type"; ?></title>
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
 
@@ -199,6 +198,7 @@ function displayPaperIcon($row) {
   function addQuestion(qType) {
     top.location.href='../question/add/' + qType + '.php?folder=<?php if (isset($_GET['folder'])) echo $_GET['folder']; ?>&module=<?php if (isset($_GET['module'])) echo $_GET['module']; ?>';
   }
+
 
   function deleteFolder() {
     notice=window.open("../delete/check_delete_folder.php?folderID=<?php if (isset($_GET['folder'])) echo $_GET['folder']; ?>","notice","width=420,height=170,scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
@@ -249,7 +249,7 @@ function displayPaperIcon($row) {
 
 <body onclick="hideMenus()">
 <?php
-  require '../include/folder_options.inc';
+  include '../include/folder_options.inc';
 ?>
 
 <div id="content" class="content" style="font-size:80%">
@@ -258,9 +258,9 @@ function displayPaperIcon($row) {
 <?php
 echo '<tr><td style="background-color:#F1F5FB">';
 if (isset($parent_id)) {
-  echo '<div class="breadcrumb"><a href="../index.php">' . $string['home'] . '</a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="details.php?folder=' . $parent_id . '">' . $parent_name . '</a></div>';
+  echo '<div class="breadcrumb"><a href="../index.php">Home</a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="details.php?folder=' . $parent_id . '">' . $parent_name . '</a></div>';
 } else {
-  echo '<div class="breadcrumb"><a href="../index.php">' . $string['home'] . '</a></div>';
+  echo '<div class="breadcrumb"><a href="../index.php">Home</a></div>';
 }
 echo "</td><td style=\"background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(1); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"Help\" border=\"0\" /></a></td></tr>\n";
 
@@ -273,7 +273,7 @@ if ($folder != '') {
 echo '</td>';
 echo "<td style=\"background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><input type=\"checkbox\" name=\"showretired\" value=\"on\" onclick=\"updateCookies();\"";
 if (isset($_COOKIE['showretired']) and $_COOKIE['showretired'] == 'checked') echo ' checked';
-echo " /> " . $string['showretired'] . "</td></tr>\n";
+echo " /> Show retired</td></tr>\n";
 
 echo "<tr><td colspan=\"2\" style=\"height:3px\"><img src=\"../artwork/header_horizontal_line.gif\" width=\"100%\" height=\"3\" alt=\"Line\" /></td></tr>\n</table>\n<br />\n";
 
@@ -298,14 +298,13 @@ if (isset($_GET['module']) and $_GET['module'] != '') {
     if ($tmp_userID == $userID) $add_member = true;
   }
   if ($member_details->num_rows > 0) $tmp_html .= '</ul>';
-  //echo '<div style="float:right; width:165px; margin-right:10px; border:1px solid #8492A6; background-color:#FCFCFC; filter:progid:DXImageTransform.Microsoft.Shadow(direction=120,color=gray,strength=2)">';
-  echo '<div style="box-shadow: 2px 2px 2px #C0C0C0; float:right; width:165px; margin-right:10px; border:1px solid #8492A6; background-color:#FCFCFC">';
+  echo '<div style="float:right; width:165px; margin-right:10px; border:1px solid #8492A6; background-color:#FCFCFC; filter:progid:DXImageTransform.Microsoft.Shadow(direction=120,color=gray,strength=2)">';
   if ($add_member == true or strpos($userroles,'Admin') !== false) {
-    echo '<div style="float:left; width:95%; padding:4px; background-color:#F1F5FB; border-bottom:1px solid #CFDBEB"><div style="float:left"><a href="" style="color:#254280" onclick="addTeamMember(); return false;" class="recent">' . $string['teammembers'] . '</a></div><div style="float:right"><a href="" onclick="addTeamMember(); return false;">' . $string['edit'] . '</a></div></div>';
+    echo '<div style="padding:4px; background-color:#F1F5FB; border-bottom:1px solid #CFDBEB"><a href="" style="color:#254280" onclick="addTeamMember(); return false;" class="recent">Team Members</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="" onclick="addTeamMember(); return false;">Edit</a></div>';
   } else {
-    echo '<div style="padding:4px; background-color:#F1F5FB; border-bottom:1px solid #CFDBEB">' . $string['teammembers'] . '</div>';
+    echo '<div style="padding:4px; background-color:#F1F5FB; border-bottom:1px solid #CFDBEB">Team Members</div>';
   }
-  echo "<br clear=\"all\" />$tmp_html</div>\n";
+  echo "$tmp_html</div>\n";
   $member_details->close();
 }
 
@@ -352,7 +351,7 @@ if (isset($_COOKIE['showretired']) and $_COOKIE['showretired'] == 'checked') {
 
 // Get current owner papers.
 if ($folder != '') {
-  $query_string = "SELECT DISTINCT property_id, title, initials, surname, moduleID, paper_ownerID, paper_type, MAX(screen) AS screens, paper_title, DATE_FORMAT(start_date,'%Y%m%d%H%i%s') AS start_date, DATE_FORMAT(start_date,'$cfg_long_date_time') AS display_start_date, DATE_FORMAT(end_date,'$cfg_long_date_time') AS display_end_date, exam_duration, moduleID, retired FROM (properties, users) LEFT JOIN papers ON properties.property_id=papers.paper WHERE properties.paper_ownerID=users.id AND folder=\"$folder\" AND deleted IS NULL $showretiredSQL GROUP BY paper_title ORDER BY paper_type, paper_title";
+  $query_string = "SELECT DISTINCT property_id, title, initials, surname, moduleID, paper_ownerID, paper_type, MAX(screen) AS screens, paper_title, DATE_FORMAT(start_date,'%Y%m%d%H%i%s') AS start_date, DATE_FORMAT(start_date,'%d/%m/%y %H:%i') AS display_start_date, DATE_FORMAT(end_date,'%d/%m/%y %H:%i') AS display_end_date, exam_duration, moduleID, retired FROM (properties, users) LEFT JOIN papers ON properties.property_id=papers.paper WHERE properties.paper_ownerID=users.id AND folder=\"$folder\" AND deleted IS NULL $showretiredSQL GROUP BY paper_title ORDER BY paper_type, paper_title";
 } elseif ($_GET['module'] != '') {
   $paper_types = array();
   $results = $mysqli->query("SELECT DISTINCT paper_type, COUNT(paper_type) AS no_papers FROM properties WHERE moduleID LIKE '%" . $_GET['module'] . "%' AND deleted IS NULL $showretiredSQL GROUP BY paper_type");
@@ -361,7 +360,7 @@ if ($folder != '') {
   }
   $results->close();
   
-  $query_string = "SELECT DISTINCT property_id, title, initials, surname, moduleID, paper_ownerID, paper_type, MAX(screen) AS screens, paper_title, DATE_FORMAT(start_date,'%Y%m%d%H%i%s') AS start_date, DATE_FORMAT(start_date,'$cfg_long_date_time') AS display_start_date, DATE_FORMAT(end_date,'$cfg_long_date_time') AS display_end_date, exam_duration, moduleID, retired FROM (properties, users) LEFT JOIN papers ON properties.property_id=papers.paper WHERE properties.paper_ownerID=users.id AND moduleID LIKE '%" . $_GET['module'] . "%' AND deleted IS NULL $showretiredSQL GROUP BY paper_title ORDER BY paper_type, paper_title";
+  $query_string = "SELECT DISTINCT property_id, title, initials, surname, moduleID, paper_ownerID, paper_type, MAX(screen) AS screens, paper_title, DATE_FORMAT(start_date,'%Y%m%d%H%i%s') AS start_date, DATE_FORMAT(start_date,'%d/%m/%y %H:%i') AS display_start_date, DATE_FORMAT(end_date,'%d/%m/%y %H:%i') AS display_end_date, exam_duration, moduleID, retired FROM (properties, users) LEFT JOIN papers ON properties.property_id=papers.paper WHERE properties.paper_ownerID=users.id AND moduleID LIKE '%" . $_GET['module'] . "%' AND deleted IS NULL $showretiredSQL GROUP BY paper_title ORDER BY paper_type, paper_title";
 }
 $results = $mysqli->query($query_string);
 $old_p_type = '';
@@ -376,7 +375,7 @@ if ($display_papers) {
         $sent_clear_all = true;
         echo "<table border=\"0\" style=\"margin-left:10px; padding-right:2px; padding-bottom:5px; color:#1E3287\"><tr><td><nobr>" . $types_array[$row['paper_type']] . " (" . $paper_types[$row['paper_type']] . ")";
         if ($row['paper_type'] == 2) {
-          echo "&nbsp;&nbsp;&nbsp;<span style=\"font-weight:normal\"><a href=\"../admin/calendar.php?module=" . $_GET['module'] . "#" . date("n") . "\"><img src=\"../artwork/shortcut_calendar_icon.png\" width=\"16\" height=\"14\" alt=\"Calendar\" border=\"0\" /></a>&nbsp;<a href=\"../admin/calendar.php?module=" . $_GET['module'] . "#" . date("n") . "\">" . $string['calendar'] . "</a></span>\n";
+          echo "&nbsp;&nbsp;&nbsp;<span style=\"font-weight:normal\"><a href=\"../admin/calendar.php?module=" . $_GET['module'] . "#" . date("n") . "\"><img src=\"../artwork/shortcut_calendar_icon.png\" width=\"16\" height=\"14\" alt=\"Calendar\" border=\"0\" /></a>&nbsp;<a href=\"../admin/calendar.php?module=" . $_GET['module'] . "#" . date("n") . "\">Calendar</a></span>\n";
         }
         echo "</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
         echo "<br />\n";

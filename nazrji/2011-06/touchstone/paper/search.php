@@ -26,26 +26,25 @@
 
   require '../include/staff_auth.inc';
   
-  function displayIcon($paper_type, $title, $initials, $surname, $shared, $locked, $retired) {
-    global $string;
+  function displayIcon($paper_type,$title,$initials,$surname,$shared,$locked) {
     switch ($paper_type) {
       case 0:
-        $html = "<img src=\"../artwork/formative" . $retired . ".png\" width=\"48\" height=\"48\" alt=\"" . $string['type'] . ": " . $string['formative'] ."&#013;" . $string['author'] . ": $title $initials $surname\" border=\"0\" />";
+        $html = "<img src=\"../artwork/formative" . $shared . ".png\" width=\"48\" height=\"48\" alt=\"Type: Formative Self-Assessment&#013;Author: $title $initials $surname\" border=\"0\" />";
         break;
       case 1:
-        $html = "<img src=\"../artwork/progress" . $retired . ".png\" width=\"48\" height=\"48\" alt=\"" . $string['type'] . ": " . $string['progresstest'] . "&#013;" . $string['author'] . ": $title $initials $surname\" border=\"0\" />";
+        $html = "<img src=\"../artwork/progress" . $shared . ".png\" width=\"48\" height=\"48\" alt=\"Type: Progress Test&#013;Author: $title $initials $surname\" border=\"0\" />";
         break;
       case 2:
-        $html = "<img src=\"../artwork/summative" . $retired . $locked . ".png\" width=\"48\" height=\"48\" alt=\"" . $string['type'] . ": " . $string['summative'] . "&#013;" . $string['author'] . ": $title $initials $surname\" border=\"0\" />";
+        $html = "<img src=\"../artwork/summative" . $shared . $locked . ".png\" width=\"48\" height=\"48\" alt=\"Type: Summative Exam&#013;Author: $title $initials $surname\" border=\"0\" />";
         break;
       case 3:
-        $html = "<img src=\"../artwork/survey" . $retired . ".png\" width=\"48\" height=\"48\" alt=\"" . $string['type'] . ": " . $string['survey'] . "&#013;" . $string['author'] . ": $title $initials $surname\" border=\"0\" />";
+        $html = "<img src=\"../artwork/survey" . $shared . ".png\" width=\"48\" height=\"48\" alt=\"Type: Survey&#013;Author: $title $initials $surname\" border=\"0\" />";
         break;
       case 4:
-        $html = "<img src=\"../artwork/osce" . $retired . ".png\" width=\"48\" height=\"48\" alt=\"" . $string['type'] . ": " . $string['oscestation'] . "&#013;" . $string['author'] . ": $title $initials $surname\" border=\"0\" />";
+        $html = "<img src=\"../artwork/osce" . $shared . ".png\" width=\"48\" height=\"48\" alt=\"Type: OSCE Station&#013;Author: $title $initials $surname\" border=\"0\" />";
         break;
       case 5:
-        $html = "<img src=\"../artwork/offline" . $retired . ".png\" width=\"48\" height=\"48\" alt=\"" . $string['type'] . ": " . $string['offlinepaper'] . "&#013;" . $string['author'] . ": $title $initials $surname\" border=\"0\" />";
+        $html = "<img src=\"../artwork/offline" . $shared . ".png\" width=\"48\" height=\"48\" alt=\"Type: Offline Paper&#013;Author: $title $initials $surname\" border=\"0\" />";
         break;
     }
     return $html;
@@ -142,12 +141,12 @@ input[type=text], select {font-family:Arail,sans-serif; border: 1px solid #7F9DB
     require '../include/paper_search_options.inc';
     echo "<div id=\"content\" class=\"content\" style=\"font-size:80%\">\n";
     echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">\n";
-    echo "<tr><td style=\"background-color:#F1F5FB\" colspan=\"4\"><div class=\"breadcrumb\"><a href=\"../index.php\">" . $string['home'] . "</a></div><div style=\"font-size:200%; margin-left:10px\"><strong>" . $string['papersearch'] . "</strong></div></td></tr>";
+    echo "<tr><td style=\"background-color:#F1F5FB\" colspan=\"4\"><div class=\"breadcrumb\"><a href=\"../index.php\">Home</a></div><div style=\"font-size:200%; margin-left:10px\"><strong>Paper Search</strong></div></td></tr>";
     echo "<tr style=\"height:4px\"><td valign=\"top\"><img src=\"../artwork/header_horizontal_line.gif\" width=\"100%\" height=\"3\" alt=\"Line\" /></td></tr>\n</table>\n";
   }
 
   if (isset($_POST['submit'])) {
-    $results = $mysqli->prepare("SELECT DISTINCT property_id, title, initials, surname, moduleID, paper_ownerID, paper_type, MAX(screen) AS screens, paper_title, DATE_FORMAT(start_date,'%Y%m%d%H%i%s') AS start_date, DATE_FORMAT(start_date,'$cfg_long_date_time') AS display_start_date, DATE_FORMAT(end_date,'$cfg_long_date_time') AS display_end_date, retired FROM (properties, users) LEFT JOIN papers ON properties.property_id=papers.paper WHERE properties.paper_ownerID=users.id $paper $owner $lab $moduleid $date $type AND deleted IS NULL GROUP BY paper_title");
+    $results = $mysqli->prepare("SELECT DISTINCT property_id, title, initials, surname, moduleID, paper_ownerID, paper_type, MAX(screen) AS screens, paper_title, DATE_FORMAT(start_date,'%Y%m%d%H%i%s') AS start_date, DATE_FORMAT(start_date,'%d/%m/%y %H:%i') AS display_start_date, DATE_FORMAT(end_date,'%d/%m/%y %H:%i') AS display_end_date FROM (properties, users) LEFT JOIN papers ON properties.property_id=papers.paper WHERE properties.paper_ownerID=users.id $paper $owner $lab $moduleid $date $type AND deleted IS NULL GROUP BY paper_title");
     if (count($variables) > 0) {
 	    array_unshift($variables, $params);
 	    $vars = array();
@@ -158,13 +157,13 @@ input[type=text], select {font-family:Arail,sans-serif; border: 1px solid #7F9DB
     }
     $results->execute();
     $results->store_result();
-    $results->bind_result($property_id, $title, $initials, $surname, $moduleID, $paper_ownerID, $paper_type, $screens, $paper_title, $start_date, $display_start_date, $display_end_date, $retired);
+    $results->bind_result($property_id, $title, $initials, $surname, $moduleID, $paper_ownerID, $paper_type, $screens, $paper_title, $start_date, $display_start_date, $display_end_date);
     
-    echo "<tr><td style=\"background-color:#F1F5FB\"><div class=\"breadcrumb\"><a href=\"../index.php\">" . $string['home'] . "</a></div><div onclick=\"qOff()\" style=\"font-size:200%; margin-left:10px\"><strong>" . $string['papers'] . " (" . number_format($results->num_rows) . "):&nbsp;</strong>" . $_POST['searchterm'] . "</div></td><td style=\"background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(0); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"Help\" border=\"0\" /></a></td></tr>\n";
+    echo "<tr><td style=\"background-color:#F1F5FB\"><div class=\"breadcrumb\"><a href=\"../index.php\">Home</a></div><div onclick=\"qOff()\" style=\"font-size:200%; margin-left:10px\"><strong>Papers (" . number_format($results->num_rows) . "):&nbsp;</strong>" . $_POST['searchterm'] . "</div></td><td style=\"background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(0); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"Help\" border=\"0\" /></a></td></tr>\n";
     echo "<tr style=\"height:4px\"><td valign=\"top\" colspan=\"2\"><img src=\"../artwork/header_horizontal_line.gif\" width=\"100%\" height=\"3\" alt=\"Line\" /></td></tr>\n</table>\n";
     if ($results->num_rows > 0) {
       echo '<br />';
-      while ($results->fetch()) {
+      while ($row = $results->fetch()) {
         echo '<div class="f">';
         echo '<table cellpadding="0" cellspacing="0" border="0"><tr><td style="width:60px; text-align:center">';
         $type = $paper_type;
@@ -174,7 +173,7 @@ input[type=text], select {font-family:Arail,sans-serif; border: 1px solid #7F9DB
           $locked = '';
         }
         if ($paper_ownerID == $userID or strpos($userroles,'SysAdmin') !== false or strpos($userroles,'Admin') !== false or $type != 2) {
-          echo "<a href=\"../paper/details.php?paperID=$property_id&module=$moduleID\">" . displayIcon($type, $title, $initials, $surname, '', $locked, $retired) . "</a></td>\n";
+          echo "<a href=\"../paper/details.php?paperID=$property_id&module=$moduleID\">" . displayIcon($type,$title,$initials,$surname,'',$locked) . "</a></td>\n";
           echo "</td><td><a href=\"../paper/details.php?paperID=$property_id&module=$moduleID\">$paper_title</a><br />";
         } else {
           $access = false;
@@ -183,7 +182,7 @@ input[type=text], select {font-family:Arail,sans-serif; border: 1px solid #7F9DB
           }
         
           if ($access = true) {
-            echo "<a href=\"../paper/details.php?paperID=$property_id&module=$moduleID\">" . displayIcon(2, $title, $initials, $surname, '', $locked, $retired) . "</a></td>\n";
+            echo "<a href=\"../paper/details.php?paperID=$property_id&module=$moduleID\">" . displayIcon(2,$title,$initials,$surname,'',$locked) . "</a></td>\n";
             echo "</td><td><a href=\"../paper/details.php?paperID=$property_id&module=$moduleID\">$paper_title</a><br />";
           } else {
             echo "<img src=\"../artwork/noentry_question_icon_48.png\" width=\"48\" height=\"48\" alt=\"Type: Summative Exam (Restricted Access)&#013;Author: $title $initials $surname\" border=\"0\" /></td>\n";
@@ -192,19 +191,19 @@ input[type=text], select {font-family:Arail,sans-serif; border: 1px solid #7F9DB
         }
         echo '  <span style="color:#808080">' . $screens;
         if ($screens == 1) {
-          echo ' ' . $string['screen'] . ', ';
+          echo ' Screen, ';
         } else {
-          echo ' ' . $string['screens'] . ', ';
+          echo ' Screens, ';
         }
         echo str_replace(',',' ',$moduleID) . '<br />';
-        echo '  ' . $display_start_date. ' ' . $string['to'] . ' ' . $display_end_date .  '</td></tr></table>';
+        echo '  ' . $display_start_date. ' to ' . $display_end_date .  '</td></tr></table>';
         echo "</div>\n";
       }
     } else {
     ?>
     <table cellpadding="1" cellspacing="1" border="0" style="margin: 0px auto; width:75%; border:1px solid #C0C0C0; text-align:left">
     <tr><td colspan="2" style="background-color:#F2B100; height:3px"> </td></tr>
-    <tr><td style="width:16px; padding-top:5px; padding-bottom:5px"><img src="../artwork/information_icon.gif" width="16" height="16" alt="i" border="0" /></td><td style="padding-top:5px; padding-bottom:5px">&nbsp;<?php echo $string['nothingfound']; ?> "<?php echo $_POST['searchterm']; ?>"</td></tr>
+    <tr><td style="width:16px; padding-top:5px; padding-bottom:5px"><img src="../artwork/information_icon.gif" width="16" height="16" alt="i" border="0" /></td><td style="padding-top:5px; padding-bottom:5px">&nbsp;Nothing found in Papers for the query "<?php echo $_POST['searchterm']; ?>"</td></tr>
     </table>
     <?php
     }

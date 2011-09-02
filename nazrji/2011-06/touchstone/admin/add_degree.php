@@ -56,7 +56,7 @@ if (isset($_POST['submit']) and $unique_degree == true) {
   <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
   <html>
   <head>
-  <title><?php echo $string['createnewcourse']; ?></title>
+  <title>Add Degree</title>
   <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
   <style>
     input, textarea {font-family:Arial,sans-serif; color:black}
@@ -79,11 +79,11 @@ if (isset($_POST['submit']) and $unique_degree == true) {
   
   <body>
   <?php
-    require '../include/course_options.inc';
+    require '../include/degree_options.inc';
   ?>
   <div id="content" class="content" style="font-size:80%">
   <table cellpadding="0" cellspacing="0" border="0" width="100%">
-  <tr><td style="background-color:#F1F5FB"><div class="breadcrumb"><a href="../index.php"><?php echo $string['home']; ?></a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php"><?php echo $string['administrativetools']; ?></a></div><div style="margin-left:10px; font-size:200%; font-weight:bold"><?php echo $string['createnewcourse']; ?></div></td></tr>
+  <tr><td style="background-color:#F1F5FB"><div class="breadcrumb"><a href="../index.php">Home</a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php">Administrative Tools</a></div><div style="margin-left:10px; font-size:200%; font-weight:bold">Create new Degree</div></td></tr>
   <tr><td style="height:3px"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" /></td></tr>
   </table>
   <br />
@@ -92,40 +92,37 @@ if (isset($_POST['submit']) and $unique_degree == true) {
     <table cellpadding="0" cellspacing="2" border="0" style="text-align:left">
     <?php
     if ($unique_degree == false) {
-      echo "<tr><td class=\"field\">" . $string['code'] . "</td><td><input type=\"text\" size=\"10\" name=\"degree\" style=\"background-color:#FFD9D9; color:#800000; border:1px solid #800000\" value=\"$tmp_degree\" /></td></tr>\n";
+      echo "<tr><td class=\"field\">Code</td><td><input type=\"text\" size=\"10\" name=\"degree\" style=\"background-color:#FFD9D9; color:#800000; border:1px solid #800000\" value=\"$tmp_degree\" /></td></tr>\n";
     } else {
     ?>
-      <tr><td class="field"><?php echo $string['code']; ?></td><td><input type="text" size="10" name="degree" value="<?php if (isset($_GET['moduleid'])) echo $_GET['moduleid']; ?>" /></td></tr>
+      <tr><td class="field">Code</td><td><input type="text" size="10" name="degree" value="<?php if (isset($_GET['moduleid'])) echo $_GET['moduleid']; ?>" /></td></tr>
     <?php
     }
     ?>
-    <tr><td class="field"><?php echo $string['name']; ?></td><td><input type="text" size="70" name="description" value="<?php if (isset($_POST['description'])) echo $_POST['description']; ?>" /></td></tr>
-    <tr><td class="field"><?php echo $string['school']; ?></td><td><select name="school">
+    <tr><td class="field">Title</td><td><input type="text" size="70" name="description" value="<?php if (isset($_POST['description'])) echo $_POST['description']; ?>" /></td></tr>
+    <tr><td class="field">School</td><td><select name="school">
     <option value=""></option>
     <?php
-      $result = $mysqli->prepare("SELECT school, name FROM schools, faculty WHERE schools.facultyID=faculty.id ORDER BY name, school");
-      $result->execute();
-      $result->bind_result($school, $faculty);
-      
+      $school_details = $mysqli->query("SELECT school, faculty FROM schools ORDER BY faculty, school");
       $old_faculty = '';
-      while ($result->fetch()) {
-        if ($faculty != $old_faculty) {
+      while ($school_row = $school_details->fetch_assoc()) {
+        if ($school_row['faculty'] != $old_faculty) {
           if ($old_faculty != '') echo "</optgroup>\n";
-          echo "<optgroup label=\"$faculty\">\n";
+          echo "<optgroup label=\"" . $school_row['faculty'] . "\">\n";
         }
-        if (isset($_POST['school']) and $_POST['school'] == $school) {
-          echo "<option value=\"$school\" selected>$school</option>\n";
+        if (isset($_POST['school']) and $_POST['school'] == $school_row['school']) {
+          echo "<option value=\"" . $school_row['school'] . "\" selected>" . $school_row['school'] . "</option>\n";
         } else {
-          echo "<option value=\"$school\">$school</option>\n";
+          echo "<option value=\"" . $school_row['school'] . "\">" . $school_row['school'] . "</option>\n";
         }
-        $old_faculty = $faculty;
+        $old_faculty = $school_row['faculty'];
       }
       echo "</optgroup>\n";
-      $result->close();
+      $school_details->close();
     ?>
     </select></td></tr>
     </table>
-    <p><input type="submit" style="width:100px" name="submit" value="<?php echo $string['add']; ?>">&nbsp;&nbsp;<input style="width:100px" type="button" name="home" value="<?php echo $string['cancel']; ?>" onclick="javascript:history.back();" /></p>
+    <p><input type="submit" style="width:100px" name="submit" value="Add">&nbsp;&nbsp;<input style="width:100px" type="button" name="home" value="Cancel" onclick="javascript:history.back();" /></p>
   </form>
   </div>
 <?php

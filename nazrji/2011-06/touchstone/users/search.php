@@ -146,21 +146,20 @@
 a {color:black}
 input[type=text], select {font-family:Arail,sans-serif; border: 1px solid #7F9DB9}
 .coltitle {cursor:hand; background-color:#F1F5FB; color:black}
-#usertable td {padding-left:6px}
-.fn {color:#A5A5A5}
 </style>
 
 <script src="../javascript/staff_help.js" type="text/javascript"></script>
 <script language="javascript">
-  function selUser(userID, lineID, menuID) {
+  function selectUser(userID, email, lineID, menuID) {
     tmp_ID = document.PapersMenu.oldUserID.value;
     if (tmp_ID != '') {
       document.getElementById(tmp_ID).style.backgroundColor = 'white';
     }
     document.getElementById('menu2a').style.display = 'none';
-    document.getElementById('menu' + menuID).style.display = 'block';
+    document.getElementById(menuID).style.display = 'block';
 
     document.PapersMenu.userID.value = userID;
+    document.PapersMenu.email.value = email;
 
     document.getElementById(lineID).style.backgroundColor = '#B3C8E8';
     
@@ -183,19 +182,19 @@ input[type=text], select {font-family:Arail,sans-serif; border: 1px solid #7F9DB
     document.PapersMenu.tmp_yearID.value = '<?php if (isset($yearID)) echo $yearID; ?>';  
   }
   
-  function lon(lineID) {
+  function highlight(lineID) {
     if (lineID != document.PapersMenu.oldUserID.value) {
       document.getElementById(lineID).style.backgroundColor = '#EEEEEE';
     }
   }
 
-  function loff(lineID) {
+  function unhighlight(lineID) {
     if (lineID != document.PapersMenu.oldUserID.value) {
       document.getElementById(lineID).style.backgroundColor = '';
     }
   }
 
-  function profile(userID) {
+  function viewProfile(userID) {
     document.location.href='details.php?search_surname=<?php if (isset($_GET['search_surname'])) echo $_GET['search_surname']; ?>&search_username=<?php if (isset($_GET['username']))  echo $_GET['search_username']; ?>&student_id=<?php if (isset($_GET['student_id'])) echo $_GET['student_id']; ?>&moduleID=<?php if (isset($_GET['team'])) echo $_GET['team']; ?>&calendar_year=<?php if (isset($_GET['calendar_year'])) echo $_GET['calendar_year']; ?>&students=<?php if (isset($_GET['students'])) echo $_GET['students']; ?>&submit=Search&userID=' + userID + '&email=<?php if (isset($_GET['email'])) echo $_GET['email']; ?>&oldUserID=<?php if (isset($_GET['oldUserID'])) echo $_GET['oldUserID']; ?>&tmp_surname=<?php if (isset($_GET['tmp_surname'])) echo $_GET['tmp_surname']; ?>&tmp_degreeID=<?php if (isset($_GET['tmp_degreeID'])) echo $_GET['tmp_degreeID']; ?>&tmp_yearID=<?php if (isset($_GET['tmp_yearID'])) echo $_GET['tmp_yearID']; ?>';
   }
 </script>
@@ -211,32 +210,32 @@ input[type=text], select {font-family:Arail,sans-serif; border: 1px solid #7F9DB
     include '../include/user_search_options.inc';
     echo "<div id=\"content\" class=\"content\" style=\"font-size:80%\">\n";
     echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">\n";
-    echo "<tr><td style=\"background-color:#F1F5FB\"><div class=\"breadcrumb\"><a href=\"../index.php\">" . $string['home'] . "</a></div><div onclick=\"qOff()\" style=\"font-size:200%; margin-left:16px\"><strong>" . $string['usersearch'] . "</div></td><td style=\"background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(92); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"Help\" border=\"0\" /></a></td></tr>";
+    echo "<tr><td style=\"background-color:#F1F5FB\"><div class=\"breadcrumb\"><a href=\"../index.php\">Home</a></div><div onclick=\"qOff()\" style=\"font-size:200%; margin-left:10px\"><strong>User Search</div></td><td style=\"background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(92); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"Help\" border=\"0\" /></a></td></tr>";
     echo "<tr style=\"height:4px\"><td valign=\"top\" colspan=\"2\"><img src=\"../artwork/header_horizontal_line.gif\" width=\"100%\" height=\"3\" alt=\"Line\" /></td></tr>\n</table>\n</div>\n</body></html>\n";
     exit;
   }
 ?>
 
 <form method="get" action="<?php echo $_SERVER['PHP_SELF']; ?>?sortby=<?php echo $sortby; ?>&order=<?php echo $ordering; ?>">
-<table cellpadding="0" cellspacing="0" border="0" width="100%" id="usertable">
+<table cellpadding="0" cellspacing="0" border="0" width="100%">
 
 <?php
-echo "<tr><td style=\"background-color:#F1F5FB; padding-left:16px\" colspan=\"7\"><div class=\"breadcrumb\" style=\"margin-left:0px\"><a href=\"../index.php\">" . $string['home'] . "</a></div><div onclick=\"qOff()\" style=\"font-size:200%\"><strong>Users ($user_no):&nbsp;</strong>";
-if (isset($_GET['search_surname']) and $_GET['search_surname'] != '') {
-  echo $_GET['search_surname'];
-} elseif (isset($_GET['team']) and $_GET['team'] != '%') {
-  echo $_GET['team'];
-  if (isset($_GET['calendar_year']) and $_GET['calendar_year'] != '' and isset($_GET['students']) and $_GET['students'] != '') {
-    echo ' (' . $_GET['calendar_year'] . ')';
+  echo "<tr><td style=\"background-color:#F1F5FB\" colspan=\"7\"><div class=\"breadcrumb\"><a href=\"../index.php\">Home</a></div><div onclick=\"qOff()\" style=\"font-size:200%; margin-left:10px\"><strong>Users ($user_no):&nbsp;</strong>";
+  if (isset($_GET['search_surname']) and $_GET['search_surname'] != '') {
+    echo $_GET['search_surname'];
+  } elseif (isset($_GET['team']) and $_GET['team'] != '%') {
+    echo $_GET['team'];
+    if (isset($_GET['calendar_year']) and $_GET['calendar_year'] != '' and isset($_GET['students']) and $_GET['students'] != '') {
+      echo ' (' . $_GET['calendar_year'] . ')';
+    }
+  } elseif (isset($_GET['search_username']) and $_GET['search_username'] != '') {
+    echo $_GET['search_username'];
+  } elseif (isset($_GET['student_id']) and $_GET['student_id'] != '') {
+    echo $_GET['student_id'];
+  } elseif (isset($_GET['calendar_year']) and $_GET['calendar_year'] != '%') {
+    echo $_GET['calendar_year'];
   }
-} elseif (isset($_GET['search_username']) and $_GET['search_username'] != '') {
-  echo $_GET['search_username'];
-} elseif (isset($_GET['student_id']) and $_GET['student_id'] != '') {
-  echo $_GET['student_id'];
-} elseif (isset($_GET['calendar_year']) and $_GET['calendar_year'] != '%') {
-  echo $_GET['calendar_year'];
-}
-echo "</div></td><td style=\"background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(92); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['help'] . "\" border=\"0\" /></a></td></tr>\n";
+  echo "</div></td><td style=\"background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(92); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"Help\" border=\"0\" /></a></td></tr>\n";
 
 if ($ordering == 'asc') {
   $new_order = 'desc';
@@ -274,28 +273,22 @@ if (isset($_GET['student_id'])) {
   $tmp_student_id = '';
 }
 
-if (isset($_GET['team'])) {
-  $tmp_team = $_GET['team'];
-} else {
-  $tmp_team = '';
-}
-
-$additional_param = '&team=' . $tmp_team . '&search_surname=' . $tmp_surname . '&search_username=' . $tmp_username . '&student_id=' . $tmp_student_id . '&moduleID=' . $moduleID . '&calendar_year=' . $calendar_year . '&students=' . $tmp_students . '&staff=' . $tmp_staff . '&submit=Search&userID=';
+$additional_param = '&search_surname=' . $tmp_surname . '&search_username=' . $tmp_username . '&student_id=' . $tmp_student_id . '&moduleID=' . $moduleID . '&calendar_year=' . $calendar_year . '&students=' . $tmp_students . '&staff=' . $tmp_staff . '&submit=Search&userID=';
 if ($sortby == 'title') {
-  echo '<tr><td class="coltitle" style="width:16px"></td><td class="coltitle" style="width:80px" onclick="window.location=\'search.php?sortby=title&ordering=' . $new_order . $additional_param . '\'">&nbsp;' . $string['title'] . '&nbsp;<img src="../artwork/desc.gif" width="9" height="7" border="0" /></td><td class="coltitle"></td><td class="coltitle" style="width:240px; padding-left:0px" onclick="window.location=\'search.php?sortby=surname&ordering=asc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;' . $string['name'] . '&nbsp;</td><td class="coltitle" style="padding-left:0px" onclick="window.location=\'search.php?sortby=username&ordering=asc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;' . $string['username'] . '&nbsp;</td><td class="coltitle" style="padding-left:0px" onclick="window.location=\'search.php?sortby=student_id&ordering=asc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;' . $string['studentid'] . '&nbsp;</td><td class="coltitle" style="padding-left:0px" onclick="window.location=\'search.php?sortby=yearofstudy&ordering=desc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;' . $string['year'] . '&nbsp;</td><td class="coltitle" style="padding-left:0px" onclick="window.location=\'search.php?sortby=grade&ordering=asc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;' . $string['course'] . '&nbsp;</td></tr>';
+  echo '<tr><td class="coltitle" style="width:16px"></td><td class="coltitle" style="width:80px" onclick="window.location=\'search.php?sortby=title&ordering=' . $new_order . $additional_param . '\'">&nbsp;Title&nbsp;<img src="../artwork/desc.gif" width="9" height="7" border="0" /></td><td class="coltitle"></td><td class="coltitle" style="width: 240px" onclick="window.location=\'search.php?sortby=surname&ordering=asc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Name&nbsp;</td><td class="coltitle" onclick="window.location=\'search.php?sortby=username&ordering=asc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Username&nbsp;</td><td class="coltitle" onclick="window.location=\'search.php?sortby=student_id&ordering=asc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Student ID&nbsp;</td><td class="coltitle" onclick="window.location=\'search.php?sortby=yearofstudy&ordering=desc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Year&nbsp;</td><td class="coltitle" onclick="window.location=\'search.php?sortby=grade&ordering=asc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Course&nbsp;</td></tr>';
 } elseif ($sortby == 'surname') {
-  echo '<tr><td class="coltitle" style="width:16px"></td><td class="coltitle" style="width:80px" onclick="window.location=\'search.php?sortby=title&ordering=asc' . $additional_param . '\'">&nbsp;' . $string['title'] . '&nbsp;</td><td class="coltitle"></td><td class="coltitle" style="width:240px; padding-left:0px" onclick="window.location=\'search.php?sortby=surname&ordering=' . $new_order . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;' . $string['name'] . '&nbsp;<img src="../artwork/desc.gif" width="9" height="7" border="0" /></td><td class="coltitle" style="padding-left:0px" onclick="window.location=\'search.php?sortby=username&ordering=asc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;' . $string['username'] . '&nbsp;</td><td class="coltitle" style="padding-left:0px" onclick="window.location=\'search.php?sortby=student_id&ordering=asc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;' . $string['studentid'] . '&nbsp;</td><td class="coltitle" style="padding-left:0px" onclick="window.location=\'search.php?sortby=yearofstudy&ordering=desc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;' . $string['year'] . '&nbsp;</td><td class="coltitle" style="padding-left:0px" onclick="window.location=\'search.php?sortby=grade&ordering=asc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;' . $string['course'] . '&nbsp;</td></tr>';
+  echo '<tr><td class="coltitle" style="width:16px"></td><td class="coltitle" style="width:80px" onclick="window.location=\'search.php?sortby=title&ordering=asc' . $additional_param . '\'">&nbsp;Title&nbsp;</td><td class="coltitle"></td><td class="coltitle" onclick="window.location=\'search.php?sortby=surname&ordering=' . $new_order . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Name&nbsp;<img src="../artwork/desc.gif" width="9" height="7" border="0" /></td><td class="coltitle" onclick="window.location=\'search.php?sortby=username&ordering=asc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Username&nbsp;</td><td class="coltitle" onclick="window.location=\'search.php?sortby=student_id&ordering=asc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Student ID&nbsp;</td><td class="coltitle" onclick="window.location=\'search.php?sortby=yearofstudy&ordering=desc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Year&nbsp;</td><td class="coltitle" onclick="window.location=\'search.php?sortby=grade&ordering=asc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Course&nbsp;</td></tr>';
 } elseif ($sortby == 'username') {
-  echo '<tr><td class="coltitle" style="width:16px"></td><td class="coltitle" style="width:80px" onclick="window.location=\'search.php?sortby=title&ordering=asc' . $additional_param . '\'">&nbsp;' . $string['title'] . '&nbsp;</td><td class="coltitle"></td><td class="coltitle" style="width:240px; padding-left:0px" onclick="window.location=\'search.php?sortby=surname&ordering=asc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;' . $string['name'] . '&nbsp;</td><td class="coltitle" style="padding-left:0px" onclick="window.location=\'search.php?sortby=username&ordering=' . $new_order . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;' . $string['username'] . '&nbsp;<img src="../artwork/desc.gif" width="9" height="7" border="0" /></td><td class="coltitle" style="padding-left:0px" onclick="window.location=\'search.php?sortby=student_id&ordering=asc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;' . $string['studentid'] . '&nbsp;</td><td class="coltitle" style="padding-left:0px" onclick="window.location=\'search.php?sortby=yearofstudy&ordering=desc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;' . $string['year'] . '&nbsp;</td><td class="coltitle" style="padding-left:0px" onclick="window.location=\'search.php?sortby=grade&ordering=asc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;' . $string['course'] . '&nbsp;</td></tr>';
+  echo '<tr><td class="coltitle" style="width:16px"></td><td class="coltitle" style="width:80px" onclick="window.location=\'search.php?sortby=title&ordering=asc' . $additional_param . '\'">&nbsp;Title&nbsp;</td><td class="coltitle"></td><td class="coltitle" onclick="window.location=\'search.php?sortby=surname&ordering=asc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Name&nbsp;</td><td class="coltitle" onclick="window.location=\'search.php?sortby=username&ordering=' . $new_order . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Username&nbsp;<img src="../artwork/desc.gif" width="9" height="7" border="0" /></td><td class="coltitle" onclick="window.location=\'search.php?sortby=student_id&ordering=asc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Student ID&nbsp;</td><td class="coltitle" onclick="window.location=\'search.php?sortby=yearofstudy&ordering=desc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Year&nbsp;</td><td class="coltitle" onclick="window.location=\'search.php?sortby=grade&ordering=asc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Course&nbsp;</td></tr>';
 } elseif ($sortby == 'student_id') {
-  echo '<tr><td class="coltitle" style="width:16px"></td><td class="coltitle" style="width:80px" onclick="window.location=\'search.php?sortby=title&ordering=asc' . $additional_param . '\'">&nbsp;' . $string['title'] . '&nbsp;</td><td class="coltitle"></td><td class="coltitle" style="width:240px; padding-left:0px" onclick="window.location=\'search.php?sortby=surname&ordering=asc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;' . $string['name'] . '&nbsp;</td><td class="coltitle" style="padding-left:0px" onclick="window.location=\'search.php?sortby=username&ordering=desc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;' . $string['username'] . '&nbsp;</td><td class="coltitle" style="padding-left:0px" onclick="window.location=\'search.php?sortby=student_id&ordering=' . $new_order . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;' . $string['studentid'] . '&nbsp;<img src="../artwork/desc.gif" width="9" height="7" border="0" /></td><td class="coltitle" style="padding-left:0px" onclick="window.location=\'search.php?sortby=yearofstudy&ordering=desc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;' . $string['year'] . '&nbsp;</td><td class="coltitle" style="padding-left:0px" onclick="window.location=\'search.php?sortby=grade&ordering=asc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;' . $string['course'] . '&nbsp;</td></tr>';
+  echo '<tr><td class="coltitle" style="width:16px"></td><td class="coltitle" style="width:80px" onclick="window.location=\'search.php?sortby=title&ordering=asc' . $additional_param . '\'">&nbsp;Title&nbsp;</td><td class="coltitle"></td><td class="coltitle" onclick="window.location=\'search.php?sortby=surname&ordering=asc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Name&nbsp;</td><td class="coltitle" onclick="window.location=\'search.php?sortby=username&ordering=desc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Username&nbsp;</td><td class="coltitle" onclick="window.location=\'search.php?sortby=student_id&ordering=' . $new_order . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Student ID&nbsp;<img src="../artwork/desc.gif" width="9" height="7" border="0" /></td><td class="coltitle" onclick="window.location=\'search.php?sortby=yearofstudy&ordering=desc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Year&nbsp;</td><td class="coltitle" onclick="window.location=\'search.php?sortby=grade&ordering=asc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Course&nbsp;</td></tr>';
 } elseif ($sortby == 'yearofstudy') {
-  echo '<tr><td class="coltitle" style="width:16px"></td><td class="coltitle" style="width:80px" onclick="window.location=\'search.php?sortby=title&ordering=asc' . $additional_param . '\'">&nbsp;' . $string['title'] . '&nbsp;</td><td class="coltitle"></td><td class="coltitle" style="width:240px; padding-left:0px" onclick="window.location=\'search.php?sortby=surname&ordering=asc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;' . $string['name'] . '&nbsp;</td><td class="coltitle" style="padding-left:0px" onclick="window.location=\'search.php?sortby=username&ordering=desc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;' . $string['username'] . '&nbsp;</td><td class="coltitle" style="padding-left:0px" onclick="window.location=\'search.php?sortby=student_id&ordering=asc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;' . $string['studentid'] . '&nbsp;</td><td class="coltitle" style="padding-left:0px" onclick="window.location=\'search.php?sortby=yearofstudy&ordering=' . $new_order . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;' . $string['year'] . '&nbsp;<img src="../artwork/desc.gif" width="9" height="7" border="0" /></td><td class="coltitle" style="padding-left:0px" onclick="window.location=\'search.php?sortby=grade&ordering=desc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;' . $string['course'] . '&nbsp;</td></tr>';
+  echo '<tr><td class="coltitle" style="width:16px"></td><td class="coltitle" style="width:80px" onclick="window.location=\'search.php?sortby=title&ordering=asc' . $additional_param . '\'">&nbsp;Title&nbsp;</td><td class="coltitle"></td><td class="coltitle" onclick="window.location=\'search.php?sortby=surname&ordering=asc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Name&nbsp;</td><td class="coltitle" onclick="window.location=\'search.php?sortby=username&ordering=desc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Username&nbsp;</td><td class="coltitle" onclick="window.location=\'search.php?sortby=student_id&ordering=asc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Student ID&nbsp;</td><td class="coltitle" onclick="window.location=\'search.php?sortby=yearofstudy&ordering=' . $new_order . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Year&nbsp;<img src="../artwork/desc.gif" width="9" height="7" border="0" /></td><td class="coltitle" onclick="window.location=\'search.php?sortby=grade&ordering=desc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Course&nbsp;</td></tr>';
 } elseif ($sortby == 'grade') {
-  echo '<tr><td class="coltitle" style="width:16px"></td><td class="coltitle" style="width:80px" onclick="window.location=\'search.php?sortby=title&ordering=asc' . $additional_param . '\'">&nbsp;' . $string['title'] . '&nbsp;</td><td class="coltitle"></td><td class="coltitle" style="width:240px; padding-left:0px" onclick="window.location=\'search.php?sortby=surname&ordering=asc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;' . $string['name'] . '&nbsp;</td><td class="coltitle" style="padding-left:0px" onclick="window.location=\'search.php?sortby=username&ordering=desc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;' . $string['username'] . '&nbsp;</td><td class="coltitle" style="padding-left:0px" onclick="window.location=\'search.php?sortby=student_id&ordering=asc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;' . $string['studentid'] . '&nbsp;</td><td class="coltitle" style="padding-left:0px" onclick="window.location=\'search.php?sortby=yearofstudy&ordering=desc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;' . $string['year'] . '&nbsp;</td><td class="coltitle" style="padding-left:0px" onclick="window.location=\'search.php?sortby=grade&ordering=' . $new_order . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;' . $string['course'] . '&nbsp;<img src="../artwork/desc.gif" width="9" height="7" border="0" /></td></tr>';
+  echo '<tr><td class="coltitle" style="width:16px"></td><td class="coltitle" style="width:80px" onclick="window.location=\'search.php?sortby=title&ordering=asc' . $additional_param . '\'">&nbsp;Title&nbsp;</td><td class="coltitle"></td><td class="coltitle" onclick="window.location=\'search.php?sortby=surname&ordering=asc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Name&nbsp;</td><td class="coltitle" onclick="window.location=\'search.php?sortby=username&ordering=desc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Username&nbsp;</td><td class="coltitle" onclick="window.location=\'search.php?sortby=student_id&ordering=asc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Student ID&nbsp;</td><td class="coltitle" onclick="window.location=\'search.php?sortby=yearofstudy&ordering=desc' . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Year&nbsp;</td><td class="coltitle" onclick="window.location=\'search.php?sortby=grade&ordering=' . $new_order . $additional_param . '\'"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Course&nbsp;<img src="../artwork/desc.gif" width="9" height="7" border="0" /></td></tr>';
 }
 ?>
-<tr style="height:4px"><td valign="top" colspan="8" style="padding-left:0px"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td></tr>
+<tr style="height:4px"><td valign="top" colspan="8"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td></tr>
 <?php
   if ($roles_sql == '') {
     echo "</table>\n<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"width:100%\"><tr><td style=\"width:60px; height:32px; text-align:right; background-image:url('../artwork/non_owner_gradient.gif'); background-repeat:repeat-x\"><img src=\"../artwork/red_warning.png\" width=\"32\" height=\"32\" alt=\"Locked\" />&nbsp;&nbsp;</td><td style=\"height:32px; vertical-align:middle; background-image:url('../artwork/non_owner_gradient.gif'); background-repeat:repeat-x\"><strong>Warning</strong>&nbsp;&nbsp;&nbsp;You have not ticked any categories under 'Advanced' to search for.</td></tr></table>\n</body>\n</html>\n";
@@ -310,85 +303,79 @@ if ($sortby == 'title') {
   $old_title = '';
   $old_username = '';
   $old_grade = '';
-  $old_year = '';
   $x = 0;
   while ($row = $user_data->fetch_assoc()) {
     if ($old_letter != strtoupper(substr($row['surname'],0,1)) and $sortby == 'surname') {
-      echo "<tr><td colspan=\"8\"><table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td>" . strtoupper(substr($row['surname'],0,1)) . "</td><td style=\"width:99%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#CCCCCC; background-color:#CCCCCC; width:100%\" /></td></tr></table>\n</td></tr>\n";
+      echo "<tr><td colspan=\"8\"><table border=\"0\" style=\"padding-left:10px; padding-bottom:5px; width:100%; color:#1E3287\"><tr><td>" . strtoupper(substr($row['surname'],0,1)) . "</td><td style=\"width:99%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#CCCCCC; background-color:#CCCCCC; width:100%\" /></td></tr></table>\n</td></tr>\n";
     } elseif ($old_title != $row['title'] and $sortby == 'title') {
-      echo "<tr><td colspan=\"8\"><table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td>" . $string[strtolower($row['title'])] . "</td><td style=\"width:99%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#CCCCCC; background-color:#CCCCCC; width:100%\" /></td></tr></table>\n</td></tr>\n";
+      echo "<tr><td colspan=\"8\"><table border=\"0\" style=\"padding-left:10px; padding-bottom:5px; width:100%; color:#1E3287\"><tr><td>" . $row['title'] . "</td><td style=\"width:99%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#CCCCCC; background-color:#CCCCCC; width:100%\" /></td></tr></table>\n</td></tr>\n";
     } elseif ($old_username != substr($row['username'],0,4) and $sortby == 'username') {
-      echo "<tr><td colspan=\"8\"><table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td>" . substr($row['username'],0,4) . "</td><td style=\"width:99%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#CCCCCC; background-color:#CCCCCC; width:100%\" /></td></tr></table>\n</td></tr>\n";
+      echo "<tr><td colspan=\"8\"><table border=\"0\" style=\"padding-left:10px; padding-bottom:5px; width:100%; color:#1E3287\"><tr><td>" . substr($row['username'],0,4) . "</td><td style=\"width:99%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#CCCCCC; background-color:#CCCCCC; width:100%\" /></td></tr></table>\n</td></tr>\n";
     } elseif ($old_grade != $row['grade'] and $sortby == 'grade') {
-      echo "<tr><td colspan=\"8\"><table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td>" . $row['grade'] . "</td><td style=\"width:99%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#CCCCCC; background-color:#CCCCCC; width:100%\" /></td></tr></table>\n</td></tr>\n";
+      echo "<tr><td colspan=\"8\"><table border=\"0\" style=\"padding-left:10px; padding-bottom:5px; width:100%; color:#1E3287\"><tr><td>" . $row['grade'] . "</td><td style=\"width:99%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#CCCCCC; background-color:#CCCCCC; width:100%\" /></td></tr></table>\n</td></tr>\n";
     } elseif ($old_year != $row['yearofstudy'] and $sortby == 'yearofstudy') {
-      echo "<tr><td colspan=\"8\"><table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>Year " . $row['yearofstudy'] . "</nobr></td><td style=\"width:99%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#CCCCCC; background-color:#CCCCCC; width:100%\" /></td></tr></table>\n</td></tr>\n";
+      echo "<tr><td colspan=\"8\"><table border=\"0\" style=\"padding-left:10px; padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>Year " . $row['yearofstudy'] . "</nobr></td><td style=\"width:99%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#CCCCCC; background-color:#CCCCCC; width:100%\" /></td></tr></table>\n</td></tr>\n";
     }
     $tmp_username = $row['username'];
     if (strpos($userroles,'SysAdmin') !== false) {
-      echo "<tr id=\"$x\" onmouseover=\"lon($x)\" onmouseout=\"loff($x)\" style=\"cursor:pointer\" onclick=\"selUser('" . $row['id'] . "',$x,'2c'); return false;\" ondblclick=\"profile('" . $row['id'] . "'); return false;\">";
+      echo "<tr id=\"$x\" onmouseover=\"highlight($x)\" onmouseout=\"unhighlight($x)\" style=\"cursor:pointer\" onclick=\"selectUser('" . $row['id'] . "','" . $row['email'] . "','$x', 'menu2c'); return false;\" ondblclick=\"viewProfile('" . $row['id'] . "'); return false;\">";
       if (file_exists($cfg_web_root . 'touchstone/users/photos/' . $row['username'] . '.jpg')) {
         echo '<td><img src="../artwork/photo.png" width="16" height="16" alt="Photo" /></td>';
       } else {
         echo '<td></td>';
       }
       if (array_key_exists($row['id'],$needs_array)) {
-        echo "<td>" . $string[strtolower($row['title'])] . "</td><td style=\"width:20px\"><img src=\"../artwork/accessibility_16.png\" width=\"16\" height=\"16\" border=\"0\" /></td><td>" . $row['surname'] . ", ";
+        echo "<td>&nbsp;" . $row['title'] . "</td><td style=\"width:20px\"><img src=\"../artwork/accessibility_16.png\" width=\"16\" height=\"16\" border=\"0\" /></td><td>" . $row['surname'] . ", ";
         if ($row['first_names'] != '') {
           echo '<span style="color:#A5A5A5">' . $row['first_names'] . '</span>';
         } else {
           echo $row['initials'];
         }
-        echo  "</td><td>" . $row['username'] . "</td>";
+        echo  "</td><td>&nbsp;" . $row['username'] . "</td>";
       } else {
-        if (isset($row['title']) and $row['title'] != '') {
-          $tmp_title = $string[strtolower($row['title'])];
-        } else {
-          $tmp_title = '';
-        }
-        echo "<td>" . $tmp_title . "</td><td></td><td>" . $row['surname'] . ", ";
+        echo "<td>&nbsp;" . $row['title'] . "</td><td></td><td>" . $row['surname'] . ", ";
         if ($row['first_names'] != '') {
           echo '<span style="color:#A5A5A5">' . $row['first_names'] . '</span>';
         } else {
           echo $row['initials'];
         }
-        echo "</td><td>" . $row['username'] . "</td>";
+        echo "</td><td>&nbsp;" . $row['username'] . "</td>";
       }
     } else {
-      echo "<tr id=\"$x\" onmouseover=\"lon($x)\" onmouseout=\"loff($x)\" style=\"cursor:pointer\" onclick=\"selUser('" . $row['id'] . "',$x,'2b'); return false;\" ondblclick=\"profile('" . $row['id'] . "'); return false;\">";
+      echo "<tr id=\"$x\" onmouseover=\"highlight($x)\" onmouseout=\"unhighlight($x)\" style=\"cursor:pointer\" onclick=\"selectUser('" . $row['id'] . "','" . $row['email'] . "','$x', 'menu2b'); return false;\" ondblclick=\"viewProfile('" . $row['id'] . "'); return false;\">";
       if (file_exists($cfg_web_root . '/touchstone/users/photos/' . $row['username'] . '.jpg')) {
         echo '<td><img src="../artwork/photo.png" width="16" height="16" alt="Photo" /></td>';
       } else {
         echo '<td></td>';
       }
       if (array_key_exists($row['id'],$needs_array)) {
-        echo "<td>" . $row['title'] . "</td><td style=\"width:20px\"><img src=\"../artwork/accessibility_16.png\" width=\"16\" height=\"16\" border=\"0\" /></td><td>" . $row['surname'] . ", ";
+        echo "<td>&nbsp;" . $row['title'] . "</td><td style=\"width:20px\"><img src=\"../artwork/accessibility_16.png\" width=\"16\" height=\"16\" border=\"0\" /></td><td>" . $row['surname'] . ", ";
         if ($row['first_names'] != '') {
-          echo '<span class="fn">' . $row['first_names'] . '</span>';
+          echo '<span style="color:#A5A5A5">' . $row['first_names'] . '</span>';
         } else {
           echo $row['initials'];
         }
-        echo "</a></td><td>" . $row['username'] . "</td>";
+        echo "</a></td><td>&nbsp;" . $row['username'] . "</td>";
       } else {
         echo "<td>&nbsp;" . $row['title'] . "</td><td></td><td>" . $row['surname'] . ", ";
         if ($row['first_names'] != '') {
-          echo '<span class="fn">' . $row['first_names'] . '</span>';
+          echo '<span style="color:#A5A5A5">' . $row['first_names'] . '</span>';
         } else {
           echo $row['initials'];
         }
-        echo "</a></td><td>" . $row['username'] . "</td>";
+        echo "</a></td><td>&nbsp;" . $row['username'] . "</td>";
       }
     }
     if ($row['roles'] == 'Student') {
       if ($row['student_id'] == NULL) {
-        echo "<td class=\"fn\">" . $string['unknown'] . "</td>";
+        echo "<td style=\"color:#A5A5A5\">&nbsp;&lt;unknown&gt;</td>";
       } else {
-        echo "<td>" . $row['student_id'] . "</td>";
+        echo "<td>&nbsp;" . $row['student_id'] . "</td>";
       }
     } else {
-      echo "<td class=\"fn\">" . $string['na'] . "</td>";
+      echo "<td style=\"color:#A5A5A5\">&nbsp;n/a</td>";
     }
-    echo "<td>" . $row['yearofstudy'] . "</td><td>&nbsp;" . $row['grade'] . "</td></tr>\n";
+    echo "<td>&nbsp;" . $row['yearofstudy'] . "&nbsp;</td><td>&nbsp;" . $row['grade'] . "</td></tr>\n";
     $old_letter = strtoupper(substr($row['surname'],0,1));
     $old_title = $row['title'];
     $old_username = substr($row['username'],0,4);
@@ -419,5 +406,6 @@ if ($sortby == 'title') {
   $mysqli->close();
 ?>
 </script>
+
 </body>
 </html>

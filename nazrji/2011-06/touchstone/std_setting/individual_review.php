@@ -83,7 +83,7 @@ $current_screen = 1;
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
 <style type="text/css">
   body {width:100%; background-color:<?php echo $bgcolor; ?>; color:<?php echo $fgcolor; ?>; padding:0px;margin:0px; border:0px; font-family:Arial,sans-serif; font-size:90%}
-  pre {width:90%}
+  pre{width:90%}
   li {margin-left:15px; margin-right:15px; font-family:Arial,sans-serif; font-size:100%}
   select, input {font-size:100%}
   table {font-size:100%}
@@ -98,10 +98,9 @@ $current_screen = 1;
   .heading {background-color:#EBEADB; color:black; font-family:Arial,sans-serif}
 </style>
 
-<script language="JavaScript" src="../javascript/MathJaxConfig.js"></script>
-<script language="JavaScript" src="../javascript/ie_fix.js"></script>
+<script src="../javascript/ie_fix.js" type="text/javascript"></script>
 <script language="JavaScript" src="../javascript/flash_include.js"></script>
-<script language="JavaScript" src="../javascript/staff_help.js"></script>
+<script src="../javascript/staff_help.js" type="text/javascript"></script>
 <script language="JavaScript">
 <?php
   if ($_GET['method'] == 'ebel') {
@@ -161,74 +160,72 @@ $current_screen = 1;
     var origHN = 0;
 
     var question_no = parseInt(document.questions.stdIDNo.value);
-
     for (i=0; i<question_no; i++) {
-      var question_marks = parseInt(document.getElementById('std' + i + '_marks').value);
       switch (document.getElementById('valstd' + i).value) {
         case 'EE':
-          EE += question_marks;
+          EE++;
           break;
         case 'EI':
-          EI += question_marks;
+          EI++;
           break;
         case 'EN':
-          EN += question_marks;
+          EN++;
           break;
         case 'ME':
-          ME += question_marks;
+          ME++;
           break;
         case 'MI':
-          MI += question_marks;
+          MI++;
           break;
         case 'MN':
-          MN += question_marks;
+          MN++;
           break;
         case 'HE':
-          HE += question_marks;
+          HE++;
           break;
         case 'HI':
-          HI += question_marks;
+          HI++;
           break;
         case 'HN':
-          HN += question_marks;
+          HN++;
           break;
       }
       switch (document.getElementById('valstd' + i).value) {
         case 'EE':
         case 'exclude_EE':
-          origEE += question_marks;
+          origEE++;
           break;
         case 'EI':
         case 'exclude_EI':
-          origEI += question_marks;
+          origEI++;
           break;
         case 'EN':
         case 'exclude_EN':
-          origEN += question_marks;
+          origEN++;
           break;
         case 'ME':
         case 'exclude_ME':
-          origME += question_marks;
+          origME++;
           break;
         case 'MI':
         case 'exclude_MI':
-          origMI += question_marks;
+          origMI++;
           break;
         case 'MN':
         case 'exclude_MN':
-          origMN += question_marks;
+          origMN++;
           break;
         case 'HE':
         case 'exclude_HE':
-          origHE += question_marks;
+          origHE++;
           break;
         case 'HI':
         case 'exclude_HI':
-          origHI += question_marks;
+          origHI++;
           break;
         case 'HN':
         case 'exclude_HN':
-          origHN += question_marks;
+          origHN++;
           break;
       }
     }
@@ -471,11 +468,11 @@ $current_screen = 1;
   </div>
   <br />
 <?php
-  $result = $mysqli->prepare("SELECT screen, q_type, q_id, score_method, display_method, marks_correct, theme, scenario, leadin, correct, REPLACE(option_text,'\t','') AS option_text, q_media, q_media_width, q_media_height, o_media, o_media_width, o_media_height, notes, correct_fback FROM (papers, questions, options) WHERE paper=? AND papers.question=questions.q_id AND questions.q_id=options.o_id ORDER BY display_pos, id_num");
+  $result = $mysqli->prepare("SELECT screen, q_type, q_id, score_method, marks, theme, scenario, leadin, correct, REPLACE(option_text,'\t','') AS option_text, q_media, q_media_width, q_media_height, o_media, o_media_width, o_media_height, notes, correct_fback FROM (papers, questions, options) WHERE paper=? AND papers.question=questions.q_id AND questions.q_id=options.o_id ORDER BY display_pos, id_num");
   $result->bind_param('i', $_GET['paperID']);
   $result->execute();
   $result->store_result();
-  $result->bind_result($screen, $q_type, $q_id, $score_method, $display_method, $marks, $theme, $scenario, $leadin, $correct, $option_text, $q_media, $q_media_width, $q_media_height, $o_media, $o_media_width, $o_media_height, $notes, $correct_fback);
+  $result->bind_result($screen, $q_type, $q_id, $score_method, $marks, $theme, $scenario, $leadin, $correct, $option_text, $q_media, $q_media_width, $q_media_height, $o_media, $o_media_width, $o_media_height, $notes, $correct_fback);
 
   $num_rows = $result->num_rows;
   $old_leadin = '';
@@ -490,7 +487,7 @@ $current_screen = 1;
   $std_excluded = 0;
   $prologue_show = 1;
   echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">\n";
-  while ($result->fetch()) {
+  while ($row = $result->fetch()) {
     if ($prologue_show == 1 and $current_screen == 1 and $paper_prologue != '') {
       echo '<tr><td colspan="2" style="padding:20px; text-align:justify">' . $paper_prologue . '</td></tr>';
       $prologue_show = 0;
@@ -537,7 +534,7 @@ $current_screen = 1;
           echo "<p align=\"center\">" . display_media($q_media,$q_media_width,$q_media_height) . "</p>\n";
         }
       }
-      if ($q_type != 'likert' and $q_type != 'calculation' and $q_type != 'info' and $q_type != 'hotspot') {
+      if ($q_type != 'likert' and $q_type != 'calculation' and $q_type != 'info') {
         if ($li_set == 0) {
           echo '<tr><a name="' . ($question_no + $question_offset) . '"></a><td class="question_no">' . ($question_no + $question_offset) . '.&nbsp;</td><td>';
         }
@@ -562,7 +559,7 @@ $current_screen = 1;
       $question_no++;
     }
 
-    $options_array[] = array('q_type'=>$q_type, 'score_method'=>$score_method, 'display_method'=>$display_method, 'correct'=>$correct, 'scenario'=>$scenario, 'q_media'=>$q_media, 'q_media_width'=>$q_media_width, 'q_media_height'=>$q_media_height, 'option_text'=>$option_text, 'o_media'=>$o_media, 'o_media_width'=>$o_media_width, 'o_media_height'=>$o_media_height, 'marks'=>$marks);
+    $options_array[] = array('q_type'=>$q_type, 'score_method'=>$score_method, 'correct'=>$correct, 'scenario'=>$scenario, 'q_media'=>$q_media, 'q_media_width'=>$q_media_width, 'q_media_height'=>$q_media_height, 'option_text'=>$option_text, 'o_media'=>$o_media, 'o_media_width'=>$o_media_width, 'o_media_height'=>$o_media_height, 'marks'=>$marks);
   }         // End of While loop
   $result->close();
 
@@ -582,7 +579,7 @@ $current_screen = 1;
       }
       $query_string->close(); 
     }
-    if (empty($ebel)) $ebel = array('','','','','','','','','','','','','','','','','','');
+    if(empty($ebel)) $ebel = array('','','','','','','','','','','','','','','','','','');
 
     echo "<br />\n<div align=\"center\">\n";
     echo "<table cellpadding=\"4\" cellspacing=\"0\" width=\"90%\" style=\"background-color:#E4EEFC; border: 1px solid #B5C4DF; text-align:left\">\n";

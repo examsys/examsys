@@ -144,11 +144,6 @@ function outputDebug() {
 
 function outputLoadTimes() {
   global $debug_pagestart, $userroles, $mysqli, $queryInfo;
-  
-  if(!is_object($mysqli)) {
-    return;
-  }
-  
   if(!$mysqli->closed) {
     $mysqli->cacheSqlProfile();
   }

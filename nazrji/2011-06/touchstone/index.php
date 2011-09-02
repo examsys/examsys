@@ -118,33 +118,32 @@ require './include/staff_auth.inc';
     }
   }
 
-  function displayIcon($paper_type, $title, $initials, $surname, $shared, $locked) {
-    global $string;
+  function displayIcon($paper_type,$title,$initials,$surname,$shared,$locked) {
     switch ($paper_type) {
       case 0:
-        $html = "<img src=\"./artwork/formative" . $shared . ".png\" width=\"48\" height=\"48\" alt=\"" . $string['type'] . ": " . $string['formative'] ."&#013;" . $string['author'] . ": $title $initials $surname\" border=\"0\" />";
+        $html = "<img src=\"./artwork/formative" . $shared . ".png\" width=\"48\" height=\"48\" alt=\"Type: Formative Self-Assessment&#013;Author: $title $initials $surname\" border=\"0\" />";
         break;
       case 1:
-        $html = "<img src=\"./artwork/progress" . $shared . ".png\" width=\"48\" height=\"48\" alt=\"" . $string['type'] . ": " . $string['progresstest'] . "&#013;" . $string['author'] . ": $title $initials $surname\" border=\"0\" />";
+        $html = "<img src=\"./artwork/progress" . $shared . ".png\" width=\"48\" height=\"48\" alt=\"Type: Progress Test&#013;Author: $title $initials $surname\" border=\"0\" />";
         break;
       case 2:
-        $html = "<img src=\"./artwork/summative" . $shared . $locked . ".png\" width=\"48\" height=\"48\" alt=\"" . $string['type'] . ": " . $string['summative'] . "&#013;" . $string['author'] . ": $title $initials $surname\" border=\"0\" />";
+        $html = "<img src=\"./artwork/summative" . $shared . $locked . ".png\" width=\"48\" height=\"48\" alt=\"Type: Summative Exam&#013;Author: $title $initials $surname\" border=\"0\" />";
         break;
       case 3:
-        $html = "<img src=\"./artwork/survey" . $shared . ".png\" width=\"48\" height=\"48\" alt=\"" . $string['type'] . ": " . $string['survey'] . "&#013;" . $string['author'] . ": $title $initials $surname\" border=\"0\" />";
+        $html = "<img src=\"./artwork/survey" . $shared . ".png\" width=\"48\" height=\"48\" alt=\"Type: Survey&#013;Author: $title $initials $surname\" border=\"0\" />";
         break;
       case 4:
-        $html = "<img src=\"./artwork/osce" . $shared . ".png\" width=\"48\" height=\"48\" alt=\"" . $string['type'] . ": " . $string['oscestation'] . "&#013;" . $string['author'] . ": $title $initials $surname\" border=\"0\" />";
+        $html = "<img src=\"./artwork/osce" . $shared . ".png\" width=\"48\" height=\"48\" alt=\"Type: OSCE Station&#013;Author: $title $initials $surname\" border=\"0\" />";
         break;
       case 5:
-        $html = "<img src=\"./artwork/offline" . $shared . ".png\" width=\"48\" height=\"48\" alt=\"" . $string['type'] . ": " . $string['offlinepaper'] . "&#013;" . $string['author'] . ": $title $initials $surname\" border=\"0\" />";
+        $html = "<img src=\"./artwork/offline" . $shared . ".png\" width=\"48\" height=\"48\" alt=\"Type: Offline Paper&#013;Author: $title $initials $surname\" border=\"0\" />";
         break;
     }
     return $html;
   }
 
   function displayPaperIcon($row) {
-    global $folder, $string;
+    global $folder;
 
     if (!isset($row['title'])) {
       $row['title'] = '';
@@ -168,17 +167,17 @@ require './include/staff_auth.inc';
     echo "</td><td><a href=\"./paper/details.php?paperID=" . $row['property_id'] . "&folder=$folder&module=\" class=\"blacklink\">" . $row['paper_title'] . '</a><br />';
     echo '  <span style="color:#808080">';
     if ($row['screens'] == NULL) {
-      echo '0 ' . $string['screens'] . ', ';
+      echo '0 Screens, ';
     } elseif ($row['screens'] == 1) {
-      echo $row['screens'] . ' ' . $string['screen'];
+      echo $row['screens'] . ' Screen';
     } else {
-      echo $row['screens'] . ' ' . $string['screens'];
+      echo $row['screens'] . ' Screens';
     }
-    echo ', <span style="color:red">' . $string['nomodulesset'] . '</span>';
+    echo ', <span style="color:red">No modules set</span>';
     echo '<br />';
     echo '  ' . $row['display_start_date'];
     if ($icon_type == 2) {
-      echo ', ' . $row['exam_duration'] . $string['mins'];
+      echo ', ' . $row['exam_duration'] . 'mins';
     } else {
       echo ' to ' . $row['display_end_date'];
     }
@@ -225,7 +224,7 @@ require './include/staff_auth.inc';
   $query_string = "SELECT paperID, paper_title, moduleID, accessed, paper_type FROM (recent_papers, properties) WHERE userID=$userID AND recent_papers.paperID=properties.property_id ORDER BY accessed DESC LIMIT 10";
   $results = $mysqli->query($query_string) or die("failed : ".$mysqli->error." $query_string");
 
-  echo "<table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>" . $string['myrecentpapers'] . " (" . $results->num_rows . ")</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
+  echo "<table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>My Recent Papers (" . $results->num_rows . ")</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
 
   while ($row = $results->fetch_assoc()) {
     echo "<div style=\"padding-left:12px\"><a href=\"./paper/details.php?paperID=" . $row['paperID'] . "&folder=&module=" . $row['moduleID'] . "\"><img src=\"./artwork/" . $icons[$row['paper_type']] . "_16.gif\" width=\"16\" height=\"16\" border=\"0\" alt=\"" . $row['paper_type'] . "\" /></a>&nbsp;<a class=\"recent\"";
@@ -253,9 +252,9 @@ require './include/staff_auth.inc';
     echo "<div class=\"f\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"width:60px\" align=\"center\"><a href=\"#\" onclick=\"startPaper('" . $row['property_id'] . "'," . $row['fullscreen'] . "); return false;\"><img src=\"./artwork/summative.png\" width=\"48\" height=\"48\" alt=\"Paper Icon\" border=\"0\" /></a></td>\n";
     echo "  <td><a href=\"#\" onclick=\"startPaper('" . $row['property_id'] . "'," . $row['fullscreen'] . "); return false;\">" . $row['paper_title'] . "</a><br /><div style=\"color:#C00000\">Deadline: " . $row['internal_review_deadline'] . "</div>";
     if ($reviewed == '') {
-      echo "<span style=\"color:white; background-color:red\">&nbsp;" . $string['notreviewed'] . "&nbsp;</span>";
+      echo "<span style=\"color:white; background-color:red\">&nbsp;Not Reviewed&nbsp;</span>";
     } else {
-      echo "<span style=\"color:#808080\">" . $string['reviewed'] . ": $reviewed</span>";
+      echo "<span style=\"color:#808080\">Reviewed: $reviewed</span>";
     }
     echo "</td></tr></table></div>\n";
   }
@@ -273,7 +272,7 @@ require './include/staff_auth.inc';
 
   $folder_details = $mysqli->query("SELECT id, name, team_name, color FROM folders WHERE (ownerID=$userID $module_sql) AND name NOT LIKE '%;%' AND deleted IS NULL ORDER BY name, id");
 
-  echo "<table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>" . $string['myfolders'] . " (" . ($folder_details->num_rows + 1) . ")</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
+  echo "<table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>My Folders (" . ($folder_details->num_rows + 1) . ")</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
   while ($row = $folder_details->fetch_assoc()) {
     echo "<div class=\"f\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"width:60px\" align=\"center\"><a href=\"./folder/details.php?folder=" . $row['id'] . "\"><img src=\"./artwork/" . $row['color'] . "_folder.png\" width=\"48\" height=\"48\" alt=\"Folder\" border=\"0\" align=\"middle\" /></a>&nbsp;</td><td><a href=\"./folder/details.php?folder=" . $row['id'] . "\" class=\"blacklink\">" . $row['name'] . "</a></td></tr></table></div>\n";
   }
@@ -281,18 +280,18 @@ require './include/staff_auth.inc';
 
   if (isset($_GET['newfolder']) AND $_GET['newfolder'] == 'y' or $duplicate_name == 1) {
     if (isset($_POST['submit']) and $_POST['submit'] and $duplicate_name == 1) {
-      echo "<div class=\"f\"><img src=\"./artwork/yellow_folder.png\" width=\"48\" height=\"48\" alt=\"Folder\" border=\"0\" align=\"middle\" />&nbsp;<input style=\"background-color:#FFC0C0\" type=\"text\" size=\"30\" name=\"folder_name\" value=\"$new_folder_name\" onkeypress=\"if (event.keyCode == 38 || event.keyCode == 59 || event.keyCode == 63 || event.keyCode == 64 || event.keyCode == 94 || event.keyCode == 126) illegalChar(event.keyCode);\" /><input type=\"submit\" name=\"submit\" value=\"" . $string['create'] . "\" /></div>\n";
+      echo "<div class=\"f\"><img src=\"./artwork/yellow_folder.png\" width=\"48\" height=\"48\" alt=\"Folder\" border=\"0\" align=\"middle\" />&nbsp;<input style=\"background-color:#FFC0C0\" type=\"text\" size=\"30\" name=\"folder_name\" value=\"$new_folder_name\" onkeypress=\"if (event.keyCode == 38 || event.keyCode == 59 || event.keyCode == 63 || event.keyCode == 64 || event.keyCode == 94 || event.keyCode == 126) illegalChar(event.keyCode);\" /><input type=\"submit\" name=\"submit\" value=\"Create\" /></div>\n";
     } elseif (!isset($_POST['submit'])) {
-      echo "<div class=\"f\"><img src=\"./artwork/yellow_folder.png\" width=\"48\" height=\"48\" alt=\"Folder\" border=\"0\" align=\"middle\" />&nbsp;<input type=\"text\" size=\"30\" name=\"folder_name\" value=\"" . $string['newfolder'] . "\" onkeypress=\"if (event.keyCode == 38 || event.keyCode == 59 || event.keyCode == 63 || event.keyCode == 64 || event.keyCode == 94 || event.keyCode == 126) illegalChar(event.keyCode);\" /><input type=\"submit\" name=\"submit\" value=\"" . $string['create'] . "\" /></div>\n";
+      echo "<div class=\"f\"><img src=\"./artwork/yellow_folder.png\" width=\"48\" height=\"48\" alt=\"Folder\" border=\"0\" align=\"middle\" />&nbsp;<input type=\"text\" size=\"30\" name=\"folder_name\" value=\"New Folder\" onkeypress=\"if (event.keyCode == 38 || event.keyCode == 59 || event.keyCode == 63 || event.keyCode == 64 || event.keyCode == 94 || event.keyCode == 126) illegalChar(event.keyCode);\" /><input type=\"submit\" name=\"submit\" value=\"Create\" /></div>\n";
     }
   }
 
   $deleted_details = $mysqli->query("SELECT COUNT(property_id) AS no_deleted FROM properties WHERE deleted IS NOT NULL AND paper_ownerID=$userID");
   $deleted = $deleted_details->fetch_assoc();
   if ($deleted['no_deleted'] > 0) {
-    echo "<div class=\"f\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"width:60px\" align=\"center\"><a href=\"./delete/recycle_list.php\"><img src=\"./artwork/full_bin.png\" width=\"48\" height=\"48\" alt=\"Recycle Bin\" border=\"0\" align=\"middle\" /></a>&nbsp;</td><td><a href=\"./delete/recycle_list.php\" class=\"blacklink\">" . $string['recyclebin'] . "</a></td></tr></table></div>\n";
+    echo "<div class=\"f\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"width:60px\" align=\"center\"><a href=\"./delete/recycle_list.php\"><img src=\"./artwork/full_bin.png\" width=\"48\" height=\"48\" alt=\"Recycle Bin\" border=\"0\" align=\"middle\" /></a>&nbsp;</td><td><a href=\"./delete/recycle_list.php\" class=\"blacklink\">Recycle Bin</a></td></tr></table></div>\n";
   } else {
-    echo "<div class=\"f\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"width:60px\" align=\"center\"><a href=\"./delete/recycle_list.php\"><img src=\"./artwork/empty_bin.png\" width=\"48\" height=\"48\" alt=\"Recycle Bin\" border=\"0\" align=\"middle\" /></a>&nbsp;</td><td><a href=\"./delete/recycle_list.php\" class=\"blacklink\">" . $string['recyclebin'] . "</a></td></tr></table></div>\n";
+    echo "<div class=\"f\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"width:60px\" align=\"center\"><a href=\"./delete/recycle_list.php\"><img src=\"./artwork/empty_bin.png\" width=\"48\" height=\"48\" alt=\"Recycle Bin\" border=\"0\" align=\"middle\" /></a>&nbsp;</td><td><a href=\"./delete/recycle_list.php\" class=\"blacklink\">Recycle Bin</a></td></tr></table></div>\n";
   }
   $deleted_details->close();
 ?>
@@ -304,11 +303,12 @@ require './include/staff_auth.inc';
     $module_no = count($modules_array);
     if (strpos($userroles,'Admin') !== false) $module_no++;
 
-    echo "<table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>" . $string['mymodules'] . " ($module_no)</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
+    echo "<table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>My Modules ($module_no)</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
     if (strpos($userroles,'SysAdmin') !== false) {
-      echo "<div class=\"f\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"width:60px\" align=\"center\"><a href=\"./folder/all.php\"><img src=\"./artwork/yellow_folder.png\" width=\"48\" height=\"48\" alt=\"Folder\" border=\"0\" align=\"middle\" /></a>&nbsp;</td><td><a href=\"./folder/all.php\" class=\"blacklink\"><strong>" . $string['allmodules']  . "</strong></a><br /><span style=\"color:#C00000\">(" . $string['sysadminonly'] . ")</span></td></tr></table></div>\n";
+      echo "<div class=\"f\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"width:60px\" align=\"center\"><a href=\"./folder/all.php\"><img src=\"./artwork/yellow_folder.png\" width=\"48\" height=\"48\" alt=\"Folder\" border=\"0\" align=\"middle\" /></a>&nbsp;</td><td><a href=\"./folder/all.php\" class=\"blacklink\"><strong>All Modules...</strong></a><br /><span style=\"color:#C00000\">(SysAdmin only)</span></td></tr></table></div>\n";
     } elseif (strpos($userroles,'Admin') !== false) {
-      echo "<div class=\"f\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"width:60px\" align=\"center\"><a href=\"./folder/all.php\"><img src=\"./artwork/yellow_folder.png\" width=\"48\" height=\"48\" alt=\"Folder\" border=\"0\" align=\"middle\" /></a>&nbsp;</td><td><a href=\"./folder/all.php\" class=\"blacklink\"><strong>" . $string['allmodulesinschool'] . "</strong></a><br /><span style=\"color:#C00000\">(" . $string['adminonly'] . ")</span></td></tr></table></div>\n";
+      echo "<div class=\"f\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"width:60px\" align=\"center\"><a href=\"./folder/all.php\"><img src=\"./artwork/yellow_folder.png\" width=\"48\" height=\"48\" alt=\"Folder\" border=\"0\" align=\"middle\" /></a>&nbsp;</td><td><a href=\"./folder/all.php\" class=\"blacklink\"><strong>All Modules in School...</strong></a><br /><span style=\"color:#C00000\">(Admin only)</span></td></tr></table></div>\n";
+      //echo '<div style="font-weight:normal">&nbsp;<a style="color:blue" href="/folder/all.php">All modules</a> (Admin)</div>';
     }
     foreach ($modules_array as $folder_title => $url) {
 	    $title_parts = explode(' - ',$folder_title);
@@ -320,7 +320,7 @@ require './include/staff_auth.inc';
     // -- Display papers not assigned to a module -------------------
     $paper_data = $mysqli->query("SELECT DISTINCT property_id, paper_type, MAX(screen) AS screens, paper_title, DATE_FORMAT(start_date,'%Y%m%d%H%i%s') AS start_date, DATE_FORMAT(start_date,'%d/%m/%y %H:%i') AS display_start_date, DATE_FORMAT(end_date,'%d/%m/%y %H:%i') AS display_end_date, exam_duration FROM properties LEFT JOIN papers ON properties.property_id=papers.paper WHERE paper_ownerID=$userID AND moduleID='' AND deleted IS NULL GROUP BY paper_title ORDER BY paper_title");
     if ($paper_data->num_rows > 0) {
-      echo "<table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>" . $string['unassignedpapers'] . " (" . $paper_data->num_rows . ")<nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
+      echo "<table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>Unassigned Papers (" . $paper_data->num_rows . ")<nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
       while ($row = $paper_data->fetch_assoc()) {
         displayPaperIcon($row);
       }
