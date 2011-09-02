@@ -1,0 +1,51 @@
+ body {margin:0; padding:0 0 0 213px; font-family:Arial,sans-serif; font-size:100%; background-color:white; color:black}
+ div#left-sidebar {position:absolute; top:0; left:0; width:195px; height:100%; padding-right:4px; padding-left:14px; padding-top:4px; padding-bottom:4px; background-color:#DFECFF; border-right: 1px solid #95AEC8; overflow:auto; font-size:75%}
+ @media screen {body>div#left-sidebar{position:fixed}}
+ * html body{overflow:hidden} 
+ * html div#content{height:100px; background-colour:white}
+ img {margin:0px; padding:0px;}
+ .divider {padding-left:10px; padding-bottom:2px; font-weight:bold}
+ .f {float:left; width:375px; padding-left:10px; font-size:90%}
+ .file {float:left; width:375px; height:74px; padding-left:12px; font-size:90%}
+
+ a:link {color:blue}
+ a:visited {color:blue}
+ a:hover {color:blue}
+
+ a.blacklink:link {color:black}
+ a.blacklink:visited {color:black}
+ a.blacklink:hover {color:black}
+
+ a.greylink:link {color:#808080}
+ a.greylink:visited {color:#808080}
+ a.greylink:hover {color:#808080}
+
+.menuheading {padding-left:6px; color:#215DC6; font-weight:bold; cursor:pointer}
+.menuheading a:link {color:#215DC6; cursor:pointer}
+.menuheading a:visited {color:#215DC6; cursor:pointer}
+.menuheading a:hover {color:#428EFF; cursor:pointer}
+
+.sidebar {background-color:#6375D6}
+.popup {display:none; top:0px; left:190px; font-size:75%; position:fixed; line-height:170%; border:1px solid #ACA899; padding:2px; background-color:white; filter: progid:DXImageTransform.Microsoft.Shadow(direction=120,color=gray,strength=4)}
+.popupitem {padding-left:14px; padding-right:14px; cursor:pointer}
+.popupitembold {padding-left:4px; font-weight:bold}
+
+.greymenuitem {width:190px; color:#808080}
+.greymenuitem a:link {color:#808080; text-decoration:none; cursor:pointer}
+.greymenuitem a:visited {color:#808080; text-decoration:none; cursor:pointer}
+.greymenuitem a:hover {color:#808080; text-decoration:none; cursor:pointer}
+
+.menuitem {width:190px}
+.menuitem span {width:120px; float:left}
+.menuitem a:link {color:black; text-decoration:none; cursor:pointer}
+.menuitem a:visited {color:black; text-decoration:none; cursor:pointer}
+.menuitem a:hover {color:blue; text-decoration:underline; cursor:pointer}
+
+.breadcrumb {margin-top:2px; margin-left:10px; font-size:90%}
+.breadcrumb a:link {color:blue; text-decoration:none; cursor:pointer}
+.breadcrumb a:visited {color:blue; text-decoration:none; cursor:pointer}
+.breadcrumb a:hover {color:blue; text-decoration:underline; cursor:pointer}
+
+textarea, input[type=text], select {font-family:Arail,sans-serif; border: 1px solid #7F9DB9}
+
+

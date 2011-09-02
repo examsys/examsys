@@ -1,0 +1,103 @@
+<?php
+// This file is part of TouchStone
+//
+// TouchStone is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// TouchStone is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with TouchStone.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+* 
+* @author Rob Ingram
+* @version 1.0
+* @copyright Copyright (c) 2011 The University of Nottingham
+* @package
+*/
+
+$scales = $question->get_scale_types();
+$scale_value = $question->get_scale_type();
+$na_checked = ($question->get_not_applicable() == 'true') ? ' checked="checked"' : '';
+
+?>
+				<table id="q-details" class="form" summary="Edit question details">
+					<tbody>
+<?php require_once 'details_common.php' ?>
+            <tr>
+              <th><label for="scale_type">Scale</label></th>
+              <td>
+                <select id="scale_type" name="scale_type">
+<?php 
+$scale_found = false;
+foreach ($scales as $scale_group => $scale):
+?>
+                  <optgroup label="<?php echo $scale_group ?>">
+<?php 
+  foreach ($scale as $value => $text):
+    if ($value == $scale_value) {
+      $sel = ' selected="selected"';
+      $scale_found = true;
+    } else {
+      $sel = '';
+    } 
+?>
+                    <option value="<?php echo $value ?>"<?php echo $sel ?>><?php echo $text ?></option>
+<?php
+  endforeach;
+?>
+                  </optgroup>
+<?php
+endforeach;
+
+if (!$scale_found) {
+  $sel = ' selected="selected"';
+  $show_custom = '';
+} else {
+  $sel = '';
+  $show_custom = ' class="hide"';
+}
+?>
+                  <optgroup label="Custom">
+                    <option value="custom"<?php echo $sel ?>>Custom&hellip;</option>
+                  </optgroup>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <th>N/A Column</th>
+              <td>
+                <input type="checkbox" id="not_applicable" name="not_applicable"<?php echo $na_checked ?> /> <label for="not_applicable">include 'not applicable' option</label>
+              </td>
+            </tr>
+            <tr>
+              <th>&nbsp;</th>
+              <td>
+                <dl id="extended-option-list"<?php echo $show_custom ?>>
+<?php
+$custom_scale = $question->get_all_custom_scales();
+for ($i = 1; $i <= $question->max_stems; $i++):
+  $val = (isset($custom_scale[$i - 1])) ? $custom_scale[$i - 1] : '';
+?>
+                  <dt><label for="question_custom_scale<?php echo $i ?>"><?php echo $i ?>.</label></dt>
+                  <dd>
+                    <input type="text" id="question_custom_scale<?php echo $i ?>" name="question_custom_scale<?php echo $i ?>" value="<?php echo $val ?>" class="form-small">
+                  </dd>
+
+<?php
+endfor;
+?>
+                </dl>
+                &nbsp;
+              </td>
+            </tr>
+					</tbody>
+				</table>
+
+<?php require_once 'detail_parts/details_general_feedback.php' ?>
