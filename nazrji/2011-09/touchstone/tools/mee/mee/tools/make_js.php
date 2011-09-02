@@ -8,7 +8,6 @@ $files[] = "jquery/jquery.class.js";
 $files[] = "jquery/jquery.pxem.js";
 $files[] = "jquery/jquery.scale9.js";
 $files[] = "jquery/jquery.textarea.js";
-$files[] = "jquery/jquery.xml2json.js";
 $files[] = "jquery/jquery.cookie.js";
 $files[] = "jquery/json2.js";
 
@@ -29,6 +28,7 @@ $files[] = "js/mee.elem.boxed.js";
 $files[] = "js/mee.elem.space.js";
 $files[] = "js/mee.elem.input.js";
 $files[] = "js/mee.elem.answer.js";
+$files[] = "js/mee.elem.bond.js";
 
 $files[] = "js/mee.elemset.js";
 $files[] = "js/mee.elemset.normal.js";
@@ -37,10 +37,12 @@ $files[] = "js/mee.elemset.array.js";
 
 $files[] = "js/mee.toolbar.js";
 $files[] = "js/mee.base.js";
+$files[] = "js/mee.images.js";
 
 $files[] = "js/mee.undo.js";
 $files[] = "js/mee.symhist.js";
-$files[] = "js/mee.images.js";
+$files[] = "js/mee.font.js";
+$files[] = "js/mee.maxima.js";
 
 require("include/jsmin.php");
 $js = "/*DO NOT MODIFY THIS FILE*/\n";

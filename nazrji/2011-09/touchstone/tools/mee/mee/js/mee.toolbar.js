@@ -256,6 +256,13 @@ $.Class.extend("MEE.Toolbar",
                         temp.data('latex', paneitem.latex);
                         if (paneitem.command)
                             temp.data('command', paneitem.command);
+                        if (paneitem.id)
+                            temp.attr('id', 'tbpm_item_' + paneitem.id);
+                        if (paneitem.wlatex)
+                            temp.data('wlatex', paneitem.wlatex);
+                        if (paneitem.mlatex)
+                            temp.data('mlatex', paneitem.mlatex);
+
                         var div = MEE.Toolbar.appendElement(temp, "div", "icon");
                         var img = MEE.Toolbar.AddImage(div, 'tbicons/' + paneitem.image);
                         img.css('float', 'left');
@@ -277,6 +284,12 @@ $.Class.extend("MEE.Toolbar",
                         temp.data('latex', paneitem.latex);
                         if (paneitem.command)
                             temp.data('command', paneitem.command);
+                        if (paneitem.id)
+                            temp.attr('id', 'tbpm_item_' + paneitem.id);
+                        if (paneitem.wlatex)
+                            temp.data('wlatex', paneitem.wlatex);
+                        if (paneitem.mlatex)
+                            temp.data('mlatex', paneitem.mlatex);
 
                         if (!paneitem.image)
                             paneitem.image = 'blank_1x16.png';
@@ -407,6 +420,8 @@ $.Class.extend("MEE.Toolbar",
 
                                     if (item.wlatex)
                                         item_elem.data('wlatex', item.wlatex);
+                                    if (item.mlatex)
+                                        item_elem.data('mlatex', item.mlatex);
 
                                     item_elem.data('text', item.display);
 
@@ -805,13 +820,24 @@ $.Class.extend("MEE.Toolbar",
         }
         var latex = $(item).data('latex');
         var wlatex = $(item).data('wlatex');
+        var mlatex = $(item).data('mlatex');
         if (latex) {
-            this.currentEdit.toolbarCommand(latex, item, wlatex);
+            this.currentEdit.toolbarCommand(latex, item, wlatex, mlatex);
         }
 
         return false;
     },
     //#endregion
+
+    SetHighlighted: function (id) {
+        $('#' + id).trigger('mousedown');
+        $('#' + id).data('showingmenu', 1);
+    },
+
+    SetNormal: function (id) {
+        $('#' + id).data('showingmenu', 0);
+        $('#' + id).trigger('mouseout');
+    },
 
     hidePopups: function () {
         this.hideHome();

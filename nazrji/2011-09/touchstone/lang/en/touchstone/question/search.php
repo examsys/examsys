@@ -1,0 +1,47 @@
+<?php
+require '../lang/' . $language . '/touchstone/include/blooms.inc';
+require '../lang/' . $language . '/touchstone/include/status.inc';
+require '../lang/' . $language . '/touchstone/include/question_types.inc';
+
+$string['question'] = '1Question';
+$string['questions'] = '1Questions';
+$string['questionsearch'] = '1Question Search';
+$string['type'] = '1Type';
+$string['modified'] = '1Modified';
+$string['wordorphrase'] = '1Word or phrase';
+$string['questiontype'] = '1Question Type';
+$string['alltypes'] = '1(all types)';
+$string['inclockedquestions'] = '1include Locked questions';
+$string['questionsections'] = '1Question Sections';
+$string['whenmodified'] = '1When was it modified?';
+$string['metadata'] = '1Metadata';
+$string['module'] = '1Module:';
+$string['anymodule'] = '1(any module)';
+$string['owner'] = '1Owner:';
+$string['anyowner'] = '1(any owner)';
+$string['myquestionsonly'] = '1(my questions only)';
+$string['status'] = '1Status';
+$string['keyword'] = '1Keyword';
+$string['back'] = '1Back';
+$string['search'] = '1Search';
+$string['editquestion'] = '1Edit Question';
+$string['information'] = '1Information';
+$string['copyontopaperx'] = '1Copy onto Paper X...';
+$string['linktopaper'] = '1Link to paper';
+$string['deletequestion'] = '1Delete Question';
+$string['noquestionleadin'] = '1WARNING: no question lead-in!';
+$string['currentquestiontasks'] = '1Current Question Tasks';
+$string['theme'] = '1Theme';
+$string['scenario'] = '1Scenario';
+$string['leadin'] = '1Lead-in';
+$string['options'] = '1Options';
+$string['dont remember'] = '1Don\'t remember';
+$string['week'] = '1Within the last week';
+$string['month'] = '1Past month';
+$string['year'] = '1Within the past year';
+$string['specify'] = '1Specify dates';
+$string['from'] = '1from';
+$string['to'] = '1to';
+$string['locked'] = '1Locked';
+$string['noquestionsfound'] = '1No questions found for specified search criteria.';
+?>

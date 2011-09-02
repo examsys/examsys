@@ -175,7 +175,7 @@
 <tr>
 <td align="left" style="background-color:#F1F5FB" colspan="2">
 
-<p style="text-align:justify">CSV file should had a header file with the field names in. Next the first column should be username followed by the data. The example below shows two metadata pieces of information ('Site' and 'Project Group').</p>
+<p style="text-align:justify">CSV file should have a header file with the field names in. Next the first column should be username followed by the data. The example below shows two metadata pieces of information ('Site' and 'Project Group').</p>
 <br />
 <div align="center">
 <img src="../artwork/user_metadata_sheet.png" width="350" height="165" style="border:1px solid black" alt="Excel sheet" />

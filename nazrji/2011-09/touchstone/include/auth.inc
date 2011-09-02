@@ -33,15 +33,15 @@
  *
  */
 function access_denied($message, $output_header = false) {
-  global $mysqli;
+  global $mysqli, $string;
   
   if ($output_header == true) {
     Header("WWW-authenticate: basic realm=\"TouchStone\"");
     Header("HTTP/1.0 401 Unauthorised");
   }
-  echo "<html>\n<head>\n<title>Access Denied</title>\n<style>\nbody {font-size:90%; font-family:Arial,sans-serif;background-color:#FCFCFC;color:#575757}\nh1 {font-weight:normal;color:#BF0000;font-size:140%}\n</style>\n</head>\n<body>\n";
+  echo "<html>\n<head>\n<title>" . $string['accessdenied'] .  "</title>\n<style>\nbody {font-size:90%; font-family:Arial,sans-serif;background-color:#FCFCFC;color:#575757}\nh1 {font-weight:normal;color:#BF0000;font-size:140%}\n</style>\n</head>\n<body>\n";
   echo "<div style=\"position:absolute; left:10px; top:10px\"><img src=\"/touchstone/artwork/access_denied.png\" width=\"48\" height=\"48\" /></div>\n";
-  echo "<h1 style=\"margin-left:60px\">Access Denied</h1>\n";
+  echo "<h1 style=\"margin-left:60px\">" . $string['accessdenied'] . "</h1>\n";
   echo "<hr size=\"1\" align=\"left\" width=\"500\" style=\"margin-left:60px; color:#C0C0C0; background-color:#C0C0C0\" />\n<p style=\"margin-left:60px\">$message</p>\n</body>\n</html>"; 
   
   $mysqli->close();
@@ -59,13 +59,13 @@ function access_denied($message, $output_header = false) {
  *
  */
 function ldap_auth($u, $p, &$data){
-  global $cfg_ldap_server, $cfg_ldap_search_dn, $cfg_ldap_bind_rdn, $cfg_ldap_bind_password;
+  global $cfg_ldap_server, $cfg_ldap_search_dn, $cfg_ldap_bind_rdn, $cfg_ldap_bind_password, $string;
   if ($u == '') {
-    $data['error'] = 'No LDAP username or password supplied';
+    $data['error'] = $string['noldapusernamesupplied'];
     return false;
   }
   if ($p == '') {
-    $data['error'] = 'No LDAP username or password supplied';
+    $data['error'] = $string['noldapusernamesupplied'];
     return false;
   }
 
@@ -74,19 +74,19 @@ function ldap_auth($u, $p, &$data){
   ldap_set_option($ldap, LDAP_OPT_REFERRALS, 0);
   if (ldap_bind($ldap, $cfg_ldap_bind_rdn, $cfg_ldap_bind_password)) {
     if (!($search=@ldap_search($ldap, $cfg_ldap_search_dn, 'sAMAccountName=' . $u))) {
-      $data['error'] = 'LDAP Server Unavalable: unable to search';
+      $data['error'] = $string['ldapservernosearch'];
       return false;
     } else {
       $info = ldap_get_entries($ldap, $search);
       if ($info['count'] == 1) {
         $dn = $info[0]['dn'];
-        if(isset($info[0]['uonprimaryemailalias'])) $data['email'] =  $info[0]['uonprimaryemailalias'][0];
-        if(isset($info[0]['edupersonentitlement'])) $data['roles'] = $info[0]['edupersonentitlement'][0];
-        if(isset( $info[0]['title'])) $data['title'] = $info[0]['title'][0];
-        if(isset($info[0]['givenname'])) $data['first_name'] = $info[0]['givenname'][0];
-        if(isset($info[0]['sn'])) $data['last_name'] = $info[0]['sn'][0];
+        if (isset($info[0]['uonprimaryemailalias'])) $data['email'] =  $info[0]['uonprimaryemailalias'][0];
+        if (isset($info[0]['edupersonentitlement'])) $data['roles'] = $info[0]['edupersonentitlement'][0];
+        if (isset( $info[0]['title'])) $data['title'] = $info[0]['title'][0];
+        if (isset($info[0]['givenname'])) $data['first_name'] = $info[0]['givenname'][0];
+        if (isset($info[0]['sn'])) $data['last_name'] = $info[0]['sn'][0];
       } else {
-        $data['error'] = '<strong>No LDAP account found!</strong>';
+        $data['error'] = '<strong>' . $string['noldapaccount'] . '</strong>';
         return false;
       }
     }
@@ -95,13 +95,11 @@ function ldap_auth($u, $p, &$data){
       ldap_unbind( $ldap );
       return true;
     } else {
-      $data['error'] = 'Incorrect password provided';
+      $data['error'] = $string['incorrectpassword'];
       return false;	
     }
   } else {
-    echo "Cannot connect to LDAP server";
-    exit;
-    $data['error'] = 'LDAP Server Unavalable';
+    $data['error'] = $string['ldapserverunavailable'];
     return false;	
   }
 }
@@ -118,7 +116,13 @@ function ldap_auth($u, $p, &$data){
  *
  */
 function db_auth($u, $p, $db) {
-  global $userID, $userroles, $faculty, $title, $initials, $surname, $username, $grade, $year, $special_needs, $db_errors, $cfg_install_type;
+  global $userID, $userroles, $faculty, $title, $initials, $surname, $username, $grade, $year, $special_needs, $db_errors, $cfg_install_type, $cfg_db_database, $string;
+  global $cfg_db_sysadmin_user, $cfg_db_sysadmin_passwd;
+  global $cfg_db_admin_user, $cfg_db_admin_passwd;
+  global $cfg_db_staff_user, $cfg_db_staff_passwd;
+  global $cfg_db_student_user, $cfg_db_student_passwd;
+  global $cfg_db_external, $cfg_db_external_passwd;
+
   if ($u == '') {
     return false;
   }
@@ -158,15 +162,38 @@ function db_auth($u, $p, $db) {
           $cfg_install_type .= " as $title $surname";
         }
       }
+            
+      //select the aproprate database user
+      if (strpos($userroles,'SysAdmin') !== false) {
+        $result = $db->change_user($cfg_db_sysadmin_user, $cfg_db_sysadmin_passwd, $cfg_db_database);
+        //echo "using sysadmin db conection";
+      } else if (strpos($userroles,'Student') !== false) {
+        //echo "using Student db conection";
+        $result = $db->change_user($cfg_db_student_user, $cfg_db_student_passwd, $cfg_db_database);
+      } else if (strpos($userroles,'Staff') !== false or strpos($userroles,'Admin') !== false) {
+        $result = $db->change_user($cfg_db_staff_user, $cfg_db_staff_passwd, $cfg_db_database);
+        //echo "using staff db conection";
+      } else if (strpos($userroles,'External Examiner') !== false) {
+        $result = $db->change_user($cfg_db_external, $cfg_db_external_passwd, $cfg_db_database);
+        //echo "using External Examiner db conection";
+      } else {
+        $result = false;
+      }
+            
+      if($result === false) {
+        $db_errors = '<strong>' . $string['nodatabaseconnection'] . '</strong>';
+        return false;
+      }
+      
       return true;
     } else {
-      $db_errors = '<strong>Local TouchStone authentication failed.</strong>';
+      $db_errors = '<strong>' . $string['localtsauthfailed'] . '</strong>';
       return false;
     }
   } else {
     $password = $userID = $userroles = $title = $surname = $username = $grade = $year = '';
     if ($stmt->num_rows == 0) {
-      $db_errors = '<strong>No TouchStone account found!</strong>';
+      $db_errors = '<strong>' . $string['notsaccount'] . '</strong>';
     }
     $stmt->close();
     return false;

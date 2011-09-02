@@ -34,15 +34,20 @@ Class PasswordUtils {
    * @return string password length 8 including uper lower case and other chars
    *
    */
-  static function gen_password() {
-    $lower = 'abcdefghijklmnoprrstuvwxyzabcdefghijklmnoprrstuvwxyz';
-    $upper = 'ABCDEFGHIJKLMN0PQRSTUVWXYZabcdefghijklmnoprrstuvwxyz';
-    $num =   '0123456789012345678901234501234567890123456789012345';
-    $special ='!$%?#@!.%?#@!$%?#@!$%?#@!.!$%?#@!.%?#@!$%?#@!.%?#@!$'; 
+  static function gen_password($len = 8) {
+    $lower    = 'abcdefghijklmnoprrstuvwxyzabcdefghijklmnoprrstuvwxyz';
+    $upper    = 'ABCDEFGHIJKLMN0PQRSTUVWXYZABCDEFGHIJKLMN0PQRSTUVWXYZ';
+    $num      = '0123456789012345678901234501234567890123456789012345';
+    $special  = '!$%^&*-=+_.@~!?!$%^&*-=+_.@~!?!$%^&*-=+_.@~!?!$%^&*-'; 
+
     $pass = '';
     $chars = array($lower,$lower,$lower,$special,$num,$num,$upper,$upper);
-    for($i = 0; $i < 8; $i++) { 
-      $pass .= substr($chars[$i],rand(0,51),1);
+    for($i = 0; $i < $len; $i++) { 
+      if($i < 7) {
+        $pass .= substr($chars[$i],rand(0,51),1);
+      } else {
+        $pass .= substr($chars[rand(2,6)],rand(0,51),1);
+      }
     }
     return $pass;
   }

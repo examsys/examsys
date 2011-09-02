@@ -19,7 +19,7 @@ MEE.Main.extend("MEE.Display",
         if (typeof this.baseid == "undefined")
             this.baseid = "";
 
-        var showcomp = 1;
+        var showcomp = 0;
         var large = "\\LARGE ";
         var border = 0;
         var showlatex = 0;
@@ -41,7 +41,7 @@ MEE.Main.extend("MEE.Display",
         if (inline) depth = 2;
         var res = this.elementset.toHTML(depth);
 
-        //$(element).css('color', 'red');
+       // $(element).css('color', 'red');
 
         if (inline) {
             $(element).html("");

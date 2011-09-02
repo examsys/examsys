@@ -69,7 +69,7 @@ require_once '../classes/searchutils.class.php';
 
 <table cellpadding="4" cellspacing="0" border="0" width="185">
 <tr><td>
-<div><strong>Word or phrase</strong><br /><input type="text" name="searchterm" id="searchterm" size="25" style="width:98%" value="<?php if (isset($_POST['searchterm'])) echo $_POST['searchterm']; ?>" /></div>
+<div><strong><?php echo $string['wordorphrase']; ?></strong><br /><input type="text" name="searchterm" id="searchterm" size="25" style="width:98%" value="<?php if (isset($_POST['searchterm'])) echo $_POST['searchterm']; ?>" /></div>
 <table cellpadding="0" cellspacing="0" border="0">
 <?php
   if (isset($_POST['submit'])) {
@@ -113,18 +113,18 @@ require_once '../classes/searchutils.class.php';
   }
 ?>
 
-<tr><td><input type="checkbox" name="formative" value="1"<?php echo $radio[0]; ?> /></td><td>Formative Self-Assessment</td></tr>
-<tr><td><input type="checkbox" name="progress" value="1"<?php echo $radio[1]; ?> /></td><td>Progress Test</td></tr>
-<tr><td><input type="checkbox" name="summative" value="1"<?php echo $radio[2]; ?> /></td><td>Summative Exam</td></tr>
-<tr><td><input type="checkbox" name="survey" value="1"<?php echo $radio[3]; ?> /></td><td>Survey</td></tr>
-<tr><td><input type="checkbox" name="osce" value="1"<?php echo $radio[4]; ?> /></td><td>OSCE Station</td></tr>
-<tr><td><input type="checkbox" name="offline" value="1"<?php echo $radio[5]; ?> /></td><td>Offline Paper</td></tr>
+<tr><td><input type="checkbox" name="formative" value="1"<?php echo $radio[0]; ?> /></td><td><?php echo $string['formative']; ?></td></tr>
+<tr><td><input type="checkbox" name="progress" value="1"<?php echo $radio[1]; ?> /></td><td><?php echo $string['progresstest']; ?></td></tr>
+<tr><td><input type="checkbox" name="summative" value="1"<?php echo $radio[2]; ?> /></td><td><?php echo $string['summative']; ?></td></tr>
+<tr><td><input type="checkbox" name="survey" value="1"<?php echo $radio[3]; ?> /></td><td><?php echo $string['survey']; ?></td></tr>
+<tr><td><input type="checkbox" name="osce" value="1"<?php echo $radio[4]; ?> /></td><td><?php echo $string['osce']; ?></td></tr>
+<tr><td><input type="checkbox" name="offline" value="1"<?php echo $radio[5]; ?> /></td><td><?php echo $string['offlinepaper']; ?></td></tr>
 </table>
 
 <br />
 
   <table cellpadding="4" cellspacing="0" border="0" width="100%">
-  <tr><td><a href="#" style="font-size:110%; font-weight:bold; color:black" onclick="updateMenu(6);">Accessibility</a></td>
+  <tr><td><a href="#" style="font-size:110%; font-weight:bold; color:black" onclick="updateMenu(6);"><?php echo $string['accessibility']; ?></a></td>
   <td align="right"><a href="#" onclick="updateMenu(6);"><?php
     if (isset($_COOKIE['papersearch'][6]) and $_COOKIE['papersearch'][6] == 'block') {
       echo '<img id="icon6" src="../artwork/up_arrow_icon.gif" width="9" height="9" alt="Hide" border="0" />';
@@ -141,7 +141,7 @@ require_once '../classes/searchutils.class.php';
     echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"menu6\" style=\"display:none\">\n";
   }
 ?>
-<tr><td><div style="margin-left:4px">Date&nbsp;</div></td><td>
+<tr><td><div style="margin-left:4px"><?php echo $string['date']; ?>&nbsp;</div></td><td>
 <?php
   echo "<select name=\"day\">\n";
   echo "<option value=\"\"></option>\n";
@@ -177,7 +177,7 @@ require_once '../classes/searchutils.class.php';
 ?>
 </select>
 </td></tr>
-<tr><td><div style="margin-left:4px">Lab&nbsp;</div></td><td><select style="width:150px" name="lab"><option value="">(any lab)</option>
+<tr><td><div style="margin-left:4px"><?php echo $string['lab']; ?>&nbsp;</div></td><td><select style="width:150px" name="lab"><option value=""><?php echo $string['anylab']; ?></option>
 <?php
   $old_campus = '';
   $search_results = $mysqli->query("SELECT DISTINCT id, name, campus FROM labs ORDER BY campus, name");
@@ -200,7 +200,7 @@ require_once '../classes/searchutils.class.php';
 </table>
 
   <table cellpadding="4" cellspacing="0" border="0" width="100%">
-  <tr><td><a href="#" style="font-weight:bold; color:black" onclick="updateMenu(9);">Ownership</a></td>
+  <tr><td><a href="#" style="font-weight:bold; color:black" onclick="updateMenu(9);"><?php echo $string['ownership']; ?></a></td>
   <td align="right"><a href="#" onclick="updateMenu(9);"><?php
     if (isset($_COOKIE['papersearch'][9]) and $_COOKIE['papersearch'][9] == 'block') {
       echo "<img id=\"icon9\" src=\"../artwork/up_arrow_icon.gif\" width=\"9\" height=\"9\" alt=\"Hide\" border=\"0\" />";
@@ -227,14 +227,14 @@ require_once '../classes/searchutils.class.php';
 <div style="text-align:center">
 <?php
   if (isset($_GET['paperID'])) {
-    echo '<input style="width:80px" type="button" name="back" value="Back" onclick="window.location=\'/touchstone/paper/details.php?paperID=' . $_GET['paperID'] . '&module=' . $_GET['module'] . '&folder=' . $_GET['folder'] . '\'"/>';
+    echo '<input style="width:80px" type="button" name="back" value="' . $string['back'] . '" onclick="window.location=\'/touchstone/paper/details.php?paperID=' . $_GET['paperID'] . '&module=' . $_GET['module'] . '&folder=' . $_GET['folder'] . '\'"/>';
   } elseif (isset($_GET['module']) and $_GET['module'] != '') {
-    echo '<input style="width:80px" type="button" name="back" value="Back" onclick="window.location=\'/touchstone/folder/details.php?module=' . $_GET['module'] . '&folder=' . $_GET['folder'] . '\'"/>';
+    echo '<input style="width:80px" type="button" name="back" value="' . $string['back'] . '" onclick="window.location=\'/touchstone/folder/details.php?module=' . $_GET['module'] . '&folder=' . $_GET['folder'] . '\'"/>';
   } else {
-    echo '<input style="width:80px" type="button" name="back" value="Back" onclick="window.location=\'/touchstone/index.php\'"/>';
+    echo '<input style="width:80px" type="button" name="back" value="' . $string['back'] . '" onclick="window.location=\'/touchstone/index.php\'"/>';
   }
 ?>
-&nbsp;<input style="width:80px" type="submit" name="submit" value="Search" /></div>
+&nbsp;<input style="width:80px" type="submit" name="submit" value="<?php echo $string['search']; ?>" /></div>
 </td></tr>
 </table>
 

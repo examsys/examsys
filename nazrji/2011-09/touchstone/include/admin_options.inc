@@ -26,11 +26,11 @@
 <div id="left-sidebar" class="sidebar">
 <br />
 <table cellpadding="0" cellspacing="0" border="0" width="185">
-<tr><td style="font-weight:bold">Administrative Tools</td></tr>
+<tr><td style="font-weight:bold"><?php echo $string['administrativetools']; ?></td></tr>
 <tr><td style="margin:4px">
 <tr><td>
 <table cellpadding="3" cellspacing="0" border="0" style="margin-left:6px; font-size:90%">
-<tr><td><a href="../index.php"><img src="../artwork/house.png" width="16" height="16" alt="home" border="0" /></a></td><td class="menuitem"><a href="../index.php">Home</a></td></tr>
+<tr><td><a href="../index.php"><img src="../artwork/house.png" width="16" height="16" alt="home" border="0" /></a></td><td class="menuitem"><a href="../index.php"><?php echo $string['home']; ?></a></td></tr>
 </table>
 
 </td></tr>

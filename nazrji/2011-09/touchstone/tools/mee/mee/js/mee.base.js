@@ -2,10 +2,10 @@
 $.Class.extend("MEE.Base",
 {
     Render: function (source, mcedoc) {
-        if (mcedoc) {
+        /*if (mcedoc) {
             this.ProcessForTinyMCE(source, mcedoc);
             return;
-        }
+        }*/
 
         this.fontwaitlimit = 10;
         // build all recursive definitions
@@ -163,8 +163,16 @@ $.Class.extend("MEE.Base",
 
     removeProgress: function () {
         $('.mee_progress').remove();
-    },
+    }
     //#endregion
+
+    /*DoMCERender: function (edid) {
+        // need to locate tinymce editor with id edid
+        var ed = tinyMCE.get(edid);
+        if (ed) {
+            MEE.Base.Render(ed.getBody(), ed.getDoc());
+        }
+    },
 
     //#region Tiny MCE rendering, requires immediate render instead of timed render
     ProcessForTinyMCE: function (source, mcedoc) {
@@ -276,7 +284,7 @@ $.Class.extend("MEE.Base",
 
         var meeeqn = new MEE.Display(elem, true, doc);
         MEE.Base.displays.push(meeeqn);
-    }
+    }*/
     //#endregion
 },
 {

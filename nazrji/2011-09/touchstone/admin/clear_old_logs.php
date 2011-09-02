@@ -24,6 +24,34 @@
 
   require '../include/sysadmin_auth.inc';
   require '../include/sidebar_menu.inc';
+  set_time_limit(0);
+  ob_start();
+?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title><?php echo $string['clearoldlogs']; ?></title>
+<link rel="stylesheet" type="text/css" href="../css/submenu.css" />
+<script language="JavaScript" src="../javascript/staff_help.js"></script>
+<script language="JavaScript" src="../javascript/sidebar.js"></script>
+</head>
+
+<body>
+
+<?php
+  require '../include/admin_options.inc';
+?>
+
+<div id="content" class="content" style="font-size:80%">
+<table cellpadding="0" cellspacing="0" border="0" width="100%">
+<tr><td style="background-color:#F1F5FB"><div class="breadcrumb"><a href="../index.php"><?php echo $string['home']; ?></a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php"><?php echo $string['administrativetools']; ?></a></div><div style="font-size:200%; margin-left:10px; font-weight:bold"><?php echo $string['clearoldlogs']; ?></div></td><td style="background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(239); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="<?php echo $string['help']; ?>" border="0" /></a></td></tr>
+<tr><td colspan="2" style="height:3px"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td></tr>
+</table>
+
+<?php
+  ob_flush();
+  flush();
 
   $log0_deleted = 0;
   $log1_deleted = 0;
@@ -39,44 +67,33 @@
     $deletequery->execute();
     $log0_deleted += $deletequery->affected_rows;
     $deletequery->close();
+    
     // Delete from progress test log.
     $deletequery = $mysqli->prepare("DELETE FROM log1 WHERE userID=?");
     $deletequery->bind_param('s', $userID);
     $deletequery->execute();
     $log1_deleted += $deletequery->affected_rows;
     $deletequery->close();
+    
+    // Reset passwords
+    if ($cfg_use_ldap) {
+      $updatequery = $mysqli->prepare("UPDATE users SET password='' WHERE roles IN('Student','graduate','left')");
+    } else {
+      $updatequery = $mysqli->prepare("UPDATE users SET password='' WHERE roles IN('graduate','left')");
+    }
+    $updatequery->execute();
+    $updatequery->close();
   }
   $stmt->close();
-  $mysqli->close();
 
-?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
-<head>
-<title>Clear Old Logs</title>
-<link rel="stylesheet" type="text/css" href="../css/submenu.css" />
-<script language="JavaScript" src="../javascript/staff_help.js"></script>
-<script language="JavaScript" src="../javascript/sidebar.js"></script>
-</head>
-
-<body>
-
-<?php
-  require '../include/admin_options.inc';
-?>
-
-<div id="content" class="content" style="font-size:80%">
-<table cellpadding="0" cellspacing="0" border="0" width="100%">
-<tr><td style="background-color:#F1F5FB"><div class="breadcrumb"><a href="../index.php">Home</a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php">Administrative Tools</a></div><div style="font-size:200%; margin-left:10px; font-weight:bold">Clear Old Logs</div></td><td style="background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(239); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="Help" border="0" /></a></td></tr>
-<tr><td colspan="2" style="height:3px"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td></tr>
-</table>
-
-<?php
-
-  echo "<blockquote>\n<div>Log0 records deleted: $log0_deleted</div>";
-  echo "<div>Log1 records deleted: $log1_deleted</div>\n</blockquote>";
+  echo "<blockquote>\n<div>" . $string['log0deleted'] . " $log0_deleted</div>";
+  echo "<div>" . $string['log1deleted'] . " $log1_deleted</div>\n</blockquote>";
 ?>
 </div>
 
 </body>
 </html>
+<?php
+  $mysqli->close();
+  ob_end_flush();
+?>

@@ -45,15 +45,17 @@ function findDecisionQ($question_array,$sourceID) {
 }
 
 function checkProblems($p_type, $q_type, $score_method, &$temp_array, $scenario, $q_media, $row_no, $question_marks, $q_id, $tmp_excluded, $option_text, $correct_array, $status) {
+  global $string;
+
   if (!isset($tmp_excluded) and ($status == 'Normal' or $status == 'Experimental' or $status == 'Beta')) {
     if ($score_method == 'SelectedPositive' and $q_type == 'mrq') {
-      if ($question_marks > (count($option_text) / 2)) $temp_array[$row_no]['warnings'] = "Too many correct options";
+      if ($question_marks > (count($option_text) / 2)) $temp_array[$row_no]['warnings'] = $string['toomanycorrect'];
     } elseif ($q_type == 'dichotomous') {
-      if ($question_marks < count($option_text)) $temp_array[$row_no]['warnings'] = "$question_marks out of " . count($option_text);
+      if ($question_marks < count($option_text)) $temp_array[$row_no]['warnings'] = sprintf($string['dichotomouswarning'], $question_marks, count($option_text));
     } elseif ($q_type == 'mcq' and $correct_array[0] == '') {
-      $temp_array[$row_no]['warnings'] = 'No correct answer specified';
+      $temp_array[$row_no]['warnings'] = $string['nocorrect'];
     } elseif ($q_type == 'calculation' and $correct_array[0] == '') {
-      $temp_array[$row_no]['warnings'] = 'No correct answer specified';
+      $temp_array[$row_no]['warnings'] = $string['nocorrect'];
     } elseif ($q_type == 'extmatch' or $q_type == 'matrix') {
       $matching_scenarios = explode('|', $scenario);
       $matching_media = explode('|', $q_media);
@@ -66,10 +68,10 @@ function checkProblems($p_type, $q_type, $score_method, &$temp_array, $scenario,
         if ($matching_media[$part_id] != '') $media_scenarios++;
       }
       $scenario_no = max($text_scenarios, $media_scenarios);
-      if ($question_marks < $scenario_no) $temp_array[$row_no]['warnings'] = 'Correct answer missing for some options.';
+      if ($question_marks < $scenario_no) $temp_array[$row_no]['warnings'] = $string['answermissing'];
     }
     if ($q_type == 'mcq' and $score_method == 'vertical_other' and $p_type != '3') {
-      $temp_array[$row_no]['warnings'] = "MCQ with 'other' should only be used on surveys";
+      $temp_array[$row_no]['warnings'] = $string['mcqsurvey'];
     }
   }
 }
@@ -86,12 +88,12 @@ function randomDetails($questionID) {
   $old_correct = array();
   $old_option_text = array();
 
-  $result = $mysqli->prepare("SELECT theme, options1.option_text, leadin, scenario, q_media_width, q_media_height, options2.correct, options2.marks, options2.option_text, q_type, score_method, DATE_FORMAT(last_edited,'%d/%m/%y'), status FROM options AS options1, questions, options AS options2 WHERE options1.option_text=questions.q_id AND questions.q_id=options2.o_id AND options1.o_id=? ");
+  $result = $mysqli->prepare("SELECT theme, options1.option_text, leadin, scenario, q_media_width, q_media_height, options2.correct, options2.marks_correct, options2.option_text, q_type, display_method, score_method, DATE_FORMAT(last_edited,'$cfg_short_date'), status FROM options AS options1, questions, options AS options2 WHERE options1.option_text=questions.q_id AND questions.q_id=options2.o_id AND options1.o_id=? ");
   $result->bind_param('i', $questionID);
   $result->execute();
   $result->store_result();
   if ($result->num_rows > 0) {
-    $result->bind_result($theme, $q_id, $leadin, $scenario, $q_media_width, $q_media_height, $correct, $marks, $option_text, $q_type, $score_method, $display_last_edited, $status);
+    $result->bind_result($theme, $q_id, $leadin, $scenario, $q_media_width, $q_media_height, $correct, $marks, $option_text, $q_type, $display_method, $score_method, $display_last_edited, $status);
     while ($row=$result->fetch()) {
       if ($old_q_id != $q_id and $old_q_id != '') {
         $old_leadin = trim(str_replace('&nbsp;',' ',(strip_tags($old_leadin))));
@@ -105,8 +107,8 @@ function randomDetails($questionID) {
         $random_questions[$question_no]['correct'] = $old_correct;
         $random_questions[$question_no]['status'] = $old_status;
         $random_questions[$question_no]['display_last_edited'] = $display_last_edited;
-        $random_questions[$question_no]['marks'] = qMarks($old_q_type, '', $old_marks, $old_option_text, $old_correct, $old_score_method);
-        $random_questions[$question_no]['random_mark'] = qRandomMarks($old_q_type, '', $old_option_text, $old_correct, $old_score_method, $old_q_media_width, $old_q_media_height);
+        $random_questions[$question_no]['marks'] = qMarks($old_q_type, '', $old_marks, $old_option_text, $old_correct, $old_display_method, $old_score_method);
+        $random_questions[$question_no]['random_mark'] = qRandomMarks($old_q_type, '', $old_option_text, $old_correct, $old_display_method, $old_score_method, $old_q_media_width, $old_q_media_height);
         $old_correct = array();
         $old_option_text = array();
         $question_no++;
@@ -120,6 +122,7 @@ function randomDetails($questionID) {
       $old_marks = $marks;
       $old_correct[] = $correct;
       $old_option_text[] = $option_text;
+      $old_display_method = $display_method;
       $old_score_method = $score_method;
       $old_q_media_width = $q_media_width;
       $old_q_media_height = $q_media_height;
@@ -136,8 +139,8 @@ function randomDetails($questionID) {
     $random_questions[$question_no]['correct'] = $old_correct;
     $random_questions[$question_no]['status'] = $old_status;
     $random_questions[$question_no]['display_last_edited'] = $display_last_edited;
-    $random_questions[$question_no]['marks'] = qMarks($old_q_type, '', $old_marks, $old_option_text, $old_correct, $old_score_method);
-    $random_questions[$question_no]['random_mark'] = qRandomMarks($old_q_type, '', $old_option_text, $old_correct, $old_score_method, $old_q_media_width, $old_q_media_height);
+    $random_questions[$question_no]['marks'] = qMarks($old_q_type, '', $old_marks, $old_option_text, $old_correct, $old_display_method, $old_score_method);
+    $random_questions[$question_no]['random_mark'] = qRandomMarks($old_q_type, '', $old_option_text, $old_correct, $old_display_method, $old_score_method, $old_q_media_width, $old_q_media_height);
   }
   $result->close();
 
@@ -332,10 +335,10 @@ if (isset($_GET['change_screen'])) {
 <body onscroll="scrollXY();"<?php if (isset($_GET['scrOfY'])) echo ' onload="window.scrollTo(0,' . $_GET['scrOfY'] . ');"'; ?>>
 
 <?php
-  $result = $mysqli->prepare("SELECT paper_title, moduleID, pass_mark, users.title, users.initials, users.surname, moduleID, folder, random_mark, total_mark, paper_ownerID, DATE_FORMAT(start_date,'%Y%m%d%H%i') AS start_date, DATE_FORMAT(start_date,'%H:%i %d/%m/%Y') AS display_start_date, DATE_FORMAT(end_date,'%Y%m%d%H%i') AS end_date, paper_type, deleted, latex_needed FROM (properties, users) WHERE property_id=? AND paper_ownerID=users.id LIMIT 1");
+  $result = $mysqli->prepare("SELECT paper_title, moduleID, pass_mark, users.title, users.initials, users.surname, moduleID, folder, random_mark, total_mark, marking, paper_ownerID, DATE_FORMAT(start_date,'%Y%m%d%H%i') AS start_date, DATE_FORMAT(start_date,'$cfg_long_date_time') AS display_start_date, DATE_FORMAT(end_date,'%Y%m%d%H%i') AS end_date, paper_type, deleted, latex_needed FROM (properties, users) WHERE property_id=? AND paper_ownerID=users.id LIMIT 1");
   $result->bind_param('i', $paperID);
   $result->execute();
-  $result->bind_result($paper_title, $moduleID, $pass_mark, $title, $initials, $surname, $tmp_module, $tmp_folder, $random_mark, $total_mark, $paper_ownerID, $start_date, $display_start_date, $end_date, $paper_type, $deleted, $latex_needed);
+  $result->bind_result($paper_title, $moduleID, $pass_mark, $title, $initials, $surname, $tmp_module, $tmp_folder, $random_mark, $total_mark, $marking, $paper_ownerID, $start_date, $display_start_date, $end_date, $paper_type, $deleted, $latex_needed);
   $result->fetch();
   $result->close();
   
@@ -461,6 +464,7 @@ if (isset($_GET['change_screen'])) {
   $old_marks  = 0;
   $old_option_text = '';
   $old_correct  = '';
+  $old_display_method = '';
   $old_score_method  = '';
   $old_q_media  = '';
   $old_q_media_width = '';
@@ -469,15 +473,16 @@ if (isset($_GET['change_screen'])) {
   $total_random_mark = 0;
   $total_marks  = 0;
   $options = 0;
+  $neg_marking = false;
   
   // Get the questions (if any).
-  $result = $mysqli->prepare("SELECT theme, q_group, ownerID, p_id, q_id, q_type, screen, leadin, scenario, option_text, correct, score_method, q_media, q_media_width, q_media_height, marks, DATE_FORMAT(last_edited,'%d/%m/%y') AS display_last_edited, display_pos, status, correct_fback, feedback_right, locked FROM (papers, questions) LEFT JOIN options ON questions.q_id = options.o_id WHERE paper=? AND papers.question=questions.q_id ORDER BY screen, display_pos, o_id");
+  $result = $mysqli->prepare("SELECT theme, q_group, ownerID, p_id, q_id, q_type, screen, leadin, scenario, option_text, correct, display_method, score_method, q_media, q_media_width, q_media_height, marks_correct, marks_incorrect, DATE_FORMAT(last_edited,'$cfg_short_date') AS display_last_edited, display_pos, status, correct_fback, feedback_right, locked FROM (papers, questions) LEFT JOIN options ON questions.q_id = options.o_id WHERE paper=? AND papers.question=questions.q_id ORDER BY screen, display_pos, o_id");
   $result->bind_param('i', $paperID);
   $result->execute();
   $result->store_result();
-  $result->bind_result($theme, $q_group, $ownerID, $p_id, $q_id, $q_type, $screen, $leadin, $scenario, $option_text, $correct, $score_method, $q_media, $q_media_width, $q_media_height, $marks, $display_last_edited, $display_pos, $status, $correct_fback, $feedback_right, $locked);
+  $result->bind_result($theme, $q_group, $ownerID, $p_id, $q_id, $q_type, $screen, $leadin, $scenario, $option_text, $correct, $display_method, $score_method, $q_media, $q_media_width, $q_media_height, $marks_correct, $marks_incorrect, $display_last_edited, $display_pos, $status, $correct_fback, $feedback_right, $locked);
   $temp_array = array();
-  while ($row = $result->fetch()) {
+  while ($result->fetch()) {
     // latex check [tex]
     if ($latex == 0) {
       if (strpos($leadin,'[tex]') !== false or strpos($scenario,'[tex]') !== false or strpos($option_text,'[tex]') !== false or strpos($score_method,'[tex]') !== false or strpos($correct_fback,'[tex]') !== false or strpos($feedback_right,'[tex]') !== false) {
@@ -489,6 +494,10 @@ if (isset($_GET['change_screen'])) {
       if (strpos($leadin,'$$') !== false or strpos($scenario,'$$') !== false or strpos($option_text,'$$') !== false or strpos($score_method,'$$') !== false or strpos($correct_fback,'$$') !== false or strpos($feedback_right,'$$') !== false) {
         $latex = 1;
       }
+    }
+    // Check for negative marking
+    if ($marks_incorrect < 0) {
+      $neg_marking = true;
     }
 
     if ($old_q_id != $q_id or $old_display_pos != $display_pos) {
@@ -508,13 +517,14 @@ if (isset($_GET['change_screen'])) {
         } else {
           $tmp_exclude = '';
         }
-        $temp_array[$row_no2]['original_marks'] = qMarks($old_q_type, $tmp_exclude, $old_marks, $old_option_text, $old_correct, $old_score_method);
+        $temp_array[$row_no2]['original_marks'] = qMarks($old_q_type, $tmp_exclude, $old_marks, $old_option_text, $old_correct, $old_display_method, $old_score_method);
         if ($row_no2 > 0 and $temp_array[$row_no2]['status'] != 'Experimental') {
           $temp_array[$row_no2]['marks'] = $temp_array[$row_no2]['original_marks'];
-          $total_random_mark += qRandomMarks($old_q_type, $tmp_exclude, $old_option_text, $old_correct, $old_score_method, $old_q_media_width, $old_q_media_height);
+          $total_random_mark += qRandomMarks($old_q_type, $tmp_exclude, $old_option_text, $old_correct, $old_display_method, $old_score_method, $old_q_media_width, $old_q_media_height);
         }
       }
       if ($row_no2 > 0 and $temp_array[$row_no2]['status'] != 'Experimental') $total_marks += $temp_array[$row_no2]['marks'];
+      $temp_array[$row_no2]['display_method'] = $old_display_method;
       $temp_array[$row_no2]['score_method'] = $old_score_method;
       if ($row_no2 > 0 and $paper_type < 3) checkProblems($paper_type, $old_q_type, $old_score_method, $temp_array, $old_scenario, $old_q_media, $row_no2, $temp_array[$row_no2]['original_marks'], $old_q_id, $excluded[$old_q_id], $old_option_text, $old_correct, $temp_array[$row_no2]['status']);
       $old_correct = array();
@@ -594,6 +604,7 @@ if (isset($_GET['change_screen'])) {
     $old_q_id = $q_id;
     $old_display_pos = $display_pos;
     $old_q_type = $q_type;
+    $old_display_method = $display_method;
     $old_score_method = $score_method;
     $old_correct[] = $correct;
     $old_scenario = $scenario;
@@ -601,11 +612,11 @@ if (isset($_GET['change_screen'])) {
     $old_q_media_width = $q_media_width;
     $old_q_media_height = $q_media_height;
     $old_option_text[] = $option_text;
-    $old_marks = $marks;
-    if(!empty($option_text) or (!empty($correct) and (in_array($q_type, array('labelling', 'hotspot', 'timedate')))) or in_array($q_type, array('info', 'likert', 'flash'))) $options++;
+    $old_marks = $marks_correct;
+    if (!empty($option_text) or (!empty($correct) and (in_array($q_type, array('labelling', 'hotspot', 'timedate')))) or in_array($q_type, array('info', 'likert', 'flash'))) $options++;
   }
   $result->close();
-
+  
   if ($row_no > 0) {
     $temp_array[$row_no]['options'] = $options;
     if ($old_q_type == 'random') {
@@ -615,10 +626,10 @@ if (isset($_GET['change_screen'])) {
         $total_random_mark += $temp_array[$row_no2]['random'][0]['random_mark'];
       }
     } else {
-      $temp_array[$row_no2]['original_marks'] = qMarks($old_q_type, $excluded[$old_q_id], $old_marks, $old_option_text, $old_correct, $old_score_method);
+      $temp_array[$row_no2]['original_marks'] = qMarks($old_q_type, $excluded[$old_q_id], $old_marks, $old_option_text, $old_correct, $old_display_method, $old_score_method);
       if ($temp_array[$row_no2]['status'] != 'Experimental') {
         $temp_array[$row_no2]['marks'] = $temp_array[$row_no2]['original_marks'];
-        $total_random_mark += qRandomMarks($old_q_type, $excluded[$old_q_id], $old_option_text, $old_correct, $old_score_method, $old_q_media_width, $old_q_media_height);
+        $total_random_mark += qRandomMarks($old_q_type, $excluded[$old_q_id], $old_option_text, $old_correct, $old_display_method, $old_score_method, $old_q_media_width, $old_q_media_height);
       }
     }
     if ($temp_array[$row_no2]['status'] != 'Experimental') $total_marks += $temp_array[$row_no2]['marks'];
@@ -679,28 +690,28 @@ if (isset($_GET['change_screen'])) {
   echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">\n";
   echo "<tr><td style=\"background-color:#F1F5FB\" colspan=\"5\"><div class=\"breadcrumb\">";
   if ($module != '') {
-    echo '<a href="../index.php">Home</a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?module=' . $module . '">' . $module . '</a>';
+    echo '<a href="../index.php">' . $string['home'] . '</a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?module=' . $module . '">' . $module . '</a>';
   } elseif ($folder != '') {
-    echo '<a href="../index.php">Home</a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?folder=' . $folder . '">' . $folder_name . '</a>';
+    echo '<a href="../index.php">' . $string['home'] . '</a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?folder=' . $folder . '">' . $folder_name . '</a>';
   } else {
-    echo '<a href="../index.php">Home</a>';
+    echo '<a href="../index.php">' . $string['home'] . '</a>';
   }
   echo "</div><div onclick=\"qOff()\" style=\"font-size:220%; font-weight:bold; margin-left:10px\">$paper_title</div>";
-  echo "</td><td style=\"background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(1); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"Help\" border=\"0\" /></a></td></tr>\n";
-  echo "<tr><td colspan=\"3\" style=\"background-color:#F1F5FB;font-size:90%;padding-left:10px\"><strong>Start:</strong> $display_start_date</td><td colspan=\"3\" style=\"background-color:#F1F5FB;text-align:right;font-size:90%\"><strong>Owner:</strong> $paper_owner&nbsp;</td></tr>\n";
+  echo "</td><td style=\"background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(1); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['help'] . "\" border=\"0\" /></a></td></tr>\n";
+  echo "<tr><td colspan=\"3\" style=\"background-color:#F1F5FB;font-size:90%;padding-left:10px\"><strong>" . $string['start'] . ":</strong> $display_start_date</td><td colspan=\"3\" style=\"background-color:#F1F5FB;text-align:right;font-size:90%\"><strong>" . $string['owner'] . ":</strong> $paper_owner&nbsp;</td></tr>\n";
   ?>
     <tr>
     <td style="background-color:#F1F5FB;width:40px" colspan="2">&nbsp;</td>
-    <td style="background-color:#F1F5FB">Question</td>
-    <td style="background-color:#F1F5FB;width:120px"><img src="../artwork/header_vertical_line.gif" width="2" height="15" border="0" />&nbsp;Type&nbsp;</td>
-    <td style="background-color:#F1F5FB;width:50px"><img src="../artwork/header_vertical_line.gif" width="2" height="15" border="0" />&nbsp;Marks&nbsp;</td>
-    <td style="background-color:#F1F5FB;width:100px"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" />&nbsp;Modified&nbsp;</td>
+    <td style="background-color:#F1F5FB"><?php echo $string['question']; ?></td>
+    <td style="background-color:#F1F5FB;width:120px"><img src="../artwork/header_vertical_line.gif" width="2" height="15" border="0" />&nbsp;<?php echo $string['type']; ?>&nbsp;</td>
+    <td style="background-color:#F1F5FB;width:50px"><img src="../artwork/header_vertical_line.gif" width="2" height="15" border="0" />&nbsp;<?php echo $string['marks']; ?>&nbsp;</td>
+    <td style="background-color:#F1F5FB;width:100px"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" />&nbsp;<?php echo $string['modified']; ?>&nbsp;</td>
     </tr>
     <tr><td colspan="6" style="height:3px"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" /></td></tr>
   <?php
 
   if ($summative_lock == 1) {
-    echo "<tr><td colspan=\"2\" style=\"height:32px; text-align:right; background-image:url('../artwork/locked_gradient.png'); background-repeat:repeat-x\"><img src=\"../artwork/paper_locked_padlock.png\" width=\"19\" height=\"24\" alt=\"Locked\" />&nbsp;&nbsp;</td><td colspan=\"3\" style=\"height:32px; vertical-align:middle; background-image:url('../artwork/locked_gradient.png'); background-repeat:repeat-x\"><strong>Paper Locked</strong>&nbsp;&nbsp;&nbsp;This paper is now locked and cannot be modified. <a href=\"#\" class=\"blacklink\" onclick=\"launchHelp(189); return false;\">Click for more details.</a></td><td style=\"text-align:right; background-image:url('../artwork/locked_gradient.png'); background-repeat:repeat-x\">";
+    echo "<tr><td colspan=\"2\" style=\"height:32px; text-align:right; background-image:url('../artwork/locked_gradient.png'); background-repeat:repeat-x\"><img src=\"../artwork/paper_locked_padlock.png\" width=\"19\" height=\"24\" alt=\"Locked\" />&nbsp;&nbsp;</td><td colspan=\"3\" style=\"height:32px; vertical-align:middle; background-image:url('../artwork/locked_gradient.png'); background-repeat:repeat-x\">" . $string['paperlockedwarning'] . " <a href=\"#\" class=\"blacklink\" onclick=\"launchHelp(189); return false;\">Click for more details.</a></td><td style=\"text-align:right; background-image:url('../artwork/locked_gradient.png'); background-repeat:repeat-x\">";
     if (strpos($userroles,'Admin') !== false) {
       $record_no = 0;
       $result = $mysqli->prepare("SELECT COUNT(log_metadata.id) FROM log_metadata, users WHERE paperID=? AND log_metadata.userID=users.id AND roles='Student'");
@@ -711,9 +722,9 @@ if (isset($_GET['change_screen'])) {
       $result->close();
    
       if ($record_no == 0) {
-        echo '<span style="align:right"><input type="button" name="unlock" value="Unlock" onclick="window.location=\'details.php?paperID=' . $paperID . '&module=' . $module . '&folder=' . $folder . '&scrOfY=0&unlock=1\'" /></span>';
+        echo '<span style="align:right"><input type="button" name="unlock" value="' . $string['unlock'] . '" onclick="window.location=\'details.php?paperID=' . $paperID . '&module=' . $module . '&folder=' . $folder . '&scrOfY=0&unlock=1\'" /></span>';
       } else {
-        echo '<span style="align:right"><input type="button" name="unlock" value="Unlock" disabled /></span>';
+        echo '<span style="align:right"><input type="button" name="unlock" value="' . $string['unlock'] . '" disabled /></span>';
       }
     }
     echo "</td></tr>\n";
@@ -721,36 +732,45 @@ if (isset($_GET['change_screen'])) {
     $tmp_hour = substr($display_start_date,0,2);
     if (substr($tmp_hour,0,1) == '0') $tmp_hour = substr($tmp_hour,1,1);
     if (substr($display_start_date,12,4) > (date("Y")+1)) {
-      echo "<tr><td colspan=\"2\" style=\"height:32px; text-align:right; background-image:url('../artwork/non_owner_gradient.gif'); background-repeat:repeat-x\"><img src=\"../artwork/late_warning_icon.png\" style=\"padding-top:2px\" width=\"28\" height=\"28\" alt=\"Locked\" />&nbsp;&nbsp;</td><td colspan=\"7\" style=\"height:32px; vertical-align:middle; background-image:url('../artwork/non_owner_gradient.gif'); background-repeat:repeat-x\"><strong>Time/Date Warning</strong>&nbsp;&nbsp;&nbsp;This paper is scheduled for a long way in the future ($display_start_date)</td></tr>\n";
+      echo "<tr><td colspan=\"2\" style=\"height:32px; text-align:right; background-image:url('../artwork/non_owner_gradient.gif'); background-repeat:repeat-x\"><img src=\"../artwork/late_warning_icon.png\" style=\"padding-top:2px\" width=\"28\" height=\"28\" alt=\"Locked\" />&nbsp;&nbsp;</td><td colspan=\"7\" style=\"height:32px; vertical-align:middle; background-image:url('../artwork/non_owner_gradient.gif'); background-repeat:repeat-x\">";
+      printf($string['farfuturewarning'], $display_start_date); 
+      echo "</td></tr>\n";
     } elseif ($tmp_hour < $cfg_hour_warning) {
-      echo "<tr><td colspan=\"2\" style=\"height:32px; text-align:right; background-image:url('../artwork/non_owner_gradient.gif'); background-repeat:repeat-x\"><img src=\"../artwork/late_warning_icon.png\" style=\"padding-top:2px\" width=\"28\" height=\"28\" alt=\"Locked\" />&nbsp;&nbsp;</td><td colspan=\"7\" style=\"height:32px; vertical-align:middle; background-image:url('../artwork/non_owner_gradient.gif'); background-repeat:repeat-x\"><strong>Time/Date Warning</strong>&nbsp;&nbsp;&nbsp;This paper is scheduled to start before " . $cfg_hour_warning . "am</td></tr>\n";
+      echo "<tr><td colspan=\"2\" style=\"height:32px; text-align:right; background-image:url('../artwork/non_owner_gradient.gif'); background-repeat:repeat-x\"><img src=\"../artwork/late_warning_icon.png\" style=\"padding-top:2px\" width=\"28\" height=\"28\" alt=\"Locked\" />&nbsp;&nbsp;</td><td colspan=\"7\" style=\"height:32px; vertical-align:middle; background-image:url('../artwork/non_owner_gradient.gif'); background-repeat:repeat-x\">";
+      printf($string['earlywarning'], $cfg_hour_warning);
+      echo "</td></tr>\n";
     }
   }
 
   $screen_marks = 0;
   $old_screen = 0;
   $question_number = 0;
-  $marks_error = false;
+  $marks_incorrect_error = false;
   $paper_warnings = array();
   for ($x=1; $x<=$row_no; $x++) {
-    if($temp_array[$x]['options'] == 0) $temp_array[$x]['warnings'] .= 'No options defined for question';
+    if($temp_array[$x]['options'] == 0) $temp_array[$x]['warnings'] .= $string['nooptionsdefined'];
     if ($temp_array[$x]['status'] == 'Incomplete') $paper_warnings['Incomplete'][] = $question_number + 1;
     if ($temp_array[$x]['status'] == 'Beta') $paper_warnings['Beta'][] = $question_number + 1;
     if ($temp_array[$x]['status'] == 'Retired') $paper_warnings['Retired'][] = $question_number + 1;
     if ($old_screen != $temp_array[$x]['screen']) {
       if ($old_screen > 0) {
         $tmp_screen_mean = ($total_marks == 0) ? 0 : ($screen_marks / $total_marks);
-        if ($paper_type == '2' and $question_number > 2 and $tmp_screen_mean * 100 > 25 and $screen_marks > 3) echo "\n<tr><td colspan=\"5\" style=\"font-weight:bold; color:#C00000\"><img src=\"../artwork/small_yellow_warning_icon.gif\" width=\"16\" height=\"16\" alt=\"Warning\" border=\"0\" />&nbsp;Screen $old_screen has $screen_marks marks which is " . round(($screen_marks / $total_marks) * 100) . "% of the paper total. Please insert additional screen breaks to minimise data loss in the event of a computer crash.</td></tr>\n";
+        if ($paper_type == '2' and $question_number > 2 and $tmp_screen_mean * 100 > 25 and $screen_marks > 3) {
+          echo "\n<tr><td colspan=\"5\" style=\"font-weight:bold; color:#C00000\"><img src=\"../artwork/small_yellow_warning_icon.gif\" width=\"16\" height=\"16\" alt=\"Warning\" border=\"0\" />&nbsp;";
+          $percent = round(($screen_marks / $total_marks) * 100);
+          printf($string['markswarning'], $old_screen, $screen_marks, $percent);
+          echo "</td></tr>\n";
+        }
       }
       $screen_marks = 0;
       if ($old_screen < ($temp_array[$x]['screen'] - 1)) {
         for ($missing=1; $missing<($temp_array[$x]['screen'] - $old_screen); $missing++) {
-          echo "<tr><td colspan=\"6\"><table border=\"0\" style=\"padding-left:10px; padding-right:2px; padding-bottom:5px; width:100%; color:#C00000\"><tr><td style=\"font-weight:bold\"><nobr>Screen " . ($old_screen + $missing) . "</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#C00000; background-color:#C00000; width:100%\" /></td></tr></table></td></tr>\n";
-          echo '<tr><td colspan="6" style="height:55px; background-image:url(../artwork/no_questions_gradient.png); repeat:repeat-x; background-color:#FFC0C0; padding-left:15px; padding-top:4x"><strong>Warning:</strong> there are no questions on this screen.<br />This will produce an error if the paper is tested!</td></tr>';
+          echo "<tr><td colspan=\"6\"><table border=\"0\" style=\"padding-left:10px; padding-right:2px; padding-bottom:5px; width:100%; color:#C00000\"><tr><td style=\"font-weight:bold\"><nobr>" . $string['screen'] . " " . ($old_screen + $missing) . "</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#C00000; background-color:#C00000; width:100%\" /></td></tr></table></td></tr>\n";
+          echo '<tr><td colspan="6" style="height:55px; background-image:url(../artwork/no_questions_gradient.png); repeat:repeat-x; background-color:#FFC0C0; padding-left:15px; padding-top:4x">' . $string['noquestionscreen'] . '</td></tr>';
         }
       }
       echo '<tr><td colspan="6" style="height:10px"></td></tr>';
-      echo "<tr><td colspan=\"6\"><table border=\"0\" style=\"padding-left:10px; padding-right:2px; padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>Screen " . $temp_array[$x]['screen'] . "</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table></td></tr>\n";
+      echo "<tr><td colspan=\"6\"><table border=\"0\" style=\"padding-left:10px; padding-right:2px; padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>" . $string['screen'] . " " . $temp_array[$x]['screen'] . "</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table></td></tr>\n";
     }
     $old_screen = $temp_array[$x]['screen'];
     $teamOK = false;
@@ -778,7 +798,7 @@ if (isset($_GET['change_screen'])) {
         echo "document.getElementById('promotetext').style.color = '#808080';\n";
         echo "document.getElementById('promoteicon').src = '../artwork/promote_disabled.gif';\n";
       } else {
-        echo "document.getElementById('promotetext').style.color = '#215DC6';\n";
+        echo "document.getElementById('promotetext').style.color = '#black';\n";
         echo "document.getElementById('promoteicon').src = '../artwork/promote.gif';\n";
       }
       echo "document.PapersMenu.next_screen.value = '" . $temp_array[$x + 1]['screen'] . "';\n";
@@ -786,7 +806,7 @@ if (isset($_GET['change_screen'])) {
         echo "document.getElementById('demotetext').style.color = '#808080';\n";
         echo "document.getElementById('demoteicon').src = '../artwork/demote_disabled.gif';\n";
       } else {
-        echo "document.getElementById('demotetext').style.color = '#215DC6';\n";
+        echo "document.getElementById('demotetext').style.color = '#black';\n";
         echo "document.getElementById('demoteicon').src = '../artwork/demote.gif';\n";
       }
       echo "document.PapersMenu.current_screen.value = '" . $temp_array[$x]['screen'] . "';\n";
@@ -807,7 +827,7 @@ if (isset($_GET['change_screen'])) {
 
     echo "<tr id=\"link$x\" onmouseover=\"lon($x)\" onmouseout=\"loff($x)\" class=\"qline\" style=\"";
     if ($q_highlight == $temp_array[$x]['display_pos']) {
-      echo '; background-color:#316AC5; color:white';
+      echo '; background-color:#B3C8E8';
     } else {
       echo '; color:' . $forecolor;
     }
@@ -858,7 +878,7 @@ if (isset($_GET['change_screen'])) {
     } elseif ($temp_array[$x]['leadin'] != '') {
       echo "<td>" . $temp_array[$x]['leadin'];
       if ($excluded[$temp_array[$x]['q_id']] != NULL) echo ' <img src="../artwork/exclude_small.gif" width="15" height="11" alt="Excluded" />';
-      if ($temp_array[$x]['warnings'] != '') echo '<span style="color:#C00000; font-weight:bold">&nbsp;<img src="../artwork/small_yellow_warning_icon.gif" width="16" height="16" alt="Warning" border="0" />&nbsp;' . $temp_array[$x]['warnings'] . '</span>';
+      if ($temp_array[$x]['warnings'] != '') echo '<span style="color:#C00000; font-weight:bold">&nbsp;<img src="../artwork/small_yellow_warning_icon.gif" width="16" height="16" alt="' . $string['warning'] . '" border="0" />&nbsp;' . $temp_array[$x]['warnings'] . '</span>';
       echo "</td>";
     } elseif (strpos($temp_array[$x]['q_media'],'.swf') !== false) {
       echo "<td><img src=\"../artwork/flash_icon.png\" width=\"48\" height=\"48\" alt=\"Embedded Flash object\" border=\"0\" /></td>";
@@ -877,7 +897,8 @@ if (isset($_GET['change_screen'])) {
         display_error("Paper order Error","Problem with query: $editPaper");
       }
     }
-    echo fullQuestionType($temp_array[$x]['q_type']) . '</td>';
+    //echo fullQuestionType($temp_array[$x]['q_type']) . '</td>';
+    echo $string[$temp_array[$x]['q_type']] . '</td>';
     if ($paper_type == '3') {
       echo '<td style="text-align:right; vertical-align:top; color:#C0C0C0">n/a</td>';
     } elseif ($paper_type == '4') {
@@ -888,8 +909,8 @@ if (isset($_GET['change_screen'])) {
       echo '<td>&nbsp;</td>';
     } else {
       if ($temp_array[$x]['status'] !== 'Experimental' and $temp_array[$x]['marks'] === 'ERR') {
-        echo '<td style="text-align:right; vertical-align:top"><img src="../artwork/small_yellow_warning_icon.gif" width="16" height="16" alt="Warning: Variable number of marks" border="0" /></td>';
-        $marks_error = true;
+        echo '<td style="text-align:right; vertical-align:top"><img src="../artwork/small_yellow_warning_icon.gif" width="16" height="16" alt="' . $string['variablenomarks'] . '" border="0" /></td>';
+        $marks_incorrect_error = true;
       } elseif ($temp_array[$x]['status'] === 'Experimental') {
         echo '<td style="text-align:right; vertical-align:top">N/A</td>';
       } else {
@@ -918,19 +939,23 @@ if (isset($_GET['change_screen'])) {
   }
 
   if ($total_marks != 0) {
-    if ($paper_type == '2' and $question_number > 2 and ($screen_marks / $total_marks) * 100 > 25 and $screen_marks > 3)  echo "\n<tr><td colspan=\"6\" style=\"font-weight:bold; color:#C00000\"><img src=\"../artwork/small_yellow_warning_icon.gif\" width=\"16\" height=\"16\" alt=\"Warning\" border=\"0\" />&nbsp;Screen $old_screen has $screen_marks marks which is " . round(($screen_marks / $total_marks) * 100) . "% of the paper total. Please insert additional screen breaks to minimise data loss in the event of a computer crash.</td></tr>\n";
-
+    if ($paper_type == '2' and $question_number > 2 and ($screen_marks / $total_marks) * 100 > 25 and $screen_marks > 3) {
+      echo "\n<tr><td colspan=\"5\" style=\"font-weight:bold; color:#C00000\"><img src=\"../artwork/small_yellow_warning_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['warning'] . "\" border=\"0\" />&nbsp;";
+      $percent = round(($screen_marks / $total_marks) * 100);
+      printf($string['markswarning'], $old_screen, $screen_marks, $percent);
+      echo "</td></tr>\n";
+    }
     if ($row_no > 0 and $paper_type != '3' and $paper_type != '4') {
       echo "<tr><td colspan=\"4\"></td><td style=\"border-top:1px solid black\" align=\"right\">";
-      if ($marks_error == true) {
-        echo '<img src="../artwork/small_yellow_warning_icon.gif" width="16" height="16" alt="Warning: Variable number of marks" border="0" />';
+      if ($marks_incorrect_error == true) {
+        echo '<img src="../artwork/small_yellow_warning_icon.gif" width="16" height="16" alt="' . $string['variablenomarks'] . '" border="0" />';
       } else {
         echo $total_marks;
       }
-      echo "</td><td style=\"color:#808080\">&nbsp;&nbsp;Pass&nbsp;Mark:&nbsp;$pass_mark%&nbsp;</td></tr>\n";
+      echo "</td><td style=\"color:#808080\"><nobr>&nbsp;&nbsp;" . $string['passmark'] . ":&nbsp;$pass_mark%&nbsp;</nobr></td></tr>\n";
     }
   }
-  $mysqli->close();
+
 
   // Final paper warnings.
   if ($paper_type == '2') {
@@ -941,7 +966,7 @@ if (isset($_GET['change_screen'])) {
     }
     foreach ($warning_types as $warning_type) {
       if (isset($paper_warnings[$warning_type]) AND count($paper_warnings[$warning_type]) > 0) {
-        echo "<tr><td colspan=\"6\" style=\"color:#C00000\"><img src=\"../artwork/small_yellow_warning_icon.gif\" width=\"16\" height=\"16\" alt=\"Warning\" border=\"0\" />&nbsp;<strong>The following questions are '$warning_type':</strong> ";
+        echo "<tr><td colspan=\"6\" style=\"color:#C00000\"><img src=\"../artwork/small_yellow_warning_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['warning'] . "\" border=\"0\" />&nbsp;<strong>The following questions are '$warning_type':</strong> ";
         foreach ($paper_warnings[$warning_type] as $question_warning) {
           echo ' Q' . $question_warning;
         }
@@ -949,8 +974,17 @@ if (isset($_GET['change_screen'])) {
       }
     }
   }
+  
+  if ($marking == 1 and $neg_marking == true) {     // Can't use random mark with negative marking
+    $editPaper = $mysqli->prepare("UPDATE properties SET marking=0 WHERE property_id=?");
+    $editPaper->bind_param('i', $paperID);
+    $editPaper->execute();
+    $editPaper->close();
+  }
+  $mysqli->close();
 ?>
 </table>
 </div>
+
 </body>
 </html>

@@ -1,10 +1,79 @@
 $.Class.extend("MEE.Tools.HTML",
 {
+    BuildBarText: function (barwidth, bartype) {
+        if (!bartype)
+            bartype = 'single';
+
+        var bartext = "";
+        var added = true;
+        var sizes = MEE.Data.bars[bartype].chars;
+
+        while (added) {
+            var newchar = ""; // new char to be added
+            var newcharsize = 0; // size of new char
+            // go through all available char sizes and find the largest that will fit
+            for (size in sizes) {
+                var sizechar = sizes[size];
+
+                if (size < barwidth) { // size is smaller than what we have left
+                    if (size > newcharsize) { // size is bigger than any char we have got from before
+                        newchar = sizechar;
+                        newcharsize = size;
+                    }
+                }
+            }
+
+            if (newcharsize > 0) {
+                barwidth -= newcharsize;
+                bartext += newchar;
+            } else {
+                added = false;
+            }
+        }
+        return bartext;
+    },
 
     AlignElementOver: function (target, elem, align, nosize) {
-        var pos = target.offset();
-        var w = target.outerWidth(true);
-        var h = target.outerHeight(true);
+
+        if ($.isArray(target)) {
+
+            var left = 99999999;
+            var right = 0;
+            var top = 99999999;
+            var bottom = 0;
+
+            for (var i = 0; i < target.length; i++) {
+                var telem = target[i];
+
+                var pos = $(telem).offset();
+                var w = $(telem).outerWidth(true);
+                var h = $(telem).outerHeight(true);
+
+                if (pos.left < left)
+                    left = pos.left;
+
+                if (pos.left + w > right)
+                    right = pos.left + w;
+
+                if (pos.top < top)
+                    top = pos.top;
+
+                if (pos.top + h > bottom)
+                    bottom = pos.top + h;
+            }
+
+            var pos = new Object();
+            pos.left = left;
+            pos.top = top;
+            var w = right - left;
+            var h = bottom - top;
+        } else {
+
+            var pos = target.offset();
+            var w = target.outerWidth(true);
+            var h = target.outerHeight(true);
+        }
+
 
         if (align) {
             pos.top -= align.top;

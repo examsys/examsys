@@ -40,7 +40,7 @@
 <tr><td>
 
 <table cellpadding="3" cellspacing="0" border="0" style="margin-left:6px; font-size:90%">
-<tr><td><a onclick="displayDetails(); return false;"><img src="../artwork/information_icon.gif" width="16" height="16" alt="home" border="0" /></a></td><td class="menuitem"><a onclick="displayDetails(); return false;">Display Details</a></td></tr>
+<tr><td><a onclick="displayDetails(); return false;"><img src="../artwork/information_icon.gif" width="16" height="16" alt="home" border="0" /></a></td><td class="menuitem"><a onclick="displayDetails(); return false;"><?php echo $string['displaydetails']; ?></a></td></tr>
 </table>
 
 </td></tr>

@@ -27,7 +27,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Modules<?php echo " $cfg_install_type"; ?></title>
+<title><?php echo $string['modules'] . ' ' . $cfg_install_type; ?></title>
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
 <style>
 .mid {padding-left:30px}
@@ -88,13 +88,13 @@
 
 <table cellpadding="0" cellspacing="0" border="0" width="100%">
 <tr>
-<td colspan="3" style="background-color:#F1F5FB"><div class="breadcrumb"><a href="../index.php">Home</a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php">Administrative Tools</a></div><div style="margin-left:10px; font-size:200%; font-weight:bold">Modules</td>
+<td colspan="3" style="background-color:#F1F5FB"><div class="breadcrumb"><a href="../index.php"><?php echo $string['home']; ?></a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php"><?php echo $string['administrativetools']; ?></a></div><div style="margin-left:10px; font-size:200%; font-weight:bold"><?php echo $string['modules']; ?></td>
 <td style="background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(233); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="Help" border="0" /></a></td>
 </tr>
 <tr>
-<td style="background-color:#F1F5FB" class="mid">Module ID&nbsp;</td>
-<td style="background-color:#F1F5FB"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Name&nbsp;</td>
-<td style="background-color:#F1F5FB"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Active&nbsp;</td><td style="width:30%; background-color:#F1F5FB">&nbsp;</td></tr>
+<td style="background-color:#F1F5FB" class="mid"><?php echo $string['moduleid']; ?>&nbsp;</td>
+<td style="background-color:#F1F5FB"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['name']; ?>&nbsp;</td>
+<td style="background-color:#F1F5FB"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['active']; ?>&nbsp;</td><td style="width:30%; background-color:#F1F5FB">&nbsp;</td></tr>
 <tr><td colspan="4" style="height:3px"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td></tr>
 <?php
 $old_school = '';
@@ -109,9 +109,9 @@ while ($result->fetch()) {
     echo "<tr><td colspan=\"5\"><table border=\"0\" style=\"padding-left:10px; padding-right:2px; padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>$school</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table></td></tr>\n";
   }
   if ($active == 1) {
-    $tmp_active = 'Yes';
+    $tmp_active = $string['yes'];
   } else {
-    $tmp_active = 'No';
+    $tmp_active = $string['no'];
   }
   echo "<tr id=\"$id\" onclick=\"selMod($id,'$moduleid',event)\" ondblclick=\"edit('$moduleid')\" onmouseover=\"lon($id)\" onmouseout=\"loff($id)\" class=\"l\"><td class=\"mid\">$moduleid</td><td>$fullname</td><td colspan=\"2\">$tmp_active</td></tr>\n";
   $old_school = $school;

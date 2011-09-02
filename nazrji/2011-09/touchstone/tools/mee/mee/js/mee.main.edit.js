@@ -30,8 +30,13 @@ MEE.Main.extend("MEE.Edit",
         if (!this.checkProtocol())
             return;
 
+        // debug configuration
+        this.debug = 1; // 0 = no debug, 1 = latex and maxima debug, 2 = full debug including element tree
+
+        // turns maxima on or off
+        this.maxima = 1;
+
         // initialize some variables
-        this.debug = 0;
         this.mode = -1;
         this.inline = false;
         this.symhist = new MEE.SymHist();
@@ -87,6 +92,30 @@ MEE.Main.extend("MEE.Edit",
         this.editdiv = $('<div>');
         this.editdiv.addClass('mee_edit');
         $(this.inputelement).before(this.editdiv);
+
+        // create maxima output if needed
+        if (this.maxima) {
+            this.maximaoutput = $('<input>');
+            if (!this.debug) {
+                this.maximaoutput.attr('type', 'hidden');
+            } else {
+                this.maximaoutput.css('width', '600px');
+            }
+
+            var name = $(this.inputelement).attr('name');
+
+            $(this.maximaoutput).attr('name', name + '_maxima');
+            $(this.maximaoutput).insertAfter(this.inputelement);
+        }
+
+        if (this.debug) {
+            $('<span>Latex: </span>').insertBefore(this.inputelement);
+
+            if (this.maxima) {
+                $('<br />').insertBefore(this.maximaoutput);
+                $('<span>Maxima: </span>').insertBefore(this.maximaoutput);
+            }
+        }
 
         // build equation container
         this.eqndiv = $('<div>');
@@ -163,12 +192,17 @@ MEE.Main.extend("MEE.Edit",
             var hldiv = $('<div>');
             hldiv.addClass('mee_edit_highlight');
             hldiv.css('display', 'none');
-            $(document.body).prepend(hldiv);
+            $(document.body).append(hldiv);
+
+            var hldiv = $('<div>');
+            hldiv.addClass('mee_edit_highlight_multi');
+            hldiv.css('display', 'none');
+            $(document.body).append(hldiv);
 
             var hldiv = $('<div>');
             hldiv.addClass('mee_edit_highlight_elem');
             hldiv.css('display', 'none');
-            $(document.body).prepend(hldiv);
+            $(document.body).append(hldiv);
         }
     },
 
@@ -282,7 +316,7 @@ MEE.Main.extend("MEE.Edit",
     },
 
     dump: function () {
-        if (!this.debug) return;
+        if (this.debug < 2) return;
 
         var res = "";
         res += "<div>";
@@ -343,7 +377,11 @@ MEE.Main.extend("MEE.Edit",
             return;
 
         //$('.mee_elemset_empty_inner').remove();
-        this.curElemSet.sortBlanks();
+        for (var i = 0; i < MEE.ElemSet.elemsets.length; i++) {
+            if (MEE.ElemSet.elemsets[i]._name != "MEE.Row") {
+                MEE.ElemSet.elemsets[i].sortBlanks();
+            }
+        }
     },
 
     moveInput: function () {
@@ -362,7 +400,7 @@ MEE.Main.extend("MEE.Edit",
     },
 
     Highlight: function () {
-        if (this.mode != 1 || !this.active || ($.browser.msie && document.documentMode == 7)) {
+        if (this.mode != 1 || !this.active /*|| ($.browser.msie && document.documentMode == 7)*/) {
             $('.mee_edit_highlight').css('display', 'none');
             $('.mee_edit_highlight_elem').css('display', 'none');
             return;
@@ -390,6 +428,7 @@ MEE.Main.extend("MEE.Edit",
         //$('.mee_elemsetbasic').click(this.callback('elementClick'));
         $('.mee_elemset_empty_inner').click(this.callback('emptyClick'));
         $('.mee_elem').click(this.callback('elemClick'));
+        $('.mee_elem').dblclick(this.callback('elemDblClick'));
     },
 
     clearAlign: function (elem) {
@@ -426,12 +465,16 @@ MEE.Main.extend("MEE.Edit",
         if (source != "baseinput")
             $(this.inputelement).val(latex);
 
+        if (this.maxima) {
+            var maxima = MEE.Maxima.Convert(this.elementset);
+            $(this.maximaoutput).val(maxima);
+        }
         window.location.hash = latex;
 
         this.rebuildDisplay();
     },
 
-    toolbarCommand: function (latex, item, wlatex) {
+    toolbarCommand: function (latex, item, wlatex, mlatex) {
 
         if (this.mode == 0) {
             // raw mode
@@ -466,7 +509,6 @@ MEE.Main.extend("MEE.Edit",
                 var latex1 = latex.substr(0, latex.indexOf('$'));
                 var latex2 = latex.substr(latex.indexOf('$') + 2);
 
-
                 var padafter = false;
                 if (latex2.charAt(latex2.length - 1) != "}" && after.length > 0) {
                     if (after.charAt(0) != "[" & after.charAt(0) != "(" &
@@ -498,6 +540,76 @@ MEE.Main.extend("MEE.Edit",
 
         } else {
             // WYSIWYG mode
+            if (typeof this.curElemSet.selectStart == "number") {
+                // store selection
+                var sel = this.getSelStartEnd();
+                var selelemset = this.curElemSet;
+
+                if (mlatex)
+                    latex = mlatex;
+
+                var ip = this.curElemSet.getInputPos();
+
+                // move cursor to end of selection
+                var endelem = this.curElemSet.elements[sel.end];
+                this.moveToElement(endelem);
+
+                // if input was at start of selection, its now moved so shuffle selection down
+                if (ip == sel.start - 1) {
+                    sel.start--;
+                    sel.end--;
+                }
+
+                // clear selection
+                this.curElemSet.selectStart = null;
+
+                // type in latex
+                latex = latex.replace("$1", "\\XXREPLACEXX");
+
+                this.inputAdd(latex + " ");
+
+                // find position of $1
+                var found = this.elementset.findElement('XXREPLACEXX');
+
+                if (!found) {
+                    // no replace found, so just remove the old selected elements
+                    for (var i = sel.start; i <= sel.end; i++) {
+                        var tomove = selelemset.elements[i];
+                        tomove.html_elem.remove();
+                    }
+
+                    selelemset.elements.splice(sel.start, sel.end - sel.start + 1);
+
+                    this.changed();
+                    return;
+                }
+
+                var targetset = found.set;
+                var targetoffset = found.elem.offset;
+
+                // move old selection after $1
+                for (var i = sel.start; i <= sel.end; i++) {
+                    // need to move each element from current location to before the target offset
+                    var tomove = selelemset.elements[i];
+
+                    targetset.elements.splice(targetoffset, 0, tomove);
+                    tomove.parent = targetset;
+                    tomove.html_elem.insertBefore(found.elem.html_elem);
+                    targetoffset++;
+                }
+
+                selelemset.elements.splice(sel.start, sel.end - sel.start + 1);
+
+                // remove $1
+                targetset.elements.splice(targetoffset, 1);
+                found.elem.html_elem.remove();
+
+                this.moveToElement(tomove);
+
+                this.changed();
+
+                return;
+            }
 
             // check if W mode has different latex
             if (wlatex)
@@ -602,8 +714,10 @@ MEE.Main.extend("MEE.Edit",
             MEE.Edit.toolbar.hidePopups();
 
             // move selection to end if W mode
-            if (this.mode == 1)
+            if (this.mode == 1) {
+                this.curElemSet.selectStart = null;
                 this.moveToSet(this.elementset, false, false);
+            }
 
             this.changed(null, 'editorClick');
 
@@ -624,6 +738,7 @@ MEE.Main.extend("MEE.Edit",
             return;
         this.active = true;
 
+
         // check for an active edit box, if there is on deactivate it
         if (MEE.Edit.activeEdit) {
             MEE.Edit.activeEdit.deactivate();
@@ -641,10 +756,27 @@ MEE.Main.extend("MEE.Edit",
         this.sortUndoMeun();
         this.symhist.SortToolbar();
 
+        this.openDefaultTab();
+
         if (this.mode == 1)
             this.moveToSet(this.elementset, false, false);
 
         this.changed(null, 'activate');
+    },
+
+    openDefaultTab: function () {
+        //alert(this.inputelement.class);
+        var classList = $(this.inputelement).attr('class').split(/\s+/);
+        for (var i = 0; i < classList.length; i++) {
+            var class_name = classList[i];
+            if (class_name.indexOf(':') > -1) {
+                var type = class_name.substr(0, class_name.indexOf(':'));
+                var tab = class_name.substr(class_name.indexOf(':') + 1);
+                if (type == "tabopen") {
+                    $('#mee_tab_link_' + tab).children('a').click();
+                }
+            }
+        }
     },
 
     showhideInputs: function () {
@@ -781,12 +913,20 @@ MEE.Main.extend("MEE.Edit",
         return true;
     },
 
-    checkPrevElems: function () {
+    checkPrevElems: function (text) {
+        if (text.substr(0, 1) == "\\")
+            return "";
+        
+        // this should check the content of the elements instead of prevlatex, as prevlatex is WRONG
+
+
         for (var i = 0; i < MEE.Data.namedops.length; i++) {
             var nop = MEE.Data.namedops[i];
             var match = this.prevlatex.substr(this.prevlatex.length - nop.length);
 
             if (nop == match && this.prevlatex.substr(this.prevlatex.length - nop.length - 1, 1) != "\\") {
+                if (this.prevlatex.substr(this.prevlatex.length - nop.length - 1, 1) == "t" && nop == "sin")
+                    continue;
                 // we found a typed named operator with a slash! (useless users!)
                 var toremove = nop.length - 1;
 
@@ -821,14 +961,23 @@ MEE.Main.extend("MEE.Edit",
     parseInput: function (text, o) {
         // strip all but keyboard characters that we care about, as firefox passes all char codes here (chrome only passes visible so not needed, no idea about IE)
 
-        text = text.replace(/[^a-zA-z0-9 .\,\/\<\>\?\;\:\"\'\`\!\@\#\$\%\^\&\*\(\)\[\]\{\}\_\+\=\-\|\\]+/g, '');
+        text = text.replace(/[^a-zA-z0-9 .\,\/\<\>\?\;\:\"\'\`\!\@\#\$\%\^\&\*\(\)\[\]\{\}\_\+\=\-\|\\\~\#]+/g, '');
         //text = text.replace(/[^a-zA-z0-9\\\+\-\=\_\^\$\/]+/g,'');
 
         if (text == "")
             return false;
 
-        this.prevlatex += text;
-        var nop = this.checkPrevElems();
+        // types something, and we have a selected content, need to replace the content
+        if (typeof this.curElemSet.selectStart == "number") {
+            this.deleteSelection();
+        }
+
+        if (text.length > 1)
+            this.prevlatex = text;
+        else
+            this.prevlatex += text;
+
+        var nop = this.checkPrevElems(text);
         if (nop) {
             text = nop + " ";
             this.prevlatex = "";
@@ -929,7 +1078,12 @@ MEE.Main.extend("MEE.Edit",
                             arg1.type = "superscript";
                             elem.SetScript(arg1, null, true);
                         }
-                        this.moveToSet(elem.superscript, null, false);
+                        this.moveToSet(elem.superscript, true, false);
+                        //this.curElemSet.single = false;
+                        this.curElemSet.insarg = true;
+                    } else if (elem.eldata.sarg_as_lower) {
+                        // hunt down lower element set
+                        this.moveToSet(elem.parent.row1.col0, true, false);
                         //this.curElemSet.single = false;
                         this.curElemSet.insarg = true;
                     } else {
@@ -1171,6 +1325,8 @@ MEE.Main.extend("MEE.Edit",
             var lb_elem = this.curElemSet.elements[backto];
             var lbtype = lb_elem.latex;
             var lbsize = lb_elem.size;
+            if (lbsize == 0)
+                lbsize = -1;
 
             // create a new element set
             var ntoken = new Object();
@@ -1191,6 +1347,9 @@ MEE.Main.extend("MEE.Edit",
             elem.size = lbsize;
 
             elem.sizer = token.size;
+            if (elem.sizer == 0)
+                elem.sizer = -1;
+
             var rbeldata = this.parser.getElementData(token);
             if (rbeldata.text)
                 elem.eldata.rb = rbeldata.text; // lookup token.latex and get text from it
@@ -1228,7 +1387,7 @@ MEE.Main.extend("MEE.Edit",
         } else {
             // not found then just add a bracket and carry on
 
-            var elem = this.createNewElem(token, tokens, i);
+            var elem = this.createNewElem(token);
             this.insertIntoCurrentSet(elem);
         }
     },
@@ -1296,6 +1455,8 @@ MEE.Main.extend("MEE.Edit",
                 var caret = this.inputelembox.caret();
                 var value = this.inputelembox.val();
                 var vallen = value.length;
+                if (key == 8 || key == 46)
+                    this.lasttext = value;
 
                 if (key == 37 || key == 8) { // left // backspace
                     if (caret.start > 0) {
@@ -1308,13 +1469,19 @@ MEE.Main.extend("MEE.Edit",
                         return true;
                     }
                 }
+                if ((key == 37 || key == 39 || key == 35 || key == 36) && event.shiftKey) // shift left
+                {
+                    this.handleSelectMultiple(key);
+                    this.changed();
+                    return true;
+                }
             }
 
 
             //if (key == 8 || key == 46 || key == 37 || key == 38 || key == 39 || key == 40)
             if (key == 32)
                 this.inputAdd(" ");
-            else
+            else if (typeof this.curElemSet.selectStart != "number")
                 this.inputAdd("");
 
             this.processInput(event);
@@ -1333,18 +1500,114 @@ MEE.Main.extend("MEE.Edit",
         }
     },
 
+    handleSelectMultiple: function (key) {
+        if (typeof this.curElemSet.selectStart != "number") {
+            this.curElemSet.selectStart = this.curElemSet.getInputPos();
+        }
+
+        if (key == 37) {
+            // move input left
+            var curelempos = this.curElemSet.getInputPos();
+            curelempos -= 2;
+            if (curelempos < 0) {
+                // move to start of set
+                this.moveToSetStart(this.curElemSet);
+                return;
+            }
+            var newelem = this.curElemSet.elements[curelempos];
+
+            this.moveToElement(newelem);
+        } else if (key == 39) {
+            // move input right
+
+            var curelempos = this.curElemSet.getInputPos();
+            curelempos++;
+            if (curelempos >= this.curElemSet.elements.length)
+                return;
+
+            var newelem = this.curElemSet.elements[curelempos];
+
+            this.moveToElement(newelem);
+        } else if (key == 35) { // end
+            var newelem = this.curElemSet.elements[this.curElemSet.elements.length - 1];
+
+            this.moveToElement(newelem);
+        } else if (key == 36) { // home
+            this.moveToSetStart(this.curElemSet);
+        }
+    },
+
+    getSelStartEnd: function () {
+        var start = this.curElemSet.selectStart;
+        var end = this.curElemSet.getInputPos();
+
+        var ip = end;
+
+        if (start > end) {
+            var temp = end;
+            end = start;
+            start = temp;
+        }
+
+        if (start == end)
+            return;
+
+        if (start == ip)
+            start++;
+        if (end == ip)
+            end--;
+
+        if (start > end)
+            return { 'start': -1, 'end': -1 };
+
+        return { 'start': start, 'end': end };
+    },
+
+    deleteSelection: function () {
+        // pressed delete on a selected set of data, so remove it
+
+        if (typeof this.curElemSet.selectStart != "number")
+            return false;
+
+        var sel = this.getSelStartEnd();
+
+        if (sel.start == -1)
+            return;
+
+        var count = sel.end - sel.start + 1;
+        for (var i = 0; i < count; i++) {
+            var elem = this.curElemSet.elements[sel.start];
+
+            // remove elem from elemset
+            this.curElemSet.elements.splice(sel.start, 1);
+
+            // remove the elem html
+            elem.html_elem.remove();
+        }
+
+        this.curElemSet.selectStart = null;
+        return true;
+    },
+
     // handle input to the wysiwyg editor
     processInput: function (event) {
         // build cursor naviagtion here
         var key = event.which;
 
-        if (key == 8) { // delete
+        if (key == 8) { // backspace 
             // need to remove the element after the input. If the element is has more than just a simple main (ie things like subscripts
             // and super scripts), highlight it. then if press delete again delete it.
+
+            if (typeof this.curElemSet.selectStart == "number") {
+                return this.deleteSelection();
+            }
+
             var elem = this.curElemSet.getElemBeforeInput();
             if (!elem) {
                 this.moveToParent();
                 elem = this.curElemSet.getElemBeforeInput();
+                if (elem && (elem.eldata.inmatrix || elem.eldata.frac))
+                    return;
             }
             if (!elem) {
                 return;
@@ -1364,9 +1627,14 @@ MEE.Main.extend("MEE.Edit",
             elem.html_elem.remove();
 
 
-        } else if (key == 46) { // backspace
+        } else if (key == 46) { // delete
             // need to remove the element before the input. If the element is has more than just a simple main (ie things like subscripts
             // and super scripts), highlight it. then if press delete again delete it.
+            if (typeof this.curElemSet.selectStart == "number") {
+                return this.deleteSelection();
+            }
+
+
             var offset = this.curElemSet.getInputPos();
             if (this.curElemSet.elements.length <= offset + 1)
                 return;
@@ -1379,6 +1647,7 @@ MEE.Main.extend("MEE.Edit",
             // remove the elem html
             elem.html_elem.remove();
         } else if (key == 35) { // end
+            this.curElemSet.selectStart = null;
             var offset = this.curElemSet.getInputPos();
 
             if (offset + 1 < this.curElemSet.elements.length) {
@@ -1398,6 +1667,7 @@ MEE.Main.extend("MEE.Edit",
             }
 
         } else if (key == 36) { // home
+            this.curElemSet.selectStart = null;
             var offset = this.curElemSet.getInputPos();
 
             if (offset > 0) {
@@ -1422,6 +1692,7 @@ MEE.Main.extend("MEE.Edit",
             //#region LEFT LEFT LEFT LEFT LEFT //
             //////////////////////////////
             // need to move the input box left a place
+            this.curElemSet.selectStart = null;
 
             // get position of input
             var offset = this.curElemSet.getInputPos();
@@ -1507,6 +1778,7 @@ MEE.Main.extend("MEE.Edit",
             ///////////////////////////////////
             //#region  RIGHT RIGHT RIGHT RIGHT RIGHT //
             ///////////////////////////////////
+            this.curElemSet.selectStart = null;
 
             // get position of input
             var offset = this.curElemSet.getInputPos();
@@ -1537,7 +1809,7 @@ MEE.Main.extend("MEE.Edit",
 
                     // if we arent in an empty column, the create on and move to it
                     if (!parset.isColBlank(pos.col, true) && !parset.eldata.frac) {
-                        return this.arrayAppendCol(true);
+                        return this.arrayAppendCol(true, parset);
                     }
 
                     // out the array!
@@ -1595,6 +1867,7 @@ MEE.Main.extend("MEE.Edit",
             ////////////////////////////////
             //#region  UP UP UP UP UP UP UP UP UP //
             ////////////////////////////////
+            this.curElemSet.selectStart = null;
 
             // check for a subscript element to navigate to
             var offset = this.curElemSet.getInputPos();
@@ -1675,6 +1948,7 @@ MEE.Main.extend("MEE.Edit",
             //#region  DOWN DOWN DOWN DOWN DOWN //
             //////////////////////////////
             // does the opposite of up basically
+            this.curElemSet.selectStart = null;
 
             var offset = this.curElemSet.getInputPos();
 
@@ -1747,7 +2021,7 @@ MEE.Main.extend("MEE.Edit",
                         var row = this.curElemSet.parent;
                         var matrix = row.parent;
 
-                        if (!matrix.isRowBlank(row.row, true)) {
+                        if (!matrix.isRowBlank(row.row, true) && !matrix.eldata.frac) {
                             // add a row to the matrix and move to the first column
                             return this.arrayAppendRow();
                         }
@@ -1766,6 +2040,7 @@ MEE.Main.extend("MEE.Edit",
 
     elemClick: function (html_elem) {
         //console.log("elemClick");
+        this.curElemSet.selectStart = null;
 
         if (this.mode == 0)
             return;
@@ -1791,8 +2066,62 @@ MEE.Main.extend("MEE.Edit",
         return false;
     },
 
+    elemDblClick: function (html_elem, event) {
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+
+        // already moved to the element, as click will be called first
+        // need to select all in around the current elemetn
+
+        var curpos = this.curElemSet.getInputPos();
+
+        // if this element has no_auto_frac, just select it on its own
+        var elem = this.curElemSet.elements[curpos - 1];
+
+        if (elem.eldata.noautofrac) {
+            this.curElemSet.selectStart = curpos - 1;
+            this.changed(null, 'elemDblClick');
+            return true;
+        }
+
+        var endpos = curpos - 1;
+        // need to check elements either side of this one, and find the end and start of the elements with no no_auto_frac
+        for (var i = curpos + 1; i < this.curElemSet.elements.length; i++) {
+            var elem = this.curElemSet.elements[i];
+            if (elem.eldata.noautofrac)
+                break;
+
+            endpos = i;
+        }
+
+        if (endpos == -1)
+            return true;
+
+        var endelem = this.curElemSet.elements[endpos];
+        this.moveToElement(endelem);
+
+        var startpos = curpos - 1;
+        for (var i = endpos - 1; i >= 0; i--) {
+            var elem = this.curElemSet.elements[i];
+            if (elem.eldata.noautofrac)
+                break;
+
+            startpos = i;
+        }
+
+        if (startpos == -1)
+            return;
+
+        this.curElemSet.selectStart = startpos;
+
+        this.changed(null, 'elemDblClick');
+        return true;
+    },
+
     emptyClick: function (html_elem) {
         //console.log("emptyClick");
+        this.curElemSet.selectStart = null;
 
         if (this.mode == 0)
             return true;
@@ -1845,6 +2174,11 @@ MEE.Main.extend("MEE.Edit",
     getNewWYSIWYGLatex: function () {
         var newlatex = this.elementset.toLatex().get();
         $(this.inputelement).val(newlatex);
+
+        if (this.maxima) {
+            var maxima = MEE.Maxima.Convert(this.elementset);
+            $(this.maximaoutput).val(maxima);
+        }
 
         this.latex = newlatex;
 
@@ -1938,7 +2272,10 @@ MEE.Main.extend("MEE.Edit",
             elem = this.curElemSet.parent;
             if (elem && elem._name == "MEE.Row")
                 elem = elem.parent.parent;
-            _set = elem.parent;
+            if (elem)
+                _set = elem.parent;
+            else
+                _set = this.elementset;
         }
         this.curElemSet = _set;
 
@@ -2000,7 +2337,7 @@ MEE.Main.extend("MEE.Edit",
         var elem = elems[0];
 
         if (elem.eldata.args > 0) {
-            if (elem.eldata.arg01_as_upperlower) {
+            if (elem.eldata.arg01_as_upperlower || elem.eldata.arg0_as_upper) {
                 var arg1 = new Object();
                 arg1.latex = "";
                 var arg2 = new Object();
@@ -2026,6 +2363,10 @@ MEE.Main.extend("MEE.Edit",
                 var arg = new Object();
                 arg.latex = "";
                 elem.SetScript(arg, "superscript");
+            } else if (elem.eldata.sarg_as_lower) {
+                /*var arg = new Object();
+                arg.latex = "";
+                elem.SetScript(arg, "superscript");*/
             } else {
                 var arg = new Object();
                 arg.latex = "";
@@ -2150,6 +2491,31 @@ MEE.Main.extend("MEE.Edit",
         //regions.fonts = 1;
 
         if (this.curElemSet) {
+            // try to see if we are in a chem part. 
+            var inchem = false;
+            var set = this.curElemSet;
+
+            // this is a bit of a quick bodge, but works. Should only really be checking the latex of elemnts, and not the sets
+            while (set.parent) {
+                if (set.latex == "ce") {
+                    inchem = true;
+                }
+                set = set.parent;
+            }
+
+            if (inchem) {
+                // If so change highlight of chem button
+                if (MEE.Edit.toolbar)
+                    MEE.Edit.toolbar.SetHighlighted('tbpm_item_chemmode');
+            } else {
+                // if no set chem button highlight back to normal
+                if (MEE.Edit.toolbar)
+                    MEE.Edit.toolbar.SetNormal('tbpm_item_chemmode');
+
+            }
+        }
+
+        if (this.curElemSet) {
             var elem = this.curElemSet.getElemBeforeInput();
             if (elem) {
                 regions.scripts = 1;
@@ -2158,7 +2524,7 @@ MEE.Main.extend("MEE.Edit",
                 if (elem.latex == 'sqrt')
                     regions.sqrt = 1;
 
-                if (elem.type == "extpair") {
+                if (elem.type == "extpair" || elem.eldata.changetype == "extpair") {
                     regions.bracket_both = 1;
                 }
                 if (elem.type == "extsingle") {
@@ -2169,7 +2535,7 @@ MEE.Main.extend("MEE.Edit",
                     }
                 }
                 if (elem.latex.substr(elem.latex.length - 4) == "frac") {
-                    regions.fraction = 1;
+                    //regions.fraction = 1;
                 }
                 if (elem.type == "begin") {
                     regions.matrix = 1;
@@ -2188,7 +2554,7 @@ MEE.Main.extend("MEE.Edit",
                     regions.matrix_cols = 1;
                     regions.matrix_rows = 1;
                 } else {
-                    regions.fraction = 1;
+                    //regions.fraction = 1;
                 }
             }
 
@@ -2259,7 +2625,28 @@ MEE.Main.extend("MEE.Edit",
     },
 
     changeFontType: function (newtype) {
+        var elem = this.curElemSet.getElemBeforeInput();
+        if (!elem)
+            return;
 
+        var classList = $(elem.html_elem).attr('class').split(/\s+/);
+        for (var i = 0; i < classList.length; i++) {
+            var class_name = classList[i];
+            if (class_name.substr(0, 9) == "mee_font_")
+                $(elem.html_elem).removeClass(class_name);
+        }
+
+        var neweldata = MEE.Data.commands["\\" + newtype];
+        if (!neweldata)
+            return;
+
+        elem.latex = newtype;
+
+        if (neweldata.elemclass) {
+            $(elem.html_elem).addClass(neweldata.elemclass);
+        }
+
+        this.changed(null, 'changeFontType');
     },
 
     changeBracket: function (side, newtype, newtype2) {
@@ -2510,8 +2897,9 @@ MEE.Main.extend("MEE.Edit",
             this.changed();
     },
 
-    arrayAppendCol: function (skipchanged) {
-        var matrix = this.getCurrentMatrix();
+    arrayAppendCol: function (skipchanged, matrix) {
+        if (!matrix)
+            matrix = this.getCurrentMatrix();
         if (!matrix)
             return;
 

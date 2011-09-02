@@ -100,7 +100,7 @@ MEE.Elem.extend("MEE.ElemAccent",
         var accentwidth = this.main.align.width;
         var textwidth = this.args[0].align.width;
 
-        debug.log(accentwidth, textwidth);
+        //debug.log(accentwidth, textwidth);
         // vector character in MathJax_Main is boggered, so this.eldata.nopadleft was added to get around this.
         // changed font to Arial Unicode so no need for it anymore
 

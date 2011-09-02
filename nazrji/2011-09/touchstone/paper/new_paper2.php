@@ -24,6 +24,8 @@
 
 require '../include/staff_auth.inc';
 require_once '../classes/schoolutils.class.php';
+require_once '../classes/dateutils.class.php';
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -147,11 +149,7 @@ require_once '../classes/schoolutils.class.php';
   }
   
   // Create the new paper.
-  if (date('n') < 9) {   // Before September
-    $session = (date('Y')-1) . '/' . date('y');
-  } else {
-    $session = date('Y') . '/' . (date('y') + 1);
-  }
+  $session =  DateUtils::get_current_academic_year();
   
   if (isset($_POST['folder'])) {
     $folder = $_POST['folder'];

@@ -40,9 +40,12 @@ $.Class.extend("MEE.Row",
     },
 
     toHTML: function (depth, subdepth) {
+        // if we arent the first row and column, then get the depth info from the first one
+
         this.html_elem = $('<span>');
         this.html_elem.addClass('mee_row');
         this.depth = depth;
+        this.subdepth = subdepth;
 
         this.elemid = MEE.ElemSet.elemsets.length;
         MEE.ElemSet.elemsets[this.elemid] = this;
@@ -91,6 +94,7 @@ $.Class.extend("MEE.Row",
         $(this.html_elem).css('margin-top', this.align.top + 'px');
         if (this.align.bottom)
         $(this.html_elem).css('margin-bottom', this.align.bottom + 'px');*/
+
         this.html_elem.attr('al', this.align.toString());
         return this.align;
     },
@@ -100,7 +104,8 @@ $.Class.extend("MEE.Row",
             this['col' + c] = new MEE.ElemSetNormal("", this);
             this['col' + c].inmatrix = this.eldata.inmatrix;
             this['col' + c].col = c;
-            this.createColHTML(c, this.depth);
+            this['col' + c].depth = this.subdepth;
+            this.createColHTML(c, this.subdepth);
         }
         this.cols = cols;
     },
@@ -140,14 +145,19 @@ MEE.ElemSet.extend("MEE.ElemSetArray",
 
     UpperLower: function (upper, lower) {
         // create 2 rows with 1 element each
-        this.row0 = new MEE.Row(this.eldata, 0, this);
-        this.row0.addElem(upper);
-        this.row0.row = 0;
-        this.row1 = new MEE.Row(this.eldata, 1, this);
-        this.row1.addElem(lower);
-        this.row1.row = 1;
-        this.rows = 2;
-        this.cols = 1;
+        if (!this.row0) {
+            this.row0 = new MEE.Row(this.eldata, 0, this);
+            this.row1 = new MEE.Row(this.eldata, 1, this);
+            this.row0.row = 0;
+            this.row1.row = 1;
+            this.rows = 2;
+            this.cols = 1;
+        }
+
+        if (upper)
+            this.row0.addElem(upper);
+        if (lower)
+            this.row1.addElem(lower);
     },
 
     AddArray: function (token) {
@@ -204,6 +214,20 @@ MEE.ElemSet.extend("MEE.ElemSetArray",
         this.html_elem.addClass('mee_elemsetarray');
         this.html_elem.css('position', 'relative');
 
+        if (this.eldata.lend) {
+            this.html_lend = $('<span>');
+            this.html_lend.addClass('mee_barend');
+            this.html_lend.html(this.eldata.lend);
+            this.html_elem.append(this.html_lend);
+        }
+
+        if (this.eldata.rend) {
+            this.html_rend = $('<span>');
+            this.html_rend.addClass('mee_barend');
+            this.html_rend.html(this.eldata.rend);
+            this.html_elem.append(this.html_rend);
+        }
+
         this.html_padding = $('<span>');
         this.html_padding.html(MEE.Data.blankspace);
         this.html_padding.css('position', 'relative');
@@ -224,6 +248,8 @@ MEE.ElemSet.extend("MEE.ElemSetArray",
             var subdepth = depth + 1;
             if (this.eldata.nodepth) {
                 subdepth = depth;
+            } else if (this.eldata.extradepth) {
+                subdepth = depth + 2;
             }
         }
         var dodepth = true;
@@ -273,8 +299,16 @@ MEE.ElemSet.extend("MEE.ElemSetArray",
 
         // sort the all contained elements widths and heights
         // also add up total height while doing it
-
-
+        var lendwidth = 0;
+        if (this.eldata.lend) {
+            lendwidth = MEE.Data.arrowendwidths[this.eldata.lend];
+            lendwidth = $(lendwidth).toPx({ 'scope': this.html_elem });
+        }
+        var rendwidth = 0;
+        if (this.html_rend) {
+            rendwidth = MEE.Data.arrowendwidths[this.eldata.rend];
+            rendwidth = $(rendwidth).toPx({ 'scope': this.html_elem });
+        }
         if (this.eldata.evenpos) {
             // need to process fractions and binoms height differently, should be positions evenly above the baseline
 
@@ -283,7 +317,7 @@ MEE.ElemSet.extend("MEE.ElemSetArray",
             // normal height adjustments
             var row0align = this['row0'].sortAlign();
             var row1align = this['row1'].sortAlign();
-            
+
 
 
             var mainheight = MEE.Data.getBaseSize($(this.html_padding));
@@ -386,14 +420,17 @@ MEE.ElemSet.extend("MEE.ElemSetArray",
                     } else {
                         var padl = Math.floor((maxwidth - elwidth) / 2);
                         var padr = Math.ceil((maxwidth - elwidth) / 2);
-                        $(colc.html_elem).css('padding-left', padl + 'px');
+                        $(colc.html_elem).css('padding-left', padl + lendwidth + 'px');
                         $(colc.html_elem).css('padding-right', padr + 'px');
                     }
                 } else {
                     $(colc.html_elem).css('padding-right', '1px');
+                    $(colc.html_elem).css('padding-left', lendwidth + 'px');
                 }
             }
         }
+
+        totalwidth += lendwidth + rendwidth;
 
         var padright = totalwidth;
         $(this.html_elem).css('padding-right', padright - MEE.Data.blankspacesize(this.html_elem) + 'px');
@@ -411,14 +448,23 @@ MEE.ElemSet.extend("MEE.ElemSetArray",
             var barpadding = 0.07;
             barpadding = $(barpadding).toPx({ 'scope': this.html_elem });
             //barpadding = 0;
-            var barwidth = totalwidth - (2 * barpadding);
-            this.html_bar.css('padding-right', barwidth + 'px');
+            var barwidth = totalwidth - (2 * barpadding) - lendwidth - rendwidth;
+            barwidth = $(barwidth).toEm({ 'scope': this.html_elem });
 
-            var elh = MEE.Data.getBaseSize($(this.html_elem));
-            var baroff = 0.075;
-            baroff = $(baroff).toPx({ 'scope': this.html_elem });
-            this.html_bar.css('top', Math.floor(elh / 2) + baroff + 'px');
-            this.html_bar.css('margin-left', barpadding + 'px');
+            var bartext = MEE.Tools.HTML.BuildBarText(barwidth, this.eldata.bartype);
+
+            this.html_bar.html(bartext);
+
+            //var elh = MEE.Data.getBaseSize($(this.html_elem));
+            //var baroff = 0.03;
+            //baroff = $(baroff).toPx({ 'scope': this.html_elem });
+            //this.html_bar.css('top', -baroff + 'px');
+            this.html_bar.css('margin-left', barpadding + lendwidth + 'px');
+        }
+
+        if (this.html_rend) {
+            var offset = totalwidth - this.html_rend.outerWidth();
+            this.html_rend.css('padding-left', offset + 'px');
         }
 
         // work out final align
@@ -581,7 +627,7 @@ MEE.ElemSet.extend("MEE.ElemSetArray",
         if (this.eldata.frac)
             return;
 
-        for (var i = this.cols - 1; i > -1; i--) {
+        for (var i = this.cols - 1; i > 0; i--) {
             var colisblank = this.isColBlank(i);
 
             if (colisblank) {
@@ -599,7 +645,7 @@ MEE.ElemSet.extend("MEE.ElemSetArray",
             }
         }
 
-        for (var i = this.rows - 1; i > -1; i--) {
+        for (var i = this.rows - 1; i > 0; i--) {
             var rowisblank = this.isRowBlank(i);
 
             if (rowisblank) {
@@ -646,10 +692,12 @@ MEE.ElemSet.extend("MEE.ElemSetArray",
             return;
 
         var row = new MEE.Row(this.eldata, this.rows, this);
+        row.row = this.rows;
+        row.cols = 0;
+        row.depth = this.depth;
+        row.subdepth = this.depth + 1;
         this['row' + this.rows] = row;
-        this['row' + this.rows].row = this.rows;
-        this['row' + this.rows].cols = 0;
-        this.createRowHTML(this.rows);
+        this.createRowHTML(this.rows, this.depth + 1);
         this.rows++;
         this.fillInBlankCols();
     },
@@ -674,7 +722,9 @@ MEE.ElemSet.extend("MEE.ElemSetArray",
         this['row' + row] = rowe;
         this['row' + row].row = row;
         this['row' + row].cols = 0;
-        this.createRowHTML(row);
+        this['row' + row].depth = this.depth;
+        this['row' + row].subdepth = this.depth + 1;
+        this.createRowHTML(row, this.depth + 1);
         this.rows++;
         this.fillInBlankCols();
     },
@@ -760,6 +810,23 @@ MEE.ElemSet.extend("MEE.ElemSetArray",
         this.fillInBlankCols();
     },
 
+    findElement: function (latex) {
+        for (var r = 0; r < this.rows; r++) {
+            var row = this['row' + r];
+            if (!row)
+                continue;
+            for (var c = 0; c < row.cols; c++) {
+                var col = row['col' + c];
+                if (!col)
+                    continue;
+
+                var res = col.findElement(latex);
+                if (res) return res;
+            }
+        }
+
+        return null;
+    },
     getSetAt: function (pos) {
         if (this['row' + pos.row] && this['row' + pos.row]['col' + pos.col])
             return this['row' + pos.row]['col' + pos.col];

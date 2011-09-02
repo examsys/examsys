@@ -230,25 +230,14 @@
 
 }
 
+/* Separate brackets font hack to make IE7 happy. NO IDEA WHY THIS WORKS, IT JUST DOES */
 @font-face {
-    font-family: 'MathJax_WinChrome';
-    src: url('../fonts/mathjax_winchrome-regular-webfont.eot');
-    src: url('../fonts/mathjax_winchrome-regular-webfont.eot?#iefix') format('embedded-opentype'),
-         url('../fonts/mathjax_winchrome-regular-webfont.woff') format('woff'),
-         url('../fonts/mathjax_winchrome-regular-webfont.ttf') format('truetype'),
-         url('../fonts/mathjax_winchrome-regular-webfont.svg#MathJax_WinChromeRegular') format('svg');
-    font-weight: normal;
-    font-style: normal;
-
-}
-
-@font-face {
-    font-family: 'MathJax_WinIE6';
-    src: url('../fonts/mathjax_winie6-regular-webfont.eot');
-    src: url('../fonts/mathjax_winie6-regular-webfont.eot?#iefix') format('embedded-opentype'),
-         url('../fonts/mathjax_winie6-regular-webfont.woff') format('woff'),
-         url('../fonts/mathjax_winie6-regular-webfont.ttf') format('truetype'),
-         url('../fonts/mathjax_winie6-regular-webfont.svg#MathJax_WinIE6Regular') format('svg');
+    font-family: 'MathJax_Brackets';
+    src: url('../fonts/mathjax_size4-regular-webfont.eot');
+    src: url('../fonts/mathjax_size4-regular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/mathjax_size4-regular-webfont.woff') format('woff'),
+         url('../fonts/mathjax_size4-regular-webfont.ttf') format('truetype'),
+         url('../fonts/mathjax_size4-regular-webfont.svg#MathJax_BracketsRegular') format('svg');
     font-weight: normal;
     font-style: normal;
 

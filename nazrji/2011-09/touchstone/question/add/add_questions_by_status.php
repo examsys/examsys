@@ -26,7 +26,7 @@ require '../../include/staff_auth.inc';
 ?>
 <html>
 <head>
-<title>by Status</title>
+<title><?php echo $string['bystatus']; ?></title>
 <style>
 body {margin:0px; background-color:white; color:black; font-family:Arial,sans-serif; font-size:90%}
 a:link {color:black}
@@ -39,11 +39,11 @@ a:hover {color:black}
 
 <body>
 <br />
-<div class="f"><a href="add_questions_list_status.php?status=Normal" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_list_status.php?status=Normal">Normal</a></div>
-<div class="f"><a href="add_questions_list_status.php?status=Retired" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_list_status.php?status=Retired">Retired</a></div>
-<div class="f"><a href="add_questions_list_status.php?status=Incomplete" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_list_status.php?status=Incomplete">Incomplete</a></div>
-<div class="f"><a href="add_questions_list_status.php?status=Experimental" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_list_status.php?status=Experimental">Experimental</a></div>
-<div class="f"><a href="add_questions_list_status.php?status=Beta" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_list_status.php?status=Beta">Beta</a></div>
+<div class="f"><a href="add_questions_list_status.php?status=Normal" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_list_status.php?status=Normal"><?php echo $string['normal']; ?></a></div>
+<div class="f"><a href="add_questions_list_status.php?status=Retired" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_list_status.php?status=Retired"><?php echo $string['retired']; ?></a></div>
+<div class="f"><a href="add_questions_list_status.php?status=Incomplete" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_list_status.php?status=Incomplete"><?php echo $string['incomplete']; ?></a></div>
+<div class="f"><a href="add_questions_list_status.php?status=Experimental" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_list_status.php?status=Experimental"><?php echo $string['experimental']; ?></a></div>
+<div class="f"><a href="add_questions_list_status.php?status=Beta" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_list_status.php?status=Beta"><?php echo $string['beta']; ?></a></div>
 
 </body>
 </html>

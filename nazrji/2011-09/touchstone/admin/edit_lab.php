@@ -24,6 +24,7 @@
 
   require '../include/sysadmin_auth.inc';
   require '../include/errors.inc';
+  require '../config/campuses.inc';
 
   if (isset($_POST['submit'])) {
     // Delete the existing IP addresses for the lab first.
@@ -58,7 +59,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Edit Computer Lab</title>
+<title><?php echo $string['editcomputerlab']; ?></title>
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
 <style>
 input, textarea {font-family:Arial,sans-serif; line-height:140%}
@@ -86,10 +87,10 @@ input, textarea {font-family:Arial,sans-serif; line-height:140%}
       $plagarism = $lab_row['plagarism'];
       $low_bandwidth = $lab_row['low_bandwidth'];
       echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">\n";
-      echo "<tr><td style=\"background-color:#F1F5FB\"><div class=\"breadcrumb\"><a href=\"../index.php\">Home</a>&nbsp;&nbsp;<img src=\"../artwork/breadcrumb_arrow.png\" width=\"4\" height=\"7\" alt=\"-\" />&nbsp;&nbsp;<a href=\"./index.php\">Administrative Tools</a>&nbsp;&nbsp;<img src=\"../artwork/breadcrumb_arrow.png\" width=\"4\" height=\"7\" alt=\"-\" />&nbsp;&nbsp;<a href=\"./list_labs.php\">Computer Labs</a></div><div style=\"font-size:220%; font-weight:bold; margin-left:10px\">Edit Lab</div></td>\n";
-      echo "<td style=\"background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(231); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"Help\" border=\"0\" /></a></td></tr>\n";
+      echo "<tr><td style=\"background-color:#F1F5FB\"><div class=\"breadcrumb\"><a href=\"../index.php\">" . $string['home'] . "</a>&nbsp;&nbsp;<img src=\"../artwork/breadcrumb_arrow.png\" width=\"4\" height=\"7\" alt=\"-\" />&nbsp;&nbsp;<a href=\"./index.php\">" . $string['administrativetools'] . "</a>&nbsp;&nbsp;<img src=\"../artwork/breadcrumb_arrow.png\" width=\"4\" height=\"7\" alt=\"-\" />&nbsp;&nbsp;<a href=\"./list_labs.php\">" . $string['editcomputerlab'] . "</a></div><div style=\"font-size:220%; font-weight:bold; margin-left:10px\">Edit Lab</div></td>\n";
+      echo "<td style=\"background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(231); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['help'] . "\" border=\"0\" /></a></td></tr>\n";
       echo "<tr><td colspan=\"2\" style=\"height:3px\"><img src=\"../artwork/header_horizontal_line.gif\" width=\"100%\" height=\"3\" alt=\"Line\" /></td></tr>\n</table>\n";
-      echo "<br />\n<table cellpadding=\"2\" cellspacing=\"0\" border=\"0\" style=\"font-size:100%; margin-left:10px; margin-right:10px\">\n<tr><td style=\"vertical-align:top; width:200px\"><div><strong>IP Addresses</strong></div>\n";
+      echo "<br />\n<table cellpadding=\"2\" cellspacing=\"0\" border=\"0\" style=\"font-size:100%; margin-left:10px; margin-right:10px\">\n<tr><td style=\"vertical-align:top; width:200px\"><div><strong>" . $string['ipaddresses'] . "</strong></div>\n";
       echo "<textarea cols=\"20\" rows=\"28\" style=\"width:200px; height:590px\" name=\"addresses\">\n";
     }
     echo $lab_row['address'] . "\n";
@@ -97,9 +98,8 @@ input, textarea {font-family:Arial,sans-serif; line-height:140%}
   }
   
   echo "</textarea></td><td style=\"width:50px\"></td><td style=\"vertical-align:top\">\n";
-  echo "<div><strong>Name</strong></div>\n<div><input type=\"text\" size=\"40\" name=\"name\" value=\"$name\" /></div>\n";
-  echo "<br /><div><strong>Campus</strong></div>\n<div><select name=\"campus\">\n";
-  $choices = array("Derby","Jubilee","King's Meadow","Malaysia","Ningbo","Sutton Bonington","University Park","Other");
+  echo "<div><strong>" . $string['name'] . "</strong></div>\n<div><input type=\"text\" size=\"40\" name=\"name\" value=\"$name\" /></div>\n";
+  echo "<br /><div><strong>" . $string['campus'] . "</strong></div>\n<div><select name=\"campus\">\n";
   foreach ($choices as $choice) {
     if ($campus == $choice) {
       echo "<option value=\"$choice\" selected>$choice</option>\n";
@@ -108,17 +108,17 @@ input, textarea {font-family:Arial,sans-serif; line-height:140%}
     }
   }
   echo "</select></div>\n";
-  echo "<br /><div><strong>Building</strong></div>\n<div><input type=\"text\" size=\"40\" name=\"building\" value=\"$building\" /></div>\n";
-  echo "<br /><div><strong>Room Number</strong></div>\n<div><input type=\"text\" size=\"10\" name=\"room_no\" value=\"$room_no\" /></div>\n";
-  echo "<br /><div><strong>Bandwidth</strong></div>\n<div><input type=\"radio\" name=\"low_bandwidth\" value=\"1\"";
+  echo "<br /><div><strong>" . $string['building'] . "</strong></div>\n<div><input type=\"text\" size=\"40\" name=\"building\" value=\"$building\" /></div>\n";
+  echo "<br /><div><strong>" . $string['roomnumber'] . "</strong></div>\n<div><input type=\"text\" size=\"10\" name=\"room_no\" value=\"$room_no\" /></div>\n";
+  echo "<br /><div><strong>" . $string['bandwidth'] . "</strong></div>\n<div><input type=\"radio\" name=\"low_bandwidth\" value=\"1\"";
   if ($low_bandwidth == 1) echo ' checked';
-  echo " />Low&nbsp;&nbsp;&nbsp;<input type=\"radio\" name=\"low_bandwidth\" value=\"0\" ";
+  echo " />" . $string['low'] . "&nbsp;&nbsp;&nbsp;<input type=\"radio\" name=\"low_bandwidth\" value=\"0\" ";
   if ($low_bandwidth == 0) echo ' checked';
-  echo "/>High</div>\n";
-  echo "<br /><div><strong>Timetabling</strong></div>\n<div><textarea name=\"timetabling\" rows=\"3\" cols=\"100\">$timetabling</textarea></div>\n";
-  echo "<br /><div><strong>IT Support</strong></div>\n<div><textarea name=\"it_support\" rows=\"3\" cols=\"100\">$it_support</textarea></div>\n";
-  echo "<br /><div><strong>Plagarism</strong></div>\n<div><textarea name=\"plagarism\" rows=\"3\" cols=\"100\">$plagarism</textarea></div>\n";
-  echo "<br /><br /><input type=\"submit\" name=\"submit\" value=\"Save\" style=\"width:120px\" />\n";
+  echo "/>" . $string['high'] . "</div>\n";
+  echo "<br /><div><strong>" . $string['timetabling'] . "</strong></div>\n<div><textarea name=\"timetabling\" rows=\"3\" cols=\"100\">$timetabling</textarea></div>\n";
+  echo "<br /><div><strong>" . $string['itsupport'] . "</strong></div>\n<div><textarea name=\"it_support\" rows=\"3\" cols=\"100\">$it_support</textarea></div>\n";
+  echo "<br /><div><strong>" . $string['plagarism'] . "</strong></div>\n<div><textarea name=\"plagarism\" rows=\"3\" cols=\"100\">$plagarism</textarea></div>\n";
+  echo "<br /><br /><input type=\"submit\" name=\"submit\" value=\"" . $string['save'] . "\" style=\"width:120px\" />\n";
   echo "</td></tr>\n</table>\n";
 ?>
 </form>

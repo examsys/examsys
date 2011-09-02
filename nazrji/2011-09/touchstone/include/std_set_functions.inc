@@ -32,8 +32,8 @@ function checkVariables($number) {
   return $new_number;
 }
 
-function display_options($options,$q_id, $current_theme, $current_scenario, $current_leadin, $current_notes, $q_type, $std_method, $tmp_reviews, $exclude, $is_group) {
-  global $marking, $question_no, $question_offset, $part_id, $labelcolor, $old_likert_label, $A, $B, $C, $D, $E, $F, $G, $H, $li_set, $bgcolor, $total_marks, $old_correct_fback, $stdID, $std_excluded;
+function display_options($options, $q_id, $current_theme, $current_scenario, $current_leadin, $current_notes, $q_type, $std_method, $tmp_reviews, $exclude, $is_group) {
+  global $marking, $question_no, $question_offset, $part_id, $labelcolor, $old_likert_label, $A, $B, $C, $D, $E, $F, $G, $H, $I, $J, $li_set, $bgcolor, $total_marks, $old_correct_fback, $stdID, $std_excluded;
   
   $display_inline = array('dichotomous', 'mrq', 'rank', 'timedate', 'flash');
   
@@ -71,10 +71,10 @@ function display_options($options,$q_id, $current_theme, $current_scenario, $cur
     }
   } elseif ($options[0]['q_type'] == 'mcq') {
     echo '<blockquote>';
-    if ($options[0]['score_method'] == 'vertical' or $options[0]['score_method'] == 'vertical_other') {
+    if ($options[0]['display_method'] == 'vertical' or $options[0]['display_method'] == 'vertical_other') {
       echo '<table cellpadding="2" cellspacing="0" border="0">';
     }
-    if ($options[0]['score_method'] == 'dropdown') {
+    if ($options[0]['display_method'] == 'dropdown') {
       echo '<div class="option"><select name="q' . $question_no . '" size="1">';
       echo '<option value=""></option>';
     }
@@ -98,7 +98,7 @@ function display_options($options,$q_id, $current_theme, $current_scenario, $cur
     $matching_users_answers = explode('|', $options[0]['correct']);
   }
 
-  if($options[0]['q_type'] != 'info') {
+  if ($options[0]['q_type'] != 'info') {
     $i = 0;
     foreach ($options as $display_option) {
       $part_id++;
@@ -114,16 +114,16 @@ function display_options($options,$q_id, $current_theme, $current_scenario, $cur
   switch($options[0]['q_type']) {
     case 'mcq':
       $review_val = get_review($options[0]['q_type'], $std_method, $q_id, 1, $tmp_reviews, $is_group);
-      $scale_html = reviewScale($question_no, '', $std_method, (isset($exclude[$q_id])), $review_val, $stdID, $std_excluded, $is_group);
-      if ($options[0]['score_method'] == 'vertical' or $options[0]['score_method'] == 'vertical_other') {
-        if ($options[0]['score_method'] == 'vertical_other') {
+      $scale_html = reviewScale($question_no, '', $options[0]['marks'], $std_method, (isset($exclude[$q_id])), $review_val, $stdID, $std_excluded, $is_group);
+      if ($options[0]['display_method'] == 'vertical' or $options[0]['display_method'] == 'vertical_other') {
+        if ($options[0]['display_method'] == 'vertical_other') {
           echo "<tr><td><input type=\"radio\" name=\"q" . $question_no . "\" value=\"other\" /></td><td>Other <input type=\"text\" onkeypress=\"document.questions.q" . $question_no . "[" . $part_id . "].checked=true\" name=\"q" . $question_no . "_other\" /></td></tr>\n";
         }
         echo '</table></blockquote>';
         echo "<div>";
         echo $scale_html;
         echo "</div>\n";
-      } elseif ($options[0]['score_method'] == 'dropdown') {
+      } elseif ($options[0]['display_method'] == 'dropdown') {
         echo '</select>&nbsp;';
         echo $scale_html;
         echo "</div>\n";
@@ -131,23 +131,21 @@ function display_options($options,$q_id, $current_theme, $current_scenario, $cur
       break;
     case 'calculation':
       $review_val = get_review($options[0]['q_type'], $std_method, $q_id, 1, $tmp_reviews, $is_group);
-      $score_array = explode(',',$options[0]['score_method']);
+      $score_array = explode(',',$options[0]['display_method']);
       if ($li_set == 1) {
         echo '<tr><td></td><td>';
       } else {
         echo '<tr><td class="question_no">' . (($question_no + $question_offset) - 1) . '.&nbsp;</td><td>';
       }
-      //$new_leadin = "echo \"<p>$current_leadin</p>\"";
-      //eval("$new_leadin;");
-      $search = array('$A','$B','$C','$D','$E','$F','$G','$H');
-      $replace = array($A,$B,$C,$D,$E,$F,$G,$H);
+      $search = array('$A','$B','$C','$D','$E','$F','$G','$H','$I','$J');
+      $replace = array($A,$B,$C,$D,$E,$F,$G,$H,$I,$J);
       echo "<p";
       if(isset($exclude[$q_id])) echo ' style="color:red; text-decoration:line-through"';
       echo ">" . str_ireplace($search,$replace,$current_leadin) . "</p>\n";
       
       echo "<p><input type=\"text\" style=\"text-align:right\" name=\"q" . $question_no . "\" size=\"10\" />" . $score_array[2] .  "</p>\n";
       echo "<div>";
-      echo reviewScale($question_no, '', $std_method, (isset($exclude[$q_id])), $review_val, $stdID, $std_excluded, $is_group);
+      echo reviewScale($question_no, '', $options[0]['marks'], $std_method, (isset($exclude[$q_id])), $review_val, $stdID, $std_excluded, $is_group);
       echo "</div>\n";
       $marks = 1;
       break;
@@ -162,19 +160,22 @@ function display_options($options,$q_id, $current_theme, $current_scenario, $cur
       echo '</table>';
       if ($options[0]['q_type'] == 'mrq') {
         echo "</blockquote>\n";
-        if ($options[0]['score_method'] == 'AllItemsCorrect') {
+        if ($options[0]['score_method'] == 'Mark per Question') {
           $part_id++;
           $review_val = get_review($options[0]['q_type'], $std_method, $q_id, 1, $tmp_reviews, $is_group);
+          //if ($options[0]['score_method'] == 'Mark per Option') {
           echo "<div>";
-          echo reviewScale($question_no, 1, $std_method, substr($tmp_exclude,1,1), $review_val, $stdID, $std_excluded, $is_group);
+          echo reviewScale($question_no, 1, $options[0]['marks'], $std_method, substr($tmp_exclude,1,1), $review_val, $stdID, $std_excluded, $is_group);
           echo "</div>\n";
+          $marks = $options[0]['marks'];
+          //}
         }
       } elseif ($options[0]['q_type'] == 'rank') {
         echo "<input type=\"hidden\" id=\"rank" . $question_no . "_options\" name=\"rank" . $question_no . "_options\" value=\"$part_id\" />\n";
-        if ($options[0]['score_method'] == 'BonusMark') {
+        if ($options[0]['score_method'] == 'Bonus Mark') {
           $review_val = get_review($options[0]['q_type'], $std_method, $q_id, ($part_id+1), $tmp_reviews, $is_group);
           echo "<br />\n<div>All items correct: ";
-          echo reviewScale($question_no, ($part_id+1), $std_method, substr($tmp_exclude,0,1), $review_val, $stdID, $std_excluded, $is_group);
+          echo reviewScale($question_no, ($part_id+1), $options[0]['marks'], $std_method, substr($tmp_exclude,0,1), $review_val, $stdID, $std_excluded, $is_group);
           echo "</div>\n";
           echo "<input type=\"hidden\" id=\"rank" . $question_no . "_correct_no\" name=\"rank" . $question_no . "_correct_no\" value=\"". ($marks-1) . "\" />\n";
         } elseif ($options[0]['score_method'] == 'AllItemsCorrect') {
@@ -203,8 +204,9 @@ function display_options($options,$q_id, $current_theme, $current_scenario, $cur
       $rating_part = 0;
       for ($part_id=1; $part_id<=$scenario_no; $part_id++) {
         $answer_no = substr_count($matching_answers[$part_id-1],'$') + 1;
-        $marks += substr_count($matching_answers[$part_id - 1],'$') + 1;
-  
+        if ($options[0]['score_method'] == 'Mark per Option') {
+          $marks += (substr_count($matching_answers[$part_id - 1],'$') + 1) * $options[0]['marks'];
+        }
         echo '<li>';
         if ($matching_scenarios[$part_id - 1] != '') {
           echo "<div";
@@ -247,7 +249,9 @@ function display_options($options,$q_id, $current_theme, $current_scenario, $cur
         if ($answer_no == 1) {
           echo '&nbsp;';
           $review_val = get_review($options[0]['q_type'], $std_method, $q_id, $part_id, $tmp_reviews, $is_group);
-          echo reviewScale($question_no, $part_id, $std_method, substr($tmp_exclude,($part_id - 1),1), $review_val, $stdID, $std_excluded, $is_group);
+          if ($options[0]['score_method'] == 'Mark per Option') {
+            echo reviewScale($question_no, $part_id, $options[0]['marks'], $std_method, substr($tmp_exclude,($part_id - 1),1), $review_val, $stdID, $std_excluded, $is_group);
+          }
           echo '</div></li>';
           $rating_part++;
         } else {
@@ -256,56 +260,79 @@ function display_options($options,$q_id, $current_theme, $current_scenario, $cur
           for ($i=1; $i<=$answer_count; $i++) {
             $review_val = get_review($options[0]['q_type'], $std_method, $q_id, $rating_part + 1, $tmp_reviews, $is_group);
             echo '<div>';
-            echo reviewScale($question_no, $rating_part + 1, $std_method, (isset($exclude[$q_id])), $review_val, $stdID, $std_excluded, $is_group);
+            if ($options[0]['score_method'] == 'Mark per Option') {
+              echo reviewScale($question_no, $rating_part + 1, $options[0]['marks'], $std_method, (isset($exclude[$q_id])), $review_val, $stdID, $std_excluded, $is_group);
+            }
             echo '</div>';
             $rating_part++;
           }
         }
         echo '<br />';
       }
-      echo '</ol><input type="hidden" name="multimatching' . $question_no . '_options" value="' . count($matching_options) . '" /><input type="hidden" name="multimatching' . $question_no . '_correct_no" value="' . $marks . '" />';
+      echo '</ol>';
+      if ($options[0]['score_method'] == 'Mark per Question') {
+        echo reviewScale($question_no, $rating_part + 1, $options[0]['marks'], $std_method, (isset($exclude[$q_id])), $review_val, $stdID, $std_excluded, $is_group);
+        $marks += $options[0]['marks'];
+      }
+      echo '<input type="hidden" name="multimatching' . $question_no . '_options" value="' . count($matching_options) . '" /><input type="hidden" name="multimatching' . $question_no . '_correct_no" value="' . $marks . '" />';
       break;
     case 'labelling':
       $part_id = 1;
-      echo "<blockquote>\n<table cellpadding=\"2\" cellspacing=\"0\" border=\"0\">\n";
-      foreach ($matching_options as $single_option) {
-        $review_val = get_review($options[0]['q_type'], $std_method, $q_id, $part_id, $tmp_reviews, $is_group);
-        echo "<tr><td>" . chr($part_id + 64) . ".</td><td>" . $single_option . "</td><td>&nbsp;</td><td>";
-        echo reviewScale($question_no, $part_id, $std_method, substr($tmp_exclude,$part_id - 1,1), $review_val, $stdID, $std_excluded, $is_group);
-        echo "</td></tr>\n";
-        $part_id++;
-        $marks++;
+      if ($options[0]['score_method'] == 'Mark per Option') {
+        echo "<blockquote>\n<table cellpadding=\"2\" cellspacing=\"0\" border=\"0\">\n";
+        foreach ($matching_options as $single_option) {
+          $review_val = get_review($options[0]['q_type'], $std_method, $q_id, $part_id, $tmp_reviews, $is_group);
+          echo "<tr><td>" . chr($part_id + 64) . ".</td><td>" . $single_option . "</td><td>&nbsp;</td><td>";
+          echo reviewScale($question_no, $part_id, $options[0]['marks'], $std_method, substr($tmp_exclude,$part_id - 1,1), $review_val, $stdID, $std_excluded, $is_group);
+          echo "</td></tr>\n";
+          $part_id++;
+          $marks += $options[0]['marks'];
+        }
+        echo "</table>\n</blockquote>\n";
+      } else {
+        echo reviewScale($question_no, $part_id, $options[0]['marks'], $std_method, substr($tmp_exclude,$part_id - 1,1), $review_val, $stdID, $std_excluded, $is_group);
+        $marks += $options[0]['marks'];
       }
-      echo "</table>\n</blockquote>\n";
       break;
     case 'hotspot':
       $part_id = 1;
       echo "<table summary=\"Options for Hotspot question\">\n";
       $excl_string = '';
+            
       foreach ($matching_options as $single_option) {
         if (substr($tmp_exclude,$part_id - 1,1) == '1') {
           $excl_string = ' ;color:red; text-decoration:line-through';
         }
         $review_val = get_review($options[0]['q_type'], $std_method, $q_id, $part_id, $tmp_reviews, $is_group);
         echo "<tbody><tr><td style=\"padding-right: 12px$excl_string\">" .  chr($part_id+64) . ')&nbsp;' . $single_option . "</td><td>&nbsp;</td><td>";
-        echo reviewScale($question_no, $part_id, $std_method, substr($tmp_exclude,$part_id - 1,1), $review_val, $stdID, $std_excluded, $is_group);
+        if ($options[0]['score_method'] == 'Mark per Option') {
+          echo reviewScale($question_no, $part_id, $options[0]['marks'], $std_method, substr($tmp_exclude,$part_id - 1,1), $review_val, $stdID, $std_excluded, $is_group);
+          $marks += $options[0]['marks'];
+        }
         echo "</td></tr></tbody>\n";
         $part_id++;
       }
       echo '</table>';
+      if ($options[0]['score_method'] == 'Mark per Question') {
+        echo reviewScale($question_no, $part_id, $options[0]['marks'], $std_method, substr($tmp_exclude,0,1), $review_val, $stdID, $std_excluded, $is_group);
+        $marks += $options[0]['marks'];
+      }
       break;
     case 'matrix':
       $part_id = 1;
       if ($matching_media[0] != '') {
-        echo "<p align=\"center\">" . display_media($matching_media[0],$matching_media_width[0],$matching_media_height[0]) . "</p>\n";
+        echo "<p align=\"center\">" . display_media($matching_media[0], $matching_media_width[0], $matching_media_height[0]) . "</p>\n";
       }
       echo '<table cellpadding="2" cellspacing="0" border="1">';
       echo "<tr><td colspan=\"2\">&nbsp;</td>\n";
       foreach ($matching_options as $single_option) {
         echo '<td>' . $single_option . '</td>';
       }
-      echo "<td>&nbsp;</td><tr>\n";
-      $numerals = array('0','i','ii','iii','iv','v','vi','vii','viii','ix','x');
+      if ($options[0]['score_method'] == 'Mark per Option') {
+        echo '<td>&nbsp;</td>';
+      }
+      echo "</tr>\n";
+      $numerals = array('0','i','ii','iii','iv','v','vi','vii','viii','ix','x','xi','xii');
       foreach ($matching_scenarios as $single_scenario) {
         $review_val = get_review($options[0]['q_type'], $std_method, $q_id, $part_id, $tmp_reviews, $is_group);
         if (trim($single_scenario) != '') {
@@ -322,15 +349,19 @@ function display_options($options,$q_id, $current_theme, $current_scenario, $cur
             }
             $answer_no++;
           }
-          echo '<td>';
-          echo reviewScale($question_no, $part_id, $std_method, substr($tmp_exclude,$part_id - 1,1), $review_val, $stdID, $std_excluded, $is_group);
-          echo '</td>';
+          if ($options[0]['score_method'] == 'Mark per Option') {
+            echo '<td>' . reviewScale($question_no, $part_id, $options[0]['marks'], $std_method, substr($tmp_exclude,$part_id - 1,1), $review_val, $stdID, $std_excluded, $is_group) . '</td>';
+            $marks += $options[0]['marks'];
+          }
           echo "</tr>\n";
           $part_id++;
         }
       }
       echo '</table>';
-      $marks = $part_id - 1;
+      if ($options[0]['score_method'] == 'Mark per Question') {
+        $marks = $options[0]['marks'];
+        echo '<br />' . reviewScale($question_no, $part_id, $options[0]['marks'], $std_method, substr($tmp_exclude,0,1), $review_val, $stdID, $std_excluded, $is_group);
+      }
       break;
   }
 

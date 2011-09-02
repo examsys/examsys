@@ -352,10 +352,8 @@ function getUserMark($q_id, $tmp_user_answer, $tmp_user_mark, $exclude, $status,
         } else {
           $match = false;
           if (isset($paper_buffer[$q_id]['correct'][$a])) {
-            foreach ($paper_buffer[$q_id]['correct'][$a] as $check_correct) {
-              if ($user_answers[$a+1] == $check_correct) {
-                $match = true;
-              }
+            if ($user_answers[$a+1] == $paper_buffer[$q_id]['correct'][$a]) {
+              $match = true;
             }
           }
           if ($match == true) {
@@ -530,10 +528,10 @@ while ($row = $result->fetch()) {
 $result->close();
 
 // Load the correct answers into 'paper_buffer' array.
-$result = $mysqli->prepare("SELECT q_id, marks, score_method, q_media_height, q_media_width, paper_title, marking, pass_mark, distinction_mark, paper_ownerID, q_type, paper_type, correct, score_method, option_text, moduleID, calendar_year, status FROM (papers, questions, options, properties) WHERE papers.paper=properties.property_id AND papers.question=questions.q_id AND papers.paper=? AND questions.q_id=options.o_id AND q_type!='info' ORDER BY screen, display_pos, id_num");
+$result = $mysqli->prepare("SELECT q_id, marks_correct, display_method, score_method, q_media_height, q_media_width, paper_title, marking, pass_mark, distinction_mark, paper_ownerID, q_type, paper_type, correct, score_method, option_text, moduleID, calendar_year, status FROM (papers, questions, options, properties) WHERE papers.paper=properties.property_id AND papers.question=questions.q_id AND papers.paper=? AND questions.q_id=options.o_id AND q_type!='info' ORDER BY screen, display_pos, id_num");
 $result->bind_param('i', $_GET['paperID']);
 $result->execute();
-$result->bind_result($q_id, $marks, $score_method, $q_media_height, $q_media_width, $paper_title, $marking, $pass_mark, $distinction_mark, $tmp_ownerID, $q_type, $paper_type, $correct, $score_method, $option_text, $moduleID, $calendar_year, $status);
+$result->bind_result($q_id, $marks, $display_method, $score_method, $q_media_height, $q_media_width, $paper_title, $marking, $pass_mark, $distinction_mark, $tmp_ownerID, $q_type, $paper_type, $correct, $score_method, $option_text, $moduleID, $calendar_year, $status);
 $old_q_id = '';
 $question_no = 0;
 $total_marks = 0;
@@ -544,7 +542,8 @@ $display_experimental = '';
 $old_correct = array();
 $old_option_text = array();
 $stems = 0;
-while ($row = $result->fetch()) {
+while ($result->fetch()) {
+  //echo $q_id . '<br />';
   if ($q_id != $old_q_id) {
     if ($old_q_id != 0) {
       if ($old_status != 'Experimental') {
@@ -553,10 +552,10 @@ while ($row = $result->fetch()) {
         } else {
           $tmp_exclude = '';
         }
-        $total_marks += qMarks($old_q_type, $tmp_exclude, $old_marks, $old_option_text, $old_correct, $old_score_method);
-        $orig_total_marks += qMarks($old_q_type, '', $old_marks, $old_option_text, $old_correct, $old_score_method);
-        $total_random_mark += qRandomMarks($old_q_type, $tmp_exclude , $old_option_text, $old_correct, $old_score_method, $old_q_media_width, $old_q_media_height);
-        checkDisplayExcluded($display_excluded,$old_q_id,$excluded,$question_no);
+        $total_marks += qMarks($old_q_type, $tmp_exclude, $old_marks, $old_option_text, $old_correct, $old_display_method, $old_score_method);
+        $orig_total_marks += qMarks($old_q_type, '', $old_marks, $old_option_text, $old_correct, $old_display_method, $old_score_method);
+        $total_random_mark += qRandomMarks($old_q_type, $tmp_exclude, $old_option_text, $old_correct, $old_display_method, $old_score_method, $old_q_media_width, $old_q_media_height);
+        checkDisplayExcluded($display_excluded, $old_q_id, $excluded, $question_no);
       } else {
       	displayExperimental($display_experimental, $question_no);
       }
@@ -599,6 +598,7 @@ while ($row = $result->fetch()) {
   $option_no++;
   $old_q_id = $q_id;
   $old_q_type = $q_type;
+  $old_display_method = $display_method;
   $old_score_method = $score_method;
   $old_correct[] = $correct;
   $old_q_media_width = $q_media_width;
@@ -615,10 +615,10 @@ if ($old_status != 'Experimental') {
   } else {
     $tmp_exclude = '';
   }
-  $total_marks += qMarks($old_q_type, $tmp_exclude, $old_marks, $old_option_text, $old_correct, $old_score_method);
-  $orig_total_marks += qMarks($old_q_type, '', $old_marks, $old_option_text, $old_correct, $old_score_method);
-  $total_random_mark += qRandomMarks($old_q_type, $tmp_exclude, $old_option_text, $old_correct, $old_score_method, $old_q_media_width, $old_q_media_height);
-  checkDisplayExcluded($display_excluded,$old_q_id,$excluded,$question_no);
+  $total_marks += qMarks($old_q_type, $tmp_exclude, $old_marks, $old_option_text, $old_correct, $old_display_method, $old_score_method);
+  $orig_total_marks += qMarks($old_q_type, '', $old_marks, $old_option_text, $old_correct, $old_display_method, $old_score_method);
+  $total_random_mark += qRandomMarks($old_q_type, $tmp_exclude, $old_option_text, $old_correct, $old_display_method, $old_score_method, $old_q_media_width, $old_q_media_height);
+  checkDisplayExcluded($display_excluded, $old_q_id, $excluded, $question_no);
 } else {
 	displayExperimental($display_experimental, $question_no);
 }
@@ -813,7 +813,7 @@ if ($log_query->num_rows > 0) {
       // Sort by mark order.
       $sortby = 'mark';
       $ordering = $direction;
-      $user_results = array_csort($user_results,$sortby,$ordering);
+      $user_results = array_csort($user_results, $sortby, $ordering);
       $cohort_size = round(($user_no/100)*$percent);
       // Set visible/invisible flag where necessary.
       for ($i=0; $i<$user_no; $i++) {
@@ -912,7 +912,8 @@ if ($log_query->num_rows > 0) {
     }
     
     $tmp_sort = ($sortby != 'result' and $sortby != 'percent') ? $sortby : 'adj_percent';
-    $user_results = array_csort($user_results,$tmp_sort,$ordering);
+    if ($tmp_sort == 'adj_percent') $tmp_sort = 'mark';
+    $user_results = array_csort($user_results, $tmp_sort, $ordering);
   }
 }
 

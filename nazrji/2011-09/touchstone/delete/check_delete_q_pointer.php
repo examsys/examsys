@@ -32,7 +32,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Confirm Pointer Delete</title>
+<title><?php echo $string['confirmdelete']; ?></title>
 
 <style>
 body {margin:0px; background-color:#F1F5FB; font-family:Arial,sans-serif; font-size:80%; text-align:justifed}
@@ -43,10 +43,9 @@ body {margin:0px; background-color:#F1F5FB; font-family:Arial,sans-serif; font-s
 
 <table cellpadding="8" cellspacing="0" border="0" width="100%">
 <tr>
-<td valign="top"><img src="../artwork/delete_warning.png" width="48" height="48" border="0" alt="Recycle Bin" /></td>
+<td valign="top"><img src="../artwork/delete_warning.png" width="48" height="48" border="0" alt="<?php echo $string['recyclebin']; ?>" /></td>
 
-<td><p>Deleting the pointer to this question will only delete it from the question paper.<p>
-<p>It does <strong>not</strong> delete the actual question in the question bank.</p>
+<td><p><?php echo $string['msg']; ?></p>
 
 <div style="text-align: right">
 <form action="do_delete_q_pointer.php" method="post">
@@ -56,8 +55,8 @@ body {margin:0px; background-color:#F1F5FB; font-family:Arial,sans-serif; font-s
 <input type="hidden" name="questionID" value="<?php echo $_GET['questionID']; ?>" />
 <input type="hidden" name="q_id" value="<?php echo $_GET['q_id']; ?>" />
 <input type="hidden" name="paperID" value="<?php echo $_GET['paperID']; ?>" />
-<input style="width:140px" type="submit" name="submit" value="Delete Pointer" />&nbsp;
-<input style="width:80px" type="button" name="cancel" value=" Cancel " onclick="javascript:window.close();" />
+<input style="width:140px" type="submit" name="submit" value="<?php echo $string['delete']; ?>" />&nbsp;
+<input style="width:90px" type="button" name="cancel" value="<?php echo $string['cancel']; ?>" onclick="javascript:window.close();" />
 </form>
 </div>
 </td></tr>
