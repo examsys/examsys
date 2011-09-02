@@ -1,0 +1,29 @@
+<html>
+  <head>
+    <script src="../mee/jquery/jquery-1.6.1.js"></script>
+    <script src="../mee/jquery/fontdetect.js"></script>
+    <link rel="stylesheet" href="../mee/css/fonts.css" type="text/css" media="all" />
+    
+    <style type="text/css">
+      .fonttest 
+      {
+          font-family: MathJax_Size2;
+      }
+    </style>
+
+  </head>
+  <body>
+    <h1>This is using Cantarell</h1>
+    <p>This is using Tangerine!</p>
+    <div id='test'>test &#x2211; ing</div>
+  </body>
+    <script>
+        $().ready(function () {
+
+            d = new Detector();
+            /*alert(d.test('MathJax_Size2'));
+            $('#test').addClass('fonttest');
+            alert(d.test('MathJax_Size2'));*/
+        });
+    </script>
+</html>
