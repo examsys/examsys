@@ -1,0 +1,7 @@
+body {background-color:#FFC0C0; color:black; font-family:Arial,sans-serif; font-size:90%}
+table, td {font-size:100%}
+h1 {font-size:150%; color:black; font-family:Verdana,sans-serif}
+h2 {font-size:140%; color:#f27000; font-family:Verdana,sans-serif}
+.path {background-color:#F2F2F2; color:#666666; font-size:80%; padding-left:10px; border-bottom:1px solid #B6B6B6}
+.subheading {font-weight:bold; font-style:italic}
+.tutorial {background-color:#FCF6CF; width: 95%; cursor:pointer}

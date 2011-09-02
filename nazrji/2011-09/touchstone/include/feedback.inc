@@ -1,0 +1,158 @@
+<?php
+// This file is part of TouchStone
+//
+// TouchStone is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// TouchStone is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with TouchStone.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+* 
+* @author Simon Wilkinson
+* @version 1.0
+* @copyright Copyright (c) 2011 The University of Nottingham
+* @package
+*/
+
+function getCohortData($mysqli, $moduleID, $startdate, $enddate, $repdegree, $repmodule, $repyear, $paperID, $paper_type, $direction, &$student_no = 0, &$user_total = 0, $percent = 100) {
+  global $qid_list;
+  
+  // Get all the users on the module(s) the paper is on.
+  if ($moduleID != '') {
+    $users_on_modules = '';
+    $mod_query = $mysqli->prepare("SELECT userID, moduleid FROM student_modules WHERE moduleid IN ('" . str_replace(",","','",$moduleID) . "')");
+    $mod_query->execute();
+    $mod_query->bind_result($tmp_userID, $tmp_moduleid);
+    $mod_query->store_result();
+    while ($row = $mod_query->fetch()) {
+	  if (isset($repmodule) AND $repmodule != '' AND $tmp_moduleid != $repmodule) {
+      continue; //this user is not on the module set in repmodule so dont put them in the array
+	  }
+	  if ($users_on_modules == '') {
+        $users_on_modules = "'" . $tmp_userID . "'";
+      } else {
+        $users_on_modules .= ",'" . $tmp_userID . "'";
+      }
+    }
+    $mod_query->close();
+  }
+  $student_modules_sql = '';
+  if ($users_on_modules != '' AND isset($repmodule) AND $repmodule != '') {
+    $student_modules_sql = " AND log$paper_type.userID IN ($users_on_modules)";
+  } 
+
+  // Get order of the class.
+  if ($paper_type == '0') {
+    if ($users_on_modules != '') {
+      $student_modules_sql1 = " AND log0.userID IN ($users_on_modules)";
+      $student_modules_sql2 = " AND log1.userID IN ($users_on_modules)";
+    } else {
+      $student_modules_sql1 = '';
+      $student_modules_sql2 = '';
+    }
+    $marks_query = $mysqli->query("(SELECT log0.userID, sum(mark) AS total_mark FROM (log0, log_metadata) WHERE log0.started=log_metadata.started AND log0.q_paper=log_metadata.paperID AND log0.userID=log_metadata.userID AND q_paper=$paperID AND log_metadata.started>='$startdate' AND log_metadata.started<='$enddate' AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE '%staff%' AND student_grade NOT LIKE '%nhs%' AND year LIKE '" . $repyear . "'$student_modules_sql1 GROUP BY log0.userID, q_paper, log0.started) UNION ALL (SELECT log1.userID, sum(mark) AS total_mark FROM (log1, log_metadata) WHERE log1.started=log_metadata.started AND log1.q_paper=log_metadata.paperID AND log1.userID=log_metadata.userID AND q_paper=" . $paperID . " AND log_metadata.started>='$startdate' AND log_metadata.started<='$enddate' AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE '%staff%' AND student_grade NOT LIKE '%nhs%' AND year LIKE '" . $repyear . "'$student_modules_sql2 GROUP BY log1.userID, q_paper, log1.started) ORDER BY total_mark " . $direction);
+  } else {
+    $marks_query = $mysqli->query("SELECT log$paper_type.userID, sum(mark) AS total_mark FROM (log$paper_type, log_metadata) WHERE log$paper_type.started=log_metadata.started AND log$paper_type.q_paper=log_metadata.paperID AND log$paper_type.userID=log_metadata.userID AND q_paper=$paperID AND DATE_ADD(log_metadata.started, INTERVAL 2 MINUTE)>='$startdate' AND log_metadata.started<='$enddate' AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE '%staff%' AND student_grade NOT LIKE '%nhs%' AND student_grade LIKE '" . $repdegree . "' AND year LIKE '" . $repyear . "'$student_modules_sql GROUP BY log$paper_type.userID, q_paper, log$paper_type.started ORDER BY total_mark " . $direction);
+  }
+  $user_total = $marks_query->num_rows;
+
+  $student_no = 0;
+  $student_list = '';
+  
+  //only take the required number of users if $percent is not 100%
+  $user_limit = ($percent != 100) ? floor($user_total * ($percent/100)) : $user_total;
+  
+  while ($row = $marks_query->fetch_assoc() and $student_no <= $user_limit) {
+    if ($student_list == '') {
+      $student_list = "'" . $row['userID'] . "'";
+    } else {
+      $student_list .= ",'" . $row['userID'] . "'";
+    }
+    $student_no++;
+  }
+  $marks_query->close();
+  
+  //get the excluded questions
+  $excluded = array();
+  $exclude_query =  $mysqli->query("SELECT q_id, parts FROM question_exclude WHERE q_paper=$paperID");
+  if ($exclude_query->num_rows > 0) {
+    while ($row = $exclude_query->fetch_assoc()) {
+      $excluded[] = $row['q_id'];
+    }
+    $excluded = 'AND q_id NOT IN (' . implode(',',$excluded) . ') ';
+  } else {
+    $excluded = '';
+  }
+  $exclude_query->close();
+  
+  //get users log data
+  $qid_list = '';
+  $question_data = array();
+  if ($student_list != '') {
+    $res =  $mysqli->query("SELECT q_id, SUM(mark) AS mark, SUM(totalpos) AS totalpos FROM log$paper_type WHERE userID IN ($student_list) $excluded AND q_paper=$paperID GROUP BY q_id ORDER BY q_id");
+    if ($res->num_rows > 0) {
+      while ($row = $res->fetch_assoc()) {    
+        $question_data[$row['q_id']]['totalpos'] = $row['totalpos'];
+        $question_data[$row['q_id']]['mark'] = $row['mark'];    
+        $qid_list .= $row['q_id'] . ',';
+      }
+      $res->close();
+    }
+  }
+  return $question_data;
+}
+
+function getPaperProperties($db,$paperID) {
+  global $paper_title, $paper_type, $moduleID, $session, $pass_mark, $random_mark, $total_mark, $marking, $exam_duration, $start_date, $end_date;
+  $result = $db->prepare("SELECT paper_title, paper_type, moduleID, calendar_year, pass_mark, random_mark, total_mark, marking, exam_duration, start_date, end_date FROM properties WHERE property_id=?");
+  $result->bind_param('i', $paperID);
+  $result->execute();
+  $result->bind_result($paper_title, $paper_type, $moduleID, $session, $pass_mark, $random_mark, $total_mark, $marking, $exam_duration, $start_date, $end_date);
+  $result->fetch();
+  $result->close();
+}
+
+function array_csort($marray, $column, $sort_order) {   //coded by Ichier2003
+  foreach ($marray as $row) {
+    $sortarr[] = $row[$column];
+  }
+  $sortarr = array_map('strtolower',$sortarr);
+  $sort_method = SORT_STRING;
+  if ($column == 'ratio') $sort_method = SORT_NUMERIC;
+  if ($sort_order == 'asc') {
+    array_multisort($sortarr, SORT_ASC, $sort_method, $marray);
+  } else {
+    array_multisort($sortarr, SORT_DESC, $sort_method, $marray);
+  }
+  return $marray;
+}
+
+function formatsec($seconds) {
+  $diff_hour = ($seconds / 60) / 60;
+  $tmp_position = strpos($diff_hour, '.');
+  if ($tmp_position > 0) $diff_hour = substr($diff_hour, 0, $tmp_position);
+  if ($diff_hour > 0) $seconds -= ($diff_hour * 60) * 60;
+  $diff_min = $seconds / 60;
+  $tmp_position = strpos($diff_min, '.');
+  if ($tmp_position > 0) $diff_min = substr($diff_min, 0, $tmp_position);
+  if ($diff_min > 0) $seconds -= $diff_min * 60;
+  $diff_sec = $seconds;
+  $timestring = '';
+  if ($diff_hour < 10) $timestring = '0';
+  $timestring .= "$diff_hour:";
+  if ($diff_min < 10) $timestring .= '0';
+  $timestring .= "$diff_min:";
+  if ($diff_sec < 10) $timestring .= '0';
+  $timestring .= $diff_sec;
+  return $timestring;
+}
+
+?>

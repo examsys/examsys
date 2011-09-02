@@ -1,0 +1,44 @@
+.label
+{
+}
+.head
+{
+    padding: 6px;
+    background-color: #ccffcc;
+    margin-bottom: 20px;
+}
+.head div
+{
+    padding-bottom: 6px;
+}
+.question
+{
+    padding: 20px;
+}
+.question div
+{
+    padding-bottom: 12px;
+}
+.answer
+{
+    text-align: center;
+    font-size: 19px;
+}
+.footer
+{
+    padding: 30px;
+    clear: both;
+    font-size: 150%;
+}
+.next 
+{
+    float: right;
+}
+.prev
+{
+    float: left;
+}
+.section
+{
+    padding: 4px;
+}
