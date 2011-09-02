@@ -1,0 +1,716 @@
+<?php
+// This file is part of TouchStone
+//
+// TouchStone is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// TouchStone is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with TouchStone.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+* 
+* Handles paper display and the recording of marks to the ‘logX’ tables. Uses functions within ‘display_functions.inc’ to process specific 
+* types of questions. Start.php continues calling itself while there are further screens to be displayed and then calls ‘finish.php’ 
+* to end.
+* 
+* @author Simon Wilkinson, Anthony Brown
+* @version 1.0
+* @copyright Copyright (c) 2011 The University of Nottingham
+* @package
+*/
+
+require '../include/staff_student_auth.inc';
+require '../include/display_functions.inc';
+require '../include/media.inc';
+
+function randomQOverwrite(&$questions,$random_q_data,$paper_type,$user_answers,$current_screen,$q_no) {
+  global $mysqli, $used_questions;
+ 
+  $selected_q_id = '';
+  if(isset($user_answers[$current_screen])) {
+    //match user's answers with random question ID.
+    $question_on_screen = array_keys($user_answers[$current_screen]);
+    $selected_q_id = current($question_on_screen);
+    for ($i=1; $i<$q_no; $i++) {
+      $selected_q_id = next($question_on_screen);
+    }
+  }
+  
+  if ($selected_q_id == '') {
+    // Generate a random question ID.
+    $random_q_no = count($random_q_data['options']);
+    $try = 0;
+    $unique = false;
+    while ($unique == false and $try < 9999) {
+      $selected_no = rand(0,$random_q_no-1);
+      $selected_q_id = $random_q_data['options'][$selected_no]['option_text'];
+      if (!isset($used_questions[$selected_q_id])) $unique = true;
+      $try++;
+    }
+    $used_questions[$selected_q_id] = 1;
+  }
+  
+  // Look up selected question and overwrite data.
+  $question_data = $mysqli->prepare("SELECT q_type, q_id, score_method, marks, theme, scenario, leadin, correct, REPLACE(option_text,'\t','') AS option_text, q_media, q_media_width, q_media_height, o_media, o_media_width, o_media_height, notes, q_option_order FROM questions, options WHERE q_id=? AND questions.q_id=options.o_id ORDER BY id_num");
+  $question_data->bind_param('i', $selected_q_id);
+  $question_data->execute();
+  $question_data->store_result();
+  $question_data->bind_result($q_type, $q_id, $score_method, $marks, $theme, $scenario, $leadin, $correct, $option_text, $q_media, $q_media_width, $q_media_height, $o_media, $o_media_width, $o_media_height, $notes, $q_option_order);
+  while ($row = $question_data->fetch()) {
+    if (!isset($question['q_id']) or $question['q_id'] != $q_id) {
+      $question['theme'] = $theme;
+      $question['scenario'] = $scenario;
+      $question['leadin'] = $leadin;
+      $question['notes'] = $notes;
+      $question['q_type'] = $q_type;
+      $question['q_id'] = $q_id;
+      $question['display_pos'] = $q_no;
+      $question['score_method'] = $score_method;
+      $question['q_media'] = $q_media;
+      $question['q_media_width'] = $q_media_width;
+      $question['q_media_height'] = $q_media_height;
+      $question['q_option_order'] = $q_option_order;
+      $question['dismiss'] = '';
+    }
+    $question['options'][] = array('correct'=>$correct, 'option_text'=>$option_text, 'o_media'=>$o_media, 'o_media_width'=>$o_media_width, 'o_media_height'=>$o_media_height, 'marks'=>$marks);
+  }
+  $questions[] = $question;
+  echo "\n<input type=\"hidden\" name=\"q" . $q_no . "_randomID\" value=\"" . $question['q_id'] ."\" />\n";
+}
+
+function branchingQOverwrite(&$questions,$branching_q_data,$paper_type,$user_answers,$current_screen) {
+  global $mysqli, $userID, $sessionid;
+  $previous_user_answer = '';
+  for ($screen=1; $screen<=count($user_answers); $screen++) {
+    foreach ($user_answers[$screen] as $questionID=>$past_answer) {
+      if ($branching_q_data['scenario'] == $questionID) $previous_user_answer = $past_answer;
+    }
+  }
+  $target_questionIDs = explode(',',$branching_q_data['options'][$previous_user_answer-1]['option_text']);
+  
+  // Remove any additional records from log, if user goes down different 'branch'.
+  
+  foreach ($branching_q_data['options'] as $individual_option) {
+    //build a list of all optional questions
+    $optional_qids .= $individual_option['option_text'] . ',';
+  }
+  $optional_qids = array_unique(explode(',',$optional_qids)); //get the unique qids
+  foreach ($optional_qids as $op_qid) {
+    if (!in_array($op_qid,$target_questionIDs) and isset($user_answers[$current_screen][$op_qid])) {
+      //if any of the possible qids are set on this screen remove old answer as the user is no on a different branch 
+      $stmt = $mysqli->prepare("DELETE FROM log$paper_type WHERE userid=? AND screen=? AND started=? AND q_id=?");
+      $stmt->bind_param('iisi',$userID, $current_screen, $sessionid, $op_qid);
+      $stmt->execute();
+    }
+  }
+    
+  foreach ($target_questionIDs as $target_questionID) {
+    // Look up selected question and overwrite data.
+    $question_data = $mysqli->prepare("SELECT q_type, q_id, score_method, marks, theme, scenario, leadin, correct, REPLACE(option_text,'\t','') AS option_text, q_media, q_media_width, q_media_height, o_media, o_media_width, o_media_height, notes, q_option_order FROM questions, options WHERE q_id=? AND questions.q_id=options.o_id ORDER BY id_num");
+    $question_data->bind_param('i', $target_questionID);
+    $question_data->execute();
+    $question_data->store_result();
+    $question_data->bind_result($q_type, $q_id, $score_method, $marks, $theme, $scenario, $leadin, $correct, $option_text, $q_media, $q_media_width, $q_media_height, $o_media, $o_media_width, $o_media_height, $notes, $q_option_order);
+    $question = array();
+    while ($row = $question_data->fetch()) {
+      if ($question['q_id'] != $q_id or $question['display_pos'] != $display_pos) {
+        $question['theme'] = $theme;
+        $question['scenario'] = $scenario;
+        $question['leadin'] = $leadin;
+        $question['notes'] = $notes;
+        $question['q_type'] = $q_type;
+        $question['q_id'] = $q_id;
+        $question['display_pos'] = $display_pos;
+        $question['score_method'] = $score_method;
+        $question['q_media'] = $q_media;
+        $question['q_media_width'] = $q_media_width;
+        $question['q_media_height'] = $q_media_height;
+        $question['q_option_order'] = $q_option_order;
+        $question['dismiss'] = $dismiss;
+      }
+      $question['options'][] = array('correct'=>$correct, 'option_text'=>$option_text, 'o_media'=>$o_media, 'o_media_width'=>$o_media_width, 'o_media_height'=>$o_media_height, 'marks'=>$marks);
+   }
+   $questions[] = $question;
+  }
+  echo "\n<input type=\"hidden\" name=\"q" . $branching_q_data['q_id'] . '_' . ($previous_user_answer-1) . "_branchID\" value=\"" . ($previous_user_answer-1) . "\" />\n";
+}
+
+function keywordQOverwrite(&$questions,$random_q_data,$paper_type,$user_answers,$current_screen,$q_no) {
+  global $mysqli, $used_questions;
+  
+  $selected_q_id = '';
+  if(isset($user_answers[$current_screen])) {
+    //match user's answers with random question ID.
+    $question_on_screen = array_keys($user_answers[$current_screen]);
+    $selected_q_id = current($question_on_screen);
+    for ($i=1; $i<$q_no; $i++) {
+      $selected_q_id = next($question_on_screen);
+    }
+  }
+  
+  if ($selected_q_id == '') {
+    // Generate a random question ID from keywords.
+    $question_ids = array();
+    $question_data = $mysqli->prepare("SELECT DISTINCT q_id FROM keywords_question WHERE keywordID=?");
+    $question_data->bind_param('i', $random_q_data['options'][0]['option_text']);
+    $question_data->execute();
+    $question_data->bind_result($q_id);
+    while ($question_data->fetch()) {
+      $question_ids[] = $q_id;
+    }
+    $question_data->close();
+    shuffle($question_ids);
+    
+    $try = 0;
+    $unique = false;
+    while ($unique == false and $try < count($question_ids)) {
+      $selected_q_id = $question_ids[$try];
+      if (!isset($used_questions[$selected_q_id])) $unique = true;
+      $try++;
+    }
+    $used_questions[$selected_q_id] = 1;
+  }
+  
+  if ($unique) {
+    // Look up selected question and overwrite data.
+    $question_data = $mysqli->prepare("SELECT q_type, q_id, score_method, marks, theme, scenario, leadin, correct, REPLACE(option_text,'\t','') AS option_text, q_media, q_media_width, q_media_height, o_media, o_media_width, o_media_height, notes, q_option_order FROM questions, options WHERE q_id=? AND questions.q_id=options.o_id ORDER BY id_num");
+    $question_data->bind_param('i', $selected_q_id);
+    $question_data->execute();
+    $question_data->store_result();
+    $question_data->bind_result($q_type, $q_id, $score_method, $marks, $theme, $scenario, $leadin, $correct, $option_text, $q_media, $q_media_width, $q_media_height, $o_media, $o_media_width, $o_media_height, $notes, $q_option_order);
+    while ($question_data->fetch()) {
+      if (!isset($question['q_id']) or $question['q_id'] != $q_id) {
+        $question['theme'] = $theme;
+        $question['scenario'] = $scenario;
+        $question['leadin'] = $leadin;
+        $question['notes'] = $notes;
+        $question['q_type'] = $q_type;
+        $question['q_id'] = $q_id;
+        $question['display_pos'] = $q_no;
+        $question['score_method'] = $score_method;
+        $question['q_media'] = $q_media;
+        $question['q_media_width'] = $q_media_width;
+        $question['q_media_height'] = $q_media_height;
+        $question['q_option_order'] = $q_option_order;
+        $question['dismiss'] = '';
+      }
+      $question['options'][] = array('correct'=>$correct, 'option_text'=>$option_text, 'o_media'=>$o_media, 'o_media_width'=>$o_media_width, 'o_media_height'=>$o_media_height, 'marks'=>$marks);
+    }
+    echo "\n<input type=\"hidden\" name=\"q" . $q_no . "_randomID\" value=\"" . $question['q_id'] ."\" />\n";
+  } else {
+    $question['leadin'] = '<span style="color: #f00;">ERROR: unable to find unique question for supplied keywords</span>';
+    $question['q_type'] = 'keyword_based';
+    $question['q_id'] = -1;
+    $question['display_pos'] = $q_no;
+    $question['theme'] = $question['scenario'] = $question['notes'] = $question['score_method'] = $question['q_media'] = '';
+    $question['q_media_width'] = $question['q_media_height'] = $question['q_option_order'] = $question['dismiss'] = '';
+    $question['options'][] = array();
+  }
+  $questions[] = $question;
+}
+
+if (isset($_POST['sessionid'])) require '../include/marking_functions.inc';
+
+if ($special_needs == 1) {
+  $stmt = $mysqli->prepare("SELECT background, foreground, textsize, marks_color, themecolor, labelcolor, font FROM special_needs WHERE userid=?");
+  $stmt->bind_param('i',$userID);
+  $stmt->execute();
+  $stmt->store_result();
+  $stmt->bind_result($bgcolor, $fgcolor, $textsize, $marks_color, $themecolor, $labelcolor, $font);
+  $stmt->fetch();
+  $stmt->close();
+}
+
+// Get how many screens make up the question paper.
+$screen_data = array();
+$row_no = 0;
+$stmt = $mysqli->prepare("SELECT labs, paper_title, paper_type, paper_prologue, marking, screen, UNIX_TIMESTAMP(start_date), UNIX_TIMESTAMP(end_date), bgcolor, fgcolor, themecolor, labelcolor, bidirectional, calculator, moduleID, calendar_year, latex_needed, password FROM (properties, papers, questions) WHERE properties.property_id=papers.paper AND property_id=? AND papers.question=questions.q_id AND q_type != 'info' ORDER BY screen");
+$stmt->bind_param('i', $_GET['paperID']);
+$stmt->execute();
+$stmt->store_result();
+$stmt->bind_result($labs, $paper_title, $paper_type, $paper_prologue, $marking, $screen, $start_date, $end_date, $paper_bgcolor, $paper_fgcolor, $paper_themecolor, $paper_labelcolor, $bidirectional, $calculator, $moduleID, $calendar_year, $latex_needed, $password);
+if ($stmt->num_rows == 0) {  // No record found, the paper can't exist
+  access_denied('The requested paper cannot be found.', $output_header = false);
+}
+while ($row = $stmt->fetch()) {
+  $row_no++;
+  $no_screens = $screen;
+  if (!isset($screen_data[$no_screens])) { 
+    $screen_data[$no_screens] = 1;
+  } else {
+    $screen_data[$no_screens]++;
+  }
+  if ($row_no == 1) {
+    $original_paper_type = $paper_type;
+    
+    // If set overwrite the default colours with the current users' special settings
+    if (!isset($bgcolor) or $bgcolor == 'NULL' or $bgcolor == '') $bgcolor = $paper_bgcolor;
+    if (!isset($fgcolor) or $fgcolor == 'NULL' or $fgcolor == '') $fgcolor = $paper_fgcolor;
+    if (!isset($textsize) or $textsize == 'NULL' or $textsize == '') $textsize = 90;
+    if (!isset($marks_color) or $marks_color == 'NULL' or $marks_color == '') $marks_color = '#808080';
+    if (!isset($themecolor) or $themecolor == 'NULL' or $themecolor == '') $themecolor = $paper_themecolor;
+    if (!isset($labelcolor) or $labelcolor == 'NULL' or $labelcolor == '') $labelcolor = $paper_labelcolor;
+    if (!isset($font) or $font== 'NULL' or $font == '') $font = 'Arial';
+    $attempt = 1; //default attempt to 1 overwritten if the student is resit candidate
+  
+    if (stripos($userroles,'Student') !== false) {
+	    // Check for additional password on the paper
+      if ($password != '') {
+        if (!isset($_COOKIE['paperpwd']) or $password != $_COOKIE['paperpwd']) {
+          access_denied('There is a specific password assigned to this paper.', $output_header = false);
+        }
+      }
+	  
+      // Check time security
+      if ((time()+120) < $start_date or (time()-3600) > $end_date) {
+        access_denied('The paper you are attempting to access is only available between ' . date('d/m/Y H:i',$start_date) . ' and ' . date('d/m/Y H:i',$end_date), $output_header = false);
+      }
+	  
+      //Check room security
+      if ($labs != '') {
+        $lab_info = $mysqli->prepare("SELECT address, low_bandwidth FROM ip_addresses WHERE address=? AND lab IN ($labs)");
+        $lab_info->bind_param('s', $_SERVER['REMOTE_ADDR']);
+        $lab_info->execute();
+        $lab_info->bind_result($address, $low_bandwidth);
+        $lab_info->store_result();
+        $lab_info->fetch();
+        if ($lab_info->num_rows == 0) {
+          access_denied('Access to this paper is not permitted from your current location.', $output_header = false);
+        }
+        $lab_info->close();
+      } else {
+        // Exit if a summative exam is on no labs.
+        if ($paper_type == '2') exit;
+      }
+    
+      // get modules if the user is a student and the paper is not formative
+      if (stripos($_SERVER['PHP_AUTH_USER'], 'user') !== 0) {
+        if ($moduleID != '') {
+          $cal_year_sql = '';
+          if ($calendar_year != '') $cal_year_sql = "AND calendar_year = '$calendar_year'";
+          $module_info = $mysqli->query("SELECT moduleid,MAX(attempt) as attempt FROM student_modules WHERE userID=$userID AND moduleid IN ('" . str_replace(",","','",$moduleID) . "') $cal_year_sql GROUP BY moduleid");
+          if ($module_info->num_rows == 0) {
+            access_denied("$title $surname ($username) is not registered on <strong>$moduleID</strong> in <strong>$calendar_year</strong>.", $output_header = false);
+          } else {
+            $row = $module_info->fetch_array(MYSQLI_ASSOC);
+            if(is_array($row)) {
+              $attempt = $row['attempt'];
+            }
+          }
+          $module_info->close();
+        } else {
+          access_denied('This paper is not on any module.', $output_header = false);
+        }
+      }
+      if (time() > $end_date and ($paper_type == '1' or $paper_type == '2')) {
+        $paper_type = '_late';
+      }
+      
+      // Check for any metadata security restrictions
+      $metadata_security = $mysqli->prepare("SELECT name, value FROM paper_metadata_security WHERE paperID=?");
+      $metadata_security->bind_param('i', $_GET['paperID']);
+      $metadata_security->execute();
+      $metadata_security->bind_result($security_type, $security_value);
+      $metadata_security->store_result();
+      while ($metadata_security->fetch()) {
+        $check_security = $mysqli->prepare("SELECT users_metadata.id FROM users_metadata, modules WHERE users_metadata.moduleid=modules.id AND modules.moduleid IN ('" . str_replace(",", "','", $moduleID) . "') AND userID=? AND type=? AND value=?");
+        $check_security->bind_param('iss', $userID, $security_type, $security_value);
+        $check_security->execute();
+        $check_security->store_result();
+        if ($check_security->num_rows == 0) {
+          access_denied('User metadata does not match <strong>' . $security_type . ': ' . $security_value . '</strong>', $output_header = false);
+        }
+        $check_security->close();
+      }      
+      $metadata_security->close();
+      
+    }
+  }
+}
+$stmt->free_result();
+$stmt->close();
+
+// Extract the posted variables.
+$restart = 0;
+if (isset($_POST['sessionid'])) {
+  if (isset($_POST['next'])) {
+    $current_screen = $_POST['current_screen'];
+  } elseif (isset($_POST['prev'])) {
+    $current_screen = $_POST['current_screen'] - 2;
+  } elseif (isset($_POST['jump_screen'])) {
+    $current_screen = $_POST['jump_screen'];
+  }
+  $sessionid = $_POST['sessionid'];
+} else {
+  $current_screen = 1;
+  if (($paper_type == '1' or $paper_type == '2' or $paper_type == '3') and !isset($_GET['mode'])) {  //Mode is used for staff preview.
+    $stmt = $mysqli->prepare("SELECT DATE_FORMAT(MAX(started),\"%Y%m%d%H%i%s\") AS started, MAX(screen) AS screen FROM log$paper_type WHERE q_paper=? AND userID=? GROUP BY screen DESC LIMIT 1");
+    $stmt->bind_param('ii', $_GET['paperID'], $userID);
+    $stmt->execute();
+    $stmt->store_result();
+    $stmt->bind_result($sessionid, $current_screen);
+    if ($stmt->num_rows == 1) {
+      $row = $stmt->fetch();
+      $stmt->free_result();
+      $restart = 1;
+      if ($paper_type == '3') {
+        $current_screen = 1;
+      } elseif ($current_screen < $no_screens) {
+        $current_screen++;
+      }
+    } else {
+      $sessionid = date("YmdHis", time());
+    }
+    $stmt->close();
+  } else {
+    $sessionid = date("YmdHis", time());
+  }
+}
+
+require '../config/start.inc';
+echo "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\n\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html>\n<head>\n";
+if ($paper_type == '2') {
+  echo "<title>Exam Paper</title>\n";
+} elseif ($paper_type == '3') {
+  echo "<title>Survey</title>\n";
+} else {
+  echo "<title>Assessment</title>\n";
+}
+?>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="imagetoolbar" content="no">
+<meta http-equiv="imagetoolbar" content="false">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> 
+<meta http-equiv="pragma" content="no-cache" />
+<style type="text/css">
+body {background-color:<?php echo $bgcolor; ?>;color:<?php echo $fgcolor; ?>;padding:0px;margin:0px;border:0px;font-family:<?php echo $font; ?>,sans-serif;font-size:<?php echo $textsize; ?>%}
+li {margin-left:15px;margin-right:15px;font-size:100%}
+<?php
+if (($bgcolor != 'white' and $bgcolor != '#FFFFFF') or ($fgcolor != 'black' and $fgcolor != '#000000')) {
+  echo "select,input{background-color:$bgcolor;color:$fgcolor;font-family:$font,sans-serif;font-size:100%}\n";
+} else {
+  echo "select,input{font-family:$font,sans-serif;font-size:100%}\n";
+}
+?>
+table {font-size:100%}
+p {margin-top:0px; padding-top:0px}
+pre {font-family:<?php echo $font; ?>,sans-serif; font-size:100%}
+.q_no {width:40px; text-align:right;vertical-align:top}
+.theme {font-size:150%; padding-left:4px;font-weight:bold;color:<?php echo $themecolor; ?>}
+.note {color:<?php echo $labelcolor; ?>}
+.mk {color:<?php echo $marks_color; ?>;font-size:80%}
+.act {color:<?php echo $fgcolor; ?>;text-decoration:none}
+.inact {color:#A5A5A5;text-decoration:line-through}
+.s0 {width:18px;text-align:center;background-color:#003366;font-size:80%}
+.s1 {width:18px;text-align:center;background-color:#C00000;font-size:80%}
+.unans {background-color:#FFC0C0}
+<?php
+if ($paper_type == '3') echo ".likert_button {text-align:center;width:40px;vertical-align:top}\n";
+if ($latex_needed == 1) echo ".latex {vertical-align:middle}\n";
+?>
+</style>
+<?php if ($latex_needed == 1) {?>
+  <script language="JavaScript" src="../javascript/MathJaxConfig.js"></script>
+<?php }?>
+<script language="JavaScript" src="../javascript/start.js"></script>
+<script language="JavaScript" src="../javascript/flash_include.js"></script>
+<script language="javascript">
+  window.history.go(1);
+<?php
+  if ($original_paper_type == '2') {
+?>
+  function fire(scrno) {
+    document.questions.button_pressed.value='previous';
+    document.questions.action="fire_evacuation.php?paperID=<?php echo $_GET['paperID']; ?>";
+    document.questions.submit();
+  }
+<?php
+  }
+  if ($bidirectional == '0') {
+?>
+  var submitted = false;
+  function confirmSubmit() {
+    if (submitted == true) {
+      return false;
+    }
+    var agree = confirm("Have you completed all the questions on this screen, you will NOT be able to go back.\nAre you sure you wish to continue?");
+    if (agree) {
+      document.body.style.cursor = 'wait';
+      submitted = true;
+      return true;
+    } else {
+      return false;
+    }
+  }
+<?php
+  } else {
+?>
+  var submitted = false;
+  function confirmSubmit() {
+	saveMath();
+	if (submitted == true) {
+      return false;
+    }
+    if (document.questions.button_pressed.value == 'finish') {
+      var agree = confirm("Are you sure you wish to finish. After clicking 'OK' you will not be able to go back.");
+      if (agree) {
+        document.body.style.cursor = 'wait';
+        submitted = true;
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      document.body.style.cursor = 'wait';
+      submitted = true;
+      return true;
+    }
+  }
+  function jumpScreen() {
+    document.questions.button_pressed.value='previous';
+    document.questions.action="start.php?paperID=<?php echo $_GET['paperID']; ?>";
+    if (confirmSubmit()) {
+      document.questions.submit();
+    }
+  }
+<?php
+  }
+?>
+</script>
+</head>
+<?php
+if (stripos($userroles,'Student') !== false) {
+  echo '<body oncontextmenu="return false;" onload="StartClock();" onunload="KillClock()">';
+} else {
+  echo '<body onload="StartClock();" onunload="KillClock()">';
+}
+if ($current_screen < $no_screens) {
+  echo "<form method=\"post\" name=\"questions\" action=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "\"";
+} else {
+  echo "<form method=\"post\" name=\"questions\" action=\"finish.php?paperID=" . $_GET['paperID'] . "\"";
+}
+echo ' onsubmit="return confirmSubmit()">';   // Warning message only in linear navigation mode.
+?>
+  <table cellpadding="0" cellspacing="0" border="0" width="100%" height="100%">
+  <tr><td valign="top">
+<?php
+  if ((isset($_POST['old_screen']) and $_POST['old_screen'] != '') and (!isset($_GET['dont_record']) or $_GET['dont_record'] != true)) {
+    record_marks($_GET['paperID'],$_POST['old_screen'],$mysqli,$_POST,$userID,$_POST['previous_duration'],$paper_type,$grade,$year,$attempt);
+  }
+
+  echo $top_table_html;
+  echo '<tr><td><div style="margin-left:0px;font-size:180%;color:white;font-weight:bold">' . $paper_title . '</div>';
+  $question_offset = 0;
+  if ($no_screens > 1) {
+    echo '<table cellspacing="1" cellpadding="1" border="0" style="font-weight:bold;color:white"><tr>';
+    for ($i=1; $i<=$no_screens; $i++) {
+      echo "<td title=\"";
+      if (isset($screen_data[$i])) {
+        echo $screen_data[$i];
+      } else {
+        echo '0';
+      }
+      if ($i == $current_screen) {
+        if (isset($screen_data[$i]) and $screen_data[$i] == 1) {
+          echo " question\" class=\"s1\">";
+        } else {
+          echo " questions\" class=\"s1\">";
+        }
+      } else {
+        if (isset($screen_data[$i]) and $screen_data[$i] == 1) {
+          echo " question\" class=\"s0\">";
+        } else {
+          echo " questions\" class=\"s0\">";
+        }
+        if ($i < $current_screen and isset($screen_data[$i])) $question_offset += $screen_data[$i];
+      }
+      echo "$i</td>\n";
+    }
+    echo '</tr></table>';
+  }
+  echo '</td>';
+  echo $logo_html;
+  
+  $user_answers = array();
+  $previous_duration = 0;
+  $screen_pre_submitted = 0;
+  if (isset($_POST['sessionid']) or (isset($_POST['fire_alarm']) AND $_POST['fire_alarm'] == '1') or $restart == 1) {    // Get users previous answers for the current screen.
+    $log_data = $mysqli->prepare("SELECT id, q_id, user_answer, duration, screen, dismiss, option_order FROM log$paper_type WHERE userID=? AND started=? and q_paper=? ORDER BY id");
+    $log_data->bind_param('isi', $userID, $sessionid, $_GET['paperID']);
+    $log_data->execute();
+    $log_data->store_result();
+    $log_data->bind_result($log_id, $log_q_id, $log_user_answer, $log_duration, $log_screen, $current_dismiss, $option_order);
+    if ($log_data->num_rows > 0) {
+      while ($log_row = $log_data->fetch()) {
+        $user_answers[$log_screen][$log_q_id] = $log_user_answer;
+        $user_dismiss[$log_screen][$log_q_id] = $current_dismiss;
+        $user_order[$log_screen][$log_q_id] = $option_order;
+        $used_questions[$log_q_id] = $log_q_id;
+        if ($log_screen == $current_screen) {
+          $previous_duration = $log_duration;
+          $screen_pre_submitted = 1;
+        }
+      }
+      $log_data->close();
+    } else {
+      $log_data->close();
+      if ($paper_type == '_late') {
+        $log_data = $mysqli->prepare("SELECT id, q_id, user_answer, duration, screen, dismiss, option_order FROM log$original_paper_type WHERE userID=? AND started=? and q_paper=?");
+        $log_data->bind_param('isi', $userID, $sessionid, $_GET['paperID']);
+        $log_data->execute();
+        $log_data->store_result();
+        $log_data->bind_result($log_id, $log_q_id, $log_user_answer, $log_duration, $log_screen, $current_dismiss, $option_order);
+        $user_answers = array();
+        $used_questions[$log_q_id] = $log_q_id;
+        while ($log_row = $log_data->fetch()) {
+          $user_answers[$log_screen][$log_q_id] = $log_user_answer;
+          $user_dismiss[$log_screen][$log_q_id] = $current_dismiss;
+          $user_order[$log_screen][$log_q_id] = $option_order;
+          if ($log_screen == $current_screen) $previous_duration = $log_duration;
+        }
+        $log_data->close();
+      }
+    }
+  }
+
+  $old_leadin = '';
+  $old_q_type = '';
+  $old_q_id = 0;
+  $question_no = 0;
+  $q_displayed = 0;
+  $marks = 0;
+  $old_theme = '';
+  $previous_q_type = '';
+
+  $question_data = $mysqli->prepare("SELECT q_type, q_id, score_method, marks, theme, scenario, leadin, correct, REPLACE(option_text,'\t','') AS option_text, q_media, q_media_width, q_media_height, o_media, o_media_width, o_media_height, notes, display_pos, q_option_order FROM papers, questions, options WHERE paper=? AND screen=? AND papers.question=questions.q_id AND questions.q_id=options.o_id ORDER BY display_pos, id_num");
+  $question_data->bind_param('ii', $_GET['paperID'], $current_screen);
+  $question_data->execute();
+  $question_data->store_result();
+  $question_data->bind_result($q_type, $q_id, $score_method, $marks, $theme, $scenario, $leadin, $correct, $option_text, $q_media, $q_media_width, $q_media_height, $o_media, $o_media_width, $o_media_height, $notes, $display_pos, $q_option_order);
+  $num_rows = $question_data->num_rows;
+  echo "<table cellpadding=\"0\" cellspacing=\"4\" border=\"0\" width=\"100%\" style=\"table-layout:fixed\">\n";
+  echo "<col width=\"40\"><col>\n";
+  if ($original_paper_type == 2) {
+    if (isset($low_bandwidth) and $low_bandwidth == 1) {
+      echo '<tr><td colspan="2"><table cellpadding="0" cellspacing="0" border="0" width="100%"><tr><td><span style="text-align:center;font-weight:bold;background-color:#028F43;color:white;cursor:pointer" onclick="fire()" />&nbsp;Fire Exit&nbsp;</span></td><td style="text-align:right"><span style="text-align:center;font-weight:bold;background-color:#028F43;color:white;cursor:pointer" onclick="fire()" />&nbsp;Fire Exit&nbsp;</span></td></tr></table></td></tr>';
+    } else {
+      echo '<tr><td colspan="2"><table cellpadding="0" cellspacing="0" border="0" width="100%"><tr><td><img src="/touchstone/artwork/fire_exit.png" width="32" height="32" alt="Fire Exit" style="cursor:hand" onclick="fire()" /></td><td style="text-align:right"><img src="/touchstone/artwork/fire_exit.png" width="32" height="32" alt="Fire Exit" style="cursor:hand" onclick="fire()" /></td></tr></table></td></tr>';
+    }
+  }
+  $q_no = 0;
+  //build the questions_array
+  $tmp_questions_array = array();
+  while ($row = $question_data->fetch()) {
+    if ($q_no == 0 or $tmp_questions_array[$q_no]['q_id'] != $q_id or $tmp_questions_array[$q_no]['display_pos'] != $display_pos) {
+      $q_no++;
+      $tmp_questions_array[$q_no]['theme'] = trim($theme);
+      $tmp_questions_array[$q_no]['scenario'] = trim($scenario);
+      $tmp_questions_array[$q_no]['leadin'] = trim($leadin);
+      $tmp_questions_array[$q_no]['notes'] = trim($notes);
+      $tmp_questions_array[$q_no]['q_type'] = $q_type;
+      $tmp_questions_array[$q_no]['q_id'] = $q_id;
+      $tmp_questions_array[$q_no]['display_pos'] = $display_pos;
+      $tmp_questions_array[$q_no]['score_method'] = $score_method;
+      $tmp_questions_array[$q_no]['q_media'] = $q_media;
+      $tmp_questions_array[$q_no]['q_media_width'] = $q_media_width;
+      $tmp_questions_array[$q_no]['q_media_height'] = $q_media_height;
+      $tmp_questions_array[$q_no]['q_option_order'] = $q_option_order;
+      $tmp_questions_array[$q_no]['dismiss'] = '';
+      $used_questions[$q_id] = 1;
+    }
+    $tmp_questions_array[$q_no]['options'][] = array('correct'=>$correct, 'option_text'=>$option_text, 'o_media'=>$o_media, 'o_media_width'=>$o_media_width, 'o_media_height'=>$o_media_height, 'marks'=>$marks);
+  } 
+  $question_data->close();
+  
+  //look for braching and random questions and overwrite as needed
+  $questions_array = array();
+  $tmp_q_no = 0;
+  foreach ($tmp_questions_array as &$question) {
+    if ($question['q_type'] != 'info') {
+      $tmp_q_no++;
+    }
+    if ($question['q_type'] == 'random') {
+      randomQOverwrite($questions_array,$question,$paper_type,$user_answers,$current_screen,$tmp_q_no);
+    } elseif ($question['q_type'] == 'branching') {
+      branchingQOverwrite($questions_array,$question,$paper_type,$user_answers,$current_screen);
+    } elseif ($question['q_type'] == 'keyword_based') {
+      keywordQOverwrite($questions_array,$question,$paper_type,$user_answers,$current_screen,$tmp_q_no);
+    } else {
+      $questions_array[] = $question;
+    }
+  }
+  unset($tmp_questions_array);
+  
+  //display the questions
+  foreach($questions_array as &$question) {
+    if ($screen_pre_submitted == 1 and $q_displayed == 0) echo "<tr><td colspan=\"2\"><span style=\"background-color:#FFC0C0\">&nbsp;&nbsp;&nbsp;&nbsp;</span> = unanswered question</td></tr>\n";
+    if ($q_displayed == 0 and $current_screen == 1 and $paper_prologue != '') echo '<tr><td colspan="2" style="padding:20px; text-align:justify">' . $paper_prologue . '</td></tr>';
+    if ($q_displayed == 0 and $question['theme'] == '') echo "<tr><td colspan=\"2\">&nbsp;</td></tr>\n";
+    display_question($question, $paper_type, $current_screen, $previous_q_type, $question_no, $question_offset, $user_answers);	
+    $previous_q_type = $question['q_type'];
+    $q_displayed++;
+  }
+  
+  echo "</table></td></tr>\n<tr><td valign=\"bottom\">\n<br />\n";
+
+  $current_screen++;
+  echo "<input type=\"hidden\" name=\"current_screen\" value=\"$current_screen\" />\n";
+  echo "<input type=\"hidden\" name=\"sessionid\" value=\"$sessionid\" />\n";
+  echo "<input type=\"hidden\" name=\"page_start\" value=\"" . date("YmdHis", time()) . "\" />\n";
+  echo "<input type=\"hidden\" name=\"old_screen\" value=\"" . ($current_screen - 1) . "\" />\n";
+  echo "<input type=\"hidden\" name=\"previous_duration\" value=\"$previous_duration\" />\n";
+  echo "<input type=\"hidden\" name=\"button_pressed\" value=\"\" />\n";
+
+  if ($current_screen > $no_screens) {
+    echo "<br />\n<div class=\"note\" style=\"text-align:center;font-size:90%\">";
+    if (isset($low_bandwidth) and $low_bandwidth == 0) echo '<img src="/touchstone/artwork/notes_icon.gif" width="14" height="14" alt="Note" />&nbsp;';
+    echo "<strong>NOTE:</strong> Please complete all questions before clicking &#145;Finish&#146;, you will not be able to go back.";
+    if ($bidirectional == 1) echo "<br />When you go back unanswered questions will be highlighted in pink.";
+    echo "</div>\n<br >\n";
+  } elseif ($bidirectional == 0) {
+    echo "<br />\n<div class=\"note\" style=\"text-align:center;font-size:90%\">";
+    if (isset($low_bandwidth) and $low_bandwidth == 0) echo '<img src="/touchstone/artwork/notes_icon.gif" width="14" height="14" alt="Note" />&nbsp;';
+    echo "<strong>NOTE:</strong> Please complete all questions before clicking &#145;Screen $current_screen &#146;, you will not be able to go back.</div>\n<br >\n";
+  }
+  if ($original_paper_type == '2') {
+    if (isset($low_bandwidth) and $low_bandwidth == 1) {
+      echo '<table cellpadding="4" cellspacing="0" border="0" width="100%"><tr><td><span style="text-align:center;font-weight:bold;background-color:#028F43;color:white;cursor:pointer" onclick="fire()" />&nbsp;Fire Exit&nbsp;</span></td><td style="text-align:right"><span style="text-align:center;font-weight:bold;background-color:#028F43;color:white;cursor:pointer" onclick="fire()" />&nbsp;Fire Exit&nbsp;</span></td></tr></table>';
+    } else {
+      echo '<table cellpadding="4" cellspacing="0" border="0" width="100%"><tr><td><img src="/touchstone/artwork/fire_exit.png" width="32" height="32" alt="Fire Exit" style="cursor:hand" onclick="fire()" /></td><td style="text-align:right"><img src="/touchstone/artwork/fire_exit.png" width="32" height="32" alt="Fire Exit" style="cursor:hand" onclick="fire()" /></td></tr></table>';
+    }
+  }
+  echo $bottom_html;
+  echo '<input type="text" style="background-color:transparent;text-align:center;font-size:80%;color:white;border:0px" id="theTime" size="8" /></td><td align="right">';
+  if ($bidirectional == 1 and $no_screens > 1) {
+    if ($current_screen > 2) echo "<input type=\"submit\" name=\"prev\" onclick=\"document.questions.button_pressed.value='previous'; document.questions.action='" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "'\" style=\"width:120px\" value=\"&nbsp;&lt; Screen " . ($current_screen - 2) . "&nbsp;\" />&nbsp;";
+    if ($original_paper_type == '0' or $original_paper_type == '1' or $original_paper_type == '2') {
+      echo "<select name=\"jump_screen\" onchange=\"jumpScreen()\">";
+      for ($i=1; $i<=$no_screens; $i++) {
+        if ($i == ($current_screen - 1)) {
+          echo "<option value=\"$i\" selected>$i</option>";
+        } else {
+          echo "<option value=\"$i\">$i</option>";
+        }
+      }
+      echo "</select>&nbsp;";
+    }
+  }
+  if ($current_screen > $no_screens) {
+    echo "<input type=\"submit\" style=\"width:120px; font-weight:bold\" name=\"next\" onclick=\"document.questions.button_pressed.value='finish';\" value=\"Finish\" />&nbsp;\n";
+  } else {
+    echo "<input type=\"submit\" style=\"width:120px\" name=\"next\" value=\"Screen $current_screen &gt;\" />&nbsp;\n";
+  }
+  echo '</td></tr></table>';
+  $mysqli->close();
+?>
+</td></tr></table>
+</form>
+</body>
+</html>

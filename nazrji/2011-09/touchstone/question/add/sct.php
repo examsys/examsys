@@ -1,0 +1,325 @@
+<?php
+// This file is part of TouchStone
+//
+// TouchStone is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// TouchStone is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with TouchStone.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+*
+* @author Simon Wilkinson
+* @version 1.0
+* @copyright Copyright (c) 2011 The University of Nottingham
+* @package
+*/
+
+require '../../include/staff_auth.inc';
+require '../../include/media.inc';
+require '../../include/add.inc';
+require '../../include/metadata.inc';
+require '../../include/mapping_tab.inc';
+
+include_once('../../tools/getid3/getid3.php');
+
+function responseNo($responseID) {
+  $html = "<select name=\"response_no" . $responseID . "\">";
+  for ($i=0; $i<=40; $i++) {
+    $html .= "<option value=\"$i\">$i</option>\n";
+  }
+  $html .= "</select>\n";
+  
+  return $html;
+}
+
+if (isset($_POST['addbank']) or isset($_POST['addpaper'])) {
+  $no_options = 0;
+  for ($option_no=1; $option_no<=20; $option_no++) {
+    if (isset($_POST["option_text$option_no"]) and trim($_POST["option_text$option_no"]) != '') {
+      $no_options++;
+    } elseif (isset($_FILES['omedia' . $option_no]) and $_FILES['omedia' . $option_no]['name'] != '' and $_FILES['omedia' . $option_no]['name'] != 'none') {
+      $no_options++;
+    }
+  }
+  if ($no_options == 0) {
+    echo "<html>\n<head>\n<title>Access Denied</title>\n</head>\n<body>\n<div style=\"text-align:center\">\n<table cellpadding=\"10\" cellspacing=\"0\" border=\"0\" style=\"width:400px; border:1px solid red; color:red\">\n<tr><td style=\"width: 36px\"><img src=\"../artwork/red_exclamation_icon.gif\" width=\"36\" height=\"34\" alt=\"!\" /></td><td><strong>Error</strong><br />You have not entered any options.</td></tr>\n</table>\n</div>\n</body></html>";
+    exit;
+  } elseif ($no_options == 1) {
+    echo "<html>\n<head>\n<title>Access Denied</title>\n</head>\n<body>\n<div style=\"text-align:center\">\n<table cellpadding=\"10\" cellspacing=\"0\" border=\"0\" style=\"width:400px; border:1px solid red; color:red\">\n<tr><td style=\"width: 36px\"><img src=\"../artwork/red_exclamation_icon.gif\" width=\"36\" height=\"34\" alt=\"!\" /></td><td><strong>Error</strong><br />You have only entered one option.</td></tr>\n</table>\n</div>\n</body></html>";
+    exit;
+  }
+
+  $unique_name = uploadFile('q_media',$tmp_width,$tmp_height);
+
+  $tmp_scenario = clearMSOtags($_POST['scenario']);
+  if (trim(strip_tags($tmp_scenario)) == '') $tmp_scenario = '';
+
+  $tmp_leadin = clearMSOtags($_POST['leadin1']) . '~' . clearMSOtags($_POST['leadin2']);
+  
+  // Work out the highest number of experts
+  $max_experts = 1;
+  for ($option_no=1; $option_no<=20; $option_no++) {
+    if (isset($_POST['response_no' . $option_no]) and $_POST['response_no' . $option_no] > $max_experts and $_POST["option_text$option_no"] != '') {
+      $max_experts = $_POST['response_no' . $option_no];
+    }
+  }
+  
+  // Insert into Questions
+  $question_id = insert_into_questions('sct',$_POST['theme'],$tmp_scenario,$tmp_leadin,$_POST['correct_fback'],'',$_POST['scttype'],$_POST['notes'],$userID,$unique_name,$tmp_width,$tmp_height,date("YmdHis"),date("YmdHis"),$_POST['bloom'],getTeams(),$_POST['status'],'display order');
+
+  // Insert into Options
+  for ($option_no=1; $option_no<=20; $option_no++) {
+    if (isset($_POST["option_text$option_no"]) and $_POST["option_text$option_no"] != '') {
+      insert_into_options($question_id,$_POST["option_text$option_no"],'','','',$_POST["feedback_right$option_no"],'',$_POST['response_no' . $option_no],$_POST['response_no' . $option_no] / $max_experts);
+    }
+  }
+
+  // Save keywords
+  $changes = false;
+  saveKeywords($question_id, $userID, $changes, false, $mysqli);
+
+  $paperID = $_POST['paperID'];
+  // Insert into Papers
+  if (isset($_POST['addpaper'])) {
+    insert_into_papers($paperID, $question_id);
+    saveObjMappings($paperID, $question_id, $mysqli);
+  }
+
+  setcookie("default_team", getDefaultTeam(), time()+31536000);
+
+  redirect($paperID);
+} else {
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head>
+  <title>New Script Concordance Question<?php echo " $cfg_install_type"; ?></title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="stylesheet" href="../../css/add_edit.css" type="text/css">
+  <script language="JavaScript">
+    var cancel = 0;
+    function formCancel() {
+      cancel = 1;
+    }
+
+    function checkForm() {
+      if (cancel != 0) {
+        return true;
+      }
+      <?php
+      if($cfg_editor_name == 'tinymce') {
+        echo "\t tinyMCE.triggerSave();";
+      }
+      ?>
+      if (document.getElementById('leadin').value == "" || document.getElementById('leadin').value == "&nbsp;" || document.getElementById('leadin').value == "<p>&nbsp;</p>" || document.getElementById('leadin').value == "<div>&nbsp;</div>" || document.getElementById('leadin').value == "<br />") {
+        alert ("Please enter a Lead-in for this question.");
+        return false;
+      }
+      if (submit != '') {
+        var modules = document.getElementById('modules').value;
+        var modulesArray = modules.split(',');
+        for(var j = 0; j < modulesArray.length; j++) {
+          var objcount = document.getElementById(modulesArray[j] + '_objectiveCount').value;
+          for(var i = 0; i < objcount; i++) {
+            var cb = document.getElementById(modulesArray[j] + 'obj' + i).checked;
+            if(cb == true) {
+              submit = '';
+              return confirm("WARNING: All mappings will be lost if this question is not added to the paper !");
+            }
+          }
+        }
+        submit = '';
+      }
+      return true;
+    }
+
+    var submit = '';
+    function AddToBank() {
+      submit = 'AddToBank';
+    }
+
+    function showTab(tabID) {
+      if (tabID == 'editortab') {
+        document.getElementById('editortab').style.display = 'block';
+        document.getElementById('mappingtab').style.display = 'none';
+      } else if (tabID == 'mappingtab') {
+        document.getElementById('editortab').style.display = 'none';
+        document.getElementById('mappingtab').style.display = 'block';
+      }
+    }
+    
+    function changeType() {
+      if (document.getElementById('scttype').options[document.getElementById('scttype').selectedIndex].value == "1") {
+        document.getElementById('scttitle').innerHTML = 'Hypothesis';
+        document.getElementById('option_text1').value = 'very unlikely';
+        document.getElementById('option_text2').value = 'unlikely';
+        document.getElementById('option_text3').value = 'neither likely nor unlikely';
+        document.getElementById('option_text4').value = 'more likely';
+        document.getElementById('option_text5').value = 'very likely';
+      } else if (document.getElementById('scttype').options[document.getElementById('scttype').selectedIndex].value == "2") {
+        document.getElementById('scttitle').innerHTML = 'Investigation';
+        document.getElementById('option_text1').value = 'useless';
+        document.getElementById('option_text2').value = 'less useful';
+        document.getElementById('option_text3').value = 'neither more or less useful';
+        document.getElementById('option_text4').value = 'more useful';
+        document.getElementById('option_text5').value = 'very useful';
+      } else if (document.getElementById('scttype').options[document.getElementById('scttype').selectedIndex].value == "3") {
+        document.getElementById('scttitle').innerHTML = 'Prescription';
+        document.getElementById('option_text1').value = 'contra-indicated totally or almost totally';
+        document.getElementById('option_text2').value = 'not useful or even detrimental';
+        document.getElementById('option_text3').value = 'nor less nor more useful';
+        document.getElementById('option_text4').value = 'useful';
+        document.getElementById('option_text5').value = 'absolutely necessary';
+      } else if (document.getElementById('scttype').options[document.getElementById('scttype').selectedIndex].value == "4") {
+        document.getElementById('scttitle').innerHTML = 'Intervention';
+        document.getElementById('option_text1').value = 'contraindicated';
+        document.getElementById('option_text2').value = 'less indicated';
+        document.getElementById('option_text3').value = 'neither more or less indicated';
+        document.getElementById('option_text4').value = 'indicated';
+        document.getElementById('option_text5').value = 'strongly indicated';
+      } else {
+        document.getElementById('scttitle').innerHTML = 'Treatment';
+        document.getElementById('option_text1').value = 'contraindicated';
+        document.getElementById('option_text2').value = 'less indicated';
+        document.getElementById('option_text3').value = 'neither more or less indicated';
+        document.getElementById('option_text4').value = 'indicated';
+        document.getElementById('option_text5').value = 'strongly indicated';
+      }
+    }
+    
+  </script>
+  <script language="JavaScript" src="../../javascript/mapping_tab.js"></script>
+  <script language="JavaScript" src="../../javascript/metadata.js"></script>
+  <?php echo $cfg_editor_javascript; ?>
+  <script language="JavaScript" src="../../javascript/staff_help.js"></script>
+  </head>
+
+  <body onLoad="document.add_form.theme.focus();">
+
+<form name="add_form" method="post" onsubmit="return checkForm()" action="<?php echo $_SERVER['PHP_SELF']; ?>" enctype="multipart/form-data">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+  <tr height="70" style="background-color:#DFECFF">
+    <td width="400">
+      <img style="position:absolute; left:8px; top:2px;" src="../../artwork/edit_question.png" width="64" height="64" alt="Edit Logo" />
+      <span style="position:absolute; left:80px; top:0px; font-family:'Arial Black',Arial,sans-serif; font-size:24pt">New Question</span>
+      <span style="position:absolute; left:80px; top:40px; font-family:Arial,sans-serif; font-size:12pt; font-weight:bold">(Script Concordance)</span>
+    </td>
+    <td style="text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(1); return false;"><img src="../../artwork/small_help_icon.gif" width="16" height="16" alt="Help" border="0" /></a></td>
+  </tr>
+</table>
+<?php
+  echo displayEditTab();
+?>
+<table cellpadding="0" cellspacing="0" border="0" width="100%">
+  <tr>
+    <td style="text-align:center">
+     <table border="0" cellpadding="3" cellspacing="0" align="center">
+      <tr>
+        <td colspan="3">&nbsp;</td>
+      </tr>
+      <tr>
+        <td colspan="3" style="font-size:90%; color:#808080; text-align:center"><span class="mandatory">*</span> Indicates a <strong>mandatory</strong> field that must be completed.</td>
+      </tr>
+      <tr>
+        <td colspan="3" class="section">General Information</td>
+      </tr>
+      <tr>
+        <td class="field">Theme/Heading</td>
+        <td colspan="2"><input type="text" name="theme" size="80" /></td>
+      </tr>
+      <tr>
+        <td class="field">Notes<br /><span class="note">(visible to students)</span></td>
+        <td colspan="2"><textarea name="notes" cols="100" style="width:700px" rows="2" wrap="virtual"></textarea></td>
+      </tr>
+      <tr>
+        <td class="field"><span class="mandatory">*</span>&nbsp;Clinical Vignette</td>
+        <td colspan="2"><?php echo wysiwyg_editor('oEdit1','scenario','',740); ?></td>
+      </tr>
+      <tr>
+        <td class="field">Media</td>
+        <td colspan="2"><input type="file" name="q_media" size="65" /></td>
+      </tr>
+      <tr>
+        <td class="field"><span class="mandatory">*</span>&nbsp;Hypothesis</td>
+        <td colspan="2"><?php echo wysiwyg_editor('oEdit2','leadin1','',740); ?></td>
+      </tr>
+      <tr>
+        <td class="field"><span class="mandatory">*</span>&nbsp;New Information</td>
+        <td colspan="2"><?php echo wysiwyg_editor('oEdit3','leadin2','',740); ?></td>
+      </tr>
+     
+      <tr>
+        <td colspan="3"><span class="section">Options</span></td>
+      </tr>
+
+      <?php
+      $types = array('1'=>'This hypothesis becomes','2'=>'This investigation becomes','3'=>'This prescription becomes','4'=>'This intervention becomes','5'=>'This treatment becomes');
+      echo "<tr>\n<td colspan=\"2\">Type <select name=\"scttype\" id=\"scttype\" onchange=\"changeType()\">\n";
+      foreach ($types as $type=>$description) {
+        echo "<option value=\"$type\">$description</option>\n";
+      }
+      echo "</select></td><td>Experts</td>\n</tr>\n";
+
+      $option_text = array('ruled out or almost ruled out','less probable','neither less or more probable','more probable','certain or almost certain');
+      
+      for ($option_no=1; $option_no<=5; $option_no++) {
+        echo "<tr class=\"option\">\n";
+        echo "<td style=\"text-align:right\"><span class=\"mandatory\">*</span>&nbsp;<span class=\"field\">" . $option_no . ".&nbsp;</span></td>";
+        echo "<td><input type=\"text\" name=\"option_text" . $option_no . "\" id=\"option_text" . $option_no . "\" size=\"90\" style=\"border:none; background-color:#F1F5FB; width:680px\" value=\"" . $option_text[$option_no-1] . "\" /></td><td>" . responseNo($option_no) . "</td>";
+        echo "</tr>\n";
+        echo "<tr class=\"option\">\n<td>&nbsp;</td><td colspan=\"2\"><span class=\"field\">Feedback</span><textarea cols=\"95\" rows=\"2\" name=\"feedback_right" . $option_no . "\"></textarea></td></tr>\n";
+        echo "<tr class=\"option\"><td colspan=\"3\">&nbsp;</td></tr>\n";
+      }
+      ?>
+    <tr>
+      <td class="field">General Feedback</span></td>
+      <td colspan="2"><textarea name="correct_fback" cols="100" style="width:700px" rows="4" wrap="virtual"></textarea></td>
+    </tr>
+    <tr><td colspan="3">&nbsp;</td></tr>
+    <?php
+      echo echoMetadata('','','',3,$mysqli,true,'','');
+    ?>
+    <tr>
+      <td colspan="3">&nbsp;<?php echo hidden_add_fields(); ?></td>
+    </tr>
+    <tr>
+    <?php
+      if (isset($_GET['paperID']) and $_GET['paperID'] != '' and substr($_GET['paperID'],0,5) != 'list:') {
+        echo '<td colspan="3" style="text-align: center"><input style="width: 150px" type="submit" name="addbank" value="Add to Bank" onmousedown="AddToBank();">&nbsp;<input style="width: 150px" type="submit" name="addpaper" value="Add to Bank &amp; Paper">&nbsp;&nbsp;&nbsp;&nbsp;<input style="width: 100px" type="button" name="cancel" value="Cancel" onclick="history.back()" /></td>';
+      } else {
+        echo '<td colspan="3" style="text-align: center"><input style="width: 150px" type="submit" name="addbank" value="Add to Bank">&nbsp;&nbsp;&nbsp;&nbsp;<input style="width: 100px" type="button" name="cancel" value="Cancel" onclick="history.back()" /></td>';
+      }
+    ?>
+    </tr>
+  </table>
+  </td>
+  </tr>
+  </table>
+  </div>
+  <?php
+    if (isset($_GET['paperID'])) {
+      $paperID = $_GET['paperID'];
+    } else {
+      $paperID = '';
+    }
+  
+    echo displayMappingTabAdd($paperID,$mysqli,date('d/m/Y'));
+  ?>
+  <p>&nbsp;</p>
+  <input type="hidden" name="scttype" id="scttype" value="1" />
+</form>
+
+<?php
+}
+$mysqli->close();
+?>
+</body>
+</html>

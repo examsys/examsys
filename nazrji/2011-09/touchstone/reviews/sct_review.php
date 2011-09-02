@@ -1,0 +1,230 @@
+<?php
+// This file is part of TouchStone
+//
+// TouchStone is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// TouchStone is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with TouchStone.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+* 
+* @author Simon Wilkinson
+* @version 1.0
+* @copyright Copyright (c) 2011 The University of Nottingham
+* @package
+*/
+
+  $root = (substr($_SERVER['DOCUMENT_ROOT'], -1) == '/') ? $_SERVER['DOCUMENT_ROOT'] : $_SERVER['DOCUMENT_ROOT'] . '/';
+  require_once $root . 'touchstone/config/config.inc';
+  require '../include/media.inc';
+  require '../include/errors.inc';
+  require '../include/sct_review.inc';
+      
+  // Check for key parameters
+  check_var('paperID', 'POST', true, false);
+  check_var('reviewer_name', 'POST', true, false);
+  check_var('reviewer_email', 'POST', true, false);
+
+  function display_question($question, &$question_no, $answers) {
+    $question_no++;
+
+    if ($question['scenario'] != '') {
+      echo "<tr><td class=\"q_no\">" . $question_no . ".&nbsp;</td><td style=\"background-color:#E4EEFC; border-bottom:1px solid #B5C4DF; font-weight:bold; padding:2px; color:#000040\">Clinical Vignette</td></tr>\n";
+      echo '<tr><td style="vertical-align:top; text-align:right"></td><td>';
+      if ($question['notes'] != '') echo '<p class="note"><img src="/touchstone/artwork/notes_icon.gif" width="14" height="14" alt="Note" />&nbsp;<strong>NOTE:</strong>&nbsp;' . $question['notes'] . '</p>';
+      echo $question['scenario'] . "<br />\n<br />";
+      $li_set = 1;
+    }
+    if ($question['q_media'] != '') {
+      if ($li_set == 0) {
+        echo '<tr><td class="q_no">' . $question_no . '.&nbsp;</td><td>';
+      }
+      echo '<p align="center">' . display_media($question['q_media'],$question['q_media_width'],$question['q_media_height']) . "</p>\n";
+      $li_set = 1;
+    }
+    
+    $sct_parts = explode('~',$question['leadin']);
+    echo '<table cellpadding="2" cellspacing="0" border="0" style="width:100%">';
+    $sct_titles = array(1=>'Hypothesis',2=>'Investigation',3=>'Prescription',4=>'Intervention',5=>'Treatment');
+    echo "<tr><td style=\"width:49%; background-color:#E4EEFC; border-bottom:1px solid #B5C4DF; font-weight:bold\">" . $sct_titles[$question['score_method']] . "</td><td style=\"width:2%\">&nbsp;</td><td style=\"width:49%; background-color:#E4EEFC; border-bottom:1px solid #B5C4DF; font-weight:bold\">New Information</td></tr>\n";
+    echo "<tr><td style=\"width:49%; vertical-align:top\">" . $sct_parts[0] . "</td><td style=\"width:2%\">&nbsp;</td><td style=\"width:49%; vertical-align:top\">" . $sct_parts[1] . "</td></tr>\n";
+    echo "</table>\n";
+      
+    echo '<p><strong>';
+    if ($question['score_method'] == 1) {
+      echo 'Then this hypothesis becomes:';
+    } elseif ($question['score_method'] == 2) {
+      echo 'Then this investigation becomes:';
+    } elseif ($question['score_method'] == 3) {
+      echo 'Then this prescription becomes:';
+    } elseif ($question['score_method'] == 4) {
+      echo 'Then this intervention becomes:';
+    } elseif ($question['score_method'] == 5) {
+      echo 'Then this treatment becomes:';
+    }
+    echo '</strong></p>';
+    echo '<blockquote><table cellpadding="2" cellspacing="0" border="0">';
+      
+    $part_id = 0;
+    foreach ($question['options'] as $option_text) {
+      $part_id++;
+      if (isset($answers[$question['q_id']]['answer']) and $part_id == $answers[$question['q_id']]['answer']) {
+        echo "<tr><td><input type=\"radio\" name=\"q" . $question_no . "\" value=\"$part_id\" checked /></td><td>$option_text</td></tr>\n";
+      } else {
+        echo "<tr><td><input type=\"radio\" name=\"q" . $question_no . "\" value=\"$part_id\" /></td><td>$option_text</td></tr>\n";
+      }
+    }
+    echo "</table>\n</blockquote>\n";
+    
+    echo "<span style=\"color:#808080\">Brief reason why?</span><br /><textarea name=\"reason$question_no\" cols=\"100\" rows=\"3\" />";
+    if (isset($answers[$question['q_id']]['reason'])) echo $answers[$question['q_id']]['reason'];
+    echo "</textarea>\n";
+    echo "</td></tr>\n";
+    echo "<tr><td colspan=\"2\">&nbsp;</td></tr>\n";
+  }
+
+  if (isset($_POST['submit'])) {
+    $question_no = 1;
+
+    // Clear previous ratings for current reviewer and current paper
+    $stmt = $mysqli->prepare("DELETE FROM sct_reviews WHERE paperID=? AND reviewer_name=? AND reviewer_email=?");
+    $stmt->bind_param('iss', $paperID, $_POST['reviewer_name'], $_POST['reviewer_email']);
+    $stmt->execute();
+    $stmt->close();
+
+    // Loop through the structure of the paper
+    $stmt = $mysqli->prepare("SELECT q_id FROM (papers, questions) WHERE papers.paper=? AND papers.question=questions.q_id AND q_type='sct' ORDER BY display_pos");
+    $stmt->bind_param('i', $paperID);
+    $stmt->execute();
+    $stmt->store_result();
+    $stmt->bind_result($q_id);
+    while ($stmt->fetch()) {
+      // Store experts' reviews in sct_reviews table
+
+      $update = $mysqli->prepare("INSERT INTO sct_reviews VALUES (NULL, ?, ?, ?, ?, ?, ?)");
+      $update->bind_param('ssiiis', $_POST['reviewer_name'], $_POST['reviewer_email'], $paperID, $q_id, $_POST['q' . $question_no], $_POST['reason' . $question_no]);
+      $update->execute();
+      $update->close();
+
+      $question_no++;
+    }
+    $stmt->close();  
+  }
+  require '../config/start.inc';
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title>SCT Review</title>
+<script language="JavaScript" src="../javascript/jquery-1.6.1.min.js"></script>
+<?php
+  if (isset($_POST['submit'])) {
+?>
+<script language="JavaScript">
+   $(function() { alert('Your answers and reasons have been saved. You can make further changes or close the browser down to exit.'); });
+ </script>
+ <?php
+  }
+?>
+<style type="text/css">
+body {background-color:white;color:black;padding:0px;margin:0px;border:0px;font-family:Arial,sans-serif;font-size:90%}
+textarea {font-family:Arial,sans-serif}
+li {margin-left:15px;margin-right:15px;font-size:100%}
+select,input{font-family:$font,sans-serif;font-size:100%}
+table {font-size:100%}
+pre {font-family:Arial,sans-serif; font-size:100%}
+.q_no {width:40px; text-align:right;vertical-align:top}
+.theme {font-size:150%; padding-left:4px;font-weight:bold;color:#316AC5}
+.note {color:#C00000}
+.mk {color:#808080;font-size:80%}
+</style>
+</head>
+
+<body>
+<?php
+  // Get any previous answers for the current reviewer.
+  $saved_data = array();
+  $stmt = $mysqli->prepare("SELECT q_id, answer, reason FROM sct_reviews WHERE paperID=? AND reviewer_name=? AND reviewer_email=?");
+  $stmt->bind_param('iss', $paperID, $_POST['reviewer_name'], $_POST['reviewer_email']);
+  $stmt->execute();
+  $stmt->bind_result($q_id, $answer, $reason);
+  while ($stmt->fetch()) {
+    $saved_data[$q_id]['answer'] = $answer;
+    $saved_data[$q_id]['reason'] = $reason;
+  }
+  $stmt->close();
+  
+  // Output the top logo banner.
+  echo $top_table_html;
+  echo '<tr><td><div style="margin-left:0px;font-size:180%;color:white;font-weight:bold">' . getPaperTitle($paperID, $mysqli) . '</div></td>';
+  echo $logo_html;
+  
+  echo "<form name=\"myform\" action=\"" . $_SERVER['PHP_SELF'] . "\" method=\"post\">\n";
+  echo "<br />\n";
+  
+  echo "<blockquote>\n<table cellpadding=\"2\" cellspacing=\"0\" border=\"0\" style=\"padding:10px; border: 1px solid #C0C000; background-color:#FFFFC0; width:100%; font-size:100%\">\n";
+  echo "<col width=\"80\"><col>\n";
+  echo "<tr><td colspan=\"2\">This screen is designed to allow you to answer the following Script Concordance Test questions. Please provide a brief reason why you believe each answer is correct.</td></tr>\n";
+  echo "</table>\n</blockquote>\n";
+  
+  echo "<table cellspacing=\"0\" cellpadding=\"2\" border=\"0\" style=\"width:100%; font-size:100%\">\n<col width=\"40\"><col>\n";
+
+  //build the questions_array
+  $old_q_id = '';
+  $q_no = 0;
+  $question_no = 0;
+
+  $stmt = $mysqli->prepare("SELECT q_id, theme, leadin, scenario, notes, score_method, q_media, q_media_width, q_media_height, q_option_order, option_text FROM (papers, questions, options) WHERE papers.paper=? AND papers.question=questions.q_id AND questions.q_id=options.o_id AND q_type='sct' ORDER BY display_pos, id_num");
+  $stmt->bind_param('i', $paperID);
+  $stmt->execute();
+  $stmt->store_result();
+  $stmt->bind_result($q_id, $theme, $leadin, $scenario, $notes, $score_method, $q_media, $q_media_width, $q_media_height, $q_option_order, $option_text);
+  while ($stmt->fetch()) {
+    if ($old_q_id != $q_id) {
+      $q_no++;
+      $questions_array[$q_no]['theme'] = trim($theme);
+      $questions_array[$q_no]['scenario'] = trim($scenario);
+      $questions_array[$q_no]['leadin'] = trim($leadin);
+      $questions_array[$q_no]['notes'] = trim($notes);
+      $questions_array[$q_no]['q_id'] = $q_id;
+      $questions_array[$q_no]['score_method'] = $score_method;
+      $questions_array[$q_no]['q_media'] = $q_media;
+      $questions_array[$q_no]['q_media_width'] = $q_media_width;
+      $questions_array[$q_no]['q_media_height'] = $q_media_height;
+      $questions_array[$q_no]['q_option_order'] = $q_option_order;
+    }
+    $questions_array[$q_no]['options'][] = $option_text;
+    
+    $old_q_id = $q_id;
+  }
+  $stmt->close();
+  
+  //display the questions
+  foreach($questions_array as &$question) {
+    if ($question['theme'] == '') echo "<tr><td colspan=\"2\">&nbsp;</td></tr>\n";
+    display_question($question, $question_no, $saved_data);	
+  }
+
+?>
+</table>
+
+<div style="text-align:center"><input type="submit" name="submit" value="Save" style="width:100px" /></div>
+<input type="hidden" name="paperID" value="<?php echo $paperID; ?>" />
+<input type="hidden" name="reviewer_name" value="<?php echo $_POST['reviewer_name']; ?>" />
+<input type="hidden" name="reviewer_email" value="<?php echo $_POST['reviewer_email']; ?>" />
+<br />
+</form>
+<?php
+  echo $bottom_html;
+?>
+</body>
+</html>
+
