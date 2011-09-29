@@ -914,6 +914,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
 
         $tmp_correct = str_replace("'", "\'", trim($question['options'][0]['correct']));
         $tmp_correct = str_replace("&nbsp;", " ", $tmp_correct);
+        $tmp_correct = preg_replace('/\r\n/', '', $tmp_correct);
         ?>
         <script language="JavaScript">
           function swfLoaded<?php echo $question_no; ?>(message) {
