@@ -821,7 +821,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
               $screen_output[$blank_count] = preg_replace("|\[blank.*\].*\[/blank\]|","<input type=\"text\" name=\"q" . $question_no . "_" . $blank_count . "\" class=\"unans\" size=\"$blank_size[$blank_count]\" />",$blank_details[$blank_count]);
             } else { 
               if(isset($blank_user_answers[$blank_count])) {
-                $ans .= $blank_user_answers[$blank_count];
+                $ans = $blank_user_answers[$blank_count];
               }
               $screen_output[$blank_count] = preg_replace("|\[blank.*\].*\[/blank\]|","<input type=\"text\" name=\"q" . $question_no . "_" . $blank_count . "\" value=\"" . $ans. "\" size=\"$blank_size[$blank_count]\" />",$blank_details[$blank_count]);
             }
