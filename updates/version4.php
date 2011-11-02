@@ -906,6 +906,22 @@ if (!isset($_POST['update'])) {
   }
   $result->close();
 
+  // 08/09/2011 - Add field to Modules table to hold which Ebel grid template to use.
+  $result = $mysqli->prepare("SELECT COLUMN_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='modules' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='ebel_grid_template'");
+  $result->execute();
+  $result->store_result();
+  $result->bind_result($column_type);
+  $result->fetch();
+  if ($result->num_rows() == 0) {
+    $adjust = $mysqli->prepare("ALTER TABLE modules ADD COLUMN ebel_grid_template int");
+    $adjust->execute();
+    $adjust->close();
+    echo "<li>ALTER TABLE modules ADD COLUMN ebel_grid_template int</li>\n";
+    ob_flush();
+    flush();
+  }
+  $result->close();
+
   // 15/08/2011 - Add new table to hold Ebel grid templates.
   $result = $mysqli->prepare("SELECT COLUMN_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='ebel_grid_templates' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='id'");
   $result->execute();
@@ -935,22 +951,6 @@ if (!isset($_POST['update'])) {
       echo "<li>Populating ebel_grid_templates with Nottingham data.";
     }
 
-  }
-  $result->close();
-
-  // 08/09/2011 - Add field to Modules table to hold which Ebel grid template to use.
-  $result = $mysqli->prepare("SELECT COLUMN_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='modules' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='ebel_grid_template'");
-  $result->execute();
-  $result->store_result();
-  $result->bind_result($column_type);
-  $result->fetch();
-  if ($result->num_rows() == 0) {
-    $adjust = $mysqli->prepare("ALTER TABLE modules ADD COLUMN ebel_grid_template int");
-    $adjust->execute();
-    $adjust->close();
-    echo "<li>ALTER TABLE modules ADD COLUMN ebel_grid_template int</li>\n";
-    ob_flush();
-    flush();
   }
   $result->close();
 
