@@ -43,7 +43,7 @@ Class OptionEXTMATCH extends Option {
   
   public function set_all_corrects($value) {
     $this->all_corrects = $value;
-    $this->set_correct();
+    $this->set_correct('dummy');
   }
 
   public function get_correct() {
@@ -54,7 +54,7 @@ Class OptionEXTMATCH extends Option {
     return $this->correct;
   }
   
-  public function set_correct($value=-1) {
+  public function set_correct($value) {
     $stems = $this->_question->get_all_stems();
     $media = $this->_question->get_all_medias();
     $tmp = array();

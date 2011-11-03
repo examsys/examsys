@@ -56,7 +56,7 @@ Class QuestionCALCULATION extends Question {
    * @return integer
    */
   public function save($clear_checkout = true) {
-    $this->set_display_method();
+    $this->set_display_method('dummy');
     return parent::save($clear_checkout);
   }
   
@@ -189,7 +189,7 @@ Class QuestionCALCULATION extends Question {
     if ($value != $this->get_units()) {
       $this->set_modified_field('units', $this->units);
       $this->units = $value;
-      $this->set_display_method();
+      $this->set_display_method('dummy');
     }
   }
 
@@ -210,7 +210,7 @@ Class QuestionCALCULATION extends Question {
     if ($value != $this->get_answer_decimals()) {
       $this->set_modified_field('answer_decimals', $this->answer_decimals);
       $this->answer_decimals = $value;
-      $this->set_display_method();
+      $this->set_display_method('dummy');
     }
   }
 
@@ -231,7 +231,7 @@ Class QuestionCALCULATION extends Question {
     if ($value != $this->get_tolerance_full()) {
       $this->set_modified_field('tolerance_full', $this->tolerance_full);
       $this->tolerance_full = $value;
-      $this->set_display_method();
+      $this->set_display_method('dummy');
     }
   }
 
@@ -252,7 +252,7 @@ Class QuestionCALCULATION extends Question {
     if ($value != $this->get_tolerance_partial()) {
       $this->set_modified_field('tolerance_partial', $this->tolerance_partial);
       $this->tolerance_partial = $value;
-      $this->set_display_method();
+      $this->set_display_method('dummy');
     }
   }
 
@@ -275,7 +275,7 @@ Class QuestionCALCULATION extends Question {
    * Set the display method for the question - this is a composite of decimals, tolerances and units
    * @param unknown_type $value
    */
-  public function set_display_method($value=-1) {
+  public function set_display_method($value) {
     $this->display_method = $this->answer_decimals . ',' . $this->tolerance_full . ',' . $this->tolerance_partial . ',' . $this->units;
   }
 }

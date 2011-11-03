@@ -103,7 +103,7 @@ Class QuestionSCT extends Question {
     if ($value != $this->get_hypothesis()) {
       $this->set_modified_field('hypothesis', $this->hypothesis);
       $this->hypothesis = $value;
-      $this->set_leadin();
+      $this->set_leadin('dummy');
     }
   }
 
@@ -124,7 +124,7 @@ Class QuestionSCT extends Question {
     if ($value != $this->get_new_information()) {
       $this->set_modified_field('new_information', $this->new_information);
       $this->new_information = $value;
-      $this->set_leadin();
+      $this->set_leadin('dummy');
     }
   }
 
@@ -145,7 +145,7 @@ Class QuestionSCT extends Question {
    * Set the question leadin
    * @param string $value
    */
-  public function set_leadin($value=-1) {
+  public function set_leadin($value) {
     $this->leadin =  $this->hypothesis . '~' . $this->new_information;
   }
 }

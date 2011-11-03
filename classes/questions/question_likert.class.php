@@ -82,7 +82,7 @@ Class QuestionLIKERT extends Question {
       $this->set_modified_field('scale_type', $this->scale_type);
       $this->scale_type = $value;
     }
-    $this->set_display_method();
+    $this->set_display_method('dummy');
   }
   
   /**
@@ -104,7 +104,7 @@ Class QuestionLIKERT extends Question {
       $this->set_modified_field('not_applicable', $this->not_applicable);
       $this->not_applicable = $value;
     }
-    $this->set_display_method();
+    $this->set_display_method('dummy');
   }
   
   /**
@@ -150,7 +150,7 @@ Class QuestionLIKERT extends Question {
    * Set the display method for the question - this is a composite of decimals, tolerance and units
    * @param unknown_type $value
    */
-  public function set_display_method($value=-1) {
+  public function set_display_method($value) {
     $this->display_method = $this->scale_type . '|' . $this->not_applicable;
   }
 

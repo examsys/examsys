@@ -162,7 +162,7 @@ Class QuestionEXTMATCH extends Question {
    */
   public function set_all_stems($value) {
     $this->stems = $value;
-    $this->set_scenario();
+    $this->set_scenario('dummy');
   }
   
   /**
@@ -199,7 +199,7 @@ Class QuestionEXTMATCH extends Question {
    */
   public function set_all_medias($value) {
     $this->all_media_names = $value;
-    $this->set_media();
+    $this->set_media('dummy');
   }
   
   /**
@@ -217,7 +217,7 @@ Class QuestionEXTMATCH extends Question {
    */
   public function set_all_media_widths($value) {
     $this->all_media_widths = $value;
-    $this->set_media();
+    $this->set_media('dummy');
   }
   
   /**
@@ -235,7 +235,7 @@ Class QuestionEXTMATCH extends Question {
    */
   public function set_all_media_heights($value) {
     $this->all_media_heights = $value;
-    $this->set_media();
+    $this->set_media('dummy');
   }
   
   /**
@@ -253,7 +253,7 @@ Class QuestionEXTMATCH extends Question {
    */
   public function set_all_correct_fbacks($value) {
     $this->all_feedback = $value;
-    $this->set_correct_fback();
+    $this->set_correct_fback('dummy');
   }
   
   /**
@@ -276,7 +276,7 @@ Class QuestionEXTMATCH extends Question {
    * Set the question scenario
    * @param string $value
    */
-  public function set_media($value = -1) {
+  public function set_media($value) {
     $this->media = implode('|', $this->all_media_names);
     $this->media_width = implode('|', $this->all_media_widths);
     $this->media_height = implode('|', $this->all_media_heights);
@@ -297,7 +297,7 @@ Class QuestionEXTMATCH extends Question {
    * Set the question scenario
    * @param string $value
    */
-  public function set_scenario($value = -1) {
+  public function set_scenario($value) {
     $this->scenario = implode('|', $this->stems);
   }
   
@@ -316,7 +316,7 @@ Class QuestionEXTMATCH extends Question {
    * Set the question correct feedback
    * @param string $value
    */
-  public function set_correct_fback($value = -1) {
+  public function set_correct_fback($value) {
     $this->correct_fback = implode('|', $this->all_feedback);
   }
 }

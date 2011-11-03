@@ -152,7 +152,7 @@ Class QuestionMATRIX extends Question {
    */
   public function set_all_stems($value) {
     $this->stems = $value;
-    $this->set_scenario();
+    $this->set_scenario('dummy');
   }
   
   /**
@@ -170,7 +170,7 @@ Class QuestionMATRIX extends Question {
    * Set the question scenario
    * @param string $value
    */
-  public function set_scenario($value = -1) {
+  public function set_scenario($value) {
     $this->scenario = implode('|', $this->stems);
   }
 }

@@ -43,7 +43,7 @@ Class OptionMATRIX extends Option {
   
   public function set_all_corrects($value) {
     $this->all_corrects = $value;
-    $this->set_correct();
+    $this->set_correct('dummy');
   }
 
   public function get_correct() {
@@ -51,7 +51,7 @@ Class OptionMATRIX extends Option {
     return $this->correct;
   }
   
-  public function set_correct($value=-1) {
+  public function set_correct($value) {
     $this->correct = implode('|', $this->all_corrects);
   }
 }

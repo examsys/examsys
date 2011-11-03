@@ -89,7 +89,7 @@ Class QuestionTIMEDATE extends Question {
       $this->add_unified_field_modification('format', 'format', $this->_formats[$this->format], $this->_formats[$value]);
       $this->format = $value;
     }
-    $this->set_display_method();
+    $this->set_display_method('dummy');
   }
   
   /**
@@ -110,7 +110,7 @@ Class QuestionTIMEDATE extends Question {
       $this->set_modified_field('start_year', $this->start_year);
       $this->start_year = $value;
     }
-    $this->set_display_method();
+    $this->set_display_method('dummy');
   }
   
   /**
@@ -128,7 +128,7 @@ Class QuestionTIMEDATE extends Question {
    */
   public function set_end_year($value) {
     $this->end_year = $value;
-    $this->set_display_method();
+    $this->set_display_method('dummy');
   }
   
   /**
@@ -146,7 +146,7 @@ Class QuestionTIMEDATE extends Question {
    */
   public function set_td_year($value) {
     $this->td_year = $value;
-    $this->set_correct();
+    $this->set_correct('dummy');
   }
   
   /**
@@ -164,7 +164,7 @@ Class QuestionTIMEDATE extends Question {
    */
   public function set_td_month($value) {
     $this->td_month = $value;
-    $this->set_correct();
+    $this->set_correct('dummy');
   }
   
   /**
@@ -182,7 +182,7 @@ Class QuestionTIMEDATE extends Question {
    */
   public function set_td_day($value) {
     $this->td_day = $value;
-    $this->set_correct();
+    $this->set_correct('dummy');
   }
   
   /**
@@ -200,7 +200,7 @@ Class QuestionTIMEDATE extends Question {
    */
   public function set_td_hours($value) {
     $this->td_hours = $value;
-    $this->set_correct();
+    $this->set_correct('dummy');
   }
   
   /**
@@ -218,7 +218,7 @@ Class QuestionTIMEDATE extends Question {
    */
   public function set_td_minutes($value) {
     $this->td_minutes = $value;
-    $this->set_correct();
+    $this->set_correct('dummy');
   }
   
   /**
@@ -236,7 +236,7 @@ Class QuestionTIMEDATE extends Question {
    */
   public function set_td_seconds($value) {
     $this->td_seconds = $value;
-    $this->set_correct();
+    $this->set_correct('dummy');
   }
   
   /**
@@ -260,7 +260,7 @@ Class QuestionTIMEDATE extends Question {
    * Set the correct answer for this question by applying it, in the correct format, to a single option
    * @param string $value
    */
-  public function set_correct($value=-1) {
+  public function set_correct($value) {
     if (count($this->options) == 0) {
       $option = Option::option_factory($this->_mysqli, $this->_user_id, $this, 1, $this->_lang_strings);
       $this->options[] = $option;
@@ -294,7 +294,7 @@ Class QuestionTIMEDATE extends Question {
    * Set the display method for this question by building from pseudo-properties
    * @param string $value
    */
-  public function set_display_method($value=-1) {
+  public function set_display_method($value) {
     $this->display_method = $this->format . '|' . $this->start_year . '|' . $this->end_year;
   }
   

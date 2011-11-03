@@ -40,7 +40,7 @@ Class OptionCALCULATION extends Option {
    * @return integer
    */
   public function save($option_number = 0) {
-    $this->set_text();
+    $this->set_text('dummy');
     return parent::save($option_number);
   }
   
@@ -100,7 +100,7 @@ Class OptionCALCULATION extends Option {
     if ($value != $this->get_min()) {
       $this->set_modified_field('min', $this->min);
       $this->min = $value;
-      $this->set_text();
+      $this->set_text('dummy');
     }
   }
   
@@ -121,7 +121,7 @@ Class OptionCALCULATION extends Option {
     if ($value != $this->get_max()) {
       $this->set_modified_field('max', $this->max);
       $this->max = $value;
-      $this->set_text();
+      $this->set_text('dummy');
     }
   }
   
@@ -142,7 +142,7 @@ Class OptionCALCULATION extends Option {
     if ($value != $this->get_decimals()) {
       $this->set_modified_field('decimals', $this->decimals);
       $this->decimals = $value;
-      $this->set_text();
+      $this->set_text('dummy');
     }
   }
   
@@ -163,7 +163,7 @@ Class OptionCALCULATION extends Option {
     if ($value != $this->get_increment()) {
       $this->set_modified_field('increment', $this->increment);
       $this->increment = $value;
-      $this->set_text();
+      $this->set_text('dummy');
     }
   }
 
@@ -186,7 +186,7 @@ Class OptionCALCULATION extends Option {
    * Set the option text
    * @param string $value
    */
-  public function set_text($value=-1) {
+  public function set_text($value) {
     $this->text = $this->min . ',' . $this->max . ',' . $this->increment . ',' . $this->decimals;
   }
   

@@ -36,7 +36,7 @@ Class QuestionTEXTBOX extends Question {
   
   function __construct($mysqli, $user_id, $lang_strings, $data = null) {    
     // Populate display method with defaults
-    $this->set_display_method();
+    $this->set_display_method('dummy');
     
     parent::__construct($mysqli, $user_id, $lang_strings, $data);
     
@@ -63,7 +63,7 @@ Class QuestionTEXTBOX extends Question {
     if ($value != $this->get_columns()) {
       $this->set_modified_field('columns', $this->columns);
       $this->columns = $value;
-      $this->set_display_method();
+      $this->set_display_method('dummy');
     }
   }
 
@@ -84,7 +84,7 @@ Class QuestionTEXTBOX extends Question {
     if ($value != $this->get_rows()) {
       $this->set_modified_field('rows', $this->rows);
       $this->rows = $value;
-      $this->set_display_method();
+      $this->set_display_method('dummy');
     }
   }
 
@@ -105,7 +105,7 @@ Class QuestionTEXTBOX extends Question {
    * Set the display method for the question - this is a composite of decimals, tolerance and units
    * @param unknown_type $value
    */
-  public function set_display_method($value=-1) {
+  public function set_display_method($value) {
     $this->display_method = $this->columns . 'x' . $this->rows;
   }
   
