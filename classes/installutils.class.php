@@ -28,17 +28,19 @@ require_once $_SERVER['DOCUMENT_ROOT'] . 'classes/userutils.class.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . 'classes/moduleutils.class.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . 'classes/schoolutils.class.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . 'classes/lang.class.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . 'lang/' . $language . '/include/timezones.inc';
 
 Class InstallUtils {
 	
   public static $db;
-  public static $touchstone_path;
+  public static $rogo_path;
   
   public static $warnings;
 
   public static $cfg_company;
   public static $cfg_short_date;
   public static $cfg_long_date_time;
+  public static $cfg_timezone;
 
   //database config options
   public static $cfg_db_host;
@@ -78,7 +80,7 @@ Class InstallUtils {
     
   
   static function displayForm() {
-    global $string,$language;
+    global $string, $language, $timezone_array;
     
     ?>
     <script>
@@ -109,7 +111,7 @@ Class InstallUtils {
         <br />
         <div><label for="mysql_db_host"><?php echo $string['databasehost']; ?></label> <input type="text" value="127.0.0.1" name="mysql_db_host" class="required" /> </div>
         <div><label for="mysql_db_port"><?php echo $string['databaseport']; ?></label> <input type="text" value="3306" name="mysql_db_port" class="required" /> </div>
-        <div><label for="mysql_db_name"><?php echo $string['databasename']; ?></label> <input type="text" value="" name="mysql_db_name" class="required" minlength="3" /> </div>
+        <div><label for="mysql_db_name"><?php echo $string['databasename']; ?></label> <input type="text" value="rogo" name="mysql_db_name" class="required" minlength="3" /> </div>
       
       <table class="header"><tr><td><nobr><?php echo $string['databaseuser']; ?></nobr></td><td class="line"><hr /></td></tr></table>
         <div><label for="mysql_touchstone_username"><?php echo $string['rdbusername']; ?></label> <input type="text" value="" name="mysql_touchstone_username" class="required" minlength="3"/></div>
@@ -120,6 +122,17 @@ Class InstallUtils {
         <br />
         <div><label for="cfg_short_date"><?php echo $string['date']; ?></label> <input type="text" name="cfg_short_date" class="required" minlength="2" value="%d/%m/%y" /> </div>
         <div><label for="cfg_long_date_time"><?php echo $string['datetime']; ?></label> <input type="text"  name="cfg_long_date_time" class="required" value="%d/%m/%Y %H:%i" /></div>
+        <div><label for="cfg_timezone"><?php echo $string['currenttimezone']; ?></label> <select name="cfg_timezone">
+        <?php
+          foreach ($timezone_array as $individual_zone => $display_zone) {
+            if ($individual_zone == 'Europe/London') {
+              echo "<option value=\"$individual_zone\" selected>$display_zone</option>";
+            } else {
+              echo "<option value=\"$individual_zone\">$display_zone</option>";
+            }
+          }
+        ?>
+        </select></div>
 
         <table class="header"><tr><td><nobr><?php echo $string['ldapconfiguration']; ?></nobr></td><td class="line"><hr /></td></tr></table>
         <div><label for="useLdap"><?php echo $string['useldap']; ?></label><input id="useLdap" name="useLdap" type="checkbox" /></div>
@@ -188,6 +201,7 @@ Class InstallUtils {
     
     self::$cfg_short_date = $_POST['cfg_short_date'];
     self::$cfg_long_date_time = $_POST['cfg_long_date_time'];
+    self::$cfg_timezone = $_POST['cfg_timezone'];
      
     //LDAP
     self::$cfg_ldap_server = $_POST['ldap_server'];
@@ -225,7 +239,7 @@ Class InstallUtils {
     //Write out the config file
     self::writeConfigFile();
     
-    echo "<h1>Touchstone Installed</h1>";
+    echo "<h1>Rogo Installed</h1>";
     
     self::displayWarnings();
     
@@ -448,6 +462,7 @@ Class InstallUtils {
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".feedback_release TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".paper_metadata_security TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".paper_notes TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".standards_setting TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".ebel TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".question_exclude TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".keywords_question TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
@@ -475,7 +490,7 @@ Class InstallUtils {
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".track_changes TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".temp_users TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";  
     $priv_SQL[] = "FLUSH PRIVILEGES";
-    foreach($priv_SQL as $sql) {
+    foreach ($priv_SQL as $sql) {
       self::$db->query($sql);
       if (self::$db->errno != 0) {
 	    echo self::$db->error . "<br />";
@@ -634,10 +649,10 @@ Class InstallUtils {
   */
   static function configFile() {
   global $string;
-    $touchstone_path = str_ireplace('/install/index.php','',$_SERVER['SCRIPT_FILENAME']);
+    $rogo_path = str_ireplace('/install/index.php','',$_SERVER['SCRIPT_FILENAME']);
     $errors = array();
-    if (file_exists($touchstone_path . '/config/config.inc.php')) {
-	  $errors['90'] =  "<p>".sprintf($string['errors1'],$touchstone_path."/config/config.inc.php")."</p>";
+    if (file_exists($rogo_path . '/config/config.inc.php')) {
+	  $errors['90'] =  "<p>".sprintf($string['errors1'],$rogo_path."/config/config.inc.php")."</p>";
       $errors['90'] .= "<p>".sprintf($string['errors2'],"<a href=\"/staff\">")."</a></p>";
     }
   }
@@ -648,10 +663,10 @@ Class InstallUtils {
   */
   static function configFileIsWriteable() {
     global $string;
-    $touchstone_path = str_ireplace('/install/index.php','',$_SERVER['SCRIPT_FILENAME']);
-    $touchstone_path = str_ireplace('/updates/version4.php','',$_SERVER['SCRIPT_FILENAME']);
+    $rogo_path = str_ireplace('/install/index.php','',$_SERVER['SCRIPT_FILENAME']);
+    $rogo_path = str_ireplace('/updates/version4.php','',$_SERVER['SCRIPT_FILENAME']);
     $errors = array();
-    if (is_writable($touchstone_path . '/config/config.inc.php')) {
+    if (is_writable($rogo_path . '/config/config.inc.php')) {
       return true;
     } else {
       return false;
@@ -664,33 +679,28 @@ Class InstallUtils {
   */
   static function checkDirPermissions() {
     global $string;
-    self::$touchstone_path = str_ireplace('/install/index.php','',$_SERVER['SCRIPT_FILENAME']);
+    self::$rogo_path = str_ireplace('/install/index.php','',$_SERVER['SCRIPT_FILENAME']);
     $errors = array();
     //tmp
     if (!is_writable('/tmp')) {
       $errors['100'] = $string['errors3'];
     }
     //media
-    if (!is_writable(self::$touchstone_path . '/media')) {
-      $errors['102'] = sprintf($string['errors4'], self::$touchstone_path);
+    if (!is_writable(self::$rogo_path . '/media')) {
+      $errors['102'] = sprintf($string['errors4'], self::$rogo_path);
     }    
     //qti imports
-    if (!is_writable(self::$touchstone_path . '/qti/imports')) {
-      $errors['103'] = sprintf($string['errors5'], self::$touchstone_path);
+    if (!is_writable(self::$rogo_path . '/qti/imports')) {
+      $errors['103'] = sprintf($string['errors5'], self::$rogo_path);
     }
     //qti exports
-    if (!is_writable(self::$touchstone_path . '/qti/exports')) {
-      $errors['104'] = sprintf($string['errors6'], self::$touchstone_path);
-    }
-    //temp
-    if (!is_writable(self::$touchstone_path . '/temp')) {
-      $errors['105'] = sprintf($string['errors7'], self::$touchstone_path);
+    if (!is_writable(self::$rogo_path . '/qti/exports')) {
+      $errors['104'] = sprintf($string['errors6'], self::$rogo_path);
     }
     if (count($errors) > 0) {
       self::displayError($errors);  
     }
   }
-  
   
   /**
   * Check for installed software versions PHP, Apache 
@@ -803,7 +813,7 @@ Class InstallUtils {
         body { padding: 0em; margin: 0em; width: 100%; font-family:Arial,sans-serif; font-size:90%; background-color:white; color:black }
         .error { float: none; color: red; padding-left: .5em; vertical-align: top; }
         .warning { float: none; color: red; padding-left: .5em; vertical-align: top; }
-        label { float:left; width:7.5em; padding-left:0em; text-align:left;}
+        label { float:left; width:8.5em; padding-left:0em; text-align:right; padding-right:6px}
         p { clear: both; }
         .submit { margin-left: 42%; padding-top:2em; }
         table {border:none;}
@@ -893,6 +903,7 @@ define('DIR_SEPARATOR', '/');
   // Date formats in MySQL DATE_FORMAT format
   \$cfg_short_date = '{cfg_short_date}';
   \$cfg_long_date_time = '{cfg_long_date_time}';
+  \$cfg_timezone = '{cfg_timezone}';
   
 // SMS Imports
   \$cfg_sms_api = '';
@@ -961,8 +972,9 @@ CONFIG;
     $config = str_replace('{cfg_support_email}',self::$cfg_support_email,$config);
     $config = str_replace('{emergency_support_numbers}',self::$emergency_support_numbers,$config);
     
-    $config = str_replace('{$cfg_short_date}',self::$cfg_short_date,$config);
-    $config = str_replace('{$cfg_long_date_time}',self::$cfg_long_date_time,$config);
+    $config = str_replace('{cfg_short_date}',self::$cfg_short_date,$config);
+    $config = str_replace('{cfg_long_date_time}',self::$cfg_long_date_time,$config);
+    $config = str_replace('{cfg_timezone}',self::$cfg_timezone,$config);
     
     $config = str_replace('{cfg_ldap_server}',self::$cfg_ldap_server,$config);
     $config = str_replace('{cfg_ldap_search_dn}',self::$cfg_ldap_search_dn,$config);
@@ -972,11 +984,11 @@ CONFIG;
     
     $config = str_replace('{SERVER_NAME}',$_SERVER['HTTP_HOST'],$config);
     
-    if (file_exists(self::$touchstone_path . '/config/config.inc.php')) {
-      rename(self::$touchstone_path . '/config/config.inc.php', self::$touchstone_path . '/config/config.inc.old.php');
+    if (file_exists(self::$rogo_path . '/config/config.inc.php')) {
+      rename(self::$rogo_path . '/config/config.inc.php', self::$rogo_path . '/config/config.inc.old.php');
     }
     
-    if (file_put_contents(self::$touchstone_path . '/config/config.inc.php', $config) === false) {
+    if (file_put_contents(self::$rogo_path . '/config/config.inc.php', $config) === false) {
       self::displayError(array(300=>'Could not write config file !'));
     }
   }    

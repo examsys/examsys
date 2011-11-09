@@ -184,7 +184,7 @@ a.user:hover {color:white; background-color:#000080}
     document.getElementById('menudiv').style.display = 'none';
     var winwidth = screen.width-80;
     var winheight = screen.height-80;
-    window.open("../mapping/user_feedback.php?paperID=<?php echo $paperID; ?>&userID=" + document.getElementById('userID').value + "&started=" + document.getElementById('started').value + "","feedback","width="+winwidth+",height="+winheight+",left=30,top=20,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+    window.open("../mapping/user_feedback.php?id=<?php echo $crypt_name; ?>&userID=" + document.getElementById('userID').value + "&started=" + document.getElementById('started').value + "","feedback","width="+winwidth+",height="+winheight+",left=30,top=20,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
   }
 
   function viewProfile() {

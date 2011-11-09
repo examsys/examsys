@@ -27,6 +27,7 @@
 require '../include/staff_auth.inc';
 require '../include/icon_display.inc';
 require '../include/sidebar_menu.inc';
+require '../include/errors.inc';
 
 $folder_name = '';
 $folder_type = '';
@@ -52,7 +53,7 @@ if ($folder != '') {
   $result->fetch();
   $result->close();
 
-  if (isset($folder_teams) AND $folder_teams != '' and $module == '') $module = $folder_teams;
+  if (isset($folder_teams) and $folder_teams != '' and $module == '') $module = $folder_teams;
 
   if (substr_count($folder_name,';') > 0) {
     $last_semicolon = strrpos($folder_name,';');
@@ -65,8 +66,27 @@ if ($folder != '') {
     $parent_results->close();
   }
 }
+if (isset($_GET['module'])) {
+  $module = $_GET['module'];
+  
+  $module_data = $mysqli->prepare("SELECT fullname, checklist, selfenroll FROM modules WHERE moduleid=?");
+  $module_data->bind_param('s', $module);
+  $module_data->execute();
+  $module_data->store_result();
+  $module_data->bind_result($module_fullname, $checklist, $selfenrol);
+  $module_data->fetch();
+  $module_count = $module_data->num_rows();
+  $module_data->close();
+  
+  if ($module_count == 0) {
+    display_error($string['modulenotfound'], sprintf($string['modulenotfoundmsg'], $module), false, true);
+  }
+} else {
+  $module = '';
+}
 
-if (isset($_POST['submit']) AND $_POST['submit'] == 'Create') {
+
+if (isset($_POST['submit']) and $_POST['submit'] == 'Create') {
   $folder_results = $mysqli->query("SELECT name FROM folders WHERE id=$folder LIMIT 1");
   $folder_row = $folder_results->fetch_assoc();
   $folder_parent = $folder_row['name'];
@@ -249,7 +269,7 @@ if ($folder != '') {
 
 // New folder.
 if (isset($_GET['newfolder']) AND $_GET['newfolder'] == 'y' AND !isset($_POST['submit'])) {
-  echo "<div class=\"f\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"width:60px\" align=\"center\"><img src=\"../artwork/yellow_folder.png\" width=\"48\" height=\"48\" alt=\"Folder\" border=\"0\" align=\"middle\" /></td><td><input type=\"text\" size=\"30\" name=\"folder_name\" value=\"New Folder\" onkeypress=\"if (event.keyCode == 38 || event.keyCode == 59 || event.keyCode == 63 || event.keyCode == 64 || event.keyCode == 94 || event.keyCode == 126) illegalChar(event.keyCode);\" /><input type=\"hidden\" name=\"newteam\" value=\"" . $_GET['newteam'] . "\" /><input type=\"submit\" name=\"submit\" value=\"" . $string['create'] . "\" /></td></tr></table></div>\n";
+  echo "<div class=\"f\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"width:60px\" align=\"center\"><img src=\"../artwork/yellow_folder.png\" width=\"48\" height=\"48\" alt=\"Folder\" border=\"0\" align=\"middle\" /></td><td><input type=\"text\" size=\"30\" name=\"folder_name\" value=\"" . $string['newfolder'] . "\" onkeypress=\"if (event.keyCode == 38 || event.keyCode == 59 || event.keyCode == 63 || event.keyCode == 64 || event.keyCode == 94 || event.keyCode == 126) illegalChar(event.keyCode);\" /><input type=\"hidden\" name=\"newteam\" value=\"" . $_GET['newteam'] . "\" /><input type=\"submit\" name=\"submit\" value=\"" . $string['create'] . "\" /></td></tr></table></div>\n";
 }
 
 if (isset($_COOKIE['showretired']) and $_COOKIE['showretired'] == 'checked') {

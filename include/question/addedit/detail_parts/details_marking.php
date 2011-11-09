@@ -30,7 +30,7 @@ if (count($question->options) > 0) {
 $allow_neg = $question->allow_negative_marks($module);
 $allow_change_method = ($question->allow_change_marking_method()) ? '' : ' disabled="disabled"';
 ?>
-        <table id="q-details" class="form" summary="<?php echo $string['qeditsummary'] ?>">
+        <table id="q-marking" class="form" summary="<?php echo $string['qeditsummary'] ?>">
           <tbody>
             <tr>
               <th><label for="score_method" class="heavy"><?php echo $string['markingmethod'] ?></label></th>

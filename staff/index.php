@@ -132,9 +132,9 @@ require '../include/staff_auth.inc';
     var winwidth = screen.width-80;
     var winheight = screen.height-80;
     if (fullsc == 0) {
-      window.open("../reviews/start.php?paperID="+paperID+"&review=1","paper","width="+winwidth+",height="+winheight+",left=20,top=10,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+      window.open("../reviews/start.php?id="+paperID+"&review=1","paper","width="+winwidth+",height="+winheight+",left=20,top=10,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
     } else {
-      window.open("../reviews/start.php?paperID="+paperID+"&review=1","paper","fullscreen=yes,left=20,top=10,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+      window.open("../reviews/start.php?id="+paperID+"&review=1","paper","fullscreen=yes,left=20,top=10,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
     }
   }
 </script>
@@ -171,7 +171,7 @@ require '../include/staff_auth.inc';
   $results->close();
 
   // -- Display any papers for review ---------------------------------
-  $query_string = "SELECT paper_type, paper_title, property_id, bidirectional, fullscreen, MAX(screen) AS max_screen, DATE_FORMAT(internal_review_deadline,'%d/%m/%Y') AS internal_review_deadline FROM (properties, papers) WHERE deleted IS NULL AND internal_review_deadline >= NOW() AND properties.property_id=papers.paper AND internal_reviewers LIKE '%$userID%' GROUP BY paper";
+  $query_string = "SELECT paper_type, paper_title, property_id, bidirectional, fullscreen, MAX(screen) AS max_screen, DATE_FORMAT(internal_review_deadline,'%d/%m/%Y') AS internal_review_deadline, crypt_name FROM (properties, papers) WHERE deleted IS NULL AND internal_review_deadline >= NOW() AND properties.property_id=papers.paper AND internal_reviewers LIKE '%$userID%' GROUP BY paper";
   $results = $mysqli->query($query_string) or die("failed : " . $mysqli->error . " $query_string");
   if ($results->num_rows > 0) {
     echo "<br />\n";
@@ -186,8 +186,8 @@ require '../include/staff_auth.inc';
       $reviewed = $log_row['started'];
     }
     $log_results->close();
-    echo "<div class=\"f\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"width:60px\" align=\"center\"><a href=\"#\" onclick=\"startPaper('" . $row['property_id'] . "'," . $row['fullscreen'] . "); return false;\"><img src=\"../artwork/summative.png\" width=\"48\" height=\"48\" alt=\"Paper Icon\" border=\"0\" /></a></td>\n";
-    echo "  <td><a href=\"#\" onclick=\"startPaper('" . $row['property_id'] . "'," . $row['fullscreen'] . "); return false;\">" . $row['paper_title'] . "</a><br /><div style=\"color:#C00000\">Deadline: " . $row['internal_review_deadline'] . "</div>";
+    echo "<div class=\"f\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"width:60px\" align=\"center\"><a href=\"#\" onclick=\"startPaper('" . $row['crypt_name'] . "'," . $row['fullscreen'] . "); return false;\"><img src=\"../artwork/summative.png\" width=\"48\" height=\"48\" alt=\"Paper Icon\" border=\"0\" /></a></td>\n";
+    echo "  <td><a href=\"#\" onclick=\"startPaper('" . $row['crypt_name'] . "'," . $row['fullscreen'] . "); return false;\">" . $row['paper_title'] . "</a><br /><div style=\"color:#C00000\">Deadline: " . $row['internal_review_deadline'] . "</div>";
     if ($reviewed == '') {
       echo "<span style=\"color:white; background-color:red\">&nbsp;" . $string['notreviewed'] . "&nbsp;</span>";
     } else {

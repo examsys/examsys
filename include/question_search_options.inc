@@ -30,7 +30,7 @@ require_once '../classes/searchutils.class.php';
 <script language="JavaScript">
   function checkForm() {
     if (searchoptions.searchterm.value == "") {
-      alert ("Please enter a search term or phrase.");
+      alert ("<?php echo $string['entersearchterm'];?>");
       return false;
     }
   }
@@ -212,7 +212,7 @@ require_once '../classes/searchutils.class.php';
     echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"menu6\" style=\"display:none\">\n";
   }
   
-  $date_options = array("dont remember"=>"Don't remember","week"=>"Within the last week","month"=>"Past month","year"=>"Within the past year","specify"=>"Specify dates");
+  $date_options = array("dont remember"=>$string['dont remember'],"week"=>$string['week'],"month"=>$string['month'],"year"=>$string['year'],"specify"=>$string['specify']);
   foreach ($date_options as $date_value=>$date_label) {
     if ((isset($_POST['question_date']) and $_POST['question_date'] == $date_value) or (!isset($_POST['question_date']) and $date_value == 'dont remember')) {
       echo "<tr><td colspan=\"2\"><input type=\"radio\" name=\"question_date\" value=\"$date_value\" checked />&nbsp;" . $string[$date_value] . "</td></tr>";

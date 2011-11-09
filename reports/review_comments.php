@@ -199,6 +199,8 @@
 
           $tmp_height = $q_media_height;
           if ($tmp_height < ($max_label * 55)) $tmp_height = ($max_label * 55);
+          $correct = str_replace('"', '&#034;', $correct);
+          $correct = str_replace("'", '&#039;', $correct);
 ?>
     <div align="center">
     <script language="JavaScript">

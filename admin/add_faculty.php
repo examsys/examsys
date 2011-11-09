@@ -84,7 +84,7 @@ h1 {font-size:120%}
 <div><?php
 if ($duplicate) {
   echo '<input type="text" style="width:100%; background-color:#FFC0C0; border:solid 1px #C00000; color:#800000" name="add_faculty" value="' . $_POST['add_faculty'] . '" />';
-  echo "<script language=\"JavaScript\">\nalert('" . $string['warning'] . "');\n</script>\n";
+  echo "<script language=\"JavaScript\">\nalert('" . $string['facultywarning'] . "');\n</script>\n";
 } else {
   echo '<input type="text" style="width:100%" name="add_faculty" />';
 }

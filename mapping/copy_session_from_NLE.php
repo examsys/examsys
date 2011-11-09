@@ -37,13 +37,13 @@ if (isset($_POST['submit'])) {
     $occurrence = $s['occurrance'];
 
     $stmt = $mysqli->prepare("INSERT INTO sessions VALUES (NULL,?,?,?,?,?,?)");
-    $stmt->bind_param('ssssss',$identifier,$moduleID,$title,$url,$_POST['touchstone_session'],$occurrence);
+    $stmt->bind_param('ssssss', $identifier, $moduleID, $title, $url, $_POST['academic_session'], $occurrence);
     $stmt->execute();
     $stmt->close();
 	
     foreach ($s['objectives'] as $obj) {
       $stmt = $mysqli->prepare("INSERT INTO objectives VALUES (?,?,?,?,?,?)");
-      $stmt->bind_param('issssi',$i,$obj['content'],$moduleID,$identifier,$_POST['touchstone_session'],$i);
+      $stmt->bind_param('issssi', $i, $obj['content'], $moduleID, $identifier, $_POST['academic_session'], $i);
       $stmt->execute();
       $stmt->close();
       $i++;
@@ -56,7 +56,7 @@ if (isset($_POST['submit'])) {
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>TouchStone: Manage Objectives<?php echo " $cfg_install_type"; ?></title>
+<title>Rogō: Manage Objectives<?php echo " $cfg_install_type"; ?></title>
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
   <style style="text/css">
     img {border:none}
@@ -140,7 +140,7 @@ if (isset($_POST['submit'])) {
 <tr>
 <?php
 
-  echo "<td style=\"text-align:right\">Session</td><td><select name=\"touchstone_session\">\n";
+  echo "<td style=\"text-align:right\">Session</td><td><select name=\"academic_session\">\n";
   $startyear = ( date('Y') - 1 );
   for ($i = 0; $i < 2; $i++){
     $tmp_session = ($startyear + $i) . '/' . substr(($startyear + $i + 1),2);

@@ -46,20 +46,15 @@ if(empty($_POST['source_y']) || empty($_POST['dest_y']) || empty($_POST['moduleI
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>TouchStone: CopyObjectives<?php echo " $cfg_install_type"; ?></title>
+<title>Rogō: CopyObjectives<?php echo " $cfg_install_type"; ?></title>
 <link rel="stylesheet" type="text/css" href="../submenu.css" />
 </head>
 <?php
-if(count($errors) == 0) {
+if (count($errors) == 0) {
 	echo "<body onload=\"javascript:window.location='" . $protocol . $_SERVER['HTTP_HOST'] . "/mapping/sessions_list.php?module=" . $_POST['moduleID'] . "';\"></body></html>";
 } else {
 ?>
   <body onclick="hideMenus()">
-  <?php
-    //$_GET['paperID'] = $_POST['paperID'];
-    //require '../include/paper_options.inc';
-  ?>
-
   <div id="content" class="content">
     <table border="0" width="100%" height="100%">
     <tr><td valign="middle">

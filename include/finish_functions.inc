@@ -55,9 +55,9 @@
     }
   }
 
-  function init_feedback() {
+  function init_feedback(&$strong_on, &$strong_off) {
     // Reset feedback back to defaults.
-    global $tmp_display_correct_answer, $tmp_display_students_response, $tmp_display_feedback, $strong_on, $strong_off, $display_correct_answer, $display_students_response, $display_feedback;
+    global $tmp_display_correct_answer, $tmp_display_students_response, $tmp_display_feedback, $display_correct_answer, $display_students_response, $display_feedback;
   
     $tmp_display_correct_answer = $display_correct_answer;
     $tmp_display_students_response = $display_students_response;
@@ -418,7 +418,7 @@
     for ($question=1; $question<=$q_no; $question++) {
       $display_no++;
       
-      init_feedback();
+      init_feedback($strong_on, $strong_off);
 
       if ($old_screen < $paper[$question]['screen']) {
         echo '</table><br /><table cellpadding="0" cellspacing="1" border="0" style="width:100%; height:70px; border-top:1px solid #B5C4DF; background-image:url(\'../artwork/screen_no_background.gif\'); background-repeat:repeat-x">';
@@ -1281,7 +1281,7 @@
           $all_correct = true;
           
           echo_content($paper[$question]['leadin']);
-          echo '<ol type="i">';
+          echo '<ol class="extmatch">';
           $matching_scenarios = array();
           $matching_scenarios = explode('|', $paper[$question]['scenario']);
           if (isset($paper[$question]['user_answer'])) {
@@ -1335,7 +1335,7 @@
               if ($user_answers[$i] == 'u' or $user_answers[$i] == '') {
                 reset_feedback($hide_if_unanswered);
               } else {
-                init_feedback();
+                init_feedback($strong_on, $strong_off);
               }
               $std_part++;
               if ($tmp_display_correct_answer == '1') {
@@ -1459,7 +1459,7 @@
           echo "</ol>\n";
           if ($option_answered == 0) {
             echo "<div style=\"color:#808080\">" . $string['unanswered'] . "</div>\n";
-            $paper[$question]['mark'] = 0;
+            //$paper[$question]['mark'] = 0;
           } elseif ($paper[$question]['score_method'] == 'Mark per Question') {
             $paper[$question]['mark'] = ($all_correct) ? $paper[$question]['marks_correct'] :$paper[$question]['marks_incorrect']; 
           }
@@ -1495,11 +1495,10 @@
           echo "</tr>\n";
           $row_no = 0;
           $part_id = 0;
-          $numerals = array('i','ii','iii','iv','v','vi','vii','viii','ix','x','xi','xii');
           foreach ($matching_scenarios as $single_scenario) {
             if (trim($single_scenario) != '') {
               echo "<tr>\n";
-              echo '<td align="right">' . $numerals[$row_no] . '.</td>';
+              echo '<td align="right">' . chr(64 + $part_id) . '.</td>';
               if (isset($paper[$question]['std'][$row_no]) and display_std($paper[$question]['std'][$row_no]) != '') echo '<td>' . display_std($paper[$question]['std'][$row_no]) . '</td>';
               echo '<td';
               if (substr($tmp_exclude,$row_no,1) == '1') echo ' style="color:red; text-decoration:line-through"';
@@ -1639,7 +1638,7 @@
             $answer_options = explode("[/blank]",substr($blank_details[$blank_count],(strpos($blank_details[$blank_count],']') + 1)));
             $answer_list = array();
             $answer_list = explode(',',$answer_options[0]);
-            if ($paper[$question]['display_method'] == 'textboxes') {
+            if ($paper[$question]['display_method'] == 'textboxes') {             // Textboxes
               $correct_flag = false;
               foreach ($answer_list as $individual_answer) {
                 if (trim(strtolower($individual_answer)) == trim(strtolower($user_choices[$blank_count]))) {
@@ -1670,7 +1669,7 @@
                   echo ')</strong>';
                 }
               }
-            } else {
+            } else {                                                                // Dropdown menus
               echo '</span>';
               if ($tmp_display_correct_answer == '1') {
                 if (isset($paper[$question]['std'][$blank_count-1])) echo display_std($paper[$question]['std'][$blank_count-1],0);

@@ -89,12 +89,12 @@ color: #f00;
         <td align="left" style="background-color:#F1F5FB">
 
         <?php
-        //get a list of touchstone modules
+        //get a list of Rogo modules
         $SQL = "SELECT DISTINCT moduleid FROM modules";
         $res = $mysqli->query($SQL) OR die(mysql_error());
-        $touchstone_modules = array();
+        $rogo_modules = array();
         while ($row = $res->fetch_assoc()) {
-          $touchstone_modules[] = $row['moduleid'];
+          $rogo_modules[] = $row['moduleid'];
         }
 
         $modulesAdded = 0;
@@ -133,7 +133,7 @@ color: #f00;
             $result->store_result();
             $result->bind_result($moduleid);
             while ($result->fetch()) {
-              if (in_array($moduleid, $touchstone_modules)) {
+              if (in_array($moduleid, $rogo_modules)) {
                 $students[$student['username']]['modules'][] = $moduleid;
               }
             }
@@ -157,7 +157,7 @@ color: #f00;
             $email = trim($fields[12]);
             $username = explode("@",$email);
             $username = $username[0];
-            if (in_array($module,$touchstone_modules)) {
+            if (in_array($module,$rogo_modules)) {
               if (!in_array($module,$students[$username]['modules'])) {
                 if (isset($students[$username]['dbID'])) {
                   UserUtils::addUserToModule($students[$username]['dbID'], $module, $session, $mysqli);

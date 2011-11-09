@@ -8,8 +8,10 @@ $(function() {
       option_correct: 'required'
     },
     messages: {
-      leadin: 'Please enter a leadin for the question',
-      option_correct: 'Please enter a formula'
+      leadin: lang['enterleadin'],
+      //niko leadin: 'Please enter a leadin for the question',
+      //niko option_correct: 'Please enter a formula'
+	  option_correct: lang['enterformula']
     },
     errorPlacement: function(error, element) {
       if (element.attr('name') == 'leadin') {
@@ -20,7 +22,8 @@ $(function() {
       }
     },
     invalidHandler: function() {
-      alert('There were problems with your submission. Please review the form and re-try');
+      alert(lang['validationerror']);
+      //niko alert('There were problems with your submission. Please review the form and re-try');
     }
   });
 })

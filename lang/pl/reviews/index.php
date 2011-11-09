@@ -11,6 +11,8 @@ $string['yourpapersforreview'] = 'Arkusze do oceny obejmują:';
 $string['nopapersfound'] = 'Nie znaleziono żadnego arkusza!';
 $string['copyrightmsg'] = 'Pytania zawarte w Rogō są chronione prawem autorskim i należą do %s.';
 $string['helpandsupport'] = 'Pomoc i wsparcie';
+$string['helpandsupportext'] = 'Pomoc i wsparcie dla zewnętrznych egzaminatorów recenzujących arkusze w Rogō.';
+$string['rogodetails'] = 'Rogō %s jest elektronicznym systemem egzaminacyjnym open source realizowanym przez Information Services Uniwersytetu Nottingham.<br />Więcej szczegółów poznasz na stronie projektu:';
 $string['onlinesupportsystem'] = 'System pomocy online dla studentów';
 $string['email'] = 'Email';
 ?>

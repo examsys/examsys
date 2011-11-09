@@ -28,7 +28,7 @@ class IE_Local_Save extends IE_Main {
   var $o_row = array();
   var $db;
 
-  // touchstone save parameters:
+  // Rogo save parameters:
   // for saving questions
   // ownerID
   // q_group
@@ -46,16 +46,10 @@ class IE_Local_Save extends IE_Main {
     $this->db = new Database();
 
     if (count($data->questions) == 0) {
-      $this->AddError("No questions to load into touchstone");
+      $this->AddError("No questions to load into Rogo");
       return;
     }
 
-    //print_p($params);
-    //print_p($data,false);
-    /*$save_params->ownerID = 12704;
-     $save_params->q_group = 'A11CLS';
-     $save_params->keywords = '';
-     $save_params->bloom = '';*/
     $paperid = $params->paper;
 
     $db = new Database();
@@ -444,7 +438,7 @@ class IE_Local_Save extends IE_Main {
 
     $o_row['correct'] = $hs_text;
 
-    // if touchstone->qti->touchstone, then use the raw text from the options table to make 1:1
+    // if rogo->qti->rogo, then use the raw text from the options table to make 1:1
     if ($question->raw_option) $o_row['correct'] = $question->raw_option;
     $o_row['marks_correct'] = $question->marks_correct;
     $o_row['marks_incorrect'] = $question->marks_incorrect;

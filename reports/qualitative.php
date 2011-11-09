@@ -33,6 +33,6 @@
     <frame marginwidth="0" src="qualitative_results.php?paperID=<?php echo $_GET['paperID']; ?>&startdate=<?php echo $_GET['startdate']; ?>&enddate=<?php echo $_GET['enddate']; ?>&module=<?php echo $_GET['module']; ?>&repdegree=<?php echo $_GET['repdegree']; ?>&repyear=<?php echo $_GET['repyear']; ?>" name="results">
   </frameset>
   <noframes>
-    Sorry, you need frames to use the TouchStone.
+    Sorry, you need frames to use the Rogō.
   </noframes>
 </html>

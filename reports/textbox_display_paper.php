@@ -136,14 +136,14 @@ echo "<html>\n<head>\n<title>$paper_title</title>\n";
       if ($q_no+1 == $_GET['qNo'] and $q_type != 'info') {
         $tmp_color = '#FFFFDD';
       } else {
-        $tmp_color = '$bgcolor';
+        $tmp_color = $bgcolor;
       }
     
       $li_set = 0;
       echo "<tr><td colspan=\"2\">&nbsp;</td></tr>\n";
 
       if ($theme != '') echo '<tr><td colspan="2"><p class="theme">' . $theme . '</p></td></tr><tr><td colspan="2">&nbsp;</td></tr>';
-      if ($notes != '') echo '<tr><td></td><td class="notes"><img src="../artwork/notes_icon.gif" width="14" height="14" alt="' . $string['note'] . '" />&nbsp;<strong>' . strtoupper($string['note']) . 'NOTE:</strong>&nbsp;' . $notes . '</td></tr>';
+      if (trim($notes) != '') echo '<tr><td></td><td class="notes"><img src="../artwork/notes_icon.gif" width="14" height="14" alt="' . $string['note'] . '" />&nbsp;<strong>' . strtoupper($string['note']) . ':</strong>&nbsp;' . $notes . '</td></tr>';
 
       if ($scenario != '') {
         echo "<tr style=\"background-color:$tmp_color\"><td class=\"question_no\">";
@@ -158,6 +158,7 @@ echo "<html>\n<head>\n<title>$paper_title</title>\n";
       
       if ($q_type == 'info') {
         echo "<tr style=\"background-color:$tmp_color\"><td>";
+        $li_set = 0;
       } elseif ($q_type != 'info' and $li_set == 0) {
         $q_no++;
         echo "<tr style=\"background-color:$tmp_color\"><td class=\"question_no\">";

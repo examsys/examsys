@@ -259,19 +259,22 @@
       }
     } else {
       //we are copying between sessions we need to check for changed sessions/objectives
+      $mappings_copy_objID = array();
       $old_course = getObjectives($moduleID, $calendar_year, $_POST['paperID'], '', $mysqli);
       $new_course = getObjectives($moduleID, $new_calendar_year, $_POST['paperID'], '', $mysqli);
       if (count($old_course) > 0 and count($new_course) > 0) {
         foreach ($old_course as $module=>&$sessions) {
           foreach ($sessions as $identifier=>&$session) {
-            foreach ($session['objectives'] as &$obj) {
-              $old_objID = $obj['id'];
-                if (isset($new_course[$module][$identifier]['objectives'])){
-                  foreach ($new_course[$module][$identifier]['objectives'] as $new_obj) {
-                  if ($new_obj['id'] == $old_objID AND $new_obj['content'] == $obj['content']) {
-                    //build a list of objectives that are still in both sessions
-                    $mappings_copy_objID[$old_objID] = $old_objID;
-                    break;
+            if (!empty($session['objectives'])) {
+              foreach ($session['objectives'] as &$obj) {
+                $old_objID = $obj['id'];
+                  if (isset($new_course[$module][$identifier]['objectives'])){
+                    foreach ($new_course[$module][$identifier]['objectives'] as $new_obj) {
+                    if ($new_obj['id'] == $old_objID AND $new_obj['content'] == $obj['content']) {
+                      //build a list of objectives that are still in both sessions
+                      $mappings_copy_objID[$old_objID] = $old_objID;
+                      break;
+                    }
                   }
                 }
               }
@@ -297,7 +300,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>TouchStone: <?php echo $string['copypaper'] . ' ' . $cfg_install_type; ?></title>
+<title>Rogō: <?php echo $string['copypaper'] . ' ' . $cfg_install_type; ?></title>
 <link rel="stylesheet" type="text/css" href="../submenu.css" />
 </head>
 <?php

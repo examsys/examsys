@@ -34,5 +34,7 @@ $string['mins'] = 'min.';
 $string['type'] = 'Typ';
 $string['author'] = 'Autor';
 $string['create'] = 'Utwórz';
-
+$string['newfolder'] = 'Nowy Folder';
+$string['modulenotfound'] = 'Nie odnaleziony modułu';  
+$string['modulenotfoundmsg'] = "Nie było możliwe odnalezienie modułu z kodem <strong>%s</strong>.";
 ?>

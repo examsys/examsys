@@ -48,16 +48,18 @@
     $addresses = explode('<br />',nl2br($_POST['addresses']));
     foreach ($addresses as $individual_address) {
       $ip_address = trim($individual_address);
-      if (preg_match('/^(([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]).){3}([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/', $ip_address)) {
-        if($ip_address != '') {
-          $hostname = gethostbyaddr($ip_address);
-          $result = $mysqli->prepare("INSERT INTO ip_addresses VALUES (NULL,?,?,?,?)");
-          $result->bind_param('issi', $labID, $ip_address, $hostname, $_POST['low_bandwidth']);
-          $result->execute();  
-          $result->close();
+      if ($ip_address != '') {
+        if (preg_match('/^(([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]).){3}([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/', $ip_address)) {
+          if ($ip_address != '') {
+            $hostname = gethostbyaddr($ip_address);
+            $result = $mysqli->prepare("INSERT INTO ip_addresses VALUES (NULL,?,?,?,?)");
+            $result->bind_param('issi', $labID, $ip_address, $hostname, $_POST['low_bandwidth']);
+            $result->execute();  
+            $result->close();
+          }
+        } else {
+          $bad_addresses[] = $ip_address;
         }
-      } else {
-        $bad_addresses[] = $ip_address;
       }
     }
     
@@ -82,7 +84,7 @@ input, textarea {font-family:Arial,sans-serif; line-height:140%}
   
   function checkForm() {
     if (document.getElementById('addresses').value == '') {
-      alert('Cannot create lab as there are no IP Addresses listed.');
+      alert('<?php echo $string['noipaddresses']; ?>');
       return false;
     }
   }

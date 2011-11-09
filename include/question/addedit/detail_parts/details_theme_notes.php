@@ -19,7 +19,7 @@ $show_notes = (isset($show_notes)) ? $show_notes : true;
             <tr>
               <th><label for="theme"><?php echo $string['theme'] ?></label></th>
               <td>
-                <input type="text" id="theme" name="theme" cols="100" rows="5" class="form-large" value="<?php echo $question->get_theme() ?>" />
+                <input type="text" id="theme" name="theme" class="form-large" value="<?php echo $question->get_theme() ?>" />
               </td>
             </tr>
 <?php 

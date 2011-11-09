@@ -103,7 +103,7 @@ a:visited.page {color:white}
   echo "<div style=\"font-size:130%; font-weight:bold; margin-bottom:5px; color:#7598C4\">" . sprintf($string['searchedfor'], $_GET['searchstring']) . "</div>\n<br />\n";
   
   if (isset($_GET['searchstring'])) {
-    $search_results = $mysqli->prepare("SELECT id, title, MATCH (title, body_plain) AGAINST (?) AS relevance FROM student_help WHERE MATCH (title, body_plain) AGAINST (? IN BOOLEAN MODE) ORDER BY relevance DESC");
+    $search_results = $mysqli->prepare("SELECT id, title, MATCH (title, body_plain) AGAINST (?) AS relevance FROM student_help WHERE MATCH (title, body_plain) AGAINST (? IN BOOLEAN MODE) AND deleted IS NULL ORDER BY relevance DESC");
     $search_results->bind_param('ss', $_GET['searchstring'], $_GET['searchstring']);
     $search_results->execute();
     $search_results->store_result();

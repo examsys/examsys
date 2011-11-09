@@ -8,7 +8,7 @@ $(function () {
         checked++;
       }
     });
-    if (checked == 1 && confirm("There is only one correct answer, this would be better as a MCQ question type.\r\nDo you wish to convert this question to MCQ?")) {
+    if (checked == 1 && confirm(lang['mrqconvert'])) {
       $('#mcqconvert').val('1');
     }
   });

@@ -23,7 +23,7 @@
 */
 
 /**
-* This is function demo_replace takes a string and obscures it. Useful for demonstrating TouchStone
+* This is function demo_replace takes a string and obscures it. Useful for demonstrating Rogo
 * at conferences and other meetings. 
 * 
 * @param string $text the string to be obscured
@@ -54,7 +54,7 @@ function demo_replace($text, $demo_on) {
 
 /**
 * This is function demo_replace_number takes a number and obscures it. Useful for
-* demonstrating TouchStone at conferences and other meetings. 
+* demonstrating Rogo at conferences and other meetings. 
 * 
 * @param integer $number the number to be obscured
 * @param string $demo_on whether demo mode is on or off
@@ -71,7 +71,7 @@ function demo_replace_number($number, $demo_on) {
 
 /**
 * This is function demo_replace_username takes a username and obscures by replacing characters with hashes.
-* Useful for demonstrating TouchStone at conferences and other meetings. 
+* Useful for demonstrating Rogo at conferences and other meetings. 
 * 
 * @param string $username the username to be obscured
 * @param string $demo_on whether demo mode is on or off

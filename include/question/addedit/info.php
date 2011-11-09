@@ -22,8 +22,6 @@
 * @package
 */
 
-// TODO: check what should happen for options on new questions
-
 $show_notes = false;
 ?>
 				<table id="q-details" class="form" summary="<?php echo $string['qeditsummary'] ?>">

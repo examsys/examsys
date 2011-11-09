@@ -38,7 +38,7 @@ body {background-color:white; color:black; font-family:Arial,sans-serif; font-si
 	<div align="center">
   	<table cellpadding="0" cellspacing="0" style="width:500px; border:1px #C8C8C8 solid">
     	<tr style="height:70px; width:100%; background-image:url(artwork/grey_bar.png); background-repeat:repeat-x; font-size:150%; font-weight:bold; padding-left:6px"><td style="text-align:right; width:135px"><img src="artwork/optimize_tables_icon.png" width="48" height="48" alt="Under maintenance" /></td><td style="text-align:left">&nbsp;&nbsp;Undergoing Maintenance</td></tr>
-    	<tr><td colspan="2" style="padding-top:4px; padding-left:6px;"><p>TouchStone is currently undergoing routine maintenance. Please try again later.</p></td></tr>
+    	<tr><td colspan="2" style="padding-top:4px; padding-left:6px;"><p>Rogo is currently undergoing routine maintenance. Please try again later.</p></td></tr>
     </table>
   </div>
 </body>

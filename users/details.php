@@ -556,7 +556,6 @@ a.access:hover {color:white}
   $results_no = 0;
   $paper = array();
 
-  //$mysqli->select_db('touchstone');
   if (strpos($tmp_roles,'External Examiner') !== false) {      // Get the papers the External is down to review.
     $external_array = array();
 

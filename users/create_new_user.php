@@ -117,7 +117,7 @@
       $result = $mysqli->query("SELECT email FROM users WHERE username='" . $_SERVER['PHP_AUTH_USER'] . "'");
       $row = $result->fetch_assoc();
       $result->close();
-      $subject = "New TouchStone account";
+      $subject = "New Rogo account";
       $headers = "From: " . $row['email'] . "\n";
       $headers .= "MIME-Version: 1.0\nContent-type: text/html; charset=iso-8859-1\n";
       $headers .= "bcc: " . $row['email'] . "\n";

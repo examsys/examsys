@@ -61,7 +61,7 @@
     $replaced_module = str_replace('_UNNC','',$replaced_module);
     //------------------------------------
     
-    // Get the currently enrolled students in TouchStone for the module.
+    // Get the currently enrolled students in Rogo for the module.
     $current_users = array();
     $student_data = $mysqli->prepare("SELECT student_modules.id, username, grade, title, surname, first_names, initials, roles, yearofstudy, auto_update FROM (student_modules, users) WHERE student_modules.userID=users.id AND calendar_year=? AND moduleid=? AND auto_update=1");
     $student_data->bind_param('ss', $session, $module);
@@ -101,8 +101,8 @@
         if (isset($current_users[$lookup_username]['delete'])) {
           $current_users[$lookup_username]['delete'] = 0;   // Mark as being legitimate
         } else {
-          // Student missing from TouchStone module
-          $student_data = $mysqli->prepare("SELECT id, yearofstudy, initials, grade, title, surname, first_names, roles FROM users WHERE username=? LIMIT 1");            // Do they have a TouchStone user record?
+          // Student missing from Rogo module
+          $student_data = $mysqli->prepare("SELECT id, yearofstudy, initials, grade, title, surname, first_names, roles FROM users WHERE username=? LIMIT 1");            // Do they have a Rogo user record?
           $student_data->bind_param('s', $sms->Username);
           $student_data->execute();
           $student_data->store_result();
@@ -121,9 +121,9 @@
             $result->execute();
             $result->close();
         
-            $tmp_userID = $mysqli->insert_id;    // Get the new TouchStone userID
+            $tmp_userID = $mysqli->insert_id;    // Get the new Rogo userID
 
-            $result = $mysqli->prepare("INSERT INTO sid VALUES (?,?)");
+            $result = $mysqli->prepare("INSERT INTO sid VALUES (?, ?)");
             $result->bind_param('si', trim($sms->StudentID), $tmp_userID);
             $result->execute();
             $result->close();
@@ -191,7 +191,7 @@
       }
     }
     
-    // Check for any extra students in TouchStone but not in SATURN for module
+    // Check for any extra students in Rogo but not in SATURN for module
     foreach ($current_users as $username=>$individual_user) {
       if ($individual_user['delete'] == 1 and $individual_user['auto_update'] == 1) {
         $result = $mysqli->prepare("DELETE FROM student_modules WHERE id=?");         // Delete using primary key of 'student_modules'

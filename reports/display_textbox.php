@@ -31,7 +31,7 @@ $enddate = $_GET['enddate'];
 <html>
 <head>
 
-<title>TouchStone: Textbox Marking</title>
+<title>Rogō: Textbox Marking</title>
 
 <style type="text/css">
 body {font-family:Arial,sans-serif; font-size:90%; background-color:#9099AE; color:black; margin-top:6px; margin-bottom:20px; margin-left:40px; margin-right:40px}

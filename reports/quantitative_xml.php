@@ -30,7 +30,7 @@
   header('Content-type: text/xml');
   
   function displayQuestion($q_id, $theme, $scenario, $leadin, $q_type, $correct, $q_media, $q_media_width, $q_media_height, $options, $log, $correct_buf, $screen, $question_number, $candidates) {
-    global $old_likert_scale, $old_score_method, $table_on;
+    global $old_likert_scale, $old_display_method, $table_on;
 
     // Remove spaces
     $theme = str_replace('&nbsp;',' ',$theme);
@@ -60,7 +60,7 @@
         case 'dichotomous':
           if ($table_on == 1) echo '</w:tbl>';
           echo "<w:p><w:r><w:t>$question_number. $leadin</w:t></w:r></w:p><w:p/>";
-          if ($old_score_method == 'YN_Positive' or $old_score_method == 'YN_NegativeAbstain') {
+          if ($old_display_method == 'YN_Positive' or $old_display_method == 'YN_NegativeAbstain') {
             echo '<w:p><w:pPr><w:tabs><w:tab w:val="center" w:pos="650"/><w:tab w:val="center" w:pos="1700"/></w:tabs></w:pPr><w:r><w:tab wx:wTab="795" wx:tlc="none" wx:cTlc="17"/><w:rPr><w:b/></w:rPr><w:t>Yes</w:t></w:r><w:r><w:tab wx:wTab="180" wx:tlc="none" wx:cTlc="3"/><w:rPr><w:b/></w:rPr><w:t>No</w:t></w:r></w:p>';
           } else {
             echo '<w:p><w:pPr><w:tabs><w:tab w:val="center" w:pos="600"/><w:tab w:val="center" w:pos="1600"/></w:tabs></w:pPr><w:r><w:tab wx:wTab="795" wx:tlc="none" wx:cTlc="17"/><w:rPr><w:b/></w:rPr><w:t>True</w:t></w:r><w:r><w:tab wx:wTab="180" wx:tlc="none" wx:cTlc="3"/><w:rPr><w:b/></w:rPr><w:t>False</w:t></w:r></w:p>';
@@ -89,7 +89,7 @@
               echo '<w:p><w:pPr><w:tabs><w:tab w:val="decimal" w:pos="900"/><w:tab w:val="left" w:pos="1080"/><w:tab w:val="left" w:pos="1800"/></w:tabs></w:pPr><w:r><w:tab wx:wTab="795" wx:tlc="none" wx:cTlc="17"/><w:t>' . $log[$screen][$q_id][1][$i] . '</w:t></w:r><w:r><w:tab wx:wTab="180" wx:tlc="none" wx:cTlc="3"/><w:t>(' . round(($log[$screen][$q_id][1][$i]/$candidates)*100) . '%)</w:t></w:r><w:r><w:tab wx:wTab="720" wx:tlc="none" wx:cTlc="15"/></w:r><w:r><w:t>' . wordToUtf8($individual_option) . '</w:t></w:r></w:p>';
             }
           }
-          if ($old_score_method == 'vertical_other') {
+          if ($old_display_method == 'vertical_other') {
             echo '<w:p><w:pPr><w:tabs><w:tab w:val="decimal" w:pos="900"/><w:tab w:val="left" w:pos="1080"/><w:tab w:val="left" w:pos="1800"/></w:tabs></w:pPr><w:r><w:tab wx:wTab="795" wx:tlc="none" wx:cTlc="17"/><w:t>' . count($log[$screen][$q_id][1]['other']) . '</w:t></w:r><w:r><w:tab wx:wTab="180" wx:tlc="none" wx:cTlc="3"/><w:t>(' . round((count($log[$screen][$q_id][1]['other'])/$candidates)*100) . '%)</w:t></w:r><w:r><w:tab wx:wTab="720" wx:tlc="none" wx:cTlc="15"/></w:r><w:r><w:t>Other:</w:t></w:r></w:p>';
             foreach ($log[$screen][$q_id][1]['other'] as $other_text) {
               echo '<w:p><w:pPr><w:tabs><w:tab w:val="decimal" w:pos="900"/><w:tab w:val="left" w:pos="1080"/><w:tab w:val="left" w:pos="2268"/></w:tabs></w:pPr><w:r><w:tab wx:wTab="900" wx:tlc="none" wx:cTlc="19"/></w:r><w:r><w:tab wx:wTab="180" wx:tlc="none" wx:cTlc="3"/></w:r><w:r><w:tab wx:wTab="1185" wx:tlc="none" wx:cTlc="25"/><w:t>' . wordToUtf8($other_text) . '</w:t></w:r></w:p>';
@@ -108,10 +108,10 @@
           $unanswered = 0;
           $old_properties = explode('|',$old_likert_scale);
           $old_size = substr_count($old_likert_scale,'|');
-          $current_properties = explode('|',$old_score_method);
-          $new_size = substr_count($old_score_method,'|');
+          $current_properties = explode('|',$old_display_method);
+          $new_size = substr_count($old_display_method,'|');
           $na = $current_properties[$new_size];
-          if ($old_likert_scale != $old_score_method or $table_on == 0) {
+          if ($old_likert_scale != $old_display_method or $table_on == 0) {
             if ($table_on == 1) echo '</w:tbl>';
             echo '<w:tbl><w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="0" w:type="auto"/><w:tblLook w:val="01E0"/></w:tblPr><w:tblGrid><w:gridCol w:w="470"/><w:gridCol w:w="4350"/><w:gridCol w:w="500"/><w:gridCol w:w="780"/><w:gridCol w:w="780"/><w:gridCol w:w="780"/><w:gridCol w:w="1290"/><w:gridCol w:w="780"/></w:tblGrid>';
             echo '<w:tr><w:tc><w:tcPr><w:tcW w:w="0" w:type="auto"/><w:shd w:val="clear" w:color="auto" w:fill="E0E0E0"/></w:tcPr><w:p><w:pPr><w:jc w:val="center"/><w:rPr><w:b/></w:rPr></w:pPr><w:r><w:rPr><w:b/></w:rPr><w:t>No</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w="0" w:type="auto"/><w:shd w:val="clear" w:color="auto" w:fill="E0E0E0"/></w:tcPr><w:p><w:pPr><w:jc w:val="center"/><w:rPr><w:b/></w:rPr></w:pPr><w:r><w:rPr><w:b/></w:rPr><w:t>Question</w:t></w:r></w:p></w:tc>';
@@ -152,7 +152,7 @@
           } else {
             echo '<w:tc><w:tcPr><w:tcW w:w="0" w:type="auto"/></w:tcPr><w:p><w:r><w:t>' . number_format($sub_total/($candidates-$unanswered),1) . '</w:t></w:r></w:p></w:tc></w:tr>';
           }
-          $old_likert_scale = $old_score_method;
+          $old_likert_scale = $old_display_method;
           break;
         case 'mrq':
           if ($table_on == 1) echo '</w:tbl>';
@@ -166,7 +166,7 @@
               echo '<w:p><w:pPr><w:tabs><w:tab w:val="decimal" w:pos="900"/><w:tab w:val="left" w:pos="1080"/><w:tab w:val="left" w:pos="1800"/></w:tabs></w:pPr><w:r><w:tab wx:wTab="795" wx:tlc="none" wx:cTlc="17"/><w:t>' . $log[$screen][$q_id][$i]['y'] . '</w:t></w:r><w:r><w:tab wx:wTab="180" wx:tlc="none" wx:cTlc="3"/><w:t>(' . round(($log[$screen][$q_id][$i]['y']/$candidates)*100) . '%)</w:t></w:r><w:r><w:tab wx:wTab="720" wx:tlc="none" wx:cTlc="15"/></w:r><w:r><w:t>' . wordToUtf8($individual_option) . '</w:t></w:r></w:p>';
             }            
           }
-          if ($old_score_method == 'other') {
+          if ($old_display_method == 'other') {
             echo '<w:p><w:pPr><w:tabs><w:tab w:val="decimal" w:pos="900"/><w:tab w:val="left" w:pos="1080"/><w:tab w:val="left" w:pos="1800"/></w:tabs></w:pPr><w:r><w:tab wx:wTab="795" wx:tlc="none" wx:cTlc="17"/><w:t>' . count($log[$screen][$q_id][1]['other']) . '</w:t></w:r><w:r><w:tab wx:wTab="180" wx:tlc="none" wx:cTlc="3"/><w:t>(' . round((count($log[$screen][$q_id][1]['other'])/$candidates)*100) . '%)</w:t></w:r><w:r><w:tab wx:wTab="720" wx:tlc="none" wx:cTlc="15"/></w:r><w:r><w:t>Other:</w:t></w:r></w:p>';
             foreach ($log[$screen][$q_id][1]['other'] as $other_text) {
               echo '<w:p><w:pPr><w:tabs><w:tab w:val="decimal" w:pos="900"/><w:tab w:val="left" w:pos="1080"/><w:tab w:val="left" w:pos="2268"/></w:tabs></w:pPr><w:r><w:tab wx:wTab="900" wx:tlc="none" wx:cTlc="19"/></w:r><w:r><w:tab wx:wTab="180" wx:tlc="none" wx:cTlc="3"/></w:r><w:r><w:tab wx:wTab="1185" wx:tlc="none" wx:cTlc="25"/><w:t>' . wordToUtf8($other_text) . '</w:t></w:r></w:p>';
@@ -299,7 +299,7 @@
   echo $paper;
   $tmp_start = substr($_GET['startdate'], 6, 2) . '/' . substr($_GET['startdate'], 4, 2) . '/' . substr($_GET['startdate'], 0, 4) . ' ' . substr($_GET['startdate'], 8, 2) . ':' . substr($_GET['startdate'], 10, 2);
   $tmp_end = substr($_GET['enddate'], 6, 2) . '/' . substr($_GET['enddate'], 4, 2) . '/' . substr($_GET['enddate'], 0, 4) . ' ' . substr($_GET['enddate'], 8, 2) . ':' . substr($_GET['enddate'], 10, 2);
-  echo '</o:Title><o:Author>TouchStone ' . $ts_version . '</o:Author><o:Description>Quantitative report for survey taken between ' . $tmp_start . ' and ' . $tmp_end .'.</o:Description><o:LastAuthor>TouchStone ' . $ts_version . '</o:LastAuthor><o:Revision>1</o:Revision><o:TotalTime>0</o:TotalTime><o:Created>';
+  echo '</o:Title><o:Author>Rogo ' . $ts_version . '</o:Author><o:Description>Quantitative report for survey taken between ' . $tmp_start . ' and ' . $tmp_end .'.</o:Description><o:LastAuthor>Rogo ' . $ts_version . '</o:LastAuthor><o:Revision>1</o:Revision><o:TotalTime>0</o:TotalTime><o:Created>';
   echo date('Y-m-d', time()) . 'T' . date('H:i:s') . 'Z';
   echo '</o:Created><o:LastSaved>';
   echo date('Y-m-d', time()) . 'T' . date('H:i:s') . 'Z';
@@ -313,12 +313,12 @@
   $log_array = array();
   $hits = 0;
   // Capture the log data first.
-  $result = $mysqli->prepare("SELECT DISTINCT log3.userID, log3.q_id, user_answer, q_type, screen, score_method FROM (log3, log_metadata, questions, users) WHERE log3.q_paper=log_metadata.paperID AND log3.userID=log_metadata.userID AND log3.started=log_metadata.started AND log3.q_id=questions.q_id AND q_paper=? AND users.id=log3.userID AND log_metadata.year LIKE ? AND (users.roles='Student' OR users.roles='graduate')$exclude AND grade LIKE ? AND log_metadata.started>=? AND log_metadata.started<=?");
+  $result = $mysqli->prepare("SELECT DISTINCT log3.userID, log3.q_id, user_answer, q_type, screen, display_method FROM (log3, log_metadata, questions, users) WHERE log3.q_paper=log_metadata.paperID AND log3.userID=log_metadata.userID AND log3.started=log_metadata.started AND log3.q_id=questions.q_id AND q_paper=? AND users.id=log3.userID AND log_metadata.year LIKE ? AND (users.roles='Student' OR users.roles='graduate')$exclude AND grade LIKE ? AND log_metadata.started>=? AND log_metadata.started<=?");
   $result->bind_param('issss', $_GET['paperID'], $_GET['repyear'], $_GET['repdegree'], $_GET['startdate'], $_GET['enddate']);
   $result->execute();
   $result->store_result();
   $hits = $result->num_rows;
-  $result->bind_result($tmp_username, $question_ID, $tmp_answer, $q_type, $screen, $score_method);
+  $result->bind_result($tmp_username, $question_ID, $tmp_answer, $q_type, $screen, $display_method);
   while ($row = $result->fetch()) {
     $tmp_answer = str_replace('&','&amp;',$tmp_answer);
     switch ($q_type) {
@@ -336,9 +336,9 @@
         }
         break;
       case 'calculation':
-        $tmp_score_method = array();
-        $tmp_score_method = explode(',',$score_method);
-        $tolerance = $tmp_score_method[1];
+        $tmp_display_method = array();
+        $tmp_display_method = explode(',',$display_method);
+        $tolerance = $tmp_display_method[1];
         $tmp_first_split = explode('|', $tmp_answer);
         if ($tmp_first_split[0] == $tmp_first_split[1]) {
           $log_array[$screen][$question_ID][1]['correct']++;
@@ -517,10 +517,10 @@
     $options_buffer = array();
     $correct_buffer = array();
   
-    $result = $mysqli->prepare("SELECT screen, q_id, q_type, theme, scenario, leadin, option_text, score_method, q_media, q_media_width, q_media_height, correct FROM papers, questions, options WHERE papers.question=questions.q_id AND questions.q_id=options.o_id AND papers.paper=? ORDER BY screen, display_pos, id_num");
+    $result = $mysqli->prepare("SELECT screen, q_id, q_type, theme, scenario, leadin, option_text, display_method, q_media, q_media_width, q_media_height, correct FROM papers, questions, options WHERE papers.question=questions.q_id AND questions.q_id=options.o_id AND papers.paper=? ORDER BY screen, display_pos, id_num");
     $result->bind_param('i', $_GET['paperID']);
     $result->execute();
-    $result->bind_result($screen, $q_id, $q_type, $theme, $scenario, $leadin, $option_text, $score_method, $q_media, $q_media_width, $q_media_height, $correct);
+    $result->bind_result($screen, $q_id, $q_type, $theme, $scenario, $leadin, $option_text, $display_method, $q_media, $q_media_width, $q_media_height, $correct);
     while ($row = $result->fetch()) {
       $scenario = str_replace('&nbsp;',' ',$scenario);
       $leadin = str_replace('&nbsp;',' ',$leadin);
@@ -541,8 +541,8 @@
         }
         if ($old_q_type == 'likert') {
           $options_buffer['n/a'] = 'n/a';
-          $likert_properties = explode('|',$old_score_method);
-          for ($i=1; $i<=substr_count($old_score_method,'|'); $i++) {
+          $likert_properties = explode('|',$old_display_method);
+          for ($i=1; $i<=substr_count($old_display_method,'|'); $i++) {
             $options_buffer[$i] = $i;
           }
         }
@@ -602,14 +602,14 @@
       $old_q_media_width = $q_media_width;
       $old_q_media_height = $q_media_height;
       $old_correct = $correct;
-      $old_score_method = $score_method;
+      $old_display_method = $display_method;
     }
     $result->close();
 
     if ($old_q_type == 'likert') {
       $options_buffer['n/a'] = 'n/a';
-      $likert_properties = explode('|',$old_score_method);
-      for ($i=1; $i<=substr_count($old_score_method,'|'); $i++) {
+      $likert_properties = explode('|',$old_display_method);
+      for ($i=1; $i<=substr_count($old_display_method,'|'); $i++) {
         $options_buffer[$i] = $i;
       }
     }

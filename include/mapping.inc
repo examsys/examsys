@@ -16,7 +16,7 @@
 
 /**
 * 
-* Set of mapping functions used to map touchstone questions to objectives
+* Set of mapping functions used to map questions to objectives
 * 
 * @author Anthony Brown
 * @version 1.0
@@ -28,7 +28,7 @@
  * This is function displayObjectivesMappingForm it displays objectives by session
  *
  * @param int $paper_id 
- * @param object $touchstonedb
+ * @param object $rogodb
  * 
  */
  
@@ -90,19 +90,25 @@ HTML;
             <ul class="hide">
 
 HTML;
-      
-      foreach ($class['objectives'] as $objectives) {
-        if ($objectives['mapped'] != 0) {
-          $checked = ' checked="checked"';
-          $old_mappings .= $objectives['id'] . ',';
-        } else {
-          $checked = '';
+      if (isset($class['objectives'])) {
+        foreach ($class['objectives'] as $objectives) {
+          if ($objectives['mapped'] != 0) {
+            $checked = ' checked="checked"';
+            $old_mappings .= $objectives['id'] . ',';
+          } else {
+            $checked = '';
+          }
+          $html .= <<< HTML
+        				<li><input id="objective{$objcount}" name="{$moduleid_forform}_objectives[]" value="{$objectives['id']}" type="checkbox"{$checked} /> <label for="objective{$objcount}">{$objectives['content']}</label></li>
+  
+HTML;
+          $objcount++;
         }
+      } else {
         $html .= <<< HTML
-      				<li><input id="objective{$objcount}" name="{$moduleid_forform}_objectives[]" value="{$objectives['id']}" type="checkbox"{$checked} /> <label for="objective{$objcount}">{$objectives['content']}</label></li>
+            		<li>{$string['noobjectives']}</li>
 
 HTML;
-        $objcount++;
       }
         
       $html .= <<< HTML
@@ -135,9 +141,9 @@ HTML;
   return $html;
 }
 
-function displayObjectivesMappingForm($paper_id, $touchstonedb) {
+function displayObjectivesMappingForm($paper_id, $rogodb) {
   //get module and session form paper id
-  $result = $touchstonedb->prepare("SELECT moduleID, calendar_year, paper_type FROM properties WHERE property_id=?");
+  $result = $rogodb->prepare("SELECT moduleID, calendar_year, paper_type FROM properties WHERE property_id=?");
   $result->bind_param('i', $paper_id);
   $result->execute();
   $result->store_result();
@@ -154,7 +160,7 @@ function displayObjectivesMappingForm($paper_id, $touchstonedb) {
     $q_id = '';
   }
   
-  $objsByModuleSession = getObjectives($modules, $session, $paper_id, $q_id, $touchstonedb);
+  $objsByModuleSession = getObjectives($modules, $session, $paper_id, $q_id, $rogodb);
 
   if (isset($objsByModuleSession['none_of_the_above'])) {
     $none_of_the_above = $objsByModuleSession['none_of_the_above'];
@@ -239,7 +245,7 @@ function displayObjectivesMappingForm($paper_id, $touchstonedb) {
  *
  * @param int $paper_id 
  * @param int $question_id 
- * @param object $touchstonedb 
+ * @param object $rogodb 
  * 
  */
 function save_objective_mappings($db, $modules, $paper_id, $question_id) {
@@ -292,10 +298,10 @@ function save_objective_mappings($db, $modules, $paper_id, $question_id) {
  *
  * @param int $paper_id 
  * @param int $question_id 
- * @param object $touchstonedb 
+ * @param object $rogodb 
  * 
  */
-function saveObjMappings($paper_id, $question_id, $touchstonedb) {
+function saveObjMappings($paper_id, $question_id, $rogodb) {
   if (isset($_POST['modules']) and $paper_id != '' and substr($paper_id,0,5) != 'find:') {
     $modules = $_POST['modules'];
     $modules = explode(',',$modules);
@@ -327,8 +333,8 @@ function saveObjMappings($paper_id, $question_id, $touchstonedb) {
             array_unshift($sql,$delete);
           }
           foreach($sql as $query) {
-            if (!$result = $touchstonedb->query($query)) {
-              echo "Question Mapping Error #1 " . $touchstonedb->error . "<br/> $query <br/>";
+            if (!$result = $rogodb->query($query)) {
+              echo "Question Mapping Error #1 " . $rogodb->error . "<br/> $query <br/>";
             }
           }
         }
@@ -347,7 +353,7 @@ function saveObjMappings($paper_id, $question_id, $touchstonedb) {
  * @param string $session A session in the format yyyy/yy
  * @param mixed $paperID 
  * @param mixed $questionID 
- * @param mixed $touchstonedb 
+ * @param mixed $rogodb 
  * @return array an array of objectives and mappings
  *
  */
@@ -355,7 +361,7 @@ function saveObjMappings($paper_id, $question_id, $touchstonedb) {
 $objsBySession_cache = array();
 $vle_api_cache = array(); // cashe the vle api to save some queries
 
-function getObjectives($thisModuleid, $session, $paperID, $questionID, $touchstonedb, $scope='latest') {
+function getObjectives($thisModuleid, $session, $paperID, $questionID, $rogodb, $scope='latest') {
   global $objsBySession_cache, $vle_api_cache, $cfg_short_date;
   $original_thisModuleid = $thisModuleid;
   $objsBySession = array();
@@ -364,7 +370,7 @@ function getObjectives($thisModuleid, $session, $paperID, $questionID, $touchsto
   foreach ($module_list as $thisModuleid) {
     // Get which API to use to get the learning objectives
     if(!isset($vle_api_cache[$thisModuleid])) {
-      $stmt = $touchstonedb->prepare("SELECT vle_api FROM modules WHERE moduleid=?");
+      $stmt = $rogodb->prepare("SELECT vle_api FROM modules WHERE moduleid=?");
       $stmt->bind_param('s',$thisModuleid);
       $stmt->execute();
       $stmt->bind_result($vle_api);
@@ -395,21 +401,21 @@ function getObjectives($thisModuleid, $session, $paperID, $questionID, $touchsto
       // Use TouchStone's internally stored objectves
       if ($scope == 'all') {
       	$sql = "SELECT sess_id,identifier,moduleID,title,source_url,calendar_year,DATE_FORMAT(occurrence,'$cfg_short_date') AS occurrence FROM sessions WHERE moduleID=? ORDER BY calendar_year, sess_id";
-      	$stmt = $touchstonedb->prepare($sql);
+      	$stmt = $rogodb->prepare($sql);
         $stmt->bind_param('s', $thisModuleid);
       } elseif ($session == '' and $scope == 'latest') {
         $sql = "SELECT sess_id,identifier,moduleID,title,source_url,calendar_year,DATE_FORMAT(occurrence,'$cfg_short_date') AS occurrence FROM sessions WHERE moduleID=? AND calendar_year=(SELECT MAX(calendar_year) FROM objectives) ORDER BY sess_id";
-        $stmt = $touchstonedb->prepare($sql);
+        $stmt = $rogodb->prepare($sql);
         $stmt->bind_param('s', $thisModuleid);
       } else {
         $sql = "SELECT sess_id,identifier,moduleID,title,source_url,calendar_year,DATE_FORMAT(occurrence,'$cfg_short_date') AS occurrence FROM sessions WHERE moduleID=? AND calendar_year=? ORDER BY sess_id";
-        $stmt = $touchstonedb->prepare($sql);
+        $stmt = $rogodb->prepare($sql);
         $stmt->bind_param('ss', $thisModuleid,$session);
       }
       $stmt->execute();
       $stmt->store_result();
-      $stmt->bind_result($sess_id,$identifier,$moduleID,$title,$source_url,$calendar_year,$occurrence);
-      while ($row = $stmt->fetch()) {
+      $stmt->bind_result($sess_id, $identifier, $moduleID, $title, $source_url, $calendar_year, $occurrence);
+      while ($stmt->fetch()) {
         $objsBySession[$thisModuleid][$identifier]['class_code'] = '';
         $objsBySession[$thisModuleid][$identifier]['title'] = $title;
         $objsBySession[$thisModuleid][$identifier]['occurrance'] = $occurrence;
@@ -424,7 +430,7 @@ function getObjectives($thisModuleid, $session, $paperID, $questionID, $touchsto
         //GET objs from Touchstone
         foreach ($objsBySession[$thisModuleid] as $identifier => $sess) {
           $sql = "SELECT obj_id,objective,sequence FROM objectives WHERE identifier=? AND calendar_year=? ORDER BY sequence";
-          $stmt = $touchstonedb->prepare($sql);
+          $stmt = $rogodb->prepare($sql);
           $stmt->bind_param('ss',$identifier,$sess['calendar_year']);
           $stmt->execute();
           //$stmt->store_result();
@@ -447,7 +453,7 @@ function getObjectives($thisModuleid, $session, $paperID, $questionID, $touchsto
   $mapped = array();
   if ($questionID != '') {
     $thisModuleid = str_replace(',','|',$original_thisModuleid);
-    if ($result = $touchstonedb->prepare("SELECT obj_id, question_id FROM relationships WHERE module_id REGEXP ? AND paper_id=? AND calendar_year=? AND question_id IN ($questionID)")) {
+    if ($result = $rogodb->prepare("SELECT obj_id, question_id FROM relationships WHERE module_id REGEXP ? AND paper_id=? AND calendar_year=? AND question_id IN ($questionID)")) {
       $result->bind_param('sis', $thisModuleid, $paperID, $session);
       $result->execute();
       $result->bind_result($obj_id, $question_id);
@@ -456,7 +462,7 @@ function getObjectives($thisModuleid, $session, $paperID, $questionID, $touchsto
       }
       $result->close();
     } else {
-      echo "Error: " . $touchstonedb->error;
+      echo "Error: " . $rogodb->error;
     }
   }
   //END:: get the currently mapped objetives in touchstone
@@ -494,13 +500,13 @@ function getObjectives($thisModuleid, $session, $paperID, $questionID, $touchsto
  * @param string $session A session in the format yyyy/yy
  * @param int $paperID 
  * @param int $questionID 
- * @param object $touchstonedb 
+ * @param object $rogodb 
  * @return array This is the return value description
  *
  */
-function getObjectivesByMapping($thisModuleid, $session, $paperID, $questionID, $touchstonedb) {
+function getObjectivesByMapping($thisModuleid, $session, $paperID, $questionID, $rogodb) {
 
-  $objsBySession = getObjectives($thisModuleid, $session, $paperID, $questionID, $touchstonedb);
+  $objsBySession = getObjectives($thisModuleid, $session, $paperID, $questionID, $rogodb);
   $objsByMapping = array();
 
   if (isset($objsBySession['none_of_the_above']['mapped']) and $objsBySession['none_of_the_above']['mapped'] == 1) {
@@ -527,9 +533,9 @@ function getObjectivesByMapping($thisModuleid, $session, $paperID, $questionID, 
   return $objsByMapping;
 }
 
-function copyObjectives($objectives, $module, $dest_session, $touchstonedb) {
+function copyObjectives($objectives, $module, $dest_session, $rogodb) {
 	// Get highest identifier - can't rely on time as we may loop in < 1 second
-	$result = $touchstonedb->prepare("SELECT MAX(identifier) AS largest FROM sessions WHERE moduleID = ?");
+	$result = $rogodb->prepare("SELECT MAX(identifier) AS largest FROM sessions WHERE moduleID = ?");
 	$result->bind_param('s', $module);
 	$result->execute();
 	$result->bind_result($largest);
@@ -548,7 +554,7 @@ function copyObjectives($objectives, $module, $dest_session, $touchstonedb) {
 		$occurrence_new = date('Y-m-d H:i:s', mktime(9, 0, 0, $occurrence_parts[1], $occurrence_parts[0], $occurrence_parts[2] + 1));
 		
 		// Save it
-    $stmt = $touchstonedb->prepare("INSERT INTO sessions(identifier, moduleID, title, source_url, calendar_year, occurrence) VALUES (?,?,?,?,?,?)");
+    $stmt = $rogodb->prepare("INSERT INTO sessions(identifier, moduleID, title, source_url, calendar_year, occurrence) VALUES (?,?,?,?,?,?)");
     $stmt->bind_param('ssssss', $identifier, $module, $session['title'], $session['source_url'], $dest_session, $occurrence_new);
 		$stmt->execute();
 		$err = $stmt->error;
@@ -559,7 +565,7 @@ function copyObjectives($objectives, $module, $dest_session, $touchstonedb) {
     }
     
     // Get starting point for objective ID
-    $result = $touchstonedb->prepare("SELECT MAX(obj_id) AS largest FROM objectives");
+    $result = $rogodb->prepare("SELECT MAX(obj_id) AS largest FROM objectives");
     $result->execute();
     $result->bind_result($largest);
     while ($row = $result->fetch()) {
@@ -573,7 +579,7 @@ function copyObjectives($objectives, $module, $dest_session, $touchstonedb) {
 		// Loop through the objectives for the original session
 		foreach ($session['objectives'] as $objective) {
 			// Save them against the new session identifier
-			$stmt = $touchstonedb->prepare("INSERT INTO objectives(obj_id, objective, moduleID, identifier, calendar_year, sequence) VALUES (?,?,?,?,?,?)");
+			$stmt = $rogodb->prepare("INSERT INTO objectives(obj_id, objective, moduleID, identifier, calendar_year, sequence) VALUES (?,?,?,?,?,?)");
 			$stmt->bind_param('issssi', $obj_id, $objective['content'], $module, $identifier, $dest_session, $objective['sequence']);
 			$stmt->execute();
 			$err = $stmt->error;

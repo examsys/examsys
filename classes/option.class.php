@@ -113,10 +113,9 @@ Class Option extends TouchStoneObject {
         // If 'correct' is not a unified field then its value if not in POST is negative
         if ($section_name == 'correct' and !isset($data[$field])) $data[$field] = $this->_question->get_answer_negative();
         
-        if (isset($data[$field])) {
-          $method = "set_$section_name";
-          $this->$method($data[$field]);
-        }
+        $value = (isset($data[$field])) ? $data[$field] : '';
+        $method = "set_$section_name";
+        $this->$method($value);
       }
     }
   }

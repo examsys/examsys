@@ -217,7 +217,7 @@ function add_users_from_file($fileName) {
 }
 
 function send_welcome_email($title, $surname, $username, $password, $user_email) {
-  $subject = "New TouchStone account";
+  $subject = "New Rogo account";
   $headers = "From: $support_email\n";
   $headers .= "MIME-Version: 1.0\nContent-type: text/html; charset=iso-8859-1\n";
   $message = "<!doctype html public \"-//w3c//dtd html 4.0 transitional//en\">
@@ -230,7 +230,7 @@ body, td, p, div {font-family:Arial,sans-serif; background-color:white; color:#0
 </head>
 <body>
 <p>Dear $title $surname,</p>
-<p>A new account has been created to access the online assessment and survey system TouchStone. Your personal authentication details are the same as your university log in details.</p>
+<p>A new account has been created to access the online assessment and survey system Rogo. Your personal authentication details are the same as your university log in details.</p>
 <p><strong>Note:</strong></p>
 <ul>
 <li>Never share your university username/password with anyone.</li>

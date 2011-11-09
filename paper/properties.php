@@ -28,6 +28,7 @@ require '../include/staff_auth.inc';
 require '../include/add_edit.inc';  // to clear MS Office tags
 require_once '../classes/schoolutils.class.php';
 require_once '../classes/searchutils.class.php';
+require '../lang/' . $language. '/include/timezones.inc';
 
 function modulo($n,$b) {
   return $n-$b*floor($n/$b);
@@ -82,11 +83,11 @@ if (isset($_POST['Submit'])) {
     if ($leap == false and $_POST['fmonth'] == '02' and ($_POST['fday'] == '29' or $_POST['fday'] == '30' or $_POST['fday'] == '31')) $_POST['fday'] = '28';
     if (($_POST['fmonth'] == '04' or $_POST['fmonth'] == '06' or $_POST['fmonth'] == '09' or $_POST['fmonth'] == '11') and $_POST['fday'] == '31') $_POST['fday'] = '30';
     
-    $UK_time = new DateTimeZone("Europe/London");
+    $local_time = new DateTimeZone($cfg_timezone);
     $target_timezone = new DateTimeZone($_POST['timezone']);
     
     $start_date = new dateTime($_POST['fyear'] . $_POST['fmonth'] . $_POST['fday'] . $_POST['ftime'], $target_timezone);
-    $start_date->setTimezone($UK_time);
+    $start_date->setTimezone($local_time);
         
     if ((modulo($_POST['tyear'],4) == 0 and modulo($_POST['tyear'],100) != 0) or modulo($_POST['tyear'],400) == 0) {
       $leap = true;
@@ -98,7 +99,7 @@ if (isset($_POST['Submit'])) {
     if (($_POST['tmonth'] == '04' or $_POST['tmonth'] == '06' or $_POST['tmonth'] == '09' or $_POST['tmonth'] == '11') and $_POST['tday'] == '31') $_POST['tday'] = '30';
     
     $end_date = new dateTime($_POST['tyear'] . $_POST['tmonth'] . $_POST['tday'] . $_POST['ttime'], $target_timezone);
-    $end_date->setTimezone($UK_time);
+    $end_date->setTimezone($local_time);
         
     if ($_POST['timezone'] < 0) {
       $start_date->modify("+" . abs($_POST['timezone']) . " hour");
@@ -346,10 +347,10 @@ if (isset($_POST['Submit'])) {
   $result->fetch();
   $result->close();
   
-  $UK_time = new DateTimeZone("Europe/London");
+  $local_time = new DateTimeZone($cfg_timezone);
   $target_timezone = new DateTimeZone($timezone);
-  $start_date = new dateTime($start_date, $UK_time);
-  $end_date = new dateTime($end_date, $UK_time);
+  $start_date = new dateTime($start_date, $local_time);
+  $end_date = new dateTime($end_date, $local_time);
   
   $start_date->setTimezone($target_timezone);
   $end_date->setTimezone($target_timezone);
@@ -942,22 +943,14 @@ if ($paper_type != '4' and $paper_type != '5') {
     echo "</select></td><td align=\"right\">" . $string['password'] . "</td><td><input type=\"text\" size=\"20\" name=\"password\" value=\"$password\" /></td></tr>\n";
 
     echo "<tr><td align=\"right\">" . $string['timezone'] .  "</td><td><select name=\"timezone\">";
-    $timezone_array = array('*Africa','Dakar','Johannesburg','*America','Anchorage','Denver','Chicago','Halifax','Los_Angeles','New_York','Mexico_City','*Asia','Dubai','Istanbul','Kuala_Lumpur','Shanghai','Singapore','Tokyo','*Australia','Adelaide','Perth','Sydney','Victoria','*Europe','Budapest','London','Moscow','Oslo','Paris','Vienna','*Pacific','Fiji','Auckland');
-    $old_prefix = '';
-    foreach ($timezone_array as $individual_zone) {
-      if (substr($individual_zone,0,1) == '*') {
-        if ($old_prefix != '') echo "</optgroup>\n";
-        echo "<optgroup label=\"" . substr($individual_zone,1) . "\">\n";
-        $old_prefix = substr($individual_zone,1);
+    foreach ($timezone_array as $individual_zone => $display_zone) {
+      if ($timezone == $individual_zone) {
+        echo "<option value=\"$individual_zone\" selected>$display_zone</option>";
       } else {
-        if ($timezone == $old_prefix . '/' . $individual_zone) {
-          echo "<option value=\"" . $old_prefix . "/" . $individual_zone . "\" selected>" . str_replace('_',' ',$individual_zone) . "</option>";
-        } else {
-          echo "<option value=\"" . $old_prefix . "/" . $individual_zone . "\">" . str_replace('_',' ',$individual_zone) . "</option>";
-        }
+        echo "<option value=\"$individual_zone\">$display_zone</option>";
       }
     }
-    echo '</optgroup></select></td>';
+    echo '</select></td>';
     echo '<td align="right">' . $string['duration'] . '</td><td><select name="exam_duration">';
     $minutes = array('NULL'=>$string['na'],'15'=>'15','20'=>'20','25'=>'25','30'=>'30','35'=>'35','40'=>'40','45'=>'45','50'=>'50','55'=>'55','60'=>'60','65'=>'65','70'=>'70','75'=>'75','80'=>'80','85'=>'85','90'=>'90','95'=>'95','100'=>'100','110'=>'110','120'=>'120','150'=>'150','180'=>'180');
     foreach ($minutes as $key => $value) {

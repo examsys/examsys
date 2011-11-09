@@ -1,4 +1,4 @@
 <?php
 $string['addfaculty'] = 'Dodaj wydział';
-$string['warning'] = 'Nazwa wydziału już istnieje. Wybierz inną nazwę.';
+$string['facultywarning'] = 'Nazwa wydziału już istnieje. Wybierz inną nazwę.';
 ?>

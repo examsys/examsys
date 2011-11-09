@@ -219,7 +219,7 @@ function keywordQOverwrite(&$questions, $random_q_data, $paper_type, $user_answe
     $question['display_pos'] = $q_no;
     $question['theme'] = $question['scenario'] = $question['notes'] = $question['score_method'] = $question['q_media'] = '';
     $question['q_media_width'] = $question['q_media_height'] = $question['q_option_order'] = $question['dismiss'] = '';
-    $question['options'][] = array();
+    $question['options'] = array();
   }
   $questions[] = $question;
 }
@@ -367,7 +367,7 @@ pre {font-family:<?php echo $font; ?>,sans-serif; font-size:100%}
 .unans {background-color:#FFC0C0}
 .matrix {border:1px solid #808080; border-collapse:collapse}
 .matrix td {border:1px solid #808080}
-.extmatch li {padding-bottom:14px; vertical-align:text-bottom; list-style-type:lower-roman}
+.extmatch li {padding-bottom:14px; vertical-align:text-bottom; list-style-type:upper-alpha}
 <?php
 if ($paper_type == '3') echo ".likert_button {text-align:center;width:40px;vertical-align:top}\n";
 if ($latex_needed == 1) echo ".latex {vertical-align:middle}\n";

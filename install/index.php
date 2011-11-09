@@ -16,7 +16,7 @@
 
 /**
 * 
-* Installation script for inital setup of TouchStone.
+* Installation script for inital setup of Rogo.
 * 
 * @author Simon Wilkinson
 * @version 1.0

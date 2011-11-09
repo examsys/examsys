@@ -46,7 +46,7 @@
     echo "<title>$title</title>\n";
     echo "<forenames><![CDATA[" . htmlentities($first_names, ENT_QUOTES | ENT_IGNORE, "UTF-8") . "]]></forenames>\n";
     echo "<surname><![CDATA[" . htmlentities($surname, ENT_QUOTES | ENT_IGNORE, "UTF-8") . "]]></surname>\n";
-    echo "<photo>https://touchstone.nottingham.ac.uk/users/photos/" . $username . ".jpg</photo>\n";
+    echo "<photo>" . $cfg_web_root . "users/photos/" . $username . ".jpg</photo>\n";
     echo "</student>\n";
   }
   $result->close();

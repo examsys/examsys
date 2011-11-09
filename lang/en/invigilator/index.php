@@ -21,7 +21,7 @@ $string['checklist'] = '<div><strong>Tasklist</strong></div>
     
     <div><em>Mid-Exam</em></div>
     <ol>
-    <li>Record minor problems in the students\' file (<a href="help.html" target="_blank">example problems</a>)</li>
+    <li>Record minor problems in the students\' file (<a href="%shelp.html" target="_blank">example problems</a>)</li>
     <li>Record problems with paper/question content</li>
     <li>Call number below for major problems</li>
     </ol>

@@ -347,12 +347,13 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
             $decimals = ($score_array[0] != '') ? $score_array[0] : 0;
             $answer = round($answer, $decimals);
           } else {
+            $decimals = 0;
             $answer = '';
           }
           
           $difference = round(abs($saved_response_clean - $answer), $decimals);
           
-          if ($saved_response_clean === $answer and $saved_response_clean != '') {
+          if ($saved_response_clean == $answer and $saved_response_clean != '') {
             $mark = $marks_correct;
           } elseif ($difference <= $score_array[1] and $score_array[1] > 0) {
             $mark = $marks_correct;

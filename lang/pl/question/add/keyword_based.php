@@ -13,7 +13,7 @@ $string['modified'] = 'Zmodyfikowane:';
 $string['metadata'] = 'Metadane';
 $string['keywords'] = 'Słowa kluczowe';
 $string['teams'] = 'Zespoły';
-$string['mappingdisabled'] = 'Owzorowanie nieaktywne';//niko
-$string['questionnotonpaper'] = 'To pytanie nie jest zawarte w arkuszu stąd nie może być odwzorowane';//niko
+$string['mappingdisabled'] = 'Odwzorowywanie nieaktywne';
+$string['questionnotonpaper'] = 'To pytanie nie jest zawarte w arkuszu stąd nie może być odwzorowane';
 
 ?>

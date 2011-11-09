@@ -28,6 +28,7 @@
 <head>
 <title>Add new Question</title>
 <script language="javascript">
+  var questions = new Array();
   <?php
     $newHTML = '';
     $question_no = 0;
@@ -45,9 +46,9 @@
       if (strlen($leadin) > 160) $leadin = substr($leadin,0,160) . '...';
       $newHTML .= "<div style=\"background-color:highlight; color:white\" id=\"divquestion_$question_no\"><input type=\"hidden\" name=\"question_id$question_no\" value=\"$item\" /><input type=\"checkbox\" onclick=\"toggle(\'divquestion_$question_no\'); updateList();\" id=\"question_text$question_no\" name=\"question_text$question_no\" value=\"" . addslashes($leadin) . "\" checked>&nbsp;" .  addslashes($leadin) . "</div>";
       $question_no++;
+      echo "questions.push([$item, '" . addslashes($leadin) . "']);";
     }
-    echo "window.top.opener.document.getElementById('questionlist').innerHTML = window.top.opener.document.getElementById('questionlist').innerHTML + '$newHTML';\n";
-    echo "window.top.opener.document.getElementById('question_no').value = parseInt(window.top.opener.document.getElementById('question_no').value) + $question_no;\n";
+    echo "window.top.opener.addQuestionsToList(questions);";
     $mysqli->close();
   ?>
   window.top.close();

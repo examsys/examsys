@@ -1,5 +1,7 @@
 <?php
 $string['administrativetools'] = 'Narzędzia administracyjne';
+$string['entermoduleid'] = 'Podaj indentyfikator modułu.';
+$string['entermoduletitle'] = 'Podaj tytuł modułu.';
 $string['moduleid'] = 'Identyfikator modułu';
 $string['name'] = 'Nazwa';
 $string['school'] = 'Katedra';

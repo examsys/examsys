@@ -26,10 +26,7 @@
 <html onscroll="scrollXY();" onclick="hideMenus();">
 <head>
 	<title><?php echo $string['importfromqti'] ?></title>
-	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
-	<link rel="icon" href="favicon.ico" type="image/x-icon"/>
-	<link rel="P3Pv1" href="https://touchstone.nottingham.ac.uk/w3c/p3p.xml">
-  <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
+	<link rel="stylesheet" type="text/css" href="../css/submenu.css" />
 
 	<script type="text/javascript" src="/qti/js/mootools-1.2.4.js"></script> 
 

@@ -23,7 +23,7 @@
 * @copyright Copyright (c) 2010 The University of Nottingham
 * @package
 */ 
-  require "../config/config.inc";
+  require "../config/config.inc.php";
   $error = false;
   $mysqli = new $dbclass($cfg_db_host , $cfg_db_username, $cfg_db_passwd, $cfg_db_database);
   if (mysqli_connect_error()) {
@@ -37,7 +37,7 @@
     $error = true;
   }
   
-  if(!$error) {
+  if (!$error) {
     echo "OK";
   }
 

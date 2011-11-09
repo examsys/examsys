@@ -25,10 +25,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
 <html onscroll="scrollXY();" onclick="hideMenus();">
 <head>
-	<title>TouchStone Export to QTI</title>
-	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
-	<link rel="icon" href="favicon.ico" type="image/x-icon"/>
-	<link rel="P3Pv1" href="https://touchstone.nottingham.ac.uk/w3c/p3p.xml">
+	<title>Rogō Export to QTI</title>
 	<script type="text/javascript" src="js/mootools-1.2.4.js"></script> 
 	<link rel="stylesheet" type="text/css" href="css/highlight.css" /> 
 	<link rel="stylesheet" type="text/css" href="css/wizard.css" /> 

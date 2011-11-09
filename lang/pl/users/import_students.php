@@ -15,11 +15,11 @@ $string['missingcolumn'] = 'Brak kolumny \'%s\' w importowanym pliku - dodaj ją
 $string['finished'] = 'Zakończono';
 $string['loadstudents'] = 'Rogō: Ładowanie danych studentów';
 
-$string['emailmsg1'] = '1Create new user account';//niko
-$string['emailmsg2'] = '1Dear $title $surname,';
-$string['emailmsg3'] = '1A new account has been created to access the online assessment and survey system TouchStone. Your personal authentication details are the same as your university log in details.';
-$string['emailmsg4'] = '1Note:';
-$string['emailmsg5'] = '1Never share your university username/password with anyone.';
-$string['emailmsg6'] = '1Cheating in summative examinations is an academic offence and will not be tolerated.';
-$string['emailmsg7'] = '1Could not send mail to <strong>$user_email</strong>.';
+$string['emailmsg1'] = 'Utwórz nowe konto użytkownika';
+$string['emailmsg2'] = '';
+$string['emailmsg3'] = 'Utworzone zostało nowe konto w Rogō - systemie elektronicznego ankietowania i egzaminowania. Szczegóły Twego osobistego dostępu są identyczne jak szczegóły logowania do Twojego konta uniwersyteckiego.';
+$string['emailmsg4'] = 'Uwaga:';
+$string['emailmsg5'] = 'Nigdy nie ujawniaj nikomu swego loginu i hasła.';
+$string['emailmsg6'] = 'Oszukiwanie na egzaminie końcowym jest wykroczeniem akademickim i nie będzie tolerowane.';
+$string['emailmsg7'] = 'Nie można było wysłać Emaila do.';
 ?>

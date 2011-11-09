@@ -28,13 +28,14 @@
   require '../include/errors.inc';
   require '../include/feedback.inc';
   
+  check_var('id', 'GET', true, false);
+  
   if (strpos($userroles,'Demo') !== false) {
     $demo = true;
   } else {
     $demo = false;
   }
   
-  $paperID = $_GET['paperID'];
   $showReflection = true;
   if ((strpos($userroles,'Staff') !== false or strpos($userroles,'SysAdmin') !== false) AND $_GET['userID'] != '') {
     $userID = $_GET['userID'];
@@ -43,16 +44,23 @@
 
   //check the feedback has been released !!!
   if (strpos($userroles,'Student') !== false) {
-    $result = $mysqli->prepare("SELECT date FROM feedback_release WHERE paper_id=? AND date < NOW()");
-    $result->bind_param('i', $paperID);
+    $result = $mysqli->prepare("SELECT property_id, date FROM feedback_release, properties WHERE properties.property_id=feedback_release.paper_id AND crypt_name=? AND date < NOW()");
+    $result->bind_param('s', $_GET['id']);
     $result->execute();
-    $result->bind_result($date);
+    $result->bind_result($paperID, $date);
     $result->fetch();
     $result->close();
     if ($date == '') {
       header("HTTP/1.0 404 Not Found");
       exit;
     }
+  } else {
+    $result = $mysqli->prepare("SELECT property_id FROM properties WHERE crypt_name=?");
+    $result->bind_param('s', $_GET['id']);
+    $result->execute();
+    $result->bind_result($paperID);
+    $result->fetch();
+    $result->close();
   }
 
   if (!isset($_GET['ordering'])) {
@@ -130,11 +138,13 @@
   $result->close();*/
 
  ?>
+ <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
   <html>
   <head>
-  <title>Exam Feedback</title>
+
+  <title><?php echo $string['examfeedback']; ?></title>
   <style style="text/css">
-    body {font-family:Arial,sans-serif; font-size:90%; color:black; background-color:white; margin:10px; background-image:url(../artwork/grey_bar.png); background-repeat:repeat-x}
+    body {font-family:Arial,sans-serif; font-size:90%; color:black; background-color:white; margin:10px}
     td {font-size:100%}
     img {border: none;}
     .q_no {text-align:right; vertical-align:top; cursor:pointer}
@@ -143,34 +153,37 @@
     a {text-decoration:none}
     li {list-style:none; padding-bottom:5px}
     p {padding:5px}
-    h1 {font-size:150%; font-weight:bold}
+    h1 {font-size:120%; font-weight:bold; color:#1E3287}
     .r {text-align:right}
     .c {text-align:center}
   </style>
   </head>
   <body>
-    <table style="font-size:100%; border: 1px solid #C0C0C0; float:right; font-size:90%; background-color:#FFFFE1; filter: progid:DXImageTransform.Microsoft.Shadow(direction=120,color=gray,strength=4)">
-    <tr><td colspan="2" style="padding-left:10px; padding-right:10px"><strong>Key</strong></td></tr>
-    <tr><td style="padding-left:10px"><img src="../artwork/ok_comment.png" width="16" height="16" alt="Completely/Mostly acquired" /></td><td style="padding-right:10px">Acquisition of 80-100% of specific objective</td></tr>
-    <tr><td style="padding-left:10px"><img src="../artwork/minor_comment.png" width="16" height="16" alt="Partically acquired" /></td><td style="padding-right:10px">Acquisition of 50-79% of specific objective</td></tr>
-    <tr><td style="padding-left:10px"><img src="../artwork/major_comment.png" width="16" height="16" alt="Mostly not acquired" /></td><td style="padding-right:10px">Acquisition of 0-49% of specific objective</td></tr>
-    <tr><td style="padding-left:10px"><img src="../artwork/small_link.png" width="12" height="12" alt="Shortcut" /></td><td style="padding-right:10px"><a href="" onclick="return false;">hyperlink</a> - jump to section in the NLE for further details</td></tr>
-    <tr><td style="padding-left:10px" colspan="2"><strong>Relative</strong> - number of marks above '+' or below '-' relative to the mean of the cohort</td></tr>
-    <tr><td style="padding-left:10px" colspan="2"><strong>Q no</strong> - number of questions mapped to objective</td></tr>
+    <table style="position:relative; border: 1px solid #808080; float:right; font-size:90%; background-color:#FFFFEE; box-shadow: 2px 2px 2px #C0C0C0; z-index:10">
+    <tr><td colspan="2" style="padding-left:10px; padding-right:10px"><strong><?php echo $string['key']; ?></strong></td></tr>
+    <tr><td style="padding-left:10px"><img src="../artwork/ok_comment.png" width="16" height="16" alt="Completely/Mostly acquired" /></td><td style="padding-right:10px"><?php echo $string['greenicon']; ?></td></tr>
+    <tr><td style="padding-left:10px"><img src="../artwork/minor_comment.png" width="16" height="16" alt="Partically acquired" /></td><td style="padding-right:10px"><?php echo $string['ambericon']; ?></td></tr>
+    <tr><td style="padding-left:10px"><img src="../artwork/major_comment.png" width="16" height="16" alt="Mostly not acquired" /></td><td style="padding-right:10px"><?php echo $string['redicon']; ?></td></tr>
+    <tr><td style="padding-left:10px"><img src="../artwork/small_link.png" width="12" height="12" alt="Shortcut" /></td><td style="padding-right:10px"><?php echo $string['hyperlink']; ?></td></tr>
+    <tr><td style="padding-left:10px" colspan="2"><?php echo $string['relativekey']; ?></td></tr>
+    <tr><td style="padding-left:10px" colspan="2"><?php echo $string['question']; ?></td></tr>
     </table>
   <?php
-  echo "<div style=\"font-size:170%; font-weight:bold\">$paper_title</div>\n";
-  echo "<div><strong>$student_name Feedback</strong></div>\n";
+  echo "<table cellpadding=\"0\" cellspacing=\"0\" style=\"background-color:#F1F5FB; width:100%; position:absolute; top:0px; left:0px; height:85px; padding:0px; border:0px\">\n";
+  echo "<tr><td style=\"padding:5px\"><div style=\"font-size:170%; font-weight:bold\">$paper_title</div>\n";
+  echo "<div><strong>$student_name " . $string['feedback'] . "</strong></div></td></tr>\n";
+  echo "<tr><td style=\"height:3px\"><img src=\"../artwork/header_horizontal_line.gif\" width=\"100%\" height=\"3\" /></td></tr>\n";
+  echo "</table>\n";
   
   //get Cohort Data
-  $chort_question_data = getCohortData($mysqli,$moduleID,$start_date,$end_date,'%','%','%',$paperID,$paper_type,'');
+  $chort_question_data = getCohortData($mysqli, $moduleID, $start_date, $end_date, '%', '%', '%', $paperID, $paper_type, '');
   
   //get users log data excluding exclued questions
   $qid_list = '';
-  $question_data = Array();
+  $question_data = array();
   
   $startedSQL = '';
-  if(isset($_GET['started'])) {
+  if (isset($_GET['started'])) {
     $startedSQL = ' AND started = "' . $_GET['started'] . '"';;
   }
   
@@ -184,7 +197,7 @@
   $result->execute();
   $result->bind_result($q_id, $mark, $totalpos);
   $total_student_mark = 0;
-  while ($row = $result->fetch()) {
+  while ($result->fetch()) {
     if(is_string($totalpos)) {
       $question_data[$q_id]['totalpos'] = count(explode('|',$totalpos)) - 2;
     } else {
@@ -243,16 +256,16 @@
   ?>
   <br />
   <br />
-  <h1>Learning Objectives</h1>
-  <p>Below is a list of all the unique learning objectives tested by this paper. Because multiple questions may test the same objective it is possible to have partial acquisition of an objective. Use the results below to concentrate on red <img src="../artwork/major_comment.png" width="16" height="16" alt="Mostly not acquired" /> and amber <img src="../artwork/minor_comment.png" width="16" height="16" alt="Mostly not acquired" /> objectives you have not fully mastered.</p>
+  <h1><?php echo $string['learningobjectives']; ?></h1>
+  <p><?php echo $string['explanation']; ?></p>
   <?php
   if (count($objectives) == 0) {
-    echo "<p style=\"background-color:#FFC0C0; border:1px solid #C00000; padding:10px; color:#800000\">This paper has not been mapped to any learning objectives.</p>\n</body>\n</html>\n";
+    echo "<p style=\"background-color:#FFC0C0; border:1px solid #C00000; padding:10px; color:#800000\">" . $string['notmapped'] . "</p>\n</body>\n</html>\n";
     exit;
   }
   
-  echo "<blockquote><table cellspacing=\"0\" cellpadding=\"2\" border=\"0\" style=\"font-size:100%\">\n";
-  echo "<tr><th style=\"border-bottom: 1px solid #C0C0C0\">&nbsp;</th><th colspan=\"3\" style=\"border-bottom: 1px solid #C0C0C0\">Your Mark</th><th style=\"border-bottom: 1px solid #C0C0C0\">Relative</th><th style=\"border-bottom: 1px solid #C0C0C0\">Q&nbsp;no</th><th style=\"border-bottom: 1px solid #C0C0C0\">Objective</th></tr>";
+  echo "<table cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"font-size:100%; line-height:150%\">\n";
+  echo "<tr><td style=\"border-top: 1px solid #D6E5F5\">&nbsp;</td><td style=\"border-top: 1px solid #D6E5F5\"><img src=\"../artwork/vertical_spacer.gif\" width=\"1\" height=\"21\" alt=\"\" /></td><td colspan=\"3\" style=\"border-top: 1px solid #D6E5F5; color:#1E3287\">&nbsp;<nobr>" . $string['yourmark'] . "</nobr></td><td style=\"border-top: 1px solid #D6E5F5\"><img src=\"../artwork/vertical_spacer.gif\" width=\"1\" height=\"21\" alt=\"\" /></td><td style=\"border-top: 1px solid #D6E5F5; color:#1E3287\">&nbsp;" . $string['relative'] . "&nbsp;</td><td style=\"border-top: 1px solid #D6E5F5\"><img src=\"../artwork/vertical_spacer.gif\" width=\"1\" height=\"21\" alt=\"\" /></td><td style=\"border-top: 1px solid #D6E5F5; color:#1E3287\"><nobr>&nbsp;" . $string['qno'] . "&nbsp;</nobr></td><td style=\"border-top: 1px solid #D6E5F5\"><img src=\"../artwork/vertical_spacer.gif\" width=\"1\" height=\"21\" alt=\"\" /></td><td style=\"border-top: 1px solid #D6E5F5; color:#1E3287; text-align:center\">" . $string['objective'] . "</td></tr>";
   foreach($objectives as $id => $obj_data) {
     $session_string = '';
     if($obj_data['ratio'] > 0.799) {
@@ -278,40 +291,41 @@
       $session_string = "&nbsp;&nbsp;<a target=\"_blank\" href=\"" . $obj_data['session']['source_url'] . "\"><img src=\"../artwork/small_link.png\" width=\"12\" height=\"12\" /></a>&nbsp;<a target=\"_blank\" href=\"" . $obj_data['session']['source_url'] . "\">" . $obj_data['session']['sessiontitle'] . "</a>";
     }
 
-    echo "<tr><td><img src=\"$img_src\" width=\"16\" height=\"16\" />&nbsp;</td><td class=\"r\">" . $obj_data['mark_sum'] . '</td><td>out&nbsp;of</td><td>' . $obj_data['totalpos_sum'] . "</td><td class=\"r\">$comparison</td><td class=\"c\">" . $obj_data['questions'] . "</td><td>" . $obj_data['content'] . " $session_string</td></tr>\n";
+    echo "<tr><td><img src=\"$img_src\" width=\"16\" height=\"16\" />&nbsp;</td><td></td><td class=\"r\">" . $obj_data['mark_sum'] . "</td><td>&nbsp;" . $string['outof'] . "&nbsp;</td><td>" . $obj_data['totalpos_sum'] . "</td><td></td><td class=\"r\">$comparison</td><td></td><td class=\"c\">" . $obj_data['questions'] . "</td><td></td><td>" . $obj_data['content'] . " $session_string</td></tr>\n";
   }
-  echo "</table></blockquote>\n";
+  echo "</table>\n";
 
-  echo "<h1>Summary Information</h1>";
+  echo "<h1>" . $string['summaryinformation'] . "</h1>";
   echo "<table style=\"font-size:100%\">\n";
-  echo "<tr><td>Paper Title</td><td>$paper_title</td></tr>\n";
-  echo "<tr><td>Started at</td><td>$started</td></tr>\n";
+  echo "<tr><td>" . $string['papertitle'] . "</td><td>$paper_title</td></tr>\n";
+  echo "<tr><td>" . $string['startedat'] . "</td><td>$started</td></tr>\n";
   //display student marks
   if($paperID == 2501) {
     if ($marking == 1) {
       $adjusted = round((($total_student_mark-$random_mark)/($total_mark-$random_mark))*100);
-      echo "<tr><td>Your Mark</td><td>$total_student_mark out of $total_mark (adjusted $adjusted" . "%)</td></tr>\n";  
+      echo "<tr><td>" . $string['yourmark'] . "</td><td>$total_student_mark " . $string['outof'] . " $total_mark (" . $string['adjusted'] . " $adjusted" . "%)</td></tr>\n";  
       echo "<tr><td>Random Mark</td><td>" . round($random_mark) . "</td></tr>\n";
     } else {
       $per = round((($total_student_mark)/($total_mark))*100);
-      echo "<tr><td>Your Mark</td><td>$total_student_mark out of $total_mark ($per" . "%)</td></tr>\n";  
+      echo "<tr><td>" . $string['yourmark'] . "</td><td>$total_student_mark " . $string['outof'] . " $total_mark ($per" . "%)</td></tr>\n";  
    
     }
   }
   if ($paper_type < '3') {
-    echo "<tr><td>Exam Length</td><td>" . formatsec($exam_duration*60) . "</td></tr>\n";
-    echo "<tr><td>Time spent</td><td>" . formatsec($time_spent) . "</td></tr>\n";
+    echo "<tr><td>" . $string['examlength'] . "</td><td>" . formatsec($exam_duration*60) . "</td></tr>\n";
+    echo "<tr><td>" . $string['timespent'] . "</td><td>" . formatsec($time_spent) . "</td></tr>\n";
   }
   echo "</table>\n";
   
-  
+  // Code specific to the University of Nottingham below here --------------------------------------------------------------------------------------------------------------------------------------------
+  /*
   $result = $mysqli->prepare("SELECT vle_api FROM modules WHERE moduleid = ?");
   $result->bind_param('s',$moduleID);
   $result->execute();
   $result->bind_result($vle_api);
   $result->fetch();  
   $result->close();
-  if($vle_api == 'NLE') {
+  if ($vle_api == 'NLE') {
     //display reflection
     $insighturl = "http://www.nle.nottingham.ac.uk/insight/manage_reflections.php?related_type=examfeedback&related_to=$paperID&moduleID=$moduleID&session=$session";
 
@@ -333,9 +347,10 @@
       display_error("NLE Log Insert Error",$mysqliNLE->error);
     }
     $mysqliNLE->close();
-    $mysqli->close();
   }
+  */
   
-  ?>
+  $mysqli->close();
+?>
 </body>
 </html>

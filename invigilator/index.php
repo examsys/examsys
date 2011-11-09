@@ -73,7 +73,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <head>
-<title>TouchStone: <?php echo $string['invigilatoraccess']; ?></title>
+<title>Rogo: <?php echo $string['invigilatoraccess']; ?></title>
 
 <script language="JavaScript">
   // please keep these lines on when you copy the source
@@ -158,7 +158,6 @@ body {margin:0px; background-color:white; color:#000040; font-family:Arial,sans-
   $lab_results->close();
 
 ?>
-
 <table cellspacing="0" cellpadding="0" border="0" style="width:100%; font-size:100%; background-color:#F1F5FB">
 <tr>
 <td><div style="padding-left:10px; font-size:24pt; font-weight:bold">
@@ -194,7 +193,7 @@ body {margin:0px; background-color:white; color:#000040; font-family:Arial,sans-
     }
     $paper_results->close();
     echo "<td style=\"vertical-align:top; width:$col_width%\">";
-    echo $string['checklist'];
+    echo sprintf($string['checklist'],'../lang/' . $language . '/invigilator/');
     ?>
     
     <br />

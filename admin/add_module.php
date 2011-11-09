@@ -174,11 +174,11 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
   <script language="JavaScript">
     function checkForm() {
       if (myform.moduleid.value == "") {
-        alert ("Please enter an Identifier for the module.");
+        alert ("<?php echo $string['entermoduleid']; ?>");
         return false;
       }
       if (myform.fullname.value == "") {
-        alert ("Please enter a title for the module.");
+        alert ("<?php echo $string['entermoduletitle']; ?>");
         return false;
       }
     }

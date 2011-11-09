@@ -67,33 +67,6 @@ function check_fullSave($q_id, $mysqli) {
   }
 }
 
-function do_limitedSave($q_id, $mysqli, $userID) {
-  $changes = false;
-  
-  $part_names = array('bloom','status');
-  foreach($part_names as $section_name) {
-    if ($section_name != 'keywords') $$section_name = $_POST["$section_name"];
-    $old_section_name = 'old_' . $section_name;
-    $$old_section_name = $_POST["$old_section_name"];
-    record_trackChanges('Edit Question', $q_id, $$old_section_name, $$section_name, $section_name, $userID, $changes);
-  }
-  
-  saveKeywords($q_id, $userID, $changes, true, $mysqli);
-    
-  $question_teams = getTeams();
-  record_trackChanges('Edit Question', $q_id, $_POST['old_teams'], $question_teams, 'teams', $userID, $changes);
-  
-
-  if ($changes == true) {
-    $result = $mysqli->prepare("UPDATE questions SET bloom=?, q_group=?, status=?, last_edited=NOW() WHERE q_id=?");
-    $result->bind_param('sssi', $bloom, $question_teams, $status, $q_id);
-    $result->execute();  
-    $result->close();
-  }
-  
-  save_external_responses($mysqli);
-}
-
 function redirect() {
   global $protocol, $mysqli, $q_id, $userID;
   // Release the lock.
@@ -122,19 +95,7 @@ function redirect() {
   exit;   // Stop script execution after the redirect.
 }
 
-function save_external_responses($dblink) {
-  // Record responses to external examiner comments.
-  for ($i=0; $i<$_POST['comment_no']; $i++) {
-    $tmp_response = $_POST["response$i"];
-  
-    $result = $dblink->prepare("UPDATE review_comments SET action=?, response=? WHERE id=?");
-    $result->bind_param('ssi', $_POST["action$i"], $tmp_response, $_POST["commentid$i"]);
-    $result->execute();  
-    $result->close();
-  }
-}
-
-function save_external_responses_new($dblink, $question, $ids, $actions, $responses, $paper_id = -1) {
+function save_external_responses($dblink, $question, $ids, $actions, $responses, $paper_id = -1) {
   // Record responses to external examiner comments.
     $comments = $question->get_comments($paper_id);
     $changed = false;
@@ -309,7 +270,7 @@ function hidden_edit_fields() {
   return $html;
 }
 
-function save_buttons_new($mode, $disabled, $locked, $allow_correct, $userID, $checkout_author, $paper_id, &$string) {
+function save_buttons($mode, $disabled, $locked, $allow_correct, $userID, $checkout_author, $paper_id, &$string) {
   $html = '';
   
   if ($mode == $string['edit']) {
@@ -355,25 +316,6 @@ HTML;
       <input id="submit-cancel" name="submit-cancel" value="{$string['cancel']}" type="submit" class="submit cancel" />
 
 HTML;
-  
-  return $html;
-}
-
-function save_buttons($disabled, $locked, $userID, $checkout_author) {
-  global $string;
-  $html = '';
-  
-  if ($disabled == '') {
-    $html .= '<input style="width:120px" type="submit" name="submit" value="' . $string['save'] . '" />&nbsp;';
-  } elseif ($checkout_author == '') {
-    $html .= '<input type="submit" name="submit" value="' . $string['limitedsave'] . '" />&nbsp;';
-  } elseif ($checkout_author != $userID) {
-    $html .= '<input style="width:120px" type="submit" name="bogus" value="' . $string['save'] . '" disabled />&nbsp;';
-  }
-  if ($locked != '' and $_GET['paperID'] != '') {
-    $html .= '<input style="width:120px" type="submit" name="submit" value="' . $string['correct'] . '" />&nbsp;';
-  }
-  $html .= '<input style="width:120px" type="submit" name="submit" value="' . $string['cancel'] . '" onclick="formCancel();" />';  
   
   return $html;
 }

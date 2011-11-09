@@ -29,7 +29,7 @@
 <html>
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<title>System Error Report<?php echo " $cfg_install_type"; ?></title>
+<title><?php echo $string['systemerrrorreport'] . ' ' . $cfg_install_type; ?></title>
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
 <style>
 th {background-color:#F1F5FB; font-weight:normal; text-align:left}
@@ -88,7 +88,7 @@ th {background-color:#F1F5FB; font-weight:normal; text-align:left}
 <td colspan="4" style="padding-left:0px; background-color:#F1F5FB"><div class="breadcrumb"><a href="../staff/index.php"><?php echo $string['home']; ?></a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php"><?php echo $string['administrativetools']; ?></a></div><div style="margin-left:10px; font-size:200%; font-weight:bold"><?php echo $string['systemerrrorreport']; ?></td>
 <td colspan="3" style="padding-left:0px; background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(1); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="<?php echo $string['help']; ?>" border="0" /></a><br /><div style="padding-top:5px"><input type="checkbox" name="showfixed" id="showfixed" value="1" onclick="updateCookies();"<?php if (isset($_COOKIE['showfixed'])) echo $_COOKIE['showfixed']; ?> /> <?php echo $string['showfixed']; ?></div></td>
 </tr>
-<tr><th>&nbsp;<?php echo $string['date']; ?></th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['type']; ?></th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['message']; ?></th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['file']; ?></th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['lineno']; ?>&nbsp;</th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['user']; ?></th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['userid']; ?></th></tr>
+<tr><th>&nbsp;<?php echo $string['date']; ?></th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['type']; ?></th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['message']; ?></th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['file']; ?></th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" /><nobr>&nbsp;<?php echo $string['lineno']; ?>&nbsp;</nobr></th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" /><nobr>&nbsp;<?php echo $string['user']; ?></nobr></th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" /><nobr>&nbsp;<?php echo $string['userid']; ?>&nbsp;</nobr></th></tr>
 <tr><td colspan="7" style="padding-left:0px; height:3px"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td></tr>
 
 <?php

@@ -111,7 +111,7 @@ a:visited.page {color:white}
       $roles_check = 'AND roles="Staff"';
     }
   
-    $search_results = $mysqli->prepare("SELECT id, title, MATCH (title, body_plain) AGAINST (?) AS relevance FROM staff_help WHERE MATCH (title, body_plain) AGAINST (? IN BOOLEAN MODE) $roles_check ORDER BY relevance DESC");
+    $search_results = $mysqli->prepare("SELECT id, title, MATCH (title, body_plain) AGAINST (?) AS relevance FROM staff_help WHERE MATCH (title, body_plain) AGAINST (? IN BOOLEAN MODE) $roles_check AND deleted IS NULL ORDER BY relevance DESC");
     $search_results->bind_param('ss', $_GET['searchstring'], $_GET['searchstring']);
     $search_results->execute();
     $search_results->store_result();

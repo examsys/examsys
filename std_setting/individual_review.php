@@ -84,21 +84,22 @@ $current_screen = 1;
 ?>
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
 <style type="text/css">
-  body {width:100%; background-color:<?php echo $bgcolor; ?>; color:<?php echo $fgcolor; ?>; padding:0px;margin:0px; border:0px; font-family:Arial,sans-serif; font-size:90%}
-  pre {width:90%}
-  li {margin-left:15px; margin-right:15px; font-family:Arial,sans-serif; font-size:100%}
-  select, input {font-size:100%}
-  table {font-size:100%}
-  p {margin-top:0px; padding-top:0px}
-  .raised_tbl {background-color:#5582D2; border-left:solid #90C8FF 1px; border-right:solid #003060 1px; border-top:solid #90C8FF 1px; border-bottom: solid #003060 1px}
-  .paper {margin-left:0px; font-family:Arial,sans-serif; font-size:180%; color:white; font-weight:bold}
-  .question_no {width:40px; text-align:right; vertical-align:top}
-  .theme {font-size:150%; font-weight:bold; color:<?php echo $themecolor; ?>; padding-left:20px}
-  .notes {font-size:80%; color: <?php echo $labelcolor; ?>}
-  .mk {color:#808080; font-size:80%}
-  .active {color:<?php echo $fgcolor; ?>}
-  .inactive {color:#C0C0C0}
-  .heading {background-color:#EBEADB; color:black; font-family:Arial,sans-serif}
+body {width:100%; background-color:<?php echo $bgcolor; ?>; color:<?php echo $fgcolor; ?>; padding:0px;margin:0px; border:0px; font-family:Arial,sans-serif; font-size:90%}
+pre {width:90%}
+li {margin-left:15px; margin-right:15px; font-family:Arial,sans-serif; font-size:100%}
+select, input {font-size:100%}
+table {font-size:100%}
+p {margin-top:0px; padding-top:0px}
+.raised_tbl {background-color:#5582D2; border-left:solid #90C8FF 1px; border-right:solid #003060 1px; border-top:solid #90C8FF 1px; border-bottom: solid #003060 1px}
+.paper {margin-left:0px; font-family:Arial,sans-serif; font-size:180%; color:white; font-weight:bold}
+.question_no {width:40px; text-align:right; vertical-align:top}
+.theme {font-size:150%; font-weight:bold; color:<?php echo $themecolor; ?>; padding-left:20px}
+.notes {font-size:80%; color: <?php echo $labelcolor; ?>}
+.mk {color:#808080; font-size:80%}
+.active {color:<?php echo $fgcolor; ?>}
+.inactive {color:#C0C0C0}
+.heading {background-color:#EBEADB; color:black; font-family:Arial,sans-serif}
+.extmatch li {padding-bottom:14px; vertical-align:text-bottom; list-style-type:upper-alpha}
 </style>
 
 <script language="JavaScript" src="../javascript/jquery-1.6.1.min.js"></script>

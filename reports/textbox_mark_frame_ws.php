@@ -27,7 +27,7 @@
 ?>
 <html>
 <head>
-  <title>TouchStone - Question <?php echo $_GET['qNo']; ?></title>
+  <title>Rogō - Question <?php echo $_GET['qNo']; ?></title>
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
   <link rel="icon" href="favicon.ico" type="image/x-icon"/>
 </head>
@@ -39,6 +39,6 @@
     </frameset>
   </frameset>
   <noframes>
-    Sorry, you need frames to use the TouchStone.
+    Sorry, you need frames to use the Rogō.
   </noframes>
 </html>

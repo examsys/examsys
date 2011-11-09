@@ -53,7 +53,7 @@
 <html>
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<title>TouchStone: <?php echo $string['questionbank'] . " $cfg_install_type"; ?></title>
+<title>Rogo: <?php echo $string['questionbank'] . ' ' . $cfg_install_type; ?></title>
 
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
 <style style="text/css">
@@ -157,8 +157,18 @@
       echo "<td></td>";
     }
     $tmp_leadin = $leadin;
-    if (strlen($tmp_leadin) > 160) $tmp_leadin = substr($tmp_leadin,0,160) . '...';
-    if (trim($tmp_leadin) == '') $tmp_leadin = '<span style="color:red">' . $string['noquestionleadin'] . '</span>';
+    
+    if (strpos($tmp_leadin,'class="mee"') === false) {
+      $tmp_leadin = strip_tags($tmp_leadin);                                     // No equation, strip all tags
+      if (strlen($tmp_leadin) > 160) {
+        $tmp_leadin = substr($tmp_leadin,0,160) . '...';
+      }
+    } else {
+      $tmp_leadin = trim(str_replace('&nbsp;',' ',(strip_tags($tmp_leadin,"<div>,<span>"))));
+      $tmp_leadin = preg_replace('/ style="[\w-,:; \']*"/i', '', $tmp_leadin);   // Equation present, strip some formatting
+    }
+    
+    if (trim($tmp_leadin) == '') $tmp_leadin = '<span style="color:#C00000">' . $string['noquestionleadin'] . '</span>';
     echo "<td class=\"d\">$tmp_leadin <span class=\"owner\">($title $initials $surname)</span></td>";
     echo "<td class=\"d\" onclick=\"qOff()\"><nobr>" . $string[$q_type] . "</nobr></td>";
     echo "<td class=\"d\" onclick=\"qOff()\">$last_edited</td>\n";

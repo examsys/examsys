@@ -32,6 +32,28 @@
   check_var('module', 'GET', true, false);
   set_time_limit(0);
   ob_start();
+
+  
+// Folder security checks
+$folder = '';
+if (isset($_GET['module'])) {
+  $module = $_GET['module'];
+  
+  $module_data = $mysqli->prepare("SELECT fullname, checklist, selfenroll FROM modules WHERE moduleid=?");
+  $module_data->bind_param('s', $module);
+  $module_data->execute();
+  $module_data->store_result();
+  $module_data->bind_result($module_fullname, $checklist, $selfenrol);
+  $module_data->fetch();
+  $module_count = $module_data->num_rows();
+  $module_data->close();
+  
+  if ($module_count == 0) {
+    display_error($string['modulenotfound'], sprintf($string['modulenotfoundmsg'], $module), false, true);
+  }
+} else {
+  $module = '';
+}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>

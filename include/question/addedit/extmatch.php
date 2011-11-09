@@ -36,8 +36,6 @@ if ($num_options > 0) {
 }
 $option_texts = array();
 
-$roman = array('i','ii','iii','iv','v','vi','vii','viii','ix','x');
-
 // Media, stem and feedback for this question type are compound fields
 $all_media = $question->get_all_media();
 $stems = $question->get_all_stems();
@@ -47,7 +45,7 @@ $current_media = array('filename' => $all_media['filenames'][0], 'width' => $all
 // Work out how many 'questions' to show
 $visible_questions = 0;
 for ($i = 0; $i < $question->max_stems; $i++) {
-  if ((isset($stems[$i]) and $stems[$i] != '') or (isset($all_media['filenames'][$i]) and $all_media['filenames'][$i] != '')) $visible_questions = $i + 1;
+  if ((isset($stems[$i]) and $stems[$i] != '') or (isset($all_media['filenames'][$i + 1]) and $all_media['filenames'][$i + 1] != '')) $visible_questions = $i + 1;
 }
 ?>
 <script type="text/javascript">
@@ -73,12 +71,12 @@ $(function () {
       $option_text = '';
       $option_id = -1;
     }
-    if ($option_text != '') $option_texts[$index + 1] = chr($index + 65) . '. ' . $option_text;
+    if ($option_text != '') $option_texts[$index + 1] = ($index + 1) . '. ' . $option_text;
 ?>
-            <dt><?php echo $mandatory . ' ' . chr($index + 65) ?>.</dt>
+            <dt><?php echo $mandatory . ' ' . ($index + 1); ?>.</dt>
             <dd>
               <textarea rows="2" id="option_text<?php echo $index + 1 ?>" name="option_text<?php echo $index + 1 ?>" rel="<?php echo $index + 1 ?>" class="extmatch-option form-small form-fixed"><?php echo $option_text ?></textarea>
-              <input name="optionid<?php echo $index + 1 ?>" value="<?php echo $option_id ?>" type="hidden" />
+              <input name="optionid<?php echo ($index + 1); ?>" value="<?php echo $option_id ?>" type="hidden" />
             </dd>
 <?php
   }
@@ -114,10 +112,10 @@ for ($index = 1; $index <= $question->max_stems; $index++):
 ?>
         <div class="option<?php echo $hidden ?>">
           <div class="form">
-            <h2><?php echo $string['scenario']." ".$roman[$index - 1] ?></h2>
+            <h2><?php echo $string['scenario'] . ' ' . chr($index+64) ?>.</h2>
           </div>
           
-          <table id="q-options" class="form" summary="Edit scenario <?php echo $roman[$index - 1] ?>">
+          <table id="q-options" class="form" summary="Edit scenario <?php echo chr($index+64) ?>.">
 <?php
   include 'options/opt_extmatch.php';
 ?>
@@ -128,7 +126,7 @@ endfor;
 ?>
 
 <?php
-if($question->get_locked() == '') {
+if ($question->get_locked() == '') {
 ?>
         <table id="q-options" class="form" summary="Add more options">
           <tbody id="add-option-holder">

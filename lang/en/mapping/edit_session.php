@@ -11,4 +11,5 @@ $string['new'] = 'New...';
 $string['save'] = 'Save';
 $string['manageobjectives'] = 'Manage Objectives';
 $string['msg1'] = 'Type New Objective here...';
+$string['msg2'] = 'Please enter a meaningful title for your new session.';
 ?>

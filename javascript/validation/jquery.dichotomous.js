@@ -7,7 +7,8 @@ $(function() {
       leadin: 'required'
     },
     messages: {
-      leadin: 'Please enter a leadin for the question'
+      leadin: lang['enterleadin'],
+      //niko leadin: 'Please enter a leadin for the question'
     },
     errorPlacement: function(error, element) {
       if (element.attr('name') == 'leadin') {
@@ -18,7 +19,8 @@ $(function() {
       }
     },
     invalidHandler: function() {
-      alert('There were problems with your submission. Please review the form and re-try');
+      //niko alert('There were problems with your submission. Please review the form and re-try');
+      alert(lang['validationerror']);
     }
   });
 })

@@ -32,7 +32,7 @@ $needed_cols1 = array('student_id','first names','surname','title','course code'
 $needed_cols2 = array('id','forenames','family name','title','degree','year of study','email');
 
 function add_users_from_file($fileName) {
-  global $header, $needed_cols1, $needed_cols2, $mysqli;
+  global $header, $needed_cols1, $needed_cols2, $mysqli, $string;
   
   $degrees = array();
   $users[] = array();
@@ -60,7 +60,7 @@ function add_users_from_file($fileName) {
       $header = array_flip($header);
       for ($i=0; $i<count($needed_cols1); $i++) {
         if (!isset($header[$needed_cols1[$i]]) and !isset($header[$needed_cols2[$i]])) {
-          $error['error'][] = "<li>Missing '" . $needed_cols1[$i] . "' Colum from import please add it.</li>";
+          $error['error'][] = "<li>" . sprintf($string['missingcolumn'],$needed_cols1[$i]) . "</li>";
         }
       }
       if (count($error) > 0) {
@@ -175,27 +175,28 @@ function add_users_from_file($fileName) {
 }
 
 function send_welcome_email($title, $surname, $username, $password, $user_email) {
-  $subject = "New TouchStone account";
+global $string;
+  $subject = "New Rogo account";
   $headers = "From: $support_email\n";
   $headers .= "MIME-Version: 1.0\nContent-type: text/html; charset=iso-8859-1\n";
   $message = "<!doctype html public \"-//w3c//dtd html 4.0 transitional//en\">
 <html>
 <head>
-<title>Create new user account</title>
+<title>" . $string['emailmsg1'] . "</title>
 <style>
 body, td, p, div {font-family:Arial,sans-serif; background-color:white; color:#003366; font-size:10pt}
 </style>
 </head>
 <body>
-<p>Dear $title $surname,</p>
-<p>A new account has been created to access the online assessment and survey system TouchStone. Your personal authentication details are the same as your university log in details.</p>
-<p><strong>Note:</strong></p>
+<p>" . $string['emailmsg2'] . " $title $surname,</p>
+<p>" . $string['emailmsg3'] . "</p>
+<p><strong>" . $string['emailmsg4'] . "</strong></p>
 <ul>
-<li>Never share your university username/password with anyone.</li>
-<li>Cheating in summative examinations is an academic offence and will not be tolerated.</li>
+<li>" . $string['emailmsg5'] . "</li>
+<li>" . $string['emailmsg6'] . "</li>
 </ul>\n
 </body>\n</html>";
 
- mail($user_email, $subject, $message, $headers) or print "<p>Could not send mail to <strong>$user_email</strong>.</p>";
+ mail($user_email, $subject, $message, $headers) or print "<p>" . $string['emailmsg7'] . " <strong>$user_email</strong>.</p>";
 }
 ?>

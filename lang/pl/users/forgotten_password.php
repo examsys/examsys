@@ -1,7 +1,4 @@
 <?php
-
-// niko
-
 $string['forgottenpassword'] = 'Utracone hasło';
 $string['emailaddress'] = 'Adres Email';
 $string['emailaddressinvalid'] = 'Podaj poprawny adres Email';

@@ -69,12 +69,12 @@ $stmt->bind_result($property_id, $labs, $paper_title, $paper_type, $paper_prolog
 while ($stmt->fetch()) {
   $no_screens = $screen;
   $original_paper_type = $paper_type;
-  if ($q_type != 'info') {
+//  if ($q_type != 'info') {
     if (!isset($screen_data[$no_screens])) { 
       $screen_data[$no_screens] = 1;
     } else {
       $screen_data[$no_screens]++;
-    }
+//    }
   } 
   // If set overwrite the default colours with the current users' special settings
   if (!isset($bgcolor) or $bgcolor == 'NULL' or $bgcolor == '') $bgcolor = $paper_bgcolor;
@@ -279,11 +279,11 @@ echo '" onsubmit="return confirmSubmit()">';   // Warning message only in linear
   $old_theme = '';
   $previous_q_type = '';
 
-  $question_data = $mysqli->prepare("SELECT q_type, q_id, score_method, display_method, marks_correct, marks_incorrect, marks_partial, theme, scenario, leadin, correct, REPLACE(option_text,'\t','') AS option_text, q_media, q_media_width, q_media_height, o_media, o_media_width, o_media_height, notes, display_pos, q_option_order FROM papers, questions, options WHERE paper=? AND screen=? AND papers.question=questions.q_id AND questions.q_id=options.o_id ORDER BY display_pos, id_num");
+  $question_data = $mysqli->prepare("SELECT q_type, q_id, score_method, display_method, marks_correct, marks_incorrect, marks_partial, theme, scenario, leadin, correct, correct_fback, REPLACE(option_text,'\t','') AS option_text, q_media, q_media_width, q_media_height, o_media, o_media_width, o_media_height, notes, display_pos, q_option_order FROM papers, questions, options WHERE paper=? AND screen=? AND papers.question=questions.q_id AND questions.q_id=options.o_id ORDER BY display_pos, id_num");
   $question_data->bind_param('ii', $property_id, $current_screen);
   $question_data->execute();
   $question_data->store_result();
-  $question_data->bind_result($q_type, $q_id, $score_method, $display_method, $marks_correct, $marks_incorrect, $marks_partial, $theme, $scenario, $leadin, $correct, $option_text, $q_media, $q_media_width, $q_media_height, $o_media, $o_media_width, $o_media_height, $notes, $display_pos, $q_option_order);
+  $question_data->bind_result($q_type, $q_id, $score_method, $display_method, $marks_correct, $marks_incorrect, $marks_partial, $theme, $scenario, $leadin, $correct, $correct_fback, $option_text, $q_media, $q_media_width, $q_media_height, $o_media, $o_media_width, $o_media_height, $notes, $display_pos, $q_option_order);
   $num_rows = $question_data->num_rows;
   echo "<table cellpadding=\"4\" cellspacing=\"0\" border=\"0\" width=\"100%\" style=\"table-layout:fixed\">\n";
   echo "<col width=\"40\"><col>\n";
@@ -305,6 +305,7 @@ echo '" onsubmit="return confirmSubmit()">';   // Warning message only in linear
       $questions_array[$q_no]['q_media_width'] = $q_media_width;
       $questions_array[$q_no]['q_media_height'] = $q_media_height;
       $questions_array[$q_no]['q_option_order'] = $q_option_order;
+      $questions_array[$q_no]['correct_fback'] = $correct_fback;
       $questions_array[$q_no]['dismiss'] = '';
     }
     $questions_array[$q_no]['options'][] = array('correct'=>$correct, 'option_text'=>$option_text, 'o_media'=>$o_media, 'o_media_width'=>$o_media_width, 'o_media_height'=>$o_media_height, 'marks_correct'=>$marks_correct, 'marks_incorrect'=>$marks_incorrect, 'marks_partial'=>$marks_partial);

@@ -22,16 +22,7 @@
 * @package
 */
 
-// TODO: check all options work for EITHER text or media
-// TODO: SCT - old SCT type
-// TODO: check - was leadin/scenario change tracking looking at the plain version?
 // TODO: replace comment OK etc. icons with CSS BG image?
-
-// Keyword based and random questions aren't coming through here
-if (isset($_GET['type']) and ($_GET['type'] == 'random' or $_GET['type'] == 'keyword_based')) {
-  $random_mode = (!isset($_GET['q_id'])) ? 'add' : 'edit';
-  header('Location: ' . '../' . $random_mode . '/' . $_GET['type'] . '.php?' . $_SERVER['QUERY_STRING']);
-}
 
 require '../../include/staff_auth.inc';
 require_once '../../classes/question.class.php';
@@ -175,9 +166,7 @@ if ($critical_error == '') {
       if (!in_array('media', $question->get_compound_fields())) {
         $question->populate_media('q_media', $_FILES, $_POST);
       }
-      
-      // TODO: track changes for compound field delete?
-      
+            
       // Save compound fields
       $question->populate_compound($compound_fields, $_POST, array('media'), $prefix='question_');
 
@@ -191,7 +180,6 @@ if ($critical_error == '') {
       $question->set_leadin(clearMSOtags($question->get_leadin()));
    
 
-      // TODO: check usage of old getTeams function - USED IN LIMITED SAVE FUNCTION
       if (isset($_POST['teams'])) {
         $question->set_teams($_POST['teams']);
       }
@@ -241,7 +229,6 @@ if ($critical_error == '') {
           }
         }
         
-        // TODO: have removed 'and !$option->is_blank()' - check if this is needed here
         if ($option != null and !in_array('media', $question->get_compound_fields())) {
           // Handle changes in media
           $old_media = $option->get_media();
@@ -297,12 +284,10 @@ if ($critical_error == '') {
             insert_into_papers($paper_id, $question->id);
           }
             	    
-          // TODO: check usage of old saveKeywords function - USED IN LIMITED SAVE FUNCTION
           save_keywords($question, $userID, true, $mysqli, $string);
       
-    	    // TODO: check usage of old save_external_responses function - USED IN LIMITED SAVE FUNCTION
     	    if(isset($_POST['comment_ids']) and isset($_POST['actions']) and isset($_POST['responses'])) {
-    	      save_external_responses_new($mysqli, $question, $_POST['comment_ids'], $_POST['actions'], $_POST['responses'], $paper_id);
+    	      save_external_responses($mysqli, $question, $_POST['comment_ids'], $_POST['actions'], $_POST['responses'], $paper_id);
     	    }
     	    
     	    if (isset($_POST['objective_modules'])) {
@@ -317,6 +302,7 @@ if ($critical_error == '') {
     
     if (count($errors) == 0) redirect();
   } elseif (isset($_POST['submit-cancel']) and $_POST['submit-cancel'] == $string['cancel']) {
+    $question->clear_checkout();
     redirect();
   }
 
@@ -367,7 +353,7 @@ endif;
 <script type="text/javascript">
 var lang = {
 <?php
-$langstrings = array('allowpartial', 'validationerror', 'enterleadin', 'showmore', 'hidemore', 'enteroption');
+$langstrings = array('allowpartial', 'validationerror', 'enterleadin', 'showmore', 'hidemore', 'enteroption', 'mrqconvert', 'entervignette');
 $first = true;
 foreach ($langstrings as $langstring) {
   if (!$first) {
@@ -395,9 +381,8 @@ foreach ($langstrings as $langstring) {
 <?php 
 if ($critical_error == '') {
   $mapping_enabled = ($question->allow_mapping()) ? '' : ' class="disabled"';
-  // TODO: format dates for locale
-  $creation_date = ($mode == 'Edit') ? strftime($cfg_short_date, $question->get_created('timestamp')) : $string['now'];
-  $modified_date = ($question->get_last_edited('timestamp')) ? strftime($cfg_short_date, $question->get_last_edited('timestamp')) : $string['never'];
+  $creation_date = ($mode == 'Edit') ? strftime($cfg_short_date, $question->get_created('timestamp')) : strftime($cfg_short_date, time());
+  $modified_date = ($question->get_last_edited('timestamp')) ? strftime($cfg_short_date, $question->get_last_edited('timestamp')) : $string['na'];
 ?>
     <div class="tab-bar">
       <div class="tab-holder">
@@ -456,9 +441,9 @@ if($critical_error != '') {
   } else {
     $query_string .= '?type=' . $question->get_type();;
   }
-  $query_string .= ($q_no != '') ? '&q_no=' . $q_no : '';
-  $query_string .= ($paper_id != -1) ? '&paperID=' . $paper_id : '';
-  $query_string .= ($module != '') ? '&module=' . $module : '';
+  $query_string .= ($q_no != '') ? '&amp;q_no=' . $q_no : '';
+  $query_string .= ($paper_id != -1) ? '&amp;paperID=' . $paper_id : '';
+  $query_string .= ($module != '') ? '&amp;module=' . $module : '';
 
 ?>
 	<form id="edit_form" name="edit_form" method="post" action="<?php echo $_SERVER['PHP_SELF'] . $query_string ?>" enctype="multipart/form-data" class="clearinput">
@@ -496,7 +481,7 @@ if (count($errors) > 0) {
 <?php
 }
 ?>
-        <div id="question-holder">
+        <div id="question-holder" class="clearfix">
           <div class="form">
             <h2><?php echo $string['question'] ?></h2>
           </div>
@@ -510,7 +495,6 @@ if ($question->get_type() != '') require_once '../../include/question/addedit/' 
           </div>
         
 <?php
-// TODO: check usage of old echoMetadata function - SAFE TO REMOVE
 echo render_metadata($mysqli, $question, $question->use_bloom(), $module, $disabled, $string);
 ?>
         </div>
@@ -519,7 +503,6 @@ echo render_metadata($mysqli, $question, $question->use_bloom(), $module, $disab
       <div id="changes" class="tab-area">
 <?php
 $changes = $question->get_changes();
-// TODO: remove 'changes_tab.inc'?
 echo render_changes($changes, $string);
 ?>
       </div>
@@ -527,28 +510,21 @@ echo render_changes($changes, $string);
       <div id="comments" class="tab-area">
 <?php
 $comments = $question->get_comments($paper_id);
-// TODO: remove 'comments_tab.inc'?
 echo render_comments($comments, $string);
 ?>
       </div>
 
       <div id="mapping" class="tab-area">
 <?php
-// TODO: remove 'mapping_tab.inc'?
-// TODO: how does it work in add? What if the question isn't on a paper?
 echo render_objectives_mapping_form($mysqli, $paper_id, $string);
 ?>
         
       </div>
-      
-      <div id="bar-spacer">&nbsp;</div>
     </div>
 
     <div id="button-bar">
 <?php
-// TODO: check old save_buttons function - SAFE TO REMOVE
-echo save_buttons_new($mode, $disabled, $question->get_locked(), $question->allow_correction(), $userID, $question->get_checkout_author_id(), $paper_id, $string);
-// TODO: make cancel jQuery
+echo save_buttons($mode, $disabled, $question->get_locked(), $question->allow_correction(), $userID, $question->get_checkout_author_id(), $paper_id, $string);
 ?>
       <input type="hidden" name="q_id" value="<?php echo $question->id ?>" />
       <input name="checkout_author" value="<?php echo $userID ?>" type="hidden" />

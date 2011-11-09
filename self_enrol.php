@@ -33,7 +33,7 @@ $session = DateUtils::get_current_academic_year();
 
 //dose the user have an account?
 if (UserUtils::usernameExists($_SERVER['PHP_AUTH_USER'],$mysqli) === false ) {
-  //the user has no TouchStone Account but has an LDAP acount so lets make one !
+  //the user has no Rogo Account but has an LDAP acount so lets make one !
   $SMS = SMSutils::GetSmsUtils();
   $user_data = $SMS->getUserData($_SERVER['PHP_AUTH_USER']);
   if (count($user_data) > 0) {
@@ -55,7 +55,7 @@ if (UserUtils::usernameExists($_SERVER['PHP_AUTH_USER'],$mysqli) === false ) {
     db_auth($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'], $mysqli);
   } else {
     //no account information found
-    display_error('No account found in the student managment system', '', false, true);
+    display_error($string['noaccountfound'], '', false, true);
   }
 }
 
@@ -80,7 +80,7 @@ if ($active == 1 and $selfenroll == 1 and isset($_POST['submit']) and !UserUtils
 <html>
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<title>Module Self-Enrolment<?php echo " $cfg_install_type"; ?></title>
+<title><?php echo $string['moduleselfenrolment'] . ' ' . $cfg_install_type; ?></title>
 <style>
 body {background-color:white; color:black; font-family:Arial,sans-serif; font-size:90%}
 .field {padding-top:4px; padding-left:6px; font-weight:bold}
@@ -97,12 +97,12 @@ body {background-color:white; color:black; font-family:Arial,sans-serif; font-si
   $years = array($session, $next_session);
   
   echo '<br /><div align="center"><table cellpadding="0" cellspacing="0" style="width:500px; border:1px #C8C8C8 solid">';
-  echo '<tr style="height:70px; width:100%; background-image:url(./artwork/grey_bar.png); background-repeat:repeat-x; font-size:150%; font-weight:bold; padding-left:6px"><td style="text-align:right; width:115px"><img src="./artwork/modules_icon.png" width="48" height="48" alt="modules" /></td><td style="text-align:left">&nbsp;&nbsp;Module Self-Enrolment</td></tr>';
+  echo '<tr style="height:70px; width:100%; background-image:url(./artwork/grey_bar.png); background-repeat:repeat-x; font-size:150%; font-weight:bold; padding-left:6px"><td style="text-align:right; width:115px"><img src="./artwork/modules_icon.png" width="48" height="48" alt="modules" /></td><td style="text-align:left">&nbsp;&nbsp;' . $string['moduleselfenrolment'] . '</td></tr>';
   echo '<tr><td colspan="2">&nbsp;</td></tr>';
-  echo '<tr><td colspan="2"><table border="0" style="width:100%; text-align:left"><tr><td class="field" style="width:120px">Module ID</td><td>' . $_GET['moduleid'] . '</td></tr>';
-  echo '<tr><td class="field">Name</td><td>' . $fullname . '</td></tr>';
-  echo '<tr><td class="field">School</td><td>' . $school . '</td></tr>';
-  echo '<tr><td class="field">Academic Year</td><td><select name="session">';
+  echo '<tr><td colspan="2"><table border="0" style="width:100%; text-align:left"><tr><td class="field" style="width:120px">' . $string['moduleid'] . '</td><td>' . $_GET['moduleid'] . '</td></tr>';
+  echo '<tr><td class="field">' . $string['name'] . '</td><td>' . $fullname . '</td></tr>';
+  echo '<tr><td class="field">' . $string['school'] . '</td><td>' . $school . '</td></tr>';
+  echo '<tr><td class="field">' . $string['academicyear'] . '</td><td><select name="session">';
   foreach ($years as $year) {
     if (isset($_POST['session']) and $_POST['session'] == $year) {
       echo '<option value="' . $year . '" selected>' . $year . '</option>';
@@ -113,21 +113,21 @@ body {background-color:white; color:black; font-family:Arial,sans-serif; font-si
   echo '</select></td></tr>';
   echo '<tr><td colspan="2">&nbsp;</td></tr>';
   if (isset($_POST['submit'])) {
-    echo '<tr><td colspan="2"><strong>Enrolment completed</strong></td></tr>';
+    echo '<tr><td colspan="2"><strong>' . $string['enrolmentcompleted'] . '</strong></td></tr>';
     echo '<tr><td colspan="2">&nbsp;</td></tr>';
-    echo '<tr><td colspan="2"><a href="/"><img src="https://touchstone.local/artwork/link.png" width="16" height="16" alt=">" border="0" /></a>&nbsp;<strong><a href="/" style="color:blue">Show papers I can Access</a></strong></td></tr>';
+    echo '<tr><td colspan="2"><a href="/"><img src="/artwork/link.png" width="16" height="16" alt=">" border="0" /></a>&nbsp;<strong><a href="/students/" style="color:blue">' . $string['icanaccess'] . '</a></strong></td></tr>';
   } else {
-    echo '<tr><td colspan="2">I (' . $title . ' ' . $surname . ') would like to self-enroll on the above module.</td></tr>';
+    echo '<tr><td colspan="2">' . sprintf($string['iwouldliketo'], $title, $surname) . '</td></tr>';
     echo '<tr><td colspan="2">&nbsp;</td></tr>';
     if ($active == 0) {
-      echo '<tr><td colspan="2" style="color:#C00000">This module is not currently active.</td></tr>';
-      echo '<tr><td colspan="2" style="text-align:center"><input type="submit" name="submitdisabled" value="Enroll"  style="width:100px" disabled />&nbsp;<input type="button" name="cancel" value="Cancel"  style="width:100px" /></td></tr>';
+      echo '<tr><td colspan="2" style="color:#C00000">' . $string['notactive'] . '</td></tr>';
+      echo '<tr><td colspan="2" style="text-align:center"><input type="submit" name="submitdisabled" value="' . $string['enroll'] . '" style="width:100px" disabled />&nbsp;<input type="button" name="cancel" value="' . $string['cancel'] . '" style="width:100px" /></td></tr>';
     } else {
       if ($selfenroll == 0) {
-        echo '<tr><td colspan="2" style="color:#C00000">This module is not available for self-enrollment.</td></tr>';
-        echo '<tr><td colspan="2" style="text-align:center"><input type="submit" name="submitdisabled" value="Enroll"  style="width:100px" disabled />&nbsp;<input type="button" name="cancel" value="Cancel"  style="width:100px" /></td></tr>';
+        echo '<tr><td colspan="2" style="color:#C00000">' . $string['notavailableselfenrollment'] . '</td></tr>';
+        echo '<tr><td colspan="2" style="text-align:center"><input type="submit" name="submitdisabled" value="' . $string['enroll'] . '" style="width:100px" disabled />&nbsp;<input type="button" name="cancel" value="' . $string['cancel'] . '" style="width:100px" /></td></tr>';
       } else {
-        echo '<tr><td colspan="2" style="text-align:center"><input type="submit" name="submit" value="Enroll"  style="width:100px" />&nbsp;<input type="button" name="cancel" value="Cancel"  style="width:100px" /></td></tr>';
+        echo '<tr><td colspan="2" style="text-align:center"><input type="submit" name="submit" value="' . $string['enroll'] . '" style="width:100px" />&nbsp;<input type="button" name="cancel" value="' . $string['cancel'] . '" style="width:100px" /></td></tr>';
 
       }
     }

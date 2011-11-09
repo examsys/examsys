@@ -25,7 +25,7 @@
 require '../include/staff_auth.inc';
 require_once '../classes/schoolutils.class.php';
 require_once '../classes/dateutils.class.php';
-
+require '../lang/' . $language. '/include/timezones.inc';
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -371,19 +371,11 @@ require_once '../classes/dateutils.class.php';
   echo "</select>\n</td></tr>\n";
 
   echo "<tr><td align=\"right\">" . $string['timezone'] . "</td><td><select name=\"timezone\">";
-  $timezone_array = array('*Africa','Dakar','Johannesburg','*America','Anchorage','Denver','Chicago','Halifax','Los_Angeles','New_York','Mexico_City','*Asia','Dubai','Istanbul','Kuala_Lumpur','Shanghai','Singapore','Tokyo','*Australia','Adelaide','Perth','Sydney','Victoria','*Europe','Budapest','London','Moscow','Oslo','Paris','Vienna','*Pacific','Fiji','Auckland');
-  $old_prefix = '';
-  foreach ($timezone_array as $individual_zone) {
-    if (substr($individual_zone,0,1) == '*') {
-      if ($old_prefix != '') echo "</optgroup>\n";
-      echo "<optgroup label=\"" . substr($individual_zone,1) . "\">\n";
-      $old_prefix = substr($individual_zone,1);
+  foreach ($timezone_array as $individual_zone => $display_zone) {
+    if ($individual_zone == $cfg_timezone) {
+      echo "<option value=\"$individual_zone\" selected>$display_zone</option>";
     } else {
-      if ($individual_zone == 'London') {  // Make UK time the default.
-        echo "<option value=\"" . $old_prefix . "/" . $individual_zone . "\" selected>" . str_replace('_',' ',$individual_zone) . "</option>";
-      } else {
-        echo "<option value=\"" . $old_prefix . "/" . $individual_zone . "\">" . str_replace('_',' ',$individual_zone) . "</option>";
-      }
+      echo "<option value=\"$individual_zone\">$display_zone</option>";
     }
   }
   echo '</optgroup></select></td></tr>';

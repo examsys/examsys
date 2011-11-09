@@ -311,12 +311,12 @@ function qRandomMarks($question_type, $tmp_exclude, $marks_correct, $option_text
       break;
     case 'sct':
       $max_correct = 0;
-      foreach($correct as $tmp_correct) {
+      foreach ($correct as $tmp_correct) {
         if ($tmp_correct > $max_correct) $max_correct = $tmp_correct;
       }
       $tmp_total = 0;
-      foreach($correct as $tmp_correct) {
-        $tmp_total += $tmp_correct / $max_correct;
+      foreach ($correct as $tmp_correct) {
+        if ($max_correct > 0) $tmp_total += $tmp_correct / $max_correct;
       }
       $random_mark += $tmp_total / count($correct);
       break;

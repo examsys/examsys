@@ -16,13 +16,13 @@ $string['checklist'] = '<div><strong>Lista zadań</strong></div>
     <li>Umieść przy każdym komputerze czystą kartkę papieru</li>
     <li>Sprawdź czy każdy student zalogował się poprawnie</li>
     <li>Użyj konta \'gość\' dla każdego studenta, który nie mógł się zalogować</li>
-    <li><strong>Uwaga:</strong> Nie rozpoczynaj przez zaplanowanym czasem startu</li>
+    <li><strong>Uwaga:</strong> Nie rozpoczynaj przed zaplanowanym czasem startu</li>
     </ol>
     
     <div><em>W czasie egzaminu</em></div>
     <ol>
-    <li>Rejestruj drobne problemy w plikach studentów (<a href="help.html" target="_blank">przykładowe problemy</a>)</li>
-    <li>Rejestruj problemy z tresciami arkuszy/pytań</li>
+    <li>Rejestruj drobne problemy w plikach studentów (<a href="%shelp.html" target="_blank">przykładowe problemy</a>)</li>
+    <li>Rejestruj problemy z treściami arkuszy/pytań</li>
     <li>Zadzwoń na poniższy numer w razie większych kłopotów</li>
     </ol>
     

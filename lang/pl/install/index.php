@@ -16,6 +16,7 @@ $string['timedateformats'] = 'Formaty czasu/daty';
 $string['tdformatsare'] = 'Formaty czasu/daty zdefiniowane są wg. stylu %s ';
 $string['date'] = 'Data:';
 $string['datetime'] = 'Data/Czas:';
+$string['currenttimezone'] = 'Aktualna strefa czasowa';
 $string['ldapconfiguration'] = 'Konfiguracja LDAP Rogō';
 $string['useldap'] = 'Zastosuj LDAP:';
 $string['ldapserver'] = 'Serwer LDAP:';

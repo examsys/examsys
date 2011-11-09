@@ -529,7 +529,7 @@ if (!isset($_POST['update'])) {
     $priv_SQL[] = "GRANT SELECT ON " . $cfg_db_database . ".options TO '" . $cfg_db_external_user . "'@'". $cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT ON " . $cfg_db_database . ".properties TO '" . $cfg_db_external_user . "'@'". $cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT ON " . $cfg_db_database . ".special_needs TO '" . $cfg_db_external_user . "'@'". $cfg_db_host . "'";
-    $priv_SQL[] = "GRANT SELECT ON " . $cfg_db_database . ".teams TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $cfg_db_database . ".teams TO '". $cfg_db_external_user . "'@'". $cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $cfg_db_database . ".log0 TO '" . $cfg_db_external_user . "'@'". $cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $cfg_db_database . ".log1 TO '" . $cfg_db_external_user . "'@'". $cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $cfg_db_database . ".log2 TO '" . $cfg_db_external_user . "'@'". $cfg_db_host . "'";
@@ -562,6 +562,7 @@ if (!isset($_POST['update'])) {
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".feedback_release TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".paper_metadata_security TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".paper_notes TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".standards_setting TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".ebel TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".question_exclude TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".keywords_question TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
@@ -661,6 +662,7 @@ if (!isset($_POST['update'])) {
   $new_cfg_str[] =  "// Date formats in MySQL DATE_FORMAT format\n";
   $new_cfg_str[] =  "  \$cfg_short_date = '%m/%d/%y';\n";
   $new_cfg_str[] =  "  \$cfg_long_date_time = '%m/%d/%Y %H:%i';\n";
+  $new_cfg_str[] =  "  \$cfg_timezone = 'Europe/London';\n";
   $touchstone_path = str_ireplace('/updates/version4.php','',$_SERVER['SCRIPT_FILENAME']);
   $cfg = file($touchstone_path . '/config/config.inc.php');
   if (!in_array("// Date formats in MySQL DATE_FORMAT format\n", $cfg)) {

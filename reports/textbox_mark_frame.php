@@ -27,7 +27,7 @@
 ?>
 <html>
 <head>
-  <title>TouchStone</title>
+  <title>Rogō</title>
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
   <link rel="icon" href="favicon.ico" type="image/x-icon"/>
 </head>
@@ -36,6 +36,6 @@
     <frame src="textbox_marking.php?<?php echo $_SERVER['QUERY_STRING']; ?>" name="body">
   </frameset>
   <noframes>
-    Sorry, you need frames to use the TouchStone.
+    Sorry, you need frames to use the Rogō.
   </noframes>
 </html>

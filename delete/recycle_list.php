@@ -56,7 +56,7 @@ if (isset($_GET['folder'])) {
 <html>
 <head>
 
-<title>TouchStone: <?php echo $string['recyclebin'] . ' ' . $cfg_install_type; ?></title>
+<title>Rogō: <?php echo $string['recyclebin'] . ' ' . $cfg_install_type; ?></title>
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
 <style>
   .icon {width:20px; text-align:right; padding-right:8px}

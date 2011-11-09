@@ -210,7 +210,7 @@ function display_options($options, $q_id, $current_theme, $current_scenario, $cu
         if (isset($matching_media[$part_id]) and $matching_media[$part_id] != '') $media_scenarios++;
       }
       $scenario_no = max($text_scenarios, $media_scenarios);
-      echo '<ol type="i">';
+      echo '<ol class="extmatch">';
       $rating_part = 0;
       for ($part_id=1; $part_id<=$scenario_no; $part_id++) {
         $answer_no = substr_count($matching_answers[$part_id-1],'$') + 1;

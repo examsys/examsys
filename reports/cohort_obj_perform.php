@@ -34,7 +34,7 @@
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>TouchStone: <?php echo $string['learningobjectiveanalysis'] . ' ' . $cfg_install_type; ?></title>
+<title>Rogō: <?php echo $string['learningobjectiveanalysis'] . ' ' . $cfg_install_type; ?></title>
 <style type="text/css">
 body {font-family:Arial,sans-serif; font-size:90%; background-color:white; color:black; margin:0px}
 h1 {margin-left:15px; font-size:18pt}

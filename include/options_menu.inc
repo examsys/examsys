@@ -56,7 +56,7 @@
     echo "<tr><td style=\"text-align:left; color:#808080\"><img style=\"text-align:center\" src=\"/artwork/new_paper_icon_16.gif\" width=\"16\" height=\"16\" alt=\"New Paper\" border=\"0\" /></td><td class=\"menuitem\" style=\"color:#808080\">" . $string['createnewpaper'] . "</td></tr>\n";
   }
 ?>
-<tr><td width="16"><img src="/artwork/list_papers_icon_16.gif" width="16" height="16" alt="List Papers" border="0" /></td><td class="menuitem"><a href="#" onclick="showMenu('popup0','papertasks','listpapers',myOptions0,myURLs0,event); return false;"><span id="listpapers"><?php echo $string['listpapers']; ?></span><img src="/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></a></td></tr>
+<tr><td width="16"><img src="/artwork/list_papers_icon_16.gif" width="16" height="16" alt="List Papers" border="0" /></td><td class="menuitem"><span id="listpapers"><a href="#" onclick="showMenu('popup0','papertasks','listpapers',myOptions0,myURLs0,event); return false;"><?php echo $string['listpapers']; ?></a></span><img src="/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
 </table>
 
 </td></tr>
@@ -68,11 +68,11 @@
 <tr><td style="font-weight:bold"><?php echo $string['questionbanktasks']; ?></td></tr>
 <tr><td>
 <table cellpadding="4" cellspacing="0" border="0" style="font-size:90%; margin-left:6px">
-<tr><td width="16"><img src="/artwork/question_list_icon.gif" width="16" height="16" alt="List Papers" border="0" /></td><td class="menuitem"><a href="#" onclick="showMenu('popup1','banktasks','type',myOptions1,myURLs1,event); return false;"><span id="type"><?php echo $string['questionsbytype']; ?></span><img src="/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></a></td></tr>
-<tr><td width="16"><img src="/artwork/question_list_icon.gif" width="16" height="16" alt="List Teams" border="0" /></td><td class="menuitem"><a href="#" onclick="showMenu('popup2','banktasks','team',myOptions2,myURLs2,event); return false;"><span id="team"><?php echo $string['questionsbyteam']; ?></span><img src="/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></a></td></tr>
-<tr><td width="16"><img src="/artwork/question_list_icon.gif" width="16" height="16" alt="List Keywords" border="0" /></td><td class="menuitem"><a href="#" onclick="showMenu('popup3','banktasks','keyword',myOptions3,myURLs3,event); return false;"><span id="keyword"><?php echo $string['questionsbykeyword']; ?></span><img src="/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></a></td></tr>
-<tr><td width="16"><img src="/artwork/xmag.png" width="16" height="16" alt="Search" border="0" /></td><td class="menuitem"><a href="#" onclick="showMenu('popup4','banktasks','search',myOptions4,myURLs4,event); return false;"><span id="search"><?php echo $string['search']; ?></span><img src="/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></a></td></tr>
-<tr><td width="16"><img src="/artwork/new_question_menu_icon.gif" width="16" height="16" alt="newquestion" border="0" /></td><td class="menuitem"><a href="#" onclick="showMenu('popup5','banktasks','newquestion',myOptions5,myURLs5,event); return false;"><span id="newquestion"><?php echo $string['createnewquestion']; ?></span><img src="/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></a></td></tr>
+<tr><td width="16"><img src="/artwork/question_list_icon.gif" width="16" height="16" alt="List Papers" border="0" /></td><td class="menuitem"><span id="type"><a href="#" onclick="showMenu('popup1','banktasks','type',myOptions1,myURLs1,event); return false;"><?php echo $string['questionsbytype']; ?></span></a><img src="/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
+<tr><td width="16"><img src="/artwork/question_list_icon.gif" width="16" height="16" alt="List Teams" border="0" /></td><td class="menuitem"><span id="team"><a href="#" onclick="showMenu('popup2','banktasks','team',myOptions2,myURLs2,event); return false;"><?php echo $string['questionsbyteam']; ?></a></span><img src="/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
+<tr><td width="16"><img src="/artwork/question_list_icon.gif" width="16" height="16" alt="List Keywords" border="0" /></td><td class="menuitem"><span id="keyword"><a href="#" onclick="showMenu('popup3','banktasks','keyword',myOptions3,myURLs3,event); return false;"><?php echo $string['questionsbykeyword']; ?></a></span><img src="/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
+<tr><td width="16"><img src="/artwork/xmag.png" width="16" height="16" alt="Search" border="0" /></td><td class="menuitem"><span id="search"><a href="#" onclick="showMenu('popup4','banktasks','search',myOptions4,myURLs4,event); return false;"><?php echo $string['search']; ?></a></span><img src="/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
+<tr><td width="16"><img src="/artwork/new_question_menu_icon.gif" width="16" height="16" alt="newquestion" border="0" /></td><td class="menuitem"><span id="newquestion"><a href="#" onclick="showMenu('popup5','banktasks','newquestion',myOptions5,myURLs5,event); return false;"><?php echo $string['createnewquestion']; ?></a></span><img src="/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
 </table>
 
 </td></tr>
@@ -116,7 +116,7 @@
   // Teams
   $teams_array = array();
   foreach($teams as $individual_team) {
-    $teams_array[$individual_team] = './question/list.php?type=%&team=' . $individual_team;
+    $teams_array[$individual_team] = '/question/list.php?type=%&team=' . $individual_team;
   }
 
   // Keywords
@@ -141,7 +141,7 @@
   $result->execute();
   $result->bind_result($keywordID, $tmp_keyword);
   while ($result->fetch()) {
-    $keywords_array[htmlspecialchars($tmp_keyword)] = './question/list.php?type=%&keyword=' . $keywordID . ';' . urlencode($tmp_keyword);
+    $keywords_array[htmlspecialchars($tmp_keyword)] = '/question/list.php?type=%&keyword=' . $keywordID . ';' . urlencode($tmp_keyword);
   }
   $result->close();
       

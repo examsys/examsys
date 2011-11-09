@@ -286,6 +286,10 @@ td.separated:last-child {
   padding-top: 115px;
 }
 
+.tab-area {
+	padding-bottom: 120px;
+}
+
 #bar-spacer {
 	height: 450px;
 	min-height: 450px;

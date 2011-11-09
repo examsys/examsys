@@ -25,9 +25,6 @@
 <html>
 <head>
 	<title><?php echo $string['importfromqti'] ?></title>
-	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
-	<link rel="icon" href="favicon.ico" type="image/x-icon"/>
-	<link rel="P3Pv1" href="https://touchstone.nottingham.ac.uk/w3c/p3p.xml">
 	<script type="text/javascript" src="js/mootools-1.2.4.js"></script> 
 	<link rel="stylesheet" type="text/css" href="css/highlight.css" /> 
 	<link rel="stylesheet" type="text/css" href="css/wizard.css" /> 

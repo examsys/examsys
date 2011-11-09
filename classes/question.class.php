@@ -259,9 +259,10 @@ Class Question extends TouchStoneObject {
     for ($i = 0; $i <= $this->max_stems; $i++) {
       $post_field = ($i == 0) ? $general_field : "{$prefix}$i";
       
-      if ($media_data[$post_field]['name'] != $old_media['filenames'][$i] and ($media_data[$post_field]['name'] != 'none' and $media_data[$post_field]['name'] != '')) {
-        if ($old_media['filenames'][$i] != '') {
-          deleteMedia($old_media['filenames'][$i]);
+      $media_name = (isset($old_media['filenames'][$i])) ? $old_media['filenames'][$i] : '';
+      if ($media_data[$post_field]['name'] != $media_name and ($media_data[$post_field]['name'] != 'none' and $media_data[$post_field]['name'] != '')) {
+        if ($media_name != '') {
+          deleteMedia($media_name);
         }
         $new_media = uploadFile($post_field);
         $old_media['filenames'][$i] = $new_media['filename'];
@@ -271,8 +272,8 @@ Class Question extends TouchStoneObject {
       } else {
         // Delete existing media if asked
         if (isset($deletion_data["delete_media$i"]) AND $deletion_data["delete_media$i"] == 'on') {
-          deleteMedia($old_media['filenames'][$i]);
-          $this->add_unified_field_modification('q_media' . $i, 'q_media' . $i, $old_media['filenames'][$i], '', $this->_lang_strings['mediadeleted']);
+          deleteMedia($media_name);
+          $this->add_unified_field_modification('q_media' . $i, 'q_media' . $i, $media_name, '', $this->_lang_strings['mediadeleted']);
           $old_media['filenames'][$i] = '';
           $old_media['widths'][$i] = 0;
           $old_media['heights'][$i] = 0;
@@ -363,6 +364,25 @@ QUERY;
     } else {
       throw new ValidationException($valid);
     }
+    
+    return $success;
+  }
+  
+  public function clear_checkout() {
+    $success = false;
+    
+    $this->checkout_author_id = null;
+    $this->checkout_time = null;
+    
+    $u_query = <<< QUERY
+UPDATE questions
+SET checkout_time = ?, checkout_authorID = ?
+WHERE q_id = ?
+QUERY;
+    $result = $this->_mysqli->prepare($u_query);
+    $result->bind_param('sii', $this->checkout_time, $this->checkout_author_id, $this->id);
+    $success = $result->execute();
+    $result->close();
     
     return $success;
   }

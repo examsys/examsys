@@ -60,7 +60,7 @@ Class OptionEXTMATCH extends Option {
     $tmp = array();
     for ($i = 0; $i < count($this->all_corrects); $i++) {
       // Don't save correct answer if the option is empty
-      if ($stems[$i] == '' and $media[$i] == '') {
+      if ($stems[$i] == '' and (!isset($media[$i + 1]) or $media[$i + 1] == '')) {
         $this->all_corrects[$i] = '';
       }
       $correct = $this->all_corrects[$i];

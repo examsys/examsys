@@ -34,7 +34,7 @@ $select_size = (count($option_texts) < 10) ? count($option_texts) : 10;
             </tr>
 <?php
 
-if ($all_media['filenames'][$index] != '') {
+if (isset($all_media['filenames'][$index]) and $all_media['filenames'][$index] != '') {
   $current_media_html =  display_media($all_media['filenames'][$index], $all_media['widths'][$index], $all_media['heights'][$index], $index); 
 ?>
               <tr<?php echo $alt_c ?>>

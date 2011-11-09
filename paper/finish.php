@@ -123,6 +123,7 @@ table {font-size:100%}
 .std {display:block;background-color:#f27000;color:white;width:35px;text-align:center}
 .matrix {border:1px solid #808080; border-collapse:collapse}
 .matrix td {border:1px solid #808080}
+.extmatch li {padding-bottom:14px; vertical-align:text-bottom; list-style-type:upper-alpha}
 </style>
 <?php
   if ($latex_needed == 1) {

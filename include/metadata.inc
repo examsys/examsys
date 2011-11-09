@@ -112,7 +112,7 @@ META;
     $html .= <<< META
           <div class="form">
             <div id="keyword-select" class="select-area">
-            <h3>{$string['keywords']}</h3>
+            	<h3>{$string['keywords']}</h3>
               <div id="q-keywords" class="select-group">
 
 META;
@@ -146,8 +146,9 @@ META;
             $checked = ' checked="checked"';
             $on = ' on';
           }
+          $enc_keyword = htmlentities($keyword['keyword']);
           $html .= <<< META
-      						<li><label for="keyword{$i}" class="fullwidth{$on}"><input id="keyword{$i}" name="keywords[]" value="{$keyword['keyword_id']}" type="checkbox"{$checked} />{$keyword['keyword']}</label></li>
+      						<li><label for="keyword{$i}" class="fullwidth{$on}"><input id="keyword{$i}" name="keywords[]" value="{$keyword['keyword_id']}" type="checkbox"{$checked} />{$enc_keyword}</label></li>
 
 META;
           $i++;
@@ -172,8 +173,9 @@ META;
             $checked = ' checked="checked"';
             $on = ' on';
           }
+          $enc_keyword = htmlentities($keyword['keyword']);
           $html .= <<< META
-      						<li><label for="keyword{$i}" class="fullwidth{$on}"><input id="keyword{$i}" name="keywords[]" value="{$keyword['keyword_id']}" type="checkbox"{$checked} />{$keyword['keyword']}</label></li>
+      						<li><label for="keyword{$i}" class="fullwidth{$on}"><input id="keyword{$i}" name="keywords[]" value="{$keyword['keyword_id']}" type="checkbox"{$checked} />{$enc_keyword}</label></li>
           
 META;
           $i++;
@@ -181,13 +183,13 @@ META;
         
         $html .= <<< META
           			</ul>
-              </div>
 
 META;
       }
       
       $html .= <<< META
-      			</div></div>
+              </div>
+      			</div>
 
 META;
     }
@@ -230,8 +232,9 @@ HEADING;
         $disabled_mod = ' disabled="disabled"';
       }
       
+      $enc_name = htmlentities($fullname);
       $html .= <<< META
-                	<li><label for="team{$i}" class="fullwidth{$on}"><input id="team{$i}" name="teams[]" value="{$team_name}" type="checkbox"{$checked}{$disabled_mod} /> {$team_name}: {$fullname}</label></li>
+                	<li><label for="team{$i}" class="fullwidth{$on}"><input id="team{$i}" name="teams[]" value="{$team_name}" type="checkbox"{$checked}{$disabled_mod} /> {$team_name}: {$enc_name}</label></li>
 
 META;
 
@@ -247,173 +250,6 @@ META;
     
 META;
     
-    return $html;
-  }
-  
-  function echoMetadata($blooms, $questionID, $team, $colspan, $mysqlidb, $bloom_on, $current_status, $disabled) {
-    global $teams, $userID, $userroles, $faculty, $string;
-
-    if ($current_status == '') $current_status = 'Normal';
-    $html = "<tr><td colspan=\"" . ($colspan + 1) . "\"><div class=\"section\">" . $string['metadata'] . "</div>\n";
-    
-    // Question Status
-    $html .= "<tr>\n<td class=\"field\">" . $string['status'] . "</td>\n<td colspan=\"$colspan\">";
-    $status_array = array('Normal','Retired','Incomplete','Experimental','Beta');
-    foreach ($status_array as $status) {
-      if ($current_status == $status) {
-        if ($disabled != '' and $status != 'Normal' and $status != 'Retired') {
-          $html .= '<input type="radio" name="status" value="' . $status . '" checked disabled>&nbsp;<span style="color:#808080">' . $string[strtolower($status)] . '</span>&nbsp;&nbsp;';
-        } else {
-          $html .= '<input type="radio" name="status" value="' . $status . '" checked>&nbsp;' . $string[strtolower($status)] . '&nbsp;&nbsp;';
-        }
-      } else {
-        if ($disabled != '' and $status != 'Normal' and $status != 'Retired') {
-          $html .= '<input type="radio" name="status" value="' . $status . '" disabled>&nbsp;<span style="color:#808080">' . $string[strtolower($status)] . '</span>&nbsp;&nbsp;';
-        } else {
-          $html .= '<input type="radio" name="status" value="' . $status . '">&nbsp;' . $string[strtolower($status)] . '&nbsp;&nbsp;';
-        }
-      }
-    }
-    $html .= "<input type=\"hidden\" name=\"old_status\" value=\"$current_status\" /></td></tr>\n";
-    
-    // Bloom's Taxonomy
-    if ($bloom_on) {
-      $html .= "<tr>\n<td class=\"field\">" . $string['bloomstaxonomy'] . "</td>\n<td colspan=\"$colspan\"><input type=\"hidden\" name=\"old_bloom\" value=\"$blooms\" /><select name=\"bloom\">\n<option value=\"\"></option>\n";
-      $bloom_array = array('Knowledge','Comprehension','Application','Analysis','Synthesis','Evaluation');
-      foreach ($bloom_array as $individual_bloom) {
-        if ($individual_bloom == $blooms) {
-          $html .= "<option value=\"$individual_bloom\" selected>" . $string[strtolower($individual_bloom)] . "</option>\n";
-        } else {
-          $html .= "<option value=\"$individual_bloom\">" . $string[strtolower($individual_bloom)] . "</option>\n";
-        }
-      }
-      $html .= "</select></td>\n</tr>\n";
-    }
-    
-    $html .= "<tr><td colspan=\"" . ($colspan+1) . "\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"font-size:90%; width:100%\">";
-    $html .= "<tr style=\"font-weight:bold\"><td>" . $string['keywords'] . "</td><td style=\"padding-left:4px\">" . $string['teams'] . "</td></tr>";
-    
-    // Keywords
-    $question_keywords = array();
-    $or_sql = '';
-    if ($questionID != '') {
-      $result = $mysqlidb->prepare("SELECT keywordID FROM keywords_question WHERE q_id=$questionID");
-      $result->execute();
-      $result->store_result();
-      $result->bind_result($keywordID);
-      while ($result->fetch()) {
-        $question_keywords[$keywordID] = $keywordID;
-      }
-      $result->close();
-    }
-    
-    $keyword_no = 0;
-    $keywords = '';
-	
-    $html .= "<tr>\n<td style=\"vertical-align:top\">";
-    $html .= "<div id=\"keywordarea\" style=\"width:300px; height:300px; background-color:white; overflow-y:scroll; border:1px solid #7F9DB9; font-size:90%\">\n";
-
-    // Team keyword lists by module
-    if ($team == '') {
-      // No teams passed in, use all teams the current user is on.
-      $team = implode(';',$teams);
-    }
-    
-    if ($team != '') {
-      $old_team = '';
-      $sql_team = str_replace(";","','",$team);
-      $result = $mysqlidb->prepare("SELECT moduleid, keyword, keywords_user.id FROM keywords_user, modules WHERE keywords_user.userID=modules.id AND moduleid IN ('$sql_team') ORDER BY moduleid, keyword");
-      $result->execute();
-      $result->store_result();
-      $result->bind_result($moduleID, $keyword, $keywordID);
-      while ($result->fetch()) {
-        if ($old_team != $moduleID) {
-          $html .= "<table border=\"0\" style=\"padding-top:3px; padding-bottom:2px; width:100%; background-color:white; color:#1E3287\"><tr><td><nobr>" . $moduleID . "</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
-        }
-        if (isset($question_keywords[$keywordID])) {
-          $html .= "<div style=\"background-color:#B3C8E8\" id=\"divkeyword$keyword_no\"><input type=\"checkbox\" onclick=\"toggle('divkeyword$keyword_no'); updateList();\" id=\"keyword$keyword_no\" name=\"keyword$keyword_no\" value=\"$keywordID\" checked>&nbsp;$keyword</div>\n";
-          if ($keywords == '') {
-            $keywords = $keywordID;
-          } else {
-            $keywords .= ';' . $keywordID;
-          }
-        } else {
-          $html .= "<div style=\"background-color:white; color:black\" id=\"divkeyword$keyword_no\"><input type=\"checkbox\" onclick=\"toggle('divkeyword$keyword_no'); updateList();\" id=\"keyword$keyword_no\" name=\"keyword$keyword_no\" value=\"$keywordID\">&nbsp;$keyword</div>\n";
-        }
-        $old_team = $moduleID;
-        $keyword_no++;
-      }
-      $result->close();
-    }
-	
-    // Personal keyword list
-    $html .= "<table border=\"0\" style=\"padding-top:3px; padding-bottom:2px; width:100%; background-color:white; color:#1E3287\"><tr><td><nobr>Personal Keywords</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
-    $result = $mysqlidb->prepare("SELECT DISTINCT keyword, id FROM keywords_user WHERE userID=$userID ORDER BY keyword");
-    $result->execute();
-    $result->store_result();
-    $result->bind_result($keyword, $keywordID);
-    while ($result->fetch()) {
-      if (isset($question_keywords[$keywordID])) {
-        $html .= "<div style=\"background-color:#B3C8E8\" id=\"divkeyword$keyword_no\"><input type=\"checkbox\" onclick=\"toggle('divkeyword$keyword_no'); updateList();\" id=\"keyword$keyword_no\" name=\"keyword$keyword_no\" value=\"$keywordID\" checked>&nbsp;$keyword</div>\n";
-        if ($keywords == '') {
-          $keywords = $keywordID;
-        } else {
-          $keywords .= ';' . $keywordID;
-        }
-      } else {
-        $html .= "<div style=\"background-color:white; color:black\" id=\"divkeyword$keyword_no\"><input type=\"checkbox\" onclick=\"toggle('divkeyword$keyword_no'); updateList();\" id=\"keyword$keyword_no\" name=\"keyword$keyword_no\" value=\"$keywordID\">&nbsp;$keyword</div>\n";
-      }
-      $keyword_no++;
-    }
-    $result->close();
-    $html .= "</div><input type=\"hidden\" name=\"keyword_no\" id=\"keywordno\" value=\"$keyword_no\" /><textarea rows=\"0\" cols=\"0\" style=\"display:none\" name=\"old_keywords\">$keywords</textarea></td>\n";
-    
-    // Teams
-    $current_teams = explode(';',$team);
-    $html .= "<td style=\"padding-left:4px; vertical-align:top\"><div id=\"teamsarea\" style=\"width:500px; height:300px; background-color:white; overflow-y:scroll; border:1px solid #7F9DB9; font-size:90%\">\n";
-    
-    if (count($current_teams) > 0) {
-      $extra_teams = " OR name IN('" . str_replace(";","','",$team) . "')";
-      $extra_modules = " OR moduleID IN('" . str_replace(";","','",$team) . "')";
-    } else {
-      $extra_teams = '';
-      $extra_modules = '';
-    }
-    
-    $teams_array = SearchUtils::getTeams($teams, $userroles, $userID, $mysqlidb);
-
-    $found = false;
-    foreach($teams_array as $individual_team) {
-      if ($individual_team['id'] == $team) $found = true;
-    }
-    
-    $team_no = 0;
-    $old_school = '';
-    foreach ($teams_array as $individual_team) {
-      $team_name = $individual_team['id'];
-      $fullname = $individual_team['fullname'];
-      
-      if ($individual_team['school'] != $old_school) {
-        $html .= "<div style=\"font-weight:bold; padding-top:4px\">" . $individual_team['school'] . "</div>\n";
-      }
-      
-      if ((isset($_GET['module']) and $team_name == $_GET['module'] and $team == '') or (isset($_COOKIE['default_team']) and $team_name == $_COOKIE['default_team'] and $team == '')) $match = true;
-      
-      if (isset($_GET['module']) and $team_name == $_GET['module']) {
-        if (in_array($team_name,$teams) or strpos($userroles,'SysAdmin') !== false) {
-          $html .= "<div style=\"background-color:#B3C8E8\" id=\"divteam$team_no\"><input type=\"checkbox\" onclick=\"toggle('divteam$team_no'); updateList();\" id=\"team$team_no\" name=\"team$team_no\" value=\"$team_name\" checked>&nbsp;$team_name: $fullname</div>\n";
-        } else {
-          $html .= "<div style=\"background-color:#B3C8E8\" id=\"divteam$team_no\"><input type=\"checkbox\" name=\"dummyteam$team_no\" value=\"\" checked disabled><input type=\"checkbox\" name=\"team$team_no\" value=\"$team_name\" style=\"display:none\" checked>&nbsp;$team_name: $fullname</div>\n";
-        }
-      } else {
-        $html .= "<div style=\"background-color:white; color:black\" id=\"divteam$team_no\"><input type=\"checkbox\" onclick=\"toggle('divteam$team_no'); updateList();\" id=\"team$team_no\" name=\"team$team_no\" value=\"$team_name\">&nbsp;$team_name: $fullname</div>\n";
-      }
-      $team_no++;
-      $old_school = $individual_team['school'];
-    }
-    if (count($teams_array) > 0) $html .= "</div><input type=\"hidden\" name=\"team_no\" id=\"teamno\" value=\"$team_no\" /><input type=\"hidden\" name=\"old_teams\" value=\"$team\" />\n</td>\n</tr>\n";
-    
-    $html .= "</table></td></tr>\n";
     return $html;
   }
   
@@ -492,63 +328,7 @@ META;
       }
     }
   }
-  
-  function saveKeywords($questionID, $userID, $question_changes, $edit, $mysqlidb) {
-    $keyword_changes = false;
-    $updated_list = getKeywords();
-    if ($edit == true) {
-      $existing_list = explode(';',$_POST['old_keywords']);
-    } else {
-      $existing_list = array();
-    }
     
-    // First go through the list of updated keywords looking for new ones to add.
-    $elements = count($updated_list);
-    for ($i=0; $i<$elements; $i++) {
-      $keywordID = $updated_list[$i];
-      
-      if (!in_array($keywordID, $existing_list)) {
-        $query = $mysqlidb->prepare("INSERT INTO keywords_question VALUES ($questionID, $keywordID)");
-        $query->execute();
-        $query->close();
-        
-        $keyword_changes = true;
-      }
-    }
-
-    if ($edit == true) {
-      // Next go through the list of old keywords looking for ones to delete.
-      $elements = count($existing_list);
-      for ($i=0; $i<$elements; $i++) {
-        $keywordID = $existing_list[$i];
-        
-        if (!in_array($keywordID, $updated_list) and $keywordID != '') {
-          $query = $mysqlidb->prepare("DELETE FROM keywords_question WHERE q_id=$questionID AND keywordID=$keywordID");
-          $query->execute();
-          $query->close();
-          
-          $keyword_changes = true;
-        }
-      }
-
-      if ($keyword_changes == true) {
-        record_trackChanges('Edit Question', $questionID, keyword_id_to_text($existing_list, $mysqlidb), keyword_id_to_text($updated_list, $mysqlidb), 'keywords', $userID, $question_changes);
-      }
-    }
-  }
-  
-  function getTeams() {
-    $teams = '';
-    $tmp_list = array();
-    for ($i=0; $i<$_POST['team_no']; $i++) {
-      if (isset($_POST["team$i"])) {
-        $tmp_list[] = $_POST["team$i"];
-      }
-    }
-    sort($tmp_list);
-    return implode(';', $tmp_list);
-  }
-  
   function getDefaultTeam() {
     $team = '';
     for ($i=0; $i<$_POST['team_no']; $i++) {

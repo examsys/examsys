@@ -20,4 +20,5 @@ $string['ipaddresses'] = 'Adresy IP';
 $string['save'] = 'Zachowaj';
 $string['badaddressesmsg'] = 'Następujące adresy IP są niepoprawne i nie zostały dodane do pracowni: %s. Inne adresy zostały zapisane';
 $string['backtolabs'] = 'Powrót do listy pracowni';
+$string['noipaddresses'] = 'Nie można utworzyć pracowni gdyż nie podano żadnych adresów IP.';
 ?>

@@ -1041,7 +1041,6 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
       echo '<td>' . $single_option . '</td>';
     }
     echo "<tr>\n";
-    $numerals = array('i','ii','iii','iv','v','vi','vii','viii','ix','x','xi','xii');
     foreach ($matching_scenarios as $single_scenario) {
       if (trim($single_scenario) != '') {
         if (isset($matching_users_answers[$part_id - 1]) and $matching_users_answers[$part_id - 1] == '' and $screen_pre_submitted == 1) {
@@ -1049,7 +1048,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
         } else {
           echo "<tr>\n";
         }
-        echo '<td align="right">' . $numerals[$part_id - 1] . '.</td><td>' . $single_scenario . '</td>';
+        echo '<td align="right">' . chr(64 + $part_id) . '.</td><td>' . $single_scenario . '</td>';
         $answer_no = 1;
         foreach ($matching_options as $single_option) {
           $tmp_part_id = $question['option_order'][$answer_no-1] + 1;

@@ -129,7 +129,7 @@ require '../include/staff_auth.inc';
     <script>
       function checkForm() {
         if (document.getElementById('session_title').value == '' || document.getElementById('session_title').value == ' ') {
-          alert("Please enter a meaningful title for your new session.");
+          alert("<?php echo $string['entertitle']; ?>");
           return false;
         }
       }
