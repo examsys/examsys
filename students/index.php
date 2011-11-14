@@ -25,6 +25,7 @@
 */
 
 require '../include/staff_student_auth.inc';
+require '../include/icon_display.inc';
 require '../config/index.inc';
 require '../classes/dateutils.class.php';
 
@@ -38,7 +39,6 @@ function drawTabs($tab_array, $current_tab) {
 	$html .= "</tr></table>\n";
 	return $html;
 }
-
 
 // Check if our student is in a lab
 $lab_info = $mysqli->prepare("SELECT lab FROM ip_addresses WHERE address=? LIMIT 1");
@@ -162,7 +162,7 @@ if (count($sessions_with_papers) > 0) {
 	  </tr>
 	</table>
 <?php
-if($papers > 0) {
+if ($papers > 0) {
 	$last_session = '';
 	
 	foreach($modules as $module) {
@@ -173,7 +173,7 @@ if($papers > 0) {
 				if ($module['year'] == $default_session) {
 					$visibility = '';
 				}
-				if($last_session != '') {
+				if ($last_session != '') {
 ?>
 		</div>
 <?php
@@ -200,7 +200,7 @@ if($papers > 0) {
 	    					<a href="../user_index.php?id=<?php echo $paper['crypt_name']; ?>" title="<?php echo htmlentities($paper['title']) ?>" target="_blank" class="blacklink"><?php echo(htmlentities($paper['title'])); ?></a><br />
 	    					<span style="color:#808080">
 	    						<?php echo($paper['screens']." screen".$screen_plural)?><br />
-	    						<?php echo(date('d/m/Y h:i', strtotime($paper['start']))." to ".date('d/m/Y h:i', strtotime($paper['end']))) ?>
+	    						<?php echo(date(str_replace('%', '', $cfg_long_date_time), strtotime($paper['start']))." to " . date(str_replace('%', '', $cfg_long_date_time), strtotime($paper['end']))) ?>
 	    					</span>
 	    				</td>
 	    			</tr>
@@ -215,26 +215,10 @@ if($papers > 0) {
 <?php
 } else {
 ?>
-	<p style="margin-left: 20px">You have no papers available at this time.</p>
+	<p style="margin-left:20px"><?php echo $string['nopapers']; ?></p>
 <?php
 }
 ?>
 </div>
 </body>
 </html>
-<?php
-function displayIcon($paper_type,$title,$initials,$surname,$shared,$locked) {
-  switch ($paper_type) {
-    case 0:
-      $html = "<img src=\"../artwork/formative" . $shared . ".png\" width=\"48\" height=\"48\" alt=\"Type: Formative Self-Assessment&#013;Author: $title $initials $surname\" border=\"0\" />";
-      break;
-    case 1:
-      $html = "<img src=\"../artwork/progress" . $shared . ".png\" width=\"48\" height=\"48\" alt=\"Type: Progress Test&#013;Author: $title $initials $surname\" border=\"0\" />";
-      break;
-    case 3:
-      $html = "<img src=\"../artwork/survey" . $shared . ".png\" width=\"48\" height=\"48\" alt=\"Type: Survey&#013;Author: $title $initials $surname\" border=\"0\" />";
-      break;
-  }
-  return $html;
-}
-?>

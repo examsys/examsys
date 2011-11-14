@@ -114,8 +114,8 @@ Class InstallUtils {
         <div><label for="mysql_db_name"><?php echo $string['databasename']; ?></label> <input type="text" value="rogo" name="mysql_db_name" class="required" minlength="3" /> </div>
       
       <table class="header"><tr><td><nobr><?php echo $string['databaseuser']; ?></nobr></td><td class="line"><hr /></td></tr></table>
-        <div><label for="mysql_touchstone_username"><?php echo $string['rdbusername']; ?></label> <input type="text" value="" name="mysql_touchstone_username" class="required" minlength="3"/></div>
-        <div><label for="mysql_touchstone_passwd"><?php echo $string['rdbpassword']; ?></label> <input type="password" value="" name="mysql_touchstone_passwd" class="required" minlength="8" /></div>
+        <div><label for="mysql_touchstone_username"><?php echo $string['rdbusername']; ?></label> <input type="text" value="" name="mysql_database_username" class="required" minlength="3"/></div>
+        <div><label for="mysql_touchstone_passwd"><?php echo $string['rdbpassword']; ?></label> <input type="password" value="" name="mysql_database_passwd" class="required" minlength="8" /></div>
       
       <table class="header"><tr><td><nobr><?php echo $string['timedateformats']; ?></nobr></td><td class="line"><hr /></td></tr></table> 
         <div><?php echo sprintf($string['tdformatsare'],'<a href="http://dev.mysql.com/doc/refman/5.1/en/date-and-time-functions.html#function_date-format" target="_blank">MySQL DATE_FORMAT</a>'); ?></div>
@@ -194,8 +194,8 @@ Class InstallUtils {
     self::$db_admin_username = $_POST['mysql_admin_user'];
     self::$db_admin_passwd = $_POST['mysql_admin_pass'];
     
-    self::$cfg_db_username = $_POST['mysql_touchstone_username'];
-    self::$cfg_db_password = $_POST['mysql_touchstone_passwd'];
+    self::$cfg_db_username = $_POST['mysql_database_username'];
+    self::$cfg_db_password = $_POST['mysql_database_passwd'];
     
     self::$cfg_SysAdmin_username = $_POST['SysAdmin_username'];
     
@@ -305,7 +305,7 @@ Class InstallUtils {
     self::$db->change_user(self::$db_admin_username, self::$db_admin_passwd,self::$cfg_db_name);
     
     //create tables
-    $tables = new touchStoneTables();
+    $tables = new databaseTables();
     while ($sql = $tables->next()) {
       $res = self::$db->query($sql);
       if (self::$db->errno != 0) {
@@ -327,11 +327,11 @@ Class InstallUtils {
     self::$cfg_db_inv_passwd = PasswordUtils::gen_password() . PasswordUtils::gen_password();
     
     $priv_SQL = array();
-    //create touchstone 'database user authentication user' and grant permissions
+    //create 'database user authentication user' and grant permissions
     self::$db->query("CREATE USER  '" . self::$cfg_db_username . "'@'". self::$cfg_db_host . "' IDENTIFIED BY '" . self::$cfg_db_password . "'");
     if (self::$db->errno != 0) {
-      echo "CREATE USER  '" . self::$cfg_db_username . "'@'". self::$cfg_db_host . "' IDENTIFIED BY '" . self::$cfg_db_password . "'" . '<br/>';
-      echo self::$db->error . '<br/>';
+      echo "CREATE USER  '" . self::$cfg_db_username . "'@'". self::$cfg_db_host . "' IDENTIFIED BY '" . self::$cfg_db_password . "'" . '<br />';
+      echo self::$db->error . '<br />';
       self::logWarning(array('013'=> $string['wdatabaseuser'] . self::$cfg_db_username . $string['wnotcreated']));
     }
     //$priv_SQL[] = "REVOKE ALL PRIVILEGES ON $dbname.* FROM '". self::$cfg_db_username . "'@'" . self::$cfg_db_host . "'";
@@ -357,7 +357,7 @@ Class InstallUtils {
     }
     
     $priv_SQL = array();
-    //create touchstone 'database user student user' and grant permissions
+    //create 'database user student user' and grant permissions
     self::$db->query("CREATE USER  '" . self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "' IDENTIFIED BY '" . self::$cfg_db_student_passwd . "'");
     if (self::$db->errno != 0) {
       echo self::$db->error;
@@ -408,7 +408,7 @@ Class InstallUtils {
     }
     
     $priv_SQL = array();
-    //create touchstone 'database user external user' and grant permissions
+    //create 'database user external user' and grant permissions
     self::$db->query("CREATE USER  '" . self::$cfg_db_external_user . "'@'". self::$cfg_db_host . "' IDENTIFIED BY '" . self::$cfg_db_external_passwd . "'");
     if (self::$db->errno != 0) {
       self::logWarning(array('013'=> $string['wdatabaseuser']. self::$cfg_db_external_user . $string['wnotcreated']));
@@ -440,7 +440,7 @@ Class InstallUtils {
     }
     
     $priv_SQL = array();
-    //create touchstone 'database user staff user' and grant permissions
+    //create 'database user staff user' and grant permissions
     self::$db->query("CREATE USER  '" . self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "' IDENTIFIED BY '" . self::$cfg_db_staff_passwd . "'");
     if (self::$db->errno != 0) {
       self::logWarning(array('013'=> $string['wdatabaseuser']. self::$cfg_db_staff_user . $string['wnotcreated']));
@@ -499,7 +499,7 @@ Class InstallUtils {
     }
     
     $priv_SQL = array();
-    //create touchstone 'database user SCT user' and grant permissions
+    //create 'database user SCT user' and grant permissions
     self::$db->query("CREATE USER  '" . self::$cfg_db_sct_user . "'@'". self::$cfg_db_host . "' IDENTIFIED BY '" . self::$cfg_db_sct_passwd . "'");
     if (self::$db->errno != 0) {
       self::logWarning(array('013'=> $string['wdatabaseuser']. self::$cfg_db_sct_user . $string['wnotcreated']));
@@ -523,7 +523,7 @@ Class InstallUtils {
     }
     
     $priv_SQL = array();
-    //create touchstone 'database user Invigilator user' and grant permissions
+    //create 'database user Invigilator user' and grant permissions
     self::$db->query("CREATE USER  '" . self::$cfg_db_inv_user . "'@'". self::$cfg_db_host . "' IDENTIFIED BY '" . self::$cfg_db_inv_passwd . "'");
     if (self::$db->errno != 0) {
       self::logWarning(array('013'=> $string['wdatabaseuser']. self::$cfg_db_inv_user . $string['wnotcreated']));
@@ -548,10 +548,10 @@ Class InstallUtils {
     }
     
     $priv_SQL = array();
-    //create touchstone 'database user sysadmin user' and grant permissions
+    //create 'database user sysadmin user' and grant permissions
     self::$db->query("CREATE USER  '" . self::$cfg_db_sysadmin_user . "'@'". self::$cfg_db_host . "' IDENTIFIED BY '" . self::$cfg_db_sysadmin_passwd . "'");
     if (self::$db->errno != 0) {
-	  echo self::$db->error . "<br/>";
+	  echo self::$db->error . "<br />";
       self::logWarning(array('013'=> $string['wdatabaseuser']. self::$cfg_db_sysadmin_user . $string['wnotcreated']));
     }
     //$priv_SQL[] = "REVOKE ALL PRIVILEGES ON $dbname.* FROM '". self::$cfg_db_sysadmin_user . "'@'". self::$cfg_db_host . "'";
@@ -565,7 +565,7 @@ Class InstallUtils {
       }  
     }
     
-    //create touchstone sysadmin user 
+    //create sysadmin user 
     UserUtils::createUser(  $_POST['SysAdmin_username'], 
                             $_POST['SysAdmin_password'], 
                             $_POST['SysAdmin_title'],
@@ -616,7 +616,7 @@ Class InstallUtils {
                                 false, 
                                 true,
                                 NULL,
-								NULL,
+                                NULL,
                                 self::$db
                              );
     
@@ -632,7 +632,7 @@ Class InstallUtils {
                                 true, 
                                 true,
                                 NULL,
-								NULL,
+                                NULL,
                                 self::$db
                              );
                           
@@ -652,8 +652,8 @@ Class InstallUtils {
     $rogo_path = str_ireplace('/install/index.php','',$_SERVER['SCRIPT_FILENAME']);
     $errors = array();
     if (file_exists($rogo_path . '/config/config.inc.php')) {
-	  $errors['90'] =  "<p>".sprintf($string['errors1'],$rogo_path."/config/config.inc.php")."</p>";
-      $errors['90'] .= "<p>".sprintf($string['errors2'],"<a href=\"/staff\">")."</a></p>";
+      $errors['90'] =  "<p>" . sprintf($string['errors1'],$rogo_path."/config/config.inc.php") . "</p>";
+      $errors['90'] .= "<p>" . sprintf($string['errors2'],"<a href=\"/staff\">") . "</a></p>";
     }
   }
   
@@ -995,7 +995,7 @@ CONFIG;
 
 }
 
-class touchStoneTables {
+class databaseTables {
 
   public static $tableList = array();
   
@@ -1123,7 +1123,7 @@ QUERY;
         CREATE TABLE `labs` (
           `id` smallint(5) unsigned NOT NULL auto_increment,
           `name` varchar(255) default NULL,
-          `campus` enum('University Park','Jubilee','King''s Meadow','Derby','Malaysia','Ningbo','Sutton Bonington','Other') default NULL,
+          `campus` varchar(255) default NULL,
           `building` varchar(255) default NULL,
           `room_no` varchar(255) default NULL,
           `timetabling` text,
@@ -1324,7 +1324,7 @@ QUERY;
           `objective` text NOT NULL,
           `moduleID` char(25) NOT NULL,
           `identifier` bigint(20) unsigned NOT NULL,
-          `calendar_year` enum('2008/09','2009/10','2010/11','2011/12','2012/13','2013/14','2014/15','2014/15','2015/16','2016/17','2017/18','2018/19','2019/20') NOT NULL,
+          `calendar_year` enum('2008/09','2009/10','2010/11','2011/12','2012/13','2013/14','2014/15','2015/16','2016/17','2017/18','2018/19','2019/20') NOT NULL,
           `sequence` int(11) default NULL,
           PRIMARY KEY  (`obj_id`,`moduleID`,`calendar_year`)
         ) ENGINE=MyISAM DEFAULT CHARSET=latin1
@@ -1410,7 +1410,7 @@ QUERY;
           `display_feedback` enum('0','1') default NULL,
           `hide_if_unanswered` enum('0','1') default NULL,
           `moduleID` text,
-          `calendar_year` enum('2008/09','2009/10','2010/11','2011/12','2012/13','2013/14','2014/15','2014/15','2015/16','2016/17','2017/18','2018/19','2019/20') NOT NULL,
+          `calendar_year` enum('2008/09','2009/10','2010/11','2011/12','2012/13','2013/14','2014/15','2015/16','2016/17','2017/18','2018/19','2019/20') NOT NULL,
           `internal_reviewers` text,
           `external_review_deadline` date default NULL,
           `internal_review_deadline` date default NULL,
@@ -1509,7 +1509,7 @@ QUERY;
           `paper_id` int(11) NOT NULL,
           `question_id` int(11) NOT NULL,
           `obj_id` int(11) NOT NULL,
-          `calendar_year` enum('2008/09','2009/10','2010/11','2011/12','2012/13','2013/14','2014/15','2014/15','2015/16','2016/17','2017/18','2018/19','2019/20') NOT NULL,
+          `calendar_year` enum('2008/09','2009/10','2010/11','2011/12','2012/13','2013/14','2014/15','2015/16','2016/17','2017/18','2018/19','2019/20') NOT NULL,
           PRIMARY KEY  (`rel_id`),
           KEY `module_id_idx` (`module_id`),
           KEY `paper_id_idx` (`paper_id`),
@@ -1566,7 +1566,7 @@ QUERY;
           `moduleID` char(25) NOT NULL,
           `title` text NOT NULL,
           `source_url` text,
-          `calendar_year` enum('2008/09','2009/10','2010/11','2011/12','2012/13','2013/14','2014/15','2014/15','2015/16','2016/17','2017/18','2018/19','2019/20') NOT NULL,
+          `calendar_year` enum('2008/09','2009/10','2010/11','2011/12','2012/13','2013/14','2014/15','2015/16','2016/17','2017/18','2018/19','2019/20') NOT NULL,
           `occurrence` datetime default NULL,
           PRIMARY KEY  (`identifier`,`moduleID`,`calendar_year`),
           KEY `sess_id` (`sess_id`)
@@ -1590,7 +1590,7 @@ QUERY;
           `enrolement_details` text,
           `deletions` int(11) default NULL,
           `deletion_details` text,
-          `import_type` enum('manual','SATURN UK','SATURN Malaysia','SATURN China','ARC') default NULL,
+          `import_type` varchar(25) default NULL,
           PRIMARY KEY  (`id`)
         ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=latin1
 QUERY;
@@ -1662,7 +1662,7 @@ QUERY;
           `id` int(11) NOT NULL auto_increment,
           `userID` mediumint(8) unsigned default NULL,
           `moduleid` char(15) NOT NULL,
-          `calendar_year` enum('2008/09','2009/10','2010/11','2011/12','2012/13','2013/14','2014/15','2014/15','2015/16','2016/17','2017/18','2018/19','2019/20') NOT NULL,
+          `calendar_year` enum('2008/09','2009/10','2010/11','2011/12','2012/13','2013/14','2014/15','2015/16','2016/17','2017/18','2018/19','2019/20') NOT NULL,
           `attempt` tinyint(4) default NULL,
           `auto_update` tinyint(4) default NULL,
           PRIMARY KEY  (`id`)
@@ -1780,7 +1780,7 @@ QUERY;
           `roles` char(40) default NULL,
           `id` smallint(6) NOT NULL auto_increment,
           `first_names` char(60) default NULL,
-          `gender` enum('Male','Female') default NULL,
+          `gender` enum('Male','Female','') default NULL,
           `last_login` datetime default NULL,
           `special_needs` tinyint(4) default '0',
           `yearofstudy` tinyint(4) default NULL,

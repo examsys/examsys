@@ -30,6 +30,7 @@ require '../include/media.inc';
 require '../config/start.inc';
 
 check_var('id', 'GET', true, false);
+session_start();
 
 if ($stmt = $mysqli->prepare("SELECT background, foreground, textsize, marks_color, themecolor, labelcolor, font FROM special_needs WHERE userid=?")) {
   $stmt->bind_param('i', $userID);
@@ -69,12 +70,10 @@ $stmt->bind_result($property_id, $labs, $paper_title, $paper_type, $paper_prolog
 while ($stmt->fetch()) {
   $no_screens = $screen;
   $original_paper_type = $paper_type;
-//  if ($q_type != 'info') {
-    if (!isset($screen_data[$no_screens])) { 
-      $screen_data[$no_screens] = 1;
-    } else {
-      $screen_data[$no_screens]++;
-//    }
+  if (!isset($screen_data[$no_screens])) { 
+    $screen_data[$no_screens] = 1;
+  } else {
+    $screen_data[$no_screens]++;
   } 
   // If set overwrite the default colours with the current users' special settings
   if (!isset($bgcolor) or $bgcolor == 'NULL' or $bgcolor == '') $bgcolor = $paper_bgcolor;
@@ -262,7 +261,7 @@ echo '" onsubmit="return confirmSubmit()">';   // Warning message only in linear
   $result->execute();
   $result->store_result();
   $result->bind_result($q_id, $category, $comment, $previous_duration, $action, $response);
-  while ($review_row = $result->fetch()) {
+  while ($result->fetch()) {
     $reviews_array[$q_id]['category'] = $category;
     $reviews_array[$q_id]['comment'] = $comment;
     $reviews_array[$q_id]['action'] = $action;

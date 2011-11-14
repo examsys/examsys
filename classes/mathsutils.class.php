@@ -52,7 +52,11 @@ Class MathsUtils {
       $increment = $increment * (10 * $decimals);
     }
     if ($increment == 1 or $increment == 0) {
-      $gen_no = rand($min, $max);
+      if (strpos($min,'var') !== false or strpos($min,'ans') !== false or strpos($max,'var') !== false or strpos($max,'ans') !== false) {
+        $gen_no = 0;
+      } else {
+        $gen_no = rand($min, $max);
+      }
     } else {
       $new_max = ($max - $min) / $increment;
       $gen_no = rand(0, $new_max);

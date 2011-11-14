@@ -24,6 +24,78 @@
 
 require_once $cfg_web_root . 'classes/mathsutils.class.php';
 
+function displayGeneratedFigures($original_vars) {
+  global $A, $B, $C, $D, $E, $F, $G, $H, $I, $J, $A_min, $B_min, $C_min, $D_min, $E_min, $F_min, $G_min, $H_min, $I_min, $J_min, $A_max, $B_max, $C_max, $D_max, $E_max, $F_max, $G_max, $H_max, $I_max, $J_max;
+  
+  $html = '';
+  
+  $letters = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J');
+  for ($i=0; $i<10; $i++) {
+    $master_variable = $letters[$i];
+    $min_variable = $letters[$i] . '_min';
+    $max_variable = $letters[$i] . '_max';
+    if (isset($$master_variable)) {
+      $html .= "<tr><td>\$" . $letters[$i] . "</td><td>" . $$master_variable . "</td><td>";
+
+      if (isset($original_vars[$master_variable]['min'])) {
+        $html .= 'from Q' . $_SESSION['q' . $original_vars[$master_variable]['min']];
+      } else {
+        $html .= $$min_variable;
+      }
+      $html .= "</td><td>";
+
+      if (isset($original_vars[$master_variable]['max'])) {
+        $html .= 'from Q' . $_SESSION['q' . $original_vars[$master_variable]['max']];
+      } else {
+        $html .= $$max_variable;
+      }
+      $html .= "</td></tr>\n";
+    }
+  }
+    
+  return $html;
+}
+
+function overwriteCalcValues($letter, &$tmp_figures, &$original_vars) {
+  // Min variable
+  if (strpos($tmp_figures[0], 'var' . $letter) !== false) {
+    $questionID = str_replace('var' . $letter, '', $tmp_figures[0]);  
+    if (isset($_SESSION['q' . $questionID])) {
+      $original_vars[$letter]['min'] = $questionID;
+    }
+  
+    if (isset($_SESSION[$tmp_figures[0]])) {
+      $tmp_figures[0] = $_SESSION[$tmp_figures[0]];
+    }
+  }
+
+  // Max variable
+  if (strpos($tmp_figures[1], 'var' . $letter) !== false) {
+    $questionID = str_replace('var' . $letter, '', $tmp_figures[1]);  
+    if (isset($_SESSION['q' . $questionID])) {
+      $original_vars[$letter]['max'] = $questionID;
+    }
+  
+    if (isset($_SESSION[$tmp_figures[1]])) {
+      $tmp_figures[1] = $_SESSION[$tmp_figures[1]];
+    }
+  }
+
+  // Min Answer
+  if (strpos($tmp_figures[0], 'ans') !== false) {
+    if (isset($_SESSION[$tmp_figures[0]])) {
+      $tmp_figures[0] = $_SESSION[$tmp_figures[0]];
+    }
+  }
+
+  // Max Answer
+  if (strpos($tmp_figures[1], 'ans') !== false) {
+    if (isset($_SESSION[$tmp_figures[1]])) {
+      $tmp_figures[1] = $_SESSION[$tmp_figures[1]];
+    }
+  }
+}
+
 function checkVariables($number) {
   global $A, $B, $C, $D, $E, $F, $G, $H, $I, $J;
   eval("\$new_number = \"$number\";");
@@ -31,7 +103,7 @@ function checkVariables($number) {
 }
 
 function display_question(&$question, $paper_type, $current_screen, $old_q_type, &$question_no, &$question_offset) {
-  global $external_review_deadline, $reviews_array, $labelcolor, $old_likert_label, $old_likert_cols, $screen_pre_submitted, $A, $B, $C, $D, $E, $F, $G, $H, $I, $J, $li_set, $bgcolor, $li_set, $calculator, $used_questions, $user_dismiss, $string, $language;
+  global $external_review_deadline, $reviews_array, $labelcolor, $old_likert_label, $old_likert_cols, $screen_pre_submitted, $A, $B, $C, $D, $E, $F, $G, $H, $I, $J, $A_min, $B_min, $C_min, $D_min, $E_min, $F_min, $G_min, $H_min, $I_min, $J_min, $A_max, $B_max, $C_max, $D_max, $E_max, $F_max, $G_max, $H_max, $I_max, $J_max, $li_set, $bgcolor, $li_set, $calculator, $used_questions, $user_dismiss, $string, $language;
 
   $q_id = $question['q_id'];
   $option_no = count($question['options']);
@@ -138,6 +210,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
   $option_no = count($question['options']);
   $part_id = 0;
   $marks = 0;
+  $calc_original_vars = array();
   if ($question['q_type'] != 'likert') $old_likert_label = '';
 
   // Pre-question processing
@@ -289,54 +362,74 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
         $figures = explode(',',$display_option['option_text']);
         switch ($part_id) {
           case 1:
+            overwriteCalcValues('A', $figures, $calc_original_vars);
             $A = MathsUtils::gen_random_no(checkVariables($figures[0]), checkVariables($figures[1]), $figures[2], $figures[3]);
             $A_min = $figures[0];
             $A_max = $figures[1];
+            $_SESSION['varA' . $q_id] = $A;  
             break;
           case 2:
+            overwriteCalcValues('B', $figures, $calc_original_vars);
             $B = MathsUtils::gen_random_no(checkVariables($figures[0]), checkVariables($figures[1]), $figures[2], $figures[3]);
             $B_min = $figures[0];
             $B_max = $figures[1];
+            $_SESSION['varB' . $q_id] = $B;   
             break;
           case 3:
+            overwriteCalcValues('C', $figures, $calc_original_vars);
             $C = MathsUtils::gen_random_no(checkVariables($figures[0]), checkVariables($figures[1]), $figures[2], $figures[3]);
             $C_min = $figures[0];
             $C_max = $figures[1];
+            $_SESSION['varC' . $q_id] = $C;  
             break;
           case 4:
+            overwriteCalcValues('D', $figures, $calc_original_vars);
             $D = MathsUtils::gen_random_no(checkVariables($figures[0]), checkVariables($figures[1]), $figures[2], $figures[3]);
             $D_min = $figures[0];
             $D_max = $figures[1];
+            $_SESSION['varD' . $q_id] = $D;  
             break;
           case 5:
+            overwriteCalcValues('E', $figures, $calc_original_vars);
             $E = MathsUtils::gen_random_no(checkVariables($figures[0]), checkVariables($figures[1]), $figures[2], $figures[3]);
             $E_min = $figures[0];
             $E_max = $figures[1];
+            $_SESSION['varE' . $q_id] = $E;  
             break;
           case 6:
+            overwriteCalcValues('F', $figures, $calc_original_vars);
             $F = MathsUtils::gen_random_no(checkVariables($figures[0]), checkVariables($figures[1]), $figures[2], $figures[3]);
             $F_min = $figures[0];
             $F_max = $figures[1];
+            $_SESSION['varF' . $q_id] = $F;  
             break;
           case 7:
+            overwriteCalcValues('G', $figures, $calc_original_vars);
             $G = MathsUtils::gen_random_no(checkVariables($figures[0]), checkVariables($figures[1]), $figures[2], $figures[3]);
             $G_min = $figures[0];
             $G_max = $figures[1];
+            $_SESSION['varG' . $q_id] = $G;  
             break;
           case 8:
+            overwriteCalcValues('H', $figures, $calc_original_vars);
             $H = MathsUtils::gen_random_no(checkVariables($figures[0]), checkVariables($figures[1]), $figures[2], $figures[3]);
             $H_min = $figures[0];
             $H_max = $figures[1];
+            $_SESSION['varH' . $q_id] = $H;  
             break;
           case 9:
+            overwriteCalcValues('I', $figures, $calc_original_vars);
             $I = MathsUtils::gen_random_no(checkVariables($figures[0]), checkVariables($figures[1]), $figures[2], $figures[3]);
             $I_min = $figures[0];
             $I_max = $figures[1];
+            $_SESSION['varI' . $q_id] = $I;  
             break;
           case 10:
+            overwriteCalcValues('J', $figures, $calc_original_vars);
             $J = MathsUtils::gen_random_no(checkVariables($figures[0]), checkVariables($figures[1]), $figures[2], $figures[3]);
             $J_min = $figures[0];
             $J_max = $figures[1];
+            $_SESSION['varJ' . $q_id] = $J;  
             break;
         }
         break;
@@ -717,34 +810,28 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
   } elseif ($question['q_type'] == 'calculation') {
     $score_array = explode(',',$question['display_method']);
     $answer_equation = $question['options'][0]['correct'];
-    if ($li_set == 1) {
-      echo '<tr><td></td><td>';
-    } else {
-      echo "<tr><td></td><td>";
-      echo "<table cellpadding=\"2\" cellspacing=\"0\" border=\"0\" style=\"padding:10px; border: 1px solid #C0C000; background-color:#FFFFC0; width:700px\">\n";
-      echo "<tr><td colspan=\"4\">" . $string['notvisible'] . "</td></tr>";
-      echo "<tr><td colspan=\"4\" style=\"text-align:justify\">" . $string['reviewermsg'] . "</td></tr>";
-      echo "<tr><td colspan=\"4\">&nbsp;</td></tr>";
-      echo "<tr style=\"font-weight:bold\"><td style=\"width:80px; border-bottom: 1px solid #C0C000\">Variable</td><td style=\"width:80px; border-bottom: 1px solid #C0C000\">" . $string['generated'] . "</td><td style=\"width:80px; border-bottom: 1px solid #C0C000\">" . $string['min'] . "</td><td style=\"width:460px; border-bottom: 1px solid #C0C000\">" . $string['max'] . "</td></tr>\n";
-      if (isset($A)) echo "<tr><td>\$A</td><td>$A</td><td>$A_min</td><td>$A_max</td></tr>\n";
-      if (isset($B)) echo "<tr><td>\$B</td><td>$B</td><td>$B_min</td><td>$B_max</td></tr>\n";
-      if (isset($C)) echo "<tr><td>\$C</td><td>$C</td><td>$C_min</td><td>$C_max</td></tr>\n";
-      if (isset($D)) echo "<tr><td>\$D</td><td>$D</td><td>$D_min</td><td>$D_max</td></tr>\n";
-      if (isset($E)) echo "<tr><td>\$E</td><td>$E</td><td>$E_min</td><td>$E_max</td></tr>\n";
-      if (isset($F)) echo "<tr><td>\$F</td><td>$F</td><td>$F_min</td><td>$F_max</td></tr>\n";
-      if (isset($G)) echo "<tr><td>\$G</td><td>$G</td><td>$G_min</td><td>$G_max</td></tr>\n";
-      if (isset($H)) echo "<tr><td>\$H</td><td>$H</td><td>$H_min</td><td>$H_max</td></tr>\n";
-      if (isset($I)) echo "<tr><td>\$I</td><td>$I</td><td>$I_min</td><td>$I_max</td></tr>\n";
-      if (isset($J)) echo "<tr><td>\$J</td><td>$J</td><td>$J_min</td><td>$J_max</td></tr>\n";
-      echo "<tr><td>Answer</td><td colspan=\"3\">$answer_equation</td></tr>\n";
-      echo "</table>\n";
-      echo "</td></tr>\n";
     
+    echo "<tr><td></td><td>";
+    echo "<table cellpadding=\"2\" cellspacing=\"0\" border=\"0\" style=\"padding:10px; border: 1px solid #C0C000; background-color:#FFFFC0; width:700px\">\n";
+    echo "<tr><td colspan=\"4\">" . $string['notvisible'] . "</td></tr>";
+    echo "<tr><td colspan=\"4\" style=\"text-align:justify\">" . $string['reviewermsg'] . "</td></tr>";
+    echo "<tr><td colspan=\"4\">&nbsp;</td></tr>";
+    echo "<tr style=\"font-weight:bold\"><td style=\"width:80px; border-bottom: 1px solid #C0C000\">Variable</td><td style=\"width:80px; border-bottom: 1px solid #C0C000\">" . $string['generated'] . "</td><td style=\"width:80px; border-bottom: 1px solid #C0C000\">" . $string['min'] . "</td><td style=\"width:460px; border-bottom: 1px solid #C0C000\">" . $string['max'] . "</td></tr>\n";
+    
+    echo displayGeneratedFigures($calc_original_vars);
+    
+    echo "<tr><td>Formula</td><td colspan=\"3\">$answer_equation</td></tr>\n";
+    echo "</table>\n";
+    echo "</td></tr>\n";
+  
+    if ($li_set == 0) {
       echo '<tr><td class="q_no">' . ($question_no + $question_offset) . '.&nbsp;';
       if ($calculator == 1) echo '<br /><a href="#" onclick="openCalculator(); return false;"><img src="../artwork/calc.gif" width="18" height="24" alt="' . $string['calculator'] . '" border="0" /></a>';
       echo '</td><td>';
+    } else {
+      echo '<tr><td></td><td>';
     }
-    
+        
     $question['leadin'] = str_replace('$A','<span style="background-color:#FFFF80">&nbsp;<strong>$A</strong>&nbsp;</span>' . $A,$question['leadin']);
     $question['leadin'] = str_replace('$B','<span style="background-color:#FFFF80">&nbsp;<strong>$B</strong>&nbsp;</span>' . $B,$question['leadin']);
     $question['leadin'] = str_replace('$C','<span style="background-color:#FFFF80">&nbsp;<strong>$C</strong>&nbsp;</span>' . $C,$question['leadin']);
@@ -761,7 +848,10 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
     eval ("\$answer = $answer_equation;");
     $answer = round($answer, $score_array[0]);
     
-    echo "<p><input type=\"text\" style=\"text-align:right\" name=\"q" . $question_no . "\" size=\"10\" value=\"$answer\" />" . $score_array[2] . "</p>\n";
+    $_SESSION['ans' . $q_id] = $answer;
+    $_SESSION['q' . $q_id] = ($question_no + $question_offset);
+    
+    echo "<p><input type=\"text\" style=\"text-align:right\" name=\"q" . $question_no . "\" size=\"10\" value=\"$answer\" />" . $score_array[3] . "</p>\n";
     $marks = 1;
   } elseif ($question['q_type'] == 'dichotomous' or $question['q_type'] == 'mrq' or $question['q_type'] == 'rank') {
     if ($question['score_method'] == 'other') {

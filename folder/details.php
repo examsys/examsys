@@ -66,7 +66,7 @@ if ($folder != '') {
     $parent_results->close();
   }
 }
-if (isset($_GET['module'])) {
+if (isset($_GET['module']) and $_GET['module'] != '') {
   $module = $_GET['module'];
   
   $module_data = $mysqli->prepare("SELECT fullname, checklist, selfenroll FROM modules WHERE moduleid=?");
@@ -245,6 +245,7 @@ if ($selfenrol == 1) {
 
 // Get any sub-folders first.
 if ($folder != '') {
+  $tmp_string = '';
   if (count($teams) > 0) {
     $tmp_string = " OR team_name IN ('" . implode("','",$teams) . "')";
   }
