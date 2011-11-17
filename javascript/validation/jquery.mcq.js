@@ -1,21 +1,21 @@
 $(function() {
   $('#edit_form').submit(function () { 
     tinyMCE.triggerSave();
-  })
+  });
   $('#edit_form').validate({
     rules: {
       leadin: 'required',
       option_text1: {
         required: {
           depends: function (element) {
-            return $('#option_media1').val() == '';
+            return ($('#option_media1').val() == '' && ($('#existing_media1').length ==0 || $('#existing_media1').val() == ''));
           }
         } 
       },
       option_text2: {
         required: {
           depends: function (element) {
-            return $('#option_media2').val() == '';
+            return ($('#option_media2').val() == '' && ($('#existing_media2').length ==0 || $('#existing_media2').val() == ''));
           }
         } 
       }

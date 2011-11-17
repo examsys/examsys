@@ -43,7 +43,8 @@ Class Option extends TouchStoneObject {
   protected $marks_partial = 0;
   
   protected static $_fields = array('question_id', 'text', 'media', 'media_width', 'media_height', 'correct_fback', 'incorrect_fback', 'correct', 'marks_correct', 'marks_incorrect', 'marks_partial');
-  protected $_fields_editable = array('text', 'media', 'correct_fback', 'incorrect_fback', 'correct', 'marks_correct', 'marks_incorrect', 'marks_partial');
+  // 'media' should not appear in the list below as they are handled separately
+  protected $_fields_editable = array('text', 'correct_fback', 'incorrect_fback', 'correct', 'marks_correct', 'marks_incorrect', 'marks_partial');
   protected $_fields_required = array('question_id', 'marks_correct');
   
   protected $_question = null;

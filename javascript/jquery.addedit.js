@@ -20,6 +20,7 @@ $(function () {
       $(this).fadeIn();
     });
     $('#delete_media' + id).prop('checked', true);
+    $('#existing_media' + id).val('');
     return false;
   });
   

@@ -78,6 +78,7 @@ OBJEMBED;
     $html .= <<< DELETE
 <a href="#" class="media-delete" rel="{$imageid}"><img class="align-bottom" src="/artwork/red_cross.png" width="16" height="16" alt="Delete" /></a></div>
 <label class="hide"><input type="checkbox" id="delete_media{$imageid}" name="delete_media{$imageid}" /> Delete image {$imageid}</label>
+<input type="hidden" id="existing_media{$imageid}" name="existing_media{$imageid}" value="$filename" />
 DELETE;
   }
 
