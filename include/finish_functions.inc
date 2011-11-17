@@ -781,13 +781,15 @@
                   echo '<td></td>';
                 }
                 echo "<td><input type=\"radio\" name=\"q" . $question . "\" value=\"\" checked /></td><td style=\"width:99%\">";
-                if ($paper[$question]['option_text'][$tmp_part_id] != '') {
+                if (trim($paper[$question]['option_text'][$tmp_part_id]) != '') {
                   if (substr($tmp_exclude,0,1) == '1') echo '<span style="color:red; text-decoration:line-through">';
                   echo $strong_on . $paper[$question]['option_text'][$tmp_part_id] . $strong_off;
                   if (substr($tmp_exclude,0,1) == '1') echo '</span>';
-                } else {
+                  echo '<br />';
+                }
+                if ($paper[$question]['o_media'][$tmp_part_id] != '') {
                   echo '&nbsp;<img src="../media/' . $paper[$question]['o_media'][$tmp_part_id] . '" height="' . $paper[$question]['o_media_height'][$tmp_part_id] . '" width="' . $paper[$question]['o_media_width'][$tmp_part_id] . '" border="0" />';
-                  if ($tmp_display_correct_answer == '1') echo ' <strong>Is correct</strong>';
+                  if (trim($paper[$question]['option_text'][$tmp_part_id]) == '' and $tmp_display_correct_answer == '1') echo ' <strong>Is correct</strong>';
                 }
                 echo '</td></tr>';
               } else {
@@ -799,13 +801,15 @@
                   echo '<td></td>';          
                 }
                 echo "<td></td><td><input type=\"radio\" name=\"q" . $question . "\" value=\"\" /></td><td style=\"width:99%\">";
-                if ($paper[$question]['option_text'][$tmp_part_id] != '') {
+                if (trim($paper[$question]['option_text'][$tmp_part_id]) != '') {
                   if (substr($tmp_exclude,0,1) == '1') echo '<span style="color:red; text-decoration:line-through">';
                   echo $strong_on . $paper[$question]['option_text'][$tmp_part_id] . $strong_off;
                   if (substr($tmp_exclude,0,1) == '1') echo '</span>';
-                } else {
+                  echo '<br />';
+                }
+                if ($paper[$question]['o_media'][$tmp_part_id] != '') {
                   echo '&nbsp;<img src="../media/' . $paper[$question]['o_media'][$tmp_part_id] . '" height="' . $paper[$question]['o_media_height'][$tmp_part_id] . '" width="' . $paper[$question]['o_media_width'][$tmp_part_id] . '" border="0" />';
-                  if ($tmp_display_correct_answer == '1') echo ' <strong>Is correct</strong>';
+                  if (trim($paper[$question]['option_text'][$tmp_part_id]) == '' and $tmp_display_correct_answer == '1') echo ' <strong>Is correct</strong>';
                 }
                 echo '</td></tr>';
               }
@@ -818,21 +822,25 @@
                   echo '<td></td>';
                 }
                 echo "<td><input type=\"radio\" name=\"q" . $question . "\" value=\"\" checked /></td><td style=\"width:99%\">";
-                if ($paper[$question]['option_text'][$tmp_part_id] != '') {
+                if (trim($paper[$question]['option_text'][$tmp_part_id]) != '') {
                   if (substr($tmp_exclude,0,1) == '1') echo '<span style="color:red; text-decoration:line-through">';
                   echo $paper[$question]['option_text'][$tmp_part_id];
                   if (substr($tmp_exclude,0,1) == '1') echo '</span>';
-                } else {
+                  echo '<br />';
+                } 
+                if ($paper[$question]['o_media'][$tmp_part_id] != '') {
                   echo '<img src="../media/' . $paper[$question]['o_media'][$tmp_part_id] . '" height="' . $paper[$question]['o_media_height'][$tmp_part_id] . '" width="' . $paper[$question]['o_media_width'][$tmp_part_id] . '" border="0" />';
                 }
                 echo "</td></tr>";
               } else {
                 echo "<td></td><td><input type=\"radio\" name=\"q" . $question . "\" value=\"\" /></td><td>";
-                if ($paper[$question]['option_text'][$tmp_part_id] != '') {
+                if (trim($paper[$question]['option_text'][$tmp_part_id]) != '') {
                   if (substr($tmp_exclude,0,1) == '1') echo '<span style="color:red; text-decoration:line-through">';
                   echo $paper[$question]['option_text'][$tmp_part_id];
                   if (substr($tmp_exclude,0,1) == '1') echo '</span>';
-                } else {
+                  echo '<br />';
+                }
+                if ($paper[$question]['o_media'][$tmp_part_id] != '') {
                   echo '<img src="../media/' . $paper[$question]['o_media'][$tmp_part_id] . '" height="' . $paper[$question]['o_media_height'][$tmp_part_id] . '" width="' . $paper[$question]['o_media_width'][$tmp_part_id] . '" border="0" />';
                 }
                 echo '</td></tr>';
