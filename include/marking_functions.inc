@@ -342,8 +342,8 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
             $mark = $marks_correct;
           }          
         } else {
-          if ($answer_equation != '') {
-            echo eval ("\$answer = $answer_equation;");
+          if ($answer_equation != '' and check_formula($answer_equation, $variable_array)) {
+            eval ("\$answer = $answer_equation;");
             $decimals = ($score_array[0] != '') ? $score_array[0] : 0;
             $answer = round($answer, $decimals);
           } else {
@@ -853,5 +853,26 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
         
   // Close still open database prepared queries
   $save_answers->close();
+}
+
+/**
+ * Check if any of the variables used in a formula evaluates to ERROR (a student answer from a previous question that
+ * hasn't been answered), in which case it cannot be processed
+ * @param $formula Formula to be evaluated
+ * @param $variables Array of variable values
+ * @return bool
+ */
+function check_formula($formula, $variables) {
+  $ok = true;
+  preg_match_all('/\$[A-J]{1}/', $formula, $matches);
+  if (is_array($matches[0])) {
+    foreach ($matches[0] as $var) {
+      $index = ord(substr($var, 1, 1)) - 65;
+      if ($variables[$index] == 'ERROR') {
+        $ok = false;
+      }
+    }
+  }
+  return $ok;
 }
 ?>
