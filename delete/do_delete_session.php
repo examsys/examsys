@@ -22,7 +22,7 @@
 * @package
 */
 
-require '../include/sysadmin_auth.inc';
+require '../include/staff_auth.inc';
 
 // Query 'objectives' to get the IDs of the 'relationships' records to delete.
 $obj_data = $mysqli->prepare("SELECT obj_id FROM objectives WHERE identifier=? AND moduleID=? AND calendar_year=?");
