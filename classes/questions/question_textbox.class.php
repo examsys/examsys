@@ -26,7 +26,7 @@
 
 Class QuestionTEXTBOX extends Question {
   
-  protected $columns = 10;
+  protected $columns = 80;
   protected $rows = 4;
   public $max_options = 1;
   protected $_allow_change_marking_method = false;
