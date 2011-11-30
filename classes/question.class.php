@@ -311,7 +311,7 @@ Class Question extends TouchStoneObject {
       if ($this->id == -1) {
         $this->created = date ('Y-m-d H:i:s');
         $this->last_edited = date ('Y-m-d H:i:s');
-        $params = array_merge(array('ssssssssssssisisssssisssss'), $this->_data);
+        $params = array_merge(array('ssssssssssssssisssssisssss'), $this->_data);
         $query = <<< QUERY
 INSERT INTO questions(q_type, theme, scenario, scenario_plain, leadin, leadin_plain, notes, correct_fback, incorrect_fback, score_method, 
 display_method, q_option_order, std, bloom, ownerID, q_media, q_media_width, q_media_height, q_group, checkout_time, checkout_authorID, 
@@ -320,7 +320,7 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
 QUERY;
       } else {
         // Otherwise we're updating an existing one
-        $params = array_merge(array('ssssssssssssisisssssisssssi'), $this->_data, array(&$this->id));
+        $params = array_merge(array('ssssssssssssssisssssisssssi'), $this->_data, array(&$this->id));
         $this->last_edited = date('Y-m-d H:i:s');
         $query = <<< QUERY
 UPDATE questions
