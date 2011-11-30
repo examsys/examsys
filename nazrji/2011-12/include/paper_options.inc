@@ -445,6 +445,10 @@ if ($paper_type == '4') {
 </td></tr>
 </table>
 
+<ul id="draggable">
+  <li id="break_99" class="break">Add screen break</li>
+</ul>
+
 <br />
 <br />
 

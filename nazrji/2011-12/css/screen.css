@@ -1,3 +1,8 @@
+#content * {
+	margin: 0;
+	padding: 0;
+}
+
 .error {color: #c00000}
 li.error {
 	list-style: none;
@@ -25,4 +30,142 @@ label.error {
 
 #major-error-inner h1 {
   color: #c80000;
+}
+
+.qline {
+  cursor: pointer;
+  color: #000;
+}
+
+#content .qline td {
+  padding: 3px 0;
+  font-size: 100%;
+  width: 1px;
+  color: black;
+}
+
+.qline td {
+  font-size: 80%;
+}
+
+#content td.icon, td.icon {
+  text-align: right;
+  vertical-align: top;
+  cursor: pointer;
+  width: 14px;
+  padding-right: 6px;
+}
+
+#content td.q_no, td.q_no {
+  text-align: right;
+  vertical-align: top;
+  cursor: pointer;
+  width: 14px;
+  padding-right: 6px;
+}
+
+#content td.d, td.d {
+  text-align: right;
+  padding-left: 6px;
+  padding-right: 14px;
+  vertical-align: top;
+  width: 100px
+}
+
+#content .theme {
+  font-weight: bold;
+  color: #316AC5
+}
+
+#content td.rnd, td.rnd {
+  background-color: #DCE7F5;
+  cursor: pointer
+}
+
+#content td.s {
+  padding-left: 10px
+}
+
+#content td.t, td.t {
+  white-space: nowrap;
+  vertical-align: top;
+  padding-left: 6px;
+  padding-right: 6px;
+  width:108px
+}
+
+#content td.m, td.m {
+  text-align: right;
+  vertical-align: top;
+  padding-right: 4px;
+  width: 46px
+}
+
+#content td.l {
+  vertical-align: top;
+  width: auto;
+}
+
+.errmk {
+  color: red;
+  text-align: right;
+  vertical-align: top
+}
+
+.mee {
+  font-size: 100%;
+}
+
+.qline:hover {
+	background-color: #eee;
+}
+
+/*#content .qline td.handle-holder {*/
+	/*vertical-align: top;*/
+	/*padding-top: 6px;*/
+	/*width: 8px;*/
+	/*text-align: right;*/
+  /*color: red;*/
+/*}*/
+
+#content .breakline td {
+  padding-top: 14px;
+  vertical-align: middle;
+}
+
+#content .breakline h4 {
+	font-weight:normal;
+	color: #1e3287;
+	padding: 0;
+	margin: 4px 0 4px 8px;
+	font-size: 80%;
+	line-height: 100%;
+	background: #fff url('../artwork/separator1x1.png') repeat-x left center;
+}
+
+.opaque {
+	background-color: #fff;
+	padding-right: 4px;
+  font-size: 130%;
+}
+
+.breakline:hover {
+	background-color: #fff;
+}
+
+#draggable {
+  margin-top: 8px;
+  padding-left: 12px;
+}
+
+li.break {
+  list-style:  none;
+  padding-left: 22px;
+  background: transparent url('../artwork/move16.png') no-repeat left center;
+  width: 120px;
+  font-size: 90%;
+}
+
+#content .breadcrumb {
+  margin: 2px 0 0 10px;
 }
