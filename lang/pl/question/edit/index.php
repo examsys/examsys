@@ -209,6 +209,7 @@ $string['validationerror'] = 'Wystąpił problem podczas wysyłania. Przejrzyj f
 $string['enterleadin'] = 'Sformułuj pytanie';
 $string['enteroption'] = 'Wprowadź tekst opcji lub plik medialny dla tej opcji';
 $string['enteroptionshort'] = 'Wymagane';
+$string['enteroption_kw'] = 'Please select a keyword for the question';
 $string['enterquestion'] = 'Wprowadź pytanie';
 $string['enterformula'] = 'Wprowadź wzór';
 $string['entervignette'] = 'Wprowadź przypadek kliniczny dla tego pytania';

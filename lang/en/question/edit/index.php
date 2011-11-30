@@ -209,6 +209,7 @@ $string['validationerror'] = 'There were problems with your submission. Please r
 $string['enterleadin'] = 'Please enter a leadin for the question';
 $string['enteroption'] = 'Please enter either option text or a media file for this option';
 $string['enteroptionshort'] = 'Required';
+$string['enteroption_kw'] = 'Please select a keyword for the question';
 $string['enterquestion'] = 'Please enter the question';
 $string['enterformula'] = 'Please enter a formula';
 $string['entervignette'] = 'Please enter a clinical vignette for the question';
