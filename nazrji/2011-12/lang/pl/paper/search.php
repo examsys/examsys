@@ -1,0 +1,28 @@
+<?php
+$string['papersearch'] = 'Wyszukiwanie arkuszy';
+$string['wordorphrase'] = 'Słowo lub fraza';
+$string['formative'] = 'Formatywna samoocena';
+$string['progresstest'] = 'Test postępów';
+$string['summative'] = 'Egzamin końcowy';
+$string['survey'] = 'Ankieta';
+$string['oscestation'] = 'Stacja OSCE';
+$string['offlinepaper'] = 'Arkusz Offline';
+$string['accessibility'] = 'Dostępność';
+$string['date'] = 'Data';
+$string['lab'] = 'zajęcia';
+$string['anylab'] = '(każde zajęcia)';
+$string['ownership'] = 'Własność';
+$string['owner'] = 'Właściciel';
+$string['anyowner'] = '(każdy właściciel)';
+$string['papers'] = 'Arkusze';
+$string['back'] = 'Wstecz';
+$string['search'] = 'Szukaj';
+$string['nothingfound'] = 'Nie znaleziono arkuszy dla tych kryteriów wyszukiwania';
+$string['screen'] = 'Ekran';
+$string['screens'] = 'Ekrany';
+$string['anymodule'] = '(każdy moduł)';
+$string['mypaperssonly'] = '(Tylko moje arkusze)';
+$string['type'] = 'Typ';
+$string['author'] = 'Autor';
+$string['to'] = 'do';
+?>
