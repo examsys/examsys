@@ -72,9 +72,10 @@ label.error {
   width: 100px
 }
 
-#content .theme {
+#content .theme, .theme {
   font-weight: bold;
-  color: #316AC5
+  color: #316AC5;
+  margin: 0;
 }
 
 #content td.rnd, td.rnd {
@@ -104,6 +105,14 @@ label.error {
 #content td.l {
   vertical-align: top;
   width: auto;
+}
+
+#content tr.q_theme td, tr.q_theme td {
+  padding-top: 19px;
+}
+
+#content tr.q_theme td.l, tr.q_theme td.l {
+  padding-top: 3px;
 }
 
 .errmk {

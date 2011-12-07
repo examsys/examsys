@@ -851,11 +851,14 @@ function getMSCAA($paperID, $mysqlidb) {
       $forecolor = 'black';
     }
 
+    $theme_class = '';
+    $theme_str = '';
     if (trim($temp_array[$x]['theme']) != '') {
-      echo "<tr><td></td><td></td><td colspan=\"4\" class=\"theme\">" . trim($temp_array[$x]['theme']) . "</td></tr>\n";
+      $theme_class = ' q_theme';
+      $theme_str = "<h4 class=\"theme\">" . trim($temp_array[$x]['theme']) . "</h4>\n";
     }
 
-    echo "<tr id=\"link_$x\" class=\"link_$x qline\" style=\"";
+    echo "<tr id=\"link_$x\" class=\"link_$x qline{$theme_class}\" style=\"";
     if ($q_highlight == $temp_array[$x]['display_pos']) {
       echo '; background-color:#B3C8E8';
     } else {
@@ -901,26 +904,28 @@ function getMSCAA($paperID, $mysqlidb) {
       echo "<td class=\"q_no\">&nbsp;$question_number.</td>";
     }
     
+    echo "<td class=\"l\">";
+    echo $theme_str;
     if ($temp_array[$x]['q_type'] == 'random') {
-      echo "<td class=\"l\">" . $temp_array[$x]['leadin'] . "</td>";
+      echo $temp_array[$x]['leadin'];
     } elseif ($temp_array[$x]['q_type'] == 'branching') {
       if ($temp_array[$x]['leadin'] == '') {
-        echo "<td class=\"l\">Branching question set based on Q" . findDecisionQ($temp_array,$temp_array[$x]['scenario']) . "</td>";
+        echo "Branching question set based on Q" . findDecisionQ($temp_array,$temp_array[$x]['scenario']);
       } else {
-        echo "<td class=\"l\">" . $temp_array[$x]['leadin'] . " (Q" . findDecisionQ($temp_array,$temp_array[$x]['scenario']) . ")</td>";
+        echo $temp_array[$x]['leadin'] . " (Q" . findDecisionQ($temp_array,$temp_array[$x]['scenario']) . ")";
       }
     } elseif ($temp_array[$x]['leadin'] != '') {
-      echo "<td class=\"l\">" . $temp_array[$x]['leadin'];
+      echo $temp_array[$x]['leadin'];
       if ($excluded[$temp_array[$x]['q_id']] != NULL) echo ' <img src="../artwork/exclude_small.gif" width="15" height="11" alt="Excluded" />';
       if ($temp_array[$x]['warnings'] != '') echo '<span style="color:#C00000; font-weight:bold">&nbsp;<img src="../artwork/small_yellow_warning_icon.gif" width="16" height="16" alt="' . $string['warning'] . '" border="0" />&nbsp;' . $temp_array[$x]['warnings'] . '</span>';
-      echo "</td>";
     } elseif (strpos($temp_array[$x]['q_media'],'.swf') !== false) {
-      echo "<td class=\"l\"><img src=\"../artwork/flash_icon.png\" width=\"48\" height=\"48\" alt=\"Embedded Flash object\" border=\"0\" /></td>";
+      echo "<img src=\"../artwork/flash_icon.png\" width=\"48\" height=\"48\" alt=\"Embedded Flash object\" border=\"0\" />";
     } elseif (strpos($temp_array[$x]['q_media'],'.flv') !== false) {
-      echo "<td class=\"l\"><img src=\"../artwork/flash_icon.png\" width=\"48\" height=\"48\" alt=\"Embedded Flash object\" border=\"0\" /></td>";
+      echo "<img src=\"../artwork/flash_icon.png\" width=\"48\" height=\"48\" alt=\"Embedded Flash object\" border=\"0\" />";
     } else {
-      echo "<td class=\"l\"><img src=\"../media/" . $temp_array[$x]['q_media'] . "\" width=\"" . ($temp_array[$x]['q_media_width'] / 3) . "\" height=\"" . ($temp_array[$x]['q_media_height'] /3) . "\" alt=\"Media file\" border=\"1\" /></td>";
+      echo "<img src=\"../media/" . $temp_array[$x]['q_media'] . "\" width=\"" . ($temp_array[$x]['q_media_width'] / 3) . "\" height=\"" . ($temp_array[$x]['q_media_height'] /3) . "\" alt=\"Media file\" border=\"1\" />";
     }
+    echo "</td>";
 
     echo '<td class="t">';
     // Display position out of sync.
