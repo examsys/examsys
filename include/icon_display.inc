@@ -35,6 +35,9 @@ function displayIcon($paper_type, $title, $initials, $surname, $shared, $locked)
     case 5:
       $html = "<img src=\"../artwork/offline" . $shared . ".png\" width=\"48\" height=\"48\" alt=\"" . $string['type'] . ": " . $string['offline paper'] . "&#013;" . $string['author'] . ": $title $initials $surname\" border=\"0\" />";
       break;
+    case 6:
+      $html = "<img src=\"../artwork/peer_review" . $shared . ".png\" width=\"48\" height=\"48\" alt=\"" . $string['type'] . ": Peer Review&#013;" . $string['author'] . ": $title $initials $surname\" border=\"0\" />";
+      break;
   }
   return $html;
 }

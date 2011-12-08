@@ -80,7 +80,7 @@ require '../include/staff_auth.inc';
 <div style="text-align:center; border:solid 1px #7F9DB9; background-color:white">
 <table cellpadding="0" cellspacing="0" border="0" style="background-color:white; color:#001687; width:100%">
 <tr>
-<td colspan="7" style="font-weight:bold; background-color:#DDE7EE; color:#001687; border-bottom:1px solid #C5C5C5">&nbsp;<?php echo $string['papertype']; ?></td>
+<td colspan="8" style="font-weight:bold; background-color:#DDE7EE; color:#001687; border-bottom:1px solid #C5C5C5">&nbsp;<?php echo $string['papertype']; ?></td>
 </tr>
 <tr>
 <td class="icon" onclick="activate('formative')" onmouseover="over('formative')" onmouseout="out('formative')" id="formative"><img src="../artwork/formative.png" width="48" height="48" border="0" alt="Formative Self-Assessment" /><br /><?php echo $string['formative self-assessment']; ?></td>
@@ -89,6 +89,7 @@ require '../include/staff_auth.inc';
 <td class="icon" onclick="activate('survey')" onmouseover="over('survey')" onmouseout="out('survey')" id="survey"><img src="../artwork/survey.png" width="48" height="48" border="0" alt="Survey" /><br /><?php echo $string['survey']; ?></td>
 <td class="icon" onclick="activate('osce')" onmouseover="over('osce')" onmouseout="out('osce')" id="osce"><img src="../artwork/osce.png" width="48" height="48" border="0" alt="OSCE" /><br /><?php echo $string['osce station']; ?></td>
 <td class="icon" onclick="activate('offline')" onmouseover="over('offline')" onmouseout="out('offline')" id="offline"><img src="../artwork/offline.png" width="48" height="48" border="0" alt="Offline" /><br /><?php echo $string['offline paper']; ?></td>
+<td class="icon" onclick="activate('peer_review')" onmouseover="over('peer_review')" onmouseout="out('peer_review')" id="peer_review"><img src="../artwork/peer_review.png" width="48" height="48" border="0" alt="Peer Review" /><br />Peer Review</td>
 <td>&nbsp;</td>
 </tr>
 </table>

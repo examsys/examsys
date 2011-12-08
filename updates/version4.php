@@ -1469,6 +1469,30 @@ if (!isset($_POST['update'])) {
   }
   $result->close();
 
+  // 07/12/2011
+  $result = $mysqli->prepare("SELECT COLUMN_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='log6' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='id'");
+  $result->execute();
+  $result->store_result();
+  $result->bind_result($column_type);
+  $result->fetch();
+  if ($result->num_rows() == 0) {
+    $adjust = $mysqli->prepare("CREATE TABLE log6 (id int not null primary key auto_increment, paperID smallint, reviewerID mediumint, peerID mediumint, started datetime, q_id int, rating tinyint)");
+    $adjust->execute();
+    $adjust->close();
+    echo "<li>CREATE TABLE log6 (id int not null primary key auto_increment, paperID smallint, reviewerID mediumint, peerID mediumint, started datetime, q_id int, rating tinyint)</li>\n";
+    
+    $adjust = $mysqli->prepare("ALTER TABLE properties CHANGE COLUMN paper_type paper_type enum('0','1','2','3','4','5','6')");
+    $adjust->execute();
+    $adjust->close();
+    echo "<li>ALTER TABLE properties CHANGE COLUMN paper_type paper_type enum('0','1','2','3','4','5','6')</li>\n";
+    
+    $sql = "GRANT SELECT, INSERT, UPDATE ON " . $cfg_db_database . ".log6 TO '" . $cfg_db_student_user . "'@'". $cfg_db_host . "'";
+    $mysqli->query($sql);
+    echo "<li>GRANT SELECT, INSERT, UPDATE ON " . $cfg_db_database . ".log6 TO '" . $cfg_db_student_user . "'@'". $cfg_db_host . "'</li>\n";
+    
+  }
+  $result->close();
+
   
   // End ------------------------------------------------------------------
   echo "</ol>\n";

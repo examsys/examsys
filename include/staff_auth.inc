@@ -39,7 +39,7 @@
 
   // Get teams.
   $teams = getUserTeams($userID, $mysqli);
-  $types_array = array('Formative Self-Assessments', 'Progress Tests', 'Summative Exams', 'Surveys', 'OSCE Stations', 'Offline Papers');
+  $types_array = array('Formative Self-Assessments', 'Progress Tests', 'Summative Exams', 'Surveys', 'OSCE Stations', 'Offline Papers', 'Peer Review');
 
   //
   //default security checkes

@@ -862,7 +862,7 @@ a.access:hover {color:white}
 <select name="textsize">
 <option value="null"><?php echo $string['angledefault']; ?></option>
 <?php
-  $fontsizes = array(90, 100, 120, 150, 200, 300, 400);
+  $fontsizes = array(90, 100, 110, 120, 130, 140, 150, 175, 200, 300, 400);
   foreach ($fontsizes as $individual_fontsize) {
     if ($individual_fontsize == $textsize) {
       echo "<option value=\"$individual_fontsize\" selected>$individual_fontsize%</option>\n";

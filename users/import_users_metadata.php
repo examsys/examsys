@@ -121,12 +121,13 @@ if (isset($_GET['module'])) {
       } else {
         // Load the IDs for all students in the module
         $student_id_array = array();
-        $stmt = $mysqli->prepare("SELECT users.id, username FROM users, student_modules WHERE users.id=student_modules.userID AND moduleid=? AND calendar_year=? ORDER BY username");
+        $stmt = $mysqli->prepare("SELECT users.id, username, student_id FROM (users, student_modules) LEFT JOIN sid ON users.id=sid.userID WHERE users.id=student_modules.userID AND moduleid=? AND calendar_year=? ORDER BY username");
         $stmt->bind_param('ss', $_GET['module'], $_POST['session']);
         $stmt->execute();
-        $stmt->bind_result($id, $username);
+        $stmt->bind_result($id, $username, $student_id);
         while ($stmt->fetch()) {
-          $student_id_array[$username] = $id;
+          $student_id_array[$username] = $id;    // Reference by Username
+          $student_id_array[$student_id] = $id;  // Reference by Student ID
         }
         $stmt->close();
         
@@ -156,7 +157,10 @@ if (isset($_GET['module'])) {
             $username = trim($cols[0]);
             
             // Check see if user was found
+            echo "checking $username<br />";
             if (!isset($student_id_array[$username])) {
+              var_dump($student_id_array[$username], $student_id_array);
+              exit;
               $unknown_users[] = $username;
             } else {
               $student_id = $student_id_array[$username];
@@ -213,7 +217,7 @@ if (isset($_GET['module'])) {
 
   $parts = explode('/', $current_year);
   echo "<option value=\"" . ($parts[0]-1) . "/" . ($parts[1]-1) . "\">" . ($parts[0]-1) . "/" . ($parts[1]-1) . "</option>\n";
-  echo "<option value=\"$current_year\">$current_year</option>\n";
+  echo "<option value=\"$current_year\" selected>$current_year</option>\n";
   echo "<option value=\"" . ($parts[0]+1) . "/" . ($parts[1]+1) . "\">" . ($parts[0]+1) . "/" . ($parts[1]+1) . "</option>\n";
   
 ?>

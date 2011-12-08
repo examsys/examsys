@@ -90,6 +90,10 @@ $stmt->close();
     ?>
       window.open("/osce/form.php?id=<?php echo $crypt_name; ?>&username=test","paper","width=1024,height=600,left=0,top=0,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
     <?php
+    } elseif ($paper_type == '6') {
+    ?>
+      window.open("/peer_review/form.php?id=<?php echo $crypt_name; ?>","paper","width=1024,height=600,left=0,top=0,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+    <?php
     } else {
     ?>
     if (fullsc == 0) {
@@ -111,7 +115,17 @@ $stmt->close();
   }
 
   function paperProperties() {
+    <?php
+    if ($paper_type == '6') {
+    ?>
+    notice=window.open("/peer_review/properties.php?paperID=<?php echo $paperID; ?>","properties","width=862,height=650,left="+(screen.width/2-431)+",top="+(screen.height/2-325)+",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+    <?php
+    } else {
+    ?>
     notice=window.open("/paper/properties.php?paperID=<?php echo $paperID; ?>","properties","width=862,height=650,left="+(screen.width/2-431)+",top="+(screen.height/2-325)+",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+    <?php
+    }
+    ?>
     if (window.focus) {
       notice.focus();
     }
@@ -352,8 +366,8 @@ $stmt->close();
     } elseif ($paper_type == '3') {
       echo "<tr><td><img src=\"/artwork/statistics_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['reports'] . "\" border=\"0\" /></td><td class=\"menuitem\"><span id=\"reports\"><a onclick=\"showAssStatsMenu(event); return false;\" href=\"#\">" . $string['reports'] . "</a></span><img src=\"/artwork/submenu_arrow.png\" width=\"16\" height=\"16\" alt=\">\" border=\"0\" /></td></tr>\n";
     } elseif ($paper_type == '4') {
-        echo "<tr><td><img src=\"/artwork/statistics_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['reports'] . "\" border=\"0\" /></td><td class=\"menuitem\"><span id=\"reports\"><a onclick=\"showAssStatsMenu(event); return false;\" href=\"#\">" . $string['reports'] . "</a></span><img src=\"/artwork/submenu_arrow.png\" width=\"16\" height=\"16\" alt=\">\" border=\"0\" /></td></tr>\n"; 
-        echo "<tr><td><a href=\"/import/osce_marks.php?paperID=$paperID&module=" . $module . "&folder=" . $folder . "\"><img src=\"/artwork/import_16.gif\" width=\"16\" height=\"16\" alt=\"" . $string['importoscemarks'] . "\" border=\"0\" /></a></td><td class=\"menuitem\"><a href=\"/import/osce_marks.php?paperID=$paperID&module=" . $module . "&folder=" . $folder . "\">" . $string['importoscemarks'] . "</a></td></tr>\n";
+      echo "<tr><td><img src=\"/artwork/statistics_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['reports'] . "\" border=\"0\" /></td><td class=\"menuitem\"><span id=\"reports\"><a onclick=\"showAssStatsMenu(event); return false;\" href=\"#\">" . $string['reports'] . "</a></span><img src=\"/artwork/submenu_arrow.png\" width=\"16\" height=\"16\" alt=\">\" border=\"0\" /></td></tr>\n"; 
+      echo "<tr><td><a href=\"/import/osce_marks.php?paperID=$paperID&module=" . $module . "&folder=" . $folder . "\"><img src=\"/artwork/import_16.gif\" width=\"16\" height=\"16\" alt=\"" . $string['importoscemarks'] . "\" border=\"0\" /></a></td><td class=\"menuitem\"><a href=\"/import/osce_marks.php?paperID=$paperID&module=" . $module . "&folder=" . $folder . "\">" . $string['importoscemarks'] . "</a></td></tr>\n";
       if (strpos($checklist,'mapping') !== false) {
         echo "<tr><td><a href=\"/mapping/paper_mappings_by_session.php?paperID=$paperID&paper_title=$paper_title&sd=$start_date&ed=$end_date&module=" . $module . "&folder=" . $folder . "\"><img src=\"/artwork/curriculum_map_small.png\" width=\"16\" height=\"16\" alt=\"" . $string['mappedobjectives'] . "\" border=\"0\" /></a></td><td class=\"menuitem\"><a href=\"/mapping/paper_mappings_by_session.php?paperID=$paperID&paper_title=$paper_title&sd=$start_date&ed=$end_date&module=" . $module . "&folder=" . $folder . "\">" . $string['mappedobjectives'] . "</a></td></tr>\n";
       }
