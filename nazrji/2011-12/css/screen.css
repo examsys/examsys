@@ -152,6 +152,14 @@ label.error {
 	background: #fff url('../artwork/separator1x1.png') repeat-x left center;
 }
 
+#content .screenerror h4 {
+  color:#C00000;
+  font-weight: bold;
+}
+
+#content .screenerror h4 {
+  background: #fff url('../artwork/separator1x1-error.png') repeat-x left center;
+}
 .opaque {
 	background-color: #fff;
 	padding-right: 4px;

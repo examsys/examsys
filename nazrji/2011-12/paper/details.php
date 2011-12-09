@@ -793,10 +793,9 @@ function getMSCAA($paperID, $mysqlidb) {
         }
       }
       $screen_marks = 0;
-      // TODO: missing questions screen
       if ($old_screen < ($temp_array[$x]['screen'] - 1)) {
         for ($missing=1; $missing<($temp_array[$x]['screen'] - $old_screen); $missing++) {
-          echo "<tr><td colspan=\"6\"><table border=\"0\" style=\"padding-left:10px; padding-right:2px; padding-bottom:5px; width:100%; color:#C00000\"><tr><td style=\"font-weight:bold\"><nobr>" . $string['screen'] . " " . ($old_screen + $missing) . "</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#C00000; background-color:#C00000; width:100%\" /></td></tr></table></td></tr>\n";
+          echo '<tr id="link_break' . $temp_array[$x]['screen'] . '" class="breakline qline screenerror"><td colspan="6"><h4><span class="opaque screen_no">' . $string['screen'] . " " . ($old_screen + $missing) . '</span></h4></td></tr>';
           echo '<tr><td colspan="6" style="height:55px; background-image:url(../artwork/no_questions_gradient.png); repeat:repeat-x; background-color:#FFC0C0; padding-left:15px; padding-top:4x">' . $string['noquestionscreen'] . '</td></tr>';
         }
       }
