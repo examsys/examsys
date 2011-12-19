@@ -68,6 +68,7 @@ function getRandomDetails($questionID) {
         $paper_buffer[$old_q_id]['scenario'] = $old_scenario;
         $paper_buffer[$old_q_id]['correct'] = $old_correct;
         $paper_buffer[$old_q_id]['display_method'] = $old_display_method;
+        $paper_buffer[$old_q_id]['score_method'] = $old_score_method;
         $paper_buffer[$old_q_id]['status'] = $old_status;
         $paper_buffer[$old_q_id]['display_last_edited'] = $display_last_edited;
         $paper_buffer[$old_q_id]['marks'] = qMarks($old_q_type, '', $old_marks_correct, $old_option_text, $old_correct, $old_display_method, $old_score_method);
@@ -102,6 +103,7 @@ function getRandomDetails($questionID) {
     $paper_buffer[$old_q_id]['scenario'] = $old_scenario;
     $paper_buffer[$old_q_id]['correct'] = $old_correct;
     $paper_buffer[$old_q_id]['display_method'] = $old_display_method;
+    $paper_buffer[$old_q_id]['score_method'] = $old_score_method;
     $paper_buffer[$old_q_id]['status'] = $old_status;
     $paper_buffer[$old_q_id]['display_last_edited'] = $display_last_edited;
     $paper_buffer[$old_q_id]['marks'] = qMarks($old_q_type, '', $old_marks_correct, $old_option_text, $old_correct, $old_display_method, $old_score_method);
@@ -388,8 +390,8 @@ function getUserMark($q_id, $tmp_user_answer, $tmp_user_mark, $exclude, $status,
   if ($status == 'Experimental') $exclude[$q_id] = '1111111111111111111111111111111111111111';
 
   $multi_part_qns = array('extmatch', 'matrix', 'blank', 'dichotomous', 'labelling', 'hotspot');
-  
-  if (isset($paper_buffer[$q_id]['score_method']) and $paper_buffer[$q_id]['score_method'] != 'Mark per Question' and in_array($paper_buffer[$q_id]['q_type'], $multi_part_qns)) {
+
+  if ($paper_buffer[$q_id]['score_method'] != 'Mark per Question' and in_array($paper_buffer[$q_id]['q_type'], $multi_part_qns)) {
     if ($paper_buffer[$q_id]['q_type'] == 'extmatch' or $paper_buffer[$q_id]['q_type'] == 'matrix') {
       if (!isset($tmp_user_mark_array[$q_id])) $tmp_user_mark_array[$q_id] = array();
       $paper_answers = explode('|',$paper_buffer[$q_id]['correct'][0]);
