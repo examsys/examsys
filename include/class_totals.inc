@@ -389,7 +389,7 @@ function getUserMark($q_id, $tmp_user_answer, $tmp_user_mark, $exclude, $status,
 
   $multi_part_qns = array('extmatch', 'matrix', 'blank', 'dichotomous', 'labelling', 'hotspot');
   
-  if ($paper_buffer[$q_id]['score_method'] != 'Mark per Question' and in_array($paper_buffer[$q_id]['q_type'], $multi_part_qns)) {
+  if (isset($paper_buffer[$q_id]['score_method']) and $paper_buffer[$q_id]['score_method'] != 'Mark per Question' and in_array($paper_buffer[$q_id]['q_type'], $multi_part_qns)) {
     if ($paper_buffer[$q_id]['q_type'] == 'extmatch' or $paper_buffer[$q_id]['q_type'] == 'matrix') {
       if (!isset($tmp_user_mark_array[$q_id])) $tmp_user_mark_array[$q_id] = array();
       $paper_answers = explode('|',$paper_buffer[$q_id]['correct'][0]);
@@ -777,9 +777,10 @@ if ($old_status != 'Experimental') {
     $tmp_exclude = '';
   }
   if ($old_q_type == 'random') {
-    getRandomDetails($q_id);
+    $tmp_id = getRandomDetails($old_q_id);
     $total_marks += $paper_buffer[$tmp_id]['marks'];
-  } else {  $total_marks += qMarks($old_q_type, $tmp_exclude, $old_marks_correct, $old_option_text, $old_correct, $old_display_method, $old_score_method);
+  } else {
+    $total_marks += qMarks($old_q_type, $tmp_exclude, $old_marks_correct, $old_option_text, $old_correct, $old_display_method, $old_score_method);
     $orig_total_marks += qMarks($old_q_type, '', $old_marks_correct, $old_option_text, $old_correct, $old_display_method, $old_score_method);
     $total_random_mark += qRandomMarks($old_q_type, $tmp_exclude, $old_marks_correct, $old_option_text, $old_correct, $old_display_method, $old_score_method, $old_q_media_width, $old_q_media_height);
     checkDisplayExcluded($display_excluded, $old_q_id, $excluded, $question_no);
