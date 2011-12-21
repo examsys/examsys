@@ -38,5 +38,5 @@ require_once 'staff_student_auth.inc';
   }
   $team_details->close();
 
-  $types_array = array('Formative Self-Assessments', 'Progress Tests', 'Summative Exams', 'Surveys', 'OSCE Stations', 'Spotters');
+  $types_array = array('Formative Self-Assessments', 'Progress Tests', 'Summative Exams', 'Surveys', 'OSCE Stations', 'Offline Papers', 'Peer Review');
 ?>

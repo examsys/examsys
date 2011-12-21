@@ -158,7 +158,7 @@
     $result->bind_param('i', $_POST['old_userID']);
     $result->execute();
     $result->close();
-    if (isset($_POST['sid']) and $_POST['sid'] != '' and $_POST['sid'] != '<unknown>') {
+    if (isset($_POST['sid']) and $_POST['sid'] != '' and $_POST['sid'] != $string['unknown']) {
       $result = $mysqli->prepare("INSERT INTO sid VALUES (?,?)");
       $result->bind_param('si', $_POST['sid'], $_POST['old_userID']);
       $result->execute();
@@ -374,7 +374,7 @@ a.access:hover {color:white}
     echo "</select>&nbsp;<input type=\"text\" name=\"first_names\" size=\"20\" value=\"$tmp_first_names\" />&nbsp;<input type=\"text\" size=\"15\" name=\"surname\" value=\"$tmp_surname\" /></td><td style=\"text-align:right\"><input type=\"submit\" name=\"update\" value=\"" . $string['update'] . "\" /></td></td></tr>\n";
     echo "<tr><td>&nbsp;" . $string['email'] . "</td><td><input type=\"text\" size=\"35\" name=\"email\" value=\"$email\" /></td>\n";
     if (strpos($tmp_roles,'Student') !== false) {
-      if ($student_id == '') $student_id = '&lt;unknown&gt;';
+      if ($student_id == '') $student_id = $string['unknown'];
       echo "<td>&nbsp;" . $string['studentid'] . "</td><td colspan=\"2\"><input type=\"text\" size=\"15\" name=\"sid\" value=\"$student_id\" /></td></tr>\n";
     } else {
       if ($cfg_use_ldap == true and strpos($grade,'University') !== false) {
@@ -418,15 +418,15 @@ a.access:hover {color:white}
           echo "<option value=\"$degree\">$degree: $description</option>\n";
         }
       }
-      if ($found == 0) echo "<option value=\"" . $grade . "\" selected>" . $grade . ": &lt;unknown degree&gt;</option>\n";
+      if ($found == 0) echo "<option value=\"" . $grade . "\" selected>" . $grade . ": ".$string['unknowndegree']."</option>\n";
       $degree_details->close();
       echo "</select></td><td colspan=\"3\">&nbsp;</td></tr>\n";
       echo "<tr><td>&nbsp;" . $string['yearofstudy'] . "</td><td><select name=\"year\">";
       for ($i=1; $i<=6; $i++) {
         if ($i == $tmp_year) {
-          echo "<option value=\"$i\" selected>Year $i</option>";
+          echo "<option value=\"$i\" selected>".$string['year']." $i</option>";
         } else {
-          echo "<option value=\"$i\">Year $i</option>";
+          echo "<option value=\"$i\">".$string['year']." $i</option>";
         }
       }
       echo "</select></td>";
@@ -873,7 +873,7 @@ a.access:hover {color:white}
 <select name="textsize">
 <option value="null"><?php echo $string['angledefault']; ?></option>
 <?php
-  $fontsizes = array(90, 100, 120, 150, 200, 300, 400);
+  $fontsizes = array(90, 100, 110, 120, 130, 140, 150, 175, 200, 300, 400);
   foreach ($fontsizes as $individual_fontsize) {
     if ($individual_fontsize == $textsize) {
       echo "<option value=\"$individual_fontsize\" selected>$individual_fontsize%</option>\n";

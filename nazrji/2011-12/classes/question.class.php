@@ -311,7 +311,7 @@ Class Question extends TouchStoneObject {
       if ($this->id == -1) {
         $this->created = date ('Y-m-d H:i:s');
         $this->last_edited = date ('Y-m-d H:i:s');
-        $params = array_merge(array('ssssssssssssisisssssisssss'), $this->_data);
+        $params = array_merge(array('ssssssssssssssisssssisssss'), $this->_data);
         $query = <<< QUERY
 INSERT INTO questions(q_type, theme, scenario, scenario_plain, leadin, leadin_plain, notes, correct_fback, incorrect_fback, score_method, 
 display_method, q_option_order, std, bloom, ownerID, q_media, q_media_width, q_media_height, q_group, checkout_time, checkout_authorID, 
@@ -320,7 +320,7 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
 QUERY;
       } else {
         // Otherwise we're updating an existing one
-        $params = array_merge(array('ssssssssssssisisssssisssssi'), $this->_data, array(&$this->id));
+        $params = array_merge(array('ssssssssssssssisssssisssssi'), $this->_data, array(&$this->id));
         $this->last_edited = date('Y-m-d H:i:s');
         $query = <<< QUERY
 UPDATE questions
@@ -1208,11 +1208,11 @@ QUERY;
    * @param int $id
    * @return bool True or false depending on success or failure of the delete operation
    */
-  public static function delete($id) {
+  public static function delete($id, $mysqli) {
     // TODO: Track changes
     $success = false;
     
-    return Question::update_deletion_status($id, date ("Y-m-d H:i:s"));
+    return Question::update_deletion_status($id, date ("Y-m-d H:i:s"), $mysqli);
   }
   
   /**
@@ -1223,7 +1223,7 @@ QUERY;
   public static function restore($id) {
     $success = false;
     
-    return Question::update_deletion_status($id, null);
+    return Question::update_deletion_status($id, null, $mysqli);
   }
   
   /**
@@ -1408,7 +1408,7 @@ QUERY;
    * @param int $id
    * @return bool True or false depending on success or failure of the operation
    */
-  private static function update_deletion_status($id, $status) {
+  private static function update_deletion_status($id, $status, $mysqli) {
     $success = false;
     
     $d_query = <<< QUERY
@@ -1416,7 +1416,7 @@ UPDATE questions
 SET deleted = ?
 WHERE q_id = ?
 QUERY;
-    $result = $this->_mysqli->prepare($d_query);
+    $result = $mysqli->prepare($d_query);
     $result->bind_param('i', $status, $id);
     $success = $result->execute();
     $result->close();

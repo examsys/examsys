@@ -75,7 +75,7 @@ $papers = 0;
 $papers_query = <<< QUERY
 SELECT p.paper_title, p.paper_type, p.labs, p.start_date, p.end_date, max(pa.screen) AS screens, p.calendar_year, crypt_name FROM properties p
 INNER JOIN papers pa ON p.property_id = pa.paper
-WHERE p.paper_type IN ('0','1','3')
+WHERE p.paper_type IN ('0','1','3','6')
 AND p.moduleID LIKE ? AND (p.calendar_year = ? OR p.calendar_year = '' OR p.calendar_year IS NULL)
 AND p.start_date < NOW() AND p.end_date > NOW()
 AND p.deleted IS NULL
@@ -189,15 +189,20 @@ if ($papers > 0) {
 <?php
 			foreach($module['papers'] as $paper) {
 				$screen_plural = ($paper['screens'] != 1) ? 's' : '';
+        if ($paper['type'] == '6') {
+          $script_name = '../peer_review/form.php';
+        } else {
+          $script_name = '../user_index.php';
+        }
 ?>
 			  <div class="file">
 			  	<table cellpadding="0" cellspacing="0" border="0">
 			  		<tr>
 			  			<td style="width:60px" align="center">
-								<a href="../user_index.php?id=<?php echo $paper['crypt_name']; ?>" title="<?php echo htmlentities($paper['title']) ?>" target="_blank"><?php echo(displayIcon($paper['type'],$paper['title'],'','','','')); ?></a>
+								<a href="<?php echo $script_name; ?>?id=<?php echo $paper['crypt_name']; ?>" title="<?php echo htmlentities($paper['title']) ?>" target="_blank"><?php echo(displayIcon($paper['type'],$paper['title'],'','','','')); ?></a>
 							</td>
 	    				<td>
-	    					<a href="../user_index.php?id=<?php echo $paper['crypt_name']; ?>" title="<?php echo htmlentities($paper['title']) ?>" target="_blank" class="blacklink"><?php echo(htmlentities($paper['title'])); ?></a><br />
+	    					<a href="<?php echo $script_name; ?>?id=<?php echo $paper['crypt_name']; ?>" title="<?php echo htmlentities($paper['title']) ?>" target="_blank" class="blacklink"><?php echo(htmlentities($paper['title'])); ?></a><br />
 	    					<span style="color:#808080">
 	    						<?php echo($paper['screens']." screen".$screen_plural)?><br />
 	    						<?php echo(date(str_replace('%', '', $cfg_long_date_time), strtotime($paper['start']))." to " . date(str_replace('%', '', $cfg_long_date_time), strtotime($paper['end']))) ?>

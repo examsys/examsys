@@ -426,7 +426,7 @@ label.error {
 
 textarea, input[type=text], select {
 	font-family:Arail,sans-serif;
-	font-size:90%;
+	font-size:100%;
 	border: 1px solid #7F9DB9;
   overflow: auto;
 }

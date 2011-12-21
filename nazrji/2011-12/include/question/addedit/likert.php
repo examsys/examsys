@@ -23,7 +23,11 @@
 */
 
 $scales = $question->get_scale_types();
-$scale_value = $question->get_scale_type();
+if ($mode == 'Add' and isset($_COOKIE['likert_format'])) {
+  $scale_value = $_COOKIE['likert_format'];
+} else {
+  $scale_value = $question->get_scale_type();
+}
 $na_checked = ($question->get_not_applicable() == 'true') ? ' checked="checked"' : '';
 if (count($question->options) > 0) {
   $option = reset($question->options);
@@ -87,7 +91,7 @@ if (!$scale_found) {
               <td>
                 <dl id="extended-option-list"<?php echo $show_custom ?>>
 <?php
-$custom_scale = $question->get_all_custom_scales();
+$custom_scale = ($mode == 'Add' and isset($_COOKIE['likert_format'])) ? explode('|', $_COOKIE['likert_format']) : $question->get_all_custom_scales();
 for ($i = 1; $i <= $question->max_stems; $i++):
   $val = (isset($custom_scale[$i - 1])) ? $custom_scale[$i - 1] : '';
 ?>

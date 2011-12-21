@@ -205,7 +205,7 @@ table {font-size:100%}
   } else {
     echo '<blockquote>';
     if ($language == 'en') {
-      echo '<p style="font-size:450%;font-family:Rage,\'Brush Script MT\',\'Lucida Handwriting\',sans-serif">' . $string['thankyou'] . '</p>';
+      echo '<p style="font-size:450%;font-family:\'Monotype Corsiva\',Rage,\'Brush Script MT\',\'Lucida Handwriting\',sans-serif">' . $string['thankyou'] . '</p>';
     } else {
       // Do not use fancy fonts for foreign lanuages due to extended character support issues.
       echo '<p style="font-size:450%">' . $string['thankyou'] . '</p>';

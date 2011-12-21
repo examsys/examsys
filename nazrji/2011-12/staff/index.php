@@ -71,7 +71,7 @@ require '../include/staff_auth.inc';
   }
 
   function newPaper(paperID) {
-    notice = window.open("../paper/new_paper1.php?folder=","properties","width=700,height=500,left="+(screen.width/2-325)+",top="+(screen.height/2-250)+",scrollbars=no,toolbar=no,location=no,directories=no,status=yes,menubar=no,resizable");
+    notice = window.open("../paper/new_paper1.php?folder=","properties","width=750,height=500,left="+(screen.width/2-375)+",top="+(screen.height/2-250)+",scrollbars=no,toolbar=no,location=no,directories=no,status=yes,menubar=no,resizable");
     if (window.focus) {
       notice.focus();
     }
@@ -155,7 +155,7 @@ require '../include/staff_auth.inc';
   }
 
   echo "<br />\n";
-  $icons = array('formative', 'progress', 'summative', 'survey', 'osce', 'offline');
+  $icons = array('formative', 'progress', 'summative', 'survey', 'osce', 'offline', 'peer_review');
 
   // -- Display top 10 recent papers ----------------------------------
   $query_string = "SELECT paperID, paper_title, moduleID, accessed, paper_type FROM (recent_papers, properties) WHERE userID=$userID AND recent_papers.paperID=properties.property_id ORDER BY accessed DESC LIMIT 10";

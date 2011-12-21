@@ -871,11 +871,19 @@ if ($paper_type != '4' and $paper_type != '5') {
         echo " />";
         echo $string['stdset'] . ' <select name="std_set">';
         $std_set_details->bind_result($std_set_title, $std_set_surname, $std_set_initials, $std_set_reviewer, $std_set_display_date, $std_set_date, $group_review);
-        while ($row = $std_set_details->fetch()) {
+        while ($std_set_details->fetch()) {
           if ($group_review == 'No') {
-            echo "<option value=\"2,$std_set_reviewer,$std_set_date\">$std_set_title $std_set_surname, $std_set_initials - $std_set_display_date</option>";
+            if ($marking = "2,$std_set_reviewer,$std_set_date") {
+              echo "<option value=\"2,$std_set_reviewer,$std_set_date\" selected>$std_set_title $std_set_surname, $std_set_initials - $std_set_display_date</option>";
+            } else {
+              echo "<option value=\"2,$std_set_reviewer,$std_set_date\">$std_set_title $std_set_surname, $std_set_initials - $std_set_display_date</option>";
+            }
           } else {
-            echo "<option value=\"2,$std_set_reviewer,$std_set_date\">Group Review - $std_set_display_date</option>";
+            if ($marking == "2,$std_set_reviewer,$std_set_date") {
+              echo "<option value=\"2,$std_set_reviewer,$std_set_date\" selected>Group Review - $std_set_display_date</option>";
+            } else {
+              echo "<option value=\"2,$std_set_reviewer,$std_set_date\">Group Review - $std_set_display_date</option>";
+            }
           }
         }
         echo "</select>\n";

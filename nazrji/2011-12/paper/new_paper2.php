@@ -76,6 +76,7 @@ require '../lang/' . $language. '/include/timezones.inc';
     document.getElementById('survey').style.backgroundImage = "url('../artwork/blank_tick_cross.gif')";
     document.getElementById('osce').style.backgroundImage = "url('../artwork/blank_tick_cross.gif')";
     document.getElementById('offline').style.backgroundImage = "url('../artwork/blank_tick_cross.gif')";
+    document.getElementById('peer_review').style.backgroundImage = "url('../artwork/blank_tick_cross.gif')";
   
     document.getElementById(id).style.backgroundImage = "url('../artwork/on.png');";
     document.getElementById('paper_type').value = id;
@@ -126,6 +127,11 @@ require '../lang/' . $language. '/include/timezones.inc';
   } else {
     echo "<td class=\"icon\" onclick=\"activate('offline')\" onmouseover=\"over('offline')\" onmouseout=\"out('offline')\" id=\"offline\"><img src=\"../artwork/offline.png\" width=\"48\" height=\"48\" border=\"0\" alt=\"Offline\" /><br />" . $string['offline paper'] . "</td>\n";
   }
+  if ($_POST['paper_type'] == 'peer_review') {
+    echo "<td class=\"icon\" onclick=\"activate('peer_review')\" onmouseover=\"over('peer_review')\" onmouseout=\"out('peer_review')\" id=\"peer_review\" style=\"background-image:url('../artwork/on.png')\"><img src=\"../artwork/offline.png\" width=\"48\" height=\"48\" border=\"0\" alt=\"Peer Review\" /><br />Peer Review</td>\n";
+  } else {
+    echo "<td class=\"icon\" onclick=\"activate('peer_review')\" onmouseover=\"over('peer_review')\" onmouseout=\"out('peer_review')\" id=\"peer_review\"><img src=\"../artwork/offline.png\" width=\"48\" height=\"48\" border=\"0\" alt=\"Peer Review\" /><br />Peer Review</td>\n";
+  }
 ?>
 <td>&nbsp;</td>
 </tr>
@@ -142,7 +148,7 @@ require '../lang/' . $language. '/include/timezones.inc';
 
 <?php
 } else {
-  $paper_types = array('formative'=>0,'progress'=>1,'summative'=>2,'survey'=>3,'osce'=>4,'offline'=>5);
+  $paper_types = array('formative'=>0, 'progress'=>1, 'summative'=>2, 'survey'=>3, 'osce'=>4, 'offline'=>5, 'peer_review'=>6);
   if ($_POST['paper_type'] == 'summative') {
     $default_rubric = $string['msg6'];
   } else {
@@ -281,7 +287,7 @@ require '../lang/' . $language. '/include/timezones.inc';
   echo "<select name=\"fmonth\" onchange=\"dateCopy('fmonth')\">\n";
   $current_month = (date('n') + 1);
   if ($current_month > 12) $current_month = 1;
-  $months = array('','january','february','march','april','may','june','july','august','september','october','november','december');
+  $months = array('', 'january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december');
   for ($i=1; $i<=12; $i++) {
     $trans_month = mb_substr($string[$months[$i]],0,3,'UTF-8');
     if ($i < 10) {
@@ -364,7 +370,6 @@ require '../lang/' . $language. '/include/timezones.inc';
   }
   echo "</select>&nbsp;<select name=\"ttime\">\n";
   // Available to Hour
-  $times = array('000000'=>'00:00','003000'=>'00:30','010000'=>'01:00','013000'=>'01:30','020000'=>'02:00','023000'=>'02:30','030000'=>'03:00','033000'=>'03:30','040000'=>'04:00','043000'=>'04:30','050000'=>'05:00','053000'=>'05:30','060000'=>'06:00','063000'=>'06:30','070000'=>'07:00','073000'=>'07:30','080000'=>'08:00','083000'=>'08:30','090000'=>'09:00','093000'=>'09:30','100000'=>'10:00','103000'=>'10:30','110000'=>'11:00','113000'=>'11:30','120000'=>'12:00','123000'=>'12:30','130000'=>'13:00','133000'=>'13:30','140000'=>'14:00','143000'=>'14:30','150000'=>'15:00','153000'=>'15:30','160000'=>'16:00','163000'=>'16:30','170000'=>'17:00','173000'=>'17:30','180000'=>'18:00','183000'=>'18:30','190000'=>'19:00','193000'=>'19:30','200000'=>'20:00','203000'=>'20:30','210000'=>'21:00','213000'=>'21:30','220000'=>'22:00','223000'=>'22:30','230000'=>'23:00','233000'=>'23:30');
   foreach ($times as $key => $value) {
     echo "<option value=\"" . $key . "\">" . $value . "</option>\n";
   }

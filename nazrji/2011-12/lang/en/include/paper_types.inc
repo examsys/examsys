@@ -11,4 +11,5 @@ $string['summative exams'] = 'Summative Exams';
 $string['surveys'] = 'Surveys';
 $string['osce stations'] = 'OSCE Stations';
 $string['offline papers'] = 'Offline Papers';
+$string['peer review'] = 'Peer Review';
 ?>

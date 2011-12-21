@@ -51,7 +51,7 @@ Class MathsUtils {
       $max = $max * (10 * $decimals);
       $increment = $increment * (10 * $decimals);
     }
-    if ($increment == 1 or $increment == 0) {
+    if ($increment == 1 or $increment == 0 or $increment == '') {
       if (strpos($min,'var') !== false or strpos($min,'ans') !== false or strpos($max,'var') !== false or strpos($max,'ans') !== false) {
         $gen_no = 0;
       } else {
