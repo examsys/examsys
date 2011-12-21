@@ -20,8 +20,9 @@ jQuery.rQuerySstring = {
     if (typeof querystring == 'undefined') {
       querystring = '&' + window.location.search.substring(1);
     }
+    querystring = '&' + querystring;
 
-    re = new RegExp('&' + search + '=');
+    var re = new RegExp('&' + search + '=');
     if (querystring.length > 0 && querystring.match(re) != null) {
       var parts = querystring.split(search);
       var parts2 = parts[1].substring(1).split('&');
@@ -29,6 +30,25 @@ jQuery.rQuerySstring = {
     }
 
     return result;
+  },
+
+  setValue: function (key, value, querystring) {
+    if (typeof querystring == 'undefined') {
+      querystring = window.location.search.substring(1);
+    }
+    querystring = '&' + querystring + '&';
+
+    var matchString = '&' + key + '=';
+    var matchRE = new RegExp(matchString);
+    if (querystring.length > 0 && querystring.match(matchRE) != null) {
+      var replRE = new RegExp(matchString + '.*?&');
+      querystring = querystring.replace(replRE, matchString + value + '&');
+    } else {
+      if (querystring.length == 2) querystring = '&';
+      querystring += key + '=' + value + '&';
+    }
+
+    return querystring.substring(1, querystring.length - 1);
   },
 
   extract: function(querystring) {
