@@ -2,6 +2,8 @@ $(function () {
   resetLinks();
   highlightQn();
 
+  var sourceIndex;
+
   $('#sortable tbody').sortable( {
     items: '.qline:not(#link_break1)',
     axis: 'y',
@@ -37,6 +39,7 @@ $(function () {
     update: function (event, ui) {
       $('.qline').css('background-color', '#fff');
       var order = $('#sortable tbody').sortable('serialize', { attribute: 'data-order' });
+      var newpos = $(ui.item).parent().children('.qline:not(.breakline)').index(ui.item) + 1;
 //      $('#response').load('../ajax/paper/order-questions.php?paperID=' + paperID + '&' + order);
       $('td.q_no').each(function(index) { $(this).html((index + 1) + '.')});
       $('span.screen_no').each(function(index) { $(this).html('Screen ' + (index + 1))});
@@ -71,6 +74,7 @@ function highlightQn() {
 
   if (selected != '') {
     var row = $('#link_' + selected);
-    row.triggerHandler('click');
+    row.css('background-color', '#b3c8e8');
+    row.effect("highlight", { color: '#e6f0ff'}, 1000, function() { row.triggerHandler('click') });
   }
 }
