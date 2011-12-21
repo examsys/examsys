@@ -730,7 +730,7 @@ function getMSCAA($paperID, $mysqlidb) {
   echo "</td><td style=\"background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(1); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['help'] . "\" border=\"0\" /></a></td></tr>\n";
   echo "<tr><td colspan=\"3\" style=\"background-color:#F1F5FB;font-size:90%;padding-left:10px\"><strong>" . $string['start'] . ":</strong> $display_start_date</td><td colspan=\"3\" style=\"background-color:#F1F5FB;text-align:right;font-size:90%\"><strong>" . $string['owner'] . ":</strong> $paper_owner&nbsp;</td></tr>\n";
   ?>
-    <tr>
+    <tr class="details-head">
     <td style="background-color:#F1F5FB" colspan="2">&nbsp;</td>
     <td style="background-color:#F1F5FB" class="q-cell"><?php echo $string['question']; ?></td>
     <td style="background-color:#F1F5FB;"><img src="../artwork/header_vertical_line.gif" width="2" height="15" border="0" />&nbsp;<?php echo $string['type']; ?>&nbsp;</td>

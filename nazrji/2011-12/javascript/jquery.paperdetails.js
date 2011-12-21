@@ -8,8 +8,14 @@ $(function () {
     helper: 'clone',
     appendTo: 'body',
     start: function(event, ui) {
-      var keepWidth = $('td.q-cell:first').width();
-      ui.helper.find('td.l').width(keepWidth);
+      var keepWidth = 0;
+      if (ui.item.hasClass('breakline')) {
+        keepWidth = $('tr.details-head:first').width();
+        ui.helper.find('td:first').width(keepWidth);
+      } else {
+        keepWidth = $('td.q-cell:first').width();
+        ui.helper.find('td.l').width(keepWidth);
+      }
     },
     beforeStop: function(event, ui) {
       if (!ui.item.hasClass('qline')) {

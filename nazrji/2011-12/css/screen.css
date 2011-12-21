@@ -137,12 +137,12 @@ label.error {
   /*color: red;*/
 /*}*/
 
-#content .breakline td {
+#content .breakline td, .breakline td {
   padding-top: 14px;
   vertical-align: middle;
 }
 
-#content .breakline h4 {
+#content .breakline h4, .breakline h4 {
 	font-weight:normal;
 	color: #1e3287;
 	padding: 0;
@@ -152,14 +152,12 @@ label.error {
 	background: #fff url('../artwork/separator1x1.png') repeat-x left center;
 }
 
-#content .screenerror h4 {
+#content .screenerror h4, .screenerror h4 {
   color:#C00000;
   font-weight: bold;
-}
-
-#content .screenerror h4 {
   background: #fff url('../artwork/separator1x1-error.png') repeat-x left center;
 }
+
 .opaque {
 	background-color: #fff;
 	padding-right: 4px;
