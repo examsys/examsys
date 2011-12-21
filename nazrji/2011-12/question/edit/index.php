@@ -310,8 +310,8 @@ if ($critical_error == '') {
             if ($module != '') {
               $team_for_cookie = $module;
             } else {
-              $teams = $question->get_teams();
-              if (is_array($teams) and count($teams) > 0) $team_for_cookie = $teams[0];
+              $q_teams = $question->get_teams();
+              if (is_array($q_teams) and count($q_teams) > 0) $team_for_cookie = $q_teams[0];
             }
             $time = ($team_for_cookie != '') ? time()+31536000 : 1;
             setcookie("default_team", $team_for_cookie, $time);
@@ -519,8 +519,8 @@ if ($question->get_type() != '') require_once '../../include/question/addedit/' 
 <?php
 $default_team = '';
 if (count($question->get_teams()) > 0) {
-  $teams = $question->get_teams();
-  $default_team = $teams[0];
+  $q_teams = $question->get_teams();
+  $default_team = $q_teams[0];
 } elseif (isset($_COOKIE['default_team'])) {
   $default_team = $_COOKIE['default_team'];
 }
