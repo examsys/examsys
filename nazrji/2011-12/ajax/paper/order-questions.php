@@ -91,7 +91,7 @@ if (isset($_GET['paperID']) and $_GET['paperID'] != '' and isset($_GET['link']) 
 
 function process_new($raw) {
   $new_order = array();
-  $screen = 0;
+  $screen = 1;
   $new_pos = 1;
 
   foreach ($raw as $item) {

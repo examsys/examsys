@@ -41,8 +41,7 @@ $(function () {
       var order = $('#sortable tbody').sortable('serialize', { attribute: 'data-order' });
       var newpos = $(ui.item).parent().children('.qline:not(.breakline)').index(ui.item) + 1;
 //      $('#response').load('../ajax/paper/order-questions.php?paperID=' + paperID + '&' + order);
-//      window.location.href = window.location.href.split('?')[0] + '?' + $.rQuerySstring.setValue('selected', newpos);
-
+//      window.location.href = [location.protocol, '//', location.host, location.pathname].join('') + '?' + $.rQuerySstring.setValue('selected', newpos);
 
 //      $('td.q_no').each(function(index) { $(this).html((index + 1) + '.')});
 //      $('span.screen_no').each(function(index) { $(this).html('Screen ' + (index + 1))});
