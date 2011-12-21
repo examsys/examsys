@@ -1,5 +1,6 @@
 $(function () {
   resetLinks();
+  highlightQn();
 
   $('#sortable tbody').sortable( {
     items: '.qline:not(#link_break1)',
@@ -63,4 +64,13 @@ function resetLinks() {
       $(this).attr('data-order', 'link_' + (index - breaks + 1));
     }
   });
+}
+
+function highlightQn() {
+  var selected = $.rQuerySstring.getValue('selected');
+
+  if (selected != '') {
+    var row = $('#link_' + selected);
+    row.triggerHandler('click');
+  }
 }

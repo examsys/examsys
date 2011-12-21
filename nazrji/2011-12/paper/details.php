@@ -226,6 +226,7 @@ function getMSCAA($paperID, $mysqlidb) {
   <script type="text/javascript" src="../javascript/jquery-1.6.1.min.js"></script>
   <script type="text/javascript" src="../javascript/jquery-ui.1.8.16.min.js"></script>
   <script type="text/javascript" src="../tools/mee/mee/js/mee_src.js"></script>
+  <script type="text/javascript" src="../javascript/jquery.rquerystring.js"></script>
   <script type="text/javascript" src="../javascript/jquery.paperdetails.js"></script>
 <script defer="defer" language="JavaScript">
   var paperID='<?php echo $_GET['paperID'] ?>';
