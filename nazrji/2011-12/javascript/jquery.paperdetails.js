@@ -2,7 +2,18 @@ $(function () {
   resetLinks();
   highlightQn();
 
-  var sourceIndex;
+  var deleteLink = $('#delete_break');
+  $('html').click(function () { deActivateDelete(deleteLink); });
+
+  $('.breakline:gt(0)').click(function (e) {
+    e.stopPropagation();
+    deActivateDelete(deleteLink);
+    // TODO: do this with a class
+    $(this).css('background-color', '#b3c8e8').find('h4, span').css('background-color', '#b3c8e8');
+    if (deleteLink.hasClass('greymenuitem')) {
+      activateDelete(deleteLink, $(this).attr('id'));
+    }
+  });
 
   $('#sortable tbody').sortable( {
     items: '.qline:not(#link_break1)',
@@ -55,7 +66,8 @@ $(function () {
   $('#draggable').draggable({
     helper: 'clone',
     appendTo: 'body',
-    connectToSortable: '#sortable tbody'
+    cancel: '#delete_break',
+        connectToSortable: '#sortable tbody'
   });
 });
 
@@ -79,4 +91,23 @@ function highlightQn() {
     row.css('background-color', '#b3c8e8');
     row.effect("highlight", { color: '#e6f0ff'}, 1000, function() { row.triggerHandler('click') });
   }
+}
+
+function activateDelete(element, sid) {
+  element.removeClass('greymenuitem');
+  element.addClass('active');
+  element.click(deleteScreenBreak);
+  element.data('screenID', sid);
+}
+
+function deActivateDelete(element) {
+  $('.breakline').css('background-color', '#fff').find('h4, span').css('background-color', '#fff');
+  element.addClass('greymenuitem');
+  element.removeClass('active');
+  element.unbind('click');
+}
+
+function deleteScreenBreak() {
+  var screenNo = $(this).data('screenID').substring(10);
+  $('#response').load('../ajax/paper/delete-screen-break.php?paperID=' + paperID + '&screen=' + screenNo);
 }

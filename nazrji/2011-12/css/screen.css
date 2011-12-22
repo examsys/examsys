@@ -168,17 +168,29 @@ label.error {
 	background-color: #fff;
 }
 
-#draggable {
-  margin-top: 8px;
+.menu_list {
+  margin: 4px 0 0 0;
   padding-left: 12px;
+  list-style:  none;
 }
 
-li.break {
-  list-style:  none;
+.menu_list li {
   padding-left: 22px;
-  background: transparent url('../artwork/move16.png') no-repeat left center;
   width: 120px;
   font-size: 90%;
+  margin: 0;
+}
+
+.menu_list .break {
+  background: transparent url('../artwork/move16.png') no-repeat left center;
+}
+
+#draggable {
+  margin-top: 16px;
+}
+
+#delete_break {
+  background: transparent url('../artwork/move16.png') no-repeat left center;
 }
 
 #content .breadcrumb {

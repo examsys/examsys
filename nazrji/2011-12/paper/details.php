@@ -24,6 +24,8 @@
 * @package
 */
 
+// TODO: error handling for AJAX calls
+
 ob_start('ob_gzhandler');
 require '../include/staff_auth.inc';
 require '../include/question_types.inc';
@@ -293,6 +295,9 @@ function getMSCAA($paperID, $mysqlidb) {
     document.getElementById('change_screen_submenu').style.display='none';
 
     evt.cancelBubble = true;
+
+    var deleteLink = $('#delete_break');
+    deActivateDelete(deleteLink);
   }
 
   function edQ(questionNo, questionID, qType) {
