@@ -1,4 +1,9 @@
 $(function () {
+  $.ajaxSetup({ timeout: 2000 });
+  $('#content').ajaxError(function (event, jqXHR, ajaxSettings, thrownError) {
+    alert('There was a problem carrying out your action. Please refresh the page and try again');
+  });
+
   resetLinks();
   highlightQn();
 
@@ -9,7 +14,6 @@ $(function () {
     e.stopPropagation();
     qOff();   // WARNING: comes from main /paper/details.php file
     deActivateDelete(deleteLink);
-    // TODO: do this with a class
     $(this).addClass('line-selected');
     if (deleteLink.hasClass('greymenuitem')) {
       activateDelete(deleteLink, $(this).attr('id'));
@@ -110,5 +114,12 @@ function deActivateDelete(element) {
 
 function deleteScreenBreak() {
   var screenNo = $(this).data('screenID').substring(10);
-  $('#response').load('../ajax/paper/delete-screen-break.php?paperID=' + paperID + '&screen=' + screenNo);
+  $.get('../ajax/paper/delete-screen-break.php?paperID=' + paperID + '&screen=' + screenNo)
+  .success(function (data) {
+    if (data == 'SUCCESS') {
+      window.location.reload();
+    } else {
+      alert('Invalid screen break selected. Screen break was not deleted');
+    }
+  });
 }

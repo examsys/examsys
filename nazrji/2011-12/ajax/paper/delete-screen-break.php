@@ -26,6 +26,9 @@
 
 require '../../include/staff_auth.inc';
 
+sleep(3);
+exit;
+
 if (isset($_GET['paperID']) and $_GET['paperID'] != '' and isset($_GET['screen']) and is_numeric($_GET['screen'])) {
   $paper_id = $_GET['paperID'];
   $screen_no = $_GET['screen'];
@@ -35,7 +38,9 @@ if (isset($_GET['paperID']) and $_GET['paperID'] != '' and isset($_GET['screen']
   $result->execute();
   $result->close();
 
-  print 'Deleted';
+  print 'SUCCESS';
+} else {
+  print 'INVALID INPUT';
 }
 
 
