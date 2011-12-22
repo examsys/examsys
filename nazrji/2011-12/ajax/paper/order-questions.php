@@ -40,6 +40,7 @@ if (isset($_GET['paperID']) and $_GET['paperID'] != '' and isset($_GET['link']) 
   while ($result->fetch()) {
       $old_order[$display_pos] = array('screen' => $screen, 'p_id' => $p_id, 'q_id' => $question);
   }
+  $result->close();
 
 //  echo '<pre>';
 //  print_r($new_order);
@@ -86,6 +87,80 @@ if (isset($_GET['paperID']) and $_GET['paperID'] != '' and isset($_GET['link']) 
   echo '<br /><br />Pos Update:';
   print_r($position_update);
   echo '</pre>';
+
+  if (($decs = count($screen_dec)) > 0) {
+    $dec_list = '';
+    // Make list of IDs of questions to decrement
+    for ($i = 0; $i < $decs; $i++) {
+      if ($i > 0) $dec_list .= ',';
+      $dec_list .= $screen_dec[$i]['p_id'];
+    }
+
+    $result = $mysqli->prepare("UPDATE papers SET screen=screen-1 WHERE p_id IN (" . $dec_list . ")");
+    $result->execute();
+    $result->close();
+  }
+
+  if (($incs = count($screen_inc)) > 0) {
+    $inc_list = '';
+    // Make list of IDs of questions to increment
+    for ($i = 0; $i < $incs; $i++) {
+      if ($i > 0) $inc_list .= ',';
+      $inc_list .= $screen_inc[$i]['p_id'];
+    }
+
+    $result = $mysqli->prepare("UPDATE papers SET screen=screen+1 WHERE p_id IN (" . $inc_list . ")");
+    $result->execute();
+    $result->close();
+  }
+
+  if (($upds = count($screen_update)) > 0) {
+    for ($i = 0; $i < $upds; $i++) {
+      $new_screen = $screen_update[$i]['screen'];
+      $upd_id = $screen_update[$i]['p_id'];
+      $result = $mysqli->prepare("UPDATE papers SET screen=? WHERE p_id=?");
+      $result->bind_param('ii', $new_screen, $upd_id);
+      $result->execute();
+      $result->close();
+    }
+  }
+
+  if (($decs = count($position_dec)) > 0) {
+    $dec_list = '';
+    // Make list of IDs of questions to decrement
+    for ($i = 0; $i < $decs; $i++) {
+      if ($i > 0) $dec_list .= ',';
+      $dec_list .= $position_dec[$i]['p_id'];
+    }
+
+    $result = $mysqli->prepare("UPDATE papers SET display_pos=display_pos-1 WHERE p_id IN (" . $dec_list . ")");
+    $result->execute();
+    $result->close();
+  }
+
+  if (($incs = count($position_inc)) > 0) {
+    $inc_list = '';
+    // Make list of IDs of questions to increment
+    for ($i = 0; $i < $incs; $i++) {
+      if ($i > 0) $inc_list .= ',';
+      $inc_list .= $position_inc[$i]['p_id'];
+    }
+
+    $result = $mysqli->prepare("UPDATE papers SET display_pos=display_pos+1 WHERE p_id IN (" . $inc_list . ")");
+    $result->execute();
+    $result->close();
+  }
+
+  if (($upds = count($position_update)) > 0) {
+    for ($i = 0; $i < $upds; $i++) {
+      $new_pos = $position_update[$i]['new_pos'];
+      $upd_id = $position_update[$i]['p_id'];
+      $result = $mysqli->prepare("UPDATE papers SET display_pos=? WHERE p_id=?");
+      $result->bind_param('ii', $new_pos, $upd_id);
+      $result->execute();
+      $result->close();
+    }
+  }
 
 }
 

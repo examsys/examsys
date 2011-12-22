@@ -40,7 +40,7 @@ $(function () {
       $('.qline').css('background-color', '#fff');
       var order = $('#sortable tbody').sortable('serialize', { attribute: 'data-order' });
       var newpos = $(ui.item).parent().children('.qline:not(.breakline)').index(ui.item) + 1;
-//      $('#response').load('../ajax/paper/order-questions.php?paperID=' + paperID + '&' + order);
+      $('#response').load('../ajax/paper/order-questions.php?paperID=' + paperID + '&' + order);
 //      window.location.href = [location.protocol, '//', location.host, location.pathname].join('') + '?' + $.rQuerySstring.setValue('selected', newpos);
 
 //      $('td.q_no').each(function(index) { $(this).html((index + 1) + '.')});
