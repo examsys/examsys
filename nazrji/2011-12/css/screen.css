@@ -168,6 +168,10 @@ label.error {
 	background-color: #fff;
 }
 
+.breakline.line-selected, .breakline.line-selected h4, .breakline.line-selected span {
+  background-color: #b3c8e8!important;
+}
+
 .menu_list {
   margin: 4px 0 0 0;
   padding-left: 12px;

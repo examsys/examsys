@@ -9,7 +9,7 @@ $(function () {
     e.stopPropagation();
     deActivateDelete(deleteLink);
     // TODO: do this with a class
-    $(this).css('background-color', '#b3c8e8').find('h4, span').css('background-color', '#b3c8e8');
+    $(this).addClass('line-selected');
     if (deleteLink.hasClass('greymenuitem')) {
       activateDelete(deleteLink, $(this).attr('id'));
     }
@@ -101,7 +101,7 @@ function activateDelete(element, sid) {
 }
 
 function deActivateDelete(element) {
-  $('.breakline').css('background-color', '#fff').find('h4, span').css('background-color', '#fff');
+  $('.breakline').removeClass('line-selected');
   element.addClass('greymenuitem');
   element.removeClass('active');
   element.unbind('click');
