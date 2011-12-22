@@ -7,6 +7,7 @@ $(function () {
 
   $('.breakline:gt(0)').click(function (e) {
     e.stopPropagation();
+    qOff();   // WARNING: comes from main /paper/details.php file
     deActivateDelete(deleteLink);
     // TODO: do this with a class
     $(this).addClass('line-selected');
