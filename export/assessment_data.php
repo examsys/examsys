@@ -316,8 +316,6 @@
             }
             break;
           default:
-            var_dump($paper_buffer[$i]['correct']);
-            exit;
             if (!isset($excluded[$tmp_question_ID])) echo $paper_buffer[$i]['correct'];
             break;
         }
