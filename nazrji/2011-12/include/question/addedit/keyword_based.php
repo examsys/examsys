@@ -31,7 +31,8 @@ if (count($question->options) > 0) {
   $option_text = '';
 }
 $q_teams = isset($q_teams) ? $q_teams : $question->get_teams();
-$keywords = $question->get_user_keywords($q_teams);
+$all_teams = array_unique(array_merge($q_teams, array_keys($teams)));
+$keywords = $question->get_user_keywords($all_teams);
 ?>
 				<table id="q-details" class="form" summary="<?php echo $string['qeditsummary'] ?>">
 					<tbody>

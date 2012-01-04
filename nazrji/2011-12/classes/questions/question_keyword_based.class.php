@@ -39,15 +39,41 @@ Class QuestionKEYWORD_BASED extends Question {
   
   public function get_user_keywords($teams) {
     $keywords = array();
-    
-    $result = $this->_mysqli->prepare("SELECT moduleid, keyword, keywords_user.id FROM keywords_user, modules WHERE keywords_user.userID=modules.id AND moduleid IN ('" . implode("','",$teams) . "') ORDER BY moduleid, keyword");
-    $result->execute();  
-    $result->store_result();
-    $result->bind_result($module_id, $keyword, $keyword_id);
-    while ($result->fetch()) {
+
+    $team_list = implode("','",$teams);
+    $team_query = <<< SQL
+SELECT moduleid, keyword, keywords_user.id
+FROM keywords_user, modules
+WHERE keyword_type = 'team' AND keywords_user.userID=modules.id AND moduleid IN ('{$team_list}')
+ORDER BY moduleid, keyword
+SQL;
+
+    $team_result = $this->_mysqli->prepare($team_query);
+    $team_result->execute();
+    $team_result->store_result();
+    $team_result->bind_result($module_id, $keyword, $keyword_id);
+    while ($team_result->fetch()) {
       $keywords[] = array($module_id, $keyword, $keyword_id);
     }
-    
+    $team_result->close();
+
+    $user_query = <<< SQL
+SELECT keyword, id
+FROM keywords_user
+WHERE keyword_type = 'personal' AND userID=?
+ORDER BY keyword
+SQL;
+
+    $user_result = $this->_mysqli->prepare($user_query);
+    $user_result->bind_param('i', $this->_user_id);
+    $user_result->execute();
+    $user_result->store_result();
+    $user_result->bind_result($keyword, $keyword_id);
+    while ($user_result->fetch()) {
+      $keywords[] = array('Personal', $keyword, $keyword_id);
+    }
+    $user_result->close();
+
     return $keywords;
   }
 }

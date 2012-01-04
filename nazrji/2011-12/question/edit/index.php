@@ -69,7 +69,7 @@ if (!isset($_REQUEST['q_id']) or $_REQUEST['q_id'] == -1) {
     }
   }
 } else {
-  // We're editing an existion question
+  // We're editing an existing question
   $mode = $string['edit'];
   
   try {
