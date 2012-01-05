@@ -14,6 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+* 
+* Utility class for date related functionality
+* 
+* @author Rob Ingram
+* @version 1.0
+* @copyright Copyright (c) 2012 The University of Nottingham
+* @package
+*/
+
 class ValidationException extends Exception { }
 
 class DataTypeException extends Exception { }

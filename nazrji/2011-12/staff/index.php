@@ -20,7 +20,7 @@
 *
 * @author Simon Wilkinson
 * @version 1.0
-* @copyright Copyright (c) 2011 The University of Nottingham
+* @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */
 
@@ -50,8 +50,8 @@ require '../include/staff_auth.inc';
 <title>Rogō<?php echo " $cfg_install_type"; ?></title>
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
 
-<script src="../javascript/staff_help.js" type="text/javascript"></script>
-<script src="../javascript/sidebar.js" type="text/javascript"></script>
+<script src="../js/staff_help.js" type="text/javascript"></script>
+<script src="../js/sidebar.js" type="text/javascript"></script>
 <script language="JavaScript">
   function illegalChar(codeID) {
     if (codeID == 38) {

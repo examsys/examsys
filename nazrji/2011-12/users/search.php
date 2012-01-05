@@ -20,7 +20,7 @@
 * 
 * @author Simon Wilkinson
 * @version 1.0
-* @copyright Copyright (c) 2011 The University of Nottingham
+* @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */
 
@@ -141,7 +141,7 @@ input[type=text], select {font-family:Arail,sans-serif; border: 1px solid #7F9DB
 .fn {color:#A5A5A5}
 </style>
 
-<script src="../javascript/staff_help.js" type="text/javascript"></script>
+<script src="../js/staff_help.js" type="text/javascript"></script>
 <script language="javascript">
   function selUser(userID, lineID, menuID) {
     tmp_ID = document.PapersMenu.oldUserID.value;

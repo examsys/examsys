@@ -224,12 +224,12 @@ function getMSCAA($paperID, $mysqlidb) {
   <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
   <link rel="stylesheet" type="text/css" href="../css/screen.css" />
 
-  <script type="text/javascript" src="../javascript/staff_help.js"></script>
-  <script type="text/javascript" src="../javascript/jquery-1.6.1.min.js"></script>
-  <script type="text/javascript" src="../javascript/jquery-ui.1.8.16.min.js"></script>
+  <script type="text/javascript" src="../js/staff_help.js"></script>
+  <script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
+  <script type="text/javascript" src="../js/jquery-ui.1.8.16.min.js"></script>
   <script type="text/javascript" src="../tools/mee/mee/js/mee_src.js"></script>
-  <script type="text/javascript" src="../javascript/jquery.rquerystring.js"></script>
-  <script type="text/javascript" src="../javascript/jquery.paperdetails.js"></script>
+  <script type="text/javascript" src="../js/jquery.rquerystring.js"></script>
+  <script type="text/javascript" src="../js/jquery.paperdetails.js"></script>
 <script defer="defer" language="JavaScript">
   var paperID='<?php echo $_GET['paperID'] ?>';
 

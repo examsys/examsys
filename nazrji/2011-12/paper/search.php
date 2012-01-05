@@ -20,7 +20,7 @@
 * 
 * @author Simon Wilkinson
 * @version 1.0
-* @copyright Copyright (c) 2011 The University of Nottingham
+* @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */
 
@@ -128,7 +128,7 @@ input[type=text], select {font-family:Arail,sans-serif; border: 1px solid #7F9DB
 .f a {color:black}
 .f {float:left; width:375px; height:74px; padding-left:12px}
 </style>
-<script src="../javascript/staff_help.js" type="text/javascript"></script>
+<script src="../js/staff_help.js" type="text/javascript"></script>
 </head>
 
 <?php

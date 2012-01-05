@@ -20,13 +20,13 @@
 * 
 * @author Simon Wilkinson
 * @version 1.0
-* @copyright Copyright (c) 2011 The University of Nottingham
+* @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */
 
   require $cfg_web_root . 'include/sidebar_menu.inc';
 ?>
-<script src="/javascript/sidebar.js" type="text/javascript"></script>
+<script src="/js/sidebar.js" type="text/javascript"></script>
 <script language="JavaScript">
   function updateCookies() {
     if (document.getElementById('myquestions').checked == 1) {

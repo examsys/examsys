@@ -22,25 +22,25 @@
 * @package
 */
 
-  require '../include/staff_auth.inc';
-  require '../include/errors.inc';
+require '../include/staff_auth.inc';
+require '../include/errors.inc';
+
+if (isset($_POST['submit'])) {
+  // Clear the team of all members.
+  $result = $mysqli->prepare("DELETE FROM teams WHERE memberID=?");
+  $result->bind_param('i', $_POST['userID']);
+  $result->execute();  
+  $result->close();
   
-  if (isset($_POST['submit'])) {
-    // Clear the team of all members.
-    $result = $mysqli->prepare("DELETE FROM teams WHERE memberID=?");
-    $result->bind_param('i', $_POST['userID']);
-    $result->execute();  
-    $result->close();
-    
-    // Insert a record for each team member.
-    for ($i=0; $i<$_POST['module_no']; $i++) {
-      if (isset($_POST["mod$i"]) and $_POST["mod$i"] != '') {
-        $result = $mysqli->prepare("INSERT INTO teams VALUES (NULL, ?, ?, NULL, 'System')");
-        $result->bind_param('si', $_POST["mod$i"], $_POST['userID']);
-        $result->execute();  
-        $result->close();
-      }
+  // Insert a record for each team member.
+  for ($i=0; $i<$_POST['module_no']; $i++) {
+    if (isset($_POST["mod$i"]) and $_POST["mod$i"] != '') {
+      $result = $mysqli->prepare("INSERT INTO teams VALUES (NULL, ?, ?, NULL, 'System')");
+      $result->bind_param('si', $_POST["mod$i"], $_POST['userID']);
+      $result->execute();  
+      $result->close();
     }
+  }
 ?>
 <html>
 <head>

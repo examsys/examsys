@@ -14,10 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
-require './config/config.inc.php';
-require './classes/lang.class.php';
-require_once './classes/networkutils.class.php';
-
 /**
 * 
 * Looks up the next free temporary account and reserves it for the current user.
@@ -25,9 +21,13 @@ require_once './classes/networkutils.class.php';
 *
 * @author Simon Wilkinson
 * @version 1.0
-* @copyright Copyright (c) 2011 The University of Nottingham
+* @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */
+
+require './config/config.inc.php';
+require './classes/lang.class.php';
+require_once './classes/networkutils.class.php';
 
 function encpw($u,$p) {
   $salt = '$1$' . substr(md5($u),0,12) . '$';

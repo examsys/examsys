@@ -20,7 +20,7 @@
 * 
 * @author Simon Wilkinson
 * @version 1.0
-* @copyright Copyright (c) 2011 The University of Nottingham
+* @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */
 
@@ -413,9 +413,9 @@ p {margin-left:0px; margin-right:15px; margin-top:0px; padding-top:0px}
 .breadcrumb a:hover {color:blue; text-decoration:underline; cursor:pointer}
 </style>
 
-<script src="../javascript/staff_help.js" type="text/javascript"></script>
-<script src="../javascript/flash_include.js" type="text/javascript"></script>
-<script src="../javascript/ie_fix.js" type="text/javascript"></script>
+<script src="../js/staff_help.js" type="text/javascript"></script>
+<script src="../js/flash_include.js" type="text/javascript"></script>
+<script src="../js/ie_fix.js" type="text/javascript"></script>
 <script language="JavaScript">
   function getScrollXY() {
     var scrOfX = 0, scrOfY = 0;

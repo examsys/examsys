@@ -18,7 +18,7 @@
 * 
 * @author Simon Wilkinson
 * @version 1.0
-* @copyright Copyright (c) 2011 The University of Nottingham
+* @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */
 
@@ -37,8 +37,8 @@
 .mod {padding-left:60px; text-indent:-20px}
 </style>
 
-<script src="../javascript/staff_help.js" type="text/javascript"></script>
-<script src="../javascript/sidebar.js" type="text/javascript"></script>
+<script src="../js/staff_help.js" type="text/javascript"></script>
+<script src="../js/sidebar.js" type="text/javascript"></script>
 <script language="JavaScript">
   function displayCredits(){
     notice=window.open("../credits/credits.php","credits","width=700,height=487,scrollbars=no,resizable=no,toolbar=no,location=no,directories=no,status=0,menubar=0");

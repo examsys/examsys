@@ -14,6 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+* 
+* @author Rob Ingram
+* @version 1.0
+* @copyright Copyright (c) 2012 The University of Nottingham
+* @package
+*/
+
 require_once 'detail_parts/details_theme_notes.php';
 require_once 'detail_parts/details_scenario.php';
 require_once 'detail_parts/details_media.php';

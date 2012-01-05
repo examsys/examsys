@@ -18,7 +18,7 @@
 * 
 * @author Simon Wilkinson
 * @version 1.0
-* @copyright Copyright (c) 2011 The University of Nottingham
+* @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */
 
@@ -58,7 +58,7 @@
   .unans {background-color:#FFC0C0}
 </style>
 
-<script language="JavaScript" src="../javascript/flash_include.js"></script>
+<script language="JavaScript" src="../js/flash_include.js"></script>
 <script src="/tools/MathJax/MathJax.js"> 
   MathJax.Hub.Config({
     showProcessingMessages: false,

@@ -18,7 +18,7 @@
 * 
 * @author Simon Wilkinson
 * @version 1.0
-* @copyright Copyright (c) 2011 The University of Nottingham
+* @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */
 
@@ -38,7 +38,7 @@ th {background-color:#F1F5FB; font-weight:normal; text-align:left}
 .errl {padding-right:6px; vertical-align:top; text-align:right}
 </style>
 
-<script src="../javascript/staff_help.js" type="text/javascript"></script>
+<script src="../js/staff_help.js" type="text/javascript"></script>
 <script language="JavaScript">
   function updateCookies() {
     if (document.getElementById('showfixed').checked == 1) {

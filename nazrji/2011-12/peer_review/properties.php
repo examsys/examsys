@@ -20,7 +20,7 @@
 * 
 * @author Simon Wilkinson
 * @version 1.0
-* @copyright Copyright (c) 2011 The University of Nottingham
+* @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */
 
@@ -214,7 +214,7 @@ if (isset($_POST['Submit'])) {
   </style>
 
   <?php echo $cfg_editor_javascript; ?>
-  <script type="text/javascript" src="../javascript/jquery-1.6.1.min.js"></script>
+  <script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
   <script language="JavaScript">
     function toggle(objectID) {
       if (document.getElementById(objectID).className == 'indentoff') {

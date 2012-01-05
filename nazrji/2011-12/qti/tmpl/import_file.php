@@ -29,8 +29,8 @@
 	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
 	<link rel="icon" href="favicon.ico" type="image/x-icon"/>
 	<link rel="P3Pv1" href="https://touchstone.nottingham.ac.uk/w3c/p3p.xml">
-	<script type="text/javascript" src="../javascript/jquery-1.6.1.min.js"></script> 
-  <script type="text/javascript" src="../javascript/jquery.validate.min.js"></script> 
+	<script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
+  <script type="text/javascript" src="../js/jquery.validate.min.js"></script>
 	<link rel="stylesheet" type="text/css" href="css/highlight.css" /> 
 	<link rel="stylesheet" type="text/css" href="css/wizard.css" /> 
   <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
@@ -69,7 +69,7 @@ label.error {
   color: #f00;
 }
 	</style>
-<script src="../javascript/staff_help.js" type="text/javascript"></script>
+<script src="../js/staff_help.js" type="text/javascript"></script>
 <script language="JavaScript">
   // Popup window code
   function newPopup(url) {

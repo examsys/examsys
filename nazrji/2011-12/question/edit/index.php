@@ -18,7 +18,7 @@
 * 
 * @author Rob Ingram
 * @version 1.0
-* @copyright Copyright (c) 2011 The University of Nottingham
+* @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */
 
@@ -352,23 +352,23 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
 <link rel="stylesheet" href="../../css/add_edit_new.css" type="text/css" />
 
 <?php echo $cfg_editor_javascript; ?>
-<script type="text/javascript" src="../../javascript/jquery-1.6.1.min.js"></script>
-<script type="text/javascript" src="../../javascript/staff_help.js"></script>
-<script type="text/javascript" src="../../javascript/jquery.touchstone.js"></script>
-<script type="text/javascript" src="../../javascript/jquery.addedit.js"></script>
-<script type="text/javascript" src="../../javascript/staff_help.js"></script>
-<script type="text/javascript" src="../../javascript/jquery.formhelpers.js"></script>
+<script type="text/javascript" src="../../js/jquery-1.6.1.min.js"></script>
+<script type="text/javascript" src="../../js/staff_help.js"></script>
+<script type="text/javascript" src="../../js/jquery.touchstone.js"></script>
+<script type="text/javascript" src="../../js/jquery.addedit.js"></script>
+<script type="text/javascript" src="../../js/staff_help.js"></script>
+<script type="text/javascript" src="../../js/jquery.formhelpers.js"></script>
 <?php
-if ($question != null and file_exists($cfg_web_root . 'javascript/validation/jquery.' . $question->get_type() . '.js')):
+if ($question != null and file_exists($cfg_web_root . 'js/validation/jquery.' . $question->get_type() . '.js')):
 ?>
-<script type="text/javascript" src="../../javascript/jquery.validate.min.js"></script>
-<script type="text/javascript" src="../../javascript/validation/jquery.<?php echo $question->get_type() ?>.js"></script>
+<script type="text/javascript" src="../../js/jquery.validate.min.js"></script>
+<script type="text/javascript" src="../../js/validation/jquery.<?php echo $question->get_type() ?>.js"></script>
 <?php
 endif;
 if ($question != null and $question->requires_flash()):
 ?>
-<script type="text/javascript" src="../../javascript/ie_fix.js"></script>
-<script type="text/javascript" src="../../javascript/flash_include.js"></script>
+<script type="text/javascript" src="../../js/ie_fix.js"></script>
+<script type="text/javascript" src="../../js/flash_include.js"></script>
 <?php
 endif;
 ?>

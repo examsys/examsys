@@ -18,7 +18,7 @@
 * 
 * @author Simon Wilkinson
 * @version 1.0
-* @copyright Copyright (c) 2011 The University of Nottingham
+* @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */
 
@@ -414,7 +414,7 @@ td {vertical-align:top}
 .breadcrumb a:visited {color:blue; text-decoration:none; cursor:pointer}
 .breadcrumb a:hover {color:blue; text-decoration:underline; cursor:pointer}
 </style>
-<script src="../javascript/staff_help.js" type="text/javascript"></script>
+<script src="../js/staff_help.js" type="text/javascript"></script>
 </head>
 
 <body>

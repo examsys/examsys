@@ -14,6 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+* 
+* @author Rob Ingram
+* @version 1.0
+* @copyright Copyright (c) 2012 The University of Nottingham
+* @package
+*/
+
 $label_correct = (isset($label_correct)) ? $label_correct : $string['generalfeedback'];
 $label_incorrect = (isset($label_incorrect)) ? $label_incorrect : $string['fbincorrect'] . '<br /><span class="note">' . $string['fbincorrectmsg'] . '</span>';
 $show_incorrect = (isset($show_incorrect)) ? $show_incorrect : false;

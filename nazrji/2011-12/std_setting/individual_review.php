@@ -18,7 +18,7 @@
 * 
 * @author Simon Wilkinson
 * @version 1.0
-* @copyright Copyright (c) 2011 The University of Nottingham
+* @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */
 
@@ -102,11 +102,11 @@ p {margin-top:0px; padding-top:0px}
 .extmatch li {padding-bottom:14px; vertical-align:text-bottom; list-style-type:upper-alpha}
 </style>
 
-<script language="JavaScript" src="../javascript/jquery-1.6.1.min.js"></script>
+<script language="JavaScript" src="../js/jquery-1.6.1.min.js"></script>
 <script language="JavaScript" src="../tools/mee/mee/js/mee_src.js"></script>
-<script language="JavaScript" src="../javascript/ie_fix.js"></script>
-<script language="JavaScript" src="../javascript/flash_include.js"></script>
-<script language="JavaScript" src="../javascript/staff_help.js"></script>
+<script language="JavaScript" src="../js/ie_fix.js"></script>
+<script language="JavaScript" src="../js/flash_include.js"></script>
+<script language="JavaScript" src="../js/staff_help.js"></script>
 <script language="JavaScript">
 <?php
   if ($_GET['method'] == 'ebel') {

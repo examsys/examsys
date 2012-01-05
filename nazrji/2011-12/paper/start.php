@@ -22,7 +22,7 @@
 * 
 * @author Simon Wilkinson, Anthony Brown
 * @version 1.0
-* @copyright Copyright (c) 2011 The University of Nottingham
+* @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */
 
@@ -374,11 +374,11 @@ if ($paper_type == '3') echo ".likert_button {text-align:center;width:40px;verti
 if ($latex_needed == 1) echo ".latex {vertical-align:middle}\n";
 ?>
 </style>
-<script type="text/javascript" src="/javascript/jquery-1.6.1.min.js"></script>
+<script type="text/javascript" src="/js/jquery-1.6.1.min.js"></script>
 <?php if ($latex_needed == 1) {?>
   <script type="text/javascript" src="/tools/mee/mee/js/mee_src.js"></script>
 <?php }?>
-<script language="JavaScript" src="../javascript/start.js"></script>
+<script language="JavaScript" src="../js/start.js"></script>
 
 <script type="text/javascript">
 var lang = {
@@ -396,7 +396,7 @@ foreach ($langstrings as $langstring) {
 };
 </script>
 
-<script language="JavaScript" src="../javascript/flash_include.js"></script>
+<script language="JavaScript" src="../js/flash_include.js"></script>
 <script language="javascript">
   window.history.go(1);
 <?php

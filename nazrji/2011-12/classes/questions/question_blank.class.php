@@ -20,7 +20,7 @@
  *
  * @author Rob Ingram
  * @version 1.0
- * @copyright Copyright (c) 2011 The University of Nottingham
+ * @copyright Copyright (c) 2012 The University of Nottingham
  * @package
  */
 

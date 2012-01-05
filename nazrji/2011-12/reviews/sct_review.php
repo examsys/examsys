@@ -18,7 +18,7 @@
 * 
 * @author Simon Wilkinson
 * @version 1.0
-* @copyright Copyright (c) 2011 The University of Nottingham
+* @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */
 
@@ -116,7 +116,7 @@
 <html>
 <head>
 <title><?php echo $string['sctreview']; ?></title>
-<script language="JavaScript" src="../javascript/jquery-1.6.1.min.js"></script>
+<script language="JavaScript" src="../js/jquery-1.6.1.min.js"></script>
 <?php
   if (isset($_POST['submit'])) {
 ?>

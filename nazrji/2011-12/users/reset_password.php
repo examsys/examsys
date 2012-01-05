@@ -18,7 +18,7 @@
 * 
 * @author Rob Ingram
 * @version 1.0
-* @copyright Copyright (c) 2011 The University of Nottingham
+* @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */
 
@@ -124,8 +124,8 @@ if (count($critical_errors) == 0 and isset($_POST['token']) and $_POST['token'] 
 body {background-color:white; color:black; font-family:Arial,sans-serif; font-size:90%}
 .field {padding-top:4px; padding-left:6px; font-weight:bold}
 </style>
-<script type="text/javascript" src="../javascript/jquery-1.6.1.min.js"></script>
-<script type="text/javascript" src="../javascript/jquery.validate.min.js"></script>
+<script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
+<script type="text/javascript" src="../js/jquery.validate.min.js"></script>
 <script type="text/javascript">
 $(function() {
   $('#forgotten_pw').validate({

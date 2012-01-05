@@ -20,7 +20,7 @@
 * 
 * @author Anthony Brown 
 * @version 1.0
-* @copyright Copyright (c) 2010 The University of Nottingham
+* @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */ 
   require "../config/config.inc.php";

@@ -1,7 +1,4 @@
 <?php
-
-//niko abs
-
 // This file is part of Rogō
 //
 // Rogō is free software: you can redistribute it and/or modify
@@ -21,7 +18,7 @@
 * 
 * @author Simon Wilkinson
 * @version 1.0
-* @copyright Copyright (c) 2011 The University of Nottingham
+* @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */
 

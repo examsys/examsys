@@ -18,7 +18,7 @@
 * 
 * @author Simon Wilkinson
 * @version 1.0
-* @copyright Copyright (c) 2011 The University of Nottingham
+* @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */
 
@@ -102,7 +102,7 @@ td {line-height:150%; text-align:justify}
 .heading {background-color:#EBEADB; color:black}
 </style>
 
-<script src="../javascript/ie_fix.js" type="text/javascript"></script>
+<script src="../js/ie_fix.js" type="text/javascript"></script>
 <script language="JavaScript">
   function move_in(img_name) {
     document[img_name].src=onImg.src;

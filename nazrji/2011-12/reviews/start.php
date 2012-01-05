@@ -18,7 +18,7 @@
 * 
 * @author Simon Wilkinson
 * @version 1.0
-* @copyright Copyright (c) 2011 The University of Nottingham
+* @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */
 
@@ -173,8 +173,8 @@ textarea {font-size:100%}
 </style>
 
 <script src="start.js" type="text/javascript"></script>
-<script language="JavaScript" src="../javascript/flash_include.js"></script>
-<script type="text/javascript" src="/javascript/jquery-1.6.1.min.js"></script>
+<script language="JavaScript" src="../js/flash_include.js"></script>
+<script type="text/javascript" src="/js/jquery-1.6.1.min.js"></script>
 <?php if ($latex_needed == 1) {?>
 <script type="text/javascript" src="/tools/mee/mee/js/mee_src.js"></script>
 <?php }?>

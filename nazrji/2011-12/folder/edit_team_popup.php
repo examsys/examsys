@@ -18,32 +18,32 @@
 * 
 * @author Simon Wilkinson
 * @version 1.0
-* @copyright Copyright (c) 2011 The University of Nottingham
+* @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */
 
-  require '../include/staff_auth.inc';
-  require '../include/errors.inc';
+require '../include/staff_auth.inc';
+require '../include/errors.inc';
+
+check_var('teamID', 'GET', true, false);
+$teamID = $_GET['teamID'];
+
+if (isset($_POST['submit'])) {
+  // Clear the team of all members.
+  $result = $mysqli->prepare("DELETE FROM teams WHERE name=?");
+  $result->bind_param('s', $teamID);
+  $result->execute();  
+  $result->close();
   
-  check_var('teamID', 'GET', true, false);
-  $teamID = $_GET['teamID'];
-  
-  if (isset($_POST['submit'])) {
-    // Clear the team of all members.
-    $result = $mysqli->prepare("DELETE FROM teams WHERE name=?");
-    $result->bind_param('s', $teamID);
-    $result->execute();  
-    $result->close();
-    
-    // Insert a record for each team member.
-    for ($i=0; $i<$_POST['staff_no']; $i++) {
-      if (isset($_POST["staff$i"]) and $_POST["staff$i"] != '') {
-        $result = $mysqli->prepare("INSERT INTO teams VALUES (NULL,?,?,NULL,'System')");
-        $result->bind_param('si', $teamID, $_POST["staff$i"]);
-        $result->execute();  
-        $result->close();
-      }
+  // Insert a record for each team member.
+  for ($i=0; $i<$_POST['staff_no']; $i++) {
+    if (isset($_POST["staff$i"]) and $_POST["staff$i"] != '') {
+      $result = $mysqli->prepare("INSERT INTO teams VALUES (NULL,?,?,NULL,'System')");
+      $result->bind_param('si', $teamID, $_POST["staff$i"]);
+      $result->execute();  
+      $result->close();
     }
+  }
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>

@@ -20,7 +20,7 @@
 *
 * @author Simon Wilkinson
 * @version 1.0
-* @copyright Copyright (c) 2011 The University of Nottingham
+* @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */
 
@@ -54,7 +54,7 @@
 <html>
 <head>
 <title>Rogō: <?php echo $string['calendar'] . ' ' . $cfg_install_type; ?></title>
-<script language="JavaScript" src="../javascript/sidebar.js"></script>
+<script language="JavaScript" src="../js/sidebar.js"></script>
 <script language="JavaScript">
   function go() {
     box = document.forms[0].navi;

@@ -18,7 +18,7 @@
 * 
 * @author Simon Wilkinson
 * @version 1.0
-* @copyright Copyright (c) 2011 The University of Nottingham
+* @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */
 
@@ -48,7 +48,7 @@ if (isset($_POST['submit'])) {
 <html>
 <head>
 <title><?php echo $string['secondmark']; ?></title>
-<script src="../javascript/staff_help.js" type="text/javascript"></script>
+<script src="../js/staff_help.js" type="text/javascript"></script>
 <style type="text/css">
 body {font-family:Arial,sans-serif; font-size:90%; background-color:white; color:black; margin:0px}
 table {font-size:100%}

@@ -18,7 +18,7 @@
 * 
 * @author Simon Wilkinson
 * @version 1.0
-* @copyright Copyright (c) 2011 The University of Nottingham
+* @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */
 
@@ -37,7 +37,7 @@
   .icon {width:250px; padding-top:20px; padding-bottom:20px; float:left; text-align:center}
 </style>
 
-<script language="JavaScript" src="../javascript/sidebar.js"></script>
+<script language="JavaScript" src="../js/sidebar.js"></script>
 <script language="JavaScript">
   function highlightResource(resourceID,highlightColor) {
     document.getElementById(resourceID).style.borderColor = '#316AC5';

@@ -14,6 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+* 
+* @author Simon Wilkinson
+* @version 1.0
+* @copyright Copyright (c) 2012 The University of Nottingham
+* @package
+*/
+
 require '../../include/staff_auth.inc';
 ?>
 <html>

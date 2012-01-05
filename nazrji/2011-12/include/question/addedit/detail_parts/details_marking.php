@@ -14,6 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+* 
+* @author Rob Ingram
+* @version 1.0
+* @copyright Copyright (c) 2012 The University of Nottingham
+* @package
+*/
+
 $marks_positive = range(1, 20);
 $marks_negative = array(0, -0.5, -1, -2, -3, -4, -5, -6, -7, -8, -9, -10);
 $marks_partial = array_merge(range(0, 1, 0.1), range(2, 5));

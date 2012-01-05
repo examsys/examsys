@@ -18,7 +18,7 @@
 * 
 * @author Anthony Brown
 * @version 1.0
-* @copyright Copyright (c) 2011 The University of Nottingham
+* @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */
 
@@ -39,7 +39,7 @@
   .mapping {font-size:90%;color:#FF6300;font-weight:normal}
   .mapping_exclueded {color:red;font-weight:normal;text-decoration:line-through;}
 </style>
-<script src="../javascript/staff_help.js" type="text/javascript"></script>
+<script src="../js/staff_help.js" type="text/javascript"></script>
 <script language="JavaScript">
   function mapQuestion(qNo, pid, qid, session) {
     mapWindow = window.open('./map_question.php?qNo=' + qNo + '&paperID=' + pid + '&q_id=' + qid + '&session=' + session, "",'height=' + (screen.height - 300) + ',width=' + (screen.width - 300) + ',scrollbars=1,resizable=1,statusbar=0');

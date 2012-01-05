@@ -20,7 +20,7 @@
 *
 * @author Simon Wilkinson
 * @version 1.0
-* @copyright Copyright (c) 2011 The University of Nottingham
+* @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */
 
@@ -60,7 +60,7 @@ if (isset($_GET['module'])) {
   <head>
   <title>Rogō: <?php echo $string['importmetadata'] . ' ' . $cfg_install_type; ?></title>
   <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
-  <script src="../javascript/sidebar.js" type="text/javascript"></script>
+  <script src="../js/sidebar.js" type="text/javascript"></script>
   <script language="JavaScript">
     function changeMsg() {
       document.getElementById('msg').innerHTML = 'Finished';

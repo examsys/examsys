@@ -18,7 +18,7 @@
 * 
 * @author Simon Wilkinson, Anthony Brown
 * @version 1.0
-* @copyright Copyright (c) 2011 The University of Nottingham
+* @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */
 
@@ -41,7 +41,7 @@
 .title {padding-left:6px}
 </style>
 
-<script src="../javascript/staff_help.js" type="text/javascript"></script>
+<script src="../js/staff_help.js" type="text/javascript"></script>
 <script language="javascript">
   function selSession(divID, identifier, session, VLE, evt) {
     hideSessCopyMenu(evt);

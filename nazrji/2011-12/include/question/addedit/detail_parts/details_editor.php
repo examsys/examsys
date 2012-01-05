@@ -14,6 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+* 
+* @author Rob Ingram
+* @version 1.0
+* @copyright Copyright (c) 2012 The University of Nottingham
+* @package
+*/
+
 $mandatory = (isset($mandatory_editor) and $mandatory_editor) ? '<span class="mandatory">*</span> ' : '';
 $field_editor = (isset($field_editor)) ? $field_editor : 'scenario';
 $label_editor = (isset($label_editor)) ? $label_editor : '<label for="' . $field_editor . '">' . $string['scenario'] . '</label><br /><span class="note">' . $string['scenariomsg'] . '</span>';

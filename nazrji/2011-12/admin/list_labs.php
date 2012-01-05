@@ -18,7 +18,7 @@
 * 
 * @author Simon Wilkinson
 * @version 1.0
-* @copyright Copyright (c) 2011 The University of Nottingham
+* @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */
 
@@ -33,7 +33,7 @@
 .foldername {float:left; width:380px; height:60px; padding-left:12px; font-size:90%}
 </style>
 
-<script src="../javascript/staff_help.js" type="text/javascript"></script>
+<script src="../js/staff_help.js" type="text/javascript"></script>
 <script language="javascript">
   function selLab(labID,labNo,evt) {
     tmp_ID = document.labform.oldLabNo.value;

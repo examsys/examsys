@@ -18,7 +18,7 @@
 *
 * @author Anthony Brown
 * @version 1.0
-* @copyright Copyright (c) 2011 The University of Nottingham
+* @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */
 
@@ -73,9 +73,9 @@
 <html>
 <head>
 <title>Objective Mapping</title>
-<script language="JavaScript" src="../javascript/mapping_tab.js"></script>
-<script language="JavaScript" src="../javascript/flash_include.js"></script>
-<script language="JavaScript" src="../javascript/ie_fix.js"></script>
+<script language="JavaScript" src="../js/mapping_tab.js"></script>
+<script language="JavaScript" src="../js/flash_include.js"></script>
+<script language="JavaScript" src="../js/ie_fix.js"></script>
 <style>
   body {font-family:Arial,sans-serif; font-size:90%; background-color:white; color:black}
   h1 {font-size:150%; font-weight:bold; color:#316AC5; margin-left:15px; padding-top:10px}

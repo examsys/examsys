@@ -20,7 +20,7 @@
 *
 * @author Anthony Brown
 * @version 1.0
-* @copyright Copyright (c) 2011 The University of Nottingham
+* @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */
 
@@ -38,8 +38,8 @@
     h1 {font-size:120%; font-weight:bold}
     img { border-style:none; border-width:0px)
   </style>
-<script type="text/javascript" src="../javascript/jquery-1.6.1.min.js"></script>
-<script type="text/javascript" src="../javascript/jquery.validate.min.js"></script>
+<script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
+<script type="text/javascript" src="../js/jquery.validate.min.js"></script>
 <script type="text/javascript">
 $(function () { $('#import_form').validate(); });
 </script>

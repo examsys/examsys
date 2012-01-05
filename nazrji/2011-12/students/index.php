@@ -20,7 +20,7 @@
 * 
 * @author Rob Ingram
 * @version 1.0
-* @copyright Copyright (c) 2011 The University of Nottingham
+* @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */
 
@@ -122,7 +122,7 @@ for($i = 0; $i < count($modules); $i++) {
 body { padding-left: 0px; }
 </style>
 
-<script src="../javascript/student_help.js" type="text/javascript"></script>
+<script src="../js/student_help.js" type="text/javascript"></script>
 <script type="text/javascript">
 function switchYear(toShow) {
 	var years = ['<?php echo implode('\',\'', $sessions_with_papers) ?>'];
