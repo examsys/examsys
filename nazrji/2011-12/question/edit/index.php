@@ -386,6 +386,15 @@ foreach ($langstrings as $langstring) {
 }
 ?>
 };
+<?php
+if (!empty($_GET['tab']) and in_array($_GET['tab'], array('changes', 'comments', 'mapping'))):
+?>
+$(function () {
+  $('.tabs li a[rel=<?php echo $_GET['tab'] ?>]').trigger('click');
+});
+<?php
+endif;
+?>
 </script>
 <script type="text/javascript" src="/tools/mee/mee/js/mee_src.js"></script>
 </head>

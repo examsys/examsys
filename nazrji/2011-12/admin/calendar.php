@@ -53,7 +53,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Rogō: Calendar<?php echo " $cfg_install_type"; ?></title>
+<title>Rogō: <?php echo $string['calendar'] . ' ' . $cfg_install_type; ?></title>
 <script language="JavaScript" src="../javascript/sidebar.js"></script>
 <script language="JavaScript">
   function go() {
@@ -84,6 +84,16 @@
     $schools[$faculty][$id] = $school;
   }
   $stmt->close();
+
+  //get computer lab info
+  $labs = array($string['default']=>array('-1'=>$string['alllabs']));
+  $stmt = $mysqli->prepare("SELECT id, building, room_no, campus FROM labs ORDER BY campus, building, room_no");
+  $stmt->execute();
+  $stmt->bind_result($id, $building, $room_no, $campus);
+  while ($stmt->fetch()) {
+    $labs[$campus][$id] = $building . ' - ' . $room_no;
+  }
+  $stmt->close();
 ?>
 
 <div id="content" class="content" style="font-size:80%">
@@ -104,10 +114,23 @@
 <div style="font-size:200%; margin-left:10px"><strong><?php echo $string['calendar']; ?>:</strong> <?php echo $current_year; ?></div></td>
 <td style="text-align:right">
 <?php
+
+  echo "<select name=\"lab\" onchange=\"this.form.submit();\">";
+  foreach ($labs as $campus => $lab) {
+    echo "<optgroup label=\"$campus\">";
+    foreach ($lab as $id => $title) {
+      $selected = '';
+      if (isset($_GET['lab']) and $id == $_GET['lab']) $selected = 'selected '; 
+      echo "<option value=\"$id\" $selected>$title</option>";
+    }
+    echo "</optgroup>";
+  }
+  echo "</select>&nbsp;";
+
   echo "<select name=\"school\" onchange=\"this.form.submit();\">";
-  foreach($schools as $fac => $sch) {
+  foreach ($schools as $fac => $sch) {
     echo "<optgroup label=\"$fac\">";
-    foreach($sch as $id => $title) {
+    foreach ($sch as $id => $title) {
       $selected = '';
       if (isset($_GET['school']) and $id == $_GET['school']) $selected = 'selected '; 
       echo "<option value=\"$id\" $selected>$title</option>";
@@ -173,13 +196,18 @@
     $stmt->close();
     if ($schools_sql != '') $schools_sql .= ')';
   }
-
+  
+  if (isset($_GET['lab']) and $_GET['lab'] != -1) {
+    $lab_sql = " AND (labs='" . $_GET['lab'] . "' OR labs LIKE '%," . $_GET['lab'] . ",%' OR labs LIKE '" . $_GET['lab'] . ",%' OR labs LIKE '%," . $_GET['lab'] . "')";
+  } else {
+    $lab_sql = '';
+  }
   
   $paper_no = 0;
   $paper_details = array();
   if ($schools_sql != '' OR !isset($_GET['school']) OR (isset($_GET['school']) AND ($_GET['school'] == -1 OR $_GET['school'] == ''))) {
     // Get papers running on various dates.
-    $results = $mysqli->query("SELECT DATE_FORMAT(start_date,'%Y/%m/%d') AS date, labs, DATE_FORMAT(start_date,'%H:%i') AS start_time, DATE_FORMAT(end_date,'%H:%i') AS end_time, property_id, paper_title, DATE_FORMAT(start_date,'%c') AS month, DATE_FORMAT(start_date,'%Y') AS cal_year, DATE_FORMAT(start_date,'%e') AS start_day, DATE_FORMAT(end_date,'%e') AS end_date, moduleID, paper_type FROM properties WHERE start_date>=" . $current_year . "0101000000 AND end_date<=" . $current_year . "1231235959 AND (paper_type='2' OR paper_type='4') AND deleted IS NULL $schools_sql ORDER BY start_date");
+    $results = $mysqli->query("SELECT DATE_FORMAT(start_date,'%Y/%m/%d') AS date, labs, DATE_FORMAT(start_date,'%H:%i') AS start_time, DATE_FORMAT(end_date,'%H:%i') AS end_time, property_id, paper_title, DATE_FORMAT(start_date,'%c') AS month, DATE_FORMAT(start_date,'%Y') AS cal_year, DATE_FORMAT(start_date,'%e') AS start_day, DATE_FORMAT(end_date,'%e') AS end_date, moduleID, paper_type FROM properties WHERE start_date>=" . $current_year . "0101000000 AND end_date<=" . $current_year . "1231235959 AND (paper_type='2' OR paper_type='4') AND deleted IS NULL $schools_sql $lab_sql ORDER BY start_date");
     while ($row = $results->fetch_assoc()) {
       $paper_details[$paper_no]['labs'] = $row['labs'];
       $paper_details[$paper_no]['date'] = $row['date'];

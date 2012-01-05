@@ -176,7 +176,20 @@ if (isset($_POST['submit'] )) {
   </script>
   </head>
   <body>
-
+  <div id="menudiv" style="filter: progid:DXImageTransform.Microsoft.Shadow(direction=120,color=gray,strength=3); position:absolute; display:none; top:0px; left:0px;z-index:10000;" onmouseover="javascript:overpopupmenu=true;" onmouseout="javascript:overpopupmenu=false;">
+  <table width="160" cellspacing="2" cellpadding="0" border="0" style="border:1px solid #6593CF; font-size:90%; background-color:white">
+    <tr><td>
+      <table width="160" cellspacing="0" cellpadding="1" border="0" style="font-size:100%; background-color:white">
+        <tr>
+          <td id="item1a" style="text-align:center; border-top:1px solid #F1F5FB; border-bottom:1px solid #F1F5FB; border-left:1px solid #F1F5FB; border-right:0px solid #F1F5FB; background-color:#F1F5FB; width:24px" onmouseover="menuRowOn('1');" onmouseout="menuRowOff('1');" onclick="viewScript();"><img src="/artwork/summative_16.gif" width="16" height="16" alt="" border="0" /></td><td id="item1b" style="padding-left:8px; border:1px solid #FFFFFF; background-color:#FFFFFF; cursor:default" onmouseover="menuRowOn('1');" onmouseout="menuRowOff('1');" onclick="viewScript();">Review Form</td>
+        </tr>
+        <tr>
+          <td id="item2a" style="text-align:center; border-top:1px solid #F1F5FB; border-bottom:1px solid #F1F5FB; border-left:1px solid #F1F5FB; border-right:0px solid #F1F5FB; background-color:#F1F5FB; width:24px" onmouseover="menuRowOn('2');" onmouseout="menuRowOff('2');" onclick="viewProfile();"><img src="/artwork/small_user_icon.gif" width="16" height="16" alt="" border="0" /></td><td id="item2b" style="padding-left:8px; border:1px solid #FFFFFF; background-color:#FFFFFF; cursor:default" onmouseover="menuRowOn('2');" onmouseout="menuRowOff('2');" onclick="viewProfile();">Student Profile</td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+  </div>
   <?php
   echo '<table cellpadding="4" cellspacing="0" border="0" style="width:100%;border-bottom:1px solid #164994;background-color:#2765AB;background-image:url(\'../artwork/title_gradient.png\');background-repeat:repeat-y;background-position:center">';
   echo '<tr><td><div class="paper">' . $paper_title . '</div><div class="group"><strong>Reviewer:</strong> ' . $title .' ' . $surname . '<strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Group:</strong> ' . $group . '</strong></div></td></tr></table>';
@@ -293,11 +306,11 @@ if (isset($_POST['submit'] )) {
           $record_id = $saved_results[$member_userID][$questionID]['id'];
         }
         echo "<tr><td>" . $details['leadin']. "<input type=\"hidden\" name=\"" . $member_userID . "_" . $row_no . "_id\" value=\"$record_id\" /></td>";
-        for ($i=0; $i<$columns; $i++) {
+        for ($i=(0 + $marking); $i<($columns + $marking); $i++) {
           if (isset($saved_results[$member_userID][$questionID]['rating']) and $saved_results[$member_userID][$questionID]['rating'] === $i) {
-            echo "<td class=\"col\"><input type=\"radio\" name=\"" . $member_userID . "_" . $row_no . "\" value=\"" . ($i + $marking) . "\" checked /></td>";
+            echo "<td class=\"col\"><input type=\"radio\" name=\"" . $member_userID . "_" . $row_no . "\" value=\"$i\" checked /></td>";
           } else {
-            echo "<td class=\"col\"><input type=\"radio\" name=\"" . $member_userID . "_" . $row_no . "\" value=\"" . ($i + $marking) . "\" /></td>";
+            echo "<td class=\"col\"><input type=\"radio\" name=\"" . $member_userID . "_" . $row_no . "\" value=\"$i\" /></td>";
           }
         }
         echo "</tr>";

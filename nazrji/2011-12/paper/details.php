@@ -943,7 +943,7 @@ function getMSCAA($paperID, $mysqlidb) {
     }
 
     echo $string[$temp_array[$x]['q_type']] . '</td>';
-    if ($paper_type == '3') {
+    if ($paper_type == '3' or $paper_type == '6') {
       echo '<td style="text-align:right; vertical-align:top; color:#C0C0C0">n/a</td>';
     } elseif ($paper_type == '4') {
       $temp_array[$x]['score_method'] = str_replace('|',',',$temp_array[$x]['score_method']);

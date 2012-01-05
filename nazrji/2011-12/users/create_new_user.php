@@ -25,27 +25,28 @@
 */
 
   require '../include/admin_auth.inc';
+  require '../include/mb_string.inc.php';
 
-  function my_ucwords($s) { 
-    $s = preg_replace_callback("/(\b[\w|']+\b)/s", 'fixcase_callback', $s); 
+  function my_ucwords($s) {
+    $s = preg_replace_callback("/(\b[\w|']+\b)/su", 'fixcase_callback', $s);
     return $s;         
   } 
     
   function fixcase_callback($word) { 
     $word = $word[1]; 
-    $word = strtolower($word); 
+    $word = mb_strtolower($word, 'UTF-8');
         
     if ($word == "de") return $word; 
     
-    $word = ucfirst($word); 
+    $word = mb_ucasefirst($word);
        
-    if (substr($word,1,1) == "'") { 
-      if (substr($word,0,1) == "D") { 
-        $word = strtolower($word); 
+    if (mb_substr($word, 1, 1, 'UTF-8') == "'") {
+      if (mb_substr($word, 0, 1, 'UTF-8') == "D") {
+        $word = mb_strtolower($word, 'UTF-8');
       } 
-      $next = substr($word,2,1); 
-      $next = strtoupper($next); 
-      $word = substr_replace($word, $next, 2, 1); 
+      $next = mb_substr($word, 2, 1, 'UTF-8');
+      $next = mb_strtoupper($next, 'UTF-8');
+      $word = mb_substr_replace($word, $next, 2, 1, 'UTF-8');
     }
     return $word; 
   } 

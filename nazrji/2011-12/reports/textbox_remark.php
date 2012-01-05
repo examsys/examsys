@@ -103,15 +103,16 @@ table {font-size:100%}
 
   $student_no = 1;
 
-  $result = $mysqli->prepare("SELECT SUM(mark) AS total_mark, student_userID, users.id, student_id FROM textbox_marking, users, sid WHERE users.id=sid.userID AND users.id=textbox_marking.student_userID AND paperID=? AND phase=1 GROUP BY student_userID ORDER BY student_id");
+  $result = $mysqli->prepare("SELECT SUM(mark) AS total_mark, users.username, users.id, student_id FROM textbox_marking, users LEFT JOIN sid ON users.id=sid.userID WHERE users.id=textbox_marking.student_userID AND paperID=? AND phase=1 GROUP BY student_userID ORDER BY student_id");
   $result->bind_param('i', $_GET['paperID']);
   $result->execute();
   $result->bind_result($total_mark, $username, $recordID, $student_id);
   while ($result->fetch()) {
+    $student_id = ($student_id == '') ? '&lt;student ID unknown&gt;' : $student_id;
     if (round(($total_mark/$paper_total)*100) < $pass_mark) {
-      echo "<tr style=\"color:red\"><td class=\"pad\"><input type=\"checkbox\" name=\"student$student_no\" value=\"$recordID\" checked /></td><td>$student_id</td><td style=\"text-align:right\">$total_mark</td><td class=\"pad\">" . round(($total_mark/$paper_total)*100) . "%</td><td>&nbsp;</td></tr>\n";
+      echo "<tr style=\"color:red\"><td class=\"pad\"><input type=\"checkbox\" name=\"student$student_no\" value=\"$recordID\" checked /></td><td>$username</td><td>$student_id</td><td style=\"text-align:right\">$total_mark</td><td class=\"pad\">" . round(($total_mark/$paper_total)*100) . "%</td><td>&nbsp;</td></tr>\n";
     } else {
-      echo "<tr><td class=\"pad\"><input type=\"checkbox\" name=\"student$student_no\" value=\"$recordID\" /></td><td>$student_id</td><td style=\"text-align:right\">$total_mark</td><td class=\"pad\">" . round(($total_mark/$paper_total)*100) . "%</td><td>&nbsp;</td></tr>\n";
+      echo "<tr><td class=\"pad\"><input type=\"checkbox\" name=\"student$student_no\" value=\"$recordID\" /></td><td>$username</td><td>$student_id</td><td style=\"text-align:right\">$total_mark</td><td class=\"pad\">" . round(($total_mark/$paper_total)*100) . "%</td><td>&nbsp;</td></tr>\n";
     }
     $student_no++;
   }

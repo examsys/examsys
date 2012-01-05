@@ -235,7 +235,7 @@ HTML;
   					<tr{$alt}>
               <td><img src="../../artwork/{$img_status}_comment.png" width="16" height="16" alt="{$status[1]}" /></td>
               <td>{$comment['name']}<br /><span class="note">{$type_translated}</span></td>
-              <td><span class="note">{$comment_str}</span></td>
+              <td>{$comment_str}</td>
               <td>
                 <select name="actions[]">
 
