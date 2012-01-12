@@ -51,8 +51,8 @@ function customErrorHandler($errno, $errstr, $errfile, $errline) {
       return true;
     } elseif (strpos($errstr,'Access is denied.') !== false) {
       return true;
-    } elseif (strpos($errstr,'ldap_bind()') !== false) {
-      return true;
+   } elseif (strpos($errstr,'ldap_bind()') !== false) {
+     return true;
     } elseif (strpos($errstr,'simplexml_load_string()') !== false) {
       //QTI imports with invalid XML cause lots of warnings in the error logs. Filter them out.
       return false;  
@@ -84,8 +84,9 @@ function customErrorHandler($errno, $errstr, $errfile, $errline) {
         }
       }
       
-      $log_error = $mysqli->prepare("INSERT INTO sys_errors VALUES(NULL, NOW(), ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?, ?)");
-      $log_error->bind_param('isssssssis', $userID, $error_type, $errstr, $errfile, $errline, $_SERVER['PHP_SELF'], $_SERVER['QUERY_STRING'], $_SERVER['REQUEST_METHOD'], $paperID, $post_data);
+      $auth_user = isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : '';
+      $log_error = $mysqli->prepare("INSERT INTO sys_errors VALUES(NULL, NOW(), ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?, ?)");
+      $log_error->bind_param('issssssssis', $userID, $auth_user, $error_type, $errstr, $errfile, $errline, $_SERVER['PHP_SELF'], $_SERVER['QUERY_STRING'], $_SERVER['REQUEST_METHOD'], $paperID, $post_data);
       $log_error->execute();
       $log_error->close();
     }
