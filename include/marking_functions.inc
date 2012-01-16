@@ -729,7 +729,6 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
             } else {
               if ($saved_response != 'u') $mark += $marks_incorrect;
             }
-            $totalpos += $marks_correct;
           }
         } else {
           $saved_response = '';
@@ -743,6 +742,8 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
             $mark = $marks_incorrect;
           }
           $totalpos = $marks_correct;
+        } else {
+          $totalpos = (substr_count($correct, '|') + 1) * $marks_correct;
         }
         break;
       case 'labelling':
