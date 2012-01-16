@@ -518,8 +518,10 @@ function getUserMark($q_id, $tmp_user_answer, $tmp_user_mark, $exclude, $status,
       
       for ($i=0; $i<count($question_parts); $i++) {
         if (isset($user_answers[$i]) and substr($user_answers[$i],0,1) == '1') {
+          $tmp_mark += $paper_buffer[$q_id]['marks_correct'];
           $tmp_user_mark_array[$q_id][] = $paper_buffer[$q_id]['marks_correct'];
         } elseif (isset($user_answers[$i]) and substr($user_answers[$i],0,1) == '0') {
+          $tmp_mark += $paper_buffer[$q_id]['marks_incorrect'];
           $tmp_user_mark_array[$q_id][] = $paper_buffer[$q_id]['marks_incorrect'];
         } else {
           $tmp_user_mark_array[$q_id][] = 0;
