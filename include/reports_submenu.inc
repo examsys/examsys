@@ -35,11 +35,18 @@
     } else {
       completerpt = 0;
     }
-    window.location.href = url + "paperID=" + document.stats_menu.paperID.value + "&startdate=" + document.stats_menu.start_year.value + document.stats_menu.start_month.value + document.stats_menu.start_day.value + document.stats_menu.start_time.value + "&enddate=" + document.stats_menu.end_year.value + document.stats_menu.end_month.value + document.stats_menu.end_day.value + document.stats_menu.end_time.value + "&repdegree=" + document.stats_menu.repdegree.value + "&repyear=" + document.stats_menu.repyear.value + "&sortby=surname&module=<?php echo $module_list[0]; ?>&folder=<?php echo $folder; ?>&complete=" + completerpt;
+    window.location.href = url + "paperID=" + document.stats_menu.paperID.value + "&startdate=" + document.stats_menu.start_year.value + document.stats_menu.start_month.value + document.stats_menu.start_day.value + document.stats_menu.start_time.value + "&enddate=" + document.stats_menu.end_year.value + document.stats_menu.end_month.value + document.stats_menu.end_day.value + document.stats_menu.end_time.value + "&repcourse=" + document.stats_menu.repcourse.value + "&repyear=" + document.stats_menu.repyear.value + "&sortby=surname&module=<?php echo $module_list[0]; ?>&folder=<?php echo $folder; ?>&complete=" + completerpt;
     evt.cancelBubble = true;
     return false;
   }
 <?php
+  } elseif ($paper_type == '6') {
+?>
+  function go(url, evt) {
+    document.getElementById('stats_menu').style.display='none';
+    window.location.href = url + "paperID=" + document.stats_menu.paperID.value + "&startdate=" + document.stats_menu.start_year.value + document.stats_menu.start_month.value + document.stats_menu.start_day.value + document.stats_menu.start_time.value + "&enddate=" + document.stats_menu.end_year.value + document.stats_menu.end_month.value + document.stats_menu.end_day.value + document.stats_menu.end_time.value + "&repmodule=" + document.stats_menu.repmodule.value + "&repcourse=" + document.stats_menu.repcourse.value;
+  }
+  <?php
   } else {
 ?>
   function go(url, evt) {
@@ -53,9 +60,9 @@
     
     document.getElementById('stats_menu').style.display='none';
     if (document.stats_menu.absent.checked == true) {
-      window.location.href = url + "paperID=" + document.stats_menu.paperID.value + "&startdate=" + document.stats_menu.start_year.value + document.stats_menu.start_month.value + document.stats_menu.start_day.value + document.stats_menu.start_time.value + "&enddate=" + document.stats_menu.end_year.value + document.stats_menu.end_month.value + document.stats_menu.end_day.value + document.stats_menu.end_time.value + "&repmodule=" + document.stats_menu.repmodule.value + "&repdegree=" + document.stats_menu.repdegree.value + "&sortby=name&module=<?php echo $module_list[0]; ?>&folder=<?php echo $folder; ?>&percent=" + document.stats_menu.percent.value + "&absent=1&direction=" + document.stats_menu.direction.value + extra_data;
+      window.location.href = url + "paperID=" + document.stats_menu.paperID.value + "&startdate=" + document.stats_menu.start_year.value + document.stats_menu.start_month.value + document.stats_menu.start_day.value + document.stats_menu.start_time.value + "&enddate=" + document.stats_menu.end_year.value + document.stats_menu.end_month.value + document.stats_menu.end_day.value + document.stats_menu.end_time.value + "&repmodule=" + document.stats_menu.repmodule.value + "&repcourse=" + document.stats_menu.repcourse.value + "&sortby=name&module=<?php echo $module_list[0]; ?>&folder=<?php echo $folder; ?>&percent=" + document.stats_menu.percent.value + "&absent=1&direction=" + document.stats_menu.direction.value + extra_data;
     } else {
-      window.location.href = url + "paperID=" + document.stats_menu.paperID.value + "&startdate=" + document.stats_menu.start_year.value + document.stats_menu.start_month.value + document.stats_menu.start_day.value + document.stats_menu.start_time.value + "&enddate=" + document.stats_menu.end_year.value + document.stats_menu.end_month.value + document.stats_menu.end_day.value + document.stats_menu.end_time.value + "&repmodule=" + document.stats_menu.repmodule.value + "&repdegree=" + document.stats_menu.repdegree.value + "&sortby=name&module=<?php echo $module_list[0]; ?>&folder=<?php echo $folder; ?>&percent=" + document.stats_menu.percent.value + "&absent=0&direction=" + document.stats_menu.direction.value + extra_data;
+      window.location.href = url + "paperID=" + document.stats_menu.paperID.value + "&startdate=" + document.stats_menu.start_year.value + document.stats_menu.start_month.value + document.stats_menu.start_day.value + document.stats_menu.start_time.value + "&enddate=" + document.stats_menu.end_year.value + document.stats_menu.end_month.value + document.stats_menu.end_day.value + document.stats_menu.end_time.value + "&repmodule=" + document.stats_menu.repmodule.value + "&repcourse=" + document.stats_menu.repcourse.value + "&sortby=name&module=<?php echo $module_list[0]; ?>&folder=<?php echo $folder; ?>&percent=" + document.stats_menu.percent.value + "&absent=0&direction=" + document.stats_menu.direction.value + extra_data;
     }
     evt.cancelBubble = true;
     return false;
@@ -252,9 +259,9 @@
   }
   echo "</select>\n</td></tr>\n";
   
-  echo "<tr><td>" . $string['course'] . "</td><td><select name=\"repdegree\" style=\"width:375px\">\n";
+  echo "<tr><td>" . $string['course'] . "</td><td><select name=\"repcourse\" style=\"width:375px\">\n";
   echo "<option value=\"%\">" . $string['anycourse'] . "</option>\n";
-  $result = $mysqli->prepare("SELECT DISTINCT student_grade, description FROM log_metadata, degrees WHERE log_metadata.student_grade=degrees.degree AND paperID=? ORDER BY student_grade");
+  $result = $mysqli->prepare("SELECT DISTINCT student_grade, description FROM log_metadata, courses WHERE log_metadata.student_grade=courses.name AND paperID=? ORDER BY student_grade");
   $result->bind_param('i', $_GET['paperID']);
   $result->execute();
   $result->bind_result($student_grade, $description);

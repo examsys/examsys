@@ -340,7 +340,7 @@ a.access:hover {color:white}
   $tmp_name = $tmp_title . ' ' . $tmp_initials . ' ' . $tmp_surname;
 
   $description = '';
-  $user_query = $mysqli->prepare("SELECT DISTINCT description FROM degrees WHERE degree=? LIMIT 1");
+  $user_query = $mysqli->prepare("SELECT DISTINCT description FROM courses WHERE name=? LIMIT 1");
   $user_query->bind_param('s', $grade);
   $user_query->execute();
   $user_query->bind_result($description);
@@ -408,24 +408,27 @@ a.access:hover {color:white}
       // Student editing
       echo "<tr><td>&nbsp;" . $string['course'] . "</td><td><select name=\"grade\" style=\"width:300px\">";
       $found = 0;
-      $degree_details = $mysqli->query("SELECT DISTINCT degree, description FROM degrees ORDER BY degree");
-      while ($degree_row = $degree_details->fetch_assoc()) {
-        if ($degree_row['degree'] == $grade) {
+      
+      $course_details = $mysqli->prepare("SELECT DISTINCT name, description FROM courses ORDER BY name");
+      $course_details->execute();
+      $course_details->bind_result($course, $description);
+      while ($course_details->fetch()) {
+        if ($course == $grade) {
           $found = 1;
-          echo "<option value=\"" . $degree_row['degree'] . "\" selected>" . $degree_row['degree'] . ": " . $degree_row['description'] . "</option>\n";
+          echo "<option value=\"$course\" selected>$course: $description</option>\n";
         } else {
-          echo "<option value=\"" . $degree_row['degree'] . "\">" . $degree_row['degree'] . ": " . $degree_row['description'] . "</option>\n";
+          echo "<option value=\"$course\">$course: $description</option>\n";
         }
       }
-      if ($found == 0) echo "<option value=\"" . $grade . "\" selected>" . $grade . ": &lt;unknown degree&gt;</option>\n";
-      $degree_details->close();
+      if ($found == 0) echo "<option value=\"" . $grade . "\" selected>" . $grade . ": ". $string['unknown'] ."</option>\n";
+      $course_details->close();
       echo "</select></td><td colspan=\"3\">&nbsp;</td></tr>\n";
       echo "<tr><td>&nbsp;" . $string['yearofstudy'] . "</td><td><select name=\"year\">";
       for ($i=1; $i<=6; $i++) {
         if ($i == $tmp_year) {
-          echo "<option value=\"$i\" selected>Year $i</option>";
+          echo "<option value=\"$i\" selected>" . $string['year'] . " $i</option>";
         } else {
-          echo "<option value=\"$i\">Year $i</option>";
+          echo "<option value=\"$i\">" . $string['year'] . " $i</option>";
         }
       }
       echo "</select></td><td>&nbsp;" . $string['status'] . "</td><td colspan=\"2\"><select name=\"roles\">";
