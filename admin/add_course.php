@@ -18,35 +18,35 @@
 * 
 * @author Simon Wilkinson
 * @version 1.0
-* @copyright Copyright (c) 2012 The University of Nottingham
+* @copyright Copyright (c) 2011 The University of Nottingham
 * @package
 */
 
 require '../include/sysadmin_auth.inc';
 
-$unique_course = true;
+$unique_degree = true;
 if (isset($_POST['submit'])) {
   // Check for unique username
-  $tmp_course = trim($_POST['course']);
+  $tmp_degree = trim($_POST['degree']);
   
-  $result = $mysqli->prepare("SELECT name FROM courses WHERE name=?");
-  $result->bind_param('s', $tmp_course);
+  $result = $mysqli->prepare("SELECT degree FROM degrees WHERE degree=?");
+  $result->bind_param('s', $tmp_degree);
   $result->execute();
   $result->store_result();
-  $result->bind_result($tmp_course);
+  $result->bind_result($tmp_degree);
   $result->fetch();
-  if ($result->num_rows > 0) $unique_course = false;
+  if ($result->num_rows > 0) $unique_degree = false;
   $result->free_result();
   $result->close();
 }
 
-if (isset($_POST['submit']) and $unique_course == true) {
+if (isset($_POST['submit']) and $unique_degree == true) {
   $tmp_school = $_POST['school'];
-  $tmp_course = trim($_POST['course']);
+  $tmp_degree = trim($_POST['degree']);
   $tmp_description = trim($_POST['description']);
   
-  $result = $mysqli->prepare("INSERT INTO courses VALUES (NULL, ?, ?, ?, NULL)");
-  $result->bind_param('sss', $tmp_school, $tmp_course, $tmp_description);
+  $result = $mysqli->prepare("INSERT INTO degrees VALUES (NULL,?,?,?)");
+  $result->bind_param('sss', $tmp_school, $tmp_degree, $tmp_description);
   $result->execute();  
   $result->close();
   $mysqli->close();
@@ -65,12 +65,12 @@ if (isset($_POST['submit']) and $unique_course == true) {
 
   <script language="JavaScript">
   function checkForm() {
-    if (edit_course.course.value == "") {
-      alert ("<?php echo $string['codecourse']; ?>");
+    if (edit_degree.degree.value == "") {
+      alert ("<?php echo $string['codedegree']; ?>");
       return false;
     }
-    if (edit_course.description.value == "") {
-      alert ("<?php echo $string['titlecourse']; ?>");
+    if (edit_degree.description.value == "") {
+      alert ("<?php echo $string['titledegree']; ?>");
       return false;
     }
   }
@@ -88,14 +88,14 @@ if (isset($_POST['submit']) and $unique_course == true) {
   </table>
   <br />
   <div align="center">
-  <form name="edit_course" method="post" onsubmit="return checkForm()" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+  <form name="edit_degree" method="post" onsubmit="return checkForm()" action="<?php echo $_SERVER['PHP_SELF']; ?>">
     <table cellpadding="0" cellspacing="2" border="0" style="text-align:left">
     <?php
-    if ($unique_course == false) {
-      echo "<tr><td class=\"field\">" . $string['code'] . "</td><td><input type=\"text\" size=\"10\" name=\"course\" style=\"background-color:#FFD9D9; color:#800000; border:1px solid #800000\" value=\"$tmp_course\" /></td></tr>\n";
+    if ($unique_degree == false) {
+      echo "<tr><td class=\"field\">" . $string['code'] . "</td><td><input type=\"text\" size=\"10\" name=\"degree\" style=\"background-color:#FFD9D9; color:#800000; border:1px solid #800000\" value=\"$tmp_degree\" /></td></tr>\n";
     } else {
     ?>
-      <tr><td class="field"><?php echo $string['code']; ?></td><td><input type="text" size="10" name="course" value="<?php if (isset($_GET['moduleid'])) echo $_GET['moduleid']; ?>" /></td></tr>
+      <tr><td class="field"><?php echo $string['code']; ?></td><td><input type="text" size="10" name="degree" value="<?php if (isset($_GET['moduleid'])) echo $_GET['moduleid']; ?>" /></td></tr>
     <?php
     }
     ?>
