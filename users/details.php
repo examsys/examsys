@@ -22,7 +22,7 @@
 * 
 * @author Simon Wilkinson, Anthony Brown
 * @version 1.0
-* @copyright Copyright (c) 2011 The University of Nottingham
+* @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */
 
@@ -34,7 +34,7 @@
   
   check_var('userID', 'GET', true, false);
 
-  if (strpos($userroles,'Demo') !== false) {
+  if (strpos($userroles, 'Demo') !== false) {
     $demo = true;
   } else {
     $demo = false;
