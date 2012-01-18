@@ -93,8 +93,11 @@
   function ordinal_suffix($number, $language='en') {
     $suffix = ($number === 0) ? 'N/A' : $number;
     if ($language == 'en') {
-      if($number !== '') {
+      if ($number !== '') {
   	    switch($number) {
+          case 0:
+            $suffix .= '';
+            break;
   	      case 1:
   	        $suffix .= 'st';
   	        break;
@@ -1181,7 +1184,7 @@
 
             echo '<td>';
             if ($tmp_display_students_response == '1' and substr($tmp_exclude,0,1) == '0' and $rank_answers[$tmp_part_id-1] != 'u') {
-							if(($paper[$question]['score_method'] == 'Bonus Mark' or $paper[$question]['score_method'] == 'Allow partial Marks') and $rank_answers[$tmp_part_id-1] == '0' and $paper[$question]['correct'][$tmp_part_id-1] == '0') {
+							if (($paper[$question]['score_method'] == 'Bonus Mark' or $paper[$question]['score_method'] == 'Allow partial Marks') and $rank_answers[$tmp_part_id-1] == '0' and $paper[$question]['correct'][$tmp_part_id-1] == '0') {
 								echo '&nbsp;';
 							} else {
 	            	if ($paper[$question]['score_method'] == 'Allow partial Marks') {
@@ -1194,15 +1197,17 @@
 	                } else {
 	                  echo '&nbsp;<img src="../artwork/cross.gif" width="17" height="16" alt="Cross" />';
                     if ($rank_answers[$tmp_part_id-1] != 'u') $paper[$question]['mark'] += $paper[$question]['marks_incorrect'];
+                    $all_correct = false;
 	                }
 	              } else {
               		if ($rank_answers[$tmp_part_id-1] == $paper[$question]['correct'][$tmp_part_id-1] or ($paper[$question]['score_method'] == 'Bonus Mark' and $rank_answers[$tmp_part_id-1] > 0 and $paper[$question]['correct'][$tmp_part_id-1] > 0)) {
 	                  echo '&nbsp;<img src="../artwork/tick.gif" width="17" height="16" alt="Tick" />';
                     $paper[$question]['mark'] += $paper[$question]['marks_correct'];
-                    if ($rank_answers[$tmp_part_id-1] != $paper[$question]['correct'][$tmp_part_id-1]) $all_correct = false;
+                    //if ($rank_answers[$tmp_part_id-1] != $paper[$question]['correct'][$tmp_part_id-1]) $all_correct = false;
 	                } else {
 	                  echo '&nbsp;<img src="../artwork/cross.gif" width="17" height="16" alt="Cross" />';
                     if ($rank_answers[$tmp_part_id-1] != 'u') $paper[$question]['mark'] += $paper[$question]['marks_incorrect'];
+                    $all_correct = false;
                 	}
                 }
               }
@@ -1223,10 +1228,10 @@
               }
             }
             echo '</select></td>';
-            if ($tmp_display_correct_answer == '1') {
+            if ($tmp_display_correct_answer == '1' and $paper[$question]['correct'][$tmp_part_id-1] > 0) {
               echo "<td style=\"font-weight:bold; vertical-align:top\">&nbsp;" . ordinal_suffix($paper[$question]['correct'][$tmp_part_id-1], $language) . "</td>";
             } else {
-              echo "</td></td>";
+              echo "<td></td>";
             }
             if (substr($tmp_exclude,0,1) == '1') {
               echo "<td style=\"vertical-align:top; color:red; text-decoration:line-through\">" . $paper[$question]['option_text'][$tmp_part_id-1] . "</td>";
@@ -1252,7 +1257,7 @@
             }
             $html .= '</td>';
             $html .= '<td>&nbsp;<img src="../artwork/' . $img_name . '.gif" width="17" height="16" alt="' . ucwords($img_name) . '" /></td>';
-            $html .= "<td colspan=\"3\">Overall correct order (Bonus Mark)</td>";
+            $html .= '<td colspan="3">' . $string['overallcorrectorder'] . '</td>';
             $html .= '</tr>';
             
             echo $html;
