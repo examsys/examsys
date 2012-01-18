@@ -25,7 +25,7 @@
 * 
 * @author Simon Wilkinson
 * @version 1.0
-* @copyright Copyright (c) 2011 The University of Nottingham
+* @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */
 
@@ -390,7 +390,7 @@ function getUserMark($q_id, $tmp_user_answer, $tmp_user_mark, $exclude, $status,
   if ($status == 'Experimental') $exclude[$q_id] = '1111111111111111111111111111111111111111';
 
   $multi_part_qns = array('extmatch', 'matrix', 'blank', 'dichotomous', 'labelling', 'hotspot');
-
+  
   if ($paper_buffer[$q_id]['score_method'] != 'Mark per Question' and in_array($paper_buffer[$q_id]['q_type'], $multi_part_qns)) {
     if ($paper_buffer[$q_id]['q_type'] == 'extmatch' or $paper_buffer[$q_id]['q_type'] == 'matrix') {
       if (!isset($tmp_user_mark_array[$q_id])) $tmp_user_mark_array[$q_id] = array();
@@ -415,6 +415,7 @@ function getUserMark($q_id, $tmp_user_answer, $tmp_user_mark, $exclude, $status,
             for ($c=0; $c<count($sub_user_answers); $c++) {
               if (substr($tmp_exclude, $section, 1) == '0') {
                 if ($sub_user_answers[$c] == '' or $sub_user_answers[$c] == 'u') {
+                  // Do nothing
                 } elseif (in_array($sub_user_answers[$c], $sub_paper_answers)) {
                   $answers_correct++;
                 } else {
@@ -465,11 +466,12 @@ function getUserMark($q_id, $tmp_user_answer, $tmp_user_mark, $exclude, $status,
             }
           } else {
             $match = false;
-            if (isset($paper_buffer[$q_id]['correct'][$a])) {
-              if ($user_answers[$a+1] == $paper_buffer[$q_id]['correct'][$a]) {
+            foreach ($paper_buffer[$q_id]['correct'][$a] as $correct_alternative) {
+              if (trim($user_answers[$a+1]) == trim($correct_alternative)) {
                 $match = true;
               }
             }
+            
             if ($match == true) {
               $tmp_mark += $paper_buffer[$q_id]['marks_correct'];
               $tmp_user_mark_array[$q_id][] = $paper_buffer[$q_id]['marks_correct'];
@@ -746,7 +748,10 @@ while ($result->fetch()) {
             $paper_buffer[$question_id]['correct'][$i-1][] = html_entity_decode(trim($individual_answer));
           }
         } else {
-          $paper_buffer[$question_id]['correct'][] = html_entity_decode(trim($answer_list[0]));
+          //$paper_buffer[$question_id]['correct'][$i-1] = html_entity_decode(trim($answer_list[0]));
+          foreach ($answer_list as $tmp_answer) {
+            $paper_buffer[$question_id]['correct'][$i-1][] = html_entity_decode(trim($tmp_answer));
+          }
         }
       }
     } else {
@@ -779,10 +784,9 @@ if ($old_status != 'Experimental') {
     $tmp_exclude = '';
   }
   if ($old_q_type == 'random') {
-    $tmp_id = getRandomDetails($old_q_id);
+    getRandomDetails($q_id);
     $total_marks += $paper_buffer[$tmp_id]['marks'];
-  } else {
-    $total_marks += qMarks($old_q_type, $tmp_exclude, $old_marks_correct, $old_option_text, $old_correct, $old_display_method, $old_score_method);
+  } else {  $total_marks += qMarks($old_q_type, $tmp_exclude, $old_marks_correct, $old_option_text, $old_correct, $old_display_method, $old_score_method);
     $orig_total_marks += qMarks($old_q_type, '', $old_marks_correct, $old_option_text, $old_correct, $old_display_method, $old_score_method);
     $total_random_mark += qRandomMarks($old_q_type, $tmp_exclude, $old_marks_correct, $old_option_text, $old_correct, $old_display_method, $old_score_method, $old_q_media_width, $old_q_media_height);
     checkDisplayExcluded($display_excluded, $old_q_id, $excluded, $question_no);
