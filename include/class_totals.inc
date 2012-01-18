@@ -411,30 +411,26 @@ function getUserMark($q_id, $tmp_user_answer, $tmp_user_mark, $exclude, $status,
             $sub_paper_answers = explode('$',$paper_answers[$a]);
             $sub_user_answers = explode('$',$user_answers[$a]);
             $exclude_on = true;
-            if (substr($tmp_exclude,$section,1) == '0') {
-              for ($c=0; $c<count($sub_user_answers); $c++) {
+            
+            for ($c=0; $c<count($sub_user_answers); $c++) {
+              if (substr($tmp_exclude, $section, 1) == '0') {
                 if ($sub_user_answers[$c] == '' or $sub_user_answers[$c] == 'u') {
-                  //$tmp_user_mark_array[$q_id][] = 0;
                 } elseif (in_array($sub_user_answers[$c], $sub_paper_answers)) {
-                  //$tmp_mark += $paper_buffer[$q_id]['marks_correct'];
-                  //$tmp_user_mark_array[$q_id][] = $paper_buffer[$q_id]['marks_correct'];
                   $answers_correct++;
                 } else {
-                  //$tmp_mark += $paper_buffer[$q_id]['marks_incorrect'];
-                  //$tmp_user_mark_array[$q_id][] = $paper_buffer[$q_id]['marks_incorrect'];
                   $answers_incorrect++;
                 }
+                $exclude_on = false;
               }
-            
-              $exclude_on = false;
+              $section++;
             }
-            $section++;
-           
-            $section_mark =($answers_correct * $paper_buffer[$q_id]['marks_correct']) + ($answers_incorrect * $paper_buffer[$q_id]['marks_incorrect']); 
+            
+            $section_mark = ($answers_correct * $paper_buffer[$q_id]['marks_correct']) + ($answers_incorrect * $paper_buffer[$q_id]['marks_incorrect']); 
             $tmp_mark += $section_mark;
+            // This is excluding whole question parts (not answers/marks).
             if ($exclude_on == false) $tmp_user_mark_array[$q_id][] = $section_mark;
           } else {   // Matrix
-            if (substr($tmp_exclude,$a,1) == '0') {
+            if (substr($tmp_exclude, $a, 1) == '0') {
               if ($paper_answers[$a] == $user_answers[$a]) {
                 $tmp_mark += $paper_buffer[$q_id]['marks_correct'];
                 $tmp_user_mark_array[$q_id][] = $paper_buffer[$q_id]['marks_correct'];
