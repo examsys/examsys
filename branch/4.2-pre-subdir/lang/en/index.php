@@ -1,0 +1,33 @@
+<?php
+$string['cannotfindexams'] = 'Rogō cannot find any Exams';
+$string['exams'] = 'Exams';
+$string['staffmangscreens'] = 'Staff management screens';
+$string['note1'] = '<strong>Note:</strong> This is the summative exams screen for students, did you want the';
+$string['unknownIp'] = '(unknown address)';
+$string['mostLikely'] = 'Most likely cause is one or more security conflicts with:';
+$string['IPaddress'] = 'IP address';
+$string['Time/Date'] = 'Time/Date';
+$string['AcademicYear'] = 'Academic Year';
+$string['noyear'] = 'no year held for user!';
+$string['Modules'] = 'Modules';
+$string['nomodules'] = 'Warning: no modules registered!';
+$string['UserRoles'] = 'User roles';
+$string['try'] = 'What you can try';
+$string['f5'] = 'If the time is more than 15 minutes before the start of the exam wait until within 15 minutes and press F5.';
+$string['RaiseYourHand '] = 'Raise your hand for a member of staff.';
+$string['staff'] = 'Staff';
+$string['student'] = 'Student';
+$string['sysadmin'] = 'Sysadmin';
+$string['admin'] = 'Sdmin';
+$string['graduate'] = 'Graduate';
+$string['inactive'] = 'Inactive';
+$string['external examiner '] = 'External Examiner ';
+$string['multipleExams'] = 'Multiple Exams Found';
+$string['selectOne'] = 'Please select the one you are required to take:';
+$string['passwordRequired'] = 'password required';
+$string['screen'] = 'screen';
+$string['screens'] = 'screens';
+$string['Bidirectional'] = 'Bidirectional navigation';
+$string['Unidirectional'] = 'Unidirectional navigation';
+$string['requirespassword'] = 'This paper requires a password.';
+?>
