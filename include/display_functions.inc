@@ -673,9 +673,9 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
             shuffle($answer_list);            // Shuffle the answers up.
             for ($i=1; $i<=count($answer_list); $i++) {
               if (isset($answer_list[$i-1]) and isset($blank_user_answers[$blank_count]) and html_entity_decode(trim($answer_list[$i-1])) == html_entity_decode(trim($blank_user_answers[$blank_count]))) {
-                echo "<option value=\"" . htmlentities(trim($answer_list[$i-1])) . "\" selected>" . trim($answer_list[$i-1]) . "</option>\n";
+                echo "<option value=\"" . htmlentities(trim($answer_list[$i-1]), ENT_COMPAT, "UTF-8") . "\" selected>" . trim($answer_list[$i-1]) . "</option>\n";
               } else {
-                echo "<option value=\"" . htmlentities(trim($answer_list[$i-1])) . "\">" . trim($answer_list[$i-1]) . "</option>\n";
+                echo "<option value=\"" . htmlentities(trim($answer_list[$i-1]), ENT_COMPAT, "UTF-8") . "\">" . trim($answer_list[$i-1]) . "</option>\n";
               }
             }
             echo '</select>';
@@ -892,7 +892,11 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
     $search = array('$A','$B','$C','$D','$E','$F','$G','$H','$I','$J');
     $replace = array($A,$B,$C,$D,$E,$F,$G,$H,$I,$J);
     $question['leadin'] = str_ireplace($search, $replace, $question['leadin']);
-    $question['leadin'] = str_replace('ERROR', '<span style="color:red; font-weight:bold">' . $string['unanswered'] . '</span>', $question['leadin']);
+    if(strpos($question['leadin'],'class="mee"') !== false) {
+      $question['leadin'] = str_replace('ERROR', $string['unanswered'] , $question['leadin']);
+    } else {
+      $question['leadin'] = str_replace('ERROR', '<span style="color:red; font-weight:bold">' . $string['unanswered'] . '</span>', $question['leadin']);
+    } 
     echo "<p>" . $question['leadin'] . "</p>\n";
     if (in_array('ERROR',$replace,true)) {
       echo "<p><input type=\"text\" style=\"text-align:right\" name=\"q" . $question_no . "\" size=\"10\" value=\"\" disabled />" . $score_array[3] .  "</p>\n";
