@@ -568,9 +568,9 @@
 
             if ($saved_response_clean == $tmp_answer[1]) {
               $paper[$question]['mark'] = $paper[$question]['marks_correct'];
-            } elseif ($difference <= $score_array[1] and $score_array[2] != 'Formula') {
+            } elseif ($difference <= $score_array[1] and $score_array[1] > 0) {
               $paper[$question]['mark'] = $paper[$question]['marks_correct'];
-            } elseif ($difference <= $score_array[2]) {
+            } elseif ($difference <= $score_array[2] and $score_array[2] > 0) {
               $paper[$question]['mark'] = $paper[$question]['marks_partial'];
             } else {
               $paper[$question]['mark'] = $paper[$question]['marks_incorrect'];
