@@ -30,8 +30,8 @@ require_once '../classes/userutils.class.php';
 
 $SMS = SMSutils::GetSmsUtils();
 $cfg_sms_sources = array();
-if(is_object($SMS)) {
- $cfg_sms_sources =  $SMS->getModuleSources();
+if (is_object($SMS)) {
+  $cfg_sms_sources =  $SMS->getModuleSources();
 }
   
 $unique_moduleid = true;
@@ -156,7 +156,7 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
   }
 
   $mysqli->close();
-  header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/admin/list_modules.php");
+  header("location: list_modules.php");
 } else {
 ?>
   <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

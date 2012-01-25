@@ -26,7 +26,7 @@
 $menuNo=0;
 
 function makeMenu($options) {
-  global $menuNo;
+  global $menuNo, $cfg_root_path;
   
   // Work out the width of the menu
   $longest_string = 0;
@@ -66,7 +66,7 @@ function makeMenu($options) {
   $line = 0;
   echo "<div id=\"popup$menuNo\" class=\"popup\" style=\"width:" . $width . "px\">\n";
   
-  if (count($options) > 20) echo "<div id=\"" . $menuNo . "_up\" class=\"popupitem\" onMouseOver=\"scrollUpStart('popup$menuNo',myOptions" . $menuNo . ",myURLs" . $menuNo . ",'myOptions" . $menuNo . "')\" onMouseOut=\"scrollUpEnd()\"><img src=\"/artwork/submenu_up_off.png\" width=\"9\" height=\"5\" alt=\"down\" border=\"0\" />&nbsp;</div>\n";
+  if (count($options) > 20) echo "<div id=\"" . $menuNo . "_up\" class=\"popupitem\" onMouseOver=\"scrollUpStart('popup$menuNo',myOptions" . $menuNo . ",myURLs" . $menuNo . ",'myOptions" . $menuNo . "')\" onMouseOut=\"scrollUpEnd()\"><img src=\"{$cfg_root_path}/artwork/submenu_up_off.png\" width=\"9\" height=\"5\" alt=\"down\" border=\"0\" />&nbsp;</div>\n";
   foreach ($options as $title=>$url) {
     $itemID = $menuNo . '_' . $line;
     if (substr($url,0,1) == '-') {
@@ -83,7 +83,7 @@ function makeMenu($options) {
     $line++;
     if ($line > 19) break;
   }
-  if (count($options) > 20) echo "<div id=\"" . $menuNo . "_down\" class=\"popupitem\" onMouseOver=\"scrollDownStart('popup$menuNo',myOptions" . $menuNo . ",myURLs" . $menuNo . ",'myOptions" . $menuNo . "')\" onMouseOut=\"scrollDownEnd()\"><img src=\"/artwork/submenu_down_on.png\" width=\"9\" height=\"5\" alt=\"down\" border=\"0\" />&nbsp;</div>\n";
+  if (count($options) > 20) echo "<div id=\"" . $menuNo . "_down\" class=\"popupitem\" onMouseOver=\"scrollDownStart('popup$menuNo',myOptions" . $menuNo . ",myURLs" . $menuNo . ",'myOptions" . $menuNo . "')\" onMouseOut=\"scrollDownEnd()\"><img src=\"{$cfg_root_path}/artwork/submenu_down_on.png\" width=\"9\" height=\"5\" alt=\"down\" border=\"0\" />&nbsp;</div>\n";
   
   echo "</div>\n";
   $menuNo++;

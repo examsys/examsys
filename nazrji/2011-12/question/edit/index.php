@@ -396,7 +396,7 @@ $(function () {
 endif;
 ?>
 </script>
-<script type="text/javascript" src="/tools/mee/mee/js/mee_src.js"></script>
+<script type="text/javascript" src="../../tools/mee/mee/js/mee_src.js"></script>
 </head>
 <body>
   <div id="debug" class="debug"></div>

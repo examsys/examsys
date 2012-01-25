@@ -31,7 +31,7 @@ if (isset($_POST['ok']) or (isset($_POST['returnhit']) and $_POST['returnhit'] =
   if ($add_faculty != '') {
     // Check for existing name
 
-    $result = $mysqli->prepare("SELECT id FROM faculty WHERE name=?");
+    $result = $mysqli->prepare("SELECT id FROM faculty WHERE name=? AND deleted IS NULL");
     $result->bind_param('s', $add_faculty);
     $result->execute(); 
     $result->store_result();
@@ -41,7 +41,7 @@ if (isset($_POST['ok']) or (isset($_POST['returnhit']) and $_POST['returnhit'] =
     $result->close();
 
     if (!$duplicate) {
-      $result = $mysqli->prepare("INSERT INTO faculty VALUES (NULL, ?)");
+      $result = $mysqli->prepare("INSERT INTO faculty VALUES (NULL, ?, NULL)");
       $result->bind_param('s', $add_faculty);
       $result->execute();  
       $result->close();

@@ -25,14 +25,14 @@
   require '../include/sysadmin_auth.inc';
   require '../include/errors.inc';
   
-  check_var('degreeID', 'GET', true, false);
+  check_var('courseID', 'GET', true, false);
 
   $mysqli->close();
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title><?php echo $string['confirmdegreedelete']; ?></title>
+<title><?php echo $string['confirmcoursedelete']; ?></title>
 
 <style>
 body {margin:0px; background-color:#F1F5FB; font-family:Arial,sans-serif; font-size:90%; text-align:justifed}
@@ -50,7 +50,7 @@ body {margin:0px; background-color:#F1F5FB; font-family:Arial,sans-serif; font-s
 <br />
 <div style="text-align:right">
 <form action="do_delete_course.php" method="post">
-<input type="hidden" name="degreeID" value="<?php echo $_GET['degreeID']; ?>" />
+<input type="hidden" name="courseID" value="<?php echo $_GET['courseID']; ?>" />
 <input style="width:140px" type="submit" name="submit" value="<?php echo $string['delete']; ?>" />&nbsp;
 <input style="width:80px" type="button" name="cancel" value="<?php echo $string['cancel']; ?>" onclick="javascript:window.close();" />
 </form>

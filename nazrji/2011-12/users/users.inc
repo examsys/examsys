@@ -50,13 +50,13 @@ function fixcase_callback($word) {
   return $word; 
 } 
 
-$header = Array();
-$needed_cols = Array('student_id','full name','first names','surname','title','course code','year of course','local email');
+$header = array();
+$needed_cols = array('student_id', 'full name', 'first names', 'surname', 'title', 'course code', 'year of course', 'local email');
 
 function add_users_from_file($fileName) {
   global $header, $needed_cols, $mysqli;
   
-  $degrees = array();
+  $courses = array();
   $users[] = array();
   $faculties = array();
   
@@ -115,7 +115,7 @@ function add_users_from_file($fileName) {
     $initials = strtoupper($initials);
     $surname = my_ucwords(trim($fields[$header['surname']]));
     $title = my_ucwords(trim($fields[$header['title']]));
-    $degree = trim($fields[$header['course code']]); 
+    $course = trim($fields[$header['course code']]); 
     $year = trim($fields[$header['year of course']]);
     $email = trim($fields[$header['local email']]);
     if (isset($header['username'])) {
@@ -123,16 +123,6 @@ function add_users_from_file($fileName) {
     } else {
       $username = explode("@",$email);
       $username = $username[0];
-    }
-      
-    //echo "$title $surname ($username)<br />";
-                            
-    if ($degree == "A101") { //Do extra work for GEM
-      if (date("m") >= 2 and date("m") <= 6 and $year == 2) {
-        $year++;
-      } elseif ($year > 2) {
-        $year++;
-      }
     }
                         
     $school = trim($fields[11]);
@@ -164,8 +154,8 @@ function add_users_from_file($fileName) {
       //TODO this function has been moved to passwordutils.class.inc  
       $password =  gen_password();
       //TODO this function has been moved to userutils.class.inc  
-      $result = $mysqli->prepare("INSERT INTO users VALUES(?,?,?,?,?,?,?,?,'Student',NULL,?,?,?,NULL,0)");
-      $result->bind_param('ssssssssssi', encpw($username, $password), $degree, $surname, $initials, $title, $username, $email, $faculty, $forname, $gender, $year);
+      $result = $mysqli->prepare("INSERT INTO users VALUES(?, ?, ?, ?, ?, ?, ?, ?, 'Student', NULL, ?, ?, ?, NULL, 0)");
+      $result->bind_param('ssssssssssi', encpw($username, $password), $course, $surname, $initials, $title, $username, $email, $faculty, $forname, $gender, $year);
       $result->execute();
       $result->close();
         
@@ -177,7 +167,7 @@ function add_users_from_file($fileName) {
       $result->close();
 
       $users['added'][] = $username;
-      $users['degrees'][$degree] = $degree;
+      $users['courses'][$course] = $course;
       $users['year_string'][$year_string] = $year_string;  
       
       //send Welcome Email if ticked
@@ -187,12 +177,12 @@ function add_users_from_file($fileName) {
     } elseif ($username != '' and stristr('ps_',$username) === false) {
       //update existing student records
       $result = $mysqli->prepare("UPDATE users SET yearofstudy=?, title=?, first_names=?, surname=?, grade=? WHERE username=?");
-      $result->bind_param('ssssss', $year, $title, $forname, $surname, $degree, $username);
+      $result->bind_param('ssssss', $year, $title, $forname, $surname, $course, $username);
       $result->execute();
       $result->close();
 
       $users['updated'][] = $username;
-      $users['degrees'][$degree] = $degree;
+      $users['courses'][$course] = $course;
       $users['year_string'][$year_string] = $year_string;
     } else {
       $invalid_user = true;
@@ -203,7 +193,7 @@ function add_users_from_file($fileName) {
       $module = trim($fields[$header['modules']]);
       $session = trim($fields[$header['session']]);
       echo "Insert " . trim($fields[$header['modules']]) . " $userID - " . trim($fields[$header['session']]) . "<br />\n";
-      $result = $mysqli->prepare("INSERT INTO student_modules VALUES(NULL,?,?,?,1)");
+      $result = $mysqli->prepare("INSERT INTO student_modules VALUES(NULL, ?, ?, ?, 1)");
       $result->bind_param('iss',$userID,$module,$session);
       $result->execute();
       $result->close();

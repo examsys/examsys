@@ -32,10 +32,11 @@
     }
   }
 
-  $path = $cfg_web_root . 'student_help';
-  
   require '../../include/sysadmin_auth.inc';    // Only let staff delete pages.
   require '../../include/errors.inc';
+
+  $path = $cfg_web_root . 'student_help';
+  
   header('Content-Type: text/html; charset=UTF-8');
   $image_list = array();
 
@@ -82,7 +83,7 @@
 <title>Delete Page</title>
 <script language="JavaScript">
   function reloadHelp() {
-    window.top.location='/help/student/index.php';
+    window.top.location='index.php';
   }
 </script>
 </head>

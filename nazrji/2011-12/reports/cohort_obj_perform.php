@@ -61,7 +61,7 @@ li {list-style:none; padding-bottom:5px}
   
   $student_no = 0;
   $user_total = 0;
-  $question_data = getCohortData($mysqli, $moduleID, $startdate, $enddate, $_GET['repdegree'], $_GET['repmodule'], '%', $paperID, $paper_type, $_GET['direction'], $student_no, $user_total, $percent);
+  $question_data = getCohortData($mysqli, $moduleID, $startdate, $enddate, $_GET['repcourse'], $_GET['repmodule'], '%', $paperID, $paper_type, $_GET['direction'], $student_no, $user_total, $percent);
   
   if (isset($_GET['repmodule']) and $_GET['repmodule'] != '') {
     $paper_title = $paper_title . ' - ' . $_GET['repmodule'] . ' students only';

@@ -1,6 +1,7 @@
 <?php
   require '../config/config.inc';
-  $mysqli = new $dbclass($cfg_db_host , $cfg_db_username, $cfg_db_passwd, $cfg_db_database);
+  require_once $cfg_web_root . 'classes/dbutils.class.php';
+  $mysqli = DBUtils::get_mysqli_link($cfg_db_host , $cfg_db_username, $cfg_db_passwd, $cfg_db_database, $cfg_db_charset, $dbclass);
 
   /*
   $result = $mysqli->prepare("SELECT userID, started, q_paper, q_id, mark, totalpos, user_answer, screen, ipaddress, duration, student_grade, year, updated, dismiss, option_order FROM log2 WHERE q_paper IN (3022,3023,3024) AND started>20110324120000 AND started<20110324130000");

@@ -23,6 +23,13 @@
 */
 
   require '../include/sysadmin_auth.inc';
+
+// Check if we have any faculties
+$result = $mysqli->prepare("SELECT COUNT(id) FROM faculty");
+$result->execute();
+$result->bind_result($faculties);
+$result->fetch();
+$result->close();
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -33,6 +40,7 @@
 .mid {padding-left:30px}
 .l {cursor:pointer}
 .no {text-align:right; padding-right:10px}
+.deleted {color: red; text-decoration: line-through}
 </style>
 
 <script src="../js/staff_help.js" type="text/javascript"></script>
@@ -101,16 +109,19 @@ $(function () {
 <td style="background-color:#F1F5FB"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['modules']; ?>&nbsp;</td></tr>
 <tr><td colspan="3" style="height:3px"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td></tr>
 <?php
-$old_faculty = '';
+
+if ($faculties > 0) {
+  $old_faculty = '';
 $id = 0;
 
-$result = $mysqli->prepare("SELECT schools.id, schools.school, faculty.name, COUNT(modules.id) FROM (schools, faculty) LEFT JOIN modules ON schools.id=modules.schoolid WHERE schools.facultyID=faculty.id GROUP BY school ORDER BY faculty.name, school");
+$result = $mysqli->prepare("SELECT schools.id, schools.school, faculty.name, faculty.deleted, COUNT(modules.id) FROM (schools, faculty) LEFT JOIN modules ON schools.id=modules.schoolid WHERE schools.facultyID=faculty.id AND schools.deleted IS NULL GROUP BY school ORDER BY faculty.name, school");
 $result->execute();
-$result->bind_result($id, $school, $faculty, $module_no);
+$result->bind_result($id, $school, $faculty, $faculty_deleted, $module_no);
 while ($result->fetch()) {
   if ($old_faculty != $faculty) {
+    $del = ($faculty_deleted != '') ? ' class="deleted"' : '';
     echo "<tr><td colspan=\"4\">&nbsp;</td></tr>\n";
-    echo "<tr><td colspan=\"4\"><table border=\"0\" style=\"padding-left:10px; padding-right:2px; padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>$faculty</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table></td></tr>\n";
+    echo "<tr><td colspan=\"4\"><table border=\"0\" style=\"padding-left:10px; padding-right:2px; padding-bottom:5px; width:100%; color:#1E3287\"><tr><td{$del}><nobr>$faculty</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table></td></tr>\n";
   }
   echo "<tr";
   if ($module_no == 0) {
@@ -122,6 +133,11 @@ while ($result->fetch()) {
 }
 $result->close();
 $mysqli->close();
+} else {
+  echo "<tr><td colspan=\"4\">&nbsp;</td></tr>\n";
+  echo "<tr><td colspan=\"4\">{$string['musthavefaculty']}</td></tr>\n";
+}
+
 ?>
 </table>
 </div>

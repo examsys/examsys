@@ -54,8 +54,8 @@ body {font-family:Arial,sans-serif; font-size:90%; background-color:#DFECFF; col
 textarea, input[type=text], select {font-family:Arail,sans-serif; font-size:90%; border: 1px solid #7F9DB9}
 </style>
 
-<script language="JavaScript" src="/tools/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
-<script language="JavaScript" src="/tools/tinymce/jscripts/tiny_mce/tiny_config_email.js"></script>
+<script language="JavaScript" src="../tools/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
+<script language="JavaScript" src="../tools/tinymce/jscripts/tiny_mce/tiny_config_email.js"></script>
 <script language="JavaScript" type="text/javascript">
   function submitValues() {
     opener.document.theform.from.value = document.templateform.from.value;

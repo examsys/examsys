@@ -303,7 +303,7 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
         $saved_response_clean = str_replace(',', '', str_replace(' ', '', $saved_response));
         $variable_array = explode(',',$question_variables);
         $var_no = 1;
-        foreach($variable_array as $individual_variable) {
+        foreach ($variable_array as $individual_variable) {
           switch ($var_no) {
             case 1:
               $A = $individual_variable;
@@ -339,27 +339,20 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
           $var_no++;
         }
         $answer_equation = trim($correct);
-        if ($score_array[3] == 'Formula') {
-          // formula answer just do a string comp on the useranswer and the correct one (replace with CAS system later)
-          if ($answer_equation != '') {
-            eval ("\$answer = \"" . $answer_equation . "\";");
-          }
-          if ($saved_response_clean === $answer and $saved_response_clean != '') {
-            $mark = $marks_correct;
-          }          
+
+        if ($answer_equation != '' and check_formula($answer_equation, $variable_array)) {
+          eval ("\$answer = $answer_equation;");
+          $decimals = ($score_array[0] != '') ? $score_array[0] : 0;
+          $answer = round($answer, $decimals);
         } else {
-          if ($answer_equation != '' and check_formula($answer_equation, $variable_array)) {
-            eval ("\$answer = $answer_equation;");
-            $decimals = ($score_array[0] != '') ? $score_array[0] : 0;
-            $answer = round($answer, $decimals);
-          } else {
-            $decimals = 0;
-            $answer = '';
-          }
-          
-          $difference = round(abs($saved_response_clean - $answer), $decimals);
-          
-          if ($saved_response_clean == $answer and $saved_response_clean != '') {
+          $decimals = 0;
+          $answer = '';
+        }
+
+        $difference = round(abs($saved_response_clean - $answer), $decimals);
+
+        if ($saved_response_clean != '') {
+          if ($saved_response_clean == $answer) {
             $mark = $marks_correct;
           } elseif ($difference <= $score_array[1] and $score_array[1] > 0) {
             $mark = $marks_correct;
@@ -369,7 +362,7 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
             $mark = $marks_incorrect;
           }
         }
-        
+
         $saved_response .= '|' . $answer . '|' . $question_variables;
         $totalpos = $marks_correct;
         break;
@@ -722,7 +715,7 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
         } else {
           $saved_response = '';
         }
-        $mark = 'NULL';
+        $mark = NULL;
         $totalpos += $marks_correct;
         break;
       case 'hotspot':
@@ -737,7 +730,6 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
             } else {
               if ($saved_response != 'u') $mark += $marks_incorrect;
             }
-            $totalpos += $marks_correct;
           }
         } else {
           $saved_response = '';
@@ -751,6 +743,8 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
             $mark = $marks_incorrect;
           }
           $totalpos = $marks_correct;
+        } else {
+          $totalpos = (substr_count($correct, '|') + 1) * $marks_correct;
         }
         break;
       case 'labelling':

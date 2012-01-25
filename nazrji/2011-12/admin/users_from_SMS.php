@@ -30,16 +30,17 @@
   }
   
   set_time_limit(0);
-  $path = str_replace('/admin/users_from_SMS.php','',$_SERVER['SCRIPT_NAME']);
+  $path = str_replace('/admin', '', str_replace('\\', '/', dirname(__FILE__)));
   if ($path == '') {
     $path = $_SERVER['DOCUMENT_ROOT'];
   }
 
   require_once $path . '/config/config.inc.php';
   require $path . '/classes/dateutils.class.php';
-  
+  require_once $cfg_web_root . 'classes/dbutils.class.php';
+
 	//require '../classes/dateutils.class.php';
-  $mysqli = new $dbclass($cfg_db_host , $cfg_db_sysadmin_user, $cfg_db_sysadmin_passwd, $cfg_db_database);
+  $mysqli = DBUtils::get_mysqli_link($cfg_db_host , $cfg_db_sysadmin_user, $cfg_db_sysadmin_passwd, $cfg_db_database, $cfg_db_charset, $dbclass);
 
   // Calculate what the current academic session is.
   $session = (isset($_GET['session']) and $_GET['session'] != '') ? $_GET['session'] : DateUtils::get_current_academic_year();

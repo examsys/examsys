@@ -38,7 +38,7 @@ $page_id = $mysqli->insert_id;
 <title></title>
 <script language="JavaScript">
   function reloadHelp() {
-	window.top.location='/help/student/index.php?id=<?php echo $page_id; ?>';
+	window.top.location='index.php?id=<?php echo $page_id; ?>';
   }
 </script>
 </head>

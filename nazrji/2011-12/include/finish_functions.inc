@@ -73,6 +73,7 @@
   }
 
   function display_media($filename, $width, $height) {
+    global $cfg_root_path;
     if (strtolower(substr($filename, -4)) == '.gif' or strtolower(substr($filename, -4)) == '.jpg' or strtolower(substr($filename, -4)) == 'jpeg' or strtolower(substr($filename, -4)) == '.png') {
       $html = "<img src=\"../media/$filename\" width=\"$width\" height=\"$height\" border=\"0\" />";
     } elseif (strtolower(substr($filename, -4)) == '.mp3') {
@@ -80,7 +81,7 @@
       $html = "<object type=\"application/x-shockwave-flash\" data=\"player_mp3_maxi.swf\" width=\"200\" height=\"20\">\n";
       $html .= "<param name=\"wmode\" value=\"transparent\" />\n";
       $html .= "<param name=\"movie\" value=\"player_mp3_maxi.swf\" />\n";
-      $html .= "<param name=\"FlashVars\" value=\"mp3=/media/$filename&amp;showstop=1&amp;showvolume=1&amp;bgcolor1=ffa50b&amp;bgcolor2=d07600\" />\n";
+      $html .= "<param name=\"FlashVars\" value=\"mp3={$cfg_root_path}/media/$filename&amp;showstop=1&amp;showvolume=1&amp;bgcolor1=ffa50b&amp;bgcolor2=d07600\" />\n";
       $html .= "</object>\n";  
     } elseif (strtolower(substr($filename, -4)) == '.doc' or strtolower(substr($filename, -4)) == '.ppt' or strtolower(substr($filename, -4)) == '.xls' or strtolower(substr($filename, -4)) == '.pdf') {
       $html = "<iframe src=\"../media/$filename\" width=\"$width\" height=\"$height\" align=\"center\">Your browser does not support iframes!</iframe>";
@@ -93,8 +94,11 @@
   function ordinal_suffix($number, $language='en') {
     $suffix = ($number === 0) ? 'N/A' : $number;
     if ($language == 'en') {
-      if($number !== '') {
+      if ($number !== '') {
   	    switch($number) {
+          case 0:
+            $suffix .= '';
+            break;
   	      case 1:
   	        $suffix .= 'st';
   	        break;
@@ -132,7 +136,7 @@
   }
 
   function display_feedback($sessionid, $temp_userID, $paperID, $paper_type, $log_type, $paper_title, $paper_postscript, $marking, $userroles, $mysqlidb) {
-    global $language, $string, $bottom_html, $hide_if_unanswered, $tmp_display_correct_answer, $tmp_display_students_response, $tmp_display_feedback, $display_question_mark, $moduleID, $calendar_year, $bgcolor, $fgcolor, $textsize, $marks_color, $themecolor, $labelcolor, $font, $pass_mark;
+    global $language, $string, $bottom_html, $hide_if_unanswered, $tmp_display_correct_answer, $tmp_display_students_response, $tmp_display_feedback, $display_question_mark, $moduleID, $calendar_year, $bgcolor, $fgcolor, $textsize, $marks_color, $themecolor, $labelcolor, $font, $pass_mark, $cfg_root_path;
     
     $strong_on = '';
     $strong_off = '';
@@ -151,7 +155,7 @@
     if ($paper_type == '2' and (strpos($userroles,'Staff') !== false or strpos($userroles,'SysAdmin') !== false)) {
       if (!isset($_GET['userid'])) {
         $tmp_string = sprintf($string['thankyoumsg'], $paper_title);
-        echo '<blockquote><p style="font-size:450%; font-family:Rage,\'Brush Script MT\',\'Lucida Handwriting\',sans-serif">' . $string['thankyou'] . '</p><p>' . $tmp_string . '</p>';
+        echo '<blockquote><p style="font-size:450%; font-family:\'Monotype Corsiva\',Rage,\'Brush Script MT\',\'Lucida Handwriting\',sans-serif">' . $string['thankyou'] . '</p><p>' . $tmp_string . '</p>';
         //echo '<blockquote><p><img src="../artwork/thankyou.gif" width="238" height="76" alt="Thank You" /></p><p>' . $tmp_string . '</p><br />';
         if ($paper_postscript != '') echo "<p>$paper_postscript</p>\n";
         echo '</blockquote>';
@@ -570,9 +574,9 @@
 
             if ($saved_response_clean == $tmp_answer[1]) {
               $paper[$question]['mark'] = $paper[$question]['marks_correct'];
-            } elseif ($difference <= $score_array[1] and $score_array[2] != 'Formula') {
+            } elseif ($difference <= $score_array[1] and $score_array[1] > 0) {
               $paper[$question]['mark'] = $paper[$question]['marks_correct'];
-            } elseif ($difference <= $score_array[2]) {
+            } elseif ($difference <= $score_array[2] and $score_array[2] > 0) {
               $paper[$question]['mark'] = $paper[$question]['marks_partial'];
             } else {
               $paper[$question]['mark'] = $paper[$question]['marks_incorrect'];
@@ -1199,32 +1203,39 @@
             }
 
             echo '<td>';
-            if ($tmp_display_students_response == '1' and substr($tmp_exclude,0,1) == '0' and $rank_answers[$tmp_part_id-1] != 'u') {
-							if(($paper[$question]['score_method'] == 'Bonus Mark' or $paper[$question]['score_method'] == 'Allow partial Marks') and $rank_answers[$tmp_part_id-1] == '0' and $paper[$question]['correct'][$tmp_part_id-1] == '0') {
-								echo '&nbsp;';
-							} else {
-	            	if ($paper[$question]['score_method'] == 'Allow partial Marks') {
-	                if ($rank_answers[$tmp_part_id-1] > 0 and $rank_answers[$tmp_part_id-1] == $paper[$question]['correct'][$tmp_part_id-1]) {
-	                  echo '&nbsp;<img src="../artwork/tick.gif" width="17" height="16" alt="Tick" />';
-                    $paper[$question]['mark'] += $paper[$question]['marks_correct'];
-	                } elseif ($rank_answers[$tmp_part_id-1] > 0 and $paper[$question]['correct'][$tmp_part_id-1] > 0 and ($rank_answers[$tmp_part_id-1]+1 == $paper[$question]['correct'][$tmp_part_id-1] or $rank_answers[$tmp_part_id-1]-1 == $paper[$question]['correct'][$tmp_part_id-1])) {
-	                  echo '&nbsp;<img src="../artwork/tick_half.gif" width="17" height="16" alt="Half Right" />';
-                    $paper[$question]['mark'] += $paper[$question]['marks_partial'];
-	                } else {
-	                  echo '&nbsp;<img src="../artwork/cross.gif" width="17" height="16" alt="Cross" />';
-                    if ($rank_answers[$tmp_part_id-1] != 'u') $paper[$question]['mark'] += $paper[$question]['marks_incorrect'];
-	                }
-	              } else {
-              		if ($rank_answers[$tmp_part_id-1] == $paper[$question]['correct'][$tmp_part_id-1] or ($paper[$question]['score_method'] == 'Bonus Mark' and $rank_answers[$tmp_part_id-1] > 0 and $paper[$question]['correct'][$tmp_part_id-1] > 0)) {
-	                  echo '&nbsp;<img src="../artwork/tick.gif" width="17" height="16" alt="Tick" />';
-                    $paper[$question]['mark'] += $paper[$question]['marks_correct'];
-                    if ($rank_answers[$tmp_part_id-1] != $paper[$question]['correct'][$tmp_part_id-1]) $all_correct = false;
-	                } else {
-	                  echo '&nbsp;<img src="../artwork/cross.gif" width="17" height="16" alt="Cross" />';
-                    if ($rank_answers[$tmp_part_id-1] != 'u') $paper[$question]['mark'] += $paper[$question]['marks_incorrect'];
-                	}
+            if ($rank_answers[$tmp_part_id-1] != 'u') {
+              if ($tmp_display_students_response == '1' and substr($tmp_exclude,0,1) == '0') {
+                if (($paper[$question]['score_method'] == 'Bonus Mark' or $paper[$question]['score_method'] == 'Allow partial Marks') and $rank_answers[$tmp_part_id-1] == '0' and $paper[$question]['correct'][$tmp_part_id-1] == '0') {
+                  echo '&nbsp;';
+                } else {
+                  if ($paper[$question]['score_method'] == 'Allow partial Marks') {
+                    if ($rank_answers[$tmp_part_id-1] > 0 and $rank_answers[$tmp_part_id-1] == $paper[$question]['correct'][$tmp_part_id-1]) {
+                      echo '&nbsp;<img src="../artwork/tick.gif" width="17" height="16" alt="Tick" />';
+                      $paper[$question]['mark'] += $paper[$question]['marks_correct'];
+                    } elseif ($rank_answers[$tmp_part_id-1] > 0 and $paper[$question]['correct'][$tmp_part_id-1] > 0 and ($rank_answers[$tmp_part_id-1]+1 == $paper[$question]['correct'][$tmp_part_id-1] or $rank_answers[$tmp_part_id-1]-1 == $paper[$question]['correct'][$tmp_part_id-1])) {
+                      echo '&nbsp;<img src="../artwork/tick_half.gif" width="17" height="16" alt="Half Right" />';
+                      $paper[$question]['mark'] += $paper[$question]['marks_partial'];
+                    } else {
+                      echo '&nbsp;<img src="../artwork/cross.gif" width="17" height="16" alt="Cross" />';
+                      if ($rank_answers[$tmp_part_id-1] != 'u') $paper[$question]['mark'] += $paper[$question]['marks_incorrect'];
+                      $all_correct = false;
+                    }
+                  } else {
+                    if ($rank_answers[$tmp_part_id-1] == $paper[$question]['correct'][$tmp_part_id-1] or ($paper[$question]['score_method'] == 'Bonus Mark' and $rank_answers[$tmp_part_id-1] > 0 and $paper[$question]['correct'][$tmp_part_id-1] > 0)) {
+                      echo '&nbsp;<img src="../artwork/tick.gif" width="17" height="16" alt="Tick" />';
+                      $paper[$question]['mark'] += $paper[$question]['marks_correct'];
+                      // Not all correct if Bonus Mark but not exact match
+                      if ($rank_answers[$tmp_part_id-1] != $paper[$question]['correct'][$tmp_part_id-1]) $all_correct = false;
+                    } else {
+                      echo '&nbsp;<img src="../artwork/cross.gif" width="17" height="16" alt="Cross" />';
+                      if ($rank_answers[$tmp_part_id-1] != 'u') $paper[$question]['mark'] += $paper[$question]['marks_incorrect'];
+                      $all_correct = false;
+                    }
+                  }
                 }
               }
+            } elseif ($paper[$question]['correct'][$tmp_part_id-1] > 0) {
+              $all_correct = false;
             }
             echo "</td>";
 
@@ -1242,10 +1253,10 @@
               }
             }
             echo '</select></td>';
-            if ($tmp_display_correct_answer == '1') {
+            if ($tmp_display_correct_answer == '1' and $paper[$question]['correct'][$tmp_part_id-1] > 0) {
               echo "<td style=\"font-weight:bold; vertical-align:top\">&nbsp;" . ordinal_suffix($paper[$question]['correct'][$tmp_part_id-1], $language) . "</td>";
             } else {
-              echo "</td></td>";
+              echo "<td></td>";
             }
             if (substr($tmp_exclude,0,1) == '1') {
               echo "<td style=\"vertical-align:top; color:red; text-decoration:line-through\">" . $paper[$question]['option_text'][$tmp_part_id-1] . "</td>";
@@ -1271,7 +1282,7 @@
             }
             $html .= '</td>';
             $html .= '<td>&nbsp;<img src="../artwork/' . $img_name . '.gif" width="17" height="16" alt="' . ucwords($img_name) . '" /></td>';
-            $html .= "<td colspan=\"3\">Overall correct order (Bonus Mark)</td>";
+            $html .= '<td colspan="3">' . $string['overallcorrectorder'] . '</td>';
             $html .= '</tr>';
             
             echo $html;
@@ -1754,27 +1765,28 @@
           $paper[$question]['mark'] = 0;
           $paper[$question]['totalpos'] = 0;
           $all_correct = true;
+          $parts = explode('|',$paper[$question]['correct'][0]);
           if (isset($paper[$question]['user_answer'])) {
-            $parts = explode('|',$paper[$question]['user_answer']);
-            $i = 0;
-            foreach ($parts as $part) {
+            $ua_parts = explode('|',$paper[$question]['user_answer']);
+          }
+          for ($i = 0; $i < count($parts); $i++) {
+            if (isset($paper[$question]['user_answer'])) {
               if (substr($tmp_exclude, $i, 1) == '0' and $paper[$question]['user_answer'] != 'u') {
                 $have_answer = true;
-                if (substr($part,0,1) == 1) {
+                if (substr($ua_parts[$i], 0, 1) == 1) {
                   $paper[$question]['mark'] += $paper[$question]['marks_correct'];
                 } else {
                   $paper[$question]['mark'] += $paper[$question]['marks_incorrect'];
                   $all_correct = false;
                 }
               }
-              if ($paper[$question]['score_method'] == 'Mark per Option') {
-                $paper[$question]['totalpos'] += $paper[$question]['marks_correct'];
-              }
-              $i++;
-            }            
+            }
+            if ($paper[$question]['score_method'] == 'Mark per Option' and substr($tmp_exclude, $i, 1) == '0') {
+              $paper[$question]['totalpos'] += $paper[$question]['marks_correct'];
+            }
           }
-          
-          if ($paper[$question]['score_method'] == 'Mark per Question') {
+
+          if ($paper[$question]['score_method'] == 'Mark per Question' and substr($tmp_exclude, 0, 1) == '0') {
             if (!$have_answer) {
               $paper[$question]['mark'] = 0;
             } elseif ($all_correct) {
@@ -1803,10 +1815,10 @@
       }
       write_string('<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="https://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0" id="flash<?php echo $question_no; ?>" width="<?php echo ($paper[$question]['q_media_width'] + 301); ?>" height="<?php echo ($paper[$question]['q_media_height'] + 30); ?>" align="middle">');
       write_string('<param name="allowScriptAccess" value="always" />');
-      write_string('<param name="movie" value="/paper/hotspot_answer.swf" />');
+      write_string('<param name="movie" value="<?php echo $cfg_root_path ?>/paper/hotspot_answer.swf" />');
       write_string('<param name="quality" value="high" />');
       write_string('<param name="bgcolor" value="<?php echo $bgcolor; ?>" />');
-      write_string('<embed src="/paper/hotspot_answer.swf" quality="high" bgcolor="<?php echo $bgcolor; ?>" width="<?php echo ($paper[$question]['q_media_width'] + 301); ?>" height="<?php echo ($paper[$question]['q_media_height'] + 30); ?>" swliveconnect="true" id="flash<?php echo $question_no; ?>" name="flash<?php echo $question_no; ?>" align="middle" allowScriptAccess="always" type="application/x-shockwave-flash" pluginspage="https://www.macromedia.com/go/getflashplayer" />');
+      write_string('<embed src="<?php echo $cfg_root_path ?>/paper/hotspot_answer.swf" quality="high" bgcolor="<?php echo $bgcolor; ?>" width="<?php echo ($paper[$question]['q_media_width'] + 301); ?>" height="<?php echo ($paper[$question]['q_media_height'] + 30); ?>" swliveconnect="true" id="flash<?php echo $question_no; ?>" name="flash<?php echo $question_no; ?>" align="middle" allowScriptAccess="always" type="application/x-shockwave-flash" pluginspage="https://www.macromedia.com/go/getflashplayer" />');
       write_string('</object>');
     </script>
     </div>
@@ -1931,10 +1943,10 @@
       }
       write_string('<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="https://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0" id="flash<?php echo $question_no; ?>" width="<?php echo ($paper[$question]['q_media_width'] + 250); ?>" height="<?php echo $tmp_height; ?>" align="middle">');
       write_string('<param name="allowScriptAccess" value="always" />');
-      write_string('<param name="movie" value="/paper/label_question.swf" />');
+      write_string('<param name="movie" value="<?php echo $cfg_root_path ?>/paper/label_question.swf" />');
       write_string('<param name="quality" value="high" />');
       write_string('<param name="bgcolor" value="<?php echo $bgcolor; ?>" />');
-      write_string('<embed src="/paper/label_question.swf" quality="high" bgcolor="<?php echo $bgcolor; ?>" width="<?php echo ($paper[$question]['q_media_width'] + 250); ?>" height="<?php echo $tmp_height; ?>" swliveconnect="true" id="flash<?php echo $question_no; ?>" name="flash<?php echo $question_no; ?>" align="middle" allowScriptAccess="always" type="application/x-shockwave-flash" pluginspage="https://www.macromedia.com/go/getflashplayer" />');
+      write_string('<embed src="<?php echo $cfg_root_path ?>/paper/label_question.swf" quality="high" bgcolor="<?php echo $bgcolor; ?>" width="<?php echo ($paper[$question]['q_media_width'] + 250); ?>" height="<?php echo $tmp_height; ?>" swliveconnect="true" id="flash<?php echo $question_no; ?>" name="flash<?php echo $question_no; ?>" align="middle" allowScriptAccess="always" type="application/x-shockwave-flash" pluginspage="https://www.macromedia.com/go/getflashplayer" />');
       write_string('</object>');
 <?php
   } else {
@@ -1962,10 +1974,10 @@
     }
     write_string('<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="https://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0" id="flash<?php echo $question_no; ?>" width="<?php echo ($paper[$question]['q_media_width'] + 250); ?>" height="<?php echo $tmp_height; ?>" align="middle">');
     write_string('<param name="allowScriptAccess" value="always" />');
-    write_string('<param name="movie" value="/paper/label_answer.swf" />');
+    write_string('<param name="movie" value="<?php echo $cfg_root_path ?>/paper/label_answer.swf" />');
     write_string('<param name="quality" value="high" />');
     write_string('<param name="bgcolor" value="<?php echo $bgcolor; ?>" />');
-    write_string('<embed src="/paper/label_answer.swf" quality="high" bgcolor="<?php echo $bgcolor; ?>" width="<?php echo ($paper[$question]['q_media_width'] + 250); ?>" height="<?php echo $tmp_height; ?>" swliveconnect="true" id="flash<?php echo $question_no; ?>" name="flash<?php echo $question_no; ?>" align="middle" allowScriptAccess="always" type="application/x-shockwave-flash" pluginspage="https://www.macromedia.com/go/getflashplayer" />');
+    write_string('<embed src="<?php echo $cfg_root_path ?>/paper/label_answer.swf" quality="high" bgcolor="<?php echo $bgcolor; ?>" width="<?php echo ($paper[$question]['q_media_width'] + 250); ?>" height="<?php echo $tmp_height; ?>" swliveconnect="true" id="flash<?php echo $question_no; ?>" name="flash<?php echo $question_no; ?>" align="middle" allowScriptAccess="always" type="application/x-shockwave-flash" pluginspage="https://www.macromedia.com/go/getflashplayer" />');
     write_string('</object>');
 <?php
   }

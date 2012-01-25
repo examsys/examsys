@@ -16,4 +16,5 @@ $string['datefixed'] = 'Date fixed';
 $string['na'] = 'n/a';
 $string['close'] = 'Close';
 $string['fixed'] = 'Fixed';
+$string['username'] = 'Username';
 ?>

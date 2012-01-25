@@ -16,4 +16,5 @@ $string['datefixed'] = 'Poprawiona data';
 $string['na'] = 'Brak';
 $string['close'] = 'Zamknij';
 $string['fixed'] = 'Naprawiono';
+$string['username'] = 'Username';
 ?>

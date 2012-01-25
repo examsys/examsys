@@ -24,29 +24,48 @@
 * @package
 */
 
-  require '../include/staff_auth.inc';
-  require '../include/sidebar_menu.inc';
-  
-  if (isset($_GET['calyear'])) {
-    $current_year = $_GET['calyear'];
-  } else {
-    $current_year = date("Y");
-  }
+require '../include/staff_auth.inc';
+require '../include/sidebar_menu.inc';
 
-  function array_csort($marray, $column, $sort_order) {   //coded by Ichier2003
-    $sortarr = array();
-    foreach ($marray as $row) {
-      $sortarr[] = $row[$column];
-    }
-    $sortarr = array_map('strtolower',$sortarr);
-    $sort_method = SORT_STRING;
-    if ($column == 'mark' or $column == 'duration') $sort_method = SORT_NUMERIC;
-    if ($sort_order == 'asc') {
-      array_multisort($sortarr, SORT_ASC, $sort_method, $marray);
-    } else {
-      array_multisort($sortarr, SORT_DESC, $sort_method, $marray);
-    }
-    return $marray;
+if (isset($_GET['calyear'])) {
+  $current_year = $_GET['calyear'];
+} else {
+  $current_year = date("Y");
+}
+
+function array_csort($marray, $column, $sort_order) {   //coded by Ichier2003
+  $sortarr = array();
+  foreach ($marray as $row) {
+    $sortarr[] = $row[$column];
+  }
+  $sortarr = array_map('strtolower',$sortarr);
+  $sort_method = SORT_STRING;
+  if ($column == 'mark' or $column == 'duration') $sort_method = SORT_NUMERIC;
+  if ($sort_order == 'asc') {
+    array_multisort($sortarr, SORT_ASC, $sort_method, $marray);
+  } else {
+    array_multisort($sortarr, SORT_DESC, $sort_method, $marray);
+  }
+  return $marray;
+}
+
+function echoButtons($year) {
+  $html = '';
+  
+  $prev_param = 'calyear=' . ($year - 1);
+  $next_param = 'calyear=' . ($year + 1);
+  $module = (isset($_GET['module'])) ? $_GET['module'] : '';
+  
+  if ($module != '') {
+    $prev_param .= '&module=' . $_GET['module'];
+    $next_param .= '&module=' . $_GET['module'];
+  }
+  
+  $html = '<input style="width:100px" type="button" onclick="window.location=\'' . $_SERVER['PHP_SELF'] . '?' . $prev_param . '\'" value="&lt; ' . ($year - 1) . '" />';
+  $html .= '&nbsp;';
+  $html .= '<input style="width:100px" type="button" onclick="window.location=\'' . $_SERVER['PHP_SELF'] . '?' . $next_param . '\'" value="' . ($year + 1) . ' &gt;" />';
+
+  return $html;
 }
 
 ?>
@@ -54,6 +73,7 @@
 <html>
 <head>
 <title>Rogō: <?php echo $string['calendar'] . ' ' . $cfg_install_type; ?></title>
+<?php echo $cfg_js_root ?>
 <script language="JavaScript" src="../js/sidebar.js"></script>
 <script language="JavaScript">
   function go() {
@@ -139,8 +159,9 @@
   }
   echo "</select>&nbsp;";
   echo "<input type=\"hidden\" name=\"calyear\" value=\"$current_year\" /><br />";
+  
 ?>
-<input style="width:100px" type="button" onclick="window.location='<?php echo $_SERVER['PHP_SELF']; ?>?calyear=<?php echo $current_year-1; ?>&school=<?php if (isset($_GET['school'])) echo $_GET['school']; ?>&module=<?php if (isset($_GET['module'])) echo $_GET['module']; ?>'" value="&lt; <?php echo $current_year-1; ?>" />&nbsp;<input style="width:100px" type="button" onclick="window.location='<?php echo $_SERVER['PHP_SELF']; ?>?calyear=<?php echo $current_year+1; ?>&school=<?php if (isset($_GET['school'])) echo $_GET['school']; ?>&module=<?php if (isset($_GET['module'])) echo $_GET['module']; ?>'" value="<?php echo $current_year+1; ?> &gt;" />&nbsp;</td>
+<div style="text-align:right"><?php echo echoButtons($current_year); ?>&nbsp;</div>
 </tr>
 <tr><td colspan="2" style="height:3px"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td></tr>
 </table>
@@ -270,7 +291,6 @@
             if ($day_no >= $start_day) {
               if ($first_day == true) {
                 $tmp_month = strtolower(date("F", mktime(0, 0, 0, $current_month, 1, $current_year)));
-                //echo ($day_no-$subtract) . ' ' . date("M", mktime(0, 0, 0, $current_month, 1, $current_year));
                 echo ($day_no-$subtract) . ' ' . mb_substr($string[$tmp_month],0,3,'UTF-8');
                 $first_day = false;
               } else {
@@ -406,16 +426,8 @@
     $current_month++;
   }
   $mysqli->close();
-  
-  $prev_param = 'calyear=' . $current_year-1;
-  $next_param = 'calyear=' . $current_year+1;
-  $module = (isset($_GET['module'])) ? $_GET['module'] : '';
-  if ($module != '') {
-    $prev_param .= '&module=' . $_GET['module'];
-    $next_param .= '&module=' . $_GET['module'];
-  }
 ?>
-<div style="text-align:right"><input style="width:100px" type="button" onclick="window.location='<?php echo $_SERVER['PHP_SELF']; ?>?calyear=<?php echo $current_year-1; ?>&module=<?php echo $module; ?>'" value="&lt; <?php echo $current_year-1; ?>" />&nbsp;<input style="width:100px" type="button" onclick="window.location='<?php echo $_SERVER['PHP_SELF']; ?>?calyear=<?php echo $current_year+1; ?>&module=<?php echo $module; ?>'" value="<?php echo $current_year+1; ?> &gt;" />&nbsp;</div>
+<div style="text-align:right"><?php echo echoButtons($current_year); ?>&nbsp;</div>
 </form>
 </div>
 

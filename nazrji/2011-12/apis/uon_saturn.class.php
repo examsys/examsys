@@ -24,10 +24,9 @@
 * @package
 */
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/dateutils.class.php';
+require_once $cfg_web_root . '/classes/dateutils.class.php';
 
 Class UON_SATURN extends SmsUtils {
-
 
   function getUserData($username) {
     $user = array();
@@ -65,7 +64,6 @@ Class UON_SATURN extends SmsUtils {
   }
   
   function getModuleEnrolements($moduleID) {
-    
     $users = array();
     
     // Calculate what the current academic session is.
@@ -81,11 +79,11 @@ Class UON_SATURN extends SmsUtils {
   }
   
   function getStudentSources() {
-   return array('&lt;No lookup&gt;'=>'','UK'=>'http://saturn-exports.nottingham.ac.uk/touchstonestudent.ashx?campus=uk');
+    return array('&lt;No lookup&gt;'=>'','UK'=>'http://saturn-exports.nottingham.ac.uk/touchstonestudent.ashx?campus=uk');
   }
   
   function getModuleSources() {
-   return array('&lt;No lookup&gt;'=>'','UK'=>'http://saturn-exports.nottingham.ac.uk/touchstone.ashx?campus=uk','Malaysia'=>'http://saturn-exports.nottingham.ac.uk/touchstone.ashx?campus=malaysia','China'=>'http://saturn-exports.nottingham.ac.uk/touchstone.ashx?campus=china');
+    return array('&lt;No lookup&gt;'=>'','UK'=>'http://saturn-exports.nottingham.ac.uk/touchstone.ashx?campus=uk','Malaysia'=>'http://saturn-exports.nottingham.ac.uk/touchstone.ashx?campus=malaysia','China'=>'http://saturn-exports.nottingham.ac.uk/touchstone.ashx?campus=china');
   }
   
 }

@@ -46,13 +46,13 @@ function redirect($p_id) {
   
   if (substr($p_id,0,5) == 'list:') {
     $type = substr($p_id,5);
-    header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/question/list.php");
+    header("location: " . $protocol . $_SERVER['HTTP_HOST'] . $cfg_root_path . "/question/list.php");
   } elseif ($p_id != '') {
-    header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/paper/details.php?paperID=$p_id&module=" . $_POST['module'] . "&folder=" . $_POST['folder']);
+    header("location: " . $protocol . $_SERVER['HTTP_HOST'] . $cfg_root_path . "/paper/details.php?paperID=$p_id&module=" . $_POST['module'] . "&folder=" . $_POST['folder']);
   } elseif (isset($_GET['module']) and $_GET['module'] != '') {
-    header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/folder/details.php?module=" . $_POST['module'] . "&folder=" . $_POST['folder']);
+    header("location: " . $protocol . $_SERVER['HTTP_HOST'] . $cfg_root_path . "/folder/details.php?module=" . $_POST['module'] . "&folder=" . $_POST['folder']);
   } else {
-    header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/");
+    header("location: " . $protocol . $_SERVER['HTTP_HOST'] . $cfg_root_path . "/");
   }
   $mysqli->close();
   exit;   // Stop script execution after the redirect.

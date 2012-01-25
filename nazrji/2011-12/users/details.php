@@ -338,7 +338,7 @@ a.access:hover {color:white}
   $tmp_name = $tmp_title . ' ' . $tmp_initials . ' ' . $tmp_surname;
 
   $description = '';
-  $user_query = $mysqli->prepare("SELECT DISTINCT description FROM degrees WHERE degree=? LIMIT 1");
+  $user_query = $mysqli->prepare("SELECT DISTINCT description FROM courses WHERE name=? LIMIT 1");
   $user_query->bind_param('s', $grade);
   $user_query->execute();
   $user_query->bind_result($description);
@@ -351,9 +351,9 @@ a.access:hover {color:white}
       $row_no = 7;
       if (file_exists($student_photo)) {
         if ($demo == true) {
-          echo "<tr><td valign=\"top\" rowspan=\"$row_no\" width=\"70\" align=\"center\"><img style=\"filter:progid:DXImageTransform.Microsoft.Pixelate(maxSquare=8)\" src=\"/users/photos/$original_username.jpg\" width=\"180\" height=\"270\" alt=\"Student Photo\" border=\"0\" /></td><td>&nbsp;Name</td><td colspan=\"3\">";
+          echo "<tr><td valign=\"top\" rowspan=\"$row_no\" width=\"70\" align=\"center\"><img style=\"filter:progid:DXImageTransform.Microsoft.Pixelate(maxSquare=8)\" src=\"photos/$original_username.jpg\" width=\"180\" height=\"270\" alt=\"Student Photo\" border=\"0\" /></td><td>&nbsp;Name</td><td colspan=\"3\">";
         } else {
-          echo "<tr><td valign=\"top\" rowspan=\"$row_no\" width=\"70\" align=\"center\"><img src=\"/users/photos/$original_username.jpg\" width=\"180\" height=\"270\" alt=\"Student Photo\" border=\"0\" /></td><td>&nbsp;Name</td><td colspan=\"3\">";
+          echo "<tr><td valign=\"top\" rowspan=\"$row_no\" width=\"70\" align=\"center\"><img src=\"photos/$original_username.jpg\" width=\"180\" height=\"270\" alt=\"Student Photo\" border=\"0\" /></td><td>&nbsp;Name</td><td colspan=\"3\">";
         }
       } else {
         echo "<tr><td valign=\"top\" rowspan=\"$row_no\" width=\"70\" align=\"center\"><img src=\"../artwork/user_icon.png\" width=\"58\" height=\"61\" alt=\"User Icon\" border=\"0\" /></td><td>&nbsp;" . $string['name'] . "</td><td colspan=\"3\">";
@@ -407,26 +407,26 @@ a.access:hover {color:white}
       echo "<tr><td>&nbsp;" . $string['course'] . "</td><td><select name=\"grade\" style=\"width:300px\">";
       $found = 0;
       
-      $degree_details = $mysqli->prepare("SELECT DISTINCT degree, description FROM degrees ORDER BY degree");
-      $degree_details->execute();
-      $degree_details->bind_result($degree, $description);
-      while ($degree_details->fetch()) {
-        if ($degree == $grade) {
+      $course_details = $mysqli->prepare("SELECT DISTINCT name, description FROM courses ORDER BY name");
+      $course_details->execute();
+      $course_details->bind_result($name, $description);
+      while ($course_details->fetch()) {
+        if ($name == $grade) {
           $found = 1;
-          echo "<option value=\"$degree\" selected>$degree: $description</option>\n";
+          echo "<option value=\"$name\" selected>$name: $description</option>\n";
         } else {
-          echo "<option value=\"$degree\">$degree: $description</option>\n";
+          echo "<option value=\"$name\">$name: $description</option>\n";
         }
       }
-      if ($found == 0) echo "<option value=\"" . $grade . "\" selected>" . $grade . ": ".$string['unknowndegree']."</option>\n";
-      $degree_details->close();
+      if ($found == 0) echo "<option value=\"" . $grade . "\" selected>" . $grade . ": " . $string['unknown'] . "</option>\n";
+      $course_details->close();
       echo "</select></td><td colspan=\"3\">&nbsp;</td></tr>\n";
       echo "<tr><td>&nbsp;" . $string['yearofstudy'] . "</td><td><select name=\"year\">";
       for ($i=1; $i<=6; $i++) {
         if ($i == $tmp_year) {
-          echo "<option value=\"$i\" selected>".$string['year']." $i</option>";
+          echo "<option value=\"$i\" selected>" . $string['year'] . " $i</option>";
         } else {
-          echo "<option value=\"$i\">".$string['year']." $i</option>";
+          echo "<option value=\"$i\">" . $string['year'] . " $i</option>";
         }
       }
       echo "</select></td>";
@@ -516,7 +516,7 @@ a.access:hover {color:white}
       $student_photo =  $cfg_web_root ."users/photos/$username.jpg";
       $row_no = 10;
       if (file_exists($student_photo)) {
-        echo "<tr><td valign=\"top\" rowspan=\"$row_no\" width=\"70\" align=\"center\"><img src=\"/users/photos/$username.jpg\" width=\"180\" height=\"270\" alt=\"Student Photo\" border=\"0\" /></td><td width=\"110\">&nbsp;Name</td><td>$tmp_title $tmp_initials $tmp_surname</td></tr>\n";
+        echo "<tr><td valign=\"top\" rowspan=\"$row_no\" width=\"70\" align=\"center\"><img src=\"photos/$username.jpg\" width=\"180\" height=\"270\" alt=\"Student Photo\" border=\"0\" /></td><td width=\"110\">&nbsp;Name</td><td>$tmp_title $tmp_initials $tmp_surname</td></tr>\n";
       } else {
         echo "<tr><td valign=\"top\" rowspan=\"$row_no\" width=\"70\" align=\"center\"><img src=\"../artwork/user_icon.png\" width=\"58\" height=\"61\" alt=\"User Icon\" border=\"0\" /></td><td width=\"110\">&nbsp;Name:</td><td>$tmp_title $tmp_initials $tmp_surname</td></tr>\n";
       }

@@ -30,13 +30,13 @@
 
   // Redirect Students (if not also staff), External Examiners and Invigilators to their own areas.
   if (strpos($userroles,'Student') !== false and strpos($userroles,'Staff') === false and strpos($userroles,'Admin') === false and strpos($userroles,'SysAdmin') === false) {
-    header("location: " . $protocol. $_SERVER['HTTP_HOST'] . "/students/");
+    header("location: ../students/");
     exit;
   } elseif ($userroles == 'External Examiner') {
-    header("location: " . $protocol. $_SERVER['HTTP_HOST'] . "/reviews/");
+    header("location: ../reviews/");
     exit;
   } elseif ($userroles == 'Invigilator') {
-    header("location: " . $protocol. $_SERVER['HTTP_HOST'] . "/invigilator/");
+    header("location: ../invigilator/");
     exit;
   }
 
@@ -51,6 +51,7 @@ require '../include/staff_auth.inc';
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
 
 <script src="../js/staff_help.js" type="text/javascript"></script>
+<?php echo $cfg_js_root ?>
 <script src="../js/sidebar.js" type="text/javascript"></script>
 <script language="JavaScript">
   function illegalChar(codeID) {

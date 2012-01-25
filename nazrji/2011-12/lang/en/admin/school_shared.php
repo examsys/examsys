@@ -1,6 +1,7 @@
 <?php
 $string['createschool'] = 'Create new School';
 $string['editschool'] = 'Edit School';
+$string['deleteschool'] = 'Delete School';
 $string['administrativetools'] = 'Administrative Tools';
 $string['schools'] = 'Schools';
 $string['school'] = 'School';

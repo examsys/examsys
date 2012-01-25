@@ -54,5 +54,5 @@ if ($result = $mysqli->prepare("UPDATE papers SET screen=? WHERE screen > ? AND 
 }
 
 // Redirect back to paper/details.php
-header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/paper/details.php?paperID=" . $_GET['paperID'] . "&module=" . $_GET['module'] . "&folder=" . $_GET['folder'] . "&scrOfY=0" . $_GET['scrOfY']);
+header("location: " . $protocol . $_SERVER['HTTP_HOST'] . $cfg_root_path . "/paper/details.php?paperID=" . $_GET['paperID'] . "&module=" . $_GET['module'] . "&folder=" . $_GET['folder'] . "&scrOfY=0" . $_GET['scrOfY']);
 ?>

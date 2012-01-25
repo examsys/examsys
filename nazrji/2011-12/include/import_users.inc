@@ -29,12 +29,12 @@ require_once '../classes/passwordutils.class.php';
 
 $header = array();
 $needed_cols1 = array('student_id','first names','surname','title','course code','year of course','local email');
-$needed_cols2 = array('id','forenames','family name','title','degree','year of study','email');
+$needed_cols2 = array('id','forenames','family name','title','course','year of study','email');
 
 function add_users_from_file($fileName) {
   global $header, $needed_cols1, $needed_cols2, $mysqli, $string;
   
-  $degrees = array();
+  $courses = array();
   $users[] = array();
   
   $lines = file($fileName);
@@ -94,9 +94,9 @@ function add_users_from_file($fileName) {
     }
     $title = UserUtils::my_ucwords(trim($fields[$header['title']]));
     if (isset($header['course code'])) {
-      $degree = trim($fields[$header['course code']]);
+      $course = trim($fields[$header['course code']]);
     } else {
-      $degree = trim($fields[$header['degree']]);
+      $course = trim($fields[$header['course']]);
     }
     if (isset($header['year of course'])) {
       $year = trim($fields[$header['year of course']]);
@@ -114,15 +114,7 @@ function add_users_from_file($fileName) {
       $username = explode("@",$email);
       $username = $username[0];
     }
-                            
-    if ($degree == "A101") { //Do extra work for GEM
-      if (date("m") >= 2 and date("m") <= 6 and $year == 2) {
-        $year++;
-      } elseif ($year > 2) {
-        $year++;
-      }
-    }
-                        
+                
     if ($title == 'Mr') {
       $gender = 'Male'; 
     } elseif ($title == 'Miss' or $title == 'Mrs' or $title == 'Ms') {
@@ -139,12 +131,12 @@ function add_users_from_file($fileName) {
       $password = PasswordUtils::gen_password();
       $encpw_password = PasswordUtils::encpw($username, $password);
 
-      $tmp_userID = UserUtils::createUser($username, $encpw_password, $title, $forname, $surname, $email, $degree, $gender, $year, 'Student', $sid, $mysqli);
+      $tmp_userID = UserUtils::createUser($username, $encpw_password, $title, $forname, $surname, $email, $course, $gender, $year, 'Student', $sid, $mysqli);
 
       if ($tmp_userID !== false) {
         $users['added'][] = $username;
       }
-      $users['degrees'][$degree] = $degree;
+      $users['courses'][$course] = $course;
       
       //send Welcome Email if ticked
       if (isset($_POST['welcome']) and $_POST['welcome'] != '') {
@@ -153,17 +145,17 @@ function add_users_from_file($fileName) {
     } elseif ($username != '' and stristr('ps_',$username) === false) {
       //update existing student records
       $result = $mysqli->prepare("UPDATE users SET yearofstudy=?, title=?, first_names=?, surname=?, grade=? WHERE username=?");
-      $result->bind_param('ssssss', $year, $title, $forname, $surname, $degree, $username);
+      $result->bind_param('ssssss', $year, $title, $forname, $surname, $course, $username);
       $result->execute();
       $result->close();
 
       $users['updated'][] = $username;
-      $users['degrees'][$degree] = $degree;
+      $users['courses'][$course] = $course;
     } else {
       $invalid_user = true;
     }
 	  
-    if ($invalid_user != true AND isset($header['modules']) AND isset($header['session'])) {
+    if ($invalid_user != true and isset($header['modules']) and isset($header['session'])) {
       //add students to modules
       $module = trim($fields[$header['modules']]);
       $session = trim($fields[$header['session']]);

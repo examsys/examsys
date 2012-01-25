@@ -141,7 +141,7 @@ HTML;
   return $html;
 }
 
-function displayObjectivesMappingForm($paper_id, $rogodb) {
+function displayObjectivesMappingForm($paper_id, $rogodb, $cfg_root_path) {
   //get module and session form paper id
   $result = $rogodb->prepare("SELECT moduleID, calendar_year, paper_type FROM properties WHERE property_id=?");
   $result->bind_param('i', $paper_id);
@@ -176,10 +176,10 @@ function displayObjectivesMappingForm($paper_id, $rogodb) {
       if (isset($class['objectives']) and count($class['objectives']) > 0) {
         $html .= "<div style=\"cursor:pointer; color:#316AC5; font-weight:bold; margin-top:6px\" onclick=\"showHide('$moduleid$id')\">";
         if($class['mapped'] == 0) {
-          $html .= "<img id=\"img_$moduleid$id\" src='/artwork/plus.png' />&nbsp;";
+          $html .= "<img id=\"img_$moduleid$id\" src='$cfg_root_path/artwork/plus.png' />&nbsp;";
           $display = 'none';
         } else {
-          $html .= "<img id=\"img_$moduleid$id\" src='/artwork/minus.png' />&nbsp;";
+          $html .= "<img id=\"img_$moduleid$id\" src='$cfg_root_path/artwork/minus.png' />&nbsp;";
           $display = 'block';
         }
 
@@ -204,7 +204,7 @@ function displayObjectivesMappingForm($paper_id, $rogodb) {
         }
         $html .= "</div>\n";
       } else {
-        $html .= "<div style=\"color:#808080; font-weight:bold; margin-top:6px\"><img src='/artwork/grey_plus.gif' />&nbsp;";
+        $html .= "<div style=\"color:#808080; font-weight:bold; margin-top:6px\"><img src='$cfg_root_path/artwork/grey_plus.gif' />&nbsp;";
         if($class['class_code'] != '') {
           $html .= $class['class_code'] . ' - ';
         }

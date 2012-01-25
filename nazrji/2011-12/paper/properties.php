@@ -663,11 +663,11 @@ if ($paper_type != '4' and $paper_type != '5') {
      echo "<tr><td colspan=\"4\" style=\"background-color:#E5EFFA; color:#00156E; border-bottom: 1px solid #CFDBEB\">&nbsp;" . $string['paperdetails'] . "</td></tr>\n";
      echo "<tr><td colspan=\"4\">&nbsp;</td></tr>\n";
      if ($paper_type == '2') {
-       echo "<tr><td align=\"right\" valign=\"top\">" . $string['url'] . "&nbsp;</td><td colspan=\"3\"><a href=\"" . $protocol . $_SERVER['HTTP_HOST'] . "\" target=\"_blank\" style=\"color:blue\">" . $protocol . $_SERVER['HTTP_HOST'] . "</a> " . $string['onlyonexamday'] . "</td></tr>\n";
+       echo "<tr><td align=\"right\" valign=\"top\">" . $string['url'] . "&nbsp;</td><td colspan=\"3\"><a href=\"" . $protocol . $_SERVER['HTTP_HOST'] . $cfg_root_path . "\" target=\"_blank\" style=\"color:blue\">" . $protocol . $_SERVER['HTTP_HOST'] . $cfg_root_path . "</a> " . $string['onlyonexamday'] . "</td></tr>\n";
      } elseif ($paper_type == '4') {
-       echo "<tr><td align=\"right\" valign=\"top\">" . $string['url'] . "&nbsp;</td><td colspan=\"3\"><a href=\"" . $protocol . $_SERVER['HTTP_HOST'] . "/osce/\" target=\"_blank\" style=\"color:blue\">" . $protocol . $_SERVER['HTTP_HOST'] . "/osce/</a> " . $string['onlyonexamday'] . "</td></tr>\n";
+       echo "<tr><td align=\"right\" valign=\"top\">" . $string['url'] . "&nbsp;</td><td colspan=\"3\"><a href=\"" . $protocol . $_SERVER['HTTP_HOST'] . $cfg_root_path . "/osce/\" target=\"_blank\" style=\"color:blue\">" . $protocol . $_SERVER['HTTP_HOST'] . $cfg_root_path . "/osce/</a> " . $string['onlyonexamday'] . "</td></tr>\n";
      } else {
-       echo "<tr><td align=\"right\" valign=\"top\">" . $string['url'] . "&nbsp;</td><td colspan=\"3\"><a href=\"" . $protocol . $_SERVER['HTTP_HOST'] . "/user_index.php?id=" . urlencode($crypt_name) ."\" target=\"_blank\" style=\"color:blue\">" . $protocol . $_SERVER['HTTP_HOST'] . "/user_index.php?id=" . urlencode($crypt_name) ."</a></td></tr>\n";
+       echo "<tr><td align=\"right\" valign=\"top\">" . $string['url'] . "&nbsp;</td><td colspan=\"3\"><a href=\"" . $protocol . $_SERVER['HTTP_HOST'] . $cfg_root_path . "/user_index.php?id=" . urlencode($crypt_name) ."\" target=\"_blank\" style=\"color:blue\">" . $protocol . $_SERVER['HTTP_HOST'] . $cfg_root_path . "/user_index.php?id=" . urlencode($crypt_name) ."</a></td></tr>\n";
      }
      echo "<tr><td align=\"right\" valign=\"top\">" . $string['name'] . "&nbsp;</td><td colspan=\"3\"><input type=\"text\" size=\"75\" maxlength=\"255\" value=\"$paper_title\" name=\"paper_title\" /><input type=\"hidden\" name=\"original_paper_title\" value=\"$paper_title\"><input type=\"hidden\" name=\"paperID\" value=\"" . $_GET['paperID'] . "\"></td></tr>\n";
    ?>
@@ -725,6 +725,7 @@ if ($paper_type != '4' and $paper_type != '5') {
      echo "</td><td colspan=\"3\">";
      if (in_array($paper_type, array('0', '1', '2', '5'))) {
        // Objectives-based Feedback
+       $idfeedback_release = '';
        $feedback_details = $mysqli->prepare("SELECT idfeedback_release FROM feedback_release WHERE paper_id=? AND type='objectives'");
        $feedback_details->bind_param('i', $_GET['paperID']);
        $feedback_details->execute();
@@ -741,6 +742,7 @@ if ($paper_type != '4' and $paper_type != '5') {
      }
      if (in_array($paper_type, array('1', '2', '5'))) {
        // Question-based Feedback
+       $idfeedback_release = '';
        $feedback_details = $mysqli->prepare("SELECT idfeedback_release FROM feedback_release WHERE paper_id=? AND type='questions'");
        $feedback_details->bind_param('i', $_GET['paperID']);
        $feedback_details->execute();
@@ -1208,7 +1210,7 @@ if ($paper_type != '4' and $paper_type != '5') {
   $result->fetch();
   $result->close();
   if ($sct_no > 0) {
-    echo '<a href="' . $protocol . $_SERVER['HTTP_HOST'] . '/reviews/sct_login.php?paperID=' . $_GET['paperID'] . '" target="_blank" style="color:blue">' . $protocol . $_SERVER['HTTP_HOST'] . '/reviews/sct_login.php?paperID=' . $_GET['paperID'] . '</a>';
+    echo '<a href="' . $protocol . $_SERVER['HTTP_HOST'] . $cfg_root_path . '/reviews/sct_login.php?paperID=' . $_GET['paperID'] . '" target="_blank" style="color:blue">' . $protocol . $_SERVER['HTTP_HOST'] . $cfg_root_path . '/reviews/sct_login.php?paperID=' . $_GET['paperID'] . '</a>';
   }
 
 ?></td></tr>

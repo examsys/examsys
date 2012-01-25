@@ -88,7 +88,7 @@ body {font-family:Arial,sans-serif; font-size:90%; color:black; margin-top:0px; 
   echo '<input type="hidden" name="startdate" value="' . $_GET['startdate'] . '" />';
   echo '<input type="hidden" name="enddate" value="' . $_GET['enddate'] . '" />';
   echo '<input type="hidden" name="module" value="' . $_GET['module'] . '" />';
-  echo '<input type="hidden" name="repdegree" value="' . $_GET['repdegree'] . '" />';
+  echo '<input type="hidden" name="repcourse" value="' . $_GET['repcourse'] . '" />';
   echo '<input type="hidden" name="repyear" value="' . $_GET['repyear'] . '" />';
   echo "</td></tr>";
   echo "<tr><td colspan=\"2\" style=\"height: 3px\"><img src=\"../artwork/header_horizontal_line.gif\" width=\"100%\" height=\"3\" alt=\"Line\" /></td></tr>\n";

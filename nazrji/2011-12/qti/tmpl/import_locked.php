@@ -108,7 +108,7 @@ echo "</table>";
 			
 			<div style="padding-top:16px;padding-left:16px;padding-right:16px;">
           <table border="0" cellpadding="0" cellspacing="0" style="width:100%">
-			     <tr><td colspan="2" style="height:32px; text-align:right"><img src="/artwork/paper_locked_padlock.png" width="19" height="24" alt="Locked" />&nbsp;&nbsp;</td><td colspan="7" style="height:32px; vertical-align:middle;"><strong>Paper Locked</strong>&nbsp;&nbsp;&nbsp;This paper is now locked and cannot be modified. <a href="#" class="blacklink" onclick="launchHelp(189); return false;">Click for more details.</a></td></tr>
+			     <tr><td colspan="2" style="height:32px; text-align:right"><img src="../artwork/paper_locked_padlock.png" width="19" height="24" alt="Locked" />&nbsp;&nbsp;</td><td colspan="7" style="height:32px; vertical-align:middle;"><strong>Paper Locked</strong>&nbsp;&nbsp;&nbsp;This paper is now locked and cannot be modified. <a href="#" class="blacklink" onclick="launchHelp(189); return false;">Click for more details.</a></td></tr>
 			    </table>
           <br/>
       </div>

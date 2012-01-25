@@ -86,7 +86,7 @@ if (isset($_POST['submit'])) {
   }
   
   unlink('/tmp/' . $userID . '_load_objectives.txt');
-  header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/mapping/sessions_list.php?module=" . $_POST['module']);
+  header("location: " . $protocol . $_SERVER['HTTP_HOST'] . $cfg_root_path . "/mapping/sessions_list.php?module=" . $_POST['module']);
 } else {
   //display the form
 ?>

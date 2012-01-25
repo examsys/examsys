@@ -23,8 +23,9 @@
 */
   //require '../include/sysadmin_auth.inc';
   require '../config/config.inc';
+  require_once $cfg_web_root . 'classes/dbutils.class.php';
   set_time_limit(0);
-  $mysqli = new $dbclass($cfg_db_host , $cfg_db_username, $cfg_db_passwd, $cfg_db_database);
+  $mysqli = DBUtils::get_mysqli_link($cfg_db_host , $cfg_db_username, $cfg_db_passwd, $cfg_db_database, $cfg_db_charset, $dbclass);
   ob_start();
 ?>
 <html>

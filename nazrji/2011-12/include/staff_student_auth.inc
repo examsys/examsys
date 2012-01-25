@@ -24,25 +24,26 @@
 * @package
 */
 
-$root = (substr($_SERVER['DOCUMENT_ROOT'], -1) == '/') ? $_SERVER['DOCUMENT_ROOT'] : $_SERVER['DOCUMENT_ROOT'] . '/';
+$root = str_replace('/include', '/', str_replace('\\', '/', dirname(__FILE__)));
 require_once $root . 'config/config.inc.php';
 require_once $cfg_web_root . 'include/auth.inc';
 require_once $cfg_web_root . 'include/custom_error_handler.inc';
 require_once $cfg_web_root . 'classes/lang.class.php';
 require_once $cfg_web_root . 'lang/' . $language . '/include/common.inc';   // Include common language file that all scripts need
+require_once $cfg_web_root . 'classes/dbutils.class.php';
 require_once $cfg_web_root . 'classes/networkutils.class.php';
 
-$fp_link = "<p style=\"margin-left:60px\"><a href=\"/users/forgotten_password.php\">" . $string['forgottenpassword'] . "</p>\n";
+$fp_link = "<p style=\"margin-left:60px\"><a href=\"{$cfg_root_path}/users/forgotten_password.php\">" . $string['forgottenpassword'] . "</p>\n";
 
-if ($_SERVER['SERVER_PORT'] != 443 and $_SERVER['SERVER_PORT'] != 8080) {
+if ($protocol == 'https://' and $_SERVER['SERVER_PORT'] != 443 and $_SERVER['SERVER_PORT'] != 8080) {
   echo "<html>\n<body style=\"font-family:Arial,sans-serif;font-size:100%;color:#C00000\">\n<p><strong>" . $string['warning'] . "</strong> " . $string['secureconnection'] . " <a href=\"https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . "\">https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . "</a>.\n</body>\n</html>\n";
   exit;
 }
 if (preg_match( '|MSIE ([5-9].[0-9]{1,2})|',$_SERVER['HTTP_USER_AGENT'],$log_version) or preg_match( '|Netscape6|',$_SERVER['HTTP_USER_AGENT'],$log_version) or preg_match( '|Netscape\/7.0|',$_SERVER['HTTP_USER_AGENT'],$log_version) or preg_match('|Mozilla\/5.0|',$_SERVER['HTTP_USER_AGENT'],$log_version) or preg_match('|PHP-SOAP|',$_SERVER['HTTP_USER_AGENT'],$log_version)) {
-  $mysqli = new $dbclass($cfg_db_host , $cfg_db_username, $cfg_db_passwd, $cfg_db_database);
+  $mysqli = DBUtils::get_mysqli_link($cfg_db_host , $cfg_db_username, $cfg_db_passwd, $cfg_db_database, $cfg_db_charset, $dbclass);
   if (mysqli_connect_error()) {
     echo "<html>\n<head>\n<title>" . $string['accessdenied'] . "</title>\n<style>\nbody {font-size:90%; font-family:Arial,sans-serif; background-color:#FCFCFC; color:#575757}\nh1 {font-weight:normal; color:#BF0000; font-size:140%}\n</style>\n</head>\n<body>\n";
-    echo "<div style=\"position:absolute; left:10px; top:10px\"><img src=\"/artwork/orange_alert_48.png\" width=\"48\" height=\"48\" /></div>\n";
+    echo "<div style=\"position:absolute; left:10px; top:10px\"><img src=\"{$cfg_root_path}/artwork/orange_alert_48.png\" width=\"48\" height=\"48\" /></div>\n";
     echo "<h1 style=\"margin-left:60px\">Database Connection Error</h1>\n";
     echo "<hr size=\"1\" align=\"left\" width=\"500\" style=\"margin-left:60px; color:#C0C0C0; background-color:#C0C0C0\" />\n<ul style=\"margin-left:80px\">\n<li>Error message: " . mysqli_connect_error() . ".</li>\n<li>Error number: " . mysqli_connect_errno() . "</li>";
     exit;

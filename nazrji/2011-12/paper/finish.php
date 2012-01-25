@@ -127,8 +127,8 @@ table {font-size:100%}
 </style>
 <?php
   if ($latex_needed == 1) {
-   echo "<script type=\"text/javascript\" src=\"/js/jquery-1.6.1.min.js\"></script>";
-   echo "<script type=\"text/javascript\" src=\"/tools/mee/mee/js/mee_src.js\"></script>";
+   echo "<script type=\"text/javascript\" src=\"../js/jquery-1.6.1.min.js\"></script>";
+   echo "<script type=\"text/javascript\" src=\"../tools/mee/mee/js/mee_src.js\"></script>";
   }
   if (($userroles == 'Student' and $paper_type < 2) or strpos($userroles,'Staff') !== false) {
     echo "<script src=\"../js/ie_fix.js\" type=\"text/javascript\"></script>\n";

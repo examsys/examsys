@@ -37,6 +37,7 @@
   .icon {width:250px; padding-top:20px; padding-bottom:20px; float:left; text-align:center}
 </style>
 
+<?php echo $cfg_js_root ?>
 <script language="JavaScript" src="../js/sidebar.js"></script>
 <script language="JavaScript">
   function highlightResource(resourceID,highlightColor) {

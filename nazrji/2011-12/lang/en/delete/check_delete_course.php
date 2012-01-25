@@ -1,5 +1,5 @@
 <?php
-$string['confirmdegreedelete'] = 'Confirm Degree Delete';
+$string['confirmcoursedelete'] = 'Confirm Course Delete';
 $string['recyclebin'] = 'Recycle Bin';
 $string['msg'] = 'Are you sure you wish to delete this course?';
 $string['delete'] = 'Delete';

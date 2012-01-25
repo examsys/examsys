@@ -26,7 +26,7 @@
 
   require '../include/staff_auth.inc';
 
-  $mydata = file('/tmp/' . $_SERVER['PHP_AUTH_USER'] . '_distribution.dat');
+  $mydata = file('/tmp/' . $userID . '_distribution.dat');
   $mydata = unserialize($mydata[0]);
   
   $max_frequency = 0;

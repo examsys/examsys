@@ -82,7 +82,7 @@
   }
   
   function moreColours() {
-    notice=window.open("/tools/colour_picker/more_colours.php?swatch=" + textBox + "","colours","width=450,height=370,left="+(screen.width/2-225)+",top="+(screen.height/2-185)+",scrollbars=no,toolbar=no,location=no,directories=no,status=yes,menubar=no,resizable");
+    notice=window.open("<?php echo $cfg_root_path ?>/tools/colour_picker/more_colours.php?swatch=" + textBox + "","colours","width=450,height=370,left="+(screen.width/2-225)+",top="+(screen.height/2-185)+",scrollbars=no,toolbar=no,location=no,directories=no,status=yes,menubar=no,resizable");
     if (window.focus) {
       notice.focus();
     }
@@ -139,7 +139,7 @@
   }
   echo "</tr>\n";
   echo "<tr style=\"height:4px\"><td colspan=\"21\" style=\"border-bottom: 1px solid #C5C5C5\"></td></tr>";
-  echo "<tr><td colspan=\"2\" style=\"padding-top:1px; padding-bottom:1px; background-color:#E9EEEE\"><img src=\"/artwork/palette.png\" width=\"16\" height=\"16\" border=\"0\" onclick=\"moreColours();\" /></td><td style=\"border-left: 1px solid #C5C5C5; font-size:80%\" colspan=\"19\" onclick=\"moreColours();\">&nbsp;More...</td></tr>";
+  echo "<tr><td colspan=\"2\" style=\"padding-top:1px; padding-bottom:1px; background-color:#E9EEEE\"><img src=\"{$cfg_root_path}/artwork/palette.png\" width=\"16\" height=\"16\" border=\"0\" onclick=\"moreColours();\" /></td><td style=\"border-left: 1px solid #C5C5C5; font-size:80%\" colspan=\"19\" onclick=\"moreColours();\">&nbsp;More...</td></tr>";
 ?>
 </table>
 </div>

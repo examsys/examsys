@@ -22,13 +22,12 @@
 * @package
 */
 
-$root = (substr($_SERVER['DOCUMENT_ROOT'], -1) == '/') ? $_SERVER['DOCUMENT_ROOT'] : $_SERVER['DOCUMENT_ROOT'] . '/';
-require_once $root . 'config/config.inc.php';
+require_once '../config/config.inc.php';
 require_once $cfg_web_root . 'classes/formutils.class.php';
 require_once $cfg_web_root . 'classes/passwordutils.class.php';
-require_once $root . 'classes/lang.class.php';
-
-$mysqli = new $dbclass($cfg_db_host , $cfg_db_username, $cfg_db_passwd, $cfg_db_database);
+require_once $cfg_web_root . 'classes/lang.class.php';
+require_once $cfg_web_root . 'classes/dbutils.class.php';
+$mysqli = DBUtils::get_mysqli_link($cfg_db_host , $cfg_db_username, $cfg_db_passwd, $cfg_db_database, $cfg_db_charset, $dbclass);
 
 $password = $password_confirm = $email = '';
 $message = '';
@@ -94,7 +93,7 @@ if (count($critical_errors) == 0 and isset($_POST['token']) and $_POST['token'] 
           $delete->execute();
           $delete->close();
           
-          $redirect_url = $protocol. $_SERVER['HTTP_HOST'] . "/";
+          $redirect_url = $protocol. $_SERVER['HTTP_HOST'] . $cfg_root_path . "/";
           if (strpos($userroles, 'External Examiner')  !== false) {
             $redirect_url .= "reviews/";
           } elseif (strpos($userroles,'Invigilator') !== false) {

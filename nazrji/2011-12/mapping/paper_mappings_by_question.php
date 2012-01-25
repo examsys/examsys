@@ -29,7 +29,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Rogō: <?php echo $string['mappingbyquestion'] . " $cfg_install_type"; ?></title>
+<title>Rogō: <?php echo $string['mappingbyquestion'] . ' ' . $cfg_install_type; ?></title>
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
 <style style="text/css">
   td {font-size:100%}
@@ -104,38 +104,38 @@
   $result->close();
   
   ?>
-    <table cellpadding="0" cellspacing="0" border="0" style="display:block; font-size:90%; background-color:white">
-    <tr><td>
-    <table cellpadding="0" cellspacing="0" border="0" style="font-size:90%; width:378px; background-color:#F1F5FB">
-    <td style="cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_off.gif)" onclick="window.location.href='paper_mappings_by_session.php?paperID=<?php echo $_GET['paperID']; ?>&folder=<?php echo $_GET['folder']; ?>&module=<?php echo $_GET['module']; ?>'"><?php echo $string['bysession']; ?></td>
-    <td style="cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_on.gif)"><?php echo $string['byquestion']; ?></td>
-    <td style="cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_off.gif)" onclick="window.location.href='paper_mappings_by_year.php?paperID=<?php echo $_GET['paperID']; ?>&folder=<?php echo $_GET['folder']; ?>&module=<?php echo $_GET['module']; ?>'"><?php echo $string['longitudinal']; ?></td>
-    </table>
-    </td><td style="width:100%; background-color:#F1F5FB; text-align:right">&nbsp;</td>
-    </tr>
-    <tr><td colspan="5" style="background-color:#1E3C7B">&nbsp;</td></tr>
-    </table>
-    <?php
-      $year_in_title = false;
-      $tmp_match = '';
-      if (preg_match( '/\d\d\d\d.\d\d\d\d/' , $paper_title , $matches) == 1) {
-        $year_in_title = true;
-        $tmp_match = substr($matches[0],0,4) . '/' . substr($matches[0],-2);
-      } elseif (preg_match( '/\d\d\d\d.\d\d/' , $paper_title , $matches) == 1) {
-        $year_in_title = true;
-        $tmp_match = substr($matches[0],0,4) . '/' . substr($matches[0],-2);
-      } elseif (preg_match( '/\d\d.\d\d/' , $paper_title , $matches) == 1) {
-        $year_in_title = true;      
-        $tmp_match = '20' . substr($matches[0],0,2) . '/' . substr($matches[0],-2);
-      }
-      if ($year_in_title == true) {
-        if ($tmp_match != $session) {
-          echo "<table border=\"0\" cellpadding=\"1\" cellspacing=\"0\" style=\"width:100%; font-size:80%\">\n";
-          echo "<tr><td style=\"width:40px; height:32px; text-align:right; background-image:url('../artwork/non_owner_gradient.gif'); background-repeat:repeat-x\"><img src=\"../artwork/non_owner_icon.png\" width=\"25\" height=\"30\" alt=\"Warning\" />&nbsp;&nbsp;</td><td colspan=\"7\" style=\"height:32px; vertical-align:middle; background-image:url('../artwork/non_owner_gradient.gif'); background-repeat:repeat-x\"><strong>" . $string['warning'] . "</strong>&nbsp;&nbsp;&nbsp;";
-          printf($string['nomatchsession'], $tmp_match, $session);
-          echo "</td></tr>\n</table>\n";
-        }
-      }
+  <table cellpadding="0" cellspacing="0" border="0" style="display:block; font-size:90%; background-color:white">
+  <tr><td>
+  <table cellpadding="0" cellspacing="0" border="0" style="font-size:90%; width:378px; background-color:#F1F5FB">
+  <td style="cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_off.gif)" onclick="window.location.href='paper_mappings_by_session.php?paperID=<?php echo $_GET['paperID']; ?>&folder=<?php echo $_GET['folder']; ?>&module=<?php echo $_GET['module']; ?>'"><?php echo $string['bysession']; ?></td>
+  <td style="cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_on.gif)"><?php echo $string['byquestion']; ?></td>
+  <td style="cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_off.gif)" onclick="window.location.href='paper_mappings_by_year.php?paperID=<?php echo $_GET['paperID']; ?>&folder=<?php echo $_GET['folder']; ?>&module=<?php echo $_GET['module']; ?>'"><?php echo $string['longitudinal']; ?></td>
+  </table>
+  </td><td style="width:100%; background-color:#F1F5FB; text-align:right">&nbsp;</td>
+  </tr>
+  <tr><td colspan="5" style="background-color:#1E3C7B">&nbsp;</td></tr>
+  </table>
+  <?php
+  $year_in_title = false;
+  $tmp_match = '';
+  if (preg_match( '/\d\d\d\d.\d\d\d\d/' , $paper_title , $matches) == 1) {
+    $year_in_title = true;
+    $tmp_match = substr($matches[0],0,4) . '/' . substr($matches[0],-2);
+  } elseif (preg_match( '/\d\d\d\d.\d\d/' , $paper_title , $matches) == 1) {
+    $year_in_title = true;
+    $tmp_match = substr($matches[0],0,4) . '/' . substr($matches[0],-2);
+  } elseif (preg_match( '/\d\d.\d\d/' , $paper_title , $matches) == 1) {
+    $year_in_title = true;      
+    $tmp_match = '20' . substr($matches[0],0,2) . '/' . substr($matches[0],-2);
+  }
+  if ($year_in_title == true) {
+    if ($tmp_match != $session) {
+      echo "<table border=\"0\" cellpadding=\"1\" cellspacing=\"0\" style=\"width:100%; font-size:80%\">\n";
+      echo "<tr><td style=\"width:40px; height:32px; text-align:right; background-image:url('../artwork/non_owner_gradient.gif'); background-repeat:repeat-x\"><img src=\"../artwork/non_owner_icon.png\" width=\"25\" height=\"30\" alt=\"Warning\" />&nbsp;&nbsp;</td><td colspan=\"7\" style=\"height:32px; vertical-align:middle; background-image:url('../artwork/non_owner_gradient.gif'); background-repeat:repeat-x\"><strong>" . $string['warning'] . "</strong>&nbsp;&nbsp;&nbsp;";
+      printf($string['nomatchsession'], $tmp_match, $session);
+      echo "</td></tr>\n</table>\n";
+    }
+  }
   echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"  style=\"width:100%; font-size:80%; background-color:white\">\n";
   $old_p_id = 0;
   $row_no = 0;
@@ -177,7 +177,7 @@
     $result->bind_param('i', $paperID);
     $result->execute();
     $result->bind_result($q_type, $q_id, $correct, $score_method, $q_media_height, $q_media_width, $option_text);
-    while ($row = $result->fetch()) {
+    while ($result->fetch()) {
       if ($old_q_id != $q_id and $old_q_id != 0) {
         $old_marks = $total_marks;
         $temp_array[$row_no2]['marks'] = $total_marks - $old_marks;
@@ -221,7 +221,7 @@
     }
     $old_screen = $temp_array[$x]['screen'];
     
-    $objByModule = getObjectivesByMapping($moduleID,$session,$paperID,$temp_array[$x]['q_id'],$mysqli);
+    $objByModule = getObjectivesByMapping($moduleID, $session, $paperID, $temp_array[$x]['q_id'], $mysqli);
     if(array_key_exists($temp_array[$x]['q_id'],$excluded)) {
       $class = 'mapping_exclueded';
     } else {
@@ -248,51 +248,49 @@
         echo '<td class="' . $class . '" valign="middle" style="color:#C00000; width:100%">';
       }
       echo $temp_array[$x]['leadin'] . "&nbsp;&nbsp;";
-      if($temp_array[$x]['q_type'] != 'info')
+      if ($temp_array[$x]['q_type'] != 'info') {
         echo "<img style=\"cursor: pointer\" onclick=\"mapQuestion('$question_number', '" . $paperID . "','" . $temp_array[$x]['q_id'] . "','" . $session . "')\" src=\"../artwork/map_question.gif\" width=\"16\" height=\"14\"/></td>";
-    } elseif (strpos($temp_array[$x]['q_media'],'.swf') !== false) {
-      echo "<td><img src=\"../artwork/flash_icon.png\" width=\"48\" height=\"48\" alt=\"Embedded Flash object\" border=\"0\" /></td>";
-      if($temp_array[$x]['q_type'] != 'info')
-        echo "<img style=\"cursor: pointer\" onclick=\"mapQuestion('$question_number', '" . $paperID . "','" . $temp_array[$x]['q_id'] . "','" . $session . "')\" src=\"../artwork/map_question.gif\" width=\"16\" height=\"14\"/></td>";
-    } else {
-      echo "<td><img src=\"../media/" . $temp_array[$x]['q_media'] . "\" width=\"" . ($temp_array[$x]['q_media_width'] / 3) . "\" height=\"" . ($temp_array[$x]['q_media_height'] /3) . "\" alt=\"Media file\" border=\"1\" />";
-      if($temp_array[$x]['q_type'] != 'info')
-        echo "<img style=\"cursor: pointer\" onclick=\"mapQuestion('$question_number', '" . $paperID . "','" . $temp_array[$x]['q_id'] . "','" . $session . "')\" src=\"../artwork/map_question.gif\" width=\"16\" height=\"14\"/></td>";
-
-    }
-    echo "</tr>\n";
-
-    //output mappings
-    echo "<tr><td colspan=\"2\">&nbsp;</td><td>\n";
-    $sessiontitle = '';
-    if(count($objByModule) > 0) {
-      if(isset($objByModule['none_of_the_above']['mapped']) AND $objByModule['none_of_the_above']['mapped'] == 1) {
-        echo "<ul class=\"$class\" style=\"list-style-type:none; margin-left:10px; padding:0px\">\n<li style=\"padding-left:10px; color:red; background-image:url(../artwork/small_warning_16.png); background-repeat:no-repeat\"><strong>" . $string['warning'] . ":</strong> " . $string['questiononnotmap'] . "</li></ul>\n";
+      } elseif (strpos($temp_array[$x]['q_media'],'.swf') !== false) {
+        echo "<td><img src=\"../artwork/flash_icon.png\" width=\"48\" height=\"48\" alt=\"Embedded Flash object\" border=\"0\" /></td>";
+        if ($temp_array[$x]['q_type'] != 'info') echo "<img style=\"cursor: pointer\" onclick=\"mapQuestion('$question_number', '" . $paperID . "','" . $temp_array[$x]['q_id'] . "','" . $session . "')\" src=\"../artwork/map_question.gif\" width=\"16\" height=\"14\"/></td>";
       } else {
-        echo "<ul class=\"$class\" style=\"list-style-type:disc; margin-left:20px; margin-top:5px\">\n";
-        foreach($objByModule as $module => $mappings) {
-          foreach($mappings as $id => $mappingData) {
-            if( $mappingData['session']['class_code'] != '') {
-              $sessiondata = $mappingData['session']['class_code'];
-              $sessiontitle = $mappingData['session']['title'];
-              $sessiontitle .= ' ' . $mappingData['session']['occurrance'];
-            } else {
-              $sessiondata = $mappingData['session']['title'];
-            }
-            echo "<li>";
-            if(count($objByModule) > 1) {
-              echo "$module: ";
-            }
+        echo "<td><img src=\"../media/" . $temp_array[$x]['q_media'] . "\" width=\"" . ($temp_array[$x]['q_media_width'] / 3) . "\" height=\"" . ($temp_array[$x]['q_media_height'] /3) . "\" alt=\"Media file\" border=\"1\" />";
+        if ($temp_array[$x]['q_type'] != 'info') echo "<img style=\"cursor: pointer\" onclick=\"mapQuestion('$question_number', '" . $paperID . "','" . $temp_array[$x]['q_id'] . "','" . $session . "')\" src=\"../artwork/map_question.gif\" width=\"16\" height=\"14\"/></td>";
+      }
+      echo "</tr>\n";
+      
+      //output mappings
+      echo "<tr><td colspan=\"2\">&nbsp;</td><td>\n";
+      $sessiontitle = '';
+      if (count($objByModule) > 0) {
+        if (isset($objByModule['none_of_the_above']['mapped']) and $objByModule['none_of_the_above']['mapped'] == 1) {
+          echo "<ul class=\"$class\" style=\"list-style-type:none; margin-left:10px; padding:0px\">\n<li style=\"padding-left:10px; color:red; background-image:url(../artwork/small_warning_16.png); background-repeat:no-repeat\"><strong>" . $string['warning'] . ":</strong> " . $string['questiononnotmap'] . "</li></ul>\n";
+        } else {
+          echo "<ul class=\"$class\" style=\"list-style-type:disc; margin-left:20px; margin-top:5px\">\n";
+          foreach ($objByModule as $module => $mappings) {
+            foreach ($mappings as $id => $mappingData) {
+              if( $mappingData['session']['class_code'] != '') {
+                $sessiondata = $mappingData['session']['class_code'];
+                $sessiontitle = $mappingData['session']['title'];
+                $sessiontitle .= ' ' . $mappingData['session']['occurrance'];
+              } else {
+                $sessiondata = $mappingData['session']['title'];
+              }
+              echo '<li>';
+              if (count($objByModule) > 1) {
+                echo "$module: ";
+              }
               echo $mappingData['content'];
               echo "&nbsp;&nbsp;&nbsp;<span title=\"$sessiontitle\" class=\"mapping\"><a href=\"" . $mappingData['session']['source_url'] . "\" target=\"_blank\"><img src=\"../artwork/small_link.png\" width=\"12\" height=\"12\" /></a>&nbsp;<a href=\"" . $mappingData['session']['source_url'] . "\" target=\"_blank\">" . $sessiondata ."</a></span>";
-              echo "</li>";
+              echo '</li>';
             }
+          }
         }
+        echo "</ul>\n";
       }
-      echo "</ul>\n";
+      echo "<tr></td>\n";
+      echo "<tr><td colspan=\"5\" style=\"height:3px\"></td></tr>\n";
     }
-    echo "<tr></td>\n";
-    echo "<tr><td colspan=\"5\" style=\"height:3px\"></td></tr>\n";
   }
   $mysqli->close();
 ?>

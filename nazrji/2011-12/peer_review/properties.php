@@ -120,6 +120,8 @@ if (isset($_POST['Submit'])) {
       $display_photos = '0';
     }
     
+    $display_question_mark = $_POST['review'];    // Reuse the 'display_question_mark' field to stor this setting.
+    
     $rubric = $_POST['type'];      // Reuse the 'rubric' field to store which field in the metadata to use for groups.
     
     $tmp_prologue = $_POST['paper_prologue'];
@@ -128,8 +130,8 @@ if (isset($_POST['Submit'])) {
     $tmp_postscript = $_POST['paper_postscript'];
     $tmp_postscript = clearMSOtags($tmp_postscript);
 
-    $editProperties = $mysqli->prepare("UPDATE properties SET paper_title=?, start_date=?, end_date=?, timezone=?, moduleID=?, bgcolor=?, fgcolor=?, themecolor=?, labelcolor=?, folder=?, labs=?, calendar_year=?, password=?, rubric=?, paper_prologue=?, paper_postscript=?, marking=?, display_correct_answer=? WHERE property_id=?");
-    $editProperties->bind_param('ssssssssssssssssssi', $paper_title, $tmp_start_date, $tmp_end_date, $timezone, $module_string, $bgcolor, $fgcolor, $themecolor, $labelcolor, $folderID, $lab_string, $_POST['calendar_year'], $password, $rubric, $tmp_prologue, $tmp_postscript, $tmp_marking, $display_photos, $paperID);
+    $editProperties = $mysqli->prepare("UPDATE properties SET paper_title=?, start_date=?, end_date=?, timezone=?, moduleID=?, bgcolor=?, fgcolor=?, themecolor=?, labelcolor=?, folder=?, labs=?, calendar_year=?, password=?, rubric=?, paper_prologue=?, paper_postscript=?, marking=?, display_correct_answer=?, display_question_mark=? WHERE property_id=?");
+    $editProperties->bind_param('sssssssssssssssssssi', $paper_title, $tmp_start_date, $tmp_end_date, $timezone, $module_string, $bgcolor, $fgcolor, $themecolor, $labelcolor, $folderID, $lab_string, $_POST['calendar_year'], $password, $rubric, $tmp_prologue, $tmp_postscript, $tmp_marking, $display_photos, $display_question_mark, $paperID);
     $editProperties->execute();
     $editProperties->close();
     
@@ -181,10 +183,10 @@ if (isset($_POST['Submit'])) {
   $option_no = 1;
   
   // Get the main properties of the paper
-  $result = $mysqli->prepare("SELECT paper_title, paper_type, start_date, end_date, timezone, bgcolor, fgcolor, themecolor, labelcolor, folder, labs, moduleID, calendar_year, password, crypt_name, paper_prologue, paper_postscript, marking, display_correct_answer AS display_photos FROM properties WHERE property_id=?");
+  $result = $mysqli->prepare("SELECT paper_title, paper_type, start_date, end_date, timezone, bgcolor, fgcolor, themecolor, labelcolor, folder, labs, moduleID, calendar_year, password, crypt_name, paper_prologue, paper_postscript, marking, display_correct_answer AS display_photos, display_question_mark AS review FROM properties WHERE property_id=?");
   $result->bind_param('i', $_GET['paperID']);
   $result->execute();
-  $result->bind_result($paper_title, $paper_type, $start_date, $end_date, $timezone, $bgcolor, $fgcolor, $themecolor, $labelcolor, $folder, $labs, $moduleID, $calendar_year, $password, $crypt_name, $paper_prologue, $paper_postscript, $marking, $display_photos);
+  $result->bind_result($paper_title, $paper_type, $start_date, $end_date, $timezone, $bgcolor, $fgcolor, $themecolor, $labelcolor, $folder, $labs, $moduleID, $calendar_year, $password, $crypt_name, $paper_prologue, $paper_postscript, $marking, $display_photos, $review);
   $result->fetch();
   $result->close();
   
@@ -335,7 +337,7 @@ if (isset($_POST['Submit'])) {
      echo "<tr><td colspan=\"4\">&nbsp;</td></tr>\n";
      echo "<tr><td colspan=\"4\" style=\"background-color:#E5EFFA; color:#00156E; border-bottom: 1px solid #CFDBEB\">&nbsp;" . $string['paperdetails'] . "</td></tr>\n";
      echo "<tr><td colspan=\"4\">&nbsp;</td></tr>\n";
-     echo "<tr><td align=\"right\" valign=\"top\">" . $string['url'] . "&nbsp;</td><td colspan=\"3\"><a href=\"" . $protocol . $_SERVER['HTTP_HOST'] . "/peer_review/form.php?id=" . urlencode($crypt_name) ."\" target=\"_blank\" style=\"color:blue\">" . $protocol . $_SERVER['HTTP_HOST'] . "/peer_review/form.php?id=" . urlencode($crypt_name) ."</a></td></tr>\n";
+     echo "<tr><td align=\"right\" valign=\"top\">" . $string['url'] . "&nbsp;</td><td colspan=\"3\"><a href=\"" . $protocol . $_SERVER['HTTP_HOST'] . $cfg_root_path . "/peer_review/form.php?id=" . urlencode($crypt_name) ."\" target=\"_blank\" style=\"color:blue\">" . $protocol . $_SERVER['HTTP_HOST'] . $cfg_root_path . "/peer_review/form.php?id=" . urlencode($crypt_name) ."</a></td></tr>\n";
      echo "<tr><td align=\"right\" valign=\"top\">" . $string['name'] . "&nbsp;</td><td colspan=\"3\"><input type=\"text\" size=\"75\" maxlength=\"255\" value=\"$paper_title\" name=\"paper_title\" /><input type=\"hidden\" name=\"original_paper_title\" value=\"$paper_title\"><input type=\"hidden\" name=\"paperID\" value=\"" . $_GET['paperID'] . "\"></td></tr>\n";
      echo "<tr><td align=\"right\" valign=\"top\">" . $string['folder'] . "&nbsp;</td><td colspan=\"3\" valign=\"top\">\n<select style=\"width:210px\" name=\"folderID\">\n";
      echo "<option value=\"\"></option>";
@@ -378,31 +380,30 @@ if (isset($_POST['Submit'])) {
     echo "</select>\n</td></tr>\n";
      
     echo "<tr><td colspan=\"4\">&nbsp;</td></tr>\n";     
-    if ($paper_type == '4') {
-    } else {
-      echo "<tr><td colspan=\"4\" style=\"background-color:#E5EFFA;color:#00156E; border-bottom:1px solid #CFDBEB\">&nbsp;" . $string['displayoptions'] ."</td></tr>\n";
-      echo "<tr><td colspan=\"4\">&nbsp;</td></tr>\n";
-       
-      echo "<tr>\n";
-      echo "<td align=\"right\">" . $string['background'] . "&nbsp;</td><td><div onclick=\"showPicker('bgcolor',event)\" id=\"span_bgcolor\" style=\"border:1px solid #C5C5C5; width:20px; background-color:$bgcolor\">&nbsp;&nbsp;&nbsp;&nbsp;</div><input type=\"hidden\" id=\"bgcolor\" name=\"bgcolor\" value=\"$bgcolor\" /></td>";
-      echo "<td align=\"right\">" . $string['foreground'] . "&nbsp;</td><td><div onclick=\"showPicker('fgcolor',event)\" id=\"span_fgcolor\" style=\"border:1px solid #C5C5C5; width:20px; background-color:$fgcolor\">&nbsp;&nbsp;&nbsp;&nbsp;</div><input type=\"hidden\" id=\"fgcolor\" name=\"fgcolor\" value=\"$fgcolor\" /></td>";
-      echo "</tr>\n";
-   
-      echo "<tr>\n";
-      echo "<td align=\"right\">Peer Names&nbsp;</td><td><div onclick=\"showPicker('themecolor',event)\" id=\"span_themecolor\" style=\"border:1px solid #C5C5C5; width:20px; background-color:$themecolor\">&nbsp;&nbsp;&nbsp;&nbsp;</div><input type=\"hidden\" id=\"themecolor\" name=\"themecolor\" value=\"$themecolor\" /></td>";
-      echo "<td align=\"right\">Headings&nbsp;</td><td><div onclick=\"showPicker('labelcolor',event)\" id=\"span_labelcolor\" style=\"border:1px solid #C5C5C5; width:20px; background-color:$labelcolor\">&nbsp;&nbsp;&nbsp;&nbsp;</div><input type=\"hidden\" id=\"labelcolor\" name=\"labelcolor\" value=\"$labelcolor\" /></td>";
-      echo "</tr>\n";
-      
-      echo "<tr><td align=\"right\">Photos&nbsp;</td><td colspan=\"3\">";
-      if ($display_photos == '1') {
-        echo "<input type=\"checkbox\" name=\"display_photos\" value=\"1\" checked />";
-      } else {
-        echo "<input type=\"checkbox\" name=\"display_photos\" value=\"1\" />";
-      }
-      echo "&nbsp;if available</td></tr>\n";
 
-      echo "<tr><td colspan=\"4\">&nbsp;</td></tr>\n";
+    echo "<tr><td colspan=\"4\" style=\"background-color:#E5EFFA;color:#00156E; border-bottom:1px solid #CFDBEB\">&nbsp;" . $string['displayoptions'] ."</td></tr>\n";
+    echo "<tr><td colspan=\"4\">&nbsp;</td></tr>\n";
+     
+    echo "<tr>\n";
+    echo "<td align=\"right\">" . $string['background'] . "&nbsp;</td><td><div onclick=\"showPicker('bgcolor',event)\" id=\"span_bgcolor\" style=\"border:1px solid #C5C5C5; width:20px; background-color:$bgcolor\">&nbsp;&nbsp;&nbsp;&nbsp;</div><input type=\"hidden\" id=\"bgcolor\" name=\"bgcolor\" value=\"$bgcolor\" /></td>";
+    echo "<td align=\"right\">" . $string['foreground'] . "&nbsp;</td><td><div onclick=\"showPicker('fgcolor',event)\" id=\"span_fgcolor\" style=\"border:1px solid #C5C5C5; width:20px; background-color:$fgcolor\">&nbsp;&nbsp;&nbsp;&nbsp;</div><input type=\"hidden\" id=\"fgcolor\" name=\"fgcolor\" value=\"$fgcolor\" /></td>";
+    echo "</tr>\n";
+ 
+    echo "<tr>\n";
+    echo "<td align=\"right\">Peer Names&nbsp;</td><td><div onclick=\"showPicker('themecolor',event)\" id=\"span_themecolor\" style=\"border:1px solid #C5C5C5; width:20px; background-color:$themecolor\">&nbsp;&nbsp;&nbsp;&nbsp;</div><input type=\"hidden\" id=\"themecolor\" name=\"themecolor\" value=\"$themecolor\" /></td>";
+    echo "<td align=\"right\">Headings&nbsp;</td><td><div onclick=\"showPicker('labelcolor',event)\" id=\"span_labelcolor\" style=\"border:1px solid #C5C5C5; width:20px; background-color:$labelcolor\">&nbsp;&nbsp;&nbsp;&nbsp;</div><input type=\"hidden\" id=\"labelcolor\" name=\"labelcolor\" value=\"$labelcolor\" /></td>";
+    echo "</tr>\n";
+    
+    echo "<tr><td align=\"right\">Photos&nbsp;</td><td colspan=\"3\">";
+    if ($display_photos == '1') {
+      echo "<input type=\"checkbox\" name=\"display_photos\" value=\"1\" checked />";
+    } else {
+      echo "<input type=\"checkbox\" name=\"display_photos\" value=\"1\" />";
     }
+    echo "&nbsp;if available</td></tr>\n";
+
+    echo "<tr><td colspan=\"4\">&nbsp;</td></tr>\n";
+
     echo "<tr><td colspan=\"4\" style=\"background-color:#E5EFFA; color:#00156E; border-bottom:1px solid #CFDBEB\">&nbsp;Form</td></tr>\n";
     echo "<tr><td colspan=\"4\">&nbsp;</td></tr>\n";
     echo "<tr><td align=\"right\">Group Details&nbsp;</td><td><select name=\"type\">\n";
@@ -415,14 +416,27 @@ if (isset($_POST['Submit'])) {
       echo "<option value=\"$type\">$type</option>\n";
     }
     $field_details->close();
-    echo "</select>\n</td></tr>\n";
-    echo "<tr><td align=\"right\">Begin numbering at</td><td colspan=\"3\"><select name=\"marking\">\n";
+    echo "</select>\n</td>\n";
+    echo "<td align=\"right\">Number from</td><td><select name=\"marking\">\n";
     if ($marking == '1') {
       echo "<option value=\"0\">0</option>\n<option value=\"1\" selected>1</option>\n";
     } else {
       echo "<option value=\"0\" selected>0</option>\n<option value=\"1\">1</option>\n";
     }
     echo "</select>\n</td></tr>\n";
+    echo '<tr><td align="right">Review</td><td>';
+    if ($review == '1') {
+      echo '<input type="radio" name="review" value="1" checked="checked" />';
+    } else {
+      echo '<input type="radio" name="review" value="1" />';
+    }
+    echo 'All peers per group<br />';
+    if ($review == '0') {
+      echo '<input type="radio" name="review" value="0" checked="checked" />';
+    } else {
+      echo '<input type="radio" name="review" value="0" />';
+    }
+    echo 'Single Review</td></tr>';
   ?>
   </table>
 </td>

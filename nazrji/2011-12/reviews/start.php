@@ -174,9 +174,9 @@ textarea {font-size:100%}
 
 <script src="start.js" type="text/javascript"></script>
 <script language="JavaScript" src="../js/flash_include.js"></script>
-<script type="text/javascript" src="/js/jquery-1.6.1.min.js"></script>
+<script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
 <?php if ($latex_needed == 1) {?>
-<script type="text/javascript" src="/tools/mee/mee/js/mee_src.js"></script>
+<script type="text/javascript" src="../tools/mee/mee/js/mee_src.js"></script>
 <?php }?>
 <script language="JavaScript" type="text/javascript">
   window.history.go(1);

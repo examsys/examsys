@@ -41,14 +41,16 @@ if ( false ) {
   exit;
 }
 
-define('DIR_SEPARATOR', '/');
-$cfg_web_root = (substr($_SERVER['DOCUMENT_ROOT'], -1) == DIR_SEPARATOR) ? $_SERVER['DOCUMENT_ROOT'] : $_SERVER['DOCUMENT_ROOT'] . DIR_SEPARATOR;
+require '../include/path_functions.inc.php';
+$cfg_web_root = get_root_path() . '/';
+$cfg_root_path = str_replace($_SERVER['DOCUMENT_ROOT'], '', $cfg_web_root);
 
-require '../classes/installutils.class.php';
+require $cfg_web_root . 'classes/installutils.class.php';
 
 //basic checks
 InstallUtils::displayHeader();
-InstallUtils::checkHTTPS();
+// TODO: uncomment
+//InstallUtils::checkHTTPS();
 InstallUtils::checkSoftware();
 InstallUtils::checkDirPermissions();
 
@@ -62,5 +64,4 @@ if(isset($_POST['install'])) {
   InstallUtils::displayForm();
 }
 InstallUtils::displayfooter();
-
 ?>

@@ -22,13 +22,13 @@
 * @package
 */
 
-$root = (substr($_SERVER['DOCUMENT_ROOT'], -1) == '/') ? $_SERVER['DOCUMENT_ROOT'] : $_SERVER['DOCUMENT_ROOT'] . '/';
-require_once $root . 'config/config.inc.php';
+require_once '../config/config.inc.php';
+require_once '../classes/lang.class.php';
 require '../include/media.inc';
 require '../include/errors.inc';
 require '../include/sct_review.inc';
 require '../config/start.inc';
-  
+
 check_var('paperID', 'GET', true, false);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">

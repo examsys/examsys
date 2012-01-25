@@ -25,12 +25,12 @@
   require '../include/sysadmin_auth.inc';
   require '../include/errors.inc';
 
-  check_var('degreeID', 'POST', true, false);
+  check_var('courseID', 'POST', true, false);
 
-  $tmp_degreeID = $_POST['degreeID'];
+  $tmp_courseID = $_POST['courseID'];
   
-  $result = $mysqli->prepare("DELETE FROM degrees WHERE id=?");
-  $result->bind_param('i', $tmp_degreeID);
+  $result = $mysqli->prepare("UPDATE courses SET deleted=NOW() WHERE id=?");
+  $result->bind_param('i', $tmp_courseID);
   $result->execute();  
   $result->close();
   $mysqli->close();
@@ -38,7 +38,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Degree Deleted</title>
+<title>Course Deleted</title>
 <script language="javascript">
   function updateParent() {
     window.opener.location.reload();
@@ -53,7 +53,7 @@
 <tr>
 <td valign="top"><img src="../artwork/delete_warning.png" width="48" height="48" border="0" alt="Recycle Bin" /></td>
 
-<td><p>Degree successfully deleted.<p>
+<td><p>Course successfully deleted.<p>
 
 <div style="text-align: center">
 <form action="" method="get">

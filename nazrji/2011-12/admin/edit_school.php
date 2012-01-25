@@ -35,8 +35,18 @@ if (isset($_POST['submit'])) {
   $result->execute();
   $result->close();
 
-  header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/admin/list_schools.php");
+  header("location: list_schools.php");
 } else {
+  $faculties = 0;
+  $faculty_list = array();
+  $result = $mysqli->prepare("SELECT id, name FROM faculty ORDER BY name");
+  $result->execute();
+  $result->bind_result($facultyID, $name);
+  while ($result->fetch()) {
+    $faculty_list[] = array($facultyID, $name);
+    $faculties++;
+  }
+  $result->close();
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
   <html>
@@ -66,7 +76,7 @@ if (isset($_POST['submit'])) {
   $result = $mysqli->prepare("SELECT school, facultyID FROM schools WHERE id=?");
   $result->bind_param('i', $_GET['schoolid']);
   $result->execute();
-  $result->bind_result($school, $faculty);
+  $result->bind_result($school, $curr_faculty);
   $result->fetch();
   $result->close();
  
@@ -87,19 +97,11 @@ if (isset($_POST['submit'])) {
     <table cellpadding="0" cellspacing="2" border="0">
     <tr><td class="field"><?php echo $string['school'] ?></td><td><input type="text" size="70" id="school" name="school" value="<?php echo $school; ?>" /></td></tr>
     <tr><td class="field"><?php echo $string['faculty'] ?></td><td><select name="faculty">
-    <option value=""></option>
     <?php
-      $result = $mysqli->prepare("SELECT id, name FROM faculty ORDER BY name");
-      $result->execute();
-      $result->bind_result($id, $name);
-      while ($result->fetch()) {
-        if ($id == $faculty) {
-          echo "<option value=\"$id\" selected=\"selected\">$name</option>\n";
-        } else {
-          echo "<option value=\"$id\">$name</option>\n";
-        }
+      foreach ($faculty_list as $faculty) {
+        $sel = ($faculty[0] == $curr_faculty) ? ' selected="selected"' : '';
+        echo "<option value=\"{$faculty[0]}\"{$sel}>{$faculty[1]}</option>\n";
       }
-      $result->close();
     ?>
     </select></td></tr>
     </table>

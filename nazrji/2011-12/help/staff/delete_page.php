@@ -52,5 +52,5 @@
 
   $mysqli->close();
 
-  header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/help/staff/index.php");
+  header("location: index.php");
 ?>

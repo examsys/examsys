@@ -449,9 +449,9 @@
   $module = (isset($_GET['module'])) ? $_GET['module'] : '';
   $folder = (isset($_GET['folder'])) ? $_GET['folder'] : '';
   if (isset($_POST['continue'])) {
-    header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/std_setting/individual_review.php?&paperID=$paperID&method=" . $_GET['method'] . "&setterID=$userID&dateID=$now&module=$module&folder=$folder#$last_question");
+    header("location: individual_review.php?&paperID=$paperID&method=" . $_GET['method'] . "&setterID=$userID&dateID=$now&module=$module&folder=$folder#$last_question");
   } else {
-    header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/std_setting/index.php?paperID=$paperID&module=$module&folder=$folder");
+    header("location: index.php?paperID=$paperID&module=$module&folder=$folder");
   }
   $mysqli->close();
 ?>

@@ -28,7 +28,7 @@
   require '../include/mb_string.inc.php';
 
   function my_ucwords($s) {
-    $s = preg_replace_callback("/(\b[\w|']+\b)/su", 'fixcase_callback', $s);
+    $s = preg_replace_callback("/(?:^|-|\pZ|')([\pL]+)/su", 'fixcase_callback', $s);
     return $s;         
   } 
     
@@ -305,14 +305,14 @@ if (strpos($_SERVER['HTTP_HOST'],'.uk') !== false) {
 <option value="Invigilator"><?php echo $string['invigilator']; ?></option>
 <?php
   $old_school = '';
-  $result = $mysqli->prepare("SELECT DISTINCT degree, description, school FROM degrees WHERE school NOT IN ('university','NHS','N/A') ORDER BY school, degree");
+  $result = $mysqli->prepare("SELECT DISTINCT name, description, school FROM courses WHERE school NOT IN ('university','NHS','N/A') ORDER BY school, name");
   $result->execute();
-  $result->bind_result($degree, $description, $school);
+  $result->bind_result($name, $description, $school);
   while ($result->fetch()) {
     if ($old_school != $school) {
       echo "</optgroup>\n<optgroup label=\"" . $string['students'] . " - $school\">\n";    
     }
-    echo "<option value=\"$degree\">$degree: $description</option>\n";
+    echo "<option value=\"$name\">$name: $description</option>\n";
     $old_school = $school;
   }
   $result->close();

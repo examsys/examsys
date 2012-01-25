@@ -28,11 +28,11 @@
 
   if ($_POST['submit']) {
     $surname = $_POST['surname'];
-    $degreeID = $_POST['degreeID'];
+    $courseID = $_POST['courseID'];
     $yearID = $_POST['yearID'];
     
     $result = $mysqli->prepare("SELECT DISTINCT student_id, surname, initials, title, users.username, password, email FROM users LEFT JOIN sid ON users.id=sid.userID WHERE roles='Student' AND year LIKE ? AND grade LIKE ? AND surname LIKE ?");
-    $result->bind_param('sss', $yearID, $degreeID, $surname);
+    $result->bind_param('sss', $yearID, $courseID, $surname);
     $result->execute();
     $result->bind_result($student_id, $surname, $initials, $title, $username, $password, $email);
     while ($row = $result->fetch()) {
@@ -123,7 +123,7 @@ textarea, input {font-family:Arial,sans-serif}
 </div>
 
 <input type="hidden" name="surname" value="<?php echo $_GET['surname']; ?>" />
-<input type="hidden" name="degreeID" value="<?php echo $_GET['degreeID']; ?>" />
+<input type="hidden" name="courseID" value="<?php echo $_GET['courseID']; ?>" />
 <input type="hidden" name="yearID" value="<?php echo $_GET['yearID']; ?>" />
 </form>
 <?php

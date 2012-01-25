@@ -36,6 +36,31 @@ check_var('paperID', 'GET', true, false);
 
 $paperID = $_GET['paperID'];
 
+$result = $mysqli->prepare("SELECT paper_title, moduleID, pass_mark, users.title, users.initials, users.surname, moduleID, folder, random_mark, total_mark, marking, paper_ownerID, DATE_FORMAT(start_date,'%H') as start_hour, DATE_FORMAT(start_date,'%Y%m%d%H%i') AS start_date, DATE_FORMAT(start_date,'$cfg_long_date_time') AS display_start_date, DATE_FORMAT(end_date,'%Y%m%d%H%i') AS end_date, paper_type, deleted, latex_needed FROM (properties, users) WHERE property_id=? AND paper_ownerID=users.id LIMIT 1");
+$result->bind_param('i', $paperID);
+$result->execute();
+$result->bind_result($paper_title, $moduleID, $pass_mark, $title, $initials, $surname, $tmp_module, $tmp_folder, $random_mark, $total_mark, $marking, $paper_ownerID, $tmp_start_hour, $start_date, $display_start_date, $end_date, $paper_type, $deleted, $latex_needed);
+$result->fetch();
+$result->close();
+
+// Check out team security
+if (strpos($userroles,'SysAdmin') === false) {
+  $on_team = false;
+  $paper_teams = explode(',', $moduleID);
+  
+  foreach ($teams as $team) {
+    foreach ($paper_teams as $paper_team) {
+      if ($team == $paper_team) {
+        $on_team = true;
+      }
+    }
+  }
+  
+  if ($on_team == false and strpos($moduleID,'SYSTEM') === false) {
+    access_denied($string['denied_paper'], false);
+  }
+}
+
 function findDecisionQ($question_array,$sourceID) {
   $source_question_no = 0;
   $tmp_q_no = 0;
@@ -765,7 +790,7 @@ function getMSCAA($paperID, $mysqlidb) {
     }
     echo "</td></tr>\n";
   } elseif ($paper_type == '2') {
-    $tmp_hour = substr($display_start_date,0,2);
+    $tmp_hour = $tmp_start_hour;
     if (substr($tmp_hour,0,1) == '0') $tmp_hour = substr($tmp_hour,1,1);
     if (substr($display_start_date,12,4) > (date("Y")+1)) {
       echo "<tr><td colspan=\"2\" style=\"height:32px; text-align:right; background-image:url('../artwork/non_owner_gradient.gif'); background-repeat:repeat-x\"><img src=\"../artwork/late_warning_icon.png\" style=\"padding-top:2px\" width=\"28\" height=\"28\" alt=\"Locked\" />&nbsp;&nbsp;</td><td colspan=\"7\" style=\"height:32px; vertical-align:middle; background-image:url('../artwork/non_owner_gradient.gif'); background-repeat:repeat-x\">";

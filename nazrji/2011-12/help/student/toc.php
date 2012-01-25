@@ -43,7 +43,7 @@ a:visited {color:#003DB2}
     current = (document.getElementById(sectionID).style.display == 'block') ? 'none' : 'block';
     document.getElementById(sectionID).style.display = current;
 
-    icon = (document.getElementById(imageID).getAttribute('src') == '<?php echo $protocol . $_SERVER['HTTP_HOST']; ?>/help/open_book.png') ? '<?php echo $protocol . $_SERVER['HTTP_HOST']; ?>/help/closed_book.png' : '<?php echo $protocol . $_SERVER['HTTP_HOST']; ?>/help/open_book.png';
+    icon = (document.getElementById(imageID).getAttribute('src') == '../open_book.png') ? '../closed_book.png' : '../open_book.png';
     document.getElementById(imageID).setAttribute('src',icon);
   }
 
@@ -108,11 +108,11 @@ a:visited {color:#003DB2}
     }
     $id = $help_toc[$i]['id'];
     if ($icon == 'closed_book.png') {
-      echo "<div><img src=\"" . $protocol . $_SERVER['HTTP_HOST'] . "/help/$icon\" id=\"button$id\" width=\"16\" height=\"16\" alt=\"\" border=\"0\" style=\"cursor:pointer\" onclick=\"updateMenu('submenu$id','button$id'); return false;\" />&nbsp;<a href=\"\" class=\"book\" onclick=\"updateMenu('submenu$id','button$id'); return false;\"><nobr>" . $tmp_title . "</nobr></a></div>\n";
+      echo "<div><img src=\"../$icon\" id=\"button$id\" width=\"16\" height=\"16\" alt=\"\" border=\"0\" style=\"cursor:pointer\" onclick=\"updateMenu('submenu$id','button$id'); return false;\" />&nbsp;<a href=\"\" class=\"book\" onclick=\"updateMenu('submenu$id','button$id'); return false;\"><nobr>" . $tmp_title . "</nobr></a></div>\n";
       echo "<div style=\"display:none; margin-left:18px\" id=\"submenu$id\">";
       $sub_section = 1;
     } elseif ($icon == 'open_book.png') {
-      echo "<div><img src=\"" . $protocol . $_SERVER['HTTP_HOST'] . "/help/$icon\" id=\"button$id\" width=\"16\" height=\"16\" alt=\"\" border=\"0\" style=\"cursor:pointer\" onclick=\"updateMenu('submenu$id','button$id'); return false;\" />&nbsp;<a href=\"\" class=\"book\" onclick=\"updateMenu('submenu$id','button$id'); return false;\"><nobr>" . $tmp_title . "</nobr></a></div>\n";
+      echo "<div><img src=\"../$icon\" id=\"button$id\" width=\"16\" height=\"16\" alt=\"\" border=\"0\" style=\"cursor:pointer\" onclick=\"updateMenu('submenu$id','button$id'); return false;\" />&nbsp;<a href=\"\" class=\"book\" onclick=\"updateMenu('submenu$id','button$id'); return false;\"><nobr>" . $tmp_title . "</nobr></a></div>\n";
       echo "<div style=\"display:block; margin-left:18px\" id=\"submenu$id\">";
       $sub_section = 1;
     } else {

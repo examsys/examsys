@@ -22,13 +22,12 @@
 * @package
 */
 
-$root = (substr($_SERVER['DOCUMENT_ROOT'], -1) == '/') ? $_SERVER['DOCUMENT_ROOT'] : $_SERVER['DOCUMENT_ROOT'] . '/';
-require_once $root . 'config/config.inc.php';
+require_once $cfg_web_root . 'classes/dbutils.class.php';
 
 set_error_handler("customErrorHandler");
 
 function customErrorHandler($errno, $errstr, $errfile, $errline) {
-  global $mysqli, $userID, $debug_pagestart, $dbclass, $cfg_db_host , $cfg_db_username, $cfg_db_passwd, $cfg_db_database;
+  global $mysqli, $userID, $debug_pagestart, $dbclass, $cfg_db_host, $cfg_db_username, $cfg_db_passwd, $cfg_db_database, $cfg_db_charset;
   
   if (isset($debug_pagestart)) {
     //we are in a debug session do not log errors to db just display them
@@ -61,6 +60,8 @@ function customErrorHandler($errno, $errstr, $errfile, $errline) {
       return true;
     } elseif (strpos($errstr,'ldap_bind()') !== false) {
       return true;
+    } elseif (strpos($errstr,'ldap_search()') !== false) {
+      return true;
     } elseif (strpos($errstr,'simplexml_load_string()') !== false) {
       //QTI imports with invalid XML cause lots of warnings in the error logs. Filter them out.
       return false;  
@@ -68,11 +69,11 @@ function customErrorHandler($errno, $errstr, $errfile, $errline) {
   }
 
   if ($error_type != 'Notice') {  // Record errors that are not notices.
-    if (is_object($mysqli)) {
+    if (is_object($mysqli)) {    
       // Query may fail if we try to insert while another statement is open.
       // Since we don't have a handle on the original statement, close the DB link and create another
       $mysqli->close();
-      $mysqli = new $dbclass($cfg_db_host , $cfg_db_username, $cfg_db_passwd, $cfg_db_database);
+      $mysqli = DBUtils::get_mysqli_link($cfg_db_host , $cfg_db_username, $cfg_db_passwd, $cfg_db_database, $cfg_db_charset, $dbclass);
       
       $paperID = NULL;
       if (isset($_GET['paperID'])) {
@@ -92,8 +93,8 @@ function customErrorHandler($errno, $errstr, $errfile, $errline) {
         }
       }
       
-      $log_error = $mysqli->prepare("INSERT INTO sys_errors VALUES(NULL, NOW(), ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?, ?)");
-      $log_error->bind_param('isssssssis', $userID, $error_type, $errstr, $errfile, $errline, $_SERVER['PHP_SELF'], $_SERVER['QUERY_STRING'], $_SERVER['REQUEST_METHOD'], $paperID, $post_data);
+      $log_error = $mysqli->prepare("INSERT INTO sys_errors VALUES(NULL, NOW(), ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?, ?)");
+      $log_error->bind_param('issssssssis', $userID, $_SERVER['PHP_AUTH_USER'], $error_type, $errstr, $errfile, $errline, $_SERVER['PHP_SELF'], $_SERVER['QUERY_STRING'], $_SERVER['REQUEST_METHOD'], $paperID, $post_data);
       $log_error->execute();
       $log_error->close();
     }

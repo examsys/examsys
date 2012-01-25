@@ -67,7 +67,7 @@
     <title></title>
     <script language="JavaScript">
       function reloadHelp() {
-        window.top.location='/help/staff/index.php?id=<?php echo $page_id; ?>';
+        window.top.location='<?php echo $cfg_root_path ?>/help/staff/index.php?id=<?php echo $page_id; ?>';
       }
     </script>
     </head>
@@ -97,8 +97,9 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     .subheading {font-weight:bold; font-style:italic}
   </style>
   
-  <script language="JavaScript" src="/tools/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
-  <script language="JavaScript" src="/tools/tinymce/jscripts/tiny_mce/tiny_config_help_staff.js"></script>
+  <?php echo $cfg_js_root ?>
+  <script language="JavaScript" src="../../tools/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
+  <script language="JavaScript" src="../../tools/tinymce/jscripts/tiny_mce/tiny_config_help_staff.js"></script>
   <script language="JavaScript">
     function getSize() {
       if (parseInt(navigator.appVersion)>3) {

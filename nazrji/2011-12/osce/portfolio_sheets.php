@@ -47,7 +47,7 @@
   $startdate = $_GET['startdate'];
   $enddate = $_GET['enddate'];
   $result = $mysqli->prepare("SELECT log4.userID, students.title, students.surname, students.first_names, log4.q_id, rating, q_parts, leadin, theme, DATE_FORMAT(log4_overall.started,\"%d/%m/%Y %H:%i\") AS started, REPLACE(feedback,'&','&amp;') AS feedback, examiners.title, examiners.surname FROM (log4, log4_overall, papers, questions, users AS students, users AS examiners) WHERE log4.userID=log4_overall.userID AND log4.q_paper=log4_overall.q_paper AND log4.userID=students.id AND log4_overall.examinerID=examiners.id AND papers.question=questions.q_id AND papers.paper=? AND log4.q_paper=? AND log4.q_id=questions.q_id AND log4_overall.started>=? AND log4_overall.started<=? AND (students.roles='Student' OR students.roles='graduate') AND log4_overall.student_grade LIKE ? ORDER BY students.surname, students.initials, log4_overall.userID, display_pos");
-  $result->bind_param('iisss', $_GET['paperID'], $_GET['paperID'], $startdate, $enddate, $_GET['repdegree']);
+  $result->bind_param('iisss', $_GET['paperID'], $_GET['paperID'], $startdate, $enddate, $_GET['repcourse']);
   $result->execute();
   $result->bind_result($tmp_userID, $title, $surname, $first_names, $q_id, $rating, $q_parts, $leadin, $theme, $started, $feedback, $examiner_title, $examiner_surname);
   $old_tmp_userID = 0;

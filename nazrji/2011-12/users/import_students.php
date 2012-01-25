@@ -47,10 +47,7 @@
 $(function () { $('#import_form').validate(); });
 </script>
 <style type="text/css">
-label.error {
-display: block;
-color: #f00;
-}
+label.error {display:block; color:#f00}
 </style>
 </head>
 
@@ -114,7 +111,7 @@ color: #f00;
 <td align="left" style="background-color:#F1F5FB" colspan="2">
 
 <p><?php echo $string['msg1']; ?></p>
-<blockquote>ID, First Names, Family Name, Title, Degree, Year of Study and Email</blockquote>
+<blockquote>ID, First Names, Family Name, Title, Course, Year of Study and Email</blockquote>
 <p><?php echo $string['msg2']; ?></p> 
 
 <div style="text-align:center"><img src="../artwork/student_import_headings.png" width="695" height="59" alt="Headings" border="1" /></div>

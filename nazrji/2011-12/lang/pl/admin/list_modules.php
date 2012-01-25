@@ -7,6 +7,7 @@ $string['active'] = 'Aktywny';
 $string['yes'] = 'tak';
 $string['no'] = 'nie';
 $string['createmodule'] = 'Utwórz nowy moduł';
+$string['bulkmoduleimport'] = 'Skomasowany import modułów'; 
 $string['editmodule'] = 'Edytuj moduł';
 $string['modulefolder'] = 'Folder modułu';
 $string['studentcohort'] = 'Grupa studentów';

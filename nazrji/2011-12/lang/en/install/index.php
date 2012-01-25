@@ -10,6 +10,7 @@ $string['databasesetup'] = 'Database Setup';
 $string['databasehost'] = 'Database host';
 $string['databaseport'] = 'Database port';
 $string['databasename'] = 'Database Name';
+$string['databasecharset'] = 'Database Character Set';
 $string['databaseuser'] = 'Rogō Database user';
 $string['rdbusername'] = 'Username';
 $string['rdbpassword'] = 'Password';

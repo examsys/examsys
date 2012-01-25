@@ -35,7 +35,6 @@ function encpw($u,$p) {
 }
 
 $mysqli = new mysqli($cfg_db_host, $cfg_db_student_user, $cfg_db_student_passwd, $cfg_db_database);
-$protocol = 'https://';
 
 // Check that the ip_address of the current user is within the exam lab.
 $ip_match = false;
@@ -91,7 +90,7 @@ if (isset($_POST['submit'])) {
   echo '<tr><td><table style="width:100%"><tr><td style="padding:6px">' . $string['username'] . '</td><td><strong>' . $_POST['username'] . '</strong></td></tr>';
   echo '<tr><td style="padding:6px">' . $string['password'] . '</td><td><strong>' . $_POST['password'] . '</strong></td></tr>';
   echo '<tr><td colspan="2"><td>&nbsp;</td></tr>';
-  echo '<tr><td style="text-align:center"><td><input type="button" name="login" value="' . $string['login'] . '" style="width:120px" onclick="window.location=\'' . $protocol . $_SERVER['HTTP_HOST'] . '/index.php\';" /></td></tr>';
+  echo '<tr><td style="text-align:center"><td><input type="button" name="login" value="' . $string['login'] . '" style="width:120px" onclick="window.location=\'' . $protocol . $_SERVER['HTTP_HOST'] . $cfg_root_path . '/index.php\';" /></td></tr>';
   echo '</table></td></tr></table></div>';
 } else {
   $used_accounts = array();

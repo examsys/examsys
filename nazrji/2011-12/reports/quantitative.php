@@ -443,13 +443,13 @@ td {vertical-align:top}
   $log_array = array();
   $hits = 0;
   // Capture the log data first.
-  if ($_GET['repdegree'] == 'Staff') {
+  if ($_GET['repcourse'] == 'Staff') {
     $result = $mysqli->prepare("SELECT DISTINCT log3.userID, log3.q_id, user_answer, q_type, screen, score_method FROM (log3, questions, users) WHERE log3.q_id=questions.q_id AND q_paper=? AND users.id=log3.userID AND (users.roles LIKE 'Staff%' OR users.roles LIKE '%SysAdmin%')$exclude AND started>=? AND started<=?");
     $result->bind_param('iss', $_GET['paperID'], $_GET['startdate'], $_GET['enddate']);
     $result->execute();
   } else {
     $result = $mysqli->prepare("SELECT DISTINCT log3.userID, log3.q_id, user_answer, q_type, screen, score_method FROM (log3, questions, users) WHERE log3.q_id=questions.q_id AND q_paper=? AND users.id=log3.userID AND (users.roles='Student' OR users.roles='graduate')$exclude AND grade LIKE ? AND started>=? AND started<=?");
-    $result->bind_param('isss', $_GET['paperID'], $_GET['repdegree'], $_GET['startdate'], $_GET['enddate']);
+    $result->bind_param('isss', $_GET['paperID'], $_GET['repcourse'], $_GET['startdate'], $_GET['enddate']);
     $result->execute();
   }
   $result->bind_result($tmp_userID, $question_ID, $tmp_answer, $q_type, $screen, $score_method);

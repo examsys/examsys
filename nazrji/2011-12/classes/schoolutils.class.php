@@ -27,13 +27,13 @@
 
 Class SchoolUtils {
  
-  static function addSchool($faculty, $school, $db) {
+  static function addSchool($facultyID, $school, $db) {
    
-    $result = $db->prepare("INSERT INTO schools VALUES (NULL, ?,?)");
-    $result->bind_param('ss', $faculty, $school);
+    $result = $db->prepare("INSERT INTO schools VALUES (NULL, ?, ?, NULL)");
+    $result->bind_param('si', $school, $facultyID);
     $result->execute();
     $result->close();
-    if($db->errno != 0) {
+    if ($db->errno != 0) {
       return false;
     }
     

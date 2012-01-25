@@ -11,5 +11,5 @@ tinyMCE.init({
     theme_advanced_toolbar_location : "top", 
     theme_advanced_toolbar_align : "left",
     // Example content CSS (should be your site CSS) 
-    content_css : "/css/editor.css", 
+    content_css : cfgRootPath + "/css/editor.css",
 }); 

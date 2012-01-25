@@ -443,6 +443,8 @@ p {margin-top:0px; padding-top:0px}
   <br />
 <?php
   $old_leadin = '';
+  $old_scenario = '';
+  $old_notes = '';
   $old_q_type = '';
   $old_q_id = 0;
   $question_no = 0;
@@ -452,6 +454,7 @@ p {margin-top:0px; padding-top:0px}
   $total_marks = 0; //Altered as a globle in display_options !!!
   $std_excluded = 0;
   $prologue_show = 1;
+  $options_array = array();
   echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">\n";
 
   $result = $mysqli->prepare("SELECT screen, q_type, q_id, score_method, display_method, marks_correct, marks_incorrect, theme, scenario, leadin, correct, REPLACE(option_text,'\t','') AS option_text, q_media, q_media_width, q_media_height, o_media, o_media_width, o_media_height, notes, correct_fback FROM (papers, questions, options) WHERE paper=? AND papers.question=questions.q_id AND questions.q_id=options.o_id ORDER BY display_pos, id_num");
@@ -471,7 +474,7 @@ p {margin-top:0px; padding-top:0px}
       $li_set = 0;
       if ($old_leadin != '') {
         if ($li_set == 1) echo "</td></tr>\n";
-        display_options($options_array, $old_q_id, $old_theme, $old_scenario, $old_leadin, $old_notes, $paper_type, $_GET['method'], $reviews, $excluded, false);
+        if (count($options_array) > 0) display_options($options_array, $old_q_id, $old_theme, $old_scenario, $old_leadin, $old_notes, $paper_type, $_GET['method'], $reviews, $excluded, false);
         if ($old_screen != $screen) {
           echo '<tr><td colspan="2"><table cellpadding="0" cellspacing="1" border="0" style="width:100%; height:70px; border-top:1px solid #B5C4DF; background-image:url(\'../artwork/screen_no_background.gif\'); background-repeat:repeat-x">';
           echo "<tr>\n<td width=\"20\">&nbsp;</td>\n";
@@ -536,7 +539,7 @@ p {margin-top:0px; padding-top:0px}
   $result->close();
 
   // Print the options for the last question on the screen.
-  display_options($options_array, $old_q_id, $old_theme, $old_scenario, $old_leadin, $old_notes, $paper_type, $_GET['method'], $reviews, $excluded, false);
+  if (count($options_array) > 0) display_options($options_array, $old_q_id, $old_theme, $old_scenario, $old_leadin, $old_notes, $paper_type, $_GET['method'], $reviews, $excluded, false);
 
   echo '</td></tr></table></td></tr>';
   echo "<tr><td colspan=\"2\" style=\"border-top: dotted #808080 1px; color:#808080; font-size:90%; font-weight:bold\">&nbsp;</td>\n</tr>\n";

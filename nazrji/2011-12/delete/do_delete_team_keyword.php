@@ -38,22 +38,20 @@ $result = $mysqli->prepare("DELETE FROM keywords_question WHERE keywordID=?");
 $result->bind_param('i', $_POST['keywordID']);
 $result->execute();  
 $result->close();
-
-$mysqli->close();
-exit;
 ?>
 <html>
 <head>
 <title>Keyword Deleted</title>
-<script language="javascript">
-  function closeWindow() {
-    window.opener.location.href = '/folder/list_keywords.php?module=<?php echo $_POST['module']; ?>';
+<script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
+<script type="text/javascript">
+  $(function () {
+    window.opener.location.href = '<?php echo $cfg_root_path ?>/folder/list_keywords.php?module=<?php echo $_POST['module']; ?>';
     self.close();
-  }
+  });
 </script>
 </head>
 
-<body onload="closeWindow();" style="margin:0px; background-color:#EEEEEE; font-family:Arial,sans-serif; font-size:80%; text-align:justifed">
+<body style="margin:0px; background-color:#EEEEEE; font-family:Arial,sans-serif; font-size:80%; text-align:justifed">
 
 <table cellpadding="8" cellspacing="0" border="0" width="100%">
 <tr>
@@ -63,7 +61,7 @@ exit;
 
 <div style="text-align:center">
 <form action="" method="get">
-<input type="button" name="ok" value="  <?php echo $string['ok']; ?>  " onclick="javascript:self.opener.location.href='/folder/list_keywords.php?moduleid=<?php echo $_POST['moduleID']; ?>';window.close();" />
+<input type="button" name="ok" value="  <?php echo $string['ok']; ?>  " onclick="javascript:self.opener.location.href='<?php echo $cfg_root_path ?>/folder/list_keywords.php?moduleid=<?php echo $_POST['moduleID']; ?>';window.close();" />
 </form>
 </div>
 </td></tr>

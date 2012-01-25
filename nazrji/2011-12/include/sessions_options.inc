@@ -85,7 +85,7 @@
     document.getElementById('menu' + ID).style.display = current;
 
     <?php
-      echo "icon = (document.getElementById('icon' + ID).getAttribute('src') == '$protocol" . $_SERVER['HTTP_HOST'] . "/artwork/down_arrow_icon.gif') ? '$protocol" . $_SERVER['HTTP_HOST'] . "/artwork/up_arrow_icon.gif' : '$protocol" . $_SERVER['HTTP_HOST'] . "/artwork/down_arrow_icon.gif';\n";
+      echo "icon = (document.getElementById('icon' + ID).getAttribute('src') == '$protocol" . $_SERVER['HTTP_HOST'] . "{$cfg_root_path}/artwork/down_arrow_icon.gif') ? '$protocol" . $_SERVER['HTTP_HOST'] . "{$cfg_root_path}/artwork/up_arrow_icon.gif' : '$protocol" . $_SERVER['HTTP_HOST'] . "{$cfg_root_path}/artwork/down_arrow_icon.gif';\n";
     ?>
     alttag = (document.getElementById('icon' + ID).getAttribute('alt') == 'Hide') ? 'Show' : 'Hide';
     document.getElementById('icon' + ID).setAttribute('src',icon);
@@ -99,7 +99,7 @@
   }
 
   function jumpTo() {
-    window.top.location = '<?php echo $protocol . $_SERVER['HTTP_HOST']; ?>/paper_frame.php?paperID=' + document.releaseform.paperID.value;
+    window.top.location = '<?php echo $protocol . $_SERVER['HTTP_HOST'] . $cfg_root_path; ?>/paper_frame.php?paperID=' + document.releaseform.paperID.value;
   }
 
   function showSessCopyMenu(e) {
@@ -139,10 +139,10 @@ if ($vle_api != 'NLE') {
 <tr><td><img src="../artwork/red_cross_grey.png" width="16" height="16" alt="" border="0" /></td><td class="greymenuitem"><?php echo $string['deletesession']; ?></td></tr>
 <?php
 if ($vle_api != 'NLE') {
-	echo '<tr><td><img onclick="showSessCopyMenu(event)" src="../artwork/copy_icon.gif" width="16" height="16" alt="Copy year" border="0" /></td><td class="menuitem"><a href="#" onclick="showSessCopyMenu(event); return false;"><span>' . $string['copyyear'] . '</span></a><img src="/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>';
+	echo '<tr><td><img onclick="showSessCopyMenu(event)" src="../artwork/copy_icon.gif" width="16" height="16" alt="Copy year" border="0" /></td><td class="menuitem"><a href="#" onclick="showSessCopyMenu(event); return false;"><span>' . $string['copyyear'] . '</span></a><img src="' . $cfg_root_path . '/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>';
 }
 else {
-	echo '<tr><td><img onclick="alert(\'Copy year is not available for NLE modules\') return false;" src="../artwork/copy_icon.gif" width="16" height="16" alt="" border="0" /></td><td class="menuitem"><a href="#" onclick="alert(\'Copy year is not available for NLE modules\'); return false;"><span>' . $string['copyyear'] . '</span></a><img src="/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>';
+	echo '<tr><td><img onclick="alert(\'Copy year is not available for NLE modules\') return false;" src="../artwork/copy_icon.gif" width="16" height="16" alt="" border="0" /></td><td class="menuitem"><a href="#" onclick="alert(\'Copy year is not available for NLE modules\'); return false;"><span>' . $string['copyyear'] . '</span></a><img src="' . $cfg_root_path . '/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>';
 }
 ?>
 </table>
@@ -163,10 +163,10 @@ if ($vle_api != 'NLE') {
 <tr><td><img onclick="hideSessCopyMenu(event); deleteSession()" src="../artwork/red_cross.png" width="16" height="16" alt="" border="0" /></td><td class="menuitem"><a href="" onclick="hideSessCopyMenu(event); deleteSession(); return false;"><?php echo $string['deletesession']; ?></a></td></tr>
 <?php
 if ($vle_api != 'NLE') {
-  echo '<tr><td><img onclick="showSessCopyMenu(event)" src="../artwork/copy_icon.gif" width="16" height="16" alt="" border="0" /></td><td class="menuitem"><a href="" onclick="showSessCopyMenu(event); return false;"><span>' . $string['copyyear'] . '</span></a><img src="/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>';
+  echo '<tr><td><img onclick="showSessCopyMenu(event)" src="../artwork/copy_icon.gif" width="16" height="16" alt="" border="0" /></td><td class="menuitem"><a href="" onclick="showSessCopyMenu(event); return false;"><span>' . $string['copyyear'] . '</span></a><img src="' . $cfg_root_path . '/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>';
 }
 else {
-	echo '<tr><td><img onclick="alert(\'Copy year is not available for NLE modules\') return false;" src="../artwork/copy_icon.gif" width="16" height="16" alt="" border="0" /></td><td class="menuitem"><a href="#" onclick="alert(\'Copy year is not available for NLE modules\'); return false;"><span>' . $string['copyyear'] . '</span></a><img src="/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>';
+	echo '<tr><td><img onclick="alert(\'Copy year is not available for NLE modules\') return false;" src="../artwork/copy_icon.gif" width="16" height="16" alt="" border="0" /></td><td class="menuitem"><a href="#" onclick="alert(\'Copy year is not available for NLE modules\'); return false;"><span>' . $string['copyyear'] . '</span></a><img src="' . $cfg_root_path . '/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>';
 }
 ?>
 </table>
@@ -187,10 +187,10 @@ if ($vle_api != 'NLE') {
 <tr><td><img onclick="hideSessCopyMenu(event); deleteNLESession()" src="../artwork/red_cross.png" width="16" height="16" alt="" border="0" /></td><td class="menuitem"><a href="" onclick="hideSessCopyMenu(event); deleteNLESession(); return false;"><?php echo $string['deletesession']; ?></a></td></tr>
 <?php
 if ($vle_api != 'NLE') {
-  echo '<tr><td><img onclick="showSessCopyMenu(event)" src="../artwork/copy_icon.gif" width="16" height="16" alt="" border="0" /></td><td class="menuitem"><a href="" onclick="showSessCopyMenu(event); return false;"><span>' . $string['copyyear'] . '</span></a><img src="/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>';
+  echo '<tr><td><img onclick="showSessCopyMenu(event)" src="../artwork/copy_icon.gif" width="16" height="16" alt="" border="0" /></td><td class="menuitem"><a href="" onclick="showSessCopyMenu(event); return false;"><span>' . $string['copyyear'] . '</span></a><img src="' . $cfg_root_path . '/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>';
 }
 else {
-	echo '<tr><td><img onclick="alert(\'Copy year is not available for NLE modules\') return false;" src="../artwork/copy_icon.gif" width="16" height="16" alt="" border="0" /></td><td class="menuitem"><a href="#" onclick="alert(\'Copy year is not available for NLE modules\'); return false;"><span>' . $string['copyyear'] . '</span></a><img src="/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>';
+	echo '<tr><td><img onclick="alert(\'Copy year is not available for NLE modules\') return false;" src="../artwork/copy_icon.gif" width="16" height="16" alt="" border="0" /></td><td class="menuitem"><a href="#" onclick="alert(\'Copy year is not available for NLE modules\'); return false;"><span>' . $string['copyyear'] . '</span></a><img src="' . $cfg_root_path . '/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>';
 }
 ?>
 </table>

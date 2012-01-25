@@ -30,21 +30,21 @@
 ?>
 <script language="JavaScript">
   function newKeyword() {
-    keywordwin=window.open("/folder/new_keyword.php?module=<?php echo $module; ?>","keywords","width=350,height=120,left="+(screen.width/2-175)+",top="+(screen.height/2-60)+",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+    keywordwin=window.open("<?php echo $cfg_root_path ?>/folder/new_keyword.php?module=<?php echo $module; ?>","keywords","width=350,height=120,left="+(screen.width/2-175)+",top="+(screen.height/2-60)+",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
     if (window.focus) {
       keywordwin.focus();
     }
   }
 
   function editKeyword() {
-    keywordwin=window.open("/folder/edit_keyword.php?keywordID=" + document.getElementById('keywordID').value + "&module=<?php echo $module; ?>","keywords","width=350,height=120,left="+(screen.width/2-175)+",top="+(screen.height/2-60)+",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+    keywordwin=window.open("<?php echo $cfg_root_path ?>/folder/edit_keyword.php?keywordID=" + document.getElementById('keywordID').value + "&module=<?php echo $module; ?>","keywords","width=350,height=120,left="+(screen.width/2-175)+",top="+(screen.height/2-60)+",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
     if (window.focus) {
       keywordwin.focus();
     }
   }
 
   function deleteKeyword() {
-    keywordwin=window.open("/delete/check_delete_team_keyword.php?keywordID=" + document.getElementById('keywordID').value + "&module=<?php echo $module; ?>","keywords","width=350,height=120,left="+(screen.width/2-175)+",top="+(screen.height/2-60)+",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+    keywordwin=window.open("<?php echo $cfg_root_path ?>/delete/check_delete_team_keyword.php?keywordID=" + document.getElementById('keywordID').value + "&module=<?php echo $module; ?>","keywords","width=350,height=120,left="+(screen.width/2-175)+",top="+(screen.height/2-60)+",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
     if (window.focus) {
       keywordwin.focus();
     }

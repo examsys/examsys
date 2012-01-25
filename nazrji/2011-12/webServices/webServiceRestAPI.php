@@ -21,10 +21,8 @@
 * @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */
-$root = (substr($_SERVER['DOCUMENT_ROOT'], -1) == '/') ? $_SERVER['DOCUMENT_ROOT'] : $_SERVER['DOCUMENT_ROOT'] . '/';
-require $root . 'include/staff_student_auth.inc';
-require_once $root . 'config/config.inc.php';
-require_once $root . 'classes/userutils.class.php';
+require '../include/staff_student_auth.inc';
+require_once $cfg_web_root . 'classes/userutils.class.php';
 require './restAPI.class';
 
 Class webServiceRestAPI extends restAPI {
@@ -208,7 +206,7 @@ Class webServiceRestAPI extends restAPI {
   }
 
   public function getOwnerPaperList($username, $types) {
-    global $protocol;
+    global $protocol, $cfg_root_path;
         
     $tmp_userID = $this->getUserID($username, true);
     if ($tmp_userID == '') {
@@ -266,8 +264,8 @@ Class webServiceRestAPI extends restAPI {
         $papers[$paper_no]['id'] = $crypt_name;
         $papers[$paper_no]['title'] = $paper_title;
         $papers[$paper_no]['type'] = $this->qtypes[$paper_type];
-        $papers[$paper_no]['staff_url'] = $protocol . $_SERVER['HTTP_HOST'] . '/paper/details.php?paperID=' . $property_id;
-        $papers[$paper_no]['student_url'] = $protocol . $_SERVER['HTTP_HOST'] . '/user_index.php?id=' . $crypt_name;
+        $papers[$paper_no]['staff_url'] = $protocol . $_SERVER['HTTP_HOST'] . $cfg_root_path . '/paper/details.php?paperID=' . $property_id;
+        $papers[$paper_no]['student_url'] = $protocol . $_SERVER['HTTP_HOST'] . $cfg_root_path . '/user_index.php?id=' . $crypt_name;
         $papers[$paper_no]['start_date'] = $start_date;
         $papers[$paper_no]['end_date'] = $end_date;
         $papers[$paper_no]['created'] = $created;

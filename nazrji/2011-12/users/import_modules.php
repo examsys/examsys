@@ -16,9 +16,9 @@
 
 /**
 *
-* Import student module registrations form SMS export
+* Bulk student module enrolement
 *
-* @author Anthony Brown
+* @author Anthony Brown, Simon Wilkinson
 * @version 1.0
 * @copyright Copyright (c) 2012 The University of Nottingham
 * @package
@@ -30,25 +30,19 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
   <head>
-  <title><?php echo $string['impmodtitle'] . " $cfg_install_type"; ?></title>
+  <title><?php echo $string['impmodtitle'] . ' ' . $cfg_install_type; ?></title>
   <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
-  <style>
+  <style type="text/css">
     body {font-family:Arial,sans-serif; background-color:white; colour:black}
     p {margin:0px; padding:0px}
     h1 {font-size:120%; font-weight:bold}
-    img { border-style:none; border-width:0px)
+    label.error {display:block; color:#f00}
   </style>
-<script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
-<script type="text/javascript" src="../js/jquery.validate.min.js"></script>
-<script type="text/javascript">
-$(function () { $('#import_form').validate(); });
-</script>
-<style type="text/css">
-label.error {
-display: block;
-color: #f00;
-}
-</style>
+  <script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
+  <script type="text/javascript" src="../js/jquery.validate.min.js"></script>
+  <script type="text/javascript">
+    $(function () { $('#import_form').validate(); });
+  </script>
   </head>
 
   <body>
@@ -62,20 +56,7 @@ color: #f00;
   if (isset($_POST['submit'])) {
     if ($_FILES['csvfile']['name'] != 'none' and $_FILES['csvfile']['name'] != '') {
       if (!move_uploaded_file($_FILES['csvfile']['tmp_name'], "/tmp/" . $userID . "_cohort_update.csv"))  {
-        echo $string['problem'];
-        if ($_FILES['csvfile']['error'] == "0") {
-          echo($string['problem']);
-        } elseif ($_FILES['csvfile']['error'] == "1") {
-          echo($string['problem']);
-        } elseif ($_FILES['csvfile']['error'] == "2") {
-          echo($string['problem']);
-        } elseif ($_FILES['csvfile']['error'] == "3") {
-          echo($string['problem']);
-        } elseif ($_FILES['csvfile']['error'] == "4") {
-          echo($string['problem']);
-        } else {
-          echo($string['problem'] . $_FILES['csvfile']['error']);
-        }
+        echo uploadError($_FILES['csvfile']['error']);
         exit;
       } else {
         ?>
@@ -89,13 +70,15 @@ color: #f00;
         <td align="left" style="background-color:#F1F5FB">
 
         <?php
-        //get a list of Rogo modules
-        $SQL = "SELECT DISTINCT moduleid FROM modules";
-        $res = $mysqli->query($SQL) OR die(mysql_error());
-        $rogo_modules = array();
-        while ($row = $res->fetch_assoc()) {
-          $rogo_modules[] = $row['moduleid'];
+        // Get a list of modules held by Rogo.
+        $module_list = array();
+        $result = $mysqli->prepare("SELECT DISTINCT moduleid FROM modules");
+        $result->execute();
+        $result->bind_result($moduleid);
+        while ($result->fetch()) {
+          $module_list[] = $moduleid;
         }
+        $result->close();
 
         $modulesAdded = 0;
         $missing_users = array();
@@ -103,38 +86,35 @@ color: #f00;
 
         // Build an array of unique student names.
         $students = array();
-        foreach($lines as $separate_line) {
-          if (strpos($separate_line,'"') !== false) {
-            $separate_line = str_replace('","','~',$separate_line);
-            $separate_line = str_replace('"','',$separate_line);
-          } else {
-            $separate_line = str_replace(',','~',$separate_line);
+        foreach ($lines as $separate_line) {
+          if (trim($separate_line) != '') {
+            $fields = explode(',', $separate_line);
+            
+            $sid = trim($fields[0]);
+            $session = trim($fields[2]);
+            // Modules will be added later.
+            
+            $students[$sid]['sid'] = $sid;
+            $students[$sid]['session'] = $session;
+            $students[$sid]['modules'] = array();
           }
-          $fields = explode('~',$separate_line);
-          $email = trim($fields[12]);
-          $username = explode("@",$email);
-          $username = $username[0];
-          $session = trim('20' . $fields[1]);
-          $students[$username]['username'] = $username;
-          $students[$username]['session'] = $session;
-          $students[$username]['modules'] = array();
         }
 
         // Query the modules for each student
         foreach ($students as $student) {
-          $student_databaseID = UserUtils::usernameExists($student['username'], $mysqli);
+          $student_databaseID = UserUtils::studentidExists($student['sid'], $mysqli);
           
           if ($student_databaseID !== false) {
-            $students[$student['username']]['dbID'] = $student_databaseID;
+            $students[$student['sid']]['dbID'] = $student_databaseID;
 
-            $result = $mysqli->prepare("SELECT moduleid FROM student_modules WHERE userID=? AND calendar_year=?");
+            $result = $mysqli->prepare("SELECT moduleid, attempt FROM student_modules WHERE userID=? AND calendar_year=?");
             $result->bind_param('is', $student_databaseID, $student['session']);
             $result->execute();
             $result->store_result();
-            $result->bind_result($moduleid);
+            $result->bind_result($moduleid, $attempt);
             while ($result->fetch()) {
-              if (in_array($moduleid, $rogo_modules)) {
-                $students[$student['username']]['modules'][] = $moduleid;
+              if (in_array($moduleid, $module_list)) {
+                $students[$student['sid']]['modules'][$moduleid][] = $attempt;
               }
             }
             $result->close();
@@ -142,31 +122,35 @@ color: #f00;
         }
 
         foreach ($lines as $separate_line) {
-          if (strpos($separate_line,'"') !== false) {
-            $separate_line = str_replace('","','~',$separate_line);
-            $separate_line = str_replace('"','',$separate_line);
-          } else {
-            $separate_line = str_replace(',','~',$separate_line);
-          }
-          $fields = explode('~',$separate_line);
+          $fields = explode(',', $separate_line);
 
-          if (!stristr($fields[0],"Module Mnem")) {
-            $sid = trim($fields[3]);
-            $module = $fields[0];
-            $session = trim('20' . $fields[1]);
-            $email = trim($fields[12]);
-            $username = explode("@",$email);
-            $username = $username[0];
-            if (in_array($module,$rogo_modules)) {
-              if (!in_array($module,$students[$username]['modules'])) {
-                if (isset($students[$username]['dbID'])) {
-                  UserUtils::addUserToModule($students[$username]['dbID'], $module, $session, $mysqli);
+          if (!stristr($fields[0], "ID") and !stristr($fields[0], "Student ID")) {
+            $sid = trim($fields[0]);
+            $module = trim($fields[1]);
+            $session = trim($fields[2]);
+            if (isset($fields[3])) {
+              $attempt = trim($fields[3]);
+            } else {
+              $attempt = 1;
+            }
+            
+            if (in_array($module, $module_list)) {
+              $require_insert = true;
+              if (isset($students[$sid]['modules'][$module])) {
+                foreach ($students[$sid]['modules'][$module] as $individual_attempt) {
+                  if ($individual_attempt == $attempt) {
+                    $require_insert = false;
+                  }
                 }
-                $modulesAdded++;
-              } else {
-                $missing_users[$sid]['module'][] = $module;
-                $missing_users[$sid]['forname'] = $fields[2];
-                $missing_users[$sid]['surname'] = $fields[1];
+              }
+              
+              if ($require_insert) {
+                if (isset($students[$sid]['dbID'])) {
+                  UserUtils::addUserToModule($students[$sid]['dbID'], $module, $attempt, $session, $mysqli);
+                  $modulesAdded++;
+                } else {
+                  $missing_users[$sid]['module'][] = $module;
+                }
               }
             }
           }
@@ -175,11 +159,11 @@ color: #f00;
     }
     unlink("/tmp/" . $userID . "_cohort_update.csv");
 
-    echo "<h2>$modulesAdded " . $string['modulesadded'] . "</h2>";
+    echo "<h2>$modulesAdded " . $string['enrolementsperformed'] . "</h2>";
     echo "<p>" . count($missing_users) . " " . $string['missingusers'] . "</p>";
-    foreach($missing_users as $sid => $module) {
-      echo "<p>$sid:" . $module['surname'] . ', ' . $module['forname'] . "</p>";
-      foreach($module['module'] as $moduleid) {
+    foreach ($missing_users as $sid => $module) {
+      echo "$sid<br />";
+      foreach ($module['module'] as $moduleid) {
         echo "<p style=\"margin-left:10px\">$moduleid</p>";
       }
     }
@@ -196,7 +180,7 @@ color: #f00;
     <?php
   } else {
 ?>
-<table border="0" cellpadding="4" cellspacing="0" style="width:70%; border:1px solid #95AEC8; margin-left:auto; margin-right:auto">
+<table border="0" cellpadding="4" cellspacing="0" style="width:650px; border:1px solid #95AEC8; margin-left:auto; margin-right:auto">
 <tr>
 <td style="width:56px; background-color:white"><img src="../artwork/import_48.gif" width="48" height="48" alt="Icon" /></td><td style="text-align:left; font-size:150%; font-weight:bold; color:#5582D2; width:90%"><?php echo $string['importmodules']; ?></span></td>
 </tr>
@@ -205,11 +189,13 @@ color: #f00;
 
 <p style="text-align:justify"><?php echo $string['msg1']; ?></p>
 <br />
+<div style="text-align:center"><img src="../artwork/module_import_headings.png" width="290" height="60" alt="Headings" border="1" /></div>
+<br />
 <div><?php echo $string['msg2']; ?></div>
 <br />
 <div align="center">
 <form id="import_form" name="import" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>" enctype="multipart/form-data">
-<p><input type="file" size="50" name="csvfile" class="required" /></p>
+<p><strong><?php echo $string['csvfile']; ?></strong> <input type="file" size="50" name="csvfile" class="required" /></p>
 <br />
 <p><input type="submit" style="width:100px" value="<?php echo $string['import']; ?>" name="submit" />&nbsp;<input style="width:100px" type="button" value="<?php echo $string['cancel']; ?>" name="cancel" onclick="history.go(-1)" /></p>
 </form>

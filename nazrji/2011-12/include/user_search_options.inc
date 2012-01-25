@@ -58,7 +58,7 @@ if (isset($_GET['calendar_year'])) {
     document.getElementById('menu' + ID).style.display = current;
 
     <?php
-      echo "icon = (document.getElementById('icon' + ID).getAttribute('src') == '$protocol" . $_SERVER['HTTP_HOST'] . "/artwork/down_arrow_icon.gif') ? '$protocol" . $_SERVER['HTTP_HOST'] . "/artwork/up_arrow_icon.gif' : '$protocol" . $_SERVER['HTTP_HOST'] . "/artwork/down_arrow_icon.gif';\n";
+      echo "icon = (document.getElementById('icon' + ID).getAttribute('src') == '$protocol" . $_SERVER['HTTP_HOST'] . "{$cfg_root_path}/artwork/down_arrow_icon.gif') ? '$protocol" . $_SERVER['HTTP_HOST'] . "{$cfg_root_path}/artwork/up_arrow_icon.gif' : '$protocol" . $_SERVER['HTTP_HOST'] . "{$cfg_root_path}/artwork/down_arrow_icon.gif';\n";
     ?>
     alttag = (document.getElementById('icon' + ID).getAttribute('alt') == 'Hide') ? 'Show' : 'Hide';
     document.getElementById('icon' + ID).setAttribute('src',icon);
@@ -78,7 +78,7 @@ if (isset($_GET['calendar_year'])) {
   function emailCohort() {
     var winwidth = 700;
     var winheight = 550;
-    templatewin = window.open("email_cohort.php?surname=" + document.PapersMenu.tmp_surname.value + "&degreeID=" + document.PapersMenu.tmp_degreeID.value + "&yearID=" + document.PapersMenu.tmp_yearID.value + "","emailwin","width="+winwidth+",height="+winheight+",left=30,top=20,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+    templatewin = window.open("email_cohort.php?surname=" + document.PapersMenu.tmp_surname.value + "&courseID=" + document.PapersMenu.tmp_courseID.value + "&yearID=" + document.PapersMenu.tmp_yearID.value + "","emailwin","width="+winwidth+",height="+winheight+",left=30,top=20,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
     templatewin.moveTo(screen.width/2-350,screen.height/2-275);
   }
 </script>
@@ -306,7 +306,7 @@ if (isset($_GET['calendar_year'])) {
 <input type="hidden" name="email" value="" />
 <input type="hidden" name="oldUserID" value="" />
 <input type="hidden" name="tmp_surname" value="" />
-<input type="hidden" name="tmp_degreeID" value="" />
+<input type="hidden" name="tmp_courseID" value="" />
 <input type="hidden" name="tmp_yearID" value="" />
 </form>
 </div>

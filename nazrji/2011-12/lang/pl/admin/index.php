@@ -18,6 +18,6 @@ $string['systemerrors'] = 'Błędy systemowe';
 $string['systeminformation'] = 'Informacje systemowe';
 $string['trac'] = 'Trac (śledzenie problemów)';
 $string['usermanagement'] = 'Zarządzanie użytkownikami';
-$string['msg1'] = 'Czy na pewno usunąć wszystkie arkusze/pytania z moduły treningowego?';
+$string['msg1'] = 'Czy na pewno usunąć wszystkie arkusze/pytania z modułu treningowego?';
 $string['msg2'] = 'Czy na pewno usunąć stare rejestry testów formatywnych i diagnostycznych?\n\n(rejestry egzaminów końcowych/ankiet nie będą usunięte)';
 ?>

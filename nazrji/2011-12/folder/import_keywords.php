@@ -84,7 +84,7 @@ require '../include/staff_auth.inc';
       } else {
         keywords_from_file('/tmp/' . $userID . '_keywords.txt');
         unlink('/tmp/' . $userID . '_keywords.txt');
-        header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/folder/list_keywords.php?paperID=". $_GET['paperID'] . "&module=" . $_GET['module'] . "&folder=" . $_GET['folder']);
+        header("location: list_keywords.php?paperID=". $_GET['paperID'] . "&module=" . $_GET['module'] . "&folder=" . $_GET['folder']);
       }
     }
   } else {

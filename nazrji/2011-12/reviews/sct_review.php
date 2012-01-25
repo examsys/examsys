@@ -22,15 +22,15 @@
 * @package
 */
 
-  $root = (substr($_SERVER['DOCUMENT_ROOT'], -1) == '/') ? $_SERVER['DOCUMENT_ROOT'] : $_SERVER['DOCUMENT_ROOT'] . '/';
-  require_once $root . 'config/config.inc.php';
+  require_once '../config/config.inc.php';
   require_once $cfg_web_root . 'classes/lang.class.php';
-  require '../include/media.inc';
-  require '../include/errors.inc';
-  require '../include/sct_review.inc';
-  
+  require $cfg_web_root . 'include/media.inc';
+  require $cfg_web_root . 'include/errors.inc';
+  require $cfg_web_root . 'include/sct_review.inc';
+  require_once $cfg_web_root . 'classes/dbutils.class.php';
+
   // Connect to the database as the SCT user.
-  $mysqli = new $dbclass($cfg_db_host, $cfg_db_sct_user, $cfg_db_sct_passwd, $cfg_db_database);
+  $mysqli = DBUtils::get_mysqli_link($cfg_db_host , $cfg_db_sct_user, $cfg_db_sct_passwd, $cfg_db_database, $cfg_db_charset, $dbclass);
 
   // Check for key parameters
   check_var('paperID', 'POST', true, false);
@@ -43,7 +43,7 @@
     if ($question['scenario'] != '') {
       echo "<tr><td class=\"q_no\">" . $question_no . ".&nbsp;</td><td style=\"background-color:#E4EEFC; border-bottom:1px solid #B5C4DF; font-weight:bold; padding:2px; color:#000040\">" . $string['clinicalvignette'] . "</td></tr>\n";
       echo '<tr><td style="vertical-align:top; text-align:right"></td><td>';
-      if ($question['notes'] != '') echo '<p class="note"><img src="/artwork/notes_icon.gif" width="14" height="14" alt="Note" />&nbsp;<strong>' . $string['note'] . '</strong>&nbsp;' . $question['notes'] . '</p>';
+      if ($question['notes'] != '') echo '<p class="note"><img src="../artwork/notes_icon.gif" width="14" height="14" alt="Note" />&nbsp;<strong>' . $string['note'] . '</strong>&nbsp;' . $question['notes'] . '</p>';
       echo $question['scenario'] . "<br />\n<br />";
       $li_set = 1;
     }

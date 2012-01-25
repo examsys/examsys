@@ -38,6 +38,7 @@
 </style>
 
 <script src="../js/staff_help.js" type="text/javascript"></script>
+<?php echo $cfg_js_root ?>
 <script src="../js/sidebar.js" type="text/javascript"></script>
 <script language="JavaScript">
   function displayCredits(){
@@ -75,9 +76,9 @@
   $module_block = false;
   $block_id=0;
   if (strpos($userroles,'SysAdmin') !== false) {
-    $results = $mysqli->prepare("SELECT DISTINCT faculty.name as faculty, schools.school, moduleid, fullname FROM (schools, faculty) LEFT JOIN modules ON schools.id=modules.schoolid WHERE schools.facultyID=faculty.id ORDER BY faculty.name, school, moduleid");
+    $results = $mysqli->prepare("SELECT DISTINCT faculty.name as faculty, schools.school, moduleid, fullname FROM (schools, faculty) LEFT JOIN modules ON schools.id=modules.schoolid WHERE schools.facultyID=faculty.id AND schools.deleted IS NULL ORDER BY faculty.name, school, moduleid");
   } else {
-    $results = $mysqli->prepare("SELECT DISTINCT faculty.name as faculty, schools.school, moduleid, fullname FROM (schools, faculty, admin_access, modules) WHERE schools.facultyID=faculty.id AND schools.id=modules.schoolid AND schools.id=admin_access.schools_id AND admin_access.userID=$userID ORDER BY faculty.name, school, moduleid");
+    $results = $mysqli->prepare("SELECT DISTINCT faculty.name as faculty, schools.school, moduleid, fullname FROM (schools, faculty, admin_access, modules) WHERE schools.facultyID=faculty.id AND schools.id=modules.schoolid AND schools.id=admin_access.schools_id AND admin_access.userID=$userID AND schools.deleted IS NULL ORDER BY faculty.name, school, moduleid");
   }
   $results->execute();
   $results->bind_result($faculty, $school, $moduleid, $fullname);

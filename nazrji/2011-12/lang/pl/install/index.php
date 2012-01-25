@@ -9,6 +9,7 @@ $string['databasesetup'] = 'Ustawienia bazy danych';
 $string['databasehost'] = 'Adres:';
 $string['databaseport'] = 'Port:';
 $string['databasename'] = 'Nazwa:';
+$string['databasecharset'] = 'Database Character Set';
 $string['databaseuser'] = 'Użytkownik bazy danych Rogō';
 $string['rdbusername'] = 'Użytkownik';
 $string['rdbpassword'] = 'Hasło:';

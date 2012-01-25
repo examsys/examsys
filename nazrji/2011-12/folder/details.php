@@ -123,6 +123,7 @@ if ($folder != '') {
 <title>Rogō<?php echo " $cfg_install_type"; ?></title>
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
 
+<?php echo $cfg_js_root ?>
 <script src="../js/sidebar.js" type="text/javascript"></script>
 <script src="../js/staff_help.js" type="text/javascript"></script>
 <script language="JavaScript">
@@ -239,7 +240,7 @@ if (isset($_GET['module']) and $_GET['module'] != '') {
 
 // Is it a self-enrol module.
 if ($selfenrol == 1) {
-  $selfenrol_url = $protocol . $_SERVER['HTTP_HOST'] . '/self_enrol.php?moduleid=' . $_GET['module'];
+  $selfenrol_url = $protocol . $_SERVER['HTTP_HOST'] . $cfg_root_path . '/self_enrol.php?moduleid=' . $_GET['module'];
   echo "<div style=\"padding-left:10px\"><img src=\"../artwork/module_icon_16.png\" width=\"16\" height=\"16\" alt=\"modules\" /> <span style=\"color:#C00000\">Self-enrol URL:</span> <a href=\"$selfenrol_url\">$selfenrol_url</a></div>\n<br />";
 }
 

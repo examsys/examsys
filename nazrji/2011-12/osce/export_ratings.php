@@ -47,7 +47,7 @@
   $user_no = 0;
   // Capture the log data first.
   $result = $mysqli->prepare("SELECT DISTINCT sid.student_id, users.username, title, surname, initials, grade, gender, started, log4.q_id, rating FROM (log4, questions, users) LEFT JOIN sid ON users.id=sid.userID WHERE log4.q_id=questions.q_id AND q_paper=? AND users.id=log4.userID AND (users.roles='Student' OR users.roles='graduate') AND grade LIKE ? AND started>=? AND started<=?");
-  $result->bind_param('isss', $paperID, $_GET['repdegree'], $_GET['startdate'], $_GET['enddate']);
+  $result->bind_param('isss', $paperID, $_GET['repcourse'], $_GET['startdate'], $_GET['enddate']);
   $result->execute();
   $result->bind_result($user_ID, $username, $title, $surname, $initials, $grade, $gender, $started, $q_id, $rating);
   while ($row = $result->fetch()) {

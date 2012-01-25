@@ -29,10 +29,10 @@ require '../include/paper_security.inc';
 check_var('id', 'GET', true, false);
 
 // Get some properties of the paper.
-$result = $mysqli->prepare("SELECT property_id, paper_title, modules.id, properties.moduleID, UNIX_TIMESTAMP(start_date), UNIX_TIMESTAMP(end_date), calendar_year, bgcolor, fgcolor, themecolor, labelcolor, rubric, paper_prologue AS type, marking, display_correct_answer AS display_photos, labs FROM (properties, modules) WHERE properties.moduleID=modules.moduleid AND crypt_name=? LIMIT 1");
+$result = $mysqli->prepare("SELECT property_id, paper_title, modules.id, properties.moduleID, UNIX_TIMESTAMP(start_date), UNIX_TIMESTAMP(end_date), calendar_year, bgcolor, fgcolor, themecolor, labelcolor, rubric, paper_prologue AS type, marking, display_correct_answer AS display_photos, display_question_mark as review, labs FROM (properties, modules) WHERE properties.moduleID=modules.moduleid AND crypt_name=? LIMIT 1");
 $result->bind_param('s', $_GET['id']);
 $result->execute();
-$result->bind_result($property_id, $paper_title, $moduleID, $moduleID_text, $start_date, $end_date, $calendar_year, $paper_bgcolor, $paper_fgcolor, $paper_themecolor, $paper_labelcolor, $type, $paper_prologue, $marking, $display_photos, $labs);
+$result->bind_result($property_id, $paper_title, $moduleID, $moduleID_text, $start_date, $end_date, $calendar_year, $paper_bgcolor, $paper_fgcolor, $paper_themecolor, $paper_labelcolor, $type, $paper_prologue, $marking, $display_photos, $review, $labs);
 $result->fetch();
 $result->close();
 
@@ -114,38 +114,82 @@ if ($group == '') {
 }
 
 if (isset($_POST['submit'] )) {
-  // Get the other users in the same group.
-  $result = $mysqli->prepare("SELECT username, title, surname, first_names, users_metadata.userID FROM (users_metadata, users) WHERE users_metadata.userID=users.id AND moduleID=? AND calendar_year=? AND type=? AND value=?");
-  $result->bind_param('isss', $moduleID, $calendar_year, $type, $group);
+  // Check for any previously saved records.
+  $result = $mysqli->prepare("SELECT id, peerID, q_id, rating FROM log6 WHERE reviewerID=? AND paperID=?");
+  $result->bind_param('ii', $userID, $property_id);
   $result->execute();
-  $result->store_result();
-  $result->bind_result($member_username, $member_title, $member_surname, $member_first_names, $member_userID);
+  $result->bind_result($id, $peerID, $q_id, $rating);
   while ($result->fetch()) {
-    if ($member_userID != $userID) {   // Make sure current user cannot peer review themself.
-      $row_no = 0;      
-
-      foreach ($questions as $questionID=>$details) {
-        if (isset($_POST[$member_userID . "_" . $row_no])) {
-          $rating = $_POST[$member_userID . "_" . $row_no];
-        } else {
-          $rating = NULL;
-        }
-      
-        if (isset($_POST[$member_userID . "_" . $row_no . "_id"]) and $_POST[$member_userID . "_" . $row_no . "_id"] != '') {
-          $result2 = $mysqli->prepare("UPDATE log6 SET started=NOW(), rating=? WHERE id=?");
-          $result2->bind_param('ii', $rating, $_POST[$member_userID . "_" . $row_no . "_id"]);
-        } else {
-          $result2 = $mysqli->prepare("INSERT INTO log6 VALUES (NULL, ?, ?, ?, NOW(), ?, ?)");
-          $result2->bind_param('iiiii', $property_id, $userID, $member_userID, $questionID, $rating);
-        }
-        $result2->execute();
-        $result2->close();
-        
-        $row_no++;
-      }
-    }
+    $saved_results[$peerID][$q_id]['id'] = $id;
   }
   $result->close();
+
+  $insert_sql = '';
+  $variables = array();
+  $params = '';
+  
+  $current_time = date("Ymdhis");
+
+  if ($review == '1') {
+    // Get the other users in the same group.
+    $result = $mysqli->prepare("SELECT username, title, surname, first_names, users_metadata.userID FROM (users_metadata, users) WHERE users_metadata.userID=users.id AND moduleID=? AND calendar_year=? AND type=? AND value=?");
+    $result->bind_param('isss', $moduleID, $calendar_year, $type, $group);
+    $result->execute();
+    $result->store_result();
+    $result->bind_result($member_username, $member_title, $member_surname, $member_first_names, $member_userID);
+    while ($result->fetch()) {
+      if ($member_userID != $userID) {   // Make sure current user cannot peer review themself.
+        $row_no = 0;      
+
+        foreach ($questions as $questionID=>$details) {
+          if (isset($_POST[$member_userID . "_" . $row_no])) {
+            $rating = $_POST[$member_userID . "_" . $row_no];
+          } else {
+            $rating = NULL;
+          }
+        
+          if (isset($saved_results[$member_userID][$questionID]['id'])) {
+            $result2 = $mysqli->prepare("UPDATE log6 SET started=NOW(), rating=? WHERE id=?");
+            $result2->bind_param('ii', $rating, $saved_results[$member_userID][$questionID]['id']);
+            $result2->execute();
+            $result2->close();
+          } else {
+            $result2 = $mysqli->prepare("INSERT INTO log6 VALUES (NULL, ?, ?, ?, ?, ?, ?)");
+            $result2->bind_param('iiisii', $property_id, $userID, $member_userID, $current_time, $questionID, $rating);
+            $result2->execute();
+            $result2->close();
+          }
+          $row_no++;
+        }
+      }
+    }
+    $result->close();
+  } else {
+    $member_userID = 0;
+    // Get the other users in the same group.
+    $row_no = 0;      
+
+    foreach ($questions as $questionID=>$details) {
+      if (isset($_POST[$member_userID . "_" . $row_no])) {
+        $rating = $_POST[$member_userID . "_" . $row_no];
+      } else {
+        $rating = NULL;
+      }
+    
+      if (isset($saved_results[$member_userID][$questionID]['id'])) {
+        $result2 = $mysqli->prepare("UPDATE log6 SET started=NOW(), rating=? WHERE id=?");
+        $result2->bind_param('ii', $rating, $saved_results[$member_userID][$questionID]['id']);
+        $result2->execute();
+        $result2->close();
+      } else {
+        $result2 = $mysqli->prepare("INSERT INTO log6 VALUES (NULL, ?, ?, ?, ?, ?, ?)");
+        $result2->bind_param('iiisii', $property_id, $userID, $member_userID, $current_time, $questionID, $rating);
+        $result2->execute();
+        $result2->close();
+      }
+      $row_no++;
+    }
+  }
   
 ?>
   <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
@@ -209,7 +253,6 @@ if (isset($_POST['submit'] )) {
   $result->execute();
   $result->bind_result($id, $peerID, $q_id, $rating);
   while ($result->fetch()) {
-    $saved_results[$peerID][$q_id]['id'] = $id;
     $saved_results[$peerID][$q_id]['rating'] = $rating;
   }
   $result->close();
@@ -276,51 +319,73 @@ if (isset($_POST['submit'] )) {
     echo "<tr><td colspan=\"" . (count($questions) + 2) . "\">" . $paper_prologue . "</td></tr>\n";
     echo "<tr><td colspan=\"" . (count($questions) + 2) . "\">&nbsp;</td></tr>\n";
   }
-    
-  // Get the other users in the same group.
-  $result = $mysqli->prepare("SELECT username, title, surname, first_names, users_metadata.userID FROM (users_metadata, users) WHERE users_metadata.userID=users.id AND moduleID=? AND calendar_year=? AND type=? AND value=?");
-  $result->bind_param('isss', $moduleID, $calendar_year, $type, $group);
-  $result->execute();
-  $result->bind_result($member_username, $member_title, $member_surname, $member_first_names, $member_userID);
-  while ($result->fetch()) {
-    if ($member_userID != $userID) {   // Make sure current user cannot peer review themself.
-      $row_no = 0;
-      echo "<tr><td class=\"phototd\" rowspan=\"" . (count($questions) + 2) . "\">";
-      $peer_photo = $cfg_web_root . 'users/photos/' . $member_username . '.jpg';
-      if (file_exists($peer_photo) and $display_photos == '1') {
-        echo "<img class=\"photo\" src=\"/users/photos/" . $member_username . ".jpg\" width=\"90\" height=\"135\" border=\"0\" />";
-      }
-      $first_names = explode(' ', $member_first_names);
-      echo "</td><td class=\"title\" colspan=\"" . ($columns + 1) . "\">$member_title " . $first_names[0] . " $member_surname</td></tr>\n";
-      
-      echo "<tr><td></td>";
-      for ($i=0; $i<$columns; $i++) {
-        echo "<td class=\"col\">" . $parts[$i] . "</td>";
-      }
-      echo "</tr>\n";
-      
-      
-      foreach($questions as $questionID=>$details) {
-        $record_id = '';
-        if (isset($saved_results[$member_userID][$questionID]['id'])) {
-          $record_id = $saved_results[$member_userID][$questionID]['id'];
+  
+  if ($review == '1') {
+    // Get the other users in the same group.
+    $result = $mysqli->prepare("SELECT username, title, surname, first_names, users_metadata.userID FROM (users_metadata, users) WHERE users_metadata.userID=users.id AND moduleID=? AND calendar_year=? AND type=? AND value=? ORDER BY surname, initials");
+    $result->bind_param('isss', $moduleID, $calendar_year, $type, $group);
+    $result->execute();
+    $result->bind_result($member_username, $member_title, $member_surname, $member_first_names, $member_userID);
+    while ($result->fetch()) {
+      if ($member_userID != $userID) {   // Make sure current user cannot peer review themself.
+        $row_no = 0;
+        echo "<tr><td class=\"phototd\" rowspan=\"" . (count($questions) + 2) . "\">";
+        $peer_photo = $cfg_web_root . 'users/photos/' . $member_username . '.jpg';
+        if (file_exists($peer_photo) and $display_photos == '1') {
+          echo "<img class=\"photo\" src=\"../users/photos/" . $member_username . ".jpg\" width=\"90\" height=\"135\" border=\"0\" />";
         }
-        echo "<tr><td>" . $details['leadin']. "<input type=\"hidden\" name=\"" . $member_userID . "_" . $row_no . "_id\" value=\"$record_id\" /></td>";
-        for ($i=(0 + $marking); $i<($columns + $marking); $i++) {
-          if (isset($saved_results[$member_userID][$questionID]['rating']) and $saved_results[$member_userID][$questionID]['rating'] === $i) {
-            echo "<td class=\"col\"><input type=\"radio\" name=\"" . $member_userID . "_" . $row_no . "\" value=\"$i\" checked /></td>";
-          } else {
-            echo "<td class=\"col\"><input type=\"radio\" name=\"" . $member_userID . "_" . $row_no . "\" value=\"$i\" /></td>";
+        $first_names = explode(' ', $member_first_names);
+        echo "</td><td class=\"title\" colspan=\"" . ($columns + 1) . "\">$member_title " . $first_names[0] . " $member_surname</td></tr>\n";
+        
+        echo "<tr><td></td>";
+        for ($i=0; $i<$columns; $i++) {
+          echo "<td class=\"col\">" . $parts[$i] . "</td>";
+        }
+        echo "</tr>\n";
+        
+        
+        foreach ($questions as $questionID=>$details) {
+          echo "<tr><td>" . $details['leadin'] . "</td>";
+          for ($i=(0 + $marking); $i<($columns + $marking); $i++) {
+            if (isset($saved_results[$member_userID][$questionID]['rating']) and $saved_results[$member_userID][$questionID]['rating'] === $i) {
+              echo "<td class=\"col\"><input type=\"radio\" name=\"" . $member_userID . "_" . $row_no . "\" value=\"$i\" checked=\"checked\" /></td>";
+            } else {
+              echo "<td class=\"col\"><input type=\"radio\" name=\"" . $member_userID . "_" . $row_no . "\" value=\"$i\" /></td>";
+            }
           }
+          echo "</tr>";
+          $row_no++;
         }
-        echo "</tr>";
-        $row_no++;
+        
+        echo "<tr><td colspan=\"" . (count($questions) + 2) . "\">&nbsp;</td></tr>\n";
       }
-      
-      echo "<tr><td colspan=\"" . (count($questions) + 2) . "\">&nbsp;</td></tr>\n";
     }
+    $result->close();
+  } else {
+    $row_no = 0;
+    $member_userID = 0;
+    
+    echo "<tr><td></td>";
+    for ($i=0; $i<$columns; $i++) {
+      echo "<td class=\"col\">" . $parts[$i] . "</td>";
+    }
+    echo "</tr>\n";
+       
+    foreach ($questions as $questionID=>$details) {
+      echo "<tr><td>" . $details['leadin'] . "</td>";
+      for ($i=(0 + $marking); $i<($columns + $marking); $i++) {
+        if (isset($saved_results[$member_userID][$questionID]['rating']) and $saved_results[$member_userID][$questionID]['rating'] === $i) {
+          echo "<td class=\"col\"><input type=\"radio\" name=\"" . $member_userID . "_" . $row_no . "\" value=\"$i\" checked=\"checked\" /></td>";
+        } else {
+          echo "<td class=\"col\"><input type=\"radio\" name=\"" . $member_userID . "_" . $row_no . "\" value=\"$i\" /></td>";
+        }
+      }
+      echo "</tr>";
+      $row_no++;
+    }
+    
+    echo "<tr><td colspan=\"" . (count($questions) + 2) . "\">&nbsp;</td></tr>\n";
   }
-  $result->close();
   
   echo "</table>\n";
 
@@ -331,7 +396,6 @@ if (isset($_POST['submit'] )) {
     echo "<input type=\"button\" name=\"close\" value=\"Close\" style=\"width:100px\" onclick=\"window.close();\" />";
   }
   echo "</td></tr>\n";
-
   echo "</table>\n</form>\n";
     
   ?>

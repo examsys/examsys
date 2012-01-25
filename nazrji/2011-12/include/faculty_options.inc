@@ -37,6 +37,14 @@
       facultywin.focus();
     }
   }
+  
+  function deleteFaculty() {
+    notice=window.open("../delete/check_delete_faculty.php?facultyID=" + document.getElementById('divID').value + "","faculties","width=420,height=170,scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+    notice.moveTo(screen.width/2-210,screen.height/2-85);
+    if (window.focus) {
+      notice.focus();
+    }
+  }
 </script>
 
 <div id="left-sidebar" class="sidebar">
@@ -49,11 +57,13 @@
 <table style="display:block" cellpadding="3" cellspacing="0" border="0" id="menu1a">
 <tr><td><a href="" onclick="addFaculty(); return false;"><img src="../artwork/faculty_16.png" width="16" height="16" alt="" border="0" /></a></td><td class="menuitem"><a href="" onclick="addFaculty(); return false;"><?php echo $string['createfaculty']; ?></a></td></tr>
 <tr><td><img src="../artwork/edit_grey.png" width="16" height="16" alt="" border="0" /></td><td class="greymenuitem"><?php echo $string['editfaculty']; ?></td></tr>
+<tr><td><img src="../artwork/red_cross_grey.png" width="16" height="16" alt="" border="0" /></td><td class="greymenuitem"><?php echo $string['deletefaculty']; ?></td></tr>
 </table>
 
 <table style="display:none" cellpadding="3" cellspacing="0" border="0" id="menu1b">
 <tr><td><a href="" onclick="addFaculty(); return false;"><img src="../artwork/faculty_16.png" width="16" height="16" alt="" border="0" /></a></td><td class="menuitem"><a href="" onclick="addFaculty(); return false;"><?php echo $string['createfaculty']; ?></a></td></tr>
 <tr><td><img onclick="editFaculty()" src="../artwork/edit.png" width="16" height="16" alt="" border="0" /></td><td class="menuitem"><a href="" onclick="editFaculty(); return false;"><?php echo $string['editfaculty']; ?></a></td></tr>
+<tr><td><img onclick="deleteCourse()" src="../artwork/red_cross.png" width="16" height="16" alt="" border="0" /></td><td class="menuitem"><a href="" onclick="deleteFaculty(); return false;"><?php echo $string['deletefaculty']; ?></a></td></tr>
 </table>
 </td></tr>
 </table>
@@ -61,6 +71,6 @@
 </td></tr>
 </table>
 
-<input type="hidden" name="divID" value="" />
+<input type="hidden" id="divID" name="divID" value="" />
 </form>
 </div>

@@ -152,10 +152,10 @@
   // Capture the log data.
   if ($paper_type == '0') {
     $result = $mysqli->prepare("(SELECT DISTINCT sid.student_id, username, log0.userID, title, surname, first_names, grade, gender, log_metadata.year, log_metadata.started, log0.q_id, user_answer, q_type, screen FROM (log0, log_metadata, questions, users) LEFT JOIN sid ON users.id=sid.userID WHERE log0.userID = log_metadata.userID AND log0.q_paper = log_metadata.paperID AND log0.started = log_metadata.started AND log0.q_id=questions.q_id AND log0.userID IN ($student_list) AND q_paper=? AND  users.id=log0.userID AND (users.roles='Student' OR users.roles='graduate')$exclude AND grade LIKE ? AND log_metadata.started>=? AND log_metadata.started<=?) UNION ALL (SELECT DISTINCT sid.student_id, username, log1.userID, title, surname, first_names, grade, gender, log_metadata.year, log_metadata.started, log1.q_id, user_answer, q_type, screen FROM (log1, log_metadata, questions, users) LEFT JOIN sid ON users.id=sid.userID WHERE log1.userID = log_metadata.userID AND log1.q_paper = log_metadata.paperID AND log1.started = log_metadata.started AND log1.q_id=questions.q_id AND log1.userID IN ($student_list) AND q_paper=? AND users.id=log1.userID AND (users.roles='Student' OR users.roles='graduate')$exclude AND grade LIKE ? AND log_metadata.started>=? AND log_metadata.started<=?) ORDER BY surname, first_names, started, userID");
-    $result->bind_param('isssisss', $_GET['paperID'], $_GET['repdegree'], $_GET['startdate'], $_GET['enddate'], $_GET['paperID'], $_GET['repdegree'], $_GET['startdate'], $_GET['enddate']);
+    $result->bind_param('isssisss', $_GET['paperID'], $_GET['repcourse'], $_GET['startdate'], $_GET['enddate'], $_GET['paperID'], $_GET['repcourse'], $_GET['startdate'], $_GET['enddate']);
   } else {
     $result = $mysqli->prepare("SELECT DISTINCT sid.student_id, username, log$paper_type.userID, title, surname, first_names, grade, gender, log_metadata.year, log_metadata.started, log$paper_type.q_id, user_answer, q_type, screen FROM (log$paper_type, log_metadata, questions, users) LEFT JOIN sid ON users.id=sid.userID WHERE log_metadata.userID = log$paper_type.userID AND log_metadata.paperID = log$paper_type.q_paper AND log_metadata.started = log$paper_type.started AND log$paper_type.q_id=questions.q_id AND log$paper_type.userID IN ($student_list) AND q_paper=? AND users.id=log$paper_type.userID AND (users.roles='Student' OR users.roles='graduate')$exclude AND grade LIKE ? AND DATE_ADD(log_metadata.started, INTERVAL 2 MINUTE)>=? AND log_metadata.started<=? ORDER BY surname, first_names, log_metadata.started, userID");
-    $result->bind_param('isss', $_GET['paperID'], $_GET['repdegree'], $_GET['startdate'], $_GET['enddate']);
+    $result->bind_param('isss', $_GET['paperID'], $_GET['repcourse'], $_GET['startdate'], $_GET['enddate']);
   }
 
   $result->execute();
@@ -169,7 +169,7 @@
     $log_array[$rowID]['student_id'] = demo_replace_number($student_id,$demo);
     $log_array[$rowID]['userID'] = $userID;
     $log_array[$rowID]['username'] = $username;
-    $log_array[$rowID]['degree'] = $grade;
+    $log_array[$rowID]['course'] = $grade;
     $log_array[$rowID]['year'] = $year;
     $log_array[$rowID]['started'] = $started;
     $log_array[$rowID]['title'] = $title;
@@ -323,7 +323,7 @@
       echo "\n";
     }
     // Write out the raw data.
-    echo $individual['gender'] . ',' . $individual['title'] . ',' . $individual['surname'] . ',' . $individual['first_names'] . ',' . $individual['student_id'] . ',' . $individual['degree'] . ',' . $individual['year'] . ',' . $individual['started'];
+    echo $individual['gender'] . ',' . $individual['title'] . ',' . $individual['surname'] . ',' . $individual['first_names'] . ',' . $individual['student_id'] . ',' . $individual['course'] . ',' . $individual['year'] . ',' . $individual['started'];
     for ($i=0; $i<$question_no; $i++) {
       $tmp_question_ID = $paper_buffer[$i]['ID'];
       $tmp_screen = $paper_buffer[$i]['screen'];

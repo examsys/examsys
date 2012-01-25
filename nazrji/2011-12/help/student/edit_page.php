@@ -55,7 +55,7 @@
     }
         
     $mysqli->close();
-    header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/help/student/display_page.php?id=" . $_POST['original_id']);
+    header("location: ../student/display_page.php?id=" . $_POST['original_id']);
   } elseif (isset($_POST['cancel'])) {
     // Release authoring lock.
     if ($_POST['checkout_authorID'] == $userID) {
@@ -65,7 +65,7 @@
       $result->close();
     }
     $mysqli->close();
-    header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/help/student/display_page.php?id=" . $_POST['original_id']);  
+    header("location: ../student/display_page.php?id=" . $_POST['original_id']);
   } else {
 ?>
 <!DOCTYPE html
@@ -87,8 +87,9 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     .subheading {font-weight:bold; font-style:italic}
   </style>
   
-  <script language="JavaScript" src="/tools/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
-  <script language="JavaScript" src="/tools/tinymce/jscripts/tiny_mce/tiny_config_help_student.js"></script>
+  <?php echo $cfg_js_root ?>
+  <script language="JavaScript" src="../../tools/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
+  <script language="JavaScript" src="../../tools/tinymce/jscripts/tiny_mce/tiny_config_help_student.js"></script>
   <script language="JavaScript">
     function getSize() {
       if (parseInt(navigator.appVersion)>3) {

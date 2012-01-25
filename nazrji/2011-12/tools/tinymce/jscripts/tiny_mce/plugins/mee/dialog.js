@@ -70,7 +70,7 @@ function insertMME() {
 
     var datatxt = JSON.stringify(data);
 
-    var src = "/tools/tinymce/jscripts/tiny_mce/plugins/mee/frame.html?" + datatxt;
+    var src = "../../tools/tinymce/jscripts/tiny_mce/plugins/mee/frame.html?" + datatxt;
     if (selelem) {
         selelem.src = src;
         $(selelem).attr('src', src);

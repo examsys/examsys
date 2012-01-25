@@ -392,9 +392,9 @@ function getUserMark($q_id, $tmp_user_answer, $tmp_user_mark, $exclude, $status,
   if ($paper_buffer[$q_id]['score_method'] != 'Mark per Question' and in_array($paper_buffer[$q_id]['q_type'], $multi_part_qns)) {
     if ($paper_buffer[$q_id]['q_type'] == 'extmatch' or $paper_buffer[$q_id]['q_type'] == 'matrix') {
       if (!isset($tmp_user_mark_array[$q_id])) $tmp_user_mark_array[$q_id] = array();
-      $paper_answers = explode('|',$paper_buffer[$q_id]['correct'][0]);
-      $user_answers = explode('|',$tmp_user_answer);
-      if (array_key_exists($q_id,$exclude)) {
+      $paper_answers = explode('|', $paper_buffer[$q_id]['correct'][0]);
+      $user_answers = explode('|', $tmp_user_answer);
+      if (array_key_exists($q_id, $exclude)) {
         $tmp_exclude = $exclude[$q_id];
       } else {
         $tmp_exclude = '0000000000000000000000000000000000000000';
@@ -406,33 +406,30 @@ function getUserMark($q_id, $tmp_user_answer, $tmp_user_mark, $exclude, $status,
           $answers_incorrect = 0;
           
           if ($paper_buffer[$q_id]['q_type'] == 'extmatch') {
-            $sub_paper_answers = explode('$',$paper_answers[$a]);
-            $sub_user_answers = explode('$',$user_answers[$a]);
+            $sub_paper_answers = explode('$', $paper_answers[$a]);
+            $sub_user_answers = explode('$', $user_answers[$a]);
             $exclude_on = true;
-            if (substr($tmp_exclude,$section,1) == '0') {
-              for ($c=0; $c<count($sub_user_answers); $c++) {
+            
+            for ($c=0; $c<count($sub_user_answers); $c++) {
+              if (substr($tmp_exclude, $section, 1) == '0') {
                 if ($sub_user_answers[$c] == '' or $sub_user_answers[$c] == 'u') {
-                  //$tmp_user_mark_array[$q_id][] = 0;
+                  // Do nothing
                 } elseif (in_array($sub_user_answers[$c], $sub_paper_answers)) {
-                  //$tmp_mark += $paper_buffer[$q_id]['marks_correct'];
-                  //$tmp_user_mark_array[$q_id][] = $paper_buffer[$q_id]['marks_correct'];
                   $answers_correct++;
                 } else {
-                  //$tmp_mark += $paper_buffer[$q_id]['marks_incorrect'];
-                  //$tmp_user_mark_array[$q_id][] = $paper_buffer[$q_id]['marks_incorrect'];
                   $answers_incorrect++;
                 }
+                $exclude_on = false;
               }
-            
-              $exclude_on = false;
+              $section++;
             }
-            $section++;
-           
-            $section_mark =($answers_correct * $paper_buffer[$q_id]['marks_correct']) + ($answers_incorrect * $paper_buffer[$q_id]['marks_incorrect']); 
+            
+            $section_mark = ($answers_correct * $paper_buffer[$q_id]['marks_correct']) + ($answers_incorrect * $paper_buffer[$q_id]['marks_incorrect']); 
             $tmp_mark += $section_mark;
+            // This is excluding whole question parts (not answers/marks).
             if ($exclude_on == false) $tmp_user_mark_array[$q_id][] = $section_mark;
           } else {   // Matrix
-            if (substr($tmp_exclude,$a,1) == '0') {
+            if (substr($tmp_exclude, $a, 1) == '0') {
               if ($paper_answers[$a] == $user_answers[$a]) {
                 $tmp_mark += $paper_buffer[$q_id]['marks_correct'];
                 $tmp_user_mark_array[$q_id][] = $paper_buffer[$q_id]['marks_correct'];
@@ -447,16 +444,16 @@ function getUserMark($q_id, $tmp_user_answer, $tmp_user_mark, $exclude, $status,
         }
       }
     } elseif ($paper_buffer[$q_id]['q_type'] == 'blank') {
-      $user_answers = explode('|',$tmp_user_answer);
-      if (array_key_exists($q_id,$exclude)) {
+      $user_answers = explode('|', $tmp_user_answer);
+      if (array_key_exists($q_id, $exclude)) {
         $tmp_exclude = $exclude[$q_id];
       } else {
         $tmp_exclude = '0000000000000000000000000000000000000000';
       }
       for ($a=0; $a<count($user_answers)-1; $a++) {
-        if (substr($tmp_exclude,$a,1) == '0') {
-          if ($paper_buffer[$q_id]['score_method'] == 'dropdown') {
-            if ($paper_buffer[$q_id]['correct'][$a] == $user_answers[$a+1]) {
+        if (substr($tmp_exclude, $a, 1) == '0') {
+          if ($paper_buffer[$q_id]['display_method'] == 'dropdown') {
+            if ($paper_buffer[$q_id]['correct'][$a][0] == $user_answers[$a+1]) {
               $tmp_mark += $paper_buffer[$q_id]['marks_correct'];
               $tmp_user_mark_array[$q_id][] = $paper_buffer[$q_id]['marks_correct'];
             } elseif ($user_answers[$a+1] != 'u' and $user_answers[$a+1] != '') {
@@ -468,10 +465,13 @@ function getUserMark($q_id, $tmp_user_answer, $tmp_user_mark, $exclude, $status,
           } else {
             $match = false;
             if (isset($paper_buffer[$q_id]['correct'][$a])) {
-              if ($user_answers[$a+1] == $paper_buffer[$q_id]['correct'][$a]) {
-                $match = true;
+              foreach ($paper_buffer[$q_id]['correct'][$a] as $correct_alternative) {
+                if (strtolower(trim($user_answers[$a+1])) == strtolower(trim($correct_alternative))) {
+                  $match = true;
+                }
               }
             }
+            
             if ($match == true) {
               $tmp_mark += $paper_buffer[$q_id]['marks_correct'];
               $tmp_user_mark_array[$q_id][] = $paper_buffer[$q_id]['marks_correct'];
@@ -491,12 +491,12 @@ function getUserMark($q_id, $tmp_user_answer, $tmp_user_mark, $exclude, $status,
         } else {
           $tmp_exclude = '0000000000000000000000000000000000000000';
         }
-        if (substr($tmp_exclude,$a,1) == '0') {
+        if (substr($tmp_exclude, $a, 1) == '0') {
           if ($paper_buffer[$q_id]['correct'][$a] == substr($tmp_user_answer,$a,1)) {
             $tmp_mark += $paper_buffer[$q_id]['marks_correct'];
             $tmp_user_mark_array[$q_id][] = $paper_buffer[$q_id]['marks_correct'];
           } else {
-            if (substr($tmp_user_answer,$a,1) == 'a' or substr($tmp_user_answer,$a,1) == 'u') {
+            if (substr($tmp_user_answer, $a, 1) == 'a' or substr($tmp_user_answer,$a,1) == 'u') {
               $tmp_user_mark_array[$q_id][] = 0;
             } else {
               $tmp_mark += $paper_buffer[$q_id]['marks_incorrect'];
@@ -513,14 +513,18 @@ function getUserMark($q_id, $tmp_user_answer, $tmp_user_mark, $exclude, $status,
       }
       $question_parts = explode('|', $paper_buffer[$q_id]['correct'][0]);
       $user_answers = explode('|', $tmp_user_answer);
-      
+
       for ($i=0; $i<count($question_parts); $i++) {
-        if (isset($user_answers[$i]) and substr($user_answers[$i],0,1) == '1') {
-          $tmp_user_mark_array[$q_id][] = $paper_buffer[$q_id]['marks_correct'];
-        } elseif (isset($user_answers[$i]) and substr($user_answers[$i],0,1) == '0') {
-          $tmp_user_mark_array[$q_id][] = $paper_buffer[$q_id]['marks_incorrect'];
-        } else {
-          $tmp_user_mark_array[$q_id][] = 0;
+        if (substr($tmp_exclude, $i, 1) == '0') {
+          if (isset($user_answers[$i]) and substr($user_answers[$i],0,1) == '1') {
+            $tmp_mark += $paper_buffer[$q_id]['marks_correct'];
+            $tmp_user_mark_array[$q_id][] = $paper_buffer[$q_id]['marks_correct'];
+          } elseif (isset($user_answers[$i]) and substr($user_answers[$i],0,1) == '0') {
+            $tmp_mark += $paper_buffer[$q_id]['marks_incorrect'];
+            $tmp_user_mark_array[$q_id][] = $paper_buffer[$q_id]['marks_incorrect'];
+          } else {
+            $tmp_user_mark_array[$q_id][] = 0;
+          }
         }
       }
     } elseif ($paper_buffer[$q_id]['q_type'] == 'labelling') {
@@ -726,8 +730,10 @@ while ($result->fetch()) {
     $question_id = $q_id;
     $paper_buffer[$question_id]['q_type'] = $q_type;
     $paper_buffer[$question_id]['score_method'] = $score_method;
+    $paper_buffer[$question_id]['display_method'] = $display_method;
     $paper_buffer[$question_id]['marks_correct'] = $marks_correct;
     $paper_buffer[$question_id]['marks_incorrect'] = $marks_incorrect;
+
     if ($q_type == 'blank') {
       $not_used = preg_match('/mark="([0-9]{1,3})"/',$option_text,$results);
       $blank_details = explode("[blank",$option_text);
@@ -744,7 +750,10 @@ while ($result->fetch()) {
             $paper_buffer[$question_id]['correct'][$i-1][] = html_entity_decode(trim($individual_answer));
           }
         } else {
-          $paper_buffer[$question_id]['correct'][] = html_entity_decode(trim($answer_list[0]));
+          //$paper_buffer[$question_id]['correct'][$i-1] = html_entity_decode(trim($answer_list[0]));
+          foreach ($answer_list as $tmp_answer) {
+            $paper_buffer[$question_id]['correct'][$i-1][] = html_entity_decode(trim($tmp_answer));
+          }
         }
       }
     } else {
@@ -792,10 +801,10 @@ $cohort_size = 0;
 if ($_GET['absent'] == 1) {
   // Get students in the cohort.
   $student_cohort = array();
-  $result = $mysqli->prepare("SELECT users.id, users.username, title, surname, first_names, initials, student_id, grade, moduleid FROM (student_modules, users, sid) WHERE student_modules.userID=sid.userID AND student_modules.userID=users.id AND users.roles LIKE '%Student%' AND moduleid IN ('" . str_replace(",","','",$moduleID) . "') AND calendar_year=?");
+  $result = $mysqli->prepare("SELECT users.id, users.username, title, surname, first_names, initials, student_id, grade, moduleid, gender FROM (student_modules, users, sid) WHERE student_modules.userID=sid.userID AND student_modules.userID=users.id AND users.roles LIKE '%Student%' AND moduleid IN ('" . str_replace(",","','",$moduleID) . "') AND calendar_year=?");
   $result->bind_param('s', $calendar_year);
   $result->execute();
-  $result->bind_result($tmp_userID, $tmp_username, $title, $surname, $first_names, $initials, $student_id, $grade, $moduleid);
+  $result->bind_result($tmp_userID, $tmp_username, $title, $surname, $first_names, $initials, $student_id, $grade, $moduleid, $gender);
   while ($result->fetch()) {
     $student_cohort[$cohort_size]['username'] = $tmp_username;
     $student_cohort[$cohort_size]['tmp_userID'] = $tmp_userID;
@@ -807,6 +816,7 @@ if ($_GET['absent'] == 1) {
     $student_cohort[$cohort_size]['student_id'] = demo_replace_number($student_id, $demo);
     $student_cohort[$cohort_size]['grade'] = $grade;
     $student_cohort[$cohort_size]['module'] = $moduleid;
+    $student_cohort[$cohort_size]['gender'] = $gender;
     $student_cohort[$cohort_size]['taken'] = 0;
     $cohort_size++;
   }
@@ -842,16 +852,16 @@ if ($moduleID != '') {
 // Get student's log data.
 if ($paper_type == '0') {
   $log_query = $mysqli->prepare("(SELECT DISTINCT log0.q_id, 0 AS paper_type, grade, screen, duration, log0.started AS order_started, user_answer, DATE_FORMAT(log0.started, '$cfg_long_date_time') AS display_started, log_metadata.year, title, surname, initials, first_names, gender, ipaddress, username, users.id, student_id, REPLACE(user_answer,'\"',\"'\") AS user_answer, q_type, log0.userID, mark, totalpos, status, attempt FROM (log0, log_metadata, questions, users) LEFT JOIN sid ON users.id=sid.userID WHERE log0.q_paper=log_metadata.paperID AND log0.userID=log_metadata.userID AND log0.started=log_metadata.started AND log0.q_id=questions.q_id AND roles LIKE '%Student%' AND q_paper=? AND users.id=log0.userID AND grade LIKE ? AND (users.roles LIKE '%Student%' OR users.roles='graduate') AND log0.started>=? AND log0.started<=?) UNION ALL (SELECT log1.q_id, 1 AS paper_type, grade, screen, duration, log1.started AS order_started, user_answer, DATE_FORMAT(log1.started, '$cfg_long_date_time') AS display_started, log_metadata.year, title, surname, initials, first_names, gender, ipaddress, username, users.id, student_id, REPLACE(user_answer,'\"',\"'\") AS user_answer, q_type, log1.userID, mark, totalpos, status, attempt FROM (log1, log_metadata, questions, users) LEFT JOIN sid ON users.id=sid.userID WHERE log1.q_paper=log_metadata.paperID AND log1.userID=log_metadata.userID AND log1.started=log_metadata.started AND log1.q_id=questions.q_id AND q_paper=? AND users.id=log1.userID AND grade LIKE ? AND (users.roles='Student' OR users.roles='graduate') AND log1.started>=? AND log1.started<=?) ORDER BY username, order_started, screen");
-  $log_query->bind_param('isssisss', $_GET['paperID'], $_GET['repdegree'], $_GET['startdate'], $_GET['enddate'], $_GET['paperID'], $_GET['repdegree'], $_GET['startdate'], $_GET['enddate']);
+  $log_query->bind_param('isssisss', $_GET['paperID'], $_GET['repcourse'], $_GET['startdate'], $_GET['enddate'], $_GET['paperID'], $_GET['repcourse'], $_GET['startdate'], $_GET['enddate']);
 } elseif ($paper_type == '2') {
   $log_query = $mysqli->prepare("SELECT DISTINCT log2.q_id, 2 AS paper_type, grade, screen, duration, log2.started, user_answer, DATE_FORMAT(log2.started, '$cfg_long_date_time') AS display_started, log_metadata.year, title, surname, initials, first_names, gender, ipaddress, username, users.id, student_id, REPLACE(user_answer,'\"',\"'\") AS user_answer, q_type, log2.userID, mark, totalpos, status, attempt FROM (log2, log_metadata, questions, users) LEFT JOIN sid ON users.id=sid.userID WHERE log2.q_paper=log_metadata.paperID AND log2.userID=log_metadata.userID AND log2.started=log_metadata.started AND log2.q_id=questions.q_id AND q_paper=? AND users.id=log2.userID AND grade LIKE ? AND (users.roles='Student' OR users.roles='graduate') AND DATE_ADD(log2.started, INTERVAL 2 MINUTE)>=? AND log2.started<=? ORDER BY username, log2.started, screen");
-  $log_query->bind_param('isss', $_GET['paperID'], $_GET['repdegree'], $_GET['startdate'], $_GET['enddate']);
+  $log_query->bind_param('isss', $_GET['paperID'], $_GET['repcourse'], $_GET['startdate'], $_GET['enddate']);
 } elseif ($paper_type == '5') {
   $log_query =   $mysqli->prepare("SELECT DISTINCT log5.q_id, 5 AS paper_type, grade, 1 AS screen, 0 AS duration, log5.started, NULL AS user_answer, DATE_FORMAT(log5.started, '$cfg_long_date_time') AS display_started, log_metadata.year, title, surname, initials, first_names, gender, NULL AS ipaddress, username, users.id, student_id, NULL AS user_answer, q_type, log5.userID, mark, totalpos, status, 1 AS attempt FROM (log5, log_metadata, questions, users) LEFT JOIN sid ON users.id=sid.userID WHERE log5.q_paper=log_metadata.paperID AND log5.userID=log_metadata.userID AND log5.started=log_metadata.started AND log5.q_id=questions.q_id AND q_paper=? AND users.id=log5.userID AND grade LIKE ? AND (users.roles='Student' OR users.roles='graduate') AND DATE_ADD(log5.started, INTERVAL 2 MINUTE)>=? AND log5.started<=? ORDER BY username, log5.started, screen");
-  $log_query->bind_param('isss', $_GET['paperID'], $_GET['repdegree'], $_GET['startdate'], $_GET['enddate']);
+  $log_query->bind_param('isss', $_GET['paperID'], $_GET['repcourse'], $_GET['startdate'], $_GET['enddate']);
 } else {
   $log_query = $mysqli->prepare("SELECT DISTINCT log$paper_type.q_id, $paper_type AS paper_type, grade, screen, duration, log$paper_type.started, user_answer, DATE_FORMAT(log$paper_type.started, '$cfg_long_date_time') AS display_started, log_metadata.year, title, surname, initials, first_names, gender, ipaddress, username, users.id, student_id, REPLACE(user_answer,'\"',\"'\") AS user_answer, q_type, log$paper_type.userID, mark, totalpos, status, attempt FROM (log$paper_type, log_metadata, questions, users) LEFT JOIN sid ON users.id=sid.userID WHERE log$paper_type.q_paper=log_metadata.paperID AND log$paper_type.userID=log_metadata.userID AND log$paper_type.started=log_metadata.started AND log$paper_type.q_id=questions.q_id AND q_paper=? AND users.id=log$paper_type.userID AND grade LIKE ? AND (users.roles='Student' OR users.roles='graduate') AND log$paper_type.started>=? AND log$paper_type.started<=? ORDER BY username, started, screen");
-  $log_query->bind_param('isss', $_GET['paperID'], $_GET['repdegree'], $_GET['startdate'], $_GET['enddate']);
+  $log_query->bind_param('isss', $_GET['paperID'], $_GET['repcourse'], $_GET['startdate'], $_GET['enddate']);
 }
 $log_query->execute();
 $log_query->bind_result($q_id, $paper_type, $grade, $screen, $duration, $started, $user_answer, $display_started, $year, $title, $surname, $initials, $first_names, $gender, $ipaddress, $username, $tmp_userID, $student_id, $user_answer, $q_type, $tmp_userID, $mark, $totalpos, $status, $attempt);
@@ -950,7 +960,7 @@ if ($log_query->num_rows > 0) {
       $tmp_array['paper_type'] = $paper_type;
     }
     getUserMark($q_id, $user_answer, $mark, $excluded, $status, $tmp_mark, $tmp_user_mark_array);
-
+    
     if ($q_type == 'textbox' and !is_numeric($mark)) $marking_complete = 0;
     if (isset($tmp_array['questions'])) {
       $tmp_array['questions']++;
@@ -1015,12 +1025,12 @@ if ($log_query->num_rows > 0) {
           $user_results[$user_no]['initials'] = $student_cohort[$i]['initials'];
           $user_results[$user_no]['first_names'] = $student_cohort[$i]['first_names'];
           $user_results[$user_no]['student_id'] = $student_cohort[$i]['student_id'];
-          $user_results[$user_no]['gender'] = $tmp['gender'];
+          $user_results[$user_no]['gender'] = $student_cohort[$i]['gender'];
           $user_results[$user_no]['ipaddress'] = '';
           $user_results[$user_no]['duration'] = 0;
           $user_results[$user_no]['questions'] = '';
           $user_results[$user_no]['paper_type'] = '';
-          $user_results[$user_no]['room'] = $tmp['room'];
+          $user_results[$user_no]['room'] = '';
           $user_results[$user_no]['visible'] = 1;    // Default to visible unless switched off below.
           $user_no++;
         }
@@ -1138,7 +1148,7 @@ for ($i=0; $i<$user_no; $i++) {
 }
 if ($completed_no > 1) {
   $stddev_mark = sqrt($xmean_total/($completed_no-1));
-  $stddev_percent = sqrt($xmean_percent_total/($completed_no-1));
+  $stddev_percent = sqrt($xmean_percent_total / ($completed_no - 1));
 } else {
   $stddev_mark = 0;
   $stddev_percent = 0;

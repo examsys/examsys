@@ -305,7 +305,7 @@
 </head>
 <?php
   if (count($error) == 0) {
-  	echo "<body onload=\"javascript:window.location='" . $protocol . $_SERVER['HTTP_HOST'] . "/paper/details.php?paperID=$new_paper_id&module=" . $_POST['module'] . "&folder=" . $_POST['folder'] . "';\">";
+  	echo "<body onload=\"javascript:window.location='" . $protocol . $_SERVER['HTTP_HOST'] . $cfg_root_path . "/paper/details.php?paperID=$new_paper_id&module=" . $_POST['module'] . "&folder=" . $_POST['folder'] . "';\">";
   } else {
 ?>
   <body onclick="hideMenus()">
@@ -319,7 +319,7 @@
 
     <table border="0" cellpadding="4" cellspacing="1" style="background-color:#C0C0C0; text-align:left">
     <tr>
-    <td valign="middle" style="background-color:white"><img src="/artwork/orange_alert_32.png" width="32" height="32" alt="<?php echo $string['warning']; ?>" />&nbsp;&nbsp;<span style="font-family:Arial,sans-serif; font-size:150%; font-weight:bold; color:#C00000"><?php echo $string['filecopywarning']; ?></span></td>
+    <td valign="middle" style="background-color:white"><img src="../artwork/orange_alert_32.png" width="32" height="32" alt="<?php echo $string['warning']; ?>" />&nbsp;&nbsp;<span style="font-family:Arial,sans-serif; font-size:150%; font-weight:bold; color:#C00000"><?php echo $string['filecopywarning']; ?></span></td>
    </tr>
    <tr>
    <td style="background-color:#EAEAEA"><ul>
@@ -330,7 +330,7 @@
     }
    ?>
     </ul>
-    <div style="text-align:center"><input type="button" name="OK" value=" <?php echo $string['ok']; ?> " onclick="javascript:window.location='<?php echo $protocol . $_SERVER['HTTP_HOST'] . '/paper/details.php?paperID=' . $new_paper_id . '&module=' . $_POST['module'] . '&folder=' . $_POST['folder']; ?>'" style="width:100px" /></div>
+    <div style="text-align:center"><input type="button" name="OK" value=" <?php echo $string['ok']; ?> " onclick="javascript:window.location='<?php echo $protocol . $_SERVER['HTTP_HOST'] . $cfg_root_path . '/paper/details.php?paperID=' . $new_paper_id . '&module=' . $_POST['module'] . '&folder=' . $_POST['folder']; ?>'" style="width:100px" /></div>
     <br />
     </td>
     </tr>

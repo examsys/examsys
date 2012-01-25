@@ -8,6 +8,6 @@ $string['add'] = 'Add';
 $string['createcourse'] = 'Create new Course';
 $string['editcourse'] = 'Edit Course';
 $string['deletecourse'] = 'Delete Course';
-$string['codedegree'] = 'Please enter a code for the degree.';
-$string['titledegree'] = 'Please enter a title for the degree.';
+$string['codecourse'] = 'Please enter a code for the course.';
+$string['titlecourse'] = 'Please enter a title for the course.';
 ?>

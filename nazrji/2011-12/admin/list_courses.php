@@ -73,8 +73,8 @@
     }
   }
 
-  function edit(degreeID) {
-    document.location.href='./edit_course.php?degreeID=' + degreeID;
+  function edit(courseID) {
+    document.location.href='./edit_course.php?courseID=' + courseID;
   }
 </script>
 </head>
@@ -96,11 +96,11 @@
 </tr>
 <tr><td colspan="3" style="height:3px"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td></tr>
 <?php
-$result = $mysqli->prepare("SELECT id, school, degree, description FROM degrees WHERE degree != 'left' AND degree != 'none' AND school != 'university' AND school != 'NHS' ORDER BY degree");
+$result = $mysqli->prepare("SELECT id, school, name, description FROM courses WHERE name != 'left' AND name != 'none' AND school != 'university' AND school != 'NHS' ORDER BY name");
 $result->execute();
-$result->bind_result($id, $school, $degree, $description);
+$result->bind_result($id, $school, $name, $description);
 while ($result->fetch()) {
-  echo "<tr id=\"$id\" onclick=\"selDeg($id,event)\" ondblclick=\"edit($id)\" onmouseover=\"lon($id)\" onmouseout=\"loff($id)\" class=\"l\"><td>&nbsp;$degree</td><td>$description</td><td>$school</td></tr>\n";
+  echo "<tr id=\"$id\" onclick=\"selDeg($id,event)\" ondblclick=\"edit($id)\" onmouseover=\"lon($id)\" onmouseout=\"loff($id)\" class=\"l\"><td>&nbsp;$name</td><td>$description</td><td>$school</td></tr>\n";
 }
 $result->close();
 $mysqli->close();

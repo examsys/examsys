@@ -49,7 +49,7 @@ if (isset($_POST['submit'])) {
       $i++;
     }
   }
-  header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/mapping/sessions_list.php?module=$moduleID");
+  header("location: " . $protocol . $_SERVER['HTTP_HOST'] . $cfg_root_path . "/mapping/sessions_list.php?module=$moduleID");
   exit;
 }
 ?>

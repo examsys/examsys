@@ -29,7 +29,7 @@ Class ModuleUtils {
 
   static function addModules($moduleid, $fullname, $active, $schoolID, $vle_api, $sms_api, $selfEnroll, $peer, $external, $stdset, $mapping, $neg_marking, $ebel_grid_template, $db) {
     
-    if(ModuleUtils::moduleExists($moduleid,$db) === false) {
+    if (ModuleUtils::moduleExists($moduleid,$db) === false) {
       return false;
     }
     

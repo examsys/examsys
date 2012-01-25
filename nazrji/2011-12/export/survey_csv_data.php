@@ -26,7 +26,7 @@ require '../include/staff_auth.inc';
   
 $paper_id = $_GET['paperID'];
 $rep_year = (empty($_GET['repyear'])) ? '%' : $_GET['repyear'];
-$rep_degree = (empty($_GET['repdegree'])) ? '%' : $_GET['repdegree'];
+$rep_course = (empty($_GET['repcourse'])) ? '%' : $_GET['repcourse'];
 
 // Capture the paper makeup.
 $paper_buffer = array();
@@ -96,14 +96,14 @@ if ($_GET['complete'] == 1) {
 $log_array = array();
 $hits = 0;
 $stmt = $mysqli->prepare("SELECT DISTINCT sid.student_id, username, title, surname, initials, grade, gender, log_metadata.year, log3.started, log3.q_id, user_answer, q_type, screen FROM (log3, questions, users, log_metadata) LEFT JOIN sid ON users.id=sid.userID WHERE log3.userID = log_metadata.userID AND log3.q_paper = log_metadata.paperID AND log3.started = log_metadata.started AND log3.q_id=questions.q_id AND q_paper=? AND log_metadata.year LIKE ? AND users.id=log3.userID AND (users.roles='Student' OR users.roles='graduate')$exclude AND grade LIKE ? AND log3.started>=? AND log3.started<=?");
-$stmt->bind_param('issss', $paper_id, $rep_year, $rep_degree, $_GET['startdate'], $_GET['enddate']);
+$stmt->bind_param('issss', $paper_id, $rep_year, $rep_course, $_GET['startdate'], $_GET['enddate']);
 $stmt->execute();
 $stmt->bind_result($student_id, $username, $title, $surname, $initials, $grade, $gender, $year, $started, $q_id, $user_answer, $q_type, $screen);
 while($stmt->fetch()) {
   $log_array[$username][$screen][$q_id] = $user_answer;
   $log_array[$username]['student_id'] = $student_id;
   $log_array[$username]['username'] = $username;
-  $log_array[$username]['degree'] = $grade;
+  $log_array[$username]['course'] = $grade;
   $log_array[$username]['year'] = $year;
   $log_array[$username]['started'] = $started;
   $log_array[$username]['title'] = $title;
@@ -120,7 +120,7 @@ foreach ($log_array as $individual) {
   // Write out the headings.
   if ($row_written == 0) {
     // Only output personal data if assessment, do not show if survey.
-    echo 'Gender,Student ID,Degree,Year,Submitted,';
+    echo 'Gender,Student ID,Course,Year,Submitted,';
     for ($i=0; $i<$question_no; $i++) {
       $tmp_question_ID = $paper_buffer[$i]['ID'];
       $tmp_screen = $paper_buffer[$i]['screen'];
@@ -177,7 +177,7 @@ foreach ($log_array as $individual) {
     echo "\n";
   }
   // Write out the raw data.
-  echo $individual['gender'] . ',' . $individual['student_id'] . ',' . $individual['degree'] . ',' . $individual['year'] . ',' . $individual['started'] . ',';
+  echo $individual['gender'] . ',' . $individual['student_id'] . ',' . $individual['course'] . ',' . $individual['year'] . ',' . $individual['started'] . ',';
   for ($i=0; $i<$question_no; $i++) {
     $tmp_question_ID = $paper_buffer[$i]['ID'];
     $tmp_screen = $paper_buffer[$i]['screen'];

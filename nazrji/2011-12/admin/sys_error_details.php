@@ -29,11 +29,11 @@ require '../include/errors.inc';
 
 check_var('errorID', 'GET', true, false);
 
-$result = $mysqli->prepare("SELECT sys_errors.id, title, initials, surname, DATE_FORMAT(occurred,'%d/%m/%y&nbsp;%H:%i:%s'), userID, errtype, errstr, errfile, errline, php_self, query_string, request_method, DATE_FORMAT(fixed,'%d/%m/%y&nbsp;%H:%i:%s'), paperID, post_data FROM sys_errors, users WHERE sys_errors.userID=users.id AND sys_errors.id=?");
+$result = $mysqli->prepare("SELECT sys_errors.id, auth_user, title, initials, surname, DATE_FORMAT(occurred,'%d/%m/%y&nbsp;%H:%i:%s'), userID, errtype, errstr, errfile, errline, php_self, query_string, request_method, DATE_FORMAT(fixed,'%d/%m/%y&nbsp;%H:%i:%s'), paperID, post_data FROM sys_errors LEFT JOIN users ON sys_errors.userID=users.id WHERE sys_errors.id=?");
 $result->bind_param('i', $_GET['errorID']);
 $result->execute();
 $result->store_result();
-$result->bind_result($error_id, $title, $initials, $surname, $occurred, $userID, $errtype, $errstr, $errfile, $errline, $php_self, $query_string, $request_method, $fixed, $paperID, $post_data);
+$result->bind_result($error_id, $auth_user, $title, $initials, $surname, $occurred, $userID, $errtype, $errstr, $errfile, $errline, $php_self, $query_string, $request_method, $fixed, $paperID, $post_data);
 $result->fetch();
 $result->close();
 
@@ -54,7 +54,6 @@ if (isset($_POST['submit'])) {
   $similar_errors = $result->num_rows();
   $result->close();
 }
-$mysqli->close();
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -74,6 +73,7 @@ td {border: 1px solid #C0C0C0; padding:2px}
 <table style="">
 <tr><td class="f"><?php echo $string['date']; ?></td><td><?php echo $occurred; ?></td></tr>
 <tr><td class="f"><?php echo $string['staff']; ?></td><td><?php echo $title . ' ' . $initials . ' ' . $surname; ?></td></tr>
+<tr><td class="f"><?php echo $string['username']; ?></td><td><?php echo $auth_user; ?></td></tr>
 <tr><td class="f"><?php echo $string['type']; ?></td><td><?php echo $errtype; ?></td></tr>
 <tr><td class="f"><?php echo $string['description']; ?></td><td><?php echo $errstr; ?></td></tr>
 <tr><td class="f"><?php echo $string['file']; ?></td><td><?php echo $errfile . ' (line ' . $errline . ')'; ?></td></tr>
@@ -99,7 +99,7 @@ if ($fixed == '') {
 </div>
 </form>
 <?php
-
+$mysqli->close();
 ?>
 
 </body>

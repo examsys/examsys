@@ -155,7 +155,7 @@ while ($result->fetch()) {
     echo "<tr><td class=\"phototd\" rowspan=\"" . (count($questions) + 2) . "\">";
     $peer_photo = $cfg_web_root . 'users/photos/' . $member_username . '.jpg';
     if (file_exists($peer_photo) and $display_photos == '1') {
-      echo "<img class=\"photo\" src=\"/users/photos/" . $member_username . ".jpg\" width=\"90\" height=\"135\" border=\"0\" />";
+      echo "<img class=\"photo\" src=\"../users/photos/" . $member_username . ".jpg\" width=\"90\" height=\"135\" border=\"0\" />";
     }
     $first_names = explode(' ', $member_first_names);
     echo "</td><td class=\"title\" colspan=\"" . ($columns + 1) . "\">$member_title " . $first_names[0] . " $member_surname</td></tr>\n";

@@ -38,7 +38,7 @@ function display_error($error_title, $error_description, $headers = true, $stop_
   }
 ?>
 <table border="0" cellpadding="5" cellspacing="0" style="font-size:100%">
-<tr><td rowspan="2"><img src="/artwork/bomb.png" width="64" height="64" alt="bomb" /></td><td style="font-size:160%; font-weight:bold; color:#C00000"><?php echo $error_title; ?></td></tr>
+<tr><td rowspan="2"><img src="<?php echo $cfg_root_path ?>/artwork/bomb.png" width="64" height="64" alt="bomb" /></td><td style="font-size:160%; font-weight:bold; color:#C00000"><?php echo $error_title; ?></td></tr>
 <tr><td><div><?php echo $error_description; ?></div><br /><div style="color:#808080; font-size:90%"><?php echo $string['errormsg']; ?> <a href="mailto:<?php echo $support_email; ?>" style="color:blue"><?php echo $support_email; ?></a></div></td></tr>
 </table>
 

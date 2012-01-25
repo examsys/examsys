@@ -63,7 +63,7 @@
       }
     }
     
-    if (count($bad_addresses) == 0) header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/admin/list_labs.php");
+    if (count($bad_addresses) == 0) header("location: list_labs.php");
   }
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

@@ -26,6 +26,7 @@
 
 require_once 'exceptions.inc.php';
 require_once 'touchstone_object.class.php';
+require_once $cfg_web_root . '/include/path_functions.inc.php';
 
 Class Option extends TouchStoneObject {
 
@@ -491,8 +492,8 @@ QUERY;
   
   public static function option_factory($mysqli, $user_id, $question, $number, &$lang_strings, $data=-1) {
     $object = null;
-    $root = (substr($_SERVER['DOCUMENT_ROOT'], -1) == DIR_SEPARATOR) ? $_SERVER['DOCUMENT_ROOT'] : $_SERVER['DOCUMENT_ROOT'] . DIR_SEPARATOR;
-    $root .= 'classes/';
+    $root = get_root_path();
+    $root .= '/classes/';
     
     $question_type = $question->get_type();
     $classname = 'Option' . strtoupper($question_type);

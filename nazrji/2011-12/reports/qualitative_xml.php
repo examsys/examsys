@@ -68,7 +68,7 @@
   $enddate = $_GET['enddate'];
   $q_no = 0;
   $result = $mysqli->prepare("SELECT DISTINCT log3.screen, theme, users.username AS username, log3.q_id AS q_id, REPLACE(leadin,'&','&amp;') AS leadin, REPLACE(user_answer,'&','&amp;') AS user_answer FROM (log3, log_metadata, papers, questions, users) WHERE log3.q_paper=log_metadata.paperID AND log3.userID=log_metadata.userID AND log3.started=log_metadata.started AND users.id=log3.userID AND papers.question=log3.q_id AND papers.screen=log3.screen AND paper=? AND q_paper=? AND log3.q_id=questions.q_id AND q_type='textbox' AND log_metadata.started>=? AND log_metadata.started<=? AND (roles='Student' OR roles='graduate') AND log_metadata.student_grade LIKE ? AND log_metadata.year LIKE ? ORDER BY papers.screen, display_pos");
-  $result->bind_param('iissss', $_GET['paperID'], $_GET['paperID'], $startdate, $enddate, $_GET['repdegree'], $_GET['repyear']);
+  $result->bind_param('iissss', $_GET['paperID'], $_GET['paperID'], $startdate, $enddate, $_GET['repcourse'], $_GET['repyear']);
   $result->execute();
   $result->bind_result($screen, $theme, $tmp_username, $q_id, $leadin, $user_answer);
   while ($row = $result->fetch()) {

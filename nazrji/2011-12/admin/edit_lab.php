@@ -52,7 +52,7 @@
     $result->execute();  
     $result->close();
 
-    header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/admin/lab_details.php?labID=" . $_GET['labID']);
+    header("location: lab_details.php?labID=" . $_GET['labID']);
   } else {
     $lab_details = $mysqli->query("SELECT name, address, campus, building, room_no, timetabling, it_support, plagarism, low_bandwidth FROM (ip_addresses, labs) WHERE ip_addresses.lab=labs.id AND labs.id=" . $_GET['labID']);
 ?>

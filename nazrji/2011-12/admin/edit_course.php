@@ -24,42 +24,42 @@
 
 require '../include/sysadmin_auth.inc';
 
-$unique_degree = true;
-$tmp_degree = '';
+$unique_course = true;
+$tmp_course = '';
 
-if (isset($_POST['submit']) and $_POST['degree'] != $_POST['old_degree']) {
-  // Check for unique degree name
-  $tmp_degree = trim($_POST['degree']);
+if (isset($_POST['submit']) and $_POST['course'] != $_POST['old_course']) {
+  // Check for unique course name
+  $tmp_course = trim($_POST['course']);
   
-  $result = $mysqli->prepare("SELECT degree FROM degrees WHERE degree=?");
-  $result->bind_param('s', $tmp_degree);
+  $result = $mysqli->prepare("SELECT name FROM courses WHERE name=?");
+  $result->bind_param('s', $tmp_course);
   $result->execute();
   $result->store_result();
-  $result->bind_result($tmp_degree);
+  $result->bind_result($tmp_course);
   $result->fetch();
-  if ($result->num_rows > 0) $unique_degree = false;
+  if ($result->num_rows > 0) $unique_course = false;
   $result->free_result();
   $result->close();
 }
 
-if (isset($_POST['submit']) and $unique_degree == true) {
-  $tmp_degree = trim($_POST['degree']);
+if (isset($_POST['submit']) and $unique_course == true) {
+  $tmp_course = trim($_POST['course']);
   $tmp_school = $_POST['school'];
   $tmp_description = trim($_POST['description']);
-  $tmp_degreeID = $_POST['degreeID'];
+  $tmp_courseID = $_POST['courseID'];
 
-  $result = $mysqli->prepare("UPDATE degrees SET degree=?, description=?, school=? WHERE id=?");
-  $result->bind_param('sssi', $tmp_degree, $tmp_description, $tmp_school, $tmp_degreeID);
+  $result = $mysqli->prepare("UPDATE courses SET name=?, description=?, school=? WHERE id=?");
+  $result->bind_param('sssi', $tmp_course, $tmp_description, $tmp_school, $tmp_courseID);
   $result->execute();  
   $result->close();
   $mysqli->close();
-  header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/admin/list_courses.php");
+  header("location: list_courses.php");
 } else {
-  $degreeID = $_GET['degreeID'];
-  $result = $mysqli->prepare("SELECT school, degree, description FROM degrees WHERE id=? LIMIT 1");
-  $result->bind_param('i', $degreeID);
+  $courseID = $_GET['courseID'];
+  $result = $mysqli->prepare("SELECT school, name, description FROM courses WHERE id=? LIMIT 1");
+  $result->bind_param('i', $courseID);
   $result->execute();
-  $result->bind_result($current_school, $degree, $description);
+  $result->bind_result($current_school, $name, $description);
   $result->fetch();
   $result->close();
 ?>
@@ -75,22 +75,22 @@ if (isset($_POST['submit']) and $unique_degree == true) {
 
   <script language="JavaScript">
   function checkForm() {
-    if (edit_degree.degree.value == "") {
-      alert ("<?php echo $string['degreeentercode'];?>");
+    if (edit_course.course.value == "") {
+      alert ("<?php echo $string['courseentercode'];?>");
       return false;
     }
-    if (edit_degree.description.value == "") {
-      alert ("<?php echo $string['degreeentertitle'];?>");
+    if (edit_course.description.value == "") {
+      alert ("<?php echo $string['courseentertitle'];?>");
       return false;
     }
   }
   function codeWarning() {
-    alert("<?php echo sprintf($string['degreecodeinuse'],$tmp_degree); ?>");
+    alert("<?php echo sprintf($string['coursecodeinuse'], $tmp_course); ?>");
   }
   </script>
   </head>
   <?php
-  if ($unique_degree == false) {
+  if ($unique_course == false) {
     echo "<body onload=\"codeWarning()\">\n";
   } else {
     echo "<body>\n";
@@ -104,13 +104,13 @@ if (isset($_POST['submit']) and $unique_degree == true) {
   </table>
   <br />
   <div align="center">
-  <form name="edit_degree" method="post" onsubmit="return checkForm()" action="<?php echo $_SERVER['PHP_SELF'] . '?degreeID=' . $degreeID; ?>">
+  <form name="edit_course" method="post" onsubmit="return checkForm()" action="<?php echo $_SERVER['PHP_SELF'] . '?courseID=' . $courseID; ?>">
     <table cellpadding="0" cellspacing="2" border="0" style="text-align:left">
     <?php
-    if ($unique_degree == false) {
-      echo "<tr><td class=\"field\">" . $string['code'] . "</td><td><input type=\"text\" size=\"10\" name=\"degree\" style=\"background-color:#FFD9D9; color:#800000; border:1px solid #800000\" value=\"$tmp_degree\" /><input type=\"hidden\" name=\"old_degree\" value=\"$tmp_degree\" /></td></tr>\n";
+    if ($unique_course == false) {
+      echo "<tr><td class=\"field\">" . $string['code'] . "</td><td><input type=\"text\" size=\"10\" name=\"course\" style=\"background-color:#FFD9D9; color:#800000; border:1px solid #800000\" value=\"$tmp_course\" /><input type=\"hidden\" name=\"old_course\" value=\"$tmp_course\" /></td></tr>\n";
     } else {
-      echo "<tr><td class=\"field\">" . $string['code'] . "</td><td><input type=\"text\" size=\"10\" name=\"degree\" value=\"" . $degree . "\" /><input type=\"hidden\" name=\"old_degree\" value=\"$degree\" /></td></tr>\n";
+      echo "<tr><td class=\"field\">" . $string['code'] . "</td><td><input type=\"text\" size=\"10\" name=\"course\" value=\"" . $name . "\" /><input type=\"hidden\" name=\"old_course\" value=\"$name\" /></td></tr>\n";
     }
     ?>
     <tr><td class="field"><?php echo $string['name']; ?></td><td><input type="text" size="70" name="description" value="<?php echo $description; ?>" /></td></tr>
@@ -139,7 +139,7 @@ if (isset($_POST['submit']) and $unique_degree == true) {
     ?>
     </select></td></tr>
     </table>
-    <input type="hidden" name="degreeID" value="<?php echo $degreeID; ?>" />
+    <input type="hidden" name="courseID" value="<?php echo $courseID; ?>" />
     <p><input type="submit" style="width:100px" name="submit" value="<?php echo $string['save']; ?>">&nbsp;&nbsp;<input type="button" style="width:100px" name="home" value="<?php echo $string['cancel']; ?>" onclick="javascript:history.back();" /></p>
   </form>
   </div>

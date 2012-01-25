@@ -68,7 +68,7 @@ function check_fullSave($q_id, $mysqli) {
 }
 
 function redirect() {
-  global $protocol, $mysqli, $q_id, $userID;
+  global $protocol, $mysqli, $q_id, $userID, $cfg_root_path;
   // Release the lock.
   if ($_POST['checkout_author'] == $userID) {
     $result = $mysqli->prepare("UPDATE questions SET checkout_time=NULL, checkout_authorID=NULL WHERE q_id=?");
@@ -79,17 +79,17 @@ function redirect() {
 
   if (substr($_POST['paperID'],0,5) == 'list:') {
     $type = substr($_POST['paperID'],5);
-    header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/question/list.php?type=$type&keyword=" . $_POST['keyword'] . "&team=" . $_POST['team']);
+    header("location: " . $protocol . $_SERVER['HTTP_HOST'] . $cfg_root_path . "/question/list.php?type=$type&keyword=" . $_POST['keyword'] . "&team=" . $_POST['team']);
   } elseif ($_POST['calling'] == 'find') {
-    header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/question/search.php");
+    header("location: " . $protocol . $_SERVER['HTTP_HOST'] . $cfg_root_path . "/question/search.php");
   } elseif ($_POST['calling'] == 'paper') {
-    header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/paper/details.php?paperID=" . $_POST['paperID'] . "&module=" . $_POST['module'] . "&folder=" . $_POST['folder'] . "&scrOfY=" . $_POST['scrOfY']);
+    header("location: " . $protocol . $_SERVER['HTTP_HOST'] . $cfg_root_path . "/paper/details.php?paperID=" . $_POST['paperID'] . "&module=" . $_POST['module'] . "&folder=" . $_POST['folder'] . "&scrOfY=" . $_POST['scrOfY']);
   } elseif ($_POST['calling'] == 'external_comments') {
-    header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/reports/review_comments.php?type=external&paperID=" . $_POST['paperID'] . "&module=" . $_POST['module'] . "&folder=" . $_POST['folder'] . "&scrOfY=" . $_POST['scrOfY']);
+    header("location: " . $protocol . $_SERVER['HTTP_HOST'] . $cfg_root_path . "/reports/review_comments.php?type=external&paperID=" . $_POST['paperID'] . "&module=" . $_POST['module'] . "&folder=" . $_POST['folder'] . "&scrOfY=" . $_POST['scrOfY']);
   } elseif ($_POST['calling'] == 'internal_comments') {
-    header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/reports/review_comments.php?type=internal&paperID=" . $_POST['paperID'] . "&module=" . $_POST['module'] . "&folder=" . $_POST['folder'] . "&scrOfY=" . $_POST['scrOfY']);
+    header("location: " . $protocol . $_SERVER['HTTP_HOST'] . $cfg_root_path . "/reports/review_comments.php?type=internal&paperID=" . $_POST['paperID'] . "&module=" . $_POST['module'] . "&folder=" . $_POST['folder'] . "&scrOfY=" . $_POST['scrOfY']);
   } else {
-    header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/staff/index.php");
+    header("location: " . $protocol . $_SERVER['HTTP_HOST'] . $cfg_root_path . "/staff/index.php");
   }
   $mysqli->close();
   exit;   // Stop script execution after the redirect.

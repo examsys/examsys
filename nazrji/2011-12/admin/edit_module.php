@@ -116,7 +116,7 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
   }
 
   $mysqli->close();
-  header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/admin/list_modules.php");
+  header("location: list_modules.php");
 } else {
   $moduleid = $_GET['moduleid'];
   $stmt = $mysqli->prepare("SELECT moduleid, fullname, active, school, vle_api, checklist, sms, selfenroll, neg_marking, ebel_grid_template FROM modules, schools WHERE modules.schoolid=schools.id AND moduleid=?");
@@ -126,11 +126,13 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
   $stmt->fetch();
   $stmt->close();
   
-  require '../classes/smsutils.class.php';
+  require_once '../classes/smsutils.class.php';
 
   $SMS = SMSutils::GetSmsUtils();
-  $cfg_sms_sources =  $SMS->getModuleSources();
-   
+  $cfg_sms_sources = array();
+  if (is_object($SMS)) {
+    $cfg_sms_sources =  $SMS->getModuleSources();
+  }
 ?>
   <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
   <html>
@@ -245,15 +247,15 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
       $mapping = 0;
     }
     
-  echo '<tr><td class="field">' . $string['smsapi'] . '</td><td><select name="sms_api">';
-  foreach ($cfg_sms_sources as $key=>$value) {
-    if ($sms == $value) {
-      echo "<option value=\"$value\" selected>$key</option>\n";
-    } else {
-      echo "<option value=\"$value\">$key</option>\n";
+    echo '<tr><td class="field">' . $string['smsapi'] . '</td><td><select name="sms_api">';
+    foreach ($cfg_sms_sources as $key=>$value) {
+      if ($sms == $value) {
+        echo "<option value=\"$value\" selected>$key</option>\n";
+      } else {
+        echo "<option value=\"$value\">$key</option>\n";
+      }
     }
-  }
-  echo '</select></td></tr>';
+    echo '</select></td></tr>';
   ?>
     <tr><td class="field"><?php echo $string['objapi']; ?></td><td><select name="vle_api"><option value=""><?php echo $string['nolookup']; ?></option><option value="NLE"<?php if ($vle_api == 'NLE') echo ' selected'; ?>><?php echo $string['nle']; ?></option></select></td></tr>
     <tr><td class="field"><?php echo $string['summativechecklist']; ?></td><td><input type="checkbox" name="peer"<?php if ($peer == 1) echo ' checked'; ?> /> <?php echo $string['peerreview']; ?>, <input type="checkbox" name="external"<?php if ($external == 1) echo ' checked'; ?> /> <?php echo $string['externalexaminers']; ?>, <input onclick="showHideGrid()" type="checkbox" id="stdset" name="stdset"<?php if ($stdset == 1) echo ' checked'; ?> /> <?php echo $string['standardssetting']; ?>, <input type="checkbox" name="mapping"<?php if ($mapping == 1) echo ' checked'; ?> /> <?php echo $string['mapping']; ?></td></tr>

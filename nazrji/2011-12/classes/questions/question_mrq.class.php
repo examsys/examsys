@@ -134,15 +134,16 @@ Class QuestionMRQ extends Question {
   public function convert_to_mcq($correct_answer) {
     // TODO: update question and get new MCQ object based on it
     $this->set_type('mcq');
-    $this->set_option_order('vertical');
+    $this->set_display_method('vertical');
 
     foreach ($this->options as $option) {
       $option->set_correct($correct_answer);
     }
     
     $this->save();
-    
-    return new QuestionMCQ($this->_mysqli, $this->_user_id, $this->id);
+
+    $q =  new QuestionMCQ($this->_mysqli, $this->_user_id, $this->_lang_strings, $this->id);
+    return $q;
   }
   
   // ACCESSORS

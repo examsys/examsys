@@ -82,5 +82,5 @@
   }
   $mysqli->close();
   
-  header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/delete/recycle_list.php");
+  header("location: ./recycle_list.php");
 ?>

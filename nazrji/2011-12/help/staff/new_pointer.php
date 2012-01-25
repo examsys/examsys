@@ -38,7 +38,7 @@
     <title></title>
     <script language="JavaScript">
       function reloadHelp() {
-        window.top.location='/help/staff/index.php?id=<?php echo $page_id; ?>';
+        window.top.location='index.php?id=<?php echo $page_id; ?>';
       }
     </script>
     </head>

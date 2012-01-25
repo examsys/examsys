@@ -24,10 +24,10 @@
 * @package
 */
 
-  require '../include/staff_auth.inc';
-  require '../include/class_totals.inc';
+require '../include/staff_auth.inc';
+require '../include/class_totals.inc';
   
-  ob_start();
+ob_start();
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
      "DTD/xhtml1-transitional.dtd">
@@ -41,6 +41,16 @@ a.user {color:black}
 a.user:hover {color:white; background-color:#000080}
 .h {background-color:#F1F5FB; color:black}
 .field {text-align:right; padding-right:10px}
+.mk {padding-right:10px}
+.redln {border-bottom:solid red 1px}
+.greyln {border-bottom:solid #EEEEEE 1px}
+.ordered {background-color:#F7F7F7}
+.grey {color:#808080}
+.padl {padding-left:6px}
+.exclude {color:red; text-decoration:line-through}
+.nonattend {background-color:#FFC0C0}
+.dist {color:#008000}
+.fail {color:red}
 </style>
 <link rel="stylesheet" type="text/css" href="../css/breadcrumb.css" />
 <script src="../js/staff_help.js" type="text/javascript"></script>
@@ -160,10 +170,6 @@ a.user:hover {color:white; background-color:#000080}
       return true;
     else
       return false;
-  }
-
-  function viewNote2(userID) {
-    window.open("display_note.php?paperID=<?php echo $paperID; ?>&userID="+userID+"","note","width=400,height=300,left=30,top=20,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
   }
 
   function popupEmailTemplate() {
@@ -304,22 +310,22 @@ a.user:hover {color:white; background-color:#000080}
   <tr><td>
     <table width="160" cellspacing="0" cellpadding="1" border="0" style="font-size:100%; background-color:white">
       <tr>
-        <td id="item1a" style="text-align:center; border-top:1px solid #F1F5FB; border-bottom:1px solid #F1F5FB; border-left:1px solid #F1F5FB; border-right:0px solid #F1F5FB; background-color:#F1F5FB; width:24px" onmouseover="menuRowOn('1');" onmouseout="menuRowOff('1');" onclick="viewScript();"><img src="/artwork/summative_16.gif" width="16" height="16" alt="" border="0" /></td><td id="item1b" style="padding-left:8px; border:1px solid #FFFFFF; background-color:#FFFFFF; cursor:default" onmouseover="menuRowOn('1');" onmouseout="menuRowOff('1');" onclick="viewScript();"><?php echo $string['examscript']; ?></td>
+        <td id="item1a" style="text-align:center; border-top:1px solid #F1F5FB; border-bottom:1px solid #F1F5FB; border-left:1px solid #F1F5FB; border-right:0px solid #F1F5FB; background-color:#F1F5FB; width:24px" onmouseover="menuRowOn('1');" onmouseout="menuRowOff('1');" onclick="viewScript();"><img src="../artwork/summative_16.gif" width="16" height="16" alt="" border="0" /></td><td id="item1b" style="padding-left:8px; border:1px solid #FFFFFF; background-color:#FFFFFF; cursor:default" onmouseover="menuRowOn('1');" onmouseout="menuRowOff('1');" onclick="viewScript();"><?php echo $string['examscript']; ?></td>
       </tr>
       <tr>
-        <td id="item2a" style="text-align:center; border-top:1px solid #F1F5FB; border-bottom:1px solid #F1F5FB; border-left:1px solid #F1F5FB; border-right:0px solid #F1F5FB; background-color:#F1F5FB; width:24px" onmouseover="menuRowOn('2');" onmouseout="menuRowOff('2');" onclick="viewFeedback();"><img src="/artwork/ok_comment.png" width="16" height="16" alt="" border="0" /></td><td id="item2b" style="padding-left:8px; border:1px solid #FFFFFF; background-color:#FFFFFF; cursor:default" onmouseover="menuRowOn('2');" onmouseout="menuRowOff('2');" onclick="viewFeedback();"><?php echo $string['feedback']; ?></td>
+        <td id="item2a" style="text-align:center; border-top:1px solid #F1F5FB; border-bottom:1px solid #F1F5FB; border-left:1px solid #F1F5FB; border-right:0px solid #F1F5FB; background-color:#F1F5FB; width:24px" onmouseover="menuRowOn('2');" onmouseout="menuRowOff('2');" onclick="viewFeedback();"><img src="../artwork/ok_comment.png" width="16" height="16" alt="" border="0" /></td><td id="item2b" style="padding-left:8px; border:1px solid #FFFFFF; background-color:#FFFFFF; cursor:default" onmouseover="menuRowOn('2');" onmouseout="menuRowOff('2');" onclick="viewFeedback();"><?php echo $string['feedback']; ?></td>
       </tr>
       <tr>
-        <td style="background-color:#F1F5FB; width:22px"></td><td style="padding-left:8px; text-align:right"><img src="/artwork/popup_divider.png" width="100%" height="3" border="0" alt="-" /></td>
+        <td style="background-color:#F1F5FB; width:22px"></td><td style="padding-left:8px; text-align:right"><img src="../artwork/popup_divider.png" width="100%" height="3" border="0" alt="-" /></td>
       </tr>
       <tr>
-        <td id="item3a" style="text-align:center; border-top:1px solid #F1F5FB; border-bottom:1px solid #F1F5FB; border-left:1px solid #F1F5FB; border-right:0px solid #F1F5FB; background-color:#F1F5FB; width:24px" onmouseover="menuRowOn('3');" onmouseout="menuRowOff('3');" onclick="viewProfile();"><img src="/artwork/small_user_icon.gif" width="16" height="16" alt="" border="0" /></td><td id="item3b" style="padding-left:8px; border:1px solid #FFFFFF; background-color:#FFFFFF; cursor:default" onmouseover="menuRowOn('3');" onmouseout="menuRowOff('3');" onclick="viewProfile();"><?php echo $string['studentprofile']; ?></td>
+        <td id="item3a" style="text-align:center; border-top:1px solid #F1F5FB; border-bottom:1px solid #F1F5FB; border-left:1px solid #F1F5FB; border-right:0px solid #F1F5FB; background-color:#F1F5FB; width:24px" onmouseover="menuRowOn('3');" onmouseout="menuRowOff('3');" onclick="viewProfile();"><img src="../artwork/small_user_icon.gif" width="16" height="16" alt="" border="0" /></td><td id="item3b" style="padding-left:8px; border:1px solid #FFFFFF; background-color:#FFFFFF; cursor:default" onmouseover="menuRowOn('3');" onmouseout="menuRowOff('3');" onclick="viewProfile();"><?php echo $string['studentprofile']; ?></td>
       </tr>
       <tr>
-        <td id="item4a" style="text-align:center; border-top:1px solid #F1F5FB; border-bottom:1px solid #F1F5FB; border-left:1px solid #F1F5FB; border-right:0px solid #F1F5FB; background-color:#F1F5FB; width:24px" onmouseover="menuRowOn('4');" onmouseout="menuRowOff('4');" onclick="newStudentNote();"><img src="/artwork/notes_icon.gif" width="14" height="14" alt="" border="0" /></td><td id="item4b" style="padding-left:8px; border:1px solid #FFFFFF; background-color:#FFFFFF; cursor:default" onmouseover="menuRowOn('4');" onmouseout="menuRowOff('4');" onclick="newStudentNote();"><?php echo $string['newnote']; ?></td>
+        <td id="item4a" style="text-align:center; border-top:1px solid #F1F5FB; border-bottom:1px solid #F1F5FB; border-left:1px solid #F1F5FB; border-right:0px solid #F1F5FB; background-color:#F1F5FB; width:24px" onmouseover="menuRowOn('4');" onmouseout="menuRowOff('4');" onclick="newStudentNote();"><img src="../artwork/notes_icon.gif" width="14" height="14" alt="" border="0" /></td><td id="item4b" style="padding-left:8px; border:1px solid #FFFFFF; background-color:#FFFFFF; cursor:default" onmouseover="menuRowOn('4');" onmouseout="menuRowOff('4');" onclick="newStudentNote();"><?php echo $string['newnote']; ?></td>
       </tr>
       <tr>
-        <td style="background-color:#F1F5FB; width:22px"></td><td style="padding-left:8px; text-align:right"><img src="/artwork/popup_divider.png" width="100%" height="3" border="0" alt="-" /></td>
+        <td style="background-color:#F1F5FB; width:22px"></td><td style="padding-left:8px; text-align:right"><img src="../artwork/popup_divider.png" width="100%" height="3" border="0" alt="-" /></td>
       </tr>
       <tr>
         <td id="item5a" style="text-align:center; border-top:1px solid #F1F5FB; border-bottom:1px solid #F1F5FB; border-left:1px solid #F1F5FB; border-right:0px solid #F1F5FB; background-color:#F1F5FB; width:24px" onmouseover="menuRowOn('5');" onmouseout="menuRowOff('5');" onclick="reassignScript();">&nbsp;</td><td id="item5b" style="padding-left:8px; border:1px solid #FFFFFF; background-color:#FFFFFF; cursor:default" onmouseover="menuRowOn('5');" onmouseout="menuRowOff('5');" onclick="reassignScript();"><?php echo $string['reassigntouser']; ?></td>
@@ -340,7 +346,7 @@ a.user:hover {color:white; background-color:#000080}
   $result->bind_param('i', $paperID);
   $result->execute();
   $result->bind_result($tmp_userID);
-  while ($row = $result->fetch()) {
+  while ($result->fetch()) {
     $notes[$tmp_userID] = 'y';
   }
   $result->close();
@@ -350,7 +356,7 @@ a.user:hover {color:white; background-color:#000080}
   $result = $mysqli->prepare("SELECT userID FROM special_needs");
   $result->execute();
   $result->bind_result($special_userID);
-  while ($row = $result->fetch()) {
+  while ($result->fetch()) {
     $special_needs[$special_userID] = 'y';
   }
   $result->close();
@@ -360,9 +366,9 @@ a.user:hover {color:white; background-color:#000080}
   $result = $mysqli->prepare("SELECT DISTINCT userID, title, surname, first_names FROM log_late, users WHERE log_late.userID=users.id AND q_paper=? AND started>? ORDER BY surname, initials");
   $result->bind_param('is', $paperID, $startdate);
   $result->execute();
-  $result->bind_result($userID, $title, $surname, $first_names);
-  while ($row = $result->fetch()) {
-    $log_late[$userID] = $title . ' ' .  $surname . ', ' . $first_names;
+  $result->bind_result($tmp_userID, $title, $surname, $first_names);
+  while ($result->fetch()) {
+    $log_late[$tmp_userID] = $title . ' ' .  $surname . ', ' . $first_names;
   }
   $result->close();
   
@@ -379,7 +385,7 @@ a.user:hover {color:white; background-color:#000080}
   if ($paper_type == 2) $table_order[$string['room']] = 'room';
   $metadata_cols = array();
   if (isset($user_results[0])){
-    foreach($user_results[0] as $key => $val) {
+    foreach ($user_results[0] as $key => $val) {
       if (strrpos($key,'meta_') !== false) {
         $key_display = ucfirst(str_replace('meta_','',$key));
         $table_order[$key_display] = $key;
@@ -427,11 +433,11 @@ a.user:hover {color:white; background-color:#000080}
     foreach($table_order as $display => $key) {
       echo "<td class=\"h\"><img src=\"../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;";
       if ($sortby == $key and $ordering == 'asc') {
-        echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repdegree=" . $_GET['repdegree'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=$key&ordering=desc&percent=$percent&direction=$direction&absent=$absent\">$display</a>&nbsp;<img src=\"../artwork/desc.gif\" width=\"9\" height=\"7\" border=\"0\" /></td>";
+        echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repcourse=" . $_GET['repcourse'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=$key&ordering=desc&percent=$percent&direction=$direction&absent=$absent\">$display</a>&nbsp;<img src=\"../artwork/desc.gif\" width=\"9\" height=\"7\" border=\"0\" /></td>";
       } elseif ($sortby == $key and $ordering == 'desc') {
-        echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repdegree=" . $_GET['repdegree'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=$key&ordering=asc&percent=$percent&direction=$direction&absent=$absent\">$display</a>&nbsp;<img src=\"../artwork/asc.gif\" width=\"9\" height=\"7\" border=\"0\" /></td>";
+        echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repcourse=" . $_GET['repcourse'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=$key&ordering=asc&percent=$percent&direction=$direction&absent=$absent\">$display</a>&nbsp;<img src=\"../artwork/asc.gif\" width=\"9\" height=\"7\" border=\"0\" /></td>";
       } else {
-        echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repdegree=" . $_GET['repdegree'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=$key&ordering=asc&percent=$percent&direction=$direction&absent=$absent\">$display</a>&nbsp;</td>";
+        echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repcourse=" . $_GET['repcourse'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=$key&ordering=asc&percent=$percent&direction=$direction&absent=$absent\">$display</a>&nbsp;</td>";
       }
     }
   }
@@ -446,11 +452,11 @@ a.user:hover {color:white; background-color:#000080}
     }
   }
   if ($temp_user_no > 0) {
-    echo "<tr><td style=\"height:32px; text-align:right; background-image:url('../artwork/non_owner_gradient.gif'); background-repeat:repeat-x\"><img src=\"../artwork/temp_account_warning.png\" style=\"padding-top:2px\" width=\"28\" height=\"28\" alt=\"Locked\" /></td><td colspan=\"10\" style=\"height:32px; vertical-align:middle; background-image:url('../artwork/non_owner_gradient.gif'); background-repeat:repeat-x\">&nbsp;&nbsp;" . $string['temporaryaccountswarning'] . " <a href=\"#\" style=\"color:black\" onclick=\"launchHelp(185); return false;\">" . $string['moredetails'] . "</a></td></tr>\n";
+    echo "<tr><td style=\"height:32px; text-align:right; background-image:url('../artwork/non_owner_gradient.gif'); background-repeat:repeat-x\"><img src=\"../artwork/temp_account_warning.png\" style=\"padding-top:2px\" width=\"28\" height=\"28\" alt=\"Locked\" /></td><td colspan=\"$cols\" style=\"height:32px; vertical-align:middle; background-image:url('../artwork/non_owner_gradient.gif'); background-repeat:repeat-x\">&nbsp;&nbsp;" . $string['temporaryaccountswarning'] . " <a href=\"#\" style=\"color:black\" onclick=\"launchHelp(185); return false;\">" . $string['moredetails'] . "</a></td></tr>\n";
   }
 
   if (count($log_late) > 0) {
-    echo "<tr><td style=\"width:40px; height:32px; text-align:right; background-image:url('../artwork/non_owner_gradient.gif'); background-repeat:repeat-x\"><img src=\"../artwork/late_warning_icon.png\" width=\"28\" height=\"28\" style=\"position:relative; left:0px; top:2px;\" alt=\"Warning\" />&nbsp;&nbsp;</td><td colspan=\"10\" style=\"height:32px; vertical-align:middle; background-image:url('../artwork/non_owner_gradient.gif'); background-repeat:repeat-x\">" . $string['latesubmissions'] . " (<a style=\"color:black\" href=\"#\" onclick=\"launchHelp(221); return false;\">" . $string['moredetails'] . "</a>): ";
+    echo "<tr><td style=\"width:40px; height:32px; text-align:right; background-image:url('../artwork/non_owner_gradient.gif'); background-repeat:repeat-x\"><img src=\"../artwork/late_warning_icon.png\" width=\"28\" height=\"28\" style=\"position:relative; left:0px; top:2px;\" alt=\"Warning\" />&nbsp;&nbsp;</td><td colspan=\"$cols\" style=\"height:32px; vertical-align:middle; background-image:url('../artwork/non_owner_gradient.gif'); background-repeat:repeat-x\">" . $string['latesubmissions'] . " (<a style=\"color:black\" href=\"#\" onclick=\"launchHelp(221); return false;\">" . $string['moredetails'] . "</a>): ";
     $html = '';
     foreach ($log_late as $student_userID => $student_name) {
       if ($html == '') {
@@ -461,9 +467,9 @@ a.user:hover {color:white; background-color:#000080}
     }
     echo "$html.</td></tr>\n";
   }
-
+  
   $xmean_total = 0;
-  $scatter_file = fopen('/tmp/' . $_SERVER['PHP_AUTH_USER'] . '_scatter.dat', 'w');              // Scatter plot data
+  $scatter_file = fopen('/tmp/' . $userID. '_scatter.dat', 'w');              // Scatter plot data
   $absent_no = 0;
   for ($i=0; $i<$user_no; $i++) {
     if ($user_results[$i]['visible'] == 1) {
@@ -474,15 +480,14 @@ a.user:hover {color:white; background-color:#000080}
       }
       if ($user_results[$i]['display_started'] == '') {  // Student did not take exam.
         $bg_color = '#FFC0C0';
-        $line_color = '#EBEADB';
-        echo "<tr style=\"border-bottom:solid $line_color 1px; background-color:$bg_color\"><td>&nbsp;</td>";
-        echo "<td style=\"padding:1px\">&nbsp;<a class=\"user\" href=\"../users/details.php?username=" . $user_results[$i]['username'] . "\">" . $user_results[$i]['title'] . "&nbsp;" . $user_results[$i]['surname'] . ",&nbsp;<span style=\"color:#808080\">" . $user_results[$i]['first_names'] . "</span></a>";
+        echo "<tr class=\"nonattend\"><td>&nbsp;</td>";
+        echo "<td style=\"padding:1px\">&nbsp;<a class=\"user\" href=\"../users/details.php?username=" . $user_results[$i]['username'] . "\">" . $user_results[$i]['title'] . "&nbsp;" . $user_results[$i]['surname'] . ",&nbsp;<span class=\"grey\">" . $user_results[$i]['first_names'] . "</span></a>";
         if ($user_results[$i]['student_id'] == '') {
-          echo "<td style=\"padding:1px; color:#808080\">" . $string['unknown'] . "</td>";
+          echo "<td class=\"padl grey\">" . $string['unknown'] . "</td>";
         } else {
-          echo "<td style=\"padding:1px\">&nbsp;" . $user_results[$i]['student_id'] . "</td>";
+          echo "<td class=\"padl\">" . $user_results[$i]['student_id'] . "</td>";
         }
-        echo "<td style=\"padding:1px\">&nbsp;" . $user_results[$i]['student_grade'] . "</td><td colspan=\"3\">&nbsp;</td><td style=\"padding:1px\">&nbsp;<strong>" . $string['noattendance'] . "</strong></td><td colspan=\"3\">&nbsp;</td></tr>\n";
+        echo "<td class=\"padl\">" . $user_results[$i]['student_grade'] . "</td><td colspan=\"3\">&nbsp;</td><td class=\"padl\"><strong>" . $string['noattendance'] . "</strong></td><td colspan=\"3\">&nbsp;</td></tr>\n";
         $absent_no++;
       } else {
         if (isset($log_late[$user_results[$i]['tmp_userID']])) {
@@ -494,10 +499,10 @@ a.user:hover {color:white; background-color:#000080}
         if ($user_results[$i]['questions'] < $question_no) {
           fwrite($scatter_file,"0\n");
           fwrite($scatter_file,"0\n");
-          $line_color = 'red';
+          $class = 'redln';
           echo ' style="padding:1px"';
         } else {
-          $line_color = '#EEEEEE';
+          $class = 'greyln';
           echo ' style="padding:1px"';
           $total_time += $user_results[$i]['duration'];
           $temp_location = $user_results[$i]['adj_percent'];
@@ -510,32 +515,32 @@ a.user:hover {color:white; background-color:#000080}
           fwrite($scatter_file,$user_results[$i]['duration'] . "\n");
         }
         if ($user_results[$i]['questions'] < $question_no) {
-          echo "><td style=\"border-bottom:solid $line_color 1px\"><img src=\"../artwork/incomplete_paper_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['notcompleted'] . "\" border=\"0\" onclick=\"ItemSelMenu('" . $user_results[$i]['started'] . "'," . $user_results[$i]['tmp_userID'] . ",'" . $user_results[$i]['username'] . "','" . $user_results[$i]['title'] . " " . str_replace("'","&#8217;",$user_results[$i]['surname']) . ", " . $user_results[$i]['initials'] . " (" . $user_results[$i]['student_id'] . ")', '" . $user_results[$i]['paper_type'] . "', '$reassign', '$late_submissions', '" . $user_results[$i]['adj_percent'] . "', event);\" /></td>";
+          echo "><td class=\"$class\"><img src=\"../artwork/incomplete_paper_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['notcompleted'] . "\" border=\"0\" onclick=\"ItemSelMenu('" . $user_results[$i]['started'] . "'," . $user_results[$i]['tmp_userID'] . ",'" . $user_results[$i]['username'] . "','" . $user_results[$i]['title'] . " " . str_replace("'","&#8217;",$user_results[$i]['surname']) . ", " . $user_results[$i]['initials'] . " (" . $user_results[$i]['student_id'] . ")', '" . $user_results[$i]['paper_type'] . "', '$reassign', '$late_submissions', '" . $user_results[$i]['adj_percent'] . "', event);\" /></td>";
         } else {
-          echo "><td style=\"border-bottom:solid $line_color 1px\">";
+          echo "><td class=\"$class\">";
           if ($user_results[$i]['paper_type'] == 0) {
-            echo '<img src="../artwork/formative_16.gif" width="16" height="16" alt="' . $string['displayexamscript'] . ' ' . $user_results[$i]['title'] . ' ' . $user_results[$i]['surname'] . '" border="0"';
+            echo '<img src="../artwork/formative_16.gif" width="16" height="16" alt="' . $string['displayexamscript'] . '" border="0"';
           } elseif ($user_results[$i]['paper_type'] == '1') {
-            echo '<img src="../artwork/progress_16.gif" width="16" height="16" alt="' . $string['displayexamscript'] . ' ' . $user_results[$i]['title'] . ' ' . $user_results[$i]['surname'] . '" border="0"';
+            echo '<img src="../artwork/progress_16.gif" width="16" height="16" alt="' . $string['displayexamscript'] . '" border="0"';
           } elseif ($user_results[$i]['paper_type'] == '2') {
-            echo '<img src="../artwork/summative_16.gif" width="16" height="16" alt="' . $string['displayexamscript'] . ' ' . $user_results[$i]['title'] . ' ' . $user_results[$i]['surname'] . '" border="0"';
+            echo '<img src="../artwork/summative_16.gif" width="16" height="16" alt="' . $string['displayexamscript'] . '" border="0"';
           } elseif ($user_results[$i]['paper_type'] == '3') {
-            echo '<img src="../artwork/survey_16.gif" width="16" height="16" alt="' . $string['displaysurvey'] . ' ' . $user_results[$i]['title'] . ' ' . $user_results[$i]['surname'] . '" border="0"';
+            echo '<img src="../artwork/survey_16.gif" width="16" height="16" alt="' . $string['displaysurvey'] . '" border="0"';
           } elseif ($user_results[$i]['paper_type'] == '5') {
-            echo '<img src="../artwork/offline_16.gif" width="16" height="16" alt="' . $string['displaypaper'] . ' ' . $user_results[$i]['title'] . ' ' . $user_results[$i]['surname'] . '" border="0"';
+            echo '<img src="../artwork/offline_16.gif" width="16" height="16" alt="' . $string['displaypaper'] . '" border="0"';
           }
           echo " onclick=\"ItemSelMenu('" . $user_results[$i]['started'] . "'," . $user_results[$i]['tmp_userID'] . ",'" . $user_results[$i]['username'] . "','" . $user_results[$i]['title'] . " " . str_replace("'","&#8217;",$user_results[$i]['surname']) . "," . $user_results[$i]['initials'] . " (" . $user_results[$i]['student_id'] . ")', '" . $user_results[$i]['paper_type'] . "', '$reassign', '$late_submissions', '" . $user_results[$i]['adj_percent'] . "', event);\" /></td>";
         }
         if ($_GET['sortby'] == 'name') {
-          $bg_color = '#F7F7F7';
+          $ordered = ' ordered';
         } else {
-          $bg_color = 'white';
+          $ordered = '';
         }
         if (strpos($user_results[$i]['username'], 'user') === 0) {
           $bg_color = '#FFFF80';
-          echo "<td style=\"border-bottom:solid $line_color 1px; background-color:$bg_color\">&nbsp;<span style=\"cursor:hand\" onclick=\"ItemSelMenu('" . $user_results[$i]['started'] . "'," . $user_results[$i]['tmp_userID'] . ",'" . $user_results[$i]['username'] . "','" . $user_results[$i]['title'] . " " . str_replace("'","&#8217;",$user_results[$i]['surname']) . ", " . $user_results[$i]['initials'] . " (" . $user_results[$i]['student_id'] . ")', '" . $user_results[$i]['paper_type'] . "', '$reassign', '$late_submissions', '" . $user_results[$i]['adj_percent'] . "', event);\">" . str_replace('User','Temporary Account No. ',$user_results[$i]['surname']) . "</span>";
+          echo "<td class=\"$class$ordered padl\"><span style=\"cursor:hand\" onclick=\"ItemSelMenu('" . $user_results[$i]['started'] . "'," . $user_results[$i]['tmp_userID'] . ",'" . $user_results[$i]['username'] . "','" . $user_results[$i]['title'] . " " . str_replace("'","&#8217;",$user_results[$i]['surname']) . ", " . $user_results[$i]['initials'] . " (" . $user_results[$i]['student_id'] . ")', '" . $user_results[$i]['paper_type'] . "', '$reassign', '$late_submissions', '" . $user_results[$i]['adj_percent'] . "', event);\">" . str_replace('User','Temporary Account No. ',$user_results[$i]['surname']) . "</span>";
         } else {
-          echo "<td style=\"border-bottom:solid $line_color 1px; background-color:$bg_color\">&nbsp;<span style=\"cursor:hand\" onclick=\"ItemSelMenu('" . $user_results[$i]['started'] . "'," . $user_results[$i]['tmp_userID'] . ",'" . $user_results[$i]['username'] . "','" . $user_results[$i]['title'] . " " . str_replace("'","&#8217;",$user_results[$i]['surname']) . ", " . $user_results[$i]['initials'] . " (" . $user_results[$i]['student_id'] . ")', '" . $user_results[$i]['paper_type'] . "', '$reassign', '$late_submissions', '" . $user_results[$i]['adj_percent'] . "', event);\">" . $user_results[$i]['title'] . "&nbsp;" . $user_results[$i]['surname'] . ",&nbsp;<span style=\"color:#808080\">" . $user_results[$i]['first_names'] . "</span></span>";
+          echo "<td class=\"$class$ordered padl\"><span style=\"cursor:hand\" onclick=\"ItemSelMenu('" . $user_results[$i]['started'] . "'," . $user_results[$i]['tmp_userID'] . ",'" . $user_results[$i]['username'] . "','" . $user_results[$i]['title'] . " " . str_replace("'","&#8217;",$user_results[$i]['surname']) . ", " . $user_results[$i]['initials'] . " (" . $user_results[$i]['student_id'] . ")', '" . $user_results[$i]['paper_type'] . "', '$reassign', '$late_submissions', '" . $user_results[$i]['adj_percent'] . "', event);\">" . $user_results[$i]['title'] . "&nbsp;" . $user_results[$i]['surname'] . ",&nbsp;<span class=\"grey\">" . $user_results[$i]['first_names'] . "</span></span>";
         }
         if (isset($special_needs[$user_results[$i]['tmp_userID']]) and $special_needs[$user_results[$i]['tmp_userID']] == 'y') {
           echo '&nbsp;<img src="../artwork/accessibility_16.png" width="16" height="16" alt="' . $string['alternativearrangements'] . '" border="0" />';
@@ -549,80 +554,81 @@ a.user:hover {color:white; background-color:#000080}
         }
         echo "</td>";
         if ($_GET['sortby'] == 'student_id') {
-          $bg_color = '#F7F7F7';
+          $ordered = ' ordered';
         } else {
-          $bg_color = 'white';
+          $ordered = '';
         }
         if ($user_results[$i]['student_id'] == '') {
-          echo "<td style=\"border-bottom:solid $line_color 1px; background-color:$bg_color; color:#808080\">" . $string['unknown'] . "</td>";
+          echo "<td class=\"grey $class$ordered padl\">" . $string['unknown'] . "</td>";
         } else {
-          echo "<td style=\"border-bottom:solid $line_color 1px; background-color:$bg_color\">&nbsp;" . $user_results[$i]['student_id'] . "</td>";
+          echo "<td class=\"$class$ordered padl\">" . $user_results[$i]['student_id'] . "</td>";
         }
         if ($_GET['sortby'] == 'student_grade') {
-          $bg_color = '#F7F7F7';
+          $ordered = ' ordered';
         } else {
-          $bg_color = 'white';
+          $ordered = '';
         }
-        echo "<td style=\"border-bottom:solid $line_color 1px; background-color:$bg_color\">&nbsp;" . $user_results[$i]['student_grade'] . "</td>";
+        echo "<td class=\"$class$ordered padl\">" . $user_results[$i]['student_grade'] . "</td>";
         if ($_GET['sortby'] == 'mark') {
-          $bg_color = '#F7F7F7';
+          $ordered = ' ordered';
         } else {
-          $bg_color = 'white';
+          $ordered = '';
         }
         if ($user_results[$i]['adj_percent'] < $pass_mark) {
-          echo "<td align=\"right\" style=\"border-bottom:solid $line_color 1px; background-color:$bg_color; color:red\">";
+          echo "<td align=\"right\" class=\"mk $class$ordered fail\">";
           if ($user_results[$i]['marking_complete'] == '0') echo '<img src="../artwork/small_yellow_warning_icon.gif" width="16" height="16" alt="' . $string['markingnotcomplete'] . '" />&nbsp;';
           echo $user_results[$i]['mark'] . "</td>";
-          echo "<td align=\"right\" style=\"border-bottom:solid $line_color 1px; background-color:$bg_color; color:red\">" . $user_results[$i]['adj_percent'] . "%</td><td style=\"border-bottom: solid $line_color 1px; color:red\">&nbsp;" . $string['fail'] . "</td>";
+          echo "<td align=\"right\" class=\"$class fail\">" . $user_results[$i]['adj_percent'] . "%</td><td class=\"$class fail\">&nbsp;" . $string['fail'] . "</td>";
         } else {
           if ($user_results[$i]['adj_percent'] >= $distinction_mark) {
-            echo "<td align=\"right\" style=\"border-bottom:solid $line_color 1px; background-color:$bg_color; color:#008000\">";
+            echo "<td align=\"right\" class=\"mk $class dist\">";
             if ($user_results[$i]['marking_complete'] == '0') echo '<img src="../artwork/small_yellow_warning_icon.gif" width="16" height="16" alt="' . $string['markingnotcomplete'] . '" />&nbsp;';
             echo $user_results[$i]['mark'] . "</td>";
-            echo "<td align=\"right\" style=\"border-bottom:solid $line_color 1px; background-color:$bg_color; color:#008000\">" . $user_results[$i]['adj_percent'] . "%</td><td style=\"border-bottom: solid $line_color 1px; color:#008000\">&nbsp;" . $string['distinction'] . "</td>";
+            echo "<td align=\"right\" class=\"dist $class\">" . $user_results[$i]['adj_percent'] . "%</td><td class=\"$class dist\">&nbsp;" . $string['distinction'] . "</td>";
           } else {
-            echo "<td align=\"right\" style=\"border-bottom:solid $line_color 1px; background-color:$bg_color\">";
+            echo "<td align=\"right\" class=\"mk $class$ordered\">";
             if ($user_results[$i]['marking_complete'] == '0') echo '<img src="../artwork/small_yellow_warning_icon.gif" width="16" height="16" alt="' . $string['markingnotcomplete'] . '" />&nbsp;';
             echo $user_results[$i]['mark'] . "</td>";
-            echo "<td align=\"right\" style=\"border-bottom:solid $line_color 1px; background-color:$bg_color\">" . $user_results[$i]['adj_percent'] . "%</td><td style=\"border-bottom: solid $line_color 1px\">&nbsp;" . $string['pass'] . "</td>";
+            echo "<td align=\"right\" class=\"$class\">" . $user_results[$i]['adj_percent'] . "%</td><td class=\"$class\">&nbsp;" . $string['pass'] . "</td>";
           }
         }
         if ($_GET['sortby'] == 'started') {
-          $bg_color = '#F7F7F7';
+          $ordered = ' ordered';
         } else {
-          $bg_color = 'white';
+          $ordered = '';
         }
-        echo "<td style=\"border-bottom:solid $line_color 1px; background-color:$bg_color\">&nbsp;" . $user_results[$i]['display_started'] . "</td>";
+        echo "<td class=\"$class$ordered padl\">" . $user_results[$i]['display_started'] . "</td>";
         if ($_GET['sortby'] == 'duration') {
-          $bg_color = '#F7F7F7';
+          $ordered = ' ordered';
         } else {
-          $bg_color = 'white';
+          $ordered = '';
         }
-        echo "<td style=\"border-bottom:solid $line_color 1px; background-color:$bg_color\">&nbsp;" . formatsec($user_results[$i]['duration']) . "</td>";
+        echo "<td class=\"$class$ordered padl\">" . formatsec($user_results[$i]['duration']) . "</td>";
+        
         if ($_GET['sortby'] == 'ipaddress') {
-          $bg_color = '#F7F7F7';
+         $ordered = ' ordered';
         } else {
-          $bg_color = 'white';
+          $ordered = '';
         }
-        echo "<td style=\"border-bottom:solid $line_color 1px; background-color:$bg_color\">&nbsp;" . $user_results[$i]['ipaddress'] . "</td>";
+        echo "<td class=\"$class$ordered padl\">" . $user_results[$i]['ipaddress'] . "</td>";
         if ($paper_type == 2) {
           if ($_GET['sortby'] == 'room') {
-            $bg_color = '#F7F7F7';
+            $ordered = ' ordered';
           } else {
-            $bg_color = 'white';
+            $ordered = '';
           }
-          echo "<td style=\"border-bottom:solid $line_color 1px; background-color:$bg_color\">&nbsp;" . $user_results[$i]['room'] . "</td>";
+          echo "<td class=\"$class$ordered padl\">" . $user_results[$i]['room'] . "</td>";
         }
         
         // Display any associated metadata
         if (count($metadata_cols) > 0) {
           foreach ( $metadata_cols as $type) {
             if ($_GET['sortby'] == $type) {
-              $bg_color = '#F7F7F7';
+              $ordered = ' ordered';
             } else {
-              $bg_color = 'white';
+              $ordered = '';
             }
-            echo "<td style=\"border-bottom:solid $line_color 1px; background-color:$bg_color\">&nbsp;" . $user_results[$i][$type] . "</td>";
+            echo "<td class=\"$class$ordered\">&nbsp;" . $user_results[$i][$type] . "</td>";
           }
         }
         echo "</tr>\n";
@@ -643,7 +649,7 @@ a.user:hover {color:white; background-color:#000080}
   }
   fclose($scatter_file);
   
-  $distribution_file = fopen('/tmp/' . $_SERVER['PHP_AUTH_USER'] . '_distribution.dat', 'w');         // Distribution data
+  $distribution_file = fopen('/tmp/' . $userID . '_distribution.dat', 'w');         // Distribution data
   fwrite($distribution_file,serialize($distribution) . "\n");
   fclose($distribution_file);
 
@@ -672,8 +678,6 @@ a.user:hover {color:white; background-color:#000080}
     }
     echo "</td></tr>";
     $result->close();
-  
-  
   
     echo "<tr><td colspan=\"" . (11 + $cols) . "\" height=\"9\">&nbsp;</td></tr>\n";
     echo "<tr><td colspan=\"" . (11 + $cols) . "\" height=\"9\">&nbsp;</td></tr>\n";
@@ -713,13 +717,12 @@ a.user:hover {color:white; background-color:#000080}
       echo '</td>';
     }
     echo "</tr>\n";
-    //var_dump($cohort_size, $display_no);
     echo "<tr><td class=\"field\">" . $string['failureno'] . "</td><td align=\"right\">$failures</td><td>(" . round(($failures / $display_no) * 100) . "% of cohort)</td></tr>\n";
     if (isset($ss_hon)) {
       echo "<tr><td class=\"field\">" . $string['distinctionno'] . "</td><td align=\"right\">$honours</td><td>(" . round(($honours / $display_no) * 100) . "% of cohort)</td></tr>\n";
     }
     echo "<tr><td class=\"field\">" . $string['totalmarks'] . "</td><td align=\"right\">";
-    if ($total_marks < $orig_total_marks) echo "<span style=\"color:red; text-decoration:line-through\">$orig_total_marks</span>&nbsp;&nbsp;";
+    if ($total_marks < $orig_total_marks) echo "<span class=\"exclude\">$orig_total_marks</span>&nbsp;&nbsp;";
     echo "$total_marks</td></tr>\n";
     echo "<tr><td class=\"field\">" . $string['passmark'] . "</td><td align=\"right\">$pass_mark%</td><td>&nbsp;</td></tr>\n";
     if ($marking == '1') {
@@ -728,16 +731,16 @@ a.user:hover {color:white; background-color:#000080}
         if ($total_marks > 0) {
           echo "<tr><td class=\"field\">" . $string['meanmark'] . "</td><td align=\"right\">$mean_mark</td><td>($mean_percent%)</td></tr>\n";
         } else {
-          echo "<tr><td class=\"field\">" . $string['meanmark'] . "</td><td align=\"right\" style=\"color:#808080\">" . $string['na'] . "</td><td>&nbsp;</td></tr>\n";
+          echo "<tr><td class=\"field\">" . $string['meanmark'] . "</td><td align=\"right\" class=\"grey\">" . $string['na'] . "</td><td>&nbsp;</td></tr>\n";
         }
       } else {
-        echo "<tr><td class=\"field\">" . $string['meanmark'] . "</td><td align=\"right\" style=\"color:#808080\">" . $string['nocompletions'] . "</td><td>&nbsp;</td></tr>\n";
+        echo "<tr><td class=\"field\">" . $string['meanmark'] . "</td><td align=\"right\" class=\"grey\">" . $string['nocompletions'] . "</td><td>&nbsp;</td></tr>\n";
       }
     } elseif ($marking == '0') {
       if ($completed_no > 0) {
         echo "<tr><td class=\"field\">" . $string['meanmark'] . "</td><td align=\"right\">$mean_mark</td><td>($mean_percent%)</td></tr>\n";
       } else {
-        echo "<tr><td class=\"field\">" . $string['meanmark'] . "</td><td align=\"right\" style=\"color:#808080\">" . $string['nocompletions'] . "</td><td>&nbsp;</td></tr>\n";
+        echo "<tr><td class=\"field\">" . $string['meanmark'] . "</td><td align=\"right\" class=\"grey\">" . $string['nocompletions'] . "</td><td>&nbsp;</td></tr>\n";
       }
     } else {
       echo "<tr><td class=\"field\">" . $string['ss'] .  "</td><td align=\"right\">" . round($ss_pass,2) . "%</td></tr>\n";
@@ -745,13 +748,13 @@ a.user:hover {color:white; background-color:#000080}
       if ($completed_no > 0) {
         echo "<tr><td class=\"field\">" . $string['meanmark'] . "</td><td align=\"right\">$mean_mark</td><td>($mean_percent%)</td></tr>\n";
       } else {
-        echo "<tr><td class=\"field\">" . $string['meanmark'] . "</td><td align=\"right\" style=\"color:#808080\">" . $string['nocompletions'] . "</td><td>&nbsp;</td></tr>\n";
+        echo "<tr><td class=\"field\">" . $string['meanmark'] . "</td><td align=\"right\" class=\"grey\">" . $string['nocompletions'] . "</td><td>&nbsp;</td></tr>\n";
       }
     }
     $mid_point = round($cohort_size / 2) - 1;
     echo "<tr><td class=\"field\">" . $string['medianmark'] . "</td><td align=\"right\">$median_mark</td><td>($median_percent%)</td></tr>\n";
     if ($completed_no == 0) {
-      echo "<tr><td class=\"field\">" . $string['stdevmark'] . "</td><td align=\"right\" style=\"color:#808080\">" . $string['na'] . "</td><td>&nbsp;</td></tr>\n";
+      echo "<tr><td class=\"field\">" . $string['stdevmark'] . "</td><td align=\"right\" class=\"grey\">" . $string['na'] . "</td><td>&nbsp;</td></tr>\n";
     } else {
       echo "<tr><td class=\"field\">" . $string['stdevmark'] . "</td><td align=\"right\">" . number_format($stddev_mark, 2, '.', ',') . "</td><td>(" . round($stddev_percent,1) . "%)</td></tr>\n";
     }

@@ -32,6 +32,8 @@
  *
  */
 function display_media($filename, $width, $height, $imageid=-1) {
+  global $cfg_root_path;
+
   $html = '';
   
   $fn_parts = pathinfo($filename);
@@ -39,11 +41,11 @@ function display_media($filename, $width, $height, $imageid=-1) {
   if ($imageid > -1) $html .= "<div id=\"media$imageid\" class=\"media\">";
   // Is the file an image or something else (e.g. RasMol)?
   if (in_array($fn_parts['extension'], array('gif', 'jpg', 'jpeg', 'png'))) {
-    $html .= "<img src=\"/media/$filename\" width=\"$width\" height=\"$height\" border=\"0\" alt=\"Image\" style=\"vertical-align:text-top\" />";
+    $html .= "<img src=\"{$cfg_root_path}/media/$filename\" width=\"$width\" height=\"$height\" border=\"0\" alt=\"Image\" style=\"vertical-align:text-top\" />";
   } elseif (in_array($fn_parts['extension'], array('wav', 'wma', 'mid'))) {
-    $html .= "<img src=\"audio_icon_32.gif\" width=\"32\" height=\"32\" alt=\"Audio File\" /><a href=\"/media/$filename\">Audio Clip</a>";
+    $html .= "<img src=\"audio_icon_32.gif\" width=\"32\" height=\"32\" alt=\"Audio File\" /><a href=\"{$cfg_root_path}/media/$filename\">Audio Clip</a>";
   } elseif (in_array($fn_parts['extension'], array('doc', 'ppt', 'xls', 'pdf'))) {
-    $html .= "<iframe src=\"/media/$filename\" width=\"$width\" height=\"$height\" align=\"center\">Your browser does not support iframes!</iframe>";
+    $html .= "<iframe src=\"{$cfg_root_path}/media/$filename\" width=\"$width\" height=\"$height\" align=\"center\">Your browser does not support iframes!</iframe>";
   } elseif ($fn_parts['extension'] == 'flv') {
     if ($width == 0 or $height == 0) {
       $width = 320;
@@ -65,18 +67,18 @@ OBJEMBED;
     $html .= <<< OBJEMBED
 <object type="application/x-shockwave-flash" data="/paper/player_mp3_maxi.swf" width="200" height="20">
 <param name="wmode" value="transparent" />
-<param name="movie" value="/paper/player_mp3_maxi.swf" />
-<param name="FlashVars" value="mp3=/media/{$filename}&amp;showstop=1&amp;showvolume=1&amp;bgcolor1=ffa50b&amp;bgcolor2=d07600" />
+<param name="movie" value="{$cfg_root_path}/paper/player_mp3_maxi.swf" />
+<param name="FlashVars" value="mp3={$cfg_root_path}/media/{$filename}&amp;showstop=1&amp;showvolume=1&amp;bgcolor1=ffa50b&amp;bgcolor2=d07600" />
 </object>  
 OBJEMBED;
   } elseif ($fn_parts['extension'] == 'avi' or $fn_parts['extension'] == 'wmv') {
-    $html .= "<embed src=\"/media/$filename\" width=\"$width\" height=\"$height\" border=\"1\" autoplay=\"true\" loop=\"false\" alt=\"Data File\" wmode=\"opaque\"></embed>";
+    $html .= "<embed src=\"{$cfg_root_path}/media/$filename\" width=\"$width\" height=\"$height\" border=\"1\" autoplay=\"true\" loop=\"false\" alt=\"Data File\" wmode=\"opaque\"></embed>";
   } else {
-    $html .= "<embed src=\"/media/$filename\" width=\"$width\" height=\"$height\" border=\"1\" alt=\"Data File\" wmode=\"opaque\"></embed>";
+    $html .= "<embed src=\"{$cfg_root_path}/media/$filename\" width=\"$width\" height=\"$height\" border=\"1\" alt=\"Data File\" wmode=\"opaque\"></embed>";
   }
   if ($imageid > -1) {
     $html .= <<< DELETE
-<a href="#" class="media-delete" rel="{$imageid}"><img class="align-bottom" src="/artwork/red_cross.png" width="16" height="16" alt="Delete" /></a></div>
+<a href="#" class="media-delete" rel="{$imageid}"><img class="align-bottom" src="{$cfg_root_path}/artwork/red_cross.png" width="16" height="16" alt="Delete" /></a></div>
 <label class="hide"><input type="checkbox" id="delete_media{$imageid}" name="delete_media{$imageid}" /> Delete image {$imageid}</label>
 <input type="hidden" id="existing_media{$imageid}" name="existing_media{$imageid}" value="$filename" />
 DELETE;

@@ -39,13 +39,13 @@ h1 {font-size:150%; color:#C00000}
 <body>
 <?php
   if (strpos($userroles,'Student') !== false and strpos($userroles,'Staff') === false and strpos($userroles,'Admin') === false and strpos($userroles,'SysAdmin') === false) {
-    $url = $protocol. $_SERVER['HTTP_HOST'] . "/students/";
+    $url = $protocol. $_SERVER['HTTP_HOST'] . $cfg_root_path . "/students/";
   } elseif ($userroles == 'External Examiner') {
-    $url = $protocol. $_SERVER['HTTP_HOST'] . "/reviews/";
+    $url = $protocol. $_SERVER['HTTP_HOST'] . $cfg_root_path . "/reviews/";
   } elseif ($userroles == 'Invigilator') {
-    $url = $protocol. $_SERVER['HTTP_HOST'] . "/invigilator/";
+    $url = $protocol. $_SERVER['HTTP_HOST'] . $cfg_root_path . "/invigilator/";
   } else {
-    $url = $protocol. $_SERVER['HTTP_HOST'] . "/staff/";
+    $url = $protocol. $_SERVER['HTTP_HOST'] . $cfg_root_path . "/staff/";
   }
 ?>
 <h1>Page has Moved</h1>

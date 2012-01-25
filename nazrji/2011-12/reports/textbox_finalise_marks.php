@@ -58,7 +58,7 @@ if (isset($_POST['submit'])) {
     $result->execute();
     $result->close();
   }
-  header("location: " . $protocol . $_SERVER['HTTP_HOST'] . "/paper/details.php?paperID=" . $_GET['paperID'] . "&module=" . $_GET['module'] . "&folder=" . $_GET['folder']);
+  header("location: ../paper/details.php?paperID=" . $_GET['paperID'] . "&module=" . $_GET['module'] . "&folder=" . $_GET['folder']);
 } else {
   $q_id = $_GET['q_id'];
   $startdate = $_GET['startdate'];

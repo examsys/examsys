@@ -1,7 +1,8 @@
+if (typeof cfgRootPath === 'undefined') var cfgRootPath = '';
 minusImg = new Image;
-minusImg.src = '/artwork/minus.png';
+minusImg.src = cfgRootPath + '/artwork/minus.png';
 plusImg = new Image;
-plusImg.src = '/artwork/plus.png';
+plusImg.src = cfgRootPath + '/artwork/plus.png';
 
 function showHide(id) {
   var imgid = 'img_' + id;
@@ -43,5 +44,5 @@ function showNextOption(showNum) {
 var newwin;
 function eqnEdit(editor) {
   editor.focus();
-  newwin = window.open("/editor/DragMath/dragMath_popup.html","","width=565,height=400,resizable")
+  newwin = window.open(cfgRootPath + "/editor/DragMath/dragMath_popup.html","","width=565,height=400,resizable")
 }

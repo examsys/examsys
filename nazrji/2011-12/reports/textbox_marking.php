@@ -81,7 +81,7 @@
       <html>
       <body>
       <script language="JavaScript">
-        window.top.location = "/reports/textbox_select_q.php?paperID=<?php echo $paperID; ?>&q_id=<?php echo $_GET['q_id']; ?>&startdate=<?php echo $_GET['startdate']; ?>&enddate=<?php echo $_GET['enddate']; ?>&module=<?php echo $_GET['module']; ?>&folder=<?php echo $_GET['folder']; ?>&ws=<?php echo $ws; ?>&phase=<?php echo $phase; ?>&action=mark&repdegree=%";
+        window.top.location = "textbox_select_q.php?paperID=<?php echo $paperID; ?>&q_id=<?php echo $_GET['q_id']; ?>&startdate=<?php echo $_GET['startdate']; ?>&enddate=<?php echo $_GET['enddate']; ?>&module=<?php echo $_GET['module']; ?>&folder=<?php echo $_GET['folder']; ?>&ws=<?php echo $ws; ?>&phase=<?php echo $phase; ?>&action=mark&repcourse=%";
       </script>
       </body>
       </html>
@@ -215,9 +215,9 @@ td {line-height:150%; text-align:justify}
 
 <?php
   if ($answer_no == 0) {
-    echo '<tr><td><input type="submit" name="submit" value="' . $string['saveexit'] . '" accesskey="S" style="width:160px" disabled /></td><td><input type="submit" name="continue" value="' . $string['savecontinue'] . '" accesskey="C" style="width:160px" disabled /></td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td><input onclick="javascript:window.top.location=\'./textbox_select_q.php?paperID=' . $_GET['paperID'] . '&startdate=' . $_GET['startdate'] . '&enddate=' . $_GET['enddate'] . '&module=' . $_GET['module'] . '&folder=' . $_GET['folder'] . '&ws=1&phase=' . $phase . '&action=mark&repdegree=%\'" type="button" name="cancel" value="' . $string['cancel'] . '" style="width:90px" /></td></tr>';
+    echo '<tr><td><input type="submit" name="submit" value="' . $string['saveexit'] . '" accesskey="S" style="width:160px" disabled /></td><td><input type="submit" name="continue" value="' . $string['savecontinue'] . '" accesskey="C" style="width:160px" disabled /></td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td><input onclick="javascript:window.top.location=\'./textbox_select_q.php?paperID=' . $_GET['paperID'] . '&startdate=' . $_GET['startdate'] . '&enddate=' . $_GET['enddate'] . '&module=' . $_GET['module'] . '&folder=' . $_GET['folder'] . '&ws=1&phase=' . $phase . '&action=mark&repcourse=%\'" type="button" name="cancel" value="' . $string['cancel'] . '" style="width:90px" /></td></tr>';
   } else {
-    echo '<tr><td><input type="submit" name="submit" value="' . $string['saveexit'] . '" accesskey="S" style="width:160px" /></td><td><input type="submit" name="continue" value="' . $string['savecontinue'] . '" accesskey="C" style="width:160px" /></td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td><input onclick="javascript:window.top.location=\'./textbox_select_q.php?paperID=' . $_GET['paperID'] . '&startdate=' . $_GET['startdate'] . '&enddate=' . $_GET['enddate'] . '&module=' . $_GET['module'] . '&folder=' . $_GET['folder'] . '&ws=1&phase=' . $phase . '&action=mark&repdegree=%\'" type="button" name="cancel" value="' . $string['cancel'] . '" style="width:90px" /></td></tr>';
+    echo '<tr><td><input type="submit" name="submit" value="' . $string['saveexit'] . '" accesskey="S" style="width:160px" /></td><td><input type="submit" name="continue" value="' . $string['savecontinue'] . '" accesskey="C" style="width:160px" /></td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td><input onclick="javascript:window.top.location=\'./textbox_select_q.php?paperID=' . $_GET['paperID'] . '&startdate=' . $_GET['startdate'] . '&enddate=' . $_GET['enddate'] . '&module=' . $_GET['module'] . '&folder=' . $_GET['folder'] . '&ws=1&phase=' . $phase . '&action=mark&repcourse=%\'" type="button" name="cancel" value="' . $string['cancel'] . '" style="width:90px" /></td></tr>';
   }
 ?>
 </table>

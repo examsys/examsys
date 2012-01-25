@@ -73,6 +73,7 @@
 <html>
 <head>
 <title>Objective Mapping</title>
+<?php echo $cfg_js_root ?>
 <script language="JavaScript" src="../js/mapping_tab.js"></script>
 <script language="JavaScript" src="../js/flash_include.js"></script>
 <script language="JavaScript" src="../js/ie_fix.js"></script>
@@ -104,7 +105,7 @@ if (isset($_POST['submit']) AND $_POST['submit'] == 'Save Changes') {
   display_q($mysqli);
 
   echo "<form method=\"post\">";
-  echo displayObjectivesMappingForm($paperID,$mysqli);
+  echo displayObjectivesMappingForm($paperID, $mysqli, $cfg_root_path);
   echo "<br />";
   echo "<div style=\"text-align:center; width:100%\"><input type=\"submit\" name=\"submit\" value=\"Save Changes\" />&nbsp;";
   echo "<input style=\"width:120px\" type=\"button\" value=\"Cancel\" onclick=\"window.close()\"/></div>";

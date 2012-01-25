@@ -136,7 +136,7 @@ a {color:blue}
           echo "<a href=\"textbox_mark_frame_ws.php";
         }
       }
-      echo "?ws=1&q_id=$q_id&qNo=$question_no&paperID=" . $_GET['paperID'] . "&startdate=" . $_GET['startdate'] . "&enddate=" . $_GET['enddate'] . "&folder=" . $_GET['folder'] . "&module=" . $_GET['module'] . "&repdegree=" . $_GET['repdegree'] . "$tmp_phase\">$leadin</a></td></tr>\n";
+      echo "?ws=1&q_id=$q_id&qNo=$question_no&paperID=" . $_GET['paperID'] . "&startdate=" . $_GET['startdate'] . "&enddate=" . $_GET['enddate'] . "&folder=" . $_GET['folder'] . "&module=" . $_GET['module'] . "&repcourse=" . $_GET['repcourse'] . "$tmp_phase\">$leadin</a></td></tr>\n";
     }
     $question_no++;
   }
