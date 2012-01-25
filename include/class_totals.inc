@@ -468,7 +468,7 @@ function getUserMark($q_id, $tmp_user_answer, $tmp_user_mark, $exclude, $status,
             $match = false;
             if (isset($paper_buffer[$q_id]['correct'][$a])) {
               foreach ($paper_buffer[$q_id]['correct'][$a] as $correct_alternative) {
-                if (trim($user_answers[$a+1]) == trim($correct_alternative)) {
+                if (trim(strtolower($user_answers[$a+1])) == trim(strtolower($correct_alternative))) {
                   $match = true;
                 }
               }
