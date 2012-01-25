@@ -194,11 +194,19 @@ label.error {
 }
 
 .menu_list .break {
-  background: transparent url('../artwork/move16.png') no-repeat left center;
+  background: transparent url('../artwork/screen_icon.png') no-repeat left center;
+}
+
+.menu_list .break.greymenuitem {
+  background: transparent url('../artwork/screen_icon_grey.png') no-repeat left center;
 }
 
 #delete_break {
-  background: transparent url('../artwork/move16.png') no-repeat left center;
+  background: transparent url('../artwork/screen_icon_delete.png') no-repeat left center;
+}
+
+#delete_break.greymenuitem {
+  background: transparent url('../artwork/screen_icon_delete_off.png') no-repeat left center;
 }
 
 #content .breadcrumb {
