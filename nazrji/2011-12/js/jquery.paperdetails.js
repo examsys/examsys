@@ -1,7 +1,7 @@
 $(function () {
-  $.ajaxSetup({ timeout: 2000 });
+  $.ajaxSetup({ timeout: 3000 });
   $('#content').ajaxError(function (event, jqXHR, ajaxSettings, thrownError) {
-    alert('There was a problem carrying out your action. Please refresh the page and try again');
+    showAJAXError();
   });
 
   resetLinks();
@@ -55,8 +55,7 @@ $(function () {
       $('.qline').css('background-color', '#fff');
       var order = $('#sortable tbody').sortable('serialize', { attribute: 'data-order' });
       var newpos = $(ui.item).parent().children('.qline:not(.breakline)').index(ui.item) + 1;
-      $('#response').load('../ajax/paper/order-questions.php?paperID=' + paperID + '&' + order);
-//      window.location.href = [location.protocol, '//', location.host, location.pathname].join('') + '?' + $.rQuerySstring.setValue('selected', newpos);
+      $.get('../ajax/paper/order-questions.php?paperID=' + paperID + '&' + order, function() { window.location.href = [location.protocol, '//', location.host, location.pathname].join('') + '?' + $.rQuerySstring.setValue('selected', newpos); });
 
 //      $('td.q_no').each(function(index) { $(this).html((index + 1) + '.')});
 //      $('span.screen_no').each(function(index) { $(this).html('Screen ' + (index + 1))});
@@ -127,4 +126,8 @@ function deleteScreenBreak() {
       alert('Invalid screen break selected. Screen break was not deleted');
     }
   });
+}
+
+function showAJAXError() {
+  alert('There was a problem carrying out your action. Please refresh the page and try again');
 }

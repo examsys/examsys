@@ -319,7 +319,9 @@ function getMSCAA($paperID, $mysqlidb) {
     document.getElementById('copy_submenu').style.display = 'none';
     document.getElementById('change_screen_submenu').style.display='none';
 
-    evt.cancelBubble = true;
+    if (evt != null) {
+      evt.cancelBubble = true;
+    }
 
     var deleteLink = $('#delete_break');
     deActivateDelete(deleteLink);
