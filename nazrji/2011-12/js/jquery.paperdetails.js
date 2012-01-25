@@ -67,12 +67,6 @@ $(function () {
 //      resetLinks();
     }
   });
-  $('#draggable').draggable({
-    helper: 'clone',
-    appendTo: 'body',
-    cancel: '#delete_break',
-        connectToSortable: '#sortable tbody'
-  });
 });
 
 function resetLinks() {
@@ -106,6 +100,18 @@ function activateDelete(element, sid) {
 
 function deActivateDelete(element) {
   $('.breakline').removeClass('line-selected');
+  element.addClass('greymenuitem');
+  element.removeClass('active');
+  element.unbind('click');
+}
+
+function activateAddBreak(element) {
+  element.removeClass('greymenuitem');
+  element.addClass('active');
+  element.click(incScreen);
+}
+
+function deActivateAddBreak(element) {
   element.addClass('greymenuitem');
   element.removeClass('active');
   element.unbind('click');

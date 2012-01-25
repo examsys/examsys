@@ -323,6 +323,8 @@ function getMSCAA($paperID, $mysqlidb) {
 
     var deleteLink = $('#delete_break');
     deActivateDelete(deleteLink);
+    var addLink = $('#add_break');
+    activateAddBreak(addLink);
   }
 
   function edQ(questionNo, questionID, qType) {
@@ -347,6 +349,9 @@ function getMSCAA($paperID, $mysqlidb) {
     document.getElementById('change_screen_submenu').style.display='none';
 
     hideMenus();
+
+    var addLink = $('#add_break');
+    deActivateAddBreak(addLink);
   }
 
   function scrollXY() {

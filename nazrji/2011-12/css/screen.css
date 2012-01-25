@@ -185,12 +185,16 @@ label.error {
   margin: 0;
 }
 
-.menu_list .break {
-  background: transparent url('../artwork/move16.png') no-repeat left center;
+#break_controls {
+  margin-top: 16px;
 }
 
-#draggable {
-  margin-top: 16px;
+#break_controls li {
+  margin-bottom: 6px;
+}
+
+.menu_list .break {
+  background: transparent url('../artwork/move16.png') no-repeat left center;
 }
 
 #delete_break {
