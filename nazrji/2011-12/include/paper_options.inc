@@ -423,9 +423,6 @@ $stmt->close();
 <tr><td><img src="<?php echo $cfg_root_path ?>/artwork/information_icon_grey.gif" width="16" height="16" alt="<?php echo $string['information']; ?>" /></td><td class="greymenuitem"><?php echo $string['information']; ?></td></tr>
 <tr><td><img src="<?php echo $cfg_root_path ?>/artwork/copy_icon_grey.gif" width="16" height="16" alt="<?php echo $string['copyontopaperx']; ?>" /></td><td class="greymenuitem"><?php echo $string['copyontopaperx']; ?></td></tr>
 <tr><td><img src="<?php echo $cfg_root_path ?>/artwork/link_grey.png" width="16" height="16" alt="Link 2 Paper" /></td><td class="greymenuitem"><?php echo $string['linktopaper']; ?></td></tr>
-<tr><td><img src="<?php echo $cfg_root_path ?>/artwork/promote_disabled.gif" width="16" height="16" alt="<?php echo $string['moveup']; ?>" /></td><td class="greymenuitem"><?php echo $string['moveup']; ?></td></tr>
-<tr><td><img src="<?php echo $cfg_root_path ?>/artwork/demote_disabled.gif" width="16" height="16" alt="<?php echo $string['movedown']; ?>" /></td><td class="greymenuitem"><?php echo $string['movedown']; ?></td></tr>
-<tr><td><img src="<?php echo $cfg_root_path ?>/artwork/screen_icon_grey.png" width="16" height="16" alt="<?php echo $string['changescreenno']; ?>" /></td><td class="greymenuitem"><?php echo $string['changescreenno']; ?></td></tr>
 <tr><td><img src="<?php echo $cfg_root_path ?>/artwork/red_cross_grey.png" width="16" height="16" alt="<?php echo $string['removefrompaper']; ?>" /></td><td class="greymenuitem"><?php echo $string['removefrompaper']; ?></td></tr>
 </table>
 
@@ -434,15 +431,6 @@ $stmt->close();
 <tr><td><img style="cursor:hand" onclick="questionInfo(); return false;" src="<?php echo $cfg_root_path ?>/artwork/information_icon.gif" width="16" height="16" alt="<?php echo $string['information']; ?>" /></td><td class="menuitem"><a id="information" href="#" onclick="questionInfo(); return false;"><?php echo $string['information']; ?></a></td></tr>
 <tr><td><img style="cursor:hand" onclick="copyToPaper(); return false;" src="<?php echo $cfg_root_path ?>/artwork/copy_icon.gif" width="16" height="16" alt="<?php echo $string['copyontopaperx']; ?>" /></td><td class="menuitem"><a id="copy" href="#" onclick="copyToPaper(); return false;"><?php echo $string['copyontopaperx']; ?></a></td></tr>
 <tr><td><img style="cursor:hand" onclick="linkToPaper(); return false;" src="<?php echo $cfg_root_path ?>/artwork/link.png" width="16" height="16" alt="Link 2 Paper" border="0" /></td><td class="menuitem"><a id="link" href="#" onclick="linkToPaper(); return false;"><?php echo $string['linktopaper']; ?></a></td></tr>
-<tr><td><img style="cursor:hand" onclick="promote(); return false;" id="promoteicon" src="<?php echo $cfg_root_path ?>/artwork/promote.gif" width="16" height="16" alt="<?php echo $string['moveup']; ?>" /></td><td class="menuitem"><a id="promotetext" onclick="promote(); return false;"><?php echo $string['moveup']; ?></a></td></tr>
-<tr><td><img style="cursor:hand" onclick="demote(); return false;" id="demoteicon" src="<?php echo $cfg_root_path ?>/artwork/demote.gif" width="16" height="16" alt="<?php echo $string['movedown']; ?>" /></td><td class="menuitem"><a id="demotetext" onclick="demote(); return false;"><?php echo $string['movedown']; ?></a></td></tr>
-<?php
-if ($paper_type == '4') {
-  echo '<tr><td><img src="' . $cfg_root_path . '/artwork/screen_icon_grey.png" width="16" height="16" alt="' . $string['changescreenno'] . '" /></td><td class="greymenuitem">' . $string['changescreenno'] . '</td></tr>';
-} else {
-  echo '<tr><td><img style="cursor:hand" src="' . $cfg_root_path . '/artwork/screen_icon.png" width="16" height="16" alt="' . $string['changescreenno'] . '" /></td><td class="menuitem"><a href="#" onclick="showChangeScreen(event); return false;"><span id="changescreen">' . $string['changescreenno'] . '</span><img src="' . $cfg_root_path . '/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></a></td></tr>';
-}
-?>
 <tr><td><img style="cursor:hand" onclick="deleteQuestion(); return false;" src="<?php echo $cfg_root_path ?>/artwork/red_cross.png" width="16" height="16" alt="<?php echo $string['removefrompaper']; ?>" /></td><td class="menuitem"><a id="delete" href="#" onclick="deleteQuestion(); return false;"><?php echo $string['removefrompaper']; ?></a></td></tr>
 </table>
 
@@ -451,9 +439,6 @@ if ($paper_type == '4') {
 <tr><td><img style="cursor:hand" onclick="questionInfo(); return false;" src="<?php echo $cfg_root_path ?>/artwork/information_icon.gif" width="16" height="16" alt="<?php echo $string['information']; ?>" /></td><td class="menuitem"><a id="information" href="#" onclick="questionInfo(); return false;"><?php echo $string['information']; ?></a></td></tr>
 <tr><td><img style="cursor:hand" onclick="copyToPaper(); return false;" src="<?php echo $cfg_root_path ?>/artwork/copy_icon.gif" width="16" height="16" alt="<?php echo $string['copyontopaperx']; ?>" /></td><td class="menuitem"><a id="copy" href="#" onclick="copyToPaper(); return false;"><?php echo $string['copyontopaperx']; ?></a></td></tr>
 <tr><td><img style="cursor:hand" onclick="linkToPaper(); return false;" src="<?php echo $cfg_root_path ?>/artwork/link.png" width="16" height="16" alt="Link 2 Paper" border="0" /></td><td class="menuitem"><a id="link" href="#" onclick="linkToPaper(); return false;"><?php echo $string['linktopaper']; ?></a></td></tr>
-<tr><td><img src="<?php echo $cfg_root_path ?>/artwork/promote_disabled.gif" width="16" height="16" alt="<?php echo $string['moveup']; ?>" /></td><td class="greymenuitem"><?php echo $string['moveup']; ?></td></tr>
-<tr><td><img src="<?php echo $cfg_root_path ?>/artwork/demote_disabled.gif" width="16" height="16" alt="<?php echo $string['movedown']; ?>" /></td><td class="greymenuitem"><?php echo $string['movedown']; ?></td></tr>
-<tr><td><img src="<?php echo $cfg_root_path ?>/artwork/screen_icon_grey.png" width="16" height="16" alt="<?php echo $string['changescreenno']; ?>" /></td><td class="greymenuitem"><?php echo $string['changescreenno']; ?></td></tr>
 <tr><td><img src="<?php echo $cfg_root_path ?>/artwork/red_cross_grey.png" width="16" height="16" alt="<?php echo $string['removefrompaper']; ?>" /></td><td class="greymenuitem"><?php echo $string['removefrompaper']; ?></td></tr>
 </table>
 
@@ -461,10 +446,16 @@ if ($paper_type == '4') {
 </table>
 
 <ul id="break_controls" class="menu_list">
-  <li id="add_break" class="break greymenuitem">Add screen break</li>
-  <li id="delete_break" class="greymenuitem">Delete screen break</li>
+<?php
+if ($paper_type != '4') {
+?>
+  <li id="add_break" class="break greymenuitem"><a href="#">Add screen break</a></li>
+  <li id="delete_break" class="greymenuitem"><a href="#">Delete screen break</a></li>
+<?php
+}
+?>
+  <li id="move_info" class="has_tip tip_right" title="<?php echo $string['reorderinfo'] ?>">Reordering questions</li>
 </ul>
-
 <br />
 <br />
 

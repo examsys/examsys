@@ -99,4 +99,6 @@ $string['copyname'] = 'Nazwa kopii:';
 $string['paperonly'] = 'Tylko arkusze';
 $string['paperandquestions'] = 'Arkusze i pytania';
 $string['copypaper'] = 'Kopiuj arkusz';
+$string['reorderinfo'] = 'You can now reorder questions and screen breaks by dragging them to their new position';
+
 ?>

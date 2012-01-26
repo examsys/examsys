@@ -190,6 +190,7 @@ label.error {
 }
 
 #break_controls li {
+  height: 16px;
   margin-bottom: 6px;
 }
 
@@ -207,6 +208,10 @@ label.error {
 
 #delete_break.greymenuitem {
   background: transparent url('../artwork/screen_icon_delete_off.png') no-repeat left center;
+}
+
+#move_info {
+  background: transparent url('../artwork/information_icon.gif') no-repeat left center;
 }
 
 #content .breadcrumb {

@@ -4,8 +4,12 @@ $(function () {
     showAJAXError();
   });
 
+  $(".has_tip").tipTip();
+
   resetLinks();
   highlightQn();
+
+  $('.menu_list a').click(function (e) { e.preventDefault(); })
 
   var deleteLink = $('#delete_break');
   $('html').click(function () { deActivateDelete(deleteLink); });
@@ -55,15 +59,16 @@ $(function () {
       $('.qline').css('background-color', '#fff');
       var order = $('#sortable tbody').sortable('serialize', { attribute: 'data-order' });
       var newpos = $(ui.item).parent().children('.qline:not(.breakline)').index(ui.item) + 1;
-      $.get('../ajax/paper/order-questions.php?paperID=' + paperID + '&' + order, function() { window.location.href = [location.protocol, '//', location.host, location.pathname].join('') + '?' + $.rQuerySstring.setValue('selected', newpos); });
+//      $('#response').load('../ajax/paper/order-questions.php?paperID=' + paperID + '&' + order);
 
-//      $('td.q_no').each(function(index) { $(this).html((index + 1) + '.')});
-//      $('span.screen_no').each(function(index) { $(this).html('Screen ' + (index + 1))});
-//      if (!ui.item.hasClass('breakline')) {
-//        ui.item.css('background-color', '#b3c8e8');
-//        ui.item.effect("highlight", { color: '#e6f0ff'}, 1000);
-//      }
-//      resetLinks();
+      $.get('../ajax/paper/order-questions.php?paperID=' + paperID + '&' + order, function(data) {
+        if (data == 'ERROR') {
+          showAJAXError();
+        } else {
+          window.location.href = [location.protocol, '//', location.host, location.pathname].join('') + '?' + $.rQuerySstring.setValue('selected', newpos);
+        }
+      });
+
     }
   });
 });
@@ -85,14 +90,14 @@ function highlightQn() {
 
   if (selected != '') {
     var row = $('#link_' + selected);
-    row.css('background-color', '#b3c8e8');
-    row.effect("highlight", { color: '#e6f0ff'}, 1000, function() { row.triggerHandler('click') });
+//    row.css('background-color', '#eee');
+    row.effect("highlight", { color: '#b3c8e8'}, 1500);
   }
 }
 
 function activateDelete(element, sid) {
   element.removeClass('greymenuitem');
-  element.addClass('active');
+  element.addClass('menuitem');
   element.click(deleteScreenBreak);
   element.data('screenID', sid);
 }
@@ -100,19 +105,19 @@ function activateDelete(element, sid) {
 function deActivateDelete(element) {
   $('.breakline').removeClass('line-selected');
   element.addClass('greymenuitem');
-  element.removeClass('active');
+  element.removeClass('menuitem');
   element.unbind('click');
 }
 
 function activateAddBreak(element) {
   element.removeClass('greymenuitem');
-  element.addClass('active');
+  element.addClass('menuitem');
   element.click(incScreen);
 }
 
 function deActivateAddBreak(element) {
   element.addClass('greymenuitem');
-  element.removeClass('active');
+  element.removeClass('menuitem');
   element.unbind('click');
 }
 

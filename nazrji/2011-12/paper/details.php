@@ -248,10 +248,12 @@ function getMSCAA($paperID, $mysqlidb) {
   <title>Rogō<?php echo " $cfg_install_type"; ?></title>
   <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
   <link rel="stylesheet" type="text/css" href="../css/screen.css" />
+  <link rel="stylesheet" type="text/css" href="../css/tipTip.css" />
 
   <script type="text/javascript" src="../js/staff_help.js"></script>
   <script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
   <script type="text/javascript" src="../js/jquery-ui.1.8.16.min.js"></script>
+  <script type="text/javascript" src="../js/jquery.tipTip.minified.js"></script>
   <script type="text/javascript" src="../tools/mee/mee/js/mee_src.js"></script>
   <script type="text/javascript" src="../js/jquery.rquerystring.js"></script>
   <script type="text/javascript" src="../js/jquery.paperdetails.js"></script>
@@ -280,23 +282,7 @@ function getMSCAA($paperID, $mysqlidb) {
 
     document.PapersMenu.current_pos.value = current_pos;
     document.PapersMenu.prev_screen.value = prev_screen;
-    if (prev_screen == '') {
-      document.getElementById('promotetext').style.color = '#808080';
-      document.getElementById('promoteicon').src = '../artwork/promote_disabled.gif';
-    } else {
-      document.getElementById('promotetext').style.color = '#000000';
-      document.getElementById('promotetext').style.hover = '#0000FF';
-      document.getElementById('promoteicon').src = '../artwork/promote.gif';
-    }
     document.PapersMenu.next_screen.value = next_screen;
-    if (next_screen == '') {
-      document.getElementById('demotetext').style.color = '#808080';
-      document.getElementById('demoteicon').src = '../artwork/demote_disabled.gif';
-    } else {
-      document.getElementById('demotetext').style.color = '#000000';
-      document.getElementById('demotetext').style.hover = '#0000FF';
-      document.getElementById('demoteicon').src = '../artwork/demote.gif';
-    }
     document.PapersMenu.current_screen.value = current_screen;
 
     document.getElementById('link_' + lineID).style.backgroundColor = '#B3C8E8';

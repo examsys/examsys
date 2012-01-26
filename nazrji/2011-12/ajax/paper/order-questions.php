@@ -74,19 +74,21 @@ if (isset($_GET['paperID']) and $_GET['paperID'] != '' and isset($_GET['link']) 
     }
   }
 
-  echo '<pre>Screen Dec:';
-  print_r($screen_dec);
-  echo '<br /><br />Screen Inc:';
-  print_r($screen_inc);
-  echo '<br /><br />Screen Update:';
-  print_r($screen_update);
-  echo '<br /><br />Pos Dec:';
-  print_r($position_dec);
-  echo '<br /><br />Pos Inc:';
-  print_r($position_inc);
-  echo '<br /><br />Pos Update:';
-  print_r($position_update);
-  echo '</pre>';
+//  echo '<pre>Screen Dec:';
+//  print_r($screen_dec);
+//  echo '<br /><br />Screen Inc:';
+//  print_r($screen_inc);
+//  echo '<br /><br />Screen Update:';
+//  print_r($screen_update);
+//  echo '<br /><br />Pos Dec:';
+//  print_r($position_dec);
+//  echo '<br /><br />Pos Inc:';
+//  print_r($position_inc);
+//  echo '<br /><br />Pos Update:';
+//  print_r($position_update);
+//  echo '</pre>';
+
+  $ok = true;
 
   if (($decs = count($screen_dec)) > 0) {
     $dec_list = '';
@@ -97,11 +99,15 @@ if (isset($_GET['paperID']) and $_GET['paperID'] != '' and isset($_GET['link']) 
     }
 
     $result = $mysqli->prepare("UPDATE papers SET screen=screen-1 WHERE p_id IN (" . $dec_list . ")");
-    $result->execute();
-    $result->close();
+    if ($result) {
+      $result->execute();
+      $result->close();
+    } else {
+      $ok = false;
+    }
   }
 
-  if (($incs = count($screen_inc)) > 0) {
+  if ($ok and ($incs = count($screen_inc)) > 0) {
     $inc_list = '';
     // Make list of IDs of questions to increment
     for ($i = 0; $i < $incs; $i++) {
@@ -110,22 +116,30 @@ if (isset($_GET['paperID']) and $_GET['paperID'] != '' and isset($_GET['link']) 
     }
 
     $result = $mysqli->prepare("UPDATE papers SET screen=screen+1 WHERE p_id IN (" . $inc_list . ")");
-    $result->execute();
-    $result->close();
-  }
-
-  if (($upds = count($screen_update)) > 0) {
-    for ($i = 0; $i < $upds; $i++) {
-      $new_screen = $screen_update[$i]['screen'];
-      $upd_id = $screen_update[$i]['p_id'];
-      $result = $mysqli->prepare("UPDATE papers SET screen=? WHERE p_id=?");
-      $result->bind_param('ii', $new_screen, $upd_id);
+    if ($result) {
       $result->execute();
       $result->close();
+    } else {
+      $ok = false;
     }
   }
 
-  if (($decs = count($position_dec)) > 0) {
+  if ($ok and ($upds = count($screen_update)) > 0) {
+    for ($i = 0; $i < $upds; $i++) {
+      $new_screen = $screen_update[$i]['new_screen'];
+      $upd_id = $screen_update[$i]['p_id'];
+      $result = $mysqli->prepare("UPDATE papers SET screen=? WHERE p_id=?");
+      if ($result) {
+        $result->bind_param('ii', $new_screen, $upd_id);
+        $result->execute();
+        $result->close();
+      } else {
+        $ok = false;
+      }
+    }
+  }
+
+  if ($ok and ($decs = count($position_dec)) > 0) {
     $dec_list = '';
     // Make list of IDs of questions to decrement
     for ($i = 0; $i < $decs; $i++) {
@@ -134,11 +148,15 @@ if (isset($_GET['paperID']) and $_GET['paperID'] != '' and isset($_GET['link']) 
     }
 
     $result = $mysqli->prepare("UPDATE papers SET display_pos=display_pos-1 WHERE p_id IN (" . $dec_list . ")");
-    $result->execute();
-    $result->close();
+    if ($result) {
+      $result->execute();
+      $result->close();
+    } else {
+      $ok = false;
+    }
   }
 
-  if (($incs = count($position_inc)) > 0) {
+  if ($ok and ($incs = count($position_inc)) > 0) {
     $inc_list = '';
     // Make list of IDs of questions to increment
     for ($i = 0; $i < $incs; $i++) {
@@ -147,11 +165,15 @@ if (isset($_GET['paperID']) and $_GET['paperID'] != '' and isset($_GET['link']) 
     }
 
     $result = $mysqli->prepare("UPDATE papers SET display_pos=display_pos+1 WHERE p_id IN (" . $inc_list . ")");
-    $result->execute();
-    $result->close();
+    if ($result) {
+      $result->execute();
+      $result->close();
+    } else {
+      $ok = false;
+    }
   }
 
-  if (($upds = count($position_update)) > 0) {
+  if ($ok and ($upds = count($position_update)) > 0) {
     for ($i = 0; $i < $upds; $i++) {
       $new_pos = $position_update[$i]['new_pos'];
       $upd_id = $position_update[$i]['p_id'];
@@ -162,6 +184,7 @@ if (isset($_GET['paperID']) and $_GET['paperID'] != '' and isset($_GET['link']) 
     }
   }
 
+  if (!$ok) echo 'ERROR';
 }
 
 function process_new($raw) {
