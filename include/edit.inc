@@ -270,7 +270,7 @@ function hidden_edit_fields() {
   return $html;
 }
 
-function save_buttons($mode, $disabled, $locked, $allow_correct, $userID, $checkout_author, $paper_id, &$string) {
+function save_buttons($mode, $disabled, $locked, $allow_correct, $userID, $checkout_author, $paper_id, $paper_count, &$string) {
   $html = '';
   
   if ($mode == $string['edit']) {
@@ -294,6 +294,11 @@ HTML;
 
     if ($allow_correct and $locked != '' and $paper_id != -1) {
       $html .= <<< HTML
+      <script type="text/javascript">
+        var otherSummatives = $paper_count;
+        var postExam = true;
+        var postExamWarningShown = false;
+      </script>
       <input id="submit-correct" name="submit" value="{$string['correct']}" type="submit" class="submit" />
 
 HTML;

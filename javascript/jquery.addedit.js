@@ -1,4 +1,21 @@
 $(function () {
+  // TODO: this will be generalised in next release
+  if (qType == 'dichotomous') {
+    if (typeof postExam != 'undefined' && postExam) {
+      if (otherSummatives == 0) {
+        $('#option_marks_correct').focus(function() {
+            prev_val = $(this).val();
+        }).change(function () { $(this).blur(); return showMarksWarning($(this)); });
+        $('#option_marks_incorrect').focus(function() {
+            prev_val = $(this).val();
+        }).change(function () { $(this).blur(); return showMarksWarning($(this)); });
+      } else {
+        $('#option_marks_correct').attr('disabled', 'disabled');
+        $('#option_marks_incorrect').attr('disabled', 'disabled');
+      }
+    }
+  }
+
   $('.tabs li a').click(changeTab);
 
   $('#next-option').click(showNextOption);
@@ -172,7 +189,7 @@ function trimLongChanges() {
 function checkMapping() {
   var checked = $('.objectives input:checked');
   if (checked.length > 0) {
-    return confirm('WARNING: All mappings will be lost if this question is not added to the paper!');
+    return confirm(lang['mappingwarning']);
   }
   
   return true;
@@ -196,3 +213,15 @@ function addQuestionsToList(questions) {
   }
 }
 
+function showMarksWarning(element) {
+  var rval = false;
+  if (!postExamWarningShown) {
+    rval = confirm(lang['markchangewarning']);
+    if (!rval) {
+      element.val(prev_val);
+    } else {
+      postExamWarningShown = true;
+    }
+  }
+  return rval;
+}

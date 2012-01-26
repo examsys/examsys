@@ -585,6 +585,28 @@ QUERY;
   public function allow_mapping() {
     return $this->_allow_mapping;
   }
+
+  /**
+   * How many summative papers, apart from the current paper, is this question on?
+   * @param $paper_id ID of current paper, if any
+   * @return int
+   */
+  public function get_other_summative_count($paper_id) {
+    $count_query = <<< QUERY
+SELECT COUNT(pr.property_id) FROM papers pa INNER JOIN properties pr ON pa.paper=pr.property_id WHERE pr.paper_type='2' AND pa.question=? AND pr.property_id<>? GROUP BY pa.question ORDER BY count(pr.property_id) DESC;
+QUERY;
+    $result = $this->_mysqli->prepare($count_query);
+    $result->bind_param('ii', $this->id, $paper_id);
+    $result->execute();
+    $result->store_result();
+    $result->bind_result($p_count);
+    $result->fetch();
+    $result->close();
+
+    $p_count = (isset($p_count)) ? $p_count : 0;
+
+    return $p_count;
+  }
   
   // ACCESSORS
   
