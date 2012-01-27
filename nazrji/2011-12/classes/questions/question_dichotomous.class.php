@@ -30,6 +30,7 @@ Class QuestionDICHOTOMOUS extends Question {
   protected $_answer_positive = 't';
   protected $_answer_negative = 'f';
   protected $display_method = 'TF_Positive';
+  protected $_fields_change = array('option_correct', 'option_marks_correct', 'option_marks_incorrect');
   
   function __construct($mysqli, $user_id, $lang_strings, $data = null) {
     parent::__construct($mysqli, $user_id, $lang_strings, $data);
@@ -63,13 +64,28 @@ Class QuestionDICHOTOMOUS extends Question {
     $new_correct = $new_fields['option_correct'];
     $errors = array();
     $changes = false;
-    
+    $mark_changes = false;
+
     $old_correct_list = '';
     $i = 0;
     foreach ($this->options as $option) {
       if ($i == 0) {
         $mark_correct = $option->get_marks_correct();
+        if (isset($new_fields['option_marks_correct']) and $new_fields['option_marks_correct'] != $mark_correct) {
+          $mark_correct = $new_fields['option_marks_correct'];
+          $mark_changes = true;
+          $this->add_unified_field_modification('marks_correct', '<span style="color: red; font-weight: bold">' . $this->_lang_strings['markscorrect'] . '</span>', $option->get_marks_correct(),  $mark_correct, $this->_lang_strings['postexamchange']);
+        }
         $mark_incorrect = $option->get_marks_incorrect();
+        if (isset($new_fields['option_marks_incorrect']) and $new_fields['option_marks_incorrect'] != $mark_incorrect) {
+          $mark_incorrect = $new_fields['option_marks_incorrect'];
+          $mark_changes = true;
+          $this->add_unified_field_modification('marks_incorrect', '<span style="color: red; font-weight: bold">' . $this->_lang_strings['marksincorrect'] . '</span>', $option->get_marks_incorrect(),  $mark_incorrect, $this->_lang_strings['postexamchange']);
+        }
+      }
+      if ($mark_changes) {
+        $option->set_marks_correct($mark_correct, false);
+        $option->set_marks_incorrect($mark_incorrect, false);
       }
       $old_correct = $option->get_correct();
       $old_correct_list .= $old_correct . ',';
@@ -82,8 +98,10 @@ Class QuestionDICHOTOMOUS extends Question {
       $i++;
     }
     
-    if ($changes) {
-      $this->add_unified_field_modification('correct', $this->_lang_strings['correctanswer'], rtrim($old_correct_list, ','),  implode(',', $new_correct), $this->_lang_strings['postexamchange']);
+    if ($mark_changes or $changes) {
+      if ($changes) {
+        $this->add_unified_field_modification('correct', $this->_lang_strings['correctanswer'], rtrim($old_correct_list, ','),  implode(',', $new_correct), $this->_lang_strings['postexamchange']);
+      }
       try {
     	  if(!$this->save()) {
     	    $errors[] = $this->_lang_strings['datasaveerror'];

@@ -27,6 +27,7 @@
   
   header('Content-type: application/octet-stream');
   header("Content-Disposition: attachment; filename=new_" . str_replace(' ', '_', $paper) . ".csv");
+  
   $row_written = 0;
   foreach ($user_results as $individual) {
     $tmp_user_ID = $individual['username'];
@@ -51,20 +52,20 @@
           for ($a=0; $a<count($paper_answers); $a++) {
             $sub_parts += substr_count($paper_answers[$a],'$');
           
-            if ($paper_answers[$a] != '' and substr($tmp_exclude,$a+$sub_parts,1) == '0') echo ',Q' . $q_no . '.' . ($a+1);
+            if ($paper_answers[$a] != '' and substr($tmp_exclude,$a+$sub_parts,1) == '0') echo ',Q' . $q_no . chr($a+65);
           }
         } elseif ($question['q_type'] == 'dichotomous' or $question['q_type'] == 'blank' and $question['score_method'] == 'Mark per Option') {
           for ($a=0; $a<count($question['correct']); $a++) {
-            if (substr($tmp_exclude,$a,1) == '0') echo ',Q' . $q_no . '.' . ($a+1);
+            if (substr($tmp_exclude,$a,1) == '0') echo ',Q' . $q_no . chr($a+65);
           }
         } elseif ($question['q_type'] == 'labelling' and $question['score_method'] == 'Mark per Option') {
           for ($a=0; $a<count($question['correct_labels']); $a++) {
-            if (substr($tmp_exclude,$a,1) == '0') echo ',Q' . $q_no . '.' . ($a+1);
+            if (substr($tmp_exclude,$a,1) == '0') echo ',Q' . $q_no . chr($a+65);
           }
         } elseif ($question['q_type'] == 'hotspot' and $question['score_method'] == 'Mark per Option') {
           $paper_answers = explode("|",$question['correct'][0]);
           for ($a=0; $a<count($paper_answers); $a++) {
-            if (substr($tmp_exclude,$a,1) == '0') echo ',Q' . $q_no . '.' . ($a+1);
+            if (substr($tmp_exclude,$a,1) == '0') echo ',Q' . $q_no . chr($a+65);
           }
         } else {
           if (!array_key_exists($q_id,$excluded)) echo ',Q' . $q_no;

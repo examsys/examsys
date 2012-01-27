@@ -1,0 +1,33 @@
+RelNotesCal89.txt
+================= small, scientific, script Calculators
+sCal ver. 0.8
+sCal2 ver.0.8       R.Mohaupt,  May, 2004
+sCal ver. 0.9
+
+It has been nearly 15-months since the first release version 0.6 of sCal on SourceForge.net.  The current sCal-8-9.zip file is much larger than it would ordinarily be.  I will go into some rationalle behind this situation, but at this time its appropriate to list some of the changes that have occurred between versions:
+
+1.    Links to Small Help files (displaying from alert boxes) incorporated in the face of the Calculators, eliminating the cells beneath which served a similar purpose.  In the case of sCal2, there is room at the top of the stretched right cell to link to a dialog box from which some layout features can be changed.  These values are retained in a cookie.
+
+2.    Style Settings: trying two different methods to wrestle with the form layout problems arising when sCal or sCal2 is run under a non-Windows operating system.  This is a well-commented problem, which the Style Settings have done little to correct.  (I believe that the operation is not affected, but can't be certain.  Most of my brief time on a Mac system was spent trying to find an editor to tweak the code on the Form layout.)
+
+3.    Conversion of much of the html Body code to JavaScript, mostly to access the Style variables.  This trend will continue with new(?) Style attempts beyond version 0.9.
+
+4.    A stopwatch / count-down timer function.  At this stage, the memory button caps do not reflect the changed functions, however the stopwatch turned out to have an impressive capability of recording large numbers of 'lap' times.  This could be very useful in capturing finish times for multiple racers or sub-operations in a continuous process.  There's also a pause / restart function.  Altogether, it's a pretty impressive stopwatch.  Running at 1/100 second on a desktop computer, I've found it recording virtually the same times as a dedicated stopwatch over a 2-minute plus interval.  Unfortunately, my Pocket PC (a ViewSonic V36--yes, hardly the most expensive hand-held out there) isn't able to record any better than 1-second intervals.  It may be the model.
+
+5.   A split [do] button in sCal v.0.9:  the [d] does, the [o] gives the opposite.  This accomplishes the same as the [>x] and [1/x] buttons in sCal2 v.0.8.
+
+6.   Definition of JScrAps --JScript Applications which are simple to create and transfer between technologically adept users who don't necessarily want to invest the time (and, often money) with full-blown programming;  and sCal-eton --the open framework and formwork that  allow JScrAps to work.
+
+7.    A bunch of small stuff.  Sorry I didn't keep better track.  I could compare the files, but it's not that important.  
+
+The big change is/will be the abandonment of the sCal2 line.  The double-width does not work well on the PDA scale devices.  It works fine on desktop/laptop machines  (recognizing the potential form layout issue between platforms), but too much horizontal scrolling is needed on small screens.  By some glitch, it doesn't even work on a Windows Mobile 2003 system, and its not worth fixing (by me at least, at this time).  Also, the n[0...19] I/O array is a good idea, but using it makes the sCal2 JScrAps incompatible with the sCal line.
+
+If anyone wishes to pursue further development in this form, they're welcome to do so.  That's why I have included all those extra files in the download package.
+
+The Pocket PC is a really meaningful target in the cross-platform intent of sCal.  So many carry these timy computers around, and keep track of addresses and appointments, and maybe listen to some music and play some games, figure a tip with a simple calculator, and (at the cutting edge) access some information on the Web.  This on a machine incredibly more powerful than what cluttered up my desktop a couple of decades ago.  
+
+There are some serious technical programs available for the PPC.  But the arcane and even the mundane are often neglected.  In short, there's a lot of attention to storing and retrieving information, but little to generating it.  The most common seems to be having a field worker fill in a digital form, which only saves a data entry step from the previous paper form.  Nice, though the paper form fares better it it happens to fall in a mud puddle.
+
+Programmers rarely (unles they have a personal interest) spend the time to develope programs for limited audiences, especially when they have to repeat the operation for the number of platforms that audience might be using.  As a result, there's a lot of potential power sitting there (on desktops as well as in pockets) with no easy way for technical people whose field is not programming, to get at it, and once having solved the first problem, sharing the solution.
+
+And hey---its a nice little calculator in 20-kb.

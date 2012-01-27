@@ -111,7 +111,7 @@
       $dstats['no'] = 1;
     }
     if ($value < 0.15) {
-      $html = '<nobr><span style="color:#C00000">d=' . number_format($value,2) . '</span><img src="../artwork/red_flag.png" width="14" height="14" alt="' . $string['warning2'] . '" border="0" class="in-exclusion" /></nobr>';
+      $html = '<span style="color:#C00000">d=' . number_format($value,2) . '</span><img src="../artwork/red_flag.png" width="14" height="14" alt="' . $string['warning2'] . '" border="0" class="in-exclusion" />';
     } else {
       $html = 'd=' . number_format($value,2);
     }
@@ -1534,10 +1534,10 @@ td p:first-child {margin-top:0}
   $student_list = '';
   if ($paper_type == '0') {
     $result = $mysqli->prepare("(SELECT username, sum(mark) AS total_mark, log_metadata.started FROM (log0, users, log_metadata) WHERE log0.userID=log_metadata.userID AND log0.started=log_metadata.started AND log0.q_paper=log_metadata.paperID AND log0.userID=users.id AND (users.roles='Student' OR users.roles='graduate') AND q_paper=? AND grade LIKE ? AND log0.started>=? AND log0.started<=? AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE 'Staff%' AND student_grade NOT LIKE '%nhs%' $student_modules_sql GROUP BY username, q_paper, log0.started) UNION ALL (SELECT username, sum(mark) AS total_mark, log_metadata.started FROM (log1, users, log_metadata) WHERE log1.userID=log_metadata.userID AND log1.started=log_metadata.started AND log1.q_paper=log_metadata.paperID AND log1.userID=users.id AND (users.roles='Student' OR users.roles='graduate') AND q_paper=? AND log1.started>=? AND log1.started<=? AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE '%staff%' AND student_grade NOT LIKE '%nhs%' " . str_replace('log0', 'log1', $student_modules_sql) . " GROUP BY username, q_paper, log1.started) ORDER BY total_mark ASC, username");
-    $result->bind_param('isssiss', $paperID, $_GET['repcourse'], $startdate, $enddate, $paperID, $startdate, $enddate);
+    $result->bind_param('isssiss', $paperID, $_GET['repdegree'], $startdate, $enddate, $paperID, $startdate, $enddate);
   } else {
     $result = $mysqli->prepare("SELECT username, sum(mark) AS total_mark, log_metadata.started FROM (log$paper_type, users, log_metadata) WHERE log$paper_type.userID=log_metadata.userID AND log$paper_type.started=log_metadata.started AND log$paper_type.q_paper=log_metadata.paperID AND log$paper_type.userID=users.id AND q_paper=? AND grade LIKE ? AND DATE_ADD(log$paper_type.started, INTERVAL 2 MINUTE)>=? AND log$paper_type.started<=? AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE 'Staff%' AND student_grade NOT LIKE '%nhs%' $student_modules_sql GROUP BY username, q_paper, log$paper_type.started ORDER BY total_mark ASC, username");
-    $result->bind_param('isss',$paperID, $_GET['repcourse'], $startdate, $enddate);
+    $result->bind_param('isss',$paperID, $_GET['repdegree'], $startdate, $enddate);
   }
   $result->execute();
   $result->bind_result($username, $total_mark, $started);
@@ -1563,10 +1563,10 @@ td p:first-child {margin-top:0}
   $top_log_array = array();
   if ($paper_type == '0') {
     $result = $mysqli->prepare("(SELECT username, log0.userID, log0.q_id, user_answer, q_type, score_method, display_method, mark, totalpos, option_order, started FROM log0, questions, users WHERE log0.q_id=questions.q_id AND q_paper=? AND grade LIKE ? AND users.id=log0.userID AND (users.roles='Student' OR users.roles='graduate') AND started>=? AND started<=? $student_modules_sql) UNION ALL (SELECT username, log1.userID, log1.q_id, user_answer, q_type, score_method, display_method, mark, totalpos, option_order, started FROM log1, questions,  users WHERE log1.q_id=questions.q_id AND q_paper=? AND users.id=log1.userID AND (users.roles='Student' OR users.roles='graduate') AND started>=? AND started<=? " . str_replace('log0', 'log1', $student_modules_sql) . ")");
-    $result->bind_param('isssiss', $paperID, $_GET['repcourse'], $startdate, $enddate, $paperID, $startdate, $enddate);
+    $result->bind_param('isssiss', $paperID, $_GET['repdegree'], $startdate, $enddate, $paperID, $startdate, $enddate);
   } else {
     $result = $mysqli->prepare("SELECT username, log$paper_type.userID, log$paper_type.q_id, user_answer, q_type, score_method, display_method, mark, totalpos, option_order, started FROM log$paper_type, questions, users WHERE log$paper_type.q_id=questions.q_id AND q_paper=? AND grade LIKE ? AND users.id=log$paper_type.userID AND (users.roles='Student' OR users.roles='graduate') AND DATE_ADD(started, INTERVAL 2 MINUTE)>=? AND started<=? $student_modules_sql");
-    $result->bind_param('isss', $paperID, $_GET['repcourse'], $startdate, $enddate);
+    $result->bind_param('isss', $paperID, $_GET['repdegree'], $startdate, $enddate);
   }
   $result->execute();
   $result->bind_result($username, $tmp_userID, $question_ID, $tmp_answer, $q_type, $score_method, $display_method, $mark, $totalpos, $option_order, $started);

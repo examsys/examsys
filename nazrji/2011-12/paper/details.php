@@ -79,9 +79,9 @@ function checkProblems($p_type, $q_type, $score_method, &$temp_array, $scenario,
       if ($question_marks > (count($option_text) / 2)) $temp_array[$row_no]['warnings'] = $string['toomanycorrect'];
     } elseif ($q_type == 'dichotomous') {
       if ($score_method == 'Mark per Option' and $question_marks < count($option_text)) $temp_array[$row_no]['warnings'] = sprintf($string['dichotomouswarning'], $question_marks, count($option_text));
-    } elseif ($q_type == 'mcq' and $correct_array[0] == '') {
+    } elseif ($p_type != 3 and ($q_type == 'mcq' or $q_type == 'calculation') and $correct_array[0] == '') {
       $temp_array[$row_no]['warnings'] = $string['nocorrect'];
-    } elseif ($q_type == 'calculation' and $correct_array[0] == '') {
+    } elseif ($p_type != 3 and $q_type == 'mrq' and !in_array('y', $correct_array)) {
       $temp_array[$row_no]['warnings'] = $string['nocorrect'];
     } elseif ($p_type != 3 and $q_type == 'textbox' and $question_marks == 0) {
       $temp_array[$row_no]['warnings'] = $string['zeromarks'];

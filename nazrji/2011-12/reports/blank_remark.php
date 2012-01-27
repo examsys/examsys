@@ -173,11 +173,15 @@ if (isset($_POST['submit'])) {
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Remark</title>
+<title><?php echo $string['remark'] . ' ' . $cfg_install_type; ?></title>
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <style>
   body {font-family:Arial,sans-serif; font-size:90%; background-color:#F1F5FB; color:black; margin:0px}
+  th {font-weight:normal; color:#001687}
   .o {text-align:right; padding-right:10px}
+  .c1 {width:65px; text-align:center}
+  .c2 {width:250px}
+  .msg {text-align:justify; margin:5px; font-size:90%; color:#001687}
 </style>
 <script language="JavaScript">
   function toggle(objectID) {
@@ -202,7 +206,7 @@ if (isset($_POST['submit'])) {
       winW = window.innerWidth;
       winH = window.innerHeight;
     }
-    winH -= 105;
+    winH -= 160;
     document.getElementById('list').style.height = winH + 'px';
   }
 </script>
@@ -212,12 +216,17 @@ if (isset($_POST['submit'])) {
 
 <form method="post" action="<?php echo $_SERVER['PHP_SELF'] . '?q_id=' . $_GET['q_id'] . '&blank=' . $_GET['blank'] . '&paperID=' . $_GET['paperID']; ?>">
   <table cellpadding="6" cellspacing="0" border="0" width="100%">
-  <tr><td style="width:32px; background-color:white; border-bottom:1px solid #CCD9EA"><img src="../artwork/dictionary.png" width="32" height="32 alt="Word List" /></td><td style="background-color:white; font-size:150%; color:#5582D2; border-bottom:1px solid #CCD9EA"><strong>Unique Word List</td></tr>
+  <tr><td style="width:32px; background-color:white; border-bottom:1px solid #CCD9EA"><img src="../artwork/dictionary.png" width="32" height="32 alt="Word List" /></td><td style="background-color:white; font-size:150%; color:#5582D2; border-bottom:1px solid #CCD9EA"><strong><?php echo $string['uniqueanswers']; ?></td></tr>
   </table>
 
-  <div style="height:200px; overflow:auto; background-color:white; border:1px solid #CCD9EA; margin:12px 4px 8px 4px; font-size:90%" id="list">
+  <div class="msg"><?php echo $string['msg']; ?></div>
+  
   <table cellpadding="2" cellspacing="0" border="0" style="width:100%">
-<tr><th style="width:60px">Correct</th><th>Word/Phrase</th><th>Occurrence</th></tr>
+  <tr><th style="width:70px"><?php echo $string['correct']; ?></th><th style="width:250px"><?php echo $string['wordphrase']; ?></th><th><?php echo $string['occurrence']; ?></th></tr>
+  </table>
+
+  <div style="height:200px; overflow:auto; background-color:white; border:1px solid #CCD9EA; margin:0px 4px 8px 4px; font-size:90%" id="list">
+  <table cellpadding="2" cellspacing="0" border="0" style="width:100%">
 <?php
 $unique_list = array();
 
@@ -240,12 +249,16 @@ ksort($unique_list);
 foreach ($unique_list as $word=>$occurrance) {
   $match = false;
   foreach ($blanks as $blank) {
-    if (strtolower($word) == strtolower($blank)) $match = true;
+    if (strtolower($word) == strtolower($blank)) {
+      $match = true;
+      $word = $blank;
+    }
   }
+  
   if ($match) {
-    echo '<tr id="div' . $word_count . '" style="background-color:#B3C8E8"><td><input type="checkbox" onclick="toggle(\'div'. $word_count . '\')" name="word' . $word_count . '" value="' . $word . '" checked="checked" /></td><td>' . $word . '</td><td class="o">' . $occurrance . '</td></tr>';
+    echo '<tr id="div' . $word_count . '" style="background-color:#B3C8E8"><td class="c1"><input type="checkbox" onclick="toggle(\'div'. $word_count . '\')" name="word' . $word_count . '" value="' . $word . '" checked="checked" /></td><td class="c2">' . $word . '</td><td class="o">' . $occurrance . '</td></tr>';
   } else {
-    echo '<tr id="div' . $word_count . '" style="background-color:white"><td><input type="checkbox" onclick="toggle(\'div'. $word_count . '\')" name="word' . $word_count . '" value="' . $word . '" /></td><td>' . $word . '</td><td class="o">' . $occurrance . '</td></tr>';
+    echo '<tr id="div' . $word_count . '" style="background-color:white"><td class="c1"><input type="checkbox" onclick="toggle(\'div'. $word_count . '\')" name="word' . $word_count . '" value="' . $word . '" /></td><td class="c2">' . $word . '</td><td class="o">' . $occurrance . '</td></tr>';
   }
   $word_count++;
 }
@@ -254,7 +267,7 @@ foreach ($unique_list as $word=>$occurrance) {
 </div>
 
 <input type="hidden" name="word_count" value="<?php echo $word_count; ?>" />
-<div style="text-align:center"><input type="submit" name="submit" value="Save" style="width:100px" />&nbsp;&nbsp;<input type="button" name="cancel" value="Cancel" style="width:100px" onclick="window.close();" /></div>
+<div style="text-align:center"><input type="submit" name="submit" value="<?php echo $string['save']; ?>" style="width:100px" />&nbsp;&nbsp;<input type="button" name="cancel" value="<?php echo $string['cancel']; ?>" style="width:100px" onclick="window.close();" /></div>
 
 </form>
 </body>

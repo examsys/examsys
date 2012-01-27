@@ -1010,6 +1010,8 @@ if ($log_query->num_rows > 0) {
       for ($i=0; $i<count($student_cohort); $i++) {
         if ($student_cohort[$i]['taken'] == 0) {
           $user_results[$user_no]['name'] = $student_cohort[$i]['name'];
+          var_dump($student_cohort[$i]['name']);
+          exit;
           $user_results[$user_no]['mark'] = 0;
           $user_results[$user_no]['adj_percent'] = 0;
           $user_results[$user_no]['percent'] = 0;

@@ -2,6 +2,10 @@
 require '../lang/' . $language . '/include/months.inc';
 require '../lang/' . $language . '/include/paper_types.inc';
 
+$string['displaycalculator-1'] = 'stary kalkulator calc98';
+$string['displaycalculator0'] = 'bez kalkulatora';
+$string['displaycalculator1'] = 'Wyświetlacz kalkulatora naukowego';
+$string['displaycalculator2'] = 'wyświetlić podstawowe kalkulator';
 
 $string['propertiestitle'] = 'Właściwości';
 $string['edittitle'] = 'Edytuj';

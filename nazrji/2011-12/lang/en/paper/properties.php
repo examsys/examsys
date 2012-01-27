@@ -2,6 +2,12 @@
 require '../lang/' . $language . '/include/months.inc';
 require '../lang/' . $language . '/include/paper_types.inc';
 
+$string['displaycalculator-1'] = 'old calc98 calculator';
+$string['displaycalculator0'] = 'no calculator';
+$string['displaycalculator1'] = 'display scientific calculator';
+$string['displaycalculator2'] = 'display basic calculator';
+
+
 $string['propertiestitle'] = 'Properties';
 $string['edittitle'] = 'Edit';
 $string['warning'] = 'Warning paper name already used by another assessment!';

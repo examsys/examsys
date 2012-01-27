@@ -26,7 +26,7 @@ require '../../include/staff_auth.inc';
 ?>
 <html>
 <head>
-<title>Help and Support Center<?php echo " $cfg_install_type"; ?></title>
+<title>Help and Support Center<?php echo ' ' . $cfg_install_type; ?></title>
 <style>
 html {margin:0px; width:100%; height:100%; overflow:hidden}
 body {margin:0px; width:100%; height:100%; overflow:hidden; font-size:75%; background-color:#F1F5FB; color:#154A93; font-family:Arial,sans-serif}
@@ -89,22 +89,20 @@ function getInternetExplorerVersion()
   }
     
   $sub_section = 0;
-  $search_results = $mysqli->query("SELECT id, title FROM staff_help WHERE id != 1 $roles_check AND deleted IS NULL ORDER BY title, id");
-  if (!$search_results) {
-    echo $mysqli->error;
-    exit;
-  }
   $help_section = 0;
+  $old_title = '';
   $help_toc = array();
-  while ($row = $search_results->fetch_assoc()) {
-    $help_toc[$help_section]['id'] = $row['id'];
-    $help_toc[$help_section]['title'] = $row['title'];
+
+  $result = $mysqli->prepare("SELECT id, title FROM staff_help WHERE id != 1 $roles_check AND deleted IS NULL ORDER BY title, id");
+  $result->execute();
+  $result->bind_result($id, $title);
+  while ($result->fetch()) {
+    $help_toc[$help_section]['id'] = $id;
+    $help_toc[$help_section]['title'] = $title;
     $help_section++;
   }
-  $search_results->close();
+  $result->close();
   
-  $old_title = '';
-
   for ($i=0; $i<$help_section; $i++) {
     $slash_pos = strpos($help_toc[$i]['title'], '/');
     if ($slash_pos !== false) {

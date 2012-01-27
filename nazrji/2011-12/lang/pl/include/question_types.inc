@@ -17,4 +17,5 @@ $string['mrq'] = 'Pytanie wielu odpowiedzi';
 $string['rank'] = 'Pytanie na stopniowanie';
 $string['sct'] = 'Test scenariusza';//Test zgodności ze scenariuszem
 $string['textbox'] = 'Pytanie półotwarte';
+$string['true_false'] = 'True/False';    // Niko
 ?>

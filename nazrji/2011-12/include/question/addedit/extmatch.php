@@ -63,7 +63,7 @@ $(function () {
 <?php
   
   for ($index = 0; $index < $question->max_options; $index++) {
-    $mandatory = ($index < 4) ? '<span class="mandatory">*</span> ' : '';
+    $mandatory = ($index < 3) ? '<span class="mandatory">*</span> ' : '';
     if ($index < $num_options) {
       $option_text = $options[$option_ids[$index]]->get_text();
       $option_id = $option_ids[$index];

@@ -1,0 +1,47 @@
+Read-sCal-8-9.txt
+================= small, scientific, script Calculators
+  sCal & sCal2
+
+This text file accompanies the download zip pachage: sCal-8-9.zip
+Use an extractor program to load the files into a convenient file folder.
+
+The files included in this package are:
+=======================================
+   GNU-GPL.txt       
+   -------------------the General Public License governing the use and distribution of the program sCal2...htm.  (sCal...htm is Public Domain.)
+   Read-sCal-8-9.txt 
+   -------------------this file
+   RelNotesCal89.txt 
+   -------------------Release Notes for sCal versions 0.8 & 0.9.  These notes accompany the May, 2004, Release at
+        http://sourceforge.net/projects/scal-2/
+        ***************************************
+      reproduced here to complete the version information:  most pointedly that development of the sCal2 format will not be pursued beyond version 0.8 by this writer (R.Mohaupt).  The format has some valuable attributes, and others may wish to take it further, but its too much work to undertake along with the direction of sCal ver. 0.9 compatibility with Pocket PC platforms.
+   sCal2-08.htm      
+   -------------------HTML/JavaScript Calculator program, wide-format, version 0.8.  The program will run on the vast majority of modern, full-featured browsers.  If properly installed on the user's operating system, running the sCal...htm file will automatically open it in the browser.  The format is much tested in Win32 environments; some layout problems are anticipated in other operating systems--probably not fatal to the operation and subject to tweaking in the Open Source code.
+   sCal2-sShot.gif   
+   -------------------thumbnail-sized screen shot of the above program, used as a link to the program in documentation, or to the download site from on-line review.  (The 153-kb file size of sCal2 is deemed too large for direct online access, and is only available for download in this .zip file.)
+   sCal-08.htm
+   -------------------HTML/JavaScript Calculator program, single-format, version 0.8: the smaller cousin of sCal2, operationally described above.
+   sCal-8-DraftDoc.htm
+   -------------------Draft Documentation for versions 0.8 & 0.9.  It is incomplete and largly unedited.  It is considered not worth finalizing, when it represents a line to be discontinued.  Nonetheless, it contains much useful information, and does clarify (hopefully) some points.  At 132-kb, it is only included in the .zip file.  If placed in the same directory as a running sCal... or sCal2... program, this is the 'Help' file linked from the calculator face.
+   sCal-09.htm
+   -------------------HTML/JavaScript Calculator program, PPC compatible format, version 0.9.  Its on the main line towards the 'final' Version 1.0.  That will be accompanied by an sCal-x (eXpanded) format which will take the place of sCal2 in scope, without the double width.
+   sCal-9sShot.gif
+   -------------------thumbnail-sized screen shot of the above program, used as a link to the program in documentation, or from the Website.
+   sCal-09-Web.htm
+   -------------------the current sCal-2 Website at SourceForge.net (address above; on the site, this is called 'index.htm'.)
+   sCal-p8.gif
+   -------------------thumbnail-sized screen shot of the below program, used as a link from the Draft Documentation.
+   sCal-p8.htm
+   -------------------HTML/JavaScript Calculator program, PPC compatible, version 0.8.  It is included with, and linked from, the Draft Documentation, and consistent with the other version 0.8 features.
+   sCal-QA-9.htm
+   -------------------Website linked additional information and interim documentation relative to version 0.9.  This contains a viable link to sCal2 from this .zip file (not from the Website).
+   sCsl-sShot.gif
+   -------------------thumbnail-sized screen shot of the version 0.8 program, used as a link to it from documentation and Website.
+   sflogo.gif
+   -------------------the SourceForge Logo, used as a link to it from documentation.
+
+NOTE
+==== that this release is somewhat bloated, since it contains more versions than one ordinarily puts out at one time.  I am loath to abandon sCal2 (see commentary above) without passing along its current development.  Any comments/questions are welcome to any Forum at the SourceForge host site.  Just copy->paste the above address to your browser Address line, or use one of the links in the documentation.
+---- 
+R.Mohaupt,  mgineer1@netscape.net,  May, 2004

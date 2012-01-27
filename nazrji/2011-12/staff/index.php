@@ -159,36 +159,39 @@ require '../include/staff_auth.inc';
   $icons = array('formative', 'progress', 'summative', 'survey', 'osce', 'offline', 'peer_review');
 
   // -- Display top 10 recent papers ----------------------------------
-  $query_string = "SELECT paperID, paper_title, moduleID, accessed, paper_type FROM (recent_papers, properties) WHERE userID=$userID AND recent_papers.paperID=properties.property_id ORDER BY accessed DESC LIMIT 10";
-  $results = $mysqli->query($query_string) or die("failed : ".$mysqli->error." $query_string");
-
-  echo "<table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>" . $string['myrecentpapers'] . " (" . $results->num_rows . ")</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
-
-  while ($row = $results->fetch_assoc()) {
-    echo "<div style=\"padding-left:12px\"><a href=\"../paper/details.php?paperID=" . $row['paperID'] . "&folder=&module=" . $row['moduleID'] . "\"><img src=\"../artwork/" . $icons[$row['paper_type']] . "_16.gif\" width=\"16\" height=\"16\" border=\"0\" alt=\"" . $row['paper_type'] . "\" /></a>&nbsp;<a class=\"recent\"";
-    if (strpos($row['paper_title'],'[deleted') !== false) echo ' style="color:#808080"';
-    echo "href=\"../paper/details.php?paperID=" . $row['paperID'] . "&folder=&module=" . $row['moduleID'] . "\">" . $row['paper_title'] . "</a></div>\n";
+  $result = $mysqli->prepare("SELECT paperID, paper_title, moduleID, accessed, paper_type FROM (recent_papers, properties) WHERE userID=? AND recent_papers.paperID=properties.property_id ORDER BY accessed DESC LIMIT 10");
+  $result->bind_param('i', $userID);
+  $result->execute();
+  $result->bind_result($paperID, $paper_title, $moduleID, $accessed, $paper_type);
+  $result->store_result();
+  echo "<table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>" . $string['myrecentpapers'] . " (" . $result->num_rows() . ")</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
+  while ($result->fetch()) {
+    echo "<div style=\"padding-left:12px\"><a href=\"../paper/details.php?paperID=" . $paperID . "&folder=&module=" . $moduleID . "\"><img src=\"../artwork/" . $icons[$paper_type] . "_16.gif\" width=\"16\" height=\"16\" border=\"0\" alt=\"" . $paper_type . "\" /></a>&nbsp;<a class=\"recent\"";
+    if (strpos($paper_title,'[deleted') !== false) echo ' style="color:#808080"';
+    echo "href=\"../paper/details.php?paperID=" . $paperID . "&folder=&module=" . $moduleID . "\">" . $paper_title . "</a></div>\n";
   }
-  $results->close();
+  $result->close();
 
   // -- Display any papers for review ---------------------------------
-  $query_string = "SELECT paper_type, paper_title, property_id, bidirectional, fullscreen, MAX(screen) AS max_screen, DATE_FORMAT(internal_review_deadline,'%d/%m/%Y') AS internal_review_deadline, crypt_name FROM (properties, papers) WHERE deleted IS NULL AND internal_review_deadline >= NOW() AND properties.property_id=papers.paper AND internal_reviewers LIKE '%$userID%' GROUP BY paper";
-  $results = $mysqli->query($query_string) or die("failed : " . $mysqli->error . " $query_string");
-  if ($results->num_rows > 0) {
+  $result = $mysqli->prepare("SELECT paper_type, paper_title, property_id, bidirectional, fullscreen, DATE_FORMAT(internal_review_deadline,'%d/%m/%Y') AS internal_review_deadline, crypt_name FROM (properties, papers) WHERE deleted IS NULL AND internal_review_deadline >= NOW() AND properties.property_id=papers.paper AND internal_reviewers LIKE '%$userID%' GROUP BY paper");
+  $result->execute();
+  $result->bind_result($paper_type, $paper_title, $property_id, $bidirectional, $fullscreen, $internal_review_deadline, $crypt_name);
+  $result->store_result();
+
+  if ($result->num_rows() > 0) {
     echo "<br />\n";
     echo "<table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>Papers for Review</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
   }
-  while ($row = $results->fetch_assoc()) {
-    $log_string = "SELECT DATE_FORMAT(MAX(reviewed),'%d/%m/%Y %T') AS started FROM review_comments WHERE reviewer=$userID and q_paper=" . $row['property_id'];
-    $log_results = $mysqli->query($log_string);
+  while ($result->fetch()) {
     $reviewed = '';
-    $restartdate = '';
-    while ($log_row = $log_results->fetch_assoc()) {
-      $reviewed = $log_row['started'];
-    }
-    $log_results->close();
-    echo "<div class=\"f\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"width:60px\" align=\"center\"><a href=\"#\" onclick=\"startPaper('" . $row['crypt_name'] . "'," . $row['fullscreen'] . "); return false;\"><img src=\"../artwork/summative.png\" width=\"48\" height=\"48\" alt=\"Paper Icon\" border=\"0\" /></a></td>\n";
-    echo "  <td><a href=\"#\" onclick=\"startPaper('" . $row['crypt_name'] . "'," . $row['fullscreen'] . "); return false;\">" . $row['paper_title'] . "</a><br /><div style=\"color:#C00000\">Deadline: " . $row['internal_review_deadline'] . "</div>";
+    $result2 = $mysqli->prepare("SELECT DATE_FORMAT(MAX(reviewed),'%d/%m/%Y %T') AS started FROM review_comments WHERE reviewer=$userID and q_paper=?");
+    $result2->bind_param('i', $property_id);
+    $result2->execute();
+    $result2->bind_result($reviewed);
+    $result2->fetch();
+    $result2->close();
+    echo "<div class=\"f\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"width:60px\" align=\"center\"><a href=\"#\" onclick=\"startPaper('" . $crypt_name . "'," . $fullscreen . "); return false;\"><img src=\"../artwork/summative.png\" width=\"48\" height=\"48\" alt=\"Paper Icon\" border=\"0\" /></a></td>\n";
+    echo "  <td><a href=\"#\" onclick=\"startPaper('" . $crypt_name . "'," . $fullscreen . "); return false;\">" . $paper_title . "</a><br /><div style=\"color:#C00000\">Deadline: " . $internal_review_deadline . "</div>";
     if ($reviewed == '') {
       echo "<span style=\"color:white; background-color:red\">&nbsp;" . $string['notreviewed'] . "&nbsp;</span>";
     } else {
@@ -196,8 +199,8 @@ require '../include/staff_auth.inc';
     }
     echo "</td></tr></table></div>\n";
   }
-  if ($results->num_rows > 0) echo '<br clear="left" />';
-  $results->close();
+  if ($result->num_rows() > 0) echo '<br clear="left" />';
+  $result->close();
 ?>
 
 <br />
@@ -208,13 +211,16 @@ require '../include/staff_auth.inc';
     if (trim($individual_team) != '') $module_sql .= " OR team_name LIKE '%$individual_team%'";
   }
 
-  $folder_details = $mysqli->query("SELECT id, name, team_name, color FROM folders WHERE (ownerID=$userID $module_sql) AND name NOT LIKE '%;%' AND deleted IS NULL ORDER BY name, id");
+  $result = $mysqli->prepare("SELECT id, name, team_name, color FROM folders WHERE (ownerID=$userID $module_sql) AND name NOT LIKE '%;%' AND deleted IS NULL ORDER BY name, id");
+  $result->execute();
+  $result->bind_result($id, $name, $team_name, $color);
+  $result->store_result();
 
-  echo "<table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>" . $string['myfolders'] . " (" . ($folder_details->num_rows + 1) . ")</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
-  while ($row = $folder_details->fetch_assoc()) {
-    echo "<div class=\"f\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"width:60px\" align=\"center\"><a href=\"../folder/details.php?folder=" . $row['id'] . "\"><img src=\"../artwork/" . $row['color'] . "_folder.png\" width=\"48\" height=\"48\" alt=\"Folder\" border=\"0\" align=\"middle\" /></a>&nbsp;</td><td><a href=\"../folder/details.php?folder=" . $row['id'] . "\" class=\"blacklink\">" . $row['name'] . "</a></td></tr></table></div>\n";
+  echo "<table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>" . $string['myfolders'] . " (" . ($result->num_rows() + 1) . ")</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
+  while ($result->fetch()) {
+    echo "<div class=\"f\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"width:60px\" align=\"center\"><a href=\"../folder/details.php?folder=$id\"><img src=\"../artwork/" . $color . "_folder.png\" width=\"48\" height=\"48\" alt=\"Folder\" border=\"0\" align=\"middle\" /></a>&nbsp;</td><td><a href=\"../folder/details.php?folder=$id\" class=\"blacklink\">$name</a></td></tr></table></div>\n";
   }
-  $folder_details->close();
+  $result->close();
 
   if (isset($_GET['newfolder']) AND $_GET['newfolder'] == 'y' or $duplicate_name == 1) {
     if (isset($_POST['submit']) and $_POST['submit'] and $duplicate_name == 1) {
@@ -226,7 +232,8 @@ require '../include/staff_auth.inc';
   }
 
   // Work out if there is anything in the recycle bin.
-  $deleted_details = $mysqli->prepare("SELECT COUNT(property_id) AS no_deleted FROM properties WHERE deleted IS NOT NULL AND paper_ownerID=$userID");
+  $deleted_details = $mysqli->prepare("SELECT COUNT(property_id) AS no_deleted FROM properties WHERE deleted IS NOT NULL AND paper_ownerID=?");
+  $deleted_details->bind_param('i', $userID);
   $deleted_details->execute();
   $deleted_details->bind_result($no_deleted);
   $deleted_details->store_result();
@@ -260,17 +267,18 @@ require '../include/staff_auth.inc';
     echo '<br clear="left" /><br />';
 
     // -- Display papers not assigned to a module -------------------
-    $paper_data = $mysqli->prepare("SELECT DISTINCT property_id, paper_type, MAX(screen) AS screens, paper_title, DATE_FORMAT(start_date,'%Y%m%d%H%i%s') AS start_date, DATE_FORMAT(start_date,'%d/%m/%y %H:%i') AS display_start_date, DATE_FORMAT(end_date,'%d/%m/%y %H:%i') AS display_end_date, exam_duration, title, initials, surname, retired, moduleID FROM properties LEFT JOIN users ON properties.paper_ownerID=users.id LEFT JOIN papers ON properties.property_id=papers.paper WHERE paper_ownerID=$userID AND moduleID='' AND deleted IS NULL GROUP BY paper_title ORDER BY paper_title");
-    $paper_data->execute();
-    $paper_data->bind_result($property_id, $paper_type, $screens, $paper_title, $start_date, $display_start_date, $display_end_date, $exam_duration, $title, $initials, $surname, $retired, $moduleID);
-    $paper_data->store_result();
-    $paper_data->fetch();
-    if ($paper_data->num_rows > 0) {
-      echo "<table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>" . $string['unassignedpapers'] . " (" . $paper_data->num_rows . ")<nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
-      while ($row = $paper_data->fetch()) {
+    $result = $mysqli->prepare("SELECT DISTINCT property_id, paper_type, MAX(screen) AS screens, paper_title, DATE_FORMAT(start_date,'%Y%m%d%H%i%s') AS start_date, DATE_FORMAT(start_date,'%d/%m/%y %H:%i') AS display_start_date, DATE_FORMAT(end_date,'%d/%m/%y %H:%i') AS display_end_date, exam_duration, title, initials, surname, retired, moduleID FROM properties LEFT JOIN users ON properties.paper_ownerID=users.id LEFT JOIN papers ON properties.property_id=papers.paper WHERE paper_ownerID=$userID AND moduleID='' AND deleted IS NULL GROUP BY paper_title ORDER BY paper_title");
+    $result->execute();
+    $result->bind_result($property_id, $paper_type, $screens, $paper_title, $start_date, $display_start_date, $display_end_date, $exam_duration, $title, $initials, $surname, $retired, $moduleID);
+    $result->store_result();
+    $result->fetch();
+    if ($result->num_rows > 0) {
+      echo "<table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>" . $string['unassignedpapers'] . " (" . $result->num_rows() . ")<nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
+      while ($result->fetch()) {
         displayPaperIcon($userID, $property_id, $paper_type, $screens, $paper_title, $start_date, $display_start_date, $display_end_date, $exam_duration, $title, $initials, $surname, $retired, $moduleID);
       }
     }
+    $result->close();
   }
 
   $mysqli->close();

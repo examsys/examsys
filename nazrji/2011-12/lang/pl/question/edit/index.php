@@ -226,5 +226,7 @@ $string['description'] = 'Opis';
 $string['questions'] = 'Pytania';
 $string['addquestions'] = 'Dodaj pytanie(a)';
 $string['questionbasedon'] = 'Question based on';
-$string['keywordwarning'] = 'Warning no keywords found, cannot create question.'
+$string['keywordwarning'] = 'Warning no keywords found, cannot create question.';
+$string['mappingwarning'] = 'WARNING: All mappings will be lost if this question is not added to the paper!';
+$string['markchangewarning'] = 'Warning: changing mark allocations post-exam should only be undertaken if absolutely necessary. Are you sure you want to continue?';
 ?>

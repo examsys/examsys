@@ -56,11 +56,15 @@ require_once './classes/networkutils.class.php';
 
   $paper_no = 0;
   $paper_display = array();
-  $paper_query = $mysqli->query("SELECT paper_type, crypt_name, paper_title, bidirectional, fullscreen, MAX(screen) AS max_screen, labs, moduleID, calendar_year, password FROM (papers, properties) WHERE papers.paper=properties.property_id AND labs != '' AND (paper_type='1' OR paper_type='2') AND deleted IS NULL AND start_date < DATE_ADD(NOW(),interval 15 minute) AND end_date > NOW() GROUP BY paper");
-  while ($row = $paper_query->fetch_assoc()) {
-    if ($row['labs'] != '') {
+  
+  $paper_query = $mysqli->prepare("SELECT paper_type, crypt_name, paper_title, bidirectional, fullscreen, MAX(screen) AS max_screen, labs, moduleID, calendar_year, password FROM (papers, properties) WHERE papers.paper=properties.property_id AND labs != '' AND (paper_type='1' OR paper_type='2') AND deleted IS NULL AND start_date < DATE_ADD(NOW(),interval 15 minute) AND end_date > NOW() GROUP BY paper");
+  $paper_query->execute();
+  $paper_query->store_result();
+  $paper_query->bind_result($paper_type, $crypt_name, $paper_title, $bidirectional, $fullscreen, $max_screen, $labs, $moduleID, $calendar_year, $password);
+  while ($paper_query->fetch()) {
+    if ($labs != '') {
       $machineOK = false;
-      $labs = str_replace(","," OR lab=",$row['labs']);
+      $labs = str_replace(","," OR lab=",$labs);
       $lab_info = $mysqli->query("SELECT address FROM ip_addresses WHERE address='" . NetworkUtils::get_ipaddress() . "' AND (lab=$labs)");
       if ($lab_info->num_rows > 0) $machineOK = true;
       $lab_info->close();
@@ -68,15 +72,21 @@ require_once './classes/networkutils.class.php';
       $machineOK = true;
     }
     if (strpos($_SERVER['PHP_AUTH_USER'], 'user') !== 0) {
-      if ($row['moduleID'] != '') {
+      if ($moduleID != '') {
         $moduleOK = false;
-        if($row['calendar_year'] != '') {
-          $cal_sql = "AND calendar_year = '" . $row['calendar_year'] . "'";
+        if ($calendar_year != '') {
+          $cal_sql = "AND calendar_year = '" . $calendar_year . "'";
         } else {
           $cal_sql = '';
         }
-        $moduleInfo = $mysqli->query("SELECT userID FROM student_modules WHERE userID=$userID $cal_sql AND moduleID IN ('" . str_replace(",","','",$row['moduleID']) . "')");
-        if ($moduleInfo->num_rows > 0) $moduleOK = true;
+        $moduleInfo = $mysqli->prepare("SELECT userID FROM student_modules WHERE userID=? $cal_sql AND moduleID IN ('" . str_replace(",","','",$moduleID) . "')");
+        $moduleInfo->bind_param('i', $userID);
+        $moduleInfo->execute();
+        $moduleInfo->store_result();
+        $moduleInfo->bind_result($tmp_userID);
+        $moduleInfo->fetch();
+        //$moduleInfo = $mysqli->query("SELECT userID FROM student_modules WHERE userID=$userID $cal_sql AND moduleID IN ('" . str_replace(",","','",$moduleID) . "')");
+        if ($moduleInfo->num_rows() > 0) $moduleOK = true;
         $moduleInfo->close();
       } else {
         $moduleOK = true;
@@ -85,12 +95,12 @@ require_once './classes/networkutils.class.php';
       $moduleOK = true;
     }
     if ($machineOK == true AND $moduleOK == true) {
-      $paper_display[$paper_no]['paper_title'] = $row['paper_title'];
-      $paper_display[$paper_no]['crypt_name'] = $row['crypt_name'];
-      $paper_display[$paper_no]['paper_type'] = $row['paper_type'];
-      $paper_display[$paper_no]['max_screen'] = $row['max_screen'];
-      $paper_display[$paper_no]['bidirectional'] = $row['bidirectional'];
-      $paper_display[$paper_no]['password'] = $row['password'];
+      $paper_display[$paper_no]['paper_title'] = $paper_title;
+      $paper_display[$paper_no]['crypt_name'] = $crypt_name;
+      $paper_display[$paper_no]['paper_type'] = $paper_type;
+      $paper_display[$paper_no]['max_screen'] = $max_screen;
+      $paper_display[$paper_no]['bidirectional'] = $bidirectional;
+      $paper_display[$paper_no]['password'] = $password;
       $paper_no++;
     }
   }
@@ -109,17 +119,20 @@ require_once './classes/networkutils.class.php';
 
     echo "<hr size=\"1\" align=\"left\" width=\"500\" style=\"margin-left:60px; color:#C0C0C0; background-color:#C0C0C0\" />\n<p style=\"margin-left:60px\">" . $string['mostLikely'] . "</p>\n<ul style=\"margin-left:80px\">\n";
 
-    $ip_info = $mysqli->query("SELECT name FROM (labs, ip_addresses) WHERE labs.id=ip_addresses.lab AND address='" . NetworkUtils::get_ipaddress() . "'");
-    if ($ip_info->num_rows > 0) {
-      $ip_row = $ip_info->fetch_assoc();
-      $computer_lab = '(' . $ip_row['name'] . ')';
-    } else {
+    $current_ip_address = NetworkUtils::get_ipaddress();
+    $ip_info = $mysqli->prepare("SELECT name FROM (labs, ip_addresses) WHERE labs.id=ip_addresses.lab AND address=?");
+    $ip_info->bind_param('s', $current_ip_address);
+    $ip_info->execute();
+    $ip_info->store_result();
+    $ip_info->bind_result($computer_lab);
+    $ip_info->fetch();
+    if ($ip_info->num_rows() == 0) {
       $computer_lab = '<span style="color:red">' . $string['unknownIp'] . '</span>';
     }
     $ip_info->close();
     echo "<li>" . $string['IPaddress'] . " - " . NetworkUtils::get_ipaddress() . " $computer_lab</li>\n";
     echo "<li>" . $string['Time/Date'] . " - " . date('d/m/Y H:i:s') . "</li>\n";
-    echo "<li>" . $string['AcademicYear'] . " - ";
+    echo "<li>" . $string['yearofstudy'] . " - ";
     if ($year == '') {
       echo '<span style="color:red">' . $string['noyear'] . '</span>';
     } else {
@@ -127,25 +140,31 @@ require_once './classes/networkutils.class.php';
     }
     echo "</li>\n";
     echo "<li>" . $string['Modules'] . " - \n";
-    $info = $mysqli->query("SELECT moduleID, calendar_year FROM student_modules WHERE userID=$userID ORDER BY calendar_year DESC, moduleID");
+    
+    
     $last_cal_year = '';
     $i = 0;
-    if ($info->num_rows == 0) {
+    $info = $mysqli->prepare("SELECT moduleID, calendar_year FROM student_modules WHERE userID=? ORDER BY calendar_year DESC, moduleID");
+    $info->bind_param('i', $userID);
+    $info->execute();
+    $info->bind_result($user_moduleID, $user_calendar_year);
+    $info->store_result();
+    if ($info->num_rows() == 0) {
       echo '<span style="color:red">' . $string['nomodules'] . '</span>';
     } else {
-      while ($row = $info->fetch_assoc()) {
-        if($last_cal_year != $row['calendar_year']) {
-          echo "<br/><b>" . $row['calendar_year'] . "</b><br/>";
+      while ($info->fetch()) {
+        if ($last_cal_year != $user_calendar_year) {
+          echo "<br/><strong>" . $user_calendar_year . "</strong><br/>";
         }
-        echo $row['moduleID'] . '&nbsp;';
-        $last_cal_year = $row['calendar_year'];
+        echo $user_moduleID . '&nbsp;';
+        $last_cal_year = $user_calendar_year;
         $i++;
       }
     }
     $info->close();
     echo "</li>\n";
     echo "<li>" . $string['UserRoles'] . " - ";
-    $userRolesArray = explode(',',$userroles);
+    $userRolesArray = explode(',', $userroles);
     foreach ($userRolesArray as $ur) {
       if ($ur != 'Student') {
         echo '<span style="color:red">' . $string[strtolower($ur)] . '</span>,';

@@ -424,8 +424,8 @@ QUERY;
    * Set the option marks for correct answers
    * @param string $value
    */
-  public function set_marks_correct($value) {
-    if($value != $this->marks_correct and !in_array('marks_correct', array_keys($this->_question->get_unified_fields()))) {
+  public function set_marks_correct($value, $log_change=true) {
+    if($log_change and $value != $this->marks_correct and !in_array('marks_correct', array_keys($this->_question->get_unified_fields()))) {
       $this->set_modified_field('marks_correct', $this->marks_correct);
     }
     $this->marks_correct = $value;
@@ -443,8 +443,8 @@ QUERY;
    * Set the option marks for incorrect answers
    * @param string $value
    */
-  public function set_marks_incorrect($value) {
-    if($value != $this->marks_incorrect and !in_array('marks_incorrect', array_keys($this->_question->get_unified_fields()))) {
+  public function set_marks_incorrect($value, $log_change=true) {
+    if($log_change and $value != $this->marks_incorrect and !in_array('marks_incorrect', array_keys($this->_question->get_unified_fields()))) {
       $this->set_modified_field('marks_incorrect', $this->marks_incorrect);
     }
     $this->marks_incorrect = $value;

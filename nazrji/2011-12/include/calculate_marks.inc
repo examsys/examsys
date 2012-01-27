@@ -109,6 +109,7 @@ function qMarks($question_type, $tmp_exclude, $question_marks, $option_text, $co
       $marks = 0;
       break;
     case 'mcq':
+    case 'true_false':
       if (substr($tmp_exclude,0,1) == '0') $marks += $question_marks;
       break;
     case 'mrq':

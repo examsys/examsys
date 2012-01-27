@@ -60,13 +60,14 @@
   while ($row = $search_results->fetch()) {
     $edit_id = $_GET['id'];
     if ($type == 'pointer') {
-      $redirect_results = $mysqli->query("SELECT title, body, deleted FROM staff_help WHERE id=$tmp_body");
-      while ($redirect_row = $redirect_results->fetch_assoc()) {
-        $edit_id = $tmp_body;
-        $tmp_body = $redirect_row['body'];
-        $deleted = $redirect_row['deleted'];
-      }
-      $redirect_results->close();
+      $pointer_results = $mysqli->prepare("SELECT title, body, deleted FROM staff_help WHERE id=?");
+      $pointer_results->bind_param('i', $tmp_body);
+      $pointer_results->execute();
+      $pointer_results->store_result();
+      $pointer_results->bind_result($tmp_title, $tmp_body, $deleted);
+      $pointer_results->fetch();
+      $pointer_results->close();
+      $edit_id = $tmp_body;
     }
   }
   $search_results->free_result();
@@ -78,7 +79,7 @@
   }
 
   if ($_GET['id'] != '1' and strpos($userroles,'SysAdmin') === false) {   // Don't record the homepage or SysAdmin activities.
-    $result = $mysqli->prepare("INSERT INTO help_log VALUES (NULL,'staff',?,NOW(),?)");
+    $result = $mysqli->prepare("INSERT INTO help_log VALUES (NULL, 'staff', ?, NOW(), ?)");
     $result->bind_param('ii', $userID, $_GET['id']);
     $result->execute();  
     $result->close();
@@ -180,7 +181,7 @@ h2 {font-size:140%; color:#f27000}
   if ($_GET['id'] > 1) {
     echo "<br clear=\"all\" />\n<hr style=\"width:100%; background-color:#B6B6B6; color:#B6B6B6; height:1px; border:0px; margin-bottom:5px\" />\n</div>\n";
     echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"width:100%; font-size:90%\"><tr>";
-    echo "<td style=\"padding-left:20px\"><a style=\"color:#003366\" href=\"#top\"><img src=\"../../artwork/top_icon.gif\" width=\"9\" height=\"12\" border=\"0\" alt=\"" . $string['top'] . "\" /></a>&nbsp;<a style=\"color:#003366\" href=\"#top\">" . $string['top'] . "</a></td><td style=\"padding-right:20px; text-align:right\">&copy; 2011, The University of Nottingham</td></tr>";
+    echo "<td style=\"padding-left:20px\"><a style=\"color:#003366\" href=\"#top\"><img src=\"../../artwork/top_icon.gif\" width=\"9\" height=\"12\" border=\"0\" alt=\"" . $string['top'] . "\" /></a>&nbsp;<a style=\"color:#003366\" href=\"#top\">" . $string['top'] . "</a></td><td style=\"padding-right:20px; text-align:right\">&copy; 2012, The University of Nottingham</td></tr>";
     if (strpos($userroles,'SysAdmin') !== false) {
       echo '<tr><td colspan="2" style="padding-right:20px; text-align:right; color:#316AC5">' . $protocol . $_SERVER['HTTP_HOST'] . $cfg_root_path . '/help/staff/index.php?id=' . $_GET['id'] . '</tr>';
     }

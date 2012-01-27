@@ -17,4 +17,5 @@ $string['mrq'] = 'Multiple Response';
 $string['rank'] = 'Ranking';
 $string['sct'] = 'Script Concordance Test';
 $string['textbox'] = 'Text Box';
+$string['true_false'] = 'True/False';
 ?>

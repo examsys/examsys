@@ -64,7 +64,7 @@ function makeMenu($options) {
   echo "</script>\n";
   
   $line = 0;
-  echo "<div id=\"popup$menuNo\" class=\"popup\" style=\"width:" . $width . "px\">\n";
+  echo "<div id=\"popup$menuNo\" class=\"popup\" style=\"width:" . $width . "px; z-index:30\">\n";
   
   if (count($options) > 20) echo "<div id=\"" . $menuNo . "_up\" class=\"popupitem\" onMouseOver=\"scrollUpStart('popup$menuNo',myOptions" . $menuNo . ",myURLs" . $menuNo . ",'myOptions" . $menuNo . "')\" onMouseOut=\"scrollUpEnd()\"><img src=\"{$cfg_root_path}/artwork/submenu_up_off.png\" width=\"9\" height=\"5\" alt=\"down\" border=\"0\" />&nbsp;</div>\n";
   foreach ($options as $title=>$url) {

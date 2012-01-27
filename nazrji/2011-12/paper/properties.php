@@ -192,11 +192,15 @@ if (isset($_POST['Submit'])) {
 
     $tmp_distinction_mark = (isset($_POST['distinction_mark']) and $_POST['distinction_mark'] != '') ? $_POST['distinction_mark'] : 70;
 
+    /*
     if (isset($_POST['calculator'])) {
       $tmp_calculator = 1;
     } else {
       $tmp_calculator = 0;
     }
+    */
+    $tmp_calculator = $_POST['calculator'];
+
     
     if (isset($_POST['sound_demo'])) {
       $tmp_sound_demo = 1;
@@ -808,11 +812,24 @@ if ($paper_type != '4' and $paper_type != '5') {
        echo "<td align=\"right\">" . $string['labelsnotes'] . "&nbsp;</td><td><div onclick=\"showPicker('labelcolor',event)\" id=\"span_labelcolor\" style=\"border:1px solid #C5C5C5; width:20px; background-color:$labelcolor\">&nbsp;&nbsp;&nbsp;&nbsp;</div><input type=\"hidden\" id=\"labelcolor\" name=\"labelcolor\" value=\"$labelcolor\" /></td>";
        echo "</tr>\n";
 
+       echo "<tr><td align=\"right\">" . $string['calculator'] . "&nbsp;</td><td><select name=\"calculator\">\n";
+       for ($calcloop=-1;$calcloop<3;$calcloop++) {
+         echo "<option value=\"$calcloop\"";
+         if ($calcloop == $calculator) {
+           echo " selected";
+         }
+         echo ">";
+         echo $string["displaycalculator$calcloop"];
+         echo "</option>\n";
+       }
+       echo "</select></td>\n";
+/*
        if ($calculator == 1) {
          echo "<tr><td align=\"right\">" . $string['calculator'] . "&nbsp;</td><td><input type=\"checkbox\" value=\"1\" name=\"calculator\" checked /> " . $string['displaycalculator'] . "</td>";
        } else {
          echo "<tr><td align=\"right\">" . $string['calculator'] . "&nbsp;</td><td><input type=\"checkbox\" value=\"1\" name=\"calculator\" /> " . $string['displaycalculator'] . "</td>";
        }
+*/
        if ($sound_demo == 1) {
          echo "<td align=\"right\">" . $string['audio'] . "&nbsp;</td><td><input type=\"checkbox\" value=\"1\" name=\"sound_demo\" checked /> " . $string['demosoundclip'] . "</td></tr>\n";
        } else {

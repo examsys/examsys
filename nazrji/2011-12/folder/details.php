@@ -87,21 +87,29 @@ if (isset($_GET['module']) and $_GET['module'] != '') {
 
 
 if (isset($_POST['submit']) and $_POST['submit'] == 'Create') {
-  $folder_results = $mysqli->query("SELECT name FROM folders WHERE id=$folder LIMIT 1");
-  $folder_row = $folder_results->fetch_assoc();
-  $folder_parent = $folder_row['name'];
-  $new_folder_name = $folder_parent . ';' . $_POST['folder_name'];
-  $duplicate_name = 0;
-  $folder_details = $mysqli->query("SELECT name FROM folders WHERE ownerID=$userID");
-  while ($folder_row = $folder_details->fetch_assoc()) {
-    if ($folder_row['name'] == $new_folder_name) $duplicate_name = 1;
-  }
-  $folder_details->close();
+  $folder_results = $mysqli->prepare("SELECT name FROM folders WHERE id=? LIMIT 1");
+  $folder_results->bind_param('i', $folder);
+  $folder_results->execute();
+  $folder_results->bind_result($folder_parent);
+  $folder_results->fetch();
   $folder_results->close();
 
+  $new_folder_name = $folder_parent . ';' . $_POST['folder_name'];
+  $duplicate_name = 0;
+  
+  $folder_details = $mysqli->prepare("SELECT name FROM folders WHERE ownerID=? AND name=?");
+  $folder_details->bind_param('is', $userID, $new_folder_name);
+  $folder_details->execute();
+  $folder_details->store_result();
+  $folder_details->bind_result($name);
+  if ($folder_details->num_rows() > 0) {
+    $duplicate_name = 1;
+  }
+  $folder_details->close();
+  
   if ($duplicate_name == 0) {
-    if ($folder_query = $mysqli->prepare("INSERT INTO folders VALUES (NULL,$userID, ?,?,NOW(),'yellow',NULL)")) {
-      $folder_query->bind_param('ss', $new_folder_name, $_GET['newteam']);
+    if ($folder_query = $mysqli->prepare("INSERT INTO folders VALUES (NULL, ?, ?, ?, NOW(), 'yellow', NULL)")) {
+      $folder_query->bind_param('iss', $userID, $new_folder_name, $_GET['newteam']);
       $folder_query->execute();
       $folder_query->close();
     } else {
@@ -120,7 +128,7 @@ if ($folder != '') {
 <html onclick="hideMenus()">
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<title>Rogō<?php echo " $cfg_install_type"; ?></title>
+<title>Rogō<?php echo ' ' . $cfg_install_type; ?></title>
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
 
 <?php echo $cfg_js_root ?>
@@ -285,9 +293,12 @@ if ($folder != '') {
   $query_string = "SELECT DISTINCT paper_ownerID, property_id, paper_type, MAX(screen) AS screens, paper_title, DATE_FORMAT(start_date,'%Y%m%d%H%i%s') AS start_date, DATE_FORMAT(start_date,'$cfg_long_date_time') AS display_start_date, DATE_FORMAT(end_date,'$cfg_long_date_time') AS display_end_date, exam_duration, title, initials, surname, retired, moduleID FROM (properties, users) LEFT JOIN papers ON properties.property_id=papers.paper WHERE properties.paper_ownerID=users.id AND folder=\"$folder\" AND deleted IS NULL $showretiredSQL GROUP BY paper_title ORDER BY paper_type, paper_title";
 } elseif ($_GET['module'] != '') {
   $paper_types = array();
-  $results = $mysqli->query("SELECT DISTINCT paper_type, COUNT(paper_type) AS no_papers FROM properties WHERE moduleID LIKE '%" . $_GET['module'] . "%' AND deleted IS NULL $showretiredSQL GROUP BY paper_type");
-  while ($row = $results->fetch_assoc()) {
-    $paper_types[$row['paper_type']] = $row['no_papers'];
+  
+  $results = $mysqli->prepare("SELECT DISTINCT paper_type, COUNT(paper_type) AS no_papers FROM properties WHERE moduleID LIKE '%" . $_GET['module'] . "%' AND deleted IS NULL $showretiredSQL GROUP BY paper_type");
+  $results->execute();
+  $results->bind_result($paper_type, $no_papers);
+  while ($results->fetch()) {
+    $paper_types[$paper_type] = $no_papers;
   }
   $results->close();
   

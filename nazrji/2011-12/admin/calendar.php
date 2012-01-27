@@ -106,12 +106,12 @@ function echoButtons($year) {
   $stmt->close();
 
   //get computer lab info
-  $labs = array($string['default']=>array('-1'=>$string['alllabs']));
+  $lab_details = array($string['default']=>array('-1'=>$string['alllabs']));
   $stmt = $mysqli->prepare("SELECT id, building, room_no, campus FROM labs ORDER BY campus, building, room_no");
   $stmt->execute();
   $stmt->bind_result($id, $building, $room_no, $campus);
   while ($stmt->fetch()) {
-    $labs[$campus][$id] = $building . ' - ' . $room_no;
+    $lab_details[$campus][$id] = $building . ' - ' . $room_no;
   }
   $stmt->close();
 ?>
@@ -136,7 +136,7 @@ function echoButtons($year) {
 <?php
 
   echo "<select name=\"lab\" onchange=\"this.form.submit();\">";
-  foreach ($labs as $campus => $lab) {
+  foreach ($lab_details as $campus => $lab) {
     echo "<optgroup label=\"$campus\">";
     foreach ($lab as $id => $title) {
       $selected = '';
@@ -179,13 +179,13 @@ function echoButtons($year) {
   $current_month = 1;
 
   // Get lab information.
-  $labs = array();
+  $lab_list = array();
   $stmt = $mysqli->prepare("SELECT id, room_no, name FROM labs");
   $stmt->execute();
   $stmt->bind_result($lab_id, $room_no, $name);
   while ($stmt->fetch()) {
-    $labs[$lab_id]['room_no'] = $room_no;
-    $labs[$lab_id]['name'] = $name;
+    $lab_list[$lab_id]['room_no'] = $room_no;
+    $lab_list[$lab_id]['name'] = $name;
   }
   $stmt->close();
   
@@ -228,30 +228,36 @@ function echoButtons($year) {
   $paper_details = array();
   if ($schools_sql != '' OR !isset($_GET['school']) OR (isset($_GET['school']) AND ($_GET['school'] == -1 OR $_GET['school'] == ''))) {
     // Get papers running on various dates.
-    $results = $mysqli->query("SELECT DATE_FORMAT(start_date,'%Y/%m/%d') AS date, labs, DATE_FORMAT(start_date,'%H:%i') AS start_time, DATE_FORMAT(end_date,'%H:%i') AS end_time, property_id, paper_title, DATE_FORMAT(start_date,'%c') AS month, DATE_FORMAT(start_date,'%Y') AS cal_year, DATE_FORMAT(start_date,'%e') AS start_day, DATE_FORMAT(end_date,'%e') AS end_date, moduleID, paper_type FROM properties WHERE start_date>=" . $current_year . "0101000000 AND end_date<=" . $current_year . "1231235959 AND (paper_type='2' OR paper_type='4') AND deleted IS NULL $schools_sql $lab_sql ORDER BY start_date");
-    while ($row = $results->fetch_assoc()) {
-      $paper_details[$paper_no]['labs'] = $row['labs'];
-      $paper_details[$paper_no]['date'] = $row['date'];
-      $paper_details[$paper_no]['start_day'] = $row['start_day'];
-      $paper_details[$paper_no]['end_date'] = $row['end_date'];
-      $paper_details[$paper_no]['paper_title'] = $row['paper_title'];
-      $paper_details[$paper_no]['property_id'] = $row['property_id'];
-      $paper_details[$paper_no]['month'] = $row['month'];
-      $paper_details[$paper_no]['cal_year'] = $row['cal_year'];
-      $paper_details[$paper_no]['start_time'] = $row['start_time'];
-      $paper_details[$paper_no]['end_time'] = $row['end_time'];
-      $paper_details[$paper_no]['paper_type'] = $row['paper_type'];
-      $tmp_modules = explode(',',$row['moduleID']);
+    $result = $mysqli->prepare("SELECT DATE_FORMAT(start_date,'%Y/%m/%d') AS date, labs, DATE_FORMAT(start_date,'%H:%i') AS start_time, DATE_FORMAT(end_date,'%H:%i') AS end_time, property_id, paper_title, DATE_FORMAT(start_date,'%c') AS month, DATE_FORMAT(start_date,'%Y') AS cal_year, DATE_FORMAT(start_date,'%e') AS start_day, DATE_FORMAT(end_date,'%e') AS end_date, moduleID, paper_type FROM properties WHERE start_date>=" . $current_year . "0101000000 AND end_date<=" . $current_year . "1231235959 AND (paper_type='2' OR paper_type='4') AND deleted IS NULL $schools_sql $lab_sql ORDER BY start_date");
+    //$result->bind_param('s', $current_ip_address);
+    $result->execute();
+    //$result->store_result();
+    $result->bind_result($main_date, $labs, $start_time, $end_time, $property_id, $paper_title, $month, $cal_year, $start_day, $end_date, $moduleID, $paper_type);
+
+    //$results = $mysqli->query("SELECT DATE_FORMAT(start_date,'%Y/%m/%d') AS date, labs, DATE_FORMAT(start_date,'%H:%i') AS start_time, DATE_FORMAT(end_date,'%H:%i') AS end_time, property_id, paper_title, DATE_FORMAT(start_date,'%c') AS month, DATE_FORMAT(start_date,'%Y') AS cal_year, DATE_FORMAT(start_date,'%e') AS start_day, DATE_FORMAT(end_date,'%e') AS end_date, moduleID, paper_type FROM properties WHERE start_date>=" . $current_year . "0101000000 AND end_date<=" . $current_year . "1231235959 AND (paper_type='2' OR paper_type='4') AND deleted IS NULL $schools_sql $lab_sql ORDER BY start_date");
+    while ($result->fetch()) {
+      $paper_details[$paper_no]['labs'] = $labs;
+      $paper_details[$paper_no]['date'] = $main_date;
+      $paper_details[$paper_no]['start_day'] = $start_day;
+      $paper_details[$paper_no]['end_date'] = $end_date;
+      $paper_details[$paper_no]['paper_title'] = $paper_title;
+      $paper_details[$paper_no]['property_id'] = $property_id;
+      $paper_details[$paper_no]['month'] = $month;
+      $paper_details[$paper_no]['cal_year'] = $cal_year;
+      $paper_details[$paper_no]['start_time'] = $start_time;
+      $paper_details[$paper_no]['end_time'] = $end_time;
+      $paper_details[$paper_no]['paper_type'] = $paper_type;
+      $tmp_modules = explode(',', $moduleID);
       $paper_details[$paper_no]['moduleID'] = $tmp_modules[0];
       $paper_no++;
     }
-    $results->close();
+    $result->close();
   }
 
   // Sort all papers correctly by start time
   $sortby = 'start_time';
   $ordering = 'asc';
-  $paper_details = array_csort($paper_details,$sortby,$ordering);
+  $paper_details = array_csort($paper_details, $sortby, $ordering);
   
   for ($i=1; $i<=12; $i++) {
     $current_full_month = date("m", mktime(0, 0, 0, $current_month, 1, $current_year));
@@ -270,7 +276,7 @@ function echoButtons($year) {
     $day_no = 1;
     $cell_no = 1;
     $subtract = 0;
-    $start_day = getDayOfWeek(1,$current_month,$current_year,1);
+    $start_day = getDayOfWeek(1, $current_month, $current_year,1);
     if ($start_day == 6) {
       $start_day = 1;
       $day_no = 3;
@@ -353,13 +359,13 @@ function echoButtons($year) {
               echo "<tr><td style=\"color:#294C7A; text-align:right; width:50px\" valign=\"top\">";
               if ($individual_paper['start_time'] == $individual_paper['end_time']) echo '<img src="../artwork/small_yellow_warning_icon.gif" width="16" height="16" align="texttop" alt="Warning: problem with times!" />';
               echo $individual_paper['start_time'] . "&nbsp;&nbsp;</td><td style=\"color:#294C7A; width:38px\" valign=\"top\">" . $individual_paper['end_time'] . "&nbsp;</td><td><a href=\"../paper/details.php?paperID=" . $individual_paper['property_id'] . "&module=" . $individual_paper['moduleID'] . "&folder=\">" . $individual_paper['paper_title'] . "</a>&nbsp;";
-              $rooms = explode(',',$individual_paper['labs']);
+              $rooms = explode(',', $individual_paper['labs']);
               $html = '';
               foreach ($rooms as $individual_room) {
                 if ($html == '') {
-                  if (isset($labs[$individual_room]['room_no']) and $labs[$individual_room]['room_no'] != '') $html = '<a style="color:#FF6300" href="lab_details.php?labID=' . $individual_room . '" title="' . $labs[$individual_room]['name'] . '">' . $labs[$individual_room]['room_no'] . '</a>';
+                  if (isset($lab_list[$individual_room]['room_no']) and $lab_list[$individual_room]['room_no'] != '') $html = '<a style="color:#FF6300" href="lab_details.php?labID=' . $individual_room . '" title="' . $lab_list[$individual_room]['name'] . '">' . $lab_list[$individual_room]['room_no'] . '</a>';
                 } else {
-                  if (isset($labs[$individual_room]['room_no'])  and $labs[$individual_room]['room_no'] != '') $html .= ', <a style="color:#FF6300" href="lab_details.php?labID=' . $individual_room . '" title="' . $labs[$individual_room]['name'] . '">' . $labs[$individual_room]['room_no'] . '</a>';
+                  if (isset($lab_list[$individual_room]['room_no'])  and $lab_list[$individual_room]['room_no'] != '') $html .= ', <a style="color:#FF6300" href="lab_details.php?labID=' . $individual_room . '" title="' . $lab_list[$individual_room]['name'] . '">' . $lab_list[$individual_room]['room_no'] . '</a>';
                 }
               }
               if ($individual_paper['labs'] == '' and $individual_paper['paper_type'] == '2') echo '<img src="../artwork/small_yellow_warning_icon.gif" width="16" height="16" align="texttop" alt="Warning: no labs set!" />';
@@ -392,11 +398,11 @@ function echoButtons($year) {
                   $rooms = explode(',',$individual_paper['labs']);
                   $html = '';
                   foreach ($rooms as $individual_room) {
-                    if (isset($labs[$individual_room]['name'])) {
+                    if (isset($lab_list[$individual_room]['name'])) {
                       if ($html == '') {
-                        if ($labs[$individual_room]['room_no'] != '') $html = '<a style="color:#FF6300" href="lab_details.php?labID=' . $individual_room . '" title="' . $labs[$individual_room]['name'] . '">' . $labs[$individual_room]['room_no'] . '</a>';
+                        if ($lab_list[$individual_room]['room_no'] != '') $html = '<a style="color:#FF6300" href="lab_details.php?labID=' . $individual_room . '" title="' . $lab_list[$individual_room]['name'] . '">' . $lab_list[$individual_room]['room_no'] . '</a>';
                       } else {
-                        if ($labs[$individual_room]['room_no'] != '') $html .= ', <a style="color:#FF6300" href="lab_details.php?labID=' . $individual_room . '" title="' . $labs[$individual_room]['name'] . '">' . $labs[$individual_room]['room_no'] . '</a>';
+                        if ($lab_list[$individual_room]['room_no'] != '') $html .= ', <a style="color:#FF6300" href="lab_details.php?labID=' . $individual_room . '" title="' . $lab_list[$individual_room]['name'] . '">' . $lab_list[$individual_room]['room_no'] . '</a>';
                       }
                     } 
                   }

@@ -43,6 +43,8 @@ $calling = (!isset($_REQUEST['calling'])) ? '' : $_REQUEST['calling'];
 $keyword = (!isset($_REQUEST['keyword'])) ? '' : $_REQUEST['keyword'];
 $team = (!isset($_REQUEST['team'])) ? '' : $_REQUEST['team'];
 
+$paper_count = 0;
+
 $critical_error = '';
 
 $q_no = (!isset($_GET['q_no'])) ? '' : $_GET['q_no'];
@@ -107,7 +109,12 @@ if ($critical_error == '' and $question->requires_media() and (isset($_POST['sub
   }
 }
 
-if ($critical_error == '') {  
+if ($critical_error == '') {
+  // If existing question, check how many summative papers it is on
+  if ($mode == 'Edit') {
+    $paper_count = $question->get_other_summative_count($paper_id);
+  }
+
   // Get any existing media
   $current_media = $question->get_media();
   
@@ -145,7 +152,16 @@ if ($critical_error == '') {
         foreach ($part_names as $field) {
           $i = 1;
           for ($i = 1; $i <= $loop_limit; $i++) {
-            $correct_answers[$field][] = (isset($_POST[$field . $i])) ? $_POST[$field . $i] : $question->get_answer_negative();
+            if (isset($_POST[$field . $i])) {
+              $correct_answers[$field][] = $_POST[$field . $i];
+            } elseif  (isset($_POST[$field])) {
+              $correct_answers[$field] = $_POST[$field];
+              break;
+            } else {
+              $correct_answers[$field][] = $question->get_answer_negative();
+            }
+
+//            $correct_answers[$field][] = (isset($_POST[$field . $i])) ? $_POST[$field . $i] : $question->get_answer_negative();
           }
         }
         
@@ -373,9 +389,10 @@ if ($question != null and $question->requires_flash()):
 endif;
 ?>
 <script type="text/javascript">
+var qType = '<?php echo $question->get_type() ?>';
 var lang = {
 <?php
-$langstrings = array('allowpartial', 'validationerror', 'enterleadin', 'showmore', 'hidemore', 'enteroption', 'enteroptionshort', 'enteroption_kw', 'mrqconvert', 'entervignette');
+$langstrings = array('allowpartial', 'validationerror', 'enterleadin', 'showmore', 'hidemore', 'enteroption', 'enteroptionshort', 'enteroption_kw', 'mrqconvert', 'entervignette', 'mappingwarning', 'markchangewarning');
 $first = true;
 foreach ($langstrings as $langstring) {
   if (!$first) {
@@ -562,7 +579,7 @@ echo render_objectives_mapping_form($mysqli, $paper_id, $string);
 
     <div id="button-bar">
 <?php
-echo save_buttons($mode, $disabled, $question->get_locked(), $question->allow_correction(), $userID, $question->get_checkout_author_id(), $paper_id, $string);
+echo save_buttons($mode, $disabled, $question->get_locked(), $question->allow_correction(), $userID, $question->get_checkout_author_id(), $paper_id, $paper_count, $string);
 ?>
       <input type="hidden" name="q_id" value="<?php echo $question->id ?>" />
       <input name="checkout_author" value="<?php echo $userID ?>" type="hidden" />

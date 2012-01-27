@@ -136,7 +136,7 @@
   }
 
   function display_feedback($sessionid, $temp_userID, $paperID, $paper_type, $log_type, $paper_title, $paper_postscript, $marking, $userroles, $mysqlidb) {
-    global $language, $string, $bottom_html, $hide_if_unanswered, $tmp_display_correct_answer, $tmp_display_students_response, $tmp_display_feedback, $display_question_mark, $moduleID, $calendar_year, $bgcolor, $fgcolor, $textsize, $marks_color, $themecolor, $labelcolor, $font, $pass_mark, $cfg_root_path;
+    global $language, $string, $bottom_html, $hide_if_unanswered, $tmp_display_correct_answer, $tmp_display_students_response, $tmp_display_feedback, $display_question_mark, $moduleID, $calendar_year, $bgcolor, $fgcolor, $textsize, $marks_color, $themecolor, $labelcolor, $font, $pass_mark, $cfg_root_path, $strong_on, $strong_off;
     
     $strong_on = '';
     $strong_off = '';
@@ -798,7 +798,7 @@
                 }
                 if ($paper[$question]['o_media'][$tmp_part_id] != '') {
                   echo '&nbsp;<img src="../media/' . $paper[$question]['o_media'][$tmp_part_id] . '" height="' . $paper[$question]['o_media_height'][$tmp_part_id] . '" width="' . $paper[$question]['o_media_width'][$tmp_part_id] . '" border="0" />';
-                  if (trim($paper[$question]['option_text'][$tmp_part_id]) == '' and $tmp_display_correct_answer == '1') echo ' <strong>'. $string['iscorrect'] . '</strong>';
+                  if (trim($paper[$question]['option_text'][$tmp_part_id]) == '' and $tmp_display_correct_answer == '1') echo ' ' . $strong_on . $string['iscorrect'] . $strong_off;
                 }
                 echo '</td></tr>';
               } else {
@@ -1147,19 +1147,90 @@
           echo "</table>\n";
           
           break;
+        case 'true_false':
+          if (isset($paper[$question]['user_answer']) and $paper[$question]['user_answer'] == 'u') {
+            reset_feedback($hide_if_unanswered);
+          }
+
+          $paper[$question]['mark'] = 0;
+          $paper[$question]['totalpos'] = 0;
+
+          if ($paper[$question]['scenario'] != '') echo_content($paper[$question]['scenario']);
+          if ($paper[$question]['q_media'] != '') echo "<p align=\"center\">" . display_media($paper[$question]['q_media'],$paper[$question]['q_media_width'],$paper[$question]['q_media_height'],$question) . "</p>\n";
+          echo_content($paper[$question]['leadin']);
+
+          $true_checked = '';
+          $false_checked = '';
+          
+          if (isset($paper[$question]['user_answer']) and $paper[$question]['user_answer'] == 't') $true_checked = ' checked="checked"';
+          if (isset($paper[$question]['user_answer']) and $paper[$question]['user_answer'] == 'f') $false_checked = ' checked="checked"';
+          
+          echo '<table cellpadding="2" cellspacing="0" border="0"><tr>';
+          echo '<td>';
+          if ($paper[$question]['user_answer'] == 't' and $paper[$question]['correct'][0] == 't') {
+            if ($tmp_display_students_response == '1') echo '<img src="../artwork/tick.gif" width="17" height="16" alt="Tick" />';
+          } elseif ($paper[$question]['user_answer'] == 't' and $paper[$question]['correct'][0] == 'f') {
+            if ($tmp_display_students_response == '1') echo '<img src="../artwork/cross.gif" width="17" height="16" alt="Cross" />';
+          }
+          echo '</td>';
+          echo "<td><input type=\"radio\" name=\"q" . $question_no . "\" value=\"t\"$true_checked /></td><td>";
+          if ($paper[$question]['correct'][0] == 't') {
+            echo $strong_on . 'True' . $strong_off;
+          } else {
+            echo 'True';
+          }
+          if ($paper[$question]['display_method'] == 'horizontal') {
+            echo '&nbsp;&nbsp;&nbsp;';
+          } elseif ($paper[$question]['display_method'] == 'vertical') {
+            echo '</tr><tr>';
+          }
+          echo '<td>';
+          if ($paper[$question]['user_answer'] == 'f' and $paper[$question]['correct'][0] == 'f') {
+            if ($tmp_display_students_response == '1') echo '<img src="../artwork/tick.gif" width="17" height="16" alt="Tick" />';
+          } elseif ($paper[$question]['user_answer'] == 'f' and $paper[$question]['correct'][0] == 't') {
+            if ($tmp_display_students_response == '1') echo '<img src="../artwork/cross.gif" width="17" height="16" alt="Cross" />';
+          }
+          echo '</td>';
+          echo "<td><input type=\"radio\" name=\"q" . $question_no . "\" value=\"f\"$false_checked /></td><td>";
+          if ($paper[$question]['correct'][0] == 'f') {
+            echo $strong_on . 'False' . $strong_off;
+          } else {
+            echo 'False';
+          }
+          echo '</tr></table>';
+          
+          if ($paper[$question]['user_answer'] == 'u') {
+            $paper[$question]['mark'] = 0;
+          } elseif ($paper[$question]['correct'][0] == $paper[$question]['user_answer']) {
+            $paper[$question]['mark'] = $paper[$question]['marks_correct'];
+          } else {
+            $paper[$question]['mark'] = $paper[$question]['marks_incorrect'];
+          }
+          $paper[$question]['totalpos'] = $paper[$question]['marks_correct'];
+
+
+          break;
         case 'rank':
           $paper[$question]['mark'] = 0;
           $paper[$question]['totalpos'] = 0;
           $all_correct = true;
           
-          foreach ($paper[$question]['correct'] as $tmp_correct) {
-            if ($paper[$question]['score_method'] != 'Bonus Mark' or $tmp_correct != 0) {
+          $correct_no = 0;
+          for ($i=0; $i<count($paper[$question]['correct']); $i++) {
+            if ($paper[$question]['correct'][$i] != 0) $correct_no++;
+          }
+          if (substr($tmp_exclude,0,1) == '0') {
+            if ($paper[$question]['score_method'] == 'Mark per Option') {
+              $paper[$question]['totalpos'] += count($paper[$question]['option_text']) * $paper[$question]['marks_correct'];
+            } elseif ($paper[$question]['score_method'] == 'Mark per Question') {
               $paper[$question]['totalpos'] += $paper[$question]['marks_correct'];
+            } elseif ($paper[$question]['score_method'] == 'Allow partial Marks') {
+              $paper[$question]['totalpos'] += $correct_no * $paper[$question]['marks_correct'];
+            } elseif ($paper[$question]['score_method'] == 'Bonus Mark' and $correct_no > 0) {
+              $paper[$question]['totalpos'] += ($correct_no + 1) * $paper[$question]['marks_correct'];
             }
           }
 
-          if ($paper[$question]['score_method'] == 'Bonus Mark') $paper[$question]['totalpos'] += $paper[$question]['marks_correct'];
-          
           if ($paper[$question]['scenario'] != '') echo_content($paper[$question]['scenario']);
           if ($paper[$question]['q_media'] != '') echo "<p align=\"center\">" . display_media($paper[$question]['q_media'], $paper[$question]['q_media_width'], $paper[$question]['q_media_height'], $question_no) . "</p>\n";
           echo_content($paper[$question]['leadin']);
@@ -1191,7 +1262,7 @@
             $tmp_part_id = $option_order[$i-1]+1;
             echo '<tr>';
             if ($tmp_display_correct_answer == '1') {
-              if(($paper[$question]['score_method'] == 'Bonus Mark' and $paper[$question]['correct'][$tmp_part_id-1] != 0) or $paper[$question]['score_method'] != 'Bonus Mark') {
+              if (($paper[$question]['score_method'] == 'Bonus Mark' and $paper[$question]['correct'][$tmp_part_id-1] != 0) or $paper[$question]['score_method'] != 'Bonus Mark') {
                 echo '<td>';
                 if(isset($paper[$question]['std'][$tmp_part_id-1])) echo display_std($paper[$question]['std'][$tmp_part_id-1]);
                 echo '</td>';

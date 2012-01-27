@@ -67,21 +67,19 @@ a:visited {color:#003DB2}
 <div id="main">
 <?php
   $sub_section = 0;
-  $search_results = $mysqli->query("SELECT id, title FROM student_help WHERE id != 1 AND deleted IS NULL ORDER BY title, id");
-  if (!$search_results) {
-    echo $mysqli->error;
-    exit;
-  }
   $help_section = 0;
+  $old_title = '';
   $help_toc = array();
-  while ($row = $search_results->fetch_assoc()) {
-    $help_toc[$help_section]['id'] = $row['id'];
-    $help_toc[$help_section]['title'] = $row['title'];
+
+  $result = $mysqli->prepare("SELECT id, title FROM student_help WHERE id != 1 AND deleted IS NULL ORDER BY title, id");
+  $result->execute();
+  $result->bind_result($id, $title);
+  while ($result->fetch()) {
+    $help_toc[$help_section]['id'] = $id;
+    $help_toc[$help_section]['title'] = $title;
     $help_section++;
   }
-  $search_results->close();
-
-  $old_title = '';
+  $result->close();
 
   for ($i=0; $i<$help_section; $i++) {
     $slash_pos = strpos($help_toc[$i]['title'], '/');

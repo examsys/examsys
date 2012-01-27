@@ -24,10 +24,32 @@
 
   require '../include/staff_auth.inc';
   require '../include/demo_replace.inc';
+  require '../include/errors.inc';
+  
+  check_var('paperID', 'GET', true, false);
+  check_var('startdate', 'GET', true, false);
+  check_var('enddate', 'GET', true, false);
+  
   if (strpos($userroles,'Demo') !== false) {
     $demo = true;
   } else {
     $demo = false;
+  }
+
+  function array_csort($marray, $column, $sort_order) {   //coded by Ichier2003
+    foreach ($marray as $row) {
+      $sortarr[] = $row[$column];
+    }
+    
+    $sortarr = array_map('strtolower',$sortarr);
+    $sort_method = SORT_STRING;
+    if ($column == 'mark' or $column == 'duration') $sort_method = SORT_NUMERIC;
+    if ($sort_order == 'asc') {
+      array_multisort($sortarr, SORT_ASC, $sort_method, $marray);
+    } else {
+      array_multisort($sortarr, SORT_DESC, $sort_method, $marray);
+    }
+    return $marray;
   }
 
   // Get any questions to exclude.
@@ -64,13 +86,14 @@
       if ($q_type != 'extmatch' and $q_type != 'matrix') {
         $old_correct = ',' . $correct;
       }
-      if ($q_type == 'blank') {
+      if ($old_q_type == 'blank') {
         $old_correct = '';
-        $split1 = explode('[blank]',$option_text);
+        $split1 = explode('[blank', $old_option_text);
         for ($i=1; $i<count($split1); $i++) {
-          $split2 = explode(',', substr($split1[$i],0,strpos($split1[$i],'[/blank]')));
+          $split2 = explode(',', substr($split1[$i],1,strpos($split1[$i],'[/blank]')-1));
           $old_correct .= ',' . $split2[0];
         }
+        $paper_buffer[$question_no-1]['correct'] = $old_correct;
       }
     } else {
       if ($q_type == 'mcq' or $q_type == 'calculation') {
@@ -86,6 +109,7 @@
     $old_q_type = $q_type;
     $old_screen = $screen;
     $old_score_method = $score_method;
+    $old_option_text = $option_text;
     $part++;
   }
   $result->close();
@@ -133,7 +157,7 @@
   $result->execute();
   $result->bind_result($tmp_userID, $total_mark);
   $result->store_result();
-  $user_no = round(($result->num_rows/100)*$_GET['percent']);
+  $user_no = round(($result->num_rows/100) * $_GET['percent']);
   $student_no = 0;
   while ($result->fetch() and $student_no < $user_no) {
     if ($student_list == '') {
@@ -166,15 +190,16 @@
       $rowID++;
     }
     $log_array[$rowID][$screen][$question_ID] = $user_answer;
-    $log_array[$rowID]['student_id'] = demo_replace_number($student_id,$demo);
+    $log_array[$rowID]['student_id'] = demo_replace_number($student_id, $demo);
     $log_array[$rowID]['userID'] = $userID;
     $log_array[$rowID]['username'] = $username;
     $log_array[$rowID]['course'] = $grade;
     $log_array[$rowID]['year'] = $year;
     $log_array[$rowID]['started'] = $started;
     $log_array[$rowID]['title'] = $title;
-    $log_array[$rowID]['surname'] = demo_replace($surname,$demo);
-    $log_array[$rowID]['first_names'] = demo_replace($first_names,$demo);
+    $log_array[$rowID]['surname'] = demo_replace($surname, $demo);
+    $log_array[$rowID]['first_names'] = demo_replace($first_names, $demo);
+    $log_array[$rowID]['name'] = str_replace("'", "", $surname) . ',' . $first_names;
     $log_array[$rowID]['gender'] = $gender;
     
     $user_no++;
@@ -182,6 +207,10 @@
     $old_started = $started;
   }
   $result->close();
+  
+  $sortby = 'name';
+  $ordering = 'asc';
+  $log_array = array_csort($log_array, $sortby, $ordering);
 
   $row_written = 0;
   foreach ($log_array as $individual) {
@@ -200,35 +229,35 @@
         switch ($paper_buffer[$i]['type']) {
           case 'blank':
             for ($sec=1; $sec<=substr_count($paper_buffer[$i]['correct'],','); $sec++) {
-              if (substr($tmp_exclude,$sec-1,1) == '0') echo ',Q' . ($i+1) . '.' . $sec;
+              if (substr($tmp_exclude,$sec-1,1) == '0') echo ',Q' . ($i+1) . chr($sec+64);
             }
             break;
           case 'extmatch':
             $correct_parts = explode(',',$paper_buffer[$i]['correct']);
             $partID = 0;
             for ($sec=1; $sec<substr_count($paper_buffer[$i]['correct'],',') + 1; $sec++) {
-              if (substr($tmp_exclude,$partID,1) == '0') echo ',Q' . ($i+1) . '.' . $sec;
+              if ($correct_parts[$sec] != '' and substr($tmp_exclude,$partID,1) == '0') echo ',Q' . ($i+1) . chr($sec+64);
               $partID += substr_count($correct_parts[$sec],'$') + 1;
             }
             break;
           case 'matrix':
             for ($sec=1; $sec<substr_count($paper_buffer[$i]['correct'],',') + 1; $sec++) {
-              if (substr($tmp_exclude,$sec-1,1) == '0') echo ',Q' . ($i+1) . '.' . $sec;
+              if (substr($tmp_exclude,$sec-1,1) == '0') echo ',Q' . ($i+1) . chr($sec+64);
             }
             break;
           case 'rank':
             for ($sec=1; $sec<=substr_count($paper_buffer[$i]['correct'],','); $sec++) {
-              if (substr($tmp_exclude,$sec-1,1) == '0') echo ',Q' . ($i+1) . '.' . $sec;
+              if (substr($tmp_exclude,$sec-1,1) == '0') echo ',Q' . ($i+1) . chr($sec+64);
             }
             break;
           case 'dichotomous':
             for ($sec=1; $sec<=substr_count($paper_buffer[$i]['correct'],','); $sec++) {
-              if (substr($tmp_exclude,$sec-1,1) == '0') echo ',Q' . ($i+1) . '.' . $sec;
+              if (substr($tmp_exclude,$sec-1,1) == '0') echo ',Q' . ($i+1) . chr($sec+64);
             }
             break;
           case 'mrq':
             for ($sec=1; $sec<=substr_count($paper_buffer[$i]['correct'],','); $sec++) {
-	      if (!isset($excluded[$tmp_question_ID])) echo ',Q' . ($i+1) . '.' . $sec;
+              if (!isset($excluded[$tmp_question_ID])) echo ',Q' . ($i+1) . chr($sec+64);
             }
             if ($paper_buffer[$i]['score_method'] == 'other') echo ',Q' . ($i+1) . '.other';
             break;
@@ -266,7 +295,7 @@
             $correct_parts = explode(',',$paper_buffer[$i]['correct']);
             $partID=1;
             for ($outer=1; $outer<=count($correct_parts)-1; $outer++) {
-              if (substr($tmp_exclude,$partID-1,1) == '0') echo ',' . $correct_parts[$outer];
+              if ($correct_parts[$outer] != '' and substr($tmp_exclude,$partID-1,1) == '0') echo ',"' . str_replace('$', ',', $correct_parts[$outer]) . '"';
               $partID += substr_count($correct_parts[$outer],'$') + 1;
             }
             break;
@@ -299,7 +328,7 @@
             if (!isset($excluded[$tmp_question_ID])) echo ',';
             break;
           case 'calculation':
-            echo ',' . $paper_buffer[$i]['correct'] . ',';
+            echo ',,"' . substr($paper_buffer[$i]['correct'],1) . '",';
             break;
           case 'sct':
             if (!isset($excluded[$tmp_question_ID])) {
@@ -337,7 +366,10 @@
           $tmp_answers = explode('|',$individual[$tmp_screen][$tmp_question_ID]);
           $correct_parts = explode(',',$paper_buffer[$i]['correct']);
           for ($partID=1; $partID<count($correct_parts); $partID++) {
-            if (substr($tmp_exclude,$partID-1,1) == '0') echo ',' . $tmp_answers[$partID];
+            if (substr($tmp_exclude,$partID-1,1) == '0') {
+              echo ',';
+              if ($tmp_answers[$partID] != 'u') echo $tmp_answers[$partID];
+            }
           }
           break;
         case 'calculation':
@@ -347,7 +379,16 @@
             $answer_parts = array('u','u','u');
           }
           if (!isset($excluded[$tmp_question_ID])) {
-            echo ',"' . $answer_parts[0] . '",' . $answer_parts[1] . ',"' . $answer_parts[2] . '"';
+            $vars = explode(',', $answer_parts[2]);
+            $variables = '';
+            foreach ($vars as $var) {
+              if ($variables == '') {
+                $variables = $var;
+              } else {
+                if ($var != '') $variables .= ',' . $var;
+              }
+            }
+            echo ',"' . $answer_parts[0] . '",' . $answer_parts[1] . ',"' . $variables . '"';
           }
           break;
         case 'dichotomous':
@@ -365,10 +406,17 @@
           break;
         case 'extmatch':
           $answer_parts = explode('|',$individual[$tmp_screen][$tmp_question_ID]);
+
           $correct_parts = explode(',',$paper_buffer[$i]['correct']);
           $partID = 0;
           for ($outer=1; $outer<=count($correct_parts)-1; $outer++) {
-            if (substr($tmp_exclude,$partID,1) == '0') echo ',' . $answer_parts[$outer-1];
+            if ($correct_parts[$outer] != '' and substr($tmp_exclude,$partID,1) == '0') {
+              if (isset( $answer_parts[$outer-1])) {
+                echo ',"' . str_replace('$', ',', $answer_parts[$outer-1]) . '"';
+              } else {
+                echo ',';
+              }
+            }
             $partID += substr_count($correct_parts[$outer],'$') + 1;
           }
           break;
