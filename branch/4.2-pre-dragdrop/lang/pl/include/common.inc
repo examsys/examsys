@@ -1,0 +1,33 @@
+<?php
+$string['home'] = 'Strona główna';
+$string['help'] = 'Pomoc';
+$string['line'] = 'Linia';
+$string['cancel'] = 'Anuluj';
+$string['ok'] = 'OK';
+$string['save'] = 'Zachowaj';
+$string['accessdenied'] = 'Odmowa dostępu';
+$string['accessdeniedadmin'] = '<strong>Brak dostępu</strong><br />Podejmujesz działania dostępne tylko administratorowi.';
+$string['accessdeniedsysadmin'] = '<strong>Brak dostępu</strong><br />Podejmujesz działania dostępne tylko administratorowi systemu.';
+$string['denied_paper'] = 'Nie posiadasz  <strong>praw dostępu do tego arkusza</strong>!';
+$string['denied_folder'] = 'Nie posiadasz  <strong>praw dostępu do tego folderu</strong>!';
+$string['denied_question'] = 'Nie posiadasz  <strong>praw dostępu do tego pytania</strong>!';
+$string['denied_team'] = 'Nie jesteś członkiem zespołu dla modułu <strong>%s</strong>.';
+$string['noldapusernamesupplied'] = 'Nie wprowadzono loginu lub hasła LDAP';
+$string['incorrectpassword'] = 'Wprowadzono nieprawidłowe hasło';
+$string['ldapserverunavailable'] = 'Serwer LDAP jest niedostępny';
+$string['noldapaccount'] = 'Nie odnaleziono konta LDAP !';
+$string['ldapservernosearch'] = 'Serwer LDAP niedostępny: wyszukiwanie niemożliwe';
+$string['nodatabaseconnection'] = 'Podłączenie do bazy niemożliwe - skontaktuj się z administratorem';
+$string['localtsauthfailed'] = 'Nie uzyskano lokalnej autoryzacji Rogō.';
+$string['notsaccount'] = 'Nie odnaleziono konta Rogō!';
+$string['tempaccount'] = 'Konto tymczasowe';
+$string['authenticationfailed'] = 'Nie uzyskano autoryzacji Rogō, należy pamiętać:';
+$string['usernamecasesensitive'] = 'W loginie i haśle rozróżniane są duże i małe litery';
+$string['pressf5'] = "Wybierz 'F5' na klawiaturze aby logować się ponownie";
+$string['tsonldap'] = 'W Rogō stosowane są hasła LDAP';
+$string['ifstuckinvigilator'] = 'W razie dalszych problemów poproś osobę nadzorującą o';
+$string['forgottenpassword'] = 'Zapomniane hasło';
+$string['warning'] = 'Ostrzeżenie:';
+$string['secureconnection'] = 'Rogō jest dostępny wyłącznie przez połączenie bezpieczne. W zamian użyj:';
+$string['errormsg'] = 'Jeśli kolejny raz napotkałeś ten błąd skontaktuj się z:';
+?>

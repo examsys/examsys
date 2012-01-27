@@ -1,0 +1,168 @@
+
+a.calcbutton {
+  text-decoration:  none;
+  border: 1px solid;
+  height: 20px;
+  line-height: 20px;
+  text-align: center;
+  border: 1px solid;
+  background-color: #e2e2e2;
+  display: block;
+  margin: 0px;
+  padding: 0;
+
+  font-family: tahoma, verdana, sans-serif;
+  font-size: 17px;}
+*.button1 {
+  border: 1px solid;
+  border-color: #737373;
+  margin: 2px;
+  width: 40px;
+}
+
+a.calcbutton1 {
+  text-decoration:  none;
+  border: 1px solid;
+  border: 1px solid;
+  height: 20px;
+  line-height: 20px;
+  text-align: center;
+  background-color: #f08080;
+  display: block;
+  margin: 0px;
+  padding: 0;
+
+  font-family: tahoma, verdana, sans-serif;
+  font-size: 100%;}
+
+a.calcbutton2 {
+  text-decoration:  none;
+  border: 1px solid;
+  background-color: #add8e6;
+
+  height: 20px;
+  line-height: 20px;
+  display: block;
+  margin: 0px;
+  padding: 0;
+  border: 1px solid;
+  text-align: center;
+  font-family: tahoma, verdana, sans-serif;
+  font-size: 100%}
+
+a.calcbutton3 {
+  text-decoration:  none;
+
+  padding: 0;
+  border: 1px solid;
+  border: 1px solid;
+  background-color: #adff2f;
+  display: block;
+  margin: 0px;  height: 20px;
+  line-height: 20px;
+  text-align: center;
+  font-family: tahoma, verdana, sans-serif;
+  font-size: 100%}
+
+a.calcbutton4 {
+  text-decoration:  none;
+  border: 1px solid;
+  height: 20px;
+  line-height: 20px;
+  text-align: center;
+  border: 1px solid;
+  background-color: #90ee90;
+  display: block;
+  margin: 0px;
+  padding: 0;
+
+  font-family: tahoma, verdana, sans-serif;
+  font-size: 100%}
+
+a.calcbutton5 {
+  text-decoration:  none;
+  border: 1px solid;
+  background-color: #ffa07a;
+
+  line-height: 20px;
+  text-align: center;
+  font-family: tahoma, verdana, sans-serif;
+  display: block;
+  margin: 0px;
+  padding: 0;
+  border: 1px solid;
+  height: 20px;font-size: 100%;}
+
+a.calcbutton6 {
+  text-decoration:  none;
+  border: 1px solid;
+  background-color: #fafad2;
+  border: 1px solid;
+  height: 20px;
+  line-height: 20px;
+  text-align: center;
+  font-family: tahoma, verdana, sans-serif;
+  display: block;
+  margin: 0px;
+  padding: 0;
+
+  font-size: 100%;}
+
+a.calcbutton7 {
+  text-decoration:  none;
+  border: 1px solid;
+  border: 1px solid;
+  height: 20px;
+  line-height: 20px;
+  text-align: center;
+  background-color: #ee82ee;
+  display: block;
+  margin: 0px;
+  padding: 0;
+
+  font-family: tahoma, verdana, sans-serif;
+  font-size: 100%;}
+
+
+*.LCD {
+  text-decoration:  none;
+  border: 1px solid;
+
+  display: block;
+  margin: 0px;
+  padding: 0;
+  border: 1px solid;
+
+  line-height: 20px;
+
+  font-family: tahoma, verdana, sans-serif;
+  font-size: 100%;}
+
+
+
+*.memory {
+  text-decoration:  none;
+  border: 1px solid;
+  padding: 0;
+  border: 1px solid;
+  line-height: 20px;
+  font-family: tahoma, verdana, sans-serif;
+  background-color: #add8e6;
+  margin: 0px;
+
+  text-align: center;
+
+  font-size: 100%;
+}
+
+
+table.calculator { background-color:#d3d3d3;
+  border: 1px solid;
+}
+body {background-color:white; color:black; font-family:Arial,sans-serif; font-size:90%}
+table, td {font-size:100%}
+h1 {font-size:150%; color:black; font-family:Verdana,sans-serif}
+h2 {font-size:140%; color:#f27000; font-family:Verdana,sans-serif}
+.path {background-color:#F2F2F2; color:#666666; font-size:80%; padding-left:10px; border-bottom:1px solid #B6B6B6}
+.subheading {font-weight:bold; font-style:italic}
+.tutorial {background-color:#FCF6CF; width: 95%; cursor:pointer}
