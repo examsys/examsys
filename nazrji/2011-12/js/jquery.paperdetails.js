@@ -68,7 +68,6 @@ $(function () {
           window.location.href = [location.protocol, '//', location.host, location.pathname].join('') + '?' + $.rQuerySstring.setValue('selected', newpos);
         }
       });
-
     }
   });
 });

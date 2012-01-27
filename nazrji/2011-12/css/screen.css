@@ -69,7 +69,8 @@ label.error {
   padding-left: 6px;
   padding-right: 14px;
   vertical-align: top;
-  width: 100px
+  width: 100px;
+  min-width: 100px
 }
 
 #content .theme, .theme {
@@ -92,14 +93,16 @@ label.error {
   vertical-align: top;
   padding-left: 6px;
   padding-right: 6px;
-  width:108px
+  width:108px;
+  min-width:108px
 }
 
 #content td.m, td.m {
   text-align: right;
   vertical-align: top;
   padding-right: 4px;
-  width: 46px
+  width: 46px;
+  min-width: 46px;
 }
 
 #content td.l {

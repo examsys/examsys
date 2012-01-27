@@ -250,6 +250,22 @@ function getMSCAA($paperID, $mysqlidb) {
   <link rel="stylesheet" type="text/css" href="../css/screen.css" />
   <link rel="stylesheet" type="text/css" href="../css/tipTip.css" />
 
+  <!--[if lt IE 8]>
+  <style type="text/css">
+    td.ie-fullwidth {
+      width: 100%!important;
+    }
+    #content td.t, td.t {
+      width:158px;
+      min-width:158px
+    }
+    #tiptip_content {
+      background: rgb(25,25,25);
+      background: rgba(25,25,25,0.92);
+    }
+  </style>
+  <![endif]-->
+
   <script type="text/javascript" src="../js/staff_help.js"></script>
   <script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
   <script type="text/javascript" src="../js/jquery-ui.1.8.16.min.js"></script>
@@ -819,11 +835,11 @@ function getMSCAA($paperID, $mysqlidb) {
       $screen_marks = 0;
       if ($old_screen < ($temp_array[$x]['screen'] - 1)) {
         for ($missing=1; $missing<($temp_array[$x]['screen'] - $old_screen); $missing++) {
-          echo '<tr id="link_break' . $temp_array[$x]['screen'] . '" class="breakline qline screenerror"><td colspan="6"><h4><span class="opaque screen_no">' . $string['screen'] . " " . ($old_screen + $missing) . '</span></h4></td></tr>';
+          echo '<tr id="link_break' . ($old_screen + $missing) . '" class="breakline qline screenerror"><td colspan="6" class="ie-fullwidth"><h4><span class="opaque screen_no">' . $string['screen'] . " " . ($old_screen + $missing) . '</span></h4></td></tr>';
           echo '<tr><td colspan="6" style="height:55px; background-image:url(../artwork/no_questions_gradient.png); repeat:repeat-x; background-color:#FFC0C0; padding-left:15px; padding-top:4x">' . $string['noquestionscreen'] . '</td></tr>';
         }
       }
-      echo '<tr id="link_break' . $temp_array[$x]['screen'] . '" class="breakline qline"><td colspan="6"><h4><span class="opaque screen_no">' . $string['screen'] . " " . $temp_array[$x]['screen'] . '</span></h4></td></tr>';
+      echo '<tr id="link_break' . $temp_array[$x]['screen'] . '" class="breakline qline"><td colspan="6" class="ie-fullwidth"><h4><span class="opaque screen_no">' . $string['screen'] . " " . $temp_array[$x]['screen'] . '</span></h4></td></tr>';
     }
     $old_screen = $temp_array[$x]['screen'];
     $teamOK = false;
