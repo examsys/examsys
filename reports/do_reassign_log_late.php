@@ -57,30 +57,31 @@ body {font-size:100%; background-color:#ECE9D8; color:black; font-family:Arial,s
   if ($_POST['button_pressed'] == 'Accept') {
     $log_type = 'log' . $_POST['log_type'];
 
-    $stmt = $mysqli->prepare("SELECT q_id, mark, totalpos, user_answer, screen, ipaddress, duration, student_grade, year, updated, dismiss FROM log_late WHERE userID=? AND q_paper=? AND started=?");
+    $stmt = $mysqli->prepare("SELECT q_id, mark, totalpos, user_answer, screen, duration, updated, dismiss, option_order FROM log_late WHERE userID=? AND q_paper=? AND started=?");
     $stmt->bind_param('iis', $_POST['userID'], $_POST['paperID'], $_POST['started']);
     $stmt->execute();
     $stmt->store_result();
-    $stmt->bind_result($q_id, $mark, $totalpos, $user_answer, $screen, $ipaddress, $duration, $student_grade, $year, $updated, $dismiss);
-    while ($row = $stmt->fetch()) {
+    $stmt->bind_result($q_id, $mark, $totalpos, $user_answer, $screen, $duration, $updated, $dismiss, $option_order);
+    while ($stmt->fetch()) {
       // Delete any existing record for the question in the real log table.
       $result = $mysqli->prepare("DELETE FROM $log_type WHERE userID=? AND q_paper=? AND q_id=? AND screen=? AND started=?");
-      $result->bind_param('iiis', $_POST['userID'], $_POST['paperID'], $q_id, $screen, $_POST['started']);
+      $result->bind_param('iiiis', $_POST['userID'], $_POST['paperID'], $q_id, $screen, $_POST['started']);
       $result->execute();
       $result->close();
     
       // Insert the records from log_late into the real log table.
-      $result = $mysqli->prepare("INSERT INTO $log_type VALUES (NULL,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-      $result->bind_param('isiidisisissss', $_POST['userID'], $_POST['started'], $_POST['paperID'], $q_id, $mark, $totalpos, $user_answer, $screen, $ipaddress, $duration, $student_grade, $year, $updated, $dismiss);
+      $result = $mysqli->prepare("INSERT INTO $log_type VALUES (NULL,?,?,?,?,?,?,?,?,?,?,?,?)");
+      $result->bind_param('isiidisiisss', $_POST['userID'], $_POST['started'], $_POST['paperID'], $q_id, $mark, $totalpos, $user_answer, $screen, $duration, $updated, $dismiss, $option_order);
       $result->execute();  
       $result->close();
     }
-    $stmt->close;
+    $stmt->close();
   }
   
   if (trim($_POST['reason']) != '') {
+    $tmp_reason = trim($_POST['reason']);
     $result = $mysqli->prepare("INSERT INTO student_notes VALUES (NULL,?,?,NOW(),?,?)");
-    $result->bind_param('isis', $_POST['userID'], trim($_POST['reason']), $_POST['paperID'], $userID);
+    $result->bind_param('isis', $_POST['userID'], $tmp_reason, $_POST['paperID'], $userID);
     $result->execute();  
     $result->close();
   }

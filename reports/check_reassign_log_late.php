@@ -94,16 +94,16 @@ body {font-size:90%; background-color:#ECE9D8; color:black; font-family:Arial,sa
   // Get any the questions which have gone into log_late
   $missing = array();
   $missing_no = 0;
-  $result = $mysqli->prepare("SELECT q_id, screen, DATE_FORMAT(updated,'%d/%m/%Y %T'), ipaddress FROM log_late WHERE userID=? AND q_paper=? AND started=? ORDER BY screen");
+  $result = $mysqli->prepare("SELECT q_id, screen, DATE_FORMAT(updated,'%d/%m/%Y %T') FROM log_late WHERE userID=? AND q_paper=? AND started=? ORDER BY screen");
+  echo $mysqli->error;
   $result->bind_param('iis', $_GET['userID'], $_GET['paperID'], $_GET['started']);
   $result->execute();
-  $result->bind_result($q_id, $screen, $updated, $ipaddress);
+  $result->bind_result($q_id, $screen, $updated);
   while ($row = $result->fetch()) {
     $question_no = $questions[$q_id];
     $missing[$missing_no]['question_no'] = $question_no; 
     $missing[$missing_no]['screen'] = $screen;
     $missing[$missing_no]['updated'] = $updated;
-    $missing[$missing_no]['ipaddress'] = $ipaddress;
     $missing_no++;
   }
   $result->close();
@@ -112,13 +112,13 @@ body {font-size:90%; background-color:#ECE9D8; color:black; font-family:Arial,sa
   echo "<p><strong>$title $surname, $first_names</strong></p>\n";
   
   echo "<div style=\"font-size:100%\"><table cellpadding=\"4\" cellspacing=\"0\" border=\"0\" style=\"font-size:100%\">\n";
-  echo "<tr style=\"font-weight:bold\"><td style=\"width:80px\">Question</td><td style=\"width:70px\">Screen</td><td style=\"width:150px\">Saved</td><td>IP Address</td></tr>\n";
+  echo "<tr style=\"font-weight:bold\"><td style=\"width:80px\">Question</td><td style=\"width:70px\">Screen</td><td style=\"width:150px\">Saved</td></tr>\n";
   echo "</table></div>\n";
   
   
   echo "<div style=\"height:180px; overflow-y:scroll; border:1px solid highlight; background-color:white; font-size:90%\"><table cellpadding=\"4\" cellspacing=\"0\" border=\"0\" style=\"font-size:100%\">\n";
   foreach ($missing as $missing_question) {
-    echo "<tr><td style=\"text-align:right; width:80px\">" . $missing_question['question_no'] . "</td><td style=\"text-align:right; width:70px\">" . $missing_question['screen'] . "</td><td style=\"width:150px\">" . $missing_question['updated'] . "</td><td>" . $missing_question['ipaddress'] . "</td></tr>\n";
+    echo "<tr><td style=\"text-align:right; width:80px\">" . $missing_question['question_no'] . "</td><td style=\"text-align:right; width:70px\">" . $missing_question['screen'] . "</td><td style=\"width:150px\">" . $missing_question['updated'] . "</td></tr>\n";
   }
   echo "</table>\n</div><br />";
   echo "<div><strong>Reason:</strong> <span style=\"font-size:80%; color:#808080\">(state why the records are accepted or rejected)</div>\n";
