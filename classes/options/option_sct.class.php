@@ -50,7 +50,7 @@ Class OptionSCT extends Option {
    * Set the option marks for correct answers
    * @param string $value
    */
-  public function set_marks_correct($value) {
+  public function set_marks_correct($value, $log_change=true) {
     $this->marks_correct = $value;
   }
 }
