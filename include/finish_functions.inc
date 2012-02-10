@@ -564,7 +564,7 @@
             if ($tmp_exclude == '1')  echo '<span style="color:red; text-decoration:line-through">';
             
             $decimals = ($score_array[0] != '') ? $score_array[0] : 0;
-            $difference = round(abs($saved_response_clean - $tmp_answer[1]), $decimals);
+            $difference = round(abs($saved_response_clean - $tmp_answer[1]), 12);
 
             if ($saved_response_clean == $tmp_answer[1]) {
               $paper[$question]['mark'] = $paper[$question]['marks_correct'];

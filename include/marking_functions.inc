@@ -343,7 +343,7 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
           $answer = '';
         }
 
-        $difference = round(abs($saved_response_clean - $answer), $decimals);
+        $difference = round(abs($saved_response_clean - $answer), 12);
 
         if ($saved_response_clean != '') {
           if ($saved_response_clean == $answer) {
