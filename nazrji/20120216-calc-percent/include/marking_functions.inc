@@ -24,6 +24,7 @@
 * @package
 */
 require_once $cfg_web_root . 'classes/networkutils.class.php';
+require_once $cfg_web_root . 'classes/stringutils.class.php';
 
 /**
  * This is function time_to_seconds
@@ -352,12 +353,23 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
         //$difference = round(abs($saved_response_clean - $answer), $decimals);
         $difference = round(abs($saved_response_clean - $answer), 12);
 
+        $tolerance_full = $score_array[1];
+        if (StringUtils::ends_with($tolerance_full, '%')) {
+          $tolerance_perc = rtrim($tolerance_full, '%');
+          $tolerance_full = $answer * ($tolerance_perc/100);
+        }
+        $tolerance_partial = $score_array[2];
+        if (StringUtils::ends_with($tolerance_partial, '%')) {
+          $tolerance_perc = rtrim($tolerance_partial, '%');
+          $tolerance_partial = $answer * ($tolerance_perc/100);
+        }
+
         if ($saved_response_clean != '') {
           if ($saved_response_clean == $answer) {
             $mark = $marks_correct;
-          } elseif ($difference <= $score_array[1] and $score_array[1] > 0) {
+          } elseif ($difference <= $tolerance_full and $tolerance_full > 0) {
             $mark = $marks_correct;
-          } elseif ($difference <= $score_array[2] and $score_array[2] > 0) {
+          } elseif ($difference <= $tolerance_partial and $tolerance_partial > 0) {
             $mark = $marks_partial;
           } else {
             $mark = $marks_incorrect;

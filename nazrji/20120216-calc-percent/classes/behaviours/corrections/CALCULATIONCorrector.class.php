@@ -24,6 +24,7 @@
  * @package
  */
 
+require_once $cfg_web_root . 'classes/stringutils.class.php';
 include_once 'Corrector.class.php';
 
 class CALCULATIONCorrector extends Corrector {
@@ -79,7 +80,8 @@ class CALCULATIONCorrector extends Corrector {
     	  if(!$this->_question->save()) {
     	    $errors[] = $this->_lang_strings['datasaveerror'];
     	  } else {
-          $score_method = $this->_question->get_score_method();
+          $decimals = $this->_question->get_answer_decimals();
+          $answer_equation = $first->get_correct();
 
           // Remark the student's answers in 'log2'.
           $result = $this->_mysqli->prepare("SELECT user_answer, id FROM log2 WHERE q_id=? AND q_paper=?");
@@ -87,7 +89,7 @@ class CALCULATIONCorrector extends Corrector {
           $result->execute();
           $result->store_result();
           $result->bind_result($user_answer, $id);
-          while ($row = $result->fetch()) {
+          while ($result->fetch()) {
             // Split up the user answer into its constituent parts.
             $answer_parts = explode('|',$user_answer);
             $variable_array = explode(',',$answer_parts[2]);
@@ -99,14 +101,29 @@ class CALCULATIONCorrector extends Corrector {
               $var_no++;
             }
             $mark = 0;
-            $answer_equation = $first->get_correct();
+
             eval ("\$answer = $answer_equation;");
-            $answer = round($answer, $this->_question->get_answer_decimals());
+            $answer = round($answer, $decimals);
+
+            $tolerance_full = $this->_question->get_tolerance_full();
+            if (StringUtils::ends_with($tolerance_full, '%')) {
+              $tolerance_perc = rtrim($tolerance_full, '%');
+              $tolerance_full = $answer * ($tolerance_perc/100);
+            }
+            $tolerance_partial = $this->_question->get_tolerance_partial();
+            if (StringUtils::ends_with($tolerance_partial, '%')) {
+              $tolerance_perc = rtrim($tolerance_partial, '%');
+              $tolerance_partial = $answer * ($tolerance_perc/100);
+            }
+
+//            $difference = round(abs($saved_response - $answer), $decimals);
+            $difference = abs($saved_response - $answer);
+
             if ($saved_response == $answer) {
               $mark = $mark_correct;
-            } elseif (abs($saved_response - $answer) <= $this->_question->get_tolerance_full()) {
+            } elseif ($difference <= $tolerance_full and $tolerance_full > 0) {
               $mark = $mark_correct;
-            } elseif ($score_method == 'Allow partial Marks' and abs($saved_response - $answer) <= $this->_question->get_tolerance_partial()) {
+            } elseif ($difference <= $tolerance_partial and $tolerance_partial > 0) {
               $mark = $mark_partial;
             } else {
               $mark = $mark_incorrect;
@@ -118,6 +135,7 @@ class CALCULATIONCorrector extends Corrector {
             $updateLog->execute();
             $updateLog->close();
           }
+          $result->close();
     	  }
     	} catch (ValidationException $vex) {
     	  $errors[] = $vex->getMessage();

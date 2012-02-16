@@ -22,6 +22,8 @@
 * @package
 */
 
+require_once $cfg_web_root . 'classes/stringutils.class.php';
+
   function getSpecialSettings($userID, $mysqlidb) {
     global $bgcolor, $fgcolor, $textsize, $marks_color, $themecolor, $labelcolor, $font;
     
@@ -554,6 +556,20 @@
           echo_content($tmp_leadin);
           
           $score_array = explode(',', $paper[$question]['display_method']);
+
+          $decimals = ($score_array[0] != '') ? $score_array[0] : 0;
+
+          $tolerance_full = $score_array[1];
+          if (StringUtils::ends_with($tolerance_full, '%')) {
+            $tolerance_perc = rtrim($tolerance_full, '%');
+            $tolerance_full = $tmp_answer[1] * ($tolerance_perc/100);
+          }
+          $tolerance_partial = $score_array[2];
+          if (StringUtils::ends_with($tolerance_partial, '%')) {
+            $tolerance_perc = rtrim($tolerance_partial, '%');
+            $tolerance_partial = $tmp_answer[1] * ($tolerance_perc/100);
+          }
+
           echo "<table cellpadding=\"0\" cellspacing=\"1\" border=\"0\"><tr>";
           if ($tmp_display_correct_answer == '1') {
             echo '<td>';
@@ -569,14 +585,13 @@
             echo '<td>';
             if ($tmp_exclude == '1')  echo '<span class="exclude">';
             
-            $decimals = ($score_array[0] != '') ? $score_array[0] : 0;
             $difference = round(abs($saved_response_clean - $tmp_answer[1]), $decimals);
             
             if ($saved_response_clean == floatval($tmp_answer[1])) {
               $paper[$question]['mark'] = $paper[$question]['marks_correct'];
-            } elseif ($difference <= $score_array[1] and $score_array[1] > 0) {
+            } elseif ($difference <= $tolerance_full and $tolerance_full > 0) {
               $paper[$question]['mark'] = $paper[$question]['marks_correct'];
-            } elseif ($difference <= $score_array[2] and $score_array[2] > 0) {
+            } elseif ($difference <= $tolerance_partial and $tolerance_partial > 0) {
               $paper[$question]['mark'] = $paper[$question]['marks_partial'];
             } else {
               $paper[$question]['mark'] = $paper[$question]['marks_incorrect'];
@@ -587,14 +602,14 @@
             
             if ($paper[$question]['mark'] == $paper[$question]['marks_correct']) {
               if ($tmp_display_students_response == '1') echo '<img src="../artwork/tick.gif" width="17" height="16" alt="Tick" />';
-            } elseif ($score_array[2] > 0 and $paper[$question]['mark'] == $paper[$question]['marks_partial']) {
+            } elseif ($tolerance_partial > 0 and $paper[$question]['mark'] == $paper[$question]['marks_partial']) {
               if ($tmp_display_students_response == '1') echo '<img src="../artwork/tick_half.gif" width="17" height="16" alt="Half Right" />';
             } else {
               if ($tmp_display_students_response == '1') echo '<img src="../artwork/cross.gif" width="17" height="16" alt="Cross" />';
             }
             echo '<input type="text" style="text-align:right" name="q' . $question . '" size="10" value="' . $tmp_answer[0] . '" />' . $score_array[3];
           }
-          if ($tmp_display_correct_answer == '1' and $score_array[2] != 'Formula') {
+          if ($tmp_display_correct_answer == '1') {
             if (is_numeric($tmp_answer[1])) {
               $decimals = ($score_array[0] != '') ? $score_array[0] : 0;
               echo ' <strong>(' . number_format($tmp_answer[1], $decimals, '.', '');
@@ -607,8 +622,14 @@
             echo ' ';
           }
                     
-          if ($saved_response_clean <> $tmp_answer[1] and $paper[$question]['mark'] == $paper[$question]['marks_correct'] and $score_array[1] > 0) echo ' ' . $string['withatoleranceof'] . ' ' . $score_array[1];
-          if ($saved_response_clean <> $tmp_answer[1] and $paper[$question]['mark'] == $paper[$question]['marks_partial'] and $score_array[2] > 0) echo ' ' . $string['withatoleranceof'] . ' ' . $score_array[2];
+          if ($saved_response_clean <> $tmp_answer[1] and $paper[$question]['mark'] == $paper[$question]['marks_correct'] and $tolerance_full > 0) {
+            echo ' ' . $string['withatoleranceof'] . ' ' . $score_array[1];
+            if (StringUtils::ends_with($score_array[1], '%')) echo " ($tolerance_full)";
+          }
+          if ($saved_response_clean <> $tmp_answer[1] and $paper[$question]['mark'] == $paper[$question]['marks_partial'] and $tolerance_partial > 0) {
+            echo ' ' . $string['withatoleranceof'] . ' ' . $score_array[2];
+            if (StringUtils::ends_with($score_array[2], '%')) echo " ($tolerance_partial)";
+          }
           
           if ($tmp_exclude == '1')  echo '</span>';
           echo "</td></tr>\n</table>\n";

@@ -471,7 +471,7 @@ QUERY;
    * Add the default correction behaviour based on the type of question
    * @throws ClassNotFoundException
    */
-  public function add_default_correction_behaviours() {
+  public function add_default_correction_behaviours($cfg_web_root) {
     $file_base = 'behaviours/corrections/';
     $classdetails = array();
 
