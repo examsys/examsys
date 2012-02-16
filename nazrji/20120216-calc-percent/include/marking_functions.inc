@@ -301,7 +301,8 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
           $question_variables = '';
         }
 
-        $saved_response_clean = str_replace(',', '', str_replace(' ', '', $saved_response));
+        $saved_response_clean = preg_replace('([^0-9\.])', '', $saved_response);
+        
         $variable_array = explode(',',$question_variables);
         $var_no = 1;
         foreach ($variable_array as $individual_variable) {

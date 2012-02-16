@@ -903,12 +903,12 @@ function getMSCAA($paperID, $mysqlidb) {
       echo "document.PapersMenu.oldQuestionID.value = '$x';\n";
       echo "</script>\n";
     }
+
+    $higlight_class = '';
     if ($temp_array[$x]['status'] == 'Experimental' or $temp_array[$x]['status'] == 'Retired') {
-      $forecolor = '#808080';
+      $higlight_class = ' experimental';
     } elseif ($temp_array[$x]['marks'] == 0 and $temp_array[$x]['q_type'] != 'info' and $paper_type != '3' and $paper_type != '4' and $excluded[$temp_array[$x]['q_id']] != NULL) {
-      $forecolor = 'red';
-    } else {
-      $forecolor = 'black';
+      $higlight_class = ' excluded';
     }
 
     $theme_class = '';
@@ -918,11 +918,11 @@ function getMSCAA($paperID, $mysqlidb) {
       $theme_str = "<h4 class=\"theme\">" . trim($temp_array[$x]['theme']) . "</h4>\n";
     }
 
-    echo "<tr id=\"link_$x\" class=\"link_$x qline{$theme_class}\" style=\"";
+    echo "<tr id=\"link_$x\" class=\"link_$x qline{$theme_class}";
     if ($q_highlight == $temp_array[$x]['display_pos']) {
       echo '; background-color:#B3C8E8';
     } else {
-      echo '; color:' . $forecolor;
+      echo $higlight_class;
     }
 
     $prevous_screen = '';

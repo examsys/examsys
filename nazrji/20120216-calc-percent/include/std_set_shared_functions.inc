@@ -93,17 +93,18 @@ function get_reviews($mysqli, $mode, $paperID, $total_marks, &$no_reviews = 0) {
           $pass_score = round($pass_score,1);
   
           $cut_marks2 = 0.0;
-          $cut_marks2 += $ebel_marks['EE2'] * $ebel_percents['EE2'] * 100;
-          $cut_marks2 += $ebel_marks['EI2'] * $ebel_percents['EI2'] * 100;
-          $cut_marks2 += $ebel_marks['EN2'] * $ebel_percents['EN2'] * 100;
-          $cut_marks2 += $ebel_marks['ME2'] * $ebel_percents['ME2'] * 100;
-          $cut_marks2 += $ebel_marks['MI2'] * $ebel_percents['MI2'] * 100;
-          $cut_marks2 += $ebel_marks['MN2'] * $ebel_percents['MN2'] * 100;
-          $cut_marks2 += $ebel_marks['HE2'] * $ebel_percents['HE2'] * 100;
-          $cut_marks2 += $ebel_marks['HI2'] * $ebel_percents['HI2'] * 100;
-          $cut_marks2 += $ebel_marks['HN2'] * $ebel_percents['HN2'] * 100;
+          $cut_marks2 += $ebel_marks['EE'] * $ebel_percents['EE2'] * 100;
+          $cut_marks2 += $ebel_marks['EI'] * $ebel_percents['EI2'] * 100;
+          $cut_marks2 += $ebel_marks['EN'] * $ebel_percents['EN2'] * 100;
+          $cut_marks2 += $ebel_marks['ME'] * $ebel_percents['ME2'] * 100;
+          $cut_marks2 += $ebel_marks['MI'] * $ebel_percents['MI2'] * 100;
+          $cut_marks2 += $ebel_marks['MN'] * $ebel_percents['MN2'] * 100;
+          $cut_marks2 += $ebel_marks['HE'] * $ebel_percents['HE2'] * 100;
+          $cut_marks2 += $ebel_marks['HI'] * $ebel_percents['HI2'] * 100;
+          $cut_marks2 += $ebel_marks['HN'] * $ebel_percents['HN2'] * 100;
           $distinction_score = ($total_marks == 0) ? $total_marks : (($cut_marks2 / ($total_marks * 100)) * 100);
           $distinction_score = round($distinction_score,1);
+          var_dump($ebel_marks);
         }
         if ($old_group_review == 'No') $no_reviews++;
         $reviews[] = array(

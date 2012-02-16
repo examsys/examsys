@@ -309,7 +309,7 @@ if (strpos($_SERVER['HTTP_HOST'],'.uk') !== false) {
 <option value="Invigilator"><?php echo $string['invigilator']; ?></option>
 <?php
   $old_school = '';
-  $result = $mysqli->prepare("SELECT DISTINCT name, description, school FROM courses WHERE school NOT IN ('university','NHS','N/A') ORDER BY school, name");
+  $result = $mysqli->prepare("SELECT DISTINCT c.name, c.description, s.school FROM courses c INNER JOIN schools s ON c.schoolid=s.id WHERE s.school NOT IN ('university','NHS','N/A') ORDER BY s.school, c.name");
   $result->execute();
   $result->bind_result($name, $description, $school);
   while ($result->fetch()) {

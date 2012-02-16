@@ -220,3 +220,11 @@ label.error {
 #content .breadcrumb {
   margin: 2px 0 0 10px;
 }
+
+#content tr.excluded td {
+  color: #f00;
+}
+
+#content tr.experimental td {
+  color: #808080;
+}

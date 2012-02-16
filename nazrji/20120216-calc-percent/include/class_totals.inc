@@ -452,7 +452,7 @@ function getUserMark($q_id, $tmp_user_answer, $tmp_user_mark, $exclude, $status,
       for ($a=0; $a<count($user_answers)-1; $a++) {
         if (substr($tmp_exclude, $a, 1) == '0') {
           if ($paper_buffer[$q_id]['display_method'] == 'dropdown') {
-            if ($paper_buffer[$q_id]['correct'][$a][0] == $user_answers[$a+1]) {
+            if ($paper_buffer[$q_id]['correct'][$a][0] == html_entity_decode(trim($user_answers[$a+1]))) {
               $tmp_mark += $paper_buffer[$q_id]['marks_correct'];
               $tmp_user_mark_array[$q_id][] = $paper_buffer[$q_id]['marks_correct'];
             } elseif ($user_answers[$a+1] != 'u' and $user_answers[$a+1] != '') {
@@ -601,11 +601,11 @@ function getUserMark($q_id, $tmp_user_answer, $tmp_user_mark, $exclude, $status,
   } else {
     // Marking per Question, or all other question types, simply return the original mark.
     if (!array_key_exists($q_id, $exclude)) {
-      $tmp_mark += $tmp_user_mark;
-      $tmp_user_mark_array[$q_id] = $tmp_user_mark;
+      $tmp_mark += round($tmp_user_mark, 2);
+      $tmp_user_mark_array[$q_id] = round($tmp_user_mark, 2);
     }
   }
-  if ($status == 'mzyln') var_dump($q_id, $tmp_user_mark_array[$q_id]);
+  if ($status == 'paydcy1') var_dump($q_id, $tmp_user_mark_array[$q_id]);
 }
 
 function array_csort($marray, $column, $sort_order) {   //coded by Ichier2003
