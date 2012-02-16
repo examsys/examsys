@@ -1,0 +1,7 @@
+﻿<?php
+
+$string['hotspots'] = 'Hotspots';
+$string['correctAnswers'] = 'Correct Answers';
+$string['incorrectAnswers'] = 'Incorrect Answers';
+
+?>

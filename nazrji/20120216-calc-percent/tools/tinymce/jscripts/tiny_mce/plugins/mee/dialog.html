@@ -1,0 +1,25 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<script>var no_auto_mee = 1;</script>
+	<title>Equation Editor</title>
+	<script type="text/javascript" src="../../tiny_mce_popup.js"></script>
+	<script type="text/javascript" src="../../../../../../tools/mee/mee/jquery/jquery-1.6.1.js"></script>
+	<script type="text/javascript" src="../../../../../../tools/mee/mee/js/mee_src.js"></script>
+	<script type="text/javascript" src="dialog.js"></script>
+  <style>
+    html {margin:0px; padding:0px; width:100%; height:100%; overflow:auto}
+    body {font-size:100%; margin:0px; padding:0px; width:100%; height:100%; overflow:auto}
+    .mee_edit {margin:0px}
+  </style>
+</head>
+<body>
+  <div id="editor_cont" style="padding:0px; width:100%"></div>  
+  <div class="mceActionPanel" style="position:fixed; padding-left:5px; bottom:10px; width:98%">
+    <input type="button" class="button" id="update" name="update" value="{#update}" onclick="updateMME();" />
+		<input type="button" id="insert" name="insert" value="{#insert}" onclick="insertMME();" />
+		<input type="button" id="cancel" name="cancel" value="{#cancel}" onclick="tinyMCEPopup.close();" />
+	</div>
+</body>
+</html>

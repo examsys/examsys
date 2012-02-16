@@ -1,0 +1,2548 @@
+<HTML>
+<HEAD>
+
+<SCRIPT LANGUAGE="JavaScript">
+<!-- Begin
+/* 
+**  **  ##  ********************************************************* H1 **
+**  **  ##
+******  ##   ABOUT sCal2 - small, scientific, script Calculator - ver.0.8
+******  ##
+**  **  ##   Copyright (C) 2004  R. Mohaupt, Code Edition: sCal2-08u.htm
+**  **  ##
+**  **  ##  ***************************************************************
+*/
+// - - - - - HISTORY - - - - -
+// sCal2-06r  Feb, 2003  first distribution version: stable but short
+//     of ultimate features: Civil incomplete; Stopwatch needs help; 
+//     Entire Help dismally short;  Materials need more (elements); etc.
+// sCal2-06t  Mar, 03  interim ver: attempt at error handler=no good
+// sCal2-07b  May, 03   " : Data_Manage: fcn. DataWrite; sucks but keep
+// sCal2-07d  Sep, 03   " : sCal2 link in heading + others, to alert
+//     boxes: mInfo, Cookie to format (Mac display =terrible, fix?)
+// sCal2-07g  Sep, 03   " : do n[0..19] layout all in JavaScript loop
+// sCal2-07w  Nov, 03   " : transfer code from sCal-08j: Timer-Stopwatch 
+// sCal2-08b  Nov, 03   " : some clean-up, eliminate 2x2 cells to 2x1
+//
+// - - - - - LICENSE sCal2 version 0.8 - - - - -
+// This program is free software; you can redistribute it and/or modify it under the
+// terms of the GNU General Public License as published by the Free Software Foundation;
+// either version 2 of the License, or any later version.
+// This program is distributed with hope that it will be useful, but WITHOUT ANY WARRANTY;
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+// PURPOSE.  See the GNU General Public License for more details.  You should have
+// received a copy of the GNU General Public License along with this program; if not, 
+// write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+// 02111-1307  USA
+//                    --- mgineer1@netscape.net
+//                        R.Mohaupt, April, 2004
+// - - - - - CODE - - - - -
+// sCal2 is written in HTML & JavaScript (a.k.a. JScript, ECMA std.262 Script, or JS).
+// A Browser (such as Microsoft Internet Explorer (v.5+), Mozilla (v.1+), Netscape
+// Navigator (v.6+), or Opera (v.7+) with a JS interpreter is Essential --tho common.
+// Many excellent references, tutorials, and examples exist in books and on the Web.
+// sCal is mildlly commented; more information is available in the file 'sCal8-Doc.htm'. 
+// The code is organized as follows:
+//  Head:
+//   H1 - This introductory material: Copyright, License, etc.  original line.no . 10
+//   H2 - STYLE Settings - Systems variable, User may add/edit . . . . . . . . . . 65
+//   H3 - Function Calls from Links in top of Calculator Layout - READ!  . . . .  150
+//   H4 - CALCULATOR OPERATION FUNCTIONS - Do Not Change without due study . . .  318
+//   H5 - MENU GROUPS WITH STRINGS OF JS SOURCE CODE - Main User Programming . .  470
+//    5.1 - Catagory 1: Default Selection of Conversions & Constants . . . . . .  502
+//    5.2 - Catagory 2: Default Selection of Ordinary Math Functions . . . . . . 1136
+//    5.3 - Catagory 3: Special Programs - Default Selection . . . . . . . . . . 1724
+//   H6 - ***** MENU POPULATION ***** - Final Small Section in Head  . . . . . . 2184
+//  Body:
+//   B1 - sCal2 in BODY of Documant: LEFT CELL.  R. Mohaupt-Apr,2004 . . . . . . 2246
+//   B2 - sCal2 Expansion layout table - RIGHT CELL: . . . . . . . . . . . . . . 2371
+// Any text editor may be used to view/edit/copy-paste/expand the code.  Use 'Find' to
+// locate specific examples, since line numbers will change with the first major edit.
+// JavaScript Language Elements, for use examples, are marked '**JS**' for 'Find Next'. 
+/* 
+**  **  ###  ********************************************************************** H2 **
+**  ** #   #
+******   #    STYLE Settings - Systems variable, Dimensions in Pixels, User may add/edit
+**  **  #
+**  ** ##### ****************************************************************************
+*/
+var sCode = "a5";      // sets entire Style pattern; 'a5' is Normal=Dafault **JS** var
+var TxtAreaCol="235";  // column width for the x-display
+var MemSize = "75";    // column width of the m- & n-displays
+var sCalor = "yellow"; // color of calculator body
+//
+// ---- check Browser, change TextArea size if appropriate to other browsers tested
+var Browser = navigator.appName.substr(0,9);    // **JS** substr(start,#ofChar)
+if (Browser=='Netscape') // Mozilla is same as Netscape Navigator; both have a    **JS** if
+ {var XhtFctr=20}       // horizontal scroll bar which isn't helpful to sCal.     **JS** condition 
+ else {var XhtFctr=0;  // Height of x-display.  Other Browsers may need tweaking. **JS** else
+ }
+// ---- check for Cookie to alter format (Cookie is entered by link from 'Handling'
+//      at top of right cell.  Code for this is at end of HEADing.  Use of Cookie
+//      is fine for experimentation with settings, not recommended for long-term.)
+if (document.cookie != "" && document.cookie != "null"){   // **JS** && (meaning 'and')  
+ CookStr = document.cookie;         // **JS** document.cookie
+ sCode=CookStr.substring(0,2);      // **JS** substring(start#,Char#)
+ TxtAreaCol=CookStr.substring(3,6);
+ MemSize=CookStr.substring(7,9); 
+ sCalor=CookStr.substring(10);
+ }
+var sStyl= sCode.substring(0,1);
+var sSize= parseInt(sCode.substring(1,2));
+//
+if (isNaN(TxtAreaCol)){ // if TxtAreaCol is garbled, sCal assigns via sCode;  **JS** isNaN
+ switch(sSize){                    // **JS** switch (between cases of sSize)
+  case 3: TxtAreaCol=135; break;   // **JS** case; break (skip to end '}')
+  case 4: TxtAreaCol=195; break;
+  case 6: TxtAreaCol=294; break;
+  case 7: TxtAreaCol=354; break;
+  default: TxtAreaCol=238 }
+ }
+if (isNaN(MemSize)){  // if MemSize is garbled or left for sCal to assign via sCode
+ switch(sSize){
+  case 3: MemSize=42; break;
+  case 4: MemSize=62; break;
+  case 6: MemSize=90; break;
+  case 7: MemSize=105; break;
+  default: MemSize=75 }
+ }
+var celHt= (2*sSize+11)+"px";    // height of buttons & text boxes   **JS** px (pixel measure)
+var sFont= (2*sSize+2)+"px";       // Default sSize=5, then sFont=(2*5+4)=14px
+var subCellW=(TxtAreaCol/1+5)+"px";  // pixel width of Left & Right cells of sCal
+var mainCellW=(2*TxtAreaCol+10)+"px";   // pixel width of sCal calculator: both sides
+var bWid= Math.round(MemSize/2-sSize); // button width    **JS** Math.round
+var sp = " ";        // 1-space padding on buttons, use "" for narrow, "  " wide
+ if (sSize<4){sp=""}
+var m1 = "m";        // 1-'m' for 'memory' buttons, use "" for narrow, " m" wide
+ if (sSize<4){m1=""}
+ if (sSize>5){m1=" m"}
+// ---- set very basic formatting
+var bStylk= "font-size:"+sFont; // Set button style for the numeric keypad buttons
+var bStylf= bStylk;  // Set button style for the function keys
+var bStyln= bStylk;  // Set button style for the n-buttons
+var tStylm= bStylk + "; width:"+MemSize+"px"; // Set text style for m- I/O values
+var tStyln= tStylm;  // Set text style for n- I/O values
+if (sSize<4) {var tStyld= bStylk} else {  // Set text style for drop-down Select menus 
+ var tStyld = "font-size:"+(2*sSize+4)+"px"}
+var xStyle= bStylk+"; width:"+TxtAreaCol+"px";  // Set text style for x- I/O values
+//
+// ---- Styles a & t (if sStyl = anything else, there is no Style other than font-size)
+if (sStyl=="a" || sStyl=="t") {     // **JS** == (means conditional =; || (means 'or')
+ bStylk+= "; font-weight: bold; width:"+bWid+"px; height:"+celHt;
+ bStylf = bStylk +"; color: blue";
+ bStyln = bStylk +"; color: green";
+ tStylm+= "; font-family: arial, helvetica, sans-serif; height:"+celHt;
+ tStyln = tStylm +"; color: green";
+ tStyld+= "; width:"+Math.round(2*MemSize+11)+"px; height:"+celHt;
+ xStyle = "font-family: arial, helvetica, sans-serif; " + xStyle;
+  xStyle+="; height:"+Math.round(sSize*10+40-XhtFctr)+"px";
+ } //TxtAreaCol/2.6
+  // ----- Finally! Style string must be placed in quotes:   **JS**  style (actually CSS)
+tStyld="style='"+tStyld+"'";
+xStyle="style='"+xStyle+"'";
+tStylm="style='"+tStylm+"'";
+bStylk="style='"+bStylk+"'";
+bStylf="style='"+bStylf+"'";
+bStyln="style='"+bStyln+"'";
+tStyln="style='"+tStyln+"'";
+/* 
+**  **  ###  ********************************************************** H3 **
+**  **     #
+******  ###    Function Calls from Links in top of Calculator Layout - READ!
+**  **     #
+**  **  ###  ****************************************************************
+*/
+var ps = "";  // ps is a temp. for alerts.
+function About_sCal() {     // **JS** function 
+  ps= "sCal2 vers.0.8 - Small, Scientific, Script Calculator \n\n";
+ ps+= "'Small' meaning code size and display footprint.\n";
+ ps+= "'Scientific' meaning functions AND programmability.\n";
+ ps+= "'Script' meaning JavaScript--needs such a browser.\n";
+ ps+= " also 'Free', Open Source, GPL licensed (see Help)\n";
+ ps+= "User must inspect code and test known values \n";
+ ps+= "before critical use.  - - NO WARRANTEES. - -\n\n";
+ ps+= "R.Mohaupt: May, 2004 - mgineer1@netscape.net \n\n";
+ ps+= "'Script' & 'Calculator' links produce alert boxes \n";
+ ps+= "similar to this--like 'Quick Reference Cards'. 'xAid' \n";
+ ps+= "gives context-sensitive, user-supplied help. 'Help'\n";
+ ps+= "(in the right cell) links to the general sCal8-Doc.htm \n";
+ ps+= "file--if in the same directory as this.\n";
+ alert(ps);    // **JS** alert (dialog box)
+ }
+function About_Script() {
+  ps= "sCal is written in JavaScript (JS) & HTML.  This has\n";
+ ps+= "* bad and, depending on outlook,  * good points: \n";
+ ps+= "* interpreted vs. compiled code  * can view/modify \n";
+ ps+= " -browser->view, source, text-edit, save, refresh \n";
+ ps+= " -follow examples to add user functions/converts \n" 
+ ps+= " -(if inclined: change color, rearange buttons, etc) \n";
+ ps+= "* limited capabilities   * 'safe' from system damage \n";
+ ps+= "* incompatibilities  * Web makes JS near universal \n";
+ ps+= " -OK in MsIE5/6 & Netscape6/Mozilla;  Opera=iffy \n\n";
+ ps+= "See source code examples & comments--especially \n";
+ ps+= "in sCal2.  Use 'Find' function of Editor.  Much Text \n";
+ ps+= "and Web documentation available to obtain full \n";
+ ps+= "power of programming in sCal's framework: syntax \n";
+ ps+= "similar to C++ or Java =worthwhile learning effort. \n\n";
+ ps+= "Notes: - - - * NaN (Not a Number), 'Error on Page', \n";
+ ps+= " or no response, can often be edited through.\n";
+ ps+= "* May copy/paste to/from text files and x-display. \n";
+ ps+= "* The eval() function does all the work: parsing \n";
+ ps+= " expressions, setting precidence (*,/ before +,-) \n\n";
+ ps+= "* Compact display and file size are goals of sCal. \n";
+ alert(ps);
+ }
+function About_Calc() {
+  ps= "Simple Calculator operated by buttons [0]...[9] or from keyboard, \n";
+ ps+= "with [*] [/] [+] [-] or others as expected. [<] deletes last entry.\n";
+ ps+= "Usually easier to edit from keyboard.  Click [=] or press [Enter]\n";
+ ps+= "(as long as cursor is in the x-display area) to evaluate expression\n";
+ ps+= "in the x-display.  Only 1-[x^] power key allowed in any expression.\n";
+ ps+= "Math.pow(x,y) is more flexible JavaScript method. Use [JS] key.\n\n";
+ ps+= "[x>m] [m>x] [m+] [mc] move x-display into, out of, add in, & clear\n";
+ ps+= "the memory, m-display.  Stopwatch Mode (select catagory 2) gives\n";
+ ps+= "different functions: Stop, 'lap'-time, pause/run, & Clear.\n\n";
+ ps+= "Upper, drop-down Select boxes are pre-coded with Conversions, \n";
+ ps+= "Scientific Fcns, & micro-programs.  View these as extra, changeable\n";
+ ps+= "key caps with invocation options: [Do] applies the function, [JS}\n";
+ ps+= "writes expression (JScrAp) in x-display for further coding. Alpha-\n";
+ ps+= "characters or /*comment-prompt*/__ are sometimes used to clarify \n";
+ ps+= "the expected __ entry. \n\n";
+ ps+= "- - - - sCal2 - - - - The right-half of the footprint adds much utility:\n";
+ ps+= "*- Catagory Menus increase options for converts & fcns on the left\n";
+ ps+= "*- [/x] Buttons allow inverse converts, i.e. feet>meters gets m>ft\n";
+ ps+= " - - not always sensible, 1/tan=cotan but 1/deg.C NOT= deg.F\n";
+ ps+= "*- n[0..19] Array of memory-program slots for organizing in/output\n";
+ ps+= " - - preceeded by n}, arrows point: input prompt<, output label>\n";
+ ps+= " - - one or more variables can be changed between runs for comparing.\n";
+ ps+= "*- [n0]..[n19] Buttons move the x-display into the corresponding slot\n";
+ ps+= "*- [nx] Button causes the next [n?] button pressed to dump to display\n";
+ ps+= "*- [n[]] Button places 'n[?]' in the display;  *- [nc] Clears all n's\n\n";
+ ps+= "EXPERIMENT - - not randomly, but with a point. \n";
+ alert(ps);
+ }
+var ShowXcmt = true;
+var AddTo = false;
+function xAid() {
+if (ShowXcmt) {
+ if (x.indexOf('/*')<0 && x.indexOf('//')<0) {   // **JS** indexOf (Char# of appearance)
+  ps= "By default, this Alert Box displays code-comments in \n";  // **JS** \n (linebreak)
+  ps+="a more readible format than the x-Display--for lengthy \n";
+  ps+="explanations or data tables.  [Format: '\\n' or '*_' makes \n";
+  ps+="a line break, '\\t' is a tab.] \n ";
+  ps+="* There are no comments in the x-code.";}
+ else { // sort out comments-only for display
+  ps ="Comments = \n\n";
+  for (j=1; j<x.length; j++){   // **JS** stringName.length (means #ofChar)
+   if (x.charAt(j-1)=='/' && (x.charAt(j)=='*' | x.charAt(j)=='/')) {AddTo=true}
+   if (x.charAt(j+1)=='*'){     // **JS** stringName.charAt (Char#)
+    if (x.charAt(j+2)=='/') {AddTo=false; ps+="\n";} // denotes end of comment
+    if (x.charAt(j+2)=='_') {ps+="\n"}}
+//   if (x.charAt(j+1)==';' && x.charAt(j+2)==' ') {ps+="\n"} // end of JScript line
+   if (AddTo) {ps+=x.charAt(j+1)}
+   }  //end for
+  }  //end else
+  ps+="\n\n[0K] or [Enter] to continue comments-only. \n";
+  ps+="[Cancel] to display entire x-code.";
+  if (confirm(ps)){ShowXcmt=true} else {ShowXcmt=false};   // **JS** confirm (dialog box)
+ }  //end if (ShowXcmt) 
+if (ShowXcmt==false){
+ ps ="x-display = \n\n" +x.charAt(0);
+ for (j=1;j<x.length;j++){
+  ps+=x.charAt(j);
+  if (x.charAt(j-1)==';' && x.charAt(j)==' '){ps+='\n'} } // line break at JS semi-colons
+ ps+="\n\n[OK] or [Enter] continue showing entire x-display \n";
+ ps+="[Cancel] show only comments in future";
+ if (confirm(ps)) {ShowXcmt=false} else {ShowXcmt=true};}
+}
+// --------- In top of Layout, Right 'sCal2' side
+//
+function MoreInfo()   //  Click on 'sCal2' in Heading
+{ps= "     sCal2 version 0.8;  GNU Public License;  R.Mohaupt, Apr, 2004\n\n";
+ ps+="*      [  sCal2  ]    The heading has Clickable Links.  These provide more ";
+ ps+="examples of JavaScript functions and methods.  Try the others (but cancel out the ";
+ ps+="Handling Prompt Box unles serious about a format Cookie):\n";
+ ps+="*      [  Data   ]    provides information about the Browser and System you are ";
+ ps+="using--at least what the Browser says about itself (it can lie).\n";
+ ps+="*      [ Handling]    gives a Prompt Box that allows for creating,editing a Cookie";
+ ps+=" which changes the way that sCal2 displays itself.  This is not the preferred ";
+ ps+="method of alteration since different browsers handle cookies differently (or, in ";
+ ps+="Opera, not well).  Source Code changes are better.  The format is illustrated ";
+ ps+="followed by meaning: number of digits, no spaces, coma separation are critical. ";
+ ps+="The cookie looks like \'a5,235,75,yellow\' (default values for msIE6 under the Win32";
+ ps+=" operating system); but a Prompt Box space can be small, so here are details:\n";
+ ps+=". . . sCode: . 2-char . . codes for other platforms, \'05\'-normal, \'a5\'-stylish,\n";
+ ps+="\t\t{first char is style: ('0','a',or't'), the second is size ('3' to '7') supported}\n";
+ ps+=". . . . xCol: . 3-char . . pixel width of the x-display, \'235\' for msIE6, ";
+ ps+="\'235\' for Netscape/Mozilla\n";
+ ps+=". . . . mCol: . 2-char . . pixel width of the m-display, \'75\' for msIE6, ";
+ ps+="\'75\' for Netscape/Mozilla\n";
+ ps+=". . . sColor: . unlimited . \'yellow\', or blue, green, aqua, red, silver, white, ";
+ ps+="black, brown, etc; or R-G-B- 6-hex-digit.no.\n";
+ ps+="Expiration date of 1-year is auto-appended, is extended each time the Cookie ";
+ ps+="is re-entered; is eliminated if the Cookie is nulled out or canceled--which is ";
+ ps+="the default condition for sCal.\n";
+ ps+="*      [Help]    Link to documentation sCal-8-DraftDoc.htm, must be in same directory.";
+ alert(ps);
+ }
+function SysDisplay() { //  Click on 'Data' in Heading.
+ //  There are more navigator propertiesavailable than these, see complete References.
+ ps= "Current (now.getTime, toString) = " + eval(Time0+' now.toString()')+"\n\n";
+ ps+="*System  (navigator.platform) = " +navigator.platform+"\n";
+ ps+="*Display (screen.height, etc.) = height: "+screen.height+"; width: "+screen.width;
+ ps+="; colorDepth: "+screen.colorDepth+"\n";
+ ps+="*Browser (navigator.appName) = " + navigator.appName+"\n";
+ ps+=". . . ver. (navigator.appVersion) "+navigator.appVersion+"\n";
+ var NPlug = navigator.plugins;  var PlgNo=NPlug.length; ps+=". . . Plugins ["+(PlgNo)+"]: ";
+ if (Browser=='Netscape') {for (i=0;i<PlgNo;i++){   // This works ONLY in Netscape & Mozilla
+  ps+=" ["+i+"]: "+NPlug[i].name+": "+NPlug[i].description+" MIME types=";// **JS** for (loop)
+  for (j=0;j<NPlug[i].length;j++){ps+=" "+NPlug[i][j].type; } }} // note: 2-dimension array
+ else {ps+="with number of MIME types="+navigator.mimeTypes.length; // for Internet Explorer
+  ps+="\n. . . CPU = "+navigator.cpuClass+"\n. . . Cookies? = "+navigator.cookieEnabled;
+  ps+="\n. . . Languages: Browser="+navigator.browserLanguage+"; user="+navigator.userLanguage;
+  ps+="; system="+navigator.systemLanguage;}  
+ alert(ps);
+ }
+function CookieSet() { //  Click on 'Handling' in Heading
+ ps ="Source Code revision preferred to Cookie format.  Formatted Cookie looks like: ";
+ ps+="[a5,235,75,yellow] means [code,xCol,mCol,color] -NO spaces.";
+ CookStr = prompt(ps, document.cookie);   // **JS** prompt (dialog box)
+ expDate = new Date;   // **JS** Date
+ expDate.setDate(expDate.getDate()+365);  // set cookie expiration for 365 days from now
+ if (CookStr != "") {document.cookie=CookStr + "; expires=" +expDate.toGMTString() }
+ location.reload(true) // **JS** location.reload
+ }
+/* 
+**  **  #  #  ************************************************************** H4 **
+**  **  #  #
+******  #####   CALCULATOR OPERATION FUNCTIONS - Do Not Change without due study.
+**  **     #
+**  **     #  ********************************************************************
+*/
+var x = "";    // Display: by loose typing, 'x' mostly a string, sometimes a number
+               // Advantages & Disadvantages.  Big problem is use of '+' to add strings.
+               // Often necessary to induce JavaScript to treat variable as a number by
+               // dividing it by 1: i.e. +x adds x-string, +x/1 adds numeric value of x.
+               // A stray '/1' is seen in many formulations to use less code than eval().
+var m = "";  // stores Memory
+var xRedo=0; // restores current x    **JS** xRedo (Flag to allow data change/reiterate)
+var TAPE=""; // virtual adding machine tape
+var Timer=0; var st0p=0; // for stopwatch
+var nFlag = "0";  // determines function of [n] keys
+n = new Array(20);// stores variables used in programming, initialize as empty strings
+ for (i=0; i<20; i++) {n[i]="";}
+var temp = "";
+
+function Ix() {x = document.sCal.IOx.value;}    // **JS** Ix(); Ox() (Defined Functions)
+           // Input synch to x-string.  Do since TextArea can be changed from keyboard
+function Ox() {document.sCal.IOx.value = x; // Output x-string change to display
+ }
+function xEval() {Ix(); Im(); xTemp=x; // *** MAIN Evaluation Routine, invoked by [ =,Enter ] ***
+ for (i=0; i<20; i++) {nI(i);}    
+ var j = x.indexOf('^');     // check to see if there is an x^y function
+ if (j > 0) {                // all to left of '^' is taken as base and all right as exponent
+  if (x.indexOf('^',j+1) > 0) {alert("WARNING! Only 1 [^] allowed in expression! Math.pow(x,y) preferred.");}
+  else {                     // likewise, entire x-value is used as function argument, not just last term
+  document.sCal.IOx.value = Math.pow(eval(x.substring(0,j)),eval(x.substring(j+1)));}}
+ else {                      // check to see if a program, update variables for keyboard entries
+  if (x.indexOf('=')>-1) {   // Note: certain calls reserved for programs ('=' designated)
+    if (xRedo==0) {x=xTemp;} eval(x); Ox();} // original x not changed in a program; stopwatch code on xTemp 
+  else {document.sCal.IOx.value = eval(x);} }   // end of nested if-else statements
+ if (xRedo==1) {x=xTemp; Ox(); xRedo=0;} 
+ Ix(); Om(); On();
+ }
+function EnterKey_EqButton(e) {   // Response to .onkeypress. Other keyCodes could be added.
+ var k=0;                         // Allows use of [Enter] key from keyboard (k=13) for [ = ]
+ if (Browser=='Netscape') {k=e.which} else {k=window.event.keyCode;}  // **JS** e.which
+ if (k==13) {xEval();} }          // NOTE: CURSOR MUST BE IN TEXTAREA WHEN PRESSED, OR LAST  
+                                  // DIGIT IN X-DISPLAY IS APPENDED TO END OF EVALUATION.
+document.onkeypress = EnterKey_EqButton;   // **JS** document.onkeypress
+// if (Browser='Netscape') {document.captureEvents(Event.KEYDOWN|Event.KEYUP);}   **used in some versions?         
+
+function xPlusEq(s) {Ix(); x += s; Ox();}   // --- DISPLAY x functions ---
+function xMultEq(s) {xEval(); x *= s; Ox();}
+function Clear() {x = ""; Ox();}            // Clearing x often necessary when switching functions.
+function BkSpace() {Ix(); x = x.substring(0,x.length-1) ; Ox();}
+function recip() {xEval(); x = 1/(x); Ox();}
+function xEnd() {Ix(); return x.substr(x.length-1,1);  // allows last char. of x to be a Flag;
+ // click display button, or key if cursor placed at end of x, for a control. {x[i] doesn't work}
+ }
+function JSwork(s) // --- determine what to do with incoming MENU (s) values from [JS] button ---
+ {if (s.indexOf('n[1]')>-1)          //-if there is program (indicated by presence of n[1]),
+  {x=""; Ox(); xPlusEq(s); xEval();} // fill in array.  ERROR if x-display not cleared prior.
+  else {xPlusEq(s);}
+ }
+function Xwork(s)  // --- determine what to do with incoming MENU (s) values from [Do] button ---
+ {if (s.indexOf('!')==0) {alert(s)} else  // '!' calls (s) to alert box
+ {if (isNaN(s))
+  {if (s.indexOf('x')>-1)        //-if expression, s, is f(x), i.e.Method,
+   {xEval(); x = eval(s); Ox();} // figure x, & substiture in function 
+  else {x += eval(s); Ox();}  }  //-if a Property or program, add 's' value
+ else {xPlusEq(s);}   }          //-if numeric constant, append like JSwork
+ }
+function DoRecip(s) //--- does [1/d]: inverse [Do] eg. ft>m becomes m>ft. NOT ALWAYS SENSIBLE! ---
+ {Ix(); temp=eval(s); if (s.indexOf('x')>-1) {x=x*x/temp} else {x=1/temp} Ox();
+ }
+function runStop(k) {  // Timer functions
+ start = new Date();
+ start.setTime(start.getTime() - k);  // **JS** .getTime
+ upDate();
+ }
+function upDate() {
+ if (st0p>0){
+  if (Timer==0) {
+   now= new Date(); k=Mr((now.getTime()-start.getTime())/1000, 2);
+   if (C>0) {m=C-k} else {m=k}
+   st0p=m+0.00001; m+= ", "; Om();
+   if (st0p<0) {st0p=0; m=0; Om(); x=temp; xRedo=1; Ox(); alert("Time Up!");}
+   setTimeout("upDate();", 10);}
+ }
+}
+function Im() {m = document.sCal.IOm.value;} // --- MEMORY functions: (similar to Ix() & Ox())
+function Om() {document.sCal.IOm.value = m;} // **JS** Im(); Om(): (Defined Functions)
+function XtoM()  {Ix(); Im(); m += x; Om(); x=""; Ox(); Timer=1;} //--with stopwatch settings, Memory click ops:
+function MtoX()  {Ix(); Im(); x += m; Ox();}
+function Mplus() {if (st0p>0){
+  if (Timer==0) {Timer=1} else {Timer=0} m=st0p-0.00001; Om(); runStop(m*1000);}
+ else {xEval(); if (m=="") {m=0} // --- note that Mplus can accumulate:
+ if (isNaN(m) && m.charAt(0)=="/"){m+=x+"/"}// string of data values, triggered by starting '/'
+ else {m=parseFloat(m)+parseFloat(x)}       //   & using '/' as delimiter between values,    **JS** parseFloat
+ Om(); x=""; Ox();}}                        // or as summation & storage of a single value.
+function Mclear(){m="";Om();Timer=0;st0p=0; // - Use MtoX to view/edit the string of values.
+ }
+function nI(k) {n[k] = eval("document.sCal.n"+k+".value");} // --- for n[.] DATA ARRAY ---
+ // for consistency with Ix() & Im() this would have been named In, except its reserved
+function On() {                  // function On(k) like Ox() & Om().   **JS** nI(); On(): (Defined Functions)
+ document.sCal.n0.value = n[0];  // These are values of the text boxes **JS** .value
+ document.sCal.n1.value = n[1];  // on the right cell of sCal.
+ document.sCal.n2.value = n[2];  // {This is not ellegant code
+ document.sCal.n3.value = n[3];  // but the prior form of n[k]=
+ document.sCal.n4.value = n[4];  // eval("document.sCal.n"+k+".value")
+ document.sCal.n5.value = n[5];  // in the 'input' nI form, but
+ document.sCal.n6.value = n[6];  // contrary to Netscape documentation,
+ document.sCal.n7.value = n[7];  // eval("document.sCal.n"+k+".value")
+ document.sCal.n8.value = n[8];  // =n[k] for On, doesn't work.}
+ document.sCal.n9.value = n[9];
+ document.sCal.n10.value=n[10];
+ document.sCal.n11.value=n[11];
+ document.sCal.n12.value=n[12];
+ document.sCal.n13.value=n[13];
+ document.sCal.n14.value=n[14];
+ document.sCal.n15.value=n[15];
+ document.sCal.n16.value=n[16];
+ document.sCal.n17.value=n[17];
+ document.sCal.n18.value=n[18];
+ document.sCal.n19.value=n[19];
+ }
+function setNflag1() {nFlag="1";}  // sets flag to insert 'n[k]' in x-display
+function setNflag2() {nFlag="2";}  // sets flag to insert value of n[k] in x 
+function nData(k) {                // similar to Memory functions
+ if (nFlag=="0") {n[k] = x; On();}
+ if (nFlag=="1") {Ix(); x += "n["+k+"]"; Ox(); nFlag="0";}  // Nflag is reset to 0
+ if (nFlag=="2") {Ix(); nI(k); x += n[k]; Ox(); nFlag="0";}}//     after each use.
+function Nclear() {for (i=0; i<20; i++) {n[i] = "";} On();} // clears entire n-array
+  // --- except when data is specifically intended to carry over, it is good practice
+  //  to clear the n-data array (AND the x-display) when switching to a new function.
+  
+function Mr(val,place) {var d=Math.pow(10,place); //--- MISC. UTILITY FUNCTIONS **JS** Math.pow
+ return Math.round(d*val)/d;}                     //--- Output decimal places   **JS** Mr (Defined Function) 
+function Fo(val) {var d=0; if (val<100){          // format output to 3 +/- significant figures
+ if (val<10){d=2} else {d=1}} return Mr(val,d)}   //                            **JS** Fo
+function fact(q) {var j=q; for (i=q;i>1;i--) {j*=fact(j-1)} return j};// **JS** factorial, n!=1*2*3*...*n
+      // note recursion: fact(q) calls itself, above.   **JS** Math.PI, below.
+var Pi =Math.PI; // Consideration has been given to streamlining all Math. fcn. calls by defining
+                 // them in a cluster; eg. sin(a)=Math.sin(a*PI/180) {in degrees vs. radians}, etc.
+                 // With the math intensity of sCal, there would be a savings in code size (and it
+                 // has been done in the cases above), but it would not encourage good JS coding.
+                 // Not a big matter of principle, tho. User could do it, looking like VB.script. 
+function newWin(s) {                     // Creates a browser window to SHOW & SAVE data: s;
+ dta2 = open();                          // Variable results in IE, Netscape/Mozilla, & Opera; **JS** open
+ dta2.document.open('text/html');        // Generally view -> Source Code; or Cut-Paste to .txt file;
+ dta2.document.writeln('<html><body>');  // If code can't be edited directly (as in Net/Moz),
+ dta2.document.writeln(s);               //   have to save from 'Edit' screen.
+ dta2.document.writeln('<br><br>');      // This because JavaScript doesn't allow direct file writing.
+// dta2.document.writeln('<a href="#" onClick="history.back()">.Back.</a>');      // **JS** history.back()
+ dta2.document.writeln('______________.<br><small>close [x] to return</small>');
+ dta2.document.writeln('</body></html>');             // **JS** document.close()
+ dta2.document.close() }
+/* 
+**  **  ##### *************************************************************** H5 **
+**  **  #
+******  ####   MENU GROUPS WITH STRINGS OF JS SOURCE CODE - Main User Programming
+**  **      #
+**  **  ####  *********************************************************************
+*/
+/*     All of sCal is user-programmable, of course.  But the following Menu-Value
+   setups should be particularly useful to engineers & scientific professionals for
+   adding new functions, often just because many formulae are too easily forgettable.
+                    --- Follow working code closely. ---
+ GROUP MENU options format = "('selected.text','selected.value')",
+ "('','')", <-copy/paste to fill in new options in chosen group
+ Watch length of .text to avoid overrun of cell width (obvious when border blows).
+ Last option must end with ); close parentheses & semi-colon, to end array.
+   >       < use EXACTLY 7-characters of group name .text & EXACT CASE!  */
+
+var A234567_nA = new Array("('A23456789 sample NAME','COMPUTATION string')", // **JS** Array
+ "('x} . NAME','COMP')",
+ "('x} . . .','')",     // copy this section to start a new catagory;
+ "('x} . . .','')",     // paste it to an appropriate location in the code;
+ "('x} . . .','')",     // fill in the blanks with desired name, comp;
+ "('x} . . .','')",     // copy the top catagory name to the desired option select
+ "('x} . . .','')",     // menu (top, right cell) to make available for use.
+ "('x} . . .','')",
+ "('x} . . .','')",     // adding a calculation to an existing catagory: simply
+ "('x} . . .','')",     // add blank lines where needed.  Delete these comments.
+ "('x} . . .','')",     // Note that final line ending with semi-colon = critical.
+ "('x} . . .','')",
+ "('x} . . .','')",     // There are better blanks (less editing required) at
+ "('','')");            // Catagory 3: Special for User_01; User_02; User_03.
+/* 
+**  **  #####  ##  ************************************************************* H5.1 **
+**  **  #       #
+******  ####    #    Catagory 1: Default Selection of Conversions & Constants
+**  **      #   #
+**  **  ####   ###  *********************************************************************
+*/
+// Sources (numerous, some discrepancies, potential transcription errors:)
+// ASHRAE, Handbook of Fundamentals, Subcommittee Bryan, Wm. L, et al, 1972;
+// Engineering Manual, Perry, Robert H, 3rd. Ed, McGraw Hill, 1976;
+// Engineers Manual, Hudson, 2nd Ed, Ralph G, Wiley & Sons, 1944;
+// Handbook of Chemistry and Physics, 47th Ed, CRC, 1966-67;
+// Timber Construction Manual, American Inst. of Timber Constr, 2nd Ed, 1974;
+
+var General_nA = new Array("('General: convert x}. Pi .','Math.PI')",
+ "('len. x}. inch > millimeter','x*25.4')",
+ "('length x} . . feet > meter','x*0.3048')",
+ "('length x} . . . feet > mile','x/5280')",
+ "('len. x} . mile >kilometer','1.609344*x')",
+ "('area x} . ft^2 > meter^2','0.092903*x')",
+ "('area x} . . feet^2 > acre','x/43560')",
+ "('area x} . acre >hectare','0.404686*x')",
+ "('area x} . acre > mile^2','x/640')",
+ "('vol. x} . . ft^3 > meter^3','0.0283168*x')",
+ "('vol. x} . . . . ft^3 > gallon','7.4805*x')",
+ "('vol. x} .yd^3 > meter^3','0.764555*x')",
+ "('force . . . lb(f) > Newton','4.44822*x')",
+ "('mass x} . . . lb.US > kg','0.45359*x')",
+ "('x} . . .','')",
+ "('n} Rect.-Polar Convert',R_PCon)", // code for this is is at Analytic Geometry
+ "('Ty}JScrap Call Name',' JScrAp Code here ')",
+ "('temp. . . C deg > F deg','9*x/5+32')",
+ "('temp. . . F deg > C deg','5*(x-32)/9')",
+ "('temp. . . C deg > K deg','x-273.15')");
+
+var Length__nA = new Array("('length x} . feet > meter','x*0.3048')",
+ "('x} . . . inch > millimeter','x*25.4')",
+ "('x} . . . . . . yard > meter','x*0.9144')",
+ "('x} . . .ft(us) > ft(survey)','x*0.9999980315')",
+ "('x} . . . . . . feet > link','x/0.66')",
+ "('x} . . . . . . feet > rod','x/16.5')",
+ "('x} . . . . . . feet > chain','x/66')",
+ "('x} . . . . . . feet > inch','x*12')",
+ "('x} . . . . . . feet > hand','x*3')",
+ "('x} . . . . . . feet > cubit','x/1.5')",
+ "('x} . . . . . . feet > yard','x/3')",
+ "('x} . . . . . feet > fathom','x/6')",
+ "('x} . . . . . feet > furlong','x/660')",
+ "('x} . . . . . . feet > cable','x/720')",
+ "('x} . . . . . . feet > mile','x/5280')",
+ "('x} feet > mile(int.naut.)','x/6076.115485')",
+ "('x} . . . mile > kilometer','x*1.609344')",
+ "('x} mile > league(stat.)','x/3')",
+ "('x} mile>league(intnat)','x/3.45')",
+ "('x} . mile > astrom.unit','x/92955763.342')",
+ "('x} . . . . . mile > parsec','x/1.917377515e13')",
+ "('x} . . . mile > light year','x/5.87851323e12')",
+ "('x} . . .','')",
+ "('x} . . inch > pica(print)','x*6')",
+ "('x} . .inch > point(print)','x*72')",
+ "('x} . . .','')",
+ "('x} . . . meter > micron','x*1e6')",
+ "('x} . meter > angstrom','x*1e10')");
+  
+var Area_co_nA = new Array("('Area conv.x} f^2 >m^2','x*0.092903')",
+ "('x} . . . . . feet^2 > inch^2','x*144')",
+ "('x} . . . . . . inch^2 > cm^2','x*6.4516')",
+ "('x} . . . . .feet^2 > yard^2','x/9')",
+ "('x} . . .yard^2 > meter^2','x*0.83612736')",
+ "('x} . . . . . . . feet^2 > acre','x/43560')",
+ "('x} . . . . . acre > hectare','x*0.40468564')",
+ "('x} . . . . . .mile^2 > km^2','x*2.589988')",
+ "('x} . . . . . . feet^2 > rood','x/10890')",
+ "('x}acre>sq.mi.(section)','x/640')",
+ "('x} . . mile^2 > township','x/36')", 
+ "('x} . . .','')",
+ "('x} circular inch > sq.in.','x*Math.PI/4')",
+ "('x} circular mm > sq.mm','x*Math.PI/4')",
+ "('x} circular in. > circ.mil','x*1000000')",
+ "('x} circular in. > circ.mm','x*645.16')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('x} . . .','')");
+ 
+var Volume__nA = new Array("('Vol. conv. x} ft^3 > m^3','x*0.0283168')",
+ "('x} . . . . . feet^3 > inch^3','x*1728')",
+ "('x} . . . . . .inch^3 > cm^3','x*16.387064')",
+ "('x} . . . . .feet^3 > yard^3','x/27')",
+ "('x} . . .yard^3 > meter^3','x*0.764555')",
+ "('x} . . . .acre.ft > meter^3','x*1233.48')",
+ "('x} . . .','')",
+ "('x} gallon(US)>gal(Imp.)','x*0.83261')",
+ "('x} fl.oz(us) > teaspoon','x*6')",
+ "('x} fl.oz(us)>tablespoon','x*2')",
+ "('x} . fl.oz(us) > fl.oz(Brit)','x*1.04')",
+ "('x} .fluid oz(us) > inch^3','x*1.8')",
+ "('x} . .fluid oz(us) > cm^3','x*29.573')",
+ "('x} fluid ounce(us) >cup','x/8')",
+ "('x} . . .fl.oz(us) > pint(us)','x/16')",
+ "('x} fl.oz(us) >quart(fl.us)','x/32')",
+ "('x} . . . . . . fl.oz(us) > liter','x/33.8146282')",
+ "('x} quart(us)liquid > dry','x*0.8594')",
+ "('x} quart(us.liq) >gallon','x/4')",
+ "('x} . . . . . feet^3 > gallon','x*7.4805')",
+ "('x} ft^3>bushel(us.dry)','x*0.80356')",
+ "('x} feet^3 > bbl(us.liq)','x*0.237483')",
+ "('x} feet^3 > bbl(us.oil)','x*0.17811')",
+ "('x} feet^3 > bbl(us.dry)','x*0.2449')",
+ "('x} ft^3>ton(us.shipng)','x/40')",
+ "('x} ton(register)>m^3','x*2.8317')",
+ "('x} . . .','')",
+ "('x} . . feet^3 > board.ft','x*12')",
+ "('x} . ft^3 > cord(wood)','x/128')");
+ 
+var Time_Stop="C=/*CountDown Seconds*/  0; /* OR_leave_0_for_[=]_Start ";
+ Time_Stop += "*-stopwatch/memory_functions:  [x>m]_stop, [m>x]_'lap'time, [m+]_pause/go, ";
+ Time_Stop += "[mc]_reset */ st0p=1; Timer=0; temp=x; runStop(0); x='Seconds:';"
+ 
+var Time_Ve_nA = new Array("('Time_Velocity x} hr > s','x*3600')",
+ "('*} Timer - Stopwatch',Time_Stop)",
+ "('x} . . . day > second','x*86400')",
+ "('x} . sec.> nanosecond','x*1e9')",
+ "('x}sec(sidereal)>s(solr)','x*0.9972695')",
+ "('x} day > day(sidereal)','x*1.0027379')",
+ "('x} year > yr.(sidereal)','x*0.999298')",
+ "('x} year > day(actual)','x*365.24')",
+ "('','')",
+ "('x} velocity: ft/s > mi/hr','x*0.68181818')",
+ "('x} . meter/sec > km/hr','x*3.6')",
+ "('x} . . . . . . mi/hr > km/hr','x*1.609344')",
+ "('x} . . . . . . mi/hr > knot','x*0.86898')",
+ "('x} . . . mi/hr > Mach no.','x/741.5444')",
+ "('x} C(light speed) >m/s','x*2.99792458e8')",
+ "('','')",
+ "('','')");
+
+var Mass_Fo_nA = new Array("('Mass_Force x} lb > kg','x/2.204634')",
+ "('x} lb(pound.av)>lb.troy','x*1.215 //avoirdupois is common used here')",
+ "('x} . . . . lb > oz(avoir.)','x*16')",
+ "('x} . . . . lb > oz (troy)','x*14.58')",
+ "('x} . . lb > carat(metric)','x*2267.95')",
+ "('x} gram > carat(metric)','x*5')",
+ "('x}      gram > grain','x*15.432')",
+ "('','')",
+ "('x}pound(lb.mass)>slug','x/32.174')",
+ "('x} . . . . lb > grains','x*7000')",
+ "('x} . . lb > stone(Brit)','x/14')",
+ "('x} . . . . . lb > ton','x/2000')",
+ "('x} . . . . . lb > ton(metric)','x/2204.634')",
+ "('x} . . . . . lb > ton(long)','x/2240')",
+ "('x} . . .','')",
+ "('s} DEFINITION F=MA','if a=g~9.8m/sec^2, kg * g = N (Newton)')",
+ "('x} . . .','')",
+ "('x} . kg(f) > Newton','x*9.80665')",
+ "('x} . . kg.m/sec > N','x*1.0')",
+ "('x} . . . . . . . J/m > N','x*1.0')",
+ "('x} . . . . . .dyne > N','x/10000')",
+ "('x} . . . . gram(f) > dyne','x*980.665')",
+ "('x} . . . . . . lb(f) > N','x*4.44822')",
+ "('x} . . . . . . lb(f) > kip','x/1000')",
+ "('x} . . . . . lb(f) > poundal','x*32.174')",
+ "('x} . . .','')",
+ "('x} . . .','')");
+
+var Pressur_nA = new Array("('Pressure x} p.s.i. > Pa','x*6894.757')",
+ "('x} . . N/sq.m > Pascal','x*1.0 // definition')",
+ "('x} . . dyne/sq.cm > Pa','x*0.1')",
+ "('x} . . . . . lb(f)/sq.ft > Pa','x*47.88')",
+ "('x} . tons/s.f. > kg/cm^2','x*0.9765')",
+ "('x} . . . . kg(f)/sq.m > Pa','x*9.80665')",
+ "('x} Newton/cm^2 > Pa','x*10000')",
+ "('x} . . . . . . . cm Hg > Pa','x*1333.224')",
+ "('x} . . . in Hg(32 F) > Pa','x*3386.38')",
+ "('x} . . . in Hg(60 F) > Pa','x*3376.85')",
+ "('x} . . .','')",
+ "('x} . atmosphere > Pa','x*101325')",
+ "('x} . . . . atm(std) > p.s.i.','x*14.69595')",
+ "('x} . . . . . atm(std) > bar','x*1.01325')",
+ "('x} . . . . . bars > Pascal','x*100000')",
+ "('x} . . .atm(std) > in Hg','x*29.92')",
+ "('x} . . atm(std) > ft.water','x*33.899')",
+ "('x} . . .','')",
+ "('x} . .','')");
+ 
+var Density_nA = new Array("('Density x} p/cf >kg/m^3','x*16.02')",
+ "('x} . lb/gal(us) > kg/cu.m','x*119.83')",
+ "('x} . . g/cu.cm > kg/cu.m','x*1000')",
+ "('x} milligram/liter > kg/l','x*1e-6')",
+ "('x} megag./cu.m. > kg/l','x*1.0')",
+ "('x} . oz/gal(us)>kg/c.m','x*7.489')",
+ "('x} oz/gal(us)>oz/g(uk)','x*1.2')",
+ "('x} . ton/c.y. > kg/liter','x*1.18655')",
+ "('x} g/cu.cm > spec.grav','x*1.0')",
+ "('x} . . g/cc = kg/l > s.g.','x*1.0')",
+ "('x} . . . . . . lb/cu.ft > s.g.','x/62.428')",
+ "('x} . . . . . . lb/cu.in > s.g.','x/0.036127')",
+ "('x} . . . . . . . lb/gal > s.g.','x/8.345')",
+ "('x} . . .','')",
+ "('s} TYP. Values of S.G.','see Materials charts in this catagory.')",
+ "('s} . . .','')",
+ "('s} . . .','')",
+ "('s} . . .','')");
+
+var Energy__nA = new Array("('Energy_or work s} Def.','Energy=work ~F*dist')",
+ "('x} . . Watt.sec > Joule','x*1.0 //definition')",
+ "('x} . . . . Watt.hr > Joule','x*3600')",
+ "('x} . . . kWatt.hr > Joule','x*3600000')",
+ "('x} . . . . Btu(mean) > J','x*1054.35')",
+ "('x} . . . . . . Btu(ISO) > J','x*1055.06')",
+ "('x} . . . . . . . . . ft.lb(f) > J','x*1.355818')",
+ "('x} . . . . . . . . . kg.m > J','x*9.80665')",
+ "('x} . . . . . . . . . . kCal > J','x*4186.75')",
+ "('x} . . . . . . . . . therm > J','x*105506000')",
+ "('x} . . . . . therm(us) > J','x*105480400')",
+ "('x} tonsTNT equiv >J','x*4200000000')",
+ "('x} horsepower.hr >J','x*2.6845e6')",
+ "('x} . . metric HP.hr > J','x*2.648e6')",
+ "('x} liter.atmosphere>J','x*101.33')",
+ "('x} . . . . . . dyne.cm > J','x/10000000')",
+ "('x} . . . . dyne.cm > erg','x*1.0 //definition')",
+ "('x} . . .','')",
+ "('x} . .','')");
+ 
+var Power_r_nA = new Array("('Power_rate of Work s}','Power ~energy/time')",
+ "('x} . . . . . Watt > Btu/hr','x*3.414426')",
+ "('x} . . . kw > Btu/sec','x*0.9478')",
+ "('x} . . . kw > poncelet','x*1.02')",
+ "('x} . . . kw > kg.m/sec','x*102')",
+ "('x} . . . Watt > cal/sec','x*0.23885')",
+ "('x}W>candle pow(sp.)','x*53.2481363')",
+ "('x} . . . . . W > erg/sec','x*10000000')",
+ "('x} . . . W > ft.lb(f)/sec','x*0.737562')",
+ "('x} W > HP (550ft.lb/s)','x/745.7')",
+ "('x} . . . W > HP (metric)','x/735.5')",
+ "('x} . . . . . . . W > lumen','x*668.45')",
+ "('x} W > tons.refrigerat.','x/3516.9')",
+ "('x} tons.refrig >BTU.hr','x*1200')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('','')");
+ 
+var HtRes="R =resistance to heat flow (reciprocal of conductivity). R values are added to obtain ";
+  HtRes +="reciprocal of overall heat transmission of a building surface, U. eg. for a frame wall: ";
+  HtRes +="Outside surf.15mph wind R~0.17 deg.F/Btu/hr/sf; wood siding, 1/2in.w/laps R~0.81; ";
+  HtRes +="Sheathing, 1/2in. asph.impreg.board R~1.32; Insulation, 4in.fiberglass R~11; Gypsum wall";
+  HtRes +="board R~0.45; Inside surf. still air R~0.68; ->Total R=14.43 =1/U -> U=0.0697Btu/hr.sf.F";
+  HtRes +=" adjust for framing:2x4 @ 16in.cts ->U*1.08 =0.075.  Heating capacity needed is then ";
+  HtRes +="computed from sq.ft of walls, adj. windows, doors, ceiling, etc. Apply to design temp.";  
+
+var Heat_Te_nA = new Array("('Heat_Temperature: s}','meas. of atomic kinetic energy')",
+ "('x}. . . C deg > F deg','9*x/5+32')",
+ "('x}. . . F deg > C deg','5*(x-32)/9')",
+ "('x}. . . C deg > K deg','x-273.15')",
+ "('x} . . .F deg > R deg','x-458.57')",
+ "('x} . . .','')",
+ "('x} . BTU/lb > J/kg','x*2326')",
+ "('x} . . cal/g > J/kg','x*4186')",
+ "('x} . . . C/m>W/m.C','x*1.0')",
+ "('x} . . .','')",
+ "('s} __HEAT FLOW__','rate of Heat per area')",
+ "('x} Watt/cm^2 >Btu/hr.sf','x*3170')",
+ "('x} watt/cm^2 >Btu/dy.sf','x*76081')",
+ "('x} w/cm^2 >cal/hr.cm^2','x*860')",
+ "('x} w/cm^2 > cal/s.cm^2','x*0.2388')",
+ "('s} _CONDUCTANCE_','=heat flow per deg.F or deg.C temperature gradient')",
+ "('x} w/cm^2.C>Btu/hr.sf.F','x*1761')",
+ "('x} w/sm.C>cal/hr.sm.C','x*860')",
+ "('x} w/smC>cal/s.sm.C','x*0.2388')",
+ "('x}Btu/hr.sf.F>W/s.sm.C','x*5.6784')",
+ "('x}kcal/hr.sm.C>w/sm.C','x*1.163')",
+ "('s}_CONDUCTIVITY, k','conductance through a thickness of material')",
+ "('x} w/scm(cm/C)>Btu/h..','x*57.79 // watt/cm^2(cm/C)>Btu/hr.sf(ft/F)')",
+ "('x} w/sm(cm/C)>cal/h...','x*860 // watt/sm(cm/C)>cal/h.sm(cm/C)')",
+ "('x} Btu/s.sf(in/F)>cal..','x*1.2405 // Btu/s.sf(in/F)>cal/s.cm^2(cm/C)')",
+ "('x}Btu/hr.sf.(in/F)>w/m.C','x*0.1442')",
+ "('s}_RESISTIVITY,1/k_',HtRes)",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('','')");
+
+var Light_R_nA = new Array("('Light_Rad. lux>lum./sm','x*1.0')",
+ "('x} . candle pow.>lumen','x*12.556')",
+ "('x} . . . . lumen > watt','0.001496')",
+ "('x} . . . . lux > ft.candle','x*0.0929')",
+ "('x} . ft.candle>lumen/s.f','x*0.0929')",
+ "('x} . . .','')",
+ "('x} candela/s.in>ft.lam.','x*452.389 //c./sq.inch>foot.lambert')",
+ "('x} candela/s.in>c./s.m','x*1550')",
+ "('x} . . .','')",
+ "('x}rayleigh>ph./sm.sec','1.0E10 //photon emission/sq.m.Second')",
+ "('x} roentgen>coul./kg','x*2.57976E-4')",
+ "('x} . . dose rad > J/kg','x/100')",
+ "('x} . . Rutherford > Bq','x*1000000 // disintegrations/second')",
+ "('x} . . curie >disinteg/s','x*3.7e10')",
+ "('x} . . .','')",
+ "('','')");
+   
+var DMStoDeg="var dg=(/*Deg*/ ); var mn=(/*min*/ ); var sc=(/*sec*/ ); /*CLICK[=]*/ ";
+  DMStoDeg +="m=dg + mn/60 + sc/3600; ";
+var AZtoBEAR="var Az=(/*Azimuth 0-deg @ N, rotate to E.(right)*/ ); /*CLICK[=]*/ ";
+  AZtoBEAR +="var Quad=Math.floor(Az/90); while (Quad>=4) {Quad-=4} var d=Az%90; ";
+  AZtoBEAR +="if (Quad==0||Quad==3) {m='N';} else {m='S';} if (Quad==1 || Quad==3) ";
+  AZtoBEAR +="{d=90-d} m+=Mr(d,4); if (Quad>1) {m+='W'} else {m+='E'}";
+ 
+var Angular_nA = new Array("('Angular x} . . deg > rad','x*Math.PI/180')",
+ "('x} . . . . grad > degrees','x*360/400')",
+ "('x} . . . . .mils > degrees','x*360/6400 // 1/tan(grad)=1018.6 ie.~1unit wide @ 1000unit dist.')",
+ "('x} . . .','')",
+ "('x} . degrees > arc.min.','x*60')",
+ "('x} . degrees > arc.sec.','x*3600')",
+ "('x} deg,min,sec > deg.',DMStoDeg)",
+ "('x} . . .','')",
+ "('*} d.azimuth > bearing',AZtoBEAR)",
+ "('n} Rect.-Polar Convert',R_PCon)",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('','')");
+
+var Electri_nA = new Array("('Elect,Magnet. EMU >F','x*1000000000')",
+ "('x} capacit: ESU>Farad','x*1.11265E-12')",
+ "('x} charge/mole>Farad','x*1.036484E-5')",
+ "('x} . . Amp.hr>Faraday','x/26.811639')",
+ "('x} . . Amp.hr>Coulomb','x*3600')",
+ "('x} Coulomb > Faraday','x*1.03603431E-5')",
+ "('x} electron.volt>Joule','1.60219e-19')",
+ "('x} current Amp.>EMU','x/10')",
+ "('x} . . . Ampere > ESU','x/3.3356E-10')",
+ "('x} . . . Ampere > mA','x*1000')",
+ "('x} . . . A > abampere','x/10')",
+ "('x} . . . A > statampere','x/3.33564E-10')",
+ "('x} micrOhm.cm>O.cm','x*1e-6 //O.cm=Ohm.cm^2/cm')",
+ "('x} mO>circ.mil.Ohm/ft','x*6.0153049')",
+ "('x} mO>mOhm.in^2/in','x/2.54')",
+ "('','')",
+ "('x} induct: Henry>ESU','x/8.987554E11')",
+ "('x} . . . . . Henry > EMU','x/1.0E-9')",
+ "('x} m.fild:A/m>Oersted','x/79.5775')",
+ "('x} mmf: A.turn >gilbert','x*1.256637')",
+ "('x} . . .','')",
+ "('x} . . . gauss > tesla','x*1e-4')",
+ "('x} . maxwell > webber','x*1e-8')",
+ "('x} unit.pole>maxwell','x*12.5664')",
+ "('','')");
+
+var MscKCode="n[0]='_key_below_'; n[10]='_unicode_no_'; for (j=1;j<10;j++){n[j+10]=n[j].charCodeAt(0)}";
+ 
+var Misc_Un_nA = new Array("('Misc_Units each >doz.','x/12')",
+ "('x} . bytes > kilobyte','x/1024')",
+ "('x} . each > score','x/20')",
+ "('x} . each > gross','x/144')",
+ "('x} each > ream(paper)','x/500')",
+ "('x} . . .','')",
+ "('n} Key > char code',MscKCode)",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('Ty}JScrap Call Name',' JScrAp Code here ')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('','')");
+
+var GrabNval="function GrabN(s){for (j=10;j<20;j++){n[j]=s[j-10]}} var j=n[1]; "; //fill s-array to n[10..20]
+var MatP="/* Material Properties are given in tables: Select->[JS]->[=]. Descriptors prefixed by * have ";
+  MatP +="additional beyond-cell info. [c]->[nx]->[n?] display in full in x-display.  Same process to ";
+  MatP +="transfer data from the n-cell to manipulate/convert units/apply in the x-display.*/"; 
+var Mat0=GrabNval+" n[0]='*__Material__characteristics can be highly variable, especially those that ";
+  Mat0 +="absorb water, eg. stone agg. & wood '; "+MatP;
+  Mat0 +="n[1]='*Specific Grav. water based: S.G =1 =1kg/liter =1g/cc =62.4lb/c.f =8.34lb/gal'; ";
+  Mat0 +="n[2]='atom.No/wt if an element'; n[3]='melt/boil C.deg'; n[4]='*therm.conductivity, ";
+  Mat0 +="water @20deg.C std. =0.346 Btu/hr.sf(deg.F/ft) =4.15 Btu/hr.sf.(deg.F/in) ";
+  Mat0 +="=0.006 Watt/cm.deg.C =0.00143 cal/sec.cm2(deg.C/cm) =1/R'; ";
+  Mat0 +="n[5]='*Specific Heat water std. =1Btu/lb.deg.F =1cal/g.deg.C =4186.8J/kg.C =1.163watt.h/kg.C'; ";
+  Mat0 +="n[6]='*coef.lin.expansion*E6 per deg.C eg. L1=L0*(1+coeff*(deg.C1-deg.C0))'; ";
+  Mat0 +="n[7]='*sound.speed m/sec'; n[8]='*Strength: tensile/yield/Mod of Elast, all kips/s.in'; ";
+  Mat0 +="n[9]='*electrical resistivity, ohm.cir.mil/ft =0.1662426 microhm.cm =0.06545 mOhm.in'; s =new Array";
+var MAcou=Mat0+"('Acoustic Tile',0.4,'','',0.1,'','','1600','',''); GrabN(s);";
+var MAir =Mat0+"('Air @ STP',0.00125,'N2%78,O2%21-,A%1-,CO2%.03,etc','',0.04,'','',340,'',''); GrabN(s);";
+var MAlum=Mat0+"('Aluminum',2.65,'Al 13/26.98','660/2467',368,0.226,23.8,16400,'13-24/5-22/10E3',18); GrabN(s);";
+var MAsph=Mat0+"('Asphalt, Tar',1.3,'','',1.23,0.22,'','','',''); GrabN(s);";
+var MBras=Mat0+"('Brass(.7Cu,.3Zn)',8.53,'','',210,0.0917,18.7,11400,'53/20/16E3',42); GrabN(s);";
+var MBron=Mat0+"('Bronze(.9Cu,.1Zn)',8.6,'','',49,0.086,27,1250,'61/54/17E3',65); GrabN(s);";
+var MBric=Mat0+"('Brick',1.9,'','',1.15,0.2,9.5,12000,'',''); GrabN(s);";
+var MCast=Mat0+"('Cast Iron',7.6,'Fe 26/55.85','1535/2750',79.3,0.119,79.3,16900,'25+//13E3',60); GrabN(s);";
+var MCCok=Mat0+"('Coal -coke',1.2,'','',1.6,0.36,'','','',''); GrabN(s);";
+var MCChr=Mat0+"(' -charcoal',2.4,'','',0.09,0.2,'','','',''); GrabN(s);";
+var MCCin=Mat0+"(' -cinders',0.7,'','','','','','','',''); GrabN(s);";
+var MCBit=Mat0+"(' -bituminous',1.35,'','',0.25,0.201,'','','',''); GrabN(s);";
+var MCAnt=Mat0+"(' -anthracite',1.55,'','','','','','','',''); GrabN(s);";
+var MCCLt=Mat0+"('Concrete, lite',1.6,'','',0.22,'','','','',''); GrabN(s);";
+var MCHol=Mat0+"('Conc, hollow core',1.55,'','',0.86,'','','','',''); GrabN(s);";
+var MCPla=Mat0+"('Conc, plain',2.3,'','',1.56,0.271,'','','0.55//',''); GrabN(s);";
+var MCRen=Mat0+"('Conc, reinforced',2.4,'','','','','','','',''); GrabN(s);";
+var MCopp=Mat0+"('Copper',8.9,'Cu 29/63.55','1083/2567',562,0.093,16.8,12500,'30-60//17E3',10.3); GrabN(s);";
+var MCork=Mat0+"('Cork',0.24,'','',0.04,0.485,'',1640,'',''); GrabN(s);";
+var MCorn=Mat0+"('Corn',0.7,'','','','','','','',''); GrabN(s);";
+var MCotH=Mat0+"('Cotton; Hemp',1.5,'','',0.04,0.362,'','','',''); GrabN(s);";
+var MEaDL=Mat0+"('Earth:dry loose',1.2,'','',0.3,'','','','',''); GrabN(s);";
+var MEaMP=Mat0+"('Earth:moist pack',1.6,'','',2.5,'','','','',''); GrabN(s);";
+var MEaSG=Mat0+"(' . Sand; Gravel',1.9,'','',1.5,'','','','',''); GrabN(s);";
+var MFlOa=Mat0+"('Flour; Oats',0.5,'','','','','','','',''); GrabN(s);";
+var MGaso=Mat0+"('Gasoline',0.7,'','',0.2,0.5,'','','',''); GrabN(s);";
+var MGold=Mat0+"('Gold',9.3,'Au 79/196.97','1064/2808',494,0.0321,14.3,6660,'17.5-30//10.8E3',14.7); GrabN(s);";
+var MGlFl=Mat0+"('Glass: flint',3.8,'','',1.7,0.18,7.88,12200,'',''); GrabN(s);";
+var MGlSi=Mat0+"('Glass: silica',2.2,'','',1.7,0.18,'',18900,'',''); GrabN(s);";
+var MGyps=Mat0+"('Gypsum',0.9,'','',0.72,0.26,'','','',''); GrabN(s);";
+var MHayB=Mat0+"('Hay, baled',0.3,'','','','','','','',''); GrabN(s);";
+var MInsB=Mat0+"('Insulation, bat',0.1,'','',0.07,0.16,'','','',''); GrabN(s);";
+var MInsR=Mat0+"('Insul, rigid board',0.3,'','',0.09,0.3,'','','',''); GrabN(s);";
+var MLead=Mat0+"('Lead',11.4,'Pb 82/207.2','327.5/1740',58,0.0297,29.4,3900,'3/2/2E3',124); GrabN(s);";
+var MMerc=Mat0+"('Mercury',13.6,'Hg 80/200.59','-38.9/356.6',13.9,0.0331,'',4750,'0','576'); GrabN(s);";
+var MOil=Mat0+"('Oil (variable)',0.9,'','','','','','','',''); GrabN(s);";
+var MPlsr=Mat0+"('Plaster',1.6,'','',1.24,'','','','',''); GrabN(s);";
+var MPlLu=Mat0+"('Plastic-lucite',1.18,'','','','','',6000,'',''); GrabN(s);";
+var MPlPs=Mat0+"('Plastic-polystyrene',1.06,'','','','','',7350,'7/5E3',''); GrabN(s);";
+var MPlNe=Mat0+"('Plastic-neoprene',1.33,'','','','','','','',''); GrabN(s);";
+var MSilv=Mat0+"('Silver',10.5,'Ag 47/107.87','961.9/2212',705,0.056,18.8,8790,'23-43/12-38/10.5E3',9.8); GrabN(s);";
+var MStel=Mat0+"('Steel',7.9,'','',75,0.118,13.6,'16800','60/36-60/30E3','60-600'); GrabN(s);";
+var MSton=Mat0+"('Stone s.g.x0.8 if crushed','','','','','','','','',''); GrabN(s);";
+var MStSa=Mat0+"('Stone, sand',2.3,'','','','','0.5 fused quartz','','',''); GrabN(s);";
+var MStLi=Mat0+"('Stone, lime',2.5,'','',1.6,0.2,'','','',''); GrabN(s);";
+var MStGr=Mat0+"('Stone, granite',2.65,'','',3.2-6,0.191,8.3,1250,'',''); GrabN(s);";
+var MStIO=Mat0+"('Stone, iron ore',5.2,'','','','','','','',''); GrabN(s);";
+var MTiCl=Mat0+"('Tile:shingles,clay',1.3,'','','',0.22,'',11400,'',''); GrabN(s);";
+var MTiAA=Mat0+"('Tile:asphalt/agg',1.5,'','',0.3,0.35,'','','',''); GrabN(s);";
+var MTiMa=Mat0+"('Tile: marble',2.7,'','',4.3,0.206,1-15,1250,'',''); GrabN(s);";
+var MTin=Mat0+"('Tin',7.36,'Sn 50/118.71','232/2270',108,0.0556,26.9,9000,'4//6E3',66); GrabN(s);";
+var MWatr=Mat0+"('Water, 4-degC',1.00,'','',1.00,1.00,'',4915,'',''); GrabN(s);";
+var MWSea=Mat0+"('Water, Sea','1.03','','','','','','','',''); GrabN(s);";
+var MWIce=Mat0+"('Water, Ice',0.9,'','',2.8,0.505,51,'','',''); GrabN(s);";
+var MWdCe=Mat0+"('Wood: Cedar',0.35,'','','','','','','.4-.7/.7-1/750',''); GrabN(s);";
+var MWdPS=Mat0+"('Wood: pine,spruce',0.45,'','',0.18,0.67,'','','.4-.7/.8-1.2/1.1e3',''); GrabN(s);";
+var MWdMW=Mat0+"('Wood: maple,walnut',0.6,'','','0.22-.29','0.45-.65',6.58,13500,'',''); GrabN(s);";
+var MWdPl=Mat0+"('Wood: plywood',0.6,'','',0.23,'','','','/1.2-2/.9-1.8e3',''); GrabN(s);";
+var MWdYR=Mat0+"('Wood: yel.pine,red.oak',0.65,'','',0.31,'','','','.8-1.2/1-1.8/1.7e3',''); GrabN(s);";
+var MWdWO=Mat0+"('Wood: white oak',0.77,'','',0.31,'','',12600,'',''); GrabN(s);";
+var MZinc=Mat0+"('Zinc',7.2,'Zn 30/65.39','419.6/907',187,0.095,26.3,12600,'10//',36.6); GrabN(s);";
+
+var Materia_nA = new Array("('Materials, Elements s}',MatP)",
+ "('x} . . .','')",
+ "('s} . Acoustic Tile',MAcou)",
+ "('s} . Air @ STP',MAir)",
+ "('s} . Aluminum',MAlum)",
+ "('s} . Asphalt, Tar',MAsph)",
+ "('s} . Brass(.7Cu,.3Zn)',MBras)",
+ "('s} . Bronze(.9Cu,.1Zn)',MBron)",
+ "('s} . Brick',MBric)",
+ "('s} . Cast Iron',MCast)",
+ "('s} . Coal-coke',MCCok)",
+ "('s} . . -charcoal',MCChr)",
+ "('s} . . -cinders',MCCin)",
+ "('s} . . -bituminous',MCBit)",
+ "('s} . . -anthracite',MCAnt)",
+ "('s} . Concrete-lite',MCCLt)",
+ "('s} . . -hollow core',MCHol)",
+ "('s} . . -plain',MCPla)",
+ "('s} . . -reinforced',MCRen)",
+ "('s} . Copper',MCopp)",
+ "('s} . Cork',MCork)",
+ "('s} . Corn',MCorn)",
+ "('s} . Cotton, Hemp',MCotH)",
+ "('s} . Earth-dry,loose',MEaDL)",
+ "('s} . . -moist,pack',MEaMP)",
+ "('s} . . -sand,gravel',MEaSG)",
+ "('s} . Flour, Oats',MFlOa)",
+ "('s} . Gasoline',MGaso)",
+ "('s} . Gold',MGold)",
+ "('s} . Glass-flint',MGlFl)",
+ "('s} . . -silica',MGlSi)",
+ "('s} . Gypsum',MGyps)",
+ "('s} . Hay, baled',MHayB)",
+ "('s} . Insulation-bat',MInsB)",
+ "('s} . . -rigid board',MInsR)",
+ "('s} . Lead',MLead)",
+ "('s} . Mercury',MMerc)",
+ "('s} . Oil (var)',MOil)",
+ "('s} . Plaster',MPlsr)",
+ "('s} . Plastic-lucite',MPlLu)",
+ "('s} . . -polyethylene',MPlPs)",
+ "('s} . . -neoprene',MPlNe)",
+ "('s} . Silver',MSilv)",
+ "('s} . Steel',MStel)",
+ "('s} . Stone x.8 crushed',MSton)",
+ "('s} . . -sandstone',MStSa)",
+ "('s} . . -limestone',MStLi)",
+ "('s} . . -granite',MStGr)",
+ "('s} . . -iron ore',MStIO)",
+ "('s} . Tile-shingles, clay',MTiCl)",
+ "('s} . . -asphalt,aggreg.',MTiAA)",
+ "('s} . . -marble',MTiMa)",
+ "('s} . Tin',MTin)",
+ "('s} . Water',MWatr)",
+ "('s} . . -seawater',MWSea)",
+ "('s} . . -ice',MWIce)",
+ "('s} . Wood-cedar',MWdCe)",
+ "('s} . . -pine,spruce',MWdPS)",
+ "('s} . . -maple,walnut',MWdMW)",
+ "('s} . . -plywood',MWdPl)",
+ "('s} . . -yel.pine, red oak',MWdYR)",
+ "('s} . . -white oak',MWdWO)",
+ "('s} . Zinc',MZinc)",
+ "('s} . . .','')",
+ "('s} . . .','')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('','')");
+
+var Math_Sc_nA = new Array("('Math_Science s} . Pi .','Math.PI')",
+ "('Nat.Log base, e','Math.E')",
+ "('common log (10) of e','Math.LOG10E')",
+ "('Euler constant','0.5772156649')",
+ "('Golden ratio','1.61803398875')",
+ "('','')",
+ "('Unified AMU, g','1.66053873E-24')",
+  "('hydrogen atom mass','1.67339E-24 // g')",
+ "('electron mass, g','9.10938188E-28')",
+ "('proton mass, g','1.67262158E-24')",
+ "('','')",
+ "('Avagadro No./mole','6.02214199E23')",
+ "('pres.vol of gas','2271.16 // joules/mole at 0C & 0 pressure')",
+  "('mole vol,ideal gas,stp','0.022413996 //m^3/mol')",
+ "('','')",
+ "('Boltzmann con, J/K','1.3806503E-23')",
+ "('Faraday, coulomb','96484.6')",
+ "('Fermi coupling con,','1.16639E-5 // Ge/v^2')",
+ "('Gravitational con,','6.673E-11 // m^3/kg/s^2')",
+ "('std.accel.Grav, m/s^2','9.80665')",
+ "('permiability of space,','8.854187817E-12 //N/A^2')",
+ "('permitivity of space,','1.2566370614E-6 //F/m')",
+ "('Plank constant, J.s','6.62606876E-34')",
+ "('Stefan-Boltzmann,','5.6704E-8 // W/m^2/K')",
+ "('Wien displac.law con,','0.0028977686 // m K')",
+ "('strong coupling con,','0.1185')",
+ "('weak mixing angle','0.23117')",
+ "('W boson mass,','80.419 // Ge/v^2')",
+ "('Z boson mass,','91.1882 // Ge/v^2')",
+ "('','')",
+ "('sound speed, air, m/s','340')",
+ "('light speed c, m/sec','299792458')",
+ "('light speed c, mi./sec','186300')");
+ 
+var Geo_Phy_nA = new Array("('Geo_Physical cnst. s}','Earth characteristics')",
+ "('s} . . Earth mass, kg','5.97E24')",
+ "('s} radius @Equator,km','6378.388')",
+ "('s} radius @ Poles, km','6356..912')",
+ "('s} mean density, g/cc','5.522')",
+ "('s} atmos. press, bars','1.013')",
+ "('s} . . .','')",
+ "('x} deg.latitude>naut.mi','x*60')",
+ "('x} naut.mile > stat. mi','x*1.15078 //=1852 m =6076.115 ft')",
+ "('*} deg.longitude, n.mi.','Math.cos((/*lat.deg*/ )*Math.PI/180)*60')",
+ "('x} deg.longitude > hour','x/15')",
+ "('s} . . .','')",
+ "('s} inclin. to axis, deg','23.45')",
+ "('s} rotation period, hrs','23.9')",
+ "('s} revolution per., day','365.26')",
+ "('s} avg. orbit vel, mi/s','18.46')",
+ "('s} escape vel, mi/sec','6.96')",
+ "('s} . . .','')",
+ "('s} avg.dist.to Sun, mi','92960000')"); 
+ 
+var Prefixe_nA = new Array("('Prefixes to Units s}','names for powers')",
+ "('s} . . .yotta- Y','1E24')",
+ "('s} . . .zetta- Z','1E21')",
+ "('s} . . .exa-   E','1E18')",
+ "('s} . . .peta-  P','1E15')",
+ "('s} . . .tera-  T','1E12')",
+ "('s} . . .giga-  G','1E9')",
+ "('s} . . .mega- M','1E6')",
+ "('s} . . .kilo-  k','1E3')",
+ "('s} . . .hecto- h','1E2')",
+ "('s} . . .deka- da','1E1')",
+ "('s} . -no prefix','1')",
+ "('s} . . .deci-  d','1E-1')",
+ "('s} . . .centi- c','1E-2')",
+ "('s} . . .milli- m','1E-3')",
+ "('s} . . micro- mu','1E-6')",
+ "('s} . . .nano-  n','1E-9')",
+ "('s} . . .pico-  p','1E-12')",
+ "('s} . . .femto- f','1E-15')",
+ "('s} . . .atto-  a','1E-18')",
+ "('s} . . .zepto- z','1E-21')",
+ "('s} . . .yocto- y','1E-24')");
+ 
+var dec_bin="var j=(/*start No.*/ ); for(i=j;i<j+20;i++){n[i-j]=i+', '+i.toString(2)}";
+var dec_oct="var j=(/*start No.*/ ); for(i=j;i<j+20;i++){n[i-j]=i+' octal,'+i.toString(8)}"; 
+var ASCIIhex="var j=(/*start No.*/ ); for(i=j;i<j+20;i++){var k=i.toString(16); ";
+  ASCIIhex +="n[i-j]=i+' hex,'+k+' .'+unescape('%'+k)}";  //**JS** toString(); unescape()
+var dec_bse="var j=(/*start No.*/ ); var k=(/*2 to 36: base:*/ ); for(i=j;i<j+20;i++) ";
+  dec_bse +="{n[i-j]=i+' b'+k+','+i.toString(k)}";
+var CharSin="var j=(/*SIN deg.start*/ ); var k=(/*deg.increm.*/5 ); for(i=0;i<20;i++) ";
+  CharSin +="{n[i]='sin('+(j+i*k)/1+')='+Math.sin((j+i*k)*Math.PI/180)};";
+var CharCos="var j=(/*COS deg.start*/ ); var k=(/*deg.increm.*/5 ); for(i=0;i<20;i++) ";
+  CharCos +="{n[i]='cs('+(j+i*k)/1+')='+Math.cos((j+i*k)*Math.PI/180)};";
+var CharTan="var j=(/*TAN deg.start*/ ); var k=(/*deg.increm.*/5 ); for(i=0;i<20;i++) ";
+  CharTan +="{n[i]='tan('+(j+i*k)/1+')='+Math.tan((j+i*k)*Math.PI/180)};";
+var CharLn="var j=(/*LN start*/ ); var k=(/*increm.*/1 ); for(i=0;i<20;i++) ";
+  CharLn +="{n[i]='ln('+(j+i*k)/1+')='+Math.log(j+i*k)};";
+var CharLog="var j=(/*LOG start*/ ); var k=(/*increm.*/1 ); for(i=0;i<20;i++) ";
+  CharLog +="{n[i]='log('+(j+i*k)/1+')='+Math.log(j+i*k)*Math.LOG10E};";
+var ChaRoot="var j=(/*SQUARE ROOT start*/ ); var k=(/*increm.*/1 ); for(i=0;i<20;i++) ";
+  ChaRoot +="{n[i]='sr('+(j+i*k)/1+')='+Math.sqrt(j+i*k)};";
+var CharPow="var j=(/*POWER base start*/ ); var ex=(/*exponent*/ ); var k=(/*increm.*/1 ); ";
+  CharPow +="for(i=0;i<20;i++) {n[i]=(j+i*k)/1+'p'+ex+'='+Math.pow(j+i*k,ex)};";
+var CharFac="var k=(/*FACTORIAL start*/ ); for (j=k;j<20;j++) {n[j-k]=j+'!='+fact(j)};"; 
+
+var Charts__nA = new Array("('Charts_Series, misc. s}','various series, display in n[]')",
+ "('*} . . decimal, binary',dec_bin)",
+ "('*} . . decimal, octal',dec_oct)",
+ "('*} . . dec, hex, ASCII',ASCIIhex)",
+ "('*} . . dec, spec. base',dec_bse)",
+ "(' . . .','')",
+ "('*} . . Sine function',CharSin)",
+ "('*} . . Cosine function',CharCos)",
+ "('*} . . Tangent function',CharTan)",
+ "('*} . . natural log(e)',CharLn)",
+ "('*} . . common log(10)',CharLog)",
+ "('*} . . square roots',ChaRoot)",
+ "('*} . . power function',CharPow)",
+ "(' . . .','')",
+ "('*} . . factorial',CharFac)",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('','')");
+/* 
+**  **  #####  ###*  ************************************************************** H5.2 **
+**  **  #         #
+******  ####     #     Catagory 2: Default Selection of Ordinary Math Functions
+**  **      #   #
+**  **  ####   ####  *********************************************************************
+*/
+var TAPEplace="if (m==''){TAPE=''} else {TAPE+=' + '+m; x=xTemp}";
+ 
+var Ordinar_nA =  new Array("('Ordinary Math x}. (x)^2','Math.pow(x,2)')", 
+ "('*} Timer - Stopwatch',Time_Stop)",
+ "('x} . . factorial . . . x! ','fact(x) //pos integer assumed; Source in upper area of code.')",
+ "('(opp/hyp, deg.) . sin(x)','Math.sin(x*Math.PI/180)')",     // **JS** Math.sin
+ "('(adj/hyp, deg.) . cos(x)','Math.cos(x*Math.PI/180)')",     // **JS** Math.cos
+ "('(opp/adj, deg.) . tan(x)','Math.tan(x*Math.PI/180)')",     // **JS** Math.tan
+ "('x} . degrees > radians','Math.PI/180 *x')",                // **JS** Math.PI
+ "('*} Pythagorean hyp.','m=Math.sqrt(Math.pow((/*side1*/ ),2)+Math.pow((/*side2*/ ),2))')",
+ "('*} Pythagorean side','m=Math.sqrt(Math.pow((/*hyp*/ ),2)-Math.pow((/*side*/ ),2))')",
+ "('','')",                                                    // **JS** Math.sqrt (above)
+ "('(for deg.) .  .  arc sin(x)','Math.asin(x)*180/Math.PI')", // **JS** Math.asin
+ "('(for deg.) .  .arc cos(x)','Math.acos(x)*180/Math.PI')",   // **JS** Math.acos
+ "('(for deg.) .  .  arc tan(x)','Math.atan(x)*180/Math.PI')", // *-JS_* Math.atan
+ "('','')",
+ "(' . . natural log (base e)','Math.log(x)')",                // **JS** Math.log
+ "('exponentiation: . . e^x','Math.exp(x)')",                  // **JS** Math.exp
+ "(' common log (bse 10)','Math.log(x)*Math.LOG10E')",         // **JS** Math.LOG10E
+ "('anti-log(common)10^x','Math.pow(10,x)')",                  // **JS** Math.pow
+ "('','')",
+ "('Ty}JScrap Call Name',' JScrAp Code here ')",               // **JS** JScrAp
+ "('','')",
+ "('*} Count Down Timer',TimCntDn)",  // source code with Time_Functions
+ "('to 4-dec.places: round','Math.round(x*10000)/10000')",
+ "('x} . m -> TAPE',TAPEplace)",                               // **JS** TAPE
+ "('x} . TAPE -> x','x=TAPE')",
+ "('>Random Num. (0 - 1)','Math.random()')");                  // **JS** Math.random
+
+var Fj1_20 = "for (j=1; j<20; j++)"; //used for series expansions, eg. JavaScript w/o 'Math.'fcns
+var sinX="var i=1; var k=-1; var l=x; m=x; "+Fj1_20+"{i+=2; l=l*x*x; k=-k; m=m-l/(fact(i)*k)}";
+ // sin(x) =x -x^3/3! +x^5/5! -x^7/7! +...; x in radians, code convoluted to prevent string concatination. 
+var cosX="x=3.14159265359/2-x; "+sinX;
+var atnX="var i=1; var k=-1; if (x*x<1) {m=x; var l=x; "+Fj1_20+" {l*=x*x; i+=2; k=-k; m=m-k*l/i}}";
+ // for x^2<1: atan(x) =x -x^3/3 +x^5/5 -x^7/7 +... 
+  atnX +=" else {i=-1; var l=1/x; var m=3.14159265359/2; "+Fj1_20+" {k=-k; l*=x*x; i+=2; m=m-k/(l*i)}";
+ // for x>1: atan(x) =PI/2 +series{-1/x +1/3x^2 -1/5x^5 +...}; if x<-1: atan(x) = -PI/2 +series.
+  atnX +=" if (x<-1){m=m-3.14159265359}}";
+var lnX ="var a=(x-1)/(x/1+1); var i=1; var k=a; m=a; "+Fj1_20+"{i+=2; k=k*a*a; m+=k/i} m*=2";
+ // ln(x) =2*(a +a^3/3 +a^5/5 +...)
+ // limitations on series lnX: very good for small x, tho 0.03% error by x=8, and increasing
+var expX="var i=1; var k=1; m=1; "+Fj1_20+"{k*=x; i*=j; m+=k/i}"; // e^x =1 +x +x^2/2! +x^3/3! +...
+ // limitations on series expX: very good for small x, tho 0.03% error by x=15, & increasing
+ // note: power function x^y coded as exp(ln(x)*y); convert to common logs to avoid limitations?
+ 
+var Esoteri_nA =  new Array("('Esoteric Math *}. (x)^y','Math.pow(x,y)')",
+ "('(opp/hyp, rad.) . sin(x)','Math.sin(x)')",
+ "('(adj/hyp, rad.) . cos(x)','Math.cos(x)')",
+ "('(opp/adj, rad.) . tan(x)','Math.tan(x)')",
+ "('*} Pythagorean hyp.','m=Math.sqrt(Math.pow((/*side1*/ ),2)+Math.pow((/*side2*/ ),2))')",
+ "('*} Pythagorean side','m=Math.sqrt(Math.pow((/*hyp*/ ),2)-Math.pow((/*side*/ ),2))')",
+ "('x} 3.14159265359 = PI','Math.PI')",
+ "('s} reciprocal functions','csc=1/sin; sec=1/sin; cot=1/tan=cos/sin')",
+ "('s} . . general triangles','a+b+c=180=Math.PI //deg or radians; note-A is side opp. angle a')",
+ "('s} . . . . . . . law of sines','A/Math.sin(a) = B/Math.sin(b) = C/Math.sin(c)')",
+ "('s} . . . . law of cosines','A*A = B*B + C*C -2BC*cos(a); B*B = A*A + C*C -2AC*cos(b); etc')",
+ "('s} . . . .law of tangents','(A-B)/(A+B) = tan((a-b)/2)/tan((a+b)/2); etc')",
+ "('','')",
+ "('x} sin(x) ser.expans.',sinX)",
+ "('x} cos(x) = sin(PI/2 -x)',cosX)",
+ "('s} tan(x) = sin/cos','if Math not avail, code sinX & cosX, then do division')",
+ "('','')",
+ "('x} . degrees > radians','Math.PI/180 *x')",
+ "('x}(for rad.)  .  arc sin(x)','Math.asin(x)')",
+ "('x}(for rad.)  .arc cos(x)','Math.acos(x)')",
+ "('x}(for rad.)  .  arc tan(x)','Math.atan(x)')",
+ "('','')",
+ "('x} atan(x) ser.expans.',atnX)",
+ "('x} (from atan) asin(x)','x=x/Math.sqrt(1-x*x); '+atnX)",
+ "('s} (from asin) acos(x)','PI/2-asin(x)')",
+ "(' . . . . ','')",
+ "('x}Hyperbolic . sinh(x)','(Math.exp(x)-Math.exp(-x))/2')",
+ "('x} . . . . . . . . . . . . cosh(x)','(Math.exp(x)+Math.exp(-x))/2')",
+ "('x} . . . . . . . . . . . . tanh(x)','(Math.exp(x)-Math.exp(-x))/(Math.exp(x)+Math.exp(-x))')",
+ "('s} reciprocal functions','csch=1/sinh; sech=1/cosh; coth=1/tanh=cosh/sinh')",
+ "('','')",
+ "('x} . . . . . . . arc sinh(x)','Math.log(x/1+Math.sqrt(x*x+1))')",
+ "('x} . . . . . . . arc cosh(x)','Math.log(x/1+Math.sqrt(x*x-1))')",
+ "('x} . . . . . . . arc tanh(x)','Math.log((1+x/1)/(1-x/1))/2')",
+ "('','')",
+ "('x} natural log (base e)','Math.log(x)')",
+ "('x}<8,ln(x): ser. expans.',lnX)",
+ "('x} exponentiation: e^x','Math.exp(x)')",
+ "('x}<15,e^x: ser. expans',expX)",
+ "('','')",
+ "('','')",
+ "('','')",
+ "('','')");
+ 
+var QuadEq="/*[-b +/-sqrt(bb-4ac)]/2a =roots*/ n[1]='Quadratic eq'; n[11]='axx+bx+c=0'; n[0]='';";
+  QuadEq +=" n[12]='- - data'; n[10]=''; n[2]=''; n[3]='coeff. . a . . <'; n[4]='coeff. . ";
+  QuadEq +="b . . <'; n[5]='coeff. . c . . <'; n[16]=' - output -'; n[6]=''; n[7]=' =  = x = =>';";
+  QuadEq +=" n[8]=' = = or x =>'; var sr=Math.sqrt(n[14]*n[14]-4*n[13]*n[15]); ";
+  QuadEq +="n[17]=(-n[14]+sr)/(2*n[13]); n[18]=(-n[14]-sr)/(2*n[13]); n[9]=''; n[19]='';";
+ 
+var Algebra_nA = new Array("('Algebra . . . . . s} . terms','definitions & laws:')",
+ "('s} addition, subtraction','a+0 = a; a+b = b+a; a-b = -(b-a); a+(-a)=0')",
+ "('s} . . multiplication','ab = ba; 0*a=0; c(ab)=abc; c(a+b)=ca+cb; a(-b)=-ab; (-a)(-b)=ab')",
+ "('s} . . . . . . . division','a/b = 1/(b/a); a*(1/a)=1; (a/b)(b/a)=1')",
+ "('s} . . . . . . powers I','a^2 = aa; a^1=a; a^0=1; (a^x)(a^y)=a^(x+y); (ab)^x=(a^x)(b^x)')",
+ "('s} . . . . . .powers II','a^(-x) = 1/a^x; a^(1/x)=xth root of a; (a^x)^y=a^(xy)')",
+ "('s} . . . . . powers III','(a+x)^2 = a^2 +2ax + x^2; (a-x)^2 = a^2 -2ax +x^2')",
+ "('s} . . . . . powers IV','(a+b)^3 = a^3 +3ba^2 +3ab^2 +b^3')",
+ "('s} . . common logs','(base 10): let x=10^a, then log(x)=a; operates like natural logs')",
+ "('s} . Napierian logs','(base e): let x=e^a, then ln(x)=a; operates like common logs')",
+ "('s} . . . logarithms I','ln(xy)=ln(x)+ln(y); ln(1/x)=-ln(x); ln(x/y)=ln(x)-ln(y)')",
+ "('s} . . .logarithms II','ln(x^y)=y*ln(x); ln(x)=log(x)/log(e); log(x)=ln(x)/ln(10)')",
+ "('s} . . logarithms III','log(10)=1; log(1)=0; e^a = EXP(a)')",
+ "('s} . . . proportions','if a:b :: c:d or a/b=c/d, then ad=bc, a=bc/d, & (a+b)/b=(c+d)/d')",
+ "('s} . . .','')",
+ "('x} . . factorial . . . . x! ','fact(x)')",
+ "('s} . . .','')",
+ "('n} quadratic equation',QuadEq)",
+ "('','')");
+
+var RectCo="Axes x_ (abscissa), y| (ordinate), [& z/ if 3-dim.] at right angles. A point ";
+  RectCo +="is located by (x,y[,z]) where +x is right of origin (intersection), +y is above.";
+var PoleCo="Point located by (r,a) where r is dist. from origin, a is angle /_ measured from ";
+  PoleCo +="x-direction: + if counter-clockwise, toward the +y-direction.";
+var R_PCon="/*eg. from origin O(0,0) to rectang.coord. point P(3,4) -> r=5, a.deg=53.1;  ";
+  R_PCon +="the polar point of r=6, a.deg=30, gives the rectang.point x,y P(5.2,3).*/ ";
+  R_PCon +="n[0]='Rectangular'; n[10]='->_to_Polar_'; n[1]='. . . x . . <'; n[2]='. . . y . . <';";
+  R_PCon +=" n[3]=' = = r = = >'; n[4]=' = a deg >'; n[14]=Math.atan(n[12]/n[11])*180/Math.PI; ";
+  R_PCon +="n[13]=Math.sqrt(n[11]*n[11]+n[12]*n[12]); n[5]='__Polar__->'; n[15]='__Rectang__'; ";
+  R_PCon +="n[6]='. . . r . . <'; n[7]=' . a deg . <'; n[8]=' = = x = = >'; n[9]=' = = y = = >'; ";
+  R_PCon +="n[18]=n[16]*Math.cos(n[17]*Math.PI/180); n[19]=n[16]*Math.sin(n[17]*Math.PI/180);";
+var AnLine="2 points: (x1,y1) & (x2,y2): Dist, d=sqrt((x2-x1)^2+(y2-y1)^2); midpoint between=";
+  AnLine +="([x1+x2]/2,[y1+y2]/2); slope of line, a to x-axis =tan(a) =m =(y2-y1)/(x2-x1); ";
+  AnLine +="slope.intercept eq. of line: y=mx+b; Lines parallel if m1=m2, perpendicular if m1=-1/m2.";
+var EqLine="/*eg. P1(3,7), P2(5,17) -> P1-P2 dist.=10.2; line y =5x-8.*/ ";
+  EqLine +="n[0]='Point 1, x1 <'; n[1]=' . . . . . . . .y1<'; n[2]='Point 2, x2 <'; n[3]=";
+  EqLine +="' . . . . . . . y2 <'; var dx=n[12]-n[10]; var dy=n[13]-n[11]; n[4]='P1-P2 dist >';";
+  EqLine +=" n[14]=Math.sqrt(dx*dx+dy*dy); n[5]='line_equation'; n[15]='y = mx +b'; ";
+  EqLine +=" n[6]='. . slope, m >'; n[16]=dy/dx; n[7]='y-intercpt, b>'; n[17]=n[11]-n[16]*n[10]; ";
+  EqLine +="n[8]='give X (-> y)'; n[18]='give Y (<- x)'; if (n[9]=='') {n[9]=(n[19]-n[17])/n[16]} ";
+  EqLine +="else {n[19]=n[16]*n[9]+n[17]/1} //NOTE default is x solves y, clear x to solve from y";
+var AnCirc="gen. eq. Rect.: sq(x-Cx)+sq(y-Cy)=sq(r), where (Cx,Cy)=center of circle, r=radius. ";
+  AnCirc +="Polar Coord: sq(r)+sq(Cr)-2r*Cr*cos(a-Ca), where (Cr,Ca)=ctr.of circle. Special case";
+  AnCirc +=" if Origin (0,0)=center: sq(x)+sq(y)=sq(r); polar: r=numeric value of radius.";
+var AnConi="Locus of points, a constant ratio (eccentricity,e) of dist. from a point (focus,F) ";
+  AnConi +="and from a line (directrix,D). If d=dist.F-D: sq(x)+sq(y)=sq(e)sq(d-x); r=de/(1-e*cos(a))";
+  AnConi +=". The Conic =Ellipse if e<1; =Parabola if e=1; =Hyperbola if e>1.";
+var AnEllip="Conic e<1: sq(x-Ex)/sq(Sx)+sq(y-Ey)/sq(Sy)=1, where center=(Ex,Ey), Sx & Sy are ";
+  AnEllip +="semi-axes in x- & y-directions respectively, & as spec. cond. parallel || to axes.";
+var AnHyper="Conic e>1: sq((x-Ix)/b)-sq((y-Iy)/c)=1, (Ix,Iy)=intersection of asymptotes.";
+var PCurv="/*eg. if P1(1,1), P2(7,3), P3(13,11) -> equation: y = 0.0833xx -0.33x +1.25*/ ";
+  PCurv +="n[0]='2-d polynomial'; n[10]='axx+bx+c=y'; n[1]='x: input_pairs'; n[11]='y:_3_points_'; ";
+  PCurv +="n[5]='Coefficients>'; var A=(n[14]-n[12]-(n[13]-n[12])*(n[4]-n[2])/(n[3]-n[2]))/";
+  PCurv +="(n[4]*n[4]-n[2]*n[2]-(n[3]*n[3]-n[2]*n[2])*(n[4]-n[2])/(n[3]-n[2])); n[15]='a='+A; ";
+  PCurv +="var B=(n[13]-n[12]-A*(n[3]*n[3]-n[2]*n[2]))/(n[3]-n[2]); n[6]='b='+B; n[17]=''; ";
+  PCurv +="var C=n[12]-A*n[2]*n[2]-B*n[2]; n[16]='c='+C; n[7]=''; n[8]='enter_x_:_'; ";
+  PCurv +="n[18]='y:_computed'; n[19]=A*n[9]*n[9]+B*n[9]+C; // enter x=2 per eg. -> y=0.916";
+var mRegres="/*eg. P1(1,1), P2(7,3) -> y=1*pow(x,0.565); if x=2 -> y=1.48*/ ";
+  mRegres +="n[0]='Regres.form'; n[10]='A*pow(x,B)=y'; n[1]='x: input_pairs'; n[11]='y:_2_points_';";
+  mRegres +=" n[4]='Coefficients>'; function L(v){return Math.log(v)} var x1=L(n[2]); ";
+  mRegres +="var y1=L(n[12]); var x2=L(n[3]); var y2=L(n[13]); var B=(y2-y1)/(x2-x1); ";
+  mRegres +="var A=Math.exp(y1-B*x1); n[4]='Coefficients>'; n[14]='A='+A; n[15]='B='+B; ";
+  mRegres +="n[7]='enter_x_:_'; n[17]='y:_computed'; n[18]='>y='+A*Math.pow(n[8],B)";
+var nRegres="/* form A*pow(x1,B)*pow(x12,C)=y: 3-point enter for 3-unk. Each point has 2 x-";
+  nRegres +="var: input x1 to n0, x12 to n1, y1 to n11; similarly x2 to n2, x22 to n3, etc. ";
+  nRegres +="eg. (see Civil-hydrology) 1-acre sloping 3% -> Q2 =1.4cfs; 10ac @2% -> Q2 = 7.1cfs; ";
+  nRegres +="100ac @1% -> Q2=31.1cfs. => Regression Formula for 2-yr.events: ";
+  nRegres +="Q2 =0.8*pow(ac,.795)*pow(slope,.51) {note: some inputs choke algorithm}*/ ";
+  nRegres +="function L(v){return Math.log(v)} n[10]='<x1/x12,_y1:'; n[12]='<x2/x22,_y2:'; ";
+  nRegres +="n[14]='<x3/x32,_y3:'; var x1=L(n[0]); var x12=L(n[1]); var y1=L(n[11]); ";
+  nRegres +="var x2=L(n[2]); var x22=L(n[3]); var y2=L(n[13]); var x3=L(n[4]); var x32= ";
+  nRegres +="L(n[5]); var y3=L(n[15]); n[6]='Coefficients>';var R=(x3-x1)/(x2-x1); var ";
+  nRegres +="C=(y3-y1-R*(y2-y1))/(x32-x12-R*(x22-x12)); n[17]='C='+C; var B=(y2-y1-C*(x22-x12))";
+  nRegres +="/(x2-x1); n[7]='B='+B; A=Math.exp(y1-B*x1-C*x12); n[16]='A='+A; n[18]='<x/x1_>?y_'; ";
+  nRegres +="n[19]='>y='+A*Math.pow(n[8],B)*Math.pow(n[9],C); ";
+
+var Analyti_nA = new Array("('Analytic Geometry . . s}','graphic coordinates')",
+ "('s} Rectangular Coord.',RectCo)",
+ "('s} . . . . . . Polar Coord.',PoleCo)",
+ "('s} Rect.-Polar Convert','x=r*cos(a); y=r*sin(a); r=sqrt(xx+yy); tan(a)=y/x')",
+ "('n} Rect.-Polar Convert',R_PCon)",
+ "(' . . .','')",
+ "('s} . . line: ax+by+c =0',AnLine)",
+ "('n} . line equation, etc',EqLine)",
+ "('s} circle:ax^2+by^2=rr',AnCirc)",
+ "('s} . conic sections',AnConi)",
+ "('s} . . . .ellipse:',AnEllip)",
+ "('s} . . . parabola:','Conic e=1: sq(y-Vy)=b(x-Vx), (Vx,Vy)=virtex point, || to x-axis')",
+ "('s} . . .hyperbola:',AnHyper)",
+ "(' . . .','')",
+ "('n} parabola curve fit',PCurv)",
+ "(' . . .','')",
+ "('n} linear regress. 1-var',mRegres)",
+ "('n} linear regress.2-var',nRegres)",
+ "(' . . .','')",
+ "(' . . .','')",
+  "('','')");
+
+var FinanceBase="n[1]=' int. APR % <'; n[2]='no. of years<'; n[3]='periods / yr<'; ";
+  FinanceBase +="n[6]='int% /period>'; n[16]=n[11]/n[13]; var I=n[16]/100; var N=n[12]*n[13]; ";
+  FinanceBase +="var y=Math.pow(1+I,N); n[5]=' - OUTPUT -'; n[15]=' -------------'; ";
+var FinanceCR="/*CRF eg: 9%APR (=0.75%/mo.) for 36mo, repay $10000 @ $318/mo.*/ "+ FinanceBase;
+  FinanceCR +="n[0]='Cap_Recov:'; n[10]='(loan_repay)'; n[4]=' Principal $ <'; "; 
+  FinanceCR +="n[7]='Payments $>'; n[17]= n[14]*I*y/(y-1); n[8]='Total paid $>'; ";
+  FinanceCR +="n[18]=n[17]*N; n[9]='avg.int/per$>'; n[19]=(n[18]-n[14])/N";
+var FinanceCA="/*SPCAF eg: $1000 invested @9%APR for 10 yrs. becomes $2367.*/ "+ FinanceBase;
+  FinanceCA +="n[0]='Comp_Amt.'; n[10]='sgl_payment'; n[4]='P: banked $<'; "; 
+  FinanceCA +="n[7]=' in '+n[12] +' yr $>'; n[17]= n[14]*y; n[8]=' Total Int. $>'; ";
+  FinanceCA +="n[18]=n[17]-n[14]; n[9]='avg.int/per$>'; n[19]=n[18]/N";
+var FinanceCU="/*UCAF eg: @9%APR, $1000 invested/yr for 10yrs, yields $15193.*/ "+  FinanceBase;
+  FinanceCU +="n[0]='Comp_Amt.'; n[10]='uniform_pay'; n[4]='bank/per. $<'; "; 
+  FinanceCU +="n[7]=' in '+n[12] +' yr $>'; n[17]= n[14]*(y-1)/I; n[8]=' Total Int. $>'; ";
+  FinanceCU +="n[18]=n[17]-n[14]*N; n[9]='avg.int/per$>'; n[19]=n[18]/N";
+var FinancePs="/*SPPWF eg: @9%APR, $1000 needed in 10yrs; bank $422 now.*/ "+ FinanceBase;
+  FinancePs +="n[0]='Pres_Worth'; n[10]='sgl_payment'; n[4]='need in '+n[12]+'yr$<'; "; 
+  FinancePs +="n[7]='Bank Now $>'; n[17]= n[14]/y; n[8]=' Total Int. $>'; ";
+  FinancePs +="n[18]=n[14]-n[17]; n[9]='avg.int/per$>'; n[19]=n[18]/N";
+var FinancePu="/*UPWF eg: @9%APR, $1000 needed annually for 10yrs; bank $6418 now.*/ "+ FinanceBase;
+  FinancePu +="n[0]='Pres_Worth'; n[10]='uniform_pay'; n[4]='need / year $<'; "; 
+  FinancePu +="n[7]='Bank Now $>'; n[17]= n[14]*(y-1)/(y*I); n[8]=' Total Int. $>'; ";
+  FinancePu +="n[18]=n[14]*N-n[17]; n[9]='avg.int/per$>'; n[19]=n[18]/N";
+var FinanceSF="/*SFF eg: @9%APR, $1000 needed in 10yrs; bank $66 annually.*/ "+ FinanceBase;
+  FinanceSF +="n[0]='Sinking_Fund'; n[10]='uniform_pay'; n[4]='need in '+n[12]+'yr.$<'; "; 
+  FinanceSF +="n[7]='Bank/per.$>'; n[17]= n[14]*I/(y-1); n[8]=' Total Int. $>'; ";
+  FinanceSF +="n[18]=n[14]-n[17]*N; n[9]='avg.int/per$>'; n[19]=n[18]/N";
+var IntFact="Tables vary. The discrete interest factors: CRF SCAF, UCAF, SPWF, UPWF, & SFF, are ";
+  IntFact +="standard, end-of-period, where APR(annual percent rate)/(no.pay./yr)=effective ";
+  IntFact +="interest. Arithmatic series factors are extensions where a repeated regular payment ";
+  IntFact +="is required. When interest quoted at less than 1-year, effective annual interest = ";
+  IntFact +="SCAF-1. Interest compounded Continuously is handy when payments made at irregular times.";
+  IntFact +=" Factor is not much more than effective rate componuded 365 days/year.";
+var IntEff="var ipp=(/*Int.%/period*/ ); var n=(/*periods/yr*/ ); m='eff.%='+(Math.pow(1/1+ipp/100,n)-1)";
+  IntEff +="*100; /*eg. 1.5% per month (12x per year) = 19.56% anual effective interest rate.*/";
+var IntCont="n[0]='Cont.eff_i% <'; n[1]='no.perds, n <'; n[2]='Nom.int,_r%>'; ";
+  IntCont +="n[12]=Math.log(n[10]/100+1/1)*100; var r=n[12]/100; var f=Math.exp(r*n[11]); ";
+  IntCont +="n[3]='S.CapAmF >'; n[13]=f; n[4]='S.PresWrF >'; n[14]=1/f; n[5]='CapRecoF >'; ";
+  IntCont +="n[15]=r*f/(f-1); n[6]='U.PresWrF >'; n[16]=1/n[15]; n[7]='SinkFundF >'; ";
+  IntCont +="n[17]=r/(f-1); n[8]='U.CapAmF >'; n[18]=1/n[17]; n[9]=' . ArithSerF >'; ";
+  IntCont +="n[19]=1/(Math.exp(r)-1)-(n[11]/(f-1));";
+   
+var Finance_nA = new Array("('Finance fn} . . $ > Euro .','x*1.0034 //11-02 c} MUST UPDATE!')",
+ "('x} . . . $US > $Can','x*1.58 //c}11-02')",
+ "('x} . . . $ > Pound,Brit','x*0.6338 //c}11-02')",
+ "('x} . . . $ > Peso,Mex','x*10.124 //c}11-02')",
+ "('x} . . . $ > Yen','x*122.84 //c}11-02')",
+ "('x} . . . $ > Yuan','x*8.227 //c}11-02')",
+ "('','')",
+ "('','')",
+ "('n}Cap.Recov:loan pay',FinanceCR)",
+ "('n} sgl.pay: Comp.Amt.',FinanceCA)",
+ "('n} unif.pay: Comp.Amt.',FinanceCU)",
+ "('n} sgl.pay: Pres.Worth',FinancePs)",
+ "('n}unif.pay: Pres.Worth',FinancePu)",
+ "('n} unif.pay: Sink.Fund',FinanceSF)",
+ "('','')",
+ "('s} Interest Rate terms',IntFact)",
+ "('*} Effective Int. Rate',IntEff)",    //eg: int. @1.5%/month (12x/yr) = 19.56%/yr
+ "('n} Contin. Int. Factors',IntCont)",
+ "('','')",
+ "('','')",
+ "('','')");
+ 
+var JavaScr0="Samples of code. Note that program strings must be activated with the [js] key,";
+  JavaScr0 +=" initiated with the [=] key, fill in the unknowns, and [=] again to calculate.";
+var JS_sCal="sCal uses a limited set of JavaScript language elements, listed following: ";
+  JS_sCal +="(Use the browser->source text->find '**JS** code element name' as shown below to ";
+  JS_sCal +="view (hopefully sound) example.) alert & prompt dialog boxes; navigator & ";
+  JS_sCal +="screen properties; cookie operations; {MATH} Math.E; Math.PI; Math.LOG10E; Math.abs; ";
+  JS_sCal +="Math.acos; Math.asin; Math.atan; Math.cos; Math.exp; Math.log; Math.pow; Math.random;";
+  JS_sCal +="Math.round; Math.sin; Math.sqrt; Math.tan; {STRING} eval(x); x.indexOf(; length; ";
+  JS_sCal +="x.substr(; x.substring(; parseFloat(; parseInt(; charAt; charCodeAt; .slice(; split;";
+  JS_sCal +=" toString; unescape; {MORE} appName; document.captureEvents; inform; onkeypress; ";
+  JS_sCal +=".options; onLoad; isNaN; {TECHNIQUES} interpolation; fact(q) {regression}; ";
+  JS_sCal +="{TIME} .getDate(); .getDay(); .getFullYear(); .getMonth(); .getTime; ";
+var JavaScr1="n[0]='start point . <'; n[1]='increment . <'; n[2]='-- number --'; n[12]='-- ";
+  JavaScr1 +="value --'; for (i=1; i<8; i++) {n[2+i]=i; n[12+i]=parseInt(n[10])+i*n[11]}";
+var J_Graph="for (j=0;j<10;j++){n[j]=Math.round(Math.random()*120)}; /*<-generate data for eg.";
+  J_Graph +="->graph*/ var s='::::!::::!::::!::::!::::!'; var max=n[0]; var min=n[0]; for ";
+  J_Graph +="(j=1;j<10;j++){if (n[j]<min){min=n[j]} if (n[j]>max){max=n[j]}} var unit=";
+  J_Graph +="(max-min)/25; for (j=10;j<20;j++){n[j]=s.slice(0,Math.round((n[j-10]-min)/unit))}";
+  J_Graph +=" On(); m='Graph Random Data: base='+min+'; units/colon='+unit";
+var FcnGraf="/*Graphs a Function (eg. y=Math.sin(a) within the a-limits of 0 to 2*PI, & -1<y-limit<1).";
+  FcnGraf +=" These values, including the fcn, can be replaced in the following code.*/ ";
+  FcnGraf +="var s=' '; for (j=1;j<20;j++){s+=' '} s+=' | '+s; /*built std. blank, next set parameters.*/";
+  FcnGraf +=" var aStart=0; var aEnd=2*Math.PI; var yMin=-1; var yMax=1; var unit=(yMax-yMin)/20; ";
+  FcnGraf +="var loEnd=Math.abs(yMin/unit); s=s.slice(20-loEnd); var aIncrem=(aEnd-aStart)/10; ";
+  FcnGraf +="for (j=0;j<10;j++){var a=aStart +j*aIncrem; n[j]=Fo(a)+' a|y '+Fo(Math.sin(a)); ";
+  FcnGraf +="var i=Math.round(Math.sin(a)/unit+loEnd+1); n[j+10]=s.substr(0,i)+':'+s.substr(i+1);}";
+var Interp="n[0]='__x:_data__'; n[10]='__y:_data__'; for (j=1;j<7;j++){n[j]=j*2; n[j+10]=";
+  Interp +="Math.pow(n[j],1.6);} /*generate data for eg. ->do interpolation*/ n[7]='__x: input__'; ";
+  Interp +="n[17]='_interp. y:_'; if (n[8]<=n[1]){n[18]=n[11]+(n[8]-n[1])*(n[12]-n[11])/(n[2]-n[1])};";
+  Interp +=" for (j=1;j<6;j++) {if (n[8]>n[j]&&n[8]<=n[j+1]) {n[18]=n[j+10]+(n[8]-n[j])*";
+  Interp +="(n[j+11]-n[j+10])/(n[j+1]-n[j])} } if (n[8]>n[6]) {n[18]=n[16]+(n[8]-n[6])*"; 
+  Interp +="(n[16]-n[15])/(n[6]-n[5])}; n[9]=' actual y = >'; n[19]=Math.pow(n[8],1.6);";
+ 
+var JavaScr_nA = new Array("('s} JavaScript samples',JavaScr0)",
+ "('s} sCal used Elements',JS_sCal)",
+ "('n}start>increment code',JavaScr1)",
+ "('*} Square function','function Square(a) {return a*a} Square(/*insert no. to square*/ );')",
+ "('x} xEnd() function','xEnd()')",
+ "('','')",
+ "('x} Bar-Graph Example',J_Graph)",
+ "('x} Function Grapher','FcnGraf')",
+ "('n} Interpolate / Extrap.',Interp)",
+ "('','')",
+ "('s} str.>str.(geo time)',TimeGeo)", // Source code at Time_Fcns
+ "('n} data entry form 1',CivVC1)",  // Source at Civ_Highway, Survey
+ "('n} data for series 2',CivVC2)",  //  ditto
+ "('','')");
+
+var MenTerms="a=angle; b=base.width; d=diagonal; s=side; h=perpendicular.height; ";
+ MenTerms += "A=area; V=volume; ";
+var CirArc="/*_where arc subtended by /_ angle a-radians, defining a cord, h=dist. between ";
+  CirArc +="center of circle and center of cord.*/ arc.len =r*a; cord.len =2*Math.sqrt(r*r-h*h)";
+  CirArc +=" =2*r*Math.sin(a/2) =2*h*Math.tan(a/2); dist.cord-to-circumf.=H =r-h; ";
+  CirArc +="h =Math.sqrt(4*r*-cord.len^2)/2 =cord.len/(2*tan(a/2); A.sector =r*arc.len/2 = ";
+  CirArc +="r*r*a/2; A.segment =A.sector -A.triangle(ctr-cord) =r*r*(a-Math.sin(a))/2 ";
+  CirArc +="=r*r*arc.cos((r-H)/r) -(r-H)*Math.sqrt(2*r*H-H*H)";
+
+var Mensura_nA = new Array("('Mensuration .s} . terms',MenTerms)",
+ "('s} . . . Triangle','A = b*h/2')",
+ "('s} . . . Rectangle','A = b*h')",
+ "('s} . . . Parallelogram','A = b*h =b*s*Math.sin(a)')",
+ "('s} . . . Trapezoid','A = h*(b1+b2)/2')",
+ "('s} .gen.Quadrilateral','A = d1*d2/2*sin(a) //a is acute angle between diagonals d1, d2')",
+ "('s} reg.Polygon,n-sides','A = n*s*s/4*cot(180-deg/n)')",
+ "('s} . . . Circle, rad=r','A = Math.PI*r*r = Math.PI*D*D/4')",
+ "('s} . Circumference, C','C = 2*Math.PI*r = Math.PI*D')",
+ "('s} Cir.arc, cord, segm,',CirArc)",
+ "('s} . . . Ring','A= Math.PI*(r1*r1-r2*r2) =Math.PI*(r1+r2)*(r1-r2)')",
+ "('s} . . . Ellipse','A = Math.PI*semi.axis.major*semi.axis.minor')",
+ "('s} . . . Parabola','A = 2/3*b*h; height,h1 at given width,b1: h1 = (h/b^2)*(b*b-b1*b1')",
+ "('s} . . . ','')",
+ "('s} . . . Cube','V =s*s*s; A.all.surf. = 6*s*s; diagonal =s*Math.sqrt(3)')",
+ "('s} rect.Parallelepiped','V =a*b*c; A.surf =2*(a*b+b*c+c*a); diag =Math.sqrt(a*a+b*b+c*c)')",
+ "('s} . . . Prism','V = A.b * h')",
+ "('s} . . . Pyramid','V = A.b*h/3')",
+ "('s} . . . Cylinder','V = A.b * h; lateral.A.surf.rt.circ. =2*r*Math.PI')",
+ "('s} . . . Cone','V =A.b*h/3; Rt.Circ.Cone.A.b =Math.PI*r*r; A.surf =PI*r*Math.sqrt(r*r+h*h)')",
+ "('s} frustum rt.Cone','V =PI*h/3*(r1*r1+r1*r2+r2*r2); A.surf =PI*(r1+r2)*sqrt(h*h+(r1-r2)^2)')",
+ "('s} . . . Sphere','V =4/3*PI*r^3; V.sector =2/3*PI*h*r^2; A.surf =4*PI*r^2')",
+ "('s} . . . Ellipsoid','V =4/3*PI*a*b*c//semi-axes')",
+ "('s} . . . Torus','V =2*PI^2*R*r^2; A.surf =4*PI^2*R*r //R is large rad, r is small')",
+ "('','')",
+ "('Irregular Area s}terms','area is split into equally spaced, h.dist, cords meas. y0,y1,..,yn')",
+ "('s} . . Trapezoid rule','A =h/2*((y0+yn) +2*(y1+y2+...+y(n-1))')",
+ "('s} . . Simpsons rule','A =h/3*((y0+yn) +4*(y1+y3+y5...) +2*(y2+y4+y6+...))')");
+
+var PhysGen="Simplified formulae w/o calculus. Constants implied: eg. v=at may include an ";
+  PhysGen +="initial vel. v =v0 +at. Observe unit consistency.";
+var PhysKin="x =v*t =a*t^2/2; v =a*t =x/t =(2*a*x)^.5; //x:distance; v:velocity,x/sec; ";
+  PhysKin +="a:acceleration,x/sec^2; for freefall bodies a =g =9.8m/sec^2 =32.15ft/sec^2";
+var PhysVec="scalar magnitude + direction: a, angle to x_axis, [=(90-deg -a)to y|axis] ";
+  PhysVec +="V @.direct. to components: Vx =V*cos(@); Vy =V*sin(@); V=sqrt(Vx*Vx+Vy*Vy)";
+var PhyProj="initial vel.v; angle.@ to horiz: Vy=g*t: at top of arc, Vy=0, solve for t; ";
+  PhyProj +="returns to horiz. ground in t; then range, x =Vx*2*t";
+var PhyNewt="I. Object at rest or unif. motion continues: inertia (if Fy=Fx=0, a=0), II. unless ";
+  PhyNewt +="acted upon by unballanced force (F =ma); for which III. there is equal & opposite ";
+  PhyNewt +="reaction: Fx =-Fx. Ft=mv=m2v2 {impulse=momentum). Weight,w =mg. Mass,m is scalar.";
+var PhyFric="Ff =Cf*normal force, where coeff.frict, Cf for brake.mat-c.iron =.4, .2 if wet; steel-";
+  PhyFric +="steel =.58 clean, .1 oiled; Rubber-solids =.2 to .6; Ice =.1 @ 0degC, .3@-12, .5@-70C.";
+var PhyUGr="Newton: F=GmM/r^2; m & M are 2 masses, r ctrs.dist; G=6.673E-11 newton-meter^2/kg^2";
+var PhyWE="Work =Fs=force*dist.parallel to resisting F. Potential Energy: PE=Wh=mgh (against ";
+  PhyWE +="gravity). Input.Work: (F1s1=F2s2) =Output.Work/efficiency. Kinetic Energy: KE=mv^2/2 ";
+  PhyWE +=" Energy is Conserved.";
+var PhyPas="Pressure applied to incompressable fluid (liquid) is transmitted equally & normal to";
+  PhyPas +=" the walls throughout.";
+var PhyRot="follows pattern like translatory. angular a.vel*t; a.vel=a.acc*t =(2*a.acc*ang)^.5 ";
+  PhyRot +=" =2*PI*r*n.rev/sec. Convert: s=r*ang; v=rv; a=ra; ang in radians, r=radius";
+var PhySHM="approx. Unif. Circular Motion->Pendulum(ideal): T = 2p (L/g)^0.5 for swing +/-5deg.";
+var PhyWave="l=wave len, A=amplitude: v=nl.  standing cord wave: n=1/(2L)((N^2T)/m)^0.5 ";
+  PhyWave +="N, T, m, L =no. loops, tension, mass/length";
+var PhyTex="L=Lo(1+aT), a is coef.linear expansion; V=Vo(1+BT), B is coef.vol. thermal expans.";
+  PhyTex +=" B=>3a,  For gasses B=>1/273 (for deg.C)";
+var PhyHMeas="1 calorie (1 BTU) avg. raises temp. 1g (1 lb.) water 1 deg.C (deg.F). ";
+  PhyHMeas +=" 1BTU=778 ft-lb =252cal =1053joule";
+var PhyHCon="H/time=Ch*A*dT/thicknes; A=surf.area, dT=temp.dif Ch=Heat Conductivity. * selected";
+  PhyHCon +=" Ch as a fctr of water Ch=1, =0.348 BTU/(hr*sq.ft.*deg.F/ft.)=4.176 BTU/(hr*sq.ft.";
+  PhyHCon +="*deg.F/in.)=0.60 Watt/(sq.m.*deg.C/m)=.6W/m*deg.K=0.518 kcal./(hr*sq.m.*deg.C/m) ";
+  PhyHCon +=" Note: Insulation R-value =1/(Ch*water value)";
+var PTherm0="System placed in contact with an infinite environment (a thermal reservoir) ";
+  PTherm0 +="eventually comes to equlibrium with it. i.e. thermometer meas.";
+var PTherm1="When mechanical work is changed to heat, or heat to work, work=heat, but heat>work.";
+  PTherm1 +=" -precludes perpetual motion of 1st kind.";
+var PTherm2="No continuous self-sustained process moves heat from cold to hot. Entropy (disorder)";
+  PTherm2 +=" of isolated syst. can't drop. -no perpetual motion of 2nd kind.";
+var PTherm3="Absolute Zero (-273.16 deg.C) can't be achieved physically.";
+var PhyESU="Electrostatic Unit (ESU or Stat-Coulomb) = positive charge which repels a like charge ";
+  PhyESU +=" 1 cm apart in a vacuum with a force of 1 dyne (2.248E-6 pound). coulomb(6.25E18";
+  PhyESU +=" electron)/sec =ampere current,I";
+  
+var Physics_nA = new Array("('Physics . . . . . s} . terms',PhysGen)",
+ "('s} Motion (kinematics)',PhysKin)",
+ "('s} . . Vector Resolution',PhysVec)",
+ "('s} . . Projectiles',PhyProj)",
+  "('(kinetics) Newton laws',PhyNewt)",
+ "('s} . . Friction',PhyFric)",
+ "('s} Univ.law gravitation',PhyUGr)",
+ "('s} . Work, Energy',PhyWE)",
+ "('s} CIRCULAR motion','a(cir)=v^2/r; F(centripital)=mv^2/r')",
+ "('s} . Rotary kinematics',PhyRot)",
+ "('s} . Periodic Motion','frequency, n (cycles/s) =1/period, T')",
+ "('s} simpl harmonic mot.',PhySHM)",
+ "('s} . . .Wave Motion',PhyWave)",
+ "('s} . . .Doppler Effect','n.observed= n(v+/-v.observer)/(v-/+v.source)')",
+ "('s} electromag. spctrm','Light Speed, C=lf where l=wave length, f=frequency, c/s')",
+ "('s} . . . MATTER','Solid=fixed struct; Fluid=liquid, free surf.; or gas, fills container')",
+ "('s} . Hookes Law','within elastic limits, strain (distortion) is proportional to stress.')",
+ "('s} . . . Modulii','(Young)Elasticity: E=(F/A)/(dL/L); Bulk Mod: B=(F/A)/(dV/V)=P/(dV/V)')",
+ "('s} Density =m/Vol','Specific Gravity: S.g.x=density.x/density.water')",
+ "('s} . Pascals Principle',PhyPas)",
+ "('s} Liquid Pressure','P=h*density*g +P.over; h=ht of column (Atmos. 14.7psi=760mm Hg, etc')",
+ "('s} Archimedes princip.','Body in fluid is buoyed up by a force=weight of fluid displaced.')",
+ "('s} . Ideal Gas Law:','P1V1/T1=P2V2/T2, T=absol. temp, approx for real gas, best for H & He')",
+ "('s} Bernoulli Principle','dV1^2 + P1 = dV2^2 + P2')",
+ "('s} . . . HEAT','avg. atomic kinetic energy as meas. by temp.')",
+ "('s} . thermal expans',PhyTex)",
+ "('s} . heat measuremnt',PhyHMeas)",
+ "('s} . Change of State','water: heat.vaporization(boil)=540 cal/g; of fusion(freeze)=80 cal/g')",
+ "('s} . . .Heat Capacity','of x/water = Specific Heat of x.')",
+ "('s} . . Heat Conduction',PhyHCon)",
+ "('s} thermodynamics 0',PTherm0)",
+ "('s} . 1st Law Thermo .',PTherm1)",
+ "('s} . 2nd Law Thermo .',PTherm2)",
+ "('s} . 3rd Law Thermo .',PTherm3)",
+ "('s} ELECTricity & Mag',PhyESU)",
+ "('s} . Coulombs Law','F=(qq1)/(Kr^2); q=charge,ESU; r=separatn, K=dialectric const.(1 in vacuum)')",
+ "('s} Potnetial Difference','volts, V=IR, R,ohms(law)')",
+ "('s} . Electric Power','watts, P=IV=I^2R')",
+ "('s}Capacitor Reactnce','Xc=1/2pifC=V/I [A.C.]')",
+ "('s}Inductive Reactance','Xi=2pi/L=V/I [A.C.]')",
+ "('s}combined Impednce','Z=(R^2+(Xi-Xc)^2)^.5; V=IZ')",
+ "('s} Inverse Square law','Radiation Intensity,I decreases as inv.sq. of dist,r: Ir^2=I1r1^2.')",
+ "('s} . . .','')",
+ "('s} . . .','')",
+ "('s} . . Heisenberg','Uncertainty Principle: One cannot define both position & momentum of a particle.')",
+ "('s} . . Einstein','E=mC^2; m=m1/(1-(v^2/C^2))^0.5')");
+
+var MdataGet=" function MDG() {end =m.indexOf('/',start); temp = m.substr(start,end-start); start=end+1;} ";
+var MdataExtract=MdataGet+"var start=1; var end=0; MDG(); var lo=temp; var hi=temp; var i=0; "; 
+var ProbTerm="if P=probability of outcome, P1 +P2 +P3 +... =1 (certainty). Statistics derived from ";
+  ProbTerm +="representative data can determine probabilities.  DATA can be entered in sCal by several";
+  ProbTerm +=" means: <=20 points to n-array; >20 pts to memory; or random number generator to test. ";
+  ProbTerm +="Once DATA entered, run Stats on n-, or stats on m- or group- finds average, std.dev, etc."; 
+var StatRndm="var No=(/*No.of points*/ ); var d=(/*size 1 to */100);/*CLICK[=]*/ if (No>20){m='/'} ";
+  StatRndm +="for (j=0;j<No;j++) {temp=Math.round(Math.random()*d); if (No<21){n[j]=temp} else ";
+  StatRndm +="{m+=temp+'/'}}; //procedure loads No random data values (1 to d) in n-array or m-series;";
+var StatsN="var No=0; var Tot=0; for (j=0;j<20;j++){nI(j); if (n[j]!=''){Tot+=n[j]/1; No+=1}} var mean=Tot/No;";
+  StatsN +=" var variance2=0; for (j=0;j<20;j++){if (n[j]!=''){variance2+=Math.pow(n[j]-mean,2)}} var ";
+  StatsN +="Std_Dev0=Math.sqrt(variance2/No); Std_Dev1=Math.sqrt(variance2/(No-1)); var d=2; if (mean>100)";  
+  StatsN +="{d=0} if (mean<1){d=5} m='No of data points='+No+' Total='+Tot+' mean='+Mr(mean,d)+";//decimal out
+  StatsN +="' Standard Deviation(n)='+Mr(Std_Dev0,d)+' Std.Dev(n-1)='+Mr(Std_Dev1,d)";
+var StatsD="/*Enter data values one at a time in x-display, clicking [M+] after each (or simply start ";
+  StatsD +="the data with a slash '/', place '/' between data values & at END, then click [x>m]). When ";
+  StatsD +="finished, select 'Stats on m-DATA' or 'Group m-DATA' to analyse. CLICK[=] to initialize ";
+  StatsD +="m-cell for data string:*/ m='/';";
+var StatGp="var lw=(/*Set Group Ranges: Lowest value=*/ ); var r=(/*Range=*/ ); /*note: can enter odd-sized ";
+  StatGp +="ranges manually--in same format (comment out for-loop to do this).*/ for (j=0;j<9;j++){n[j] ";
+  StatGp +="=(lw+j*r)+'-'+(lw+(j+1)*r-1); n[j+10]=''} ";
+  StatGp +="n[9]='. >'+(lw+9*r); n[19]=''; /*Place DATA in m (see 'DATA > 20 pts') & CLICK[=]*/"+MdataExtract;
+  StatGp +=" start=1; do {MDG(); if (temp<lw){alert('value '+temp+' is less than least range '+lw)} var s=0; ";
+  StatGp +="for (j=0;j<9;j++){i=n[j].indexOf('-'); if (temp>=n[j].substr(0,i)/1 && temp<=n[j].substr(i+1)/1) ";
+  StatGp +="{n[j+10]=n[j+10]/1+1/1; s=1}} if (s!=1){n[19]=n[19]/1+1/1}} while (m.indexOf('/',start)>-1); ";
+var StatIn=MdataExtract+"var Tot=temp; var No=1; do {MDG(); if (temp!=''){Tot=Tot/1+temp/1; No+=1; ";
+  StatIn +="if (temp<lo){lo=temp} if (temp>hi){hi=temp}}} while (m.indexOf('/',start)>-1); var mean=Tot/No; ";
+  StatIn +="start=1; var variance2=0; do {MDG(); if (temp!=''){variance2+=Math.pow(temp-mean,2)}} ";
+  StatIn +="while (m.indexOf('/',start)>-1); n[0]='_Statistics_'; n[10]='data_from_m'; n[1]='No. of points'; ";
+  StatIn +="n[11]=No; n[2]='Total . . . . >'; n[12]=Tot; n[3]='Mean . . . . >'; n[13]=mean; n[4]='Std.dev.(n)";
+  StatIn +=" >'; n[14]=Math.sqrt(variance2/No); n[5]=' . . S.d.(n-1)>'; n[15]=Math.sqrt(variance2/(No-1)); ";
+  StatIn +="n[6]='range.low val'; n[16]=lo; n[7]=' . . .  . high val'; n[17]=hi; n[8]=' . mid-range >'; ";
+  StatIn +="n[18]=(hi/1+lo/1)/2; n[9]='copy m-data >'; n[19]=m;";
+var ProbComb="/*Number of outcomes for probability. eg. Have 6 books, can display 4 at a time; there are ";
+  ProbComb +="15 diff. combinations possible, but 360 if the order of the 4 books included. In 3 Binomial ";
+  ProbComb +="trials, where the probability of success, P(pass), is 0.8 in each trial, the prob. of only 1 ";
+  ProbComb +="success =0.096*/ n[0]=' . # of items <'; n[1]=' . r at a time <'; var s=n[10]-n[11]; n[2]='";
+  ProbComb +="Combinations'; n[12]='________'; n[3]='. possible r >'; n[13]=fact(n[10])/(fact(n[11])*fact(s));";
+  ProbComb +=" n[4]='Permutations'; n[14]='________'; n[5]='. orders of r >'; n[15]=n[13]*fact(n[11]); n[6]=";
+  ProbComb +="'Binoml.trials<'; n[7]=' . . P(pass) <'; n[8]=' . # passes <'; n[9]='probability >'; s=n[16]";
+  ProbComb +="-n[18]; n[19]=Math.pow(n[17],n[18])*Math.pow(1-n[17],s)*fact(n[16])/(fact(n[18])*fact(s));"
+var ProbPois="/*Where average rate defined for random events: eg. if avg. is 20 cars/min, in 0.5-min, EXACTLY";
+  ProbPois +=" 4 cars passing has a 1.9% chance.*/ n[0]='Poisson Dist.'; n[10]='_avg/interval'; ";
+  ProbPois +="n[1]='known rate <'; n[2]=' . rev.intervl<'; n[3]='x.occuranc<'; n[4]='x.probability>'; ";
+  ProbPois +="function PDist(s) {n[s]=Math.pow(n[11]*n[12],n[s-1])*Math.exp(-n[11]*n[12])/fact(n[s-1])} ";
+  ProbPois +="PDist(14); n[5]=' . . x2.occur <'; n[6]=' . . x2.prob. >'; PDist(16); n[7]=' . . x3.occur <'; ";
+  ProbPois +="n[8]=' . . x3.prob. >'; PDist(18); n[9]='sum of prob>'; n[19]=n[14]/1+n[16]/1+n[18]/1; ";
+var ProbNorm="/*Normal 'bell-curve' symmetrical about mean=median=mode. +/- 1 stdandard deviation covers ~68%";
+  ProbNorm +=" of data, +/- 2 s.d ~95%, 3 s.d virtually all. Probabilities,P, are areas under curve between ";
+  ProbNorm +="points. eg. if mean=10, std.dev=1; from point 8.5 (15% of norm) the area outside (2-tails) ";
+  ProbNorm +="=0.1336 or 13.4%; 43.3% will be on the low side of the mean, but still within 15% of it.*/ ";
+  ProbNorm +="n[0]='Normal_Distr.'; n[10]='sampl.represent'; n[1]=' . mean val <'; n[2]=' . std.deviat<'; ";
+  ProbNorm +="n[3]=' . . . . point.x <'; n[4]=' . x.ordinate >'; var s=n[13]-n[11]; n[14]=1/(Math.exp(s*s/";
+  ProbNorm +="(2*n[12]*n[12]))*n[12]*Math.sqrt(2*Pi)); n[5]='Z=(x-m)/s.d >'; var Z=s/n[12]; var Za=Math.abs(Z);";
+  ProbNorm +=" n[16]=1/Math.pow(1/1+Za*(0.04986735+Za*(0.02114101+Za*(0.00327763+Za*(0.0000380036+Za";
+  ProbNorm +="*(0.0000488906+Za*0.000005383))))),16); n[15]=Z; n[6]=' . P(2-tails) >'; n[7]=' . . P(m to x)>'; ";
+  ProbNorm +="n[17]=(1-n[16])/2; n[8]=' . . P(1-tail) >'; n[18]=n[16]/2;";
+var ProbX2="/*Hypothesis (Ho) Testing: Expected value,Ex, is compared to experimental observation,Ob, to ";
+  ProbX2 +="find if Ho behind Ex is probable. The Chi-Square statistic, X2 =sum(sq(Ob-Ex))/Ex, and degree of ";
+  ProbX2 +="freedom (d.f=No.Sets-1; if more than 1 group (+'blind'), d.f=(Sets-1)*(Groups-1)). eg. set of 100:";
+  ProbX2 +=" Ob: 45 got better, 25 worse, 30 same; but Ex was 1/3 (33.3)each case. X2 stat.=6.5 with d.f=2, ";
+  ProbX2 +=" results in a 4% chance that Ex was correct. NOTE that formula used here is approx: +/- 1% for ";
+  ProbX2 +="0.01<P<0.9 AND d.f<6. Layout here is for a SIMPLE case. n[17],n[18] are independent inputs of ";
+  ProbX2 +="X2 statistic and deg.of freedom for GENERAL cases.*/ n[0]='Chi-Square'; n[10]='experim.data';";
+  ProbX2 +=" n[1]='__observ__'; n[11]='__expect__'; n[6]='___data___'; n[16]='___d.f=2__'; function X2(s) ";
+  ProbX2 +="{return Math.pow(n[s-10]-n[s],2)/n[s]} n[5]=Mr(X2(12),2)+'|'+Mr(X2(13),2)+'|'+Mr(X2(14),2); n[7]=";
+  ProbX2 +="'INPUT X2 <'; var X=X2(12)/1+X2(13)/1+X2(14)/1; n[15]='<X2='+X; X=n[17]; n[8]=' deg.freed.<';";
+  ProbX2 +=" var d=n[18]; n[9]='probability >'; var o=Math.pow(0.734,1/d); var p=Math.pow(d,0.00816); ";
+  ProbX2 +="var q=Math.pow(d,1.58); var Pr=(-0.193+0.846*d-0.138*d*d+0.0059*d*d*d)*Math.pow(0.704*o*p,X)*";
+  ProbX2 +="Math.pow(X,(-26.36+8.8*q)/(156.4+1.58*d)); if (d<1.5){Pr*=1.2}; n[19]=Mr(Pr,2)";//~good @ 2 dec.pl.
+  
+var Probabi_nA = new Array("('Probability, Statistic s}',ProbTerm)",
+ "('s} DATA: <=20 points','Enter data (0 is legit, blank=pass) in cells. Use Stats on n-data to analyse.')",
+ "('*} DATA: random gen.',StatRndm)",
+ "('x} Stats on n-DATA',StatsN)",
+ "('*} DATA > 20 points',StatsD)",
+ "('n} Stats on m-DATA',StatIn)",
+ "('n} Group m-DATA',StatGp)",
+ "('*} n[1..19] > memory',DataNdM)", //source at Data Management, edit>select.all>copy>paste to text file>save
+ "(' . . .','')",
+ "('n} Combin,Permut,Bin.',ProbComb)",
+ "('n} Poisson Distribution',ProbPois)",
+ "('n} Normal Distribution',ProbNorm)",
+ "('n} Chi-Square Distrib',ProbX2)",
+ "(' . . .','')",
+ "(' . . .','')",
+ "(' . . .','')",
+ "(' . . .','')");
+
+var Time0 ="var now=new Date(); now.getTime();";
+var Months=" var MonthAr =new Array('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec');";
+var WeekDay=" var DayAr = new Array('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday');";
+var TimCntDn="var c=(/*Count Down from: seconds*/ );/*CLICK[=]*/ m=c; var a=new Date(); ";
+  TimCntDn +="while (m>0) {var b=new Date(); m=c-eval(b-a)/1000;} alert('Time Up'); ";
+var JSdate="Date is measured in milliseconds (86,400,000 ms/day) since midnight Jan 1, 1970 UTC. ";
+  JSdate +="Date object range is -100,000,000 days to 100,000,000 days relative to Jan 1, 1970 UTC. ";
+  JSdate +="Universal Time (UTC) [aka Greenwich Mean Time (GMT)] is rel. to local time set on system.";
+  JSdate +=" When date is entered as a string, form must be as 'Jan 4, 2003' with full 4-digit year.";
+var TimeDif="n[0]='Date_Difference'; n[10]='_Calculator_'; n[1]='. . NOW . . =>'; "+Time0+Months+WeekDay+" n[11]";
+  TimeDif +="=MonthAr[now.getMonth()]+' '+now.getDate()+', '+now.getFullYear(); n[12]='(note format)';";
+  TimeDif +=" n[3]='new date.1 <'; var New1=Date.parse(n[13]); n[4]=' . day of wk >'; var da=new Date(n[13]); ";
+  TimeDif +="n[14]=DayAr[da.getDay()]; n[16]='(neg.=past)'; n[5]='to d.1, days>'; n[15]=(New1-now)/86400000; ";
+  TimeDif +="n[7]='new date.2 <'; var New2=Date.parse(n[17]); n[8]='d.2-d.1, day>'; n[18]=(New1-New2)/86400000;";
+  TimeDif +=" n[9]=' . . . = years >'; n[19]=Mr(n[18]/365.24,3);";
+var TimeDDif="var d=(/*neg.=past: Days from Now*/ ); "+Time0+Months+" var s=Date.parse(now)+d*86400000; ";
+  TimeDDif +="var then=new Date(s); m=MonthAr[then.getMonth()]+then.getDate()+','+then.getFullYear();";
+var TimePal="n[0]='PALEO_pds'; n[10]='B.P. . 570 mil'; n[1]='Cambrian'; n[11]='-trilobites'; ";
+  TimePal +="n[2]='Ordovician'; n[12]='-coral 500 mil'; n[3]='Silurian'; n[13]='-clam 425 mil'; ";
+  TimePal +="n[4]=' - 1st land'; n[14]='-plant,animal'; n[5]='Devonian'; n[15]='-fern 395 mil'; ";
+  TimePal +="n[6]=' - anphibian'; n[16]='-shark,lungfish'; n[7]='Carboniferous'; n[17]='-insect 350m'; ";
+  TimePal +="n[8]=' - forest'; n[18]='-early reptile'; n[9]='Permian'; n[19]='conifer 290m';";
+var TimeMes="n[0]='MESO_pds'; n[10]='B.P. . 235 mil'; n[1]='Triassic'; n[11]=' -frog,turtle'; ";
+  TimeMes +="n[2]=' - 1st mammal'; n[12]='-1st dinosaur'; n[3]=' -pangea split'; n[13]=''; ";
+  TimeMes +="n[4]='Jurassic'; n[14]='-bird 190 mil'; n[5]=' - 1st flowers'; n[15]='-dinasaur age'; ";
+  TimeMes +="n[6]='Cretaceous'; n[16]=' . . . . . 130 mil'; n[7]=' - late dinosaur'; n[17]='-var.mammal'; ";
+  TimeMes +="n[8]=' - Rocky mts'; n[18]=''; n[9]=''; n[19]='';";
+var TimeQuat="n[0]='Quatenary_Pd'; n[10]='Epochs follow'; n[1]='Pleistocene'; n[11]='B.P. . 1.8 mil'; ";
+  TimeQuat +="n[2]=' -homo erectus'; n[12]='(1st human ancest)'; n[3]='-neanderthal'; n[13]=''; ";
+  TimeQuat +="n[4]='Holocene'; n[14]='modrn 0.01m'; n[5]=' -dark ages'; n[15]=' . . 0.001m'; ";
+  TimeQuat +="n[6]=' -moon landing'; n[16]=' . . 0.000035m'; n[7]=''; n[17]=''; n[8]=''; n[18]=''; ";
+  TimeQuat +="n[9]=''; n[19]=''; ";  
+var TimeCen="n[0]='CENO_periods'; n[10]='B.P. . . 65 mil'; n[1]='_Tertiary'; n[11]='Epochs follow'; ";
+  TimeCen +="n[2]='. Paleocene'; n[12]='-1st primates'; n[3]='. Eocene'; n[13]='-cats . . . 55m'; ";
+  TimeCen +="n[4]=' - bat,whale'; n[14]='-dog,penguin'; n[5]='. Oligocene'; n[15]='-monkey 38m'; ";
+  TimeCen +="n[6]='. Miocene'; n[16]='-bear . . . 26m'; n[7]=' - alps,himalayas'; n[17]='-grass,1st ape'; ";
+  TimeCen +="n[8]='. Pliocene'; n[18]='homo hab. 6m'; n[9]='/*Quaternary Pd*/'+TimeQuat; n[19]='[c][nx][n9][=]';";
+var TimeGeo="n[0]='_EON_*Era_'; n[10]='_years_B.P_'; n[1]='Archeon'; n[11]='4.6 bil.'; n[2]='- 1st bacteria'; ";
+  TimeGeo +="n[12]='4.2 bil'; n[3]='- Oxy to atm'; n[13]='3.5 bil'; n[4]='Proterozoic'; n[14]='2.5 bil'; ";
+  TimeGeo +="n[5]='-proista,amoeba'; n[15]='1.2 bil'; n[6]='Phanerozoic'; n[16]=' . . 570 mil';";
+  TimeGeo +="n[7]='/* Paleozoic */ '+TimePal; n[17]='[c][nx][n7][=]'; ";// example of calling another set
+  TimeGeo +="n[8]='/* Mesozoic */ '+TimeMes; n[18]=' . . 235 mil'; ";  // of data via string to expand table.
+  TimeGeo +="n[9]='/* Cenozoic */ '+TimeCen; n[19]=' . . . 65 mil';"; // Can extend from an extension, etc.
+  
+var Time_Fu_nA = new Array("('Time_Functns: x} Now','Date()')",
+ "('x}Time Code,milliSec.',Time0)",
+ "('x}Universal(GMT)time',Time0+' now.toUTCString()')",
+ "('','')",
+ "('*} Count Down Timer',TimCntDn)",
+ "('','')",
+ "('s} Dates in JavaScript',JSdate)",
+ "('*} . Days Difference',TimeDDif)",
+ "('n} . Date Difference',TimeDif)",
+ "('','')",
+ "('','')",
+ "('s} Geologic Timetable',TimeGeo)", // Source code at Time_Fcns
+ "('','')",
+ "('','')",
+ "('','')");
+/* 
+**  **  #####  ###  ************************************************************* H5.3 **
+**  **  #         #
+******  ####   ###    Catagory 3: Special Programs - Default Selection
+**  **      #     #
+**  **  ####   ###  *********************************************************************
+*/
+
+var CHorifC="! Orifice: Q = CoA(2gh)^0.5__where: \n";            // Following: 3 examples of
+  CHorifC +="Q: flow capacity, cu.ft/sec or cu.m/sec. \n";       // strings of JScrAps set up
+  CHorifC +="Co: orifice coeff. of contraction, 0.6 general \n"; // as user-programmable HELP
+  CHorifC +="----- equiv. culvert entrance approximate Ke \n";   // files: can give Table of
+  CHorifC +=" 0.60 - BOX: 45-deg wing, w/top rad. = 0.2 \n";     // values, define a formula,
+  CHorifC +=" 0.54 -   0-deg wings, square entr. . . = 0.7 \n";  // etc.  Starting '!' tells
+  CHorifC +=" 0.66 - PIPE: socket end projectg . . . = 0.2 \n";  // xWorks(s) function, by
+  CHorifC +=" 0.60 -   square edge in headwall. . . .= 0.5 \n";  // [>x], to show Alert box.
+  CHorifC +=" 0.52 -   projecting from fill . . . . . . . .= 0.7 \n";  // '\n' is a linefeed.
+  CHorifC +="A: area, square units, of opening \n";
+  CHorifC +="g: accel.gravity: 32.15ft- or 9.8m/sec^2 \n";
+  CHorifC +="h: head height to center of opening \n";
+  CHorifC +="___note-- sCal auto-deducts half height. \n";
+  CHorifC +="As suggested, an orifice may be used to \n";
+  CHorifC +="approximate a culvert entrance calculation. \n";
+  CHorifC +="--Know limitations before using!";
+var CHmanF="! Manning Equation for Normal Flow. \n";
+  CHmanF+= "---i.e. flow surface parallel to bottom. \n";
+  CHmanF+= "V = Cm * S^.5 * R^.667 / n ___ where: \n";
+  CHmanF+= "V: velocity, u (feet or meters), per second. \n";
+  CHmanF+= "Cm: coeff. based on u: 1 if meters; 1.486, ft. \n";
+  CHmanF+= "S: channel slope,u/u. sCal uses %: fall/100u \n";
+  CHmanF+= "R: hydraulic radius=(flow area)/(wet.perim) \n";
+  CHmanF+= "n: roughness coeff. depending on channel \n";
+  CHmanF+= " cover and alignment, see n-table below. \n";
+  CHmanF+= "____ also: Q=VA -by continuity, and \n";
+  CHmanF+= "Froude No.= V/(g*A/(top.width))^0.5 \n";
+  CHmanF+= "if froude less than 1, flow is subcritical; \n";
+  CHmanF+= " =1, critical; \n";
+  CHmanF+= " greater than 1, supercritical. \n";
+  CHmanF+= "--Know limitations before using!";
+var CHmanN="! Typical n-values __short list__ \n";
+  CHmanN +="0.009 - glass, plastic . . 0.012 - smooth conc. \n";
+  CHmanN +="0.018 - bare dirt; gunite; planks w/battens \n";
+  CHmanN +="0.025 - corrugat.metal; cut rock; conc.rubble \n";
+  CHmanN +="0.03 - mowed turf, straight; 8-in rip rap \n";
+  CHmanN +="0.04 - weeds, lite brush . . . 0.05 - denser \n";
+  CHmanN +="0.07 - winding, brushy channel, floodplain \n";
+  CHmanN +="0.12 - extremely weedy, brush, timber, pools \n";
+  CHmanN +="0.20 - nearly impenetrable -worst case";
+
+var Special_nA = new Array("('Special pg} root . (x)^.5','Math.pow(x,0.5)')",
+ "('','')",
+ "('n} Peak Flow, nwIL',CHpkILnw)", // source code at Civ_Hydro group 
+ "('n} Rational Meth, nwIL',CHratIln)",
+ "('n} Stormwater Storage',CHdet)",
+ "('!} HYDRO-ORIFICES',CHorifC)",
+ "('n} Hyd.Control Struct.',CHydCStr)",
+ "('!} HYDRO: Manning',CHmanF)",
+ "('!} HYDRO: n-values',CHmanN)",
+ "('n} Normal Open Chan.',CHydMan)",
+ "('','')",
+ "('n}Cap.Recov:loan pay',FinanceCR)", // source code at Finance group
+ "('n} sgl.pay: Comp.Amt.',FinanceCA)",
+ "('n} unif.pay: Comp.Amt.',FinanceCU)",
+ "('n} sgl.pay: Pres.Worth',FinancePs)",
+ "('n}unif.pay: Pres.Worth',FinancePu)",
+ "('n} unif.pay: Sink.Fund',FinanceSF)",
+ "('','')",
+ "('Ty}JScrap Call Name',' JScrAp Code here ')",
+ "('','')",
+ "('','')",
+ "('','')");
+
+var User_01_nA = new Array("('User_01 . . . . . blank set','Set-up for user function group')",
+ "('x} . . .','')",
+ "('Ty}JScrap Call Name',' JScrAp Code here ')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('','')");
+
+var User_02_nA = new Array("('User_02 . . . . . blank set','Set-up for user function group')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('','')");
+
+var User_03_nA = new Array("('User_03 . . . . . blank set','Set-up for user function group')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('','')");
+
+// GrabNval: sting containing function GrabN to populate s-array to n[st..en] located in Materials area
+var CivHS="/*Following stds tables based on typical values (IL DOT 1975). Consult local DOT. NOTES: ";
+  CivHS +="Design Hourly Volume, DHV, typically 10-20% of Average Daily Traffic, ADT, enclosed in [ ] ";
+  CivHS +="in tables. Slopes are denoted by horiz.dist : 1-vertical. Stopping Site Dist. approx. 6-sec";
+  CivHS +=" at design speed, Passing Site Dist.~25-sec. Minimum K (=L/A =vert.curve.length / algebraic";
+  CivHS +=" difference in grades) for drainage ~1.43. External, E=AL/8. Degree of Curve, D=5729.6/radius.";
+var CivHS0=GrabNval+" n[0]='Design, mph'; n[1]=' . . . Class'; n[2]='drainage, yr.';";
+  CivHS0 +=" n[3]='Site.d Stop,ft'; n[4]=' . . . . . Pass,ft'; n[5]='max.grade%'; n[6]='Sag Curve K'; ";
+  CivHS0 +="n[7]='Crest: Stop,K'; n[8]='Crest: Pass,K'; n[9]='Horiz: max,D'; s =new Array";
+var CivHS70=CivHS0+"(70,'Major','50-30[<750]',625,2500,'3up-5dn',1.45,2.6,23,3); GrabN(s,10,20);";
+var CivHS60=CivHS0+"(60,'Area Service','50-30[<750]',525,2100,5,1,1.6,17.49,5); GrabN(s,10,20);";
+var CivHS50=CivHS0+"(50,'Collectr[<750]','30-25',400,1800,6,0.75,0.9,9.84,7.5); GrabN(s,10,20);";
+var CivHS40=CivHS0+"(40,'Collectr[<250]',20,275,1500,7,0.55,0.55,6.83,12.5); GrabN(s,10,20);";
+var CivHS30=CivHS0+"(30,'Rd.Dist.[<150]','~10',200,1100,8,0.35,0.33,3.67,23); GrabN(s,10,20);";
+var  CivVC=" FCN. FOR VERT.CURVE CALCULATION*/ function GetEl(sta) {var xEl =0; if (sta/1 < PIst/1) ";
+  CivVC +="{xEl=PIel-(PIst-sta)*G1/100; if (sta/1>PCst/1){xEl+=Math.pow((sta-PCst)*2/L,2)*Ex}} else ";
+  CivVC +="{xEl=PIel-(PIst-sta)*G2/100; if (sta/1<PTst/1){xEl+=Math.pow((PTst-sta)*2/L,2)*Ex}} return xEl} ";
+         // Vert.Curve is example of a data entry screen, with the data saved for use in a next screen
+         // to generate a series of output values.  Data could also be entered directly or pasted from
+         // a text file.
+var CivVC1="/*READ! Vertical Curve contains 2 procedures: First for curve data: enter curve Length {eg.400};";
+  CivVC1 +=" grade,% to PI (all grades looking to increased stations, enter '-' for negative){eg.-2}; ";
+  CivVC1 +="PI station (do not insert '+'){eg. sta 10+00=1000} & elevation {eg.200.00}; & grade,% away from";
+  CivVC1 +=" PI {eg. 1}. The V.C. E- & K-values will be displayed {eg. 1.5 & 133.3}. An unk. odd station may";
+  CivVC1 +=" be input {eg. 950} to obtain elev. {eg.201.844}. The Curve Data is saved to m-memory to be used";
+  CivVC1 +=" to compute elevations for a series of stations in Vert.Curve Series. "+CivVC+"n[0]='Vert.Curv,";
+  CivVC1 +=" L<'; var L=n[10]; n[1]=' . . to PI G% <'; var G1=n[11]; n[2]=' . . PI station <';";
+  CivVC1 +=" var PIst=n[12]; n[3]='PI elevation<'; var PIel=n[13]; n[4]='away PI G%<'; var G2=n[14]; ";
+  CivVC1 +="var Ex=(G2-G1)*L/800; n[5]='E='+Ex; n[15]='K='+0.01*L/Math.abs(G2-G1); var PCst=PIst-L/2; ";
+  CivVC1 +="n[6]='pc.sta='+PCst; var PCel=PIel -G1*L/200; n[16]='pc.el='+PCel; var PTst=PIst/1+L/2; ";
+  CivVC1 +="n[7]='pt.sta='+PTst; var PTel=PIel/1 +G2*L/200; n[17]='pt.el='+PTel; n[8]='input station<'; ";
+  CivVC1 +="n[9]='<data to m)'; var xSt=n[18]; n[19]='elev '+GetEl(xSt); /*end DATA ENTRY, SAVE DATA to";
+  CivVC1 +=" m-mem.*/ m='VC.dta,'+L+','+G1+','+PIst+','+PIel+','+G2+','+PCst+','+PTst+','+Ex; ";
+var CivVC2="/*READ! Vert.Curve Data must first be input to m-memory. This can be done by running Vert.Curve";
+  CivVC2 +=" data or pasting previously saved data from a text file to the m-box. The first point 'VC.dta' ";
+  CivVC2 +="can be augmented with a name--include NO Comas! Then a series of stations based on starting ";
+  CivVC2 +="station {eg.700} & increment {eg.50} can be slisted. Can repeat by changing start or increment. ";
+  CivVC2 +=CivVC+"var VCd=m.split(','); L=VCd[1]; G1=VCd[2]; PIst=VCd[3]; PIel=VCd[4]; G2=VCd[5]; ";
+  CivVC2 +="PCst=VCd[6]; PTst=VCd[7]; Ex=VCd[8]; n[0]='list:start sta <'; L=VCd[1]; G1=VCd[2]; PIst=VCd[3]; ";
+  CivVC2 +="PIel=VCd[4]; G2=VCd[5]; PCst=VCd[6]; PTst=VCd[7]; Ex=VCd[8]; /*listing*/ var st=n[10]; ";
+  CivVC2 +="n[1]=' . increment<'; var i=n[11]; for (j=0;j<8;j++){xSt=st/1+j*i; n[j+2]='sta '+xSt; ";
+  CivVC2 +="n[j+12]='elev '+GetEl(xSt)}";
+
+var Civ_Hig_nA = new Array("('Civ_Highway, Survey','')",
+ "('s} __Geometric Stds__',CivHS)",
+ "('s} Std. 70-mph design',CivHS70)",
+ "('s} Std. 60-mph design',CivHS60)",
+ "('s} Std. 50-mph design',CivHS50)",
+ "('s} Std. 40-mph design',CivHS40)",
+ "('s} Std. 30-mph design',CivHS30)",
+ "('x} . . .','')",
+ "('n} Vert.Curve data.in',CivVC1)",
+ "('x} Vert.Curve series.out',CivVC2)",
+ "('n} H.Curv. tan.offset.dta','')",
+ "('x} . . .','')",
+ "('n} H.Curv. deflect.dta','')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('','')");
+
+var CHyd0="Q=V*A // Continuity Equation: for consistent units: cubic feet (or meters)/sec ";
+ CHyd0 += "= ft (or m)/sec, velocity * area, sq.ft (or sq.m). Without any inflow or outflow, ";
+ CHyd0 += "Q is constant between sections 1 & 2, therefore: V1*A1 = V2*A2.";
+var CHydB="Z1 +V1*V1/(2*g) +density*V1 = Z2 +V2*V2/(2*g) +frict.head +density*V2 //Bernoulli";
+var CHpkILnw="/*Hydrology highly dependent on local climate. These methods developed for northwest ";
+  CHpkILnw +="Illinois. US units; 3-variations: eg. 330 acres, 1% impervious, main channel slope= ";
+  CHpkILnw +="1.5%; output, in cfs, is for 4 recurrence intervals |2-yr|10yr||30yr|100y| the top, ";
+  CHpkILnw +="n5, row computed by a strictly local method, depending only on area; the second row, n6, ";
+  CHpkILnw +="modifies the first for urbanization; the 3rd row, n7, is from regional regression equations ";
+  CHpkILnw +="(Curtis,USGS,1987) for unmod. rural basins. By the eg. inputs, the 2-year peaks estim. ";
+  CHpkILnw +="114,116,97 cfs. 3.3 ft. on last line is APPROX. channel flow depth,2-yr (Prugh,USGS,1976).*/";
+  CHpkILnw +=" n[0]='_Peaks_cfs_'; n[10]='_for_n.w.IL_'; n[1]=' Drain acre<'; n[2]=' . imperv.%<'; ";
+  CHpkILnw +="n[3]=' ch.slope%<'; n[4]='Q-2_|_-10 cfs'; n[14]='30yr_|_100yr'; var A=n[11]; ";
+  CHpkILnw +="var i=n[12]; var s=n[13]; function OQ(q){var d=0; if (q<10){d=1} return Mr(q,d)} ";
+  CHpkILnw +="/*WinCo comp.*/ var Q2=1.56*Math.pow(A,0.74); if (A>3200){Q2*=(2.42-0.176*Math.log(A))}";
+  CHpkILnw +=" function WinCo(y){var Qy = Q2*(9*Math.pow(y,0.17)-7.2)/(1.8+Math.pow(y,0.17)); "; 
+  CHpkILnw +="return Qy} /* built-in rel. s decrease as A incr.*/ n[5]=OQ(Q2)+' | '+OQ(WinCo(10));";
+  CHpkILnw +=" n[15]=OQ(WinCo(30))+' | '+OQ(WinCo(100)); function WUrb(y){return WinCo(y)*(1+0.02*i)}";
+  CHpkILnw +="n[6]=OQ(Q2*(1+0.02*i))+' | '+OQ(WUrb(10)); n[16]=OQ(WUrb(30))+' | '+OQ(WUrb(100)); ";
+  CHpkILnw +="/*USGS comp.*/ function USG(y){var p=0.51*Math.pow(0.86,1/y)*Math.pow(y,0.028); ";
+  CHpkILnw +="return OQ(34*Math.pow(0.29,1/y)*Math.pow(y,0.11)*Math.pow(A/640,0.786)*Math.pow(s*52.8,p))}";
+  CHpkILnw +=" n[7]=USG(2)+' | '+USG(10); n[17]=USG(30)+' | '+USG(100); /*Depth comp.*/ n[8]='chan_depth';";
+  CHpkILnw +=" n[18]='_aprox_ft_'; function Ud(y){var r=0.283*Math.pow(1.14,1/y)*Math.pow(y,-0.02); ";
+  CHpkILnw +="return Mr(1.12*Math.pow(0.49,1/y)*Math.pow(y,0.104)*Math.pow(USG(2),r),1)}; ";
+  CHpkILnw +="n[9]=' '+Ud(2)+' | '+Ud(10); n[19]=' '+Ud(30)+' | '+Ud(100)";
+var CHratIln="/*Rational Formula: Q=ciA (based on 1-in/hr rainfall on 1 acre=1.008cfs) where c=runoff coeff.";
+  CHratIln +="=runoff/rainfall; {depend. on soils, cover, rain, etc.} ~.9-.95 impervious, ~.2-.3 pervious, ";
+  CHratIln +="composit~.45 for 25% imperv. urban subdiv, etc. i=rainfall,in/hr {key assumption: rain of ";
+  CHratIln +="duration of time of concentration, for flow to travel from most remote part of drainage basin,";
+  CHratIln +=" herein based on ISWS Bul.70 for NW Illinois. There is a subroutine using Kirpick equation for";
+  CHratIln +=" Tc, minutes, flow in natural channels, grass ditches, bare-dirt overland. Multiply by ";
+  CHratIln +="~2 grass overland, ~0.4 conc.sheet, ~0.2 paved channel: add components. Manual enter Final Tc.";
+  CHratIln +=" eg. for 100-yr event, with channel travel 2300-ft & 50-ft fall yields 13.22-min in channel, ";
+  CHratIln +="Enter 20-min to add ~7-m sheetfl (300ft w/4ft fall)x2 to channel (all depends on basin config.)";
+  CHratIln +=" With c=0.3 on 48 acres. Routine calculates 7 in/hour for 20-min, 100-yr rain [Total rain in ";
+  CHratIln +="this time would be 7in/hr*20min/60min/hr =2.33-in.] Resulting Q=101-cfs.*/ n[1]='Design Yr. <';";
+  CHratIln +="n[0]='Rational_nwIL'; n[10]='_Q=ciA_cfs_'; n[2]='travel.dist,ft <'; n[3]=' . .Tc. . fall,ft <';";
+  CHratIln +=" n[4]='partl Tc,min>'; var d=n[12]; n[14]='__'+Mr(0.00781*Math.pow(d*d*d/n[13],0.385),2)+'__'; ";
+  CHratIln +="n[5]='Fin. Tc,min <'; n[6]='compos. c <'; n[7]='drain.acres<'; n[8]='rain, i, in/hr >'; ";
+  CHratIln +="n[18]=0.9465*Math.pow(0.843,1/n[11])*Math.pow(n[11],0.204)/(0.11+0.0211*Math.pow(n[15],0.805));";
+  CHratIln +=" n[9]=' . . . . Q, cfs >'; n[19]=n[16]*n[17]*n[18];";
+var CHdet="/*2 calculations presented: first is a one-step route, VERY approximate but applicable ";
+  CHdet +="anywhere, uses a triangular inflow hydrograph clipped by a triangular (at least on the ";
+  CHdet +="rising limb) outflow at the time to peak of outflow. eg. 250cfs inflow peak at 30 minutes ";
+  CHdet +="can be reduced to 200cfs outflow if about 2.5 acre.ft of storage applied. Secondly, in an ";
+  CHdet +="algorithm tied to ISGS Bulletin 70 for Northwestern Illinois, the area and runoff coeff.";
+  CHdet +=" and allowable release rate (in cfs per acre developed) are used to return a factor in ";
+  CHdet +="ft.depth of storage required which becomes acre feet when multiplied by the acreage, eg. ";
+  CHdet +="50 acres developed to a C-value of 0.95, if the allowable release is 0.2cfs/acre, needs 17.2";
+  CHdet +=" acre.feet of stormwater detention volume.*/ n[0]='Storage_Vol.'; n[10]='_acre_feet_'; ";
+  CHdet +="n[1]='1-st pk, cfs <'; n[2]='. min. to pk<'; n[3]='. outflo,cfs <'; n[4]='vol.req. ac.ft>';";
+  CHdet +=" n[14]=(n[11]-n[13])*n[12]/600; n[5]='_nwIl_acre <'; n[6]='. runoff coef.<'; n[7]=";
+  CHdet +="'. 0ut, cfs/ac <'; n[8]='stor.depth, ft>'; n[18]=0.27*n[16]/Math.pow(n[17],0.25) -0.04;";
+  CHdet +=" n[9]='vol.req. ac.ft>'; n[19]=n[18]*n[15];";
+var CHydCStr="/*Three control structures share head Input. eg. with 2.75ft head, a 10ft long, broad ";
+  CHydCStr +="crested weir spills 141 cfs. Using the same head, a rectangular orifice, 1ft wide by ";
+  CHydCStr +="0.5ft high, passes 3.8cfs, a round orifice, 0.75ft (9-inch) dia. delivers 3.3cfs.*/";
+  CHydCStr +="n[0]='Head feet . <'; n[1]=' - WEIR Q ='; n[11]=' 3.1L*H**1.5'; n[2]='length, feet <'; ";
+  CHydCStr +="n[3]='= Flow, cfs . >'; n[13]=3.1*n[12]*Math.pow(n[10],1.5); n[4]='-ORIFICE Q='; ";
+  CHydCStr +="n[14]='0.6A(2gh)**.5'; n[5]='Rect:width ft<'; n[6]=' . . . height,ft.<'; n[7]=n[3]; ";
+  CHydCStr +="n[17]=0.6*n[15]*n[16]*Math.pow(2*32.15*(n[10]-n[16]/2),0.5); n[8]='Circ: Dia. ft. <'; ";
+  CHydCStr +="n[9]=n[3]; n[19]=0.6*3.1416*n[18]*n[18]/4*Math.pow(2*32.15*(n[10]-n[18]/2),0.5)";
+var CHydMan="/*For Normal Flow: by gravity only, surface parallel to channel bottom.  v, ft/sec =1.486*pow";
+  CHydMan +="(Hyd.rad,2/3)*sqrt(s,ft/ft)/n & Q=vA. {Hydraulic Radius =area of section,A/wetted perimeter}.";
+  CHydMan +=" n =Manning roughness coeff. ~.009-.012 plastic,glass,conc.pipe; ~.013-.025: clay,brick,to ";
+  CHydMan +="asphalt; ~.02-.025: corr.metal:paved bottom to plain; ~.025-.03: channel, straight,dirt to ";
+  CHydMan +="short grass; ~.035-.04: smooth rip.rap to weedy; ~.06-.14+: brushy, winding, to extremely ";
+  CHydMan +="dense. sCal uses a single form for full-pipe & trapezoidal channel analysis, so the n- & s-";
+  CHydMan +="inputs are shared. One ignores the inappropriate output. eg: a conc.pipe and a conc.channel,";
+  CHydMan +=" both with n=0.012 & s=0.5% (.5ft fall per 100ft run). The PIPE has dia. 1.25ft (15-inches) ";
+  CHydMan +="yielding v=1.23 sq.ft & a Normal Q of 4.9cfs. The CHANNEL has a left side slope of 4:1 (4 ";
+  CHydMan +="units horiz to 1 vert.); bottom width of 4ft, & right side slope of 2:1. Assuming a flow ";
+  CHydMan +="depth of 1.5ft: the top width is 15ft, Froude no. of 1.52 (>1, supercritical), v=8.8ft/sec,";
+  CHydMan +=" and Q=139 cfs. [Note the flexibility of trapezoidal shape: v-ditch if bot.wid set to 0, ";
+  CHydMan +="box-shape if side.slopes=0. As a trick feature, if either lt, rt or both side slopes set to ";
+  CHydMan +="exactly 0.01, the respective boundry is ignored in the wet.perim calculation, allowing ";
+  CHydMan +="subsections of complex channel/floodplain to add manually.]*/";
+  CHydMan +="n[0]=' Manning n <'; n[1]='lon.slope%<'; var sn=1.486*Math.sqrt(n[11]/100)/n[10]; /*<COMMON ";
+  CHydMan +=". PIPE>*/ n[2]='PIPE dia, ft <'; var ap=3.1416*n[12]*n[12]/4; n[3]='A, s.f='+ap; ";
+  CHydMan +="n[13]='Q,cfs=' +sn*Math.pow(n[12]/4,0.667)*ap; /*TRAP.CHANNEL>*/ n[4]='|_/Chan.lt.ss<'; ";
+  CHydMan +="n[5]=' bot.width, ft <'; n[6]=' . . right.ss:1 <'; n[7]='flow depth,ft<'; var d2=n[17]*n[17];";
+  CHydMan +=" var tw=(n[14]*n[17]+n[15]/1+n[16]*n[17]); n[8]='top.w,ft='+tw; var ac=n[17]*(tw+n[15]/1)/2; ";
+  CHydMan +="var wp=n[15]/1; if (n[14]!=0.01){wp+=Math.sqrt(n[14]*n[14]*d2+d2)}; if (n[16]!=0.01){wp+=";
+  CHydMan +="Math.sqrt(n[16]*n[16]*d2+d2)}; var vc=sn*Math.pow(ac/wp,0.667); n[18]='V,ft/s='+vc; ";
+  CHydMan +="n[9]='froud#='+vc/Math.sqrt(32.15*ac/tw); n[19]='Q,cfs='+ac*vc;";
+ 
+var Civ_Hyd_nA = new Array("('Civ_Hydro-Hydraulics',CHyd0)",
+ "('s} Energy Ballance',CHydB)",
+ "('','')",
+ "('n} Peak Flow, nwIL',CHpkILnw)",
+ "('n} Rational Meth, nwIL',CHratIln)",
+ "('n} Stormwater Storage',CHdet)",
+ "('*} Brd.Crest Weir, Q,cfs','3.1*(/*weirLength,ft*/ )*Math.pow((/*head,ft*/ ),1.5)')",
+ "('n} Hyd.Control Struct.',CHydCStr)",
+ "('n} Normal Open Chan.',CHydMan)",
+ "('','')",
+ "('','')",
+ "('','')");
+ 
+var StrLL="var f=(/*TYP.Live Loads (see local code for actual) lb/sf >for kg/sm, replace 1 w/ 4.88*/1.0); ";
+  StrLL +="n[0]='__Use__'; n[10]='_Typ_L.L_'; n[1]='heavy.mfg.'; n[11]=Mr(250*f,0); n[2]='l.mfg,warehse'; ";
+  StrLL +="n[12]=Mr(125*f,0); n[3]='gym,dining'; n[13]=Mr(100*f,0); n[4]='hall,balcony'; n[14]=Mr(80*f,0); ";
+  StrLL+="n[5]='1st.fl retail'; n[15]=Mr(75*f,0); n[6]='theater:fix.seat'; n[16]=Mr(60*f,0); n[7]='office,";
+  StrLL +="car.park'; n[17]=Mr(50*f,0); n[8]='residential'; n[18]=Mr(40*f,0); n[9]='no-access areas'; ";
+  StrLL +="n[19]=Mr(20*f,0);";
+var StrMat="/*(Youngs) MODULUS OF ELASTICITY, E: Mat'l: mod. E  commonly: STEEL: mild structural (A36) 30 ";
+  StrMat +="E+6 psi, high-strength 29 & variable many grades;  WOOD: has even more grades.  Machine stress ";
+  StrMat +="rated lumber has some consistency: f(b) values run from 900psi to 3300psi (probably a rare ";
+  StrMat +="piece of wood) in 300psi increments--with an extra desig. at 1650psi.  Modulus of elasticity, ";
+  StrMat +="E, varies from 1,000,000psi to 2,600,000 according to the general rule of E=1,200,000psi + ";
+  StrMat +="(f(b)-1200)*2000/3, eg. 1200psi rated has typical E=1.2mil.psi; 1500psi ->E 1.4mil.psi.  As ";
+  StrMat +="for all timber, allowable f(b) can be increased by 15% if repetative members are used in an ";
+  StrMat +="element.  Thus, structural glue laminated timber runs f(b) from 1600-2400psi. (in 200psi ";
+  StrMat +="increments) while E corresponds with 1.6-1.8 mil.psi.  [Reduce both values by 20% for wet use ";
+  StrMat +="conditions.]  Visually rated lumber is more variable, TENDING to the samy TYPE of relation.  ";
+  StrMat +="Doug.Fir,Larch, Southern Pine have similar ranges: 1200-2000psi, E 1.5-1.9mil.psi for structural";
+  StrMat +=" types, S.Pine perhaps 10% higher.  Other species 10% and more, lower.  ALLOWABLE EXTREME FIBER ";
+  StrMat +="STRESS IN BENDING: f(b)>M/s :typically STEEL-(By AISC in compact sections=0.66x Yield Strength, ";
+  StrMat +="for non-compact=0.6x Fy ->) mild (A36 0.66*36ksi or 0.6*36) 24 0r 22 [ksi], {note F-ultimate";
+  StrMat +="~60+ksi}, high strength (Fy60) 39.6 or 60 [ksi] {F-ult.~85ksi};  WOOD-see discussion under mod.E";
+  StrMat +=" above. Code Max. DEFLECTION= L/360 for habitable floors, L/240 for ceilings w/o plaster. SHEAR,";
+  StrMat +=" fv [steel~.4fb, wood var] --allowable shear strength (US) lb/sq.in. or (SI) kg/sq.cm. to carry ";
+  StrMat +="the shear stress in col.K-L.  For STEEL, 0.4 * allowable extreme fiber stress in bending is ";
+  StrMat +="general value,  tho this operates only on the gross section = web thickness * beam depth.  ";
+  StrMat +="WOOD is susceptible to Horizontal Shear = 3/2 times the normal vertical shear, which is computed";
+  StrMat +=" in col.K-L.  In other words, the computed shear stress must be <= 2/3 the Horiz. Shear Strength";
+  StrMat +="which varies greatly between species of wood, but little within each species for structural ";
+  StrMat +="grades.  eg. Douglas Fir, Larch, Hemlock: horiz.shear strength is 85 to 95 psi.  2/3 of that = ";
+  StrMat +="60psi. <---value to enter.  Similar 2/3 horiz.shear values: balsam fir, 40; Cal.redwood, 60 ";
+  StrMat +="(or 97 for clear heart str.); eastern spruce, southern pine, 55; white pine, 43; Structural ";
+  StrMat +="Glue Laminated timbers tend to have shorz.shear strengths 1.8x the single board strength if ";
+  StrMat +="load is perpendicular to wide face, 1.6x if loaded parallel to wide face, deduct 20psf if under";
+  StrMat +=" wet service conditions.  NOTE: These are generalities.  Consult ratings specific to ";
+  StrMat +="available grades. SPECIFIC GRAVITY: typically: STEEL mild (A36) 7.86, high-strength 8.0;  WOOD";
+  StrMat +=" [at 12% moisture content, factor 1.15 for 20% moist, 0.92 oven dry]: HARDWOODS: Hickory 0.7, ";
+  StrMat +="Oak, Birch, Maple .6, Elm .55, Poplar .43:  SOFTWOODS: Southern Pine 0.52, Douglas Fir .48, ";
+  StrMat +="Spruce .4, White Pine, Redwood .38, Cedar .35 */";   
+var StrSecR="/*Rectangular Section Properties: units either US or SI as long as consistent. eg. say units=i:";
+  StrSecR +=" Beam =2i wide x 6i deep, then A=12ii, moment of inertia,I=36iiii, section modulus,S=I/c=12iii,";
+  StrSecR +=" radius of gyration,r=1.73. All this is about a horiz.axis through the centroid,c=3i from base.";
+  StrSecR +=" If the axis translated 3i from centroid (i.e. to base), I=144, r=3.46. {Note: move axis x ";
+  StrSecR +="units, I=I+Axx} OR if the axis rotated 30-degrees, in std.directn: ccw from the horiz, I=28, ";
+  StrSecR +="r=1.53.*/ n[0]='_Sect_Prop_'; n[10]='_rectangular_'; n[1]='base width <'; var b=n[11]; n[2]=";
+  StrSecR +="'beam dep. <'; var d=n[12]; n[3]='A='+Fo(b*d); var I=b*d*d*d/12; n[4]='I='+Fo(I); n[13]='S=";
+  StrSecR +="'+Fo(b*d*d/6); n[14]='r='+Fo(Math.sqrt(d*d/12)); n[5]='_move_axis_'; n[15]='>_centroid_>'; n[6]";
+  StrSecR +="='translate.c.<'; var c=n[16]; I+=b*d*c*c; n[7]='I='+Fo(I); n[17]='r='+Fo(Math.sqrt(I/(b*d))); ";
+  StrSecR +="var a=n[18]; n[8]='rotate.h.ang<'; var c1=Math.sin(a*Math.PI/180); var c2=Math.cos(a*Math.PI/";
+  StrSecR +="180); c1=b*b*c1*c1 +d*d*c2*c2; n[9]='I='+Fo(b*d*c1/12); n[19]='r='+Fo(Math.sqrt(c1/12));";
+var StrSecI="/*Rect. based shapes: Outer dimensions, base & depth entered. Rather than enter web & flange ";
+  StrSecI +="thick., the inner rectangle entered. H-shape is ][ at y-axis. Definitions in 'Rectang.sect.'. ";
+  StrSecI +="eg. 4x6 outside, 2x5 inside dim: A=14 for any orientation; S=17.1 as I-shape, etc, S=12.1 as ";
+  StrSecI +="H.*/ n[0]='[],I,H shapes'; n[10]='_outer_dim_'; n[1]='base width <'; var b=n[11]; n[2]='beam ";
+  StrSecI +="dep. <'; var d=n[12]; n[3]='. inner_wid.<'; var b1=n[13]; n[4]='.inner_dep.<'; var d1=n[14]; ";
+  StrSecI +="n[5]=' . common >'; n[15]='A='+Fo(b*d -b1*d1); n[6]='I, [] shape_>'; var I=(b*d*d*d ";
+  StrSecI +="-b1*d1*d1*d1)/12; n[16]='S='+Fo(I*2/d); n[7]='I='+Fo(I); n[17]='r='+Fo(Math.sqrt(I/";
+  StrSecI +="(b*d-b1*d1))); n[8]='_H shape_>'; var f=b-b1; var t=d-d1; I=(f*d*d*d +b1*t*t*t)/12; ";
+  StrSecI +="n[18]='S='+Fo(I*2/d); n[9]='I='+Fo(I); n[19]='r='+Fo(Math.sqrt(I/(b*d-b1*d1)));";
+var StrSecL="/*L & trapezoid shapes: eg. L-shape: 6d x 4w with stem thicknes of 1 & lower leg 0.5 thick; "; 
+  StrSecL +="A=7.5, centroid distance & S rel. to bottom =2.45, =11.06, I=27.1, r=1.9. eg. for trapezoidal ";
+  StrSecL +="shape, L/: using same dimensions, except low leg thick n/a, centroid to bottom =2.4, A=15.0, ";
+  StrSecL +="S rel.bottom=14.2, I=39.6, r=1.625.*/ n[0]='L & L/ sh.dp<'; var d=n[10]; n[1]='top, stem.w<'; ";
+  StrSecL +="var t=n[11]; n[2]=' . bot.width <'; var b=n[12]; n[3]='L_bot.thick <'; var t2=n[13]; n[4]=";
+  StrSecL +="'centroid-bot>'; var c=(t*d*d +(b-t)*t2*t2)/(2*(t*d+(b-t)*t2)); n[14]=c; n[5]='A='+(b*t2+t*";
+  StrSecL +="(d-t2))/1; var I=(b*c*c*c -(b-t)*(c-t2)*(c-t2)*(c-t2) +t*(d-c)*(d-c)*(d-c))/3; n[15]='S.bot='+";
+  StrSecL +="I/c; n[6]='I='+I; n[16]='r='+Math.sqrt(I/(b*t2 +t*(d-t2))); n[7]='L/ _centr-b_>'; ";
+  StrSecL +="c=d*(2*t+b/1)/(3*(b/1+t/1)); n[17]=c; var A=d*(b/1+t/1)/2; n[8]='A='+A; I=d*d*d*(b*b+4*b*t+t*t)";
+  StrSecL +="/(36*(b/1+t/1)); n[18]='S.bot='+I/c; n[9]='I='+I; n[19]='r='+Math.sqrt(I/A);";
+var StrSecO="/*Circular: eg. Solid dia.2, A=3.14, I=S=.785, etc. eg. pipe, inner dia 1.25, A=1.91, I=.66.*/";
+  StrSecO +=" n[0]='CIRCULAR'; n[10]='_solid_bar_'; n[1]=' . diameter <'; var d=n[11]; var PI=Math.PI; n[2]=";
+  StrSecO +="'A='+PI*d*d/4; var I=PI*d*d*d*d/64; n[12]='S='+2*I/d; n[3]='I='+I; n[13]='r='+d/4; n[4]=''; ";
+  StrSecO +="n[14]='_hollow_pipe'; n[5]=' . inner dia.<'; var d1=n[15]; n[6]='A='+PI*(d*d-d1*d1)/4; I=PI*";
+  StrSecO +="(d*d*d*d-d1*d1*d1*d1)/64; n[16]='S='+2*I/d; n[7]='I='+I; n[17]='r='+Math.sqrt(d*d+d1*d1)/4;";
+var StrLum="/*US dimensional lumber up to 6-in, is dressed 1/2-inch less than nominal, 8-in & bigger is 3/4";
+  StrLum +="-inch short. eg. a 2x4 is 1.5-in x 3.5-in, has area=5.25sq.in, & S=3.06cu.in in 4-in directn. ";
+  StrLum +="typical (MUST BE CONFIRMED!) spruce, white pine, etc. with allowable f-bending 900psi can ";
+  StrLum +="a moment,M =230ft-lb, with compressive strength (parallel to grain, allow 900psi) C=31,500lb, ";
+  StrLum +="& dead load (at 25 lb/c.f) w=0.9 lb/ft. Douglas fir, select structural, with f-b of 1600psi ";
+  StrLum +="capacity M=408 ft.lb, C=47,250 lb (all subject to length/r for buckling), & w=1.1 lb/ft.*/ ";
+  StrLum +="n[0]='Lumber_size'; n[10]='_nominal_'; n[1]=' . . width, in <'; var b=n[11]-0.5; if (b>6){b-="; 
+  StrLum +="0.25} n[2]=' . height, in <'; var d=n[12]-0.5; if (d>6){d-=0.25}; n[3]=' . . . . actual >'; ";
+  StrLum +="n[13]=Fo(b)+' x '+Fo(d); n[4]='A,s.in.='+d*b; var S=b*d*d/6; n[14]='S,cu.in='+S; n[5]='I,in**4=";
+  StrLum +="'+b*d*d*d/12; n[15]='r,in='+Math.sqrt(d*d/12); n[6]='_typ_spruce>'; n[16]='M,ft.lb='+900*S/12; ";
+  StrLum +="n[7]='C,lb='+6000*b*d; n[17]='w,lb/ft='+25*b*d/144; n[8]='typ_d.fir_ss.>';  n[18]='M,ft.lb='";
+  StrLum +="+1600*S/12; n[9]='C,lb='+9000*b*d; n[19]='w,lb/ft='+30*b*d/144;";
+var StBmSS="/*Simply Supported Beam: eg. 8-ft span, unif. load,w=50lb/ft; point load of 200lb located 6-ft ";
+  StBmSS +="from left end. Check beam at 3-ft from left end: (Note- max moment,M will occur between the ";
+  StBmSS +="mid-point (4-ft) & 6-ft where point loaded, this for illustration.) Beam f-b, allow. extreme ";
+  StBmSS +="fiber strength in bending, 1400psi, and combined EI (mod. of elasticity 1.3E6 psi times I ";
+  StBmSS +="assumed 178 in.-to-4th-power) =231.4E6 lb-sq.in. Output: left & right reactions, R=250 & 350 ";
+  StBmSS +="lb, shear, V= 100lb. (V/A of section tests against f-v, 3V/2 for horiz.shear) Mx(at pt.x)=525ft";
+  StBmSS +="=.lb; min. S =M/f 4.5, deflection=0.028-in (genl: defl.<L/360 (8*12/360=0.26-in) if plastered, ";
+  StBmSS +="L/240 otherwise).*/ n[0]='.--L--. Len,ft <'; var L=n[10]; n[1]='unif. w: lb/ft <'; var w=n[11];";
+  StBmSS +=" n[2]='sgl.ld: P,lb <'; var P=n[12]; n[3]='dist.P.left: ft<'; var a=n[13]; n[4]='chk.pt.x: ";
+  StBmSS +="lt,ft<'; var X=n[14]; n[5]='Beam_f,psi<'; n[6]='combin.EI <'; var Rlw=w*L/2; var Rlp=P*(L-a)/L;";
+  StBmSS +=" n[7]='R-lt,lb='+(Rlw/1 +Rlp/1); var Rrw=w*L/2; var Rrp=P*a/L; n[17]='R-rt,lb='+(Rrw/1 +Rrp/1);";
+  StBmSS+=" var Vx=w*(L/2-X); var Mx=w*X*(L-X)/2; if (X<a){Vx+=Rlp; Mx+=Rlp*X} else {Vx+=Rrp; Mx+=Rrp*(L-X)}";
+  StBmSS +=" n[8]='Vx,lb='+Vx; n[18]='Mx,ft.lb='+Mx; n[9]='S,c.in>'+Mx*12/n[15]; var dx=P*1728/(6*n[16]*L);";
+  StBmSS +=" if (X<a){dx*=X*(L-a)*(L*L-(L-a)*(L-a)-X*X)} else {dx*=(L-X)*a*(L*L-a*a-(L-X)*(L-X))} ";
+  StBmSS +="dx+=w*X*(L*L*L -2*L*X*X +X*X*X)*1728/(24*n[16]); n[19]='defl,in='+dx;"; 
+ 
+var Civ_Str_nA = new Array("('Civ_Structures . . . s} . .','Def. in 1st ea. group: know thy limits!')",
+ "('s} Typical L.L. table',StrLL)",
+ "('s} Matl, Properties',StrMat)",
+ "(' . . .','')",
+ "('n} Section: Rectangle',StrSecR)",
+ "('n} Sec: [], I, H shapes',StrSecI)",
+ "('n} Sec: L, trap. shape',StrSecL)",
+ "('n} Sec: Circular shape',StrSecO)",
+ "('n} Sec: std.US lumber',StrLum)",
+ "(' . . .','')",
+ "('n} Beam: simple sup.',StBmSS)",
+ "(' . . .','')",
+ "(' . . .','')",
+ "(' . . .','')",
+ "('','')");
+ 
+function DataWrite() {                   // Uses the newWin(s) function to open  a window with
+ var space =' . . . . . . . . . . . . '; // just m-display ([x>m]) & n[0..19] to view-save.
+ var temp='m='+m+'<br><br>';
+ for (j=0;j<10;j++) {
+  temp+=n[j]+space.substring(n[j].length)+n[j+10]+' <br>'; }
+ newWin(temp) }
+
+var DataSR="JavaScript is SAFE: no functions a virus can use to destroy data. Which makes saving ";
+  DataSR +="data difficult -must use 'copy'&'paste'. TO SAVE 1)-Use text editor. (Easily obtained: ";
+  DataSR +="View->Source Code->File->New gets NotePad from Internet Explorer; & ->composer page ";
+  DataSR +="from Mozilla; etc.) 2)-Place cursor in box with data. 3)-Edit->Select All->Copy 4)-paste";
+  DataSR +=" to text file.  Data in n[0..19] could be laborious, 1 at a time. sCal provides utility ";
+  DataSR +="to dump all values to the m-cell. User can select order & delimiters (to transfer to a ";
+  DataSR +="spreadsheet or database program); n[index] to restore to sCal (paste to x-cell); etc.";
+var DataS="/*Saves to sCal-Data*/  DataWrite();";
+var DataNdM="var d=(/*delimiter*/', '); m=''; for (j=0;j<20;j++){m+=n[j]+d}";
+var DataNsM="var d=(/*delimiter*/', '); m=''; for (j=0;j<10;j++){m+=n[j]+d+n[j+10]+d}";
+var Quote="'";
+var DataNaM="m=''; for (j=0;j<20;j++){m+='n['+j+']='+Quote+n[j]+Quote+'; '}";
+ 
+var Data_Ma_nA = new Array("('Data_Management s}','for manipulating & displaying data')", 
+ "('s} save/restore Data',DataSR)",
+ "('*} SAVE to text file',DataS)",
+ "('*} n[1..19] > memory',DataNdM)",
+ "('*} n0, n10, n1, n11 >m',DataNsM)",
+ "('x} n[0], n[1], . . . . . > m',DataNaM)",
+ "('','')",
+ "('n} parabola curve fit',PCurv)",     //Source at Analytic Geometry
+ "(' . . .','')",
+ "('n} linear regress. 1-var',mRegres)",//Source at Analytic Geometry
+ "('n} linear regress.2-var',nRegres)", //Source at Analytic Geometry
+ "('s} Statistics on data','see Probability, Statistics group')",
+ "('x} Pseudo-Graphing',J_Graph)",      //Source at JavaScript samples
+ "('n} Interpolate / Extrap.',Interp)", //Source at JavaScript samples
+ "(' . . .','')",
+ "('s} ext.Table(geo time)',TimeGeo)", // Source code at Time_Fcns
+ "(' . . .','')",
+ "('','')");
+
+var RanderI="Instruct: 2 player; select Random Num. above; player-1: [Do], use [n0] to [n9] ";
+  RanderI +="place in cell, [C] to clear x; player-2: [Do], use [n10] to [n19] to place in cell,";
+  RanderI +=" [C] to clear; back to player-1 & continue alternating until all 20 cells filled. ";
+  RanderI +="OBJECT: place random numbers in order lowest to highest in column. [C]>[Do] Scorder.";
+var Scorder="var P1=10; P2=10; for (j=0;j<9;j++){if (n[j]>n[j+1]){P1--}} for (j=10;j<19;j++)";
+  Scorder +="{if (n[j]>n[j+1]){P2--}} m=' P1='+P1+'; P2='+P2";
+var CasIns="INSTR: 1 player; select Random No.(1-11) above; [Do], use [n0] to [n19] to place ";
+  CasIns +="in cell' [C] clear, repeat. OBJECT: obtain highest score of closest to 21 total in ";
+  CasIns +="horiz. rows (like Blackjack) combined with highest score of matches (like slots) ";
+  CasIns +="in vert. columns. [C]->[Do] ScoreCasandom to see total. (check source for score ";
+  CasIns +="values; max. 378 on slots +360 blackjack =738, tho 400 good) Variant: 2 players: ";
+  CasIns +="alternating columns for max. slot score. Player completing 21 awarded manual 50 pts.";
+var ScoreCas="var B=0; P=new Array(0,0); var t=0; var k=0; for(j=0; j<10; j++) {t=n[j]/1+n[j+10]/1;";
+  ScoreCas +=" if(t>15 && t<22) {B+=Math.pow(t-15,2)} for(i=0;i<2;i++) {k=10*i; if(j<9 && n[k+j]";
+  ScoreCas +="==n[k+j+1]){P[i]+=n[k+j]/1} if(j>0 && n[k+j]==n[k+j-1]){P[i]+=n[k+j]/1}}} m='Slot-1=";
+  ScoreCas +="'+P[0]+'; Slot-2='+P[1]+'; BlackJack='+B+' for TOTAL='+parseInt(P[0]+P[1]+B)";
+ 
+var Strateg_nA = new Array("('Strategic Planning . s}','These are games, random numbers, skill varies')",
+ "('x} . . .','')",
+ "('x} Random Num.(0 - 1)','Math.random()')",
+ "('s} RANDER: order no',RanderI)",
+ "('x} Scorder for Rander',Scorder)",
+ "('x} . . .','')",
+ "('x} Random No.(5 - 15)','Math.round(Math.random()*10)+5')",
+ "('s} . . CASANDOM:',CasIns)",
+ "('x} . Score Casandom',ScoreCas)",
+ "('x} . . .','')",
+ "('x} . NO.NINE','')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "('x} . . .','')",
+ "(' . . .','')");
+/* 
+**  **   #### *************************************************************** H6 **
+**  **  #
+******  #####   ***** MENU POPULATION ***** - Final Small Section in Head
+**  **  #    #
+**  **   ####  *********************************************************************
+*/
+function populateGroup(inForm,selected) { // --- sets left GROUP MENUS to chosen right Category
+ var selectedArray = eval(selected.substring(0,7) + "_nA");   // **JS** .selected
+ while (selectedArray.length < inForm.options.length) {       // **JS** selectedArray.
+  inForm.options[(inForm.options.length - 1)] = null;}        // **JS** inForm.options
+ for (var i=0; i < selectedArray.length; i++) {
+  eval("inForm.options[i]=" + "new Option" + selectedArray[i]);}
+// OLDER BROWSERS MAY NEED FOLLOWING LINE TO DISPLAY OPTIONS, Leave out for newer ones:
+// window.history.go(0);
+}
+function setDefaultMenus() {
+ populateGroup(document.sCal.group1,document.sCal.catagory1.options[0].text);
+ populateGroup(document.sCal.group2,document.sCal.catagory2.options[0].text);
+ populateGroup(document.sCal.group3,document.sCal.catagory3.options[0].text); }
+// 
+//  End of  JavaScript Calculator sCal in HEAD -->
+//
+</script>
+</HEAD>
+<!-- **************** HEAD *********************************************** -->
+<!-- ********************************************************************* -->
+<!-- ************************************** BODY ************************* -->
+<BODY onLoad="setDefaultMenus()">                       <!-- **JS** onLoad -->
+<form name="sCal">                                      <!-- **JS** form   -->
+<script language="JavaScript" type="text/javascript">   <!-- **JS** script -->
+<!--                       // note difference between HTML and JS comments
+with (document){           // **JS** with
+// defaults for Main 2x Table below: = 1 0 0 480 done in JScript to allow variables eg. BGCOLOR=sCalor
+write('<table border=1 cellspacing=0 cellpadding=0 width='+mainCellW+'><tr valign=top BGCOLOR='+sCalor+'>');
+//
+/*******************************lay*out*****************************
+ * sCal.v. Script Calculator. xAid *    sCal2 Data Handling Help   *  <-title, links to assistance
+ * ---------------------           * ----- ----<-links-> --------- *
+ * [JS] |[_____ set 1____|V]| [>x] * [1/x] [___category1__|V] [nx] *
+ * [JS] |[_____ set 2____|V]| [>x] * [1/x] [___category2__|V] [n[] *
+ * [JS] |[_____ set 3____|V]| [>x] * [1/x] [___category3__|V] [nc] *
+ * +---------------------------+-+ *  [n0] [_______] [_______][10] *
+ * |          x display        | | *  [n1] [_______] [_______][11] *
+ * |                           | | *  [n2] [___           ___][12] *
+ * |  << upper-left cell >>    |V| *  [n3] [<< upper-right >>][13] *
+ * +---------------------------+-+ *  [n4] [___ << cell >> __][14] *
+ *  [x>m][m>x][__memory__][m+][mc] *  [n5] [______      _____][15] *
+ * [ 7] [ 8] [ 9] [ (] [) ] [ c ]  *  [n6] [_______] [_______][16] *
+ * [ 4] [ 5] [ 6] [ *] [ /] [ < ]  *  [n7] [_______] [_______][17] *
+ * [ 1] [ 2] [ 3] [ +] [ -] [ ^ ]  *  [n8] [_______] [_______][18] *
+ * [ 0] [ .] [+/-] [1/x] [=,Ent.]  *  [n9] [_______] [_______][19] *
+ *******************************************************************
+ *  - - optional (if sStyl='t' table width) to check format size - *
+ *******************************************************************/
+//
+//- - - - - default width = 480 pixels ( mainCellW ) - - - - - - - /
+// - -width = 238 px (subCellW)- - /
+//
+function SetBut(s, sty, doit){  // does button Value, Style, and onClick operation
+ document.write('<td><input type="button" '+sty+' Value="'+sp+s+sp+'" onClick="'+doit+'"></td>');}
+/* 
+*****   ##   *************************************************************** B1 **
+**  **   # 
+**  **   #     sCal2 in BODY of Documant: LEFT CELL.  R. Mohaupt-April, 2004
+*****    #    
+**  **   #     This is free, open-source, user-modifiable code.- No Warantee.
+**  **   #
+*****   ###  *********************************************************************
+*/
+  write('<td>');   // **JS** write (writeln, which includes a carriage return, not used)     
+ write('<table border=1 cellspacing=0 cellpadding=0 WIDTH='+subCellW+'>');
+  write('<tr>');
+   write('<td colspan=6 align="center"><small>');
+   write('<A href="javascript:About_sCal()">sCal.8</A>.</small><b>'); // **JS** <A href... (HTML)
+   write('<A href="javascript:About_Script()">Script</A> ');
+   write('<A href="javascript:About_Calc()">Calculator</A>.</b><small>');
+   write('<A href="javascript:xAid()">xAid</A></small></td>');
+  write('</tr>');
+ if (sSize>3){ write('<tr align="center">');
+   write('<td colspan=1><small><small>Place</small></small></td>');
+   write('<td colspan=4><small><small>Constants, Functions</small></small></td>');
+   write('<td colspan=1><small><small>Do</small></small></td>');
+   write('</tr>');} 
+// ***************************** Top group1 drop-down SELECT menus: can change or add functions
+  write('<tr align="center">');
+   write('<td><input type="button" '+bStylk+' value="JS'+sp+'"'); 
+    write('onClick="JSwork(document.sCal.group1.options[document.sCal.group1.selectedIndex].value)">');
+    write('</td>');
+   write('<td colspan=4><select '+tStyld+' name="group1"><option value="Math.PI">General convert x}. Pi .</option>');
+    write('</select></td>');
+   write('<td><input type="button" '+bStylk+' Value=">x'+sp+'"');
+    write('onClick="Xwork(document.sCal.group1.options[document.sCal.group1.selectedIndex].value)">');
+    write('</td>');
+  write('</tr>');
+// ******************************* Middle group2 SELECT menu:
+  write('<tr align="center">');
+   write('<td><input type="button" '+bStylk+' value="JS'+sp+'"');
+    write('onClick="JSwork(document.sCal.group2.options[document.sCal.group2.selectedIndex].value)">');
+    write('</td>');
+    temp='<td colspan=4><SELECT '+tStyld+' name="group2"><option value="Math.pow(x,2)">';
+   write(temp+'Ordinary Math x} . (x)&sup2; .</option>');
+     write('</select></td>');
+   write('<td><input type="button" '+bStylk+' Value=">x'+sp+'"');
+    write('onClick="Xwork(document.sCal.group2.options[document.sCal.group2.selectedIndex].value)">');
+    write('</td>');
+  write('</tr>');
+// ******************************* Bottom group3 SELECT menu: Much PROGRAMMABLE AREA available
+  write('<tr align="center">');
+   write('<td><input type="button" '+bStylk+' value="JS'+sp+'"');
+    write('onClick="JSwork(document.sCal.group3.options[document.sCal.group3.selectedIndex].value)">');
+    write('</td>');
+    temp='<td colspan=4><SELECT '+tStyld+' name="group3"><option value="Math.sqrt(x)">';
+   write(temp+'Special: *} . root (x)&frac12;</option>');
+     write('</select></td>');
+   write('<td><input type="button" '+bStylk+' Value=">x'+sp+'"');
+    write('onClick="Xwork(document.sCal.group3.options[document.sCal.group3.selectedIndex].value)">');
+    write('</td>');
+  write('</tr>');
+// ********************
+ if (sSize>3){ write('<tr>');
+   write('<td colspan=6><small><small>Display - x</small></small></td>');
+  write('</tr>');}
+// ******************************* x-display text area:
+  write('<tr>');
+  write('<td colspan=6><TextArea '+xStyle+' name="IOx" rows=4 ></TextArea></td>');
+  write('</tr>');
+ if (sSize>3){ write('<tr>');
+  write('<td colspan=6><small><small>Memory - m</small></small></td>');
+  write('</tr>');}
+// ******************************* buttons & small MEMORY text box:
+  write('<tr align="center">');
+   write('<td><input type="button" '+bStyln+' Value="x&rsaquo;'+m1+'" onClick="XtoM()"></td>');
+   write('<td><input type="button" '+bStyln+' Value="'+m1+'&rsaquo;x" onClick="MtoX()"></td>');
+   write('<td colspan=2>');
+   write('<INPUT TYPE="text" '+tStylm+' NAME="IOm" VALUE="" >');
+   write('</td>');
+   write('<td><input type="button" '+bStyln+' Value="'+m1+'+" onClick="Mplus()"></td>');
+   write('<td><input type="button" '+bStyln+' Value="'+m1+'c" onClick="Mclear()"></td>');
+  write('</tr>');
+// ********************
+ if (sSize>3){ write('<tr>');
+   write('<td colspan=6 align="right"><small><small>Civil Engr. vers. r.m.04 </small></small></td>');
+  write('</tr>');}
+// ******************************* main layout of CALCULATOR keypad buttons:
+  write('<tr align="center">');
+   SetBut(' 7 ', bStylk, 'xPlusEq(7)');
+   SetBut(' 8 ', bStylk, 'xPlusEq(8)');
+   SetBut(' 9 ', bStylk, 'xPlusEq(9)');
+   s40="(";
+   SetBut(' ( ', bStylf, 'xPlusEq('+"s40"+')');
+   s41=")";
+   SetBut(' ) ', bStylf, 'xPlusEq('+"s41"+')');
+   SetBut('C', bStylf, 'Clear()');
+  write('</tr>');
+  write('<tr align="center">');
+   SetBut(' 4 ', bStylk, 'xPlusEq(4)');
+   SetBut(' 5 ', bStylk, 'xPlusEq(5)');
+   SetBut(' 6 ', bStylk, 'xPlusEq(6)');
+   s42="*";
+   SetBut(' * ', bStylf, 'xPlusEq('+"s42"+')');
+   s47="/";
+   SetBut(' / ', bStylf, 'xPlusEq('+"s47"+')');
+   SetBut(' &lt;', bStylf, 'BkSpace()');
+  write('</tr>');
+  write('<tr align="center">');
+   SetBut(' 1 ', bStylk, 'xPlusEq(1)');
+   SetBut(' 2 ', bStylk, 'xPlusEq(2)');
+   SetBut(' 3 ', bStylk, 'xPlusEq(3)');
+   s43="+";
+   SetBut(' + ', bStylf, 'xPlusEq('+"s43"+')');
+   s45="-";
+   SetBut(' - ', bStylf, 'xPlusEq('+"s45"+')');
+   s94="^";
+   SetBut(' ^', bStylf, 'xPlusEq('+"s94"+')');
+  write('</tr>');
+  write('<tr align="center">');
+   SetBut(' 0 ', bStylk, 'xPlusEq(0)');
+   s46=".";
+   SetBut(' . ', bStylf, 'xPlusEq('+"s46"+')');
+   SetBut('+/-', bStylf, 'xMultEq(-1)');
+   SetBut('1/x', bStylf, 'recip()'); //-line below shows HTML code in JScript w/o SetBut function
+   write('<td colspan=2><input type="button" '+tStyln+' Value="='+sp+sp+'Enter" onClick="xEval()"></td>');
+  write('</tr>');
+ write('</table>');
+write('</td>');
+write('<td>');
+/* 
+*****  ###   *************************************************************** B2 **
+**  **    #
+*****    #     sCal2 Expansion layout table - RIGHT CELL: 
+**  **  #
+*****  ####  *********************************************************************
+*/
+ write('<table border=1 cellspacing=0 cellpadding=0 WIDTH='+subCellW+'>');
+ } //with(document)
+-->
+ </script>
+  <tr>
+   <td colspan=6 align="center"><b>
+   <A HREF="javascript:MoreInfo()">sCal2</A>
+   <A HREF="javascript:SysDisplay()">Data</A>
+   <A HREF="javascript:CookieSet()">Handling</A>
+   <A HREF="sCal-8-DraftDoc.htm">Help</A></b>
+   </td>
+  </tr>
+<script language="JavaScript" type="text/javascript">
+<!--
+ with (document){
+ if (sSize>3){ write('<tr align="center">');
+   write('<td><small><small>1/Do</small></small></td>');
+   write('<td colspan=4><small><small>CATAGORY of Const, Fcn.</small></small></td>');
+   write('<td><small><small>n[ ]</small></small></td>');
+  write('</tr>');}
+// Top(catagory1) drop-down SELECT menus: can change or add CATEGORIES 
+  write('<tr align="center">');
+   write('<td><input type="button" '+bStylk+' value="1/x"');
+    write('onClick="DoRecip(document.sCal.group1.options[document.sCal.group1.selectedIndex].value)">');
+    write('</td>');
+    temp = '<td colspan=4><select '+tStyld+' name="catagory1" onChange="populateGroup(document.sCal.group1,';
+   write(temp + 'document.sCal.catagory1.options[document.sCal.catagory1.selectedIndex].text)">');
+ }
+-->
+</script>
+<!-- ***************** catagory1 -- User add conversions, cv} and constants, cs} **********
+ -->
+    <option selected value='Math.PI'>General: convert x}. Pi .</option>  
+    <option value=''>Length_convert x} ft&gt;m</option>
+    <option value=''>Area_convert x} ft&sup2; &gt;m&sup2;</option>
+    <option value=''>Volume_conv.x} ft&sup3 &gt;m&sup3;</option>
+    <option value=''>Time_Velocity x} hr > s.</option>
+    <option value=''>Mass_Force x} lb > kg</option>
+    <option value=''>Pressure x} p.s.i. > Pa</option>
+    <option value=''>Density x} p/cf > kg/m&sup3;</option>
+    <option value=''>Energy_or work s} Def.</option>
+    <option value=''>Power_rate of Work s}</option>
+    <option value=''>Heat_Temperature: s}</option>
+    <option value=''>Angular x} . . deg > rad</option>
+    <option value=''>Electric, Magnetism x}</option>
+    <option value=''>Light_Rad. lux>lum./sm</option>
+    <option value=''>Misc_Units each >doz.</option>
+    <option value=''></option>
+    <option value=''>Materials, Elements s}</option>
+    <option value=''>Math_Science cnst. s}</option>
+    <option value=''>Geo_Physical cnst. s}</option>
+    <option value=''>Prefixes to Units s}</option>
+    <option value=''>Charts_Series, misc.s}</option>
+    <option value=''></option>
+    <option value=''></option>
+<!--
+ ----- end catagory1 -----
+ -->
+    </select></td>
+<script language="JavaScript" type="text/javascript">
+<!--
+ with (document){
+    write('<td><input type="button" '+bStyln+' value="nx'+sp+'" onClick="setNflag2()"></td>');
+  write('</tr>');
+// **************************
+  write('<tr align="center">');
+   write('<td><input type="button" '+bStylk+' value="1/x"');
+    write('onClick="DoRecip(document.sCal.group2.options[document.sCal.group2.selectedIndex].value)">');
+    write('</td>');
+    temp='<td colspan=4><SELECT '+tStyld+' name="catagory2" onChange="populateGroup(document.sCal.group2,';
+   write(temp + 'document.sCal.catagory2.options[document.sCal.catagory2.selectedIndex].text)">');
+ }
+-->
+</script>
+<!-- ***************** catagory2 -- User add ordinary and general functions, fn} ********** -->
+
+    <option selected value="Math.pow(x,2)">Ordinary Math x} . (x)&sup2; .</option>
+    <option value="Math.pow(x,y)">Esoteric Math *} .(x)^y</option>
+    <option value="">Algebra . . . . . s} . terms</option>
+    <option value="">Analytic Geometry . . s}</option>
+    <option value="">Mensuration .s} . terms</option>
+    <option value="">*</option>
+    <option value="">Finance *} . . . . . . $ &gt; &euro; .</option>
+    <option value="">Physics . . . . . s} . terms</option>
+    <option value="">Probability, Statistic s}</option>
+    <option value="">Time_Function: x}Now</option>
+    <option value="">*</option>
+    <option value="">JavaScript samples</option>
+    <option value="">*</option>
+    <option value="">*</option>
+    <option value="">*</option>
+<!--
+ ----- end catagory2 ----- 
+ -->
+ </select></td>
+<script language="JavaScript" type="text/javascript">
+<!--
+ with (document){
+   write('<td><input type="button" '+bStyln+' value="n['+sp+']" onClick="setNflag1()"></td>');
+  write('</tr>');
+// **************************
+  write('<tr align="center">');
+   write('<td><input type="button" '+bStylk+' value="1/x"');
+    write('onClick="DoRecip(document.sCal.group3.options[document.sCal.group3.selectedIndex].value)">');
+    write('</td>');
+    temp='<td colspan=4><SELECT '+tStyld+' name="catagory3" onChange="populateGroup(document.sCal.group3,';
+   write(temp + 'document.sCal.catagory3.options[document.sCal.catagory3.selectedIndex].text)">');
+ }
+-->
+</script>
+<!-- ***************** catagory3 -- User add special programs, pg} (or anything) **********
+ -->
+    <option selected value="Math.sqrt(x)">Special: pg} . . root (x)&frac12;</option>
+    <option value="">User_01 . . . . . blank set</option>
+    <option value="">User_02 . . . . . blank set</option>
+    <option value="">User_03 . . . . . blank set</option>
+    <option value="">*</option>
+    <option value="">Civ_Highway-Survey</option>
+    <option value="">Civ_Hydro-Hydraulics</option>
+    <option value="">Civ_Structures . . . s} . .</option>
+    <option value="">*</option>
+    <option value="">Data_Management s}</option>
+    <option value="">*</option>
+    <option value="">Strategic Planning . s}</option>
+    <option value="">*</option>
+    <option value="">*</option>
+    <option value="">*</option>
+<!--
+ ----- end catagory3 -----
+ -->
+    </select></td>
+<script language="JavaScript" type="text/javascript">
+<!--
+ with (document){
+   write('<td><input type="button" '+bStyln+' value="nc'+sp+'" onClick="Nclear()"></td>');
+   write('</tr>');
+// -------- Begin layout of name/number n[0..20] data array ------- -->
+// Below is code in straight HTML: It must be repeated 10 times! to -->
+// create all 20 buttons;  and then does not allow for variables in -->
+// style and layout.  JavaScript gives this capability, while using -->
+// a loop to consume less code. -->
+/*
+  <tr>
+   <td align="right"><input type="button" value="n 0" onClick="nData(0)"></td>
+   <td colspan=2><input type="text" name="n0" size=10></td>
+   <td colspan=2><input type="text" name="n10" size=10></td>
+   <td><input type="button" value="10 " onClick="nData(10)"></td>
+  </tr>
+*/
+for (j=0; j<10; j++){
+ write('<tr>');
+ write('<td align="right"><input type="button" '+bStyln+' value="n'+sp+j+'" onClick="nData('+j+')"></td>');
+ write('<td colspan=2><input type="text" '+tStyln+' name="n'+j+'" ></td>');
+ write('<td colspan=2><input type="text" '+tStyln+' name="n'+eval(j+10)+'" ></td>');
+ write('<td><input type="button" '+bStyln+' value="'+eval(j+10)+sp+'" onClick="nData('+eval(j+10)+')"></td>');
+ write('</tr>')
+ }
+ write('</table>');
+ write('</td>'); // ************ end right cell
+write('</tr>');
+write('</FORM>');
+if (sStyl=='t')   // ------- width test for layout format
+{
+ write('<table border=1 width='+mainCellW+'><tr valign=top>');
+ write('<td>-'+subCellW+' width test -</td>');
+ write('<td>-'+subCellW+' width test -</td></tr></table>');}
+}
+-->
+</script>
+</td>
+</tr>
+</table>       
+</body>
+</html>

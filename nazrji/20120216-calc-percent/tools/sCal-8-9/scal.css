@@ -1,0 +1,19 @@
+body {font-famil:Arial,sans-serif; background-color:#ECE9D8; color:black; font-family:Arial,sans-serif; font-size:100%; margin:2px}
+table, td {font-size:100%; border-spacing:0px; padding:0px; border-collapse:collapse}
+h1 {font-size:150%; color:black}
+h2 {font-size:140%; color:#f27000}
+*.b {padding:0px; margin:1px; width:40px}
+.wide {width: 82px;}
+a.del {text-decoration:none; height:30px; line-height:30px; text-align:center; background-color:#CC9933; color:white; border-top: 1px solid white; border-left: 1px solid white; border-right: 1px solid black; border-bottom: 1px solid black; display:block; font-size:110%}
+a.ac {text-decoration:none; height:30px; line-height:30px; text-align:center; background-color:#BB0000; color:white; border-top: 1px solid white; border-left: 1px solid white; border-right: 1px solid black; border-bottom: 1px solid black; display:block; font-size:110%}
+a.off {text-decoration:none; font-weight:bold; height:24px; line-height:24px; text-align:center; background-color:#CC9933; color:white; border-top: 1px solid white; border-left: 1px solid white; border-right: 1px solid black; border-bottom: 1px solid black; display: block; font-size:100%}
+a.ret {text-decoration:none; height:24px; line-height:24px; text-align:center; background-color:#CC9933; color:white; border-top: 1px solid white; border-left: 1px solid white; border-right: 1px solid black; border-bottom: 1px solid black; display:block; font-size:100%}
+a.b1 {text-decoration:none; height:24px; line-height:24px; text-align:center; background-color:#E0DFE3; color:black; border-top: 1px solid white; border-left: 1px solid white; border-right: 1px solid #808080; border-bottom: 1px solid #808080; display: block; font-size:80%}
+a.b2 {text-decoration:none; height:30px; line-height:30px; text-align:center; background-color:#606060; color:white; border-top: 1px solid white; border-left: 1px solid white; border-right: 1px solid black; border-bottom: 1px solid black; display:block; font-size:110%}
+.trigmode, a.memBut {font-size:90%}
+.ans {text-align:right; border:1px solid #7F9DB9; background-color:#EEEEEE; font-size:110%; height:22px; line-height:100%; width:100%; overflow:hidden; font-weight:bold}
+*.LCD {display:none}
+*.memory {text-decoration:none; border: 1px solid #ECE9D8; line-height: 20px; background-color:#ECE9D8; text-align:left; font-size:90%; color:#000040; width:100%}
+.path {background-color:#F2F2F2; color:#666666; font-size:80%; padding-left:10px; border-bottom:1px solid #B6B6B6}
+.subheading {font-weight:bold; font-style:italic}
+.tutorial {background-color:#FCF6CF; width: 95%; cursor:pointer}

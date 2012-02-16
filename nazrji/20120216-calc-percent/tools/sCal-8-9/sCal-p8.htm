@@ -1,0 +1,429 @@
+<HTML>
+<HEAD>
+<SCRIPT LANGUAGE="JavaScript">
+
+// Version configured for Pocket PC 2003 -- r.mohaupt, April, 2004
+
+var ps = "";  // ps is a temp. for 3 alert boxes below: - READ -
+function About_sCal() { 
+  ps= "sCal - Small, Scientific, Script Calculator v.0.8p ";
+ ps+= "for Pocket PC 2003 & higher\n";
+ ps+= "**  Free, Public Domain, accessable JavaScript code. ";
+ ps+= "**  User must inspect code and test known values \n";
+ ps+= "before critical use.  - - NO WARRANTEES. - -\n";
+ ps+= "**  R.Mohaupt: Apr, 2004 - mgineer1@netscape.net \n";
+ ps+= "**  'Script' & 'Calculator' links produce alert boxes ";
+ ps+= "similar to this--like 'Quick Reference Cards'. 'Help' ";
+ ps+= "links to sCal8-Doc.htm file, if in same directory.";
+ alert(ps); }
+
+function About_Script() {
+  ps= "sCal is written in JavaScript (JS) & HTML.  This makes ";
+ ps+= "it accessable for easy user modification & addition ";
+ ps+= "of functions (JScrAps) to the Select Menus, entering ";
+ ps+= "code directly to x-display, or Cut/Paste to it using ";
+ ps+= "any text editor--no need of a compiler. \n" 
+ ps+= "**  Code in x-display is sent to eval(x) function.  User ";
+ ps+= "should review source code (especially sCal2) examples.\n";
+ ps+= "**  Compact display and file size are goals of sCal. \n";
+ alert(ps); }
+
+function About_Calc() {
+  ps= "Simple Calculator operated by buttons or keyboard; ";
+ ps+= "expression to x-display.  Drop-down Select menus ";
+ ps+= "for more functions.  [Do] operates immediately, ";
+ ps+= "[JS] moves to x. /*Comments*/ assist data entry. ";
+ ps+= "Click [=] to evaluate.\n ";
+ ps+= "**  Only one-[x^] power allowed, Math.pow(x,y) is preferred JavaScript.\n";
+ ps+= "[x>m][m>x][m+][mc] for memory; with stopwatch ";
+ ps+= "[stop][lap][pause/go][clr]\n";
+ ps+= "**  EXPERIMENT --not randomly, but with a point. ";
+ alert(ps); }
+
+var x = "";  // by Javascript loose typing, 'x' is a string, AND/OR number: confuses '+' if adding
+var m = "";  // stores Memory.  Note: x & m are GLOBAL--of concern if sCal embedded.
+var xRedo=0; // restores current x
+var Timer=0; var st0p=0; // for stopwatch
+var TAPE=""; // virtual adding machine tape
+var NL="\n";
+//var Nre=/\n/g;
+var sp_x=" ";
+//
+function Ix() { var s = document.sCal.IOx.value;  var n = s.indexOf('/*=');
+  if (n>0) {var InPrompt=s.substring(0,n); var xCode=s.substring(n);
+         x=InPrompt.replace(sp_x+/\n/g,";") +xCode}
+   else {x=s}  // These functions update the x-value for any keyboard inputs, & put any x calculated
+ }             // into the x-display.  If the JScrAp is a simple function, the Oxf() is used; else
+               // '/*=' shows its a program. 'New Lines' are unset and set for distinct input prompt.
+function Oxf() {document.sCal.IOx.value = x}
+function Ox() { var n = x.indexOf('/*=');
+  if (n>0) {var InPrompt=x.substring(0,n); var xCode=x.substring(n);
+         document.sCal.IOx.value = InPrompt.replace(/;/g,sp_x+"\n") +xCode}
+   else {document.sCal.IOx.value = x }
+ }
+function Mr(val,place) {var d=Math.pow(10,place); // set output decimal places
+ return Math.round(d*val)/d}
+
+function xEval() {Ix();    // JavaScript eval allows multi-statements, see examples.
+ xTemp=x;
+ var n = x.indexOf('^');
+ if (n > 0) {
+  if (x.indexOf('^',n+1) > 0) {alert("WARNING! Only 1 [^] allowed in expression!");}
+  else {  // all to left of '^' is taken as base, and all right as exponent
+  document.sCal.IOx.value = Math.pow(eval(x.substring(0,n)),eval(x.substring(n+1)));}
+  }       // likewise, entire x-value used as function argument, not just last term
+ else {document.sCal.IOx.value = eval(x);}
+ if (xRedo==1) {x=xTemp; Ox(); Om(); xRedo=0;}
+ Ix(); }
+
+function xPlusEq(s) {Ix(); x += s; Ox();} // --- DISPLAY-x functions ---
+function xMultEq(s) {xEval(); x *= s; Ox();}
+function Clear() {x = ""; Ox();}
+function BkSpace() {Ix(); x = x.substring(0,x.length-1) ; Ox();}
+function recip() {xEval(); x = 1/(x); Ox();}
+
+function Xwork(s)  // --- finds how to handle incoming MENU (s)-values ---
+ {if (s.indexOf('!')==0) {alert(s)} else  // '!' calls (s) to alert box
+ {if (isNaN(s))
+  {if (s.indexOf('x')>-1)       //-if expression is f(x), i.e.Method,
+   {xEval(); x = eval(s); Oxf();}//  figure x, & substiture in function,  NOTE: Oxf()!!!!
+  else {x += eval(s); Ox();} }  //-if a Property (eg. Math.PI), add value
+ else {xPlusEq(s);}  }  }       //-if numeric constant, append like Jwork
+
+function Im() {m = document.sCal.IOm.value;} // --- MEMORY fcns: like Ix() & Ox() ---
+function Om() {document.sCal.IOm.value = m;}
+function XtoM()  {Ix(); Im(); m+=x; Om(); x=""; Ox(); Timer=1;} //--with stopwatch settings
+function MtoX()  {Ix(); Im(); x += m; Ox();}
+function Mplus() {if (st0p>0){
+  if (Timer==0) {Timer=1} else {Timer=0} m=st0p-0.00001; Om(); runStop(m*1000);}
+ else {xEval(); if (m==""){m=0;} m = parseFloat(m) + parseFloat(x); Om(); x=""; Ox();}}
+function Mclear() {m = ""; Om(); Timer=0; st0p=0;}
+
+//function newWin(s) { } See regular version of sCal. Pocket PC doesn't do this well.
+
+var Browser = navigator.appName.substr(0,9);
+function EnterKey_EqButton(e) { // can use 'Enter' key (k=13) like [=] button
+ var k=0;
+ if (Browser=='Netscape') {k=e.which} else {k=window.event.keyCode;}
+ if (k==13) {xEval();} } 
+document.onkeypress = EnterKey_EqButton;
+
+function runStop(k) {  // Timer functions
+ start = new Date();
+ start.setTime(start.getTime() - k);
+ upDate();
+ }
+function upDate() {
+ if (st0p>0){
+  if (Timer==0) {
+   now= new Date(); k=Mr((now.getTime()-start.getTime())/1000, 0);
+   if (C>0) {m=C-k} else {m=k}
+   st0p=m+0.00001; m+= ", "; Om();
+   if (st0p<0) {st0p=0; m=0; Om(); x=temp; xRedo=1; Ox(); alert("Time Up!");}
+   setTimeout("upDate();", 1000);}
+ }}
+//   ***** end of sCal in HEAD **** -->
+</script>
+</HEAD>
+<BODY>
+<!--  ***** start of sCal in BODY **** -->
+<form name="sCal">
+
+<table bgcolor="yellow" border=0 cellspacing=0 cellpadding=0 width=200>
+
+<!-- Top(FSET1) drop-down SELECT menu: can change or add JScrAps ** 1 ** -->
+ <tr align="center">
+  <td><input type="button" value="JS " onClick="xPlusEq(document.sCal.FSET1.value)"></td>
+  <td colspan=4><SELECT name="FSET1">
+  <option selected value="Math.PI">[convert, constant] Pi </option>
+  <option value="x/25.4">x}[length] . . mm -&gt; inch</option>
+  <option value="25.4*x">x}[length] . . inch -&gt; mm</option>
+  <option value="x/0.3048">x}[length] meter -&gt; feet</option>
+  <option value="0.3048*x">x}[length] feet -&gt; meter</option>
+  <option value="x/5280">x}[length] . . feet -&gt; mile</option>
+  <option value="0.62137*x">x}[len.] kilometer-&gt;mile</option>
+  <option value="1.609344*x">x}[len.] mile-&gt;kilometer</option>
+  <option value="10.76391*x">x}[area] meter&sup2; -&gt; feet&sup2;</option>
+  <option value="0.092903*x">x}[area] feet&sup2; -&gt; meter&sup2;</option>
+  <option value="x/43560">x}[area] . . feet&sup2; -&gt;acre</option>
+  <option value="43560*x">x}[area] . . acre -&gt;feet&sup2;</option>
+  <option value="2.471054*x">x}[area] hectare-&gt;acre</option>
+  <option value="0.404686*x">x}[area] acre-&gt;hectare</option>
+  <option value="x/640">x}[area] . . acre-&gt; mile&sup2;</option>
+  <option value="35.314725*x">x}[volume] meter&sup3; -&gt; ft&sup3;</option>
+  <option value="0.0283168*x">x}[volume] ft&sup3; -&gt; meter&sup3;</option>
+  <option value="7.4805*x">x}[volume] ft&sup3; -&gt; gallon</option>
+  <option value="0.764555*x">x}[vol.] . . yd&sup3; -&gt;meter&sup3;</option>
+  <option value="4.44822*x">x}[force] lb(f)-&gt;Newton</option>
+  <option value="0.45359*x">x}[mass] . lb.US -&gt; kg</option>
+  <option value="9*x/5+32">x}[temperature] C&deg;-&gt;F&deg;</option>
+  <option value="5*(x-32)/9">x}[temperature] F&deg;-&gt;C&deg;</option>
+  <option value="x-273.15">x}[temperature] C&deg;-&gt;K&deg;</option></select></td>
+  <td><input type="button" Value="Do" onClick="Xwork(document.sCal.FSET1.value)"></td>
+ </tr>
+<!-- Middle(FSET2) SELECT menu: ** 2 **-->
+ <tr align="center">
+  <td><input type="button" value="JS " onClick="xPlusEq(document.sCal.FSET2.value)"></td>
+  <td colspan=4><SELECT name="FSET2">
+  <option selected value="Math.pow(x,2)">[power, trig, log] . . (x)&sup2;</option>
+  <option value="C=/*CountDn.Sec*/ 0; /*OR_leave_0_for_[=]_Start  *-stopwatch/mem_fcns:
+ [x>m]stop, [m>x]'lap'time, [m+]_pause/go, [mc]_reset */
+ st0p=1; Timer=0; temp=x; runStop(0); x='Seconds:';">
+ *} Timer - Stopwatch</option>
+  <option value="alert(m)">x} Memory to alert box</option>
+  <option value="for(j=x;j>2;j--){x*=j-1;} //x<2 undefined">x}pgm.eg.} factorial . x!</option>
+  <option value="Math.round(x*10000)/10000">x} 4-dec.places: round</option>
+  <option value="Math.sin(x*Math.PI/180)">x}op/hy, deg) . sin(x&deg;)</option>
+  <option value="Math.cos(x*Math.PI/180)">x}aj/hy, deg) . cos(x&deg;)</option>
+  <option value="Math.tan(x*Math.PI/180)">x}op/aj, deg) . tan(x&deg;)</option>
+  <option value="Math.PI/180 *x">x} . degrees to radians</option>
+  <option value="180/Math.PI *x">x} . radians to degrees</option>
+  <option value="Math.asin(x)*180/Math.PI">x}for deg.)  .  arc sin(x)</option>
+  <option value="Math.acos(x)*180/Math.PI">x}for deg.)  .  arc cos(x)</option>
+  <option value="Math.atan(x)*180/Math.PI">x}for deg.)  .  arc tan(x)</option>
+  <option value="Math.log(x)">x} natural log (base e)</option>
+  <option value="Math.exp(x)">x}exponentiation: e^x</option>
+  <option value="Math.log(x)*Math.LOG10E">x}common log(bse10)</option>
+  <option value="Math.pow(10,x)">x}anti-log(com'n)10^x</option>
+  <option value="Math.E">base of natural logs,e</option>
+  <option value="Math.LOG10E">common log (10) of e</option>
+  <option value="if (m==''){TAPE=''} else {TAPE+=' + '+m; x=xTemp}">x} . m -> TAPE</option>
+  <option value="x=TAPE">x} . TAPE -> x</option>
+  <option value="Math.random()">Random Num. (0 to 1)</option></select></td>
+  <td><input type="button" Value="Do" onClick="Xwork(document.sCal.FSET2.value)"></td>
+ </tr>
+<!-- Bottom(FSET3) SELECT menu: Much PROGRAMMABLE AREA avail. ** 3 **-->
+ <tr align="center">
+  <td><input type="button" value="JS " onClick="xPlusEq(document.sCal.FSET3.value)"></td>
+  <td colspan=4><SELECT name="FSET3">
+
+  <option selected value="Math.sqrt(x)">[ - other - ] sq.root (x)&frac12;</option>
+
+  <option value="! Actual bank values can vary on pay date vs. interest posting, etc.">
+ s}____FINANCE____</option>
+
+  <option value="(/*miles traveled*/ )/(/*gallons used*/ )+' mi/gal'">  <!-- SIMPLE case -->
+  *}miles per gallon {eg</option>
+
+  <option value="I=/*int.%/prd*/;N=/*#.periods*/;P=/*Principl$*/;/*=repay/period @m
+  eg: 9%APR (=0.75%/mo.) for 36mo, repay $10000 @ $318/mo.*/
+ i=I/100; y=Math.pow(1+i,N); m=Mr(P*i*y/(y-1),2)+'/prd.'; xRedo=1">
+   *}Cap.Recov: loan pay</option>
+
+  <option value="I=/*int.%/prd*/;N=/*#.periods*/;P=/*$banked*/;/*=acum.$ in time @m
+ eg: $1000 invested @9%APR for 10 yrs. becomes $2367*/
+ i=I/100; y=Math.pow(1+i,N); m=Mr(P*y,2); xRedo=1"> 
+   *} sgl.pay: Comp.Amt.</option>
+
+  <option value="I=/*int.%/prd*/;N=/*#.periods*/;R=/*bank$/prd*/;/*=acum.$ in time @m
+ eg: @9%APR, $1000 invested/year for 10yrs, yields $15193*/
+ i=I/100; y=Math.pow(1+i,N); m=Mr(R*(y-1)/i,2); xRedo=1;">
+   *} unif.pay: Comp.Amt.</option>
+
+  <option value="I=/*int.%/prd*/;N=/*#.periods*/;S=/*$need in #*/;/*=$bank now @m
+ eg: @9%APR, $1000 needed in 10yrs; bank $422 now.*/
+ i=I/100; y=Math.pow(1+i,N); m=Mr(S/y,2)+' now'; xRedo=1;">
+   *} sgl.pay: Pres.Worth</option>
+
+  <option value="I=/*int.%/prd*/;N=/*#.periods*/;R=/*$need/prd*/;/*=$bank now @m
+ eg: @9%APR, $1000 needed annually for 10yrs; bank $6418 now*/
+ i=I/100; y=Math.pow(1+i,N); m=Mr(R*(y-1)/(y*i),2)+'now'; xRedo=1;">
+   *}unif.pay: Pres.Worth</option>
+
+  <option value="I=/*int.%/prd.*/;N=/*#.periods*/;S=/*$need in #*/;/*=$bank/prd. @m
+  eg: @9%APR, $1000 needed in 10yrs; bank $66 annually*/
+ i=I/100; y=Math.pow(1+i,N); m=Mr(S*i/(y-1),2)+'/prd.'; xRedo=1;">
+   *} unif.pay: Sink.Fund</option>
+
+<script language="JavaScript" type="text/javascript">
+<!--
+var MdataGet="/*=*/ function MDG() {end =m.indexOf('/',start); temp = m.substr(start,end-start); start=end+1;} ";
+var MdataExtract=MdataGet+"var start=1; var end=0; MDG(); var lo=temp; var hi=temp; var i=0; "; 
+var StatRndm="No=/*No.of pts*/;d=/*value 1 to*/100;/*= ->[x>m]*/ m='/'; for (j=0;j<No;j++) ";
+  StatRndm +="{m+=Math.round(Math.random()*d)+'/'}; //this loads No random data values (1 to d) in m-series;";
+var StatIn=MdataExtract+"var Tot=temp; var No=1; do {MDG(); if (temp!=''){Tot=Tot/1+temp/1; No+=1; ";
+  StatIn +="if (temp<lo){lo=temp} if (temp>hi){hi=temp}}} while (m.indexOf('/',start)>-1); var mean=Tot/No; ";
+  StatIn +="start=1; var variance2=0; do {MDG(); if (temp!=''){variance2+=Math.pow(temp-mean,2)}} ";
+  StatIn +="while (m.indexOf('/',start)>-1); m='__Statistics__m-data__'+NL+'No. of points = '+No";
+  StatIn +="+NL+' Total = '+Tot+NL+' Mean = '+mean+NL+' Std.dev.(n) = '";
+  StatIn +="+Mr(Math.sqrt(variance2/No),3)+NL+' . . S.d.(n-1) = '+Mr(Math.sqrt(variance2/(No-1)),3)+ ";
+  StatIn +="NL+' range.low val = '+lo+NL+' . . .  . high val = '+hi+NL+' . mid-range = '";
+  StatIn +="+(hi/1+lo/1)/2+NL+' copy m-data: '+m; Om(); alert(m); "; 
+-->
+</script>
+  <option value="!__Basic_STATISTICS__
+Put data values in x-disp.
+starting with delimiter '/'
+& separate values with '/'.
+Edit, copy,paste,save, etc.
+Or use Random Data for eg.
+Use [x>m] to store data.
+[Do][=] Stats on m-Data.
+Summary: mean, std_dev,
+will appear in Alert box.
+Can check/edit data,
+ remove outliers, etc.
+ between runs.">
+   !}___STATISTICS___</option>
+  <option value=javascript:StatRndm>Random Data gen. {x</option>
+  <option value=javascript:StatIn>Statistics on m-Data {x</option>
+
+  <option value="Civil Enineering Hydraulics: Open Channel Flow. Use only if qualified.">
+   s}__HYDRAULICS__</option>
+
+  <option value="L=/*weirLen,ft*/;H=/*head,ft*/;/*=flow cfs @m */
+ m=Mr(3.1*L*Math.pow(H,1.5),1)+' cfs'; xRedo=1">
+   *}BrdCrest Weir, Q,cfs</option>
+
+  <option value="!_Orifice: Q=CoA(2gh)^.5
+Q: flow, cu.ft/sec or cms 
+Co: contract.coef, 0.6&plusmn;
+----- equiv. culvert ent. Ke
+.60 - BOX: \/-wing, r.top.2
+.54 -   ||-wing, sqr.entr=.7
+.66 - PIPE: socket proj.=.2
+.60 -   sq.edge in hdwl.=.5
+.52 -   projectg from fill=.7
+A: area, sq.units, of openg
+g: accel.gravity: 32.15ft/
+   or 9.8m/sec&sup2; 
+h: head height - ctr openg
+__note-- sCal deducts ht/2
+An orifice may be used to
+   approx culvert entr. calc.
+--Know limitations of using!">
+   !} HYDRO: ORIFICES</option>
+ 
+  <option value="h=/*Orifice.ht,ft*/;W=/*width, ft*/;H=/*tot.Head,ft*/;/*=flow cfs @m
+ *note: coef~0.5 for pipe inlet*/ g=32.15; m=Mr(0.6*W*h*Math.sqrt((H-h/2)*2*g),1)+' cfs'; xRedo=1">
+   *}Rectng.Orifice Q,cfs</option>
+
+  <option value="d=/*Orif.Dia,ft*/;H=/*tot.Head, ft*/;/*=]area,s.ft; flow,cfs @m
+  *note: coef~0.5 for pipe inlet*/ g=32.15; A=3.1416*d*d/4;
+  m=Mr(A,1)+'sf; q '+Mr(0.6*A*Math.sqrt(2*g*(H-d/2)),1); xRedo=1">
+   *} Circular Orifice Q,cfs</option>
+
+  <option value="!_Manning_Eq: normal flow.
+-i.e. flow surface ll bottom-
+__V =Cm*S^.5*R^.667/n:
+V: velocity, u (ft or m) /sec
+Cm: coeff. based on u:
+  1 if meters; 1.486, ft.
+S: channel slope,u/u.
+  sCal uses %: fall/100u
+R: hydraulic radius
+  =(flow area)/(wet.perim)
+n: roughness coef. (table)
+__also: Q=VA (continuity)
+Froude Number  =
+  V/(g*A/(top.width))^0.5
+if froude<1, flow subcriticl;
+ =1,critical; >1,supercritical
+--Know limitations of use!">
+   !}_HYDRO_Manning_</option>
+ 
+   <option value="!_Typical_n-values_shortList
+0.009 - glass, plastic 
+0.012 - smooth conc.
+0.018 - bare dirt; gunite;
+  planks w/battens
+0.025 - corrugat.metal; cut
+  rock; conc.rubble
+0.03 - mowed turf, 
+  straight;  8-in rip rap
+0.04 - weeds, lite brush
+0.05 - denser
+0.07 - winding, brushy
+  channel, floodplain
+0.12 - extremely weedy,
+  brush, timber, pools
+0.20 - nearly impenetrable
+  -worst case">
+   !}_HYDRO_n-values_</option>
+ 
+   <option value="d=/*Pipe.dia,f*/;s=/*long.sl,%*/;N=/*Manning.n*/;/*=vel,f/s; q,cfs @m*/
+ A=3.1416*d*d/4; v=1.486*Math.sqrt(s/100)*Math.pow(d/4,0.667)/N; m=Mr(v,1)+'v, q '+Mr(v*A,1); xRedo=1">
+   *} Pipe norm.flow Q,cfs</option>  <!--FULL PIPE ONLY! A=Q/v-->
+
+  <option value="l=/*slope 1v:*/;b=/*bot.w, ft*/;r=/*slope 1v:*/;y=/*depth, ft*/;s=/*long.sl,%*/;N=/*Manning.n*/;
+/*=vel,f/s, q,cfs; etc. @m*/ tw=l*y+b+r*y; a=y*(tw+b)/2; wp=Math.sqrt(l*y*l*y+y*y)+b+Math.sqrt(r*y*r*y+y*y);
+ v=1.486*Math.sqrt(s/100)*Math.pow(a/wp,0.667)/N; f=v/Math.sqrt(32.2*a/tw);
+ m=Mr(v,1)+'v; q '+Mr(v*a,1)+' top wid.ft='+Mr(tw,1)+', area s.f.='+Mr(a,1)+', Froude#='+Mr(f,2);
+ xRedo=1; // Note: if side.slope=0, vertical wall; if bottom width=0, V-ditch; Froude, etc in [m>x]">
+   *} \_/ Channel norm.Q</option> <!--Complex, extended output in m-display-->
+
+  <option value="">*}</option> <!-- empty programmable area -->
+  <option value=" JScrAp CODE here ">Ty}JScrAp Call Name</option>
+  <option value="">*}</option>
+  
+  <option value="ps='_decimal-ASCII code_\n'; j=/*starting #*/  ;/*=*/if(j>52){ps+='Poor display if #>52'}
+  else {nRow=16; nCol=3; for(i=1;i<=nRow;i++)
+ {for(k=0;k<nCol;k++) {dec=j+i+k*nRow-1;  ps+=dec+'-'+unescape('%'+dec)+'\t'} ps+='\n'}}
+ alert(ps); xRedo=1; // example of branching (if, else) and nested loops (for, next)">
+   *}decimal>ASCII code</option>
+  </select></td>
+ <td><input type="button" Value="Do" onClick="Xwork(document.sCal.FSET3.value)"></td>
+ </tr>
+
+<!--  x-text area for Main Input/Output -->
+ <tr align="center">
+  <td colspan=5><TextArea name="IOx" rows=4 cols=21></TextArea></td>
+ <td>
+ <small><!-- links to "Help" alerts -->
+   <A href="javascript:About_sCal()">sCal.p</A><br>
+   <A href="javascript:xEval()">[ = ]</A><br>
+   <A href="javascript:About_Script()">Scrpt</A><br>
+   <A href="javascript:About_Calc()">Calc.</A><br>
+   <A href="sCal-8-DraftDoc.htm">Help</A></small>
+ </td>
+ </tr>
+
+<!-- buttons & MEMORY text box: -->
+ <tr align="center">
+  <td><input type="button" Value="x&rsaquo;m" onClick="XtoM()"></td>
+  <td><input type="button" Value="m&rsaquo;x" onClick="MtoX()"></td>
+  <td colspan=2><input type="text" name="IOm" size=8></td>
+  <td><input type="button" Value=" m+" onClick="Mplus()"></td>
+  <td><input type="button" Value="mc" onClick="Mclear()"></td>
+ </tr>
+<!-- layout of CALCULATOR buttons: -->
+ <tr align="center">
+  <td><input type="button" Value="  7  " onClick="xPlusEq(7)"></td>
+  <td><input type="button" Value="  8  " onClick="xPlusEq(8)"></td>
+  <td><input type="button" Value="  9  " onClick="xPlusEq(9)"></td>
+  <td><input type="button" Value="  ( . " onClick="xPlusEq('(')"></td>
+  <td><input type="button" Value=" . )  " onClick="xPlusEq(')')"></td>
+  <td><input type="button" Value="  C  " onClick="Clear()"></td>
+ </tr>
+ <tr align="center">
+  <td><input type="button" Value="  4  " onClick="xPlusEq(4)"></td>
+  <td><input type="button" Value="  5  " onClick="xPlusEq(5)"></td>
+  <td><input type="button" Value="  6  " onClick="xPlusEq(6)"></td>
+  <td><input type="button" Value="  *  " onClick="xPlusEq('*')"></td>
+  <td><input type="button" Value="  /  " onClick="xPlusEq('/')"></td>
+  <td><input type="button" Value="  &lt; " onClick="BkSpace()"></td>
+ </tr>
+ <tr align="center">
+  <td><input type="button" Value="  1  " onClick="xPlusEq(1)"></td>
+  <td><input type="button" Value="  2  " onClick="xPlusEq(2)"></td>
+  <td><input type="button" Value="  3  " onClick="xPlusEq(3)"></td>
+  <td><input type="button" Value="  +  " onClick="xPlusEq('+')"></td>
+  <td><input type="button" Value="  -  " onClick="xPlusEq('-')"></td>
+  <td><input type="button" Value=" x^." onClick="xPlusEq('^')"></td>
+ </tr>
+ <tr align="center">
+  <td><input type="button" Value="  0  " onClick="xPlusEq('0')"></td>
+  <td><input type="button" Value="  &bull;  " onClick="xPlusEq('.')"></td>
+  <td><input type="button" Value="+/-" onClick="xMultEq('-1')"></td>
+  <td><input type="button" Value="1/x "  onClick="recip()">
+  <td colspan=2><input type="button" Value=" = Enter  " onClick="xEval()"></td>
+ </tr>
+</table>
+</form>
+<!-- End sCal in BODY -->
+</body>
+</html>
+
+
+
+
