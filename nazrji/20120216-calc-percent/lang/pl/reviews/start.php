@@ -15,4 +15,8 @@ $string['majorproblems'] = 'Poważne/liczne problemy';
 $string['deadlineexpired'] = 'Deadline Expired';
 $string['deadlinepassed'] = 'You may view this assessment but you cannot change your comments as the deadline has expired or the start time of the exam has passed.';
 $string['confirmsubmit'] = 'Have you completed all the questions on this screen, you will NOT be able to go back.\nAre you sure you wish to continue?';
+$string['variable'] = 'Variable';
+$string['formula'] = 'Formula';
+$string['tolerancefull'] = 'Tolerance for full marks';
+$string['tolerancepartial'] = 'Tolerance for partial marks';
 ?>

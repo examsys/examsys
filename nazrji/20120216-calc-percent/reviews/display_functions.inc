@@ -855,11 +855,17 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
     echo "<tr><td colspan=\"4\">" . $string['notvisible'] . "</td></tr>";
     echo "<tr><td colspan=\"4\" style=\"text-align:justify\">" . $string['reviewermsg'] . "</td></tr>";
     echo "<tr><td colspan=\"4\">&nbsp;</td></tr>";
-    echo "<tr style=\"font-weight:bold\"><td style=\"width:80px; border-bottom: 1px solid #C0C000\">Variable</td><td style=\"width:80px; border-bottom: 1px solid #C0C000\">" . $string['generated'] . "</td><td style=\"width:80px; border-bottom: 1px solid #C0C000\">" . $string['min'] . "</td><td style=\"width:460px; border-bottom: 1px solid #C0C000\">" . $string['max'] . "</td></tr>\n";
+    echo "<tr style=\"font-weight:bold\"><td style=\"width:80px; border-bottom: 1px solid #C0C000\">{$string['variable']}</td><td style=\"width:80px; border-bottom: 1px solid #C0C000\">" . $string['generated'] . "</td><td style=\"width:80px; border-bottom: 1px solid #C0C000\">" . $string['min'] . "</td><td style=\"width:460px; border-bottom: 1px solid #C0C000\">" . $string['max'] . "</td></tr>\n";
     
     echo displayGeneratedFigures($calc_original_vars);
     
-    echo "<tr><td>Formula</td><td colspan=\"3\">$answer_equation</td></tr>\n";
+    echo "<tr><td>{$string['formula']}</td><td colspan=\"3\">$answer_equation</td></tr>\n";
+    if (strlen($score_array[1]) > 0) {
+      echo "<tr><td colspan=\"3\">{$string['tolerancefull']}</td><td>{$score_array[1]}</td></tr>\n";
+    }
+    if (strlen($score_array[2]) > 0) {
+      echo "<tr><td colspan=\"3\">{$string['tolerancepartial']}</td><td>{$score_array[2]}</td></tr>\n";
+    }
     echo "</table>\n";
     echo "</td></tr>\n";
   

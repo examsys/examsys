@@ -587,7 +587,7 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
             echo '<td>';
             if ($tmp_exclude == '1')  echo '<span class="exclude">';
             
-            $difference = round(abs($saved_response_clean - $tmp_answer[1]), $decimals);
+            $difference = round(abs($saved_response_clean - $tmp_answer[1]), 12);
             
             if ($saved_response_clean == $tmp_answer[1]) {
               $paper[$question]['mark'] = $paper[$question]['marks_correct'];
@@ -626,11 +626,11 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
                     
           if ($saved_response_clean <> $tmp_answer[1] and $paper[$question]['mark'] == $paper[$question]['marks_correct'] and $tolerance_full > 0) {
             echo ' ' . $string['withatoleranceof'] . ' ' . $score_array[1];
-            if (StringUtils::ends_with($score_array[1], '%')) echo " ($tolerance_full)";
+            if (StringUtils::ends_with($score_array[1], '%')) echo " (" . (round($tmp_answer[1], $decimals) - $tolerance_full) . " - " . (round($tmp_answer[1], $decimals) + $tolerance_full) . ")";
           }
           if ($saved_response_clean <> $tmp_answer[1] and $paper[$question]['mark'] == $paper[$question]['marks_partial'] and $tolerance_partial > 0) {
             echo ' ' . $string['withatoleranceof'] . ' ' . $score_array[2];
-            if (StringUtils::ends_with($score_array[2], '%')) echo " ($tolerance_partial)";
+            if (StringUtils::ends_with($score_array[2], '%')) echo " (" . (round($tmp_answer[1], $decimals) - $tolerance_partial) . " - " . (round($tmp_answer[1], $decimals) + $tolerance_partial) . ")";
           }
           
           if ($tmp_exclude == '1')  echo '</span>';
