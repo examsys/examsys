@@ -2,6 +2,8 @@
 print <<<END
 <html>
 <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
   <title>Calculator</title>
   <link rel="stylesheet" type="text/css" href="scal.css" />
 </head>
@@ -47,8 +49,8 @@ print <<<END
 <tr>
  <td colspan="6"></td>
  </tr>
-  <tr><td colspan="5"><div id="ans" class="ans">0</div></td></tr>
-  <tr><td colspan="5"><textarea name="IOx" rows="3" cols="16" class="LCD"></textarea></td></tr>
+  <tr><td colspan="5"><div id="ans-holder"><div id="ans">0</div></div></td></tr>
+  <tr><td colspan="5"><textarea name="IOx" rows="3" cols="16" class="LCD">0</textarea></td></tr>
   <tr><td colspan="5"><div name="memory" id="memory" class="memory">&nbsp;</div></td></tr>
 
 END;
@@ -67,9 +69,9 @@ END;
 
   if (isset($_GET['calc']) and $_GET['calc'] != 2) {
 print <<<END
-  <td><div class="b"><a href="#" class="b1" onclick="Xwork('rogo_asinh(buffer)')">asinh</a></div></td>
-  <td><div class="b"><a href="#" class="b1" onclick="Xwork('rogo_acosh(buffer)')">acosh</a></div></td>
-  <td><div class="b"><a href="#" class="b1" onclick="Xwork('rogo_atanh(buffer)')">atanh</a></div></td>
+  <td><div class="b"><a href="#" class="b1" onclick="Xwork('sCal_asinh(buffer)')">asinh</a></div></td>
+  <td><div class="b"><a href="#" class="b1" onclick="Xwork('sCal_acosh(buffer)')">acosh</a></div></td>
+  <td><div class="b"><a href="#" class="b1" onclick="Xwork('sCal_atanh(buffer)')">atanh</a></div></td>
 
 END;
 
@@ -80,14 +82,20 @@ END;
   }
 print <<<END
 
-  <td><div class="b">
+  <td>
+    <div class="b"><a href="#" class="b1" onclick="Xwork('Math.sqrt(buffer)')" style="font-family:'Times New Roman'">&radic;</a></div>
+  </td>
+  <td>
+    <div class="b">
 <script language="javascript">
-  if (urlParams["form"] != "undefined") {
-    document.write('<a href="#" class="ret" onclick="returntoform()">RET</a>')
+  if (urlParams["field"] != "undefined") {
+    document.write('<a href="#" class="b1" onclick="returntoform()">&laquo;copy</a>')
+  } else {
+    document.write('<a href="#" class="b1" onclick="return false">&nbsp;</a>')
   }
 </script>
-</div></td>
-<td><div class="b"><a href="#" class="off" onClick="window.close()">OFF</a></td>
+    </div>
+  </td>
 </tr>
 
 END;
@@ -96,36 +104,36 @@ END;
 print <<<END
 
 <tr>
-  <td><div class="b"><a href="#" class="b1" onclick="Xwork('rogo_sinh(buffer)')">sinh</a></div></td>
-  <td><div class="b"><a href="#" class="b1" onclick="Xwork('rogo_cosh(buffer)')">cosh</a></div></td>
-  <td><div class="b"><a href="#" class="b1" onclick="Xwork('rogo_tanh(buffer)')">tanh</a></div></td>
+  <td><div class="b"><a href="#" class="b1" onclick="Xwork('sCal_sinh(buffer)')">sinh</a></div></td>
+  <td><div class="b"><a href="#" class="b1" onclick="Xwork('sCal_cosh(buffer)')">cosh</a></div></td>
+  <td><div class="b"><a href="#" class="b1" onclick="Xwork('sCal_tanh(buffer)')">tanh</a></div></td>
   <td><div class="b"><a href="#" class="b1" onclick="Xwork('Math.exp(buffer)')">&nbsp;e<sup><i><span style="font-family:'Times New Roman',serif; font-size:130%; padding-left:2px">x</span></i></sup></a></div></td>
   <td><div class="b"><a href="#" class="b1" onclick="Xwork('Math.pow(10,buffer)')">&nbsp;10<sup><i><span style="font-family:'Times New Roman',serif; font-size:130%; padding-left:2px">x</span></i></sup></a></div></td>
 </tr>
 
 <tr>
-  <td><div class="b"><a href="#" class="b1" onclick="Xwork('rogo_asin(buffer)')">asin</a></div></td>
-  <td><div class="b"><a href="#" class="b1" onclick="Xwork('rogo_acos(buffer)')">acos</a></div></td>
-  <td><div class="b"><a href="#" class="b1" onclick="Xwork('rogo_atan(buffer)')">atan</a></div></td>
+  <td><div class="b"><a href="#" class="b1" onclick="Xwork('sCal_asin(buffer)')">asin</a></div></td>
+  <td><div class="b"><a href="#" class="b1" onclick="Xwork('sCal_acos(buffer)')">acos</a></div></td>
+  <td><div class="b"><a href="#" class="b1" onclick="Xwork('sCal_atan(buffer)')">atan</a></div></td>
   <td><div class="b"><a href="#" class="b1" onclick="Xwork('Math.log(buffer)')">ln</a></div></td>
   <td><div class="b"><a href="#" class="b1" onclick="Xwork('Math.log(buffer)*Math.LOG10E')">log</a></div></td>
 </tr>
 
 
 <tr>
-  <td><div class="b"><a href="#" class="b1" onclick="Xwork('rogo_sin(buffer)')">sin</a></div></td>
-  <td><div class="b"><a href="#" class="b1" onclick="Xwork('rogo_cos(buffer)')">cos</a></div></td>
-  <td><div class="b"><a href="#" class="b1" onclick="Xwork('rogo_tan(buffer)')">tan</a></div></td>
+  <td><div class="b"><a href="#" class="b1" onclick="Xwork('sCal_sin(buffer)')">sin</a></div></td>
+  <td><div class="b"><a href="#" class="b1" onclick="Xwork('sCal_cos(buffer)')">cos</a></div></td>
+  <td><div class="b"><a href="#" class="b1" onclick="Xwork('sCal_tan(buffer)')">tan</a></div></td>
   <td><div class="b"><a href="#" class="b1" onclick="Xwork('Math.PI')"><span style="font-family:'Times New Roman',serif; font-size:150%">&pi;</span></a></div></td>
   <td><div class="b"><a href="#" class="b1"  onclick="Xwork('Math.E')">e</a></div></td>
 </tr>
 
   <tr>
-   <td><div class="b"><a href="#" class="b1" onclick="Xwork('Math.sqrt(buffer)')" style="font-family:'Times New Roman'">&radic;</a></div></td>
-   <td><div class="b"><a href="#" class="b1" onclick="Xwork('rogo_square(buffer)')"><span style="font-family:'Times New Roman'; font-size:150%"><i>x</i></span><span style="font-size:90%; padding-left:1px"><sup>2</sup></span></a></div></td>
-   <td><div class="b"><a href="#" class="b1" onclick="Xwork('rogo_recip(buffer)')">1/<span style="font-family:'Times New Roman',serif; font-size:110%"><i>x</i></span></a></div></td>
-   <td><div class="b"><a href="#" class="b1" onclick="Xwork('rogo_fact(buffer)')"><span style="font-family:'Times New Roman',serif; font-size:150%"><i>x</i></span>!</a></div></td>
-   <td><div class="b"><a href="#" class="b1" onclick="rogo_buffered(buffer, '^')">&nbsp;<span style="font-family:'Times New Roman',serif; font-size:150%"><i>x</i></span><span style="font-size:90%; padding-left:1px"><sup><i>y</i></sup></span></a></div></td>
+   <td><div class="b"><a href="#" class="b1" onclick="Xwork('sCal_square(buffer)')"><span style="font-family:'Times New Roman'; font-size:150%"><i>x</i></span><span style="font-size:90%; padding-left:1px"><sup>2</sup></span></a></div></td>
+   <td><div class="b"><a href="#" class="b1" onclick="Xwork('sCal_cube(buffer)')"><span style="font-family:'Times New Roman'; font-size:150%"><i>x</i></span><span style="font-size:90%; padding-left:1px"><sup>3</sup></span></a></div></td>
+   <td><div class="b"><a href="#" class="b1" onclick="sCal_buffered(buffer, '^')">&nbsp;<span style="font-family:'Times New Roman',serif; font-size:150%"><i>x</i></span><span style="font-size:90%; padding-left:1px"><sup><i>y</i></sup></span></a></div></td>
+   <td><div class="b"><a href="#" class="b1" onclick="Xwork('sCal_recip(buffer)')">1/<span style="font-family:'Times New Roman',serif; font-size:110%"><i>x</i></span></a></div></td>
+   <td><div class="b"><a href="#" class="b1" onclick="Xwork('sCal_fact(buffer)')"><span style="font-family:'Times New Roman',serif; font-size:150%"><i>x</i></span>!</a></div></td>
   </tr>
 
 END;
@@ -139,7 +147,7 @@ END;
   <td><div class="b"><a href="#" class="b2" onclick="return xPlusEq('(')">(</a></div></td>
   <td><div class="b"><a href="#" class="b2" onclick="return xPlusEq(')')">)</a></div></td>
 <!--  <td><div class="b"><a href="#" class="del" onClick="BkSpace()">DEL</a></div></td>-->
-  <td colspan="2"><div class="b wide"><a href="#" class="ac" onclick="Clear()">AC</a></div></td>
+  <td colspan="2"><div class="b"><a href="#" class="ac" onclick="Clear()">AC</a></div></td>
   </td>
 </tr>
 
@@ -179,7 +187,7 @@ END;
 </div>
 </form>
 <script type="text/javascript">
-if (urlParams["field"] != "undefined" && typeof(window.opener.document.getElementById(urlParams["field"])) != 'undefined') {
+if (urlParams["field"] != "undefined" && typeof(window.opener.document.getElementById(urlParams["field"])) != 'undefined' && window.opener.document.getElementById(urlParams["field"]).value != '') {
   x = document.getElementById('ans').innerHTML = window.opener.document.getElementById(urlParams["field"]).value;
   Ox();
 }

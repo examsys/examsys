@@ -24,34 +24,35 @@
 
 require '../include/staff_auth.inc';
 ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Textbox Marking</title>
-<style type="text/css">
-body {font-family:Arial,sans-serif; font-size:90%; background-color:white; color:black; margin:0px}
-table {font-size:100%}
-.h {background-color:#F1F5FB; color:black}
-a {color:blue}
-</style>
-<link rel="stylesheet" type="text/css" href="../css/breadcrumb.css" />
-<script src="../js/staff_help.js" type="text/javascript"></script>
-<script language="JavaScript">
-  function hideMarked() {
-    if (document.getElementById('hidemarked').checked == 1) {
-      setting = " checked";
-    } else {
-      setting = "";
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Textbox Marking</title>
+  <link rel="stylesheet" type="text/css" href="../css/header.css" />
+  <style type="text/css">
+  body {font-family:Arial,sans-serif; font-size:90%; background-color:white; color:black; margin:0px}
+  a {color:blue}
+  </style>
+  <link rel="stylesheet" type="text/css" href="../css/breadcrumb.css" />
+  <script src="../js/staff_help.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    function hideMarked() {
+      if (document.getElementById('hidemarked').checked == 1) {
+        setting = " checked";
+      } else {
+        setting = "";
+      }
+
+      var ExpireDate = new Date ();
+      expiredays = 100;
+      ExpireDate.setTime(ExpireDate.getTime() + (expiredays * 24 * 3600 * 1000));
+      NameOfCookie = "hidemarked";
+      document.cookie = NameOfCookie + "=" + setting +  ((expiredays == null) ? "" : "; expires=" + ExpireDate.toGMTString());
+
+      parent.body.location.href='textbox_marking.php?<?php echo $_SERVER['QUERY_STRING']; ?>';
     }
-
-    var ExpireDate = new Date ();
-    expiredays = 100;
-    ExpireDate.setTime(ExpireDate.getTime() + (expiredays * 24 * 3600 * 1000));
-    NameOfCookie = "hidemarked";
-    document.cookie = NameOfCookie + "=" + setting +  ((expiredays == null) ? "" : "; expires=" + ExpireDate.toGMTString());
-
-    parent.body.location.href='textbox_marking.php?<?php echo $_SERVER['QUERY_STRING']; ?>';
-  }
-</script>
+  </script>
 </head>
 
 <body>
@@ -100,18 +101,18 @@ a {color:blue}
     $result->close();
   }
 
-  echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">\n<tr><td class=\"h\" style=\"height:52px\">";
+  echo "<table class=\"header\" style=\"font-size:90%\">\n<tr><th style=\"height:52px\">";
   echo '<div class="breadcrumb"><a href="../staff/index.php" target="_top">' . $string['home'] . '</a>';
   if ($folder != '') {
     echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?folder=' . $folder . '" target="_top">' . $folder_name . '</a>';
   } elseif (isset($_GET['module']) and $_GET['module'] != '') {
     echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?module=' . $_GET['module'] . '" target="_top">' . $_GET['module'] . '</a>';
   }
-  echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../paper/details.php?paperID=' . $_GET['paperID'] . '" target="_top">' . $paper . '</a></div><div style="margin-left:10px; font-size:180%; color:black; font-weight:bold">' . $phase_description . '</div></td>';
-  echo "<td style=\"background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(1); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['help'] . "\" border=\"0\" /></a><br /><input type=\"checkbox\" name=\"hidemarked\" id=\"hidemarked\" value=\"1\" onclick=\"hideMarked();\"";
+  echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../paper/details.php?paperID=' . $_GET['paperID'] . '" target="_top">' . $paper . '</a></div><div style="margin-left:10px; font-size:220%; color:black; font-weight:bold">' . $phase_description . '</div></th>';
+  echo "<th style=\"text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(1); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['help'] . "\" border=\"0\" /></a><br /><input type=\"checkbox\" name=\"hidemarked\" id=\"hidemarked\" value=\"1\" onclick=\"hideMarked();\"";
   if (isset($_COOKIE['hidemarked']) and $_COOKIE['hidemarked'] == 'checked') echo ' checked';
-  echo "  /> " . $string['hidemarked'] . "</td></tr>\n";
-  echo "<tr><td colspan=\"2\" style=\"height:3px\"><img src=\"../artwork/header_horizontal_line.gif\" width=\"100%\" height=\"3\" /></td></tr>\n";
+  echo "  /> " . $string['hidemarked'] . "</th></tr>\n";
+  echo "<tr><td colspan=\"2\" class=\"bevel\"></th></tr>\n";
   echo "</table>\n";
 ?>
 </body>

@@ -34,30 +34,32 @@
   
   
 ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Help and Support Center<?php echo " $cfg_install_type"; ?></title>
-<style>
-body {background-color:white; color:black; font-family:Arial,sans-serif; font-size:80%}
-table {font-size:100%}
-ul {list-style-type:square; color:#FF9900}
-a:link.title {color:#0560A6; font-weight:bold}
-a:visited.title {color:#0560A6; font-weight:bold}
-a:link.page {color:white}
-a:visited.page {color:white}
-.path {color:#808080}
-.num {text-align:right; border-bottom: 1px solid #6B82B2; border-right: 1px solid #6B82B2}
-.txt {border-bottom: 1px solid #6B82B2; border-right: 1px solid #6B82B2}
-</style>
-<script language="JavaScript">
-  function displayPage(targetID, page_no) {
-    for (page=1; page<=page_no; page++) {
-      document.getElementById('page' + page).style.display='none';
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Help and Support Center<?php echo " $cfg_install_type"; ?></title>
+  <style type="text/css">
+  body {background-color:white; color:black; font-family:Arial,sans-serif; font-size:80%}
+  table {font-size:100%}
+  ul {list-style-type:square; color:#FF9900}
+  a:link.title {color:#0560A6; font-weight:bold}
+  a:visited.title {color:#0560A6; font-weight:bold}
+  a:link.page {color:white}
+  a:visited.page {color:white}
+  .path {color:#808080}
+  .num {text-align:right; border-bottom: 1px solid #6B82B2; border-right: 1px solid #6B82B2}
+  .txt {border-bottom: 1px solid #6B82B2; border-right: 1px solid #6B82B2}
+  </style>
+  <script type="text/javascript">
+    function displayPage(targetID, page_no) {
+      for (page=1; page<=page_no; page++) {
+        document.getElementById('page' + page).style.display='none';
+      }
+      document.getElementById('page' + targetID).style.display='block';
+      window.scrollTo(0,0)
     }
-    document.getElementById('page' + targetID).style.display='block';
-    window.scrollTo(0,0)
-  }
-</script>
+  </script>
 </head>
 <body>
 

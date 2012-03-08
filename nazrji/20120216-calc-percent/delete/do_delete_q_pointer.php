@@ -59,13 +59,14 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title><?php echo $string['questiondeleted']; ?></title>
-<script language="javascript">
-  function closeWindow() {
-    window.opener.location.href='../paper/details.php?paperID=<?php echo $_POST['paperID']; ?>&module=<?php echo $_POST['module']; ?>&folder=<?php echo $_POST['folder']; ?>&scrOfY=<?php echo $_POST['scrOfY']; ?>';
-    self.close();
-  }
-</script>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title><?php echo $string['questiondeleted']; ?></title>
+  <script type="text/javascript">
+    function closeWindow() {
+      window.opener.location.href='../paper/details.php?paperID=<?php echo $_POST['paperID']; ?>&module=<?php echo $_POST['module']; ?>&folder=<?php echo $_POST['folder']; ?>&scrOfY=<?php echo $_POST['scrOfY']; ?>';
+      self.close();
+    }
+  </script>
 </head>
 
 <body onload="closeWindow();" style="margin:0px; background-color:#F1F5FB; font-family:Arial,sans-serif; font-size:90%; text-align:justifed">

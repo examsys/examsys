@@ -24,9 +24,11 @@
 
 require '../../include/staff_auth.inc';
 ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>TOC</title>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>TOC</title>
 </head>
 <body style="margin:0px">
 <table cellpadding="0" cellspacing="0" border="0" style="font-size:75%; font-family:Verdana,sans-serif; font-weight:bold; width:100%; height:20px">

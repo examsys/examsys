@@ -218,50 +218,43 @@ if (isset($_GET['calendar_year'])) {
 
 <br />
 <br />
-<br />
 
-<table cellpadding="0" cellspacing="0" border="0" width="185" style="margin-left:2px">
-<tr><td style="font-weight:bold"><?php echo $string['currentusertasks']; ?></td></tr>
-<table cellpadding="0" cellspacing="0" border="0" id="menu1" style="display:block; margin-left:6px; font-size:90%">
+<div class="submenuheading"><?php echo $string['currentusertasks']; ?></div>
+<table cellpadding="0" cellspacing="0" border="0" id="menu1" style="display:block; margin-left:10px; font-size:90%">
 <tr><td>
 
 <table style="font-size:100%; line-height:160%; display:block" cellpadding="3" cellspacing="0" border="0" id="menu2a">
 <tr><td><img src="../artwork/user_file_icon_grey_16.gif" width="16" height="16" alt="User Details" /></td><td class="greymenuitem"><?php echo $string['viewuserfile']; ?></td></tr>
 <?php
   if (strpos($userroles,'Admin') !== false or strpos($userroles,'SysAdmin') !== false) {
-    echo '<tr><td><a href="create_new_user.php" target="body"><img src="../artwork/small_user_icon.gif" width="16" height="16" alt="Create User" border="0" /></td><td class="menuitem"><a href="create_new_user.php">' . $string['createnewuser'] . '</a></td></tr>';
+    echo '<tr><td class="ico"><a href="create_new_user.php" target="body"><img src="../artwork/small_user_icon.gif" width="16" height="16" alt="Create User" border="0" /></td><td class="menuitem"><a href="create_new_user.php">' . $string['createnewuser'] . '</a></td></tr>';
   } else {
-    echo '<tr><td><img src="../artwork/small_user_icon_grey.gif" width="16" height="16" alt="Create User" /></td><td class="greymenuitem">' . $string['createnewuser'] . '</td></tr>';
+    echo '<tr><td class="ico"><img src="../artwork/small_user_icon_grey.gif" width="16" height="16" alt="Create User" /></td><td class="greymenuitem">' . $string['createnewuser'] . '</td></tr>';
   }
 ?>
 </table>
 
 <table style="font-size:100%; line-height:160%; display:none" cellpadding="3" cellspacing="0" border="0" id="menu2b">
-<tr><td><a href="#" onclick="viewProfileSingle(); return false;"><img src="../artwork/user_file_icon_16.gif" width="16" height="16" alt="Edit" border="0" /></a></td><td class="menuitem"><a id="edit" onclick="viewProfileSingle(); return false;" href="#"><?php echo $string['viewuserfile']; ?></a></td></tr>
-<tr><td><img src="../artwork/small_user_icon_grey.gif" width="16" height="16" alt="Create" border="0" /></td><td class="greymenuitem"><?php echo $string['createnewuser']; ?></td></tr>
+<tr><td class="ico"><a href="#" onclick="viewProfileSingle(); return false;"><img src="../artwork/user_file_icon_16.gif" width="16" height="16" alt="Edit" border="0" /></a></td><td class="menuitem"><a id="edit" onclick="viewProfileSingle(); return false;" href="#"><?php echo $string['viewuserfile']; ?></a></td></tr>
+<tr><td class="ico"><img src="../artwork/small_user_icon_grey.gif" width="16" height="16" alt="Create" border="0" /></td><td class="greymenuitem"><?php echo $string['createnewuser']; ?></td></tr>
 </table>
 
 <table style="font-size:100%; line-height:160%; display:none" cellpadding="3" cellspacing="0" border="0" id="menu2c">
-<tr><td><a onclick="viewProfileSingle(); return false;" href="#"><img src="../artwork/user_file_icon_16.gif" width="16" height="16" alt="Edit" border="0" /></a></td><td class="menuitem"><a id="edit" onclick="viewProfileSingle(); return false;" href="#"><?php echo $string['viewuserfile']; ?></a></td></tr>
-<tr><td><a href="create_new_user.php" target="body"><img src="../artwork/small_user_icon.gif" width="16" height="16" alt="Create" border="0" /></a></td><td class="menuitem"><a href="create_new_user.php"><?php echo $string['createnewuser']; ?></a></td></tr>
-</table>
-
-</td></tr>
+<tr><td class="ico"><a onclick="viewProfileSingle(); return false;" href="#"><img src="../artwork/user_file_icon_16.gif" width="16" height="16" alt="Edit" border="0" /></a></td><td class="menuitem"><a id="edit" onclick="viewProfileSingle(); return false;" href="#"><?php echo $string['viewuserfile']; ?></a></td></tr>
+<tr><td class="ico"><a href="create_new_user.php" target="body"><img src="../artwork/small_user_icon.gif" width="16" height="16" alt="Create" border="0" /></a></td><td class="menuitem"><a href="create_new_user.php"><?php echo $string['createnewuser']; ?></a></td></tr>
 </table>
 
 </td></tr>
 </table>
 
 <br />
-<br />
 
-<table cellpadding="0" cellspacing="0" border="0" width="185" style="margin-left:2px">
-<tr><td style="font-weight:bold"><?php echo $string['cohorttasks']; ?></td></tr>
+<div class="submenuheading"><?php echo $string['cohorttasks']; ?></div>
 <?php
   if (isset($_COOKIE['caausermgt'][2])) {
-    echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"menu2\" style=\"display:" . $_COOKIE['caausermgt'][2] . "; margin-left:6px; font-size:90%\">\n";
+    echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"menu2\" style=\"display:" . $_COOKIE['caausermgt'][2] . "; margin-left:10px; font-size:90%\">\n";
   } else {
-    echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"menu2\" style=\"display:block; margin-left:6px; font-size:90%\">\n";
+    echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"menu2\" style=\"display:block; margin-left:10px; font-size:90%\">\n";
   }
 ?>
 <tr><td>
@@ -270,10 +263,10 @@ if (isset($_GET['calendar_year'])) {
 <table style="font-size:100%; line-height: 160%; display:block" cellpadding="3" cellspacing="0" border="0" id="menu3a">
 <?php
   if (strpos($userroles,'Admin') !== false) {
-    echo '<tr><td><a href="load_cohort.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="' . $string['importstudents'] . '" border="0" /></a></td><td class="menuitem"><a href="import_students.php">' . $string['importstudents'] . '</a></td></tr>';
-    echo '<tr><td><a href="import_student_module_info.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="' . $string['importmodules'] . '" border="0" /></a></td><td class="menuitem"><a href="import_modules.php">' . $string['importmodules'] . '</a></td></tr>';
+    echo '<tr><td class="ico"><a href="load_cohort.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="' . $string['importstudents'] . '" border="0" /></a></td><td class="menuitem"><a href="import_students.php">' . $string['importstudents'] . '</a></td></tr>';
+    echo '<tr><td class="ico"><a href="import_student_module_info.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="' . $string['importmodules'] . '" border="0" /></a></td><td class="menuitem"><a href="import_modules.php">' . $string['importmodules'] . '</a></td></tr>';
   } else {
-    echo '<tr><td><img src="../artwork/import_grey_16.gif" width="16" height="16" alt="' . $string['importstudents'] . '" /></td><td class="greymenuitem">' . $string['importstudents'] . '</td></tr>';
+    echo '<tr><td class="ico"><img src="../artwork/import_grey_16.gif" width="16" height="16" alt="' . $string['importstudents'] . '" /></td><td class="greymenuitem">' . $string['importstudents'] . '</td></tr>';
   }
 ?>
 <tr><td><img src="../artwork/small_email_grey.png" width="16" height="16" alt="<?php echo $string['emailcohort']; ?>" border="0" /></td><td class="greymenuitem"><?php echo $string['emailcohort']; ?></td></tr>
@@ -282,8 +275,8 @@ if (isset($_GET['calendar_year'])) {
 <table style="font-size:100%; line-height:160%; display:none" cellpadding="3" cellspacing="0" border="0" id="menu3b">
 <?php
   if (strpos($userroles,'Admin') !== false) {
-    echo '<tr><td><a href="load_cohort.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="' . $string['importstudents'] . '" border="0" /></a></td><td class="menuitem"><a href="import_students.php">' . $string['importstudents'] . '</a></td></tr>';
-    echo '<tr><td><a href="import_student_module_info.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="' . $string['importmodules'] . '" border="0" /></a></td><td class="menuitem"><a href="import_student_module_info.php">' . $string['importmodules'] . '</a></td></tr>';
+    echo '<tr><td class="ico"><a href="load_cohort.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="' . $string['importstudents'] . '" border="0" /></a></td><td class="menuitem"><a href="import_students.php">' . $string['importstudents'] . '</a></td></tr>';
+    echo '<tr><td class="ico"><a href="import_student_module_info.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="' . $string['importmodules'] . '" border="0" /></a></td><td class="menuitem"><a href="import_student_module_info.php">' . $string['importmodules'] . '</a></td></tr>';
   }
 ?>
 <tr><td><a id="copy" href="#" onclick="emailCohort(); return false;"><img src="../artwork/small_email.png" width="16" height="16" alt="<?php echo $string['emailcohort']; ?>" border="0" /></a></td><td class="menuitem"><a id="copy" href="#" onclick="emailCohort(); return false;"><?php echo $string['emailcohort']; ?></a></td></tr>
@@ -292,14 +285,11 @@ if (isset($_GET['calendar_year'])) {
 <table style="font-size:100%; line-height:160%; display:none" cellpadding="3" cellspacing="0" border="0" id="menu3c">
 <?php
   if (strpos($userroles,'Admin') !== false) {
-    echo '<tr><td><a href="load_cohort.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="' . $string['importstudents'] . '" border="0" /></a></td><td class="menuitem"><a href="import_students.php">' . $string['importstudents'] . '</a></td></tr>';
-    echo '<tr><td><a href="import_student_module_info.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="' . $string['importmodules'] . '" border="0" /></a></td><td class="menuitem"><a href="import_modules.php">' . $string['importmodules'] . '</a></td></tr>';
+    echo '<tr><td class="ico"><a href="load_cohort.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="' . $string['importstudents'] . '" border="0" /></a></td><td class="menuitem"><a href="import_students.php">' . $string['importstudents'] . '</a></td></tr>';
+    echo '<tr><td class="ico"><a href="import_student_module_info.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="' . $string['importmodules'] . '" border="0" /></a></td><td class="menuitem"><a href="import_modules.php">' . $string['importmodules'] . '</a></td></tr>';
   }
 ?>
 <tr><td><a id="copy" href="#" onclick="emailCohort(); return false;"><img src="../artwork/small_email.png" width="16" height="16" alt="<?php echo $string['emailcohort']; ?>" border="0" /></a></td><td class="menuitem"><a id="copy" href="#" onclick="emailCohort(); return false;"><?php echo $string['emailcohort']; ?></a></td></tr>
-</table>
-
-</td></tr>
 </table>
 
 </td></tr>

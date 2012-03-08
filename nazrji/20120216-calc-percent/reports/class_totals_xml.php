@@ -26,9 +26,11 @@
 
   require '../include/staff_auth.inc';
   require '../include/class_totals.inc';
-
+  
+  $displayDebug = false; //disable debud output in this script as it effects the output
+  
   header("Content-type: application/vnd.ms-excel");
-  header("Content-Disposition: attachment; filename=" . $paper . ".xml");
+  header("Content-Disposition: attachment; filename=" . str_replace(' ', '_', $paper) . ".xml");
 
   if ($marking == '0') {
     $marking_label = '%';
@@ -134,12 +136,13 @@
   echo ' </Style>';
   echo ' </Styles>';
   echo ' <Worksheet ss:Name="' . $string['marks'] . '">';
-  echo '  <Table ss:ExpandedColumnCount="' . (13 + $meta_col_count) .'" ss:ExpandedRowCount="' . ($user_no + 3) . '" x:FullColumns="1" x:FullRows="1">';
+  echo '  <Table ss:ExpandedColumnCount="' . (14 + $meta_col_count) .'" ss:ExpandedRowCount="' . ($user_no + 3) . '" x:FullColumns="1" x:FullRows="1">';
   echo '   <Column ss:AutoFitWidth="0" ss:Width="35"/>';
   echo '   <Column ss:AutoFitWidth="0" ss:Width="80"/>';
   echo '   <Column ss:AutoFitWidth="0" ss:Width="130"/>';
   echo '   <Column ss:AutoFitWidth="0" ss:Width="60"/>';
   echo '   <Column ss:AutoFitWidth="0" ss:Width="60"/>';
+  echo '   <Column ss:AutoFitWidth="0" ss:Width="50"/>';
   echo '   <Column ss:AutoFitWidth="0" ss:Width="50"/>';
   echo '   <Column ss:AutoFitWidth="0" ss:Width="40"/>';
   echo '   <Column ss:AutoFitWidth="0" ss:Width="40"/>';
@@ -169,6 +172,7 @@
   echo '    <Cell ss:StyleID="s28"/>';
   echo '    <Cell ss:StyleID="s28"/>';
   echo '    <Cell ss:StyleID="s28"/>';
+  echo '    <Cell ss:StyleID="s28"/>';
   
   foreach ($metadata_cols as $key) {
     echo '    <Cell ss:StyleID="s28"/>';    
@@ -181,6 +185,7 @@
   echo '    <Cell ss:StyleID="s30"><Data ss:Type="String">' . $string['firstnames'] . '</Data></Cell>';
   echo '    <Cell ss:StyleID="s30"><Data ss:Type="String">' . $string['studentid'] . '</Data></Cell>';
   echo '    <Cell ss:StyleID="s30"><Data ss:Type="String">' . $string['username'] . '</Data></Cell>';
+  echo '    <Cell ss:StyleID="s30"><Data ss:Type="String">' . $string['course'] . '</Data></Cell>';
   echo '    <Cell ss:StyleID="s30"><Data ss:Type="String">' . $string['module'] . '</Data></Cell>';
   echo '    <Cell ss:StyleID="s30"><Data ss:Type="String">' . $string['mark'] . '</Data></Cell>';
   if ($marking == '0') {
@@ -211,6 +216,7 @@
       echo '<Cell><Data ss:Type="String">' . htmlentities($user_results[$i]['first_names']) . '</Data></Cell>';
       echo '<Cell><Data ss:Type="String">' . $user_results[$i]['student_id'] . '</Data></Cell>';
       echo '<Cell><Data ss:Type="String">' . $user_results[$i]['username'] . '</Data></Cell>';
+      echo '<Cell><Data ss:Type="String">' . $user_results[$i]['student_grade'] . '</Data></Cell>';
       echo '<Cell><Data ss:Type="String">' . $user_results[$i]['module'] . '</Data></Cell>';
       if ($user_results[$i]['display_started'] == '') {  // Student did not take exam.{
         echo '<Cell/>';
@@ -309,9 +315,10 @@
   echo '  <Table ss:ExpandedColumnCount="2" ss:ExpandedRowCount="' . $exp_row_count . '" x:FullColumns="1" x:FullRows="1">';
   echo '  <Column ss:AutoFitWidth="0" ss:Width="120"/>';
 
+  $size_msg = ($cohort_size < $display_no) ? $cohort_size : $display_no;
   echo '<Row>';
   echo '<Cell ss:StyleID="s23"><Data ss:Type="String">' . $string['cohortsize'] . '</Data></Cell>';
-  echo '<Cell><Data ss:Type="Number">' . $display_no . '</Data></Cell>';
+  echo '<Cell><Data ss:Type="Number">' . $size_msg . '</Data></Cell>';
   echo '</Row>';
   echo '<Row>';
   echo '<Cell ss:StyleID="s23"><Data ss:Type="String">' . $string['failureno'] . '</Data></Cell>';

@@ -26,7 +26,7 @@
   require 'class_totals.inc';
 
   header("Content-type: application/vnd.ms-excel");
-  header("Content-Disposition: attachment; filename=" . $paper . ".xml");
+  header("Content-Disposition: attachment; filename=" . str_replace(' ', '_', $paper) . ".xml");
 
   // Write results to XML ---------------------------------------------------------------------------
   echo '<?xml version="1.0"?>';
@@ -38,7 +38,7 @@
   echo ' xmlns:html="http://www.w3.org/TR/REC-html40">';
   echo ' <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">';
   echo '  <Title>' . $paper . '</Title>';
-  echo '  <Author>Rogo/Author>';
+  echo '  <Author>Rogo</Author>';
   $tmp_start = substr($_GET['startdate'], 6, 2) . '/' . substr($_GET['startdate'], 4, 2) . '/' . substr($_GET['startdate'], 0, 4) . ' ' . substr($_GET['startdate'], 8, 2) . ':' . substr($_GET['startdate'], 10, 2);
   $tmp_end = substr($_GET['enddate'], 6, 2) . '/' . substr($_GET['enddate'], 4, 2) . '/' . substr($_GET['enddate'], 0, 4) . ' ' . substr($_GET['enddate'], 8, 2) . ':' . substr($_GET['enddate'], 10, 2);
   echo '  <Description>Class totals for assessment taken between ' . $tmp_start . ' and ' . $tmp_end .'.</Description>';
@@ -115,11 +115,8 @@
   echo '   <Column ss:AutoFitWidth="0" ss:Width="80"/>';
   echo '   <Column ss:AutoFitWidth="0" ss:Width="100"/>';
   echo '   <Column ss:AutoFitWidth="0" ss:Width="90"/>';
-  if ($paper_type == 2) {
-    echo '   <Column ss:AutoFitWidth="0" ss:Width="90"/>';
-  }
   echo '   <Row ss:AutoFitHeight="0" ss:Height="26.25">';
-  echo '    <Cell ss:StyleID="s27"><Data ss:Type="String">' . $paper_title . '</Data></Cell>';
+  echo '    <Cell ss:StyleID="s27"><Data ss:Type="String">' . $paper . '</Data></Cell>';
   echo '    <Cell ss:StyleID="s28"/>';
   echo '    <Cell ss:StyleID="s28"/>';
   echo '    <Cell ss:StyleID="s28"/>';

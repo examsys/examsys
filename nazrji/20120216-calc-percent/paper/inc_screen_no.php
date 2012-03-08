@@ -28,24 +28,24 @@ require '../include/errors.inc';
 $screen = $_GET['screen'] + 1;
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-   <html>
-   <head>
-   <title>Screen No.<?php echo " $cfg_install_type"; ?></title>
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Screen No.<?php echo " $cfg_install_type"; ?></title>
 
-   <style>
-     body {font-family:Arial,sans-serif; color:black; margin:0px; background-color:#E5EFFA}
-     td {font-size:90%}
-     input, textarea {font-family:Arial,sans-serif; color:black}
-   </style>
+  <style type="text/css">
+    body {font-family:Arial,sans-serif; color:black; margin:0px; background-color:#E5EFFA}
+    td {font-size:90%}
+    input, textarea {font-family:Arial,sans-serif; color:black}
+  </style>
 
-   <script language="JavaScript">
-   function updateParent() {
-     window.opener.location = "details.php?paperID=<?php if(isset($_GET['paperID'])) echo $_GET['paperID']; ?>&folder=<?php if(isset($_GET['folder'])) echo $_GET['folder']; ?>&module=<?php if(isset($_GET['module'])) echo $_GET['module']; ?>&scrOfY=<?php echo $_GET['scrOfY']; ?>";
-     window.close();
-   }
-   
-   </script>
-   </head>
+  <script type="text/javascript">
+    function updateParent() {
+    window.opener.location = "details.php?paperID=<?php if(isset($_GET['paperID'])) echo $_GET['paperID']; ?>&folder=<?php if(isset($_GET['folder'])) echo $_GET['folder']; ?>&module=<?php if(isset($_GET['module'])) echo $_GET['module']; ?>&scrOfY=<?php echo $_GET['scrOfY']; ?>";
+    window.close();
+    }
+  </script>
+</head>
 
 <?php
 // Change the screen number of the actual question.

@@ -100,11 +100,11 @@ META;
     
     
     // Teams
-    $current_teams = $question->get_teams();
+    $module = $current_teams = $question->get_teams();
     $teams_array = SearchUtils::getTeams($teams, $userroles, $userID, $mysqlidb);
     
     // Team keyword lists by module
-    if ($module == '') {
+    if (count($module) == 0) {
       // No teams passed in, use all teams the current user is on.
       $module = $teams;
     }
@@ -117,7 +117,7 @@ META;
 
 META;
 
-    if ($module != '') {
+    if (count($module) > 0) {
       $keywords = SearchUtils::get_keywords($mysqlidb, $module, $userID);
       $question_keywords = $question->get_keywords();
       

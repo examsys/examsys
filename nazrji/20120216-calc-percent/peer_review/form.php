@@ -132,8 +132,6 @@ $questions[$old_questionID]['options'] = $old_options;
 
 $result->close();
 
-//var_dump($questions);
-
 // Work out the scale.
 $parts = explode('|', $display_method);
 $columns = count($parts) - 1;
@@ -178,7 +176,7 @@ if (isset($_POST['submit'] )) {
   $variables = array();
   $params = '';
   
-  $current_time = date("Ymdhis");
+  $current_time = date("YmdHis");
 
   if ($review == '1') {
     // Get the other users in the same group.
@@ -199,8 +197,8 @@ if (isset($_POST['submit'] )) {
           }
         
           if (isset($saved_results[$member_userID][$questionID]['id'])) {
-            $result2 = $mysqli->prepare("UPDATE log6 SET started=NOW(), rating=? WHERE id=?");
-            $result2->bind_param('ii', $rating, $saved_results[$member_userID][$questionID]['id']);
+            $result2 = $mysqli->prepare("UPDATE log6 SET started=?, rating=? WHERE id=?");
+            $result2->bind_param('sii', $current_time, $rating, $saved_results[$member_userID][$questionID]['id']);
             $result2->execute();
             $result2->close();
           } else {
@@ -242,15 +240,14 @@ if (isset($_POST['submit'] )) {
   }
   
 ?>
-  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
-
-  <html>
-  <head>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
   <title><?php echo $string['peerreview']; ?></title>
 
-  <style>
+  <style type="text/css">
   body {margin:0px; font-size:<?php echo $textsize; ?>%; font-family:<?php echo $font; ?>,sans-serif; background-color:<?php echo $bgcolor; ?>; color:<?php echo $fgcolor; ?>}
   table {font-size:100%}
   td p {margin:0px; padding:0px}
@@ -268,8 +265,8 @@ if (isset($_POST['submit'] )) {
       window.location = "form.php?id=<?php echo $_GET['id']; ?>&group=" + document.getElementById('group').value;
     }
   </script>
-  </head>
-  <body>
+</head>
+<body>
   <div id="menudiv" style="filter: progid:DXImageTransform.Microsoft.Shadow(direction=120,color=gray,strength=3); position:absolute; display:none; top:0px; left:0px;z-index:10000;" onmouseover="javascript:overpopupmenu=true;" onmouseout="javascript:overpopupmenu=false;">
   <table width="160" cellspacing="2" cellpadding="0" border="0" style="border:1px solid #6593CF; font-size:90%; background-color:white">
     <tr><td>
@@ -308,15 +305,14 @@ if (isset($_POST['submit'] )) {
   $result->close();
 
   ?>
-  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
-
-  <html>
-  <head>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
   <title><?php echo $string['peerreview']; ?></title>
 
-  <style>
+  <style type="text/css">
   body {margin:0px; font-size:<?php echo $textsize; ?>%; font-family:<?php echo $font; ?>,sans-serif; background-color:<?php echo $bgcolor; ?>; color:<?php echo $fgcolor; ?>}
   table {font-size:100%}
   td p {margin:0px}
@@ -333,8 +329,8 @@ if (isset($_POST['submit'] )) {
       window.location = "form.php?id=<?php echo $_GET['id']; ?>&group=" + document.getElementById('group').value;
     }
   </script>
-  </head>
-  <body>
+</head>
+<body>
 
   <?php
   echo "<form method=\"post\" action=\"" . $_SERVER['PHP_SELF'] . "?id=" . $_GET['id'] . "\">\n";

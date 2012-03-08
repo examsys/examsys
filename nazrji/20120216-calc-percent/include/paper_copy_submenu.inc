@@ -23,7 +23,7 @@
 */
 ?>
 
-<div style="z-index:20; display:none; background-color:white; position:fixed; left:190px; top:150px; box-shadow: 2px 2px 2px #808080" id="copy_submenu" onclick="showCopyMenu(event);">
+<div style="z-index:20; display:none; background-color:white; position:fixed; left:190px; top:100px; box-shadow: 2px 2px 2px #808080" id="copy_submenu" onclick="showCopyMenu(true, event);">
 <form method="post" action="../paper/copy.php">
 
 <table cellpadding="1" cellspacing="1" border="0" style="background-color:white; border:1px solid #C0C0C0; font-size:90%">

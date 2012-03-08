@@ -31,14 +31,17 @@ require '../include/staff_auth.inc';
 <html>
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
 <title>Rogō: <?php echo $string['questionsearch'] . " $cfg_install_type"; ?></title>
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
-<style style="text/css">
+<link rel="stylesheet" type="text/css" href="../css/header.css" />
+<style type="text/css">
 input[type=text], select {font-family:Arail,sans-serif; border: 1px solid #7F9DB9}
 .owner {color:#A5A5A5}
+.retired {color:#808080}
 </style>
 
-<script language="JavaScript">
+<script type="text/javascript">
   function selQ(questionID, lineID, qType, menuID) {
     tmp_ID = document.PapersMenu.oldQuestionID.value;
     if (tmp_ID != '') {
@@ -89,15 +92,15 @@ input[type=text], select {font-family:Arail,sans-serif; border: 1px solid #7F9DB
     echo "<body style=\"margin:0px; background-color:white; color:black\">\n";
     require '../include/question_search_options.inc';
     echo "<div id=\"content\" class=\"content\" style=\"font-size:80%\">\n";
-    echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">\n";
-    echo "<tr><td style=\"background-color:#F1F5FB\" colspan=\"4\"><div class=\"breadcrumb\"><a href=\"../staff/index.php\">" . $string['home'] . "</a></div><div onclick=\"qOff()\" style=\"font-size:200%; margin-left:10px\"><strong>" . $string['questionsearch'] . "</div></td></tr>";
+    echo "<table class=\"header\">\n";
+    echo "<tr><th colspan=\"4\"><div class=\"breadcrumb\"><a href=\"../staff/index.php\">" . $string['home'] . "</a></div><div onclick=\"qOff()\" style=\"font-size:200%; margin-left:10px\"><strong>" . $string['questionsearch'] . "</div></th></tr>";
 ?>
   <tr>
-  <td style="background-color:#F1F5FB" align="right">&nbsp;<img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" /></td>
-  <td style="background-color:#F1F5FB">&nbsp;<?php echo $string['question']; ?>&nbsp;</td>
-  <td style="background-color:#F1F5FB"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['type']; ?>&nbsp;</td>
-  <td style="background-color:#F1F5FB"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['modified']; ?>&nbsp;</td></tr>
-  <tr style="height:4px"><td valign="top" colspan="4"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td></tr>
+  <th align="right">&nbsp;<img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" /></th>
+  <th>&nbsp;<?php echo $string['question']; ?>&nbsp;</th>
+  <th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['type']; ?>&nbsp;</th>
+  <th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['modified']; ?>&nbsp;</th></tr>
+  <tr><th colspan="4" class="bevel"></th></tr>
   </table>
 <?php
   }
@@ -113,23 +116,23 @@ if (isset($_POST['submit'])) {
     $error = $string['narrowyoursearch'];
   }
   
-  if($error != '') {
-    echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">\n";
-    echo "<tr><td style=\"background-color:#F1F5FB\" colspan=\"4\"><div class=\"breadcrumb\"><a href=\"../staff/index.php\">" . $string['home'] . "</a></div><div onclick=\"qOff()\" style=\"font-size:200%; margin-left:10px\"><strong>".$string['questionsearch']."</div></td></tr>";
+  if ($error != '') {
+    echo "<table class=\"header\">\n";
+    echo "<tr><th colspan=\"4\"><div class=\"breadcrumb\"><a href=\"../staff/index.php\">" . $string['home'] . "</a></div><div onclick=\"qOff()\" style=\"font-size:200%; margin-left:10px\"><strong>".$string['questionsearch']."</div></th></tr>";
     ?>
     <tr>
-    <td style="background-color:#F1F5FB" align="right">&nbsp;<img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" /></td>
-    <td style="background-color:#F1F5FB">&nbsp;<?php echo $string['question']; ?>&nbsp;</td>
-    <td style="background-color:#F1F5FB"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['type']; ?>&nbsp;</td>
-    <td style="background-color:#F1F5FB"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['modified']; ?>&nbsp;</td></tr>
-    <tr style="height:4px"><td valign="top" colspan="4"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td></tr>
+    <th align="right">&nbsp;<img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" /></th>
+    <th>&nbsp;<?php echo $string['question']; ?>&nbsp;</th>
+    <th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['type']; ?>&nbsp;</th>
+    <th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['modified']; ?>&nbsp;</th></tr>
+    <tr><th colspan="4" class="bevel"></td></tr>
     </table>
     <?php
     echo "<table cellpadding=\"1\" cellspacing=\"1\" border=\"0\" style=\"margin: 0px auto; width:75%; border:1px solid #C0C0C0; text-align:left\">\n<tr><td colspan=\"2\" style=\"background-color:#F2B100; height:3px\"> </td></tr>\n<tr><td style=\"width:16px; padding-top:5px; padding-bottom:5px\"><img src=\"../artwork/information_icon.gif\" width=\"16\" height=\"16\" alt=\"i\" border=\"0\" /></td><td style=\"padding-top:5px; padding-bottom:5px\">&nbsp;$error.</td></tr></table>\n";
     exit;
   }
   
-  echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">\n";
+  echo "<table class=\"header\">\n";
 
   $params = '';
   $variables = array();
@@ -207,17 +210,21 @@ if (isset($_POST['submit'])) {
   }
   
   if (isset($_POST['status']) and $_POST['status'] != '%') {
-    $status_string = ' AND questions.status=?';
-    $variables[] = $_POST['status'];
-    $params .= 's';
+    if ($_POST['status'] == 'nonretired') {
+      $status_string = " AND questions.status != 'retired'";
+    } else {
+      $status_string = ' AND questions.status=?';
+      $variables[] = $_POST['status'];
+      $params .= 's';
+    }
   } else {
     $status_string = '';
   }
 
-  if (isset($_POST['locked']) and $_POST['locked'] != '1') {
-    $locked_string = " AND locked IS NULL";
-  } else {
+  if (isset($_POST['locked']) and $_POST['locked'] == '1') {
     $locked_string = '';
+  } else {
+    $locked_string = " AND locked IS NULL";
   }
 
   if ($_POST['question_date'] == 'dont remember') {
@@ -264,9 +271,9 @@ if (isset($_POST['submit'])) {
   }
   
   if ($keywordsSQL == '') {
-    $result = $mysqli->prepare("SELECT DISTINCT option_text, title, initials, surname, q_type, q_id, theme, scenario_plain, leadin_plain, DATE_FORMAT(last_edited,'$cfg_short_date') AS last_edited, ownerID, locked FROM (questions, users) LEFT JOIN options ON questions.q_id = options.o_id WHERE questions.ownerID=users.id $search_string $team_string $user_string $status_string $locked_string $last_edited $q_type $bloom AND deleted IS NULL ORDER BY leadin_plain, o_id");
+    $result = $mysqli->prepare("SELECT DISTINCT option_text, title, initials, surname, q_type, q_id, theme, scenario_plain, leadin_plain, DATE_FORMAT(last_edited,'$cfg_short_date') AS last_edited, ownerID, locked, status FROM (questions, users) LEFT JOIN options ON questions.q_id = options.o_id WHERE questions.ownerID=users.id $search_string $team_string $user_string $status_string $locked_string $last_edited $q_type $bloom AND deleted IS NULL ORDER BY leadin_plain, o_id");
   } else {
-    $result = $mysqli->prepare("SELECT DISTINCT option_text, title, initials, surname, q_type, questions.q_id, theme, scenario_plain, leadin_plain, DATE_FORMAT(last_edited,'$cfg_short_date') AS last_edited, ownerID, locked FROM (questions, users, keywords_question) LEFT JOIN options ON questions.q_id = options.o_id WHERE questions.q_id=keywords_question.q_id $keywordsSQL AND questions.ownerID=users.id $search_string $team_string $user_string $status_string $locked_string $last_edited $q_type $bloom AND deleted IS NULL ORDER BY leadin_plain, o_id");
+    $result = $mysqli->prepare("SELECT DISTINCT option_text, title, initials, surname, q_type, questions.q_id, theme, scenario_plain, leadin_plain, DATE_FORMAT(last_edited,'$cfg_short_date') AS last_edited, ownerID, locked, status FROM (questions, users, keywords_question) LEFT JOIN options ON questions.q_id = options.o_id WHERE questions.q_id=keywords_question.q_id $keywordsSQL AND questions.ownerID=users.id $search_string $team_string $user_string $status_string $locked_string $last_edited $q_type $bloom AND deleted IS NULL ORDER BY leadin_plain, o_id");
   }
   array_unshift($variables, $params);
   foreach($variables as $key => $value) $tmp[$key] = &$variables[$key];
@@ -274,7 +281,7 @@ if (isset($_POST['submit'])) {
   call_user_func_array(array($result,'bind_param'), $tmp);
   $result->execute();
   $result->store_result();
-  $result->bind_result($option_text, $title, $initials, $surname, $q_type, $q_id, $theme, $scenario_plain, $leadin_plain, $last_edited, $ownerID, $locked);
+  $result->bind_result($option_text, $title, $initials, $surname, $q_type, $q_id, $theme, $scenario_plain, $leadin_plain, $last_edited, $ownerID, $locked, $status);
 
   $temp_results = array();
   $hits = 0;
@@ -294,28 +301,33 @@ if (isset($_POST['submit'])) {
     $temp_results[$hits]['leadin'] = $leadin_plain;
     $temp_results[$hits]['last_edited'] = strip_tags($last_edited);
     $temp_results[$hits]['locked'] = $locked;
+    $temp_results[$hits]['status'] = $status;
     $temp_results[$hits]['ownerID'] = $ownerID;
     $old_id = $q_id;
   }
   $result->close();
 
-  echo "<tr><td style=\"background-color:#F1F5FB\" colspan=\"4\"><div class=\"breadcrumb\"><a href=\"../staff/index.php\">" . $string['home'] . "</a></div><div onclick=\"qOff()\" style=\"font-size:200%; margin-left:10px\"><strong>" . $string['questions'] . " (" . number_format(count($temp_results)) . "):&nbsp;</strong>" . $_POST['searchterm'] . "</div></td></tr>";
+  echo "<tr><th colspan=\"4\"><div class=\"breadcrumb\"><a href=\"../staff/index.php\">" . $string['home'] . "</a></div><div onclick=\"qOff()\" style=\"font-size:200%; margin-left:10px\"><strong>" . $string['questions'] . " (" . number_format(count($temp_results)) . "):&nbsp;</strong>" . $_POST['searchterm'] . "</div></th></tr>";
 ?>
   <tr>
-  <td style="background-color:#F1F5FB" align="right">&nbsp;<img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" /></td>
-  <td style="background-color:#F1F5FB">&nbsp;<?php echo $string['question']; ?>&nbsp;</td>
-  <td style="background-color:#F1F5FB"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['type']; ?>&nbsp;</td>
-  <td style="background-color:#F1F5FB"><nobr><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['modified']; ?> </nobr></td></tr>
-  <tr style="height:4px"><td valign="top" colspan="4"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td></tr>
+  <th align="right">&nbsp;<img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" /></th>
+  <th>&nbsp;<?php echo $string['question']; ?>&nbsp;</th>
+  <th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['type']; ?>&nbsp;</th>
+  <th><nobr><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['modified']; ?> </nobr></th></tr>
+  <tr><th colspan="4" class="bevel"></td></tr>
 <?php
   $old_id = -1;
   $old_leadin = '';
   $display_no = 1;
   foreach ($temp_results as $temp_line) {
+    echo '<tr';
+    if ($temp_results[$display_no]['status'] == 'Retired') {
+      echo ' class="retired"';
+    }
     if ($temp_results[$display_no]['locked'] != '') {
-      echo "<tr id=\"link$display_no\" onmouseover=\"lon($display_no)\" onmouseout=\"loff($display_no)\" onclick=\"selQ('" . $temp_line['q_id'] . "',$display_no, '" . $temp_line['q_type'] . "','menu2c'); return false;\" ondblclick=\"editQuestion('" . $temp_line['q_id'] . "', '" . $temp_line['q_type'] . "'); return false;\"><td><img src=\"../artwork/small_padlock.png\" width=\"16\" height=\"16\" border=\"0\" alt=\"" . $string['locked'] . "\" /></td>";
+      echo " id=\"link$display_no\" onmouseover=\"lon($display_no)\" onmouseout=\"loff($display_no)\" onclick=\"selQ('" . $temp_line['q_id'] . "',$display_no, '" . $temp_line['q_type'] . "','menu2c'); return false;\" ondblclick=\"editQuestion('" . $temp_line['q_id'] . "', '" . $temp_line['q_type'] . "'); return false;\"><td><img src=\"../artwork/small_padlock.png\" width=\"16\" height=\"16\" border=\"0\" alt=\"" . $string['locked'] . "\" /></td>";
     } else {
-      echo "<tr id=\"link$display_no\" onmouseover=\"lon($display_no)\" onmouseout=\"loff($display_no)\" onclick=\"selQ('" . $temp_line['q_id'] . "',$display_no, '" . $temp_line['q_type'] . "','menu2b'); return false;\" ondblclick=\"editQuestion('" . $temp_line['q_id'] . "', '" . $temp_line['q_type'] . "'); return false;\"><td></td>";
+      echo " id=\"link$display_no\" onmouseover=\"lon($display_no)\" onmouseout=\"loff($display_no)\" onclick=\"selQ('" . $temp_line['q_id'] . "',$display_no, '" . $temp_line['q_type'] . "','menu2b'); return false;\" ondblclick=\"editQuestion('" . $temp_line['q_id'] . "', '" . $temp_line['q_type'] . "'); return false;\"><td></td>";
     }
 
     $tmp_leadin = trim($temp_line['leadin']);

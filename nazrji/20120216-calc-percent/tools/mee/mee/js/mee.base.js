@@ -2,12 +2,7 @@
 $.Class.extend("MEE.Base",
 {
     Render: function (source, mcedoc) {
-        /*if (mcedoc) {
-            this.ProcessForTinyMCE(source, mcedoc);
-            return;
-        }*/
-
-        this.fontwaitlimit = 0;
+        this.fontwaitlimit = 10;
         // build all recursive definitions
         MEE.Base.displays = new Array();
         MEE.Base.edits = new Array();
@@ -17,10 +12,10 @@ $.Class.extend("MEE.Base",
 
         if (!source)
             source = document.body;
-
-        $(source).find("div.mee").each(this.callback('processDiv'));
-        $(source).find("span.mee").each(this.callback('processSpan'));
-        $(source).find("input.mee").each(this.callback('processInput'));
+        source = $(source)
+        source.find("div.mee").each(this.callback('processDiv'));
+        source.find("span.mee").each(this.callback('processSpan'));
+        source.find("input.mee").each(this.callback('processInput'));
 
         if (MEE.Base.to_process.length > 0)
             MEE.Base.createProgress(MEE.Base.to_process.length);
@@ -47,9 +42,6 @@ $.Class.extend("MEE.Base",
         i = MEE.Base.current;
         if (i >= MEE.Base.to_process.length) {
             // dont creating HTML, 
-
-            //MEE.Base.current = 0;
-            //setTimeout("MEE.Base.ProcessAlignNext()", 1);
             MEE.Base.removeProgress();
             return;
         }
@@ -57,8 +49,7 @@ $.Class.extend("MEE.Base",
         var proc = this.to_process[i];
         MEE.Base.process(proc);
         MEE.Base.updateProgress();
-
-        setTimeout("MEE.Base.ProcessNext_Fonts()", 1);
+        setTimeout("MEE.Base.ProcessNext_Align()", 5);
     },
 
     ProcessNext_Fonts: function () {
@@ -69,15 +60,14 @@ $.Class.extend("MEE.Base",
             return;
         }
 
-        //var proc = this.to_process[i];
-        //if (proc.eqn && this.fontwaitlimit > 0) {
-        //    if (!proc.eqn.FontsLoaded()) {
-        //        this.setProgressMessage("Waiting on Fonts");
-        //        setTimeout("MEE.Base.ProcessNext_Fonts()", 5);
-        //        return;
-        //    }
-        //}
-        //debug.log("Fonts OK");
+        var proc = this.to_process[i];
+        if (proc.eqn && this.fontwaitlimit > 0) {
+            if (!proc.eqn.FontsLoaded()) {
+                this.setProgressMessage("Waiting on Fonts");
+                setTimeout("MEE.Base.ProcessNext_Fonts()", 5);
+                return;
+            }
+        }
         setTimeout("MEE.Base.ProcessNext_Align()", 5);
     },
 
@@ -94,18 +84,32 @@ $.Class.extend("MEE.Base",
 
         MEE.Base.updateProgress();
         $(proc.elem).css('color','');
-        
         //add some hight and padding to the parent elments to help with layout.
         if(!$(proc.elem).hasClass('meeInMCE')) {
-          var h = parseInt(proc.elem.style.height) 
-                                              + parseInt(proc.elem.style.paddingTop)
-                                               + parseInt(proc.elem.style.paddingBottom);
-          if(proc.elem.parentNode.style.height == '' || h > parseInt(proc.elem.parentNode.style.height)) {
-            proc.elem.parentNode.style.height = h + 'px';
-            proc.elem.parentNode.style.paddingTop = proc.elem.style.paddingTop;
-          }
-        }
+          var h = this.replacePX(proc.elem.style.height) 
+                                              + this.replacePX(proc.elem.style.paddingTop)
+                                               + this.replacePX(proc.elem.style.paddingBottom);
           
+          var elem = proc.elem.parentNode;
+          if(elem.tagName == 'SPAN') {
+            elem = elem.parentNode; // if we are in a table set the height on the tr not the td
+          } 
+          if(elem.tagName == 'TD') {
+            elem = elem.parentNode; // if we are in a table set the height on the tr not the td
+          } 
+          
+          if(h == 0 && this.replacePX(elem.style.height) == 0) {
+            elem.style.height = 'auto';
+          } else if(elem.style.height == '' || h > this.replacePX(elem.style.height)) {
+            elem.style.height = h + 'px';
+            elem.style.paddingTop = proc.elem.style.paddingTop;
+          }
+        } else {
+           var w = this.calcWidth(proc.elem,0);
+           proc.elem.parentNode.style.width = w + 'px';
+           //var h = this.calcHeight(proc.elem,0);
+           //proc.elem.parentNode.style.height = h + 'px';
+        }
         setTimeout("MEE.Base.ProcessNext()", 1);
     },
 
@@ -172,8 +176,46 @@ $.Class.extend("MEE.Base",
 
     removeProgress: function () {
         $('.mee_progress').remove();
-    }
+    },
     //#endregion
+    replacePX: function (val) {
+      val = parseInt(val);
+      if(!val || val == 'NaN') {
+        return 0;
+      } else {
+        return val;
+      }
+    },
+    calcWidth : function (e,w) {
+        //recursivly caculate width of an equasion
+       if(e.childNodes) {
+          for(var i = 0; i < e.childNodes.length; i++) {
+            if(e.childNodes[i].style) {
+              je=$(e.childNodes[i]);
+              if (je.width() > w)
+                  w += je.width();
+            }
+            w = this.calcWidth(e.childNodes[i],w);
+          }
+          return w;
+       }
+       return 0;
+    },
+    calcHeight : function (e,h) {
+        //recursivly caculate height of an equasion
+       if(e.childNodes) {
+          for(var i = 0; i < e.childNodes.length; i++) {
+            if(e.childNodes[i].style) {
+              je=$(e.childNodes[i]);
+              //if (je.height() > h)
+                  h += je.height();
+            }
+            h = this.calcWidth(e.childNodes[i],h);
+          }
+          return h;
+       }
+       return 0;
+    }
 },
 {
 });

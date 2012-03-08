@@ -529,7 +529,7 @@
       $theme = str_replace('&','&amp;',$theme);
       $scenario = str_replace('&','&amp;',$scenario);
       $leadin = str_replace('&','&amp;',$leadin);
-      $option_text = str_replace('&','&amp;',$option_text);
+      $option_text = strip_tags(str_replace('&','&amp;',$option_text));
 
       if ($old_q_id != $q_id and $old_q_id > 0) {   // New question.
         if ($old_screen < $screen) {

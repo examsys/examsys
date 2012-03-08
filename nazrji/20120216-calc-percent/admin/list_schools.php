@@ -34,9 +34,11 @@ $result->close();
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
+<meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
 <title><?php echo $string['schools'] . ' ' . $cfg_install_type; ?></title>
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
-<style>
+<link rel="stylesheet" type="text/css" href="../css/header.css" />
+<style type="text/css">
 .mid {padding-left:30px}
 .l {cursor:pointer}
 .no {text-align:right; padding-right:10px}
@@ -98,16 +100,17 @@ $(function () {
 ?>
 <div id="content" class="content" style="font-size:80%">
 
-<table cellpadding="0" cellspacing="0" border="0" width="100%">
+<table class="header">
 <tr>
-<td colspan="2" style="background-color:#F1F5FB"><div class="breadcrumb"><a href="../staff/index.php"><?php echo $string['home']; ?></a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php"><?php echo $string['administrativetools']; ?></a></div><div style="margin-left:10px; font-size:200%; font-weight:bold"><?php echo $string['schools']; ?></td>
-<td style="background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(233); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="<?php echo $string['help']; ?>" border="0" /></a></td>
+<th colspan="2"><div class="breadcrumb"><a href="../staff/index.php"><?php echo $string['home']; ?></a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php"><?php echo $string['administrativetools']; ?></a></div><div style="margin-left:10px; font-size:200%; font-weight:bold"><?php echo $string['schools']; ?></th>
+<th style="text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(233); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="<?php echo $string['help']; ?>" border="0" /></a></th>
 </tr>
 <tr>
-<td style="background-color:#F1F5FB" class="mid"><?php echo $string['name']; ?>&nbsp;</td>
-<td style="background-color:#F1F5FB"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['faculty']; ?>&nbsp;</td>
-<td style="background-color:#F1F5FB"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['modules']; ?>&nbsp;</td></tr>
-<tr><td colspan="3" style="height:3px"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td></tr>
+<th><div class="mid"><?php echo $string['name']; ?>&nbsp;</div></th>
+<th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['faculty']; ?>&nbsp;</th>
+<th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['modules']; ?>&nbsp;</th>
+</tr>
+<tr><th colspan="3" class="bevel"></th></tr>
 <?php
 
 if ($faculties > 0) {
@@ -127,7 +130,7 @@ while ($result->fetch()) {
   if ($module_no == 0) {
     echo ' style="color:#808080"';
   }
-  echo " id=\"$id\" onclick=\"selSch($id,event)\" ondblclick=\"edit('$id')\" onmouseover=\"lon($id)\" onmouseout=\"loff($id)\" class=\"l\"><td class=\"mid\">$school</td><td>$faculty</td><td class=\"no\">" . number_format($module_no) . "</td></tr>\n";
+  echo " id=\"$id\" onclick=\"selSch($id,event)\" ondblclick=\"edit('$id')\" onmouseover=\"lon($id)\" onmouseout=\"loff($id)\" class=\"l\"><td><div class=\"mid\">$school</div></td><td>$faculty</td><td><div class=\"no\">" . number_format($module_no) . "</div></td></tr>\n";
   $old_faculty = $faculty;
   $id++;
 }

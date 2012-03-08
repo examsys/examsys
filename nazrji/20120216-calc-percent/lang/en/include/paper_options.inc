@@ -101,4 +101,5 @@ $string['paperonly'] = 'Paper Only';
 $string['paperandquestions'] = 'Paper and Questions';
 $string['copypaper'] = 'Copy Paper';
 $string['reorderinfo'] = 'You can now reorder questions and screen breaks by dragging them to their new position';
+$string['insertscreenbreak'] = 'Insert screen break';
 ?>

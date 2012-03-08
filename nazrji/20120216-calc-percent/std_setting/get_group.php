@@ -44,18 +44,18 @@ ss_get_marks_correct($mysqli, $paperID, $exclude, $marks_array);
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title><?php echo $string['selectreviewers'] . ' ' . $cfg_install_type; ?></title>
 
-<title><?php echo $string['selectreviewers'] . ' ' . $cfg_install_type; ?></title>
-
-<link rel="stylesheet" type="text/css" href="../css/submenu.css" />
-<style type="text/css">
-body {font-family:Arial,sans-serif; font-size:90%; color:black; padding:0;margin-top:0px; margin-left:0px; margin-right:0px}
-table {font-size:100%}
-.heading {background-color:#EBEADB; color:black}
-</style>
-<script src="../js/staff_help.js" type="text/javascript"></script>
+  <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
+  <link rel="stylesheet" type="text/css" href="../css/header.css" />
+  <style type="text/css">
+  body {font-family:Arial,sans-serif; font-size:90%; color:black; padding:0;margin-top:0px; margin-left:0px; margin-right:0px}
+  table {font-size:100%}
+  .heading {background-color:#EBEADB; color:black}
+  </style>
+  <script src="../js/staff_help.js" type="text/javascript"></script>
 </head>
-
 <body>
 	<form action="group_set_angoff.php" method="post">	
 	
@@ -94,8 +94,8 @@ while ($result->fetch()) {
 }
 $result->close();
 
-echo "\n<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">\n";
-echo "<tr><td style=\"background-color:#F1F5FB\"><div class=\"breadcrumb\"><a href=\"../staff/index.php\">{$string['home']}</a>";
+echo "\n<table class=\"header\">\n";
+echo "<tr><th><div class=\"breadcrumb\"><a href=\"../staff/index.php\">{$string['home']}</a>";
 if ($folder != '') {
   echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?folder=' . $folder . '">' . $folder_name . '</a>';
 } elseif (isset($_GET['module']) and $_GET['module'] != '') {
@@ -103,21 +103,21 @@ if ($folder != '') {
 }
 echo "&nbsp;&nbsp;<img src=\"../artwork/breadcrumb_arrow.png\" width=\"4\" height=\"7\" alt=\"-\" />&nbsp;&nbsp;<a href=\"../paper/details.php?paperID=$paperID&module=$module&folder=$folder\">$paper_title</a>&nbsp;&nbsp;<img src=\"../artwork/breadcrumb_arrow.png\" width=\"4\" height=\"7\" alt=\"-\" />&nbsp;&nbsp;<a href=\"./index.php?paperID=$paperID&module=$module&folder=$folder\">{$string['standardssetting']}</a></div>";
 $helpID = 98;
-echo '<div style="font-family:Arial,sans-serif; font-size:200%; color:black; font-weight:bold; margin-left:10px">' . $string['selectreviewers'] . '</div>';
-echo "</td><td style=\"background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp($helpID); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"{$string['help']}\" border=\"0\" /></a></td></tr>\n";
+echo '<div style="font-size:200%; color:black; font-weight:bold; margin-left:10px">' . $string['selectreviewers'] . '</div>';
+echo "</th><th style=\"text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp($helpID); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"{$string['help']}\" border=\"0\" /></a></th></tr>\n";
 echo "</table>\n";
 
 ?>
-<table cellpadding="0" cellspacing="0" border="0" width="100%">
+<table class="header">
 <tr>
-	<td style="width:18px; background-color:#F1F5FB">&nbsp;</td>
-	<td style="background-color:#F1F5FB; width:20%"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['standardsetter'] ?>&nbsp;</td>
-	<td style="background-color:#F1F5FB; width:15%"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['date'] ?>&nbsp;</td>
-	<td style="background-color:#F1F5FB; width:8%"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['passscore'] ?></td>
-	<td style="background-color:#F1F5FB"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['method'] ?></td>
-	<td width="25%" style="background-color:#F1F5FB"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp</td>
+	<th style="width:18px">&nbsp;</th>
+	<th style="width:20%"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['standardsetter'] ?>&nbsp;</th>
+	<th style="width:15%"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['date'] ?>&nbsp;</th>
+	<th style="width:8%"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['passscore'] ?></th>
+	<th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['method'] ?></th>
+	<th style="width:25%"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp</th>
 </tr>
-<tr style="height:4px"><td valign="top" colspan="6"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td></tr>
+<tr><th colspan="6" class="bevel"></th></tr>
 <?php
 $reviews = get_reviews($mysqli, 'group', $paperID, $total_marks);
 foreach ($reviews as $review) {

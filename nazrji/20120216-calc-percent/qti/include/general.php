@@ -268,9 +268,11 @@ function for_id($in) {
   return $in;
 }
 
-function MakeValidHTML($in) {
+function MakeValidHTML($in,$trim=0) {
   // remove any closing tags at start just in case
-  $in = trim($in);
+  if($trim==0) {
+    $in = trim($in);
+  }
   if (substr($in, 0, 2) == "</") {
     $in = substr($in, strpos($in, ">") + 1);
   }
@@ -292,7 +294,9 @@ function MakeValidHTML($in) {
    echo "</pre>";*/
   $in = substr($in, strpos($in, "XXX-START-XXX") + 13);
   $in = substr($in, 0, strpos($in, "XXX-END-XXX"));
-  $in = trim($in);
+  if($trim==0) {
+    $in = trim($in);
+  }
   // remove any closing tags at start just in case
   if (substr($in, 0, 2) == "</") {
     $in = substr($in, strpos($in, ">") + 1);

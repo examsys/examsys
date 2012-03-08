@@ -29,32 +29,32 @@
   $q_id = $_GET['q_id'];
 ?>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Textbox Marking</title>
-<style type="text/css">
-body {font-family:Arial,sans-serif; font-size:90%; background-color:white; color:black; margin:0px}
-td {line-height:150%}
-.heading {background-color:#EBEADB; color:black}
-</style>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Textbox Marking</title>
+  <link rel="stylesheet" type="text/css" href="../css/header.css" />
+  <style type="text/css">
+  body {font-family:Arial,sans-serif; font-size:90%; background-color:white; color:black; margin:0px}
+  td {line-height:150%}
+  </style>
 
-<script src="../js/ie_fix.js" type="text/javascript"></script>
-<script language="JavaScript">
-  function move_in(img_name) {
-    document[img_name].src=onImg.src;
-  }
+  <script src="../js/ie_fix.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    function move_in(img_name) {
+      document[img_name].src=onImg.src;
+    }
 
-  function move_out(img_name) {
-    document[img_name].src=offImg.src;
-  }
-  
-  onImg = new Image;
-  onImg.src = '../artwork/up_folder_icon_on.gif';
-  offImg = new Image;
-  offImg.src = '../artwork/up_folder_icon_off.gif';
-</script>
+    function move_out(img_name) {
+      document[img_name].src=offImg.src;
+    }
+
+    onImg = new Image;
+    onImg.src = '../artwork/up_folder_icon_on.gif';
+    offImg = new Image;
+    offImg.src = '../artwork/up_folder_icon_off.gif';
+  </script>
 </head>
 
 <body style="margin:0px">
@@ -80,8 +80,8 @@ td {line-height:150%}
   } else {
     display_error("Properties Query Error",$mysqli->close());
   }
-  echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">\n<tr><td class=\"heading\" colspan=\"10\"><span style=\"font-family:Arial,sans-serif; font-size:200%; color:black; font-weight:bold\"><a onmouseover=\"move_in('image1')\" onmouseout=\"move_out('image1')\" href=\"textbox_select_q.php?paperID=" . $_SERVER['QUERY_STRING'] . "\" target=\"_top\"><img name=\"image1\" src=\"../artwork/up_folder_icon_off.gif\" style=\"vertical-align:middle\" width=\"32\" height=\"38\" alt=\"Up\" border=\"0\" /></a>&nbsp;Textbox Marking - Question " . $_GET['qNo'] . ".</span></td></tr>\n";
-  echo "<tr style=\"height:4px\"><td valign=\"top\"><img src=\"../artwork/header_horizontal_line.gif\" width=\"100%\" height=\"3\" alt=\"Line\" /></td></tr>\n</table>\n";
+  echo "<table cclass=\"header\" style=\"font-size:90%\">\n<tr><th colspan=\"10\"><span style=\"font-size:220%; color:black; font-weight:bold\"><a onmouseover=\"move_in('image1')\" onmouseout=\"move_out('image1')\" href=\"textbox_select_q.php?paperID=" . $_SERVER['QUERY_STRING'] . "\" target=\"_top\"><img name=\"image1\" src=\"../artwork/up_folder_icon_off.gif\" style=\"vertical-align:middle\" width=\"32\" height=\"38\" alt=\"Up\" border=\"0\" /></a>&nbsp;Textbox Marking - Question " . $_GET['qNo'] . ".</span></th></tr>\n";
+  echo "<tr><th class=\"bevel\"></th></tr>\n</table>\n";
 
   $mysqli->close();
 ?>

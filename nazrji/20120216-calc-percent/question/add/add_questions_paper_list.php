@@ -26,22 +26,24 @@ require '../../include/staff_auth.inc';
 ?>
 <html>
 <head>
-<title>by Paper</title>
-<style>
-body {margin:0px; font-family:Arial,sans-serif; color:black; background-color:white; font-size:80%}
-a:link {color:black}
-a:visited {color:black}
-a:hover {color:black}
-.f {padding-left:2px; width:20px}
-.s {padding-left:6px}
-</style>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>by Paper</title>
+  <link rel="stylesheet" type="text/css" href="../../css/header.css" />
+  <style type="text/css">
+  body {margin:0px; font-family:Arial,sans-serif; color:black; background-color:white; font-size:80%}
+  a:link {color:black}
+  a:visited {color:black}
+  a:hover {color:black}
+  .f {padding-left:2px; width:20px}
+  .s {padding-left:6px}
+  </style>
 </head>
 
 <body>
-<table cellpadding="0" cellspacing="0" border="0" style="width:100%; font-size:100%">
-<tr style="background-color:#F1F5FB"><td colspan="5"style="font-size:160%; font-weight:bold">&nbsp;by Paper</td></tr>
-<tr style="background-color:#F1F5FB"><td>&nbsp;</td><td><img src="../../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Title</td><td><img src="../../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Module</td><td><img src="../../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Owner</td><td><img src="../../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Created</td></tr>
-<tr style="height:4px"><td valign="top" colspan="5"><img src="../../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td></tr>
+<table class="header">
+<tr><th colspan="5"style="font-size:160%; font-weight:bold">&nbsp;by Paper</th></tr>
+<tr><th>&nbsp;</th><th><img src="../../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Title</th><th><img src="../../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Module</th><th><img src="../../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Owner</th><th><img src="../../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;Created</th></tr>
+<tr><th colspan="5" class="bevel"></th></tr>
 <?php
   $my_teams = '';
   foreach ($teams as $individual_team) {

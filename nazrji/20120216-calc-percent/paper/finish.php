@@ -102,7 +102,7 @@ require '../config/finish.inc';
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta http-equiv="imagetoolbar" content="no">
 <meta http-equiv="imagetoolbar" content="false">
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> 
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $cfg_page_charset ?>" />
 <style type="text/css">
 body {background-color:<?php echo $bgcolor; ?>;color:<?php echo $fgcolor; ?>;padding:0px;margin:0px;border:0px;font-family:<?php echo $font; ?>,sans-serif;font-size:<?php echo $textsize; ?>%}
 p {margin-top:0px;padding-top:0px}
@@ -125,10 +125,39 @@ table {font-size:100%; table-layout: fixed}
 .matrix td {border:1px solid #808080}
 .extmatch li {padding-bottom:14px; vertical-align:text-bottom; list-style-type:upper-alpha}
 .exclude {color:red; text-decoration:line-through}
-.scr_br {width:100%; height:70px; border-top:1px solid #B5C4DF; background-image:url('../artwork/screen_no_background.gif'); background-repeat:repeat-x}
-.scr_no {vertical-align:top; font-size:90%; font-weight:bold; color:#15428B}
+input.exclude, select.exclude {border: 1px solid red}
 .box {width:90%; background-color:#E4EEFC; border:1px solid #B5C4DF; text-align:left}
 .mee {font-size:120%; display:inline}
+.scr_no {margin-left:25px}
+.screenbrk {
+  color:#15428B;
+  font-weight:bold;
+  font-size:90%;
+  height:70px;
+  width:100%;
+  border-top: 1px solid #B5C4DF;
+  background: -moz-linear-gradient(top, #E4EEFC, #FFFFFF);
+  background: -webkit-linear-gradient(top, #E4EEFC, #FFFFFF);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#E4EEFC', endColorstr='#FFFFFF');
+}
+.studentview {
+  color:#800000;
+  font-size:90%;
+  font-weight:bold;
+  padding-left:15px;
+  padding-bottom:2px
+}
+.staffview {
+  color:#800000;
+  font-size:90%;
+  height:70px;
+  width:100%;
+  padding-top:2px;
+  padding-left:15px
+  background: -moz-linear-gradient(top, #FF8282, #FFFFFF);
+  background: -webkit-linear-gradient(top, #FF8282, #FFFFFF);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FF8282', endColorstr='#FFFFFF');
+}
 </style>
 <?php
   if ($latex_needed == 1) {

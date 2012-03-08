@@ -43,8 +43,15 @@
   } elseif ($paper_type == '6') {
 ?>
   function go(url, evt) {
+    var extra_data = '';
+
+    for (i=1; i<document.getElementById('meta_no').value; i++) {
+      meta_ref = 'meta' + i;
+      extra_data += '&meta' + i + '=' + document.getElementById(meta_ref).value;
+    }
+
     document.getElementById('stats_menu').style.display='none';
-    window.location.href = url + "paperID=" + document.stats_menu.paperID.value + "&startdate=" + document.stats_menu.start_year.value + document.stats_menu.start_month.value + document.stats_menu.start_day.value + document.stats_menu.start_time.value + "&enddate=" + document.stats_menu.end_year.value + document.stats_menu.end_month.value + document.stats_menu.end_day.value + document.stats_menu.end_time.value + "&repmodule=" + document.stats_menu.repmodule.value + "&repcourse=" + document.stats_menu.repcourse.value;
+    window.location.href = url + "paperID=" + document.stats_menu.paperID.value + "&startdate=" + document.stats_menu.start_year.value + document.stats_menu.start_month.value + document.stats_menu.start_day.value + document.stats_menu.start_time.value + "&enddate=" + document.stats_menu.end_year.value + document.stats_menu.end_month.value + document.stats_menu.end_day.value + document.stats_menu.end_time.value + "&repmodule=" + document.stats_menu.repmodule.value + "&repcourse=" + document.stats_menu.repcourse.value + extra_data;
   }
   <?php
   } else {
@@ -77,7 +84,7 @@
   }
 </script>
 
-<div style="z-index:20; display:none; background-color:white; position:fixed; left:190px; top:60px; box-shadow: 2px 2px 2px #808080" id="stats_menu" onclick="showAssStatsMenu(event);">
+<div style="z-index:20; display:none; background-color:white; position:fixed; left:190px; top:60px; box-shadow: 2px 2px 2px #808080" id="stats_menu" onclick="showAssStatsMenu(true, event);">
 <table border="0" cellpadding="3" cellspacing="1" style="width:490px; border:1px solid #C0C0C0; font-size:80%">
 <tr>
 <td style="background-color:#F2B100; height:5px; padding:0px"></td>
@@ -270,11 +277,11 @@
   $result->close();
   echo "</select></td></tr>\n";
   
-  //get the paper modules
-  $result = $mysqli->prepare("SELECT moduleID FROM properties WHERE property_id=?");
+  //get the paper modules (also rubric for use if peer review paper)
+  $result = $mysqli->prepare("SELECT moduleID, rubric FROM properties WHERE property_id=?");
   $result->bind_param('i', $_GET['paperID']);
   $result->execute();
-  $result->bind_result($moduleID);
+  $result->bind_result($moduleID, $rubric);
   $result->fetch();
   $result->close();
   $moduleIDs = explode(',', $moduleID);
@@ -329,12 +336,12 @@
   }
   
   $meta_no = 1;
-  if ($paper_type != '6') {
 
-    if (count($metadata) > 0) {
-      echo "<tr><td colspan=\"2\"><hr style=\"height:1px; color:#C0C0C0; background-color:#C0C0C0; border:0px\" /></td></tr>\n";
-    }
-    foreach ($metadata as $meta_type=>$value_array) {
+  if (count($metadata) > 0) {
+    echo "<tr><td colspan=\"2\"><hr style=\"height:1px; color:#C0C0C0; background-color:#C0C0C0; border:0px\" /></td></tr>\n";
+  }
+  foreach ($metadata as $meta_type=>$value_array) {
+    if ($paper_type != '6' or $rubric == $meta_type) {
       echo "<tr><td>$meta_type</td><td><select name=\"meta$meta_no\" id=\"meta$meta_no\">";
       echo "<option value=\"$meta_type=%\">&lt;all&gt;</option>";
       foreach ($value_array as $meta_value) {
@@ -344,6 +351,7 @@
       $meta_no++;
     }
   }
+
   
   echo "</table><input type=\"hidden\" name=\"meta_no\" id=\"meta_no\" value=\"$meta_no\" /><input type=\"hidden\" name=\"paperID\" value=\"" . $_GET['paperID'] . "\" />";
 
@@ -429,8 +437,12 @@
       break;
     case '6':
       echo "<br />\n<div style=\"margin-left:25px; line-height:150%; font-weight:bold\">Reports</div>\n";
-      echo "<div style=\"margin-left:25px; line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../../peer_review/summary_report.php?percent=0&',event)\">Review Summary - means (HTML)</a></div>\n";
-      echo "<div style=\"margin-left:25px; line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../../peer_review/summary_report.php?percent=1&',event)\">Review Summary - percents (HTML)</a></div>\n";
+      if ($display_question_mark == '1') {
+        echo "<div style=\"margin-left:25px; line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../../peer_review/summary_report.php?percent=0&',event)\">Review Summary - means (HTML)</a></div>\n";
+        echo "<div style=\"margin-left:25px; line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../../peer_review/summary_report.php?percent=1&',event)\">Review Summary - percents (HTML)</a></div>\n";
+      } else {
+        echo "<div style=\"margin-left:25px; line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../../peer_review/summary_report.php?',event)\">Review Summary</a></div>\n";
+      }
       echo "<div style=\"margin-left:25px; line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../../peer_review/summary_report_csv.php?',event)\">Review Summary - means (CSV)</a></div>\n";
       break;
   }

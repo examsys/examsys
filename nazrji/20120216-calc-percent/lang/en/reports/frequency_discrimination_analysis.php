@@ -1,4 +1,5 @@
 <?php
+$string['frequencydiscrimination'] = 'Frequency & Discrimination Analysis';
 $string['reporttitle'] = 'Frequency & Discrimination (U-L) Analysis Report';
 $string['totalcandidatenumber'] = 'Total candidate number';
 $string['groupsizes'] = 'Upper/lower group sizes';

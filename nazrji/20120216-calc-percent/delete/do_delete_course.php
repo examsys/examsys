@@ -38,13 +38,14 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Course Deleted</title>
-<script language="javascript">
-  function updateParent() {
-    window.opener.location.reload();
-    self.close();
-  }
-</script>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Course Deleted</title>
+  <script type="text/javascript">
+    function updateParent() {
+      window.opener.location.reload();
+      self.close();
+    }
+  </script>
 </head>
 
 <body onload="javascript:updateParent();" style="margin:0px; background-color:#F1F5FB; font-family:Arial,sans-serif; font-size:90%; text-align:justifed">

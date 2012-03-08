@@ -40,7 +40,14 @@ function makeMenu($options) {
   echo "var myOptions" . $menuNo . "=new Array(";
   $line = 0;
   foreach ($options as $title=>$url) {
-  if ($line == 0) {
+    $tmp_parts = explode('[BR]', $title);
+    if (count($tmp_parts) > 1) {
+      $title = $tmp_parts[1];
+    } else {
+      $title = $tmp_parts[0];
+    }
+  
+    if ($line == 0) {
       echo '"' . $title .'"';
     } else {
       echo ',"' . $title .'"';

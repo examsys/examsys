@@ -245,9 +245,12 @@ function getMSCAA($paperID, $mysqlidb) {
 <html onscroll="scrollXY();" onclick="qOff(); hideMenus(); hideAssStatsMenu(event);">
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Rogō<?php echo ' ' . $cfg_install_type; ?></title>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Rogō<?php echo ' ' . $ts_version . ' ' . $cfg_install_type; ?></title>
   <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
+  <link rel="stylesheet" type="text/css" href="../css/header.css" />
   <link rel="stylesheet" type="text/css" href="../css/screen.css" />
+  <link rel="stylesheet" type="text/css" href="../css/warnings.css" />
   <link rel="stylesheet" type="text/css" href="../css/tipTip.css" />
 
   <!--[if lt IE 8]>
@@ -272,7 +275,7 @@ function getMSCAA($paperID, $mysqlidb) {
   <script type="text/javascript" src="../js/jquery.tipTip.minified.js"></script>
   <script type="text/javascript" src="../tools/mee/mee/js/mee_src.js"></script>
   <script type="text/javascript" src="../js/jquery.rquerystring.js"></script>
-<script defer="defer" language="JavaScript">
+<script defer="defer" type="text/javascript">
   var paperID='<?php echo $_GET['paperID'] ?>';
 
   function selQ(questionNo, questionID, lineID, qType, screenNo, pID, current_pos, prev_screen, next_screen, current_screen, menuID, subparts, evt) {
@@ -315,7 +318,7 @@ function getMSCAA($paperID, $mysqlidb) {
       }
     }
     hideMenus();
-    
+
     document.getElementById('stats_menu').style.display = 'none';
     document.getElementById('copy_submenu').style.display = 'none';
     document.getElementById('change_screen_submenu').style.display='none';
@@ -324,10 +327,12 @@ function getMSCAA($paperID, $mysqlidb) {
       evt.cancelBubble = true;
     }
 
-    var deleteLink = $('#delete_break');
-    deActivateDelete(deleteLink);
-    var addLink = $('#add_break');
-    activateAddBreak(addLink);
+    if (typeof deActivateAddBreak != 'undefined') {
+      var deleteLink = $('#delete_break');
+      deActivateDelete(deleteLink);
+      var addLink = $('#add_break');
+      activateAddBreak(addLink);
+    }
   }
 
   function edQ(questionNo, questionID, qType) {
@@ -353,8 +358,10 @@ function getMSCAA($paperID, $mysqlidb) {
 
     hideMenus();
 
-    var addLink = $('#add_break');
-    deActivateAddBreak(addLink);
+    if (typeof deActivateAddBreak != 'undefined') {
+      var addLink = $('#add_break');
+      deActivateAddBreak(addLink);
+    }
   }
 
   function hideNotice() {
@@ -381,10 +388,10 @@ function getMSCAA($paperID, $mysqlidb) {
   }
 </script>
 <?php
-  $result = $mysqli->prepare("SELECT paper_title, moduleID, pass_mark, users.title, users.initials, users.surname, moduleID, folder, random_mark, total_mark, marking, paper_ownerID, DATE_FORMAT(start_date,'%Y%m%d%H%is') AS start_date, DATE_FORMAT(start_date,'$cfg_long_date_time') AS display_start_date, DATE_FORMAT(end_date,'%Y%m%d%H%i') AS end_date, paper_type, deleted, latex_needed FROM (properties, users) WHERE property_id=? AND paper_ownerID=users.id LIMIT 1");
+  $result = $mysqli->prepare("SELECT paper_title, moduleID, pass_mark, users.title, users.initials, users.surname, moduleID, folder, random_mark, total_mark, marking, paper_ownerID, DATE_FORMAT(start_date,'%Y%m%d%H%is') AS start_date, DATE_FORMAT(start_date,'$cfg_long_date_time') AS display_start_date, DATE_FORMAT(end_date,'%Y%m%d%H%i') AS end_date, paper_type, deleted, latex_needed, retired FROM (properties, users) WHERE property_id=? AND paper_ownerID=users.id LIMIT 1");
   $result->bind_param('i', $paperID);
   $result->execute();
-  $result->bind_result($paper_title, $moduleID, $pass_mark, $title, $initials, $surname, $tmp_module, $tmp_folder, $random_mark, $total_mark, $marking, $paper_ownerID, $start_date, $display_start_date, $end_date, $paper_type, $deleted, $latex_needed);
+  $result->bind_result($paper_title, $moduleID, $pass_mark, $title, $initials, $surname, $tmp_module, $tmp_folder, $random_mark, $total_mark, $marking, $paper_ownerID, $start_date, $display_start_date, $end_date, $paper_type, $deleted, $latex_needed, $retired);
   $result->fetch();
   $result->close();
 
@@ -579,7 +586,9 @@ function getMSCAA($paperID, $mysqlidb) {
         $temp_array[$row_no2]['original_marks'] = random_qMarks($temp_array[$row_no2]['random']);
         if ($temp_array[$row_no2]['status'] != 'Experimental') {
           $temp_array[$row_no2]['marks'] = $temp_array[$row_no2]['original_marks'];
-          $total_random_mark += $temp_array[$row_no2]['random'][0]['random_mark'];
+          if (count($temp_array[$row_no2]['random']) > 0) {
+            $total_random_mark += $temp_array[$row_no2]['random'][0]['random_mark'];
+          }
         }
       } else {
         if (isset($excluded[$old_q_id])) {
@@ -769,12 +778,12 @@ function getMSCAA($paperID, $mysqlidb) {
     $module = implode(',',$OKmodules);
   }
 
-  echo "<table style=\"table-layout: fixed\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\" id=\"sortable\">\n";
+  echo "<table style=\"table-layout: fixed\" class=\"header\" id=\"sortable\">\n";
   
   //blank row to preserve table layout when using table-layout: fixed - needed to increase ie8 latex rendering speed
-  echo "<tr><td class=\"icon\"></td><td class=\"q_no\"></td><td style=\"width:100%\"></td><td class=\"m\"></td><td class=\"d\"></td><td class=\"t\"></td></tr>";
+  echo "<tr><td class=\"icon\"></td><td class=\"q_no\"></td><td></td><td class=\"t\"></td><td class=\"m\"></td><td class=\"d\"></td></tr>";
   
-  echo "<tr><td style=\"background-color:#F1F5FB\" colspan=\"5\"><div class=\"breadcrumb\">";
+  echo "<tr><th colspan=\"5\"><div class=\"breadcrumb\">";
   if ($module != '') {
     echo '<a href="../staff/index.php">' . $string['home'] . '</a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?module=' . $module . '">' . $module . '</a>';
   } elseif ($folder != '') {
@@ -782,24 +791,37 @@ function getMSCAA($paperID, $mysqlidb) {
   } else {
     echo '<a href="../staff/index.php">' . $string['home'] . '</a>';
   }
-  echo "</div><div onclick=\"qOff()\" style=\"font-size:220%; font-weight:bold; margin-left:10px\">$paper_title</div>";
-  echo "</td><td style=\"background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(1); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['help'] . "\" border=\"0\" /></a></td></tr>\n";
-  echo "<tr><td colspan=\"3\" style=\"background-color:#F1F5FB;font-size:90%;padding-left:10px\"><strong>" . $string['start'] . ":</strong> $display_start_date</td><td colspan=\"3\" style=\"background-color:#F1F5FB;text-align:right;font-size:90%\"><strong>" . $string['owner'] . ":</strong> $paper_owner&nbsp;</td></tr>\n";
+  echo '</div><div onclick="qOff()" style="font-size:220%; font-weight:bold; margin-left:10px"';
+  if ($retired != '') {
+    echo ' class="retired"';
+  }
+  echo '>' . $paper_title . '</div>';
+  echo "</th><th style=\"text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(1); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['help'] . "\" border=\"0\" /></a></th></tr>\n";
+  if ($retired == '') {
+    echo "<tr>\n";
+  } else {
+    echo "<tr class=\"retired\">\n";
+  }
+  echo "<th colspan=\"3\" style=\"font-size:90%;padding-left:10px\"><strong>" . $string['start'] . ":</strong> $display_start_date</th><th colspan=\"3\" style=\"text-align:right;font-size:90%\"><strong>" . $string['owner'] . ":</strong> $paper_owner&nbsp;</th></tr>\n";
+  if ($retired == '') {
+    echo '<tr class="details-head">';
+  } else {
+    echo '<tr class="details-head retired">';
+  }
   ?>
-    <tr class="details-head">
-    <td class="icon" style="background-color:#F1F5FB" >&nbsp;</td>
-    <td style="background-color:#F1F5FB" >&nbsp;</td>
-    <td style="background-color:#F1F5FB" class="q-cell"><?php echo $string['question']; ?></td>
-    <td style="background-color:#F1F5FB;"><img src="../artwork/header_vertical_line.gif" width="2" height="15" border="0" />&nbsp;<?php echo $string['type']; ?>&nbsp;</td>
-    <td style="background-color:#F1F5FB"><img src="../artwork/header_vertical_line.gif" width="2" height="15" border="0" />&nbsp;<?php echo $string['marks']; ?>&nbsp;</td>
-    <td style="background-color:#F1F5FB"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" />&nbsp;<?php echo $string['modified']; ?>&nbsp;</td>
+    <th class="icon">&nbsp;</th>
+    <th>&nbsp;</th>
+    <th class="q-cell"><?php echo $string['question']; ?></th>
+    <th class="t delimited"><?php echo $string['type']; ?>&nbsp;</th>
+    <th class="m delimited"><?php echo $string['marks']; ?>&nbsp;</th>
+    <th class="d delimited"><?php echo $string['modified']; ?>&nbsp;</th>
     </tr>
-    <tr><td colspan="6" style="height:3px"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" /></td></tr>
+    <tr><th colspan="6" class="bevel"></th></tr>
   <?php
 
   if ($summative_lock == 1) {
-    echo "<tr><td colspan=\"2\" style=\"height:32px; text-align:right; background-image:url('../artwork/locked_gradient.png'); background-repeat:repeat-x\"><img src=\"../artwork/paper_locked_padlock.png\" width=\"19\" height=\"24\" alt=\"Locked\" />&nbsp;&nbsp;</td><td colspan=\"3\" style=\"height:32px; vertical-align:middle; background-image:url('../artwork/locked_gradient.png'); background-repeat:repeat-x\">" . $string['paperlockedwarning'] . " <a href=\"#\" class=\"blacklink\" onclick=\"launchHelp(189); return false;\">Click for more details.</a></td><td style=\"text-align:right; background-image:url('../artwork/locked_gradient.png'); background-repeat:repeat-x\">";
-    if (strpos($userroles,'Admin') !== false) {
+    echo "<tr><td colspan=\"2\" style=\"text-align:right; vertical-align:middle\"><div class=\"yellowwarn\"><img src=\"../artwork/paper_locked_padlock.png\" width=\"19\" height=\"24\" alt=\"Locked\" style=\"position:relative; top:2px\" />&nbsp;&nbsp;</div></td><td colspan=\"3\" style=\"vertical-align:middle\"><div class=\"yellowwarn\">" . $string['paperlockedwarning'] . " <a href=\"#\" class=\"blacklink\" onclick=\"launchHelp(189); return false;\">Click for more details.</a></div></td><td style=\"text-align:right\"><div class=\"yellowwarn\">";
+    if (strpos($userroles, 'Admin') !== false) {
       $record_no = 0;
       $result = $mysqli->prepare("SELECT COUNT(log_metadata.id) FROM log_metadata, users WHERE paperID=? AND log_metadata.userID=users.id AND roles='Student'");
       $result->bind_param('i', $paperID);
@@ -809,27 +831,27 @@ function getMSCAA($paperID, $mysqlidb) {
       $result->close();
    
       if ($record_no == 0) {
-        echo '<span style="align:right"><input type="button" name="unlock" value=" ' . $string['unlock'] . ' " onclick="window.location=\'details.php?paperID=' . $paperID . '&module=' . $module . '&folder=' . $folder . '&scrOfY=0&unlock=1\'" /></span>';
+        echo '<input type="button" name="unlock" value=" ' . $string['unlock'] . ' " onclick="window.location=\'details.php?paperID=' . $paperID . '&module=' . $module . '&folder=' . $folder . '&scrOfY=0&unlock=1\'" />';
       } else {
-        echo '<span style="align:right"><input type="button" name="unlock" value=" ' . $string['unlock'] . ' " disabled /></span>';
+        echo '<input type="button" name="unlock" value=" ' . $string['unlock'] . ' " disabled />';
       }
     }
-    echo "</td></tr>\n";
+    echo "&nbsp;</div></td></tr>\n";
   } elseif ($paper_type == '2') {
     $tmp_hour = $tmp_start_hour;
     if (substr($tmp_hour,0,1) == '0') $tmp_hour = substr($tmp_hour,1,1);
-    if (substr($display_start_date,12,4) > (date("Y")+1)) {
-      echo "<tr><td colspan=\"2\" style=\"height:32px; text-align:right; background-image:url('../artwork/non_owner_gradient.gif'); background-repeat:repeat-x\"><img src=\"../artwork/late_warning_icon.png\" style=\"padding-top:2px\" width=\"28\" height=\"28\" alt=\"Locked\" />&nbsp;&nbsp;</td><td colspan=\"7\" style=\"height:32px; vertical-align:middle; background-image:url('../artwork/non_owner_gradient.gif'); background-repeat:repeat-x\">";
+    if (substr($display_start_date,6,4) > (date("Y")+1)) {
+      echo "<tr><td colspan=\"2\" style=\"text-align:right; vertical-align:middle\"><div class=\"redwarn\"><img src=\"../artwork/late_warning_icon.png\" style=\"padding-top:1px; padding-right:10px\" width=\"28\" height=\"28\" alt=\"Locked\" /></div></td><td colspan=\"4\" style=\"vertical-align:middle\"><div class=\"redwarn\">";
       printf($string['farfuturewarning'], $display_start_date); 
-      echo "</td></tr>\n";
+      echo "</div></td></tr>\n";
     } elseif ($tmp_hour < $cfg_hour_warning) {
-      echo "<tr><td colspan=\"2\" style=\"height:32px; text-align:right; background-image:url('../artwork/non_owner_gradient.gif'); background-repeat:repeat-x\"><img src=\"../artwork/late_warning_icon.png\" style=\"padding-top:2px\" width=\"28\" height=\"28\" alt=\"Locked\" />&nbsp;&nbsp;</td><td colspan=\"7\" style=\"height:32px; vertical-align:middle; background-image:url('../artwork/non_owner_gradient.gif'); background-repeat:repeat-x\">";
+      echo "<tr><td colspan=\"2\" style=\"text-align:right; vertical-align:middle\"><div class=\"redwarn\"><img src=\"../artwork/late_warning_icon.png\" style=\"padding-top:1px; padding-right:10px\" width=\"28\" height=\"28\" alt=\"Locked\" /></div></td><td colspan=\"4\" style=\"vertical-align:middle\"><div class=\"redwarn\">";
       printf($string['earlywarning'], $cfg_hour_warning);
-      echo "</td></tr>\n";
+      echo "</div></td></tr>\n";
     }
   }
 
-  if (!isset($_COOKIE['dragnotice'])) {
+  if (!isset($_COOKIE['dragnotice']) and $summative_lock != 1) {
     echo '<tr id="dragnotice"><td style="padding:2px; color:#154A93; background-color:#B8CFE9" colspan="5">&nbsp;Questions can now be reordered simply by dragging.</td><td style="padding:2px; color:#154A93; background-color:#B8CFE9; text-align:right"><a href="#" onclick="hideNotice();"><img src="../artwork/small_x.png" width="8" height="7" alt="close" border="0" /></a>&nbsp;</td></tr>';
   }
   
@@ -847,7 +869,7 @@ function getMSCAA($paperID, $mysqlidb) {
       if ($old_screen > 0) {
         $tmp_screen_mean = ($total_marks == 0) ? 0 : ($screen_marks / $total_marks);
         if ($paper_type == '2' and $question_number > 2 and $tmp_screen_mean * 100 > 25 and $screen_marks > 3) {
-          echo "\n<tr><td colspan=\"5\" style=\"font-weight:bold; color:#C00000\"><img src=\"../artwork/small_yellow_warning_icon.gif\" width=\"16\" height=\"16\" alt=\"Warning\" border=\"0\" />&nbsp;";
+          echo "\n<tr><td colspan=\"6\" style=\"margin-left:5px; font-weight:bold; color:#C00000\"><img src=\"../artwork/small_yellow_warning_icon.gif\" width=\"16\" height=\"16\" alt=\"Warning\" border=\"0\" />&nbsp;";
           $percent = round(($screen_marks / $total_marks) * 100);
           printf($string['markswarning'], $old_screen, $screen_marks, $percent);
           echo "</td></tr>\n";
@@ -968,6 +990,7 @@ function getMSCAA($paperID, $mysqlidb) {
     echo $theme_str;
     if ($temp_array[$x]['q_type'] == 'random') {
       echo $temp_array[$x]['leadin'];
+      if ($temp_array[$x]['warnings'] != '') echo '<span style="color:#C00000; font-weight:bold">&nbsp;<img src="../artwork/small_yellow_warning_icon.gif" width="16" height="16" alt="' . $string['warning'] . '" border="0" />&nbsp;' . $temp_array[$x]['warnings'] . '</span>';
     } elseif ($temp_array[$x]['q_type'] == 'branching') {
       if ($temp_array[$x]['leadin'] == '') {
         echo "Branching question set based on Q" . findDecisionQ($temp_array,$temp_array[$x]['scenario']);
@@ -1008,7 +1031,10 @@ function getMSCAA($paperID, $mysqlidb) {
       echo '<td>&nbsp;</td>';
     } else {
       if ($temp_array[$x]['status'] !== 'Experimental' and $temp_array[$x]['marks'] === 'ERR') {
-        echo '<td style="text-align:right; vertical-align:top"><img src="../artwork/small_yellow_warning_icon.gif" width="16" height="16" alt="' . $string['variablenomarks'] . '" border="0" /></td>';
+        // Only ever get in here for random questions
+        if (count($temp_array[$x]['marks']) > 0) {
+          echo '<td style="text-align:right; vertical-align:top"><img src="../artwork/small_yellow_warning_icon.gif" width="16" height="16" title="' . $string['variablenomarks'] . '" alt="' . $string['variablenomarks'] . '" border="0" /></td>';
+        }
         $marks_incorrect_error = true;
       } elseif ($temp_array[$x]['status'] === 'Experimental') {
         echo '<td style="text-align:right; vertical-align:top">N/A</td>';
@@ -1024,7 +1050,7 @@ function getMSCAA($paperID, $mysqlidb) {
     if ($temp_array[$x]['q_type'] == 'random') {
       $sub_question = 1;
       foreach ($temp_array[$x]['random'] as $random_question) {
-        echo "<tr style=\"display:none\" ondblclick=\"edQ(" . ($question_number+1) . "," . $random_question['q_id'] . ",'" . $random_question['type'] . "');\" id=\"r" . $x . "_" . $sub_question . "\"><td></td><td></td><td class=\"s\">&#149&nbsp;" . $random_question['leadin'] . "</td><td class=\"t\">" . fullQuestionType($random_question['type']) . "</td>";
+        echo "<tr style=\"display:none\" ondblclick=\"edQ(" . ($question_number+1) . "," . $random_question['q_id'] . ",'" . $random_question['type'] . "');\" id=\"r" . $x . "_" . $sub_question . "\"><td></td><td></td><td class=\"s\">&#149&nbsp;" . $random_question['leadin'] . "</td><td class=\"t\">" . fullQuestionType($random_question['type'], $string) . "</td>";
         if ($temp_array[$x]['marks'] == 'ERR') {
           echo "<td class=\"errmk\">" . $random_question['marks'] . "</td>";
         } else {

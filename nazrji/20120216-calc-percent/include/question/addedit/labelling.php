@@ -71,7 +71,7 @@ if ($media['filename'] != ''):
     $flash_path = '../add/label_add.swf';
     foreach ($label_images as $lab_img) {
       //echo var_dump($lab_img );
-      if ($lab_img['filename'] != '') {
+      if (isset($lab_img['filename']) and $lab_img['filename'] != '') {
         $img_str .= implode(',', $lab_img) . ';';
       }
     }

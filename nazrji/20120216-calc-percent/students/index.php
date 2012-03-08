@@ -59,7 +59,7 @@ if ($stmt = $mysqli->prepare("SELECT m.ModuleID, m.fullname, sm.calendar_year FR
   $stmt->bind_param('i', $userID);
   $stmt->execute();
   $stmt->bind_result($moduleID, $module_name, $module_year);
-  while($stmt->fetch()) {
+  while ($stmt->fetch()) {
 		$modules[$i]['id'] = $moduleID;
 		$modules[$i]['name'] = $module_name;
 		$modules[$i]['year'] = $module_year;
@@ -83,7 +83,7 @@ GROUP BY p.property_id
 ORDER BY p.paper_title
 QUERY;
 
-for($i = 0; $i < count($modules); $i++) {
+for ($i = 0; $i < count($modules); $i++) {
   $mod_id = $modules[$i]['id'];
 	if ($stmt = $mysqli->prepare($papers_query)) {
 		$mod_string = '%'.$mod_id.'%';
@@ -115,35 +115,37 @@ for($i = 0; $i < count($modules); $i++) {
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<title>Rogō<?php echo " $cfg_install_type"; ?></title>
-<link rel="stylesheet" type="text/css" href="../css/submenu.css" />
-<style type="text/css">
-body { padding-left: 0px; }
-</style>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Rogō<?php echo " $cfg_install_type"; ?></title>
+  <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
+  <link rel="stylesheet" type="text/css" href="../css/announcements.css" />
+  <style type="text/css">
+  body {padding-left:0px}
+  </style>
 
-<script src="../js/student_help.js" type="text/javascript"></script>
-<script type="text/javascript">
-function switchYear(toShow) {
-	var years = ['<?php echo implode('\',\'', $sessions_with_papers) ?>'];
-	for(var i = 0; i < years.length; i++) {
-		target = document.getElementById('papers-' + years[i].replace('/', '-'));
-		link = document.getElementById('button-' + years[i].replace('/', '-'));
-		if (target != null) {
-			target.style.display = (years[i] == toShow) ? 'block' : 'none';
-			if (link != null) {
-				link.style.backgroundImage = (years[i] == toShow) ? 'url(../artwork/tab_on.gif)' : 'url(../artwork/tab_off.gif)';
-			}
-		}
-	}
-}
-</script>
+  <script src="../js/student_help.js" type="text/javascript"></script>
+  <script type="text/javascript">
+  function switchYear(toShow) {
+    var years = ['<?php echo implode('\',\'', $sessions_with_papers) ?>'];
+    for(var i = 0; i < years.length; i++) {
+      target = document.getElementById('papers-' + years[i].replace('/', '-'));
+      link = document.getElementById('button-' + years[i].replace('/', '-'));
+      if (target != null) {
+        target.style.display = (years[i] == toShow) ? 'block' : 'none';
+        if (link != null) {
+          link.style.backgroundImage = (years[i] == toShow) ? 'url(../artwork/tab_on.gif)' : 'url(../artwork/tab_off.gif)';
+        }
+      }
+    }
+  }
+  </script>
 </head>
 <body>
 <div id="content" class="content" style="font-size:80%">
 	<table cellpadding="0" cellspacing="0" border="0" width="100%">
 		<tr>
-      <td rowspan="2"style="background-color:#F1F5FB"><img style="margin:4px" src="../artwork/rogo_logo.gif" width="137" height="61" alt"Rogo" border="0" /></td>
+      <td rowspan="2"style="background-color:#F1F5FB"><img style="margin:4px" src="../artwork/rogo_logo.gif" width="137" height="61" alt="Rogo" border="0" /></td>
       <td style="background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(1); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="Help" border="0" /></a></td>
     </tr>
 	  <tr>
@@ -161,7 +163,21 @@ if (count($sessions_with_papers) > 0) {
 	    <td colspan="2" style="height:6px; background-color:#1E3C7B"></td>
 	  </tr>
 	</table>
+
 <?php
+// Check for any news/announcements
+$student_msg = '';
+$result = $mysqli->prepare("SELECT title, student_msg, icon FROM announcements WHERE NOW() > startdate AND NOW() < enddate AND deleted IS NULL");
+$result->execute();
+$result->bind_result($news_title, $student_msg, $icon);
+$result->fetch();
+$result->close();
+
+if ($student_msg != '') {
+  $news_icons = array('', 'news_64.png', 'new_64.png', 'tip_64.png', 'software_64.png', 'exclamation_64.png', 'sync_64.png', 'megaphone_64.png');
+  echo "<br /><div class=\"announcement\"><div style=\"padding-left:80px; background: transparent url('../artwork/" . $news_icons[$icon] . "') no-repeat top left;\"><strong>$news_title</strong><br />\n<br />\n$student_msg</div></div>\n<br />\n";
+}
+  
 if ($papers > 0) {
 	$last_session = '';
 	

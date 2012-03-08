@@ -24,12 +24,13 @@
 ?>
 <html>
 <head>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
 	<title><?php echo $string['importfromqti'] ?></title>
 	<script type="text/javascript" src="js/mootools-1.2.4.js"></script> 
 	<link rel="stylesheet" type="text/css" href="css/highlight.css" /> 
 	<link rel="stylesheet" type="text/css" href="css/wizard.css" /> 
 
-	<style>
+	<style type="text/css">
 		body {background-color:white; color:black; font-family:Arial,sans-serif;margin:0px;}
 		.divider {padding-left:6px; font-weight:bold}
 		a {color:black}

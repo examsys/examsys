@@ -7,6 +7,7 @@ $string['summative'] = 'Egzamin końcowy';
 $string['survey'] = 'Ankieta';
 $string['oscestation'] = 'Stacja OSCE';
 $string['offlinepaper'] = 'Arkusz Offline';
+$string['peerreview'] = 'Recenzja wewnętrzna'; 
 $string['accessibility'] = 'Dostępność';
 $string['date'] = 'Data';
 $string['lab'] = 'zajęcia';

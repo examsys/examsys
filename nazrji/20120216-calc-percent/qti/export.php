@@ -28,6 +28,9 @@
 // type - paper or question
 // ids - comma separated list of question or paper ids (supports multiple papers as multiple qti files)
 
+global $ts_version;
+
+
 require_once 'include/inc.php';
 require_once 'local/local_load.php';
 require_once 'qti12/qti12_save.php';

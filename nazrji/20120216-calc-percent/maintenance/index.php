@@ -25,10 +25,11 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
+  <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <title>Undergoing Maintenance</title>
 <link rel="stylesheet" href="../css/screen.css" type="text/css" />
-<style>
+<style type="text/css">
 body {background-color:white; color:black; font-family:Arial,sans-serif; font-size:90%}
 .field {padding-top:4px; padding-left:6px; font-weight:bold}
 </style>

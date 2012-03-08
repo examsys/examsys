@@ -11,70 +11,70 @@ $(function() {
       option_increment1: {
         required: {
           depends: function (element) {
-            return hasMin(1);
+            return requiresIncrement(1);
           }
         }
       },
       option_increment2: {
         required: {
           depends: function (element) {
-            return hasMin(2);
+            return requiresIncrement(2);
           }
         }
       },
       option_increment3: {
         required: {
           depends: function (element) {
-            return hasMin(3);
+            return requiresIncrement(3);
           }
         }
       },
       option_increment4: {
         required: {
           depends: function (element) {
-            return hasMin(4);
+            return requiresIncrement(4);
           }
         }
       },
       option_increment5: {
         required: {
           depends: function (element) {
-            return hasMin(5);
+            return requiresIncrement(5);
           }
         }
       },
       option_increment6: {
         required: {
           depends: function (element) {
-            return hasMin(6);
+            return requiresIncrement(6);
           }
         }
       },
       option_increment7: {
         required: {
           depends: function (element) {
-            return hasMin(7);
+            return requiresIncrement(7);
           }
         }
       },
       option_increment8: {
         required: {
           depends: function (element) {
-            return hasMin(8);
+            return requiresIncrement(8);
           }
         }
       },
       option_increment9: {
         required: {
           depends: function (element) {
-            return hasMin(9);
+            return requiresIncrement(9);
           }
         }
       },
       option_increment10: {
         required: {
           depends: function (element) {
-            return hasMin(10);
+            return requiresIncrement(10);
           }
         }
       }
@@ -108,8 +108,13 @@ $(function() {
   });
 });
 
-function hasMin(index) {
-  return ($('#option_min' + index).val() != '');
+function requiresIncrement(index) {
+  var rval = false;
+  var min_value = $('#option_min' + index).val();
+  if (min_value != '' && min_value.substring(0, 3) != 'var' && min_value.substring(0, 3) != 'ans') {
+    rval = true;
+  }
+  return rval;
 }
 
 function checkHasOption() {

@@ -107,7 +107,7 @@ echo ViewHelper::render_options($decimals, $question->get_answer_decimals(), 3);
               </td>
             </tr>
             <tr>
-              <th class="spaced-top"><?php echo $string['tolerance'] ?></th>
+              <th class="spaced-top"><img src="../../artwork/information_icon.gif" width="16" height="16" alt="Information" title="<?php echo $string['percenttolerance'] ?>" class="tiptop" /> <?php echo $string['tolerance'] ?></th>
               <td class="spaced-top"><label for="tolerance_full" class="spaced-right"><strong><?php echo $string['tolerance_full'] ?></strong></label><input type="text" id="tolerance_full" name="tolerance_full" value="<?php echo $question->get_tolerance_full() ?>" /></td>
               <td class="spaced-top"><span class="marks-partial<?php echo $show_partial ?>"><label for="tolerance_partial" class="spaced-right"><strong><?php echo $string['tolerance_partial'] ?></strong></label><input type="text" id="tolerance_partial" name="tolerance_partial" value="<?php echo $question->get_tolerance_partial() ?>" /></span></td>
             </tr>

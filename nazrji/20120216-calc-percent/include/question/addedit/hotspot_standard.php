@@ -63,11 +63,15 @@ require_once 'detail_parts/details_scenario.php';
               <td>
 <?php
 if ($media['filename'] != '' and !$show_correction_intermediate):
+  $tmp_correct = str_replace("'", "\'", trim($correct));
+  $tmp_correct = str_replace("&nbsp;", " ", $tmp_correct);
+  $tmp_correct = preg_replace('/\r\n/', '', $tmp_correct);
 ?>
                 <script type="text/javascript">
                   function swfLoaded1(message) {
                     var num = message.substring(5,message.length);
-                    setUpFlash(num, message, '<?php echo $language; ?>', '<?php echo $media['filename']; ?>', '<?php echo str_replace("'", "\'", trim($correct)); ?>');
+                    
+                    setUpFlash(num, message, '<?php echo $language; ?>', '<?php echo $media['filename']; ?>', '<?php echo $tmp_correct; ?>');
                   }
                   write_string('<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="https://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0" id="flash1" width="<?php echo ($media['width'] + 306); ?>" height="<?php echo $plugin_height; ?>" align="middle">');
                   write_string('<param name="allowScriptAccess" value="always" />');

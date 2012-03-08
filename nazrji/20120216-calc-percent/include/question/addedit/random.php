@@ -35,7 +35,7 @@ require '../../classes/questionutils.class.php';
             <tr>
               <th><span class="mandatory">*</span> <label for="option_text1"><?php echo $string['questions'] ?></label></th>
               <td>
-                <div class="select-group">
+                <div id="qlist-holder" class="select-group">
                   <ul id="questionlist" class="radio-list clearfix">
 <?php
 $i = 1;
@@ -47,7 +47,7 @@ foreach ($question->options as $option):
       $option_text = substr($option_text, 0, strpos($option_text, "\n")) . '&hellip;';
   }
 ?>
-                    <li><label for="option_text<?php echo $i ?>" class="fullwidth"><input id="option_text<?php echo $i ?>" name="option_text<?php echo $i ?>" value="<?php echo $option->get_text() ?>" type="checkbox" checked="checked" /> <?php echo $option_text ?></label><input name="optionid<?php echo $i ?>" value="<?php echo $option->id ?>" type="hidden" /></li>
+                    <li><label for="option_text<?php echo $i ?>" class="fullwidth"><input id="option_text<?php echo $i ?>" name="option_text<?php echo $i ?>" value="<?php echo $option->get_text() ?>" type="checkbox" checked="checked" class="random-q" /> <?php echo $option_text ?></label><input name="optionid<?php echo $i ?>" value="<?php echo $option->id ?>" type="hidden" /></li>
 <?php
   $i++;
 endforeach;
@@ -59,6 +59,7 @@ endforeach;
             <tr>
               <th>&nbsp;</th>
               <td>
+                <input id="questioncheck" name="questioncheck" value="" type="hidden" />
                 <input type="button" id="addquestion" name="addquestion" value="<?php echo $string['addquestions']; ?>" />
               </td>
             </tr>

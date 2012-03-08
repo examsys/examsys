@@ -26,24 +26,24 @@ require '../include/staff_auth.inc';
 require '../include/errors.inc';
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-   <html>
-   <head>
-   <title>Screen No.<?php echo " $cfg_install_type"; ?></title>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+    <title>Screen No.<?php echo " $cfg_install_type"; ?></title>
 
-   <style>
-     body {font-family:Arial,sans-serif; color:black; margin:0px; background-color:#E5EFFA}
-     td {font-size:90%}
-     input, textarea {font-family:Arial,sans-serif; color:black}
-   </style>
+    <style type="text/css">
+      body {font-family:Arial,sans-serif; color:black; margin:0px; background-color:#E5EFFA}
+      td {font-size:90%}
+      input, textarea {font-family:Arial,sans-serif; color:black}
+    </style>
 
-   <script language="JavaScript">
-   function updateParent() {
-     window.opener.location = "details.php?paperID=<?php if(isset($_POST['paperID'])) echo $_POST['paperID']; ?>&folder=<?php if(isset($_POST['folder'])) echo $_POST['folder']; ?>&module=<?php if(isset($_POST['module'])) echo $_POST['module']; ?>&scrOfY=<?php echo $_POST['scrOfY']; ?>";
-     window.close();
-   }
-   
-   </script>
-   </head>
+    <script type="text/javascript">
+      function updateParent() {
+      window.opener.location = "details.php?paperID=<?php if(isset($_POST['paperID'])) echo $_POST['paperID']; ?>&folder=<?php if(isset($_POST['folder'])) echo $_POST['folder']; ?>&module=<?php if(isset($_POST['module'])) echo $_POST['module']; ?>&scrOfY=<?php echo $_POST['scrOfY']; ?>";
+      window.close();
+      }
+    </script>
+  </head>
 
 <?php
 

@@ -1,4 +1,6 @@
 <?php
+require_once("../config/config.inc.php");
+$deb32434=1;
 // This file is part of Rogō
 //
 // Rogō is free software: you can redistribute it and/or modify
@@ -20,7 +22,7 @@
 			<qmd_itemtype><?php echo $type ?></qmd_itemtype>
 			<qmd_status><?php echo $question->status ?></qmd_status>
 			<qmd_score_method><?php echo $question->score_method ?></qmd_score_method>
-			<qmd_toolvendor>Touchstone 4.0</qmd_toolvendor>
+			<qmd_toolvendor>Rogō <?php echo $GLOBALS['ts_version']; ?></qmd_toolvendor>
 		</itemmetadata>
 		
 		<presentation>

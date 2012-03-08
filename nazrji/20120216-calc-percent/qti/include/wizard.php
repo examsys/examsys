@@ -121,7 +121,7 @@ class Wizard {
 	</tr>
 </table>
 
-<script>
+<script type="text/javascript">
 var Pages = new Array(<?php echo count($this->pages); ?>);
 
 <?php foreach($this->pages as $page): ?>

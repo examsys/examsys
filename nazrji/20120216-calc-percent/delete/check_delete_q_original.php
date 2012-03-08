@@ -31,16 +31,15 @@ $icons = array('formative', 'progress', 'summative', 'survey', 'osce', 'offline'
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 <html>
 <head>
-<title><?php echo $string['deletequestion']; ?></title>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title><?php echo $string['deletequestion']; ?></title>
 
-<style>
-body {margin:0px; background-color:#F1F5FB; font-family:Arial,sans-serif; font-size:90%; text-align:justifed}
-</style>
+  <style type="text/css">
+  body {margin:0px; background-color:#F1F5FB; font-family:Arial,sans-serif; font-size:90%; text-align:justifed}
+  </style>
 </head>
-
 <body>
 
 <table cellpadding="8" cellspacing="0" border="0" width="100%">

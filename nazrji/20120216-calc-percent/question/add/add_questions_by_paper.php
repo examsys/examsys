@@ -27,8 +27,10 @@
 ?>
 <html>
 <head>
+<meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
 <title>by Paper</title>
-<style>
+<link rel="stylesheet" type="text/css" href="../../css/header.css" />
+<style type="text/css">
 body {margin:0px; background-color:white; color:black; font-family:Arial,sans-serif; font-size:90%}
 table {font-size:100%}
 a:link {color:black}
@@ -38,6 +40,8 @@ a:hover {color:black}
 .s {padding-left:6px}
 .q_no {text-align:right; width:35px}
 </style>
+<script type="text/javascript" src="/js/jquery-1.6.1.min.js"></script>
+<script type="text/javascript" src="/tools/mee/mee/js/mee_src.js"></script>
 <script language="JavaScript">  
   function Qpreview(qID) {
     parent.previewurl.location = '../view_question.php?q_id=' + qID;
@@ -67,10 +71,10 @@ a:hover {color:black}
       
   echo "<form name=\"theform\" method=\"post\" action=\"\">\n";
   echo "<input type=\"hidden\" name=\"screen\" value=\"1\" />\n";
-  echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"width:100%; font-size:100%\">\n";
-  echo "<tr style=\"background-color:#F1F5FB\"><td valign=\"top\" colspan=\"7\" style=\"font-size:160%; font-weight:bold\">&nbsp;$paper_title</td></tr>\n";
-  echo "<tr style=\"background-color:#F1F5FB\"><td></td><td></td><td style=\"text-align:right\"><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;</td><td>" . $string['question'] . "&nbsp;</td><td><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;" . $string['type'] . "&nbsp;</td><td><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;" . $string['modified'] . "&nbsp;</td></tr>\n";
-  echo "<tr style=\"height:4px\"><td valign=\"top\" colspan=\"7\"><img src=\"../../artwork/header_horizontal_line.gif\" width=\"100%\" height=\"3\" alt=\"Line\" /></td></tr>\n";
+  echo "<table class=\"header\">\n";
+  echo "<tr><th colspan=\"7\" style=\"font-size:160%; font-weight:bold\">&nbsp;$paper_title</th></tr>\n";
+  echo "<tr><th></th><th></th><th style=\"text-align:right\"><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;</th><th>" . $string['question'] . "&nbsp;</th><th><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;" . $string['type'] . "&nbsp;</th><th><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;" . $string['modified'] . "&nbsp;</th></tr>\n";
+  echo "<tr><th colspan=\"7\" class=\"bevel\"></th></tr>\n";
 
   // Get the questions in order off the paper.
   $stmt = $mysqli->prepare("SELECT questions.q_id, leadin_plain, q_type, screen, DATE_FORMAT(last_edited,'$cfg_short_date') AS last_edited, locked, parts FROM (papers, questions) LEFT JOIN question_exclude ON questions.q_id=question_exclude.q_id WHERE papers.paper=? AND papers.question=questions.q_id ORDER BY screen, display_pos");
@@ -79,7 +83,7 @@ a:hover {color:black}
   $stmt->bind_result($q_id, $leadin_plain, $q_type, $screen, $last_edited, $locked, $parts);
   $old_screen = 0;
   $question_no = 0;
-  while ($row = $stmt->fetch()) {
+  while ($stmt->fetch()) {
     if ($q_type != 'info') $question_no++;
     if ($screen > $old_screen) {
       echo '<tr><td colspan="6" style="height:10px"></td></tr>';
@@ -97,7 +101,7 @@ a:hover {color:black}
     } else {
       echo '<td style="color:red; text-decoration:line-through" onclick="Qpreview(' . $q_id . ')">';
     }
-    echo "$leadin_plain</td><td class=\"s\">" . fullQuestionType($q_type) . "</td><td class=\"s\">$last_edited</td></tr>\n";
+    echo "$leadin_plain</td><td class=\"s\">" . fullQuestionType($q_type, $string) . "</td><td class=\"s\">$last_edited</td></tr>\n";
     $old_screen = $screen;
   }
   $stmt->close();

@@ -65,21 +65,23 @@ $result->close();
 
 $mysqli->close();
 ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title><?php echo $string['folderdeleted']; ?></title>
-<script language="javascript">
-  function closeWindow() {
-    <?php
-    if ($parent == '') {
-      echo "window.opener.location.href = '../staff/index.php'\n";
-    } else {
-      echo "window.opener.location.href = '../folder.php?folder=$parentID'\n";
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title><?php echo $string['folderdeleted']; ?></title>
+  <script type="text/javascript">
+    function closeWindow() {
+      <?php
+      if ($parent == '') {
+        echo "window.opener.location.href = '../staff/index.php'\n";
+      } else {
+        echo "window.opener.location.href = '../folder.php?folder=$parentID'\n";
+      }
+      ?>
+      self.close();
     }
-    ?>
-    self.close();
-  }
-</script>
+  </script>
 </head>
 
 <body onload="closeWindow();" style="margin:0px; background-color:#F1F5FB; font-family:Arial,sans-serif; font-size:80%; text-align:justifed">

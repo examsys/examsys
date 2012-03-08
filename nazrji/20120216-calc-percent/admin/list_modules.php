@@ -43,12 +43,13 @@ function array_csort($marray, $column, $sort_order) {   //coded by Ichier2003
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
+<meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
 <title><?php echo $string['modules'] . ' ' . $cfg_install_type; ?></title>
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
-<style>
+<link rel="stylesheet" type="text/css" href="../css/header.css" />
+<style type="text/css">
 .l {cursor:pointer}
 .t {color:black; text-decoration:none}
-.h {background-color:#F1F5FB; color:black}
 .col {padding-left:5px}
 .col1 {padding-left:20px}
 </style>
@@ -105,10 +106,10 @@ function array_csort($marray, $column, $sort_order) {   //coded by Ichier2003
 ?>
 <div id="content" class="content" style="font-size:80%">
 
-<table cellpadding="0" cellspacing="0" border="0" width="100%">
+<table class="header">
 <tr>
-<td colspan="3" style="background-color:#F1F5FB"><div class="breadcrumb"><a href="../staff/index.php"><?php echo $string['home']; ?></a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php"><?php echo $string['administrativetools']; ?></a></div><div style="margin-left:10px; font-size:200%; font-weight:bold"><?php echo $string['modules']; ?></td>
-<td style="background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(233); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="<?php echo $string['help']; ?>" border="0" /></a></td>
+<th colspan="3"><div class="breadcrumb"><a href="../staff/index.php"><?php echo $string['home']; ?></a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php"><?php echo $string['administrativetools']; ?></a></div><div style="margin-left:10px; font-size:200%; font-weight:bold"><?php echo $string['modules']; ?></th>
+<th style="text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(233); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="<?php echo $string['help']; ?>" border="0" /></a></th>
 </tr>
 <tr>
 <?php
@@ -123,18 +124,23 @@ function array_csort($marray, $column, $sort_order) {   //coded by Ichier2003
   // output table header
   $table_order = array($string['moduleid']=>'moduleid', $string['name']=>'name', $string['school']=>'school', $string['active']=>'active');
   foreach($table_order as $display => $key) {
-    echo "<td class=\"h\"><img src=\"../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;";
-    if ($sortby == $key and $ordering == 'asc') {
-      echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?sortby=$key&ordering=desc\">$display</a>&nbsp;<img src=\"../artwork/desc.gif\" width=\"9\" height=\"7\" border=\"0\" />&nbsp;</td>";
-    } elseif ($sortby == $key and $ordering == 'desc') {
-      echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?sortby=$key&ordering=asc\">$display</a>&nbsp;<img src=\"../artwork/asc.gif\" width=\"9\" height=\"7\" border=\"0\" />&nbsp;</td>";
+    echo '<th>';
+    if ($key == 'moduleid') {
+      echo '<div style="padding-left:10px">';
     } else {
-      echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?sortby=$key&ordering=asc\">$display</a>&nbsp;</td>";
+      echo '<div><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;';
+    }
+    if ($sortby == $key and $ordering == 'asc') {
+      echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?sortby=$key&ordering=desc\">$display</a>&nbsp;<img src=\"../artwork/desc.gif\" width=\"9\" height=\"7\" border=\"0\" />&nbsp;</div></th>";
+    } elseif ($sortby == $key and $ordering == 'desc') {
+      echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?sortby=$key&ordering=asc\">$display</a>&nbsp;<img src=\"../artwork/asc.gif\" width=\"9\" height=\"7\" border=\"0\" />&nbsp;</div></th>";
+    } else {
+      echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?sortby=$key&ordering=asc\">$display</a>&nbsp;</div></th>";
     }
   }
 ?>
 </tr>
-<tr><td colspan="4" style="height:3px"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td></tr>
+<tr><th colspan="4" class="bevel"></th></tr>
 <?php
 $old_school = '';
 $id = 0;
@@ -178,7 +184,7 @@ for ($i=0; $i<$module_no; $i++) {
   } elseif ($sortby == 'active' and $old_active != $modules[$i]['active']) {
     echo "<tr><td colspan=\"5\"><table border=\"0\" style=\"padding-left:10px; padding-right:2px; padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>" . $tmp_active . "</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table></td></tr>\n";
   }
-  echo "<tr id=\"$i\" onclick=\"selMod($i,'" . $modules[$i]['moduleid'] . "',event)\" ondblclick=\"edit('$moduleid')\" onmouseover=\"lon($i)\" onmouseout=\"loff($i)\" class=\"l\"><td class=\"col1\">" . $modules[$i]['moduleid'] . "</td><td class=\"col\">" . $modules[$i]['name'] . "</td><td class=\"col\"><nobr>" . $modules[$i]['school'] . "</nobr></td><td class=\"col\">$tmp_active</td></tr>\n";
+  echo "<tr id=\"$i\" onclick=\"selMod($i,'" . $modules[$i]['moduleid'] . "',event)\" ondblclick=\"edit('" . $modules[$i]['moduleid'] . "')\" onmouseover=\"lon($i)\" onmouseout=\"loff($i)\" class=\"l\"><td><div class=\"col1\">" . $modules[$i]['moduleid'] . "</div></td><td><div class=\"col\">" . $modules[$i]['name'] . "</div></td><td><div class=\"col\"><nobr>" . $modules[$i]['school'] . "</nobr></div></td><td><div class=\"col\">$tmp_active</div></td></tr>\n";
   
   $old_moduleid_letter = substr($modules[$i]['moduleid'], 0, 1);
   $old_name_letter = substr($modules[$i]['name'], 0, 1);

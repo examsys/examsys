@@ -26,16 +26,15 @@
 
 require '../include/staff_student_auth.inc';
 ?>
-<!DOCTYPE html
-PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Rogō</title>
-<style>
-body {font-family:Arial,sans-serif; font-size:100%; background-color:white; color:black}
-h1 {font-size:150%; color:#C00000}
-</style>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Rogō</title>
+  <style type="text/css">
+  body {font-family:Arial,sans-serif; font-size:100%; background-color:white; color:black}
+  h1 {font-size:150%; color:#C00000}
+  </style>
 </head>
 
 <body>

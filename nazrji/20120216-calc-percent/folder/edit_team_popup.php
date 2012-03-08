@@ -48,13 +48,14 @@ if (isset($_POST['submit'])) {
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title><?php echo $string['teammembers'] . ' ' . $teamID; ?></title>
-<script language="JavaScript">
-  function closeWindow() {
-    window.opener.location.href = '../folder/details.php?module=<?php echo $teamID; ?>';
-    self.close();
-  }
-</script>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title><?php echo $string['teammembers'] . ' ' . $teamID; ?></title>
+  <script language="JavaScript">
+    function closeWindow() {
+      window.opener.location.href = '../folder/details.php?module=<?php echo $teamID; ?>';
+      self.close();
+    }
+  </script>
 </head>
 <body onload="closeWindow()">
 </body>
@@ -67,7 +68,7 @@ if (isset($_POST['submit'])) {
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <title><?php echo $string['teammembers'] . ' ' . $_GET['teamID'] . ' ' . $cfg_install_type; ?></title>
-<style>
+<style type="text/css">
   body {font-family:Arial,sans-serif; font-size:90%; background-color:#F1F5FB; color:black; margin:0px}
   hr {width:100%; border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5}
   .r1 {background-color:white}

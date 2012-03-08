@@ -27,7 +27,6 @@ $string['warning'] = 'Ostrzeżenie';
 $string['variablenomarks'] = 'Ostrzeżenie: Zmienna liczba punktów';
 $string['export12'] = 'Eksport 1.2';
 $string['import'] = 'Import';
-$string['insertscreenbreak'] = 'Wprowadź podzielniki ekranowe';//Insert screen break';
 $string['papernotfound'] = 'Nie odnaleziono arkusza';
 $string['paperdeleted'] = 'Arkusz usunięty';
 $string['furtherassistance'] = 'W celu uzyskania dalszej pomocy skontaktuj się z: <a href="mailto:%s">%s</a>';

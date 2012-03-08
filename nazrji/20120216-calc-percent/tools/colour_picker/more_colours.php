@@ -45,7 +45,7 @@ function rgb_hex($input) {
 <html>
 <head>
 <title>Colours</title>
-<style>
+<style type="text/css">
 body {font-family:Arial,sans-serif; background-color:#F0F1F2; color:black; font-size:100%; margin:2px}
 input {font-family:Arial,sans-serif}
 </style>

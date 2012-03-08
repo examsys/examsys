@@ -1,5 +1,5 @@
 <?php
-$string['reviewsummary'] = 'Review Summary';   // Niko, whole file please
+$string['reviewsummary'] = 'Review Summary'; 
 $string['name'] = 'Name';
 $string['studentid'] = 'Student ID';
 $string['reviewed'] = 'Reviewed';

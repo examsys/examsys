@@ -77,11 +77,17 @@ while ($stmt->fetch()) {
 $stmt->free_result();
 $stmt->close();
 
-echo "<html>\n<head>\n<title></title>\n</head>\n<body style=\"font-family:Arial,sans-serif; color:black\">\n";
-echo "<form method=\"post\" name=\"questions\" action=\"start.php?id=" . $_GET['id'] . "&dont_record=true\">\n";
-
 record_marks($property_id, $mysqli, $userID, $paper_type, $grade, $year, $attempt, $userroles);
 ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+    <title></title>
+</head>
+<body style="font-family:Arial,sans-serif; color:black">
+  <form method="post" name="questions" action="start.php?id=<?php echo $_GET['id'] ?>&dont_record=true">
+
   <p style="text-align:center; font-size:200%; color:#008000"><?php echo $string['top_msg']; ?></p>
   <p style="text-align:center; font-weight:bold"><?php echo $string['donotrun']; ?></p>
   <p>&nbsp;</p>

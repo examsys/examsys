@@ -28,10 +28,10 @@ require $cfg_web_root . 'include/sidebar_menu.inc';
 $paperID = $_GET['paperID'];
 $max_screen = 0;
 
-$stmt = $mysqli->prepare("SELECT paper_title, moduleID, folder, paper_ownerID, moduleID, DATE_FORMAT(start_date,'%Y%m%d%H%i%S') AS start_date, DATE_FORMAT(end_date,'%Y%m%d%H%i%S') AS end_date, DATE_FORMAT(created,'%d/%m/%Y% %H:%i') AS created, MAX(screen) AS screen, fullscreen, MAX(display_pos) AS display_pos, paper_type, externals, internal_reviewers, labs, calendar_year, exam_duration, crypt_name FROM properties LEFT JOIN papers ON properties.property_id=papers.paper WHERE property_id=? GROUP BY paper_title");
+$stmt = $mysqli->prepare("SELECT paper_title, moduleID, folder, paper_ownerID, moduleID, DATE_FORMAT(start_date,'%Y%m%d%H%i%S') AS start_date, DATE_FORMAT(end_date,'%Y%m%d%H%i%S') AS end_date, DATE_FORMAT(created,'%d/%m/%Y% %H:%i') AS created, MAX(screen) AS screen, fullscreen, MAX(display_pos) AS display_pos, paper_type, externals, internal_reviewers, labs, calendar_year, exam_duration, crypt_name, display_question_mark FROM properties LEFT JOIN papers ON properties.property_id=papers.paper WHERE property_id=? GROUP BY paper_title");
 $stmt->bind_param('i', $paperID);
 $stmt->execute();
-$stmt->bind_result($paper_title, $paper_moduleID, $tmp_folder, $paper_ownerID, $tmp_module, $start_date, $end_date, $created, $max_screen, $fullscreen, $max_display_pos, $paper_type, $externals, $internal_reviewers, $labs, $session, $exam_duration, $crypt_name);
+$stmt->bind_result($paper_title, $paper_moduleID, $tmp_folder, $paper_ownerID, $tmp_module, $start_date, $end_date, $created, $max_screen, $fullscreen, $max_display_pos, $paper_type, $externals, $internal_reviewers, $labs, $session, $exam_duration, $crypt_name, $display_question_mark);
 while ($stmt->fetch()) {
   if (date("YmdHis", time()) >= $start_date and date("YmdHis", time()) <= $end_date) {
     $active_date = 1;
@@ -254,27 +254,34 @@ $stmt->close();
     }
   }
   
-  function showAssStatsMenu(e) {
+  function showAssStatsMenu(showMenu, e) {
     hideMenus();
-    document.getElementById('copy_submenu').style.display = 'none';
-    document.getElementById('stats_menu').style.display = 'block';
+    if (showMenu) {
+      document.getElementById('stats_menu').style.display = 'block';
+    } else {
+      document.getElementById('copy_submenu').style.display = 'none';
+      if (document.getElementById('stats_menu').style.display == 'none') {
+        document.getElementById('stats_menu').style.display = 'block';
+      } else {
+        document.getElementById('stats_menu').style.display = 'none';
+      }
+    }
     if (!e) var e = window.event;
     e.cancelBubble = true;
   }
   
-  function showCopyMenu(e) {
+  function showCopyMenu(showMenu, e) {
     hideMenus();
-    document.getElementById('stats_menu').style.display = 'none';
-    document.getElementById('copy_submenu').style.display = 'block';
-    if (!e) var e = window.event;
-    e.cancelBubble = true;
-  }
-  
-  function showChangeScreen(e) {
-    hideMenus();
-    document.getElementById('stats_menu').style.display = 'none';
-    document.getElementById('copy_submenu').style.display = 'none';
-    document.getElementById('change_screen_submenu').style.display = 'block';
+    if (showMenu) {
+      document.getElementById('copy_submenu').style.display = 'block';
+    } else {
+      document.getElementById('stats_menu').style.display = 'none';
+      if (document.getElementById('copy_submenu').style.display != 'block') {
+        document.getElementById('copy_submenu').style.display = 'block';
+      } else {
+        document.getElementById('copy_submenu').style.display = 'none';
+      }
+    }
     if (!e) var e = window.event;
     e.cancelBubble = true;
   }
@@ -288,7 +295,6 @@ $stmt->close();
 
 <div id="left-sidebar" class="sidebar">
 
-<br />
 <form name="PapersMenu" action="">
 <input type="hidden" name="questionNo" value="" />
 <input type="hidden" name="questionID" value="" />
@@ -319,11 +325,9 @@ $stmt->fetch();
 $stmt->close();
 
 ?>
-<table id="papertasks" cellpadding="0" cellspacing="0" border="0" width="185" style="margin-left:2px; font-size:100%">
-<tr><td style="font-weight:bold"><?php echo $string['papertasks']; ?></td></tr>
-<tr><td style="margin:4px">
-<?php
-  echo "<table cellpadding=\"3\" cellspacing=\"0\" border=\"0\" id=\"menu1\" style=\"margin-left:7px; font-size:90%; display:block\">\n";
+<div class="submenuheading" id="papertasks"><?php echo $string['papertasks']; ?></div>
+ <?php
+  echo "<table cellpadding=\"3\" cellspacing=\"0\" border=\"0\" id=\"menu1\" style=\"margin-left:9px; font-size:90%; display:block\">\n";
   if ($paper_type == '5') {      // Offline
     echo "<tr><td style=\"width:20px>3<img src=\"{$cfg_root_path}/artwork/small_play_grey.png\" width=\"16\" height=\"16\" alt=\"" . $string['testpreview'] . "\" border=\"0\" /></td><td class=\"greymenuitem\" style=\"width:166px\">" . $string['testpreview'] . "</td></tr>\n";
   } else {
@@ -352,22 +356,22 @@ $stmt->close();
       if ($p_id_count == 0) {
         echo "<tr><td><img src=\"{$cfg_root_path}/artwork/statistics_icon_grey.gif\" width=\"16\" height=\"16\" alt=\"" . $string['reports'] . "\" border=\"0\" /></td><td class=\"greymenuitem\"><span id=\"reports\">" . $string['reports'] . "</span></td></tr>\n";
       } else {
-        echo "<tr><td><img src=\"{$cfg_root_path}/artwork/statistics_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['reports'] . "\" border=\"0\" /></td><td class=\"menuitem\"><span id=\"reports\"><a onclick=\"showAssStatsMenu(event); return false;\" href=\"#\">" . $string['reports'] . "</a></span><img src=\"{$cfg_root_path}/artwork/submenu_arrow.png\" width=\"16\" height=\"16\" alt=\">\" border=\"0\" /></td></tr>\n";
+        echo "<tr><td><a onclick=\"showAssStatsMenu(false, event); return false;\" href=\"#\"><img src=\"{$cfg_root_path}/artwork/statistics_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['reports'] . "\" border=\"0\" /></a></td><td class=\"menuitem\"><span id=\"reports\"><a onclick=\"showAssStatsMenu(false, event); return false;\" href=\"#\">" . $string['reports'] . "</a></span><img src=\"{$cfg_root_path}/artwork/submenu_arrow.png\" width=\"16\" height=\"16\" alt=\">\" border=\"0\" /></td></tr>\n";
       }
       if (strpos($checklist,'mapping') !== false and $paper_type != '6') {
         echo "<tr><td><a href=\"{$cfg_root_path}/mapping/paper_mappings_by_session.php?paperID=$paperID&paper_title=$paper_title&sd=$start_date&ed=$end_date&module=" . $module . "&folder=" . $folder . "\"><img src=\"{$cfg_root_path}/artwork/curriculum_map_small.png\" width=\"16\" height=\"16\" alt=\"" . $string['mappedobjectives'] . "\" border=\"0\" /></a></td><td class=\"menuitem\"><a href=\"{$cfg_root_path}/mapping/paper_mappings_by_session.php?paperID=$paperID&paper_title=$paper_title&sd=$start_date&ed=$end_date&module=" . $module . "&folder=" . $folder . "\">" . $string['mappedobjectives'] . "</a></td></tr>\n";
       }
       if ($paper_type == '5') {
-        echo "<tr><td><a href=\"{$cfg_root_path}/import/spotter_marks.php?paperID=$paperID&module=" . $module . "&folder=" . $folder . "\"><img src=\"{$cfg_root_path}/artwork/import_csv_16.gif\" width=\"16\" height=\"16\" alt=\"" . $string['importmarks'] . "\" border=\"0\" /></a></td><td class=\"menuitem\"><a href=\"{$cfg_root_path}/import/spotter_marks.php?paperID=$paperID&module=" . $module . "&folder=" . $folder . "\">" . $string['importmarks'] . "</a></td></tr>\n";
+        echo "<tr><td><a href=\"{$cfg_root_path}/import/spotter_marks.php?paperID=$paperID&module=" . $module . "&folder=" . $folder . "\"><img src=\"{$cfg_root_path}/artwork/import_16.gif\" width=\"16\" height=\"16\" alt=\"" . $string['importmarks'] . "\" border=\"0\" /></a></td><td class=\"menuitem\"><a href=\"{$cfg_root_path}/import/spotter_marks.php?paperID=$paperID&module=" . $module . "&folder=" . $folder . "\">" . $string['importmarks'] . "</a></td></tr>\n";
       } elseif ($paper_type != '6') {
         if (strpos($checklist,'stdset') !== false) {
           echo "<tr><td><a href=\"{$cfg_root_path}/std_setting/index.php?paperID=$paperID&module=" . $module . "&folder=" . $folder . "\"><img src=\"{$cfg_root_path}/artwork/std_set_icon_16.gif\" width=\"16\" height=\"16\" alt=\"" . $string['standardssetting'] . "\" border=\"0\" /></a></td><td class=\"menuitem\"><a href=\"{$cfg_root_path}/std_setting/index.php?paperID=$paperID&module=" . $module . "&folder=" . $folder . "\">" . $string['standardssetting'] . "</a></td></tr>\n";
         }
       }
     } elseif ($paper_type == '3') {
-      echo "<tr><td><img src=\"{$cfg_root_path}/artwork/statistics_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['reports'] . "\" border=\"0\" /></td><td class=\"menuitem\"><span id=\"reports\"><a onclick=\"showAssStatsMenu(event); return false;\" href=\"#\">" . $string['reports'] . "</a></span><img src=\"{$cfg_root_path}/artwork/submenu_arrow.png\" width=\"16\" height=\"16\" alt=\">\" border=\"0\" /></td></tr>\n";
+      echo "<tr><td><img src=\"{$cfg_root_path}/artwork/statistics_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['reports'] . "\" border=\"0\" /></td><td class=\"menuitem\"><span id=\"reports\"><a onclick=\"showAssStatsMenu(false, event); return false;\" href=\"#\">" . $string['reports'] . "</a></span><img src=\"{$cfg_root_path}/artwork/submenu_arrow.png\" width=\"16\" height=\"16\" alt=\">\" border=\"0\" /></td></tr>\n";
     } elseif ($paper_type == '4') {
-      echo "<tr><td><img src=\"{$cfg_root_path}/artwork/statistics_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['reports'] . "\" border=\"0\" /></td><td class=\"menuitem\"><span id=\"reports\"><a onclick=\"showAssStatsMenu(event); return false;\" href=\"#\">" . $string['reports'] . "</a></span><img src=\"{$cfg_root_path}/artwork/submenu_arrow.png\" width=\"16\" height=\"16\" alt=\">\" border=\"0\" /></td></tr>\n";
+      echo "<tr><td><img src=\"{$cfg_root_path}/artwork/statistics_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['reports'] . "\" border=\"0\" /></td><td class=\"menuitem\"><span id=\"reports\"><a onclick=\"showAssStatsMenu(false, event); return false;\" href=\"#\">" . $string['reports'] . "</a></span><img src=\"{$cfg_root_path}/artwork/submenu_arrow.png\" width=\"16\" height=\"16\" alt=\">\" border=\"0\" /></td></tr>\n";
       echo "<tr><td><a href=\"{$cfg_root_path}/import/osce_marks.php?paperID=$paperID&module=" . $module . "&folder=" . $folder . "\"><img src=\"{$cfg_root_path}/artwork/import_16.gif\" width=\"16\" height=\"16\" alt=\"" . $string['importoscemarks'] . "\" border=\"0\" /></a></td><td class=\"menuitem\"><a href=\"{$cfg_root_path}/import/osce_marks.php?paperID=$paperID&module=" . $module . "&folder=" . $folder . "\">" . $string['importoscemarks'] . "</a></td></tr>\n";
       if (strpos($checklist,'mapping') !== false) {
         echo "<tr><td><a href=\"{$cfg_root_path}/mapping/paper_mappings_by_session.php?paperID=$paperID&paper_title=$paper_title&sd=$start_date&ed=$end_date&module=" . $module . "&folder=" . $folder . "\"><img src=\"{$cfg_root_path}/artwork/curriculum_map_small.png\" width=\"16\" height=\"16\" alt=\"" . $string['mappedobjectives'] . "\" border=\"0\" /></a></td><td class=\"menuitem\"><a href=\"{$cfg_root_path}/mapping/paper_mappings_by_session.php?paperID=$paperID&paper_title=$paper_title&sd=$start_date&ed=$end_date&module=" . $module . "&folder=" . $folder . "\">" . $string['mappedobjectives'] . "</a></td></tr>\n";
@@ -386,7 +390,7 @@ $stmt->close();
     }
   }
 ?>
-<tr><td><a onclick="showCopyMenu(event); return false;" href="#"><img src="<?php echo $cfg_root_path ?>/artwork/copy_icon.gif" width="16" height="16" alt="<?php echo $string['copypaper']; ?>" border="0" /></a></td><td class="menuitem"><span id="copy"><a onclick="showCopyMenu(event); return false;" href="#"><?php echo $string['copypaper']; ?></a></span><img src="<?php echo $cfg_root_path ?>/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
+<tr><td><a onclick="showCopyMenu(false, event); return false;" href="#"><img src="<?php echo $cfg_root_path ?>/artwork/copy_icon.gif" width="16" height="16" alt="<?php echo $string['copypaper']; ?>" border="0" /></a></td><td class="menuitem"><span id="copy"><a onclick="showCopyMenu(false, event); return false;" href="#"><?php echo $string['copypaper']; ?></a></span><img src="<?php echo $cfg_root_path ?>/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
 <?php
   if ($team_member == true and $summative_lock != 1) {
     echo '<tr><td><a href="#" onclick="deletePaper(); return false;"><img src="' . $cfg_root_path . '/artwork/delete_paper_16.gif" width="16" height="16" alt="' . $string['deletepaper'] . '" border="0" /></a></td><td class="menuitem"><a href="#" onclick="deletePaper(); return false;">' . $string['deletepaper'] . '</a></td></tr>';
@@ -408,42 +412,38 @@ $stmt->close();
 ?>
 <tr><td width="16"><img src="<?php echo $cfg_root_path ?>/artwork/ims_16.png" width="16" height="16" alt="<?php echo $string['qtiimportexport']; ?>" border="0" /></td><td class="menuitem"><span id="qti"><a href="#" onclick="hideAssStatsMenu(event); showMenu('popup6','papertasks','qti',myOptions6,myURLs6,event); return false;"><?php echo $string['qtiimportexport']; ?></a></span><img src="<?php echo $cfg_root_path ?>/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
 </table>
-</td></tr>
-</table>
 
 <br />
-<br />
 
-<table id="currentquestion" cellpadding="0" cellspacing="0" border="0" width="185" style="margin-left:2px; font-size:100%">
-<tr><td style="font-weight:bold"><?php echo $string['currentquestiontasks']; ?></td></tr>
-<tr><td style="margin:4px">
+<div class="submenuheading" id="currentquestion"><?php echo $string['currentquestiontasks']; ?></div>
 
-<table style="margin-left:7px; display:block; font-size:90%" cellpadding="3" cellspacing="0" border="0" id="menu2a">
-<tr><td><img src="<?php echo $cfg_root_path ?>/artwork/edit_grey.png" width="16" height="16" alt="<?php echo $string['editquestion']; ?>" /></td><td class="greymenuitem"><?php echo $string['editquestion']; ?></td></tr>
-<tr><td><img src="<?php echo $cfg_root_path ?>/artwork/information_icon_grey.gif" width="16" height="16" alt="<?php echo $string['information']; ?>" /></td><td class="greymenuitem"><?php echo $string['information']; ?></td></tr>
-<tr><td><img src="<?php echo $cfg_root_path ?>/artwork/copy_icon_grey.gif" width="16" height="16" alt="<?php echo $string['copyontopaperx']; ?>" /></td><td class="greymenuitem"><?php echo $string['copyontopaperx']; ?></td></tr>
-<tr><td><img src="<?php echo $cfg_root_path ?>/artwork/link_grey.png" width="16" height="16" alt="Link 2 Paper" /></td><td class="greymenuitem"><?php echo $string['linktopaper']; ?></td></tr>
-<tr><td><img src="<?php echo $cfg_root_path ?>/artwork/red_cross_grey.png" width="16" height="16" alt="<?php echo $string['removefrompaper']; ?>" /></td><td class="greymenuitem"><?php echo $string['removefrompaper']; ?></td></tr>
+<table style="margin-left:9px; display:block; font-size:90%" cellpadding="3" cellspacing="0" border="0" id="menu2a">
+<tr><td class="ico"><img src="<?php echo $cfg_root_path ?>/artwork/edit_grey.png" width="16" height="16" alt="<?php echo $string['editquestion']; ?>" /></td><td class="greymenuitem"><?php echo $string['editquestion']; ?></td></tr>
+<tr><td class="ico"><img src="<?php echo $cfg_root_path ?>/artwork/information_icon_grey.gif" width="16" height="16" alt="<?php echo $string['information']; ?>" /></td><td class="greymenuitem"><?php echo $string['information']; ?></td></tr>
+<tr><td class="ico"><img src="<?php echo $cfg_root_path ?>/artwork/copy_icon_grey.gif" width="16" height="16" alt="<?php echo $string['copyontopaperx']; ?>" /></td><td class="greymenuitem"><?php echo $string['copyontopaperx']; ?></td></tr>
+<tr><td class="ico"><img src="<?php echo $cfg_root_path ?>/artwork/link_grey.png" width="16" height="16" alt="Link 2 Paper" /></td><td class="greymenuitem"><?php echo $string['linktopaper']; ?></td></tr>
+<tr><td class="ico"><img src="<?php echo $cfg_root_path ?>/artwork/red_cross_grey.png" width="16" height="16" alt="<?php echo $string['removefrompaper']; ?>" /></td><td class="greymenuitem"><?php echo $string['removefrompaper']; ?></td></tr>
 </table>
 
-<table style="margin-left:7px; display:none; font-size:90%" cellpadding="3" cellspacing="0" border="0" id="menu2b">
-<tr><td><img style="cursor:hand" onclick="editQuestion(); return false;" src="<?php echo $cfg_root_path ?>/artwork/edit.png" width="16" height="16" alt="<?php echo $string['editquestion']; ?>" /></td><td class="menuitem"><a id="edit" onclick="editQuestion(); return false;" href="#"><?php echo $string['editquestion']; ?></a></td></tr>
-<tr><td><img style="cursor:hand" onclick="questionInfo(); return false;" src="<?php echo $cfg_root_path ?>/artwork/information_icon.gif" width="16" height="16" alt="<?php echo $string['information']; ?>" /></td><td class="menuitem"><a id="information" href="#" onclick="questionInfo(); return false;"><?php echo $string['information']; ?></a></td></tr>
-<tr><td><img style="cursor:hand" onclick="copyToPaper(); return false;" src="<?php echo $cfg_root_path ?>/artwork/copy_icon.gif" width="16" height="16" alt="<?php echo $string['copyontopaperx']; ?>" /></td><td class="menuitem"><a id="copy" href="#" onclick="copyToPaper(); return false;"><?php echo $string['copyontopaperx']; ?></a></td></tr>
-<tr><td><img style="cursor:hand" onclick="linkToPaper(); return false;" src="<?php echo $cfg_root_path ?>/artwork/link.png" width="16" height="16" alt="Link 2 Paper" border="0" /></td><td class="menuitem"><a id="link" href="#" onclick="linkToPaper(); return false;"><?php echo $string['linktopaper']; ?></a></td></tr>
-<tr><td><img style="cursor:hand" onclick="deleteQuestion(); return false;" src="<?php echo $cfg_root_path ?>/artwork/red_cross.png" width="16" height="16" alt="<?php echo $string['removefrompaper']; ?>" /></td><td class="menuitem"><a id="delete" href="#" onclick="deleteQuestion(); return false;"><?php echo $string['removefrompaper']; ?></a></td></tr>
+<table style="margin-left:9px; font-size:90%" cellpadding="3" cellspacing="0" border="0" id="menu2b">
+<tr><td class="ico"><a id="edit" onclick="editQuestion(); return false;" href="#"><img style="cursor:hand" onclick="editQuestion(); return false;" src="<?php echo $cfg_root_path ?>/artwork/edit.png" width="16" height="16" alt="<?php echo $string['editquestion']; ?>" /></a></td><td class="menuitem"><a id="edit" onclick="editQuestion(); return false;" href="#"><?php echo $string['editquestion']; ?></a></td></tr>
+<tr><td class="ico"><a id="information" href="#" onclick="questionInfo(); return false;"><img style="cursor:hand" onclick="questionInfo(); return false;" src="<?php echo $cfg_root_path ?>/artwork/information_icon.gif" width="16" height="16" alt="<?php echo $string['information']; ?>" /></a></td><td class="menuitem"><a id="information" href="#" onclick="questionInfo(); return false;"><?php echo $string['information']; ?></a></td></tr>
+<tr><td class="ico"><a id="copy" href="#" onclick="copyToPaper(); return false;"><img style="cursor:hand" onclick="copyToPaper(); return false;" src="<?php echo $cfg_root_path ?>/artwork/copy_icon.gif" width="16" height="16" alt="<?php echo $string['copyontopaperx']; ?>" /></a></td><td class="menuitem"><a id="copy" href="#" onclick="copyToPaper(); return false;"><?php echo $string['copyontopaperx']; ?></a></td></tr>
+<tr><td class="ico"><a id="link" href="#" onclick="linkToPaper(); return false;"><img style="cursor:hand" onclick="linkToPaper(); return false;" src="<?php echo $cfg_root_path ?>/artwork/link.png" width="16" height="16" alt="Link 2 Paper" border="0" /></a></td><td class="menuitem"><a id="link" href="#" onclick="linkToPaper(); return false;"><?php echo $string['linktopaper']; ?></a></td></tr>
+<tr><td class="ico"><a id="delete" href="#" onclick="deleteQuestion(); return false;"><img style="cursor:hand" onclick="deleteQuestion(); return false;" src="<?php echo $cfg_root_path ?>/artwork/red_cross.png" width="16" height="16" alt="<?php echo $string['removefrompaper']; ?>" /></a></td><td class="menuitem"><a id="delete" href="#" onclick="deleteQuestion(); return false;"><?php echo $string['removefrompaper']; ?></a></td></tr>
 </table>
 
-<table style="margin-left:7px; display:none; font-size:90%" cellpadding="3" cellspacing="0" border="0" id="menu2c">
-<tr><td><img style="cursor:hand" onclick="editQuestion(); return false;" src="<?php echo $cfg_root_path ?>/artwork/edit.png" width="16" height="16" alt="<?php echo $string['editquestion']; ?>" /></td><td class="menuitem"><a id="edit" onclick="editQuestion(); return false;" href="#"><?php echo $string['editquestion']; ?></a></td></tr>
-<tr><td><img style="cursor:hand" onclick="questionInfo(); return false;" src="<?php echo $cfg_root_path ?>/artwork/information_icon.gif" width="16" height="16" alt="<?php echo $string['information']; ?>" /></td><td class="menuitem"><a id="information" href="#" onclick="questionInfo(); return false;"><?php echo $string['information']; ?></a></td></tr>
-<tr><td><img style="cursor:hand" onclick="copyToPaper(); return false;" src="<?php echo $cfg_root_path ?>/artwork/copy_icon.gif" width="16" height="16" alt="<?php echo $string['copyontopaperx']; ?>" /></td><td class="menuitem"><a id="copy" href="#" onclick="copyToPaper(); return false;"><?php echo $string['copyontopaperx']; ?></a></td></tr>
-<tr><td><img style="cursor:hand" onclick="linkToPaper(); return false;" src="<?php echo $cfg_root_path ?>/artwork/link.png" width="16" height="16" alt="Link 2 Paper" border="0" /></td><td class="menuitem"><a id="link" href="#" onclick="linkToPaper(); return false;"><?php echo $string['linktopaper']; ?></a></td></tr>
-<tr><td><img src="<?php echo $cfg_root_path ?>/artwork/red_cross_grey.png" width="16" height="16" alt="<?php echo $string['removefrompaper']; ?>" /></td><td class="greymenuitem"><?php echo $string['removefrompaper']; ?></td></tr>
+<table style="margin-left:9px; font-size:90%" cellpadding="3" cellspacing="0" border="0" id="menu2c">
+<tr><td class="ico"><img style="cursor:hand" onclick="editQuestion(); return false;" src="<?php echo $cfg_root_path ?>/artwork/edit.png" width="16" height="16" alt="<?php echo $string['editquestion']; ?>" /></td><td class="menuitem"><a id="edit" onclick="editQuestion(); return false;" href="#"><?php echo $string['editquestion']; ?></a></td></tr>
+<tr><td class="ico"><img style="cursor:hand" onclick="questionInfo(); return false;" src="<?php echo $cfg_root_path ?>/artwork/information_icon.gif" width="16" height="16" alt="<?php echo $string['information']; ?>" /></td><td class="menuitem"><a id="information" href="#" onclick="questionInfo(); return false;"><?php echo $string['information']; ?></a></td></tr>
+<tr><td class="ico"><img style="cursor:hand" onclick="copyToPaper(); return false;" src="<?php echo $cfg_root_path ?>/artwork/copy_icon.gif" width="16" height="16" alt="<?php echo $string['copyontopaperx']; ?>" /></td><td class="menuitem"><a id="copy" href="#" onclick="copyToPaper(); return false;"><?php echo $string['copyontopaperx']; ?></a></td></tr>
+<tr><td class="ico"><img style="cursor:hand" onclick="linkToPaper(); return false;" src="<?php echo $cfg_root_path ?>/artwork/link.png" width="16" height="16" alt="Link 2 Paper" border="0" /></td><td class="menuitem"><a id="link" href="#" onclick="linkToPaper(); return false;"><?php echo $string['linktopaper']; ?></a></td></tr>
+<tr><td class="ico"><img src="<?php echo $cfg_root_path ?>/artwork/red_cross_grey.png" width="16" height="16" alt="<?php echo $string['removefrompaper']; ?>" /></td><td class="greymenuitem"><?php echo $string['removefrompaper']; ?></td></tr>
 </table>
 
-</td></tr>
-</table>
+<!--[if lt IE 9]>
+<div class="iefixdiv"></div><div class="iefixdiv"></div>
+<![endif]-->
 
 <?php
 if ($summative_lock == 1) {
@@ -467,38 +467,28 @@ if ($summative_lock == 1) {
   <li id="delete_break" class="greymenuitem"><a href="#">Delete screen break</a></li>
 <?php
   }
-?>
-</ul>
-<?php
+  echo '</ul>';
 }
 ?>
-<br />
-<br />
 
-<table id="banktasks" cellpadding="0" cellspacing="0" border="0" width="185" style="margin-left:2px; font-size:100%">
-<tr><td style="font-weight:bold"><?php echo $string['questionbanktasks']; ?></td></tr>
-<tr><td>
-<table cellpadding="3" cellspacing="0" border="0" style="margin-left:7px; font-size:90%">
-<tr><td width="16"><img src="<?php echo $cfg_root_path ?>/artwork/question_list_icon.gif" width="16" height="16" alt="<?php echo $string['questionsbytype']; ?>" border="0" /></td><td class="menuitem"><span id="type"><a href="#" onclick="hideAssStatsMenu(event); showMenu('popup1','banktasks','type',myOptions1,myURLs1,event); return false;"><?php echo $string['questionsbytype']; ?></a></span><img src="<?php echo $cfg_root_path ?>/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
-<tr><td><img src="<?php echo $cfg_root_path ?>/artwork/question_list_icon.gif" width="16" height="16" alt="<?php echo $string['questionsbyteam']; ?>" border="0" /></td><td class="menuitem"><span id="team"><a href="#" onclick="hideAssStatsMenu(event); showMenu('popup2','banktasks','team',myOptions2,myURLs2,event); return false;"><?php echo $string['questionsbyteam']; ?></a></span><img src="<?php echo $cfg_root_path ?>/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
-<tr><td><img src="<?php echo $cfg_root_path ?>/artwork/question_list_icon.gif" width="16" height="16" alt="<?php echo $string['questionsbykeyword']; ?>" border="0" /></td><td class="menuitem"><span id="keyword"><a href="#" onclick="hideAssStatsMenu(event); showMenu('popup3','banktasks','keyword',myOptions3,myURLs3,event); return false;"><?php echo $string['questionsbykeyword']; ?></a></span><img src="<?php echo $cfg_root_path ?>/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
-<tr><td><img src="<?php echo $cfg_root_path ?>/artwork/xmag.png" width="16" height="16" alt="<?php echo $string['search']; ?>" border="0" /></td><td class="menuitem"><span id="search"><a href="#" onclick="hideAssStatsMenu(event); showMenu('popup4','banktasks','search',myOptions4,myURLs4,event); return false;"><?php echo $string['search']; ?></a></span><img src="<?php echo $cfg_root_path ?>/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
-<tr><td><img src="<?php echo $cfg_root_path ?>/artwork/new_question_menu_icon.gif" width="16" height="16" alt="<?php echo $string['createnewquestion']; ?>" border="0" /></td><td class="menuitem"><span id="newquestion"><a href="#" onclick="hideAssStatsMenu(event); showMenu('popup5','banktasks','newquestion',myOptions5,myURLs5,event); return false;"><?php echo $string['createnewquestion']; ?></a></span><img src="<?php echo $cfg_root_path ?>/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
-</table>
+<div class="submenuheading" id="banktasks"><?php echo $string['questionbanktasks']; ?></div>
 
-</td></tr>
+<table cellpadding="3" cellspacing="0" border="0" style="margin-left:9px; font-size:90%">
+<tr><td class="ico"><img src="<?php echo $cfg_root_path ?>/artwork/question_list_icon.gif" width="16" height="16" alt="<?php echo $string['questionsbytype']; ?>" border="0" /></td><td class="menuitem"><span id="type"><a href="#" onclick="hideAssStatsMenu(event); showMenu('popup1','banktasks','type',myOptions1,myURLs1,event); return false;"><?php echo $string['questionsbytype']; ?></a></span><img src="<?php echo $cfg_root_path ?>/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
+<tr><td class="ico"><img src="<?php echo $cfg_root_path ?>/artwork/question_list_icon.gif" width="16" height="16" alt="<?php echo $string['questionsbyteam']; ?>" border="0" /></td><td class="menuitem"><span id="team"><a href="#" onclick="hideAssStatsMenu(event); showMenu('popup2','banktasks','team',myOptions2,myURLs2,event); return false;"><?php echo $string['questionsbyteam']; ?></a></span><img src="<?php echo $cfg_root_path ?>/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
+<tr><td class="ico"><img src="<?php echo $cfg_root_path ?>/artwork/question_list_icon.gif" width="16" height="16" alt="<?php echo $string['questionsbykeyword']; ?>" border="0" /></td><td class="menuitem"><span id="keyword"><a href="#" onclick="hideAssStatsMenu(event); showMenu('popup3','banktasks','keyword',myOptions3,myURLs3,event); return false;"><?php echo $string['questionsbykeyword']; ?></a></span><img src="<?php echo $cfg_root_path ?>/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
+<tr><td class="ico"><img src="<?php echo $cfg_root_path ?>/artwork/xmag.png" width="16" height="16" alt="<?php echo $string['search']; ?>" border="0" /></td><td class="menuitem"><span id="search"><a href="#" onclick="hideAssStatsMenu(event); showMenu('popup4','banktasks','search',myOptions4,myURLs4,event); return false;"><?php echo $string['search']; ?></a></span><img src="<?php echo $cfg_root_path ?>/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
+<tr><td class="ico"><img src="<?php echo $cfg_root_path ?>/artwork/new_question_menu_icon.gif" width="16" height="16" alt="<?php echo $string['createnewquestion']; ?>" border="0" /></td><td class="menuitem"><span id="newquestion"><a href="#" onclick="hideAssStatsMenu(event); showMenu('popup5','banktasks','newquestion',myOptions5,myURLs5,event); return false;"><?php echo $string['createnewquestion']; ?></a></span><img src="<?php echo $cfg_root_path ?>/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
 </table>
 
 <?php
 if ($paper_type == '2') {
 ?>
 <br />
-<br />
 
-<table cellpadding="0" cellspacing="0" border="0" width="185" style="margin-left:2px; font-size:100%">
-<tr><td style="font-weight:bold"><?php echo $string['summativechecklist']; ?></td></tr>
-<tr><td>
-<table cellpadding="2" cellspacing="0" border="0" width="100%" style="margin-left:7px; padding-bottom:2px; font-size:90%">
+<div class="submenuheading"><?php echo $string['summativechecklist']; ?></div>
+
+<table cellpadding="2" cellspacing="0" border="0" width="185" style="margin-left:9px; padding-bottom:2px; font-size:90%">
 
 <?php
   // Session
@@ -547,7 +537,7 @@ if ($paper_type == '2') {
       $stmt->bind_param('i', $_GET['paperID']);
       $stmt->execute();
       $stmt->bind_result($review_records, $reviewer);
-      while ($row = $stmt->fetch()) {
+      while ($stmt->fetch()) {
         $internal_array[$reviewer] = 1;
       }
       $stmt->close();
@@ -561,9 +551,9 @@ if ($paper_type == '2') {
         } else {
           $tmp_color = '#F27000';
         }
-        echo "<tr><td style=\"width:18px\"><img src=\"{$cfg_root_path}/artwork/small_yellow_warning_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['warning'] . "\" border=\"0\" /></td><td><a style=\"color:black\" href=\"{$cfg_root_path}/reports/review_comments.php?type=internal&paperID=" . $_GET['paperID'] . "&startdate=&enddate=&repcourse=%&repyear=%&sortby=name&module=" . $module . "&folder=" . $folder . "&percent=100&absent=0&direction=asc\">" . $string['peerreviewes'] . "</a></td><td style=\"color:$tmp_color\"><strong>$reviews_complete/" . count($internal_array) . "</strong></td></tr>\n";
+        echo "<tr><td style=\"width:18px\"><img src=\"{$cfg_root_path}/artwork/small_yellow_warning_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['warning'] . "\" border=\"0\" /></td><td><a class=\"checklist\" href=\"{$cfg_root_path}/reports/review_comments.php?type=internal&paperID=" . $_GET['paperID'] . "&startdate=&enddate=&repcourse=%&repyear=%&sortby=name&module=" . $module . "&folder=" . $folder . "&percent=100&absent=0&direction=asc\">" . $string['peerreviewes'] . "</a></td><td style=\"color:$tmp_color\"><strong>$reviews_complete/" . count($internal_array) . "</strong></td></tr>\n";
       } else {
-        echo "<tr><td style=\"width:18px\"><img src=\"{$cfg_root_path}/artwork/bullet_icon.gif\" width=\"16\" height=\"16\" alt=\".\" border=\"0\" /></td><td><a style=\"color:black\" href=\"{$cfg_root_path}/reports/review_comments.php?type=internal&paperID=" . $_GET['paperID'] . "&startdate=&enddate=&repcourse=%&repyear=%&sortby=name&module=" . $module . "&folder=" . $folder . "&percent=100&absent=0&direction=asc\">" . $string['peerreviewes'] . "</a></td><td style=\"color:#008000\"><strong>" . $string['ok'] . "</strong></td></tr>\n";
+        echo "<tr><td style=\"width:18px\"><img src=\"{$cfg_root_path}/artwork/bullet_icon.gif\" width=\"16\" height=\"16\" alt=\".\" border=\"0\" /></td><td><a class=\"checklist\" href=\"{$cfg_root_path}/reports/review_comments.php?type=internal&paperID=" . $_GET['paperID'] . "&startdate=&enddate=&repcourse=%&repyear=%&sortby=name&module=" . $module . "&folder=" . $folder . "&percent=100&absent=0&direction=asc\">" . $string['peerreviewes'] . "</a></td><td style=\"color:#008000\"><strong>" . $string['ok'] . "</strong></td></tr>\n";
       }
     }
   }
@@ -584,7 +574,7 @@ if ($paper_type == '2') {
       $stmt->bind_param('i', $_GET['paperID']);
       $stmt->execute();
       $stmt->bind_result($review_records, $reviewer);
-      while ($row = $stmt->fetch()) {
+      while ($stmt->fetch()) {
         if (isset($external_array[$reviewer]) AND $external_array[$reviewer] === 0) {
           $reviews_complete++;
         }
@@ -597,9 +587,9 @@ if ($paper_type == '2') {
 		} else {
 		  $tmp_color = '#F27000';
 		}
-        echo "<tr><td><img src=\"{$cfg_root_path}/artwork/small_yellow_warning_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['warning'] . "\" border=\"0\" /></td><td><a style=\"color:black\" href=\"{$cfg_root_path}/reports/review_comments.php?type=external&paperID=" . $_GET['paperID'] . "&startdate=&enddate=&repcourse=%&repyear=%&sortby=name&module=" . $module . "&folder=" . $folder . "&percent=100&absent=0&direction=asc\">" . $string['externalreviews'] . "</a></td><td style=\"color:$tmp_color\"><strong>$reviews_complete/" . count($external_array) . "</strong></td></tr>\n";
+        echo "<tr><td><img src=\"{$cfg_root_path}/artwork/small_yellow_warning_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['warning'] . "\" border=\"0\" /></td><td><a class=\"checklist\" href=\"{$cfg_root_path}/reports/review_comments.php?type=external&paperID=" . $_GET['paperID'] . "&startdate=&enddate=&repcourse=%&repyear=%&sortby=name&module=" . $module . "&folder=" . $folder . "&percent=100&absent=0&direction=asc\">" . $string['externalreviews'] . "</a></td><td style=\"color:$tmp_color\"><strong>$reviews_complete/" . count($external_array) . "</strong></td></tr>\n";
       } else {
-        echo "<tr><td><img src=\"{$cfg_root_path}/artwork/bullet_icon.gif\" width=\"16\" height=\"16\" alt=\".\" border=\"0\" /></td><td><a style=\"color:black\" href=\"{$cfg_root_path}/reports/review_comments.php?type=external&paperID=" . $_GET['paperID'] . "&startdate=&enddate=&repcourse=%&repyear=%&sortby=name&module=" . $module . "&folder=" . $folder . "&percent=100&absent=0&direction=asc\">" . $string['externalreviews'] . "</a></td><td style=\"color:#008000\"><strong>" . $string['ok'] . "</strong></td></tr>\n";
+        echo "<tr><td><img src=\"{$cfg_root_path}/artwork/bullet_icon.gif\" width=\"16\" height=\"16\" alt=\".\" border=\"0\" /></td><td><a class=\"checklist\" href=\"{$cfg_root_path}/reports/review_comments.php?type=external&paperID=" . $_GET['paperID'] . "&startdate=&enddate=&repcourse=%&repyear=%&sortby=name&module=" . $module . "&folder=" . $folder . "&percent=100&absent=0&direction=asc\">" . $string['externalreviews'] . "</a></td><td style=\"color:#008000\"><strong>" . $string['ok'] . "</strong></td></tr>\n";
       }
     }
   }
@@ -621,9 +611,9 @@ if ($paper_type == '2') {
     }
     $stmt->close();
     if ($standards_set == 1) {
-      echo "<tr><td><img src=\"{$cfg_root_path}/artwork/bullet_icon.gif\" width=\"16\" height=\"16\" alt=\".\" border=\"0\" /></td><td><a style=\"color:black\" href=\"{$cfg_root_path}/std_setting/index.php?paperID=" . $_GET['paperID'] . "&module=" . $module . "&folder=" . $folder . "\">" . $string['standardsset'] . "</a></td>";
+      echo "<tr><td><img src=\"{$cfg_root_path}/artwork/bullet_icon.gif\" width=\"16\" height=\"16\" alt=\".\" border=\"0\" /></td><td><a class=\"checklist\" href=\"{$cfg_root_path}/std_setting/index.php?paperID=" . $_GET['paperID'] . "&module=" . $module . "&folder=" . $folder . "\">" . $string['standardsset'] . "</a></td>";
     } else {
-      echo "<tr><td><img src=\"{$cfg_root_path}/artwork/small_yellow_warning_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['warning'] . "\" border=\"0\" /></td><td><a style=\"color:black\" href=\"{$cfg_root_path}/std_setting/index.php?paperID=" . $_GET['paperID'] . "&module=" . $module . "&folder=" . $folder . "\">" . $string['standardsset'] . "</a></td>";
+      echo "<tr><td><img src=\"{$cfg_root_path}/artwork/small_yellow_warning_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['warning'] . "\" border=\"0\" /></td><td><a class=\"checklist\" href=\"{$cfg_root_path}/std_setting/index.php?paperID=" . $_GET['paperID'] . "&module=" . $module . "&folder=" . $folder . "\">" . $string['standardsset'] . "</a></td>";
     }
 	
     if ($standards_set == 1) {
@@ -654,16 +644,13 @@ if ($paper_type == '2') {
 	  } else {
       $tmp_color = '#F27000';
 	  }
-      echo "<tr><td><img src=\"{$cfg_root_path}/artwork/small_yellow_warning_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['warning'] . "\" border=\"0\" /></td><td><a style=\"color:black\" href=\"{$cfg_root_path}/mapping/paper_mappings_by_question.php?paperID=" . $_GET['paperID'] . "&folder=" . $folder . "&module=" . $module . "\">" . $string['mapping'] . "</a></td><td style=\"color:$tmp_color\"><strong>$mappings_complete/" . count($question_list) . "</strong></td></tr>\n";
+      echo "<tr><td><img src=\"{$cfg_root_path}/artwork/small_yellow_warning_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['warning'] . "\" border=\"0\" /></td><td><a class=\"checklist\" href=\"{$cfg_root_path}/mapping/paper_mappings_by_question.php?paperID=" . $_GET['paperID'] . "&folder=" . $folder . "&module=" . $module . "\">" . $string['mapping'] . "</a></td><td style=\"color:$tmp_color\"><strong>$mappings_complete/" . count($question_list) . "</strong></td></tr>\n";
     } else {
-      echo "<tr><td><img src=\"{$cfg_root_path}/artwork/bullet_icon.gif\" width=\"16\" height=\"16\" alt=\".\" border=\"0\" /></td><td><a style=\"color:black\" href=\"{$cfg_root_path}/mapping/paper_mappings_by_question.php?paperID=" . $_GET['paperID'] . "&folder=" . $folder . "&module=" . $module . "\">" . $string['mapping'] . "</a></td><td style=\"color:#008000\"><strong>" . $string['ok'] . "</strong></td></tr>\n";
+      echo "<tr><td><img src=\"{$cfg_root_path}/artwork/bullet_icon.gif\" width=\"16\" height=\"16\" alt=\".\" border=\"0\" /></td><td><a class=\"checklist\" href=\"{$cfg_root_path}/mapping/paper_mappings_by_question.php?paperID=" . $_GET['paperID'] . "&folder=" . $folder . "&module=" . $module . "\">" . $string['mapping'] . "</a></td><td style=\"color:#008000\"><strong>" . $string['ok'] . "</strong></td></tr>\n";
     }
   }
 }
 ?>
-</table>
-
-</td></tr>
 </table>
 
 </td></tr>

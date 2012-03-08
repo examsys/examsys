@@ -9,13 +9,22 @@
             var mee_baseurl = "../../../../../../tools/mee/mee/";
        </script>
 	    <script src="../../../../../../tools/mee/mee/js/mee_src.js"></script>
-       <tiale></title>
+       <title></title>
 	</head>
-    <style>html {overflow: hidden;}</style>
+    <style>
+      html {overflow: hidden;}
+    </style>
 	<body style="margin: 0px; padding: 0px">
-        <div id='equation'></div>
+        <div id='equation' style="display:block"></div>
 	</body>
     <script>
+      function setupFrame() {
+          
+          var eqn = $('#equation');
+          if (window.parent && window.parent.parent && window.parent.parent.updateMEE)
+              window.parent.parent.updateMEE(window, eqn.width(), eqn.height(), false);
+        }
+        
       $(document).ready(function () {
         var no_auto_mee = 1;
         var data = window.location.search;
@@ -35,30 +44,13 @@
         $('#equation').append(tag);
 
         $().ready(function () {
-            setupFrame();
+            setTimeout("setupFrame()", 500);
         });
 
         $('#equation').click(function () {
             if (window.parent && window.parent.parent && window.parent.parent.clickMEEiFrame)
                 window.parent.parent.clickMEEiFrame(window);
         });
-        function setupFrame() {
-            if (typeof MEE == "undefined") {
-                setTimeout("setupFrame()", 500);
-                return;
-            }
-            if ($('#eqn_inner').attr('title'))
-                return;
-
-            //console.log("Iframe Render");
-            var meeeqn = new MEE.Display($('#eqn_inner')[0], data.inline);
-            meeeqn.Align();
-            if (data.inline)
-                $('#equation').css('padding-top', $('#eqn_inner').css('padding-top'));
-
-            if (window.parent && window.parent.parent && window.parent.parent.updateMEE)
-                window.parent.parent.updateMEE(window, meeeqn.elementset.align, data.inline);
-        }
 
      });
     </script>

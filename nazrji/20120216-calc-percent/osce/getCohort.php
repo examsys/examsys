@@ -23,7 +23,7 @@
 */
 
   require '../include/staff_auth.inc';
-  header ("Content-Type:text/xml");
+  header ("Content-Type:text/xml; charset=UTF-8");
 
   $result = $mysqli->prepare("SELECT paper_title, moduleID, calendar_year FROM properties WHERE property_id=? LIMIT 1");
   $result->bind_param('i', $_GET['id']);

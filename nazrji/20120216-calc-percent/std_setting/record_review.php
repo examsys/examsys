@@ -295,16 +295,19 @@
           $total_parts++;
           break;
         case 'textbox':
-          for ($mark_part = $marks_correct; $mark_part > 0; $mark_part--) {
-            $qid = 'std' . $question_no . '_' . $mark_part;
-            if ($rating == '') {
-              $rating = $_POST[$qid];
-            } else {
-              $rating .= ',' . $_POST[$qid];
+          // NOTE: Cannot standards set with Ebel method.
+          if ($tmp_method == 'Modified Angoff') {
+            for ($mark_part = $marks_correct; $mark_part > 0; $mark_part--) {
+              $qid = 'std' . $question_no . '_' . $mark_part;
+              if ($rating == '') {
+                $rating = $_POST[$qid];
+              } else {
+                $rating .= ',' . $_POST[$qid];
+              }
+              $total_rating += $_POST["$qid"];
+              if ($_POST["$qid"] != '') $last_question = $question_no;
+              $total_parts++;
             }
-            if ($tmp_method == 'Modified Angoff') $total_rating += $_POST["$qid"];
-            if ($_POST["$qid"] != '') $last_question = $question_no;
-            $total_parts++;
           }
           break;
         case 'blank':

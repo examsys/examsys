@@ -34,21 +34,22 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title><?php echo $string['loadstudents'] . " $cfg_install_type"; ?></title>
-<link rel="stylesheet" type="text/css" href="../css/submenu.css" />
-<script language="JavaScript">
-  function updateMsg() {
-    document.getElementById('msg').innerHTML = '<?php echo $string['finished']; ?>';
-  }
-</script>
-<script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
-<script type="text/javascript" src="../js/jquery.validate.min.js"></script>
-<script type="text/javascript">
-$(function () { $('#import_form').validate(); });
-</script>
-<style type="text/css">
-label.error {display:block; color:#f00}
-</style>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title><?php echo $string['loadstudents'] . " $cfg_install_type"; ?></title>
+  <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
+  <script type="text/javascript">
+    function updateMsg() {
+      document.getElementById('msg').innerHTML = '<?php echo $string['finished']; ?>';
+    }
+  </script>
+  <script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
+  <script type="text/javascript" src="../js/jquery.validate.min.js"></script>
+  <script type="text/javascript">
+  $(function () { $('#import_form').validate(); });
+  </script>
+  <style type="text/css">
+  label.error {display:block; color:#f00}
+  </style>
 </head>
 
 <?php

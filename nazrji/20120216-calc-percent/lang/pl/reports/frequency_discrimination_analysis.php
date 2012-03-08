@@ -1,9 +1,10 @@
 <?php
+$string['frequencydiscrimination'] = 'Analiza częstości i różnicowania'; 
 $string['reporttitle'] = 'Raport analizy częstości i różnicowania (U-L)';
 $string['totalcandidatenumber'] = 'Całkowita liczba kandydatów';
 $string['groupsizes'] = 'Górne/dolne rozmiary grup';
 $string['pergroup'] = 'na grupę';
-$string['boldstems'] = 'ważne odgałęzienia';//1Bold stems??
+$string['boldstems'] = 'ważne opcje';//1Bold stems??
 $string['correctanswers'] = 'reprezentuje poprawną odpowiedź (odpowiedzi)';
 $string['p_definition'] = 'trudność elementu (proporocje studentów odpowiadających poprawnie)';
 $string['d_definition'] = 'moc różnicująca';

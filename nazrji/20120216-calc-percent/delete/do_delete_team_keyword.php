@@ -39,16 +39,18 @@ $result->bind_param('i', $_POST['keywordID']);
 $result->execute();  
 $result->close();
 ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Keyword Deleted</title>
-<script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
-<script type="text/javascript">
-  $(function () {
-    window.opener.location.href = '<?php echo $cfg_root_path ?>/folder/list_keywords.php?module=<?php echo $_POST['module']; ?>';
-    self.close();
-  });
-</script>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Keyword Deleted</title>
+  <script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
+  <script type="text/javascript">
+    $(function () {
+      window.opener.location.href = '<?php echo $cfg_root_path ?>/folder/list_keywords.php?module=<?php echo $_POST['module']; ?>';
+      self.close();
+    });
+  </script>
 </head>
 
 <body style="margin:0px; background-color:#EEEEEE; font-family:Arial,sans-serif; font-size:80%; text-align:justifed">

@@ -66,14 +66,15 @@ function getCohortData($mysqli, $moduleID, $startdate, $enddate, $repcourse, $re
   $student_no = 0;
   $student_list = '';
   
-  //only take the required number of users if $percent is not 100%
-  $user_limit = ($percent != 100) ? floor($user_total * ($percent/100)) : $user_total;
-  
   $result = $mysqli->prepare($marks_query);
   $result->execute();
   $result->store_result();
   $result->bind_result($tmp_userID, $total_mark);
   $user_total = $result->num_rows;
+  
+  //only take the required number of users if $percent is not 100%
+  $user_limit = ($percent != 100) ? floor($user_total * ($percent/100)) : $user_total;
+  
   while ($result->fetch() and $student_no <= $user_limit) {
     if ($student_list == '') {
       $student_list = "'$tmp_userID'";

@@ -24,13 +24,14 @@
 ?>
 <html>
 <head>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
 	<title>TouchStone Import to QTI</title>
 	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
 	<link rel="icon" href="favicon.ico" type="image/x-icon"/>
 	<link rel="P3Pv1" href="https://touchstone.nottingham.ac.uk/w3c/p3p.xml">
 	<script type="text/javascript" src="/qti/js/mootools-1.2.4.js"></script> 
 
-	<style>
+	<style type="text/css">
 		body {background-color:white; color:black; font-family:Arial,sans-serif;margin:0px}
 		.divider {font-size:80%; padding-left:16px; padding-bottom:2px; font-weight:bold}
 		a {color:black}
@@ -62,7 +63,7 @@
 	}
 
 	</style>
-<style>
+<style type="text/css">
 .print_cont {
 	/*border: 1px solid #CCCCCC;*/
 	margin:6px;
@@ -97,7 +98,7 @@
 	padding:6px;
 }
 </style>
-<script>
+<script type="text/javascript">
 
 function print_nice_expand(id)
 {

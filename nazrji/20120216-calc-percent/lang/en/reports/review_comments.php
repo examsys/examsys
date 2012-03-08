@@ -16,4 +16,5 @@ $string['Not actioned'] = 'Not actioned';
 $string['notreviewed'] = 'Not reviewed';
 $string['noresponse'] = 'No response made';
 $string['noreviewers'] = '<strong>Warning:</strong> There have been no reviews of this paper.';
+$string['screen'] = 'Screen';
 ?>

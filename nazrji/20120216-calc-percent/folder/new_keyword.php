@@ -51,7 +51,8 @@ require '../include/errors.inc';
 ?>
 <html>
 <head>
-<title>Add Keyword</title>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Add Keyword</title>
 </head>
 <?php
   if ($new_keyword != '') {
@@ -98,7 +99,7 @@ require '../include/errors.inc';
     }
   }
 </script>
-<style>
+<style type="text/css">
 body {font-family:Arial,sans-serif; font-size:90%; background-color:#EEEEEE; color:black}
 textarea, input[type=text], select {font-family:Arail,sans-serif; border: 1px solid #7F9DB9}
 h1 {font-size:120%}

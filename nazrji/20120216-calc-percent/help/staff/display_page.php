@@ -88,52 +88,52 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <head>
-<title>Help and Support Center</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<style>
-body {background-color:white; color:black; margin:0px; font-family:Arial,sans-serif; font-size:85%; line-height:150%}
-p, div, td {color:#484848}
-ul {list-style:square outside; color:#f27000}
-table {font-size:100%}
-h1 {font-size:150%; color:black}
-h2 {font-size:140%; color:#f27000}
-.path {background-color:#F2F2F2; color:#666666; font-size:80%; padding-left:10px; border-bottom:1px solid #B6B6B6}
-.subheading {font-weight:bold; font-style:italic}
-.tutorial {background-color:#FCF6CF; width: 95%; cursor:pointer}
-</style>
-<script language="JavaScript">
-  function updateToolbar(editID,deleteID) {
-    parent.frames['toolbar'].document.myform.editid.value=editID;
-    parent.frames['toolbar'].document.myform.deleteid.value=deleteID;
-    <?php
-    if (isset($_GET['section'])) {
-      echo "window.location='#" . $_GET['section'] . "'\">\n";
+  <title>Help and Support Center</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $cfg_page_charset ?>">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <style type="text/css">
+  body {background-color:white; color:black; margin:0px; font-family:Arial,sans-serif; font-size:85%; line-height:150%}
+  p, div, td {color:#484848}
+  ul {list-style:square outside; color:#f27000}
+  table {font-size:100%}
+  h1 {font-size:150%; color:black}
+  h2 {font-size:140%; color:#f27000}
+  .path {background-color:#F2F2F2; color:#666666; font-size:80%; padding-left:10px; border-bottom:1px solid #B6B6B6}
+  .subheading {font-weight:bold; font-style:italic}
+  .tutorial {background-color:#FCF6CF; width: 95%; cursor:pointer}
+  </style>
+  <script type="text/javascript">
+    function updateToolbar(editID,deleteID) {
+      parent.frames['toolbar'].document.myform.editid.value=editID;
+      parent.frames['toolbar'].document.myform.deleteid.value=deleteID;
+      <?php
+      if (isset($_GET['section'])) {
+        echo "window.location='#" . $_GET['section'] . "'\">\n";
+      }
+      ?>
     }
-    ?>
-  }
-  
-  function updateTOC() {
-    if (parent.frames['navigation'].document.getElementById('old_highlight').value != 0) {
-      old_section = parent.frames['navigation'].document.getElementById('old_highlight').value;
-      parent.frames['navigation'].document.getElementById(old_section).style.fontWeight="normal";
-      parent.frames['navigation'].document.getElementById(old_section).style.textDecoration="none";
+
+    function updateTOC() {
+      if (parent.frames['navigation'].document.getElementById('old_highlight').value != 0) {
+        old_section = parent.frames['navigation'].document.getElementById('old_highlight').value;
+        parent.frames['navigation'].document.getElementById(old_section).style.fontWeight="normal";
+        parent.frames['navigation'].document.getElementById(old_section).style.textDecoration="none";
+      }
+      parent.frames['navigation'].document.getElementById('title<?php echo $_GET['id']; ?>').style.fontWeight="bold";
+      parent.frames['navigation'].document.getElementById('title<?php echo $_GET['id']; ?>').style.textDecoration="underline";
+      parent.frames['navigation'].document.getElementById('old_highlight').value = 'title<?php echo $_GET['id']; ?>';
     }
-    parent.frames['navigation'].document.getElementById('title<?php echo $_GET['id']; ?>').style.fontWeight="bold";
-    parent.frames['navigation'].document.getElementById('title<?php echo $_GET['id']; ?>').style.textDecoration="underline";
-    parent.frames['navigation'].document.getElementById('old_highlight').value = 'title<?php echo $_GET['id']; ?>';
-  }
-  
- function openTutorial(file) {
-   var winheight = screen.height-30;
-    var winwidth = screen.width-20;
-    notice = window.open("./viewCaptivate.php?tutorial=" + file + "","Tutorial","width=" + winwidth + ",height="+winheight+",scrollbars=yes,resizable=yes,toolbar=no,location=no,directories=no,status=no,menubar=no");
-    notice.moveTo(0,0);
-    if (window.focus) {
-      notice.focus();
-    }  
- }
-</script>
+
+   function openTutorial(file) {
+     var winheight = screen.height-30;
+      var winwidth = screen.width-20;
+      notice = window.open("./viewCaptivate.php?tutorial=" + file + "","Tutorial","width=" + winwidth + ",height="+winheight+",scrollbars=yes,resizable=yes,toolbar=no,location=no,directories=no,status=no,menubar=no");
+      notice.moveTo(0,0);
+      if (window.focus) {
+        notice.focus();
+      }
+   }
+  </script>
 </head>
 
 <?php

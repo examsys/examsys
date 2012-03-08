@@ -35,15 +35,16 @@
 ?>
 <html>
 <head>
-<title>My Questions</title>
-<script language="javascript">
-  function paperProperties() {
-    notice=window.open("../../paper/properties.php?paperID=<?php echo $_GET['paperID']; ?>&noadd=y","properties","width=827,height=510,left="+(screen.width/2-325)+",top="+(screen.height/2-250)+",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
-    if (window.focus) {
-      notice.focus();
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>My Questions</title>
+  <script language="javascript">
+    function paperProperties() {
+      notice=window.open("../../paper/properties.php?paperID=<?php echo $_GET['paperID']; ?>&noadd=y","properties","width=827,height=510,left="+(screen.width/2-325)+",top="+(screen.height/2-250)+",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+      if (window.focus) {
+        notice.focus();
+      }
     }
-  }
-</script>
+  </script>
 </head>
 
 <body style="background-color:#EEEEEE; font-family:Arial,sans-serif; font-size:90%">

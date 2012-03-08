@@ -27,8 +27,9 @@
 ?>
 <html>
 <head>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
   <title>Rename Keyword</title>
-  <script language="JavaScript">
+  <script type="text/javascript">
     window.opener.document.getElementById('keytext<?php echo $_POST['index']; ?>').innerHTML = '<?php echo str_replace('"','&quot;',$_POST['new_keyword']); ?>';
     window.opener.document.getElementById('renamelist').value = window.opener.document.getElementById('renamelist').value + ';<?php echo $_POST['keywordID'] . '=' . str_replace('"','&quot;',$_POST['new_keyword']); ?>';
   </script>
@@ -40,40 +41,41 @@
 ?>
 <html>
 <head>
-<title>Rename Keyword</title>
-<script language="JavaScript">
-  function illegalChar(codeID) {
-    if (codeID == 35) {
-      alert("Character '#' illegal - please use alternative characters in keyword.");
-      event.returnValue = false;
-    } else if (codeID == 38) {
-      alert("Character '&' illegal - please use alternative characters in keyword.");
-      event.returnValue = false;
-    } else if (codeID == 59) {
-      alert("Character ';' illegal - please use alternative characters in keyword.");
-      event.returnValue = false;
-    } else if (codeID == 63) {
-      alert("Character '?' illegal - please use alternative characters in keyword.");
-      event.returnValue = false;
-    } else if (codeID == 64) {
-      alert("Character '@' illegal - please use alternative characters in keyword.");
-      event.returnValue = false;
-    } else if (codeID == 94) {
-      alert("Character '^' illegal - please use alternative characters in keyword.");
-      event.returnValue = false;
-    } else if (codeID == 126) {
-      alert("Character '~' illegal - please use alternative characters in keyword.");
-      event.returnValue = false;
-    } else if (codeID == 13) {
-      document.myform.returnhit.value = '1';
-      document.myform.submit();
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Rename Keyword</title>
+  <script type="text/javascript">
+    function illegalChar(codeID) {
+      if (codeID == 35) {
+        alert("Character '#' illegal - please use alternative characters in keyword.");
+        event.returnValue = false;
+      } else if (codeID == 38) {
+        alert("Character '&' illegal - please use alternative characters in keyword.");
+        event.returnValue = false;
+      } else if (codeID == 59) {
+        alert("Character ';' illegal - please use alternative characters in keyword.");
+        event.returnValue = false;
+      } else if (codeID == 63) {
+        alert("Character '?' illegal - please use alternative characters in keyword.");
+        event.returnValue = false;
+      } else if (codeID == 64) {
+        alert("Character '@' illegal - please use alternative characters in keyword.");
+        event.returnValue = false;
+      } else if (codeID == 94) {
+        alert("Character '^' illegal - please use alternative characters in keyword.");
+        event.returnValue = false;
+      } else if (codeID == 126) {
+        alert("Character '~' illegal - please use alternative characters in keyword.");
+        event.returnValue = false;
+      } else if (codeID == 13) {
+        document.myform.returnhit.value = '1';
+        document.myform.submit();
+      }
     }
-  }
-</script>
-<style>
-body {font-family:Arial,sans-serif; font-size:90%; background-color:#EEEEEE; color:black}
-h1 {font-size:120%}
-</style>
+  </script>
+  <style type="text/css">
+  body {font-family:Arial,sans-serif; font-size:90%; background-color:#EEEEEE; color:black}
+  h1 {font-size:120%}
+  </style>
 </head>
 <body>
 <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">

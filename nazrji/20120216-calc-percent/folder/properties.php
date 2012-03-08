@@ -43,9 +43,10 @@ require '../include/staff_auth.inc';
 ?>
 <html>
 <head>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
   <title><?php echo $string['folderproperties']; ?></title>
 
-  <style>
+  <style type="text/css">
     body {font-family:Arial,sans-serif; color: black;margin:0px; background-color:#F1F5FB}
     td {font-size:90%}
     input, textarea {font-family:Arial,sans-serif}

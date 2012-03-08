@@ -100,7 +100,7 @@
     // Check time security
     if ($test == false) {
       if (time() < $start_date or time() > $end_date) {
-        echo "<html><head>\n<title>Access Denied</title>\n<style>\nbody {font-size:120%;font-family:Arial,sans-serif;background-color:#FCFCFC;color:#575757}\nh1 {font-weight:normal;color:#4465A2;font-size:140%}\n</style></head>\n<body style=\"font-family:Arial,sans-serif\"><div style=\"position:absolute;left:10px;top:10px\"><img src=\"../artwork/clock_48.png\" width=\"48\" height=\"48\" /></div>\n";
+        echo "<html><head>\n<title>Access Denied</title>\n<style type=\"text/css\">\nbody {font-size:120%;font-family:Arial,sans-serif;background-color:#FCFCFC;color:#575757}\nh1 {font-weight:normal;color:#4465A2;font-size:140%}\n</style></head>\n<body style=\"font-family:Arial,sans-serif\"><div style=\"position:absolute;left:10px;top:10px\"><img src=\"../artwork/clock_48.png\" width=\"48\" height=\"48\" /></div>\n";
         echo "<h1 style=\"margin-left:60px\">Access Denied</h1>\n";
         echo "<hr size=\"1\" align=\"left\" width=\"500\" style=\"margin-left:60px;color:#C0C0C0;background-color:#C0C0C0\" />\n<p style=\"margin-left:60px\">" . $string['paperavailable'] . "</p>\n<ul style=\"margin-left:80px\">\n<li>From - " . date('d/m/Y H:i',$start_date) . "</li>\n<li>To - " . date('d/m/Y H:i',$end_date) . "</li>\n</ul>\n<br /><p style=\"margin-left:60px\"v><form><input type=\"button\" value=\"&lt; Back\" style=\"width:100px\" name=\"back\" onclick=\"history.back();\"></form></p>\n</body>\n</html>";
         $mysqli->close();
@@ -117,10 +117,11 @@
 ?>
   <html>
   <head>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
   <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <title>OSCE Form</title>
-  <style>
+  <style type="text/css">
     body {font-family:Arial,sans-serif; font-size:60%; background-color:<?php echo $bgcolor; ?>; color:<?php echo $fgcolor; ?>; margin:0px}
     table {font-size:100%; border-collapse:collapse}
     td {text-align:center}

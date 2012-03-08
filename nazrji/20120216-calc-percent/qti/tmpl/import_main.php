@@ -25,12 +25,13 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
 <html onscroll="scrollXY();" onclick="hideMenus();">
 <head>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
 	<title><?php echo $string['importfromqti'] ?></title>
 	<link rel="stylesheet" type="text/css" href="../css/submenu.css" />
 
 	<script type="text/javascript" src="/qti/js/mootools-1.2.4.js"></script> 
 
-	<style>
+	<style type="text/css">
 		body {background-color:white; color:black; font-family:Arial,sans-serif;margin:0px}
 		.divider {font-size:80%; padding-left:16px; padding-bottom:2px; font-weight:bold}
 		a {color:black}

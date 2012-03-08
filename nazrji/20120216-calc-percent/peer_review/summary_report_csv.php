@@ -33,36 +33,53 @@ header("Content-type: application/vnd.ms-excel");
 header("Content-Disposition: attachment; filename=data.csv");
 
 // write out headings
-echo "Title,Surname,First Names,Student ID,Reviewed,Group,Reviews";
+echo "Title,Surname,First Names,Student ID,Reviewed,Group";
+if ($review_type == 1) echo ",Reviews";
 for ($i=1; $i<=$heading_no; $i++) {
   echo ',Q' . $i;
 }
-echo ",Overall\n";
+if ($review_type == 1) echo ",Overall";
+echo "\n";
 
 
 foreach ($user_data as $student_userID => $student) {
-  $mean_total = 0;
-  echo $student['title'] . ',' . $student['surname'] . ',' . $student['first_names'];
-  echo ',' . $student['student_id'];
-  if (isset($reviewers[$student['userID']])) {
-    echo ',Complete';
-  } else {
-    echo ',Missing';
-  }
-  echo ',' . $student['group'];
-  if (isset($student['review_no'])) {
-    echo ',' . $student['review_no'];
-  } else {
-    echo ',0';
-  }
-  foreach ($questions as $questionID => $tmp_data) {
-    if (isset($student['means'][$questionID])) {
-      echo ',' . padDecimals($student['means'][$questionID],2);
-      $mean_total += $student['means'][$questionID];
+  if ($student_userID > 0) {
+    $mean_total = 0;
+    echo $student['title'] . ',' . $student['surname'] . ',' . $student['first_names'];
+    echo ',' . $student['student_id'];
+    if (isset($reviewers[$student['userID']])) {
+      echo ',Complete';
     } else {
-      echo ',';
+      echo ',Missing';
+    }
+    echo ',' . $student['group'];
+    if ($review_type == 1){
+      if (isset($student['review_no'])) {
+        echo ',' . $student['review_no'];
+      } else {
+        echo ',0';
+      }
+    }
+    if ($review_type == 1) {
+      foreach ($questions as $questionID => $tmp_data) {
+        if (isset($student['means'][$questionID])) {
+          echo ',' . padDecimals($student['means'][$questionID],2);
+          $mean_total += $student['means'][$questionID];
+        } else {
+          echo ',';
+        }
+      }
+      echo "," . padDecimals($mean_total / $heading_no, 2) . "\n";
+    } else {
+      foreach ($questions as $questionID => $tmp_data) {
+        echo ',';
+        if (isset($user_data[0]['data'][$questionID][$student_userID])) {
+          echo $user_data[0]['data'][$questionID][$student_userID];
+          $mean_total += $user_data[0]['data'][$questionID][$student_userID];
+        }
+      }
+      echo "\n";
     }
   }
-  echo "," . padDecimals($mean_total / $heading_no, 2) . "\n";
 }
 ?>

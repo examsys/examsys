@@ -45,8 +45,9 @@
 ?>
   <html>
   <head>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
   <title><?php echo $string['frequencyanalysis']; ?></title>
-  <style>
+  <style type="text/css">
     body {font-family:Arial,sans-serif; font-size:90%; color:black; margin-top:0px; margin-left:0px; margin-right:0px}
     .h {background-color:#F1F5FB; color:black}
     .breadcrumb {margin-left:10px; font-size:90%}

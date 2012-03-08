@@ -1,5 +1,5 @@
 <?php
-$string['examfeedback'] = 'Informacje zwrotne egzaminu';//niko  Informacje zwrotne? odzew? dobre kontra krótkie
+$string['examfeedback'] = 'Informacje zwrotne egzaminu';// Informacje zwrotne? odzew? dobre kontra krótkie
 $string['feedback'] = '- informacje zwrotne';
 $string['learningobjectives'] = 'Cele kształcenia';
 $string['explanation'] = 'Poniższa lista zawiera wszystkie unikalne cele kształcenia testowane w tym arkuszu. Ponieważ wiele pytań może odnosić się do współnych celów możliwe jest częściowe osiągnięcie celów. Na podstawie poniższych wyników możesz skupić się na czerownych <img src="../artwork/major_comment.png" width="16" height="16" alt="Mostly not acquired" /> i pomarańczowych <img src="../artwork/minor_comment.png" width="16" height="16" alt="Mostly not acquired" /> celach, których nie wypracowałeś w wystarczającym stopniu.';
@@ -18,7 +18,7 @@ $string['adjusted'] = 'skorygowany';
 
 // Key
 $string['key'] = 'Legenda';
-$string['greenicon'] = 'Osiągnięcie 80-100% celów specyficznych';  // Niko
+$string['greenicon'] = 'Osiągnięcie 80-100% celów specyficznych'; 
 $string['ambericon'] = 'Osiągnięcie 50-79% celów specyficznych';
 $string['redicon'] = 'Osiągnięcie 0-49% celów specyficznych';
 $string['hyperlink'] = '<a href="" onclick="return false;">hiperłącze</a> - przejście do sekcji NLE w celu uzyskania dalszych szczegółów';

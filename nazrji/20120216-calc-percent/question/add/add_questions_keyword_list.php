@@ -27,21 +27,22 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title><?php echo $string['bykeyword'];?></title>
-<style>
-body {margin:2px; background-color:white; color:black; font-family:Arial,sans-serif; font-size:80%}
-h1 {font-size:100%; background-color:#DDE7EE; color:#00156E; font-weight:bold; border-bottom:1px solid #C5C5C5; margin-bottom:0px; padding-bottom:0px}
-a:link {color:black}
-a:visited {color:black}
-a:hover {color:black}
-.k {padding-left:2px}
-</style>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title><?php echo $string['bykeyword'];?></title>
+  <style type="text/css">
+  body {margin:2px; background-color:white; color:black; font-family:Arial,sans-serif; font-size:80%}
+  h1 {font-size:100%; background-color:#DDE7EE; color:#00156E; font-weight:bold; border-bottom:1px solid #C5C5C5; margin-bottom:0px; padding-bottom:0px}
+  a:link {color:black}
+  a:visited {color:black}
+  a:hover {color:black}
+  .k {padding-left:2px}
+  </style>
 
-<script language="JavaScript">
-  function findKeywords() {
-    document.myform.submit();
-  }
-</script>
+  <script language="JavaScript">
+    function findKeywords() {
+      document.myform.submit();
+    }
+  </script>
 </head>
 
 <body>

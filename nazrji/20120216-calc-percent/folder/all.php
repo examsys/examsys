@@ -28,33 +28,35 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Rogō<?php echo " $cfg_install_type"; ?></title>
-<link rel="stylesheet" type="text/css" href="../css/submenu.css" />
-<style>
-.divider {padding-left:16px; padding-bottom:2px; font-weight:bold}
-.sch {padding-left:32px; text-indent:-20px}
-.greysch {padding-left:12px; color:#808080}
-.mod {padding-left:60px; text-indent:-20px}
-</style>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Rogō<?php echo " $cfg_install_type"; ?></title>
+  <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
+  <link rel="stylesheet" type="text/css" href="../css/header.css" />
+  <style type="text/css">
+  .divider {padding-left:16px; padding-bottom:2px; font-weight:bold}
+  .sch {padding-left:32px; text-indent:-20px}
+  .greysch {padding-left:12px; color:#808080}
+  .mod {padding-left:60px; text-indent:-20px}
+  </style>
 
-<script src="../js/staff_help.js" type="text/javascript"></script>
-<?php echo $cfg_js_root ?>
-<script src="../js/sidebar.js" type="text/javascript"></script>
-<script language="JavaScript">
-  function displayCredits(){
-    notice=window.open("../credits/credits.php","credits","width=700,height=487,scrollbars=no,resizable=no,toolbar=no,location=no,directories=no,status=0,menubar=0");
-    notice.moveTo(screen.width/2-350,screen.height/2-243)
-    if (window.focus) {
-      notice.focus();
+  <script src="../js/staff_help.js" type="text/javascript"></script>
+  <?php echo $cfg_js_root ?>
+  <script src="../js/sidebar.js" type="text/javascript"></script>
+  <script language="JavaScript">
+    function displayCredits(){
+      notice=window.open("../credits/credits.php","credits","width=700,height=487,scrollbars=no,resizable=no,toolbar=no,location=no,directories=no,status=0,menubar=0");
+      notice.moveTo(screen.width/2-350,screen.height/2-243)
+      if (window.focus) {
+        notice.focus();
+      }
     }
-  }
 
-  function showHide(sectionID) {
-    sectionID = 'block' + sectionID;
-    current = (document.getElementById(sectionID).style.display == 'block') ? 'none' : 'block';
-    document.getElementById(sectionID).style.display = current;
-  }
-</script>
+    function showHide(sectionID) {
+      sectionID = 'block' + sectionID;
+      current = (document.getElementById(sectionID).style.display == 'block') ? 'none' : 'block';
+      document.getElementById(sectionID).style.display = current;
+    }
+  </script>
 </head>
 
 <body onclick="hideMenus()">
@@ -63,12 +65,12 @@
 ?>
 
 <div id="content" class="content" style="font-size:80%">
-<table cellpadding="0" cellspacing="0" border="0" width="100%">
-<tr><td style="background-color:#F1F5FB"><div class="breadcrumb"><a href="../staff/index.php"><?php echo $string['home']; ?></a></div><div style="font-size:220%; font-weight:bold; margin-left:10px"><?php echo $string['allmodules']; ?></div></td><td style="background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(1); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="<?php echo $string['help']; ?>" border="0" /></a></td></tr>
-<tr><td colspan="2" style="height:3px"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td></tr>
+<table class="header">
+<tr><th><div class="breadcrumb"><a href="../staff/index.php"><?php echo $string['home']; ?></a></div><div style="font-size:220%; font-weight:bold; margin-left:10px"><?php echo $string['allmodules']; ?></div></td><td style="background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(1); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="<?php echo $string['help']; ?>" border="0" /></a></th></tr>
+<tr><th colspan="2" class="bevel"></th></tr>
 </table>
 
-<table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+<table style="width:100%">
 <tr><td style="vertical-align:top; width:50%; border-right:#95AEC8 1px solid">
 <?php
   $old_faculty = '';

@@ -63,6 +63,7 @@ if ($userroles == 'External Examiner') {
 ?>
 <html>
 <head>
+<meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
 <title>Rogō</title>
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta http-equiv="imagetoolbar" content="no">
@@ -98,7 +99,14 @@ if ($userroles == 'External Examiner') {
   } else {
     echo "Deadline = $external_review_deadline";
   }
-  echo '<blockquote><br />';
+  echo '<blockquote>';
+  if ($language == 'en') {
+    echo '<p style="font-size:450%;font-family:\'Monotype Corsiva\',Rage,\'Brush Script MT\',\'Lucida Handwriting\',sans-serif">' . $string['thankyou'] . '</p>';
+  } else {
+    // Do not use fancy fonts for foreign lanuages due to extended character support issues.
+    echo '<p style="font-size:450%">' . $string['thankyou'] . '</p>';
+  }
+  echo '</blockquote>';
   echo '<div style="text-align:center; border: 1px black solid; padding:10px; margin-left:100px; margin-right:100px" align="center"><input type="button" name="close" value="&nbsp;Close Window&nbsp;" onclick="window.close();" /></div>';
 
   $mysqli->close();

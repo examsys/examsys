@@ -48,14 +48,7 @@ for ($i = 0; $i < $question->max_stems; $i++) {
   if ((isset($stems[$i]) and $stems[$i] != '') or (isset($all_media['filenames'][$i + 1]) and $all_media['filenames'][$i + 1] != '')) $visible_questions = $i + 1;
 }
 ?>
-<script type="text/javascript">
-//<![CDATA[
-<?php // Bit of a hack to get the options section to fit in ?>
-$(function () {
-  $('#question-holder').addClass('wide');
-});
-//]]>
-</script>
+<script src="../../js/jquery.addedit.extmatch-fix.js" type="text/javascript"></script>
 
         <div id="extmatch-options">
           <h2><?php echo $string['availableoptions'] ?></h2>

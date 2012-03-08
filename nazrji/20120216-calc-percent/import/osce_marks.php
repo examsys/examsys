@@ -181,8 +181,10 @@ if (isset($_POST['submit'])) {
       marks_from_file('/tmp/' . $userID . '_osce_marks.csv', $mysqli);
       unlink('/tmp/' . $userID . '_osce_marks.csv');
       ?>
+      <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
       <html>
       <head>
+      <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
       <title><?php echo $string['importoscemarks']; ?></title>
       </head>
       <body style="font-family:Arial,sans-serif">
@@ -196,13 +198,13 @@ if (isset($_POST['submit'])) {
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title><?php echo $string['importoscemarks']; ?></title>
-<link rel="stylesheet" href="../css/submenu.css" type="text/css">
-<style>
-  body, p {color:black; font-family:Arial,sans-serif}
-  .content {font-size:90%}
-</style>
-
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title><?php echo $string['importoscemarks']; ?></title>
+  <link rel="stylesheet" href="../css/submenu.css" type="text/css">
+  <style type="text/css">
+    body, p {color:black; font-family:Arial,sans-serif}
+    .content {font-size:90%}
+  </style>
 </head>
 
 <body onclick="hideMenus()">

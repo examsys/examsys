@@ -27,7 +27,6 @@ $string['warning'] = 'Warning';
 $string['variablenomarks'] = 'Warning: Variable number of marks';
 $string['export12'] = 'Export 1.2';
 $string['import'] = 'Import';
-$string['insertscreenbreak'] = 'Insert screen break';
 $string['papernotfound'] = 'Paper not Found';
 $string['paperdeleted'] = 'Paper Deleted';
 $string['furtherassistance'] = 'For further assistance contact: <a href="mailto:%s">%s</a>';

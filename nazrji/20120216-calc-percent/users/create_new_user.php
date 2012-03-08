@@ -128,11 +128,11 @@
       $headers .= "bcc: $tmp_email\n";
       $sname = ucwords($_POST['new_surname']);
       $message = <<< MESSAGE
-<!doctype html public \"-//w3c//dtd html 4.0 transitional//en\">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
 <title>{$string['rogoaccount']}</title>
-<style>
+<style type="text/css">
 body, td, p, div {font-family:Arial,sans-serif; background-color:white; color:#003366; font-size:90%}
 h1 {font-size:140%}
 h2 {font-size:120%}
@@ -159,8 +159,9 @@ MESSAGE;
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Rogō: <?php echo "{$string['createnewuser']} $cfg_install_type"; ?></title>
-<link rel="stylesheet" type="text/css" href="../css/submenu.css" />
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Rogō: <?php echo "{$string['createnewuser']} $cfg_install_type"; ?></title>
+  <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
 </head>
 <body>
 <?php
@@ -176,60 +177,61 @@ MESSAGE;
 <html>
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<title>Rogō: <?php echo "{$string['createnewuser']} $cfg_install_type"; ?></title>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Rogō: <?php echo "{$string['createnewuser']} $cfg_install_type"; ?></title>
 
-<link rel="stylesheet" type="text/css" href="../css/submenu.css" />
-<style>
-textarea, input[type=text], select {font-family:Arail,sans-serif; border: 1px solid #7F9DB9}
-.title {font-size:160%; font-weight:bold}
-.field {font-weight:bold}
-</style>
+  <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
+  <style type="text/css">
+  textarea, input[type=text], select {font-family:Arail,sans-serif; border: 1px solid #7F9DB9}
+  .title {font-size:160%; font-weight:bold}
+  .field {font-weight:bold}
+  </style>
 
-<script language="JavaScript">
-function checkForm() {
-  if (document.newUser.new_first_names.value == "") {
-    alert("<?php echo $string['reqfirstname'] ?>");
-    return false;
-  }
-  if (document.newUser.new_surname.value == "") {
-    alert("<?php echo $string['reqsurname'] ?>");
-    return false;
-  }
-  if (document.newUser.new_email.value == "" || document.newUser.new_email.value == "@nottingham.ac.uk") {
-    alert("<?php echo $string['reqemail'] ?>");
-    return false;
-  }
-  if (document.newUser.new_grade.options[document.newUser.new_grade.selectedIndex].value == "") {
-    alert("<?php echo $string['reqcourse'] ?>");
-    return false;
-  }
-  if (document.newUser.new_username.value == "") {
-    alert("<?php echo $string['requsername'] ?>");
-    return false;
-  } else {
-    username = document.newUser.new_username.value;
-    for (a=0; a<username.length; a++) {
-      char = username.substr(a,1);
-      if (char == '_') {
-        alert('<?php echo $string['usernamechars'] ?>');
-        return false;
+  <script type="text/javascript">
+  function checkForm() {
+    if (document.newUser.new_first_names.value == "") {
+      alert("<?php echo $string['reqfirstname'] ?>");
+      return false;
+    }
+    if (document.newUser.new_surname.value == "") {
+      alert("<?php echo $string['reqsurname'] ?>");
+      return false;
+    }
+    if (document.newUser.new_email.value == "" || document.newUser.new_email.value == "@nottingham.ac.uk") {
+      alert("<?php echo $string['reqemail'] ?>");
+      return false;
+    }
+    if (document.newUser.new_grade.options[document.newUser.new_grade.selectedIndex].value == "") {
+      alert("<?php echo $string['reqcourse'] ?>");
+      return false;
+    }
+    if (document.newUser.new_username.value == "") {
+      alert("<?php echo $string['requsername'] ?>");
+      return false;
+    } else {
+      username = document.newUser.new_username.value;
+      for (a=0; a<username.length; a++) {
+        char = username.substr(a,1);
+        if (char == '_') {
+          alert('<?php echo $string['usernamechars'] ?>');
+          return false;
+        }
       }
     }
+    if (document.newUser.new_password.value == "") {
+      alert("<?php echo $string['reqpassword'] ?>");
+      return false;
+    }
   }
-  if (document.newUser.new_password.value == "") {
-    alert("<?php echo $string['reqpassword'] ?>");
-    return false;
-  }
-}
 
-function ldaplookup() {
-  notice=window.open("ldaplookup.php","ldap","width=650,height=250,left=30,top=20,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
-  notice.moveTo(screen.width/2-325,screen.height/2-125);
-  if (window.focus) {
-    notice.focus();
+  function ldaplookup() {
+    notice=window.open("ldaplookup.php","ldap","width=650,height=250,left=30,top=20,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+    notice.moveTo(screen.width/2-325,screen.height/2-125);
+    if (window.focus) {
+      notice.focus();
+    }
   }
-}
-</script>
+  </script>
 </head>
 
 <body>

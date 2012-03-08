@@ -56,18 +56,20 @@
     $result->close();
   } else {
 ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Email Cohort</title>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Email Cohort</title>
 
-<style type="text/css">
-body {font-family:Arial,sans-serif; font-size:90%; background-color:#D6DFF7; color:black; margin-top:0px; margin-left:0px; margin-right:0px}
-td {font-size:90%}
-.heading {background-color:#EBEADB; border-left:solid white 1px; border-right:solid #D8D2BD 1px; border-top:solid white 1px; border-bottom:solid #D8D2BD 1px; color:black; font-family:Arial,sans-serif}
-textarea, input {font-family:Arial,sans-serif}
-</style>
+  <style type="text/css">
+  body {font-family:Arial,sans-serif; font-size:90%; background-color:#D6DFF7; color:black; margin-top:0px; margin-left:0px; margin-right:0px}
+  td {font-size:90%}
+  .heading {background-color:#EBEADB; border-left:solid white 1px; border-right:solid #D8D2BD 1px; border-top:solid white 1px; border-bottom:solid #D8D2BD 1px; color:black; font-family:Arial,sans-serif}
+  textarea, input {font-family:Arial,sans-serif}
+  </style>
 
-<script language=JavaScript src='../editor/scripts/innovaeditor.js'></script>
+  <script language=JavaScript src='../editor/scripts/innovaeditor.js'></script>
 </head>
 
 <body>
@@ -102,7 +104,7 @@ textarea, input {font-family:Arial,sans-serif}
 <tr>
 <td><strong>Message:</strong></td>
 <td colspan="2"><textarea name="message" cols="80" rows="14"></textarea>
-  <script>
+  <script type="text/javascript">
     var oEdit1 = new InnovaEditor("oEdit1");
     oEdit1.mode="XHTML";
     oEdit1.useTagSelector=false;

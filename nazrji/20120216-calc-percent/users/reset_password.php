@@ -116,35 +116,36 @@ if (count($critical_errors) == 0 and isset($_POST['token']) and $_POST['token'] 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<title><?php echo $string['resetpassword'] . " $cfg_install_type"; ?></title>
-<link rel="stylesheet" href="../css/screen.css" type="text/css" />
-<style>
-body {background-color:white; color:black; font-family:Arial,sans-serif; font-size:90%}
-.field {padding-top:4px; padding-left:6px; font-weight:bold}
-</style>
-<script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
-<script type="text/javascript" src="../js/jquery.validate.min.js"></script>
-<script type="text/javascript">
-$(function() {
-  $('#forgotten_pw').validate({
-		rules: {
-		  password_confirm: {
-				required: true,
-				equalTo: "#password"
-			}
-		},
-		messages: {
-			email: '<?php echo $string['emailaddressinvalid'] ?>',
-			password: '<?php echo $string['pleaseenterpassword'] ?>',
-			password_confirm: {
-				required: '<?php echo $string['pleaseconfirmpassword'] ?>',
-				equalTo: '<?php echo $string['passwordsnotmatch'] ?>'
-			}
-		}
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title><?php echo $string['resetpassword'] . " $cfg_install_type"; ?></title>
+  <link rel="stylesheet" href="../css/screen.css" type="text/css" />
+  <style type="text/css">
+  body {background-color:white; color:black; font-family:Arial,sans-serif; font-size:90%}
+  .field {padding-top:4px; padding-left:6px; font-weight:bold}
+  </style>
+  <script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
+  <script type="text/javascript" src="../js/jquery.validate.min.js"></script>
+  <script type="text/javascript">
+  $(function() {
+    $('#forgotten_pw').validate({
+      rules: {
+        password_confirm: {
+          required: true,
+          equalTo: "#password"
+        }
+      },
+      messages: {
+        email: '<?php echo $string['emailaddressinvalid'] ?>',
+        password: '<?php echo $string['pleaseenterpassword'] ?>',
+        password_confirm: {
+          required: '<?php echo $string['pleaseconfirmpassword'] ?>',
+          equalTo: '<?php echo $string['passwordsnotmatch'] ?>'
+        }
+      }
+    });
   });
-});
-</script>
+  </script>
 </head>
 
 <body>

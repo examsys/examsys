@@ -2,6 +2,6 @@ body {font-family:Arial,sans-serif; font-size:8pt; line-height:160%; color:black
 p,td {line-height:160%; font-size:8pt}
 td.heading {line-height:140%}
 a {color:#215DC6; text-decoration:none}
-a:hover {color:#428EFF}
+a:hover {color:#428EFF; text-decoration:underline}
 a.heading {color:#215DC6; font-size:8pt; font-weight:bold}
 a.heading:hover {color:#428EFF; font-size:8pt; font-weight:bold}

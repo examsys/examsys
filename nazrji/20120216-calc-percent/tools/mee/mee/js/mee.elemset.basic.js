@@ -25,7 +25,7 @@ MEE.ElemSet.extend("MEE.ElemSetBasic",
         MEE.ElemSetBasic.basicelems[this.elemid] = this;
         this.depth = depth;
         
-        this.html_elem = $('<span class="mee_elemsetbasic" elem="' + this.elemid + '" depth="' + depth + '">');
+        this.html_elem = $('<span class="mee_elemsetbasic" elem="' + this.elemid + '" depth="' + depth + '"></span>');
         
         this.text = "";
         if ('text' in this.eldata) {
@@ -44,7 +44,7 @@ MEE.ElemSet.extend("MEE.ElemSetBasic",
         if (MEE.Data.largechars[this.basetext] && this.eldata.large) {
             var chardata = MEE.Data.getLargeCharData(this.basetext, this.html_elem);
 
-            this.html_inner = $('<span class="mee_basic_large_inner" style="position:absolute; left:0px; padding-right200px">');
+            this.html_inner = $('<span class="mee_basic_large_inner" style="position:absolute; left:0px; padding-right200px"></span>');
             this.html_inner.html(this.text);
 
             this.html_elem.append(this.html_inner);

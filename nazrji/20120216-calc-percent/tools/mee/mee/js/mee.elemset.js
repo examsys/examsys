@@ -141,7 +141,7 @@ $.Class.extend("MEE.ElemSet",
 
         if (!haselements /*this.elements.length == 0*/) {
             if (!this.html_elem.hasClass('mee_elemset_empty')) {
-                var blank = $('<span class="mee_elemset_empty_inner">');
+                var blank = $('<span class="mee_elemset_empty_inner"></span>');
                 blank.html(MEE.Data.blankspace);
                 this.html_elem.append(blank);
                 this.html_elem.addClass('mee_elemset_empty');

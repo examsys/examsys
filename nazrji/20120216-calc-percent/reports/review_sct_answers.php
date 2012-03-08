@@ -107,28 +107,29 @@
     echo "<tr><td colspan=\"2\">&nbsp;</td></tr>\n";
   }
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title><?php echo $string['sctresponses'] . " $cfg_install_type"; ?></title>
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title><?php echo $string['sctresponses'] . " $cfg_install_type"; ?></title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-<style type="text/css">
-body {background-color:white;color:black;padding:0px;margin:0px;border:0px;font-family:Arial,sans-serif;font-size:90%}
-li {margin-left:15px;margin-right:15px;font-size:100%}
-select,input{font-family:$font,sans-serif;font-size:100%}
-table {font-size:100%}
-pre {font-family:Arial,sans-serif; font-size:100%}
-.q_no {width:40px; text-align:right;vertical-align:top}
-.theme {font-size:150%; padding-left:4px;font-weight:bold;color:#316AC5}
-.note {color:#C00000}
-.mk {color:#808080;font-size:80%}
-.h {background-color:#F1F5FB; color:black}
-.breadcrumb {margin-top:2px; margin-left:10px; font-size:90%}
-.breadcrumb a:link {color:blue; text-decoration:none; cursor:pointer}
-.breadcrumb a:visited {color:blue; text-decoration:none; cursor:pointer}
-.breadcrumb a:hover {color:blue; text-decoration:underline; cursor:pointer}
-</style>
+  <style type="text/css">
+  body {background-color:white;color:black;padding:0px;margin:0px;border:0px;font-family:Arial,sans-serif;font-size:90%}
+  li {margin-left:15px;margin-right:15px;font-size:100%}
+  select,input{font-family:$font,sans-serif;font-size:100%}
+  table {font-size:100%}
+  pre {font-family:Arial,sans-serif; font-size:100%}
+  .q_no {width:40px; text-align:right;vertical-align:top}
+  .theme {font-size:150%; padding-left:4px;font-weight:bold;color:#316AC5}
+  .note {color:#C00000}
+  .mk {color:#808080;font-size:80%}
+  .h {background-color:#F1F5FB; color:black}
+  .breadcrumb {margin-top:2px; margin-left:10px; font-size:90%}
+  .breadcrumb a:link {color:blue; text-decoration:none; cursor:pointer}
+  .breadcrumb a:visited {color:blue; text-decoration:none; cursor:pointer}
+  .breadcrumb a:hover {color:blue; text-decoration:underline; cursor:pointer}
+  </style>
 </head>
 
 <body>

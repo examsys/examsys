@@ -1,7 +1,8 @@
 <html>
 <head>
+<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
 <title>Form</title>
-<style>
+<style type="text/css">
 body {font-family:Arial,sans-serif; font-size:90%}
 h1 {font-size:150%}
 table {font-size:100%}

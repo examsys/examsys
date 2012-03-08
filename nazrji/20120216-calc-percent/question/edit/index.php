@@ -365,17 +365,20 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title><?php echo $mode . ' ' . $string['question'] . ' - ' . $q_type_full .  ' ' . $cfg_install_type ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $cfg_page_charset ?>" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
 <link rel="stylesheet" href="../../css/screen.css" type="text/css" />
 <link rel="stylesheet" href="../../css/add_edit_new.css" type="text/css" />
+<link rel="stylesheet" href="../../css/warnings.css" type="text/css" />
+<link rel="stylesheet" href="../../css/tipTip.css" type="text/css" />
 
 <?php echo $cfg_editor_javascript; ?>
 <script type="text/javascript" src="../../js/jquery-1.6.1.min.js"></script>
 <script type="text/javascript" src="../../js/staff_help.js"></script>
 <script type="text/javascript" src="../../js/jquery.touchstone.js"></script>
 <script type="text/javascript" src="../../js/jquery.addedit.js"></script>
+<script type="text/javascript" src="../../js/jquery.tipTip.minified.js"></script>
 <script type="text/javascript" src="../../js/staff_help.js"></script>
 <script type="text/javascript" src="../../js/jquery.formhelpers.js"></script>
 <?php
@@ -396,7 +399,7 @@ endif;
 var qType = '<?php if (isset($question)) echo $question->get_type() ?>';
 var lang = {
 <?php
-$langstrings = array('allowpartial', 'validationerror', 'enterleadin', 'showmore', 'hidemore', 'enteroption', 'enteroptionshort', 'enteroption_kw', 'mrqconvert', 'entervignette', 'mappingwarning', 'markchangewarning');
+$langstrings = array('allowpartial', 'validationerror', 'enterleadin', 'enterdescription', 'showmore', 'hidemore', 'enteroption', 'enteroptionshort', 'enteroption_kw', 'mrqconvert', 'entervignette', 'randomenterquestion', 'mappingwarning', 'markchangewarning');
 $first = true;
 foreach ($langstrings as $langstring) {
   if (!$first) {
@@ -464,9 +467,7 @@ if ($critical_error == '') {
 <?php
     } elseif ($disabled == 'locked') {
 ?>
-    <div class="banner">
-      <p><?php echo $string['lockedmsg'] ?></p>
-    </div>
+    <div class="yellowwarn" style="font-size:90%">&nbsp;<img src="../../artwork/paper_locked_padlock.png" width="19" height="24" alt="Locked" style="position:relative; top:2px\" />&nbsp;&nbsp;<?php echo $string['lockedmsg'] ?></div>
 <?php
     }
   }

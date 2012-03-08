@@ -164,8 +164,12 @@ Class SearchUtils {
     global $string;
     
     echo "<select style=\"width:175px\" onchange=\"updateCookieOwner(this,'status')\" name=\"status\">\n";
-    echo "<option value=\"%\">" . $string['anystatus'] . "</option>\n";
-
+    echo "<option value=\"nonretired\">" . $string['anynonretiredstatus'] . "</option>\n";
+    if (isset($_COOKIE['status']) and $_COOKIE['status'] == '%') {
+      echo "<option value=\"%\" selected>" . $string['anystatus'] . "</option>\n";
+    } else {
+      echo "<option value=\"%\">" . $string['anystatus'] . "</option>\n";
+    }
     $status_array = array('Normal','Retired','Incomplete','Experimental','Beta');
     foreach ($status_array as $individual_status) {
       if (isset($_COOKIE['status']) and $_COOKIE['status'] == $individual_status) {

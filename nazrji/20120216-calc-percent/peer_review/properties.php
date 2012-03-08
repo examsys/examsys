@@ -149,8 +149,10 @@ if (isset($_POST['Submit'])) {
     }
     $result->close();
   ?>
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html>
     <head>
+    <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
     <title><?php echo $string['edittitle']; ?></title>
     <meta http-equiv="pragma" content="no-cache" />
     <script language="JavaScript">
@@ -172,7 +174,10 @@ if (isset($_POST['Submit'])) {
   ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
     <html>
-    <head><title><?php echo $string['edittitle']; ?></title></head>
+    <head>
+      <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+      <title><?php echo $string['edittitle']; ?></title>
+    </head>
     <body>
     <form>
       <br /><?php echo $string['warning']; ?><br />&nbsp;<div align="center"><input type="button" name="back" value="&lt; Back" onclick="javascript: history.go(-1)" /></div>
@@ -205,9 +210,10 @@ if (isset($_POST['Submit'])) {
 <html>
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
   <title><?php echo $string['propertiestitle'] . ' ' . $cfg_install_type; ?></title>
 
-  <style>
+  <style type="text/css">
     body {font-family:Arial,sans-serif; color:black; background-color:#F1F5FB; margin:0px; font-size:100%}
     table {font-size:100%; text-align:left}
     input,textarea {font-family:Arial,sans-serif; color:black}

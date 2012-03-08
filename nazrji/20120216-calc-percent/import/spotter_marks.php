@@ -148,8 +148,10 @@
         marks_from_file('/tmp/' . $_SERVER['PHP_AUTH_USER'] . '_spotter_marks.csv');
         unlink('/tmp/' . $_SERVER['PHP_AUTH_USER'] . '_spotter_marks.csv');
         ?>
+        <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
         <html>
         <head>
+        <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
         <title>Load Spotter Marks</title>
         </head>
         <body style="font-family:Arial,sans-serif">
@@ -163,12 +165,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Load Spotter Marks</title>
-<link rel="stylesheet" href="../css/submenu.css" type="text/css">
-<style>
-  body, p {color:#003366; font-family:Arial,sans-serif}
-</style>
-
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Load Spotter Marks</title>
+  <link rel="stylesheet" href="../css/submenu.css" type="text/css">
+  <style type="text/css">
+    body, p {color:#003366; font-family:Arial,sans-serif}
+  </style>
 </head>
 
 <body onclick="hideMenus()">

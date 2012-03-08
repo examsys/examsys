@@ -28,26 +28,27 @@ $paper = $_GET['paper'];
 $startdate = $_GET['startdate'];
 $enddate = $_GET['enddate'];
 ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Rogō: Textbox Marking</title>
 
-<title>Rogō: Textbox Marking</title>
+  <style type="text/css">
+  body {font-family:Arial,sans-serif; font-size:90%; background-color:#9099AE; color:black; margin-top:6px; margin-bottom:20px; margin-left:40px; margin-right:40px}
+  p {margin-left:30px; margin-top:10px; marging-bottom:10px; margin-right:30px; line-height:150%}
+  a.user {font-family:Arial,sans-serif; color:black}
+  a.user:hover {color:white; background-color:#000080}
+  .heading {background-color:#EBEADB; color:black; font-family:Arial,sans-serif}
+  </style>
 
-<style type="text/css">
-body {font-family:Arial,sans-serif; font-size:90%; background-color:#9099AE; color:black; margin-top:6px; margin-bottom:20px; margin-left:40px; margin-right:40px}
-p {margin-left:30px; margin-top:10px; marging-bottom:10px; margin-right:30px; line-height:150%}
-a.user {font-family:Arial,sans-serif; color:black}
-a.user:hover {color:white; background-color:#000080}
-.heading {background-color:#EBEADB; color:black; font-family:Arial,sans-serif}
-</style>
-
-<script language="JavaScript" type="text/javascript">
-  function resizeText() {
-    selecteditem = document.getElementById('percentage').selectedIndex ;
-    new_size = document.getElementById('percentage').options[ selecteditem ].value 
-    document.getElementById('preview').style.fontSize = new_size;
-  }
-</script>
+  <script language="JavaScript" type="text/javascript">
+    function resizeText() {
+      selecteditem = document.getElementById('percentage').selectedIndex ;
+      new_size = document.getElementById('percentage').options[ selecteditem ].value
+      document.getElementById('preview').style.fontSize = new_size;
+    }
+  </script>
 </head>
 
 <body>

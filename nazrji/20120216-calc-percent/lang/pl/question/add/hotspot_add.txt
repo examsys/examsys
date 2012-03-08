@@ -1,10 +1,10 @@
 <?php
 
-$string['view'] = 'Pokaż miejsca aktywne na wszystkich warstwach';
+$string['view'] = 'Pokaż m. aktywne na wszyst. warstwach';
 
-$string['newLayer'] = 'Dodaj część zawierającą pytanie';
-$string['deleteLayer'] = 'Usuń część zawierającą pytanie';
-$string['edit'] = 'Przesuń/Edytuj miejsce aktywne';
+$string['newLayer'] = 'Dodaj część zaw. pytanie';
+$string['deleteLayer'] = 'Usuń część zaw. pytanie';
+$string['edit'] = 'Przesuń/Edytuj m. aktywne';
 $string['ellipse'] = 'Owal';
 $string['rectangle'] = 'Prostokąt';
 $string['polygon'] = 'Wielobok';

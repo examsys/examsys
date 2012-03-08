@@ -24,20 +24,15 @@
 
   require '../include/staff_auth.inc';
 ?>
-<!DOCTYPE html
-   PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-     "DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title><?php echo $string['qualitativeanalysis'] . ' ' . $cfg_install_type; ?></title>
-<style type="text/css">
-body {font-family:Arial,sans-serif; font-size:90%; color:black; margin-top:0px; margin-left:0px; margin-right:0px}
-.heading {background-color:#F1F5FB}
-.breadcrumb {margin-top:2px; margin-left:10px; font-size:90%}
-.breadcrumb a:link {color:blue; text-decoration:none; cursor:pointer}
-.breadcrumb a:visited {color:blue; text-decoration:none; cursor:pointer}
-.breadcrumb a:hover {color:blue; text-decoration:underline; cursor:pointer}
-</style>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title><?php echo $string['qualitativeanalysis'] . ' ' . $cfg_install_type; ?></title>
+  <link rel="stylesheet" type="text/css" href="../css/header.css" />
+  <style type="text/css">
+  body {font-family:Arial,sans-serif; font-size:90%; color:black; margin-top:0px; margin-left:0px; margin-right:0px}
+  </style>
 </head>
 
 <body>
@@ -60,8 +55,8 @@ body {font-family:Arial,sans-serif; font-size:90%; color:black; margin-top:0px; 
     $result->close();
   }
 
-  echo "<form name=\"analyse\" method=\"get\" action=\"qualitative_results.php\" target=\"results\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">\n";
-  echo "<tr><td class=\"heading\">";
+  echo "<form name=\"analyse\" method=\"get\" action=\"qualitative_results.php\" target=\"results\"><table class=\"header\" style=\"font-size:90%\">\n";
+  echo "<tr><th style=\"width:75%\">";
   echo '<div class="breadcrumb"><a href="../staff/index.php" target="_top">' . $string['home'] . '</a>';
   if ($folder != '') {
     echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?folder=' . $folder . '" target="_top">' . $folder_name . '</a>';
@@ -69,8 +64,8 @@ body {font-family:Arial,sans-serif; font-size:90%; color:black; margin-top:0px; 
     echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?module=' . $_GET['module'] . '" target="_top">' . $_GET['module'] . '</a>';
   }
   echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../paper/details.php?paperID=' . $_GET['paperID'] . '" target="_top">' . $paper . '</a></div>';
-  echo "<span style=\"font-size:200%; color:black; font-weight:bold; margin-left:10px\">" . $string['qualitativeanalysis'] . "</span></td>";
-  echo "<td class=\"heading\" valign=\"top\" width=\"250\"><input type=\"text\" name=\"keywords\" size=\"20\" value=\"";
+  echo "<span style=\"font-size:220%; color:black; font-weight:bold; margin-left:10px\">" . $string['qualitativeanalysis'] . "</span></td>";
+  echo "<th valign=\"top\" style=\"width:25%\"><input type=\"text\" name=\"keywords\" size=\"20\" value=\"";
   if (isset($_GET['keywords'])) echo $_GET['keywords']; 
   echo "\" /><input type=\"submit\" name=\"submit\" value=\"" . $string['highlight'] . "\" />";
   if (isset($_GET['collapse']) and $_GET['collapse'] == '1') {
@@ -90,8 +85,8 @@ body {font-family:Arial,sans-serif; font-size:90%; color:black; margin-top:0px; 
   echo '<input type="hidden" name="module" value="' . $_GET['module'] . '" />';
   echo '<input type="hidden" name="repcourse" value="' . $_GET['repcourse'] . '" />';
   echo '<input type="hidden" name="repyear" value="' . $_GET['repyear'] . '" />';
-  echo "</td></tr>";
-  echo "<tr><td colspan=\"2\" style=\"height: 3px\"><img src=\"../artwork/header_horizontal_line.gif\" width=\"100%\" height=\"3\" alt=\"Line\" /></td></tr>\n";
+  echo "</th></tr>";
+  echo "<tr><th colspan=\"2\" class=\"bevel\"></th></tr>\n";
 ?>
 </table>
 </form>

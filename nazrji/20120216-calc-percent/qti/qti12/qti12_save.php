@@ -121,6 +121,7 @@ class IE_qti12_Save extends IE_Main {
     elseif ($question->type == "mrq") $this->SaveMrq($question);
     elseif ($question->type == "rank") $this->SaveRank($question);
     elseif ($question->type == "textbox") $this->SaveTextbox($question);
+    elseif ($question->type == "true_false") $this->SaveTrueFalse($question);
     else $this->AddError("Question type ".$question->type." not yet supported", $question->load_id);
   }
 
@@ -393,6 +394,27 @@ class IE_qti12_Save extends IE_Main {
     $ob = new OB();
     $ob->ClearAndSave();
     include "qti12/tmpl/mcq.php";
+    $this->output .= $ob->GetContent();
+    $ob->Restore();
+
+    foreach ($question->options as $option) {
+      if ($option->media) {
+        $this->data->files[] = new ST_File($option->media, $option->media, $option->params->dir, 'image');
+      }
+    }
+  }
+
+  function SaveTrueFalse(&$question) {
+    // fairly sure this is exporting correctly, feedback for pos + neg ok,
+    // all options listed ok
+
+    // format the text for the question
+    list($headertext, $title) = $this->MakeQuestionHeader($question);
+
+    $type = "True False";
+    $ob = new OB();
+    $ob->ClearAndSave();
+    include "qti12/tmpl/true_false.php";
     $this->output .= $ob->GetContent();
     $ob->Restore();
 

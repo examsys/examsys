@@ -53,7 +53,7 @@ $string['createnewquestion'] = 'Utwórz nowe pytanie';
 $string['questions'] = 'Pytania';
 $string['papers'] = 'Arkusze';
 $string['people'] = 'Osoby';
-$string['studentcohort'] = 'Grupa studentów';  // Niko - Student Cohort of Paper
+$string['studentcohort'] = 'Grupa studentów';  // Student Cohort of Paper
 
 $string['startdate'] = 'Data rozpoczęcia';
 $string['enddate'] = 'Data zakończenia';
@@ -100,6 +100,7 @@ $string['copyname'] = 'Nazwa kopii:';
 $string['paperonly'] = 'Tylko arkusze';
 $string['paperandquestions'] = 'Arkusze i pytania';
 $string['copypaper'] = 'Kopiuj arkusz';
-$string['reorderinfo'] = 'You can now reorder questions and screen breaks by dragging them to their new position';
+$string['reorderinfo'] = 'Możesz teraz zmienić porządek pytań i przemieścić podzielniki ekranowe przeciągając je w nowe położenia';
+$string['insertscreenbreak'] = 'Wprowadź podzielniki ekranowe';//Insert screen break';
 
 ?>

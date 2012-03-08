@@ -37,7 +37,7 @@
 
   $path = $cfg_web_root . 'student_help';
   
-  header('Content-Type: text/html; charset=UTF-8');
+  header('Content-Type: text/html; charset=' . $cfg_page_charset);
   $image_list = array();
 
   // Is the current page real or a pointer.
@@ -71,14 +71,16 @@
 
   $mysqli->close();
 ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Delete Page</title>
-<script language="JavaScript">
-  function reloadHelp() {
-    window.top.location='index.php';
-  }
-</script>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Delete Page</title>
+  <script type="text/javascript">
+    function reloadHelp() {
+      window.top.location='index.php';
+    }
+  </script>
 </head>
 <body onload="reloadHelp()">
 

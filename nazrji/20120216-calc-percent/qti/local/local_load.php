@@ -641,6 +641,29 @@ class IE_Local_Load extends IE_Main {
     }
   }
 
+  function LoadQuestiontrue_false($store, $q_row, $o_rows) {
+    // basic stuff
+    $store->scenario = $q_row['scenario'];
+    $store->fb_correct = $q_row['correct_fback'];
+    $store->fb_incorrect = $q_row['incorrect_fback'];
+    if (!$store->fb_incorrect) $store->fb_incorrect = $store->fb_correct;
+    $store->correct = $o_rows[0]['correct'];
+
+    // for each of the options create an STQ_Mcq_Option
+    $optionno = 1;
+    foreach ($o_rows as $o_row) {
+      $option = new STQ_Mcq_Option();
+      $option->stem = $o_row['option_text'];
+      $option->marks_correct = $o_row['marks_correct'];
+      $option->marks_incorrect = $o_row['marks_incorrect'];
+      $option->marks_partial = $o_row['marks_partial'];
+      $this->AddMedia($option, $o_row['o_media'], $o_row['o_media_width'], $o_row['o_media_height']);
+
+      $store->options[$optionno] = $option;
+      $optionno++;
+    }
+  }
+
   function LoadQuestionMrq($store, $q_row, $o_rows) {
     // basic stuff
     $store->scenario = $q_row['scenario'];

@@ -43,7 +43,7 @@ if (isset($_POST['submit'])) {
   $result->execute();
   $result->close();
   
-  echo "<html>\n<head><title>Error Details</title></head>\n<body onload=\"window.opener.location='sys_error_list.php'; window.close();\"></body>\n<html>\n";
+  echo "<html>\n<head><meta http-equiv=\"content-type\" content=\"text/html;charset={$cfg_page_charset}\" /><title>Error Details</title></head>\n<body onload=\"window.opener.location='sys_error_list.php'; window.close();\"></body>\n<html>\n";
   exit;
 } else {
   $result = $mysqli->prepare("SELECT id FROM sys_errors WHERE errstr=? AND errfile=? AND errline=?");
@@ -58,9 +58,10 @@ if (isset($_POST['submit'])) {
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
+<meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
 <title><?php printf($string['errordetails'], $error_id); ?></title>
 
-<style>
+<style type="text/css">
 body {color:black; background-color:white; font-family:Arial; font-size:90%; margin:0px}
 table {font-size:100%; border-collapse:collapse; width:100%}
 td {border: 1px solid #C0C0C0; padding:2px}

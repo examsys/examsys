@@ -60,29 +60,30 @@ if (isset($_POST['submit'])) {
 }
 
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Reassign Script to User</title>
-<style>
-body {background-color:white; color:black; font-family:Arial,sans-serif; font-size:90%}
-</style>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Reassign Script to User</title>
+  <style type="text/css">
+  body {background-color:white; color:black; font-family:Arial,sans-serif; font-size:90%}
+  </style>
 
-<script language="JavaScript">
-  function doReassign(targetID) {
-    window.location = "do_reassign_script.php?temp_userID=<?php echo $_GET['userID']; ?>&userID=" + targetID + "&assigned_account=<?php echo $temp_username; ?>";
-  }
-  
-  function lon(lineID) {
-    document.getElementById(lineID).style.backgroundColor = '#EBF3FD';
-    document.getElementById(lineID).style.border = '1px solid #B8D6FB';
-  }
-  
-  function loff(lineID) {
-    document.getElementById(lineID).style.backgroundColor = '';
-    document.getElementById(lineID).style.border = '1px solid white';
-  }
-</script>
+  <script language="JavaScript">
+    function doReassign(targetID) {
+      window.location = "do_reassign_script.php?temp_userID=<?php echo $_GET['userID']; ?>&userID=" + targetID + "&assigned_account=<?php echo $temp_username; ?>";
+    }
+
+    function lon(lineID) {
+      document.getElementById(lineID).style.backgroundColor = '#EBF3FD';
+      document.getElementById(lineID).style.border = '1px solid #B8D6FB';
+    }
+
+    function loff(lineID) {
+      document.getElementById(lineID).style.backgroundColor = '';
+      document.getElementById(lineID).style.border = '1px solid white';
+    }
+  </script>
 </head>
 
 <body>

@@ -67,9 +67,12 @@ function convert_year($old_year) {
   return $new_year;
 }
 ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
   <head>
+    <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
     <title>TouchStone 4.x to Rogō update Script</title>
+    <link rel="stylesheet" type="text/css" href="../css/header.css" />
     <style type="text/css">
       html {padding:0em; margin:0em; width:100%}
       body {padding:0em; margin:0em; width:100%; font-family:Arial,sans-serif; font-size:90%; background-color:white; color:black}
@@ -79,12 +82,10 @@ function convert_year($old_year) {
       .warning {float:none; color:red; padding-left: .5em; vertical-align:top}
       label {float:left; width:7.5em; padding-left:0em; text-align:left}
       p {clear:both}
-      .submit {margin-left:42%; padding-top:2em}
+      .submit {text-align:center; padding-top:2em}
       table {border:none}
-      table.topbar {font-weight:bold; width:100%; border-collapse:collapse}
-      .topbar td {background-color:#F1F5FB}
-      .header {margin-top:1.5em; margin-bottom:0.5em; width:97%; color:#1E3287}
-      .header hr {border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:97%}
+      .heading {margin-top:1.5em; margin-bottom:0.5em; width:97%; color:#1E3287}
+      .heading hr {border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:97%}
       td.line {width:98%}
       input {width:150px}
       form {padding:1em}
@@ -94,19 +95,19 @@ function convert_year($old_year) {
     <script language="text/javascript" type="text/javascript" src="../js/jquery.validate.min.js"></script>
   </head>
   <body>
-  <table class="topbar"> 
+  <table class="header"> 
     <tr> 
-      <td><div style="font-size:26pt; font-weight:bold; color:#001979">&nbsp;<?php echo $string['systemupdate']; ?></div><div style="position:relative; left:48px; top:-6px; font-size:10pt; color:#001979">version 4.x to <?php echo $version; ?></div></td> 
-      <td style="text-align:right; padding-top:10px; padding-right:10px"><img src="../artwork/rogo_logo.gif" width="137" height="61" alt="Logo" border="0" />&nbsp;&nbsp;</td> 
+      <th><div style="font-size:26pt; font-weight:bold; color:#001979">&nbsp;<?php echo $string['systemupdate']; ?></div><div style="position:relative; left:48px; top:-6px; font-size:10pt; color:#001979; font-weight:bold">version 4.x to <?php echo $version; ?></div></th> 
+      <th style="text-align:right; padding-top:10px; padding-right:10px"><img src="../artwork/rogo_logo.gif" width="137" height="61" alt="Logo" border="0" />&nbsp;&nbsp;</th> 
     </tr> 
     <tr> 
-      <td colspan="2" style="height:3px"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td> 
+      <th colspan="2" class="bevel"></th> 
     </tr> 
   </table>
 <?php
 if (!isset($_POST['update'])) {
 ?>
-    <script>
+    <script type="text/javascript">
       $(document).ready(function(){
           $("#installForm").validate();
       });
@@ -128,7 +129,7 @@ if (!isset($_POST['update'])) {
       ?>    
       <form id="installForm" class="cmxform" method="post" action="<?php echo $_SERVER['PHP_SELF'];?>">
       <div><?php printf($string['msg1'], $version); ?></div>
-        <table class="header"><tr><td><nobr><?php echo $string['databaseadminuser']; ?></nobr></td><td class="line"><hr /></td></tr></table> 
+        <table class="heading"><tr><td><nobr><?php echo $string['databaseadminuser']; ?></nobr></td><td class="line"><hr /></td></tr></table> 
           <div><?php echo $string['msg2']; ?></div>
           <br />
           <div><label for="mysql_admin_user"><?php echo $string['dbusername']; ?></label> <input type="text" value="" name="mysql_admin_user" class="required" minlength="2" /> </div>
@@ -593,8 +594,8 @@ if (!isset($_POST['update'])) {
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $cfg_db_database . ".log5 TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".log_late TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $cfg_db_database . ".log_metadata TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
-    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $cfg_db_database . ".textbox_marking TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
-    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $cfg_db_database . ".textbox_remark TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".textbox_marking TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".textbox_remark TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $cfg_db_database . ".track_changes TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".temp_users TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";  
     
@@ -609,6 +610,19 @@ if (!isset($_POST['update'])) {
         echo '<li class="error">ERROR: could not set permissions ' . $sql . '</li>';
       }  
     }
+    
+    //Old users will be missing permision to delete from textbox_marking and textbox_remark just add them in
+    $priv_SQL = Array();
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".textbox_marking TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".textbox_remark TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
+    $priv_SQL[] = "FLUSH PRIVILEGES";
+    foreach ($priv_SQL as $sql) {
+      $mysqli->query($sql);
+      if ($mysqli->errno != 0) {
+        echo '<li class="error">ERROR: could not set permissions ' . $sql . '</li>';
+      }  
+    }
+    
     ////////////////////////////////////////////////////////////////////////////
     //
     //  update the config file!!
@@ -1251,6 +1265,8 @@ if (!isset($_POST['update'])) {
     
   } // END Create SCT user
   
+  $cfg_db_inv_username = $cfg_db_database . '_inv';
+
   $result = $mysqli->prepare("SELECT user FROM mysql.user WHERE user = '" . $cfg_db_database . "_inv'");
   $result->execute();
   $result->store_result();
@@ -1258,7 +1274,6 @@ if (!isset($_POST['update'])) {
   $result->fetch();
   if ($result->num_rows() == 0) {
     
-    $cfg_db_inv_username = $cfg_db_database . '_inv';
     $cfg_db_inv_password = PasswordUtils::gen_password(16);
         
     $priv_SQL = array();
@@ -1885,6 +1900,102 @@ if (!isset($_POST['update'])) {
     $adjust->close();
     echo "<li>ALTER TABLE courses DROP COLUMN school</li>\n";
   }
+
+  // 19/01/2012 - Add LDAP user search prefix to config file.
+  $new_cfg_str = array();
+  $new_cfg_str[] = "  \$cfg_ldap_user_prefix   = 'sAMAccountName='; // Nottingham specific.  Please change.\n";
+
+  $cfg = file($cfg_web_root . 'config/config.inc.php');
+  $found = false;
+  $ldap_pass_location = 0;
+  $index = 0;
+  foreach ($cfg as $line) {
+    if (strpos($line,'cfg_ldap_user_prefix') !== false) {
+      $found = true;
+    }
+    if (strpos($line,'cfg_ldap_bind_password') !== false) {
+      $ldap_pass_location = $index;
+    }
+    $index++;
+  }
+
+  if (!$found) {
+    array_splice($cfg, $ldap_pass_location+1, 0, $new_cfg_str);
+    if (file_exists($cfg_web_root . 'config/config.inc.php')) {
+      rename($cfg_web_root . 'config/config.inc.php', $cfg_web_root . 'config/config.inc.old8.php');
+    }
+
+    if (file_put_contents($cfg_web_root . 'config/config.inc.php', $cfg) === false) {
+      echo "<li class=\"error\">" . $string['couldnotwrite'] . "</li>";
+    }
+    echo "<li>Added LDAP user search prefix to config file.\n";
+    echo "<br /><strong>If you use LDAP authentication then you will need to change the value <code>\$cfg_ldap_user_prefix</code> in <code>/config/config.inc.php</code></strong></li>\n";
+    ob_flush();
+    flush();
+  }
+
+  // 24/02/2012 - Add new page character set to configuration file.
+  $new_cfg_str =  array("\$cfg_page_charset = 'UTF-8';\n");
+  $cfg = file($cfg_web_root . 'config/config.inc.php');
+
+  //remove refrances to old vars
+  $cfg_new = array();
+  $found = false;
+  foreach ($cfg as $line) {
+    if (strpos($line,'cfg_page_charset') !== false) {
+      $found = true;
+    }
+    $cfg_new[] = $line;
+  }
+
+  if (!$found) {
+    $index = 0;
+    foreach ($cfg as $line) {
+      if (strpos($line, '$protocol') !== false) {
+        $found = true;
+        break;
+      }
+      $index++;
+    }
+
+    if (!$found) $index = 20;
+
+    //add the new config chunk
+    array_splice($cfg_new, $index + 1, 0, $new_cfg_str);
+
+    if (file_exists($cfg_web_root . 'config/config.inc.php')) {
+      rename($cfg_web_root . 'config/config.inc.php', $cfg_web_root . 'config/config.inc.old8.php');
+    }
+
+    if (file_put_contents($cfg_web_root . 'config/config.inc.php', $cfg_new) === false) {
+      echo "<li class=\"error\">" . $string['couldnotwrite'] . "</li>";
+    }
+    echo "<li>Added page charset to configuration file.</li>\n";
+  }
+
+  // 05/03/2012 - Add announcements table
+  $result = $mysqli->prepare("SELECT TABLE_NAME FROM information_schema.COLUMNS WHERE TABLE_NAME='announcements' AND TABLE_SCHEMA='$cfg_db_database'");
+  $result->execute();
+  $result->store_result();
+  $result->bind_result($column_type);
+  $result->fetch();
+  if ($result->num_rows() == 0) {
+    $adjust = $mysqli->prepare("CREATE TABLE announcements (id int not null primary key auto_increment, title varchar(255), staff_msg text, student_msg text, icon varchar(255), startdate datetime, enddate datetime, deleted datetime)");
+    $adjust->execute();
+    $adjust->close();
+    echo "<li>CREATE TABLE announcements (id int not null primary key auto_increment, title varchar(255), staff_msg text, student_msg text, icon varchar(255), startdate datetime, enddate datetime, deleted datetime, deleted datetime)</li>\n";
+    ob_flush();
+    flush();
+  }
+  $result->close();
+
+  $sql = "GRANT SELECT ON " . $cfg_db_database . ".announcements TO '" . $cfg_db_student_user . "'@'". $cfg_db_host . "'";
+  $mysqli->query($sql);
+  echo "<li>GRANT SELECT ON " . $cfg_db_database . ".announcements TO '" . $cfg_db_student_user . "'@'". $cfg_db_host . "'</li>\n";
+
+  $sql = "GRANT SELECT ON " . $cfg_db_database . ".log2 TO '" . $cfg_db_inv_username . "'@'". $cfg_db_host . "'";
+  $mysqli->query($sql);
+  echo "<li>GRANT SELECT ON " . $cfg_db_database . ".log2 TO '" . $cfg_db_inv_username . "'@'". $cfg_db_host . "'</li>\n";
 
   // End ------------------------------------------------------------------
   echo "</ol>\n";

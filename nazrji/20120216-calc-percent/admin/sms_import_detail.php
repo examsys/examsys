@@ -43,10 +43,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
+<meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
 <title>SMS Update Summary<?php echo " $cfg_install_type"; ?></title>
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
+<link rel="stylesheet" type="text/css" href="../css/header.css" />
 <script src="../js/staff_help.js" type="text/javascript"></script>
-<style>
+<style type="text/css">
 th {background-color:#F1F5FB; font-weight:normal}
 tr {vertical-align:top}
 .no {text-align:right}
@@ -58,13 +60,13 @@ tr {vertical-align:top}
 ?>
 
 <div id="content" class="content" style="font-size:80%">
-<table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+<table class="header">
 <tr>
-<td colspan="6" style="background-color:#F1F5FB"><div class="breadcrumb"><a href="../staff/index.php"><?php echo $string['home']; ?></a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php"><?php echo $string['administrativetools']; ?></a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="sms_import_summary.php"><?php echo $string['smsimportsummary']; ?></a></div><div style="margin-left:10px; font-size:200%; font-weight:bold"><?php echo $string['smsimportson']; ?> <?php echo substr($_GET['day'],6,2) . '/' . substr($_GET['day'],4,2) . '/' . substr($_GET['day'],0,4); ?></td>
-<td style="background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(1); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="<?php echo $string['help']; ?>" border="0" /></a></td>
+<th colspan="6"><div class="breadcrumb"><a href="../staff/index.php"><?php echo $string['home']; ?></a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php"><?php echo $string['administrativetools']; ?></a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="sms_import_summary.php"><?php echo $string['smsimportsummary']; ?></a></div><div style="margin-left:10px; font-size:200%; font-weight:bold"><?php echo $string['smsimportson']; ?> <?php echo substr($_GET['day'],6,2) . '/' . substr($_GET['day'],4,2) . '/' . substr($_GET['day'],0,4); ?></th>
+<th style="text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(1); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="<?php echo $string['help']; ?>" border="0" /></a></th>
 </tr>
-<tr><th><?php echo $string['moduleid']; ?></th><th><?php echo $string['enrolements']; ?></th><th><?php echo $string['enrolementdetails']; ?></th><th><?php echo $string['deletions']; ?></th><th><?php echo $string['deletiondetails']; ?></th><th><?php echo $string['importtype']; ?></th><th style="width:20%">&nbsp;</th></tr>
-<tr><td colspan="7" style="height:3px"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td></tr>
+<tr><th><div style="padding-left:10px"><?php echo $string['moduleid']; ?></div></th><th><?php echo $string['enrolements']; ?></th><th><?php echo $string['enrolementdetails']; ?></th><th><?php echo $string['deletions']; ?></th><th><?php echo $string['deletiondetails']; ?></th><th><?php echo $string['importtype']; ?></th><th style="width:20%">&nbsp;</th></tr>
+<tr><th colspan="7" class="bevel"></th></tr>
 
 <?php
   $result = $mysqli->prepare("SELECT moduleid, enrolements, enrolement_details, deletions, deletion_details, import_type FROM sms_imports WHERE updated=? ORDER BY moduleid");

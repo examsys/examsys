@@ -40,13 +40,13 @@ $result->close();
 if ($paper_no == 1) {
   header("location: " . $protocol . $_SERVER['HTTP_HOST'] . $cfg_root_path . "/osce/class_list.php?paperID=" . $paper_display[0]['id']);
 } elseif ($paper_no == 0) {
-  echo "<html>\n<head>\n<title>" . $string['exams'] . "</title>\n<style>\nbody {font-size:90%; font-family:Arial,sans-serif; background-color:#FCFCFC; color:#575757}\nh1 {font-weight:normal; color:#4465A2; font-size:140%}\n</style>\n</head>\n<body>\n";
+  echo "<html>\n<head>\n<meta http-equiv=\"content-type\" content=\"text/html;charset={$cfg_page_charset}\" />\n\t<title>" . $string['exams'] . "</title>\n<style type=\"text/css\">\nbody {font-size:90%; font-family:Arial,sans-serif; background-color:#FCFCFC; color:#575757}\nh1 {font-weight:normal; color:#4465A2; font-size:140%}\n</style>\n</head>\n<body>\n";
   echo "<div style=\"position:absolute; left:10px; top:10px\"><img src=\"../artwork/orange_alert_48.png\" width=\"48\" height=\"48\" /></div>\n";
   echo "<h1 style=\"margin-left:60px\">" . $string['cannotfind'] . "</h1>\n";
   echo "<hr size=\"1\" align=\"left\" width=\"500\" style=\"margin-left:60px; color:#C0C0C0; background-color:#C0C0C0\" />\n";
   exit;
 } else {
-  echo "<html>\n<head>\n<title>" . $string['exams'] . "</title>\n</head>\n<body style=\"font-family:Arial,sans-serif\">\n";
+  echo "<html>\n<head>\n<meta http-equiv=\"content-type\" content=\"text/html;charset={$cfg_page_charset}\" />\n\t<title>" . $string['exams'] . "</title>\n</head>\n<body style=\"font-family:Arial,sans-serif\">\n";
   echo "<h1>" . $string['multiplestations'] . "</h1>\n";
   echo "<p><em>" . $string['pleaseselect'] . "</em></p>\n";
   echo "<table cellpadding=\"0\" cellspacing=\"4\" border=\"0\">\n";

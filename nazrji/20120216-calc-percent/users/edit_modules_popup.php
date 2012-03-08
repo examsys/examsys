@@ -103,15 +103,17 @@
       }
     }
   ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title><?php echo $_POST['session']; ?> Modules</title>
-<script language="JavaScript">
-  function closeWindow() {
-    window.opener.location.href = 'details.php?userID=<?php echo $_POST['userID']; ?>&tab=modules';
-    self.close();
-  }
-</script>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title><?php echo $_POST['session']; ?> Modules</title>
+  <script type="text/javascript">
+    function closeWindow() {
+      window.opener.location.href = 'details.php?userID=<?php echo $_POST['userID']; ?>&tab=modules';
+      self.close();
+    }
+  </script>
 </head>
 <body onload="closeWindow()">
 </body>
@@ -129,7 +131,7 @@
 <html>
 <head>
 <title><?php echo $session; ?> Modules</title>
-<style>
+<style type="text/css">
   body {font-family:Arial,sans-serif; font-size:90%; background-color:#E3EFFF; color:black; margin:8px 4px 4px 4px}
   td {font-size:90%}
 </style>

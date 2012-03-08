@@ -34,8 +34,9 @@ $result->close();
 ?>
   <html>
   <head>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
   <title>OSCE: Class List</title>
-  <style>
+  <style type="text/css">
     body {font-family:Arial,sans-serif; font-size:70%; background-color:white; color:black; margin:0px}
     table {font-size:100%; border-collapse:collapse; width:100%}
     tr {border:1px solid #7F9DB9}

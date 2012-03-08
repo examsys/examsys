@@ -276,12 +276,14 @@ if (isset($_POST['Submit'])) {
       }
     }
 
-  ?>
-    <html>
-    <head>
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
     <title><?php echo $string['edittitle']; ?></title>
     <meta http-equiv="pragma" content="no-cache" />
-    <script language="JavaScript">
+    <script type="text/javascript">
       function closeWindow() {
 <?php
           if ($_POST['noadd'] == 'y') {
@@ -310,10 +312,13 @@ if (isset($_POST['Submit'])) {
   <?php
   } else {
   ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
-    <html>
-    <head><title><?php echo $string['edittitle']; ?></title></head>
-    <body>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+    <title><?php echo $string['edittitle']; ?></title>
+  </head>
+  <body>
     <form>
       <br /><?php echo $string['warning']; ?><br />&nbsp;<div align="center"><input type="button" name="back" value="&lt; Back" onclick="javascript: history.go(-1)" /></div>
     </form>
@@ -354,13 +359,14 @@ if (isset($_POST['Submit'])) {
   $start_date = $start_date->format("Y/m/d H:i:s");
   $end_date = $end_date->format("Y/m/d H:i:s");
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
   <title><?php echo $string['propertiestitle'] . ' ' . $cfg_install_type; ?></title>
 
-  <style>
+  <style type="text/css">
     body {font-family:Arial,sans-serif; color:black; background-color:#F1F5FB; margin:0px; font-size:100%}
     table {font-size:100%; text-align:left}
     input,textarea {font-family:Arial,sans-serif; color:black}
@@ -370,7 +376,7 @@ if (isset($_POST['Submit'])) {
 
   <?php echo $cfg_editor_javascript; ?>
   <script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
-  <script language="JavaScript">
+  <script type="text/javascript">
     $(getMeta);
   
     function getMeta() {
@@ -671,12 +677,12 @@ if ($paper_type != '4' and $paper_type != '5') {
    ?>
      <tr><td align="right" valign="top"><?php echo $string['type']; ?>&nbsp;</td><td>
      <select name="paper_type" onclick="changeType();">
-     <option value="0"<?php if ($paper_type == '0') echo ' selected'; ?> /><?php echo $string['formative self-assessment']; ?></option>
-     <option value="1"<?php if ($paper_type == '1') echo ' selected'; ?> /><?php echo $string['progress test']; ?></option>
-     <option value="2"<?php if ($paper_type == '2') echo ' selected'; ?> /><?php echo $string['summative exam']; ?></option>
-     <option value="3"<?php if ($paper_type == '3') echo ' selected'; ?> /><?php echo $string['survey']; ?></option>
-     <option value="4"<?php if ($paper_type == '4') echo ' selected'; ?> /><?php echo $string['osce station']; ?></option>
-     <option value="5"<?php if ($paper_type == '5') echo ' selected'; ?> /><?php echo $string['offline paper']; ?></option>
+     <option value="0"<?php if ($paper_type == '0') echo ' selected="selected"'; ?> /><?php echo $string['formative self-assessment']; ?></option>
+     <option value="1"<?php if ($paper_type == '1') echo ' selected="selected"'; ?> /><?php echo $string['progress test']; ?></option>
+     <option value="2"<?php if ($paper_type == '2') echo ' selected="selected"'; ?> /><?php echo $string['summative exam']; ?></option>
+     <option value="3"<?php if ($paper_type == '3') echo ' selected="selected"'; ?> /><?php echo $string['survey']; ?></option>
+     <option value="4"<?php if ($paper_type == '4') echo ' selected="selected"'; ?> /><?php echo $string['osce station']; ?></option>
+     <option value="5"<?php if ($paper_type == '5') echo ' selected="selected"'; ?> /><?php echo $string['offline paper']; ?></option>
    <?php
      echo "<td align=\"right\" valign=\"top\">" . $string['folder'] . "&nbsp;</td><td valign=\"top\">\n<select style=\"width:210px\" name=\"folderID\">\n";
      echo "<option value=\"\"></option>";
@@ -807,7 +813,7 @@ if ($paper_type != '4' and $paper_type != '5') {
        echo "</tr>\n";
 
        echo "<tr><td align=\"right\">" . $string['calculator'] . "&nbsp;</td><td><select name=\"calculator\">\n";
-       for ($calcloop=-1;$calcloop<3;$calcloop++) {
+       for ($calcloop=0; $calcloop<3; $calcloop++) {
          echo "<option value=\"$calcloop\"";
          if ($calcloop == $calculator) {
            echo " selected";

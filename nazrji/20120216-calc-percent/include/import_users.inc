@@ -159,7 +159,7 @@ function add_users_from_file($fileName) {
       //add students to modules
       $module = trim($fields[$header['modules']]);
       $session = trim($fields[$header['session']]);
-      UserUtils::addUserToModule($tmp_userID, $module, $session, $mysqli);
+      UserUtils::addUserToModule($tmp_userID, $module, 1, $session, $mysqli);
     }
   }
 

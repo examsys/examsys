@@ -9,9 +9,10 @@
  .file {float:left; width:375px; height:74px; padding-left:12px; font-size:90%}
  .mee {font-size:120%; display:inline}
 
+ a {text-decoration:none}
  a:link {color:#0000FF}
  a:visited {color:#0000FF}
- a:hover {color:#0000FF}
+ a:hover {color:#0000FF; text-decoration:underline}
 
  a.blacklink:link {color:#000000}
  a.blacklink:visited {color:#000000}
@@ -42,9 +43,70 @@
 .menuitem a:visited {color:black; text-decoration:none; cursor:pointer}
 .menuitem a:hover {color:blue; text-decoration:underline; cursor:pointer}
 
-.breadcrumb {margin-top:2px; margin-left:10px; font-size:90%}
-.breadcrumb a:link {color:blue; text-decoration:none; cursor:pointer}
-.breadcrumb a:visited {color:blue; text-decoration:none; cursor:pointer}
-.breadcrumb a:hover {color:blue; text-decoration:underline; cursor:pointer}
-
 textarea, input[type=text], select {font-family:Arail,sans-serif; border: 1px solid #7F9DB9}
+
+ .menu_list {
+ margin: 4px 0 0 0;
+ padding-left: 11px;
+ list-style: none;
+}
+
+.menu_list li {
+ padding-left: 24px;
+ width: 120px;
+ font-size: 90%;
+ margin: 0;
+}
+
+#break_controls {
+ list-style: none;
+}
+
+#break_controls li {
+ height: 16px;
+ margin-bottom: 6px;
+}
+
+.menu_list .break {
+ background: transparent url('../artwork/screen_icon.png') no-repeat left center;
+}
+
+.menu_list .break.greymenuitem {
+ background: transparent url('../artwork/screen_icon_grey.png') no-repeat left center;
+}
+
+#delete_break {
+ background: transparent url('../artwork/screen_icon_delete.png') no-repeat left center;
+}
+
+#delete_break.greymenuitem {
+ background: transparent url('../artwork/screen_icon_delete_off.png') no-repeat left center;
+}
+
+a.checklist {
+  color:black;
+  text-decoration:none;
+}
+
+ .ico {
+   text-align:center;
+   width:16px;
+ }
+
+.ico img {
+  border: 0;
+}
+
+.submenuheading {
+  font-weight:bold;
+  padding-top:15px;
+  margin-left:2px;
+}
+
+ #menu2b, #menu2c {
+  display: none;
+}
+
+div.iefixdiv {
+  padding-top: 1px;
+}

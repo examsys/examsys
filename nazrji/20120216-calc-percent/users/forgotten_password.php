@@ -82,7 +82,7 @@ if (isset($_POST['submit']) and $_POST['submit'] == $string['send']) {
 <html>
 <head>
 <title>Rogō {$string['passwordreset']}</title>
-<style>
+<style type="text/css">
 body, td, p, div {font-family:Arial,sans-serif; background-color:white; color:#003366; font-size:90%}
 h1 {font-size:140%}
 h2 {font-size:120%}
@@ -116,24 +116,25 @@ EMAIL;
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<title><?php echo $string['forgottenpassword']." $cfg_install_type"; ?></title>
-<link rel="stylesheet" href="../css/screen.css" type="text/css" />
-<style>
-body {background-color:white; color:black; font-family:Arial,sans-serif; font-size:90%}
-.field {padding-top:4px; padding-left:6px; font-weight:bold}
-</style>
-<script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
-<script type="text/javascript" src="../js/jquery.validate.min.js"></script>
-<script type="text/javascript">
-$(function() {
-  $('#forgotten_pw').validate({
-		messages: {
-			email: '<?php echo $string['emailaddressinvalid'] ?>'
-		}
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title><?php echo $string['forgottenpassword']." $cfg_install_type"; ?></title>
+  <link rel="stylesheet" href="../css/screen.css" type="text/css" />
+  <style type="text/css">
+  body {background-color:white; color:black; font-family:Arial,sans-serif; font-size:90%}
+  .field {padding-top:4px; padding-left:6px; font-weight:bold}
+  </style>
+  <script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
+  <script type="text/javascript" src="../js/jquery.validate.min.js"></script>
+  <script type="text/javascript">
+  $(function() {
+    $('#forgotten_pw').validate({
+      messages: {
+        email: '<?php echo $string['emailaddressinvalid'] ?>'
+      }
+    });
   });
-});
-</script>
+  </script>
 </head>
 
 <body>

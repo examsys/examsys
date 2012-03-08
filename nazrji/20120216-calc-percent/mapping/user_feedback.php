@@ -37,7 +37,8 @@
   }
   
   $showReflection = true;
-  if ((strpos($userroles,'Staff') !== false or strpos($userroles,'SysAdmin') !== false) AND $_GET['userID'] != '') {
+  if ((strpos($userroles,'Staff') !== false or strpos($userroles,'SysAdmin') !== false) AND (!isset($_GET['userID']) OR $_GET['userID'] != '') ) {
+    check_var('userID', 'GET', true, false);
     $userID = $_GET['userID'];
     $showReflection = false;
   }
@@ -138,13 +139,16 @@
   $result->close();*/
 
  ?>
- <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
-  <html>
-  <head>
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
   <title><?php echo $string['examfeedback']; ?></title>
-  <style style="text/css">
-    body {font-family:Arial,sans-serif; font-size:90%; color:black; background-color:white; margin:10px}
+  <link rel="stylesheet" type="text/css" href="../css/header.css" />
+  <style type="text/css">
+    body {font-family:Arial,sans-serif; font-size:90%; color:black; background-color:white; margin:0px}
+    h1 {margin-left:5px;}
     td {font-size:100%}
     img {border: none;}
     .q_no {text-align:right; vertical-align:top; cursor:pointer}
@@ -156,10 +160,11 @@
     h1 {font-size:120%; font-weight:bold; color:#1E3287}
     .r {text-align:right}
     .c {text-align:center}
+    .symbol {width:24px; text-align:center}
   </style>
-  </head>
-  <body>
-    <table style="position:relative; border: 1px solid #808080; float:right; font-size:90%; background-color:#FFFFEE; box-shadow: 2px 2px 2px #C0C0C0; z-index:10">
+</head>
+<body>
+    <table style="position:relative; border: 1px solid #808080; box-shadow: 2px 2px 2px #C0C0C0; z-index:10; float:right; top:10px; right:10px; font-size:90%; background-color:#FFFFEE; margin-bottom:5px">
     <tr><td colspan="2" style="padding-left:10px; padding-right:10px"><strong><?php echo $string['key']; ?></strong></td></tr>
     <tr><td style="padding-left:10px"><img src="../artwork/ok_comment.png" width="16" height="16" alt="Completely/Mostly acquired" /></td><td style="padding-right:10px"><?php echo $string['greenicon']; ?></td></tr>
     <tr><td style="padding-left:10px"><img src="../artwork/minor_comment.png" width="16" height="16" alt="Partically acquired" /></td><td style="padding-right:10px"><?php echo $string['ambericon']; ?></td></tr>
@@ -169,15 +174,15 @@
     <tr><td style="padding-left:10px" colspan="2"><?php echo $string['question']; ?></td></tr>
     </table>
   <?php
-  echo "<table cellpadding=\"0\" cellspacing=\"0\" style=\"background-color:#F1F5FB; width:100%; position:absolute; top:0px; left:0px; height:85px; padding:0px; border:0px\">\n";
-  echo "<tr><td style=\"padding:5px\"><div style=\"font-size:170%; font-weight:bold\">$paper_title</div>\n";
-  echo "<div><strong>$student_name " . $string['feedback'] . "</strong></div></td></tr>\n";
-  echo "<tr><td style=\"height:3px\"><img src=\"../artwork/header_horizontal_line.gif\" width=\"100%\" height=\"3\" /></td></tr>\n";
+  echo "<table class=\"header\" style=\"position:absolute; top:0px; left:0px; font-size:90%\">\n";
+  echo "<tr><th style=\"padding:5px\"><div style=\"font-size:220%; font-weight:bold\">$paper_title</div>\n";
+  echo "<div><strong>$student_name " . $string['feedback'] . "</strong></div></th></tr>\n";
+  echo "<tr><th class=\"bevel\"></th></tr>\n";
   echo "</table>\n";
   
   //get Cohort Data
   $chort_question_data = getCohortData($mysqli, $moduleID, $start_date, $end_date, '%', '%', '%', $paperID, $paper_type, '');
-  
+
   //get users log data excluding exclued questions
   $qid_list = '';
   $question_data = array();
@@ -214,15 +219,15 @@
   $objByModule = getObjectivesByMapping($moduleID, $session, $paperID, $qid_list, $mysqli);
   unset($objByModule['none_of_the_above']);
   if (count($objByModule) > 0) {
-    foreach($objByModule as $module => $mappings) {
-      foreach($mappings as $id => $mappingData) {
+    foreach ($objByModule as $module => $mappings) {
+      foreach ($mappings as $id => $mappingData) {
         if( $mappingData['session']['class_code'] != '') {
           $sessiontitle = $mappingData['session']['class_code'];
         } else {
           $sessiontitle = $mappingData['session']['title'];
         }
         $objectives[$id] = $mappingData;
-        foreach($mappingData['mapped'] as $q_id) {
+        foreach ($mappingData['mapped'] as $q_id) {
           if (isset($objectives[$id]['questions'])) {
             $objectives[$id]['questions']++;
           } else {
@@ -256,6 +261,8 @@
   ?>
   <br />
   <br />
+  <br />
+  <br />
   <h1><?php echo $string['learningobjectives']; ?></h1>
   <p><?php echo $string['explanation']; ?></p>
   <?php
@@ -264,7 +271,7 @@
     exit;
   }
   
-  echo "<table cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"font-size:100%; line-height:150%\">\n";
+  echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"font-size:100%; line-height:150%\">\n";
   echo "<tr><td style=\"border-top: 1px solid #D6E5F5\">&nbsp;</td><td style=\"border-top: 1px solid #D6E5F5\"><img src=\"../artwork/vertical_spacer.gif\" width=\"1\" height=\"21\" alt=\"\" /></td><td colspan=\"3\" style=\"border-top: 1px solid #D6E5F5; color:#1E3287\">&nbsp;<nobr>" . $string['yourmark'] . "</nobr></td><td style=\"border-top: 1px solid #D6E5F5\"><img src=\"../artwork/vertical_spacer.gif\" width=\"1\" height=\"21\" alt=\"\" /></td><td style=\"border-top: 1px solid #D6E5F5; color:#1E3287\">&nbsp;" . $string['relative'] . "&nbsp;</td><td style=\"border-top: 1px solid #D6E5F5\"><img src=\"../artwork/vertical_spacer.gif\" width=\"1\" height=\"21\" alt=\"\" /></td><td style=\"border-top: 1px solid #D6E5F5; color:#1E3287\"><nobr>&nbsp;" . $string['qno'] . "&nbsp;</nobr></td><td style=\"border-top: 1px solid #D6E5F5\"><img src=\"../artwork/vertical_spacer.gif\" width=\"1\" height=\"21\" alt=\"\" /></td><td style=\"border-top: 1px solid #D6E5F5; color:#1E3287; text-align:center\">" . $string['objective'] . "</td></tr>";
   foreach($objectives as $id => $obj_data) {
     $session_string = '';
@@ -291,7 +298,7 @@
       $session_string = "&nbsp;&nbsp;<a target=\"_blank\" href=\"" . $obj_data['session']['source_url'] . "\"><img src=\"../artwork/small_link.png\" width=\"12\" height=\"12\" /></a>&nbsp;<a target=\"_blank\" href=\"" . $obj_data['session']['source_url'] . "\">" . $obj_data['session']['sessiontitle'] . "</a>";
     }
 
-    echo "<tr><td><img src=\"$img_src\" width=\"16\" height=\"16\" />&nbsp;</td><td></td><td class=\"r\">" . $obj_data['mark_sum'] . "</td><td>&nbsp;" . $string['outof'] . "&nbsp;</td><td>" . $obj_data['totalpos_sum'] . "</td><td></td><td class=\"r\">$comparison</td><td></td><td class=\"c\">" . $obj_data['questions'] . "</td><td></td><td>" . $obj_data['content'] . " $session_string</td></tr>\n";
+    echo "<tr><td class=\"symbol\"><img src=\"$img_src\" width=\"16\" height=\"16\" /></td><td></td><td class=\"r\">" . $obj_data['mark_sum'] . "</td><td>&nbsp;" . $string['outof'] . "&nbsp;</td><td>" . $obj_data['totalpos_sum'] . "</td><td></td><td class=\"r\">$comparison</td><td></td><td class=\"c\">" . $obj_data['questions'] . "</td><td></td><td>" . $obj_data['content'] . " $session_string</td></tr>\n";
   }
   echo "</table>\n";
 

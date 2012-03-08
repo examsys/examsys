@@ -29,9 +29,9 @@
 <html>
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+<meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
 <title>Rogō<?php echo " $cfg_install_type"; ?></title>
-<style>
+<style type="text/css">
 body {font-family:Arial,sans-serif}
 h1 {font-size:150%; color:#C00000}
 </style>

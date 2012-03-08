@@ -1,23 +1,23 @@
 <?php
-// This file is part of Rogō
+// This file is part of Rog?
 //
-// Rogō is free software: you can redistribute it and/or modify
+// Rog? is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// Rog? is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with Rog?.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
-* 
+*
 * Utility class for installer related functionality
-* 
+*
 * @author Anthony Brown
 * @version 1.0
 * @copyright Copyright (c) 2012 The University of Nottingham
@@ -32,10 +32,10 @@ require_once $cfg_web_root . 'classes/lang.class.php';
 require_once $cfg_web_root . 'lang/' . $language . '/include/timezones.inc';
 
 Class InstallUtils {
-	
+
   public static $db;
   public static $rogo_path;
-  
+
   public static $warnings;
 
   public static $cfg_company;
@@ -49,6 +49,7 @@ Class InstallUtils {
   public static $cfg_db_username;
   public static $cfg_db_password;
   public static $cfg_db_charset;
+  public static $cfg_page_charset;
 
   public static $cfg_db_student_user;
   public static $cfg_db_student_passwd;
@@ -62,7 +63,7 @@ Class InstallUtils {
   public static $cfg_db_sct_passwd;
   public static $cfg_db_inv_user;
   public static $cfg_db_inv_passwd;
-  
+
   public static $cfg_db_name;
   public static $db_admin_username;
   public static $db_admin_passwd;
@@ -70,44 +71,45 @@ Class InstallUtils {
   public static $ts_version = '4.1';
   public static $support_email;
   public static $cfg_SysAdmin_username;
-  
+
   public static $cfg_ldap_server;
   public static $cfg_ldap_search_dn;
   public static $cfg_ldap_bind_rdn;
   public static $cfg_ldap_bind_password;
+  public static $cfg_ldap_user_prefix;
   public static $cfg_use_ldap = 'false';
-  
+
   public static $cfg_support_email;
   public static $emergency_support_numbers;
-    
-  
+
+
   static function displayForm() {
     global $string, $language, $timezone_array;
-    
+
     ?>
-    <script>
+    <script type="text/javascript">
       $(document).ready(function(){
           $("#installForm").validate();
       });
-      
+
       $(document).ready(function() {
         $('#useLdap').change(function() {
             $('#ldapOptions').toggle();
           });
       });
-    </script> 
+    </script>
     <form id="installForm" class="cmxform" method="post" action="<?php echo $_SERVER['PHP_SELF'];?>">
-      
+
       <table class="header"><tr><td><nobr><?php echo $string['company']; ?></nobr></td><td class="line"><hr /></td></tr></table>
         <div><label for="company_name"><?php echo $string['companyname']; ?></label> <input type="text" value="" id="company_name" name="company_name" class="required" minlength="2" /> </div>
 
-      
-      <table class="header"><tr><td><nobr><?php echo $string['databaseadminuser']; ?></nobr></td><td class="line"><hr /></td></tr></table> 
+
+      <table class="header"><tr><td><nobr><?php echo $string['databaseadminuser']; ?></nobr></td><td class="line"><hr /></td></tr></table>
         <div><?php echo $string['needusername']; ?></div>
         <br />
         <div><label for="mysql_admin_user"><?php echo $string['dbusername']; ?></label> <input type="text" value="" id="mysql_admin_user" name="mysql_admin_user" class="required" minlength="2" /> </div>
         <div><label for="mysql_admin_pass"><?php echo $string['dbpassword']; ?></label> <input type="password" value="" id="mysql_admin_pass" name="mysql_admin_pass"/></div>
-      
+
       <table class="header"><tr><td><nobr><?php echo $string['databasesetup']; ?></nobr></td><td class="line"><hr /></td></tr></table>
         <div></div>
         <br />
@@ -115,12 +117,13 @@ Class InstallUtils {
         <div><label for="mysql_db_port"><?php echo $string['databaseport']; ?></label> <input type="text" value="3306" id="mysql_db_port" name="mysql_db_port" class="required" /> </div>
       <div><label for="mysql_db_name"><?php echo $string['databasename']; ?></label> <input type="text" value="rogo" id="mysql_db_name" name="mysql_db_name" class="required" minlength="3" /> </div>
       <div><label for="mysql_db_charset"><?php echo $string['databasecharset']; ?></label> <select id="mysql_db_charset" name="mysql_db_charset"><option value="latin1">latin1</option><option value="utf8">UTF-8</option></select> </div>
+      <div style="clear: left"><label for="page_charset"><?php echo $string['pagecharset']; ?></label> <select id="page_charset" name="page_charset"><option value="UTF-8">UTF-8</option><option value="ISO-8859-1">ISO 8859-1</option></select> </div>
 
       <table class="header"><tr><td><nobr><?php echo $string['databaseuser']; ?></nobr></td><td class="line"><hr /></td></tr></table>
         <div><label for="mysql_database_username"><?php echo $string['rdbusername']; ?></label> <input type="text" value="" id="mysql_database_username" name="mysql_database_username" class="required" minlength="3"/></div>
         <div><label for="mysql_database_passwd"><?php echo $string['rdbpassword']; ?></label> <input type="password" value="" id="mysql_database_passwd" name="mysql_database_passwd" class="required" minlength="8" /></div>
-      
-      <table class="header"><tr><td><nobr><?php echo $string['timedateformats']; ?></nobr></td><td class="line"><hr /></td></tr></table> 
+
+      <table class="header"><tr><td><nobr><?php echo $string['timedateformats']; ?></nobr></td><td class="line"><hr /></td></tr></table>
         <div><?php echo sprintf($string['tdformatsare'],'<a href="http://dev.mysql.com/doc/refman/5.1/en/date-and-time-functions.html#function_date-format" target="_blank">MySQL DATE_FORMAT</a>'); ?></div>
         <br />
         <div><label for="cfg_short_date"><?php echo $string['date']; ?></label> <input type="text" id="cfg_short_date" name="cfg_short_date" class="required" minlength="2" value="%d/%m/%y" /> </div>
@@ -145,12 +148,13 @@ Class InstallUtils {
           <div><label for="ldap_search_dn"><?php echo $string['searchdn']; ?></label> <input type="text" value="" id="ldap_search_dn" name="ldap_search_dn" /> </div>
           <div><label for="ldap_bind_rdn"><?php echo $string['bindusername']; ?></label> <input type="text" value="" id="ldap_bind_rdn" name="ldap_bind_rdn" /> </div>
           <div><label for="ldap_bind_password"><?php echo $string['bindpassword']; ?></label> <input type="password" value="" id="ldap_bind_password" name="ldap_bind_password" /> </div>
+          <div><label for="ldap_user_prefix"><?php echo $string['userprefix']; ?></label> <input type="text" value="" id="ldap_user_prefix" name="ldap_user_prefix" /> <img src="../artwork/information_icon.gif" class="tipright" width="16" height="16" title="<?php echo $string['userprefixtip'] ?>" /></div>
         </div>
-      
+
       <table class="header"><tr><td><nobr><?php echo $string['sysadminuser']; ?></nobr></td><td class="line"><hr /></td></tr></table>
         <div><?php echo $string['initialsysadmin']; ?></div>
         <br />
-        <div><label for="SysAdmin_title"><?php echo $string['title']; ?></label> 
+        <div><label for="SysAdmin_title"><?php echo $string['title']; ?></label>
           <select id="SysAdmin_title" name="SysAdmin_title" class="required">
 		<?php
 		  if ($language != 'en') {
@@ -168,56 +172,58 @@ Class InstallUtils {
         <div><label for="SysAdmin_email"><?php echo $string['emailaddress']; ?></label> <input type="text" value="" id="SysAdmin_email" name="SysAdmin_email" class="required email" /></div>
         <div><label for="SysAdmin_username"><?php echo $string['username']; ?></label> <input type="text" value="" id="SysAdmin_username" name="SysAdmin_username" class="required" minlength="3"/></div>
         <div><label for="SysAdmin_password"><?php echo $string['password']; ?></label> <input type="password" value="" id="SysAdmin_password" name="SysAdmin_password" class="required" minlength="8" /></div>
-      
+
       <table class="header"><tr><td><nobr><?php echo $string['helpdb']; ?></nobr></td><td class="line"><hr /></td></tr></table>
         <div><label for="loadHelp"><?php echo $string['loadhelp']; ?></label> <input id="loadHelp" name="loadHelp" type="checkbox" checked="checked"/></div>
-      
+
       <table class="header"><tr><td><nobr><?php echo $string['supportemaila']; ?></nobr></td><td class="line"><hr /></td></tr></table>
         <div></div>
         <br />
         <div><label for="support_email"><?php echo $string['supportemail']; ?></label> <input type="text" value="" id="support_email" name="support_email" class="" class="email"/> </div>
-      
+
       <table class="header"><tr><td><nobr><?php echo $string['supportnumbers']; ?></nobr></td><td class="line"><hr /></td></tr></table>
         <div><label for="emergency_support1"><?php echo $string['name']; ?></label> <input type="text" value="" id="emergency_support1" name="emergency_support1" class="" /> <?php echo $string['number']; ?> <input type="text" value="" name="emergency_support_number1" class="" /></div>
         <div><label for="emergency_support2"><?php echo $string['name']; ?></label> <input type="text" value="" id="emergency_support2" name="emergency_support2" class="" /> <?php echo $string['number']; ?> <input type="text" value="" name="emergency_support_number2" class="" /></div>
         <div><label for="emergency_support3"><?php echo $string['name']; ?></label> <input type="text" value="" id="emergency_support3" name="emergency_support3" class="" /> <?php echo $string['number']; ?> <input type="text" value="" name="emergency_support_number3" class="" /></div>
-        
+
       <div class="submit"> <input type="submit" name="install" value="<?php echo $string['install']; ?>" /> </div>
     </form>
     <?php
   }
-  
+
   static function  processForm() {
     global $string;
     self::$cfg_company = $_POST['company_name'];
     //check admin database user name and password and create the connection
     self::$cfg_db_host = $_POST['mysql_db_host'];
     self::$cfg_db_charset = $_POST['mysql_db_charset'];
+    self::$cfg_page_charset = $_POST['page_charset'];
     self::$cfg_db_port = $_POST['mysql_db_port'];
     self::$cfg_db_name = $_POST['mysql_db_name'];
     self::$db_admin_username = $_POST['mysql_admin_user'];
     self::$db_admin_passwd = $_POST['mysql_admin_pass'];
-    
+
     self::$cfg_db_username = $_POST['mysql_database_username'];
     self::$cfg_db_password = $_POST['mysql_database_passwd'];
-    
+
     self::$cfg_SysAdmin_username = $_POST['SysAdmin_username'];
-    
+
     self::$cfg_short_date = $_POST['cfg_short_date'];
     self::$cfg_long_date_time = $_POST['cfg_long_date_time'];
     self::$cfg_timezone = $_POST['cfg_timezone'];
-     
+
     //LDAP
     self::$cfg_ldap_server = $_POST['ldap_server'];
     self::$cfg_ldap_search_dn = $_POST['ldap_search_dn'];
     self::$cfg_ldap_bind_rdn = $_POST['ldap_bind_rdn'];
     self::$cfg_ldap_bind_password = $_POST['ldap_bind_password'];
-    if( self::$cfg_ldap_server != '' ) { 
+    if( self::$cfg_ldap_server != '' ) {
       self::$cfg_use_ldap = 'true';
     } else {
       self::$cfg_use_ldap = 'false';
     }
-    
+    self::$cfg_ldap_user_prefix = $_POST['ldap_user_prefix'];
+
     //ASSISTANCE
     self::$cfg_support_email = $_POST['support_email'];
     self::$emergency_support_numbers = 'array(';
@@ -233,26 +239,26 @@ Class InstallUtils {
     self::$db = new mysqli(self::$cfg_db_host , self::$db_admin_username, self::$db_admin_passwd,'',self::$cfg_db_port);
 
     if (mysqli_connect_error()) {
-      self::displayError(array('001' => mysqli_connect_error()));  
+      self::displayError(array('001' => mysqli_connect_error()));
     }
     self::$db->set_charset(self::$cfg_db_charset);
     self::createDatabase(self::$cfg_db_name, self::$cfg_db_charset);
-    
+
     //LOAD help if requested
     if (isset($_POST['loadHelp'])) {
       self::loadHelp();
     }
-    
+
     //Write out the config file
     self::writeConfigFile();
-    
+
     echo "<h1>Rogo Installed</h1>";
-    
+
     self::displayWarnings();
-    
+
   }
-  
-  
+
+
   /**
   * Load the UoN help databases
   *
@@ -261,34 +267,34 @@ Class InstallUtils {
     global $string;
     $staff_help = './staff_help.sql';
     $student_help = './student_help.sql';
-    
+
     //make sure we are using the right DB
     self::$db->select_db(self::$cfg_db_name);
-    
+
     if (file_exists($staff_help)) {
       $query = file_get_contents($staff_help);
       self::$db->query("TRUNCATE staff_help");
       self::$db->query($query);
       if (self::$db->errno != 0) {
-        self::logWarning(array('501' => $string['logwarning1'] . self::$db->error )); 
+        self::logWarning(array('501' => $string['logwarning1'] . self::$db->error ));
       }
     } else {
       self::logWarning(array('502'=>  $string['logwarning2']));
     }
-    
+
     if (file_exists($student_help)) {
       $query = file_get_contents($student_help);
       self::$db->query("TRUNCATE student_help");
       self::$db->query($query);
       if (self::$db->errno != 0) {
-        self::logWarning(array('503' =>  $string['logwarning3'] . self::$db->error )); 
+        self::logWarning(array('503' =>  $string['logwarning3'] . self::$db->error ));
       }
     } else {
       self::logWarning(array('504'=> $string['logwarning4']));
     }
-    
+
   }
-  
+
   /**
   * create the database and users if they do not exist
   *
@@ -299,7 +305,7 @@ Class InstallUtils {
     $res->execute();
     $res->store_result();
     if ($res->num_rows > 0) {
-      self::displayError(array('010' => $string['displayerror1']."The database name '$dbname' is in use please use a different one")); 
+      self::displayError(array('010' => $string['displayerror1']."The database name '$dbname' is in use please use a different one"));
     }
     $res->close();
 
@@ -313,21 +319,21 @@ Class InstallUtils {
 
     self::$db->query("CREATE DATABASE $dbname CHARACTER SET = $dbcharset COLLATE = $collation"); //have to use query here oldvers of php throw an error
     if (self::$db->errno != 0) {
-      self::displayError(array('011' => $string['displayerror2'])); 
+      self::displayError(array('011' => $string['displayerror2']));
     }
-    
+
     //select the newly created database
     self::$db->change_user(self::$db_admin_username, self::$db_admin_passwd,self::$cfg_db_name);
-    
+
     //create tables
     $tables = new databaseTables($dbcharset);
     while ($sql = $tables->next()) {
       $res = self::$db->query($sql);
       if (self::$db->errno != 0) {
-        self::displayError(array('012' => $string['displayerror3'] . self::$db->error . "</br> $sql")); 
+        self::displayError(array('012' => $string['displayerror3'] . self::$db->error . "</br> $sql"));
       }
     }
-    
+
     self::$cfg_db_student_user = self::$cfg_db_name . '_stu';
     self::$cfg_db_student_passwd = PasswordUtils::gen_password() . PasswordUtils::gen_password();
     self::$cfg_db_staff_user = self::$cfg_db_name . '_staff';
@@ -340,7 +346,7 @@ Class InstallUtils {
     self::$cfg_db_sct_passwd = PasswordUtils::gen_password() . PasswordUtils::gen_password();
     self::$cfg_db_inv_user = self::$cfg_db_name . '_inv';
     self::$cfg_db_inv_passwd = PasswordUtils::gen_password() . PasswordUtils::gen_password();
-    
+
     $priv_SQL = array();
     //create 'database user authentication user' and grant permissions
     self::$db->query("CREATE USER  '" . self::$cfg_db_username . "'@'". self::$cfg_db_host . "' IDENTIFIED BY '" . self::$cfg_db_password . "'");
@@ -361,16 +367,16 @@ Class InstallUtils {
     $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".labs TO '". self::$cfg_db_username . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".admin_access TO '". self::$cfg_db_username . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT,INSERT ON " . $dbname . ".temp_users TO '". self::$cfg_db_username . "'@'". self::$cfg_db_host . "'";
-    $priv_SQL[] = "GRANT INSERT ON " . $dbname . ".sys_errors TO '". self::$cfg_db_username . "'@'". self::$cfg_db_host . "'";    
+    $priv_SQL[] = "GRANT INSERT ON " . $dbname . ".sys_errors TO '". self::$cfg_db_username . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "FLUSH PRIVILEGES";
     foreach($priv_SQL as $sql) {
       self::$db->query($sql);
       if (self::$db->errno != 0) {
         echo self::$db->error;
         self::logWarning(array('013'=> $string['wdatabaseuser']. self::$cfg_db_username . $string['wnotpermission']));
-      }  
+      }
     }
-    
+
     $priv_SQL = array();
     //create 'database user student user' and grant permissions
     self::$db->query("CREATE USER  '" . self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "' IDENTIFIED BY '" . self::$cfg_db_student_passwd . "'");
@@ -412,17 +418,18 @@ Class InstallUtils {
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log6 TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log_late TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log_metadata TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
-    $priv_SQL[] = "GRANT SELECT,INSERT ON " . $dbname . ".temp_users TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
-    $priv_SQL[] = "GRANT INSERT ON " . $dbname . ".sys_errors TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";    
+    $priv_SQL[] = "GRANT SELECT,INSERT,UPDATE ON " . $dbname . ".temp_users TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT INSERT ON " . $dbname . ".sys_errors TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT INSERT ON " . $dbname . ".announcements TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";    
     $priv_SQL[] = "FLUSH PRIVILEGES";
     foreach($priv_SQL as $sql) {
       self::$db->query($sql);
       if (self::$db->errno != 0) {
         echo self::$db->error;
         self::logWarning(array('013'=> $string['wdatabaseuser']. self::$cfg_db_student_user . $string['wnotpermission']));
-      }  
+      }
     }
-    
+
     $priv_SQL = array();
     //create 'database user external user' and grant permissions
     self::$db->query("CREATE USER  '" . self::$cfg_db_external_user . "'@'". self::$cfg_db_host . "' IDENTIFIED BY '" . self::$cfg_db_external_passwd . "'");
@@ -447,15 +454,15 @@ Class InstallUtils {
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log_late TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log_metadata TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".review_comments TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_db_host . "'";
-    $priv_SQL[] = "GRANT INSERT ON " . $dbname . ".sys_errors TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_db_host . "'";  
+    $priv_SQL[] = "GRANT INSERT ON " . $dbname . ".sys_errors TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "FLUSH PRIVILEGES";
     foreach($priv_SQL as $sql) {
       self::$db->query($sql);
       if (self::$db->errno != 0) {
         self::logWarning(array('013'=> $string['wdatabaseuser']. self::$cfg_db_external_user . $string['wnotpermission']));
-      }  
+      }
     }
-    
+
     $priv_SQL = array();
     //create 'database user staff user' and grant permissions
     self::$db->query("CREATE USER  '" . self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "' IDENTIFIED BY '" . self::$cfg_db_staff_passwd . "'");
@@ -487,7 +494,7 @@ Class InstallUtils {
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".objectives TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".relationships TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".review_comments TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
-    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".recent_papers TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";  
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".recent_papers TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".folders TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".teams TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".help_log TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
@@ -503,10 +510,10 @@ Class InstallUtils {
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log6 TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".log_late TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log_metadata TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
-    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".textbox_marking TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
-    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".textbox_remark TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".textbox_marking TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".textbox_remark TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".track_changes TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
-    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".temp_users TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";  
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".temp_users TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".sessions TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "FLUSH PRIVILEGES";
     foreach ($priv_SQL as $sql) {
@@ -514,9 +521,9 @@ Class InstallUtils {
       if (self::$db->errno != 0) {
 	    echo self::$db->error . "<br />";
         self::logWarning(array('013'=> $string['wdatabaseuser']. self::$cfg_db_staff_user . $string['wnotpermission']));
-      }  
+      }
     }
-    
+
     $priv_SQL = array();
     //create 'database user SCT user' and grant permissions
     self::$db->query("CREATE USER  '" . self::$cfg_db_sct_user . "'@'". self::$cfg_db_host . "' IDENTIFIED BY '" . self::$cfg_db_sct_passwd . "'");
@@ -538,9 +545,9 @@ Class InstallUtils {
       if (self::$db->errno != 0) {
 	    echo self::$db->error . "<br />";
         self::logWarning(array('013'=> $string['wdatabaseuser']. self::$cfg_db_sct_user . $string['wnotpermission']));
-      }  
+      }
     }
-    
+
     $priv_SQL = array();
     //create 'database user Invigilator user' and grant permissions
     self::$db->query("CREATE USER  '" . self::$cfg_db_inv_user . "'@'". self::$cfg_db_host . "' IDENTIFIED BY '" . self::$cfg_db_inv_passwd . "'");
@@ -563,9 +570,9 @@ Class InstallUtils {
       if (self::$db->errno != 0) {
 	    echo self::$db->error . "<br />";
         self::logWarning(array('013'=> $string['wdatabaseuser']. self::$cfg_db_inv_user . $string['wnotpermission']));
-      }  
+      }
     }
-    
+
     $priv_SQL = array();
     //create 'database user sysadmin user' and grant permissions
     self::$db->query("CREATE USER  '" . self::$cfg_db_sysadmin_user . "'@'". self::$cfg_db_host . "' IDENTIFIED BY '" . self::$cfg_db_sysadmin_passwd . "'");
@@ -581,41 +588,41 @@ Class InstallUtils {
       if (self::$db->errno != 0) {
 	    echo self::$db->error . "<br />";
         self::logWarning(array('013'=> $string['wdatabaseuser']. self::$cfg_db_sysadmin_user . $string['wnotpermission']));
-      }  
+      }
     }
-    
-    //create sysadmin user 
-    UserUtils::createUser(  $_POST['SysAdmin_username'], 
-                            $_POST['SysAdmin_password'], 
+
+    //create sysadmin user
+    UserUtils::createUser(  $_POST['SysAdmin_username'],
+                            $_POST['SysAdmin_password'],
                             $_POST['SysAdmin_title'],
                             $_POST['SysAdmin_first'],
-                            $_POST['SysAdmin_last'], 
-                            $_POST['SysAdmin_email'], 
-                            'University Lecturer', 
-                            '', 
-                            '1', 
+                            $_POST['SysAdmin_last'],
+                            $_POST['SysAdmin_email'],
+                            'University Lecturer',
+                            '',
+                            '1',
                             'Staff,SysAdmin',
                             '',
                             self::$db
                           );
-    
+
     //create 100 guest accounts
     for ($i=1; $i<=100; $i++) {
-      UserUtils::createUser(  'user' . $i, 
+      UserUtils::createUser(  'user' . $i,
                               '', //blank password will be generated
                               'Dr',
                               'A',
-                              'User' . $i, 
-                              '', 
+                              'User' . $i,
+                              '',
                               'none',
-                              '', 
-                              '1', 
+                              '',
+                              '1',
                               'Student',
-                              '',                              
+                              '',
                               self::$db
                             );
      }
-     
+
      //add traing school
     $facultyID = FacultyUtils::addFaculty('Administrative and Support Units',
                                         self::$db
@@ -627,47 +634,47 @@ Class InstallUtils {
                                      );
 
      //create special modules
-     ModuleUtils::addModules(  'TRAIN', 
-                                'Training Module', 
-                                1, 
-                                $scoolID, 
+     ModuleUtils::addModules(  'TRAIN',
+                                'Training Module',
+                                1,
+                                $scoolID,
                                 '',
-                                '', 
-                                0, 
-                                false, 
-                                false, 
-                                false, 
+                                '',
+                                0,
+                                false,
+                                false,
+                                false,
                                 true,
                                 NULL,
                                 NULL,
                                 self::$db
                              );
-    
-    ModuleUtils::addModules(   'SYSTEM', 
-                                'Online Help', 
-                                1, 
-                                $scoolID, 
+
+    ModuleUtils::addModules(   'SYSTEM',
+                                'Online Help',
+                                1,
+                                $scoolID,
                                 '',
                                 '',
-                                0,                                
-                                true, 
-                                true, 
-                                true, 
+                                0,
+                                true,
+                                true,
+                                true,
                                 true,
                                 NULL,
                                 NULL,
                                 self::$db
                              );
-                          
+
     //FLUSH PRIVILEGES
     self::$db->query("FLUSH PRIVILEGES");
     if (self::$db->errno != 0) {
       self::logWarning(array('014'=> $string['logwarning20']));
-    }  
+    }
   }
-  
+
   /**
-  * Check that we do not have a config file and that we can write one 
+  * Check that we do not have a config file and that we can write one
   *
   */
   static function configFile() {
@@ -679,9 +686,9 @@ Class InstallUtils {
       $errors['90'] .= "<p>" . sprintf($string['errors2'],"<a href=\"/staff\">") . "</a></p>";
     }
   }
-  
+
   /**
-  * Check that we do not have a config file and that we can write one 
+  * Check that we do not have a config file and that we can write one
   *
   */
   static function configFileIsWriteable() {
@@ -695,9 +702,9 @@ Class InstallUtils {
       return false;
     }
   }
-  
+
   /**
-  * Check Apache can write to the required directories 
+  * Check Apache can write to the required directories
   *
   */
   static function checkDirPermissions() {
@@ -711,7 +718,7 @@ Class InstallUtils {
     //media
     if (!is_writable(self::$rogo_path . '/media')) {
       $errors['102'] = sprintf($string['errors4'], self::$rogo_path);
-    }    
+    }
     //qti imports
     if (!is_writable(self::$rogo_path . '/qti/imports')) {
       $errors['103'] = sprintf($string['errors5'], self::$rogo_path);
@@ -721,12 +728,12 @@ Class InstallUtils {
       $errors['104'] = sprintf($string['errors6'], self::$rogo_path);
     }
     if (count($errors) > 0) {
-      self::displayError($errors);  
+      self::displayError($errors);
     }
   }
-  
+
   /**
-  * Check for installed software versions PHP, Apache 
+  * Check for installed software versions PHP, Apache
   *
   */
   static function checkSoftware() {
@@ -744,7 +751,7 @@ Class InstallUtils {
         $errors['201'] = $string['errors9']. $ver[0];
       }
     }
-    
+
     //php
     $php_min_ver = '5.0';
     if (phpversion() < $php_min_ver) {
@@ -754,14 +761,14 @@ Class InstallUtils {
     if ( !in_array('mysqli',$phpModules) ) {
       $errors['203'] = $string['errors11'];
     }
-    
+
     if (count($errors) > 0) {
-      self::displayError($errors);  
+      self::displayError($errors);
     }
   }
-  
+
   /**
-  * Check we are accessing through HTTPS for security 
+  * Check we are accessing through HTTPS for security
   *
   */
   static function checkHTTPS() {
@@ -772,9 +779,9 @@ Class InstallUtils {
     }
     return true;
   }
-  
+
   /**
-  * Display errors with a nice message 
+  * Display errors with a nice message
   *
   */
   static function displayError($error = '') {
@@ -789,9 +796,9 @@ Class InstallUtils {
     self::displayFooter();
     exit;
   }
-  
+
   /**
-  * Log warnings with a nice message 
+  * Log warnings with a nice message
   *
   */
   static function logWarning($warning = '') {
@@ -801,14 +808,14 @@ Class InstallUtils {
       }
     }
   }
-  
+
   /**
-  * Display warnings with a nice message 
+  * Display warnings with a nice message
   *
   */
   static function displayWarnings() {
     global $string;
-    
+
     if (is_array(self::$warnings)) {
       echo "<h2>". $string['errors14']."</h2>";
       echo "<div class=\"warning\">\n";
@@ -817,11 +824,11 @@ Class InstallUtils {
       }
       echo "</div>\n";
     }
-    
+
   }
-  
+
   /**
-  * Display header 
+  * Display header
   *
   */
   static function displayHeader() {
@@ -830,7 +837,8 @@ Class InstallUtils {
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html>
     <head>
-      <title>Rogō Install script</title>
+      <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+      <title>Rog? Install script</title>
       <style type="text/css">
         html { padding: 0em; margin: 0em; width: 100%}
         body { padding: 0em; margin: 0em; width: 100%; font-family:Arial,sans-serif; font-size:90%; background-color:white; color:black }
@@ -845,29 +853,36 @@ Class InstallUtils {
         .header {margin-top:1.5em;  margin-bottom:0.5em;  width:97%; color:#1E3287}
         .header hr  {border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:97%;}
         td.line {width:98%}
-        
+
         input {width:200px}
         form {padding: 1em}
         form div {padding-left: 2em}
       </style>
+      <link rel="stylesheet" type="text/css" href="../css/tipTip.css" />
       <script language="text/javascript" type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
       <script language="text/javascript" type="text/javascript" src="../js/jquery.validate.min.js"></script>
+      <script language="text/javascript" type="text/javascript" src="../js/jquery.tipTip.minified.js"></script>
+      <script type="text/javascript">
+        $(function(){
+          $(".tipright").tipTip({defaultPosition: 'right'});
+        });
+      </script>
     </head>
     <body>
-    <table class="topbar"> 
-      <tr> 
-        <td><div style="font-size:26pt; font-weight:bold; color:black">&nbsp;<?php echo $string['systeminstallation']; ?></div></td> 
-        <td style="text-align:right; padding-top:4px; padding-right:15px"><img src="../artwork/rogo_logo.gif" width="137" height="61" alt="logo" border="0" /></td> 
-      </tr> 
-      <tr> 
-        <td colspan="2" style="height:3px"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td> 
-      </tr> 
-    </table> 
+    <table class="topbar">
+      <tr>
+        <td><div style="font-size:26pt; font-weight:bold; color:black">&nbsp;<?php echo $string['systeminstallation']; ?></div></td>
+        <td style="text-align:right; padding-top:4px; padding-right:15px"><img src="../artwork/rogo_logo.gif" width="137" height="61" alt="logo" border="0" /></td>
+      </tr>
+      <tr>
+        <td colspan="2" style="height:3px"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td>
+      </tr>
+    </table>
     <?php
   }
-  
+
   /**
-  * Display footer 
+  * Display footer
   *
   */
   static function displayfooter() {
@@ -876,15 +891,15 @@ Class InstallUtils {
       </html>
     <?php
   }
-  
+
   static function writeConfigFile() {
-  
+
     $config = <<<CONFIG
 <?php
 /**
-* 
+*
 * config file
-* 
+*
 * @author Simon Wilkinson, Anthony Brown
 * @version 1.0
 * @copyright Copyright (c) 2011 The University of Nottingham
@@ -900,6 +915,7 @@ define('DIR_SEPARATOR', '/');
 \$cfg_web_root = get_root_path() . '/';
 \$cfg_root_path = rtrim('/' . str_replace(\$_SERVER['DOCUMENT_ROOT'], '', \$cfg_web_root), '/');
 \$protocol = 'https://';
+\$cfg_page_charset 	   = '{cfg_page_charset}';
 \$cfg_company = '{cfg_company}';
 
 \$news_msg = '';
@@ -932,22 +948,23 @@ define('DIR_SEPARATOR', '/');
   \$cfg_short_date = '{cfg_short_date}';
   \$cfg_long_date_time = '{cfg_long_date_time}';
   \$cfg_timezone = '{cfg_timezone}';
-  
+
 // SMS Imports
   \$cfg_sms_api = '';
-  
+
 //LDAP
   \$cfg_ldap_server        = '{cfg_ldap_server}';
   \$cfg_ldap_search_dn     = '{cfg_ldap_search_dn}';
   \$cfg_ldap_bind_rdn      = '{cfg_ldap_bind_rdn}';
   \$cfg_ldap_bind_password = '{cfg_ldap_bind_password}';
+  \$cfg_ldap_user_prefix   = '{cfg_ldap_user_prefix}';
   \$cfg_use_ldap           = {cfg_use_ldap};
 
 // Institutional email domains
 // If using external authentication (e.g. LDAP) list the domains that will authenticate against the external system
 // This will allow you to change the password of any users that do not match against those domains (e.g. external examiners)
   \$cfg_institutional_domains = array('nottingham.ac.uk');
-  
+
 // Root path for JS
   \$cfg_js_root = <<< SCRIPT
 <script type="text/javascript">
@@ -978,7 +995,7 @@ switch (strtolower(\$_SERVER['HTTP_HOST'])) {
 
 //Warnings
   \$cfg_hour_warning = 10;       // Warning for summative exams
-  
+
 //Assistance
   \$support_email = '{cfg_support_email}';
   \$emergency_support_numbers = {emergency_support_numbers};
@@ -997,8 +1014,9 @@ CONFIG;
     $config = str_replace('{cfg_db_host}',self::$cfg_db_host,$config);
     $config = str_replace('{cfg_db_port}',self::$cfg_db_port,$config);
     $config = str_replace('{cfg_db_charset}',self::$cfg_db_charset,$config);
+    $config = str_replace('{cfg_page_charset}',self::$cfg_page_charset,$config);
     $config = str_replace('{cfg_company}',self::$cfg_company,$config);
-    
+
     $config = str_replace('{cfg_db_database}',self::$cfg_db_name,$config);
     $config = str_replace('{cfg_db_username}',self::$cfg_db_username,$config);
     $config = str_replace('{cfg_db_passwd}',self::$cfg_db_password,$config);
@@ -1007,44 +1025,45 @@ CONFIG;
     $config = str_replace('{cfg_db_staff_user}',self::$cfg_db_staff_user,$config);
     $config = str_replace('{cfg_db_staff_passwd}',self::$cfg_db_staff_passwd,$config);
     $config = str_replace('{cfg_db_external}',self::$cfg_db_external_user,$config);
-    $config = str_replace('{cfg_db_external_passwd}',self::$cfg_db_external_passwd,$config);   
+    $config = str_replace('{cfg_db_external_passwd}',self::$cfg_db_external_passwd,$config);
     $config = str_replace('{cfg_db_sysadmin_user}',self::$cfg_db_sysadmin_user,$config);
     $config = str_replace('{cfg_db_sysadmin_passwd}',self::$cfg_db_sysadmin_passwd,$config);
     $config = str_replace('{cfg_db_sct_user}',self::$cfg_db_sct_user,$config);
     $config = str_replace('{cfg_db_sct_passwd}',self::$cfg_db_sct_passwd,$config);
     $config = str_replace('{cfg_db_inv_user}',self::$cfg_db_inv_user,$config);
     $config = str_replace('{cfg_db_inv_passwd}',self::$cfg_db_inv_passwd,$config);
-    
+
     $config = str_replace('{cfg_support_email}',self::$cfg_support_email,$config);
     $config = str_replace('{emergency_support_numbers}',self::$emergency_support_numbers,$config);
-    
+
     $config = str_replace('{cfg_short_date}',self::$cfg_short_date,$config);
     $config = str_replace('{cfg_long_date_time}',self::$cfg_long_date_time,$config);
     $config = str_replace('{cfg_timezone}',self::$cfg_timezone,$config);
-    
+
     $config = str_replace('{cfg_ldap_server}',self::$cfg_ldap_server,$config);
     $config = str_replace('{cfg_ldap_search_dn}',self::$cfg_ldap_search_dn,$config);
     $config = str_replace('{cfg_ldap_bind_rdn}',self::$cfg_ldap_bind_rdn,$config);
     $config = str_replace('{cfg_ldap_bind_password}',self::$cfg_ldap_bind_password,$config);
+    $config = str_replace('{cfg_ldap_user_prefix}',self::$cfg_ldap_user_prefix,$config);
     $config = str_replace('{cfg_use_ldap}',self::$cfg_use_ldap,$config);
-    
+
     $config = str_replace('{SERVER_NAME}',$_SERVER['HTTP_HOST'],$config);
-    
+
     if (file_exists(self::$rogo_path . '/config/config.inc.php')) {
       rename(self::$rogo_path . '/config/config.inc.php', self::$rogo_path . '/config/config.inc.old.php');
     }
-    
+
     if (file_put_contents(self::$rogo_path . '/config/config.inc.php', $config) === false) {
       self::displayError(array(300=>'Could not write config file !'));
     }
-  }    
+  }
 
 }
 
 class databaseTables {
 
   public static $tableList = array();
-  
+
   function __construct($charset) {
     $this->tableList['admin_access'] = <<<QUERY
       CREATE TABLE `admin_access` (
@@ -1058,10 +1077,10 @@ QUERY;
    $this->tableList['courses'] = <<<QUERY
         CREATE TABLE `courses` (
           `id` int(11) NOT NULL auto_increment,
-          `school` varchar(255) default NULL,
           `name` varchar(255) default NULL,
           `description` varchar(255) default NULL,
           `deleted` datetime default NULL,
+          `schoolid` int(11) default NULL,
           PRIMARY KEY  (`id`),
           KEY `degree` (`name`)
         ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
@@ -1650,6 +1669,7 @@ QUERY;
           `id` int(11) NOT NULL auto_increment,
           `school` char(255) default NULL,
           `facultyID` int(11) default NULL,
+          `deleted` datetime default NULL,
           PRIMARY KEY  (`id`)
         ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
@@ -1909,8 +1929,22 @@ QUERY;
         ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
+    $this->tableList['announcements'] = <<<QUERY
+        CREATE TABLE `announcements` (
+          `id` int(11) NOT NULL AUTO_INCREMENT,
+          `title` varchar(255) DEFAULT NULL,
+          `staff_msg` text,
+          `student_msg` text,
+          `icon` varchar(255) DEFAULT NULL,
+          `startdate` datetime DEFAULT NULL,
+          `enddate` datetime DEFAULT NULL,
+          `deleted` datetime DEFAULT NULL,
+          PRIMARY KEY (`id`)
+        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+QUERY;
+
   }
-  
+
   function next() {
     if (count($this->tableList) > 0) {
       return array_pop($this->tableList);

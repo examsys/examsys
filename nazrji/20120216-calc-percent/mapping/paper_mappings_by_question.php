@@ -29,23 +29,25 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Rogō: <?php echo $string['mappingbyquestion'] . ' ' . $cfg_install_type; ?></title>
-<link rel="stylesheet" type="text/css" href="../css/submenu.css" />
-<style style="text/css">
-  td {font-size:100%}
-  img {border:none}
-  .q_no {text-align:right; vertical-align:top; cursor:pointer; width:40px}
-  .divider {font-family:Arial,sans-serif; font-size:90%; font-weight:bold}
-  .mapping {font-size:90%;color:#FF6300;font-weight:normal}
-  .mapping_exclueded {color:red;font-weight:normal;text-decoration:line-through;}
-</style>
-<script src="../js/staff_help.js" type="text/javascript"></script>
-<script language="JavaScript">
-  function mapQuestion(qNo, pid, qid, session) {
-    mapWindow = window.open('./map_question.php?qNo=' + qNo + '&paperID=' + pid + '&q_id=' + qid + '&session=' + session, "",'height=' + (screen.height - 300) + ',width=' + (screen.width - 300) + ',scrollbars=1,resizable=1,statusbar=0');
-    mapWindow.moveTo(100,100);
-  }
-</script>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Rogō: <?php echo $string['mappingbyquestion'] . ' ' . $cfg_install_type; ?></title>
+  <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
+  <link rel="stylesheet" type="text/css" href="../css/header.css" />
+  <style type="text/css">
+    td {font-size:100%}
+    img {border:none}
+    .q_no {text-align:right; vertical-align:top; cursor:pointer; width:40px}
+    .divider {font-family:Arial,sans-serif; font-size:90%; font-weight:bold}
+    .mapping {font-size:90%;color:#FF6300;font-weight:normal}
+    .mapping_exclueded {color:red;font-weight:normal;text-decoration:line-through;}
+  </style>
+  <script src="../js/staff_help.js" type="text/javascript"></script>
+  <script language="JavaScript">
+    function mapQuestion(qNo, pid, qid, session) {
+      mapWindow = window.open('./map_question.php?qNo=' + qNo + '&paperID=' + pid + '&q_id=' + qid + '&session=' + session, "",'height=' + (screen.height - 300) + ',width=' + (screen.width - 300) + ',scrollbars=1,resizable=1,statusbar=0');
+      mapWindow.moveTo(100,100);
+    }
+  </script>
 </head>
 
 <body onclick="hideMenus()">
@@ -76,9 +78,9 @@
   $result->bind_param('i', $paperID);
   $result->execute();
   $result->bind_result($paper_title, $moduleID, $session, $start_date, $end_date, $paper_type);
-  while ($row = $result->fetch()) {
-    echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"width:100%; font-size:80%\">\n";
-    echo '<tr><td style="background-color:#F1F5FB">';
+  while ($result->fetch()) {
+    echo "<table class=\"header\" style=\"font-size:80%\">\n";
+    echo '<tr><th>';
     echo '<div class="breadcrumb"><a href="../staff/index.php">' . $string['home'] . '</a>';
     if ($folder != '') {
       echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?folder=' . $folder . '">' . $folder_name . '</a>';
@@ -86,7 +88,7 @@
       echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?module=' . $_GET['module'] . '">' . $_GET['module'] . '</a>';
     }
     echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../paper/details.php?paperID=' . $_GET['paperID'] . '">' . $paper_title . '</a></div>';
-    echo "<div style=\"font-size:220%; font-weight:bold; margin-left:10px\">" . $string['mappedobjectives'] . "</div></td><td style=\"background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(147); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"Help\" border=\"0\" /></a></td></tr>\n</table>\n";
+    echo "<div style=\"font-size:220%; font-weight:bold; margin-left:10px\">" . $string['mappedobjectives'] . "</div></th><th style=\"text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(147); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"Help\" border=\"0\" /></a></th></tr>\n</table>\n";
   }
   $result->close();
 
@@ -104,14 +106,14 @@
   $result->close();
   
   ?>
-  <table cellpadding="0" cellspacing="0" border="0" style="display:block; font-size:90%; background-color:white">
-  <tr><td>
-  <table cellpadding="0" cellspacing="0" border="0" style="font-size:90%; width:378px; background-color:#F1F5FB">
+  <table class="header" style="font-size:90%">
+  <tr><th style="padding-top:1px">
+  <table cellpadding="0" cellspacing="0" border="0" style="font-size:90%; width:378px">
   <td style="cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_off.gif)" onclick="window.location.href='paper_mappings_by_session.php?paperID=<?php echo $_GET['paperID']; ?>&folder=<?php echo $_GET['folder']; ?>&module=<?php echo $_GET['module']; ?>'"><?php echo $string['bysession']; ?></td>
   <td style="cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_on.gif)"><?php echo $string['byquestion']; ?></td>
   <td style="cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_off.gif)" onclick="window.location.href='paper_mappings_by_year.php?paperID=<?php echo $_GET['paperID']; ?>&folder=<?php echo $_GET['folder']; ?>&module=<?php echo $_GET['module']; ?>'"><?php echo $string['longitudinal']; ?></td>
   </table>
-  </td><td style="width:100%; background-color:#F1F5FB; text-align:right">&nbsp;</td>
+  </th><th style="width:100%; text-align:right">&nbsp;</th>
   </tr>
   <tr><td colspan="5" style="background-color:#1E3C7B">&nbsp;</td></tr>
   </table>
@@ -145,7 +147,7 @@
   $result->bind_param('ii', $paperID, $paperID);
   $result->execute();
   $result->bind_result($total_random_mark, $total_marks, $paper_ownerID, $q_group, $ownerID, $p_id, $q_id, $q_type, $screen, $leadin, $q_media, $q_media_width, $q_media_height, $display_last_edited, $display_pos);
-  while ($row = $result->fetch()) {
+  while ($result->fetch()) {
     $row_no++;
     $temp_array[$row_no]['screen'] = $screen;
     $temp_array[$row_no]['q_type'] = $q_type;

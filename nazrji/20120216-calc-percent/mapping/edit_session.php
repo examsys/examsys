@@ -117,94 +117,96 @@ require '../include/staff_auth.inc';
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html>
     <head>
-    <title>TouchStone: <?php echo $string['manageobjectives'] . ' ' . $cfg_install_type; ?></title>
-    <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
-    <style style="text/css">
-      img {border:none;}
-      .editBox {width:90%}
-      .field {text-align:right; font-weight:bold}
-      .note {width:90%}
-    </style>
-    <script src="../js/staff_help.js" type="text/javascript"></script>
-    <script>
-      function checkForm() {
-        if (document.getElementById('session_title').value == '' || document.getElementById('session_title').value == ' ') {
-          alert("<?php echo $string['entertitle']; ?>");
-          return false;
+      <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+      <title>TouchStone: <?php echo $string['manageobjectives'] . ' ' . $cfg_install_type; ?></title>
+      <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
+      <link rel="stylesheet" type="text/css" href="../css/header.css" />
+      <style type="text/css">
+        img {border:none;}
+        .editBox {width:90%}
+        .field {text-align:right; font-weight:bold}
+        .note {width:90%}
+      </style>
+      <script src="../js/staff_help.js" type="text/javascript"></script>
+      <script type="text/javascript">
+        function checkForm() {
+          if (document.getElementById('session_title').value == '' || document.getElementById('session_title').value == ' ') {
+            alert("<?php echo $string['entertitle']; ?>");
+            return false;
+          }
         }
-      }
 
-      function clearTextbox(objectName) {
-        if (document.getElementById(objectName).value == '<?php echo $string['msg1']; ?>') {
-          document.getElementById(objectName).value = '';
-          document.getElementById(objectName).style.color = 'black';
+        function clearTextbox(objectName) {
+          if (document.getElementById(objectName).value == '<?php echo $string['msg1']; ?>') {
+            document.getElementById(objectName).value = '';
+            document.getElementById(objectName).style.color = 'black';
+          }
         }
-      }
 
-      var ObjNewCount = 0;
-      var ObjCount = 0;
-      function addNew(ulId) {
-        ul = document.getElementById( ulId );
-        li = document.createElement("li");
-        li.id = 'li_' + ulId + ObjNewCount;
-        li.style.margin = '0.5em';
-        li.style.marginLeft = '3.5em';
-        li.innerHTML = '<img src="./up_on.png" onclick="promote( \'' + li.id + '\' )" />&nbsp<img src="./down_on.png" onclick="demote( \'' + li.id + '\' )" />&nbsp<input class="editBox" name="objnew_' + ObjNewCount + '" id="objnew_' + ObjNewCount + '" type="text" style="color:#808080" onfocus="clearTextbox(\'objnew_' + ObjNewCount + '\');" value="<?php echo $string['msg1']; ?>" /></li>';
-        ul.insertBefore(li,ul.lastChild);
-        ObjNewCount++;
-        updateButtons();
-      }
+        var ObjNewCount = 0;
+        var ObjCount = 0;
+        function addNew(ulId) {
+          ul = document.getElementById( ulId );
+          li = document.createElement("li");
+          li.id = 'li_' + ulId + ObjNewCount;
+          li.style.margin = '0.5em';
+          li.style.marginLeft = '3.5em';
+          li.innerHTML = '<img src="./up_on.png" onclick="promote( \'' + li.id + '\' )" />&nbsp<img src="./down_on.png" onclick="demote( \'' + li.id + '\' )" />&nbsp<input class="editBox" name="objnew_' + ObjNewCount + '" id="objnew_' + ObjNewCount + '" type="text" style="color:#808080" onfocus="clearTextbox(\'objnew_' + ObjNewCount + '\');" value="<?php echo $string['msg1']; ?>" /></li>';
+          ul.insertBefore(li,ul.lastChild);
+          ObjNewCount++;
+          updateButtons();
+        }
 
-      function demote( liId ) {
-        li = document.getElementById( liId );
-        ul = li.parentNode;
-        var i = 0;
-        while(ul.childNodes[i].id != liId) {
-           i++;
+        function demote( liId ) {
+          li = document.getElementById( liId );
+          ul = li.parentNode;
+          var i = 0;
+          while(ul.childNodes[i].id != liId) {
+             i++;
+          }
+          if( i > 0 && i < (ul.childNodes.length - 2) ) {
+            temp = ul.removeChild(ul.childNodes[i]);
+            ul.insertBefore(temp,ul.childNodes[i+1]);
+          }
+          updateButtons();
         }
-        if( i > 0 && i < (ul.childNodes.length - 2) ) {
-          temp = ul.removeChild(ul.childNodes[i]);
-          ul.insertBefore(temp,ul.childNodes[i+1]);
-        }
-        updateButtons();
-      }
 
-      function promote( liId ) {
-        li = document.getElementById( liId );
-        ul = li.parentNode;
-        var i = 0;
-        while(ul.childNodes[i].id != liId) {
-           i++;
+        function promote( liId ) {
+          li = document.getElementById( liId );
+          ul = li.parentNode;
+          var i = 0;
+          while(ul.childNodes[i].id != liId) {
+             i++;
+          }
+          if ( i > 1 ) {
+            temp = ul.removeChild(ul.childNodes[i]);
+            ul.insertBefore(temp,ul.childNodes[i-1]);
+          }
+          updateButtons();
         }
-        if ( i > 1 ) {
-          temp = ul.removeChild(ul.childNodes[i]);
-          ul.insertBefore(temp,ul.childNodes[i-1]);
-        }
-        updateButtons();
-      }
 
-      function updateButtons() {
-        lis = document.getElementsByTagName('li');
-        ObjCount = 0;
-        for (var i = 1; i < (lis.length - 1) ; i++ ) {
-          if (lis[i].id != '') {
-            ObjCount++;
-            if(lis[i - 1].id == '') {
-               //disable up
-               lis[i].childNodes[0].src = './up_off.png';
-            } else {
-               lis[i].childNodes[0].src = './up_on.png';
-            }
-            if(lis[i+ 1].id == '') {
-               //disable down
-               lis[i].childNodes[2].src = './down_off.png';
-            } else {
-                lis[i].childNodes[2].src = './down_on.png';
+        function updateButtons() {
+          lis = document.getElementsByTagName('li');
+          ObjCount = 0;
+          for (var i = 1; i < (lis.length - 1) ; i++ ) {
+            if (lis[i].id != '') {
+              ObjCount++;
+              if(lis[i - 1].id == '') {
+                 //disable up
+                 lis[i].childNodes[0].src = './up_off.png';
+              } else {
+                 lis[i].childNodes[0].src = './up_on.png';
+              }
+              if(lis[i+ 1].id == '') {
+                 //disable down
+                 lis[i].childNodes[2].src = './down_off.png';
+              } else {
+                  lis[i].childNodes[2].src = './down_on.png';
+              }
             }
           }
         }
-      }
-    </script>
+      </script>
     </head>
     <body onclick="hideSessCopyMenu(event);">
   <?php
@@ -224,9 +226,9 @@ require '../include/staff_auth.inc';
     $session = $_GET['calendar_year'];
   }
   echo '<div id="content" class="content" style="font-size:80%">';
-  echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">\n";
-  echo "<tr><td colspan=\"3\" style=\"background-color:#F1F5FB\"><div class=\"breadcrumb\"><a href=\"../staff/index.php\">" . $string['home'] . "</a>&nbsp;&nbsp;<img src=\"../artwork/breadcrumb_arrow.png\" width=\"4\" height=\"7\" alt=\"-\" />&nbsp;&nbsp;<a href=\"../folder/details.php?module=$module\">$module</a>&nbsp;&nbsp;<img src=\"../artwork/breadcrumb_arrow.png\" width=\"4\" height=\"7\" alt=\"-\" />&nbsp;&nbsp;<a href=\"sessions_list.php?module=$module&folder=$folder\">" . $string['manageobjectives'] . "</a></div><div style=\"font-size:200%; margin-left:10px\"><strong>" . $string['editsession'] . "</div></td><td style=\"background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(0); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['help'] . "\" border=\"0\" /></a></td></tr>\n";
-  echo "<tr><td colspan=\"4\" style=\"height:3px\"><img src=\"../artwork/header_horizontal_line.gif\" width=\"100%\" height=\"3\" alt=\"Line\" /></td></tr>\n";
+  echo "<table class=\"header\">\n";
+  echo "<tr><th colspan=\"3\"><div class=\"breadcrumb\"><a href=\"../staff/index.php\">" . $string['home'] . "</a>&nbsp;&nbsp;<img src=\"../artwork/breadcrumb_arrow.png\" width=\"4\" height=\"7\" alt=\"-\" />&nbsp;&nbsp;<a href=\"../folder/details.php?module=$module\">$module</a>&nbsp;&nbsp;<img src=\"../artwork/breadcrumb_arrow.png\" width=\"4\" height=\"7\" alt=\"-\" />&nbsp;&nbsp;<a href=\"sessions_list.php?module=$module&folder=$folder\">" . $string['manageobjectives'] . "</a></div><div style=\"font-size:200%; margin-left:10px\"><strong>" . $string['editsession'] . "</div></th><th style=\"text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(0); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['help'] . "\" border=\"0\" /></a></th></tr>\n";
+  echo "<tr><th colspan=\"4\" class=\"bevel\"></td></tr>\n";
   echo '</table><br />';
 
   //get session information

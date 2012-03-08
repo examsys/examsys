@@ -32,7 +32,8 @@
 ?>
 <html>
 <head>
-<title><?php echo $string['questionsbank']; ?></title>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title><?php echo $string['questionsbank']; ?></title>
 </head>
 
   <frameset rows="*,32" frameborder="0" framespacing="0" border="0">

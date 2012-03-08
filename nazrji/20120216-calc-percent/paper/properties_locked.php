@@ -93,7 +93,9 @@ if (isset($_POST['Submit'])) {
   }
   ?>
     <html>
-    <head><title>Edit</title>
+    <head>
+    <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+    <title>Edit</title>
     <script language="JavaScript">
       function closeWindow() {
         <?php
@@ -132,9 +134,10 @@ if (isset($_POST['Submit'])) {
 <html>
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
   <title>Properties<?php echo " $cfg_install_type"; ?></title>
 
-  <style>
+  <style type="text/css">
     body {font-family:Arial,sans-serif; color:black; background-color:#F1F5FB; margin:0px; font-size:100%}
     table {font-size:100%; text-align:left}
     input,textarea {font-family:Arial,sans-serif; color:black}
@@ -142,7 +145,7 @@ if (isset($_POST['Submit'])) {
     .indentoff {text-indent:-23px; padding-left:23px; background-color:white}
   </style>
 
-  <script language="JavaScript">
+  <script type="text/javascript">
     function launchHelp(pageID) {
       var winheight = screen.height-100;
       if (screen.width == 800) {
@@ -251,6 +254,7 @@ if (isset($_POST['Submit'])) {
        echo $string['objectivesreport'] . "<br /><a href=\"https://" . $_SERVER['HTTP_HOST'] . "/mapping/user_feedback.php?id=$crypt_name\" style=\"color:blue\" target=\"_blank\">https://" . $_SERVER['HTTP_HOST'] . "/mapping/user_feedback.php?id=$crypt_name</a></div>\n";
      
        // Question-based Feedback
+       $idfeedback_release = '';
        $feedback_details = $mysqli->prepare("SELECT idfeedback_release FROM feedback_release WHERE paper_id=? AND type='questions'");
        $feedback_details->bind_param('i', $_GET['paperID']);
        $feedback_details->execute();

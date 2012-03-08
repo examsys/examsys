@@ -96,10 +96,11 @@ $result->close();
 ?>
 <html>
 <head>
-<title>Reassign Script to User</title>
-<style>
-body {background-color:#ECE9D8; color:black; font-family:Arial,sans-serif; margin:0px}
-</style>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Reassign Script to User</title>
+  <style type="text/css">
+  body {background-color:#ECE9D8; color:black; font-family:Arial,sans-serif; margin:0px}
+  </style>
 </head>
 
 <body onload="window.opener.location.reload(); window.close();">

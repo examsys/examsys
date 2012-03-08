@@ -44,21 +44,17 @@ if (isset($_POST['submit'])) {
   header("location: ../paper/details.php?paperID=" . $_GET['paperID'] . "&module=" . $_GET['module'] . "&folder=" . $_GET['folder']);
 } else {
 ?>
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title><?php echo $string['secondmark']; ?></title>
-<script src="../js/staff_help.js" type="text/javascript"></script>
-<style type="text/css">
-body {font-family:Arial,sans-serif; font-size:90%; background-color:white; color:black; margin:0px}
-table {font-size:100%}
-.h {background-color:#F1F5FB; color:black}
-.breadcrumb {margin-left:10px; font-size:90%}
-.breadcrumb a:link {color:blue; text-decoration:none; cursor:pointer}
-.breadcrumb a:visited {color:blue; text-decoration:none; cursor:pointer}
-.breadcrumb a:hover {color:blue; text-decoration:underline; cursor:pointer}
-.pad {padding-left:40px; width:20px}
-</style>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title><?php echo $string['secondmark']; ?></title>
+  <script src="../js/staff_help.js" type="text/javascript"></script>
+  <link rel="stylesheet" type="text/css" href="../css/header.css" />
+  <style type="text/css">
+  body {font-family:Arial,sans-serif; font-size:90%; background-color:white; color:black; margin:0px}
+  .pad {padding-left:40px; width:20px}
+  </style>
 </head>
 
 <body>
@@ -83,16 +79,16 @@ table {font-size:100%}
   }
 
   echo "<form action=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&module=" . $_GET['module'] . "&folder=" . $_GET['folder'] . "\" method=\"post\">\n";
-  echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">\n<tr><td class=\"h\" colspan=\"4\">";
+  echo "<table class=\"header\" style=\"font-size:90%\">\n<tr><th colspan=\"4\">";
   echo '<div class="breadcrumb"><a href="../staff/index.php">' . $string['home'] . '</a>';
   if ($folder != '') {
     echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?folder=' . $folder . '">' . $folder_name . '</a>';
   } elseif (isset($_GET['module']) and $_GET['module'] != '') {
     echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?module=' . $_GET['module'] . '">' . $_GET['module'] . '</a>';
   }
-  echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../paper/details.php?paperID=' . $_GET['paperID'] . '">' . $paper . '</a></div><div style="margin-left:10px; font-size:180%; color:black; font-weight:bold">Second Mark Selection</div></td><td class="h" style="width:50%; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(0); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="' . $string['help'] . '" border="0" /></a></td></tr>';
+  echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../paper/details.php?paperID=' . $_GET['paperID'] . '">' . $paper . '</a></div><div style="margin-left:10px; font-size:220%; color:black; font-weight:bold">' . $string['secondmarkselection'] . '</div></th><th style="width:50%; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(0); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="' . $string['help'] . '" border="0" /></a></th></tr>';
 
-  echo "<tr style=\"height:4px\"><td colspan=\"5\" valign=\"top\"><img src=\"../artwork/header_horizontal_line.gif\" width=\"100%\" height=\"3\" alt=\"Line\" /></td></tr>\n";
+  echo "<tr><th colspan=\"5\" class=\"bevel\"></th></tr>\n";
 
   $result = $mysqli->prepare("SELECT SUM(marks_correct), pass_mark FROM (properties, papers, questions, options) WHERE property_id=? AND properties.property_id=papers.paper AND papers.question=questions.q_id AND questions.q_id=options.o_id AND q_type != 'info' GROUP BY paper");
   $result->bind_param('i', $_GET['paperID']);

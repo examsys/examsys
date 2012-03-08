@@ -24,18 +24,30 @@
 
   require '../include/staff_auth.inc';
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Qualitative Analysis<?php echo " $cfg_install_type"; ?></title>
-<style type="text/css">
-body {font-family:Arial,sans-serif; font-size:90%; color:black; margin-top:0px; margin-left:0px; margin-right:0px}
-h1 {margin-left:15px; font-size:150%; color:#3A70A4}
-li {margin-right:10px}
-.heading {background-color:#EBEADB; border-left: solid white 1px; border-right: solid #D8D2BD 1px; border-top: solid white 1px; border-bottom: solid #D8D2BD 1px; color:black}
-.comments {margin-left:10px; color:#808080}
-</style>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Qualitative Analysis<?php echo " $cfg_install_type"; ?></title>
+  <style type="text/css">
+  body {font-family:Arial,sans-serif; font-size:90%; color:black; margin-top:0px; margin-left:0px; margin-right:0px}
+  h1 {margin-left:15px; font-size:150%; color:#3A70A4}
+  li {margin-right:10px}
+  .heading {background-color:#EBEADB; border-left: solid white 1px; border-right: solid #D8D2BD 1px; border-top: solid white 1px; border-bottom: solid #D8D2BD 1px; color:black}
+  .comments {margin-left:10px; color:#808080}
+  .scr_no {margin-left:25px}
+  .screenbrk {
+    color:#15428B;
+    font-weight:bold;
+    font-size:90%;
+    height:70px;
+    width:100%;
+    border-top: 1px solid #B5C4DF;
+    background: -moz-linear-gradient(top, #E4EEFC, #FFFFFF);
+    background: -webkit-linear-gradient(top, #E4EEFC, #FFFFFF);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#E4EEFC', endColorstr='#FFFFFF');
+  }
+  </style>
 </head>
 
 <body>
@@ -83,11 +95,7 @@ li {margin-right:10px}
       if ($old_screen < $screen) {
         if ($list_on == 1) echo "</ul>\n";
         $list_on = 0;
-        echo '<br /><table cellpadding="0" cellspacing="1" border="0" style="width:100%; height:70px; border-top:1px solid #B5C4DF; background-image:url(\'../artwork/screen_no_background.gif\'); background-repeat:repeat-x">';
-        echo "<tr>\n<td width=\"20\">&nbsp;</td>\n";
-        echo "<td style=\"vertical-align:top; font-size:90%; font-weight:bold; color:#15428B\">Screen&nbsp;$screen</td>\n</tr>\n";
-        echo "</table>\n";
-        
+        echo '<br /><div class="screenbrk"><span class="scr_no">' . $string['screen'] . '&nbsp;' . $screen . '</span></div>';
       }
 
       if ($old_theme != '') {

@@ -82,9 +82,9 @@ if ($_GET['id'] != '1' and strpos($userroles,'SysAdmin') === false) {   // Don't
 <html>
 <head>
 <title>Help and Support Center</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $cfg_page_charset ?>">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<style>
+<style type="text/css">
 body {background-color:white; color:black; margin:0px; font-family:Arial,sans-serif; font-size:85%; line-height:150%}
 p, div, td {color:#484848}
 ul {list-style:square outside; color:#f27000}

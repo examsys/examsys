@@ -350,3 +350,12 @@ class ST_Question_Random extends ST_Question {
   // NO EXTENSIONS
 }
 
+class ST_Question_true_false extends ST_Question {
+  var $scenario = '';
+  var $correct = 0;
+
+  var $options = array(); // array of STQ_Mcq_Option, key as option no
+
+  var $fb_correct;
+  var $fb_incorrect;
+}

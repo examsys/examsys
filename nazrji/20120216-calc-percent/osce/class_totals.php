@@ -29,6 +29,7 @@
      "DTD/xhtml1-transitional.dtd">
   <html>
   <head>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
   <title>Rogō: <?php echo $string['classtotals'] . ' ' . $cfg_install_type; ?></title>
   <style type="text/css">
   body {font-family:Arial,sans-serif; font-size:90%; color:black; margin-top:0px; margin-left:0px; margin-right:0px}

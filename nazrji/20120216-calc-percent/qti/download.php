@@ -52,7 +52,7 @@ function head($text) {
 }
 
 if ($ext == "xml") {
-  head('Content-Type: text/xml');
+  head('Content-Type: text/xml; charset='. cfg_page_charset);
 } elseif ($ext == "zip") {
   head('Content-Type: application/zip');
 } else if ($ext == "png") {

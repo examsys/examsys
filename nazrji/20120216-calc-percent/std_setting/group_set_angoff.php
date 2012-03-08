@@ -118,39 +118,39 @@ if (!isset($no_screens)) {
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
 	<title><?php echo $string['standardssetting'] . ' ' . $cfg_install_type; ?></title>
-<meta http-equiv="imagetoolbar" content="no">
-<meta http-equiv="imagetoolbar" content="false">
-<link rel="stylesheet" type="text/css" href="../css/submenu.css" />
-<style type="text/css">
-  body {background-color:<?php echo $bgcolor; ?>; color:<?php echo $fgcolor; ?>; padding:0px; margin:0px; border:0px; font-family:Arial,sans-serif; font-size:90%}
-  li {margin-left:15px; margin-right:15px; font-family:Arial,sans-serif; font-size:100%}
-  select, input {font-size:100%}
-  table {font-size:100%; text-align:left}
-  .raised_tbl {background-color:#5582D2; border-left:solid #90C8FF 1px; border-right:solid #003060 1px; border-top:solid #90C8FF 1px; border-bottom:solid #003060 1px}
-  .paper {margin-left:0px; font-family:Arial,sans-serif; font-size:180%; color:white; font-weight: bold}
-  .question_no {width:40px; text-align:right; vertical-align:top}
-  .theme {font-size:150%; font-weight:bold; color:<?php echo $themecolor; ?>}
-  .notes {font-size:80%; color:<?php echo $labelcolor; ?>}
-  .no_marks {color:#808080; font-size:80%}
-  .active {color:<?php echo $fgcolor; ?>}
-  .inactive {color:#C0C0C0}
-  .heading {background-color:#EBEADB; color:black; font-family:Arial,sans-serif}
-  .extmatch li {padding-bottom:14px; vertical-align:text-bottom; list-style-type:upper-alpha}
-</style>
-
-<script src="../js/ie_fix.js" type="text/javascript"></script>
-<script language="JavaScript" src="../js/flash_include.js"></script>
-<script src="../js/staff_help.js" type="text/javascript"></script>
-
+  <meta http-equiv="imagetoolbar" content="no">
+  <meta http-equiv="imagetoolbar" content="false">
+  <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
+  <link rel="stylesheet" type="text/css" href="../css/header.css" />
+  <style type="text/css">
+    body {background-color:<?php echo $bgcolor; ?>; color:<?php echo $fgcolor; ?>; padding:0px; margin:0px; border:0px; font-family:Arial,sans-serif; font-size:90%}
+    li {margin-left:15px; margin-right:15px; font-family:Arial,sans-serif; font-size:100%}
+    select, input {font-size:100%}
+    table {font-size:100%; text-align:left}
+    .raised_tbl {background-color:#5582D2; border-left:solid #90C8FF 1px; border-right:solid #003060 1px; border-top:solid #90C8FF 1px; border-bottom:solid #003060 1px}
+    .paper {margin-left:0px; font-family:Arial,sans-serif; font-size:180%; color:white; font-weight: bold}
+    .question_no {width:40px; text-align:right; vertical-align:top}
+    .theme {font-size:150%; font-weight:bold; color:<?php echo $themecolor; ?>}
+    .notes {font-size:80%; color:<?php echo $labelcolor; ?>}
+    .no_marks {color:#808080; font-size:80%}
+    .active {color:<?php echo $fgcolor; ?>}
+    .inactive {color:#C0C0C0}
+    .heading {background-color:#EBEADB; color:black; font-family:Arial,sans-serif}
+    .extmatch li {padding-bottom:14px; vertical-align:text-bottom; list-style-type:upper-alpha}
+  </style>
+  <script src="../js/ie_fix.js" type="text/javascript"></script>
+  <script language="JavaScript" src="../js/flash_include.js"></script>
+  <script src="../js/staff_help.js" type="text/javascript"></script>
 </head>
 <body>
 	<form method="post" name="questions" action="record_review.php?group=true">
   <table cellpadding="0" cellspacing="0" border="0" width="100%" height="100%">
   <tr><td valign="top">
   <?php
-  echo "\n<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">\n";
-  echo "<tr><td style=\"background-color:#F1F5FB\"><div class=\"breadcrumb\"><a href=\"../staff/index.php\">{$string['home']}</a>";
+  echo "\n<table class=\"header\">\n";
+  echo "<tr><th><div class=\"breadcrumb\"><a href=\"../staff/index.php\">{$string['home']}</a>";
   if ($folder != '') {
     echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?folder=' . $folder . '">' . $folder_name . '</a>';
   } elseif (isset($_GET['module']) and $_GET['module'] != '') {
@@ -158,9 +158,9 @@ if (!isset($no_screens)) {
   }
   echo "&nbsp;&nbsp;<img src=\"../artwork/breadcrumb_arrow.png\" width=\"4\" height=\"7\" alt=\"-\" />&nbsp;&nbsp;<a href=\"../paper/details.php?paperID=$paperID&module=$module&folder=$folder\">$paper_title</a>&nbsp;&nbsp;<img src=\"../artwork/breadcrumb_arrow.png\" width=\"4\" height=\"7\" alt=\"-\" />&nbsp;&nbsp;<a href=\"./index.php?paperID=$paperID&module=$module&folder=$folder\">{$string['standardssetting']}</a></div>";
   $helpID = 98;
-  echo '<div style="font-family:Arial,sans-serif; font-size:200%; color:black; font-weight:bold; margin-left:10px">' . $paper_title . '</div><div style="position:relative; left:12px; top:-3px; font-size:8pt">' . $string['standardssetting'] . ': ' . $string['angoffmethod'] . ' - ' . $string['groupreview'] . '</div>';
-  echo "</td><td style=\"background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp($helpID); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"{$string['help']}\" border=\"0\" /></a></td></tr>\n";
-  echo "<tr style=\"height:4px\"><td colspan=\"2\" valign=\"top\"><img src=\"../artwork/header_horizontal_line.gif\" width=\"100%\" height=\"3\" alt=\"{$string['line']}\" /></td></tr>\n</table>\n";
+  echo '<div style="font-family:Arial,sans-serif; font-size:200%; color:black; font-weight:bold; margin-left:10px">' . $paper_title . '</div><div style="position:relative; left:12px; top:-3px; font-size:90%">' . $string['standardssetting'] . ': ' . $string['angoffmethod'] . ' - ' . $string['groupreview'] . '</div>';
+  echo "</th><th style=\"text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp($helpID); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"{$string['help']}\" border=\"0\" /></a></th></tr>\n";
+  echo "<tr><td colspan=\"2\" class=\"bevel\"></th></tr>\n</table>\n";
 ?>
   <br />
   <div align="center">

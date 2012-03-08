@@ -30,7 +30,8 @@ require '../lang/' . $language. '/include/timezones.inc';
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
 <title><?php echo $string['createnewpaper'] . $cfg_install_type; ?></title>
 <?php
   // Delete any half completed papers owned by current user.
@@ -50,42 +51,42 @@ require '../lang/' . $language. '/include/timezones.inc';
   
   if ($rows_found > 0) {
 ?>
-<style>
-  body {font-family:Arial,sans-serif; color:black; background-color:#F1F5FB; margin:6px; font-size:90%}
-  table {font-size:100%}
-  textarea, input[type=text], select {font-family: Arail,sans-serif; border: 1px solid #7F9DB9}
-  .icon {color:#001687; padding-top:15px; padding-bottom:15px; padding-left:0px; padding-right:0px; vertical-align:top; width:98px; font-size:8pt}
-</style>
-<script language="JavaScript">
-  function over(id) {
-    if (id != document.getElementById('paper_type').value) {
-      document.getElementById(id).style.backgroundImage = "url('../artwork/over.png')";
+  <style type="text/css">
+    body {font-family:Arial,sans-serif; color:black; background-color:#F1F5FB; margin:6px; font-size:90%}
+    table {font-size:100%}
+    textarea, input[type=text], select {font-family: Arail,sans-serif; border: 1px solid #7F9DB9}
+    .icon {color:#001687; padding-top:15px; padding-bottom:15px; padding-left:0px; padding-right:0px; vertical-align:top; width:98px; font-size:8pt}
+  </style>
+  <script type="text/javascript">
+    function over(id) {
+      if (id != document.getElementById('paper_type').value) {
+        document.getElementById(id).style.backgroundImage = "url('../artwork/over.png')";
+      }
     }
-  }
-  
-  function out(id) {
-    if (id != document.getElementById('paper_type').value) {
-      document.getElementById(id).style.backgroundImage = "url('../artwork/blank_tick_cross.gif')";
+
+    function out(id) {
+      if (id != document.getElementById('paper_type').value) {
+        document.getElementById(id).style.backgroundImage = "url('../artwork/blank_tick_cross.gif')";
+      }
     }
-  }
-  
-  function activate(id) {
-    document.getElementById('formative').style.backgroundImage = "url('../artwork/blank_tick_cross.gif')";
-    document.getElementById('progress').style.backgroundImage = "url('../artwork/blank_tick_cross.gif')";
-    document.getElementById('summative').style.backgroundImage = "url('../artwork/blank_tick_cross.gif')";
-    document.getElementById('survey').style.backgroundImage = "url('../artwork/blank_tick_cross.gif')";
-    document.getElementById('osce').style.backgroundImage = "url('../artwork/blank_tick_cross.gif')";
-    document.getElementById('offline').style.backgroundImage = "url('../artwork/blank_tick_cross.gif')";
-    document.getElementById('peer_review').style.backgroundImage = "url('../artwork/blank_tick_cross.gif')";
-  
-    document.getElementById(id).style.backgroundImage = "url('../artwork/on.png');";
-    document.getElementById('paper_type').value = id;
-  }
-  
-  function warning() {
-    alert("<?php printf($string['msg5'], $_POST['paper_name']); ?>");
-  }
-</script>
+
+    function activate(id) {
+      document.getElementById('formative').style.backgroundImage = "url('../artwork/blank_tick_cross.gif')";
+      document.getElementById('progress').style.backgroundImage = "url('../artwork/blank_tick_cross.gif')";
+      document.getElementById('summative').style.backgroundImage = "url('../artwork/blank_tick_cross.gif')";
+      document.getElementById('survey').style.backgroundImage = "url('../artwork/blank_tick_cross.gif')";
+      document.getElementById('osce').style.backgroundImage = "url('../artwork/blank_tick_cross.gif')";
+      document.getElementById('offline').style.backgroundImage = "url('../artwork/blank_tick_cross.gif')";
+      document.getElementById('peer_review').style.backgroundImage = "url('../artwork/blank_tick_cross.gif')";
+
+      document.getElementById(id).style.backgroundImage = "url('../artwork/on.png');";
+      document.getElementById('paper_type').value = id;
+    }
+
+    function warning() {
+      alert("<?php printf($string['msg5'], $_POST['paper_name']); ?>");
+    }
+  </script>
 </head>
 
 <body onload="warning();">
@@ -177,7 +178,7 @@ require '../lang/' . $language. '/include/timezones.inc';
   $property_id = $mysqli->insert_id;
   $result->close();
 ?>
-<style>
+<style type="text/css">
   body {font-family:Arial,sans-serif; color:black; background-color:#F1F5FB; margin:4px; font-size:90%}
   table {font-size:100%}
   input,textarea {font-family:Arial,sans-serif; color:black}

@@ -269,7 +269,8 @@ function qRandomMarks($question_type, $tmp_exclude, $marks_correct, $option_text
           } else {
             $tmp_date = 20600111100000;
           }
-          if ($tmp_date > 201111070000 ) {
+          
+          if ($tmp_date > 20111107000000 ) {
             $prob = (MathsUtils::factorial($correct_no) * MathsUtils::factorial($option_no - $correct_no)) / MathsUtils::factorial($option_no);
             $random_mark += $prob * $marks_correct;
           } else {    // Maintain backward compatibility

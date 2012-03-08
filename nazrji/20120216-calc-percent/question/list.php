@@ -52,14 +52,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<title>Rogo: <?php echo $string['questionbank'] . ' ' . $cfg_install_type; ?></title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Rogo: <?php echo $string['questionbank'] . ' ' . $cfg_install_type; ?></title>
 
-<link rel="stylesheet" type="text/css" href="../css/submenu.css" />
-<style style="text/css">
-  .d {padding-left:6px; padding-right:2px; padding-top:4px; padding-bottom:2px; vertical-align:top}
-  .owner {color:#A5A5A5}
-</style>
+  <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
+  <link rel="stylesheet" type="text/css" href="../css/header.css" />
+  <style type="text/css">
+    .d {padding-left:6px; padding-right:2px; padding-top:4px; padding-bottom:2px; vertical-align:top}
+    .owner {color:#A5A5A5}
+  </style>
 </head>
 
 <body onclick="hideMenus(event)">
@@ -68,7 +70,7 @@
 ?>
 
 <div id="content" class="content" style="font-size:80%" onclick="hideMenus(event)">
-<table cellpadding="0" cellspacing="0" border="0" width="100%">
+<table class="header">
 <?php
   $question_no = 0;
   $display_no = 0;
@@ -135,17 +137,17 @@
   $search_results->store_result();
   $search_results->bind_result($q_id, $title, $initials, $surname, $ownerID, $leadin, $q_type, $q_media, $last_edited, $locked, $status);
 
-  echo "<tr><td colspan=\"3\" style=\"background-color:#F1F5FB\"><div class=\"breadcrumb\"><a href=\"../staff/index.php\">" . $string['home'] . "</a></div><div style=\"font-size:200%; margin-left:10px\"><strong>" . $string['questionbank'] . "&nbsp;(" . number_format($search_results->num_rows) . ")</strong>$bank_type</div></td>";
-  echo "<td colspan=\"2\" style=\"text-align:right; background-color:#F1F5FB\" nowrap><input type=\"checkbox\" onclick=\"updateCookies();\" name=\"myquestions\" id=\"myquestions\" value=\"on\"";
+  echo "<tr><th colspan=\"3\"><div class=\"breadcrumb\"><a href=\"../staff/index.php\">" . $string['home'] . "</a></div><div style=\"font-size:200%; margin-left:10px\"><strong>" . $string['questionbank'] . "&nbsp;(" . number_format($search_results->num_rows) . ")</strong>$bank_type</div></th>";
+  echo "<th colspan=\"2\" style=\"text-align:right\" nowrap><input type=\"checkbox\" onclick=\"updateCookies();\" name=\"myquestions\" id=\"myquestions\" value=\"on\"";
   if (isset($_COOKIE['myquestions'])) echo $_COOKIE['myquestions'];
-  echo " />&nbsp;<nobr>" . $string['myquestionsonly'] . "</nobr>&nbsp;</td></tr>\n";
+  echo " />&nbsp;<nobr>" . $string['myquestionsonly'] . "</nobr>&nbsp;</th></tr>\n";
 
-  echo "<tr><td style=\"background-color:#F1F5FB\" align=\"right\" width=\"15\">&nbsp;<img src=\"../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" /></td>\n";
-  echo "<td style=\"background-color:#F1F5FB\">&nbsp;" . $string['question'] . "&nbsp;</td>\n";
-  echo "<td style=\"background-color:#F1F5FB\"><img src=\"../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;" . $string['type'] . "&nbsp;</td>\n";
-  echo "<td style=\"background-color:#F1F5FB\"><img src=\"../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;" . $string['modified'] . "&nbsp;</td>\n";
-  echo "<td style=\"background-color:#F1F5FB\"><img src=\"../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;" . $string['status'] . "&nbsp;</td></tr>\n";
-  echo "<tr style=\"height:4px\"><td valign=\"top\" colspan=\"5\"><img src=\"../artwork/header_horizontal_line.gif\" width=\"100%\" height=\"3\" alt=\"Line\" /></td></tr>\n";
+  echo "<tr><th style=\"text-align:right; width:15px\">&nbsp;<img src=\"../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" /></th>\n";
+  echo "<th>&nbsp;" . $string['question'] . "&nbsp;</td>\n";
+  echo "<th><img src=\"../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;" . $string['type'] . "&nbsp;</th>\n";
+  echo "<th><img src=\"../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;" . $string['modified'] . "&nbsp;</th>\n";
+  echo "<th><img src=\"../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;" . $string['status'] . "&nbsp;</th></tr>\n";
+  echo "<tr><th class=\"bevel\" colspan=\"5\"></th></tr>\n";
 
   while ($search_results->fetch()) {
 

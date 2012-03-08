@@ -49,6 +49,7 @@ function getData($url) {
 }
 
 function tidyLine($line) {
+  $line = str_replace('<img src="../artwork/small_yellow_warning_icon.gif" width="16" height="16" alt="Marking not complete" />&nbsp;', '', $line);
   $parts = explode('>', $line);
   $parts2 = explode('<', $parts[1]);
   
@@ -96,8 +97,9 @@ function parseScript($data) {
 }
 
 $papers = array();
-$result = $mysqli->prepare("SELECT crypt_name, property_id, paper_title, DATE_FORMAT(start_date,'%d/%m/%Y'), DATE_FORMAT(start_date,'%Y%m%d%H%i%s'), DATE_FORMAT(end_date,'%Y%m%d%H%i%s') FROM properties WHERE paper_type = '2' AND start_date > 20110326080000 AND end_date < 20120229070000 AND deleted IS NULL ORDER BY start_date");
-//$result = $mysqli->prepare("SELECT crypt_name, property_id, paper_title, DATE_FORMAT(start_date,'%d/%m/%Y'), DATE_FORMAT(start_date,'%Y%m%d%H%i%s'), DATE_FORMAT(end_date,'%Y%m%d%H%i%s') FROM properties WHERE property_id IN (3779)");
+//$result = $mysqli->prepare("SELECT crypt_name, property_id, paper_title, DATE_FORMAT(start_date,'%d/%m/%Y'), DATE_FORMAT(start_date,'%Y%m%d%H%i%s'), DATE_FORMAT(end_date,'%Y%m%d%H%i%s') FROM properties WHERE paper_type = '2' AND start_date > 20080101070000 AND end_date < 20110101070000 AND deleted IS NULL ORDER BY start_date");
+$result = $mysqli->prepare("SELECT crypt_name, property_id, paper_title, DATE_FORMAT(start_date,'%d/%m/%Y'), DATE_FORMAT(start_date,'%Y%m%d%H%i%s'), DATE_FORMAT(end_date,'%Y%m%d%H%i%s') FROM properties WHERE paper_type = '2' AND start_date > 20110101070000 AND end_date < 20120215070000 AND deleted IS NULL ORDER BY start_date");
+//$result = $mysqli->prepare("SELECT crypt_name, property_id, paper_title, DATE_FORMAT(start_date,'%d/%m/%Y'), DATE_FORMAT(start_date,'%Y%m%d%H%i%s'), DATE_FORMAT(end_date,'%Y%m%d%H%i%s') FROM properties WHERE property_id IN (4841)");
 $result->execute();
 $result->bind_result($crypt_name, $paperID, $title, $display_start_date, $start_date, $end_date);
 while ($result->fetch()) {
@@ -108,7 +110,7 @@ $result->close();
 <html>
 <head>
 <title>Testing: Class Totals</title>
-<style>
+<style type="text/css">
 body {font-family:Arial,sans-serif; font-size:90%}
 table {font-size:100%}
 .n {text-align:right}
@@ -116,18 +118,24 @@ table {font-size:100%}
 </head>
 <body>
 <?php
+$server = 'https://rogo.local';
+
+$paper_no = count($papers);
+$current_no = 0;
+
 foreach ($papers as $paper) {
-  $url = "https://rogo.local/reports/class_totals.php?paperID=" . $paper['paperID'] . "&startdate=" . $paper['start_date'] . "&enddate=" . $paper['end_date'] . "&repmodule=&repcourse=%&sortby=student_id&module=A14CHH&folder=&percent=100&absent=0&direction=asc";
+  $url = $server . "/reports/class_totals.php?paperID=" . $paper['paperID'] . "&startdate=" . $paper['start_date'] . "&enddate=" . $paper['end_date'] . "&repmodule=&repcourse=%&sortby=student_id&module=A14CHH&folder=&percent=100&absent=0&direction=asc";
   $output = getData($url);
   $marks_set = parseRawMarks($output);
   
-  echo "<br /><strong>Checking paperID " . $paper['paperID'] . "...</strong><br />\n";
+  $current_no++;
+  echo "<br /><strong>$current_no/$paper_no Checking paperID " . $paper['paperID'] . "...</strong><br />\n";
   ob_flush();
   flush();  
 
   $result = $mysqli->prepare("SELECT surname, first_names, username FROM users WHERE id=? LIMIT 1");
   foreach ($marks_set as $mark) {
-    $url = "https://rogo.local/paper/finish.php?id=" . $paper['crypt_name'] . "&previous=" . str_replace(' ', '%20', $mark['started']) . "&userid=" . $mark['userID'] . "&surname=Test&log_type=2&percent=" . str_replace('%' ,'', $mark['percent']);
+    $url = $server . "/paper/finish.php?id=" . $paper['crypt_name'] . "&previous=" . str_replace(' ', '%20', $mark['started']) . "&userid=" . $mark['userID'] . "&surname=Test&log_type=2&percent=" . str_replace('%' ,'', $mark['percent']);
     $output = getData($url);
     $script_mark = parseScript($output);
     

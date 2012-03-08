@@ -41,7 +41,7 @@
 <head>
 <title><?php echo $string['deletelab']; ?></title>
 
-<style>
+<style type="text/css">
 body {margin:0px; background-color:#F1F5FB; font-family:Arial,sans-serif; font-size:90%; text-align:justifed}
 </style>
 </head>

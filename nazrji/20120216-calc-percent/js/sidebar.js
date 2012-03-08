@@ -112,7 +112,7 @@
     document.getElementById(rowID).style.color='black';
   }
 
-  function showMenu(submenuID,menuID,callingID,arrayID,urlID,e) {    
+  function showMenu(submenuID, menuID, callingID, arrayID, urlID, e) {    
     scrollLine = 0;
   
     var limit = (scrollLine + 19);
@@ -153,9 +153,12 @@
     }
 
     if (!e) var e = window.event;
-    hideMenus(e);
-    
-    document.getElementById(submenuID).style.display = 'block';
+    if (document.getElementById(submenuID).style.display != 'block') {
+      hideMenus(e);
+      document.getElementById(submenuID).style.display = 'block';
+    } else {
+      hideMenus(e);
+    }
     popupHeight = document.getElementById(submenuID).offsetHeight;
     
     sidebarHeight = document.getElementById('left-sidebar').offsetHeight;

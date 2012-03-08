@@ -1,5 +1,7 @@
 $(function () {
   $('.rankselect').change(rankCheck);
+
+  $(".calc-answer").keydown(filterKeypress);
 });
 
 function refreshparent() {
@@ -108,17 +110,6 @@ function openCalc(mode, element) {
   }
 }
 
-function openCalc2() {
-  if (typeof(calc) == 'object' && calc.closed != true) {
-    calc.focus();
-  } else {
-    calc=window.open("../tools/calc98/jcalc98.htm","calculator","width=250,height=331,top=10,left="+(document.documentElement.clientWidth-280)+"scrollbars=no,resizable=no,toolbar=no,location=no,directories=no,status=no,menubar=no");
-    if (window.focus) {
-      calc.focus();
-    }
-  }
-}
-
 function openLink(url,name,width,height) {
   if (typeof (doc) == 'object' && doc.closed != true) {
     doc.focus();
@@ -141,3 +132,21 @@ function saveMath() {
   }
 }
 
+function filterKeypress(event) {
+  // Allow: backspace, delete, tab and escape
+  if ( event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 189 || event.keyCode == 190 || event.keyCode == 110 || event.keyCode == 109 || event.keyCode == 9 || event.keyCode == 27 ||
+  // Allow: Ctrl+A
+  (event.keyCode == 65 && event.ctrlKey === true) ||
+  // Allow: home, end, left, right
+  (event.keyCode >= 35 && event.keyCode <= 39)) {
+    // let it happen, don't do anything
+    return;
+  }
+  else {
+    // Ensure that it is a number and stop the keypress
+    if (((event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105 ))
+            || event.shiftKey === true) {
+      event.preventDefault();
+    }
+  }
+}

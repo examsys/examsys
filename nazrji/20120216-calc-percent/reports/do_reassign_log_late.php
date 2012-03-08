@@ -24,19 +24,21 @@
 
   require '../include/staff_auth.inc';
 ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Reassign Script to User</title>
-<style>
-body {font-size:100%; background-color:#ECE9D8; color:black; font-family:Arial,sans-serif}
-</style>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Reassign Script to User</title>
+  <style type="text/css">
+  body {font-size:100%; background-color:#ECE9D8; color:black; font-family:Arial,sans-serif}
+  </style>
 
-<script language="JavaScript">
-  function reloadClose() {
-    window.opener.location.href = window.opener.location.href;
-    window.close();
-  }
-</script>
+  <script type="text/javascript">
+    function reloadClose() {
+      window.opener.location.href = window.opener.location.href;
+      window.close();
+    }
+  </script>
 </head>
 
 <body onload="reloadClose();">

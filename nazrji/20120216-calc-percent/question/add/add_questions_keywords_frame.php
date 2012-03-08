@@ -25,9 +25,11 @@
   require '../../include/staff_auth.inc';
   $mysqli->close();
 ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Add Questions</title>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Add Questions</title>
 </head>
   <frameset cols="200,*" frameborder="0" framespacing="0" border="0">
     <frame scrolling="auto" src="add_questions_keyword_list.php" name="keywords">

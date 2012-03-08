@@ -28,10 +28,13 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
 <title>Clear Guest Users</title>
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
+<link rel="stylesheet" type="text/css" href="../css/header.css" />
 <script language="JavaScript" src="../js/staff_help.js"></script>
-<style>
+<style type="text/css">
 .sechead {background-color:#EBF2F7; color:#00156E; border-bottom: 1px solid #CFDBEB}
 .l {border-bottom:1px solid #EEEEEE}
 .loff {border-bottom:1px solid #EEEEEE; color:#808080}
@@ -44,9 +47,9 @@
 ?>
 
 <div id="content" class="content" style="font-size:80%">
-<table cellpadding="0" cellspacing="0" border="0" width="100%">
-<tr><td style="background-color:#F1F5FB"><div class="breadcrumb"><a href="../staff/index.php"><?php echo $string['home']; ?></a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php"><?php echo $string['administrativetools']; ?></a></div><div style="font-size:200%; margin-left:10px; font-weight:bold"><?php echo $string['clearguestaccounts']; ?></div></td><td style="background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(243); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="<?php echo $string['help']; ?>" border="0" /></a></td></tr>
-<tr><td colspan="2" style="height:3px"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td></tr>
+<table class="header">
+<tr><th><div class="breadcrumb"><a href="../staff/index.php"><?php echo $string['home']; ?></a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php"><?php echo $string['administrativetools']; ?></a></div><div style="font-size:200%; margin-left:10px; font-weight:bold"><?php echo $string['clearguestaccounts']; ?></div></th><th style="text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(243); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="<?php echo $string['help']; ?>" border="0" /></a></th></tr>
+<tr><th colspan="2" class="bevel"></th></tr>
 </table>
 <br />
 

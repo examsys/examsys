@@ -98,19 +98,20 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>New Paper</title>
-<script language="JavaScript">
-  function jumpToPaper() {
-    <?php
-      if ($_POST['folder'] != '') {
-        echo 'window.opener.location = "details.php?paperID=' . $_POST['property_id'] . '&folder=' . $_POST['folder'] . '";';
-      } else {
-        echo 'window.opener.location = "details.php?paperID=' . $_POST['property_id'] . '&module=' . $first_module . '";';
-      }
-    ?>
-    window.close();
-  }
-</script>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>New Paper</title>
+  <script type="text/javascript">
+    function jumpToPaper() {
+      <?php
+        if ($_POST['folder'] != '') {
+          echo 'window.opener.location = "details.php?paperID=' . $_POST['property_id'] . '&folder=' . $_POST['folder'] . '";';
+        } else {
+          echo 'window.opener.location = "details.php?paperID=' . $_POST['property_id'] . '&module=' . $first_module . '";';
+        }
+      ?>
+      window.close();
+    }
+  </script>
 </head>
 <body onload="jumpToPaper()">
 </body>

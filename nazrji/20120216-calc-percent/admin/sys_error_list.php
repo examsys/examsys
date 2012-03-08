@@ -28,10 +28,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
+<meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <title><?php echo $string['systemerrrorreport'] . ' ' . $cfg_install_type; ?></title>
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
-<style>
+<link rel="stylesheet" type="text/css" href="../css/header.css" />
+<style type="text/css">
 th {background-color:#F1F5FB; font-weight:normal; text-align:left}
 .no {text-align:right}
 .err {padding-left:6px; vertical-align:top}
@@ -83,13 +85,13 @@ th {background-color:#F1F5FB; font-weight:normal; text-align:left}
   require '../include/sys_errors_menu.inc';
 ?>
 <div id="content" class="content" style="font-size:80%">
-<table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+<table class="header">
 <tr>
-<td colspan="4" style="padding-left:0px; background-color:#F1F5FB"><div class="breadcrumb"><a href="../staff/index.php"><?php echo $string['home']; ?></a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php"><?php echo $string['administrativetools']; ?></a></div><div style="margin-left:10px; font-size:200%; font-weight:bold"><?php echo $string['systemerrrorreport']; ?></td>
-<td colspan="3" style="padding-left:0px; background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(1); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="<?php echo $string['help']; ?>" border="0" /></a><br /><div style="padding-top:5px"><input type="checkbox" name="showfixed" id="showfixed" value="1" onclick="updateCookies();"<?php if (isset($_COOKIE['showfixed'])) echo $_COOKIE['showfixed']; ?> /> <?php echo $string['showfixed']; ?></div></td>
+<th colspan="4"><div class="breadcrumb"><a href="../staff/index.php"><?php echo $string['home']; ?></a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php"><?php echo $string['administrativetools']; ?></a></div><div style="margin-left:10px; font-size:200%; font-weight:bold"><?php echo $string['systemerrrorreport']; ?></th>
+<th colspan="3" style="text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(1); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="<?php echo $string['help']; ?>" border="0" /></a><br /><div style="padding-top:5px"><input type="checkbox" name="showfixed" id="showfixed" value="1" onclick="updateCookies();"<?php if (isset($_COOKIE['showfixed'])) echo $_COOKIE['showfixed']; ?> /> <?php echo $string['showfixed']; ?></div></th>
 </tr>
-<tr><th>&nbsp;<?php echo $string['date']; ?></th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['type']; ?></th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['message']; ?></th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['file']; ?></th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" /><nobr>&nbsp;<?php echo $string['lineno']; ?>&nbsp;</nobr></th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" /><nobr>&nbsp;<?php echo $string['user']; ?></nobr></th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" /><nobr>&nbsp;<?php echo $string['userid']; ?>&nbsp;</nobr></th></tr>
-<tr><td colspan="7" style="padding-left:0px; height:3px"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td></tr>
+<tr><th><div style="padding-left:10px"><?php echo $string['date']; ?></div></th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['type']; ?></th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['message']; ?></th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['file']; ?></th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" /><nobr>&nbsp;<?php echo $string['lineno']; ?>&nbsp;</nobr></th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" /><nobr>&nbsp;<?php echo $string['user']; ?></nobr></th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" /><nobr>&nbsp;<?php echo $string['userid']; ?>&nbsp;</nobr></th></tr>
+<tr><th colspan="7" class="bevel"></th></tr>
 
 <?php
   if (isset($_COOKIE['showfixed']) and $_COOKIE['showfixed'] == 'checked') {
@@ -104,15 +106,16 @@ th {background-color:#F1F5FB; font-weight:normal; text-align:left}
   $result->bind_result($fixed, $errorID, $title, $initials, $surname, $occurred, $errtype, $errstr, $errfile, $errline, $tmp_userID);
   while ($result->fetch()) {
     if ($fixed == '') {
-      echo "<tr onclick=\"selErr($errorID)\" onmouseover=\"lon($errorID)\" onmouseout=\"loff($errorID)\" id=\"link$errorID\"><td class=\"err\"><nobr>$occurred<nobr></td><td class=\"err\">$errtype</td><td class=\"err\">$errstr</td><td class=\"err\">$errfile</td><td class=\"errl\">$errline</td><td class=\"err\">$title&nbsp;$initials&nbsp;$surname</td><td class=\"err\">$tmp_userID</td></tr>\n";
+      echo "<tr onclick=\"selErr($errorID)\" onmouseover=\"lon($errorID)\" onmouseout=\"loff($errorID)\" id=\"link$errorID\"><td><div class=\"err\"><nobr>$occurred<nobr></div></td><td><div class=\"err\">$errtype</div></td><td><div class=\"err\">$errstr</div></td><td><div class=\"err\">$errfile</div></td><td><div class=\"errl\">$errline</div></td><td><div class=\"err\">$title&nbsp;$initials&nbsp;$surname</div></td><td><div class=\"err\">$tmp_userID</div></td></tr>\n";
     } else {
-      echo "<tr onclick=\"selErr($errorID)\" onmouseover=\"lon($errorID)\" onmouseout=\"loff($errorID)\" id=\"link$errorID\" style=\"color:#808080\"><td class=\"err\"><nobr>$occurred</nobr></td><td class=\"err\">$errtype</td><td class=\"err\">$errstr</td><td class=\"err\">$errfile</td><td class=\"errl\">$errline</td><td class=\"err\">";
+      echo "<tr onclick=\"selErr($errorID)\" onmouseover=\"lon($errorID)\" onmouseout=\"loff($errorID)\" id=\"link$errorID\" style=\"color:#808080\"><td><div class=\"err\"><nobr>$occurred</nobr></div></td><td><div class=\"err\">$errtype</div></td><td><div class=\"err\">$errstr</div></td><td><div class=\"err\">$errfile</div></td><td><div class=\"errl\">$errline</div></td><td><div class=\"err\">";
       if ($surname == '') {
         echo '<span class="grey">unauthenticated</span>';
       } else {
         echo "$title&nbsp;$initials&nbsp;$surname";
       }
-      echo "</td><td class=\"err\">$tmp_userID</td></tr>\n";
+      echo "</div></td><td><div class=\"err\">$tmp_userID</div>Quadcor3
+      </td></tr>\n";
     }
   }
 ?>

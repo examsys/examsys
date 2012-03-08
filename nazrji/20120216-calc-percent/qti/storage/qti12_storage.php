@@ -24,6 +24,8 @@ class ST_QTI12_Question // <item
   var $title; // <item title=
   var $load_id; // <item ident=
 
+
+  var $wct_questiontype;
   // itemmetadata stuff
   var $qmd_itemtype; // <itemmetadata><qmd_itemtype>
   var $qmd_status = 'Normal'; // <itemmetadata><qmd_status>
@@ -103,21 +105,107 @@ class ST_QTI12_Question // <item
 
     // load item meta data
     if ($xml->itemmetadata) {
-      if ($xml->itemmetadata->qmd_itemtype) $this->qmd_itemtype = (string) $xml->itemmetadata->qmd_itemtype;
+
+      foreach ($xml->itemmetadata as $th) {
+        foreach($th as $rg) {
+          foreach($rg as $ef) {
+            if($ef->fieldlabel=="wct_questiontype"){
+              $this->wct_questiontype = (string) $ef->fieldentry;
+            }
+          }
+        }
+      }
+
+    if ($xml->itemmetadata->qmd_itemtype) $this->qmd_itemtype = (string) $xml->itemmetadata->qmd_itemtype;
 
       if ($xml->itemmetadata->qmd_status) $this->qmd_status = (string) $xml->itemmetadata->qmd_status;
 
       if ($xml->itemmetadata->qmd_toolvendor) $this->qmd_toolvendor = (string) $xml->itemmetadata->qmd_toolvendor;
+
+      $t=0;
+
+
     }
 
-    $this->LoadComments($xml);
-    $this->LoadPresentation($xml->presentation);
 
+    $this->LoadComments($xml);
+    if($this->wct_questiontype=="WCT_JumbledSentence") {
+$ttt=$xml->presentation->flow->response_lid->render_extension->ims_render_object;
+
+      $itemid=1;
+
+      foreach( $xml->presentation->flow->response_lid->render_extension->ims_render_object->children() as $child1)
+      {
+        $name=$child1->getName();
+        if($name=="material") {
+          $mat=new ST_QTI12_Material();
+          $mat->notrim=1;
+          $mat->add($child1);
+          $question[]=$mat->GetText(1);
+          $trtrtr=1;
+          unset($mat);
+        }
+        if($name=="response_label") {
+          $mat=new ST_QTI12_Material();
+          $mat->notrim=1;
+          $mat->add($child1->material);
+          $string=sprintf("%%BLANK_%d%%",$itemid);
+          $question[]=$string;
+          $optionslk[$itemid]=$mat->GetText(1);
+          $ident1=(string) $child1->attributes()->ident;
+          $optionslk1[$itemid]=$ident1;
+          $optionslk2[$ident1]=$mat->GetText(1);
+          $trtrtr=1;
+          unset($mat);
+          $itemid++;
+        }
+      }
+
+      if($xml->resprocessing->respcondition->conditionvar->and) {
+
+        foreach($xml->resprocessing->respcondition->conditionvar->and->children() as $child2) {
+
+         $ident2= (string) $child2->attributes()->index;
+         $nm=(string) $child2;
+         $optionslk3[$ident2]=$nm;
+         $optionslk4[$nm]=$ident2;
+        }
+      }
+      if(isset($optionslk3)) {
+    foreach($optionslk1 as $par3 => $child3) {
+      $string=sprintf("%%BLANK_%d%%",$par3);
+$lk2=$optionslk3[$par3];
+      $options[$string][]=$optionslk2[$lk2];
+      foreach($optionslk2 as $par4 => $child4) {
+        if($par4!=$lk2) {
+          $options[$string][]=$optionslk2[$par4];
+        }
+      }
+    }
+      }
+      $this->optionslk1=$optionslk1;
+      $this->optionslk2=$optionslk2;
+      @$this->optionslk3=$optionslk3;
+      @$this->optionslk4=$optionslk4;
+
+
+      @$this->options2=$options;
+      $this->question2=$question;
+      $debpoint=1;
+
+      $this->LoadPresentation($xml->presentation->flow);
+    }
+    else {
+      $this->LoadPresentation($xml->presentation);
+    }
     //}
     // process respcond
+
     if ($xml->resprocessing->respcondition) {
-      foreach ($xml->resprocessing->respcondition as $respcondition) {
-        $this->respconditions[] = new ST_QTI12_RespCondition($respcondition);
+      foreach ($xml->resprocessing as $respch) {
+        foreach ($respch->respcondition as $respcondition) {
+          $this->respconditions[] = new ST_QTI12_RespCondition($respcondition);
+        }
       }
     }
 
@@ -191,7 +279,7 @@ class ST_QTI12_Question // <item
       $this->LoadPresentation($xml->flow);
     }
 
-    $this->presentation = $xml;
+     $this->presentation = $xml;
     $elementno = 1;
 
     foreach ($xml->children() as $child) {
@@ -201,6 +289,8 @@ class ST_QTI12_Question // <item
       if ($name == 'material') $this->material->add($child, $elementno);
 
       // load all response_lid elements, followed by all other types
+
+
 
       //foreach ($xml->response_lid as $response)
       //{
@@ -253,7 +343,7 @@ class ST_QTI12_Question // <item
 
     foreach ($this->responses as $response) {
       $this->counts[$response->type]++;
-      $this->counts[$response->render]++;
+      @$this->counts[$response->render]++;
       $this->counts['response']++;
     }
 
@@ -350,6 +440,7 @@ class ST_QTI12_Response // <response_
   var $rows = 0;
   var $cols = 0;
 
+  var $orderid = 0;
   // attributes for render_slider
 
   // attributes for render_hotspot
@@ -386,6 +477,9 @@ class ST_QTI12_Response // <response_
 
     } else if ($xml->render_extension) {
       $this->render = 'extension';
+
+      $this->LoadRender($xml->render_extension->ims_render_object);
+
 
     } else if ($xml->render_fib) {
       $this->render = 'fib';
@@ -445,9 +539,12 @@ class ST_QTI12_Label // <response_label
   var $id; // <response_label ident=
   var $material; // <material>
   var $flow = 0;
+  var $orderid=0;
 
   function __construct($xml) {
     $this->id = (string) $xml->attributes()->ident;
+
+    if($xml->attributes()->orderid) $this->orderid=(int)$xml->attributes()->orderid;
 
     $this->material = new ST_QTI12_Material();
     // get material if available
@@ -481,8 +578,29 @@ class ST_QTI12_RespCondition // <respcondition>
   // no key
   var $conditions = array();
 
+  var $sortedout;
+  var $sortedoutR;
+
   function __construct($xml) {
     $this->title = (string) $xml->attributes()->title;
+
+    foreach( $xml->conditionvar->and as $andpart) {
+
+      if($andpart->varequal) {
+        foreach( $andpart->varequal as $andpart1) {
+          $nm=(string) $andpart1;
+          $ind=(int)$andpart1->attributes()->index;
+
+          $this->sortedout[$ind]=$nm;
+          $this->sortedoutR[$nm]=$ind;
+        }
+      }
+
+
+
+
+
+    }
 
     $this->continue = strtolower($xml->attributes()->continue) == 'yes' ? 1 : 0;
     if ($xml->setvar) {
@@ -623,20 +741,31 @@ class ST_QTI12_Material // <material>
   var $y_scale = 1;
   var $media_width = 0;
   var $media_height = 0;
+  var $orderid = 0;
+
+  var $notrim=0;
 
   function add($xml = '', $order = '') {
     if ($xml) {
       $this->count++;
+      if ($xml->attributes()->objectid) $this->orderid=$xml->attributes()->objectid;
       $chunk = new ST_QTI12_Material_Inner();
       $chunk->label = (string) $xml->attributes()->label;
 
       foreach ($xml->children() as $child) {
         $name = $child->getName();
-        if ($name == 'mattext') $chunk->data[] = MakeValidHTML($this->ParseImages((string) $child));
+        if ($name == 'mattext') $chunk->data[] = MakeValidHTML($this->ParseImages((string) $child),$this->notrim);
 
         if ($name == 'matemtext') $chunk->data[] = "<em>".MakeValidHTML($this->ParseImages((string) $child))."</em>";
 
         if ($name == 'matbreak') $chunk->data[] = "<br />";
+
+        if ($name == 'mat_extension') {
+          foreach ($child->children() as $child1) {
+            $name1 = $child1->getName();
+            if ($name1 == 'webct_localizable_mattext') $chunk->data[] = MakeValidHTML($this->ParseImages((string) $child1));
+          }
+        }
       }
 
       if ($order) {
@@ -788,7 +917,13 @@ class ST_QTI12_Material // <material>
     if (count($this->chunks) > 1) $usediv = 1;
 
     foreach ($this->chunks as $chunk) {
-      $text = trim(implode("", $chunk->data));
+
+      if($this->notrim==0) {
+        $text = trim(implode("", $chunk->data));
+      }
+      else {
+        $text = implode("", $chunk->data);
+      }
 
       if ($text) {
         if ($usediv) $output .= "<div>";
@@ -801,15 +936,19 @@ class ST_QTI12_Material // <material>
     return $output;
   }
 
-  function GetText() {
+  function GetText($notrim=0) {
     $text = '';
     foreach ($this->chunks as $chunk) {
       $text .= implode("", $chunk->data)."\n";
     }
 
     while (strpos($text, "  ") > 0) $text = str_replace("  ", " ", $text);
-
-    return trim($text);
+    if($notrim==1) {
+      return ($text);
+    }
+    else {
+      return trim($text);
+    }
   }
 
   function __toString() {

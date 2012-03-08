@@ -103,6 +103,11 @@ require_once '../classes/searchutils.class.php';
     } else {
       $radio[5] = '';
     }
+    if (isset($_POST['peerreview']) and $_POST['peerreview'] == 1) {
+      $radio[6] = ' checked';
+    } else {
+      $radio[6] = '';
+    }
   } else {
     $radio[0] = ' checked';
     $radio[1] = ' checked';
@@ -110,6 +115,7 @@ require_once '../classes/searchutils.class.php';
     $radio[3] = ' checked';
     $radio[4] = ' checked';
     $radio[5] = ' checked';
+    $radio[6] = ' checked';
   }
 ?>
 
@@ -118,7 +124,8 @@ require_once '../classes/searchutils.class.php';
 <tr><td><input type="checkbox" name="summative" value="1"<?php echo $radio[2]; ?> /></td><td><?php echo $string['summative']; ?></td></tr>
 <tr><td><input type="checkbox" name="survey" value="1"<?php echo $radio[3]; ?> /></td><td><?php echo $string['survey']; ?></td></tr>
 <tr><td><input type="checkbox" name="osce" value="1"<?php echo $radio[4]; ?> /></td><td><?php echo $string['oscestation']; ?></td></tr>
-<tr><td><input type="checkbox" name="offline" value="1"<?php echo $radio[5]; ?> /></td><td><?php echo $string['offlinepaper']; ?></td></tr>
+  <tr><td><input type="checkbox" name="offline" value="1"<?php echo $radio[5]; ?> /></td><td><?php echo $string['offlinepaper']; ?></td></tr>
+  <tr><td><input type="checkbox" name="peerreview" value="1"<?php echo $radio[6]; ?> /></td><td><?php echo $string['peerreview']; ?></td></tr>
 </table>
 
 <br />

@@ -24,13 +24,14 @@
 
   require '../include/sysadmin_auth.inc';
 ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Photo rename</title>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Photo rename</title>
 </head>
 
 <body>
-
 <h1>Renaming Photos</h1>
 <?php
   $d = dir("/tmp/new_photos/");

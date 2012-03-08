@@ -29,6 +29,8 @@
   require '../include/staff_auth.inc';
   require '../include/class_totals.inc';
 
+  $displayDebug = false; //disable debud output in this script as it effects the output
+
   header("Content-type: application/vnd.ms-excel");
   header("Content-Disposition: attachment; filename=" . str_replace(' ', '_', $paper) . ".csv");
 
@@ -44,7 +46,7 @@
     $total_time = 0;
     
     //output table heading
-    $table_order = array('title'=>'title', 'surname'=>'Surname' ,'firstnames'=>'First_Names','studentid'=>'student_id','course'=>'student_grade','mark'=>'mark',$marking_label=>$marking_key,'classification'=>'mark','starttime'=>'started','duration'=>'duration','ipaddress'=>'ipaddress');
+    $table_order = array('title'=>'title', 'surname'=>'Surname' ,'firstnames'=>'First_Names','studentid'=>'student_id','course'=>'student_grade','module'=>'module','mark'=>'mark',$marking_label=>$marking_key,'classification'=>'mark','starttime'=>'started','duration'=>'duration','ipaddress'=>'ipaddress');
     $table_order['room'] = 'room';
     $metadata_cols = array();
     if (isset($user_results[0])){
@@ -72,12 +74,12 @@
           echo $user_results[$i]['student_id'] . ",";
         }
         if ($user_results[$i]['display_started'] == '') {  // Student did not take exam.
-          echo $user_results[$i]['module'] . ",,,,No Attendance,,,\n";
+          echo $user_results[$i]['student_grade'] . "," . $user_results[$i]['module'] . ",,,,No Attendance,,,\n";
         } else {
           // If room is unknown then it will contain HTML that we want to discard
           $user_results[$i]['room'] = (strpos($user_results[$i]['room'], 'unknown') !== false) ? 'unknown' : $user_results[$i]['room'];
     
-          echo $user_results[$i]['module'] . "," . $user_results[$i]['mark'] . "," . $user_results[$i]['adj_percent'] . "%,";
+          echo $user_results[$i]['student_grade'] . "," . $user_results[$i]['module'] . "," . $user_results[$i]['mark'] . "," . $user_results[$i]['adj_percent'] . "%,";
           
           
           if ($user_results[$i]['adj_percent'] < $pass_mark) {
@@ -102,11 +104,12 @@
       }
     }
     echo ",,,,,,,,,,,\n";
-  
-    echo $string['cohortsize'] . ",$display_no,,,,,,,,,,\n";
-    echo $string['failureno'] . ",$failures,(" . round(($failures / $display_no) * 100) . "% of cohort),,,,,,,,,\n";
+
+    $size_msg = ($cohort_size < $display_no) ? $cohort_size . $string['of'] . $display_no : $display_no;
+    echo $string['cohortsize'] . ",$size_msg,,,,,,,,,,\n";
+    echo $string['failureno'] . ",$failures,(" . round(($failures / $cohort_size) * 100) . "% of cohort),,,,,,,,,\n";
     if (isset($ss_hon)) {
-      echo $string['distinctionno'] . ",$honours,(" . round(($honours / $display_no) * 100) . "% of cohort),,,,,,,,,\n";
+      echo $string['distinctionno'] . ",$honours,(" . round(($honours / $cohort_size) * 100) . "% of cohort),,,,,,,,,\n";
     }
     echo $string['totalmarks'] . ",$total_marks,,,,,,,,,,\n";
     echo $string['passmark'] . ",$pass_mark%,,,,,,,,,,\n";

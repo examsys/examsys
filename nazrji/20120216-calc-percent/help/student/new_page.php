@@ -26,7 +26,7 @@
   require '../../include/errors.inc';
   require '../../include/help.inc';
 
-  header('Content-Type: text/html; charset=UTF-8');
+  header('Content-Type: text/html; charset=' . $cfg_page_charset);
 
   if (isset($_POST['save_changes'])) {
     $tmp_title = $_POST['title'];
@@ -84,9 +84,9 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 <html>
 <head>
   <title>New Help Page</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $cfg_page_charset ?>">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <style>
+  <style type="text/css">
     html {height:100%}
     body {background-color:white; color:black; margin-left:0px; margin-right:0px; font-family:Arial,sans-serif; font-size:85%; line-height:150%; color:#484848}
     p, div, td {text-align:justify}

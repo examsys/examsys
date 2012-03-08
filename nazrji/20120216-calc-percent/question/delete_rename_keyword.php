@@ -29,7 +29,8 @@ require '../include/errors.inc';
 ?>
 <html>
 <head>
-<title>Rename/Delete Keywords</title>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Rename/Delete Keywords</title>
 </head>
 <?php
     // Perform renames first
@@ -95,7 +96,7 @@ require '../include/errors.inc';
 <html>
 <head>
 <title>Rename/Delete Keywords</title>
-<style>
+<style type="text/css">
   .indenton {text-indent:-23px; padding-left:23px; background-color:highlight; color:white}
   .indentoff {text-indent:-23px; padding-left:23px; background-color:white; color:black}
 </style>

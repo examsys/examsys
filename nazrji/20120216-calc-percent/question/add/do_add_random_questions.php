@@ -26,6 +26,7 @@
 ?>
 <html>
 <head>
+<meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
 <title>Add new Question</title>
 <script language="javascript">
   var questions = new Array();

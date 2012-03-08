@@ -7,6 +7,7 @@ $string['summative'] = 'Summative Exam';
 $string['survey'] = 'Survey';
 $string['oscestation'] = 'OSCE Station';
 $string['offlinepaper'] = 'Offline Paper';
+$string['peerreview'] = 'Peer Review';
 $string['accessibility'] = 'Accessibility';
 $string['Date'] = 'Date';
 $string['lab'] = 'Lab';

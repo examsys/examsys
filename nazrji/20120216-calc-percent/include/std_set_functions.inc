@@ -148,7 +148,7 @@ function display_options($options, $q_id, $current_theme, $current_scenario, $cu
       if ($li_set == 1) {
         echo '<tr><td></td><td>';
       } else {
-        echo '<tr><td class="question_no">' . ($question_no - 1) . '.&nbsp;</td><td>';
+        echo '<tr><td class="question_no">' . $question_no . '.&nbsp;</td><td>';
       }
       $search = array('$A','$B','$C','$D','$E','$F','$G','$H','$I','$J');
       $replace = array($A,$B,$C,$D,$E,$F,$G,$H,$I,$J);
@@ -333,7 +333,14 @@ function display_options($options, $q_id, $current_theme, $current_scenario, $cu
         echo "<blockquote>\n<table cellpadding=\"2\" cellspacing=\"0\" border=\"0\">\n";
         foreach ($matching_options as $single_option) {
           $review_val = get_review($options[0]['q_type'], $std_method, $q_id, $part_id, $tmp_reviews, $is_group);
-          echo "<tr><td>" . chr($part_id + 64) . ".</td><td>" . $single_option . "</td><td>&nbsp;</td><td>";
+          echo "<tr><td>" . chr($part_id + 64) . ".</td><td>";
+          if (strpos($single_option,'.gif') !== false or strpos($single_option,'.png') !== false or strpos($single_option,'.jpg') !== false or strpos($single_option,'.jpeg') !== false) {
+            $image_parts = explode('~', $single_option);
+            echo '<img src="../media/' . $image_parts[0] . '" width="' . $image_parts[1] . '" height="' . $image_parts[2] . '" border="0" />';
+          } else {
+            echo $single_option; 
+          }
+          echo "</td><td>&nbsp;</td><td>";
           echo reviewScale($question_no, $part_id, $options[0]['marks_correct'], $std_method, substr($tmp_exclude,$part_id - 1,1), $review_val, $stdID, $std_excluded, $is_group);
           echo "</td></tr>\n";
           $part_id++;
@@ -376,7 +383,7 @@ function display_options($options, $q_id, $current_theme, $current_scenario, $cu
       if ($matching_media[0] != '') {
         echo "<p align=\"center\">" . display_media($matching_media[0], $matching_media_width[0], $matching_media_height[0]) . "</p>\n";
       }
-      echo '<table cellpadding="2" cellspacing="0" border="1">';
+      echo '<table cellpadding="2" cellspacing="0" border="1" class="matrix">';
       echo "<tr><td colspan=\"2\">&nbsp;</td>\n";
       foreach ($matching_options as $single_option) {
         echo '<td>' . $single_option . '</td>';
@@ -385,12 +392,12 @@ function display_options($options, $q_id, $current_theme, $current_scenario, $cu
         echo '<td>&nbsp;</td>';
       }
       echo "</tr>\n";
-      $numerals = array('0','i','ii','iii','iv','v','vi','vii','viii','ix','x','xi','xii');
+      //$numerals = array('0','i','ii','iii','iv','v','vi','vii','viii','ix','x','xi','xii');
       foreach ($matching_scenarios as $single_scenario) {
         $review_val = get_review($options[0]['q_type'], $std_method, $q_id, $part_id, $tmp_reviews, $is_group);
         if (trim($single_scenario) != '') {
           echo '<tr>';
-          echo '<td align="right">' . $numerals[$part_id] . '.</td><td';
+          echo '<td align="right">' . chr(64 + $part_id) . '.</td><td';
           if (substr($tmp_exclude,$part_id-1,1) == '1') echo ' style="color:red; text-decoration:line-through"';
           echo '>' . $single_scenario . '</td>';
           $answer_no = 1;

@@ -44,13 +44,14 @@ if (isset($_POST['submit'])) {
 ?>
 <html>
 <head>
-<title>Manage Teams</title>
-<script language="JavaScript">
-  function closeWindow() {
-    window.opener.location.href = '../users/details.php?userID=<?php echo $_POST['userID']; ?>&tab=teams';
-    self.close();
-  }
-</script>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Manage Teams</title>
+  <script language="JavaScript">
+    function closeWindow() {
+      window.opener.location.href = '../users/details.php?userID=<?php echo $_POST['userID']; ?>&tab=teams';
+      self.close();
+    }
+  </script>
 </head>
 <body onload="closeWindow()">
 </body>
@@ -61,7 +62,7 @@ if (isset($_POST['submit'])) {
 <html>
 <head>
 <title>Manage Teams</title>
-<style>
+<style type="text/css">
   body {font-family:Arial,sans-serif; font-size:90%; background-color:#F1F5FB; color:black; margin:0px}
 </style>
 <script language="JavaScript">

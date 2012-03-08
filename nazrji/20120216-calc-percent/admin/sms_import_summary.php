@@ -28,9 +28,11 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
+<meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
 <title><?php echo $string['smsimportsummary'] . ' ' . $cfg_install_type; ?></title>
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
-<style>
+<link rel="stylesheet" type="text/css" href="../css/header.css" />
+<style type="text/css">
 th {background-color:#F1F5FB; font-weight:normal}
 .no {text-align:right}
 </style>
@@ -55,13 +57,13 @@ th {background-color:#F1F5FB; font-weight:normal}
 ?>
 
 <div id="content" class="content" style="font-size:80%">
-<table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+<table class="header">
 <tr>
-<td colspan="4" style="background-color:#F1F5FB"><div class="breadcrumb"><a href="../staff/index.php"><?php echo $string['home']; ?></a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php"><?php echo $string['administrativetools']; ?></a></div><div style="margin-left:10px; font-size:200%; font-weight:bold"><?php echo $string['smsimportsummary']; ?></td>
-<td style="background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(1); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="<?php echo $string['help']; ?>" border="0" /></a></td>
+<th colspan="4"><div class="breadcrumb"><a href="../staff/index.php"><?php echo $string['home']; ?></a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php"><?php echo $string['administrativetools']; ?></a></div><div style="margin-left:10px; font-size:200%; font-weight:bold"><?php echo $string['smsimportsummary']; ?></th>
+<th style="text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(1); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="<?php echo $string['help']; ?>" border="0" /></a></th>
 </tr>
-<tr><th><?php echo $string['date']; ?></th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['modules']; ?></th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['enroled']; ?></th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['deleted']; ?></th><th style="width:50%">&nbsp;</th></tr>
-<tr><td colspan="5" style="height:3px"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td></tr>
+<tr><th><div style="padding-left:10px"><?php echo $string['date']; ?></div></th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['modules']; ?></th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['enroled']; ?></th><th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['deleted']; ?></th><th style="width:50%">&nbsp;</th></tr>
+<tr><th colspan="5" class="bevel"></th></tr>
 
 <?php
   $id = 1;

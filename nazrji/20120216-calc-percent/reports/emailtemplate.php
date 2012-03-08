@@ -46,29 +46,30 @@
 <html>
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<title>Email Template<?php echo " $cfg_install_type"; ?></title>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Email Template<?php echo " $cfg_install_type"; ?></title>
 
-<style type="text/css">
-body {font-family:Arial,sans-serif; font-size:90%; background-color:#DFECFF; color:black; margin-top:2px; margin-left:0px; margin-right: 0px}
-.heading {background-color:#EBEADB; border-left:solid white 1px; border-right:solid #D8D2BD 1px; border-top:solid white 1px; border-bottom: solid #D8D2BD 1px; color:black; font-family:Arial,sans-serif}
-textarea, input[type=text], select {font-family:Arail,sans-serif; font-size:90%; border: 1px solid #7F9DB9}
-</style>
+  <style type="text/css">
+  body {font-family:Arial,sans-serif; font-size:90%; background-color:#DFECFF; color:black; margin-top:2px; margin-left:0px; margin-right: 0px}
+  .heading {background-color:#EBEADB; border-left:solid white 1px; border-right:solid #D8D2BD 1px; border-top:solid white 1px; border-bottom: solid #D8D2BD 1px; color:black; font-family:Arial,sans-serif}
+  textarea, input[type=text], select {font-family:Arail,sans-serif; font-size:90%; border: 1px solid #7F9DB9}
+  </style>
 
-<script language="JavaScript" src="../tools/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
-<script language="JavaScript" src="../tools/tinymce/jscripts/tiny_mce/tiny_config_email.js"></script>
-<script language="JavaScript" type="text/javascript">
-  function submitValues() {
-    opener.document.theform.from.value = document.templateform.from.value;
-    opener.document.theform.emailtemplate.value = tinyMCE.get('template').getContent();
-    opener.document.theform.ccaddress.value = document.templateform.ccaddress.value;
-    opener.document.theform.bccaddress.value = document.templateform.bccaddress.value;
-    opener.document.theform.subject.value = document.templateform.subject.value;
-    opener.document.theform.emailclass.value = "yes";
-    window.opener.document.theform.submit();
-    window.close();
-		return false;
-  }
-</script>
+  <script type="text/javascript" src="../tools/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
+  <script type="text/javascript" src="../tools/tinymce/jscripts/tiny_mce/tiny_config_email.js"></script>
+  <script type="text/javascript">
+    function submitValues() {
+      opener.document.theform.from.value = document.templateform.from.value;
+      opener.document.theform.emailtemplate.value = tinyMCE.get('template').getContent();
+      opener.document.theform.ccaddress.value = document.templateform.ccaddress.value;
+      opener.document.theform.bccaddress.value = document.templateform.bccaddress.value;
+      opener.document.theform.subject.value = document.templateform.subject.value;
+      opener.document.theform.emailclass.value = "yes";
+      window.opener.document.theform.submit();
+      window.close();
+      return false;
+    }
+  </script>
 </head>
 
 <body>

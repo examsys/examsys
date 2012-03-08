@@ -24,22 +24,16 @@
 
 ?>
 <div id="left-sidebar" class="sidebar">
-<br />
+<div class="submenuheading"><?php echo $string['calendaryears']; ?></div>
 
-<table cellpadding="0" cellspacing="0" border="0" width="185">
-<tr><td style="font-weight:bold"><?php echo $string['calendaryears']; ?></td></tr>
-<tr><td>
-<table cellpadding="3" cellspacing="0" border="0" style="margin-left:6px; font-size:90%">
+<table cellpadding="3" cellspacing="0" border="0" style="margin-left:9px; font-size:90%">
 <?php
   $start_year = date("Y");
   $start_year -= 4;
   for ($tmp_year=$start_year; $tmp_year < $start_year + 6; $tmp_year++) {
-    echo "<tr><td><a href=\"calendar.php?calyear=$tmp_year\"><img src=\"../artwork/shortcut_calendar_icon.png\" width=\"16\" height=\"16\" alt=\"\" border=\"0\" /></a></td><td class=\"menuitem\"><a href=\"calendar.php?calyear=$tmp_year\">$tmp_year</a></td></tr>\n";
+    echo "<tr><td class=\"ico\"><a href=\"calendar.php?calyear=$tmp_year\"><img src=\"../artwork/shortcut_calendar_icon.png\" width=\"16\" height=\"16\" alt=\"\" border=\"0\" /></a></td><td class=\"menuitem\"><a href=\"calendar.php?calyear=$tmp_year\">$tmp_year</a></td></tr>\n";
   }
 ?>
-</table>
-
-</td></tr>
 </table>
 
 </div>

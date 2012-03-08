@@ -83,12 +83,59 @@ class IE_qti12_Load extends IE_Main {
     $this->params = $params;
 
     $xmlStr = file_get_contents($file);
+    $xmlStr = str_replace('webct:localizable_mattext','webct_localizable_mattext',$xmlStr,$count);
     $xml = @simplexml_load_string($xmlStr);
 
     if (!$xml) {
       $this->AddError("$file is an invalid XML file");
       return;
     }
+$rt="";
+
+    // detector for jumbled sentance
+    $pos=strpos($xmlStr,"wct_questiontype");
+$numb=0;
+    while($pos=strpos($xmlStr,"<material",$pos)) {
+      $xmlStr=substr_replace($xmlStr," objectid=\"" . $numb . "\" oid=\"" . $numb . "\" orderid=\"".$numb++."\"",$pos+9,0);
+      $pos=$pos+3;
+    }
+
+    $xml = @simplexml_load_string($xmlStr);
+
+    foreach($xml->item->presentation->flow->response_lid->render_extension as $yyy)
+    {
+      //$yyy is ->ims_render_object
+    foreach($yyy as $uuu)
+    {
+      //$uuu is subpart
+
+    $b=$uuu;
+    }
+    }
+
+      foreach($xml->item->presentation->flow as $yyy)
+    {
+      foreach($yyy as $uuu)
+      {
+        foreach($uuu as $iii)
+        {
+          foreach($iii as $aaa)
+          {
+            foreach($aaa as $sss)
+            {
+              foreach($sss as $ddd)
+              {
+                $variable="$iii $uuu $yyy";
+                $variable1=(string)$ddd . " " . (string)$sss . " ". (string)$aaa . " " .(string)$iii . " " . (string)$uuu . " " . (string)$yyy ;
+
+              }
+            }
+          }
+          $variable1=(string)$iii . " " . (string)$uuu . " " . (string)$yyy;
+        }
+      }
+    }
+
 
     // single assessment object possible
     if ($xml->assessment) $this->LoadAssessment($xml->assessment);
@@ -152,6 +199,13 @@ class IE_qti12_Load extends IE_Main {
     $q_imp = $this->LoadQuestion($item);
     $type = $this->DetermineQType($q_imp);
 
+    $oiii=print_r($q_imp,TRUE);
+    $t=9;
+    file_put_contents("/tmp/out2.txt",$oiii);
+    $t=8;
+
+    //file_put_contents("/tmp/out.txt",$q_imp);
+
     //print_p($q_imp,false);
     //exit;
 
@@ -173,7 +227,10 @@ class IE_qti12_Load extends IE_Main {
         }
       }
     }*/
-    
+
+
+
+
     if ($type == "blank") $question = $this->LoadBlank($q_imp);
     elseif ($type == "calculation") $question = $this->LoadCalculation($q_imp);
     elseif ($type == "dichotomous") $question = $this->LoadDichotomous($q_imp);
@@ -195,6 +252,52 @@ class IE_qti12_Load extends IE_Main {
       $question = $this->LoadUnknown($q_imp);
       $this->AddError("Question type $type not yet supported", $q_imp->load_id);
     }
+    // DEBUGDEBUG add if WCTJUMB SENTANCE DETECT AND OVERWRITE $question->$question
+
+    if($q_imp->wct_questiontype=="WCT_JumbledSentence") {
+      if($q_imp->options2["%BLANK_1%"][0]==NULL) {
+        foreach ($q_imp->respconditions as & $respconditions) {
+          if(count($respconditions->sortedout)>0) {
+            foreach($respconditions->sortedout as $par3 => $child3) {
+              $string=sprintf("%%BLANK_%d%%",$par3);
+              $lk2=$respconditions->sortedout[$par3];
+              $options[$string][]=$q_imp->optionslk2[$lk2];
+              foreach($q_imp->optionslk2 as $par4 => $child4) {
+                if($par4!=$lk2) {
+                  $options[$string][]=$q_imp->optionslk2[$par4];
+                }
+              }
+            }
+          }
+        }
+        $q_imp->options2=$options;
+      }
+
+
+      unset($question->question);
+      unset($question->options);
+      $question->question=$q_imp->question2;
+      foreach($q_imp->options2 as $parent => $child) {
+        foreach($child as $parent1 => $child1) {
+          $blank = new STQ_Blank_Option();
+          $blank->display = $child1;
+          $blank->correct = 1;
+          $blankoptions[] =$blank;
+        }
+        $question->options[$parent]=$blankoptions;
+        unset($blankoptions);
+      }
+      $question->q_option_order="display order";
+
+      if(strlen($question->leadin)<1) {
+        $question->leadin=$item->attributes()->title;
+      }
+    }
+
+    $oiii=print_r($question,TRUE);
+    $t=9;
+    file_put_contents("/tmp/out3.txt",$oiii);
+    $t=8;
 
     if (!empty($q_imp->material->media)) {
       $question->media = $q_imp->material->media;
@@ -255,6 +358,15 @@ class IE_qti12_Load extends IE_Main {
       $this->AddError("Response groups are not currently supported.", $question->load_id);
       return "error";
     }
+
+    if (isset($question->counts['extension']) && $question->counts['extension'] > 0 && $question->wct_questiontype == "WCT_JumbledSentence") {
+//      $this->AddError("Render extensions are not currently supported.", $question->load_id);
+      print "WebCT Jumbled Sentence Detected<br>";
+
+      return "blank";
+    }
+
+
 
     if (isset($question->counts['extension']) && $question->counts['extension'] > 0) {
       $this->AddError("Render extensions are not currently supported.", $question->load_id);
@@ -1819,7 +1931,13 @@ class IE_qti12_Load extends IE_Main {
         else if ($respconditions->mark < $min) $min = $respconditions->mark;
       }
     }
-    
+
+    // Fix for webCT output where it gives output as a percentage and as this is upto 100 and and doesnt include the
+    // question mark and rogo doesnt support above 20 fix it to 1 to allow user editing
+
+    if($max>20) $max=1;
+    if($min>20) $min=1;
+    if($part>20) $part=1;
     return array($min,$part,$max);  
   }
 

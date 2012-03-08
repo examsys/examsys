@@ -51,27 +51,28 @@
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Variable Link</title>
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<style>
-body {color:black; background-color:white; font-family:Arial,sans-serif; margin:0px; font-size:90%}
-.q_no {text-align:right; vertical-align:top; cursor:pointer; width:40px; padding-right:6px}
-.divider {font-family:Arial,sans-serif; font-size:80%; font-weight:bold; padding-left:6px}
-</style>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Variable Link</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <style type="text/css">
+  body {color:black; background-color:white; font-family:Arial,sans-serif; margin:0px; font-size:90%}
+  .q_no {text-align:right; vertical-align:top; cursor:pointer; width:40px; padding-right:6px}
+  .divider {font-family:Arial,sans-serif; font-size:80%; font-weight:bold; padding-left:6px}
+  </style>
 
-<script language="JavaScript">
-  function copyValue() {
-    for (var i=0; i < document.myform.ref.length; i++) {
-      if (document.myform.ref[i].checked) {
-        var selectedRef = document.myform.ref[i].value;
+  <script language="JavaScript">
+    function copyValue() {
+      for (var i=0; i < document.myform.ref.length; i++) {
+        if (document.myform.ref[i].checked) {
+          var selectedRef = document.myform.ref[i].value;
+        }
       }
-    }
 
-    window.opener.document.getElementById('<?php echo $_GET['elementID']; ?>').value = selectedRef;
-    window.opener.document.getElementById('<?php echo $_GET['iconID']; ?>').src = '/artwork/variable_link_on.png';
-    window.close();
-  }
-</script>
+      window.opener.document.getElementById('<?php echo $_GET['elementID']; ?>').value = selectedRef;
+      window.opener.document.getElementById('<?php echo $_GET['iconID']; ?>').src = '/artwork/variable_link_on.png';
+      window.close();
+    }
+  </script>
 </head>
 
 <body>

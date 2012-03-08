@@ -12,7 +12,7 @@
 // v.p9u
 var ps = "";  // Info. Alerts: READ!
 var object_calc;
-var rogo_buffer = '';
+var sCal_buffer = '';
 
 function checkButton(e) {
   var evt = e || window.event;
@@ -21,8 +21,12 @@ function checkButton(e) {
   if (bCode == 16 && shifton == 0) {
     shifton = 1;
   }
-
-  if (bCode >= 48 && bCode <= 57 && shifton == 0) {
+  
+  //alert(evt.keyCode);
+ 
+  if (evt.charCode == 46) {
+    xPlusEq('.');
+  } else if (bCode >= 48 && bCode <= 57 && shifton == 0) {
     bCode = bCode - 48;
     xPlusEq(bCode);
   } else if (bCode == 48 && shifton == 1) {
@@ -169,7 +173,7 @@ function About_Calc() {
 alert(ps);
 }
 
-var x = "";  // by JScript loose typing, 'x' is a string OR number: confuses '+' if adding
+var x = "0";  // by JScript loose typing, 'x' is a string OR number: confuses '+' if adding
 var m = "";  // stores Memory.  Note: x & m are GLOBAL--of concern if sCal embedded.
 var xRedo=0; // if xRedo=1, restores current x; =2, output to alert, etc. see xEval.
 var Timer=0; var st0p=0; // for stopwatch
@@ -180,7 +184,7 @@ var sC_xDec=8;//decimal places for Oxf()
 var sC_t=100;
 var clearFlag = false;
 var equalsFlag = false;
-var buffer = '';
+var buffer = '0';
 var shifton = 0;
 //timer x/1000 of second; USE 10 for PC's
 //
@@ -231,10 +235,10 @@ function xEval() {
     if (x.indexOf('^',n+1) > 0) {
       alert("WARNING! Only 1 [^] allowed in expression!");
     } else {  // all to left of '^' is taken as base, and all right as exponent
-      document.sCal.IOx.value = Math.pow(eval(x.substring(0,n)),eval(x.substring(n+1)));
+      showAnswer(Math.pow(eval(x.substring(0,n)),eval(x.substring(n+1))));
     }
   } else {      // likewise, entire x-value used as function argument, not just last term
-    document.sCal.IOx.value = eval(x);
+    showAnswer(eval(x));
   }
   if (xRedo>0) {
     x=xTemp;
@@ -246,7 +250,9 @@ function xEval() {
     xRedo=0;
   }
   Ix();
-  document.getElementById('ans').innerHTML = x;
+  if (x != 'undefined') {
+    document.getElementById('ans').innerHTML = x;
+  }
   buffer = x;
   equalsFlag = true;
 }
@@ -254,13 +260,21 @@ function xEval() {
 function returntoform() {
   xEval();
   //Oxf();
-  if (typeof(window.opener.document.getElementById(urlParams["field"])) != 'undefined') {
+  if (typeof(window.opener.document.getElementById(urlParams["field"])) != 'undefined' && x != 'undefined') {
     window.opener.document.getElementById(urlParams["field"]).value=x; //.getElementById(urlParams["id"]).value=x;
   }
   window.close();
 }
 function xPlusEq(s) {
-  if (rogo_buffer == '') {
+  if (s == '.' && buffer.indexOf('\.') != -1) return;
+  if (buffer == '0') {
+    if (s == '0') {
+      return;
+    } else {
+      x = buffer = '';
+    }
+  }
+  if (sCal_buffer == '') {
     if (equalsFlag && s!='+' && s!='-' && s!='*' && s!='/' && s!='(' && s!=')' && s!='^') {
       document.sCal.IOx.value = '';
       buffer = '';
@@ -270,8 +284,12 @@ function xPlusEq(s) {
       buffer = '';
     }
     Ix();
-    if (s == '.' && x == '' && buffer == '') {
-      x = buffer = '0';
+    if (buffer == '') {
+      if (s == '.') {
+        x = buffer = '0';
+      } else if (x == '0') {
+        x = '';
+      }
     }
     x += s;
     buffer += s;
@@ -290,15 +308,15 @@ function xPlusEq(s) {
       document.getElementById('ans').innerHTML = buffer;
     }
   } else {
-    var reStr = rogo_buffer.replace('^', '\\^') + '+$';
+    var reStr = sCal_buffer.replace('^', '\\^') + '+$';
     var re = new RegExp(reStr);
     document.getElementById('ans').innerHTML = s;
-    rogo_buffer += s;
-    var buffVal = rogo_eval(rogo_buffer);
+    sCal_buffer += s;
+    var buffVal = sCal_eval(sCal_buffer);
     x = x.replace(re, '') + buffVal.toString();
     buffer = buffVal;
     Oxf(); //  figure x, & substiture in function,  NOTE: Oxf()!
-    rogo_buffer = '';
+    sCal_buffer = '';
   }
 } // --- DISPLAY-x functions ---
 function xMultEq(s) {
@@ -307,9 +325,8 @@ function xMultEq(s) {
     Oxf();
 }
 function Clear() {
-  x = '';
+  x = buffer = '0';
   Ox();
-  buffer = '';
   document.getElementById('ans').innerHTML = '0';
 }
 function BkSpace() {Ix(); x = x.substring(0,x.length-1) ; Ox();}
@@ -390,7 +407,7 @@ function Om() {
   document.getElementById('memory').innerHTML = '<span style="font-size:70%">+M</span>  <span id="memval">' + m + '</span>';
 }
 function XtoM()  {Ix(); Im(); m+=x; Om(); x=""; Ox(); Timer=1;} //--with stopwatch settings
-function MtoX()  {Ix(); Im(); x += m; Ox();}
+function MtoX()  {Ix(); Im(); x += m; Ox(); document.getElementById('ans').innerHTML = x}
 function Mplus() {
   if (st0p > 0) {
     if (Timer==0) {
@@ -453,77 +470,82 @@ function trigModeConvert (angle) {
   }
 }
 
-function rogo_asinh (arg) {
+function sCal_asinh (arg) {
   arg = trigModeConvert(arg);
   return arg / Math.abs(arg) * Math.log(Math.abs(arg) + Math.sqrt(arg * arg + 1));
 }
 
-function rogo_acosh (arg) {
+function sCal_acosh (arg) {
   arg = trigModeConvert(arg);
   return 2 * Math.log(Math.sqrt((arg + 1) / 2) + Math.sqrt((arg - 1) / 2));
 }
 
-function rogo_atanh (arg) {
+function sCal_atanh (arg) {
   arg = trigModeConvert(arg);
   return 0.5 * Math.log((1 + arg) / (1 - arg));
 }
 
-function rogo_sinh (arg) {
+function sCal_sinh (arg) {
   arg = trigModeConvert(arg);
   return ( Math.exp(arg) - 1 / Math.exp(arg) )/ 2;
 }
 
-function rogo_cosh (arg) {
+function sCal_cosh (arg) {
   arg = trigModeConvert(arg);
   return (Math.exp(arg) + 1 / Math.exp(arg) )/ 2;
 }
 
-function rogo_tanh (arg) {
+function sCal_tanh (arg) {
   arg = trigModeConvert(arg);
   return ( Math.exp(arg) - 1 / Math.exp(arg) )/ ( Math.exp(arg) + 1 / Math.exp(arg) );
 }
 
-function rogo_asin (arg) {
+function sCal_asin (arg) {
   arg = trigModeConvert(arg);
   return Math.asin(arg);
 }
 
-function rogo_acos (arg) {
+function sCal_acos (arg) {
   arg = trigModeConvert(arg);
   return Math.acos(arg);
 }
 
-function rogo_atan (arg) {
+function sCal_atan (arg) {
   arg = trigModeConvert(arg);
   return Math.atan(arg);
 }
 
-function rogo_sin (arg) {
+function sCal_sin (arg) {
   arg = trigModeConvert(arg);
   return Math.sin(arg);
 }
 
-function rogo_cos (arg) {
+function sCal_cos (arg) {
   arg = trigModeConvert(arg);
   return Math.cos(arg);
 }
 
-function rogo_tan (arg) {
+function sCal_tan (arg) {
   arg = trigModeConvert(arg);
   return Math.tan(arg);
 }
 
-function rogo_square (arg) {
+function sCal_square (arg) {
   arg = parseFloat(arg);
   return arg*arg;
 }
 
-function rogo_recip (arg) {
+function sCal_cube (arg) {
+  arg = parseFloat(arg);
+  return arg*arg*arg;
+}
+
+function sCal_recip (arg) {
   arg = parseFloat(arg);
   return 1/arg;
 }
 
-function rogo_fact (arg) {
+function sCal_fact (arg) {
   arg = parseInt(arg);
   var rval = arg;
   for (j = arg; j > 2 ;j--) {
@@ -532,12 +554,12 @@ function rogo_fact (arg) {
   return rval;
 }
 
-function rogo_buffered(arg, operator) {
-  rogo_buffer = parseFloat(arg) + operator;
+function sCal_buffered(arg, operator) {
+  sCal_buffer = parseFloat(arg) + operator;
   x += operator;
 }
 
-function rogo_eval(arg) {
+function sCal_eval(arg) {
   var n = arg.indexOf('^');
   if (n > 0) {
     return Math.pow(arg.substring(0,n), arg.substring(n+1));
@@ -557,4 +579,9 @@ function braceEval() {
 
 function changeTrigMode() {
   trigMode = (document.getElementById('trigmode_rad').checked) ? 'radians' : 'degrees';
+}
+
+function showAnswer(val) {
+  val = parseFloat(val);
+  document.sCal.IOx.value = val.toFixed(12).replace(/0+$/, "").replace(/\.+$/, "");
 }

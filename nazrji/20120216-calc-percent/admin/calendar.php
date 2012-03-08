@@ -72,6 +72,8 @@ function echoButtons($year) {
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
 <title>Rogō: <?php echo $string['calendar'] . ' ' . $cfg_install_type; ?></title>
 <?php echo $cfg_js_root ?>
 <script language="JavaScript" src="../js/sidebar.js"></script>
@@ -85,7 +87,8 @@ function echoButtons($year) {
   }
 </script>
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
-<style>
+<link rel="stylesheet" type="text/css" href="../css/header.css" />
+<style type="text/css">
   .month {font-size:140%; margin-left:10px; margin-right:10px}
 </style>
 </head>
@@ -118,8 +121,8 @@ function echoButtons($year) {
 
 <div id="content" class="content" style="font-size:80%">
 <form action="" method="get">
-<table cellpadding="0" cellspacing="0" border="0" width="100%" style="text-align:left">
-<tr style="background-color:#F1F5FB"><td>
+<table class="header">
+<tr><th>
 <?php
   if (isset($_GET['module'])) {
     echo '<div class="breadcrumb"><a href="../staff/index.php">' . $string['home'] . '</a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?module=' . $_GET['module'] . '">' . $_GET['module'] . '</a></div>';
@@ -131,8 +134,8 @@ function echoButtons($year) {
     }
   }
 ?>
-<div style="font-size:200%; margin-left:10px"><strong><?php echo $string['calendar']; ?>:</strong> <?php echo $current_year; ?></div></td>
-<td style="text-align:right">
+<div style="font-size:200%; margin-left:10px"><strong><?php echo $string['calendar']; ?>:</strong> <?php echo $current_year; ?></div></th>
+<th style="text-align:right">
 <?php
 
   echo "<select name=\"lab\" onchange=\"this.form.submit();\">";
@@ -162,8 +165,9 @@ function echoButtons($year) {
   
 ?>
 <div style="text-align:right"><?php echo echoButtons($current_year); ?>&nbsp;</div>
+</th>
 </tr>
-<tr><td colspan="2" style="height:3px"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td></tr>
+<tr><th colspan="2" class="bevel"></th></tr>
 </table>
 <br />
 <?php

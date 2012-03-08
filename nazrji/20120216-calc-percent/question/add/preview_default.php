@@ -25,14 +25,17 @@
 require_once '../../config/config.inc.php';
 require_once $cfg_web_root . 'classes/lang.class.php';
 
-echo "<html>
+$html = <<< HTML
+<html>
 <head>
-<title>" . $string['preview'] . "</title>
+  <meta http-equiv="content-type" content="text/html;charset={$cfg_page_charset}" />
+  <title>{$string['preview']}</title>
 </head>
 <body style='background-color:white; color:#808080; font-family:Arial,sans-serif; font-size:100%'>
-
-<p>" . $string['previewmsg'] . "</p>
-
+<p>{$string['previewmsg']}</p>
 </body>
-</html>";
+</html>
+HTML;
+
+echo $html;
 ?>

@@ -27,52 +27,53 @@ require '../include/staff_auth.inc';
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<title><?php echo $string['createnewpaper'] . $cfg_install_type; ?></title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title><?php echo $string['createnewpaper'] . $cfg_install_type; ?></title>
 
-<style>
-  body {font-family:Arial,sans-serif; color:black; background-color:#F1F5FB; margin:6px; font-size:90%}
-  table {font-size:100%}
-  textarea, input[type=text], select {font-family:Arail,sans-serif; border: 1px solid #7F9DB9}
-  .icon {color:#001687; padding-top:15px; padding-bottom:15px; padding-left:0px; padding-right:0px; vertical-align:top; width:98px; font-size:8pt}
-</style>
+  <style type="text/css">
+    body {font-family:Arial,sans-serif; color:black; background-color:#F1F5FB; margin:6px; font-size:90%}
+    table {font-size:100%}
+    textarea, input[type=text], select {font-family:Arail,sans-serif; border: 1px solid #7F9DB9}
+    .icon {color:#001687; padding-top:15px; padding-bottom:15px; padding-left:0px; padding-right:0px; vertical-align:top; width:98px; font-size:8pt}
+  </style>
 
-<script language="JavaScript">
-  function over(id) {
-    if (id != document.getElementById('paper_type').value) {
-      document.getElementById(id).style.backgroundImage = "url('../artwork/over.png')";
+  <script type="text/javascript">
+    function over(id) {
+      if (id != document.getElementById('paper_type').value) {
+        document.getElementById(id).style.backgroundImage = "url('../artwork/over.png')";
+      }
     }
-  }
-  
-  function out(id) {
-    if (id != document.getElementById('paper_type').value) {
-      document.getElementById(id).style.backgroundImage = "url('../artwork/blank_tick_cross.gif')";
+
+    function out(id) {
+      if (id != document.getElementById('paper_type').value) {
+        document.getElementById(id).style.backgroundImage = "url('../artwork/blank_tick_cross.gif')";
+      }
     }
-  }
-  
-  function activate(id) {
-    document.getElementById('formative').style.backgroundImage = "url('../artwork/blank_tick_cross.gif')";
-    document.getElementById('progress').style.backgroundImage = "url('../artwork/blank_tick_cross.gif')";
-    document.getElementById('summative').style.backgroundImage = "url('../artwork/blank_tick_cross.gif')";
-    document.getElementById('survey').style.backgroundImage = "url('../artwork/blank_tick_cross.gif')";
-    document.getElementById('osce').style.backgroundImage = "url('../artwork/blank_tick_cross.gif')";
-    document.getElementById('offline').style.backgroundImage = "url('../artwork/blank_tick_cross.gif')";
-  
-    document.getElementById(id).style.backgroundImage = "url('../artwork/on.png')";
-    document.getElementById('paper_type').value = id;
-  }
-  
-  function checkForm() {
-    if (document.theform.paper_type.value == '') {
-      alert("<?php echo $string['msg1']; ?>");
-      return false;
+
+    function activate(id) {
+      document.getElementById('formative').style.backgroundImage = "url('../artwork/blank_tick_cross.gif')";
+      document.getElementById('progress').style.backgroundImage = "url('../artwork/blank_tick_cross.gif')";
+      document.getElementById('summative').style.backgroundImage = "url('../artwork/blank_tick_cross.gif')";
+      document.getElementById('survey').style.backgroundImage = "url('../artwork/blank_tick_cross.gif')";
+      document.getElementById('osce').style.backgroundImage = "url('../artwork/blank_tick_cross.gif')";
+      document.getElementById('offline').style.backgroundImage = "url('../artwork/blank_tick_cross.gif')";
+
+      document.getElementById(id).style.backgroundImage = "url('../artwork/on.png')";
+      document.getElementById('paper_type').value = id;
     }
-    if (document.theform.paper_name.value == '') {
-      alert("<?php echo $string['msg2']; ?>");
-      return false;
+
+    function checkForm() {
+      if (document.theform.paper_type.value == '') {
+        alert("<?php echo $string['msg1']; ?>");
+        return false;
+      }
+      if (document.theform.paper_name.value == '') {
+        alert("<?php echo $string['msg2']; ?>");
+        return false;
+      }
     }
-  }
-</script>
+  </script>
 </head>
 
 <body>

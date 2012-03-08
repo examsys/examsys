@@ -51,6 +51,7 @@ if (isset($_POSR['paperID'])) {
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
+<meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
 <title>Standards Setting<?php echo ' ' . $cfg_install_type; ?></title>
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <?php
@@ -83,6 +84,7 @@ $result->close();
 $current_screen = 1;
 ?>
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
+<link rel="stylesheet" type="text/css" href="../css/header.css" />
 <style type="text/css">
 body {width:100%; background-color:<?php echo $bgcolor; ?>; color:<?php echo $fgcolor; ?>; padding:0px;margin:0px; border:0px; font-family:Arial,sans-serif; font-size:90%}
 pre {width:90%}
@@ -99,7 +101,20 @@ p {margin-top:0px; padding-top:0px}
 .active {color:<?php echo $fgcolor; ?>}
 .inactive {color:#C0C0C0}
 .heading {background-color:#EBEADB; color:black; font-family:Arial,sans-serif}
+.matrix {border:1px solid #808080; border-collapse:collapse}
+.matrix td {border:1px solid #808080}
 .extmatch li {padding-bottom:14px; vertical-align:text-bottom; list-style-type:upper-alpha}
+.scr_no {margin-left:25px}
+.screenbrk {
+  color:#15428B;
+  font-weight:bold;
+  font-size:90%;
+  height:70px;
+  width:100%;
+  border-top: 1px solid #B5C4DF;
+  background: -moz-linear-gradient(top, #E4EEFC, #FFFFFF);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#E4EEFC', endColorstr='#FFFFFF');
+}
 </style>
 
 <script language="JavaScript" src="../js/jquery-1.6.1.min.js"></script>
@@ -405,8 +420,8 @@ p {margin-top:0px; padding-top:0px}
   <tr><td valign="top">
 <?php
 
-  echo "\n<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">\n";
-  echo "<tr><td style=\"background-color:#F1F5FB\"><div class=\"breadcrumb\"><a href=\"../staff/index.php\">" . $string['home'] . "</a>";
+  echo "\n<table class=\"header\">\n";
+  echo "<tr><th><div class=\"breadcrumb\"><a href=\"../staff/index.php\">" . $string['home'] . "</a>";
   if ($folder != '') {
     echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?folder=' . $folder . '">' . $folder_name . '</a>';
   } elseif (isset($_GET['module']) and $_GET['module'] != '') {
@@ -420,8 +435,8 @@ p {margin-top:0px; padding-top:0px}
     $helpID = 99;
     echo '<div style="font-family:Arial,sans-serif; font-size:200%; color:black; font-weight:bold; margin-left:10px">' . $string['ebelmethod'] . '</div>';
   }
-  echo "</td><td style=\"background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp($helpID); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"Help\" border=\"0\" /></a></td></tr>\n";
-  echo "<tr style=\"height:4px\"><td colspan=\"2\" valign=\"top\"><img src=\"../artwork/header_horizontal_line.gif\" width=\"100%\" height=\"3\" alt=\"Line\" /></td></tr>\n</table>\n";
+  echo "</th><th style=\"text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp($helpID); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"Help\" border=\"0\" /></a></th></tr>\n";
+  echo "<tr><th colspan=\"2\" class=\"bevel\"></th></tr>\n</table>\n";
 
   switch ($_GET['method']) {
     case 'modified_angoff':
@@ -476,10 +491,9 @@ p {margin-top:0px; padding-top:0px}
         if ($li_set == 1) echo "</td></tr>\n";
         if (count($options_array) > 0) display_options($options_array, $old_q_id, $old_theme, $old_scenario, $old_leadin, $old_notes, $paper_type, $_GET['method'], $reviews, $excluded, false);
         if ($old_screen != $screen) {
-          echo '<tr><td colspan="2"><table cellpadding="0" cellspacing="1" border="0" style="width:100%; height:70px; border-top:1px solid #B5C4DF; background-image:url(\'../artwork/screen_no_background.gif\'); background-repeat:repeat-x">';
-          echo "<tr>\n<td width=\"20\">&nbsp;</td>\n";
-          echo "<td style=\"vertical-align:top; font-size:90%; font-weight:bold; color:#15428B\">" . $string['screen'] . "&nbsp;$screen</td>\n</tr>\n";
-          echo '</table></td></tr>';
+          echo '<tr><td colspan="2">';
+          echo '<div class="screenbrk"><span class="scr_no">' . $string['screen'] . '&nbsp;' . $screen . '</span></div>';
+          echo '</td></tr>';
         }
       }
       $question_no++;

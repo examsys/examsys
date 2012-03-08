@@ -341,7 +341,7 @@ if ($paper_type == '3') {
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta http-equiv="imagetoolbar" content="no">
 <meta http-equiv="imagetoolbar" content="false">
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> 
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $cfg_page_charset ?>" />
 <meta http-equiv="pragma" content="no-cache" />
 <style type="text/css">
 body {background-color:<?php echo $bgcolor; ?>;color:<?php echo $fgcolor; ?>;padding:0px;margin:0px;border:0px;font-family:<?php echo $font; ?>,sans-serif;font-size:<?php echo $textsize; ?>%}

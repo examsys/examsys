@@ -50,7 +50,8 @@
 
     $html = "<tr><td></td><td><table cellpadding=\"2\" cellspacing=\"0\" border=\"0\" style=\"width:98%\">\n";
     $html .= "<tr><td colspan=\"5\"><strong>" . $string[$type . 'comments'] . "$qno</strong>&nbsp;<img onclick=\"editQuestion('$qtype',$questionID,$qno)\" style=\"cursor:pointer\" src=\"../artwork/edit_icon_16.gif\" width=\"16\" height=\"16\" alt=\"" . $string['editquestion'] . "\" border=\"0\" /></td></tr>\n";
-    $html .= "<tr style=\"background-image:url('../artwork/gradient_heading.png'); background-repeat:repeat-x; background-color:#E3EFFF\"><td style=\"width:20px; border-top:1px solid #6593CF; border-bottom:1px solid #6593CF\">&nbsp;</td><td style=\"width:20%; border-top:1px solid #6593CF; border-bottom:1px solid #6593CF\">" . $string['reviewer'] . "</td><td style=\"width:35%; border-top:1px solid #6593CF; border-bottom:1px solid #6593CF\">" . $string['comment'] . "</td><td style=\"width:10%; border-top:1px solid #6593CF; border-bottom:1px solid #6593CF\">" . $string['action'] . "</td><td style=\"width:35%; border-top: 1px solid #6593CF; border-bottom:1px solid #6593CF\">" . $string['response'] . "</td></tr>\n";
+    $html .= "<tr><td class=\"reviewbar\" style=\"width:20px\">&nbsp;</td><td style=\"width:20%\" class=\"reviewbar\">" . $string['reviewer'] . "</td><td style=\"width:35%\" class=\"reviewbar\">" . $string['comment'] . "</td><td style=\"width:10%\" class=\"reviewbar\">" . $string['action'] . "</td><td style=\"width:35%\" class=\"reviewbar\">" . $string['response'] . "</td></tr>\n";
+    //$html .= "<tr style=\"background-image:url('../artwork/gradient_heading.png'); background-repeat:repeat-x; background-color:#E3EFFF\"><td style=\"width:20px; border-top:1px solid #6593CF; border-bottom:1px solid #6593CF\">&nbsp;</td><td style=\"width:20%; border-top:1px solid #6593CF; border-bottom:1px solid #6593CF\">" . $string['reviewer'] . "</td><td style=\"width:35%; border-top:1px solid #6593CF; border-bottom:1px solid #6593CF\">" . $string['comment'] . "</td><td style=\"width:10%; border-top:1px solid #6593CF; border-bottom:1px solid #6593CF\">" . $string['action'] . "</td><td style=\"width:35%; border-top: 1px solid #6593CF; border-bottom:1px solid #6593CF\">" . $string['response'] . "</td></tr>\n";
     if (isset($comments_data[$questionID])) {
       foreach ($comments_data[$questionID] as $reviewer => $index) {
         $image = 'ok_comment.png';
@@ -411,65 +412,86 @@
   }
 ?>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title><?php echo ucfirst($type); ?> Comments Report</title>
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<style type="text/css">
-body {font-family:Arial,sans-serif; font-size:90%; background-color:white; color:black; margin:0px}
-h1 {margin-left:15px; font-size:18pt}
-p {margin-left:0px; margin-right:15px; margin-top:0px; padding-top:0px}
-.h {background-color:#F1F5FB; color:black}
-.figures {text-align:right}
-.q_no {text-align:right; vertical-align:top; width:50px}
-.grey {color:#808080}
-.OK {}
-.Minor {}
-.Major {}
-.breadcrumb {margin-left:10px; font-size:90%}
-.breadcrumb a:link {color:blue; text-decoration:none; cursor:pointer}
-.breadcrumb a:visited {color:blue; text-decoration:none; cursor:pointer}
-.breadcrumb a:hover {color:blue; text-decoration:underline; cursor:pointer}
-.matrix {border:1px solid #808080; border-collapse:collapse}
-.matrix td {border:1px solid #808080}
-</style>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title><?php echo ucfirst($type); ?> Comments Report</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <style type="text/css">
+  body {font-family:Arial,sans-serif; font-size:90%; background-color:white; color:black; margin:0px}
+  h1 {margin-left:15px; font-size:18pt}
+  p {margin-left:0px; margin-right:15px; margin-top:0px; padding-top:0px}
+  .h {background-color:#F1F5FB; color:black}
+  .figures {text-align:right}
+  .q_no {text-align:right; vertical-align:top; width:50px}
+  .grey {color:#808080}
+  .OK {}
+  .Minor {}
+  .Major {}
+  .breadcrumb {margin-left:10px; font-size:90%}
+  .breadcrumb a:link {color:blue; text-decoration:none; cursor:pointer}
+  .breadcrumb a:visited {color:blue; text-decoration:none; cursor:pointer}
+  .breadcrumb a:hover {color:blue; text-decoration:underline; cursor:pointer}
+  .matrix {border:1px solid #808080; border-collapse:collapse}
+  .matrix td {border:1px solid #808080}
+  .scr_no {margin-left:25px}
+  .screenbrk {
+    color:#15428B;
+    font-weight:bold;
+    font-size:90%;
+    height:70px;
+    width:100%;
+    border-top: 1px solid #B5C4DF;
+    background: -moz-linear-gradient(top, #E4EEFC, #FFFFFF);
+    background: -webkit-linear-gradient(top, #E4EEFC, #FFFFFF);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#E4EEFC', endColorstr='#FFFFFF');
+  }
+  .reviewbar {
+    color:black;
+    width:100%;
+    border-top: 1px solid #6593CF;
+    border-bottom: 1px solid #6593CF;
+    background: -moz-linear-gradient(top, #FFFFFF, #C5DEFF);
+    background: -webkit-linear-gradient(top, #FFFFFF, #C5DEFF);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFFFFF', endColorstr='#C5DEFF');
+  }
+  </style>
 
-<script src="../js/staff_help.js" type="text/javascript"></script>
-<script src="../js/flash_include.js" type="text/javascript"></script>
-<script src="../js/ie_fix.js" type="text/javascript"></script>
-<script language="JavaScript">
-  function getScrollXY() {
-    var scrOfX = 0, scrOfY = 0;
-    if( typeof( window.pageYOffset ) == 'number' ) {
-      //Netscape compliant
-      scrOfY = window.pageYOffset;
-      scrOfX = window.pageXOffset;
-    } else if( document.body && ( document.body.scrollLeft || document.body.scrollTop ) ) {
-      //DOM compliant
-      scrOfY = document.body.scrollTop;
-      scrOfX = document.body.scrollLeft;
-    } else if( document.documentElement && ( document.documentElement.scrollLeft || document.documentElement.scrollTop ) ) {
-      //IE6 standards compliant mode
-      scrOfY = document.documentElement.scrollTop;
-      scrOfX = document.documentElement.scrollLeft;
+  <script src="../js/staff_help.js" type="text/javascript"></script>
+  <script src="../js/flash_include.js" type="text/javascript"></script>
+  <script src="../js/ie_fix.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    function getScrollXY() {
+      var scrOfX = 0, scrOfY = 0;
+      if( typeof( window.pageYOffset ) == 'number' ) {
+        //Netscape compliant
+        scrOfY = window.pageYOffset;
+        scrOfX = window.pageXOffset;
+      } else if( document.body && ( document.body.scrollLeft || document.body.scrollTop ) ) {
+        //DOM compliant
+        scrOfY = document.body.scrollTop;
+        scrOfX = document.body.scrollLeft;
+      } else if( document.documentElement && ( document.documentElement.scrollLeft || document.documentElement.scrollTop ) ) {
+        //IE6 standards compliant mode
+        scrOfY = document.documentElement.scrollTop;
+        scrOfX = document.documentElement.scrollLeft;
+      }
+      document.getElementById('scrOfY').value = scrOfY;
     }
-    document.getElementById('scrOfY').value = scrOfY;
-  }
-  
-  function editQuestion(qtype,qid,qno) {
-    location.href='../question/edit/index.php?type=' + qtype + '&q_id=' + qid + '&qNo=' + qno + '&paperID=<?php echo $_GET['paperID']; ?>&folder=<?php echo $_GET['folder']; ?>&module=<?php echo $_GET['module']; ?>&calling=<?php echo $type; ?>_comments&scrOfY=' + document.getElementById('scrOfY').value + '&tab=comments';
-  }
-  
-  function showHideSerious() {
-    if (document.styleSheets[0].rules) {
-      document.styleSheets[0].rules.item(7).style.display = (document.styleSheets[0].rules.item(7).style.display == 'none') ? 'block' : 'none';
-    } else {
-      document.styleSheets[0].cssRules[7].style.display = (document.styleSheets[0].cssRules[7].style.display == 'none') ? 'table-row' : 'none';
+
+    function editQuestion(qtype,qid,qno) {
+      location.href='../question/edit/index.php?type=' + qtype + '&q_id=' + qid + '&qNo=' + qno + '&paperID=<?php echo $_GET['paperID']; ?>&folder=<?php echo $_GET['folder']; ?>&module=<?php echo $_GET['module']; ?>&calling=<?php echo $type; ?>_comments&scrOfY=' + document.getElementById('scrOfY').value + '&tab=comments';
     }
-  }
-</script>
+
+    function showHideSerious() {
+      if (document.styleSheets[0].rules) {
+        document.styleSheets[0].rules.item(7).style.display = (document.styleSheets[0].rules.item(7).style.display == 'none') ? 'block' : 'none';
+      } else {
+        document.styleSheets[0].cssRules[7].style.display = (document.styleSheets[0].cssRules[7].style.display == 'none') ? 'table-row' : 'none';
+      }
+    }
+  </script>
 </head>
 
 <body onscroll="getScrollXY()"<?php
@@ -587,10 +609,9 @@ if (isset($_GET['scrOfY'])) {
       $options_buffer = array();
       $correct_buffer = array();
       if ($old_screen != $screen) {
-        echo '<tr><td colspan="2"><table cellpadding="0" cellspacing="1" border="0" style="width:100%; height:70px; border-top:1px solid #B5C4DF; background-image:url(\'../artwork/screen_no_background.gif\'); background-repeat:repeat-x">';
-        echo "<tr>\n<td width=\"20\">&nbsp;</td>\n";
-        echo "<td style=\"vertical-align:top; font-size:90%; font-weight:bold; color:#15428B\">Screen&nbsp;$screen</td>\n</tr>\n";
-        echo '</table></td></tr>';
+        echo '<tr><td colspan="2">';
+        echo '<div class="screenbrk"><span class="scr_no">' . $string['screen'] . '&nbsp;' . $screen . '</span></div>';
+        echo '</td></tr>';
       }
     }
     if ($q_type == 'labelling') {

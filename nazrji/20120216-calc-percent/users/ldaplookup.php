@@ -44,44 +44,45 @@ function array_csort($marray, $column, $sort_order) {   //coded by Ichier2003
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<title>LDAP Lookup</title>
-</head>
-<style>
-body {background-color:#F1F5FB; color:black; font-family:Arial,sans-serif; font-size:90%; margin:0px}
-table {font-size:100%}
-textarea, input[type=text], select {font-family:Arail,sans-serif; border: 1px solid #7F9DB9}
-</style>
-<script language="JavaScript">
-  function setSelectedIndex(s, v) {
-    for ( var i = 0; i < s.options.length; i++ ) {
-      if ( s.options[i].value == v ) {
-        s.options[i].selected = true;
-        return;
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>LDAP Lookup</title>
+
+  <style type="text/css">
+  body {background-color:#F1F5FB; color:black; font-family:Arial,sans-serif; font-size:90%; margin:0px}
+  table {font-size:100%}
+  textarea, input[type=text], select {font-family:Arail,sans-serif; border: 1px solid #7F9DB9}
+  </style>
+  <script type="text/javascript">
+    function setSelectedIndex(s, v) {
+      for ( var i = 0; i < s.options.length; i++ ) {
+        if ( s.options[i].value == v ) {
+          s.options[i].selected = true;
+          return;
+        }
       }
     }
-  }
-  
-  function writeDetails(user_title, first_names, surname, username, email) {
-    window.opener.document.getElementById('new_surname').value = surname;
-    window.opener.document.getElementById('new_first_names').value = first_names;
-    window.opener.document.getElementById('new_username').value = username;
-    window.opener.document.getElementById('new_email').value = email;
-    if (user_title == 'Prof') {
-      setSelectedIndex(window.opener.document.getElementById('new_users_title'),'Professor');
-    } else {
-      setSelectedIndex(window.opener.document.getElementById('new_users_title'),user_title);
-    }
-    
-    if (user_title == 'Mr') {
-      setSelectedIndex(window.opener.document.getElementById('new_gender'),'Male');
-    } else if (user_title == 'Miss' || user_title == 'Mrs' || user_title == 'Ms') {
-      setSelectedIndex(window.opener.document.getElementById('new_gender'),'Female');
-    }
-    window.close();
-  }
-</script>
 
+    function writeDetails(user_title, first_names, surname, username, email) {
+      window.opener.document.getElementById('new_surname').value = surname;
+      window.opener.document.getElementById('new_first_names').value = first_names;
+      window.opener.document.getElementById('new_username').value = username;
+      window.opener.document.getElementById('new_email').value = email;
+      if (user_title == 'Prof') {
+        setSelectedIndex(window.opener.document.getElementById('new_users_title'),'Professor');
+      } else {
+        setSelectedIndex(window.opener.document.getElementById('new_users_title'),user_title);
+      }
+
+      if (user_title == 'Mr') {
+        setSelectedIndex(window.opener.document.getElementById('new_gender'),'Male');
+      } else if (user_title == 'Miss' || user_title == 'Mrs' || user_title == 'Ms') {
+        setSelectedIndex(window.opener.document.getElementById('new_gender'),'Female');
+      }
+      window.close();
+    }
+  </script>
+</head>
 <?php
   if (isset($_POST['submit'])) {
     $ldap = ldap_connect( $cfg_ldap_server );

@@ -145,13 +145,14 @@ if (isset($_POST['submit'])) {
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Remark</title>
-<script language="JavaScript">
-  function reload() {
-    window.opener.location = window.opener.location;
-    self.close();
-  }
-</script>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Remark</title>
+  <script type="text/javascript">
+    function reload() {
+      window.opener.location = window.opener.location;
+      self.close();
+    }
+  </script>
 </head>
 <body onload="reload()">
 </body>
@@ -175,7 +176,7 @@ if (isset($_POST['submit'])) {
 <head>
 <title><?php echo $string['remark'] . ' ' . $cfg_install_type; ?></title>
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<style>
+<style type="text/css">
   body {font-family:Arial,sans-serif; font-size:90%; background-color:#F1F5FB; color:black; margin:0px}
   th {font-weight:normal; color:#001687}
   .o {text-align:right; padding-right:10px}

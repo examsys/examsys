@@ -33,53 +33,54 @@ if (!isset($_POST['submit'])) {
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title><?php echo $string['linktopaper']; ?></title>
-<style>
-body {font-family:Arial,sans-serif; margin:0px; background-color:#F1F5FB}
-td {font-size:80%}
-</style>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title><?php echo $string['linktopaper']; ?></title>
+  <style type="text/css">
+  body {font-family:Arial,sans-serif; margin:0px; background-color:#F1F5FB}
+  td {font-size:80%}
+  </style>
 
-<script language="JavaScript">
-  function checkForm() {
-    checkOption = -1
-    for (i=0; i<theForm.property_id.length; i++) {
-      if (theForm.property_id[i].checked) {
-        checkOption = i;
+  <script language="JavaScript">
+    function checkForm() {
+      checkOption = -1
+      for (i=0; i<theForm.property_id.length; i++) {
+        if (theForm.property_id[i].checked) {
+          checkOption = i;
+        }
       }
-    }
-    if (checkOption == -1) {
-      alert("Please select which paper you would like to add the question to.");
-      return false;
-    }
-    
-    paperTitle = theForm.new_paper.value;
-    for (a=0; a<paperTitle.length; a++) {
-      char = paperTitle.substr(a,1);
-      if (char == '&' || char == '#' || char == '@' || char == '?' || char == '^' || char == '~') {
-        alert('A paper name cannot contain any of the following characters:\r      &  #  @  ?  ^  ~');
+      if (checkOption == -1) {
+        alert("Please select which paper you would like to add the question to.");
         return false;
       }
+
+      paperTitle = theForm.new_paper.value;
+      for (a=0; a<paperTitle.length; a++) {
+        char = paperTitle.substr(a,1);
+        if (char == '&' || char == '#' || char == '@' || char == '?' || char == '^' || char == '~') {
+          alert('A paper name cannot contain any of the following characters:\r      &  #  @  ?  ^  ~');
+          return false;
+        }
+      }
     }
-  }
-    
-  function resizeList() {
-    var winW = 630, winH = 460;
-    if (document.body && document.body.offsetWidth) {
-      winW = document.body.offsetWidth;
-      winH = document.body.offsetHeight;
+
+    function resizeList() {
+      var winW = 630, winH = 460;
+      if (document.body && document.body.offsetWidth) {
+        winW = document.body.offsetWidth;
+        winH = document.body.offsetHeight;
+      }
+      if (document.compatMode=='CSS1Compat' && document.documentElement && document.documentElement.offsetWidth ) {
+        winW = document.documentElement.offsetWidth;
+        winH = document.documentElement.offsetHeight;
+      }
+      if (window.innerWidth && window.innerHeight) {
+        winW = window.innerWidth;
+        winH = window.innerHeight;
+      }
+      winH -= 170;
+      document.getElementById('paperlist').style.height = winH + 'px';
     }
-    if (document.compatMode=='CSS1Compat' && document.documentElement && document.documentElement.offsetWidth ) {
-      winW = document.documentElement.offsetWidth;
-      winH = document.documentElement.offsetHeight;
-    }
-    if (window.innerWidth && window.innerHeight) {
-      winW = window.innerWidth;
-      winH = window.innerHeight;
-    }
-    winH -= 170;
-    document.getElementById('paperlist').style.height = winH + 'px';
-  }
-</script>
+  </script>
 </head>
 
 <body onload="resizeList();" onresize="resizeList();">

@@ -28,23 +28,23 @@
   header("Content-type: application/vnd.ms-excel");
   header("Content-Disposition: attachment; filename=" . str_replace(' ', '_', $paper) . ".csv");
 
-  echo "Title\tSurname\tFirst Names\tStudent ID\tCourse\tTotal\tClassification\tStart Date\tExaminer\n";
+  echo "Title,Surname,First Names,Student ID,Course,Total,Classification,Start Date,Examiner\n";
   for ($i=0; $i<$user_no; $i++) {
-    echo $user_results[$i]['title'] . "\t" . $user_results[$i]['surname'] . "\t" . $user_results[$i]['first_names'] . "\t";
+    echo $user_results[$i]['title'] . ',"' . $user_results[$i]['surname'] . '","' . $user_results[$i]['first_names'] . '",';
     if ($user_results[$i]['student_id'] == '') {
-      echo "Unknown\t";
+      echo "Unknown,";
     } else {
-      echo $user_results[$i]['student_id'] . "\t";
+      echo $user_results[$i]['student_id'] . ",";
     }
     if ($user_results[$i]['display_started'] == '') {  // Student did not take exam.
-      echo "\t\tNo Attendance\t\t\n";
+      echo ",,No Attendance,,\n";
     } else {
-      echo $user_results[$i]['grade'] . "\t" . $user_results[$i]['numeric_score'] . "\t" . $labels[$user_results[$i]['classification']] . "\t" . $user_results[$i]['display_started'] . "\t" . $user_results[$i]['examiner'] . "\n";
+      echo $user_results[$i]['grade'] . "," . $user_results[$i]['numeric_score'] . "," . $labels[$user_results[$i]['classification']] . "," . $user_results[$i]['display_started'] . ",\"" . $user_results[$i]['examiner'] . "\"\n";
     }
   }
-  echo "\t\t\t\t\t\t\t\t\t\n";
+  echo ",,,,,,,,,\n";
 
-  echo "Cohort Size\t$user_no\t\t\t\t\t\t\t\t\n";
+  echo "Cohort Size,$user_no,,,,,,,,\n";
 
   $mysqli->close();
 ?>

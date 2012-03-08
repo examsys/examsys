@@ -26,6 +26,7 @@
 ?>
 <html>
 <head>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
   <title>Buttons</title>
 
   <script language="JavaScript">
@@ -60,7 +61,7 @@
     }
   </script>
   
-  <style>
+  <style type="text/css">
   body {font-size:100%; font-family:Arial,sans-serif; background-color:#DFECFF; color:black; margin-top:4px; margin-bottom:2px; margin-left:4px; margin-right:4px}
   </style>
 </head>

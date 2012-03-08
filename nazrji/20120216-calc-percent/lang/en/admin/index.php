@@ -20,4 +20,5 @@ $string['trac'] = 'Trac (issue tracking)';
 $string['usermanagement'] = 'User Management';
 $string['msg1'] = 'Are you sure you wish to clear all papers/questions form the Training module?';
 $string['msg2'] = 'Are you sure you wish to delete old Formative and Progress Test records?\n\n(Summative/Survey records will not be affected)';
+$string['announcments'] = 'News &amp; Announcements';
 ?>

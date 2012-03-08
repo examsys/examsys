@@ -24,6 +24,7 @@
 ?>
 <html>
 <head>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
 	<title>Export to QTI</title>
 	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
 	<link rel="icon" href="favicon.ico" type="image/x-icon"/>
@@ -31,7 +32,7 @@
 	<link rel="stylesheet" type="text/css" href="css/highlight.css" /> 
 	<link rel="stylesheet" type="text/css" href="css/wizard.css" /> 
 
-	<style>
+	<style type="text/css">
 		body {background-color:white; color:black; font-family:Arial,sans-serif;margin:0px;}
 		.divider {padding-left:6px; font-weight:bold}
 		a {color:black}

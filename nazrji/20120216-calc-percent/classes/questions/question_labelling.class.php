@@ -49,7 +49,7 @@ Class QuestionLABELLING extends Question {
    */
   public function save($clear_checkout = true) {
     // Make sure 'correct' value is set for option
-    if (count($this->options) > 0) {
+    if ((!isset($this->correct) or $this->correct = '') and $this->points1 != '' and count($this->options) > 0) {
       $this->set_points1($this->points1);
     }
     return parent::save($clear_checkout);

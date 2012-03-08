@@ -45,12 +45,13 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
 
   function reset_feedback($hide) {
     // Set all the feedback display options to '0' so that they become hidden.
-    global $tmp_display_correct_answer, $tmp_display_students_response, $tmp_display_feedback, $strong_on, $strong_off;
+    global $tmp_display_correct_answer, $tmp_display_students_response, $tmp_display_feedback, $tmp_display_question_mark, $strong_on, $strong_off;
   
     if ($hide == '1') {
       $tmp_display_correct_answer = '0';
       $tmp_display_students_response = '0';
       $tmp_display_feedback = '0';
+      $tmp_display_question_mark = '0';
 
       $strong_on = '';
       $strong_off = '';
@@ -59,12 +60,13 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
 
   function init_feedback(&$strong_on, &$strong_off) {
     // Reset feedback back to defaults.
-    global $tmp_display_correct_answer, $tmp_display_students_response, $tmp_display_feedback, $display_correct_answer, $display_students_response, $display_feedback;
+    global $tmp_display_correct_answer, $tmp_display_students_response, $tmp_display_feedback, $tmp_display_question_mark, $display_correct_answer, $display_students_response, $display_feedback, $display_question_mark;
   
     $tmp_display_correct_answer = $display_correct_answer;
     $tmp_display_students_response = $display_students_response;
     $tmp_display_feedback = $display_feedback;
-    
+    $tmp_display_question_mark = $display_question_mark;
+
     if ($display_correct_answer == '1') {
       $strong_on = '<strong>';
       $strong_off = '</strong>';
@@ -138,7 +140,7 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
   }
 
   function display_feedback($sessionid, $temp_userID, $paperID, $paper_type, $log_type, $paper_title, $paper_postscript, $marking, $userroles, $mysqlidb) {
-    global $language, $string, $bottom_html, $hide_if_unanswered, $tmp_display_correct_answer, $tmp_display_students_response, $tmp_display_feedback, $display_question_mark, $moduleID, $calendar_year, $bgcolor, $fgcolor, $textsize, $marks_color, $themecolor, $labelcolor, $font, $pass_mark, $cfg_root_path, $strong_on, $strong_off;
+    global $language, $string, $bottom_html, $hide_if_unanswered, $tmp_display_correct_answer, $tmp_display_students_response, $tmp_display_feedback, $tmp_display_question_mark, $moduleID, $calendar_year, $bgcolor, $fgcolor, $textsize, $marks_color, $themecolor, $labelcolor, $font, $pass_mark, $cfg_root_path, $strong_on, $strong_off;
     
     $strong_on = '';
     $strong_off = '';
@@ -161,10 +163,9 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
         //echo '<blockquote><p><img src="../artwork/thankyou.gif" width="238" height="76" alt="Thank You" /></p><p>' . $tmp_string . '</p><br />';
         if ($paper_postscript != '') echo "<p>$paper_postscript</p>\n";
         echo '</blockquote>';
-        echo '<table cellpadding="0" cellspacing="0" width="100%" border="0">';
-        echo "<tr>\n<td width=\"21\" style=\"font-weight:bold\">&nbsp;</td><td style=\"color:#800000; font-size:90%; font-weight:bold\">" . $string['studentviewend'] . "&nbsp;</td></tr>\n";
-        echo "<tr style=\"height:55px; background-image:url(../artwork/no_questions_gradient.png); repeat:repeat-x\">\n<td width=\"21\">&nbsp;</td><td style=\"color:#800000; font-size:90%\">" . $string['staffviewbelow'] . "</td></tr>\n";
-        echo '</table>';
+        
+        echo '<div class="studentview">' . $string['studentviewend'] . '</div>';
+        echo '<div class="staffview" style="padding-top:2px; padding-left:15px">' . $string['staffviewbelow'] . '</div>';
       }
     }
     $q_no = 0;
@@ -199,7 +200,7 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
     $answer_data->bind_result($screen, $q_id, $q_type, $theme, $scenario, $leadin, $correct_fback, $incorrect_fback, $display_method, $score_method, $notes, $q_media, $q_media_width, $q_media_height, $option_text, $o_media, $o_media_width, $o_media_height, $feedback_right, $feedback_wrong, $correct, $marks_correct, $marks_incorrect, $marks_partial, $display_pos, $status);
     while ($answer_data->fetch()) {
       if ($old_q_id != $q_id or $old_display_pos != $display_pos) {  // New question.
-        if ($old_q_id != 0) {
+       if ($old_q_id != 0) {
           if (isset($excluded[$old_q_id])) {
             $tmp_exclude = $excluded[$old_q_id];
           } else {
@@ -324,6 +325,7 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
               $paper[$i]['q_media'] = $q_media;
               $paper[$i]['q_media_height'] = $q_media_height;
               $paper[$i]['q_media_width'] = $q_media_width;
+              $paper[$i]['display_method'] = $display_method;
               $paper[$i]['score_method'] = $score_method;
               $paper[$i]['correct_fback'] = $correct_fback;
               $paper[$i]['incorrect_fback'] = $incorrect_fback;
@@ -432,10 +434,9 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
       init_feedback($strong_on, $strong_off);
 
       if ($old_screen < $paper[$question]['screen']) {
-        echo '</table><br /><table cellpadding="0" cellspacing="1" border="0" class="scr_br">';
-        echo "<tr>\n<td width=\"20\">&nbsp;</td>\n";
-        echo "<td class=\"scr_no\">" . $string['screen'] . "&nbsp;" . $paper[$question]['screen'] . "</td>\n</tr>\n";
-        echo '</table>';
+        echo '</table><br />';
+        
+        echo '<div class="screenbrk"><span class="scr_no">' . $string['screen'] . '&nbsp;' . $paper[$question]['screen'] . '</span></div>';
         echo "<table width=\"100%\" cellpadding=\"4\" cellspacing=\"0\" border=\"0\" style=\"table-layout:fixed\">\n<col width=\"40\"><col>\n";
         if ($paper[$question]['q_type'] != 'info') {
           if ($paper[$question]['theme'] != '') echo "<tr><td colspan=\"2\" class=\"theme\">" . $paper[$question]['theme'] . "</td></tr>\n";
@@ -579,7 +580,7 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
             echo '<td></td>';
           }
 
-          $saved_response_clean = preg_replace('([^0-9\.])', '', $saved_response);
+          $saved_response_clean = preg_replace('([^0-9\.\-])', '', $saved_response);
                     
           if ($tmp_answer[0] == '') {
             echo "<td><img src=\"../artwork/blank_tick_cross.gif\" width=\"17\" height=\"16\" alt=\"\" /><input type=\"text\" style=\"color:#808080; text-align:right\" name=\"q' . $question . '\" size=\"10\" value=\"" . $string['unanswered'] . "\" />" . $score_array[3];
@@ -591,9 +592,9 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
             
             if ($saved_response_clean == $tmp_answer[1]) {
               $paper[$question]['mark'] = $paper[$question]['marks_correct'];
-            } elseif ($difference <= $tolerance_full and $tolerance_full > 0) {
+            } elseif ($difference > 0 and $difference <= $tolerance_full and $tolerance_full > 0) {
               $paper[$question]['mark'] = $paper[$question]['marks_correct'];
-            } elseif ($difference <= $tolerance_partial and $tolerance_partial > 0) {
+            } elseif ($difference > 0 and $difference <= $tolerance_partial and $tolerance_partial > 0) {
               $paper[$question]['mark'] = $paper[$question]['marks_partial'];
             } else {
               $paper[$question]['mark'] = $paper[$question]['marks_incorrect'];
@@ -788,7 +789,7 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
           $display_no--;
           break;
         case 'mcq':
-          if (isset($paper[$question]['user_answer']) and $paper[$question]['user_answer'] == 0) {
+          if (!isset($paper[$question]['user_answer']) or (isset($paper[$question]['user_answer']) and $paper[$question]['user_answer'] == 0)) {
             reset_feedback($hide_if_unanswered);
           }
              
@@ -1059,6 +1060,7 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
           $sct_titles = array(1=>$string['hypothesis'],2=>$string['investigation'],3=>$string['prescription'],4=>$string['intervention'],5=>$string['treatment']);
           $sct_intros = array(1=>$string['tdiagnosis'],2=>$string['tinvestigation'],3=>$string['tprescription'],4=>$string['tintervention'],5=>$string['ttreatment']);
           echo "<tr><td style=\"width:49%; background-color:#E4EEFC; border-bottom:1px solid #B5C4DF; font-weight:bold\">" . $sct_titles[$paper[$question]['display_method']] . "</td><td style=\"width:2%\">&nbsp;</td><td style=\"width:49%; background-color:#E4EEFC; border-bottom:1px solid #B5C4DF; font-weight:bold\">" . $string['newinformation'] . "</td></tr>\n";
+          echo "<tr><td style=\"width:49%;\">" . $sct_parts[0] . "</td><td style=\"width:2%\">&nbsp;</td><td style=\"width:49%;\">" . $sct_parts[1] . "</td></tr>\n";
           echo '</table>';
       
           echo "\n<br /><p><strong>" . $string['thenthis'] . " " . mb_strtolower($sct_titles[$paper[$question]['display_method']], 'UTF-8') . " " . $string['is'] . ":</strong></p>\n";
@@ -1081,6 +1083,10 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
             }
           }
           
+          if (!isset($paper[$question]['user_answer']) OR $paper[$question]['user_answer'] == 0) {
+            reset_feedback($hide_if_unanswered);
+          }
+
           echo "<table cellpadding=\"0\" cellspacing=\"1\" border=\"0\">\n";
           echo "<tr><td></td><td></td><td></td>";
           if ($tmp_display_correct_answer == 1) {
@@ -1275,7 +1281,9 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
               echo 'False';
             }
             echo '</td></tr>';
-            echo "<td style=\"color:#808080\" colspan=\"3\">" . $string['unanswered'] . "</td></tr>";
+            if (!isset($paper[$question]['user_answer']) or $paper[$question]['user_answer'] == 'u') {
+              echo "<td style=\"color:#808080\" colspan=\"3\">" . $string['unanswered'] . "</td></tr>";
+            }
           }
           echo '</table>';
 
@@ -1371,7 +1379,7 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
             }
 
             echo '<td>';
-            if (isset($rank_answers[$tmp_part_id-1]) and $rank_answers[$tmp_part_id-1] != 'u') {
+            if (isset($rank_answers[$tmp_part_id-1]) and ($rank_answers[$tmp_part_id-1] != 'u' or $paper[$question]['score_method'] == 'Mark per Option')) {
               if ($tmp_display_students_response == '1' and substr($tmp_exclude,0,1) == '0') {
                 if (($paper[$question]['score_method'] == 'Bonus Mark' or $paper[$question]['score_method'] == 'Allow partial Marks') and $rank_answers[$tmp_part_id-1] == '0' and $paper[$question]['correct'][$tmp_part_id-1] == '0') {
                   echo '&nbsp;';
@@ -1384,8 +1392,10 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
                       echo '&nbsp;<img src="../artwork/tick_half.gif" width="17" height="16" alt="Half Right" />';
                       $paper[$question]['mark'] += $paper[$question]['marks_partial'];
                     } else {
-                      echo '&nbsp;<img src="../artwork/cross.gif" width="17" height="16" alt="Cross" />';
-                      if ($rank_answers[$tmp_part_id-1] != 'u') $paper[$question]['mark'] += $paper[$question]['marks_incorrect'];
+                      if ($rank_answers[$tmp_part_id-1] != 'u' and $rank_answers[$tmp_part_id-1] != '0') {
+                        echo '&nbsp;<img src="../artwork/cross.gif" width="17" height="16" alt="Cross" />';
+                        $paper[$question]['mark'] += $paper[$question]['marks_incorrect'];
+                      }
                       $all_correct = false;
                     }
                   } else {
@@ -1395,8 +1405,8 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
                       // Not all correct if Bonus Mark but not exact match
                       if ($rank_answers[$tmp_part_id-1] != $paper[$question]['correct'][$tmp_part_id-1]) $all_correct = false;
                     } else {
-                      if ($rank_answers[$tmp_part_id-1] != 'u' and $rank_answers[$tmp_part_id-1] != '0') {
-                        echo $rank_answers[$tmp_part_id-1] . '&nbsp;<img src="../artwork/cross.gif" width="17" height="16" alt="Cross" />';
+                      if (($rank_answers[$tmp_part_id-1] != 'u' and $rank_answers[$tmp_part_id-1] != '0') or ($paper[$question]['score_method'] == 'Mark per Option' and $rank_answers[$tmp_part_id-1] != 'u')) {
+                        echo '&nbsp;<img src="../artwork/cross.gif" width="17" height="16" alt="Cross" />';
                         $paper[$question]['mark'] += $paper[$question]['marks_incorrect'];
                         $all_correct = false;
                       }
@@ -1406,6 +1416,9 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
               }
             } elseif ($paper[$question]['correct'][$tmp_part_id-1] > 0) {
               $all_correct = false;
+              if ($paper[$question]['score_method'] == 'Mark per Question') {
+                echo '&nbsp;<img src="../artwork/cross.gif" width="17" height="16" alt="Cross" />';
+              }
             }
             echo "</td>";
 
@@ -1438,7 +1451,7 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
         
           if ($paper[$question]['score_method'] == 'Bonus Mark' and $tmp_display_students_response == '1') {
             $img_name = 'cross';
-            if ($all_correct) {
+            if ($paper[$question]['mark'] == ($paper[$question]['totalpos'] - $paper[$question]['marks_correct']) and $all_correct) {
               $paper[$question]['mark'] += $paper[$question]['marks_correct'];
               $img_name = 'tick';
             }
@@ -1475,7 +1488,7 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
           if ($paper[$question]['score_method'] == 'Mark per Question') {
             if ($all_correct) {
               $paper[$question]['mark'] = $paper[$question]['marks_correct'];
-            } else {
+            } elseif ($answered) {
               $paper[$question]['mark'] = $paper[$question]['marks_incorrect'];
             }
             $paper[$question]['totalpos'] = $paper[$question]['marks_correct'];
@@ -1487,7 +1500,8 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
         case 'extmatch':
           $paper[$question]['mark'] = 0;
           $all_correct = true;
-          
+          $have_answer = false;
+
           echo_content($paper[$question]['leadin']);
           echo '<ol class="extmatch">';
           $matching_scenarios = array();
@@ -1520,6 +1534,7 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
           $i = 0;
           $section = 0;
           $std_part = 0;
+          $option_answered = 0;
           for ($scenario_no=0; $scenario_no<$total_scenarios; $scenario_no++) {
             if(isset($matching_scenarios[$scenario_no])) {
               $single_scenario = $matching_scenarios[$scenario_no];
@@ -1538,7 +1553,6 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
             $separate_user_answers = explode('$', $user_answers[$i]);
             echo '<table cellpadding="0" cellspacing="1" border="0">';
             $tmp_option_no = 1;
-            $option_answered = 0;
             if (count($separate_answers) == 1) {   // Single answer Extended Matching
               if ($user_answers[$i] == 'u' or $user_answers[$i] == '') {
                 reset_feedback($hide_if_unanswered);
@@ -1554,7 +1568,7 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
                 echo '<td></td>';
               }
               echo '<td>';
-              if ($user_answers[$i] == $correct_answers[$i]) {
+              if ($separate_user_answers[0] == $correct_answers[$i]) {
                 if (substr($tmp_exclude,$section,1) == '0') {
                   $paper[$question]['mark'] += $paper[$question]['marks_correct'];
                 }
@@ -1567,10 +1581,13 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
                 if ($tmp_display_students_response == '1' and $user_answers[$i] != '' and $user_answers[$i] != 'u') echo '<img src="../artwork/cross.gif" width="17" height="16" alt="Cross" />&nbsp;';
               }
               if (substr($tmp_exclude,$section,1) == '0') {
-                echo "<select name=\"q" . $question. "_" . $std_part . "\">\n";
+                echo "<select name=\"q" . $question. "_" . $std_part;
+                if ($user_answers[$i] == 'u' or $user_answers[$i] == '') echo "\" style=\"color: #808080";
               } else {
-                echo "<select name=\"q" . $question. "_" . $std_part . "\" class=\"exclude\" style=\"border:1px solid red\">\n";
+                echo "<select name=\"q" . $question. "_" . $std_part . "\" class=\"exclude\" style=\"border:1px solid red";
+                if ($user_answers[$i] == 'u' or $user_answers[$i] == '') echo ";color: #808080";
               }
+              echo "\">\n";
               if ($user_answers[$i] == 'u' or $user_answers[$i] == '') {
                 echo "<option value=\"\" style=\"color:#808080\">" . $string['unanswered'] . "</option>\n";
               } else {
@@ -1665,7 +1682,10 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
             $i++;
           }
           echo "</ol>\n";
+
+          init_feedback($strong_on, $strong_off);
           if ($option_answered == 0) {
+            reset_feedback($hide_if_unanswered);
             echo "<div style=\"color:#808080\">" . $string['unanswered'] . "</div>\n";
             //$paper[$question]['mark'] = 0;
           } elseif ($paper[$question]['score_method'] == 'Mark per Question') {
@@ -1703,6 +1723,7 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
           echo "</tr>\n";
           $row_no = 0;
           $part_id = 0;
+          $answered = 0;
           foreach ($matching_scenarios as $single_scenario) {
             if (trim($single_scenario) != '') {
               echo "<tr>\n";
@@ -1724,6 +1745,9 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
                 $tmp_answer = (isset($user_answers[$row_no])) ? $user_answers[$row_no] : 'u';
                 if ($tmp_answer == $tmp_col_no) echo ' checked';
                 echo ' />';
+                if (isset($user_answers[$row_no]) and $user_answers[$row_no] != 'u' and $user_answers[$row_no] != '') {
+                  $answered++;
+                }
                 if ($correct_answers[$row_no] == $tmp_col_no and $tmp_answer == $tmp_col_no) {
                   if ($tmp_display_students_response == '1') echo '<img src="../artwork/tick.gif" width="17" height="16" alt="Tick" />';
                   if (substr($tmp_exclude,$row_no,1) == '0') $paper[$question]['mark'] += $paper[$question]['marks_correct'];
@@ -1744,6 +1768,12 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
             }
           }    
           echo '</table></blockquote>';
+
+          if ($answered == 0) {
+            reset_feedback($hide_if_unanswered);
+            echo "<div style=\"color:#808080\">" . $string['unanswered'] . "</div>\n";
+          }
+
           if ($tmp_display_feedback == '1' and trim($paper[$question]['correct_fback']) != '') {
             echo "<p class=\"fback\">" . $paper[$question]['correct_fback'] . "</p>\n";
           }
@@ -1751,10 +1781,12 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
           if ($paper[$question]['score_method'] == 'Mark per Question') {
             if ($paper[$question]['mark'] == $paper[$question]['marks_correct'] * $row_no) {
               $paper[$question]['mark'] = $paper[$question]['marks_correct'];
-            } elseif ((strlen($paper[$question]['user_answer']) + 1)  == $row_no) {
+            } elseif (isset($paper[$question]['user_answer']) and (strlen($paper[$question]['user_answer']) + 1)  == $row_no) {
               $paper[$question]['mark'] = 0;
             } else {
-              $paper[$question]['mark'] = $paper[$question]['marks_incorrect'];
+              if ($answered > 0) {
+                $paper[$question]['mark'] = $paper[$question]['marks_incorrect'];
+              }
             }
           }
           break;
@@ -1832,20 +1864,21 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
           $blank_details = array();
           $blank_details = explode("[blank",$paper[$question]['option_text'][0]);
           $no_blanks = count($blank_details);
-          echo '<p><span';
-          if (substr($tmp_exclude,0,1) == '1') echo ' class="exclude"';
-          echo '>' . $blank_details[0];
+          echo '<p>' . $blank_details[0];
           $blank_count = 1;
           
           while ($blank_count < $no_blanks) {
             if (!isset($user_choices[$blank_count]) or $user_choices[$blank_count] == 'u') {
               reset_feedback($hide_if_unanswered);
+            } else {
+              init_feedback($strong_on, $strong_off);
             }
-          
+
             $answer_options = array();
             $answer_options = explode("[/blank]",substr($blank_details[$blank_count],(strpos($blank_details[$blank_count],']') + 1)));
             $answer_list = array();
             $answer_list = explode(',',$answer_options[0]);
+            $exclude_mod = (substr($tmp_exclude,$blank_count-1,1) == '1') ? ' class="exclude"' : '';
             if ($paper[$question]['display_method'] == 'textboxes') {             // Textboxes
               $correct_flag = false;
               foreach ($answer_list as $individual_answer) {
@@ -1854,17 +1887,21 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
                 }
               }
               if ($correct_flag == true) {
-                $paper[$question]['mark'] += $paper[$question]['marks_correct'];
+                if (substr($tmp_exclude,$blank_count-1,1) == '0') {
+                  $paper[$question]['mark'] += $paper[$question]['marks_correct'];
+                }
                 $have_answer = true;
-                echo "<input type=\"text\" size=\"20\" name=\"q" . $question . "_" . $blank_count . "\" value=\"" . $user_choices[$blank_count] .  "\" />";
+                echo "<input type=\"text\" size=\"20\" name=\"q" . $question . "_" . $blank_count . "\" value=\"" . htmlentities($user_choices[$blank_count]) .  "\"$exclude_mod />";
                 if ($tmp_display_students_response == '1') echo '<img src="../artwork/tick.gif" width="17" height="16" alt="Tick" />';
               } else {
                 if ($user_choices[$blank_count] == 'u') {
-                    echo "<input type=\"text\" size=\"20\" name=\"q" . $question . "_" . $blank_count . "\" value=\"" . $string['unanswered'] .  "\" />";
+                    echo "<input type=\"text\" size=\"20\" name=\"q" . $question . "_" . $blank_count . "\" value=\"" . $string['unanswered'] .  "\" style=\"color: #808080\"$exclude_mod />";
                 } else {
-                  $paper[$question]['mark'] += $paper[$question]['marks_incorrect'];
+                  if (substr($tmp_exclude,$blank_count-1,1) == '0') {
+                    $paper[$question]['mark'] += $paper[$question]['marks_incorrect'];
+                  }
                   $have_answer = true;
-                  echo "<input type=\"text\" size=\"20\" name=\"q" . $question . "_" . $blank_count . "\" value=\"" . $user_choices[$blank_count] .  "\" />";
+                  echo "<input type=\"text\" size=\"20\" name=\"q" . $question . "_" . $blank_count . "\" value=\"" . htmlentities($user_choices[$blank_count]) .  "\"$exclude_mod />";
                   if ($tmp_display_students_response == '1') echo '<img src="../artwork/cross.gif" width="17" height="16" alt="Cross" />';
                 }
                 if ($tmp_display_correct_answer == '1') {
@@ -1878,11 +1915,16 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
                 }
               }
             } else {                                                                // Dropdown menus
-              echo '</span>';
+              //echo '</span>';
               if ($tmp_display_correct_answer == '1') {
                 if (isset($paper[$question]['std'][$blank_count-1])) echo display_std($paper[$question]['std'][$blank_count-1],0);
               }
-              echo "<select name=\"\">\n<option value=\"\"></option>";
+              $colormod = (!isset($user_choices[$blank_count]) or $user_choices[$blank_count] == 'u') ? " style=\"color: #808080\"" : '';
+              echo "<select name=\"\"{$colormod}{$exclude_mod}>\n";
+              echo "<option value=\"\"></option>";
+              if (!isset($user_choices[$blank_count]) or $user_choices[$blank_count] == 'u') {
+                echo "<option value=\"u\" selected=\"selected\">{$string['unanswered']}</option>\n";
+              }
               foreach ($answer_list as $answer_option) {
                 if (isset($user_choices[$blank_count]) and html_entity_decode(trim($answer_option)) == html_entity_decode(trim($user_choices[$blank_count]))) {
                   echo "<option value=\"\" selected>$answer_option</option>\n";
@@ -1900,7 +1942,7 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
                 }
               } else {
                 if (isset($user_choices[$blank_count]) and html_entity_decode(trim($user_choices[$blank_count])) != 'u') {
-                  $paper[$question]['mark'] += $paper[$question]['marks_incorrect'];
+                  if (substr($tmp_exclude,$blank_count-1,1) == '0') $paper[$question]['mark'] += $paper[$question]['marks_incorrect'];
                   $have_answer = true;
                 }
                 if ($tmp_display_students_response == '1'and substr($tmp_exclude,$blank_count-1,1) == '0' and isset($user_choices[$blank_count]) and html_entity_decode(trim($user_choices[$blank_count])) != 'u') {
@@ -1911,13 +1953,17 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
               }
               if ($tmp_display_correct_answer == '1') echo ' <strong>(' . $answer_list[0] . ')</strong>';
             }
-            echo '<span';
-            if (substr($tmp_exclude,$blank_count,1) == '1') echo ' class="exclude"';
-            echo '>' . $answer_options[1]; // Bit after the closing [/blank] tag.
+            echo $answer_options[1]; // Bit after the closing [/blank] tag.
             $blank_count++;
           }
-          echo "</span></p>\n";
-          if ($paper[$question]['correct_fback'] != '') {
+          echo "</p>\n";
+
+          init_feedback($strong_on, $strong_off);
+          if (!$have_answer) {
+            reset_feedback($hide_if_unanswered);
+          }
+
+          if ($tmp_display_feedback == '1' and $paper[$question]['correct_fback'] != '') {
             echo '<div class="fback">&nbsp;' . $paper[$question]['correct_fback'] . "</div>\n";
           }
           
@@ -2064,22 +2110,26 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
           $tmp_height = $paper[$question]['q_media_height'];
           if ($tmp_height < ($max_label * 55)) $tmp_height = ($max_label * 55);
 
+          $answered = false;
           if (isset($paper[$question]['user_answer'])) {
             $user_split1 = explode(';',$paper[$question]['user_answer']);
-            $user_split2 = explode('$',$user_split1[1]);
-            
-            $i = 0;
-            for ($a=0; $a<count($user_split2)-3; $a+=4) {
-              $x = $user_split2[$a];
-              $y = $user_split2[$a+1];
-              if (isset($correct_labels[$x . 'x' . $y]) and $correct_labels[$x . 'x' . $y] == $user_split2[$a+2]) {
-                $paper[$question]['mark'] += $paper[$question]['marks_correct'];
-                $correct_no++;
-              } else {
-                $paper[$question]['mark'] += $paper[$question]['marks_incorrect'];
-                $all_correct = false;
+            if ($user_split1[1] != '') {
+              $answered = true;
+              $user_split2 = explode('$',$user_split1[1]);
+
+              $i = 0;
+              for ($a=0; $a<count($user_split2)-3; $a+=4) {
+                $x = $user_split2[$a];
+                $y = $user_split2[$a+1];
+                if (isset($correct_labels[$x . 'x' . $y]) and $correct_labels[$x . 'x' . $y] == $user_split2[$a+2]) {
+                  $paper[$question]['mark'] += $paper[$question]['marks_correct'];
+                  $correct_no++;
+                } else {
+                  $paper[$question]['mark'] += $paper[$question]['marks_incorrect'];
+                  $all_correct = false;
+                }
+                $i++;
               }
-              $i++;
             }
           }
           
@@ -2097,6 +2147,11 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
             echo_content($paper[$question]['scenario']);
           }
           echo_content($paper[$question]['leadin']);
+
+          if ($answered == 0) {
+            reset_feedback($hide_if_unanswered);
+          }
+
           echo '<div align="center">';
           echo '<script language="JavaScript">';
           if ($tmp_display_correct_answer == '0' or $tmp_display_students_response == '0') {
@@ -2156,8 +2211,13 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
     <input type="hidden" name="q<?php echo $question_no; ?>" id="q<?php echo $question_no; ?>" value="" />
     </div>
     <br />
-    <div align="center" style="color:#808080">(Move the mouse over incorrect labels to reveal the correct answer)</div>
 <?php
+          if ($answered == 0) {
+            echo "<div style=\"color:#808080\">" . $string['unanswered'] . "</div>\n";
+          } else {
+            echo '<div align="center" style="color:#808080">(Move the mouse over incorrect labels to reveal the correct answer)</div>';
+          }
+
           if ($paper[$question]['correct_fback'] != '' and $tmp_display_feedback == '1') {
             echo '<div class="fback" style="margin-left:17px">&nbsp;' . $paper[$question]['correct_fback'] . "</div>\n";
           }
@@ -2167,6 +2227,14 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
             echo_content($paper[$question]['scenario']);
           }
           echo_content($paper[$question]['leadin']);
+
+          $movie = $paper[$question]['o_media'][0];
+          if (!isset($paper[$question]['user_answer'])) {
+            reset_feedback($hide_if_unanswered);
+            if ($tmp_display_correct_answer == '0') {
+              $movie = $paper[$question]['q_media'];
+            }
+          }
 ?>
     <div align="center">
     <script language="JavaScript">
@@ -2176,7 +2244,7 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
       write_string('<param name="quality" value="high" />');
       write_string('<param name="bgcolor" value="<?php echo $bgcolor; ?>" />');
       write_string('<param name="FlashVars" value="dataIn=<?php if (isset($paper[$question]['user_answer'])) echo $paper[$question]['user_answer']; ?>" />');
-      write_string('<embed src="/media/<?php echo $paper[$question]['o_media'][0]; ?>" FlashVars="dataIn=<?php if (isset($paper[$question]['user_answer'])) echo $paper[$question]['user_answer']; ?>" quality="high" bgcolor="<?php echo $bgcolor; ?>" width="<?php echo $paper[$question]['o_media_width'][0]; ?>" height="<?php echo $paper[$question]['o_media_height'][0]; ?>" swLiveConnect=true id="flash<?php echo $question; ?>" name="flash<?php echo $question; ?>" align="middle" allowScriptAccess="sameDomain" type="application/x-shockwave-flash" pluginspage="https://www.macromedia.com/go/getflashplayer" />');
+      write_string('<embed src="/media/<?php echo $movie ?>" FlashVars="dataIn=<?php if (isset($paper[$question]['user_answer'])) echo $paper[$question]['user_answer']; ?>" quality="high" bgcolor="<?php echo $bgcolor; ?>" width="<?php echo $paper[$question]['o_media_width'][0]; ?>" height="<?php echo $paper[$question]['o_media_height'][0]; ?>" swLiveConnect=true id="flash<?php echo $question; ?>" name="flash<?php echo $question; ?>" align="middle" allowScriptAccess="sameDomain" type="application/x-shockwave-flash" pluginspage="https://www.macromedia.com/go/getflashplayer" />');
       write_string('</object>');
     </script>
     </div>
@@ -2210,7 +2278,7 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
       }
       
       // Write out the marks for the question
-      if ($display_question_mark == '1' and $paper[$question]['q_type'] != 'info' and $paper[$question]['q_type'] != 'likert') {
+      if ($tmp_display_question_mark == '1' and $paper[$question]['q_type'] != 'info' and $paper[$question]['q_type'] != 'likert') {
         if (isset($paper[$question]['mark']) and is_numeric($paper[$question]['mark'])) {
           if ($paper[$question]['status'] == 'Experimental') {
             echo '<p class="mkpad"><span style="color:#800000; background-color:#FFC0C0; padding-left:8px; padding-right:8px">&nbsp;0 ' . $string['outof'] . ' 0 - Experimental Question&nbsp;</span></p>';

@@ -104,7 +104,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta http-equiv="imagetoolbar" content="no">
 <meta http-equiv="imagetoolbar" content="false">
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> 
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $cfg_page_charset ?>" />
 <style type="text/css">
 body {background-color:<?php echo $bgcolor; ?>;color:<?php echo $fgcolor; ?>;padding:0px;margin:0px;border:0px;font-family:<?php echo $font; ?>,sans-serif;font-size:<?php echo $textsize; ?>%}
 p {margin-top:0px;padding-top:0px}
@@ -126,6 +126,17 @@ table {font-size:100%}
 .matrix {border:1px solid #808080; border-collapse:collapse}
 .matrix td {border:1px solid #808080}
 .box {width:90%; background-color:#E4EEFC; border:1px solid #B5C4DF; text-align:left}
+.screenbrk {
+  color:#15428B;
+  font-weight:bold;
+  font-size:90%;
+  height:70px;
+  width:100%;
+  border-top: 1px solid #B5C4DF;
+  background: -moz-linear-gradient(top, #E4EEFC, #FFFFFF);
+  background: -webkit-linear-gradient(top, #E4EEFC, #FFFFFF);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#E4EEFC', endColorstr='#FFFFFF');
+}
 </style>
 <?php
   if ($latex_needed == 1) {

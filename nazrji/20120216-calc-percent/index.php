@@ -109,7 +109,7 @@ require_once './classes/networkutils.class.php';
   if ($paper_no == 1 and $paper_display[0]['password'] == '') {
     header("location: user_index.php?id=" . $paper_display[0]['crypt_name']);
   } elseif ($paper_no == 0) {
-    echo "<html>\n<head>\n<title>" . $string['exams']. "</title>\n<style>\nbody {font-size:90%; font-family:Arial,sans-serif; background-color:#FCFCFC; color:#575757}\nh1 {font-weight:normal; color:#4465A2; font-size:140%}\n</style>\n</head>\n<body>\n";
+    echo "<html>\n<head>\n<meta http-equiv=\"content-type\" content=\"text/html;charset={$cfg_page_charset}\" />\n<title>{$string['exams']}</title>\n<style type=\"text/css\">\nbody {font-size:90%; font-family:Arial,sans-serif; background-color:#FCFCFC; color:#575757}\nh1 {font-weight:normal; color:#4465A2; font-size:140%}\n</style>\n</head>\n<body>\n";
     echo "<div style=\"position:absolute; left:10px; top:10px\"><img src=\"/artwork/orange_alert_48.png\" width=\"48\" height=\"48\" /></div>\n";
     echo "<h1 style=\"margin-left:60px\">" . $string['cannotfindexams'] . "</h1>\n"; 
 
@@ -176,20 +176,21 @@ require_once './classes/networkutils.class.php';
     exit;
   } else {
 ?>
-  <html>
+<html>
   <head>
-  <title><?php echo $string['exams']; ?></title>
-  <script language="JavaScript">
-    function enterPassword() {
-      var password = prompt("<?php echo $string['requirespassword'] ?>","");
-      if (password == '' || password == null) {
-        return false;
-      } else {
-        document.cookie = "paperpwd=" + password + "; secure";
-        return true;
+    <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+    <title><?php echo $string['exams']; ?></title>
+    <script type="text/javascript">
+      function enterPassword() {
+        var password = prompt("<?php echo $string['requirespassword'] ?>","");
+        if (password == '' || password == null) {
+          return false;
+        } else {
+          document.cookie = "paperpwd=" + password + "; secure";
+          return true;
+        }
       }
-    }
-  </script>
+    </script>
   </head>
   <body style="font-family:Arial,sans-serif">
 <?php

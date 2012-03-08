@@ -26,15 +26,16 @@ require '../../include/staff_auth.inc';
 ?>
 <html>
 <head>
-<title><?php echo $string['bystatus']; ?></title>
-<style>
-body {margin:0px; background-color:white; color:black; font-family:Arial,sans-serif; font-size:90%}
-a:link {color:black}
-a:visited {color:black}
-a:hover {color:black}
-.divider {font-size:90%; padding-left:16px; padding-bottom:2px; font-weight:bold}
-.f {float:left; width:375px; padding-left:12px; font-size:90%}
-</style>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title><?php echo $string['bystatus']; ?></title>
+  <style type="text/css">
+  body {margin:0px; background-color:white; color:black; font-family:Arial,sans-serif; font-size:90%}
+  a:link {color:black}
+  a:visited {color:black}
+  a:hover {color:black}
+  .divider {font-size:90%; padding-left:16px; padding-bottom:2px; font-weight:bold}
+  .f {float:left; width:375px; padding-left:12px; font-size:90%}
+  </style>
 </head>
 
 <body>

@@ -56,7 +56,8 @@ if (isset($_GET['folder'])) $folder = $_GET['folder'];
 ?>
 <html>
 <head>
-<title>Add new Question</title>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Add new Question</title>
   <script language="javascript">
     function closeWindow() {
       top.window.opener.location.href='../../paper/details.php?paperID=<?php echo $paperID; ?>&type=<?php echo $type; ?>&module=<?php echo $module; ?>&folder=<?php echo $folder; ?>&scrOfY=<?php echo $scrOfY; ?>';

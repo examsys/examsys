@@ -104,7 +104,6 @@ function get_reviews($mysqli, $mode, $paperID, $total_marks, &$no_reviews = 0) {
           $cut_marks2 += $ebel_marks['HN'] * $ebel_percents['HN2'] * 100;
           $distinction_score = ($total_marks == 0) ? $total_marks : (($cut_marks2 / ($total_marks * 100)) * 100);
           $distinction_score = round($distinction_score,1);
-          var_dump($ebel_marks);
         }
         if ($old_group_review == 'No') $no_reviews++;
         $reviews[] = array(
@@ -253,12 +252,12 @@ function ss_get_marks_correct($mysqli, $paper_id, $exclude, &$marks_array) {
         if (isset($exclude[$old_q_id]) and strpos($exclude[$old_q_id], '1') !== false) {
           $marks_array[$old_q_id][$partID] = 0;
         } else {
-          $marks_array[$old_q_id][$partID] = $marks_correct;
+          $marks_array[$old_q_id][$partID] = $old_marks_correct;
         }
       }
       $stems = 0;
       $correct_no = 0;
-      $temp_marks = 0;
+      $old_marks_correct = 0;
       $partID = 0;
     }
 
@@ -338,6 +337,11 @@ function ss_get_marks_correct($mysqli, $paper_id, $exclude, &$marks_array) {
           }
         }
         break;
+      case 'flash':
+        if (substr($exclude[$old_q_id], 0, 1) == '0') {
+          $marks_array[$old_q_id][0] = $marks_correct;
+        }
+        break;
       case 'mcq':
         if (substr($exclude[$old_q_id], $partID, 1) == '0') {
           if ($correct == $partID + 1) {
@@ -391,7 +395,7 @@ function ss_get_marks_correct($mysqli, $paper_id, $exclude, &$marks_array) {
     $old_score_method = $score_method;
     $old_correct = $correct;
     $old_option_text = $option_text;
-    $temp_marks = $marks_correct;
+    $old_marks_correct = $marks_correct;
     if ($q_type == 'mrq') {
       if ($correct == 'y') $correct_no++;
     }
@@ -427,7 +431,7 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
       if ($std_method == 'modified_angoff') {
         for ($mark_part=$marks; $mark_part>0; $mark_part--) {
           $review_val = get_review('textbox', $std_method, $q_id, $mark_part, $tmp_reviews, $is_group);
-          echo reviewScale($question_no, $mark_part, $display_option['marks'], $std_method, $qn_excluded, $review_val, $stdID, $std_excluded, $is_group);
+          echo reviewScale($question_no, $mark_part, $display_option['marks_correct'], $std_method, $qn_excluded, $review_val, $stdID, $std_excluded, $is_group);
           if ($mark_part == 1) $plural = '';
           echo "<span class=\"part-mark\">$mark_part mark$plural</span><br />\n";
         }
@@ -469,7 +473,7 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
       }
       echo "</td>";
       echo '<td>';
-      if($display_option['score_method'] == 'Mark per Option') {
+      if ($display_option['score_method'] == 'Mark per Option') {
         echo reviewScale($question_no, $part_id, $display_option['marks_correct'], $std_method, ($exclude == '1'), $review_val, $stdID, $std_excluded, $is_group);
       }
       echo '</td>';
@@ -622,6 +626,10 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
         if ($display_option['correct'] == 'y') {
           $marks += $display_option['marks_correct'];
         }
+      } else {
+        if ($part_id == 1) {
+          $marks += $display_option['marks_correct'];
+        }
       }
       break;
     case 'extmatch':
@@ -666,6 +674,7 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
         echo "<td></td>\n";
       }
       echo "</tr>\n";
+       
       if ($display_option['score_method'] == 'Mark per Question') {
         if ($part_id == 1) {
           $marks += $display_option['marks_correct'];
@@ -682,6 +691,7 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
         $array_size = count($blank_details);
         $blank_count = 1;
         while ($blank_count < $array_size) {
+          $reviewScale = '';
           $blank_parts = explode("[/blank]", $blank_details[$blank_count]);
           $results = array();
           $not_used = preg_match("|size=\"([0-9]{1,3})\"|", $blank_details[$blank_count], $results);
@@ -767,7 +777,7 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
       break;
     case 'hotspot':
       if ($display_option['scenario'] == '') {
-        echo '<tr><td class="question_no">' . ($question_no - 1) . '.&nbsp;</td><td>';
+        echo '<tr><td class="question_no">' . $question_no . '.&nbsp;</td><td>';
       } else {
         echo '<tr><td></td><td>';
       }
@@ -877,7 +887,10 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
       $marks += $display_option['marks_correct'];
       break;
     case 'sct':
-      if ($part_id == 1) echo "<div style=\"color:#C00000\">" . $string['note'] . " " . $string['notpossibletostandard'] . "</div>\n";
+      if ($part_id == 1) {
+        echo "<div style=\"color:#C00000\"><strong>" . $string['note'] . "</strong> " . $string['notpossibletostandard'] . "</div>\n";
+        $marks++;
+      }
   }                  // End switch
 }
 

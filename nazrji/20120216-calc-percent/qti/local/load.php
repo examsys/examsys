@@ -25,7 +25,7 @@
 require '../../include/staff_auth.inc';
 
 ?>
-<script>
+<script type="text/javascript">
 function local_LoadPanel(type)
 {
     var url = load_source + '/load_' + type + '.php';

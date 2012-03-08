@@ -22,64 +22,67 @@
 * @package
 */
 
-  function fullQuestionType($abreviation) {
+  function fullQuestionType($abreviation, $string) {
     switch ($abreviation) {
       case 'blank':
-        $fullname = 'Fill-in-the-Blank';
+        $fullname = $string['blank'];
         break;
       case 'branching':
-        $fullname = 'Branching';
+        $fullname = $string['branching'];
         break;
       case 'calculation':
-        $fullname = 'Calculation';
+        $fullname = $string['calculation'];
         break;
       case 'dichotomous':
-        $fullname = 'Dichotomous';
+        $fullname = $string['dichotomous'];
         break;
       case 'extmatch':
-        $fullname = 'Extended Matching';
+        $fullname = $string['extmatch'];
         break;
       case 'flash':
-        $fullname = 'Flash&nbsp;Interface';
+        $fullname = $string['flash'];
         break;
       case 'hotspot':
-        $fullname = 'Image Hotspot';
+        $fullname = $string['hotspot'];
         break;
       case 'info':
-        $fullname = 'Information Block';
+        $fullname = $string['info'];
         break;
       case 'keyword_based':
-        $fullname = 'Keyword-based';
+        $fullname = $string['keyword_based_short'];
         break;
       case 'labelling':
-        $fullname = 'Labelling';
+        $fullname = $string['labelling'];
         break;
       case 'likert':
-        $fullname = 'Likert Scale';
+        $fullname = $string['likert'];
         break;
       case 'matrix':
-        $fullname = 'Matrix';
+        $fullname = $string['matrix'];
         break;
       case 'mcq':
-        $fullname = 'Multiple Choice';
+        $fullname = $string['mcq'];
         break;
       case 'mrq':
-        $fullname = 'Multiple Response';
+        $fullname = $string['mrq'];
         break;
       case 'rank':
-        $fullname = 'Ranking';
+        $fullname = $string['rank'];
         break;
       case 'random':
-        $fullname = 'Random';
+        $fullname = $string['random_short'];
         break;
       case 'sct';
-        $fullname = 'Script Concordance';
+        $fullname = $string['sct_short'];
         break;
       case 'textbox':
-        $fullname = 'Text Box';
+        $fullname = $string['textbox'];
+        break;
+      case 'true_false':
+        $fullname = $string['true_false'];
         break;
       case '%':
-        $fullname = 'All Types';
+        $fullname = $string['alltypes'];
         break;
     }
     return $fullname;

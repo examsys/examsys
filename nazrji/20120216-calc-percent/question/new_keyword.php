@@ -38,19 +38,20 @@ require '../include/errors.inc';
 ?>
 <html>
 <head>
-<title>Add Keyword</title>
-<script language="JavaScript">
-  function updateKeywords() {
-    var keywordNo = parseInt(window.opener.document.getElementById('keywordno').value);
-    var oldHTML = window.opener.document.getElementById('keywordarea').innerHTML;
-    var newHTML = "<div style=\"background-color:highlight; color:white\" id=\"divkeyword" + keywordNo + "\"><input type=\"checkbox\" onclick=\"toggle('divkeyword" + keywordNo + "')\" name=\"keyword" + keywordNo + "\" value=\"<?php echo $keywordID; ?>\" checked>&nbsp;<?php echo str_replace('"','&quot;',$_POST['new_keyword']); ?></div>" + oldHTML;
-    window.opener.document.getElementById('keywordarea').innerHTML = newHTML;
-    window.opener.document.getElementById('keywordno').value = parseInt(keywordNo + 1);
-    window.opener.document.getElementById('thelist').value = ';<?php echo $keywordID; ?>' + window.opener.document.getElementById('thelist').value;
-    window.close();
-  }
-  
-</script>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Add Keyword</title>
+  <script type="text/javascript">
+    function updateKeywords() {
+      var keywordNo = parseInt(window.opener.document.getElementById('keywordno').value);
+      var oldHTML = window.opener.document.getElementById('keywordarea').innerHTML;
+      var newHTML = "<div style=\"background-color:highlight; color:white\" id=\"divkeyword" + keywordNo + "\"><input type=\"checkbox\" onclick=\"toggle('divkeyword" + keywordNo + "')\" name=\"keyword" + keywordNo + "\" value=\"<?php echo $keywordID; ?>\" checked>&nbsp;<?php echo str_replace('"','&quot;',$_POST['new_keyword']); ?></div>" + oldHTML;
+      window.opener.document.getElementById('keywordarea').innerHTML = newHTML;
+      window.opener.document.getElementById('keywordno').value = parseInt(keywordNo + 1);
+      window.opener.document.getElementById('thelist').value = ';<?php echo $keywordID; ?>' + window.opener.document.getElementById('thelist').value;
+      window.close();
+    }
+
+  </script>
 </head>
 <?php
   if ($new_keyword != '') {
@@ -96,7 +97,7 @@ require '../include/errors.inc';
     }
   }
 </script>
-<style>
+<style type="text/css">
 body {font-family:Arial,sans-serif; font-size:90%; background-color:#EEEEEE; color:black}
 h1 {font-size:120%}
 </style>

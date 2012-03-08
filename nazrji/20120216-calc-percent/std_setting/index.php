@@ -70,64 +70,66 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title><?php echo $string['listsettings'] . ' ' . $cfg_install_type; ?></title>
+  <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
+  <link rel="stylesheet" type="text/css" href="../css/header.css" />
+  <script src="../js/staff_help.js" type="text/javascript"></script>
+  <script language="JavaScript" type="text/javascript">
+    var groupReview;
 
-<title><?php echo $string['listsettings'] . ' ' . $cfg_install_type; ?></title>
-<link rel="stylesheet" type="text/css" href="../css/submenu.css" />
-<script src="../js/staff_help.js" type="text/javascript"></script>
-<script language="JavaScript" type="text/javascript">
-var groupReview;
+    function selReview(setterID, dateID, reviewID, methodType, menuID, group, evt) {
+      groupReview = group;
 
-  function selReview(setterID, dateID, reviewID, methodType, menuID, group, evt) {
-    groupReview = group;
-    
-    tmp_ID = document.StdSetMenu.oldReviewID.value;
-    if (tmp_ID != '') {
-      document.getElementById('review' + tmp_ID).style.backgroundColor = 'white';
-      document.getElementById('review' + tmp_ID).style.color = 'black';
+      tmp_ID = document.StdSetMenu.oldReviewID.value;
+      if (tmp_ID != '') {
+        document.getElementById('review' + tmp_ID).style.backgroundColor = 'white';
+        document.getElementById('review' + tmp_ID).style.color = 'black';
+      }
+      document.getElementById('menu2a').style.display = 'none';
+      document.getElementById('menu2b').style.display = 'none';
+      document.getElementById('menu2c').style.display = 'none';
+      document.getElementById(menuID).style.display = 'block';
+
+      document.StdSetMenu.setterID.value = setterID;
+      document.StdSetMenu.dateID.value = dateID;
+      document.StdSetMenu.method.value = methodType;
+
+      document.getElementById('review' + reviewID).style.backgroundColor = '#316AC5';
+      document.getElementById('review' + reviewID).style.color = 'white';
+      document.StdSetMenu.oldReviewID.value = reviewID;
+      evt.cancelBubble = true;
     }
-    document.getElementById('menu2a').style.display = 'none';
-    document.getElementById('menu2b').style.display = 'none';
-    document.getElementById('menu2c').style.display = 'none';
-    document.getElementById(menuID).style.display = 'block';
 
-    document.StdSetMenu.setterID.value = setterID;
-    document.StdSetMenu.dateID.value = dateID;
-    document.StdSetMenu.method.value = methodType;
-
-    document.getElementById('review' + reviewID).style.backgroundColor = '#316AC5';
-    document.getElementById('review' + reviewID).style.color = 'white';
-    document.StdSetMenu.oldReviewID.value = reviewID;
-    evt.cancelBubble = true;
-  }
-
-  function reviewOff() {
-    document.getElementById('menu2a').style.display = 'block';
-    document.getElementById('menu2b').style.display = 'none';
-    document.getElementById('menu2c').style.display = 'none';
-    tmp_ID = document.StdSetMenu.oldReviewID.value;
-    if (tmp_ID != '') {
-      document.getElementById('review' + tmp_ID).style.backgroundColor = 'white';
-      document.getElementById('review' + tmp_ID).style.color = 'black';
+    function reviewOff() {
+      document.getElementById('menu2a').style.display = 'block';
+      document.getElementById('menu2b').style.display = 'none';
+      document.getElementById('menu2c').style.display = 'none';
+      tmp_ID = document.StdSetMenu.oldReviewID.value;
+      if (tmp_ID != '') {
+        document.getElementById('review' + tmp_ID).style.backgroundColor = 'white';
+        document.getElementById('review' + tmp_ID).style.color = 'black';
+      }
     }
-  }
 
-  function highlight(lineID) {
-    if (lineID != document.StdSetMenu.oldReviewID.value) {
-      document.getElementById('review' + lineID).style.backgroundColor = '#EEEEEE';
+    function highlight(lineID) {
+      if (lineID != document.StdSetMenu.oldReviewID.value) {
+        document.getElementById('review' + lineID).style.backgroundColor = '#EEEEEE';
+      }
     }
-  }
 
-  function unhighlight(lineID) {
-    if (lineID != document.StdSetMenu.oldReviewID.value) {
-      document.getElementById('review' + lineID).style.backgroundColor = '';
+    function unhighlight(lineID) {
+      if (lineID != document.StdSetMenu.oldReviewID.value) {
+        document.getElementById('review' + lineID).style.backgroundColor = '';
+      }
     }
-  }
 
-  function roundNumber(num, dec) {
-    var result = Math.round(num*Math.pow(10,dec))/Math.pow(10,dec);
-    return result;
-  }
-</script>
+    function roundNumber(num, dec) {
+      var result = Math.round(num*Math.pow(10,dec))/Math.pow(10,dec);
+      return result;
+    }
+  </script>
 </head>
 
 <body onclick="reviewOff()">
@@ -142,25 +144,25 @@ $results->execute();
 $results->bind_result($paper_title, $total_mark);
 while ($results->fetch()) {
   $reviews_html .= <<< PAGEHEADING
-<table cellpadding="0" cellspacing="0" border="0" width="100%">
-  <tr><td style="background-color:#F1F5FB"><div class="breadcrumb"><a href="../staff/index.php">{$string['home']}</a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../paper/details.php?paperID={$_GET['paperID']}&folder={$_GET['folder']}&module={$_GET['module']}">{$paper_title}</a></div><div style="font-size:220%; color:black; font-weight:bold; margin-left:10px">{$string['standardssetting']}</div></td><td style="background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(97); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="Help" border="0" /></a></td></tr>
+<table class="header">
+  <tr><th><div class="breadcrumb"><a href="../staff/index.php">{$string['home']}</a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../paper/details.php?paperID={$_GET['paperID']}&folder={$_GET['folder']}&module={$_GET['module']}">{$paper_title}</a></div><div style="font-size:220%; color:black; font-weight:bold; margin-left:10px">{$string['standardssetting']}</div></th><th style="text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(97); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="Help" border="0" /></a></th></tr>
 </table>\n\n
 PAGEHEADING;
 
   $reviews_html .= <<< TABLEHEADER
-<table cellpadding="0" cellspacing="0" border="0" width="100%">
+<table class="header">
   <tr>
-  	<td style="width:18px; background-color:#F1F5FB">&nbsp;</td>
-  	<td style="background-color:#F1F5FB; width:18%"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;{$string['standardsetter']}&nbsp;</td>
-  	<td style="background-color:#F1F5FB; width:13%"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;{$string['date']}&nbsp;</td>
-  	<td style="background-color:#F1F5FB; width:10%"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;{$string['passscore']}</td>
-  	<td style="background-color:#F1F5FB; width:10%"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;{$string['distinction']}</td>
-  	<td style="background-color:#F1F5FB; width:12%"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;{$string['reviewmarks']}</td>
-  	<td style="background-color:#F1F5FB; width:10%"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;{$string['papertotal']}</td>
-  	<td style="background-color:#F1F5FB; width:14%"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;{$string['method']}</td>
-  	<td width="25%" style="background-color:#F1F5FB"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp</td>
+  	<th style="width:18px">&nbsp;</td>
+  	<th style="width:18%"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;{$string['standardsetter']}&nbsp;</th>
+  	<th style="width:13%"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;{$string['date']}&nbsp;</th>
+  	<th style="width:10%"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;{$string['passscore']}</th>
+  	<th style="width:10%"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;{$string['distinction']}</th>
+  	<th style="width:12%"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;{$string['reviewmarks']}</th>
+  	<th style="width:10%"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;{$string['papertotal']}</th>
+  	<th style="width:14%"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;{$string['method']}</th>
+  	<th width="25%"><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp</th>
  </tr>
- <tr style="height:4px"><td valign="top" colspan="9"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td></tr>
+ <tr><th colspan="9" class="bevel"></th></tr>
 TABLEHEADER;
   $total_marks = $total_mark;
 }
@@ -168,8 +170,6 @@ $results->close();
 
 $no_reviews = 0;
 $reviews = get_reviews($mysqli, 'index', $paperID, $total_marks, $no_reviews);
-
-var_dump($reviews);
 
 foreach ($reviews as $review) {
   $reviews_html .= displayReview($review);

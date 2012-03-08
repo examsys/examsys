@@ -60,39 +60,42 @@ while ($stmt->fetch()) {
 }
 $stmt->free_result();
 $stmt->close();
-
-echo "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\n\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n";
-echo "<html>\n<head>\n<title>$paper_title</title>\n";
 ?>
-<meta http-equiv="imagetoolbar" content="no">
-<meta http-equiv="imagetoolbar" content="false">
-<style type="text/css">
-  body {background-color:<?php echo $bgcolor; ?>; color:<?php echo $fgcolor; ?>; padding:0px; margin:0px; border:0px; font-family:Arial,sans-serif; font-size:<?php echo $textsize; ?>%}
-  li {margin-left:15px; margin-right:15px; font-size:100%}
-  <?php
-  if (($bgcolor != 'white' and $bgcolor != '#FFFFFF') or ($fgcolor != 'black' and $fgcolor != '#000000')) {
-    echo "select, input {background-color:$bgcolor; color:$fgcolor; font-family:Arial,sans-serif; font-size:100%}\n";
-  } else {
-    echo "select, input {font-family:Arial,sans-serif; font-size:100%}\n";
-  }
-  ?>
-  table {font-size:100%}
-  .paper {margin-left:0px; font-size:180%; color:white; font-weight:bold}
-  .question_no {width:40px; text-align:right; vertical-align:top}
-  .theme {font-size:150%; padding-left:4px; font-weight:bold; color:<?php echo $themecolor; ?>}
-  .notes {font-size:80%; color:<?php echo $labelcolor; ?>}
-  .no_marks {color:<?php echo $marks_color; ?>; font-size:80%}
-  .active {color:<?php echo $fgcolor; ?>}
-  .inactive {color:#C0C0C0}
-  .scrno {width:18px; text-align:center; background-color:#003366; font-size:80%}
-  .scrnocur {width:18px; text-align:center; background-color:#C00000; font-size:80%}
-  .feedback {font-family:Arial,sans-serif; font-style:italic; color:<?php echo $labelcolor; ?>}
-</style>
-<script language=javascript>
-  function jumpTo() {
-    self.location.hash="#<?php echo 'q' . $_GET['qNo']; ?>"; 
-  }
-</script> 
+<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\n\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title><?php echo $paper_title ?></title>
+
+  <meta http-equiv="imagetoolbar" content="no">
+  <meta http-equiv="imagetoolbar" content="false">
+  <style type="text/css">
+    body {background-color:<?php echo $bgcolor; ?>; color:<?php echo $fgcolor; ?>; padding:0px; margin:0px; border:0px; font-family:Arial,sans-serif; font-size:<?php echo $textsize; ?>%}
+    li {margin-left:15px; margin-right:15px; font-size:100%}
+    <?php
+    if (($bgcolor != 'white' and $bgcolor != '#FFFFFF') or ($fgcolor != 'black' and $fgcolor != '#000000')) {
+      echo "select, input {background-color:$bgcolor; color:$fgcolor; font-family:Arial,sans-serif; font-size:100%}\n";
+    } else {
+      echo "select, input {font-family:Arial,sans-serif; font-size:100%}\n";
+    }
+    ?>
+    table {font-size:100%}
+    .paper {margin-left:0px; font-size:180%; color:white; font-weight:bold}
+    .question_no {width:40px; text-align:right; vertical-align:top}
+    .theme {font-size:150%; padding-left:4px; font-weight:bold; color:<?php echo $themecolor; ?>}
+    .notes {font-size:80%; color:<?php echo $labelcolor; ?>}
+    .no_marks {color:<?php echo $marks_color; ?>; font-size:80%}
+    .active {color:<?php echo $fgcolor; ?>}
+    .inactive {color:#C0C0C0}
+    .scrno {width:18px; text-align:center; background-color:#003366; font-size:80%}
+    .scrnocur {width:18px; text-align:center; background-color:#C00000; font-size:80%}
+    .feedback {font-family:Arial,sans-serif; font-style:italic; color:<?php echo $labelcolor; ?>}
+  </style>
+  <script type="text/javascript">
+    function jumpTo() {
+      self.location.hash="#<?php echo 'q' . $_GET['qNo']; ?>";
+    }
+  </script>
 </head>
 <body onload="jumpTo()">
   <table cellpadding="0" cellspacing="0" border="0" width="100%" height="100%">

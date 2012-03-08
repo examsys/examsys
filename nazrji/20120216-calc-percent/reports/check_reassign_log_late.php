@@ -24,32 +24,34 @@
 
   require '../include/staff_auth.inc';
 ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Late Submission</title>
-<style>
-body {font-size:90%; background-color:#ECE9D8; color:black; font-family:Arial,sans-serif; margin:4px}
-</style>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Late Submission</title>
+  <style type="text/css">
+  body {font-size:90%; background-color:#ECE9D8; color:black; font-family:Arial,sans-serif; margin:4px}
+  </style>
 
-<script language="JavaScript">
-  function confirmIntention() {
-    if (document.myform.button_pressed.value == 'Accept') {
-      var agree = confirm("Are you sure you wish to accept these late submitted answers?");
-      if (agree) {
-        return true;
-      } else {
-        return false;
-      }
-    } else if (document.myform.button_pressed.value == 'Reject') {
-      var agree = confirm("Are you sure you wish to reject and discard these answers?");
-      if (agree) {
-        return true;
-      } else {
-        return false;
+  <script type="text/javascript">
+    function confirmIntention() {
+      if (document.myform.button_pressed.value == 'Accept') {
+        var agree = confirm("Are you sure you wish to accept these late submitted answers?");
+        if (agree) {
+          return true;
+        } else {
+          return false;
+        }
+      } else if (document.myform.button_pressed.value == 'Reject') {
+        var agree = confirm("Are you sure you wish to reject and discard these answers?");
+        if (agree) {
+          return true;
+        } else {
+          return false;
+        }
       }
     }
-  }
-</script>
+  </script>
 </head>
 
 <body>

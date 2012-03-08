@@ -44,32 +44,59 @@ function padDecimals($number, $rounding) {
 }
 
 // Get some properties of the paper.
-$result = $mysqli->prepare("SELECT property_id, paper_title, modules.id, properties.moduleID, calendar_year, rubric, marking, calendar_year FROM properties, modules WHERE properties.moduleID=modules.moduleid AND property_id=?");
+$result = $mysqli->prepare("SELECT property_id, paper_title, modules.id, properties.moduleID, calendar_year, rubric, marking, display_question_mark FROM properties, modules WHERE properties.moduleID=modules.moduleid AND property_id=?");
 $result->bind_param('i', $_GET['paperID']);
 $result->execute();
-$result->bind_result($property_id, $paper_title, $moduleID, $moduleID_text, $calendar_year, $type, $marking, $calendar_year);
+$result->bind_result($property_id, $paper_title, $moduleID, $moduleID_text, $calendar_year, $type, $marking, $review_type);
 $result->fetch();
 $result->close();
 
 // Get questions on the paper
 $questions = array();
-$result = $mysqli->prepare("SELECT question, leadin, display_method FROM (papers, questions) WHERE papers.question=questions.q_id AND paper=? ORDER BY display_pos");
+$result = $mysqli->prepare("SELECT q_type, question, leadin, display_method, option_text FROM (papers, questions, options) WHERE papers.question=questions.q_id AND questions.q_id=options.o_id AND paper=? ORDER BY display_pos, id_num");
 $result->bind_param('i', $property_id);
 $result->execute();
-$result->bind_result($questionID, $leadin, $display_method);
+$result->bind_result($q_type, $questionID, $leadin, $display_method, $option_text);
 while ($result->fetch()) {
-  $heading_no = substr_count($display_method, '|');
+  //$heading_no = substr_count($display_method, '|');
   $questions[$questionID]['leadin'] = $leadin;
-  $questions[$questionID]['scale'] = $display_method;
-  $questions[$questionID]['scale_size'] = substr_count($display_method, '|');
+  if ($q_type == 'likert') {
+    $questions[$questionID]['scale'] = $display_method;
+    $questions[$questionID]['scale_size'] = substr_count($display_method, '|');
+  } elseif ($q_type == 'mcq') {
+    if (isset($questions[$questionID]['scale'])) {
+      $questions[$questionID]['scale_size']++;
+    } else {
+      $questions[$questionID]['scale_size'] = 1;
+    }
+    $questions[$questionID]['scale'][] = $option_text;
+  }
 }
 $result->close();
+
+$heading_no = $questions[$questionID]['scale_size'];
+
+$group = '%';
+foreach ($_GET as $key => $value) {
+  if (substr($key, 0, 4) == 'meta') {
+    $md_parts = explode('=', $value);
+    if ($md_parts[0] == $type) {
+      $group = $md_parts[1];
+    }
+  }
+}
+
 
 // Load basic user information
 $user_data = array();
 $groups = array();
-$result = $mysqli->prepare("SELECT users_metadata.userID, value, surname, first_names, title, student_id FROM (users_metadata, users) LEFT JOIN sid ON users.id=sid.userID WHERE users_metadata.userID=users.id AND moduleID=? AND calendar_year=? AND type=? ORDER BY surname, initials");
-$result->bind_param('iss', $moduleID, $calendar_year, $type);
+if ($group == '%') {
+  $result = $mysqli->prepare("SELECT users_metadata.userID, value, surname, first_names, title, student_id FROM (users_metadata, users) LEFT JOIN sid ON users.id=sid.userID WHERE users_metadata.userID=users.id AND moduleID=? AND calendar_year=? AND type=? ORDER BY surname, initials");
+  $result->bind_param('iss', $moduleID, $calendar_year, $type);
+} else {
+  $result = $mysqli->prepare("SELECT users_metadata.userID, value, surname, first_names, title, student_id FROM (users_metadata, users) LEFT JOIN sid ON users.id=sid.userID WHERE users_metadata.userID=users.id AND moduleID=? AND calendar_year=? AND type=? AND value=? ORDER BY surname, initials");
+  $result->bind_param('isss', $moduleID, $calendar_year, $type, $group);
+}
 $result->execute();
 $result->bind_result($userID, $group, $surname, $first_names, $title, $student_id);
 while ($result->fetch()) {
@@ -84,10 +111,13 @@ while ($result->fetch()) {
 }
 $result->close();
 
+$users = array_keys($user_data);
+$users = implode(',', $users);
+
 // Load results from Log6
 $reviewers = array();
-$result = $mysqli->prepare("SELECT reviewerID, peerID, q_id, rating FROM log6 WHERE paperID=? ORDER BY started");
-$result->bind_param('i', $_GET['paperID']);
+$result = $mysqli->prepare("SELECT reviewerID, peerID, q_id, rating FROM log6 WHERE reviewerID IN ($users) AND paperID=? AND started>? AND started<? ORDER BY started");
+$result->bind_param('iss', $_GET['paperID'], $_GET['startdate'], $_GET['enddate']);
 $result->execute();
 $result->bind_result($reviewerID, $peerID, $q_id, $rating);
 while ($result->fetch()) {
@@ -97,35 +127,78 @@ while ($result->fetch()) {
 $result->close();
 
 // Parse the data calculating means
-foreach ($user_data as $studentID => $student) {
-  $available_marks = 0;
-  $student_marks = 0;
-  if (isset($student['data'])) {
-    foreach ($student['data'] as $questionID => $question_data) {
-      $review_no = 0;
-      $review_total = 0;   
-      $sub_student = 0;
-      $sub_available = 0;
-      foreach ($question_data as $individual_question) {
-        if ($individual_question != '') {
-          $review_no++;
-          $review_total += $individual_question;
-          $available_marks += $questions[$questionID]['scale_size'];
-          $sub_available += $questions[$questionID]['scale_size'];
-          $student_marks += $individual_question;
-          $sub_student += $individual_question;
+
+if ($review_type == '1') {
+  parse_group_data($questions, $user_data);
+} else {
+  parse_single_data($questions, $user_data);
+}
+
+
+
+function parse_group_data($questions, &$user_data) {
+  foreach ($user_data as $studentID => $student) {
+    $available_marks = 0;
+    $student_marks = 0;
+    if (isset($student['data'])) {
+      foreach ($student['data'] as $questionID => $question_data) {
+        $review_no = 0;
+        $review_total = 0;
+        $sub_student = 0;
+        $sub_available = 0;
+        foreach ($question_data as $individual_question) {
+          if ($individual_question != '') {
+            $review_no++;
+            $review_total += $individual_question;
+            $available_marks += $questions[$questionID]['scale_size'];
+            $sub_available += $questions[$questionID]['scale_size'];
+            $student_marks += $individual_question;
+            $sub_student += $individual_question;
+          }
         }
+        $user_data[$studentID]['review_no'] = $review_no;
+        if ($review_no > 0) {
+          $user_data[$studentID]['means'][$questionID] = $review_total / $review_no;
+          $user_data[$studentID]['percent'][$questionID] = ($sub_student / $sub_available) * 100;
+        } else {
+          $user_data[$studentID]['means'][$questionID] = 0;
+          $user_data[$studentID]['percent'][$questionID] = 0;
+        }
+        $user_data[$studentID]['review_total'][$questionID] = $student_marks;
+        $user_data[$studentID]['total_percent'][$questionID] = ($student_marks / $available_marks) * 100;
       }
-      $user_data[$studentID]['review_no'] = $review_no;
-      if ($review_no > 0) {
-        $user_data[$studentID]['means'][$questionID] = $review_total / $review_no;
-        $user_data[$studentID]['percent'][$questionID] = ($sub_student / $sub_available) * 100;
-      } else {
-        $user_data[$studentID]['means'][$questionID] = 0;
-        $user_data[$studentID]['percent'][$questionID] = 0;
+    }
+  }
+}
+
+function parse_single_data($questions, &$user_data) {
+  foreach ($user_data as $studentID => $student) {
+    $available_marks = 0;
+    $student_marks = 0;
+    if (isset($student['data'])) {
+      foreach ($student['data'] as $questionID => $question_data) {
+        $review_no = 0;
+        $review_total = 0;
+        $sub_student = 0;
+        $sub_available = 0;
+        foreach ($question_data as $individual_question) {
+          if ($individual_question != '') {
+            $review_no++;
+            $review_total += $individual_question;
+            $available_marks += $questions[$questionID]['scale_size'];
+            $sub_available += $questions[$questionID]['scale_size'];
+            $student_marks += $individual_question;
+            $sub_student += $individual_question;
+          }
+        }
+        $user_data[$studentID]['review_no'] = $review_no;
+        if ($review_no > 0) {
+          $user_data[0]['means'][$questionID] = $review_total / $review_no;
+          $user_data[0]['percent'][$questionID] = ($sub_student / $sub_available) * 100;
+        }
+        $user_data[0]['review_total'][$questionID] = $student_marks;
+        $user_data[0]['total_percent'][$questionID] = ($student_marks / $available_marks) * 100;
       }
-      $user_data[$studentID]['review_total'][$questionID] = $student_marks;
-      $user_data[$studentID]['total_percent'][$questionID] = ($student_marks / $available_marks) * 100;
     }
   }
 }

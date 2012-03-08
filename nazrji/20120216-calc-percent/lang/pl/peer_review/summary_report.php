@@ -1,5 +1,5 @@
 <?php
-$string['reviewsummary'] = 'Recenzja wewnetrzna'; 
+$string['reviewsummary'] = 'Recenzja wewnętrzna'; 
 $string['name'] = 'Nazwa';
 $string['studentid'] = 'Numer legitymacji';
 $string['reviewed'] = 'Przejrzany';

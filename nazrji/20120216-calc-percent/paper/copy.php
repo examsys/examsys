@@ -235,7 +235,7 @@
         }
       
         $addOption = $mysqli->prepare("INSERT INTO options VALUES(?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?)");
-        $addOption->bind_param('isssssssiii', $question_id, $option_text, $new_o_media, $o_media_width, $o_media_height, $feedback_right, $feedback_wrong, $correct, $marks_correct, $marks_incorrect, $marks_partial);
+        $addOption->bind_param('isssssssidd', $question_id, $option_text, $new_o_media, $o_media_width, $o_media_height, $feedback_right, $feedback_wrong, $correct, $marks_correct, $marks_incorrect, $marks_partial);
         $addOption->execute();
         $addOption->close();
         $line++;
@@ -300,8 +300,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Rogō: <?php echo $string['copypaper'] . ' ' . $cfg_install_type; ?></title>
-<link rel="stylesheet" type="text/css" href="../submenu.css" />
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Rogō: <?php echo $string['copypaper'] . ' ' . $cfg_install_type; ?></title>
+  <link rel="stylesheet" type="text/css" href="../submenu.css" />
 </head>
 <?php
   if (count($error) == 0) {

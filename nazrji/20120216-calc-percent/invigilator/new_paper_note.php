@@ -42,6 +42,7 @@
     }
   ?>
   <html>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
   <head><title>Note</title>
   <script language="JavaScript">
     function closeWindow() {
@@ -68,7 +69,7 @@
 <head>
 <title>Note</title>
 
-<style>
+<style type="text/css">
 body {background-color:#FFFFCC; color:black; margin:0px; font-size:90%; font-family:Arial,sans-serif}
 </style>
 </head>

@@ -489,7 +489,7 @@
         echo "<td colspan=\"2\" style=\"padding-left:15px\">$leadin\n";
       } else {
         echo "<td class=\"q_no\">$q_no.&nbsp;</td><td><div";
-        if (($q_type == 'dichotomous' or $q_type == 'labelling' or $q_type == 'blank' or $q_type == 'hotspot') and $score_method == 'Mark per Question') {
+        if ((($q_type == 'dichotomous' or $q_type == 'labelling' or $q_type == 'blank' or $q_type == 'hotspot') and $score_method == 'Mark per Question') or $q_type == 'flash') {
           echo ' id="q_' . ($ex_no+1) . '_1"';
           if (isset($excluded[$q_id])) {
              echo ' class="excluded"';
@@ -497,12 +497,13 @@
         }
         echo '>';
         if (trim(str_replace('&nbsp;', '', $scenario)) != '') echo "$scenario<br /><br />\n";
-        if ($q_type != 'hotspot' and $q_type != 'timedate' and $q_type != 'calculation') echo "$leadin</div>\n";
-        if ($q_media != '' and $q_type != 'hotspot' and $q_type != 'labelling') {
+        if ($q_type != 'hotspot' and $q_type != 'timedate' and $q_type != 'calculation' and $q_type != 'flash') echo "$leadin</div>\n";
+        if ($q_media != '' and $q_type != 'hotspot' and $q_type != 'labelling' and $q_type != 'flash') {
           echo "<p align=\"center\">" . display_media($q_media,$q_media_width,$q_media_height) . "</p>\n";
         }
-        if ($q_type != 'hotspot' and $q_type != 'labelling' and $q_type != 'calculation' and $q_type != 'blank') echo "<p>\n<table cellpadding=\"4\" cellspacing=\"0\" border=\"0\">\n";
+        if ($q_type != 'hotspot' and $q_type != 'labelling' and $q_type != 'calculation' and $q_type != 'blank' and $q_type != 'flash') echo "<p>\n<table cellpadding=\"4\" cellspacing=\"0\" border=\"0\">\n";
       }
+
       switch ($q_type) {
         case 'blank':
           $blank_details = explode('[blank',$options[0]);
@@ -842,6 +843,51 @@
             }
             $i++;
           }
+          break;
+        case 'flash':
+          if (isset($excluded[$q_id])) {
+            echo excludeButton($ex_no, $q_id, 1, 1,1);
+          } else {
+            echo excludeButton($ex_no, $q_id, 0, 1, 1);
+          }
+          echo $leadin;
+          ?>
+            <script language="JavaScript">
+            var isInternetExplorer = navigator.appName.indexOf("Microsoft") != -1;
+            function flash<?php echo $q_no; ?>_DoFSCommand(command, args) {
+              var flash<?php echo $q_no; ?>Obj = isInternetExplorer ? document.all.flash<?php echo $q_no; ?> : document.flash<?php echo $q_no; ?>;
+              document.questions.q<?php echo $q_no; ?>.value = args;
+            }
+            if (navigator.appName && navigator.appName.indexOf("Microsoft") != -1 && navigator.userAgent.indexOf("Windows") != -1 && navigator.userAgent.indexOf("Windows 3.1") == -1) {
+              document.write('<script language=\"VBScript\"\>\n');
+              document.write('On Error Resume Next\n');
+              document.write('Sub flash<?php echo $q_no; ?>_FSCommand(ByVal command, ByVal args)\n');
+              document.write('	Call flash<?php echo $q_no; ?>_DoFSCommand(command, args)\n');
+              document.write('End Sub\n');
+              document.write('</script\>\n');
+            }
+          </script>
+          <div style="text-align:center">
+          <script language="JavaScript">
+            write_string('<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="https://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" id="flash<?php echo $q_no; ?>" width="<?php echo $q_media_width; ?>" height="<?php echo $q_media_height; ?>" align="middle">');
+            write_string('<param name="allowScriptAccess" value="sameDomain" />');
+            write_string('<param name="movie" value="../media/<?php echo $q_media; ?>" />');
+            write_string('<param name="quality" value="high" />');
+            write_string('<param name="bgcolor" value="#ffffff" />');
+            <?php
+              if ($scenario != '') {
+                echo 'write_string(\'<param name="FlashVars" value="' . $scenario . '">\')';
+              }
+              echo 'write_string(\'<embed src="../media/' . $q_media . '"';
+              if ($scenario != '') {
+                echo ' FlashVars="' . $scenario . '"';
+              }
+              echo ' quality="high" bgcolor="#ffffff" width="' . $q_media_width . '" height="' . $q_media_height . '" swLiveConnect=true id="flash' . $q_no . '" name="flash' . $q_no . '" align="middle" allowScriptAccess="sameDomain" type="application/x-shockwave-flash" pluginspage="https://www.macromedia.com/go/getflashplayer" />\');';
+            ?>
+            write_string('</object>');
+          </script>
+          </div>
+          <?php
           break;
         case 'hotspot':
           $layers = explode('|', $correct);
@@ -1457,24 +1503,20 @@
   }
 ?>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Frequency/Discrimination Analysis<?php echo " $cfg_install_type"; ?></title>
+<meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+<title><?php echo $string['frequencydiscrimination'] . " $cfg_install_type"; ?></title>
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
+<link rel="stylesheet" type="text/css" href="../css/header.css" />
 <style type="text/css">
 body {font-family:Arial,sans-serif; font-size:90%; background-color:white; color:black; margin:0px}
 h1 {margin-left:15px; font-size:18pt}
 p {margin-left:0px; margin-right:0px}
-.h {background-color:#F1F5FB; color:black}
 .figures {text-align:right}
 .q_no {text-align:right; vertical-align:top; width:50px}
 .grey {color:#808080}
-.breadcrumb {margin-left:10px; font-size:90%}
-.breadcrumb a:link {color:blue; text-decoration:none; cursor:pointer}
-.breadcrumb a:visited {color:blue; text-decoration:none; cursor:pointer}
-.breadcrumb a:hover {color:blue; text-decoration:underline; cursor:pointer}
 .extmatch li {padding-bottom:14px; vertical-align:text-bottom; list-style-type:upper-alpha}
 .correct {color:#000; font-weight:bold}
 .excluded {color:red; text-decoration:line-through}
@@ -1482,6 +1524,18 @@ p {margin-left:0px; margin-right:0px}
 .excluded img.in-exclusion {border:0}
 td p:first-child {margin-top:0}
 .std {display:block;background-color:#f27000;color:white;width:35px;text-align:center}
+.scr_no {margin-left:25px}
+.screenbrk {
+  color:#15428B;
+  font-weight:bold;
+  font-size:90%;
+  height:70px;
+  width:100%;
+  border-top: 1px solid #B5C4DF;
+  background: -moz-linear-gradient(top, #E4EEFC, #FFFFFF);
+  background: -webkit-linear-gradient(top, #E4EEFC, #FFFFFF);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#E4EEFC', endColorstr='#FFFFFF');
+}
 </style>
 
 <script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
@@ -1524,7 +1578,7 @@ td p:first-child {margin-top:0}
 
 <body>
 <form name="theform" action="<?php echo $_SERVER['PHP_SELF'] . '?' . $_SERVER['QUERY_STRING']; ?>" method="post">
-<table cellpadding="0" cellspacing="0" border="0" width="100%">
+<table class="header">
 <?php
   // Get any questions to exclude.
   $excluded = array();
@@ -1650,7 +1704,7 @@ td p:first-child {margin-top:0}
 
   if ($user_total == 0) {
     // No one has taken the paper yet.
-    echo '<tr><td class="h">';
+    echo '<tr><th>';
     
     echo '<div class="breadcrumb"><a href="../staff/index.php">' . $string['home'] . '</a>';
     if ($folder != '') {
@@ -1660,11 +1714,12 @@ td p:first-child {margin-top:0}
     }
     echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../paper/details.php?paperID=' . $_GET['paperID'] . '">' . $paper_title . '</a></div>';
     
-    echo "<span style=\"margin-left:10px; font-size:200%; color:black; font-weight:bold\">" . $string['reporttitle'] . "</span></td><td class=\"h\" style=\"text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(30); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"Help\" border=\"0\" /></a></td></tr>\n";
-    echo "<tr style=\"height:4px\"><td valign=\"top\" colspan=\"2\"><img src=\"../artwork/header_horizontal_line.gif\" width=\"100%\" height=\"3\" alt=\"Line\" /></td></tr>\n</table>\n<table cellpadding=\"1\" cellspacing=\"1\" border=\"0\" style=\"margin: 0px auto; width:75%; border: 1px solid #C0C0C0; text-align:left\">\n<tr><td colspan=\"2\" style=\"background-color:#F2B100; height:3px\"> </td></tr>\n<tr><td style=\"width:16px; padding-top:5px; padding-bottom:5px\"><img src=\"../artwork/information_icon.gif\" width=\"16\" height=\"16\" alt=\"i\" border=\"0\" /></td><td style=\"padding-top:5px; padding-bottom:5px\">&nbsp;This paper has not been attempted by anyone.</td></tr></table>\n";  
+    echo "<span style=\"margin-left:10px; font-size:200%; color:black; font-weight:bold\">" . $string['reporttitle'] . "</span></th><th style=\"text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(30); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"Help\" border=\"0\" /></a></th></tr>\n";
+    echo "<tr><th colspan=\"2\" class=\"bevel\"></th></tr>\n</table>\n";
+    echo "<table cellpadding=\"1\" cellspacing=\"1\" border=\"0\" style=\"margin: 0px auto; width:75%; border: 1px solid #C0C0C0; text-align:left\">\n<tr><td colspan=\"2\" style=\"background-color:#F2B100; height:3px\"> </td></tr>\n<tr><td style=\"width:16px; padding-top:5px; padding-bottom:5px\"><img src=\"../artwork/information_icon.gif\" width=\"16\" height=\"16\" alt=\"i\" border=\"0\" /></td><td style=\"padding-top:5px; padding-bottom:5px\">&nbsp;This paper has not been attempted by anyone.</td></tr></table>\n";  
   } elseif ($user_no == 0) {
     // Not enough data for relevant cohort at selected percentage
-    echo '<tr><td class="h">';
+    echo '<tr><th>';
     
     echo '<div class="breadcrumb"><a href="../staff/index.php">' . $string['home'] . '</a>';
     if ($folder != '') {
@@ -1674,8 +1729,9 @@ td p:first-child {margin-top:0}
     }
     echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../paper/details.php?paperID=' . $_GET['paperID'] . '">' . $paper_title . '</a></div>';
     
-    echo "<span style=\"margin-left:10px; font-size:200%; color:black; font-weight:bold\">" . $string['reporttitle'] . "</span></td><td class=\"h\" style=\"text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(30); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"Help\" border=\"0\" /></a></td></tr>\n";
-    echo "<tr style=\"height:4px\"><td valign=\"top\" colspan=\"2\"><img src=\"../artwork/header_horizontal_line.gif\" width=\"100%\" height=\"3\" alt=\"Line\" /></td></tr>\n</table>\n<table cellpadding=\"1\" cellspacing=\"1\" border=\"0\" style=\"margin: 0px auto; width:75%; border: 1px solid #C0C0C0; text-align:left\">\n<tr><td colspan=\"2\" style=\"background-color:#F2B100; height:3px\"> </td></tr>\n<tr><td style=\"width:16px; padding-top:5px; padding-bottom:5px\"><img src=\"../artwork/information_icon.gif\" width=\"16\" height=\"16\" alt=\"i\" border=\"0\" /></td><td style=\"padding-top:5px; padding-bottom:5px\">&nbsp;Not enough data to calculate upper and lower groups. Please select a higher percentage.</td></tr></table>\n";  
+    echo "<span style=\"margin-left:10px; font-size:200%; color:black; font-weight:bold\">" . $string['reporttitle'] . "</span></th><th style=\"text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(30); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"Help\" border=\"0\" /></a></th></tr>\n";
+    echo "<tr><th colspan=\"2\" class=\"bevel\"></th></tr>\n</table>\n";
+    echo "<table cellpadding=\"1\" cellspacing=\"1\" border=\"0\" style=\"margin: 0px auto; width:75%; border: 1px solid #C0C0C0; text-align:left\">\n<tr><td colspan=\"2\" style=\"background-color:#F2B100; height:3px\"> </td></tr>\n<tr><td style=\"width:16px; padding-top:5px; padding-bottom:5px\"><img src=\"../artwork/information_icon.gif\" width=\"16\" height=\"16\" alt=\"i\" border=\"0\" /></td><td style=\"padding-top:5px; padding-bottom:5px\">&nbsp;Not enough data to calculate upper and lower groups. Please select a higher percentage.</td></tr></table>\n";  
   } else {
   	// Capture the paper makeup.
     $display_header = true;
@@ -1696,7 +1752,7 @@ td p:first-child {margin-top:0}
     $result->store_result();
     while ($result->fetch()) {
       if ($display_header == true) {
-        echo '<tr><td class="h">';
+        echo '<tr><th>';
         echo '<div class="breadcrumb"><a href="../staff/index.php">' . $string['home'] . '</a>';
         if ($folder != '') {
           echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?folder=' . $folder . '">' . $folder_name . '</a>';
@@ -1705,8 +1761,8 @@ td p:first-child {margin-top:0}
         }
         echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../paper/details.php?paperID=' . $_GET['paperID'] . '">' . $paper_title . '</a></div>';
         
-        echo "<span style=\"margin-left:10px; font-size:200%; color:black; font-weight:bold\">" . $string['reporttitle'] . "</span></td><td class=\"h\" style=\"text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(30); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['help'] . "\" border=\"0\" /></a></td></tr>\n";
-        echo "<tr style=\"height:4px\"><td valign=\"top\" colspan=\"2\"><img src=\"../artwork/header_horizontal_line.gif\" width=\"100%\" height=\"3\" alt=\"Line\" /></td></tr>\n</table>\n";
+        echo "<span style=\"margin-left:10px; font-size:200%; color:black; font-weight:bold\">" . $string['reporttitle'] . "</span></th><th style=\"text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(30); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['help'] . "\" border=\"0\" /></a></th></tr>\n";
+        echo "<tr><th colspan=\"2\" class=\"bevel\"></th></tr>\n</table>\n";
 
         echo '<br /><div align="center"><table cellpadding="4" cellspacing="0" border="0" width="95%" style="background-color:#E4EEFC; border:1px solid #B5C4DF">';
         echo '<tr><td style="text-align:left"><table cellpadding="2" cellspacing="0" border="0">';
@@ -1739,10 +1795,9 @@ td p:first-child {margin-top:0}
         $correct_buffer = array();
         $o_media_buffer = array();
         if ($old_screen != $screen) {
-          echo '<tr><td colspan="2"><table cellpadding="0" cellspacing="1" border="0" style="width:100%; height:70px; border-top:1px solid #B5C4DF; background-image:url(\'../artwork/screen_no_background.gif\'); background-repeat:repeat-x">';
-          echo "<tr>\n<td width=\"20\">&nbsp;</td>\n";
-          echo "<td style=\"vertical-align:top; font-size:90%; font-weight:bold; color:#15428B\">" . $string['screen'] . "&nbsp;$screen</td>\n</tr>\n";
-          echo '</table></td></tr>';
+          echo '<tr><td colspan="2">';
+          echo '<div class="screenbrk"><span class="scr_no">' . $string['screen'] . '&nbsp;' . $screen . '</span></div>';
+          echo '</td></tr>';
         }
       }
       if ($q_type == 'labelling') {

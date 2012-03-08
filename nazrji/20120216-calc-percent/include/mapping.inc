@@ -400,17 +400,17 @@ function getObjectives($thisModuleid, $session, $paperID, $questionID, $rogodb, 
     } else {
       // Use TouchStone's internally stored objectves
       if ($scope == 'all') {
-      	$sql = "SELECT sess_id,identifier,moduleID,title,source_url,calendar_year,DATE_FORMAT(occurrence,'$cfg_short_date') AS occurrence FROM sessions WHERE moduleID=? ORDER BY calendar_year, sess_id";
+      	$sql = "SELECT sess_id, identifier, moduleID, title, source_url, calendar_year, DATE_FORMAT(occurrence,'$cfg_short_date') AS occurrence FROM sessions WHERE moduleID=? ORDER BY calendar_year, sess_id";
       	$stmt = $rogodb->prepare($sql);
         $stmt->bind_param('s', $thisModuleid);
       } elseif ($session == '' and $scope == 'latest') {
-        $sql = "SELECT sess_id,identifier,moduleID,title,source_url,calendar_year,DATE_FORMAT(occurrence,'$cfg_short_date') AS occurrence FROM sessions WHERE moduleID=? AND calendar_year=(SELECT MAX(calendar_year) FROM objectives) ORDER BY sess_id";
+        $sql = "SELECT sess_id, identifier, moduleID, title, source_url, calendar_year, DATE_FORMAT(occurrence,'$cfg_short_date') AS occurrence FROM sessions WHERE moduleID=? AND calendar_year=(SELECT MAX(calendar_year) FROM objectives) ORDER BY sess_id";
         $stmt = $rogodb->prepare($sql);
         $stmt->bind_param('s', $thisModuleid);
       } else {
-        $sql = "SELECT sess_id,identifier,moduleID,title,source_url,calendar_year,DATE_FORMAT(occurrence,'$cfg_short_date') AS occurrence FROM sessions WHERE moduleID=? AND calendar_year=? ORDER BY sess_id";
+        $sql = "SELECT sess_id, identifier, moduleID, title, source_url, calendar_year, DATE_FORMAT(occurrence,'$cfg_short_date') AS occurrence FROM sessions WHERE moduleID=? AND calendar_year=? ORDER BY sess_id";
         $stmt = $rogodb->prepare($sql);
-        $stmt->bind_param('ss', $thisModuleid,$session);
+        $stmt->bind_param('ss', $thisModuleid, $session);
       }
       $stmt->execute();
       $stmt->store_result();

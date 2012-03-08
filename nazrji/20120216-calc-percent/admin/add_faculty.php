@@ -51,6 +51,7 @@ if (isset($_POST['ok']) or (isset($_POST['returnhit']) and $_POST['returnhit'] =
 ?>
 <html>
 <head>
+<meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
 <title><?php echo $string['addfaculty']; ?></title>
 </head>
 <?php
@@ -71,7 +72,7 @@ if (isset($_POST['ok']) or (isset($_POST['returnhit']) and $_POST['returnhit'] =
 <html>
 <head>
 <title><?php echo $string['addfaculty']; ?></title>
-<style>
+<style type="text/css">
 body {font-family:Arial,sans-serif; font-size:90%; background-color:#EEEEEE; color:black}
 textarea, input[type=text], select {font-family:Arail,sans-serif; border: 1px solid #7F9DB9}
 h1 {font-size:120%}

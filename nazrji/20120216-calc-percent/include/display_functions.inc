@@ -110,7 +110,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
       } elseif ($question['q_option_order'] == 'alphabetic') {
         $tmp_order_array = array();
         for ($i=0; $i<$option_no; $i++) {
-          $tmp_order_array[$i] = $question['options'][$i]['option_text'];
+          $tmp_order_array[$i] = strtolower($question['options'][$i]['option_text']);
         }
         asort($tmp_order_array);
         foreach ($tmp_order_array as $key => $value) {
@@ -155,7 +155,6 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
   if ($question['q_type'] != 'info' and $question['q_type'] != 'sct') {
     if ($question['scenario'] != '' and $question['q_type'] != 'extmatch' and $question['q_type'] != 'matrix' and $question['q_type'] != 'likert') {
       echo '<tr><td class="q_no">' . ($question_no + $question_offset) . '.&nbsp;';
-      if ($calculator == -1) echo '<br /><img onclick="openCalc2();" style="cursor:pointer" src="../artwork/calc.gif" width="18" height="25" alt="' . $string['calculator'] . '" />';
       if ($calculator >= 1) {
         echo '<br /><img  onclick="openCalc(' . $calculator . ', \'q' . $question_no . '\');" style="cursor:pointer" src="../artwork/calc.gif" width="18" height="25" alt="' . $string['calculator'] . '" />';
       }
@@ -167,7 +166,6 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
     if ($question['q_media'] != '' and $question['q_type'] != 'hotspot' and $question['q_type'] != 'labelling' and $question['q_type'] != 'flash' and $question['q_type'] != 'extmatch') {
       if ($li_set == 0) {
         echo '<tr><td class="q_no">' . ($question_no + $question_offset) . '.&nbsp;';
-        if ($calculator == -1) echo '<br /><img onclick="openCalc2();" style="cursor:pointer" src="../artwork/calc.gif" width="18" height="25" alt="' . $string['calculator'] . '" />';
         if ($calculator >= 1) {
           if ($question['q_type'] == 'calculation') {
             echo '<br /><img onclick="openCalc(' . $calculator . ', \'q' . $question_no . '\');" style="cursor:pointer" src="../artwork/calc.gif" width="18" height="25" alt="' . $string['calculator'] . '" />';
@@ -183,7 +181,6 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
     if ($question['q_type'] != 'likert' and $question['q_type'] != 'calculation') {
       if ($li_set == 0) {
         echo '<tr><td class="q_no">' . ($question_no + $question_offset) . '.&nbsp;';
-        if ($calculator == -1) echo '<br /><img onclick="openCalc2();" style="cursor:pointer" src="../artwork/calc.gif" width="18" height="25" alt="' . $string['calculator'] . '" />';
         if ($calculator >= 1) {
           echo '<br /><img onclick="openCalc(' . $calculator . ');" style="cursor:pointer" src="../artwork/calc.gif" width="18" height="25" alt="' . $string['calculator'] . '" />';
         }
@@ -315,7 +312,6 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
       if ($question['scenario'] != '') {
         echo "<tr><td class=\"question_no\">" . ($question_no + $question_offset) . ".&nbsp;</td><td style=\"width:49%; background-color:#E4EEFC; border-bottom:1px solid #B5C4DF; font-weight:bold; padding:2px; color:#000040\">" . $string['clinicalvignette'] . "</td></tr>\n";
         echo '<tr><td style="vertical-align:top; text-align:right">';
-        if ($calculator == -1) echo '<br /><img onclick="openCalc2();" style="cursor:pointer" src="../artwork/calc.gif" width="18" height="25" alt="' . $string['calculator'] . '" />';
         if ($calculator >= 1) {
           echo '<a href="#" onclick="openCalc(' . $calculator . '); return false;"><img src="../artwork/calc.gif" width="18" height="24" alt="' . $string['calculator'] . '" border="0" /></a>';
         }
@@ -327,9 +323,9 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
       if ($question['q_media'] != '') {
         if ($li_set == 0) {
           echo '<tr><td class="q_no">' . ($question_no + $question_offset) . '.&nbsp;';
-                if ($calculator == -1) echo '<br /><img onclick="openCalc2();" style="cursor:pointer" src="../artwork/calc.gif" width="18" height="25" alt="' . $string['calculator'] . '" />';
-      if ($calculator >= 1)
+          if ($calculator >= 1) {
             echo '<br /><img onclick="openCalc(' . $calculator . ');" style="cursor:pointer" src="../artwork/calc.gif" width="18" height="24" alt="' . $string['calculator'] . '" />';
+          }
           echo '</td><td>';
         }
         echo '<p align="center">' . display_media($question['q_media'],$question['q_media_width'],$question['q_media_height']) . "</p>\n";
@@ -695,7 +691,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
               if (isset($blank_user_answers[$blank_count])) {
                 $ans = $blank_user_answers[$blank_count];
               }
-              $screen_output[$blank_count] = preg_replace("|\[blank.*\].*\[/blank\]|","<input type=\"text\" name=\"q" . $question_no . "_" . $blank_count . "\" value=\"" . $ans. "\" size=\"$blank_size[$blank_count]\" />",$blank_details[$blank_count]);
+              $screen_output[$blank_count] = preg_replace("|\[blank.*\].*\[/blank\]|","<input type=\"text\" name=\"q" . $question_no . "_" . $blank_count . "\" value=\"" . htmlentities($ans). "\" size=\"$blank_size[$blank_count]\" />",$blank_details[$blank_count]);
             }
             $blank_count++;
           }
@@ -942,7 +938,6 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
       echo '<tr><td></td><td>';
     } else {
       echo '<tr><td class="q_no">' . ($question_no + $question_offset) . '.&nbsp;';
-      if ($calculator == -1) echo '<br /><img onclick="openCalc2();" style="cursor:pointer" src="../artwork/calc.gif" width="18" height="25" alt="' . $string['calculator'] . '" />';
       if ($calculator >= 1) {
         echo '<br /><img  onclick="openCalc(' . $calculator . ', \'q' . $question_no . '\');" style="cursor:pointer" src="../artwork/calc.gif" width="18" height="24" alt="' . $string['calculator'] . '" />';
       }
@@ -979,16 +974,16 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
         }
       } else {
         if (isset($user_answers[$current_screen][$q_id]) and $user_answers[$current_screen][$q_id] == '') {
-          echo "<div><input type=\"text\" style=\"text-align:right\" name=\"q" . $question_no . "\" size=\"10\" />" . $score_array[3] .  "</div>\n";
+          echo "<div><input type=\"text\" style=\"text-align:right\" name=\"q" . $question_no . "\" size=\"10\" class=\"calc-answer\" />" . $score_array[3] .  "</div>\n";
         } else {
           if ((isset($tmp_user_answers[0]) and $tmp_user_answers[0] != '') or $screen_pre_submitted == 0) {
             $ans = '';
             if(isset($tmp_user_answers[0])){
               $ans = $tmp_user_answers[0];
             }
-            echo "<div><input type=\"text\" style=\"text-align:right\" id=\"q" . $question_no . "\" name=\"q" . $question_no . "\" size=\"10\" value=\"" . $ans . "\" />" . $score_array[3] .  "</div>\n";
+            echo "<div><input type=\"text\" style=\"text-align:right\" id=\"q" . $question_no . "\" name=\"q" . $question_no . "\" size=\"10\" value=\"" . $ans . "\" class=\"calc-answer\" />" . $score_array[3] .  "</div>\n";
           } else {
-            echo "<div><input type=\"text\" style=\"text-align:right\" class=\"unans\" id=\"q" . $question_no . "\" name=\"q" . $question_no . "\" size=\"10\" value=\"\" />" . $score_array[3] .  "</div>\n";
+            echo "<div><input type=\"text\" style=\"text-align:right\" class=\"unans calc-answer\" id=\"q" . $question_no . "\" name=\"q" . $question_no . "\" size=\"10\" value=\"\" />" . $score_array[3] .  "</div>\n";
           }
         }
       }

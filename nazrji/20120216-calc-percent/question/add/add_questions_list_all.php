@@ -26,27 +26,29 @@ require '../../include/staff_auth.inc';
 ?>
 <html>
 <head>
-<title>Rogō</title>
-<style>
-  body {margin:0px; font-family:Arial,sans-serif; background-color:white; color:black; font-size:80%}
-</style>
-<script type="text/javascript" src="/js/jquery-1.6.1.min.js"></script>
-<script type="text/javascript" src="/tools/mee/mee/js/mee_src.js"></script>
-<script language="JavaScript">
-  function Qpreview(qID) {
-    parent.previewurl.location = '../view_question.php?q_id=' + qID;
-  }
-  
-  function populateTicks() {
-    q_array = parent.top.controls.document.theform.questions_to_add.value.split(",");
-    for (i=0; i<q_array.length; i++) { 
-      var obj = document.getElementById(q_array[i]);
-      if (obj != null) {
-        obj.checked = true;
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Rogō</title>
+  <link rel="stylesheet" type="text/css" href="../../css/header.css" />
+  <style type="text/css">
+    body {margin:0px; font-family:Arial,sans-serif; background-color:white; color:black; font-size:80%}
+  </style>
+  <script type="text/javascript" src="/js/jquery-1.6.1.min.js"></script>
+  <script type="text/javascript" src="/tools/mee/mee/js/mee_src.js"></script>
+  <script language="JavaScript">
+    function Qpreview(qID) {
+      parent.previewurl.location = '../view_question.php?q_id=' + qID;
+    }
+
+    function populateTicks() {
+      q_array = parent.top.controls.document.theform.questions_to_add.value.split(",");
+      for (i=0; i<q_array.length; i++) {
+        var obj = document.getElementById(q_array[i]);
+        if (obj != null) {
+          obj.checked = true;
+        }
       }
     }
-  }
-</script>
+  </script>
 </head>
 <body onload="populateTicks()">
 <?php
@@ -67,23 +69,23 @@ require '../../include/staff_auth.inc';
   echo "<form name=\"theform\">\n";
   ?>
   <input type="hidden" name="screen" value="1" />
-  <table cellpadding="0" cellspacing="0" border="0" style="font-size:100%; width:100%">
+  <table class="header">
   <?php
-  echo "<tr><td colspan=\"5\" style=\"background-color:#F1F5FB; font-size:160%; font-weight:bold\">&nbsp;" . $string['allmyquestions'] . "</td></tr>\n";
+  echo "<tr><th colspan=\"5\" style=\"font-size:160%; font-weight:bold\">&nbsp;" . $string['allmyquestions'] . "</td></tr>\n";
   if ($order == 'leadin' and $direction == 'asc') {
-    echo "<tr style=\"background-color:#F1F5FB\"><td colspan=\"2\">&nbsp;</td><td><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?order=leadin&direction=desc\">" . $string['question'] . "</a>&nbsp;<img src=\"../../artwork/desc.gif\" width=\"9\" height=\"7\" border=\"0\" /></td><td><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?order=q_type&direction=asc\">" . $string['type'] . "</a>&nbsp;</td><td><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?order=last_edited&direction=asc\">" . $string['modified'] . "</a>&nbsp;</td></tr>\n";
+    echo "<tr><th colspan=\"2\">&nbsp;</th><th><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?order=leadin&direction=desc\">" . $string['question'] . "</a>&nbsp;<img src=\"../../artwork/desc.gif\" width=\"9\" height=\"7\" border=\"0\" /></th><th><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?order=q_type&direction=asc\">" . $string['type'] . "</a>&nbsp;</th><th><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?order=last_edited&direction=asc\">" . $string['modified'] . "</a>&nbsp;</th></tr>\n";
   } elseif ($order == 'leadin' and $direction == 'desc') {
-    echo "<tr style=\"background-color:#F1F5FB\"><td colspan=\"2\">&nbsp;</td><td><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?order=leadin&direction=asc\">" . $string['question'] . "</a>&nbsp;<img src=\"../../artwork/asc.gif\" width=\"9\" height=\"7\" border=\"0\" /></td><td><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?order=q_type&direction=asc\">" . $string['type'] . "</a>&nbsp;</td><td><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?order=last_edited&direction=asc\">" . $string['modified'] . "</a>&nbsp;</td></tr>\n";
+    echo "<tr><th colspan=\"2\">&nbsp;</th><th><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?order=leadin&direction=asc\">" . $string['question'] . "</a>&nbsp;<img src=\"../../artwork/asc.gif\" width=\"9\" height=\"7\" border=\"0\" /></th><th><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?order=q_type&direction=asc\">" . $string['type'] . "</a>&nbsp;</th><th><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?order=last_edited&direction=asc\">" . $string['modified'] . "</a>&nbsp;</th></tr>\n";
   } elseif ($order == 'q_type' and $direction == 'asc') {
-    echo "<tr style=\"background-color:#F1F5FB\"><td colspan=\"2\">&nbsp;</td><td><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?order=leadin&direction=asc\">" . $string['question'] . "</a>&nbsp;</td><td><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?order=q_type&direction=desc\">" . $string['type'] . "</a>&nbsp;<img src=\"../../artwork/desc.gif\" width=\"9\" height=\"7\" border=\"0\" /></td><td><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?order=last_edited&direction=asc\">" . $string['modified'] . "</a>&nbsp;</td></tr>\n";
+    echo "<tr><th colspan=\"2\">&nbsp;</th><th><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?order=leadin&direction=asc\">" . $string['question'] . "</a>&nbsp;</th><th><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?order=q_type&direction=desc\">" . $string['type'] . "</a>&nbsp;<img src=\"../../artwork/desc.gif\" width=\"9\" height=\"7\" border=\"0\" /></th><th><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?order=last_edited&direction=asc\">" . $string['modified'] . "</a>&nbsp;</th></tr>\n";
   } elseif ($order == 'q_type' and $direction == 'desc') {
-    echo "<tr style=\"background-color:#F1F5FB\"><td colspan=\"2\">&nbsp;</td><td><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?order=leadin&direction=asc\">" . $string['question'] . "</a>&nbsp;</td><td><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?order=q_type&direction=asc\">" . $string['type'] . "</a>&nbsp;<img src=\"../../artwork/asc.gif\" width=\"9\" height=\"7\" border=\"0\" /></td><td><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?order=last_edited&direction=asc\">" . $string['modified'] . "</a>&nbsp;</td></tr>\n";
+    echo "<tr><th colspan=\"2\">&nbsp;</th><th><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?order=leadin&direction=asc\">" . $string['question'] . "</a>&nbsp;</th><th><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?order=q_type&direction=asc\">" . $string['type'] . "</a>&nbsp;<img src=\"../../artwork/asc.gif\" width=\"9\" height=\"7\" border=\"0\" /></th><th><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?order=last_edited&direction=asc\">" . $string['modified'] . "</a>&nbsp;</th></tr>\n";
   } elseif ($order == 'last_edited' and $direction == 'asc') {
-    echo "<tr style=\"background-color:#F1F5FB\"><td colspan=\"2\">&nbsp;</td><td><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?order=leadin&direction=asc\">" . $string['question'] . "</a>&nbsp;</td><td><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?order=q_type&direction=asc\">" . $string['type'] . "</a>&nbsp;</td><td><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?order=last_edited&direction=desc\">" . $string['modified'] . "</a>&nbsp;<img src=\"../../artwork/desc.gif\" width=\"9\" height=\"7\" border=\"0\" /></td></tr>\n";
+    echo "<tr><th colspan=\"2\">&nbsp;</th><th><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?order=leadin&direction=asc\">" . $string['question'] . "</a>&nbsp;</th><th><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?order=q_type&direction=asc\">" . $string['type'] . "</a>&nbsp;</th><th><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?order=last_edited&direction=desc\">" . $string['modified'] . "</a>&nbsp;<img src=\"../../artwork/desc.gif\" width=\"9\" height=\"7\" border=\"0\" /></th></tr>\n";
   } elseif ($order == 'last_edited' and $direction == 'desc') {
-    echo "<tr style=\"background-color:#F1F5FB\"><td colspan=\"2\">&nbsp;</td><td><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?order=leadin&direction=asc\">" . $string['question'] . "</a>&nbsp;</td><td><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?order=q_type&direction=asc\">" . $string['type'] . "</a>&nbsp;</td><td><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?order=last_edited&direction=asc\">" . $string['modified'] . "</a>&nbsp;<img src=\"../../artwork/asc.gif\" width=\"9\" height=\"7\" border=\"0\" /></td></tr>\n";
+    echo "<tr><th colspan=\"2\">&nbsp;</th><th><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?order=leadin&direction=asc\">" . $string['question'] . "</a>&nbsp;</th><th><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?order=q_type&direction=asc\">" . $string['type'] . "</a>&nbsp;</th><th><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?order=last_edited&direction=asc\">" . $string['modified'] . "</a>&nbsp;<img src=\"../../artwork/asc.gif\" width=\"9\" height=\"7\" border=\"0\" /></th></tr>\n";
   }  
-  echo "<tr style=\"height:4px\"><td valign=\"top\" colspan=\"5\"><img src=\"../../artwork/header_horizontal_line.gif\" width=\"100%\" height=\"3\" alt=\"Line\" /></td></tr>\n";
+  echo "<tr><th colspan=\"5\" class=\"bevel\"></th></tr>\n";
   
   $id = 0;
   if ($order == 'leadin') $order = 'leadin_plain';
@@ -93,13 +95,13 @@ require '../../include/staff_auth.inc';
   $result->execute();
   $result->bind_result($q_id, $q_type, $leadin, $q_media, $q_media_width, $q_media_height, $display_date, $locked);
   while ($result->fetch()) {
-    $tmp_leadin = strip_tags($leadin,'<div>,<span>');
+    $tmp_leadin = str_replace('&nbsp;',' ',strip_tags($leadin));
     if (strlen($tmp_leadin) > 160) $tmp_leadin = substr($tmp_leadin, 0, 160) . '...';
     if (trim($tmp_leadin) == '') $tmp_leadin = '<span style="color:red">' . $string['warningnoleadin'] . '</span>';
       
     echo "<tr><td>";
     if ($locked != '') echo '<img src="../../artwork/small_padlock.png" width="16" height="16" alt="' . $string['locked'] . '" />';
-    echo "</td><td><input onclick=\"parent.top.controls.checkStatus(this)\" type=\"checkbox\" name=\"" . $q_id . "\" value=\"" . $q_id . "\" /></td><td style=\"padding-left:8px\" onclick=\"Qpreview(" . $q_id . ")\">$tmp_leadin</td><td>&nbsp;" . $string[$q_type] . "</td><td>&nbsp;" . $display_date . "</td></tr>\n";
+    echo "</td><td><input onclick=\"parent.top.controls.checkStatus(this)\" type=\"checkbox\" name=\"" . $q_id . "\" value=\"" . $q_id . "\" /></td><td style=\"padding-left:8px\" onclick=\"Qpreview(" . $q_id . ")\">$tmp_leadin</td><td><nobr>&nbsp;" . $string[$q_type] . "</nobr></td><td>&nbsp;" . $display_date . "</td></tr>\n";
   }
   $result->close();
   $mysqli->close();

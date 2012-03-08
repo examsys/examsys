@@ -2,6 +2,7 @@
 // This file is part of Rogō
 //
 // Rogō is free software: you can redistribute it and/or modify
+// Rogō is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
@@ -68,7 +69,7 @@ function getPaper($paperID) {
   $result->execute();
   $result->bind_result($random_mark, $total_mark, $q_group, $p_id, $q_id, $q_type, $screen, $leadin, $q_media, $q_media_width, $q_media_height, $display_last_edited, $display_pos);
   $temp_array['questionID'] = '';
-  while ($row = $result->fetch()) {
+  while ($result->fetch()) {
     $row_no++;
     $temp_array['questions'][$q_id]['screen'] = $screen;
     $temp_array['questions'][$q_id]['q_type'] = $q_type;
@@ -101,27 +102,29 @@ function getPaper($paperID) {
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Rogō: <?php echo $string['mappingbyyear'] . " $cfg_install_type"; ?></title>
-<link rel="stylesheet" type="text/css" href="../css/submenu.css" />
-<style style="text/css">
-  img {border:none}
-  .q_no {text-align:right; vertical-align:top; cursor:pointer}
-  .divider {font-weight:normal; color:#1E3287; padding-left:6px}
-  .mapping {font-size:90%; color:#FF6300; font-weight:normal}
-  .mapping_exclueded {color:red;font-weight:normal;text-decoration:line-through}
-  .unmapped {color:#C0C0C0}
-  li {padding-left:32px; text-indent:-16px;}
-  a {text-decoration: none}
-  .m_s {background-image:url('../artwork/red_hash_background.png'); background-repeat:repeat}
-  .o_s {background-color:#99FF99}
-  .nm_s {background-color:white}
-  td.m_s {border:1px solid #c0c0c0}
-  td.o_s {border:1px solid #c0c0c0}
-  td.nm_s {border:1px solid #c0c0c0}
-  td.obj {border:1px solid #c0c0c0}
-  table {border-collapse:collapse}
-</style>
-<script src="../js/staff_help.js" type="text/javascript"></script>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Rogō: <?php echo $string['mappingbyyear'] . " $cfg_install_type"; ?></title>
+  <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
+  <link rel="stylesheet" type="text/css" href="../css/header.css" />
+  <style type="text/css">
+    img {border:none}
+    .q_no {text-align:right; vertical-align:top; cursor:pointer}
+    .divider {font-weight:normal; color:#1E3287; padding-left:6px}
+    .mapping {font-size:90%; color:#FF6300; font-weight:normal}
+    .mapping_exclueded {color:red;font-weight:normal;text-decoration:line-through}
+    .unmapped {color:#C0C0C0}
+    li {padding-left:32px; text-indent:-16px;}
+    a {text-decoration: none}
+    .m_s {background-image:url('../artwork/red_hash_background.png'); background-repeat:repeat}
+    .o_s {background-color:#99FF99}
+    .nm_s {background-color:white}
+    td.m_s {border:1px solid #c0c0c0}
+    td.o_s {border:1px solid #c0c0c0}
+    td.nm_s {border:1px solid #c0c0c0}
+    td.obj {border:1px solid #c0c0c0}
+    table {border-collapse:collapse}
+  </style>
+  <script src="../js/staff_help.js" type="text/javascript"></script>
 </head>
 
 <body onclick="hideMenus()">
@@ -151,9 +154,9 @@ function getPaper($paperID) {
   $result->bind_param('i', $paperID);
   $result->execute();
   $result->bind_result($paper_title, $moduleID, $session, $start_date, $end_date, $paper_type);
-  while ($row = $result->fetch()) {
-    echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"width:100%; font-size:80%\">\n";
-    echo '<tr><td style="background-color:#F1F5FB">';
+  while ($result->fetch()) {
+    echo "<table class=\"header\" style=\"font-size:80%\">\n";
+    echo '<tr><th>';
     echo '<div class="breadcrumb"><a href="../staff/index.php">' . $string['home'] . '</a>';
     if ($folder != '') {
       echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?folder=' . $folder . '">' . $folder_name . '</a>';
@@ -161,19 +164,19 @@ function getPaper($paperID) {
       echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?module=' . $_GET['module'] . '">' . $_GET['module'] . '</a>';
     }
     echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../paper/details.php?paperID=' . $_GET['paperID'] . '">' . $paper_title . '</a></div>';
-    echo "<div style=\"font-size:220%; font-weight:bold; margin-left:10px\">" . $string['mappedobjectives'] . "</div></td><td style=\"background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(147); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"Help\" border=\"0\" /></a></td></tr>\n</table>\n";
+    echo "<div style=\"font-size:220%; font-weight:bold; margin-left:10px\">" . $string['mappedobjectives'] . "</div></th><th style=\"text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(147); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"Help\" border=\"0\" /></a></th></tr>\n</table>\n";
   }
   $result->close();
   
 ?>
-<table cellpadding="0" cellspacing="0" border="0" style="font-size:80%; background-color:white">
-<tr><td>
-  <table cellpadding="0" cellspacing="0" border="0" style="font-size:100%; width:378px; background-color:#F1F5FB">
+<table class="header" style="font-size:80%">
+<tr><th style="padding-top:1px">
+  <table cellpadding="0" cellspacing="0" border="0" style="font-size:100%; width:378px">
   <td style="cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_off.gif)" onclick="window.location.href='paper_mappings_by_session.php?paperID=<?php echo $_GET['paperID']; ?>&folder=<?php echo $_GET['folder']; ?>&module=<?php echo $_GET['module']; ?>'"><?php echo $string['bysession']; ?></td>
   <td style="cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_off.gif)" onclick="window.location.href='paper_mappings_by_question.php?paperID=<?php echo $_GET['paperID']; ?>&folder=<?php echo $_GET['folder']; ?>&module=<?php echo $_GET['module']; ?>'"><?php echo $string['byquestion']; ?></td>
   <td style="cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_on.gif)"><?php echo $string['longitudinal']; ?></td>
   </table>
-</td><td style="width:100%; background-color:#F1F5FB; text-align:right">&nbsp;</td>
+</th><th style="width:100%; text-align:right">&nbsp;</th>
 </tr>
 <tr><td colspan="4" style="background-color:#1E3C7B">&nbsp;</td></tr>
 </table><br/>
@@ -186,7 +189,7 @@ $papersRes = $mysqli->prepare($sql);
 $papersRes->bind_param('is', $_GET['paperID'],$start_date);
 $papersRes->execute();
 $papersRes->bind_result($property_id);
-while ($row = $papersRes->fetch()) {
+while ($papersRes->fetch()) {
   $papers_tmp[] =  $property_id;
 }
 
@@ -201,7 +204,7 @@ if(isset($papers_tmp)) {
 }
 
 foreach ($papers as $p_id => $paper) {
-  $objsBySession[$p_id] = getObjectives($paper['moduleID'],$paper['session'],$p_id,$paper['questionID'],$mysqli);
+  $objsBySession[$p_id] = getObjectives($paper['moduleID'], $paper['session'], $p_id,$paper['questionID'], $mysqli);
 }
 
 $allsession = array();
@@ -258,7 +261,7 @@ foreach($allsession as $moduleID => $module) {
                 if (is_array($tmpObj['mapped'])) {
                   echo "\t<td class=\"o_s\">";
                   foreach($tmpObj['mapped'] as $qid) {
-                    echo "<span class=\"\" style=\"cursor:pointer\" title=\"" . $papers[$p_id]['questions'][$qid]['leadin'] . "\"><a href=\"preview_question.php?q_id=" . $papers[$p_id]['questions'][$qid]['q_id'] . "&qNo=" . $papers[$p_id]['questions'][$qid]['qnumber'] . "\" target=\"_blank\">Q" . $papers[$p_id]['questions'][$qid]['qnumber'] . "</a></span> ";
+                    echo "<span class=\"\" style=\"cursor:pointer\" title=\"" . $papers[$p_id]['questions'][$qid]['leadin'] . "\"><a href=\"../question/view_question.php?q_id=" . $papers[$p_id]['questions'][$qid]['q_id'] . "&qNo=" . $papers[$p_id]['questions'][$qid]['qnumber'] . "\" target=\"_blank\">Q" . $papers[$p_id]['questions'][$qid]['qnumber'] . "</a></span> ";
                   }
                 } else {
                   echo "\t<td class=\"nm_s\">";

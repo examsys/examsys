@@ -35,15 +35,9 @@
 <div id="left-sidebar" class="sidebar">
 
 <br />
-<table cellpadding="0" cellspacing="0" border="0" width="185">
-<tr><td style="margin:4px">
-<tr><td>
 
-<table cellpadding="3" cellspacing="0" border="0" style="margin-left:6px; font-size:90%">
-<tr><td><a onclick="displayDetails(); return false;"><img src="../artwork/information_icon.gif" width="16" height="16" alt="home" border="0" /></a></td><td class="menuitem"><a onclick="displayDetails(); return false;"><?php echo $string['displaydetails']; ?></a></td></tr>
-</table>
-
-</td></tr>
+<table cellpadding="3" cellspacing="0" border="0" style="margin-left:10px; font-size:90%">
+<tr><td class="ico"><a onclick="displayDetails(); return false;"><img src="../artwork/information_icon.gif" width="16" height="16" alt="home" border="0" /></a></td><td class="menuitem"><a onclick="displayDetails(); return false;"><?php echo $string['displaydetails']; ?></a></td></tr>
 </table>
 
 <form name="errorsMenu">

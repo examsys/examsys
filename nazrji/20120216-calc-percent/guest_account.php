@@ -55,7 +55,7 @@ while ($results->fetch()) {
 $results->close();
 
 if ($ip_match == false) {
-  echo "<html>\n<head>\n<title>" . $string['accessdenied'] . "</title>\n<style>\nbody {font-size:90%; font-family:Arial,sans-serif; background-color:#FCFCFC; color:#575757}\nh1 {font-weight:normal; color:#BF0000; font-size:140%}\n</style>\n</head>\n<body>\n";
+  echo "<html>\n<head>\n<title>" . $string['accessdenied'] . "</title>\n<style type=\"text/css\">\nbody {font-size:90%; font-family:Arial,sans-serif; background-color:#FCFCFC; color:#575757}\nh1 {font-weight:normal; color:#BF0000; font-size:140%}\n</style>\n</head>\n<body>\n";
   echo "<div style=\"position:absolute; left:10px; top:10px\"><img src=\"/artwork/access_denied.png\" width=\"48\" height=\"48\" /></div>\n";
   echo "<h1 style=\"margin-left:60px\">" . $string['accessdenied'] . "</h1>\n";
   echo "<hr size=\"1\" align=\"left\" width=\"500\" style=\"margin-left:60px; color:#C0C0C0; background-color:#C0C0C0\" />\n<p style=\"margin-left:60px\">" . $string['denied_msg'] . "</p>\n</body>\n</html>";
@@ -65,8 +65,9 @@ if ($ip_match == false) {
 
 <html>
 <head>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
 <title><?php echo $string['guestaccount']; ?></title>
-<style>
+<style type="text/css">
 body {color:black; background-color:white; font-family:Arial,sans-serif}
 </style>
 </head>
@@ -132,7 +133,7 @@ if (isset($_POST['submit'])) {
 <html>
 <head>
 <title><?php echo $string['guestaccount']; ?></title>
-<style>
+<style type="text/css">
 body {color:black; background-color:white; font-family:Arial,sans-serif}
 </style>
 </head>

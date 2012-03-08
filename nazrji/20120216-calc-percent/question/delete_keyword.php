@@ -41,9 +41,8 @@ require './include/staff_auth.inc';
 ?>
 <html>
 <head>
-<title>Delete Keyword</title>
-<script language="JavaScript">
-</script>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Delete Keyword</title>
 </head>
 <body>
 </body>

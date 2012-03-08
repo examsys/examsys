@@ -72,22 +72,23 @@
 ?>
 <html>
 <head>
-<title>Objective Mapping</title>
-<?php echo $cfg_js_root ?>
-<script language="JavaScript" src="../js/mapping_tab.js"></script>
-<script language="JavaScript" src="../js/flash_include.js"></script>
-<script language="JavaScript" src="../js/ie_fix.js"></script>
-<style>
-  body {font-family:Arial,sans-serif; font-size:90%; background-color:white; color:black}
-  h1 {font-size:150%; font-weight:bold; color:#316AC5; margin-left:15px; padding-top:10px}
-  table {font-size:100%}
-  p {margin-top:0px; padding-top:0px}
-  .paper {margin-left:0px; font-size:180%; color:white; font-weight:bold}
-  .q_no {width:40px; text-align:right; vertical-align:top}
-  .theme {font-size:150%; padding-left:4px; font-weight:bold; color:#316AC5}
-  .notes {font-size:80%; color:#C00000}
-  .mk {color:#808080; font-size:80%}
-</style>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Objective Mapping</title>
+  <?php echo $cfg_js_root ?>
+  <script type="text/javascript" src="../js/mapping_tab.js"></script>
+  <script type="text/javascript" src="../js/flash_include.js"></script>
+  <script type="text/javascript" src="../js/ie_fix.js"></script>
+  <style type="text/css">
+    body {font-family:Arial,sans-serif; font-size:90%; background-color:white; color:black}
+    h1 {font-size:150%; font-weight:bold; color:#316AC5; margin-left:15px; padding-top:10px}
+    table {font-size:100%}
+    p {margin-top:0px; padding-top:0px}
+    .paper {margin-left:0px; font-size:180%; color:white; font-weight:bold}
+    .q_no {width:40px; text-align:right; vertical-align:top}
+    .theme {font-size:150%; padding-left:4px; font-weight:bold; color:#316AC5}
+    .notes {font-size:80%; color:#C00000}
+    .mk {color:#808080; font-size:80%}
+  </style>
 </head>
 <body>
 <?php

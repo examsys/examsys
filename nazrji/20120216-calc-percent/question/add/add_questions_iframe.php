@@ -22,10 +22,12 @@
 * @package
 */
 
+require '../../include/staff_auth.inc';
 ?>
 <html>
 <head>
-<title>Rogō</title>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Rogō</title>
 </head>
 <body style="font-family:Arial,sans-serif; margin-top:4px; margin-left:0px; margin-right:4px; margin-bottom:2px; background-color:#DFECFF">
 

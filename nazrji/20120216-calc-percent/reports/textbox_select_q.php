@@ -27,15 +27,16 @@ require '../include/staff_auth.inc';
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title><?php echo $string['textboxmarking'] . ' ' . $cfg_install_type; ?></title>
-<style type="text/css">
-body {font-family:Arial,sans-serif; font-size:90%; background-color:white; color:black; margin:0px}
-table {font-size:100%}
-.h {background-color:#F1F5FB; color:black}
-a {color:blue}
-</style>
-<link rel="stylesheet" type="text/css" href="../css/breadcrumb.css" />
-<script src="../js/staff_help.js" type="text/javascript"></script>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title><?php echo $string['textboxmarking'] . ' ' . $cfg_install_type; ?></title>
+  <link rel="stylesheet" type="text/css" href="../css/header.css" />
+  <style type="text/css">
+  body {font-family:Arial,sans-serif; font-size:90%; background-color:white; color:black; margin:0px}
+  table {font-size:100%}
+  a {color:blue}
+  </style>
+  <link rel="stylesheet" type="text/css" href="../css/breadcrumb.css" />
+  <script src="../js/staff_help.js" type="text/javascript"></script>
 </head>
 
 <body>
@@ -84,16 +85,16 @@ a {color:blue}
     $result->close();
   }
 
-  echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">\n<tr><td class=\"h\">";
+  echo "<table class=\"header\" style=\"font-size:90%\">\n<tr><th>";
   echo '<div class="breadcrumb"><a href="../staff/index.php">' . $string['home'] . '</a>';
   if ($folder != '') {
     echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?folder=' . $folder . '">' . $folder_name . '</a>';
   } elseif (isset($_GET['module']) and $_GET['module'] != '') {
     echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?module=' . $_GET['module'] . '">' . $_GET['module'] . '</a>';
   }
-  echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../paper/details.php?paperID=' . $_GET['paperID'] . '">' . $paper . '</a></div><div style="margin-left:10px; font-size:180%; color:black; font-weight:bold">' . $phase_description . '</div></td>';
-  echo "<td style=\"background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(214); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['help'] . "\" border=\"0\" /></a></td></tr>\n";
-  echo "<tr style=\"height:4px\"><td colspan=\"2\" valign=\"top\"><img src=\"../artwork/header_horizontal_line.gif\" width=\"100%\" height=\"3\" alt=\"Line\" /></td></tr>\n</table>\n";
+  echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../paper/details.php?paperID=' . $_GET['paperID'] . '">' . $paper . '</a></div><div style="margin-left:10px; font-size:220%; color:black; font-weight:bold">' . $phase_description . '</div></th>';
+  echo "<th style=\"text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(214); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['help'] . "\" border=\"0\" /></a></th></tr>\n";
+  echo "<tr><td colspan=\"2\" class=\"bevel\"></th></tr>\n</table>\n";
 
   echo "<br />\n<div style=\"margin:20px; background-color:#E4EEFC; border:1px solid #B5C4DF; padding:10px; font-size:80%\">" . $string['msg'] . "</div>\n";
 

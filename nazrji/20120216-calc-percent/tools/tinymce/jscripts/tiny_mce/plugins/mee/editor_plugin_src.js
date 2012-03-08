@@ -17,16 +17,12 @@ function getFrameForDocument(document) {
 }
 
 
-function updateMEE(frame, align, inline) {
+function updateMEE(frame, w, h , inline) {
     var iframe = $(getFrameForDocument(frame.document));
     var eqn = $(frame.document).find('#eqn_inner');
 
-    if (inline) {
-        iframe.css('width', align.width + 'px');
-    } else {
-        iframe.css('width', align.width + 'px');
-    }
-    iframe.css('height', align.height + 'px');
+    iframe.css('width', w + 5 + 'px');
+    iframe.css('height', h + 'px');
     iframe.css('vertical-align', 'middle');
 }
 
@@ -127,16 +123,13 @@ function clickMEEiFrame(frame) {
 
                     var datatxt = JSON.stringify(data);
 
-                    var html = "<iframe class='mee_iframe' data-mce-style='' src='/tools/tinymce/jscripts/tiny_mce/plugins/mee/frame.html?" + datatxt + "' width='1000' height='5' frameborder='0'></iframe>";
+                    var html = "<iframe class='mee_iframe' src='/tools/tinymce/jscripts/tiny_mce/plugins/mee/frame.html?" + datatxt + "' frameborder='0'></iframe>";
                     var newelem = $(html);
 
-                    $(newelem).addClass('mee_iframe');
                     $(newelem).insertBefore(elem);
                     if (!data.inline)
                         newelem.attr('align','middle');
-                    
-                    newelem.attr('data-mce-style','');
- 
+                                  
                     $(elem).remove();
                 }
             });

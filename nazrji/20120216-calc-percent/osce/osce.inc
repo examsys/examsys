@@ -30,6 +30,7 @@ function parse_leadin_word_2003($text,$parts) {
   $text = str_replace("\n",'',$text);
   $text = str_replace("\r",'',$text);
   $text = str_replace("\t",'',$text);
+  $text = str_replace("&nbsp;",' ',$text);
   $text = str_replace('<strong>','',$text);
   $text = str_replace('</strong>','',$text);
   $text = str_replace('<ul>','',$text);

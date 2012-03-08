@@ -27,12 +27,13 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
+<meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
 <title>Ebel Grids<?php echo ' ' . $cfg_install_type; ?></title>
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
-<style>
-.mid {padding-left:30px}
+<link rel="stylesheet" type="text/css" href="../css/header.css" />
+<style type="text/css">
+.mid {padding-left:10px}
 .l {cursor:pointer}
-.no {text-align:right; padding-right:10px}
 </style>
 
 <script src="../js/staff_help.js" type="text/javascript"></script>
@@ -81,14 +82,14 @@
 ?>
 <div id="content" class="content" style="font-size:80%">
 
-<table cellpadding="0" cellspacing="0" border="0" width="100%">
+<table class="header">
 <tr>
-<td style="background-color:#F1F5FB"><div class="breadcrumb"><a href="../staff/index.php"><?php echo $string['home']; ?></a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php"><?php echo $string['administrativetools']; ?></a></div><div style="margin-left:10px; font-size:200%; font-weight:bold"><?php echo $string['ebeltemplates']; ?></td>
-<td style="background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(233); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="<?php echo $string['help']; ?>" border="0" /></a></td>
+<th><div class="breadcrumb"><a href="../staff/index.php"><?php echo $string['home']; ?></a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php"><?php echo $string['administrativetools']; ?></a></div><div style="margin-left:10px; font-size:200%; font-weight:bold"><?php echo $string['ebeltemplates']; ?></th>
+<th style="text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(233); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="<?php echo $string['help']; ?>" border="0" /></a></th>
 </tr>
 <tr>
-<td style="background-color:#F1F5FB" class="mid"><?php echo $string['gridnames']; ?>&nbsp;</td><td style="background-color:#F1F5FB">&nbsp;</td></tr>
-<tr><td colspan="2" style="height:3px"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td></tr>
+<th><div class="mid"><?php echo $string['gridnames']; ?>&nbsp;</div></th><th>&nbsp;</th></tr>
+<tr><th colspan="2" class="bevel"></th></tr>
 <?php
 $old_faculty = '';
 $id = 0;
@@ -97,7 +98,7 @@ $result = $mysqli->prepare("SELECT id, name FROM ebel_grid_templates ORDER BY na
 $result->execute();
 $result->bind_result($id, $name);
 while ($result->fetch()) {
-  echo "<tr id=\"$id\" onclick=\"selFac($id,event)\" ondblclick=\"editTemplate()\" onmouseover=\"lon($id)\" onmouseout=\"loff($id)\" class=\"l\"><td class=\"mid\" colspan=\"2\">$name</td></tr>\n";
+  echo "<tr id=\"$id\" onclick=\"selFac($id,event)\" ondblclick=\"editTemplate()\" onmouseover=\"lon($id)\" onmouseout=\"loff($id)\" class=\"l\"><td colspan=\"2\"><div class=\"mid\">$name</div></td></tr>\n";
   $id++;
 }
 $result->close();

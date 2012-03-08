@@ -31,7 +31,7 @@ function OutputHeader_pp() {
   $pr_p_head = 1;
 ?>
 
-<style>
+<style type="text/css">
 .print_cont {
 	/*border: 1px solid #CCCCCC;*/
 	margin:6px;
@@ -66,7 +66,7 @@ function OutputHeader_pp() {
 	padding:6px;
 }
 </style>
-<script>
+<script type="text/javascript">
 
 function print_nice_expand(id)
 {

@@ -46,8 +46,9 @@ if(empty($_POST['source_y']) || empty($_POST['dest_y']) || empty($_POST['moduleI
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Rogō: CopyObjectives<?php echo " $cfg_install_type"; ?></title>
-<link rel="stylesheet" type="text/css" href="../submenu.css" />
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Rogō: CopyObjectives<?php echo " $cfg_install_type"; ?></title>
+  <link rel="stylesheet" type="text/css" href="../submenu.css" />
 </head>
 <?php
 if (count($errors) == 0) {

@@ -26,6 +26,7 @@ require '../../include/staff_auth.inc';
 ?>
 <html>
 <head>
+<meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
 <title>Rogō</title>
 <script language="JavaScript">
   var selected_q = Array();

@@ -91,32 +91,32 @@
   }
 ?>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Textbox Marking</title>
-<style type="text/css">
-body {font-family:Arial,sans-serif; font-size:90%; background-color:white; color:black; margin:0px}
-td {line-height:150%; text-align:justify}
-.heading {background-color:#EBEADB; color:black}
-</style>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Textbox Marking</title>
+  <style type="text/css">
+  body {font-family:Arial,sans-serif; font-size:90%; background-color:white; color:black; margin:0px}
+  td {line-height:150%; text-align:justify}
+  .heading {background-color:#EBEADB; color:black}
+  </style>
 
-<script src="../js/ie_fix.js" type="text/javascript"></script>
-<script language="JavaScript">
-  function move_in(img_name) {
-    document[img_name].src=onImg.src;
-  }
+  <script src="../js/ie_fix.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    function move_in(img_name) {
+      document[img_name].src=onImg.src;
+    }
 
-  function move_out(img_name) {
-    document[img_name].src=offImg.src;
-  }
-  
-  onImg = new Image;
-  onImg.src = '../artwork/up_folder_icon_on.gif';
-  offImg = new Image;
-  offImg.src = '../artwork/up_folder_icon_off.gif';
-</script>
+    function move_out(img_name) {
+      document[img_name].src=offImg.src;
+    }
+
+    onImg = new Image;
+    onImg.src = '../artwork/up_folder_icon_on.gif';
+    offImg = new Image;
+    offImg.src = '../artwork/up_folder_icon_off.gif';
+  </script>
 </head>
 
 <body style="margin:0px">

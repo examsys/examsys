@@ -137,10 +137,11 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
   <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
   <html>
   <head>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
   <title><?php echo $string['editmodule'] . ' ' . $cfg_install_type; ?></title>
   <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
-
-  <style>
+  <link rel="stylesheet" type="text/css" href="../css/header.css" />
+  <style type="text/css">
     input, textarea {font-family:Arial,sans-serif; color:black}
     .field {font-weight:bold; text-align:right; padding-right:10px}
   </style>
@@ -187,9 +188,9 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
     require '../include/module_options.inc';
   ?>
   <div id="content" class="content" style="font-size:80%">
-  <table cellpadding="0" cellspacing="0" border="0" width="100%">
-  <tr><td style="background-color:#F1F5FB"><div class="breadcrumb"><a href="../staff/index.php"><?php echo $string['home']; ?></a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php"><?php echo $string['administrativetools']; ?></a></div><div style="margin-left:10px; font-size:200%; font-weight:bold"><?php echo $string['editmodule']; ?></div></td></tr>
-  <tr><td style="height:3px"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" /></td></tr>
+  <table class="header">
+  <tr><th><div class="breadcrumb"><a href="../staff/index.php"><?php echo $string['home']; ?></a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php"><?php echo $string['administrativetools']; ?></a></div><div style="margin-left:10px; font-size:200%; font-weight:bold"><?php echo $string['editmodule']; ?></div></th></tr>
+  <tr><th class="bevel"></th></tr>
   </table>
   <br />
   <div align="center">

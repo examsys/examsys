@@ -156,41 +156,40 @@ if (stripos($userroles,'Student') !== false AND stripos($_SERVER['PHP_AUTH_USER'
   }
 }
 ?>
-<!DOCTYPE html
-PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title><?php echo $string['startscreen']; ?></title>
-<style>
-body {font-family:<?php echo $font; ?>,sans-serif;color:black;font-size:<?php echo $textsize; ?>%}
-input {font-family:<?php echo $font; ?>,sans-serif;font-size:90%}
-td {text-align:left}
-.f {font-weight:bold; text-align:right;line-height:180%;padding-right:6px}
-.w {font-size:90%;color:#C00000;font-weight:bold}
-</style>
-<script language="JavaScript">
-function startPaper() {
-  exam=window.open("./paper/start.php?id=<?php echo $_GET['id']; ?>","paper","fullscreen=<?php echo $fullscreen; ?>,width="+(screen.width-80)+",height="+(screen.height-80)+",left=20,top=10,scrollbars=yes,menubar=no,titlebar=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable=yes");
-  if (window.focus) {
-    exam.focus();
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title><?php echo $string['startscreen']; ?></title>
+  <style type="text/css">
+  body {font-family:<?php echo $font; ?>,sans-serif;color:black;font-size:<?php echo $textsize; ?>%}
+  input {font-family:<?php echo $font; ?>,sans-serif;font-size:90%}
+  td {text-align:left}
+  .f {font-weight:bold; text-align:right;line-height:180%;padding-right:6px}
+  .w {font-size:90%;color:#C00000;font-weight:bold}
+  </style>
+  <script type="text/javascript">
+  function startPaper() {
+    exam=window.open("./paper/start.php?id=<?php echo $_GET['id']; ?>","paper","fullscreen=<?php echo $fullscreen; ?>,width="+(screen.width-80)+",height="+(screen.height-80)+",left=20,top=10,scrollbars=yes,menubar=no,titlebar=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable=yes");
+    if (window.focus) {
+      exam.focus();
+    }
+    document.getElementById('start').value = '<?php echo $string['restart']; ?>';
   }
-  document.getElementById('start').value = '<?php echo $string['restart']; ?>';
-}
-function reviewPaper(started,type) {
-  exam=window.open("./paper/finish.php?id=<?php echo $_GET['id']; ?>&previous="+started+"&log_type="+type+"","paper","fullscreen=<?php echo $fullscreen; ?>,width="+(screen.width-80)+",height="+(screen.height-80)+",left=30,top=20,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
-  if (window.focus) {
-    exam.focus();
+  function reviewPaper(started,type) {
+    exam=window.open("./paper/finish.php?id=<?php echo $_GET['id']; ?>&previous="+started+"&log_type="+type+"","paper","fullscreen=<?php echo $fullscreen; ?>,width="+(screen.width-80)+",height="+(screen.height-80)+",left=30,top=20,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+    if (window.focus) {
+      exam.focus();
+    }
   }
-}
-function launchHelp() {
-  help=window.open("./help/student/index.php","help","width="+(screen.width-30)+",height="+(screen.height-100)+",scrollbars=yes,resizable=yes,toolbar=no,location=no,directories=no,status=no,menubar=no");
-  help.moveTo(10,10);
-  if (window.focus) {
-    help.focus();
+  function launchHelp() {
+    help=window.open("./help/student/index.php","help","width="+(screen.width-30)+",height="+(screen.height-100)+",scrollbars=yes,resizable=yes,toolbar=no,location=no,directories=no,status=no,menubar=no");
+    help.moveTo(10,10);
+    if (window.focus) {
+      help.focus();
+    }
   }
-}
-</script>
+  </script>
 </head>
 <body>
 <form name="theform">

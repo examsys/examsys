@@ -399,22 +399,19 @@
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title><?php echo $string['quantitativereport']; ?></title>
-<style type="text/css">
-body {font-family:Arial,sans-serif; font-size:90%; background-color:white; color:black; margin:0px}
-h1 {margin-left:15px; font-family:Arial,sans-serif; font-size:18pt; color:#316AC5}
-table {font-size:100%}
-p {margin-right:15px}
-td {vertical-align:top}
-.figures {text-align:right; width:60px}
-.q_no {text-align:right; width:40px}
-.h {background-color:#F1F5FB; color:black}
-.breadcrumb {margin-left:10px; font-size:90%}
-.breadcrumb a:link {color:blue; text-decoration:none; cursor:pointer}
-.breadcrumb a:visited {color:blue; text-decoration:none; cursor:pointer}
-.breadcrumb a:hover {color:blue; text-decoration:underline; cursor:pointer}
-</style>
-<script src="../js/staff_help.js" type="text/javascript"></script>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title><?php echo $string['quantitativereport']; ?></title>
+  <link rel="stylesheet" type="text/css" href="../css/header.css" />
+  <style type="text/css">
+  body {font-family:Arial,sans-serif; font-size:90%; background-color:white; color:black; margin:0px}
+  h1 {margin-left:15px; font-family:Arial,sans-serif; font-size:18pt; color:#316AC5}
+  table {font-size:100%}
+  p {margin-right:15px}
+  td {vertical-align:top}
+  .figures {text-align:right; width:60px}
+  .q_no {text-align:right; width:40px}
+  </style>
+  <script src="../js/staff_help.js" type="text/javascript"></script>
 </head>
 
 <body>
@@ -703,13 +700,13 @@ td {vertical-align:top}
     $result->fetch();
     $result->close();
   }
-  echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">\n";
-  echo '<tr><td class="h"><div class="breadcrumb"><a href="../staff/index.php">' . $string['home'] . '</a>';
+  echo "<table class=\"header\" style=\"font-size:90%\">\n";
+  echo '<tr><th><div class="breadcrumb"><a href="../staff/index.php">' . $string['home'] . '</a>';
   if ($folder != '') echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?folder=' . $folder . '">' . $folder_name . '</a>';
   if (isset($_GET['module']) and $_GET['module'] != '') echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?module=' . $_GET['module'] . '">' . $_GET['module'] . '</a>';
   echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../paper/details.php?paperID=' . $_GET['paperID'] . '">' . $paper . '</a></div>';
-  echo "<span style=\"margin-left:10px; font-size:200%; color:black; font-weight:bold\">" . $string['quantitativereport'] . "</span></td><td class=\"h\" style=\"text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(33); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['help'] . "\" border=\"0\" /></a></td></tr>\n";
-  echo '<tr style="height:4px"><td valign="top" colspan="11"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td></tr>';
+  echo "<span style=\"margin-left:10px; font-size:220%; color:black; font-weight:bold\">" . $string['quantitativereport'] . "</span></th><th style=\"text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(33); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['help'] . "\" border=\"0\" /></a></th></tr>\n";
+  echo '<tr><th colspan="11" class="bevel"></th></tr>';
   echo "\n</table>\n";
 
   echo '<table cellpadding="2" cellspacing="0" border="0" width="100%">';

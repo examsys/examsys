@@ -124,13 +124,14 @@ if ($folder != '') {
   $selfenrol = 0;
 }
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html onclick="hideMenus()">
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
 <title>Rogō<?php echo ' ' . $cfg_install_type; ?></title>
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
-
+<link rel="stylesheet" type="text/css" href="../css/header.css" />
 <?php echo $cfg_js_root ?>
 <script src="../js/sidebar.js" type="text/javascript"></script>
 <script src="../js/staff_help.js" type="text/javascript"></script>
@@ -192,28 +193,28 @@ if ($folder != '') {
 ?>
 <div id="content" class="content" style="font-size:80%">
 <form name="myform" action="<?php echo $_SERVER['PHP_SELF'] . '?' . $_SERVER['QUERY_STRING']; ?>" method="post">
-<table cellpadding="0" cellspacing="0" border="0" width="100%">
+<table class="header">
 <?php
-echo '<tr><td style="background-color:#F1F5FB">';
+echo '<tr><th>';
 if (isset($parent_id)) {
   echo '<div class="breadcrumb"><a href="../staff/index.php">' . $string['home'] . '</a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="details.php?folder=' . $parent_id . '">' . $parent_name . '</a></div>';
 } else {
   echo '<div class="breadcrumb"><a href="../staff/index.php">' . $string['home'] . '</a></div>';
 }
-echo "</td><td style=\"background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(1); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"Help\" border=\"0\" /></a></td></tr>\n";
+echo "</th><th style=\"text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(1); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"Help\" border=\"0\" /></a></th></tr>\n";
 
-echo '<tr><td style="background-color:#F1F5FB"><div style="margin-left:10px; font-size:200%; font-weight:bold">';
+echo '<tr><th><div style="margin-left:10px; font-size:200%; font-weight:bold">';
 if ($folder != '') {
   echo $folders_array[$parts];
 } elseif ($_GET['module'] != '') {
   echo $_GET['module'] . ': <span style="font-weight:normal">' . $module_fullname . '</span>';
 }
-echo '</td>';
-echo "<td style=\"background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><input type=\"checkbox\" name=\"showretired\" id=\"showretired\" value=\"on\" onclick=\"updateCookies();\"";
+echo '</th>';
+echo "<th style=\"text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><input type=\"checkbox\" name=\"showretired\" id=\"showretired\" value=\"on\" onclick=\"updateCookies();\"";
 if (isset($_COOKIE['showretired']) and $_COOKIE['showretired'] == 'checked') echo ' checked';
-echo " /> " . $string['showretired'] . "</td></tr>\n";
+echo " /> " . $string['showretired'] . "</th></tr>\n";
 
-echo "<tr><td colspan=\"2\" style=\"height:3px\"><img src=\"../artwork/header_horizontal_line.gif\" width=\"100%\" height=\"3\" alt=\"Line\" /></td></tr>\n</table>\n<br />\n";
+echo "<tr><th colspan=\"2\" class=\"bevel\"></th></tr>\n</table>\n<br />\n";
 
 $display_papers = true;
 // Get members of current folder.

@@ -25,21 +25,23 @@
 
 require '../../include/staff_auth.inc';
 ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Help and Support Center</title>
-<style>
-body {background-color:white; color:black; margin:0px; font-family:Arial,sans-serif; font-size:85%; line-height:150%}
-table {font-size:100%}
-a:link {color:#0560A6}
-a:visited {color:#0560A6}
-.row {height:28px; border-bottom: 1px solid #A6CBEB}
-</style>
-<script language="JavaScript">
-  function updateToolbar(pageID) {
-    parent.frames['toolbar'].document.myform.pageid.value=pageID;
-  }
-</script>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Help and Support Center</title>
+  <style type="text/css">
+  body {background-color:white; color:black; margin:0px; font-family:Arial,sans-serif; font-size:85%; line-height:150%}
+  table {font-size:100%}
+  a:link {color:#0560A6}
+  a:visited {color:#0560A6}
+  .row {height:28px; border-bottom: 1px solid #A6CBEB}
+  </style>
+  <script type="text/javascript">
+    function updateToolbar(pageID) {
+      parent.frames['toolbar'].document.myform.pageid.value=pageID;
+    }
+  </script>
 </head>
 
 <?php

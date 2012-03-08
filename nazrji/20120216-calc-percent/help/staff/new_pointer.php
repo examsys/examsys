@@ -22,37 +22,39 @@
 * @package
 */
 
-  require '../../include/sysadmin_auth.inc';    // Only let SysAdmin staff create links.
-  
-  if (isset($_POST['submit'])) {
-    $insertQuery = "INSERT INTO staff_help VALUES (NULL, \"" . $_POST['title'] . "\", '" . $_POST['pageid'] . "', NULL, 'pointer', NULL, NULL, 'Staff', NULL)";
-    if (!$mysqli->query($insertQuery)) {
-      echo "<p>" . $mysqli->error . "</p>\n";
-      echo "<p>$insertQuery</p>\n";
-      exit;
+require '../../include/sysadmin_auth.inc';    // Only let SysAdmin staff create links.
+
+if (isset($_POST['submit'])) {
+  $insertQuery = "INSERT INTO staff_help VALUES (NULL, \"" . $_POST['title'] . "\", '" . $_POST['pageid'] . "', NULL, 'pointer', NULL, NULL, 'Staff', NULL)";
+  if (!$mysqli->query($insertQuery)) {
+    echo "<p>" . $mysqli->error . "</p>\n";
+    echo "<p>$insertQuery</p>\n";
+    exit;
+  }
+  $page_id = $mysqli->insert_id;
+  ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title></title>
+  <script type="text/javascript">
+    function reloadHelp() {
+      window.top.location='index.php?id=<?php echo $page_id; ?>';
     }
-    $page_id = $mysqli->insert_id;
-    ?>
-    <html>
-    <head>
-    <title></title>
-    <script language="JavaScript">
-      function reloadHelp() {
-        window.top.location='index.php?id=<?php echo $page_id; ?>';
-      }
-    </script>
-    </head>
-    <body onload="reloadHelp()">
-    </body>
-    </html>
-    
-    <?php
-  } else {
+  </script>
+</head>
+<body onload="reloadHelp()">
+</body>
+</html>
+
+<?php
+} else {
 ?>
 <html>
 <head>
 <title>Help and Support Center</title>
-<style>
+<style type="text/css">
 body {margin:0px; font-size:85%; background-color:white; color:black; font-family:Arial,sans-serif}
 div {line-height:180%}
 a:link {color:black}

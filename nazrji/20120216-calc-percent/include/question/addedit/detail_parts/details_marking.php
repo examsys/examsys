@@ -70,7 +70,7 @@ echo ViewHelper::render_options($marks_partial, $mark_partial, 3);
                 </span>
 <?php
 endif;
-if ($allow_neg):
+if ($allow_neg or $mark_incorrect != 0):
 ?>
                 <label for="option_marks_incorrect" class="heavy"><?php echo $string['marksincorrect']?></label>
                 <select id="option_marks_incorrect" name="option_marks_incorrect">

@@ -43,15 +43,17 @@ function findDecisionQ($question_array,$sourceID) {
   return $source_question_no;
 }
 ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Descision Question</title>
-<style>
-body {color:black; background-color:white; font-family:Arial,sans-serif; margin:0px; font-size:90%}
-.q_no {text-align:right; vertical-align:top; cursor:pointer; width:40px; padding-right:6px}
-.divider {font-family:Arial,sans-serif; font-size:80%; font-weight:bold; padding-left:6px}
-.leadin {width:85%; vertical-align:top}
-</style>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <title>Descision Question</title>
+  <style type="text/css">
+  body {color:black; background-color:white; font-family:Arial,sans-serif; margin:0px; font-size:90%}
+  .q_no {text-align:right; vertical-align:top; cursor:pointer; width:40px; padding-right:6px}
+  .divider {font-family:Arial,sans-serif; font-size:80%; font-weight:bold; padding-left:6px}
+  .leadin {width:85%; vertical-align:top}
+  </style>
 </head>
 
 <body>

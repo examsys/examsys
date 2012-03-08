@@ -57,23 +57,24 @@ if (isset($_GET['module'])) {
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
-  <head>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
   <title>Rogō: <?php echo $string['importmetadata'] . ' ' . $cfg_install_type; ?></title>
   <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
   <?php echo $cfg_js_root ?>
   <script src="../js/sidebar.js" type="text/javascript"></script>
-  <script language="JavaScript">
+  <script type="text/javascript">
     function changeMsg() {
       document.getElementById('msg').innerHTML = 'Finished';
     }
   </script>
-  <style>
+  <style type="text/css">
     body {font-family:Arial,sans-serif; background-color:white; colour:black}
     p {margin:0px; padding:0px}
     h1 {font-size:120%; font-weight:bold}
     img { border-style:none; border-width:0px)
   </style>
-  </head>
+</head>
 
 
 <?php

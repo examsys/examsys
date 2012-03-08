@@ -123,60 +123,43 @@
 <div id="left-sidebar" class="sidebar">
 <form name="PapersMenu" action="">
 
-<br />
+<div class="submenuheading" id="banktasks"><?php echo $string['questionbank']; ?></div>
 
-<table id="banktasks" cellpadding="0" cellspacing="0" border="0" width="185" style="margin-left:2px; font-size:100%">
-<tr><td style="font-weight:bold"><?php echo $string['questionbank']; ?></td></tr>
-<table cellpadding="4" cellspacing="0" border="0" style="font-size:90%; margin-left:7px">
-<tr><td width="16"><img src="<?php echo $cfg_root_path ?>/artwork/question_list_icon.gif" width="16" height="16" alt="List Papers" border="0" /></td><td class="menuitem"><span id="type"><a href="#" onclick="showMenu('popup0','banktasks','type',myOptions0,myURLs0,event); return false;"><?php echo $string['questionsbytype']; ?></a></span><img src="<?php echo $cfg_root_path ?>/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
-<tr><td width="16"><img src="<?php echo $cfg_root_path ?>/artwork/question_list_icon.gif" width="16" height="16" alt="List Teams" border="0" /></td><td class="menuitem"><span id="team"><a href="#" onclick="showMenu('popup1','banktasks','team',myOptions1,myURLs1,event); return false;"><?php echo $string['questionsbyteam']; ?></a></span><img src="<?php echo $cfg_root_path ?>/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
-<tr><td width="16"><img src="<?php echo $cfg_root_path ?>/artwork/question_list_icon.gif" width="16" height="16" alt="List Keywords" border="0" /></td><td class="menuitem"><span id="keyword"><a href="#" onclick="showMenu('popup2','banktasks','keyword',myOptions2,myURLs2,event); return false;"><?php echo $string['questionsbykeyword']; ?></a></span><img src="<?php echo $cfg_root_path ?>/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
-<tr><td width="16"><img src="<?php echo $cfg_root_path ?>/artwork/xmag.png" width="16" height="16" alt="Search" border="0" /></td><td class="menuitem"><span id="search"><a href="#" onclick="showMenu('popup3','banktasks','search',myOptions3,myURLs3,event); return false;"><?php echo $string['search']; ?></a></span><img src="<?php echo $cfg_root_path ?>/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
-<tr><td width="16"><img src="<?php echo $cfg_root_path ?>/artwork/new_question_menu_icon.gif" width="16" height="16" alt="newquestion" border="0" /></td><td class="menuitem"><span id="newquestion"><a href="#" onclick="showMenu('popup4','banktasks','newquestion',myOptions4,myURLs4,event); return false;"><?php echo $string['createnewquestion']; ?></a></span><img src="<?php echo $cfg_root_path ?>/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
-</table>
-
-</td></tr>
+<table cellpadding="4" cellspacing="0" border="0" style="margin-left:8px; font-size:90%">
+<tr><td class="ico"><a href="#" onclick="showMenu('popup0','banktasks','type',myOptions0,myURLs0,event); return false;"><img src="<?php echo $cfg_root_path ?>/artwork/question_list_icon.gif" width="16" height="16" alt="List Papers" border="0" /></a></td><td class="menuitem"><span id="type"><a href="#" onclick="showMenu('popup0','banktasks','type',myOptions0,myURLs0,event); return false;"><?php echo $string['questionsbytype']; ?></a></span><img src="<?php echo $cfg_root_path ?>/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
+<tr><td class="ico"><a href="#" onclick="showMenu('popup1','banktasks','team',myOptions1,myURLs1,event); return false;"><img src="<?php echo $cfg_root_path ?>/artwork/question_list_icon.gif" width="16" height="16" alt="List Teams" border="0" /></a></td><td class="menuitem"><span id="team"><a href="#" onclick="showMenu('popup1','banktasks','team',myOptions1,myURLs1,event); return false;"><?php echo $string['questionsbyteam']; ?></a></span><img src="<?php echo $cfg_root_path ?>/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
+<tr><td class="ico"><a href="#" onclick="showMenu('popup2','banktasks','keyword',myOptions2,myURLs2,event); return false;"><img src="<?php echo $cfg_root_path ?>/artwork/question_list_icon.gif" width="16" height="16" alt="List Keywords" border="0" /></a></td><td class="menuitem"><span id="keyword"><a href="#" onclick="showMenu('popup2','banktasks','keyword',myOptions2,myURLs2,event); return false;"><?php echo $string['questionsbykeyword']; ?></a></span><img src="<?php echo $cfg_root_path ?>/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
+<tr><td class="ico"><a href="#" onclick="showMenu('popup3','banktasks','search',myOptions3,myURLs3,event); return false;"><img src="<?php echo $cfg_root_path ?>/artwork/xmag.png" width="16" height="16" alt="Search" border="0" /></a></td><td class="menuitem"><span id="search"><a href="#" onclick="showMenu('popup3','banktasks','search',myOptions3,myURLs3,event); return false;"><?php echo $string['search']; ?></a></span><img src="<?php echo $cfg_root_path ?>/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
+<tr><td class="ico"><a href="#" onclick="showMenu('popup4','banktasks','newquestion',myOptions4,myURLs4,event); return false;"><img src="<?php echo $cfg_root_path ?>/artwork/new_question_menu_icon.gif" width="16" height="16" alt="newquestion" border="0" /></a></td><td class="menuitem"><span id="newquestion"><a href="#" onclick="showMenu('popup4','banktasks','newquestion',myOptions4,myURLs4,event); return false;"><?php echo $string['createnewquestion']; ?></a></span><img src="<?php echo $cfg_root_path ?>/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
 </table>
 
 <br />
-<br />
 
-<table cellpadding="0" cellspacing="0" border="0" width="185" style="margin-left:2px; font-size:100%">
-<tr><td style="font-weight:bold"><?php echo $string['currentquestiontasks']; ?></td></tr>
-<table cellpadding="0" cellspacing="0" border="0" style="margin-left:7px; font-size:90%">
-<tr><td>
+<div class="submenuheading" id="banktasks"><?php echo $string['currentquestiontasks']; ?></div>
 
-<table style="font-size:100%; line-height:160%; display:block" cellpadding="4" cellspacing="0" border="0" id="menu2a">
-<tr><td><img src="<?php echo $cfg_root_path ?>/artwork/edit_icon_16_grey.png" width="16" height="16" alt="Edit" /></td><td class="greymenuitem"><?php echo $string['editquestion']; ?></td></tr>
-<tr><td><img src="<?php echo $cfg_root_path ?>/artwork/information_icon_grey.gif" width="16" height="16" alt="Information" /></td><td class="greymenuitem"><?php echo $string['information']; ?></td></tr>
-<tr><td><img src="<?php echo $cfg_root_path ?>/artwork/copy_icon_grey.gif" width="16" height="16" alt="Copy" /></td><td class="greymenuitem"><?php echo $string['copyontopaperx']; ?></td></tr>
-<tr><td><img src="<?php echo $cfg_root_path ?>/artwork/link_grey.png" width="16" height="16" alt="Link 2 Paper" /></td><td class="greymenuitem"><?php echo $string['linktopaperx']; ?></td></tr>
-<tr><td><img src="<?php echo $cfg_root_path ?>/artwork/red_cross_grey.png" width="16" height="16" alt="Delete" /></td><td class="greymenuitem"><?php echo $string['deletequestion']; ?></td></tr>
+<table style="margin-left:8px; font-size:90%; line-height:160%; display:block" cellpadding="3" cellspacing="0" border="0" id="menu2a">
+<tr><td class="ico"><img src="<?php echo $cfg_root_path ?>/artwork/edit_icon_16_grey.png" width="16" height="16" alt="Edit" /></td><td class="greymenuitem"><?php echo $string['editquestion']; ?></td></tr>
+<tr><td class="ico"><img src="<?php echo $cfg_root_path ?>/artwork/information_icon_grey.gif" width="16" height="16" alt="Information" /></td><td class="greymenuitem"><?php echo $string['information']; ?></td></tr>
+<tr><td class="ico"><img src="<?php echo $cfg_root_path ?>/artwork/copy_icon_grey.gif" width="16" height="16" alt="Copy" /></td><td class="greymenuitem"><?php echo $string['copyontopaperx']; ?></td></tr>
+<tr><td class="ico"><img src="<?php echo $cfg_root_path ?>/artwork/link_grey.png" width="16" height="16" alt="Link 2 Paper" /></td><td class="greymenuitem"><?php echo $string['linktopaperx']; ?></td></tr>
+<tr><td class="ico"><img src="<?php echo $cfg_root_path ?>/artwork/red_cross_grey.png" width="16" height="16" alt="Delete" /></td><td class="greymenuitem"><?php echo $string['deletequestion']; ?></td></tr>
 </table>
 
-<table style="font-size:100%; line-height:160%; display:none" cellpadding="4" cellspacing="0" border="0" id="menu2b">
-<tr><td><a id="edit" onclick="editQ(); return false;" href="#"><img src="<?php echo $cfg_root_path ?>/artwork/new_question_menu_icon.gif" width="16" height="16" alt="Edit" border="0" /></a></td><td class="menuitem"><a id="edit" onclick="editQ(); return false;" href="#"><?php echo $string['editquestion']; ?></a></td></tr>
-<tr><td><a id="information" href="#" onclick="questionInfo(); return false;"><img src="<?php echo $cfg_root_path ?>/artwork/information_icon.gif" width="16" height="16" alt="Information" border="0" /></a></td><td class="menuitem"><a id="information" href="#" onclick="questionInfo(); return false;"><?php echo $string['information']; ?></a></td></tr>
-<tr><td><a id="copy" href="#" onclick="copyToPaper(); return false;"><img src="<?php echo $cfg_root_path ?>/artwork/copy_icon.gif" width="16" height="16" alt="Copy" border="0" /></a></td><td class="menuitem"><a id="copy" href="#" onclick="copyToPaper(); return false;"><?php echo $string['copyontopaperx']; ?></a></td></tr>
-<tr><td><a id="link" href="#" onclick="linkToPaper(); return false;"><img src="<?php echo $cfg_root_path ?>/artwork/link.png" width="16" height="16" alt="Link 2 Paper" border="0" /></a></td><td class="menuitem"><a id="link" href="#" onclick="linkToPaper(); return false;"><?php echo $string['linktopaperx']; ?></a></td></tr>
-<tr><td><a id="delete" href="#" onclick="deleteQuestion(); return false;"><img src="<?php echo $cfg_root_path ?>/artwork/red_cross.png" width="16" height="16" alt="Delete" border="0" /></a></td><td class="menuitem"><a id="delete" href="#" onclick="deleteQuestion(); return false;"><?php echo $string['deletequestion']; ?></a></td></tr>
+<table style="margin-left:8px; font-size:90%; line-height:160%; display:none" cellpadding="3" cellspacing="0" border="0" id="menu2b">
+<tr><td class="ico"><a id="edit" onclick="editQ(); return false;" href="#"><img src="<?php echo $cfg_root_path ?>/artwork/new_question_menu_icon.gif" width="16" height="16" alt="Edit" border="0" /></a></td><td class="menuitem"><a id="edit" onclick="editQ(); return false;" href="#"><?php echo $string['editquestion']; ?></a></td></tr>
+<tr><td class="ico"><a id="information" href="#" onclick="questionInfo(); return false;"><img src="<?php echo $cfg_root_path ?>/artwork/information_icon.gif" width="16" height="16" alt="Information" border="0" /></a></td><td class="menuitem"><a id="information" href="#" onclick="questionInfo(); return false;"><?php echo $string['information']; ?></a></td></tr>
+<tr><td class="ico"><a id="copy" href="#" onclick="copyToPaper(); return false;"><img src="<?php echo $cfg_root_path ?>/artwork/copy_icon.gif" width="16" height="16" alt="Copy" border="0" /></a></td><td class="menuitem"><a id="copy" href="#" onclick="copyToPaper(); return false;"><?php echo $string['copyontopaperx']; ?></a></td></tr>
+<tr><td class="ico"><a id="link" href="#" onclick="linkToPaper(); return false;"><img src="<?php echo $cfg_root_path ?>/artwork/link.png" width="16" height="16" alt="Link 2 Paper" border="0" /></a></td><td class="menuitem"><a id="link" href="#" onclick="linkToPaper(); return false;"><?php echo $string['linktopaperx']; ?></a></td></tr>
+<tr><td class="ico"><a id="delete" href="#" onclick="deleteQuestion(); return false;"><img src="<?php echo $cfg_root_path ?>/artwork/red_cross.png" width="16" height="16" alt="Delete" border="0" /></a></td><td class="menuitem"><a id="delete" href="#" onclick="deleteQuestion(); return false;"><?php echo $string['deletequestion']; ?></a></td></tr>
 </table>
 
-<table style="font-size:100%; line-height:160%; display:none" cellpadding="4" cellspacing="0" border="0" id="menu2c">
-<tr><td><a id="edit" onclick="editQ(); return false;" href="#"><img src="<?php echo $cfg_root_path ?>/artwork/new_question_menu_icon.gif" width="16" height="16" alt="Edit" border="0" /></a></td><td class="menuitem"><a id="edit" onclick="editQ(); return false;" href="#"><?php echo $string['editquestion']; ?></a></td></tr>
-<tr><td><a id="information" href="#" onclick="questionInfo(); return false;"><img src="<?php echo $cfg_root_path ?>/artwork/information_icon.gif" width="16" height="16" alt="Information" border="0" /></a></td><td class="menuitem"><a id="information" href="#" onclick="questionInfo(); return false;"><?php echo $string['information']; ?></a></td></tr>
-<tr><td><a id="copy" href="#" onclick="copyToPaper(); return false;"><img src="<?php echo $cfg_root_path ?>/artwork/copy_icon.gif" width="16" height="16" alt="Copy" border="0" /></a></td><td class="menuitem"><a id="copy" href="#" onclick="copyToPaper(); return false;"><?php echo $string['copyontopaperx']; ?></a></td></tr>
-<tr><td><a id="link" href="#" onclick="linkToPaper(); return false;"><img src="<?php echo $cfg_root_path ?>/artwork/link.png" width="16" height="16" alt="Link 2 Paper" border="0" /></a></td><td class="menuitem"><a id="link" href="#" onclick="linkToPaper(); return false;"><?php echo $string['linktopaperx']; ?></a></td></tr>
-<tr><td><img src="<?php echo $cfg_root_path ?>/artwork/red_cross_grey.png" width="16" height="16" alt="Delete" border="0" /></td><td class="greymenuitem"><?php echo $string['deletequestion']; ?></td></tr>
+<table style="margin-left:8px; font-size:90%; line-height:160%; display:none" cellpadding="3" cellspacing="0" border="0" id="menu2c">
+<tr><td class="ico"><a id="edit" onclick="editQ(); return false;" href="#"><img src="<?php echo $cfg_root_path ?>/artwork/new_question_menu_icon.gif" width="16" height="16" alt="Edit" border="0" /></a></td><td class="menuitem"><a id="edit" onclick="editQ(); return false;" href="#"><?php echo $string['editquestion']; ?></a></td></tr>
+<tr><td class="ico"><a id="information" href="#" onclick="questionInfo(); return false;"><img src="<?php echo $cfg_root_path ?>/artwork/information_icon.gif" width="16" height="16" alt="Information" border="0" /></a></td><td class="menuitem"><a id="information" href="#" onclick="questionInfo(); return false;"><?php echo $string['information']; ?></a></td></tr>
+<tr><td class="ico"><a id="copy" href="#" onclick="copyToPaper(); return false;"><img src="<?php echo $cfg_root_path ?>/artwork/copy_icon.gif" width="16" height="16" alt="Copy" border="0" /></a></td><td class="menuitem"><a id="copy" href="#" onclick="copyToPaper(); return false;"><?php echo $string['copyontopaperx']; ?></a></td></tr>
+<tr><td class="ico"><a id="link" href="#" onclick="linkToPaper(); return false;"><img src="<?php echo $cfg_root_path ?>/artwork/link.png" width="16" height="16" alt="Link 2 Paper" border="0" /></a></td><td class="menuitem"><a id="link" href="#" onclick="linkToPaper(); return false;"><?php echo $string['linktopaperx']; ?></a></td></tr>
+<tr><td class="ico"><img src="<?php echo $cfg_root_path ?>/artwork/red_cross_grey.png" width="16" height="16" alt="Delete" border="0" /></td><td class="greymenuitem"><?php echo $string['deletequestion']; ?></td></tr>
 </table>
-
-</td></tr>
-</table>
-
-</td></tr>
-</table>
-
-<br />
 
 <input type="hidden" name="questionID" value="" />
 <input type="hidden" name="qType" value="" />

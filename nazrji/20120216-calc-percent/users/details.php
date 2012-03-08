@@ -223,9 +223,10 @@
 <html>
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
 <title><?php echo $string['usermanagement'] ?></title>
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
-<style style="text/css">
+<style type="text/css">
 body {font-size:100%}
 td {padding-top:1px}
 .coltitle {cursor:hand; background-color:#1E3C7B; color:white}

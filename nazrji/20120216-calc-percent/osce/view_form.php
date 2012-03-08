@@ -52,8 +52,9 @@
 ?>
   <html>
   <head>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
   <title><?php echo $string['osceform']; ?></title>
-  <style>
+  <style type="text/css">
     body {font-family:Arial,sans-serif; font-size:90%; background-color:<?php echo $bgcolor; ?>; color:<?php echo $fgcolor; ?>}
     table {font-size:100%; border-collapse:collapse}
     td {text-align:center}

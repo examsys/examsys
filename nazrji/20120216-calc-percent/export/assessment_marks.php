@@ -46,7 +46,7 @@
         } else {
           $tmp_exclude = '0000000000000000000000000000000000000000';
         }
-        if ($question['q_type'] == 'extmatch' or $question['q_type'] == 'matrix' and $question['score_method'] == 'Mark per Option') {
+        if (($question['q_type'] == 'extmatch' or $question['q_type'] == 'matrix') and $question['score_method'] == 'Mark per Option') {
           $sub_parts = 0;
           $paper_answers = explode("|",$question['correct'][0]);
           for ($a=0; $a<count($paper_answers); $a++) {
@@ -54,7 +54,7 @@
           
             if ($paper_answers[$a] != '' and substr($tmp_exclude,$a+$sub_parts,1) == '0') echo ',Q' . $q_no . chr($a+65);
           }
-        } elseif ($question['q_type'] == 'dichotomous' or $question['q_type'] == 'blank' and $question['score_method'] == 'Mark per Option') {
+        } elseif (($question['q_type'] == 'dichotomous' or $question['q_type'] == 'blank') and $question['score_method'] == 'Mark per Option') {
           for ($a=0; $a<count($question['correct']); $a++) {
             if (substr($tmp_exclude,$a,1) == '0') echo ',Q' . $q_no . chr($a+65);
           }

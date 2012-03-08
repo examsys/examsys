@@ -27,8 +27,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
 <title>Credits</title>
-<style>
+<style type="text/css">
 a {color:blue}
 </style>
 </head>
@@ -47,8 +48,9 @@ a {color:blue}
 <tr><td style="vertical-align:top; width:250px">
 <strong>Design &amp; Programming</strong><br />
 Dr Simon Wilkinson<br />
-Anthony Brown<br />
 Dr Rob Ingram<br />
+Anthony Brown<br />
+Simon Atack<br />
 <br />
 <strong>Flash</strong><br />
 Fay Cross<br />
@@ -73,14 +75,13 @@ Dr Nikodem Miranowicz</td>
 <tr><td style="vertical-align:top">Graphics</td><td><a href="http://www.iconfinder.com/" target="_blank">www.iconfinder.com</a><br />
 <a href="http://www.psdgraphics.com/category/icons/" target="_blank">www.psdgraphics.com/category/icons/</a><br />
 <a href="http://pixel-mixer.com/" target="_blank">pixel-mixer.com</a></td></tr>
-<tr><td colspan="2">&nbsp;</td></tr>
-<tr><td>Calculator</td><td><em>NOTE: Not open source but used with permission</em><br />
-<a href="http://www.calculator.org/default.aspx" target="_blank">http://www.calculator.org</a></td></tr>
 </table>
 
 </td>
 </tr>
 </table>
+<br />
+<br />
 <input type="button" value="OK" name="OK" style="width:100px" onclick="window.close()" />
 </div>
 

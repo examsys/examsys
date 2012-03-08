@@ -79,16 +79,18 @@
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html>
     <head>
+    <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
     <title>Rogo: <?php echo $string['manageobjectives'] . ' ' . $cfg_install_type; ?></title>
     <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
-    <style style="text/css">
+    <link rel="stylesheet" type="text/css" href="../css/header.css" />
+    <style type="text/css">
       img {border:none;}
       .editBox {width:90%}
       .field {text-align:right; font-weight:bold}
       .note {width:90%}
     </style>
     <script src="../js/staff_help.js" type="text/javascript"></script>
-    <script>
+    <script type="text/javascript">
         function checkForm() {
           if (document.getElementById('session_title').value == '' || document.getElementById('session_title').value == ' ') {
             alert("<?php echo $string['msg2'];?>");
@@ -185,9 +187,9 @@
       $folder = '';
     }
     echo '<div id="content" class="content" style="font-size:80%">';
-    echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">\n";
-    echo "<tr><td colspan=\"3\" style=\"background-color:#F1F5FB\"><div class=\"breadcrumb\"><a href=\"../staff/index.php\">" . $string['home'] . "</a>&nbsp;&nbsp;<img src=\"../artwork/breadcrumb_arrow.png\" width=\"4\" height=\"7\" alt=\"-\" />&nbsp;&nbsp;<a href=\"../folder/details.php?module=$module\">$module</a>&nbsp;&nbsp;<img src=\"../artwork/breadcrumb_arrow.png\" width=\"4\" height=\"7\" alt=\"-\" />&nbsp;&nbsp;<a href=\"sessions_list.php?module=$module&folder=$folder\">" . $string['manageobjectives'] . "</a></div><div style=\"font-size:200%; margin-left:10px\"><strong>" . $string['newsession'] . "</strong></div></td><td style=\"background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(0); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"Help\" border=\"0\" /></a></td></tr>\n";
-    echo "<tr><td colspan=\"4\" style=\"height:3px\"><img src=\"../artwork/header_horizontal_line.gif\" width=\"100%\" height=\"3\" alt=\"Line\" /></td></tr>\n";
+    echo "<table class=\"header\">\n";
+    echo "<tr><th colspan=\"3\"><div class=\"breadcrumb\"><a href=\"../staff/index.php\">" . $string['home'] . "</a>&nbsp;&nbsp;<img src=\"../artwork/breadcrumb_arrow.png\" width=\"4\" height=\"7\" alt=\"-\" />&nbsp;&nbsp;<a href=\"../folder/details.php?module=$module\">$module</a>&nbsp;&nbsp;<img src=\"../artwork/breadcrumb_arrow.png\" width=\"4\" height=\"7\" alt=\"-\" />&nbsp;&nbsp;<a href=\"sessions_list.php?module=$module&folder=$folder\">" . $string['manageobjectives'] . "</a></div><div style=\"font-size:200%; margin-left:10px\"><strong>" . $string['newsession'] . "</strong></div></th><th style=\"text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(0); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"Help\" border=\"0\" /></a></th></tr>\n";
+    echo "<tr><th colspan=\"4\" class=\"bevel\"></th></tr>\n";
     echo '</table><br/>';
 
     echo "<form name=\"editObj\" action=\"" . $_SERVER['PHP_SELF'] . "?module=" . $_GET['module'] . "&folder=\" method=\"post\" onsubmit=\"return checkForm();\">\n<div align=\"center\"><table cellpadding=\"2\" cellspacing=\"0\" border=\"0\" style=\"width:80%; text-align:left\">\n";
