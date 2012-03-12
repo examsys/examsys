@@ -1,0 +1,40 @@
+<?php
+require '../lang/' . $language . '/include/paper_options.inc';
+require_once '../lang/' . $language . '/include/paper_types.inc';
+
+$string['showretired'] = 'Pokaż wycofane';
+$string['teammembers'] = 'Członkowie zespołów';
+$string['calendar'] = 'Kalendarz';
+$string['edit'] = 'Edytuj';
+$string['screen'] = 'Ekran';
+$string['screens'] = 'Ekrany';
+$string['mins'] = 'min.';
+$string['createnewpaper'] = 'Utwórz nowy arkusz';
+$string['editpropertiessysadmin'] = 'Edytuj właściwości (SysAdmin)';
+$string['manageobjectives'] = 'Zarządzaj celami';
+$string['managekeywords'] = 'Zarządzaj słowami kluczowymi';
+$string['importstudentmetadata'] = 'Importuj metadane studentów';
+$string['listpapers'] = 'Wyświetl listę arkuszy';
+$string['module'] = 'Moduł';
+$string['papertasks'] = 'Działania dot. arkuszy';
+$string['questionbank'] = 'Bank pytań';
+$string['foldertasks'] = 'Działania dot. folderów';
+$string['folderproperties'] = 'Właściwości folderu';
+$string['makesubfolder'] = 'Utwórz nowy podfolder';
+$string['deletefolder'] = 'Usuń ten folder';
+$string['questionsbytype'] = 'Pytania wg. typu';
+$string['questionsbyteam'] = 'Pytania wg. zespołu';
+$string['questionsbykeyword'] = 'Pytania wg. słowa kluczowego';
+$string['search'] = 'Szukaj';
+$string['createnewquestion'] = 'Utwórz nowe pytanie';
+$string['questions'] = 'Pytania';
+$string['papers'] = 'Arkusze';
+$string['people'] = 'Osoby';
+$string['mins'] = 'min.';
+$string['type'] = 'Typ';
+$string['author'] = 'Autor';
+$string['create'] = 'Utwórz';
+$string['newfolder'] = 'Nowy Folder';
+$string['modulenotfound'] = 'Nie odnaleziony modułu';  
+$string['modulenotfoundmsg'] = "Nie było możliwe odnalezienie modułu z kodem <strong>%s</strong>.";
+?>
