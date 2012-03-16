@@ -2027,6 +2027,22 @@ if (!isset($_POST['update'])) {
   }
   $result->close();
 
+  // 16/03/2012 - Make paper_id in relationships table nullable
+  $result = $mysqli->prepare("SELECT IS_NULLABLE FROM information_schema.COLUMNS WHERE TABLE_NAME='relationships' AND COLUMN_NAME='paper_id' AND TABLE_SCHEMA='$cfg_db_database'");
+  $result->execute();
+  $result->store_result();
+  $result->bind_result($nullable);
+  $result->fetch();
+  if ($result->num_rows() > 0 and $nullable == 'NO') {
+    $adjust = $mysqli->prepare("ALTER TABLE relationships CHANGE COLUMN paper_id paper_id INT NULL");
+    $adjust->execute();
+    $adjust->close();
+    echo "<li>ALTER TABLE relationships CHANGE COLUMN paper_id paper_id INT NULL</li>\n";
+    ob_flush();
+    flush();
+  }
+  $result->close();
+
 
   // End ------------------------------------------------------------------
   echo "</ol>\n";
