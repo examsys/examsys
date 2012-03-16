@@ -11,6 +11,7 @@ $string['screens'] = 'Screens';
 $string['mins'] = 'mins';
 $string['createnewpaper'] = 'Create new Paper';
 $string['editpropertiessysadmin'] = 'Edit Properties (SysAdmin)';
+$string['objectives'] = 'Objectives';
 $string['manageobjectives'] = 'Manage Objectives';
 $string['managekeywords'] = 'Manage Keywords';
 $string['importstudentmetadata'] = 'Import Student metadata';
@@ -37,4 +38,5 @@ $string['create'] = 'Create';
 $string['newfolder'] = 'New Folder';
 $string['modulenotfound'] = 'Module not Found';
 $string['modulenotfoundmsg'] = "Unable to find module with code <strong>%s</strong>.";
+$string['dynamicpapers'] = 'Dynamic Papers';
 ?>

@@ -15,7 +15,7 @@
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
-* 
+*
 * @author Simon Wilkinson
 * @version 1.0
 * @copyright Copyright (c) 2012 The University of Nottingham
@@ -28,7 +28,7 @@ if (count($teams) > 0) {
   $modules_array = array();
   $team_sql = implode("','", $teams);
   if ($team_sql != '') $team_sql = "'$team_sql'";
-  
+
   $result = $mysqli->prepare("SELECT DISTINCT moduleid, fullname, checklist FROM modules WHERE moduleid IN ($team_sql) ORDER BY moduleID");
   $result->execute();
   $result->bind_result($moduleid, $fullname, $checklist);
@@ -63,10 +63,10 @@ if (count($teams) > 0) {
 
 <?php
   } else {
-  
-    if ($module != '') {   
+
+    if ($module != '') {
     ?>
-      <div class="submenuheading"><?php echo $string['module']; ?></div>
+      <div class="submenuheading" id="moduletasks"><?php echo $string['module']; ?></div>
       <table cellpadding="4" cellspacing="0" border="0" style="font-size:90%; margin-left:9px">
     <?php
 
@@ -75,16 +75,16 @@ if (count($teams) > 0) {
     }
     if (strpos($checklist,'mapping') !== false ) {     // Curriculum mapping switched on for the module
       if (in_array($module, $teams) == true or strpos($userroles,'SysAdmin') !== false or strpos($userroles,'Admin') !== false ) {
-        echo "<tr><td class=\"ico\"><a href=\"../mapping/sessions_list.php?module=" . $module . "\"><img src=\"$cfg_root_path/artwork/module_icon_16.png\" width=\"16\" height=\"16\" alt=\"modules\" border=\"0\" /></a></td><td class=\"menuitem\"><a href=\"../mapping/sessions_list.php?module=" . $_GET['module'] . "\">" . $string['manageobjectives'] . "</a></td></tr>\n";
+        echo "<tr><td class=\"ico\"><a href=\"../mapping/sessions_list.php?module=" . $module . "\"><img src=\"$cfg_root_path/artwork/module_icon_16.png\" width=\"16\" height=\"16\" alt=\"modules\" border=\"0\" /></a></td><td class=\"menuitem\"><a href=\"#\" onclick=\"showMenu('popup6','moduletasks','manageobjectives', myOptions6, myURLs6, event); return false;\"><span id=\"manageobjectives\">" . $string['objectives'] . "</span><img src=\"$cfg_root_path/artwork/submenu_arrow.png\" width=\"16\" height=\"16\" alt=\">\" border=\"0\" /></a></td></tr>\n";
       } else {
-        echo "<tr><td class=\"ico\"><img src=\"$cfg_root_path/artwork/module_icon_grey_16.png\" width=\"16\" height=\"16\" alt=\"modules\" border=\"0\" /></td><td class=\"menuitem\" style=\"color:#808080\">" . $string['manageobjectives'] . "</td></tr>\n";
+        echo "<tr><td class=\"ico\"><img src=\"$cfg_root_path/artwork/module_icon_grey_16.png\" width=\"16\" height=\"16\" alt=\"modules\" border=\"0\" /></td><td class=\"menuitem\" style=\"color:#808080\">" . $string['objectives'] . "</td></tr>\n";
       }
     }
     echo "<tr><td class=\"ico\"><a href=\"../folder/list_keywords.php?module=$module\"><img src=\"$cfg_root_path/artwork/key.png\" width=\"16\" height=\"16\" alt=\"key\" border=\"0\" /></a></td><td class=\"menuitem\"><a href=\"../folder/list_keywords.php?module=$module\">" . $string['managekeywords'] . "</a></td></tr>";
     echo '<tr><td class="ico"><a href="../users/load_users_metadata.php?module=' . $_GET['module'] . '"><img src="' . $cfg_root_path . '/artwork/import_16.gif" width="16" height="16" alt="Import Metadata" border="0" /></a></td><td class="menuitem"><a href="../users/import_users_metadata.php?module=' . $_GET['module'] . '">' . $string['importstudentmetadata'] . '</a></td></tr>';
   ?>
   </table>
-  
+
   <br />
 
 <?php
@@ -178,7 +178,7 @@ if ($folder != '') {
     $keywords_array[htmlspecialchars($tmp_keyword)] = $cfg_root_path . '/question/list.php?type=%&keyword=' . $keywordID . ';' . urlencode($tmp_keyword);
   }
   $result->close();
-  
+
   if (count($my_folders_array) > 0) {
     $divider = array('-'=>'-');
     $full_modules_array = array();
@@ -191,13 +191,14 @@ if ($folder != '') {
   } else {
     $full_modules_array = $modules_array;
   }
-  
+
   makeMenu($full_modules_array);
   makeMenu(array($string['info']=>$cfg_root_path . '/question/list.php?type=info',$string['keyword_based']=>$cfg_root_path . '/question/list.php?type=keyword',$string['random']=>$cfg_root_path . '/question/list.php?type=random','-'=>'-',$string['calculation']=>$cfg_root_path . '/question/list.php?type=calculation',$string['dichotomous']=>$cfg_root_path . '/question/list.php?type=dichotomous',$string['extmatch']=>$cfg_root_path . '/question/list.php?type=extmatch',$string['blank']=>$cfg_root_path . '/question/list.php?type=blank',$string['flash']=>$cfg_root_path . '/question/list.php?type=flash',$string['hotspot']=>$cfg_root_path . '/question/list.php?type=hotspot',$string['labelling']=>$cfg_root_path . '/question/list.php?type=labelling',$string['likert']=>$cfg_root_path . '/question/list.php?type=likert',$string['matrix']=>$cfg_root_path . '/question/list.php?type=matrix',$string['mcq']=>$cfg_root_path . '/question/list.php?type=mcq',$string['mrq']=>$cfg_root_path . '/question/list.php?type=mrq',$string['rank']=>$cfg_root_path . '/question/list.php?type=rank',$string['sct']=>$cfg_root_path . '/question/list.php?type=sct',$string['textbox']=>$cfg_root_path . '/question/list.php?type=textbox', $string['true_false']=>$cfg_root_path . '/question/list.php?type=true_false'));
   makeMenu($teams_array);
   makeMenu($keywords_array);
   makeMenu(array($string['questions']=>$cfg_root_path . '/question/search.php',$string['papers']=>$cfg_root_path . '/paper/search.php',$string['people']=>$cfg_root_path . '/users/search.php'));
   makeMenu(array($string['info']=>"$cfg_root_path/question/edit/index.php?type=info",$string['keyword_based']=>"$cfg_root_path/question/edit/index.php?type=keyword_based",$string['random']=>"$cfg_root_path/question/edit/index.php?type=random","-"=>"-",$string['calculation']=>"$cfg_root_path/question/edit/index.php?type=calculation",$string['dichotomous']=>"$cfg_root_path/question/edit/index.php?type=dichotomous",$string['extmatch']=>"$cfg_root_path/question/edit/index.php?type=extmatch",$string['blank']=>"$cfg_root_path/question/edit/index.php?type=blank",$string['flash']=>"$cfg_root_path/question/edit/index.php?type=flash",$string['hotspot']=>"$cfg_root_path/question/edit/index.php?type=hotspot",$string['labelling']=>"$cfg_root_path/question/edit/index.php?type=labelling",$string['likert']=>"$cfg_root_path/question/edit/index.php?type=likert",$string['matrix']=>"$cfg_root_path/question/edit/index.php?type=matrix",$string['mcq']=>"$cfg_root_path/question/edit/index.php?type=mcq",$string['mrq']=>"$cfg_root_path/question/edit/index.php?type=mrq",$string['rank']=>"$cfg_root_path/question/edit/index.php?type=rank",$string['sct']=>"$cfg_root_path/question/edit/index.php?type=sct",$string['textbox']=>"$cfg_root_path/question/edit/index.php?type=textbox",$string['true_false']=>"$cfg_root_path/question/edit/index.php?type=true_false"));
+  makeMenu(array($string['manageobjectives']=>"$cfg_root_path/mapping/sessions_list.php?module=" . $module, $string['dynamicpapers'] => "$cfg_root_path/mapping/dynamic_papers.php?module=" . $module));
 
   hideMenuScript($menuNo);
 ?>

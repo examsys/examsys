@@ -11,6 +11,7 @@ $string['screens'] = 'Ekrany';
 $string['mins'] = 'min.';
 $string['createnewpaper'] = 'Utwórz nowy arkusz';
 $string['editpropertiessysadmin'] = 'Edytuj właściwości (SysAdmin)';
+$string['objectives'] = 'Celami';
 $string['manageobjectives'] = 'Zarządzaj celami';
 $string['managekeywords'] = 'Zarządzaj słowami kluczowymi';
 $string['importstudentmetadata'] = 'Importuj metadane studentów';
@@ -37,4 +38,5 @@ $string['create'] = 'Utwórz';
 $string['newfolder'] = 'Nowy Folder';
 $string['modulenotfound'] = 'Nie odnaleziony modułu';  
 $string['modulenotfoundmsg'] = "Nie było możliwe odnalezienie modułu z kodem <strong>%s</strong>.";
+$string['dynamicpapers'] = 'Dynamic Papers'; // Niko
 ?>
