@@ -95,46 +95,41 @@ if ($module != '') { ?>
 </table>
 
 <?php
-  // TODO: How are we handling multiple sessions?  Check the main mapping screen
+// TODO: How are we handling multiple sessions?  Check the main mapping screen
+$session = '2011/12';
+
+$old_p_id = 0;
+$row_no = 0;
+$info_count = 0;
+$temp_array = array();
+$questionID_list = '';
+
+$result = $mysqli->prepare("SELECT q_group, q_id, q_type, leadin, q_media, q_media_width, q_media_height, DATE_FORMAT(last_edited,'%d/%m/%y') AS display_last_edited FROM questions q INNER JOIN relationships r ON q.q_id=r.question_id WHERE r.module_id=? AND r.paper_id IS NULL AND r.calendar_year=?");
+$result->bind_param('ss', $module, $session);
+$result->execute();
+$result->bind_result($q_group, $q_id, $q_type, $leadin, $q_media, $q_media_width, $q_media_height, $display_last_edited);
+while ($result->fetch()) {
+  $temp_array[$q_id]['q_type'] = $q_type;
+  $temp_array[$q_id]['leadin'] = trim(str_replace('&nbsp;',' ',(strip_tags($leadin))));
+  $temp_array[$q_id]['q_id'] = $q_id;
+  $temp_array[$q_id]['display_last_edited'] = $display_last_edited;
+  $temp_array[$q_id]['q_media'] = $q_media;
+  $temp_array[$q_id]['q_media_width'] = $q_media_width;
+  $temp_array[$q_id]['q_media_height'] = $q_media_height;
+
+  if($q_type == 'info') $info_count++;
+
+  $temp_array[$q_id]['q_group'] = $q_group;
+  $questionID_list .= $q_id . ',';
+}
+$result->close();
+$questionID_list = rtrim($questionID_list, ',');
+
 //$objsBySession = getObjectives($module, $session, null, $questionID_list, $mysqli);
-$objsBySession = getObjectives($module, '2011/12', null, '', $mysqli);
+$objsBySession = getObjectives($module, $session, null, $questionID_list, $mysqli);
 unset($objsBySession['none_of_the_above']);
 
 
-//$old_p_id = 0;
-//$row_no = 0;
-//$info_count = 0;
-//$temp_array = array();
-//$questionID_list = '';
-//
-//$result = $mysqli->prepare("SELECT random_mark, total_mark, q_group, p_id, q_id, q_type, screen, leadin, q_media, q_media_width, q_media_height, DATE_FORMAT(last_edited,'%d/%m/%y') AS display_last_edited, display_pos FROM (properties, papers, questions) WHERE property_id=? AND paper=? AND papers.question=questions.q_id ORDER BY screen, display_pos");
-//$result->bind_param('ii', $paperID, $paperID);
-//$result->execute();
-//$result->bind_result($random_mark, $total_mark, $q_group, $p_id, $q_id, $q_type, $screen, $leadin, $q_media, $q_media_width, $q_media_height, $display_last_edited, $display_pos);
-//while ($result->fetch()) {
-//  $row_no++;
-//  $temp_array[$q_id]['screen'] = $screen;
-//  $temp_array[$q_id]['q_type'] = $q_type;
-//  $temp_array[$q_id]['leadin'] = trim(str_replace('&nbsp;',' ',(strip_tags($leadin))));
-//  $temp_array[$q_id]['p_id'] = $p_id;
-//  $temp_array[$q_id]['q_id'] = $q_id;
-//  $temp_array[$q_id]['display_last_edited'] = $display_last_edited;
-//  $temp_array[$q_id]['q_media'] = $q_media;
-//  $temp_array[$q_id]['q_media_width'] = $q_media_width;
-//  $temp_array[$q_id]['q_media_height'] = $q_media_height;
-//  $temp_array[$q_id]['display_pos'] = $display_pos;
-//
-//  $temp_array[$q_id]['qnumber'] = $display_pos - $info_count;
-//
-//  if($q_type == 'info') $info_count++;
-//
-//  $temp_array[$q_id]['q_group'] = $q_group;
-//  $total_random_mark = $random_mark;
-//  $total_marks = $total_mark;
-//  $temp_total_marks = $total_mark;
-//  $questionID_list .= $q_id . ',';
-//}
-//$result->close();
 ?>
   <table class="header" style="font-size:80%">
   <tr>
