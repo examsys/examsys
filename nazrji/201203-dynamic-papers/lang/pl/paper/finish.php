@@ -1,0 +1,53 @@
+<?php
+require '../lang/' . $language . '/question/sct_shared.php';
+
+$string['examscript'] = 'Skrypt egzaminacyjny';
+$string['error_paper'] = 'Wskazany arkusz nie mógł być odnaleziony.';
+$string['specificpassword'] = 'Do tego arkusza przypisane jest specyficzne hasło.';
+$string['denied_location'] = 'Dostęp do tego arkusza nie jest dozwolony z aktualnej lokalizacji.';
+$string['error_time'] = 'Arkusz, który chcesz zobaczyć dostępny jest tylko pomiędzy %s i %s';
+$string['error_module'] = 'Ten arkusz nie występuje w żadnym module.';
+$string['error_metadata'] = 'Metadane użytkownika nie są zgodne <strong>%s: %s</strong>';
+$string['notregistered'] = '%s %s (%s) nie jest zarejestrowany na <strong>%s</strong> w <strong>%s</strong>.';
+$string['thankyoumsg'] = 'Dziękujemy za wypełnienie <strong>%s</strong>. Twoje odpowiedzi zostały zarejestrowane.';
+$string['studentviewend'] = 'Ogląd studencki tu się kończy';
+$string['staffviewbelow'] = '<strong>Ogląd dla kadry dostępny poniżej </strong>(studenci tego nie widzą)';
+$string['answersscreen'] = 'Ekran odpowiedzi';
+$string['key'] = 'Klucz:';
+$string['correctanswer'] = 'Prawidłowa odpowiedź';
+$string['incorrectanswer'] = 'Nieprawidłowa odpowiedź';
+$string['boldwords'] = "<strong>Pogrubione</strong> słowa reprezentują prawidłowe odpowiedzi dla każdego pytania (nie są to odpowiedzi respondentów).";
+$string['feedbackinred'] = 'Odzew wyświetlony jest ciemno-czerwonymi italikami';
+$string['note'] = 'Uwaga';//??
+$string['screen'] = 'Ekran';
+$string['unanswered'] = 'brak odpowiedzi';
+$string['unmarked'] = 'brak oceny';
+$string['summaryofmarks'] = 'Zestawienie punktacji:';
+$string['yourmark'] = 'Zebrane punkty';
+$string['randommark'] = "Liczba punktów na 'chybił-trafił'";
+$string['passmark'] = 'Liczba punktów na zaliczenie';
+$string['yourpercentage'] = 'Twój wynik';//??
+$string['adjusted'] = '(skorygowany)';
+$string['msg'] = 'Dziękujemy za wypełnienie <strong>%s</strong>. Twoje odpowiedzi zostały zanotowane.';//??
+$string['closewindow'] = 'Zamknij okno';
+$string['overallcorrectorder'] = 'Poprawna kolejność całości (Punkt dodatkowy)';
+$string['outof'] = 'z';
+$string['experimentalquestion'] = '0 - Pytanie eksperymentalne';
+$string['unmarked'] = 'niepunktowane';
+$string['tdiagnosis'] = 'diagnozie';
+$string['tinvestigation'] = 'badaniu';
+$string['tprescription'] = 'zaleceniu';
+$string['tintervention'] = 'interwencji';
+$string['ttreatment'] = 'terapii';
+$string['thankyou'] = 'Dziękujemy';
+$string['difficultyofthequestion'] = 'trudność pytania (tj. wyznaczone standardy). Przewiń do pełnego tytułu kategorii.';
+$string['withatoleranceof'] = 'z tolerancją';
+$string['true'] = 'Prawda';
+$string['false'] = 'Fałsz';
+$string['yes'] = 'Tak';
+$string['no'] = 'Nie';
+$string['abstain'] = 'Wstrzymany';
+$string['msg'] = '<strong>Zasady uniwersyteckie</strong><br />1) zakaz opuszczania pomieszczenia egzaminacyjnego przed upływem pierwszej godziny, <br />2) zakaz opuszczania pomieszczenia egzaminacyjnego w czasie ostatnich 15 minut.<br /><br />Jeśli przestrzegane są dwie pierwsze zasady, a egzamin ma tylko jednę turę to można kliknąć na \'Zamknij okno\' a następnie nacisnąć przyciski &lt;CTRL&gt; &lt;ALT&gt; &lt;DELETE&gt; aby wylogować się z tego komputera.'; 
+$string['iscorrect'] = 'jest poprawny';
+$string['isexcluded'] = 'jest wykluczony';
+?>

@@ -1,0 +1,74 @@
+body {
+  font-family:Arial,sans-serif;
+  font-size:100%;
+  color:black;
+  margin-top:0px;
+  margin-left:0px;
+  margin-right:0px
+}
+a {
+  text-decoration:none
+}
+a.user {
+  color:black
+}
+a.user:hover {
+  color:white;
+  background-color:#000080
+}
+td {
+  font-size:110%
+}
+.field {
+  text-align:right;
+  padding-right:10px
+}
+.mk {
+  padding-right:10px
+}
+.r {
+  text-align:right
+}
+.redln {
+  border-bottom:solid red 1px
+}
+.greyln {
+  border-bottom:solid #EEEEEE 1px
+}
+.ordered {
+  background-color:#F7F7F7
+}
+.grey {
+  color:#808080
+}
+.padl {
+  padding-left:6px
+}
+.exclude {
+  color:red;
+  text-decoration:line-through
+}
+.nonattend {
+  background-color:#FFC0C0
+}
+.dist {
+  color:#008000
+}
+.fail {
+  color:red
+}
+.tmpacc {
+  background-color:#FFFF80
+}
+.papernote {
+  padding:10px;
+  width:300px;
+  min-height:100px;
+  line-height:150%;
+  background-color:#FFFFC0;
+  background: -moz-linear-gradient(top, #FFF6BD, #FFEC82);
+  background: -webkit-linear-gradient(top, #FFF6BD, #FFEC82);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFF6BD', endColorstr='#FFEC82');
+  float:left;
+  border:5px solid white;
+}

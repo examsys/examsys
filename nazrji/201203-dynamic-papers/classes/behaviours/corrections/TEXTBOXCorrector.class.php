@@ -1,0 +1,58 @@
+<?php
+// This file is part of Rogō
+//
+// Rogō is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Rogō is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ *
+ * Class for Correction behaviour for Fill in the Blank questions
+ *
+ * @author Rob Ingram
+ * @version 1.0
+ * @copyright Copyright (c) 2012 The University of Nottingham
+ * @package
+ */
+
+include_once 'Corrector.class.php';
+
+class TEXTBOXCorrector extends Corrector {
+  /**
+   * Change the correct answer after the question has been locked. Update user marks in summative log table
+   * @param integer $new_correct new correct answer
+   * @param integer $paper_id
+   */
+  public function execute($new_correct, $paper_id, &$changes) {
+    $errors = array();
+    if ($changes) {
+      $first = reset($this->_question->options);
+      $mark_correct = $first->get_marks_correct();
+
+      try {
+    	  if(!$this->_question->save()) {
+    	    $errors[] = $this->_lang_strings['datasaveerror'];
+    	  } else {
+          // Set new value for totalpos in log2 but don't change student marks
+          $updateLog = $this->_mysqli->prepare("UPDATE log2 SET totalpos=? WHERE q_id=? AND q_paper=?");
+          $updateLog->bind_param('iii', $mark_correct, $this->_question->id, $paper_id);
+          $updateLog->execute();
+          $updateLog->close();
+    	  }
+    	} catch (ValidationException $vex) {
+    	  $errors[] = $vex->getMessage();
+    	}
+    }
+
+    return $errors;
+  }
+}
