@@ -83,8 +83,8 @@ $stmt->close();
 ?>
 
 <?php echo $cfg_js_root ?>
-<script language="JavaScript" src="<?php echo $cfg_root_path ?>/js/sidebar.js"></script>
-<script language="JavaScript">
+<script type="text/javascript" src="<?php echo $cfg_root_path ?>/js/sidebar.js"></script>
+<script type="text/javascript">
   function startPaper(fullsc) {
     <?php
     if ($paper_type == '4') {      // OSCE

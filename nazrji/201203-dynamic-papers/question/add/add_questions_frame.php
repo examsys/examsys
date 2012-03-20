@@ -23,7 +23,14 @@
 */
 
 require '../../include/staff_auth.inc';
-$mysqli->close();
+//$mysqli->close();
+
+$controls_url = 'add_question_controls.php?';
+if (!isset($_GET['paperID'])) {
+  $controls_url .= 'module=' . $_GET['module'] . '&amp;qns=' . $_GET['questions'];
+} else {
+  $controls_url .= 'paperID=' . $_GET['paperID'] . '&amp;module=' . $_GET['module'] . '&amp;folder=' . $_GET['folder'] . '&amp;display_pos=' . $_GET['display_pos'] . '&amp;scrOfY=' . $_GET['scrOfY'] . '&amp;max_screen=' . $_GET['max_screen'];
+}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -32,15 +39,14 @@ $mysqli->close();
   <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
   <title><?php echo $string['questionsbank'] . $cfg_install_type; ?></title>
 </head>
-
-  <frameset rows="*,32" frameborder="0" framespacing="0" border="0">
-    <frameset cols="134,*" frameborder="0" framespacing="0" border="0">
-      <frame scrolling="no" src="add_questions_buttons.php" name="qbuttons">
-      <frame scrolling="no" src="add_questions_iframe.php" name="qlist">
-    </frameset>
-    <frame scrolling="no" resizable="no" src="add_question_controls.php?paperID=<?php echo $_GET['paperID']; ?>&module=<?php echo $_GET['module']; ?>&folder=<?php echo $_GET['folder']; ?>&display_pos=<?php echo $_GET['display_pos']; ?>&scrOfY=<?php echo $_GET['scrOfY']; ?>&max_screen=<?php echo $_GET['max_screen']; ?>" name="controls">
+<frameset rows="*,32" frameborder="0" framespacing="0" border="0">
+  <frameset cols="134,*" frameborder="0" framespacing="0" border="0">
+    <frame scrolling="no" src="add_questions_buttons.php" name="qbuttons">
+    <frame scrolling="no" src="add_questions_iframe.php" name="qlist">
   </frameset>
+  <frame scrolling="no" resizable="no" src="<?php echo $controls_url ?>" name="controls">
   <noframes>
-    <?php echo $string['frameserr'];?>
+    <body><?php echo $string['frameserr'];?></body>
   </noframes>
+</frameset>
 </html>

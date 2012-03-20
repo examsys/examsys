@@ -26,11 +26,11 @@ require_once '../classes/dateutils.class.php';
 
 ?>
 <div id="left-sidebar" class="sidebar">
-<form name="myform">
+<form name="myform" action="./">
 <br />
 
 <table style="margin-left:4px; font-size:90%; display:block" cellpadding="3" cellspacing="0" border="0" id="menu1a">
-<tr><td class="ico"><a href="add_module.php"><img src="../artwork/module_icon_16.png" width="16" height="16" alt="<?php echo 'temporary'; ?>" border="0" /></a></td><td class="menuitem"><a href="#"><?php echo 'temporary'; ?></a></td></tr>
+<tr><td class="ico"><a href="add_module.php"><img src="../artwork/module_icon_16.png" width="16" height="16" alt="<?php echo 'Add Questions'; ?>" border="0" /></a></td><td class="menuitem"><a href="#" id="add-questions"><?php echo 'Add Questions'; ?></a></td></tr>
 </table>
 
 </form>

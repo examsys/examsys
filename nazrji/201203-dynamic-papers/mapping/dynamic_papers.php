@@ -35,7 +35,7 @@ $module = $_GET['module'];
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
   <title>Rogō: <?php echo $string['dynamicpapers'] . ' - ' . $string['mappingbysession'] . ' ' . $cfg_install_type; ?></title>
   <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
@@ -52,11 +52,51 @@ $module = $_GET['module'];
     .unmapped {color:#C0C0C0}
     ul {margin-top:0px; margin-bottom:0px}
     li {padding-left:8px}
+
+    .tab {
+      cursor:pointer;
+      width:126px;
+      height:21px;
+      color:white;
+      text-align:center;
+      font-weight:bold;
+      font-size:110%;
+      background-image:url(../artwork/tab_off.gif)
+    }
+    .tab.on {
+      background-image:url(../artwork/tab_on.gif)
+    }
+    table.map-session {
+      border: 0;
+      padding: 6px 0 2px 0;
+      width:100%;
+      color:#1E3287
+    }
+    table.map-session td {
+      white-space: nowrap;
+    }
+    hr.head-line {
+      border:0;
+      height:1px;
+      color:#E5E5E5;
+      background-color:#E5E5E5;
+      width:100%
+    }
+    .map-objectives {
+      list-style: none;
+      padding-left: 16px;
+    }
+    .map-objectives label {
+      margin-left: 6px;
+    }
   </style>
   <script src="../js/staff_help.js" type="text/javascript"></script>
+  <script src="../js/jquery-1.6.1.min.js" type="text/javascript"></script>
+  <script src="../js/jquery.dynamicpapers.js" type="text/javascript"></script>
+<?php echo $cfg_js_root ?>
 </head>
 
-<body onclick="hideMenus()">
+<body>
 <?php
 require '../include/dynamic_paper_options.inc';
 ?>
@@ -135,13 +175,17 @@ unset($objsBySession['none_of_the_above']);
   <tr>
     <th style="padding-top:1px">
       <table cellpadding="0" cellspacing="0" border="0" style="font-size:100%; width:252px">
-      <td style="cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_on.gif)"><?php echo $string['bysession']; ?></td>
-      <td style="cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_off.gif)" onclick="window.location.href='paper_mappings_by_question.php?module=<?php echo $module; ?>'"><?php echo $string['byquestion']; ?></td>
+        <tr>
+          <td class="tab on"><?php echo $string['bysession']; ?></td>
+          <td class="tab" onclick="window.location.href='paper_mappings_by_question.php?module=<?php echo $module; ?>'"><?php echo $string['byquestion']; ?></td>
+        </tr>
       </table>
     </th>
     <th style="width:100%; text-align:right">&nbsp;</th>
   </tr>
-  <tr><td colspan="4" style="background-color:#1E3C7B">&nbsp;</td></tr>
+  <tr><td colspan="2" style="background-color:#1E3C7B">&nbsp;</td></tr>
+  <tr>
+    <td colspan="2">
 <?php
 //$questionID_list = substr($questionID_list,0,-1);
 //
@@ -149,35 +193,36 @@ unset($objsBySession['none_of_the_above']);
 //$total_random_mark = 0;
 //$total_marks = 0;
 
-
+// TODO: put real condition back
 //if ($row_no > 0) {
 if (true) {
- ?>
-    <tr>
-    <td colspan="5" style="padding:0px">
+?>
+      <form action="./" method="post">
 <?php
   $ul_start = false;
 
   foreach($objsBySession as $module => $sessions ) {
     if (count($objsBySession) > 1) {
-      echo "<tr><td colspan=\"3\"><h1>$module " . $string['objectives'] . "</h1></td></tr>";
+      echo "<h1>$module " . $string['objectives'] . "</h1>";
     }
     foreach($sessions as $identifier => $sessionData) {
       if ($ul_start) {
         echo '</ul>';
       }
-      echo "<tr><td colspan=\"4\" style=\"padding-left:4px\"><table border=\"0\" style=\"padding-top:6px; padding-bottom:2px; width:100%; color:#1E3287\"><tr><td><nobr>";
+      echo "<table class=\"map-session\"><tr><td>";
       if ($sessionData['class_code'] != '') {
         echo $sessionData['class_code'] . ': ';
       }
-      echo $sessionData['title'] . ' <a href="' . $sessionData['source_url'] . '"><img src="../artwork/small_link.png" width="12" height="12" alt="" /></a> ';
+      echo $sessionData['title'] . ' <a href="' . urlencode($sessionData['source_url']) . '"><img src="../artwork/small_link.png" width="12" height="12" alt="" /></a> ';
 
-      echo "</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n</td></tr>\n";
+      echo "</td><td style=\"width:98%\"><hr class=\"head-line\" /></td></tr></table>\n";
       if (isset($sessionData["objectives"]) and is_array($sessionData["objectives"])) {
-        echo '<tr><td colspan="4"><ul>';
+        echo '<ul class="map-objectives">';
         foreach ($sessionData["objectives"] as $id => $objectives) {
+          $map_class = is_array($objectives['mapped']) ? 'mapped' : 'unmapped';
+          echo '<li class="' . $map_class . '"><input type="checkbox" id="obj-mapped' . $objectives['id'] . '" name="obj-mapped" value="' . $objectives['id'] . '" class="map-objective" /> <label for="obj-mapped' . $objectives['id'] . '">' . htmlentities($objectives['content']) . '</label>';
           if (is_array($objectives['mapped'])) {
-            echo '<li class="mapped">' . $objectives['content'] . ' <span class="mapping">';
+            echo ' <span class="mapping">';
             $i = 0;
             foreach ($objectives['mapped'] as $q_id) {
               if (array_key_exists($q_id,$excluded)) {
@@ -189,24 +234,24 @@ if (true) {
               $i++;
               echo "<a class=\"$class\" href=\"../question/view_question.php?q_id=" . $q_id . "&qNo=" . $temp_array[$q_id]['qnumber'] . "\" target=\"_blank\">Q" . $temp_array[$q_id]['qnumber'] . "</a>";
             }
-            echo'</span></li>';
-          } else {
-            //could display unmaped obj here !!
-            echo '<li class="unmapped">' . $objectives['content'] . '</li>';
+            echo'</span>';
           }
+          echo '</li>';
         }
-        echo '</ul></td></tr>';
+        echo '</ul>';
       }
     }
-
   }
   if ($ul_start) {
     echo '</ul>';
   }
-  echo "</td></tr>\n</table>";
 }
 $mysqli->close();
 ?>
+      <input type="hidden" name="module" id="module" value="<?php echo $module ?>" />
+    </form>
+    </td>
+  </tr>
 </table>
 </div>
 </body>

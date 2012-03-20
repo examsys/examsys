@@ -79,19 +79,26 @@ require '../../include/staff_auth.inc';
 </head>
 <body style="font-family:Arial,sans-serif; margin-top:0px; margin-left:0px; margin-right:4px; margin-bottom:2px; background-color:#DFECFF; font-size:90%">
 <?php
-  echo "<form name=\"theform\" method=\"post\" action=\"do_add_questions.php?paperID=" . $_GET['paperID'] . "&display_pos=" . $_GET['display_pos'] . "&module=" . $_GET['module'] . "&folder=" . $_GET['folder'] . "&scrOfY=" . $_GET['scrOfY'] . "&max_screen=" . $_GET['max_screen'] . "\">\n";
-  echo "<div align=\"right\">" . $string['screen'] . "&nbsp;<select name=\"screen\">\n";
-
+if (isset($_GET['paperID'])) {
+  $action_url = "do_add_questions.php?paperID=" . $_GET['paperID'] . "&display_pos=" . $_GET['display_pos'] . "&module=" . $_GET['module'] . "&folder=" . $_GET['folder'] . "&scrOfY=" . $_GET['scrOfY'] . "&max_screen=" . $_GET['max_screen'] . "\">\n";
+  $screen_html = $string['screen'] . "&nbsp;<select name=\"screen\">\n";
   $max_screen = $_GET['max_screen'];
   for ($i=1; $i<=$max_screen + 1; $i++) {
     if ($i == $max_screen) {
-      echo "<option value=\"$i\" selected>$i</option>\n";
+      $screen_html .= "<option value=\"$i\" selected>$i</option>\n";
     } else {
-      echo "<option value=\"$i\">$i</option>\n";
+      $screen_html .= "<option value=\"$i\">$i</option>\n";
     }
   }
+  $screen_html .= '</select>&nbsp;';
+} else {
+  $screen_html = '';
+  $action_url = './';
+}
+echo "<form name=\"theform\" method=\"post\" action=\"$action_url\">\n";
+echo "<div align=\"right\">";
+echo $screen_html;
 ?>
-</select>&nbsp;
 <input type="hidden" name="questions_to_add" size="100" value="" /><input type="submit" name="submit" value="<?php echo $string['addquestions']; ?>" /></div>
 
 </form>
