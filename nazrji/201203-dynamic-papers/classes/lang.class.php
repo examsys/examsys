@@ -15,9 +15,9 @@
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
-* 
+*
 * Utility class for language related functionality
-* 
+*
 * @author Simon Wilkinson
 * @version 1.0
 * @copyright Copyright (c) 2012 The University of Nottingham
@@ -42,13 +42,35 @@ Class LangUtils {
       }
       $i++;
     }
-    
+
     if ($language == '') $language = 'en';   // Default to English if no languages found
-    
+
     return $language;
   }
-}
 
+  static function render_JS_strings($keys, $string) {
+    $html = '';
+
+    if (is_array($keys) and count($keys) > 0) {
+      $html .= "<script type=\"text/javascript\">\n";
+      $html .= "var lang = {\n";
+
+      $first = true;
+      foreach ($keys as $langstring) {
+        if (!$first) {
+          $html .= ",";
+        }
+        $html .= "'{$langstring}':'{$string[$langstring]}'\n";
+        $first = false;
+      }
+      $html .= "}\n";
+      $html .= "</script>\n";
+    }
+
+    return $html;
+  }
+
+}
 $language = LangUtils::getLang($cfg_web_root);
 $lang_path = "$cfg_web_root/lang/$language" . str_replace($cfg_root_path, '', $_SERVER['PHP_SELF']);
 if (file_exists($lang_path)) {

@@ -396,22 +396,11 @@ if ($question != null and $question->requires_flash()):
 <script type="text/javascript" src="../../js/flash_include.js"></script>
 <?php
 endif;
+$langstrings = array('allowpartial', 'validationerror', 'enterleadin', 'enterdescription', 'showmore', 'hidemore', 'enteroption', 'enteroptionshort', 'enteroption_kw', 'mrqconvert', 'entervignette', 'randomenterquestion', 'mappingwarning', 'markchangewarning');
+echo LangUtils::render_JS_strings($langstrings, $string);
 ?>
 <script type="text/javascript">
 var qType = '<?php if (isset($question)) echo $question->get_type() ?>';
-var lang = {
-<?php
-$langstrings = array('allowpartial', 'validationerror', 'enterleadin', 'enterdescription', 'showmore', 'hidemore', 'enteroption', 'enteroptionshort', 'enteroption_kw', 'mrqconvert', 'entervignette', 'randomenterquestion', 'mappingwarning', 'markchangewarning');
-$first = true;
-foreach ($langstrings as $langstring) {
-  if (!$first) {
-    echo ',';
-  }
-  echo "'{$langstring}':'{$string[$langstring]}'";
-  $first = false;
-}
-?>
-};
 <?php
 if (!empty($_GET['tab']) and in_array($_GET['tab'], array('changes', 'comments', 'mapping'))):
 ?>

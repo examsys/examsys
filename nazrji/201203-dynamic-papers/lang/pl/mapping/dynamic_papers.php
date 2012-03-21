@@ -16,4 +16,7 @@ $string['byquestion'] = 'wg. pytania';
 $string['longitudinal'] = 'dalekosiężne';
 $string['warning'] = 'Ostrzeżenie';
 $string['nomatchsession'] = 'Sesja w tytule arkusza (%s) nie odpowiada sesji arkusza (%s).';
+$string['mustselectobjectives'] = 'Plese select objectives to which the questions will be mapped'; // Niko
+$string['ajaxerror'] = 'There was a problem carrying out your action. Please refresh the page and try again'; // Niko
+$string['ajaxconfirm'] = 'Are you sure?'; // Niko
 ?>

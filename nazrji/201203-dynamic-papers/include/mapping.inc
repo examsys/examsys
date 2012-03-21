@@ -449,12 +449,17 @@ function getObjectives($thisModuleid, $session, $paperID, $questionID, $rogodb, 
     }
   }
 
-  //START:: get the currently mapped objetives in touchstone.
+  //START:: get the currently mapped objectives in touchstone.
   $mapped = array();
   if ($questionID != '') {
+    $paper_sql = (isset($paperID)) ? 'paper_id=?' : 'paper_id IS NULL';
     $thisModuleid = str_replace(',','|',$original_thisModuleid);
-    if ($result = $rogodb->prepare("SELECT obj_id, question_id FROM relationships WHERE module_id REGEXP ? AND paper_id=? AND calendar_year=? AND question_id IN ($questionID)")) {
-      $result->bind_param('sis', $thisModuleid, $paperID, $session);
+    if ($result = $rogodb->prepare("SELECT obj_id, question_id FROM relationships WHERE module_id REGEXP ? AND $paper_sql AND calendar_year=? AND question_id IN ($questionID)")) {
+      if (isset($paperID)) {
+        $result->bind_param('sis', $thisModuleid, $paperID, $session);
+      } else {
+        $result->bind_param('ss', $thisModuleid, $session);
+      }
       $result->execute();
       $result->bind_result($obj_id, $question_id);
       while ($row = $result->fetch()) {

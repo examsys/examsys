@@ -53,8 +53,8 @@ function display_error($error_title, $error_description, $headers = true, $stop_
 }
 
 function uploadError($errCode) {
-  $engDescription = $string['uploaderrormsg0'];
-  
+  global $string;
+
   switch ($errCode) {
     case 0:
       $engDescription = $string['uploaderrormsg1'];
@@ -89,16 +89,29 @@ function check_var($var_name, $method, $mandatory, $headers, $type = '') {
   // $mandatory - if true then exit if the variable does not exist
   // $headers - if true then output HTML header code
   // $type - unused currently
-  
+
+  $error = 0;
+
   if ($mandatory) {
-    if ($method == 'GET') {
-      if (empty($_GET[$var_name])) {
-        display_error($string['fatalerrormsg0'],$string['fatalerrormsg1'],$headers);
-      }
-    } else {
-      if (empty($_POST[$var_name])) {
-        display_error($string['fatalerrormsg0'],$string['fatalerrormsg2'],$headers);
-      }
+    switch ($method) {
+      case 'GET':
+        if (empty($_GET[$var_name])) {
+          $error = 1;
+        }
+        break;
+      case 'POST':
+        if (empty($_POST[$var_name])) {
+          $error = 2;
+        }
+        break;
+      case 'REQUEST':
+        if (empty($_REQUEST[$var_name])) {
+          $error = 3;
+        }
+        break;
+    }
+    if ($error > 0) {
+      display_error($string['fatalerrormsg0'], $string['fatalerrormsg' . $error], $headers);
     }
   }
 }

@@ -14,22 +14,65 @@
 // along with TouchStone.  If not, see <http://www.gnu.org/licenses/>.
 
 $(function () {
+  $.ajaxSetup({ timeout: 3000 });
+
   // TODO: handle 'by question' display
   $('#add-questions').click(checkObjectives);
+  $('.unmap').click(unMapQuestion);
 });
 
-function checkObjectives() {
+function checkObjectives(e) {
+  e.preventDefault();
   var ids = '';
   var module = $('#module').val();
   $('.map-objective:checked').each(function() { ids += $(this).val() + ','; });
-  launchAddQuestions(module, ids.replace(/,$/, ''));
+  if (ids.length > 0) {
+    launchAddQuestions(module, ids.replace(/,$/, ''));
+  } else {
+    alert(lang['mustselectobjectives'])
+  }
 }
 
-function launchAddQuestions(module, qns) {
+function launchAddQuestions(module, objs) {
   var winH = screen.height - 80;
   var winW = screen.width - 80;
-  var notice=window.open(cfgRootPath + "/question/add/add_questions_frame.php?module=" + module + "&questions=" + qns, "notice", "width=" + winW + ", height=" + winH + ",left=40,top=20,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+  var notice=window.open(cfgRootPath + "/question/add/add_questions_frame.php?module=" + module + "&objectives=" + objs, "notice", "width=" + winW + ", height=" + winH + ",left=40,top=20,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
   if (window.focus) {
     notice.focus();
   }
+}
+
+function unMapQuestion(e) {
+  e.preventDefault();
+  if (confirm(lang['ajaxconfirm'])) {
+    var data = $(this).attr('rel').split('_');
+    var module, qID, oID, session;
+    var li = $(this).parent();
+
+    if (data.length == 4) {
+      module = data[0];
+      oID = data[1];
+      qID = data[2];
+      session = data[3].replace('#', '/');
+    }
+    $.post('../ajax/dynamic_paper/remove_mapping.php',
+       {
+         module: module,
+         objective: oID,
+         question: qID,
+         session: session
+       },
+       function(data) {
+        if (data == 'ERROR') {
+          showAJAXError();
+        } else {
+          li.remove();
+        }
+    });
+  }
+}
+
+
+function showAJAXError() {
+  alert(lang['ajaxerror']);
 }

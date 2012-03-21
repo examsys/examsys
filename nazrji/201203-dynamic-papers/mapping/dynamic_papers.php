@@ -27,10 +27,9 @@ require '../include/question_types.inc';
 require '../include/mapping.inc';
 require '../include/errors.inc';
 
-check_var('module', 'GET', true, false);
+check_var('module', 'REQUEST', true, false);
 
-$module = $_GET['module'];
-
+$module = $_REQUEST['module'];
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -93,7 +92,12 @@ $module = $_GET['module'];
   <script src="../js/staff_help.js" type="text/javascript"></script>
   <script src="../js/jquery-1.6.1.min.js" type="text/javascript"></script>
   <script src="../js/jquery.dynamicpapers.js" type="text/javascript"></script>
-<?php echo $cfg_js_root ?>
+  <script type="text/javascript" src="../js/jquery.rquerystring.js"></script>
+<?php
+echo $cfg_js_root;
+$langstrings = array('mustselectobjectives', 'ajaxerror', 'ajaxconfirm');
+echo LangUtils::render_JS_strings($langstrings, $string);
+?>
 </head>
 
 <body>
@@ -219,22 +223,16 @@ if (true) {
       if (isset($sessionData["objectives"]) and is_array($sessionData["objectives"])) {
         echo '<ul class="map-objectives">';
         foreach ($sessionData["objectives"] as $id => $objectives) {
-          $map_class = is_array($objectives['mapped']) ? 'mapped' : 'unmapped';
+          $mapped = is_array($objectives['mapped']);
+          $map_class = ($mapped) ? 'mapped' : 'unmapped';
           echo '<li class="' . $map_class . '"><input type="checkbox" id="obj-mapped' . $objectives['id'] . '" name="obj-mapped" value="' . $objectives['id'] . '" class="map-objective" /> <label for="obj-mapped' . $objectives['id'] . '">' . htmlentities($objectives['content']) . '</label>';
-          if (is_array($objectives['mapped'])) {
-            echo ' <span class="mapping">';
-            $i = 0;
+          if ($mapped) {
+            echo ' <ul>';
             foreach ($objectives['mapped'] as $q_id) {
-              if (array_key_exists($q_id,$excluded)) {
-                $class = 'q_excluded';
-              } else {
-                $class = 'q_ok';
-              }
-              if ($i != 0) echo ', ';
-              $i++;
-              echo "<a class=\"$class\" href=\"../question/view_question.php?q_id=" . $q_id . "&qNo=" . $temp_array[$q_id]['qnumber'] . "\" target=\"_blank\">Q" . $temp_array[$q_id]['qnumber'] . "</a>";
+              $session_safe = str_replace('/', '#', $session);
+              echo "<li><a href=\"../question/view_question.php?q_id=" . $q_id . "\" target=\"_blank\">" . $temp_array[$q_id]['leadin'] . "</a> <a href=\"#\" rel=\"{$module}_{$objectives['id']}_{$q_id}_{$session_safe}\" class=\"unmap\">Unmap</a></li>";
             }
-            echo'</span>';
+            echo'</ul>';
           }
           echo '</li>';
         }

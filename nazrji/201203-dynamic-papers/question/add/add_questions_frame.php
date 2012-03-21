@@ -27,7 +27,7 @@ require '../../include/staff_auth.inc';
 
 $controls_url = 'add_question_controls.php?';
 if (!isset($_GET['paperID'])) {
-  $controls_url .= 'module=' . $_GET['module'] . '&amp;qns=' . $_GET['questions'];
+  $controls_url .= 'module=' . $_GET['module'] . '&amp;objectives=' . $_GET['objectives'];
 } else {
   $controls_url .= 'paperID=' . $_GET['paperID'] . '&amp;module=' . $_GET['module'] . '&amp;folder=' . $_GET['folder'] . '&amp;display_pos=' . $_GET['display_pos'] . '&amp;scrOfY=' . $_GET['scrOfY'] . '&amp;max_screen=' . $_GET['max_screen'];
 }

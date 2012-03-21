@@ -26,33 +26,60 @@ require '../../include/staff_auth.inc';
 
 if ($_POST['questions_to_add'] != '') {
   $questions = explode(',',$_POST['questions_to_add']);
-  $display_pos = $_GET['display_pos'];
-  foreach ($questions as $item) {
-    $result = $mysqli->prepare("INSERT INTO papers VALUES (NULL,?,?,?,?)");
-    $result->bind_param('iiii', $_GET['paperID'], $item, $_POST['screen'], $display_pos);
-    $result->execute();
-    $result->close();
-    $display_pos++;
+  if (isset($_GET['display_pos'])) {
+    // Adding questions to paper
+    $display_pos = $_GET['display_pos'];
+    foreach ($questions as $item) {
+      $result = $mysqli->prepare("INSERT INTO papers VALUES (NULL,?,?,?,?)");
+      $result->bind_param('iiii', $_GET['paperID'], $item, $_POST['screen'], $display_pos);
+      $result->execute();
+      $result->close();
+      $display_pos++;
 
-    // Create a track changes record to say new question added.
-    $tmp_paperID = intval($_GET['paperID']);
-    $trackChange = $mysqli->prepare("INSERT INTO track_changes VALUES (NULL,'Alter Paper',?,$userID,'',?,NOW(),'Add Question')");
-    $trackChange->bind_param('is', $tmp_paperID, $item);
-    $trackChange->execute();
-    $trackChange->close();
+      // Create a track changes record to say new question added.
+      $tmp_paperID = intval($_GET['paperID']);
+      $trackChange = $mysqli->prepare("INSERT INTO track_changes VALUES (NULL,'Alter Paper',?,$userID,'',?,NOW(),'Add Question')");
+      $trackChange->bind_param('is', $tmp_paperID, $item);
+      $trackChange->execute();
+      $trackChange->close();
+    }
+    $paperID = (isset($_GET['paperID'])) ? $_GET['paperID'] : '';
+    $type = (isset($_GET['type'])) ? $_GET['type'] : '';
+    $scrOfY = (isset($_GET['scrOfY'])) ? $_GET['scrOfY'] : '';
+    $module = (isset($_GET['module'])) ? $_GET['module'] : '';
+    $folder = (isset($_GET['folder'])) ? $_GET['folder'] : '';
+    $redirect_url = "../../paper/details.php?paperID=$paperID&type=$type&module=$module&folder=$folder&scrOfY=$scrOfY";
+  } else {
+    // Adding questions to dynamic paper
+
+    // TODO: work out the session
+    $session = '2011/12';
+    foreach ($questions as $question) {
+      if ($_POST['objectives'] != '') {
+        $mapped_objs = explode(',', $_POST['objectives']);
+        $module = $_POST['module'];
+
+        $ins_query = 'INSERT INTO relationships(module_id, question_id, obj_id, calendar_year) VALUES ';
+        $params = array('bind_param', '');
+        foreach ($mapped_objs as $objective) {
+          // Build up insert statement
+          $ins_query .= "(?, ?, ?, ?) ";
+          $params[1] .= 'siis';
+          $params = array_merge($params, array(&$module, &$question, &$objective, &$session));
+        }
+        $result = $mysqli->prepare($ins_query);
+        $params[0] = $result;
+        call_user_func_array('mysqli_stmt_bind_param', $params);
+        $result->execute();
+        $result->close();
+      } else {
+        // TODO: questions added but not yet mapped
+      }
+    }
+    $redirect_url = "../../mapping/dynamic_papers.php?module=$module";
   }
 }
 $mysqli->close();
-$paperID = '';
-$type = '';
-$scrOfY = '';
-$module = '';
-$folder = '';
-if (isset($_GET['paperID'])) $paperID = $_GET['paperID'];
-if (isset($_GET['type'])) $type = $_GET['type'];
-if (isset($_GET['scrOfY'])) $scrOfY = $_GET['scrOfY'];
-if (isset($_GET['module'])) $module = $_GET['module'];
-if (isset($_GET['folder'])) $folder = $_GET['folder'];
 ?>
 <html>
 <head>
@@ -61,7 +88,7 @@ if (isset($_GET['folder'])) $folder = $_GET['folder'];
   <title>Add new Question</title>
   <script language="javascript">
     function closeWindow() {
-      top.window.opener.location.href='../../paper/details.php?paperID=<?php echo $paperID; ?>&type=<?php echo $type; ?>&module=<?php echo $module; ?>&folder=<?php echo $folder; ?>&scrOfY=<?php echo $scrOfY; ?>';
+      top.window.opener.location.href='<?php echo $redirect_url ?>';
       top.window.close();
     }
   </script>
