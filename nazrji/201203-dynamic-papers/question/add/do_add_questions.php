@@ -24,6 +24,10 @@
 
 require '../../include/staff_auth.inc';
 
+function clone_scalar($var) {
+  return $var;
+}
+
 if ($_POST['questions_to_add'] != '') {
   $questions = explode(',',$_POST['questions_to_add']);
   if (isset($_GET['display_pos'])) {
@@ -54,7 +58,10 @@ if ($_POST['questions_to_add'] != '') {
 
     // TODO: work out the session
     $session = '2011/12';
+    $i = $j = 0;
     foreach ($questions as $question) {
+      ${tmp_question.$i} = $question;
+
       if ($_POST['objectives'] != '') {
         $mapped_objs = explode(',', $_POST['objectives']);
         $module = $_POST['module'];
@@ -62,11 +69,15 @@ if ($_POST['questions_to_add'] != '') {
         $ins_query = 'INSERT INTO relationships(module_id, question_id, obj_id, calendar_year) VALUES ';
         $params = array('bind_param', '');
         foreach ($mapped_objs as $objective) {
+          // TODO: check if already mapped before adding
           // Build up insert statement
-          $ins_query .= "(?, ?, ?, ?) ";
+          ${tmp_objective.$j} = $objective;
+          $ins_query .= "(?, ?, ?, ?),";
           $params[1] .= 'siis';
-          $params = array_merge($params, array(&$module, &$question, &$objective, &$session));
+          $params = array_merge($params, array(&$module, &${tmp_question.$i}, &${tmp_objective.$j}, &$session));
+          $j++;
         }
+        $ins_query = rtrim($ins_query, ',');
         $result = $mysqli->prepare($ins_query);
         $params[0] = $result;
         call_user_func_array('mysqli_stmt_bind_param', $params);
@@ -75,6 +86,7 @@ if ($_POST['questions_to_add'] != '') {
       } else {
         // TODO: questions added but not yet mapped
       }
+      $i++;
     }
     $redirect_url = "../../mapping/dynamic_papers.php?module=$module";
   }

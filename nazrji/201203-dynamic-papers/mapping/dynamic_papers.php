@@ -88,6 +88,12 @@ $module = $_REQUEST['module'];
     .map-objectives label {
       margin-left: 6px;
     }
+    .map-objectives ul {
+      list-style: disc;
+    }
+    a.unmap {
+      color: #f00;
+    }
   </style>
   <script src="../js/staff_help.js" type="text/javascript"></script>
   <script src="../js/jquery-1.6.1.min.js" type="text/javascript"></script>

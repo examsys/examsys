@@ -14,7 +14,10 @@
 // along with TouchStone.  If not, see <http://www.gnu.org/licenses/>.
 
 $(function () {
-  $.ajaxSetup({ timeout: 3000 });
+  $.ajaxSetup({ timeout: 6000 });
+  $('#content').ajaxError(function (event, jqXHR, ajaxSettings, thrownError) {
+    showAJAXError();
+  });
 
   // TODO: handle 'by question' display
   $('#add-questions').click(checkObjectives);
