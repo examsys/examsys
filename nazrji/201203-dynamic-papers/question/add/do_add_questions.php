@@ -59,8 +59,9 @@ if ($_POST['questions_to_add'] != '') {
     // TODO: work out the session
     $session = '2011/12';
     $i = $j = 0;
+    $do_insert = false;
     foreach ($questions as $question) {
-      ${tmp_question.$i} = $question;
+      ${'tmp_question'.$i} = $question;
 
       if ($_POST['objectives'] != '') {
         $mapped_objs = explode(',', $_POST['objectives']);
@@ -69,20 +70,30 @@ if ($_POST['questions_to_add'] != '') {
         $ins_query = 'INSERT INTO relationships(module_id, question_id, obj_id, calendar_year) VALUES ';
         $params = array('bind_param', '');
         foreach ($mapped_objs as $objective) {
-          // TODO: check if already mapped before adding
-          // Build up insert statement
-          ${tmp_objective.$j} = $objective;
-          $ins_query .= "(?, ?, ?, ?),";
-          $params[1] .= 'siis';
-          $params = array_merge($params, array(&$module, &${tmp_question.$i}, &${tmp_objective.$j}, &$session));
-          $j++;
+          $check = $mysqli->prepare("SELECT rel_id FROM relationships WHERE module_id=? AND question_id=? AND obj_id=? AND calendar_year=?");
+          $check->bind_param('siis', $module, $question, $objective, $session);
+          $check->execute();
+          $check->store_result();
+          $check->fetch();
+          if ($check->num_rows == 0) {
+            $do_insert = true;
+            // Build up insert statement
+            ${'tmp_objective'.$j} = $objective;
+            $ins_query .= "(?, ?, ?, ?),";
+            $params[1] .= 'siis';
+            $params = array_merge($params, array(&$module, &${'tmp_question'.$i}, &${'tmp_objective'.$j}, &$session));
+            $j++;
+          }
+          $check->close();
         }
-        $ins_query = rtrim($ins_query, ',');
-        $result = $mysqli->prepare($ins_query);
-        $params[0] = $result;
-        call_user_func_array('mysqli_stmt_bind_param', $params);
-        $result->execute();
-        $result->close();
+        if ($do_insert) {
+          $ins_query = rtrim($ins_query, ',');
+          $result = $mysqli->prepare($ins_query);
+          $params[0] = $result;
+          call_user_func_array('mysqli_stmt_bind_param', $params);
+          $result->execute();
+          $result->close();
+        }
       } else {
         // TODO: questions added but not yet mapped
       }
