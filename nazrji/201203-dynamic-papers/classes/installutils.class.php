@@ -1071,7 +1071,7 @@ class databaseTables {
         `userID` int(11) default NULL,
         `schools_id` int(11) default NULL,
         PRIMARY KEY  (`adminID`)
-      ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+      ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
    $this->tableList['courses'] = <<<QUERY
@@ -1083,7 +1083,7 @@ QUERY;
           `schoolid` int(11) default NULL,
           PRIMARY KEY  (`id`),
           KEY `degree` (`name`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['ebel'] = <<<QUERY
@@ -1095,7 +1095,7 @@ QUERY;
             `percentage` float default NULL,
             PRIMARY KEY  (`id`),
             KEY `SETTER_AND_DATE` (`setterID`,`date_set`)
-          ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+          ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['ebel_grid_templates'] = <<<QUERY
@@ -1121,7 +1121,7 @@ QUERY;
             `HN2` tinyint(4) default NULL,
             `name` varchar(255) default NULL,
             PRIMARY KEY  (`id`)
-          ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+          ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['faculty'] = <<<QUERY
@@ -1130,7 +1130,7 @@ QUERY;
             `name` varchar(80) default NULL,
             `deleted` datetime default NULL,
             PRIMARY KEY  (`id`)
-          ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+          ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['feedback_release'] = <<<QUERY
@@ -1140,7 +1140,7 @@ QUERY;
           `date` datetime NOT NULL,
           `type` enum('objectives','questions') default NULL,
           PRIMARY KEY  (`idfeedback_release`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['folders'] = <<<QUERY
@@ -1153,7 +1153,7 @@ QUERY;
           `color` enum('yellow','red','green','blue') default NULL,
           `deleted` datetime default NULL,
           PRIMARY KEY  (`id`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['help_log'] = <<<QUERY
@@ -1199,7 +1199,7 @@ QUERY;
           `low_bandwidth` tinyint(4) default '0',
           PRIMARY KEY  (`id`),
           KEY `lab` (`lab`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['keywords_question'] = <<<QUERY
@@ -1207,7 +1207,7 @@ QUERY;
           `q_id` int(11) default NULL,
           `keywordID` int(11) default NULL,
           KEY `q_id` (`q_id`)
-        ) ENGINE=MyISAM DEFAULT CHARSET={$charset}
+        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['keywords_user'] = <<<QUERY
@@ -1218,7 +1218,7 @@ QUERY;
           `keyword_type` enum('personal','team') default NULL,
           PRIMARY KEY  (`id`),
           KEY `username` (`userID`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['labs'] = <<<QUERY
@@ -1232,7 +1232,7 @@ QUERY;
           `it_support` text,
           `plagarism` text,
           PRIMARY KEY  (`id`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['log0'] = <<<QUERY
@@ -1254,7 +1254,7 @@ QUERY;
           KEY `q_paper` (`q_paper`),
           KEY `username` (`userID`),
           KEY `started` (`started`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset} PACK_KEYS=1
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset} PACK_KEYS=1
 QUERY;
 
     $this->tableList['log1'] = <<<QUERY
@@ -1276,7 +1276,7 @@ QUERY;
           KEY `q_paper` (`q_paper`),
           KEY `username` (`userID`),
           KEY `started` (`started`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset} PACK_KEYS=1
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset} PACK_KEYS=1
 QUERY;
 
     $this->tableList['log2'] = <<<QUERY
@@ -1298,7 +1298,7 @@ QUERY;
           KEY `q_paper` (`q_paper`),
           KEY `username` (`userID`),
           KEY `started` (`started`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset} PACK_KEYS=1
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset} PACK_KEYS=1
 QUERY;
 
     $this->tableList['log3'] = <<<QUERY
@@ -1320,7 +1320,7 @@ QUERY;
           KEY `q_paper` (`q_paper`),
           KEY `username` (`userID`),
           KEY `started` (`started`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset} PACK_KEYS=1
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset} PACK_KEYS=1
 QUERY;
 
     $this->tableList['log4'] = <<<QUERY
@@ -1333,7 +1333,7 @@ QUERY;
           `rating` text,
           `q_parts` varchar(50) default NULL,
           PRIMARY KEY  (`id`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['log4_overall'] = <<<QUERY
@@ -1350,7 +1350,7 @@ QUERY;
           `osce_type` enum('electronic','paper') default NULL,
           `year` tinyint(4) default NULL,
           PRIMARY KEY  (`id`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['log5'] = <<<QUERY
@@ -1363,7 +1363,7 @@ QUERY;
           `mark` float default NULL,
           `totalpos` tinyint(4) default NULL,
           PRIMARY KEY  (`id`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0  DEFAULT CHARSET={$charset}
+        ) ENGINE=InnoDB AUTO_INCREMENT=0  DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['log6'] = <<<QUERY
@@ -1376,7 +1376,7 @@ QUERY;
           `q_id` int(11) default NULL,
           `rating` tinyint(4) default NULL,
           PRIMARY KEY  (`id`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0  DEFAULT CHARSET={$charset}
+        ) ENGINE=InnoDB AUTO_INCREMENT=0  DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['log_late'] = <<<QUERY
@@ -1397,7 +1397,7 @@ QUERY;
           PRIMARY KEY  (`id`),
           KEY `q_paper` (`q_paper`),
           KEY `username` (`userID`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset} PACK_KEYS=1
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset} PACK_KEYS=1
 QUERY;
 
     $this->tableList['log_metadata'] = <<<QUERY
@@ -1412,7 +1412,7 @@ QUERY;
           `attempt` tinyint(4) default NULL,
           PRIMARY KEY  (`id`),
           KEY `userID` (`userID`,`paperID`,`started`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['modules'] = <<<QUERY
@@ -1430,7 +1430,7 @@ QUERY;
           `ebel_grid_template` int(11) default NULL,
           PRIMARY KEY  (`id`),
           KEY `guideid` (`moduleid`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset} PACK_KEYS=1
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset} PACK_KEYS=1
 QUERY;
 
     $this->tableList['objectives'] = <<<QUERY
@@ -1442,7 +1442,7 @@ QUERY;
           `calendar_year` enum('2008/09','2009/10','2010/11','2011/12','2012/13','2013/14','2014/15','2015/16') NOT NULL,
           `sequence` int(11) default NULL,
           PRIMARY KEY  (`obj_id`,`moduleID`,`calendar_year`)
-        ) ENGINE=MyISAM DEFAULT CHARSET={$charset}
+        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['options'] = <<<QUERY
@@ -1461,7 +1461,7 @@ QUERY;
           `marks_partial` float default NULL,
           PRIMARY KEY  (`id_num`),
           KEY `o_id` (`o_id`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset} PACK_KEYS=1
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset} PACK_KEYS=1
 QUERY;
 
     $this->tableList['paper_metadata_security'] = <<<QUERY
@@ -1471,7 +1471,7 @@ QUERY;
           `name` varchar(255) default NULL,
           `value` varchar(255) default NULL,
           PRIMARY KEY  (`id`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['paper_notes'] = <<<QUERY
@@ -1483,7 +1483,7 @@ QUERY;
           `note_authorID` mediumint(9) default NULL,
           `note_workstation` varchar(15) default NULL,
           PRIMARY KEY  (`note_id`)
-        ) ENGINE=MyISAM DEFAULT CHARSET={$charset}
+        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['papers'] = <<<QUERY
@@ -1498,7 +1498,7 @@ QUERY;
           KEY `question_idx` (`question`),
           KEY `screen` (`screen`),
           KEY `paper_2` (`paper`,`display_pos`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset} PACK_KEYS=1
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset} PACK_KEYS=1
 QUERY;
 
     $this->tableList['password_tokens'] = <<<QUERY
@@ -1508,7 +1508,7 @@ QUERY;
           `token` char(16) NOT NULL,
           `time` datetime NOT NULL,
           PRIMARY KEY  (`id`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['properties'] = <<<QUERY
@@ -1561,7 +1561,7 @@ QUERY;
           KEY `paper_owner` (`paper_ownerID`),
           KEY `question_type` (`paper_type`),
           KEY `crypt_name_idx` (`crypt_name`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
 
@@ -1575,7 +1575,7 @@ QUERY;
           `date` datetime default NULL,
           `reason` text,
           PRIMARY KEY  (`id`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['questions'] = <<<QUERY
@@ -1608,7 +1608,7 @@ QUERY;
           `q_option_order` enum('display order','alphabetic','random') default NULL,
           `score_method` enum('Mark per Question','Mark per Option','Allow partial Marks','Bonus Mark') default NULL,
           PRIMARY KEY  (`q_id`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset} PACK_KEYS=1
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset} PACK_KEYS=1
 QUERY;
 
 $this->tableList['questions_metadata'] = <<<QUERY
@@ -1618,7 +1618,7 @@ $this->tableList['questions_metadata'] = <<<QUERY
           `type` varchar(255) default NULL,
           `value` varchar(255) default NULL,
           PRIMARY KEY  (`id`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['recent_papers'] = <<<QUERY
@@ -1627,7 +1627,7 @@ QUERY;
           `paperID` mediumint(9) NOT NULL default '0',
           `accessed` datetime default NULL,
           PRIMARY KEY  (`userID`,`paperID`)
-        ) ENGINE=MyISAM DEFAULT CHARSET={$charset}
+        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['relationships'] = <<<QUERY
@@ -1642,7 +1642,7 @@ QUERY;
           KEY `module_id_idx` (`module_id`),
           KEY `paper_id_idx` (`paper_id`),
           KEY `calendar_year` (`calendar_year`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['review_comments'] = <<<QUERY
@@ -1661,7 +1661,7 @@ QUERY;
           `duration` mediumint(9) default NULL,
           `screen` tinyint(4) default NULL,
           PRIMARY KEY  (`id`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['schools'] = <<<QUERY
@@ -1671,7 +1671,7 @@ QUERY;
           `facultyID` int(11) default NULL,
           `deleted` datetime default NULL,
           PRIMARY KEY  (`id`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['sct_reviews'] = <<<QUERY
@@ -1684,7 +1684,7 @@ QUERY;
           `answer` tinyint(4) default NULL,
           `reason` text,
           PRIMARY KEY  (`id`)
-        ) ENGINE=MyISAM DEFAULT CHARSET={$charset}
+        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['sessions'] = <<<QUERY
@@ -1698,7 +1698,7 @@ QUERY;
           `occurrence` datetime default NULL,
           PRIMARY KEY  (`identifier`,`moduleID`,`calendar_year`),
           KEY `sess_id` (`sess_id`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['sid'] = <<<QUERY
@@ -1706,7 +1706,7 @@ QUERY;
           `student_id` char(15) default NULL,
           `userID` mediumint(8) unsigned NOT NULL default '0',
           PRIMARY KEY  (`userID`)
-        ) ENGINE=MyISAM DEFAULT CHARSET={$charset}
+        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['sms_imports'] = <<<QUERY
@@ -1720,7 +1720,7 @@ QUERY;
           `deletion_details` text,
           `import_type` varchar(255) default NULL,
           PRIMARY KEY  (`id`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['special_needs'] = <<<QUERY
@@ -1736,7 +1736,7 @@ QUERY;
           `labelcolor` varchar(20) default NULL,
           `font` varchar(50) default NULL,
           PRIMARY KEY  (`special_id`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['staff_help'] = <<<QUERY
@@ -1767,7 +1767,7 @@ QUERY;
           `group_review` text,
           PRIMARY KEY  (`id`),
           KEY `paperID` (`paperID`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['student_help'] = <<<QUERY
@@ -1794,7 +1794,7 @@ QUERY;
           `attempt` tinyint(4) default NULL,
           `auto_update` tinyint(4) default NULL,
           PRIMARY KEY  (`id`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['student_notes'] = <<<QUERY
@@ -1806,7 +1806,7 @@ QUERY;
           `paper_id` smallint(5) unsigned NOT NULL default '0',
           `note_authorID` mediumint(8) unsigned default NULL,
           PRIMARY KEY  (`note_id`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['sys_errors'] = <<<QUERY
@@ -1825,7 +1825,7 @@ QUERY;
           `paperID` int(11) default NULL,
           `post_data` text,
           PRIMARY KEY  (`id`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['teams'] = <<<QUERY
@@ -1837,7 +1837,7 @@ QUERY;
           `type` enum('System','Custom') default NULL,
           PRIMARY KEY  (`groupID`),
           KEY `name` (`name`(20))
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['temp_users'] = <<<QUERY
@@ -1850,7 +1850,7 @@ QUERY;
           `assigned_account` char(10) default NULL,
           `reserved` datetime default NULL,
           PRIMARY KEY  (`id`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['textbox_marking'] = <<<QUERY
@@ -1869,7 +1869,7 @@ QUERY;
           PRIMARY KEY  (`id`),
           KEY `paperID` (`paperID`),
           KEY `q_id` (`q_id`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['textbox_remark'] = <<<QUERY
@@ -1878,7 +1878,7 @@ QUERY;
           `paperID` int(11) default NULL,
           `userID` mediumint(8) unsigned default NULL,
           PRIMARY KEY  (`id`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['track_changes'] = <<<QUERY
@@ -1893,7 +1893,7 @@ QUERY;
           `part` text,
           PRIMARY KEY  (`id`),
           KEY `typeID` (`typeID`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['users'] = <<<QUERY
@@ -1914,7 +1914,7 @@ QUERY;
           `yearofstudy` tinyint(4) default NULL,
           PRIMARY KEY  (`id`),
           KEY `username_index` (`username`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset} PACK_KEYS=1
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset} PACK_KEYS=1
 QUERY;
 
     $this->tableList['users_metadata'] = <<<QUERY
@@ -1926,7 +1926,7 @@ QUERY;
           `value` varchar(255) default NULL,
           `calendar_year` enum('2010/11','2011/12','2012/13','2013/14','2014/15','2015/16','2016/17','2017/18','2018/19','2019/20') default NULL,
           PRIMARY KEY  (`id`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['announcements'] = <<<QUERY
@@ -1940,7 +1940,7 @@ QUERY;
           `enddate` datetime DEFAULT NULL,
           `deleted` datetime DEFAULT NULL,
           PRIMARY KEY (`id`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
   }
