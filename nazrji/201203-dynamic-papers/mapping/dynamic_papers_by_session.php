@@ -154,6 +154,10 @@ unset($objsBySession['none_of_the_above']);
       background-color: #B3C8E8;
       color: black;
     }
+    .map-objective:checked ~ label {
+      background-color: #B3C8E8;
+      color: black;
+    }
   </style>
   <script src="../js/staff_help.js" type="text/javascript"></script>
   <script src="../js/jquery-1.6.1.min.js" type="text/javascript"></script>

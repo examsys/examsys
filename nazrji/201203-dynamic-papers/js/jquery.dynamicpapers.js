@@ -25,7 +25,9 @@ $(function () {
 
   $('#session').change(function () { $('#year-form').submit(); });
 
-  $('.objective').click(function () { $(this).toggleClass('selected'); });
+  if ($.browser.msie && parseInt($.browser.version, 10) < 9) {
+    $('.objective').click(function () { $(this).toggleClass('selected'); });
+  }
 });
 
 function checkObjectives(e) {
