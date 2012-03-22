@@ -30,7 +30,7 @@ require_once '../classes/dateutils.class.php';
 <br />
 
 <table style="margin-left:4px; font-size:90%; display:block" cellpadding="3" cellspacing="0" border="0" id="menu1a">
-<tr><td class="ico"><a href="add_module.php"><img src="../artwork/module_icon_16.png" width="16" height="16" alt="<?php echo 'Add Questions'; ?>" border="0" /></a></td><td class="menuitem"><a href="#" id="add-questions"><?php echo 'Add Questions'; ?></a></td></tr>
+<tr><td class="ico"><a href="add_module.php"><img src="../artwork/add_questions_16.gif" width="16" height="16" alt="<?php echo 'Add Questions'; ?>" border="0" /></a></td><td class="menuitem"><a href="#" id="add-questions"><?php echo 'Add Questions'; ?></a></td></tr>
 </table>
 
 </form>

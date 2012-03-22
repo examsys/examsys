@@ -24,6 +24,8 @@ $(function () {
   $('.unmap').click(unMapQuestion);
 
   $('#session').change(function () { $('#year-form').submit(); });
+
+  $('.objective').click(function () { $(this).toggleClass('selected'); });
 });
 
 function checkObjectives(e) {

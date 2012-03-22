@@ -132,16 +132,27 @@ unset($objsBySession['none_of_the_above']);
     }
     .map-objectives {
       list-style: none;
-      padding-left: 16px;
-    }
-    .map-objectives label {
-      margin-left: 6px;
+      padding: 0;
     }
     .map-objectives ul {
       list-style: disc;
     }
     a.unmap {
       color: #f00;
+    }
+    .map-objective {
+      position: absolute;
+      top: -9999px;
+      left: -9999px;
+    }
+    .objective {
+      padding: 2px 0 2px 16px;
+      display: block;
+      width: 100%;
+    }
+    .objective.selected {
+      background-color: #B3C8E8;
+      color: black;
     }
   </style>
   <script src="../js/staff_help.js" type="text/javascript"></script>
@@ -222,7 +233,7 @@ if (count($objsBySession[$module]) > 0) {
         foreach ($sessionData["objectives"] as $id => $objectives) {
           $mapped = is_array($objectives['mapped']);
           $map_class = ($mapped) ? 'mapped' : 'unmapped';
-          echo '<li class="' . $map_class . '"><input type="checkbox" id="obj-mapped' . $objectives['id'] . '" name="obj-mapped" value="' . $objectives['id'] . '" class="map-objective" /> <label for="obj-mapped' . $objectives['id'] . '">' . htmlentities($objectives['content']) . '</label>';
+          echo '<li class="' . $map_class . '"><input type="checkbox" id="obj-mapped' . $objectives['id'] . '" name="obj-mapped" value="' . $objectives['id'] . '" class="map-objective" /> <label for="obj-mapped' . $objectives['id'] . '" class="objective">' . htmlentities($objectives['content']) . '</label>';
           if ($mapped) {
             echo ' <ul>';
             foreach ($objectives['mapped'] as $q_id) {
