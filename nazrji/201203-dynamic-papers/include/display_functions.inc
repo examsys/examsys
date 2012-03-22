@@ -1075,9 +1075,6 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
     }
   } elseif ($question['q_type'] == 'matrix') {
     $part_id = 1;
-    if ($matching_media[0] != '') {
-      echo "<p align=\"center\">" . display_media($matching_media[0], $matching_media_width[0], $matching_media_height[0]) . "</p>\n";
-    }
     echo '<blockquote><table cellpadding="2" cellspacing="0" border="1" class="matrix">';
     echo "<tr>\n<td colspan=\"2\">&nbsp;</td>";
     foreach ($matching_options as $single_option) {

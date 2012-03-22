@@ -84,6 +84,7 @@ class IE_qti12_Load extends IE_Main {
 
     $xmlStr = file_get_contents($file);
     $xmlStr = str_replace('webct:localizable_mattext','webct_localizable_mattext',$xmlStr,$count);
+    $xmlStr = str_replace(array('‘','’'),array("'","'"),$xmlStr,$count);
     $xml = @simplexml_load_string($xmlStr);
 
     if (!$xml) {
@@ -350,7 +351,9 @@ if(isset($xml->item->presentation->flow))
   function LoadQuestion(&$item) {
     $q = new ST_QTI12_Question($item);
     $q->CountStuff();
-
+    if(!isset($q->q_option_order)) {
+      $q->q_option_order='display order';
+    }
     return $q;
   }
 
@@ -1095,7 +1098,8 @@ if(isset($xml->item->presentation->flow))
     $this->GenerateQuestionInfo($dest, $source->material, $source->title);
 
     // load option list
-    $optionlist = $this->GetResponseLabelList($source, false);
+
+    $optionlist = $this->GetResponseLabelList($source, false,$lablk,$lablkd);
     $optid = 1;
 
     foreach ($optionlist as $id => $option) {
@@ -1106,6 +1110,8 @@ if(isset($xml->item->presentation->flow))
       $dest->optionlist[$optid] = $opt;
       $optid++;
     }
+    $optid=1;
+
 
     // load all stems
     $stemid = 1;
@@ -1150,7 +1156,16 @@ if(isset($xml->item->presentation->flow))
       $correct_mapped = array();
       foreach ($correct as $answer) {
         foreach ($dest->optionlist as $oid => $option) {
-          if ($option->id == $answer) $stem->correctans[] = $oid;
+          if ($option->id == $answer) {
+         //   $stem->correctans[] = $oid;
+          }
+
+        }
+        foreach ($lablkd as $lablkk => $lablkv) {
+          if($lablk[$rid][$answer] == $lablkk)
+          {
+            $stem->correctans[]=$lablkv;
+          }
         }
       }
 
@@ -2035,24 +2050,35 @@ $dest->answer=strtolower($answer);
   ///////////////////////////////////////////////
 
   // gets a list of the possible responses in the question and returns it as an array
-  function GetResponseLabelList(&$question, $clean = true) {
+  function GetResponseLabelList(&$question, $clean = true,&$lablk=array(),&$lablkd=array()) {
     $resplist = array();
 $numbb=1;
-    foreach ($question->responses as $response) {
+    $loop=0;
+    foreach ($question->responses as $rid => $response) {
       foreach ($response->labels as $label) {
         if ($clean) {
           $value = strtolower($label->material->GetText());
         } else {
           $value = $label->material->GetHTML();
         }
+        $labl=$label->material->GetLabel();
+        $labl2=$label->id;
+$lablk[$rid][$labl2]=$labl;
+        if(!isset($lablkd[$labl])) {
+          $lablkd[$labl]=$numbb;
+        }
         if($question->wct_questiontype =="WCT_Matching") {
           $label->id="MATCH" . $numbb++;
         }
-        $resplist[$label->id] = $value;
+        if($loop==0) {
+          $resplist[$label->id] = $value;
+        }
+
       }
-    //  if($question->wct_questiontype != "WCT_Matching") {
-        break;
-     // }
+  //  if($question->wct_questiontype != "WCT_Matching") {
+        //break;
+      $loop=1;
+   //  }
     }
 
     return $resplist;

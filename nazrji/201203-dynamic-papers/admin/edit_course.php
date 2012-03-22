@@ -54,6 +54,7 @@ if (isset($_POST['submit']) and $unique_course == true) {
   $result->close();
   $mysqli->close();
   header("location: list_courses.php");
+  exit;
 } else {
   $courseID = $_GET['courseID'];
   $result = $mysqli->prepare("SELECT schoolid, name, description FROM courses WHERE id=? LIMIT 1");

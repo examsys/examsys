@@ -754,7 +754,12 @@ class ST_QTI12_Material // <material>
 
       foreach ($xml->children() as $child) {
         $name = $child->getName();
-        if ($name == 'mattext') $chunk->data[] = MakeValidHTML($this->ParseImages((string) $child),$this->notrim);
+        if ($name == 'mattext') {
+          $chunk->data[] = MakeValidHTML($this->ParseImages((string) $child),$this->notrim);
+          if(isset($child->attributes()->label)) {
+            $chunk->label = (string) $child->attributes()->label;
+          }
+        }
 
         if ($name == 'matemtext') $chunk->data[] = "<em>".MakeValidHTML($this->ParseImages((string) $child))."</em>";
 
@@ -949,6 +954,14 @@ class ST_QTI12_Material // <material>
     else {
       return trim($text);
     }
+  }
+
+  function GetLabel() {
+    foreach($this->chunks as $chunk) {
+      $label[]=$chunk->label;
+    }
+    $labels=implode(' ',$label);
+    return $labels;
   }
 
   function __toString() {

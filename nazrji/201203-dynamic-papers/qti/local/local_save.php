@@ -617,6 +617,7 @@ $t=9;
     $this->q_row['q_option_order'] = $question->presentation ;
     $this->q_row['score_method'] = 'Mark per Question';
     $this->q_row['display_method'] = 'vertical';
+    $this->q_row['q_option_order'] = 'display order';
 
     $this->q_row['correct_fback'] =$question->fb_correct;
     $this->q_row['incorrect_fback'] =$question->fb_incorrect;

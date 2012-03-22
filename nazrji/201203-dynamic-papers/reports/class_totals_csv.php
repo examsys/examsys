@@ -65,11 +65,11 @@
     for ($i=0; $i<$user_no; $i++) {
       if ($user_results[$i]['visible'] == 1) {
         $total_time += $user_results[$i]['duration'];
-        echo $user_results[$i]['title'] . "," . $user_results[$i]['surname'] . "," . $user_results[$i]['first_names'] . ",";
+        echo '"' . $user_results[$i]['title'] . '","' . $user_results[$i]['surname'] . '","' . $user_results[$i]['first_names'] . '",';
         if ($user_results[$i]['student_id'] == '') {
-          echo "Unknown,";
+          echo 'Unknown,';
         } else {
-          echo $user_results[$i]['student_id'] . ",";
+          echo $user_results[$i]['student_id'] . ',';
         }
         if ($user_results[$i]['display_started'] == '') {  // Student did not take exam.
           echo $user_results[$i]['student_grade'] . "," . $user_results[$i]['module'] . ",,,,No Attendance,,,\n";

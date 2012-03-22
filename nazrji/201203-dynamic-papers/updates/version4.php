@@ -2043,7 +2043,108 @@ if (!isset($_POST['update'])) {
   }
   $result->close();
 
+  // 21/03/2012 - Move to InnoDB for all tables except help tables
+  echo "<li>UPDATING TO InnoDB This may take some time please be patient ;-)</li>\n";
+  ob_flush();
+  flush();
+  $result = $mysqli->prepare("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE ENGINE='MyISAM' AND TABLE_SCHEMA = '" . $cfg_db_database . "'");
+  $result->execute();
+  $result->store_result();
+  $result->bind_result($name);
+  $skip_table = Array('help_log'=>1,'help_searches'=>1,'help_tutorial_log'=>1,'staff_help'=>1,'student_help'=>1);
+  while ($result->fetch()) {
+    if(isset($skip_table[$name])) {
+      continue;
+    }
+    echo "<li>ALTER TABLE " . $name . " ENGINE=InnoDB</li>\n";
+    if(!$mysqli->real_query("ALTER TABLE $name ENGINE=InnoDB")) {
+        echo "<li>" . $mysqli->error . "</li>\n";
+    }
+    ob_flush();
+    flush();
+  }
+  // Adding missing indexes 
+  $result->close();
+  $result = $mysqli->prepare("SHOW INDEX FROM users WHERE Key_name = 'idx_roles'");
+  $result->execute();
+  $result->store_result();
+  $result->fetch();
+  if ($result->num_rows() == 0) {
+    echo "<li>CREATE INDEX idx_roles ON users (roles)</li>\n";
+    if(!$mysqli->real_query("CREATE INDEX idx_roles ON users (roles)")) {
+        echo "<li>" . $mysqli->error . "</li>\n";
+    }
+  }
 
+  $result->close();
+  $result = $mysqli->prepare("SHOW INDEX FROM standards_setting WHERE Key_name = 'idx_std_set'");
+  $result->execute();
+  $result->store_result();
+  $result->fetch();
+  if ($result->num_rows() == 0) {
+    echo "<li>CREATE INDEX idx_std_set ON standards_setting (std_set)</li>\n";
+    if(!$mysqli->real_query("CREATE INDEX idx_std_set ON standards_setting (std_set)")) {
+        echo "<li>" . $mysqli->error . "</li>\n";
+    }
+    echo "<li>CREATE INDEX idx_setterID ON standards_setting (setterID)</li>\n";
+    if(!$mysqli->real_query("CREATE INDEX idx_setterID ON standards_setting (setterID)")) {
+        echo "<li>" . $mysqli->error . "</li>\n";
+    }
+  }    
+  $result->close();
+  
+  $result = $mysqli->prepare("SHOW INDEX FROM log_metadata WHERE Key_name = 'idx_log_metadata_student_grade'");
+  $result->execute();
+  $result->store_result();
+  $result->fetch();
+  if ($result->num_rows() == 0) {
+    echo "<li>CREATE INDEX idx_log_metadata_student_grade ON log_metadata (paperID)</li>\n";
+    if(!$mysqli->real_query("CREATE INDEX idx_log_metadata_student_grade ON log_metadata (student_grade)")) {
+        echo "<li>" . $mysqli->error . "</li>\n";
+    }
+    echo "<li>CREATE INDEX idx_log_metadata_paperID ON log_metadata (paperID)</li>\n";
+    if(!$mysqli->real_query("CREATE INDEX idx_log_metadata_paperID ON log_metadata (paperID)")) {
+        echo "<li>" . $mysqli->error . "</li>\n";
+    }
+  } 
+  $result->close();
+  
+  $result = $mysqli->prepare("SHOW INDEX FROM log0 WHERE Key_name = 'idx_log0_screen'");
+  $result->execute();
+  $result->store_result();
+  $result->fetch();
+  if ($result->num_rows() == 0) {
+    echo "<li>CREATE INDEX idx_log0_screen ON log0 (screen)</li>\n";
+    if(!$mysqli->real_query("CREATE INDEX idx_log0_screen ON log0 (screen)")) {
+        echo "<li>" . $mysqli->error . "</li>\n";
+    }
+    echo "<li>CREATE INDEX idx_log1_screen ON log1 (screen)</li>\n";
+    if(!$mysqli->real_query("CREATE INDEX idx_log1_screen ON log1 (screen)")) {
+        echo "<li>" . $mysqli->error . "</li>\n";
+    }
+    echo "<li>CREATE INDEX idx_log2_screen ON log2 (screen)</li>\n";
+    if(!$mysqli->real_query("CREATE INDEX idx_log2_screen ON log2 (screen)")) {
+        echo "<li>" . $mysqli->error . "</li>\n";
+    }
+    echo "<li>CREATE INDEX idx_log3_screen ON log3 (screen)</li>\n";
+    if(!$mysqli->real_query("CREATE INDEX idx_log3_screen ON log3 (screen)")) {
+        echo "<li>" . $mysqli->error . "</li>\n";
+    }
+  } 
+  $result->close();
+  
+  $result = $mysqli->prepare("SHOW INDEX FROM courses WHERE Key_name = 'idx_courses_name'");
+  $result->execute();
+  $result->store_result();
+  $result->fetch();
+  if ($result->num_rows() == 0) {
+    echo "<li>CREATE INDEX idx_courses_name ON courses (name)</li>\n";
+    if(!$mysqli->real_query("CREATE INDEX idx_courses_name ON courses (name)")) {
+        echo "<li>" . $mysqli->error . "</li>\n";
+    }
+  } 
+  $result->close();
+  
   // End ------------------------------------------------------------------
   echo "</ol>\n";
   

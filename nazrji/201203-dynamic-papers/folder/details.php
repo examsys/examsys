@@ -295,7 +295,7 @@ if ($folder != '') {
 } elseif ($_GET['module'] != '') {
   $paper_types = array();
   
-  $results = $mysqli->prepare("SELECT DISTINCT paper_type, COUNT(paper_type) AS no_papers FROM properties WHERE moduleID LIKE '%" . $_GET['module'] . "%' AND deleted IS NULL $showretiredSQL GROUP BY paper_type");
+  $results = $mysqli->prepare("SELECT DISTINCT paper_type, COUNT(paper_type) AS no_papers FROM properties WHERE (moduleID = '" . $_GET['module'] . "' OR moduleID LIKE '%," . $_GET['module'] . ",%' OR moduleID LIKE '" . $_GET['module'] . ",%' OR moduleID LIKE '%," . $_GET['module'] . "') AND deleted IS NULL $showretiredSQL GROUP BY paper_type");
   $results->execute();
   $results->bind_result($paper_type, $no_papers);
   while ($results->fetch()) {
@@ -303,7 +303,7 @@ if ($folder != '') {
   }
   $results->close();
   
-  $query_string = "SELECT DISTINCT paper_ownerID, property_id, paper_type, MAX(screen) AS screens, paper_title, DATE_FORMAT(start_date,'%Y%m%d%H%i%s') AS start_date, DATE_FORMAT(start_date,'$cfg_long_date_time') AS display_start_date, DATE_FORMAT(end_date,'$cfg_long_date_time') AS display_end_date, exam_duration, title, initials, surname, retired, moduleID FROM (properties, users) LEFT JOIN papers ON properties.property_id=papers.paper WHERE properties.paper_ownerID=users.id AND moduleID LIKE '%" . $_GET['module'] . "%' AND deleted IS NULL $showretiredSQL GROUP BY paper_title ORDER BY paper_type, paper_title";
+  $query_string = "SELECT DISTINCT paper_ownerID, property_id, paper_type, MAX(screen) AS screens, paper_title, DATE_FORMAT(start_date,'%Y%m%d%H%i%s') AS start_date, DATE_FORMAT(start_date,'$cfg_long_date_time') AS display_start_date, DATE_FORMAT(end_date,'$cfg_long_date_time') AS display_end_date, exam_duration, title, initials, surname, retired, moduleID FROM (properties, users) LEFT JOIN papers ON properties.property_id=papers.paper WHERE properties.paper_ownerID=users.id AND (moduleID = '" . $_GET['module'] . "' OR moduleID LIKE '%," . $_GET['module'] . ",%' OR moduleID LIKE '" . $_GET['module'] . ",%' OR moduleID LIKE '%," . $_GET['module'] . "') AND deleted IS NULL $showretiredSQL GROUP BY paper_title ORDER BY paper_type, paper_title";
 }
 
 $results = $mysqli->prepare($query_string);

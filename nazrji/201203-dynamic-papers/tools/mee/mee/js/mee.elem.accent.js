@@ -51,18 +51,16 @@ MEE.Elem.extend("MEE.ElemAccent",
         this.args[0].sortAlign();
 
         // work out accent size needed
-        var tall = '-0.22em';
-        var top = '0.1';
+        var tall = '-0.35em';
+        var top = '-1.1';
         var topoffset = 0;
         var topmax = 0.1;
 
         // work out the font size to use based on the size of the content
-        $(this.html_main).css('top', '0em');
         if (this.eldata.accent_wide) {
             var textlen = this.args[0].align.width;
             textlen = $(textlen).toEm({ 'scope': this.args[0].html_elem });
-            //console.log(textlen);
-            if (textlen < 0.6) {
+           if (textlen < 0.6) {
             } else if (textlen < 1) {
                 $(this.html_main).css('font-family', 'MathJax_Size1');
                 $(this.html_main).css('top', '0.1em');
@@ -101,10 +99,8 @@ MEE.Elem.extend("MEE.ElemAccent",
         var accentwidth = this.main.align.width;
         var textwidth = this.args[0].align.width;
 
-        //debug.log(accentwidth, textwidth);
         // vector character in MathJax_Main is boggered, so this.eldata.nopadleft was added to get around this.
         // changed font to Arial Unicode so no need for it anymore
-
         if (this.eldata.handledots) { // deal with multiple . chars instead of a sinlge unicode char
             $(this.html_main).css('position', 'absolute');
             $(this.html_main).css('top', '-0.57em');
@@ -158,10 +154,14 @@ MEE.Elem.extend("MEE.ElemAccent",
 
             //topoffset += $(top).toPx({ 'scope': this.args[0].html_elem });
         } else if (hasTall(text) && !this.eldata.handledots) { // do we have tall text, ie t char
+            if($.browser.msie) {
+              tall = '-1.22em';
+            }
             $(this.html_main).css('top', tall);
             topoffset += 0.22;
         }
-
+        topoffset += 0.22;
+        
         // sort out top of align
         top = $(this.html_main).css('top');
         if (top.indexOf("e") != -1) {

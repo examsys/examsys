@@ -26,7 +26,7 @@
   require '../include/class_totals.inc';
   
   header('Content-type: application/octet-stream');
-  header("Content-Disposition: attachment; filename=new_" . str_replace(' ', '_', $paper) . ".csv");
+  header("Content-Disposition: attachment; filename=new_" . str_replace(' ', '_', $paper) . "_marks.csv");
   
   $row_written = 0;
   foreach ($user_results as $individual) {
@@ -92,11 +92,11 @@
           $a = 0;
           if (is_array($individual['mark_array'][$q_id])) {
             foreach ($individual['mark_array'][$q_id] as $tmp_mark) {
-              if (substr($tmp_exclude,$a,1) == '0') echo "," . $tmp_mark;
+              echo ',' . $tmp_mark;
               $a++;
             }
           } else {
-            if (substr($tmp_exclude,$a,1) == '0') echo "," . $individual['mark_array'][$q_id];
+            echo ',' . $individual['mark_array'][$q_id];
           }
         } else {
           if (($question['q_type'] == 'extmatch' or $question['q_type'] == 'matrix') and $question['score_method'] == 'Mark per Option') {
