@@ -1,5 +1,6 @@
 <?php
 require '../lang/' . $language . '/paper/details.php';
+require '../lang/' . $language . '/include/dynamic_papers.inc.php';
 
 $string['dynamicpapers'] = 'Dynamic Papers';
 $string['start'] = 'Start';
@@ -19,4 +20,5 @@ $string['nomatchsession'] = 'The session in the paper title (%s) does not match 
 $string['mustselectobjectives'] = 'Plese select objectives to which the questions will be mapped';
 $string['ajaxerror'] = 'There was a problem carrying out your action. Please refresh the page and try again';
 $string['ajaxconfirm'] = 'Are you sure?';
+$string['nosessions'] = 'No sessions mapped for module in %s.';
 ?>

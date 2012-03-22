@@ -57,7 +57,7 @@ if ($_POST['questions_to_add'] != '') {
     // Adding questions to dynamic paper
 
     // TODO: work out the session
-    $session = '2011/12';
+    $session = $_POST['session'];
     $i = $j = 0;
     $do_insert = false;
     foreach ($questions as $question) {
@@ -99,7 +99,7 @@ if ($_POST['questions_to_add'] != '') {
       }
       $i++;
     }
-    $redirect_url = "../../mapping/dynamic_papers.php?module=$module";
+    $redirect_url = "../../mapping/dynamic_papers_by_session.php?module=$module&session=$session";
   }
 }
 $mysqli->close();

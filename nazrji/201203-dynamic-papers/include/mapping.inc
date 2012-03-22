@@ -346,6 +346,32 @@ function saveObjMappings($paper_id, $question_id, $rogodb) {
 
 
 /**
+ * Get the academic years that have been created in the objectives mapping interface or for which there are mapped questions
+ * @param $module
+ * @param $mysqli
+ * @param string $scope Which objectives to return.  Default = 'mapped' - years for which there are mapped questions. Otherwise 'all' - all existing years
+ * @return array
+ */
+function get_years($module, $mysqli, $scope='mapped') {
+  $sessions = array();
+
+  if ($scope == 'all') {
+    $stmt = $mysqli->prepare("SELECT DISTINCT calendar_year FROM student_modules, modules WHERE student_modules.moduleid=modules.moduleid AND student_modules.moduleid=? ORDER BY calendar_year DESC");
+  } else {
+    $stmt = $mysqli->prepare("SELECT DISTINCT calendar_year FROM relationships WHERE module_id=? ORDER BY calendar_year DESC");
+  }
+  $stmt->bind_param('s', $module);
+  $stmt->execute();
+  $stmt->bind_result($session);
+  while ($stmt->fetch()) {
+    $sessions[] = $session;
+  }
+  $stmt->close();
+
+  return $sessions;
+}
+
+/**
  * This is function getObjectives this function get objevive to be mapped. It can Retrieve objectives from 
  * TouchStones internal database or an external application 
  *

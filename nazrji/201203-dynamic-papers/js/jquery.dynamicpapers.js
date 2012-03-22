@@ -16,30 +16,33 @@
 $(function () {
   $.ajaxSetup({ timeout: 6000 });
   $('#content').ajaxError(function (event, jqXHR, ajaxSettings, thrownError) {
-    showAJAXError();
+    showAJAXError(lang['ajaxerror']);
   });
 
   // TODO: handle 'by question' display
   $('#add-questions').click(checkObjectives);
   $('.unmap').click(unMapQuestion);
+
+  $('#session').change(function () { $('#year-form').submit(); });
 });
 
 function checkObjectives(e) {
   e.preventDefault();
   var ids = '';
   var module = $('#module').val();
+  var session = $('#session').val();
   $('.map-objective:checked').each(function() { ids += $(this).val() + ','; });
   if (ids.length > 0) {
-    launchAddQuestions(module, ids.replace(/,$/, ''));
+    launchAddQuestions(module, ids.replace(/,$/, ''), session);
   } else {
     alert(lang['mustselectobjectives'])
   }
 }
 
-function launchAddQuestions(module, objs) {
+function launchAddQuestions(module, objs, session) {
   var winH = screen.height - 80;
   var winW = screen.width - 80;
-  var notice=window.open(cfgRootPath + "/question/add/add_questions_frame.php?module=" + module + "&objectives=" + objs, "notice", "width=" + winW + ", height=" + winH + ",left=40,top=20,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+  var notice=window.open(cfgRootPath + "/question/add/add_questions_frame.php?module=" + module + "&objectives=" + objs + "&session=" + session, "notice", "width=" + winW + ", height=" + winH + ",left=40,top=20,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
   if (window.focus) {
     notice.focus();
   }
@@ -52,30 +55,30 @@ function unMapQuestion(e) {
     var module, qID, oID, session;
     var li = $(this).parent();
 
-    if (data.length == 4) {
-      module = data[0];
-      oID = data[1];
-      qID = data[2];
-      session = data[3].replace('#', '/');
+    if (data.length == 2) {
+      module = $('#module').val();
+      oID = data[0];
+      qID = data[1];
+      session = $('#session').val();
+      $.post('../ajax/dynamic_paper/remove_mapping.php',
+         {
+           module: module,
+           objective: oID,
+           question: qID,
+           session: session
+         },
+         function(data) {
+          if (data == 'INVALID INPUT') {
+            showAJAXError(lang['ajaxerror']);
+          } else {
+            li.remove();
+          }
+      });
     }
-    $.post('../ajax/dynamic_paper/remove_mapping.php',
-       {
-         module: module,
-         objective: oID,
-         question: qID,
-         session: session
-       },
-       function(data) {
-        if (data == 'ERROR') {
-          showAJAXError();
-        } else {
-          li.remove();
-        }
-    });
   }
 }
 
 
-function showAJAXError() {
-  alert(lang['ajaxerror']);
+function showAJAXError(message) {
+  alert(message);
 }

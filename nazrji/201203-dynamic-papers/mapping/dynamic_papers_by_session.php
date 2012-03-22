@@ -26,10 +26,54 @@ require '../include/staff_auth.inc';
 require '../include/question_types.inc';
 require '../include/mapping.inc';
 require '../include/errors.inc';
+require '../include/dynamic_papers.inc.php';
 
 check_var('module', 'REQUEST', true, false);
 
 $module = $_REQUEST['module'];
+
+$result = $mysqli->prepare("SELECT fullname FROM modules WHERE moduleid=? LIMIT 1");
+$result->bind_param('i', $module);
+$result->execute();
+$result->bind_result($module_name);
+$result->fetch();
+$result->close();
+
+$years = get_years($module, $mysqli, 'all');
+$session = (isset($_REQUEST['session'])) ? $_REQUEST['session'] : $years[0];
+
+$old_p_id = 0;
+$row_no = 0;
+$info_count = 0;
+$temp_array = array();
+$questionID_list = '';
+
+$result = $mysqli->prepare("SELECT q_group, q_id, q_type, leadin, q_media, q_media_width, q_media_height, DATE_FORMAT(last_edited,'%d/%m/%y') AS display_last_edited FROM questions q INNER JOIN relationships r ON q.q_id=r.question_id WHERE r.module_id=? AND r.paper_id IS NULL AND r.calendar_year=?");
+$result->bind_param('ss', $module, $session);
+$result->execute();
+$result->bind_result($q_group, $q_id, $q_type, $leadin, $q_media, $q_media_width, $q_media_height, $display_last_edited);
+while ($result->fetch()) {
+  $temp_array[$q_id]['q_type'] = $q_type;
+  $temp_array[$q_id]['leadin'] = trim(str_replace('&nbsp;',' ',(strip_tags($leadin))));
+  $temp_array[$q_id]['q_id'] = $q_id;
+  $temp_array[$q_id]['display_last_edited'] = $display_last_edited;
+  $temp_array[$q_id]['q_media'] = $q_media;
+  $temp_array[$q_id]['q_media_width'] = $q_media_width;
+  $temp_array[$q_id]['q_media_height'] = $q_media_height;
+
+  if($q_type == 'info') $info_count++;
+
+  $temp_array[$q_id]['q_group'] = $q_group;
+  $questionID_list .= $q_id . ',';
+}
+$result->close();
+$questionID_list = rtrim($questionID_list, ',');
+
+//$objsBySession = getObjectives($module, $session, null, $questionID_list, $mysqli);
+$objsBySession = getObjectives($module, $session, null, $questionID_list, $mysqli);
+unset($objsBySession['none_of_the_above']);
+
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -53,14 +97,19 @@ $module = $_REQUEST['module'];
     li {padding-left:8px}
 
     .tab {
-      cursor:pointer;
       width:126px;
       height:21px;
-      color:white;
       text-align:center;
+      color:white;
       font-weight:bold;
       font-size:110%;
       background-image:url(../artwork/tab_off.gif)
+    }
+    .tab a {
+      display: block;
+      width: 100%;
+      color:white;
+      text-decoration: none;
     }
     .tab.on {
       background-image:url(../artwork/tab_on.gif)
@@ -111,103 +160,45 @@ echo LangUtils::render_JS_strings($langstrings, $string);
 require '../include/dynamic_paper_options.inc';
 ?>
 
-<div id="content" class="content">
-<?php
-if (!isset($_GET['ordering'])) {
-  $ordering = 'screen';
-  $direction = 'asc';
-}
-
-$result = $mysqli->prepare("SELECT fullname FROM modules WHERE moduleid=? LIMIT 1");
-
-$result->bind_param('i', $module);
-$result->execute();
-$result->bind_result($module_name);
-$result->fetch();
-$result->close();
-?>
-<table class="header" style="font-size:80%">
-  <tr>
-    <th>
-      <div class="breadcrumb">
-        <a href="../staff/index.php"><?php echo $string['home'] ?></a>
+  <div id="content" class="content">
+    <table class="header" style="font-size:80%">
+      <tr>
+        <th>
+          <div class="breadcrumb">
+            <a href="../staff/index.php"><?php echo $string['home'] ?></a>
 <?php
 if ($module != '') { ?>
-        <img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?module=' . $module . '"><?php echo $module . ' - ' . $module_name ?></a>
+            <img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?module=' . $module . '"><?php echo $module . ' - ' . $module_name ?></a>
 <?php
 }
 ?>
-      </div>
-      <div style="font-size:220%; font-weight:bold; margin-left:10px"><?php echo $string['dynamicpapers'] . ' - ' . $string['mappedobjectives'] ?></div>
-    </th>
-    <th style="text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(147); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="Help" border="0" /></a></th>
-  </tr>
-</table>
+          </div>
+          <div style="font-size:220%; font-weight:bold; margin-left:10px"><?php echo $string['dynamicpapers'] . ' - ' . $string['mappedobjectives'] ?></div>
+        </th>
+        <th style="text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(147); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="Help" border="0" /></a></th>
+      </tr>
+    </table>
 
+    <table class="header" style="font-size:80%">
+    <tr>
+      <th style="padding-top:1px">
+        <table cellpadding="0" cellspacing="0" border="0" style="font-size:100%; width:252px">
+          <tr>
+            <td class="tab on"><?php echo $string['bysession']; ?></td>
+            <td class="tab"><a href="dynamic_papers_by_question.php?module=<?php echo $module; ?>"><?php echo $string['byquestion']; ?></a></td>
+          </tr>
+        </table>
+      </th>
+      <th style="width:100%; text-align:right"><?php echo render_year_dropdown($years, $module, $string, $session) ?></th>
+    </tr>
+    <tr><td colspan="2" style="background-color:#1E3C7B">&nbsp;</td></tr>
+    <tr>
+      <td colspan="2">
 <?php
-// TODO: How are we handling multiple sessions?  Check the main mapping screen
-$session = '2011/12';
 
-$old_p_id = 0;
-$row_no = 0;
-$info_count = 0;
-$temp_array = array();
-$questionID_list = '';
-
-$result = $mysqli->prepare("SELECT q_group, q_id, q_type, leadin, q_media, q_media_width, q_media_height, DATE_FORMAT(last_edited,'%d/%m/%y') AS display_last_edited FROM questions q INNER JOIN relationships r ON q.q_id=r.question_id WHERE r.module_id=? AND r.paper_id IS NULL AND r.calendar_year=?");
-$result->bind_param('ss', $module, $session);
-$result->execute();
-$result->bind_result($q_group, $q_id, $q_type, $leadin, $q_media, $q_media_width, $q_media_height, $display_last_edited);
-while ($result->fetch()) {
-  $temp_array[$q_id]['q_type'] = $q_type;
-  $temp_array[$q_id]['leadin'] = trim(str_replace('&nbsp;',' ',(strip_tags($leadin))));
-  $temp_array[$q_id]['q_id'] = $q_id;
-  $temp_array[$q_id]['display_last_edited'] = $display_last_edited;
-  $temp_array[$q_id]['q_media'] = $q_media;
-  $temp_array[$q_id]['q_media_width'] = $q_media_width;
-  $temp_array[$q_id]['q_media_height'] = $q_media_height;
-
-  if($q_type == 'info') $info_count++;
-
-  $temp_array[$q_id]['q_group'] = $q_group;
-  $questionID_list .= $q_id . ',';
-}
-$result->close();
-$questionID_list = rtrim($questionID_list, ',');
-
-//$objsBySession = getObjectives($module, $session, null, $questionID_list, $mysqli);
-$objsBySession = getObjectives($module, $session, null, $questionID_list, $mysqli);
-unset($objsBySession['none_of_the_above']);
-
-
+if (count($objsBySession[$module]) > 0) {
 ?>
-  <table class="header" style="font-size:80%">
-  <tr>
-    <th style="padding-top:1px">
-      <table cellpadding="0" cellspacing="0" border="0" style="font-size:100%; width:252px">
-        <tr>
-          <td class="tab on"><?php echo $string['bysession']; ?></td>
-          <td class="tab" onclick="window.location.href='paper_mappings_by_question.php?module=<?php echo $module; ?>'"><?php echo $string['byquestion']; ?></td>
-        </tr>
-      </table>
-    </th>
-    <th style="width:100%; text-align:right">&nbsp;</th>
-  </tr>
-  <tr><td colspan="2" style="background-color:#1E3C7B">&nbsp;</td></tr>
-  <tr>
-    <td colspan="2">
-<?php
-//$questionID_list = substr($questionID_list,0,-1);
-//
-//
-//$total_random_mark = 0;
-//$total_marks = 0;
-
-// TODO: put real condition back
-//if ($row_no > 0) {
-if (true) {
-?>
-      <form action="./" method="post">
+        <form action="./" method="post">
 <?php
   $ul_start = false;
 
@@ -235,8 +226,7 @@ if (true) {
           if ($mapped) {
             echo ' <ul>';
             foreach ($objectives['mapped'] as $q_id) {
-              $session_safe = str_replace('/', '#', $session);
-              echo "<li><a href=\"../question/view_question.php?q_id=" . $q_id . "\" target=\"_blank\">" . $temp_array[$q_id]['leadin'] . "</a> <a href=\"#\" rel=\"{$module}_{$objectives['id']}_{$q_id}_{$session_safe}\" class=\"unmap\">Unmap</a></li>";
+              echo "<li><a href=\"../question/view_question.php?q_id=" . $q_id . "\" target=\"_blank\">" . $temp_array[$q_id]['leadin'] . "</a> <a href=\"#\" rel=\"{$objectives['id']}_{$q_id}\" class=\"unmap\">Unmap</a></li>";
             }
             echo'</ul>';
           }
@@ -249,14 +239,19 @@ if (true) {
   if ($ul_start) {
     echo '</ul>';
   }
+} else {
+?>
+     <p><?php printf($string['nosessions'], $session) ?></p>
+<?php
 }
 $mysqli->close();
 ?>
-      <input type="hidden" name="module" id="module" value="<?php echo $module ?>" />
-    </form>
-    </td>
-  </tr>
-</table>
-</div>
+        <input type="hidden" name="module" id="module" value="<?php echo $module ?>" />
+        <input type="hidden" name="session" id="session" value="<?php echo $session ?>" />
+        </form>
+        </td>
+      </tr>
+    </table>
+  </div>
 </body>
 </html>

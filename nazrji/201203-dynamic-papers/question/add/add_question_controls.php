@@ -92,7 +92,7 @@ if (isset($_GET['paperID'])) {
   }
   $form_html .= '</select>&nbsp;';
 } else {
-  $form_html = '<input type="hidden" name="module" value="' . $_GET['module'] . '" /><input type="hidden" name="objectives" value="' . $_GET['objectives'] . '" />';
+  $form_html = '<input type="hidden" name="module" value="' . $_GET['module'] . '" /><input type="hidden" name="objectives" value="' . $_GET['objectives'] . '" /><input type="hidden" name="session" value="' . $_GET['session'] . '" />';
   $action_url = "do_add_questions.php";
 }
 echo "<form name=\"theform\" method=\"post\" action=\"$action_url\">\n";
