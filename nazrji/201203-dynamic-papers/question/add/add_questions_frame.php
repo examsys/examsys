@@ -31,6 +31,7 @@ if (!isset($_GET['paperID'])) {
 } else {
   $controls_url .= 'paperID=' . $_GET['paperID'] . '&amp;module=' . $_GET['module'] . '&amp;folder=' . $_GET['folder'] . '&amp;display_pos=' . $_GET['display_pos'] . '&amp;scrOfY=' . $_GET['scrOfY'] . '&amp;max_screen=' . $_GET['max_screen'];
 }
+$url_mod = (isset($_GET['module'])) ? '?module=' . $_GET['module'] : '';
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -41,8 +42,8 @@ if (!isset($_GET['paperID'])) {
 </head>
 <frameset rows="*,32" frameborder="0" framespacing="0" border="0">
   <frameset cols="134,*" frameborder="0" framespacing="0" border="0">
-    <frame scrolling="no" src="add_questions_buttons.php" name="qbuttons">
-    <frame scrolling="no" src="add_questions_iframe.php" name="qlist">
+    <frame scrolling="no" src="add_questions_buttons.php<?php echo $url_mod ?>" name="qbuttons">
+    <frame scrolling="no" src="add_questions_iframe.php<?php echo $url_mod ?>" name="qlist">
   </frameset>
   <frame scrolling="no" resizable="no" src="<?php echo $controls_url ?>" name="controls">
   <noframes>

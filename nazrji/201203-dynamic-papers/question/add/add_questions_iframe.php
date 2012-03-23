@@ -23,6 +23,7 @@
 */
 
 require '../../include/staff_auth.inc';
+$url_mod = (isset($_GET['module'])) ? '?module=' . $_GET['module'] : '';
 ?>
 <html>
 <head>
@@ -35,7 +36,7 @@ require '../../include/staff_auth.inc';
 </head>
 <body style="height:100%; font-family:Arial,sans-serif; margin-top:4px; margin-left:0px; margin-right:4px; margin-bottom:2px; background-color:#DFECFF">
 
-<iframe src="add_questions_list_unused.php" name="iframeurl" width="100%" height="60%" style="border:1px solid #95AEC8" frameborder="0">
+<iframe src="add_questions_list_unused.php<?php echo $url_mod ?>" name="iframeurl" width="100%" height="60%" style="border:1px solid #95AEC8" frameborder="0">
   <p><?php echo $string['browsererr'];?></p>
 </iframe>
 

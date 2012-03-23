@@ -24,6 +24,8 @@
 
 require '../../include/staff_auth.inc';
 require '../../include/errors.inc';
+
+$module = (isset($_GET['module'])) ? $_GET['module'] : '';
 ?>
 <html>
 <head>
@@ -93,10 +95,15 @@ require '../../include/errors.inc';
   
   $id = 0;
   if ($order == 'leadin') $order = 'leadin_plain';
-  
+
   $question_array = array();
-  $result = $mysqli->prepare("SELECT question, q_id, q_type, leadin, q_media, q_media_width, q_media_height, DATE_FORMAT(last_edited,'$cfg_short_date') AS display_date FROM papers RIGHT JOIN questions ON papers.question=questions.q_id WHERE questions.ownerID=? AND status != 'retired' AND deleted IS NULL ORDER BY $order $direction");
-  $result->bind_param('i', $userID);
+  if ($module == '') {
+    $result = $mysqli->prepare("SELECT question, q_id, q_type, leadin, q_media, q_media_width, q_media_height, DATE_FORMAT(last_edited,'$cfg_short_date') AS display_date FROM papers RIGHT JOIN questions ON papers.question=questions.q_id WHERE questions.ownerID=? AND status != 'retired' AND deleted IS NULL ORDER BY $order $direction");
+    $result->bind_param('i', $userID);
+  } else {
+    $result = $mysqli->prepare("SELECT question, q_id, q_type, leadin, q_media, q_media_width, q_media_height, DATE_FORMAT(last_edited,'$cfg_short_date') AS display_date FROM papers RIGHT JOIN questions ON papers.question=questions.q_id WHERE questions.ownerID=? AND status != 'retired' AND deleted IS NULL AND q_group LIKE CONCAT('%', ?, '%') ORDER BY $order $direction");
+    $result->bind_param('is', $userID, $module);
+  }
   $result->execute();
   $result->bind_result($question, $q_id, $q_type, $leadin, $q_media, $q_media_width, $q_media_height, $display_date);
   while ($result->fetch()) {

@@ -22,7 +22,8 @@
 * @package
 */
 
-  require '../../include/staff_auth.inc';
+require '../../include/staff_auth.inc';
+$url_mod = (isset($_GET['module'])) ? '?module=' . $_GET['module'] : '';
 ?>
 <html>
 <head>
@@ -34,7 +35,7 @@
     var selectedButton = 'unused';
   
     function buttonclick(sectionID, scriptName) {
-      parent.qlist.iframeurl.location = scriptName;
+      parent.qlist.iframeurl.location = scriptName + '<?php echo $url_mod ?>';
       parent.qlist.previewurl.location = 'preview_default.php'
       
       document.getElementById('button_unused').style.background='';
