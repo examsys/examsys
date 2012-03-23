@@ -1,26 +1,26 @@
- body {margin:0px; padding-top:0px; padding-bottom:0px; padding-right:0px; padding-left:213px; font-family:Arial,sans-serif; font-size:100%; background-color:white; color:black}
- div#left-sidebar {position:absolute; top:0; left:0; width:195px; height:100%; padding-right:4px; padding-left:14px; padding-top:4px; padding-bottom:4px; background-color:#DFECFF; border-right: 1px solid #95AEC8; overflow:auto; font-size:75%}
- @media screen {body>div#left-sidebar{position:fixed}}
- * html body{overflow:hidden} 
- * html div#content{height:100px; background-colour:#FFFFFF}
- img {margin:0px; padding:0px;}
- .divider {padding-left:10px; padding-bottom:2px; font-weight:bold}
- .f {float:left; width:375px; padding-left:10px; font-size:90%}
- .file {float:left; width:375px; height:74px; padding-left:12px; font-size:90%}
- .mee {font-size:120%; display:inline}
+body {margin:0px; padding-top:0px; padding-bottom:0px; padding-right:0px; padding-left:213px; font-family:Arial,sans-serif; font-size:100%; background-color:white; color:black}
+div#left-sidebar {position:absolute; top:0; left:0; width:195px; height:100%; padding-right:4px; padding-left:14px; padding-top:4px; padding-bottom:4px; background-color:#DFECFF; border-right: 1px solid #95AEC8; overflow:auto; font-size:75%}
+@media screen {body>div#left-sidebar{position:fixed}}
+* html body{overflow:hidden}
+* html div#content{height:100px; background-colour:#FFFFFF}
+img {margin:0px; padding:0px;}
+.divider {padding-left:10px; padding-bottom:2px; font-weight:bold}
+.f {float:left; width:375px; padding-left:10px; font-size:90%}
+.file {float:left; width:375px; height:74px; padding-left:12px; font-size:90%}
+.mee {font-size:120%; display:inline}
 
- a {text-decoration:none}
- a:link {color:#0000FF}
- a:visited {color:#0000FF}
- a:hover {color:#0000FF; text-decoration:underline}
+a {text-decoration:none}
+a:link {color:#0000FF}
+a:visited {color:#0000FF}
+a:hover {color:#0000FF; text-decoration:underline}
 
- a.blacklink:link {color:#000000}
- a.blacklink:visited {color:#000000}
- a.blacklink:hover {color:#000000}
+a.blacklink:link {color:#000000}
+a.blacklink:visited {color:#000000}
+a.blacklink:hover {color:#000000}
 
- a.greylink:link {color:#808080}
- a.greylink:visited {color:#808080}
- a.greylink:hover {color:#808080}
+a.greylink:link {color:#808080}
+a.greylink:visited {color:#808080}
+a.greylink:hover {color:#808080}
 
 .menuheading {padding-left:6px; color:#215DC6; font-weight:bold; cursor:pointer}
 .menuheading a:link {color:#215DC6; cursor:pointer}
@@ -45,7 +45,7 @@
 
 textarea, input[type=text], select {font-family:Arail,sans-serif; border: 1px solid #7F9DB9}
 
- .menu_list {
+.menu_list {
  margin: 4px 0 0 0;
  padding-left: 11px;
  list-style: none;
@@ -75,12 +75,32 @@ textarea, input[type=text], select {font-family:Arail,sans-serif; border: 1px so
  background: transparent url('../artwork/screen_icon_grey.png') no-repeat left center;
 }
 
-#delete_break {
- background: transparent url('../artwork/screen_icon_delete.png') no-repeat left center;
+ #delete_break {
+  background: transparent url('../artwork/screen_icon_delete.png') no-repeat left center;
+ }
+
+ #delete_break.greymenuitem {
+  background: transparent url('../artwork/screen_icon_delete_off.png') no-repeat left center;
+ }
+
+ #add_qns {
+  background: transparent url('../artwork/add_questions_16.gif') no-repeat left center;
+ }
+
+ #map_qns {
+  background: transparent url('../artwork/map_question.gif') no-repeat left center;
+ }
+
+#map_qns.greymenuitem {
+ background: transparent url('../artwork/map_question_off.gif') no-repeat left center;
 }
 
-#delete_break.greymenuitem {
- background: transparent url('../artwork/screen_icon_delete_off.png') no-repeat left center;
+#left-sidebar h2 {
+  font-size: 100%;
+  font-weight:bold;
+  padding-top:15px;
+  margin-left:2px;
+  color: #000;
 }
 
 a.checklist {

@@ -20,7 +20,7 @@ $(function () {
   });
 
   // TODO: handle 'by question' display
-  $('#add-questions').click(checkObjectives);
+  $('#add_qns').click(checkObjectives);
   $('.unmap').click(unMapQuestion);
 
   $('#session').change(function () { $('#year-form').submit(); });

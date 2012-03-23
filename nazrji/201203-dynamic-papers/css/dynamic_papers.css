@@ -1,0 +1,133 @@
+h1 {
+  font-size: 160%;
+  font-weight: bold;
+  color: #316AC5;
+  margin-left: 15px;
+  padding-top: 10px
+}
+
+img {
+  border: none;
+}
+
+td {
+  font-size: 100%
+}
+
+.q_no {
+  text-align: right;
+  vertical-align: top;
+  cursor: pointer
+}
+
+.divider {
+  font-family: Arial, sans-serif;
+  font-size: 90%;
+  font-weight: bold;
+  padding-left: 30px
+}
+
+.mapping {
+  font-size: 90%;
+  color: #FF6300;
+  font-weight: normal
+}
+
+a.q_excluded {
+  color: red;
+  font-weight: normal;
+  text-decoration: line-through
+}
+
+a.q_ok {
+  color: #FF6300;
+  font-weight: normal
+}
+
+.unmapped {
+  color: #C0C0C0
+}
+
+ul {
+  margin-top: 0px;
+  margin-bottom: 0px
+}
+
+li {
+  padding-left: 8px
+}
+
+.tab {
+  width: 126px;
+  height: 21px;
+  text-align: center;
+  color: white;
+  font-weight: bold;
+  font-size: 110%;
+  background-image: url(../artwork/tab_off.gif)
+}
+
+.tab a {
+  display: block;
+  width: 100%;
+  color: #fff;
+  text-decoration: none;
+}
+
+.tab.on {
+  background-image: url(../artwork/tab_on.gif)
+}
+
+table.map-session {
+  border: 0;
+  padding: 6px 0 2px 0;
+  width: 100%;
+  color: #1E3287
+}
+
+table.map-session td {
+  white-space: nowrap;
+}
+
+hr.head-line {
+  border: 0;
+  height: 1px;
+  color: #E5E5E5;
+  background-color: #E5E5E5;
+  width: 100%
+}
+
+.map-objectives {
+  list-style: none;
+  padding: 0;
+}
+
+.map-objectives ul {
+  list-style: disc;
+}
+
+a.unmap {
+  color: #f00;
+}
+
+.map-objective {
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
+}
+
+.objective {
+  padding: 2px 0 2px 16px;
+  display: block;
+  width: 100%;
+}
+
+.objective.selected {
+  background-color: #B3C8E8;
+  color: black;
+}
+
+.map-objective:checked ~ label {
+  background-color: #B3C8E8;
+  color: black;
+}

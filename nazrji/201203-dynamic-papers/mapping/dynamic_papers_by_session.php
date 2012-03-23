@@ -80,85 +80,13 @@ unset($objsBySession['none_of_the_above']);
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+
   <title>Rogō: <?php echo $string['dynamicpapers'] . ' - ' . $string['mappingbysession'] . ' ' . $cfg_install_type; ?></title>
+
   <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
   <link rel="stylesheet" type="text/css" href="../css/header.css" />
-  <style type="text/css">
-    h1 {font-size:160%; font-weight:bold; color:#316AC5; margin-left:15px; padding-top:10px}
-    img {border:none;}
-    td {font-size:100%}
-    .q_no {text-align:right; vertical-align:top; cursor:pointer}
-    .divider {font-family:Arial,sans-serif; font-size:90%; font-weight:bold; padding-left:30px}
-    .mapping {font-size:90%;color:#FF6300;font-weight:normal}
-    a.q_excluded {color:red; font-weight:normal; text-decoration:line-through}
-    a.q_ok {color:#FF6300; font-weight:normal}
-    .unmapped {color:#C0C0C0}
-    ul {margin-top:0px; margin-bottom:0px}
-    li {padding-left:8px}
+  <link rel="stylesheet" type="text/css" href="../css/dynamic_papers.css" />
 
-    .tab {
-      width:126px;
-      height:21px;
-      text-align:center;
-      color:white;
-      font-weight:bold;
-      font-size:110%;
-      background-image:url(../artwork/tab_off.gif)
-    }
-    .tab a {
-      display: block;
-      width: 100%;
-      color:white;
-      text-decoration: none;
-    }
-    .tab.on {
-      background-image:url(../artwork/tab_on.gif)
-    }
-    table.map-session {
-      border: 0;
-      padding: 6px 0 2px 0;
-      width:100%;
-      color:#1E3287
-    }
-    table.map-session td {
-      white-space: nowrap;
-    }
-    hr.head-line {
-      border:0;
-      height:1px;
-      color:#E5E5E5;
-      background-color:#E5E5E5;
-      width:100%
-    }
-    .map-objectives {
-      list-style: none;
-      padding: 0;
-    }
-    .map-objectives ul {
-      list-style: disc;
-    }
-    a.unmap {
-      color: #f00;
-    }
-    .map-objective {
-      position: absolute;
-      top: -9999px;
-      left: -9999px;
-    }
-    .objective {
-      padding: 2px 0 2px 16px;
-      display: block;
-      width: 100%;
-    }
-    .objective.selected {
-      background-color: #B3C8E8;
-      color: black;
-    }
-    .map-objective:checked ~ label {
-      background-color: #B3C8E8;
-      color: black;
-    }
-  </style>
   <script src="../js/staff_help.js" type="text/javascript"></script>
   <script src="../js/jquery-1.6.1.min.js" type="text/javascript"></script>
   <script src="../js/jquery.dynamicpapers.js" type="text/javascript"></script>
@@ -172,7 +100,7 @@ echo LangUtils::render_JS_strings($langstrings, $string);
 
 <body>
 <?php
-require '../include/dynamic_paper_options.inc';
+require '../include/dynamic_paper_options.inc.php';
 ?>
 
   <div id="content" class="content">
@@ -183,7 +111,7 @@ require '../include/dynamic_paper_options.inc';
             <a href="../staff/index.php"><?php echo $string['home'] ?></a>
 <?php
 if ($module != '') { ?>
-            <img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?module=' . $module . '"><?php echo $module . ' - ' . $module_name ?></a>
+            <img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?module=' . $module . '"><?php echo $module ?></a>
 <?php
 }
 ?>
