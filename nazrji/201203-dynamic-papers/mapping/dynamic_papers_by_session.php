@@ -110,8 +110,9 @@ require '../include/dynamic_paper_options.inc.php';
           <div class="breadcrumb">
             <a href="../staff/index.php"><?php echo $string['home'] ?></a>
 <?php
-if ($module != '') { ?>
-            <img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?module=' . $module . '"><?php echo $module ?></a>
+if ($module != '') {
+?>
+            <img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?module=<?php echo $module ?>"><?php echo $module ?></a>
 <?php
 }
 ?>
