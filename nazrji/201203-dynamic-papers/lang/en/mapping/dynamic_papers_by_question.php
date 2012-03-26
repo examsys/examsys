@@ -31,4 +31,6 @@ $string['mappingbyquestion'] = 'Mapping by Question';
 $string['mappedquestions'] = 'Mapped Questions';
 $string['bysession'] = 'by Session';
 $string['byquestion'] = 'by Question';
+$string['ajaxerror'] = 'There was a problem carrying out your action. Please refresh the page and try again';
+$string['ajaxconfirm'] = 'Are you sure?';
 $string['mustselectquestions'] = 'Plese select questions to which the objectives will be mapped';

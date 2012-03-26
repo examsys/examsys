@@ -37,18 +37,9 @@ function checkObjectives(e) {
   var session = $('#session').val();
   $('.sel-objective:checked').each(function() { ids += $(this).val() + ','; });
   if (ids.length > 0) {
-    launchAddQuestions(module, ids.replace(/,$/, ''), session);
+    launchMappingWindow(cfgRootPath + '/question/add/add_questions_frame.php?module=' + module + '&objectives=' + ids.replace(/,$/, '') + '&session=' + session);
   } else {
     alert(lang['mustselectobjectives'])
-  }
-}
-
-function launchAddQuestions(module, objs, session) {
-  var winH = screen.height - 80;
-  var winW = screen.width - 80;
-  var notice=window.open(cfgRootPath + "/question/add/add_questions_frame.php?module=" + module + "&objectives=" + objs + "&session=" + session, "notice", "width=" + winW + ", height=" + winH + ",left=40,top=20,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
-  if (window.focus) {
-    notice.focus();
   }
 }
 
@@ -59,14 +50,19 @@ function checkQuestions(e) {
   var session = $('#session').val();
   $('.sel-question:checked').each(function() { ids += $(this).val() + ','; });
   if (ids.length > 0) {
-    launchMapObjectives(module, ids.replace(/,$/, ''), session);
+    launchMappingWindow(cfgRootPath + '/mapping/map_question.php?module=' + module + '&questions=' + ids.replace(/,$/, '') + '&session=' + session);
   } else {
     alert(lang['mustselectquestions'])
   }
 }
 
-function launchMapObjectives(module, qns, session) {
-  alert('Map objectives: ' + qns);
+function launchMappingWindow(url) {
+  var winH = screen.height - 80;
+  var winW = screen.width - 80;
+  var notice=window.open(url, "notice", "width=" + winW + ", height=" + winH + ",left=40,top=20,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+  if (window.focus) {
+    notice.focus();
+  }
 }
 
 function unMapQuestion(e) {

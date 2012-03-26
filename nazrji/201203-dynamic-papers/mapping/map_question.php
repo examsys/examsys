@@ -22,53 +22,66 @@
 * @package
 */
 
-  require '../include/staff_auth.inc';
-  require '../include/question_types.inc';
-  require '../include/mapping.inc';
-  require '../include/display_functions.inc';
-  if (file_exists($cfg_web_root . "lang/$language/paper/start.php")) {
-    require $cfg_web_root . "lang/$language/paper/start.php";
-  }
-  require '../include/media.inc';
-  $paperID = $_GET['paperID'];
+require '../include/staff_auth.inc';
+require '../include/question_types.inc';
+require '../include/mapping.inc';
+require '../include/errors.inc';
+require '../include/display_functions.inc';
+if (file_exists($cfg_web_root . "lang/$language/paper/start.php")) {
+  require $cfg_web_root . "lang/$language/paper/start.php";
+}
+require '../include/media.inc';
+require_once '../classes/dateutils.class.php';
 
-  function display_q($mysqlidb) {
-    global $bgcolor;
-    $question_data = $mysqlidb->prepare("SELECT q_type, q_id, score_method, display_method, marks_correct, marks_incorrect, marks_partial, theme, scenario, leadin, correct, REPLACE(option_text,'\t','') AS option_text, q_media, q_media_width, q_media_height, o_media, o_media_width, o_media_height, notes FROM questions, options WHERE q_id=? AND questions.q_id=options.o_id ORDER BY id_num");
-    $question_data->bind_param('i', $_GET['q_id']);
-    $question_data->execute();
-    $question_data->store_result();
-    $question_data->bind_result($q_type, $q_id, $score_method, $display_method, $marks_correct, $marks_incorrect, $marks_partial, $theme, $scenario, $leadin, $correct, $option_text, $q_media, $q_media_width, $q_media_height, $o_media, $o_media_width, $o_media_height, $notes);
-    $num_rows = $question_data->num_rows;
-    echo "<table cellpadding=\"4\" cellspacing=\"0\" border=\"0\" width=\"100%\" style=\"table-layout:fixed\">\n";
-    echo "<col width=\"40\"><col>\n";
-    $old_q_id  = 0;
-    while ($row = $question_data->fetch()) {
-      if ($old_q_id != $q_id) {
-        $question['theme'] = trim($theme);
-        $question['scenario'] = trim($scenario);
-        $question['leadin'] = trim($leadin);
-        $question['notes'] = trim($notes);
-        $question['q_type'] = $q_type;
-        $question['q_id'] = $q_id;
-        $question['score_method'] = $score_method;
-        $question['display_method'] = $display_method;
-        $question['q_media'] = $q_media;
-        $question['q_media_width'] = $q_media_width;
-        $question['q_media_height'] = $q_media_height;
-        $question['dismiss'] = '';
-      }
-      $question['options'][] = array('correct'=>$correct, 'option_text'=>$option_text, 'o_media'=>$o_media, 'o_media_width'=>$o_media_width, 'o_media_height'=>$o_media_height, 'marks_correct'=>$marks_correct, 'marks_incorrect'=>$marks_incorrect, 'marks_partial'=>$marks_partial);
+
+if (isset($_GET['paperID'])) {
+  $paperID = $_GET['paperID'];
+}
+if (isset($_GET['module'])) {
+  $paperID = -1;
+  $module = $_GET['module'];
+  $session = (isset($_GET['session'])) ? $_GET['session'] : DateUtils::get_current_academic_year();
+  check_var('questions', 'GET', true, false);
+  $questions = $_GET['questions'];
+}
+
+function display_q($mysqlidb) {
+  global $bgcolor;
+  $question_data = $mysqlidb->prepare("SELECT q_type, q_id, score_method, display_method, marks_correct, marks_incorrect, marks_partial, theme, scenario, leadin, correct, REPLACE(option_text,'\t','') AS option_text, q_media, q_media_width, q_media_height, o_media, o_media_width, o_media_height, notes FROM questions, options WHERE q_id=? AND questions.q_id=options.o_id ORDER BY id_num");
+  $question_data->bind_param('i', $_GET['q_id']);
+  $question_data->execute();
+  $question_data->store_result();
+  $question_data->bind_result($q_type, $q_id, $score_method, $display_method, $marks_correct, $marks_incorrect, $marks_partial, $theme, $scenario, $leadin, $correct, $option_text, $q_media, $q_media_width, $q_media_height, $o_media, $o_media_width, $o_media_height, $notes);
+  $num_rows = $question_data->num_rows;
+  echo "<table cellpadding=\"4\" cellspacing=\"0\" border=\"0\" width=\"100%\" style=\"table-layout:fixed\">\n";
+  echo "<col width=\"40\"><col>\n";
+  $old_q_id  = 0;
+  while ($row = $question_data->fetch()) {
+    if ($old_q_id != $q_id) {
+      $question['theme'] = trim($theme);
+      $question['scenario'] = trim($scenario);
+      $question['leadin'] = trim($leadin);
+      $question['notes'] = trim($notes);
+      $question['q_type'] = $q_type;
+      $question['q_id'] = $q_id;
+      $question['score_method'] = $score_method;
+      $question['display_method'] = $display_method;
+      $question['q_media'] = $q_media;
+      $question['q_media_width'] = $q_media_width;
+      $question['q_media_height'] = $q_media_height;
+      $question['dismiss'] = '';
     }
-    $question_data->close();
-    
-    $question_no = 0;
-    $paper_type = 0;
-    $bgcolor = 'white';
-    display_question($question, $paper_type, 1, '', $question_no, $question_offset, array());	
-    $question_nos[] = $old_q_id;
-    echo "<table>\n";
+    $question['options'][] = array('correct'=>$correct, 'option_text'=>$option_text, 'o_media'=>$o_media, 'o_media_width'=>$o_media_width, 'o_media_height'=>$o_media_height, 'marks_correct'=>$marks_correct, 'marks_incorrect'=>$marks_incorrect, 'marks_partial'=>$marks_partial);
   }
+  $question_data->close();
+
+  $question_no = 0;
+  $paper_type = 0;
+  $bgcolor = 'white';
+  display_question($question, $paper_type, 1, '', $question_no, $question_offset, array());
+  $question_nos[] = $old_q_id;
+  echo "<table>\n";
+}
 ?>
 <html>
 <head>
@@ -96,7 +109,7 @@
 
 if (isset($_POST['submit']) AND $_POST['submit'] == 'Save Changes') {
   // Write out curriculum mapping.
-  saveObjMappings($_POST['paperID'],$_POST['questionID'],$mysqli);
+  saveObjMappings($_POST['paperID'], $_POST['questionID'], $mysqli);
   ?>
   <script language="JavaScript">
     window.opener.location = window.opener.location;
@@ -104,10 +117,12 @@ if (isset($_POST['submit']) AND $_POST['submit'] == 'Save Changes') {
   </script>
   <?php
 } else {
-  display_q($mysqli);
+  if (isset($_GET['q_id'])) {
+    display_q($mysqli);
+  }
 
   echo "<form method=\"post\">";
-  echo displayObjectivesMappingForm($paperID, $mysqli, $cfg_root_path);
+  echo displayObjectivesMappingForm($paperID, $mysqli, $cfg_root_path, $module, $session);
   echo "<br />";
   echo "<div style=\"text-align:center; width:100%\"><input type=\"submit\" name=\"submit\" value=\"Save Changes\" />&nbsp;";
   echo "<input style=\"width:120px\" type=\"button\" value=\"Cancel\" onclick=\"window.close()\"/></div>";

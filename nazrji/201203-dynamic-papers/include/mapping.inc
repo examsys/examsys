@@ -141,18 +141,20 @@ HTML;
   return $html;
 }
 
-function displayObjectivesMappingForm($paper_id, $rogodb, $cfg_root_path) {
+function displayObjectivesMappingForm($paper_id, $rogodb, $cfg_root_path, $modules='', $session='') {
   //get module and session form paper id
-  $result = $rogodb->prepare("SELECT moduleID, calendar_year, paper_type FROM properties WHERE property_id=?");
-  $result->bind_param('i', $paper_id);
-  $result->execute();
-  $result->store_result();
-  $result->bind_result($modules, $session, $paper_type);
-  $result->fetch();
-  if ($result->num_rows == 0) {
-    return 0;
+  if ($paper_id != -1) {
+    $result = $rogodb->prepare("SELECT moduleID, calendar_year, paper_type FROM properties WHERE property_id=?");
+    $result->bind_param('i', $paper_id);
+    $result->execute();
+    $result->store_result();
+    $result->bind_result($modules, $session, $paper_type);
+    $result->fetch();
+    if ($result->num_rows == 0) {
+      return 0;
+    }
+    $result->close();
   }
-  $result->close();
 
   if (isset($_GET['q_id'])) {
     $q_id = $_GET['q_id'];

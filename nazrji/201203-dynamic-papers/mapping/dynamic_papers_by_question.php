@@ -56,8 +56,6 @@ while ($result->fetch()) {
   $temp_array[$q_id]['q_group'] = $q_group;
 }
 $result->close();
-
-
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -75,13 +73,11 @@ $result->close();
   <script src="../js/jquery-1.6.1.min.js" type="text/javascript"></script>
   <script src="../js/jquery.dynamicpapers.js" type="text/javascript"></script>
   <script src="../js/jquery.rquerystring.js" type="text/javascript"></script>
-
-  <script language="JavaScript">
-    function mapQuestion(qNo, pid, qid, session) {
-//      mapWindow = window.open('./map_question.php?qNo=' + qNo + '&paperID=' + pid + '&q_id=' + qid + '&session=' + session, "",'height=' + (screen.height - 300) + ',width=' + (screen.width - 300) + ',scrollbars=1,resizable=1,statusbar=0');
-//      mapWindow.moveTo(100,100);
-    }
-  </script>
+<?php
+echo $cfg_js_root;
+$langstrings = array('mustselectquestions', 'ajaxerror', 'ajaxconfirm');
+echo LangUtils::render_JS_strings($langstrings, $string);
+?>
 </head>
 
 <body>
@@ -124,11 +120,13 @@ if ($module != '') {
     <tr><td colspan="2" style="background-color:#1E3C7B">&nbsp;</td></tr>
   </table>
 
-  <?php
+<?php
   if (count($temp_array) > 0) {
-    echo '<ul class="map-objectives questions">';
+?>
+    <form action="./" method="post">
+    <ul class="map-objectives questions">
+<?php
   }
-
 
   foreach ($temp_array as $question) {
     $objByModule = getObjectivesByMapping($module, $session, null, $question['q_id'], $mysqli);
@@ -175,7 +173,12 @@ if ($module != '') {
   }
   $mysqli->close();
   if (count($temp_array) > 0) {
-    echo '</ul>';
+?>
+    </ul>
+    <input type="hidden" name="module" id="module" value="<?php echo $module ?>" />
+    <input type="hidden" name="session" id="session" value="<?php echo $session ?>" />
+  </form>
+<?php
   }
 ?>
 </div>
