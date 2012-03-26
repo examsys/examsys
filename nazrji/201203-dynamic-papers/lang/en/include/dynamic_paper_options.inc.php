@@ -25,4 +25,4 @@
 $string['mapping'] = 'Mapping';
 $string['addquestions'] = 'Add Questions';
 $string['mapquestions'] = 'Map Questions';
-
+$string['mapsessions'] = 'Map Sessions';

@@ -23,12 +23,22 @@
 */
 
 require_once '../classes/dateutils.class.php';
-
+$mode = (isset($mode)) ? $mode : 'session';
 ?>
 <div id="left-sidebar" class="sidebar">
   <h2><?php echo $string['mapping'] ?></h2>
   <ul id="break_controls" class="menu_list">
-    <li id="add_qns" class="menuitem"><a href="#"><?php echo $string['addquestions'] ?></a></li>
+<?php
+if ($mode == 'session') {
+?>
     <li id="map_qns" class="greymenuitem"><a href="#"><?php echo $string['mapquestions'] ?></a></li>
+<?php
+} else {
+?>
+    <li id="add_qns" class="menuitem"><a href="#"><?php echo $string['addquestions'] ?></a></li>
+    <li id="map_qns" class="greymenuitem"><a href="#"><?php echo $string['mapsessions'] ?></a></li>
+<?php
+}
+?>
   </ul>
 </div>

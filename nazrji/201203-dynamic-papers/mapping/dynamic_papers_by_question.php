@@ -30,6 +30,7 @@ require '../include/dynamic_papers.inc.php';
 check_var('module', 'REQUEST', true, false);
 
 $module = $_REQUEST['module'];
+$mode = 'question';
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

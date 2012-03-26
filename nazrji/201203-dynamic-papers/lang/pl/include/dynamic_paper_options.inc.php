@@ -25,4 +25,5 @@
 $string['mapping'] = 'Mapping'; // Niko
 $string['addquestions'] = 'Add Questions'; // Niko
 $string['mapquestions'] = 'Map Questions'; // Niko
+$string['mapsessions'] = 'Map Sessions'; // Niko
 

@@ -31,6 +31,7 @@ require '../include/dynamic_papers.inc.php';
 check_var('module', 'REQUEST', true, false);
 
 $module = $_REQUEST['module'];
+$mode = 'session';
 
 $result = $mysqli->prepare("SELECT fullname FROM modules WHERE moduleid=? LIMIT 1");
 $result->bind_param('i', $module);

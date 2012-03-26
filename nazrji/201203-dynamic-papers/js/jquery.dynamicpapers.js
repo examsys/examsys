@@ -20,14 +20,12 @@ $(function () {
   });
 
   // TODO: handle 'by question' display
-  $('#add_qns').click(checkObjectives);
+  deactivateLink('map_qns');
   $('.unmap').click(unMapQuestion);
 
   $('#session').change(function () { $('#year-form').submit(); });
 
-  if ($.browser.msie && parseInt($.browser.version, 10) < 9) {
-    $('.objective').click(function () { $(this).toggleClass('selected'); });
-  }
+  $('.objective').click(selUnselObjective);
 });
 
 function checkObjectives(e) {
@@ -82,6 +80,29 @@ function unMapQuestion(e) {
   }
 }
 
+function selUnselObjective() {
+  $(this).toggleClass('selected');
+
+  var count = $('.map-objective:checked').length;
+  if (count == 1 && !$(this).hasClass('selected')) {
+    deactivateLink('map_qns');
+  } else {
+    activateMapQns();
+  }
+}
+
+function activateMapQns() {
+  $('#map_qns').removeClass('greymenuitem');
+  $('#map_qns').addClass('menuitem');
+  $('#map_qns').click(checkObjectives);
+}
+
+function deactivateLink(id) {
+  $('#' + id).addClass('greymenuitem');
+  $('#' + id).removeClass('menuitem');
+  $('#' + id).unbind('click');
+  $('#' + id).click(function(e) { e.preventDefault(); });
+}
 
 function showAJAXError(message) {
   alert(message);
