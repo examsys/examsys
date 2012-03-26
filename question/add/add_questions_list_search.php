@@ -108,7 +108,7 @@ require '../../include/media.inc';
       if ($tmp_id == $userID) {
         echo "<option value=\"" . $tmp_id . "\" selected>$tmp_surname, $tmp_initials $tmp_title</option>\n";
       } else {
-        echo "<option value=\"" . $tmp_id . "\">$tmp_surname, $tmp_initials $title</option>\n";
+        echo "<option value=\"" . $tmp_id . "\">$tmp_surname, $tmp_initials $tmp_title</option>\n";
       }
     }
   }
