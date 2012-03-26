@@ -47,19 +47,24 @@ require '../../include/staff_auth.inc';
 <tr><th colspan="5" class="bevel"></th></tr>
 <?php
   $my_teams = '';
-  foreach ($teams as $individual_team) {
-    $my_teams .= " OR moduleID LIKE '%$individual_team%'";
+  if (!isset($_GET['team_name'])) {
+    foreach ($teams as $individual_team) {
+      $my_teams .= " OR moduleID LIKE '%$individual_team%'";
+    }
   }
 
   $paper_icons = array('formative_16.gif','progress_16.gif','summative_16.gif','survey_16.gif','osce_16.gif','offline_16.gif','peer_review_16.gif');
   
   if (isset($_GET['paper_type'])) {
-    $sql = "SELECT property_id, paper_title, paper_type, moduleID, DATE_FORMAT(created,'$cfg_short_date') AS created, title, initials, surname FROM (properties, users) WHERE paper_type='" . $_GET['paper_type'] . "' AND deleted IS NULL AND paper_ownerID=users.id AND (paper_ownerID=$userID $my_teams) ORDER BY paper_title";
+    $module = (isset($_GET['team_name'])) ? $_GET['team_name'] : '';
+    $sql = "SELECT property_id, paper_title, paper_type, moduleID, DATE_FORMAT(created,'$cfg_short_date') AS created, title, initials, surname FROM (properties, users) WHERE paper_type='" . $_GET['paper_type'] . "' AND deleted IS NULL AND paper_ownerID=users.id AND (paper_ownerID=$userID $my_teams) AND moduleID LIKE CONCAT('%', ?, '%') ORDER BY paper_title";
+    $result = $mysqli->prepare($sql);
+    $result->bind_param('s', $module);
   } else {
     $sql = "SELECT property_id, paper_title, paper_type, moduleID, DATE_FORMAT(created,'$cfg_short_date') AS created, title, initials, surname FROM (properties, users) WHERE moduleID LIKE '%" . $_GET['team_name'] . "%' AND deleted IS NULL AND paper_ownerID=users.id ORDER BY paper_title";
+    $result = $mysqli->prepare($sql);
   }
   
-  $result = $mysqli->prepare($sql);
   $result->execute();
   $result->bind_result($property_id, $paper_title, $paper_type, $moduleID, $created, $tmp_title, $tmp_initials, $tmp_surname);
   while ($result->fetch()) {

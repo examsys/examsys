@@ -23,6 +23,9 @@
 */
 
 require '../../include/staff_auth.inc';
+
+$url_mod = (isset($_GET['module'])) ? '&team_name=' . $_GET['module'] : '';
+$teams_list = (isset($_GET['module'])) ? array($_GET['module']) : $teams;
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -44,19 +47,19 @@ require '../../include/staff_auth.inc';
 <br />
 <table border="0" style="padding-left:10px; padding-right:2px; padding-bottom:5px; width:100%; color:#1E3287"><tr><td><nobr><?php echo $string['papersbytype']; ?> (6)</nobr></td><td style="width:98%"><hr noshade="noshade" style="border:0px; height:1px; color:#CCCCCC; background-color:#CCCCCC; width:100%" /></td></tr></table>
 <br />
-<div class="f"><a href="add_questions_paper_list.php?paper_type=0" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_paper_list.php?paper_type=0"><?php echo $string['formative self-assessment']; ?></a></div>
-<div class="f"><a href="add_questions_paper_list.php?paper_type=1" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_paper_list.php?paper_type=1"><?php echo $string['progress test']; ?></a></div>
-<div class="f"><a href="add_questions_paper_list.php?paper_type=2" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_paper_list.php?paper_type=2"><?php echo $string['summative exam']; ?></a></div>
-<div class="f"><a href="add_questions_paper_list.php?paper_type=3" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_paper_list.php?paper_type=3"><?php echo $string['survey']; ?></a></div>
-<div class="f"><a href="add_questions_paper_list.php?paper_type=4" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_paper_list.php?paper_type=4"><?php echo $string['osce station']; ?></a></div>
-<div class="f"><a href="add_questions_paper_list.php?paper_type=5" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_paper_list.php?paper_type=5"><?php echo $string['offline paper']; ?></a></div>
+<div class="f"><a href="add_questions_paper_list.php?paper_type=0<?php echo $url_mod ?>" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_paper_list.php?paper_type=0<?php echo $url_mod ?>"><?php echo $string['formative self-assessment']; ?></a></div>
+<div class="f"><a href="add_questions_paper_list.php?paper_type=1<?php echo $url_mod ?>" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_paper_list.php?paper_type=1<?php echo $url_mod ?>"><?php echo $string['progress test']; ?></a></div>
+<div class="f"><a href="add_questions_paper_list.php?paper_type=2<?php echo $url_mod ?>" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_paper_list.php?paper_type=2<?php echo $url_mod ?>"><?php echo $string['summative exam']; ?></a></div>
+<div class="f"><a href="add_questions_paper_list.php?paper_type=3<?php echo $url_mod ?>" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_paper_list.php?paper_type=3<?php echo $url_mod ?>"><?php echo $string['survey']; ?></a></div>
+<div class="f"><a href="add_questions_paper_list.php?paper_type=4<?php echo $url_mod ?>" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_paper_list.php?paper_type=4<?php echo $url_mod ?>"><?php echo $string['osce station']; ?></a></div>
+<div class="f"><a href="add_questions_paper_list.php?paper_type=5<?php echo $url_mod ?>" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_paper_list.php?paper_type=5<?php echo $url_mod ?>"><?php echo $string['offline paper']; ?></a></div>
 <br clear="all" />
 
 <br />
 <table border="0" style="padding-left:10px; padding-right:2px; padding-bottom:5px; width:100%; color:#1E3287"><tr><td><nobr><?php echo $string['papersbyteam']; ?> (<?php echo count($teams); ?>)</nobr></td><td style="width:98%"><hr noshade="noshade" style="border:0px; height:1px; color:#CCCCCC; background-color:#CCCCCC; width:100%" /></td></tr></table>
 <br />
 <?php
-  foreach($teams as $team_name) {
+  foreach($teams_list as $team_name) {
     echo '<div class="f"><a href="add_questions_paper_list.php?team_name=' . $team_name . '"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_paper_list.php?team_name=' . $team_name . '">' . $team_name .  '</a></div>';
   }
 ?>
