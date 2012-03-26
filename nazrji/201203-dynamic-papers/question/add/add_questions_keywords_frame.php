@@ -22,8 +22,10 @@
 * @package
 */
 
-  require '../../include/staff_auth.inc';
-  $mysqli->close();
+require '../../include/staff_auth.inc';
+$mysqli->close();
+
+$url_mod = (isset($_GET['module'])) ? '?module=' . $_GET['module'] : '';
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -33,8 +35,8 @@
   <title>Add Questions</title>
 </head>
   <frameset cols="200,*" frameborder="0" framespacing="0" border="0">
-    <frame scrolling="auto" src="add_questions_keyword_list.php" name="keywords">
-    <frame scrolling="auto" resizable="no" src="add_questions_by_keyword.php" name="keywordlist">
+    <frame scrolling="auto" src="add_questions_keyword_list.php<?php echo $url_mod ?>" name="keywords">
+    <frame scrolling="auto" resizable="no" src="add_questions_by_keyword.php<?php echo $url_mod ?>" name="keywordlist">
   </frameset>
   <noframes>
     <?php echo $string['frameserr'];?>

@@ -22,7 +22,16 @@
 * @package
 */
 
-  require '../../include/staff_auth.inc';
+require '../../include/staff_auth.inc';
+
+if (!isset($_GET['module'])) {
+  $module = '';
+  $url_mod = '';
+} else {
+  $module = $_GET['module'];
+  $url_mod = '?module=' . $_GET['module'];
+}
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -47,7 +56,7 @@
 </head>
 
 <body>
-<form method="post" name="myform" action="add_questions_by_keyword.php" target="keywordlist">
+<form method="post" name="myform" action="add_questions_by_keyword.php<?php echo $url_mod ?>" target="keywordlist">
 <?php
   $keyword_no = 0;
   

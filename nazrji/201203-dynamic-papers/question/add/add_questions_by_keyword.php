@@ -22,8 +22,10 @@
 * @package
 */
 
-  require '../../include/staff_auth.inc';
-  require '../../include/question_types.inc';
+require '../../include/staff_auth.inc';
+require '../../include/question_types.inc';
+
+$module = (isset($_GET['module'])) ? $_GET['module'] : '';
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -101,8 +103,8 @@
     echo "</table>\n</body>\n</html>\n";
     exit;
   }
-  
-  if (count($teams) == 0) {
+
+  if (count($teams) == 0 or $module != '') {
     $team_sql = '';
   } else {
     $team_sql = "OR q_group IN ('" . implode("','", $teams) . "')";
@@ -124,8 +126,13 @@
   }
   
   $old_id = '';
-  $result = $mysqli->prepare("SELECT questions.q_id, leadin_plain, q_type, DATE_FORMAT(last_edited,'$cfg_short_date') AS display_date, locked, parts FROM (questions, keywords_question) LEFT JOIN question_exclude ON questions.q_id=question_exclude.q_id WHERE questions.q_id=keywords_question.q_id AND keywords_question.keywordID IN ($keyword_ids) AND (ownerID=? $team_sql) AND status != 'retired' AND deleted IS NULL ORDER BY $order $direction, questions.q_id");
-  $result->bind_param('i', $userID);
+  if ($module == '') {
+    $result = $mysqli->prepare("SELECT questions.q_id, leadin_plain, q_type, DATE_FORMAT(last_edited,'$cfg_short_date') AS display_date, locked, parts FROM (questions, keywords_question) LEFT JOIN question_exclude ON questions.q_id=question_exclude.q_id WHERE questions.q_id=keywords_question.q_id AND keywords_question.keywordID IN ($keyword_ids) AND (ownerID=? $team_sql) AND status != 'retired' AND deleted IS NULL ORDER BY $order $direction, questions.q_id");
+    $result->bind_param('i', $userID);
+  } else {
+    $result = $mysqli->prepare("SELECT questions.q_id, leadin_plain, q_type, DATE_FORMAT(last_edited,'$cfg_short_date') AS display_date, locked, parts FROM (questions, keywords_question) LEFT JOIN question_exclude ON questions.q_id=question_exclude.q_id WHERE questions.q_id=keywords_question.q_id AND keywords_question.keywordID IN ($keyword_ids) AND (ownerID=?) AND status != 'retired' AND deleted IS NULL AND q_group LIKE CONCAT('%', ?, '%') ORDER BY $order $direction, questions.q_id");
+    $result->bind_param('is', $userID, $module);
+  }
   $result->execute();
   $result->store_result();
   $result->bind_result($q_id, $leadin_plain, $q_type, $display_date, $locked, $parts);

@@ -26,12 +26,13 @@ require '../../include/staff_auth.inc';
 //$mysqli->close();
 
 $controls_url = 'add_question_controls.php?';
+$url_mod = '';
 if (!isset($_GET['paperID'])) {
   $controls_url .= 'module=' . $_GET['module'] . '&amp;objectives=' . $_GET['objectives'] . '&amp;session=' . $_GET['session'];
+  $url_mod = '?module=' . $_GET['module'];
 } else {
   $controls_url .= 'paperID=' . $_GET['paperID'] . '&amp;module=' . $_GET['module'] . '&amp;folder=' . $_GET['folder'] . '&amp;display_pos=' . $_GET['display_pos'] . '&amp;scrOfY=' . $_GET['scrOfY'] . '&amp;max_screen=' . $_GET['max_screen'];
 }
-$url_mod = (isset($_GET['module'])) ? '?module=' . $_GET['module'] : '';
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
