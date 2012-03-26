@@ -79,7 +79,13 @@ $url_mod = (isset($_GET['module'])) ? '?module=' . $_GET['module'] : '';
 <tr><td id="button_keywords" style="height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('keywords')" onmouseout="buttonout('keywords')" onclick="buttonclick('keywords','add_questions_keywords_frame.php')">&nbsp;<?php echo $string['bykeywords']; ?></td></tr>
 <tr><td id="button_status" style="height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('status')" onmouseout="buttonout('status')" onclick="buttonclick('status','add_questions_by_status.php')">&nbsp;<?php echo $string['bystatus']; ?></td></tr>
 <tr><td id="button_papers" style="height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('papers')" onmouseout="buttonout('papers')" onclick="buttonclick('papers','add_questions_paper_types.php')">&nbsp;<?php echo $string['bypaper']; ?></td></tr>
-<tr><td id="button_team" style="height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('team')" onmouseout="buttonout('team')" onclick="buttonclick('team','add_questions_team_list.php')">&nbsp;<?php echo $string['byteam']; ?></td></tr>
+<?php
+if ($url_mod == '') {
+?>
+  <tr><td id="button_team" style="height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('team')" onmouseout="buttonout('team')" onclick="buttonclick('team','add_questions_team_list.php')">&nbsp;<?php echo $string['byteam']; ?></td></tr>
+<?php
+}
+?>
 <tr><td id="button_search" style="height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('search')" onmouseout="buttonout('search')" onclick="buttonclick('search','add_questions_list_search.php')">&nbsp;<?php echo $string['search']; ?></td></tr>
 </table>
 
