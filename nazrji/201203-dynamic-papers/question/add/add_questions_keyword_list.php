@@ -61,7 +61,12 @@ if (!isset($_GET['module'])) {
   $keyword_no = 0;
   
   $old_moduleID = '';
-  $stmt = $mysqli->prepare("SELECT moduleid, keyword, keywords_user.id FROM keywords_user, modules WHERE keywords_user.userID=modules.id AND moduleid IN ('" . implode("','",$teams) . "') ORDER BY moduleid, keyword");
+  if ($module == '') {
+    $stmt = $mysqli->prepare("SELECT moduleid, keyword, keywords_user.id FROM keywords_user, modules WHERE keywords_user.userID=modules.id AND moduleid IN ('" . implode("','",$teams) . "') ORDER BY moduleid, keyword");
+  } else {
+    $stmt = $mysqli->prepare("SELECT moduleid, keyword, keywords_user.id FROM keywords_user, modules WHERE keywords_user.userID=modules.id AND modules.moduleid=? ORDER BY moduleid, keyword");
+    $stmt->bind_param('s', $module);
+  }
   $stmt->execute();
   $stmt->bind_result($moduleID, $keyword, $keywordID);
   while ($stmt->fetch()) {
