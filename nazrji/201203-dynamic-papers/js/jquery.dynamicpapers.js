@@ -21,11 +21,13 @@ $(function () {
 
   // TODO: handle 'by question' display
   deactivateLink('map_qns');
+  deactivateLink('map_sess');
   $('.unmap').click(unMapQuestion);
 
   $('#session').change(function () { $('#year-form').submit(); });
 
-  $('.objective').click(selUnselObjective);
+  $('.map-objective').click(selUnselObjective);
+  $('.map-question').click(selUnselQuestion);
 });
 
 function checkObjectives(e) {
@@ -33,7 +35,7 @@ function checkObjectives(e) {
   var ids = '';
   var module = $('#module').val();
   var session = $('#session').val();
-  $('.map-objective:checked').each(function() { ids += $(this).val() + ','; });
+  $('.sel-objective:checked').each(function() { ids += $(this).val() + ','; });
   if (ids.length > 0) {
     launchAddQuestions(module, ids.replace(/,$/, ''), session);
   } else {
@@ -48,6 +50,23 @@ function launchAddQuestions(module, objs, session) {
   if (window.focus) {
     notice.focus();
   }
+}
+
+function checkQuestions(e) {
+  e.preventDefault();
+  var ids = '';
+  var module = $('#module').val();
+  var session = $('#session').val();
+  $('.sel-question:checked').each(function() { ids += $(this).val() + ','; });
+  if (ids.length > 0) {
+    launchMapObjectives(module, ids.replace(/,$/, ''), session);
+  } else {
+    alert(lang['mustselectquestions'])
+  }
+}
+
+function launchMapObjectives(module, qns, session) {
+  alert('Map objectives: ' + qns);
 }
 
 function unMapQuestion(e) {
@@ -83,7 +102,7 @@ function unMapQuestion(e) {
 function selUnselObjective() {
   $(this).toggleClass('selected');
 
-  var count = $('.map-objective:checked').length;
+  var count = $('.sel-objective:checked').length;
   if (count == 1 && !$(this).hasClass('selected')) {
     deactivateLink('map_qns');
   } else {
@@ -91,10 +110,23 @@ function selUnselObjective() {
   }
 }
 
+function selUnselQuestion() {
+  $(this).toggleClass('selected');
+
+  var count = $('.sel-question:checked').length;
+  if (count == 1 && !$(this).hasClass('selected')) {
+    deactivateLink('map_sess');
+  } else {
+    activateMapSess();
+  }
+}
+
 function activateMapQns() {
-  $('#map_qns').removeClass('greymenuitem');
-  $('#map_qns').addClass('menuitem');
-  $('#map_qns').click(checkObjectives);
+  if ($('#map_qns').hasClass('greymenuitem')) {
+    $('#map_qns').removeClass('greymenuitem');
+    $('#map_qns').addClass('menuitem');
+    $('#map_qns').click(checkObjectives);
+  }
 }
 
 function deactivateLink(id) {
@@ -102,6 +134,14 @@ function deactivateLink(id) {
   $('#' + id).removeClass('menuitem');
   $('#' + id).unbind('click');
   $('#' + id).click(function(e) { e.preventDefault(); });
+}
+
+function activateMapSess() {
+  if ($('#map_sess').hasClass('greymenuitem')) {
+    $('#map_sess').removeClass('greymenuitem');
+    $('#map_sess').addClass('menuitem');
+    $('#map_sess').click(checkQuestions);
+  }
 }
 
 function showAJAXError(message) {

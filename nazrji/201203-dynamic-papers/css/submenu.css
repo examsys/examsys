@@ -87,7 +87,7 @@ textarea, input[type=text], select {font-family:Arail,sans-serif; border: 1px so
   background: transparent url('../artwork/add_questions_16.gif') no-repeat left center;
  }
 
- #map_qns {
+ #map_qns, #map_sess {
   background: transparent url('../artwork/map_question.gif') no-repeat left center;
  }
 

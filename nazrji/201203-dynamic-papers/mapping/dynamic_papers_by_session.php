@@ -43,9 +43,6 @@ $result->close();
 $years = get_years($module, $mysqli, 'all');
 $session = (isset($_REQUEST['session'])) ? $_REQUEST['session'] : $years[0];
 
-$old_p_id = 0;
-$row_no = 0;
-$info_count = 0;
 $temp_array = array();
 $questionID_list = '';
 
@@ -61,8 +58,6 @@ while ($result->fetch()) {
   $temp_array[$q_id]['q_media'] = $q_media;
   $temp_array[$q_id]['q_media_width'] = $q_media_width;
   $temp_array[$q_id]['q_media_height'] = $q_media_height;
-
-  if($q_type == 'info') $info_count++;
 
   $temp_array[$q_id]['q_group'] = $q_group;
   $questionID_list .= $q_id . ',';
@@ -91,7 +86,7 @@ unset($objsBySession['none_of_the_above']);
   <script src="../js/staff_help.js" type="text/javascript"></script>
   <script src="../js/jquery-1.6.1.min.js" type="text/javascript"></script>
   <script src="../js/jquery.dynamicpapers.js" type="text/javascript"></script>
-  <script type="text/javascript" src="../js/jquery.rquerystring.js"></script>
+  <script src="../js/jquery.rquerystring.js" type="text/javascript"></script>
 <?php
 echo $cfg_js_root;
 $langstrings = array('mustselectobjectives', 'ajaxerror', 'ajaxconfirm');
@@ -105,7 +100,7 @@ require '../include/dynamic_paper_options.inc.php';
 ?>
 
   <div id="content" class="content">
-    <table class="header" style="font-size:80%">
+    <table class="header">
       <tr>
         <th>
           <div class="breadcrumb">
@@ -124,19 +119,22 @@ if ($module != '') {
       </tr>
     </table>
 
-    <table class="header" style="font-size:80%">
-    <tr>
-      <th style="padding-top:1px">
-        <table cellpadding="0" cellspacing="0" border="0" style="font-size:100%; width:252px">
-          <tr>
-            <td class="tab on"><?php echo $string['bysession']; ?></td>
-            <td class="tab"><a href="dynamic_papers_by_question.php?module=<?php echo $module; ?>"><?php echo $string['byquestion']; ?></a></td>
-          </tr>
-        </table>
-      </th>
-      <th style="width:100%; text-align:right"><?php echo render_year_dropdown($years, $module, $string, $session) ?></th>
-    </tr>
-    <tr><td colspan="2" style="background-color:#1E3C7B">&nbsp;</td></tr>
+    <table class="header">
+      <tr>
+        <th style="padding-top:1px">
+          <table cellpadding="0" cellspacing="0" border="0" style="font-size:100%; width:252px">
+            <tr>
+              <td class="tab on"><?php echo $string['bysession']; ?></td>
+              <td class="tab"><a href="dynamic_papers_by_question.php?module=<?php echo $module; ?>"><?php echo $string['byquestion']; ?></a></td>
+            </tr>
+          </table>
+        </th>
+        <th style="width:100%; text-align:right"><?php echo render_year_dropdown($years, $module, $string, $session) ?></th>
+      </tr>
+      <tr><td colspan="2" style="background-color:#1E3C7B">&nbsp;</td></tr>
+    </table>
+
+    <table class="mapping-list">
     <tr>
       <td colspan="2">
 <?php
@@ -167,7 +165,7 @@ if (count($objsBySession[$module]) > 0) {
         foreach ($sessionData["objectives"] as $id => $objectives) {
           $mapped = is_array($objectives['mapped']);
           $map_class = ($mapped) ? 'mapped' : 'unmapped';
-          echo '<li class="' . $map_class . '"><input type="checkbox" id="obj-mapped' . $objectives['id'] . '" name="obj-mapped" value="' . $objectives['id'] . '" class="map-objective" /> <label for="obj-mapped' . $objectives['id'] . '" class="objective">' . htmlentities($objectives['content']) . '</label>';
+          echo '<li class="' . $map_class . '"><input type="checkbox" id="obj-mapped' . $objectives['id'] . '" name="obj-mapped" value="' . $objectives['id'] . '" class="sel-objective offscreen" /> <label for="obj-mapped' . $objectives['id'] . '" class="map-item map-objective">' . htmlentities($objectives['content']) . '</label>';
           if ($mapped) {
             echo ' <ul>';
             foreach ($objectives['mapped'] as $q_id) {

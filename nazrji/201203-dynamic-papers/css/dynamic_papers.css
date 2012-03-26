@@ -10,6 +10,10 @@ img {
   border: none;
 }
 
+table.header, table.mapping-list {
+  font-size: 80%;
+}
+
 td {
   font-size: 100%
 }
@@ -106,28 +110,38 @@ hr.head-line {
   list-style: disc;
 }
 
+.map-objectives.questions {
+  font-size: 80%;
+  padding-top: 8px;
+}
+
+
 a.unmap {
   color: #f00;
 }
 
-.map-objective {
+.offscreen {
   position: absolute;
   top: -9999px;
   left: -9999px;
 }
 
-.objective {
+.map-item {
   padding: 2px 0 2px 16px;
   display: block;
   width: 100%;
 }
 
-.objective.selected {
+.map-item.selected {
   background-color: #B3C8E8;
   color: black;
 }
 
-.map-objective:checked ~ label {
+.map-question {
+  padding-top: 6px;
+}
+
+.offscreen:checked ~ label {
   background-color: #B3C8E8;
   color: black;
 }

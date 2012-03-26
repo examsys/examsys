@@ -28,3 +28,7 @@ require '../lang/' . $language . '/include/dynamic_papers.inc.php';
 
 $string['dynamicpapers'] = 'Dynamic Papers';
 $string['mappingbyquestion'] = 'Mapping by Question';
+$string['mappedquestions'] = 'Mapped Questions';
+$string['bysession'] = 'by Session';
+$string['byquestion'] = 'by Question';
+$string['mustselectquestions'] = 'Plese select questions to which the objectives will be mapped';

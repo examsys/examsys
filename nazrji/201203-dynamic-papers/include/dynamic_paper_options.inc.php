@@ -36,7 +36,7 @@ if ($mode == 'session') {
 } else {
 ?>
     <li id="add_qns" class="menuitem"><a href="#"><?php echo $string['addquestions'] ?></a></li>
-    <li id="map_qns" class="greymenuitem"><a href="#"><?php echo $string['mapsessions'] ?></a></li>
+    <li id="map_sess" class="greymenuitem"><a href="#"><?php echo $string['mapobjectives'] ?></a></li>
 <?php
 }
 ?>
