@@ -628,7 +628,7 @@ QUERY;
 SELECT count(p.p_id) AS pos FROM papers p INNER JOIN questions q ON p.question=q.q_id WHERE p.paper=? AND q.q_type<>'info';
 QUERY;
         $result = $this->_mysqli->prepare($num_query);
-        $result->bind_param('ii', $this->id, $paper_id);
+        $result->bind_param('i', $paper_id);
         $result->execute();
         $result->store_result();
         $result->bind_result($pos);
