@@ -23,6 +23,7 @@
 */
 
 require '../../include/staff_auth.inc';
+$url_mod = (isset($_GET['module'])) ? '&module=' . $_GET['module'] : '';
 ?>
 <html>
 <head>
@@ -41,11 +42,11 @@ require '../../include/staff_auth.inc';
 
 <body>
 <br />
-<div class="f"><a href="add_questions_list_status.php?status=Normal" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_list_status.php?status=Normal"><?php echo $string['normal']; ?></a></div>
-<div class="f"><a href="add_questions_list_status.php?status=Retired" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_list_status.php?status=Retired"><?php echo $string['retired']; ?></a></div>
-<div class="f"><a href="add_questions_list_status.php?status=Incomplete" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_list_status.php?status=Incomplete"><?php echo $string['incomplete']; ?></a></div>
-<div class="f"><a href="add_questions_list_status.php?status=Experimental" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_list_status.php?status=Experimental"><?php echo $string['experimental']; ?></a></div>
-<div class="f"><a href="add_questions_list_status.php?status=Beta" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_list_status.php?status=Beta"><?php echo $string['beta']; ?></a></div>
+<div class="f"><a href="add_questions_list_status.php?status=Normal<?php echo $url_mod ?>" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_list_status.php?status=Normal<?php echo $url_mod ?>"><?php echo $string['normal']; ?></a></div>
+<div class="f"><a href="add_questions_list_status.php?status=Retired<?php echo $url_mod ?>" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_list_status.php?status=Retired<?php echo $url_mod ?>"><?php echo $string['retired']; ?></a></div>
+<div class="f"><a href="add_questions_list_status.php?status=Incomplete<?php echo $url_mod ?>" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_list_status.php?status=Incomplete<?php echo $url_mod ?>"><?php echo $string['incomplete']; ?></a></div>
+<div class="f"><a href="add_questions_list_status.php?status=Experimental<?php echo $url_mod ?>" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_list_status.php?status=Experimental<?php echo $url_mod ?>"><?php echo $string['experimental']; ?></a></div>
+<div class="f"><a href="add_questions_list_status.php?status=Beta<?php echo $url_mod ?>" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_list_status.php?status=Beta<?php echo $url_mod ?>"><?php echo $string['beta']; ?></a></div>
 
 </body>
 </html>

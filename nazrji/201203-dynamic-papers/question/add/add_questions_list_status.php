@@ -24,6 +24,8 @@
 
 require '../../include/staff_auth.inc';
 require '../../include/errors.inc';
+
+$module = (isset($_GET['module'])) ? $_GET['module'] : '';
 ?>
 <html>
 <head>
@@ -95,8 +97,13 @@ require '../../include/errors.inc';
   
   $myteams = implode("','", $teams);
   
-  $stmt = $mysqli->prepare("SELECT q_id, q_type, leadin, q_media, q_media_width, q_media_height, DATE_FORMAT(last_edited,'$cfg_short_date') AS display_date, locked FROM questions WHERE status=? AND (ownerID=$userID OR q_group IN ('$myteams')) AND deleted IS NULL ORDER BY $order $direction");
-  $stmt->bind_param('s', $_GET['status']);
+  if ($module == '') {
+    $stmt = $mysqli->prepare("SELECT q_id, q_type, leadin, q_media, q_media_width, q_media_height, DATE_FORMAT(last_edited,'$cfg_short_date') AS display_date, locked FROM questions WHERE status=? AND (ownerID=$userID OR q_group IN ('$myteams')) AND deleted IS NULL ORDER BY $order $direction");
+    $stmt->bind_param('s', $_GET['status']);
+  } else {
+    $stmt = $mysqli->prepare("SELECT q_id, q_type, leadin, q_media, q_media_width, q_media_height, DATE_FORMAT(last_edited,'$cfg_short_date') AS display_date, locked FROM questions WHERE status=? AND (ownerID=$userID) AND deleted IS NULL AND q_group LIKE CONCAT('%', ?, '%') ORDER BY $order $direction");
+    $stmt->bind_param('ss', $_GET['status'], $module);
+  }
   $stmt->execute();
   $stmt->store_result();
   $stmt->bind_result($q_id, $q_type, $leadin, $q_media, $q_media_width, $q_media_height, $display_date, $locked);
