@@ -161,7 +161,7 @@ if ($module != '') {
                 echo "$module: ";
               }
               echo $mappingData['content'];
-              echo "<span title=\"$sessiontitle\" class=\"mapping\"><a href=\"" . $mappingData['session']['source_url'] . "\" target=\"_blank\"><img src=\"../artwork/small_link.png\" width=\"12\" height=\"12\" /></a>&nbsp;<a href=\"" . $mappingData['session']['source_url'] . "\" target=\"_blank\">" . $sessiondata ."</a></span>";
+              echo " <a href=\"" . $mappingData['session']['source_url'] . "\" target=\"_blank\" class=\"mapping\" title=\"$sessiontitle\">" . $sessiondata ."</a> <a href=\"#\" rel=\"{$mappingData['id']}_{$question['q_id']}\" class=\"unmap\">Unmap</a>";
               echo '</li>';
             }
           }
