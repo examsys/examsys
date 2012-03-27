@@ -34,15 +34,15 @@ require '../include/media.inc';
 require_once '../classes/dateutils.class.php';
 
 
+if (isset($_REQUEST['module'])) {
+  $paperID = null;
+  $module = $_REQUEST['module'];
+  $session = (isset($_REQUEST['session'])) ? $_REQUEST['session'] : DateUtils::get_current_academic_year();
+  $questions = $_REQUEST['questions'];
+}
 if (isset($_GET['paperID'])) {
   $paperID = $_GET['paperID'];
-}
-if (isset($_GET['module'])) {
-  $paperID = -1;
-  $module = $_GET['module'];
-  $session = (isset($_GET['session'])) ? $_GET['session'] : DateUtils::get_current_academic_year();
-  check_var('questions', 'GET', true, false);
-  $questions = $_GET['questions'];
+  $module = $session = $questions = '';
 }
 
 function display_q($mysqlidb) {
@@ -109,7 +109,13 @@ function display_q($mysqlidb) {
 
 if (isset($_POST['submit']) AND $_POST['submit'] == 'Save Changes') {
   // Write out curriculum mapping.
-  saveObjMappings($_POST['paperID'], $_POST['questionID'], $mysqli);
+  if (isset($_POST['paperID']) and $_POST['paperID'] != '') {
+    $paperID = $_POST['paperID'];
+    $questionID = $_POST['questionID'];
+  } else {
+    $paperID = $questionID = null;
+  }
+  saveObjMappings($paperID, $_POST['questionID'], $mysqli);
   ?>
   <script language="JavaScript">
     window.opener.location = window.opener.location;
@@ -123,12 +129,15 @@ if (isset($_POST['submit']) AND $_POST['submit'] == 'Save Changes') {
 
   echo "<form method=\"post\">";
   echo displayObjectivesMappingForm($paperID, $mysqli, $cfg_root_path, $module, $session);
-  echo "<br />";
-  echo "<div style=\"text-align:center; width:100%\"><input type=\"submit\" name=\"submit\" value=\"Save Changes\" />&nbsp;";
-  echo "<input style=\"width:120px\" type=\"button\" value=\"Cancel\" onclick=\"window.close()\"/></div>";
-
-  echo "</form>";
-
+?>
+  <br />
+  <div style="text-align:center; width:100%"><input type="submit" name="submit" value="Save Changes" />&nbsp;
+  <input style="width:120px" type="button" value="Cancel" onclick="window.close()"/></div>
+  <input type="hidden" name="module" value="<?php echo $module ?>" />
+  <input type="hidden" name="questions" value="<?php echo $questions ?>" />
+  <input type="hidden" name="session" value="<?php echo $session ?>" />
+  </form>
+<?php
 }
 ?>
 </body>

@@ -143,7 +143,7 @@ HTML;
 
 function displayObjectivesMappingForm($paper_id, $rogodb, $cfg_root_path, $modules='', $session='') {
   //get module and session form paper id
-  if ($paper_id != -1) {
+  if ($paper_id != null) {
     $result = $rogodb->prepare("SELECT moduleID, calendar_year, paper_type FROM properties WHERE property_id=?");
     $result->bind_param('i', $paper_id);
     $result->execute();
@@ -161,7 +161,8 @@ function displayObjectivesMappingForm($paper_id, $rogodb, $cfg_root_path, $modul
   } else {
     $q_id = '';
   }
-  
+
+  // Will return nothing for dynamic paper mapping but that's fine
   $objsByModuleSession = getObjectives($modules, $session, $paper_id, $q_id, $rogodb);
 
   if (isset($objsByModuleSession['none_of_the_above'])) {
@@ -304,9 +305,17 @@ function save_objective_mappings($db, $modules, $paper_id, $question_id) {
  * 
  */
 function saveObjMappings($paper_id, $question_id, $rogodb) {
-  if (isset($_POST['modules']) and $paper_id != '' and substr($paper_id,0,5) != 'find:') {
+  // Safe to use NULL as a string here because these aren't prepared queries
+  if (!isset($paper_id)) $paper_id = 'NULL';
+
+  if (isset($_POST['modules']) and (!isset($paper_id) or substr($paper_id,0,5) != 'find:')) {
     $modules = $_POST['modules'];
     $modules = explode(',',$modules);
+    if ($question_id == null and isset($_POST['questions'])) {
+      $questions = explode(',', $_POST['questions']);
+    } else {
+      $questions = array($question_id);
+    }
     foreach ($modules as $moduleid) {
       if(isset($_POST[$moduleid . '_session'])) {
         $session = $_POST[$moduleid . '_session'];
@@ -316,19 +325,37 @@ function saveObjMappings($paper_id, $question_id, $rogodb) {
         $new_mappings = '';
         for ($i = 0; $i < $objectiveCount; $i++ ) {
           if (isset($_POST[$moduleid . 'obj' . $i])) {
-            $sql[] = "INSERT INTO relationships VALUES (NULL,'$moduleid',$paper_id,$question_id," . $_POST[$moduleid . 'obj' . $i] . ",'$session')";
-            $new_mappings .= $_POST[$moduleid . 'obj' . $i] . ',';
+            $obj_id = $_POST[$moduleid . 'obj' . $i];
+            foreach ($questions as $q_id) {
+              if ($paper_id != 'NULL') {
+                $sql[] = "INSERT INTO relationships VALUES (NULL,'$moduleid', $paper_id, $q_id," . $obj_id . ",'$session')";
+              } else {
+                $check_q = $rogodb->prepare("SELECT rel_id FROM relationships WHERE module_id=? AND paper_id IS NULL AND question_id=? AND obj_id=? AND calendar_year=?");
+                $check_q->bind_param('siis', $moduleid, $q_id, $obj_id, $session);
+                $check_q->execute();
+                $check_q->store_result();
+                $check_q->fetch();
+                if ($check_q->num_rows == 0) {
+                  $insert_q = $rogodb->prepare("INSERT INTO relationships(module_id, question_id, obj_id, calendar_year) VALUES (?, ?, ?, ?)");
+                  $insert_q->bind_param('siis', $moduleid, $q_id, $obj_id, $session);
+                  $insert_q->execute();
+                  $insert_q->close();
+                }
+                $check_q->close();
+              }
+            }
+            $new_mappings .= $obj_id . ',';
           }
         }
         //check for none of the above
         if (isset($_POST['none_of_the_above']) and $_POST['none_of_the_above'] == -1 AND count($sql) == 0) {
-          $sql[] = "INSERT INTO relationships VALUES (NULL,'$moduleid',$paper_id,$question_id,-1,'$session')";
+          $sql[] = "INSERT INTO relationships VALUES (NULL, '$moduleid', $paper_id, $question_id, -1, '$session')";
           $new_mappings .= '-1,';
         } else {
           $old_mappings .= '-1,';
         }
 
-        if ($new_mappings != $old_mappings) {
+        if ($new_mappings != $old_mappings and $paper_id != 'NULL') {
           //preappend the delete
           if ($old_mappings != '') {
             $delete = "DELETE FROM relationships WHERE module_id = '$moduleid' AND paper_id = $paper_id AND question_id = $question_id AND calendar_year = '$session'";
