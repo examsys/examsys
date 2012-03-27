@@ -87,12 +87,20 @@ textarea, input[type=text], select {font-family:Arail,sans-serif; border: 1px so
   background: transparent url('../artwork/add_questions_16.gif') no-repeat left center;
  }
 
- #map_qns, #map_sess {
-  background: transparent url('../artwork/map_question.gif') no-repeat left center;
- }
+#map_qns, #map_sess {
+ background: transparent url('../artwork/map_question.gif') no-repeat left center;
+}
 
 #map_qns.greymenuitem {
- background: transparent url('../artwork/map_question_off.gif') no-repeat left center;
+background: transparent url('../artwork/map_question_off.gif') no-repeat left center;
+}
+
+#unmap {
+ background: transparent url('../artwork/red_cross.png') no-repeat left center;
+}
+
+#unmap.greymenuitem {
+background: transparent url('../artwork/red_cross_grey.png') no-repeat left center;
 }
 
 #left-sidebar h2 {

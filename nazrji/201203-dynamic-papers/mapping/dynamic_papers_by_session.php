@@ -92,6 +92,7 @@ echo $cfg_js_root;
 $langstrings = array('mustselectobjectives', 'ajaxerror', 'ajaxconfirm');
 echo LangUtils::render_JS_strings($langstrings, $string);
 ?>
+
 </head>
 
 <body>
@@ -169,7 +170,7 @@ if (count($objsBySession[$module]) > 0) {
           if ($mapped) {
             echo ' <ul>';
             foreach ($objectives['mapped'] as $q_id) {
-              echo "<li><a href=\"../question/view_question.php?q_id=" . $q_id . "\" target=\"_blank\">" . $temp_array[$q_id]['leadin'] . "</a> <a href=\"#\" rel=\"{$objectives['id']}_{$q_id}\" class=\"unmap\">Unmap</a></li>";
+              echo "<li id=\"map{$objectives['id']}_{$q_id}\" class=\"q-link\"><a href=\"#\" rel=\"{$objectives['id']}_{$q_id}\" class=\"mapped-item\">" . $temp_array[$q_id]['leadin'] . "</a></li>";
             }
             echo'</ul>';
           }

@@ -156,12 +156,12 @@ if ($module != '') {
               } else {
                 $sessiondata = $mappingData['session']['title'];
               }
-              echo '<li>';
+              echo "<li id=\"map{$mappingData['id']}_{$question['q_id']}\" class=\"o-link\">";
               if (count($objByModule) > 1) {
                 echo "$module: ";
               }
-              echo $mappingData['content'];
-              echo " <a href=\"" . $mappingData['session']['source_url'] . "\" target=\"_blank\" class=\"mapping\" title=\"$sessiontitle\">" . $sessiondata ."</a> <a href=\"#\" rel=\"{$mappingData['id']}_{$question['q_id']}\" class=\"unmap\">Unmap</a>";
+              echo "<a href=\"#\" rel=\"{$mappingData['id']}_{$question['q_id']}\" class=\"mapped-item\">{$mappingData['content']}</a>";
+              echo " <a href=\"" . $mappingData['session']['source_url'] . "\" target=\"_blank\" class=\"mapping\" title=\"$sessiontitle\">" . $sessiondata ."</a>";
               echo '</li>';
             }
           }

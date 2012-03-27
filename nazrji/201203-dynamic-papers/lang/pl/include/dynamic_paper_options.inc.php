@@ -22,8 +22,9 @@
 * @package
 */
 
-$string['mapping'] = 'Mapping'; // Niko
-$string['addquestions'] = 'Add Questions'; // Niko
-$string['mapquestions'] = 'Map Questions'; // Niko
-$string['mapobjectives'] = 'Map Objectives'; // Niko
-
+// Niko
+$string['mapping'] = 'Mapping';
+$string['addquestions'] = 'Add Questions';
+$string['mapquestions'] = 'Map Questions';
+$string['mapobjectives'] = 'Map Objectives';
+$string['removemapping'] = 'Remove Mapping';

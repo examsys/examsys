@@ -19,21 +19,42 @@ $(function () {
     showAJAXError(lang['ajaxerror']);
   });
 
-  // TODO: handle 'by question' display
   deactivateLink('map_qns');
   deactivateLink('map_sess');
-  $('.unmap').click(unMapQuestion);
+  deactivateLink('unmap');
 
   $('#session').change(function () { $('#year-form').submit(); });
 
-  $('.map-objective').click(selUnselObjective);
-  $('.map-question').click(selUnselQuestion);
+  $('.map-objective').click(function (e) { e.stopPropagation() });
+  $('.map-question').click(function (e) { e.stopPropagation() });
+  $('.sel-objective').click(selUnselObjective);
+  $('.sel-question').click(selUnselQuestion);
+
+  $('.mapped-item').click(selMapTarget);
+
+  $('.q-link a').dblclick(function (e) {
+    e.preventDefault();
+    var data = $(this).attr('rel').split('_');
+    if (data.length == 2) {
+      window.open('../question/view_question.php?q_id=' + data[1]);
+    }
+  });
 
   $('#add_qns a').click(function (e) {
     e.preventDefault();
     var module = $('#module').val();
     var session = $('#session').val();
     launchMappingWindow(cfgRootPath + '/question/add/add_questions_frame.php?module=' + module + '&session=' + session);
+  });
+
+  $('html').click(function (e) {
+    $('.mapped-item').parent().removeClass('selected');
+    $('.sel-question:checked').attr('checked', false);
+    $('.sel-objective:checked').attr('checked', false);
+    $('.map-item').removeClass('selected');
+    deactivateLink('unmap');
+    deactivateLink('map_qns');
+    deactivateLink('map_sess');
   });
 });
 
@@ -74,16 +95,18 @@ function launchMappingWindow(url) {
 
 function unMapQuestion(e) {
   e.preventDefault();
-  if (confirm(lang['ajaxconfirm'])) {
-    var data = $(this).attr('rel').split('_');
-    var module, qID, oID, session;
-    var li = $(this).parent();
+  deactivateLink('unmap', e);
 
-    if (data.length == 2) {
+  if (confirm(lang['ajaxconfirm'])) {
+    var module, session;
+
+    if ($(this).data('objective') != '' && $(this).data('question') != '') {
       module = $('#module').val();
-      oID = data[0];
-      qID = data[1];
       session = $('#session').val();
+      var oID = $(this).data('objective');
+      var qID= $(this).data('question');
+      var li = $('#map' + oID + '_' + qID);
+
       $.post('../ajax/dynamic_paper/remove_mapping.php',
          {
            module: module,
@@ -102,25 +125,39 @@ function unMapQuestion(e) {
   }
 }
 
-function selUnselObjective() {
-  $(this).toggleClass('selected');
+function selUnselObjective(e) {
+  $(this).next().toggleClass('selected');
 
   var count = $('.sel-objective:checked').length;
-  if (count == 1 && !$(this).hasClass('selected')) {
+  if (count == 0) {
     deactivateLink('map_qns');
   } else {
     activateMapQns();
   }
+  e.stopPropagation();
+  e.stopImmediatePropagation();
 }
 
-function selUnselQuestion() {
-  $(this).toggleClass('selected');
+function selUnselQuestion(e) {
+  $(this).next().toggleClass('selected');
 
   var count = $('.sel-question:checked').length;
-  if (count == 1 && !$(this).hasClass('selected')) {
+  if (count == 0) {
     deactivateLink('map_sess');
   } else {
     activateMapSess();
+  }
+  e.stopPropagation();
+}
+
+function selMapTarget(e) {
+  e.stopPropagation();
+  e.preventDefault();
+  var data = $(this).attr('rel').split('_');
+  $('.mapped-item').parent().removeClass('selected');
+  $(this).parent().addClass('selected');
+  if (data.length == 2) {
+    activateUnmap(data);
   }
 }
 
@@ -128,14 +165,15 @@ function activateMapQns() {
   if ($('#map_qns').hasClass('greymenuitem')) {
     $('#map_qns').removeClass('greymenuitem');
     $('#map_qns').addClass('menuitem');
-    $('#map_qns a').click(checkObjectives);
+    $('#map_qns a').bind('click', checkObjectives);
   }
 }
 
 function deactivateLink(id) {
   $('#' + id).addClass('greymenuitem');
   $('#' + id).removeClass('menuitem');
-  $('#' + id).unbind('click');
+  $('#' + id).removeData();
+  $('#' + id + ' a').unbind('click');
   $('#' + id + ' a').click(function(e) { e.preventDefault(); });
 }
 
@@ -143,7 +181,17 @@ function activateMapSess() {
   if ($('#map_sess').hasClass('greymenuitem')) {
     $('#map_sess').removeClass('greymenuitem');
     $('#map_sess').addClass('menuitem');
-    $('#map_sess' + ' a').click(checkQuestions);
+    $('#map_sess' + ' a').bind('click', checkQuestions);
+  }
+}
+
+function activateUnmap(data) {
+  if ($('#unmap').hasClass('greymenuitem')) {
+    $('#unmap').removeClass('greymenuitem');
+    $('#unmap').addClass('menuitem');
+    $('#unmap a').data('objective', data[0]);
+    $('#unmap a').data('question', data[1]);
+    $('#unmap a').bind('click', unMapQuestion);
   }
 }
 

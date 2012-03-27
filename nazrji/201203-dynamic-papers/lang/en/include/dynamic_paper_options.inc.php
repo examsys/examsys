@@ -26,3 +26,4 @@ $string['mapping'] = 'Mapping';
 $string['addquestions'] = 'Add Questions';
 $string['mapquestions'] = 'Map Questions';
 $string['mapobjectives'] = 'Map Objectives';
+$string['removemapping'] = 'Remove Mapping';

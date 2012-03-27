@@ -40,5 +40,6 @@ if ($mode == 'session') {
 <?php
 }
 ?>
+    <li id="unmap" class="greymenuitem"><a href="#"><?php echo $string['removemapping'] ?></a></li>
   </ul>
 </div>

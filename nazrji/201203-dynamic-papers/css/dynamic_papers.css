@@ -116,6 +116,14 @@ hr.head-line {
   padding-top: 8px;
 }
 
+.q-link, .o-link {
+  padding: 2px 0;
+}
+
+.o-link a.mapped-item {
+  color: #1E3287;
+  text-decoration: none
+}
 
 a.unmap {
   color: #f00;
@@ -130,10 +138,9 @@ a.unmap {
 .map-item {
   padding: 2px 0 2px 16px;
   display: block;
-  width: 100%;
 }
 
-.map-item.selected {
+.selected {
   background-color: #B3C8E8;
   color: black;
 }
