@@ -43,7 +43,9 @@ $url_mod = (isset($_GET['module'])) ? '?module=' . $_GET['module'] : '';
       document.getElementById('button_keywords').style.background='';
       document.getElementById('button_status').style.background='';
       document.getElementById('button_papers').style.background='';
-      document.getElementById('button_team').style.background='';
+      if (document.getElementById('button_team')) {
+        document.getElementById('button_team').style.background='';
+      }
       document.getElementById('button_search').style.background='';
 
       document.getElementById('button_'+sectionID).style.background='url(../../artwork/2007_button_on.png)';

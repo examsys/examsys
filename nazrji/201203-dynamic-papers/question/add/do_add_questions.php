@@ -28,8 +28,10 @@ function clone_scalar($var) {
   return $var;
 }
 
+$close_window = true;
+
 if ($_POST['questions_to_add'] != '') {
-  $questions = explode(',',$_POST['questions_to_add']);
+  $questions = explode(',', $_POST['questions_to_add']);
   if (isset($_GET['display_pos'])) {
     // Adding questions to paper
     $display_pos = $_GET['display_pos'];
@@ -56,8 +58,8 @@ if ($_POST['questions_to_add'] != '') {
   } else {
     // Adding questions to dynamic paper
 
-    // TODO: work out the session
     $session = $_POST['session'];
+    $module = $_POST['module'];
     $i = $j = 0;
     $do_insert = false;
     foreach ($questions as $question) {
@@ -65,7 +67,6 @@ if ($_POST['questions_to_add'] != '') {
 
       if ($_POST['objectives'] != '') {
         $mapped_objs = explode(',', $_POST['objectives']);
-        $module = $_POST['module'];
 
         $ins_query = 'INSERT INTO relationships(module_id, question_id, obj_id, calendar_year) VALUES ';
         $params = array('bind_param', '');
@@ -85,6 +86,7 @@ if ($_POST['questions_to_add'] != '') {
             $j++;
           }
           $check->close();
+          $redirect_url = "../../mapping/dynamic_papers_by_session.php?module=$module&session=$session";
         }
         if ($do_insert) {
           $ins_query = rtrim($ins_query, ',');
@@ -95,11 +97,11 @@ if ($_POST['questions_to_add'] != '') {
           $result->close();
         }
       } else {
-        // TODO: questions added but not yet mapped
+        $redirect_url = "../../mapping/map_question.php?module=$module&questions={$_POST['questions_to_add']}&session=$session";
+        $close_window = false;
       }
       $i++;
     }
-    $redirect_url = "../../mapping/dynamic_papers_by_session.php?module=$module&session=$session";
   }
 }
 $mysqli->close();
@@ -109,13 +111,26 @@ $mysqli->close();
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
   <title>Add new Question</title>
-  <script language="javascript">
-    function closeWindow() {
+  <script src="../../js/jquery-1.6.1.min.js" type="text/javascript"></script>
+  <script type="text/javascript">
+<?php
+if ($close_window) {
+?>
+    $(function () {
       top.window.opener.location.href='<?php echo $redirect_url ?>';
       top.window.close();
-    }
+    });
+<?php
+} else {
+?>
+    $(function () {
+      top.window.location.href='<?php echo $redirect_url ?>';
+    });
+<?php
+}
+?>
   </script>
 </head>
-<body onload="closeWindow();">
+<body>
 </body>
 </html>

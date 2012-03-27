@@ -28,8 +28,11 @@ require '../../include/staff_auth.inc';
 $controls_url = 'add_question_controls.php?';
 $url_mod = '';
 if (!isset($_GET['paperID'])) {
-  $controls_url .= 'module=' . $_GET['module'] . '&amp;objectives=' . $_GET['objectives'] . '&amp;session=' . $_GET['session'];
+  $controls_url .= 'module=' . $_GET['module'] . '&amp;session=' . $_GET['session'];
   $url_mod = '?module=' . $_GET['module'];
+  if (isset($_GET['objectives'])) {
+    $controls_url .= '&amp;objectives=' . $_GET['objectives'];
+  }
 } else {
   $controls_url .= 'paperID=' . $_GET['paperID'] . '&amp;module=' . $_GET['module'] . '&amp;folder=' . $_GET['folder'] . '&amp;display_pos=' . $_GET['display_pos'] . '&amp;scrOfY=' . $_GET['scrOfY'] . '&amp;max_screen=' . $_GET['max_screen'];
 }

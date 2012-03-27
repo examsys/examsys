@@ -28,6 +28,13 @@ $(function () {
 
   $('.map-objective').click(selUnselObjective);
   $('.map-question').click(selUnselQuestion);
+
+  $('#add_qns a').click(function (e) {
+    e.preventDefault();
+    var module = $('#module').val();
+    var session = $('#session').val();
+    launchMappingWindow(cfgRootPath + '/question/add/add_questions_frame.php?module=' + module + '&session=' + session);
+  });
 });
 
 function checkObjectives(e) {
@@ -121,7 +128,7 @@ function activateMapQns() {
   if ($('#map_qns').hasClass('greymenuitem')) {
     $('#map_qns').removeClass('greymenuitem');
     $('#map_qns').addClass('menuitem');
-    $('#map_qns').click(checkObjectives);
+    $('#map_qns a').click(checkObjectives);
   }
 }
 
@@ -129,14 +136,14 @@ function deactivateLink(id) {
   $('#' + id).addClass('greymenuitem');
   $('#' + id).removeClass('menuitem');
   $('#' + id).unbind('click');
-  $('#' + id).click(function(e) { e.preventDefault(); });
+  $('#' + id + ' a').click(function(e) { e.preventDefault(); });
 }
 
 function activateMapSess() {
   if ($('#map_sess').hasClass('greymenuitem')) {
     $('#map_sess').removeClass('greymenuitem');
     $('#map_sess').addClass('menuitem');
-    $('#map_sess').click(checkQuestions);
+    $('#map_sess' + ' a').click(checkQuestions);
   }
 }
 
