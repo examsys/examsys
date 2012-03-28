@@ -104,11 +104,10 @@
         $lookup_username = trim($sms->Username);
 
         // Make sure we have a proper username - it can sometimes be blank in SATURN data
-        if ($lookup_username == '' and $sms->Email != '') {
+        if ($sms->Email != '') {
           // Try to extract from email address
           $un_parts = explode('@', $sms->Email);
           $lookup_username = $un_parts[0];
-          echo 'Extracted username from email: ' . $lookup_username . '<br />';
         }
 
         if ($lookup_username != '') {
@@ -132,7 +131,7 @@
               }
 
               $result = $mysqli->prepare("INSERT INTO users VALUES ('',?,?,?,?,?,?,'Student',NULL,?,?,NULL,0,?)");
-              $result->bind_param('ssssssssi', $sms->CourseCode, $sms->Surname, $initials, $sms->Title, $sms->Username, $sms->Email, $sms->Forename, $sms->Gender, $sms->YearofStudy);
+              $result->bind_param('ssssssssi', $sms->CourseCode, $sms->Surname, $initials, $sms->Title, $lookup_username, $sms->Email, $sms->Forename, $sms->Gender, $sms->YearofStudy);
               $result->execute();
               $result->close();
 
@@ -172,9 +171,9 @@
             $result->close();
             $enrolements++;
             if ($enrolement_details == '') {
-              $enrolement_details = $sms->Username;
+              $enrolement_details = $lookup_username;
             } else {
-              $enrolement_details .= ',' . $sms->Username;
+              $enrolement_details .= ',' . $lookup_username;
             }
 
             $student_data->close();
@@ -201,7 +200,7 @@
           }
           if ($current_users[$lookup_username]['year'] != $sms->YearofStudy or $tmp_initials != $current_users[$lookup_username]['initials'] or $current_users[$lookup_username]['grade'] != $sms->CourseCode or $current_users[$lookup_username]['title'] != $sms->Title or $current_users[$lookup_username]['surname'] != $sms->Surname  or $current_users[$lookup_username]['first_names'] != $sms->Forename or $current_users[$lookup_username]['roles'] != $new_roles) {
             $result = $mysqli->prepare("UPDATE users SET yearofstudy=?, roles=?, grade=?, title=?, surname=?, first_names=?, initials=? WHERE username=?");
-            $result->bind_param('isssssss', $sms->YearofStudy, $new_roles, $sms->CourseCode, $sms->Title, $sms->Surname, $sms->Forename, $tmp_initials, $sms->Username);
+            $result->bind_param('isssssss', $sms->YearofStudy, $new_roles, $sms->CourseCode, $sms->Title, $sms->Surname, $sms->Forename, $tmp_initials, $lookup_username);
             $result->execute();
             $result->close();
           }
