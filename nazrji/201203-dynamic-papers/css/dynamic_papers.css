@@ -153,3 +153,11 @@ a.unmap {
   background-color: #B3C8E8;
   color: black;
 }
+
+th form, th table {
+  margin: 0;
+}
+
+.align-bottom {
+  vertical-align: bottom;
+}

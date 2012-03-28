@@ -122,7 +122,7 @@ if ($module != '') {
 
     <table class="header">
       <tr>
-        <th style="padding-top:1px">
+        <th class="align-bottom">
           <table cellpadding="0" cellspacing="0" border="0" style="font-size:100%; width:252px">
             <tr>
               <td class="tab on"><?php echo $string['bysession']; ?></td>
