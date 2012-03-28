@@ -103,6 +103,10 @@ background: transparent url('../artwork/map_question_off.gif') no-repeat left ce
 background: transparent url('../artwork/red_cross_grey.png') no-repeat left center;
 }
 
+#unmap.greymenuitem.loading {
+background: transparent url('../artwork/loading_16_dfecff.gif') no-repeat left center;
+}
+
 #left-sidebar h2 {
   font-size: 100%;
   font-weight:bold;

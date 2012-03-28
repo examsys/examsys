@@ -99,19 +99,26 @@ function unMapQuestion(e) {
       var qID= $(this).data('question');
       var li = $('#map' + oID + '_' + qID);
 
+      setTimeout(function() {
+        if (li.is(':visible')) {
+          $('#unmap').addClass('loading');
+        }
+      }, 1000);
+
       $.post('../ajax/dynamic_paper/remove_mapping.php',
-         {
-           module: module,
-           objective: oID,
-           question: qID,
-           session: session
-         },
-         function(data) {
+        {
+          module: module,
+          objective: oID,
+          question: qID,
+          session: session
+        },
+        function(data) {
+          $('#unmap').removeClass('loading');
           if (data == 'INVALID INPUT') {
             showAJAXError(lang['ajaxerror']);
           } else {
             li.remove();
-          }
+        }
       });
     }
   }
@@ -196,6 +203,7 @@ function activateUnmap(data) {
 
 function showAJAXError(message) {
   alert(message);
+  clearAllSelections();
 }
 
 function clearAllSelections() {
@@ -214,4 +222,5 @@ function clearMappableSelections() {
 function clearMappedSelections() {
   $('.mapped-item').parent().removeClass('selected');
   deactivateLink('unmap');
+  $('#unmap').removeClass('loading');
 }
