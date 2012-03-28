@@ -18,7 +18,7 @@ $.Class.extend("MEE.Latex",
         this.latex = "";
     },
     AddText: function (string) {
-        this.latex += string;
+        this.latex += string + " ";
         this.count++;
     },
     AddMod: function (string) {
@@ -37,7 +37,7 @@ $.Class.extend("MEE.Latex",
         this.count++;
     },
     AddElem: function (more) {
-        this.latex += more.latex;
+        this.latex += more.latex + " ";
         this.count += more.count;
     },
     get: function () {

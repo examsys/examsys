@@ -599,7 +599,7 @@ function getMSCAA($paperID, $mysqlidb) {
       $temp_array[$row_no]['screen'] = $screen;
       $temp_array[$row_no]['q_type'] = $q_type;
       $temp_array[$row_no]['leadin'] = $leadin;
-      if (strpos($temp_array[$row_no]['leadin'],'class="mee"') === false) {
+      if (strpos($temp_array[$row_no]['leadin'],'class="mee"') === false AND strpos($temp_array[$row_no]['leadin'],'class=mee') === false) {
         $temp_array[$row_no]['leadin'] = strip_tags($temp_array[$row_no]['leadin']);                                     // No equation, strip all tags
         if (strlen($temp_array[$row_no]['leadin']) > 160) {
           $temp_array[$row_no]['leadin'] = substr($temp_array[$row_no]['leadin'],0,160) . '...';

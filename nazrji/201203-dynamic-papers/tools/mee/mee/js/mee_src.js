@@ -46,6 +46,10 @@ function findBaseUrl() {
 
 findBaseUrl();
 //uncompressed debug
-loadjscssfile("js/mee_src_src.js",'js');
+//loadjscssfile("js/mee_src_src.js",'js');
 //compressed live
-//loadjscssfile("js/mee.js",'js');
+if($.browser.msie &&  $.browser.version < 9) {
+  loadjscssfile("js/mee_src_src.js",'js');
+} else {
+  loadjscssfile("js/mee.js",'js');
+}

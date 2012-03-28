@@ -790,7 +790,7 @@ $.Class.extend("MEE.Elem",
         var bh = MEE.Data.getBaseSize(scopeelem);
         var pad = Math.floor((mainh - bh) / 2);
         
-        if($.browser.msie &&  $.browser.version > 8) {
+        if($.browser.msie &&  $.browser.version >= 8) {
           //nasty hack to fix brackets iin ie 8 and 9
           pad += 12;
         }

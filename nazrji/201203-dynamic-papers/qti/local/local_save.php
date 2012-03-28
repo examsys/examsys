@@ -138,7 +138,7 @@ class IE_Local_Save extends IE_Main {
 
       $oiii=print_r($question,TRUE);
 $t=9;
-      file_put_contents("/tmp/out.txt",$oiii);
+///      file_put_contents("/tmp/out.txt",$oiii);
       $t=8;
       if ($question->type == "blank") $this->SaveBlank($question);
       elseif ($question->type == "calculation") $this->SaveCalculation($question);

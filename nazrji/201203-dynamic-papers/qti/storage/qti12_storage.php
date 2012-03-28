@@ -1021,7 +1021,10 @@ function parseHtml($s_str) {
     $b_boolOptions = is_array(($s_tagOption = each($a_tag))) && $s_tagOption[1];
     if ($b_boolOptions) {
       // Without this, we will mess up the array
-      $i_arrayCounter = (int) count($a_html[$s_tagName]);
+      $i_arrayCounter=0;
+      if(isset($a_html[$s_tagName])) {
+        $i_arrayCounter = (int) count($a_html[$s_tagName]);
+      }
       // get the tag options, like src="htt://". Here, s_tagTokOption is 'src' and s_tagTokValue is '"http://"'
       do {
         $s_tagTokOption = strtolower(strtok($s_tagOption[1], "="));

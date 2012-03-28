@@ -113,7 +113,7 @@ $.Class.extend("MEE.ElemSet",
             if (curelem._name == "MEE.ElemInput") {
                 // we have found the input element, insert the elem before it
                 this.elements.splice(i, 1);
-                //return;
+                break;
             }
         }
 

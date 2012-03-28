@@ -51,12 +51,12 @@ function getRandomDetails($questionID) {
   $old_correct = array();
   $old_option_text = array();
   
-  $result = $mysqli->prepare("SELECT theme, options1.option_text, leadin, scenario, q_media_width, q_media_height, options2.correct, options2.marks_correct, options2.option_text, q_type, display_method, score_method, last_edited, status FROM options AS options1, questions, options AS options2 WHERE options1.option_text=questions.q_id AND questions.q_id=options2.o_id AND options1.o_id=?");
+  $result = $mysqli->prepare("SELECT theme, options1.option_text, leadin, scenario, q_media_width, q_media_height, options2.correct, options2.marks_correct, options2.marks_incorrect, options2.option_text, q_type, display_method, score_method, last_edited, status FROM options AS options1, questions, options AS options2 WHERE options1.option_text=questions.q_id AND questions.q_id=options2.o_id AND options1.o_id=?");
   $result->bind_param('i', $questionID);
   $result->execute();
   $result->store_result();
   if ($result->num_rows > 0) {
-    $result->bind_result($theme, $q_id, $leadin, $scenario, $q_media_width, $q_media_height, $correct, $marks_correct, $option_text, $q_type, $display_method, $score_method, $display_last_edited, $status);
+    $result->bind_result($theme, $q_id, $leadin, $scenario, $q_media_width, $q_media_height, $correct, $marks_correct, $marks_incorrect, $option_text, $q_type, $display_method, $score_method, $display_last_edited, $status);
     while ($result->fetch()) {
       if ($old_q_id != $q_id and $old_q_id != '') {
         $old_leadin = trim(str_replace('&nbsp;',' ',(strip_tags($old_leadin))));
@@ -68,9 +68,11 @@ function getRandomDetails($questionID) {
         $paper_buffer[$old_q_id]['scenario'] = $old_scenario;
         $paper_buffer[$old_q_id]['correct'] = $old_correct;
         $paper_buffer[$old_q_id]['display_method'] = $old_display_method;
+        $paper_buffer[$old_q_id]['score_method'] = $old_score_method;
         $paper_buffer[$old_q_id]['status'] = $old_status;
         $paper_buffer[$old_q_id]['display_last_edited'] = $display_last_edited;
-        $paper_buffer[$old_q_id]['marks'] = qMarks($old_q_type, '', $old_marks_correct, $old_option_text, $old_correct, $old_display_method, $old_score_method);
+        $paper_buffer[$old_q_id]['marks_correct'] = $old_marks_correct;
+        $paper_buffer[$old_q_id]['marks_incorrect'] = $old_marks_incorrect;
         $paper_buffer[$old_q_id]['random_mark'] = qRandomMarks($old_q_type, '', $old_marks_correct, $old_option_text, $old_correct, $old_display_method, $old_score_method, $old_q_media_width, $old_q_media_height);
         $paper_buffer[$old_q_id]['option_text'] = $old_option_text;
         $old_correct = array();
@@ -84,6 +86,7 @@ function getRandomDetails($questionID) {
       $old_scenario = $scenario;
       $old_status = $status;
       $old_marks_correct = $marks_correct;
+      $old_marks_incorrect = $marks_incorrect;
       $old_correct[] = $correct;
       $old_option_text[] = $option_text;
       $old_display_method = $display_method;
@@ -102,9 +105,11 @@ function getRandomDetails($questionID) {
     $paper_buffer[$old_q_id]['scenario'] = $old_scenario;
     $paper_buffer[$old_q_id]['correct'] = $old_correct;
     $paper_buffer[$old_q_id]['display_method'] = $old_display_method;
+    $paper_buffer[$old_q_id]['score_method'] = $old_score_method;
     $paper_buffer[$old_q_id]['status'] = $old_status;
     $paper_buffer[$old_q_id]['display_last_edited'] = $display_last_edited;
-    $paper_buffer[$old_q_id]['marks'] = qMarks($old_q_type, '', $old_marks_correct, $old_option_text, $old_correct, $old_display_method, $old_score_method);
+    $paper_buffer[$old_q_id]['marks_correct'] = $old_marks_correct;
+    $paper_buffer[$old_q_id]['marks_incorrect'] = $old_marks_incorrect;
     $paper_buffer[$old_q_id]['random_mark'] = qRandomMarks($old_q_type, '', $old_marks_correct, $old_option_text, $old_correct, $old_display_method, $old_score_method, $old_q_media_width, $old_q_media_height);
     $paper_buffer[$old_q_id]['option_text'] = $old_option_text;
   }
@@ -348,7 +353,6 @@ function writeUserResults($tmp, &$master_array, &$user_number, $tmp_user_mark, $
   $master_array[$user_number]['paper_type'] = $tmp['paper_type'];
   $master_array[$user_number]['room'] = $tmp['room'];
   $master_array[$user_number]['visible'] = 1;    // Default to visible unless switched off below.
-
   
   // Add metadata
   if (count($met_array) > 0) {
@@ -719,7 +723,19 @@ while ($result->fetch()) {
         }
         if ($old_q_type == 'random') {
           $tmp_id = getRandomDetails($old_q_id);
-          $total_marks += $paper_buffer[$tmp_id]['marks'];
+                  
+          $old_q_type = $paper_buffer[$tmp_id]['q_type'];
+          $old_marks_correct = $paper_buffer[$tmp_id]['marks_correct'];
+          $old_option_text = $paper_buffer[$tmp_id]['option_text'];
+          $old_correct = $paper_buffer[$tmp_id]['correct'];
+          $old_display_method = $paper_buffer[$tmp_id]['display_method'];
+          $old_score_method = $paper_buffer[$tmp_id]['score_method'];
+          
+          $total_marks += qMarks($old_q_type, $tmp_exclude, $old_marks_correct, $old_option_text, $old_correct, $old_display_method, $old_score_method);
+          $orig_total_marks += qMarks($old_q_type, '', $old_marks_correct, $old_option_text, $old_correct, $old_display_method, $old_score_method);
+          
+          //var_dump($old_q_type, $old_marks_correct, $old_option_text, $old_correct, $old_display_method, $old_score_method);
+          //exit;
         } else {
           $total_marks += qMarks($old_q_type, $tmp_exclude, $old_marks_correct, $old_option_text, $old_correct, $old_display_method, $old_score_method);
           $orig_total_marks += qMarks($old_q_type, '', $old_marks_correct, $old_option_text, $old_correct, $old_display_method, $old_score_method);
@@ -861,20 +877,20 @@ if ($moduleID != '') {
 
 // Get student's log data.
 if ($paper_type == '0') {
-  $log_query = $mysqli->prepare("(SELECT DISTINCT log0.q_id, 0 AS paper_type, grade, screen, duration, log0.started AS order_started, user_answer, DATE_FORMAT(log0.started, '$cfg_long_date_time') AS display_started, log_metadata.year, title, surname, initials, first_names, gender, ipaddress, username, users.id, student_id, REPLACE(user_answer,'\"',\"'\") AS user_answer, q_type, log0.userID, mark, totalpos, status, attempt FROM (log0, log_metadata, questions, users) LEFT JOIN sid ON users.id=sid.userID WHERE log0.q_paper=log_metadata.paperID AND log0.userID=log_metadata.userID AND log0.started=log_metadata.started AND log0.q_id=questions.q_id AND roles LIKE '%Student%' AND q_paper=? AND users.id=log0.userID AND grade LIKE ? AND (users.roles LIKE '%Student%' OR users.roles='graduate') AND log0.started>=? AND log0.started<=?) UNION ALL (SELECT log1.q_id, 1 AS paper_type, grade, screen, duration, log1.started AS order_started, user_answer, DATE_FORMAT(log1.started, '$cfg_long_date_time') AS display_started, log_metadata.year, title, surname, initials, first_names, gender, ipaddress, username, users.id, student_id, REPLACE(user_answer,'\"',\"'\") AS user_answer, q_type, log1.userID, mark, totalpos, status, attempt FROM (log1, log_metadata, questions, users) LEFT JOIN sid ON users.id=sid.userID WHERE log1.q_paper=log_metadata.paperID AND log1.userID=log_metadata.userID AND log1.started=log_metadata.started AND log1.q_id=questions.q_id AND q_paper=? AND users.id=log1.userID AND grade LIKE ? AND (users.roles='Student' OR users.roles='graduate') AND log1.started>=? AND log1.started<=?) ORDER BY userID, order_started, screen");
+  $log_query = $mysqli->prepare("(SELECT DISTINCT log0.q_id, 0 AS paper_type, grade, screen, duration, log0.started AS order_started, user_answer, DATE_FORMAT(log0.started, '$cfg_long_date_time') AS display_started, log_metadata.year, title, surname, initials, first_names, gender, ipaddress, username, users.id, student_id, REPLACE(user_answer,'\"',\"'\") AS user_answer, q_type, log0.userID, mark, status, attempt FROM (log0, log_metadata, questions, users) LEFT JOIN sid ON users.id=sid.userID WHERE log0.q_paper=log_metadata.paperID AND log0.userID=log_metadata.userID AND log0.started=log_metadata.started AND log0.q_id=questions.q_id AND roles LIKE '%Student%' AND q_paper=? AND users.id=log0.userID AND grade LIKE ? AND (users.roles LIKE '%Student%' OR users.roles='graduate') AND log0.started>=? AND log0.started<=?) UNION ALL (SELECT log1.q_id, 1 AS paper_type, grade, screen, duration, log1.started AS order_started, user_answer, DATE_FORMAT(log1.started, '$cfg_long_date_time') AS display_started, log_metadata.year, title, surname, initials, first_names, gender, ipaddress, username, users.id, student_id, REPLACE(user_answer,'\"',\"'\") AS user_answer, q_type, log1.userID, mark, status, attempt FROM (log1, log_metadata, questions, users) LEFT JOIN sid ON users.id=sid.userID WHERE log1.q_paper=log_metadata.paperID AND log1.userID=log_metadata.userID AND log1.started=log_metadata.started AND log1.q_id=questions.q_id AND q_paper=? AND users.id=log1.userID AND grade LIKE ? AND (users.roles='Student' OR users.roles='graduate') AND log1.started>=? AND log1.started<=?) ORDER BY userID, order_started, screen");
   $log_query->bind_param('isssisss', $_GET['paperID'], $_GET['repcourse'], $_GET['startdate'], $_GET['enddate'], $_GET['paperID'], $_GET['repcourse'], $_GET['startdate'], $_GET['enddate']);
 } elseif ($paper_type == '2') {
-  $log_query = $mysqli->prepare("SELECT DISTINCT log2.q_id, 2 AS paper_type, grade, screen, duration, log2.started, user_answer, DATE_FORMAT(log2.started, '$cfg_long_date_time') AS display_started, log_metadata.year, title, surname, initials, first_names, gender, ipaddress, username, users.id, student_id, REPLACE(user_answer,'\"',\"'\") AS user_answer, q_type, log2.userID, mark, totalpos, status, attempt FROM (log2, log_metadata, questions, users) LEFT JOIN sid ON users.id=sid.userID WHERE log2.q_paper=log_metadata.paperID AND log2.userID=log_metadata.userID AND log2.started=log_metadata.started AND log2.q_id=questions.q_id AND q_paper=? AND users.id=log2.userID AND grade LIKE ? AND (users.roles='Student' OR users.roles='graduate') AND DATE_ADD(log2.started, INTERVAL 2 MINUTE)>=? AND log2.started<=? ORDER BY userID, log2.started, screen");
+  $log_query = $mysqli->prepare("SELECT DISTINCT log2.q_id, 2 AS paper_type, grade, screen, duration, log2.started, user_answer, DATE_FORMAT(log2.started, '$cfg_long_date_time') AS display_started, log_metadata.year, title, surname, initials, first_names, gender, ipaddress, username, users.id, student_id, REPLACE(user_answer,'\"',\"'\") AS user_answer, q_type, log2.userID, mark, status, attempt FROM (log2, log_metadata, questions, users) LEFT JOIN sid ON users.id=sid.userID WHERE log2.q_paper=log_metadata.paperID AND log2.userID=log_metadata.userID AND log2.started=log_metadata.started AND log2.q_id=questions.q_id AND q_paper=? AND users.id=log2.userID AND grade LIKE ? AND (users.roles='Student' OR users.roles='graduate') AND DATE_ADD(log2.started, INTERVAL 2 MINUTE)>=? AND log2.started<=? ORDER BY userID, log2.started, screen");
   $log_query->bind_param('isss', $_GET['paperID'], $_GET['repcourse'], $_GET['startdate'], $_GET['enddate']);
 } elseif ($paper_type == '5') {
-  $log_query =   $mysqli->prepare("SELECT DISTINCT log5.q_id, 5 AS paper_type, grade, 1 AS screen, 0 AS duration, log5.started, NULL AS user_answer, DATE_FORMAT(log5.started, '$cfg_long_date_time') AS display_started, log_metadata.year, title, surname, initials, first_names, gender, NULL AS ipaddress, username, users.id, student_id, NULL AS user_answer, q_type, log5.userID, mark, totalpos, status, 1 AS attempt FROM (log5, log_metadata, questions, users) LEFT JOIN sid ON users.id=sid.userID WHERE log5.q_paper=log_metadata.paperID AND log5.userID=log_metadata.userID AND log5.started=log_metadata.started AND log5.q_id=questions.q_id AND q_paper=? AND users.id=log5.userID AND grade LIKE ? AND (users.roles='Student' OR users.roles='graduate') AND DATE_ADD(log5.started, INTERVAL 2 MINUTE)>=? AND log5.started<=? ORDER BY userID, log5.started, screen");
+  $log_query =   $mysqli->prepare("SELECT DISTINCT log5.q_id, 5 AS paper_type, grade, 1 AS screen, 0 AS duration, log5.started, NULL AS user_answer, DATE_FORMAT(log5.started, '$cfg_long_date_time') AS display_started, log_metadata.year, title, surname, initials, first_names, gender, NULL AS ipaddress, username, users.id, student_id, NULL AS user_answer, q_type, log5.userID, mark, status, 1 AS attempt FROM (log5, log_metadata, questions, users) LEFT JOIN sid ON users.id=sid.userID WHERE log5.q_paper=log_metadata.paperID AND log5.userID=log_metadata.userID AND log5.started=log_metadata.started AND log5.q_id=questions.q_id AND q_paper=? AND users.id=log5.userID AND grade LIKE ? AND (users.roles='Student' OR users.roles='graduate') AND DATE_ADD(log5.started, INTERVAL 2 MINUTE)>=? AND log5.started<=? ORDER BY userID, log5.started, screen");
   $log_query->bind_param('isss', $_GET['paperID'], $_GET['repcourse'], $_GET['startdate'], $_GET['enddate']);
 } else {
-  $log_query = $mysqli->prepare("SELECT DISTINCT log$paper_type.q_id, $paper_type AS paper_type, grade, screen, duration, log$paper_type.started, user_answer, DATE_FORMAT(log$paper_type.started, '$cfg_long_date_time') AS display_started, log_metadata.year, title, surname, initials, first_names, gender, ipaddress, username, users.id, student_id, REPLACE(user_answer,'\"',\"'\") AS user_answer, q_type, log$paper_type.userID, mark, totalpos, status, attempt FROM (log$paper_type, log_metadata, questions, users) LEFT JOIN sid ON users.id=sid.userID WHERE log$paper_type.q_paper=log_metadata.paperID AND log$paper_type.userID=log_metadata.userID AND log$paper_type.started=log_metadata.started AND log$paper_type.q_id=questions.q_id AND q_paper=? AND users.id=log$paper_type.userID AND grade LIKE ? AND (users.roles='Student' OR users.roles='graduate') AND log$paper_type.started>=? AND log$paper_type.started<=? ORDER BY userID, started, screen");
+  $log_query = $mysqli->prepare("SELECT DISTINCT log$paper_type.q_id, $paper_type AS paper_type, grade, screen, duration, log$paper_type.started, user_answer, DATE_FORMAT(log$paper_type.started, '$cfg_long_date_time') AS display_started, log_metadata.year, title, surname, initials, first_names, gender, ipaddress, username, users.id, student_id, REPLACE(user_answer,'\"',\"'\") AS user_answer, q_type, log$paper_type.userID, mark, status, attempt FROM (log$paper_type, log_metadata, questions, users) LEFT JOIN sid ON users.id=sid.userID WHERE log$paper_type.q_paper=log_metadata.paperID AND log$paper_type.userID=log_metadata.userID AND log$paper_type.started=log_metadata.started AND log$paper_type.q_id=questions.q_id AND q_paper=? AND users.id=log$paper_type.userID AND grade LIKE ? AND (users.roles='Student' OR users.roles='graduate') AND log$paper_type.started>=? AND log$paper_type.started<=? ORDER BY userID, started, screen");
   $log_query->bind_param('isss', $_GET['paperID'], $_GET['repcourse'], $_GET['startdate'], $_GET['enddate']);
 }
 $log_query->execute();
-$log_query->bind_result($q_id, $paper_type, $grade, $screen, $duration, $started, $user_answer, $display_started, $year, $title, $surname, $initials, $first_names, $gender, $ipaddress, $username, $tmp_userID, $student_id, $user_answer, $q_type, $tmp_userID, $mark, $totalpos, $status, $attempt);
+$log_query->bind_result($q_id, $paper_type, $grade, $screen, $duration, $started, $user_answer, $display_started, $year, $title, $surname, $initials, $first_names, $gender, $ipaddress, $username, $tmp_userID, $student_id, $user_answer, $q_type, $tmp_userID, $mark, $status, $attempt);
 $log_query->store_result();
 
 $user_no = 0;

@@ -2158,6 +2158,9 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
 
           echo '<div align="center">';
           echo '<script language="JavaScript">';
+          $extra = $tmp_exclude;
+
+		  
           if ($tmp_display_correct_answer == '0' or $tmp_display_students_response == '0') {
           	if (!empty($paper[$question]['user_answer'])) {
 	            $paper[$question]['user_answer'] = str_replace('"','&#034;',$paper[$question]['user_answer']);
@@ -2168,7 +2171,7 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
 ?> 
       function swfLoaded<?php echo $question_no; ?>(message) {
         var num = message.substring(5,message.length);
-        setUpFlash(num, message, '<?php echo $language; ?>', '<?php echo $paper[$question]['q_media']; ?>', '<?php echo trim($paper[$question]['correct'][0]); ?>', '<?php if (isset($paper[$question]['user_answer'])) echo trim($paper[$question]['user_answer']); ?>','');
+        setUpFlash(num, message, '<?php echo $language; ?>', '<?php echo $paper[$question]['q_media']; ?>', '<?php echo trim($paper[$question]['correct'][0]); ?>', '<?php if (isset($paper[$question]['user_answer'])) echo trim($paper[$question]['user_answer']); ?>','<?php echo $extra; ?>');
       }
       write_string('<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="https://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0" id="flash<?php echo $question_no; ?>" width="<?php echo ($paper[$question]['q_media_width'] + 250); ?>" height="<?php echo $tmp_height; ?>" align="middle">');
       write_string('<param name="allowScriptAccess" value="always" />');

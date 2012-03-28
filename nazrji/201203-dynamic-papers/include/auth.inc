@@ -149,10 +149,10 @@ function db_auth($u, $p, $db) {
           $userroles .= 'Demo';
         } else {
           // Look up all the authentication details of the user you are pretending to log in as.
-          $result = $db->prepare("SELECT password, id, roles, title, surname, username, grade, yearofstudy FROM users WHERE username=?");
+          $result = $db->prepare("SELECT password, id, roles, title, surname, username, grade, yearofstudy, special_needs FROM users WHERE username=?");
           $result->bind_param('s', $split_username[1]);
           $result->execute();
-          $result->bind_result($password, $userID, $userroles, $title, $surname, $username, $grade, $year);
+          $result->bind_result($password, $userID, $userroles, $title, $surname, $username, $grade, $year, $special_needs);
           $result->fetch();
           $result->close();
           $cfg_install_type .= " as $title $surname";

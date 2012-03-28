@@ -97,53 +97,8 @@ $rt="";
     $pos=strpos($xmlStr,"wct_questiontype");
 
 
-/*    if(strpos($xmlStr,"WCT_Matching")!==FALSE)
-    {
-      $rep1='   ident="MATCH';
-      while($pos=strpos($xmlStr,'ident="NO_MATCH',$pos)) {
-
-      $xmlStr=substr_replace($xmlStr,$rep1,$pos,strlen($rep1));//ident="MATCH
-      $pos=$pos+3;
-      }
-      $xml = @simplexml_load_string($xmlStr);
-
-    }
-*/
-
 $numb=0;
- /*   while($pos=strpos($xmlStr,"<material",$pos)) {
-      $xmlStr=substr_replace($xmlStr," objectid=\"" . $numb . "\" oid=\"" . $numb . "\" orderid=\"".$numb++."\"",$pos+9,0);
-      $pos=$pos+3;
-    } */
 
-
-/*
-if(isset($xml->item->presentation->flow))
-{
-      foreach($xml->item->presentation->flow as $yyy)
-    {
-      foreach($yyy as $uuu)
-      {
-        foreach($uuu as $iii)
-        {
-          foreach($iii as $aaa)
-          {
-            foreach($aaa as $sss)
-            {
-              foreach($sss as $ddd)
-              {
-                $variable="$iii $uuu $yyy";
-                $variable1=(string)$ddd . " " . (string)$sss . " ". (string)$aaa . " " .(string)$iii . " " . (string)$uuu . " " . (string)$yyy ;
-
-              }
-            }
-          }
-          $variable1=(string)$iii . " " . (string)$uuu . " " . (string)$yyy;
-        }
-      }
-    }
-}
-*/
 
     // single assessment object possible
     if ($xml->assessment) $this->LoadAssessment($xml->assessment);
@@ -168,12 +123,28 @@ if(isset($xml->item->presentation->flow))
     $paper->load_id = (string) $xml->attributes()->ident;
     $paper->title = (string) $xml->attributes()->title;
 
+    $wct=0;
+    if(isset($xml->qtimetadata)) {
+      foreach($xml->qtimetadata as $each1) {
+        if(isset($each1->qtimetadatafield)) {
+          foreach($each1->qtimetadatafield as $each2) {
+            if(substr($each2->fieldlabel,0,3)=="wct") {
+              $wct=1;
+            }
+          }
+        }
+      }
+    }
+
     $this->result->papers[] = $paper;
     $paper->screens[0] = "";
     foreach ($xml->section as $section) {
       $screen = $this->LoadSection($section);
     }
-
+    if($wct==1) {
+      unset($this->result->papers);
+      unset($this->result->screens);
+    }
     unset($paper->screens[0]);
   }
 
@@ -496,7 +467,7 @@ if(isset($xml->item->presentation->flow))
     }
 
     // single num calculation,
-    if ($quesiton->counts['num'] == 1) return "calculation";
+    if ($question->counts['num'] == 1) return "calculation";
 
     // multiple numeric, not supported
     if ($question->counts['num'] > 1) {
@@ -742,11 +713,12 @@ if(isset($xml->item->presentation->flow))
 
             // get all conditions that are related to this response
             $conds = $this->GetRespConditions($source, 1, $response->id);
+        /*
             echo "<pre>";
             print_r($response);
             print_r($conds);
             echo "</pre>";
-
+*/
             foreach ($conds as $cond) {
               foreach ($cond->conditions as $opt) {
                 $blank = new STQ_Blank_Option();
@@ -1480,7 +1452,9 @@ if(isset($xml->item->presentation->flow))
     $dest->status = $source->qmd_status;
     $dest->presentation = 'vertical';
     $dest->type = 'mcq';
-    if ($source->responses[1]->shuffle == 1) {
+    reset($source->responses);
+    $key=key($source->responses);
+    if ($source->responses[$key]->shuffle == 1) {
       $dest->q_option_order = 'random';
     }
 
@@ -1583,7 +1557,9 @@ if(isset($xml->item->presentation->flow))
     $dest->status = $source->qmd_status;
     $dest->presentation = 'vertical';
     $dest->type = 'true_false';
-    if ($source->responses[1]->shuffle == 1) {
+    reset($source->responses);
+    $key=key($source->responses);
+    if ($source->responses[$key]->shuffle == 1) {
       $dest->q_option_order = 'random';
     }
 
