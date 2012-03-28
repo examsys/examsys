@@ -47,15 +47,7 @@ $(function () {
     launchMappingWindow(cfgRootPath + '/question/add/add_questions_frame.php?module=' + module + '&session=' + session);
   });
 
-  $('html').click(function (e) {
-    $('.mapped-item').parent().removeClass('selected');
-    $('.sel-question:checked').attr('checked', false);
-    $('.sel-objective:checked').attr('checked', false);
-    $('.map-item').removeClass('selected');
-    deactivateLink('unmap');
-    deactivateLink('map_qns');
-    deactivateLink('map_sess');
-  });
+  $('html').click(clearAllSelections);
 });
 
 function checkObjectives(e) {
@@ -126,6 +118,8 @@ function unMapQuestion(e) {
 }
 
 function selUnselObjective(e) {
+  clearMappedSelections();
+
   $(this).next().toggleClass('selected');
 
   var count = $('.sel-objective:checked').length;
@@ -139,6 +133,8 @@ function selUnselObjective(e) {
 }
 
 function selUnselQuestion(e) {
+  clearMappedSelections();
+
   $(this).next().toggleClass('selected');
 
   var count = $('.sel-question:checked').length;
@@ -153,6 +149,9 @@ function selUnselQuestion(e) {
 function selMapTarget(e) {
   e.stopPropagation();
   e.preventDefault();
+
+  clearMappableSelections();
+
   var data = $(this).attr('rel').split('_');
   $('.mapped-item').parent().removeClass('selected');
   $(this).parent().addClass('selected');
@@ -197,4 +196,22 @@ function activateUnmap(data) {
 
 function showAJAXError(message) {
   alert(message);
+}
+
+function clearAllSelections() {
+  clearMappableSelections();
+  clearMappedSelections();
+}
+
+function clearMappableSelections() {
+  $('.sel-question:checked').attr('checked', false);
+  $('.sel-objective:checked').attr('checked', false);
+  $('.map-item').removeClass('selected');
+  deactivateLink('map_qns');
+  deactivateLink('map_sess');
+}
+
+function clearMappedSelections() {
+  $('.mapped-item').parent().removeClass('selected');
+  deactivateLink('unmap');
 }
