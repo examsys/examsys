@@ -99,7 +99,7 @@ if ($module != '') {
 }
 ?>
         </div>
-        <div style="font-size:220%; font-weight:bold; margin-left:10px"><?php echo $string['dynamicpapers'] . ' - ' . $string['mappedquestions'] ?></div>
+        <div style="font-size:220%; font-weight:bold; margin-left:10px"><?php echo $string['dynamicpapers'] . ' - ' . $string['mappedobjectives'] ?></div>
       </th>
       <th style="text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(1); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="Help" border="0" /></a></th>
     </tr>
