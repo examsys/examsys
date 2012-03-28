@@ -110,7 +110,7 @@ if ($module != '') {
       <th style="padding-top:1px">
         <table cellpadding="0" cellspacing="0" border="0" style="font-size:100%; width:252px">
           <tr>
-            <td class="tab"><a href="dynamic_papers_by_session.php?module=<?php echo $module; ?>"><?php echo $string['bysession']; ?></a></td>
+            <td class="tab"><a href="dynamic_papers_by_session.php?module=<?php echo $module; ?>&amp;session=<?php echo $session; ?>"><?php echo $string['bysession']; ?></a></td>
             <td class="tab on"><?php echo $string['byquestion']; ?></td>
           </tr>
         </table>

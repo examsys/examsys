@@ -126,7 +126,7 @@ if ($module != '') {
           <table cellpadding="0" cellspacing="0" border="0" style="font-size:100%; width:252px">
             <tr>
               <td class="tab on"><?php echo $string['bysession']; ?></td>
-              <td class="tab"><a href="dynamic_papers_by_question.php?module=<?php echo $module; ?>"><?php echo $string['byquestion']; ?></a></td>
+              <td class="tab"><a href="dynamic_papers_by_question.php?module=<?php echo $module; ?>&amp;session=<?php echo $session; ?>"><?php echo $string['byquestion']; ?></a></td>
             </tr>
           </table>
         </th>
