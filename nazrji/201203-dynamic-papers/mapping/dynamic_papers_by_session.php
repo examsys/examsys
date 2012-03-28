@@ -44,26 +44,8 @@ $years = get_years($module, $mysqli, 'all');
 $session = (isset($_REQUEST['session'])) ? $_REQUEST['session'] : $years[0];
 
 $temp_array = array();
-$questionID_list = '';
 
-$result = $mysqli->prepare("SELECT q_group, q_id, q_type, leadin, q_media, q_media_width, q_media_height, DATE_FORMAT(last_edited,'%d/%m/%y') AS display_last_edited FROM questions q INNER JOIN relationships r ON q.q_id=r.question_id WHERE r.module_id=? AND r.paper_id IS NULL AND r.calendar_year=?");
-$result->bind_param('ss', $module, $session);
-$result->execute();
-$result->bind_result($q_group, $q_id, $q_type, $leadin, $q_media, $q_media_width, $q_media_height, $display_last_edited);
-while ($result->fetch()) {
-  $temp_array[$q_id]['q_type'] = $q_type;
-  $temp_array[$q_id]['leadin'] = trim(str_replace('&nbsp;',' ',(strip_tags($leadin))));
-  $temp_array[$q_id]['q_id'] = $q_id;
-  $temp_array[$q_id]['display_last_edited'] = $display_last_edited;
-  $temp_array[$q_id]['q_media'] = $q_media;
-  $temp_array[$q_id]['q_media_width'] = $q_media_width;
-  $temp_array[$q_id]['q_media_height'] = $q_media_height;
-
-  $temp_array[$q_id]['q_group'] = $q_group;
-  $questionID_list .= $q_id . ',';
-}
-$result->close();
-$questionID_list = rtrim($questionID_list, ',');
+$questionID_list = get_mapped_questions($module, $session, $temp_array, $mysqli);
 
 //$objsBySession = getObjectives($module, $session, null, $questionID_list, $mysqli);
 $objsBySession = getObjectives($module, $session, null, $questionID_list, $mysqli);

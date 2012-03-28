@@ -38,24 +38,7 @@ $session = (isset($_REQUEST['session'])) ? $_REQUEST['session'] : $years[0];
 $temp_array = array();
 $row_no = 0;
 
-$result = $mysqli->prepare("SELECT q_group, q_id, q_type, leadin, q_media, q_media_width, q_media_height, DATE_FORMAT(last_edited,'%d/%m/%y') AS display_last_edited FROM questions q INNER JOIN relationships r ON q.q_id=r.question_id WHERE r.module_id=? AND r.paper_id IS NULL AND r.calendar_year=?");
-$result->bind_param('ss', $module, $session);
-$result->execute();
-$result->bind_result($q_group, $q_id, $q_type, $leadin, $q_media, $q_media_width, $q_media_height, $display_last_edited);
-while ($result->fetch()) {
-  $row_no++;
-  $temp_array[$q_id]['q_type'] = $q_type;
-  $temp_array[$q_id]['leadin'] = trim(str_replace('&nbsp;',' ',(strip_tags($leadin))));
-  if (strlen($temp_array[$q_id]['leadin']) > 160) $temp_array[$q_id]['leadin'] = substr($temp_array[$q_id]['leadin'],0,160) . "...";
-  $temp_array[$q_id]['q_id'] = $q_id;
-  $temp_array[$q_id]['display_last_edited'] = $display_last_edited;
-  $temp_array[$q_id]['q_media'] = $q_media;
-  $temp_array[$q_id]['q_media_width'] = $q_media_width;
-  $temp_array[$q_id]['q_media_height'] = $q_media_height;
-
-  $temp_array[$q_id]['q_group'] = $q_group;
-}
-$result->close();
+get_mapped_questions($module, $session, $temp_array, $mysqli);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -107,7 +90,7 @@ if ($module != '') {
 
   <table class="header">
     <tr>
-      <th style="padding-top:1px">
+      <th class="align-bottom">
         <table cellpadding="0" cellspacing="0" border="0" style="font-size:100%; width:252px">
           <tr>
             <td class="tab"><a href="dynamic_papers_by_session.php?module=<?php echo $module; ?>&amp;session=<?php echo $session; ?>"><?php echo $string['bysession']; ?></a></td>

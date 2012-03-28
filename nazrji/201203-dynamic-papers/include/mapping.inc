@@ -593,6 +593,38 @@ function getObjectivesByMapping($thisModuleid, $session, $paperID, $questionID, 
   return $objsByMapping;
 }
 
+/**
+ * Get a comma separated list of the questions that have been mapped for a given module and session (not mapped to an individual paper)
+ * @param $module
+ * @param $session
+ * @param $rogodb
+ * @return string
+ */
+function get_mapped_questions($module, $session, &$qn_array, $rogodb, $trim_leadin=false) {
+  $questionID_list = '';
+
+  $result = $rogodb->prepare("SELECT q_group, q_id, q_type, leadin, q_media, q_media_width, q_media_height, DATE_FORMAT(last_edited,'%d/%m/%y') AS display_last_edited FROM questions q INNER JOIN relationships r ON q.q_id=r.question_id WHERE r.module_id=? AND r.paper_id IS NULL AND r.calendar_year=?");
+  $result->bind_param('ss', $module, $session);
+  $result->execute();
+  $result->bind_result($q_group, $q_id, $q_type, $leadin, $q_media, $q_media_width, $q_media_height, $display_last_edited);
+  while ($result->fetch()) {
+    $qn_array[$q_id]['q_type'] = $q_type;
+    $qn_array[$q_id]['leadin'] = trim(str_replace('&nbsp;',' ',(strip_tags($leadin))));
+    if ($trim_leadin and strlen($qn_array[$q_id]['leadin']) > 160) $qn_array[$q_id]['leadin'] = substr($qn_array[$q_id]['leadin'],0,160) . "...";
+    $qn_array[$q_id]['q_id'] = $q_id;
+    $qn_array[$q_id]['display_last_edited'] = $display_last_edited;
+    $qn_array[$q_id]['q_media'] = $q_media;
+    $qn_array[$q_id]['q_media_width'] = $q_media_width;
+    $qn_array[$q_id]['q_media_height'] = $q_media_height;
+
+    $qn_array[$q_id]['q_group'] = $q_group;
+    $questionID_list .= $q_id . ',';
+  }
+  $result->close();
+
+  return rtrim($questionID_list, ',');
+}
+
 function copyObjectives($objectives, $module, $dest_session, $rogodb) {
 	// Get highest identifier - can't rely on time as we may loop in < 1 second
 	$result = $rogodb->prepare("SELECT MAX(identifier) AS largest FROM sessions WHERE moduleID = ?");
