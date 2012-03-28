@@ -126,44 +126,32 @@ if (count($objsBySession[$module]) > 0) {
 ?>
         <form action="./" method="post">
 <?php
-  $ul_start = false;
 
-  foreach($objsBySession as $module => $sessions ) {
-    if (count($objsBySession) > 1) {
-      echo "<h1>$module " . $string['objectives'] . "</h1>";
+  foreach($objsBySession[$module] as $identifier => $sessionData) {
+    echo "<table class=\"map-session\"><tr><td>";
+    if ($sessionData['class_code'] != '') {
+      echo $sessionData['class_code'] . ': ';
     }
-    foreach($sessions as $identifier => $sessionData) {
-      if ($ul_start) {
-        echo '</ul>';
-      }
-      echo "<table class=\"map-session\"><tr><td>";
-      if ($sessionData['class_code'] != '') {
-        echo $sessionData['class_code'] . ': ';
-      }
-      echo $sessionData['title'] . ' <a href="' . urlencode($sessionData['source_url']) . '"><img src="../artwork/small_link.png" width="12" height="12" alt="" /></a> ';
+    echo $sessionData['title'] . ' <a href="' . urlencode($sessionData['source_url']) . '"><img src="../artwork/small_link.png" width="12" height="12" alt="" /></a> ';
 
-      echo "</td><td style=\"width:98%\"><hr class=\"head-line\" /></td></tr></table>\n";
-      if (isset($sessionData["objectives"]) and is_array($sessionData["objectives"])) {
-        echo '<ul class="map-objectives">';
-        foreach ($sessionData["objectives"] as $id => $objectives) {
-          $mapped = is_array($objectives['mapped']);
-          $map_class = ($mapped) ? 'mapped' : 'unmapped';
-          echo '<li class="' . $map_class . '"><input type="checkbox" id="obj-mapped' . $objectives['id'] . '" name="obj-mapped" value="' . $objectives['id'] . '" class="sel-objective offscreen" /> <label for="obj-mapped' . $objectives['id'] . '" class="map-item map-objective">' . htmlentities($objectives['content']) . '</label>';
-          if ($mapped) {
-            echo ' <ul>';
-            foreach ($objectives['mapped'] as $q_id) {
-              echo "<li id=\"map{$objectives['id']}_{$q_id}\" class=\"q-link\"><a href=\"#\" rel=\"{$objectives['id']}_{$q_id}\" class=\"mapped-item\">" . $temp_array[$q_id]['leadin'] . "</a></li>";
-            }
-            echo'</ul>';
+    echo "</td><td style=\"width:98%\"><hr class=\"head-line\" /></td></tr></table>\n";
+    if (isset($sessionData["objectives"]) and is_array($sessionData["objectives"])) {
+      echo '<ul class="map-objectives">';
+      foreach ($sessionData["objectives"] as $id => $objectives) {
+        $mapped = is_array($objectives['mapped']);
+        $map_class = ($mapped) ? 'mapped' : 'unmapped';
+        echo '<li class="' . $map_class . '"><input type="checkbox" id="obj-mapped' . $objectives['id'] . '" name="obj-mapped" value="' . $objectives['id'] . '" class="sel-objective offscreen" /> <label for="obj-mapped' . $objectives['id'] . '" class="map-item map-objective">' . htmlentities($objectives['content']) . '</label>';
+        if ($mapped) {
+          echo ' <ul>';
+          foreach ($objectives['mapped'] as $q_id) {
+            echo "<li id=\"map{$objectives['id']}_{$q_id}\" class=\"q-link\"><a href=\"#\" rel=\"{$objectives['id']}_{$q_id}\" class=\"mapped-item\">" . $temp_array[$q_id]['leadin'] . "</a></li>";
           }
-          echo '</li>';
+          echo'</ul>';
         }
-        echo '</ul>';
+        echo '</li>';
       }
+      echo '</ul>';
     }
-  }
-  if ($ul_start) {
-    echo '</ul>';
   }
 } else {
 ?>

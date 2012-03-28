@@ -1,0 +1,51 @@
+body, html, #header, .year-tabs {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family:Arial,sans-serif;
+  font-size:100%;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+#header {
+  width: 100%;
+}
+
+#header h1 {
+  color: #000;
+  font-size: 160%;
+  font-weight: bold;
+  margin-left: 15px;
+  padding-top: 10px;
+}
+
+#header td, #header th {
+  padding: 0;
+}
+
+.year-tabs {
+  font-size: 80%;
+  float: right;
+}
+
+.year-tabs td {
+  padding: 0;
+}
+
+#obj_form {
+  font-size: 80%;
+  margin: 12px 0 0 16px;
+}
+
+.intro {
+  margin: 16px 0 0 16px;
+}
+
+.map-session td {
+  padding: 12px 0 2px 0;
+}
