@@ -19,6 +19,9 @@ $(function () {
     showAJAXError(lang['ajaxerror']);
   });
 
+  var module = $('#module').val();
+  var session = $('#session').val();
+
   deactivateLink('map_qns');
   deactivateLink('map_sess');
   deactivateLink('unmap');
@@ -36,191 +39,182 @@ $(function () {
     e.preventDefault();
     var data = $(this).attr('rel').split('_');
     if (data.length == 2) {
-      window.open('../question/view_question.php?q_id=' + data[1]);
+      location.href = '../question/edit/index.php?q_id=' + data[1] + '&module=' + module + '&session=' + session + '&calling=dynamic';
     }
   });
 
   $('#add_qns a').click(function (e) {
     e.preventDefault();
-    var module = $('#module').val();
-    var session = $('#session').val();
     launchMappingWindow(cfgRootPath + '/question/add/add_questions_frame.php?module=' + module + '&session=' + session);
   });
 
   $('html').click(clearAllSelections);
-});
+
 
 function checkObjectives(e) {
-  e.preventDefault();
-  var ids = '';
-  var module = $('#module').val();
-  var session = $('#session').val();
-  $('.sel-objective:checked').each(function() { ids += $(this).val() + ','; });
-  if (ids.length > 0) {
-    launchMappingWindow(cfgRootPath + '/question/add/add_questions_frame.php?module=' + module + '&objectives=' + ids.replace(/,$/, '') + '&session=' + session);
-  } else {
-    alert(lang['mustselectobjectives'])
-  }
-}
+   e.preventDefault();
+   var ids = '';
+   $('.sel-objective:checked').each(function() { ids += $(this).val() + ','; });
+   if (ids.length > 0) {
+     launchMappingWindow(cfgRootPath + '/question/add/add_questions_frame.php?module=' + module + '&objectives=' + ids.replace(/,$/, '') + '&session=' + session);
+   } else {
+     alert(lang['mustselectobjectives'])
+   }
+ }
 
-function checkQuestions(e) {
-  e.preventDefault();
-  var ids = '';
-  var module = $('#module').val();
-  var session = $('#session').val();
-  $('.sel-question:checked').each(function() { ids += $(this).val() + ','; });
-  if (ids.length > 0) {
-    launchMappingWindow(cfgRootPath + '/mapping/map_question.php?module=' + module + '&questions=' + ids.replace(/,$/, '') + '&session=' + session);
-  } else {
-    alert(lang['mustselectquestions'])
-  }
-}
+ function checkQuestions(e) {
+   e.preventDefault();
+   var ids = '';
+   $('.sel-question:checked').each(function() { ids += $(this).val() + ','; });
+   if (ids.length > 0) {
+     launchMappingWindow(cfgRootPath + '/mapping/map_question.php?module=' + module + '&questions=' + ids.replace(/,$/, '') + '&session=' + session);
+   } else {
+     alert(lang['mustselectquestions'])
+   }
+ }
 
-function launchMappingWindow(url) {
-  var winH = screen.height - 80;
-  var winW = screen.width - 80;
-  var notice=window.open(url, "notice", "width=" + winW + ", height=" + winH + ",left=40,top=20,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
-  if (window.focus) {
-    notice.focus();
-  }
-}
+ function launchMappingWindow(url) {
+   var winH = screen.height - 80;
+   var winW = screen.width - 80;
+   var notice=window.open(url, "notice", "width=" + winW + ", height=" + winH + ",left=40,top=20,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+   if (window.focus) {
+     notice.focus();
+   }
+ }
 
-function unMapQuestion(e) {
-  e.preventDefault();
-  deactivateLink('unmap', e);
+ function unMapQuestion(e) {
+   e.preventDefault();
+   deactivateLink('unmap', e);
 
-  if (confirm(lang['ajaxconfirm'])) {
-    var module, session;
+   if (confirm(lang['ajaxconfirm'])) {
+     if ($(this).data('objective') != '' && $(this).data('question') != '') {
+       var oID = $(this).data('objective');
+       var qID= $(this).data('question');
+       var li = $('#map' + oID + '_' + qID);
 
-    if ($(this).data('objective') != '' && $(this).data('question') != '') {
-      module = $('#module').val();
-      session = $('#session').val();
-      var oID = $(this).data('objective');
-      var qID= $(this).data('question');
-      var li = $('#map' + oID + '_' + qID);
+       setTimeout(function() {
+         if (li.is(':visible')) {
+           $('#unmap').addClass('loading');
+         }
+       }, 1000);
 
-      setTimeout(function() {
-        if (li.is(':visible')) {
-          $('#unmap').addClass('loading');
-        }
-      }, 1000);
+       $.post('../ajax/dynamic_paper/remove_mapping.php',
+         {
+           module: module,
+           objective: oID,
+           question: qID,
+           session: session
+         },
+         function(data) {
+           $('#unmap').removeClass('loading');
+           if (data == 'INVALID INPUT') {
+             showAJAXError(lang['ajaxerror']);
+           } else {
+             li.remove();
+         }
+       });
+     }
+   }
+ }
 
-      $.post('../ajax/dynamic_paper/remove_mapping.php',
-        {
-          module: module,
-          objective: oID,
-          question: qID,
-          session: session
-        },
-        function(data) {
-          $('#unmap').removeClass('loading');
-          if (data == 'INVALID INPUT') {
-            showAJAXError(lang['ajaxerror']);
-          } else {
-            li.remove();
-        }
-      });
-    }
-  }
-}
+ function selUnselObjective(e) {
+   clearMappedSelections();
 
-function selUnselObjective(e) {
-  clearMappedSelections();
+   $(this).next().toggleClass('selected');
 
-  $(this).next().toggleClass('selected');
+   var count = $('.sel-objective:checked').length;
+   if (count == 0) {
+     deactivateLink('map_qns');
+   } else {
+     activateMapQns();
+   }
+   e.stopPropagation();
+   e.stopImmediatePropagation();
+ }
 
-  var count = $('.sel-objective:checked').length;
-  if (count == 0) {
-    deactivateLink('map_qns');
-  } else {
-    activateMapQns();
-  }
-  e.stopPropagation();
-  e.stopImmediatePropagation();
-}
+ function selUnselQuestion(e) {
+   clearMappedSelections();
 
-function selUnselQuestion(e) {
-  clearMappedSelections();
+   $(this).next().toggleClass('selected');
 
-  $(this).next().toggleClass('selected');
+   var count = $('.sel-question:checked').length;
+   if (count == 0) {
+     deactivateLink('map_sess');
+   } else {
+     activateMapSess();
+   }
+   e.stopPropagation();
+ }
 
-  var count = $('.sel-question:checked').length;
-  if (count == 0) {
-    deactivateLink('map_sess');
-  } else {
-    activateMapSess();
-  }
-  e.stopPropagation();
-}
+ function selMapTarget(e) {
+   e.stopPropagation();
+   e.preventDefault();
 
-function selMapTarget(e) {
-  e.stopPropagation();
-  e.preventDefault();
+   clearMappableSelections();
 
-  clearMappableSelections();
+   var data = $(this).attr('rel').split('_');
+   $('.mapped-item').parent().removeClass('selected');
+   $(this).parent().addClass('selected');
+   if (data.length == 2) {
+     activateUnmap(data);
+   }
+ }
 
-  var data = $(this).attr('rel').split('_');
-  $('.mapped-item').parent().removeClass('selected');
-  $(this).parent().addClass('selected');
-  if (data.length == 2) {
-    activateUnmap(data);
-  }
-}
+ function activateMapQns() {
+   if ($('#map_qns').hasClass('greymenuitem')) {
+     $('#map_qns').removeClass('greymenuitem');
+     $('#map_qns').addClass('menuitem');
+     $('#map_qns a').bind('click', checkObjectives);
+   }
+ }
 
-function activateMapQns() {
-  if ($('#map_qns').hasClass('greymenuitem')) {
-    $('#map_qns').removeClass('greymenuitem');
-    $('#map_qns').addClass('menuitem');
-    $('#map_qns a').bind('click', checkObjectives);
-  }
-}
+ function deactivateLink(id) {
+   $('#' + id).addClass('greymenuitem');
+   $('#' + id).removeClass('menuitem');
+   $('#' + id).removeData();
+   $('#' + id + ' a').unbind('click');
+   $('#' + id + ' a').click(function(e) { e.preventDefault(); });
+ }
 
-function deactivateLink(id) {
-  $('#' + id).addClass('greymenuitem');
-  $('#' + id).removeClass('menuitem');
-  $('#' + id).removeData();
-  $('#' + id + ' a').unbind('click');
-  $('#' + id + ' a').click(function(e) { e.preventDefault(); });
-}
+ function activateMapSess() {
+   if ($('#map_sess').hasClass('greymenuitem')) {
+     $('#map_sess').removeClass('greymenuitem');
+     $('#map_sess').addClass('menuitem');
+     $('#map_sess' + ' a').bind('click', checkQuestions);
+   }
+ }
 
-function activateMapSess() {
-  if ($('#map_sess').hasClass('greymenuitem')) {
-    $('#map_sess').removeClass('greymenuitem');
-    $('#map_sess').addClass('menuitem');
-    $('#map_sess' + ' a').bind('click', checkQuestions);
-  }
-}
+ function activateUnmap(data) {
+   if ($('#unmap').hasClass('greymenuitem')) {
+     $('#unmap').removeClass('greymenuitem');
+     $('#unmap').addClass('menuitem');
+     $('#unmap a').data('objective', data[0]);
+     $('#unmap a').data('question', data[1]);
+     $('#unmap a').bind('click', unMapQuestion);
+   }
+ }
 
-function activateUnmap(data) {
-  if ($('#unmap').hasClass('greymenuitem')) {
-    $('#unmap').removeClass('greymenuitem');
-    $('#unmap').addClass('menuitem');
-    $('#unmap a').data('objective', data[0]);
-    $('#unmap a').data('question', data[1]);
-    $('#unmap a').bind('click', unMapQuestion);
-  }
-}
+ function showAJAXError(message) {
+   alert(message);
+   clearAllSelections();
+ }
 
-function showAJAXError(message) {
-  alert(message);
-  clearAllSelections();
-}
+ function clearAllSelections() {
+   clearMappableSelections();
+   clearMappedSelections();
+ }
 
-function clearAllSelections() {
-  clearMappableSelections();
-  clearMappedSelections();
-}
+ function clearMappableSelections() {
+   $('.sel-question:checked').attr('checked', false);
+   $('.sel-objective:checked').attr('checked', false);
+   $('.map-item').removeClass('selected');
+   deactivateLink('map_qns');
+   deactivateLink('map_sess');
+ }
 
-function clearMappableSelections() {
-  $('.sel-question:checked').attr('checked', false);
-  $('.sel-objective:checked').attr('checked', false);
-  $('.map-item').removeClass('selected');
-  deactivateLink('map_qns');
-  deactivateLink('map_sess');
-}
-
-function clearMappedSelections() {
-  $('.mapped-item').parent().removeClass('selected');
-  deactivateLink('unmap');
-  $('#unmap').removeClass('loading');
-}
+ function clearMappedSelections() {
+   $('.mapped-item').parent().removeClass('selected');
+   deactivateLink('unmap');
+   $('#unmap').removeClass('loading');
+ }
+});

@@ -42,6 +42,7 @@ $scrofy = (!isset($_REQUEST['scrOfY'])) ? '' : $_REQUEST['scrOfY'];
 $calling = (!isset($_REQUEST['calling'])) ? '' : $_REQUEST['calling'];
 $keyword = (!isset($_REQUEST['keyword'])) ? '' : $_REQUEST['keyword'];
 $team = (!isset($_REQUEST['team'])) ? '' : $_REQUEST['team'];
+$session = (!isset($_GET['session'])) ? '' : $_GET['session'];
 
 $paper_count = 0;
 
@@ -585,6 +586,7 @@ echo save_buttons($mode, $disabled, $question->get_locked(), $question->allow_co
       <input id="paperID" name="paperID" value="<?php echo $paper_id ?>" type="hidden" />
       <input id="keyword" name="keyword" value="<?php echo $keyword ?>" type="hidden" />
       <input id="team" name="team" value="<?php echo $team ?>" type="hidden" />
+      <input id="session" name="session" value="<?php echo $session ?>" type="hidden" />
       <input id="question_id" name="question_id" value="<?php echo $question->id ?>" type="hidden" />
     </div>
   </form>

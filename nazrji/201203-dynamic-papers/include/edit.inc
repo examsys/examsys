@@ -88,6 +88,8 @@ function redirect() {
     header("location: " . $protocol . $_SERVER['HTTP_HOST'] . $cfg_root_path . "/reports/review_comments.php?type=external&paperID=" . $_POST['paperID'] . "&module=" . $_POST['module'] . "&folder=" . $_POST['folder'] . "&scrOfY=" . $_POST['scrOfY']);
   } elseif ($_POST['calling'] == 'internal_comments') {
     header("location: " . $protocol . $_SERVER['HTTP_HOST'] . $cfg_root_path . "/reports/review_comments.php?type=internal&paperID=" . $_POST['paperID'] . "&module=" . $_POST['module'] . "&folder=" . $_POST['folder'] . "&scrOfY=" . $_POST['scrOfY']);
+  } elseif ($_POST['calling'] == 'dynamic') {
+    header("location: " . $protocol . $_SERVER['HTTP_HOST'] . $cfg_root_path . "/mapping/dynamic_papers_by_session.php?module=" . $_POST['module'] . "&session=" . $_POST['session']);
   } else {
     header("location: " . $protocol . $_SERVER['HTTP_HOST'] . $cfg_root_path . "/staff/index.php");
   }
