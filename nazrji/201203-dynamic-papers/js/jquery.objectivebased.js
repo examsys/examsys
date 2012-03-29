@@ -17,6 +17,8 @@ $(function () {
   var module = $('#module').val();
   var session = $('#session').val();
 
+  $(".tip-right").tipTip({ defaultPosition: 'right' });
+
   $('.map-objective').click(function (e) {
     e.stopPropagation()
   });

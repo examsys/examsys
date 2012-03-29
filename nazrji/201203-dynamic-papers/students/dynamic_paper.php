@@ -37,7 +37,7 @@ function drawTabs($tab_array, $current_tab) {
 	$html = '<table class="year-tabs"><tr>';
 	foreach($tab_array as $individual_tab) {
 		$bg_mod =  ($individual_tab == $current_tab) ? ' on' : '';
-		$html .= "<td class=\"tab{$bg_mod}\"><a href=\"#\">$individual_tab</a></td>";
+		$html .= "<td class=\"tab{$bg_mod}\"><a href=\"{$_SERVER['PHP_SELF']}?module={$_GET['module']}&amp;session={$individual_tab}\">$individual_tab</a></td>";
 	}
 	$html .= "</tr></table>\n";
 	return $html;
@@ -79,9 +79,11 @@ unset($objsBySession['none_of_the_above']);
 <!--  <link rel="stylesheet" type="text/css" href="../css/submenu.css" />-->
   <link rel="stylesheet" type="text/css" href="../css/objective_based.css" />
   <link rel="stylesheet" type="text/css" href="../css/header.css" />
+  <link rel="stylesheet" type="text/css" href="../css/tipTip.css" />
   <link rel="stylesheet" type="text/css" href="../css/dynamic_papers.css" />
 
   <script src="../js/jquery-1.6.1.min.js" type="text/javascript"></script>
+  <script src="../js/jquery.tipTip.minified.js" type="text/javascript"></script>
   <script src="../js/jquery.objectivebased.js" type="text/javascript"></script>
   <script src="../js/student_help.js" type="text/javascript"></script>
 </head>
@@ -112,7 +114,7 @@ if (count($objsBySession[$module]) > 0) {
   $qn_count = count(array_unique(explode(',', $questionID_list)));
 ?>
     <p class="intro"><?php echo $string['selectobjectives'] ?></p>
-    <form action="./" method="post" id="obj_form">
+    <form action="<?php echo $_SERVER['PHP_SELF'] . '?' . $_SERVER['QUERY_STRING'] ?>" method="post" id="obj_form">
 <?php
   foreach($objsBySession[$module] as $identifier => $sessionData) {
     if ($sessionData['mapped'] == '1') {
@@ -127,20 +129,36 @@ if (count($objsBySession[$module]) > 0) {
         echo "<ul class=\"map-objectives\">\n";
         foreach ($sessionData["objectives"] as $id => $objectives) {
           if (is_array($objectives['mapped'])) {
-            echo '<li class="mapped"><input type="checkbox" id="obj-mapped' . $objectives['id'] . '" name="obj-mapped" value="' . $objectives['id'] . '" class="sel-objective offscreen" /> <label for="obj-mapped' . $objectives['id'] . '" class="map-item map-objective">' . htmlentities($objectives['content']) . '</label>';
-  //          echo ' <ul>';
-  //          foreach ($objectives['mapped'] as $q_id) {
-  //            echo "<li id=\"map{$objectives['id']}_{$q_id}\" class=\"q-link\"><a href=\"#\" rel=\"{$objectives['id']}_{$q_id}\" class=\"mapped-item\">" . $temp_array[$q_id]['leadin'] . "</a></li>";
-  //          echo'</ul>';
-  //          }
-            echo "</li>\n";
+            echo '<li class="mapped"><input type="checkbox" id="obj-mapped' . $objectives['id'] . '" name="obj-mapped" value="' . $objectives['id'] . '" class="sel-objective offscreen" /> <label for="obj-mapped' . $objectives['id'] . '" class="map-item map-objective">' . htmlentities($objectives['content']) . "</label></li>\n";
           }
         }
         echo "</ul>\n";
       }
     }
   }
-  echo "<p>$qn_count questions available.</p>";
+  
+  if ($qn_count > 2) {
+?>
+  <p>
+    <label for="num_qns"><?php echo $string['numberquestions'] ?></label>
+    <select id="num_qns" name="num_qns">
+<?php
+      for ($i = 1; $i <= $qn_count; $i++) {
+?>
+      <option value="<?php echo $i ?>"><?php echo $i ?></option>              
+<?php
+      }
+?>      
+    </select>
+    &nbsp;<img src="../artwork/information_icon.gif" width="16" height="16" alt="Information icon" title="<?php echo $string['numbermessage'] ?>" class="tip-right" />
+  </p>
+  <p><input type="submit" name="submit" value="<?php echo $string['createpaper'] ?>" /></p>
+<?php
+  } else {
+?>
+  <p><?php echo $string['toofewquestions'] ?></p>
+<?php
+  }
 } else {
 ?>
      <p><?php printf($string['nosessions'], $session) ?></p>
