@@ -49,3 +49,11 @@ table {
 .map-session td {
   padding: 12px 0 2px 0;
 }
+
+.sel-objective {
+  margin-right: 6px;
+}
+
+.mapped {
+  padding-left: 4px;
+}

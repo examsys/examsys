@@ -133,7 +133,7 @@ if (count($objsBySession[$module]) > 0) {
         echo "<ul class=\"map-objectives\">\n";
         foreach ($sessionData["objectives"] as $id => $objectives) {
           if (is_array($objectives['mapped'])) {
-            echo '<li class="mapped"><input type="checkbox" id="obj-mapped' . $objectives['id'] . '" name="obj-mapped[]" value="' . $identifier . '_' . $objectives['id'] . '" class="sel-objective offscreen" /> <label for="obj-mapped' . $objectives['id'] . '" class="map-item map-objective">' . htmlentities($objectives['content']) . "</label></li>\n";
+            echo '<li class="mapped"><label for="obj-mapped' . $objectives['id'] . '" class="map-item map-objective"><input type="checkbox" id="obj-mapped' . $objectives['id'] . '" name="obj-mapped[]" value="' . $identifier . '_' . $objectives['id'] . '" class="sel-objective" />' . htmlentities($objectives['content']) . "</label></li>\n";
           }
         }
         echo "</ul>\n";

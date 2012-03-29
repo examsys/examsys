@@ -34,7 +34,7 @@ $(function () {
 
 
   function selUnselObjective(e) {
-    $(this).next().toggleClass('selected');
+    $(this).parent().toggleClass('selected');
 
     e.stopPropagation();
     e.stopImmediatePropagation();
