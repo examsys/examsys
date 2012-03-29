@@ -7,4 +7,5 @@ $string['numberquestions'] = '<strong>Maximum</strong> number of questions to in
 $string['numbermessage'] = 'The actual number of questions on the paper may be fewer than requested depending on how many are available for the selected objectives';
 $string['clearall'] = 'Clear all selections';
 $string['createpaper'] = 'Create Paper';
+$string['mustselectobjectives'] = 'Please select objectives on which to base the paper';
 ?>

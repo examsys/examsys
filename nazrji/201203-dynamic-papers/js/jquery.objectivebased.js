@@ -29,6 +29,10 @@ $(function () {
     clearAllSelections();
   });
 
+
+  $('#obj_form').submit(handleFormSubmission);
+
+
   function selUnselObjective(e) {
     $(this).next().toggleClass('selected');
 
@@ -41,8 +45,23 @@ $(function () {
   }
 
   function clearMappableSelections() {
-    $('.sel-question:checked').attr('checked', false);
     $('.sel-objective:checked').attr('checked', false);
     $('.map-item').removeClass('selected');
+  }
+
+  function handleFormSubmission(e) {
+    e.preventDefault();
+
+    var objCount = $('.sel-objective:checked').length;
+
+    if (objCount > 0) {
+      var objectives = new Array();
+      $('.sel-objective:checked').each(function() {
+        objectives.push($(this).val());
+      });
+      window.open("./launch_dynamic_paper.php?module=" + module + "&session=" + session + "&objectives=" + objectives.join(',') + "&count=" + $('#num_qns').val(),"paper","fullscreen=yes,width="+(screen.width-80)+",height="+(screen.height-80)+",left=20,top=10,scrollbars=yes,menubar=no,titlebar=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable=yes");
+    } else {
+      alert(lang['mustselectobjectives']);
+    }
   }
 });

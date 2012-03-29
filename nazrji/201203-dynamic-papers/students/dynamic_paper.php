@@ -67,11 +67,6 @@ $questionID_list = get_mapped_questions($module, $session, $temp_array, $mysqli)
 
 $objsBySession = getObjectives($module, $session, null, $questionID_list, $mysqli);
 unset($objsBySession['none_of_the_above']);
-
-if (isset($_POST['submit'])) {
-  print_r($_POST);
-}
-
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -90,6 +85,11 @@ if (isset($_POST['submit'])) {
   <script src="../js/jquery.tipTip.minified.js" type="text/javascript"></script>
   <script src="../js/jquery.objectivebased.js" type="text/javascript"></script>
   <script src="../js/student_help.js" type="text/javascript"></script>
+<?php
+echo $cfg_js_root;
+$langstrings = array('mustselectobjectives');
+echo LangUtils::render_JS_strings($langstrings, $string);
+?>
 </head>
 <body>
   <div id="content" class="content">
@@ -133,7 +133,7 @@ if (count($objsBySession[$module]) > 0) {
         echo "<ul class=\"map-objectives\">\n";
         foreach ($sessionData["objectives"] as $id => $objectives) {
           if (is_array($objectives['mapped'])) {
-            echo '<li class="mapped"><input type="checkbox" id="obj-mapped' . $objectives['id'] . '" name="obj-mapped[]" value="' . $objectives['id'] . '" class="sel-objective offscreen" /> <label for="obj-mapped' . $objectives['id'] . '" class="map-item map-objective">' . htmlentities($objectives['content']) . "</label></li>\n";
+            echo '<li class="mapped"><input type="checkbox" id="obj-mapped' . $objectives['id'] . '" name="obj-mapped[]" value="' . $identifier . '_' . $objectives['id'] . '" class="sel-objective offscreen" /> <label for="obj-mapped' . $objectives['id'] . '" class="map-item map-objective">' . htmlentities($objectives['content']) . "</label></li>\n";
           }
         }
         echo "</ul>\n";
