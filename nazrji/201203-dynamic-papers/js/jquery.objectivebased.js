@@ -24,7 +24,10 @@ $(function () {
   });
   $('.sel-objective').click(selUnselObjective);
 
-  $('html').click(clearAllSelections);
+  $('#clear_all').click(function(e) {
+    e.preventDefault();
+    clearAllSelections();
+  });
 
   function selUnselObjective(e) {
     $(this).next().toggleClass('selected');

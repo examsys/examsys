@@ -67,6 +67,11 @@ $questionID_list = get_mapped_questions($module, $session, $temp_array, $mysqli)
 
 $objsBySession = getObjectives($module, $session, null, $questionID_list, $mysqli);
 unset($objsBySession['none_of_the_above']);
+
+if (isset($_POST['submit'])) {
+  print_r($_POST);
+}
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -76,7 +81,6 @@ unset($objsBySession['none_of_the_above']);
 
   <title>Rogō<?php echo " $cfg_install_type {$string['objectivebasedquiz']}"; ?> </title>
 
-<!--  <link rel="stylesheet" type="text/css" href="../css/submenu.css" />-->
   <link rel="stylesheet" type="text/css" href="../css/objective_based.css" />
   <link rel="stylesheet" type="text/css" href="../css/header.css" />
   <link rel="stylesheet" type="text/css" href="../css/tipTip.css" />
@@ -129,7 +133,7 @@ if (count($objsBySession[$module]) > 0) {
         echo "<ul class=\"map-objectives\">\n";
         foreach ($sessionData["objectives"] as $id => $objectives) {
           if (is_array($objectives['mapped'])) {
-            echo '<li class="mapped"><input type="checkbox" id="obj-mapped' . $objectives['id'] . '" name="obj-mapped" value="' . $objectives['id'] . '" class="sel-objective offscreen" /> <label for="obj-mapped' . $objectives['id'] . '" class="map-item map-objective">' . htmlentities($objectives['content']) . "</label></li>\n";
+            echo '<li class="mapped"><input type="checkbox" id="obj-mapped' . $objectives['id'] . '" name="obj-mapped[]" value="' . $objectives['id'] . '" class="sel-objective offscreen" /> <label for="obj-mapped' . $objectives['id'] . '" class="map-item map-objective">' . htmlentities($objectives['content']) . "</label></li>\n";
           }
         }
         echo "</ul>\n";
@@ -139,6 +143,7 @@ if (count($objsBySession[$module]) > 0) {
   
   if ($qn_count > 2) {
 ?>
+  <p><a id="clear_all" href="#"><?php echo $string['clearall'] ?></a></p>
   <p>
     <label for="num_qns"><?php echo $string['numberquestions'] ?></label>
     <select id="num_qns" name="num_qns">

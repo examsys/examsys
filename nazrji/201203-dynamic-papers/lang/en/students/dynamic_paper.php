@@ -5,5 +5,6 @@ $string['toofewquestions'] = 'Sorry, there are too few questions mapped on this 
 $string['selectobjectives'] = 'Select the learning objectives on which you would like the paper to be based:';
 $string['numberquestions'] = '<strong>Maximum</strong> number of questions to include on paper:';
 $string['numbermessage'] = 'The actual number of questions on the paper may be fewer than requested depending on how many are available for the selected objectives';
+$string['clearall'] = 'Clear all selections';
 $string['createpaper'] = 'Create Paper';
 ?>
