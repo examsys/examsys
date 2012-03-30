@@ -82,37 +82,45 @@ function uploadError($errCode) {
   return $engDescription;  
 }
 
+/**
+ * Check if a variable exists in the given scope and optionally exit with an error message
+ * @param $var_name Name of the variable to check
+ * @param $method $_GET, $_POST or $_REQUEST
+ * @param $mandatory If true then exit if the variable does not exist
+ * @param $headers If true then output HTML header code
+ * @param string $type Unused currently
+ * @return bool
+ */
 function check_var($var_name, $method, $mandatory, $headers, $type = '') {
   global $string;
-  // $var_name - name of the variable to check
-  // $method - $_GET or $_POST
-  // $mandatory - if true then exit if the variable does not exist
-  // $headers - if true then output HTML header code
-  // $type - unused currently
 
   $error = 0;
 
-  if ($mandatory) {
-    switch ($method) {
-      case 'GET':
-        if (empty($_GET[$var_name])) {
-          $error = 1;
-        }
-        break;
-      case 'POST':
-        if (empty($_POST[$var_name])) {
-          $error = 2;
-        }
-        break;
-      case 'REQUEST':
-        if (empty($_REQUEST[$var_name])) {
-          $error = 3;
-        }
-        break;
-    }
-    if ($error > 0) {
+  switch ($method) {
+    case 'GET':
+      if (empty($_GET[$var_name])) {
+        $error = 1;
+      }
+      break;
+    case 'POST':
+      if (empty($_POST[$var_name])) {
+        $error = 2;
+      }
+      break;
+    case 'REQUEST':
+      if (empty($_REQUEST[$var_name])) {
+        $error = 3;
+      }
+      break;
+  }
+  if ($error > 0) {
+    if ($mandatory) {
       display_error($string['fatalerrormsg0'], $string['fatalerrormsg' . $error], $headers);
+    } else {
+      return false;
     }
+  } else {
+    return true;
   }
 }
 ?>

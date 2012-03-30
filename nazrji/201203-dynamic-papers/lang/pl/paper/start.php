@@ -39,4 +39,5 @@ $string['msgselectable2'] = 'elementy.';
 $string['msgselectable3'] = 'Już zaznaczyłeś';
 $string['msgselectable4'] = '.\n\nWybierz inny ranking.';
 $string['notregistered'] = '%s %s (%s) nie jest zarejestrowany na <strong>%s</strong> w <strong>%s</strong>.';
+$string['objectivebased'] = 'Objectives Based Paper'; // Niko
 ?>

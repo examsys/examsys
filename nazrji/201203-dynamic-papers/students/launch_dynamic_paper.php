@@ -50,6 +50,13 @@ if ($stmt = $mysqli->prepare("SELECT m.fullname FROM modules m INNER JOIN studen
 }
 $stmt->close();
 
+// Clear any data from user's previous papers
+if ($stmt = $mysqli->prepare("DELETE FROM log_dynamic WHERE userID=?")) {
+  $stmt->bind_param('i', $userID);
+  $stmt->execute();
+}
+$stmt->close();
+
 $session = (isset($_REQUEST['session'])) ? $_REQUEST['session'] : $years[0];
 
 $temp_array = array();
@@ -79,6 +86,8 @@ $eligible_qns = array_slice($eligible_qns, 0, $count);
 $eligible_qns = implode(',', $eligible_qns);
 ?>
 <form id="dynamic_paper" action="../paper/start.php" method="post">
+  <input type="hidden" name="module" value="<?php echo $module ?>" />
+  <input type="hidden" name="session" value="<?php echo $session ?>" />
   <input type="hidden" name="dyn_questions" value="<?php echo $eligible_qns ?>" />
   <input type="submit" value="<?php echo $string['clicktostart'] ?>" />
 </form>

@@ -66,8 +66,16 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
   $branch_no = 0;
   $option_order = '';
   $old_display_pos = 0;
-  $questions = $dblink->prepare("SELECT q_id, scenario, q_type, option_text, q_media, correct, display_method, score_method, marks_correct, marks_incorrect, marks_partial, display_pos FROM papers, questions, options WHERE paper=? AND screen=? AND papers.question=questions.q_id AND questions.q_id=options.o_id ORDER BY display_pos, id_num");
-  $questions->bind_param('ii', $paper_id, $screen_no); 
+  if ($paper_id != -1) {
+    $questions = $dblink->prepare("SELECT q_id, scenario, q_type, option_text, q_media, correct, display_method, score_method, marks_correct, marks_incorrect, marks_partial, display_pos FROM papers, questions, options WHERE paper=? AND screen=? AND papers.question=questions.q_id AND questions.q_id=options.o_id ORDER BY display_pos, id_num");
+    $questions->bind_param('ii', $paper_id, $screen_no);
+  } else {
+    $dyn_questions = explode(',', $_POST['dyn_questions']);
+    $dyn_qid = $dyn_questions[$screen_no - 1];
+
+    $questions = $dblink->prepare("SELECT q_id, scenario, q_type, option_text, q_media, correct, display_method, score_method, marks_correct, marks_incorrect, marks_partial, {$screen_no} FROM questions, options WHERE q_id=? AND questions.q_id=options.o_id ORDER BY id_num");
+    $questions->bind_param('i', $dyn_qid);
+  }
   $questions->execute();
   $questions->store_result();
   $questions->bind_result($q_id, $scenario, $q_type, $option_text, $q_media, $correct, $display_method, $score_method, $marks_correct, $marks_incorrect, $marks_partial, $display_pos);
@@ -120,8 +128,13 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
   $questions->close();
   
   $log_ids = array();
-  $log_check = $dblink->prepare("SELECT id, q_id FROM log$paper_type WHERE userID=? AND q_paper=? AND screen=? AND started=?");
-  $log_check->bind_param('siis', $userid, $paper_id, $screen_no, $_POST['sessionid']);
+  if ($paper_id != -1) {
+    $log_check = $dblink->prepare("SELECT id, q_id FROM log$paper_type WHERE userID=? AND q_paper=? AND screen=? AND started=?");
+    $log_check->bind_param('iiis', $userid, $paper_id, $screen_no, $_POST['sessionid']);
+  } else {
+    $log_check = $dblink->prepare("SELECT id, q_id FROM log$paper_type WHERE userID=? AND screen=? AND started=?");
+    $log_check->bind_param('iis', $userid, $screen_no, $_POST['sessionid']);
+  }
   $log_check->execute();
   $log_check->bind_result($tmp_id, $tmp_q_id);
   while ($log_check->fetch()) {
@@ -143,8 +156,13 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
       $save_metadata->execute();
       $save_metadata->close();
     }
-    $save_answers = $dblink->prepare("INSERT INTO log$paper_type VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?, ?)");
-    $save_answers->bind_param('isiidisiiss', $userid, $_POST['sessionid'], $paper_id, $log_id, $mark, $totalpos, $saved_response, $screen_no, $tmp_duration, $dismiss, $option_order);
+    if ($paper_id != -1) {
+      $save_answers = $dblink->prepare("INSERT INTO log$paper_type VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?, ?)");
+      $save_answers->bind_param('isiidisiiss', $userid, $_POST['sessionid'], $paper_id, $log_id, $mark, $totalpos, $saved_response, $screen_no, $tmp_duration, $dismiss, $option_order);
+    } else {
+      $save_answers = $dblink->prepare("INSERT INTO log$paper_type VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?, ?)");
+      $save_answers->bind_param('isidisiiss', $userid, $_POST['sessionid'], $log_id, $mark, $totalpos, $saved_response, $screen_no, $tmp_duration, $dismiss, $option_order);
+    }
   }
     
   // Use the new structure to look for posted responses.
