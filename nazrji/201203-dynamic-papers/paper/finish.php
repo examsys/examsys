@@ -121,7 +121,7 @@ if ($mode != 'dynamic') {
   $paper_type = $log_type = '_dynamic';
   $paperID = -1;
   $low_bandwidth = 0;
-  $marking = 1;
+  $marking = 2;
 
   // Turn on all feedback
   $display_correct_answer = 1;
