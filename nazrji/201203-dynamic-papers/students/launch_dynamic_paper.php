@@ -85,9 +85,23 @@ shuffle($eligible_qns);
 $eligible_qns = array_slice($eligible_qns, 0, $count);
 $eligible_qns = implode(',', $eligible_qns);
 ?>
-<form id="dynamic_paper" action="../paper/start.php" method="post">
-  <input type="hidden" name="module" value="<?php echo $module ?>" />
-  <input type="hidden" name="session" value="<?php echo $session ?>" />
-  <input type="hidden" name="dyn_questions" value="<?php echo $eligible_qns ?>" />
-  <input type="submit" value="<?php echo $string['clicktostart'] ?>" />
-</form>
+<html>
+<head>
+  <title>&nbsp;</title>
+  <script src="../js/jquery-1.6.1.min.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    $(function() {
+      $('#dynamic_paper').css('text-indent', '-9999');
+      $('#dynamic_paper').submit();
+    });
+  </script>
+</head>
+<body>
+  <form id="dynamic_paper" action="../paper/start.php" method="post">
+    <input type="hidden" name="module" value="<?php echo $module ?>" />
+    <input type="hidden" name="session" value="<?php echo $session ?>" />
+    <input type="hidden" name="dyn_questions" value="<?php echo $eligible_qns ?>" />
+    <input type="submit" value="<?php echo $string['clicktostart'] ?>" />
+  </form>
+</body>
+</html>

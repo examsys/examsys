@@ -432,7 +432,7 @@ foreach ($langstrings as $langstring) {
 <script language="javascript">
   window.history.go(1);
 <?php
-  if ($original_paper_type == '2') {
+  if (isset($original_paper_type) and $original_paper_type == '2') {
 ?>
   function fire(scrno) {
     document.questions.button_pressed.value='previous';
@@ -483,7 +483,10 @@ foreach ($langstrings as $langstring) {
   }
   function jumpScreen() {
     document.questions.button_pressed.value='previous';
-    document.questions.action="start.php?id=<?php echo $_GET['id']; ?>";
+<?php
+$action = (isset($_GET['id'])) ? 'start.php?id=' . $_GET['id'] : 'start.php';
+?>
+    document.questions.action="<?php echo $action ?>";
     if (confirmSubmit()) {
       document.questions.submit();
     }
