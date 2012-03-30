@@ -76,5 +76,9 @@ foreach ($objectives as $selected) {
 $eligible_qns = array_unique($eligible_qns);
 shuffle($eligible_qns);
 $eligible_qns = array_slice($eligible_qns, 0, $count);
-print_r($eligible_qns);
+$eligible_qns = implode(',', $eligible_qns);
 ?>
+<form id="dynamic_paper" action="../paper/start.php" method="post">
+  <input type="hidden" name="dyn_questions" value="<?php echo $eligible_qns ?>" />
+  <input type="submit" value="<?php echo $string['clicktostart'] ?>" />
+</form>
