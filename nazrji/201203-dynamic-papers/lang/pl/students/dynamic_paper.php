@@ -1,4 +1,5 @@
 <?php
+// Niko
 $string['objectivebasedquiz'] = 'Objectives Based Quiz';
 $string['nosessions'] = 'There are no objectives mapped for this module in %s';
 $string['toofewquestions'] = 'Sorry, there are too few questions mapped on this module for this academic year to create an objectives based paper';
@@ -8,5 +9,5 @@ $string['numbermessage'] = 'The actual number of questions on the paper may be f
 $string['clearall'] = 'Clear all selections';
 $string['createpaper'] = 'Create Paper';
 $string['mustselectobjectives'] = 'Please select objectives on which to base the paper';
-$string['nopermission'] = 'You do not have permission to access objectives based papers on this module';
+$string['nopermission'] = 'You do not have permission to access objectives based papers on this module'; // Niko
 ?>

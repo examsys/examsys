@@ -90,6 +90,11 @@ GROUP BY p.property_id
 ORDER BY p.paper_title
 QUERY;
 
+$dynamic_papers_query = <<< DYNAMIC
+SELECT DISTINCT question_id FROM relationships WHERE module_id=? AND calendar_year=?
+DYNAMIC;
+
+
 for ($i = 0; $i < count($modules); $i++) {
   $mod_id = $modules[$i]['id'];
 	if ($stmt = $mysqli->prepare($papers_query)) {
@@ -117,6 +122,17 @@ for ($i = 0; $i < count($modules); $i++) {
 	  }
 	}
 	$stmt->close();
+  if ($stmt = $mysqli->prepare($dynamic_papers_query)) {
+    $stmt->bind_param('ss', $mod_id, $modules[$i]['year']);
+    $stmt->execute();
+ 	  $stmt->store_result();
+    if ($stmt->num_rows > 2) {
+      $now = date('Y-m-d H:i:s');
+      $modules[$i]['papers'][] = array('title' => $string['objectivebasedquiz'], 'type' => 'dynamic', 'start' => $now, 'end' => '2025-01-01 00:00:00', 'screens' => $string['variable'], 'crypt_name' => '');
+ 			$papers++;
+    }
+  }
+  $stmt->close();
 }
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -212,20 +228,22 @@ if ($papers > 0) {
 <?php
 			foreach($module['papers'] as $paper) {
 				$screen_plural = ($paper['screens'] != 1) ? 's' : '';
-        if ($paper['type'] == '6') {
-          $script_name = '../peer_review/form.php';
+        if ($paper['type'] == 'dynamic') {
+          $script_name = './dynamic_paper.php?module=' . $module['id'] . '&session=' . $module['year'];
+        } elseif ($paper['type'] == '6') {
+          $script_name = '../peer_review/form.php?id=' . $paper['crypt_name'];
         } else {
-          $script_name = '../user_index.php';
+          $script_name = '../user_index.php?id=' . $paper['crypt_name'];
         }
 ?>
 			  <div class="file">
 			  	<table cellpadding="0" cellspacing="0" border="0">
 			  		<tr>
 			  			<td style="width:60px" align="center">
-								<a href="<?php echo $script_name; ?>?id=<?php echo $paper['crypt_name']; ?>" title="<?php echo htmlentities($paper['title']) ?>" target="_blank"><?php echo(displayIcon($paper['type'],$paper['title'],'','','','')); ?></a>
+								<a href="<?php echo $script_name; ?>" title="<?php echo htmlentities($paper['title']) ?>" target="_blank"><?php echo(displayIcon($paper['type'],$paper['title'],'','','','')); ?></a>
 							</td>
 	    				<td>
-	    					<a href="<?php echo $script_name; ?>?id=<?php echo $paper['crypt_name']; ?>" title="<?php echo htmlentities($paper['title']) ?>" target="_blank" class="blacklink"><?php echo(htmlentities($paper['title'])); ?></a><br />
+	    					<a href="<?php echo $script_name; ?>" title="<?php echo htmlentities($paper['title']) ?>" target="_blank" class="blacklink"><?php echo(htmlentities($paper['title'])); ?></a><br />
 	    					<span style="color:#808080">
 	    						<?php echo($paper['screens']." screen".$screen_plural)?><br />
 	    						<?php echo(date(str_replace('%', '', $cfg_long_date_time), strtotime($paper['start']))." to " . date(str_replace('%', '', $cfg_long_date_time), strtotime($paper['end']))) ?>

@@ -39,6 +39,21 @@ $session = $_GET['session'];
 $objectives = explode(',', $_GET['objectives']);
 $count = $_GET['count'];
 
+// Check student enrolled on this module in _any_ year
+// TODO: check
+if ($stmt = $mysqli->prepare("SELECT count(id) FROM student_modules WHERE moduleid=? AND userID=?")) {
+  $stmt->bind_param('si', $module, $userID);
+  $stmt->execute();
+  $stmt->bind_result($enrollments);
+  $stmt->fetch();
+}
+$stmt->close();
+
+if ($enrollments == 0) {
+  // Display message and exit
+  access_denied($string['nopermission']);
+}
+
 // Get modules
 if ($stmt = $mysqli->prepare("SELECT m.fullname FROM modules m INNER JOIN student_modules sm on m.moduleID = sm.moduleid WHERE m.moduleid=? AND sm.userID = ? AND sm.calendar_year=? AND m.active = 1")) {
   $stmt->bind_param('sis', $module, $userID, $session);
