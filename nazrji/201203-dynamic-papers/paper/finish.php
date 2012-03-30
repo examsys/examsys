@@ -33,66 +33,104 @@ require '../include/mapping.inc';
 require '../include/finish_functions.inc';
 require '../include/paper_security.inc';
 
-check_var('id', 'GET', true, false);
+if (check_var('dyn_questions', 'POST', false, false)) {
+  $mode = 'dynamic';
+} else {
+  check_var('id', 'GET', true, false);
+  $mode = 'static';
+}
 
 getSpecialSettings($userID, $mysqli);
-  
-if ($paper_properties = $mysqli->prepare("SELECT property_id, labs, moduleID, calendar_year, display_correct_answer, display_question_mark, display_students_response, display_feedback, hide_if_unanswered, paper_title, paper_type, UNIX_TIMESTAMP(start_date), UNIX_TIMESTAMP(end_date), bgcolor, fgcolor, themecolor, labelcolor, marking, paper_postscript, pass_mark, latex_needed, password FROM properties WHERE crypt_name=?")) {
-  $paper_properties->bind_param('s', $_GET['id']);
-  $paper_properties->execute();
-  $paper_properties->store_result();
-  $paper_properties->bind_result($paperID, $labs, $moduleID, $calendar_year, $display_correct_answer, $display_question_mark, $display_students_response, $display_feedback, $hide_if_unanswered, $paper_title, $paper_type, $start_date, $end_date, $paper_bgcolor, $paper_fgcolor, $paper_themecolor, $paper_labelcolor, $marking, $paper_postscript, $pass_mark, $latex_needed, $password);
-  while ($paper_properties->fetch()) {
-    // If set overwrite the default colours with the current users' special settings
-    if (!isset($bgcolor) or $bgcolor == 'NULL' or $bgcolor == '') $bgcolor = $paper_bgcolor;
-    if (!isset($fgcolor) or $fgcolor == 'NULL' or $fgcolor == '') $fgcolor = $paper_fgcolor;
-    if (!isset($textsize) or $textsize == 'NULL' or $textsize == '') $textsize = 90;
-    if (!isset($marks_color) or $marks_color == 'NULL' or $marks_color == '') $marks_color = '#808080';
-    if (!isset($themecolor) or $themecolor == 'NULL' or $themecolor == '') $themecolor = $paper_themecolor;
-    if (!isset($labelcolor) or $labelcolor == 'NULL' or $labelcolor == '') $labelcolor = $paper_labelcolor;
-    if (!isset($font) or $font== 'NULL' or $font == '') $font = 'Arial';
-    $attempt = 1; //default attempt to 1 overwritten if the student is resit candidate
-    
-    $log_type = $paper_type;
-    $low_bandwidth = 0;
-    
-    if (strpos($userroles,'Staff') !== false and isset($_GET['userid']) and $_GET['userid'] != $userID) {
-      // Turn on all feedback if staff and a student exam script is being reviewed.
-      $display_correct_answer = 1;
-      $display_question_mark = 1;
-      $display_students_response = 1;
-      $display_feedback = 1;
-      $hide_if_unanswered = 0;
+
+if ($mode != 'dynamic') {
+  if ($paper_properties = $mysqli->prepare("SELECT property_id, labs, moduleID, calendar_year, display_correct_answer, display_question_mark, display_students_response, display_feedback, hide_if_unanswered, paper_title, paper_type, UNIX_TIMESTAMP(start_date), UNIX_TIMESTAMP(end_date), bgcolor, fgcolor, themecolor, labelcolor, marking, paper_postscript, pass_mark, latex_needed, password FROM properties WHERE crypt_name=?")) {
+    $paper_properties->bind_param('s', $_GET['id']);
+    $paper_properties->execute();
+    $paper_properties->store_result();
+    $paper_properties->bind_result($paperID, $labs, $moduleID, $calendar_year, $display_correct_answer, $display_question_mark, $display_students_response, $display_feedback, $hide_if_unanswered, $paper_title, $paper_type, $start_date, $end_date, $paper_bgcolor, $paper_fgcolor, $paper_themecolor, $paper_labelcolor, $marking, $paper_postscript, $pass_mark, $latex_needed, $password);
+    while ($paper_properties->fetch()) {
+      // If set overwrite the default colours with the current users' special settings
+      if (!isset($bgcolor) or $bgcolor == 'NULL' or $bgcolor == '') $bgcolor = $paper_bgcolor;
+      if (!isset($fgcolor) or $fgcolor == 'NULL' or $fgcolor == '') $fgcolor = $paper_fgcolor;
+      if (!isset($textsize) or $textsize == 'NULL' or $textsize == '') $textsize = 90;
+      if (!isset($marks_color) or $marks_color == 'NULL' or $marks_color == '') $marks_color = '#808080';
+      if (!isset($themecolor) or $themecolor == 'NULL' or $themecolor == '') $themecolor = $paper_themecolor;
+      if (!isset($labelcolor) or $labelcolor == 'NULL' or $labelcolor == '') $labelcolor = $paper_labelcolor;
+      if (!isset($font) or $font== 'NULL' or $font == '') $font = 'Arial';
+      $attempt = 1; //default attempt to 1 overwritten if the student is resit candidate
+
+      $log_type = $paper_type;
+      $low_bandwidth = 0;
+
+      if (strpos($userroles,'Staff') !== false and isset($_GET['userid']) and $_GET['userid'] != $userID) {
+        // Turn on all feedback if staff and a student exam script is being reviewed.
+        $display_correct_answer = 1;
+        $display_question_mark = 1;
+        $display_students_response = 1;
+        $display_feedback = 1;
+        $hide_if_unanswered = 0;
+      }
+
+      if (strpos($userroles,'Student') !== false) {
+        if ($paper_type == 2) $latex_needed = 0;  // Students get no feedback for summative exams so don't load the Latex library
+
+        // Check for additional password on the paper
+        check_paper_password($password);
+
+        // Check time security
+        check_datetime($start_date, $end_date);
+
+        //Check room security
+        $low_bandwidth = check_labs($paper_type, $labs, $mysqli);
+
+        // get modules if the user is a student and the paper is not formative
+        $attempt = check_modules($userID, $moduleID, $calendar_year, $mysqli);
+
+        // Check for any metadata security restrictions
+        check_metadata($paperID, $userID, $moduleID, $mysqli);
+
+        if (time() > $end_date and ($paper_type == '1' or $paper_type == '2')) {
+          $paper_type = '_late';
+        }
+      }
+      if (isset($_GET['type'])) $log_type = $_GET['type'];
     }
-
-    if (strpos($userroles,'Student') !== false) {
-      if ($paper_type == 2) $latex_needed = 0;  // Students get no feedback for summative exams so don't load the Latex library
-
-      // Check for additional password on the paper
-      check_paper_password($password);
-
-      // Check time security
-      check_datetime($start_date, $end_date);
-      
-      //Check room security
-      $low_bandwidth = check_labs($paper_type, $labs, $mysqli);
-      
-      // get modules if the user is a student and the paper is not formative
-      $attempt = check_modules($userID, $moduleID, $calendar_year, $mysqli);
-      
-      // Check for any metadata security restrictions
-      check_metadata($paperID, $userID, $moduleID, $mysqli);
-      
-      if (time() > $end_date and ($paper_type == '1' or $paper_type == '2')) {
-        $paper_type = '_late';
-      }     
-    }
-    if (isset($_GET['type'])) $log_type = $_GET['type'];
+    $paper_properties->close();
+  } else {
+    display_error("Properties Query Error", $mysqli->error);
   }
-  $paper_properties->close();
 } else {
-  display_error("Properties Query Error", $mysqli->error);
+  $dyn_qns_list = $_POST['dyn_questions'];
+  $dyn_qns = explode(',', $dyn_qns_list);
+  $no_screens = count($dyn_qns);
+  $screen_data = array_fill(0, $no_screens, 1);
+  $paper_title = $_POST['module'] . ' &mdash; ' . $string['objectivebased'];
+  $paper_postscript = '';
+  $bidirectional = true;
+
+  // No properties for dynamic paper so use some defaults
+  if (!isset($bgcolor) or $bgcolor == 'NULL' or $bgcolor == '') $bgcolor = '#fff';
+  if (!isset($fgcolor) or $fgcolor == 'NULL' or $fgcolor == '') $fgcolor = '#000';
+  if (!isset($textsize) or $textsize == 'NULL' or $textsize == '') $textsize = 90;
+  if (!isset($marks_color) or $marks_color == 'NULL' or $marks_color == '') $marks_color = '#808080';
+  if (!isset($themecolor) or $themecolor == 'NULL' or $themecolor == '') $themecolor = '#316AC5';
+  if (!isset($labelcolor) or $labelcolor == 'NULL' or $labelcolor == '') $labelcolor = '#C00000';
+  if (!isset($font) or $font== 'NULL' or $font == '') $font = 'Arial';
+  $attempt = 1; //default attempt to 1 overwritten if the student is resit candidate
+  $latex_needed = 1;
+  $paper_type = $log_type = '_dynamic';
+  $paperID = -1;
+  $low_bandwidth = 0;
+  $marking = 1;
+
+  // Turn on all feedback
+  $display_correct_answer = 1;
+  $display_question_mark = 1;
+  $display_students_response = 1;
+  $display_feedback = 1;
+  $hide_if_unanswered = 0;
 }
+
 require '../config/finish.inc';
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -227,7 +265,7 @@ input.exclude, select.exclude {border: 1px solid red}
   echo '</table>';
   
   $show_feedback = false;
-  if ($paper_type == '0') {
+  if ($paper_type == '0' or $mode='dynamic') {
     $show_feedback = true;
   } elseif ($paper_type == '1' or $paper_type == '2' or $paper_type == '5') {
     if (strpos($userroles,'Student') !== false) {

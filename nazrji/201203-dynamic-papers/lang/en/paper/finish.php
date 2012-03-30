@@ -49,4 +49,5 @@ $string['abstain'] = 'Abstain';
 $string['msg'] = '<strong>University Rules</strong><br />1) no leaving in first hour, 2) no leaving in last 15 minutes.<br /><br />If you comply with the first two rules and there is only one sitting of your exam then you may click \'Close Window\' and then press &lt;CTRL&gt; &lt;ALT&gt; and &lt;DELETE&gt; to log out of your workstation.';
 $string['iscorrect'] = 'Is correct';
 $string['isexcluded'] = 'Is excluded';
+$string['objectivebased'] = 'Objectives Based Paper';
 ?>

@@ -50,4 +50,5 @@ $string['abstain'] = 'Wstrzymany';
 $string['msg'] = '<strong>Zasady uniwersyteckie</strong><br />1) zakaz opuszczania pomieszczenia egzaminacyjnego przed upływem pierwszej godziny, <br />2) zakaz opuszczania pomieszczenia egzaminacyjnego w czasie ostatnich 15 minut.<br /><br />Jeśli przestrzegane są dwie pierwsze zasady, a egzamin ma tylko jednę turę to można kliknąć na \'Zamknij okno\' a następnie nacisnąć przyciski &lt;CTRL&gt; &lt;ALT&gt; &lt;DELETE&gt; aby wylogować się z tego komputera.'; 
 $string['iscorrect'] = 'jest poprawny';
 $string['isexcluded'] = 'jest wykluczony';
+$string['objectivebased'] = 'Objectives Based Paper'; // Niko
 ?>

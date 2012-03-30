@@ -140,21 +140,23 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
   }
 
   function display_feedback($sessionid, $temp_userID, $paperID, $paper_type, $log_type, $paper_title, $paper_postscript, $marking, $userroles, $mysqlidb) {
-    global $language, $string, $bottom_html, $hide_if_unanswered, $tmp_display_correct_answer, $tmp_display_students_response, $tmp_display_feedback, $tmp_display_question_mark, $moduleID, $calendar_year, $bgcolor, $fgcolor, $textsize, $marks_color, $themecolor, $labelcolor, $font, $pass_mark, $cfg_root_path, $strong_on, $strong_off;
+    global $language, $string, $bottom_html, $hide_if_unanswered, $tmp_display_correct_answer, $tmp_display_students_response, $tmp_display_feedback, $tmp_display_question_mark, $moduleID, $calendar_year, $bgcolor, $fgcolor, $textsize, $marks_color, $themecolor, $labelcolor, $font, $pass_mark, $cfg_root_path, $strong_on, $strong_off, $dyn_qns_list;
     
     $strong_on = '';
     $strong_off = '';
 
     // Get any questions to exclude.
     $excluded = array();
-    $exclude_query = $mysqlidb->prepare("SELECT q_id, parts FROM question_exclude WHERE q_paper=?");
-    $exclude_query->bind_param('i', $paperID);
-    $exclude_query->execute();
-    $exclude_query->bind_result($exclude_q_id, $exclude_parts);
-    while ($exclude_query->fetch()) {
-      $excluded[$exclude_q_id] = $exclude_parts;
+    if ($paperID != -1) {
+      $exclude_query = $mysqlidb->prepare("SELECT q_id, parts FROM question_exclude WHERE q_paper=?");
+      $exclude_query->bind_param('i', $paperID);
+      $exclude_query->execute();
+      $exclude_query->bind_result($exclude_q_id, $exclude_parts);
+      while ($exclude_query->fetch()) {
+        $excluded[$exclude_q_id] = $exclude_parts;
+      }
+      $exclude_query->close();
     }
-    $exclude_query->close();
 
     if ($paper_type == '2' and (strpos($userroles,'Staff') !== false or strpos($userroles,'SysAdmin') !== false)) {
       if (!isset($_GET['userid'])) {
@@ -193,9 +195,13 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
     $total_random_mark = 0;
     $total_marks = 0;
     $user_mark = 0;
-    
-    $answer_data = $mysqlidb->prepare("SELECT screen, questions.q_id, q_type, theme, scenario, leadin, correct_fback, incorrect_fback, display_method, score_method, notes, q_media, q_media_width, q_media_height, option_text, o_media, o_media_width, o_media_height, feedback_right, feedback_wrong, correct, marks_correct, marks_incorrect, marks_partial, display_pos, status FROM (papers, questions, options) WHERE papers.question=questions.q_id AND paper=? AND questions.q_id=options.o_id ORDER BY screen, display_pos, id_num");
-    $answer_data->bind_param('i', $paperID);
+
+    if ($paperID != -1) {
+      $answer_data = $mysqlidb->prepare("SELECT screen, questions.q_id, q_type, theme, scenario, leadin, correct_fback, incorrect_fback, display_method, score_method, notes, q_media, q_media_width, q_media_height, option_text, o_media, o_media_width, o_media_height, feedback_right, feedback_wrong, correct, marks_correct, marks_incorrect, marks_partial, display_pos, status FROM (papers, questions, options) WHERE papers.question=questions.q_id AND paper=? AND questions.q_id=options.o_id ORDER BY screen, display_pos, id_num");
+      $answer_data->bind_param('i', $paperID);
+    } else {
+      $answer_data = $mysqlidb->prepare("SELECT FIELD(questions.q_id, $dyn_qns_list) AS scrn, questions.q_id, q_type, theme, scenario, leadin, correct_fback, incorrect_fback, display_method, score_method, notes, q_media, q_media_width, q_media_height, option_text, o_media, o_media_width, o_media_height, feedback_right, feedback_wrong, correct, marks_correct, marks_incorrect, marks_partial, 1, status FROM (questions, options) WHERE questions.q_id IN ($dyn_qns_list) and questions.q_id=options.o_id ORDER BY FIELD(questions.q_id, $dyn_qns_list)");
+    }
     $answer_data->execute();
     $answer_data->bind_result($screen, $q_id, $q_type, $theme, $scenario, $leadin, $correct_fback, $incorrect_fback, $display_method, $score_method, $notes, $q_media, $q_media_width, $q_media_height, $option_text, $o_media, $o_media_width, $o_media_height, $feedback_right, $feedback_wrong, $correct, $marks_correct, $marks_incorrect, $marks_partial, $display_pos, $status);
     while ($answer_data->fetch()) {
@@ -294,8 +300,13 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
           }
   
           $possible_questions = implode(',', $possible_array);
-          $answer_data = $mysqlidb->prepare("SELECT q_id FROM log$log_type WHERE q_paper=? AND started=? AND userID=? AND screen=? AND q_id IN ($possible_questions) ORDER BY id");
-          $answer_data->bind_param('isii', $paperID, $sessionid, $temp_userID, $paper[$i]['screen']);
+          if ($paperID != -1) {
+            $answer_data = $mysqlidb->prepare("SELECT q_id FROM log$log_type WHERE q_paper=? AND started=? AND userID=? AND screen=? AND q_id IN ($possible_questions) ORDER BY id");
+            $answer_data->bind_param('isii', $paperID, $sessionid, $temp_userID, $paper[$i]['screen']);
+          } else {
+            $answer_data = $mysqlidb->prepare("SELECT q_id FROM log$log_type WHERE started=? AND userID=? AND screen=? AND q_id IN ($possible_questions) ORDER BY id");
+            $answer_data->bind_param('sii', $sessionid, $temp_userID, $paper[$i]['screen']);
+          }
           $answer_data->execute();
           $answer_data->bind_result($selected_q_id); 
           $answer_data->fetch();
@@ -379,11 +390,17 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
     $tmp_q_id = 1;
     if ($paper_type == '5') {
       $answer_data = $mysqlidb->prepare("SELECT 1 AS screen, q_id, NULL AS user_answer, mark, NULL AS option_order FROM log5 WHERE q_paper=? AND started=? AND userID=? ORDER BY id");
+      $answer_data->bind_param('isi', $paperID, $sessionid, $temp_userID);
     } else {
-      $answer_data = $mysqlidb->prepare("SELECT screen, q_id, user_answer, mark, option_order FROM log$log_type WHERE q_paper=? AND started=? AND userID=? ORDER BY screen, id");
+      if ($paperID != -1) {
+        $answer_data = $mysqlidb->prepare("SELECT screen, q_id, user_answer, mark, option_order FROM log$log_type WHERE q_paper=? AND started=? AND userID=? ORDER BY screen, id");
+        $answer_data->bind_param('isi', $paperID, $sessionid, $temp_userID);
+      } else {
+        $answer_data = $mysqlidb->prepare("SELECT screen, q_id, user_answer, mark, option_order FROM log$log_type WHERE started=? AND userID=? ORDER BY screen, id");
+        $answer_data->bind_param('si', $sessionid, $temp_userID);
+      }
     }
     if ($answer_data) {
-      $answer_data->bind_param('isi', $paperID, $sessionid, $temp_userID);
       $answer_data->execute();
       $answer_data->store_result();
       $answer_data->bind_result($screen, $q_id, $user_answer, $mark, $option_order);
@@ -2321,7 +2338,9 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
       if ($marking == 1) {
         echo "<tr><td style=\"width:210px\">" . $string['yourmark'] . "</td><td style=\"text-align:right\">" . $user_mark . " " . $string['outof'] . " $total_marks</td><td></td></tr>\n";
         echo "<tr><td>" . $string['randommark'] . "</td><td style=\"text-align:right\">" . number_format($total_random_mark, 2, '.', ',') . "</td><td><img onclick=\"launchHelp(13);\" src=\"../artwork/small_help_icon.gif\" style=\"cursor:pointer\" width=\"16\" height=\"16\" alt=\"help\" border=\"0\" /></td></tr>\n";
-        echo "<tr><td>" . $string['passmark'] . "</td><td style=\"text-align:right\">$pass_mark%</td><td></td></tr>\n";
+        if ($paperID != -1) {
+          echo "<tr><td>[1]" . $string['passmark'] . "</td><td style=\"text-align:right\">$pass_mark%</td><td></td></tr>\n";
+        }
         echo "<tr><td>" . $string['yourpercentage'] . "</td><td style=\"text-align:right\">";
         if (isset($_GET['percent'])) {
           echo $_GET['percent'];
