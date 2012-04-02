@@ -28,3 +28,4 @@ $string['addquestions'] = 'Add Questions';
 $string['mapquestions'] = 'Map Questions';
 $string['mapobjectives'] = 'Map Objectives';
 $string['removemapping'] = 'Remove Mapping';
+$string['testpreview'] = 'Test i podgląd';

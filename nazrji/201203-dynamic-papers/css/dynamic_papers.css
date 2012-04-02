@@ -38,6 +38,10 @@ td {
   background: transparent url('../artwork/small_link.png') no-repeat left 1px;
 }
 
+#preview {
+  background: transparent url('../artwork/small_play.png') no-repeat left top;
+}
+
 a.q_excluded {
   color: red;
   font-weight: normal;

@@ -41,5 +41,6 @@ if ($mode == 'session') {
 }
 ?>
     <li id="unmap" class="greymenuitem"><a href="#"><?php echo $string['removemapping'] ?></a></li>
+    <li id="preview" class="menuitem"><a href="../students/dynamic_paper.php?module=<?php echo $module ?>&amp;session=<?php echo $session ?>"><?php echo $string['testpreview'] ?></a></li>
   </ul>
 </div>
