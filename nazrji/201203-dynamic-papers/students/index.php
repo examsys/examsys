@@ -91,7 +91,7 @@ ORDER BY p.paper_title
 QUERY;
 
 $dynamic_papers_query = <<< DYNAMIC
-SELECT DISTINCT question_id FROM relationships WHERE module_id=? AND calendar_year=?
+SELECT DISTINCT question_id FROM relationships WHERE module_id=? AND calendar_year=? AND paper_id IS NULL
 DYNAMIC;
 
 
