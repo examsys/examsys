@@ -422,6 +422,7 @@ Class InstallUtils {
     $priv_SQL[] = "GRANT INSERT ON " . $dbname . ".sys_errors TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT INSERT ON " . $dbname . ".announcements TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";    
     $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".standards_setting TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".log_dynamic TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "FLUSH PRIVILEGES";
     foreach($priv_SQL as $sql) {
       self::$db->query($sql);
@@ -515,6 +516,7 @@ Class InstallUtils {
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".track_changes TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".temp_users TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".sessions TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".log_dynamic TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "FLUSH PRIVILEGES";
     foreach ($priv_SQL as $sql) {
       self::$db->query($sql);
@@ -1377,6 +1379,24 @@ QUERY;
           `rating` tinyint(4) default NULL,
           PRIMARY KEY  (`id`)
         ) ENGINE=InnoDB AUTO_INCREMENT=0  DEFAULT CHARSET={$charset}
+QUERY;
+
+    $this->tableList['log_dynamic'] = <<<QUERY
+        CREATE TABLE `log_dynamic` (
+          `id` int(11) NOT NULL AUTO_INCREMENT,
+          `userID` mediumint(8) unsigned NOT NULL,
+          `started` datetime NOT NULL,
+          `q_id` int(11) NOT NULL,
+          `mark` float DEFAULT NULL,
+          `totalpos` tinyint(4) DEFAULT NULL,
+          `user_answer` text,
+          `screen` tinyint(3) unsigned DEFAULT NULL,
+          `duration` mediumint(9) DEFAULT NULL,
+          `updated` datetime DEFAULT NULL,
+          `dismiss` char(20) DEFAULT NULL,
+          `option_order` varchar(255) DEFAULT NULL,
+          PRIMARY KEY (`id`)
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['log_late'] = <<<QUERY

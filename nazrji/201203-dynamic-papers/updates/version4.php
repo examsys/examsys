@@ -2144,7 +2144,50 @@ if (!isset($_POST['update'])) {
     }
   } 
   $result->close();
-  
+
+  // 04/04/2012 - Add log_dynamic table
+  $result = $mysqli->prepare("SELECT TABLE_NAME FROM information_schema.COLUMNS WHERE TABLE_NAME='log_dynamic' AND TABLE_SCHEMA='$cfg_db_database'");
+  $result->execute();
+  $result->store_result();
+  $result->bind_result($column_type);
+  $result->fetch();
+  if ($result->num_rows() == 0) {
+    $sql = <<< SQL
+CREATE TABLE `log_dynamic` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `userID` mediumint(8) unsigned NOT NULL,
+  `started` datetime NOT NULL,
+  `q_id` int(11) NOT NULL,
+  `mark` float DEFAULT NULL,
+  `totalpos` tinyint(4) DEFAULT NULL,
+  `user_answer` text,
+  `screen` tinyint(3) unsigned DEFAULT NULL,
+  `duration` mediumint(9) DEFAULT NULL,
+  `updated` datetime DEFAULT NULL,
+  `dismiss` char(20) DEFAULT NULL,
+  `option_order` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET={$cfg_db_charset}
+SQL;
+
+    $adjust = $mysqli->prepare($sql);
+    $adjust->execute();
+    $adjust->close();
+    echo "<li>$sql</li>\n";
+    ob_flush();
+    flush();
+  }
+  $result->close();
+
+  $sql = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".log_dynamic TO '" . $cfg_db_student_user . "'@'". $cfg_db_host . "'";
+  $mysqli->query($sql);
+  echo "<li>GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".log_dynamic TO '" . $cfg_db_student_user . "'@'". $cfg_db_host . "'</li>\n";
+
+  $sql = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".log_dynamic TO '" . $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
+  $mysqli->query($sql);
+  echo "<li>GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".log_dynamic TO '" . $cfg_db_staff_user . "'@'". $cfg_db_host . "'</li>\n";
+
+
   // End ------------------------------------------------------------------
   echo "</ol>\n";
   
