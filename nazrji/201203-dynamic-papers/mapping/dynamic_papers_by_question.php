@@ -103,10 +103,10 @@ if ($module != '') {
     <tr><td colspan="2" style="background-color:#1E3C7B">&nbsp;</td></tr>
   </table>
 
+  <form action="./" method="post">
 <?php
   if (count($temp_array) > 0) {
 ?>
-    <form action="./" method="post">
     <ul class="map-objectives questions">
 <?php
   }
@@ -158,12 +158,12 @@ if ($module != '') {
   if (count($temp_array) > 0) {
 ?>
     </ul>
-    <input type="hidden" name="module" id="module" value="<?php echo $module ?>" />
-    <input type="hidden" name="session" id="session" value="<?php echo $session ?>" />
-  </form>
 <?php
   }
 ?>
+    <input type="hidden" name="module" id="module" value="<?php echo $module ?>" />
+    <input type="hidden" name="session" id="session" value="<?php echo $session ?>" />
+  </form>
 </div>
 </body>
 </html>
