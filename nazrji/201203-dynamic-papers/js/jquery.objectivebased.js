@@ -29,8 +29,9 @@ $(function () {
     clearAllSelections();
   });
 
-
   $('#obj_form').submit(handleFormSubmission);
+
+  $('input.session').change(selSession);
 
 
   function selUnselObjective(e) {
@@ -45,6 +46,7 @@ $(function () {
   }
 
   function clearMappableSelections() {
+    $('.session:checked').attr('checked', false);
     $('.sel-objective:checked').attr('checked', false);
     $('.map-item').removeClass('selected');
   }
@@ -63,5 +65,24 @@ $(function () {
     } else {
       alert(lang['mustselectobjectives']);
     }
+  }
+
+  function selSession() {
+    var checked = ($(this).attr('checked') == 'checked');
+    var id_parts = $(this).attr('id').split('_');
+    var searchID = id_parts[1];
+    var targetID;
+
+    $('.sel-objective').each(function () {
+      id_parts = $(this).val().split('_');
+      targetID = id_parts[0];
+      if (searchID == targetID) {
+        if (checked) {
+          $(this).attr('checked', 'checked');
+        } else {
+          $(this).attr('checked', false);
+        }
+      }
+    });
   }
 });

@@ -50,7 +50,6 @@ $(function () {
 
   $('html').click(clearAllSelections);
 
-
 function checkObjectives(e) {
    e.preventDefault();
    var ids = '';

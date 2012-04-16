@@ -139,11 +139,11 @@ if (count($objsBySession[$module]) > 0) {
 <?php
   foreach($objsBySession[$module] as $identifier => $sessionData) {
     if ($sessionData['mapped'] == '1') {
-      echo "<table class=\"map-session\"><tr><td>";
+      echo "<table class=\"map-session\"><tr><td><input type=\"checkbox\" id=\"session_{$identifier}\" name=\"session\" class=\"session\" /> <label for=\"session_{$identifier}\">";
       if ($sessionData['class_code'] != '') {
         echo $sessionData['class_code'] . ': ';
       }
-      echo $sessionData['title'] . ' <a href="' . urlencode($sessionData['source_url']) . '"><img src="../artwork/small_link.png" width="12" height="12" alt="" /></a> ';
+      echo $sessionData['title'] . '</label> <a href="' . urlencode($sessionData['source_url']) . '"><img src="../artwork/small_link.png" width="12" height="12" alt="" /></a> ';
 
       echo "</td><td style=\"width:98%\"><hr class=\"head-line\" /></td></tr></table>\n";
       if (isset($sessionData["objectives"]) and is_array($sessionData["objectives"])) {
