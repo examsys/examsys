@@ -71,7 +71,7 @@ if ($_POST['questions_to_add'] != '') {
         $ins_query = 'INSERT INTO relationships(module_id, question_id, obj_id, calendar_year) VALUES ';
         $params = array('bind_param', '');
         foreach ($mapped_objs as $objective) {
-          $check = $mysqli->prepare("SELECT rel_id FROM relationships WHERE module_id=? AND question_id=? AND obj_id=? AND calendar_year=?");
+          $check = $mysqli->prepare("SELECT rel_id FROM relationships WHERE module_id=? AND question_id=? AND obj_id=? AND calendar_year=? AND paper_id IS NULL");
           $check->bind_param('siis', $module, $question, $objective, $session);
           $check->execute();
           $check->store_result();
