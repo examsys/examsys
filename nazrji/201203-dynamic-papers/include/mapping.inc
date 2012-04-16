@@ -244,7 +244,7 @@ function displayObjectivesMappingForm($paper_id, $rogodb, $cfg_root_path, $modul
 
 
 /**
- * This is function saveObjMappings it saves mappings to the relationships table in the touchstone database
+ * This is function saveObjMappings it saves mappings to the relationships table in the Rogo database
  *
  * @param int $paper_id 
  * @param int $question_id 
@@ -297,7 +297,7 @@ function save_objective_mappings($db, $modules, $paper_id, $question_id) {
 }
 
 /**
- * This is function saveObjMappings it saves mappings to the relationships table in the touchstone database
+ * This is function saveObjMappings it saves mappings to the relationships table in the Rogo database
  *
  * @param int $paper_id 
  * @param int $question_id 
@@ -525,7 +525,7 @@ function getObjectives($thisModuleid, $session, $paperID, $questionID, $rogodb, 
       echo "Error: " . $rogodb->error;
     }
   }
-  //END:: get the currently mapped objetives in touchstone
+  //END:: get the currently mapped objetives in Rogo
   
   //get all the objetives
   foreach ($objsBySession as $moduleid => $sessions) {

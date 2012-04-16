@@ -102,8 +102,9 @@ function write_string(p_string) {
   
   $question_no = 0;
   $paper_type = 0;
+  $unanswered = false;
   $user_answers[1] = array();
-  display_question($question, $paper_type, 1, '', $question_no, $question_offset, $user_answers);	
+  display_question($question, $paper_type, 1, '', $question_no, $question_offset, $user_answers, $unanswered);	
 
   $question_nos[] = $old_q_id;
   echo "<table>\n";

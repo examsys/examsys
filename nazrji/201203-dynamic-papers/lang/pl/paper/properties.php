@@ -20,7 +20,7 @@ $string['msg4'] = 'Rok akademicki dla egzaminu końcowego musi być określony (
 $string['msg5'] = 'OSCE muszą być przypisane do co najmniej jednego modułu.';
 $string['msg6'] = 'Wybrano egzaminatorów zewnętrznych, jednak nie określono terminu finalizacji.';
 $string['msg7'] = 'Proszę podać nazwę arkusza.';
-$string['msg8'] = 'Proszę podać nazwę arkusza. To jest egzamin typu \"closed-book\", w czasie którego <em>niedozwolone jest</em> korzystanie ze środków i źródeł pomocniczych (także słowników) ani pomocy osób drugich. Niedozwolone jest też używanie urządzeń elektronicznych z wyjątkiem komputera egzaminacyjnego.';
+$string['msg8'] = 'To jest egzamin typu "closed-book", w czasie którego <em>niedozwolone jest</em> korzystanie ze środków i źródeł pomocniczych (także słowników) ani pomocy osób drugich. Niedozwolone jest też używanie urządzeń elektronicznych z wyjątkiem komputera egzaminacyjnego.';
 
 // General tab
 $string['generaltab'] = 'Ogólne';
@@ -95,4 +95,8 @@ $string['prologueheading'] = 'Tekst wyświetlany u góry ekranu 1 po rozpoczęci
 // Postscript tab
 $string['postscripttab'] = 'Zakończenie';
 $string['postscriptheading'] = "Tekst wyświetlany po tym jak student kliknie 'Zakończ'.";
+
+// Reference Material tab
+$string['referencematerial'] = 'Materiał pomocniczy';  
+$string['referenceheading'] = 'Kontrola, które materiały pomocnicze są dostępne dla arkusza.'; 
 ?>

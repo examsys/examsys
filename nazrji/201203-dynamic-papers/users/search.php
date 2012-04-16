@@ -161,6 +161,30 @@ if (isset($_GET['submit'])) {
   $user_data->bind_result($tmp_id, $tmp_roles, $tmp_student_id, $tmp_surname, $tmp_initials, $tmp_first_names, $tmp_title, $tmp_username, $tmp_grade, $tmp_yearofstudy, $tmp_email, $tmp_moduleid);
   $user_data->store_result();
   $user_no = number_format($user_data->num_rows);
+} elseif (isset($_GET['moduleID'])) {
+  if (isset($_GET['sortby'])) $sortby = $_GET['sortby'];
+  if (isset($_GET['ordering'])) $ordering = $_GET['ordering'];
+
+  $needs_array = array();
+  $result = $mysqli->prepare("SELECT userID FROM special_needs");
+  $result->execute();
+  $result->bind_result($tmp_userID);
+  while ($result->fetch()) {
+    $needs_array[$tmp_userID] = '1';
+  }
+  $result->close();
+  
+  $calendar_year = '2011/12';
+  
+  $moduleID = $_GET['moduleID'];
+  $roles_sql = "AND roles='Student' AND grade != 'left'";
+
+  $query_string = "SELECT DISTINCT users.id, roles, student_id, surname, initials, first_names, title, users.username, grade, yearofstudy, email, moduleid FROM (users, student_modules) LEFT JOIN sid ON users.id=sid.userID WHERE users.id=student_modules.userID AND moduleid IN ('$moduleID') AND calendar_year='$calendar_year' $roles_sql ORDER BY " . $sortby . " " . $ordering;
+  $user_data = $mysqli->prepare($query_string);
+  $user_data->execute();
+  $user_data->bind_result($tmp_id, $tmp_roles, $tmp_student_id, $tmp_surname, $tmp_initials, $tmp_first_names, $tmp_title, $tmp_username, $tmp_grade, $tmp_yearofstudy, $tmp_email, $tmp_moduleid);
+  $user_data->store_result();
+  $user_no = number_format($user_data->num_rows);
 }
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -231,7 +255,7 @@ if (isset($_GET['submit'])) {
 </head>
 
 <?php
-  if (isset($_GET['submit']) or isset($_GET['paperID'])) {
+  if (isset($_GET['submit']) or isset($_GET['paperID']) or isset($_GET['moduleID'])) {
     echo "<body onload=\"updateCohortDetails();\">\n";
     include '../include/user_search_options.inc';
     echo "<div id=\"content\" class=\"content\" style=\"font-size:80%\">\n";

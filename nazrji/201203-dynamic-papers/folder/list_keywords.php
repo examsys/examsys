@@ -124,7 +124,7 @@
 <tr><th colspan="2" class="bevel"></th></tr>
 <?php
 foreach ($keyword_list as $keywordID => $keyword) {
-  echo "<tr id=\"$keywordID\" onclick=\"selKey($keywordID,event)\" ondblclick=\"edit($keywordID)\" onmouseover=\"lon($keywordID)\" onmouseout=\"loff($keywordID)\" class=\"l\"><td colspan=\"2\">&nbsp;$keyword</td></tr>\n";
+  echo "<tr id=\"$keywordID\" onclick=\"selKey($keywordID,event)\" ondblclick=\"editKeyword($keywordID)\" onmouseover=\"lon($keywordID)\" onmouseout=\"loff($keywordID)\" class=\"l\"><td colspan=\"2\">&nbsp;$keyword</td></tr>\n";
 }
 $mysqli->close();
 ?>

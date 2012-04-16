@@ -35,26 +35,27 @@ Class SearchUtils {
     
     if ($team_sql != '' or strpos($userroles,'Admin') !== false) {
       if (strpos($userroles,'SysAdmin') !== false) {
-        $sql = "SELECT DISTINCT moduleid, fullname, school FROM modules, schools WHERE modules.schoolid=schools.id ORDER BY school, moduleID";
+        $sql = "SELECT DISTINCT modules.id, moduleid, fullname, school FROM modules, schools WHERE modules.schoolid=schools.id ORDER BY school, moduleID";
       } elseif (strpos($userroles,'Admin') !== false) {
         $schoolIDs = implode(',', SchoolUtils::getAdminSchools($userID, $db));
         if ($schoolIDs != '') {
-          $sql = "SELECT DISTINCT moduleid, fullname, school FROM modules, schools WHERE modules.schoolid=schools.id AND schoolid IN ($schoolIDs) ORDER BY school, moduleID";
+          $sql = "SELECT DISTINCT modules.id, moduleid, fullname, school FROM modules, schools WHERE modules.schoolid=schools.id AND schoolid IN ($schoolIDs) ORDER BY school, moduleID";
         } elseif ($team_sql != '') {
-          $sql = "SELECT DISTINCT moduleid, fullname, school FROM modules, schools WHERE modules.schoolid=schools.id AND moduleid IN ($team_sql) ORDER BY school, moduleID";
+          $sql = "SELECT DISTINCT modules.id, moduleid, fullname, school FROM modules, schools WHERE modules.schoolid=schools.id AND moduleid IN ($team_sql) ORDER BY school, moduleID";
         }
       } else {
-        $sql = "SELECT DISTINCT moduleid, fullname, school FROM modules, schools WHERE modules.schoolid=schools.id AND moduleid IN ($team_sql) ORDER BY school, moduleID";
+        $sql = "SELECT DISTINCT modules.id, moduleid, fullname, school FROM modules, schools WHERE modules.schoolid=schools.id AND moduleid IN ($team_sql) ORDER BY school, moduleID";
       }
       
       $team_no = 0;
       
       $result = $db->prepare($sql);
       $result->execute();
-      $result->bind_result($moduleid, $fullname, $school);
+      $result->bind_result($recordid, $moduleid, $fullname, $school);
       while ($result->fetch()) {
         $teams_list[$team_no]['school'] = $school;
         $teams_list[$team_no]['id'] = $moduleid;
+        $teams_list[$team_no]['recordid'] = $recordid;
         $teams_list[$team_no]['fullname'] = $fullname;
         $team_no++;
       }

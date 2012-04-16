@@ -12,5 +12,5 @@ $string['from'] = 'Od';
 $string['to'] = 'Do';
 $string['modules'] = 'Moduł(y)';
 $string['finish'] = 'Zakończ';
-$string['msg6'] = 'To jest egzamin typu \"closed-book\", w czasie którego <em>niedozwolone jest</em> korzystanie ze środków i źródeł pomocniczych (także słowników) ani pomocy osób drugich. Niedozwolone jest też używanie urządzeń elektronicznych z wyjątkiem komputera egzaminacyjnego.';
+$string['msg6'] = 'To jest egzamin typu "closed-book", w czasie którego <em>niedozwolone jest</em> korzystanie ze środków i źródeł pomocniczych (także słowników) ani pomocy osób drugich. Niedozwolone jest też używanie urządzeń elektronicznych z wyjątkiem komputera egzaminacyjnego.';
 ?>

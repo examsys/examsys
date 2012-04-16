@@ -1315,6 +1315,10 @@ QUERY;
     $object = null;
     
     if(ctype_digit($data)) {
+      // In some versions of PHP, bind_param may change the type of $data to int, so use a copy and
+      // keep original for future use in ctype_digit() in question constructor
+      $tmp_data = $data;
+
       // Extra DB query here but easiest way to return a question of correct type for now
       $q_query = <<< QUERY
 SELECT q_type
@@ -1322,13 +1326,14 @@ FROM questions
 WHERE q_id = ?
 QUERY;
       $result = $mysqli->prepare($q_query);
-      $result->bind_param('i', $data);
+      $result->bind_param('i', $tmp_data);
       $result->execute();
       $result->bind_result($type);
       if ($result->fetch()) {
         $result->close();
         $classname = 'Question' . strtoupper($type);
         $classfile = 'questions/question_' . strtolower($type) . '.class.php';
+
         try {
           include $classfile;
           $object = new $classname($mysqli, $user_id, $lang_strings, $data);

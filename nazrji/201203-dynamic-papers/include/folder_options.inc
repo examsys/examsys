@@ -22,6 +22,8 @@
 * @package
 */
 
+include_once '../classes/dateutils.class.php';
+
 // Get folder information
 $modules_array = array();
 if (count($teams) > 0) {
@@ -81,6 +83,7 @@ if (count($teams) > 0) {
       }
     }
     echo "<tr><td class=\"ico\"><a href=\"../folder/list_keywords.php?module=$module\"><img src=\"$cfg_root_path/artwork/key.png\" width=\"16\" height=\"16\" alt=\"key\" border=\"0\" /></a></td><td class=\"menuitem\"><a href=\"../folder/list_keywords.php?module=$module\">" . $string['managekeywords'] . "</a></td></tr>";
+    echo "<tr><td class=\"ico\"><a href=\"../folder/list_ref_material.php?module=$module\"><img src=\"$cfg_root_path/artwork/ref_16.png\" width=\"16\" height=\"16\" alt=\"key\" border=\"0\" /></a></td><td class=\"menuitem\"><a href=\"../folder/list_ref_material.php?module=$module\">" . $string['referencematerial'] . "</a></td></tr>";
     echo '<tr><td class="ico"><a href="../users/load_users_metadata.php?module=' . $_GET['module'] . '"><img src="' . $cfg_root_path . '/artwork/import_16.gif" width="16" height="16" alt="Import Metadata" border="0" /></a></td><td class="menuitem"><a href="../users/import_users_metadata.php?module=' . $_GET['module'] . '">' . $string['importstudentmetadata'] . '</a></td></tr>';
   ?>
   </table>
@@ -196,7 +199,11 @@ if ($folder != '') {
   makeMenu(array($string['info']=>$cfg_root_path . '/question/list.php?type=info',$string['keyword_based']=>$cfg_root_path . '/question/list.php?type=keyword',$string['random']=>$cfg_root_path . '/question/list.php?type=random','-'=>'-',$string['calculation']=>$cfg_root_path . '/question/list.php?type=calculation',$string['dichotomous']=>$cfg_root_path . '/question/list.php?type=dichotomous',$string['extmatch']=>$cfg_root_path . '/question/list.php?type=extmatch',$string['blank']=>$cfg_root_path . '/question/list.php?type=blank',$string['flash']=>$cfg_root_path . '/question/list.php?type=flash',$string['hotspot']=>$cfg_root_path . '/question/list.php?type=hotspot',$string['labelling']=>$cfg_root_path . '/question/list.php?type=labelling',$string['likert']=>$cfg_root_path . '/question/list.php?type=likert',$string['matrix']=>$cfg_root_path . '/question/list.php?type=matrix',$string['mcq']=>$cfg_root_path . '/question/list.php?type=mcq',$string['mrq']=>$cfg_root_path . '/question/list.php?type=mrq',$string['rank']=>$cfg_root_path . '/question/list.php?type=rank',$string['sct']=>$cfg_root_path . '/question/list.php?type=sct',$string['textbox']=>$cfg_root_path . '/question/list.php?type=textbox', $string['true_false']=>$cfg_root_path . '/question/list.php?type=true_false'));
   makeMenu($teams_array);
   makeMenu($keywords_array);
-  makeMenu(array($string['questions']=>$cfg_root_path . '/question/search.php',$string['papers']=>$cfg_root_path . '/paper/search.php',$string['people']=>$cfg_root_path . '/users/search.php'));
+  if (isset($_GET['module'])) {
+    makeMenu(array($string['questions']=>$cfg_root_path . '/question/search.php', $string['papers']=>$cfg_root_path . '/paper/search.php', $string['people']=>$cfg_root_path . '/users/search.php', '-'=>'-', 'Students on ' . $_GET['module'] . ' (' . DateUtils::get_current_academic_year() . ')'=>$cfg_root_path . '/users/search.php?submit=Search&team=' . $_GET['module'] . '&calendar_year=' . DateUtils::get_current_academic_year() . '&students=on&search_username=&student_id='));
+  } else {
+    makeMenu(array($string['questions']=>$cfg_root_path . '/question/search.php', $string['papers']=>$cfg_root_path . '/paper/search.php', $string['people']=>$cfg_root_path . '/users/search.php'));
+  }
   makeMenu(array($string['info']=>"$cfg_root_path/question/edit/index.php?type=info",$string['keyword_based']=>"$cfg_root_path/question/edit/index.php?type=keyword_based",$string['random']=>"$cfg_root_path/question/edit/index.php?type=random","-"=>"-",$string['calculation']=>"$cfg_root_path/question/edit/index.php?type=calculation",$string['dichotomous']=>"$cfg_root_path/question/edit/index.php?type=dichotomous",$string['extmatch']=>"$cfg_root_path/question/edit/index.php?type=extmatch",$string['blank']=>"$cfg_root_path/question/edit/index.php?type=blank",$string['flash']=>"$cfg_root_path/question/edit/index.php?type=flash",$string['hotspot']=>"$cfg_root_path/question/edit/index.php?type=hotspot",$string['labelling']=>"$cfg_root_path/question/edit/index.php?type=labelling",$string['likert']=>"$cfg_root_path/question/edit/index.php?type=likert",$string['matrix']=>"$cfg_root_path/question/edit/index.php?type=matrix",$string['mcq']=>"$cfg_root_path/question/edit/index.php?type=mcq",$string['mrq']=>"$cfg_root_path/question/edit/index.php?type=mrq",$string['rank']=>"$cfg_root_path/question/edit/index.php?type=rank",$string['sct']=>"$cfg_root_path/question/edit/index.php?type=sct",$string['textbox']=>"$cfg_root_path/question/edit/index.php?type=textbox",$string['true_false']=>"$cfg_root_path/question/edit/index.php?type=true_false"));
   makeMenu(array($string['manageobjectives']=>"$cfg_root_path/mapping/sessions_list.php?module=" . $module, $string['dynamicpapers'] => "$cfg_root_path/mapping/dynamic_papers_by_session.php?module=" . $module));
 

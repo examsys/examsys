@@ -232,7 +232,7 @@ if (isset($_POST['sessionid'])) require '../include/marking_functions.inc';
 
 if ($special_needs == 1) {
   $stmt = $mysqli->prepare("SELECT background, foreground, textsize, marks_color, themecolor, labelcolor, font FROM special_needs WHERE userid=?");
-  $stmt->bind_param('i',$userID);
+  $stmt->bind_param('i', $userID);
   $stmt->execute();
   $stmt->store_result();
   $stmt->bind_result($bgcolor, $fgcolor, $textsize, $marks_color, $themecolor, $labelcolor, $font);
@@ -319,6 +319,24 @@ if ($mode != 'dynamic') {
   $property_id = -1;
 }
 
+// Get any Reference Material
+$reference_materials = array();
+$ref_no = 0;
+$max_ref_width = 0;
+$stmt = $mysqli->prepare("SELECT title, content, width FROM (reference_material, reference_papers) WHERE reference_material.id=reference_papers.refID AND paperID=?");
+$stmt->bind_param('i', $property_id);
+$stmt->execute();
+$stmt->bind_result($reference_title, $reference_material, $reference_width);
+while ($stmt->fetch()) {
+  $reference_materials[$ref_no]['title'] = $reference_title;
+  $reference_materials[$ref_no]['material'] = $reference_material;
+  $reference_materials[$ref_no]['width'] = $reference_width;
+  if ($reference_width > $max_ref_width) {
+    $max_ref_width = $reference_width;
+  }
+  $ref_no++;
+}
+$stmt->close();
 
 // Extract the posted variables.
 $restart = 0;
@@ -375,62 +393,125 @@ if ($paper_type == '3') {
 <meta http-equiv="imagetoolbar" content="false">
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $cfg_page_charset ?>" />
 <meta http-equiv="pragma" content="no-cache" />
-<style type="text/css">
-body {background-color:<?php echo $bgcolor; ?>;color:<?php echo $fgcolor; ?>;padding:0px;margin:0px;border:0px;font-family:<?php echo $font; ?>,sans-serif;font-size:<?php echo $textsize; ?>%}
-li {margin-left:15px;margin-right:15px;font-size:100%}
+<link rel="stylesheet" type="text/css" href="../css/start.css" />
 <?php
-if (($bgcolor != 'white' and $bgcolor != '#FFFFFF') or ($fgcolor != 'black' and $fgcolor != '#000000')) {
-  echo "select,input{background-color:$bgcolor;color:$fgcolor;font-family:$font,sans-serif;font-size:100%}\n";
-} else {
-  echo "select,input{font-family:$font,sans-serif;font-size:100%}\n";
+$css = '';
+if ($special_needs == 1 and $bgcolor != '#FFFFFF') {
+  $css .= "select,input{background-color:$bgcolor;color:$fgcolor;font-family:$font,sans-serif}\n";
+}
+if (($bgcolor != '#FFFFFF' and $bgcolor != 'white') or ($fgcolor != '#000000' and $fgcolor != 'black') or $textsize != 90) {
+  $css .= "body {background-color:$bgcolor;color:$fgcolor;font-size:$textsize%}\n";
+}
+if ($font != 'Arial') {
+  if (strpos($font,' ') === false) {
+    $css .= "body {font-family:$font,sans-serif}\n";
+    $css .= "pre {font-family:$font,sans-serif}\n";
+  } else {
+    $css .= "body {font-family:'$font',sans-serif}\n";
+    $css .= "pre {font-family:'$font',sans-serif}\n";
+  }
+}
+if ($themecolor != '#316AC5') {
+  $css .= ".theme {color:$themecolor}\n";
+}
+if ($marks_color != '#808080') {
+  $css .= ".mk {color:$marks_color}\n";
+}
+if ($fgcolor != '#000000' and $fgcolor != 'black') {
+  $css .= ".act {color:$fgcolor}\n";
+}
+if (count($reference_materials) > 0) {
+  $css .= "#maincontent {position:fixed; right:" . ($max_ref_width + 1) . "px}\n";
+  $css .= ".framecontent {width:" . ($max_ref_width - 12) . "px}\n";
+  $css .= ".refhead {width:" . ($max_ref_width - 12) . "px;}\n";
+}
+if ($css != '') {
+  echo "<style type=\"text/css\">\n$css\n</style>\n";
 }
 ?>
-table {font-size:100%; table-layout: fixed}
-p {margin-top:0px; padding-top:0px}
-pre {font-family:<?php echo $font; ?>,sans-serif; font-size:100%}
-.q_no {width:40px; text-align:right;vertical-align:top}
-.theme {font-size:150%; padding-left:4px;font-weight:bold;color:<?php echo $themecolor; ?>}
-.note {color:<?php echo $labelcolor; ?>}
-.mk {color:<?php echo $marks_color; ?>;font-size:80%}
-.act {color:<?php echo $fgcolor; ?>;text-decoration:none}
-.inact {color:#A5A5A5;text-decoration:line-through}
-.s0 {width:18px;text-align:center;background-color:#003366;font-size:80%}
-.s1 {width:18px;text-align:center;background-color:#C00000;font-size:80%}
-.unans {background-color:#FFC0C0}
-.matrix {border:1px solid #808080; border-collapse:collapse}
-.matrix td {border:1px solid #808080}
-.extmatch li {padding-bottom:14px; vertical-align:text-bottom; list-style-type:upper-alpha}
-.mee {font-size:120%; display:inline}
-<?php
-if ($paper_type == '3') echo ".likert_button {text-align:center;width:40px;vertical-align:top}\n";
-if ($latex_needed == 1) echo ".latex {vertical-align:middle}\n";
-?>
-</style>
 <script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
 <?php if ($latex_needed == 1) {?>
   <script type="text/javascript" src="../tools/mee/mee/js/mee_src.js"></script>
 <?php }?>
 <script language="JavaScript" src="../js/start.js"></script>
-
-<script type="text/javascript">
-var lang = {
-<?php
-$langstrings = array('msgselectable1', 'msgselectable2', 'msgselectable3', 'msgselectable4');
-$first = true;
-foreach ($langstrings as $langstring) {
-  if (!$first) {
-    echo ',';
-  }
-  echo "'{$langstring}':'{$string[$langstring]}'";
-  $first = false;
-}
-?>
-};
-</script>
-
 <script language="JavaScript" src="../js/flash_include.js"></script>
 <script language="javascript">
   window.history.go(1);
+<?php
+  if (count($reference_materials) > 0) {
+    echo "\$(document).ready(function() {\n";
+    if (isset($_COOKIE['refpane'])) {
+      echo "  changeRef(" . $_COOKIE['refpane'] . ");\n";
+    } else {
+      echo "  resizeReference();\n";
+    }
+    echo "});\n";
+  }
+?>    
+  var lang = {
+  <?php
+  $langstrings = array('msgselectable1', 'msgselectable2', 'msgselectable3', 'msgselectable4');
+  $first = true;
+  foreach ($langstrings as $langstring) {
+    if (!$first) {
+      echo ',';
+    }
+    echo "'{$langstring}':'{$string[$langstring]}'";
+    $first = false;
+  }
+  ?>
+  };
+  
+  function getWinH() {
+    var winH = 460;
+    if (document.body && document.body.offsetWidth) {
+      winH = document.body.offsetHeight;
+    }
+    if (document.compatMode=='CSS1Compat' && document.documentElement && document.documentElement.offsetWidth ) {
+      winH = document.documentElement.offsetHeight;
+    }
+    if (window.innerWidth && window.innerHeight) {
+      winH = window.innerHeight;
+    }
+    return winH;
+  }
+  
+  function changeRef(refID) {
+    document.cookie = 'refpane=' + refID;
+    winH = getWinH();
+    resizeReference();
+    var flag = 0;
+    <?php
+      if (count($reference_materials) > 0) {
+        echo "    for (i=0; i<" . count($reference_materials) . "; i++) {\n";
+        echo "      if (i == refID) {\n";
+        echo "        document.getElementById('framecontent' + i).style.display = 'block';\n";
+        echo "        document.getElementById('refhead' + i).style.top = (31 * i) + 'px';\n";
+        echo "        flag = 1;\n";
+        echo "      } else {\n";
+        echo "        document.getElementById('framecontent' + i).style.display = 'none';\n";
+        echo "        if (flag == 0) {\n";
+        echo "          document.getElementById('refhead' + i).style.top = (31 * i) + 'px';\n";
+        echo "        } else {\n";
+        echo "          document.getElementById('refhead' + i).style.top = (winH - (" . count($reference_materials) . " - i) * 31) + 'px';\n";
+        echo "        }\n";
+        echo "      }\n";
+        echo "    }\n";
+      }
+    ?>  
+  }
+  
+  function resizeReference() {
+    winH = getWinH();
+<?php
+  if (count($reference_materials) > 0) {
+    $subtract = (31 * count($reference_materials)) + 11;
+    echo "    for (i=0; i<" . count($reference_materials) . "; i++) {\n";
+    echo "      document.getElementById('framecontent' + i).style.height = (winH - $subtract) + 'px';\n";
+    echo "    }\n";
+  }
+?>  
+  }
 <?php
   if (isset($original_paper_type) and $original_paper_type == '2') {
 ?>
@@ -502,6 +583,9 @@ if (stripos($userroles,'Student') !== false) {
 } else {
   echo '<body onload="StartClock();" onunload="KillClock()">';
 }
+$show_ref_material = false;
+echo "<div id=\"maincontent\">\n";
+
 if ($current_screen < $no_screens) {
   $action = ($mode != 'dynamic') ? $_SERVER['PHP_SELF'] . "?id=" . $_GET['id'] : $_SERVER['PHP_SELF'];
   echo "<form method=\"post\" name=\"questions\" action=\"" . $action . "\"";
@@ -519,7 +603,7 @@ echo ' onsubmit="return confirmSubmit()">';   // Warning message only in linear 
   }
 
   echo $top_table_html;
-  echo '<tr><td><div style="margin-left:0px;font-size:180%;color:white;font-weight:bold">' . $paper_title . '</div>';
+  echo '<tr><td><div class="paper">' . $paper_title . '</div>';
   $question_offset = 0;
   if ($no_screens > 1) {
     echo '<table cellspacing="1" cellpadding="1" border="0" style="font-weight:bold;color:white"><tr>';
@@ -554,7 +638,7 @@ echo ' onsubmit="return confirmSubmit()">';   // Warning message only in linear 
   $user_answers = array();
   $previous_duration = 0;
   $screen_pre_submitted = 0;
-  if (isset($_POST['sessionid']) or (isset($_POST['fire_alarm']) AND $_POST['fire_alarm'] == '1') or $restart == 1) {    // Get users previous answers for the current screen.
+  if (isset($_POST['sessionid']) or (isset($_POST['fire_alarm']) and $_POST['fire_alarm'] == '1') or $restart == 1) {    // Get users previous answers for the current screen.
     if ($mode != 'dynamic') {
       $log_data = $mysqli->prepare("SELECT id, q_id, user_answer, duration, screen, dismiss, option_order FROM log$paper_type WHERE userID=? AND started=? AND q_paper=? ORDER BY id");
       $log_data->bind_param('isi', $userID, $sessionid, $property_id);
@@ -566,7 +650,7 @@ echo ' onsubmit="return confirmSubmit()">';   // Warning message only in linear 
     $log_data->store_result();
     $log_data->bind_result($log_id, $log_q_id, $log_user_answer, $log_duration, $log_screen, $current_dismiss, $option_order);
     if ($log_data->num_rows > 0) {
-      while ($log_row = $log_data->fetch()) {
+      while ($log_data->fetch()) {
         $user_answers[$log_screen][$log_q_id] = $log_user_answer;
         $user_dismiss[$log_screen][$log_q_id] = $current_dismiss;
         $user_order[$log_screen][$log_q_id] = $option_order;
@@ -587,7 +671,7 @@ echo ' onsubmit="return confirmSubmit()">';   // Warning message only in linear 
         $log_data->bind_result($log_id, $log_q_id, $log_user_answer, $log_duration, $log_screen, $current_dismiss, $option_order);
         $user_answers = array();
         $used_questions[$log_q_id] = $log_q_id;
-        while ($log_row = $log_data->fetch()) {
+        while ($log_data->fetch()) {
           $user_answers[$log_screen][$log_q_id] = $log_user_answer;
           $user_dismiss[$log_screen][$log_q_id] = $current_dismiss;
           $user_order[$log_screen][$log_q_id] = $option_order;
@@ -606,7 +690,7 @@ echo ' onsubmit="return confirmSubmit()">';   // Warning message only in linear 
   $marks = 0;
   $old_theme = '';
   $previous_q_type = '';
-
+  
   if ($mode != 'dynamic') {
     $question_data = $mysqli->prepare("SELECT q_type, q_id, score_method, display_method, marks_correct, marks_incorrect, marks_partial, theme, scenario, leadin, correct, REPLACE(option_text,'\t','') AS option_text, q_media, q_media_width, q_media_height, o_media, o_media_width, o_media_height, notes, display_pos, q_option_order FROM papers, questions, options WHERE paper=? AND screen=? AND papers.question=questions.q_id AND questions.q_id=options.o_id ORDER BY display_pos, id_num");
     $question_data->bind_param('ii', $property_id, $current_screen);
@@ -663,23 +747,25 @@ echo ' onsubmit="return confirmSubmit()">';   // Warning message only in linear 
       $tmp_q_no++;
     }
     if ($question['q_type'] == 'random') {
-      randomQOverwrite($questions_array,$question,$paper_type,$user_answers,$current_screen,$tmp_q_no);
+      randomQOverwrite($questions_array, $question, $paper_type, $user_answers, $current_screen, $tmp_q_no);
     } elseif ($question['q_type'] == 'branching') {
-      branchingQOverwrite($questions_array,$question,$paper_type,$user_answers,$current_screen);
+      branchingQOverwrite($questions_array, $question, $paper_type, $user_answers, $current_screen);
     } elseif ($question['q_type'] == 'keyword_based') {
-      keywordQOverwrite($questions_array,$question,$paper_type,$user_answers,$current_screen,$tmp_q_no);
+      keywordQOverwrite($questions_array, $question, $paper_type, $user_answers, $current_screen, $tmp_q_no);
     } else {
       $questions_array[] = $question;
     }
   }
   unset($tmp_questions_array);
   
+  $unanswered = false;
+  
   //display the questions
   foreach($questions_array as &$question) {
-    if ($screen_pre_submitted == 1 and $q_displayed == 0) echo "<tr><td colspan=\"2\"><span style=\"background-color:#FFC0C0\">&nbsp;&nbsp;&nbsp;&nbsp;</span> " . $string['unansweredquestion'] . "</td></tr>\n";
+    if ($screen_pre_submitted == 1 and $q_displayed == 0) echo "<tr style=\"display:none\" id=\"unansweredkey\"><td colspan=\"2\"><span style=\"background-color:#FFC0C0\">&nbsp;&nbsp;&nbsp;&nbsp;</span> " . $string['unansweredquestion'] . "</td></tr>\n";
     if ($q_displayed == 0 and $current_screen == 1 and $paper_prologue != '') echo '<tr><td colspan="2" style="padding:20px; text-align:justify">' . $paper_prologue . '</td></tr>';
     if ($q_displayed == 0 and $question['theme'] == '') echo "<tr><td colspan=\"2\">&nbsp;</td></tr>\n";
-    display_question($question, $paper_type, $current_screen, $previous_q_type, $question_no, $question_offset, $user_answers);	
+    display_question($question, $paper_type, $current_screen, $previous_q_type, $question_no, $question_offset, $user_answers, $unanswered);	
     $previous_q_type = $question['q_type'];
     $q_displayed++;
   }
@@ -743,9 +829,43 @@ echo ' onsubmit="return confirmSubmit()">';   // Warning message only in linear 
     echo "<input type=\"submit\" style=\"width:120px\" name=\"next\" value=\"" . $string['screen'] . " $current_screen &gt;\" />&nbsp;\n";
   }
   echo '</td></tr></table>';
-  $mysqli->close();
 ?>
 </td></tr></table>
 </form>
+</div>
+<?php
+
+if (count($reference_materials) > 0) {
+  $top = 0;
+  $ref_no = 0;
+  foreach ($reference_materials as $reference_material) {
+    echo "<div class=\"refhead\" id=\"refhead" . $ref_no . "\" onclick=\"changeRef(" . $ref_no . ")\" style=\"top:{$top}px\">" . $reference_material['title'] . "</div>\n";
+    echo "<div class=\"framecontent\" id=\"framecontent" . $ref_no . "\" style=\"top:" . (31 + $top) . "px\">\n" . $reference_material['material'] . "</div>\n";
+    $top+=31;
+    $ref_no++;
+  }
+}
+$mysqli->close();
+
+if (isset($_COOKIE['refpane'])) {
+  echo "<script language=\"JavaScript\">\n";
+  echo "  changeRef(" . $_COOKIE['refpane'] . ");\n";
+  echo "</script>\n";
+}
+
+if ($unanswered) {
+  echo "<script language=\"JavaScript\">\n";
+  echo "  document.getElementById('unansweredkey').style.display = '';\n";
+  echo "</script>\n";
+}
+?>
+
 </body>
 </html>
+
+
+
+
+
+
+

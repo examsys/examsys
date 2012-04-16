@@ -123,9 +123,9 @@ function write_string(p_string) {
 var DragMath = Array();
 function saveMath() {
   for (var i=0; i<DragMath.length; i++) {
-	var applet = document.getElementById('DragMath_' + DragMath[i]);
+    var applet = document.getElementById('DragMath_' + DragMath[i]);
     var input = document.getElementById(DragMath[i]);
-	input.value = applet.getMathExpression();
+    input.value = applet.getMathExpression();
   }
 }
 
@@ -145,15 +145,5 @@ function filterKeypress(event) {
             || event.shiftKey === true) {
       event.preventDefault();
     }
-  }
-}
-
-function hideshowRef() {
-  if (document.getElementById('maincontent').style.right == '0px') {
-    document.getElementById('maincontent').style.right = '451px';
-    document.getElementById('framecontent').style.display = 'block';
-  } else {
-    document.getElementById('maincontent').style.right = '0px';
-    document.getElementById('framecontent').style.display = 'none';
   }
 }

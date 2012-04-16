@@ -840,7 +840,7 @@ Class InstallUtils {
     <html>
     <head>
       <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
-      <title>Rog? Install script</title>
+      <title>Rog&#333; Install script</title>
       <style type="text/css">
         html { padding: 0em; margin: 0em; width: 100%}
         body { padding: 0em; margin: 0em; width: 100%; font-family:Arial,sans-serif; font-size:90%; background-color:white; color:black }
@@ -1064,7 +1064,7 @@ CONFIG;
 
 class databaseTables {
 
-  public static $tableList = array();
+  private $tableList = array();
 
   function __construct($charset) {
     $this->tableList['admin_access'] = <<<QUERY

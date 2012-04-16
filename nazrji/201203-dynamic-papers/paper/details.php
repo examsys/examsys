@@ -949,11 +949,11 @@ function getMSCAA($paperID, $mysqlidb) {
       echo "\" onclick=\"selQ(" . ($question_number+1) . ",'" . $temp_array[$x]['q_id'] . "','$x','" . $temp_array[$x]['q_type'] . "','" . $temp_array[$x]['screen'] . "','" . $temp_array[$x]['p_id'] . "'," . $temp_array[$x]['display_pos'] . ",'" . $prevous_screen . "','" . $next_screen . "','" . $temp_array[$x]['screen'] . "','menu2c'," . count($temp_array[$x]['random']) . ",event);\" ondblclick=\"edQ(" . ($question_number+1) . "," . $temp_array[$x]['q_id'] . ",'" . $temp_array[$x]['q_type'] . "');\">";
     }
 
-    echo '<td class="icon">';
+    echo '<td>';
     if ($temp_array[$x]['q_type'] == 'random') {
       $dice_no = rand(1,6);
       if ($temp_array[$x]['leadin'] == '') $temp_array[$x]['leadin'] = 'Random question block';
-      echo '<img src="../artwork/dice' . $dice_no . '.png" width="14" height="14" alt="folder" border="0" />';
+      echo '<img src="../artwork/dice' . $dice_no . '.png" width="14" height="14" alt="folder" border="0" style="position:relative; left:1px;" />';
     } else {
       if (isset($mscaa_metadata[$temp_array[$x]['q_id']])) {
         echo '<img src="../artwork/mscaa_logo_tiny.png" width="13" height="18" alt="MSC-AA question" border="0" />';

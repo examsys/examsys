@@ -91,7 +91,7 @@ if ($userroles == 'External Examiner') {
 <body oncontextmenu="return false;" onload="refreshparent()">
 <?php
   echo '<table cellpadding="4" cellspacing="0" border="0" style="width:100%; border-bottom:1px solid #164994; background-color:#2765AB; background-image:url(\'../artwork/title_gradient.png\'); background-repeat:repeat-y; background-position:center">';
-  echo '<tr><td class="raised_tbl"><div class="paper">' . $paper_title . '</div></td><td align="center" class="raised_tbl" width="50"><img src="../artwork/uni_logo.png" width="160" height="67" alt="University Logo" border="0" /></td></tr>';
+  echo '<tr><td><div class="paper">' . $paper_title . '</div></td><td align="center" class="raised_tbl" width="50"><img src="../artwork/uni_logo.png" width="160" height="67" alt="University Logo" border="0" /></td></tr>';
   echo '</table>';
   
   if ($_POST['old_screen'] != '' and date("Ymd") <= $external_review_deadline) {  

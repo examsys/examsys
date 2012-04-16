@@ -210,7 +210,7 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
   <?php
     $old_faculty = '';
     echo "<tr><td class=\"field\">" . $string['school'] . "</td><td><select name=\"schoolid\">\n<option value=\"\"></option>\n";
-    $result = $mysqli->prepare("SELECT schools.id, school, faculty.name FROM schools, faculty WHERE schools.facultyID=faculty.id ORDER BY faculty.name, school");
+    $result = $mysqli->prepare("SELECT schools.id, school, faculty.name FROM schools, faculty WHERE schools.facultyID=faculty.id AND schools.deleted IS NULL ORDER BY faculty.name, school");
     $result->execute();
     $result->bind_result($id, $list_school, $faculty);
     while ($result->fetch()) {

@@ -66,10 +66,17 @@
     
     document.getElementById('stats_menu').style.display='none';
     if (document.stats_menu.absent.checked == true) {
-      window.location.href = url + "paperID=" + document.stats_menu.paperID.value + "&startdate=" + document.stats_menu.start_year.value + document.stats_menu.start_month.value + document.stats_menu.start_day.value + document.stats_menu.start_time.value + "&enddate=" + document.stats_menu.end_year.value + document.stats_menu.end_month.value + document.stats_menu.end_day.value + document.stats_menu.end_time.value + "&repmodule=" + document.stats_menu.repmodule.value + "&repcourse=" + document.stats_menu.repcourse.value + "&sortby=name&module=<?php echo $module_list[0]; ?>&folder=<?php echo $folder; ?>&percent=" + document.stats_menu.percent.value + "&absent=1&direction=" + document.stats_menu.direction.value + extra_data;
+      absent = '&absent=1';
     } else {
-      window.location.href = url + "paperID=" + document.stats_menu.paperID.value + "&startdate=" + document.stats_menu.start_year.value + document.stats_menu.start_month.value + document.stats_menu.start_day.value + document.stats_menu.start_time.value + "&enddate=" + document.stats_menu.end_year.value + document.stats_menu.end_month.value + document.stats_menu.end_day.value + document.stats_menu.end_time.value + "&repmodule=" + document.stats_menu.repmodule.value + "&repcourse=" + document.stats_menu.repcourse.value + "&sortby=name&module=<?php echo $module_list[0]; ?>&folder=<?php echo $folder; ?>&percent=" + document.stats_menu.percent.value + "&absent=0&direction=" + document.stats_menu.direction.value + extra_data;
+      absent = '&absent=0';
     }
+    if (document.stats_menu.studentsonly.checked == true) {
+      studentsonly = '&studentsonly=1';
+    } else {
+      studentsonly = '&studentsonly=0';
+    }
+    window.location.href = url + "paperID=" + document.stats_menu.paperID.value + "&startdate=" + document.stats_menu.start_year.value + document.stats_menu.start_month.value + document.stats_menu.start_day.value + document.stats_menu.start_time.value + "&enddate=" + document.stats_menu.end_year.value + document.stats_menu.end_month.value + document.stats_menu.end_day.value + document.stats_menu.end_time.value + "&repmodule=" + document.stats_menu.repmodule.value + "&repcourse=" + document.stats_menu.repcourse.value + "&sortby=name&module=<?php echo $module_list[0]; ?>&folder=<?php echo $folder; ?>&percent=" + document.stats_menu.percent.value + absent + studentsonly + "&direction=" + document.stats_menu.direction.value + extra_data;
+    
     evt.cancelBubble = true;
     return false;
   }
@@ -85,7 +92,7 @@
 </script>
 
 <div style="z-index:20; display:none; background-color:white; position:fixed; left:190px; top:60px; box-shadow: 2px 2px 2px #808080" id="stats_menu" onclick="showAssStatsMenu(true, event);">
-<table border="0" cellpadding="3" cellspacing="1" style="width:490px; border:1px solid #C0C0C0; font-size:80%">
+<table border="0" cellpadding="3" cellspacing="1" style="width:510px; border:1px solid #C0C0C0; font-size:80%">
 <tr>
 <td style="background-color:#F2B100; height:5px; padding:0px"></td>
 </tr>
@@ -96,16 +103,33 @@
 <table cellpadding="2" cellspacing="0" border="0" style="font-size:100%">
 <tr>
 
-<?php
-  $start_year = substr($start_date,0,4);
-  $start_month = substr($start_date,4,2);
-  $start_day = substr($start_date,6,2);
-  $start_time = substr($start_date,8,4) . '00';
+<?php  
+  $now_time = date("YmdHis");
+  if ($start_date > $now_time) {
+    $target_start_date = $created;
+  } else {
+    $target_start_date = $start_date;
+  }
+  if ($end_date > $now_time) {
+    $target_end_date = $now_time;
+  } else {
+    $target_end_date = $end_date;
+  }
 
-  $end_year = substr($end_date,0,4);
-  $end_month = substr($end_date,4,2);
-  $end_day = substr($end_date,6,2);
-  $end_time = substr($end_date,8,4) . '00';
+  $start_year = substr($target_start_date,0,4);
+  $start_month = substr($target_start_date,4,2);
+  $start_day = substr($target_start_date,6,2);
+  $start_time = substr($target_start_date,8,2) . '0000';
+
+  $end_year = substr($target_end_date,0,4);
+  $end_month = substr($target_end_date,4,2);
+  $end_day = substr($target_end_date,6,2);
+  $end_hour = substr($target_end_date,8,2);
+  if ($end_hour < 23) {
+    $end_hour++;
+    if ($end_hour < 10) $end_hour = '0' . $end_hour;
+  }
+  $end_time = $end_hour . '0000';
   
   if ($end_year > date('Y') or ($end_year == date('Y') and $end_month > date('m'))) {
     $end_day = date('d');
@@ -117,7 +141,7 @@
 
   $date_array = getdate();
 
-  echo "<tr><td>" . $string['startdate'] . "</td><td>";
+  echo "<tr><td>" . $string['dates'] . "</td><td>";
   // Start Day
   echo "<select name=\"start_day\">\n";
   for ($i=1; $i<=31; $i++) {
@@ -133,7 +157,7 @@
     if ($i < 10) echo '0';
     echo "$i</option>\n";
   }
-  echo "</select>\n";
+  echo "</select>";
   // Start Month
   if ($start_year > $date_array['year']) {
     $start_year = $date_array['year'];
@@ -161,7 +185,7 @@
       echo "<option value=\"" . $month_nos[$i] . "\">" . mb_substr($string[$month_names[$i]],0,3,'UTF-8') . "</option>\n";
     }
   }
-  echo "</select>\n";
+  echo "</select>";
   // Start Year
   echo "<select name=\"start_year\">\n";
   for ($i=2001; $i<=($date_array['year'] + 1); $i++) {
@@ -171,7 +195,7 @@
       echo "<option value=\"$i\">$i</option>\n";
     }
   }
-  echo "</select>\n&nbsp;\n";
+  echo "</select>";
   // Start Time
   echo "<select name=\"start_time\">\n";
   $times = array('000000'=>'00:00','003000'=>'00:30','010000'=>'01:00','013000'=>'01:30','020000'=>'02:00','023000'=>'02:30','030000'=>'03:00','033000'=>'03:30','040000'=>'04:00','043000'=>'04:30','050000'=>'05:00','053000'=>'05:30','060000'=>'06:00','063000'=>'06:30','070000'=>'07:00','073000'=>'07:30','080000'=>'08:00','083000'=>'08:30','090000'=>'09:00','093000'=>'09:30','100000'=>'10:00','103000'=>'10:30','110000'=>'11:00','113000'=>'11:30','120000'=>'12:00','123000'=>'12:30','130000'=>'13:00','133000'=>'13:30','140000'=>'14:00','143000'=>'14:30','150000'=>'15:00','153000'=>'15:30','160000'=>'16:00','163000'=>'16:30','170000'=>'17:00','173000'=>'17:30','180000'=>'18:00','183000'=>'18:30','190000'=>'19:00','193000'=>'19:30','200000'=>'20:00','203000'=>'20:30','210000'=>'21:00','213000'=>'21:30','220000'=>'22:00','223000'=>'22:30','230000'=>'23:00','233000'=>'23:30');
@@ -182,10 +206,10 @@
       echo "<option value=\"" . $key . "\">" . $value . "</option>\n";
     }
   }
-  echo "</select>\n</td></tr>\n";
+  echo "</select>\n";
 
   // ---------------------------------------------------------------------------------
-  echo "<tr><td>" . $string['enddate'] . "</td><td>";
+  echo " to ";
   // End Day
   echo "<select name=\"end_day\">\n";
   for ($i=1; $i<=31; $i++) {
@@ -201,7 +225,7 @@
     if ($i < 10) echo '0';
     echo "$i</option>\n";
   }
-  echo "</select>\n";
+  echo "</select>";
   // End Month
   if ($end_year > $date_array['year']) {
     $end_year = $date_array['year'];
@@ -242,7 +266,7 @@
       echo "<option value=\"" . $month_nos[$i] . "\">" . mb_substr($string[$month_names[$i]],0,3,'UTF-8') . "</option>\n";
     }
   }
-  echo "</select>\n";
+  echo "</select>";
   // End Year
   echo "<select name=\"end_year\">\n";
   for ($i=2001; $i<=($date_array['year']); $i++) {
@@ -252,7 +276,7 @@
       echo "<option value=\"$i\">$i</option>\n";
     }
   }
-  echo "</select>\n&nbsp;\n";
+  echo "</select>";
   // End Time
   echo "<select name=\"end_time\">\n";
   $times = array('000000'=>'00:00','003000'=>'00:30','010000'=>'01:00','013000'=>'01:30','020000'=>'02:00','023000'=>'02:30','030000'=>'03:00','033000'=>'03:30','040000'=>'04:00','043000'=>'04:30','050000'=>'05:00','053000'=>'05:30','060000'=>'06:00','063000'=>'06:30','070000'=>'07:00','073000'=>'07:30','080000'=>'08:00','083000'=>'08:30','090000'=>'09:00','093000'=>'09:30','100000'=>'10:00','103000'=>'10:30','110000'=>'11:00','113000'=>'11:30','120000'=>'12:00','123000'=>'12:30','130000'=>'13:00','133000'=>'13:30','140000'=>'14:00','143000'=>'14:30','150000'=>'15:00','153000'=>'15:30','160000'=>'16:00','163000'=>'16:30','170000'=>'17:00','173000'=>'17:30','180000'=>'18:00','183000'=>'18:30','190000'=>'19:00','193000'=>'19:30','200000'=>'20:00','203000'=>'20:30','210000'=>'21:00','213000'=>'21:30','220000'=>'22:00','223000'=>'22:30','230000'=>'23:00','233000'=>'23:30');
@@ -313,6 +337,8 @@
     echo "</td></tr>\n";
   }
   
+  echo "<tr><td colspan=\"2\">" . $string['incabsentcandidates'] . "&nbsp;<input type=\"checkbox\" name=\"absent\" value=\"1\" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . $string['studentsonly'] . "&nbsp;<input type=\"checkbox\" name=\"studentsonly\" value=\"1\" checked=\"checked\" /></td></tr>\n";
+
   if ($paper_type == '3') {
     echo "<tr><td>" . $string['year'] . "</td><td><select name=\"repyear\">\n";
     $years = array('%'=>'Any Year','1'=>'Year 1','2'=>'Year 2','3'=>'Year 3','4'=>'Year 4','5'=>'Year 5');
@@ -351,7 +377,6 @@
       $meta_no++;
     }
   }
-
   
   echo "</table><input type=\"hidden\" name=\"meta_no\" id=\"meta_no\" value=\"$meta_no\" /><input type=\"hidden\" name=\"paperID\" value=\"" . $_GET['paperID'] . "\" />";
 
@@ -372,7 +397,6 @@
     }
     echo "<div style=\"margin-left:25px; line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../reports/review_comments.php?type=external&',event)\">" . $string['externalexaminers'] . "</a></div>\n";
     echo "<div style=\"margin-left:25px; line-height:150%; margin-top:10px; font-weight:bold\">" . $string['cohortreports'] . "</div>\n";
-    echo "<div style=\"margin-left:25px; line-height:150%\">" . $string['incabsentcandidates'] . "&nbsp;<input type=\"checkbox\" name=\"absent\" value=\"1\" /></div>\n";
     echo "<div style=\"margin-left:25px; line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../reports/class_totals.php?',event)\">" . $string['classtotals'] . "</a></div>\n";
     echo "<div style=\"margin-left:25px; line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../reports/class_totals_xml.php?',event)\">" . $string['classtotalsexcel2003'] . "</a></div>\n";
     echo "<div style=\"margin-left:25px; line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../reports/class_totals_csv.php?',event)\">" . $string['classtotalscsv'] . "</a></div>\n";
@@ -446,7 +470,6 @@
       echo "<div style=\"margin-left:25px; line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../../peer_review/summary_report_csv.php?',event)\">Review Summary - means (CSV)</a></div>\n";
       break;
   }
-
 
 ?>
 <br />

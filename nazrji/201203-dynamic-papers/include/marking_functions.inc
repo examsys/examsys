@@ -150,7 +150,6 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
     if ($screen_no == 1) {       // Write log_metadata first on screen 1 only
       $tmp_ip_address = NetworkUtils::get_ipaddress();
       
-      
       $save_metadata = $dblink->prepare("INSERT INTO log_metadata VALUES (NULL, ?, ?, ?, ?, ?, ?, ?)");
       $save_metadata->bind_param('iisssii', $userid, $paper_id, $_POST['sessionid'], $tmp_ip_address, $student_grade, $student_year, $attempt);
       $save_metadata->execute();
@@ -188,6 +187,7 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
   $display_pos = 0;
   $old_display_pos = 0;
   $all_items_abstain = true;
+  $dismiss = '';
   foreach ($paper_array as &$row) {
     $q_log_id = 0;
     $q_id = $row['q_id'];
@@ -201,7 +201,7 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
     $marks_correct = $row['marks_correct'];
     $marks_incorrect = $row['marks_incorrect'];
     $marks_partial = $row['marks_partial'];
-    $dismiss = '';
+
     $display_pos = $row['display_pos'];
     if ($old_q_id != $q_id or $display_pos != $old_display_pos) {
       if ($old_type == 'rank') {
@@ -329,7 +329,6 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
           $answer = '';
         }
 
-        //$difference = round(abs($saved_response_clean - $answer), $decimals);
         $difference = round(abs($saved_response_clean - $answer), 12);
 
         $tolerance_full = $score_array[1];
@@ -662,14 +661,14 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
         }
         
         if ($saved_response == '') $saved_response = 'u';
-        //if ($totalpos == 0) {
-          if ($saved_response == $correct) {
-            $mark += $marks_correct;
-          } elseif ($saved_response != 'u') {
-            $mark += $marks_incorrect;
-          }
-          $totalpos += $marks_correct;
-        //}
+        
+        if ($saved_response == $correct) {
+          $mark += $marks_correct;
+        } elseif ($saved_response != 'u') {
+          $mark += $marks_incorrect;
+        }
+        $totalpos += $marks_correct;
+        
         break;
       case 'blank':
         $blank_details = explode("[blank",$option_text);

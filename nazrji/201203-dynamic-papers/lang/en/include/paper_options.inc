@@ -55,8 +55,7 @@ $string['papers'] = 'Papers';
 $string['people'] = 'People';
 $string['studentcohort'] = 'Student Cohort of Paper';
 
-$string['startdate'] = 'Start Date';
-$string['enddate'] = 'End Date';
+$string['dates'] = 'Dates';
 $string['course'] = 'Course';
 $string['anycourse'] = '&lt;Any Course&gt;';
 $string['module'] = 'Module';
@@ -95,6 +94,7 @@ $string['exports'] = 'Exports';
 $string['quantitativereports'] = 'Quantitative Reports';
 $string['qualitativeanalysis'] = 'Qualitative Analysis';
 $string['incabsentcandidates'] = 'inc. absent candidates';
+$string['studentsonly'] = 'student attempts only';
 $string['completedatasets'] = 'Show complete datasets only';
 
 $string['copyname'] = 'Copy Name:';

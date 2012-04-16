@@ -32,15 +32,6 @@ require '../config/start.inc';
 check_var('id', 'GET', true, false);
 session_start();
 
-if ($stmt = $mysqli->prepare("SELECT background, foreground, textsize, marks_color, themecolor, labelcolor, font FROM special_needs WHERE userid=?")) {
-  $stmt->bind_param('i', $userID);
-  $stmt->execute();
-  $stmt->store_result();
-  $stmt->bind_result($bgcolor, $fgcolor, $textsize, $marks_color, $themecolor, $labelcolor, $font);
-  $stmt->fetch();
-}
-$stmt->close();
-
 // Extract the get variables.
 if (isset($_GET['no_screens'])) {
   $no_screens = $_GET['no_screens'];
@@ -51,13 +42,12 @@ if (isset($_GET['no_screens'])) {
   $surname = $_GET['surname'];
 }
 
-if ($stmt = $mysqli->prepare("SELECT background, foreground, textsize, marks_color, themecolor, labelcolor, font FROM special_needs WHERE userid=?")) {
-  $stmt->bind_param('i', $userID);
-  $stmt->execute();
-  $stmt->store_result();
-  $stmt->bind_result($bgcolor, $fgcolor, $textsize, $marks_color, $themecolor, $labelcolor, $font);
-  $stmt->fetch();
-}
+$stmt = $mysqli->prepare("SELECT background, foreground, textsize, marks_color, themecolor, labelcolor, font FROM special_needs, users WHERE users.id=special_needs.userID AND special_needs=1 AND users.id=?");
+$stmt->bind_param('i', $userID);
+$stmt->execute();
+$stmt->store_result();
+$stmt->bind_result($bgcolor, $fgcolor, $textsize, $marks_color, $themecolor, $labelcolor, $font);
+$stmt->fetch();
 $stmt->close();
 
 // Get how many screens make up the question paper.
@@ -94,6 +84,25 @@ while ($stmt->fetch()) {
   }
 }
 $stmt->free_result();
+$stmt->close();
+
+// Get any Reference Material
+$reference_materials = array();
+$ref_no = 0;
+$max_ref_width = 0;
+$stmt = $mysqli->prepare("SELECT title, content, width FROM (reference_material, reference_papers) WHERE reference_material.id=reference_papers.refID AND paperID=?");
+$stmt->bind_param('i', $property_id);
+$stmt->execute();
+$stmt->bind_result($reference_title, $reference_material, $reference_width);
+while ($stmt->fetch()) {
+  $reference_materials[$ref_no]['title'] = $reference_title;
+  $reference_materials[$ref_no]['material'] = $reference_material;
+  $reference_materials[$ref_no]['width'] = $reference_width;
+  if ($reference_width > $max_ref_width) {
+    $max_ref_width = $reference_width;
+  }
+  $ref_no++;
+}
 $stmt->close();
 
 // Extract the posted variables.
@@ -135,19 +144,8 @@ echo "<html>\n<head>\n<title>$paper_title</title>\n";
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta http-equiv="imagetoolbar" content="no">
 <meta http-equiv="imagetoolbar" content="false">
-
+<link rel="stylesheet" type="text/css" href="../css/start.css" />
 <style type="text/css">
-body {background-color:<?php echo $bgcolor; ?>; color:<?php echo $fgcolor; ?>; padding:0px; margin:0px; border:0px; font-family:Arial,sans-serif; font-size:<?php echo $textsize; ?>%}
-li {margin-left:15px; margin-right:15px; font-family:Arial,sans-serif; font-size:100%}
-<?php
-if (($bgcolor != 'white' and $bgcolor != '#FFFFFF') or ($fgcolor != 'black' and $fgcolor != '#000000')) {
-  echo "select, input {background-color:$bgcolor; color:$fgcolor; font-family:Arial,sans-serif; font-size:100%}\n";
-} else {
-  echo "select, input {font-family:Arial,sans-serif; font-size:100%}\n";
-}
-?>
-table {font-size:100%}
-p {margin-top:0px; padding-top:0px}
 pre {
 white-space: pre-wrap; /* css-3 */
 white-space: -moz-pre-wrap !important; /* Mozilla, since 1999 */
@@ -155,22 +153,43 @@ white-space: -pre-wrap; /* Opera 4-6 */
 white-space: -o-pre-wrap; /* Opera 7 */
 word-wrap: break-word; /* Internet Explorer 5.5+ */
 }
-.raised_tbl {background-color:#5582D2; border-left:solid #90C8FF 1px; border-right:solid #003060 1px; border-top:solid #90C8FF 1px; border-bottom:solid #003060 1px}
-.paper {margin-left:0px; font-size:180%; color:white; font-weight:bold}
-.q_no {width:40px; text-align:right; vertical-align:top}
-.theme {font-size:150%; padding-left:4px; font-weight:bold; color:<?php echo $themecolor; ?>}
-.notes {font-size:80%; color:<?php echo $labelcolor; ?>}
-.mk {color:<?php echo $marks_color; ?>; font-size:80%}
-.active {color:<?php echo $fgcolor; ?>}
-.inactive {color:#C0C0C0}
-.scrno {width:18px; text-align:center; background-color:#003366; font-size:80%}
-.scrnocur {width:18px; text-align:center; background-color:#C00000; font-size:80%}
-.likert_button {text-align:center; width:40px; vertical-align:top}
-.unanswered {background-color:white}
-.matrix {border:1px solid #808080; border-collapse:collapse}
-.matrix td {border:1px solid #808080}
-.extmatch li {padding-bottom:14px; vertical-align:text-bottom; list-style-type:lower-roman}
-textarea {font-size:100%}
+<?php
+$css = '';
+
+if ($special_needs == 1 and $bgcolor != '#FFFFFF') {
+  $css .= "select,input{background-color:$bgcolor;color:$fgcolor;font-family:$font,sans-serif}\n";
+}
+if (($bgcolor != '#FFFFFF' and $bgcolor != 'white') or ($fgcolor != '#000000' and $fgcolor != 'black') or $textsize != 90) {
+  $css .= "body {background-color:$bgcolor;color:$fgcolor;font-size:$textsize%}\n";
+}
+if ($font != 'Arial') {
+  if (strpos($font,' ') === false) {
+    $css .= "body {font-family:$font,sans-serif}\n";
+    $css .= "pre {font-family:$font,sans-serif}\n";
+  } else {
+    $css .= "body {font-family:'$font',sans-serif}\n";
+    $css .= "pre {font-family:'$font',sans-serif}\n";
+  }
+}
+if ($themecolor != '#316AC5') {
+  $css .= ".theme {color:$themecolor}\n";
+}
+if ($marks_color != '#808080') {
+  $css .= ".mk {color:$marks_color}\n";
+}
+if ($fgcolor != '#000000' and $fgcolor != 'black') {
+  $css .= ".act {color:$fgcolor}\n";
+}
+if (count($reference_materials) > 0) {
+  $css .= "#maincontent {position:fixed; right:" . ($max_ref_width + 1) . "px}\n";
+  $css .= ".framecontent {width:" . ($max_ref_width - 12) . "px}\n";
+  $css .= ".refhead {width:" . ($max_ref_width - 12) . "px;}\n";
+}
+if ($css != '') {
+  echo $css;
+}
+?>
+
 </style>
 
 <script src="start.js" type="text/javascript"></script>
@@ -181,6 +200,67 @@ textarea {font-size:100%}
 <?php }?>
 <script language="JavaScript" type="text/javascript">
   window.history.go(1);
+<?php
+  if (count($reference_materials) > 0) {
+    echo "\$(document).ready(function() {\n";
+    if (isset($_COOKIE['refpane'])) {
+      echo "  changeRef(" . $_COOKIE['refpane'] . ");\n";
+    } else {
+      echo "  resizeReference();\n";
+    }
+    echo "});\n";
+  }
+?>
+  function getWinH() {
+    var winH = 460;
+    if (document.body && document.body.offsetWidth) {
+      winH = document.body.offsetHeight;
+    }
+    if (document.compatMode=='CSS1Compat' && document.documentElement && document.documentElement.offsetWidth ) {
+      winH = document.documentElement.offsetHeight;
+    }
+    if (window.innerWidth && window.innerHeight) {
+      winH = window.innerHeight;
+    }
+    return winH;
+  }
+  
+  function changeRef(refID) {
+    document.cookie = 'refpane=' + refID;
+    winH = getWinH();
+    resizeReference();
+    var flag = 0;
+    <?php
+      if (count($reference_materials) > 0) {
+        echo "    for (i=0; i<" . count($reference_materials) . "; i++) {\n";
+        echo "      if (i == refID) {\n";
+        echo "        document.getElementById('framecontent' + i).style.display = 'block';\n";
+        echo "        document.getElementById('refhead' + i).style.top = (31 * i) + 'px';\n";
+        echo "        flag = 1;\n";
+        echo "      } else {\n";
+        echo "        document.getElementById('framecontent' + i).style.display = 'none';\n";
+        echo "        if (flag == 0) {\n";
+        echo "          document.getElementById('refhead' + i).style.top = (31 * i) + 'px';\n";
+        echo "        } else {\n";
+        echo "          document.getElementById('refhead' + i).style.top = (winH - (" . count($reference_materials) . " - i) * 31) + 'px';\n";
+        echo "        }\n";
+        echo "      }\n";
+        echo "    }\n";
+      }
+    ?>  
+  }
+  
+  function resizeReference() {
+    winH = getWinH();
+<?php
+  if (count($reference_materials) > 0) {
+    $subtract = (31 * count($reference_materials)) + 11;
+    echo "    for (i=0; i<" . count($reference_materials) . "; i++) {\n";
+    echo "      document.getElementById('framecontent' + i).style.height = (winH - $subtract) + 'px';\n";
+    echo "    }\n";
+  }
+?>  
+  }
 <?php
   if ($bidirectional == 0) {
 ?>
@@ -207,6 +287,7 @@ textarea {font-size:100%}
 </script>
 </head>
 <body onload="refreshparent(); StartClock()" onunload="KillClock()">
+<div id="maincontent">
 <?php
 if ($current_screen < $no_screens) {
   echo "<form method=\"post\" name=\"questions\" action=\"" . $_SERVER['PHP_SELF'] . "?id=" . $_GET['id'];
@@ -231,15 +312,15 @@ echo '" onsubmit="return confirmSubmit()">';   // Warning message only in linear
       echo "<td title=\"" . $screen_data[$i];
       if ($i == $current_screen) {
         if ($screen_data[$i] == 1) {
-          echo " question\" class=\"scrnocur\">";
+          echo " question\" class=\"s1\">";
         } else {
-          echo " questions\" class=\"scrnocur\">";
+          echo " questions\" class=\"s1\">";
         }
       } else {
         if ($screen_data[$i] == 1) {
-          echo " question\" class=\"scrno\">";
+          echo " question\" class=\"s0\">";
         } else {
-          echo " questions\" class=\"scrno\">";
+          echo " questions\" class=\"s0\">";
         }
         if ($i < $current_screen) $question_offset += $screen_data[$i];
       }
@@ -312,13 +393,14 @@ echo '" onsubmit="return confirmSubmit()">';   // Warning message only in linear
   }
   $question_data->close();
   
+  $unanswered = false;
+  
   //display the questions
   foreach($questions_array as &$question) {
     if ($screen_pre_submitted == 1 and $q_displayed == 0) echo "<tr><td colspan=\"2\"><span style=\"background-color:#FFC0C0\">&nbsp;&nbsp;&nbsp;&nbsp;</span> = unanswered question</td></tr>\n";
     if ($q_displayed == 0 and $current_screen == 1 and $paper_prologue != '') echo '<tr><td colspan="2" style="padding:20px; text-align:justify">' . $paper_prologue . '</td></tr>';
     if ($q_displayed == 0 and $question['theme'] == '') echo "<tr><td colspan=\"2\">&nbsp;</td></tr>\n";
     if ($question['q_type'] == 'random') randomQOverwrite2($question, $paper_type, $user_answers, $current_screen);
-    //if ($question['q_type'] == 'branching') branchingQOverwrite2($question,$paper_type,$user_answers,$current_screen);
     display_question($question, $paper_type, $current_screen, $previous_q_type, $question_no, $question_offset);	
     $previous_q_type = $question['q_type'];
     $q_displayed++;
@@ -356,9 +438,37 @@ echo '" onsubmit="return confirmSubmit()">';   // Warning message only in linear
     echo "<input type=\"submit\" style=\"width:120px\" name=\"next\" value=\"" . $string['screen'] . " $current_screen &gt;\" />&nbsp;\n";
   }
   echo '</td></tr></table>';
-  $mysqli->close();
+ 
 ?>
 </td></tr></table>
 </form>
+</div>
+<?php
+
+if (count($reference_materials) > 0) {
+  $top = 0;
+  $ref_no = 0;
+  foreach ($reference_materials as $reference_material) {
+    echo "<div class=\"refhead\" id=\"refhead" . $ref_no . "\" onclick=\"changeRef(" . $ref_no . ")\" style=\"top:{$top}px\">" . $reference_material['title'] . "</div>\n";
+    echo "<div class=\"framecontent\" id=\"framecontent" . $ref_no . "\" style=\"top:" . (31 + $top) . "px\">\n" . $reference_material['material'] . "</div>\n";
+    $top+=31;
+    $ref_no++;
+  }
+}
+$mysqli->close();
+
+if (isset($_COOKIE['refpane'])) {
+  echo "<script language=\"JavaScript\">\n";
+  echo "  changeRef(" . $_COOKIE['refpane'] . ");\n";
+  echo "</script>\n";
+}
+
+if ($unanswered) {
+  echo "<script language=\"JavaScript\">\n";
+  echo "  document.getElementById('unansweredkey').style.display = '';\n";
+  echo "</script>\n";
+}
+?>
+
 </body>
 </html>

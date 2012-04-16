@@ -278,7 +278,7 @@ ob_start();
       //IE6 standards compliant mode
       scrollOfX = document.documentElement.scrollLeft;
     }
-	return scrollOfX;
+    return scrollOfX;
   }
   
   function getScrollY() {
@@ -293,7 +293,7 @@ ob_start();
       //IE6 standards compliant mode
       scrollOfY = document.documentElement.scrollTop;
     }
-	return scrollOfY;
+    return scrollOfY;
   }
 
   document.onmousedown = mouseSelect;
@@ -403,7 +403,7 @@ ob_start();
   } else {
     echo "<tr><th class=\"h\" colspan=\"" . ($cols - 1) . "\">";
   }
-  if(isset($_GET['repmodule']) and $_GET['repmodule'] != '') {
+  if (isset($_GET['repmodule']) and $_GET['repmodule'] != '') {
     $report_title = $string['classtotals'] . ' (' . $_GET['repmodule'] . ' ' . $string['studentsonly'] . ')';
   } else {
     $report_title = $string['classtotals'];
@@ -520,10 +520,15 @@ ob_start();
           fwrite($scatter_file,$temp_location . "\n");
           fwrite($scatter_file,$user_results[$i]['duration'] . "\n");
         }
-        if ($user_results[$i]['questions'] < $question_no) {
-          echo "><td class=\"$class\"><img src=\"../artwork/incomplete_paper_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['notcompleted'] . "\" border=\"0\" onclick=\"ItemSelMenu('" . $user_results[$i]['started'] . "'," . $user_results[$i]['tmp_userID'] . ",'" . $user_results[$i]['username'] . "','" . $user_results[$i]['title'] . " " . str_replace("'","&#8217;",$user_results[$i]['surname']) . ", " . $user_results[$i]['initials'] . " (" . $user_results[$i]['student_id'] . ")', '" . $user_results[$i]['paper_type'] . "', '$reassign', '$late_submissions', '" . $user_results[$i]['adj_percent'] . "', event);\" /></td>";
+        if (strpos($user_results[$i]['roles'], 'Staff') !== false) {
+          $role_css = 'staff';
         } else {
-          echo "><td class=\"$class\">";
+          $role_css = '';
+        }
+        if ($user_results[$i]['questions'] < $question_no) {
+          echo "><td class=\"$class $role_css\"><img src=\"../artwork/incomplete_paper_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['notcompleted'] . "\" border=\"0\" onclick=\"ItemSelMenu('" . $user_results[$i]['started'] . "'," . $user_results[$i]['tmp_userID'] . ",'" . $user_results[$i]['username'] . "','" . $user_results[$i]['title'] . " " . str_replace("'","&#8217;",$user_results[$i]['surname']) . ", " . $user_results[$i]['initials'] . " (" . $user_results[$i]['student_id'] . ")', '" . $user_results[$i]['paper_type'] . "', '$reassign', '$late_submissions', '" . $user_results[$i]['adj_percent'] . "', event);\" /></td>";
+        } else {
+          echo "><td class=\"$class $role_css\">";
           if ($user_results[$i]['paper_type'] == 0) {
             echo '<img src="../artwork/formative_16.gif" width="16" height="16" alt="' . $string['displayexamscript'] . '" border="0"';
           } elseif ($user_results[$i]['paper_type'] == '1') {
@@ -543,9 +548,9 @@ ob_start();
           $ordered = '';
         }
         if (strpos($user_results[$i]['username'], 'user') === 0) {
-          echo "<td class=\"$class$ordered padl tmpacc\"><span style=\"cursor:hand\" onclick=\"ItemSelMenu('" . $user_results[$i]['started'] . "'," . $user_results[$i]['tmp_userID'] . ",'" . $user_results[$i]['username'] . "','" . $user_results[$i]['title'] . " " . str_replace("'","&#8217;",$user_results[$i]['surname']) . ", " . $user_results[$i]['initials'] . " (" . $user_results[$i]['student_id'] . ")', '" . $user_results[$i]['paper_type'] . "', '$reassign', '$late_submissions', '" . $user_results[$i]['adj_percent'] . "', event);\">" . str_replace('User','Temporary Account No. ',$user_results[$i]['surname']) . "</span>";
+          echo "<td class=\"$class$ordered padl tmpacc $role_css\"><span style=\"cursor:hand\" onclick=\"ItemSelMenu('" . $user_results[$i]['started'] . "'," . $user_results[$i]['tmp_userID'] . ",'" . $user_results[$i]['username'] . "','" . $user_results[$i]['title'] . " " . str_replace("'","&#8217;",$user_results[$i]['surname']) . ", " . $user_results[$i]['initials'] . " (" . $user_results[$i]['student_id'] . ")', '" . $user_results[$i]['paper_type'] . "', '$reassign', '$late_submissions', '" . $user_results[$i]['adj_percent'] . "', event);\">" . str_replace('User','Temporary Account No. ',$user_results[$i]['surname']) . "</span>";
         } else {
-          echo "<td class=\"$class$ordered padl\"><span style=\"cursor:hand\" onclick=\"ItemSelMenu('" . $user_results[$i]['started'] . "'," . $user_results[$i]['tmp_userID'] . ",'" . $user_results[$i]['username'] . "','" . $user_results[$i]['title'] . " " . str_replace("'","&#8217;",$user_results[$i]['surname']) . ", " . $user_results[$i]['initials'] . " (" . $user_results[$i]['student_id'] . ")', '" . $user_results[$i]['paper_type'] . "', '$reassign', '$late_submissions', '" . $user_results[$i]['adj_percent'] . "', event);\">" . $user_results[$i]['title'] . "&nbsp;" . $user_results[$i]['surname'] . ",&nbsp;<span class=\"grey\">" . $user_results[$i]['first_names'] . "</span></span>";
+          echo "<td class=\"$class$ordered padl $role_css\"><span style=\"cursor:hand\" onclick=\"ItemSelMenu('" . $user_results[$i]['started'] . "'," . $user_results[$i]['tmp_userID'] . ",'" . $user_results[$i]['username'] . "','" . $user_results[$i]['title'] . " " . str_replace("'","&#8217;",$user_results[$i]['surname']) . ", " . $user_results[$i]['initials'] . " (" . $user_results[$i]['student_id'] . ")', '" . $user_results[$i]['paper_type'] . "', '$reassign', '$late_submissions', '" . $user_results[$i]['adj_percent'] . "', event);\">" . $user_results[$i]['title'] . "&nbsp;" . $user_results[$i]['surname'] . ",&nbsp;<span class=\"grey\">" . $user_results[$i]['first_names'] . "</span></span>";
         }
         if (isset($special_needs[$user_results[$i]['tmp_userID']]) and $special_needs[$user_results[$i]['tmp_userID']] == 'y') {
           echo '&nbsp;<img src="../artwork/accessibility_16.png" width="16" height="16" alt="' . $string['alternativearrangements'] . '" border="0" />';
@@ -564,37 +569,41 @@ ob_start();
           $ordered = '';
         }
         if ($user_results[$i]['student_id'] == '') {
-          echo "<td class=\"grey $class$ordered padl\">" . $string['unknown'] . "</td>";
+          if (strpos($user_results[$i]['roles'], 'Staff') !== false) {
+            echo "<td class=\"grey $class$ordered padl $role_css\">&nbsp;</td>";
+          } else {
+            echo "<td class=\"grey $class$ordered padl $role_css\">" . $string['unknown'] . "</td>";
+          }
         } else {
-          echo "<td class=\"$class$ordered padl\">" . $user_results[$i]['student_id'] . "</td>";
+          echo "<td class=\"$class$ordered padl $role_css\">" . $user_results[$i]['student_id'] . "</td>";
         }
         if ($_GET['sortby'] == 'student_grade') {
           $ordered = ' ordered';
         } else {
           $ordered = '';
         }
-        echo "<td class=\"$class$ordered padl\">" . $user_results[$i]['student_grade'] . "</td>";
+        echo "<td class=\"$class$ordered padl $role_css\">" . $user_results[$i]['student_grade'] . "</td>";
         if ($_GET['sortby'] == 'mark') {
           $ordered = ' ordered';
         } else {
           $ordered = '';
         }
         if ($user_results[$i]['adj_percent'] < $pass_mark) {
-          echo "<td class=\"mk $class$ordered fail r\">";
+          echo "<td class=\"mk $class$ordered fail r $role_css\">";
           if ($user_results[$i]['marking_complete'] == '0') echo '<img src="../artwork/small_yellow_warning_icon.gif" width="16" height="16" alt="' . $string['markingnotcomplete'] . '" />&nbsp;';
           echo $user_results[$i]['mark'] . "</td>";
-          echo "<td class=\"$class fail r\">" . $user_results[$i]['adj_percent'] . "%</td><td class=\"$class fail\">&nbsp;" . $string['fail'] . "</td>";
+          echo "<td class=\"$class fail r $role_css\">" . $user_results[$i]['adj_percent'] . "%</td><td class=\"$class fail $role_css\">&nbsp;" . $string['fail'] . "</td>";
         } else {
           if ($user_results[$i]['adj_percent'] >= $distinction_mark) {
-            echo "<td class=\"mk $class$ordered dist r\">";
+            echo "<td class=\"mk $class$ordered dist r $role_css\">";
             if ($user_results[$i]['marking_complete'] == '0') echo '<img src="../artwork/small_yellow_warning_icon.gif" width="16" height="16" alt="' . $string['markingnotcomplete'] . '" />&nbsp;';
             echo $user_results[$i]['mark'] . "</td>";
-            echo "<td class=\"dist $class r\">" . $user_results[$i]['adj_percent'] . "%</td><td class=\"$class dist\">&nbsp;" . $string['distinction'] . "</td>";
+            echo "<td class=\"dist $class r $role_css\">" . $user_results[$i]['adj_percent'] . "%</td><td class=\"$class dist $role_css\">&nbsp;" . $string['distinction'] . "</td>";
           } else {
-            echo "<td class=\"mk $class$ordered r\">";
+            echo "<td class=\"mk $class$ordered r $role_css\">";
             if ($user_results[$i]['marking_complete'] == '0') echo '<img src="../artwork/small_yellow_warning_icon.gif" width="16" height="16" alt="' . $string['markingnotcomplete'] . '" />&nbsp;';
             echo $user_results[$i]['mark'] . "</td>";
-            echo "<td class=\"$class r\">" . $user_results[$i]['adj_percent'] . "%</td><td class=\"$class\">&nbsp;" . $string['pass'] . "</td>";
+            echo "<td class=\"$class r $role_css\">" . $user_results[$i]['adj_percent'] . "%</td><td class=\"$class $role_css\">&nbsp;" . $string['pass'] . "</td>";
           }
         }
         if ($_GET['sortby'] == 'started') {
@@ -602,27 +611,27 @@ ob_start();
         } else {
           $ordered = '';
         }
-        echo "<td class=\"$class$ordered padl\">" . $user_results[$i]['display_started'] . "</td>";
+        echo "<td class=\"$class$ordered padl $role_css\">" . $user_results[$i]['display_started'] . "</td>";
         if ($_GET['sortby'] == 'duration') {
           $ordered = ' ordered';
         } else {
           $ordered = '';
         }
-        echo "<td class=\"$class$ordered padl\">" . formatsec($user_results[$i]['duration']) . "</td>";
+        echo "<td class=\"$class$ordered padl $role_css\">" . formatsec($user_results[$i]['duration']) . "</td>";
         
         if ($_GET['sortby'] == 'ipaddress') {
          $ordered = ' ordered';
         } else {
           $ordered = '';
         }
-        echo "<td class=\"$class$ordered padl\">" . $user_results[$i]['ipaddress'] . "</td>";
+        echo "<td class=\"$class$ordered padl $role_css\">" . $user_results[$i]['ipaddress'] . "</td>";
         if ($paper_type == 2) {
           if ($_GET['sortby'] == 'room') {
             $ordered = ' ordered';
           } else {
             $ordered = '';
           }
-          echo "<td class=\"$class$ordered padl\">" . $user_results[$i]['room'] . "</td>";
+          echo "<td class=\"$class$ordered padl $role_css\">" . $user_results[$i]['room'] . "</td>";
         }
         
         // Display any associated metadata
@@ -633,7 +642,7 @@ ob_start();
             } else {
               $ordered = '';
             }
-            echo "<td class=\"$class$ordered\">&nbsp;" . $user_results[$i][$type] . "</td>";
+            echo "<td class=\"$class$ordered $role_css\">&nbsp;" . $user_results[$i][$type] . "</td>";
           }
         }
         echo "</tr>\n";

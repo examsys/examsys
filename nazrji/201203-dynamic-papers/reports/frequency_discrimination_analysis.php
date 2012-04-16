@@ -1590,7 +1590,7 @@ td p:first-child {margin-top:0}
 
 <body>
 <form name="theform" action="<?php echo $_SERVER['PHP_SELF'] . '?' . $_SERVER['QUERY_STRING']; ?>" method="post">
-<table class="header">
+<table class="header" style="font-size:90%">
 <?php
   // Get any questions to exclude.
   $excluded = array();
@@ -1635,7 +1635,7 @@ td p:first-child {margin-top:0}
     $mod_query->bind_result($tmp_userID, $tmp_moduleid);
     $mod_query->store_result();
     while ($mod_query->fetch()) {
-	  if (isset($_GET['repmodule']) AND $_GET['repmodule'] != '' AND $tmp_moduleid != $_GET['repmodule']) {
+	  if (isset($_GET['repmodule']) and $_GET['repmodule'] != '' and $tmp_moduleid != $_GET['repmodule']) {
 	    continue; //this user is not on the module set in repmodule so dont put them in the array
 	  }
 	  if ($users_on_modules == '') {
@@ -1651,13 +1651,20 @@ td p:first-child {margin-top:0}
     $student_modules_sql = " AND log$paper_type.userID IN ($users_on_modules)";
   } 
   
+  if ($_GET['studentsonly'] == 1) {
+    $roles_sql = " AND (users.roles='Student' OR users.roles='graduate')";
+  } else {
+    $roles_sql = '';
+  }
   // Calculate top and bottom cohorts.
   $student_list = '';
   if ($paper_type == '0') {
-    $result = $mysqli->prepare("(SELECT username, sum(mark) AS total_mark, log_metadata.started FROM (log0, users, log_metadata) WHERE log0.userID=log_metadata.userID AND log0.started=log_metadata.started AND log0.q_paper=log_metadata.paperID AND log0.userID=users.id AND (users.roles='Student' OR users.roles='graduate') AND q_paper=? AND grade LIKE ? AND log0.started>=? AND log0.started<=? AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE 'Staff%' AND student_grade NOT LIKE '%nhs%' $student_modules_sql GROUP BY username, q_paper, log0.started) UNION ALL (SELECT username, sum(mark) AS total_mark, log_metadata.started FROM (log1, users, log_metadata) WHERE log1.userID=log_metadata.userID AND log1.started=log_metadata.started AND log1.q_paper=log_metadata.paperID AND log1.userID=users.id AND (users.roles='Student' OR users.roles='graduate') AND q_paper=? AND log1.started>=? AND log1.started<=? AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE '%staff%' AND student_grade NOT LIKE '%nhs%' " . str_replace('log0', 'log1', $student_modules_sql) . " GROUP BY username, q_paper, log1.started) ORDER BY total_mark ASC, username");
+    //$result = $mysqli->prepare("(SELECT username, sum(mark) AS total_mark, log_metadata.started FROM (log0, users, log_metadata) WHERE log0.userID=log_metadata.userID AND log0.started=log_metadata.started AND log0.q_paper=log_metadata.paperID AND log0.userID=users.id AND (users.roles='Student' OR users.roles='graduate') AND q_paper=? AND grade LIKE ? AND log0.started>=? AND log0.started<=? AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE 'Staff%' AND student_grade NOT LIKE '%nhs%' $student_modules_sql GROUP BY username, q_paper, log0.started) UNION ALL (SELECT username, sum(mark) AS total_mark, log_metadata.started FROM (log1, users, log_metadata) WHERE log1.userID=log_metadata.userID AND log1.started=log_metadata.started AND log1.q_paper=log_metadata.paperID AND log1.userID=users.id AND (users.roles='Student' OR users.roles='graduate') AND q_paper=? AND log1.started>=? AND log1.started<=? AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE '%staff%' AND student_grade NOT LIKE '%nhs%' " . str_replace('log0', 'log1', $student_modules_sql) . " GROUP BY username, q_paper, log1.started) ORDER BY total_mark ASC, username");
+    $result = $mysqli->prepare("(SELECT username, sum(mark) AS total_mark, log_metadata.started FROM (log0, users, log_metadata) WHERE log0.userID=log_metadata.userID AND log0.started=log_metadata.started AND log0.q_paper=log_metadata.paperID AND log0.userID=users.id AND (users.roles='Student' OR users.roles='graduate') AND q_paper=? AND grade LIKE ? AND log0.started>=? AND log0.started<=? AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE 'Staff%' AND student_grade NOT LIKE '%nhs%' $student_modules_sql GROUP BY username, q_paper, log0.started) UNION ALL (SELECT username, sum(mark) AS total_mark, log_metadata.started FROM (log1, users, log_metadata) WHERE log1.userID=log_metadata.userID AND log1.started=log_metadata.started AND log1.q_paper=log_metadata.paperID AND log1.userID=users.id AND (users.roles='Student' OR users.roles='graduate') AND q_paper=? AND log1.started>=? AND log1.started<=? " . str_replace('log0', 'log1', $student_modules_sql) . " GROUP BY username, q_paper, log1.started) ORDER BY total_mark ASC, username");
     $result->bind_param('isssiss', $paperID, $_GET['repcourse'], $startdate, $enddate, $paperID, $startdate, $enddate);
   } else {
-    $result = $mysqli->prepare("SELECT username, sum(mark) AS total_mark, log_metadata.started FROM (log$paper_type, users, log_metadata) WHERE log$paper_type.userID=log_metadata.userID AND log$paper_type.started=log_metadata.started AND log$paper_type.q_paper=log_metadata.paperID AND (users.roles='Student' OR users.roles='graduate') AND log$paper_type.userID=users.id AND q_paper=? AND grade LIKE ? AND DATE_ADD(log$paper_type.started, INTERVAL 2 MINUTE)>=? AND log$paper_type.started<=? AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE 'Staff%' AND student_grade NOT LIKE '%nhs%' $student_modules_sql GROUP BY username, q_paper, log$paper_type.started ORDER BY total_mark ASC, username");
+    //$result = $mysqli->prepare("SELECT username, sum(mark) AS total_mark, log_metadata.started FROM (log$paper_type, users, log_metadata) WHERE log$paper_type.userID=log_metadata.userID AND log$paper_type.started=log_metadata.started AND log$paper_type.q_paper=log_metadata.paperID $roles_sql AND log$paper_type.userID=users.id AND q_paper=? AND grade LIKE ? AND DATE_ADD(log$paper_type.started, INTERVAL 2 MINUTE)>=? AND log$paper_type.started<=? AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE 'Staff%' AND student_grade NOT LIKE '%nhs%' $student_modules_sql GROUP BY username, q_paper, log$paper_type.started ORDER BY total_mark ASC, username");
+    $result = $mysqli->prepare("SELECT username, sum(mark) AS total_mark, log_metadata.started FROM (log$paper_type, users, log_metadata) WHERE log$paper_type.userID=log_metadata.userID AND log$paper_type.started=log_metadata.started AND log$paper_type.q_paper=log_metadata.paperID $roles_sql AND log$paper_type.userID=users.id AND q_paper=? AND grade LIKE ? AND DATE_ADD(log$paper_type.started, INTERVAL 2 MINUTE)>=? AND log$paper_type.started<=? $student_modules_sql GROUP BY username, q_paper, log$paper_type.started ORDER BY total_mark ASC, username");
     $result->bind_param('isss',$paperID, $_GET['repcourse'], $startdate, $enddate);
   }
   $result->execute();

@@ -96,4 +96,8 @@ $string['prologueheading'] = 'Text displayed at the top of screen 1 when paper i
 // Postscript tab
 $string['postscripttab'] = 'Postscript';
 $string['postscriptheading'] = "Text displayed after the student clicks 'Finish' at the end.";
+
+// Reference Material tab
+$string['referencematerial'] = 'Reference Material';
+$string['referenceheading'] = 'Control which reference materials are available to the paper.';
 ?>

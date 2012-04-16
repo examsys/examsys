@@ -40,16 +40,9 @@ if (isset($_POST['save'])) {
   $result->execute();  
   $result->close();
   
-  /*
-  $result = $mysqli->prepare("UPDATE announcements SET title=?, staff_msg=?, student_msg=?, icon=?, start_date=?, enddate=? WHERE id=?");
-  $result->bind_param('ssssssi', $news_title, $staff_msg, $student_msg, $icon, $startdate, $enddate, $announcementid);
-  $result->execute();  
-  $result->close();
-  */
-  
   $mysqli->close();
   header("location: list_announcements.php");
-  
+  exit;
 }
 
 $result = $mysqli->prepare("SELECT title, staff_msg, student_msg, icon, DATE_FORMAT(startdate, '%Y%m%d%H%i'), DATE_FORMAT(enddate, '%Y%m%d%H%i') FROM announcements WHERE id=?");
@@ -74,6 +67,13 @@ h1 {font-size:120%}
 .f {text-align:right; padding-right:6px; width:125px}
 </style>
 <?php
+// Override this variable with a specific configuration file for announcements.
+$cfg_editor_javascript = <<< SCRIPT
+$cfg_js_root
+<script type="text/javascript" src="$cfg_root_path/tools/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
+<script type="text/javascript" src="$cfg_root_path/tools/tinymce/jscripts/tiny_mce/tiny_config_announcements.js"></script>
+SCRIPT;
+
   echo $cfg_editor_javascript;
 ?>
 <script type="text/javascript" src="../../js/jquery-1.6.1.min.js"></script>

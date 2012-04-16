@@ -225,11 +225,11 @@ require '../include/staff_auth.inc';
 
   echo "<table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>" . $string['myfolders'] . " (" . ($result->num_rows() + 1) . ")</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
   while ($result->fetch()) {
-    echo "<div class=\"f\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"width:60px\" align=\"center\"><a href=\"../folder/details.php?folder=$id\"><img src=\"../artwork/" . $color . "_folder.png\" width=\"48\" height=\"48\" alt=\"Folder\" border=\"0\" align=\"middle\" /></a>&nbsp;</td><td><a href=\"../folder/details.php?folder=$id\" class=\"blacklink\">$name</a></td></tr></table></div>\n";
+    echo "<div class=\"f\" ><a href=\"../folder/details.php?folder=$id\" class=\"blacklink\"><img style=\"vertical-align:middle; padding-right:8px\" src=\"../artwork/" . $color . "_folder.png\" width=\"48\" height=\"48\" alt=\"Folder\" border=\"0\" />$name</a></div>\n";
   }
   $result->close();
 
-  if (isset($_GET['newfolder']) AND $_GET['newfolder'] == 'y' or $duplicate_name == 1) {
+  if (isset($_GET['newfolder']) and $_GET['newfolder'] == 'y' or $duplicate_name == 1) {
     if (isset($_POST['submit']) and $_POST['submit'] and $duplicate_name == 1) {
       echo "<script language=\"JavaScript\">alert(\"" . $string['duplicatefoldername'] . "\")</script>";
       echo "<div class=\"f\"><img src=\"../artwork/yellow_folder.png\" width=\"48\" height=\"48\" alt=\"Folder\" border=\"0\" align=\"middle\" />&nbsp;<input style=\"background-color:#FFC0C0\" type=\"text\" size=\"30\" name=\"folder_name\" value=\"$new_folder_name\" onkeypress=\"if (event.keyCode == 38 || event.keyCode == 59 || event.keyCode == 63 || event.keyCode == 64 || event.keyCode == 94 || event.keyCode == 126) illegalChar(event.keyCode);\" /><input type=\"submit\" name=\"submit\" value=\"" . $string['create'] . "\" /></div>\n";
@@ -246,9 +246,9 @@ require '../include/staff_auth.inc';
   $deleted_details->store_result();
   $deleted_details->fetch();
   if ($no_deleted > 0) {
-    echo "<div class=\"f\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"width:60px\" align=\"center\"><a href=\"../delete/recycle_list.php\"><img src=\"../artwork/full_bin.png\" width=\"48\" height=\"48\" alt=\"Recycle Bin\" border=\"0\" align=\"middle\" /></a>&nbsp;</td><td><a href=\"../delete/recycle_list.php\" class=\"blacklink\">" . $string['recyclebin'] . "</a></td></tr></table></div>\n";
+    echo "<div class=\"f\"><a href=\"../delete/recycle_list.php\" class=\"blacklink\"><img style=\"vertical-align:middle; padding-right:8px\" src=\"../artwork/full_bin.png\" width=\"48\" height=\"48\" alt=\"Recycle Bin\" border=\"0\" align=\"middle\" />" . $string['recyclebin'] . "</a></div>\n";
   } else {
-    echo "<div class=\"f\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"width:60px\" align=\"center\"><a href=\"../delete/recycle_list.php\"><img src=\"../artwork/empty_bin.png\" width=\"48\" height=\"48\" alt=\"Recycle Bin\" border=\"0\" align=\"middle\" /></a>&nbsp;</td><td><a href=\"../delete/recycle_list.php\" class=\"blacklink\">" . $string['recyclebin'] . "</a></td></tr></table></div>\n";
+    echo "<div class=\"f\"><a href=\"../delete/recycle_list.php\" class=\"blacklink\"><img style=\"vertical-align:middle; padding-right:8px\" src=\"../artwork/empty_bin.png\" width=\"48\" height=\"48\" alt=\"Recycle Bin\" border=\"0\" align=\"middle\" />" . $string['recyclebin'] . "</a></div>\n";
   }
   $deleted_details->close();
 ?>

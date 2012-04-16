@@ -86,7 +86,7 @@ function output_Math_Editor($id) {
 	<?php
 }
 
-function display_question(&$question, $paper_type, $current_screen, $old_q_type, &$question_no, &$question_offset, $user_answers) {
+function display_question(&$question, $paper_type, $current_screen, $old_q_type, &$question_no, &$question_offset, $user_answers, &$unanswered) {
   global $cfg_editor_javascript, $labelcolor, $old_likert_label, $old_likert_cols, $screen_pre_submitted, $A, $B, $C, $D, $E, $F, $G, $H, $li_set, $bgcolor, $li_set, $calculator, $used_questions, $user_dismiss, $user_order, $string, $language, $cfg_root_path, $cfg_js_root;
 
   $q_id = $question['q_id'];
@@ -141,7 +141,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
   }
   
   $question_no++;
-
+  
   $li_set = 0;
   if ($old_q_type == 'likert' and $question['q_type'] != 'likert') {
     echo "</table>\n<br />\n<table cellpadding=\"0\" cellspacing=\"4\" border=\"0\" width=\"100%\" style=\"table-layout:fixed\">\n";
@@ -214,6 +214,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
     case 'mcq':
       if (isset($user_answers[$current_screen][$q_id]) AND $user_answers[$current_screen][$q_id] == '0' AND $screen_pre_submitted == 1) {
         echo '<blockquote class="unans">';
+        $unanswered = true;
       } else {
         echo '<blockquote>';
       }
@@ -222,6 +223,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
       } elseif ($question['display_method'] == 'dropdown') {
         if (isset($user_answers[$current_screen][$q_id]) and $user_answers[$current_screen][$q_id] == '0') {
           echo '<div class="option"><select class="unans" name="q' . $question_no . '" size="1">';
+          $unanswered = true;
         } else {
           echo '<div class="option"><select name="q' . $question_no . '" size="1">';
         }
@@ -245,6 +247,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
       }
       if (isset($answer_parts) and $answer_parts[0] == str_repeat('n', $len_answer) and $screen_pre_submitted == 1) {
         echo '<blockquote class="unans"><table cellpadding="2" cellspacing="0" border="0">';
+        $unanswered = true;
       } else {
         echo '<blockquote><table cellpadding="2" cellspacing="0" border="0">';
       }
@@ -331,6 +334,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
 
       if (isset($user_answers[$current_screen][$q_id]) and $user_answers[$current_screen][$q_id] == '0' and $screen_pre_submitted == 1) {
         echo '<blockquote class="unans"><table cellpadding="2" cellspacing="0" border="0">';
+        $unanswered = true;
       } else {
         echo '<blockquote><table cellpadding="2" cellspacing="0" border="0">';
       }
@@ -356,6 +360,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
 
         if ($tmp_user_answer == 'u' and $screen_pre_submitted == 1) {
           echo '<tr class="unans"><td align="center">';
+          $unanswered = true;
         } else {
           echo '<tr><td align="center">';
         }
@@ -416,6 +421,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
       case 'likert':
         if (isset($user_answers[$current_screen][$q_id]) and $user_answers[$current_screen][$q_id] == 'u' and $screen_pre_submitted == 1) {
           echo '<tr class="unans">';
+          $unanswered = true;
         } else {
           echo '<tr>';
         }
@@ -461,7 +467,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
             echo "<input type=\"radio\" name=\"q" . $question_no . "\" value=\"" . $tmp_part_id . "\" />";
           }
           if ($display_option['option_text'] != '') echo '&nbsp;' . $display_option['option_text'];
-          if ($display_option['o_media'] != '') echo '&nbsp;' . display_media($display_option['o_media'],$display_option['o_media_width'],$display_option['o_media_height']);
+          if ($display_option['o_media'] != '') echo '&nbsp;' . display_media($display_option['o_media'], $display_option['o_media_width'], $display_option['o_media_height']);
           echo '&nbsp;&nbsp;';
         } else {
           if (isset($user_answers[$current_screen][$q_id]) and $tmp_part_id == $user_answers[$current_screen][$q_id]) {
@@ -537,6 +543,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
         echo '<tr';
         if (isset($rank_answers[$tmp_part_id - 1]) and $rank_answers[$tmp_part_id - 1] == 'u' and $screen_pre_submitted == 1 and $tmp_user_answers < $total_rank_no) {
           echo ' class="unans"';
+          $unanswered = true;
         }
         echo "><td class=\"option\"><select name=\"q" . $question_no . "_" . $tmp_part_id . "\" id=\"q" . $question_no . "_" . $tmp_part_id . "\" class=\"rankselect q" . $question_no . "\">\n";
 
@@ -598,6 +605,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
       case 'true_false':
         if (isset($user_answers[$current_screen][$q_id]) and $user_answers[$current_screen][$q_id] == 'u' and $screen_pre_submitted == 1) {
           echo '<blockquote style="line-height:175%" class="unans">';
+          $unanswered = true;
         } else {
           echo '<blockquote style="line-height:175%">';
         }
@@ -673,6 +681,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
 
             if ( (isset($blank_user_answers[$blank_count]) and $blank_user_answers[$blank_count] == 'u') and (isset($screen_pre_submitted) and $screen_pre_submitted == 1) ) {
               $screen_output[$blank_count] = preg_replace("|\[blank.*\].*\[/blank\]|","<input type=\"text\" name=\"q" . $question_no . "_" . $blank_count . "\" class=\"unans\" size=\"$blank_size[$blank_count]\" />",$blank_details[$blank_count]);
+              $unanswered = true;
             } else {
               if (isset($blank_user_answers[$blank_count])) {
                 $ans = $blank_user_answers[$blank_count];
@@ -705,6 +714,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
             $answer_list = explode(',',$answer_options[0]);
             if (isset($blank_user_answers[$part_id]) and $blank_user_answers[$part_id] == 'u' and $screen_pre_submitted == 1) {
               echo "<select name=\"q" . $question_no . "_" . $part_id . "\" class=\"unans\">\n";
+              $unanswered = true;
             } else {
               echo "<select name=\"q" . $question_no . "_" . $part_id . "\">\n";
             }
@@ -737,6 +747,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
         if ($display_option['option_text'] == 'plain') {
           if (isset($user_answers[$current_screen][$q_id]) and $user_answers[$current_screen][$q_id] == '' and $screen_pre_submitted == 1) {
             echo "<blockquote><textarea style=\"font-family:Arial,sans-serif\" class=\"unans\" name=\"q" . $question_no . "\" cols=\"" . $textbox_size[0] . "\" rows=\"" . $textbox_size[1] . "\">" . $user_answers[$current_screen][$q_id] . "</textarea></blockquote>\n";
+            $unanswered = true;
           } else {
             $ans = '';
             if(isset($user_answers[$current_screen][$q_id])) {
@@ -761,6 +772,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
       case 'hotspot':
         if (isset($user_answers[$current_screen][$q_id]) and $user_answers[$current_screen][$q_id] == 'u' and  $screen_pre_submitted == 1) {
           echo "<div align=\"left\" class=\"unans\">";
+          $unanswered = true;
           $tmp_bgcolor = '#FFC0C0';
         } else {
           echo "<div align=\"left\">";
@@ -831,6 +843,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
 
         if (isset($user_answers[$current_screen][$q_id]) and $user_answers[$current_screen][$q_id] == '0$' . $marks . ';' and  $screen_pre_submitted == 1) {
           echo "<div align=\"center\" class=\"unans\">\n";
+          $unanswered = true;
           $tmp_bgcolor = '#FFC0C0';
         } else {
           echo "<div align=\"center\">\n";
@@ -951,6 +964,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
             output_Math_Editor("q$question_no");
             echo "</p>\n";
           } else {
+            $unanswered = true;
             echo "<p class=\"unans\"><input type=\"hidden\" style=\"text-align:right\"  id=\"q" . $question_no . "\" name=\"q" . $question_no . "\" size=\"10\" value=\"\" />";
             output_Math_Editor("q$question_no");
             echo "</p>\n";
@@ -968,6 +982,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
             echo "<div><input type=\"text\" style=\"text-align:right\" id=\"q" . $question_no . "\" name=\"q" . $question_no . "\" size=\"10\" value=\"" . $ans . "\" class=\"calc-answer\" />" . $score_array[3] .  "</div>\n";
           } else {
             echo "<div><input type=\"text\" style=\"text-align:right\" class=\"unans calc-answer\" id=\"q" . $question_no . "\" name=\"q" . $question_no . "\" size=\"10\" value=\"\" />" . $score_array[3] .  "</div>\n";
+            $unanswered = true;
           }
         }
       }
@@ -1032,6 +1047,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
       if ($answer_no == 1) {
         if (isset($matching_users_answers[$part_id - 1]) and $matching_users_answers[$part_id - 1] == 'u' and $screen_pre_submitted == 1) {
           echo "<select class=\"unans\" name=\"q" . $question_no . "_" . $part_id . "\" size=\"1\">\n";
+          $unanswered = true;
         } else {
           echo "<select name=\"q" . $question_no . "_" . $part_id . "\" size=\"1\">\n";
         }
@@ -1040,6 +1056,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
         echo "<br />\n";
         if (isset($matching_users_answers[$part_id - 1]) and $matching_users_answers[$part_id - 1] == '' and $screen_pre_submitted == 1) {
           echo "<div class=\"option\"><select class=\"unans\" onchange=\"multimatchingCheck('q" . $question_no . "_" . $part_id . "'," . count($matching_options) . "," . count($sub_answers) . ");\" name=\"q" . $question_no . "_" . $part_id . "[]\" id=\"q" . $question_no . "_" . $part_id . "\" multiple=\"multiple\" size=\"$list_size\">\n";
+          $unanswered = true;
         } else {
           echo "<div class=\"option\"><select onchange=\"multimatchingCheck('q" . $question_no . "_" . $part_id . "'," . count($matching_options) . "," . count($sub_answers) . ");\" name=\"q" . $question_no . "_" . $part_id . "[]\" id=\"q" . $question_no . "_" . $part_id . "\" multiple=\"multiple\" size=\"$list_size\">\n";
         }
@@ -1085,6 +1102,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
       if (trim($single_scenario) != '') {
         if (isset($matching_users_answers[$part_id - 1]) and $matching_users_answers[$part_id - 1] == '' and $screen_pre_submitted == 1) {
           echo "<tr class=\"unans\">\n";
+          $unanswered = true;
         } else {
           echo "<tr>\n";
         }

@@ -304,7 +304,7 @@
   echo '  </WorksheetOptions>';
   echo ' </Worksheet>';
   echo ' <Worksheet ss:Name="' . $string['summary'] . '">';
-  $exp_row_count = 19;
+  $exp_row_count = 20;
   $exp_row_count += ($marking > 1) ? '2' : $marking;
   $exp_row_count += (count($warnings['deleted_qns']) > 0) ? 1 : 0;
   

@@ -48,6 +48,7 @@ if (isset($_POST['ok']) or (isset($_POST['returnhit']) and $_POST['returnhit'] =
 <html>
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="content-type" content="text/html; charset=<?php echo $cfg_page_charset ?>" />
 <title><?php echo $string['addannouncement']; ?></title>
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
 <link rel="stylesheet" type="text/css" href="../css/header.css" />
@@ -55,13 +56,21 @@ if (isset($_POST['ok']) or (isset($_POST['returnhit']) and $_POST['returnhit'] =
 body {font-family:Arial,sans-serif; font-size:100%; background-color:white; color:black}
 textarea, input[type=text], select {font-family:Arail,sans-serif; border: 1px solid #7F9DB9}
 h1 {font-size:120%}
-.f {text-align:right; padding-right:6px; width:125px}
+.field {text-align:right; padding-right:6px; width:125px}
 </style>
+<script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
 <?php
+// Override this variable with a specific configuration file for announcements.
+$cfg_editor_javascript = <<< SCRIPT
+$cfg_js_root
+<script type="text/javascript" src="$cfg_root_path/tools/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
+<script type="text/javascript" src="$cfg_root_path/tools/tinymce/jscripts/tiny_mce/tiny_config_announcements.js"></script>
+SCRIPT;
+
   echo $cfg_editor_javascript;
 ?>
-<script type="text/javascript" src="../../js/jquery-1.6.1.min.js"></script>
 <script type="text/javascript" src="../tools/mee/mee/js/mee_src.js"></script>
+<script type="text/javascript" src="../js/staff_help.js"></script>
 
 </head>
 
@@ -98,19 +107,19 @@ h1 {font-size:120%}
 </td>
 </tr>
 <tr>
-<td class="f">Title</td><td><input type="text" name="title" size="60" /></td>
+<td class="field">Title</td><td><input type="text" name="title" size="60" /></td>
 </tr>
 <tr>
-<td class="f">Available from</td><td><?php echo DateUtils::timedateSelect('f', date('YmdH00')); ?></td>
+<td class="field">Available from</td><td><?php echo DateUtils::timedateSelect('f', date('YmdH00')); ?></td>
 </tr>
 <tr>
-<td class="f">Available to</td><td><?php echo DateUtils::timedateSelect('t', date('YmdH00')); ?></td>
+<td class="field">Available to</td><td><?php echo DateUtils::timedateSelect('t', date('YmdH00')); ?></td>
 </tr>
 <tr>
-<td class="f">Staff Message</td><td><textarea class="mceEditor" id="staff_msg" name="staff_msg" style="width:750px; height:70px; margin: 0" rows="5" cols="20"></textarea></td>
+<td class="field">Staff Message</td><td><textarea class="mceEditor" id="staff_msg" name="staff_msg" style="width:750px; height:70px; margin: 0" rows="5" cols="20"></textarea></td>
 </tr>
 <tr>
-<td class="f">Student Message</td><td><textarea class="mceEditor" id="student_msg" name="student_msg" style="width:750px; height:70px; margin: 0" rows="5" cols="20"></textarea></td>
+<td class="field">Student Message</td><td><textarea class="mceEditor" id="student_msg" name="student_msg" style="width:750px; height:70px; margin: 0" rows="5" cols="20"></textarea></td>
 </tr>
 <tr>
 <td colspan="2">&nbsp;</td>

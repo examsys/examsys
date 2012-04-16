@@ -40,8 +40,8 @@ require '../../classes/questionutils.class.php';
 <?php
 $i = 1;
 foreach ($question->options as $option):
-  $option_text = strip_tags(QuestionUtils::get_leadin($option->get_text(), $mysqli));
-  if (strlen($option_text) > 200) 
+  $option_text = ltrim(strip_tags(QuestionUtils::get_leadin($option->get_text(), $mysqli)));
+  if (strlen($option_text) > 200)
   {
       $option_text = wordwrap($option_text, 200);
       $option_text = substr($option_text, 0, strpos($option_text, "\n")) . '&hellip;';

@@ -14,6 +14,7 @@ $string['editpropertiessysadmin'] = 'Edytuj właściwości (SysAdmin)';
 $string['objectives'] = 'Celami';
 $string['manageobjectives'] = 'Zarządzaj celami';
 $string['managekeywords'] = 'Zarządzaj słowami kluczowymi';
+$string['referencematerial'] = 'Materiał pomocniczy';   
 $string['importstudentmetadata'] = 'Importuj metadane studentów';
 $string['listpapers'] = 'Wyświetl listę arkuszy';
 $string['module'] = 'Moduł';

@@ -118,7 +118,10 @@ require_once '../classes/searchutils.class.php';
     NameOfCookie = "questionsearch[" + ID + "]";
     document.cookie = NameOfCookie + "=" + current +  ((expiredays == null) ? "" : "; expires=" + ExpireDate.toGMTString());
   }
-</script>
+
+  function selectDateRadio() {
+    document.getElementById('question_date5').checked = true;
+  }
 
 </script>
 
@@ -213,18 +216,20 @@ require_once '../classes/searchutils.class.php';
   }
   
   $date_options = array("dont remember"=>$string['dont remember'],"week"=>$string['week'],"month"=>$string['month'],"year"=>$string['year'],"specify"=>$string['specify']);
+  $i = 1;
   foreach ($date_options as $date_value=>$date_label) {
     if ((isset($_POST['question_date']) and $_POST['question_date'] == $date_value) or (!isset($_POST['question_date']) and $date_value == 'dont remember')) {
-      echo "<tr><td colspan=\"2\"><input type=\"radio\" name=\"question_date\" value=\"$date_value\" checked />&nbsp;" . $string[$date_value] . "</td></tr>";
+      echo "<tr><td colspan=\"2\"><input type=\"radio\" id=\"question_date$i\" name=\"question_date\" value=\"$date_value\" checked />&nbsp;" . $string[$date_value] . "</td></tr>";
     } else {
-      echo "<tr><td colspan=\"2\"><input type=\"radio\" name=\"question_date\" value=\"$date_value\" />&nbsp;" . $string[$date_value] . "</td></tr>";
+      echo "<tr><td colspan=\"2\"><input type=\"radio\" id=\"question_date$i\" name=\"question_date\" value=\"$date_value\" />&nbsp;" . $string[$date_value] . "</td></tr>";
     }
+    $i++;
   }
 ?>
 
 <tr><td style="text-align:right"><?php echo $string['from']; ?>&nbsp;</td><td>
 <?php
-  echo "<select name=\"fday\">\n";
+  echo "<select name=\"fday\" onchange=\"selectDateRadio()\">\n";
   for ($i=1; $i<=31; $i++) {
     if ($i < 10) {
       echo "<option value=\"0$i\">0$i</option>\n";
@@ -232,7 +237,7 @@ require_once '../classes/searchutils.class.php';
       echo "<option value=\"$i\">$i</option>\n";
     }
   }
-  echo "</select><select name=\"fmonth\">\n";
+  echo "</select><select name=\"fmonth\" onchange=\"selectDateRadio()\">\n";
   for ($i=1; $i<=12; $i++) {
     if ($i < 10) {
       echo "<option value=\"0$i\">0$i</option>\n";
@@ -240,7 +245,7 @@ require_once '../classes/searchutils.class.php';
       echo "<option value=\"$i\">$i</option>\n";
     }
   }
-  echo "</select><select name=\"fyear\">\n";
+  echo "</select><select name=\"fyear\" onchange=\"selectDateRadio()\">\n";
   for ($i=1999; $i<=date("Y"); $i++) {
     echo "<option value=\"$i\">$i</option>\n";
   }
@@ -249,7 +254,7 @@ require_once '../classes/searchutils.class.php';
 </td></tr>
 <tr><td style="text-align:right"><?php echo $string['to']; ?>&nbsp;</td><td>
 <?php
-  echo "<select name=\"tday\">\n";
+  echo "<select name=\"tday\" onchange=\"selectDateRadio()\">\n";
   for ($i=1; $i<=31; $i++) {
     if ($i < 10) {
       if ($i == date("d")) {
@@ -265,7 +270,7 @@ require_once '../classes/searchutils.class.php';
       }
     }
   }
-  echo "</select><select name=\"tmonth\">\n";
+  echo "</select><select name=\"tmonth\" onchange=\"selectDateRadio()\">\n";
   for ($i=1; $i<=12; $i++) {
     if ($i < 10) {
       if ($i == date("m")) {
@@ -281,7 +286,7 @@ require_once '../classes/searchutils.class.php';
       }
     }
   }
-  echo "</select><select name=\"tyear\">\n";
+  echo "</select><select name=\"tyear\" onchange=\"selectDateRadio()\">\n";
   for ($i=1999; $i<=date("Y"); $i++) {
     if ($i == date("Y")) {
       echo "<option value=\"$i\" selected>$i</option>\n";
