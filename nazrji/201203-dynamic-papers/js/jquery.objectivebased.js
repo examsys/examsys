@@ -79,8 +79,10 @@ $(function () {
       if (searchID == targetID) {
         if (checked) {
           $(this).attr('checked', 'checked');
+          $(this).parent().addClass('selected');
         } else {
           $(this).attr('checked', false);
+          $(this).parent().removeClass('selected');
         }
       }
     });
