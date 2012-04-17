@@ -107,6 +107,8 @@ if ($module != '') {
 <?php
   if (count($temp_array) > 0) {
 ?>
+    <h2><?php echo count($temp_array) ?> questions mapped</h2>
+
     <ul class="map-objectives questions">
 <?php
   }
