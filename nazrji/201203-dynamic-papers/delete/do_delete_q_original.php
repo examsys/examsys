@@ -42,7 +42,7 @@
   <title><?php echo $string['questiondeleted']; ?></title>
   <script type="text/javascript">
     function updateParent() {
-      window.opener.location.reload();
+      window.opener.document.getElementById('link<?php echo $_POST['divID']; ?>').style.display = 'none';
       self.close();
     }
   </script>

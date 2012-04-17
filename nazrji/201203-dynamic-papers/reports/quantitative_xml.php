@@ -36,15 +36,19 @@
     $theme = str_replace('&nbsp;',' ',$theme);
     $scenario = str_replace('&nbsp;',' ',$scenario);
     $leadin = str_replace('&nbsp;',' ',$leadin);
+    $old_likert_scale = str_replace('&nbsp;',' ',$old_likert_scale);
     
     // Convert ampersands
     $theme = strip_tags(str_replace('&','&amp;',$theme));
     $scenario = strip_tags(str_replace('&','&amp;',$scenario));
     $leadin = trim(strip_tags(str_replace('&','&amp;',$leadin)));
+    $old_likert_scale = trim(strip_tags(str_replace('&','&amp;',$old_likert_scale)));
+    
     $theme = strip_tags(str_replace('&amp;amp;','&amp;',$theme));
     $scenario = strip_tags(str_replace('&amp;amp;','&amp;',$scenario));
     $leadin = strip_tags(str_replace('&amp;amp;','&amp;',$leadin));
-
+    $old_likert_scale = trim(strip_tags(str_replace('&amp;amp;','&amp;',$old_likert_scale)));
+    
     //remove nasty non-utf8 chars
     $theme = wordToUtf8($theme);
     $scenario = wordToUtf8($scenario);
@@ -106,7 +110,6 @@
           break;
         case 'likert':
           $unanswered = 0;
-          $old_properties = explode('|',$old_likert_scale);
           $old_size = substr_count($old_likert_scale,'|');
           $current_properties = explode('|',$old_display_method);
           $new_size = substr_count($old_display_method,'|');
@@ -117,7 +120,7 @@
             echo '<w:tr><w:tc><w:tcPr><w:tcW w:w="0" w:type="auto"/><w:shd w:val="clear" w:color="auto" w:fill="E0E0E0"/></w:tcPr><w:p><w:pPr><w:jc w:val="center"/><w:rPr><w:b/></w:rPr></w:pPr><w:r><w:rPr><w:b/></w:rPr><w:t>No</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w="0" w:type="auto"/><w:shd w:val="clear" w:color="auto" w:fill="E0E0E0"/></w:tcPr><w:p><w:pPr><w:jc w:val="center"/><w:rPr><w:b/></w:rPr></w:pPr><w:r><w:rPr><w:b/></w:rPr><w:t>Question</w:t></w:r></w:p></w:tc>';
             if ($na == 'true') echo '<w:tc><w:tcPr><w:tcW w:w="0" w:type="auto"/><w:shd w:val="clear" w:color="auto" w:fill="E0E0E0"/></w:tcPr><w:p><w:pPr><w:jc w:val="center"/><w:rPr><w:b/></w:rPr></w:pPr><w:r><w:rPr><w:b/></w:rPr><w:t>N/A</w:t></w:r></w:p></w:tc>';
             for ($point=0; $point<$new_size; $point++) {
-              echo '<w:tc><w:tcPr><w:tcW w:w="0" w:type="auto"/><w:shd w:val="clear" w:color="auto" w:fill="E0E0E0"/></w:tcPr><w:p><w:pPr><w:jc w:val="center"/><w:rPr><w:b/></w:rPr></w:pPr><w:r><w:rPr><w:b/></w:rPr><w:t>' . str_replace('<br />','</w:t></w:r><w:r><w:br/></w:r><w:r><w:rPr><w:b/></w:rPr><w:t>',strip_tags($current_properties[$point],'<br>,<br />')) . '</w:t></w:r></w:p></w:tc>';
+              echo '<w:tc><w:tcPr><w:tcW w:w="0" w:type="auto"/><w:shd w:val="clear" w:color="auto" w:fill="E0E0E0"/></w:tcPr><w:p><w:pPr><w:jc w:val="center"/><w:rPr><w:b/></w:rPr></w:pPr><w:r><w:rPr><w:b/></w:rPr><w:t>' . str_replace('<br />','</w:t></w:r><w:r><w:br/></w:r><w:r><w:rPr><w:b/></w:rPr><w:t>' . strip_tags($current_properties[$point],'<br>,<br />')) . '</w:t></w:r></w:p></w:tc>';
             }
             echo '<w:tc><w:tcPr><w:tcW w:w="0" w:type="auto"/><w:shd w:val="clear" w:color="auto" w:fill="E0E0E0"/></w:tcPr><w:p><w:pPr><w:jc w:val="center"/><w:rPr><w:b/></w:rPr></w:pPr><w:r><w:rPr><w:b/></w:rPr><w:t>Unanswered</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w="0" w:type="auto"/><w:shd w:val="clear" w:color="auto" w:fill="E0E0E0"/></w:tcPr><w:p><w:pPr><w:jc w:val="center"/><w:rPr><w:b/></w:rPr></w:pPr><w:r><w:rPr><w:b/></w:rPr><w:t>Mean</w:t></w:r></w:p></w:tc></w:tr>';
             $table_on = 1;
@@ -522,8 +525,10 @@
     $result->execute();
     $result->bind_result($screen, $q_id, $q_type, $theme, $scenario, $leadin, $option_text, $display_method, $q_media, $q_media_width, $q_media_height, $correct);
     while ($row = $result->fetch()) {
+      $theme = str_replace('&nbsp;',' ',$theme);
       $scenario = str_replace('&nbsp;',' ',$scenario);
       $leadin = str_replace('&nbsp;',' ',$leadin);
+      $option_text = str_replace('&nbsp;',' ',$option_text);
     
       // Replace & characters.
       $theme = str_replace('&','&amp;',$theme);

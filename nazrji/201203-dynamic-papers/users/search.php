@@ -412,7 +412,7 @@ if ($sortby == 'title') {
         echo  "</td><td>$tmp_username</td>";
       } else {
         if (isset($tmp_title) and $tmp_title != '') {
-          $tmp_title = $string[strtolower($tmp_title)];
+          $tmp_title = $tmp_title;
         } else {
           $tmp_title = '';
         }

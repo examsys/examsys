@@ -726,7 +726,13 @@
   $result->execute();
   $result->bind_result($screen, $q_id, $q_type, $theme, $scenario, $leadin, $option_text, $score_method, $display_method, $q_media, $q_media_width, $q_media_height, $correct);
   while ($result->fetch()) {
-    // Replace & characters.
+    // Replace &nbsp; with spaces.
+    $theme = str_replace('&nbsp;',' ',$theme);
+    $scenario = str_replace('&nbsp;',' ',$scenario);
+    $leadin = str_replace('&nbsp;',' ',$leadin);
+    $option_text = str_replace('&nbsp;',' ',$option_text);
+
+    // Replace & with code.
     $theme = str_replace('&','&amp;',$theme);
     $scenario = str_replace('&','&amp;',$scenario);
     $leadin = str_replace('&','&amp;',$leadin);

@@ -70,7 +70,7 @@ require_once '../classes/searchutils.class.php';
   }
 
   function deleteQuestion() {
-    notice=window.open("../delete/check_delete_q_original.php?q_id=" + document.PapersMenu.questionID.value + "","notice","width=500,height=200,scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+    notice=window.open("../delete/check_delete_q_original.php?q_id=" + document.PapersMenu.questionID.value + "&divID=" + document.PapersMenu.oldQuestionID.value + "","notice","width=500,height=200,scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
     notice.moveTo(screen.width/2-250,screen.height/2-100);
     if (window.focus) {
       notice.focus();
@@ -229,66 +229,111 @@ require_once '../classes/searchutils.class.php';
 
 <tr><td style="text-align:right"><?php echo $string['from']; ?>&nbsp;</td><td>
 <?php
+  if (isset($_POST['fday'])) {
+    $target = $_POST['fday'];
+  } else {
+    $target = 0;
+  }
   echo "<select name=\"fday\" onchange=\"selectDateRadio()\">\n";
   for ($i=1; $i<=31; $i++) {
     if ($i < 10) {
-      echo "<option value=\"0$i\">0$i</option>\n";
+      if ($i == $target) {
+        echo "<option value=\"0$i\" selected>0$i</option>\n";
+      } else {
+        echo "<option value=\"0$i\">0$i</option>\n";
+      }
     } else {
-      echo "<option value=\"$i\">$i</option>\n";
+      if ($i == $target) {
+        echo "<option value=\"$i\" selected>$i</option>\n";
+      } else {
+        echo "<option value=\"$i\">$i</option>\n";
+      }
     }
+  }
+  if (isset($_POST['fmonth'])) {
+    $target = $_POST['fmonth'];
+  } else {
+    $target = 0;
   }
   echo "</select><select name=\"fmonth\" onchange=\"selectDateRadio()\">\n";
   for ($i=1; $i<=12; $i++) {
     if ($i < 10) {
-      echo "<option value=\"0$i\">0$i</option>\n";
+      if ($i == $target) {
+        echo "<option value=\"0$i\" selected>0$i</option>\n";
+      } else {
+        echo "<option value=\"0$i\">0$i</option>\n";
+      }
     } else {
-      echo "<option value=\"$i\">$i</option>\n";
+      if ($i == $target) {
+        echo "<option value=\"$i\" selected>$i</option>\n";
+      } else {
+        echo "<option value=\"$i\">$i</option>\n";
+      }
     }
   }
   echo "</select><select name=\"fyear\" onchange=\"selectDateRadio()\">\n";
   for ($i=1999; $i<=date("Y"); $i++) {
-    echo "<option value=\"$i\">$i</option>\n";
+    if (isset($_POST['fyear']) and $_POST['fyear'] == $i) {
+      echo "<option value=\"$i\" selected>$i</option>\n";
+    } else {
+      echo "<option value=\"$i\">$i</option>\n";
+    }
   }
 ?>
 </select>
 </td></tr>
 <tr><td style="text-align:right"><?php echo $string['to']; ?>&nbsp;</td><td>
 <?php
+  if (isset($_POST['tday'])) {
+    $target = $_POST['tday'];
+  } else {
+    $target = date("d");
+  }
   echo "<select name=\"tday\" onchange=\"selectDateRadio()\">\n";
   for ($i=1; $i<=31; $i++) {
     if ($i < 10) {
-      if ($i == date("d")) {
+      if ($i == $target) {
         echo "<option value=\"0$i\" selected>0$i</option>\n";
       } else {
         echo "<option value=\"0$i\">0$i</option>\n";
       }
     } else {
-      if ($i == date("d")) {
+      if ($i == $target) {
         echo "<option value=\"$i\" selected>$i</option>\n";
       } else {
         echo "<option value=\"$i\">$i</option>\n";
       }
     }
+  }
+  if (isset($_POST['tday'])) {
+    $target = $_POST['tday'];
+  } else {
+    $target = date("m");
   }
   echo "</select><select name=\"tmonth\" onchange=\"selectDateRadio()\">\n";
   for ($i=1; $i<=12; $i++) {
     if ($i < 10) {
-      if ($i == date("m")) {
+      if ($i == $target) {
         echo "<option value=\"0$i\" selected>0$i</option>\n";
       } else {
         echo "<option value=\"0$i\">0$i</option>\n";
       }
     } else {
-      if ($i == date("m")) {
+      if ($i == $target) {
         echo "<option value=\"$i\" selected>$i</option>\n";
       } else {
         echo "<option value=\"$i\">$i</option>\n";
       }
     }
   }
+  if (isset($_POST['tyear'])) {
+    $target = $_POST['tyear'];
+  } else {
+    $target = date("Y");
+  }
   echo "</select><select name=\"tyear\" onchange=\"selectDateRadio()\">\n";
   for ($i=1999; $i<=date("Y"); $i++) {
-    if ($i == date("Y")) {
+    if ($i == $target) {
       echo "<option value=\"$i\" selected>$i</option>\n";
     } else {
       echo "<option value=\"$i\">$i</option>\n";
