@@ -94,11 +94,11 @@ $(function () {
   function highlightObjectives(e) {
     var term = $('#q').val();
 
-    if (term.length > 3) {
+    if (term.length > 2) {
       var usableterms = new Array();
       term = term.split(' ');
       for (var i = 0; i < term.length; i++) {
-        if (term[i].length > 3) {
+        if (term[i].length > 2) {
           usableterms.push(term[i]);
         }
       }
@@ -121,11 +121,11 @@ $(function () {
   function searchObjectives(e) {
     var term = $('#q').val();
 
-    if (term.length > 3) {
+    if (term.length > 2) {
       var usableterms = new Array();
       term = term.split(' ');
       for (var i = 0; i < term.length; i++) {
-        if (term[i].length > 3) {
+        if (term[i].length > 2) {
           usableterms.push(term[i]);
         }
       }
