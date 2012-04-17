@@ -33,6 +33,8 @@ $(function () {
 
   $('input.session').change(selSession);
 
+  $('#q').keyup(highlightObjectives);
+  $('#search_select').click(searchObjectives);
 
   function selUnselObjective(e) {
     $(this).parent().toggleClass('selected');
@@ -49,6 +51,7 @@ $(function () {
     $('.session:checked').attr('checked', false);
     $('.sel-objective:checked').attr('checked', false);
     $('.map-item').removeClass('selected');
+    $('.map-item').removeClass('search-result');
   }
 
   function handleFormSubmission(e) {
@@ -86,5 +89,58 @@ $(function () {
         }
       }
     });
+  }
+
+  function highlightObjectives(e) {
+    var term = $('#q').val();
+
+    if (term.length > 3) {
+      var usableterms = new Array();
+      term = term.split(' ');
+      for (var i = 0; i < term.length; i++) {
+        if (term[i].length > 3) {
+          usableterms.push(term[i]);
+        }
+      }
+      term = usableterms.join('|')
+
+      var reg = new RegExp(term, 'i');
+
+      $('.map-item').each(function () {
+        if ($(this).text().match(reg)) {
+          $(this).addClass('search-result');
+        } else {
+          $(this).removeClass('search-result');
+        }
+      });
+    } else {
+      $('.map-item').removeClass('search-result');
+    }
+  }
+
+  function searchObjectives(e) {
+    var term = $('#q').val();
+
+    if (term.length > 3) {
+      var usableterms = new Array();
+      term = term.split(' ');
+      for (var i = 0; i < term.length; i++) {
+        if (term[i].length > 3) {
+          usableterms.push(term[i]);
+        }
+      }
+      term = usableterms.join('|')
+
+      var reg = new RegExp(term, 'i');
+
+      $('.map-item').each(function () {
+        if ($(this).text().match(reg)) {
+          if (e.target.id == 'search_select') {
+            $(this).children('input').attr('checked', 'checked');
+            $(this).addClass('selected');
+          }
+        }
+      });
+    }
   }
 });

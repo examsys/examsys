@@ -9,4 +9,6 @@ $string['clearall'] = 'Clear all selections';
 $string['createpaper'] = 'Create Paper';
 $string['mustselectobjectives'] = 'Please select objectives on which to base the paper';
 $string['nopermission'] = 'You do not have permission to access objectives based papers on this module';
+$string['highlight'] = 'Highlight objectives';
+$string['select'] = 'Select objectives';
 ?>

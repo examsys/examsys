@@ -57,3 +57,12 @@ table {
 .mapped {
   padding-left: 4px;
 }
+
+
+#search_form {
+  margin-left: 16px;
+}
+
+.search-result {
+  background-color: #fffbcc;
+}

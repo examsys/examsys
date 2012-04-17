@@ -103,12 +103,12 @@ if ($module != '') {
     <tr><td colspan="2" style="background-color:#1E3C7B">&nbsp;</td></tr>
   </table>
 
+  <h2><?php echo count($temp_array) . ' ' . $string['questionsmapped'] ?></h2>
+
   <form action="./" method="post">
 <?php
   if (count($temp_array) > 0) {
 ?>
-    <h2><?php echo count($temp_array) ?> questions mapped</h2>
-
     <ul class="map-objectives questions">
 <?php
   }

@@ -32,3 +32,4 @@ $string['mappedquestions'] = 'Mapped Questions';
 $string['bysession'] = 'by Session';
 $string['byquestion'] = 'by Question';
 $string['mustselectquestions'] = 'Plese select questions to which the objectives will be mapped';
+$string['questionsmapped'] = 'questions mapped'; // Niko

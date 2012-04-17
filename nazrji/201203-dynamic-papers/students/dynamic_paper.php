@@ -135,6 +135,9 @@ if (count($objsBySession[$module]) > 0) {
   $qn_count = count(array_unique(explode(',', $questionID_list)));
 ?>
     <p class="intro"><?php echo $string['selectobjectives'] ?></p>
+      
+    <p id="search_form"><label for="q">Search:</label> <input type="text" id="q" name="q" /> <button id="search_select"><?php echo $string['select'] ?></button></p>
+
     <form action="<?php echo $_SERVER['PHP_SELF'] . '?' . $_SERVER['QUERY_STRING'] ?>" method="post" id="obj_form">
 <?php
   foreach($objsBySession[$module] as $identifier => $sessionData) {
