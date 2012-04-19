@@ -136,7 +136,7 @@ if (count($objsBySession[$module]) > 0) {
 ?>
     <p class="intro"><?php echo $string['selectobjectives'] ?></p>
       
-    <p id="search_form"><label for="q">Search:</label> <input type="text" id="q" name="q" /> <button id="search_select"><?php echo $string['select'] ?></button></p>
+    <p id="search_form"><label for="q">Search:</label> <input type="text" id="q" name="q" /> <button id="search_filter"><?php echo $string['filter'] ?></button> <button id="search_select" disabled="disabled"><?php echo $string['select'] ?></button> <button id="search_show"><?php echo $string['showall'] ?></button></p>
 
     <form action="<?php echo $_SERVER['PHP_SELF'] . '?' . $_SERVER['QUERY_STRING'] ?>" method="post" id="obj_form">
 <?php

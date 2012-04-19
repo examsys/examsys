@@ -12,4 +12,6 @@ $string['mustselectobjectives'] = 'Please select objectives on which to base the
 $string['nopermission'] = 'You do not have permission to access objectives based papers on this module'; // Niko
 $string['highlight'] = 'Highlight objectives'; // Niko
 $string['select'] = 'Select objectives'; // Niko
+$string['filter'] = 'Filter'; // Niko
+$string['showall'] = 'Show All'; // Niko
 ?>
