@@ -93,10 +93,10 @@ unset($objsBySession['none_of_the_above']);
 
   <title>Rogō<?php echo " $cfg_install_type {$string['objectivebasedquiz']}"; ?> </title>
 
-  <link rel="stylesheet" type="text/css" href="../css/objective_based.css" />
   <link rel="stylesheet" type="text/css" href="../css/header.css" />
   <link rel="stylesheet" type="text/css" href="../css/tipTip.css" />
   <link rel="stylesheet" type="text/css" href="../css/dynamic_papers.css" />
+  <link rel="stylesheet" type="text/css" href="../css/objective_based.css" />
 
   <script src="../js/jquery-1.6.1.min.js" type="text/javascript"></script>
   <script src="../js/jquery.tipTip.minified.js" type="text/javascript"></script>

@@ -50,8 +50,13 @@ table {
   padding: 12px 0 2px 0;
 }
 
+.map-item {
+  padding-bottom: 4px;
+}
+
 .sel-objective {
-  margin-right: 6px;
+  margin-right: 16px;
+  float: left;
 }
 
 .mapped {

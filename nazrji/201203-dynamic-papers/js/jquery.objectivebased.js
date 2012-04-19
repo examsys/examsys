@@ -52,6 +52,7 @@ $(function () {
     $('.sel-objective:checked').attr('checked', false);
     $('.map-item').removeClass('selected');
     $('.map-item').removeClass('search-result');
+    highlightObjectives();
   }
 
   function handleFormSubmission(e) {
@@ -91,7 +92,7 @@ $(function () {
     });
   }
 
-  function highlightObjectives(e) {
+  function highlightObjectives() {
     var term = $('#q').val();
 
     if (term.length > 2) {
@@ -118,7 +119,7 @@ $(function () {
     }
   }
 
-  function searchObjectives(e) {
+  function searchObjectives() {
     var term = $('#q').val();
 
     if (term.length > 2) {
@@ -135,10 +136,9 @@ $(function () {
 
       $('.map-item').each(function () {
         if ($(this).text().match(reg)) {
-          if (e.target.id == 'search_select') {
-            $(this).children('input').attr('checked', 'checked');
-            $(this).addClass('selected');
-          }
+          $(this).children('input').attr('checked', 'checked');
+          $(this).removeClass('search-result');
+          $(this).addClass('selected');
         }
       });
     }
