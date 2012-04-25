@@ -24,13 +24,12 @@
 * @package
 */
 
-// TODO: error handling for AJAX calls
-
 ob_start('ob_gzhandler');
 require '../include/staff_auth.inc';
 require '../include/question_types.inc';
 require '../include/errors.inc';
 require '../include/calculate_marks.inc';
+require '../include/paper_functions.inc.php';
 
 check_var('paperID', 'GET', true, false);
 
@@ -713,36 +712,10 @@ function getMSCAA($paperID, $mysqlidb) {
     }
   }
 
-  if (isset($_GET['module']) and $_GET['module'] != '') {
-    $module = $_GET['module'];
-    $folder = '';
-    $paper_modules = explode(',',$module);
-    if (count($paper_modules) > 0) {     // Paper is on multiple modules
-      if (strpos($userroles,'Admin') !== false) {
-        $module = $paper_modules[0];
-      } else {
-        for ($i=count($paper_modules)-1; $i>0; $i--) {
-          if (in_array($paper_modules[$i], $teams)) {
-            $module = $paper_modules[$i];
-          }
-        }
-      }
-    }
-  } elseif (isset($_GET['folder'])) {
-    $folder = $_GET['folder'];
-    $result = $mysqli->prepare("SELECT name FROM folders WHERE id=? LIMIT 1");
-    $result->bind_param('i', $folder);
-    $result->execute();
-    $result->bind_result($folder_name);
-    $result->fetch();
-    $result->close();
-    
-    $module = '';
-  } else {
-    $paper_modules = explode(',',$tmp_module);  // Get the modules off the paper properties
-    $module = $paper_modules[0];
-    $folder = '';
-  }
+  $module = (isset($_GET['module'])) ? $_GET['module'] : '';
+  $folder = (isset($_GET['folder'])) ? $_GET['folder'] : '';
+  $folder_name = '';
+  get_module_folder_details($module, $folder, $folder_name, $userroles, $teams, $tmp_module, $mysqli);
 
   if (strpos($userroles,'Admin') === false) {
     $OKmodules = array();
