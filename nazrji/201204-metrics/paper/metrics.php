@@ -30,9 +30,12 @@ require '../include/staff_auth.inc';
 require '../include/errors.inc';
 //require '../include/calculate_marks.inc';
 require '../include/paper_functions.inc.php';
+require '../classes/paper.class.php';
 
 check_var('paperID', 'GET', true, false);
 $paperID = $_GET['paperID'];
+
+$paper = new Paper($mysqli, $userID, $string, $paperID);
 
 $result = $mysqli->prepare("SELECT paper_title, moduleID, pass_mark, users.title, users.initials, users.surname, moduleID, folder, random_mark, total_mark, marking, paper_ownerID, DATE_FORMAT(start_date,'%H') as start_hour, DATE_FORMAT(start_date,'%Y%m%d%H%i') AS start_date, DATE_FORMAT(start_date,'$cfg_long_date_time') AS display_start_date, DATE_FORMAT(end_date,'%Y%m%d%H%i') AS end_date, paper_type, deleted, latex_needed FROM (properties, users) WHERE property_id=? AND paper_ownerID=users.id LIMIT 1");
 $result->bind_param('i', $paperID);
@@ -52,7 +55,7 @@ get_module_folder_details($module, $folder, $folder_name, $userroles, $teams, $t
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
-  <title>Rogō<?php echo ' ' . $ts_version . ' ' . $cfg_install_type; ?></title>
+  <title>Rogō<?php echo ' ' . $rogo_version . ' ' . $cfg_install_type; ?></title>
   <link rel="stylesheet" type="text/css" href="../css/header.css" />
   <link rel="stylesheet" type="text/css" href="../css/screen.css" />
   <link rel="stylesheet" type="text/css" href="../css/metrics.css" />
