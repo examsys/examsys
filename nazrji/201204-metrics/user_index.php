@@ -208,7 +208,7 @@ if ($textsize > 120) {
 <?php
   $icon_types = array('formative.png', 'progress.png', 'summative.png', 'survey.png');
   echo '<td colspan="2"><table cellspacing="4" cellpadding="0" border="0"><tr><td style="vertical-align:top; width:54px">&nbsp;<img src="./artwork/' . $icon_types[$test_type] . '" width="48" height="48" alt="Icon" />';
-  echo "</td><td><span style=\"font-size:80%; color:#5582D2\">Rogō $ts_version</span><br />\n";
+  echo "</td><td><span style=\"font-size:80%; color:#5582D2\">Rogō $rogo_version</span><br />\n";
   echo "<span style=\"font-size:20pt; font-weight:bold; color:#5582D2\">$paper_title</span></td>\n</tr></table></td></tr>";
   echo "<tr>\n</table>\n<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"margin-left:auto; margin-right:auto;border:1px solid #95AEC8;background-color:#F1F5FB\" width=\"$table_width%\">\n";
   echo '<tr><td colspan="4">&nbsp;</td>';

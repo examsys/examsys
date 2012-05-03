@@ -42,7 +42,7 @@ a {color:blue}
 <div style="position:absolute; top:60px; left:20px; font-size:75%; padding-top:10px; padding-right:2px; padding-left:5px">
 <br />
 <br />
-<p>Rogō <?php echo $ts_version; ?> is copyright &copy; 2012 and is held by the University of Nottingham. It is released under a <a href="http://www.gnu.org/licenses/gpl.html" target="_blank">GPL v3.0</a> open source license whereby partners can modify, extend and contribute to the project.</p>
+<p>Rogō <?php echo $rogo_version; ?> is copyright &copy; 2012 and is held by the University of Nottingham. It is released under a <a href="http://www.gnu.org/licenses/gpl.html" target="_blank">GPL v3.0</a> open source license whereby partners can modify, extend and contribute to the project.</p>
 <br />
 <table cellpadding="0" cellspacing="0" border="0" style="width:650px">
 <tr><td style="vertical-align:top; width:250px">

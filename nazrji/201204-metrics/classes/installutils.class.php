@@ -69,7 +69,7 @@ Class InstallUtils {
   public static $db_admin_username;
   public static $db_admin_passwd;
 
-  public static $ts_version = '4.2.2';
+  public static $rogo_version = '4.2.2';
   public static $support_email;
   public static $cfg_SysAdmin_username;
 
@@ -937,7 +937,7 @@ Class InstallUtils {
 if (empty(\$root)) \$root = str_replace('/config', '/', str_replace('\\\\', '/', dirname(__FILE__)));
 require \$root . '/include/path_functions.inc.php';
 
-\$ts_version = '{ts_version}';
+\$rogo_version = '{rogo_version}';
 define('TOUCHSTONE', 'true');
 define('DIR_SEPARATOR', '/');
 \$cfg_web_root = get_root_path() . '/';
@@ -1038,7 +1038,7 @@ switch (strtolower(\$_SERVER['HTTP_HOST'])) {
   ?>
 CONFIG;
 
-    $config = str_replace('{ts_version}',self::$ts_version,$config);
+    $config = str_replace('{rogo_version}',self::$rogo_version,$config);
     $config = str_replace('{SysAdmin_username}','USERNMAE_FOR_DEBUG',$config);
     $config = str_replace('{cfg_db_host}',self::$cfg_db_host,$config);
     $config = str_replace('{cfg_db_port}',self::$cfg_db_port,$config);

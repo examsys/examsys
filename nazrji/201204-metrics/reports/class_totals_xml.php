@@ -69,11 +69,11 @@
   echo ' xmlns:html="http://www.w3.org/TR/REC-html40">';
   echo ' <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">';
   echo '  <Title>' . $paper . '</Title>';
-  echo '  <Author>Rogo ' . $ts_version . '</Author>';
+  echo '  <Author>Rogo ' . $rogo_version . '</Author>';
   $tmp_start = substr($_GET['startdate'], 6, 2) . '/' . substr($_GET['startdate'], 4, 2) . '/' . substr($_GET['startdate'], 0, 4) . ' ' . substr($_GET['startdate'], 8, 2) . ':' . substr($_GET['startdate'], 10, 2);
   $tmp_end = substr($_GET['enddate'], 6, 2) . '/' . substr($_GET['enddate'], 4, 2) . '/' . substr($_GET['enddate'], 0, 4) . ' ' . substr($_GET['enddate'], 8, 2) . ':' . substr($_GET['enddate'], 10, 2);
   echo '  <Description>Class totals for assessment taken between ' . $tmp_start . ' and ' . $tmp_end .'.</Description>';
-  echo '  <LastAuthor>Rogo ' . $ts_version . '</LastAuthor>';
+  echo '  <LastAuthor>Rogo ' . $rogo_version . '</LastAuthor>';
   echo '  <Created>' . date('Y-m-d', time()) . 'T' . date('H:i:s') . 'Z</Created>';
   echo '  <Company>' . $cfg_company . '</Company>';
   echo '  <Version>11.6408</Version>';
