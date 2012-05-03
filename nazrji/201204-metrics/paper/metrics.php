@@ -34,20 +34,28 @@ require '../classes/paper.class.php';
 
 check_var('paperID', 'GET', true, false);
 $paperID = $_GET['paperID'];
+$paper_found = false;
 
-$paper = new Paper($mysqli, $userID, $string, $paperID);
+try {
+  $paper = new Paper($mysqli, $userID, $string, $paperID);
+  $paper_found = true;
+} catch (RecordNotFoundException $rex) {
+  $paper_found = 'Not found';
+} catch (DatabaseException $dex) {
+  $paper_found = 'Error';
+}
 
-$result = $mysqli->prepare("SELECT paper_title, moduleID, pass_mark, users.title, users.initials, users.surname, moduleID, folder, random_mark, total_mark, marking, paper_ownerID, DATE_FORMAT(start_date,'%H') as start_hour, DATE_FORMAT(start_date,'%Y%m%d%H%i') AS start_date, DATE_FORMAT(start_date,'$cfg_long_date_time') AS display_start_date, DATE_FORMAT(end_date,'%Y%m%d%H%i') AS end_date, paper_type, deleted, latex_needed FROM (properties, users) WHERE property_id=? AND paper_ownerID=users.id LIMIT 1");
-$result->bind_param('i', $paperID);
-$result->execute();
-$result->bind_result($paper_title, $moduleID, $pass_mark, $title, $initials, $surname, $tmp_module, $tmp_folder, $random_mark, $total_mark, $marking, $paper_ownerID, $tmp_start_hour, $start_date, $display_start_date, $end_date, $paper_type, $deleted, $latex_needed);
-$result->fetch();
-$result->close();
-
+//$result = $mysqli->prepare("SELECT paper_title, moduleID, pass_mark, users.title, users.initials, users.surname, moduleID, folder, random_mark, total_mark, marking, paper_ownerID, DATE_FORMAT(start_date,'%H') as start_hour, DATE_FORMAT(start_date,'%Y%m%d%H%i') AS start_date, DATE_FORMAT(start_date,'$cfg_long_date_time') AS display_start_date, DATE_FORMAT(end_date,'%Y%m%d%H%i') AS end_date, paper_type, deleted, latex_needed FROM (properties, users) WHERE property_id=? AND paper_ownerID=users.id LIMIT 1");
+//$result->bind_param('i', $paperID);
+//$result->execute();
+//$result->bind_result($paper_title, $moduleID, $pass_mark, $title, $initials, $surname, $tmp_module, $tmp_folder, $random_mark, $total_mark, $marking, $paper_ownerID, $tmp_start_hour, $start_date, $display_start_date, $end_date, $paper_type, $deleted, $latex_needed);
+//$result->fetch();
+//$result->close();
+//
 $module = (isset($_GET['module'])) ? $_GET['module'] : '';
 $folder = (isset($_GET['folder'])) ? $_GET['folder'] : '';
 $folder_name = '';
-get_module_folder_details($module, $folder, $folder_name, $userroles, $teams, $tmp_module, $mysqli);
+get_module_folder_details($module, $folder, $folder_name, $userroles, $teams, $paper->get_modules(), $mysqli);
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -65,9 +73,14 @@ get_module_folder_details($module, $folder, $folder_name, $userroles, $teams, $t
 
 <body>
 <?php
-if (!isset($paper_title)) {
-  echo render_missing($string, $support_email);
-} elseif ($deleted != '') {
+if ($paper_found !== true) {
+  if ($paper_found == 'Not found') {
+    echo render_missing($string, $support_email, $string['papernotfound']);
+  } else {
+    // TODO: translate
+    echo render_missing($string, $support_email, 'Error connecting to datebase.');
+  }
+} elseif ($paper->get_deleted() != '') {
   echo render_deleted($string, $paper_title, $paper_ownerID, $userID);
 } else {
   // Main content
@@ -89,7 +102,7 @@ if (!isset($paper_title)) {
   ?>
         </ol>
       </div>
-      <h1><?php echo $moduleID . '  &mdash; ' . $string['metrics'] ?></h1>
+      <h1><?php echo $module . '  &mdash; ' . $string['metrics'] ?></h1>
 </div>
 
 <?php
@@ -99,12 +112,12 @@ if (!isset($paper_title)) {
 </body>
 </html>
 <?php
-function render_missing($string, $support_email) {
+function render_missing($string, $support_email, $message) {
   $assistance = sprintf($string['furtherassistance'], $support_email, $support_email);
 
   $html = <<< HTML
     <div class="warning">
-      <h1>{$string['papernotfound']}</h1>
+      <h1>{$message}</h1>
       <hr size="1" align="left" width="500" />
       <p>{$assistance}</p>
     </div>

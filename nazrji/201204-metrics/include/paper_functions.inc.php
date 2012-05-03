@@ -24,7 +24,7 @@
 * @package
 */
 
-function get_module_folder_details(&$module, &$folder, &$folder_name, $userroles, $teams, $tmp_module, $mysqli) {
+function get_module_folder_details(&$module, &$folder, &$folder_name, $userroles, $teams, $paper_modules, $mysqli) {
   if ($module != '') {
     $folder = '';
     $paper_modules = explode(',',$module);
@@ -49,7 +49,6 @@ function get_module_folder_details(&$module, &$folder, &$folder_name, $userroles
 
     $module = '';
   } else {
-    $paper_modules = explode(',',$tmp_module);  // Get the modules off the paper properties
     $module = $paper_modules[0];
     $folder = '';
   }
