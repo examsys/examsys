@@ -45,17 +45,12 @@ try {
   $paper_found = 'Error';
 }
 
-//$result = $mysqli->prepare("SELECT paper_title, moduleID, pass_mark, users.title, users.initials, users.surname, moduleID, folder, random_mark, total_mark, marking, paper_ownerID, DATE_FORMAT(start_date,'%H') as start_hour, DATE_FORMAT(start_date,'%Y%m%d%H%i') AS start_date, DATE_FORMAT(start_date,'$cfg_long_date_time') AS display_start_date, DATE_FORMAT(end_date,'%Y%m%d%H%i') AS end_date, paper_type, deleted, latex_needed FROM (properties, users) WHERE property_id=? AND paper_ownerID=users.id LIMIT 1");
-//$result->bind_param('i', $paperID);
-//$result->execute();
-//$result->bind_result($paper_title, $moduleID, $pass_mark, $title, $initials, $surname, $tmp_module, $tmp_folder, $random_mark, $total_mark, $marking, $paper_ownerID, $tmp_start_hour, $start_date, $display_start_date, $end_date, $paper_type, $deleted, $latex_needed);
-//$result->fetch();
-//$result->close();
-//
 $module = (isset($_GET['module'])) ? $_GET['module'] : '';
 $folder = (isset($_GET['folder'])) ? $_GET['folder'] : '';
 $folder_name = '';
 get_module_folder_details($module, $folder, $folder_name, $userroles, $teams, $paper->get_modules(), $mysqli);
+
+$questions = $paper->get_question_breakdown();
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -69,6 +64,30 @@ get_module_folder_details($module, $folder, $folder_name, $userroles, $teams, $p
   <link rel="stylesheet" type="text/css" href="../css/metrics.css" />
 
   <script type="text/javascript" src="../js/staff_help.js"></script>
+  <script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
+  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+  <script type="text/javascript">
+    google.load("visualization", "1", {packages:["corechart"]});
+
+    function drawPieChart(target, caption, data) {
+      var options = {
+        width: 960, height: 500
+      };
+
+      var chart = new google.visualization.PieChart(document.getElementById(target));
+      chart.draw(data, options);
+    }
+
+    function drawBarChart(target, caption, data) {
+      var options = {
+        width: 960, height: 500
+      };
+
+      var chart = new google.visualization.BarChart(document.getElementById(target));
+      chart.draw(data, options);
+    }
+
+  </script>
 </head>
 
 <body>
@@ -107,8 +126,90 @@ if ($paper_found !== true) {
 
 <?php
 }
+$owner = $paper->get_owner_details();
+?>
+      <div id="details">
+        <h2>Summary</h2>
+        <dl class="clearfix">
+          <dt>Owner</dt>
+          <dd><?php echo $owner['fullname'] ?> (<?php echo $owner['username'] . ', ' . $owner['email'] ?>)</dd>
+          <dt>Type</dt>
+          <dd><?php echo $paper->get_type() ?></dd>
+          <dt>Timing</dt>
+          <dd>
+            <?php echo $paper->get_start_date('d F Y,  H:i') ?> to <?php echo $paper->get_end_date('d F Y,  H:i') ?>
+<?php
+if ($paper->get_duration() != '') {
+  echo ', duration ' . $paper->get_duration() . ' minutes';
+}
+?>
+          </dd>
+          <dt>Marking</dt>
+          <dd>Pass: <?php echo $paper->get_pass_mark() ?>%, distinction: <?php echo $paper->get_distinction_mark() ?>%</dd>
+          <dt>Bidirectional</dt>
+          <dd> <?php echo $paper->get_bidirectional() ?></dd>
+          <dt>No. Questions</dt>
+          <dd><?php echo $questions['total'] ?></dd>
+          <dt>Reviews</dt>
+          <dd>&nbsp;</dd>
+        </dl>
+<?php
+if (count($questions['type']) > 0) {
+  ?>
+  <h2>Questions by type</h2>
+  <script type="text/javascript">
+    $(function () {
+      var data = google.visualization.arrayToDataTable([
+        ['Question Type', 'Count'],
+        <?php
+        $i = 1;
+        foreach ($questions['type'] as $q_type => $count) {
+          echo " ['{$q_type}',     {$count}]";
+          if ($i < count($questions['type'])) echo ",\n";
+          $i++;
+        }
+        echo "\n";
+        ?>
+      ]);
+      drawPieChart('q_by_type', 'Questions by type', data);
+    });
+  </script>
+  <div id="q_by_type"></div>
+  <?php
+}
+
+if (count($questions['screen']) > 0) {
+  ?>
+  <h2>Questions by screen</h2>
+  <script type="text/javascript">
+    $(function () {
+      var data = google.visualization.arrayToDataTable([
+        ['Screen', 'Count'],
+        <?php
+        $i = 1;
+        foreach ($questions['screen'] as $screen => $count) {
+          echo " ['Screen {$screen}',     {$count}]";
+          if ($i < count($questions['screen'])) echo ",\n";
+          $i++;
+        }
+        echo "\n";
+        ?>
+      ]);
+      drawBarChart('q_by_screen', 'Questions by screen', data);
+    });
+  </script>
+  <div id="q_by_screen"></div>
+  <?php
+}
 ?>
 
+        <h2>Questions by Bloom's Taxonomy</h2>
+        <h2>Marks by question type</h2>
+        <h2>Marks by screen</h2>
+        <h2>Marks by learning outcome</h2>
+
+
+      </div>
 </body>
 </html>
 <?php

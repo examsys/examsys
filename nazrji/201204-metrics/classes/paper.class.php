@@ -27,11 +27,20 @@
 require_once 'exceptions.inc.php';
 
 class Paper {
+  // Paper types
+  const FORMATIVE = 0;
+  const PROGRESS = 1;
+  const SUMMATIVE = 2;
+  const SURVEY = 3;
+  const OSCE = 4;
+  const OFFLINE = 5;
+  const PEER = 6;
 
   private $id = -1;
   private $title;
   private $type;
   private $module_raw;
+  private $duration;
   private $deleted;
   private $start_date;
   private $end_date;
@@ -41,11 +50,32 @@ class Paper {
   private $owner_id;
   private $modules = array();
 
+  private $owner_fullname = '';
+  private $owner_username = '';
+  private $owner_email = '';
+
   private $_mysqli;
   private $_user_id;
   private $_lang_strings;
 
-  protected $_fields = array('id', 'title', 'start_date', 'end_date', 'type', 'bidirectional', 'pass_mark', 'distinction_mark', 'owner_id', 'module_raw');
+  private $q_labels = array(
+    'calculation' => 'Calculation',
+    'dichotomous' => 'Dichotomous',
+    'extmatch' => 'Extended Matching',
+    'blank' => 'Fill-in-the-Blank',
+    'flash' => 'Flash Interface',
+    'hotspot' => 'Image Hotspot',
+    'labelling' => 'Labelling',
+    'matrix' => 'Matrix',
+    'mcq' => 'Multiple Choice',
+    'mrq' => 'Multiple Response',
+    'rank' => 'Ranking',
+    'sct' => 'Script Concordance Test',
+    'textbox' => 'Text Box',
+    'true_false' => 'True / False'
+  );
+
+  protected $_fields = array('id', 'title', 'start_date', 'end_date', 'type', 'bidirectional', 'pass_mark', 'distinction_mark', 'owner_id', 'duration', 'deleted', 'module_raw');
   protected $_data = array();
 
   function __construct($mysqli, $user_id, $lang_strings, $data = null) {
@@ -76,6 +106,8 @@ class Paper {
     } elseif ($data !== null) {
       throw new DataTypeException('Invalid data');
     }
+
+    $this->set_friendly_type();
   }
 
 
@@ -88,7 +120,7 @@ class Paper {
     $success = false;
 
     $p_query = <<< QUERY
-SELECT property_id, paper_title, start_date, end_date, paper_type, bidirectional, pass_mark, distinction_mark, paper_ownerID, moduleID
+SELECT property_id, paper_title, start_date, end_date, paper_type, bidirectional, pass_mark, distinction_mark, paper_ownerID, exam_duration, deleted, moduleID
 FROM properties
 WHERE property_id = ?
 QUERY;
@@ -109,24 +141,17 @@ QUERY;
   }
 
   /**
-   * @param $bidirectional
+   * @return mixed
    */
-  public function set_bidirectional($bidirectional) {
-    $this->bidirectional = $bidirectional;
+  public function get_bidirectional() {
+    return ($this->bidirectional == 1) ? 'Yes' : 'No';
   }
 
   /**
    * @return mixed
    */
-  public function get_bidirectional() {
-    return $this->bidirectional;
-  }
-
-  /**
-   * @param $deleted
-   */
-  public function set_deleted($deleted) {
-    $this->deleted = $deleted;
+  public function get_duration() {
+    return $this->duration;
   }
 
   /**
@@ -137,13 +162,6 @@ QUERY;
   }
 
   /**
-   * @param $distinction_mark
-   */
-  public function set_distinction_mark($distinction_mark) {
-    $this->distinction_mark = $distinction_mark;
-  }
-
-  /**
    * @return mixed
    */
   public function get_distinction_mark() {
@@ -151,17 +169,11 @@ QUERY;
   }
 
   /**
-   * @param $end_date
-   */
-  public function set_end_date($end_date) {
-    $this->end_date = $end_date;
-  }
-
-  /**
    * @return mixed
    */
-  public function get_end_date() {
-    return $this->end_date;
+  public function get_end_date($format='') {
+    $date = ($format == '') ? $this->end_date : date($format, strtotime($this->end_date));
+    return $date;
   }
 
   /**
@@ -169,13 +181,6 @@ QUERY;
    */
   public function get_id() {
     return $this->id;
-  }
-
-  /**
-   * @param $modules
-   */
-  public function set_modules($modules) {
-    $this->modules = $modules;
   }
 
   /**
@@ -189,24 +194,10 @@ QUERY;
   }
 
   /**
-   * @param $owner_id
-   */
-  public function set_owner_id($owner_id) {
-    $this->owner_id = $owner_id;
-  }
-
-  /**
    * @return mixed
    */
   public function get_owner_id() {
     return $this->owner_id;
-  }
-
-  /**
-   * @param $pass_mark
-   */
-  public function set_pass_mark($pass_mark) {
-    $this->pass_mark = $pass_mark;
   }
 
   /**
@@ -217,24 +208,11 @@ QUERY;
   }
 
   /**
-   * @param $start_date
-   */
-  public function set_start_date($start_date) {
-    $this->start_date = $start_date;
-  }
-
-  /**
    * @return mixed
    */
-  public function get_start_date() {
-    return $this->start_date;
-  }
-
-  /**
-   * @param $title
-   */
-  public function set_title($title) {
-    $this->title = $title;
+  public function get_start_date($format='') {
+    $date = ($format == '') ? $this->start_date : date($format, strtotime($this->start_date));
+    return $date;
   }
 
   /**
@@ -245,16 +223,93 @@ QUERY;
   }
 
   /**
-   * @param $type
-   */
-  public function set_type($type) {
-    $this->type = $type;
-  }
-
-  /**
    * @return mixed
    */
   public function get_type() {
     return $this->type;
+  }
+
+  /**
+   * Get the full details of the owner of the paper. Query database and cache result.
+   * @return array
+   */
+  public function get_owner_details() {
+    if ($this->owner_fullname == '') {
+      $u_query = <<< QUERY
+SELECT surname, initials, title, username, email
+FROM users
+WHERE id = ?
+QUERY;
+      $result = $this->_mysqli->prepare($u_query);
+      $result->bind_param('i', $this->owner_id);
+      $result->execute();
+      $result->store_result();
+      $result->bind_result($surname, $initials, $title, $username, $email);
+      if ($result->fetch()) {
+        $this->owner_fullname = $surname . ', ' . $initials . '. ' . $title;
+        $this->owner_username = $username;
+        $this->owner_email = $email;
+      }
+      $result->close();
+    }
+    return array('fullname' => $this->owner_fullname, 'username' => $this->owner_username, 'email' => $this->owner_email);
+  }
+
+  public function get_question_breakdown() {
+    $questions = array('total' => 0, 'screen' => array(), 'type' => array(), 'bloom' => array());
+
+    $q_query = <<< QUERY
+SELECT p.screen, q.q_type, q.bloom
+FROM papers p INNER JOIN questions q ON p.question=q.q_id
+WHERE p.paper = ?
+ORDER BY p.screen
+QUERY;
+    $result = $this->_mysqli->prepare($q_query);
+    $result->bind_param('i', $this->id);
+    $result->execute();
+    $result->store_result();
+    $result->bind_result($screen, $qtype, $bloom);
+    while ($result->fetch()) {
+      $questions['total']++;
+      $questions['screen'][$screen] = (isset($questions['screen'][$screen])) ? $questions['screen'][$screen] + 1 : 1;
+
+      $friendlytype = $this->q_labels[$qtype];
+      $questions['type'][$friendlytype] = (isset($questions['type'][$friendlytype])) ? $questions['type'][$friendlytype] + 1 : 1;
+
+      if ($bloom != '') {
+        $questions['bloom'][$bloom] = (isset($questions['type'][$qtype])) ? $questions['type'][$qtype] + 1 : 1;
+      }
+    }
+    $result->close();
+
+    return $questions;
+  }
+
+
+
+  private function set_friendly_type() {
+    switch ($this->type) {
+      case self::FORMATIVE:
+        $this->type = 'Formative Self-Assessment';
+        break;
+      case self::PROGRESS:
+        $this->type = 'Progress Test';
+        break;
+      case self::SUMMATIVE:
+        $this->type = 'Summative Exam';
+        break;
+      case self::SURVEY:
+        $this->type = 'Survey';
+        break;
+      case self::OSCE:
+        $this->type = 'OSCE Station';
+        break;
+      case self::OFFLINE:
+        $this->type = 'Offline Paper';
+        break;
+      case self::PEER:
+        $this->type = 'Peer Review';
+        break;
+    }
   }
 }
