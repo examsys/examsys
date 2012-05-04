@@ -28,6 +28,7 @@
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
 <style type="text/css">
 body {font-size:90%; margin:0px; background-color:white; color:black; font-family:Arial,sans-serif}

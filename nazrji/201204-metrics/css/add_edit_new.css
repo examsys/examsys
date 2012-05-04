@@ -623,3 +623,17 @@ input[type=text] {
   padding: 0;
   display: none;
 }
+
+textarea.disabled, input[type=text].disabled, .editor-disabled {
+  border: 1px solid #ccc;
+  background-color: #eaeaea;
+}
+
+.editor-disabled {
+  height: 120px;
+  overflow: auto;
+}
+
+.editor-disabled p {
+  padding: 0 4px;
+}

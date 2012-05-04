@@ -32,7 +32,6 @@ require_once $cfg_web_root . 'classes/lang.class.php';
 require_once $cfg_web_root . 'lang/' . $language . '/include/timezones.inc';
 
 Class InstallUtils {
-
   public static $db;
   public static $rogo_path;
 
@@ -102,26 +101,25 @@ Class InstallUtils {
     <form id="installForm" class="cmxform" method="post" action="<?php echo $_SERVER['PHP_SELF'];?>">
 
       <table class="header"><tr><td><nobr><?php echo $string['company']; ?></nobr></td><td class="line"><hr /></td></tr></table>
-        <div><label for="company_name"><?php echo $string['companyname']; ?></label> <input type="text" id="company_name" name="company_name" value="University of" class="required" minlength="2" /> </div>
-
-
-      <table class="header"><tr><td><nobr><?php echo $string['databaseadminuser']; ?></nobr></td><td class="line"><hr /></td></tr></table>
-        <div><?php echo $string['needusername']; ?></div>
-        <br />
-        <div><label for="mysql_admin_user"><?php echo $string['dbusername']; ?></label> <input type="text" value="" id="mysql_admin_user" name="mysql_admin_user" class="required" minlength="2" /> </div>
-        <div><label for="mysql_admin_pass"><?php echo $string['dbpassword']; ?></label> <input type="password" value="" id="mysql_admin_pass" name="mysql_admin_pass"/></div>
+        <div><label for="company_name"><?php echo $string['companyname']; ?></label> <input type="text" id="company_name" name="company_name" value="University of" class="required" minlength="2" /></div>
 
       <table class="header"><tr><td><nobr><?php echo $string['server']; ?></nobr></td><td class="line"><hr /></td></tr></table>
         <br />
         <div><label for="tmpdir"><?php echo $string['tempdirectory']; ?></label> <input type="text" id="mysql_admin_pass" name="tmpdir" value="/tmp/" /></div>
-        <div style="clear: left"><label for="page_charset"><?php echo $string['pagecharset']; ?></label> <select id="page_charset" name="page_charset"><option value="UTF-8">UTF-8</option><option value="ISO-8859-1">ISO 8859-1</option></select> </div>
+        <div style="clear: left"><label for="page_charset"><?php echo $string['pagecharset']; ?></label> <select id="page_charset" name="page_charset"><option value="UTF-8">UTF-8</option><option value="ISO-8859-1">ISO 8859-1</option></select></div>
+
+      <table class="header"><tr><td><nobr><?php echo $string['databaseadminuser']; ?></nobr></td><td class="line"><hr /></td></tr></table>
+        <div><?php echo $string['needusername']; ?></div>
+        <br />
+        <div><label for="mysql_admin_user"><?php echo $string['dbusername']; ?></label> <input type="text" value="" id="mysql_admin_user" name="mysql_admin_user" class="required" minlength="2" /></div>
+        <div><label for="mysql_admin_pass"><?php echo $string['dbpassword']; ?></label> <input type="password" value="" id="mysql_admin_pass" name="mysql_admin_pass"/></div>
 
         <table class="header"><tr><td><nobr><?php echo $string['databasesetup']; ?></nobr></td><td class="line"><hr /></td></tr></table>
         <br />
-        <div><label for="mysql_db_host"><?php echo $string['databasehost']; ?></label> <input type="text" value="127.0.0.1" id="mysql_db_host" name="mysql_db_host" class="required" /> </div>
-        <div><label for="mysql_db_port"><?php echo $string['databaseport']; ?></label> <input type="text" value="3306" id="mysql_db_port" name="mysql_db_port" class="required" /> </div>
-        <div><label for="mysql_db_name"><?php echo $string['databasename']; ?></label> <input type="text" value="rogo" id="mysql_db_name" name="mysql_db_name" class="required" minlength="3" /> </div>
-        <div><label for="mysql_db_charset"><?php echo $string['databasecharset']; ?></label> <select id="mysql_db_charset" name="mysql_db_charset"><option value="latin1">latin1</option><option value="utf8">UTF-8</option></select> </div>
+        <div><label for="mysql_db_host"><?php echo $string['databasehost']; ?></label> <input type="text" value="127.0.0.1" id="mysql_db_host" name="mysql_db_host" class="required" /></div>
+        <div><label for="mysql_db_port"><?php echo $string['databaseport']; ?></label> <input type="text" value="3306" id="mysql_db_port" name="mysql_db_port" class="required" /></div>
+        <div><label for="mysql_db_name"><?php echo $string['databasename']; ?></label> <input type="text" value="rogo" id="mysql_db_name" name="mysql_db_name" class="required" minlength="3" /></div>
+        <div><label for="mysql_db_charset"><?php echo $string['databasecharset']; ?></label> <select id="mysql_db_charset" name="mysql_db_charset"><option value="utf8">UTF-8</option><option value="latin1">latin1</option></select></div>
 
       <table class="header"><tr><td><nobr><?php echo $string['databaseuser']; ?></nobr></td><td class="line"><hr /></td></tr></table>
         <div><label for="mysql_database_username"><?php echo $string['rdbusername']; ?></label> <input type="text" value="" id="mysql_database_username" name="mysql_database_username" class="required" minlength="3"/></div>
@@ -148,10 +146,10 @@ Class InstallUtils {
         <div><label for="useLdap"><?php echo $string['useldap']; ?></label><input id="useLdap" name="useLdap" type="checkbox" /></div>
         <div id="ldapOptions" style="display:none;">
           <br/>
-          <div><label for="ldap_server"><?php echo $string['ldapserver']; ?></label> <input type="text" value="" id="ldap_server" name="ldap_server" /> </div>
-          <div><label for="ldap_search_dn"><?php echo $string['searchdn']; ?></label> <input type="text" value="" id="ldap_search_dn" name="ldap_search_dn" /> </div>
-          <div><label for="ldap_bind_rdn"><?php echo $string['bindusername']; ?></label> <input type="text" value="" id="ldap_bind_rdn" name="ldap_bind_rdn" /> </div>
-          <div><label for="ldap_bind_password"><?php echo $string['bindpassword']; ?></label> <input type="password" value="" id="ldap_bind_password" name="ldap_bind_password" /> </div>
+          <div><label for="ldap_server"><?php echo $string['ldapserver']; ?></label> <input type="text" value="" id="ldap_server" name="ldap_server" /></div>
+          <div><label for="ldap_search_dn"><?php echo $string['searchdn']; ?></label> <input type="text" value="" id="ldap_search_dn" name="ldap_search_dn" /></div>
+          <div><label for="ldap_bind_rdn"><?php echo $string['bindusername']; ?></label> <input type="text" value="" id="ldap_bind_rdn" name="ldap_bind_rdn" /></div>
+          <div><label for="ldap_bind_password"><?php echo $string['bindpassword']; ?></label> <input type="password" value="" id="ldap_bind_password" name="ldap_bind_password" /></div>
           <div><label for="ldap_user_prefix"><?php echo $string['userprefix']; ?></label> <input type="text" value="" id="ldap_user_prefix" name="ldap_user_prefix" /> <img src="../artwork/information_icon.gif" class="tipright" width="16" height="16" title="<?php echo $string['userprefixtip'] ?>" /></div>
         </div>
 
@@ -195,7 +193,7 @@ Class InstallUtils {
     <?php
   }
 
-  static function  processForm() {
+  static function processForm() {
     global $string;
     self::$cfg_company = $_POST['company_name'];
     //check admin database user name and password and create the connection
@@ -257,7 +255,9 @@ Class InstallUtils {
     //Write out the config file
     self::writeConfigFile();
 
-    echo "<h1>Rogo Installed</h1>";
+    echo "<p style=\"margin-left:10px\">" . $string['installed'] . "</p>\n";
+    echo "<p style=\"margin-left:10px\">" . $string['deleteinstall'] . "</p>\n";
+    echo "<p style=\"margin-left:10px\"><a href=\"/staff/\">" . $string['staffhomepage'] . "</a></p>\n";
 
     self::displayWarnings();
 
@@ -357,7 +357,6 @@ Class InstallUtils {
     self::$db->query("CREATE USER  '" . self::$cfg_db_username . "'@'". self::$cfg_db_host . "' IDENTIFIED BY '" . self::$cfg_db_password . "'");
     if (self::$db->errno != 0) {
       echo "CREATE USER  '" . self::$cfg_db_username . "'@'". self::$cfg_db_host . "' IDENTIFIED BY '" . self::$cfg_db_password . "'" . '<br />';
-      echo self::$db->error . '<br />';
       self::logWarning(array('013'=> $string['wdatabaseuser'] . self::$cfg_db_username . $string['wnotcreated']));
     }
     //$priv_SQL[] = "REVOKE ALL PRIVILEGES ON $dbname.* FROM '". self::$cfg_db_username . "'@'" . self::$cfg_db_host . "'";
@@ -377,7 +376,6 @@ Class InstallUtils {
     foreach($priv_SQL as $sql) {
       self::$db->query($sql);
       if (self::$db->errno != 0) {
-        echo self::$db->error;
         self::logWarning(array('013'=> $string['wdatabaseuser']. self::$cfg_db_username . $string['wnotpermission']));
       }
     }
@@ -386,7 +384,6 @@ Class InstallUtils {
     //create 'database user student user' and grant permissions
     self::$db->query("CREATE USER  '" . self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "' IDENTIFIED BY '" . self::$cfg_db_student_passwd . "'");
     if (self::$db->errno != 0) {
-      echo self::$db->error;
       self::logWarning(array('013'=> $string['wdatabaseuser']. self::$cfg_db_student_user . $string['wnotcreated']));
     }
    //$priv_SQL[] = "REVOKE ALL PRIVILEGES ON $dbname.* FROM '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
@@ -430,11 +427,11 @@ Class InstallUtils {
     $priv_SQL[] = "GRANT INSERT ON " . $dbname . ".sys_errors TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT INSERT ON " . $dbname . ".announcements TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";    
     $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".standards_setting TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".state TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";    
     $priv_SQL[] = "FLUSH PRIVILEGES";
     foreach($priv_SQL as $sql) {
       self::$db->query($sql);
       if (self::$db->errno != 0) {
-        echo self::$db->error;
         self::logWarning(array('013'=> $string['wdatabaseuser']. self::$cfg_db_student_user . $string['wnotpermission']));
       }
     }
@@ -530,11 +527,11 @@ Class InstallUtils {
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".track_changes TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".temp_users TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".sessions TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".state TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "FLUSH PRIVILEGES";
     foreach ($priv_SQL as $sql) {
       self::$db->query($sql);
       if (self::$db->errno != 0) {
-	    echo self::$db->error . "<br />";
         self::logWarning(array('013'=> $string['wdatabaseuser']. self::$cfg_db_staff_user . $string['wnotpermission']));
       }
     }
@@ -558,7 +555,6 @@ Class InstallUtils {
     foreach($priv_SQL as $sql) {
       self::$db->query($sql);
       if (self::$db->errno != 0) {
-	    echo self::$db->error . "<br />";
         self::logWarning(array('013'=> $string['wdatabaseuser']. self::$cfg_db_sct_user . $string['wnotpermission']));
       }
     }
@@ -583,7 +579,6 @@ Class InstallUtils {
     foreach($priv_SQL as $sql) {
       self::$db->query($sql);
       if (self::$db->errno != 0) {
-	    echo self::$db->error . "<br />";
         self::logWarning(array('013'=> $string['wdatabaseuser']. self::$cfg_db_inv_user . $string['wnotpermission']));
       }
     }
@@ -592,7 +587,6 @@ Class InstallUtils {
     //create 'database user sysadmin user' and grant permissions
     self::$db->query("CREATE USER  '" . self::$cfg_db_sysadmin_user . "'@'". self::$cfg_db_host . "' IDENTIFIED BY '" . self::$cfg_db_sysadmin_passwd . "'");
     if (self::$db->errno != 0) {
-	  echo self::$db->error . "<br />";
       self::logWarning(array('013'=> $string['wdatabaseuser']. self::$cfg_db_sysadmin_user . $string['wnotcreated']));
     }
     //$priv_SQL[] = "REVOKE ALL PRIVILEGES ON $dbname.* FROM '". self::$cfg_db_sysadmin_user . "'@'". self::$cfg_db_host . "'";
@@ -860,26 +854,27 @@ Class InstallUtils {
   *
   */
   static function displayHeader() {
-  global $string;
+  global $string, $version;
     ?>
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html>
     <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
       <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
       <title>Rog&#333; Install script</title>
       <style type="text/css">
-        html { padding: 0em; margin: 0em; width: 100%}
-        body { padding: 0em; margin: 0em; width: 100%; font-family:Arial,sans-serif; font-size:90%; background-color:white; color:black }
+        html { padding: 0px; margin: 0px; width: 100%}
+        body { padding: 0px; margin: 0px; width: 100%; font-family:Arial,sans-serif; font-size:90%; background-color:white; color:black }
         .error { float: none; color: red; padding-left: .5em; vertical-align: top; }
         .warning { float: none; color: red; padding-left: .5em; vertical-align: top; }
-        label { float:left; width:8.5em; padding-left:0em; text-align:right; padding-right:6px}
+        label { float:left; width:160px; padding-left:0em; text-align:right; padding-right:6px}
         p { clear: both; }
         .submit { margin-left: 42%; padding-top:2em; }
-        table {border:none;}
-        table.topbar {font-weight: bold; width:100%; border-collapse:collapse;}
-        .topbar td {background-color:#F1F5FB;}
+        table {border:none;padding:0px}
+        table.topbar {font-weight: bold; width:100%; border-collapse:collapse; border:0px}
+        .topbar td {background-color:#F1F5FB}
         .header {margin-top:1.5em;  margin-bottom:0.5em;  width:97%; color:#1E3287}
-        .header hr  {border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:97%;}
+        .header hr  {border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:98%;}
         td.line {width:98%}
 
         input {width:200px}
@@ -897,9 +892,9 @@ Class InstallUtils {
       </script>
     </head>
     <body>
-    <table class="topbar">
+    <table class="topbar" cellpadding="0" cellspacing="0">
       <tr>
-        <td><div style="font-size:26pt; font-weight:bold; color:black">&nbsp;<?php echo $string['systeminstallation']; ?></div></td>
+        <td><div style="font-size:26pt; font-weight:bold; color:#001979">&nbsp;<?php echo $string['systeminstallation']; ?></div><div style="position:relative; left:51px; top:-6px; font-size:10pt; color:#001979; font-weight:bold">version <?php echo $version; ?></td>
         <td style="text-align:right; padding-top:4px; padding-right:15px"><img src="../artwork/rogo_logo.gif" width="137" height="61" alt="logo" border="0" /></td>
       </tr>
       <tr>
@@ -921,6 +916,7 @@ Class InstallUtils {
   }
 
   static function writeConfigFile() {
+    global $version;
 
     $config = <<<CONFIG
 <?php
@@ -930,7 +926,7 @@ Class InstallUtils {
 *
 * @author Simon Wilkinson, Anthony Brown
 * @version 1.0
-* @copyright Copyright (c) 2011 The University of Nottingham
+* @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */
 
@@ -938,8 +934,6 @@ if (empty(\$root)) \$root = str_replace('/config', '/', str_replace('\\\\', '/',
 require \$root . '/include/path_functions.inc.php';
 
 \$rogo_version = '{rogo_version}';
-define('TOUCHSTONE', 'true');
-define('DIR_SEPARATOR', '/');
 \$cfg_web_root = get_root_path() . '/';
 \$cfg_root_path = rtrim('/' . str_replace(\$_SERVER['DOCUMENT_ROOT'], '', \$cfg_web_root), '/');
 \$protocol = 'https://';

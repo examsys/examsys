@@ -29,41 +29,54 @@
 <?php echo $cfg_js_root ?>
 <script src="<?php echo $cfg_root_path ?>/js/sidebar.js" type="text/javascript"></script>
 <script language="JavaScript">
-  function updateCookies() {
-    if (document.getElementById('myquestions').checked == 1) {
-      setting = " checked";
+  function getLastID(IDs) {
+    var id_list = IDs.split(",");
+    last_elm = id_list.length - 1;
+    
+    return id_list[last_elm];
+  }
+
+  function addQID(qID,clearall) {
+    if (clearall) {
+      document.PapersMenu.questionID.value = ',' + qID;
     } else {
-      setting = "";
+      document.PapersMenu.questionID.value = document.PapersMenu.questionID.value + ',' + qID;
     }
+  }
 
-    var ExpireDate = new Date ();
-    expiredays = 100;
-    ExpireDate.setTime(ExpireDate.getTime() + (expiredays * 24 * 3600 * 1000));
-    NameOfCookie = "myquestions";
-    document.cookie = NameOfCookie + "=" + setting +  ((expiredays == null) ? "" : "; expires=" + ExpireDate.toGMTString());
-
-    window.location='<?php echo "list.php?type=$type"; if (isset($_GET['team'])) echo "&team=" . $_GET['team']; if (isset($_GET['keyword'])) echo "&keyword=" . $_GET['keyword']; ?>';
+  function subQID(qID) {
+    var tmpq = ',' + qID;
+    document.PapersMenu.questionID.value = document.PapersMenu.questionID.value.replace(tmpq, '');
   }
   
-  function selQ(questionID, lineID, qType, menuID) {
-    tmp_ID = document.PapersMenu.oldQuestionID.value;
-    if (tmp_ID != '') {
-      document.getElementById(tmp_ID).style.backgroundColor = 'white';
-    }
+  function clearAll() {
+    $('.highlight').removeClass('highlight');
+  }
+  
+  function selQ(questionID, lineID, qType, menuID, evt) {
     document.getElementById('menu2a').style.display = 'none';
     document.getElementById('menu2b').style.display = 'none';
     document.getElementById('menu2c').style.display = 'none';
-    document.getElementById(menuID).style.display = 'block';
+    document.getElementById('menu' + menuID).style.display = 'block';
 
-    document.PapersMenu.questionID.value = questionID;
+    if (evt.ctrlKey == false) {
+      clearAll();
+      $('#link_' + lineID).addClass('highlight');
+      addQID(questionID, true);
+    } else {
+      if ($('#link_' + lineID).hasClass('highlight')) {
+        $('#link_' + lineID).removeClass('highlight');
+        subQID(questionID);
+      } else {
+        $('#link_' + lineID).addClass('highlight');
+        addQID(questionID, false);
+      }
+    }
     document.PapersMenu.qType.value = qType;
-    
-    document.getElementById(lineID).style.backgroundColor = '#B3C8E8';
-    document.PapersMenu.oldQuestionID.value = lineID;
   }
   
   function editQ() {
-    window.location.href='<?php echo $cfg_root_path ?>/question/edit/index.php?q_id=' + document.PapersMenu.questionID.value + '&paperID=list:' + document.PapersMenu.qType.value + '&calling=list';
+    window.location.href='<?php echo $cfg_root_path ?>/question/edit/index.php?q_id=' + getLastID(document.PapersMenu.questionID.value) + '&paperID=list:' + document.PapersMenu.qType.value + '&calling=list';
   }
 
   function deleteQuestion() {
@@ -97,26 +110,13 @@
       notice.focus();
     }
   }
-  function lon(lineID) {
-    if (lineID != document.PapersMenu.oldQuestionID.value) {
-      document.getElementById(lineID).style.backgroundColor = '#EEEEEE';
-    }
-  }
-
-  function loff(lineID) {
-    if (lineID != document.PapersMenu.oldQuestionID.value) {
-      document.getElementById(lineID).style.backgroundColor = '';
-    }
-  }
 
   function qOff() {
     document.getElementById('menu2a').style.display = 'block';
     document.getElementById('menu2b').style.display = 'none';
     document.getElementById('menu2c').style.display = 'none';
-    tmp_ID = document.PapersMenu.oldQuestionID.value;
-    if (tmp_ID != '') {
-      document.getElementById(tmp_ID).style.backgroundColor = 'white';
-    }
+    document.PapersMenu.questionID.value = '';
+    clearAll();
   }
 </script>
 

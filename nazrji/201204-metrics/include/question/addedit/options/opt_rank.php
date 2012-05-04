@@ -46,7 +46,7 @@ $spaced = ($index > 1) ? ' spaced-top' : '';
             <tr<?php echo $alt_c ?>>
               <th class="spaced-bottom<?php echo $spaced ?>"><label for="option_text<?php echo $index ?>"><?php echo $index ?>.</label></th>
               <td class="spaced-bottom<?php echo $spaced ?>">
-                <input type="text" name="option_text<?php echo $index ?>" id="option_text<?php echo $index ?>" class="form-med-large" value="<?php echo $option->get_text() ?>" />
+                <input type="text" name="option_text<?php echo $index ?>" id="option_text<?php echo $index ?>" value="<?php echo $option->get_text() ?>" class="form-med-large<?php echo $dis_class ?>"<?php echo $dis_readonly ?> />
                 <input name="optionid<?php echo $index ?>" value="<?php echo $option->id ?>" type="hidden" />
               </td>
               <td class="small align-centre spaced-bottom<?php echo $spaced ?>">

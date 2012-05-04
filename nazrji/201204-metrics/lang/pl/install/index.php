@@ -2,8 +2,8 @@
 $string['company'] = 'Instytucja';
 $string['companyname'] = 'Nazwa instytucji:';
 $string['databaseadminuser'] = 'Administrator bazy danych'; 
-$string['server'] = 'Server';  // Niko
-$string['tempdirectory'] = 'Temp Directory';  // Niko
+$string['server'] = 'Serwer';  
+$string['tempdirectory'] = 'Katalog Tymczasowy';  
 $string['needusername'] = 'Ten instalator wymaga nazwy użytkownika administracyjnego bazy danych MySQL oraz jego hasła aby utworzyć bazę danych i wymagane tablice. Dane tego użytkownika nie są zapisywane, a tylko zastosowane w instalacji.';
 $string['dbusername'] = 'Użytkownik:';
 $string['dbpassword'] = 'Hasło:';
@@ -46,6 +46,9 @@ $string['supportnumbers'] = 'Numer telefonów wsparcia';
 $string['name'] = 'Nazwisko:';
 $string['number'] = 'Numer:';
 $string['install'] = 'Instalacja Rogō';
+$string['installed'] = 'Rogō jest skutecznie zainstalowane.';  
+$string['deleteinstall'] = 'Ze względów bezpieczeństwa usuń katalog install.';  
+$string['staffhomepage'] = 'Przejdź do strony startowej kadry';  
 
 $string['logwarning1'] = 'nie załadowano staff_help.sql, nie można było zainstalować pomocy dla kadry';
 $string['logwarning2'] = 'nie znaleziono staff_help.sql, nie można było zainstalować pomocy dla kadry';

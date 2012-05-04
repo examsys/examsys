@@ -33,17 +33,20 @@ $stem = (isset($stems[$index - 1])) ? $stems[$index - 1] : '';
 $feedback = (isset($all_feedback[$index - 1])) ? $all_feedback[$index - 1] : '';
 $selected = (isset($correct_answers[$index - 1])) ? $correct_answers[$index - 1] : '';
 $select_size = (count($option_texts) < 10) ? count($option_texts) : 10;
+$locked = ($dis_class != '');
 ?>
             <tr<?php echo $alt_c ?>>
               <th><?php echo $mandatory ?><label for="edit_extmatch<?php echo $index ?>"><?php echo $string['stem'] ?></label></th>
               <td>
-                <?php echo wysiwyg_editor('edit_extmatch' . $index, 'question_stem' . strval($index), $stem); ?>
+<?php
+  echo wysywig_or_non_editable($dis_class, 'edit_extmatch' . $index, 'question_stem' . strval($index), $stem);
+?>
               </td>
             </tr>
 <?php
 
 if (isset($all_media['filenames'][$index]) and $all_media['filenames'][$index] != '') {
-  $current_media_html =  display_media($all_media['filenames'][$index], $all_media['widths'][$index], $all_media['heights'][$index], $index); 
+  $current_media_html =  display_media($all_media['filenames'][$index], $all_media['widths'][$index], $all_media['heights'][$index], $index, $locked);
 ?>
               <tr<?php echo $alt_c ?>>
                 <th><?php echo $string['current'] . ' ' . $string['media'] ?></th>
@@ -55,13 +58,13 @@ if (isset($all_media['filenames'][$index]) and $all_media['filenames'][$index] !
             <tr<?php echo $alt_c ?>>
               <th><label for="question_media<?php echo $index ?>"><?php echo $string['change'] . ' ' . $string['media'] ?></label></th>
               <td>
-                <input id="question_media<?php echo $index ?>" name="question_media<?php echo $index ?>" type="file" size="50" />
+                <input id="question_media<?php echo $index ?>" name="question_media<?php echo $index ?>" type="file" size="50"<?php echo $disabled ?> />
               </td>
             </tr>
             <tr<?php echo $alt_c ?>>
               <th><label for="option_correct_fback<?php echo $index ?>"><?php echo $string['feedback'] ?></label></th>
               <td>
-                <textarea cols="85" rows="2" id="question_correct_fback<?php echo $index ?>" name="question_correct_fback<?php echo $index ?>" class="form-med-large"><?php echo $feedback ?></textarea>
+                <textarea cols="85" rows="2" id="question_correct_fback<?php echo $index ?>" name="question_correct_fback<?php echo $index ?>" class="form-med-large<?php echo $dis_class ?>"<?php echo $dis_readonly ?>><?php echo $feedback ?></textarea>
               </td>
             </tr>
             <tr<?php echo $alt_c ?>>

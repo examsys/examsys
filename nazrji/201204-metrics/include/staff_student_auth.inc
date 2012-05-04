@@ -129,4 +129,16 @@ if (preg_match( '|MSIE ([5-9].[0-9]{1,2})|',$_SERVER['HTTP_USER_AGENT'],$log_ver
   $mysqli->close();
   exit;
 }
+
+// Check to see if the update script has been run.
+if ($rogo_version != '4.2.2') {
+  echo "<html>\n<head>\n<title>Update Required</title>\n</head>\n<body style=\"font-family:Arial,sans-serif;font-size:90%\">\n<table><tr><td><img src=\"../artwork/software_64.png\" width=\"64\" height=\"64\" alt=\"\" border=\"0\" /></td><td><div style=\"color:#C00000;font-weight:bold\">" . $string['warning'] . "</div>";
+  if (strpos($userroles,'SysAdmin') !== false) {
+    echo 'Please run <a href="../updates/version4.php" style="color:blue">/updates/version4.php</a> before proceeding.';
+  } else {
+    echo 'System needs configuring before use. Please contact your local system administrator.';
+  }
+  echo "</td></title>\n</body>\n</html>\n";
+  exit;
+}
 ?>

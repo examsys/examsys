@@ -28,6 +28,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
   <title>Rogō<?php echo " $cfg_install_type"; ?></title>
   <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
@@ -139,9 +140,7 @@
       }
     }
     if ($old_letter !== substr($moduleid,0,1)) {
-      if ($moduleid === '') {
-        echo "<div class=\"greysch\"><img src=\"../artwork/folder_16_grey.png\" width=\"16\" height=\"16\" alt=\"folder\" border=\"0\" />&nbsp;" . substr($moduleid,0,1) . "</div>\n";
-      } else {
+      if ($moduleid !== '') {
         echo "<div class=\"sch\"><img src=\"../artwork/folder_16.png\" width=\"16\" height=\"16\" alt=\"folder\" border=\"0\" onclick=\"showHide($block_id)\" />&nbsp;<a href=\"\" style=\"color:blue\" onclick=\"showHide($block_id); return false;\">" . substr($moduleid,0,1) . "</a></div>\n";
       }
       if ($module_block == false) {

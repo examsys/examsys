@@ -77,7 +77,7 @@ Class TouchStoneObject {
    * @param string $text the text to be processed
    */
   protected function replace_tex($text) {
-    //swap [tex] befor saving to db <div class="mee">
+    //swap [tex] before saving to db <div class="mee">
     preg_match_all("#\[tex\](.*?)\[/tex\]#si",$text,$tex_matches);
     if(count($tex_matches[0]) > 0) {
       foreach($tex_matches[0] as $m) {
@@ -86,7 +86,7 @@ Class TouchStoneObject {
       }
     } 
     
-    //swap [texi] befor saving to db <div class="mee">
+    //swap [texi] before saving to db <div class="mee">
     preg_match_all("#\[texi\](.*?)\[/texi\]#si",$text,$tex_matches);
     if(count($tex_matches[0]) > 0) {
       foreach($tex_matches[0] as $m) {
@@ -94,8 +94,6 @@ Class TouchStoneObject {
         $text = str_replace($m, $new, $text);
       }
     } 
-    return $text;
-    
     return $text;
   }
   

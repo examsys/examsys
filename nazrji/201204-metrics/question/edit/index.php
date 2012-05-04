@@ -119,7 +119,8 @@ if ($critical_error == '') {
 
   // Get any existing media
   $current_media = $question->get_media();
-  
+
+  $do_save = false;
   $show_media_upload = false;
   $show_correction_intermediate = false;
   if ($question->requires_media() and $current_media['filename'] == '') {
@@ -152,7 +153,6 @@ if ($critical_error == '') {
         $part_names = $question->get_change_fields();
         $correct_answers = array();
         foreach ($part_names as $field) {
-          $i = 1;
           for ($i = 1; $i <= $loop_limit; $i++) {
             if (isset($_POST[$field . $i])) {
               $correct_answers[$field][] = $_POST[$field . $i];
@@ -169,7 +169,18 @@ if ($critical_error == '') {
         
         $errors = $question->update_correct($correct_answers, $paper_id);
       }
-  
+
+      // Save metadata
+//      $part_names = array('bloom','status','teams');
+//      foreach($part_names as $section_name) {
+//        if(isset($_POST["$section_name"])) {
+//          $method = "set_$section_name";
+//          $question->$method($_POST["$section_name"]);
+//        }
+//      }
+//
+//      $do_save = true;
+
       redirect();
     }
   } elseif ((isset($_POST['submit']) and ($_POST['submit'] == $string['save'] or $_POST['submit'] == $string['limitedsave'])) or isset($_POST['addbank']) or isset($_POST['addpaper'])) {
@@ -268,7 +279,7 @@ if ($critical_error == '') {
 
     } else {
       // Limited save
-      $part_names = array('bloom','status');
+      $part_names = array('bloom','status','teams');
       foreach($part_names as $section_name) {
         if(isset($_POST["$section_name"])) {
           $method = "set_$section_name";
@@ -276,51 +287,45 @@ if ($critical_error == '') {
         }
       }
     }
-    
+
+    $do_save = true;
+
+  } elseif (isset($_POST['submit-cancel']) and $_POST['submit-cancel'] == $string['cancel']) {
+    $question->clear_checkout();
+    redirect();
+  }
+
+  if ($do_save) {
     // If not errored then save the question
     if (count($errors) == 0) {
       try {
-    	  if(!$question->save()) {
-    	    $errors[] = $string['datasaveerror'];
-    	  } else {
-    	    // Possibility that we might be converting a MRQ to MCQ
-    	    if(isset($_POST['mcqconvert']) and $_POST['mcqconvert'] == '1') {
-    	      $i = 1;
-    	      $correct_option = 0;
-    	      foreach ($question->options as $option) {
-    	        if ($option->get_correct() == 'y') {
-    	          $correct_option = $i;
-    	          break;
-    	        }
-    	        $i++;
-    	      }
-    	      $question = $question->convert_to_mcq($correct_option);
-    	    }
-    	    
+        if(!$question->save()) {
+          $errors[] = $string['datasaveerror'];
+        } else {
+          // Possibility that we might be converting a MRQ to MCQ
+          if(isset($_POST['mcqconvert']) and $_POST['mcqconvert'] == '1') {
+            $i = 1;
+            $correct_option = 0;
+            foreach ($question->options as $option) {
+              if ($option->get_correct() == 'y') {
+                $correct_option = $i;
+                break;
+              }
+              $i++;
+            }
+            $question = $question->convert_to_mcq($correct_option);
+          }
+
           // Insert into Papers
           if (isset($_POST['addpaper'])) {
             insert_into_papers($paper_id, $question->id);
           }
-            	    
+
           save_keywords($question, $userID, true, $mysqli, $string);
-      
-    	    if(isset($_POST['comment_ids']) and isset($_POST['actions']) and isset($_POST['responses'])) {
-    	      save_external_responses($mysqli, $question, $_POST['comment_ids'], $_POST['actions'], $_POST['responses'], $paper_id);
-    	    }
-    	    
-    	    if (isset($_POST['objective_modules'])) {
-    	      // Write out curriculum mapping.
-    	      save_objective_mappings($mysqli, $_POST['objective_modules'], $paper_id, $question->id);
-    	    }
 
-          // For likert, save the scale to a state to ease creation of multiple questions with same scale
-          if ($mode == 'Add' and $question->get_type() == 'likert') {
-            $scale_type = $question->get_scale_type();
-            $state = $stateutil->setState($userID, 'likert_format', $scale_type, '/question/edit/index.php', $mysqli);
-
-            if ($scale_type == 'custom') {
-              $state = $stateutil->setState($userID, 'likert_format', implode('|', $question->get_all_custom_scales()), '/question/edit/index.php', $mysqli);
-            }
+          if (isset($_POST['objective_modules'])) {
+            // Write out curriculum mapping.
+            save_objective_mappings($mysqli, $_POST['objective_modules'], $paper_id, $question->id);
           }
 
           // Save a default team if defined
@@ -332,19 +337,36 @@ if ($critical_error == '') {
               $q_teams = $question->get_teams();
               if (is_array($q_teams) and count($q_teams) > 0) $team_for_state = $q_teams[0];
             }
-            $state = $stateutil->setState($userID, 'default_team', $team_for_state, '/question/edit/index.php', $mysqli);            
+            $state = $stateutil->setState($userID, 'default_team', $team_for_state, '/question/edit/index.php', $mysqli);
           }
-    	  }
-    	} catch (ValidationException $vex) {
-    	  $errors[] = $vex->getMessage();
-    	}
+
+          // Stuff not to do on correction/limited save
+          if (!isset($_POST['submit']) or $_POST['submit'] != $string['correct']) {
+            // Save review comments and responses
+            if(isset($_POST['comment_ids']) and isset($_POST['actions']) and isset($_POST['responses'])) {
+              save_external_responses($mysqli, $question, $_POST['comment_ids'], $_POST['actions'], $_POST['responses'], $paper_id);
+            }
+
+            // For likert, save the scale to a state to ease creation of multiple questions with same scale
+            if ($mode == 'Add' and $question->get_type() == 'likert') {
+              $scale_type = $question->get_scale_type();
+              $state = $stateutil->setState($userID, 'likert_format', $scale_type, '/question/edit/index.php', $mysqli);
+
+              if ($scale_type == 'custom') {
+                $state = $stateutil->setState($userID, 'likert_format', implode('|', $question->get_all_custom_scales()), '/question/edit/index.php', $mysqli);
+              }
+            }
+          }
+        }
+      } catch (ValidationException $vex) {
+        $errors[] = $vex->getMessage();
+      }
     }
-    
+
     if (count($errors) == 0) redirect();
-  } elseif (isset($_POST['submit-cancel']) and $_POST['submit-cancel'] == $string['cancel']) {
-    $question->clear_checkout();
-    redirect();
   }
+
+
 
   $q_type_display = '';
   if ($question->get_type() != 'info' and !empty($q_no)) {
@@ -354,6 +376,10 @@ if ($critical_error == '') {
     $q_type_full = $string[$question->get_type()];
     $q_type_display .= " &ndash; $q_type_full";
   }
+
+  // Set come classes and attributes that we're going to use to disable fields that aren't editable when locked
+  $dis_class = $dis_readonly = '';
+  disable_locked($question, $dis_class, $dis_readonly);
 } else {
   // Bad things have happened
   $q_type_display = '';
@@ -375,7 +401,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
 
 <?php echo $cfg_editor_javascript; ?>
 <script type="text/javascript" src="../../js/jquery-1.6.1.min.js"></script>
-<script type="text/javascript" src="../../classes/stateutils.class.php"></script>
+<script type="text/javascript" src="../../js/state.js"></script>
 <script type="text/javascript" src="../../js/staff_help.js"></script>
 <script type="text/javascript" src="../../js/jquery.touchstone.js"></script>
 <script type="text/javascript" src="../../js/jquery.addedit.js"></script>
@@ -548,15 +574,14 @@ if ($question->get_type() != '') require_once '../../include/question/addedit/' 
           </div>
 
 <?php
-$default_team = '';
+$q_teams = array();
 if (count($question->get_teams()) > 0) {
   $q_teams = $question->get_teams();
-  $default_team = array_slice($q_teams, 0, 1);
 } elseif (isset($state['default_team'])) {
-  $default_team = explode(',', $state['default_team']);
+  $q_teams = explode(',', $state['default_team']);
 }
 
-echo render_metadata($mysqli, $question, $question->use_bloom(), $default_team, $disabled, $string);
+echo render_metadata($mysqli, $question, $question->use_bloom(), $q_teams, $disabled, $string);
 ?>
         </div>
       </div>

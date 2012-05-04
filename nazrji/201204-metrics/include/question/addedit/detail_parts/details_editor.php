@@ -31,7 +31,9 @@ $index_editor = (isset($index_editor)) ? $index_editor++ : 1;
             <tr>
               <th><?php echo $mandatory ?><?php echo $label_editor ?></th>
               <td>
-                <?php echo wysiwyg_editor('edit_common' . $index_editor, $field_editor, $value_editor); ?>
+<?php
+  echo wysywig_or_non_editable($dis_class, 'edit_common' . $index_editor, $field_editor, $value_editor);
+?>
               </td>
             </tr>
 

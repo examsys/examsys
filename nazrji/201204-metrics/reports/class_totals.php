@@ -42,7 +42,7 @@ ob_start();
 <link rel="stylesheet" type="text/css" href="../css/class_totals.css" />
 <link rel="stylesheet" type="text/css" href="../css/header.css" />
 <link rel="stylesheet" type="text/css" href="../css/warnings.css" />
-<script src="../js/staff_help.js" type="text/javascript"></script>
+<script type="text/javascript" src="../js/staff_help.js"></script>
 <script language="JavaScript" type="text/javascript">
   var ie  = document.all;
   var ns6 = document.getElementById&&!document.all;
@@ -63,7 +63,7 @@ ob_start();
     return false;
   }
   // POP UP MENU
-  function ItemSelMenu(tmpStarted, tmpUserID, tmpUsername, tmpDisplayName, tmpLogType, tmpReassign, tmpLogLate, tmpPercent, e) {
+  function popMenu(tmpStarted, tmpUserID, tmpLogType, tmpReassign, tmpLogLate, tmpPercent, e) {
     if (!e) var e = window.event;
     var currentX = e.clientX;
     var currentY = e.clientY;
@@ -72,8 +72,6 @@ ob_start();
 
     document.getElementById('started').value = tmpStarted;
     document.getElementById('userID').value = tmpUserID;
-    document.getElementById('username').value = tmpUsername;
-    document.getElementById('display_name').value = tmpDisplayName;
     document.getElementById('log_type').value = tmpLogType;
     document.getElementById('reassign').value = tmpReassign;
     document.getElementById('loglate').value = tmpLogLate;
@@ -181,7 +179,7 @@ ob_start();
     if (document.getElementById('started').value != '') {
       var winwidth = screen.width-80;
       var winheight = screen.height-80;
-      window.open("../paper/finish.php?id=<?php echo $crypt_name; ?>&previous=" + document.getElementById('started').value + "&userid=" + document.getElementById('userID').value + "&surname=" + document.getElementById('display_name').value + "&log_type=" +document.getElementById('log_type').value+ "&percent=" +document.getElementById('percent').value+ "","paper","width="+winwidth+",height="+winheight+",left=30,top=20,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+      window.open("../paper/finish.php?id=<?php echo $crypt_name; ?>&previous=" + document.getElementById('started').value + "&userid=" + document.getElementById('userID').value + "&log_type=" +document.getElementById('log_type').value+ "&percent=" +document.getElementById('percent').value+ "","paper","width="+winwidth+",height="+winheight+",left=30,top=20,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
     }
   }
 
@@ -201,7 +199,7 @@ ob_start();
 
   function newStudentNote() {
     document.getElementById('menudiv').style.display = 'none';
-    note = window.open("../users/new_student_note.php?userID=" + document.getElementById('userID').value + "&paperID=<?php echo $paperID; ?>&display_name=" + document.getElementById('display_name').value + "&calling=class_totals","note","width=600,height=400,left="+(screen.width/2-300)+",top="+(screen.height/2-200)+",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+    note = window.open("../users/new_student_note.php?userID=" + document.getElementById('userID').value + "&paperID=<?php echo $paperID; ?>&calling=class_totals","note","width=600,height=400,left="+(screen.width/2-300)+",top="+(screen.height/2-200)+",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
     if (window.focus) {
       note.focus();
     }
@@ -487,7 +485,7 @@ ob_start();
       if ($user_results[$i]['display_started'] == '') {  // Student did not take exam.
         $bg_color = '#FFC0C0';
         echo "<tr class=\"nonattend\"><td>&nbsp;</td>";
-        echo "<td style=\"padding:1px\" onclick=\"ItemSelMenu(''," . $user_results[$i]['tmp_userID'] . ",'" . $user_results[$i]['username'] . "','" . $user_results[$i]['title'] . " " . str_replace("'","&#8217;",$user_results[$i]['surname']) . "," . $user_results[$i]['initials'] . " (" . $user_results[$i]['student_id'] . ")', '" . $user_results[$i]['paper_type'] . "', '$reassign', '$late_submissions', '" . $user_results[$i]['adj_percent'] . "', event);\" />&nbsp;" . $user_results[$i]['title'] . "&nbsp;" . $user_results[$i]['surname'] . ",&nbsp;<span class=\"grey\">" . $user_results[$i]['first_names'] . "</span>";
+        echo "<td onclick=\"popMenu(''," . $user_results[$i]['tmp_userID'] . ",'" . $user_results[$i]['paper_type'] . "','$reassign','$late_submissions','" . $user_results[$i]['adj_percent'] . "',event);\" />&nbsp;" . $user_results[$i]['title'] . "&nbsp;" . $user_results[$i]['surname'] . ",&nbsp;<span class=\"grey\">" . $user_results[$i]['first_names'] . "</span>";
         if ($user_results[$i]['student_id'] == '') {
           echo "<td class=\"padl grey\">" . $string['unknown'] . "</td>";
         } else {
@@ -506,10 +504,8 @@ ob_start();
           fwrite($scatter_file,"0\n");
           fwrite($scatter_file,"0\n");
           $class = 'redln';
-          echo ' style="padding:1px"';
         } else {
           $class = 'greyln';
-          echo ' style="padding:1px"';
           $total_time += $user_results[$i]['duration'];
           $temp_location = $user_results[$i]['adj_percent'];
           if (isset($distribution[$temp_location])) {
@@ -526,7 +522,7 @@ ob_start();
           $role_css = '';
         }
         if ($user_results[$i]['questions'] < $question_no) {
-          echo "><td class=\"$class $role_css\"><img src=\"../artwork/incomplete_paper_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['notcompleted'] . "\" border=\"0\" onclick=\"ItemSelMenu('" . $user_results[$i]['started'] . "'," . $user_results[$i]['tmp_userID'] . ",'" . $user_results[$i]['username'] . "','" . $user_results[$i]['title'] . " " . str_replace("'","&#8217;",$user_results[$i]['surname']) . ", " . $user_results[$i]['initials'] . " (" . $user_results[$i]['student_id'] . ")', '" . $user_results[$i]['paper_type'] . "', '$reassign', '$late_submissions', '" . $user_results[$i]['adj_percent'] . "', event);\" /></td>";
+          echo "><td class=\"$class $role_css\"><img src=\"../artwork/incomplete_paper_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['notcompleted'] . "\" border=\"0\" onclick=\"popMenu('" . $user_results[$i]['started'] . "'," . $user_results[$i]['tmp_userID'] . ",'" . $user_results[$i]['paper_type'] . "','$reassign', '$late_submissions','" . $user_results[$i]['adj_percent'] . "',event);\" /></td>";
         } else {
           echo "><td class=\"$class $role_css\">";
           if ($user_results[$i]['paper_type'] == 0) {
@@ -540,7 +536,7 @@ ob_start();
           } elseif ($user_results[$i]['paper_type'] == '5') {
             echo '<img src="../artwork/offline_16.gif" width="16" height="16" alt="' . $string['displaypaper'] . '" border="0"';
           }
-          echo " onclick=\"ItemSelMenu('" . $user_results[$i]['started'] . "'," . $user_results[$i]['tmp_userID'] . ",'" . $user_results[$i]['username'] . "','" . $user_results[$i]['title'] . " " . str_replace("'","&#8217;",$user_results[$i]['surname']) . "," . $user_results[$i]['initials'] . " (" . $user_results[$i]['student_id'] . ")', '" . $user_results[$i]['paper_type'] . "', '$reassign', '$late_submissions', '" . $user_results[$i]['adj_percent'] . "', event);\" /></td>";
+          echo " onclick=\"popMenu('" . $user_results[$i]['started'] . "'," . $user_results[$i]['tmp_userID'] . ",'" . $user_results[$i]['paper_type'] . "','$reassign','$late_submissions','" . $user_results[$i]['adj_percent'] . "',event);\" /></td>";
         }
         if ($_GET['sortby'] == 'name') {
           $ordered = ' ordered';
@@ -548,9 +544,9 @@ ob_start();
           $ordered = '';
         }
         if (strpos($user_results[$i]['username'], 'user') === 0) {
-          echo "<td class=\"$class$ordered padl tmpacc $role_css\"><span style=\"cursor:hand\" onclick=\"ItemSelMenu('" . $user_results[$i]['started'] . "'," . $user_results[$i]['tmp_userID'] . ",'" . $user_results[$i]['username'] . "','" . $user_results[$i]['title'] . " " . str_replace("'","&#8217;",$user_results[$i]['surname']) . ", " . $user_results[$i]['initials'] . " (" . $user_results[$i]['student_id'] . ")', '" . $user_results[$i]['paper_type'] . "', '$reassign', '$late_submissions', '" . $user_results[$i]['adj_percent'] . "', event);\">" . str_replace('User','Temporary Account No. ',$user_results[$i]['surname']) . "</span>";
+          echo "<td class=\"$class$ordered padl tmpacc $role_css\"><span style=\"cursor:hand\" onclick=\"popMenu('" . $user_results[$i]['started'] . "'," . $user_results[$i]['tmp_userID'] . ",'" . $user_results[$i]['paper_type'] . "','$reassign','$late_submissions','" . $user_results[$i]['adj_percent'] . "',event);\">" . str_replace('User','Temporary Account No. ',$user_results[$i]['surname']) . "</span>";
         } else {
-          echo "<td class=\"$class$ordered padl $role_css\"><span style=\"cursor:hand\" onclick=\"ItemSelMenu('" . $user_results[$i]['started'] . "'," . $user_results[$i]['tmp_userID'] . ",'" . $user_results[$i]['username'] . "','" . $user_results[$i]['title'] . " " . str_replace("'","&#8217;",$user_results[$i]['surname']) . ", " . $user_results[$i]['initials'] . " (" . $user_results[$i]['student_id'] . ")', '" . $user_results[$i]['paper_type'] . "', '$reassign', '$late_submissions', '" . $user_results[$i]['adj_percent'] . "', event);\">" . $user_results[$i]['title'] . "&nbsp;" . $user_results[$i]['surname'] . ",&nbsp;<span class=\"grey\">" . $user_results[$i]['first_names'] . "</span></span>";
+          echo "<td class=\"$class$ordered padl $role_css\"><span style=\"cursor:hand\" onclick=\"popMenu('" . $user_results[$i]['started'] . "'," . $user_results[$i]['tmp_userID'] . ",'" . $user_results[$i]['paper_type'] . "','$reassign','$late_submissions','" . $user_results[$i]['adj_percent'] . "',event);\">" . $user_results[$i]['title'] . "&nbsp;" . $user_results[$i]['surname'] . ",&nbsp;<span class=\"grey\">" . $user_results[$i]['first_names'] . "</span></span>";
         }
         if (isset($special_needs[$user_results[$i]['tmp_userID']]) and $special_needs[$user_results[$i]['tmp_userID']] == 'y') {
           echo '&nbsp;<img src="../artwork/accessibility_16.png" width="16" height="16" alt="' . $string['alternativearrangements'] . '" border="0" />';
@@ -918,6 +914,6 @@ ob_start();
   echo "</table>\n";
   $mysqli->close();
 ?>
-<input type="hidden" id="started" value="" /><input type="hidden" id="userID" value="" /><input type="hidden" id="username" value="" /><input type="hidden" id="display_name" value="" /><input type="hidden" id="log_type" value="" /><input type="hidden" id="reassign" value="" /><input type="hidden" id="loglate" value="" /><input type="hidden" id="percent" value="" />
+<input type="hidden" id="started" value="" /><input type="hidden" id="userID" value="" /><input type="hidden" id="log_type" value="" /><input type="hidden" id="reassign" value="" /><input type="hidden" id="loglate" value="" /><input type="hidden" id="percent" value="" />
 </body>
 </html>

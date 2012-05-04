@@ -39,6 +39,7 @@ foreach ($question->get_sct_types() as $typs_js) {
 }
 $sct_type_js = rtrim($sct_type_js, ',') . ']';
 
+$disabled = ($dis_class != '') ? ' disabled="disabled"' : '';
 ?>
 
 <script type="text/javascript">
@@ -81,7 +82,7 @@ require_once 'detail_parts/details_general_feedback.php';
             <tr>
               <th><?php echo $string['type'] ?></th>
               <td>
-                <select id="display_method" name="display_method" class="sct-type">
+                <select id="display_method" name="display_method" class="sct-type"<?php echo $disabled ?>>
 <?php
 echo ViewHelper::render_options($question->get_display_methods(), $question->get_display_method(), 3);
 ?>

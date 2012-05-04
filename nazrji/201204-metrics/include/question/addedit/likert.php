@@ -91,7 +91,7 @@ if (!$scale_found) {
               <td>
                 <dl id="extended-option-list"<?php echo $show_custom ?>>
 <?php
-$custom_scale = ($mode == 'Add' and isset($_COOKIE['likert_format'])) ? explode('|', $_COOKIE['likert_format']) : $question->get_all_custom_scales();
+$custom_scale = ($mode == 'Add' and isset($state['likert_format'])) ? explode('|', $state['likert_format']) : $question->get_all_custom_scales();
 for ($i = 1; $i <= $question->max_stems; $i++):
   $val = (isset($custom_scale[$i - 1])) ? $custom_scale[$i - 1] : '';
 ?>

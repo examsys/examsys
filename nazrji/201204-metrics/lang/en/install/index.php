@@ -46,6 +46,9 @@ $string['supportnumbers'] = 'Emergency Support Numbers';
 $string['name'] = 'Name';
 $string['number'] = 'Number';
 $string['install'] = 'Install Rogō';
+$string['installed'] = 'Rogō is now successfully installed.';
+$string['deleteinstall'] = 'For security reasons please delete the install directory.';
+$string['staffhomepage'] = 'Go to staff homepage';
 
 $string['logwarning1'] = 'could not load staff_hlep.sql, could not install staff help';
 $string['logwarning2'] = 'cannot find staff_hlep.sql, could not install staff help';

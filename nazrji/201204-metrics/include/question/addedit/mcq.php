@@ -23,6 +23,7 @@
 */
 
 $num_options = count($question->options);
+$disabled = ($dis_class != '') ? ' disabled="disabled"' : '';
 ?>
 				<table id="q-details" class="form" summary="<?php echo $string['qeditsummary'] ?>">
 					<tbody>
@@ -33,7 +34,7 @@ require_once 'detail_parts/details_presentation.php';
             <tr>
               <th><label for="option_order"><?php echo $string['optionorder'] ?></label></th>
               <td>
-                <select id="option_order" name="option_order">
+                <select id="option_order" name="option_order"<?php echo $disabled ?>>
 <?php 
 echo ViewHelper::render_options($question->get_option_orders(), $question->get_option_order(), 3);
 ?>

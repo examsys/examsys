@@ -31,7 +31,7 @@
  * @param mixed $imageid 
  *
  */
-function display_media($filename, $width, $height, $imageid=-1) {
+function display_media($filename, $width, $height, $imageid=-1, $locked=false) {
   global $cfg_root_path;
 
   $html = '';
@@ -76,11 +76,12 @@ OBJEMBED;
   } else {
     $html .= "<embed src=\"{$cfg_root_path}/media/$filename\" width=\"$width\" height=\"$height\" border=\"1\" alt=\"Data File\" wmode=\"opaque\"></embed>";
   }
-  if ($imageid > -1) {
+  if ($imageid > -1 and !$locked) {
     $html .= <<< DELETE
 <a href="#" class="media-delete" rel="{$imageid}"><img class="align-bottom" src="{$cfg_root_path}/artwork/red_cross.png" width="16" height="16" alt="Delete" /></a></div>
 <label class="hide"><input type="checkbox" id="delete_media{$imageid}" name="delete_media{$imageid}" /> Delete image {$imageid}</label>
 <input type="hidden" id="existing_media{$imageid}" name="existing_media{$imageid}" value="$filename" />
+
 DELETE;
   }
 

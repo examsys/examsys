@@ -49,6 +49,9 @@ Class QuestionCALCULATION extends Question {
     // Convert the max number of options into a list of variables
     $this->_variables = range('A', chr(64 + $this->max_options));
     $this->option_order = 'display order';
+
+    // Populate the pseudo properties
+    $this->get_display_method();
   }
 
   /**

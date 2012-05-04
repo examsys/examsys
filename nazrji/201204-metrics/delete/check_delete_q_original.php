@@ -49,8 +49,9 @@ $icons = array('formative', 'progress', 'summative', 'survey', 'osce', 'offline'
 
 <td>
 <?php
-  $result = $mysqli->prepare("SELECT DISTINCT paper_title, paper, paper_type FROM (papers, properties) WHERE papers.paper=properties.property_id AND properties.deleted IS NULL AND question=?");
-  $result->bind_param('i', $_GET['q_id']);
+  $qIDs = substr($_GET['q_id'],1);
+
+  $result = $mysqli->prepare("SELECT DISTINCT paper_title, paper, paper_type FROM (papers, properties) WHERE papers.paper=properties.property_id AND properties.deleted IS NULL AND question IN ($qIDs)");
   $result->execute();  
   $result->store_result();
   $result->bind_result($paper_title, $paper, $paper_type);
@@ -62,7 +63,6 @@ $icons = array('formative', 'progress', 'summative', 'survey', 'osce', 'offline'
 <div style="text-align:right">
 <form action="do_delete_q_original.php" method="post">
 <input type="hidden" name="q_id" value="<?php echo $_GET['q_id']; ?>" />
-<input type="hidden" name="divID" value="<?php echo $_GET['divID']; ?>" />
 <input style="width:140px" type="submit" name="submit" value="<?php echo $string['delete']; ?>" />&nbsp;
 <input style="width:90px" type="button" name="cancel" value="<?php echo $string['cancel']; ?>" onclick="javascript:window.close();" />
 </form>
@@ -79,7 +79,6 @@ $icons = array('formative', 'progress', 'summative', 'survey', 'osce', 'offline'
 <div style="text-align:right">
 <form action="do_delete_q_original.php" method="post">
 <input type="hidden" name="q_id" value="<?php echo $_GET['q_id']; ?>" />
-<input type="hidden" name="divID" value="<?php echo $_GET['divID']; ?>" />
 <input style="width:90px" type="button" name="cancel" value="<?php echo $string['cancel']; ?>" onclick="javascript:window.close();" />
 </form>
 </div>

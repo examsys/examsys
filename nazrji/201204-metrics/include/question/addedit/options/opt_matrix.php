@@ -29,7 +29,7 @@ $stem = (isset($stems[$index - 1])) ? $stems[$index - 1] : '';
           <tr<?php echo $alt_c ?>>
             <th class="separated">
               <label for="question_stem<?php echo $index ?>" class="hide">Stem <?php echo $index ?></label>
-              <input type="text" id="question_stem<?php echo $index ?>" name="question_stem<?php echo $index ?>" value="<?php echo $stem ?>" title="<?php echo $stem ?>" class="form-tiny" />
+              <input type="text" id="question_stem<?php echo $index ?>" name="question_stem<?php echo $index ?>" value="<?php echo $stem ?>" title="<?php echo $stem ?>" class="form-tiny<?php echo $dis_class ?>"<?php echo $dis_readonly ?> />
             </th>
 <?php
 for ($i = 1; $i <= $question->max_options; $i++):

@@ -32,6 +32,13 @@ require_once '../classes/stateutils.class.php';
 <script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
 <script type="text/javascript" src="../js/state.js"></script>
 <script language="JavaScript">
+  function getLastID(IDs) {
+    var id_list = IDs.split(",");
+    last_elm = id_list.length - 1;
+    
+    return id_list[last_elm];
+  }
+
   function checkForm() {
     if (searchoptions.searchterm.value == "") {
       alert ("<?php echo $string['entersearchterm'];?>");
@@ -39,8 +46,8 @@ require_once '../classes/stateutils.class.php';
     }
   }
   
-   function editQuestion() {
-    var loc = '../question/edit/index.php?q_id=' + document.PapersMenu.questionID.value + '&paperID=find:<?php if(isset($_GET['paperID'])) echo $_GET['paperID']; ?>&calling=find';
+   function editQ() {
+    var loc = '../question/edit/index.php?q_id=' + getLastID(document.PapersMenu.questionID.value) + '&paperID=find:<?php if(isset($_GET['paperID'])) echo $_GET['paperID']; ?>&calling=find';
     if (document.PapersMenu.qType.value == 'random' || document.PapersMenu.qType.value == 'keyword_based') {
       loc += '&type=' + document.PapersMenu.qType.value;
     }
@@ -56,7 +63,7 @@ require_once '../classes/stateutils.class.php';
   }
 
   function questionInfo() {
-    notice=window.open("../question/info.php?q_id=" + document.PapersMenu.questionID.value + "","question_info","width=500,height=500,scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+    notice=window.open("../question/info.php?q_id=" + getLastID(document.PapersMenu.questionID.value) + "","question_info","width=500,height=500,scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
     notice.moveTo(screen.width/2-250,screen.height/2-250);
     if (window.focus) {
       notice.focus();
@@ -64,16 +71,16 @@ require_once '../classes/stateutils.class.php';
   }
 
   function copyToPaper() {
-    notice=window.open("../question/copy_onto_paper.php?q_id=" + document.PapersMenu.questionID.value + "","notice","width=500,height=" + (screen.height-50) + ",scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
-    notice.moveTo(screen.width/2-250,10);
+    notice=window.open("../question/copy_onto_paper.php?q_id=" + document.PapersMenu.questionID.value + "","notice","width=600,height=" + (screen.height-50) + ",scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+    notice.moveTo(screen.width/2-300,10);
     if (window.focus) {
       notice.focus();
     }
   }
 
   function linkToPaper() {
-    notice=window.open("../question/link_to_paper.php?q_id=" + document.PapersMenu.questionID.value + "","linktopaper","width=500,height=600,scrollbars=yes,toolbar=no,location=no,directories=no,status=yes,menubar=no,resizable");
-    notice.moveTo(screen.width/2-250,screen.height/2-250);
+    notice=window.open("../question/link_to_paper.php?q_id=" + document.PapersMenu.questionID.value + "","linktopaper","width=600,height=" + (screen.height-50) + ",scrollbars=yes,toolbar=no,location=no,directories=no,status=yes,menubar=no,resizable");
+    notice.moveTo(screen.width/2-300,10);
     if (window.focus) {
       notice.focus();
     }
@@ -418,7 +425,7 @@ require_once '../classes/stateutils.class.php';
 </table>
 
 <table style="margin-left:12px; font-size:90%; line-height:160%; display:none" cellpadding="3" cellspacing="0" border="0" id="menu2b">
-<tr><td class="ico"><a id="edit" onclick="editQuestion(); return false;" href="#"><img src="../artwork/edit.png" width="16" height="16" alt="Edit" border="0" /></a></td><td class="menuitem"><a id="edit" onclick="editQuestion(); return false;" href="#"><?php echo $string['editquestion']; ?></a></td></tr>
+<tr><td class="ico"><a id="edit" onclick="editQ(); return false;" href="#"><img src="../artwork/edit.png" width="16" height="16" alt="Edit" border="0" /></a></td><td class="menuitem"><a id="edit" onclick="editQ(); return false;" href="#"><?php echo $string['editquestion']; ?></a></td></tr>
 <tr><td class="ico"><a id="information" href="#" onclick="questionInfo(); return false;"><img src="../artwork/information_icon.gif" width="16" height="16" alt="Information" border="0" /></a></td><td class="menuitem"><a id="information" href="#" onclick="questionInfo(); return false;"><?php echo $string['information']; ?></a></td></tr>
 <tr><td class="ico"><a id="copy" href="#" onclick="copyToPaper(); return false;"><img src="../artwork/copy_icon.gif" width="16" height="16" alt="Copy" border="0" /></a></td><td class="menuitem"><a id="copy" href="#" onclick="copyToPaper(); return false;"><?php echo $string['copyontopaperx']; ?></a></td></tr>
 <tr><td class="ico"><a id="link" href="#" onclick="linkToPaper(); return false;"><img src="../artwork/link.png" width="16" height="16" alt="Link 2 Paper" border="0" /></a></td><td class="menuitem"><a id="link" href="#" onclick="linkToPaper(); return false;"><?php echo $string['linktopaper']; ?></a></td></tr>
@@ -426,7 +433,7 @@ require_once '../classes/stateutils.class.php';
 </table>
 
 <table style="margin-left:12px; font-size:90%; line-height:160%; display:none" cellpadding="3" cellspacing="0" border="0" id="menu2c">
-<tr><td class="ico"><a id="edit" onclick="editQuestion(); return false;" href="#"><img src="../artwork/edit.png" width="16" height="16" alt="Edit" border="0" /></a></td><td class="menuitem"><a id="edit" onclick="editQuestion(); return false;" href="#"><?php echo $string['editquestion']; ?></a></td></tr>
+<tr><td class="ico"><a id="edit" onclick="editQ(); return false;" href="#"><img src="../artwork/edit.png" width="16" height="16" alt="Edit" border="0" /></a></td><td class="menuitem"><a id="edit" onclick="editQ(); return false;" href="#"><?php echo $string['editquestion']; ?></a></td></tr>
 <tr><td class="ico"><a id="information" href="#" onclick="questionInfo(); return false;"><img src="../artwork/information_icon.gif" width="16" height="16" alt="Information" border="0" /></a></td><td class="menuitem"><a id="information" href="#" onclick="questionInfo(); return false;"><?php echo $string['information']; ?></a></td></tr>
 <tr><td class="ico"><a id="copy" href="#" onclick="copyToPaper(); return false;"><img src="../artwork/copy_icon.gif" width="16" height="16" alt="Copy" border="0" /></a></td><td class="menuitem"><a id="copy" href="#" onclick="copyToPaper(); return false;"><?php echo $string['copyontopaperx']; ?></a></td></tr>
 <tr><td class="ico"><a id="link" href="#" onclick="linkToPaper(); return false;"><img src="../artwork/link.png" width="16" height="16" alt="Link 2 Paper" border="0" /></a></td><td class="menuitem"><a id="link" href="#" onclick="linkToPaper(); return false;"><?php echo $string['linktopaper']; ?></a></td></tr>
@@ -434,7 +441,6 @@ require_once '../classes/stateutils.class.php';
 </table>
 
 <input type="hidden" name="questionID" value="" />
-<input type="hidden" name="pID" value="" />
 <input type="hidden" name="qType" value="" />
 <input type="hidden" name="screenNo" value="" />
 <input type="hidden" name="oldQuestionID" value="" />

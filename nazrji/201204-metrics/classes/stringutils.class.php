@@ -41,4 +41,31 @@ class StringUtils {
     if ($testlen > $strlen) return false;
     return substr_compare($string, $test, -$testlen) === 0;
   }
+
+  public static function ordinal_suffix($number, $language='en') {
+    $suffix = ($number === 0) ? 'N/A' : $number;
+    if ($language == 'en') {
+      if ($number !== '') {
+  	    switch($number) {
+          case 0:
+            $suffix .= '';
+            break;
+  	      case 1:
+  	        $suffix .= 'st';
+  	        break;
+  	      case 2:
+  	        $suffix .= 'nd';
+  	        break;
+  	      case 3:
+  	        $suffix .= 'rd';
+  	        break;
+  	      default:
+  	        $suffix .= 'th';
+  	        break;
+  	    }
+      }
+    }
+    return $suffix;
+  }
+
 }

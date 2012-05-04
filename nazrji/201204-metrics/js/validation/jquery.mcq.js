@@ -1,5 +1,5 @@
 $(function() {
-  $('#edit_form').submit(function () { 
+  $('#edit_form').submit(function () {
     tinyMCE.triggerSave();
   });
   $('#edit_form').validate({

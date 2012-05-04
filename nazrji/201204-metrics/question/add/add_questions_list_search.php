@@ -33,8 +33,8 @@ require '../../include/media.inc';
   <title>Rogō</title>
   <link rel="stylesheet" type="text/css" href="../../css/header.css" />
   <style type="text/css">
-    body {margin:0px; font-family:Arial,sans-serif; color:black}
-    p, td {font-size:80%}
+    body {margin:0px; font-family:Arial,sans-serif; background-color:white; color:black; font-size:90%}
+    p, td {font-size:90%}
   </style>
   <script type="text/javascript" src="/js/jquery-1.6.1.min.js"></script>
   <script type="text/javascript" src="/tools/mee/mee/js/mee_src.js"></script>

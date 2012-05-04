@@ -142,9 +142,16 @@ $stmt->close();
     if (this.event) this.event.returnValue = false;
     return false;
   }
+  
+  function getLastID(IDs) {
+    var id_list = IDs.split(",");
+    last_elm = id_list.length - 1;
+    
+    return id_list[last_elm];
+  }
 
   function editQuestion() {
-    var loc = '<?php echo $cfg_root_path ?>/question/edit/index.php?q_id=' + document.PapersMenu.questionID.value + '&qNo=' + document.PapersMenu.questionNo.value + '&paperID=<?php echo $_GET['paperID']; ?>&folder=<?php echo $folder; ?>&module=<?php echo $module; ?>&calling=paper&scrOfY=' + document.PapersMenu.scrOfY.value;
+    var loc = '<?php echo $cfg_root_path ?>/question/edit/index.php?q_id=' + getLastID(document.PapersMenu.questionID.value) + '&qNo=' + document.PapersMenu.questionNo.value + '&paperID=<?php echo $_GET['paperID']; ?>&folder=<?php echo $folder; ?>&module=<?php echo $module; ?>&calling=paper&scrOfY=' + document.PapersMenu.scrOfY.value;
     if (document.PapersMenu.qType.value == 'random' || document.PapersMenu.qType.value == 'keyword_based') {
       loc += '&type=' + document.PapersMenu.qType.value;
     }
@@ -152,7 +159,7 @@ $stmt->close();
   }
 
   function deleteQuestion() {
-    notice=window.open("<?php echo $cfg_root_path ?>/delete/check_delete_q_pointer.php?questionID=" + document.PapersMenu.pID.value + "&paperID=<?php echo $_GET['paperID']; ?>&module=<?php echo $module; ?>&folder=<?php echo $folder; ?>&q_id=" + document.PapersMenu.questionID.value + "&scrOfY=" + document.PapersMenu.scrOfY.value + "","notice","width=420,height=170,scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+    notice=window.open("<?php echo $cfg_root_path ?>/delete/check_delete_q_pointer.php?questionID=" + document.PapersMenu.questionID.value + "&pID=" + document.PapersMenu.pID.value + "&paperID=<?php echo $_GET['paperID']; ?>&module=<?php echo $module; ?>&folder=<?php echo $folder; ?>&q_id=" + document.PapersMenu.questionID.value + "&scrOfY=" + document.PapersMenu.scrOfY.value + "","notice","width=420,height=170,scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
     notice.moveTo(screen.width/2-210,screen.height/2-85);
     if (window.focus) {
       notice.focus();
@@ -175,22 +182,14 @@ $stmt->close();
     }
   }
 
-  function editScreenNo() {
-    notice=window.open("<?php echo $cfg_root_path ?>/paper/edit_screen_no.php?questionID=" + document.PapersMenu.pID.value + "&paperID=<?php echo $paperID; ?>&screen=" + document.PapersMenu.screenNo.value + "&display_pos=" + document.PapersMenu.oldQuestionID.value + "&folder=<?php echo $folder; ?>&module=<?php echo $module; ?>&scrOfY=" + document.getElementById('scrOfY').value + "","properties","width=300,height=200,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
-    notice.moveTo(screen.width/2-150,screen.height/2-100);
-    if (window.focus) {
-      notice.focus();
-    }
-  }
-  
   function changeScreen(screenNo) {
-    window.location='<?php echo $cfg_root_path ?>/paper/change_screen_no.php?questionID=' + document.PapersMenu.pID.value + '&paperID=<?php echo $paperID; ?>&screen=' + screenNo + '&display_pos=' + document.PapersMenu.oldQuestionID.value + '&folder=<?php echo $folder; ?>&module=<?php echo $module; ?>&scrOfY=' + document.getElementById('scrOfY').value;
+    window.location='<?php echo $cfg_root_path ?>/paper/change_screen_no.php?questionID=' + document.PapersMenu.pID.value + '&paperID=<?php echo $paperID; ?>&screen=' + screenNo + '&display_pos=' + document.PapersMenu.current_pos.value + '&folder=<?php echo $folder; ?>&module=<?php echo $module; ?>&scrOfY=' + document.getElementById('scrOfY').value;
   }
   
   function incScreen() {
     screenNo = document.PapersMenu.screenNo.value;
     screenNo++;
-    window.location='<?php echo $cfg_root_path ?>/paper/change_screen_no.php?questionID=' + document.PapersMenu.pID.value + '&paperID=<?php echo $paperID; ?>&screen=' + screenNo + '&display_pos=' + document.PapersMenu.oldQuestionID.value + '&folder=<?php echo $folder; ?>&module=<?php echo $module; ?>&scrOfY=' + document.getElementById('scrOfY').value;
+    window.location='<?php echo $cfg_root_path ?>/paper/change_screen_no.php?questionID=' + getLastID(document.PapersMenu.pID.value) + '&paperID=<?php echo $paperID; ?>&screen=' + screenNo + '&display_pos=' + document.PapersMenu.current_pos.value + '&folder=<?php echo $folder; ?>&module=<?php echo $module; ?>&scrOfY=' + document.getElementById('scrOfY').value;
   }
   
   function addQuestions(display, screen_no) {
@@ -219,41 +218,21 @@ $stmt->close();
   }
 
   function linkToPaper() {
-    notice=window.open("<?php echo $cfg_root_path ?>/question/link_to_paper.php?q_id=" + document.PapersMenu.questionID.value + "","linktopaper","width=500,height=600,scrollbars=yes,toolbar=no,location=no,directories=no,status=yes,menubar=no,resizable");
-    notice.moveTo(screen.width/2-250,screen.height/2-250);
+    notice=window.open("<?php echo $cfg_root_path ?>/question/link_to_paper.php?q_id=" + document.PapersMenu.questionID.value + "","linktopaper","width=600,height=" + (screen.height-50) + ",scrollbars=yes,toolbar=no,location=no,directories=no,status=yes,menubar=no,resizable");
+    notice.moveTo(screen.width/2-300,10);
     if (window.focus) {
       notice.focus();
     }
   }
   
   function questionInfo() {
-    notice=window.open("<?php echo $cfg_root_path ?>/question/info.php?q_id=" + document.PapersMenu.questionID.value + "","notice","width=500,height=500,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+    notice=window.open("<?php echo $cfg_root_path ?>/question/info.php?q_id=" + getLastID(document.PapersMenu.questionID.value) + "","notice","width=500,height=500,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
     notice.moveTo(screen.width/2-250,screen.height/2-250);
     if (window.focus) {
       notice.focus();
     }
   }
 
-  function promote() {
-    if (document.getElementById('prev_screen').value != '') {
-      if (document.getElementById('prev_screen').value < document.getElementById('current_screen').value) {
-        document.location.href = "<?php echo $cfg_root_path ?>/paper/details.php?paperID=<?php echo $_GET['paperID']; ?>&old_pos=" + document.getElementById('current_pos').value + "&new_pos=" + document.getElementById('current_pos').value + "&old_screen=" + document.getElementById('current_screen').value + "&new_screen=" + document.getElementById('prev_screen').value + "&scrOfY=" + document.getElementById('scrOfY').value;
-      } else {
-        document.location.href = "<?php echo $cfg_root_path ?>/paper/details.php?paperID=<?php echo $_GET['paperID']; ?>&old_pos=" + document.getElementById('current_pos').value + "&new_pos=" + (parseInt(document.getElementById('current_pos').value) - 1) + "&old_screen=" + document.getElementById('current_screen').value + "&new_screen=" + document.getElementById('prev_screen').value + "&scrOfY=" + document.getElementById('scrOfY').value;
-      }
-    }
-  }
-
-  function demote() {
-    if (document.getElementById('next_screen').value != '') {
-      if (document.getElementById('next_screen').value > document.getElementById('current_screen').value) {
-        document.location.href = "<?php echo $cfg_root_path ?>/paper/details.php?paperID=<?php echo $_GET['paperID']; ?>&old_pos=" + document.getElementById('current_pos').value + "&new_pos=" + document.getElementById('current_pos').value + "&old_screen=" + document.getElementById('current_screen').value + "&new_screen=" + document.getElementById('next_screen').value + "&scrOfY=" + document.getElementById('scrOfY').value;
-      } else {
-        document.location.href = "<?php echo $cfg_root_path ?>/paper/details.php?paperID=<?php echo $_GET['paperID']; ?>&old_pos=" + document.getElementById('current_pos').value + "&new_pos=" + (parseInt(document.getElementById('current_pos').value) + 1) + "&old_screen=" + document.getElementById('current_screen').value + "&new_screen=" + document.getElementById('next_screen').value + "&scrOfY=" + document.getElementById('scrOfY').value;
-      }
-    }
-  }
-  
   function showAssStatsMenu(showMenu, e) {
     hideMenus();
     if (showMenu) {
@@ -301,12 +280,8 @@ $stmt->close();
 <input type="hidden" name="pID" value="" />
 <input type="hidden" name="qType" value="" />
 <input type="hidden" name="screenNo" value="" />
-<input type="hidden" name="oldQuestionID" value="" />
 <input type="hidden" name="scrOfY" id="scrOfY" value="0" />
 <input type="hidden" name="current_pos" id="current_pos" value="" />
-<input type="hidden" name="prev_screen" id="prev_screen" value="" />
-<input type="hidden" name="next_screen" id="next_screen" value="" />
-<input type="hidden" name="current_screen" id="current_screen" value="" />
 <?php
 $team_member = false;
 if ($paper_ownerID == $userID or strpos($userroles,'Admin') !== false or strpos($userroles,'SysAdmin') !== false) {
@@ -474,11 +449,11 @@ if ($summative_lock == 1) {
 <div class="submenuheading" id="banktasks"><?php echo $string['questionbanktasks']; ?></div>
 
 <table cellpadding="3" cellspacing="0" border="0" style="margin-left:9px; font-size:90%">
-<tr><td class="ico"><img src="<?php echo $cfg_root_path ?>/artwork/question_list_icon.gif" width="16" height="16" alt="<?php echo $string['questionsbytype']; ?>" border="0" /></td><td class="menuitem"><span id="type"><a href="#" onclick="hideAssStatsMenu(event); showMenu('popup1','banktasks','type',myOptions1,myURLs1,event); return false;"><?php echo $string['questionsbytype']; ?></a></span><img src="<?php echo $cfg_root_path ?>/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
-<tr><td class="ico"><img src="<?php echo $cfg_root_path ?>/artwork/question_list_icon.gif" width="16" height="16" alt="<?php echo $string['questionsbyteam']; ?>" border="0" /></td><td class="menuitem"><span id="team"><a href="#" onclick="hideAssStatsMenu(event); showMenu('popup2','banktasks','team',myOptions2,myURLs2,event); return false;"><?php echo $string['questionsbyteam']; ?></a></span><img src="<?php echo $cfg_root_path ?>/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
-<tr><td class="ico"><img src="<?php echo $cfg_root_path ?>/artwork/question_list_icon.gif" width="16" height="16" alt="<?php echo $string['questionsbykeyword']; ?>" border="0" /></td><td class="menuitem"><span id="keyword"><a href="#" onclick="hideAssStatsMenu(event); showMenu('popup3','banktasks','keyword',myOptions3,myURLs3,event); return false;"><?php echo $string['questionsbykeyword']; ?></a></span><img src="<?php echo $cfg_root_path ?>/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
-<tr><td class="ico"><img src="<?php echo $cfg_root_path ?>/artwork/xmag.png" width="16" height="16" alt="<?php echo $string['search']; ?>" border="0" /></td><td class="menuitem"><span id="search"><a href="#" onclick="hideAssStatsMenu(event); showMenu('popup4','banktasks','search',myOptions4,myURLs4,event); return false;"><?php echo $string['search']; ?></a></span><img src="<?php echo $cfg_root_path ?>/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
-<tr><td class="ico"><img src="<?php echo $cfg_root_path ?>/artwork/new_question_menu_icon.gif" width="16" height="16" alt="<?php echo $string['createnewquestion']; ?>" border="0" /></td><td class="menuitem"><span id="newquestion"><a href="#" onclick="hideAssStatsMenu(event); showMenu('popup5','banktasks','newquestion',myOptions5,myURLs5,event); return false;"><?php echo $string['createnewquestion']; ?></a></span><img src="<?php echo $cfg_root_path ?>/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
+<tr><td class="ico"><img src="<?php echo $cfg_root_path ?>/artwork/question_list_icon.gif" width="16" height="16" alt="<?php echo $string['questionsbytype']; ?>" border="0" /></td><td class="menuitem"><span id="type"><a href="#" onclick="hideAssStatsMenu(event); showMenu('popup0','banktasks','type',myOptions0,myURLs0,event); return false;"><?php echo $string['questionsbytype']; ?></a></span><img src="<?php echo $cfg_root_path ?>/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
+<tr><td class="ico"><img src="<?php echo $cfg_root_path ?>/artwork/question_list_icon.gif" width="16" height="16" alt="<?php echo $string['questionsbyteam']; ?>" border="0" /></td><td class="menuitem"><span id="team"><a href="#" onclick="hideAssStatsMenu(event); showMenu('popup1','banktasks','team',myOptions1,myURLs1,event); return false;"><?php echo $string['questionsbyteam']; ?></a></span><img src="<?php echo $cfg_root_path ?>/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
+<tr><td class="ico"><img src="<?php echo $cfg_root_path ?>/artwork/question_list_icon.gif" width="16" height="16" alt="<?php echo $string['questionsbykeyword']; ?>" border="0" /></td><td class="menuitem"><span id="keyword"><a href="#" onclick="hideAssStatsMenu(event); showMenu('popup2','banktasks','keyword',myOptions2,myURLs2,event); return false;"><?php echo $string['questionsbykeyword']; ?></a></span><img src="<?php echo $cfg_root_path ?>/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
+<tr><td class="ico"><img src="<?php echo $cfg_root_path ?>/artwork/xmag.png" width="16" height="16" alt="<?php echo $string['search']; ?>" border="0" /></td><td class="menuitem"><span id="search"><a href="#" onclick="hideAssStatsMenu(event); showMenu('popup3','banktasks','search',myOptions3,myURLs3,event); return false;"><?php echo $string['search']; ?></a></span><img src="<?php echo $cfg_root_path ?>/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
+<tr><td class="ico"><img src="<?php echo $cfg_root_path ?>/artwork/new_question_menu_icon.gif" width="16" height="16" alt="<?php echo $string['createnewquestion']; ?>" border="0" /></td><td class="menuitem"><span id="newquestion"><a href="#" onclick="hideAssStatsMenu(event); showMenu('popup4','banktasks','newquestion',myOptions4,myURLs4,event); return false;"><?php echo $string['createnewquestion']; ?></a></span><img src="<?php echo $cfg_root_path ?>/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
 </table>
 
 <?php
@@ -707,12 +682,6 @@ if ($paper_type == '2') {
   }
   $result->close();
 
-  $screens = array($string['insertscreenbreak']=>'javascript:incScreen()','-'=>'-');
-  for ($i=1; $i<=60; $i++) {
-    $screens['Screen ' . $i] = "javascript:changeScreen($i)";
-  }
-  
-  makeMenu($screens);
   makeMenu(array($string['info']=>$cfg_root_path . '/question/list.php?type=info',$string['keyword_based']=>$cfg_root_path . '/question/list.php?type=keyword',$string['random']=>$cfg_root_path . '/question/list.php?type=random','-'=>'-',$string['calculation']=>$cfg_root_path . '/question/list.php?type=calculation',$string['dichotomous']=>$cfg_root_path . '/question/list.php?type=dichotomous',$string['extmatch']=>$cfg_root_path . '/question/list.php?type=extmatch',$string['blank']=>$cfg_root_path . '/question/list.php?type=blank',$string['flash']=>$cfg_root_path . '/question/list.php?type=flash',$string['hotspot']=>$cfg_root_path . '/question/list.php?type=hotspot',$string['labelling']=>$cfg_root_path . '/question/list.php?type=labelling',$string['likert']=>$cfg_root_path . '/question/list.php?type=likert',$string['matrix']=>$cfg_root_path . '/question/list.php?type=matrix',$string['mcq']=>$cfg_root_path . '/question/list.php?type=mcq',$string['mrq']=>$cfg_root_path . '/question/list.php?type=mrq',$string['rank']=>$cfg_root_path . '/question/list.php?type=rank',$string['sct']=>$cfg_root_path . '/question/list.php?type=sct',$string['textbox']=>$cfg_root_path . '/question/list.php?type=textbox', $string['true_false']=>$cfg_root_path . '/question/list.php?type=true_false'));
   makeMenu($teams_array);
   makeMenu($keywords_array);

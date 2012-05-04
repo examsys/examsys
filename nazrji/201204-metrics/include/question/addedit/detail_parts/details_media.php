@@ -27,11 +27,18 @@ $media_index = (isset($media_index)) ? $media_index : '';
 $media_index_display = ($media_index == '') ? '0' : $media_index;
 $current_media = (isset($current_media)) ? $current_media : $question->get_media();
 $media_label = (isset($media_label)) ? $media_label : $string['media'];
+if ($dis_class != '') {
+  $disabled = ' disabled="disabled"';
+  $locked = true;
+} else {
+  $disabled = '';
+  $locked = false;
+}
 if ($current_media['filename'] != '') {
 ?>
             <tr>
               <th><?php echo $string['current'] . ' ' . $media_label ?></th>
-              <td><?php echo display_media($current_media['filename'], $current_media['width'], $current_media['height'], $media_index_display); ?></td>
+              <td><?php echo display_media($current_media['filename'], $current_media['width'], $current_media['height'], $media_index_display, $locked); ?></td>
             </tr>
 <?php      
 }
@@ -39,6 +46,6 @@ if ($current_media['filename'] != '') {
             <tr>
               <th><label for="<?php echo $media_for ?>_media<?php echo $media_index ?>"><?php echo $string['change'] . ' ' . $media_label ?></label></th>
               <td>
-                <input id="<?php echo $media_for ?>_media<?php echo $media_index ?>" name="<?php echo $media_for ?>_media<?php echo $media_index ?>" size="65" type="file" />
+                <input id="<?php echo $media_for ?>_media<?php echo $media_index ?>" name="<?php echo $media_for ?>_media<?php echo $media_index ?>" size="65" type="file"<?php echo $disabled ?> />
               </td>
             </tr>

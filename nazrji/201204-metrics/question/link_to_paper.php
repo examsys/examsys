@@ -33,6 +33,7 @@ if (!isset($_POST['submit'])) {
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
   <title><?php echo $string['linktopaper']; ?></title>
   <style type="text/css">
@@ -51,15 +52,6 @@ if (!isset($_POST['submit'])) {
       if (checkOption == -1) {
         alert("Please select which paper you would like to add the question to.");
         return false;
-      }
-
-      paperTitle = theForm.new_paper.value;
-      for (a=0; a<paperTitle.length; a++) {
-        char = paperTitle.substr(a,1);
-        if (char == '&' || char == '#' || char == '@' || char == '?' || char == '^' || char == '~') {
-          alert('A paper name cannot contain any of the following characters:\r      &  #  @  ?  ^  ~');
-          return false;
-        }
       }
     }
 
@@ -107,7 +99,7 @@ if (!isset($_POST['submit'])) {
   $result->bind_param('s', $userID);
   $result->execute();
   $result->bind_result($property_id, $paper_title, $start_date, $end_date, $paper_type);
-  while ($row = $result->fetch()) {
+  while ($result->fetch()) {
     if (($paper_type == '2' or $paper_type == '4') and date("Y-m-d H:i:s") > $end_date) {
       echo "<tr><td style=\"width:20px\"><img src=\"../artwork/small_padlock.png\" width=\"16\" height=\"16\" alt=\"" . $string['warning'] . "\" border=\"0\" /></td><td><input type=\"radio\" name=\"property_id\" value=\"$paper_title\" disabled><span style=\"color:#808080\">$paper_title</span></td></tr>\n";
     } elseif ($start_date < date("Y-m-d H:i:s") and $end_date > date("Y-m-d H:i:s")) {
@@ -117,8 +109,6 @@ if (!isset($_POST['submit'])) {
     }
   }
   $result->close();
-  //echo "<tr><td>&nbsp;</td><td><input type=\"radio\" name=\"property_id\" value=\"-new-assessment-paper-\"><input type=\"text\" size=\"40\" name=\"new_paper\" value=\"" . $string['newassessmentpaper'] . "\" /></td></tr>\n</table>\n</div>\n";
-  
   
   echo "<tr><td>&nbsp;</td><td><input type=\"radio\" name=\"property_id\" value=\"-new-assessment-paper-\"><input type=\"text\" size=\"40\" name=\"new_paper\" value=\"" . $string['newassessmentpaper'] . "\" />&nbsp;<select name=\"new_module\" style=\"width:220px\">";
   $result = $mysqli->prepare("SELECT moduleid, fullname FROM teams, modules WHERE teams.name=modules.moduleid AND memberID=?");
@@ -168,8 +158,8 @@ if (!isset($_POST['submit'])) {
     $tmp_paper_title = $_POST['new_paper'];
     
      // Create the new paper.
-    $result = $mysqli->prepare("INSERT INTO properties VALUES (NULL,?,'20100101090000','20250101090000','Europe/London',1,'','','white','black','#316AC5','#C00000','1','1','1',40,70,?,'','','',1,'',NULL,NULL,?,0,0,'1','1','1','1','0',?,?,'',NULL,NULL,'0',0,'',NULL,NULL)");
-    $result->bind_param('sssis', $tmp_paper_title, $userID, $created, $_POST['new_module'], $session);
+    $result = $mysqli->prepare("INSERT INTO properties VALUES (NULL, ?, '20100101090000', '20250101090000', ?, 1, '', '', 'white', 'black', '#316AC5', '#C00000', '1', '1', '1', 40, 70, ?, '', '', '', 1, '', NULL, NULL, ?, 0, 0, '1', '1', '1', '1', '0', ?, ?, '', NULL, NULL, '0', 0, '', NULL, NULL)");
+    $result->bind_param('ssssis', $tmp_paper_title, $cfg_timezone, $userID, $created, $_POST['new_module'], $session);
     $result->execute();  
     $property_id = $mysqli->insert_id;
     $result->close();
@@ -195,13 +185,14 @@ if (!isset($_POST['submit'])) {
     $display_pos++;                     // Add one to put new question right at the end.
   }
 
-  $question_array = array();
-  $question_array = explode(',',$q_id);
-  foreach ($question_array as $question_part) {
-    $result = $mysqli->prepare("INSERT INTO papers VALUES (NULL,?,?,?,?)");
-    $result->bind_param('iiii',$property_id,$question_part,$screen,$display_pos);
+  $q_IDs = explode(',', $q_id);
+  for ($i=1; $i<count($q_IDs); $i++) {
+    $result = $mysqli->prepare("INSERT INTO papers VALUES (NULL, ?, ?, ?, ?)");
+    $result->bind_param('iiii', $property_id, $q_IDs[$i], $screen, $display_pos);
     $result->execute();  
-    $result->close();  
+    $result->close();
+
+    $display_pos++;    
   }
 
   echo "<p>" . $string['success'] . "</p>\n";

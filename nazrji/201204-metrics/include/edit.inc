@@ -374,4 +374,29 @@ function insert_into_papers($p_id, $q_id, $branching_question=false) {
   return $mysqli->insert_id;
 }
 
+function disable_locked($question, &$dis_class, &$dis_readonly) {
+  if ($question->get_locked() != '') {
+    $dis_class = ' disabled';
+    $dis_readonly = ' readonly="readonly"';
+  } else {
+    $dis_class = $dis_readonly = '';
+  }
+}
+
+function wysywig_or_non_editable($dis_class, $id, $field, $value, $width=756, $height=70) {
+  if ($dis_class == '') {
+    $html = wysiwyg_editor($id, $field, $value, $width=756, $height=70);
+  } else {
+    $value_safe = htmlentities(htmlspecialchars_decode($value));
+    $html = <<< HTML
+  <div class="editor-disabled form-large">
+    {$value}&nbsp;
+    <input type="hidden" name="{$field}" value="{$value_safe}" />
+  </div>
+HTML;
+  }
+
+  return $html;
+}
+
 ?>

@@ -36,27 +36,58 @@ require '../include/staff_auth.inc';
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
 <link rel="stylesheet" type="text/css" href="../css/header.css" />
 <style type="text/css">
-input[type=text], select {font-family:Arail,sans-serif; border: 1px solid #7F9DB9}
-.owner {color:#A5A5A5}
-.retired {color:#808080}
+  input[type=text], select {font-family:Arail,sans-serif; border: 1px solid #7F9DB9}
+  .owner {color:#A5A5A5}
+  .retired {color:#808080}
+  .qline {line-height:150%;cursor:pointer;color:#000000;background-color:white; -webkit-user-select:none; -moz-user-select:none;}
+  .qline:hover {background-color:#eee}
+  .qline.highlight {background-color:#B3C8E8}
 </style>
-
+<script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
 <script type="text/javascript">
-  function selQ(questionID, lineID, qType, menuID) {
-    tmp_ID = document.PapersMenu.oldQuestionID.value;
-    if (tmp_ID != '') {
-      document.getElementById('link' + tmp_ID).style.backgroundColor = 'white';
+  function addQID(qID, clearall) {
+    if (clearall) {
+      document.PapersMenu.questionID.value = ',' + qID;
+    } else {
+      document.PapersMenu.questionID.value = document.PapersMenu.questionID.value + ',' + qID;
     }
+  }
+
+  function subQID(qID) {
+    var tmpq = ',' + qID;
+    document.PapersMenu.questionID.value = document.PapersMenu.questionID.value.replace(tmpq, '');
+  }
+
+  function clearAll() {
+    $('.highlight').removeClass('highlight');
+  }
+  
+  function selQ(questionID, lineID, qType, menuID, evt) {
     document.getElementById('menu2a').style.display = 'none';
     document.getElementById('menu2b').style.display = 'none';
     document.getElementById('menu2c').style.display = 'none';
-    document.getElementById(menuID).style.display = 'block';
+    document.getElementById('menu' + menuID).style.display = 'block';
 
-    document.PapersMenu.questionID.value = questionID;
+    if (evt.ctrlKey == false) {
+      clearAll();
+      $('#link_' + lineID).addClass('highlight');
+      addQID(questionID, true);
+    } else {
+      if ($('#link_' + lineID).hasClass('highlight')) {
+        $('#link_' + lineID).removeClass('highlight');
+        subQID(questionID);
+      } else {
+        $('#link_' + lineID).addClass('highlight');
+        addQID(questionID, false);
+      }
+    }
     document.PapersMenu.qType.value = qType;
-    
-    document.getElementById('link' + lineID).style.backgroundColor = '#B3C8E8';
     document.PapersMenu.oldQuestionID.value = lineID;
+    
+    if (evt != null) {
+      evt.cancelBubble = true;
+    }
+
   }
   
   function qOff() {
@@ -65,19 +96,7 @@ input[type=text], select {font-family:Arail,sans-serif; border: 1px solid #7F9DB
     document.getElementById('menu2c').style.display = 'none';
     tmp_ID = document.PapersMenu.oldQuestionID.value;
     if (tmp_ID != '') {
-      document.getElementById('link' + tmp_ID).style.backgroundColor = 'white';
-    }
-  }
-  
-  function lon(lineID) {
-    if (lineID != document.PapersMenu.oldQuestionID.value) {
-      document.getElementById('link' + lineID).style.backgroundColor = '#EEEEEE';
-    }
-  }
-
-  function loff(lineID) {
-    if (lineID != document.PapersMenu.oldQuestionID.value) {
-      document.getElementById('link' + lineID).style.backgroundColor = '';
+      document.getElementById('link_' + tmp_ID).style.backgroundColor = 'white';
     }
   }
 </script>
@@ -85,7 +104,7 @@ input[type=text], select {font-family:Arail,sans-serif; border: 1px solid #7F9DB
 
 <?php
   if (isset($_POST['submit'])) {
-    echo "<body>\n";
+    echo "<body onselectstart=\"return false\">\n";
     require '../include/question_search_options.inc';
     echo "<div id=\"content\" class=\"content\" style=\"font-size:80%\">\n";
   } else {
@@ -286,7 +305,7 @@ if (isset($_POST['submit'])) {
   $temp_results = array();
   $hits = 0;
   $old_id = -1;
-  while ($row = $result->fetch()) {
+  while ($result->fetch()) {
     $match = 0;
     if ($old_id != $q_id) {
       $hits++;
@@ -320,14 +339,14 @@ if (isset($_POST['submit'])) {
   $old_leadin = '';
   $display_no = 1;
   foreach ($temp_results as $temp_line) {
-    echo '<tr';
+    echo '<tr class="qline';
     if ($temp_results[$display_no]['status'] == 'Retired') {
-      echo ' class="retired"';
+      echo ' retired';
     }
     if ($temp_results[$display_no]['locked'] != '') {
-      echo " id=\"link$display_no\" onmouseover=\"lon($display_no)\" onmouseout=\"loff($display_no)\" onclick=\"selQ('" . $temp_line['q_id'] . "',$display_no, '" . $temp_line['q_type'] . "','menu2c'); return false;\" ondblclick=\"editQuestion('" . $temp_line['q_id'] . "', '" . $temp_line['q_type'] . "'); return false;\"><td><img src=\"../artwork/small_padlock.png\" width=\"16\" height=\"16\" border=\"0\" alt=\"" . $string['locked'] . "\" /></td>";
+      echo "\" id=\"link_$display_no\" onclick=\"selQ(" . $temp_line['q_id'] . ",$display_no, '" . $temp_line['q_type'] . "','2c',event); return false;\" ondblclick=\"editQ('" . $temp_line['q_id'] . "', '" . $temp_line['q_type'] . "'); return false;\"><td><img src=\"../artwork/small_padlock.png\" width=\"16\" height=\"16\" border=\"0\" alt=\"" . $string['locked'] . "\" /></td>";
     } else {
-      echo " id=\"link$display_no\" onmouseover=\"lon($display_no)\" onmouseout=\"loff($display_no)\" onclick=\"selQ('" . $temp_line['q_id'] . "',$display_no, '" . $temp_line['q_type'] . "','menu2b'); return false;\" ondblclick=\"editQuestion('" . $temp_line['q_id'] . "', '" . $temp_line['q_type'] . "'); return false;\"><td></td>";
+      echo "\" id=\"link_$display_no\" onclick=\"selQ(" . $temp_line['q_id'] . ",$display_no, '" . $temp_line['q_type'] . "','2b',event); return false;\" ondblclick=\"editQ('" . $temp_line['q_id'] . "', '" . $temp_line['q_type'] . "'); return false;\"><td></td>";
     }
 
     $tmp_leadin = trim($temp_line['leadin']);
@@ -342,7 +361,7 @@ if (isset($_POST['submit'])) {
     
     echo '<td valign="top" onclick="qOff()">&nbsp;<nobr>' . $string[$temp_line['q_type']] . '</nobr></td>';
     echo '<td valign="top" onclick="qOff()">&nbsp;' . $temp_line['last_edited'] . '</td></tr>';
-    echo "<tr><td colspan=\"3\" style=\"height: 3px\"></td></tr>\n";
+    //echo "<tr><td colspan=\"3\" style=\"height: 3px\"></td></tr>\n";
 
     $old_id = $temp_line['q_id'];
     $old_leadin = $temp_line['leadin'];

@@ -32,6 +32,7 @@ if ($num_options > 0) {
   $correct_answers = array();
 }
 $option_texts = array();
+$disabled = ($dis_class != '') ? ' disabled="disabled"' : '';
 
 // Stem for this question type is a compound field
 $stems = $question->get_all_stems();
@@ -46,7 +47,7 @@ require_once 'detail_parts/details_leadin.php';
             <tr>
               <th><label for="option_order"><?php echo $string['optionorder'] ?></label></th>
               <td>
-                <select id="option_order" name="option_order">
+                <select id="option_order" name="option_order"<?php echo $disabled ?>>
 <?php 
 echo ViewHelper::render_options($question->get_option_orders(), $question->get_option_order(), 3);
 ?>
@@ -78,7 +79,7 @@ for ($index = 1; $index <= $question->max_options; $index++):
 ?>
             <td>
               <label for="option_text<?php echo $index ?>" class="hide"><?php echo $string['option'];?> <?php echo $index ?></label>
-              <input type="text" id="option_text<?php echo $index ?>" name="option_text<?php echo $index ?>" value="<?php echo $option_text ?>" title="<?php echo $option_text ?>" class="form-minute" />
+              <input type="text" id="option_text<?php echo $index ?>" name="option_text<?php echo $index ?>" value="<?php echo $option_text ?>" title="<?php echo $option_text ?>" class="form-minute<?php echo $dis_class ?>"<?php echo $dis_readonly ?> />
               <input name="optionid<?php echo $index ?>" value="<?php echo $option_id ?>" type="hidden" />
             </td>
 <?php

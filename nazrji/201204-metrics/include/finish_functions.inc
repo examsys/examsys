@@ -95,32 +95,6 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
     return $html;
   }
 
-  function ordinal_suffix($number, $language='en') {
-    $suffix = ($number === 0) ? 'N/A' : $number;
-    if ($language == 'en') {
-      if ($number !== '') {
-  	    switch($number) {
-          case 0:
-            $suffix .= '';
-            break;
-  	      case 1:
-  	        $suffix .= 'st';
-  	        break;
-  	      case 2:
-  	        $suffix .= 'nd';
-  	        break;
-  	      case 3:
-  	        $suffix .= 'rd';
-  	        break;
-  	      default:
-  	        $suffix .= 'th';
-  	        break;
-  	    }
-      }
-    }
-    return $suffix;
-  }
-  
   function display_std($std_value, $inline=1) {
     $html = '';
     if ($std_value != '') {
@@ -1430,14 +1404,14 @@ require_once $cfg_web_root . 'classes/stringutils.class.php';
             if (isset($rank_answers[$tmp_part_id-1]) and $rank_answers[$tmp_part_id-1] == 'u') echo "<option value=\"\" style=\"color:#808080\"></option>\n";
             for ($a=0; $a<=count($paper[$question]['correct']); $a++) {
             	if (isset($rank_answers[$tmp_part_id-1]) and $rank_answers[$tmp_part_id-1] != 'u' and $a == $rank_answers[$tmp_part_id-1]) {
-                echo "<option value=\"" . $a . "\" selected>" . ordinal_suffix($a, $language) . "</option>\n";
+                echo "<option value=\"" . $a . "\" selected>" . StringUtils::ordinal_suffix($a, $language) . "</option>\n";
               } else {
-                echo "<option value=\"" . $a . "\">" . ordinal_suffix($a, $language) . "</option>\n";;
+                echo "<option value=\"" . $a . "\">" . StringUtils::ordinal_suffix($a, $language) . "</option>\n";;
               }
             }
             echo '</select></td>';
             if ($tmp_display_correct_answer == '1' and $paper[$question]['correct'][$tmp_part_id-1] > 0) {
-              echo "<td style=\"font-weight:bold; vertical-align:top\">&nbsp;" . ordinal_suffix($paper[$question]['correct'][$tmp_part_id-1], $language) . "</td>";
+              echo "<td style=\"font-weight:bold; vertical-align:top\">&nbsp;" . StringUtils::ordinal_suffix($paper[$question]['correct'][$tmp_part_id-1], $language) . "</td>";
             } else {
               echo "<td></td>";
             }

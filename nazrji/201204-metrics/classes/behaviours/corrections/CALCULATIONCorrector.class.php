@@ -77,7 +77,7 @@ class CALCULATIONCorrector extends Corrector {
 
     if ($changes) {
       try {
-    	  if(!$this->_question->save()) {
+    	  if (!$this->_question->save()) {
     	    $errors[] = $this->_lang_strings['datasaveerror'];
     	  } else {
           $decimals = $this->_question->get_answer_decimals();
@@ -116,22 +116,24 @@ class CALCULATIONCorrector extends Corrector {
               $tolerance_partial = $answer * ($tolerance_perc/100);
             }
 
-//            $difference = round(abs($saved_response - $answer), $decimals);
-            $difference = abs($saved_response - $answer);
+            $saved_response_clean = preg_replace('([^0-9\.\-])', '', $saved_response);
+            $difference = round(abs($saved_response_clean - $answer), 12);
 
-            if ($saved_response == $answer) {
-              $mark = $mark_correct;
-            } elseif ($difference <= $tolerance_full and $tolerance_full > 0) {
-              $mark = $mark_correct;
-            } elseif ($difference <= $tolerance_partial and $tolerance_partial > 0) {
-              $mark = $mark_partial;
-            } else {
-              $mark = $mark_incorrect;
+            if ($saved_response_clean != '') {
+              if ($saved_response_clean == $answer) {
+                $mark = $mark_correct;
+              } elseif ($difference > 0 and $difference <= $tolerance_full and $tolerance_full > 0) {
+                $mark = $mark_correct;
+              } elseif ($difference > 0 and $difference <= $tolerance_partial and $tolerance_partial > 0) {
+                $mark = $mark_partial;
+              } else {
+                $mark = $mark_incorrect;
+              }
             }
             $saved_response .= '|' . $answer . '|' . $answer_parts[2];
-
+            
             $updateLog = $this->_mysqli->prepare("UPDATE log2 SET mark=?, user_answer=? WHERE id=? AND q_paper=?");
-            $updateLog->bind_param("dsii", $mark, $saved_response, $id, $paper_id);
+            $updateLog->bind_param('dsii', $mark, $saved_response, $id, $paper_id);
             $updateLog->execute();
             $updateLog->close();
           }

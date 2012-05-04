@@ -31,9 +31,9 @@ if (count($teams) > 0) {
   $team_sql = implode("','", $teams);
   if ($team_sql != '') $team_sql = "'$team_sql'";
   
-  $result = $mysqli->prepare("SELECT DISTINCT moduleid, fullname, checklist FROM modules WHERE moduleid IN ($team_sql) ORDER BY moduleID");
+  $result = $mysqli->prepare("SELECT DISTINCT moduleid, fullname FROM modules WHERE moduleid IN ($team_sql) ORDER BY moduleID");
   $result->execute();
-  $result->bind_result($moduleid, $fullname, $checklist);
+  $result->bind_result($moduleid, $fullname);
   while ($result->fetch()) {
     $title = $moduleid . ' - ' . str_replace("'", "\'", $fullname);
     $url = '/folder/details.php?module=' . $moduleid;

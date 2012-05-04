@@ -25,7 +25,7 @@
 ?>
 <script language="JavaScript">
   function restoreItem() {
-    document.location.href='restore_item.php?item_id=' + document.PapersMenu.itemID.value + '&type=' + document.PapersMenu.itemType.value;
+    document.location.href='restore_item.php?item_id=' + document.PapersMenu.itemID.value;
   }
 </script>
 
@@ -52,8 +52,5 @@
 </table>
 
 <input type="hidden" name="itemID" value="" />
-<input type="hidden" name="itemType" value="" />
-<input type="hidden" name="lineNo" value="" />
-<input type="hidden" name="oldLineNo" value="" />
 </form>
 </div>

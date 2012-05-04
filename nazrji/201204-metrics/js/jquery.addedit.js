@@ -13,6 +13,8 @@ $(function () {
     } else {
       $('#option_marks_correct').attr('disabled', 'disabled');
       $('#option_marks_incorrect').attr('disabled', 'disabled');
+      $('<input type="hidden" id="option_marks_correct_hidden" name="option_marks_correct" value="' + $('#option_marks_correct').val() + '" />').insertAfter('#option_marks_correct');
+      $('<input type="hidden" id="option_marks_incorrect_hidden" name="option_marks_incorrect" value="' + $('#option_marks_incorrect').val() + '" />').insertAfter('#option_marks_incorrect');
     }
   }
 
@@ -97,7 +99,11 @@ function addVariableLinks() {
     if ($(this).attr('rel') != undefined) {
       var target = $(this).attr('rel');
       var icon = $(this).children(':first-child').attr('id');
-      $(this).bind('click', { elementID: target, iconID: icon }, variableLink);
+      if (!$(this).hasClass('disabled')) {
+        $(this).bind('click', { elementID: target, iconID: icon }, variableLink);
+      } else {
+        $(this).bind('click', function (e) { e.preventDefault(); });
+      }
     }
   });
 }

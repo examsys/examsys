@@ -22,12 +22,13 @@
 * @package
 */
 
-  require '../include/staff_auth.inc';
-  require '../include/errors.inc';
-  
-  check_var('questionID', 'GET', true, false);
+require '../include/staff_auth.inc';
+require '../include/errors.inc';
 
-  $mysqli->close();
+check_var('questionID', 'GET', true, false);
+check_var('pID', 'GET', true, false);
+
+$mysqli->close();
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -55,9 +56,17 @@
 <input type="hidden" name="folder" value="<?php echo $_GET['folder']; ?>" />
 <input type="hidden" name="scrOfY" value="<?php echo $_GET['scrOfY']; ?>" />
 <input type="hidden" name="questionID" value="<?php echo $_GET['questionID']; ?>" />
-<input type="hidden" name="q_id" value="<?php echo $_GET['q_id']; ?>" />
+<input type="hidden" name="pID" value="<?php echo $_GET['pID']; ?>" />
 <input type="hidden" name="paperID" value="<?php echo $_GET['paperID']; ?>" />
-<input style="width:140px" type="submit" name="submit" value="<?php echo $string['delete']; ?>" />&nbsp;
+
+<?php
+if (substr_count($_GET['pID'], ',')  > 1) {
+  echo '<input style="width:140px" type="submit" name="submit" value="' . $string['deletes'] . '" />';
+} else {
+  echo '<input style="width:140px" type="submit" name="submit" value="' . $string['delete'] . '" />';
+}
+?>
+&nbsp;
 <input style="width:90px" type="button" name="cancel" value="<?php echo $string['cancel']; ?>" onclick="javascript:window.close();" />
 </form>
 </div>

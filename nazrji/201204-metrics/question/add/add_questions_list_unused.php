@@ -33,6 +33,7 @@ require '../../include/errors.inc';
   <link rel="stylesheet" type="text/css" href="../../css/header.css" />
   <style type="text/css">
     body {margin:0px; font-family:Arial,sans-serif; color:black; background-color:white; font-size:80%}
+    a {text-decoration:none}
   </style>
   <script type="text/javascript" src="/js/jquery-1.6.1.min.js"></script>
   <script type="text/javascript" src="/tools/mee/mee/js/mee_src.js"></script>

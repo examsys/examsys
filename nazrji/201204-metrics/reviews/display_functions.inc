@@ -637,7 +637,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
             } else {
               $blank_mark[$blank_count] = 1;
             }
-            $screen_output[$blank_count] = preg_replace("|\[blank.*\].*\[/blank\]|","<input type=\"text\" name=\"q" . $question_no . "_" . $blank_count . "\" value=\"" . $answer_list[0] . "\" size=\"$blank_size[$blank_count]\" />",$blank_details[$blank_count]);
+            $screen_output[$blank_count] = preg_replace("|\[blank.*\].*\[/blank\]|","<input type=\"text\" name=\"q" . $question_no . "_" . $blank_count . "\" value=\"" . htmlentities($answer_list[0]) . "\" size=\"$blank_size[$blank_count]\" />",$blank_details[$blank_count]);
             $blank_count++;
           }
           $screen_output_all = '';
@@ -668,9 +668,9 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
             shuffle($answer_list);            // Shuffle the answers up.
             for ($i=1; $i<=count($answer_list); $i++) {
               if (html_entity_decode(trim($answer_list[$i-1])) == trim($correct_answer)) {
-                echo "<option value=\"" . html_entity_decode(trim($answer_list[$i-1])) . "\" selected>" . trim($answer_list[$i-1]) . "</option>\n";
+                echo "<option value=\"" . htmlentities(trim($answer_list[$i-1]), ENT_COMPAT, "UTF-8") . "\" selected>" . trim($answer_list[$i-1]) . "</option>\n";
               } else {
-                echo "<option value=\"" . html_entity_decode(trim($answer_list[$i-1])) . "\">" . trim($answer_list[$i-1]) . "</option>\n";
+                echo "<option value=\"" . htmlentities(trim($answer_list[$i-1]), ENT_COMPAT, "UTF-8") . "\">" . trim($answer_list[$i-1]) . "</option>\n";
               }
             }
             echo '</select>';

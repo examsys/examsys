@@ -22,12 +22,21 @@
 * @package
 */
 
-  require '../include/staff_auth.inc';
+require '../include/staff_auth.inc';
+require '../include/errors.inc';
+
+check_var('item_id', 'GET', true, false);
   
-  if ($_GET['type'] == 'paper') {
+$items = explode(',', $_GET['item_id']);
+
+for ($i=0; $i<count($items); $i++) {
+  $type = substr($items[$i],0,1);
+  $item_id = substr($items[$i],1);
+
+  if ($type == 'p') {   // Papers
     // Get the paper title of the restored paper.
     $result = $mysqli->prepare("SELECT paper_title FROM properties WHERE property_id=?");
-    $result->bind_param('i', $_GET['item_id']);
+    $result->bind_param('i', $item_id);
     $result->execute();  
     $result->bind_result($deleted_paper_title);
     $result->fetch();
@@ -37,7 +46,7 @@
     $split_title = explode('[deleted',$deleted_paper_title);
     $tmp_title = trim($split_title[0]);
     $result = $mysqli->prepare("SELECT paper_title FROM properties WHERE paper_title=? and property_id!=?");
-    $result->bind_param('si', $tmp_title, $_GET['item_id']);
+    $result->bind_param('si', $tmp_title, $item_id);
     $result->execute();  
     $result->store_result();
     $result->bind_result($paper_title);
@@ -51,36 +60,37 @@
     $result->close();
     
     $restore = $mysqli->prepare("UPDATE properties SET deleted=NULL, paper_title=? WHERE property_id=?");
-    $restore->bind_param('si', $new_title, $_GET['item_id']);
+    $restore->bind_param('si', $new_title, $item_id);
     $restore->execute();  
     $restore->close();
     
     $result = $mysqli->prepare("SELECT question, deleted FROM (papers, questions) WHERE paper=? AND papers.question=questions.q_id");
-    $result->bind_param('i', $_GET['item_id']);
+    $result->bind_param('i', $item_id);
     $result->execute();  
     $result->store_result();
     $result->bind_result($question, $deleted);
-    while ($row = $result->fetch()) {
+    while ($result->fetch()) {
       if ($deleted != '') {
         // If the question has been deleted in the question bank then remove from the paper.
         $deleteQuery = $mysqli->prepare("DELETE FROM papers WHERE paper=? AND question=?");
-        $deleteQuery->bind_param('ii', $_GET['item_id'], $question);
+        $deleteQuery->bind_param('ii', $item_id, $question);
         $deleteQuery->execute();  
         $deleteQuery->close();
       }
     }
-  } elseif ($_GET['type'] == 'folder') {
+  } elseif ($type == 'f') {   // Folders
     $restore = $mysqli->prepare("UPDATE folders SET deleted=NULL WHERE id=?");
-    $restore->bind_param('i', $_GET['item_id']);
+    $restore->bind_param('i', $item_id);
     $restore->execute();  
     $restore->close();
-  } elseif ($_GET['type'] == 'question') {
+  } elseif ($type == 'q') {   // Questions
     $restore = $mysqli->prepare("UPDATE questions SET deleted=NULL WHERE q_id=?");
-    $restore->bind_param('i', $_GET['item_id']);
+    $restore->bind_param('i', $item_id);
     $restore->execute();  
     $restore->close();
   }
-  $mysqli->close();
-  
-  header("location: ./recycle_list.php");
+}
+$mysqli->close();
+
+header("location: ./recycle_list.php");
 ?>

@@ -22,17 +22,21 @@
 * @package
 */
 
-  require '../include/staff_auth.inc';
-  require '../include/errors.inc';
+require '../include/staff_auth.inc';
+require '../include/errors.inc';
 
-  check_var('q_id', 'POST', true, false);
+check_var('q_id', 'POST', true, false);
 
-  $tmp_q_id = $_POST['q_id'];
+$tmp_q_ids = explode(',', $_POST['q_id']);
+
+for ($i=1; $i<count($tmp_q_ids); $i++) {
   $result = $mysqli->prepare("UPDATE questions SET deleted=NOW() WHERE q_id=?");
-  $result->bind_param('i', $tmp_q_id);
+  $result->bind_param('i', $tmp_q_ids[$i]);
   $result->execute();  
   $result->close();
-  $mysqli->close();
+}
+
+$mysqli->close();
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -42,7 +46,7 @@
   <title><?php echo $string['questiondeleted']; ?></title>
   <script type="text/javascript">
     function updateParent() {
-      window.opener.document.getElementById('link<?php echo $_POST['divID']; ?>').style.display = 'none';
+      window.opener.location.href = window.opener.location.href;
       self.close();
     }
   </script>

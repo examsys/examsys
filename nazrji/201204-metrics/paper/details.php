@@ -42,6 +42,16 @@ $result->bind_result($paper_title, $moduleID, $pass_mark, $title, $initials, $su
 $result->fetch();
 $result->close();
 
+function check_duplicates($q_screens) {
+  global $string;
+  
+  foreach ($q_screens as $q_screen=>$qs) {
+    if (count($qs) > 1) {
+      echo "<tr><td colspan=\"2\" class=\"warnicon\"><img src=\"../artwork/small_yellow_warning_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['warning'] . "\" border=\"0\" /></td><td colspan=\"4\" class=\"warn\"><strong>Duplicate questions:</strong> Q" . implode(', Q', $qs) . "</td></tr>\n";
+    }
+  }
+}
+
 function findDecisionQ($question_array, $sourceID) {
   $source_question_no = 0;
   $tmp_q_no = 0;
@@ -172,58 +182,9 @@ function random_qMarks($random_questions) {
     return 'ERR';
   }
 }
-
-function changeScreenNo($mysqlidb) {
-  $screen = $_GET['screen'];
-
-  // Change the screen number of the actual question.
-  if ($result = $mysqlidb->prepare("UPDATE papers SET screen=? WHERE paper=? AND p_id=?")) {
-    $result->bind_param('iii', $screen, $_GET['paperID'], $_GET['questionID']);
-    $result->execute();
-    $result->close();
-  } else {
-    display_error("Papers Update Error 1", $mysqlidb->error);
-  }
-
-  // Increase screen number of any questions further down the paper with a lower screen number.
-  if ($result = $mysqlidb->prepare("UPDATE papers SET screen=? WHERE screen < ? AND paper=? AND display_pos > ?")) {
-    $result->bind_param('iiii', $screen, $screen, $_GET['paperID'],  $_GET['display_pos']);
-    $result->execute();
-    $result->close();
-  } else {
-    display_error("Papers Update Error 2", $mysqlidb->error);
-  }
-
-  // Decrease screen number of any questions further up the paper with a higher screen number.
-  if ($result = $mysqlidb->prepare("UPDATE papers SET screen=? WHERE screen > ? AND paper=? AND display_pos < ?")) {
-    $result->bind_param('iiii', $screen, $screen, $_GET['paperID'],  $_GET['display_pos']);
-    $result->execute();
-    $result->close();
-  } else {
-    display_error("Papers Update Error 3", $mysqlidb->error);
-  }
-}
-if (isset($_GET['change_screen'])) {
-  changeScreenNo($mysqli);
-}
-
-function getMSCAA($paperID, $mysqlidb) {
-  $mscaa_metadata = array();
-
-  $result = $mysqlidb->prepare("SELECT questionID FROM questions_metadata, papers WHERE questions_metadata.questionID=papers.question AND paper=? AND value LIKE 'MSC_AA%'");
-  $result->bind_param('i', $paperID);
-  $result->execute();
-  $result->bind_result($questionID);
-  while ($result->fetch()) {
-    $mscaa_metadata[$questionID] = '1';
-  }
-  $result->close();
-  
-  return $mscaa_metadata;
-}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html onscroll="scrollXY();" onclick="qOff(); hideMenus(); hideAssStatsMenu(event);">
+<html onscroll="scrollXY();" onclick="hideMenus(); hideAssStatsMenu(event);">
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
@@ -243,10 +204,6 @@ function getMSCAA($paperID, $mysqlidb) {
       width:158px;
       min-width:158px
     }
-    #tiptip_content {
-      background: rgb(25,25,25);
-      background: rgba(25,25,25,0.92);
-    }
   </style>
   <![endif]-->
 
@@ -258,34 +215,55 @@ function getMSCAA($paperID, $mysqlidb) {
   <script type="text/javascript" src="../js/jquery.rquerystring.js"></script>
 <script defer="defer" type="text/javascript">
   var paperID='<?php echo $_GET['paperID'] ?>';
-
-  function selQ(questionNo, questionID, lineID, qType, screenNo, pID, current_pos, prev_screen, next_screen, current_screen, menuID, subparts, evt) {
-    tmp_ID = document.PapersMenu.oldQuestionID.value;
-    if (tmp_ID != '') {
-      document.getElementById('link_' + tmp_ID).style.backgroundColor = '#ffffff';
-      document.getElementById('link_' + tmp_ID).style.color = '#000000';
+  
+  function addQID(qID, pID, clearall) {
+    if (clearall) {
+      document.PapersMenu.questionID.value = ',' + qID;
+      document.PapersMenu.pID.value = ',' + pID;
+    } else {
+      document.PapersMenu.questionID.value = document.PapersMenu.questionID.value + ',' + qID;
+      document.PapersMenu.pID.value = document.PapersMenu.pID.value + ',' + pID;
     }
+  }
+
+  function subQID(qID, pID) {
+    var tmpq = ',' + qID;
+    var tmpp = ',' + pID;
+    document.PapersMenu.questionID.value = document.PapersMenu.questionID.value.replace(tmpq, '');
+    document.PapersMenu.pID.value = document.PapersMenu.pID.value.replace(tmpp, '');
+  }
+
+  function clearAll() {
+    $('.highlight').removeClass('highlight');
+  }
+  
+  function selQ(questionNo, questionID, lineID, qType, screenNo, pID, current_pos, menuID, subparts, evt) {
     document.getElementById('menu2a').style.display = 'none';
-    if (menuID == 'menu2b') {
+    if (menuID == '2b') {
       document.getElementById('menu2c').style.display = 'none';
     } else {
       document.getElementById('menu2b').style.display = 'none';
     }
-    document.getElementById(menuID).style.display = 'block';
+    document.getElementById('menu' + menuID).style.display = 'block';
 
     document.PapersMenu.questionNo.value = questionNo;
-    document.PapersMenu.questionID.value = questionID;
     document.PapersMenu.qType.value = qType;
     document.PapersMenu.screenNo.value = screenNo;
-    document.PapersMenu.pID.value = pID;
-
     document.PapersMenu.current_pos.value = current_pos;
-    document.PapersMenu.prev_screen.value = prev_screen;
-    document.PapersMenu.next_screen.value = next_screen;
-    document.PapersMenu.current_screen.value = current_screen;
 
-    document.getElementById('link_' + lineID).style.backgroundColor = '#B3C8E8';
-    document.PapersMenu.oldQuestionID.value = lineID;
+    if (evt.ctrlKey == false) {
+      clearAll();
+      $('#link_' + lineID).addClass('highlight');
+      addQID(questionID, pID, true);
+    } else {
+      if ($('#link_' + lineID).hasClass('highlight')) {
+        $('#link_' + lineID).removeClass('highlight');
+        subQID(questionID, pID);
+      } else {
+        $('#link_' + lineID).addClass('highlight');
+        addQID(questionID, pID, false);
+      }
+    }
 
     if (qType == 'random') {
       var row = '';
@@ -314,6 +292,10 @@ function getMSCAA($paperID, $mysqlidb) {
       var addLink = $('#add_break');
       activateAddBreak(addLink);
     }
+    
+    if (document.PapersMenu.questionID.value == '') {
+      qOff();    
+    }
   }
 
   function edQ(questionNo, questionID, qType) {
@@ -328,10 +310,7 @@ function getMSCAA($paperID, $mysqlidb) {
     document.getElementById('menu2a').style.display = 'block';
     document.getElementById('menu2b').style.display = 'none';
     document.getElementById('menu2c').style.display = 'none';
-    tmp_ID = document.PapersMenu.oldQuestionID.value;
-    if (tmp_ID != '') {
-      document.getElementById('link_' + tmp_ID).style.backgroundColor = 'white';
-    }
+    clearAll();
 
     document.getElementById('stats_menu').style.display = 'none';
     document.getElementById('copy_submenu').style.display = 'none';
@@ -373,8 +352,6 @@ function getMSCAA($paperID, $mysqlidb) {
 
   $paper_owner = $title  . ' ' . $initials . ', ' . $surname;
 
-  $mscaa_metadata = getMSCAA($paperID, $mysqli);
-
   if (date("YmdHis", time()) >= $start_date and date("YmdHis", time()) <= $end_date) {
     $active_date = 1;
   } else {
@@ -393,7 +370,7 @@ function getMSCAA($paperID, $mysqlidb) {
   }
 ?>
 </head>
-<body onscroll="scrollXY();"<?php if (isset($_GET['scrOfY'])) echo ' onload="window.scrollTo(0,' . $_GET['scrOfY'] . ');"'; ?>>
+<body onscroll="scrollXY();"<?php if (isset($_GET['scrOfY'])) echo ' onload="window.scrollTo(0,' . $_GET['scrOfY'] . ');"'; ?> onselectstart="return false">
 
 <?php
   if (!isset($paper_title)) {
@@ -443,40 +420,6 @@ function getMSCAA($paperID, $mysqlidb) {
 <?php
   // Promoting/Demoting questions
   $q_highlight = 0;
-
-  if (isset($_GET['old_pos']) AND isset($_GET['new_pos']) AND $_GET['old_pos'] != $_GET['new_pos']) {
-    $old_pos = $_GET['old_pos'];
-    $new_pos = $_GET['new_pos'];
-    $old_screen = $_GET['old_screen'];
-    $new_screen = $_GET['new_screen'];
-    $result = $mysqli->prepare("UPDATE papers SET display_pos=9999 WHERE display_pos=? AND paper=?");
-    $result->bind_param('ii', $new_pos, $paperID);
-    $result->execute();
-    $result->close();
-
-    $result = $mysqli->prepare("UPDATE papers SET display_pos=?, screen=? WHERE display_pos=? AND paper=?");
-    $result->bind_param('iiii', $new_pos, $new_screen, $old_pos, $paperID);
-    $result->execute();
-    $result->close();
-
-    $result = $mysqli->prepare("UPDATE papers SET display_pos=?, screen=? WHERE display_pos=9999 AND paper=?");
-    $result->bind_param('iii', $old_pos, $old_screen, $paperID);
-    $result->execute();
-    $result->close();
-
-    $q_highlight = $new_pos;
-  } elseif (isset($_GET['old_screen']) AND isset($_GET['new_screen']) AND $_GET['old_screen'] != $_GET['new_screen']) {
-    $old_pos = $_GET['old_pos'];
-    $new_pos = $_GET['new_pos'];
-    $old_screen = $_GET['old_screen'];
-    $new_screen = $_GET['new_screen'];
-    $result = $mysqli->prepare("UPDATE papers SET screen=? WHERE display_pos=? AND paper=?");
-    $result->bind_param('iii', $new_screen, $old_pos, $paperID);
-    $result->execute();
-    $result->close();
-
-    $q_highlight = $new_pos;
-  }
 
   // Log the hit in recent_papers.
   $result = $mysqli->prepare("INSERT INTO recent_papers (userID, paperID, accessed) VALUES (?,?,NOW()) ON DUPLICATE KEY UPDATE accessed=NOW();");
@@ -801,6 +744,7 @@ function getMSCAA($paperID, $mysqlidb) {
     }
   }
 
+  $q_screen = array();
   $screen_marks = 0;
   $old_screen = 0;
   $question_number = 0;
@@ -851,23 +795,6 @@ function getMSCAA($paperID, $mysqlidb) {
       echo "document.PapersMenu.screenNo.value = '" . $temp_array[$x]['screen'] . "';\n";
       echo "document.PapersMenu.pID.value = '" . $temp_array[$x]['p_id'] . "';\n";
       echo "document.PapersMenu.current_pos.value = " . $temp_array[$x]['display_pos'] . ";\n";
-      echo "document.PapersMenu.prev_screen.value = '" . $temp_array[$x - 1]['screen'] . "';\n";
-      if ($temp_array[$x - 1]['screen'] == '') {
-        echo "document.getElementById('promotetext').style.color = '#808080';\n";
-        echo "document.getElementById('promoteicon').src = '../artwork/promote_disabled.gif';\n";
-      } else {
-        echo "document.getElementById('promotetext').style.color = '#000000';\n";
-        echo "document.getElementById('promoteicon').src = '../artwork/promote.gif';\n";
-      }
-      echo "document.PapersMenu.next_screen.value = '" . $temp_array[$x + 1]['screen'] . "';\n";
-      if ($temp_array[$x + 1]['screen'] == '') {
-        echo "document.getElementById('demotetext').style.color = '#808080';\n";
-        echo "document.getElementById('demoteicon').src = '../artwork/demote_disabled.gif';\n";
-      } else {
-        echo "document.getElementById('demotetext').style.color = '#000000';\n";
-        echo "document.getElementById('demoteicon').src = '../artwork/demote.gif';\n";
-      }
-      echo "document.PapersMenu.current_screen.value = '" . $temp_array[$x]['screen'] . "';\n";
       echo "document.PapersMenu.oldQuestionID.value = '$x';\n";
       echo "</script>\n";
     }
@@ -895,6 +822,7 @@ function getMSCAA($paperID, $mysqlidb) {
 
     $prevous_screen = '';
     $next_screen = '';
+    $q_screen[$temp_array[$x]['q_id']][] = ($question_number+1);
     if ($teamOK == true) {
       if (isset($temp_array[$x - 1]['screen'])) {
         $prevous_screen = $temp_array[$x - 1]['screen'];
@@ -905,12 +833,12 @@ function getMSCAA($paperID, $mysqlidb) {
       }
 
       if ($summative_lock == 1) {
-        echo "\" onclick=\"selQ(" . ($question_number+1) . ",'" . $temp_array[$x]['q_id'] . "','$x','" . $temp_array[$x]['q_type'] . "','" . $temp_array[$x]['screen'] . "','" . $temp_array[$x]['p_id'] . "'," . $temp_array[$x]['display_pos'] . ",'" . $prevous_screen . "','" . $next_screen . "','" . $temp_array[$x]['screen'] . "','menu2c'," . count($temp_array[$x]['random']) . ",event);\" ondblclick=\"edQ(" . ($question_number+1) . "," . $temp_array[$x]['q_id'] . ",'" . $temp_array[$x]['q_type'] . "');\">";
+        echo "\" onclick=\"selQ(" . ($question_number+1) . ",'" . $temp_array[$x]['q_id'] . "',$x,'" . $temp_array[$x]['q_type'] . "'," . $temp_array[$x]['screen'] . "," . $temp_array[$x]['p_id'] . "," . $temp_array[$x]['display_pos'] . ",'2c'," . count($temp_array[$x]['random']) . ",event);\" ondblclick=\"edQ(" . ($question_number+1) . "," . $temp_array[$x]['q_id'] . ",'" . $temp_array[$x]['q_type'] . "');\">";
       } else {
-        echo "\" onclick=\"selQ(" . ($question_number+1) . ",'" . $temp_array[$x]['q_id'] . "','$x','" . $temp_array[$x]['q_type'] . "','" . $temp_array[$x]['screen'] . "','" . $temp_array[$x]['p_id'] . "'," . $temp_array[$x]['display_pos'] . ",'" . $prevous_screen . "','" . $next_screen . "','" . $temp_array[$x]['screen'] . "','menu2b'," . count($temp_array[$x]['random']) . ",event);\" ondblclick=\"edQ(" . ($question_number+1) . "," . $temp_array[$x]['q_id'] . ",'" . $temp_array[$x]['q_type'] . "');\">";
+        echo "\" onclick=\"selQ(" . ($question_number+1) . ",'" . $temp_array[$x]['q_id'] . "',$x,'" . $temp_array[$x]['q_type'] . "'," . $temp_array[$x]['screen'] . "," . $temp_array[$x]['p_id'] . "," . $temp_array[$x]['display_pos'] . ",'2b'," . count($temp_array[$x]['random']) . ",event);\" ondblclick=\"edQ(" . ($question_number+1) . "," . $temp_array[$x]['q_id'] . ",'" . $temp_array[$x]['q_type'] . "');\">";
       }
     } else {
-      echo "\" onclick=\"selQ(" . ($question_number+1) . ",'" . $temp_array[$x]['q_id'] . "','$x','" . $temp_array[$x]['q_type'] . "','" . $temp_array[$x]['screen'] . "','" . $temp_array[$x]['p_id'] . "'," . $temp_array[$x]['display_pos'] . ",'" . $prevous_screen . "','" . $next_screen . "','" . $temp_array[$x]['screen'] . "','menu2c'," . count($temp_array[$x]['random']) . ",event);\" ondblclick=\"edQ(" . ($question_number+1) . "," . $temp_array[$x]['q_id'] . ",'" . $temp_array[$x]['q_type'] . "');\">";
+      echo "\" onclick=\"selQ(" . ($question_number+1) . ",'" . $temp_array[$x]['q_id'] . "',$x,'" . $temp_array[$x]['q_type'] . "'," . $temp_array[$x]['screen'] . "," . $temp_array[$x]['p_id'] . "," . $temp_array[$x]['display_pos'] . ",'2c'," . count($temp_array[$x]['random']) . ",event);\" ondblclick=\"edQ(" . ($question_number+1) . "," . $temp_array[$x]['q_id'] . ",'" . $temp_array[$x]['q_type'] . "');\">";
     }
 
     echo '<td>';
@@ -1010,7 +938,7 @@ function getMSCAA($paperID, $mysqlidb) {
 
   if ($total_marks != 0) {
     if ($paper_type == '2' and $question_number > 2 and ($screen_marks / $total_marks) * 100 > 25 and $screen_marks > 3) {
-      echo "\n<tr><td colspan=\"5\" style=\"font-weight:bold; color:#C00000\"><img src=\"../artwork/small_yellow_warning_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['warning'] . "\" border=\"0\" />&nbsp;";
+      echo "\n<tr><td colspan=\"2\" class=\"warnicon\"><img src=\"../artwork/small_yellow_warning_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['warning'] . "\" border=\"0\" /></td><td colspan=\"4\" class=\"warn\" style=\"font-weight:bold\">";
       $percent = round(($screen_marks / $total_marks) * 100);
       printf($string['markswarning'], $old_screen, $screen_marks, $percent);
       echo "</td></tr>\n";
@@ -1022,10 +950,14 @@ function getMSCAA($paperID, $mysqlidb) {
       } else {
         echo $total_marks;
       }
-      echo "</td><td style=\"color:#808080\"><nobr>&nbsp;&nbsp;" . $string['passmark'] . ":&nbsp;$pass_mark%&nbsp;</nobr></td></tr>\n";
+      echo "</td><td><nobr>&nbsp;&nbsp;" . $string['passmark'] . ":&nbsp;$pass_mark%&nbsp;</nobr></td></tr>\n";
+      echo "<tr><td colspan=\"4\"></td><td style=\"color:#808080; text-align:right\">" . round($total_random_mark,2) . "&nbsp;</td><td style=\"color:#808080\">(" . round(((round($total_random_mark,2) / $total_marks) * 100), 0) . "%) random mark</td></tr>\n";
     }
   }
-
+  
+  if ($paper_type != '3') {
+    check_duplicates($q_screen);
+  }
 
   // Final paper warnings.
   if ($paper_type == '2') {
@@ -1035,8 +967,8 @@ function getMSCAA($paperID, $mysqlidb) {
       $warning_types = array('Incomplete','Beta','Retired');
     }
     foreach ($warning_types as $warning_type) {
-      if (isset($paper_warnings[$warning_type]) AND count($paper_warnings[$warning_type]) > 0) {
-        echo "<tr><td colspan=\"6\" style=\"color:#C00000\"><img src=\"../artwork/small_yellow_warning_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['warning'] . "\" border=\"0\" />&nbsp;<strong>The following questions are '$warning_type':</strong> ";
+      if (isset($paper_warnings[$warning_type]) and count($paper_warnings[$warning_type]) > 0) {
+        echo "<tr><td colspan=\"2\" class=\"warnicon\"><img src=\"../artwork/small_yellow_warning_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['warning'] . "\" border=\"0\" /></td><td colspan=\"4\" class=\"warn\"><strong>The following questions are '$warning_type':</strong> ";
         foreach ($paper_warnings[$warning_type] as $question_warning) {
           echo ' Q' . $question_warning;
         }

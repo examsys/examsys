@@ -47,7 +47,7 @@ class MATRIXCorrector extends Corrector {
     for ($i = 0; $i < $this->_question->max_stems; $i++) {
       $data['option_correct' . strval($i + 1)] = $new_correct_val[$i];
       $correct_count += ($new_correct_val[$i] > 0) ? 1 : 0;
-      if ($new_correct_val[$i] != $old_correct[$i]) {
+      if (count($new_correct_val[$i]) > 0 and $new_correct_val[$i] != $old_correct[$i]) {
         $changes = true;
       }
     }

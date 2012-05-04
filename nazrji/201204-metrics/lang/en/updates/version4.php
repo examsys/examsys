@@ -7,10 +7,14 @@ $string['couldnotwrite'] = 'Error: could not write config file!';
 $string['msg1'] = 'This script updates the database structures to match the new %s code. No harm will come if this script is run multiple times as it checks the current database structure before applying any changes.';
 $string['msg2'] = 'The update script needs the username and password of a MySQL admin user to update the database, users and tables. This username is not saved to the server and is only used by this update script.';
 $string['databaseadminuser'] = 'Database Admin User';
-$string['dbusername'] = 'DB Username:';
-$string['dbpassword'] = 'DB Password:';
+$string['dbusername'] = 'DB Username';
+$string['dbpassword'] = 'DB Password';
+$string['onlinehelpsystems'] = 'Online Help Systems';
+$string['updatestaffhelp'] = 'Update Staff Help';
+$string['updatestudenthelp'] = 'Update Student Help';
 $string['startupdate'] = 'Start Update';
 $string['warning1'] = 'This update requires that /config/config.inc.php is writeable.';
 $string['warning2'] = 'Please chown the file to the webserver and chomod it 644';
 $string['updatefromversion'] = 'Update from version';
+$string['home'] = 'Home';
 ?>

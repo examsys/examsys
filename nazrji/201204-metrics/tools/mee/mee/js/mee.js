@@ -998,7 +998,7 @@ proc.eqn.Align();MEE.Base.updateProgress();$(proc.elem).css('color','');if(!$(pr
 +this.replacePX(proc.elem.style.paddingTop)
 +this.replacePX(proc.elem.style.paddingBottom);var elem=proc.elem.parentNode;if(elem.tagName=='SPAN'){elem=elem.parentNode;}
 if(elem.tagName=='TD'){elem=elem.parentNode;}
-if(h==0&&this.replacePX(elem.style.height)==0){elem.style.height='auto';}else if(elem.style.height==''||h>this.replacePX(elem.style.height)){elem.style.height=h+'px';elem.style.paddingTop=proc.elem.style.paddingTop;}}else{var w=this.calcWidth(proc.elem,0);proc.elem.parentNode.style.width=w+'px';}
+if(h==0&&this.replacePX(elem.style.height)==0){elem.style.height='auto';}else if(elem.style.height==''||h>this.replacePX(elem.style.height)){elem.style.minHeight=h+'px';elem.style.paddingTop=proc.elem.style.paddingTop;}}else{var w=this.calcWidth(proc.elem,0);proc.elem.parentNode.style.width=w+'px';}
 setTimeout("MEE.Base.ProcessNext()",1);},processDiv:function(elem){var proc={elem:elem,type:'display',inline:false};$(proc.elem).css('color','white');MEE.Base.to_process.push(proc);},processSpan:function(elem){var proc={elem:elem,type:'display',inline:true}
 $(proc.elem).css('color','white');MEE.Base.to_process.push(proc);},processInput:function(elem){var proc={elem:elem,type:'edit'}
 MEE.Base.to_process.push(proc);},process:function(proc){if(proc.type=="display"){if($(proc.elem).attr('latex'))

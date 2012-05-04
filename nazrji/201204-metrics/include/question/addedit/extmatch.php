@@ -41,6 +41,7 @@ $all_media = $question->get_all_media();
 $stems = $question->get_all_stems();
 $all_feedback = $question->get_all_correct_fbacks();
 $current_media = array('filename' => $all_media['filenames'][0], 'width' => $all_media['widths'][0], 'height' => $all_media['heights'][0]);
+$disabled = ($dis_class != '') ? ' disabled="disabled"' : '';
 
 // Work out how many 'questions' to show
 $visible_questions = 0;
@@ -68,7 +69,7 @@ for ($i = 0; $i < $question->max_stems; $i++) {
 ?>
             <dt><?php echo $mandatory . ' ' . ($index + 1); ?>.</dt>
             <dd>
-              <textarea rows="2" id="option_text<?php echo $index + 1 ?>" name="option_text<?php echo $index + 1 ?>" rel="<?php echo $index + 1 ?>" class="extmatch-option form-small form-fixed"><?php echo $option_text ?></textarea>
+              <textarea rows="2" id="option_text<?php echo $index + 1 ?>" name="option_text<?php echo $index + 1 ?>" rel="<?php echo $index + 1 ?>" class="extmatch-option form-small form-fixed<?php echo $dis_class ?>"<?php echo $dis_readonly ?>><?php echo $option_text ?></textarea>
               <input name="optionid<?php echo ($index + 1); ?>" value="<?php echo $option_id ?>" type="hidden" />
             </dd>
 <?php
@@ -87,7 +88,7 @@ require_once 'detail_parts/details_leadin.php';
             <tr>
               <th><label for="option_order"><?php echo $string['optionorder'] ?></label></th>
               <td>
-                <select id="option_order" name="option_order">
+                <select id="option_order" name="option_order"<?php echo $disabled ?>>
 <?php 
 echo ViewHelper::render_options($question->get_option_orders(), $question->get_option_order(), 3);
 ?>
@@ -121,7 +122,7 @@ endfor;
 <?php
 if ($question->get_locked() == '') {
 ?>
-        <table id="q-options" class="form" summary="Add more options">
+        <table id="q-option-add" class="form" summary="Add more options">
           <tbody id="add-option-holder">
             <tr>
               <th>&nbsp;</th>

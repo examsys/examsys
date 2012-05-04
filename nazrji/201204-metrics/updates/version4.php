@@ -70,6 +70,7 @@ function convert_year($old_year) {
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
     <title>TouchStone 4.x to Rogō update Script</title>
     <link rel="stylesheet" type="text/css" href="../css/header.css" />
@@ -80,14 +81,14 @@ function convert_year($old_year) {
       h2 {font-size:120%; color:#001979}
       .error {color:red; font-weight:bold}
       .warning {float:none; color:red; padding-left: .5em; vertical-align:top}
-      label {float:left; width:7.5em; padding-left:0em; text-align:left}
+      label {float:left; width:150px; padding-left:0em; text-align:left}
       p {clear:both}
       .submit {text-align:center; padding-top:2em}
       table {border:none}
-      .heading {margin-top:1.5em; margin-bottom:0.5em; width:97%; color:#1E3287}
-      .heading hr {border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:97%}
+      .heading {margin-top:1.5em; margin-bottom:0.5em; width:100%; color:#1E3287}
+      .heading hr {border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%}
       td.line {width:98%}
-      input {width:150px}
+      input[type=text], input[type=password] {width:140px}
       form {padding:1em}
       form div {padding-left:2em}
     </style>
@@ -133,7 +134,11 @@ if (!isset($_POST['update'])) {
           <div><?php echo $string['msg2']; ?></div>
           <br />
           <div><label for="mysql_admin_user"><?php echo $string['dbusername']; ?></label> <input type="text" value="" name="mysql_admin_user" class="required" minlength="2" /> </div>
-          <div><label for="mysql_admin_pass"><?php echo $string['dbpassword']; ?></label> <input type="password" value="" name="mysql_admin_pass"/></div>
+          <div><label for="mysql_admin_pass"><?php echo $string['dbpassword']; ?></label> <input type="password" value="" name="mysql_admin_pass" /></div>
+
+          <table class="heading"><tr><td><nobr><?php echo $string['onlinehelpsystems']; ?></nobr></td><td class="line"><hr /></td></tr></table>
+          <div><label for="update_staff_help"><?php echo $string['updatestaffhelp']; ?></label> <input type="checkbox" value="" name="update_staff_help" checked="checked" /></div>
+          <div><label for="update_student_help"><?php echo $string['updatestudenthelp']; ?></label> <input type="checkbox" value="" name="update_student_help" checked="checked" /></div>
      
        <div class="submit"> <input type="submit" name="update" value="<?php echo $string['startupdate']; ?>" /> </div>
      </form>
@@ -1649,7 +1654,6 @@ if (!isset($_POST['update'])) {
       $cfg_new[] = $line;
     }
   }
-  
   if (file_put_contents($cfg_web_root . 'config/config.inc.php', $cfg_new) === false) {
     echo "<li class=\"error\">" . $string['couldnotwrite'] . "</li>";
   }
@@ -2556,14 +2560,20 @@ if (!isset($_POST['update'])) {
   $new_cfg_str[] =  "  date_default_timezone_set(\$cfg_timezone);\n";
   $cfg = file($cfg_web_root . 'config/config.inc.php');
   $found = false;
+  $target_line = 53;
+  $cur_line = 0;
   foreach ($cfg as $line) {
     if (strpos($line,'date_default_timezone_set') !== false) {
       $found = true;
     }
+    if (strpos($line,'cfg_timezone') !== false) {
+      $target_line = $cur_line + 1;
+    }
+    $cur_line++;
   }
   
   if (!$found) {
-    array_splice($cfg,53,0,$new_cfg_str);
+    array_splice($cfg,$target_line,0,$new_cfg_str);
     if (file_exists($cfg_web_root . 'config/config.inc.php')) {
       rename($cfg_web_root . 'config/config.inc.php', $cfg_web_root . 'config/config.inc.old3.php');
     }
@@ -2601,6 +2611,71 @@ if (!isset($_POST['update'])) {
     flush();
   }
   
+  // 25/04/2012 - Remove define lines not used.
+  $new_cfg_str = array();
+  $cfg = file($cfg_web_root . 'config/config.inc.php');
+  $found = false;
+  foreach ($cfg as $line) {
+    if (strpos($line,"define('TOUCHSTONE'") === false and strpos($line,"define('DIR_SEPARATOR'") === false and strpos($line,"\$news") === false) {
+      $new_cfg_str[] = $line;
+    } else {
+      $found = true;
+    }
+  }
+  
+  $cfg = $new_cfg_str;
+  
+  if ($found) {
+    if (file_exists($cfg_web_root . 'config/config.inc.php')) {
+      rename($cfg_web_root . 'config/config.inc.php', $cfg_web_root . 'config/config.inc.old4.php');
+    }
+    
+    if (file_put_contents($cfg_web_root . 'config/config.inc.php', $cfg) === false) {
+      echo "<li class=\"error\">" . $string['couldnotwrite'] . "</li>";
+    }
+    echo "<li>Removed unneccessary lines from configuration (defines and \$news).</li>\n";
+    ob_flush();
+    flush();
+  }
+  
+
+  // 02/05/2012 - Update the online help files.
+  if (isset($_POST['update_staff_help'])) {
+    $adjust = $mysqli->prepare("TRUNCATE staff_help");
+    $adjust->execute();
+    $adjust->close();
+    echo "<li>DROP TABLE staff_help</li>\n";
+  
+    $query = file_get_contents('../install/staff_help.sql');
+    $mysqli->query($query);
+    echo "<li>LOADED staff_help</li>\n";
+  }
+  if (isset($_POST['update_student_help'])) {
+    $adjust = $mysqli->prepare("TRUNCATE student_help");
+    $adjust->execute();
+    $adjust->close();
+    echo "<li>TRUNCATE student_help</li>\n";
+    
+    $query = file_get_contents('../install/student_help.sql');
+    $mysqli->query($query);
+    echo "<li>LOADED student_help</li>\n";
+  }
+
+  // 02/05/2012 - Update the version number
+  $cfg_new = array();
+  $cfg = file($cfg_web_root . 'config/config.inc.php');
+  foreach ($cfg as $line) {
+    if (strpos($line,'rogo_version') !== false) {
+      $cfg_new[] = "\$rogo_version = '$version';\n";
+    } else {
+      $cfg_new[] = $line;
+    }
+  }
+  if (file_put_contents($cfg_web_root . 'config/config.inc.php', $cfg_new) === false) {
+    echo "<li class=\"error\">" . $string['couldnotwrite'] . "</li>";
+  }
+ 
+  
   // End ------------------------------------------------------------------
   echo "</ol>\n";
 
@@ -2609,6 +2684,6 @@ if (!isset($_POST['update'])) {
   ob_end_flush();
   echo "\n<h2>" . $string['actionrequired'] . "</h2>\n<ol>";
   echo "\n<li>" . $string['readonly'] . "</li>\n";
-  echo "</ol>\n<div>" . $string['finished'] . "</div>\n<blockquote>\n";
+  echo "</ol>\n<div>" . $string['finished'] . "</div>\n<div style=\"text-align:center\"><input type=\"button\" value=\" " . $string['home'] . " \" onclick=\"window.location('../staff/')\" /></div><blockquote>\n";
 }
 ?>

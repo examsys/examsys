@@ -41,7 +41,7 @@
     $question_no++;
 
     if ($question['scenario'] != '') {
-      echo "<tr><td class=\"q_no\">" . $question_no . ".&nbsp;</td><td style=\"background-color:#E4EEFC; border-bottom:1px solid #B5C4DF; font-weight:bold; padding:2px; color:#000040\">" . $string['clinicalvignette'] . "</td></tr>\n";
+      echo "<tr><td class=\"q_no\">" . $question_no . ".&nbsp;</td><td style=\"background-color:#E4EEFC; border-bottom:1px solid #B5C4DF; font-weight:bold\">" . $string['clinicalvignette'] . "</td></tr>\n";
       echo '<tr><td style="vertical-align:top; text-align:right"></td><td>';
       if ($question['notes'] != '') echo '<p class="note"><img src="../artwork/notes_icon.gif" width="14" height="14" alt="Note" />&nbsp;<strong>' . $string['note'] . '</strong>&nbsp;' . $question['notes'] . '</p>';
       echo $question['scenario'] . "<br />\n<br />";
@@ -129,7 +129,7 @@
 ?>
 <style type="text/css">
 body {background-color:white;color:black;padding:0px;margin:0px;border:0px;font-family:Arial,sans-serif;font-size:90%}
-textarea {font-family:Arial,sans-serif}
+textarea {font-family:Arial,sans-serif; font-size:100%; width:100%; border:1px solid #C0C0C0}
 li {margin-left:15px;margin-right:15px;font-size:100%}
 select,input{font-family:$font,sans-serif;font-size:100%}
 table {font-size:100%}
@@ -138,7 +138,18 @@ pre {font-family:Arial,sans-serif; font-size:100%}
 .theme {font-size:150%; padding-left:4px;font-weight:bold;color:#316AC5}
 .note {color:#C00000}
 .mk {color:#808080;font-size:80%}
-</style>
+.msg {
+  margin-left:auto;
+  margin-right:auto;
+  padding:20px;
+  width:90%;
+  color:black;
+  background-color:#FFFFC0;
+  background: -moz-linear-gradient(top, #FFF6BD, #FFEC82);
+  background: -webkit-linear-gradient(top, #FFF6BD, #FFEC82);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFF6BD', endColorstr='#FFEC82');
+  border:5px solid white;
+}</style>
 </head>
 
 <body>
@@ -163,12 +174,9 @@ pre {font-family:Arial,sans-serif; font-size:100%}
   echo "<form name=\"myform\" action=\"" . $_SERVER['PHP_SELF'] . "\" method=\"post\">\n";
   echo "<br />\n";
   
-  echo "<blockquote>\n<table cellpadding=\"2\" cellspacing=\"0\" border=\"0\" style=\"padding:10px; border: 1px solid #C0C000; background-color:#FFFFC0; width:100%; font-size:100%\">\n";
-  echo "<col width=\"80\"><col>\n";
-  echo "<tr><td colspan=\"2\">" . $string['top_msg'] . "</td></tr>\n";
-  echo "</table>\n</blockquote>\n";
+  echo "<div class=\"msg\">" . $string['top_msg'] . "</div>\n<br />\n";
   
-  echo "<table cellspacing=\"0\" cellpadding=\"2\" border=\"0\" style=\"width:100%; font-size:100%\">\n<col width=\"40\"><col>\n";
+  echo "<table cellspacing=\"0\" cellpadding=\"2\" border=\"0\" style=\"width:99%; font-size:100%\">\n<col width=\"40\"><col>\n";
 
   //build the questions_array
   $old_q_id = '';
@@ -227,6 +235,8 @@ pre {font-family:Arial,sans-serif; font-size:100%}
 <br />
 </form>
 <?php
+  $bottom_html = str_replace('<td style="width:30px"><img src="../artwork/fire_exit.png" width="26" height="25" alt="Fire Exit" style="cursor:pointer" onclick="fire()" /></td>', '', $bottom_html);
+
   echo $bottom_html;
 ?>
 </body>

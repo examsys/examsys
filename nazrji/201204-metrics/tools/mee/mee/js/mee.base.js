@@ -101,7 +101,7 @@ $.Class.extend("MEE.Base",
           if(h == 0 && this.replacePX(elem.style.height) == 0) {
             elem.style.height = 'auto';
           } else if(elem.style.height == '' || h > this.replacePX(elem.style.height)) {
-            elem.style.height = h + 'px';
+            elem.style.minHeight = h + 'px';
             elem.style.paddingTop = proc.elem.style.paddingTop;
           }
         } else {

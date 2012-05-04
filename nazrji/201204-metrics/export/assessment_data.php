@@ -25,7 +25,8 @@
   require '../include/staff_auth.inc';
   require '../include/demo_replace.inc';
   require '../include/errors.inc';
-  
+  require_once '../classes/stringutils.class.php';
+
   check_var('paperID', 'GET', true, false);
   check_var('startdate', 'GET', true, false);
   check_var('enddate', 'GET', true, false);
@@ -59,6 +60,7 @@
     $result->store_result();
     $result->bind_result($q_id, $q_type, $correct, $option_text, $score_method);
     $question['correct'] = '';
+    $question['correct_text'] = '';
     while ($result->fetch()) {
       $result->bind_result($q_id, $q_type, $correct, $option_text, $score_method);
       $question['ID'] = $q_id;
@@ -66,6 +68,7 @@
       $question['score_method'] = $score_method;
       $question['correct'] = fix_correct($q_type, $correct, $question['correct']);
       $question['option_text'] = $option_text;
+      $question['correct_text'] .= "\t" . $option_text;
     }
     if ($question['type'] == 'blank') {
       $old_correct = '';
@@ -81,9 +84,9 @@
     return $question;
   }
 
-  function add_random_column_standard($i, $sec){
+  function add_random_column_standard($i, $sec, $subsec=''){
     echo ':user';
-    echo ',Q' . ($i+1) . chr($sec+64) . ':correct';
+    echo ',Q' . ($i+1) . chr($sec+64) . $subsec . ':correct';
   }
 
   function fix_correct($q_type, $correct, $old_correct) {
@@ -98,6 +101,17 @@
 
     return $old_correct;
   }
+
+  function array_swap($array, $ix1, $ix2) {
+    $tmp = $array[$ix1];
+    $array[$ix1] = $array[$ix2];
+    $array[$ix2] = $tmp;
+
+    return $array;
+  }
+
+  $mode = (isset($_GET['mode']) and $_GET['mode'] == 'text') ? 'text' : 'numeric';
+  $numerals = array('i', 'ii', 'iii', 'iv', 'v', 'vi', 'vii', 'viii', 'ix', 'x', 'xi', 'xii', 'xiii', 'xiv', 'xv', 'xvi', 'xvii', 'xviii', 'xix', 'xx');
 
   // Get any questions to exclude.
   $excluded = array();
@@ -116,6 +130,7 @@
   $old_q_id = -1;
   $part = 0;
   $old_correct = '';
+  $old_correct_text = '';
   $old_random_qids = array();
   
   $result = $mysqli->prepare("SELECT paper_title, q_id, q_type, paper_type, screen, correct, option_text, score_method FROM (papers, questions, properties, options) WHERE papers.paper=properties.property_id AND papers.question=questions.q_id AND questions.q_id=options.o_id AND papers.paper=? AND q_type!='info' ORDER BY screen, display_pos, id_num");
@@ -129,6 +144,7 @@
       $paper_buffer[$question_no]['type'] = $old_q_type;
       $paper_buffer[$question_no]['screen'] = $old_screen;
       $paper_buffer[$question_no]['correct'] = $old_correct;
+      $paper_buffer[$question_no]['correct_text'] = $old_correct_text;
       $paper_buffer[$question_no]['score_method'] = $old_score_method;
       if ($old_q_type == 'random') {
         $paper_buffer[$question_no]['rand_ids'] = $old_random_qids;
@@ -147,9 +163,12 @@
       if ($q_type != 'extmatch' and $q_type != 'matrix') {
         $old_correct = ',' . $correct;
       }
+      $old_correct_text = '';
     } else {
       $old_correct = fix_correct($q_type, $correct, $old_correct);
     }
+    $old_correct_text .= "\t" . $option_text;
+
     if ($q_type == 'random') {
       $old_random_qids[] = $option_text;
     }
@@ -165,6 +184,7 @@
   $paper_buffer[$question_no]['type'] = $old_q_type;
   $paper_buffer[$question_no]['screen'] = $old_screen;
   $paper_buffer[$question_no]['correct'] = $old_correct;
+  $paper_buffer[$question_no]['correct_text'] = $old_correct_text;
   $paper_buffer[$question_no]['score_method'] = $old_score_method;
   if ($old_q_type == 'random') {
     $paper_buffer[$question_no]['rand_ids'] = $old_random_qids;
@@ -308,10 +328,22 @@
                 $correct_parts = explode(',', $question['correct']);
                 $partID = 0;
                 for ($sec=1; $sec < count($correct_parts); $sec++) {
-                  if ($correct_parts[$sec] != '' and substr($tmp_exclude,$partID,1) == '0') {
-                    echo ',Q' . ($i+1) . chr($sec + 64);
-                    if ($is_random) {
-                      add_random_column_standard($i, $sec);
+                  if ($correct_parts[$sec] != '' and substr($tmp_exclude, $partID, 1) == '0') {
+                    if (strpos($correct_parts[$sec], '$') === false) {
+                      echo ',Q' . ($i+1) . chr($sec + 64);
+                      if ($is_random) {
+                        add_random_column_standard($i, $sec);
+                      }
+                    } else {
+                      $num_ix = 0;
+                      $correct_subparts = explode('$', $correct_parts[$sec]);
+                      foreach ($correct_subparts as $subpart) {
+                        echo ',Q' . ($i+1) . chr($sec + 64) . $numerals[$num_ix];
+                        if ($is_random) {
+                          add_random_column_standard($i, $sec, $numerals[$num_ix]);
+                        }
+                        $num_ix++;
+                      }
                     }
                   }
                   $partID += substr_count($correct_parts[$sec],'$') + 1;
@@ -448,13 +480,29 @@
                 break;
               case 'extmatch':
                 $correct_parts = explode(',',$question['correct']);
+                $correct_text_parts = explode("\t", $question['correct_text']);
                 $partID=1;
                 for ($outer=1; $outer < count($correct_parts); $outer++) {
                   if ($correct_parts[$outer] != '' and substr($tmp_exclude,$partID-1,1) == '0') {
                     if ($is_random) {
-                      echo ',,';
+                      echo str_repeat(',', 2 * (substr_count($correct_parts[$outer], '$') + 1));
                     } else {
-                      echo ',"' . str_replace('$', ',', $correct_parts[$outer]) . '"';
+                      if ($mode == 'numeric') {
+                        echo ',"' . str_replace('$', '","', $correct_parts[$outer]) . '"';
+                      } else {
+                        if (strpos($correct_parts[$outer], '$') === false) {
+                          echo ',"' . $correct_text_parts[$correct_parts[$outer]] . '"';
+                        } else {
+                          $correct_subparts = explode('$', $correct_parts[$outer]);
+                          echo ',"';
+                          for ($k = 0; $k < count($correct_subparts); $k++) {
+                            $subpart = $correct_subparts[$k];
+                            if ($k > 0) echo '","';
+                            echo $correct_text_parts[$subpart];
+                          }
+                          echo '"';
+                        }
+                      }
                     }
                   }
                   $partID += substr_count($correct_parts[$outer],'$') + 1;
@@ -462,13 +510,18 @@
                 break;
               case 'matrix':
                 $correct_parts = explode(',', $question['correct']);
+                $correct_text_parts = explode("\t", $question['correct_text']);
                 for ($partID=1; $partID < count($correct_parts); $partID++) {
                   if (substr($tmp_exclude,$partID-1,1) == '0' and $correct_parts[$partID] != '') {
                     echo ',';
                     if ($is_random) {
                       echo ',';
                     } else {
+                      if ($mode == 'numeric') {
                       echo $correct_parts[$partID];
+                      } else {
+                        echo $correct_text_parts[$correct_parts[$partID]];
+                      }
                     }
                   }
                 }
@@ -480,7 +533,21 @@
                   if ($is_random) {
                     echo str_repeat(',', substr_count($question['correct'], ',') * 2);
                   } else {
-                    echo $question['correct'];
+                    if ($mode == 'numeric') {
+                      echo $question['correct'];
+                    } else {
+                      $correct_parts = explode(',', $question['correct']);
+                      $correct_text_parts = explode("\t", $question['correct_text']);
+                      for ($j = 1; $j < count($correct_parts); $j++) {
+                        if ($question['type'] == 'mrq' and $correct_parts[$j] == 'y') {
+                          echo ',"' . $correct_text_parts[$j] . '"';
+                        } elseif ($question['type'] == 'rank') {
+                          echo ',' . StringUtils::ordinal_suffix($correct_parts[$j], $language);
+                        } else {
+                          echo ',';
+                        }
+                      }
+                    }
                   }
                 }
                 break;
@@ -502,7 +569,11 @@
                       if ($is_random) {
                         echo ',';
                       } else {
-                        echo $tmp_third_split[0];
+                        if ($mode == 'numeric') {
+                          echo $tmp_third_split[1];
+                        } else {
+                          echo $tmp_third_split[0];
+                        }
                       }
                     }
                     $sec++;
@@ -518,7 +589,7 @@
                     if ($is_random) {
                       echo ',';
                     } else {
-                      $correct_parts[$partID];
+                      echo $correct_parts[$partID];
                     }
                   }
                 }
@@ -538,6 +609,7 @@
                 }
                 break;
               case 'sct':
+                $correct_text_parts = explode("\t", $question['correct_text']);
                 if (!isset($excluded[$tmp_question_ID])) {
                   $correct = '';
                   $parts = explode(',', $question['correct']);
@@ -545,9 +617,17 @@
                   for ($partID = 1; $partID < count($parts); $partID++) {
                     if ($parts[$partID] > $max_correct) {
                       $max_correct = $parts[$partID];
-                      $correct = $partID;
+                      if ($mode == 'numeric') {
+                        $correct = $partID;
+                      } else {
+                        $correct = $correct_text_parts[$partID];
+                      }
                     } elseif ($parts[$partID] == $max_correct and $max_correct > 0) {
-                      $correct .= ',' . $partID;
+                      if ($mode == 'numeric') {
+                        $correct .= ',' . $partID;
+                      } else {
+                        $correct .= ' OR ' . $correct_text_parts[$partID];
+                      }
                     }
                   }
                   echo ',';
@@ -563,7 +643,13 @@
                   if ($is_random) {
                     echo ',,';
                   } else {
-                    echo $question['correct'];
+                    if ($mode == 'numeric') {
+                      echo $question['correct'];
+                    } else {
+                      $corr_index = ltrim($question['correct'], ',');
+                      $correct_text_parts = explode("\t", $question['correct_text']);
+                      echo ',"' . $correct_text_parts[$corr_index] . '"';
+                    }
                   }
                 }
                 break;
@@ -626,7 +712,9 @@
               for ($partID=1; $partID<count($correct_parts); $partID++) {
                 if (substr($tmp_exclude,$partID-1,1) == '0') {
                   echo ',';
-                  if ($tmp_answers[$partID] != 'u') echo $tmp_answers[$partID];
+                  if ($tmp_answers[$partID] != 'u') {
+                    echo str_replace("\n", ' ', str_replace("\r", ' ', $tmp_answers[$partID]));
+                  }
                   if ($is_random) {
                     echo ',' . $correct_parts[$partID];
                   }
@@ -678,20 +766,63 @@
               $partID = 0;
               for ($outer=1; $outer < count($correct_parts); $outer++) {
                 if ($correct_parts[$outer] != '' and substr($tmp_exclude,$partID,1) == '0') {
-                  if (isset( $answer_parts[$outer-1])) {
-                    echo ',"' . str_replace('u', '', str_replace('$', ',', $answer_parts[$outer-1])) . '"';
+                  $correct_subparts = explode('$', $correct_parts[$outer]);
+                  $correct_text_parts = explode("\t", $question['correct_text']);
+                  if (isset($answer_parts[$outer-1])) {
+                    $answer_subparts = explode('$', $answer_parts[$outer-1]);
+                    echo ',"';
+                    for ($k = 0; $k < count($correct_subparts); $k++) {
+                      if ($k > 0) echo '","';
+
+                      $diff = count($correct_subparts) - count($answer_subparts);
+                      if ($diff > 0) {
+                        $answer_subparts = array_pad($answer_subparts, -1 * ($diff + count($answer_subparts)), '-1');
+                      }
+
+                      if (count($correct_subparts) > 1) {
+                        $corr_index = array_search($correct_subparts[$k], $answer_subparts);
+                        if ($corr_index !== false and $corr_index > $k) {
+                          $answer_subparts = array_swap($answer_subparts, $k, $corr_index);
+                        }
+                      }
+
+                      if ($answer_subparts[$k] != -1) {
+                        $subpart = $answer_subparts[$k];
+                        if ($mode == 'numeric') {
+                          echo $answer_subparts[$k];
+                        } else {
+                          echo $correct_text_parts[$subpart];
+                        }
+                      }
+                      if ($is_random) {
+                        if ($mode == 'numeric') {
+                          echo '","' . $correct_subparts[$k];
+                        } else {
+                          echo '","' . $correct_text_parts[$correct_subparts[$k]];
+                        }
+                      }
+                    }
+                    echo '"';
                   } else {
-                    echo ',';
+//                    echo ',';
+                    for ($k = 0; $k < count($correct_subparts); $k++) {
+                      echo ',';
+                      if ($is_random) {
+                        if ($mode == 'numeric') {
+                          echo ',' . $correct_subparts[$k];
+                        } else {
+                          echo ',"' . $correct_text_parts[$correct_subparts[$k]] . '"';
+                        }
+                      }
+                    }
                   }
-                }
-                if ($is_random) {
-                  echo ',' . $correct_parts[$outer];
                 }
                 $partID += substr_count($correct_parts[$outer],'$') + 1;
               }
               break;
             case 'matrix':
               $correct_parts = explode(',', $question['correct']);
+              $correct_text_parts = explode("\t", $question['correct_text']);
               $answer_parts = (isset($individual[$tmp_screen][$tmp_question_ID])) ? explode('|',$individual[$tmp_screen][$tmp_question_ID]) : array_fill(0, count($correct_parts), 'u');
 
               for ($partID=0; $partID < count($correct_parts) - 1; $partID++) {
@@ -699,7 +830,11 @@
                 if (substr($tmp_exclude,$partID,1) == '0' and $correct_parts[$partID + 1] != '') {
                   echo ',';
                   if (isset($answer_parts[$partID]) and  $answer_parts[$partID] != '' and  $answer_parts[$partID] != 'u') {
-                    echo $answer_parts[$partID];
+                    if ($mode == 'numeric') {
+                      echo $answer_parts[$partID];
+                    } else {
+                      echo $correct_text_parts[$answer_parts[$partID]];
+                    }
                   }
                   if ($is_random) {
                     echo ',' . $correct_parts[$partID + 1];
@@ -715,9 +850,12 @@
 
                 for ($partID=0; $partID < count($correct_parts) - 1; $partID++) {
                   echo ',';
-                  if ($answer_parts[$partID] != 'u') echo $answer_parts[$partID];
+                  if ($answer_parts[$partID] != 'u') {
+                    echo ($mode == 'numeric') ? $answer_parts[$partID] : StringUtils::ordinal_suffix($answer_parts[$partID], $language);
+                  }
                   if ($is_random) {
-                    echo ',' . $correct_parts[$partID + 1];
+                    echo ',';
+                    echo ($mode == 'numeric') ? $correct_parts[$partID + 1] : StringUtils::ordinal_suffix($correct_parts[$partID + 1], $language);
                   }
                 }
               }
@@ -746,32 +884,71 @@
               $sec = 1;
               $tmp_first_split = explode(';', $question['correct']);
               $tmp_second_split = explode('$', $tmp_first_split[11]);
+              $label_indexes = array();
+              $answers = array();
+              $correct = array();
               for ($label_no = 4; $label_no <= count($tmp_second_split); $label_no += 4) {
-                if (substr($tmp_second_split[$label_no],0,1) != '|' and $tmp_second_split[$label_no-2] > 219) {
-                  if (substr($tmp_exclude,$sec-1,1) == '0') {
+                if (substr($tmp_exclude,$sec-1,1) == '0') {
+                  $tmp_third_split = explode('|', $tmp_second_split[$label_no]);
+                  $label_indexes[$tmp_third_split[0]] = $tmp_third_split[1];
+                  if (substr($tmp_second_split[$label_no], 0, 1) != '|' and $tmp_second_split[$label_no-2] > 219) {
                     $location = $tmp_second_split[$label_no-2] . 'x' . ($tmp_second_split[$label_no-1] - 25);
+                    $tmp_third_split = explode('|', $tmp_second_split[$label_no]);
+                    $correct[$tmp_third_split[1] - 1] = $tmp_third_split[0];
                     if (isset($user_answers[$location])) {
-                      echo ',' . $user_answers[$location];
+                      $answers[] = $user_answers[$location];
                     } else {
-                      echo ',';
-                    }
-                    if ($is_random) {
-                      $tmp_third_split = explode('|', $tmp_second_split[$label_no]);
-                      echo ',' . $tmp_third_split[0];
+                      $answers[] = '';
                     }
                   }
                   $sec++;
+                }
+              }
+              for ($j = 0; $j < count($answers); $j++) {
+                $answer = $answers[$j];
+                echo ',';
+                if ($answer != '') {
+                  if ($mode == 'numeric') {
+                    if (isset($label_indexes[$answer])) {
+                      echo $label_indexes[$answer];
+                    }
+                    if ($is_random) {
+                      echo ',' . $answer;
+                    }
+                  } else {
+                    echo $answer;
+                    if ($is_random) {
+                      echo ',' . $correct[$j];
+                    }
+                  }
                 }
               }
               break;
             case 'mrq':
               if (!isset($excluded[$tmp_question_ID])) {
                 $correct_clean = str_replace(',', '', $question['correct']);
+                $correct_text_parts = explode("\t", $question['correct_text']);
                 for ($char_pos = 0; $char_pos < substr_count($question['correct'], ','); $char_pos++) {
                   $part_ans = (isset($individual[$tmp_screen][$tmp_question_ID])) ? substr($individual[$tmp_screen][$tmp_question_ID], $char_pos, 1) : '';
-                  echo ',"' . $part_ans . '"';
+                  if ($mode == 'numeric') {
+                    echo ',"' . $part_ans . '"';
+                  } else {
+                    if ($part_ans == 'y') {
+                      echo ',"' . $correct_text_parts[$char_pos + 1] . '"';
+                    } else {
+                      echo ',';
+                    }
+                  }
                   if ($is_random) {
-                    echo ',' . substr($correct_clean, $char_pos, 1);
+                    if ($mode == 'numeric') {
+                      echo ',' . substr($correct_clean, $char_pos, 1);
+                    } else {
+                      if ($part_ans == 'y') {
+                        echo ',"' . $correct_text_parts[$char_pos + 1] . '"';
+                      } else {
+                        echo ',';
+                      }
+                    }
                   }
                 }
                 $char_pos = substr_count($question['correct'],',') + 1;
@@ -797,10 +974,15 @@
               echo ',"' . $tmp_data . '"';
               break;
             case 'sct':
+              $correct_text_parts = explode("\t", $question['correct_text']);
               if (!isset($excluded[$tmp_question_ID])) {
                 echo ',"';
                 if (isset($individual[$tmp_screen][$tmp_question_ID]) and $individual[$tmp_screen][$tmp_question_ID] != 'u') {
-                  echo $individual[$tmp_screen][$tmp_question_ID];
+                  if ($mode == 'numeric') {
+                    echo $individual[$tmp_screen][$tmp_question_ID];
+                  } else {
+                    echo $correct_text_parts[$individual[$tmp_screen][$tmp_question_ID]];
+                  }
                 }
                 echo '"';
                 if ($is_random) {
@@ -810,9 +992,13 @@
                   for ($partID = 1; $partID < count($parts); $partID++) {
                     if ($parts[$partID] > $max_correct) {
                       $max_correct = $parts[$partID];
-                      $correct = $partID;
+                      $correct = ($mode =='numeric') ? $partID : $correct_text_parts[$partID];
                     } elseif ($parts[$partID] == $max_correct and $max_correct > 0) {
-                      $correct .= ',' . $partID;
+                      if ($mode =='numeric') {
+                        $correct .= ',' . $partID;
+                      } else {
+                        $correct .= ' OR ' . $correct_text_parts[$partID];
+                      }
                     }
                   }
                   echo ',"' . $correct . '"';
@@ -821,13 +1007,22 @@
               break;
             default:
               if (!isset($excluded[$tmp_question_ID])) {
+                $correct_text_parts = explode("\t", $question['correct_text']);
                 echo ',"';
                 if (isset($individual[$tmp_screen][$tmp_question_ID]) and $individual[$tmp_screen][$tmp_question_ID] != 'u') {
-                  echo $individual[$tmp_screen][$tmp_question_ID];
+                  if ($mode == 'numeric') {
+                    echo $individual[$tmp_screen][$tmp_question_ID];
+                  } else {
+                    echo $correct_text_parts[$individual[$tmp_screen][$tmp_question_ID]];
+                  }
                 }
                 echo '"';
                 if ($is_random) {
-                  echo ',"' . $question['correct'] . '"';
+                  if ($mode =='numeric') {
+                  echo ',"' . ltrim($question['correct'], ',') . '"';
+                  } else {
+                    echo ',"' . $correct_text_parts[ltrim($question['correct'], ',')] . '"';
+                  }
                 }
               }
               break;

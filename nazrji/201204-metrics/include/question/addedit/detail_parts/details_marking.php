@@ -37,7 +37,7 @@ if (count($question->options) > 0) {
   $mark_partial = 0;
 }
 $allow_neg = $question->allow_negative_marks($module);
-$allow_change_method = ($question->allow_change_marking_method()) ? '' : ' disabled="disabled"';
+$allow_change_method = ($question->allow_change_marking_method() and $dis_class == '') ? '' : ' disabled="disabled"';
 ?>
         <table id="q-marking" class="form" summary="<?php echo $string['qeditsummary'] ?>">
           <tbody>
@@ -56,7 +56,8 @@ echo ViewHelper::render_options($question->get_score_methods(), $question->get_s
 echo ViewHelper::render_options($marks_positive, $mark_correct, 3);
 ?>
                 </select>
-<?php
+
+                <?php
 if ($question->allow_partial_marks()):
   $show_partial = ($question->get_score_method() == $string['allowpartial']) ? '' : ' hide';
 ?>

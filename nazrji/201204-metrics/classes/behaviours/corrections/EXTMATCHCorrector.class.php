@@ -49,7 +49,7 @@ class EXTMATCHCorrector extends Corrector {
       $data['option_correct' . strval($i + 1)] = $new_correct_val[$i];
       if (count($new_correct_val[$i]) > 0) $stems++;
       $correct_count += count($new_correct_val[$i]);
-      if ($new_correct_val[$i] != $old_correct[$i]) {
+      if (count($new_correct_val[$i]) > 0 and $new_correct_val[$i] != $old_correct[$i]) {
         $changes = true;
       }
     }

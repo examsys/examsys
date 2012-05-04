@@ -20,5 +20,6 @@ $string['trac'] = 'Trac (śledzenie problemów)';
 $string['usermanagement'] = 'Zarządzanie użytkownikami';
 $string['msg1'] = 'Czy na pewno usunąć wszystkie arkusze/pytania z modułu treningowego?';
 $string['msg2'] = 'Czy na pewno usunąć stare rejestry testów formatywnych i diagnostycznych?\n\n(rejestry egzaminów końcowych/ankiet nie będą usunięte)';
-$string['announcments'] = 'Nowości i ogłoszenia';   
+$string['announcments'] = 'Nowości i ogłoszenia';
+$string['imslti'] = 'IMS LTI';
 ?>

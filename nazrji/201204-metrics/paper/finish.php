@@ -175,6 +175,13 @@ require '../config/finish.inc';
 
   if (isset($_GET['userid'])) {
     $temp_userID = $_GET['userid'];
+    $result = $mysqli->prepare("SELECT title, initials, surname, student_id FROM users LEFT JOIN sid ON users.id=sid.userID WHERE id=? LIMIT 1");
+    $result->bind_param('i', $_GET['userid']);
+    $result->execute();
+    $result->store_result();
+    $result->bind_result($tmp_title, $tmp_initials, $tmp_surname, $tmp_student_id);
+    $result->fetch();
+    $result->close();
   } else {
     $temp_userID = $userID;
   }
@@ -191,7 +198,7 @@ require '../config/finish.inc';
   echo '<tr><td><div class="paper">' . $paper_title . '</div>';
   if ($paper_type < 2 or strpos($userroles,'Staff') !== false or strpos($userroles,'SysAdmin') !== false) {
     echo '<span style="font-size:90%; color:white; font-weight:bold">' . $string['answersscreen'];
-    if (isset($_GET['surname'])) echo ' for ' . $_GET['surname'];
+    if (isset($_GET['userid'])) echo " for $tmp_title $tmp_surname, $tmp_initials ($tmp_student_id)";
     echo '</span>';
   }
   echo '</td>';

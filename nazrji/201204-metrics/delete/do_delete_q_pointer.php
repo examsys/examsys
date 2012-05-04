@@ -22,39 +22,44 @@
 * @package
 */
 
-  require '../include/staff_auth.inc';
-  require '../include/errors.inc';
+require '../include/staff_auth.inc';
+require '../include/errors.inc';
 
-  check_var('questionID', 'POST', true, false);
+check_var('questionID', 'POST', true, false);
+check_var('pID', 'POST', true, false);
+check_var('paperID', 'POST', true, false);
 
-  $tmp_questionID = $_POST['questionID'];
-  $tmp_paperID = $_POST['paperID'];
-  
+$tmp_pIDs = explode(',', $_POST['pID']);  
+$tmp_questionIDs = explode(',', $_POST['questionID']);
+$tmp_paperID = $_POST['paperID'];
+
+for ($i=1; $i<count($tmp_pIDs); $i++) {
   if ($result = $mysqli->prepare("DELETE FROM papers WHERE p_id=?")) {
-    $result->bind_param('i', $tmp_questionID);
+    $result->bind_param('i', $tmp_pIDs[$i]);
     $result->execute();
     $result->close();
 
     // Create a track changes record to say new question added.
-    $trackChange = $mysqli->prepare("INSERT INTO track_changes VALUES (NULL,'Alter Paper',?," . $userID . ",?,'',NULL,'Delete Question')");
-    $trackChange->bind_param('is', $tmp_paperID, $tmp_questionID);
+    $trackChange = $mysqli->prepare("INSERT INTO track_changes VALUES (NULL,'Alter Paper', ?, ?, ?, '', NOW(), 'Delete Question')");
+    $trackChange->bind_param('iis', $tmp_paperID, $userID, $tmp_questionIDs[$i]);
     $trackChange->execute();
     $trackChange->close();
 
   } else {
     display_error('Papers Delete Error',$mysqli->error);
   }
+}
 
-  if ($_POST['paperID'] != '') {
-    if ($result = $mysqli->prepare("UPDATE properties SET random_mark=NULL, total_mark=NULL WHERE property_id=?")) {
-      $result->bind_param('i', $tmp_paperID);
-      $result->execute();
-      $result->close();
-    } else {
-      display_error($string['updateerror'], $result->error);
-    }
+if ($_POST['paperID'] != '') {
+  if ($result = $mysqli->prepare("UPDATE properties SET random_mark=NULL, total_mark=NULL WHERE property_id=?")) {
+    $result->bind_param('i', $tmp_paperID);
+    $result->execute();
+    $result->close();
+  } else {
+    display_error($string['updateerror'], $result->error);
   }
-  $mysqli->close();
+}
+$mysqli->close();
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>

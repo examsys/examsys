@@ -408,8 +408,8 @@ if ($css != '') {
 <?php
   if (count($reference_materials) > 0) {
     echo "\$(document).ready(function() {\n";
-    if (isset($_COOKIE['refpane'])) {
-      echo "  changeRef(" . $_COOKIE['refpane'] . ");\n";
+    if (isset($_POST['refpane'])) {
+      echo "  changeRef(" . $_POST['refpane'] . ");\n";
     } else {
       echo "  resizeReference();\n";
     }
@@ -445,7 +445,7 @@ if ($css != '') {
   }
   
   function changeRef(refID) {
-    document.cookie = 'refpane=' + refID;
+    document.getElementById('refpane').value = refID;
     winH = getWinH();
     resizeReference();
     var flag = 0;
@@ -752,6 +752,7 @@ echo ' onsubmit="return confirmSubmit()">';   // Warning message only in linear 
       echo "</select>&nbsp;";
     }
   }
+  echo "<input type=\"hidden\" name=\"refpane\" id=\"refpane\" value=\"\" />\n";
   if ($current_screen > $no_screens) {
     echo "<input type=\"submit\" style=\"width:120px; font-weight:bold\" name=\"next\" onclick=\"document.questions.button_pressed.value='finish';\" value=\"" . $string['finish'] . "\" />&nbsp;\n";
   } else {
@@ -776,9 +777,9 @@ if (count($reference_materials) > 0) {
 }
 $mysqli->close();
 
-if (isset($_COOKIE['refpane'])) {
+if (isset($_POST['refpane'])) {
   echo "<script language=\"JavaScript\">\n";
-  echo "  changeRef(" . $_COOKIE['refpane'] . ");\n";
+  echo "  changeRef(" . $_POST['refpane'] . ");\n";
   echo "</script>\n";
 }
 

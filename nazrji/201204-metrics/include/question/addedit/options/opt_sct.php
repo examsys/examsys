@@ -39,7 +39,7 @@ $spaced = ($index > 1) ? " class=\"spaced-top{$alt}\"" : $alt_c;
                 <input name="optionid<?php echo $index ?>" value="<?php echo $option->id ?>" type="hidden" />
               </td>
               <td class="small align-right">
-                <select id="option_correct<?php echo $index ?>" name="option_correct<?php echo $index ?>">
+                <select id="option_correct<?php echo $index ?>" name="option_correct<?php echo $index ?>"<?php echo $disabled ?>>
 <?php
 echo ViewHelper::render_options($experts, $option->get_correct(), 3);
 ?>
@@ -49,7 +49,7 @@ echo ViewHelper::render_options($experts, $option->get_correct(), 3);
             <tr<?php echo $alt_c ?>>
               <th class="spaced-bottom"><label for="option_correct_fback<?php echo $index ?>"><?php echo $string['feedback'] ?></label></th>
               <td class="spaced-bottom">
-                <textarea cols="85" rows="2" id="option_correct_fback<?php echo $index ?>" name="option_correct_fback<?php echo $index ?>" class="form-med-large"><?php echo $option->get_correct_fback() ?></textarea>
+                <textarea cols="85" rows="2" id="option_correct_fback<?php echo $index ?>" name="option_correct_fback<?php echo $index ?>" class="form-med-large<?php echo $dis_class ?>"<?php echo $dis_readonly ?>><?php echo $option->get_correct_fback() ?></textarea>
               </td>
               <td class="spaced-bottom">&nbsp;</td>
             </tr>

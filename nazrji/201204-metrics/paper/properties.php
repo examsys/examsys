@@ -30,6 +30,21 @@ require_once '../classes/schoolutils.class.php';
 require_once '../classes/searchutils.class.php';
 require '../lang/' . $language. '/include/timezones.inc';
 
+function getSchools($teams, $db) {
+  $schools = array();
+  $teams_list = implode("','", $teams);
+  
+  $result = $db->prepare("SELECT DISTINCT schools.id FROM schools, modules WHERE modules.schoolid=schools.id AND modules.moduleid IN ('$teams_list')");
+  $result->execute();
+  $result->bind_result($schoolID);
+  while ($result->fetch()) {
+    $schools[] = $schoolID;
+  }
+  $result->close();
+  
+  return $schools;
+}
+
 function modulo($n,$b) {
   return $n-$b*floor($n/$b);
 }
@@ -1382,10 +1397,15 @@ if ($paper_type != '4' and $paper_type != '5') {
     }
 ?>
 </td></tr>
-  <?php
+  <?php  
   echo "<tr><td><div style=\"width:345px; height:450px; overflow-y:scroll; border:1px solid #7F9DB9; font-size:90%\">";
+  $team_list = implode("','", $teams);
+  
+  $schools = getSchools($teams, $mysqli);
+  $school_list = implode(',', $schools);
   $current_internals = explode(',',$internal_reviewers);
-  $internal_details = $mysqli->prepare("SELECT DISTINCT id, title, initials, surname, first_names FROM users WHERE roles LIKE 'Staff%' AND grade != 'left' ORDER BY surname, initials");
+     
+  $internal_details = $mysqli->prepare("SELECT DISTINCT users.id, title, initials, surname, first_names FROM users, teams, modules WHERE users.id=teams.memberID and modules.moduleid=teams.name AND schoolid IN ($school_list) ORDER BY surname, initials");
   $internal_details->execute();
   $internal_details->bind_result($internal_id, $internal_title, $internal_initials, $internal_surname, $internal_first_names);
   $internal_no = 0;
@@ -1430,13 +1450,10 @@ if ($paper_type != '4' and $paper_type != '5') {
 </tr>
 </table>
 
-
 <table id="reference" style="width:100%; font-size:90%; height:460px; display:none" border="0" cellpadding="0" cellspacing="0">
 <tr><td style="background-image:url('../artwork/blank_heading.png'); color:#001687; height:49px; font-size:110%" colspan="2">&nbsp;&nbsp;&nbsp;&nbsp;<img src="../artwork/toggle_log.png" width="32" height="32" alt="Icon" align="middle" />&nbsp;&nbsp;<?php echo $string['referenceheading']; ?></td></tr>
 <tr><td style="vertical-align:top"><div id="reference_list"></div></td></tr>
 </table>
-
-
 
 </td>
 </tr>

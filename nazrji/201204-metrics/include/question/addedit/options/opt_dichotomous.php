@@ -32,12 +32,13 @@ if ($index %2 == 0) {
   $alt = $alt_c = '';
 }
 $spaced = ($index > 1) ? " class=\"spaced-top{$alt}\"" : $alt_c;
+$locked = ($dis_class != '');
 ?>
           <tbody class="option<?php echo $hidden ?>">
             <tr<?php echo $spaced ?>>
               <th<?php echo $spaced ?>><label for="option_text<?php echo $index ?>"><?php echo $string['stem'];?> #<?php echo $index ?></label></th>
               <td<?php echo $spaced ?>>
-                <textarea name="option_text<?php echo $index ?>" id="option_text<?php echo $index ?>" cols="90" rows="2" class="form-med-large"><?php echo $option->get_text() ?></textarea>
+                <textarea name="option_text<?php echo $index ?>" id="option_text<?php echo $index ?>" cols="90" rows="2" class="form-med-large<?php echo $dis_class ?>"<?php echo $dis_readonly ?>><?php echo $option->get_text() ?></textarea>
                 <input name="optionid<?php echo $index ?>" value="<?php echo $option->id ?>" type="hidden" />
               </td>
               <td class="small">
@@ -50,7 +51,7 @@ $spaced = ($index > 1) ? " class=\"spaced-top{$alt}\"" : $alt_c;
   if ($option->id != -1) { 
     $media = $option->get_media();
     if ($media['filename'] != '') {
-      $current_media_html =  display_media($media['filename'], $media['width'], $media['height'], $index); 
+      $current_media_html =  display_media($media['filename'], $media['width'], $media['height'], $index, $locked);
 ?>
               <tr<?php echo $alt_c ?>>
                 <th><?php echo $string['current'] . ' ' . $string['media'] ?></th>
@@ -65,21 +66,21 @@ $spaced = ($index > 1) ? " class=\"spaced-top{$alt}\"" : $alt_c;
             <tr<?php echo $alt_c ?>>
               <th><label for="option_media<?php echo $index ?>"><?php echo $string['change'] . ' ' . $string['media'] ?></label></th>
               <td>
-                <input id="option_media<?php echo $index ?>" name="option_media<?php echo $index ?>" type="file" size="50" />
+                <input id="option_media<?php echo $index ?>" name="option_media<?php echo $index ?>" type="file" size="50"<?php echo $disabled ?> />
               </td>
               <td>&nbsp;</td>
             </tr>
             <tr<?php echo $alt_c ?>>
               <th><label for="option_correct_fback<?php echo $index ?>"><?php echo $string['fbcorrect'];?>:</label><br /><span class="note warning-severe"><?php echo $string['fbcorrectmsg'];?></span></th>
               <td>
-                <textarea cols="85" rows="2" id="option_correct_fback<?php echo $index ?>" name="option_correct_fback<?php echo $index ?>" class="form-med-large"><?php echo $option->get_correct_fback() ?></textarea>
+                <textarea cols="85" rows="2" id="option_correct_fback<?php echo $index ?>" name="option_correct_fback<?php echo $index ?>" class="form-med-large<?php echo $dis_class ?>"<?php echo $dis_readonly ?>><?php echo $option->get_correct_fback() ?></textarea>
               </td>
               <td>&nbsp;</td>
             </tr>
             <tr<?php echo $alt_c ?>>
               <th class="spaced-bottom"><label for="option_incorrect_fback<?php echo $index ?>"><?php echo $string['fbincorrect'];?>:</label><br /><span class="note"><?php echo $string['fbincorrectmsg'];?></span></th>
               <td class="spaced-bottom">
-                <textarea cols="85" rows="2" id="option_incorrect_fback<?php echo $index ?>" name="option_incorrect_fback<?php echo $index ?>" class="form-med-large"><?php echo $option->get_incorrect_fback() ?></textarea>
+                <textarea cols="85" rows="2" id="option_incorrect_fback<?php echo $index ?>" name="option_incorrect_fback<?php echo $index ?>" class="form-med-large<?php echo $dis_class ?>"<?php echo $dis_readonly ?>><?php echo $option->get_incorrect_fback() ?></textarea>
               </td>
               <td class="spaced-bottom">&nbsp;</td>
             </tr>

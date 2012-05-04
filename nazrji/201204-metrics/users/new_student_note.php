@@ -50,7 +50,7 @@
   ?>
   <script language="JavaScript">
     function closeWindow() {
-      window.opener.location = "details.php?username=<?php echo $_POST['username']; ?>&tab=notes";
+      window.opener.location = "details.php?userID=<?php echo $_POST['tmp_userID']; ?>&tab=notes";
       window.close();
     }
   </script></head>
@@ -80,7 +80,15 @@
 <?php
   if (isset($_GET['paperID'])) {
     echo "<input type=\"hidden\" name=\"paper\" value=\"" . $_GET['paperID'] . "\" />\n";
-    echo $string['studentname'] . " " . $_GET['display_name'] . "</br />\n";
+
+    $result = $mysqli->prepare("SELECT title, initials, surname, student_id FROM users LEFT JOIN sid ON users.id=sid.userID WHERE id=? LIMIT 1");
+    $result->bind_param('i', $_GET['userID']);
+    $result->execute();
+    $result->bind_result($tmp_title, $tmp_initials, $tmp_surname, $tmp_student_id);
+    $result->fetch();
+    $result->close();
+    
+    echo $string['studentname'] . " $tmp_title $tmp_surname, $tmp_initials ($tmp_student_id)</br />\n";
   } else {
     echo $string['papername'] . " <select name=\"paper\">\n<option value=\"\"></option>\n";
     $result = $mysqli->prepare("SELECT DISTINCT property_id, paper_title FROM properties WHERE paper_type='2' AND deleted IS NULL ORDER BY paper_title");
@@ -94,7 +102,7 @@
   }
   
   echo "<br />" . $string['note'] . "<br />\n";
-  echo "<textarea name=\"note\" cols=\"60\" rows=\"15\" style=\"font-family:Arial,sans-serif; font-size:110%; background-color:#FFFFCC; width:100%\"></textarea><br />\n";
+  echo "<textarea name=\"note\" cols=\"60\" rows=\"12\" style=\"width:100%; height:310px;font-family:Arial,sans-serif; font-size:100%; background-color:#FFFFCC; width:100%\"></textarea><br />\n";
 ?>
 <br />
 <div style="text-align:center"><input type="submit" style="width:100px" name="submit" value="<?php echo $string['save']; ?>" />&nbsp;<input style="width:100px" type="button" name="cancel" value="<?php echo $string['cancel']; ?>" onclick="javascript:window.close();" /></div>

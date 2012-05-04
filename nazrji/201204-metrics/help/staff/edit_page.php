@@ -138,7 +138,7 @@
     $edit_id = $_GET['id'];
   }
 
-  echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"width:100%\"><tr><td style=\"padding-left:20px\"><input type=\"text\" style=\"font-family:Verdana,sans-serif; color:#7598C4; font-size:160%; border: 1px solid #C0C0C0; font-weight:bold\" size=\"50\" name=\"page_title\" value=\"$page_title\" /></td><td style=\"text-align:right\"><select name=\"page_roles\">\n";
+  echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"width:100%\"><tr><td style=\"padding-left:20px\"><input type=\"text\" style=\"font-family:Arial,sans-serif; color:#7598C4; font-size:160%; border: 1px solid #C0C0C0; font-weight:bold\" size=\"50\" name=\"page_title\" value=\"$page_title\" /></td><td style=\"text-align:right\"><select name=\"page_roles\">\n";
   $categories = array('Staff','Admin','SysAdmin');
   foreach ($categories as $category) {
     if ($category == $roles) {
@@ -150,7 +150,7 @@
   
   echo "</select>\n</td></tr></table>\n<br />\n";
   
-  echo "<textarea class=\"mceEditor\" id=\"edit1\" name=\"edit1\" style=\"width:100%; height:500px\">" . $body . "</textarea>\n";
+  echo "<textarea class=\"mceEditor\" id=\"edit1\" name=\"edit1\" style=\"width:100%; height:500px\">" . htmlspecialchars($body) . "</textarea>\n";
   
   // Check for lockout.
   $current_time = date('YmdHis');
