@@ -53,8 +53,8 @@ get_module_folder_details($module, $folder, $folder_name, $userroles, $teams, $p
 $questions = $paper->get_question_breakdown();
 
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html onscroll="scrollXY();">
+<!DOCTYPE html >
+<html>
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
@@ -65,30 +65,11 @@ $questions = $paper->get_question_breakdown();
 
   <script type="text/javascript" src="../js/staff_help.js"></script>
   <script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
-  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-  <script type="text/javascript">
-    google.load("visualization", "1", {packages:["corechart"]});
-
-    function drawPieChart(target, caption, data) {
-      var options = {
-        width: 960, height: 500
-      };
-
-      var chart = new google.visualization.PieChart(document.getElementById(target));
-      chart.draw(data, options);
-    }
-
-    function drawBarChart(target, caption, data) {
-      var options = {
-        width: 960, height: 500
-      };
-
-      var chart = new google.visualization.BarChart(document.getElementById(target));
-      chart.draw(data, options);
-    }
-
-  </script>
-</head>
+  <script type="text/javascript" src="../js/rgraph/RGraph.common.core.js" ></script>
+  <script type="text/javascript" src="../js/rgraph/RGraph.common.dynamic.js" ></script>
+  <script type="text/javascript" src="../js/rgraph/RGraph.common.tooltips.js" ></script>
+  <script type="text/javascript" src="../js/rgraph/RGraph.bar.js" ></script></head>
+  <script type="text/javascript" src="../js/jquery.metrics.js" ></script></head>
 
 <body>
 <?php
@@ -157,59 +138,47 @@ if ($paper->get_duration() != '') {
 if (count($questions['type']) > 0) {
   ?>
   <h2>Questions by type</h2>
+<?php
+  $g_data = setup_graph_data($questions['type'], 'questions');
+?>
+  <canvas id="q_by_type" width="1000" height="250">[No canvas support]</canvas>
+
   <script type="text/javascript">
     $(function () {
-      var data = google.visualization.arrayToDataTable([
-        ['Question Type', 'Count'],
-        <?php
-        $i = 1;
-        foreach ($questions['type'] as $q_type => $count) {
-          echo " ['{$q_type}',     {$count}]";
-          if ($i < count($questions['type'])) echo ",\n";
-          $i++;
-        }
-        echo "\n";
-        ?>
-      ]);
-      drawPieChart('q_by_type', 'Questions by type', data);
+      drawRgraph('bar', 'q_by_type', [<?php echo $g_data['data'] ?>], [<?php echo $g_data['labels'] ?>], [<?php echo $g_data['tooltips'] ?>]);
     });
   </script>
-  <div id="q_by_type"></div>
+
   <?php
 }
 
 if (count($questions['screen']) > 0) {
-  ?>
+?>
   <h2>Questions by screen</h2>
+<?php
+  $g_data = setup_graph_data($questions['screen'], 'questions', 'Screen');
+?>
+  <canvas id="q_by_screen" width="1000" height="250">[No canvas support]</canvas>
+
   <script type="text/javascript">
     $(function () {
-      var data = google.visualization.arrayToDataTable([
-        ['Screen', 'Count'],
-        <?php
-        $i = 1;
-        foreach ($questions['screen'] as $screen => $count) {
-          echo " ['Screen {$screen}',     {$count}]";
-          if ($i < count($questions['screen'])) echo ",\n";
-          $i++;
-        }
-        echo "\n";
-        ?>
-      ]);
-      drawBarChart('q_by_screen', 'Questions by screen', data);
+      drawRgraph('bar', 'q_by_screen', [<?php echo $g_data['data'] ?>], [<?php echo $g_data['labels'] ?>], [<?php echo $g_data['tooltips'] ?>]);
     });
   </script>
-  <div id="q_by_screen"></div>
+
   <?php
 }
 ?>
 
-        <h2>Questions by Bloom's Taxonomy</h2>
-        <h2>Marks by question type</h2>
-        <h2>Marks by screen</h2>
-        <h2>Marks by learning outcome</h2>
+    <h2>Questions by Bloom's Taxonomy</h2>
+    <h2>Marks by question type</h2>
+    <h2>Marks by screen</h2>
+    <h2>Marks by learning outcome</h2>
 
+    <p>Graphs provided by <a href="http://www.rgraph.net/">RGraph</a></p>
 
-      </div>
+  </div>
+
 </body>
 </html>
 <?php
@@ -260,5 +229,24 @@ function render_deleted($string, $paper_title, $paper_ownerID, $userID) {
 HTML;
 
   return $html;
+}
+
+function setup_graph_data($source, $label_postfix='', $label_prefix='') {
+  $g_data = array('data' => '', 'labels' => '', 'tooltips' => '');
+
+  $i = 1;
+  foreach ($source as $index => $count) {
+    $g_data['data'] .= $count;
+    $g_data['labels'] .= "'$index'";
+    $g_data['tooltips'] .= "'<strong>{$label_prefix} {$index}</strong><br />{$count} {$label_postfix}'";
+    if ($i < count($source)) {
+      $g_data['data'] .= ',';
+      $g_data['labels'] .= ',';
+      $g_data['tooltips'] .= ',';
+    }
+    $i++;
+  }
+
+  return $g_data;
 }
 ?>
