@@ -68,7 +68,9 @@ $questions = $paper->get_question_breakdown();
   <script type="text/javascript" src="../js/rgraph/RGraph.common.core.js" ></script>
   <script type="text/javascript" src="../js/rgraph/RGraph.common.dynamic.js" ></script>
   <script type="text/javascript" src="../js/rgraph/RGraph.common.tooltips.js" ></script>
+  <script type="text/javascript" src="../js/rgraph/RGraph.common.key.js" ></script>
   <script type="text/javascript" src="../js/rgraph/RGraph.bar.js" ></script></head>
+  <script type="text/javascript" src="../js/rgraph/RGraph.pie.js" ></script></head>
   <script type="text/javascript" src="../js/jquery.metrics.js" ></script></head>
 
 <body>
@@ -141,11 +143,11 @@ if (count($questions['type']) > 0) {
 <?php
   $g_data = setup_graph_data($questions['type'], 'questions');
 ?>
-  <canvas id="q_by_type" width="1000" height="250">[No canvas support]</canvas>
+  <canvas id="q_by_type" width="900" height="400">[No canvas support]</canvas>
 
   <script type="text/javascript">
     $(function () {
-      drawRgraph('bar', 'q_by_type', [<?php echo $g_data['data'] ?>], [<?php echo $g_data['labels'] ?>], [<?php echo $g_data['tooltips'] ?>]);
+      drawRgraph('pie', 'q_by_type', [<?php echo $g_data['data'] ?>], [<?php echo $g_data['labels'] ?>], [<?php echo $g_data['tooltips'] ?>]);
     });
   </script>
 
@@ -158,7 +160,7 @@ if (count($questions['screen']) > 0) {
 <?php
   $g_data = setup_graph_data($questions['screen'], 'questions', 'Screen');
 ?>
-  <canvas id="q_by_screen" width="1000" height="250">[No canvas support]</canvas>
+  <canvas id="q_by_screen" width="900" height="400">[No canvas support]</canvas>
 
   <script type="text/javascript">
     $(function () {
