@@ -1,5 +1,11 @@
-function drawRgraph(type, target, data, labels, tooltips) {
+function drawRgraph(type, target, data, labels, tooltips, angle) {
   var graph;
+  var gutter = 25;
+  if (typeof angle == 'undefined') {
+    angle = 0;
+  } else {
+    gutter = 95;
+  }
 
   switch (type) {
     case 'bar':
@@ -7,7 +13,18 @@ function drawRgraph(type, target, data, labels, tooltips) {
       graph.Set('chart.background.grid', false);
       graph.Set('chart.colors', ['#1E3C7B']);
       graph.Set('chart.gutter.left', 35);
+      graph.Set('chart.gutter.bottom', gutter);
       graph.Set('chart.labels', labels);
+      graph.Set('chart.hmargin', 10);
+      graph.Set('chart.text.angle', angle);
+      break;
+    case 'hbar':
+      graph = new RGraph.HBar(target, data);
+      graph.Set('chart.background.grid', false);
+      graph.Set('chart.colors', ['#1E3C7B']);
+      graph.Set('chart.gutter.left', 120);
+      graph.Set('chart.labels', labels);
+      graph.Set('chart.hmargin', 10);
       break;
     case 'pie':
       graph = new RGraph.Pie(target, data);

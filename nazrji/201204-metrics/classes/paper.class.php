@@ -70,7 +70,7 @@ class Paper {
     'mcq' => 'Multiple Choice',
     'mrq' => 'Multiple Response',
     'rank' => 'Ranking',
-    'sct' => 'Script Concordance Test',
+    'sct' => 'Script Concordance',
     'textbox' => 'Text Box',
     'true_false' => 'True / False'
   );
@@ -259,25 +259,94 @@ QUERY;
     $questions = array('total' => 0, 'screen' => array(), 'type' => array(), 'bloom' => array());
 
     $q_query = <<< QUERY
-SELECT p.screen, q.q_type, q.bloom
+SELECT p.screen, q.q_type, q.bloom, count(o.id_num) as num_opts, max(o.option_text) as option_text, max(o.correct) as correct, group_concat(o.correct) as correct_all, max(o.marks_correct) as marks_correct, q.score_method
 FROM papers p INNER JOIN questions q ON p.question=q.q_id
+  LEFT JOIN options o ON q.q_id=o.o_id
 WHERE p.paper = ?
-ORDER BY p.screen
+GROUP BY o.o_id
+ORDER BY p.screen;
 QUERY;
     $result = $this->_mysqli->prepare($q_query);
     $result->bind_param('i', $this->id);
     $result->execute();
     $result->store_result();
-    $result->bind_result($screen, $qtype, $bloom);
+    $result->bind_result($screen, $qtype, $bloom, $num_opts, $option_text, $correct, $correct_all, $marks_correct, $score_method);
     while ($result->fetch()) {
       $questions['total']++;
+      $questions['marks'][$screen] = (isset($questions['marks'])) ? $questions['marks'] : 0;
+
       $questions['screen'][$screen] = (isset($questions['screen'][$screen])) ? $questions['screen'][$screen] + 1 : 1;
+      $questions['screen_marks'][$screen] = (isset($questions['screen_marks'][$screen])) ? $questions['screen_marks'][$screen] : 0;
 
       $friendlytype = $this->q_labels[$qtype];
       $questions['type'][$friendlytype] = (isset($questions['type'][$friendlytype])) ? $questions['type'][$friendlytype] + 1 : 1;
+      $questions['type_marks'][$friendlytype] = (isset($questions['type_marks'][$friendlytype])) ? $questions['type_marks'][$friendlytype] : 0;
 
+      $marks = 0;
+      if ($score_method == 'Mark per Question') {
+        $marks= $marks_correct;
+      } else {
+        switch ($qtype) {
+          case 'blank':
+            $marks = substr_count(strtolower($option_text), '[/blank]') * $marks_correct;
+            break;
+          case 'calculation':
+          case 'flash':
+          case 'mcq':
+          case 'sct':
+          case 'textbox':
+            $marks = $marks_correct;
+            break;
+          case 'dichotomous':
+          case 'true_false':
+            $marks = ($num_opts * $marks_correct);
+            break;
+          case 'hotspot':
+            $marks = (substr_count(strtolower($correct), '|') + 1) * $marks_correct;
+            break;
+          case 'labelling':
+            $tmp_first_split = explode(';', $correct);
+            $tmp_second_split = explode('$', $tmp_first_split[11]);
+            for ($label_no = 4; $label_no <= count($tmp_second_split); $label_no += 4) {
+              if (substr($tmp_second_split[$label_no],0,1) != '|' and $tmp_second_split[$label_no-2] > 219) {
+                $marks += $marks_correct;
+              }
+            }
+            break;
+          case 'likert':
+          case 'info':
+          case 'random':
+          case 'keyword_based':
+            break;
+          case 'extmatch':
+          case 'matrix':
+            $matches = array();
+            $marks = preg_match_all('/\d{1,2}($\d{1,2})*/', $correct, $matches) * $marks_correct;
+            break;
+          case 'mrq':
+            $marks = substr_count(strtolower($correct_all), 'y') * $marks_correct;
+            break;
+          case 'rank':
+            switch ($score_method) {
+              case 'Mark per Option':
+                $marks = $num_opts * $marks_correct;
+                break;
+              case 'Allow partial Marks':
+                $marks = preg_match_all('/\d{1,2}/', $correct_all, $matches) * $marks_correct;
+                break;
+              case 'Bonus Mark':
+                $marks = preg_match_all('/\d{1,2}/', $correct_all, $matches) * $marks_correct + $marks_correct;
+                break;
+            }
+            break;
+        }
+      }
+
+      $questions['screen_marks'][$screen] += $marks;
+      $questions['type_marks'][$friendlytype] += $marks;
       if ($bloom != '') {
-        $questions['bloom'][$bloom] = (isset($questions['type'][$qtype])) ? $questions['type'][$qtype] + 1 : 1;
+        $questions['bloom'][$bloom] = (isset($questions['bloom'][$bloom])) ? $questions['bloom'][$bloom] + 1 : 1;
+        $questions['bloom_marks'][$bloom] = (isset($questions['bloom_marks'][$bloom])) ? $questions['bloom_marks'][$bloom] + $marks : $marks;
       }
     }
     $result->close();

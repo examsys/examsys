@@ -70,6 +70,7 @@ $questions = $paper->get_question_breakdown();
   <script type="text/javascript" src="../js/rgraph/RGraph.common.tooltips.js" ></script>
   <script type="text/javascript" src="../js/rgraph/RGraph.common.key.js" ></script>
   <script type="text/javascript" src="../js/rgraph/RGraph.bar.js" ></script></head>
+  <script type="text/javascript" src="../js/rgraph/RGraph.hbar.js" ></script></head>
   <script type="text/javascript" src="../js/rgraph/RGraph.pie.js" ></script></head>
   <script type="text/javascript" src="../js/jquery.metrics.js" ></script></head>
 
@@ -140,27 +141,44 @@ if ($paper->get_duration() != '') {
 if (count($questions['type']) > 0) {
   ?>
   <h2>Questions by type</h2>
-<?php
+  <?php
   $g_data = setup_graph_data($questions['type'], 'questions');
-?>
-  <canvas id="q_by_type" width="900" height="400">[No canvas support]</canvas>
+  ?>
+  <canvas id="q_by_type" width="800" height="450">[No canvas support]</canvas>
 
   <script type="text/javascript">
     $(function () {
-      drawRgraph('pie', 'q_by_type', [<?php echo $g_data['data'] ?>], [<?php echo $g_data['labels'] ?>], [<?php echo $g_data['tooltips'] ?>]);
+      drawRgraph('bar', 'q_by_type', [<?php echo $g_data['data'] ?>], [<?php echo $g_data['labels'] ?>], [<?php echo $g_data['tooltips'] ?>], 45);
     });
   </script>
 
   <?php
 }
 
-if (count($questions['screen']) > 0) {
+if (count($questions['type_marks']) > 0) {
 ?>
-  <h2>Questions by screen</h2>
+  <h2>Marks by question type</h2>
 <?php
-  $g_data = setup_graph_data($questions['screen'], 'questions', 'Screen');
+  $g_data = setup_graph_data($questions['type_marks'], 'marks');
 ?>
-  <canvas id="q_by_screen" width="900" height="400">[No canvas support]</canvas>
+  <canvas id="m_by_type" width="800" height="450">[No canvas support]</canvas>
+
+  <script type="text/javascript">
+    $(function () {
+      drawRgraph('bar', 'm_by_type', [<?php echo $g_data['data'] ?>], [<?php echo $g_data['labels'] ?>], [<?php echo $g_data['tooltips'] ?>], 45);
+    });
+  </script>
+
+<?php
+}
+
+if (count($questions['screen']) > 0) {
+  ?>
+  <h2>Questions by screen</h2>
+  <?php
+  $g_data = setup_graph_data($questions['screen'], 'questions', 'Screen');
+  ?>
+  <canvas id="q_by_screen" width="800" height="350">[No canvas support]</canvas>
 
   <script type="text/javascript">
     $(function () {
@@ -170,11 +188,58 @@ if (count($questions['screen']) > 0) {
 
   <?php
 }
-?>
 
-    <h2>Questions by Bloom's Taxonomy</h2>
-    <h2>Marks by question type</h2>
-    <h2>Marks by screen</h2>
+if (count($questions['screen_marks']) > 0) {
+?>
+  <h2>Marks by screen</h2>
+<?php
+  $g_data = setup_graph_data($questions['screen_marks'], 'marks', 'Screen');
+?>
+  <canvas id="m_by_screen" width="800" height="350">[No canvas support]</canvas>
+
+  <script type="text/javascript">
+    $(function () {
+      drawRgraph('bar', 'm_by_screen', [<?php echo $g_data['data'] ?>], [<?php echo $g_data['labels'] ?>], [<?php echo $g_data['tooltips'] ?>]);
+    });
+  </script>
+
+<?php
+}
+
+if (count($questions['bloom']) > 1) {
+?>
+  <h2>Questions by Bloom's Taxonomy</h2>
+<?php
+  $g_data = setup_graph_data($questions['bloom'], 'questions');
+?>
+  <canvas id="q_by_bloom" width="800" height=350">[No canvas support]</canvas>
+
+  <script type="text/javascript">
+    $(function () {
+      drawRgraph('bar', 'q_by_bloom', [<?php echo $g_data['data'] ?>], [<?php echo $g_data['labels'] ?>], [<?php echo $g_data['tooltips'] ?>]);
+    });
+  </script>
+
+<?php
+}
+
+if (count($questions['bloom_marks']) > 1) {
+?>
+  <h2>Marks by Bloom's Taxonomy</h2>
+<?php
+  $g_data = setup_graph_data($questions['bloom_marks'], 'questions');
+?>
+  <canvas id="m_by_bloom" width="800" height=350">[No canvas support]</canvas>
+
+  <script type="text/javascript">
+    $(function () {
+      drawRgraph('bar', 'm_by_bloom', [<?php echo $g_data['data'] ?>], [<?php echo $g_data['labels'] ?>], [<?php echo $g_data['tooltips'] ?>]);
+    });
+  </script>
+
+<?php
+}
+?>
     <h2>Marks by learning outcome</h2>
 
     <p>Graphs provided by <a href="http://www.rgraph.net/">RGraph</a></p>
