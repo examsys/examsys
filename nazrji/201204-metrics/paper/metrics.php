@@ -138,13 +138,15 @@ if ($paper->get_duration() != '') {
           <dd>&nbsp;</dd>
         </dl>
 <?php
-if (count($questions['type']) > 0) {
-  ?>
+$type_count = count($questions['type']);
+if ($type_count > 0) {
+  $width = ($type_count >= 9) ? 900 : 60 + ($type_count * 80);
+?>
   <h2>Questions by type</h2>
   <?php
   $g_data = setup_graph_data($questions['type'], 'questions');
   ?>
-  <canvas id="q_by_type" width="800" height="450">[No canvas support]</canvas>
+  <canvas id="q_by_type" width="<?php echo $width ?>" height="450">[No canvas support]</canvas>
 
   <script type="text/javascript">
     $(function () {
@@ -155,13 +157,15 @@ if (count($questions['type']) > 0) {
   <?php
 }
 
+$type_count = count($questions['type_marks']);
 if (count($questions['type_marks']) > 0) {
+  $width = ($type_count >= 9) ? 900 : 60 + ($type_count * 80);
 ?>
   <h2>Marks by question type</h2>
 <?php
   $g_data = setup_graph_data($questions['type_marks'], 'marks');
 ?>
-  <canvas id="m_by_type" width="800" height="450">[No canvas support]</canvas>
+  <canvas id="m_by_type" width="<?php echo $width ?>" height="450">[No canvas support]</canvas>
 
   <script type="text/javascript">
     $(function () {
@@ -172,13 +176,15 @@ if (count($questions['type_marks']) > 0) {
 <?php
 }
 
-if (count($questions['screen']) > 0) {
-  ?>
+$screen_count = count($questions['screen']);
+if ($screen_count > 0) {
+  $width = ($screen_count >= 9) ? 900 : 60 + ($screen_count * 80);
+?>
   <h2>Questions by screen</h2>
   <?php
   $g_data = setup_graph_data($questions['screen'], 'questions', 'Screen');
   ?>
-  <canvas id="q_by_screen" width="800" height="350">[No canvas support]</canvas>
+  <canvas id="q_by_screen" width="<?php echo $width ?>" height="350">[No canvas support]</canvas>
 
   <script type="text/javascript">
     $(function () {
@@ -189,13 +195,15 @@ if (count($questions['screen']) > 0) {
   <?php
 }
 
-if (count($questions['screen_marks']) > 0) {
+$screen_count = count($questions['screen_marks']);
+if ($screen_count > 0) {
+  $width = ($screen_count >= 9) ? 900 : 60 + ($screen_count * 80);
 ?>
   <h2>Marks by screen</h2>
 <?php
   $g_data = setup_graph_data($questions['screen_marks'], 'marks', 'Screen');
 ?>
-  <canvas id="m_by_screen" width="800" height="350">[No canvas support]</canvas>
+  <canvas id="m_by_screen" width="<?php echo $width ?>" height="350">[No canvas support]</canvas>
 
   <script type="text/javascript">
     $(function () {
@@ -206,13 +214,15 @@ if (count($questions['screen_marks']) > 0) {
 <?php
 }
 
-if (count($questions['bloom']) > 1) {
+$bloom_count = count($questions['bloom']);
+if ($bloom_count > 0) {
+  $width = ($bloom_count >= 9) ? 900 : 60 + ($bloom_count * 80);
 ?>
   <h2>Questions by Bloom's Taxonomy</h2>
 <?php
   $g_data = setup_graph_data($questions['bloom'], 'questions');
 ?>
-  <canvas id="q_by_bloom" width="800" height=350">[No canvas support]</canvas>
+  <canvas id="q_by_bloom" width="<?php echo $width ?>" height=350">[No canvas support]</canvas>
 
   <script type="text/javascript">
     $(function () {
@@ -223,13 +233,15 @@ if (count($questions['bloom']) > 1) {
 <?php
 }
 
-if (count($questions['bloom_marks']) > 1) {
+$bloom_count = count($questions['bloom_marks']);
+if ($bloom_count > 0) {
+  $width = ($bloom_count >= 9) ? 900 : 60 + ($bloom_count * 80);
 ?>
   <h2>Marks by Bloom's Taxonomy</h2>
 <?php
   $g_data = setup_graph_data($questions['bloom_marks'], 'questions');
 ?>
-  <canvas id="m_by_bloom" width="800" height=350">[No canvas support]</canvas>
+  <canvas id="m_by_bloom" width="<?php echo $width ?>" height=350">[No canvas support]</canvas>
 
   <script type="text/javascript">
     $(function () {

@@ -12,7 +12,7 @@ function drawRgraph(type, target, data, labels, tooltips, angle) {
       graph = new RGraph.Bar(target, data);
       graph.Set('chart.background.grid', false);
       graph.Set('chart.colors', ['#1E3C7B']);
-      graph.Set('chart.gutter.left', 35);
+      graph.Set('chart.gutter.left', 55);
       graph.Set('chart.gutter.bottom', gutter);
       graph.Set('chart.labels', labels);
       graph.Set('chart.hmargin', 10);
