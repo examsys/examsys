@@ -397,7 +397,7 @@ require '../lang/' . $language. '/include/timezones.inc';
     $result = $mysqli->prepare("SELECT DISTINCT moduleid, fullname FROM modules, schools ORDER BY moduleID");
   } elseif (strpos($userroles,'Admin') !== false) {
     $schoolIDs = implode(',', SchoolUtils::getAdminSchools($userID, $mysqli));
-    $result = $mysqli->prepare("SELECT DISTINCT moduleid, fullname FROM modules WHERE schoolid IN ($schoolIDs) ORDER BY moduleID");
+    $result = $mysqli->prepare("SELECT DISTINCT moduleid, fullname FROM modules WHERE schoolid IN ($schoolIDs) OR moduleid IN ($team_sql) ORDER BY moduleID");
   } else {
     $result = $mysqli->prepare("SELECT DISTINCT moduleid, fullname FROM modules WHERE moduleid IN ($team_sql) ORDER BY moduleID");
   }

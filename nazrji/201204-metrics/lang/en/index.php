@@ -30,4 +30,6 @@ $string['screens'] = 'screens';
 $string['Bidirectional'] = 'Bidirectional navigation';
 $string['Unidirectional'] = 'Unidirectional navigation';
 $string['requirespassword'] = 'This paper requires a password.';
+$string['mins'] = 'mins';
+$string['forthcomingpapers'] = 'Forthcoming Papers';
 ?>

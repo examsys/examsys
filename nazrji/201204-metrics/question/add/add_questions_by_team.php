@@ -70,6 +70,7 @@
     $direction = 'asc';
   }
   $team = $_GET['team'];
+  $team_sql = "%" . $_GET['team'] . "%";
 
   echo "<form name=\"theform\" method=\"post\" action=\"do_add_questions.php?team=$team&display_pos=$display_pos&module=" . $_GET['module'] . "&folder=" . $_GET['folder'] . "&scrOfY=" . $_GET['scrOfY'] . "\">\n";
   ?>
@@ -96,8 +97,8 @@
   if ($order == 'leadin') $order = 'leadin_plain';
   
   
-  $stmt = $mysqli->prepare("SELECT q_id, q_type, leadin, q_media, q_media_width, q_media_height, DATE_FORMAT(last_edited,'$cfg_short_date') AS display_date, locked FROM questions WHERE q_group=? AND deleted IS NULL ORDER BY $order $direction");
-  $stmt->bind_param('s', $_GET['team']);
+  $stmt = $mysqli->prepare("SELECT q_id, q_type, leadin, q_media, q_media_width, q_media_height, DATE_FORMAT(last_edited,'$cfg_short_date') AS display_date, locked FROM questions WHERE q_group LIKE ? AND deleted IS NULL ORDER BY $order $direction");
+  $stmt->bind_param('s', $team_sql);
   $stmt->execute();
   $stmt->store_result();
   $stmt->bind_result($q_id, $q_type, $leadin, $q_media, $q_media_width, $q_media_height, $display_date, $locked);

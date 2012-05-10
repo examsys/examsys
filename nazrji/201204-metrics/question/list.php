@@ -115,7 +115,7 @@
 
   if ($team != '') {
     if (in_array($team, $teams)) {
-      $team_sql = 'q_group="' . $team . '"';
+      $team_sql = 'q_group LIKE "%' . $team . '%"';
     } else {
       echo "<tr><td colspan=\"4\">" . $string['notinteam'] . "</td></tr>\n</body>\n</html>\n";
       exit;

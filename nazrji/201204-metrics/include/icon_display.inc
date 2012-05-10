@@ -105,7 +105,7 @@ function displayPaperIcon($paper_ownerID, $property_id, $paper_type, $screens, $
   }
   if ($paper_ownerID == $userID or strpos($userroles,'Admin') !== false or strpos($userroles,'SysAdmin') !== false or ($icon_type != '2' and $icon_type != '4')) {
     echo "<a class=\"blacklink\" href=\"../paper/details.php?paperID=" . $property_id . "&folder=$folder&module=$module\">" . displayIcon($icon_type, $title, $initials, $surname, '', $locked, $retired) . "</a></td>\n";
-    echo "</td><td><a href=\"../paper/details.php?paperID=" . $property_id . "&folder=$folder&module=$module\" class=\"$title_class\">" . $paper_title . '</a><br />';
+    echo "<td><a href=\"../paper/details.php?paperID=" . $property_id . "&folder=$folder&module=$module\" class=\"$title_class\">" . $paper_title . '</a><br />';
   } else {
     $access = false;
     $paper_modules = explode(',', $moduleID);
@@ -115,12 +115,12 @@ function displayPaperIcon($paper_ownerID, $property_id, $paper_type, $screens, $
   
     if ($access == true) {
       echo "<a class=\"blacklink\" href=\"../paper/details.php?paperID=" . $property_id . "&folder=$folder&module=$module\">" . displayIcon(2, $title, $initials, $surname, '', $locked, $retired) . "</a></td>\n";
-      echo "</td><td><a href=\"../paper/details.php?paperID=" . $property_id . "&folder=$folder&module=$module\" class=\"blacklink\">" . $paper_title . '</a><br />';
+      echo "<td><a href=\"../paper/details.php?paperID=" . $property_id . "&folder=$folder&module=$module\" class=\"blacklink\">" . $paper_title . '</a><br />';
     } else {
       if ($icon_type == '2') {
-        echo "<img src=\"../artwork/noentry_question_icon_48.png\" width=\"48\" height=\"48\" alt=\"Type: Summative Exam (Restricted Access)&#013;Author: " . $title . ' ' . $initials . ' ' . $surname . "\" border=\"0\" /></td>\n";
+        echo "<img src=\"../artwork/noentry_question_icon_48.png\" width=\"48\" height=\"48\" alt=\"Type: Summative Exam (Restricted Access)&#013;Author: " . $title . ' ' . $initials . ' ' . $surname . "\" border=\"0\" />\n";
       } else {
-        echo "<img src=\"../artwork/noentry_osce.png\" width=\"48\" height=\"48\" alt=\"Type: OSCE Station (Restricted Access)&#013;Author: " . $title . ' ' . $initials . ' ' . $surname . "\" border=\"0\" /></td>\n";
+        echo "<img src=\"../artwork/noentry_osce.png\" width=\"48\" height=\"48\" alt=\"Type: OSCE Station (Restricted Access)&#013;Author: " . $title . ' ' . $initials . ' ' . $surname . "\" border=\"0\" />\n";
       }
       echo '</td><td>' . $paper_title . '<br />';
     }
@@ -149,6 +149,6 @@ function displayPaperIcon($paper_ownerID, $property_id, $paper_type, $screens, $
   } else {
     echo ' to ' . $display_end_date;
   }
-  echo "</td></tr></table></div>\n";
+  echo "</span></td></tr></table></div>\n";
 }
 ?>

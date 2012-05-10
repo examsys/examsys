@@ -212,7 +212,7 @@ if ($folder != '') {
 } elseif ($_GET['module'] != '') {
   echo $_GET['module'] . ': <span style="font-weight:normal">' . $module_fullname . '</span>';
 }
-echo '</th>';
+echo '</div></th>';
 echo "<th style=\"text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><input class=\"chk\" type=\"checkbox\" name=\"showretired\" id=\"showretired\" value=\"on\" onclick=\"refreshPage();\"";
 if (isset($state['showretired']) and $state['showretired'] == 'true') echo ' checked';
 echo " /> " . $string['showretired'] . "</th></tr>\n";

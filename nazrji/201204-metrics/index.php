@@ -29,7 +29,7 @@
 require './include/staff_student_auth.inc';
 require_once './classes/networkutils.class.php';
 
-  // Redirect External Exminers and Invigilators to their own areas.
+// Redirect External Exminers and Invigilators to their own areas.
   if ($userroles == 'External Examiner') {
     header("location: reviews/");
   } elseif ($userroles == 'Invigilator') {
@@ -109,7 +109,52 @@ require_once './classes/networkutils.class.php';
   if ($paper_no == 1 and $paper_display[0]['password'] == '') {
     header("location: user_index.php?id=" . $paper_display[0]['crypt_name']);
   } elseif ($paper_no == 0) {
-    echo "<html>\n<head>\n<meta http-equiv=\"content-type\" content=\"text/html;charset={$cfg_page_charset}\" />\n<title>{$string['exams']}</title>\n<style type=\"text/css\">\nbody {font-size:90%; font-family:Arial,sans-serif; background-color:#FCFCFC; color:#575757}\nh1 {font-weight:normal; color:#4465A2; font-size:140%}\n</style>\n</head>\n<body>\n";
+    echo "<html>\n<head>\n<meta http-equiv=\"content-type\" content=\"text/html;charset={$cfg_page_charset}\" />\n<title>{$string['exams']}</title>\n";
+?>
+<style type="text/css">
+  body {font-size:90%; font-family:Arial,sans-serif; background-color:#FCFCFC; color:#575757}
+  h1 {font-weight:normal; color:#4465A2; font-size:140%}
+  #summ_test {
+    margin: 36px 0 0 58px;
+  }
+
+  #summ_test  a {text-decoration:none}
+
+  .file {float:left; width:375px; height:74px; padding-left:12px}
+  a.blacklink:link {color:#000000}
+  a.blacklink:visited {color:#000000}
+  a.blacklink:hover {color:#000000}
+
+  #summ_test, .file td, .mod-header td {
+    font-size: 75%;
+  }
+
+  #summ_test h2 {
+    color: #4465A2
+  }
+
+  table.mod-header {
+    border: 0;
+    padding: 6px 0 2px 0;
+    width: 100%;
+    color: #1E3287;
+    margin-bottom: 8px;
+  }
+
+  table.map-session td {
+    white-space: nowrap;
+  }
+
+  hr.head-line {
+    border: 0;
+    height: 1px;
+    color: #E5E5E5;
+    background-color: #E5E5E5;
+    width: 100%
+  }
+</style>
+<?php
+    echo "</head>\n<body>\n";
     echo "<div style=\"position:absolute; left:10px; top:10px\"><img src=\"/artwork/orange_alert_48.png\" width=\"48\" height=\"48\" /></div>\n";
     echo "<h1 style=\"margin-left:60px\">" . $string['cannotfindexams'] . "</h1>\n"; 
 
@@ -172,7 +217,85 @@ require_once './classes/networkutils.class.php';
         echo $string[strtolower($ur)] . ',';
       }
     }
-    echo "</li>\n</ul>\n<p style=\"margin-left:60px\">" . $string['try'] . ":</p>\n<ul style=\"margin-left:80px\">\n<li>" . $string['f5'] . "</li>\n<li>" . $string['RaiseYourHand '] . "</li>\n</ul>\n</body>\n</html>\n";
+    echo "</li>\n</ul>\n<p style=\"margin-left:60px\">" . $string['try'] . ":</p>\n<ul style=\"margin-left:80px\">\n<li>" . $string['f5'] . "</li>\n<li>" . $string['RaiseYourHand '] . "</li>\n</ul>\n";
+
+    // Show staff a list of summative papers in the next 6 weeks with a link to test & preview
+    if (strpos($userroles, 'Staff') !== false) {
+      if (!isset($teams)){
+        $teams = getUserTeams($userID, $mysqli);
+      }
+      $papers = array();
+
+      foreach ($teams as $team) {
+        $like1 = "%,$team,%";
+        $like2 = "$team,%";
+        $like3 = "%,$team";
+        $paper_q = $mysqli->prepare("SELECT DISTINCT property_id, MAX(screen) AS screens, paper_title, DATE_FORMAT(start_date,'$cfg_long_date_time') AS display_start_date, exam_duration, crypt_name, fullscreen FROM properties LEFT JOIN papers ON properties.property_id=papers.paper WHERE paper_type='2' AND start_date > NOW() AND start_date < DATE_ADD(NOW(), INTERVAL 42 DAY) AND (moduleID=? OR moduleID LIKE ? OR moduleID LIKE ? OR moduleID LIKE ?) AND deleted IS NULL AND retired IS NULL GROUP BY paper_title ORDER BY paper_type, paper_title");
+        $paper_q->bind_param('ssss', $team, $like1, $like2, $like3);
+        $paper_q->execute();
+        $paper_q->store_result();
+        $paper_q->bind_result($property_id, $screens, $paper_title, $start_date, $exam_duration, $crypt_name, $fullscreen);
+        while($paper_q->fetch()) {
+          $papers[$team][] = array('id' => $property_id, 'screens' => $screens, 'title' => $paper_title, 'start_date' => $start_date, 'duration' => $exam_duration, 'crypt_name' => $crypt_name, 'fullscreen' => $fullscreen);
+        }
+        $paper_q-> close();
+      }
+
+      if (count($papers) > 0) {
+?>
+        <div id="summ_test">
+          <script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
+          <script language="JavaScript">
+            function startPaper(e) {
+              e.preventDefault();
+
+              var fullsc = $(this).attr('rel');
+              var url = $(this).attr('href');
+
+              if (fullsc == 0) {
+                window.open(url,"paper","width="+(screen.width-80)+",height="+(screen.height-80)+",left=20,top=10,scrollbars=yes,toolbar=no,location=no,directories=no,status=yes,menubar=no,resizable");
+              } else {
+                window.open(url,"paper","fullscreen=yes,left=20,top=10,scrollbars=yes,toolbar=no,location=no,directories=no,status=yes,menubar=no,resizable");
+              }
+            }
+
+            $(function () {
+              $('.blacklink').click(startPaper);
+            });
+          </script>
+          
+          <h2><?php echo $string['forthcomingpapers'] ?></h2>
+<?php
+        $team = '';
+        foreach ($papers as $mod_id => $paper_list) {
+          if ($mod_id != $team) {
+            $team = $mod_id;
+            echo "<table class=\"mod-header\"><tr><td>$mod_id</td><td style=\"width:98%\"><hr class=\"head-line\" /></td></tr></table>\n";
+          }
+          foreach ($paper_list as $paper) {
+            $screen_plural = ($paper['screens'] > 1) ? 'screens' : 'screen';
+  ?>
+            <div class="file">
+              <table cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="width:60px" align="center"><a class="blacklink" href="paper/start.php?id=<?php echo $paper['crypt_name'] ?>&mode=preview" rel="<?php echo $paper['fullscreen'] ?>"><img src="artwork/summative.png" width="48" height="48" alt="Type: Summative Exam" border="0" /></a></td>
+                  <td>
+                    <a href="paper/start.php?id=<?php echo $paper['crypt_name'] ?>&mode=preview" class="blacklink" rel="<?php echo $paper['fullscreen'] ?>"><?php echo $paper['title'] ?></a><br />
+                    <span style="color:#808080"><?php echo $paper['screens'] . ' ' . ucfirst($string[$screen_plural]) . '<br />' . $paper['start_date'] . ', ' . $paper['duration'] . $string['mins'] ?></span>
+                  </td>
+                </tr>
+              </table>
+            </div>
+<?php
+          }
+        }
+?>
+        </div>
+<?php
+      }
+    }
+
+    echo "</body>\n</html>\n";
     exit;
   } else {
 ?>

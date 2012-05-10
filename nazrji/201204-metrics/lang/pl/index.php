@@ -30,4 +30,6 @@ $string['screens'] = 'ekrany';
 $string['Bidirectional'] = 'Nawigacja dwukierunkowa';
 $string['Unidirectional'] = 'Nawigacja jednokierunkowa';
 $string['requirespassword'] = 'Ten arkusz wymaga podania hasła.';
+$string['mins'] = 'min.';
+$string['forthcomingpapers'] = 'Forthcoming Papers'; // Niko
 ?>

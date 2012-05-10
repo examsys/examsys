@@ -2674,8 +2674,14 @@ if (!isset($_POST['update'])) {
   if (file_put_contents($cfg_web_root . 'config/config.inc.php', $cfg_new) === false) {
     echo "<li class=\"error\">" . $string['couldnotwrite'] . "</li>";
   }
- 
-  
+
+
+  // Staff user was missing DELETE privileges on properties in the install script
+  $sql = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".properties TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
+  $mysqli->query($sql);
+  echo "<li>GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".properties TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'</li>\n";
+
+
   // End ------------------------------------------------------------------
   echo "</ol>\n";
 
