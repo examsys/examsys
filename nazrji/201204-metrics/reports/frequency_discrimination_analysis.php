@@ -721,9 +721,9 @@
           //if (!isset($tmp_std_array[$std_part])) $tmp_std_array[$std_part] = '';
           
           if (isset($excluded[$q_id]) and substr($excluded[$q_id],0,1) == '1') {
-            echo "<tr><td colspan=\"4\">" . excludeButton($ex_no, $q_id, '11', 2, 2) . "</td></tr>\n";
+            echo "<tr><td colspan=\"4\">" . excludeButton($ex_no, $q_id, '1', 2, 1) . "</td></tr>\n";
           } else {
-            echo "<tr><td colspan=\"4\">" . excludeButton($ex_no, $q_id, '00', 2, 2) . "</td></tr>\n";
+            echo "<tr><td colspan=\"4\">" . excludeButton($ex_no, $q_id, '0', 2, 1) . "</td></tr>\n";
           }
 
           echo "<tr><td>t=" . number_format(($freq_log[$q_id][1]['t']/$user_total)*100,0) . "%</td><td>u=" . number_format(($top_log[$q_id][1]['t']/$candidate_no)*100,0) . "%</td><td>l=" . number_format(($bottom_log[$q_id][1]['t']/$candidate_no)*100,0) . "%</td><td id=\"q_" . $ex_no . "_1\"";

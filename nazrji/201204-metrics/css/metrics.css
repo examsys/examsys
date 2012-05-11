@@ -109,3 +109,9 @@ dt {
 dd {
   float: left;
 }
+
+dd.beta {
+  display: block;
+  clear: left;
+  margin-left: 120px!important;
+}

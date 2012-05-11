@@ -129,7 +129,8 @@ if ($paper->get_duration() != '') {
 ?>
           </dd>
           <dt>Marking</dt>
-          <dd>Pass: <?php echo $paper->get_pass_mark() ?>%, distinction: <?php echo $paper->get_distinction_mark() ?>%</dd>
+          <dd>Total marks: <?php echo $questions['marks_total'] ?></dd>
+          <dd class="beta">Pass: <?php echo $paper->get_pass_mark() ?>%, distinction: <?php echo $paper->get_distinction_mark() ?>%</dd>
           <dt>Bidirectional</dt>
           <dd> <?php echo $paper->get_bidirectional() ?></dd>
           <dt>No. Questions</dt>

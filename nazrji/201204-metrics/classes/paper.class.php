@@ -258,13 +258,14 @@ QUERY;
   }
 
   public function get_question_breakdown() {
-    $questions = array('total' => 0, 'screen' => array(), 'type' => array(), 'bloom' => array());
+    $questions = array('total' => 0, 'marks_total' => 0, 'screen' => array(), 'type' => array(), 'bloom' => array());
 
     $q_query = <<< QUERY
-SELECT p.screen, q.q_type, q.bloom, count(o.id_num) as num_opts, max(o.option_text) as option_text, max(o.correct) as correct, group_concat(o.correct) as correct_all, max(o.marks_correct) as marks_correct, q.score_method
+SELECT q.q_id, p.screen, q.q_type, q.bloom, count(o.id_num) as num_opts, max(o.option_text) as option_text, max(o.correct) as correct, group_concat(o.correct) as correct_all, max(o.marks_correct) as marks_correct, q.score_method, qe.parts AS exclusions
 FROM papers p INNER JOIN questions q ON p.question=q.q_id
   LEFT JOIN options o ON q.q_id=o.o_id
-WHERE p.paper = ?
+  LEFT JOIN question_exclude qe ON qe.q_id=q.q_id AND qe.q_paper=p.paper
+WHERE p.paper=?
 GROUP BY o.o_id
 ORDER BY p.screen;
 QUERY;
@@ -272,7 +273,7 @@ QUERY;
     $result->bind_param('i', $this->id);
     $result->execute();
     $result->store_result();
-    $result->bind_result($screen, $qtype, $bloom, $num_opts, $option_text, $correct, $correct_all, $marks_correct, $score_method);
+    $result->bind_result($q_id, $screen, $qtype, $bloom, $num_opts, $option_text, $correct, $correct_all, $marks_correct, $score_method, $exclusions);
     while ($result->fetch()) {
       $questions['total']++;
       $questions['marks'][$screen] = (isset($questions['marks'])) ? $questions['marks'] : 0;
@@ -284,36 +285,43 @@ QUERY;
       $questions['type'][$friendlytype] = (isset($questions['type'][$friendlytype])) ? $questions['type'][$friendlytype] + 1 : 1;
 
       $marks = 0;
+      $excluded_parts = substr_count($exclusions, '1');
       if ($score_method == 'Mark per Question') {
-        $marks= $marks_correct;
+        if ($excluded_parts == 0) {
+          $marks= $marks_correct;
+        }
       } else {
         $add_mark = true;
         switch ($qtype) {
           case 'blank':
-            $marks = substr_count(strtolower($option_text), '[/blank]') * $marks_correct;
+            $marks = (substr_count(strtolower($option_text), '[/blank]') - $excluded_parts) * $marks_correct;
             break;
           case 'calculation':
           case 'flash':
           case 'mcq':
           case 'sct':
           case 'textbox':
-            $marks = $marks_correct;
+            if ($excluded_parts == 0) {
+              $marks = $marks_correct;
+            }
             break;
           case 'dichotomous':
           case 'true_false':
-            $marks = ($num_opts * $marks_correct);
+            $marks = ($num_opts - $excluded_parts) * $marks_correct;
             break;
           case 'hotspot':
-            $marks = (substr_count(strtolower($correct), '|') + 1) * $marks_correct;
+            $marks = (substr_count(strtolower($correct), '|') + 1 - $excluded_parts) * $marks_correct;
             break;
           case 'labelling':
+            $labels = 0;
             $tmp_first_split = explode(';', $correct);
             $tmp_second_split = explode('$', $tmp_first_split[11]);
             for ($label_no = 4; $label_no <= count($tmp_second_split); $label_no += 4) {
               if (substr($tmp_second_split[$label_no],0,1) != '|' and $tmp_second_split[$label_no-2] > 219) {
-                $marks += $marks_correct;
+                $labels++;
               }
             }
+            $marks = ($labels - $excluded_parts) * $marks_correct;
             break;
           case 'likert':
           case 'info':
@@ -324,22 +332,24 @@ QUERY;
           case 'extmatch':
           case 'matrix':
             $matches = array();
-            $marks = preg_match_all('/\d{1,2}($\d{1,2})*/', $correct, $matches) * $marks_correct;
+            $marks = (preg_match_all('/\d{1,2}($\d{1,2})*/', $correct, $matches) - $excluded_parts) * $marks_correct;
             break;
           case 'mrq':
-            $marks = substr_count(strtolower($correct_all), 'y') * $marks_correct;
+            $marks = (substr_count(strtolower($correct_all), 'y') - $excluded_parts) * $marks_correct;
             break;
           case 'rank':
-            switch ($score_method) {
-              case 'Mark per Option':
-                $marks = $num_opts * $marks_correct;
-                break;
-              case 'Allow partial Marks':
-                $marks = preg_match_all('/\d{1,2}/', $correct_all, $matches) * $marks_correct;
-                break;
-              case 'Bonus Mark':
-                $marks = preg_match_all('/\d{1,2}/', $correct_all, $matches) * $marks_correct + $marks_correct;
-                break;
+            if ($excluded_parts == 0) {
+              switch ($score_method) {
+                case 'Mark per Option':
+                  $marks = $num_opts * $marks_correct;
+                  break;
+                case 'Allow partial Marks':
+                  $marks = preg_match_all('/[1-9]\d{0,1}/', $correct_all, $matches) * $marks_correct;
+                  break;
+                case 'Bonus Mark':
+                  $marks = preg_match_all('/[1-9]\d{0,1}/', $correct_all, $matches) * $marks_correct + $marks_correct;
+                  break;
+              }
             }
             break;
         }
@@ -347,10 +357,11 @@ QUERY;
 
       $questions['screen_marks'][$screen] += $marks;
       if ($add_mark) {
+        $questions['marks_total'] += $marks;
         $questions['type_marks'][$friendlytype] = (isset($questions['type_marks'][$friendlytype])) ? $questions['type_marks'][$friendlytype] : 0;
         $questions['type_marks'][$friendlytype] += $marks;
       }
-      
+
       if ($bloom != '') {
         $questions['bloom'][$bloom] = (isset($questions['bloom'][$bloom])) ? $questions['bloom'][$bloom] + 1 : 1;
         $questions['bloom_marks'][$bloom] = (isset($questions['bloom_marks'][$bloom])) ? $questions['bloom_marks'][$bloom] + $marks : $marks;
