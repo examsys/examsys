@@ -935,7 +935,7 @@ require \$root . '/include/path_functions.inc.php';
 
 \$rogo_version = '{rogo_version}';
 \$cfg_web_root = get_root_path() . '/';
-\$cfg_root_path = rtrim('/' . str_replace(\$_SERVER['DOCUMENT_ROOT'], '', \$cfg_web_root), '/');
+\$cfg_root_path = rtrim('/' . trim(str_replace(\$_SERVER['DOCUMENT_ROOT'], '', \$cfg_web_root), '/'), '/');
 \$protocol = 'https://';
 \$cfg_page_charset 	   = '{cfg_page_charset}';
 \$cfg_company = '{cfg_company}';

@@ -34,10 +34,14 @@ $queryInfo = array();
 Class debug_mysqli extends mysqli {
   var $queryCount = 1;
 	var $closed = false;
+  var $dbusername;
+  var $dbname;
   function __construct($db_host , $db_username, $db_passwd, $db_database) {
 	  parent::__construct($db_host , $db_username, $db_passwd, $db_database);
 	  $this->query('SET profiling_history_size=200',false);
     $this->query('SET profiling=1',false);
+    $this->dbusername=$db_username;
+    $this->dbname=$db_database;
 	}
 	
 	function cacheSqlProfile() {
@@ -92,7 +96,14 @@ Class debug_mysqli extends mysqli {
 	  }
 	  return $stmt;
 	}
-	
+
+  function change_user( $user , $password , $database )
+  {
+    $this->dbusername=$user;
+    $this->dbname=$database;
+    return parent::change_user($user,$password,$database);
+  }
+
 	function query($sql,$log = true) {
 	  global $queryInfo;
 	  if ($log) {

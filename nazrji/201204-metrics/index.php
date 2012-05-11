@@ -155,11 +155,11 @@ require_once './classes/networkutils.class.php';
 </style>
 <?php
     echo "</head>\n<body>\n";
-    echo "<div style=\"position:absolute; left:10px; top:10px\"><img src=\"/artwork/orange_alert_48.png\" width=\"48\" height=\"48\" /></div>\n";
+    echo "<div style=\"position:absolute; left:10px; top:10px\"><img src=\"{$cfg_root_path}/artwork/orange_alert_48.png\" width=\"48\" height=\"48\" /></div>\n";
     echo "<h1 style=\"margin-left:60px\">" . $string['cannotfindexams'] . "</h1>\n"; 
 
     if (strpos($userroles,'Staff') !== false) {
-      echo "<p style=\"margin-left:60px; color:#C00000\">" . $string['note1'] . " <img src=\"/artwork/small_link.png\" width=\"12\" height=\"12\" /> <a href=\"staff/index.php\" style=\"color:blue\"><strong>" . $string['staffmangscreens'] . "</strong></a>?</p>\n";
+      echo "<p style=\"margin-left:60px; color:#C00000\">" . $string['note1'] . " <img src=\"{$cfg_root_path}/artwork/small_link.png\" width=\"12\" height=\"12\" /> <a href=\"staff/index.php\" style=\"color:blue\"><strong>" . $string['staffmangscreens'] . "</strong></a>?</p>\n";
     }
 
     echo "<hr size=\"1\" align=\"left\" width=\"500\" style=\"margin-left:60px; color:#C0C0C0; background-color:#C0C0C0\" />\n<p style=\"margin-left:60px\">" . $string['mostLikely'] . "</p>\n<ul style=\"margin-left:80px\">\n";
