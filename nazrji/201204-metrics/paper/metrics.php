@@ -214,7 +214,7 @@ if ($screen_count > 0) {
 <?php
 }
 
-$bloom_count = count($questions['bloom']);
+$bloom_count = isset($questions['bloom']) ? count($questions['bloom']) : 0;
 if ($bloom_count > 0) {
   $width = ($bloom_count >= 9) ? 900 : 60 + ($bloom_count * 80);
 ?>
@@ -233,7 +233,7 @@ if ($bloom_count > 0) {
 <?php
 }
 
-$bloom_count = count($questions['bloom_marks']);
+$bloom_count = isset($questions['bloom_marks']) ? count($questions['bloom_marks']) : 0;
 if ($bloom_count > 0) {
   $width = ($bloom_count >= 9) ? 900 : 60 + ($bloom_count * 80);
 ?>

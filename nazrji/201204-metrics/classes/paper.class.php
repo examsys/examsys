@@ -65,7 +65,9 @@ class Paper {
     'blank' => 'Fill-in-the-Blank',
     'flash' => 'Flash Interface',
     'hotspot' => 'Image Hotspot',
+    'info' => 'Information Block',
     'labelling' => 'Labelling',
+    'likert' => 'Likert Scale',
     'matrix' => 'Matrix',
     'mcq' => 'Multiple Choice',
     'mrq' => 'Multiple Response',
@@ -280,12 +282,12 @@ QUERY;
 
       $friendlytype = $this->q_labels[$qtype];
       $questions['type'][$friendlytype] = (isset($questions['type'][$friendlytype])) ? $questions['type'][$friendlytype] + 1 : 1;
-      $questions['type_marks'][$friendlytype] = (isset($questions['type_marks'][$friendlytype])) ? $questions['type_marks'][$friendlytype] : 0;
 
       $marks = 0;
       if ($score_method == 'Mark per Question') {
         $marks= $marks_correct;
       } else {
+        $add_mark = true;
         switch ($qtype) {
           case 'blank':
             $marks = substr_count(strtolower($option_text), '[/blank]') * $marks_correct;
@@ -317,6 +319,7 @@ QUERY;
           case 'info':
           case 'random':
           case 'keyword_based':
+            $add_mark = false;
             break;
           case 'extmatch':
           case 'matrix':
@@ -343,7 +346,11 @@ QUERY;
       }
 
       $questions['screen_marks'][$screen] += $marks;
-      $questions['type_marks'][$friendlytype] += $marks;
+      if ($add_mark) {
+        $questions['type_marks'][$friendlytype] = (isset($questions['type_marks'][$friendlytype])) ? $questions['type_marks'][$friendlytype] : 0;
+        $questions['type_marks'][$friendlytype] += $marks;
+      }
+      
       if ($bloom != '') {
         $questions['bloom'][$bloom] = (isset($questions['bloom'][$bloom])) ? $questions['bloom'][$bloom] + 1 : 1;
         $questions['bloom_marks'][$bloom] = (isset($questions['bloom_marks'][$bloom])) ? $questions['bloom_marks'][$bloom] + $marks : $marks;
