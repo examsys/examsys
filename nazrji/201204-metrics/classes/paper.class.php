@@ -49,6 +49,9 @@ class Paper {
   private $distinction_mark;
   private $owner_id;
   private $modules = array();
+  private $session;
+  private $internal_reviewers;
+  private $external_reviewers;
 
   private $owner_fullname = '';
   private $owner_username = '';
@@ -77,7 +80,7 @@ class Paper {
     'true_false' => 'True / False'
   );
 
-  protected $_fields = array('id', 'title', 'start_date', 'end_date', 'type', 'bidirectional', 'pass_mark', 'distinction_mark', 'owner_id', 'duration', 'deleted', 'module_raw');
+  protected $_fields = array('id', 'title', 'start_date', 'end_date', 'type', 'bidirectional', 'pass_mark', 'distinction_mark', 'owner_id', 'duration', 'deleted', 'module_raw', 'session', 'internal_reviewers', 'external_reviewers');
   protected $_data = array();
 
   function __construct($mysqli, $user_id, $lang_strings, $data = null) {
@@ -122,7 +125,7 @@ class Paper {
     $success = false;
 
     $p_query = <<< QUERY
-SELECT property_id, paper_title, start_date, end_date, paper_type, bidirectional, pass_mark, distinction_mark, paper_ownerID, exam_duration, deleted, moduleID
+SELECT property_id, paper_title, start_date, end_date, paper_type, bidirectional, pass_mark, distinction_mark, paper_ownerID, exam_duration, deleted, moduleID, calendar_year, internal_reviewers, externals
 FROM properties
 WHERE property_id = ?
 QUERY;
@@ -229,6 +232,20 @@ QUERY;
    */
   public function get_type() {
     return $this->type;
+  }
+
+  /**
+   * @return array
+   */
+  public function get_external_reviewers() {
+    return ($this->external_reviewers == '') ? array() : explode(',', $this->external_reviewers);
+  }
+
+  /**
+   * @return array
+   */
+  public function get_internal_reviewers() {
+    return ($this->internal_reviewers == '') ? array() : explode(',', $this->internal_reviewers);
   }
 
   /**
@@ -372,6 +389,50 @@ QUERY;
     return $questions;
   }
 
+  /**
+   * Check if the paper title contains a date. If so check that this matches the Session for the paper
+   * @return bool
+   */
+  public function title_matches_session() {
+    $year_in_title = false;
+    $tmp_match = '';
+    $title = $this->get_title();
+    if (preg_match( '/\d\d\d\d[\/-]\d\d\d\d/', $title, $matches) == 1) {
+      $year_in_title = true;
+      $tmp_match = substr($matches[0],0,4) . '/' . substr($matches[0],-2);
+    } elseif (preg_match( '/\d\d\d\d[\/-]\d\d/' , $title , $matches) == 1) {
+      $year_in_title = true;
+      $tmp_match = substr($matches[0],0,4) . '/' . substr($matches[0],-2);
+    } elseif (preg_match( '/\d\d[\/-]\d\d/' , $title , $matches) == 1) {
+      $year_in_title = true;
+      $tmp_match = '20' . substr($matches[0],0,2) . '/' . substr($matches[0],-2);
+    }
+
+    return !($year_in_title == true and $tmp_match != $this->session);
+  }
+
+  /**
+   * Get the number of completed reviews for the paper
+   * @param $type 'internal' or 'external'
+   * @return array containing two values 'complete' and 'total'
+   */
+  public function get_review_count($type) {
+    $reviewers = ($type == 'internal') ? $this->internal_reviewers : $this->external_reviewers;
+    $reviewer_count = substr_count($reviewers, ',') + 1;
+
+    $reviews_complete = 0;
+    if (count($reviewers) > 0) {
+      $result = $this->_mysqli->prepare("SELECT count(id), reviewer FROM review_comments WHERE q_paper=? AND review_type=? AND reviewer IN ({$reviewers}) GROUP BY reviewer, reviewed");
+      $result->bind_param('is', $_GET['paperID'], $type);
+      $result->execute();
+      $result->store_result();
+      $result->bind_result($review_records, $reviewer);
+      $reviews_complete = $result->num_rows;
+      $result->close();
+    }
+
+    return array('complete' => $reviews_complete, 'total' => $reviewer_count);
+  }
 
 
   private function set_friendly_type() {

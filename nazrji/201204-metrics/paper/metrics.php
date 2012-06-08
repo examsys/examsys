@@ -105,7 +105,7 @@ if ($paper_found !== true) {
   ?>
         </ol>
       </div>
-      <h1><?php echo $module . '  &mdash; ' . $string['metrics'] ?></h1>
+      <h1><?php echo $paper->get_title() . '  &mdash; ' . $string['metrics'] ?></h1>
 </div>
 
 <?php
@@ -123,7 +123,8 @@ $owner = $paper->get_owner_details();
           <dd>
             <?php echo $paper->get_start_date('d F Y,  H:i') ?> to <?php echo $paper->get_end_date('d F Y,  H:i') ?>
 <?php
-if ($paper->get_duration() != '') {
+$duration = $paper->get_duration();
+if ($duration != '') {
   echo ', duration ' . $paper->get_duration() . ' minutes';
 }
 ?>
@@ -139,7 +140,53 @@ if ($paper->get_duration() != '') {
           <dd>&nbsp;</dd>
         </dl>
 <?php
-$type_count = count($questions['type']);
+// TODO: use lang string here
+if ($paper->get_type() == 'Summative Exam') {
+?>
+        <h2>Summative exam checks</h2>
+
+        <ul class="checklist">
+<?php
+  if (!$paper->title_matches_session()) {
+    ?>
+          <li class="fail">Date in title does not match assigned session</li>
+<?php
+  }
+?>
+<?php
+
+  if ($duration == '' or $duration == 0) {
+?>
+    <li class="fail">No duration set</li>
+<?php
+  }
+
+  $internal = $paper->get_review_count('internal');
+  $external = $paper->get_review_count('external');
+  if ($internal['total'] == 0) {
+?>
+    <li class="fail">No internal reviewers set</li>
+<?php
+  } else {
+    $int_class = ($internal['complete'] < $internal['total']) ? 'fail' : 'pass';
+  }
+  echo '<li class="' . $int_class . '">' . $internal['complete'] . ' of ' . $internal['total'] . ' internal peer reviews complete</li>';
+
+  if ($external['total'] == 0) {
+?>
+<li class="fail">No internal reviewers set</li>
+<?php
+  } else {
+    $ext_class = ($external['complete'] < $external['total']) ? 'fail' : 'pass';
+  }
+  echo '<li class="' . $ext_class . '">' . $external['complete'] . ' of ' . $external['total'] . ' external reviews complete</li>';
+?>
+  </ul>
+<?php
+}
+
+
+        $type_count = count($questions['type']);
 if ($type_count > 0) {
   $width = ($type_count >= 9) ? 900 : 60 + ($type_count * 80);
 ?>

@@ -115,3 +115,22 @@ dd.beta {
   clear: left;
   margin-left: 120px!important;
 }
+
+.checklist {
+  list-style: none;
+}
+
+#content .checklist li {
+  height: 24px;
+  padding: 2px 0 2px 30px;
+}
+
+#content .checklist .fail {
+  background: transparent url(../artwork/cross_24.png) no-repeat center left;
+}
+
+
+#content .checklist .pass {
+  background: transparent url(../artwork/tick_24.png) no-repeat center left;
+}
+
