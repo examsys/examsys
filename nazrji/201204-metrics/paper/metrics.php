@@ -142,7 +142,18 @@ if ($duration != '') {
 <?php
 // TODO: use lang string here
 if ($paper->get_type() == 'Summative Exam') {
-?>
+  // Get checklist for the module
+  $checklist = array();
+  if ($module != '') {
+    $stmt = $mysqli->prepare("SELECT checklist FROM modules WHERE moduleid LIKE ?");
+    $stmt->bind_param('s', $module);
+    $stmt->execute();
+    $stmt->bind_result($tmp_checklist);
+    $stmt->fetch();
+    $stmt->close();
+    $checklist = explode(',', $tmp_checklist);
+  }
+  ?>
         <h2>Summative exam checks</h2>
 
         <ul class="checklist">
@@ -161,25 +172,29 @@ if ($paper->get_type() == 'Summative Exam') {
 <?php
   }
 
-  $internal = $paper->get_review_count('internal');
-  $external = $paper->get_review_count('external');
-  if ($internal['total'] == 0) {
+  if (in_array('peer', $checklist)) {
+    $internal = $paper->get_review_count('internal');
+    if ($internal['total'] == 0) {
 ?>
     <li class="fail">No internal reviewers set</li>
 <?php
-  } else {
-    $int_class = ($internal['complete'] < $internal['total']) ? 'fail' : 'pass';
+    } else {
+      $int_class = ($internal['complete'] < $internal['total']) ? 'fail' : 'pass';
+    }
+    echo '<li class="' . $int_class . '">' . $internal['complete'] . ' of ' . $internal['total'] . ' internal peer reviews complete</li>';
   }
-  echo '<li class="' . $int_class . '">' . $internal['complete'] . ' of ' . $internal['total'] . ' internal peer reviews complete</li>';
 
-  if ($external['total'] == 0) {
+  if (in_array('external', $checklist)) {
+    $external = $paper->get_review_count('external');
+    if ($external['total'] == 0) {
 ?>
 <li class="fail">No internal reviewers set</li>
 <?php
-  } else {
-    $ext_class = ($external['complete'] < $external['total']) ? 'fail' : 'pass';
+    } else {
+      $ext_class = ($external['complete'] < $external['total']) ? 'fail' : 'pass';
+    }
+    echo '<li class="' . $ext_class . '">' . $external['complete'] . ' of ' . $external['total'] . ' external reviews complete</li>';
   }
-  echo '<li class="' . $ext_class . '">' . $external['complete'] . ' of ' . $external['total'] . ' external reviews complete</li>';
 ?>
   </ul>
 <?php
