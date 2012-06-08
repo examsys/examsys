@@ -195,13 +195,27 @@ if ($paper->get_type() == 'Summative Exam') {
     }
     echo '<li class="' . $ext_class . '">' . $external['complete'] . ' of ' . $external['total'] . ' external reviews complete</li>';
   }
+
+
+  if (in_array('stdset', $checklist)) {
+    $std_status = $paper->get_std_set_status($questions['total']);
+    $std_message = 'unset';
+    $std_class = 'fail';
+    if ($std_status == 0.5) {
+      $std_message = 'partially complete';
+    } elseif ($std_status == 1) {
+      $std_message = 'complete';
+      $std_class = 'pass';
+    }
+    echo '<li class="' . $std_class . '">Standards setting ' . $std_message . '</li>';
+  }
 ?>
   </ul>
 <?php
 }
 
 
-        $type_count = count($questions['type']);
+$type_count = count($questions['type']);
 if ($type_count > 0) {
   $width = ($type_count >= 9) ? 900 : 60 + ($type_count * 80);
 ?>

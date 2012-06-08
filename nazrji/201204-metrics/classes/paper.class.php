@@ -420,19 +420,41 @@ QUERY;
     $reviewers = ($type == 'internal') ? $this->internal_reviewers : $this->external_reviewers;
     $reviewer_count = substr_count($reviewers, ',') + 1;
 
-    $reviews_complete = 0;
+    $reviews_complete = array();
     if (count($reviewers) > 0) {
       $result = $this->_mysqli->prepare("SELECT count(id), reviewer FROM review_comments WHERE q_paper=? AND review_type=? AND reviewer IN ({$reviewers}) GROUP BY reviewer, reviewed");
-      $result->bind_param('is', $_GET['paperID'], $type);
+      $result->bind_param('is', $this->id, $type);
       $result->execute();
-      $result->store_result();
       $result->bind_result($review_records, $reviewer);
-      $reviews_complete = $result->num_rows;
+      while ($result->fetch()) {
+        if (!in_array($reviewer, $reviews_complete)) {
+          $reviews_complete[] = $reviewer;
+        }
+      }
       $result->close();
     }
 
-    return array('complete' => $reviews_complete, 'total' => $reviewer_count);
+    return array('complete' => count($reviews_complete), 'total' => $reviewer_count);
   }
+  
+  public function get_std_set_status($qn_count) {
+    $standards_set = 0;
+
+    $result = $this->_mysqli->prepare("SELECT COUNT(id), setterID FROM standards_setting WHERE paperID=? GROUP BY setterID");
+    $result->bind_param('i', $this->id);
+    $result->execute();
+    $result->bind_result($set_set_records, $setterID);
+    while ($row = $result->fetch()) {
+      if ($set_set_records >= $qn_count and $standards_set == 0) {
+        $standards_set = 1;
+      } elseif ($set_set_records < $qn_count and ($standards_set == 0 or $standards_set == 1)) {
+        $standards_set = 0.5;
+      }
+    }
+    $result->close();
+
+    return $standards_set;
+  } 
 
 
   private function set_friendly_type() {
