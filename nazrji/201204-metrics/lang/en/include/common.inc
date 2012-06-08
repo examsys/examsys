@@ -30,4 +30,9 @@ $string['forgottenpassword'] = 'Forgotten Password';
 $string['warning'] = 'WARNING:';
 $string['secureconnection'] = 'Rogō can only be accessed through a secure web connection. Instead use:';
 $string['errormsg'] = 'If you repeatedly get this error please contact:';
+$string['ltifirstlogin'] = 'Rogō Authorisation';
+$string['ltifirstlogindesc'] = 'Rogō e-assessment system needs to confirm your identity to ensure you have the correct permissions.  This will only happen on your first visit and at infrequent intervals afterwards to ensure security.<br /><a href="./">Click Here to Continue</a> ';
+$string['unavailablepaper'] = 'You are attempting to access a <strong>paper that is unavailable</strong>!';
+$string['LTIFAILURE'] = 'LTI Failure';
+$string['expiredtimestamp'] = 'Timestamp has now expired. Please go back and relaunch the link (do not hit refresh in the browser).';
 ?>

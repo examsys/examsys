@@ -92,7 +92,7 @@
 </script>
 
 <div style="z-index:20; display:none; background-color:white; position:fixed; left:190px; top:60px; box-shadow: 2px 2px 2px #808080" id="stats_menu" onclick="showAssStatsMenu(true, event);">
-<table border="0" cellpadding="3" cellspacing="1" style="width:510px; border:1px solid #C0C0C0; font-size:80%">
+<table border="0" cellpadding="3" cellspacing="1" style="width:530px; border:1px solid #C0C0C0; font-size:80%">
 <tr>
 <td style="background-color:#F2B100; height:5px; padding:0px"></td>
 </tr>
@@ -380,11 +380,13 @@
   
   echo "</table><input type=\"hidden\" name=\"meta_no\" id=\"meta_no\" value=\"$meta_no\" /><input type=\"hidden\" name=\"paperID\" value=\"" . $_GET['paperID'] . "\" />";
 
+  echo "<table style=\"width:100%; padding-bottom:5px\"><tr><td style=\"vertical-align:top; width:42%\">\n";
+  
   if ($paper_type == '0' or $paper_type == '1' or $paper_type == '2' or $paper_type == '5') {
     // display Assessment stats options
 
-    echo "<div style=\"margin-left:25px; line-height:150%; margin-top:10px; font-weight:bold\">" . $string['reviews'] . "</div>\n";
-    echo "<div style=\"margin-left:25px; line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../reports/review_comments.php?type=internal&',event)\">" . $string['internalpeerreview'] . "</a></div>\n";
+    echo "<div style=\"line-height:150%; margin-top:10px; font-weight:bold\">" . $string['reviews'] . "</div>\n";
+    echo "<div style=\"line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../reports/review_comments.php?type=internal&',event)\">" . $string['internalpeerreview'] . "</a></div>\n";
     
     $result = $mysqli->prepare("SELECT COUNT(q_id) AS sct_no FROM (papers, questions) WHERE papers.paper=? AND papers.question=questions.q_id AND q_type='sct'");
     $result->bind_param('i', $_GET['paperID']);
@@ -393,13 +395,13 @@
     $result->fetch();
     $result->close();
     if ($sct_no > 0) {
-      echo "<div style=\"margin-left:25px; line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../reports/review_sct_answers.php?type=external&',event)\">" . $string['sctresponses'] . "</a></div>\n";
+      echo "<div style=\"line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../reports/review_sct_answers.php?type=external&',event)\">" . $string['sctresponses'] . "</a></div>\n";
     }
-    echo "<div style=\"margin-left:25px; line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../reports/review_comments.php?type=external&',event)\">" . $string['externalexaminers'] . "</a></div>\n";
-    echo "<div style=\"margin-left:25px; line-height:150%; margin-top:10px; font-weight:bold\">" . $string['cohortreports'] . "</div>\n";
-    echo "<div style=\"margin-left:25px; line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../reports/class_totals.php?',event)\">" . $string['classtotals'] . "</a></div>\n";
-    echo "<div style=\"margin-left:25px; line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../reports/class_totals_xml.php?',event)\">" . $string['classtotalsexcel2003'] . "</a></div>\n";
-    echo "<div style=\"margin-left:25px; line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../reports/class_totals_csv.php?',event)\">" . $string['classtotalscsv'] . "</a></div>\n";
+    echo "<div style=\"line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../reports/review_comments.php?type=external&',event)\">" . $string['externalexaminers'] . "</a></div>\n";
+    echo "<div style=\"line-height:150%; margin-top:10px; font-weight:bold\">" . $string['cohortreports'] . "</div>\n";
+    echo "<div style=\"line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../reports/class_totals.php?',event)\">" . $string['classtotals'] . "</a></div>\n";
+    echo "<div style=\"line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../reports/class_totals_xml.php?',event)\">" . $string['classtotalsexcel2003'] . "</a></div>\n";
+    echo "<div style=\"line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../reports/class_totals_csv.php?',event)\">" . $string['classtotalscsv'] . "</a></div>\n";
     
     if ($paper_type != '5') {
       $result = $mysqli->prepare("SELECT COUNT(q_id) AS textbox_no FROM (papers, questions) WHERE papers.paper=? AND papers.question=questions.q_id AND q_type='textbox'");
@@ -409,71 +411,72 @@
       $result->fetch();
       $result->close();
       if ($textbox_no > 0) {
-        echo "<div style=\"margin-left:25px; line-height:150%; margin-top:10px; font-weight:bold\">" . $string['textboxmarking'] . "</div>\n";
-        echo "<div style=\"margin-left:25px; line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../reports/textbox_select_q.php?ws=1&action=mark&phase=1&',event)\">" . $string['primarymarkbyquestion'] . "</a></div>\n";
-        echo "<div style=\"margin-left:25px; line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../reports/textbox_remark.php?',event)\">" . $string['selectpapersforremarking'] . "</a></div>\n";
-        echo "<div style=\"margin-left:25px; line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../reports/textbox_select_q.php?ws=1&action=mark&phase=2&',event)\">" . $string['secondmarkbyquestion'] . "</a></div>\n";
-        echo "<div style=\"margin-left:25px; line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../reports/textbox_select_q.php?action=finalise&',event)\">" . $string['finalisemarks'] . "</a></div>\n";
+        echo "<div style=\"line-height:150%; margin-top:10px; font-weight:bold\">" . $string['textboxmarking'] . "</div>\n";
+        echo "<div style=\"line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../reports/textbox_select_q.php?ws=1&action=mark&phase=1&',event)\">" . $string['primarymarkbyquestion'] . "</a></div>\n";
+        echo "<div style=\"line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../reports/textbox_remark.php?',event)\">" . $string['selectpapersforremarking'] . "</a></div>\n";
+        echo "<div style=\"line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../reports/textbox_select_q.php?ws=1&action=mark&phase=2&',event)\">" . $string['secondmarkbyquestion'] . "</a></div>\n";
+        echo "<div style=\"line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../reports/textbox_select_q.php?action=finalise&',event)\">" . $string['finalisemarks'] . "</a></div>\n";
       }
     }
 
-    echo "<div style=\"margin-left:25px; line-height:150%; margin-top:10px; font-weight:bold\">" . $string['itemanalysis'] . "</div>\n";
+    echo "</td><td style=\"vertical-align:top\">";
+    echo "<div style=\"line-height:150%; margin-top:10px; font-weight:bold\">" . $string['itemanalysis'] . "</div>\n";
 
     if ($paper_type != '5') {
-      echo "<div style=\"margin-left:25px; line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../reports/frequency_discrimination_analysis.php?',event)\">" . $string['frequencyanalysis'] . "</a></div>\n";
+      echo "<div style=\"line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../reports/frequency_discrimination_analysis.php?',event)\">" . $string['frequencyanalysis'] . "</a></div>\n";
     }
 
-    echo "<div style=\"margin-left:25px; line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../reports/cohort_obj_perform.php?',event)\">" . $string['learningobjectiveanalysis'] . "</a></div>\n";
-    echo "<div style=\"margin-left:25px; line-height:150%; margin-top:10px; font-weight:bold\">" . $string['exports'] . "</div>\n";
+    echo "<div style=\"line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../reports/cohort_obj_perform.php?',event)\">" . $string['learningobjectiveanalysis'] . "</a></div>\n";
+    echo "<div style=\"line-height:150%; margin-top:10px; font-weight:bold\">" . $string['exports'] . "</div>\n";
     if ($paper_type != '5') {
-      echo "<div style=\"margin-left:25px; line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../export/assessment_data.php?',event)\">" . $string['exportresponsescsvnum'] . "</a></div>\n";
-      echo "<div style=\"margin-left:25px; line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../export/assessment_data.php?mode=text&',event)\">" . $string['exportresponsescsvtext'] . "</a></div>\n";
+      echo "<div style=\"line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../export/assessment_data.php?',event)\">" . $string['exportresponsescsvnum'] . "</a></div>\n";
+      echo "<div style=\"line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../export/assessment_data.php?mode=text&',event)\">" . $string['exportresponsescsvtext'] . "</a></div>\n";
     }
-    echo "<div style=\"margin-left:25px; line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../export/assessment_marks.php?',event)\">" . $string['exportmarkscsv'] . "</a></div>\n";
+    echo "<div style=\"line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../export/assessment_marks.php?',event)\">" . $string['exportmarkscsv'] . "</a></div>\n";
   }
   
   switch ($paper_type) {
     case '3':     // Stats menu
-      echo "<div style=\"margin-left:25px; line-height:150%; margin-top:10px; font-weight:bold\">" . $string['quantitativereports'] . "</div>\n";
-      echo "<div style=\"margin-left:25px\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../reports/quantitative.php?',event)\">" . $string['xhtml'] . "</a></div>\n";
-      echo "<div style=\"margin-left:25px\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../reports/quantitative_xml.php?',event)\">" . $string['word2003format'] . "</a></div>\n";
+      echo "<div style=\"line-height:150%; margin-top:10px; font-weight:bold\">" . $string['quantitativereports'] . "</div>\n";
+      echo "<div style=\"line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../reports/quantitative.php?',event)\">" . $string['xhtml'] . "</a></div>\n";
+      echo "<div style=\"line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../reports/quantitative_xml.php?',event)\">" . $string['word2003format'] . "</a></div>\n";
       
-      echo "<div style=\"margin-left:25px; line-height:150%; margin-top:10px; font-weight:bold\">" . $string['qualitativeanalysis'] . "</div>\n";
-      echo "<div style=\"margin-left:25px\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../reports/qualitative.php?',event)\">" . $string['xhtml'] . "</a></div>\n";
-      echo "<div style=\"margin-left:25px\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../reports/qualitative_xml.php?',event)\">" . $string['word2003format'] . "</a></div>\n";
+      echo "<div style=\"line-height:150%; margin-top:10px; font-weight:bold\">" . $string['qualitativeanalysis'] . "</div>\n";
+      echo "<div style=\"line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../reports/qualitative.php?',event)\">" . $string['xhtml'] . "</a></div>\n";
+      echo "<div style=\"line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../reports/qualitative_xml.php?',event)\">" . $string['word2003format'] . "</a></div>\n";
       
-      echo "<div style=\"margin-left:25px; line-height:150%; margin-top:10px; font-weight:bold\">" . $string['exports'] . "</div>\n";
-      echo "<div style=\"margin-left:25px\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../export/survey_xml_data.php?',event)\">" . $string['rawdataxml'] . "</a></div>\n";
-      echo "<div style=\"margin-left:25px\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../export/survey_csv_data.php?',event)\">" . $string['rawdatacsv'] . "</a></div>\n";
+      echo "<div style=\"line-height:150%; margin-top:10px; font-weight:bold\">" . $string['exports'] . "</div>\n";
+      echo "<div style=\"line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../export/survey_xml_data.php?',event)\">" . $string['rawdataxml'] . "</a></div>\n";
+      echo "<div style=\"line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../export/survey_csv_data.php?',event)\">" . $string['rawdatacsv'] . "</a></div>\n";
       break;
     case '4':     // OSCE menu
-      echo "<div style=\"margin-left:25px; line-height:150%; margin-top:10px; font-weight:bold\">" . $string['cohortreports'] . "</div>\n";
-      echo "<div style=\"margin-left:25px; line-height:150%\">inc. absent candidates&nbsp;<input type=\"checkbox\" name=\"absent\" value=\"1\" /></div>\n";
-      echo "<div style=\"margin-left:25px; line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../../osce/class_totals.php?',event)\">" . $string['classtotals'] . "</a></div>\n";
-      echo "<div style=\"margin-left:25px; line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../../osce/class_totals_xml.php?',event)\">" . $string['classtotalsexcel2003'] . "</a></div>\n";
-      echo "<div style=\"margin-left:25px; line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../../osce/class_totals_csv.php?',event)\">" . $string['classtotalscsv'] . "</a></div>\n";
+      echo "<div style=\"line-height:150%; margin-top:10px; font-weight:bold\">" . $string['cohortreports'] . "</div>\n";
+      echo "<div style=\"line-height:150%\">inc. absent candidates&nbsp;<input type=\"checkbox\" name=\"absent\" value=\"1\" /></div>\n";
+      echo "<div style=\"line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../../osce/class_totals.php?',event)\">" . $string['classtotals'] . "</a></div>\n";
+      echo "<div style=\"line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../../osce/class_totals_xml.php?',event)\">" . $string['classtotalsexcel2003'] . "</a></div>\n";
+      echo "<div style=\"line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../../osce/class_totals_csv.php?',event)\">" . $string['classtotalscsv'] . "</a></div>\n";
       
-      echo "<div style=\"margin-left:25px; line-height:150%; margin-top:10px; font-weight:bold\">" . $string['itemanalysis'] . "</div>\n";
-      echo "<div style=\"margin-left:25px; line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../../osce/frequency_analysis.php?',event)\">" . $string['frequencyanalysis'] . "</a></div>\n";
+      echo "<div style=\"line-height:150%; margin-top:10px; font-weight:bold\">" . $string['itemanalysis'] . "</div>\n";
+      echo "<div style=\"line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../../osce/frequency_analysis.php?',event)\">" . $string['frequencyanalysis'] . "</a></div>\n";
       
-      echo "<div style=\"margin-left:25px; line-height:150%; margin-top:10px; font-weight:bold\">" . $string['exports'] . "</div>\n";
-      echo "<div style=\"margin-left:25px; line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../../osce/portfolio_sheets.php?',event)\">" . $string['individualportfoliosheets'] . "</a></div>\n";
-      echo "<div style=\"margin-left:25px; line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../../osce/export_ratings.php?',event)\">" . $string['exportratingscsv'] . "</a></div>\n";
+      echo "<div style=\"line-height:150%; margin-top:10px; font-weight:bold\">" . $string['exports'] . "</div>\n";
+      echo "<div style=\"line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../../osce/portfolio_sheets.php?',event)\">" . $string['individualportfoliosheets'] . "</a></div>\n";
+      echo "<div style=\"line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../../osce/export_ratings.php?',event)\">" . $string['exportratingscsv'] . "</a></div>\n";
       break;
     case '6':
-      echo "<br />\n<div style=\"margin-left:25px; line-height:150%; font-weight:bold\">Reports</div>\n";
+      echo "<br />\n<div style=\"line-height:150%; font-weight:bold\">Reports</div>\n";
       if ($display_question_mark == '1') {
-        echo "<div style=\"margin-left:25px; line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../../peer_review/summary_report.php?percent=0&',event)\">Review Summary - means (HTML)</a></div>\n";
-        echo "<div style=\"margin-left:25px; line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../../peer_review/summary_report.php?percent=1&',event)\">Review Summary - percents (HTML)</a></div>\n";
+        echo "<div style=\"line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../../peer_review/summary_report.php?percent=0&',event)\">Review Summary - means (HTML)</a></div>\n";
+        echo "<div style=\"line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../../peer_review/summary_report.php?percent=1&',event)\">Review Summary - percents (HTML)</a></div>\n";
       } else {
-        echo "<div style=\"margin-left:25px; line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../../peer_review/summary_report.php?',event)\">Review Summary</a></div>\n";
+        echo "<div style=\"line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../../peer_review/summary_report.php?',event)\">Review Summary</a></div>\n";
       }
-      echo "<div style=\"margin-left:25px; line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../../peer_review/summary_report_csv.php?',event)\">Review Summary - means (CSV)</a></div>\n";
+      echo "<div style=\"line-height:150%\"><img src=\"../artwork/bullet_outline.gif\" width=\"16\" height=\"16\" alt=\"bullet\" />&nbsp;&nbsp;<a href=\"#\" onclick=\"go('../../peer_review/summary_report_csv.php?',event)\">Review Summary - means (CSV)</a></div>\n";
       break;
   }
 
 ?>
-<br />
+</td></tr></table>
 </form>
 </td>
 </tr>

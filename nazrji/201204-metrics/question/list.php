@@ -192,7 +192,12 @@
     }
     
     if (trim($tmp_leadin) == '') $tmp_leadin = '<span style="color:#C00000">' . $string['noquestionleadin'] . '</span>';
-    echo "<td class=\"d\">$tmp_leadin <span class=\"owner\">($title $initials $surname)</span></td>";
+    if (strpos($userroles,'Demo') !== false) {
+      $owner = 'Dr J, Bloggs';
+    } else {
+      $owner = "$title $initials, $surname";
+    }
+    echo "<td class=\"d\">$tmp_leadin <span class=\"owner\">($owner)</span></td>";
     echo "<td class=\"d\" onclick=\"qOff()\"><nobr>" . $string[$q_type] . "</nobr></td>";
     echo "<td class=\"d\" onclick=\"qOff()\">$last_edited</td>\n";
     echo "<td class=\"d\" onclick=\"qOff()\">" . $string[strtolower($status)] . "</td></tr>\n";

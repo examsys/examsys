@@ -28,6 +28,7 @@ require '../include/staff_auth.inc';
 require '../include/icon_display.inc';
 require '../include/sidebar_menu.inc';
 require '../include/errors.inc';
+require '../include/demo_replace.inc';
 require_once '../classes/stateutils.class.php';
 
 $stateutil = new StateUtils();
@@ -53,15 +54,15 @@ if ($folder != '') {
   $result->bind_param('i', $tmp_folder);
   $result->execute();
   $result->store_result();
-  $result->bind_result($folder_ownerID, $folder_name, $team_name);
+  $result->bind_result($folder_ownerID, $orig_folder_name, $team_name);
   $result->fetch();
   $result->close();
-
+  
   if (isset($folder_teams) and $folder_teams != '' and $module == '') $module = $folder_teams;
 
-  if (substr_count($folder_name,';') > 0) {
-    $last_semicolon = strrpos($folder_name,';');
-    $path = substr($folder_name,0,$last_semicolon);
+  if (substr_count($orig_folder_name,';') > 0) {
+    $last_semicolon = strrpos($orig_folder_name,';');
+    $path = substr($orig_folder_name,0,$last_semicolon);
     $parent_results = $mysqli->prepare("SELECT id, name FROM folders WHERE name=? AND ownerID=? LIMIT 1");
     $parent_results->bind_param('si', $path, $userID);
     $parent_results->execute();
@@ -123,7 +124,7 @@ if (isset($_POST['submit']) and $_POST['submit'] == 'Create') {
 }
 
 if ($folder != '') {
-  $folders_array = explode(';',$folder_name);
+  $folders_array = explode(';',$orig_folder_name);
   $parts = count($folders_array) - 1;
   $selfenrol = 0;
 }
@@ -214,7 +215,7 @@ if ($folder != '') {
 }
 echo '</div></th>';
 echo "<th style=\"text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><input class=\"chk\" type=\"checkbox\" name=\"showretired\" id=\"showretired\" value=\"on\" onclick=\"refreshPage();\"";
-if (isset($state['showretired']) and $state['showretired'] == 'true') echo ' checked';
+if (isset($state['showretired']) and $state['showretired'] == 'true') echo ' checked="checked"';
 echo " /> " . $string['showretired'] . "</th></tr>\n";
 
 echo "<tr><th colspan=\"2\" class=\"bevel\"></th></tr>\n</table>\n<br />\n";
@@ -230,9 +231,15 @@ if (isset($_GET['module']) and $_GET['module'] != '') {
   $member_details->bind_result($surname, $initials, $title, $tmp_userID);
 
   $tmp_html = '';
+  if (strpos($userroles,'Demo') !== false) {
+    $i = 0;
+  }
   if ($member_details->num_rows > 0) $tmp_html = '<ul type="square" style="line-height:155%; font-size:90%; color:#8492A6; margin-top:4px; margin-bottom:4px; margin-left:20px; padding-left:0px">';
   while ($member_details->fetch()) {
-    if (strpos($userroles,'Admin') !== false) {
+    if (strpos($userroles,'Demo') !== false) {
+      $tmp_html .= "<li><span style=\"color:#254280\">" . demo_replace_name($i) . "</span></li>\n";
+      $i++;
+    } elseif (strpos($userroles,'Admin') !== false) {
       $tmp_html .= "<li><a style=\"color:#254280\" href=\"../users/details.php?userID=$tmp_userID&module=" . $_GET['module'] . "\" target=\"_top\">$surname, $initials. " . str_replace('Professor','Prof',$title) . "</a></li>\n";
     } else {
       $tmp_html .= "<li><span style=\"color:#254280\">$surname, $initials. " . str_replace('Professor','Prof',$title) . "</span></li>\n";
@@ -262,14 +269,14 @@ if ($folder != '') {
   if (count($teams) > 0) {
     $tmp_string = " OR team_name IN ('" . implode("','",$teams) . "')";
   }
-
-  $tmp_folder_name = $folder_name . ';%';
+  
+  $tmp_folder_name = $orig_folder_name . ';%';
   $folder_details = $mysqli->prepare("SELECT id, name, team_name, color FROM folders WHERE (ownerID=? $tmp_string) AND name LIKE ? AND deleted IS NULL ORDER BY name, id");
   $folder_details->bind_param('is', $userID, $tmp_folder_name);
   $folder_details->execute();
   $folder_details->bind_result($id, $name, $team_name, $color);
   while ($folder_details->fetch()) {
-    $display_name = str_replace("$folder_name;","",$name);
+    $display_name = str_replace("$orig_folder_name;","",$name);
     if (substr_count($display_name,';') == 0) {
       if ($team_name == '') {
         echo "<div class=\"f\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"width:60px\" align=\"center\"><a href=\"details.php?folder=$id\"><img src=\"../artwork/" . $color . "_folder.png\" width=\"48\" height=\"48\" alt=\"Folder\" border=\"0\" align=\"middle\" /></a>&nbsp;</td><td><a href=\"details.php?folder=$id\" class=\"blacklink\">$display_name</a></td></tr></table></div>\n";

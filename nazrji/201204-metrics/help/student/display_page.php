@@ -71,7 +71,7 @@ if ($tmp_body == '' and $tmp_title == '') {
   exit;
 }
 
-if ($_GET['id'] != '1' and strpos($userroles,'SysAdmin') === false) {   // Don't record the homepage or SysAdmin activities.
+if ($_GET['id'] != '1' and strpos($userroles,'SysAdmin') === false and strpos($userroles,'External') === false) {   // Don't record the homepage or SysAdmin or External examiner activities.
   $result = $mysqli->prepare("INSERT INTO help_log VALUES (NULL, 'student', ?, NOW(), ?)");
   $result->bind_param('ii', $userID, $_GET['id']);
   $result->execute();  
@@ -82,8 +82,8 @@ if ($_GET['id'] != '1' and strpos($userroles,'SysAdmin') === false) {   // Don't
 <html>
 <head>
 <title>Help and Support Center</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $cfg_page_charset ?>">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $cfg_page_charset ?>">
 <link rel="stylesheet" type="text/css" href="../../css/staff_help.css" />
 <script language="JavaScript">
   function updateToolbar(editID,deleteID) {

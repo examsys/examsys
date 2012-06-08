@@ -232,11 +232,11 @@ function echoButtons($year) {
   $paper_details = array();
   if ($schools_sql != '' OR !isset($_GET['school']) OR (isset($_GET['school']) AND ($_GET['school'] == -1 OR $_GET['school'] == ''))) {
     // Get papers running on various dates.
-    $result = $mysqli->prepare("SELECT DATE_FORMAT(start_date,'%Y/%m/%d') AS date, labs, DATE_FORMAT(start_date,'%H:%i') AS start_time, DATE_FORMAT(end_date,'%H:%i') AS end_time, property_id, paper_title, DATE_FORMAT(start_date,'%c') AS month, DATE_FORMAT(start_date,'%Y') AS cal_year, DATE_FORMAT(start_date,'%e') AS start_day, DATE_FORMAT(end_date,'%e') AS end_date, moduleID, paper_type FROM properties WHERE start_date>=" . $current_year . "0101000000 AND end_date<=" . $current_year . "1231235959 AND (paper_type='2' OR paper_type='4') AND deleted IS NULL $schools_sql $lab_sql ORDER BY start_date");
+    $result = $mysqli->prepare("SELECT password, DATE_FORMAT(start_date,'%Y/%m/%d') AS date, labs, DATE_FORMAT(start_date,'%H:%i') AS start_time, DATE_FORMAT(end_date,'%H:%i') AS end_time, property_id, paper_title, DATE_FORMAT(start_date,'%c') AS month, DATE_FORMAT(start_date,'%Y') AS cal_year, DATE_FORMAT(start_date,'%e') AS start_day, DATE_FORMAT(end_date,'%e') AS end_date, moduleID, paper_type FROM properties WHERE start_date>=" . $current_year . "0101000000 AND end_date<=" . $current_year . "1231235959 AND (paper_type='2' OR paper_type='4') AND deleted IS NULL $schools_sql $lab_sql ORDER BY start_date");
     //$result->bind_param('s', $current_ip_address);
     $result->execute();
     //$result->store_result();
-    $result->bind_result($main_date, $labs, $start_time, $end_time, $property_id, $paper_title, $month, $cal_year, $start_day, $end_date, $moduleID, $paper_type);
+    $result->bind_result($password, $main_date, $labs, $start_time, $end_time, $property_id, $paper_title, $month, $cal_year, $start_day, $end_date, $moduleID, $paper_type);
 
     //$results = $mysqli->query("SELECT DATE_FORMAT(start_date,'%Y/%m/%d') AS date, labs, DATE_FORMAT(start_date,'%H:%i') AS start_time, DATE_FORMAT(end_date,'%H:%i') AS end_time, property_id, paper_title, DATE_FORMAT(start_date,'%c') AS month, DATE_FORMAT(start_date,'%Y') AS cal_year, DATE_FORMAT(start_date,'%e') AS start_day, DATE_FORMAT(end_date,'%e') AS end_date, moduleID, paper_type FROM properties WHERE start_date>=" . $current_year . "0101000000 AND end_date<=" . $current_year . "1231235959 AND (paper_type='2' OR paper_type='4') AND deleted IS NULL $schools_sql $lab_sql ORDER BY start_date");
     while ($result->fetch()) {
@@ -253,6 +253,7 @@ function echoButtons($year) {
       $paper_details[$paper_no]['paper_type'] = $paper_type;
       $tmp_modules = explode(',', $moduleID);
       $paper_details[$paper_no]['moduleID'] = $tmp_modules[0];
+      $paper_details[$paper_no]['password'] = $password;
       $paper_no++;
     }
     $result->close();
@@ -372,7 +373,10 @@ function echoButtons($year) {
                   if (isset($lab_list[$individual_room]['room_no'])  and $lab_list[$individual_room]['room_no'] != '') $html .= ', <a style="color:#FF6300" href="lab_details.php?labID=' . $individual_room . '" title="' . $lab_list[$individual_room]['name'] . '">' . $lab_list[$individual_room]['room_no'] . '</a>';
                 }
               }
-              if ($individual_paper['labs'] == '' and $individual_paper['paper_type'] == '2') echo '<img src="../artwork/small_yellow_warning_icon.gif" width="16" height="16" align="texttop" alt="Warning: no labs set!" />';
+              if ($individual_paper['labs'] == '' and $individual_paper['password'] == '' and $individual_paper['paper_type'] == '2') echo '<img src="../artwork/small_yellow_warning_icon.gif" width="16" height="16" align="texttop" alt="Warning: no labs set!" />';
+              if ($individual_paper['password'] != '') {
+                echo '&nbsp;<img src="../artwork/key_12.png" width="12" height="12" alt="password" border="0" style="vertical-align:text-top" />';
+              }
               if ($individual_paper['paper_type'] == '4') echo '<img src="../artwork/small_osce_icon.png" width="16" height="13" border="0" alt="OSCE" />';
               echo "$html</td></tr>";
             }

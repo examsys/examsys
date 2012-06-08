@@ -17,6 +17,7 @@ $string['duration'] = 'Duration';
 $string['testclip'] = 'Test Clip';
 $string['switchpapers'] = 'Switch Papers';
 $string['papernotavailable'] = 'Paper not available at this time.';
+$string['papernotavailablestudents'] = 'Paper not available to students at this time.';
 $string['nottakenpaper'] = '(You have not yet taken this paper.)';
 $string['donotstart'] = "Do <strong>not</strong> click 'Start &gt;&gt;' until instructed to by an invigilator.";
 $string['minutes'] = 'minutes';

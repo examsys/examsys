@@ -330,7 +330,7 @@
                 for ($sec=1; $sec < count($correct_parts); $sec++) {
                   if ($correct_parts[$sec] != '' and substr($tmp_exclude, $partID, 1) == '0') {
                     if (strpos($correct_parts[$sec], '$') === false) {
-                      echo ',Q' . ($i+1) . chr($sec + 64);
+                      echo ',Q' . ($i+1) . $numerals[$sec-1];
                       if ($is_random) {
                         add_random_column_standard($i, $sec);
                       }
@@ -338,7 +338,7 @@
                       $num_ix = 0;
                       $correct_subparts = explode('$', $correct_parts[$sec]);
                       foreach ($correct_subparts as $subpart) {
-                        echo ',Q' . ($i+1) . chr($sec + 64) . $numerals[$num_ix];
+                        echo ',Q' . ($i+1) . $numerals[$sec-1] . chr($num_ix + 65);
                         if ($is_random) {
                           add_random_column_standard($i, $sec, $numerals[$num_ix]);
                         }
@@ -837,7 +837,12 @@
                     }
                   }
                   if ($is_random) {
-                    echo ',' . $correct_parts[$partID + 1];
+                    echo ',';
+                    if ($mode == 'numeric') {
+                      echo $correct_parts[$partID + 1];
+                    } else {
+                      echo $correct_text_parts[$correct_parts[$partID + 1]];
+                    }
                   }
                 }
               }
@@ -882,6 +887,7 @@
               }
 
               $sec = 1;
+              $cix = 0;
               $tmp_first_split = explode(';', $question['correct']);
               $tmp_second_split = explode('$', $tmp_first_split[11]);
               $label_indexes = array();
@@ -893,8 +899,8 @@
                   $label_indexes[$tmp_third_split[0]] = $tmp_third_split[1];
                   if (substr($tmp_second_split[$label_no], 0, 1) != '|' and $tmp_second_split[$label_no-2] > 219) {
                     $location = $tmp_second_split[$label_no-2] . 'x' . ($tmp_second_split[$label_no-1] - 25);
-                    $tmp_third_split = explode('|', $tmp_second_split[$label_no]);
-                    $correct[$tmp_third_split[1] - 1] = $tmp_third_split[0];
+                    $correct[$cix] = $tmp_third_split[0];
+                    $cix++;
                     if (isset($user_answers[$location])) {
                       $answers[] = $user_answers[$location];
                     } else {
@@ -913,7 +919,7 @@
                       echo $label_indexes[$answer];
                     }
                     if ($is_random) {
-                      echo ',' . $answer;
+                      echo ',' . $label_indexes[$correct[$j]];
                     }
                   } else {
                     echo $answer;
@@ -943,7 +949,7 @@
                     if ($mode == 'numeric') {
                       echo ',' . substr($correct_clean, $char_pos, 1);
                     } else {
-                      if ($part_ans == 'y') {
+                      if (substr($correct_clean, $char_pos, 1) == 'y') {
                         echo ',"' . $correct_text_parts[$char_pos + 1] . '"';
                       } else {
                         echo ',';

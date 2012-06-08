@@ -23,6 +23,7 @@
 */
 
   require '../include/staff_auth.inc';
+  require '../config/index.inc';  // Get the logo
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -63,7 +64,7 @@ p {line-height:150%}
 <table cellspacing="0" cellpadding="0" border="0" style="width:100%; background-color:#F1F5FB">
 <tr>
 <td><div style="padding-left:15px"><img src="../artwork/rogo_logo.gif" width="137" height="61" alt="logo" border="0" style="margin-top:2px" /></div><div style="padding-left:15px; font-size:90%; font-weight:bold"><?php echo $string['externalexamineraccess']; ?> (<?php echo $title . ' ' . $initials . ' ' . $surname; ?>)</div></td>
-<td align="right"><img src="../artwork/black_uon_logo.png" width="167" height="70" alt="The University of Nottingham" border="0" /></td>
+<td align="right"><?php echo $logo_html; ?></td>
 </tr>
 <tr><td colspan="2" style="height:3px"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td></tr>
 </table>

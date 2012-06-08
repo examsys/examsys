@@ -29,6 +29,7 @@ require_once ($cfg_web_root . 'classes/passwordutils.class.php');
 Class UserUtils {
 
   static function createUser($username, $password, $title, $forname, $surname, $email, $course, $gender, $year, $role, $sid, $db) {
+    global $cfg_encrypt_salt;
     
     if (!self::usernameExists($username, $db) and $username != '' and stristr('ps_',$username) === false) {
       $initial = explode(' ',$forname);
@@ -47,8 +48,8 @@ Class UserUtils {
       
       //add new users
       $result = $db->prepare("INSERT INTO users VALUES(?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, NULL, 0, ?)");
-      $password = PasswordUtils::encpw($username, $password);
-      $result->bind_param('ssssssssssi', $password, $course, $surname, $initials, $title, $username, $email, $role, $forname, $gender, $year);
+      $encrypt_password = encpw($cfg_encrypt_salt, $username, $password);
+      $result->bind_param('ssssssssssi', $encrypt_password, $course, $surname, $initials, $title, $username, $email, $role, $forname, $gender, $year);
       $result->execute();
       $result->close();
       $userID = $db->insert_id;

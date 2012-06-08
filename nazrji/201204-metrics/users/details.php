@@ -61,7 +61,7 @@
       $tab_array[] = 'Admin';
     }
 
-    if (stripos($user_roles,'Student') !== false) {
+    if (stripos($user_roles,'Student') !== false or stripos($user_roles,'Graduate') !== false) {
       $tab_array[] = 'Modules';
       $tab_array[] = 'Notes';
       $tab_array[] = 'Accessibility';
@@ -347,7 +347,7 @@ a.access:hover {color:white}
   $user_query->close();
   
   if (strpos($userroles,'Admin') !== false or strpos($userroles,'SysAdmin') !== false) {
-    if (strpos($tmp_roles,'Student') !== false or strpos($tmp_roles,'graduate') !== false or strpos($tmp_roles,'left') !== false or strpos($tmp_roles,'suspended') !== false) {
+    if (strpos($tmp_roles,'Student') !== false or stripos($tmp_roles,'graduate') !== false or strpos($tmp_roles,'left') !== false or strpos($tmp_roles,'suspended') !== false) {
       $student_photo =  $cfg_web_root . 'users/photos/' . $original_username . '.jpg';
       $row_no = 7;
       if (file_exists($student_photo)) {
@@ -374,7 +374,7 @@ a.access:hover {color:white}
     }
     echo "</select>&nbsp;<input type=\"text\" name=\"first_names\" size=\"20\" value=\"$tmp_first_names\" />&nbsp;<input type=\"text\" size=\"15\" name=\"surname\" value=\"$tmp_surname\" /></td><td style=\"text-align:right\"><input type=\"submit\" name=\"update\" value=\"" . $string['update'] . "\" /></td></td></tr>\n";
     echo "<tr><td>&nbsp;" . $string['email'] . "</td><td><input type=\"text\" size=\"35\" name=\"email\" value=\"$email\" /></td>\n";
-    if (strpos($tmp_roles,'Student') !== false) {
+    if (stripos($tmp_roles,'Student') !== false) {
       if ($student_id == '') $student_id = $string['unknown'];
       echo "<td>&nbsp;" . $string['studentid'] . "</td><td colspan=\"2\"><input type=\"text\" size=\"15\" name=\"sid\" value=\"$student_id\" /></td></tr>\n";
     } else {
@@ -403,7 +403,7 @@ a.access:hover {color:white}
         echo "<td colspan=\"3\"></td></tr>\n";
       }
     }
-    if (strpos($tmp_roles,'Student') !== false or strpos($tmp_roles,'graduate') !== false or strpos($tmp_roles,'left') !== false or strpos($tmp_roles,'suspended') !== false) {
+    if (stripos($tmp_roles,'Student') !== false or stripos($tmp_roles,'graduate') !== false or stripos($tmp_roles,'left') !== false or stripos($tmp_roles,'suspended') !== false) {
       // Student editing
       echo "<tr><td>&nbsp;" . $string['course'] . "</td><td><select name=\"grade\" style=\"width:300px\">";
       $found = 0;

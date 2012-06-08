@@ -30,7 +30,9 @@ require '../include/class_totals.inc';
 function nicedate($original) {
   return substr($original, 6, 2) . '/' . substr($original, 4, 2) . '/' . substr($original, 0, 4) . ' ' . substr($original, 8, 2) . ':' . substr($original, 10, 2);
 }
-  
+
+$studentsonly = (isset($_GET['studentsonly'])) ? $_GET['studentsonly'] : 1;
+
 ob_start();
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -437,11 +439,11 @@ ob_start();
         echo "<th><img src=\"../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;";
       }
       if ($sortby == $key and $ordering == 'asc') {
-        echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repcourse=" . $_GET['repcourse'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=$key&ordering=desc&percent=$percent&direction=$direction&absent=$absent\">$display</a>&nbsp;<img src=\"../artwork/desc.gif\" width=\"9\" height=\"7\" border=\"0\" /></th>";
+        echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repcourse=" . $_GET['repcourse'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=$key&ordering=desc&percent=$percent&direction=$direction&absent=$absent&studentsonly=$studentsonly\">$display</a>&nbsp;<img src=\"../artwork/desc.gif\" width=\"9\" height=\"7\" border=\"0\" /></th>";
       } elseif ($sortby == $key and $ordering == 'desc') {
-        echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repcourse=" . $_GET['repcourse'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=$key&ordering=asc&percent=$percent&direction=$direction&absent=$absent\">$display</a>&nbsp;<img src=\"../artwork/asc.gif\" width=\"9\" height=\"7\" border=\"0\" /></th>";
+        echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repcourse=" . $_GET['repcourse'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=$key&ordering=asc&percent=$percent&direction=$direction&absent=$absent&studentsonly=$studentsonly\">$display</a>&nbsp;<img src=\"../artwork/asc.gif\" width=\"9\" height=\"7\" border=\"0\" /></th>";
       } else {
-        echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repcourse=" . $_GET['repcourse'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=$key&ordering=asc&percent=$percent&direction=$direction&absent=$absent\">$display</a>&nbsp;</th>";
+        echo "<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $_GET['paperID'] . "&repcourse=" . $_GET['repcourse'] . "&module=" . $_GET['module'] . "&startdate=$startdate&enddate=$enddate&sortby=$key&ordering=asc&percent=$percent&direction=$direction&absent=$absent&studentsonly=$studentsonly\">$display</a>&nbsp;</th>";
       }
     }
   }

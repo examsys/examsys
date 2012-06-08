@@ -87,4 +87,24 @@ function demo_replace_username($username, $demo_on) {
   }
   return $username;
 }
+
+/**
+* This is function demo_replace_name returns generic names so that real ones can be hidden.
+* Useful for demonstrating Rogo at conferences and other meetings. 
+* 
+* @param string $no the array element number to select for the name
+* @return the string selected name is returned for display
+*
+*/
+function demo_replace_name($no) {
+  $names = array('Bloggs, J. Dr', 'Plinge, W. Dr', 'Frost, J. Mr', 'Doe, J. Dr', 'Smith, J. Dr', 'Nordmann, O. Dr', 'Jobs, S. Mr', 'Shmoe, J. Dr', 'Atkins, T. Mr', 'Bloggs, F. Mr', 'Gates, B. Mr', 'Berners-Lee, T. Mr', 'Andreessen, M. Mr', 'Ellison, L. Mr', 'Bush, V. Prof', 'Gosling, J. Mr', 'Torvalds, L. Mr', 'Clark, A. Mr');
+  
+  if (isset($names[$no])) {
+    $selected = $names[$no];
+  } else {
+    $selected = 'XXXXX, X, Dr';
+  }
+  
+  return $selected;
+}
 ?>

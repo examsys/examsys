@@ -167,10 +167,20 @@ if (stripos($userroles,'Student') !== false AND stripos($_SERVER['PHP_AUTH_USER'
   td {text-align:left}
   .f {font-weight:bold; text-align:right;line-height:180%;padding-right:6px}
   .w {font-size:90%;color:#C00000;font-weight:bold}
+  p { margin: 2px 0 8px 0 }
   </style>
   <script type="text/javascript">
   function startPaper() {
-    exam=window.open("./paper/start.php?id=<?php echo $_GET['id']; ?>","paper","fullscreen=<?php echo $fullscreen; ?>,width="+(screen.width-80)+",height="+(screen.height-80)+",left=20,top=10,scrollbars=yes,menubar=no,titlebar=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable=yes");
+    var paperURL = "./paper/start.php?id=<?php echo $_GET['id']; ?>";
+<?php
+  if ((strpos($userroles,'Staff') !== false or strpos($userroles,'Admin') !== false) and isset($_GET['mode']) and $_GET['mode'] == 'preview') {
+?>
+    paperURL += '&mode=preview';
+<?php
+  }
+?>
+
+    exam=window.open(paperURL,"paper","fullscreen=<?php echo $fullscreen; ?>,width="+(screen.width-80)+",height="+(screen.height-80)+",left=20,top=10,scrollbars=yes,menubar=no,titlebar=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable=yes");
     if (window.focus) {
       exam.focus();
     }
@@ -227,7 +237,7 @@ if ($textsize > 120) {
   if ($rubric != '') echo '<tr><td class="f" style="vertical-align:top"><nobr>' . $string['rubric'] . '</nobr></td><td colspan="3" style="text-align:justify; line-height:140%; padding-right:20px; padding-bottom:15px">' . $rubric . '</td></tr>';
   if ($test_type != 2) echo '<tr><td class="f"><nobr>' . $string['availability'] .'</nobr></td><td colspan="3">' . $display_start_date . ' to '. $display_end_date;
   if ($timezone != 'Europe/London') echo ' (' . str_replace('_',' ',$timezone) . ')';
-  echo '<input type="hidden" name="startdate" value="$display_start_date" /><input type="hidden" name="testtype" value="' . $test_type . "\" /></td></tr>\n";
+  echo '<input type="hidden" name="startdate" value="' . $display_start_date . '" /><input type="hidden" name="testtype" value="' . $test_type . "\" /></td></tr>\n";
   echo "<tr><td class=\"f\"><nobr>" . $string['candidates'] . "</nobr></td><td colspan=\"3\">" . str_replace(',',', ',$moduleID);
   echo '</td></tr><tr><td class="f"><nobr>' . $string['screens'] . '</nobr></td><td>' . $paper_screens . '</td>';
   echo '<td class="f">' . $string['navigation'] . '</td><td>';
@@ -282,12 +292,10 @@ if ($textsize > 120) {
   $log_info->execute();
   $log_info->bind_result($log_max_screen, $log_mark, $log_started, $log_paper_type, $log_temp_date);
   $log_info->store_result();
-  if (strpos($userroles,'Staff') !== false or strpos($userroles,'QABME') !== false or strpos($userroles,'SysAdmin') !== false) {
+  if (strpos($userroles,'Staff') !== false or strpos($userroles,'Admin') !== false) {
+    echo "<input type=\"button\" style=\"width:" . $button_width . "px; font-weight:bold\" value=\"" . $string['start'] . "\" name=\"start\" id=\"start\" onclick=\"startPaper();\" onkeypress=\"startPaper();\" />\n";
     if (time() < $paper_start or time() > $paper_end) {
-      echo "<input type=\"button\" style=\"width:" . $button_width . "px; font-weight:bold\" value=\"" . $string['start'] . "\" name=\"start\" onclick=\"\" disabled />\n";
-      echo '<div style="font-size:90%;color:#C00000"><img src="./artwork/small_warning_16.png" width="16" height="16" alt="!" />&nbsp;' . $string['papernotavailable'] . '</div>';
-    } else {
-      echo "<input type=\"button\" style=\"width:" . $button_width . "px; font-weight:bold\" value=\"" . $string['start'] . "\" name=\"start\" id=\"start\" onclick=\"startPaper();\" onkeypress=\"startPaper();\" />\n";
+      echo '<div style="font-size:90%;color:#C00000"><img src="./artwork/small_warning_16.png" width="16" height="16" alt="!" />&nbsp;' . $string['papernotavailablestudents'] . '</div>';
     }
   } else {
     if ($test_type > 0 and $log_info->num_rows > 0) {

@@ -22,8 +22,7 @@
 * @package
 */
 
-  require '../include/sysadmin_auth.inc';
-  //require '../include/auth.inc';
+require '../include/sysadmin_auth.inc';
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -33,10 +32,8 @@
 
 <body>
 <?php
-
   $new_password = gen_password();
-  
-  $encrypt_password = encpw($_GET['username'],$new_password);
+  $encrypt_password = encpw($cfg_encrypt_salt, $_GET['username'], $new_password);
 
   $stmt = $mysqli->prepare("UPDATE users SET password=? WHERE id=?");
   $stmt->bind_param('si', $encrypt_password, $_GET['userID']);

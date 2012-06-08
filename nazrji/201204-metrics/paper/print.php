@@ -16,9 +16,6 @@
 
 /**
 * 
-* Handles paper display and the recording of marks to the 'logX' tables. Uses functions within 'display_functions.inc' to process specific 
-* types of questions. Start.php continues calling itself while there are further screens to be displayed and then calls 'finish.php'
-* to end.
 * 
 * @author Simon Wilkinson, Anthony Brown
 * @version 1.0
@@ -29,16 +26,16 @@
 require '../include/staff_auth.inc';
 require '../include/print_functions.inc';
 require '../include/media.inc';
+require '../config/index.inc';
 require_once '../include/errors.inc';
 
 check_var('id', 'GET', true, false);
-
 
 function randomQOverwrite(&$questions, $random_q_data, $paper_type, $user_answers, $current_screen, $q_no) {
   global $mysqli, $used_questions;
  
   $selected_q_id = '';
-  if(isset($user_answers[$current_screen])) {
+  if (isset($user_answers[$current_screen])) {
     //match user's answers with random question ID.
     $question_on_screen = array_keys($user_answers[$current_screen]);
     $selected_q_id = current($question_on_screen);
@@ -225,16 +222,6 @@ function keywordQOverwrite(&$questions, $random_q_data, $paper_type, $user_answe
 
 if (isset($_POST['sessionid'])) require '../include/marking_functions.inc';
 
-if ($special_needs == 1) {
-  $stmt = $mysqli->prepare("SELECT background, foreground, textsize, marks_color, themecolor, labelcolor, font FROM special_needs WHERE userid=?");
-  $stmt->bind_param('i',$userID);
-  $stmt->execute();
-  $stmt->store_result();
-  $stmt->bind_result($bgcolor, $fgcolor, $textsize, $marks_color, $themecolor, $labelcolor, $font);
-  $stmt->fetch();
-  $stmt->close();
-}
-
 // Get how many screens make up the question paper.
 $screen_data = array();
 $row_no = 0;
@@ -256,59 +243,13 @@ while ($stmt->fetch()) {
   }
   if ($row_no == 1) {
     $original_paper_type = $paper_type;
-    
-    // If set overwrite the default colours with the current users' special settings
-    if (!isset($bgcolor) or $bgcolor == 'NULL' or $bgcolor == '') $bgcolor = $paper_bgcolor;
-    if (!isset($fgcolor) or $fgcolor == 'NULL' or $fgcolor == '') $fgcolor = $paper_fgcolor;
-    if (!isset($textsize) or $textsize == 'NULL' or $textsize == '') $textsize = 90;
-    if (!isset($marks_color) or $marks_color == 'NULL' or $marks_color == '') $marks_color = '#808080';
-    if (!isset($themecolor) or $themecolor == 'NULL' or $themecolor == '') $themecolor = $paper_themecolor;
-    if (!isset($labelcolor) or $labelcolor == 'NULL' or $labelcolor == '') $labelcolor = $paper_labelcolor;
-    if (!isset($font) or $font== 'NULL' or $font == '') $font = 'Arial';
-    $attempt = 1; //default attempt to 1 overwritten if the student is resit candidate
   }
 }
 $stmt->free_result();
 $stmt->close();
 
-// Extract the posted variables.
-$restart = 0;
-if (isset($_POST['sessionid'])) {
-  if (isset($_POST['next'])) {
-    $current_screen = $_POST['current_screen'];
-  } elseif (isset($_POST['prev'])) {
-    $current_screen = $_POST['current_screen'] - 2;
-  } elseif (isset($_POST['jump_screen'])) {
-    $current_screen = $_POST['jump_screen'];
-  }
-  $sessionid = $_POST['sessionid'];
-} else {
-  $current_screen = 1;
-  if (($paper_type == '1' or $paper_type == '2' or $paper_type == '3') and !isset($_GET['mode'])) {  //Mode is used for staff preview.
-    $stmt = $mysqli->prepare("SELECT DATE_FORMAT(MAX(started),\"%Y%m%d%H%i%s\") AS started, MAX(screen) AS screen FROM log$paper_type WHERE q_paper=? AND userID=? GROUP BY screen DESC LIMIT 1");
-    $stmt->bind_param('ii', $property_id, $userID);
-    $stmt->execute();
-    $stmt->store_result();
-    $stmt->bind_result($sessionid, $current_screen);
-    if ($stmt->num_rows == 1) {
-      $row = $stmt->fetch();
-      $stmt->free_result();
-      $restart = 1;
-      if ($paper_type == '3') {
-        $current_screen = 1;
-      } elseif ($current_screen < $no_screens) {
-        $current_screen++;
-      }
-    } else {
-      $sessionid = date("YmdHis", time());
-    }
-    $stmt->close();
-  } else {
-    $sessionid = date("YmdHis", time());
-  }
-}
+$current_screen = 1;
 
-require '../config/start.inc';
 echo "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\n\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html>\n<head>\n";
 if ($paper_type == '3') {
   echo "<title>" . $string['survey'] . "</title>\n";
@@ -321,142 +262,29 @@ if ($paper_type == '3') {
 <meta http-equiv="imagetoolbar" content="false">
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $cfg_page_charset ?>" />
 <meta http-equiv="pragma" content="no-cache" />
+<link rel="stylesheet" type="text/css" href="../css/start.css" />
+
 <style type="text/css">
-body {background-color:<?php echo $bgcolor; ?>;color:<?php echo $fgcolor; ?>;padding:0px;margin:0px;border:0px;font-family:<?php echo $font; ?>,sans-serif;font-size:<?php echo $textsize; ?>%}
-li {margin-left:15px;margin-right:15px;font-size:100%}
-<?php
-if (($bgcolor != 'white' and $bgcolor != '#FFFFFF') or ($fgcolor != 'black' and $fgcolor != '#000000')) {
-  echo "select,input{background-color:$bgcolor;color:$fgcolor;font-family:$font,sans-serif;font-size:100%}\n";
-} else {
-  echo "select,input{font-family:$font,sans-serif;font-size:100%}\n";
-}
-?>
-table {font-size:100%}
-p {margin-top:0px; padding-top:0px}
-pre {font-family:<?php echo $font; ?>,sans-serif; font-size:100%}
-.q_no {width:40px; text-align:right;vertical-align:top}
-.theme {font-size:150%; padding-left:4px;font-weight:bold;color:<?php echo $themecolor; ?>}
-.note {color:<?php echo $labelcolor; ?>}
-.mk {color:<?php echo $marks_color; ?>;font-size:80%}
-.act {color:<?php echo $fgcolor; ?>;text-decoration:none}
-.inact {color:#A5A5A5;text-decoration:line-through}
-.s0 {width:18px;text-align:center;background-color:#003366;font-size:80%}
-.s1 {width:18px;text-align:center;background-color:#C00000;font-size:80%}
-.unans {background-color:#FFC0C0}
-.matrix {border:1px solid #808080; border-collapse:collapse}
-.matrix td {border:1px solid #808080}
-.extmatch li {padding-bottom:14px; vertical-align:text-bottom; list-style-type:lower-roman}
-.paper {margin-left:0px; font-family:Arial,sans-serif; font-size:180%; color:black; font-weight:bold}
+.paper {margin-left:10px; font-family:Arial,sans-serif; font-size:180%; color:black; font-weight:bold}
 <?php
 if ($paper_type == '3') echo ".likert_button {text-align:center;width:40px;vertical-align:top}\n";
 if ($latex_needed == 1) echo ".latex {vertical-align:middle}\n";
 ?>
 </style>
 <script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
-<?php if ($latex_needed == 1) {?>
-  <script type="text/javascript" src="../tools/mee/mee/js/mee_src.js"></script>
-<?php }?>
-<script language="JavaScript" src="../js/start.js"></script>
-
-<script type="text/javascript">
-var lang = {
-<?php
-$langstrings = array('msgselectable1', 'msgselectable2', 'msgselectable3', 'msgselectable4');
-$first = true;
-foreach ($langstrings as $langstring) {
-  if (!$first) {
-    echo ',';
-  }
-  echo "'{$langstring}':'{$string[$langstring]}'";
-  $first = false;
-}
-?>
-};
-</script>
-
-<script language="JavaScript" src="../js/flash_include.js"></script>
-<script language="javascript">
-  window.history.go(1);
-<?php
-  if ($original_paper_type == '2') {
-?>
-  function fire(scrno) {
-    document.questions.button_pressed.value='previous';
-    document.questions.action="fire_evacuation.php?id=<?php echo $_GET['id']; ?>";
-    document.questions.submit();
-  }
-<?php
-  }
-  if ($bidirectional == '0') {
-?>
-  var submitted = false;
-  function confirmSubmit() {
-    if (submitted == true) {
-      return false;
-    }
-    var agree = confirm("<?php echo $string['javacheck1']; ?>");
-    if (agree) {
-      document.body.style.cursor = 'wait';
-      submitted = true;
-      return true;
-    } else {
-      return false;
-    }
-  }
-<?php
-  } else {
-?>
-  var submitted = false;
-  function confirmSubmit() {
-	saveMath();
-	if (submitted == true) {
-      return false;
-    }
-    if (document.questions.button_pressed.value == 'finish') {
-      var agree = confirm("<?php echo $string['javacheck2']; ?>");
-      if (agree) {
-        document.body.style.cursor = 'wait';
-        submitted = true;
-        return true;
-      } else {
-        return false;
-      }
-    } else {
-      document.body.style.cursor = 'wait';
-      submitted = true;
-      return true;
-    }
-  }
-  function jumpScreen() {
-    document.questions.button_pressed.value='previous';
-    document.questions.action="start.php?id=<?php echo $_GET['id']; ?>";
-    if (confirmSubmit()) {
-      document.questions.submit();
-    }
-  }
-<?php
-  }
-?>
-</script>
+<script type="text/javascript" src="../tools/mee/mee/js/mee_src.js"></script>
+<script type="text/javascript" src="../js/start.js"></script>
+<script type="text/javascript" src="../js/flash_include.js"></script>
 </head>
-<?php
-if (stripos($userroles,'Student') !== false) {
-  echo '<body oncontextmenu="return false;" onload="StartClock();" onunload="KillClock()">';
-} else {
-  echo '<body onload="StartClock();" onunload="KillClock()">';
-}
-if ($current_screen < $no_screens) {
-  echo "<form method=\"post\" name=\"questions\" action=\"" . $_SERVER['PHP_SELF'] . "?id=" . $_GET['id'] . "\"";
-} else {
-  echo "<form method=\"post\" name=\"questions\" action=\"finish.php?id=" . $_GET['id'] . "\"";
-}
-echo ' onsubmit="return confirmSubmit()">';   // Warning message only in linear navigation mode.
-?>
+<body>
+  <div id="maincontent">
+  <form method="post" name="questions" action="">
+
   <table cellpadding="0" cellspacing="0" border="0" width="100%">
   <tr><td valign="top">
 <?php
-  echo '<tr><td class="raised_tbl"><div class="paper">' . $paper_title . '</div>';
-  echo '</td><td align="center" class="raised_tbl" width="167"><img src="../artwork/black_uon_logo.png" width="167" height="70" alt="Logo" border="0" /></td></tr></table>';
+  echo '<tr><td><div class="paper">' . $paper_title . '</div>';
+  echo '</td><td align="right" width="167">' . $logo_html . '</td></tr></table>';
 
   $user_answers = array();
   $previous_duration = 0;
@@ -478,13 +306,6 @@ echo ' onsubmit="return confirmSubmit()">';   // Warning message only in linear 
   $num_rows = $question_data->num_rows;
   echo "<table cellpadding=\"0\" cellspacing=\"4\" border=\"0\" width=\"100%\" style=\"table-layout:fixed\">\n";
   echo "<col width=\"40\"><col>\n";
-  if ($original_paper_type == 2) {
-    if (isset($low_bandwidth) and $low_bandwidth == 1) {
-      echo '<tr><td colspan="2"><table cellpadding="0" cellspacing="0" border="0" width="100%"><tr><td><span style="text-align:center;font-weight:bold;background-color:#028F43;color:white;cursor:pointer" onclick="fire()" />&nbsp;Fire Exit&nbsp;</span></td><td style="text-align:right"><span style="text-align:center;font-weight:bold;background-color:#028F43;color:white;cursor:pointer" onclick="fire()" />&nbsp;Fire Exit&nbsp;</span></td></tr></table></td></tr>';
-    } else {
-      echo '<tr><td colspan="2"><table cellpadding="0" cellspacing="0" border="0" width="100%"><tr><td><img src="../artwork/fire_exit.png" width="32" height="32" alt="Fire Exit" style="cursor:hand" onclick="fire()" /></td><td style="text-align:right"><img src="../artwork/fire_exit.png" width="32" height="32" alt="Fire Exit" style="cursor:hand" onclick="fire()" /></td></tr></table></td></tr>';
-    }
-  }
   $q_no = 0;
   //build the questions_array
   $tmp_questions_array = array();
@@ -545,5 +366,6 @@ echo ' onsubmit="return confirmSubmit()">';   // Warning message only in linear 
 ?>
 </table>
 </form>
+</div>
 </body>
 </html>

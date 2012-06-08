@@ -31,5 +31,9 @@ $string['Bidirectional'] = 'Nawigacja dwukierunkowa';
 $string['Unidirectional'] = 'Nawigacja jednokierunkowa';
 $string['requirespassword'] = 'Ten arkusz wymaga podania hasła.';
 $string['mins'] = 'min.';
-$string['forthcomingpapers'] = 'Forthcoming Papers'; // Niko
+$string['summativetesting'] = 'Egzaminy kocowe do testów';
+$string['summativetestmsg'] = '<strong>Tylko dla kadry &ndash; ta sekcja nie jest widoczna dla studentów.</strong> Te egzaminy końcowe zaplanowano dla twojego zespołu w najbliższych sześciu tygodniach.'; 
+$string['nodurationwarning'] = 'Ostrzeżenie: nie określono czasu trwania'; 
+$string['startwarning'] = 'Ostrzeżenie: arkusz ustawiono na czas wcześniejszy niż %d:00'; 
+$string['nolabswarning'] = 'Ostrzeżenie: nie określono laboratorium'; 
 ?>

@@ -125,7 +125,7 @@ if ($critical_error == '') {
   $show_correction_intermediate = false;
   if ($question->requires_media() and $current_media['filename'] == '') {
     $show_media_upload = true;
-  } elseif (isset($_POST['submit']) and $_POST['submit'] == $string['correct']) {
+  } elseif (isset($_POST['submit']) and $_POST['submit'] == $string['limitedsave']) {
     if ($question->requires_correction_intermediate() and (!isset($_POST['corrected']) or $_POST['corrected'] != 'OK')) {
       $show_correction_intermediate = true;
     } else {
@@ -171,19 +171,17 @@ if ($critical_error == '') {
       }
 
       // Save metadata
-//      $part_names = array('bloom','status','teams');
-//      foreach($part_names as $section_name) {
-//        if(isset($_POST["$section_name"])) {
-//          $method = "set_$section_name";
-//          $question->$method($_POST["$section_name"]);
-//        }
-//      }
-//
-//      $do_save = true;
+      $part_names = array('bloom','status','teams');
+      foreach($part_names as $section_name) {
+        if(isset($_POST["$section_name"])) {
+          $method = "set_$section_name";
+          $question->$method($_POST["$section_name"]);
+        }
+      }
 
-      redirect();
+      $do_save = true;
     }
-  } elseif ((isset($_POST['submit']) and ($_POST['submit'] == $string['save'] or $_POST['submit'] == $string['limitedsave'])) or isset($_POST['addbank']) or isset($_POST['addpaper'])) {
+  } elseif ((isset($_POST['submit']) and $_POST['submit'] == $string['save']) or isset($_POST['addbank']) or isset($_POST['addpaper'])) {
    // Save data
     if ($question->id == -1 or check_fullSave($question->id,$mysqli)) {
       
@@ -277,19 +275,8 @@ if ($critical_error == '') {
         
       }
 
-    } else {
-      // Limited save
-      $part_names = array('bloom','status','teams');
-      foreach($part_names as $section_name) {
-        if(isset($_POST["$section_name"])) {
-          $method = "set_$section_name";
-          $question->$method($_POST["$section_name"]);
-        }
-      }
+      $do_save = true;
     }
-
-    $do_save = true;
-
   } elseif (isset($_POST['submit-cancel']) and $_POST['submit-cancel'] == $string['cancel']) {
     $question->clear_checkout();
     redirect();

@@ -54,7 +54,7 @@ $header = array();
 $needed_cols = array('student_id', 'full name', 'first names', 'surname', 'title', 'course code', 'year of course', 'local email');
 
 function add_users_from_file($fileName) {
-  global $header, $needed_cols, $mysqli;
+  global $header, $needed_cols, $mysqli, $cfg_encrypt_salt;
   
   $courses = array();
   $users[] = array();
@@ -153,9 +153,10 @@ function add_users_from_file($fileName) {
       //add new users
       //TODO this function has been moved to passwordutils.class.inc  
       $password =  gen_password();
-      //TODO this function has been moved to userutils.class.inc  
+      
+      $encrypt_password = encpw($cfg_encrypt_salt, $username, $password);
       $result = $mysqli->prepare("INSERT INTO users VALUES(?, ?, ?, ?, ?, ?, ?, ?, 'Student', NULL, ?, ?, ?, NULL, 0)");
-      $result->bind_param('ssssssssssi', encpw($username, $password), $course, $surname, $initials, $title, $username, $email, $faculty, $forname, $gender, $year);
+      $result->bind_param('ssssssssssi', $encrypt_password, $course, $surname, $initials, $title, $username, $email, $faculty, $forname, $gender, $year);
       $result->execute();
       $result->close();
         
@@ -188,13 +189,13 @@ function add_users_from_file($fileName) {
       $invalid_user = true;
     }
 	  
-    if ($invalid_user != true AND isset($header['modules']) AND isset($header['session'])) {
+    if ($invalid_user != true and isset($header['modules']) and isset($header['session'])) {
       //add students to modules
       $module = trim($fields[$header['modules']]);
       $session = trim($fields[$header['session']]);
       echo "Insert " . trim($fields[$header['modules']]) . " $userID - " . trim($fields[$header['session']]) . "<br />\n";
       $result = $mysqli->prepare("INSERT INTO student_modules VALUES(NULL, ?, ?, ?, 1)");
-      $result->bind_param('iss',$userID,$module,$session);
+      $result->bind_param('iss', $userID, $module, $session);
       $result->execute();
       $result->close();
     }

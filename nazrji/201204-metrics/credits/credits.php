@@ -27,6 +27,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
 <title>Credits</title>
 <style type="text/css">
@@ -37,7 +38,7 @@ a {color:blue}
 
 <div style="position:absolute; top:20px; left:25px"><img src="../artwork/rogo_logo.gif" width="137" height="61" alt="logo" border="0" /></div>
 
-<div style="position:absolute; top:10px; left:510px"><img src="../artwork/black_uon_logo.png" width="167" height="70" alt="Logo" border="0" /></div>
+<div style="position:absolute; top:10px; left:510px"><img src="../artwork/black_uon_logo.png" width="167" height="70" alt="University of Nottingham" /></div>
 
 <div style="position:absolute; top:60px; left:20px; font-size:75%; padding-top:10px; padding-right:2px; padding-left:5px">
 <br />
@@ -74,7 +75,7 @@ Dr Nikodem Miranowicz</td>
 <tr><td colspan="2">&nbsp;</td></tr>
 <tr><td style="vertical-align:top">Graphics</td><td><a href="http://www.iconfinder.com/" target="_blank">www.iconfinder.com</a><br />
 <a href="http://www.psdgraphics.com/category/icons/" target="_blank">www.psdgraphics.com/category/icons/</a><br />
-<a href="http://pixel-mixer.com/" target="_blank">pixel-mixer.com</a></td></tr>
+<a href="http://pixelmixer.ru/" target="_blank">pixel-mixer.com</a></td></tr>
 <tr><td colspan="2">&nbsp;</td></tr>
 <tr><td>Calculator</td><td><em>NOTE: Not open source but used with permission</em><br />
 <a href="http://www.calculator.org/default.aspx" target="_blank">http://www.calculator.org</a></td></tr>

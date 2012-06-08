@@ -32,8 +32,8 @@
  * 
  */
  
-require $cfg_web_root . 'webServices/RestRequest.class';
-require $cfg_web_root . 'classes/dateutils.class.php';
+require_once $cfg_web_root . 'webServices/RestRequest.class';
+require_once $cfg_web_root . 'classes/dateutils.class.php';
 
 function render_objectives_mapping_form($db, $paper_id, &$string) {
   //get module and session form paper id

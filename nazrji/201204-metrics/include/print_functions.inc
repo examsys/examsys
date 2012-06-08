@@ -124,7 +124,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
       }
     } else {
       // Set the order array to what is stored in the users log record
-      $question['option_order'] = explode(',',$user_order[$current_screen][$q_id]);
+      $question['option_order'] = explode(',', $user_order[$current_screen][$q_id]);
     }
     
     // Re-arrange the options array
@@ -206,11 +206,8 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
       echo "</tr>\n";
       break;
     case 'mcq':
-      if (isset($user_answers[$current_screen][$q_id]) AND $user_answers[$current_screen][$q_id] == '0' AND $screen_pre_submitted == 1) {
-        echo '<blockquote class="unans">';
-      } else {
-        echo '<blockquote>';
-      }
+      echo '<blockquote>';
+      
       if ($question['display_method'] == 'vertical' or $question['display_method'] == 'vertical_other') {
         echo '<table cellpadding="2" cellspacing="0" border="0">';
       } elseif ($question['display_method'] == 'dropdown') {
@@ -311,7 +308,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
       $sct_parts = explode('~',$question['leadin']);
       echo '<table cellpadding="2" cellspacing="0" border="0" style="width:100%">';
       $sct_titles = array(1=>$string['hypothesis'], 2=>$string['investigation'], 3=>$string['prescription'], 4=>$string['intervention'], 5=>$string['treatment']);
-       echo "<tr><td style=\"width:49%; background-color:#E4EEFC; border-bottom:1px solid #B5C4DF; font-weight:bold\">" . $sct_titles[$question['display_method']] . "</td><td style=\"width:2%\">&nbsp;</td><td style=\"width:49%; background-color:#E4EEFC; border-bottom:1px solid #B5C4DF; font-weight:bold\">" . $string['newinformation'] . "</td></tr>\n";
+      echo "<tr><td style=\"width:49%; background-color:#E4EEFC; border-bottom:1px solid #B5C4DF; font-weight:bold\">" . $sct_titles[$question['display_method']] . "</td><td style=\"width:2%\">&nbsp;</td><td style=\"width:49%; background-color:#E4EEFC; border-bottom:1px solid #B5C4DF; font-weight:bold\">" . $string['newinformation'] . "</td></tr>\n";
       echo "<tr><td style=\"width:49%; vertical-align:top\">" . $sct_parts[0] . "</td><td style=\"width:2%\">&nbsp;</td><td style=\"width:49%; vertical-align:top\">" . $sct_parts[1] . "</td></tr>\n";
       echo "</table>\n";
       
@@ -319,12 +316,21 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
       echo $string['thenthis'] . " " . mb_strtolower($sct_titles[$question['display_method']], 'UTF-8') . " " . $string['is'] . ":";
       echo '</strong></p>';
       
-      if (isset($user_answers[$current_screen][$q_id]) and $user_answers[$current_screen][$q_id] == '0' and $screen_pre_submitted == 1) {
-        echo '<blockquote class="unans"><table cellpadding="2" cellspacing="0" border="0">';
-      } else {
-        echo '<blockquote><table cellpadding="2" cellspacing="0" border="0">';
-      }
+      echo '<blockquote><table cellpadding="2" cellspacing="0" border="0">';
+      
       $marks = 1;
+      break;
+    case 'true_false':
+      echo '<blockquote style="line-height:175%"><table>';           
+      echo '<td align="center"><img src="../artwork/print_box_circle.png" width="24" height="24" alt="" />&nbsp;True';
+      if ($question['display_method'] == 'horizontal') {
+        echo '&nbsp;&nbsp;&nbsp;';
+      } else {
+        echo '<br />';
+      }
+      echo '<td align="center"><img src="../artwork/print_box_circle.png" width="24" height="24" alt="" />&nbsp;False'; 
+      
+      echo '</table></blockquote>';
       break;
   }
 
@@ -344,15 +350,11 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
           $abstain = false;
         }
 
-        if ($tmp_user_answer == 'u' and $screen_pre_submitted == 1) {
-          echo '<tr class="unans"><td align="center">';
-        } else {
-          echo '<tr><td align="center">';
-        }
+        echo '<tr><td align="center">';
         $tmp_part_id = $question['option_order'][$part_id-1] + 1;
-        echo '<img src="../artwork/print_checkbox.gif" width="25" height="24" alt="" /></td><td align="center"><img src="../artwork/print_checkbox.gif" width="25" height="24" alt="" /></td>';
+        echo '<img src="../artwork/print_box_circle.png" width="24" height="24" alt="" /></td><td align="center"><img src="../artwork/print_box_circle.png" width="24" height="24" alt="" /></td>';
         if ($abstain == true) {
-          echo '<td align=\"center\"><img src="../artwork/print_checkbox.gif" width="25" height="24" alt="" /></td>';
+          echo '<td align=\"center\"><img src="../artwork/print_box_circle.png" width="24" height="24" alt="" /></td>';
         }
         echo '<td>';
         if ($display_option['option_text'] != '') echo $display_option['option_text'];
@@ -392,38 +394,28 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
         
         break;
       case 'likert':
-        if (isset($user_answers[$current_screen][$q_id]) and $user_answers[$current_screen][$q_id] == 'u' and $screen_pre_submitted == 1) {
-          echo '<tr class="unans">';
-        } else {
-          echo '<tr>';
-        }
-        echo '<td class="q_no">' . ($question_no + $question_offset) . '.&nbsp;</td><td>' . $question['leadin'] . '</td>';
+        echo '<tr><td class="q_no">' . ($question_no + $question_offset) . '.&nbsp;</td><td>' . $question['leadin'] . '</td>';
         $scale_size = substr_count($question['display_method'],'|');
         if ($likert_display[$scale_size] == 'true') {
-          echo "<td style=\"text-align:center; width:40px; vertical-align:top\"><img src=\"../artwork/print_checkbox.gif\" width=\"25\" height=\"24\" alt=\"\" /></td>";
+          echo '<td style="text-align:center; width:40px; vertical-align:top"><img src="../artwork/print_box_tick.png" width="23" height="23" alt="" /></td>';
         }
         for ($i=1; $i<=$scale_size; $i++) {
-          echo '<td class=\"likert_button\"><img src="../artwork/print_checkbox.gif" width="25" height="24" alt="" /></td>';
+          echo '<td class=\"likert_button\"><img src="../artwork/print_box_tick.png" width="23" height="23" alt="" /></td>';
         }
         echo "</tr>\n";
         break;
       case 'mcq':
         $tmp_part_id = $question['option_order'][$part_id-1] + 1;
         if ($question['display_method'] == 'vertical' or $question['display_method'] == 'vertical_other') {
-          echo '<tr><td><img src="../artwork/print_checkbox.gif" width="25" height="24" alt="" /></td><td>';
-          if (isset($user_dismiss[$current_screen][$q_id]) and substr($user_dismiss[$current_screen][$q_id],$tmp_part_id-1,1) == '1') {
-            $class_type = 'inact';
-          } else {
-            $class_type = 'act';
-          }
-          if ($display_option['option_text'] != '') echo "<span class=\"$class_type\" onclick=\"onoff($question_no,$tmp_part_id)\" id=\"$question_no" . "_" . "$tmp_part_id\">" . $display_option['option_text'] . '</span>';
+          echo '<tr><td><img src="../artwork/print_box_circle.png" width="24" height="24" alt="" /></td><td>';
+          if ($display_option['option_text'] != '') echo $display_option['option_text'];
           if ($display_option['o_media'] != '') {
             if ($display_option['option_text'] != '') echo '<br />';
             echo display_media($display_option['o_media'],$display_option['o_media_width'],$display_option['o_media_height']);
           }
           echo "</td></tr>\n";
         } else {
-          echo '<img src="../artwork/print_checkbox.gif" width="25" height="24" alt="" />';
+          echo '<img src="../artwork/print_box_circle.png" width="24" height="24" alt="" />';
           if ($display_option['option_text'] != '') echo '&nbsp;' . $display_option['option_text'];
           if ($display_option['o_media'] != '') echo '&nbsp;' . display_media($display_option['o_media'],$display_option['o_media_width'],$display_option['o_media_height']);
           echo '&nbsp;&nbsp;';
@@ -432,15 +424,8 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
         break;
       case 'mrq':
         $tmp_part_id = $question['option_order'][$part_id-1] + 1;
-        echo '<tr><td><img src="../artwork/print_checkbox.gif" width="25" height="24" alt="" /></td><td>';
-        
-        if (isset($user_dismiss[$current_screen][$q_id]) and substr($user_dismiss[$current_screen][$q_id],$part_id-1,1) == '1') {
-          $class_type = 'inact';
-        } else {
-          $class_type = 'act';
-        }
-
-        if ($display_option['option_text'] != '') echo "<span class=\"$class_type\" onclick=\"onoff($question_no,$part_id)\" id=\"$question_no" . "_" . "$part_id\">" . $display_option['option_text'] . '</span>';
+        echo '<tr><td><img src="../artwork/print_box_tick.png" width="23" height="23" alt="" /></td><td>';
+        if ($display_option['option_text'] != '') echo $display_option['option_text'];
         if ($display_option['o_media'] != '') {
           if ($display_option['option_text'] != '') echo '<br />';
           echo display_media($display_option['o_media'], $display_option['o_media_width'], $display_option['o_media_height']);
@@ -480,46 +465,9 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
           }
         }
 
-        echo '<tr';
-        if (isset($rank_answers[$tmp_part_id - 1]) AND $rank_answers[$tmp_part_id - 1] == 'u' and $screen_pre_submitted == 1 and $tmp_user_answers < $total_rank_no) {
-          echo ' class="unans"';
-        }
-        echo "><td class=\"option\"><select name=\"q" . $question_no . "_" . $tmp_part_id . "\" id=\"q" . $question_no . "_" . $tmp_part_id . "\" class=\"rankselect q" . $question_no . "\">\n";
+        echo '<tr><td class="option"><img src="../artwork/print_box_1.png" width="30" height="30" /></td>';
         
-        echo "<option value=\"u\"></option>\n";
-        if ($require_na) {
-          if (isset($rank_answers[$tmp_part_id - 1]) AND $rank_answers[$tmp_part_id - 1] == '0') {
-            echo "<option value=\"0\" selected>" . $string['na'] . "</option>\n";
-          } else {
-            echo "<option value=\"0\">" . $string['na'] . "</option>\n";
-          }
-        }
-        for ($i=1; $i<=$total_rank_no; $i++) {
-          if (isset($rank_answers[$tmp_part_id - 1]) AND $i == $rank_answers[$tmp_part_id - 1]) {
-            echo "<option value=\"" . $i . "\" selected>" . $i;
-          } else {
-            echo "<option value=\"" . $i . "\">" . $i;
-          }
-          if ($language == 'en') {
-            if ($i == 1) {
-              echo 'st';
-            } elseif ($i == 2) {
-              echo 'nd';
-            } elseif ($i == 3) {
-              echo 'rd';
-            } else {
-              echo 'th';
-            }
-          }
-          echo '</option>';
-        }
-        echo '</select></td>';
-        if (isset($user_dismiss[$current_screen][$q_id]) and substr($user_dismiss[$current_screen][$q_id],$tmp_part_id-1,1) == '1') {
-          $class_type = 'inact';
-        } else {
-          $class_type = 'act';
-        }
-        echo "<td><span class=\"$class_type\" onclick=\"onoff($question_no,$tmp_part_id)\" id=\"$question_no" . "_" . "$tmp_part_id\">" . $display_option['option_text'] . "</span></td>\n</tr>\n";
+        echo "<td>" . $display_option['option_text'] . "</td>\n</tr>\n";
         if ($display_option['correct'] != 0) {
           $marks += $display_option['marks_correct'];
         } elseif ($question['score_method'] == 'Mark per Option') {
@@ -528,24 +476,43 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
         break;
       case 'sct':
         $tmp_part_id = $question['option_order'][$part_id-1] + 1;
-        if (isset($user_answers[$current_screen][$q_id]) AND $tmp_part_id == $user_answers[$current_screen][$q_id]) {
-          echo "<tr><td><input type=\"radio\" name=\"q" . $question_no . "\" value=\"$tmp_part_id\" checked /></td><td>";
-        } else {
-          echo "<tr><td><input type=\"radio\" name=\"q" . $question_no . "\" value=\"$tmp_part_id\" /></td><td>";
-        }
-        if (isset($user_dismiss[$current_screen][$q_id]) and substr($user_dismiss[$current_screen][$q_id],$tmp_part_id-1,1) == '1') {
-          $class_type = 'inact';
-        } else {
-          $class_type = 'act';
-        }
-        if ($display_option['option_text'] != '') echo "<span class=\"$class_type\" onclick=\"onoff($question_no,$tmp_part_id)\" id=\"$question_no" . "_" . "$tmp_part_id\">" . $display_option['option_text'] . '</span>';
+        echo "<tr><td><input type=\"radio\" name=\"q" . $question_no . "\" value=\"$tmp_part_id\" /></td><td>";
+        if ($display_option['option_text'] != '') echo $display_option['option_text'];
         echo "</td></tr>\n";
         break;
       case 'blank':
+        if ($question['display_method'] == 'dropdown') {
+          $blank_details = explode('[blank',$display_option['option_text']);
+          echo '<table class="extmatch_opt_table"><tr>';
+          
+          $no_blanks = count($blank_details);
+          $blank_count = 1;
+          while ($blank_count < $no_blanks) {
+            echo '<td style="vertical-align:top"><strong>' . $blank_count . '.</strong><ul type="A">';
+            $not_used = preg_match("|mark=\"([0-9]{1,3})\"|",$blank_details[$blank_count],$results);
+            if (isset($results[1]) and $results[1] != '') {
+              $blank_mark[$blank_count] = $results[1];
+            } else {
+              $blank_mark[$blank_count] = $display_option['marks_correct'];
+            }
+            $blank_details[$blank_count] = substr($blank_details[$blank_count], (strpos($blank_details[$blank_count],']') + 1));
+            $answer_options = explode('[/blank]',$blank_details[$blank_count]);
+            $answer_list = explode(',',$answer_options[0]);
+            shuffle($answer_list);            // Shuffle the answers up.
+            for ($i=1; $i<=count($answer_list); $i++) {
+              echo '<li>' . htmlentities(trim($answer_list[$i-1])) . '</li>';
+            }
+            $blank_count++;
+            echo '</ul></td>';
+          }
+          echo '</tr></table>';
+        }
+      
+        $blank_details = explode('[blank',$display_option['option_text']);
         $ans = '';
         $blank_mark = array();
         $display_option['option_text'] = str_replace('&nbsp;',' ',$display_option['option_text']);
-        $blank_details = explode('[blank',$display_option['option_text']);
+        
         if (isset($user_answers[$current_screen][$q_id])) {
           $user_answers[$current_screen][$q_id] = str_replace('&nbsp;',' ',$user_answers[$current_screen][$q_id]);
         }
@@ -578,14 +545,8 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
               $blank_mark[$blank_count] = $display_option['marks_correct'];
             }
     
-            if ( (isset($blank_user_answers[$blank_count]) and $blank_user_answers[$blank_count] == 'u') and (isset($screen_pre_submitted) and $screen_pre_submitted == 1) ) {
-              $screen_output[$blank_count] = preg_replace("|\[blank.*\].*\[/blank\]|","<input type=\"text\" name=\"q" . $question_no . "_" . $blank_count . "\" class=\"unans\" size=\"$blank_size[$blank_count]\" />",$blank_details[$blank_count]);
-            } else { 
-              if (isset($blank_user_answers[$blank_count])) {
-                $ans = $blank_user_answers[$blank_count];
-              }
-              $screen_output[$blank_count] = preg_replace("|\[blank.*\].*\[/blank\]|","<input type=\"text\" name=\"q" . $question_no . "_" . $blank_count . "\" value=\"" . $ans. "\" size=\"$blank_size[$blank_count]\" />",$blank_details[$blank_count]);
-            }
+            $screen_output[$blank_count] = preg_replace("|\[blank.*\].*\[/blank\]|","<input type=\"text\" style=\"border:1px solid black\" name=\"q" . $question_no . "_" . $blank_count . "\" value=\"\" size=\"$blank_size[$blank_count]\" />",$blank_details[$blank_count]);
+            
             $blank_count++;
           }
           $screen_output_all = '';
@@ -610,21 +571,8 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
             $blank_details[$blank_count] = substr($blank_details[$blank_count], (strpos($blank_details[$blank_count],']') + 1));
             $answer_options = explode('[/blank]',$blank_details[$blank_count]);
             $answer_list = explode(',',$answer_options[0]);
-            if (isset($blank_user_answers[$part_id]) and $blank_user_answers[$part_id] == 'u' and $screen_pre_submitted == 1) {
-              echo "<select name=\"q" . $question_no . "_" . $part_id . "\" class=\"unans\">\n";
-            } else {
-              echo "<select name=\"q" . $question_no . "_" . $part_id . "\">\n";
-            }
-            echo "<option value=\"u\"></option>\n";
-            shuffle($answer_list);            // Shuffle the answers up.
-            for ($i=1; $i<=count($answer_list); $i++) {
-              if (isset($answer_list[$i-1]) and isset($blank_user_answers[$blank_count]) and html_entity_decode(trim($answer_list[$i-1])) == html_entity_decode(trim($blank_user_answers[$blank_count]))) {
-                echo "<option value=\"" . htmlentities(trim($answer_list[$i-1])) . "\" selected>" . trim($answer_list[$i-1]) . "</option>\n";
-              } else {
-                echo "<option value=\"" . htmlentities(trim($answer_list[$i-1])) . "\">" . trim($answer_list[$i-1]) . "</option>\n";
-              }
-            }
-            echo '</select>';
+            echo '<strong>' . $blank_count . '.</strong>&nbsp;<img src="../artwork/print_box_a.png" width="23" height="23" alt="" /> ';
+            
             echo $answer_options[1]; // Bit after the closing [/blank] tag.
             $blank_count++;
             $part_id++;
@@ -830,33 +778,25 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
       echo "<p><input type=\"text\" style=\"text-align:right\" name=\"q" . $question_no . "\" size=\"10\" value=\"\" disabled />" . $score_array[3] .  "</p>\n";
     } else {
       if ($score_array[3] == 'Formula') {
-        if (isset($user_answers[$current_screen][$q_id]) AND $user_answers[$current_screen][$q_id] == '') {
-          echo "<p><input type=\"hidden\" style=\"text-align:right\" id=\"q" . $question_no . "\" name=\"q" . $question_no . "\" size=\"10\" />";
+        if (isset($user_answers[$current_screen][$q_id]) and $user_answers[$current_screen][$q_id] == '') {
+          echo "<p><input type=\"hidden\" style=\"text-align:right; border:1px solid black\" id=\"q" . $question_no . "\" name=\"q" . $question_no . "\" size=\"10\" />";
           output_Math_Editor("q$question_no");
           echo "</p>\n";
         } else {
-          if ((isset($tmp_user_answers[0]) and $tmp_user_answers[0] != '') or $screen_pre_submitted == 0) {
-            echo "<p><input type=\"hidden\" style=\"text-align:right\" id=\"q" . $question_no . "\" name=\"q" . $question_no . "\" size=\"10\" value=\"" . $tmp_user_answers[0] . "\" />";
-            output_Math_Editor("q$question_no");
-            echo "</p>\n";
-          } else {
-            echo "<p class=\"unans\"><input type=\"hidden\" style=\"text-align:right\"  id=\"q" . $question_no . "\" name=\"q" . $question_no . "\" size=\"10\" value=\"\" />";
-            output_Math_Editor("q$question_no");
-            echo "</p>\n";
-          }
+          echo "<p><input type=\"hidden\" style=\"text-align:right; border:1px solid black\" id=\"q" . $question_no . "\" name=\"q" . $question_no . "\" size=\"10\" value=\"" . $tmp_user_answers[0] . "\" />";
+          output_Math_Editor("q$question_no");
+          echo "</p>\n";
         }
       } else {
-        if (isset($user_answers[$current_screen][$q_id]) AND $user_answers[$current_screen][$q_id] == '') {
-          echo "<div><input type=\"text\" style=\"text-align:right\" name=\"q" . $question_no . "\" size=\"10\" />" . $score_array[3] .  "</div>\n";
+        if (isset($user_answers[$current_screen][$q_id]) and $user_answers[$current_screen][$q_id] == '') {
+          echo "<div><input type=\"text\" style=\"text-align:right; border:1px solid black\" name=\"q" . $question_no . "\" size=\"10\" />" . $score_array[3] .  "</div>\n";
         } else {
           if ((isset($tmp_user_answers[0]) and $tmp_user_answers[0] != '') or $screen_pre_submitted == 0) {
             $ans = '';
             if(isset($tmp_user_answers[0])){
               $ans = $tmp_user_answers[0];
             }
-            echo "<div><input type=\"text\" style=\"text-align:right\" name=\"q" . $question_no . "\" size=\"10\" value=\"" . $ans . "\" />" . $score_array[3] .  "</div>\n";
-          } else {
-            echo "<div><input type=\"text\" style=\"text-align:right\" class=\"unans\" name=\"q" . $question_no . "\" size=\"10\" value=\"\" />" . $score_array[3] .  "</div>\n";
+            echo "<div><input type=\"text\" style=\"text-align:right; border:1px solid black\" name=\"q" . $question_no . "\" size=\"10\" value=\"" . $ans . "\" />" . $score_array[3] .  "</div>\n";
           }
         }
       }
@@ -894,7 +834,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
     $matching_answers = explode('|', $question['options'][0]['correct']);
 
     if ($matching_media[0] != '') {
-      echo '<p align="center">' . display_media($matching_media[0],$matching_media_width[0],$matching_media_height[0]) . '</p>';
+      echo '<p align="center">' . display_media($matching_media[0], $matching_media_width[0], $matching_media_height[0]) . '</p>';
     }
     $text_scenarios = 0;
     for ($part_id=0; $part_id<count($matching_scenarios); $part_id++) {
@@ -905,43 +845,36 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
       if ($matching_media[$part_id] != '') $media_scenarios++;
     }
     $scenario_no = max($text_scenarios, $media_scenarios);
+    
+    $col1_no = ceil(count($matching_options) / 2);
+    echo "<table class=\"extmatch_opt_table\">\n<tr><td><ol>\n";
+    for ($i=0; $i<count($matching_options); $i++) {
+
+      echo "<li>" . $matching_options[$i] . "</li>";
+      if ($i == ($col1_no-1)) {
+        echo "</ol></td><td style=\"vertical-align:top\"><ol start=\"" . ($i+2) . "\">";
+      }
+    }
+    echo "</ol></td></tr>\n</table>\n";
+
     echo '<ol class="extmatch">';
     for ($part_id=1; $part_id<=$scenario_no; $part_id++) {
       $answer_no = substr_count($matching_answers[$part_id-1],'$') + 1;
       $marks += (substr_count($matching_answers[$part_id-1],'$') + 1) * $display_option['marks_correct'];
+      
+      $sub_answers = explode('$', $matching_answers[$part_id - 1]);
 
       echo '<li>';
       if (isset($matching_scenarios[$part_id - 1]) and $matching_scenarios[$part_id - 1] != '') echo '<div>' . $matching_scenarios[$part_id - 1] . '</div>';
       if (isset($matching_media[$part_id]) and $matching_media[$part_id] != '') {
-        echo "<p>" . display_media($matching_media[$part_id],$matching_media_width[$part_id],$matching_media_height[$part_id]) . "</p>\n";
-      }
-      $sub_answers = explode('$',$matching_answers[$part_id - 1]);
-      $list_size = 10;
-      if (count($matching_options) < 10) $list_size = count($matching_options);
-      if ($answer_no == 1) {
-        
-      } else {
-        echo "<br />\n";
+        echo "<div>" . display_media($matching_media[$part_id], $matching_media_width[$part_id], $matching_media_height[$part_id]) . "</div>\n";
       }
       
-      $multi_answers = array();
-      if (isset($matching_users_answers[$part_id - 1])) {
-        $multi_answers = explode('$', $matching_users_answers[$part_id - 1]);
-      } 
-	    
-      $tmp_option_no = 0;
-      for ($option_no=0; $option_no<count($matching_options); $option_no++) {
-        $tmp_answer_match = false;
-        foreach ($multi_answers as $separate_tmp_answer) {
-          if ($separate_tmp_answer == ($question['option_order'][$tmp_option_no]+1)) {
-            $tmp_answer_match = true;
-          }
-        }
-        echo "<div style=\"padding-left:20px\"><img src=\"../artwork/print_checkbox.gif\" width=\"25\" height=\"24\" alt=\"\" />" . $matching_options[$option_no] . "</div>\n";
-        $tmp_option_no++;
+      for ($i=0; $i<count($sub_answers); $i++) {
+        echo '<img src="../artwork/print_box_a.png" width="30" height="30" />&nbsp;';
       }
       
-      echo '</div><br /></li>';
+      echo '</li>';
     }
     echo '</ol>';
     if ($question['score_method'] == 'Mark per Question') {
@@ -957,20 +890,15 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
     foreach ($matching_options as $single_option) {
       echo '<td>' . $single_option . '</td>';
     }
-    echo "<tr>\n";
+    echo "</tr>\n";
     $numerals = array('i','ii','iii','iv','v','vi','vii','viii','ix','x','xi','xii');
     foreach ($matching_scenarios as $single_scenario) {
       if (trim($single_scenario) != '') {
-        if (isset($matching_users_answers[$part_id - 1]) and $matching_users_answers[$part_id - 1] == '' and $screen_pre_submitted == 1) {
-          echo "<tr class=\"unans\">\n";
-        } else {
-          echo "<tr>\n";
-        }
-        echo '<td align="right">' . $numerals[$part_id - 1] . '.</td><td>' . $single_scenario . '</td>';
+        echo '<tr><td align="right">' . $numerals[$part_id - 1] . '.</td><td>' . $single_scenario . '</td>';
         $answer_no = 1;
         foreach ($matching_options as $single_option) {
           $tmp_part_id = $question['option_order'][$answer_no-1] + 1;
-          echo '<td><div align="center"><img src="../artwork/print_checkbox.gif" width="25" height="24" alt="" /></div></td>';
+          echo '<td><div align="center"><img src="../artwork/print_box_tick.png" width="23" height="23" alt="" /></div></td>';
           $answer_no++;
         }
         echo "</tr>\n";
@@ -985,15 +913,6 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
     }
   } elseif ($question['q_type'] == 'sct') {
     echo '</table>';
-  }
-   
-  // Write out the hidden field for the dismiss facility.
-  if ($question['q_type'] == 'mcq' or $question['q_type'] == 'mrq' or $question['q_type'] == 'rank') {
-    if (isset($user_dismiss[$current_screen][$q_id]) and $user_dismiss[$current_screen][$q_id] != '') {
-      echo "\n<div><input type=\"hidden\" name=\"dismiss$question_no\" id=\"dismiss$question_no\" value=\"" . $user_dismiss[$current_screen][$q_id] . "\" /></div>\n";
-    } else {
-      echo "\n<div><input type=\"hidden\" name=\"dismiss$question_no\" id=\"dismiss$question_no\" value=\"" . str_repeat('0', count($question['options'])) . "\" /></div>\n";
-    }
   }
 
   // Display possible marks for question (if not Survey)

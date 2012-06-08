@@ -75,7 +75,7 @@ if ($paper_properties = $mysqli->prepare("SELECT property_id, labs, moduleID, ca
       check_datetime($start_date, $end_date);
       
       //Check room security
-      $low_bandwidth = check_labs($paper_type, $labs, $mysqli);
+      $low_bandwidth = check_labs($paper_type, $labs, $password, $mysqli);
       
       // get modules if the user is a student and the paper is not formative
       $attempt = check_modules($userID, $moduleID, $calendar_year, $mysqli);
@@ -143,7 +143,7 @@ require '../config/finish.inc';
     echo "<script src=\"../js/ie_fix.js\" type=\"text/javascript\"></script>\n";
   }
 ?>
-<script language="JavaScript" src="../js/flash_include.js"></script>
+<script type="text/javascript" src="../js/flash_include.js"></script>
 <script language="JavaScript">
   window.history.go(1);
 

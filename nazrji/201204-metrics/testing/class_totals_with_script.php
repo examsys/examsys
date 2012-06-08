@@ -16,7 +16,12 @@
 
 /**
 * 
-* Class total report
+* This script is designed to compare marks between the Class Totals report and students' actual exam scripts (finish.php).
+* It works by:
+*   1. Get summative exam papers in the require date range.
+*   2. For each paper call class_totals.php and parse for student IDs and marks.
+*   3. For each student call finish.php and compare the mark.
+*   4. Echo errors for any which do not match.
 * 
 * @author Simon Wilkinson
 * @version 1.0
@@ -27,6 +32,26 @@
 require '../include/sysadmin_auth.inc';
 set_time_limit(0);
 ob_start();
+
+$end_dateSQL = 'NOW()';
+if (isset($_GET['period'])) {
+  if ($_GET['period'] == 'week') {
+    $start_dateSQL = 'SUBDATE(NOW(), INTERVAL 1 WEEK)';
+  } elseif ($_GET['period'] == 'month') {
+    $start_dateSQL = 'SUBDATE(NOW(), INTERVAL 1 MONTH)';
+  } elseif ($_GET['period'] == 'year') {
+    $start_dateSQL = 'SUBDATE(NOW(), INTERVAL 1 YEAR)';
+  }
+} else {
+  $start_dateSQL = 'SUBDATE(NOW(), INTERVAL 5 YEAR)';
+}
+
+if (isset($_GET['server'])) {
+  $server = $_GET['server'];
+} else {
+  $server = $protocol . $_SERVER['HTTP_HOST'];
+}
+
   
 function getData($url) {
   $ch = curl_init($url);
@@ -97,9 +122,7 @@ function parseScript($data) {
 }
 
 $papers = array();
-//$result = $mysqli->prepare("SELECT crypt_name, property_id, paper_title, DATE_FORMAT(start_date,'%d/%m/%Y'), DATE_FORMAT(start_date,'%Y%m%d%H%i%s'), DATE_FORMAT(end_date,'%Y%m%d%H%i%s') FROM properties WHERE paper_type = '2' AND start_date > 20080101070000 AND end_date < 20110101070000 AND deleted IS NULL ORDER BY start_date");
-$result = $mysqli->prepare("SELECT crypt_name, property_id, paper_title, DATE_FORMAT(start_date,'%d/%m/%Y'), DATE_FORMAT(start_date,'%Y%m%d%H%i%s'), DATE_FORMAT(end_date,'%Y%m%d%H%i%s') FROM properties WHERE paper_type = '2' AND start_date > 20110101070000 AND end_date < 20120215070000 AND deleted IS NULL ORDER BY start_date");
-//$result = $mysqli->prepare("SELECT crypt_name, property_id, paper_title, DATE_FORMAT(start_date,'%d/%m/%Y'), DATE_FORMAT(start_date,'%Y%m%d%H%i%s'), DATE_FORMAT(end_date,'%Y%m%d%H%i%s') FROM properties WHERE property_id IN (4841)");
+$result = $mysqli->prepare("SELECT crypt_name, property_id, paper_title, DATE_FORMAT(start_date,'%d/%m/%Y'), DATE_FORMAT(start_date,'%Y%m%d%H%i%s'), DATE_FORMAT(end_date,'%Y%m%d%H%i%s') FROM properties WHERE paper_type = '2' AND start_date > $start_dateSQL AND end_date < $end_dateSQL AND deleted IS NULL ORDER BY start_date");
 $result->execute();
 $result->bind_result($crypt_name, $paperID, $title, $display_start_date, $start_date, $end_date);
 while ($result->fetch()) {
@@ -118,8 +141,6 @@ table {font-size:100%}
 </head>
 <body>
 <?php
-$server = 'https://rogo.local';
-
 $paper_no = count($papers);
 $current_no = 0;
 

@@ -24,25 +24,26 @@
 
 require '../include/staff_auth.inc';
 
-  if (isset($_POST['prefix']) and trim($_POST['prefix']) != '') {
-    $new_folder = $_POST['prefix'] . ';' . $_POST['folder'];
-  } elseif (isset($_POST['folder'])) {
-    $new_folder = $_POST['folder'];
-  }
-  if (isset($_POST['folderID'])) {
-    $folderID = $_POST['folderID'];
-  } else {
-    $folderID = 0;
-  }
-  
-  if (isset($_POST['moduleID'])) {
-    $moduleID = $_POST['moduleID'];
-  } else {
-    $moduleID = 0;
-  }
+if (isset($_POST['prefix']) and trim($_POST['prefix']) != '') {
+  $new_folder = $_POST['prefix'] . ';' . $_POST['folder'];
+} elseif (isset($_POST['folder'])) {
+  $new_folder = $_POST['folder'];
+}
+if (isset($_POST['folderID'])) {
+  $folderID = $_POST['folderID'];
+} else {
+  $folderID = 0;
+}
+
+if (isset($_POST['moduleID'])) {
+  $moduleID = $_POST['moduleID'];
+} else {
+  $moduleID = 0;
+}
 ?>
 <html>
 <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
   <title><?php echo $string['folderproperties']; ?></title>
 
@@ -96,8 +97,10 @@ if (isset($_POST['Submit'])) {
     }
   }
   
-
-  
+  if ($_POST['old_prefix'] != '') {
+    $new_folder = $_POST['old_prefix'] . ';' . $new_folder;
+  }
+    
   if (strtolower($new_folder) != strtolower($_POST['old_folder'])) {
     $result = $mysqli->prepare("SELECT name FROM folders WHERE name=? AND ownerID=? LIMIT 1");
     $result->bind_param('si', $new_folder, $userID);
@@ -189,13 +192,13 @@ if ($unique_name) {
       $current_folder = $folder_array[$sections];
       $prefix = substr($full_path,0,strrpos($full_path,';'));
       echo "<table cellpadding=\"0\" cellspacing=\"4\" border=\"0\" style=\"width:100%\" >\n";
-      echo "<tr><td align=\"right\"><nobr><strong>" . $string['foldername'] . "&nbsp;</strong></nobr></td><td colspan=\"3\"><input";
+      echo "<tr><td align=\"right\"><nobr>" . $string['foldername'] . "&nbsp;</nobr></td><td colspan=\"3\"><input";
       if (!$unique_name) {
         echo ' style="color:#800000; background-color:#FFC0C0; border:1px solid #400000"';
       }
-      echo " type=\"text\" size=\"50\" maxlength=\"255\" value=\"$current_folder\" name=\"folder\" onkeypress=\"if (event.keyCode == 59)  illegalChar(event.keyCode);\" /><input type=\"hidden\" name=\"old_folder\" value=\"$full_path\"></td></tr>\n";
+      echo " type=\"text\" size=\"50\" maxlength=\"255\" value=\"$current_folder\" name=\"folder\" onkeypress=\"if (event.keyCode == 59) illegalChar(event.keyCode);\" /><input type=\"hidden\" name=\"old_folder\" value=\"$full_path\"><input type=\"hidden\" name=\"old_prefix\" value=\"$prefix\"></td></tr>\n";
       echo "<input type=\"hidden\" name=\"folderID\" value=\"" . $_GET['folder'] . "\" />";
-      echo "<tr><td align=\"right\" valign=\"middle\"><strong>" . $string['colour'] . "&nbsp;</strong></td><td>";
+      echo "<tr><td align=\"right\" valign=\"middle\">" . $string['colour'] . "&nbsp;</td><td>";
       echo "<input type=\"radio\" name=\"color\" value=\"yellow\"";
       if ($color == 'yellow') echo ' checked';
       echo " /><img src=\"../artwork/yellow_folder.png\" width=\"48\" height=\"48\" alt=\"Yellow\" border=\"0\" />";
@@ -208,11 +211,14 @@ if ($unique_name) {
       echo "<input type=\"radio\" name=\"color\" value=\"blue\"";
       if ($color == 'blue') echo ' checked';
       echo " /><img src=\"../artwork/blue_folder.png\" width=\"48\" height=\"48\" alt=\"Blue\" border=\"0\" />";
+      echo "<input type=\"radio\" name=\"color\" value=\"grey\"";
+      if ($color == 'grey') echo ' checked';
+      echo " /><img src=\"../artwork/grey_folder.png\" width=\"48\" height=\"48\" alt=\"Grey\" border=\"0\" />";
       echo "</td></tr>\n";
-      echo "<tr><td align=\"right\" valign=\"top\"><strong>" . $string['owner'] . "&nbsp;</strong></td><td>$owner</td></tr>\n";
-      echo "<tr><td align=\"right\" valign=\"top\"><strong>" . $string['created'] . "&nbsp;</strong></td><td>$created</td></tr>\n";
+      echo "<tr><td align=\"right\" valign=\"top\">" . $string['owner'] . "&nbsp;</td><td>$owner</td></tr>\n";
+      echo "<tr><td align=\"right\" valign=\"top\">" . $string['created'] . "&nbsp;</td><td>$created</td></tr>\n";
        
-      echo "<tr><td align=\"right\"><strong>" . $string['teams'] . "&nbsp;</strong></td><td><div style=\"background-color:white; display:block; height:200px; width:100%; overflow-y:scroll; border:1px solid #7F9DB9; font-size:90%\">";
+      echo "<tr><td align=\"right\">" . $string['teams'] . "&nbsp;</td><td><div style=\"background-color:white; display:block; height:200px; width:100%; overflow-y:scroll; border:1px solid #7F9DB9; font-size:90%\">";
       $modules_array = explode(',',$folder_team);
       $total_modules = array_merge($teams, $modules_array);
 	    $module_sql = implode("','", $total_modules);

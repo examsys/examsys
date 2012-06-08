@@ -52,7 +52,7 @@ function drawHeader($tmp_page_no) {
   if ($hit_stop > $total_hits) $hit_stop = $total_hits;
 
   echo "<table cellpadding=\"2\" cellspacing=\"0\" border=\"0\" style=\"width:100%; font-size:90%\">\n";
-  echo "<tr><td style=\"border-top: 1px solid #6B82B2; border-bottom:1px solid #6B82B2; border-left:1px solid #6B82B2; background-image:url(../search_bar_background.png); background-repeat:repeat-x; height:23px; color:white; font-weight:bold\">&nbsp;&nbsp;" . sprintf($string['results'], $hit_start, $hit_stop, $total_hits) . "</td><td style=\"border-top: 1px solid #6B82B2; border-bottom: 1px solid #6B82B2; border-right: 1px solid #6B82B2; background-image:url(../search_bar_background.png); background-repeat:repeat-x; height:23px; color:white; text-align:right\">Pages:&nbsp;";
+  echo "<tr><td style=\"border-top: 1px solid #6B82B2; border-bottom:1px solid #6B82B2; border-left:1px solid #6B82B2; background-image:url(../search_bar_background.png); background-repeat:repeat-x; color:white; font-weight:bold\">&nbsp;&nbsp;" . sprintf($string['results'], $hit_start, $hit_stop, $total_hits) . "</td><td style=\"border-top: 1px solid #6B82B2; border-bottom: 1px solid #6B82B2; border-right: 1px solid #6B82B2; background-image:url(../search_bar_background.png); background-repeat:repeat-x; color:white; text-align:right\">Pages:&nbsp;";
   for ($i=1; $i<=$page_total; $i++) {
     if ($i == $tmp_page_no) {
       echo "&nbsp;[<strong>$i</strong>]&nbsp;";
@@ -76,6 +76,7 @@ function drawHeader($tmp_page_no) {
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
   <title>Help and Support Center</title>
   <style type="text/css">

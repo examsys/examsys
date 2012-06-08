@@ -24,7 +24,7 @@
 
 require '../../include/staff_auth.inc';
 
-if(isset($_POST['startday'])) {
+if (isset($_POST['startday'])) {
 $start_date = $_POST['startyear'] . $_POST['startmonth'] . $_POST['startday'] .  '000000';
 $end_date = $_POST['endyear'] . $_POST['endmonth'] . $_POST['endday'] . '000000';
 } else {
@@ -35,6 +35,8 @@ $end_date = $_POST['endyear'] . $_POST['endmonth'] . $_POST['endday'] . '000000'
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
   <title>Help and Support Center<?php echo " $cfg_install_type"; ?></title>
   <style type="text/css">
   body {background-color:white; color:black; font-family:Arial,sans-serif; font-size:80%}
@@ -47,6 +49,9 @@ $end_date = $_POST['endyear'] . $_POST['endmonth'] . $_POST['endday'] . '000000'
   .path {color:#808080}
   .num {text-align:right; border-bottom: 1px solid #6B82B2; border-right: 1px solid #6B82B2}
   .txt {border-bottom: 1px solid #6B82B2; border-right: 1px solid #6B82B2}
+  .stats {border-collapse:collapse}
+  .stats th {color:white; background-image:url(../search_bar_background.png); background-repeat:repeat-x; border: 1px solid #6893CD}
+  .stats td {border: 1px solid #6893CD}
   </style>
   <script type="text/javascript">
     function displayPage(targetID, page_no) {
@@ -63,7 +68,7 @@ $end_date = $_POST['endyear'] . $_POST['endmonth'] . $_POST['endday'] . '000000'
 <?php
   echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\n"; 
   
-  echo "<tr><td colspan=\"3\" style=\"font-size:130%; font-weight:bold; margin-bottom:5px; color:#7598C4\">\n<form action=\"\" method=\"post\">\n" . $string['from'] . "\n"; 
+  echo "<tr><td colspan=\"3\" style=\"margin-bottom:5px\">\n<form action=\"\" method=\"post\">" . $string['dates'] . " "; 
     // Split the end date
     $split_year = substr($start_date,0,4);
     $split_month = substr($start_date,4,2);
@@ -87,10 +92,10 @@ $end_date = $_POST['endyear'] . $_POST['endmonth'] . $_POST['endday'] . '000000'
       if ($i < 10) echo '0';
       echo "$i</option>\n";
     }
-    echo "</select>\n";
+    echo "</select>";
     // start Month
     $months = array('january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december');
-    echo "\n<select name=\"startmonth\">\n";
+    echo "<select name=\"startmonth\">\n";
     for ($i=0; $i<12; $i++) {
       if (($split_month-1) == $i) {
         if ($i < 9) {
@@ -106,7 +111,7 @@ $end_date = $_POST['endyear'] . $_POST['endmonth'] . $_POST['endday'] . '000000'
         }
       }
     }
-    echo "</select>\n";
+    echo "</select>";
     // start Year
     echo "<select name=\"startyear\">\n";
     for ($i = 2005; $i < (date('Y')+2); $i++) {
@@ -117,7 +122,7 @@ $end_date = $_POST['endyear'] . $_POST['endmonth'] . $_POST['endday'] . '000000'
       }
     }
     echo "</select>\n";
-    echo $string['to'];
+    echo ' - ';
     // Split the end date
     $split_year = substr($end_date,0,4);
     $split_month = substr($end_date,4,2);
@@ -141,7 +146,7 @@ $end_date = $_POST['endyear'] . $_POST['endmonth'] . $_POST['endday'] . '000000'
       if ($i < 10) echo '0';
       echo "$i</option>\n";
     }
-    echo "</select>\n";
+    echo "</select>";
     // end Month
     echo "<select name=\"endmonth\">\n";
     for ($i=0; $i<12; $i++) {
@@ -159,7 +164,7 @@ $end_date = $_POST['endyear'] . $_POST['endmonth'] . $_POST['endday'] . '000000'
         }
       }
     }
-    echo "</select>\n";
+    echo "</select>";
      // end Year
      echo "<select name=\"endyear\">\n";
      for ($i = 2005; $i < (date('Y')+2); $i++) {
@@ -184,8 +189,8 @@ $end_date = $_POST['endyear'] . $_POST['endmonth'] . $_POST['endday'] . '000000'
   if ($search_results->num_rows == 0) {
     echo "<p>" . $string['nohits'] . "</p>\n";
   } else {
-    echo "<table cellpadding=\"2\" cellspacing=\"0\" border=\"0\" style=\"width:100%; border:1px solid #6B82B2; border-collapse:collapse\">\n";
-    echo "<tr style=\"text-align:center; border-top: 1px solid #6B82B2; border-bottom:1px solid #6B82B2; border-left:1px solid #6B82B2; background-image:url(../search_bar_background.png); background-repeat:repeat-x; height:23px; color:white; font-weight:bold\"><td style=\"border-right: 1px solid #6B82B2\">" . $string['page'] . "</td><td>" . $string['hits'] . "</td></tr>\n";
+    echo "<table class=\"stats\" cellpadding=\"2\" cellspacing=\"0\" border=\"0\" style=\"width:100%\">\n";
+    echo "<tr><th>" . $string['page'] . "</th><th>" . $string['hits'] . "</th></tr>\n";
     while ($search_results->fetch()) {
       echo "<tr><td class=\"txt\">$title</td><td class=\"num\">" . number_format($hits) . "</td></tr>\n";
     }
@@ -204,8 +209,8 @@ $end_date = $_POST['endyear'] . $_POST['endmonth'] . $_POST['endday'] . '000000'
   if ($search_results->num_rows == 0) {
     echo "<p>" . $string['nosearches'] . "</p>\n";
   } else {
-    echo "<table cellpadding=\"2\" cellspacing=\"0\" border=\"0\" style=\"width:100%; font-size:100%; border:1px solid #6B82B2; border-collapse:collapse\">\n";
-    echo "<tr style=\"text-align:center; border-top: 1px solid #6B82B2; border-bottom:1px solid #6B82B2; border-left:1px solid #6B82B2; background-image:url(../search_bar_background.png); background-repeat:repeat-x; height:23px; color:white; font-weight:bold\"><td style=\"border-right: 1px solid #6B82B2\">" . $string['searches'] . "</td><td style=\"border-right: 1px solid #6B82B2\">" . $string['term'] . "</td><td>" . $string['results'] . "</td></tr>\n";
+    echo "<table class=\"stats\" cellpadding=\"2\" cellspacing=\"0\" border=\"0\" style=\"width:100%\">\n";
+    echo "<tr><th>" . $string['searches'] . "</th><th>" . $string['term'] . "</th><th>" . $string['results'] . "</th></tr>\n";
     while ($search_results->fetch()) {
       if ($hits == 0) {
         echo "<tr style=\"color:#C00000\"><td class=\"num\">" . number_format($no_searches) . "</td><td class=\"txt\">$searchstring</td><td class=\"num\">" . number_format($hits) . "</td></tr>\n";

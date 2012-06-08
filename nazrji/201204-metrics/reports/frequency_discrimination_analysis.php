@@ -731,6 +731,7 @@
           echo '>';
           if ($correct_buf[0] == 't') {
             $d = calcDiscrimination($candidate_no,$top_log[$q_id],$bottom_log[$q_id],1,'t');
+            $p = $freq_log[$q_id][1]['t'] / $user_total;
             echo '<strong>True</strong>';
           } else {
             echo 'True';
@@ -740,14 +741,15 @@
           if (isset($excluded[$q_id]) and substr($excluded[$q_id],0,1) == '1') echo ' class="excluded"';
           echo '>';
           if ($correct_buf[0] == 'f') {
-            $d = calcDiscrimination($candidate_no,$top_log[$q_id],$bottom_log[$q_id],1,'t');
+            $d = calcDiscrimination($candidate_no,$top_log[$q_id],$bottom_log[$q_id],1,'f');
+            $p = $freq_log[$q_id][1]['f'] / $user_total;
             echo '<strong>False</strong>';
           } else {
             echo 'False';
           }
           echo "</td></tr>\n";
           echo "<tr><td colspan=\"4\">&nbsp;</td></tr>\n";
-          echo "<tr><td>" . pStats($freq_log[$q_id][1]['f']/$user_total) . "</td><td colspan=\"3\">" . dStats($d) . "</td></tr>\n";
+          echo "<tr><td>" . pStats($p) . "</td><td colspan=\"3\">" . dStats($d) . "</td></tr>\n";
           break;
         case 'labelling':
           if ($score_method == 'Mark per Question') {
@@ -1083,7 +1085,6 @@
           echo "<tr><td>" . $tmp_pstat . "</td><td colspan=\"2\">" . dStats($d) . "</td></tr>\n";
           break;
         case 'rank':
-          $std_part = 0;
           $rank_no = 0;
           foreach ($correct_buf as $individual_correct) {
             if ($individual_correct > $rank_no and $individual_correct != 0) $rank_no = $individual_correct;
@@ -1120,14 +1121,14 @@
 			
               if (!isset($log[$q_id][$i][$rank_position])) $log[$q_id][$i][$rank_position] = 0;
               if ($correct_buf[$i] == $rank_position) {
-                if (isset($tmp_std_array[$std_part])) {
-                  $tmp_std = $tmp_std_array[$std_part];
+                if (isset($tmp_std_array[$i])) {
+                  $tmp_std = $tmp_std_array[$i];
                 } else {
                   $tmp_std = '';
                 }
 			  
                 echo "<tr><td><strong>u=" . $u . "%</strong></td><td><strong>l=" . $l . "%</strong></td><td><span class=\"std\">" . $tmp_std . "</span></td><td style=\"font-weight:bold\">$rank_position";
-                $std_part++;
+
                 if ($rank_position == 1) {
                   echo 'st';
                 } elseif ($rank_position == 2) {
@@ -1156,7 +1157,7 @@
             $i++;
           }
           $d = ($top_log[$q_id]['mark'] / $top_log[$q_id]['totalpos']) - ($bottom_log[$q_id]['mark'] / $bottom_log[$q_id]['totalpos']);
-          $std_val = (isset($tmp_std_array[$std_part])) ? $tmp_std_array[$std_part] : '';
+          $std_val = (isset($tmp_std_array[$i])) ? $tmp_std_array[$i] : '';
           $tmp_correct_no = (isset($top_log[$q_id]['all_correct'])) ? $top_log[$q_id]['all_correct'] : 0;
           $tmp_bottom_no = (isset($bottom_log[$q_id]['all_correct'])) ? $bottom_log[$q_id]['all_correct'] : 0;
           echo "<tr><td><strong>u=" . number_format(($tmp_correct_no/$candidate_no)*100,0) . "%</strong></td><td><strong>l=" . number_format(($tmp_bottom_no/$candidate_no)*100,0) . "%</strong></td><td><span class=\"std\">" . $std_val . "</span></td><td style=\"font-weight:bold\">All items correct</td></tr>\n";
@@ -1469,7 +1470,7 @@
             if ($score_method == 'Mark per Option' and isset($excluded[$q_id]) and substr($excluded[$q_id],$section,1) == '1') echo ' excluded';
             echo "\"";
             if ($score_method == 'Mark per Option') echo " id=\"q_" . $ex_no . "_" . $option_no . "\"";
-            echo ">$individual_option</td></tr>\n";
+            echo ">" . chr($option_no+64) . ". $individual_option</td></tr>\n";
             $correct_stems++;
             if (isset($freq_log[$q_id][$i][$option_no])) $tmp_correct_no += $freq_log[$q_id][$i][$option_no];
             $std_part++;
@@ -1493,7 +1494,7 @@
             echo "<tr><td class=\"grey\">t=" . $t . "%</td><td class=\"grey\">u=" . $u . "%</td><td class=\"grey\">l=" . $l . "%</td><td></td><td";
             if ($score_method == 'Mark per Option' and isset($excluded[$q_id]) and substr($excluded[$q_id],$section,1) == '1') echo ' class="excluded"';
             if ($score_method == 'Mark per Option') echo " id=\"q_" . $ex_no . "_" . $option_no . "\"";
-            echo ">$individual_option</td></tr>\n";
+            echo ">" . chr($option_no+64) . ". $individual_option</td></tr>\n";
           }
           $option_no++;
         }
@@ -1527,7 +1528,7 @@ p {margin-left:0px; margin-right:0px}
 .figures {text-align:right}
 .q_no {text-align:right; vertical-align:top; width:50px}
 .grey {color:#808080}
-.extmatch li {padding-bottom:14px; vertical-align:text-bottom; list-style-type:upper-alpha}
+.extmatch li {padding-bottom:14px; vertical-align:text-bottom; list-style-type:lower-roman}
 .correct {color:#000; font-weight:bold}
 .excluded {color:red; text-decoration:line-through}
 .excluded img { border: 2px solid red}

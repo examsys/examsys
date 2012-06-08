@@ -167,10 +167,9 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
         if ($calculator == 1) echo '<br /><img onclick="openCalc2();" style="cursor:pointer" src="../artwork/calc.gif" width="18" height="25" alt="' . $string['calculator'] . '" />';
         echo '</td><td>';
       }
-      echo '<p align="center">' . display_media($question['q_media'],$question['q_media_width'],$question['q_media_height']) . "</p>\n";
+      echo '<p align="center">' . display_media($question['q_media'], $question['q_media_width'], $question['q_media_height']) . "</p>\n";
       $li_set = 1;
     }
-    //if ($question['q_type'] != 'likert' and $question['q_type'] != 'calculation') {
     if ($question['q_type'] != 'likert') {
       if ($li_set == 0) {
         echo '<tr><td class="q_no">' . ($question_no + $question_offset) . '.&nbsp;';
@@ -934,24 +933,17 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
     }
   } elseif ($question['q_type'] == 'calculation') {
     $score_array = explode(',', $question['display_method']);
-    if ($li_set == 1) {
-      echo '<tr><td></td><td>';
-    } else {
-      echo '<tr><td class="q_no">' . ($question_no + $question_offset) . '.&nbsp;';
-      if ($calculator == 1) echo '<br /><img onclick="openCalc2();" style="cursor:pointer" src="../artwork/calc.gif" width="18" height="25" alt="' . $string['calculator'] . '" />';
-      echo '</td><td>';
-    }
     $new_leadin = '';
-    $search = array('$A','$B','$C','$D','$E','$F','$G','$H','$I','$J');
-    $replace = array($A,$B,$C,$D,$E,$F,$G,$H,$I,$J);
+    $search = array('$A', '$B', '$C', '$D', '$E', '$F', '$G', '$H', '$I', '$J');
+    $replace = array($A, $B, $C, $D, $E, $F, $G, $H, $I, $J);
     $question['leadin'] = str_ireplace($search, $replace, $question['leadin']);
     if(strpos($question['leadin'],'class="mee"') !== false) {
       $question['leadin'] = str_replace('ERROR', $string['unanswered'] , $question['leadin']);
     } else {
       $question['leadin'] = str_replace('ERROR', '<span style="color:red; font-weight:bold">' . $string['unanswered'] . '</span>', $question['leadin']);
     }
-    echo "<p>" . $question['leadin'] . "</p>\n";
-    if (in_array('ERROR',$replace,true)) {
+    echo $question['leadin'];
+    if (in_array('ERROR', $replace, true)) {
       echo "<p><input type=\"text\" style=\"text-align:right\" name=\"q" . $question_no . "\" size=\"10\" value=\"\" disabled />" . $score_array[3] .  "</p>\n";
     } else {
       if ($score_array[3] == 'Formula') {
@@ -1032,6 +1024,18 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
       if ($matching_media[$part_id] != '') $media_scenarios++;
     }
     $scenario_no = max($text_scenarios, $media_scenarios);
+    
+    $col1_no = ceil(count($matching_options) / 2);
+    echo "<table class=\"extmatch_opt_table\">\n<tr><td><ol>\n";
+    for ($i=0; $i<count($matching_options); $i++) {
+
+      echo "<li>" . $matching_options[$i] . "</li>";
+      if ($i == ($col1_no-1)) {
+        echo "</ol></td><td style=\"vertical-align:top\"><ol start=\"" . ($i+2) . "\">";
+      }
+    }
+    echo "</ol></td></tr>\n</table>\n";
+    
     echo '<ol class="extmatch">';
     for ($part_id=1; $part_id<=$scenario_no; $part_id++) {
       $answer_no = substr_count($matching_answers[$part_id-1],'$') + 1;
@@ -1040,9 +1044,9 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
       echo '<li>';
       if (isset($matching_scenarios[$part_id - 1]) and $matching_scenarios[$part_id - 1] != '') echo '<div>' . $matching_scenarios[$part_id - 1] . '</div>';
       if (isset($matching_media[$part_id]) and $matching_media[$part_id] != '') {
-        echo "<p>" . display_media($matching_media[$part_id],$matching_media_width[$part_id],$matching_media_height[$part_id]) . "</p>\n";
+        echo "<div>" . display_media($matching_media[$part_id],$matching_media_width[$part_id],$matching_media_height[$part_id]) . "</div>\n<br />";
       }
-      $sub_answers = explode('$',$matching_answers[$part_id - 1]);
+      $sub_answers = explode('$', $matching_answers[$part_id - 1]);
       $list_size = 10;
       if (count($matching_options) < 10) $list_size = count($matching_options);
       if ($answer_no == 1) {
@@ -1077,9 +1081,9 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
           }
         }
         if ($tmp_answer_match == true) {
-          echo "<option value=\"" . ($question['option_order'][$option_no]+1) . "\" selected>" . $matching_options[$option_no] . "</option>\n";
+          echo "<option value=\"" . ($question['option_order'][$option_no]+1) . "\" selected>" . chr($option_no+65) . ". " . $matching_options[$option_no] . "</option>\n";
         } else {
-          echo "<option value=\"" . ($question['option_order'][$option_no]+1) . "\">" . $matching_options[$option_no] . "</option>\n";
+          echo "<option value=\"" . ($question['option_order'][$option_no]+1) . "\">" . chr($option_no+65) . ". " . $matching_options[$option_no] . "</option>\n";
         }
         $tmp_option_no++;
       }
@@ -1098,7 +1102,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
     foreach ($matching_options as $single_option) {
       echo '<td>' . $single_option . '</td>';
     }
-    echo "<tr>\n";
+    echo "</tr>\n";
     foreach ($matching_scenarios as $single_scenario) {
       if (trim($single_scenario) != '') {
         if (isset($matching_users_answers[$part_id - 1]) and $matching_users_answers[$part_id - 1] == '' and $screen_pre_submitted == 1) {
@@ -1111,8 +1115,8 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
         $answer_no = 1;
         foreach ($matching_options as $single_option) {
           $tmp_part_id = $question['option_order'][$answer_no-1] + 1;
-          if (isset($matching_users_answers[$part_id-1]) and $matching_users_answers[$part_id-1] == $answer_no) {
-            echo '<td><div align="center"><input type="radio" name="q' . $question_no . '_' . $part_id . '" value="' . $tmp_part_id . '" checked /></div></td>';
+          if (isset($matching_users_answers[$part_id-1]) and $matching_users_answers[$part_id-1] == $tmp_part_id) {
+            echo '<td><div align="center"><input type="radio" name="q' . $question_no . '_' . $part_id . '" value="' . $tmp_part_id . '" checked="checked" /></div></td>';
           } else {
             echo '<td><div align="center"><input type="radio" name="q' . $question_no . '_' . $part_id . '" value="' . $tmp_part_id . '" /></div></td>';
           }

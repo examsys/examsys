@@ -17,6 +17,7 @@ $string['duration'] = 'Czas trwania';
 $string['testclip'] = 'Klip testowy';//???
 $string['switchpapers'] = 'Zamień arkusze';
 $string['papernotavailable'] = 'Arkusz czasowo niedostępny.';
+$string['papernotavailablestudents'] = 'Arkusz czasowo niedostępny dla studentów.'; 
 $string['nottakenpaper'] = '(Nie podjąłeś się jeszcze rozwiązania tego arkusza.)';
 $string['donotstart'] = "<strong>Nie</strong> wybieraj przycisku 'Start &gt;&gt;' do czasu decyzji osoby nadzorującej.";
 $string['minutes'] = 'minut(y)';

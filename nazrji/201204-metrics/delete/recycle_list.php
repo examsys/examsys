@@ -26,7 +26,7 @@ require '../include/staff_auth.inc';
 
 function array_csort($marray, $column, $sort_order) {   //coded by Ichier2003
   foreach ($marray as $row) {
-    $sortarr[] = $row[$column];
+    $sortarr[] = strtolower(trim($row[$column]));
   }
   if ($sort_order == 'asc') {
     array_multisort($sortarr, SORT_ASC, $marray);
@@ -189,7 +189,9 @@ if (isset($_GET['sortby'])) $sortby = $_GET['sortby'];
 $ordering = 'asc';
 if (isset($_GET['ordering'])) $ordering = $_GET['ordering'];
 
-if ($i > 0) $recycle_bin = array_csort($recycle_bin, $sortby, $ordering);
+if ($i > 0) {
+  $recycle_bin = array_csort($recycle_bin, $sortby, $ordering);
+}
 
 echo "</td></tr>\n";
 if ($sortby == 'name') {

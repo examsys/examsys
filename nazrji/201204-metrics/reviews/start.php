@@ -30,7 +30,7 @@ require '../include/media.inc';
 require '../config/start.inc';
 
 check_var('id', 'GET', true, false);
-session_start();
+//session_start();
 
 // Extract the get variables.
 if (isset($_GET['no_screens'])) {
@@ -370,7 +370,7 @@ echo '" onsubmit="return confirmSubmit()">';   // Warning message only in linear
   echo "<col width=\"40\"><col>\n";
   $q_no = 0;
   //build the questions_array
-  while ($row = $question_data->fetch()) {
+  while ($question_data->fetch()) {
     if ($q_no == 0 or $questions_array[$q_no]['q_id'] != $q_id or $questions_array[$q_no]['display_pos'] != $display_pos) {
       $q_no++;
       $questions_array[$q_no]['theme'] = trim($theme);
@@ -396,7 +396,7 @@ echo '" onsubmit="return confirmSubmit()">';   // Warning message only in linear
   $unanswered = false;
   
   //display the questions
-  foreach($questions_array as &$question) {
+  foreach ($questions_array as &$question) {
     if ($screen_pre_submitted == 1 and $q_displayed == 0) echo "<tr><td colspan=\"2\"><span style=\"background-color:#FFC0C0\">&nbsp;&nbsp;&nbsp;&nbsp;</span> = unanswered question</td></tr>\n";
     if ($q_displayed == 0 and $current_screen == 1 and $paper_prologue != '') echo '<tr><td colspan="2" style="padding:20px; text-align:justify">' . $paper_prologue . '</td></tr>';
     if ($q_displayed == 0 and $question['theme'] == '') echo "<tr><td colspan=\"2\">&nbsp;</td></tr>\n";

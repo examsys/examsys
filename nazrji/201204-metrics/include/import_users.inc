@@ -32,7 +32,7 @@ $needed_cols1 = array('student_id','first names','surname','title','course code'
 $needed_cols2 = array('id','forenames','family name','title','course','year of study','email');
 
 function add_users_from_file($fileName) {
-  global $header, $needed_cols1, $needed_cols2, $mysqli, $string;
+  global $header, $needed_cols1, $needed_cols2, $mysqli, $string, $cfg_encrypt_salt;
   
   $courses = array();
   $users[] = array();
@@ -129,7 +129,7 @@ function add_users_from_file($fileName) {
       //add new users
        
       $password = PasswordUtils::gen_password();
-      $encpw_password = PasswordUtils::encpw($username, $password);
+      $encpw_password = encpw($cfg_encrypt_salt, $username, $password);
 
       $tmp_userID = UserUtils::createUser($username, $encpw_password, $title, $forname, $surname, $email, $course, $gender, $year, 'Student', $sid, $mysqli);
 

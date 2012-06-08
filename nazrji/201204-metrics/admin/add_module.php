@@ -103,37 +103,39 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
     if ($returned_data !== false) {
       $xml = new SimpleXMLElement($returned_data);
       $enrolement_details = '';
-
-      foreach ($xml->Module->Membership->Student as $student) {
-        $student->Title = trim($student->Title);
-        $student->Surname = trim($student->Surname);
-        $student->Forename = trim($student->Forename);
-        $student->CourseCode = trim($student->CourseCode);
-        $student->Username = trim($student->Username);
-        $student->Email = trim($student->Email);
-        $student->Faculty = trim($student->Faculty);
-        $student->Gender = trim($student->Gender);
-        $student->YearofStudy = trim($student->YearofStudy);
-        $student->Faculty = trim($student->Faculty);
-        
-        // Create new account for the user
-        $names = explode(' ',$student->Forename);
-        $initials = '';
-        foreach ($names as $tmp_name) {
-          $initials .= substr($tmp_name,0,1);
-        }
-        $tmp_userID = UserUtils::usernameExists($student->Username, $mysqli);
-        if ($tmp_userID === false) {
-          $tmp_userID = UserUtils::createUser($student->Username, '', $student->Title, $student->Forename, $student->Surname, $student->Email, $student->CourseCode, $student->Gender, $student->YearofStudy, 'Student', $student->StudentID, $mysqli);
-        }
-        // Add student onto the module
-        UserUtils::addUserToModule($tmp_userID, $module, 1, $session, $mysqli);
-        
-        $enrolements++;
-        if ($enrolement_details == '') {
-          $enrolement_details = $student->Username;
-        } else {
-          $enrolement_details .= ',' . $student->Username;
+      
+      if (isset($xml->Module)) {
+        foreach ($xml->Module->Membership->Student as $student) {
+          $student->Title = trim($student->Title);
+          $student->Surname = trim($student->Surname);
+          $student->Forename = trim($student->Forename);
+          $student->CourseCode = trim($student->CourseCode);
+          $student->Username = trim($student->Username);
+          $student->Email = trim($student->Email);
+          $student->Faculty = trim($student->Faculty);
+          $student->Gender = trim($student->Gender);
+          $student->YearofStudy = trim($student->YearofStudy);
+          $student->Faculty = trim($student->Faculty);
+          
+          // Create new account for the user
+          $names = explode(' ',$student->Forename);
+          $initials = '';
+          foreach ($names as $tmp_name) {
+            $initials .= substr($tmp_name,0,1);
+          }
+          $tmp_userID = UserUtils::usernameExists($student->Username, $mysqli);
+          if ($tmp_userID === false) {
+            $tmp_userID = UserUtils::createUser($student->Username, '', $student->Title, $student->Forename, $student->Surname, $student->Email, $student->CourseCode, $student->Gender, $student->YearofStudy, 'Student', $student->StudentID, $mysqli);
+          }
+          // Add student onto the module
+          UserUtils::addUserToModule($tmp_userID, $module, 1, $session, $mysqli);
+          
+          $enrolements++;
+          if ($enrolement_details == '') {
+            $enrolement_details = $student->Username;
+          } else {
+            $enrolement_details .= ',' . $student->Username;
+          }
         }
       }
     }

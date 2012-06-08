@@ -49,6 +49,7 @@ require '../include/staff_auth.inc';
 <meta http-equiv="content-type" content="text/html; charset=<?php echo $cfg_page_charset ?>" />
 <title>Rogō<?php echo ' ' . $cfg_install_type; ?></title>
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
+<link rel="stylesheet" type="text/css" href="../css/warnings.css" />
 <link rel="stylesheet" type="text/css" href="../css/header.css" />
 <link rel="stylesheet" type="text/css" href="../css/announcements.css" />
 <script src="../js/staff_help.js" type="text/javascript"></script>
@@ -56,18 +57,8 @@ require '../include/staff_auth.inc';
 <script src="../js/sidebar.js" type="text/javascript"></script>
 <script language="JavaScript">
   function illegalChar(codeID) {
-    if (codeID == 38) {
-      alert("Character '&' illegal - please use alternative characters in folder name.");
-    } else if (codeID == 59) {
+    if (codeID == 59) {
       alert("Character ';' illegal - please use alternative characters in folder name.");
-    } else if (codeID == 63) {
-      alert("Character '?' illegal - please use alternative characters in folder name.");
-    } else if (codeID == 64) {
-      alert("Character '@' illegal - please use alternative characters in folder name.");
-    } else if (codeID == 94) {
-      alert("Character '^' illegal - please use alternative characters in folder name.");
-    } else if (codeID == 126) {
-      alert("Character '~' illegal - please use alternative characters in folder name.");
     }
     event.returnValue = false;
   }
@@ -80,7 +71,7 @@ require '../include/staff_auth.inc';
   }
 
   function displayCredits(){
-    notice=window.open("../credits/credits.php","credits","width=700,height=500,scrollbars=no,resizable=no,toolbar=no,location=no,directories=no,status=0,menubar=0");
+    notice=window.open("../credits/credits.php","credits","width=696,height=500,scrollbars=no,resizable=no,toolbar=no,location=no,directories=no,status=0,menubar=0");
     notice.moveTo(screen.width/2-350,screen.height/2-250)
     if (window.focus) {
       notice.focus();
@@ -150,8 +141,15 @@ require '../include/staff_auth.inc';
     <td colspan="2" class="bevel"></td>
   </tr>
 </table>
+<?php
+  $as_pos = strpos($cfg_install_type,' as ');
+  if ($as_pos !== false) {
+    echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"width:100%\"><tr><td style=\"width:32px\"><div class=\"greywarn\"><img src=\"../artwork/agent.png\" width=\"28\" height=\"28\" alt=\"Locked\" style=\"position:relative; left:6px; top:1px\" /></div></td><td><div class=\"greywarn\">&nbsp;&nbsp;" . $string['loggedinas'] . " " . substr($cfg_install_type, ($as_pos+4)) . "</div></td></tr></table>\n";
+  }
+?>
 <div style="padding-left:14px; padding-right:14px">
 <?php
+
   // Check for any news/announcements
   $news_icons = array('', 'news_64.png', 'new_64.png', 'tip_64.png', 'software_64.png', 'exclamation_64.png', 'sync_64.png', 'megaphone_64.png');
   $result = $mysqli->prepare("SELECT title, staff_msg, icon FROM announcements WHERE NOW() > startdate AND NOW() < enddate AND deleted IS NULL");
@@ -239,18 +237,38 @@ require '../include/staff_auth.inc';
   }
 
   // Work out if there is anything in the recycle bin.
-  $deleted_details = $mysqli->prepare("SELECT COUNT(property_id) AS no_deleted FROM properties WHERE deleted IS NOT NULL AND paper_ownerID=?");
-  $deleted_details->bind_param('i', $userID);
-  $deleted_details->execute();
-  $deleted_details->bind_result($no_deleted);
-  $deleted_details->store_result();
-  $deleted_details->fetch();
-  if ($no_deleted > 0) {
+  $recycle_bin_no = 0;
+  
+  $stmt = $mysqli->prepare("SELECT COUNT(property_id) FROM properties WHERE (paper_ownerID=? OR moduleID IN ('" . implode("','",$teams) . "')) AND deleted IS NOT NULL");
+  $stmt->bind_param('i', $userID);
+  $stmt->execute();
+  $stmt->bind_result($no_deleted);
+  $stmt->fetch();
+  $stmt->close();
+  $recycle_bin_no += $no_deleted;
+  
+  $stmt = $mysqli->prepare("SELECT COUNT(q_id) FROM questions WHERE (ownerID=? OR q_group IN ('" . implode("','",$teams) . "')) AND deleted IS NOT NULL");
+  $stmt->bind_param('i', $userID);
+  $stmt->execute();
+  $stmt->bind_result($no_deleted);
+  $stmt->fetch();
+  $stmt->close();
+  $recycle_bin_no += $no_deleted;
+
+  
+  $stmt = $mysqli->prepare("SELECT COUNT(id) FROM folders WHERE (ownerID=? OR team_name IN ('" . implode("','",$teams) . "')) AND deleted IS NOT NULL");
+  $stmt->bind_param('i', $userID);
+  $stmt->execute();
+  $stmt->bind_result($no_deleted);
+  $stmt->fetch();
+  $stmt->close();
+  $recycle_bin_no += $no_deleted;
+
+  if ($recycle_bin_no > 0) {
     echo "<div class=\"f\"><a href=\"../delete/recycle_list.php\" class=\"blacklink\"><img style=\"vertical-align:middle; padding-right:8px\" src=\"../artwork/full_bin.png\" width=\"48\" height=\"48\" alt=\"Recycle Bin\" border=\"0\" align=\"middle\" />" . $string['recyclebin'] . "</a></div>\n";
   } else {
     echo "<div class=\"f\"><a href=\"../delete/recycle_list.php\" class=\"blacklink\"><img style=\"vertical-align:middle; padding-right:8px\" src=\"../artwork/empty_bin.png\" width=\"48\" height=\"48\" alt=\"Recycle Bin\" border=\"0\" align=\"middle\" />" . $string['recyclebin'] . "</a></div>\n";
   }
-  $deleted_details->close();
 ?>
 <br clear="left" />
 <?php
@@ -274,13 +292,12 @@ require '../include/staff_auth.inc';
     echo '<br clear="left" /><br />';
 
     // -- Display papers not assigned to a module -------------------
-    $result = $mysqli->prepare("SELECT DISTINCT property_id, paper_type, MAX(screen) AS screens, paper_title, DATE_FORMAT(start_date,'%Y%m%d%H%i%s') AS start_date, DATE_FORMAT(start_date,'%d/%m/%y %H:%i') AS display_start_date, DATE_FORMAT(end_date,'%d/%m/%y %H:%i') AS display_end_date, exam_duration, title, initials, surname, retired, moduleID FROM properties LEFT JOIN users ON properties.paper_ownerID=users.id LEFT JOIN papers ON properties.property_id=papers.paper WHERE paper_ownerID=$userID AND moduleID='' AND deleted IS NULL GROUP BY paper_title ORDER BY paper_title");
+    $result = $mysqli->prepare("SELECT DISTINCT property_id, paper_type, MAX(screen) AS screens, paper_title, DATE_FORMAT(start_date,'$cfg_short_date') AS start_date, DATE_FORMAT(start_date,'$cfg_short_date %H:%i') AS display_start_date, DATE_FORMAT(end_date,'%d/%m/%y %H:%i') AS display_end_date, exam_duration, title, initials, surname, retired, moduleID FROM properties LEFT JOIN users ON properties.paper_ownerID=users.id LEFT JOIN papers ON properties.property_id=papers.paper WHERE paper_ownerID=$userID AND moduleID='' AND deleted IS NULL GROUP BY paper_title ORDER BY paper_title");
     $result->execute();
     $result->bind_result($property_id, $paper_type, $screens, $paper_title, $start_date, $display_start_date, $display_end_date, $exam_duration, $title, $initials, $surname, $retired, $moduleID);
     $result->store_result();
-    $result->fetch();
     if ($result->num_rows > 0) {
-      echo "<table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>" . $string['unassignedpapers'] . " (" . $result->num_rows() . ")<nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
+      echo "<table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>" . $string['unassignedpapers'] . " (" . $result->num_rows . ")<nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
       while ($result->fetch()) {
         displayPaperIcon($userID, $property_id, $paper_type, $screens, $paper_title, $start_date, $display_start_date, $display_end_date, $exam_duration, $title, $initials, $surname, $retired, $moduleID);
       }

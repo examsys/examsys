@@ -50,7 +50,7 @@
       $copy_data->execute();
       $copy_data->bind_result($copy_paperID, $copy_paper_title, $copy_question, $copy_q_type);
       $copy_data->store_result();
-      while ($row = $copy_data->fetch()) {
+      while ($copy_data->fetch()) {
         if ($copy_q_type != 'info') $row_number++;
         if ($copy_question == $copyID) $copy_question_no = $row_number;
       }
@@ -107,7 +107,7 @@
   $result->bind_result($email, $title, $surname, $initials, $paper_title, $paper_type, $paper, $screen, $creation_date, $last_edited, $q_group, $locked, $deleted, $status);
   $result->store_result();
   if ($result->num_rows > 0) {
-    while ($row = $result->fetch()) {
+    while ($result->fetch()) {
       if ($line_no == 0) {
         echo "<tr><td width=\"60\" style=\"vertical-align:top\">" . $string['author'] . "</td><td>$title $initials $surname (<a href=\"mailto:$email\">$email</a>)</td></tr>\n";
         echo "<tr><td>" . $string['status'] . "</td><td>" . $string[strtolower($status)] . "</td></tr>\n";
@@ -151,7 +151,12 @@
     $question_data->bind_result($email, $title, $surname, $initials, $creation_date, $last_edited, $q_group);
     $question_data->store_result();
     while ($question_data->fetch()) {
-      echo "<tr><td width=\"90\" valign=\"top\"><strong>" . $string['author'] . "</strong></td><td>$title $initials $surname (<a href=\"mailto:$email\">$email</a>)</td></tr>\n";
+      if (strpos($userroles,'Demo') !== false) {
+        $owner = 'Dr J, Bloggs (<a href="">joe.bloggs@uni.ac.uk</a>)';
+      } else {
+        $owner = '$title $initials $surname (<a href=\"mailto:$email\">$email</a>)';
+      }
+      echo "<tr><td width=\"90\" valign=\"top\"><strong>" . $string['author'] . "</strong></td><td>$owner</td></tr>\n";
       echo "<tr><td><strong>" . $string['created'] . "</strong></td><td>$creation_date</td></tr>\n";
       echo "<tr><td><strong>" . $string['modified'] . "</strong></td><td>$last_edited</td></tr>\n";
       if ($locked != '') {

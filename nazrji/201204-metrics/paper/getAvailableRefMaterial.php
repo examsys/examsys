@@ -23,6 +23,7 @@
 */
 require '../include/staff_auth.inc';
 require '../include/errors.inc';
+require '../lang/' . $language . '/paper/properties.php';
 
 check_var('modules', 'GET', true, false);
 ?>
@@ -45,17 +46,19 @@ $stmt = $mysqli->prepare("SELECT DISTINCT title, reference_material.id FROM refe
 $stmt->execute();
 $stmt->store_result();
 $stmt->bind_result($title, $refID);
-
-$ref_line = 0;
-while ($stmt->fetch()) {
-  if (isset($current_settings[$refID])) {
-    echo "<input type=\"checkbox\" name=\"ref$ref_line\" value=\"$refID\" checked=\"checked\" /> $title<br />";
-  } else {
-    echo "<input type=\"checkbox\" name=\"ref$ref_line\" value=\"$refID\" /> $title<br />";
+$ref_line = $stmt->num_rows();
+if ($ref_line > 0) {
+  while ($stmt->fetch()) {
+    if (isset($current_settings[$refID])) {
+      echo "<input type=\"checkbox\" name=\"ref$ref_line\" value=\"$refID\" checked=\"checked\" /> $title<br />";
+    } else {
+      echo "<input type=\"checkbox\" name=\"ref$ref_line\" value=\"$refID\" /> $title<br />";
+    }
+    $ref_line++;
   }
-  $ref_line++;
+} else {
+  echo "<div style=\"margin-top:16px; margin-left:10px\">" . $string['nomaterials'] . "</div>\n";
 }
-
 $stmt->close();
 
 $mysqli->close();

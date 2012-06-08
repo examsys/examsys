@@ -16,11 +16,9 @@
 
 /**
  *
- * Creates a new user (staff or student).
- *
- * @author Simon Wilkinson
+ * @author Rob Ingram
  * @version 1.0
- * @copyright Copyright (c) 2011 The University of Nottingham
+ * @copyright Copyright (c) 2012 The University of Nottingham
  * @package
  */
 
@@ -43,19 +41,13 @@ if (!function_exists("mb_substr_replace")) {
     if ($encoding == null) {
       if ($length == null) {
         return mb_substr($string, 0, $start) . $replacement;
-      }
-      else
-      {
+      } else {
         return mb_substr($string, 0, $start) . $replacement . mb_substr($string, $start + $length);
       }
-    }
-    else
-    {
+    } else {
       if ($length == null) {
         return mb_substr($string, 0, $start, $encoding) . $replacement;
-      }
-      else
-      {
+      } else {
         return mb_substr($string, 0, $start, $encoding) . $replacement . mb_substr($string, $start + $length, mb_strlen($string, $encoding), $encoding);
       }
     }

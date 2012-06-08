@@ -22,7 +22,7 @@
 * @package
 */
 
-function check_labs($paper_type, $labs, $mysqlidb) {
+function check_labs($paper_type, $labs, $pword, $mysqlidb) {
   global $string;
   
   $low_bandwidth = 0;
@@ -39,8 +39,8 @@ function check_labs($paper_type, $labs, $mysqlidb) {
     }
     $stmt->close();
   } else {
-    // Exit if a summative exam is on no labs.
-    if ($paper_type == '2') exit;
+    // Exit if a summative exam is on no labs and no password.
+    if ($paper_type == '2' and trim($pword) == '') exit;
   }
   
   return $low_bandwidth;

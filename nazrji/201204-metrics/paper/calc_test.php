@@ -12,7 +12,7 @@ function openCalc() {
   }
 }
 function openOldCalc() {
-  oldcalc=window.open("../tools/calc98/jcalc98.htm","calculator","width=250,height=331,top=10,left=10scrollbars=no,resizable=no,toolbar=no,location=no,directories=no,status=no,menubar=no");
+  oldcalc=window.open("../tools/calc98/jcalc98.php","calculator","width=250,height=391,top=10,left=10scrollbars=no,resizable=no,toolbar=no,location=no,directories=no,status=no,menubar=no");
   if (window.focus) {
     oldcalc.focus();
   }

@@ -299,7 +299,6 @@ HTML;
         var postExam = true;
         var postExamWarningShown = false;
       </script>
-      <input id="submit-correct" name="submit" value="{$string['correct']}" type="submit" class="submit" />
 
 HTML;
     }

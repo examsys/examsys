@@ -181,7 +181,7 @@ $screen_count = count($questions['screen']);
 if ($screen_count > 0) {
   $width = ($screen_count >= 9) ? 900 : 60 + ($screen_count * 80);
 ?>
-  <h2>Questions by screen</h2>
+  <h2>Question count by screen</h2>
   <?php
   $g_data = setup_graph_data($questions['screen'], 'questions', 'Screen');
   ?>

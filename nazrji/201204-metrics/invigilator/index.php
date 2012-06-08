@@ -121,14 +121,14 @@
   }
   
   function newStudentNote(userID, paperID, display_name) {
-    studentnote = window.open("new_student_note.php?userID=" + userID + "&paperID=" + paperID + "","studentnote","width=650,height=400,left="+(screen.width/2-300)+",top="+(screen.height/2-200)+",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+    studentnote = window.open("new_student_note.php?userID=" + userID + "&paperID=" + paperID + "","studentnote","width=650,height=430,left="+(screen.width/2-300)+",top="+(screen.height/2-200)+",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
     if (window.focus) {
       studentnote.focus();
     }
   }
 
   function newPaperNote(paperID) {
-    papernote = window.open("new_paper_note.php?paperID=" + paperID + "","papernote","width=650,height=400,left="+(screen.width/2-300)+",top="+(screen.height/2-200)+",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+    papernote = window.open("new_paper_note.php?paperID=" + paperID + "","papernote","width=650,height=410,left="+(screen.width/2-300)+",top="+(screen.height/2-200)+",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
     if (window.focus) {
       papernote.focus();
     }

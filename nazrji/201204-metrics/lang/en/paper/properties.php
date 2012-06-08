@@ -2,12 +2,6 @@
 require '../lang/' . $language . '/include/months.inc';
 require '../lang/' . $language . '/include/paper_types.inc';
 
-$string['displaycalculator-1'] = 'old calc98 calculator';
-$string['displaycalculator0'] = 'no calculator';
-$string['displaycalculator1'] = 'display scientific calculator';
-$string['displaycalculator2'] = 'display basic calculator';
-
-
 $string['propertiestitle'] = 'Properties';
 $string['edittitle'] = 'Edit';
 $string['warning'] = 'Warning paper name already used by another assessment!';
@@ -19,6 +13,7 @@ $string['msg2'] = 'Summative paper start and end dates must be on the same day (
 $string['msg3'] = 'You must specify a duration for Summative exams.\nThis should be normal duration excluding any extra time for dyslexic students.';
 $string['msg4'] = 'You must specify an academic year for Summative exams (\'Access Rights\' tab).';
 $string['msg5'] = 'OSCEs must be assigned to at least one module.';
+$string['msg6a'] = 'You have set some internal reviewers but not specified a deadline.';
 $string['msg6'] = 'You have set some external examiners but not specified a deadline.';
 $string['msg7'] = 'Please enter a name for the Paper.';
 $string['msg8'] = 'This is a closed-book examination and students may not refer to any other source or person in taking this paper. No electronic equipment, other than the examination computer, may be used. Dictionaries are <em>not</em> allowed with one exception. Those whose first language is <em>not</em> English may use a standard translation dictionary to translate between that language and English provided that neither language is the subject of this examination. Subject specific translation dictionaries are not permitted. You are not permitted to take any paper or notes out of the examination room during or after the examination. Any rough notes that you make on the paper provided will be collected by staff and destroyed.';
@@ -100,4 +95,5 @@ $string['postscriptheading'] = "Text displayed after the student clicks 'Finish'
 // Reference Material tab
 $string['referencematerial'] = 'Reference Material';
 $string['referenceheading'] = 'Control which reference materials are available to the paper.';
+$string['nomaterials'] = 'There are no reference materials available for the module(s) assigned to this paper.<br /><br />Reference material can be added by clicking the \'Reference Material\' option from a module screen (<a href="" style="color:blue" onclick="launchHelp(296); return false;">see help</a>).';
 ?>

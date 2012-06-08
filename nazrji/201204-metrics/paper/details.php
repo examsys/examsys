@@ -476,6 +476,11 @@ function random_qMarks($random_questions) {
         $latex = 1;
       }
     
+     // latex check [tex]
+      if (strpos($leadin,'[texi]') !== false or strpos($scenario,'[texi]') !== false or strpos($option_text,'[texi]') !== false or strpos($score_method,'[texi]') !== false or strpos($correct_fback,'[texi]') !== false or strpos($feedback_right,'[texi]') !== false) {
+        $latex = 1;
+      }
+    
       // latex check $$
       if (strpos($leadin,'$$') !== false or strpos($scenario,'$$') !== false or strpos($option_text,'$$') !== false or strpos($score_method,'$$') !== false or strpos($correct_fback,'$$') !== false or strpos($feedback_right,'$$') !== false) {
         $latex = 1;
@@ -536,7 +541,7 @@ function random_qMarks($random_questions) {
       $temp_array[$row_no]['screen'] = $screen;
       $temp_array[$row_no]['q_type'] = $q_type;
       $temp_array[$row_no]['leadin'] = $leadin;
-      if (strpos($temp_array[$row_no]['leadin'],'class="mee"') === false AND strpos($temp_array[$row_no]['leadin'],'class=mee') === false) {
+      if (strpos($temp_array[$row_no]['leadin'],'class="mee"') === false and strpos($temp_array[$row_no]['leadin'],'class=mee') === false) {
         $temp_array[$row_no]['leadin'] = strip_tags($temp_array[$row_no]['leadin']);                                     // No equation, strip all tags
         if (strlen($temp_array[$row_no]['leadin']) > 160) {
           $temp_array[$row_no]['leadin'] = substr($temp_array[$row_no]['leadin'],0,160) . '...';
@@ -662,13 +667,13 @@ function random_qMarks($random_questions) {
 
   if (strpos($userroles,'Admin') === false) {
     $OKmodules = array();
-    $module_split = explode(',',$module);
+    $module_split = explode(',', $module);
     foreach ($module_split as $individual_module) {
       if (in_array($individual_module, $teams)) {
         $OKmodules[] = $individual_module;
       }
     }
-    $module = implode(',',$OKmodules);
+    $module = implode(',', $OKmodules);
   }
 
   echo "<table style=\"table-layout: fixed\" class=\"header\" id=\"sortable\">\n";
@@ -694,6 +699,9 @@ function random_qMarks($random_questions) {
     echo "<tr>\n";
   } else {
     echo "<tr class=\"retired\">\n";
+  }
+  if (strpos($userroles,'Demo') !== false) {
+    $paper_owner = 'Mr J, Bloggs';
   }
   echo "<th colspan=\"3\" style=\"font-size:90%;padding-left:10px\"><strong>" . $string['start'] . ":</strong> $display_start_date</th><th colspan=\"3\" style=\"text-align:right;font-size:90%\"><strong>" . $string['owner'] . ":</strong> $paper_owner&nbsp;</th></tr>\n";
   if ($retired == '') {

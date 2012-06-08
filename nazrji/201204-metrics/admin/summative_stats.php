@@ -28,11 +28,15 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
 <title><?php echo $string['summativeexamstats'] . ' ' . $cfg_install_type; ?></title>
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
 <link rel="stylesheet" type="text/css" href="../css/header.css" />
 <style type="text/css">
+.stats {border-collapse:collapse}
+.stats th {color:white; background-image:url(../artwork/search_bar_background.png); background-repeat:repeat-x; border: 1px solid #6893CD}
+.stats td {border: 1px solid #6893CD}
 .n {text-align:right}
 </style>
 <script src="../js/staff_help.js" type="text/javascript"></script>
@@ -54,7 +58,7 @@
 <th style="text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(233); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="Help" border="0" /></a></th>
 </tr>
 <tr>
-<th colspan="2"><div style="margin-left:10px; font-size:200%; font-weight:bold"><?php echo $_GET['year']; ?>/<?php echo (substr($_GET['year'],2,2)+1); ?> <?php echo $string['summativeexamstats']; ?></th>
+<th colspan="2"><div style="margin-left:10px; font-size:200%"><strong><?php echo $string['summativeexamstats']; ?>:</strong> <?php echo $_GET['year']; ?>/<?php echo (substr($_GET['year'],2,2)+1); ?></th>
 <th style="text-align:right; vertical-align:bottom; padding-bottom:2px; padding-right:6px"><select name="year" id="year" onchange="jumpTo()">
 <?php
 for ($i=2005; $i<=date('Y'); $i++) {
@@ -71,8 +75,7 @@ for ($i=2005; $i<=date('Y'); $i++) {
 </table>
 
 <blockquote>
-<table cellpadding="2" cellspacing="0" border="1" style="width:400px">
-<tr><th colspan="2">&nbsp;</th><th colspan="3"><?php echo $string['cohortsizes']; ?></th><th>&nbsp;</th></tr>
+<table class="stats" cellpadding="2" cellspacing="0" border="0" style="width:400px">
 <tr><th><?php echo $string['month']; ?></th><th><?php echo $string['papers']; ?></th><th><?php echo $string['mean']; ?></th><th><?php echo $string['min']; ?></th><th><?php echo $string['max']; ?></th><th><?php echo $string['studentpapers']; ?></th></tr>
 <?php
 $total_paper_no = 0;

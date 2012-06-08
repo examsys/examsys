@@ -92,14 +92,13 @@
     }
     $initials = strtoupper($initials);
   
-    //TODO this function has been moved to passwordutils.class.php
-    $new_password = encpw($_POST['new_username'],trim($_POST['new_password']));
+    $new_password = encpw($cfg_encrypt_salt, $_POST['new_username'], trim($_POST['new_password']));
     $new_surname = my_ucwords(trim($_POST['new_surname']));
     $new_username = trim($_POST['new_username']);
     $new_email = trim($_POST['new_email']);
     $new_first_names = my_ucwords(trim($_POST['new_first_names']));
   
-    $result = $mysqli->prepare("INSERT INTO users VALUES (?,?,?,?,?,?,?,?,NULL,?,?,NULL,0,?)");
+    $result = $mysqli->prepare("INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, NULL, 0, ?)");
     $result->bind_param('ssssssssssi', $new_password, $_POST['new_grade'], $new_surname , $initials, $_POST['new_users_title'], $new_username, $new_email, $tmp_roles, $new_first_names, $_POST['new_gender'], $_POST['new_year']);
     $result->execute();  
     $result->close();

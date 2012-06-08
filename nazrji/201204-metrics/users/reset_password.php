@@ -38,7 +38,7 @@ $form_util = new FormUtils();
 
 // Check if we've been passed a token
 $token = (isset($_GET['token']) and $_GET['token'] != '') ? $_GET['token'] : ((!empty($_POST['token'])) ? $_POST['token'] : '');
-if($token == '') {
+if ($token == '') {
   $critical_errors[] = $string['notokensupplied'];
 } else {
   // Check if the token exists and has not expired
@@ -81,7 +81,7 @@ if (count($critical_errors) == 0 and isset($_POST['token']) and $_POST['token'] 
         $errors[] = $string['incorrectemail'];
       } else {
         // Update user's password
-        $new_pw = PasswordUtils::encpw($username, $password);
+        $new_pw = encpw($cfg_encrypt_salt, $username, $password);
         $update = $mysqli->prepare("UPDATE users SET password=? WHERE id=?");
         $update->bind_param('si', $new_pw, $user_id);
         if(!$update->execute()) {

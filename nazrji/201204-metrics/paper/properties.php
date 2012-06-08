@@ -427,7 +427,8 @@ if (isset($_POST['Submit'])) {
 
   <?php echo $cfg_editor_javascript; ?>
   <script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
-  <script type="text/javascript">
+  <script type="text/javascript" src="../js/staff_help.js"></script>
+  <script language="JavaScript">
     $(getMeta);
   
     function getMeta() {
@@ -558,13 +559,13 @@ if (isset($_POST['Submit'])) {
       }
       if (internal_set == true) {
         if (document.edit_form.int_tmonth.options[document.edit_form.int_tmonth.selectedIndex].value == '') {
-          alert("<?php echo $string['msg6']; ?>");
+          alert("<?php echo $string['msg6a']; ?>");
           return false;
         } else if (document.edit_form.int_tday.options[document.edit_form.int_tday.selectedIndex].value == '') {
-          alert("<?php echo $string['msg6']; ?>");
+          alert("<?php echo $string['msg6a']; ?>");
           return false;
         } else if (document.edit_form.int_tyear.options[document.edit_form.int_tyear.selectedIndex].value == '') {
-          alert("<?php echo $string['msg6']; ?>");
+          alert("<?php echo $string['msg6a']; ?>");
           return false;
         }        
       }
@@ -602,18 +603,7 @@ if (isset($_POST['Submit'])) {
       }
     }
 
-    function launchHelp(pageID) {
-      var winheight = screen.height-100;
-      if (screen.width == 800) {
-        notice=window.open("./staff_help/index.php?id=" + pageID + "","help","width=770,height="+winheight+",scrollbars=yes,resizable=yes,toolbar=no,location=no,directories=no,status=no,menubar=no");
-        notice.moveTo(10,10);
-      } else {
-        notice=window.open("./staff_help/index.php?id=" + pageID + "","help","width=950,height="+winheight+",scrollbars=yes,resizable=yes,toolbar=no,location=no,directories=no,status=no,menubar=no");
-        notice.moveTo(10,10);
-      }
-    }
-    
-    function buttonclick(sectionID) {
+    function buttonclick(sectionID, tabID) {
       document.getElementById('general').style.display = 'none';
       document.getElementById('security').style.display = 'none';
       document.getElementById('reviewers').style.display = 'none';
@@ -629,33 +619,33 @@ if (isset($_POST['Submit'])) {
       ?>
       document.getElementById(sectionID).style.display='';
       
-      document.getElementById('button_general').style.background='';
-      document.getElementById('button_security').style.background='';
-      document.getElementById('button_reviewers').style.background='';
+      document.getElementById('tab1').style.background='';
+      document.getElementById('tab2').style.background='';
+      document.getElementById('tab3').style.background='';
       <?php
         if ($paper_type != '4' and $paper_type != '5') {
       ?>
-      document.getElementById('button_rubric').style.background='';
-      document.getElementById('button_prologue').style.background='';
-      document.getElementById('button_postscript').style.background='';
-      document.getElementById('button_reference').style.background='';
+      document.getElementById('tab4').style.background='';
+      document.getElementById('tab5').style.background='';
+      document.getElementById('tab6').style.background='';
+      document.getElementById('tab7').style.background='';
       <?php
         }
       ?>
 
-      document.getElementById('button_'+sectionID).style.background='url("../artwork/2007_button_on.png")';
+      document.getElementById(tabID).style.background='url("../artwork/2007_button_on.png")';
     }
 
-    function buttonover(buttonID) {
-      if (document.getElementById('button_'+buttonID).style.backgroundImage != 'url("../artwork/2007_button_on.png")') {
-        document.getElementById('button_'+buttonID).style.backgroundImage='url("../artwork/2007_button_over.png")';
+    function buttonover(tabID) {
+      if (document.getElementById(tabID).style.backgroundImage != 'url("../artwork/2007_button_on.png")') {
+        document.getElementById(tabID).style.backgroundImage='url("../artwork/2007_button_over.png")';
       }
     }
 
-    function buttonout(buttonID) {
+    function buttonout(tabID) {
       
-      if (document.getElementById('button_'+buttonID).style.backgroundImage != 'url("../artwork/2007_button_on.png")') {
-        document.getElementById('button_'+buttonID).style.backgroundImage='';
+      if (document.getElementById(tabID).style.backgroundImage != 'url("../artwork/2007_button_on.png")') {
+        document.getElementById(tabID).style.backgroundImage='';
       }
     }
 
@@ -694,16 +684,16 @@ if (isset($_POST['Submit'])) {
 <tr><td valign="top" style="background-color:white; border:1px solid #7F9DB9; width:120px">
 
 <table cellspacing="0" cellpadding="0" border="0" style="font-size:90%; width:120px">
-<tr><td id="button_general" style="background-image:url('../artwork/2007_button_on.png'); height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('general')" onmouseout="buttonout('general')" onclick="buttonclick('general')">&nbsp;<?php echo $string['generaltab']; ?></td></tr>
-<tr><td id="button_security" style="height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('security')" onmouseout="buttonout('security')" onclick="buttonclick('security')">&nbsp;<?php echo $string['securitytab']; ?></td></tr>
-<tr><td id="button_reviewers" style="height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('reviewers')" onmouseout="buttonout('reviewers')" onclick="buttonclick('reviewers')">&nbsp;<?php echo $string['reviewerstab']; ?></td></tr>
+<tr><td id="tab1" style="background-image:url('../artwork/2007_button_on.png'); height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('tab1')" onmouseout="buttonout('tab1')" onclick="buttonclick('general','tab1')">&nbsp;<?php echo $string['generaltab']; ?></td></tr>
+<tr><td id="tab2" style="height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('tab2')" onmouseout="buttonout('tab2')" onclick="buttonclick('security','tab2')">&nbsp;<?php echo $string['securitytab']; ?></td></tr>
+<tr><td id="tab3" style="height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('tab3')" onmouseout="buttonout('tab3')" onclick="buttonclick('reviewers','tab3')">&nbsp;<?php echo $string['reviewerstab']; ?></td></tr>
 <?php
 if ($paper_type != '4' and $paper_type != '5') {
 ?>
-<tr><td id="button_rubric" style="height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('rubric')" onmouseout="buttonout('rubric')" onclick="buttonclick('rubric')">&nbsp;<?php echo $string['rubrictab']; ?></td></tr>
-<tr><td id="button_prologue" style="height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('prologue')" onmouseout="buttonout('prologue')" onclick="buttonclick('prologue')">&nbsp;<?php echo $string['prologuetab']; ?></td></tr>
-<tr><td id="button_postscript" style="height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('postscript')" onmouseout="buttonout('postscript')" onclick="buttonclick('postscript')">&nbsp;<?php echo $string['postscripttab']; ?></td></tr>
-<tr><td id="button_reference" style="height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('reference')" onmouseout="buttonout('reference')" onclick="buttonclick('reference')">&nbsp;<?php echo $string['referencematerial']; ?></td></tr>
+<tr><td id="tab4" style="height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('tab4')" onmouseout="buttonout('tab4')" onclick="buttonclick('rubric','tab4')">&nbsp;<?php echo $string['rubrictab']; ?></td></tr>
+<tr><td id="tab5" style="height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('tab5')" onmouseout="buttonout('tab5')" onclick="buttonclick('prologue','tab5')">&nbsp;<?php echo $string['prologuetab']; ?></td></tr>
+<tr><td id="tab6" style="height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('tab6')" onmouseout="buttonout('tab6')" onclick="buttonclick('postscript','tab6')">&nbsp;<?php echo $string['postscripttab']; ?></td></tr>
+<tr><td id="tab7" style="height:25px; color:#00156E; cursor:default" valign="middle" onmouseover="buttonover('tab7')" onmouseout="buttonout('tab7')" onclick="buttonclick('reference','tab7')">&nbsp;<?php echo $string['referencematerial']; ?></td></tr>
 <?php
 }
 ?>
@@ -889,7 +879,7 @@ if ($paper_type != '4' and $paper_type != '5') {
       <option value="4"<?php if ($marking == '4') echo ' selected'; ?> />Fail | Borderline fail | Borderline pass | Pass | Good pass</option>
       <option value="6"<?php if ($marking == '6') echo ' selected'; ?> />Clear FAIL | BORDERLINE | Clear PASS | Honours PASS</option>
   <?php
-    echo "<tr><td colspan=\"4\">" . wysiwyg_editor('oEdit1','osce_marking_guidance',$paper_prologue,684,230);
+    echo "<tr><td colspan=\"4\">" . wysiwyg_editor('oEdit1', 'osce_marking_guidance', $paper_prologue, 684, 230);
   ?>
 </td></tr>
     <?php
@@ -1402,10 +1392,10 @@ if ($paper_type != '4' and $paper_type != '5') {
   $team_list = implode("','", $teams);
   
   $schools = getSchools($teams, $mysqli);
-  $school_list = implode(',', $schools);
+  $school_sql = (count($schools) > 0) ? 'AND schoolid IN (' . implode(',', $schools) . ')' : '';
   $current_internals = explode(',',$internal_reviewers);
      
-  $internal_details = $mysqli->prepare("SELECT DISTINCT users.id, title, initials, surname, first_names FROM users, teams, modules WHERE users.id=teams.memberID and modules.moduleid=teams.name AND schoolid IN ($school_list) ORDER BY surname, initials");
+  $internal_details = $mysqli->prepare("SELECT DISTINCT users.id, title, initials, surname, first_names FROM users, teams, modules WHERE users.id=teams.memberID and modules.moduleid=teams.name $school_sql ORDER BY surname, initials");
   $internal_details->execute();
   $internal_details->bind_result($internal_id, $internal_title, $internal_initials, $internal_surname, $internal_first_names);
   $internal_no = 0;

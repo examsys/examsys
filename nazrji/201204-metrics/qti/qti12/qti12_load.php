@@ -1529,7 +1529,19 @@ $numb=0;
 
     // get list of feedbacks common to both outcomes and add to general feedback array
     // remove common ones from the list
-    //RemoveCommonInArray($correctfb,$incorrectfb,$generalfb);
+    RemoveCommonInArray($correctfb,$incorrectfb,$generalfb);
+
+    if($this->GetFeedbackFromArray($source, $correctfb) == $this->GetFeedbackFromArray($source, $incorrectfb) )
+    {
+      $generalfb=$correctfb;
+      unset($correctfb);
+      $correctfb=array();
+
+      unset($incorrectfb);
+      $incorrectfb=array();
+    }
+
+    $dest->feedback = $this->GetFeedbackFromArray($source, $generalfb);
 
     $dest->fb_correct = $this->GetFeedbackFromArray($source, $correctfb);
     $dest->fb_incorrect = $this->GetFeedbackFromArray($source, $incorrectfb);

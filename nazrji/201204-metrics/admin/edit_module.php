@@ -147,6 +147,7 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
     .field {font-weight:bold; text-align:right; padding-right:10px}
   </style>
 
+  <script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
   <script language="JavaScript">
     function checkForm() {
       if (myform.moduleid.value == "") {
@@ -166,6 +167,14 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
         document.getElementById('ebelgrid').style.display = 'none';
       }
     }
+    
+    function setSidebarMenu() {
+      $('#menu1a').css('display','none');
+      $('#menu1b').css('display','block');
+      $('#moduleID').val('<?php echo $_GET['moduleid']; ?>');
+    }
+    
+    $(document).ready(setSidebarMenu);
   
   <?php
   if ($unique_moduleid == false) {

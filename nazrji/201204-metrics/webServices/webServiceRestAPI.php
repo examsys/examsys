@@ -21,8 +21,39 @@
 * @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */
-require '../include/staff_student_auth.inc';
+error_reporting(E_ALL);
+ini_set('display_errors','On');
+
+//require '../include/staff_student_auth.inc';
+$root = str_replace('/include', '/', str_replace('\\', '/', dirname(__FILE__)));
+$root="$root/../";
+require_once $root . 'config/config.inc.php';
 require_once $cfg_web_root . 'classes/userutils.class.php';
+require_once $root . 'config/config.inc.php';
+require_once $cfg_web_root . 'include/auth.inc';
+require_once $cfg_web_root . 'include/custom_error_handler.inc';
+require_once $cfg_web_root . 'classes/lang.class.php';
+require_once $cfg_web_root . 'lang/' . $language . '/include/common.inc';   // Include common language file that all scripts need
+require_once $cfg_web_root . 'classes/dbutils.class.php';
+require_once $cfg_web_root . 'classes/networkutils.class.php';
+require_once $cfg_web_root . 'classes/dateutils.class.php';
+
+if (substr_count($_GET['url'], '/') > 0) {
+  list($action, $parms) = explode('/',$_GET['url'],2);
+} else {
+  $action = $_GET['url'];
+}
+if($action=="getModulePaperList") {
+  $userroles='Staff';
+  $mysqli = DBUtils::get_mysqli_link($cfg_db_host , $cfg_db_username, $cfg_db_passwd, $cfg_db_database, $cfg_db_charset, $dbclass);
+
+  db_change_user($mysqli);
+
+}
+else
+{
+  require '../include/staff_student_auth.inc';
+}
 require './restAPI.class';
 
 Class webServiceRestAPI extends restAPI {
@@ -138,6 +169,25 @@ Class webServiceRestAPI extends restAPI {
           }
         }
         break;
+      case 'getModulePaperList':
+        $team = '';
+        $types = '';
+        $tmp = explode('/', $parms);
+        if (isset($tmp[0])) $team = $tmp[0];
+
+        if ($team == '') {
+          $this->sendResponse(400, '', '');
+        } else {
+          //return the module Available Feedback
+          $this->data = $this->getModulePaperList($team);
+
+          if ($this->data == '') {
+            $this->sendResponse(400, '', '');
+          } else {
+            $this->sendResponse(200, $this->formatData($this->data, 'paperlist', 'paper'), $this->http_accept);
+          }
+        }
+        break;
       case 'createAccount':
         $this->data = $this->createAccount();
         if ($this->data === 'accessdenied') {
@@ -154,6 +204,55 @@ Class webServiceRestAPI extends restAPI {
         break;
     }
   }
+
+
+
+  public function getModulePaperList($team) {
+    global $protocol, $cfg_root_path;
+$moduleSQL='';
+        $moduleSQL .= " (moduleID LIKE ? OR  moduleID LIKE ? OR  moduleID LIKE ? or  moduleID LIKE ?)";
+
+
+
+        $typeSQL = " paper_type!='2'";
+
+unset($res);
+    $papers = array();
+    $paper_no = 0;
+   $sql="SELECT property_id, paper_title, paper_type, start_date, end_date, created, MAX(screen), title, surname, crypt_name FROM properties, papers, users WHERE properties.paper_ownerID=users.id AND properties.property_id=papers.paper AND  $moduleSQL AND $typeSQL AND deleted IS NULL AND retired IS NULL GROUP BY property_id ORDER BY paper_title";
+//  echo $sql;
+    $res = $this->db->prepare($sql);
+    $team1="$team,%";
+    $team2="$team";
+    $team3="%,$team,%";
+    $team4="%,$team";
+//    echo $team1 . "::::: " .$team2 . "::::::" . $team3 . ":::::::: " . $team4 .  ": <br>";
+    $res->bind_param('ssss',$team1,$team2,$team3,$team4);
+    $res->execute();
+    $res->store_result();
+    $res->bind_result($property_id, $paper_title, $paper_type, $start_date, $end_date, $created, $screens, $title, $surname, $crypt_name);
+    if ($res->num_rows == 0) {
+      return json_encode($this->db->error);
+    } else {
+      while($res->fetch()) {
+        $papers[$paper_no]['id'] = $crypt_name;
+        $papers[$paper_no]['title'] = $paper_title;
+        $papers[$paper_no]['type'] = $this->qtypes[$paper_type];
+        $papers[$paper_no]['staff_url'] = $protocol . $_SERVER['HTTP_HOST'] . $cfg_root_path . '/paper/details.php?paperID=' . $property_id;
+        $papers[$paper_no]['student_url'] = $protocol . $_SERVER['HTTP_HOST'] . $cfg_root_path . '/user_index.php?id=' . $crypt_name;
+        $papers[$paper_no]['start_date'] = $start_date;
+        $papers[$paper_no]['end_date'] = $end_date;
+        $papers[$paper_no]['created'] = $created;
+        $papers[$paper_no]['screens'] = $screens;
+        $papers[$paper_no]['owner'] = $title . ' ' . $surname;
+        $paper_no++;
+      }
+    }
+    $res->close();
+
+    return $papers;
+  }
+
 
   public function getAvailableFeedback ($username,$moduleID) {
     $tmp_userID = $this->getUserID($username);

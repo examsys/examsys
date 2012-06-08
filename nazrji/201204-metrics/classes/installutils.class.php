@@ -245,6 +245,16 @@ Class InstallUtils {
       self::displayError(array('001' => mysqli_connect_error()));
     }
     self::$db->set_charset(self::$cfg_db_charset);
+
+    //create salt as this is needed to generate the passwords that are created in the next function rather than created during config file settings
+    $salt = '';
+    $characters = 'abcdefghijklmnopqrstuvwxzyABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    for ($i=0; $i<16; $i++) {
+      $salt .= substr($characters, rand(0,61), 1);
+    }
+    global $cfg_encrypt_salt;
+    $cfg_encrypt_salt=$salt;
+
     self::createDatabase(self::$cfg_db_name, self::$cfg_db_charset);
 
     //LOAD help if requested
@@ -309,6 +319,8 @@ Class InstallUtils {
     $res = self::$db->prepare("SHOW DATABASES LIKE '$dbname'");
     $res->execute();
     $res->store_result();
+    @ob_flush();
+    @flush();
     if ($res->num_rows > 0) {
       self::displayError(array('010' => sprintf($string['displayerror1'],$dbname)));
     }
@@ -334,6 +346,8 @@ Class InstallUtils {
     $tables = new databaseTables($dbcharset);
     while ($sql = $tables->next()) {
       $res = self::$db->query($sql);
+        @ob_flush();
+        @flush();
       if (self::$db->errno != 0) {
         self::displayError(array('012' => $string['displayerror3'] . self::$db->error . "</br> $sql"));
       }
@@ -372,9 +386,15 @@ Class InstallUtils {
     $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".admin_access TO '". self::$cfg_db_username . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT,INSERT ON " . $dbname . ".temp_users TO '". self::$cfg_db_username . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT INSERT ON " . $dbname . ".sys_errors TO '". self::$cfg_db_username . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".lti_keys TO '". self::$cfg_db_username . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".lti_user TO '". self::$cfg_db_username . "'@'". self::$cfg_db_host . "'";
+
+
     $priv_SQL[] = "FLUSH PRIVILEGES";
     foreach($priv_SQL as $sql) {
       self::$db->query($sql);
+        @ob_flush();
+        @flush();
       if (self::$db->errno != 0) {
         self::logWarning(array('013'=> $string['wdatabaseuser']. self::$cfg_db_username . $string['wnotpermission']));
       }
@@ -427,10 +447,16 @@ Class InstallUtils {
     $priv_SQL[] = "GRANT INSERT ON " . $dbname . ".sys_errors TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT INSERT ON " . $dbname . ".announcements TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";    
     $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".standards_setting TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
-    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".state TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";    
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".state TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".lti_resource TO '". self::$cfg_db_student_user . "'@'".self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".lti_context TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+
+
     $priv_SQL[] = "FLUSH PRIVILEGES";
     foreach($priv_SQL as $sql) {
       self::$db->query($sql);
+        @ob_flush();
+        @flush();
       if (self::$db->errno != 0) {
         self::logWarning(array('013'=> $string['wdatabaseuser']. self::$cfg_db_student_user . $string['wnotpermission']));
       }
@@ -453,6 +479,7 @@ Class InstallUtils {
     $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".reference_papers TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".teams TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".special_needs TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".student_help TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log0 TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log1 TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log2 TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_db_host . "'";
@@ -467,6 +494,8 @@ Class InstallUtils {
     $priv_SQL[] = "FLUSH PRIVILEGES";
     foreach($priv_SQL as $sql) {
       self::$db->query($sql);
+        @ob_flush();
+        @flush();
       if (self::$db->errno != 0) {
         self::logWarning(array('013'=> $string['wdatabaseuser']. self::$cfg_db_external_user . $string['wnotpermission']));
       }
@@ -528,9 +557,14 @@ Class InstallUtils {
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".temp_users TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".sessions TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".state TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".lti_resource TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".lti_context TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+
     $priv_SQL[] = "FLUSH PRIVILEGES";
     foreach ($priv_SQL as $sql) {
       self::$db->query($sql);
+        @ob_flush();
+        @flush();
       if (self::$db->errno != 0) {
         self::logWarning(array('013'=> $string['wdatabaseuser']. self::$cfg_db_staff_user . $string['wnotpermission']));
       }
@@ -578,6 +612,8 @@ Class InstallUtils {
     $priv_SQL[] = "FLUSH PRIVILEGES";
     foreach($priv_SQL as $sql) {
       self::$db->query($sql);
+        @ob_flush();
+        @flush();
       if (self::$db->errno != 0) {
         self::logWarning(array('013'=> $string['wdatabaseuser']. self::$cfg_db_inv_user . $string['wnotpermission']));
       }
@@ -594,6 +630,8 @@ Class InstallUtils {
     $priv_SQL[] = "FLUSH PRIVILEGES";
     foreach($priv_SQL as $sql) {
       self::$db->query($sql);
+        @ob_flush();
+        @flush();
       if (self::$db->errno != 0) {
 	    echo self::$db->error . "<br />";
         self::logWarning(array('013'=> $string['wdatabaseuser']. self::$cfg_db_sysadmin_user . $string['wnotpermission']));
@@ -982,6 +1020,7 @@ require \$root . '/include/path_functions.inc.php';
   \$cfg_ldap_bind_password = '{cfg_ldap_bind_password}';
   \$cfg_ldap_user_prefix   = '{cfg_ldap_user_prefix}';
   \$cfg_use_ldap           = {cfg_use_ldap};
+  \$cfg_encrypt_salt       = '{cfg_encrypt_salt}';    // Do not alter if not on LDAP.
 
 // Institutional email domains
 // If using external authentication (e.g. LDAP) list the domains that will authenticate against the external system
@@ -1032,46 +1071,53 @@ switch (strtolower(\$_SERVER['HTTP_HOST'])) {
   ?>
 CONFIG;
 
-    $config = str_replace('{rogo_version}',self::$rogo_version,$config);
-    $config = str_replace('{SysAdmin_username}','USERNMAE_FOR_DEBUG',$config);
-    $config = str_replace('{cfg_db_host}',self::$cfg_db_host,$config);
-    $config = str_replace('{cfg_db_port}',self::$cfg_db_port,$config);
-    $config = str_replace('{cfg_db_charset}',self::$cfg_db_charset,$config);
-    $config = str_replace('{cfg_page_charset}',self::$cfg_page_charset,$config);
-    $config = str_replace('{cfg_company}',self::$cfg_company,$config);
+    $config = str_replace('{rogo_version}', $version, $config);
+    $config = str_replace('{SysAdmin_username}', 'USERNMAE_FOR_DEBUG', $config);
+    $config = str_replace('{cfg_db_host}', self::$cfg_db_host, $config);
+    $config = str_replace('{cfg_db_port}', self::$cfg_db_port, $config);
+    $config = str_replace('{cfg_db_charset}', self::$cfg_db_charset, $config);
+    $config = str_replace('{cfg_page_charset}', self::$cfg_page_charset, $config);
+    $config = str_replace('{cfg_company}', self::$cfg_company, $config);
 
-    $config = str_replace('{cfg_db_database}',self::$cfg_db_name,$config);
-    $config = str_replace('{cfg_db_username}',self::$cfg_db_username,$config);
-    $config = str_replace('{cfg_db_passwd}',self::$cfg_db_password,$config);
-    $config = str_replace('{cfg_db_student_user}',self::$cfg_db_student_user,$config);
-    $config = str_replace('{cfg_db_student_passwd}',self::$cfg_db_student_passwd,$config);
-    $config = str_replace('{cfg_db_staff_user}',self::$cfg_db_staff_user,$config);
-    $config = str_replace('{cfg_db_staff_passwd}',self::$cfg_db_staff_passwd,$config);
-    $config = str_replace('{cfg_db_external}',self::$cfg_db_external_user,$config);
-    $config = str_replace('{cfg_db_external_passwd}',self::$cfg_db_external_passwd,$config);
-    $config = str_replace('{cfg_db_sysadmin_user}',self::$cfg_db_sysadmin_user,$config);
-    $config = str_replace('{cfg_db_sysadmin_passwd}',self::$cfg_db_sysadmin_passwd,$config);
-    $config = str_replace('{cfg_db_sct_user}',self::$cfg_db_sct_user,$config);
-    $config = str_replace('{cfg_db_sct_passwd}',self::$cfg_db_sct_passwd,$config);
-    $config = str_replace('{cfg_db_inv_user}',self::$cfg_db_inv_user,$config);
-    $config = str_replace('{cfg_db_inv_passwd}',self::$cfg_db_inv_passwd,$config);
+    $config = str_replace('{cfg_db_database}', self::$cfg_db_name, $config);
+    $config = str_replace('{cfg_db_username}', self::$cfg_db_username, $config);
+    $config = str_replace('{cfg_db_passwd}', self::$cfg_db_password, $config);
+    $config = str_replace('{cfg_db_student_user}', self::$cfg_db_student_user, $config);
+    $config = str_replace('{cfg_db_student_passwd}', self::$cfg_db_student_passwd, $config);
+    $config = str_replace('{cfg_db_staff_user}', self::$cfg_db_staff_user, $config);
+    $config = str_replace('{cfg_db_staff_passwd}', self::$cfg_db_staff_passwd, $config);
+    $config = str_replace('{cfg_db_external}', self::$cfg_db_external_user, $config);
+    $config = str_replace('{cfg_db_external_passwd}', self::$cfg_db_external_passwd, $config);
+    $config = str_replace('{cfg_db_sysadmin_user}', self::$cfg_db_sysadmin_user, $config);
+    $config = str_replace('{cfg_db_sysadmin_passwd}', self::$cfg_db_sysadmin_passwd, $config);
+    $config = str_replace('{cfg_db_sct_user}', self::$cfg_db_sct_user, $config);
+    $config = str_replace('{cfg_db_sct_passwd}', self::$cfg_db_sct_passwd, $config);
+    $config = str_replace('{cfg_db_inv_user}', self::$cfg_db_inv_user, $config);
+    $config = str_replace('{cfg_db_inv_passwd}', self::$cfg_db_inv_passwd, $config);
 
-    $config = str_replace('{cfg_support_email}',self::$cfg_support_email,$config);
-    $config = str_replace('{emergency_support_numbers}',self::$emergency_support_numbers,$config);
+    $config = str_replace('{cfg_support_email}', self::$cfg_support_email, $config);
+    $config = str_replace('{emergency_support_numbers}', self::$emergency_support_numbers, $config);
 
-    $config = str_replace('{cfg_short_date}',self::$cfg_short_date,$config);
-    $config = str_replace('{cfg_long_date_time}',self::$cfg_long_date_time,$config);
-    $config = str_replace('{cfg_timezone}',self::$cfg_timezone,$config);
-    $config = str_replace('{cfg_tmpdir}',self::$cfg_tmpdir,$config);
+    $config = str_replace('{cfg_short_date}', self::$cfg_short_date, $config);
+    $config = str_replace('{cfg_long_date_time}', self::$cfg_long_date_time, $config);
+    $config = str_replace('{cfg_timezone}', self::$cfg_timezone, $config);
+    $config = str_replace('{cfg_tmpdir}', self::$cfg_tmpdir, $config);
 
-    $config = str_replace('{cfg_ldap_server}',self::$cfg_ldap_server,$config);
-    $config = str_replace('{cfg_ldap_search_dn}',self::$cfg_ldap_search_dn,$config);
-    $config = str_replace('{cfg_ldap_bind_rdn}',self::$cfg_ldap_bind_rdn,$config);
-    $config = str_replace('{cfg_ldap_bind_password}',self::$cfg_ldap_bind_password,$config);
-    $config = str_replace('{cfg_ldap_user_prefix}',self::$cfg_ldap_user_prefix,$config);
-    $config = str_replace('{cfg_use_ldap}',self::$cfg_use_ldap,$config);
+    $config = str_replace('{cfg_ldap_server}', self::$cfg_ldap_server, $config);
+    $config = str_replace('{cfg_ldap_search_dn}', self::$cfg_ldap_search_dn, $config);
+    $config = str_replace('{cfg_ldap_bind_rdn}', self::$cfg_ldap_bind_rdn, $config);
+    $config = str_replace('{cfg_ldap_bind_password}', self::$cfg_ldap_bind_password, $config);
+    $config = str_replace('{cfg_ldap_user_prefix}', self::$cfg_ldap_user_prefix, $config);
+    $config = str_replace('{cfg_use_ldap}', self::$cfg_use_ldap, $config);
+    
 
-    $config = str_replace('{SERVER_NAME}',$_SERVER['HTTP_HOST'],$config);
+
+    global $cfg_encrypt_salt;
+    $salt=$cfg_encrypt_salt; //=$salt;
+
+    $config = str_replace('{cfg_encrypt_salt}', $salt, $config);
+
+    $config = str_replace('{SERVER_NAME}', $_SERVER['HTTP_HOST'], $config);
 
     if (file_exists(self::$rogo_path . '/config/config.inc.php')) {
       rename(self::$rogo_path . '/config/config.inc.php', self::$rogo_path . '/config/config.inc.old.php');
@@ -1188,7 +1234,7 @@ QUERY;
           `name` text,
           `team_name` varchar(255) default NULL,
           `created` datetime default NULL,
-          `color` enum('yellow','red','green','blue') default NULL,
+          `color` enum('yellow','red','green','blue','grey') default NULL,
           `deleted` datetime default NULL,
           PRIMARY KEY  (`id`)
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
@@ -1976,7 +2022,7 @@ QUERY;
 
     $this->tableList['users'] = <<<QUERY
         CREATE TABLE `users` (
-          `password` char(40) default NULL,
+          `password` char(90) default NULL,
           `grade` char(30) default NULL,
           `surname` char(35) default NULL,
           `initials` char(10) default NULL,
@@ -2006,6 +2052,59 @@ QUERY;
           PRIMARY KEY  (`id`)
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
+
+
+    $this->tableList['lti_user'] = <<<QUERY
+          CREATE TABLE IF NOT EXISTS `lti_user` (
+          `oauth_consumer_key` varchar(200) NOT NULL,
+          `user_id` varchar(200) NOT NULL,
+          `rogo_id` int(11) NOT NULL,
+          `updated_on` datetime,
+          PRIMARY KEY (`oauth_consumer_key`,`user_id`),
+          KEY `rogo_id` (`rogo_id`)
+         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+QUERY;
+
+
+    $this->tableList['lti_resource'] = <<<QUERY
+        CREATE TABLE IF NOT EXISTS `lti_resource` (
+        `oauth_consumer_key` varchar(255) NOT NULL DEFAULT '',
+        `lti_resource_id` varchar(255) NOT NULL,
+        `internal_id` varchar(255) DEFAULT NULL,
+        `itype` varchar(255) DEFAULT NULL,
+        `updated` datetime,
+        PRIMARY KEY (`oauth_consumer_key`,`lti_resource_id`),
+        KEY `destination2` (`itype`),
+        KEY `destination` (`internal_id`)
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+QUERY;
+
+
+    $this->tableList['lti_keys'] = <<<QUERY
+          CREATE TABLE IF NOT EXISTS `lti_keys` (
+          `id` mediumint(9) NOT NULL AUTO_INCREMENT,
+          `oauth_consumer_key` char(255)NOT NULL,
+          `secret` char(255)DEFAULT NULL,
+          `name` char(255) DEFAULT NULL,
+          `context_id` char(255) DEFAULT NULL,
+          `deleted` datetime,
+          `updated_at` datetime,
+          PRIMARY KEY (`id`),
+          KEY `oauth_consumer_key` (`oauth_consumer_key`)
+          ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+QUERY;
+
+      $this->tableList['lti_context'] = <<<QUERY
+          CREATE TABLE IF NOT EXISTS `lti_context` (
+          `oauth_consumer_key` VARCHAR( 255 ) NOT NULL ,
+          `lti_context_id` VARCHAR( 255 ) NOT NULL ,
+          `c_internal_id` VARCHAR( 255 ) NOT NULL ,
+          `updated_on` DATETIME NOT NULL,
+          PRIMARY KEY (`oauth_consumer_key`,`lti_context_id`),
+          KEY `c_internal_id` (`c_internal_id`)
+          ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+QUERY;
+
 
   }
 

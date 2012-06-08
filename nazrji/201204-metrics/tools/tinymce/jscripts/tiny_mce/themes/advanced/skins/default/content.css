@@ -1,4 +1,4 @@
-body, td, pre {color:#000; font-family:Verdana, Arial, Helvetica, sans-serif; font-size:10px; margin:8px;}
+body, td, pre {color:#000; font-family:Arial,sans-serif; font-size:100%; margin:8px;}
 body {background:#FFF;}
 body.mceForceColors {background:#FFF; color:#000;}
 h1 {font-size: 2em}
@@ -11,7 +11,6 @@ h6 {font-size: .75em}
 a.mceItemAnchor {display:inline-block; width:11px !important; height:11px  !important; background:url(img/items.gif) no-repeat 0 0;}
 span.mceItemNbsp {background: #DDD}
 td.mceSelected, th.mceSelected {background-color:#3399ff !important}
-img {border:0;}
 table {cursor:default}
 table td, table th {cursor:text}
 ins {border-bottom:1px solid green; text-decoration: none; color:green}

@@ -55,7 +55,8 @@ for ($i = 0; $i < $question->max_stems; $i++) {
           <h2><?php echo $string['availableoptions'] ?></h2>
           <dl id="extended-option-list">
 <?php
-  
+  $numerals = array('i', 'ii', 'iii', 'iv', 'v', 'vi', 'vii', 'viii', 'ix', 'x', 'xi', 'xii', 'xiii', 'xiv', 'xv', 'xvi', 'xvii', 'xviii', 'xix', 'xx');
+ 
   for ($index = 0; $index < $question->max_options; $index++) {
     $mandatory = ($index < 3) ? '<span class="mandatory">*</span> ' : '';
     if ($index < $num_options) {
@@ -67,7 +68,7 @@ for ($i = 0; $i < $question->max_stems; $i++) {
     }
     if ($option_text != '') $option_texts[$index + 1] = ($index + 1) . '. ' . $option_text;
 ?>
-            <dt><?php echo $mandatory . ' ' . ($index + 1); ?>.</dt>
+            <dt><?php echo $mandatory . ' ' . chr($index + 65); ?>.</dt>
             <dd>
               <textarea rows="2" id="option_text<?php echo $index + 1 ?>" name="option_text<?php echo $index + 1 ?>" rel="<?php echo $index + 1 ?>" class="extmatch-option form-small form-fixed<?php echo $dis_class ?>"<?php echo $dis_readonly ?>><?php echo $option_text ?></textarea>
               <input name="optionid<?php echo ($index + 1); ?>" value="<?php echo $option_id ?>" type="hidden" />
@@ -106,10 +107,10 @@ for ($index = 1; $index <= $question->max_stems; $index++):
 ?>
         <div class="option<?php echo $hidden ?>">
           <div class="form">
-            <h2><?php echo $string['scenario'] . ' ' . chr($index+64) ?>.</h2>
+            <h2><?php echo $string['scenario'] . ' ' . $numerals[$index-1] ?>.</h2>
           </div>
           
-          <table id="q-options" class="form" summary="Edit scenario <?php echo chr($index+64) ?>.">
+          <table id="q-options" class="form" summary="Edit scenario <?php echo $numerals[$index-1] ?>.">
 <?php
   include 'options/opt_extmatch.php';
 ?>

@@ -432,7 +432,7 @@ if ($sortby == 'title') {
         echo '<td></td>';
       }
       if (array_key_exists($tmp_id, $needs_array)) {
-        echo "<td>" . $tmp_title . "</td><td style=\"width:20px\"><img src=\"../artwork/accessibility_16.png\" width=\"16\" height=\"16\" border=\"0\" /></td><td>$tmp_surname, ";
+        echo "<td>&nbsp;" . $tmp_title . "</td><td style=\"width:20px\"><img src=\"../artwork/accessibility_16.png\" width=\"16\" height=\"16\" border=\"0\" /></td><td>$tmp_surname, ";
         if ($tmp_first_names != '') {
           echo '<span class="fn">' . $tmp_first_names . '</span>';
         } else {
