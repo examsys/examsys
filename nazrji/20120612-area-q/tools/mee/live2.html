@@ -1,0 +1,146 @@
+﻿<HTML>
+	<HEAD>
+		<meta http-equiv="x-ua-compatible" content="IE=9">
+        <script src="mee/jquery/jquery-1.6.1.js"></script>
+        <script src="mee/js/mee_src.js"></script>
+	</HEAD>
+
+    <script>
+        $().ready(function () {
+            showstuff();
+
+            $('.latex').keyup(function (event) {
+                doit();
+            });
+
+            function showstuff() {
+                $('.latex').each(function () {
+                    //alert(window.location.hash);
+                    if (window.location.hash != "#undefined" && window.location.hash != "") {
+                        this.value = window.location.hash.substr(1);
+                        this.value = decodeURI(this.value);
+                        doit(this);
+                        //setTimeout("doit()", 500);
+                    }
+                });
+            }
+        });
+
+        function doit() {
+            var input = $('.latex');
+            $('.mee').html($(input)[0].value);
+            var mee = new MEE.Display($('.mee')[0], false);
+            mee.Align();
+            window.location.hash = $(input)[0].value; 
+        }
+
+    </script>
+	<BODY>
+     <h2>Mathematical Equation Editor - Old basic editor</h2>
+       <textarea name='latex' cols="80" rows="10" class='latex'></textarea>
+        <br />
+        <br />
+        <br />
+        <br />
+        <!--<div class='mee nocomp'></div>-->
+        <br />
+        <br />
+        <br />
+        <br />
+        <div style='font-size:21px'><div class='mee nocomp' style='font-size:200%;'></div></div>
+        <br />
+        <br />
+        <br />
+        <br />
+       
+      </div>
+        <button onclick="Highlight('','','',true); return false;">Clear</button>
+        <button onclick="Highlight('mee_elem','red',0,true);Highlight('mee_elemset','blue',1,false); return false;">Hightlight</button>
+        <button onclick="Highlight('mee_row'); return false;">Rows</button>
+        <button onclick="Highlight('mee_col','blue',1); return false;">Cols</button>
+        <button onclick="Highlight('mee_elemsetarray','orange'); return false;">Array</button>
+        <button onclick="Highlight('mee_basic_large_outer','yellow',1); return false;">Large</button>
+    </BODY>
+
+<script>
+
+$.Class.extend("MEE.Position",
+{
+    left: 0,
+    top: 0,
+    bottom: 0,
+    right: 0,
+    width: 0,
+    height: 0,
+
+    init: function (elem) {
+        if (elem)
+            this.fromElem(elem);
+    },
+
+    fromElem: function (elem) {
+        if (elem)
+        {
+            var offset = $(elem).offset();
+            this.left = offset.left;
+            this.top = offset.top;
+            this.width = $(elem).outerWidth(true);
+            this.height = $(elem).outerHeight(true);
+            var marginleft = parseInt($(elem).css('margin-left'));
+            if (marginleft)
+                this.left -= marginleft;
+            var margintop = parseInt($(elem).css('margin-top'));
+            if (margintop)
+                this.top -= margintop;
+
+            this.right = this.left + this.width;
+            this.bottom = this.top + this.height;
+        }
+    },
+
+    growToInclude: function (elem) {
+        if (!elem)  return;
+
+        var elempos = new MEE.Position(elem);
+        if (elempos.left < this.left)
+            this.left = elempos.left;
+
+        if (elempos.right > this.right)
+            this.right = elempos.right;
+
+        if (elempos.top < this.top)
+            this.top = elempos.top;
+
+        if (elempos.bottom > this.bottom)
+            this.bottom = elempos.bottom;
+
+        this.width = this.right - this.left;
+        this.height = this.bottom - this.top;
+    }
+});
+
+function Highlight(elem, color, offset, remove) {
+    if (remove)
+        $('.highlight').remove();
+
+    if (!color) color = "red";
+    if (!offset) offset = 0;
+
+    if (elem) {
+        $('.' + elem).each(function () {
+            var pos = new MEE.Position(this);
+            var div = $('<div>');
+            div.addClass('highlight');
+            div.css('position', 'absolute');
+            div.css('left', pos.left - offset + 'px');
+            div.css('top', pos.top - offset + 'px');
+            div.css('width', pos.width + (2 * offset) + 'px');
+            div.css('height', pos.height + (2 * offset) + 'px');
+            div.css('border', '1px solid ' + color);
+            $(document.body).append(div);
+        });
+    }
+}
+</script>
+
+</HTML>

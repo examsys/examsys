@@ -1,0 +1,29 @@
+<?php
+$string['classtotals'] = 'Zestawienie klasy';
+$string['classtotalsmodule'] = 'Zestawienie klasy (%s tylko studentów)';
+$string['name'] = 'Nazwa';
+$string['studentid'] = 'Numer legitymacji';
+$string['course'] = 'Kurs';
+$string['total'] = 'Całkowicie';
+$string['classification'] = 'Klasyfikacja';
+$string['starttime'] = 'Czas/Data rozpoczęcia';
+$string['examiner'] = 'Egzaminator';
+$string['summary'] = 'Podsumowanie';
+$string['cohortsize'] = 'Rozmiar grupy:';
+$string['fail'] = 'niezaliczone:';
+$string['pass'] = 'zaliczone:';
+$string['error'] = 'BŁĄD:';
+$string['noattendance'] = 'Brak frekwencji';
+$string['clear fail'] = 'jednoznaczne niezaliczenie';
+$string['borderline'] = 'niepewne';
+$string['clear pass'] = 'jednoznaczne zaliczenie';
+$string['fail'] = 'niezaliczenie';
+$string['borderline fail'] = 'niepewne niezaliczenie';
+$string['borderline pass'] = 'niepewne zaliczenie';
+$string['pass'] = 'zaliczenie';
+$string['good pass'] = 'zdecydowane zaliczenie';
+$string['honours pass'] = 'wyróżniające zaliczenie';
+$string['oscemarksheet'] = 'Arkusz punktacji OSCE';
+$string['feedback'] = 'Odzew';
+$string['studentprofile'] = 'Profil studenta';
+?>
