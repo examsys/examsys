@@ -284,20 +284,24 @@ function encpw($salt, $u, $p, $type='SHA-512') {
 /**
  * This is function gen_password makes a secure password
  *
- * @param string $u username
- * @param string $p password
- * @return string password length 8 including uper lower case and other chars
+ * @param int $len Length og generated password
+ * @return string password length $len including upper lower case and other chars
  *
  */
-function gen_password() {
-  $lower = 'abcdefghijklmnoprrstuvwxyzabcdefghijklmnoprrstuvwxyz';
-  $upper = 'ABCDEFGHIJKLMN0PQRSTUVWXYZabcdefghijklmnoprrstuvwxyz';
-  $num =   '0123456789012345678901234501234567890123456789012345';
-  $special ='!$%?#@!.%?#@!$%?#@!$%?#@!.!$%?#@!.%?#@!$%?#@!.%?#@!$'; 
+function gen_password($len = 8) {
+  $lower    = 'abcdefghijklmnoprrstuvwxyzabcdefghijklmnoprrstuvwxyz';
+  $upper    = 'ABCDEFGHIJKLMN0PQRSTUVWXYZABCDEFGHIJKLMN0PQRSTUVWXYZ';
+  $num      = '0123456789012345678901234501234567890123456789012345';
+  $special  = '!$%^&*-=+_.@~!?!$%^&*-=+_.@~!?!$%^&*-=+_.@~!?!$%^&*-';
+
   $pass = '';
-  $chars = array($lower, $lower, $lower, $special, $num, $num, $upper, $upper);
-  for($i = 0; $i < 8; $i++) { 
-    $pass .= substr($chars[$i], rand(0, 51), 1);
+  $chars = array($lower,$lower,$lower,$special,$num,$num,$upper,$upper);
+  for($i = 0; $i < $len; $i++) {
+    if($i < 7) {
+      $pass .= substr($chars[$i],rand(0,51),1);
+    } else {
+      $pass .= substr($chars[rand(2,6)],rand(0,51),1);
+    }
   }
   return $pass;
 }

@@ -24,6 +24,7 @@
 * @package
 */
 
+require_once $cfg_web_root . 'include/auth.inc';
 require_once $cfg_web_root . 'classes/userutils.class.php';
 require_once $cfg_web_root . 'classes/moduleutils.class.php';
 require_once $cfg_web_root . 'classes/schoolutils.class.php';
@@ -353,17 +354,17 @@ Class InstallUtils {
     }
 
     self::$cfg_db_student_user = self::$cfg_db_name . '_stu';
-    self::$cfg_db_student_passwd = PasswordUtils::gen_password() . PasswordUtils::gen_password();
+    self::$cfg_db_student_passwd = gen_password() . gen_password();
     self::$cfg_db_staff_user = self::$cfg_db_name . '_staff';
-    self::$cfg_db_staff_passwd = PasswordUtils::gen_password() . PasswordUtils::gen_password();
+    self::$cfg_db_staff_passwd = gen_password() . gen_password();
     self::$cfg_db_external_user = self::$cfg_db_name . '_ext';
-    self::$cfg_db_external_passwd  = PasswordUtils::gen_password() . PasswordUtils::gen_password();
+    self::$cfg_db_external_passwd  = gen_password() . gen_password();
     self::$cfg_db_sysadmin_user = self::$cfg_db_name . '_sys';
-    self::$cfg_db_sysadmin_passwd = PasswordUtils::gen_password() . PasswordUtils::gen_password();
+    self::$cfg_db_sysadmin_passwd = gen_password() . gen_password();
     self::$cfg_db_sct_user = self::$cfg_db_name . '_sct';
-    self::$cfg_db_sct_passwd = PasswordUtils::gen_password() . PasswordUtils::gen_password();
+    self::$cfg_db_sct_passwd = gen_password() . gen_password();
     self::$cfg_db_inv_user = self::$cfg_db_name . '_inv';
-    self::$cfg_db_inv_passwd = PasswordUtils::gen_password() . PasswordUtils::gen_password();
+    self::$cfg_db_inv_passwd = gen_password() . gen_password();
 
     $priv_SQL = array();
     //create 'database user authentication user' and grant permissions
