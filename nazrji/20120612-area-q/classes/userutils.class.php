@@ -24,8 +24,6 @@
 * @package
 */
 
-require_once ($cfg_web_root . 'classes/passwordutils.class.php');
-
 Class UserUtils {
 
   static function createUser($username, $password, $title, $forname, $surname, $email, $course, $gender, $year, $role, $sid, $db) {
@@ -41,9 +39,9 @@ Class UserUtils {
       $surname = self::my_ucwords(trim($surname));
       $title = self::my_ucwords(trim($title));  
 
-      //if there is no password georate one
+      //if there is no password generate one
       if ($password == '') {
-        $password =  PasswordUtils::gen_password();
+        $password =  gen_password();
       }
       
       //add new users
