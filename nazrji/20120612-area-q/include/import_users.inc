@@ -25,7 +25,6 @@
 */
 
 require_once '../classes/userutils.class.php';
-require_once '../classes/passwordutils.class.php';
 
 $header = array();
 $needed_cols1 = array('student_id','first names','surname','title','course code','year of course','local email');
@@ -128,7 +127,7 @@ function add_users_from_file($fileName) {
     if ($tmp_userID === false) {
       //add new users
        
-      $password = PasswordUtils::gen_password();
+      $password = gen_password();
       $encpw_password = encpw($cfg_encrypt_salt, $username, $password);
 
       $tmp_userID = UserUtils::createUser($username, $encpw_password, $title, $forname, $surname, $email, $course, $gender, $year, 'Student', $sid, $mysqli);
