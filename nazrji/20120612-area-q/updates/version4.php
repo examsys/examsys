@@ -25,7 +25,7 @@
 require_once '../config/config.inc.php';
 
 require_once '../classes/installutils.class.php';
-require_once '../classes/passwordutils.class.php';
+require_once '../include/auth.inc';
 require_once '../classes/lang.class.php';
 require_once $cfg_web_root . 'classes/dbutils.class.php';
 
@@ -531,15 +531,15 @@ if (!isset($_POST['update'])) {
   $result->fetch();
   if ($result->num_rows() == 0) {
     $cfg_db_username = $cfg_db_database . '_auth';
-    $cfg_db_password = PasswordUtils::gen_password(16);
+    $cfg_db_password = gen_password(16);
     $cfg_db_student_user = $cfg_db_database . '_stu';
-    $cfg_db_student_passwd = PasswordUtils::gen_password(16);
+    $cfg_db_student_passwd = gen_password(16);
     $cfg_db_staff_user = $cfg_db_database . '_staff';
-    $cfg_db_staff_passwd = PasswordUtils::gen_password(16);
+    $cfg_db_staff_passwd = gen_password(16);
     $cfg_db_external_user = $cfg_db_database . '_ext';
-    $cfg_db_external_passwd  = PasswordUtils::gen_password(16);
+    $cfg_db_external_passwd  = gen_password(16);
     $cfg_db_sysadmin_user = $cfg_db_database . '_sys';
-    $cfg_db_sysadmin_passwd = PasswordUtils::gen_password(16);
+    $cfg_db_sysadmin_passwd = gen_password(16);
     
     $priv_SQL = array();
     //create 'database user authentication user' and grant permissions
@@ -1334,7 +1334,7 @@ if (!isset($_POST['update'])) {
   if ($result->num_rows() == 0) {
     
     $cfg_db_sct_username = $cfg_db_database . '_sct';
-    $cfg_db_sct_password = PasswordUtils::gen_password(16);
+    $cfg_db_sct_password = gen_password(16);
         
     $priv_SQL = array();
     //create 'database user SCT user' and grant permissions
@@ -1397,7 +1397,7 @@ if (!isset($_POST['update'])) {
   $result->fetch();
   if ($result->num_rows() == 0) {
     
-    $cfg_db_inv_password = PasswordUtils::gen_password(16);
+    $cfg_db_inv_password = gen_password(16);
         
     $priv_SQL = array();
     //create 'database user SCT user' and grant permissions
