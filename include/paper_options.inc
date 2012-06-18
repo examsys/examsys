@@ -385,7 +385,7 @@ $stmt->close();
     }
   }
 ?>
-<tr><td width="16"><img src="<?php echo $cfg_root_path ?>/artwork/ims_16.png" width="16" height="16" alt="<?php echo $string['qtiimportexport']; ?>" border="0" /></td><td class="menuitem"><span id="qti"><a href="#" onclick="hideAssStatsMenu(event); showMenu('popup6','papertasks','qti',myOptions6,myURLs6,event); return false;"><?php echo $string['qtiimportexport']; ?></a></span><img src="<?php echo $cfg_root_path ?>/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
+<tr><td width="16"><img src="<?php echo $cfg_root_path ?>/artwork/ims_16.png" width="16" height="16" alt="<?php echo $string['qtiimportexport']; ?>" border="0" /></td><td class="menuitem"><span id="qti"><a href="#" onclick="hideAssStatsMenu(event); showMenu('popup5','papertasks','qti',myOptions5,myURLs5,event); return false;"><?php echo $string['qtiimportexport']; ?></a></span><img src="<?php echo $cfg_root_path ?>/artwork/submenu_arrow.png" width="16" height="16" alt=">" border="0" /></td></tr>
 </table>
 
 <br />
