@@ -2421,6 +2421,7 @@ if (!isset($_POST['update'])) {
 
 
   // 21/03/2012 - Move to InnoDB for all table except help tables SHOULD not go live untill ver 4.3 - With full testing
+  /*
   echo "<li>UPDATEING TO InnoDB This may take some time please be patient ;-)</li>\n";
   ob_flush();
   flush();
@@ -2440,6 +2441,7 @@ if (!isset($_POST['update'])) {
     ob_flush();
     flush();
   }
+  */
 
   /*
    *  UPDATES for short int database feilds SHOULD not go live untill ver 4.3 - With full testing
