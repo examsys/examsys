@@ -39,7 +39,6 @@
 <style type="text/css">
 .sechead {background-color:#EBF2F7; color:#00156E; border-bottom: 1px solid #CFDBEB}
 a {font-family:Arial,sans-serif; color:#215DC6}
-a:hover {color:#428EFF}
 a.heading {color:#215DC6; font-weight:bold}
 a.heading:hover {color:#428EFF; font-weight:bold}
 </style>
@@ -63,8 +62,8 @@ a.heading:hover {color:#428EFF; font-weight:bold}
 <div align="center">
 <table cellspacing="0" cellpadding="0" border="0" style="font-size:100%; text-align:left">
 <tr><td style="vertical-align:top">
-<table cellpadding="2" cellspacing="0" border="0" style="font-size:100%; text-align:left">
-<tr><td style="width:120px" class="sechead"><?php echo $string['table']; ?></td><td class="sechead"><?php echo $string['records']; ?></td><td class="sechead"><?php echo $string['updated']; ?><td class="sechead"><?php echo $string['engine']; ?></td>
+<table cellpadding="2" cellspacing="0" border="0" style="font-size:100%; text-align:left; width:360px">
+<tr><td style="width:180px" class="sechead"><?php echo $string['table']; ?></td><td class="sechead"><?php echo $string['records']; ?></td><td class="sechead"><?php echo $string['engine']; ?></td>
 </tr>
 <?php
   $result = $mysqli->prepare("SHOW TABLE STATUS");
@@ -72,14 +71,13 @@ a.heading:hover {color:#428EFF; font-weight:bold}
   $result->bind_result($Name, $Engine, $Version, $Row_format, $Rows, $Avg_row_length, $Data_length, $Max_data_length, $Index_length, $Data_free, $Auto_increment, $Create_time, $Update_time, $Check_time, $Collation, $Checksum, $Create_options, $Comment);
   while ($result->fetch()) {
     if (($Name == 'log_late' or $Name == 'temp_users') and $Rows > 0) {
-      echo "<tr><td style=\"color:#C00000\">" . $Name . "&nbsp;<img src=\"../artwork/small_yellow_warning_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['warning'] . "\" /></td><td style=\"text-align:right; color:#C00000\">" . number_format($Rows) . "</td>";
+      echo "<tr><td style=\"color:#C00000\">" . $Name . "&nbsp;<img src=\"../artwork/small_yellow_warning_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['warning'] . "\" />";
+      if ($Name == 'log_late') {
+        echo '&nbsp;<a href="log_late_details.php">More details...</a>';
+      }
+      echo "</td><td style=\"text-align:right; color:#C00000\">" . number_format($Rows) . "</td>";
     } else {
       echo "<tr><td>" . $Name . "</td><td style=\"text-align:right\">" . number_format($Rows) . "</td>";
-    }
-    if ($Engine == 'InnoDB') {
-      echo "<td>&nbsp;<span style=\"color:#808080\">" . $string['na'] . "</span></td>";
-    } else {
-      echo "<td>&nbsp;" . substr($Update_time, 8, 2) . "/" . substr($Update_time, 5, 2) . "/" . substr($Update_time, 0, 4) .  "</td>";
     }
     echo "<td>" . $Engine . "</td></tr>\n";
   }

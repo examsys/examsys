@@ -105,8 +105,10 @@ ob_start();
 
     if (tmpLogLate == 'y') {
       document.getElementById('item6b').style.color='#000000';
+      document.getElementById('log_late_icon').style.display = 'block';
     } else {
       document.getElementById('item6b').style.color='#C0C0C0';
+      document.getElementById('log_late_icon').style.display = 'none';
     }
 
     isMenu = true;
@@ -332,7 +334,7 @@ ob_start();
         <td id="item5a" style="text-align:center; border-top:1px solid #F1F5FB; border-bottom:1px solid #F1F5FB; border-left:1px solid #F1F5FB; border-right:0px solid #F1F5FB; background-color:#F1F5FB; width:24px" onmouseover="menuRowOn('5');" onmouseout="menuRowOff('5');" onclick="reassignScript();">&nbsp;</td><td id="item5b" style="padding-left:8px; border:1px solid #FFFFFF; background-color:#FFFFFF; cursor:default" onmouseover="menuRowOn('5');" onmouseout="menuRowOff('5');" onclick="reassignScript();"><?php echo $string['reassigntouser']; ?></td>
       </tr>
       <tr>
-        <td id="item6a" style="text-align:center; border-top:1px solid #F1F5FB; border-bottom:1px solid #F1F5FB; border-left:1px solid #F1F5FB; border-right:0px solid #F1F5FB; background-color:#F1F5FB; width:24px" onmouseover="menuRowOn('6');" onmouseout="menuRowOff('6');" onclick="reassignLogLate();">&nbsp;</td><td id="item6b" style="padding-left:8px; border:1px solid #FFFFFF; background-color:#FFFFFF; cursor:default" onmouseover="menuRowOn('6');" onmouseout="menuRowOff('6');" onclick="reassignLogLate();"><?php echo $string['latesubmissions']; ?></td>
+        <td id="item6a" style="text-align:center; border-top:1px solid #F1F5FB; border-bottom:1px solid #F1F5FB; border-left:1px solid #F1F5FB; border-right:0px solid #F1F5FB; background-color:#F1F5FB; width:24px" onmouseover="menuRowOn('6');" onmouseout="menuRowOff('6');" onclick="reassignLogLate();"><img id="log_late_icon" style="display:none" src="../artwork/log_late_16.gif" width="16" height="16" alt="" border="0" /></td><td id="item6b" style="padding-left:8px; border:1px solid #FFFFFF; background-color:#FFFFFF; cursor:default" onmouseover="menuRowOn('6');" onmouseout="menuRowOff('6');" onclick="reassignLogLate();"><?php echo $string['latesubmissions']; ?></td>
       </tr>
     </table>
   </td></tr>
@@ -462,7 +464,7 @@ ob_start();
   }
   
   if (count($log_late) > 0) {
-    echo "<tr><td class=\"redwarn\" style=\"width:28px; text-align:right\"><img src=\"../artwork/late_warning_icon.png\" width=\"28\" height=\"28\" /></td><td colspan=\"9\" class=\"redwarn\" style=\"padding-left:6px\">" . $string['latesubmissions'] . " (<a style=\"color:black\" href=\"#\" onclick=\"launchHelp(221); return false;\">" . $string['moredetails'] . "</a>): ";
+    echo "<tr><td class=\"redwarn\" style=\"width:28px; text-align:right\"><img src=\"../artwork/late_warning_icon.png\" width=\"28\" height=\"28\" /></td><td colspan=\"$cols\" class=\"redwarn\" style=\"padding-left:6px\">" . $string['latesubmissions'] . " (<a style=\"color:black\" href=\"#\" onclick=\"launchHelp(221); return false;\">" . $string['moredetails'] . "</a>): ";
     $html = '';
     foreach ($log_late as $student_userID => $student_name) {
       if ($html == '') {
@@ -527,7 +529,9 @@ ob_start();
           echo "><td class=\"$class $role_css\"><img src=\"../artwork/incomplete_paper_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['notcompleted'] . "\" border=\"0\" onclick=\"popMenu('" . $user_results[$i]['started'] . "'," . $user_results[$i]['tmp_userID'] . ",'" . $user_results[$i]['paper_type'] . "','$reassign', '$late_submissions','" . $user_results[$i]['adj_percent'] . "',event);\" /></td>";
         } else {
           echo "><td class=\"$class $role_css\">";
-          if ($user_results[$i]['paper_type'] == 0) {
+          if (isset($log_late[$user_results[$i]['tmp_userID']])) {
+            echo '<img src="../artwork/log_late_16.gif" width="16" height="16" alt="' . $string['displayexamscript'] . '" border="0"';
+          } elseif ($user_results[$i]['paper_type'] == 0) {
             echo '<img src="../artwork/formative_16.gif" width="16" height="16" alt="' . $string['displayexamscript'] . '" border="0"';
           } elseif ($user_results[$i]['paper_type'] == '1') {
             echo '<img src="../artwork/progress_16.gif" width="16" height="16" alt="' . $string['displayexamscript'] . '" border="0"';
