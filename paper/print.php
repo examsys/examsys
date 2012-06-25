@@ -262,13 +262,15 @@ if ($paper_type == '3') {
 <meta http-equiv="imagetoolbar" content="false">
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $cfg_page_charset ?>" />
 <meta http-equiv="pragma" content="no-cache" />
-<link rel="stylesheet" type="text/css" href="../css/start.css" />
+<link rel="stylesheet" type="text/css" href="../css/print.css" />
 
 <style type="text/css">
-.paper {margin-left:10px; font-family:Arial,sans-serif; font-size:180%; color:black; font-weight:bold}
 <?php
-if ($paper_type == '3') echo ".likert_button {text-align:center;width:40px;vertical-align:top}\n";
-if ($latex_needed == 1) echo ".latex {vertical-align:middle}\n";
+  if (isset($_GET['break']) and $_GET['break'] == 1) {
+    echo ".qtable {page-break-after:always}\n";
+  } else {
+    echo ".qtable {page-break-after:auto}\n";
+  }
 ?>
 </style>
 <script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
@@ -277,8 +279,6 @@ if ($latex_needed == 1) echo ".latex {vertical-align:middle}\n";
 <script type="text/javascript" src="../js/flash_include.js"></script>
 </head>
 <body>
-  <div id="maincontent">
-  <form method="post" name="questions" action="">
 
   <table cellpadding="0" cellspacing="0" border="0" width="100%">
   <tr><td valign="top">
@@ -304,8 +304,6 @@ if ($latex_needed == 1) echo ".latex {vertical-align:middle}\n";
   $question_data->store_result();
   $question_data->bind_result($q_type, $q_id, $score_method, $display_method, $marks_correct, $marks_incorrect, $marks_partial, $theme, $scenario, $leadin, $correct, $option_text, $q_media, $q_media_width, $q_media_height, $o_media, $o_media_width, $o_media_height, $notes, $display_pos, $q_option_order);
   $num_rows = $question_data->num_rows;
-  echo "<table cellpadding=\"0\" cellspacing=\"4\" border=\"0\" width=\"100%\" style=\"table-layout:fixed\">\n";
-  echo "<col width=\"40\"><col>\n";
   $q_no = 0;
   //build the questions_array
   $tmp_questions_array = array();
@@ -360,12 +358,8 @@ if ($latex_needed == 1) echo ".latex {vertical-align:middle}\n";
     $q_displayed++;
   }
   
-  echo "</table></td></tr>\n";
-
   $mysqli->close();
 ?>
-</table>
-</form>
-</div>
+
 </body>
 </html>

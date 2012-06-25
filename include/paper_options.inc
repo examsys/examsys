@@ -26,29 +26,9 @@
 
 require $cfg_web_root . 'include/sidebar_menu.inc';
 $paperID = $_GET['paperID'];
-$max_screen = 0;
-
-$stmt = $mysqli->prepare("SELECT paper_title, moduleID, folder, paper_ownerID, moduleID, DATE_FORMAT(start_date,'%Y%m%d%H%i%S') AS start_date, DATE_FORMAT(end_date,'%Y%m%d%H%i%S') AS end_date, DATE_FORMAT(created,'%Y%m%d%H%i%S') AS created, MAX(screen) AS screen, fullscreen, MAX(display_pos) AS display_pos, paper_type, externals, internal_reviewers, labs, calendar_year, exam_duration, crypt_name, display_question_mark FROM properties LEFT JOIN papers ON properties.property_id=papers.paper WHERE property_id=? GROUP BY paper_title");
-$stmt->bind_param('i', $paperID);
-$stmt->execute();
-$stmt->bind_result($paper_title, $paper_moduleID, $tmp_folder, $paper_ownerID, $tmp_module, $start_date, $end_date, $created, $max_screen, $fullscreen, $max_display_pos, $paper_type, $externals, $internal_reviewers, $labs, $session, $exam_duration, $crypt_name, $display_question_mark);
-while ($stmt->fetch()) {
-  if (date("YmdHis", time()) >= $start_date and date("YmdHis", time()) <= $end_date) {
-    $active_date = 1;
-  } else {
-    $active_date = 0;
-  }
-  if (date("YmdHis", time()) >= $start_date and $paper_type == '2') {
-    $summative_lock = 1;
-  } else {
-    $summative_lock = 0;
-  }
-}
-$stmt->close();
 
 if (isset($_GET['module']) and $_GET['module'] != '') {
   $module = $_GET['module'];
-  $tmp_module = $_GET['module'];
 } else {
   $module = '';
 }
@@ -58,7 +38,7 @@ if (isset($_GET['folder']) and $_GET['folder'] != '') {
   $folder = '';
 }
 
-$stmt = $mysqli->prepare("SELECT checklist FROM modules WHERE moduleid IN ('" . str_replace(",","','",$tmp_module) . "')");
+$stmt = $mysqli->prepare("SELECT checklist FROM modules WHERE moduleid IN ('" . str_replace(",","','",$moduleID) . "')");
 $stmt->execute();
 $stmt->bind_result($tmp_checklist);
 $check[] = array();
@@ -119,11 +99,11 @@ $stmt->close();
     <?php
     if ($paper_type == '6') {
     ?>
-    notice=window.open("<?php echo $cfg_root_path ?>/peer_review/properties.php?paperID=<?php echo $paperID; ?>","properties","width=862,height=650,left="+(screen.width/2-431)+",top="+(screen.height/2-325)+",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+    notice=window.open("<?php echo $cfg_root_path ?>/peer_review/properties.php?paperID=<?php echo $paperID; ?>&caller=details","properties","width=862,height=650,left="+(screen.width/2-431)+",top="+(screen.height/2-325)+",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
     <?php
     } else {
     ?>
-    notice=window.open("<?php echo $cfg_root_path ?>/paper/properties.php?paperID=<?php echo $paperID; ?>","properties","width=862,height=650,left="+(screen.width/2-431)+",top="+(screen.height/2-325)+",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+    notice=window.open("<?php echo $cfg_root_path ?>/paper/properties.php?paperID=<?php echo $paperID; ?>&caller=details","properties","width=862,height=650,left="+(screen.width/2-431)+",top="+(screen.height/2-325)+",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
     <?php
     }
     ?>
@@ -226,8 +206,8 @@ $stmt->close();
   }
   
   function questionInfo() {
-    notice=window.open("<?php echo $cfg_root_path ?>/question/info.php?q_id=" + getLastID(document.PapersMenu.questionID.value) + "","notice","width=500,height=500,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
-    notice.moveTo(screen.width/2-250,screen.height/2-250);
+    notice=window.open("<?php echo $cfg_root_path ?>/question/info.php?q_id=" + getLastID(document.PapersMenu.questionID.value) + "","notice","width=700,height=600,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+    notice.moveTo(screen.width/2-350,screen.height/2-300);
     if (window.focus) {
       notice.focus();
     }
@@ -381,7 +361,7 @@ $stmt->close();
     if ($paper_type == '4') {
       echo "<tr><td><a href=\"{$cfg_root_path}/osce/print.php?paperID=$paperID\"><img src=\"{$cfg_root_path}/artwork/print_icon_16.png\" width=\"16\" height=\"16\" alt=\"" . $string['printhardcopy'] . "\" border=\"0\" /></a></td><td class=\"menuitem\"><a href=\"{$cfg_root_path}/osce/print.php?paperID=$paperID\">" . $string['printhardcopy'] . "</a></td></tr>\n";
     } else {
-      echo "<tr><td><a href=\"{$cfg_root_path}/paper/print.php?id=$crypt_name\"><img src=\"{$cfg_root_path}/artwork/print_icon_16.png\" width=\"16\" height=\"16\" alt=\"" . $string['printhardcopy'] . "\" border=\"0\" /></a></td><td class=\"menuitem\"><a href=\"{$cfg_root_path}/paper/print.php?id=$crypt_name\">" . $string['printhardcopy'] . "</a></td></tr>\n";
+      echo "<tr><td><a href=\"#\" onclick=\"hideAssStatsMenu(event); showMenu('popup6','papertasks','hardcopy',myOptions6,myURLs6,event); return false;\"><img src=\"{$cfg_root_path}/artwork/print_icon_16.png\" width=\"16\" height=\"16\" alt=\"" . $string['printhardcopy'] . "\" border=\"0\" /></a></td><td class=\"menuitem\"><span id=\"hardcopy\"><a href=\"#\" onclick=\"hideAssStatsMenu(event); showMenu('popup6','papertasks','hardcopy',myOptions6,myURLs6,event); return false;\">" . $string['printhardcopy'] . "</a></span><img src=\"$cfg_root_path/artwork/submenu_arrow.png\" width=\"16\" height=\"16\" alt=\">\" border=\"0\" /></td></tr>\n";
     }
   }
 ?>
@@ -427,8 +407,8 @@ if ($summative_lock == 1) {
 <?php
   if ($paper_type != '4') {
 ?>
-  <li id="add_break" class="break greymenuitem">Add screen break</li>
-  <li id="delete_break" class="greymenuitem">Delete screen break</li>
+  <li id="add_break" class="break greymenuitem"><?php echo $string['addscreenbreak']; ?></li>
+  <li id="delete_break" class="greymenuitem"><?php echo $string['deletescreenbreak']; ?></li>
 <?php
   }
   echo '</ul>';
@@ -438,8 +418,8 @@ if ($summative_lock == 1) {
 <?php
   if ($paper_type != '4') {
 ?>
-  <li id="add_break" class="break greymenuitem"><a href="#">Add screen break</a></li>
-  <li id="delete_break" class="greymenuitem"><a href="#">Delete screen break</a></li>
+  <li id="add_break" class="break greymenuitem"><a href="#"><?php echo $string['addscreenbreak']; ?></a></li>
+  <li id="delete_break" class="greymenuitem"><a href="#"><?php echo $string['deletescreenbreak']; ?></a></li>
 <?php
   }
   echo '</ul>';
@@ -704,7 +684,8 @@ if ($paper_type == '2') {
   } else {
     makeMenu(array($string['import']=>"$cfg_root_path/qti/import.php?paperID=$paperID&module=$module",$string['export12']=>"$cfg_root_path/qti/export.php?dest=qti12&paperID=$paperID"));
   }
-  
+  makeMenu(array('Continuous'=>$cfg_root_path . "/paper/print.php?id=$crypt_name", 'Page-break per question'=>$cfg_root_path . "/paper/print.php?id=$crypt_name&break=1"));
+
   hideMenuScript($menuNo);
 
   require $cfg_web_root . 'include/reports_submenu.inc';
