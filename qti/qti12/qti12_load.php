@@ -79,6 +79,7 @@ class IE_qti12_Load extends IE_Main {
   }
 
   function Load($params) {
+    global $wct;
     $file = $params->sourcefile;
     $this->params = $params;
 
@@ -98,7 +99,29 @@ $rt="";
 
 
 $numb=0;
-
+    $wct=0;
+    if(isset($xml->qtimetadata)) {
+      foreach($xml->qtimetadata as $each1) {
+        if(isset($each1->qtimetadatafield)) {
+          foreach($each1->qtimetadatafield as $each2) {
+            if(substr($each2->fieldlabel,0,3)=="wct") {
+              $wct=1;
+            }
+          }
+        }
+      }
+    }
+    if(isset($xml->item->itemmetadata)) {
+      foreach($xml->item->itemmetadata->qtimetadata as $each1) {
+        if(isset($each1->qtimetadatafield)) {
+          foreach($each1->qtimetadatafield as $each2) {
+            if(substr($each2->fieldlabel,0,3)=="wct") {
+              $wct=1;
+            }
+          }
+        }
+      }
+    }
 
     // single assessment object possible
     if ($xml->assessment) $this->LoadAssessment($xml->assessment);
@@ -119,6 +142,8 @@ $numb=0;
   }
 
   function LoadAssessment($xml) {
+    global $wct;
+
     $paper = new ST_Paper();
     $paper->load_id = (string) $xml->attributes()->ident;
     $paper->title = (string) $xml->attributes()->title;
@@ -268,9 +293,9 @@ $numb=0;
       }
     }
 
-    $oiii=print_r($question,TRUE);
+//    $oiii=print_r($question,TRUE);
     $t=9;
-    file_put_contents($cfg_tmpdir . 'out3.txt',$oiii);
+//    file_put_contents($cfg_tmpdir . 'out3.txt',$oiii);
     $t=8;
 
     if (!empty($q_imp->material->media)) {
