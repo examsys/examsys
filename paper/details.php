@@ -36,10 +36,10 @@ check_var('paperID', 'GET', true, false);
 
 $paperID = $_GET['paperID'];
 
-$result = $mysqli->prepare("SELECT paper_title, moduleID, pass_mark, users.title, users.initials, users.surname, moduleID, folder, random_mark, total_mark, marking, paper_ownerID, DATE_FORMAT(start_date,'%H') as start_hour, DATE_FORMAT(start_date,'%Y%m%d%H%i') AS start_date, DATE_FORMAT(start_date,'$cfg_long_date_time') AS display_start_date, DATE_FORMAT(end_date,'%Y%m%d%H%i') AS end_date, paper_type, deleted, latex_needed FROM (properties, users) WHERE property_id=? AND paper_ownerID=users.id LIMIT 1");
+$result = $mysqli->prepare("SELECT DATE_FORMAT(created,'%Y%m%d%H%i%S') AS created, paper_title, moduleID, pass_mark, users.title, users.initials, users.surname, moduleID, folder, random_mark, total_mark, marking, paper_ownerID, DATE_FORMAT(start_date,'%H') as start_hour, DATE_FORMAT(start_date,'%Y%m%d%H%i') AS start_date, DATE_FORMAT(start_date,'$cfg_long_date_time') AS display_start_date, DATE_FORMAT(end_date,'%Y%m%d%H%i') AS end_date, paper_type, deleted, latex_needed FROM (properties, users) WHERE property_id=? AND paper_ownerID=users.id LIMIT 1");
 $result->bind_param('i', $paperID);
 $result->execute();
-$result->bind_result($paper_title, $moduleID, $pass_mark, $title, $initials, $surname, $tmp_module, $tmp_folder, $random_mark, $total_mark, $marking, $paper_ownerID, $tmp_start_hour, $start_date, $display_start_date, $end_date, $paper_type, $deleted, $latex_needed);
+$result->bind_result($created, $paper_title, $moduleID, $pass_mark, $title, $initials, $surname, $tmp_module, $tmp_folder, $random_mark, $total_mark, $marking, $paper_ownerID, $tmp_start_hour, $start_date, $display_start_date, $end_date, $paper_type, $deleted, $latex_needed);
 $result->fetch();
 $result->close();
 
@@ -344,10 +344,12 @@ function random_qMarks($random_questions) {
   }
 </script>
 <?php
-  $result = $mysqli->prepare("SELECT paper_title, moduleID, pass_mark, users.title, users.initials, users.surname, moduleID, folder, random_mark, total_mark, marking, paper_ownerID, DATE_FORMAT(start_date,'%Y%m%d%H%is') AS start_date, DATE_FORMAT(start_date,'$cfg_long_date_time') AS display_start_date, DATE_FORMAT(end_date,'%Y%m%d%H%i') AS end_date, paper_type, deleted, latex_needed, retired FROM (properties, users) WHERE property_id=? AND paper_ownerID=users.id LIMIT 1");
+  $max_screen = 0;
+
+  $result = $mysqli->prepare("SELECT MAX(screen) AS screen, MAX(display_pos), paper_ownerID, paper_title, moduleID, pass_mark, users.title, users.initials, users.surname, moduleID, folder, random_mark, total_mark, marking, paper_ownerID, DATE_FORMAT(start_date,'%Y%m%d%H%is') AS start_date, DATE_FORMAT(start_date,'$cfg_long_date_time') AS display_start_date, DATE_FORMAT(end_date,'%Y%m%d%H%i') AS end_date, paper_type, deleted, latex_needed, retired, crypt_name, labs, calendar_year, exam_duration, display_question_mark, fullscreen, externals, internal_reviewers FROM (properties, users) LEFT JOIN papers ON properties.property_id=papers.paper WHERE property_id=? AND paper_ownerID=users.id GROUP BY paper_title LIMIT 1");
   $result->bind_param('i', $paperID);
   $result->execute();
-  $result->bind_result($paper_title, $moduleID, $pass_mark, $title, $initials, $surname, $tmp_module, $tmp_folder, $random_mark, $total_mark, $marking, $paper_ownerID, $start_date, $display_start_date, $end_date, $paper_type, $deleted, $latex_needed, $retired);
+  $result->bind_result($max_screen, $max_display_pos, $paper_ownerID, $paper_title, $moduleID, $pass_mark, $title, $initials, $surname, $tmp_module, $tmp_folder, $random_mark, $total_mark, $marking, $paper_ownerID, $start_date, $display_start_date, $end_date, $paper_type, $deleted, $latex_needed, $retired, $crypt_name, $labs, $session, $exam_duration, $display_question_mark, $fullscreen, $externals, $internal_reviewers);
   $result->fetch();
   $result->close();
 
@@ -358,13 +360,14 @@ function random_qMarks($random_questions) {
   } else {
     $active_date = 0;
   }
-  if (date("YmdHis", time()) >= $start_date and $paper_type == '2') {
-    $summative_lock = 1;
+  
+  if (date("YmdHis", time()) >= $start_date and $paper_type == '2' and $start_date !== null) {
+    $summative_lock = true;
   } else {
-    $summative_lock = 0;
+    $summative_lock = false;
   }
 
-  if ($summative_lock == 0) {
+  if (!$summative_lock) {
 ?>
   <script type="text/javascript" src="../js/jquery.paperdetails.js"></script>
 <?php
@@ -573,7 +576,7 @@ function random_qMarks($random_questions) {
         $temp_array[$row_no]['random'] = randomDetails($q_id);
       }
 
-      if ($summative_lock == 1 and $locked == '') {
+      if ($summative_lock and $locked == '') {
         $editPaper = $mysqli->prepare("UPDATE questions SET locked=NOW() WHERE q_id=? AND locked IS NULL");
         $editPaper->bind_param('i', $q_id);
         $editPaper->execute();
@@ -607,7 +610,7 @@ function random_qMarks($random_questions) {
         $editPaper->bind_param('i', $q_id);
         $editPaper->execute();
         $editPaper->close();
-        $summative_lock = 0;
+        $summative_lock = false;
       }
 
       //prevent php errors by populating $excluded[$q_id]
@@ -730,7 +733,13 @@ function random_qMarks($random_questions) {
   if (strpos($userroles,'Demo') !== false) {
     $paper_owner = 'Mr J, Bloggs';
   }
-  echo "<th colspan=\"3\" style=\"font-size:90%;padding-left:10px\"><strong>" . $string['start'] . ":</strong> $display_start_date</th><th colspan=\"3\" style=\"text-align:right;font-size:90%\"><strong>" . $string['owner'] . ":</strong> $paper_owner&nbsp;</th></tr>\n";
+  echo "<th colspan=\"3\" style=\"font-size:90%;padding-left:10px\"><strong>" . $string['start'] . ":</strong> ";
+  if ($display_start_date == '') {
+    echo '<span style="color:#808080">&lt;unscheduled&gt;</span>';
+  } else {
+    echo $display_start_date;
+  }
+  echo "</th><th colspan=\"3\" style=\"text-align:right;font-size:90%\"><strong>" . $string['owner'] . ":</strong> $paper_owner&nbsp;</th></tr>\n";
   if ($retired == '') {
     echo '<tr class="details-head">';
   } else {
@@ -746,8 +755,8 @@ function random_qMarks($random_questions) {
     </tr>
     <tr><th colspan="6" class="bevel"></th></tr>
   <?php
-
-  if ($summative_lock == 1) {
+  
+  if ($summative_lock) {
     echo "<tr><td colspan=\"2\" style=\"text-align:right; vertical-align:middle\"><div class=\"yellowwarn\"><img src=\"../artwork/paper_locked_padlock.png\" width=\"19\" height=\"24\" alt=\"Locked\" style=\"position:relative; top:2px\" />&nbsp;&nbsp;</div></td><td colspan=\"3\" style=\"vertical-align:middle\"><div class=\"yellowwarn\">" . $string['paperlockedwarning'] . " <a href=\"#\" class=\"blacklink\" onclick=\"launchHelp(189); return false;\">". $string['paperlockedclick'] ."</a></div></td><td style=\"text-align:right\"><div class=\"yellowwarn\">";
     if (strpos($userroles, 'Admin') !== false) {
       $record_no = 0;
@@ -765,7 +774,7 @@ function random_qMarks($random_questions) {
       }
     }
     echo "&nbsp;</div></td></tr>\n";
-  } elseif ($paper_type == '2') {
+  } elseif ($paper_type == '2' and $start_date !== null) {
     $tmp_hour = $tmp_start_hour;
     if (substr($tmp_hour,0,1) == '0') $tmp_hour = substr($tmp_hour,1,1);
     if (substr($display_start_date,6,4) > (date("Y")+1)) {
@@ -867,7 +876,7 @@ function random_qMarks($random_questions) {
         $next_screen = $temp_array[$x + 1]['screen'];
       }
 
-      if ($summative_lock == 1) {
+      if ($summative_lock) {
         echo "\" onclick=\"selQ(" . ($question_number+1) . ",'" . $temp_array[$x]['q_id'] . "',$x,'" . $temp_array[$x]['q_type'] . "'," . $temp_array[$x]['screen'] . "," . $temp_array[$x]['p_id'] . "," . $temp_array[$x]['display_pos'] . ",'2c'," . count($temp_array[$x]['random']) . ",event);\" ondblclick=\"edQ(" . ($question_number+1) . "," . $temp_array[$x]['q_id'] . ",'" . $temp_array[$x]['q_type'] . "');\">";
       } else {
         echo "\" onclick=\"selQ(" . ($question_number+1) . ",'" . $temp_array[$x]['q_id'] . "',$x,'" . $temp_array[$x]['q_type'] . "'," . $temp_array[$x]['screen'] . "," . $temp_array[$x]['p_id'] . "," . $temp_array[$x]['display_pos'] . ",'2b'," . count($temp_array[$x]['random']) . ",event);\" ondblclick=\"edQ(" . ($question_number+1) . "," . $temp_array[$x]['q_id'] . ",'" . $temp_array[$x]['q_type'] . "');\">";
@@ -996,7 +1005,7 @@ function random_qMarks($random_questions) {
 
   // Final paper warnings.
   if ($paper_type == '2') {
-    if ($summative_lock == 1) {
+    if ($summative_lock) {
       $warning_types = array('Incomplete','Beta');
     } else {
       $warning_types = array('Incomplete','Beta','Retired');

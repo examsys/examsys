@@ -34,4 +34,6 @@ $string['furtherassistance'] = 'For further assistance contact: <a href="mailto:
 $string['deleted_msg1'] = 'Paper <strong>%s</strong> has been deleted.';
 $string['deleted_msg2'] = 'It can still be recovered from the <a href="' . $cfg_root_path . '/delete/recycle_list.php" style="color:blue">recycle bin</a>.';
 $string['deleted_msg3'] = 'You do not own this paper, you will need to get <a href="mailto:%s" style="color:blue">%s %s</a> to recover it.';
+$string['addscreenbreak'] = 'Add screen break';
+$string['deletescreenbreak'] = 'Delete screen break';
 ?>
