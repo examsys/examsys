@@ -1938,6 +1938,7 @@ QUERY;
           `id` int(11) NOT NULL auto_increment,
           `occurred` datetime default NULL,
           `userID` int(11) default NULL,
+          `auth_user` varchar(45) default NULL,
           `errtype` enum('Notice','Warning','Fatal Error','Unknown') default NULL,
           `errstr` text,
           `errfile` text,
