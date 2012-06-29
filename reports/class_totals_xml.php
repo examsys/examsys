@@ -27,8 +27,9 @@
   require '../include/staff_auth.inc';
   require '../include/class_totals.inc';
   
-  $displayDebug = false; //disable debud output in this script as it effects the output
-  
+  $displayDebug = false; //disable debug output in this script as it effects the output
+
+  header('Pragma: public');
   header("Content-type: application/vnd.ms-excel");
   header("Content-Disposition: attachment; filename=" . str_replace(' ', '_', $paper) . ".xml");
 
