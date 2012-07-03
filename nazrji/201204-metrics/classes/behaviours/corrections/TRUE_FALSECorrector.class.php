@@ -32,7 +32,7 @@ class TRUE_FALSECorrector extends Corrector {
    * @param integer $new_correct new correct answer
    * @param integer $paper_id
    */
-  public function execute($new_correct, $paper_id, &$changes) {
+  public function execute($new_correct, $paper_id, &$changes, $paper_type) {
     $new_correct_val = $new_correct['option_correct'];
     $errors = array();
     $mark_changes = false;
@@ -77,10 +77,10 @@ class TRUE_FALSECorrector extends Corrector {
     	  if(!$this->_question->save()) {
     	    $errors[] = $this->_lang_strings['datasaveerror'];
     	  } else {
-          // Remark the student's answers in 'log2'.
+          // Remark the student's answers in 'log{$paper_type}'.
           $score_method = $this->_question->get_score_method();
 
-    	    $result = $this->_mysqli->prepare("SELECT DISTINCT user_answer FROM log2 WHERE q_id=? AND q_paper=?");
+    	    $result = $this->_mysqli->prepare("SELECT DISTINCT user_answer FROM log{$paper_type} WHERE q_id=? AND q_paper=?");
           $result->bind_param('ii', $this->_question->id, $paper_id);
           $result->execute();
           $result->store_result();
@@ -106,7 +106,7 @@ class TRUE_FALSECorrector extends Corrector {
               $mark = ($mark == count($new_correct_val)) ? $mark_correct : $mark_incorrect;
             }
 
-            $updateLog = $this->_mysqli->prepare("UPDATE log2 SET mark=? WHERE user_answer=? AND q_id=? AND q_paper=?");
+            $updateLog = $this->_mysqli->prepare("UPDATE log{$paper_type} SET mark=? WHERE user_answer=? AND q_id=? AND q_paper=?");
             $updateLog->bind_param('dsii', $mark, $user_answer, $this->_question->id, $paper_id);
             $updateLog->execute();
             $updateLog->close();

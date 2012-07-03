@@ -89,6 +89,7 @@
         }
       }
     }
+    
    
     if ($on_team == false and isset($_GET['module']) and $_GET['module'] != '') {
       // Is 'Admin' on the module as normal
@@ -127,39 +128,45 @@
     
     // Check if user has access to the questions
     if (isset($_REQUEST['q_id'])) {
-      $tmp_q_id = $_REQUEST['q_id'];
-      $result = $mysqli->prepare("SELECT q_group, ownerID FROM questions WHERE q_id=?");
-      $result->bind_param('i', $tmp_q_id);
-      $result->execute();
-      $result->store_result();
-      $result->bind_result($q_group, $ownerID);
-      $result->fetch();
-      $group_array = explode(';', $q_group);
-      if ($ownerID != $userID and !in_array('SYSTEM', $group_array) and count(array_intersect($group_array, $teams)) == 0) {
-        // Not owner or on team so check schools
-        $is_admin = false;
-        if (count($group_array) > 0) {
-          $module_list = "'" . str_replace(';', ',', $q_group) . "'";
-          $result2 = $mysqli->prepare("SELECT school FROM schools, modules, admin_access WHERE admin_access.userID=? AND admin_access.schools_id=schools.id AND schools.id=modules.schoolid AND moduleid IN ({$module_list})");
-          $result2->bind_param('i', $userID);
-          $result2->execute();
-          $result2->store_result();
-          if($result2->num_rows > 0) {
-            $is_admin = true;
-          }
-          $result2->close();
-        }
+      $tmp_q_id = ltrim($_REQUEST['q_id'], ',');
+      $q_id_list = explode(',', $tmp_q_id);
+      foreach ($q_id_list as $tmp_q_id) {
+        if ($tmp_q_id != -1) {
+          $result = $mysqli->prepare("SELECT q_group, ownerID FROM questions WHERE q_id=?");
+          $result->bind_param('i', $tmp_q_id);
+          $result->execute();
+          $result->store_result();
+          $result->bind_result($q_group, $ownerID);
+          $result->fetch();
+          $group_array = explode(';', $q_group);
+          
+          if ($ownerID != $userID and !in_array('SYSTEM', $group_array) and count(array_intersect($group_array, $teams)) == 0) {
+            // Not owner or on team so check schools
+            $is_admin = false;
+            if (count($group_array) > 0) {
+              $module_list = "'" . str_replace(';', ',', $q_group) . "'";
+              $result2 = $mysqli->prepare("SELECT school FROM schools, modules, admin_access WHERE admin_access.userID=? AND admin_access.schools_id=schools.id AND schools.id=modules.schoolid AND moduleid IN ({$module_list})");
+              $result2->bind_param('i', $userID);
+              $result2->execute();
+              $result2->store_result();
+              if($result2->num_rows > 0) {
+                $is_admin = true;
+              }
+              $result2->close();
+            }
 
-        if (!$is_admin) {
+            if (!$is_admin) {
+              $result->close();
+              access_denied($string['denied_question'], false);
+            }
+          }
           $result->close();
-          access_denied($string['denied_question'], false);
         }
       }
-      $result->close();
     }
 
   } else {
-    //normal users can acces things they own or are on the team of only !!
+    //normal users can access things they own or are on the team of only !!
     $on_team = false;
 
     //can the user acsess the module 
@@ -205,25 +212,31 @@
     } 
 
     //Can the user access the question?
-    if (isset($_REQUEST['q_id']) and $_REQUEST['q_id'] != -1) {
-      $result = $mysqli->prepare("SELECT q_group, ownerID FROM questions WHERE q_id=?");
-      $result->bind_param('i', $_REQUEST['q_id']);
-      $result->execute();  
-      $result->bind_result($q_group, $ownerID);
-      $result->fetch();
-      $result->close();
-      
-      $access = false;
-      $moduleIDs = explode(';',$q_group);
-      //$question_teams = explode(';', $q_group);
-      foreach ($moduleIDs as $question_team) {
-        if (isset($teams[$question_team])) $access = true;
+    if (isset($_REQUEST['q_id'])) {
+      $tmp_q_id = ltrim($_REQUEST['q_id'], ',');
+      $q_id_list = explode(',', $tmp_q_id);
+      foreach ($q_id_list as $tmp_q_id) {
+        if ($tmp_q_id != -1) {
+          $result = $mysqli->prepare("SELECT q_group, ownerID FROM questions WHERE q_id=?");
+          $result->bind_param('i', $tmp_q_id);
+          $result->execute();  
+          $result->bind_result($q_group, $ownerID);
+          $result->fetch();
+          $result->close();
+          
+          $access = false;
+          $moduleIDs = explode(';',$q_group);
+          //$question_teams = explode(';', $q_group);
+          foreach ($moduleIDs as $question_team) {
+            if (isset($teams[$question_team])) $access = true;
+          }
+          
+          //allow acsess to the TRAIN module for training!
+          if ($ownerID != $userID and $access == false and !in_array('SYSTEM', $moduleIDs)) {
+            access_denied($string['denied_question'], false);
+          } 
+        }
       }
-      
-      //allow acsess to the TRAIN module for training!
-      if ($ownerID != $userID AND $access == false AND !in_array('SYSTEM', $moduleIDs)) {
-        access_denied($string['denied_question'], false);
-      } 
-    } 
+    }
   }
 ?>

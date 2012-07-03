@@ -67,7 +67,7 @@
 <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
 <blockquote>
 <table cellpadding="2" cellspacing="0" border="0" style="font-size:100%; width:100%">
-<tr><td class="sechead"><?php echo $string['clear']; ?></td><td class="sechead"><?php echo $string['user']; ?></td><td class="sechead"><?php echo $string['password']; ?></td><td class="sechead"><?php echo $string['surname']; ?></td><td class="sechead"><?php echo $string['firstnames']; ?></td><td class="sechead"><?php echo $string['title']; ?></td><td class="sechead"><?php echo $string['studentid']; ?></td><td class="sechead"><?php echo $string['datereserved']; ?></td><td class="sechead"><?php echo $string['assessmenttaken']; ?></td></tr>
+<tr><td class="sechead"><?php echo $string['clear']; ?></td><td class="sechead"><?php echo $string['user']; ?></td><td class="sechead"><?php echo $string['surname']; ?></td><td class="sechead"><?php echo $string['firstnames']; ?></td><td class="sechead"><?php echo $string['title']; ?></td><td class="sechead"><?php echo $string['studentid']; ?></td><td class="sechead"><?php echo $string['datereserved']; ?></td><td class="sechead"><?php echo $string['assessmenttaken']; ?></td></tr>
 <?php
   $used = array();
 
@@ -107,7 +107,7 @@
       } else {
         echo "<input type=\"checkbox\" name=\"clear$i\" value=\"\" disabled />";
       }
-      echo "</td><td class=\"l\">user$i</td><td class=\"l\">guest$i</td><td class=\"l\">" . $used[$i]['surname'] . "</td><td class=\"l\">" . $used[$i]['first_names'] . "</td><td class=\"l\">" . $used[$i]['title'] . "</td><td class=\"l\">" . $used[$i]['student_id'] . "</td><td class=\"l\">" . $used[$i]['reserved'] . "</td>";
+      echo "</td><td class=\"l\">user$i</td><td class=\"l\">" . $used[$i]['surname'] . "</td><td class=\"l\">" . $used[$i]['first_names'] . "</td><td class=\"l\">" . $used[$i]['title'] . "</td><td class=\"l\">" . $used[$i]['student_id'] . "</td><td class=\"l\">" . $used[$i]['reserved'] . "</td>";
       if ($paper_title == '') {
         echo "<td class=\"loff\">not taken</td>";
       } else {

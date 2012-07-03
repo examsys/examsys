@@ -25,7 +25,6 @@
 * @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */
-
 require '../include/staff_student_auth.inc';
 require '../include/display_functions.inc';
 require '../include/media.inc';
@@ -238,21 +237,22 @@ if ($special_needs == 1) {
 // Get how many screens make up the question paper.
 $screen_data = array();
 $row_no = 0;
-$stmt = $mysqli->prepare("SELECT property_id, labs, paper_title, paper_type, paper_prologue, marking, screen, UNIX_TIMESTAMP(start_date), UNIX_TIMESTAMP(end_date), bgcolor, fgcolor, themecolor, labelcolor, bidirectional, calculator, moduleID, calendar_year, latex_needed, password FROM (properties, papers, questions) WHERE properties.property_id=papers.paper AND crypt_name=? AND papers.question=questions.q_id AND q_type != 'info' ORDER BY screen");
+$stmt = $mysqli->prepare("SELECT property_id, labs, paper_title, paper_type, paper_prologue, marking, screen, UNIX_TIMESTAMP(start_date), UNIX_TIMESTAMP(end_date), bgcolor, fgcolor, themecolor, labelcolor, bidirectional, calculator, moduleID, calendar_year, latex_needed, password, questions.q_type FROM (properties, papers, questions) WHERE properties.property_id=papers.paper AND crypt_name=? AND papers.question=questions.q_id ORDER BY screen");
 $stmt->bind_param('s', $_GET['id']);
 $stmt->execute();
 $stmt->store_result();
-$stmt->bind_result($property_id, $labs, $paper_title, $paper_type, $paper_prologue, $marking, $screen, $start_date, $end_date, $paper_bgcolor, $paper_fgcolor, $paper_themecolor, $paper_labelcolor, $bidirectional, $calculator, $moduleID, $calendar_year, $latex_needed, $password);
+$stmt->bind_result($property_id, $labs, $paper_title, $paper_type, $paper_prologue, $marking, $screen, $start_date, $end_date, $paper_bgcolor, $paper_fgcolor, $paper_themecolor, $paper_labelcolor, $bidirectional, $calculator, $moduleID, $calendar_year, $latex_needed, $password, $q_type);
 if ($stmt->num_rows == 0) {  // No record found, the paper can't exist
   access_denied($string['error_paper'], $output_header = false);
 }
 while ($stmt->fetch()) {
   $row_no++;
   $no_screens = $screen;
+  $add_q = ($q_type == 'info') ? 0 : 1;
   if (!isset($screen_data[$no_screens])) { 
-    $screen_data[$no_screens] = 1;
+    $screen_data[$no_screens] = $add_q;
   } else {
-    $screen_data[$no_screens]++;
+    $screen_data[$no_screens] += $add_q;
   }
   if ($row_no == 1) {
     $original_paper_type = $paper_type;
@@ -314,12 +314,14 @@ $stmt->close();
 // Extract the posted variables.
 $restart = 0;
 if (isset($_POST['sessionid'])) {
-  if (isset($_POST['next'])) {
+  if ($_POST['button_pressed'] == 'next') {
     $current_screen = $_POST['current_screen'];
-  } elseif (isset($_POST['prev'])) {
+  } elseif ($_POST['button_pressed'] == 'prevous') {
     $current_screen = $_POST['current_screen'] - 2;
-  } elseif (isset($_POST['jump_screen'])) {
+  } elseif ($_POST['button_pressed'] == 'jump_screen') {
     $current_screen = $_POST['jump_screen'];
+  } elseif ($_POST['fire_alarm'] == 1) {
+    $current_screen = $_POST['current_screen'];
   }
   $sessionid = $_POST['sessionid'];
 } else {
@@ -413,6 +415,7 @@ if ($css != '') {
     } else {
       echo "  resizeReference();\n";
     }
+    echo "$(window).resize(resizeReference);";
     echo "});\n";
   }
 ?>    
@@ -430,7 +433,7 @@ if ($css != '') {
   ?>
   };
   
-  function getWinH() {
+  var getWinH = function() {
     var winH = 460;
     if (document.body && document.body.offsetWidth) {
       winH = document.body.offsetHeight;
@@ -444,7 +447,7 @@ if ($css != '') {
     return winH;
   }
   
-  function changeRef(refID) {
+  var changeRef = function(refID) {
     document.getElementById('refpane').value = refID;
     winH = getWinH();
     resizeReference();
@@ -469,7 +472,7 @@ if ($css != '') {
     ?>  
   }
   
-  function resizeReference() {
+  var resizeReference = function() {
     winH = getWinH();
 <?php
   if (count($reference_materials) > 0) {
@@ -477,23 +480,19 @@ if ($css != '') {
     echo "    for (i=0; i<" . count($reference_materials) . "; i++) {\n";
     echo "      document.getElementById('framecontent' + i).style.height = (winH - $subtract) + 'px';\n";
     echo "    }\n";
+?>
+    var mainWidth = $('body').outerWidth() - $('#framecontent0').outerWidth(true);
+    $('#maincontent').width(mainWidth);
+<?php
   }
 ?>  
   }
+
 <?php
-  if ($original_paper_type == '2') {
-?>
-  function fire(scrno) {
-    document.questions.button_pressed.value='previous';
-    document.questions.action="fire_evacuation.php?id=<?php echo $_GET['id']; ?>";
-    document.questions.submit();
-  }
-<?php
-  }
   if ($bidirectional == '0') {
 ?>
   var submitted = false;
-  function confirmSubmit() {
+  var confirmSubmit = function() {
     if (submitted == true) {
       return false;
     }
@@ -510,9 +509,8 @@ if ($css != '') {
   } else {
 ?>
   var submitted = false;
-  function confirmSubmit() {
-	saveMath();
-	if (submitted == true) {
+  var confirmSubmit = function() {
+	  if (submitted == true) {
       return false;
     }
     if (document.questions.button_pressed.value == 'finish') {
@@ -522,6 +520,8 @@ if ($css != '') {
         submitted = true;
         return true;
       } else {
+        $('#savemsg').html("");
+        document.body.style.cursor = 'default';
         return false;
       }
     } else {
@@ -530,16 +530,158 @@ if ($css != '') {
       return true;
     }
   }
-  function jumpScreen() {
-    document.questions.button_pressed.value='previous';
-    document.questions.action="start.php?id=<?php echo $_GET['id']; ?>";
-    if (confirmSubmit()) {
-      document.questions.submit();
-    }
+  var jumpScreen = function () {
+      document.questions.button_pressed.value='jump_screen';
+      $('#qForm').attr('action',"start.php?id=<?php echo $_GET['id']; ?>&dont_record=true");
+      return userSubmit(null);
   }
 <?php
   }
 ?>
+
+  //Bind save function to the screen for fault tolerant form saving
+  var submitPending = false;
+  var success = false;
+  var usingAjax = false;
+  var submitType = '';
+  var autoSaveRef = '';
+  $(document).ready(function () {
+      //we have javascript replace the form submit buttons to enable ajax saving 
+      usingAjax = true;
+      $('#next').replaceWith('<?php echo "<input id=\"next\" type=\"button\" value=\"" . $string['screen'] . " " . ($current_screen + 1) . " &gt;\" />&nbsp;";?>');
+      $('#next').click(userSubmit);
+
+      $('#prevous').replaceWith('<?php echo "<input id=\"prevous\" type=\"button\" value=\"&nbsp;&lt; " . $string['screen'] . " " . ($current_screen - 1) . "&nbsp;\" />&nbsp;";?>');
+      $('#prevous').click(userSubmit);
+
+      $('#finish').replaceWith('<?php echo "<input id=\"finish\" type=\"button\" value=\"" . $string['finish'] . "\" />&nbsp;";?>');
+      $('#finish').click(userSubmit);
+
+      //attach ui events
+      $('.rankselect').change(rankCheck);
+      $(".calc-answer").keydown(filterKeypress);
+
+      //setup autosave
+      startAutoSave();
+  });
+  
+  var userSubmit = function (event) {
+    submitType = 'userSubmit';
+    stopAutoSave();
+
+    $('#saveError').fadeOut('slow');
+    $('#savemsg').html("<img src=\"../artwork/busy.gif\" width=\"20\" height=\"20\" alt=\"Wait\" />")
+    document.body.style.cursor = 'wait';
+
+    //log which method the users submited the page via
+    if (!!event) {
+    $('#button_pressed').attr('value',event.target.id);
+      if(event.target.id != 'finish') {
+        $('#qForm').attr('action',"start.php?id=<?php echo $_GET['id']; ?>&dont_record=true");
+      }
+    }
+    ajaxSave();
+  }
+  
+  var startAutoSave = function () {
+    autoSaveRef = setTimeout("autoSave()",<?php echo ($cfg_autosave_timeout * 1000); ?>);
+  }
+
+  var stopAutoSave = function() {
+    clearTimeout(autoSaveRef);
+  }
+
+  var autoSave = function() {
+    submitType = 'autoSave';
+    $('#savemsg').html("<?php echo $string['auto_saving']; ?>")
+    ajaxSave();
+    //clear auto save message
+    setTimeout("$('#savemsg').html(\"\")",5000);
+    //reset the timer incase this is a long screen
+    startAutoSave();
+  }
+
+  var ajaxSave = function () {
+    submitPending = true;
+    //random page ID to stop IE caching results. arrrggg
+    date = new Date();
+    randomPageID = date.getTime();
+    $('#randomPageID').val(randomPageID);
+    if(typeof(tinyMCE) != "undefined"){
+      tinyMCE.triggerSave();
+    }
+    $.ajax({
+          url: 'save_screen.php?id=<?php echo $_GET['id'] ?>&rnd=' + randomPageID,
+          type: 'post',
+          data: $('#qForm').serialize(),
+          dataType: 'html',
+          timeout: 1000,
+          cache: false,
+          tryCount : 0,    
+          retryLimit : 5, //try 5 times b4 error
+          beforeSend: function() {
+              submitPending = true;
+              success = false;
+          },
+          fail: function() {
+              submitPending = false;
+              success = false;
+              saveFail();
+          },
+          error: function(xhr, textStatus, errorThrown) {
+              if (textStatus == 'timeout' || textStatus == 'error') {            
+                this.tryCount++;            
+                if (this.tryCount <= this.retryLimit) {                
+                  //try again
+                  $.ajax(this);                
+                  return;            
+                }            
+              }
+              saveFail();
+              submitPending = false;
+              success = false;
+              return;
+          },
+          success: function (data, jqXHR, textStatus) {
+              submitPending = false
+              if(data == randomPageID) {
+                  success = true;
+                  saveSuccess();
+                  return;
+              }
+              saveFail();
+              return;
+          }
+      });
+    submitPending = false;
+    return;
+  }
+
+  var saveSuccess = function () {
+    if (submitType == 'userSubmit') {
+      $('#qForm').submit();
+      return true;
+    }
+  }
+
+  var saveFail = function () {
+    startAutoSave();
+    $('#saveError').fadeIn('fast');
+    $('#savemsg').html("");
+    document.body.style.cursor = 'default';
+    return false;
+  }
+
+  var fire = function (scrno) {
+    submitType = 'userSubmit';
+    document.questions.button_pressed.value='fire_exit';
+    if (usingAjax) {
+        document.questions.action="fire_evacuation.php?id=<?php echo $_GET['id']; ?>&dont_record=true";
+    } else {
+        document.questions.action="fire_evacuation.php?id=<?php echo $_GET['id']; ?>";
+    }
+    ajaxSave();
+  }
 </script>
 </head>
 <?php
@@ -552,9 +694,9 @@ $show_ref_material = false;
 echo "<div id=\"maincontent\">\n";
 
 if ($current_screen < $no_screens) {
-  echo "<form method=\"post\" name=\"questions\" action=\"" . $_SERVER['PHP_SELF'] . "?id=" . $_GET['id'] . "\"";
+  echo "<form method=\"post\" id=\"qForm\" name=\"questions\" action=\"" . $_SERVER['PHP_SELF'] . "?id=" . $_GET['id'] . "\"";
 } else {
-  echo "<form method=\"post\" name=\"questions\" action=\"finish.php?id=" . $_GET['id'] . "\"";
+  echo "<form method=\"post\" id=\"qForm\" name=\"questions\" action=\"finish.php?id=" . $_GET['id'] . "\"";
 }
 echo ' onsubmit="return confirmSubmit()">';   // Warning message only in linear navigation mode.
 ?>
@@ -722,8 +864,8 @@ echo ' onsubmit="return confirmSubmit()">';   // Warning message only in linear 
   echo "<input type=\"hidden\" name=\"page_start\" value=\"" . date("YmdHis", time()) . "\" />\n";
   echo "<input type=\"hidden\" name=\"old_screen\" value=\"" . ($current_screen - 1) . "\" />\n";
   echo "<input type=\"hidden\" name=\"previous_duration\" value=\"$previous_duration\" />\n";
-  echo "<input type=\"hidden\" name=\"button_pressed\" value=\"\" />\n";
-
+  echo "<input type=\"hidden\" id=\"button_pressed\" name=\"button_pressed\" value=\"\" />\n";
+  echo "<input type=\"hidden\" id=\"randomPageID\" name=\"randomPageID\" value=\"\" />\n";
   if ($current_screen > $no_screens) {
     echo "<br />\n<div class=\"note\" style=\"text-align:center;font-size:90%\">";
     if (isset($low_bandwidth) and $low_bandwidth == 0) echo '<img src="../artwork/notes_icon.gif" width="14" height="14" alt="' . $string['note'] . '" />&nbsp;';
@@ -736,10 +878,14 @@ echo ' onsubmit="return confirmSubmit()">';   // Warning message only in linear 
     printf($string['pleasecomplete'], $current_screen);
     echo "</div>\n<br >\n";
   }
+ 
+  echo '<div id="saveError"><img alt="Warning" src="/artwork/no_save.png" /> <div><strong>' .  $string['savefailed'] . '</strong><br />' . $string['tryagain'] . '</div></div>';
+  
   echo $bottom_html;
   echo '<input type="text" style="background-color:transparent;text-align:center;font-size:80%;color:white;border:0px" id="theTime" size="8" /></td><td align="right">';
+  echo '<span id="savemsg"></span>';
   if ($bidirectional == 1 and $no_screens > 1) {
-    if ($current_screen > 2) echo "<input type=\"submit\" name=\"prev\" onclick=\"document.questions.button_pressed.value='previous'; document.questions.action='" . $_SERVER['PHP_SELF'] . "?id=" . $_GET['id'] . "'\" style=\"width:120px\" value=\"&nbsp;&lt; " . $string['screen'] . " " . ($current_screen - 2) . "&nbsp;\" />&nbsp;";
+    if ($current_screen > 2) echo "<input input id=\"prevous\" type=\"submit\" name=\"prev\" onclick=\"document.questions.button_pressed.value='previous';\" value=\"&nbsp;&lt; " . $string['screen'] . " " . ($current_screen - 2) . "&nbsp;\" />&nbsp;";
     if ($original_paper_type == '0' or $original_paper_type == '1' or $original_paper_type == '2') {
       echo "<select name=\"jump_screen\" onchange=\"jumpScreen()\">";
       for ($i=1; $i<=$no_screens; $i++) {
@@ -754,9 +900,9 @@ echo ' onsubmit="return confirmSubmit()">';   // Warning message only in linear 
   }
   echo "<input type=\"hidden\" name=\"refpane\" id=\"refpane\" value=\"0\" />\n";
   if ($current_screen > $no_screens) {
-    echo "<input type=\"submit\" style=\"width:120px; font-weight:bold\" name=\"next\" onclick=\"document.questions.button_pressed.value='finish';\" value=\"" . $string['finish'] . "\" />&nbsp;\n";
+    echo "<input id=\"finish\" type=\"submit\" name=\"next\" onclick=\"document.questions.button_pressed.value='finish';\" value=\"" . $string['finish'] . "\" />&nbsp;\n";
   } else {
-    echo "<input type=\"submit\" style=\"width:120px\" name=\"next\" value=\"" . $string['screen'] . " $current_screen &gt;\" />&nbsp;\n";
+    echo "<input id=\"next\" type=\"submit\" name=\"next\" value=\"" . $string['screen'] . " $current_screen &gt;\" />&nbsp;\n";
   }
   echo '</td></tr></table>';
 ?>

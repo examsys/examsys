@@ -28,7 +28,7 @@
   $result->bind_param('is', $_GET['paperID'], $_GET['userID']);
   $result->execute();
   $result->bind_result($note, $note_date, $title, $initials, $surname);
-  while ($row = $result->fetch()) {
+  while ($result->fetch()) {
     echo "<div style=\"padding:10px\">$note</div>\n";
     echo "<div style=\"padding:10px\"><em>$title $initials $surname - $note_date</em></div>\n";
   }

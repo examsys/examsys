@@ -50,3 +50,28 @@ pre {font-family:Arial,sans-serif;font-size:100%}
   background: -webkit-linear-gradient(top, #FEFEFE, #D9D9D9);
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FEFEFE', endColorstr='#D0D0D0');
 }
+#next {width:120px}
+#finish {width:120px; font-weight:bold}
+#prevous {width:120px}
+#savemsg {margin-right:5px;}
+#saveError {
+  display:none;
+  margin-left: 25%;
+  margin-bottom: 5px;
+  width:45%;
+  height:60px;
+  background: -moz-linear-gradient(top, #FF8181, #FFC0C0);
+  background: -webkit-linear-gradient(top, #FF8181, #FFC0C0);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FF9595', endColorstr='#FFCBCB');
+  border: 1px solid #C00000;
+}
+#saveError img {margin-top: 6px; margin-left: 16px}
+#saveError div { 
+    font-size:110%;
+    margin-top: -50px;
+    margin-left: 80px;
+    height:60px;
+    width: 80%;
+    text-align: left;
+    line-height:150%
+  }

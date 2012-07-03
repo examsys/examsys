@@ -436,8 +436,10 @@ function extract_blank_correct($option_text, $display_method, $paper_buffer, $qu
   return $correct;
 }
 
-function getUserMark($q_id, $tmp_user_answer, $tmp_user_mark, $exclude, $status, &$tmp_mark, &$tmp_user_mark_array, $random_q_ids) {
+function getUserMark($q_id, $tmp_user_answer, $tmp_user_mark, $exclude, $status, &$tmp_mark, &$tmp_user_mark_array, $random_q_ids, $tmp_userID) {
   global $paper_buffer, $user_results, $tmp_array;
+  
+  $old_tmp_mark = $tmp_mark;
   
   if ($status == 'Experimental') $exclude[$q_id] = '1111111111111111111111111111111111111111';
 
@@ -527,7 +529,7 @@ function getUserMark($q_id, $tmp_user_answer, $tmp_user_mark, $exclude, $status,
       for ($a=0; $a<count($user_answers)-1; $a++) {
         if (substr($tmp_exclude, $a, 1) == '0') {
           if ($question['display_method'] == 'dropdown') {
-            if ($question['correct'][$a][0] == html_entity_decode(trim($user_answers[$a+1]))) {
+            if (strip_tags(str_replace('&nbsp;',' ',$question['correct'][$a][0])) == strip_tags(html_entity_decode(str_replace('&nbsp;',' ',trim($user_answers[$a+1]))))) {
               $tmp_mark += $question['marks_correct'];
               $tmp_user_mark_array[$q_id][] = $question['marks_correct'];
             } elseif ($user_answers[$a+1] != 'u' and $user_answers[$a+1] != '') {
@@ -642,19 +644,21 @@ function getUserMark($q_id, $tmp_user_answer, $tmp_user_mark, $exclude, $status,
       $i = 0;
       $correct = 0;
       for ($a=0; $a<count($user_split2)-3; $a+=4) {
-        $x = $user_split2[$a];
-        $y = $user_split2[$a+1];
-               
-        if (isset($correct_labels[$x . 'x' . $y]) and $correct_labels[$x . 'x' . $y] == $user_split2[$a+2]) {
-          $tmp_mark += $question['marks_correct'];
-          $correct += $question['marks_correct'];
-          $tmp_user_mark_array[$q_id][] = $question['marks_correct'];
-        } elseif (isset($correct_labels[$x . 'x' . $y]) and $correct_labels[$x . 'x' . $y] != $user_split2[$a+2]) {
-          $tmp_mark += $question['marks_incorrect'];
-          $correct += $question['marks_incorrect'];
-          $tmp_user_mark_array[$q_id][] = $question['marks_incorrect'];
-        } else {
-          $tmp_user_mark_array[$q_id][] = 0;
+        if (substr($tmp_exclude, $i, 1) == '0') {
+          $x = $user_split2[$a];
+          $y = $user_split2[$a+1];
+
+          if (isset($correct_labels[$x . 'x' . $y]) and $correct_labels[$x . 'x' . $y] == $user_split2[$a+2]) {
+            $tmp_mark += $question['marks_correct'];
+            $correct += $question['marks_correct'];
+            $tmp_user_mark_array[$q_id][] = $question['marks_correct'];
+          } elseif (isset($correct_labels[$x . 'x' . $y]) and $correct_labels[$x . 'x' . $y] != $user_split2[$a+2]) {
+            $tmp_mark += $question['marks_incorrect'];
+            $correct += $question['marks_incorrect'];
+            $tmp_user_mark_array[$q_id][] = $question['marks_incorrect'];
+          } else {
+            $tmp_user_mark_array[$q_id][] = 0;
+          }
         }
         $i++;
       }
@@ -800,7 +804,6 @@ while ($result->fetch()) {
           $old_correct = $last_random['correct'];
           $old_display_method = $last_random['display_method'];
           $old_score_method = $last_random['score_method'];
-          
           $total_marks += qMarks($old_q_type, $tmp_exclude, $old_marks_correct, $old_option_text, $old_correct, $old_display_method, $old_score_method);
           $orig_total_marks += qMarks($old_q_type, '', $old_marks_correct, $old_option_text, $old_correct, $old_display_method, $old_score_method);
         } else {
@@ -858,9 +861,20 @@ if ($old_status != 'Experimental') {
     $tmp_exclude = '';
   }
   if ($old_q_type == 'random') {
-    getRandomDetails($q_id, $random_q_ids);
-    $total_marks += $paper_buffer[$q_id]['random_questions'][$tmp_id]['marks'];
-  } else {  $total_marks += qMarks($old_q_type, $tmp_exclude, $old_marks_correct, $old_option_text, $old_correct, $old_display_method, $old_score_method);
+    $tmp_id = getRandomDetails($old_q_id, $random_q_ids);
+
+    $last_random = $paper_buffer[$old_q_id]['random_questions'][$tmp_id];
+
+    $old_q_type = $last_random['q_type'];
+    $old_marks_correct = $last_random['marks_correct'];
+    $old_option_text = $last_random['option_text'];
+    $old_correct = $last_random['correct'];
+    $old_display_method = $last_random['display_method'];
+    $old_score_method = $last_random['score_method'];
+    $total_marks += qMarks($old_q_type, $tmp_exclude, $old_marks_correct, $old_option_text, $old_correct, $old_display_method, $old_score_method);
+    $orig_total_marks += qMarks($old_q_type, '', $old_marks_correct, $old_option_text, $old_correct, $old_display_method, $old_score_method);
+  } else {
+    $total_marks += qMarks($old_q_type, $tmp_exclude, $old_marks_correct, $old_option_text, $old_correct, $old_display_method, $old_score_method);
     $orig_total_marks += qMarks($old_q_type, '', $old_marks_correct, $old_option_text, $old_correct, $old_display_method, $old_score_method);
     $total_random_mark += qRandomMarks($old_q_type, $tmp_exclude, $old_marks_correct, $old_option_text, $old_correct, $old_display_method, $old_score_method, $old_q_media_width, $old_q_media_height);
     checkDisplayExcluded($display_excluded, $old_q_id, $excluded, $question_no);
@@ -874,7 +888,7 @@ $out_of_range = 0;
 if ($_GET['absent'] == 1) {
   // Get students in the cohort.
   $student_cohort = array();
-  $result = $mysqli->prepare("SELECT users.id, users.username, title, surname, first_names, initials, student_id, grade, moduleid, gender FROM (student_modules, users, sid) WHERE student_modules.userID=sid.userID AND student_modules.userID=users.id AND users.roles LIKE '%Student%' AND moduleid IN ('" . str_replace(",","','",$moduleID) . "') AND calendar_year=?");
+  $result = $mysqli->prepare("SELECT DISTINCT users.id, users.username, title, surname, first_names, initials, student_id, grade, moduleid, gender FROM (student_modules, users, sid) WHERE student_modules.userID=sid.userID AND student_modules.userID=users.id AND users.roles LIKE '%Student%' AND moduleid IN ('" . str_replace(",","','",$moduleID) . "') AND calendar_year=?");
   $result->bind_param('s', $calendar_year);
   $result->execute();
   $result->bind_result($tmp_userID, $tmp_username, $title, $surname, $first_names, $initials, $student_id, $grade, $moduleid, $gender);
@@ -1038,7 +1052,7 @@ if ($log_query->num_rows > 0) {
       $tmp_array['duration'] = $user_duration;
       $tmp_array['paper_type'] = $paper_type;
     }
-    getUserMark($q_id, $user_answer, $mark, $excluded, $status, $tmp_mark, $tmp_user_mark_array, $random_q_ids);
+    getUserMark($q_id, $user_answer, $mark, $excluded, $status, $tmp_mark, $tmp_user_mark_array, $random_q_ids, $tmp_userID);
     
     if ($q_type == 'textbox' and !is_numeric($mark)) $marking_complete = 0;
     if (isset($tmp_array['questions'])) {

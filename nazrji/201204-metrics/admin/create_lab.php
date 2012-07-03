@@ -73,6 +73,7 @@
 <title><?php echo $string['createnewlab']; ?></title>
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
+<link rel="stylesheet" type="text/css" href="../css/header.css" />
 <style type="text/css">
 input, textarea {font-family:Arial,sans-serif; line-height:140%}
 </style>
@@ -99,7 +100,7 @@ input, textarea {font-family:Arial,sans-serif; line-height:140%}
 <div id="content" class="content" style="font-size:80%">
 <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" onsubmit="return checkForm()">
 <table cellpadding="0" cellspacing="0" border="0" width="100%">
-<tr><td style="background-color:#F1F5FB"><div class="breadcrumb"><a href="../staff/index.php"><?php echo $string['home']; ?></a> - <a href="./index.php"><?php echo $string['administrativetools']; ?></a></div><div style="font-size:200%; margin-left:10px; font-weight:bold"><?php echo $string['createnewlab']; ?></div></td></tr>
+<tr><td style="background-color:#F1F5FB"><div class="breadcrumb"><a href="../staff/index.php"><?php echo $string['home']; ?></a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php"><?php echo $string['administrativetools']; ?></a></div><div style="font-size:200%; margin-left:10px; font-weight:bold"><?php echo $string['createnewlab']; ?></div></td></tr>
 <tr><td style="height: 3px"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td></tr>
 <?php
 if (count($bad_addresses) > 0) {
@@ -130,7 +131,7 @@ if (count($bad_addresses) > 0) {
 <div><input type="text" size="40" name="lab_name" value="" /></div>
 <?php
   echo "<br /><div><strong>" . $string['campus'] . "</strong></div>\n<div><select name=\"campus\">\n<option value=\"\"></option>\n";
-  foreach ($choices as $choice) {
+  foreach ($cfg_campus_list as $choice) {
     echo "<option value=\"$choice\">$choice</option>\n";
   }
   echo "</select></div>\n";

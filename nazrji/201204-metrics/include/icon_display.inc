@@ -24,27 +24,35 @@
 
 function displayIcon($paper_type, $title, $initials, $surname, $shared, $locked) {
   global $string;
+  $paper_type = strval($paper_type);
+  
   switch ($paper_type) {
-    case 0:
+    case '0':
       $html = "<img src=\"../artwork/formative" . $shared . ".png\" width=\"48\" height=\"48\" alt=\"" . $string['type'] . ": " . $string['formative self-assessment'] ."&#013;" . $string['author'] . ": $title $initials $surname\" border=\"0\" />";
       break;
-    case 1:
+    case '1':
       $html = "<img src=\"../artwork/progress" . $shared . ".png\" width=\"48\" height=\"48\" alt=\"" . $string['type'] . ": " . $string['progress test'] . "&#013;" . $string['author'] . ": $title $initials $surname\" border=\"0\" />";
       break;
-    case 2:
+    case '2':
       $html = "<img src=\"../artwork/summative" . $shared . $locked . ".png\" width=\"48\" height=\"48\" alt=\"" . $string['type'] . ": " . $string['summative exam'] . "&#013;" . $string['author'] . ": $title $initials $surname\" border=\"0\" />";
       break;
-    case 3:
+    case '3':
       $html = "<img src=\"../artwork/survey" . $shared . ".png\" width=\"48\" height=\"48\" alt=\"" . $string['type'] . ": " . $string['survey'] . "&#013;" . $string['author'] . ": $title $initials $surname\" border=\"0\" />";
       break;
-    case 4:
+    case '4':
       $html = "<img src=\"../artwork/osce" . $shared . ".png\" width=\"48\" height=\"48\" alt=\"" . $string['type'] . ": " . $string['osce station'] . "&#013;" . $string['author'] . ": $title $initials $surname\" border=\"0\" />";
       break;
-    case 5:
+    case '5':
       $html = "<img src=\"../artwork/offline" . $shared . ".png\" width=\"48\" height=\"48\" alt=\"" . $string['type'] . ": " . $string['offline paper'] . "&#013;" . $string['author'] . ": $title $initials $surname\" border=\"0\" />";
       break;
-    case 6:
+    case '6':
       $html = "<img src=\"../artwork/peer_review" . $shared . ".png\" width=\"48\" height=\"48\" alt=\"" . $string['type'] . ": Peer Review&#013;" . $string['author'] . ": $title $initials $surname\" border=\"0\" />";
+      break;
+    case 'objectives':
+      $html = "<img src=\"../artwork/feedback_release_icon.png\" width=\"48\" height=\"48\" alt=\"Objectives Feedback\" border=\"0\" />";
+      break;
+    case 'questions':
+      $html = "<img src=\"../artwork/question_release_icon.png\" width=\"48\" height=\"48\" alt=\"Questions Feedback\" border=\"0\" />";
       break;
   }
   return $html;

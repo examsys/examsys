@@ -24,8 +24,6 @@
 * @package
 */
 
-require_once ($cfg_web_root . 'classes/passwordutils.class.php');
-
 Class UserUtils {
 
   static function createUser($username, $password, $title, $forname, $surname, $email, $course, $gender, $year, $role, $sid, $db) {
@@ -41,9 +39,14 @@ Class UserUtils {
       $surname = self::my_ucwords(trim($surname));
       $title = self::my_ucwords(trim($title));  
 
-      //if there is no password georate one
+      //if there is no password generate one
       if ($password == '') {
-        $password =  PasswordUtils::gen_password();
+        $password =  gen_password();
+      }
+
+      //force valid value for gender or default to NULL
+      if(strtolower($gender) != 'male' or strtolower($gender) != 'female') {
+        $gender = 'NULL';
       }
       
       //add new users
@@ -117,14 +120,19 @@ Class UserUtils {
    *
    */
   static function addUserToModule($userID, $module, $attempt, $session, $db) {
-    $result = $db->prepare("INSERT INTO student_modules VALUES(NULL, ?, ?, ?, ?, 0)");
-    $result->bind_param('issi', $userID, $module, $session, $attempt);
-    $result->execute();
-    $result->close();
-    if ($db->errno != 0) {
-      return false;
+    if(UserUtils::isUserOnModule($userID, $module,$session, $db)) {
+      //dont add a user to a module multiple times
+      return true;
+    } else {
+      $result = $db->prepare("INSERT INTO student_modules VALUES(NULL, ?, ?, ?, ?, 0)");
+      $result->bind_param('issi', $userID, $module, $session, $attempt);
+      $result->execute();
+      $result->close();
+      if ($db->errno != 0) {
+        return false;
+      }
+      return true;
     }
-    return true;
   } 
 
   static function removeUserFromModule($userID, $module, $session, $db) {

@@ -37,10 +37,12 @@
   }
   
   $showReflection = true;
-  if ((strpos($userroles,'Staff') !== false or strpos($userroles,'SysAdmin') !== false) AND (!isset($_GET['userID']) OR $_GET['userID'] != '') ) {
-    check_var('userID', 'GET', true, false);
-    $userID = $_GET['userID'];
-    $showReflection = false;
+  if (strpos($userroles,'Staff') !== false or strpos($userroles,'SysAdmin') !== false) {
+    if (isset($_GET['userID']) and $_GET['userID'] != '') {
+      $userID = $_GET['userID'];
+    } else {
+      display_error($string['idmissing'], $string['idmissing_msg'], false, true, false);
+    }
   }
 
   //check the feedback has been released !!!
@@ -108,37 +110,7 @@
   $result->fetch();
   $result->close();
   $student_name = $title . ' ' . demo_replace($initials,$demo) . ' ' . demo_replace($surname,$demo);
-
-  /*$distribution = array();
-  for ($i=1; $i<=100; $i++) $distribution[$i] = 0;
-
-  if($paper_type == '4') {
-    $result = $mysqli->prepare("SELECT username, SUM(rating) AS mark, log$paper_type.userID, DATE_FORMAT(started,'%d/%m/%Y %H:%i') AS started FROM log$paper_type, users WHERE log$paper_type.userID=users.id AND roles='Student' AND q_paper=? AND started>='" . $exam_day . "000000' AND started<'" . $exam_day . "235959' GROUP BY log$paper_type.userID");
-  } else {
-    $result = $mysqli->prepare("SELECT username, SUM(mark) AS mark, log$paper_type.userID, DATE_FORMAT(started,'%d/%m/%Y %H:%i') AS started FROM log$paper_type, users WHERE log$paper_type.userID=users.id AND roles='Student' AND q_paper=? AND started>='" . $exam_day . "000000' AND started<'" . $exam_day . "235959' GROUP BY log$paper_type.userID");
-  }
-  $result->bind_param('i', $paperID);
-  $result->execute();
-  $result->bind_result($tmp_username, $mark, $tmp_userID, $started);
-  while ($row = $result->fetch()) {
-    if ($random_mark > 0 and $marking == 1) {
-      $temp_location = round((($mark-$random_mark)/($total_mark-$random_mark))*100);
-      if ($tmp_userID == $username) {
-        $plotuser = round((($mark-$random_mark)/($total_mark-$random_mark))*100);
-      }
-    } else {
-      $temp_location = round(($mark/$total_mark)*100);
-      if ($tmp_userID == $username) {
-        $plotuser = round(($mark/$total_mark)*100);
-      }
-    }
-    if ($temp_location >= 0) {
-      $distribution[$temp_location]++;
-    }
-  }
-  $result->close();*/
-
- ?>
+?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
@@ -169,7 +141,6 @@
     <tr><td style="padding-left:10px"><img src="../artwork/ok_comment.png" width="16" height="16" alt="Completely/Mostly acquired" /></td><td style="padding-right:10px"><?php echo $string['greenicon']; ?></td></tr>
     <tr><td style="padding-left:10px"><img src="../artwork/minor_comment.png" width="16" height="16" alt="Partically acquired" /></td><td style="padding-right:10px"><?php echo $string['ambericon']; ?></td></tr>
     <tr><td style="padding-left:10px"><img src="../artwork/major_comment.png" width="16" height="16" alt="Mostly not acquired" /></td><td style="padding-right:10px"><?php echo $string['redicon']; ?></td></tr>
-    <tr><td style="padding-left:10px"><img src="../artwork/small_link.png" width="12" height="12" alt="Shortcut" /></td><td style="padding-right:10px"><?php echo $string['hyperlink']; ?></td></tr>
     <tr><td style="padding-left:10px" colspan="2"><?php echo $string['relativekey']; ?></td></tr>
     <tr><td style="padding-left:10px" colspan="2"><?php echo $string['question']; ?></td></tr>
     </table>
@@ -272,7 +243,7 @@
   }
   
   echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"font-size:100%; line-height:150%\">\n";
-  echo "<tr><td style=\"border-top: 1px solid #D6E5F5\">&nbsp;</td><td style=\"border-top: 1px solid #D6E5F5\"><img src=\"../artwork/vertical_spacer.gif\" width=\"1\" height=\"21\" alt=\"\" /></td><td colspan=\"3\" style=\"border-top: 1px solid #D6E5F5; color:#1E3287\">&nbsp;<nobr>" . $string['yourmark'] . "</nobr></td><td style=\"border-top: 1px solid #D6E5F5\"><img src=\"../artwork/vertical_spacer.gif\" width=\"1\" height=\"21\" alt=\"\" /></td><td style=\"border-top: 1px solid #D6E5F5; color:#1E3287\">&nbsp;" . $string['relative'] . "&nbsp;</td><td style=\"border-top: 1px solid #D6E5F5\"><img src=\"../artwork/vertical_spacer.gif\" width=\"1\" height=\"21\" alt=\"\" /></td><td style=\"border-top: 1px solid #D6E5F5; color:#1E3287\"><nobr>&nbsp;" . $string['qno'] . "&nbsp;</nobr></td><td style=\"border-top: 1px solid #D6E5F5\"><img src=\"../artwork/vertical_spacer.gif\" width=\"1\" height=\"21\" alt=\"\" /></td><td style=\"border-top: 1px solid #D6E5F5; color:#1E3287; text-align:center\">" . $string['objective'] . "</td></tr>";
+  echo "<tr><td style=\"border-top: 1px solid #D6E5F5\">&nbsp;</td><td style=\"border-top: 1px solid #D6E5F5\"><img src=\"../artwork/vertical_spacer.gif\" width=\"1\" height=\"21\" alt=\"\" /></td><td colspan=\"3\" style=\"border-top: 1px solid #D6E5F5; color:#1E3287\">&nbsp;<nobr>" . $string['yourmark'] . "&nbsp;</nobr></td><td style=\"border-top: 1px solid #D6E5F5\"><img src=\"../artwork/vertical_spacer.gif\" width=\"1\" height=\"21\" alt=\"\" /></td><td style=\"border-top: 1px solid #D6E5F5; color:#1E3287\">&nbsp;" . $string['relative'] . "&nbsp;</td><td style=\"border-top: 1px solid #D6E5F5\"><img src=\"../artwork/vertical_spacer.gif\" width=\"1\" height=\"21\" alt=\"\" /></td><td style=\"border-top: 1px solid #D6E5F5; color:#1E3287\"><nobr>&nbsp;" . $string['qno'] . "&nbsp;</nobr></td><td style=\"border-top: 1px solid #D6E5F5\"><img src=\"../artwork/vertical_spacer.gif\" width=\"1\" height=\"21\" alt=\"\" /></td><td style=\"border-top: 1px solid #D6E5F5; color:#1E3287; text-align:center\">" . $string['objective'] . "</td></tr>";
   foreach($objectives as $id => $obj_data) {
     $session_string = '';
     if($obj_data['ratio'] > 0.799) {
@@ -303,59 +274,16 @@
   echo "</table>\n";
 
   echo "<h1>" . $string['summaryinformation'] . "</h1>";
-  echo "<table style=\"font-size:100%\">\n";
+  echo "<table style=\"font-size:100%; margin-left:4px\">\n";
   echo "<tr><td>" . $string['papertitle'] . "</td><td>$paper_title</td></tr>\n";
   echo "<tr><td>" . $string['startedat'] . "</td><td>$started</td></tr>\n";
+  
   //display student marks
-  if($paperID == 2501) {
-    if ($marking == 1) {
-      $adjusted = round((($total_student_mark-$random_mark)/($total_mark-$random_mark))*100);
-      echo "<tr><td>" . $string['yourmark'] . "</td><td>$total_student_mark " . $string['outof'] . " $total_mark (" . $string['adjusted'] . " $adjusted" . "%)</td></tr>\n";  
-      echo "<tr><td>Random Mark</td><td>" . round($random_mark) . "</td></tr>\n";
-    } else {
-      $per = round((($total_student_mark)/($total_mark))*100);
-      echo "<tr><td>" . $string['yourmark'] . "</td><td>$total_student_mark " . $string['outof'] . " $total_mark ($per" . "%)</td></tr>\n";  
-   
-    }
-  }
   if ($paper_type < '3') {
     echo "<tr><td>" . $string['examlength'] . "</td><td>" . formatsec($exam_duration*60) . "</td></tr>\n";
     echo "<tr><td>" . $string['timespent'] . "</td><td>" . formatsec($time_spent) . "</td></tr>\n";
   }
   echo "</table>\n";
-  
-  // Code specific to the University of Nottingham below here --------------------------------------------------------------------------------------------------------------------------------------------
-  /*
-  $result = $mysqli->prepare("SELECT vle_api FROM modules WHERE moduleid = ?");
-  $result->bind_param('s',$moduleID);
-  $result->execute();
-  $result->bind_result($vle_api);
-  $result->fetch();  
-  $result->close();
-  if ($vle_api == 'NLE') {
-    //display reflection
-    $insighturl = "http://www.nle.nottingham.ac.uk/insight/manage_reflections.php?related_type=examfeedback&related_to=$paperID&moduleID=$moduleID&session=$session";
-
-    if ($showReflection == true) {
-      echo "<iframe style=\"border: 0px solid #ffffff;\" src =\"$insighturl\" frameborder=\"0\" width=\"100%\" height=\"500\">\n";
-      echo "  <p>Your browser does not support iframes.</p>\n";
-      echo "</iframe>\n";
-    }
-
-    // Insert into Log (on the NLE)
-    $ip = gethostbyname('www.nle.nottingham.ac.uk');
-    $mysqliNLE = new mysqli($ip, 'notts_nle', '', 'mediguides');
-
-    if ($result = $mysqliNLE->prepare("INSERT INTO log VALUES (NULL,'$tmp_username','Assessment Feedback',?,NOW(),'" . $_SERVER['REMOTE_ADDR'] . "')")) {
-      $result->bind_param('s', $paper_title);
-      $result->execute();
-      $result->close();
-    } else {
-      display_error("NLE Log Insert Error",$mysqliNLE->error);
-    }
-    $mysqliNLE->close();
-  }
-  */
   
   $mysqli->close();
 ?>

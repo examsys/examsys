@@ -30,10 +30,13 @@
   require '../include/media.inc';
   require '../include/errors.inc';
   
+  set_time_limit(0);
   check_var('paperID', 'GET', true, false);
   
   $stop_words = array('-'=>'-','a'=>'a','about'=>'about','above'=>'above','across'=>'across','after'=>'after','again'=>'again','against'=>'against','all'=>'all','almost'=>'almost','alone'=>'alone','along'=>'along','already'=>'already','also'=>'also','although'=>'although','always'=>'always','among'=>'among','an'=>'an','and'=>'and','another'=>'another','any'=>'any','anybody'=>'anybody','anyone'=>'anyone','anything'=>'anything','anywhere'=>'anywhere','are'=>'are','area'=>'area','areas'=>'areas','around'=>'around','as'=>'as','ask'=>'ask','asked'=>'asked','asking'=>'asking','asks'=>'asks','at'=>'at','away'=>'away','b'=>'b','back'=>'back','backed'=>'backed','backing'=>'backing','backs'=>'backs','be'=>'be','became'=>'became','because'=>'because','become'=>'become','becomes'=>'becomes','been'=>'been','before'=>'before','began'=>'began','behind'=>'behind','being'=>'being','beings'=>'beings','best'=>'best','better'=>'better','between'=>'between','big'=>'big','both'=>'both','but'=>'but','by'=>'by','c'=>'c','came'=>'came','can'=>'can','cannot'=>'cannot','case'=>'case','cases'=>'cases','certain'=>'certain','certainly'=>'certainly','clear'=>'clear','clearly'=>'clearly','come'=>'come','could'=>'could','d'=>'d','did'=>'did','differ'=>'differ','different'=>'different','differently'=>'differently','do'=>'do','does'=>'does','done'=>'done','down'=>'down','downed'=>'downed','downing'=>'downing','downs'=>'downs','during'=>'during','e'=>'e','each'=>'each','early'=>'early','either'=>'either','end'=>'end','ended'=>'ended','ending'=>'ending','ends'=>'ends','enough'=>'enough','even'=>'even','evenly'=>'evenly','ever'=>'ever','every'=>'every','everybody'=>'everybody','everyone'=>'everyone','everything'=>'everything','everywhere'=>'everywhere','f'=>'f','face'=>'face','faces'=>'faces','fact'=>'fact','facts'=>'facts','far'=>'far','felt'=>'felt','few'=>'few','find'=>'find','finds'=>'finds','first'=>'first','for'=>'for','four'=>'four','from'=>'from','full'=>'full','fully'=>'fully','further'=>'further','furthered'=>'furthered','furthering'=>'furthering','furthers'=>'furthers','g'=>'g','gave'=>'gave','general'=>'general','generally'=>'generally','get'=>'get','gets'=>'gets','give'=>'give','given'=>'given','gives'=>'gives','go'=>'go','going'=>'going','good'=>'good','goods'=>'goods','got'=>'got','great'=>'great','greater'=>'greater','greatest'=>'greatest','group'=>'group','grouped'=>'grouped','grouping'=>'grouping','groups'=>'groups','h'=>'h','had'=>'had','has'=>'has','have'=>'have','having'=>'having','he'=>'he','her'=>'her','here'=>'here','herself'=>'herself','high'=>'high','higher'=>'higher','highest'=>'highest','him'=>'him','himself'=>'himself','his'=>'his','how'=>'how','however'=>'however','i'=>'i','if'=>'if','important'=>'important','in'=>'in','interest'=>'interest','interested'=>'interested','interesting'=>'interesting','interests'=>'interests','into'=>'into','is'=>'is','it'=>'it','its'=>'its','itself'=>'itself','j'=>'j','just'=>'just','k'=>'k','keep'=>'keep','keeps'=>'keeps','kind'=>'kind','knew'=>'knew','know'=>'know','known'=>'known','knows'=>'knows','l'=>'l','large'=>'large','largely'=>'largely','last'=>'last','later'=>'later','latest'=>'latest','least'=>'least','less'=>'less','let'=>'let','lets'=>'lets','like'=>'like','likely'=>'likely','long'=>'long','longer'=>'longer','longest'=>'longest','m'=>'m','made'=>'made','make'=>'make','making'=>'making','man'=>'man','many'=>'many','may'=>'may','me'=>'me','member'=>'member','members'=>'members','men'=>'men','might'=>'might','more'=>'more','most'=>'most','mostly'=>'mostly','mr'=>'mr','mrs'=>'mrs','much'=>'much','must'=>'must','my'=>'my','myself'=>'myself','n'=>'n','necessary'=>'necessary','need'=>'need','needed'=>'needed','needing'=>'needing','needs'=>'needs','never'=>'never','new'=>'new','newer'=>'newer','newest'=>'newest','next'=>'next','no'=>'no','nobody'=>'nobody','non'=>'non','noone'=>'noone','not'=>'not','nothing'=>'nothing','now'=>'now','nowhere'=>'nowhere','number'=>'number','numbers'=>'numbers','of'=>'o','of'=>'of','off'=>'off','often'=>'often','old'=>'old','older'=>'older','oldest'=>'oldest','on'=>'on','once'=>'once','one'=>'one','only'=>'only','open'=>'open','opened'=>'opened','opening'=>'opening','opens'=>'opens','or'=>'or','order'=>'order','ordered'=>'ordered','ordering'=>'ordering','orders'=>'orders','other'=>'other','others'=>'others','our'=>'our','out'=>'out','over'=>'over','p'=>'p','part'=>'part','parted'=>'parted','parting'=>'parting','parts'=>'parts','per'=>'per','perhaps'=>'perhaps','place'=>'place','places'=>'places','point'=>'point','pointed'=>'pointed','pointing'=>'pointing','points'=>'points','possible'=>'possible','present'=>'present','presented'=>'presented','presenting'=>'presenting','presents'=>'presents','problem'=>'problem','problems'=>'problems','put'=>'put','puts'=>'puts','q'=>'q','quite'=>'quite','r'=>'r','rather'=>'rather','really'=>'really','right'=>'right','room'=>'room','rooms'=>'rooms','s'=>'s','said'=>'said','same'=>'same','saw'=>'saw','say'=>'say','says'=>'says','second'=>'second','seconds'=>'seconds','see'=>'see','seem'=>'seem','seemed'=>'seemed','seeming'=>'seeming','seems'=>'seems','sees'=>'sees','several'=>'several','shall'=>'shall','she'=>'she','should'=>'should','show'=>'show','showed'=>'showed','showing'=>'showing','shows'=>'shows','side'=>'side','sides'=>'sides','since'=>'since','small'=>'small','smaller'=>'smaller','smallest'=>'smallest','so'=>'so','some'=>'some','somebody'=>'somebody','someone'=>'someone','something'=>'something','somewhere'=>'somewhere','state'=>'state','states'=>'states','still'=>'still','such'=>'such','sure'=>'sure','t'=>'t','take'=>'take','taken'=>'taken','than'=>'than','that'=>'that','the'=>'the','their'=>'their','them'=>'them','then'=>'then','there'=>'there','therefore'=>'therefore','these'=>'these','they'=>'they','thing'=>'thing','things'=>'things','think'=>'think','thinks'=>'thinks','this'=>'this','those'=>'those','though'=>'though','thought'=>'thought','thoughts'=>'thoughts','three'=>'three','through'=>'through','thus'=>'thus','to'=>'to','today'=>'today','together'=>'together','too'=>'too','took'=>'took','toward'=>'toward','turn'=>'turn','turned'=>'turned','turning'=>'turning','turns'=>'turns','two'=>'two','u'=>'u','under'=>'under','until'=>'until','up'=>'up','upon'=>'upon','us'=>'us','use'=>'use','used'=>'used','uses'=>'uses','v'=>'v','very'=>'very','w'=>'w','want'=>'want','wanted'=>'wanted','wanting'=>'wanting','wants'=>'wants','was'=>'was','way'=>'way','ways'=>'ways','we'=>'we','well'=>'well','wells'=>'wells','went'=>'went','were'=>'were','what'=>'what','when'=>'when','where'=>'where','whether'=>'whether','which'=>'which','while'=>'while','who'=>'who','whole'=>'whole','whose'=>'whose','why'=>'why','will'=>'will','with'=>'with','within'=>'within','without'=>'without','work'=>'work','worked'=>'worked','working'=>'working','works'=>'works','would'=>'would','x'=>'x','y'=>'y','year'=>'year','years'=>'years','yet'=>'yet','you'=>'you','young'=>'young','younger'=>'younger','youngest'=>'youngest','your'=>'your','yours'=>'yours','z'=>'z');
-
+  $pstats_array = array();
+  $dstats_array = array();
+  
   $cohort_percent = $_GET['percent'];
   if ($cohort_percent == 100) $cohort_percent = 27;
   $pstats = array('ve'=>0,'e'=>0,'m'=>0,'h'=>0,'vh'=>0);
@@ -54,8 +57,8 @@
     return $marray;
   }
 
-  function pStats($value) {
-    global $pstats, $string;
+  function pStats($value, $qid, $part_no) {
+    global $pstats, $string, $pstats_array;
 		
     $html = '';
     
@@ -86,11 +89,15 @@
     } else {
       $html = 'p=' . number_format($value,2);
     }
+    
+    $pstats_array[$qid][$part_no] = round($value, 2) * 100;
+    
     return $html;
   }
 
-  function dStats($value) {
-    global $dstats, $string;
+  function dStats($value, $qid, $part_no) {
+    global $dstats, $string, $dstats_array;
+    
     if ($value >= 0.35) {
       $dstats['highest']++;
     } elseif ($value >= 0.25 and $value < 0.35) {
@@ -115,6 +122,9 @@
     } else {
       $html = 'd=' . number_format($value,2);
     }
+    
+    $dstats_array[$qid][$part_no] = round($value, 2) * 100;
+    
     return $html;
   }
   
@@ -607,7 +617,7 @@
                 echo '<td>' . excludeButton($ex_no, $q_id, 0, 1, 1) . '</td>';
               }
             }
-            echo "<td>" . pStats($tmp_correct_no/$user_total) . "</td><td>" . dStats($d) . "</td><td>t=$t%</td><td>u=$u%</td><td>l=$l%</td>";
+            echo "<td>" . pStats($tmp_correct_no/$user_total, $q_id, $i) . "</td><td>" . dStats($d, $q_id, $i) . "</td><td>t=$t%</td><td>u=$u%</td><td>l=$l%</td>";
             
             if (isset($tmp_std_array[$blank_count-1])) {
               echo '<td class="std">' . $tmp_std_array[$blank_count-1] . '</td>';
@@ -664,7 +674,7 @@
           if (isset($excluded[$q_id]) and $excluded[$q_id] == '1') echo ' class="excluded"';
           echo ">$leadin</td></tr>\n";
           echo "<tr><td colspan=\"6\">&nbsp;</td></tr>";
-          echo "<tr><td></td><td>" . pStats($freq_log[$q_id][1]['correct']/$user_total) . "</td><td colspan=\"4\">" . dStats($d) . "</td></tr>";
+          echo "<tr><td></td><td>" . pStats($freq_log[$q_id][1]['correct']/$user_total, $q_id, 1) . "</td><td colspan=\"4\">" . dStats($d, $q_id, 1) . "</td></tr>";
           break;
         case 'dichotomous':
           if ($score_method == 'Mark per Question') {
@@ -698,10 +708,10 @@
             echo "</td>";
             if ($correct_buf[$i-1] == 't') {
               $d = calcDiscrimination($candidate_no,$top_log[$q_id],$bottom_log[$q_id],$i,'t');
-              echo "<td>" . pStats($freq_log[$q_id][$i]['t']/$user_total) . "</td><td>" . dStats($d) . "</td><td>t=" . number_format(($freq_log[$q_id][$i]['t']/$user_total)*100,0) . "%</td><td>u=" . number_format(($top_log[$q_id][$i]['t']/$candidate_no)*100,0) . "%</td><td>l=" . number_format(($bottom_log[$q_id][$i]['t']/$candidate_no)*100,0) . "%</td><td><span class=\"std\">" . $tmp_std_array[$std_part]. "</span></td><td><strong>True</strong></td>";
+              echo "<td>" . pStats($freq_log[$q_id][$i]['t']/$user_total, $q_id, $i) . "</td><td>" . dStats($d, $q_id, $i) . "</td><td>t=" . number_format(($freq_log[$q_id][$i]['t']/$user_total)*100,0) . "%</td><td>u=" . number_format(($top_log[$q_id][$i]['t']/$candidate_no)*100,0) . "%</td><td>l=" . number_format(($bottom_log[$q_id][$i]['t']/$candidate_no)*100,0) . "%</td><td><span class=\"std\">" . $tmp_std_array[$std_part]. "</span></td><td><strong>True</strong></td>";
             } else {
               $d = calcDiscrimination($candidate_no,$top_log[$q_id],$bottom_log[$q_id],$i,'f');
-              echo "<td>" . pStats($freq_log[$q_id][$i]['f']/$user_total) . "</td><td>" . dStats($d) . "</td><td>t=" . number_format(($freq_log[$q_id][$i]['f']/$user_total)*100,0) . "%</td><td>u=" . number_format(($top_log[$q_id][$i]['f']/$candidate_no)*100,0) . "%</td><td>l=" . number_format(($bottom_log[$q_id][$i]['f']/$candidate_no)*100,0) . "%</td><td><span class=\"std\">" . $tmp_std_array[$std_part]. "</span></td><td><strong>False</strong></td>";
+              echo "<td>" . pStats($freq_log[$q_id][$i]['f']/$user_total, $q_id, $i) . "</td><td>" . dStats($d, $q_id, $i) . "</td><td>t=" . number_format(($freq_log[$q_id][$i]['f']/$user_total)*100,0) . "%</td><td>u=" . number_format(($top_log[$q_id][$i]['f']/$candidate_no)*100,0) . "%</td><td>l=" . number_format(($bottom_log[$q_id][$i]['f']/$candidate_no)*100,0) . "%</td><td><span class=\"std\">" . $tmp_std_array[$std_part]. "</span></td><td><strong>False</strong></td>";
             }
             $std_part++;
             echo "<td id=\"q_" . $ex_no . "_1\"";
@@ -749,7 +759,7 @@
           }
           echo "</td></tr>\n";
           echo "<tr><td colspan=\"4\">&nbsp;</td></tr>\n";
-          echo "<tr><td>" . pStats($p) . "</td><td colspan=\"3\">" . dStats($d) . "</td></tr>\n";
+          echo "<tr><td>" . pStats($p, $q_id, 1) . "</td><td colspan=\"3\">" . dStats($d, $q_id, 1) . "</td></tr>\n";
           break;
         case 'labelling':
           if ($score_method == 'Mark per Question') {
@@ -823,13 +833,13 @@
                 $tmp_bottom_no = (isset($bottom_log[$q_id][$individual_coord][$text_only])) ? $bottom_log[$q_id][$individual_coord][$text_only] : 0;
                 if ($score_method == 'Mark per Option') {
                   if (isset($excluded[$q_id])) {
-                    echo "<td>" . excludeButton($ex_no, $q_id, substr($excluded[$q_id],$i-1,1), 1, 1) . "</td><td>" . pStats($tmp_correct_no/$user_total) . "</td><td>" . dStats($d) . "</td><td>t=" . number_format(($tmp_correct_no/$user_total)*100,0) . "%</td><td>u=" . number_format(($tmp_top_no/$candidate_no)*100,0) . "%</td><td>l=" . number_format(($tmp_bottom_no/$candidate_no)*100,0) . "%</td><td><span class=\"std\">$std_rating</span></td><td id=\"q_" . $ex_no . "_1\"";
+                    echo "<td>" . excludeButton($ex_no, $q_id, substr($excluded[$q_id],$i-1,1), 1, 1) . "</td><td>" . pStats($tmp_correct_no/$user_total, $q_id, $i) . "</td><td>" . dStats($d, $q_id, $i) . "</td><td>t=" . number_format(($tmp_correct_no/$user_total)*100,0) . "%</td><td>u=" . number_format(($tmp_top_no/$candidate_no)*100,0) . "%</td><td>l=" . number_format(($tmp_bottom_no/$candidate_no)*100,0) . "%</td><td><span class=\"std\">$std_rating</span></td><td id=\"q_" . $ex_no . "_1\"";
                   } else {
-                    echo "<td>" . excludeButton($ex_no, $q_id, '', 1, 1) . "</td><td>" . pStats($tmp_correct_no/$user_total) . "</td><td>" . dStats($d) . "</td><td>t=" . number_format(($tmp_correct_no/$user_total)*100,0) . "%</td><td>u=" . number_format(($tmp_top_no/$candidate_no)*100,0) . "%</td><td>l=" . number_format(($tmp_bottom_no/$candidate_no)*100,0) . "%</td><td><span class=\"std\">$std_rating</span></td><td id=\"q_" . $ex_no . "_1\"";
+                    echo "<td>" . excludeButton($ex_no, $q_id, '', 1, 1) . "</td><td>" . pStats($tmp_correct_no/$user_total, $q_id, $i) . "</td><td>" . dStats($d, $q_id, $i) . "</td><td>t=" . number_format(($tmp_correct_no/$user_total)*100,0) . "%</td><td>u=" . number_format(($tmp_top_no/$candidate_no)*100,0) . "%</td><td>l=" . number_format(($tmp_bottom_no/$candidate_no)*100,0) . "%</td><td><span class=\"std\">$std_rating</span></td><td id=\"q_" . $ex_no . "_1\"";
                   }
                   if (isset($excluded[$q_id]) and substr($excluded[$q_id],$i-1,1) == '1') echo ' class="excluded"';
                 } else {
-                  echo "<td></td><td>" . pStats($tmp_correct_no/$user_total) . "</td><td>" . dStats($d) . "</td><td>t=" . number_format(($tmp_correct_no/$user_total)*100,0) . "%</td><td>u=" . number_format(($tmp_top_no/$candidate_no)*100,0) . "%</td><td>l=" . number_format(($tmp_bottom_no/$candidate_no)*100,0) . "%</td><td><span class=\"std\">$std_rating</span></td><td";
+                  echo "<td></td><td>" . pStats($tmp_correct_no/$user_total, $q_id, $i) . "</td><td>" . dStats($d, $q_id, $i) . "</td><td>t=" . number_format(($tmp_correct_no/$user_total)*100,0) . "%</td><td>u=" . number_format(($tmp_top_no/$candidate_no)*100,0) . "%</td><td>l=" . number_format(($tmp_bottom_no/$candidate_no)*100,0) . "%</td><td><span class=\"std\">$std_rating</span></td><td";
                 }
                 echo ">";
                 if (strpos(strtolower($individual_option),'.jpg') !== false or strpos(strtolower($individual_option),'.jpeg') !== false or strpos(strtolower($individual_option),'.gif') !== false or strpos(strtolower($individual_option),'.png') !== false) {
@@ -945,12 +955,12 @@
             if (isset($excluded[$q_id])) {
               echo "<td>";
               if ($score_method == 'Mark per Option') echo excludeButton($ex_no, $q_id, substr($excluded[$q_id],$i-1,1), 1, 1);
-              echo "</td><td>" . pStats($tmp_correct_no/$user_total) . "</td><td>" . dStats($d) . "</td><td>t=" . number_format(($tmp_correct_no/$user_total)*100,0) . "%</td><td>u=" . number_format(($tmp_top_no/$candidate_no)*100,0) . "%</td><td>l=" . number_format(($tmp_bottom_no/$candidate_no)*100,0) . "%</td><td><span class=\"std\">$std_rating</span></td><td";
+              echo "</td><td>" . pStats($tmp_correct_no/$user_total, $q_id, $i) . "</td><td>" . dStats($d, $q_id, $i) . "</td><td>t=" . number_format(($tmp_correct_no/$user_total)*100,0) . "%</td><td>u=" . number_format(($tmp_top_no/$candidate_no)*100,0) . "%</td><td>l=" . number_format(($tmp_bottom_no/$candidate_no)*100,0) . "%</td><td><span class=\"std\">$std_rating</span></td><td";
               if ($score_method == 'Mark per Option') echo " id=\"q_" . $ex_no . "_1\"";
             } else {
               echo "<td>";
               if ($score_method == 'Mark per Option') echo excludeButton($ex_no, $q_id, '', 1, 1);
-              echo "</td><td>" . pStats($tmp_correct_no/$user_total) . "</td><td>" . dStats($d) . "</td><td>t=" . number_format(($tmp_correct_no/$user_total)*100,0) . "%</td><td>u=" . number_format(($tmp_top_no/$candidate_no)*100,0) . "%</td><td>l=" . number_format(($tmp_bottom_no/$candidate_no)*100,0) . "%</td><td><span class=\"std\">$std_rating</span></td><td";
+              echo "</td><td>" . pStats($tmp_correct_no/$user_total, $q_id, $i) . "</td><td>" . dStats($d, $q_id, $i) . "</td><td>t=" . number_format(($tmp_correct_no/$user_total)*100,0) . "%</td><td>u=" . number_format(($tmp_top_no/$candidate_no)*100,0) . "%</td><td>l=" . number_format(($tmp_bottom_no/$candidate_no)*100,0) . "%</td><td><span class=\"std\">$std_rating</span></td><td";
               if ($score_method == 'Mark per Option') echo " id=\"q_" . $ex_no . "_1\"";
             }
             if ($score_method == 'Mark per Option' and isset($excluded[$q_id]) and substr($excluded[$q_id],$i-1,1) == '1') echo ' class="excluded"';
@@ -1018,7 +1028,7 @@
             echo "</td></tr>\n";
           }
           echo "<tr><td colspan=\"3\">&nbsp;</td></tr>\n";
-          echo "<tr><td>" . pStats($tmp_correct_no/$user_total) . "</td><td colspan=\"2\">" . dStats($d) . "</td></tr>\n";
+          echo "<tr><td>" . pStats($tmp_correct_no/$user_total, $q_id, 1) . "</td><td colspan=\"2\">" . dStats($d, $q_id, 1) . "</td></tr>\n";
           break;
         case 'mrq':
           $tmp_parts = 0;
@@ -1081,8 +1091,8 @@
             $d = ($top_log[$q_id]['mark'] / $top_log[$q_id]['totalpos']) - ($bottom_log[$q_id]['mark'] / $bottom_log[$q_id]['totalpos']);
           }
           echo "<tr><td colspan=\"3\">&nbsp;</td></tr>\n";
-          $tmp_pstat = (isset($freq_log[$q_id]['mark']) and isset($freq_log[$q_id]['totalpos']) and $freq_log[$q_id]['totalpos'] > 0) ? pStats($freq_log[$q_id]['mark']/$freq_log[$q_id]['totalpos']) : 'p=0.00';
-          echo "<tr><td>" . $tmp_pstat . "</td><td colspan=\"2\">" . dStats($d) . "</td></tr>\n";
+          $tmp_pstat = (isset($freq_log[$q_id]['mark']) and isset($freq_log[$q_id]['totalpos']) and $freq_log[$q_id]['totalpos'] > 0) ? pStats($freq_log[$q_id]['mark']/$freq_log[$q_id]['totalpos'], $q_id, 1) : 'p=0.00';
+          echo "<tr><td>" . $tmp_pstat . "</td><td colspan=\"2\">" . dStats($d, $q_id, 1) . "</td></tr>\n";
           break;
         case 'rank':
           $rank_no = 0;
@@ -1161,7 +1171,7 @@
           $tmp_correct_no = (isset($top_log[$q_id]['all_correct'])) ? $top_log[$q_id]['all_correct'] : 0;
           $tmp_bottom_no = (isset($bottom_log[$q_id]['all_correct'])) ? $bottom_log[$q_id]['all_correct'] : 0;
           echo "<tr><td><strong>u=" . number_format(($tmp_correct_no/$candidate_no)*100,0) . "%</strong></td><td><strong>l=" . number_format(($tmp_bottom_no/$candidate_no)*100,0) . "%</strong></td><td><span class=\"std\">" . $std_val . "</span></td><td style=\"font-weight:bold\">All items correct</td></tr>\n";
-          echo "<tr><td>" . pStats($freq_log[$q_id]['mark']/$freq_log[$q_id]['totalpos']) . "</td><td colspan=\"3\">" . dStats($d) . "</td></tr>\n";
+          echo "<tr><td>" . pStats($freq_log[$q_id]['mark']/$freq_log[$q_id]['totalpos'], $q_id, 1) . "</td><td colspan=\"3\">" . dStats($d, $q_id, 1) . "</td></tr>\n";
           break;
         case 'sct':
           $tmp_exclude = (isset($excluded[$q_id])) ? $excluded[$q_id] : '';
@@ -1196,8 +1206,8 @@
           } else {
             $d = 0;
           }
-          $tmp_pstat = ($freq_log[$q_id]['totalpos'] > 0) ? pStats($freq_log[$q_id]['mark']/$freq_log[$q_id]['totalpos']) : 'p=' . 0;
-          echo "<tr><td>" . $tmp_pstat . "</td><td colspan=\"3\">" . dStats($d) . "</td></tr>\n";
+          $tmp_pstat = ($freq_log[$q_id]['totalpos'] > 0) ? pStats($freq_log[$q_id]['mark']/$freq_log[$q_id]['totalpos'], $q_id, 1) : 'p=' . 0;
+          echo "<tr><td>" . $tmp_pstat . "</td><td colspan=\"3\">" . dStats($d, $q_id, 1) . "</td></tr>\n";
           break;
       }
       if ($q_type != 'info' and $q_type != 'blank' and $q_type != 'flash') echo "</table></p>\n";
@@ -1270,7 +1280,7 @@
         } else {
           $p = $freq_log[$q_id]['mark'] / $freq_log[$q_id]['totalpos'];
         }
-        echo "<tr><td>" . pStats($p) . "</td><td colspan=\"3\">" . dStats($d)  . "</td></tr>\n";
+        echo "<tr><td>" . pStats($p, $q_id, 1) . "</td><td colspan=\"3\">" . dStats($d, $q_id, 1)  . "</td></tr>\n";
       }
       echo "</table></td></tr>\n";
     } elseif ($q_type == 'matrix') {
@@ -1330,8 +1340,8 @@
               if ($score_method == 'Mark per Option') {
                 echo '<td>' .  excludeButton($ex_no, $q_id, $tmp_exclude, 1, 1) . '</td>';
               }
-              echo "<td style=\"font-weight:bold\">" . pStats($tmp_correct_no/$user_total) . "</td>";
-              echo "<td style=\"font-weight:bold\">" . dStats($d) . "</td>";
+              echo "<td style=\"font-weight:bold\">" . pStats($tmp_correct_no/$user_total, $q_id, $i) . "</td>";
+              echo "<td style=\"font-weight:bold\">" . dStats($d, $q_id, $i) . "</td>";
               echo "<td style=\"font-weight:bold\">t=" . number_format(($tmp_correct_no/$user_total)*100,0) . "%</td>";
               echo "<td style=\"font-weight:bold\">u=" . number_format(($tmp_top_no/$candidate_no)*100,0) . "%</td>";
               echo "<td style=\"font-weight:bold\">l=" . number_format(($tmp_bottom_no/$candidate_no)*100,0) . "%</td>";
@@ -1503,7 +1513,7 @@
         $d_no++;
         $d_total += $d;
         echo "<tr><td colspan=\"4\">&nbsp;</td></tr>";
-        echo "<tr><td>" . pStats($tmp_correct_no/($correct_stems * $user_total)) . "</td><td colspan=\"3\">" . dStats($d) . "</td></tr>";
+        echo "<tr><td>" . pStats($tmp_correct_no/($correct_stems * $user_total), $q_id, $i) . "</td><td colspan=\"3\">" . dStats($d, $q_id, $i) . "</td></tr>";
         if ($i < $total_scenarios) echo "<tr><td colspan=\"4\">&nbsp;</td></tr>";
         echo "</table></div></li>\n";
       }
@@ -1880,7 +1890,7 @@ td p:first-child {margin-top:0}
       $old_screen = $screen;
     }
     $result->close();
-    $mysqli->close();
+    
     $question_no++;
     if ($old_q_type == 'info') $question_no--;
     
@@ -1920,12 +1930,59 @@ td p:first-child {margin-top:0}
   </td>
   </tr>
   </table>
+  
+  <?php
+    // Clear previous performance stats
+    $id_list = array();
+    $result = $mysqli->prepare("SELECT id FROM performance_main WHERE paperID=?");
+    $result->bind_param('i', $_GET['paperID']);
+    $result->execute();
+    $result->bind_result($id);
+    while ($result->fetch()) {
+      $id_list[] = $id;
+    }
+    $result->close();
+    
+    // Remove records from performance_main
+    $date_started = substr($started, 0, 10);    
+    $remove = $mysqli->prepare("DELETE FROM performance_main WHERE paperID=? AND taken=?");
+    $remove->bind_param('is', $_GET['paperID'], $date_started);
+    $remove->execute();
+    $remove->close();
+    
+    // Remove records from performance_details
+    if (count($id_list) > 0) {
+      $remove = $mysqli->prepare("DELETE FROM performance_details WHERE perform_id IN (" . implode(',', $id_list) . ")");
+      $remove->execute();
+      $remove->close();
+    }
+    
+    // Write in the performance stats to the database
+
+    foreach ($dstats_array as $qid=>$question_data) {
+      $record = $mysqli->prepare("INSERT INTO performance_main VALUES(NULL, ?, ?, ?, ?, ?)");
+      $record->bind_param('iiiis', $qid, $_GET['paperID'], $_GET['percent'], $user_total, $date_started);
+      $record->execute();
+      $perform_id = $record->insert_id;
+      $record->close();
+      
+      $record = $mysqli->prepare("INSERT INTO performance_details VALUES(?, ?, ?, ?)");
+      foreach ($question_data as $part_no=>$d_value) {
+        $p_value = $pstats_array[$qid][$part_no];
+        $record->bind_param('iiii', $perform_id, $part_no, $p_value, $d_value);
+        $record->execute();
+      }
+      $record->close();
+    }
+    
+  ?>
 
   <input type="hidden" name="question_no" value="<?php echo $ex_no; ?>" />
   <div align="center"><input type="submit" name="submit" value="<?php echo $string['save']; ?>" style="width:150px" />&nbsp;&nbsp;<input type="button" name="cancel" value="Cancel" onclick="history.back()" style="width:80px" /></div>
   </form>
 <?php
 }
+$mysqli->close();
 ?>
 </body>
 </html>

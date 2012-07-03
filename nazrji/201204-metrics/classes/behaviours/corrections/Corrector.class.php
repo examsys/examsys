@@ -40,5 +40,5 @@ abstract class Corrector {
    * @param integer $new_correct new correct answer
    * @param integer $paper_id
    */
-  abstract function execute($new_correct, $paper_id, &$changes);
+  abstract function execute($new_correct, $paper_id, &$changes, $paper_type);
 }

@@ -2,7 +2,7 @@
 require_once '../lang/' . $language . '/include/paper_types.inc';
 
 $string['createnewpaper'] = 'Utwórz nowy arkusz';
-$string['papertype'] = 'Typ arkusza';
+$string['papertype'] = 'Typy arkusza';   
 $string['name'] = 'Nazwa';
 $string['next'] = 'Dalej >';
 $string['msg1'] = 'Wybierz typ arkusza jaki chcesz utworzyć.';

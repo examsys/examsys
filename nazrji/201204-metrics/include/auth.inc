@@ -48,7 +48,7 @@ function access_denied($message, $output_header = false) {
     Header("WWW-authenticate: basic realm=\"Rogo\"");
     Header("HTTP/1.0 401 Unauthorised");
   }
-  display_notice($string['accessdenied'], $message, '/artwork/access_denied.png');
+  display_notice($string['accessdenied'], $message, '/artwork/access_denied.png', '#C00000');
   
   echo "\n</body>\n</html>";
   
@@ -215,7 +215,7 @@ function db_auth($u, $p, $db, $changeuser = true) {
     $encrypt_password = encpw($cfg_encrypt_salt, $u, $p, $encrypt_type);
     
     if ($encrypt_password == $password) {
-      if ($encrypt_type == 'MD5') {
+      if ($encrypt_type == 'MD5') {          // Re-encrypt MD5 passwords using SHA-512.
         $encpw_details = encpw($cfg_encrypt_salt, $u, $p);
         $stmt = $db->prepare("UPDATE users SET password = ? WHERE username = ?");
         $stmt->bind_param('ss', $encpw_details, $u);
@@ -223,15 +223,15 @@ function db_auth($u, $p, $db, $changeuser = true) {
         $stmt->close();
       }     
 
-      if (strpos($userroles,'SysAdmin') !== false and count($split_username) > 1) {
+      if (strpos($userroles,'Staff') !== false and count($split_username) > 1) {
         //for Sysadmin only 
         if ($split_username[1] == 'staff') {
           //set the role to staff
           $userroles = 'Staff';
         } elseif ($split_username[1] == 'demo') {
-          //set the role to demmo: this will anonomise any user data for public demos
-          $userroles .= 'Demo';
-        } else {
+          //set the role to demo: this will anonomise any user data for public demos
+          $userroles .= ',Demo';
+        } elseif (strpos($userroles, 'SysAdmin') !== false) {
           // Look up all the authentication details of the user you are pretending to log in as.
           list($password, $userID, $userroles, $title, $initials, $surname, $username, $email, $grade, $year, $special_needs, $record_no, $split_username) = db_userlookup($split_username[1], $db);
           $cfg_install_type .= " as $title $surname";
@@ -284,20 +284,24 @@ function encpw($salt, $u, $p, $type='SHA-512') {
 /**
  * This is function gen_password makes a secure password
  *
- * @param string $u username
- * @param string $p password
- * @return string password length 8 including uper lower case and other chars
+ * @param int $len Length og generated password
+ * @return string password length $len including upper lower case and other chars
  *
  */
-function gen_password() {
-  $lower = 'abcdefghijklmnoprrstuvwxyzabcdefghijklmnoprrstuvwxyz';
-  $upper = 'ABCDEFGHIJKLMN0PQRSTUVWXYZabcdefghijklmnoprrstuvwxyz';
-  $num =   '0123456789012345678901234501234567890123456789012345';
-  $special ='!$%?#@!.%?#@!$%?#@!$%?#@!.!$%?#@!.%?#@!$%?#@!.%?#@!$'; 
+function gen_password($len = 8) {
+  $lower    = 'abcdefghijklmnoprrstuvwxyzabcdefghijklmnoprrstuvwxyz';
+  $upper    = 'ABCDEFGHIJKLMN0PQRSTUVWXYZABCDEFGHIJKLMN0PQRSTUVWXYZ';
+  $num      = '0123456789012345678901234501234567890123456789012345';
+  $special  = '!$%^&*-=+_.@~!?!$%^&*-=+_.@~!?!$%^&*-=+_.@~!?!$%^&*-';
+
   $pass = '';
-  $chars = array($lower, $lower, $lower, $special, $num, $num, $upper, $upper);
-  for($i = 0; $i < 8; $i++) { 
-    $pass .= substr($chars[$i], rand(0, 51), 1);
+  $chars = array($lower,$lower,$lower,$special,$num,$num,$upper,$upper);
+  for($i = 0; $i < $len; $i++) {
+    if($i < 7) {
+      $pass .= substr($chars[$i],rand(0,51),1);
+    } else {
+      $pass .= substr($chars[rand(2,6)],rand(0,51),1);
+    }
   }
   return $pass;
 }

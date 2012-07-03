@@ -32,7 +32,7 @@ class HOTSPOTCorrector extends Corrector {
    * @param integer $new_correct new correct answer
    * @param integer $paper_id
    */
-  public function execute($new_correct, $paper_id, &$changes) {
+  public function execute($new_correct, $paper_id, &$changes, $paper_type) {
     $errors = array();
 
     $old_points = $this->_question->get_points1();
@@ -95,7 +95,7 @@ class HOTSPOTCorrector extends Corrector {
               $first_comma = strpos($student_record, ',') + 1;
               $tmp_user_answer = substr($student_record,$first_comma);
 
-              $result = $this->_mysqli->prepare("UPDATE log2 SET mark=?, totalpos=?, user_answer=? WHERE id=?");
+              $result = $this->_mysqli->prepare("UPDATE log{$paper_type} SET mark=?, totalpos=?, user_answer=? WHERE id=?");
               $result->bind_param('disi', $mark, $totalpos, $tmp_user_answer, $database_id);
               $result->execute();
               $result->close();

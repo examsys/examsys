@@ -15,6 +15,7 @@ $string['schools'] = 'Schools';
 $string['smsimports'] = 'SMS Imports';
 $string['summativeexamstats'] = 'Summative Exam Stats';
 $string['systemerrors'] = 'System Errors';
+$string['summativescheduling'] = 'Summative Exam Scheduling';
 $string['systeminformation'] = 'System Information';
 $string['trac'] = 'Trac (issue tracking)';
 $string['usermanagement'] = 'User Management';

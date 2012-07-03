@@ -136,43 +136,48 @@
   }
   $result->close();
   
-  // Get the questions.
-  $question_no = 1;
-  $sub_totals = array(0=>0,1=>0,2=>0,3=>0,4=>0,5=>0);
-  $cell_colors = array('#FFCBCB','#FFE3B3','#C0FFC0');
-  $result = $mysqli->prepare("SELECT q_id, q_type, theme, notes, scenario, leadin, display_method FROM papers, questions WHERE paper=? AND papers.question=questions.q_id ORDER BY display_pos");
-  $result->bind_param('i', $_GET['paperID']);
-  $result->execute();
-  $result->bind_result($q_id, $q_type, $theme, $notes, $scenario, $leadin, $display_method);
-  while ($result->fetch()) {
-    if ($question_no == 1) {
-      // Header row
-      $cols = substr_count($display_method, '|');
-      $headings = explode('|', $display_method);
-      echo '<tr><td></td>';
+  if($user_no == 0) {
+    echo "<tr><th colspan=\"2\" class=\"bevel\"></th></tr>\n</table>\n";
+    echo "<table cellpadding=\"1\" cellspacing=\"1\" border=\"0\" style=\"margin: 0px auto; width:75%; border: 1px solid #C0C0C0; text-align:left\">\n<tr><td colspan=\"2\" style=\"background-color:#F2B100; height:3px\"> </td></tr>\n<tr><td style=\"width:16px; padding-top:5px; padding-bottom:5px\"><img src=\"../artwork/information_icon.gif\" width=\"16\" height=\"16\" alt=\"i\" border=\"0\" /></td><td style=\"padding-top:5px; padding-bottom:5px\">&nbsp;This paper has not been attempted by anyone.</td></tr></table>\n";  
+  } else {
+    // Get the questions.
+    $question_no = 1;
+    $sub_totals = array(0=>0,1=>0,2=>0,3=>0,4=>0,5=>0);
+    $cell_colors = array('#FFCBCB','#FFE3B3','#C0FFC0');
+    $result = $mysqli->prepare("SELECT q_id, q_type, theme, notes, scenario, leadin, display_method FROM papers, questions WHERE paper=? AND papers.question=questions.q_id ORDER BY display_pos");
+    $result->bind_param('i', $_GET['paperID']);
+    $result->execute();
+    $result->bind_result($q_id, $q_type, $theme, $notes, $scenario, $leadin, $display_method);
+    while ($result->fetch()) {
+      if ($question_no == 1) {
+        // Header row
+        $cols = substr_count($display_method, '|');
+        $headings = explode('|', $display_method);
+        echo '<tr><td></td>';
+        for ($i=0; $i<$cols; $i++) {
+          echo "<td colspan=\"2\" style=\"text-align:center; color:$labelcolor; font-weight:bold\">" . $headings[$i] . "</td>";
+        }
+        echo "</tr>\n";
+      }
+      if (trim($theme) != '') {
+        echo "<tr><td colspan=\"4\" class=\"theme\">$theme</td></tr>\n";
+      }
+      echo "<tr id=\"row_" . $question_no . "\"><td class=\"question\">";
+      if (trim($notes) != '') {
+        echo "<span style=\"color:$labelcolor\"><img src=\"../artwork/notes_icon.gif\" width=\"14\" height=\"14\" border=\"0\" alt=\"note\" />&nbsp;$notes</span><br />\n";
+      }
+      echo "$leadin</td>";
+      
       for ($i=0; $i<$cols; $i++) {
-        echo "<td colspan=\"2\" style=\"text-align:center; color:$labelcolor; font-weight:bold\">" . $headings[$i] . "</td>";
+        if (!isset($frequencies[$q_id][$i]) or $frequencies[$q_id][$i] == '') $frequencies[$q_id][$i] = 0;
+        echo "<td class=\"rating\" style=\"background-color:" . $cell_colors[$i] . "\">" . $frequencies[$q_id][$i] . "</td><td class=\"rating\" style=\"background-color:" . $cell_colors[$i] . "\">" . round(($frequencies[$q_id][$i]/$user_no) * 100) . "%</td>";
       }
       echo "</tr>\n";
+      $question_no++;
     }
-    if (trim($theme) != '') {
-      echo "<tr><td colspan=\"4\" class=\"theme\">$theme</td></tr>\n";
-    }
-    echo "<tr id=\"row_" . $question_no . "\"><td class=\"question\">";
-    if (trim($notes) != '') {
-      echo "<span style=\"color:$labelcolor\"><img src=\"../artwork/notes_icon.gif\" width=\"14\" height=\"14\" border=\"0\" alt=\"note\" />&nbsp;$notes</span><br />\n";
-    }
-    echo "$leadin</td>";
-    
-    for ($i=0; $i<$cols; $i++) {
-      if (!isset($frequencies[$q_id][$i]) or $frequencies[$q_id][$i] == '') $frequencies[$q_id][$i] = 0;
-      echo "<td class=\"rating\" style=\"background-color:" . $cell_colors[$i] . "\">" . $frequencies[$q_id][$i] . "</td><td class=\"rating\" style=\"background-color:" . $cell_colors[$i] . "\">" . round(($frequencies[$q_id][$i]/$user_no) * 100) . "%</td>";
-    }
-    echo "</tr>\n";
-    $question_no++;
+    $result->close();
+    $mysqli->close();
   }
-  $result->close();
-  $mysqli->close();
   ?>
   </tr></table>
 

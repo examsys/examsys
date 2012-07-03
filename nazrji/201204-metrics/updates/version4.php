@@ -24,17 +24,12 @@
 
 require_once '../config/config.inc.php';
 
-// Override $cfg_web_root in case we're in a subdirectory
-require_once '../include/path_functions.inc.php';
-$cfg_web_root = get_root_path() . '/';
-$cfg_root_path = str_replace($_SERVER['DOCUMENT_ROOT'], '', $cfg_web_root);
-
 require_once '../classes/installutils.class.php';
-require_once '../classes/passwordutils.class.php';
+require_once '../include/auth.inc';
 require_once '../classes/lang.class.php';
 require_once $cfg_web_root . 'classes/dbutils.class.php';
 
-$version = '4.2.3';
+$version = '4.2.4';
 
 set_time_limit(0);
 
@@ -536,15 +531,15 @@ if (!isset($_POST['update'])) {
   $result->fetch();
   if ($result->num_rows() == 0) {
     $cfg_db_username = $cfg_db_database . '_auth';
-    $cfg_db_password = PasswordUtils::gen_password(16);
+    $cfg_db_password = gen_password(16);
     $cfg_db_student_user = $cfg_db_database . '_stu';
-    $cfg_db_student_passwd = PasswordUtils::gen_password(16);
+    $cfg_db_student_passwd = gen_password(16);
     $cfg_db_staff_user = $cfg_db_database . '_staff';
-    $cfg_db_staff_passwd = PasswordUtils::gen_password(16);
+    $cfg_db_staff_passwd = gen_password(16);
     $cfg_db_external_user = $cfg_db_database . '_ext';
-    $cfg_db_external_passwd  = PasswordUtils::gen_password(16);
+    $cfg_db_external_passwd  = gen_password(16);
     $cfg_db_sysadmin_user = $cfg_db_database . '_sys';
-    $cfg_db_sysadmin_passwd = PasswordUtils::gen_password(16);
+    $cfg_db_sysadmin_passwd = gen_password(16);
     
     $priv_SQL = array();
     //create 'database user authentication user' and grant permissions
@@ -1339,7 +1334,7 @@ if (!isset($_POST['update'])) {
   if ($result->num_rows() == 0) {
     
     $cfg_db_sct_username = $cfg_db_database . '_sct';
-    $cfg_db_sct_password = PasswordUtils::gen_password(16);
+    $cfg_db_sct_password = gen_password(16);
         
     $priv_SQL = array();
     //create 'database user SCT user' and grant permissions
@@ -1402,7 +1397,7 @@ if (!isset($_POST['update'])) {
   $result->fetch();
   if ($result->num_rows() == 0) {
     
-    $cfg_db_inv_password = PasswordUtils::gen_password(16);
+    $cfg_db_inv_password = gen_password(16);
         
     $priv_SQL = array();
     //create 'database user SCT user' and grant permissions
@@ -2421,13 +2416,8 @@ if (!isset($_POST['update'])) {
   }
   $result->close();
 
-    @ob_flush();
-    @flush();
-
-
   // 21/03/2012 - Move to InnoDB for all table except help tables SHOULD not go live untill ver 4.3 - With full testing
-  /*
-  echo "<li>UPDATEING TO InnoDB This may take some time please be patient ;-)</li>\n";
+  echo "<li>UPDATING TO InnoDB This may take some time please be patient ;-)</li>\n";
   ob_flush();
   flush();
   $result = $mysqli->prepare("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE ENGINE='MyISAM' AND TABLE_SCHEMA = '" . $cfg_db_database . "'");
@@ -2446,10 +2436,10 @@ if (!isset($_POST['update'])) {
     ob_flush();
     flush();
   }
-  */
+  
 
   /*
-   *  UPDATES for short int database feilds SHOULD not go live untill ver 4.3 - With full testing
+   *  UPDATES for short int database fields SHOULD not go live untill ver 4.3 - With full testing
 
   // 05/04/2012 - Enlarge the size of the integer for property_id in properties table.
   $data_type = '';
@@ -2898,10 +2888,6 @@ if (!isset($_POST['update'])) {
   }
 
 
-    @ob_flush();
-    @flush();
-
-
   // 02/05/2012 - Update the online help files.
   if (isset($_POST['update_staff_help'])) {
     $adjust = $mysqli->prepare("TRUNCATE staff_help");
@@ -3135,6 +3121,47 @@ if (!isset($_POST['update'])) {
     flush();
   }
   $result->close();
+
+  // 28/05/2012 - Add new autosave timeout.
+  $new_cfg_str =  array("\n//Paper auto saving time out in seconds - default 180s == 3 minutes\n",
+                        "  \$cfg_autosave_timeout = 180;\n");
+
+  $cfg = file($cfg_web_root . 'config/config.inc.php');
+
+  //remove refrances to old vars
+  $cfg_new = array();
+  $found = false;
+  foreach ($cfg as $line) {
+    if (strpos($line,'cfg_autosave_timeout') !== false) {
+      $found = true;
+    }
+    $cfg_new[] = $line;
+  }
+
+  if (!$found) {
+    $index = 0;
+    foreach ($cfg as $line) {
+      if (strpos($line, '$cfg_hour_warning') !== false) {
+        $found = true;
+        break;
+      }
+      $index++;
+    }
+
+    if (!$found) $index = $index; //put at end of file
+
+    //add the new config chunk
+    array_splice($cfg_new, $index + 1, 0, $new_cfg_str);
+
+    if (file_exists($cfg_web_root . 'config/config.inc.php')) {
+      rename($cfg_web_root . 'config/config.inc.php', $cfg_web_root . 'config/config.inc.old10.php');
+    }
+
+    if (file_put_contents($cfg_web_root . 'config/config.inc.php', $cfg_new) === false) {
+      echo "<li class=\"error\">" . $string['couldnotwrite'] . "</li>";
+    }
+    echo "<li>Added  new autosave timeout to configuration file.</li>\n";
+  }
   
  // 28/05/2012 - Add permission for external examiners to view student help.
   $priv_SQL = array();
@@ -3150,8 +3177,7 @@ if (!isset($_POST['update'])) {
       echo '<li class="error">ERROR: could not set permissions ' . $sql . '</li>';
     }  
   }
-
-  /*
+  
   // 29/05/2012 - Add 'scheduling' tables
   $result = $mysqli->prepare("SELECT TABLE_NAME FROM information_schema.COLUMNS WHERE TABLE_NAME='scheduling' AND TABLE_SCHEMA='$cfg_db_database'");
   $result->execute();
@@ -3160,10 +3186,10 @@ if (!isset($_POST['update'])) {
   $result->fetch();
   if ($result->num_rows() == 0) {
     // Table to hold Reference material
-    $adjust = $mysqli->prepare("CREATE TABLE scheduling (id int not null primary key auto_increment, paperID int, period varchar(255), barriers_needed tinyint, cohort_size varchar(20), notes text, sittings tinyint)");
+    $adjust = $mysqli->prepare("CREATE TABLE scheduling (id int not null primary key auto_increment, paperID int, period varchar(255), barriers_needed tinyint, cohort_size varchar(20), notes text, sittings tinyint, campus varchar(255))");
     $adjust->execute();
     $adjust->close();
-    echo "<li>CREATE TABLE scheduling (id int not null primary key auto_increment, paperID int, period varchar(255), barriers_needed tinyint, cohort_size varchar(20), notes text, sittings tinyint)</li>\n";
+    echo "<li>CREATE TABLE scheduling (id int not null primary key auto_increment, paperID int, period varchar(255), barriers_needed tinyint, cohort_size varchar(20), notes text, sittings tinyint, campus varchar(255))</li>\n";
     ob_flush();
     flush();
     $adjust = $mysqli->prepare("ALTER TABLE state ADD UNIQUE idx_user_state (userID, state_name, page)");
@@ -3206,7 +3232,87 @@ if (!isset($_POST['update'])) {
     }
   }
   $result->close();
-  */
+
+  // 15/06/2012 - Add performance tables to store p and d values against questions in the bank.
+  $result = $mysqli->prepare("SELECT TABLE_NAME FROM information_schema.COLUMNS WHERE TABLE_NAME='performance_main' AND TABLE_SCHEMA='$cfg_db_database'");
+  $result->execute();
+  $result->store_result();
+  $result->bind_result($column_type);
+  $result->fetch();
+  if ($result->num_rows() == 0) {
+    $adjust = $mysqli->prepare("CREATE TABLE performance_main (id int not null primary key auto_increment, q_id int unsigned, paperID int unsigned, percentage tinyint, cohort_size int unsigned, taken date)");
+    $adjust->execute();
+    $adjust->close();
+    echo "<li>CREATE TABLE performance_main (id int not null primary key auto_increment, q_id int unsigned, paperID int unsigned, percentage tinyint, cohort_size int unsigned, taken date)</li>\n";
+    ob_flush();
+    flush();
+    $adjust = $mysqli->prepare("ALTER TABLE performance_main ADD UNIQUE idx_q_id (q_id)");
+    $adjust->execute();
+    $adjust->close();
+    echo "<li>ALTER TABLE performance_main ADD UNIQUE idx_q_id (q_id)</li>\n";
+    
+    $sql = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".performance_main TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
+    $mysqli->query($sql);
+    echo "<li>GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".performance_main TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'</li>\n";
+
+    $adjust = $mysqli->prepare("CREATE TABLE performance_details (perform_id int, part_no tinyint, p tinyint, d tinyint)");
+    $adjust->execute();
+    $adjust->close();
+    echo "<li>CREATE TABLE performance_details (perform_id int, part_no tinyint, p tinyint, d tinyint)</li>\n";
+    ob_flush();
+    flush();
+    
+    $sql = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".performance_details TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
+    $mysqli->query($sql);
+    echo "<li>GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".performance_details TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'</li>\n";
+  }
+  $result->close();
+
+  // Delete permission might be missing on log_late for staff (21/06/2012)
+  $priv_SQL = array();
+  $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".log_late TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
+  $priv_SQL[] = "FLUSH PRIVILEGES";
+  foreach ($priv_SQL as $sql) {
+    $mysqli->query($sql);
+
+    @ob_flush();
+    @flush();
+
+    if ($mysqli->errno != 0) {
+      echo '<li class="error">ERROR: could not set permissions ' . $sql . '</li>';
+    }  
+  }
+  
+  // 26/06/2012 - add new index to review_comments
+  $result = $mysqli->prepare("SHOW INDEX FROM review_comments WHERE Key_name = 'idx_q_paper'");
+  $result->execute();
+  $result->store_result();
+  $result->fetch();
+  if ($result->num_rows() == 0) {
+    echo "<li>CREATE INDEX idx_q_paper ON review_comments (q_paper)</li>\n";
+    if (!$mysqli->real_query("CREATE INDEX idx_q_paper ON review_comments (q_paper)")) {
+      echo "<li>" . $mysqli->error . "</li>\n";
+    }
+  } 
+  $result->close();
+
+  // Delete permission might be missing on papers and state (28/06/2012)
+  $priv_SQL = array();
+  $priv_SQL[] = "GRANT DELETE ON " . $cfg_db_database . ".papers TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
+  $priv_SQL[] = "GRANT DELETE ON " . $cfg_db_database . ".state TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
+  $priv_SQL[] = "GRANT DELETE ON " . $cfg_db_database . ".state TO '". $cfg_db_student_user . "'@'". $cfg_db_host . "'";
+  $priv_SQL[] = "FLUSH PRIVILEGES";
+  foreach ($priv_SQL as $sql) {
+    $mysqli->query($sql);
+
+    @ob_flush();
+    @flush();
+
+    if ($mysqli->errno != 0) {
+      echo '<li class="error">ERROR: could not set permissions ' . $sql . '</li>';
+    }  
+  }
+   
 
   // End ------------------------------------------------------------------
   echo "</ol>\n";
@@ -3216,6 +3322,6 @@ if (!isset($_POST['update'])) {
   ob_end_flush();
   echo "\n<h2>" . $string['actionrequired'] . "</h2>\n<ol>";
   echo "\n<li>" . $string['readonly'] . "</li>\n";
-  echo "</ol>\n<div>" . $string['finished'] . "</div>\n<div style=\"text-align:center\"><input type=\"button\" value=\" " . $string['home'] . " \" onclick=\"window.location='../staff/'\" /></div><blockquote>\n";
+  echo "</ol>\n<div>" . $string['finished'] . "</div>\n<div style=\"text-align:center\"><input type=\"button\" value=\" " . $string['home'] . " \" onclick=\"window.location('/staff/')\" /></div><blockquote>\n";
 }
 ?>

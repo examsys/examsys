@@ -5,7 +5,7 @@ require '../lang/' . $language . '/include/titles.inc';
 $string['createnewuser'] = 'Create New User';
 $string['getldapdetails'] = 'Get LDAP details';
 $string['lastname'] = 'Last Name';
-$string['firstnames'] = 'First Names(s)';
+$string['firstnames'] = 'First Name(s)';
 $string['email'] = 'Email';
 $string['password'] = 'Password';
 $string['username'] = 'Username';

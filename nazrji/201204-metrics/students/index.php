@@ -115,9 +115,57 @@ for ($i = 0; $i < count($modules); $i++) {
 	  		}
 	  	}
 	  }
-	}
-	$stmt->close();
+    $stmt->close();
+  }
 }
+
+// Get which papers a student has taken (for feedback purposes).
+$papers_taken = array();
+$log_query = "SELECT DISTINCT q_paper FROM log2 WHERE userID=?";
+$stmt = $mysqli->prepare($log_query);
+$stmt->bind_param('i', $userID);
+$stmt->execute();
+$stmt->bind_result($q_paper);
+while ($stmt->fetch()) {
+  $papers_taken[] = $q_paper;
+}
+$stmt->close(); 
+
+// Get any objectives-based feedback released.
+$feedback_query = <<< QUERY
+SELECT paper_id, calendar_year, paper_title, crypt_name, f.type, p.start_date FROM feedback_release f, properties p
+WHERE f.paper_id=p.property_id
+AND NOW() > f.date
+AND p.paper_type IN ('0','1','2')
+AND p.moduleID LIKE ?
+AND (p.calendar_year = ? OR p.calendar_year = '' OR p.calendar_year IS NULL)
+AND p.end_date < NOW()
+ORDER BY p.paper_title
+QUERY;
+
+for ($i = 0; $i < count($modules); $i++) {
+  $mod_id = $modules[$i]['id'];
+	if ($stmt = $mysqli->prepare($feedback_query)) {
+		$mod_string = '%'.$mod_id.'%';
+	  $stmt->bind_param('ss', $mod_string, $modules[$i]['year']);
+	  $stmt->execute();
+	  $stmt->bind_result($paper_id, $calendar_year, $paper_title, $crypt_name, $feedback_type, $start_date);
+	  $stmt->store_result();
+	  while ($stmt->fetch()) {
+      if (in_array($paper_id, $papers_taken)) {
+        $modules[$i]['papers'][] = array('title' =>$paper_title, 'type' => $feedback_type, 'start' => $start_date, 'end' => 0, 'screens' => 1, 'crypt_name' => $crypt_name);
+        $papers++;
+        
+        if (!in_array($modules[$i]['year'], $sessions_with_papers)) {
+          $sessions_with_papers[] = $modules[$i]['year'];
+        }
+      }
+	  }
+	
+    $stmt->close();
+  }
+}
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -190,7 +238,9 @@ if ($papers > 0) {
 	
 	foreach($modules as $module) {
 	  $mod_id = $module['id'];
-		if (!empty($module['papers']))	{
+		if (!empty($module['papers'])) {
+    
+    
 			if ($module['year'] != $last_session) {
 				$visibility = 'style="display: none"';
 				if ($module['year'] == $default_session) {
@@ -211,9 +261,12 @@ if ($papers > 0) {
 			<br />
 <?php
 			foreach($module['papers'] as $paper) {
-				$screen_plural = ($paper['screens'] != 1) ? 's' : '';
         if ($paper['type'] == '6') {
           $script_name = '../peer_review/form.php';
+        } elseif ($paper['type'] == 'objectives') {
+          $script_name = '../mapping/user_feedback.php';
+        } elseif ($paper['type'] == 'questions') {
+          $script_name = '../paper/feedback.php';
         } else {
           $script_name = '../user_index.php';
         }
@@ -222,13 +275,28 @@ if ($papers > 0) {
 			  	<table cellpadding="0" cellspacing="0" border="0">
 			  		<tr>
 			  			<td style="width:60px" align="center">
-								<a href="<?php echo $script_name; ?>?id=<?php echo $paper['crypt_name']; ?>" title="<?php echo htmlentities($paper['title']) ?>" target="_blank"><?php echo(displayIcon($paper['type'],$paper['title'],'','','','')); ?></a>
+								<a href="<?php echo $script_name; ?>?id=<?php echo $paper['crypt_name']; ?>" title="<?php echo htmlentities($paper['title']) ?>" target="_blank"><?php echo(displayIcon($paper['type'], $paper['title'], '', '', '', '')); ?></a>
 							</td>
 	    				<td>
 	    					<a href="<?php echo $script_name; ?>?id=<?php echo $paper['crypt_name']; ?>" title="<?php echo htmlentities($paper['title']) ?>" target="_blank" class="blacklink"><?php echo(htmlentities($paper['title'])); ?></a><br />
 	    					<span style="color:#808080">
-	    						<?php echo($paper['screens']." screen".$screen_plural)?><br />
-	    						<?php echo(date(str_replace('%', '', $cfg_long_date_time), strtotime($paper['start']))." to " . date(str_replace('%', '', $cfg_long_date_time), strtotime($paper['end']))) ?>
+	    						<?php 
+
+                    if ($paper['type'] == 'objectives') {
+                      echo $string['objectivesbased'] . ' ' . date(str_replace('%', '', $cfg_long_date_time), strtotime($paper['start']));
+                    } elseif ($paper['type'] == 'questions') {
+                      echo $string['questionsbased'] . ' ' . date(str_replace('%', '', $cfg_long_date_time), strtotime($paper['start']));
+                    } else {
+                      echo $paper['screens'] . ' ';
+                      if ($paper['screens'] == 1) {
+                        echo $string['screen'];
+                      } else {
+                        echo $string['screens'];
+                      }
+                      echo '<br />';
+                      echo date(str_replace('%', '', $cfg_long_date_time), strtotime($paper['start'])) . ' ' . $string['to'] . ' ' . date(str_replace('%', '', $cfg_long_date_time), strtotime($paper['end']));
+                    }
+                  ?>
 	    					</span>
 	    				</td>
 	    			</tr>

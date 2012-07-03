@@ -648,7 +648,11 @@
                     } else {
                       $corr_index = ltrim($question['correct'], ',');
                       $correct_text_parts = explode("\t", $question['correct_text']);
-                      echo ',"' . $correct_text_parts[$corr_index] . '"';
+                      if (isset($correct_text_parts[$corr_index])) {
+                        echo ',"' . $correct_text_parts[$corr_index] . '"';
+                      } else {
+                        echo ',,';
+                      }
                     }
                   }
                 }
@@ -791,7 +795,9 @@
                         if ($mode == 'numeric') {
                           echo $answer_subparts[$k];
                         } else {
-                          echo $correct_text_parts[$subpart];
+                          if (isset($correct_text_parts[$subpart])) {
+                            echo $correct_text_parts[$subpart];
+                          }
                         }
                       }
                       if ($is_random) {
@@ -804,7 +810,6 @@
                     }
                     echo '"';
                   } else {
-//                    echo ',';
                     for ($k = 0; $k < count($correct_subparts); $k++) {
                       echo ',';
                       if ($is_random) {
@@ -1019,7 +1024,9 @@
                   if ($mode == 'numeric') {
                     echo $individual[$tmp_screen][$tmp_question_ID];
                   } else {
-                    echo $correct_text_parts[$individual[$tmp_screen][$tmp_question_ID]];
+                    if (isset($correct_text_parts[$individual[$tmp_screen][$tmp_question_ID]])) {
+                      echo $correct_text_parts[$individual[$tmp_screen][$tmp_question_ID]];
+                    }
                   }
                 }
                 echo '"';

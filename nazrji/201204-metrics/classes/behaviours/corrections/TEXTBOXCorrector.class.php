@@ -32,7 +32,7 @@ class TEXTBOXCorrector extends Corrector {
    * @param integer $new_correct new correct answer
    * @param integer $paper_id
    */
-  public function execute($new_correct, $paper_id, &$changes) {
+  public function execute($new_correct, $paper_id, &$changes, $paper_type) {
     $errors = array();
     if ($changes) {
       $first = reset($this->_question->options);
@@ -42,8 +42,8 @@ class TEXTBOXCorrector extends Corrector {
     	  if(!$this->_question->save()) {
     	    $errors[] = $this->_lang_strings['datasaveerror'];
     	  } else {
-          // Set new value for totalpos in log2 but don't change student marks
-          $updateLog = $this->_mysqli->prepare("UPDATE log2 SET totalpos=? WHERE q_id=? AND q_paper=?");
+          // Set new value for totalpos in log{$paper_type} but don't change student marks
+          $updateLog = $this->_mysqli->prepare("UPDATE log{$paper_type} SET totalpos=? WHERE q_id=? AND q_paper=?");
           $updateLog->bind_param('iii', $mark_correct, $this->_question->id, $paper_id);
           $updateLog->execute();
           $updateLog->close();

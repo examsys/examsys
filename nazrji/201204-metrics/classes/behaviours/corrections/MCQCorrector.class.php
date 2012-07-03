@@ -32,7 +32,7 @@ class MCQCorrector extends Corrector {
    * @param integer $new_correct new correct answer
    * @param integer $paper_id
    */
-  public function execute($new_correct, $paper_id, &$changes) {
+  public function execute($new_correct, $paper_id, &$changes, $paper_type) {
     $errors = array();
 
     $first = reset($this->_question->options);
@@ -53,15 +53,15 @@ class MCQCorrector extends Corrector {
     	  if(!$this->_question->save()) {
     	    $errors[] = $this->_lang_strings['datasaveerror'];
     	  } else {
-          // Remark the student's answers in 'log2'.
-          $result = $this->_mysqli->prepare("SELECT DISTINCT user_answer FROM log2 WHERE q_id=? AND q_paper=?");
+          // Remark the student's answers in 'log{$paper_type}'.
+          $result = $this->_mysqli->prepare("SELECT DISTINCT user_answer FROM log{$paper_type} WHERE q_id=? AND q_paper=?");
           $result->bind_param('ii', $this->_question->id, $paper_id);
           $result->execute();
           $result->store_result();
           $result->bind_result($user_answer);
           while ($row = $result->fetch()) {
             $new_mark = ($user_answer == $new_correct['option_correct']) ? $first->get_marks_correct() : $first->get_marks_incorrect();
-            $updateLog = $this->_mysqli->prepare("UPDATE log2 SET mark=?, totalpos=? WHERE user_answer=? AND q_id=? AND q_paper=?");
+            $updateLog = $this->_mysqli->prepare("UPDATE log{$paper_type} SET mark=?, totalpos=? WHERE user_answer=? AND q_id=? AND q_paper=?");
             $updateLog->bind_param('iisii', $new_mark, $totalpos, $user_answer, $this->_question->id, $paper_id);
             $updateLog->execute();
             $updateLog->close();

@@ -25,7 +25,7 @@
 * 
 * @author Simon Wilkinson
 * @version 1.0
-* @copyright Copyright (c) 2011 The University of Nottingham
+* @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */
 
@@ -90,7 +90,7 @@ function parseRawMarks($data) {
     if (strpos($row,'Display exam script') !== false) {
       $cols = explode('<td', $row);
       
-      $tmp_parts = explode("ItemSelMenu('", $cols[2]);
+      $tmp_parts = explode("popMenu('", $cols[2]);
       $started = substr($tmp_parts[1], 0, 19);
       
       $tmp_parts2 = explode(',', $tmp_parts[1]);
@@ -146,6 +146,7 @@ $current_no = 0;
 
 foreach ($papers as $paper) {
   $url = $server . "/reports/class_totals.php?paperID=" . $paper['paperID'] . "&startdate=" . $paper['start_date'] . "&enddate=" . $paper['end_date'] . "&repmodule=&repcourse=%&sortby=student_id&module=A14CHH&folder=&percent=100&absent=0&direction=asc&studentsonly=1";
+  
   $output = getData($url);
   $marks_set = parseRawMarks($output);
   

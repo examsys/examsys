@@ -29,6 +29,7 @@ check_var('paperID', 'GET', true, false);
 
 require 'summary_report.inc';
 
+header('Pragma: public');
 header("Content-type: application/vnd.ms-excel");
 header("Content-Disposition: attachment; filename=data.csv");
 

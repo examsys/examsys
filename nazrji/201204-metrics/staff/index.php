@@ -134,7 +134,13 @@ require '../include/staff_auth.inc';
 
 <table cellpadding="0" cellspacing="0" border="0" class="header">
   <tr>
-    <th style="padding-left:20px"><img src="../artwork/rogo_logo.gif" width="137" height="61" alt="logo" border="0" /></th>
+    <th style="padding-left:16px; padding-top:5px">
+    
+    <img src="../artwork/r_logo.gif" width="56" height="60" alt="logo" border="0" style="float:left; padding-right:8px" />
+    <div style="color:#1F497D; font-size:28pt; font-weight:bold">Rogō</div>
+    <div style="color:#1F497D; font-size:9pt">eAssessment Management System</div>
+    
+    </th>
     <th style="text-align:right"><?php echo $logo_html; ?>&nbsp;&nbsp;</th>
   </tr>
   <tr>
@@ -237,9 +243,10 @@ require '../include/staff_auth.inc';
   }
 
   // Work out if there is anything in the recycle bin.
+  // Limit 1 is included for speed. Just need to know it is not zero to display a full recycle bin icon.
   $recycle_bin_no = 0;
   
-  $stmt = $mysqli->prepare("SELECT COUNT(property_id) FROM properties WHERE (paper_ownerID=? OR moduleID IN ('" . implode("','",$teams) . "')) AND deleted IS NOT NULL");
+  $stmt = $mysqli->prepare("SELECT property_id FROM properties WHERE (paper_ownerID=? OR moduleID REGEXP ('" . implode('|', $teams) . "')) AND deleted IS NOT NULL LIMIT 1");
   $stmt->bind_param('i', $userID);
   $stmt->execute();
   $stmt->bind_result($no_deleted);
@@ -247,16 +254,15 @@ require '../include/staff_auth.inc';
   $stmt->close();
   $recycle_bin_no += $no_deleted;
   
-  $stmt = $mysqli->prepare("SELECT COUNT(q_id) FROM questions WHERE (ownerID=? OR q_group IN ('" . implode("','",$teams) . "')) AND deleted IS NOT NULL");
+  $stmt = $mysqli->prepare("SELECT q_id FROM questions WHERE (ownerID=? OR q_group REGEXP '" . implode('|', $teams) . "') AND deleted IS NOT NULL LIMIT 1");
   $stmt->bind_param('i', $userID);
   $stmt->execute();
   $stmt->bind_result($no_deleted);
   $stmt->fetch();
   $stmt->close();
   $recycle_bin_no += $no_deleted;
-
   
-  $stmt = $mysqli->prepare("SELECT COUNT(id) FROM folders WHERE (ownerID=? OR team_name IN ('" . implode("','",$teams) . "')) AND deleted IS NOT NULL");
+  $stmt = $mysqli->prepare("SELECT id FROM folders WHERE (ownerID=? OR team_name REGEXP ('" . implode('|', $teams) . "')) AND deleted IS NOT NULL LIMIT 1");
   $stmt->bind_param('i', $userID);
   $stmt->execute();
   $stmt->bind_result($no_deleted);

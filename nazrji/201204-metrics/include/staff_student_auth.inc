@@ -24,7 +24,6 @@
  * @package
  */
 
-
 $root = str_replace('/include', '/', str_replace('\\', '/', dirname(__FILE__)));
 require_once $root . 'config/config.inc.php';
 require_once $cfg_web_root . 'include/auth.inc';
@@ -37,7 +36,7 @@ require_once $cfg_web_root . 'LTI/ims-blti/blti.php';
 require_once  $cfg_web_root . 'include/lti_func.php';
 
 // Check to see if the update script has been run.
-if ($rogo_version != '4.2.3') {
+if ($rogo_version != '4.2.4') {
   echo "<html>\n<head>\n<title>Update Required</title>\n</head>\n<body style=\"font-family:Arial,sans-serif;font-size:90%\">\n<table><tr><td><img src=\"../artwork/software_64.png\" width=\"64\" height=\"64\" alt=\"\" border=\"0\" /></td><td><div style=\"color:#C00000;font-weight:bold\">" . $string['warning'] . "</div>";
   echo 'System needs configuring before use. Please contact your local system administrator.';
   echo "</td></title>\n</body>\n</html>\n";
@@ -50,7 +49,7 @@ ini_set('log_errors', 1);
 ini_set('xdebug.remote_autostart', 1);
 */
 
-$fp_link = "<p style=\"margin-left:60px\"><a href=\"{$cfg_root_path}/users/forgotten_password.php\">" . $string['forgottenpassword'] . "</p>\n";
+$fp_link = "<p style=\"margin-left:60px\"><a href=\"{$cfg_root_path}/users/forgotten_password.php\">" . $string['forgottenpassword'] . "</a></p>\n";
 
 if ($protocol == 'https://' and $_SERVER['SERVER_PORT'] != 443 and $_SERVER['SERVER_PORT'] != 8080) {
   echo "<html>\n<body style=\"font-family:Arial,sans-serif;font-size:100%;color:#C00000\">\n<p><strong>" . $string['warning'] . "</strong> " . $string['secureconnection'] . " <a href=\"https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . "\">https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . "</a>.\n</body>\n</html>\n";
@@ -65,7 +64,6 @@ if (preg_match('|MSIE ([5-9].[0-9]{1,2})|', $_SERVER['HTTP_USER_AGENT'], $log_ve
     echo "<hr size=\"1\" align=\"left\" width=\"500\" style=\"margin-left:60px; color:#C0C0C0; background-color:#C0C0C0\" />\n<ul style=\"margin-left:80px\">\n<li>Error message: " . mysqli_connect_error() . ".</li>\n<li>Error number: " . mysqli_connect_errno() . "</li>";
     exit;
   }
-
 
   session_start();
   $lti = new BLTI(array('table' => 'lti_keys', 'dbtype' => 'mysqli', 'db' => &$mysqli), true, false);

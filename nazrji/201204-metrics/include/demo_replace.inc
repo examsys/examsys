@@ -31,10 +31,14 @@
 * @return the string obscured as 'Abcde' for as long as the original string was
 *
 */
-function demo_replace($text, $demo_on) {
+function demo_replace($text, $demo_on, $capitalise=true) {
   if ($demo_on == true) {
     $new_text = '';
-    $upper_flag = true;
+    if ($capitalise) {
+      $upper_flag = true;
+    } else {
+      $upper_flag = false;
+    }
     for ($i=0; $i<strlen($text); $i++) {
       if (substr($text,$i,1) == ' ') {
         $new_text .= ' ';

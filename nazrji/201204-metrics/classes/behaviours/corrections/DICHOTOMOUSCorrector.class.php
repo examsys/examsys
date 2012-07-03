@@ -32,7 +32,7 @@ class DICHOTOMOUSCorrector extends Corrector {
    * @param integer $new_correct new correct answer
    * @param integer $paper_id
    */
-  public function execute($new_correct, $paper_id, &$prev_changes) {
+  public function execute($new_correct, $paper_id, &$prev_changes, $paper_type) {
     $new_correct_val = $new_correct['option_correct'];
     $errors = array();
     $changes = false;
@@ -63,10 +63,10 @@ class DICHOTOMOUSCorrector extends Corrector {
     	  if(!$this->_question->save()) {
     	    $errors[] = $this->_lang_strings['datasaveerror'];
     	  } else {
-          // Remark the student's answers in 'log2'.
+          // Remark the student's answers in 'log{$paper_type}'.
           $score_method = $this->_question->get_score_method();
 
-    	    $result = $this->_mysqli->prepare("SELECT DISTINCT user_answer FROM log2 WHERE q_id=? AND q_paper=?");
+    	    $result = $this->_mysqli->prepare("SELECT DISTINCT user_answer FROM log{$paper_type} WHERE q_id=? AND q_paper=?");
           $result->bind_param('ii', $this->_question->id, $paper_id);
           $result->execute();
           $result->store_result();
@@ -93,7 +93,7 @@ class DICHOTOMOUSCorrector extends Corrector {
               $totalpos = $mark_correct;
             }
 
-            $updateLog = $this->_mysqli->prepare("UPDATE log2 SET mark=?, totalpos=? WHERE user_answer=? AND q_id=? AND q_paper=?");
+            $updateLog = $this->_mysqli->prepare("UPDATE log{$paper_type} SET mark=?, totalpos=? WHERE user_answer=? AND q_id=? AND q_paper=?");
             $updateLog->bind_param('disii', $mark, $totalpos, $user_answer, $this->_question->id, $paper_id);
             $updateLog->execute();
             $updateLog->close();

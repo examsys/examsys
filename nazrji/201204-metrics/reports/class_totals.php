@@ -105,8 +105,10 @@ ob_start();
 
     if (tmpLogLate == 'y') {
       document.getElementById('item6b').style.color='#000000';
+      document.getElementById('log_late_icon').style.display = 'block';
     } else {
       document.getElementById('item6b').style.color='#C0C0C0';
+      document.getElementById('log_late_icon').style.display = 'none';
     }
 
     isMenu = true;
@@ -332,7 +334,7 @@ ob_start();
         <td id="item5a" style="text-align:center; border-top:1px solid #F1F5FB; border-bottom:1px solid #F1F5FB; border-left:1px solid #F1F5FB; border-right:0px solid #F1F5FB; background-color:#F1F5FB; width:24px" onmouseover="menuRowOn('5');" onmouseout="menuRowOff('5');" onclick="reassignScript();">&nbsp;</td><td id="item5b" style="padding-left:8px; border:1px solid #FFFFFF; background-color:#FFFFFF; cursor:default" onmouseover="menuRowOn('5');" onmouseout="menuRowOff('5');" onclick="reassignScript();"><?php echo $string['reassigntouser']; ?></td>
       </tr>
       <tr>
-        <td id="item6a" style="text-align:center; border-top:1px solid #F1F5FB; border-bottom:1px solid #F1F5FB; border-left:1px solid #F1F5FB; border-right:0px solid #F1F5FB; background-color:#F1F5FB; width:24px" onmouseover="menuRowOn('6');" onmouseout="menuRowOff('6');" onclick="reassignLogLate();">&nbsp;</td><td id="item6b" style="padding-left:8px; border:1px solid #FFFFFF; background-color:#FFFFFF; cursor:default" onmouseover="menuRowOn('6');" onmouseout="menuRowOff('6');" onclick="reassignLogLate();"><?php echo $string['latesubmissions']; ?></td>
+        <td id="item6a" style="text-align:center; border-top:1px solid #F1F5FB; border-bottom:1px solid #F1F5FB; border-left:1px solid #F1F5FB; border-right:0px solid #F1F5FB; background-color:#F1F5FB; width:24px" onmouseover="menuRowOn('6');" onmouseout="menuRowOff('6');" onclick="reassignLogLate();"><img id="log_late_icon" style="display:none" src="../artwork/log_late_16.gif" width="16" height="16" alt="" border="0" /></td><td id="item6b" style="padding-left:8px; border:1px solid #FFFFFF; background-color:#FFFFFF; cursor:default" onmouseover="menuRowOn('6');" onmouseout="menuRowOff('6');" onclick="reassignLogLate();"><?php echo $string['latesubmissions']; ?></td>
       </tr>
     </table>
   </td></tr>
@@ -460,9 +462,9 @@ ob_start();
   if ($temp_user_no > 0) {
     echo "<tr><td><div class=\"redwarn\" style=\"text-align:right\"><img src=\"../artwork/temp_account_warning.png\" style=\"padding-top:1px\" width=\"28\" height=\"28\" alt=\"Warning\" /></div></td><td colspan=\"$cols\"><div class=\"redwarn\">&nbsp;" . $string['temporaryaccountswarning'] . " <a href=\"#\" style=\"color:black\" onclick=\"launchHelp(185); return false;\">" . $string['moredetails'] . "</a></div></td></tr>\n";
   }
-
+  
   if (count($log_late) > 0) {
-    echo "<tr><td style=\"width:40px; height:32px; text-align:right; background-image:url('../artwork/non_owner_gradient.gif'); background-repeat:repeat-x\"><img src=\"../artwork/late_warning_icon.png\" width=\"28\" height=\"28\" style=\"position:relative; left:0px; top:2px;\" alt=\"Warning\" />&nbsp;&nbsp;</td><td colspan=\"$cols\" style=\"height:32px; vertical-align:middle; background-image:url('../artwork/non_owner_gradient.gif'); background-repeat:repeat-x\">" . $string['latesubmissions'] . " (<a style=\"color:black\" href=\"#\" onclick=\"launchHelp(221); return false;\">" . $string['moredetails'] . "</a>): ";
+    echo "<tr><td class=\"redwarn\" style=\"width:28px; text-align:right\"><img src=\"../artwork/late_warning_icon.png\" width=\"28\" height=\"28\" /></td><td colspan=\"$cols\" class=\"redwarn\" style=\"padding-left:6px\">" . $string['latesubmissions'] . " (<a style=\"color:black\" href=\"#\" onclick=\"launchHelp(221); return false;\">" . $string['moredetails'] . "</a>): ";
     $html = '';
     foreach ($log_late as $student_userID => $student_name) {
       if ($html == '') {
@@ -471,7 +473,7 @@ ob_start();
         $html .= ', ' . $student_name;
       }
     }
-    echo "$html.</td></tr>\n";
+    echo "$html.</div></td></tr>\n";
   }
   
   $xmean_total = 0;
@@ -487,7 +489,7 @@ ob_start();
       if ($user_results[$i]['display_started'] == '') {  // Student did not take exam.
         $bg_color = '#FFC0C0';
         echo "<tr class=\"nonattend\"><td>&nbsp;</td>";
-        echo "<td onclick=\"popMenu(''," . $user_results[$i]['tmp_userID'] . ",'" . $user_results[$i]['paper_type'] . "','$reassign','$late_submissions','" . $user_results[$i]['adj_percent'] . "',event);\" />&nbsp;" . $user_results[$i]['title'] . "&nbsp;" . $user_results[$i]['surname'] . ",&nbsp;<span class=\"grey\">" . $user_results[$i]['first_names'] . "</span>";
+        echo "<td onclick=\"popMenu('', " . $user_results[$i]['tmp_userID'] . ", '" . $user_results[$i]['paper_type'] . "', '$reassign', '$late_submissions', '" . $user_results[$i]['adj_percent'] . "', event);\" />&nbsp;" . $user_results[$i]['title'] . "&nbsp;" . $user_results[$i]['surname'] . ",&nbsp;<span class=\"grey\">" . $user_results[$i]['first_names'] . "</span>";
         if ($user_results[$i]['student_id'] == '') {
           echo "<td class=\"padl grey\">" . $string['unknown'] . "</td>";
         } else {
@@ -527,7 +529,9 @@ ob_start();
           echo "><td class=\"$class $role_css\"><img src=\"../artwork/incomplete_paper_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['notcompleted'] . "\" border=\"0\" onclick=\"popMenu('" . $user_results[$i]['started'] . "'," . $user_results[$i]['tmp_userID'] . ",'" . $user_results[$i]['paper_type'] . "','$reassign', '$late_submissions','" . $user_results[$i]['adj_percent'] . "',event);\" /></td>";
         } else {
           echo "><td class=\"$class $role_css\">";
-          if ($user_results[$i]['paper_type'] == 0) {
+          if (isset($log_late[$user_results[$i]['tmp_userID']])) {
+            echo '<img src="../artwork/log_late_16.gif" width="16" height="16" alt="' . $string['displayexamscript'] . '" border="0"';
+          } elseif ($user_results[$i]['paper_type'] == 0) {
             echo '<img src="../artwork/formative_16.gif" width="16" height="16" alt="' . $string['displayexamscript'] . '" border="0"';
           } elseif ($user_results[$i]['paper_type'] == '1') {
             echo '<img src="../artwork/progress_16.gif" width="16" height="16" alt="' . $string['displayexamscript'] . '" border="0"';
@@ -615,7 +619,11 @@ ob_start();
         } else {
           $ordered = '';
         }
-        echo "<td class=\"$class$ordered padl $role_css\">" . formatsec($user_results[$i]['duration']) . "</td>";
+        echo "<td class=\"$class$ordered padl $role_css\">" . formatsec($user_results[$i]['duration']);
+        if (isset($log_late[$user_results[$i]['tmp_userID']])) {
+          echo '&nbsp;<img src="../artwork/small_yellow_warning_icon.gif" width="16" height="16" border="0" />';
+        }
+        echo "</td>";
         
         if ($_GET['sortby'] == 'ipaddress') {
          $ordered = ' ordered';
@@ -675,7 +683,8 @@ ob_start();
     $result->execute();
     $result->store_result();
     $result->bind_result($note, $note_date, $note_workstation);
-    echo "<tr><td></td><td colspan=\"" . (10 + $meta_col_count) . "\">";
+    //echo "<tr><td></td><td colspan=\"" . ($cols - 1 + $meta_col_count) . "\">";
+    echo "<tr><td></td><td colspan=\"" . ($cols - 1) . "\">";
     while ($result->fetch()) {
       $lab_name = '';
       $result2 = $mysqli->prepare("SELECT name FROM labs, ip_addresses WHERE labs.id=ip_addresses.lab AND address=?");
@@ -691,21 +700,21 @@ ob_start();
     echo "</td></tr>";
     $result->close();
   
-    echo "<tr><td colspan=\"" . (11 + $cols) . "\" height=\"9\">&nbsp;</td></tr>\n";
-    echo "<tr><td colspan=\"" . (11 + $cols) . "\" height=\"9\">&nbsp;</td></tr>\n";
-    echo "<tr><td colspan=\"" . (11 + $cols) . "\"><table border=\"0\" style=\"padding-left:10px; padding-right:2px; padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>" . $string['distributionchart'] . "</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table></td></tr>\n";
+    echo "<tr><td colspan=\"" . $cols . "\" height=\"9\">&nbsp;</td></tr>\n";
+    echo "<tr><td colspan=\"" . $cols . "\" height=\"9\">&nbsp;</td></tr>\n";
+    echo "<tr><td colspan=\"" . $cols . "\"><table border=\"0\" style=\"padding-left:10px; padding-right:2px; padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>" . $string['distributionchart'] . "</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table></td></tr>\n";
 
-    echo "<tr><td>&nbsp;</td><td colspan=\"10\"><img src=\"draw_distribution_chart.php?adjust=" . substr($marking, 0, 1) . "&pmk=$pass_mark&distinction_mark=$distinction_mark\" width=\"830\" height=\"300\" border=\"0\" alt=\"Distribution Chart\" /></td></tr>\n";
+    echo "<tr><td>&nbsp;</td><td colspan=\"" . ($cols - 1) . "\"><img src=\"draw_distribution_chart.php?adjust=" . substr($marking, 0, 1) . "&pmk=$pass_mark&distinction_mark=$distinction_mark\" width=\"830\" height=\"300\" border=\"0\" alt=\"Distribution Chart\" /></td></tr>\n";
 
-    echo "<tr><td colspan=\"" . (11 + $cols) . "\" height=\"9\">&nbsp;</td></tr>\n";
-    echo "<tr><td colspan=\"" . (11 + $cols) . "\"><table border=\"0\" style=\"padding-left:10px; padding-right:2px; padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>" . $string['scatterplot'] . "</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table></td></tr>\n";
-    echo "<tr><td>&nbsp;</td><td colspan=\"10\"><img src=\"draw_scatter_plot.php?adjust=" . substr($marking, 0, 1) . "&pmk=$pass_mark&distinction_mark=$distinction_mark\" width=\"830\" height=\"300\" border=\"0\" alt=\"Distribution Chart\" /></td></tr>\n";
+    echo "<tr><td colspan=\"" . $cols . "\" height=\"9\">&nbsp;</td></tr>\n";
+    echo "<tr><td colspan=\"" . $cols . "\"><table border=\"0\" style=\"padding-left:10px; padding-right:2px; padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>" . $string['scatterplot'] . "</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table></td></tr>\n";
+    echo "<tr><td>&nbsp;</td><td colspan=\"" . ($cols - 1) . "\"><img src=\"draw_scatter_plot.php?adjust=" . substr($marking, 0, 1) . "&pmk=$pass_mark&distinction_mark=$distinction_mark\" width=\"830\" height=\"300\" border=\"0\" alt=\"Distribution Chart\" /></td></tr>\n";
 
     // Display summary -------------------------------------------------------------------------------------
-    echo "<tr><td colspan=\"" . (11 + $cols) . "\" height=\"9\">&nbsp;</td></tr>\n";
-    echo "<tr><td colspan=\"" . (11 + $cols) . "\"><table border=\"0\" style=\"padding-left:10px; padding-right:2px; padding-bottom:5px; width:100%; color:#1E3287\"><tr><td>" . $string['summary'] . "</td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table></td></tr>\n";
+    echo "<tr><td colspan=\"" . $cols . "\" height=\"9\">&nbsp;</td></tr>\n";
+    echo "<tr><td colspan=\"" . $cols . "\"><table border=\"0\" style=\"padding-left:10px; padding-right:2px; padding-bottom:5px; width:100%; color:#1E3287\"><tr><td>" . $string['summary'] . "</td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table></td></tr>\n";
 
-    echo "<tr><td>&nbsp;</td><td colspan=\"10\">\n";
+    echo "<tr><td colspan=\"$cols\">\n";
     echo "<table cellpadding=\"1\" cellspacing=\"0\" border=\"0\"  style=\"font-size:90%\">\n";
     echo "<tr><td class=\"field\" style=\"width:150px\">" . $string['paper'] . "</td><td colspan=\"3\">$paper</td></tr>\n";
     echo "<tr><td class=\"field\">" . $string['cohortsize'];

@@ -32,7 +32,7 @@ class LABELLINGCorrector extends Corrector {
    * @param integer $new_correct new correct answer
    * @param integer $paper_id
    */
-  public function execute($new_correct, $paper_id, &$changes) {
+  public function execute($new_correct, $paper_id, &$changes, $paper_type) {
     $errors = array();
 
     if ($changes) {
@@ -45,7 +45,7 @@ class LABELLINGCorrector extends Corrector {
         if(!$this->_question->save()) {
     	    $errors[] = $this->_lang_strings['datasaveerror'];
     	  } else {
-          // Remark the student's answers in 'log2'.
+          // Remark the student's answers in 'log{$paper_type}'.
           $label_details = $option->get_correct();
 
           // Calculate how many correct labels - are they on the canvas (x > 219px)
@@ -76,7 +76,7 @@ class LABELLINGCorrector extends Corrector {
 
           $totalpos = ($score_method == 'Mark per Question') ? $mark_correct : $mark_correct * $correct_count;
 
-    	    $result = $this->_mysqli->prepare("SELECT DISTINCT user_answer FROM log2 WHERE q_id=? AND q_paper=?");
+    	    $result = $this->_mysqli->prepare("SELECT DISTINCT user_answer FROM log{$paper_type} WHERE q_id=? AND q_paper=?");
           $result->bind_param('ii', $this->_question->id, $paper_id);
           $result->execute();
           $result->store_result();
@@ -119,7 +119,7 @@ class LABELLINGCorrector extends Corrector {
             $user_split1[0] = $mark . '$' . $totalpos;
             $user_answer_new = implode(';', $user_split1);
 
-            $updateLog = $this->_mysqli->prepare("UPDATE log2 SET mark=?, totalpos=?, user_answer=? WHERE user_answer=? AND q_id=? AND q_paper=?");
+            $updateLog = $this->_mysqli->prepare("UPDATE log{$paper_type} SET mark=?, totalpos=?, user_answer=? WHERE user_answer=? AND q_id=? AND q_paper=?");
             $updateLog->bind_param('dissii', $mark, $totalpos, $user_answer_new, $user_answer, $this->_question->id, $paper_id);
             $updateLog->execute();
             $updateLog->close();

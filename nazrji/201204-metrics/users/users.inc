@@ -151,7 +151,6 @@ function add_users_from_file($fileName) {
     $invalid_user = false;
     if ($stmt->num_rows == 0 and $username != '' and stristr('ps_',$username) === false) {
       //add new users
-      //TODO this function has been moved to passwordutils.class.inc  
       $password =  gen_password();
       
       $encrypt_password = encpw($cfg_encrypt_salt, $username, $password);

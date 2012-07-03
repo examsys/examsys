@@ -37,8 +37,10 @@
 <style type="text/css">
   a.highlight {color:black}
   a.highlight:hover {background-color:#000080; color:white}
-  .icon {width:250px; padding-top:20px; padding-bottom:20px; float:left; text-align:center}
-  .num {background-color:red; color:white; font-weight:bold; border-radius: 15px}
+  .icon {width:250px; height:110px; padding-top:20px; padding-bottom:20px; float:left; text-align:center}
+  .num {line-height:100%; display:inline-block; background-color:red; color:white; font-weight:bold; background: -moz-linear-gradient(top, #FFC0C0, #FF0000); background: -webkit-linear-gradient(top, #FFC0C0, #FF0000); filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFC0C0', endColorstr='#FF0000')}
+  .corners {border:2px solid white; display:inline-block; box-shadow: 1px 1px 2px #808080; border-radius: 15px; overflow: hidden}
+  .icon_title {display:inline-block; height:25px; line-height:25px; cursor:pointer}
 </style>
 
 <?php echo $cfg_js_root ?>
@@ -90,9 +92,14 @@
   $sys_error_no = $results->num_rows;
   $results->close();
 
-  // How many system errors are there
+  // How many announcements are there
   $results = $mysqli->query("SELECT id FROM announcements WHERE startdate<=NOW() AND enddate>=NOW() AND deleted IS NULL");
   $announcement_no = $results->num_rows;
+  $results->close();
+  
+  // How many papers need scheduling
+  $results = $mysqli->query("SELECT property_id FROM (properties, scheduling) WHERE (start_date IS NULL OR end_date IS NULL) AND properties.property_id=scheduling.paperID");
+  $scheduling_no = $results->num_rows;
   $results->close();
   
   $mysqli->close();
@@ -105,17 +112,20 @@
 </table>
 
 <?php
-  $added_string = '';
   if ($temp_account_no > 0) {
-    $added_string = ' <span class="num">&nbsp;' . $temp_account_no . '&nbsp;</span>';
+    $string['clearguestaccounts'] .= ' <span class="corners"><span class="num">&nbsp;' . $temp_account_no . '&nbsp;</span></span>';
   }
-  $err_added_string = '';
+
   if ($sys_error_no > 0) {
-    $err_added_string = ' <span class="num">&nbsp;' . $sys_error_no . '&nbsp;</span>';
+    $string['systemerrors'] .= ' <span class="corners"><span class="num">&nbsp;' . $sys_error_no . '&nbsp;</span></span>';
   }
-  $announce_add_string = '';
+  
   if ($announcement_no > 0) {
-    $announce_add_string = ' <span class="num">&nbsp;' . $announcement_no . '&nbsp;</span>';
+    $string['announcments'] .= ' <span class="corners"><span class="num">&nbsp;' . $announcement_no . '&nbsp;</span></span>';
+  }
+  
+  if ($scheduling_no > 0) {
+    $string['summativescheduling'] .= ' <span class="corners"><span class="num">&nbsp;' . $scheduling_no . '&nbsp;</span></span>';
   }
   
   $summative_year =  date('Y');
@@ -123,14 +133,14 @@
     $summative_year--;
   }
   
-  $titles = array($string['calendar'], $string['clearguestaccounts'] . $added_string, $string['clearoldlogs'], $string['clearorphanmedia'], $string['cleartraining'], $string['computerlabs'], $string['courses'], $string['ebelgridtemplates'], $string['faculties'], $string['imslti'], $string['modules'], $string['announcments'] . $announce_add_string, $string['optimizetables'], $string['schools'], $string['smsimports'], $string['summativeexamstats'], $string['systemerrors'] . $err_added_string, $string['systeminformation'], $string['trac'], $string['usermanagement']);
-  $paths = array('calendar.php#' . date("n"), 'clear_guest_users.php', 'clear_old_logs.php', 'orphan_media.php', 'clear_training_module.php', 'list_labs.php', 'list_courses.php', 'list_ebel_grids.php', 'list_faculties.php', '../LTI/lti_keys_list.php', 'list_modules.php', 'list_announcements.php', 'optimize_tables.php', 'list_schools.php', 'sms_import_summary.php', 'summative_stats.php?year=' . $summative_year, 'sys_error_list.php', 'system_info.php', 'https://suivarro.nottingham.ac.uk/trac/rogo/', '../users/search.php');
-  $images = array('calendar_icon.png', 'clear_guest_users.png', 'clear_logs.png', 'remove_orphan_icon.png', 'training.png', 'computer_lab_48.png', 'courses_icon.png', 'grid_48.png', 'faculty.png', 'ims_logo_64.png', 'modules_icon.png', 'news_48.png', 'optimize_tables_icon.png', 'school_icon.png', 'sms_import_icon.png', 'summative_stats.png', 'bug.png', 'information.png', 'trac_logo.png', 'user_accounts_icon.png');
+  $titles = array($string['calendar'], $string['clearguestaccounts'], $string['clearoldlogs'], $string['clearorphanmedia'], $string['cleartraining'], $string['computerlabs'], $string['courses'], $string['ebelgridtemplates'], $string['faculties'], $string['imslti'], $string['modules'], $string['announcments'], $string['optimizetables'], $string['schools'], $string['smsimports'], $string['summativescheduling'], $string['summativeexamstats'], $string['systemerrors'], $string['systeminformation'], $string['trac'], $string['usermanagement']);
+  $paths = array('calendar.php#' . date("n"), 'clear_guest_users.php', 'clear_old_logs.php', 'orphan_media.php', 'clear_training_module.php', 'list_labs.php', 'list_courses.php', 'list_ebel_grids.php', 'list_faculties.php', '../LTI/lti_keys_list.php', 'list_modules.php', 'list_announcements.php', 'optimize_tables.php', 'list_schools.php', 'sms_import_summary.php', 'summative_scheduling.php', 'summative_stats.php?year=' . $summative_year, 'sys_error_list.php', 'system_info.php', 'https://suivarro.nottingham.ac.uk/trac/rogo/', '../users/search.php');
+  $images = array('calendar_icon.png', 'clear_guest_users.png', 'clear_logs.png', 'remove_orphan_icon.png', 'training.png', 'computer_lab_48.png', 'courses_icon.png', 'grid_48.png', 'faculty.png', 'ims_logo_64.png', 'modules_icon.png', 'news_48.png', 'optimize_tables_icon.png', 'school_icon.png', 'sms_import_icon.png', 'summative_scheduling.png', 'summative_stats.png', 'bug.png', 'information.png', 'trac_logo.png', 'user_accounts_icon.png');
 
   for ($icon_no=0; $icon_no<count($titles); $icon_no++) {
     echo "<div class=\"icon\"><table align=\"center\" id=\"" . $icon_no . "\" onmouseover=\"highlightResource('" . $icon_no . "','#316AC5')\" onmouseout=\"unhighlightResource('" . $icon_no . "')\" onclick=\"callPage('" . $paths[$icon_no] . "')\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"cursor:hand; background-color:white; width:95px; height:95px; border:1px solid #EEEEEE; text-align:center; vertical-align:middle\"><tr><td style=\"text-align:center\">";
     echo "<img src=\"../artwork/" . $images[$icon_no] . "\" width=\"48\" height=\"48\" border=\"0\" alt=\"\"  />";
-    echo "</td></tr></table><span id=\"text" . $icon_no . "\" style=\"cursor:hand\" onmouseover=\"highlightResource('" . $icon_no . "','#000080')\" onmouseout=\"unhighlightResource('" . $icon_no . "')\" onclick=\"callPage('" . $paths[$icon_no] . "')\">&nbsp;" . $titles[$icon_no] . "&nbsp;</span></div>";
+    echo "</td></tr></table><div class=\"icon_title\" id=\"text" . $icon_no . "\" onmouseover=\"highlightResource('" . $icon_no . "','#000080')\" onmouseout=\"unhighlightResource('" . $icon_no . "')\" onclick=\"callPage('" . $paths[$icon_no] . "')\">&nbsp;" . $titles[$icon_no] . "&nbsp;</div></div>";
   }
 ?>
 

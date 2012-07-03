@@ -24,7 +24,7 @@
 
 require_once '../config/config.inc.php';
 require_once $cfg_web_root . 'classes/formutils.class.php';
-require_once $cfg_web_root . 'classes/passwordutils.class.php';
+require_once $cfg_web_root . 'include/auth.inc';
 require_once $cfg_web_root . 'classes/lang.class.php';
 require_once $cfg_web_root . 'classes/dbutils.class.php';
 $mysqli = DBUtils::get_mysqli_link($cfg_db_host , $cfg_db_username, $cfg_db_passwd, $cfg_db_database, $cfg_db_charset, $dbclass);

@@ -1,12 +1,8 @@
-$(function () {
-  $('.rankselect').change(rankCheck);
-
-  $(".calc-answer").keydown(filterKeypress);
-});
 
 function refreshparent() {
   window.opener.location.reload();
 }
+
 function onoff(questionID, itemID) {
   objID = questionID + '_' + itemID;
   if (document.getElementById(objID).className == "act") {
@@ -117,18 +113,11 @@ function openLink(url,name,width,height) {
     }
   }
 }
+
 function write_string(p_string) {
   document.write(p_string);
 }
-var DragMath = Array();
-function saveMath() {
-  for (var i=0; i<DragMath.length; i++) {
-    var applet = document.getElementById('DragMath_' + DragMath[i]);
-    var input = document.getElementById(DragMath[i]);
-    input.value = applet.getMathExpression();
-  }
-}
-
+  
 function filterKeypress(event) {
   // Allow: backspace, delete, tab and escape
   if ( event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 189 || event.keyCode == 190 || event.keyCode == 110 || event.keyCode == 109 || event.keyCode == 9 || event.keyCode == 27 ||

@@ -509,10 +509,13 @@ QUERY;
    * @param integer $paper_id
    */
   public function update_correct($new_correct, $paper_id) {
+    $paper_type = $this->get_paper_type($paper_id);
+    if ($paper_type == -1) $paper_type = 2;
+
     $errors = array();
     $changes = false;
     foreach ($this->_correctors as $corrector) {
-      $tmp_errors = $corrector->execute($new_correct, $paper_id, $changes);
+      $tmp_errors = $corrector->execute($new_correct, $paper_id, $changes, $paper_type);
       if (count($tmp_errors) > 0) {
         array_merge($errors, $tmp_errors);
       }
@@ -1485,6 +1488,24 @@ QUERY;
     $this->_unified_field_modifications = array();
   }
 
+  private function get_paper_type($paper_id) {
+    $type = -1;
+
+    $p_query = <<< QUERY
+SELECT paper_type
+FROM properties
+WHERE property_id = ?
+QUERY;
+    $result = $this->_mysqli->prepare($p_query);
+    $result->bind_param('i', $paper_id);
+    $result->execute();
+    $result->bind_result($type);
+    $result->fetch();
+    $result->close();
+
+    return $type;
+  }
+
   /**
    * Perform delete or restore operation
    * @param int $id
@@ -1498,8 +1519,8 @@ UPDATE questions
 SET deleted = ?
 WHERE q_id = ?
 QUERY;
-    $result = $mysqli->prepare($d_query);
-    $result->bind_param('i', $status, $id);
+    $result = $this->_mysqli->prepare($d_query);
+    $result->bind_param('si', $status, $id);
     $success = $result->execute();
     $result->close();
     

@@ -25,6 +25,7 @@
 */
 
 require '../include/staff_auth.inc';
+set_time_limit(0);
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -37,7 +38,8 @@ require '../include/staff_auth.inc';
 <link rel="stylesheet" type="text/css" href="../css/header.css" />
 <style type="text/css">
   input[type=text], select {font-family:Arail,sans-serif; border: 1px solid #7F9DB9}
-  .owner {color:#A5A5A5}
+  .o {color:#A5A5A5}
+  .l {padding-left:6px; vertical-align:top}
   .retired {color:#808080}
   .qline {line-height:150%;cursor:pointer;color:#000000;background-color:white; -webkit-user-select:none; -moz-user-select:none;}
   .qline:hover {background-color:#eee}
@@ -62,22 +64,24 @@ require '../include/staff_auth.inc';
     $('.highlight').removeClass('highlight');
   }
   
-  function selQ(questionID, lineID, qType, menuID, evt) {
+  function selQ(questionID, qType, menuID, evt) {
     document.getElementById('menu2a').style.display = 'none';
     document.getElementById('menu2b').style.display = 'none';
     document.getElementById('menu2c').style.display = 'none';
     document.getElementById('menu' + menuID).style.display = 'block';
 
+    lineID = questionID;
+    
     if (evt.ctrlKey == false) {
       clearAll();
-      $('#link_' + lineID).addClass('highlight');
+      $('#id' + lineID).addClass('highlight');
       addQID(questionID, true);
     } else {
-      if ($('#link_' + lineID).hasClass('highlight')) {
-        $('#link_' + lineID).removeClass('highlight');
+      if ($('#id' + lineID).hasClass('highlight')) {
+        $('#id' + lineID).removeClass('highlight');
         subQID(questionID);
       } else {
-        $('#link_' + lineID).addClass('highlight');
+        $('#id' + lineID).addClass('highlight');
         addQID(questionID, false);
       }
     }
@@ -136,7 +140,7 @@ if (isset($_POST['submit'])) {
   }
   
   if ($error != '') {
-    echo "<table class=\"header\">\n";
+    echo "<table class=\"header\" style=\"table-layout:fixed\">\n";
     echo "<tr><th colspan=\"4\"><div class=\"breadcrumb\"><a href=\"../staff/index.php\">" . $string['home'] . "</a></div><div onclick=\"qOff()\" style=\"font-size:200%; margin-left:10px\"><strong>".$string['questionsearch']."</div></th></tr>";
     ?>
     <tr>
@@ -217,7 +221,7 @@ if (isset($_POST['submit'])) {
     $params .= 'i';
   } else {
     // If no specific owner set lock down by team (apart from SysAdmin).
-    if (count($teams) > 0 and $_POST['team'] == '' and strpos($userroles,'SysAdmin') === false) {
+    if (count($teams) > 0 and $_POST['team'] == '') {
       $user_string = ' AND (';
       foreach ($teams as $individual_team) {
         $user_string .= 'q_group LIKE "%' . $individual_team . '%" OR ';
@@ -290,43 +294,34 @@ if (isset($_POST['submit'])) {
   }
   
   if ($keywordsSQL == '') {
-    $result = $mysqli->prepare("SELECT DISTINCT option_text, title, initials, surname, q_type, q_id, theme, scenario_plain, leadin_plain, DATE_FORMAT(last_edited,'$cfg_short_date') AS last_edited, ownerID, locked, status FROM (questions, users) LEFT JOIN options ON questions.q_id = options.o_id WHERE questions.ownerID=users.id $search_string $team_string $user_string $status_string $locked_string $last_edited $q_type $bloom AND deleted IS NULL ORDER BY leadin_plain, o_id");
+    $sql = "SELECT DISTINCT title, initials, surname, q_type, q_id, leadin_plain, DATE_FORMAT(last_edited,'$cfg_short_date') AS last_edited, ownerID, locked, status FROM (questions, users, options) WHERE questions.q_id = options.o_id AND questions.ownerID=users.id $search_string $team_string $user_string $status_string $locked_string $last_edited $q_type $bloom AND deleted IS NULL ORDER BY leadin_plain";
   } else {
-    $result = $mysqli->prepare("SELECT DISTINCT option_text, title, initials, surname, q_type, questions.q_id, theme, scenario_plain, leadin_plain, DATE_FORMAT(last_edited,'$cfg_short_date') AS last_edited, ownerID, locked, status FROM (questions, users, keywords_question) LEFT JOIN options ON questions.q_id = options.o_id WHERE questions.q_id=keywords_question.q_id $keywordsSQL AND questions.ownerID=users.id $search_string $team_string $user_string $status_string $locked_string $last_edited $q_type $bloom AND deleted IS NULL ORDER BY leadin_plain, o_id");
+    $sql = "SELECT DISTINCT title, initials, surname, q_type, questions.q_id, leadin_plain, DATE_FORMAT(last_edited,'$cfg_short_date') AS last_edited, ownerID, locked, status FROM (questions, users, keywords_question, options) WHERE questions.q_id = options.o_id AND questions.q_id=keywords_question.q_id $keywordsSQL AND questions.ownerID=users.id $search_string $team_string $user_string $status_string $locked_string $last_edited $q_type $bloom AND deleted IS NULL ORDER BY leadin_plain, q_id";
   }
-  array_unshift($variables, $params);
-  foreach($variables as $key => $value) $tmp[$key] = &$variables[$key];
-  
-  call_user_func_array(array($result,'bind_param'), $tmp);
+
+  $result = $mysqli->prepare($sql);
+  if (count($variables) > 0) {
+    array_unshift($variables, $params);
+    foreach ($variables as $key => $value) {
+      $tmp[$key] = &$variables[$key];
+    }
+    call_user_func_array(array($result,'bind_param'), $tmp);
+  }
   $result->execute();
   $result->store_result();
-  $result->bind_result($option_text, $title, $initials, $surname, $q_type, $q_id, $theme, $scenario_plain, $leadin_plain, $last_edited, $ownerID, $locked, $status);
+  $result->bind_result($title, $initials, $surname, $q_type, $q_id, $leadin_plain, $last_edited, $ownerID, $locked, $status);
 
-  $temp_results = array();
-  $hits = 0;
-  $old_id = -1;
-  while ($result->fetch()) {
-    $match = 0;
-    if ($old_id != $q_id) {
-      $hits++;
-    }
-    $temp_results[$hits]['q_id'] = $q_id;
-    $temp_results[$hits]['title'] = $title;
-    $temp_results[$hits]['initials'] = $initials;
-    $temp_results[$hits]['surname'] = $surname;
-    $temp_results[$hits]['q_type'] = $q_type;
-    $temp_results[$hits]['theme'] = strip_tags($theme);
-    $temp_results[$hits]['scenario'] = $scenario_plain;
-    $temp_results[$hits]['leadin'] = $leadin_plain;
-    $temp_results[$hits]['last_edited'] = strip_tags($last_edited);
-    $temp_results[$hits]['locked'] = $locked;
-    $temp_results[$hits]['status'] = $status;
-    $temp_results[$hits]['ownerID'] = $ownerID;
-    $old_id = $q_id;
+  $hits = $result->num_rows;
+  
+  echo "<tr><th colspan=\"4\"><div class=\"breadcrumb\"><a href=\"../staff/index.php\">" . $string['home'] . "</a></div><div onclick=\"qOff()\" style=\"font-size:200%; margin-left:10px\"><strong>" . $string['questions'] . " (" . number_format($hits) . "):&nbsp;</strong>";
+  if (isset($_POST['searchterm']) and $_POST['searchterm'] != '') {
+    echo "'" . $_POST['searchterm'] . "'";
+  } elseif (isset($_POST['searchtype']) and $_POST['searchtype'] != '%') {
+    echo $string[$_POST['searchtype']];
+  } else {
+    echo $_POST['team'];
   }
-  $result->close();
-
-  echo "<tr><th colspan=\"4\"><div class=\"breadcrumb\"><a href=\"../staff/index.php\">" . $string['home'] . "</a></div><div onclick=\"qOff()\" style=\"font-size:200%; margin-left:10px\"><strong>" . $string['questions'] . " (" . number_format(count($temp_results)) . "):&nbsp;</strong>" . $_POST['searchterm'] . "</div></th></tr>";
+  echo "</div></th></tr>";
 ?>
   <tr>
   <th align="right">&nbsp;<img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" /></th>
@@ -335,38 +330,27 @@ if (isset($_POST['submit'])) {
   <th><nobr><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['modified']; ?> </nobr></th></tr>
   <tr><th colspan="4" class="bevel"></td></tr>
 <?php
-  $old_id = -1;
-  $old_leadin = '';
-  $display_no = 1;
-  foreach ($temp_results as $temp_line) {
+  while ($result->fetch()) {
     echo '<tr class="qline';
-    if ($temp_results[$display_no]['status'] == 'Retired') {
+    if ($status == 'Retired') {
       echo ' retired';
     }
-    if ($temp_results[$display_no]['locked'] != '') {
-      echo "\" id=\"link_$display_no\" onclick=\"selQ(" . $temp_line['q_id'] . ",$display_no, '" . $temp_line['q_type'] . "','2c',event); return false;\" ondblclick=\"editQ('" . $temp_line['q_id'] . "', '" . $temp_line['q_type'] . "'); return false;\"><td><img src=\"../artwork/small_padlock.png\" width=\"16\" height=\"16\" border=\"0\" alt=\"" . $string['locked'] . "\" /></td>";
+    if ($locked != '') {
+      echo "\" id=\"id$q_id\" onclick=\"selQ($q_id,'$q_type','2c',event); return false;\" ondblclick=\"editQ(); return false;\"><td><img src=\"../artwork/small_padlock.png\" width=\"16\" height=\"16\" border=\"0\" alt=\"" . $string['locked'] . "\" /></td>";
     } else {
-      echo "\" id=\"link_$display_no\" onclick=\"selQ(" . $temp_line['q_id'] . ",$display_no, '" . $temp_line['q_type'] . "','2b',event); return false;\" ondblclick=\"editQ('" . $temp_line['q_id'] . "', '" . $temp_line['q_type'] . "'); return false;\"><td></td>";
+      echo "\" id=\"id$q_id\" onclick=\"selQ($q_id,'$q_type','2b',event); return false;\" ondblclick=\"editQ(); return false;\"><td></td>";
     }
 
-    $tmp_leadin = trim($temp_line['leadin']);
+    $tmp_leadin = trim($leadin_plain);
     if (strlen($tmp_leadin) > 160) $tmp_leadin = substr($tmp_leadin,0,160) . '...';
     if (trim($tmp_leadin) == '') $tmp_leadin = '<span style="color:red">' . $string['noquestionleadin'] . '</span>';
     
-    if ($temp_line['ownerID'] == $userID or strpos($userroles,'SysAdmin') !== false) {
-      echo "<td style=\"padding-left:6px\">$tmp_leadin <span class=\"owner\">(" . $temp_line['title'] . " " . $temp_line['initials'] . " " . $temp_line['surname'] . ")</span></td>";
-    } else {
-      echo "<td style=\"padding-left:6px\">$tmp_leadin <span class=\"owner\">(" . $temp_line['title'] . " " . $temp_line['initials'] . " " . $temp_line['surname'] . ")</span></td>";
-    }
-    
-    echo '<td valign="top" onclick="qOff()">&nbsp;<nobr>' . $string[$temp_line['q_type']] . '</nobr></td>';
-    echo '<td valign="top" onclick="qOff()">&nbsp;' . $temp_line['last_edited'] . '</td></tr>';
-    //echo "<tr><td colspan=\"3\" style=\"height: 3px\"></td></tr>\n";
-
-    $old_id = $temp_line['q_id'];
-    $old_leadin = $temp_line['leadin'];
-    $display_no++;
+    echo "<td class=\"l\">$tmp_leadin <span class=\"o\">($title $initials $surname)</span></td>";   
+    echo '<td class="l"><nobr>' . $string[$q_type] . '</nobr></td>';
+    echo '<td class="l">' . $last_edited . '</td></tr>';
   }
+  $result->close();
+
   echo "</table>\n";
   
   if ($hits == 0) {

@@ -33,7 +33,7 @@ class CALCULATIONCorrector extends Corrector {
    * @param integer $new_correct new correct answer
    * @param integer $paper_id
    */
-  public function execute($new_correct, $paper_id, &$changes) {
+  public function execute($new_correct, $paper_id, &$changes, $paper_type) {
     $errors = array();
 
     $first = reset($this->_question->options);
@@ -83,8 +83,8 @@ class CALCULATIONCorrector extends Corrector {
           $decimals = $this->_question->get_answer_decimals();
           $answer_equation = $first->get_correct();
 
-          // Remark the student's answers in 'log2'.
-          $result = $this->_mysqli->prepare("SELECT user_answer, id FROM log2 WHERE q_id=? AND q_paper=?");
+          // Remark the student's answers in 'log{$paper_type}'.
+          $result = $this->_mysqli->prepare("SELECT user_answer, id FROM log{$paper_type} WHERE q_id=? AND q_paper=?");
           $result->bind_param('ii', $this->_question->id, $paper_id);
           $result->execute();
           $result->store_result();
@@ -132,7 +132,7 @@ class CALCULATIONCorrector extends Corrector {
             }
             $saved_response .= '|' . $answer . '|' . $answer_parts[2];
             
-            $updateLog = $this->_mysqli->prepare("UPDATE log2 SET mark=?, user_answer=? WHERE id=? AND q_paper=?");
+            $updateLog = $this->_mysqli->prepare("UPDATE log{$paper_type} SET mark=?, user_answer=? WHERE id=? AND q_paper=?");
             $updateLog->bind_param('dsii', $mark, $saved_response, $id, $paper_id);
             $updateLog->execute();
             $updateLog->close();

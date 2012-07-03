@@ -39,4 +39,9 @@ $string['msgselectable2'] = 'items can be selected in this question.';
 $string['msgselectable3'] = 'You have already selected';
 $string['msgselectable4'] = '.\n\nPlease select a different ranking.';
 $string['notregistered'] = '%s %s (%s) is not registered on <strong>%s</strong> in <strong>%s</strong>.';
+//ajax saving and auto saving messages
+$string['saving'] = 'Saving';
+$string['auto_saving'] = 'Auto saved';
+$string['savefailed'] = 'Save Failed!';
+$string['tryagain'] = 'Please try again, by moving to the next or previous screens.</div>';
 ?>

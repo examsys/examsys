@@ -25,7 +25,13 @@
 */
 
 require '../include/staff_auth.inc';
+require '../include/demo_replace.inc';
 
+if (strpos($userroles,'Demo') !== false) {
+  $demo = true;
+} else {
+  $demo = false;
+}
 $sortby = 'surname';
 $ordering = 'asc';
 $moduleID = '%';
@@ -438,7 +444,7 @@ if ($sortby == 'title') {
         } else {
           echo $tmp_initials;
         }
-        echo "</a></td><td>$tmp_username</td>";
+        echo '</a></td><td>' . demo_replace($tmp_username, $demo, false) . '</td>';
       } else {
         echo "<td>&nbsp;$tmp_title</td><td></td><td>$tmp_surname, ";
         if ($tmp_first_names != '') {
@@ -446,14 +452,14 @@ if ($sortby == 'title') {
         } else {
           echo $tmp_initials;
         }
-        echo "</a></td><td>$tmp_username</td>";
+        echo '</a></td><td>' . demo_replace($tmp_username, $demo, false) . '</td>';
       }
     }
     if ($tmp_roles == 'Student') {
       if ($tmp_student_id == NULL) {
-        echo "<td class=\"fn\">" . $string['unknown'] . "</td>";
+        echo '<td class="fn">' . $string['unknown'] . '</td>';
       } else {
-        echo "<td>$tmp_student_id</td>";
+        echo '<td>' . demo_replace_number($tmp_student_id, $demo) . '</td>';
       }
     } else {
       echo "<td class=\"fn\">" . $string['na'] . "</td>";

@@ -110,17 +110,7 @@ if (!isset($_POST['submit'])) {
   }
   $result->close();
   
-  echo "<tr><td>&nbsp;</td><td><input type=\"radio\" name=\"property_id\" value=\"-new-assessment-paper-\"><input type=\"text\" size=\"40\" name=\"new_paper\" value=\"" . $string['newassessmentpaper'] . "\" />&nbsp;<select name=\"new_module\" style=\"width:220px\">";
-  $result = $mysqli->prepare("SELECT moduleid, fullname FROM teams, modules WHERE teams.name=modules.moduleid AND memberID=?");
-  $result->bind_param('i', $userID);
-  $result->execute();
-  $result->bind_result($moduleid, $fullname);
-  while ($result->fetch()) {
-    echo "<option value=\"$moduleid\">$moduleid: $fullname</option>";
-  }
-  $result->close();
-  echo "</select></td></tr>\n</table>\n</div>";
-  
+  echo "</table>\n</div>";
   
   echo "<div style=\"text-align:center; padding-top:4px;\"><input type=\"submit\" style=\"width:120px\" name=\"submit\" value=\"" . $string['addtopaper'] . "\" />&nbsp;&nbsp;<input type=\"button\" style=\"width:120px\" name=\"cancel\" onclick=\"window.close();\" value=\"" . $string['cancel'] . "\" /></div>\n</form>\n";
 } else {
@@ -135,55 +125,15 @@ if (!isset($_POST['submit'])) {
   $property_id = $_POST['property_id'];
   $q_id = $_GET['q_id'];
   
-  if ($property_id == '-new-assessment-paper-') {
-    // Check that paper name is not already in use.
-    $result = $mysqli->prepare("SELECT property_id FROM properties WHERE paper_title=? LIMIT 1");
-    $np_name = $_POST['new_paper'];
-    $result->bind_param('s', $np_name);
-    $result->execute();  
-    $result->store_result();
-    $result->bind_result($tmp_id);
-    $rows_found = $result->num_rows;
-    $result->free_result();
-    $result->close();
-    if ($rows_found > 0) {
-      printf($string['duplicatename'], $_POST['new_paper']);
-      echo "<p><input type=\"button\" value=\"" . $string['back'] . "\" style=\"width:100px\" onclick=\"history.back();\" /></p>\n</body>\n</html>\n";
-      exit;
-    }
-    
-    // Calculate what the current academic session is.
-		$session = DateUtils::get_current_academic_year();
-        
-    $tmp_paper_title = $_POST['new_paper'];
-    
-     // Create the new paper.
-    $result = $mysqli->prepare("INSERT INTO properties VALUES (NULL, ?, '20100101090000', '20250101090000', ?, 1, '', '', 'white', 'black', '#316AC5', '#C00000', '1', '1', '1', 40, 70, ?, '', '', '', 1, '', NULL, NULL, ?, 0, 0, '1', '1', '1', '1', '0', ?, ?, '', NULL, NULL, '0', 0, '', NULL, NULL)");
-    $result->bind_param('ssssis', $tmp_paper_title, $cfg_timezone, $userID, $created, $_POST['new_module'], $session);
-    $result->execute();  
-    $property_id = $mysqli->insert_id;
-    $result->close();
-    
-    $hash = $property_id . $created . $userID;   // Generate the encrypted name of the paper.
-
-    $result = $mysqli->prepare("UPDATE properties SET deleted=NULL, crypt_name=? WHERE property_id=? LIMIT 1");
-    $result->bind_param('si', $hash, $property_id);
-    $result->execute();  
-    $result->close();
-
-    $display_pos = 1;
-    $screen = 1;
-  } else {
-    // Get the maximum display position for an existing paper.
-    $result = $mysqli->prepare("SELECT MAX(display_pos), MAX(screen) FROM papers WHERE paper=?");
-    $result->bind_param('i', $property_id);
-    $result->execute();
-    $result->bind_result($display_pos, $screen);
-    $result->fetch();
-    $result->close();
-    if ($screen == '') $screen = 1;
-    $display_pos++;                     // Add one to put new question right at the end.
-  }
+  // Get the maximum display position for an existing paper.
+  $result = $mysqli->prepare("SELECT MAX(display_pos), MAX(screen) FROM papers WHERE paper=?");
+  $result->bind_param('i', $property_id);
+  $result->execute();
+  $result->bind_result($display_pos, $screen);
+  $result->fetch();
+  $result->close();
+  if ($screen == '') $screen = 1;
+  $display_pos++;                     // Add one to put new question right at the end.
 
   $q_IDs = explode(',', $q_id);
   for ($i=1; $i<count($q_IDs); $i++) {

@@ -24,6 +24,7 @@
 * @package
 */
 
+require_once $cfg_web_root . 'include/auth.inc';
 require_once $cfg_web_root . 'classes/userutils.class.php';
 require_once $cfg_web_root . 'classes/moduleutils.class.php';
 require_once $cfg_web_root . 'classes/schoolutils.class.php';
@@ -354,17 +355,17 @@ Class InstallUtils {
     }
 
     self::$cfg_db_student_user = self::$cfg_db_name . '_stu';
-    self::$cfg_db_student_passwd = PasswordUtils::gen_password() . PasswordUtils::gen_password();
+    self::$cfg_db_student_passwd = gen_password() . gen_password();
     self::$cfg_db_staff_user = self::$cfg_db_name . '_staff';
-    self::$cfg_db_staff_passwd = PasswordUtils::gen_password() . PasswordUtils::gen_password();
+    self::$cfg_db_staff_passwd = gen_password() . gen_password();
     self::$cfg_db_external_user = self::$cfg_db_name . '_ext';
-    self::$cfg_db_external_passwd  = PasswordUtils::gen_password() . PasswordUtils::gen_password();
+    self::$cfg_db_external_passwd  = gen_password() . gen_password();
     self::$cfg_db_sysadmin_user = self::$cfg_db_name . '_sys';
-    self::$cfg_db_sysadmin_passwd = PasswordUtils::gen_password() . PasswordUtils::gen_password();
+    self::$cfg_db_sysadmin_passwd = gen_password() . gen_password();
     self::$cfg_db_sct_user = self::$cfg_db_name . '_sct';
-    self::$cfg_db_sct_passwd = PasswordUtils::gen_password() . PasswordUtils::gen_password();
+    self::$cfg_db_sct_passwd = gen_password() . gen_password();
     self::$cfg_db_inv_user = self::$cfg_db_name . '_inv';
-    self::$cfg_db_inv_passwd = PasswordUtils::gen_password() . PasswordUtils::gen_password();
+    self::$cfg_db_inv_passwd = gen_password() . gen_password();
 
     $priv_SQL = array();
     //create 'database user authentication user' and grant permissions
@@ -447,7 +448,7 @@ Class InstallUtils {
     $priv_SQL[] = "GRANT INSERT ON " . $dbname . ".sys_errors TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT INSERT ON " . $dbname . ".announcements TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";    
     $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".standards_setting TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
-    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".state TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".state TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".lti_resource TO '". self::$cfg_db_student_user . "'@'".self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".lti_context TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
 
@@ -516,7 +517,7 @@ Class InstallUtils {
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".special_needs TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".student_modules TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".student_notes TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
-    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".papers TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".papers TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".questions TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".questions_metadata TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".options TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
@@ -556,7 +557,7 @@ Class InstallUtils {
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".track_changes TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".temp_users TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".sessions TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
-    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".state TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".state TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".lti_resource TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".lti_context TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
 
@@ -770,6 +771,13 @@ Class InstallUtils {
     if (!is_writable(self::$rogo_path . '/qti/exports')) {
       $errors['104'] = sprintf($string['errors6'], self::$rogo_path);
     }
+    if (!is_writable(self::$rogo_path . '/config/config.inc.php')) {
+      if (!is_writable(self::$rogo_path . '/config')) {
+        $errors['901'] = sprintf($string['errors16'], self::$rogo_path);
+      }
+    }
+
+
     if (count($errors) > 0) {
       self::displayError($errors);
     }
@@ -1057,6 +1065,8 @@ switch (strtolower(\$_SERVER['HTTP_HOST'])) {
 
 //Warnings
   \$cfg_hour_warning = 10;       // Warning for summative exams
+//Paper auto saving time out in seconds - default 180s
+  \$cfg_autosave_timeout = 180;
 
 //Assistance
   \$support_email = '{cfg_support_email}';
@@ -1938,6 +1948,7 @@ QUERY;
           `id` int(11) NOT NULL auto_increment,
           `occurred` datetime default NULL,
           `userID` int(11) default NULL,
+          `auth_user` varchar(45) default NULL,
           `errtype` enum('Notice','Warning','Fatal Error','Unknown') default NULL,
           `errstr` text,
           `errfile` text,

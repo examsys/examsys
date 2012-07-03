@@ -13,6 +13,7 @@ $string['modules'] = 'Moduły';
 $string['optimizetables'] = 'Optymalizuj tablice';
 $string['schools'] = 'Katedry';
 $string['smsimports'] = 'Importy SMS';
+$string['summativescheduling'] = 'Summative Exam Scheduling';  // Niko
 $string['summativeexamstats'] = 'Statystyki egzaminów końcowych';
 $string['systemerrors'] = 'Błędy systemowe';
 $string['systeminformation'] = 'Informacje systemowe';

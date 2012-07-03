@@ -35,12 +35,13 @@ Class DBUtils {
    * @param string $dbclass Optional class to use, e.g. debugging extension to mysqli
    * @return object
    */
-	static function get_mysqli_link($host , $user, $passwd, $database, $charset, $dbclass='mysqli')	{
-    $mysqli = new $dbclass($host , $user, $passwd, $database);
+	static function get_mysqli_link($host, $user, $passwd, $database, $charset, $dbclass='mysqli')	{
+    @$mysqli = new $dbclass($host, $user, $passwd, $database);
     if ($mysqli->connect_error == '') {
       $mysqli->set_charset($charset);
     } else {
-      die("<h1>Unable to connect to database</h1>");
+      display_notice('Error', "Unable to connect to database using $dbclass.", '/artwork/db_no_connect.png', '#FF7600');
+      exit;
     }
     return $mysqli;
 	}

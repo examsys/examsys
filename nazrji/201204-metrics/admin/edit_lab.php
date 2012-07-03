@@ -99,7 +99,7 @@ input, textarea {font-family:Arial,sans-serif; line-height:140%}
   echo "</textarea></td><td style=\"width:50px\"></td><td style=\"vertical-align:top\">\n";
   echo "<div><strong>" . $string['name'] . "</strong></div>\n<div><input type=\"text\" size=\"40\" name=\"name\" value=\"$name\" /></div>\n";
   echo "<br /><div><strong>" . $string['campus'] . "</strong></div>\n<div><select name=\"campus\">\n";
-  foreach ($choices as $choice) {
+  foreach ($cfg_campus_list as $choice) {
     if ($campus == $choice) {
       echo "<option value=\"$choice\" selected>$choice</option>\n";
     } else {

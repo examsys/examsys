@@ -46,20 +46,22 @@ Class SearchUtils {
       } else {
         $sql = "SELECT DISTINCT modules.id, moduleid, fullname, school FROM modules, schools WHERE modules.schoolid=schools.id AND moduleid IN ($team_sql) ORDER BY school, moduleID";
       }
-      
-      $team_no = 0;
-      
-      $result = $db->prepare($sql);
-      $result->execute();
-      $result->bind_result($recordid, $moduleid, $fullname, $school);
-      while ($result->fetch()) {
-        $teams_list[$team_no]['school'] = $school;
-        $teams_list[$team_no]['id'] = $moduleid;
-        $teams_list[$team_no]['recordid'] = $recordid;
-        $teams_list[$team_no]['fullname'] = $fullname;
-        $team_no++;
+
+      if (isset($sql)) {
+        $team_no = 0;
+
+        $result = $db->prepare($sql);
+        $result->execute();
+        $result->bind_result($recordid, $moduleid, $fullname, $school);
+        while ($result->fetch()) {
+          $teams_list[$team_no]['school'] = $school;
+          $teams_list[$team_no]['id'] = $moduleid;
+          $teams_list[$team_no]['recordid'] = $recordid;
+          $teams_list[$team_no]['fullname'] = $fullname;
+          $team_no++;
+        }
+        $result->close();
       }
-      $result->close();
     }
     
     return $teams_list;

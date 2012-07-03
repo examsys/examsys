@@ -24,7 +24,7 @@
 
 require $cfg_web_root . 'lang/' . $language . '/include/errors.inc';
 
-function display_error($error_title, $error_description, $headers = true, $stop_execution = true) {
+function display_error($error_title, $error_description, $headers = true, $stop_execution = true, $display_support_email = true) {
   // $error_title - heading which is displayed
   // $error_description - discription of the error together with any information that the user can
   // use to avoid it happening again
@@ -34,10 +34,12 @@ function display_error($error_title, $error_description, $headers = true, $stop_
   global $mysqli, $support_email, $string, $cfg_root_path;
   
   if ($headers == false) {
-    echo "<html>\n<head>\n<title>" . $string['error'] . "</title>\n</head>\n<body style=\"font-family:Arial,sans-serif; font-size:90%; background-color:white; color:black\">\n";
+    echo "<html>\n<head>\n<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n<title>" . $string['error'] . "</title>\n</head>\n<body style=\"font-family:Arial,sans-serif; font-size:90%; background-color:white; color:black\">\n";
   }
-  $msg = $error_description . '<br /><br /><span style="color:#808080">' . $string['errormsg'] . ' <a href="mailto:' . $support_email . '" style="color:blue">' . $support_email . '</a></span>';
-  display_notice($error_title, $msg, '/artwork/bomb.png', '#C00000');
+  if ($display_support_email) {
+    $error_description .= '<br /><br /><span style="color:#808080">' . $string['errormsg'] . ' <a href="mailto:' . $support_email . '" style="color:blue">' . $support_email . '</a></span>';
+  }
+  display_notice($error_title, $error_description, '/artwork/bomb.png', '#C00000');
 
   if ($headers == false) {
     echo "</body>\n</html>\n";

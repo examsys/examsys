@@ -109,7 +109,7 @@ foreach ($user_results as $individual) {
             if (substr($tmp_exclude, $a, 1) == '0') echo ',Q' . $q_no . chr($a+65);
           }
         } elseif ($question['q_type'] == 'labelling' and $question['score_method'] == 'Mark per Option') {
-          for ($a=0; $a<count($question['correct_labels']); $a++) {
+          for ($a=0; $a <(count($question['correct_labels']) + substr_count($tmp_exclude, '1')); $a++) {
             if (substr($tmp_exclude, $a, 1) == '0') echo ',Q' . $q_no . chr($a+65);
           }
         } elseif ($question['q_type'] == 'hotspot' and $question['score_method'] == 'Mark per Option') {
@@ -185,8 +185,8 @@ foreach ($user_results as $individual) {
               if (substr($tmp_exclude,$a,1) == '0') echo ',0';
             }
           } elseif ($question['q_type'] == 'labelling' and $question['score_method'] == 'Mark per Option') {
-            for ($a=0; $a<count($question['correct_labels']); $a++) {
-              if (substr($tmp_exclude,$a,1) == '0') echo ',0';
+            for ($a=0; $a < count($question['correct_labels']); $a++) {
+              if (substr($tmp_exclude, $a, 1) == '0') echo ',0';
             }
           } elseif ($question['q_type'] == 'hotspot' and $question['score_method'] == 'Mark per Option') {
             $paper_answers = explode("|",$question['correct'][0]);

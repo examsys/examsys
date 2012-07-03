@@ -24,4 +24,7 @@ $string['redicon'] = 'Osiągnięcie 0-49% celów specyficznych';
 $string['hyperlink'] = '<a href="" onclick="return false;">hiperłącze</a> - przejście do sekcji NLE w celu uzyskania dalszych szczegółów';
 $string['relativekey'] = "<strong>Wzgl.</strong> - o ile punktów więcej '+' lub mniej '-' niż średnia w grupie";
 $string['question'] = '<strong>L.Pyt.</strong> - liczba pytań odwzorowana w celach';
+
+$string['idmissing'] = 'Student ID Missing';  // Niko
+$string['idmissing_msg'] = 'No student ID has been passed. To view a specific feedback report for a student access via Class Totals report.';  // Niko
 ?>

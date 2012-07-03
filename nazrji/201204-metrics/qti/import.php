@@ -14,11 +14,34 @@
 // You should have received a copy of the GNU General Public License
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
+
 require_once 'include/inc.php';
 require_once 'qti/qti_load.php';
 require_once 'qti12/qti12_load.php';
 require_once 'qti20/qti20_load.php';
 require_once 'local/local_save.php';
+
+
+$max_screen = 0;
+
+$stmt = $mysqli->prepare("SELECT paper_title, moduleID, folder, paper_ownerID, moduleID, DATE_FORMAT(start_date,'%Y%m%d%H%i%S') AS start_date, DATE_FORMAT(end_date,'%Y%m%d%H%i%S') AS end_date, DATE_FORMAT(created,'%Y%m%d%H%i%S') AS created, MAX(screen) AS screen, fullscreen, MAX(display_pos) AS display_pos, paper_type, externals, internal_reviewers, labs, calendar_year, exam_duration, crypt_name, display_question_mark FROM properties LEFT JOIN papers ON properties.property_id=papers.paper WHERE property_id=? GROUP BY paper_title");
+$stmt->bind_param('i', $paperID);
+$stmt->execute();
+$stmt->bind_result($paper_title, $paper_moduleID, $tmp_folder, $paper_ownerID, $tmp_module, $start_date, $end_date, $created, $max_screen, $fullscreen, $max_display_pos, $paper_type, $externals, $internal_reviewers, $labs, $session, $exam_duration, $crypt_name, $display_question_mark);
+while ($stmt->fetch()) {
+  if (date("YmdHis", time()) >= $start_date and date("YmdHis", time()) <= $end_date) {
+    $active_date = 1;
+  } else {
+    $active_date = 0;
+  }
+  if (date("YmdHis", time()) >= $start_date and $paper_type == '2') {
+    $summative_lock = 1;
+  } else {
+    $summative_lock = 0;
+  }
+}
+$stmt->close();
+$moduleID=$paper_moduleID;
 
 // get some paper details
 $paper = GetVar("paperID");
@@ -55,6 +78,7 @@ $save_params = new stdClass();
 $save_params->dir = $dir;
 $save_params->base_dir = $base_dir;
 
+global $load_params;
 $load_params = new stdClass();
 $load_params->dir = $dir;
 $load_params->base_dir = $base_dir;

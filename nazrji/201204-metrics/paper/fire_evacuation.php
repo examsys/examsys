@@ -76,8 +76,9 @@ while ($stmt->fetch()) {
 }
 $stmt->free_result();
 $stmt->close();
-
-record_marks($property_id, $mysqli, $userID, $paper_type, $grade, $year, $attempt, $userroles);
+if (!isset($_GET['dont_record']) or $_GET['dont_record'] != true) {
+  record_marks($property_id, $mysqli, $userID, $paper_type, $grade, $year, $attempt, $userroles);
+}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>

@@ -32,16 +32,39 @@ require '../include/staff_auth.inc';
   <title><?php echo $string['createnewpaper'] . $cfg_install_type; ?></title>
 
   <style type="text/css">
-    body {font-family:Arial,sans-serif; color:black; background-color:#F1F5FB; margin:6px; font-size:90%}
+    body {font-family:Arial,sans-serif; color:black; background-color:#F0F0F0; margin:6px; font-size:90%}
     table {font-size:100%}
     textarea, input[type=text], select {font-family:Arail,sans-serif; border: 1px solid #7F9DB9}
-    .icon {color:#001687; padding-top:15px; padding-bottom:15px; padding-left:0px; padding-right:0px; vertical-align:top; width:98px; font-size:8pt}
+    .icon {color:#001687; padding-top:15px; padding-bottom:15px; padding-left:0px; padding-right:0px; vertical-align:top; width:98px; height:74px; font-size:8pt; background-repeat:no-repeat}
   </style>
 
   <script type="text/javascript">
     function over(id) {
       if (id != document.getElementById('paper_type').value) {
         document.getElementById(id).style.backgroundImage = "url('../artwork/over.png')";
+      }
+      switch (id) {
+        case 'formative':
+          document.getElementById('description').innerHTML = 'Self-assessment quizzes that be normally be accessed by students at any time.';
+          break;
+        case 'progress':
+          document.getElementById('description').innerHTML = 'Normally used for mid-term tests where feedback is not provided at the end of the assessment.';
+          break;
+        case 'summative':
+          document.getElementById('description').innerHTML = 'High-stakes exams where marks contribute to a student\'s course.';
+          break;
+        case 'survey':
+          document.getElementById('description').innerHTML = 'A questionnaire used for eliciting views and feedback from students.';
+          break;
+        case 'osce':
+          document.getElementById('description').innerHTML = 'Objective Structured Clinical Examination (OSCE) assessment type used for medical and health sciences fields.';
+          break;
+        case 'offline':
+          document.getElementById('description').innerHTML = 'This paper type allows marks from offline papers to be loaded into Rogo.';
+          break;
+        case 'peer_review':
+          document.getElementById('description').innerHTML = 'Generates a form for students to review their peers.';
+          break;
       }
     }
 
@@ -68,6 +91,7 @@ require '../include/staff_auth.inc';
         alert("<?php echo $string['msg1']; ?>");
         return false;
       }
+      
       if (document.theform.paper_name.value == '') {
         alert("<?php echo $string['msg2']; ?>");
         return false;
@@ -81,7 +105,7 @@ require '../include/staff_auth.inc';
 <div style="text-align:center; border:solid 1px #7F9DB9; background-color:white">
 <table cellpadding="0" cellspacing="0" border="0" style="background-color:white; color:#001687; width:100%">
 <tr>
-<td colspan="8" style="font-weight:bold; background-color:#DDE7EE; color:#001687; border-bottom:1px solid #C5C5C5">&nbsp;<?php echo $string['papertype']; ?></td>
+<td colspan="8" style="text-align:left; font-weight:bold; background-color:#DDE7EE; color:#001687; border-bottom:1px solid #C5C5C5; padding:4px">&nbsp;<?php echo $string['papertype']; ?></td>
 </tr>
 <tr>
 <td class="icon" onclick="activate('formative')" onmouseover="over('formative')" onmouseout="out('formative')" id="formative"><img src="../artwork/formative.png" width="48" height="48" border="0" alt="Formative Self-Assessment" /><br /><?php echo $string['formative self-assessment']; ?></td>
@@ -92,6 +116,9 @@ require '../include/staff_auth.inc';
 <td class="icon" onclick="activate('offline')" onmouseover="over('offline')" onmouseout="out('offline')" id="offline"><img src="../artwork/offline.png" width="48" height="48" border="0" alt="Offline" /><br /><?php echo $string['offline paper']; ?></td>
 <td class="icon" onclick="activate('peer_review')" onmouseover="over('peer_review')" onmouseout="out('peer_review')" id="peer_review"><img src="../artwork/peer_review.png" width="48" height="48" border="0" alt="Peer Review" /><br />Peer Review</td>
 <td>&nbsp;</td>
+</tr>
+<tr>
+<td colspan="8" style="text-align:left; padding-top:10px; padding-left:4px; padding-right:4px; padding-bottom:6px; font-size:90%; color:black" id="description">&nbsp;</td>
 </tr>
 </table>
 </div>

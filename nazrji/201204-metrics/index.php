@@ -270,7 +270,7 @@ require_once './classes/networkutils.class.php';
     } else {
       while ($info->fetch()) {
         if ($last_cal_year != $user_calendar_year) {
-          echo "<br/><strong>" . $user_calendar_year . "</strong><br/>";
+          echo "<br /><strong>" . $user_calendar_year . "</strong><br />";
         }
         echo $user_moduleID . '&nbsp;';
         $last_cal_year = $user_calendar_year;
