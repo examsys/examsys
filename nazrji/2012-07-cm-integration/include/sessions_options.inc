@@ -34,8 +34,9 @@
   $stmt->close(); 
 
   if ($vle_api != '') {
-    require_once("../apis/$vle_api.inc");
-    $objsBySession = getObjectives($_GET['module'], $session);
+    require_once("../apis/$vle_api.class.php");
+    $vle = new $vle_api();
+    $objsBySession = $vle.getObjectives($_GET['module'], $session);
   } else {
     require_once '../include/mapping.inc';
   }

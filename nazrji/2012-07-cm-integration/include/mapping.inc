@@ -381,9 +381,11 @@ function getObjectives($thisModuleid, $session, $paperID, $questionID, $rogodb, 
       $vle_api = $vle_api_cache[$thisModuleid];
     }
 
-    if ($vle_api == 'NLE') {
+    if ($vle_api != '') {
       // Get objectives from the NLE via REST request
       if (!isset($objsBySession_cache[$thisModuleid]) or !isset($objsBySession_cache[$thisModuleid][$session]) or count($objsBySession_cache[$thisModuleid][$session]) == 0) {
+        $
+
         $req = new RestRequest("http://www.nle.nottingham.ac.uk/webServices/getObjectives/$thisModuleid/$session");
         $split_username = explode('_', $_SERVER['PHP_AUTH_USER']);
         $req->setUsername($split_username[0]);
