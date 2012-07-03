@@ -7,13 +7,13 @@ $().ready(function () {
     if (elem) {
         selelem = elem;
         var url = elem.src;
-        url = unescape(url);
+        url = url;
         
         var data = url.substr(url.indexOf('?'));
-        var data = data.substr(1);
+        var data = unescape(data.substr(1));
         var data = $.parseJSON(data);
 
-        latex = data.latex;
+        latex = unencodeQuotes(data.latex);
         inline = data.inline;
     } else {
         var url = document.URL;
@@ -65,7 +65,7 @@ function insertMME() {
 
     var data = {};
     data.inline = edit.inline;
-    data.latex = edit.latex;
+    data.latex = encodeQuotes(edit.latex);
     data.fontsize = fontsize;
 
     var datatxt = JSON.stringify(data);
@@ -93,4 +93,16 @@ function insertMME() {
     //tinyMCEPopup.editor.selection.setContent(html);
     //tinyMCEPopup.editor.plugins["mee"].update();
     tinyMCEPopup.close();*/
+}
+
+function encodeQuotes(str) {
+    str = str.replace(/'/g,'~quot~');
+    str = str.replace(/"/g,'~dblquot~');
+    return str;
+}
+
+function unencodeQuotes(str) {
+    str = str.replace(/~quot~/g,"'");
+    str = str.replace(/~dblquot~/g,'"');
+    return str;
 }

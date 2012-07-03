@@ -172,7 +172,7 @@ function outputLoadTimes() {
   $usec = floatval($end[0]) - floatval($start[0]);
   $sec = $end[1] - $start[1];
   $res=(float)$sec+(float)$usec;
-  echo '<p>' . count($queryInfo) . ' queries (' . round($res,3) . ' secs)' . " <a href=\"#\" onclick=\"document.getElementById('allQueries').style.display='block'; return false;\">More ...</a></p>";
+  echo '<p>Time: ' . round($res,3) . ' secs, Memory: ' . round(((memory_get_peak_usage()/1024)/1024),1) . 'Mb, Queries: ' . count($queryInfo) . " <a href=\"#\" onclick=\"document.getElementById('allQueries').style.display='block'; return false;\">More ...</a></p>";
   
   
   $errors = false;

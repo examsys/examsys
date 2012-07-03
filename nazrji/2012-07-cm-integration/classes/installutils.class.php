@@ -770,6 +770,13 @@ Class InstallUtils {
     if (!is_writable(self::$rogo_path . '/qti/exports')) {
       $errors['104'] = sprintf($string['errors6'], self::$rogo_path);
     }
+    if (!is_writable(self::$rogo_path . '/config/config.inc.php')) {
+      if (!is_writable(self::$rogo_path . '/config')) {
+        $errors['901'] = sprintf($string['errors16'], self::$rogo_path);
+      }
+    }
+
+
     if (count($errors) > 0) {
       self::displayError($errors);
     }
@@ -1940,6 +1947,7 @@ QUERY;
           `id` int(11) NOT NULL auto_increment,
           `occurred` datetime default NULL,
           `userID` int(11) default NULL,
+          `auth_user` varchar(45) default NULL,
           `errtype` enum('Notice','Warning','Fatal Error','Unknown') default NULL,
           `errstr` text,
           `errfile` text,

@@ -56,6 +56,18 @@ function clickMEEiFrame(frame) {
     }
 }
 
+function unencodeQuotes(str) {
+    str = str.replace(/~quot~/g,"'");
+    str = str.replace(/~dblquot~/g,'"');
+    return str;
+}
+
+function encodeQuotes(str) {
+    str = str.replace(/'/g,'~quot~');
+    str = str.replace(/"/g,'~dblquot~');
+    return str;
+}
+
 (function () {
     tinymce.PluginManager.requireLangPack('mee');
 
@@ -118,7 +130,7 @@ function clickMEEiFrame(frame) {
                     } else {
                         data.inline = true;
                     }
-                    data.latex = $(elem).html();
+                    data.latex = encodeQuotes($(elem).html());
                     data.fontsize = $(elem).css('font-size');
 
                     var datatxt = JSON.stringify(data);
@@ -145,8 +157,9 @@ function clickMEEiFrame(frame) {
                     var src = $(this).attr('src');
                     var data = src.substr(src.indexOf('?'));
                     var data = data.substr(1);
-                    var data = unescape(data);
+                    var data = data;
                     var data = $.parseJSON(data);
+                    data.latex = unencodeQuotes(data.latex);
 
                     $(this).removeClass('mee_iframe');
                    
@@ -238,7 +251,7 @@ function clickMEEiFrame(frame) {
                 return this.mee_lastElement;
             return null;
         }
-        // Private methods
+        // Private methods 
     });
 
     // Register plugin

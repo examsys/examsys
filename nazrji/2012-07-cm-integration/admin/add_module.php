@@ -251,6 +251,7 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
 ?>
     <tr><td class="field"><?php echo $string['objapi']; ?></td><td><select name="vle_api">
     <option value=""><?php echo $string['nolookup']; ?></option>
+    <option value="UoNCM"<?php if (isset($_POST['vle_api']) and $_POST['vle_api'] == 'UoNCM') echo ' selected'; ?>>Curriculum Map (UoNCM)</option>
     <option value="NLE"<?php if (isset($_POST['vle_api']) and $_POST['vle_api'] == 'NLE') echo ' selected'; ?>>Networked Learning Environment (NLE)</option>
     </select></td></tr>
     <tr><td class="field"><?php echo $string['summativechecklist']; ?></td><td><input type="checkbox" name="peer" checked /> <?php echo $string['peerreview']; ?>, <input type="checkbox" name="external" checked /> <?php echo $string['externalexaminers']; ?>, <input onclick="showHideGrid()" type="checkbox" id="stdset" name="stdset" /> <?php echo $string['standardssetting']; ?>, <input type="checkbox" name="mapping" /> <?php echo $string['mapping']; ?></td></tr>

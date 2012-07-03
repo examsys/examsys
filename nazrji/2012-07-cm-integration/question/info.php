@@ -91,13 +91,11 @@
     }
   }
     
-  function check4Copies() {
-    global $mysqli;
-    
+  function check4Copies($mysqlidb) {
     $row_number = 0;
     
     // Get the ID of the original question.
-    $copy_data = $mysqli->prepare("SELECT old FROM track_changes WHERE type='Copied Question' AND typeID=? LIMIT 1");
+    $copy_data = $mysqlidb->prepare("SELECT old FROM track_changes WHERE type='Copied Question' AND typeID=? LIMIT 1");
     $copy_data->bind_param('i', $_GET['q_id']);
     $copy_data->execute();
     $copy_data->bind_result($copyID);
@@ -109,7 +107,7 @@
       // Look up what paper it was used on.
       $copy_question_no = 0;
       $row_no = 1;
-      $copy_data = $mysqli->prepare("SELECT property_id, paper_title, question, q_type FROM (papers, properties, questions) WHERE properties.property_id=papers.paper AND papers.question=questions.q_id AND paper=(select paper from papers where question=? limit 1) ORDER BY screen, display_pos");
+      $copy_data = $mysqlidb->prepare("SELECT property_id, paper_title, question, q_type FROM (papers, properties, questions) WHERE properties.property_id=papers.paper AND papers.question=questions.q_id AND paper=(select paper from papers where question=? limit 1) ORDER BY screen, display_pos");
       $copy_data->bind_param('i', $copyID);
       $copy_data->execute();
       $copy_data->bind_result($copy_paperID, $copy_paper_title, $copy_question, $copy_q_type);
@@ -124,6 +122,8 @@
       } else {
         echo "<tr><td>Copy of</td><td>Question No $copy_question_no. on <a href=\"\" onclick=\"loadPaper('$copy_paperID')\">$copy_paper_title</a></td></tr>\n";
       }
+    } else {
+      echo "<tr><td></td><td></td></tr>\n";
     }
   }
 ?>
@@ -192,9 +192,7 @@
         echo "<tr><td>" . $string['status'] . "</td><td>" . $string[strtolower($status)] . "</td></tr>\n";
         echo "<tr><td>" . $string['created'] . "</td><td>$creation_date</td></tr>\n";
         echo "<tr><td>" . $string['modified'] . "</td><td>$last_edited</td></tr>\n";
-        if ($locked != '') {
-          echo "<tr><td>" . $string['locked'] . "</td><td>$locked</td></tr>\n";
-        }
+        echo "<tr><td>" . $string['locked'] . "</td><td>$locked</td></tr>\n";
         $split_group = explode(';',$q_group);
         echo "<tr><td style=\"vertical-align:top\">" . $string['teams'] . "</td><td>";
         foreach ($split_group as $individual_group) {
@@ -202,11 +200,11 @@
         }
         echo "</td></tr>\n";
         
-        check4Copies();
+        check4Copies($mysqli);
       
         echo "<tr><td colspan=\"2\">&nbsp;</td></tr>\n";
         echo "<tr><td colspan=\"2\">" . $string['followingpapers'] . "</td></tr>\n";
-        echo "</table>\n<div style=\"margin:5px; display:block; height:270px; overflow-y:scroll; border:1px solid #95AEC8; font-size:90%; background-color:white\">\n<table border=\"0\" style=\"width:100%\">";
+        echo "</table>\n<div style=\"margin:5px; display:block; height:250px; overflow-y:scroll; border:1px solid #95AEC8; font-size:90%; background-color:white\">\n<table border=\"0\" style=\"width:100%\">";
         echo "<tr><th></th><th>Paper Name</th><th>Screen No</th><th>Exam Date</th><th>Cohort</th><th></th><th>P</th><th>D</th></tr>\n";
       }
       echo "<tr><td><img src=\"../artwork/" . $icons[$paper_type] . "_16.gif\" width=\"16\" height=\"16\" border=\"0\" alt=\"0\" /></td>";
@@ -246,13 +244,11 @@
       echo "<tr><td width=\"90\" valign=\"top\"><strong>" . $string['author'] . "</strong></td><td>$owner</td></tr>\n";
       echo "<tr><td><strong>" . $string['created'] . "</strong></td><td>$creation_date</td></tr>\n";
       echo "<tr><td><strong>" . $string['modified'] . "</strong></td><td>$last_edited</td></tr>\n";
-      if ($locked != '') {
-        echo "<tr><td><strong>" . $string['locked'] . "</strong></td><td>$locked</td></tr>\n";
-      }
+      echo "<tr><td><strong>" . $string['locked'] . "</strong></td><td>$locked</td></tr>\n";
       if ($q_group == '') $q_group = '<span style="color:#808080">N/A</span>';
       echo "<tr><td><strong>" . $string['teams'] . "</strong></td><td>$q_group</td></tr>\n";
 
-      check4Copies();
+      check4Copies($mysqli);
       
       echo "<tr><td colspan=\"2\">&nbsp;</td></tr>\n";
       echo "<tr><td colspan=\"2\"><strong>" . $string['followingpapers'] . "</strong>\n";

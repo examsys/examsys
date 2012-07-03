@@ -76,6 +76,7 @@ $string['errors12'] = 'Rogō can only be accessed through https. Please update y
 $string['errors13'] = 'Error';
 $string['errors14'] = 'The following warnings were generated';
 $string['errors15'] = 'Warning';
+$string['errors16'] = 'Rogo requires ability to write its config file %s/config/config.inc.php, One way to fix this is you can temporarily allow write access to %s/config and change permissions once update has run.';
 $string['installscript'] = 'Rogō Install script';
 $string['systeminstallation'] = 'System Installation'; 
 ?>

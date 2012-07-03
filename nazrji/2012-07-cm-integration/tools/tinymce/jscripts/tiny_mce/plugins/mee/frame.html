@@ -24,13 +24,19 @@
           if (window.parent && window.parent.parent && window.parent.parent.updateMEE)
               window.parent.parent.updateMEE(window, eqn.width(), eqn.height(), false);
         }
+
+        function unencodeQuotes(str) {
+          str = str.replace(/~quot~/g,"'");
+          str = str.replace(/~dblquot~/g,'"');
+          return str;
+        }
         
       $(document).ready(function () {
         var no_auto_mee = 1;
         var data = window.location.search;
-        var data = data.substr(1);
-        data = unescape(data);
+        var data = unescape(data.substr(1));
         var data = $.parseJSON(data);
+        data.latex = unencodeQuotes(data.latex);
         $('#equation').css('font-size', data.fontsize);
         if (data.inline) {
             tag = $("<span>");

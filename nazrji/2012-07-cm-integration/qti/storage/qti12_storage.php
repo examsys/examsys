@@ -44,8 +44,11 @@ class ST_QTI12_Question // <item
     'slider' => 0,
     'fib' => 0,
 
+    'extension' => 0,
+
     'response' => 0,
     'material' => 0
+
   );
 
   // calculate cardinaltiy, if all of lid are ismulti then Multi, if some are ismulti then varies (for extmatch i think)
@@ -745,6 +748,7 @@ class ST_QTI12_Material // <material>
 
   var $notrim=0;
 
+
   function add($xml = '', $order = '') {
     if ($xml) {
       $this->count++;
@@ -780,16 +784,19 @@ class ST_QTI12_Material // <material>
       }
       // load any images here
       if ($xml->matimage) {
-        $this->addImage((string) $xml->matimage->attributes()->uri, (string) $xml->matimage->attributes()->width, (string) $xml->matimage->attributes()->height);
+        $this->addImage((string) $xml->matimage->attributes()->uri, (string) $xml->matimage->attributes()->width, (string) $xml->matimage->attributes()->height,(string)$xml->matimage);
       }
     }
   }
 
-  function addImage($image, $width = '', $height = '') {
+  function addImage($image, $width = '', $height = '',$imgnam='') {
     global $import_directory;
     global $q_warnings;
     global $q_errors;
     global $cfg_web_root;
+    global $file;
+    global $wct;
+    global $load_params;
 
     if (stripos(" ".$image, "notes_icon.gif") > 0) {
       return;
@@ -800,9 +807,17 @@ class ST_QTI12_Material // <material>
     $basename = basename($image);
     $imagefile = FindFile($import_directory, $basename);
     echo "Converted \"$image\" to base name \"$imagefile\"<br>";
-    $imagefile = $import_directory.$imagefile;
+    if($imagefile=="" and $wct==1) {
+      list($discard,$split)= explode('=',$image);
+$pathinfo=pathinfo((string)$load_params->sourcefile);
 
-    if (file_exists($imagefile)) {
+      $imagefile = FindFileSub2($pathinfo['dirname'], '','*'. $split . '*.' . pathinfo($imgnam,PATHINFO_EXTENSION));
+      $imagefile= $pathinfo['dirname'].'/' .$imagefile;
+    } else {
+      $imagefile = $import_directory.$imagefile;
+    }
+
+    if (strlen($imagefile)>strlen($import_directory) and file_exists($imagefile)) {
       $identifier_size = GetImageSize($imagefile);
       $this->media_width = $identifier_size[0];
       $this->media_height = $identifier_size[1];
@@ -974,6 +989,29 @@ class ST_QTI12_Material // <material>
 
 function FindFile($basedir, $filename) {
   return FindFileSub($basedir, "", $filename);
+}
+
+function FindFileSub2($basedir, $dir, $filename) {
+  $dir_s = scandir($basedir."/".$dir);
+  foreach ($dir_s as $entry) {
+    if ($entry == ".") continue;
+    if ($entry == "..") continue;
+    if (is_dir($basedir."/".$dir."/".$entry)) {
+      if ($dir) {
+        $res = FindFileSub2($basedir, $dir."/".$entry, $filename);
+      } else {
+        $res = FindFileSub2($basedir, $entry, $filename);
+      }
+      if ($res != "") return $res;
+    } else if (fnmatch(strtolower($filename),strtolower($entry)) ) {
+      if ($dir) {
+        return $dir."/".$entry;
+      } else {
+        return $entry;
+      }
+    }
+  }
+  return "";
 }
 
 function FindFileSub($basedir, $dir, $filename) {

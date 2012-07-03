@@ -63,7 +63,7 @@ require_once '../classes/stateutils.class.php';
   }
 
   function questionInfo() {
-    notice=window.open("../question/info.php?q_id=" + getLastID(document.PapersMenu.questionID.value) + "","question_info","width=500,height=500,scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+    notice=window.open("../question/info.php?q_id=" + getLastID(document.PapersMenu.questionID.value) + "","question_info","width=700,height=600,scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
     notice.moveTo(screen.width/2-250,screen.height/2-250);
     if (window.focus) {
       notice.focus();
