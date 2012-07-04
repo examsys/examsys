@@ -80,6 +80,7 @@ class VLE_UoNCM implements iVLEAPI {
             'calendar_year' => $calendar_year,
             'VLE' => 'UoNCM',
             'source_url' => $this->root_url . 'view/' . $session['@attributes']['id'],
+            'mapped' => 0,
             'objectives' => array()
           );
 
@@ -94,7 +95,8 @@ class VLE_UoNCM implements iVLEAPI {
             foreach ($obs as $objective) {
               $obj_data = array(
                 'content' => (isset($objective['title']) and $objective['title'] != '') ? $objective['title'] : $objective['content'],
-                'id' => $objective['@attributes']['id']
+                'id' => $objective['@attributes']['id'],
+                'mapped' => 0
               );
               $sess_data['objectives'][++$i] = $obj_data;
             }

@@ -386,7 +386,7 @@ function getObjectives($thisModuleid, $session, $paperID, $questionID, $rogodb, 
       // Get objectives from the NLE via REST request
       if (!isset($objsBySession_cache[$thisModuleid]) or !isset($objsBySession_cache[$thisModuleid][$session]) or count($objsBySession_cache[$thisModuleid][$session]) == 0) {
         $vle = VLEFactory::GetVLEAPI($vle_api);
-        $resp = $vle->getObjectives($_GET['module'], $session);
+        $resp = $vle->getObjectives($thisModuleid, $session);
 
 //        $req = new RestRequest("http://www.nle.nottingham.ac.uk/webServices/getObjectives/$thisModuleid/$session");
 //        $split_username = explode('_', $_SERVER['PHP_AUTH_USER']);
@@ -453,7 +453,7 @@ function getObjectives($thisModuleid, $session, $paperID, $questionID, $rogodb, 
     }
   }
 
-  //START:: get the currently mapped objetives in Rogo.
+  //START:: get the currently mapped objectives in Rogo.
   $mapped = array();
   if ($questionID != '') {
     $thisModuleid = str_replace(',','|',$original_thisModuleid);
