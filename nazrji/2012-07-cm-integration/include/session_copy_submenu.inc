@@ -22,8 +22,6 @@
 * @package
 */
 
-require_once '../classes/dateutils.class.php';
-
 /**
  * Get a list of years for which the module has mapped objectives
  * @param debug_mysqli $mysqli
@@ -79,7 +77,6 @@ function checkCopyYearForm() {
 	$message = '';
 
 	// Get the current academic session
-	$session = DateUtils::get_current_academic_year();
 	$session_parts = explode('/',$session);
 	
 	// Get a list of existing (source) years

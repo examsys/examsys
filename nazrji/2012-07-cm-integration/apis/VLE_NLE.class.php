@@ -28,7 +28,12 @@ require 'VLEAPI.if.php';
 require '../webServices/RestRequest.class';
 
 class VLE_NLE implements iVLEAPI {
-  //GET objs from the NLE
+  /**
+   * Return objectives from the University of Nottingham Medical School Networked Learning Environment
+   * @param $moduleID
+   * @param $session
+   * @return mixed Array of session and objective data in format required by Rogō
+   */
   public function getObjectives($moduleID, $session) {
     $req = new RestRequest("http://www.nle.nottingham.ac.uk/webServices/getObjectives/$moduleID/$session");
     $split_username = explode('_', $_SERVER['PHP_AUTH_USER']);
@@ -38,6 +43,11 @@ class VLE_NLE implements iVLEAPI {
     return $req->getResponseBody();
   }
 
+  /**
+   * Get a friendly name for the source system, with the indefinite article if required
+   * @param bool $a
+   * @return string
+   */
   public function getFriendlyName($a = false) {
     return ($a) ? 'an NLE' : 'NLE';
   }

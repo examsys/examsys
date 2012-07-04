@@ -116,7 +116,7 @@
   $old_session = '';
   $id = 0;
 	$first = true;
-echo $session;
+
   if (count($objsBySession) > 0) {
     foreach ($objsBySession[$_GET['module']] as $session) {
       if (isset($session['objectives'])) {

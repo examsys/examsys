@@ -26,6 +26,18 @@
 
 interface iVLEAPI
 {
+  /**
+   * Return objectives from the remote system
+   * @param $moduleID
+   * @param $session
+   * @return mixed Array of session and objective data in format required by Rogō
+   */
   public function getObjectives($moduleID, $session);
-  public function getFriendlyName();
+
+  /**
+   * Get a friendly name for the source system, with the indefinite article if required
+   * @param bool $a
+   * @return string
+   */
+  public function getFriendlyName($a = false);
 }

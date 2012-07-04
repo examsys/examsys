@@ -22,28 +22,34 @@
 * @package
 */
 
-  require_once $cfg_web_root . 'apis/VLEFactory.class.php';
+require_once $cfg_web_root . 'apis/VLEFactory.class.php';
+require_once '../classes/dateutils.class.php';
 
-  if (in_array($_GET['module'], $teams) === false and strpos($userroles,'SysAdmin') === false) {
-    exit;
-  }
-  
-  $stmt = $mysqli->prepare("SELECT calendar_year, vle_api FROM student_modules, modules WHERE student_modules.moduleid=modules.moduleid AND student_modules.moduleid=? ORDER BY student_modules.id DESC LIMIT 1");
-  $stmt->bind_param('s', $_GET['module']);
-  $stmt->execute();
-  $stmt->bind_result($session, $vle_api);
-  $stmt->fetch();
-  $stmt->close(); 
 
-  if ($vle_api != '') {
-    $vle = VLEFactory::GetVLEAPI($vle_api);
-    $objsBySession = $vle->getObjectives($_GET['module'], $session);
-    $vle_name = $vle->getFriendlyName();
-    $vle_name_a = $vle->getFriendlyName(true);
-  } else {
-    require_once '../include/mapping.inc';
-    $objsBySession = getObjectives($_GET['module'], $session, '', '', $mysqli, 'all');
-  }
+if (in_array($_GET['module'], $teams) === false and strpos($userroles,'SysAdmin') === false) {
+  exit;
+}
+
+$stmt = $mysqli->prepare("SELECT vle_api FROM student_modules, modules WHERE student_modules.moduleid=modules.moduleid AND student_modules.moduleid=? ORDER BY student_modules.id DESC LIMIT 1");
+$stmt->bind_param('s', $_GET['module']);
+$stmt->execute();
+$stmt->bind_result($vle_api);
+$stmt->fetch();
+$stmt->close();
+
+$session = DateUtils::get_current_academic_year();
+// TODO: remove this
+$session = '2011/12';
+
+if ($vle_api != '') {
+  $vle = VLEFactory::GetVLEAPI($vle_api);
+  $objsBySession = $vle->getObjectives($_GET['module'], $session);
+  $vle_name = $vle->getFriendlyName();
+  $vle_name_a = $vle->getFriendlyName(true);
+} else {
+  require_once '../include/mapping.inc';
+  $objsBySession = getObjectives($_GET['module'], $session, '', '', $mysqli, 'all');
+}
 ?>
 <script language="JavaScript">
   function addSession() {
@@ -70,7 +76,13 @@
   }
   
   function editNLESession() {
+<?php
+  if ($vle_api != '') {
+?>
     alert("This is <?php echo $vle_name_a ?>-based module. To change its session objectives you must edit the <?php echo $vle_name ?>.");
+<?php
+  }
+?>
   }
   
   function deleteSession() {
@@ -82,7 +94,13 @@
   }
   
   function deleteNLESession() {
+<?php
+if ($vle_api != '') {
+?>
     alert("This is <?php echo $vle_name_a ?>-based module. To delete this session it must be removed from the <?php echo $vle_name ?> system.");
+<?php
+}
+?>
   }
 
   function updateMenu(ID) {
