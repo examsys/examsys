@@ -25,9 +25,10 @@
 */
 
 require 'VLEAPI.if.php';
-require '../webServices/RestRequest.class';
+require_once '../webServices/RestRequest.class';
 
 class VLE_UoNCM implements iVLEAPI {
+  private $root_url = 'http://cm.rji.ac.uk/2011/index.php/';
   /**
    * Return objectives from the University of Nottingham Curriculum Mapping system
    * @param $moduleID
@@ -36,7 +37,7 @@ class VLE_UoNCM implements iVLEAPI {
    */
   public function getObjectives($moduleID, $session) {
     // TODO: need to use the find interface to get the Module ID for code and session
-    $req = new RestRequest("http://cm.rji.ac.uk/2011/index.php/api/json/125/module_session_obs");
+    $req = new RestRequest($this->root_url . "api/json/125/module_session_obs");
 //    $split_username = explode('_', $_SERVER['PHP_AUTH_USER']);
 //    $req->setUsername('admin');
 //    $req->setPassword('admin');
@@ -78,6 +79,7 @@ class VLE_UoNCM implements iVLEAPI {
             'occurrance' => date('d/m/y H:i', strtotime($session['start'])),
             'calendar_year' => $calendar_year,
             'VLE' => 'UoNCM',
+            'source_url' => $this->root_url . 'view/' . $session['@attributes']['id'],
             'objectives' => array()
           );
 

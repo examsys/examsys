@@ -33,6 +33,7 @@
  */
  
 require_once $cfg_web_root . 'webServices/RestRequest.class';
+require_once $cfg_web_root . 'apis/VLEFactory.class.php';
 require_once $cfg_web_root . 'classes/dateutils.class.php';
 
 function render_objectives_mapping_form($db, $paper_id, &$string) {
@@ -384,14 +385,15 @@ function getObjectives($thisModuleid, $session, $paperID, $questionID, $rogodb, 
     if ($vle_api != '') {
       // Get objectives from the NLE via REST request
       if (!isset($objsBySession_cache[$thisModuleid]) or !isset($objsBySession_cache[$thisModuleid][$session]) or count($objsBySession_cache[$thisModuleid][$session]) == 0) {
-        $
+        $vle = VLEFactory::GetVLEAPI($vle_api);
+        $resp = $vle->getObjectives($_GET['module'], $session);
 
-        $req = new RestRequest("http://www.nle.nottingham.ac.uk/webServices/getObjectives/$thisModuleid/$session");
-        $split_username = explode('_', $_SERVER['PHP_AUTH_USER']);
-        $req->setUsername($split_username[0]);
-        $req->setPassword($_SERVER['PHP_AUTH_PW']);
-        $req->execute();
-        $resp = $req->getResponseBody();
+//        $req = new RestRequest("http://www.nle.nottingham.ac.uk/webServices/getObjectives/$thisModuleid/$session");
+//        $split_username = explode('_', $_SERVER['PHP_AUTH_USER']);
+//        $req->setUsername($split_username[0]);
+//        $req->setPassword($_SERVER['PHP_AUTH_PW']);
+//        $req->execute();
+//        $resp = $req->getResponseBody();
         if ($resp != '') {
           $objsBySession_cache[$thisModuleid][$session] = $resp;
         }

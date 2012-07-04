@@ -53,7 +53,7 @@
         document.getElementById(tmp_ID).style.backgroundColor = 'white';
       }
 
-      if (VLE == 'NLE') {
+      if (VLE != '') {
         document.getElementById('menu1a').style.display = 'none';
         document.getElementById('menu1c').style.display = 'block';
       } else {
@@ -136,7 +136,7 @@
       } else {
         $identifier = '';
       }
-      if ($session['VLE'] == 'NLE') {
+      if ($session['VLE'] != '') {
         echo "<tr style=\"cursor:pointer\" id=\"$id\" onmouseover=\"highlight($id)\" onmouseout=\"unhighlight($id)\" onclick=\"selSession('$id','$identifier','" . $session['calendar_year'] . "','" . $session['VLE'] . "',event);\" ondblclick=\"editNLESession('" . $session['calendar_year'] . "');\">";
       } else {
         echo "<tr style=\"cursor:pointer\" id=\"$id\" onmouseover=\"highlight($id)\" onmouseout=\"unhighlight($id)\" onclick=\"selSession('$id','$identifier','" . $session['calendar_year'] . "','" . $session['VLE'] . "',event);\" ondblclick=\"editSession('" . $session['identifier'] . "','" . $session['calendar_year'] . "');\">";

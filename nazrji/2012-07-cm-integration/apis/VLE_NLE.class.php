@@ -25,7 +25,7 @@
 */
 
 require 'VLEAPI.if.php';
-require '../webServices/RestRequest.class';
+require_once '../webServices/RestRequest.class';
 
 class VLE_NLE implements iVLEAPI {
   /**
