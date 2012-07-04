@@ -268,7 +268,7 @@ if ($paper_ownerID == $userID or strpos($userroles,'Admin') !== false or strpos(
   $team_member = true;
 } else {
   foreach ($teams as $individual_team) {
-    if (strpos($paper_moduleID,$individual_team) !== false) $team_member = true;
+    if (strpos($moduleID,$individual_team) !== false) $team_member = true;
   }
 }
 
