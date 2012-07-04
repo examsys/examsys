@@ -134,7 +134,13 @@ require '../include/staff_auth.inc';
 
 <table cellpadding="0" cellspacing="0" border="0" class="header">
   <tr>
-    <th style="padding-left:20px"><img src="../artwork/rogo_logo.gif" width="137" height="61" alt="logo" border="0" /></th>
+    <th style="padding-left:16px; padding-top:5px">
+    
+    <img src="../artwork/r_logo.gif" width="56" height="60" alt="logo" border="0" style="float:left; padding-right:8px" />
+    <div style="color:#1F497D; font-size:28pt; font-weight:bold">Rogō</div>
+    <div style="color:#1F497D; font-size:9pt">eAssessment Management System</div>
+    
+    </th>
     <th style="text-align:right"><?php echo $logo_html; ?>&nbsp;&nbsp;</th>
   </tr>
   <tr>

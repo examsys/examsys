@@ -16,13 +16,6 @@
 
 /**
 * 
-* This script is designed to compare marks between the Class Totals report and students' actual exam scripts (finish.php).
-* It works by:
-*   1. Get summative exam papers in the require date range.
-*   2. For each paper call class_totals.php and parse for student IDs and marks.
-*   3. For each student call finish.php and compare the mark.
-*   4. Echo errors for any which do not match.
-* 
 * @author Simon Wilkinson
 * @version 1.0
 * @copyright Copyright (c) 2012 The University of Nottingham
@@ -73,54 +66,6 @@ function getData($url) {
   return $output;
 }
 
-function tidyLine($line) {
-  $line = str_replace('<img src="../artwork/small_yellow_warning_icon.gif" width="16" height="16" alt="Marking not complete" />&nbsp;', '', $line);
-  $parts = explode('>', $line);
-  $parts2 = explode('<', $parts[1]);
-  
-  return str_replace('&nbsp;', '', $parts2[0]);
-}
-
-function parseRawMarks($data) {
-  $marks = array();
-  $line = 0;
-  $data_line = explode('<tr', $data);
-  
-  foreach ($data_line as $row) {
-    if (strpos($row,'Display exam script') !== false) {
-      $cols = explode('<td', $row);
-      
-      $tmp_parts = explode("popMenu('", $cols[2]);
-      $started = substr($tmp_parts[1], 0, 19);
-      
-      $tmp_parts2 = explode(',', $tmp_parts[1]);
-      $tmp_userID = $tmp_parts2[1];
-     
-      $marks[$line]['mark'] = tidyLine($cols[5]);
-      $marks[$line]['percent'] = tidyLine($cols[6]);
-      $marks[$line]['started'] = $started;
-      $marks[$line]['userID'] = $tmp_userID;
-
-      $line++;
-    }
-  }
-  return $marks;
-}
-
-function parseScript($data) {
-  $data_line = explode('<tr', $data);
-  
-  foreach ($data_line as $row) {
-    if (strpos($row,'Your mark') !== false) {
-      $cols = explode('>', $row);
-      
-      $parts = explode(' out of', $cols[4]);
-      $mark = round($parts[0],1);  // Round it to 1 decimal because this is what Class Totals does.
-    }
-  }
-  return $mark;
-}
-
 $papers = array();
 $result = $mysqli->prepare("SELECT crypt_name, property_id, paper_title, DATE_FORMAT(start_date,'%d/%m/%Y'), DATE_FORMAT(start_date,'%Y%m%d%H%i%s'), DATE_FORMAT(end_date,'%Y%m%d%H%i%s') FROM properties WHERE paper_type = '2' AND start_date > $start_dateSQL AND end_date < $end_dateSQL AND deleted IS NULL ORDER BY start_date");
 $result->execute();
@@ -132,7 +77,7 @@ $result->close();
 ?>
 <html>
 <head>
-<title>Testing: Class Totals</title>
+<title>Upgrade: Populating Performance Data</title>
 <style type="text/css">
 body {font-family:Arial,sans-serif; font-size:90%}
 table {font-size:100%}
@@ -145,35 +90,14 @@ $paper_no = count($papers);
 $current_no = 0;
 
 foreach ($papers as $paper) {
-  $url = $server . "/reports/class_totals.php?paperID=" . $paper['paperID'] . "&startdate=" . $paper['start_date'] . "&enddate=" . $paper['end_date'] . "&repmodule=&repcourse=%&sortby=student_id&module=A14CHH&folder=&percent=100&absent=0&direction=asc&studentsonly=1";
+  $url = $server . "/reports/frequency_discrimination_analysis.php?paperID=" . $paper['paperID'] . "&startdate=" . $paper['start_date'] . "&enddate=" . $paper['end_date'] . "&repmodule=&repcourse=%&sortby=name&module=A14ACE&folder=&percent=100&absent=0&studentsonly=1&direction=asc";
   
   $output = getData($url);
-  $marks_set = parseRawMarks($output);
-  
-  $current_no++;
-  echo "<br /><strong>$current_no/$paper_no Checking paperID " . $paper['paperID'] . "...</strong><br />\n";
-  ob_flush();
-  flush();  
-
-  $result = $mysqli->prepare("SELECT surname, first_names, username FROM users WHERE id=? LIMIT 1");
-  foreach ($marks_set as $mark) {
-    $url = $server . "/paper/finish.php?id=" . $paper['crypt_name'] . "&previous=" . str_replace(' ', '%20', $mark['started']) . "&userid=" . $mark['userID'] . "&surname=Test&log_type=2&percent=" . str_replace('%' ,'', $mark['percent']);
-    $output = getData($url);
-    $script_mark = parseScript($output);
     
-    if ($script_mark != $mark['mark']) {
-      $result->bind_param('i', $mark['userID']);
-      $result->execute();
-      $result->bind_result($tmp_surname, $tmp_first_names, $tmp_username);
-      $result->fetch();
-
-      echo "Problem with " . $mark['userID'] . " $tmp_surname, $tmp_first_names ($tmp_username) - $script_mark / " . $mark['mark'] . "<br />";
-    }
-
-    ob_flush();
-    flush();  
-  }
-  $result->close();
+  $current_no++;
+  echo "<br /><strong>$current_no/$paper_no Reading paperID " . $paper['paperID'] . "...</strong><br />\n";
+  ob_flush();
+  flush();
 }
 
 ob_end_flush();

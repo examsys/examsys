@@ -63,7 +63,12 @@ p {line-height:150%}
 
 <table cellspacing="0" cellpadding="0" border="0" style="width:100%; background-color:#F1F5FB">
 <tr>
-<td><div style="padding-left:15px"><img src="../artwork/rogo_logo.gif" width="137" height="61" alt="logo" border="0" style="margin-top:2px" /></div><div style="padding-left:15px; font-size:90%; font-weight:bold"><?php echo $string['externalexamineraccess']; ?> (<?php echo $title . ' ' . $initials . ' ' . $surname; ?>)</div></td>
+<td><div style="padding-left:15px">
+  <img src="../artwork/r_logo.gif" width="56" height="60" alt="logo" border="0" style="float:left; padding-right:8px" />
+  <div style="color:#1F497D; font-size:28pt; font-weight:bold">Rogō</div>
+  <div style="color:#1F497D; font-size:9pt"><?php echo $string['externalexamineraccess']; ?> (<?php echo $title . ' ' . $initials . ' ' . $surname; ?>)</div>
+</div>
+</td>
 <td align="right"><?php echo $logo_html; ?></td>
 </tr>
 <tr><td colspan="2" style="height:3px"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td></tr>
@@ -121,7 +126,7 @@ p {line-height:150%}
   echo "<tr><td width=\"66\" style=\"text-align:center\"><a href=\"mailto:$support_email\"><img src=\"../artwork/email_icon_48.png\" width=\"48\" height=\"48\" alt=\"" . $string['help'] . "\" border=\"0\" /></a></td>\n</td><td><a href=\"mailto:$support_email\">$support_email</a><br /><span style=\"color:#808080\">" . $string['helpandsupportext'] . "</span></td></tr>\n";
   
   echo "<tr><td>&nbsp;</td><td style=\"font-size:80%\">&nbsp;</td></tr>\n";
-  echo "<tr><td width=\"66\" style=\"text-align:center\"><a href=\"mailto:$support_email\"><img src=\"../artwork/osi_logo.png\" width=\"56\" height=\"66\" alt=\"Open Source Initiative\" border=\"0\" /></a></td>\n</td><td><span style=\"color:#808080\">" . sprintf( $string['rogodetails'],$rogo_version) . "</a> <a href=\"https://suivarro.nottingham.ac.uk/trac/rogo/\">suivarro.nottingham.ac.uk/trac/rogo/</a></td></tr>\n";
+  echo "<tr><td width=\"66\" style=\"text-align:center\"><a href=\"mailto:$support_email\"><img src=\"../artwork/osi_logo.png\" width=\"56\" height=\"66\" alt=\"Open Source Initiative\" border=\"0\" /></a></td>\n</td><td><span style=\"color:#808080\">" . sprintf($string['rogodetails'], $rogo_version) . "</a> <a href=\"http://rogo-oss.nottingham.ac.uk\">rogo-oss.nottingham.ac.uk</a></td></tr>\n";
   $mysqli->close();
 ?>
 

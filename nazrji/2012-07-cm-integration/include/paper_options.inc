@@ -27,6 +27,30 @@
 require $cfg_web_root . 'include/sidebar_menu.inc';
 $paperID = $_GET['paperID'];
 
+if (!isset($paper_title) or $paper_title == '') {
+  $max_screen = 0;
+
+  $stmt = $mysqli->prepare("SELECT paper_title, moduleID, folder, paper_ownerID, moduleID, DATE_FORMAT(start_date,'%Y%m%d%H%i%S') AS start_date, DATE_FORMAT(end_date,'%Y%m%d%H%i%S') AS end_date, DATE_FORMAT(created,'%Y%m%d%H%i%S') AS created, MAX(screen) AS screen, fullscreen, MAX(display_pos) AS display_pos, paper_type, externals, internal_reviewers, labs, calendar_year, exam_duration, crypt_name, display_question_mark FROM properties LEFT JOIN papers ON properties.property_id=papers.paper WHERE property_id=? GROUP BY paper_title");
+  $stmt->bind_param('i', $paperID);
+  $stmt->execute();
+  $stmt->bind_result($paper_title, $paper_moduleID, $tmp_folder, $paper_ownerID, $moduleID, $start_date, $end_date, $created, $max_screen, $fullscreen, $max_display_pos, $paper_type, $externals, $internal_reviewers, $labs, $session, $exam_duration, $crypt_name, $display_question_mark);
+  while ($stmt->fetch()) {
+    if (date("YmdHis", time()) >= $start_date and date("YmdHis", time()) <= $end_date) {
+      $active_date = 1;
+    } else {
+      $active_date = 0;
+    }
+    if (date("YmdHis", time()) >= $start_date and $paper_type == '2') {
+      $summative_lock = 1;
+    } else {
+      $summative_lock = 0;
+    }
+  }
+  $stmt->close();
+  $tmp_module = $moduleID;
+}
+
+
 if (isset($_GET['module']) and $_GET['module'] != '') {
   $module = $_GET['module'];
 } else {

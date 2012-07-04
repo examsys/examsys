@@ -134,7 +134,7 @@
   <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
   <title>Information<?php echo " $cfg_install_type"; ?></title>
   <style type="text/css">
-    body {margin:0px; background-color:#F1F5FB; font-family:Arial,sans-serif; color:black; font-size:90%}
+    body {margin:0px; background-color:#F1F5FB; font-family:Arial,sans-serif; color:black; font-size:80%}
     table {font-size:100%}
     a {color:blue}
     th {text-align:left}
@@ -160,9 +160,9 @@
 <table cellpadding="5" cellspacing="0" border="0" width="100%">
 <tr>
 <td colspan="2" valign="middle" style="background-color:white; text-align:left; border-bottom:1px solid #CCD9EA">
-<table cellpadding="0" cellspacing="0" border="0">
-<tr><td><img src="../artwork/lrg_info_icon.png" width="37" height="37" alt="Information" /></td><td style="font-family:Arial,sans-serif; font-size:16pt; font-weight:bold; color:#5582D2">&nbsp;&nbsp;<?php echo $string['questioninformation']; ?></td></tr>
-</table>
+
+<img src="../artwork/lrg_info_icon.png" width="37" height="37" alt="Information" style="float:left" /><span style="font-family:Arial,sans-serif; font-size:18pt; font-weight:bold; color:#5582D2">&nbsp;&nbsp;<?php echo $string['questioninformation']; ?></span>
+
 </td>
 </tr>
 <?php
@@ -180,87 +180,69 @@
   }
   $result->close();
   
-  $result = $mysqli->prepare("SELECT email, title, surname, initials, paper_title, paper_type, paper, screen, DATE_FORMAT(creation_date,\"$cfg_long_date_time\") AS creation_date, DATE_FORMAT(last_edited,\"$cfg_long_date_time\") AS last_edited, q_group, DATE_FORMAT(locked,\"$cfg_long_date_time\") AS locked, properties.deleted, status, q_type FROM (users, papers, questions, properties) WHERE properties.property_id=papers.paper AND users.id=questions.ownerID AND question=? AND papers.question=questions.q_id");
+  $question_data = $mysqli->prepare("SELECT email, title, surname, initials, DATE_FORMAT(creation_date,\"%d/%m/%Y %H:%i\") AS creation_date, DATE_FORMAT(last_edited,\"%d/%m/%Y %H:%i\") AS last_edited, DATE_FORMAT(locked,\"$cfg_long_date_time\") AS locked, q_group, q_type, std, status FROM (users, questions) WHERE users.id=questions.ownerID AND q_id=? LIMIT 1");
+  $question_data->bind_param('i', $_GET['q_id']);
+  $question_data->execute();
+  $question_data->bind_result($email, $title, $surname, $initials, $creation_date, $last_edited, $locked, $q_group, $q_type, $std, $status);
+  $question_data->store_result();
+  $question_data->fetch();
+  $question_data->close(); 
+  
+  if ($q_group == '') $q_group = '<span style="color:#808080">N/A</span>';
+  if ($locked == '') $locked = '<span style="color:#808080">N/A</span>';
+
+
+  if (strpos($userroles,'Demo') !== false) {
+    $owner = 'Dr J, Bloggs (<a href="">joe.bloggs@uni.ac.uk</a>)';
+  } else {
+    $owner = "$title $initials $surname (<a href=\"mailto:$email\">$email</a>)";
+  }
+  echo "<tr><td style=\"width:70px\">" . $string['author'] . "</td><td>$owner</td></tr>\n";
+  echo "<tr><td>" . $string['created'] . "</td><td>$creation_date</td></tr>\n";
+  echo "<tr><td>" . $string['modified'] . "</td><td>$last_edited</td></tr>\n";
+  echo "<tr><td>" . $string['locked'] . "</td><td>$locked</td></tr>\n";
+  echo "<tr><td>" . $string['teams'] . "</td><td>$q_group</td></tr>\n";
+
+  check4Copies($mysqli);
+
+  echo "<tr><td colspan=\"2\">&nbsp;</td></tr>\n";
+  echo "<tr><td colspan=\"2\">" . $string['followingpapers'] . "</td></tr>\n";
+  echo "</table>\n<div style=\"margin:5px; display:block; height:285px; overflow-y:scroll; border:1px solid #95AEC8; font-size:100%; background-color:white\">\n<table border=\"0\" style=\"width:100%\">";
+  echo "<tr><th></th><th>" . $string['papername'] . "</th><th>" . $string['screenno'] . "</th><th>" . $string['examdate'] . "</th><th>" . $string['cohort'] . "</th><th></th><th>" . $string['p'] . "</th><th>" . $string['d'] . "</th></tr>\n";
+
+  $result = $mysqli->prepare("SELECT paper_title, paper_type, paper, screen, properties.deleted FROM (papers, properties) WHERE properties.property_id=papers.paper AND question=?");
   $result->bind_param('i', $_GET['q_id']);
   $result->execute();
-  $result->bind_result($email, $title, $surname, $initials, $paper_title, $paper_type, $paper, $screen, $creation_date, $last_edited, $q_group, $locked, $deleted, $status, $q_type);
+  $result->bind_result($paper_title, $paper_type, $paper, $screen, $deleted);
   $result->store_result();
-  if ($result->num_rows > 0) {
-    while ($result->fetch()) {
-      if ($line_no == 0) {
-        echo "<tr><td width=\"60\" style=\"vertical-align:top\">" . $string['author'] . "</td><td>$title $initials $surname (<a href=\"mailto:$email\">$email</a>)</td></tr>\n";
-        echo "<tr><td>" . $string['status'] . "</td><td>" . $string[strtolower($status)] . "</td></tr>\n";
-        echo "<tr><td>" . $string['created'] . "</td><td>$creation_date</td></tr>\n";
-        echo "<tr><td>" . $string['modified'] . "</td><td>$last_edited</td></tr>\n";
-        echo "<tr><td>" . $string['locked'] . "</td><td>$locked</td></tr>\n";
-        $split_group = explode(';',$q_group);
-        echo "<tr><td style=\"vertical-align:top\">" . $string['teams'] . "</td><td>";
-        foreach ($split_group as $individual_group) {
-          echo "<a href=\"\" onclick=\"loadModule('$individual_group')\">$individual_group</a><br />";
-        }
-        echo "</td></tr>\n";
-        
-        check4Copies($mysqli);
-      
-        echo "<tr><td colspan=\"2\">&nbsp;</td></tr>\n";
-        echo "<tr><td colspan=\"2\">" . $string['followingpapers'] . "</td></tr>\n";
-        echo "</table>\n<div style=\"margin:5px; display:block; height:250px; overflow-y:scroll; border:1px solid #95AEC8; font-size:90%; background-color:white\">\n<table border=\"0\" style=\"width:100%\">";
-        echo "<tr><th></th><th>Paper Name</th><th>Screen No</th><th>Exam Date</th><th>Cohort</th><th></th><th>P</th><th>D</th></tr>\n";
-      }
-      echo "<tr><td><img src=\"../artwork/" . $icons[$paper_type] . "_16.gif\" width=\"16\" height=\"16\" border=\"0\" alt=\"0\" /></td>";
-      $title_split = explode('[deleted', $paper_title);
-      if (isset($title_split[1])) {
-        echo "<td><a href=\"\" style=\"color:#808080\" onclick=\"loadPaper('$paper')\">" . $title_split[0] . "</a></td>";
-      } else {
-        echo "<td><a href=\"\" onclick=\"loadPaper('$paper')\">" . $title_split[0] . "</a></td>";
-      }
-      if ($deleted != '') {
-        echo "<td style=\"color:red\">&lt;deleted " . str_replace(']','',$title_split[1]) . "&gt;</td>";
-      } else {
-        echo "<td class=\"num\">$screen</td>";
-      }
-      
-      if (isset($performance[$paper][1]['taken'])) {
-        echo "<td>" . $performance[$paper][1]['taken'] . "</td><td class=\"num\">" . $performance[$paper][1]['cohort'] . "</td><td>" . displayParts($performance[$paper], $q_type) . "</td><td class=\"num\">" . displayP($performance[$paper], $q_type) . "</td><td class=\"num\">" . displayD($performance[$paper], $q_type) . "</td>";
-      } else {
-        echo "<td></td><td></td><td></td><td></td><td></td>";
-      }
-      echo "</tr>\n";
-      $line_no++;
+  while ($result->fetch()) {
+    echo "<tr><td><img src=\"../artwork/" . $icons[$paper_type] . "_16.gif\" width=\"16\" height=\"16\" border=\"0\" alt=\"0\" /></td>";
+    $title_split = explode('[deleted', $paper_title);
+    if (isset($title_split[1])) {
+      echo "<td><a href=\"\" style=\"color:#808080\" onclick=\"loadPaper('$paper')\">" . $title_split[0] . "</a></td>";
+    } else {
+      echo "<td><a href=\"\" onclick=\"loadPaper('$paper')\">" . $title_split[0] . "</a></td>";
     }
-    echo "</table>\n</div>\n";
-  } else {
-    $question_data = $mysqli->prepare("SELECT email, title, surname, initials, DATE_FORMAT(creation_date,\"%d/%m/%Y %H:%i\") AS creation_date, DATE_FORMAT(last_edited,\"%d/%m/%Y %H:%i\") AS last_edited, q_group FROM (users, questions) WHERE users.id=questions.ownerID AND q_id=?");
-    $question_data->bind_param('i', $_GET['q_id']);
-    $question_data->execute();
-    $question_data->bind_result($email, $title, $surname, $initials, $creation_date, $last_edited, $q_group);
-    $question_data->store_result();
-    while ($question_data->fetch()) {
-      if (strpos($userroles,'Demo') !== false) {
-        $owner = 'Dr J, Bloggs (<a href="">joe.bloggs@uni.ac.uk</a>)';
-      } else {
-        $owner = '$title $initials $surname (<a href=\"mailto:$email\">$email</a>)';
-      }
-      echo "<tr><td width=\"90\" valign=\"top\"><strong>" . $string['author'] . "</strong></td><td>$owner</td></tr>\n";
-      echo "<tr><td><strong>" . $string['created'] . "</strong></td><td>$creation_date</td></tr>\n";
-      echo "<tr><td><strong>" . $string['modified'] . "</strong></td><td>$last_edited</td></tr>\n";
-      echo "<tr><td><strong>" . $string['locked'] . "</strong></td><td>$locked</td></tr>\n";
-      if ($q_group == '') $q_group = '<span style="color:#808080">N/A</span>';
-      echo "<tr><td><strong>" . $string['teams'] . "</strong></td><td>$q_group</td></tr>\n";
-
-      check4Copies($mysqli);
-      
-      echo "<tr><td colspan=\"2\">&nbsp;</td></tr>\n";
-      echo "<tr><td colspan=\"2\"><strong>" . $string['followingpapers'] . "</strong>\n";
-      echo "<br />" . $string['notused'] . "</td></tr>\n</table>";
+    if ($deleted != '') {
+      echo "<td style=\"color:red\">&lt;deleted " . str_replace(']','',$title_split[1]) . "&gt;</td>";
+    } else {
+      echo "<td class=\"num\">$screen</td>";
     }
-    $question_data->close();
+    
+    if (isset($performance[$paper][1]['taken'])) {
+      echo "<td>" . $performance[$paper][1]['taken'] . "</td><td class=\"num\">" . $performance[$paper][1]['cohort'] . "</td><td>" . displayParts($performance[$paper], $q_type) . "</td><td class=\"num\">" . displayP($performance[$paper], $q_type) . "</td><td class=\"num\">" . displayD($performance[$paper], $q_type) . "</td>";
+    } else {
+      echo "<td></td><td></td><td></td><td></td><td></td>";
+    }
+    echo "</tr>\n";
+    $line_no++;
   }
   $result->close();
   $mysqli->close();
 ?>
-<br />
-<div align="center">
+</table></div>
+
+<div style="text-align:center; padding-top:5px">
 <form>
 <input type="button" style="width: 120px" name="ok" onclick="javascript:window.close();" value="<?php echo $string['close']; ?>" />
 </form>
