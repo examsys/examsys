@@ -113,13 +113,12 @@
   echo "<th><img src=\"../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;" . $string['name'] . "&nbsp;</th>\n";
   echo "<th><img src=\"../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;" . $string['objectives'] . "&nbsp;</th><th>&nbsp;</th></tr>\n";
   echo "<tr><th colspan=\"4\" style=\"height:3px\"><img src=\"../artwork/header_horizontal_line.gif\" width=\"100%\" height=\"3\" alt=\"Line\" /></th></tr>\n";
-  $objectives = getObjectives($module, $session, '', '', $mysqli, 'all');
   $old_session = '';
   $id = 0;
 	$first = true;
-
-  if (count($objectives) > 0) {
-    foreach ($objectives[$_GET['module']] as $session) {
+echo $session;
+  if (count($objsBySession) > 0) {
+    foreach ($objsBySession[$_GET['module']] as $session) {
       if (isset($session['objectives'])) {
         $objectives_no = count($session['objectives']);
       } else {

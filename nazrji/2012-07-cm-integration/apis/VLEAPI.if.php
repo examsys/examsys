@@ -27,4 +27,5 @@
 interface iVLEAPI
 {
   public function getObjectives($moduleID, $session);
+  public function getFriendlyName();
 }

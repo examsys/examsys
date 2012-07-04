@@ -16,27 +16,30 @@
 
 /**
 * 
-* NLE API, all NLE related functions go in here
+* Implement VLE API for NLE
 * 
-* @author Rob Ingram
+* @author Anthony Brown
 * @version 1.0
 * @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */
 
-  require '../webServices/RestRequest.class';
+require 'VLEAPI.if.php';
+require '../webServices/RestRequest.class';
 
+class VLE_NLE implements iVLEAPI {
   //GET objs from the NLE
-  function getObjectives($moduleID, $session) {
-    // TODO: need to use the find interface to get the Module ID for code and session
-    $req = new RestRequest("http://cm.rji.ac.uk/2011/index.php/api/json/125/module_session_obs");
+  public function getObjectives($moduleID, $session) {
+    $req = new RestRequest("http://www.nle.nottingham.ac.uk/webServices/getObjectives/$moduleID/$session");
     $split_username = explode('_', $_SERVER['PHP_AUTH_USER']);
     $req->setUsername($split_username[0]);
     $req->setPassword($_SERVER['PHP_AUTH_PW']);
     $req->execute();
-
-    $x = 3;
-    exit;
     return $req->getResponseBody();
   }
+
+  public function getFriendlyName($a = false) {
+    return ($a) ? 'an NLE' : 'NLE';
+  }
+}
 ?>
