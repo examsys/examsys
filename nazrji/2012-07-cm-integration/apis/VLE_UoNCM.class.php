@@ -24,6 +24,9 @@
 * @package
 */
 
+// TODO: Make URL configurable?
+// TODO: Add API key for connection as Moodle/Rogo user
+
 require_once 'VLEAPI.if.php';
 require_once '../webServices/RestRequest.class';
 
@@ -38,11 +41,6 @@ class VLE_UoNCM implements iVLEAPI {
   public function getObjectives($moduleID, $session) {
     // TODO: need to use the find interface to get the Module ID for code and session
     $req = new RestRequest($this->root_url . "api/json/125/module_session_obs");
-//    $split_username = explode('_', $_SERVER['PHP_AUTH_USER']);
-//    $req->setUsername('admin');
-//    $req->setPassword('admin');
-//    $req->setUsername($split_username[0]);
-//    $req->setPassword($_SERVER['PHP_AUTH_PW']);
     $req->execute();
 
     $res = $req->getResponseBody();
