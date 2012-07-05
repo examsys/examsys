@@ -24,7 +24,7 @@
 * @package
 */
 
-require 'VLEAPI.if.php';
+require_once 'VLEAPI.if.php';
 require_once '../webServices/RestRequest.class';
 
 class VLE_NLE implements iVLEAPI {
