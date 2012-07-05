@@ -162,7 +162,7 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
     
     function showHideGrid() {
       if (document.getElementById('stdset').checked) {
-        document.getElementById('ebelgrid').style.display = 'block';
+        document.getElementById('ebelgrid').style.display = 'table-row';
       } else {
         document.getElementById('ebelgrid').style.display = 'none';
       }
@@ -275,7 +275,7 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
     <tr><td class="field"><?php echo $string['negativemarking']; ?></td><td><input type="checkbox" name="neg_marking"<?php if ($neg_marking == 1) echo ' checked'; ?> /></td></tr>
     <tr id="ebelgrid" style="display:<?php
     if ($stdset == 1) {
-      echo 'block';
+      echo 'table-row';
     } else {
       echo 'none';
     }
