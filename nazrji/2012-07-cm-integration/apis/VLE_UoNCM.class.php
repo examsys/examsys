@@ -60,7 +60,7 @@ class VLE_UoNCM implements iVLEAPI {
   }
 
   /**
-   * Tranaform the data returned by the Curriculum Map into the format required by Rogō
+   * Transform the data returned by the Curriculum Map into the format required by Rogō
    * @param $data
    */
   private function transformCMResponse($input, $calendar_year) {
