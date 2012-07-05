@@ -38,8 +38,6 @@ $stmt->fetch();
 $stmt->close();
 
 $session = DateUtils::get_current_academic_year();
-// TODO: remove this
-$session = '2011/12';
 
 if ($vle_api != '') {
   $vle = VLEFactory::GetVLEAPI($vle_api);

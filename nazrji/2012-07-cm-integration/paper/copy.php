@@ -102,7 +102,7 @@
     //if we are copying in the same session we can copy the objctives
     if ($new_calendar_year == $calendar_year) {
       $qids = implode(',', $qids);
-      $result = $mysqli->prepare("INSERT INTO relationships (SELECT NULL, module_id, $new_paper_id as paper_id, question_id, obj_id, calendar_year FROM relationships WHERE question_id IN ($qids) AND paper_id = ?)"); 
+      $result = $mysqli->prepare("INSERT INTO relationships (SELECT NULL, module_id, $new_paper_id as paper_id, question_id, obj_id, calendar_year, vle_api FROM relationships WHERE question_id IN ($qids) AND paper_id = ?)");
       $result->bind_param('i', $_POST['paperID']);
       $result->execute();
       $result->close();
@@ -251,7 +251,7 @@
       $i = 0;
       foreach ($old_qids as $old_id) {
         $new_question_id = $new_qids[$i];
-        $result = $mysqli->prepare("INSERT INTO relationships (SELECT NULL, module_id, '$new_paper_id', '$new_question_id', obj_id, calendar_year FROM relationships WHERE question_id = $old_id AND paper_id = ?)"); 
+        $result = $mysqli->prepare("INSERT INTO relationships (SELECT NULL, module_id, '$new_paper_id', '$new_question_id', obj_id, calendar_year, vle_api FROM relationships WHERE question_id = $old_id AND paper_id = ?)");
         $result->bind_param('i', $_POST['paperID']);
         $result->execute();
         $result->close();
@@ -287,7 +287,7 @@
         $i = 0;
         foreach ($old_qids as $old_id) {
           $new_question_id = $new_qids[$i];
-          $result = $mysqli->prepare("INSERT INTO relationships (SELECT NULL, module_id, '$new_paper_id', '$new_question_id', obj_id, '$new_calendar_year' FROM relationships WHERE question_id = $old_id AND paper_id = ? AND obj_id IN ($mappings_copy_objID))"); 
+          $result = $mysqli->prepare("INSERT INTO relationships (SELECT NULL, module_id, '$new_paper_id', '$new_question_id', obj_id, '$new_calendar_year', vle_api FROM relationships WHERE question_id = $old_id AND paper_id = ? AND obj_id IN ($mappings_copy_objID))");
           $result->bind_param('i', $_POST['paperID']);
           $result->execute();
           $result->close();

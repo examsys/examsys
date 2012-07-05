@@ -32,7 +32,7 @@ $obj_data->store_result();
 $obj_data->bind_result($obj_id);
 while ($row = $obj_data->fetch()) {
   // Delete from 'relationships' table.
-  $result = $mysqli->prepare("DELETE FROM relationships WHERE obj_id=? AND module_id=? AND calendar_year=?");
+  $result = $mysqli->prepare("DELETE FROM relationships WHERE obj_id=? AND module_id=? AND calendar_year=? AND vle_api=''");
   $result->bind_param('iss', $obj_id, $_POST['moduleID'], $_POST['session']);
   $result->execute();  
   $result->close();

@@ -32,7 +32,7 @@ require_once '../webServices/RestRequest.class';
 
 class VLE_UoNCM implements iVLEAPI {
   private $root_url = 'http://cm.rji.ac.uk/2011/index.php/';
-  
+
   /**
    * Return objectives from the University of Nottingham Curriculum Mapping system
    * @param $moduleID

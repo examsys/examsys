@@ -143,6 +143,8 @@ HTML;
 }
 
 function displayObjectivesMappingForm($paper_id, $rogodb, $cfg_root_path) {
+  global $vle_api_cache;
+
   //get module and session form paper id
   $result = $rogodb->prepare("SELECT moduleID, calendar_year, paper_type FROM properties WHERE property_id=?");
   $result->bind_param('i', $paper_id);
@@ -219,6 +221,7 @@ function displayObjectivesMappingForm($paper_id, $rogodb, $cfg_root_path) {
     $html .= "<input id=\"" . $moduleid . "_objectiveCount\" name=\"" . $moduleid . "_objectiveCount\" type=\"hidden\" value=\"$objcount\"/>\n";
     $html .= "<input name=\"" . $moduleid . "_session\" type=\"hidden\" value=\"$session\"/>\n";
     $html .= "<input name=\"" . $moduleid . "_old_mappings\" type=\"hidden\" value=\"$old_mappings\"/>\n";
+    $html .= "<input name=\"" . $moduleid . "_vle_api\" type=\"hidden\" value=\"$vle_api_cache[$moduleid]\"/>\n";
   }
 
   //display none of the above !
@@ -262,16 +265,17 @@ function save_objective_mappings($db, $modules, $paper_id, $question_id) {
       if(isset($_POST[$moduleid_forform . '_session'])) {
         $session = $_POST[$moduleid_forform . '_session'];
         $old_mappings = $_POST[$moduleid_forform . '_old_mappings'];
+        $vle_api = $_POST[$moduleid . '_vle_api'];
         if(isset($_POST[$moduleid_forform . '_objectives'])) {
           foreach ($_POST[$moduleid_forform . '_objectives'] as $objective_id) {
-            $sql[] = "INSERT INTO relationships VALUES (NULL, '$moduleid', $paper_id, $question_id, $objective_id, '$session')";
+            $sql[] = "INSERT INTO relationships VALUES (NULL, '$moduleid', $paper_id, $question_id, $objective_id, '$session','$vle_api')";
             $new_mappings .= $objective_id . ',';
           }
         }
     
         //check for none of the above
         if (isset($_POST['none_of_the_above']) and $_POST['none_of_the_above'] == -1 AND count($sql) == 0) {
-          $sql[] = "INSERT INTO relationships VALUES (NULL, '$moduleid', $paper_id, $question_id, -1, '$session')";
+          $sql[] = "INSERT INTO relationships VALUES (NULL, '$moduleid', $paper_id, $question_id, -1, '$session','$vle_api')";
           $new_mappings .= '-1,';
         } else {
           $old_mappings .= '-1,';
@@ -280,7 +284,7 @@ function save_objective_mappings($db, $modules, $paper_id, $question_id) {
         if ($new_mappings != $old_mappings) {
           // prepend the delete
           if ($old_mappings != '') {
-            $delete = "DELETE FROM relationships WHERE module_id = '$moduleid' AND paper_id = $paper_id AND question_id = $question_id AND calendar_year = '$session'";
+            $delete = "DELETE FROM relationships WHERE module_id = '$moduleid' AND paper_id = $paper_id AND question_id = $question_id AND calendar_year = '$session' AND vle_api= '$vle_api'";
             array_unshift($sql,$delete);
           }
           foreach($sql as $query) {
@@ -311,17 +315,18 @@ function saveObjMappings($paper_id, $question_id, $rogodb) {
         $session = $_POST[$moduleid . '_session'];
         $objectiveCount = $_POST[$moduleid . '_objectiveCount'];
         $old_mappings = $_POST[$moduleid . '_old_mappings'];
+        $vle_api = $_POST[$moduleid . '_vle_api'];
         $sql = array();
         $new_mappings = '';
         for ($i = 0; $i < $objectiveCount; $i++ ) {
           if (isset($_POST[$moduleid . 'obj' . $i])) {
-            $sql[] = "INSERT INTO relationships VALUES (NULL,'$moduleid',$paper_id,$question_id," . $_POST[$moduleid . 'obj' . $i] . ",'$session')";
+            $sql[] = "INSERT INTO relationships VALUES (NULL,'$moduleid',$paper_id,$question_id," . $_POST[$moduleid . 'obj' . $i] . ",'$session','$vle_api')";
             $new_mappings .= $_POST[$moduleid . 'obj' . $i] . ',';
           }
         }
         //check for none of the above
         if (isset($_POST['none_of_the_above']) and $_POST['none_of_the_above'] == -1 AND count($sql) == 0) {
-          $sql[] = "INSERT INTO relationships VALUES (NULL,'$moduleid',$paper_id,$question_id,-1,'$session')";
+          $sql[] = "INSERT INTO relationships VALUES (NULL,'$moduleid',$paper_id,$question_id,-1,'$session','$vle_api')";
           $new_mappings .= '-1,';
         } else {
           $old_mappings .= '-1,';
@@ -330,7 +335,7 @@ function saveObjMappings($paper_id, $question_id, $rogodb) {
         if ($new_mappings != $old_mappings) {
           //preappend the delete
           if ($old_mappings != '') {
-            $delete = "DELETE FROM relationships WHERE module_id = '$moduleid' AND paper_id = $paper_id AND question_id = $question_id AND calendar_year = '$session'";
+            $delete = "DELETE FROM relationships WHERE module_id = '$moduleid' AND paper_id = $paper_id AND question_id = $question_id AND calendar_year = '$session' AND vle_api= '$vle_api'";
             array_unshift($sql,$delete);
           }
           foreach($sql as $query) {
@@ -457,8 +462,8 @@ function getObjectives($thisModuleid, $session, $paperID, $questionID, $rogodb, 
   $mapped = array();
   if ($questionID != '') {
     $thisModuleid = str_replace(',','|',$original_thisModuleid);
-    if ($result = $rogodb->prepare("SELECT obj_id, question_id FROM relationships WHERE module_id REGEXP ? AND paper_id=? AND calendar_year=? AND question_id IN ($questionID)")) {
-      $result->bind_param('sis', $thisModuleid, $paperID, $session);
+    if ($result = $rogodb->prepare("SELECT obj_id, question_id FROM relationships WHERE module_id REGEXP ? AND paper_id=? AND calendar_year=? AND question_id IN ($questionID) AND vle_api=?")) {
+      $result->bind_param('siss', $thisModuleid, $paperID, $session, $vle_api);
       $result->execute();
       $result->bind_result($obj_id, $question_id);
       while ($row = $result->fetch()) {

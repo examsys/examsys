@@ -3312,7 +3312,42 @@ if (!isset($_POST['update'])) {
       echo '<li class="error">ERROR: could not set permissions ' . $sql . '</li>';
     }  
   }
-   
+
+  // 05/07/2012 - Add VLE API reference to relationships table (for historical references) and update for modules using NLE
+  $result_col = $mysqli->prepare("SELECT COLUMN_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='relationships' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='vle_api'");
+  $result_col->execute();
+  $result_col->store_result();
+  $result_col->bind_result($column_type);
+  $result_col->fetch();
+  if ($result_col->num_rows() == 0) {
+    // First fix '0' values in modules table
+    $update_mod = $mysqli->prepare("UPDATE modules SET vle_api=NULL WHERE vle_api='0'");
+    $update_mod->execute();
+    $update_mod->close();
+    echo "<li>UPDATE modules SET vle_api=NULL WHERE vle_api='0'</li>\n";
+
+    $adjust = $mysqli->prepare("ALTER TABLE relationships ADD COLUMN vle_api varchar(255) NOT NULL DEFAULT ''");
+    $adjust->execute();
+    $adjust->close();
+    echo "<li>ALTER TABLE relationships ADD COLUMN vle_api varchar(255) NOT NULL DEFAULT ''</li>\n";
+
+    $mod_count = 0;
+    $result_mod = $mysqli->prepare("SELECT moduleid FROM modules WHERE vle_api='NLE'");
+    $result_mod->execute();
+    $result_mod->store_result();
+    $result_mod->bind_result($moduleid);
+    while ($result_mod->fetch()) {
+      $update = $mysqli->prepare("UPDATE relationships SET vle_api='NLE' WHERE module_id=?");
+      $update->bind_param('s', $moduleid);
+      $update->execute();
+      $update->close();
+      $mod_count++;
+    }
+    echo "<li>Updated relationships table for $mod_count modules</li>\n";
+
+    $result_mod->close();
+  }
+  $result_col->close();
 
   // End ------------------------------------------------------------------
   echo "</ol>\n";

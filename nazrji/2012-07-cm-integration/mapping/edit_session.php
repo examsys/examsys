@@ -70,7 +70,7 @@ require '../include/staff_auth.inc';
             $stmt->execute();
             $stmt->close();
 
-            $stmt = $mysqli->prepare("DELETE FROM relationships WHERE obj_id = ? AND module_id = ? AND calendar_year = ?");
+            $stmt = $mysqli->prepare("DELETE FROM relationships WHERE obj_id = ? AND module_id = ? AND calendar_year = ? AND vle_api=''");
             $stmt->bind_param('iss',$objId,$moduleID,$_POST['session']);
             $stmt->execute();
             $stmt->close();
