@@ -24,20 +24,16 @@
 
 require_once $cfg_web_root . 'apis/VLEFactory.class.php';
 require_once '../classes/dateutils.class.php';
+require_once '../classes/mappingutils.class.php';
 
 
 if (in_array($_GET['module'], $teams) === false and strpos($userroles,'SysAdmin') === false) {
   exit;
 }
 
-$stmt = $mysqli->prepare("SELECT vle_api FROM student_modules, modules WHERE student_modules.moduleid=modules.moduleid AND student_modules.moduleid=? ORDER BY student_modules.id DESC LIMIT 1");
-$stmt->bind_param('s', $_GET['module']);
-$stmt->execute();
-$stmt->bind_result($vle_api);
-$stmt->fetch();
-$stmt->close();
-
 $session = DateUtils::get_current_academic_year();
+$vle_api_cache = array();
+$vle_api = MappingUtils::get_vle_api($_GET['module'], $session, $vle_api_cache, $mysqli);
 
 if ($vle_api != '') {
   $vle = VLEFactory::GetVLEAPI($vle_api);
@@ -144,7 +140,7 @@ if ($vle_api != '') {
 <?php
 if (strpos($userroles,'SysAdmin') !== false) {
 ?>
-  <tr><td class="ico"><a href="#" onclick="hideSessCopyMenu(event); importFromNLE(); return false;"><img src="../artwork/import_16.gif" width="16" height="16" alt="" border="0" /></a></td><td class="menuitem"><a href="#" onclick="hideSessCopyMenu(event); importFromNLE(); return false;"><?php echo $string['importnle']; ?></a></td></tr>
+  <tr><td class="ico"><a href="#" onclick="hideSessCopyMenu(event); importFromNLE(); return false;"><img src="../artwork/import_16.gif" width="16" height="16" alt="" border="0" /></a></td><td class="menuitem"><a href="#" onclick="hideSessCopyMenu(event); importFromNLE(); return false;"><?php echo sprintf($string['importnle'], $vle_name); ?></a></td></tr>
 <?php
 }
 if ($vle_api == '') {
@@ -168,7 +164,7 @@ else {
 <?php
 if (strpos($userroles,'SysAdmin') !== false) {
 ?>
-  <tr><td class="ico"><a href="#" onclick="hideSessCopyMenu(event); importFromNLE(); return false;"><img src="../artwork/import_16.gif" width="16" height="16" alt="" border="0" /></a></td><td class="menuitem"><a href="#" onclick="hideSessCopyMenu(event); importFromNLE(); return false;"><?php echo $string['importnle']; ?></a></td></tr>
+  <tr><td class="ico"><a href="#" onclick="hideSessCopyMenu(event); importFromNLE(); return false;"><img src="../artwork/import_16.gif" width="16" height="16" alt="" border="0" /></a></td><td class="menuitem"><a href="#" onclick="hideSessCopyMenu(event); importFromNLE(); return false;"><?php echo sprintf($string['importnle'], $vle_name); ?></a></td></tr>
 <?php
 }
 if ($vle_api == '') {
@@ -192,7 +188,7 @@ else {
 <?php
 if (strpos($userroles,'SysAdmin') !== false) {
 ?>
-  <tr><td class="ico"><a href="#" onclick="hideSessCopyMenu(event); importFromNLE(); return false;"><img src="../artwork/import_16.gif" width="16" height="16" alt="" border="0" /></a></td><td class="menuitem"><a href="#" onclick="hideSessCopyMenu(event); importFromNLE(); return false;"><?php echo $string['importnle']; ?></a></td></tr>
+  <tr><td class="ico"><a href="#" onclick="hideSessCopyMenu(event); importFromNLE(); return false;"><img src="../artwork/import_16.gif" width="16" height="16" alt="" border="0" /></a></td><td class="menuitem"><a href="#" onclick="hideSessCopyMenu(event); importFromNLE(); return false;"><?php echo sprintf($string['importnle'], $vle_name); ?></a></td></tr>
 <?php
 }
 if ($vle_api == '') {

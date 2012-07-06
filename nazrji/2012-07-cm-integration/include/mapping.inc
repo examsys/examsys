@@ -35,6 +35,7 @@
 require_once $cfg_web_root . 'webServices/RestRequest.class';
 require_once $cfg_web_root . 'apis/VLEFactory.class.php';
 require_once $cfg_web_root . 'classes/dateutils.class.php';
+require_once $cfg_web_root . 'classes/mappingutils.class.php';
 
 function render_objectives_mapping_form($db, $paper_id, &$string) {
   //get module and session form paper id
@@ -365,7 +366,7 @@ function saveObjMappings($paper_id, $question_id, $rogodb) {
  */
  
 $objsBySession_cache = array();
-$vle_api_cache = array(); // cashe the vle api to save some queries
+$vle_api_cache = array(); // cache the vle api to save some queries
 
 function getObjectives($thisModuleid, $session, $paperID, $questionID, $rogodb, $scope='latest') {
   global $objsBySession_cache, $vle_api_cache, $cfg_short_date;
@@ -375,17 +376,7 @@ function getObjectives($thisModuleid, $session, $paperID, $questionID, $rogodb, 
   $module_list = explode(',',$thisModuleid);
   foreach ($module_list as $thisModuleid) {
     // Get which API to use to get the learning objectives
-    if(!isset($vle_api_cache[$thisModuleid])) {
-      $stmt = $rogodb->prepare("SELECT vle_api FROM modules WHERE moduleid=?");
-      $stmt->bind_param('s',$thisModuleid);
-      $stmt->execute();
-      $stmt->bind_result($vle_api);
-      $stmt->fetch();
-      $stmt->close();
-      $vle_api_cache[$thisModuleid] = $vle_api;
-    } else {
-      $vle_api = $vle_api_cache[$thisModuleid];
-    }
+    $vle_api = MappingUtils::get_vle_api($thisModuleid, $session, $vle_api_cache, $rogodb);
 
     if ($vle_api != '') {
       // Get objectives from the NLE via REST request

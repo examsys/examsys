@@ -1,7 +1,7 @@
 <?php
 $string['sessions'] = 'Sessions';
 $string['createsession'] = 'Create new Session';
-$string['importnle'] = 'Import Sessions from NLE';
+$string['importnle'] = 'Import Sessions from %s';
 $string['importfile'] = 'Import Sessions from File';
 $string['editsession'] = 'Edit Session';
 $string['deletesession'] = 'Delete Session';
