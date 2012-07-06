@@ -28,7 +28,7 @@
 // TODO: Add API key for connection as Moodle/Rogo user
 
 require_once 'VLEAPI.if.php';
-require_once '../webServices/RestRequest.class';
+require_once $cfg_web_root . 'webServices/RestRequest.class';
 
 class VLE_UoNCM implements iVLEAPI {
   private $root_url = 'http://cm.rji.ac.uk/2011/index.php/';

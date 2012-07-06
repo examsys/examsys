@@ -38,6 +38,8 @@ require_once $cfg_web_root . 'classes/dateutils.class.php';
 require_once $cfg_web_root . 'classes/mappingutils.class.php';
 
 function render_objectives_mapping_form($db, $paper_id, &$string) {
+  global $vle_api_cache;
+
   //get module and session form paper id
   $result = $db->prepare("SELECT moduleID, calendar_year, paper_type FROM properties WHERE property_id=?");
   $result->bind_param('i', $paper_id);
@@ -128,6 +130,7 @@ HTML;
     $html .= <<< HTML
     		<input name="{$moduleid_forform}_session" type="hidden" value="{$session}"/>
     		<input name="{$moduleid_forform}_old_mappings" type="hidden" value="{$old_mappings}" />
+        <input name="{$moduleid_forform}_vle_api" type="hidden" value="$vle_api_cache[$moduleid_forform]"/>\n";
 
 HTML;
   }
@@ -369,7 +372,7 @@ $objsBySession_cache = array();
 $vle_api_cache = array(); // cache the vle api to save some queries
 
 function getObjectives($thisModuleid, $session, $paperID, $questionID, $rogodb, $scope='latest') {
-  global $objsBySession_cache, $vle_api_cache, $cfg_short_date;
+  global $objsBySession_cache, $vle_api_cache, $cfg_short_date, $cfg_web_root;
   $original_thisModuleid = $thisModuleid;
   $objsBySession = array();
 
