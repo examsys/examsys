@@ -69,7 +69,9 @@ Dr Nikodem Miranowicz</td>
 <td style="vertical-align:top">
 <strong>3rd Party subsystems</strong><br />
 <table cellpaddding="0" cellspacing="0" border="0">
-<tr><td style="width:110px">JavaScript Editor</td><td>TinyMCE 3.4.2 - <a href="http://tinymce.moxiecode.com/" target="_blank">tinymce.moxiecode.com</a></td></tr>
+<tr><td style="width:110px">WYSIWYG Editor</td><td>TinyMCE 3.4.2 - <a href="http://tinymce.moxiecode.com/" target="_blank">tinymce.moxiecode.com</a></td></tr>
+<tr><td colspan="2">&nbsp;</td></tr>
+<tr><td>JavaScript library</td><td>jQuery 1.6.1 - <a href="http://jquery.com/" target="_blank">jquery.com/</a></td></tr>
 <tr><td colspan="2">&nbsp;</td></tr>
 <tr><td>MP3 Player</td><td>MP3 Player 0.6.0 - <a href="http://flash-mp3-player.net/" target="_blank">flash-mp3-player.net</a></td></tr>
 <tr><td colspan="2">&nbsp;</td></tr>
@@ -81,7 +83,7 @@ Dr Nikodem Miranowicz</td>
 <a href="http://www.psdgraphics.com/category/icons/" target="_blank">www.psdgraphics.com/category/icons/</a><br />
 <a href="http://pixelmixer.ru/" target="_blank">pixel-mixer.com</a></td></tr>
 <tr><td colspan="2">&nbsp;</td></tr>
-<tr><td>Calculator</td><td><em>NOTE: Not open source but used with permission</em><br />
+<tr><td>Calculator</td><td><em>NOTE: Not open source but included with permission</em><br />
 <a href="http://www.calculator.org/default.aspx" target="_blank">http://www.calculator.org</a></td></tr>
 </table>
 

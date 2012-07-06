@@ -99,33 +99,42 @@ Class InstallUtils {
       });
     </script>
     <form id="installForm" class="cmxform" method="post" action="<?php echo $_SERVER['PHP_SELF'];?>">
-
-      <table class="header"><tr><td><nobr><?php echo $string['company']; ?></nobr></td><td class="line"><hr /></td></tr></table>
+    
+      <?php
+        if (!defined('PHP_VERSION_ID')) {
+          $version = explode('.', PHP_VERSION);
+          define('PHP_VERSION_ID', ($version[0] * 10000 + $version[1] * 100 + $version[2]));
+        }
+        if (PHP_VERSION_ID < 50302) {
+          echo "<div class=\"warning\"><img src=\"../artwork/small_yellow_warning_icon.gif\" width=\"16\" height=\"16\" alt=\"!\" /> Current PHP version " . phpversion() . " is below recommended version 5.3.2</div>\n";
+        }
+      ?>
+      <table class="h"><tr><td><nobr><?php echo $string['company']; ?></nobr></td><td class="line"><hr /></td></tr></table>
         <div><label for="company_name"><?php echo $string['companyname']; ?></label> <input type="text" id="company_name" name="company_name" value="University of" class="required" minlength="2" /></div>
 
-      <table class="header"><tr><td><nobr><?php echo $string['server']; ?></nobr></td><td class="line"><hr /></td></tr></table>
+      <table class="h"><tr><td><nobr><?php echo $string['server']; ?></nobr></td><td class="line"><hr /></td></tr></table>
         <br />
         <div><label for="tmpdir"><?php echo $string['tempdirectory']; ?></label> <input type="text" id="mysql_admin_pass" name="tmpdir" value="/tmp/" /></div>
         <div style="clear: left"><label for="page_charset"><?php echo $string['pagecharset']; ?></label> <select id="page_charset" name="page_charset"><option value="UTF-8">UTF-8</option><option value="ISO-8859-1">ISO 8859-1</option></select></div>
 
-      <table class="header"><tr><td><nobr><?php echo $string['databaseadminuser']; ?></nobr></td><td class="line"><hr /></td></tr></table>
+      <table class="h"><tr><td><nobr><?php echo $string['databaseadminuser']; ?></nobr></td><td class="line"><hr /></td></tr></table>
         <div><?php echo $string['needusername']; ?></div>
         <br />
         <div><label for="mysql_admin_user"><?php echo $string['dbusername']; ?></label> <input type="text" value="" id="mysql_admin_user" name="mysql_admin_user" class="required" minlength="2" /></div>
         <div><label for="mysql_admin_pass"><?php echo $string['dbpassword']; ?></label> <input type="password" value="" id="mysql_admin_pass" name="mysql_admin_pass"/></div>
 
-        <table class="header"><tr><td><nobr><?php echo $string['databasesetup']; ?></nobr></td><td class="line"><hr /></td></tr></table>
+        <table class="h"><tr><td><nobr><?php echo $string['databasesetup']; ?></nobr></td><td class="line"><hr /></td></tr></table>
         <br />
         <div><label for="mysql_db_host"><?php echo $string['databasehost']; ?></label> <input type="text" value="127.0.0.1" id="mysql_db_host" name="mysql_db_host" class="required" /></div>
         <div><label for="mysql_db_port"><?php echo $string['databaseport']; ?></label> <input type="text" value="3306" id="mysql_db_port" name="mysql_db_port" class="required" /></div>
         <div><label for="mysql_db_name"><?php echo $string['databasename']; ?></label> <input type="text" value="rogo" id="mysql_db_name" name="mysql_db_name" class="required" minlength="3" /></div>
         <div><label for="mysql_db_charset"><?php echo $string['databasecharset']; ?></label> <select id="mysql_db_charset" name="mysql_db_charset"><option value="utf8">UTF-8</option><option value="latin1">latin1</option></select></div>
 
-      <table class="header"><tr><td><nobr><?php echo $string['databaseuser']; ?></nobr></td><td class="line"><hr /></td></tr></table>
+      <table class="h"><tr><td><nobr><?php echo $string['databaseuser']; ?></nobr></td><td class="line"><hr /></td></tr></table>
         <div><label for="mysql_database_username"><?php echo $string['rdbusername']; ?></label> <input type="text" value="" id="mysql_database_username" name="mysql_database_username" class="required" minlength="3"/></div>
         <div><label for="mysql_database_passwd"><?php echo $string['rdbpassword']; ?></label> <input type="password" value="" id="mysql_database_passwd" name="mysql_database_passwd" class="required" minlength="8" /></div>
 
-      <table class="header"><tr><td><nobr><?php echo $string['timedateformats']; ?></nobr></td><td class="line"><hr /></td></tr></table>
+      <table class="h"><tr><td><nobr><?php echo $string['timedateformats']; ?></nobr></td><td class="line"><hr /></td></tr></table>
         <div><?php echo sprintf($string['tdformatsare'],'<a href="http://dev.mysql.com/doc/refman/5.1/en/date-and-time-functions.html#function_date-format" target="_blank">MySQL DATE_FORMAT</a>'); ?></div>
         <br />
         <div><label for="cfg_short_date"><?php echo $string['date']; ?></label> <input type="text" id="cfg_short_date" name="cfg_short_date" class="required" minlength="2" value="%d/%m/%y" /> </div>
@@ -142,7 +151,7 @@ Class InstallUtils {
         ?>
         </select></div>
 
-        <table class="header"><tr><td><nobr><?php echo $string['ldapconfiguration']; ?></nobr></td><td class="line"><hr /></td></tr></table>
+        <table class="h"><tr><td><nobr><?php echo $string['ldapconfiguration']; ?></nobr></td><td class="line"><hr /></td></tr></table>
         <div><label for="useLdap"><?php echo $string['useldap']; ?></label><input id="useLdap" name="useLdap" type="checkbox" /></div>
         <div id="ldapOptions" style="display:none;">
           <br/>
@@ -153,7 +162,7 @@ Class InstallUtils {
           <div><label for="ldap_user_prefix"><?php echo $string['userprefix']; ?></label> <input type="text" value="" id="ldap_user_prefix" name="ldap_user_prefix" /> <img src="../artwork/information_icon.gif" class="tipright" width="16" height="16" title="<?php echo $string['userprefixtip'] ?>" /></div>
         </div>
 
-      <table class="header"><tr><td><nobr><?php echo $string['sysadminuser']; ?></nobr></td><td class="line"><hr /></td></tr></table>
+      <table class="h"><tr><td><nobr><?php echo $string['sysadminuser']; ?></nobr></td><td class="line"><hr /></td></tr></table>
         <div><?php echo $string['initialsysadmin']; ?></div>
         <br />
         <div><label for="SysAdmin_title"><?php echo $string['title']; ?></label>
@@ -175,15 +184,15 @@ Class InstallUtils {
         <div><label for="SysAdmin_username"><?php echo $string['username']; ?></label> <input type="text" value="" id="SysAdmin_username" name="SysAdmin_username" class="required" minlength="3"/></div>
         <div><label for="SysAdmin_password"><?php echo $string['password']; ?></label> <input type="password" value="" id="SysAdmin_password" name="SysAdmin_password" class="required" minlength="8" /></div>
 
-      <table class="header"><tr><td><nobr><?php echo $string['helpdb']; ?></nobr></td><td class="line"><hr /></td></tr></table>
+      <table class="h"><tr><td><nobr><?php echo $string['helpdb']; ?></nobr></td><td class="line"><hr /></td></tr></table>
         <div><label for="loadHelp"><?php echo $string['loadhelp']; ?></label> <input id="loadHelp" name="loadHelp" type="checkbox" checked="checked"/></div>
 
-      <table class="header"><tr><td><nobr><?php echo $string['supportemaila']; ?></nobr></td><td class="line"><hr /></td></tr></table>
+      <table class="h"><tr><td><nobr><?php echo $string['supportemaila']; ?></nobr></td><td class="line"><hr /></td></tr></table>
         <div></div>
         <br />
         <div><label for="support_email"><?php echo $string['supportemail']; ?></label> <input type="text" value="" id="support_email" name="support_email" class="" class="email"/> </div>
 
-      <table class="header"><tr><td><nobr><?php echo $string['supportnumbers']; ?></nobr></td><td class="line"><hr /></td></tr></table>
+      <table class="h"><tr><td><nobr><?php echo $string['supportnumbers']; ?></nobr></td><td class="line"><hr /></td></tr></table>
         <div><label for="emergency_support1"><?php echo $string['name']; ?></label> <input type="text" value="" id="emergency_support1" name="emergency_support1" class="" /> <?php echo $string['number']; ?> <input type="text" value="" name="emergency_support_number1" class="" /></div>
         <div><label for="emergency_support2"><?php echo $string['name']; ?></label> <input type="text" value="" id="emergency_support2" name="emergency_support2" class="" /> <?php echo $string['number']; ?> <input type="text" value="" name="emergency_support_number2" class="" /></div>
         <div><label for="emergency_support3"><?php echo $string['name']; ?></label> <input type="text" value="" id="emergency_support3" name="emergency_support3" class="" /> <?php echo $string['number']; ?> <input type="text" value="" name="emergency_support_number3" class="" /></div>
@@ -237,6 +246,12 @@ Class InstallUtils {
     }
     self::$emergency_support_numbers = rtrim(self::$emergency_support_numbers, ', ');
     self::$emergency_support_numbers .= ')';
+    
+    // Check we can write to the config file first if not passwords will be lost!
+    $rogo_path = str_ireplace('/install/index.php','',$_SERVER['SCRIPT_FILENAME']);
+    if (!is_writable($rogo_path . '/config/config.inc.php')) {
+      self::displayError(array(300=>'Could not write config file!'));
+    }
 
     //CREATE and populate DB
     self::$db = new mysqli(self::$cfg_db_host , self::$db_admin_username, self::$db_admin_passwd,'',self::$cfg_db_port);
@@ -267,10 +282,9 @@ Class InstallUtils {
 
     echo "<p style=\"margin-left:10px\">" . $string['installed'] . "</p>\n";
     echo "<p style=\"margin-left:10px\">" . $string['deleteinstall'] . "</p>\n";
-    echo "<p style=\"margin-left:10px\"><a href=\"/staff/\">" . $string['staffhomepage'] . "</a></p>\n";
+    echo "<p style=\"margin-left:10px\"><input type=\"button\" name=\"home\" value=\"" . $string['staffhomepage'] . "\" onclick=\"window.location='../staff/index.php'\" /></p>\n";
 
     self::displayWarnings();
-
   }
 
 
@@ -725,7 +739,7 @@ Class InstallUtils {
   *
   */
   static function configFile() {
-  global $string;
+    global $string;
     $rogo_path = str_ireplace('/install/index.php','',$_SERVER['SCRIPT_FILENAME']);
     $errors = array();
     if (file_exists($rogo_path . '/config/config.inc.php')) {
@@ -856,7 +870,7 @@ Class InstallUtils {
     echo "<div class=\"error\">\n";
     if (is_array($error)) {
       foreach($error as $errCode => $message) {
-        echo "\t<div>".$string['errors13']." $errCode:: $message</div>\n";
+        echo "\t<div><img src=\"../artwork/small_yellow_warning_icon.gif\" width=\"16\" height=\"16\" alt=\"!\" /> " . $string['errors13'] . " $errCode: $message</div>\n";
       }
     }
     echo "</div>\n";
@@ -907,24 +921,22 @@ Class InstallUtils {
       <meta http-equiv="X-UA-Compatible" content="IE=edge">
       <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
       <title>Rog&#333; Install script</title>
+      <link rel="stylesheet" type="text/css" href="../css/header.css" />
       <style type="text/css">
-        html { padding: 0px; margin: 0px; width: 100%}
-        body { padding: 0px; margin: 0px; width: 100%; font-family:Arial,sans-serif; font-size:90%; background-color:white; color:black }
-        .error { float: none; color: red; padding-left: .5em; vertical-align: top; }
-        .warning { float: none; color: red; padding-left: .5em; vertical-align: top; }
-        label { float:left; width:160px; padding-left:0em; text-align:right; padding-right:6px}
-        p { clear: both; }
-        .submit { margin-left: 42%; padding-top:2em; }
+        html {padding:0px; margin:0px; width:100%}
+        body {padding:0px; margin:0px; width:100%; font-family:Arial,sans-serif; font-size:90%; background-color:white; color:black }
+        .error {float:none; color:#C00000; padding-left: .5em; vertical-align:top}
+        .warning {float:none; color:#C00000; padding-left: .5em; vertical-align:top}
+        label {float:left; width:160px; padding-left:0em; text-align:right; padding-right:6px}
+        p {clear:both}
+        .submit {margin-left:42%; padding-top:2em}
         table {border:none;padding:0px}
-        table.topbar {font-weight: bold; width:100%; border-collapse:collapse; border:0px}
-        .topbar td {background-color:#F1F5FB}
-        .header {margin-top:1.5em;  margin-bottom:0.5em;  width:97%; color:#1E3287}
-        .header hr  {border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:98%;}
+        .h {margin-top:1.5em; margin-bottom:0.5em; width:97%; color:#1E3287}
+        .h hr {border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:98%}
         td.line {width:98%}
-
         input {width:200px}
-        form {padding: 1em}
-        form div {padding-left: 2em}
+        form {padding:1em}
+        form div {padding-left:2em}
       </style>
       <link rel="stylesheet" type="text/css" href="../css/tipTip.css" />
       <script language="text/javascript" type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
@@ -937,10 +949,16 @@ Class InstallUtils {
       </script>
     </head>
     <body>
-    <table class="topbar" cellpadding="0" cellspacing="0">
-      <tr>
-        <td><div style="font-size:26pt; font-weight:bold; color:#001979">&nbsp;<?php echo $string['systeminstallation']; ?></div><div style="position:relative; left:51px; top:-6px; font-size:10pt; color:#001979; font-weight:bold">version <?php echo $version; ?></td>
-        <td style="text-align:right; padding-top:4px; padding-right:15px"><img src="../artwork/rogo_logo.gif" width="137" height="61" alt="logo" border="0" /></td>
+    <table cellpadding="0" cellspacing="0" border="0" class="header">
+    <tr>
+      <th style="padding-top:4px; padding-bottom:4px; padding-left:16px">
+      <img src="../artwork/r_logo.gif" width="56" height="60" alt="logo" border="0" style="float:left; padding-right:8px" />
+      <div style="color:#1F497D; font-size:28pt; font-weight:bold">Rogo</div>
+      <div style="color:#1F497D; font-size:9pt">System Installation (<?php echo $version; ?>)</div>
+      </th>
+      <th style="text-align:right; padding-right:10px">
+      <img src="../artwork/software_64.png" width="64" height="64" alt="Upgrade Icon" border="0" />
+      </th>
       </tr>
       <tr>
         <td colspan="2" style="height:3px"><img src="../artwork/header_horizontal_line.gif" width="100%" height="3" alt="Line" /></td>
@@ -1133,7 +1151,7 @@ CONFIG;
     }
 
     if (file_put_contents(self::$rogo_path . '/config/config.inc.php', $config) === false) {
-      self::displayError(array(300=>'Could not write config file !'));
+      self::displayError(array(300=>'Could not write config file!'));
     }
   }
 
@@ -1674,7 +1692,7 @@ QUERY;
     $this->tableList['questions'] = <<<QUERY
         CREATE TABLE `questions` (
           `q_id` int(4) NOT NULL auto_increment,
-          `q_type` enum('blank','calculation','dichotomous','flash','hotspot','labelling','likert','matrix','mcq','mrq','rank','textbox','info','extmatch','random','sct','keyword_based') default NULL,
+          `q_type` enum('blank','calculation','dichotomous','flash','hotspot','labelling','likert','matrix','mcq','mrq','rank','textbox','info','extmatch','random','sct','keyword_based','true_false') default NULL,
           `theme` text,
           `scenario` text,
           `leadin` text,

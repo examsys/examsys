@@ -204,6 +204,14 @@ function outputLoadTimes() {
     if (isset($query['sql']['error'])) echo '</div>';
     echo "</li>";
   }
+  echo '</ol>';
+  echo "<p><strong>Included files:</strong></p>";
+  echo '<hr noshade="noshade" style="height:1px; border:0px" /><ol>';
+  $included_files = get_included_files();
+  foreach ($included_files as $filename) {
+    echo "<li>$filename</li>\n";
+  }
+
   echo '</ol></div>';
 }
 //END Debug

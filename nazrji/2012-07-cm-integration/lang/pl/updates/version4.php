@@ -17,4 +17,5 @@ $string['warning1'] = 'Ta aktualizacja wymaga aby plik /config/config.inc.php by
 $string['warning2'] = 'Przypisz plik do webserwera (chown) i zmień jego atrybuty na 644 (chmod)';
 $string['updatefromversion'] = 'Aktualizacja z wersji';
 $string['home'] = 'Strona główna';
+$string['startingupdate'] = 'Starting Update';  // Niko
 ?>

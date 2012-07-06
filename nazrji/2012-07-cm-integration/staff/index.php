@@ -138,10 +138,10 @@ require '../include/staff_auth.inc';
     
     <img src="../artwork/r_logo.gif" width="56" height="60" alt="logo" border="0" style="float:left; padding-right:8px" />
     <div style="color:#1F497D; font-size:28pt; font-weight:bold">Rogō</div>
-    <div style="color:#1F497D; font-size:9pt">eAssessment Management System</div>
+    <div style="color:#1F497D; font-size:9pt"><?php echo $string['eassessmentmanagementsystem']; ?></div>
     
     </th>
-    <th style="text-align:right"><?php echo $logo_html; ?>&nbsp;&nbsp;</th>
+    <th style="text-align:right; padding-right:10px"><?php echo $logo_html; ?></th>
   </tr>
   <tr>
     <td colspan="2" class="bevel"></td>

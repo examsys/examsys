@@ -72,11 +72,26 @@
         addQID(questionID, false);
       }
     }
-    document.PapersMenu.qType.value = qType;
+    <?php 
+    if(isset($_GET['type']) AND $_GET['type'] == '%') {
+      echo "document.PapersMenu.qType.value = '%';\n";
+    } else {
+      echo "document.PapersMenu.qType.value = qType;\n";
+    }
+    ?>
   }
   
   function editQ() {
-    window.location.href='<?php echo $cfg_root_path ?>/question/edit/index.php?q_id=' + getLastID(document.PapersMenu.questionID.value) + '&paperID=list:' + document.PapersMenu.qType.value + '&calling=list';
+    var url = '<?php echo $cfg_root_path ?>/question/edit/index.php?q_id=' + getLastID(document.PapersMenu.questionID.value) + '&paperID=list:' + document.PapersMenu.qType.value + '&calling=list';
+    <?php 
+      if(isset($_GET['team']) AND $_GET['team'] != '') {
+          echo "url = url + '&team=" . $_GET['team'] . "';\n";
+      }
+      if(isset($_GET['keyword']) AND $_GET['keyword'] != '') {
+          echo "url = url + '&keyword=" . $_GET['keyword'] . "';\n";
+      }
+    ?>
+    window.location.href = url;
   }
 
   function deleteQuestion() {
@@ -164,6 +179,7 @@
 <input type="hidden" name="questionID" value="" />
 <input type="hidden" name="qType" value="" />
 <input type="hidden" name="oldQuestionID" value="" />
+<input type="hidden" name="team" value="<?php if(isset($_GET['team'])) echo $_GET['team'];?>" />
 </form>
 
 </div>

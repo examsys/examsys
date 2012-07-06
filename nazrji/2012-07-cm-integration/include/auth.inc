@@ -270,7 +270,11 @@ function db_auth($u, $p, $db, $changeuser = true) {
  *
  */
 function encpw($salt, $u, $p, $type='SHA-512') {
-  if ($type == 'SHA-512') {
+  $supportsha=false;
+  if (version_compare(PHP_VERSION, '5.3.2') >= 0) {
+    $supportsha=true;
+  }
+  if ($type == 'SHA-512' and $supportsha==true ) {
     $full_salt = '$6$' . $salt . '$';        // SHA-512
     $new_password = crypt($p, $full_salt);
     $new_password = '$6$' . substr($new_password, strlen($full_salt));

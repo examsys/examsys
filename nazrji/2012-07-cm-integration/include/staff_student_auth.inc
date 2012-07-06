@@ -36,7 +36,7 @@ require_once $cfg_web_root . 'LTI/ims-blti/blti.php';
 require_once  $cfg_web_root . 'include/lti_func.php';
 
 // Check to see if the update script has been run.
-if ($rogo_version != '4.2.4') {
+if ($rogo_version != '4.3') {
   echo "<html>\n<head>\n<title>Update Required</title>\n</head>\n<body style=\"font-family:Arial,sans-serif;font-size:90%\">\n<table><tr><td><img src=\"../artwork/software_64.png\" width=\"64\" height=\"64\" alt=\"\" border=\"0\" /></td><td><div style=\"color:#C00000;font-weight:bold\">" . $string['warning'] . "</div>";
   echo 'System needs configuring before use. Please contact your local system administrator.';
   echo "</td></title>\n</body>\n</html>\n";

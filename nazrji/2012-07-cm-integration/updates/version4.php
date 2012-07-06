@@ -29,7 +29,7 @@ require_once '../include/auth.inc';
 require_once '../classes/lang.class.php';
 require_once $cfg_web_root . 'classes/dbutils.class.php';
 
-$version = '4.2.4';
+$version = '4.3';
 
 set_time_limit(0);
 
@@ -92,8 +92,8 @@ function gen_random_salt() {
       p {clear:both}
       .submit {text-align:center; padding-top:2em}
       table {border:none}
-      .heading {margin-top:1.5em; margin-bottom:0.5em; width:100%; color:#1E3287}
-      .heading hr {border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%}
+      .h {margin-top:1.5em; margin-bottom:0.5em; width:100%; color:#1E3287}
+      .h hr {border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%}
       td.line {width:98%}
       input[type=text], input[type=password] {width:140px}
       form {padding:1em}
@@ -104,10 +104,16 @@ function gen_random_salt() {
   </head>
   <body>
   <table class="header"> 
-    <tr> 
-      <th><div style="font-size:26pt; font-weight:bold; color:#001979">&nbsp;<?php echo $string['systemupdate']; ?></div><div style="position:relative; left:48px; top:-6px; font-size:10pt; color:#001979; font-weight:bold">version <?php echo $rogo_version . ' to ' .$version; ?></div></th> 
-      <th style="text-align:right; padding-top:10px; padding-right:10px"><img src="../artwork/rogo_logo.gif" width="137" height="61" alt="Logo" border="0" />&nbsp;&nbsp;</th> 
-    </tr> 
+    <tr>
+      <th style="padding-top:4px; padding-bottom:4px; padding-left:16px">
+      <img src="../artwork/r_logo.gif" width="56" height="60" alt="logo" border="0" style="float:left; padding-right:8px" />
+      <div style="color:#1F497D; font-size:28pt; font-weight:bold">Rogo</div>
+      <div style="color:#1F497D; font-size:9pt">Update Utility (<?php echo $rogo_version . ' to ' . $version; ?>)</div>
+      </th>
+      <th style="text-align:right; padding-right:10px">
+      <img src="../artwork/software_64.png" width="64" height="64" alt="Upgrade Icon" border="0" />
+      </th>
+    </tr>
     <tr> 
       <th colspan="2" class="bevel"></th> 
     </tr> 
@@ -137,13 +143,13 @@ if (!isset($_POST['update'])) {
       ?>    
       <form id="installForm" class="cmxform" method="post" action="<?php echo $_SERVER['PHP_SELF'];?>">
       <div><?php printf($string['msg1'], $version); ?></div>
-        <table class="heading"><tr><td><nobr><?php echo $string['databaseadminuser']; ?></nobr></td><td class="line"><hr /></td></tr></table> 
+        <table class="h"><tr><td><nobr><?php echo $string['databaseadminuser']; ?></nobr></td><td class="line"><hr /></td></tr></table> 
           <div><?php echo $string['msg2']; ?></div>
           <br />
           <div><label for="mysql_admin_user"><?php echo $string['dbusername']; ?></label> <input type="text" value="" name="mysql_admin_user" class="required" minlength="2" /> </div>
           <div><label for="mysql_admin_pass"><?php echo $string['dbpassword']; ?></label> <input type="password" value="" name="mysql_admin_pass" /></div>
 
-          <table class="heading"><tr><td><nobr><?php echo $string['onlinehelpsystems']; ?></nobr></td><td class="line"><hr /></td></tr></table>
+          <table class="h"><tr><td><nobr><?php echo $string['onlinehelpsystems']; ?></nobr></td><td class="line"><hr /></td></tr></table>
           <div><label for="update_staff_help"><?php echo $string['updatestaffhelp']; ?></label> <input type="checkbox" value="" name="update_staff_help" checked="checked" /></div>
           <div><label for="update_student_help"><?php echo $string['updatestudenthelp']; ?></label> <input type="checkbox" value="" name="update_student_help" checked="checked" /></div>
      
@@ -170,7 +176,7 @@ if (!isset($_POST['update'])) {
     exit;
   }
   
-  echo "\n<blockquote>\n<h1>Starting update from version 4.x to $version</h1>\n<ol>";
+  echo "\n<blockquote>\n<h1>" . $string['startingupdate'] . "</h1>\n<ol>";
   ob_start();
   
   // 15/06/2011
@@ -2416,31 +2422,6 @@ if (!isset($_POST['update'])) {
   }
   $result->close();
 
-  // 21/03/2012 - Move to InnoDB for all table except help tables SHOULD not go live untill ver 4.3 - With full testing
-  echo "<li>UPDATING TO InnoDB This may take some time please be patient ;-)</li>\n";
-  ob_flush();
-  flush();
-  $result = $mysqli->prepare("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE ENGINE='MyISAM' AND TABLE_SCHEMA = '" . $cfg_db_database . "'");
-  $result->execute();
-  $result->store_result();
-  $result->bind_result($name);
-  $skip_table = Array('help_log'=>1,'help_searches'=>1,'help_tutorial_log'=>1,'staff_help'=>1,'student_help'=>1);
-  while ($result->fetch()) {
-    if(isset($skip_table[$name])) {
-      continue;
-    }
-    echo "<li>ALTER TABLE " . $name . " ENGINE=InnoDB</li>\n";
-    if(!$mysqli->real_query("ALTER TABLE $name ENGINE=InnoDB")) {
-        echo "<li>" . $mysqli->error . "</li>\n";
-    }
-    ob_flush();
-    flush();
-  }
-  
-
-  /*
-   *  UPDATES for short int database fields SHOULD not go live untill ver 4.3 - With full testing
-
   // 05/04/2012 - Enlarge the size of the integer for property_id in properties table.
   $data_type = '';
   $result = $mysqli->prepare("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='properties' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='property_id'");
@@ -2753,10 +2734,6 @@ if (!isset($_POST['update'])) {
     flush();
   }
   $result->close();
-  */
-
-    @ob_flush();
-    @flush();
 
 
   // 19/04/2012 - Add 'state' tables
@@ -3312,6 +3289,24 @@ if (!isset($_POST['update'])) {
       echo '<li class="error">ERROR: could not set permissions ' . $sql . '</li>';
     }  
   }
+  // 21/03/2012 - Move to InnoDB for all table except help tables SHOULD not go live untill ver 4.3 - With full testing
+  $result = $mysqli->prepare("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE ENGINE='MyISAM' AND TABLE_SCHEMA = '" . $cfg_db_database . "'");
+  $result->execute();
+  $result->store_result();
+  $result->bind_result($name);
+  $skip_table = Array('help_log'=>1,'help_searches'=>1,'help_tutorial_log'=>1,'staff_help'=>1,'student_help'=>1);
+  while ($result->fetch()) {
+    if (isset($skip_table[$name])) {
+      continue;
+    }
+    echo "<li>ALTER TABLE " . $name . " ENGINE=InnoDB</li>\n";
+    if (!$mysqli->real_query("ALTER TABLE $name ENGINE=InnoDB")) {
+      echo "<li>" . $mysqli->error . "</li>\n";
+    }
+    ob_flush();
+    flush();
+  }
+  
 
   // 05/07/2012 - Add VLE API reference to relationships table (for historical references) and update for modules using NLE
   $result_col = $mysqli->prepare("SELECT COLUMN_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='relationships' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='vle_api'");

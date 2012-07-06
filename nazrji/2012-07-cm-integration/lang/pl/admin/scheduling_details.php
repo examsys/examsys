@@ -18,5 +18,5 @@ $string['examperiod'] = 'Exam Period';
 $string['barriersneeded'] = 'Barriers Needed';
 $string['campus'] = 'Campus';
 $string['notes'] = 'Notes';
-
+$string['examtasks'] = 'Exam Tasks';
 ?>

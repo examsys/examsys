@@ -41,4 +41,5 @@ $string['type'] = 'Type';
 $string['author'] = 'Author';
 $string['duplicatefoldername'] = 'Duplicate folder name, please use an alternative.';
 $string['loggedinas'] = 'You are logged in as';
+$string['eassessmentmanagementsystem'] = 'eAssessment Management System';
 ?>

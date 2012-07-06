@@ -40,12 +40,14 @@
 
 <div id="left-sidebar" class="sidebar">
 <form name="myform">
-<br />
 
-<table style="margin-left:9px; font-size:90%" cellpadding="3" cellspacing="0" border="0" id="menu1b">
+<div class="submenuheading" id="papertasks"><?php echo $string['examtasks']; ?></div>
+
+<table style="margin-left:9px; font-size:90%" cellpadding="3" cellspacing="0" border="0">
 <tr><td class="ico"><a href="../paper/details.php?paperID=<?php echo $_GET['paperID']; ?>"><img src="../artwork/link.png" width="16" height="16" alt="" border="0" /></a></td><td class="menuitem"><a href="../paper/details.php?paperID=<?php echo $_GET['paperID']; ?>"><?php echo $string['jumptopaper']; ?></a></td></tr>
 <tr><td class="ico"><img onclick="editProperties()" src="../artwork/properties_icon.gif" width="16" height="16" alt="" /></td><td class="menuitem"><a href="#" onclick="editProperties(); return false;"><?php echo $string['editproperties']; ?></a></td></tr>
-<tr><td class="ico"><img onclick="convtFormative()" src="../artwork/formative_16.gif" width="16" height="16" alt="" /></a></td><td class="menuitem"><a href="#" onclick="convtFormative(); return false;"><?php echo $string['converttoformative']; ?></a></td></tr>
+<tr><td class="ico"><img onclick="convtFormative()" src="../artwork/formative_16.gif" width="16" height="16" alt="" /></td><td class="menuitem"><a href="#" onclick="convtFormative(); return false;"><?php echo $string['converttoformative']; ?></a></td></tr>
+<tr><td class="ico"><a href="mailto:<?php echo $email . '?subject=Scheduling of ' . $paper_title . '&body=Dear ' . $title . ' ' . $surname . ','; ?>"><img src="../artwork/small_email.png" width="16" height="16" alt="" /></a></td><td class="menuitem"><a href="mailto:<?php echo $email . '?subject=Scheduling of ' . $paper_title . '&body=Dear ' . $title . ' ' . $surname . ','; ?>">Email <?php echo $title . ' ' . $surname; ?></a></td></tr>
 </table>
 
 </td></tr>

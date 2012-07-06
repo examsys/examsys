@@ -41,7 +41,7 @@ $module = (!isset($_GET['module'])) ? '' : $_GET['module'];
 $folder = (!isset($_REQUEST['folder'])) ? '' : $_REQUEST['folder'];
 $scrofy = (!isset($_REQUEST['scrOfY'])) ? '' : $_REQUEST['scrOfY'];
 $calling = (!isset($_REQUEST['calling'])) ? '' : $_REQUEST['calling'];
-$keyword = (!isset($_REQUEST['keyword'])) ? '' : $_REQUEST['keyword'];
+$ListKeyword = (!isset($_REQUEST['keyword'])) ? '' : $_REQUEST['keyword'];
 $team = (!isset($_REQUEST['team'])) ? '' : $_REQUEST['team'];
 
 $paper_count = 0;
@@ -601,13 +601,13 @@ echo save_buttons($mode, $disabled, $question->get_locked(), $question->allow_co
 ?>
       <input type="hidden" name="q_id" value="<?php echo $question->id ?>" />
       <input name="checkout_author" value="<?php echo $userID ?>" type="hidden" />
-      <input id="calling" name="calling" value="<?php echo $calling ?>" type="hidden" />
-      <input id="module" name="module" value="<?php echo $module ?>" type="hidden" />
-      <input id="folder" name="folder" value="<?php echo $folder ?>" type="hidden" />
-      <input id="scrOfY" name="scrOfY" value="<?php echo $scrofy ?>" type="hidden" />
-      <input id="paperID" name="paperID" value="<?php echo $paper_id ?>" type="hidden" />
-      <input id="keyword" name="keyword" value="<?php echo $keyword ?>" type="hidden" />
-      <input id="team" name="team" value="<?php echo $team ?>" type="hidden" />
+      <input id="calling" name="calling" value="<?php echo $calling; ?>" type="hidden" />
+      <input id="module" name="module" value="<?php echo $module; ?>" type="hidden" />
+      <input id="folder" name="folder" value="<?php echo $folder; ?>" type="hidden" />
+      <input id="scrOfY" name="scrOfY" value="<?php echo $scrofy; ?>" type="hidden" />
+      <input id="paperID" name="paperID" value="<?php echo $paper_id; ?>" type="hidden" />
+      <input id="keyword" name="keyword" value="<?php echo $ListKeyword; ?>" type="hidden" />
+      <input id="team" name="team" value="<?php echo $team; ?>" type="hidden" />
       <input id="question_id" name="question_id" value="<?php echo $question->id ?>" type="hidden" />
     </div>
   </form>
