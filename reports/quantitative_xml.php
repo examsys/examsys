@@ -26,6 +26,7 @@
   require '../include/errors.inc';
   check_var('paperID', 'GET', true, false);
 
+  header('Pragma: public');
   header('Content-disposition: attachment; filename=report.xml');
   header('Content-type: text/xml');
   
