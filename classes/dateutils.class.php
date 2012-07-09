@@ -26,10 +26,7 @@
 
 Class DateUtils {
 	// Start of academic year (mm/dd)
-//	public static $academic_year_start = '07/01';
-
-  // TODO: set back to July
-  public static $academic_year_start = '09/01';
+	public static $academic_year_start = '07/01';
 
   /**
 	 * Get the current academic year in the format 'yyyy/yy', e.g. '2010/11'
