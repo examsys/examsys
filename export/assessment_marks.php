@@ -24,7 +24,8 @@
   
 require '../include/staff_auth.inc';
 require '../include/class_totals.inc';
-  
+
+header('Pragma: public');
 header('Content-type: application/octet-stream');
 header("Content-Disposition: attachment; filename=new_" . str_replace(' ', '_', $paper) . "_marks.csv");
 

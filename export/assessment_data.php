@@ -191,6 +191,7 @@
   }
   $question_no++;
 
+  header('Pragma: public');
   header('Content-type: application/octet-stream');
   header("Content-Disposition: attachment; filename=" . str_replace(' ', '_', $paper_title) . ".csv");
 

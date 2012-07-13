@@ -39,7 +39,8 @@ require '../include/staff_auth.inc';
     $question_no++;
   }
   $result->close();
-  
+
+  header('Pragma: public');
   header('Content-type: text/xml');
   header("Content-Disposition: attachment; filename=" . str_replace(' ', '_', $paper) . ".xml");
 
