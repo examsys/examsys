@@ -118,7 +118,7 @@ if ($faculties > 0) {
   $old_faculty = '';
 $id = 0;
 
-$result = $mysqli->prepare("SELECT schools.id, schools.school, faculty.name, faculty.deleted, COUNT(modules.id) FROM (schools, faculty) LEFT JOIN modules ON schools.id=modules.schoolid WHERE schools.facultyID=faculty.id AND schools.deleted IS NULL GROUP BY school ORDER BY faculty.name, school");
+$result = $mysqli->prepare("SELECT schools.id, schools.school, faculty.name, faculty.deleted, COUNT(modules.id) FROM (schools, faculty) LEFT JOIN modules ON schools.id=modules.schoolid WHERE schools.facultyID=faculty.id AND schools.deleted IS NULL GROUP BY faculty.name, school ORDER BY faculty.name, school");
 $result->execute();
 $result->bind_result($id, $school, $faculty, $faculty_deleted, $module_no);
 while ($result->fetch()) {
