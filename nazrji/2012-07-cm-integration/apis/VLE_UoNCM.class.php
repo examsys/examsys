@@ -31,7 +31,7 @@ require_once 'VLEAPI.if.php';
 require_once $cfg_web_root . 'webServices/RestRequest.class';
 
 class VLE_UoNCM implements iVLEAPI {
-  private $root_url = 'http://cm.rji.ac.uk/2011/index.php/';
+  private $root_url = 'http://cm.rji.ac.uk/2012/index.php/';
 
   /**
    * Return objectives from the University of Nottingham Curriculum Mapping system
@@ -41,7 +41,7 @@ class VLE_UoNCM implements iVLEAPI {
    */
   public function getObjectives($moduleID, $session) {
     // TODO: need to use the find interface to get the Module ID for code and session
-    $req = new RestRequest($this->root_url . "api/json/125/module_session_obs");
+    $req = new RestRequest($this->root_url . "api/json/189/module_session_obs");
     $req->execute();
 
     $res = $req->getResponseBody();
@@ -68,39 +68,41 @@ class VLE_UoNCM implements iVLEAPI {
       $sessions = array();
 
       $i = 0;
-      foreach ($input['cmapi']['module']['session'] as $session) {
-        // If no objectives don't bother showing the session
-          if (is_array($session['objectives'])) {
-            $sess_data = array(
-            'identifier' => $session['@attributes']['id'],
-            'class_code' => $session['code'],
-            'title' => $session['title'],
-            'occurrance' => date('d/m/y H:i', strtotime($session['start'])),
-            'calendar_year' => $calendar_year,
-            'VLE' => 'UoNCM',
-            'source_url' => $this->root_url . 'view/' . $session['@attributes']['id'],
-            'mapped' => 0,
-            'objectives' => array()
-          );
-
-          $obs = $session['objectives']['outcome_session'];
-          if (isset($obs['@attributes'])) {
-            $obj_data = array(
-              'content' => (isset($obs['title']) and $obs['title'] != '') ? $obs['title'] : $obs['content'],
-              'id' => $obs['@attributes']['id']
+      if (isset($input['cmapi']['module']['session'])) {
+        foreach ($input['cmapi']['module']['session'] as $session) {
+          // If no objectives don't bother showing the session
+            if (is_array($session['objectives'])) {
+              $sess_data = array(
+              'identifier' => $session['@attributes']['id'],
+              'class_code' => $session['code'],
+              'title' => $session['title'],
+              'occurrance' => date('d/m/y H:i', strtotime($session['start'])),
+              'calendar_year' => $calendar_year,
+              'VLE' => 'UoNCM',
+              'source_url' => $this->root_url . 'view/' . $session['@attributes']['id'],
+              'mapped' => 0,
+              'objectives' => array()
             );
-            $sess_data['objectives'][++$i] = $obj_data;
-          } else {
-            foreach ($obs as $objective) {
+
+            $obs = $session['objectives']['outcome_session'];
+            if (isset($obs['@attributes'])) {
               $obj_data = array(
-                'content' => (isset($objective['title']) and $objective['title'] != '') ? $objective['title'] : $objective['content'],
-                'id' => $objective['@attributes']['id'],
-                'mapped' => 0
+                'content' => (isset($obs['title']) and $obs['title'] != '') ? $obs['title'] : $obs['content'],
+                'id' => $obs['@attributes']['id']
               );
               $sess_data['objectives'][++$i] = $obj_data;
+            } else {
+              foreach ($obs as $objective) {
+                $obj_data = array(
+                  'content' => (isset($objective['title']) and $objective['title'] != '') ? $objective['title'] : $objective['content'],
+                  'id' => $objective['@attributes']['id'],
+                  'mapped' => 0
+                );
+                $sess_data['objectives'][++$i] = $obj_data;
+              }
             }
+            $sessions[$session['@attributes']['id']] = $sess_data;
           }
-          $sessions[$session['@attributes']['id']] = $sess_data;
         }
       }
 
