@@ -31,7 +31,7 @@ require_once 'VLEAPI.if.php';
 require_once $cfg_web_root . 'webServices/RestRequest.class';
 
 class VLE_UoNCM implements iVLEAPI {
-  private $root_url = 'http://cm.rji.ac.uk/2012/index.php/';
+  private $root_url = 'http://cm.rji.ac.uk/%s/index.php/';
 
   /**
    * Return objectives from the University of Nottingham Curriculum Mapping system
@@ -40,8 +40,8 @@ class VLE_UoNCM implements iVLEAPI {
    * @return mixed Array of session and objective data in format required by Rogō
    */
   public function getObjectives($moduleID, $session) {
-    // TODO: need to use the find interface to get the Module ID for code and session
-    $req = new RestRequest($this->root_url . "api/json/189/module_session_obs");
+    $sess_year = strstr($session, '/', true);
+    $req = new RestRequest(sprintf($this->root_url, $sess_year) . "api/find_json?search={$moduleID}&type=module&where=attribute&attrib=code&output=module_session_obs");
     $req->execute();
 
     $res = $req->getResponseBody();
