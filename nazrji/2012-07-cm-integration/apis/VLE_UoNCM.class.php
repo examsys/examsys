@@ -71,8 +71,8 @@ class VLE_UoNCM implements iVLEAPI {
       if (isset($input['cmapi']['module']['session'])) {
         foreach ($input['cmapi']['module']['session'] as $session) {
           // If no objectives don't bother showing the session
-            if (is_array($session['objectives'])) {
-              $sess_data = array(
+          if (is_array($session['objectives'])) {
+            $sess_data = array(
               'identifier' => $session['@attributes']['id'],
               'class_code' => $session['code'],
               'title' => $session['title'],
@@ -102,6 +102,44 @@ class VLE_UoNCM implements iVLEAPI {
               }
             }
             $sessions[$session['@attributes']['id']] = $sess_data;
+          }
+        }
+      }
+
+      if (isset($input['cmapi']['module']['learning_act'])) {
+        foreach ($input['cmapi']['module']['learning_act'] as $learning_act) {
+          // If no objectives don't bother showing the session
+          if (is_array($learning_act['objectives'])) {
+            $act_data = array(
+              'identifier' => $learning_act['@attributes']['id'],
+              'class_code' => '',
+              'title' => $learning_act['title'],
+              'occurrance' => 'Non-timetabled',
+              'calendar_year' => $calendar_year,
+              'VLE' => 'UoNCM',
+              'source_url' => $this->root_url . 'view/' . $learning_act['@attributes']['id'],
+              'mapped' => 0,
+              'objectives' => array()
+            );
+
+            $obs = $learning_act['objectives']['outcome_learning_act'];
+            if (isset($obs['@attributes'])) {
+              $obj_data = array(
+                'content' => (isset($obs['title']) and $obs['title'] != '') ? $obs['title'] : $obs['content'],
+                'id' => $obs['@attributes']['id']
+              );
+              $act_data['objectives'][++$i] = $obj_data;
+            } else {
+              foreach ($obs as $objective) {
+                $obj_data = array(
+                  'content' => (isset($objective['title']) and $objective['title'] != '') ? $objective['title'] : $objective['content'],
+                  'id' => $objective['@attributes']['id'],
+                  'mapped' => 0
+                );
+                $act_data['objectives'][++$i] = $obj_data;
+              }
+            }
+            $sessions[$learning_act['@attributes']['id']] = $act_data;
           }
         }
       }
