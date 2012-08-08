@@ -31,7 +31,8 @@ require_once 'VLEAPI.if.php';
 require_once $cfg_web_root . 'webServices/RestRequest.class';
 
 class VLE_UoNCM implements iVLEAPI {
-  private $root_url = 'http://cm.rji.ac.uk/%s/index.php/';
+  private $_root_url = 'http://cm.rji.ac.uk/%s/index.php/';
+  private $_sess_year;
 
   /**
    * Return objectives from the University of Nottingham Curriculum Mapping system
@@ -40,8 +41,9 @@ class VLE_UoNCM implements iVLEAPI {
    * @return mixed Array of session and objective data in format required by Rogō
    */
   public function getObjectives($moduleID, $session) {
-    $sess_year = strstr($session, '/', true);
-    $req = new RestRequest(sprintf($this->root_url, $sess_year) . "api/find_json?search={$moduleID}&type=module&where=attribute&attrib=code&output=module_session_obs");
+    $this->_sess_year = strstr($session, '/', true);
+    $this->_root_url = sprintf($this->_root_url, $this->_sess_year);
+    $req = new RestRequest($this->_root_url . "api/find_json?search={$moduleID}&type=module&where=attribute&attrib=code&output=module_session_obs");
     $req->execute();
 
     $res = $req->getResponseBody();
@@ -79,7 +81,7 @@ class VLE_UoNCM implements iVLEAPI {
               'occurrance' => date('d/m/y H:i', strtotime($session['start'])),
               'calendar_year' => $calendar_year,
               'VLE' => 'UoNCM',
-              'source_url' => $this->root_url . 'view/' . $session['@attributes']['id'],
+              'source_url' => $this->_root_url . 'view/' . $session['@attributes']['id'],
               'mapped' => 0,
               'objectives' => array()
             );
@@ -117,7 +119,7 @@ class VLE_UoNCM implements iVLEAPI {
               'occurrance' => 'Non-timetabled',
               'calendar_year' => $calendar_year,
               'VLE' => 'UoNCM',
-              'source_url' => $this->root_url . 'view/' . $learning_act['@attributes']['id'],
+              'source_url' => $this->_root_url . 'view/' . $learning_act['@attributes']['id'],
               'mapped' => 0,
               'objectives' => array()
             );
