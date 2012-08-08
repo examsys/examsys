@@ -198,6 +198,7 @@ if ($css != '') {
 <?php if ($latex_needed == 1) {?>
 <script type="text/javascript" src="../tools/mee/mee/js/mee_src.js"></script>
 <?php }?>
+<script type="text/javascript" src="../js/jquery.flash_q.js"></script>
 <script language="JavaScript" type="text/javascript">
   window.history.go(1);
 <?php

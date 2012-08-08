@@ -25,11 +25,11 @@
 */
 
 
-Class ModuleUtils {
+Class module_utils {
 
-  static function addModules($moduleid, $fullname, $active, $schoolID, $vle_api, $sms_api, $selfEnroll, $peer, $external, $stdset, $mapping, $neg_marking, $ebel_grid_template, $db) {
+  static function add_modules($moduleid, $fullname, $active, $schoolID, $vle_api, $sms_api, $selfEnroll, $peer, $external, $stdset, $mapping, $neg_marking, $ebel_grid_template, $db) {
     
-    if (ModuleUtils::moduleExists($moduleid,$db) === false) {
+    if (module_utils::module_exists($moduleid, $db) === false) {
       return false;
     }
     
@@ -51,7 +51,7 @@ Class ModuleUtils {
     return true;
   }
   
-  static function moduleExists($moduleid, $db) {
+  static function module_exists($moduleid, $db) {
     // Check for unique moduleID
     $unique_moduleid = false;
     $result = $db->prepare("SELECT moduleid FROM modules WHERE moduleid=?");
@@ -67,6 +67,21 @@ Class ModuleUtils {
     $result->close();
     
     return $unique_moduleid;
+  }
+
+  static function module_check_self_enrol($module_id) {
+    // returns false if not self enrol else returns needed data;
+    $result = $mysqli->prepare("SELECT fullname, school, active, selfenroll FROM modules, schools WHERE modules.schoolid=schools.id AND moduleid=?");
+    $result->bind_param('s', $module_id);
+    $result->execute();
+    $result->bind_result($fullname, $school, $active, $selfenroll);
+    $result->fetch();
+    if ($result->num_rows == 0) {
+      $result->close();
+      return false;
+    }
+    $result->close();
+    return(array($fullname, $school, $active, $selfenroll));
   }
   
 }

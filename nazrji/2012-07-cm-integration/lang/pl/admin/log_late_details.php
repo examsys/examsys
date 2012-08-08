@@ -1,6 +1,6 @@
 <?php
-$string['administrativetools'] = 'Administrative Tools';  // Niko, whole file please
-$string['loglatedetails'] = 'Log Late Details';
-$string['papertitle'] = 'Paper Title';
-$string['studentslate'] = 'Students Late';
+$string['administrativetools'] = 'Narzędzia administracyjne'; 
+$string['loglatedetails'] = 'Logowanie szczegółów spoźnień';
+$string['papertitle'] = 'Tytuł arkusza';
+$string['studentslate'] = 'Spóźnieni studenci';
 ?>

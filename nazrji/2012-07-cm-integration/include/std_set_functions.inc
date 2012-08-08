@@ -118,6 +118,13 @@ function display_options($options, $q_id, $current_theme, $current_scenario, $cu
   }
 
   switch($options[0]['q_type']) {
+    case 'area':
+      $review_val = get_review($options[0]['q_type'], $std_method, $q_id, 1, $tmp_reviews, $is_group);
+      echo "<div>";
+      echo reviewScale($question_no, '', $options[0]['marks_correct'], $std_method, substr($tmp_exclude,0,1), $review_val, $stdID, $std_excluded, $is_group);
+      echo "</div>\n";
+      $marks = $options[0]['marks_correct'];
+      break;
     case 'mcq':
       $review_val = get_review($options[0]['q_type'], $std_method, $q_id, 1, $tmp_reviews, $is_group);
       $scale_html = reviewScale($question_no, '', $options[0]['marks_correct'], $std_method, (isset($exclude[$q_id])), $review_val, $stdID, $std_excluded, $is_group);
@@ -148,10 +155,10 @@ function display_options($options, $q_id, $current_theme, $current_scenario, $cu
       if ($li_set == 1) {
         echo '<tr><td></td><td>';
       } else {
-        echo '<tr><td class="question_no">' . $question_no . '.&nbsp;</td><td>';
+        echo '<tr><td class="q_no">' . $question_no . '.&nbsp;</td><td>';
       }
       $search = array('$A','$B','$C','$D','$E','$F','$G','$H','$I','$J');
-      $replace = array($A,$B,$C,$D,$E,$F,$G,$H,$I,$J);
+      $replace = array($A, $B, $C, $D, $E, $F, $G, $H, $I, $J);
       echo "<p";
       if (isset($exclude[$q_id])) echo ' style="color:red; text-decoration:line-through"';
       echo ">" . str_ireplace($search,$replace,$current_leadin) . "</p>\n";
@@ -238,7 +245,7 @@ function display_options($options, $q_id, $current_theme, $current_scenario, $cu
       $matching_answers = explode('|', $options[0]['correct']);
   
       if ($matching_media[0] != '') {
-        echo '<p align="center">' . display_media($matching_media[0], $matching_media_width[0], $matching_media_height[0]) . '</p>';
+        echo '<p align="center">' . display_media($matching_media[0], $matching_media_width[0], $matching_media_height[0], '') . '</p>';
       }
       $text_scenarios = 0;
       for ($part_id=0; $part_id<10; $part_id++) {
@@ -263,7 +270,7 @@ function display_options($options, $q_id, $current_theme, $current_scenario, $cu
           echo ">" . $matching_scenarios[$part_id - 1] . "</div>";
         }
         if (isset($matching_media[$part_id]) and $matching_media[$part_id] != '') {
-          echo "<p>" . display_media($matching_media[$part_id], $matching_media_width[$part_id], $matching_media_height[$part_id]) . "</p>\n";
+          echo "<p>" . display_media($matching_media[$part_id], $matching_media_width[$part_id], $matching_media_height[$part_id], '') . "</p>\n";
         }
         $sub_answers = explode('$',$matching_answers[$part_id - 1]);
         $list_size = 10;
@@ -381,7 +388,7 @@ function display_options($options, $q_id, $current_theme, $current_scenario, $cu
     case 'matrix':
       $part_id = 1;
       if ($matching_media[0] != '') {
-        echo "<p align=\"center\">" . display_media($matching_media[0], $matching_media_width[0], $matching_media_height[0]) . "</p>\n";
+        echo "<p align=\"center\">" . display_media($matching_media[0], $matching_media_width[0], $matching_media_height[0], '') . "</p>\n";
       }
       echo '<table cellpadding="2" cellspacing="0" border="1" class="matrix">';
       echo "<tr><td colspan=\"2\">&nbsp;</td>\n";
@@ -392,7 +399,6 @@ function display_options($options, $q_id, $current_theme, $current_scenario, $cu
         echo '<td>&nbsp;</td>';
       }
       echo "</tr>\n";
-      //$numerals = array('0','i','ii','iii','iv','v','vi','vii','viii','ix','x','xi','xii');
       foreach ($matching_scenarios as $single_scenario) {
         $review_val = get_review($options[0]['q_type'], $std_method, $q_id, $part_id, $tmp_reviews, $is_group);
         if (trim($single_scenario) != '') {

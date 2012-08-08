@@ -46,7 +46,7 @@ $locked = ($dis_class != '');
 <?php
 
 if (isset($all_media['filenames'][$index]) and $all_media['filenames'][$index] != '') {
-  $current_media_html =  display_media($all_media['filenames'][$index], $all_media['widths'][$index], $all_media['heights'][$index], $index, $locked);
+  $current_media_html =  display_media($all_media['filenames'][$index], $all_media['widths'][$index], $all_media['heights'][$index], '', $index, $locked);
 ?>
               <tr<?php echo $alt_c ?>>
                 <th><?php echo $string['current'] . ' ' . $string['media'] ?></th>

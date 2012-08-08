@@ -26,7 +26,7 @@ ini_set('display_errors','On');
 
 //require '../include/staff_student_auth.inc';
 $root = str_replace('/include', '/', str_replace('\\', '/', dirname(__FILE__)));
-$root="$root/../";
+$root = "$root/../";
 require_once $root . 'config/config.inc.php';
 require_once $root . 'config/config.inc.php';
 require_once $cfg_web_root . 'include/auth.inc';
@@ -43,15 +43,13 @@ if (substr_count($_GET['url'], '/') > 0) {
 } else {
   $action = $_GET['url'];
 }
-if($action=="getModulePaperList") {
-  $userroles='Staff';
+if ($action == 'getModulePaperList') {
+  $userroles = 'Staff';
   $mysqli = DBUtils::get_mysqli_link($cfg_db_host , $cfg_db_username, $cfg_db_passwd, $cfg_db_database, $cfg_db_charset, $dbclass);
 
   db_change_user($mysqli);
 
-}
-else
-{
+} else {
   require '../include/staff_student_auth.inc';
 }
 require './restAPI.class';
@@ -65,7 +63,8 @@ Class webServiceRestAPI extends restAPI {
 					'2' => 'Summative Exam',
 					'3' => 'Survey (Questionnaire)',
 					'4' => 'OSCE Station',
-					'5' => 'Offline Paper'
+					'5' => 'Offline Paper',
+          '6' => 'Peer Review'
 					);
 
   public function __construct($mysqli) {
@@ -209,24 +208,20 @@ Class webServiceRestAPI extends restAPI {
 
   public function getModulePaperList($team) {
     global $protocol, $cfg_root_path;
-$moduleSQL='';
-        $moduleSQL .= " (moduleID LIKE ? OR  moduleID LIKE ? OR  moduleID LIKE ? or  moduleID LIKE ?)";
+    $moduleSQL='';
+    $moduleSQL .= " (moduleID LIKE ? OR  moduleID LIKE ? OR  moduleID LIKE ? or  moduleID LIKE ?)";
+    $typeSQL = " paper_type!='2'";
 
-
-
-        $typeSQL = " paper_type!='2'";
-
-unset($res);
+    unset($res);
     $papers = array();
     $paper_no = 0;
-   $sql="SELECT property_id, paper_title, paper_type, start_date, end_date, created, MAX(screen), title, surname, crypt_name FROM properties, papers, users WHERE properties.paper_ownerID=users.id AND properties.property_id=papers.paper AND  $moduleSQL AND $typeSQL AND deleted IS NULL AND retired IS NULL GROUP BY property_id ORDER BY paper_title";
-//  echo $sql;
+    $sql="SELECT property_id, paper_title, paper_type, start_date, end_date, created, MAX(screen), title, surname, crypt_name FROM properties, papers, users WHERE properties.paper_ownerID=users.id AND properties.property_id=papers.paper AND  $moduleSQL AND $typeSQL AND deleted IS NULL AND retired IS NULL GROUP BY property_id ORDER BY paper_title";
+
     $res = $this->db->prepare($sql);
     $team1="$team,%";
     $team2="$team";
     $team3="%,$team,%";
     $team4="%,$team";
-//    echo $team1 . "::::: " .$team2 . "::::::" . $team3 . ":::::::: " . $team4 .  ": <br>";
     $res->bind_param('ssss',$team1,$team2,$team3,$team4);
     $res->execute();
     $res->store_result();
@@ -420,7 +415,6 @@ unset($res);
 
 }
 
-//$mysqli = new mysqli($cfg_db_host , $cfg_db_username, $cfg_db_passwd, $cfg_db_database);
 $rest = new webServiceRestAPI($mysqli);
 $rest->processRequest();
 ?>

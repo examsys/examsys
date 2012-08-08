@@ -12,6 +12,7 @@ $string['papername'] = 'Paper Name';
 $string['paperowner'] = 'Paper Owner';
 $string['session'] = 'Session';
 $string['modules'] = 'Module(s)';
+$string['examduration'] = 'Exam Duration';
 $string['cohortsize'] = 'Cohort Size';
 $string['sittings'] = 'Sittings';
 $string['examperiod'] = 'Exam Period';

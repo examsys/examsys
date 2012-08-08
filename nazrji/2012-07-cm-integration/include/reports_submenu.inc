@@ -91,7 +91,7 @@
   }
 </script>
 
-<div style="z-index:20; display:none; background-color:white; position:fixed; left:190px; top:60px; box-shadow: 2px 2px 2px #808080" id="stats_menu" onclick="showAssStatsMenu(true, event);">
+<div style="z-index:20; display:none; background-color:white; position:fixed; left:190px; top:60px; box-shadow:2px 2px 2px rgba(0, 0, 0, 0.50)" id="stats_menu" onclick="showAssStatsMenu(true, event);">
 <table border="0" cellpadding="3" cellspacing="1" style="width:530px; border:1px solid #C0C0C0; font-size:80%">
 <tr>
 <td style="background-color:#F2B100; height:5px; padding:0px"></td>
@@ -125,12 +125,13 @@
   $end_month = substr($target_end_date,4,2);
   $end_day = substr($target_end_date,6,2);
   $end_hour = substr($target_end_date,8,2);
+  $end_minute = substr($target_end_date,10,2);
   if ($end_hour < 23) {
     $end_hour++;
     if ($end_hour < 10) $end_hour = '0' . $end_hour;
   }
-  $end_time = $end_hour . '0000';
-  
+  $end_time = $end_hour . $end_minute . '00';
+
   if ($end_year > date('Y') or ($end_year == date('Y') and $end_month > date('m'))) {
     $end_day = date('d');
     $end_month = date('m');

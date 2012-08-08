@@ -26,27 +26,12 @@
 
 require '../include/staff_auth.inc';
 require '../include/sidebar_menu.inc';
+require '../include/sort.inc';
 
 if (isset($_GET['calyear'])) {
   $current_year = $_GET['calyear'];
 } else {
   $current_year = date("Y");
-}
-
-function array_csort($marray, $column, $sort_order) {   //coded by Ichier2003
-  $sortarr = array();
-  foreach ($marray as $row) {
-    $sortarr[] = $row[$column];
-  }
-  $sortarr = array_map('strtolower',$sortarr);
-  $sort_method = SORT_STRING;
-  if ($column == 'mark' or $column == 'duration') $sort_method = SORT_NUMERIC;
-  if ($sort_order == 'asc') {
-    array_multisort($sortarr, SORT_ASC, $sort_method, $marray);
-  } else {
-    array_multisort($sortarr, SORT_DESC, $sort_method, $marray);
-  }
-  return $marray;
 }
 
 function echoButtons($year) {
@@ -232,13 +217,9 @@ function echoButtons($year) {
   $paper_details = array();
   if ($schools_sql != '' OR !isset($_GET['school']) OR (isset($_GET['school']) AND ($_GET['school'] == -1 OR $_GET['school'] == ''))) {
     // Get papers running on various dates.
-    $result = $mysqli->prepare("SELECT password, DATE_FORMAT(start_date,'%Y/%m/%d') AS date, labs, DATE_FORMAT(start_date,'%H:%i') AS start_time, DATE_FORMAT(end_date,'%H:%i') AS end_time, property_id, paper_title, DATE_FORMAT(start_date,'%c') AS month, DATE_FORMAT(start_date,'%Y') AS cal_year, DATE_FORMAT(start_date,'%e') AS start_day, DATE_FORMAT(end_date,'%e') AS end_date, moduleID, paper_type FROM properties WHERE start_date>=" . $current_year . "0101000000 AND end_date<=" . $current_year . "1231235959 AND (paper_type='2' OR paper_type='4') AND deleted IS NULL $schools_sql $lab_sql ORDER BY start_date");
-    //$result->bind_param('s', $current_ip_address);
+    $result = $mysqli->prepare("SELECT password, DATE_FORMAT(start_date,'%Y/%m/%d') AS date, labs, DATE_FORMAT(start_date,'%H:%i') AS start_time, DATE_FORMAT(end_date,'%H:%i') AS end_time, property_id, paper_title, DATE_FORMAT(start_date,'%c') AS month, DATE_FORMAT(start_date,'%Y') AS cal_year, DATE_FORMAT(start_date,'%e') AS start_day, DATE_FORMAT(end_date,'%e') AS end_date, moduleID, paper_type FROM properties WHERE start_date>=" . $current_year . "0101000000 AND end_date<=" . $current_year . "1231235959 AND paper_type='2' AND deleted IS NULL $schools_sql $lab_sql ORDER BY start_date");
     $result->execute();
-    //$result->store_result();
     $result->bind_result($password, $main_date, $labs, $start_time, $end_time, $property_id, $paper_title, $month, $cal_year, $start_day, $end_date, $moduleID, $paper_type);
-
-    //$results = $mysqli->query("SELECT DATE_FORMAT(start_date,'%Y/%m/%d') AS date, labs, DATE_FORMAT(start_date,'%H:%i') AS start_time, DATE_FORMAT(end_date,'%H:%i') AS end_time, property_id, paper_title, DATE_FORMAT(start_date,'%c') AS month, DATE_FORMAT(start_date,'%Y') AS cal_year, DATE_FORMAT(start_date,'%e') AS start_day, DATE_FORMAT(end_date,'%e') AS end_date, moduleID, paper_type FROM properties WHERE start_date>=" . $current_year . "0101000000 AND end_date<=" . $current_year . "1231235959 AND (paper_type='2' OR paper_type='4') AND deleted IS NULL $schools_sql $lab_sql ORDER BY start_date");
     while ($result->fetch()) {
       $paper_details[$paper_no]['labs'] = $labs;
       $paper_details[$paper_no]['date'] = $main_date;

@@ -42,6 +42,7 @@
   .obj_no {text-align:right; padding-right:6px}
   .zero_obj_no {text-align:right; padding-right:6px; color:#C00000}
   .title {padding-left:6px}
+  .indent {padding-left:24px}
   </style>
 
   <script src="../js/staff_help.js" type="text/javascript"></script>
@@ -109,7 +110,7 @@
 
   echo "<table class=\"header\">\n";
   echo "<tr><th colspan=\"3\"><div class=\"breadcrumb\"><a href=\"../staff/index.php\">" . $string['home'] . "</a>&nbsp;&nbsp;<img src=\"../artwork/breadcrumb_arrow.png\" width=\"4\" height=\"7\" alt=\"-\" />&nbsp;&nbsp;<a href=\"../folder/details.php?module=$module\">$module</a></div><div style=\"font-size:200%; margin-left:10px\"><strong>" . $string['manageobjectives'] . "</strong></div></th><th style=\"text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(0); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['help'] . "\" border=\"0\" /></a></th></tr>\n";
-  echo "<tr><th>&nbsp;" . $string['date'] . "&nbsp;</th>\n";
+  echo "<tr><th style=\"padding-left:10px\">" . $string['date'] . "&nbsp;</th>\n";
   echo "<th><img src=\"../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;" . $string['name'] . "&nbsp;</th>\n";
   echo "<th><img src=\"../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;" . $string['objectives'] . "&nbsp;</th><th>&nbsp;</th></tr>\n";
   echo "<tr><th colspan=\"4\" style=\"height:3px\"><img src=\"../artwork/header_horizontal_line.gif\" width=\"100%\" height=\"3\" alt=\"Line\" /></th></tr>\n";
@@ -129,7 +130,7 @@
 	      	echo "<tr><td colspan=\"4\">&nbsp;</td></tr>\n";
       	}
 	      $first = false;
-      	echo "<tr><td colspan=\"4\"><table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>" . $session['calendar_year'] . "</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table></td></tr>\n";
+      	echo "<tr><td colspan=\"4\"><table border=\"0\" class=\"subsect\" style=\"margin-left:10px; width:100%\"><tr><td><nobr>" . $session['calendar_year'] . "</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table></td></tr>\n";
       }
       if (isset($session['identifier'])) {
         $identifier = $session['identifier'];
@@ -141,7 +142,7 @@
       } else {
         echo "<tr style=\"cursor:pointer\" id=\"$id\" onmouseover=\"highlight($id)\" onmouseout=\"unhighlight($id)\" onclick=\"selSession('$id','$identifier','" . $session['calendar_year'] . "','" . $session['VLE'] . "',event);\" ondblclick=\"editSession('" . $session['identifier'] . "','" . $session['calendar_year'] . "');\">";
       }
-      echo "<td>&nbsp;" . $session['occurrance'] . "</td><td class=\"title\">" . $session['title'] . "</td>";
+      echo "<td class=\"indent\">" . $session['occurrance'] . "</td><td class=\"title\">" . $session['title'] . "</td>";
       if ($objectives_no == 0) {
         echo "<td class=\"zero_obj_no\"><img src=\"../artwork/small_yellow_warning_icon.gif\" width=\"16\" height=\"16\" alt=\"Warning\" border=\"0\" />&nbsp;$objectives_no</td>";
       } else {

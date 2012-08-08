@@ -100,13 +100,13 @@
           echo "<tr><td class=\"q_no\">$q_no.&nbsp;</td><td>$scenario<br />\n";
           echo $leadin;
           if ($q_media != '' and $q_type != 'hotspot' and $q_type != 'labelling') {
-            echo "<p align=\"center\">" . display_media($q_media,$q_media_width,$q_media_height) . "</p>\n";
+            echo "<p align=\"center\">" . display_media($q_media, $q_media_width, $q_media_height, '') . "</p>\n";
           }
           if ($q_type != 'hotspot' and $q_type != 'labelling' and $q_type != 'blank') echo "<p>\n<table cellpadding=\"3\" cellspacing=\"0\" border=\"0\" style=\"margin-left:30px\">\n";
         } else {
           echo "<tr><td class=\"q_no\">$q_no.&nbsp;</td><td>$leadin\n";
           if ($q_media != '' and $q_type != 'hotspot' and $q_type != 'labelling') {
-            echo "<p align=\"center\">" . display_media($q_media,$q_media_width,$q_media_height) . "</p>\n";
+            echo "<p align=\"center\">" . display_media($q_media, $q_media_width, $q_media_height, '') . "</p>\n";
           }
           if ($q_type != 'hotspot' and $q_type != 'labelling' and $q_type != 'blank') echo "<p>\n<table cellpadding=\"3\" cellspacing=\"0\" border=\"0\" style=\"margin-left:30px\">\n";
         }
@@ -371,12 +371,12 @@
       
       echo "<tr><td class=\"q_no\">$q_no.&nbsp;</td><td>$leadin\n<ol type=\"A\">";
       if ($tmp_media_array[0] != '') {
-        echo "<div align=\"center\">" . display_media($tmp_media_array[0],$tmp_media_width_array[0],$tmp_media_height_array[0]) . "</div>\n";
+        echo "<div align=\"center\">" . display_media($tmp_media_array[0], $tmp_media_width_array[0], $tmp_media_height_array[0], '') . "</div>\n";
       }
       for ($i=1; $i<=$total_scenarios; $i++) {
         echo "<li>\n";
         if (isset($tmp_media_array[$i]) and $tmp_media_array[$i] != '') {
-          echo "<div>" . display_media($tmp_media_array[$i],$tmp_media_width_array[$i],$tmp_media_height_array[$i]) . "</div>\n";
+          echo "<div>" . display_media($tmp_media_array[$i], $tmp_media_width_array[$i], $tmp_media_height_array[$i], '') . "</div>\n";
         }
         if ($tmp_ext_scenarios[$i-1]) echo $tmp_ext_scenarios[$i-1] . '<br />';
         $option_no = 1;

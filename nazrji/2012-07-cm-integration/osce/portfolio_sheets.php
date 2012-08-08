@@ -24,7 +24,8 @@
 
   require '../include/staff_auth.inc';
   require './osce.inc';
-  
+
+  header('Pragma: public');
   header('Content-disposition: attachment; filename=report.xml');
   header('Content-type: text/xml');
   set_time_limit(0);

@@ -96,7 +96,7 @@ if (isset($_POST['Submit'])) {
       $hide_if_unanswered = '0';
     }
     
-    if (($cfg_summative_mgmt and $paper_type == '2' and strpos($userroles,'SysAdmin') !== false) or !$cfg_summative_mgmt) {
+    if (($cfg_summative_mgmt and $paper_type == '2' and strpos($userroles,'SysAdmin') !== false) or !$cfg_summative_mgmt or $paper_type != '2') {
       $local_time = new DateTimeZone($cfg_timezone);
       $target_timezone = new DateTimeZone($_POST['timezone']);
       
@@ -146,7 +146,7 @@ if (isset($_POST['Submit'])) {
       $tmp_end_date = $end_date->format("YmdHis");
     }
 
-   if ((modulo($_POST['ext_tyear'],4) == 0 and modulo($_POST['ext_tyear'],100) != 0) or modulo($_POST['ext_tyear'],400) == 0) {
+    if ((modulo($_POST['ext_tyear'],4) == 0 and modulo($_POST['ext_tyear'],100) != 0) or modulo($_POST['ext_tyear'],400) == 0) {
       $leap = true;
     } else {
       $leap = false;
@@ -375,7 +375,6 @@ if (isset($_POST['Submit'])) {
           if ($_POST['caller'] == 'scheduling') {
         ?>
             window.opener.location = "../admin/summative_scheduling.php";
-            window.opener.close();
             window.close();
         <?php
           } elseif ($_POST['noadd'] == 'y') {
@@ -1048,7 +1047,7 @@ if ($paper_type != '4' and $paper_type != '5') {
     echo '<table id="security" style="width:100%; font-size:90%; height:590px; display:none" border="0" cellpadding="0" cellspacing="0">';
   }
 ?>
-<tr><td style="background-image:url('../artwork/blank_heading.png'); color:#001687; height:49px; font-size:110%" colspan="2">&nbsp;&nbsp;&nbsp;&nbsp;<img src="../artwork/security_heading_icon.png" width="30" height="32" alt="Icon" align="middle" />&nbsp;&nbsp;<?php echo $string['securityheading']; ?></td></tr>
+<tr><td style="background-image:url('../artwork/blank_heading.png'); color:#001687; height:49px; font-size:110%" colspan="2">&nbsp;&nbsp;&nbsp;&nbsp;<img src="../artwork/security_heading_icon.png" width="32" height="32" alt="Icon" align="middle" />&nbsp;&nbsp;<?php echo $string['securityheading']; ?></td></tr>
 <tr>
 <td style="text-align:center; vertical-align:top" colspan="2">
 <?php
@@ -1120,7 +1119,7 @@ if ($paper_type != '4' and $paper_type != '5') {
     }
     echo "</select>\n";
    // Available from Month
-    $months = array('january','february','march','april','may','june','july','august','september','october','november','december');
+    $months = array('january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december');
     echo "<select name=\"fmonth\" id=\"fmonth\" onchange=\"dateCopy('fmonth')\"$sum_disabled>\n";
     if ($start_date == '') {
       echo '<option value=""></option>';
@@ -1266,7 +1265,7 @@ if ($paper_type != '4' and $paper_type != '5') {
     if ($module_sql == '') {
       echo "<input type=\"hidden\" name=\"module_no\" id=\"module_no\" value=\"0\" /></div>\n";
     } else {
-      $module_array = SearchUtils::getTeams($teams, $userroles, $userID, $mysqli);
+      $module_array = search_utils::get_teams($teams, $userroles, $userID, $mysqli);
       $module_no = 0;
       $old_school = '';
       foreach ($module_array as $module) {

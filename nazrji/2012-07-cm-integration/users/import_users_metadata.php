@@ -58,6 +58,7 @@ if (isset($_GET['module'])) {
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
   <title>Rogō: <?php echo $string['importmetadata'] . ' ' . $cfg_install_type; ?></title>
   <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
@@ -199,7 +200,7 @@ if (isset($_GET['module'])) {
 <div align="center">
 <table border="0" cellpadding="4" cellspacing="0" style="width:100%; border:1px solid #95AEC8">
 <tr>
-<td style="width:56px; background-color:white"><img src="../artwork/import_48.gif" width="48" height="48" alt="Icon" /></td><td style="text-align:left; font-size:150%; font-weight:bold; color:#5582D2; width:90%"><?php echo $string['importmetadata']; ?></span></td>
+<td style="width:56px; background-color:white"><img src="../artwork/import_48.gif" width="48" height="48" alt="Icon" /></td><td style="text-align:left; font-size:150%; font-weight:bold; color:#4F81BD; width:90%"><?php echo $string['importmetadata']; ?></span></td>
 </tr>
 <tr>
 <td align="left" style="background-color:#F1F5FB" colspan="2">
@@ -213,7 +214,7 @@ if (isset($_GET['module'])) {
 <table style="text-align:left">
 <tr><td><?php echo $string['year']; ?></td><td><select name="session">
 <?php
-  $current_year = DateUtils::get_current_academic_year();
+  $current_year = date_utils::get_current_academic_year();
 
   $parts = explode('/', $current_year);
   echo "<option value=\"" . ($parts[0]-1) . "/" . ($parts[1]-1) . "\">" . ($parts[0]-1) . "/" . ($parts[1]-1) . "</option>\n";

@@ -26,6 +26,7 @@
   require '../include/demo_replace.inc';
   require '../include/errors.inc';
   require_once '../classes/stringutils.class.php';
+  require_once '../include/sort.inc';
 
   check_var('paperID', 'GET', true, false);
   check_var('startdate', 'GET', true, false);
@@ -35,22 +36,6 @@
     $demo = true;
   } else {
     $demo = false;
-  }
-
-  function array_csort($marray, $column, $sort_order) {   //coded by Ichier2003
-    foreach ($marray as $row) {
-      $sortarr[] = $row[$column];
-    }
-    
-    $sortarr = array_map('strtolower',$sortarr);
-    $sort_method = SORT_STRING;
-    if ($column == 'mark' or $column == 'duration') $sort_method = SORT_NUMERIC;
-    if ($sort_order == 'asc') {
-      array_multisort($sortarr, SORT_ASC, $sort_method, $marray);
-    } else {
-      array_multisort($sortarr, SORT_DESC, $sort_method, $marray);
-    }
-    return $marray;
   }
 
   function get_random_question_details($question, $rand_id, $mysqli) {
@@ -191,6 +176,7 @@
   }
   $question_no++;
 
+  header('Pragma: public');
   header('Content-type: application/octet-stream');
   header("Content-Disposition: attachment; filename=" . str_replace(' ', '_', $paper_title) . ".csv");
 

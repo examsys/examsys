@@ -42,13 +42,13 @@
           echo "<tr><td class=\"q_no\">$q_no.&nbsp;</td><td><p>$scenario</p>\n";
           echo "<p>$leadin</p>\n";
           if ($q_media != '' and $q_type != 'hotspot' and $q_type != 'labelling') {
-            echo "<p align=\"center\">" . display_media($q_media,$q_media_width,$q_media_height,$q_no) . "</p>\n";
+            echo "<p align=\"center\">" . display_media($q_media, $q_media_width, $q_media_height, '') . "</p>\n";
           }
           if ($q_type != 'hotspot' and $q_type != 'labelling') echo "<table cellpadding=\"4\" cellspacing=\"0\" border=\"0\">\n";
         } elseif ($q_type != 'likert') {
           echo "<tr><td class=\"q_no\">$q_no.&nbsp;</td><td><p>$leadin</p>\n";
           if ($q_media != '' and $q_type != 'hotspot' and $q_type != 'labelling') {
-            echo "<p align=\"center\">" . display_media($q_media,$q_media_width,$q_media_height,$q_no) . "</p>\n";
+            echo "<p align=\"center\">" . display_media($q_media, $q_media_width, $q_media_height, '') . "</p>\n";
           }
           if ($q_type != 'hotspot' and $q_type != 'labelling') echo "<table cellpadding=\"4\" cellspacing=\"0\" border=\"0\">\n";
         }
@@ -350,12 +350,12 @@
         $tmp_answers_array = explode('|',$correct_buf[0]);
         echo "<tr><td class=\"q_no\">$q_no.&nbsp;</td><td><p>$leadin</p>\n<ol type=\"i\">";
         if ($tmp_media_array[0] != '') {
-          echo "<p align=\"center\">" . display_media($tmp_media_array[0],$tmp_media_width_array[0],$tmp_media_height_array[0],$q_id) . "</p>\n";
+          echo "<p align=\"center\">" . display_media($tmp_media_array[0], $tmp_media_width_array[0], $tmp_media_height_array[0], '') . "</p>\n";
         }
         for ($i=1; $i<=(substr_count($scenario,'|')+1); $i++) {
           echo "<li>\n";
           if ($tmp_media_array[$i] != '') {
-            echo "<p>" . display_media($tmp_media_array[$i],$tmp_media_width_array[$i],$tmp_media_height_array[$i],$q_id . '_' . $i) . "</p>\n";
+            echo "<p>" . display_media($tmp_media_array[$i], $tmp_media_width_array[$i], $tmp_media_height_array[$i], '') . "</p>\n";
           }
           if ($tmp_ext_scenarios[$i-1]) echo "<p>" . $tmp_ext_scenarios[$i-1] . "</p>\n";
           echo "<p>\n<table cellpadding=\"4\" cellspacing=\"0\" border=\"0\">\n";

@@ -241,6 +241,27 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
     $question_part++;
 
     switch ($q_type) {
+      case 'area':
+        $mark = 0;
+        $qid = 'q' . $question_no;
+        if (isset($_POST[$qid])) {
+          $saved_response = $_POST[$qid];
+          
+          $parts = explode(',', $saved_response);
+          $tolerances = explode(',', $old_display_method);
+          if ($parts[1] >= $tolerances[0] and $parts[2] <= $tolerances[1]) {
+            $mark = $marks_correct;
+          } elseif ($parts[1] >= $tolerances[2] and $parts[2] <= $tolerances[3]) {
+            $mark = $marks_partial;
+          } else {
+            $mark = $marks_incorrect;
+          }
+        } else {
+          $saved_response = '';
+        }
+        $totalpos = $marks_correct;
+        
+        break;
       case 'calculation':
         $mark = 0;
         // Log format is 'users answer', 'correct answer', 'variable values used'.

@@ -66,46 +66,9 @@ function access_denied($message, $output_header = false) {
  * @return Bool TRUE on sucsess FALSE on failure
  *
  */
-function ldap_auth($u, $p, &$data) {
-  global $cfg_ldap_server, $cfg_ldap_search_dn, $cfg_ldap_bind_rdn, $cfg_ldap_bind_password, $cfg_ldap_user_prefix, $string;
-  if ($u == '') {
-    $data['error'] = $string['noldapusernamesupplied'];
-    return false;
-  }
-  if ($p == '') {
-    $data['error'] = $string['noldapusernamesupplied'];
-    return false;
-  }
+require_once 'ldap.php';
 
-  $ldap = ldap_connect($cfg_ldap_server);
-  ldap_set_option($ldap, LDAP_OPT_PROTOCOL_VERSION, 3);
-  ldap_set_option($ldap, LDAP_OPT_REFERRALS, 0);
-  if (ldap_bind($ldap, $cfg_ldap_bind_rdn, $cfg_ldap_bind_password)) {
-    if (!($search = @ldap_search($ldap, $cfg_ldap_search_dn, $cfg_ldap_user_prefix . $u))) {
-      $data['error'] = $string['ldapservernosearch'];
-      return false;
-    } else {
-      $info = ldap_get_entries($ldap, $search);
-      if ($info['count'] == 1) {
-        $dn = $info[0]['dn'];
-      } else {
-        $data['error'] = '<strong>' . $string['noldapaccount'] . '</strong>';
-        return false;
-      }
-    }
 
-    if (@ldap_bind($ldap, $dn, utf8_encode($p))) {
-      ldap_unbind($ldap);
-      return true;
-    } else {
-      $data['error'] = $string['incorrectpassword'];
-      return false;
-    }
-  } else {
-    $data['error'] = $string['ldapserverunavailable'];
-    return false;
-  }
-}
 
 /**
  * This is function db_userlookup looks up a user in the local database and populates: 
@@ -136,9 +99,9 @@ function db_userlookup($u, $db, $useridlookup = false) {
   $tmp_u = $split_username[0];
 
   if ($useridlookup == false) {
-    $stmt = $db->prepare("SELECT password, id, roles, title, initials, surname, username, email, grade, yearofstudy, special_needs FROM users WHERE username=?");
+    $stmt = $db->prepare("SELECT password, id, roles, title, initials, surname, username, email, grade, yearofstudy, special_needs FROM users WHERE user_deleted IS NULL AND username=?");
   } else {
-    $stmt = $db->prepare("SELECT password, id, roles, title, initials, surname, username, email, grade, yearofstudy, special_needs FROM users WHERE id=?");
+    $stmt = $db->prepare("SELECT password, id, roles, title, initials, surname, username, email, grade, yearofstudy, special_needs FROM users WHERE user_deleted IS NULL AND id=?");
   }
 
   $stmt->bind_param('s', $tmp_u);
@@ -184,6 +147,11 @@ function db_change_user($db) {
 }
 
 function db_auth($u, $p, $db, $changeuser = true) {
+
+
+  // return 0 if password or user missing, -1 if no user in table, -2 if password doesnt match, -3 if cant change user
+
+
   global $userID, $userroles, $faculty, $title, $initials, $surname, $username, $email, $grade, $year, $special_needs, $db_errors, $cfg_install_type, $cfg_db_database, $string, $cfg_encrypt_salt;
   global $cfg_db_sysadmin_user, $cfg_db_sysadmin_passwd;
   global $cfg_db_admin_user, $cfg_db_admin_passwd;
@@ -193,10 +161,10 @@ function db_auth($u, $p, $db, $changeuser = true) {
   global $cfg_db_inv_user, $cfg_db_inv_passwd;
   
   if ($u == '') {
-    return false;
+    return 0;
   }
   if ($p == '') {
-    return false;
+    return 0;
   }
 
   $record_no = 0;
@@ -239,22 +207,28 @@ function db_auth($u, $p, $db, $changeuser = true) {
       }
 
       if ($changeuser){
-        $ret=db_change_user($db);
+        $ret2=db_change_user($db);
+        if($ret2===false) {
+          $ret=-3;
+        }
+        else {
+          $ret=1;
+        }
       } else {
-        $ret=true;
+        $ret=1;
       }
       
       return $ret;
     } else {
       $db_errors = '<strong>' . $string['localtsauthfailed'] . '</strong>';
-      return false;
+      return -2;
     }
   } else {
     $password = $userID = $userroles = $title = $surname = $username = $email = $grade = $year = '';
     if ($record_no == 0) {
       $db_errors = '<strong>' . $string['notsaccount'] . '</strong>';
     }
-    return false;
+    return -1;
   } 
 }
 
@@ -314,6 +288,7 @@ function getUserTeams($userID, $db) {
   $teams = array();
   
   $result = $db->prepare("SELECT name FROM teams WHERE memberID=? AND name IS NOT NULL ORDER BY name");
+  echo $db->error;
   $result->bind_param('i', $userID);
   $result->execute();
   $result->bind_result($team_name);

@@ -213,8 +213,8 @@ require_once '../classes/stateutils.class.php';
   }
 ?>
   <tr><td>
-  <div style="margin-left:4px"><?php echo $string['module']; ?> <?php SearchUtils::displayTeamDropdown($teams, $userroles, $userID, $mysqli); ?></div>
-  <div style="margin-left:4px"><?php echo $string['owner']; ?> <?php SearchUtils::displayOwnersDropdown($teams, $userroles, $userID, $mysqli, 'papers'); ?></div>
+  <div style="margin-left:4px"><?php echo $string['module']; ?> <?php search_utils::display_team_dropdown($teams, $userroles, $userID, $mysqli); ?></div>
+  <div style="margin-left:4px"><?php echo $string['owner']; ?> <?php search_utils::display_owners_dropdown($teams, $userroles, $userID, $mysqli, 'papers'); ?></div>
 </td></tr>
 </table>
 

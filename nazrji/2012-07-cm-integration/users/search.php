@@ -108,13 +108,13 @@ if (isset($_GET['submit'])) {
   $user_no = 0;
   if ($roles_sql != '') {
     if ((isset($_GET['staff']) and $_GET['staff'] != '') or (isset($_GET['inactive']) and $_GET['inactive'] != '') or (isset($_GET['adminstaff']) and $_GET['adminstaff'] != '') or (isset($_GET['invigilators']) and $_GET['invigilators'] != '')) {
-      $query_string = "SELECT DISTINCT users.id, roles, NULL AS student_id, surname, initials, first_names, title, users.username, grade, yearofstudy, email FROM users LEFT JOIN teams ON users.id=teams.memberID AND teams.name LIKE '" . $_GET['team'] . "' WHERE $roles_sql$surname_sql$title_sql$username_sql$initials_sql ORDER BY " . $sortby . " " . $ordering;
+      $query_string = "SELECT DISTINCT users.id, roles, NULL AS student_id, surname, initials, first_names, title, users.username, grade, yearofstudy, email FROM users LEFT JOIN teams ON users.id=teams.memberID AND teams.name LIKE '" . $_GET['team'] . "' WHERE $roles_sql$surname_sql$title_sql$username_sql$initials_sql AND user_deleted IS NULL ORDER BY " . $sortby . " " . $ordering;
     } elseif (isset($_GET['externals']) and $_GET['externals'] != '') {
-      $query_string = "SELECT DISTINCT users.id, roles, NULL AS student_id, surname, initials, first_names, title, users.username, grade, yearofstudy, email FROM users WHERE $roles_sql$surname_sql$title_sql$username_sql$initials_sql ORDER BY " . $sortby . " " . $ordering;
+      $query_string = "SELECT DISTINCT users.id, roles, NULL AS student_id, surname, initials, first_names, title, users.username, grade, yearofstudy, email FROM users WHERE $roles_sql$surname_sql$title_sql$username_sql$initials_sql AND user_deleted IS NULL ORDER BY " . $sortby . " " . $ordering;
     } else {
       // Student search
       if ($moduleID == '%') {
-        $query_string = "SELECT DISTINCT users.id, roles, student_id, surname, initials, first_names, title, users.username, grade, yearofstudy, email FROM users LEFT JOIN sid ON users.id=sid.userID WHERE $roles_sql$surname_sql$title_sql$username_sql$student_id_sql$initials_sql ORDER BY " . $sortby . " " . $ordering;
+        $query_string = "SELECT DISTINCT users.id, roles, student_id, surname, initials, first_names, title, users.username, grade, yearofstudy, email FROM users LEFT JOIN sid ON users.id=sid.userID WHERE $roles_sql$surname_sql$title_sql$username_sql$student_id_sql$initials_sql AND user_deleted IS NULL ORDER BY " . $sortby . " " . $ordering;
       } else {
         $roles_sql = 'AND ' . $roles_sql;
         if ($moduleID == '%') {
@@ -127,7 +127,7 @@ if (isset($_GET['submit'])) {
         } else {
           $calendar_year_sql = " AND calendar_year LIKE '$calendar_year'";
         }
-        $query_string = "SELECT DISTINCT users.id, roles, student_id, surname, initials, first_names, title, users.username, grade, yearofstudy, email FROM (users, student_modules) LEFT JOIN sid ON users.id=sid.userID WHERE users.id=student_modules.userID $module_sql$calendar_year_sql$roles_sql$surname_sql$title_sql$username_sql$student_id_sql$initials_sql ORDER BY " . $sortby . " " . $ordering;
+        $query_string = "SELECT DISTINCT users.id, roles, student_id, surname, initials, first_names, title, users.username, grade, yearofstudy, email FROM (users, student_modules) LEFT JOIN sid ON users.id=sid.userID WHERE users.id=student_modules.userID $module_sql$calendar_year_sql$roles_sql$surname_sql$title_sql$username_sql$student_id_sql$initials_sql AND user_deleted IS NULL ORDER BY " . $sortby . " " . $ordering;
       }
     }
     
@@ -207,62 +207,73 @@ if (isset($_GET['submit'])) {
   .coltitle {cursor:hand; background-color:#F1F5FB; color:black}
   #usertable td {padding-left:6px}
   .fn {color:#A5A5A5}
+  .uline:hover {background-color:#eee}
+  .uline.highlight {background-color:#B3C8E8}
   </style>
 
-  <script src="../js/staff_help.js" type="text/javascript"></script>
-  <script type="text/javascript">
-    function selUser(userID, lineID, menuID) {
-      tmp_ID = document.PapersMenu.oldUserID.value;
-      if (tmp_ID != '') {
-        document.getElementById(tmp_ID).style.backgroundColor = 'white';
+  <script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
+  <script type="text/javascript" src="../js/staff_help.js"></script>
+  <script language="JavaScript">
+    function addUserID(ID, clearall) {
+      if (clearall) {
+        document.getElementById('userID').value = ',' + ID;
+      } else {
+        document.getElementById('userID').value = document.getElementById('userID').value + ',' + ID;
       }
+    }
+
+    function subUserID(ID) {
+      var tmpuserID = ',' + ID;
+      document.getElementById('userID').value = document.getElementById('userID').value.replace(tmpuserID, '');
+    }
+
+    function clearAll() {
+      $('.highlight').removeClass('highlight');
+    }
+  
+    function selUser(userID, lineID, menuID, evt) {
       document.getElementById('menu2a').style.display = 'none';
       document.getElementById('menu' + menuID).style.display = 'block';
-
-      document.PapersMenu.userID.value = userID;
-
-      document.getElementById(lineID).style.backgroundColor = '#B3C8E8';
-
-      document.PapersMenu.oldUserID.value = lineID;
+     
+      if (evt.ctrlKey == false) {
+        clearAll();
+        $('#' + lineID).addClass('highlight');
+        addUserID(userID, true);
+      } else {
+        if ($('#' + lineID).hasClass('highlight')) {
+          $('#' + lineID).removeClass('highlight');
+          subUserID(userID);
+        } else {
+          $('#' + lineID).addClass('highlight');
+          addUserID(userID, false);
+        }
+      }
     }
 
     function userOff() {
       document.getElementById('menu2a').style.display = 'block';
       document.getElementById('menu2b').style.display = 'none';
       document.getElementById('menu2c').style.display = 'none';
-      tmp_ID = document.PapersMenu.oldUserID.value;
-      if (tmp_ID != '') {
-        document.getElementById(tmp_ID).style.backgroundColor = 'white';
-      }
-    }
-
-    function updateCohortDetails() {
-      document.PapersMenu.tmp_surname.value = '<?php if (isset($_GET['surname'])) echo $_GET['surname']; ?>';
-      document.PapersMenu.tmp_courseID.value = '<?php if (isset($courseID)) echo $courseID; ?>';
-      document.PapersMenu.tmp_yearID.value = '<?php if (isset($yearID)) echo $yearID; ?>';
-    }
-
-    function lon(lineID) {
-      if (lineID != document.PapersMenu.oldUserID.value) {
-        document.getElementById(lineID).style.backgroundColor = '#EEEEEE';
-      }
-    }
-
-    function loff(lineID) {
-      if (lineID != document.PapersMenu.oldUserID.value) {
-        document.getElementById(lineID).style.backgroundColor = '';
-      }
+      
+      clearAll();
     }
 
     function profile(userID) {
-      document.location.href='details.php?search_surname=<?php if (isset($_GET['search_surname'])) echo $_GET['search_surname']; ?>&search_username=<?php if (isset($_GET['search_username'])) echo $_GET['search_username']; ?>&student_id=<?php if (isset($_GET['student_id'])) echo $_GET['student_id']; ?>&moduleID=<?php if (isset($_GET['team'])) echo $_GET['team']; ?>&calendar_year=<?php if (isset($_GET['calendar_year'])) echo $_GET['calendar_year']; ?>&students=<?php if (isset($_GET['students'])) echo $_GET['students']; ?>&submit=Search&userID=' + userID + '&email=<?php if (isset($_GET['email'])) echo $_GET['email']; ?>&oldUserID=<?php if (isset($_GET['oldUserID'])) echo $_GET['oldUserID']; ?>&tmp_surname=<?php if (isset($_GET['tmp_surname'])) echo $_GET['tmp_surname']; ?>&tmp_courseID=<?php if (isset($_GET['tmp_courseID'])) echo $_GET['tmp_courseID']; ?>&tmp_yearID=<?php if (isset($_GET['tmp_yearID'])) echo $_GET['tmp_yearID']; ?>';
+      document.location.href='details.php?search_surname=<?php if (isset($_GET['search_surname'])) echo $_GET['search_surname']; ?>&search_username=<?php if (isset($_GET['search_username'])) echo $_GET['search_username']; ?>&student_id=<?php if (isset($_GET['student_id'])) echo $_GET['student_id']; ?>&moduleID=<?php if (isset($_GET['team'])) echo $_GET['team']; ?>&calendar_year=<?php if (isset($_GET['calendar_year'])) echo $_GET['calendar_year']; ?>&students=<?php if (isset($_GET['students'])) echo $_GET['students']; ?>&submit=Search&userID=' + userID + '&email=<?php if (isset($_GET['email'])) echo $_GET['email']; ?>&tmp_surname=<?php if (isset($_GET['tmp_surname'])) echo $_GET['tmp_surname']; ?>&tmp_courseID=<?php if (isset($_GET['tmp_courseID'])) echo $_GET['tmp_courseID']; ?>&tmp_yearID=<?php if (isset($_GET['tmp_yearID'])) echo $_GET['tmp_yearID']; ?>';
+    }
+    
+    function getLastID(IDs) {
+      var id_list = IDs.split(",");
+      last_elm = id_list.length - 1;
+      
+      return id_list[last_elm];
     }
   </script>
 </head>
 
 <?php
   if (isset($_GET['submit']) or isset($_GET['paperID']) or isset($_GET['moduleID'])) {
-    echo "<body onload=\"updateCohortDetails();\">\n";
+    echo "<body>\n";
     include '../include/user_search_options.inc';
     echo "<div id=\"content\" class=\"content\" style=\"font-size:80%\">\n";
   } else {
@@ -390,19 +401,19 @@ if ($sortby == 'title') {
   $x = 0;
   while ($user_data->fetch()) {
     if ($old_letter != strtoupper(substr($tmp_surname, 0, 1)) and $sortby == 'surname') {
-      echo "<tr><td colspan=\"8\"><table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td>" . strtoupper(substr($tmp_surname,0,1)) . "</td><td style=\"width:99%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#CCCCCC; background-color:#CCCCCC; width:100%\" /></td></tr></table>\n</td></tr>\n";
+      echo "<tr><td colspan=\"8\"><table border=\"0\" class=\"subsect\" style=\"width:100%\"><tr><td>" . strtoupper(substr($tmp_surname,0,1)) . "</td><td style=\"width:99%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#CCCCCC; background-color:#CCCCCC; width:100%\" /></td></tr></table>\n</td></tr>\n";
     } elseif ($old_title != $tmp_title and $sortby == 'title') {
-      echo "<tr><td colspan=\"8\"><table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td>" . $string[strtolower($tmp_title)] . "</td><td style=\"width:99%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#CCCCCC; background-color:#CCCCCC; width:100%\" /></td></tr></table>\n</td></tr>\n";
+      echo "<tr><td colspan=\"8\"><table border=\"0\" class=\"subsect\" style=\"width:100%\"><tr><td>" . $string[strtolower($tmp_title)] . "</td><td style=\"width:99%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#CCCCCC; background-color:#CCCCCC; width:100%\" /></td></tr></table>\n</td></tr>\n";
     } elseif ($old_username != substr($tmp_username, 0, 4) and $sortby == 'username') {
-      echo "<tr><td colspan=\"8\"><table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td>" . substr($tmp_username,0,4) . "</td><td style=\"width:99%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#CCCCCC; background-color:#CCCCCC; width:100%\" /></td></tr></table>\n</td></tr>\n";
+      echo "<tr><td colspan=\"8\"><table border=\"0\" class=\"subsect\" style=\"width:100%\"><tr><td>" . substr($tmp_username,0,4) . "</td><td style=\"width:99%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#CCCCCC; background-color:#CCCCCC; width:100%\" /></td></tr></table>\n</td></tr>\n";
     } elseif ($old_grade != $tmp_grade and $sortby == 'grade') {
-      echo "<tr><td colspan=\"8\"><table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td>" . $tmp_grade . "</td><td style=\"width:99%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#CCCCCC; background-color:#CCCCCC; width:100%\" /></td></tr></table>\n</td></tr>\n";
+      echo "<tr><td colspan=\"8\"><table border=\"0\" class=\"subsect\" style=\"width:100%\"><tr><td>" . $tmp_grade . "</td><td style=\"width:99%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#CCCCCC; background-color:#CCCCCC; width:100%\" /></td></tr></table>\n</td></tr>\n";
     } elseif ($old_year != $tmp_yearofstudy and $sortby == 'yearofstudy') {
-      echo "<tr><td colspan=\"8\"><table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>Year " . $tmp_yearofstudy . "</nobr></td><td style=\"width:99%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#CCCCCC; background-color:#CCCCCC; width:100%\" /></td></tr></table>\n</td></tr>\n";
+      echo "<tr><td colspan=\"8\"><table border=\"0\" class=\"subsect\" style=\"width:100%\"><tr><td><nobr>Year " . $tmp_yearofstudy . "</nobr></td><td style=\"width:99%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#CCCCCC; background-color:#CCCCCC; width:100%\" /></td></tr></table>\n</td></tr>\n";
     }
 
     if (strpos($userroles,'SysAdmin') !== false) {
-      echo "<tr id=\"$x\" onmouseover=\"lon($x)\" onmouseout=\"loff($x)\" style=\"cursor:pointer\" onclick=\"selUser('$tmp_id',$x,'2c'); return false;\" ondblclick=\"profile('$tmp_id'); return false;\">";
+      echo "<tr class=\"uline\" id=\"$x\" onclick=\"selUser('$tmp_id',$x,'2c',event); return false;\" ondblclick=\"profile('$tmp_id'); return false;\">";
       if (file_exists($cfg_web_root . 'users/photos/' . $tmp_username . '.jpg')) {
         echo '<td><img src="../artwork/photo.png" width="16" height="16" alt="Photo" /></td>';
       } else {
@@ -431,7 +442,7 @@ if ($sortby == 'title') {
         echo "</td><td>$tmp_username</td>";
       }
     } else {
-      echo "<tr id=\"$x\" onmouseover=\"lon($x)\" onmouseout=\"loff($x)\" style=\"cursor:pointer\" onclick=\"selUser('$tmp_id',$x,'2b'); return false;\" ondblclick=\"profile('$tmp_id'); return false;\">";
+      echo "<tr class=\"uline\" id=\"$x\" onclick=\"selUser('$tmp_id',$x,'2b',event); return false;\" ondblclick=\"profile('$tmp_id'); return false;\">";
       if (file_exists($cfg_web_root . '/users/photos/' . $tmp_username . '.jpg')) {
         echo '<td><img src="../artwork/photo.png" width="16" height="16" alt="Photo" /></td>';
       } else {

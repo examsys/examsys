@@ -157,9 +157,15 @@ require_once './classes/networkutils.class.php';
   } elseif ($paper_no == 0) {
     echo "<html>\n<head>\n<meta http-equiv=\"content-type\" content=\"text/html;charset={$cfg_page_charset}\" />\n<title>{$string['exams']}</title>\n";
 ?>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset; ?>" />
+<title><?php echo $string['exams']; ?></title>
+<link rel="stylesheet" type="text/css" href="./css/header.css" />
 <style type="text/css">
   body {font-size:90%; font-family:Arial,sans-serif; background-color:#FCFCFC; color:#575757}
-  h1 {font-weight:normal; color:#4465A2; font-size:140%}
+  h1 {font-weight:normal; font-size:140%}
   #summ_test {
     margin: 36px 0 0 58px;
   }
@@ -172,16 +178,17 @@ require_once './classes/networkutils.class.php';
   #summ_test a.blacklink:hover {color:#000000; text-decoration: underline}
 
   #summ_test, .file td, .mod-header td {
-    font-size: 75%;
+    font-size: 90%;
   }
 
   #summ_test h2 {
-    font-size: 160%;
-    color: #4465A2
+    font-weight:normal;
+    font-size:140%;
   }
 
   #summ_test p {
-    font-size: 125%;
+    font-size:100%;
+    color:black;
   }
 
   table.mod-header {
@@ -226,13 +233,13 @@ require_once './classes/networkutils.class.php';
 <?php
     echo "</head>\n<body>\n";
     echo "<div style=\"position:absolute; left:10px; top:10px\"><img src=\"{$cfg_root_path}/artwork/orange_alert_48.png\" width=\"48\" height=\"48\" /></div>\n";
-    echo "<h1 style=\"margin-left:60px\">" . $string['cannotfindexams'] . "</h1>\n"; 
+    echo "<h1 class=\"dkblue_header\" style=\"margin-left:60px\">" . $string['cannotfindexams'] . "</h1>\n"; 
 
     if (strpos($userroles,'Staff') !== false) {
       echo "<p style=\"margin-left:60px; color:#C00000\">" . $string['note1'] . " <img src=\"{$cfg_root_path}/artwork/small_link.png\" width=\"12\" height=\"12\" /> <a href=\"staff/index.php\" style=\"color:blue\"><strong>" . $string['staffmangscreens'] . "</strong></a>?</p>\n";
     }
 
-    echo "<hr size=\"1\" align=\"left\" width=\"500\" style=\"margin-left:60px; color:#C0C0C0; background-color:#C0C0C0\" />\n<p style=\"margin-left:60px\">" . $string['mostLikely'] . "</p>\n<ul style=\"margin-left:80px\">\n";
+    echo "<hr noshade=\"noshade\" style=\"margin-left:60px; border:0px; height:1px; color:#C0C0C0; background-color:#C0C0C0; width:500px\" align=\"left\" />\n<p style=\"margin-left:60px\">" . $string['mostLikely'] . "</p>\n<ul style=\"margin-left:80px\">\n";
 
     $current_ip_address = NetworkUtils::get_ipaddress();
     $ip_info = $mysqli->prepare("SELECT name, room_no FROM (labs, ip_addresses) WHERE labs.id=ip_addresses.lab AND address=?");
@@ -317,14 +324,14 @@ require_once './classes/networkutils.class.php';
       if (count($papers) > 0) {
 ?>
         <div id="summ_test">
-          <h2><?php echo $string['summativetesting'] ?></h2>
+          <h2 class="dkblue_header"><?php echo $string['summativetesting'] ?></h2>
           <p><?php echo $string['summativetestmsg'] ?></p>
 <?php
         $team = '';
         foreach ($papers as $mod_id => $paper_list) {
           if ($mod_id != $team) {
             $team = $mod_id;
-            echo "<table class=\"mod-header\"><tr><td>$mod_id</td><td style=\"width:98%\"><hr class=\"head-line\" /></td></tr></table>\n";
+            echo "<table style=\"clear:both; font-size:100%\"><tr><td class=\"subsect\">$mod_id</td><td style=\"width:98%\"><hr class=\"head-line\" /></td></tr></table>\n";
           }
           foreach ($paper_list as $paper) {
             $screen_plural = ($paper['screens'] > 1) ? 'screens' : 'screen';
@@ -335,7 +342,7 @@ require_once './classes/networkutils.class.php';
             $lab_html = display_labs($labs, $computer_lab_short, $string);
   ?>
             <div class="file">
-              <table cellpadding="0" cellspacing="0" border="0">
+              <table cellpadding="0" cellspacing="0" border="0" style="font-size:100%">
                 <tr>
                   <td style="width:60px" align="center"><a class="blacklink" href="user_index.php?id=<?php echo $paper['crypt_name'] ?>&mode=preview" rel="<?php echo $paper['fullscreen'] ?>"><img src="artwork/summative.png" width="48" height="48" alt="Type: Summative Exam" border="0" /></a></td>
                   <td>

@@ -33,7 +33,7 @@ include_once $cfg_web_root . 'tools/getid3/getid3.php';
  * @param mixed $imageid 
  *
  */
-function display_media($filename, $width, $height, $imageid=-1, $locked=false) {
+function display_media($filename, $width, $height, $border_color, $imageid=-1, $locked=false) {
   global $cfg_root_path;
 
   $html = '';
@@ -43,7 +43,11 @@ function display_media($filename, $width, $height, $imageid=-1, $locked=false) {
   if ($imageid > -1) $html .= "<div id=\"media$imageid\" class=\"media\">";
   // Is the file an image or something else (e.g. RasMol)?
   if (in_array(strtolower($fn_parts['extension']), array('gif', 'jpg', 'jpeg', 'png'))) {
-    $html .= "<img src=\"{$cfg_root_path}/media/$filename\" width=\"$width\" height=\"$height\" border=\"0\" alt=\"Image\" style=\"vertical-align:text-top\" />";
+    if ($border_color == '') {
+      $html .= "<img src=\"{$cfg_root_path}/media/$filename\" width=\"$width\" height=\"$height\" border=\"0\" alt=\"Image\" style=\"vertical-align:text-top\" />";
+    } else {
+      $html .= "<img src=\"{$cfg_root_path}/media/$filename\" width=\"$width\" height=\"$height\" border=\"0\" alt=\"Image\" style=\"vertical-align:text-top; border: 1px solid $border_color\" />";
+    }
   } elseif (in_array($fn_parts['extension'], array('wav', 'wma', 'mid'))) {
     $html .= "<img src=\"audio_icon_32.gif\" width=\"32\" height=\"32\" alt=\"Audio File\" /><a href=\"{$cfg_root_path}/media/$filename\">Audio Clip</a>";
   } elseif (in_array($fn_parts['extension'], array('doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'pdf'))) {

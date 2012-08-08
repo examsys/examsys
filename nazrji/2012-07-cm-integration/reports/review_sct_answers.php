@@ -49,7 +49,7 @@
       if ($li_set == 0) {
         echo '<tr><td class="q_no">' . $question_no . '.&nbsp;</td><td>';
       }
-      echo '<p align="center">' . display_media($question['q_media'],$question['q_media_width'],$question['q_media_height']) . "</p>\n";
+      echo '<p align="center">' . display_media($question['q_media'], $question['q_media_width'], $question['q_media_height'], '') . "</p>\n";
       $li_set = 1;
     }
     

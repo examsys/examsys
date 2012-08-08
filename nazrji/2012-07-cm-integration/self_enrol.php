@@ -22,14 +22,15 @@
 * @package
 */
 
-require './include/staff_student_auth.inc';
-require './include/errors.inc';
-require './classes/dateutils.class.php';
-require './classes/userutils.class.php';
-require './classes/smsutils.class.php';
+require_once './include/staff_student_auth.inc';
+require_once './include/errors.inc';
+require_once './classes/dateutils.class.php';
+require_once './classes/userutils.class.php';
+require_once './classes/moduleutils.class.php';
+require_once './classes/smsutils.class.php';
 
 check_var('moduleid', 'GET', true, false);
-$session = DateUtils::get_current_academic_year();
+$session = date_utils::get_current_academic_year();
 
 //dose the user have an account?
 if (UserUtils::usernameExists($_SERVER['PHP_AUTH_USER'],$mysqli) === false ) {
@@ -58,7 +59,13 @@ if (UserUtils::usernameExists($_SERVER['PHP_AUTH_USER'],$mysqli) === false ) {
     display_error($string['noaccountfound'], '', false, true);
   }
 }
+$returned_check=module_utils::module_check_self_enrol($_GET['moduleid']);
+if($returned_check === false) {
+  display_error('Module ID error', 'Module code ' . $_GET['moduleid'] . ' not found.', false, true);
+}
 
+list($fullname, $school, $active, $selfenroll)=$returned_check;
+/*
 $result = $mysqli->prepare("SELECT fullname, school, active, selfenroll FROM modules, schools WHERE modules.schoolid=schools.id AND moduleid=?");
 $result->bind_param('s', $_GET['moduleid']);
 $result->execute();
@@ -69,10 +76,11 @@ $result->close();
 if ($fullname == '') {
   display_error('Module ID error', 'Module code ' . $_GET['moduleid'] . ' not found.', false, true);
 }
+*/
 
 if ($active == 1 and $selfenroll == 1 and isset($_POST['submit']) and !UserUtils::isUserOnModule($userID, $_GET['moduleid'], $_POST['session'], $mysqli)) {
   // Insert new module enrollment
-  UserUtils::addUserToModule($userID, $_GET['moduleid'], 1, $_POST['session'], $mysqli);
+  UserUtils::add_student_to_module($userID, $_GET['moduleid'], 1, $_POST['session'], $mysqli);
 }
 
 ?>

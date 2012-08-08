@@ -1,0 +1,13 @@
+﻿<?php
+$string['But_Clear_All'] = 'Wymaż wszystko';
+$string['But_Delete_point'] = 'Usuń punkt';
+$string['But_your_answer'] = 'Twoja odpowiedź';
+$string['But_correct_answer'] = 'Poprawna odpowiedź';
+$string['Start_over'] = 'Wznów';
+$string['Magnify'] = 'Powiększ';
+$string['Eraser'] = 'Kasownik';
+$string['popUp_msg'] = 'Czy na pewno usunąć wszystkie linie?';
+$string['popUp_yes'] = 'Tak';
+$string['popUp_no'] = 'Nie';
+
+?>

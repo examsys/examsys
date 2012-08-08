@@ -23,18 +23,8 @@
 */
 
 require '../include/staff_auth.inc';
-
-function array_csort($marray, $column, $sort_order) {   //coded by Ichier2003
-  foreach ($marray as $row) {
-    $sortarr[] = strtolower(trim($row[$column]));
-  }
-  if ($sort_order == 'asc') {
-    array_multisort($sortarr, SORT_ASC, $marray);
-  } else {
-    array_multisort($sortarr, SORT_DESC, $marray);
-  }
-  return $marray;
-}
+require '../include/sort.inc';
+require '../classes/recyclebin.class.php';
 
 function dateDisplay($tmp_date) {
   return substr($tmp_date,6,2) . '/' . substr($tmp_date,4,2) . '/' . substr($tmp_date,0,4) . ' ' . substr($tmp_date,8,2) . ':' . substr($tmp_date,10,2);
@@ -133,53 +123,7 @@ if (isset($_GET['folder'])) {
 <?php
 echo '<tr onclick="qOff();"><th colspan="4"><div class="breadcrumb"><a href="../staff/index.php">' . $string['home'] . '</a></div><div style="font-size:200%; margin-left:10px; font-weight:bold">' . $string['recyclebin'] . '</div>';
 
-$recycle_bin = array();
-
-// Query the Papers tables.
-$i = 0;
-$stmt = $mysqli->prepare("SELECT property_id AS id, paper_type, paper_title, DATE_FORMAT(deleted,'%Y%m%d%H%i') AS deleted FROM properties WHERE (paper_ownerID=? OR moduleID IN ('" . implode("','",$teams) . "')) AND deleted IS NOT NULL");
-$stmt->bind_param('i', $userID);
-$stmt->execute();
-$stmt->bind_result($id, $paper_type, $paper_title, $deleted);
-while ($stmt->fetch()) {
-  $recycle_bin[$i]['id'] = $id;
-  $recycle_bin[$i]['type'] = 'paper';
-  $recycle_bin[$i]['name'] = $paper_title;
-  $recycle_bin[$i]['deleted'] = $deleted;
-  $recycle_bin[$i]['subtype'] = $paper_type;
-  $i++;
-}
-$stmt->close();
-
-// Query the Questions tables.
-$stmt = $mysqli->prepare("SELECT q_id AS id, q_type, leadin_plain, DATE_FORMAT(deleted,'%Y%m%d%H%i') AS deleted FROM questions WHERE (ownerID=? OR q_group IN ('" . implode("','",$teams) . "')) AND deleted IS NOT NULL");
-$stmt->bind_param('i', $userID);
-$stmt->execute();
-$stmt->bind_result($id, $q_type, $leadin_plain, $deleted);
-while ($stmt->fetch()) {
-  $recycle_bin[$i]['id'] = $id;
-  $recycle_bin[$i]['type'] = 'question';
-  $recycle_bin[$i]['name'] = $leadin_plain;
-  $recycle_bin[$i]['deleted'] = $deleted;
-  $recycle_bin[$i]['subtype'] = $q_type;
-  $i++;
-}
-$stmt->close();
-
-// Query the Folder tables.
-$stmt = $mysqli->prepare("SELECT id, name, DATE_FORMAT(deleted,'%Y%m%d%H%i') AS deleted FROM folders WHERE (ownerID=? OR team_name IN ('" . implode("','",$teams) . "')) AND deleted IS NOT NULL");
-$stmt->bind_param('i', $userID);
-$stmt->execute();
-$stmt->bind_result($id, $name, $deleted);
-while ($stmt->fetch()) {
-  $recycle_bin[$i]['id'] = $id;
-  $recycle_bin[$i]['type'] = 'folder';
-  $recycle_bin[$i]['name'] = str_replace(';','\\',$name);
-  $recycle_bin[$i]['deleted'] = $deleted;
-  $recycle_bin[$i]['subtype'] = '';
-  $i++;
-}
-$stmt->close();
+$recycle_bin = RecycleBin::get_recyclebin_contents($userID, $teams, $mysqli);
 
 $mysqli->close();
 
@@ -189,7 +133,7 @@ if (isset($_GET['sortby'])) $sortby = $_GET['sortby'];
 $ordering = 'asc';
 if (isset($_GET['ordering'])) $ordering = $_GET['ordering'];
 
-if ($i > 0) {
+if (count($recycle_bin) > 0) {
   $recycle_bin = array_csort($recycle_bin, $sortby, $ordering);
 }
 
@@ -215,9 +159,10 @@ if ($sortby == 'name') {
 }
 echo "<tr><th colspan=\"4\" class=\"bevel\"></th></tr>\n";
 
-$paper_types = array('Formative Self-Assessment','Progress Test','Summative Exam','Survey','OSCE Station','Offline Paper');
-$paper_icons = array('formative_16.gif','progress_16.gif','summative_16.gif','survey_16.gif','osce_16.gif','offline_16.gif');
-for ($item=0; $item<$i; $item++) {
+$paper_types = array('Formative Self-Assessment', 'Progress Test', 'Summative Exam', 'Survey', 'OSCE Station', 'Offline Paper', 'Peer Review');
+$paper_icons = array('formative_16.gif', 'progress_16.gif', 'summative_16.gif', 'survey_16.gif', 'osce_16.gif', 'offline_16.gif', 'peer_review_16.gif');
+$list_size = count($recycle_bin);
+for ($item=0; $item<$list_size; $item++) {
   if ($recycle_bin[$item]['type'] == 'paper') {
     $temp_type = $recycle_bin[$item]['subtype'];
     $split_name = explode('[deleted',$recycle_bin[$item]['name']);

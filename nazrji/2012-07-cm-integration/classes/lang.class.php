@@ -50,7 +50,8 @@ Class LangUtils {
 }
 
 $language = LangUtils::getLang($cfg_web_root);
-$lang_path = "{$cfg_web_root}lang/$language" . str_replace($cfg_root_path, '', $_SERVER['PHP_SELF']);
+$lang_path = "{$cfg_web_root}lang/$language/" . str_replace($cfg_web_root, '', $_SERVER['SCRIPT_FILENAME']);
+
 if (file_exists($lang_path)) {
   require $lang_path;
 }

@@ -25,11 +25,11 @@
 require '../include/sysadmin_auth.inc';
 
 // Get data about the paper which needs scheduling
-$results = $mysqli->prepare("SELECT property_id, paper_title, moduleID, calendar_year, period, barriers_needed, cohort_size, notes, sittings, campus, title, first_names, surname, email FROM (properties, scheduling, users) WHERE property_id=? AND properties.property_id=scheduling.paperID AND properties.paper_ownerID=users.id");
+$results = $mysqli->prepare("SELECT property_id, paper_title, moduleID, calendar_year, period, barriers_needed, cohort_size, notes, sittings, campus, title, first_names, surname, email, exam_duration FROM (properties, scheduling, users) WHERE property_id=? AND properties.property_id=scheduling.paperID AND properties.paper_ownerID=users.id");
 $results->bind_param('i', $_GET['paperID']);
 $results->execute();
 $results->store_result();
-$results->bind_result($property_id, $paper_title, $moduleID, $calendar_year, $period, $barriers_needed, $cohort_size, $notes, $sittings, $campus, $title, $first_names, $surname, $email);
+$results->bind_result($property_id, $paper_title, $moduleID, $calendar_year, $period, $barriers_needed, $cohort_size, $notes, $sittings, $campus, $title, $first_names, $surname, $email, $exam_duration);
 $results->fetch();
 $results->close();
 
@@ -98,7 +98,7 @@ $results->close();
   } else {
     $barriers_needed = 'No';
   }
-  $months = array('january','february','march','april','may','june','july','august','september','october','november','december');
+  $months = array('january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december');
   $display_period = $string[$months[$period]];
   
   if ($cohort_size == '<whole cohort>') {
@@ -123,6 +123,7 @@ $results->close();
     echo "$individual_module<br />\n";
   }
   echo "</td></tr>\n";
+  echo "<tr><td class=\"f1\">" . $string['examduration'] . "</td><td>$exam_duration</td></tr>\n";  
   echo "<tr><td class=\"f1\">" . $string['cohortsize'] . "</td><td>$cohort_size</td></tr>\n";  
   echo "<tr><td class=\"f1\">" . $string['sittings'] . "</td><td>$sittings</td></tr>\n";  
   echo "<tr><td class=\"f1\">" . $string['examperiod'] . "</td><td>$display_period</td></tr>\n";  

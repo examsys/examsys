@@ -61,7 +61,7 @@ echo ViewHelper::render_options($question->get_option_orders(), $question->get_o
 require_once 'detail_parts/details_marking.php';
 ?>
         <div class="form">
-          <h2><?php echo $string['options'] ?></h2>
+          <h2 class="midblue_header"><?php echo $string['options'] ?></h2>
         </div>
 
         <table id="q-options" class="form align-centre bordered auto-sized" summary="<?php echo $string['qeditsummary'] ?>">

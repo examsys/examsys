@@ -14,11 +14,16 @@ $string['experimental'] = 'Experimental';
 $string['beta'] = 'Beta';
 $string['close'] = 'Close';
 $string['notused'] = '(This question is not currently used on any paper)';
-
 $string['papername'] = 'Paper Name';
 $string['screenno'] = 'Screen No';
 $string['examdate'] = 'Exam Date';
 $string['cohort'] = 'Cohort';
 $string['p'] = 'P';
 $string['d'] = 'D';
+$string['copyof'] = 'Copy of';
+$string['sourcefor'] = 'Source for';
+$string['na'] = 'N/A';
+$string['type'] = 'Type';
+$string['questionno'] = 'Question No';
+$string['copies'] = 'Copies:';
 ?>

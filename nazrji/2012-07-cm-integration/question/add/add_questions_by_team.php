@@ -34,7 +34,7 @@
   <title>Add new Question</title>
   <link rel="stylesheet" type="text/css" href="../../css/header.css" />
   <style type="text/css">
-    body {margin:0px; font-family:Arial,sans-serif; color:black; font-size:80%}
+    body {background-color:white; margin:0px; font-family:Arial,sans-serif; color:black; font-size:80%}
   </style>
   <script type="text/javascript" src="/js/jquery-1.6.1.min.js"></script>
   <script type="text/javascript" src="/tools/mee/mee/js/mee_src.js"></script>
@@ -75,9 +75,9 @@
   echo "<form name=\"theform\" method=\"post\" action=\"do_add_questions.php?team=$team&display_pos=$display_pos&module=" . $_GET['module'] . "&folder=" . $_GET['folder'] . "&scrOfY=" . $_GET['scrOfY'] . "\">\n";
   ?>
   <input type="hidden" name="screen" value="1" />
-  <table class="header">
+  <table class="header" cellspacing="0" cellpadding="0">
   <?php
-  echo "<tr><th colspan=\"5\" style=\"font-size:160%; font-weight:bold\">&nbsp;" . $string['byteam'] . " - " .  $_GET['team'] . "</td></tr>\n";
+  echo "<tr><th colspan=\"5\" style=\"font-size:160%; font-weight:bold\">&nbsp;" . $string['byteam'] . " - " .  $_GET['team'] . "</th></tr>\n";
   if ($order == 'leadin' and $direction == 'asc') {
     echo "<tr><th colspan=\"2\">&nbsp;</th><th><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?team=$team&order=leadin&direction=desc\">" . $string['question'] . "</a>&nbsp;<img src=\"../../artwork/desc.gif\" width=\"9\" height=\"7\" border=\"0\" /></th><th><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?team=$team&order=q_type&direction=asc\">" . $string['type'] . "</a>&nbsp;</th><th><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?team=$team&order=last_edited&direction=asc\">" . $string['modified'] . "</a>&nbsp;</th></tr>\n";
   } elseif ($order == 'leadin' and $direction == 'desc') {

@@ -3,6 +3,7 @@ require '../../lang/' . $language . '/include/status.inc';
 require '../../lang/' . $language . '/include/blooms.inc';
 require '../../lang/' . $language . '/include/question_types.inc';
 require '../../lang/' . $language . '/question/sct_shared.php';
+require '../../lang/' . $language . '/question/info.php';
 
 $string['edit'] = 'Edit';
 $string['add'] = 'Add';
@@ -92,12 +93,12 @@ $string['wysiwyg'] = 'WYSIWYG';
 $string['changes'] = 'Changes';
 $string['comments'] = 'Comments';
 $string['mapping'] = 'Mapping';
+$string['performance'] = 'Performance';
 $string['limitedsave'] = 'Limited Save';
 $string['save'] = 'Save Changes';
 $string['questionlocked'] = 'This question is currently locked for editing by';
 $string['isinreadonly'] = 'It is now in read only mode.';
 $string['correct'] = 'Correct';
-$string['mscaamsg'] = '<strong>MSC-AA Question</strong> This question has been imported from the MSC-AA and cannot be modified.';
 $string['lockedmsg'] = '<strong>Question Locked</strong> This question is now locked and cannot be modified. <a href="#" class="help-link" rel="161">Click for more details.</a>';
 $string['date'] = 'Date';
 $string['duration'] = 'duration';
@@ -238,4 +239,6 @@ $string['keywordwarning'] = 'Warning no keywords found, cannot create question.'
 $string['mappingwarning'] = 'WARNING: All mappings will be lost if this question is not added to the paper!';
 $string['markchangewarning'] = 'Warning: changing mark allocations post-exam should only be undertaken if absolutely necessary. Are you sure you want to continue?';
 $string['percenttolerance'] = 'Tolerances may now be expressed as percentages (e.g. 5%) as well as absolute numbers';
+$string['answercorrect'] = 'Answer Correct';
+$string['marks'] = 'Marks';
 ?>

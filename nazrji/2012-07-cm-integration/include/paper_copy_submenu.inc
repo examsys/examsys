@@ -65,7 +65,7 @@ require_once '../classes/dateutils.class.php';
   }
 </script>
 
-<div style="z-index:20; display:none; background-color:white; position:fixed; left:190px; top:100px; width:630px; height:320px; border:1px solid #C0C0C0;  box-shadow: 2px 2px 2px #808080" id="copy_submenu" onclick="showCopyMenu(true, event);">
+<div style="z-index:20; display:none; background-color:white; position:fixed; left:190px; top:100px; width:630px; height:320px; border:1px solid #C0C0C0;  box-shadow:2px 2px 2px rgba(0, 0, 0, 0.50)" id="copy_submenu" onclick="showCopyMenu(true, event);">
 <?php
 if ($cfg_summative_mgmt) {
   echo '<form method="post" action="../paper/copy.php" onsubmit="return checkCopyForm()">';
@@ -166,11 +166,11 @@ if ($paper_type == '2' and $cfg_summative_mgmt) {
   while ($module_details->fetch()) {
     if ($next_flag == 1) {
       $next_session = (substr($calendar_year,0,4) + 1) . '/' . (substr($calendar_year,-2) + 1);
-      $sel = (DateUtils::get_current_academic_year() == $next_session) ? ' selected="selected"' : '';
+      $sel = (date_utils::get_current_academic_year() == $next_session) ? ' selected="selected"' : '';
       echo "<option value=\"$next_session\"$sel>$next_session</option>\n";
       $next_flag = 0;
     }
-    $sel = (DateUtils::get_current_academic_year() == $calendar_year) ? ' selected="selected"' : '';
+    $sel = (date_utils::get_current_academic_year() == $calendar_year) ? ' selected="selected"' : '';
     echo "<option value=\"$calendar_year\"$sel>$calendar_year</option>\n";
   }
   echo "</select></td>\n";

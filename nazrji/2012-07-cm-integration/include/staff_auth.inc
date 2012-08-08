@@ -149,7 +149,7 @@
               $result2->bind_param('i', $userID);
               $result2->execute();
               $result2->store_result();
-              if($result2->num_rows > 0) {
+              if ($result2->num_rows > 0) {
                 $is_admin = true;
               }
               $result2->close();

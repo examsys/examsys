@@ -30,6 +30,7 @@ require '../include/marking_functions.inc';
 require '../include/calculate_marks.inc';
 require '../include/errors.inc';
 require '../include/mapping.inc';
+require '../include/media.inc';
 require '../include/finish_functions.inc';
 require '../include/paper_security.inc';
 
@@ -144,6 +145,7 @@ require '../config/finish.inc';
   }
 ?>
 <script type="text/javascript" src="../js/flash_include.js"></script>
+<script type="text/javascript" src="../js/jquery.flash_q.js"></script>
 <script language="JavaScript">
   window.history.go(1);
 
@@ -197,7 +199,7 @@ require '../config/finish.inc';
   echo $top_table_html;
   echo '<tr><td><div class="paper">' . $paper_title . '</div>';
   if ($paper_type < 2 or strpos($userroles,'Staff') !== false or strpos($userroles,'SysAdmin') !== false) {
-    echo '<span style="font-size:90%; color:white; font-weight:bold">' . $string['answersscreen'];
+    echo '<span style="margin-left:5px; font-size:90%; color:white; font-weight:bold">' . $string['answersscreen'];
     if (isset($_GET['userid'])) echo " for $tmp_title $tmp_surname, $tmp_initials ($tmp_student_id)";
     echo '</span>';
   }

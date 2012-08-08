@@ -5,11 +5,12 @@ select,input{font-family:$font,sans-serif;font-size:100%}
 table {font-size:100%;table-layout:fixed}
 p {margin-top:0px;padding-top:0px}
 pre {font-family:Arial,sans-serif;font-size:100%}
-.paper {margin-left:0px;font-size:180%;color:white;font-weight:bold}
+.paper {margin-left:5px;font-size:180%;color:white;font-weight:bold}
+.screens {margin-left:5px;font-weight:bold;color:white}
 .q_no {width:40px; text-align:right;vertical-align:top}
 .theme {font-size:150%;padding-left:4px;font-weight:bold;color:#316AC5}
 .note {color:#C00000}
-.mk {color:#808080;font-size:80%}
+.mk {color:#808080;font-size:80%;padding-top:4px}
 .act {color:black;text-decoration:none}
 .inact {color:#A5A5A5;text-decoration:line-through}
 .s0 {width:18px;text-align:center;background-color:#003366;font-size:80%}

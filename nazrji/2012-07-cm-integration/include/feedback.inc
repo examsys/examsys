@@ -59,6 +59,8 @@ function getCohortData($mysqli, $moduleID, $startdate, $enddate, $repcourse, $re
       $student_modules_sql2 = '';
     }
     $marks_query = "(SELECT log0.userID, sum(mark) AS total_mark FROM (log0, log_metadata) WHERE log0.started=log_metadata.started AND log0.q_paper=log_metadata.paperID AND log0.userID=log_metadata.userID AND q_paper=$paperID AND log_metadata.started>='$startdate' AND log_metadata.started<='$enddate' AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE '%staff%' AND student_grade NOT LIKE '%nhs%' AND year LIKE '" . $repyear . "'$student_modules_sql1 GROUP BY log0.userID, q_paper, log0.started) UNION ALL (SELECT log1.userID, sum(mark) AS total_mark FROM (log1, log_metadata) WHERE log1.started=log_metadata.started AND log1.q_paper=log_metadata.paperID AND log1.userID=log_metadata.userID AND q_paper=" . $paperID . " AND log_metadata.started>='$startdate' AND log_metadata.started<='$enddate' AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE '%staff%' AND student_grade NOT LIKE '%nhs%' AND year LIKE '" . $repyear . "'$student_modules_sql2 GROUP BY log1.userID, q_paper, log1.started) ORDER BY total_mark " . $direction;
+  } elseif ($paper_type == '4') {
+    $marks_query = "SELECT log$paper_type.userID, sum(rating) AS total_mark FROM (log$paper_type, log_metadata) WHERE log$paper_type.started=log_metadata.started AND log$paper_type.q_paper=log_metadata.paperID AND log$paper_type.userID=log_metadata.userID AND q_paper=$paperID AND DATE_ADD(log_metadata.started, INTERVAL 2 MINUTE)>='$startdate' AND log_metadata.started<='$enddate' AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE '%staff%' AND student_grade NOT LIKE '%nhs%' AND student_grade LIKE '" . $repcourse . "' AND year LIKE '" . $repyear . "'$student_modules_sql GROUP BY log$paper_type.userID, q_paper, log$paper_type.started ORDER BY total_mark " . $direction;
   } else {
     $marks_query = "SELECT log$paper_type.userID, sum(mark) AS total_mark FROM (log$paper_type, log_metadata) WHERE log$paper_type.started=log_metadata.started AND log$paper_type.q_paper=log_metadata.paperID AND log$paper_type.userID=log_metadata.userID AND q_paper=$paperID AND DATE_ADD(log_metadata.started, INTERVAL 2 MINUTE)>='$startdate' AND log_metadata.started<='$enddate' AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE '%staff%' AND student_grade NOT LIKE '%nhs%' AND student_grade LIKE '" . $repcourse . "' AND year LIKE '" . $repyear . "'$student_modules_sql GROUP BY log$paper_type.userID, q_paper, log$paper_type.started ORDER BY total_mark " . $direction;
   }
@@ -127,21 +129,6 @@ function getPaperProperties($db,$paperID) {
   $result->bind_result($paper_title, $paper_type, $moduleID, $session, $pass_mark, $random_mark, $total_mark, $marking, $exam_duration, $start_date, $end_date);
   $result->fetch();
   $result->close();
-}
-
-function array_csort($marray, $column, $sort_order) {   //coded by Ichier2003
-  foreach ($marray as $row) {
-    $sortarr[] = $row[$column];
-  }
-  $sortarr = array_map('strtolower',$sortarr);
-  $sort_method = SORT_STRING;
-  if ($column == 'ratio') $sort_method = SORT_NUMERIC;
-  if ($sort_order == 'asc') {
-    array_multisort($sortarr, SORT_ASC, $sort_method, $marray);
-  } else {
-    array_multisort($sortarr, SORT_DESC, $sort_method, $marray);
-  }
-  return $marray;
 }
 
 function formatsec($seconds) {

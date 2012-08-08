@@ -47,7 +47,7 @@ require_once 'detail_parts/details_general_feedback.php';
 ?>
         
         <div class="form">
-          <h2><?php echo $string['variables'] ?></h2>
+          <h2 class="midblue_header"><?php echo $string['variables'] ?></h2>
         </div>
         
         <table id="q-options" class="form" summary="Edit question variables">
@@ -80,7 +80,7 @@ for ($index = $num_options + 1; $index <= count($variables); $index++) {
         </table>
 
         <div class="form">
-          <h2><?php echo $string['answer'] ?></h2>
+          <h2 class="midblue_header"><?php echo $string['answer'] ?></h2>
         </div>
         
         <table id="q-options" class="form" summary="Edit question variables">

@@ -52,7 +52,7 @@ for ($i = 0; $i < $question->max_stems; $i++) {
 <script src="../../js/jquery.addedit.extmatch-fix.js" type="text/javascript"></script>
 
         <div id="extmatch-options">
-          <h2><?php echo $string['availableoptions'] ?></h2>
+          <h2 class="midblue_header"><?php echo $string['availableoptions'] ?></h2>
           <dl id="extended-option-list">
 <?php
   $numerals = array('i', 'ii', 'iii', 'iv', 'v', 'vi', 'vii', 'viii', 'ix', 'x', 'xi', 'xii', 'xiii', 'xiv', 'xv', 'xvi', 'xvii', 'xviii', 'xix', 'xx');
@@ -107,7 +107,7 @@ for ($index = 1; $index <= $question->max_stems; $index++):
 ?>
         <div class="option<?php echo $hidden ?>">
           <div class="form">
-            <h2><?php echo $string['scenario'] . ' ' . $numerals[$index-1] ?>.</h2>
+            <h2 class="midblue_header"><?php echo $string['scenario'] . ' ' . $numerals[$index-1] ?>.</h2>
           </div>
           
           <table id="q-options" class="form" summary="Edit scenario <?php echo $numerals[$index-1] ?>.">

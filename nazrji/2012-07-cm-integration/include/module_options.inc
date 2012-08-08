@@ -25,7 +25,7 @@
 require_once '../classes/dateutils.class.php';
 
 // Calculate what the current academic session is.
-$session = DateUtils::get_current_academic_year();
+$session = date_utils::get_current_academic_year();
 ?>
 <script language="JavaScript">
   function editModule() {

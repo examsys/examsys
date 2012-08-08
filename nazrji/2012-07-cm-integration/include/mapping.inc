@@ -315,7 +315,7 @@ function saveObjMappings($paper_id, $question_id, $rogodb) {
     $modules = $_POST['modules'];
     $modules = explode(',',$modules);
     foreach ($modules as $moduleid) {
-      if(isset($_POST[$moduleid . '_session'])) {
+      if (isset($_POST[$moduleid . '_session'])) {
         $session = $_POST[$moduleid . '_session'];
         $objectiveCount = $_POST[$moduleid . '_objectiveCount'];
         $old_mappings = $_POST[$moduleid . '_old_mappings'];
@@ -357,7 +357,7 @@ function saveObjMappings($paper_id, $question_id, $rogodb) {
 
 /**
  * This is function getObjectives this function get objevive to be mapped. It can Retrieve objectives from 
- * TouchStones internal database or an external application 
+ * the internal database or an external application 
  *
  * @param string $thisModuleid module code
  * @param string $session A session in the format yyyy/yy

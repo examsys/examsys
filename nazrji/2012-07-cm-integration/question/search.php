@@ -222,11 +222,14 @@ if (isset($_POST['submit'])) {
   } else {
     // If no specific owner set lock down by team (apart from SysAdmin).
     if (count($teams) > 0 and $_POST['team'] == '') {
+      $user_string = " AND (q_group REGEXP '" . implode('|', $teams) . "' OR questions.ownerID=$userID)";
+      /*
       $user_string = ' AND (';
       foreach ($teams as $individual_team) {
         $user_string .= 'q_group LIKE "%' . $individual_team . '%" OR ';
       }
       $user_string .= 'questions.ownerID=' . $userID . ')';
+      */
     } else {
       $user_string = '';
     }

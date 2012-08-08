@@ -29,7 +29,7 @@ if (isset($_POST['submit'])) {
   $school = trim($_POST['school']);
   $facultyID = trim($_POST['facultyID']);
   
-  $insert_id = SchoolUtils::addSchool($facultyID, $school, $mysqli);
+  $insert_id = SchoolUtils::add_school($facultyID, $school, $mysqli);
 
   header("location: list_schools.php");
 } else {

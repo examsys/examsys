@@ -66,6 +66,7 @@ $paper_buffer[$question_no]['score_method'] = $old_score_method;
 $question_no++;
 
 
+header('Pragma: public');
 header('Content-type: application/octet-stream');
 header("Content-Disposition: attachment; filename=" . str_replace(' ', '_', $paper_title) . ".csv");
 

@@ -200,7 +200,7 @@ if ($folder != '') {
   makeMenu($teams_array);
   makeMenu($keywords_array);
   if (isset($_GET['module'])) {
-    makeMenu(array($string['questions']=>$cfg_root_path . '/question/search.php', $string['papers']=>$cfg_root_path . '/paper/search.php', $string['people']=>$cfg_root_path . '/users/search.php', '-'=>'-', 'Students on ' . $_GET['module'] . ' (' . DateUtils::get_current_academic_year() . ')'=>$cfg_root_path . '/users/search.php?submit=Search&team=' . $_GET['module'] . '&calendar_year=' . DateUtils::get_current_academic_year() . '&students=on&search_username=&student_id='));
+    makeMenu(array($string['questions']=>$cfg_root_path . '/question/search.php', $string['papers']=>$cfg_root_path . '/paper/search.php', $string['people']=>$cfg_root_path . '/users/search.php', '-'=>'-', 'Students on ' . $_GET['module'] . ' (' . date_utils::get_current_academic_year() . ')'=>$cfg_root_path . '/users/search.php?submit=Search&team=' . $_GET['module'] . '&calendar_year=' . date_utils::get_current_academic_year() . '&students=on&search_username=&student_id='));
   } else {
     makeMenu(array($string['questions']=>$cfg_root_path . '/question/search.php', $string['papers']=>$cfg_root_path . '/paper/search.php', $string['people']=>$cfg_root_path . '/users/search.php'));
   }

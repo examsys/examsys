@@ -74,9 +74,9 @@ $string['errors10'] = 'Rogō wymaga PHP w wersji $php_min_ver lub wyższej';
 $string['errors11'] = 'Rogō wymaga aby moduł PHP mysqli funkcjonował - zainstaluj go lub aktywuj.';
 $string['errors12'] = 'Dostęp do Rogō jest możliwy wyłacznie przez https. Zaktualizuj konfugurację serwera.';
 $string['errors13'] = 'Błąd';
-$string['errors14'] = 'Wygenerowano następujace ostrzeżenia';
+$string['errors14'] = 'Wygenerowano następujące ostrzeżenia';
 $string['errors15'] = 'Ostrzeżenie';
-$string['errors16'] = 'Rogo requires ability to write its config file %s/config/config.inc.php, One way to fix this is you can temporarily allow write access to %s/config and change permissions once update has run.';  // Niko
+$string['errors16'] = 'Rogō wymaga prawa zapisu w swym pliku konfiguracyjnym %s/config/config.inc.php. Jednym ze sposobów realizacji tego jest tymczasowe udzielenie praw zapisu do  %s/config i przywrócenie oryginalnych przywilejów zaraz po dokonaniu aktualizacji.';  
 $string['installscript'] = 'Skrypt instalacyjny Rogō';
 $string['systeminstallation'] = 'Instalacja systemu'; 
 ?>

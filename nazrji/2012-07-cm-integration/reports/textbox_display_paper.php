@@ -176,7 +176,7 @@ $stmt->close();
         $media_list_height = explode('|', $q_media_height);
         for ($i=0; $i<count($media_list); $i++) {
           if ($media_list[$i] != '') {
-            echo '<p align="center">' . display_media($media_list[$i], $media_list_width[$i], $media_list_height[$i]) . "</p>\n";
+            echo '<p align="center">' . display_media($media_list[$i], $media_list_width[$i], $media_list_height[$i], '') . "</p>\n";
           }
         }
       }

@@ -28,7 +28,7 @@
 .menuheading a:hover {color:#428EFF; cursor:pointer}
 
 .sidebar {background-color:#6375D6}
-.popup {display:none; top:0px; left:190px; font-size:75%; position:fixed; line-height:170%; border:1px solid #ACA899; padding:2px; background-color:white; box-shadow:2px 2px 2px #808080}
+.popup {display:none; top:0px; left:190px; font-size:75%; position:fixed; line-height:170%; border:1px solid #ACA899; padding:2px; background-color:white; box-shadow:2px 2px 2px rgba(0, 0, 0, 0.50)}
 .popupitem {padding-left:14px; padding-right:14px; cursor:pointer}
 .popupitembold {padding-left:4px; font-weight:bold}
 

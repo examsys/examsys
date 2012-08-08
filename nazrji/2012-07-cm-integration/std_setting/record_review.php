@@ -131,6 +131,7 @@
       // Default format for $qid
       $qid = 'std' . $question_no;
       switch ($q_type) {
+        case 'area':
         case 'calculation':
         case 'mcq':
         case 'true_false':

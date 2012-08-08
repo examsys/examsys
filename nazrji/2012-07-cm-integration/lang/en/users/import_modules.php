@@ -2,7 +2,7 @@
 require '../lang/' . $language . '/include/user_search_options.inc';
 
 $string['impmodtitle'] = 'Rogō: Import Modules';
-$string['importmodules'] = 'Import Modules';
+//$string['importmodules'] = 'Import Modules';
 $string['csvfile'] = 'CSV File:';
 $string['import'] = 'Import';
 $string['msg1'] = "Rogō can bulk upload student module enrolements. The first row should be a header row containing the following fields:";

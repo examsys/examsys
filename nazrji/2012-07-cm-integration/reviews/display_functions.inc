@@ -176,13 +176,13 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
       echo $question['scenario'] . "<br />\n<br />";
       $li_set = 1;
     }
-    if ($question['q_media'] != '' and $question['q_type'] != 'hotspot' and $question['q_type'] != 'labelling' and $question['q_type'] != 'flash' and $question['q_type'] != 'extmatch') {
+    if ($question['q_media'] != '' and $question['q_type'] != 'hotspot' and $question['q_type'] != 'labelling' and $question['q_type'] != 'flash' and $question['q_type'] != 'extmatch' and $question['q_type'] != 'area') {
       if ($li_set == 0) {
         echo '<tr><td class="q_no">' . ($question_no + $question_offset) . '.&nbsp;';
         if ($calculator == 1) echo '<br /><a href="#" onclick="openCalculator(); return false;"><img src="../artwork/calc.gif" width="18" height="24" alt="Calculator" border="0" /></a>';
         echo '</td><td>';
       }
-      echo '<p align="center">' . display_media($question['q_media'],$question['q_media_width'],$question['q_media_height']) . "</p>\n";
+      echo '<p align="center">' . display_media($question['q_media'], $question['q_media_width'], $question['q_media_height'], '') . "</p>\n";
       $li_set = 1;
     }
     if ($question['q_type'] != 'likert' and $question['q_type'] != 'calculation') {
@@ -200,7 +200,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
     // Special processing of Information Blocks.
     if ($li_set == 0) echo '<tr><td colspan="2" style="padding-left:10px; padding-right:10px">';
     if ($question['q_media'] != '') {
-      echo '<p align="center">' . display_media($question['q_media'],$question['q_media_width'],$question['q_media_height']) . "</p>\n";
+      echo '<p align="center">' . display_media($question['q_media'], $question['q_media_width'], $question['q_media_height'], '') . "</p>\n";
     }
     echo $question['leadin'];
     $li_set = 1;
@@ -305,7 +305,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
           if ($calculator == 1) echo '<br /><a href="#" onclick="openCalculator(); return false;"><img src="' . $cfg_root_path . '/artwork/calc.gif" width="18" height="24" alt="' . $string['calculator'] . '" border="0" /></a>';
           echo '</td><td>';
         }
-        echo '<p align="center">' . display_media($question['q_media'],$question['q_media_width'],$question['q_media_height']) . "</p>\n";
+        echo '<p align="center">' . display_media($question['q_media'], $question['q_media_width'], $question['q_media_height'], '') . "</p>\n";
         $li_set = 1;
       }
     
@@ -366,6 +366,56 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
   foreach ($question['options'] as $display_option) {
     $part_id++;
     switch ($question['q_type']) {
+     case 'area':
+        if (isset($user_answers[$current_screen][$q_id])) {
+          $tmp_user_answer = $user_answers[$current_screen][$q_id];
+          $answer_parts = explode(';', $tmp_user_answer);
+          $tmp_user_answer = substr($answer_parts[1], 0, -2);
+        } else {
+          $tmp_user_answer = '';
+        }
+        
+        ?>
+        <br />
+        <script language="javascript">
+          write_string('<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="<?php echo ($question['q_media_width'] + 2); ?>" height="<?php echo ($question['q_media_height'] + 1); ?>" id="externalinterfaceq<?php echo $question_no; ?>_1" align="top">');
+          write_string('<param name="movie" value="<?php echo $cfg_root_path ?>/question/edit/area.swf" />');
+          write_string('<param name="quality" value="high" />');
+          write_string('<param name="bgcolor" value="#ffffff" />');
+          write_string('<param name="play" value="true" />');
+          write_string('<param name="loop" value="true" />');
+          write_string('<param name="wmode" value="opaque" />');
+          write_string('<param name="scale" value="showall" />');
+          write_string('<param name="menu" value="true" />');
+          write_string('<param name="devicefont" value="false" />');
+          write_string('<param name="salign" value="top" />');
+          write_string('<param name="allowScriptAccess" value="sameDomain" />');
+          write_string('<!--[if !IE]>-->');
+          write_string('<object type="application/x-shockwave-flash" data="<?php echo $cfg_root_path ?>/question/edit/area.swf" id="externalinterfaceq<?php echo $question_no; ?>_2" width="<?php echo ($question['q_media_width'] + 2); ?>" height="<?php echo ($question['q_media_height'] + 1); ?>">');
+          write_string('<param name="movie" value="<?php echo $cfg_root_path ?>/question/edit/area.swf" />');
+          write_string('<param name="quality" value="high" />');
+          write_string('<param name="bgcolor" value="#ffffff" />');
+          write_string('<param name="play" value="true" />');
+          write_string('<param name="loop" value="true" />');
+          write_string('<param name="wmode" value="opaque" />');
+          write_string('<param name="scale" value="showall" />');
+          write_string('<param name="menu" value="true" />');
+          write_string('<param name="devicefont" value="false" />');
+          write_string('<param name="salign" value="top" />');
+          write_string('<param name="allowScriptAccess" value="sameDomain" />');
+          write_string('<!--<![endif]-->');
+          write_string('<a href="http://www.adobe.com/go/getflash"> <img src="http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif" alt="Get Adobe Flash player" /></a>');
+          write_string('<!--[if !IE]>-->');
+          write_string('</object>');
+          write_string('<!--<![endif]-->');
+          write_string('</object>');
+          
+          sendTextToAS3('<?php echo $language; ?>','q<?php echo $question_no; ?>', 1, '<?php echo '../media/' . $question['q_media']; ?>', '<?php echo $display_option['correct']; ?>', '<?php echo $display_option['correct']; ?>');
+          
+        </script>
+        <input type="hidden" name="q<?php echo $question_no; ?>" id="q<?php echo $question_no; ?>" />
+        <?php
+        break;
       case 'dichotomous':
         if (($question['display_method'] == 'TF_NegativeAbstain') or ($question['display_method'] == 'TF_NegativeAbstainHalf') or ($question['display_method'] == 'TF_PostiveAbstain') or ($question['display_method'] == "YN_NegativeAbstain")) {
           $abstain = true;
@@ -388,7 +438,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
         if ($display_option['option_text'] != '') echo $display_option['option_text'];
         if ($display_option['o_media'] != '') {
           if ($display_option['option_text'] != '') echo '<br />';
-          echo display_media($display_option['o_media'], $display_option['o_media_width'], $display_option['o_media_height']);
+          echo display_media($display_option['o_media'], $display_option['o_media_width'], $display_option['o_media_height'], '');
         }
         echo "</td></tr>\n";
         if ($question['score_method'] == 'Mark per Question') {
@@ -492,7 +542,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
           if ($display_option['option_text'] != '') echo "<span class=\"active\" onclick=\"dismissItem('$question_no" . "_" . "$part_id')\" id=\"$question_no" . "_" . "$part_id\">" . $display_option['option_text'] . '</span>';
           if ($display_option['o_media'] != '') {
             if ($display_option['option_text'] != '') echo '<br />';
-            echo display_media($display_option['o_media'], $display_option['o_media_width'], $display_option['o_media_height']);
+            echo display_media($display_option['o_media'], $display_option['o_media_width'], $display_option['o_media_height'], '');
           }          
           echo "</td></tr>\n";
         } elseif ($question['display_method'] == 'horizontal') {
@@ -502,7 +552,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
             echo "<input type=\"radio\" name=\"q" . $question_no . "\" value=\"" . $part_id . "\" />";
           }
           if ($display_option['option_text'] != '') echo '&nbsp;' . $display_option['option_text'];
-          if ($display_option['o_media'] != '') echo '&nbsp;' . display_media($display_option['o_media'],$display_option['o_media_width'],$display_option['o_media_height']);
+          if ($display_option['o_media'] != '') echo '&nbsp;' . display_media($display_option['o_media'], $display_option['o_media_width'], $display_option['o_media_height'], '');
           echo '&nbsp;&nbsp;';
         } else {
           if ($question['option_order'][$part_id - 1] == $question['options'][0]['correct'] - 1) {
@@ -530,7 +580,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
         if ($display_option['option_text'] != '') echo "<span class=\"active\" onclick=\"dismissItem('$question_no" . "_" . "$part_id')\" id=\"$question_no" . "_" . "$part_id\">" . $display_option['option_text'] . '</span>';
         if ($display_option['o_media'] != '') {
           if ($display_option['option_text'] != '') echo '<br />';
-          echo display_media($display_option['o_media'],$display_option['o_media_width'],$display_option['o_media_height']);
+          echo display_media($display_option['o_media'], $display_option['o_media_width'], $display_option['o_media_height'], '');
         }
         echo "</td></tr>\n";
         if ($question['score_method'] == 'Mark per Option') {
@@ -910,7 +960,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
     $matching_answers = explode('|', $question['options'][0]['correct']);
 
     if ($matching_media[0] != '') {
-      echo '<p align="center">' . display_media($matching_media[0], $matching_media_width[0], $matching_media_height[0]) . '</p>';
+      echo '<p align="center">' . display_media($matching_media[0], $matching_media_width[0], $matching_media_height[0], '') . '</p>';
     }
     $text_scenarios = 0;
     for ($part_id=0; $part_id<10; $part_id++) {
@@ -941,7 +991,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
       echo '<li>';
       if (isset($matching_scenarios[$part_id - 1]) and $matching_scenarios[$part_id - 1] != '') echo '<div>' . $matching_scenarios[$part_id - 1] . '</div>';
       if (isset($matching_media[$part_id]) and $matching_media[$part_id] != '') {
-        echo "<p>" . display_media($matching_media[$part_id], $matching_media_width[$part_id], $matching_media_height[$part_id]) . "</p>\n";
+        echo "<p>" . display_media($matching_media[$part_id], $matching_media_width[$part_id], $matching_media_height[$part_id], '') . "</p>\n";
       }
       $sub_answers = explode('$',$matching_answers[$part_id - 1]);
       $list_size = 10;
@@ -980,7 +1030,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
   } elseif ($question['q_type'] == 'matrix') {
     $part_id = 1;
     if ($matching_media[0] != '') {
-      echo "<p align=\"center\">" . display_media($matching_media[0], $matching_media_width[0], $matching_media_height[0]) . "</p>\n";
+      echo "<p align=\"center\">" . display_media($matching_media[0], $matching_media_width[0], $matching_media_height[0], '') . "</p>\n";
     }
     echo '<blockquote><table cellpadding="2" cellspacing="0" border="1" class="matrix">';
     echo "<tr>\n<td colspan=\"2\">&nbsp;</td>";

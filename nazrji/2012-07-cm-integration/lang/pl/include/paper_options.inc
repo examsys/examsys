@@ -104,5 +104,6 @@ $string['paperandquestions'] = 'Arkusze i pytania';
 $string['copypaper'] = 'Kopiuj arkusz';
 $string['reorderinfo'] = 'Możesz teraz zmienić porządek pytań i przemieścić podzielniki ekranowe przeciągając je w nowe położenia';
 $string['insertscreenbreak'] = 'Wprowadź podzielniki ekranowe';//Insert screen break';
-
+$string['addscreenbreak'] = 'Wprowadź podzielniki ekranowe';  
+$string['deletescreenbreak'] = 'Usuń podzielniki ekranowe';  
 ?>

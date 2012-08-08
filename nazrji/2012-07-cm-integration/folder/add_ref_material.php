@@ -104,7 +104,7 @@ for ($size=200; $size<850; $size+=50) {
   $modules_array = array();
   $total_modules = array_merge($teams, $modules_array);
     
-  $module_array = SearchUtils::getTeams($teams, $userroles, $userID, $mysqli);
+  $module_array = search_utils::get_teams($teams, $userroles, $userID, $mysqli);
   $module_no = 0;
   $old_school = '';
   foreach ($module_array as $module) {

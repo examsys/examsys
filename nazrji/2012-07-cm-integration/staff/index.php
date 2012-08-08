@@ -26,6 +26,7 @@
 
   require '../include/staff_student_auth.inc';
   require '../include/sidebar_menu.inc';
+  require '../classes/recyclebin.class.php';
   require '../config/index.inc';
 
   // Redirect Students (if not also staff), External Examiners and Invigilators to their own areas.
@@ -71,7 +72,7 @@ require '../include/staff_auth.inc';
   }
 
   function displayCredits(){
-    notice=window.open("../credits/credits.php","credits","width=696,height=500,scrollbars=no,resizable=no,toolbar=no,location=no,directories=no,status=0,menubar=0");
+    notice=window.open("../credits/index.php","credits","width=696,height=500,scrollbars=no,resizable=no,toolbar=no,location=no,directories=no,status=0,menubar=0");
     notice.moveTo(screen.width/2-350,screen.height/2-250)
     if (window.focus) {
       notice.focus();
@@ -175,7 +176,7 @@ require '../include/staff_auth.inc';
   $result->execute();
   $result->bind_result($paperID, $paper_title, $moduleID, $accessed, $paper_type);
   $result->store_result();
-  echo "<table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>" . $string['myrecentpapers'] . " (" . $result->num_rows() . ")</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
+  echo "<table border=\"0\" class=\"subsect\"><tr><td><nobr>" . $string['myrecentpapers'] . " (" . $result->num_rows() . ")</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
   while ($result->fetch()) {
     echo "<div style=\"padding-left:12px\"><a href=\"../paper/details.php?paperID=" . $paperID . "&folder=&module=" . $moduleID . "\"><img src=\"../artwork/" . $icons[$paper_type] . "_16.gif\" width=\"16\" height=\"16\" border=\"0\" alt=\"" . $paper_type . "\" /></a>&nbsp;<a class=\"recent\"";
     if (strpos($paper_title,'[deleted') !== false) echo ' style="color:#808080"';
@@ -191,7 +192,7 @@ require '../include/staff_auth.inc';
 
   if ($result->num_rows() > 0) {
     echo "<br />\n";
-    echo "<table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>Papers for Review</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
+    echo "<table border=\"0\" class=\"subsect\"><tr><td><nobr>Papers for Review</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
   }
   while ($result->fetch()) {
     $reviewed = '';
@@ -227,7 +228,7 @@ require '../include/staff_auth.inc';
   $result->bind_result($id, $name, $team_name, $color);
   $result->store_result();
 
-  echo "<table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>" . $string['myfolders'] . " (" . ($result->num_rows() + 1) . ")</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
+  echo "<table border=\"0\" class=\"subsect\"><tr><td><nobr>" . $string['myfolders'] . " (" . ($result->num_rows() + 1) . ")</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
   while ($result->fetch()) {
     echo "<div class=\"f\" ><a href=\"../folder/details.php?folder=$id\" class=\"blacklink\"><img style=\"vertical-align:middle; padding-right:8px\" src=\"../artwork/" . $color . "_folder.png\" width=\"48\" height=\"48\" alt=\"Folder\" border=\"0\" />$name</a></div>\n";
   }
@@ -242,39 +243,7 @@ require '../include/staff_auth.inc';
     }
   }
 
-  // Work out if there is anything in the recycle bin.
-  // Limit 1 is included for speed. Just need to know it is not zero to display a full recycle bin icon.
-  $recycle_bin_no = 0;
-  
-  $stmt = $mysqli->prepare("SELECT property_id FROM properties WHERE (paper_ownerID=? OR moduleID REGEXP ('" . implode('|', $teams) . "')) AND deleted IS NOT NULL LIMIT 1");
-  $stmt->bind_param('i', $userID);
-  $stmt->execute();
-  $stmt->bind_result($no_deleted);
-  $stmt->fetch();
-  $stmt->close();
-  $recycle_bin_no += $no_deleted;
-  
-  $stmt = $mysqli->prepare("SELECT q_id FROM questions WHERE (ownerID=? OR q_group REGEXP '" . implode('|', $teams) . "') AND deleted IS NOT NULL LIMIT 1");
-  $stmt->bind_param('i', $userID);
-  $stmt->execute();
-  $stmt->bind_result($no_deleted);
-  $stmt->fetch();
-  $stmt->close();
-  $recycle_bin_no += $no_deleted;
-  
-  $stmt = $mysqli->prepare("SELECT id FROM folders WHERE (ownerID=? OR team_name REGEXP ('" . implode('|', $teams) . "')) AND deleted IS NOT NULL LIMIT 1");
-  $stmt->bind_param('i', $userID);
-  $stmt->execute();
-  $stmt->bind_result($no_deleted);
-  $stmt->fetch();
-  $stmt->close();
-  $recycle_bin_no += $no_deleted;
-
-  if ($recycle_bin_no > 0) {
-    echo "<div class=\"f\"><a href=\"../delete/recycle_list.php\" class=\"blacklink\"><img style=\"vertical-align:middle; padding-right:8px\" src=\"../artwork/full_bin.png\" width=\"48\" height=\"48\" alt=\"Recycle Bin\" border=\"0\" align=\"middle\" />" . $string['recyclebin'] . "</a></div>\n";
-  } else {
-    echo "<div class=\"f\"><a href=\"../delete/recycle_list.php\" class=\"blacklink\"><img style=\"vertical-align:middle; padding-right:8px\" src=\"../artwork/empty_bin.png\" width=\"48\" height=\"48\" alt=\"Recycle Bin\" border=\"0\" align=\"middle\" />" . $string['recyclebin'] . "</a></div>\n";
-  }
+  echo "<div class=\"f\"><a href=\"../delete/recycle_list.php\" class=\"blacklink\"><img style=\"vertical-align:middle; padding-right:8px\" src=\"../artwork/" . RecycleBin::get_recyclebin_icon($userID, $teams, $mysqli) . "\" width=\"48\" height=\"48\" alt=\"Recycle Bin\" border=\"0\" align=\"middle\" />" . $string['recyclebin'] . "</a></div>\n";
 ?>
 <br clear="left" />
 <?php
@@ -284,7 +253,7 @@ require '../include/staff_auth.inc';
     $module_no = count($modules_array);
     if (strpos($userroles,'Admin') !== false) $module_no++;
 
-    echo "<table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>" . $string['mymodules'] . " ($module_no)</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
+    echo "<table border=\"0\" class=\"subsect\"><tr><td><nobr>" . $string['mymodules'] . " ($module_no)</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
     if (strpos($userroles,'SysAdmin') !== false) {
       echo "<div class=\"f\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"width:60px\" align=\"center\"><a href=\"../folder/all.php\"><img src=\"../artwork/yellow_folder.png\" width=\"48\" height=\"48\" alt=\"Folder\" border=\"0\" align=\"middle\" /></a>&nbsp;</td><td><a href=\"../folder/all.php\" class=\"blacklink\"><strong>" . $string['allmodules']  . "</strong></a><br /><span style=\"color:#C00000\">(" . $string['sysadminonly'] . ")</span></td></tr></table></div>\n";
     } elseif (strpos($userroles,'Admin') !== false) {

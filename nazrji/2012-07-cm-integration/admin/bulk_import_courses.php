@@ -129,7 +129,7 @@
               if (in_array($courseid, $course_list)) {
                 echo "<li class=\"existing\">$courseid - " . $string['alreadyexists'] . "</li>\n";
               } else {
-                $success = CourseUtils::addCourse($schoolID, $courseid, $description, $mysqli);
+                $success = CourseUtils::add_course($schoolID, $courseid, $description, $mysqli);
                 if ($success) {
                   echo "<li class=\"added\">$courseid - " . $string['added'] . "</li>\n";
                   $coursesAdded++;

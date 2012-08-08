@@ -31,7 +31,7 @@ if (in_array($_GET['module'], $teams) === false and strpos($userroles,'SysAdmin'
   exit;
 }
 
-$session = DateUtils::get_current_academic_year();
+$session = date_utils::get_current_academic_year();
 $vle_api_cache = array();
 $vle_api = MappingUtils::get_vle_api($_GET['module'], $session, $vle_api_cache, $mysqli);
 

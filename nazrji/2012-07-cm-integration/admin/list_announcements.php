@@ -23,23 +23,6 @@
 */
 
 require '../include/sysadmin_auth.inc';
-  
-function array_csort($marray, $column, $sort_order) {   //coded by Ichier2003
-  $sortarr = array();
-  foreach ($marray as $row) {
-    $sortarr[] = $row[$column];
-  }
-  
-  $sortarr = array_map('strtolower',$sortarr);
-  $sort_method = SORT_STRING;
-  if ($sort_order == 'asc') {
-    array_multisort($sortarr, SORT_ASC, $sort_method, $marray);
-  } else {
-    array_multisort($sortarr, SORT_DESC, $sort_method, $marray);
-  }
-  return $marray;
-}
-
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -161,8 +144,7 @@ while ($result->fetch()) {
   
   $announcements_no++;
 }
-
-//$announcements = array_csort($announcements, $sortby, $ordering);
+$result->close();
 
 for ($i=0; $i<$announcements_no; $i++) {
   /*
@@ -184,10 +166,8 @@ for ($i=0; $i<$announcements_no; $i++) {
     $deleted = '';
   }
   echo "<tr id=\"$i\" onclick=\"selAnnounce($i,'" . $announcements[$i]['announcementid'] . "',event)\" ondblclick=\"edit('" . $announcements[$i]['announcementid'] . "')\" onmouseover=\"lon($i)\" onmouseout=\"loff($i)\" class=\"l\"><td><div class=\"col$deleted\">" . $announcements[$i]['title'] . "</div></td><td><div class=\"col$deleted\">" . $announcements[$i]['startdate']  . "</div></td><td><div class=\"col$deleted\">" . $announcements[$i]['enddate']  . "</div></td></tr>\n";
-  
-
 }
-$result->close();
+
 $mysqli->close();
 ?>
 </table>

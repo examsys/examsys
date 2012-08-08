@@ -24,7 +24,7 @@
 ?>
   <div id="media-upload-holder">
     <div id="media-upload">
-      <h2><?php echo $string['uploadimage'] ?></h2>
+      <h2 class="midblue_header"><?php echo $string['uploadimage'] ?></h2>
       <p><?php echo $string['uploadinstructions'] ?></p>
       <p><label for="q_media" class="heavy"><?php echo $string['image'] ?></label> <input id="q_media" name="q_media" size="45" type="file" /></p>
       <p class="compact"><a href="#" id="media-labels-link"><?php echo $string['upload_images'] ?></a></p>

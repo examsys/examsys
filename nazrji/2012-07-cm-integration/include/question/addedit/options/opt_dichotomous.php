@@ -51,7 +51,7 @@ $locked = ($dis_class != '');
   if ($option->id != -1) { 
     $media = $option->get_media();
     if ($media['filename'] != '') {
-      $current_media_html =  display_media($media['filename'], $media['width'], $media['height'], $index, $locked);
+      $current_media_html =  display_media($media['filename'], $media['width'], $media['height'], '', $index, $locked);
 ?>
               <tr<?php echo $alt_c ?>>
                 <th><?php echo $string['current'] . ' ' . $string['media'] ?></th>

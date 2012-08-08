@@ -49,4 +49,6 @@ $string['no'] = 'No';
 $string['abstain'] = 'Abstain';
 $string['iscorrect'] = 'Is correct';
 $string['isexcluded'] = 'Is excluded';
+$string['withinshape'] = 'Within shape';
+$string['outsideshape'] = 'Outside shape';
 ?>

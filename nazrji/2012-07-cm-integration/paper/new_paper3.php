@@ -94,8 +94,8 @@
   $hash = $property_id . $created . $paper_ownerID;   // Generate the encrypted name of the paper.
 
   if ($cfg_summative_mgmt and $_POST['paper_type'] == 'summative') {
-    $result = $mysqli->prepare("UPDATE properties SET moduleID=?, deleted=NULL, crypt_name=?, calendar_year=? WHERE property_id=? LIMIT 1");
-    $result->bind_param('sssi', $module_string, $hash, $session, $property_id);
+    $result = $mysqli->prepare("UPDATE properties SET moduleID=?, deleted=NULL, crypt_name=?, calendar_year=?, exam_duration=? WHERE property_id=? LIMIT 1");
+    $result->bind_param('sssii', $module_string, $hash, $session, $_POST['duration'], $property_id);
     $result->execute();  
     $result->close();
 

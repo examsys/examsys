@@ -24,6 +24,9 @@
 
   function fullQuestionType($abreviation, $string) {
     switch ($abreviation) {
+      case 'area':
+        $fullname = $string['area'];
+        break;
       case 'blank':
         $fullname = $string['blank'];
         break;

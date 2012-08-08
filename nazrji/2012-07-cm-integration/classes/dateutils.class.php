@@ -24,7 +24,7 @@
 * @package
 */
 
-Class DateUtils {
+Class date_utils {
 	// Start of academic year (mm/dd)
 	public static $academic_year_start = '07/01';
 	
@@ -33,7 +33,7 @@ Class DateUtils {
 	 * @return string
 	 */
 	static function get_current_academic_year()	{
-		return DateUtils::get_academic_year(date('Y/m/d'));
+		return date_utils::get_academic_year(date('Y/m/d'));
 	}
 	
 	/**
@@ -42,9 +42,14 @@ Class DateUtils {
 	 * @return string
 	 */
 	static function get_academic_year($date) {
+    global $cfg_academic_year_start;
+    
 		$date_as_time = strtotime($date);
-		$start_this_year = strtotime(date('Y').'/'.self::$academic_year_start);
-		
+    if (isset($cfg_academic_year_start)) {
+      $start_this_year = strtotime(date('Y') . '/' . $cfg_academic_year_start);
+    } else {
+      $start_this_year = strtotime(date('Y') . '/' . self::$academic_year_start);
+    }
 		if ($date_as_time < $start_this_year) {
 			$session = (date('Y') - 1) . '/' . date('y');
 		} else {
@@ -54,7 +59,7 @@ Class DateUtils {
 		return $session;
 	}
   
-  static function timedateSelect($prefix, $imput_date='') {
+  static function timedate_select($prefix, $imput_date='') {
     global $string;
     
     $split_year = substr($imput_date,0,4);
@@ -88,7 +93,7 @@ Class DateUtils {
     
     // Month
     $html .= "<select name=\"" . $prefix . "month\">\n";
-    $months = array('january','february','march','april','may','june','july','august','september','october','november','december');
+    $months = array('january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december');
     for ($i=0; $i<12; $i++) {
       $trans_month = mb_substr($string[$months[$i]],0,3,'UTF-8');
       if (($split_month-1) == $i) {

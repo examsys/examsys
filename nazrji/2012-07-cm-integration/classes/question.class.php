@@ -108,7 +108,7 @@ Class Question extends TouchStoneObject {
   protected $_field_map = array('type' => 'q_type', 'option_order' => 'q_option_order', 'standards_setting' => 'std', 'owner_id' => 'ownerID', 'media' => 'q_media', 'media_width' => 'q_media_width', 'media_height' => 'q_media_height', 'group' => 'q_group', 'checkout_author_id' => 'checkout_authorID', 'created' => 'creation_date');
   protected $_change_field_map;
   protected $_pretty_names;
-  public static $types = array('blank', 'calculation', 'dichotomous', 'extmatch', 'flash', 'hotspot', 'info', 'keyword_based', 'labelling', 'likert', 'matrix', 'mcq', 'mrq', 'random', 'rank', 'sct', 'textbox', 'true_false');
+  public static $types = array('blank', 'calculation', 'dichotomous', 'extmatch', 'flash', 'hotspot', 'info', 'keyword_based', 'labelling', 'likert', 'matrix', 'mcq', 'mrq', 'random', 'rank', 'sct', 'textbox', 'true_false', 'area');
   
   // Always store English values in the database so need to look up score method against English version
   protected $_score_methods_db;
@@ -1187,6 +1187,10 @@ QUERY;
    * @return array Associative array containing date, section, old value, new value and user for the change
    */
   public function get_changes() {
+    if ($this->id == -1) {
+      return array();
+    }
+
     if(!is_array($this->_changes)) {
       $this->_changes = array();
       // Load the changes into an array
@@ -1240,6 +1244,10 @@ QUERY;
    * @return array Array of comments indexed by comment ID and containing paper ID, category,  comment text, date, reviewer name, action, response and type
    */
   public function get_comments($paper_id = -1) {
+    if ($this->id == -1) {
+      return array();
+    }
+
     if(!is_array($this->_comments)) {
       $this->_comments = array();
       

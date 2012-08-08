@@ -70,6 +70,11 @@ function add_users_from_file($fileName) {
     }
 
     $fields = explode($split_on, $separate_line);
+    if (isset($header['type'])) {
+      $role = str_replace('"','',trim($fields[$header['type']]));
+    } else {
+      $roles = 'Student';
+    }
     if (isset($header['student_id'])) {
       $sid = str_replace('"','',trim($fields[$header['student_id']]));
     } else {    
@@ -108,8 +113,10 @@ function add_users_from_file($fileName) {
       $email = trim($fields[$header['email']]);
     }
     if (isset($header['username'])) {
+      // If we have a username, use it.
       $username = $fields[$header['username']];
     } else {
+      // If we don't have a username, use the part before the @ in the email address.
       $username = explode("@",$email);
       $username = $username[0];
     }
@@ -122,7 +129,6 @@ function add_users_from_file($fileName) {
       $gender = 'NULL';
     }
     
-    //JHM 2012-04-13: Enable passwords to be imported by csv
     if (isset($header['password']) and $fields[$header['password']] != "") { 
       //Check that we have a password header, and the password is not blank for this user
       $password = $fields[$header['password']];
@@ -131,8 +137,20 @@ function add_users_from_file($fileName) {
       $password = '';  
     }
 
+    // Override some fields if user type is Staff.
+    if (strtolower($role) == 'staff') {
+      $roles = 'Staff';
+      $course = 'University Lecturer';
+      $year = 1;
+    } elseif (strtolower($role) == 'external examiner') {
+      $roles = 'External Examiner';
+      $course = 'Staff External Examiner';
+      $year = 1;
+    }
+
     $invalid_user = false;
     $tmp_userID = UserUtils::usernameExists($username, $mysqli);
+    
     if ($tmp_userID === false) {
       //add new users
        
@@ -145,7 +163,7 @@ function add_users_from_file($fileName) {
                                            $course, 
                                            $gender, 
                                            $year, 
-                                           'Student', 
+                                           $role, 
                                            $sid, 
                                            $mysqli
                                           );
@@ -159,10 +177,10 @@ function add_users_from_file($fileName) {
       if (isset($_POST['welcome']) and $_POST['welcome'] != '') {
         send_welcome_email($title, $surname, $username, $password, $email);
       }
-    } elseif ($username != '' and stristr('ps_',$username) === false) {
+    } elseif ($username != '' and stristr('ps_', $username) === false) {
       //update existing student records
 
-      if($password != '') {
+      if ($password != '') {
         //we are updating the password from the CSV
         $encpw_password = encpw($cfg_encrypt_salt, $username, $password);
         $result = $mysqli->prepare("UPDATE users SET yearofstudy=?, title=?, first_names=?, surname=?, grade=? , password=? WHERE username=?");
@@ -183,11 +201,15 @@ function add_users_from_file($fileName) {
       $invalid_user = true;
     }
 	  
-    if ($invalid_user != true and isset($header['modules']) and isset($header['session'])) {
+    if ($role != 'Staff' and $role != 'External Examiner' and $invalid_user != true and isset($header['modules']) and isset($header['session'])) {
       //add students to modules
       $module = trim($fields[$header['modules']]);
       $session = trim($fields[$header['session']]);
-      UserUtils::addUserToModule($tmp_userID, $module, 1, $session, $mysqli);
+      UserUtils::add_student_to_module($tmp_userID, $module, 1, $session, $mysqli);
+    }
+    if ($role == 'Staff') {
+      $team = trim($fields[$header['modules']]);
+      UserUtils::add_staff_to_team($tmp_userID, $team, $mysqli);
     }
   }
 

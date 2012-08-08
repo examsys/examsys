@@ -25,6 +25,6 @@ $string['hyperlink'] = '<a href="" onclick="return false;">hiperłącze</a> - pr
 $string['relativekey'] = "<strong>Wzgl.</strong> - o ile punktów więcej '+' lub mniej '-' niż średnia w grupie";
 $string['question'] = '<strong>L.Pyt.</strong> - liczba pytań odwzorowana w celach';
 
-$string['idmissing'] = 'Student ID Missing';  // Niko
-$string['idmissing_msg'] = 'No student ID has been passed. To view a specific feedback report for a student access via Class Totals report.';  // Niko
+$string['idmissing'] = 'Brak numeru legitymacji'; 
+$string['idmissing_msg'] = 'Nie dostarczono numeru legitymacji studenckiej. Zobacz raport: Zestawienie klasy, aby przejrzeć informacje dot. konkretnego odzewu.';  
 ?>

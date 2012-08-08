@@ -635,7 +635,7 @@ if (isset($_POST['Submit'])) {
     if ($module_sql == '') {
       echo "<input type=\"hidden\" name=\"module_no\" id=\"module_no\" value=\"0\" /></div>\n";
     } else {
-      $module_array = SearchUtils::getTeams($teams, $userroles, $userID, $mysqli);
+      $module_array = search_utils::get_teams($teams, $userroles, $userID, $mysqli);
       $module_no = 0;
       $old_school = '';
       foreach ($module_array as $module) {

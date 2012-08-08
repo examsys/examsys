@@ -126,7 +126,7 @@ for ($size=200; $size<850; $size+=50) {
   echo "<div style=\"margin-top:1px; display:block; width:400px; height:604px; overflow-y:scroll; border:1px solid #7F9DB9; font-size:90%\">";
   $modules_array = array();
     
-  $module_array = SearchUtils::getTeams($teams, $userroles, $userID, $mysqli);
+  $module_array = search_utils::get_teams($teams, $userroles, $userID, $mysqli);
   $module_no = 0;
   $old_school = '';
   foreach ($module_array as $module) {

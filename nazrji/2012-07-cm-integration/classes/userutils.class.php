@@ -45,12 +45,12 @@ Class UserUtils {
       }
 
       //force valid value for gender or default to NULL
-      if(strtolower($gender) != 'male' or strtolower($gender) != 'female') {
-        $gender = 'NULL';
+      if (strtolower($gender) != 'male' and strtolower($gender) != 'female') {
+        $gender = NULL;
       }
       
       //add new users
-      $result = $db->prepare("INSERT INTO users VALUES(?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, NULL, 0, ?)");
+      $result = $db->prepare("INSERT INTO users VALUES(?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, NULL, 0, ?, NULL)");
       $encrypt_password = encpw($cfg_encrypt_salt, $username, $password);
       $result->bind_param('ssssssssssi', $encrypt_password, $course, $surname, $initials, $title, $username, $email, $role, $forname, $gender, $year);
       $result->execute();
@@ -109,6 +109,41 @@ Class UserUtils {
     
     return $exists;
   }
+  
+  static function add_staff_to_team($tmp_userID, $module, $db) {
+    $stmt = $db->prepare("INSERT INTO teams VALUES (NULL, ?, ?, NULL, 'System')");
+    $stmt->bind_param('si', $module, $tmp_userID);
+    $stmt->execute();  
+    $stmt->close();
+  }
+
+  static function clear_team_by_team_name($team_name, $db) {
+    $result = $db->prepare("DELETE FROM teams WHERE name=?");
+    $result->bind_param('s', $team_name);
+    $result->execute();  
+    $result->close();
+  }
+  
+  static function clear_team_by_userID($tmp_userID, $db) {
+    $result = $db->prepare("DELETE FROM teams WHERE memberID=?");
+    $result->bind_param('i', $tmp_userID);
+    $result->execute();  
+    $result->close();
+  }
+
+  static function get_team_list_by_name($team_name, $db) {
+    $team_members = array();
+    $result = $db->prepare("SELECT memberID FROM teams WHERE name=?");
+    $result->bind_param('s', $team_name);
+    $result->execute();
+    $result->bind_result($memberID);
+    while ($result->fetch()) {
+      $team_members[] = $memberID;
+    }
+    $result->close();
+
+    return $team_members;
+  }
 
   /**
    * Enrole a student on a module.
@@ -119,13 +154,13 @@ Class UserUtils {
    * @return bool return true if successful.
    *
    */
-  static function addUserToModule($userID, $module, $attempt, $session, $db) {
-    if(UserUtils::isUserOnModule($userID, $module,$session, $db)) {
+  static function add_student_to_module($tmp_userID, $module, $attempt, $session, $db) {
+    if (UserUtils::isUserOnModule($tmp_userID, $module,$session, $db)) {
       //dont add a user to a module multiple times
       return true;
     } else {
       $result = $db->prepare("INSERT INTO student_modules VALUES(NULL, ?, ?, ?, ?, 0)");
-      $result->bind_param('issi', $userID, $module, $session, $attempt);
+      $result->bind_param('issi', $tmp_userID, $module, $session, $attempt);
       $result->execute();
       $result->close();
       if ($db->errno != 0) {
@@ -135,9 +170,9 @@ Class UserUtils {
     }
   } 
 
-  static function removeUserFromModule($userID, $module, $session, $db) {
+  static function removeUserFromModule($tmp_userID, $module, $session, $db) {
     $result = $db->prepare("DELETE FROM student_modules WHERE userID=? AND moduleid=?");
-    $result->bind_param('is', $userID, $module);
+    $result->bind_param('is', $tmp_userID, $module);
     $result->execute();
     $result->close();
     if ($db->errno != 0) {

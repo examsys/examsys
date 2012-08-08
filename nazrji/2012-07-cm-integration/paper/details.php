@@ -384,8 +384,8 @@ function random_qMarks($random_questions) {
     <div id="content" class="content" style="font-size:80%"><br />
   <?php
     echo "<div style=\"position:absolute; left:230px; top:10px\"><img src=\"../artwork/orange_alert_48.png\" width=\"48\" height=\"48\" /></div>\n";
-    echo "<h1 style=\"margin-left:60px; font-weight:normal; color:#4465A2; font-size:160%\">" . $string['papernotfound'] . "</h1>\n";
-    echo "<hr size=\"1\" align=\"left\" width=\"500\" style=\"height:1px; border:none; margin-left:60px; color:#C0C0C0; background-color:#C0C0C0\" />\n<div style=\"margin-left:60px\">" . sprintf($string['furtherassistance'], $support_email, $support_email). "</div>\n";
+    echo "<h1 class=\"midblue_header\" style=\"margin-left:70px;font-size:160%\">" . $string['papernotfound'] . "</h1>\n";
+    echo "<hr size=\"1\" align=\"left\" width=\"500\" style=\"height:1px; border:none; margin-left:70px; color:#C0C0C0; background-color:#C0C0C0\" />\n<div style=\"margin-top:10px; margin-left:70px\">" . sprintf($string['furtherassistance'], $support_email, $support_email). "</div>\n";
     echo "</div>\n</body>\n</html>\n";
     $mysqli->close();
     exit;
@@ -397,9 +397,9 @@ function random_qMarks($random_questions) {
     <div id="content" class="content" style="font-size:80%"><br />
   <?php
     echo "<div style=\"position:absolute;left:230px;top:10px\"><img src=\"../artwork/full_bin.png\" width=\"48\" height=\"48\" /></div>\n";
-    echo "<h1 style=\"margin-left:60px;font-weight:normal;color:#4465A2;font-size:160%\">" . $string['paperdeleted'] . "</h1>\n";
+    echo "<h1 class=\"midblue_header\" style=\"margin-left:70px;font-size:160%\">" . $string['paperdeleted'] . "</h1>\n";
     $deleted_parts = explode('[deleted', $paper_title);
-    echo "<hr size=\"1\" align=\"left\" width=\"500\" style=\"height:1px;border:none;margin-left:60px;color:#C0C0C0;background-color:#C0C0C0\" />\n<p style=\"margin-left:60px\">" . sprintf($string['deleted_msg1'], $deleted_parts[0]) . "</p>\n\n<ul style=\"margin-left:80px\">\n";
+    echo "<hr size=\"1\" align=\"left\" width=\"500\" style=\"height:1px;border:none;margin-left:70px;color:#C0C0C0;background-color:#C0C0C0\" />\n<p style=\"margin-top:10px; margin-left:70px\">" . sprintf($string['deleted_msg1'], $deleted_parts[0]) . "</p>\n\n<ul style=\"margin-left:80px\">\n";
     if ($paper_ownerID == $userID) {
       echo "<li>" . $string['deleted_msg2'] . "</li>\n";
     } else {
@@ -631,7 +631,7 @@ function random_qMarks($random_questions) {
     $old_option_text[] = $option_text;
     if (trim($o_media != '')) $old_o_media[] = $o_media;
     $old_marks = $marks_correct;
-    if (!empty($option_text) or (!empty($correct) and (in_array($q_type, array('labelling', 'hotspot', 'true_false')))) or in_array($q_type, array('info', 'likert', 'flash'))) $options++;
+    if (!empty($option_text) or (!empty($correct) and (in_array($q_type, array('labelling', 'hotspot', 'area', 'true_false')))) or in_array($q_type, array('info', 'likert', 'flash'))) $options++;
   }
   $result->close();
   
@@ -812,11 +812,11 @@ function random_qMarks($random_questions) {
       $screen_marks = 0;
       if ($old_screen < ($temp_array[$x]['screen'] - 1)) {
         for ($missing=1; $missing<($temp_array[$x]['screen'] - $old_screen); $missing++) {
-          echo '<tr id="link_break' . ($old_screen + $missing) . '" class="breakline qline screenerror"><td colspan="6" class="ie-fullwidth"><h4><span class="opaque screen_no">' . $string['screen'] . '&nbsp' . ($old_screen + $missing) . '</span></h4></td></tr>';
+          echo '<tr id="link_break' . ($old_screen + $missing) . '" class="breakline qline screenerror"><td colspan="6" class="ie-fullwidth"><h4><span class="opaque">' . $string['screen'] . '&nbsp' . ($old_screen + $missing) . '</span></h4></td></tr>';
           echo '<tr><td colspan="6" style="height:55px; background-image:url(../artwork/no_questions_gradient.png); repeat:repeat-x; background-color:#FFC0C0; padding-left:15px; padding-top:4x">' . $string['noquestionscreen'] . '</td></tr>';
         }
       }
-      echo '<tr id="link_break' . $temp_array[$x]['screen'] . '" class="breakline qline"><td colspan="6" class="ie-fullwidth"><h4><span class="opaque screen_no">' . $string['screen'] . '&nbsp' . $temp_array[$x]['screen'] . '&nbsp;</span></h4></td></tr>';
+      echo '<tr id="link_break' . $temp_array[$x]['screen'] . '" class="breakline qline"><td colspan="6" class="ie-fullwidth"><h4><span class="subsect opaque">' . $string['screen'] . '&nbsp' . $temp_array[$x]['screen'] . '&nbsp;</span></h4></td></tr>';
     }
     $old_screen = $temp_array[$x]['screen'];
     $teamOK = false;
@@ -890,10 +890,6 @@ function random_qMarks($random_questions) {
       $dice_no = rand(1,6);
       if ($temp_array[$x]['leadin'] == '') $temp_array[$x]['leadin'] = 'Random question block';
       echo '<img src="../artwork/dice' . $dice_no . '.png" width="14" height="14" alt="folder" border="0" style="position:relative; left:1px;" />';
-    } else {
-      if (isset($mscaa_metadata[$temp_array[$x]['q_id']])) {
-        echo '<img src="../artwork/mscaa_logo_tiny.png" width="13" height="18" alt="MSC-AA question" border="0" />';
-      }
     }
     echo '</td>';
 

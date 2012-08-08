@@ -3,6 +3,7 @@ require '../../lang/' . $language . '/include/status.inc';
 require '../../lang/' . $language . '/include/blooms.inc';
 require '../../lang/' . $language . '/include/question_types.inc';
 require '../../lang/' . $language . '/question/sct_shared.php';
+require '../../lang/' . $language . '/question/info.php';
 
 $string['edit'] = 'Edytuj';
 $string['add'] = 'Dodaj';
@@ -92,12 +93,12 @@ $string['wysiwyg'] = 'WYSIWYG';
 $string['changes'] = 'Zmiany'; 
 $string['comments'] = 'Komentarze';
 $string['mapping'] = 'Odwzorowanie'; //Mapowanie,odwzorowanie, projekcja
+$string['performance'] = 'Wyniki';  
 $string['limitedsave'] = 'Ograniczone zapisywanie'; 
 $string['save'] = 'Zapisz zmiany';
 $string['correct'] = 'Poprawnie';
 $string['questionlocked'] = 'To pytanie jest zablokowane dla edycji przez';
 $string['isinreadonly'] = 'Jest ono dostępne tylko do odczytu.';
-$string['mscaamsg'] = '<strong>Pytania MSC-AA</strong> To pytanie było importowane z MSC-AA i nie może być zmienione.';
 $string['lockedmsg'] = '<strong>Pytanie zablokowane</strong> To pytanie jest zablokowane i nie może być zmienione. <a href="#" class="help-link" rel="161">Kliknij aby dowiedzieć się więcej.</a>';
 $string['date'] = 'Data';
 $string['duration'] = 'czas trwania';
@@ -237,5 +238,7 @@ $string['questionbasedon'] = 'Pytanie bazujące na';
 $string['keywordwarning'] = 'Ostrzeżenie: nie znaleziono słów kluczowych, utworzenie pytania jest niemożliwe.';
 $string['mappingwarning'] = 'Ostrzeżenie: wszystkie odwzorowania będą utracone jeśli to pytanie nie zostanie dodane do arkusza!';
 $string['markchangewarning'] = 'Ostrzeżenie: zmiana parametrów oceny po egzaminie powinna być podejmowana tylko w razie najwyższej konieczności. Czy na pewno kontynuować?'; 
-$string['percenttolerance'] = 'Tolerancja może być wyrażona procentowo (np. 5%) jak i wartościami bezwzględnymi'; 
+$string['percenttolerance'] = 'Tolerancja może być wyrażona procentowo (np. 5%) jak i wartościami bezwzględnymi';
+$string['answercorrect'] = 'Odpowiedź poprawna';
+$string['marks'] = 'Pynkty'; 
 ?>

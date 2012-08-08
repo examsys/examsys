@@ -26,4 +26,6 @@ $string['honours pass'] = 'Honours PASS';
 $string['oscemarksheet'] = 'OSCE Mark Sheet';
 $string['feedback'] = 'Feedback';
 $string['studentprofile'] = 'Student Profile';
+$string['unsatisfactory'] = 'Unsatisfactory:';
+$string['competent'] = 'Competent:';
 ?>

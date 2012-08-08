@@ -25,9 +25,8 @@ $string['viewuserfile'] = 'View user file';
 $string['createnewuser'] = 'Create new user';
 $string['emailuser'] = 'Email User';
 $string['cohorttasks'] = 'Cohort Tasks';
-$string['importstudents'] = 'Import Students';
-$string['importmodules'] = 'Import Modules';
-$string['emailcohort'] = 'Email Cohort';
+$string['importusers'] = 'Import Users';
+$string['importmodules'] = 'Import Modules (students)';
 $string['anyyear'] = 'any year';
 $string['anymodule'] = '(any module)';
 $string['title'] = 'Title';
@@ -42,4 +41,5 @@ $string['miss'] = 'Miss';
 $string['mrs'] = 'Mrs';
 $string['ms'] = 'Ms';
 $string['professor'] = 'Professor';
+$string['deleteuser'] = 'Delete User';
 ?>

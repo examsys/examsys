@@ -131,7 +131,7 @@
                   $result->fetch();
                   $result->close();
 
-                  $unknown_schoolID = SchoolUtils::addSchool($facultyID, '', $mysqli);
+                  $unknown_schoolID = SchoolUtils::add_school($facultyID, '', $mysqli);
                 }
                 $schoolID = $unknown_schoolID;
               }              
@@ -150,7 +150,7 @@
               if (in_array($moduleid, $module_list)) {
                 echo "<li class=\"existing\">$moduleid - " . $string['alreadyexists'] . "</li>\n";
               } else {
-                $success = ModuleUtils::addModules($moduleid, $fullname, $active, $schoolID, $vle_api, $sms_api, $selfEnroll, $peer, $external, $stdset, $mapping, $neg_marking, $ebel_grid_template, $mysqli);
+                $success = module_utils::add_modules($moduleid, $fullname, $active, $schoolID, $vle_api, $sms_api, $selfEnroll, $peer, $external, $stdset, $mapping, $neg_marking, $ebel_grid_template, $mysqli);
                 if ($success) {
                   echo "<li class=\"added\">$moduleid - " . $string['added'] . "</li>\n";
                   $modulesAdded++;

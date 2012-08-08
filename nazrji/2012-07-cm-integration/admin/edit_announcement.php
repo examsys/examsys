@@ -115,10 +115,10 @@ for ($i=1; $i<=7; $i++) {
 <td class="f">Title</td><td><input type="text" name="title" size="60" value="<?php echo $news_title; ?>" /></td>
 </tr>
 <tr>
-<td class="f">Available from</td><td><?php echo DateUtils::timedateSelect('f', $startdate); ?></td>
+<td class="f">Available from</td><td><?php echo date_utils::timedate_select('f', $startdate); ?></td>
 </tr>
 <tr>
-<td class="f">Available to</td><td><?php echo DateUtils::timedateSelect('t', $enddate); ?></td>
+<td class="f">Available to</td><td><?php echo date_utils::timedate_select('t', $enddate); ?></td>
 </tr>
 <tr>
 <td class="f">Staff Message</td><td><textarea class="mceEditor" id="staff_msg" name="staff_msg" style="width:750px; height:70px; margin: 0" rows="5" cols="20"><?php echo $staff_msg; ?></textarea></td>

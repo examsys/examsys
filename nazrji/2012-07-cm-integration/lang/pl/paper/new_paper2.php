@@ -14,15 +14,15 @@ $string['msg4'] = 'Nie wybrano żadnego modułu. Arkusze muszą być przypisane 
 $string['msg5'] = "Nazwa '%s' jest już wykorzystywana. Wybierz inny tytuł arkusza.";
 $string['msg6'] = 'To jest egzamin typu "closed-book", w czasie którego <em>niedozwolone jest</em> korzystanie ze środków i źródeł pomocniczych (także słowników) ani pomocy osób drugich. Niedozwolone jest też używanie urządzeń elektronicznych z wyjątkiem komputera egzaminacyjnego.';
 
-$string['barriersneeded'] = 'Barriers Needed';  // Niko, from here downwards
-$string['daterequired'] = 'Date required';
-$string['cohortsize'] = 'Cohort Size';
-$string['sittings'] = 'Sittings';
-$string['campus'] = 'Campus';
-$string['notes'] = 'Notes';
-$string['mins'] = 'mins';
+$string['barriersneeded'] = 'Potrzebne bariery';  
+$string['daterequired'] = 'Wymagana data';
+$string['cohortsize'] = 'Rozmiar grupy';
+$string['sittings'] = 'Posiedzenia'; 
+$string['campus'] = 'Kampus';
+$string['notes'] = 'Notatki';
+$string['mins'] = 'min.';
 
-$string['msg7'] = 'WARNING: You must specify which date you require the exam to run in.';
-$string['msg8'] = 'WARNING: You must specify a duration in minutes that the exam will last.';
-$string['msg9'] = 'WARNING: You must specify a size for the cohort.';
+$string['msg7'] = 'OSTRZEŻENIE: Musisz określić datę przeprowadzenia egzaminu.';
+$string['msg8'] = 'OSTRZEŻENIE: Musisz określić czas trwania egzaminu (w minutach).';
+$string['msg9'] = 'OSTRZEŻENIE: Musisz okreslić rozmiar grupy.';
 ?>

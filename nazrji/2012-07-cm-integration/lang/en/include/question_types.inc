@@ -23,4 +23,5 @@ $string['sct'] = 'Script Concordance Test';
 $string['sct_short'] = 'Script Concordance';
 $string['textbox'] = 'Text Box';
 $string['true_false'] = 'True/False';
+$string['area'] = 'Area';
 ?>

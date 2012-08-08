@@ -146,7 +146,7 @@ QUERY;
 for ($i = 0; $i < count($modules); $i++) {
   $mod_id = $modules[$i]['id'];
 	if ($stmt = $mysqli->prepare($feedback_query)) {
-		$mod_string = '%'.$mod_id.'%';
+		$mod_string = '%' . $mod_id . '%';
 	  $stmt->bind_param('ss', $mod_string, $modules[$i]['year']);
 	  $stmt->execute();
 	  $stmt->bind_result($paper_id, $calendar_year, $paper_title, $crypt_name, $feedback_type, $start_date);
@@ -200,7 +200,7 @@ for ($i = 0; $i < count($modules); $i++) {
 <div id="content" class="content" style="font-size:80%">
 	<table cellpadding="0" cellspacing="0" border="0" width="100%">
 		<tr>
-      <td rowspan="2"style="background-color:#F1F5FB"><img style="margin:4px" src="../artwork/rogo_logo.gif" width="137" height="61" alt="Rogo" border="0" /></td>
+      <td rowspan="2"style="background-color:#F1F5FB"><img style="margin:4px" src="../artwork/rogo_logo.gif" width="270" height="60" alt="Rogo" border="0" /></td>
       <td style="background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(1); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="Help" border="0" /></a></td>
     </tr>
 	  <tr>

@@ -561,10 +561,10 @@ Class InstallUtils {
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log3 TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".log4 TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".log4_overall TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
-    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log5 TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".log5 TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log6 TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".log_late TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
-    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log_metadata TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".log_metadata TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".textbox_marking TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".textbox_remark TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".track_changes TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
@@ -685,17 +685,17 @@ Class InstallUtils {
      }
 
      //add traing school
-    $facultyID = FacultyUtils::addFaculty('Administrative and Support Units',
+    $facultyID = faculty_utils::add_faculty('Administrative and Support Units',
                                         self::$db
                                      );
 
-    $scoolID = SchoolUtils::addSchool(  $facultyID,
+    $scoolID = SchoolUtils::add_school(  $facultyID,
                                         'Training',
                                         self::$db
                                      );
 
      //create special modules
-     ModuleUtils::addModules(  'TRAIN',
+     module_utils::add_modules( 'TRAIN',
                                 'Training Module',
                                 1,
                                 $scoolID,
@@ -711,7 +711,7 @@ Class InstallUtils {
                                 self::$db
                              );
 
-    ModuleUtils::addModules(   'SYSTEM',
+    module_utils::add_modules(  'SYSTEM',
                                 'Online Help',
                                 1,
                                 $scoolID,
@@ -1002,7 +1002,7 @@ require \$root . '/include/path_functions.inc.php';
 \$protocol = 'https://';
 \$cfg_page_charset 	   = '{cfg_page_charset}';
 \$cfg_company = '{cfg_company}';
-
+\$cfg_academic_year_start = '07/01';
 \$cfg_tmpdir = '{cfg_tmpdir}';
 
 // Local database
@@ -1941,7 +1941,7 @@ QUERY;
         CREATE TABLE `student_modules` (
           `id` int(11) NOT NULL auto_increment,
           `userID` mediumint(8) unsigned default NULL,
-          `moduleid` char(15) NOT NULL,
+          `moduleid` char(25) NOT NULL,
           `calendar_year` enum('2008/09','2009/10','2010/11','2011/12','2012/13','2013/14','2014/15','2015/16','2016/17','2017/18','2018/19','2019/20') default NULL,
           `attempt` tinyint(4) default NULL,
           `auto_update` tinyint(4) default NULL,
@@ -2065,6 +2065,7 @@ QUERY;
           `last_login` datetime default NULL,
           `special_needs` tinyint(4) default '0',
           `yearofstudy` tinyint(4) default NULL,
+          `user_deleted` datetime default NULL,
           PRIMARY KEY  (`id`),
           KEY `username_index` (`username`)
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset} PACK_KEYS=1
@@ -2085,24 +2086,22 @@ QUERY;
 
     $this->tableList['lti_user'] = <<<QUERY
           CREATE TABLE IF NOT EXISTS `lti_user` (
-          `oauth_consumer_key` varchar(200) NOT NULL,
-          `user_id` varchar(200) NOT NULL,
-          `rogo_id` int(11) NOT NULL,
+          `lti_user_key` varchar(255) NOT NULL,
+          `lti_user_equ` int(11) NOT NULL,
           `updated_on` datetime,
-          PRIMARY KEY (`oauth_consumer_key`,`user_id`),
-          KEY `rogo_id` (`rogo_id`)
+          PRIMARY KEY (`lti_user_key`),
+          KEY `lti_user_equ` (`lti_user_equ`)
          ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
 
     $this->tableList['lti_resource'] = <<<QUERY
         CREATE TABLE IF NOT EXISTS `lti_resource` (
-        `oauth_consumer_key` varchar(255) NOT NULL DEFAULT '',
-        `lti_resource_id` varchar(255) NOT NULL,
+        `lti_resource_key` varchar(255) NOT NULL,
         `internal_id` varchar(255) DEFAULT NULL,
         `itype` varchar(255) DEFAULT NULL,
         `updated` datetime,
-        PRIMARY KEY (`oauth_consumer_key`,`lti_resource_id`),
+        PRIMARY KEY (`lti_resource_key`),
         KEY `destination2` (`itype`),
         KEY `destination` (`internal_id`)
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
@@ -2125,11 +2124,10 @@ QUERY;
 
       $this->tableList['lti_context'] = <<<QUERY
           CREATE TABLE IF NOT EXISTS `lti_context` (
-          `oauth_consumer_key` VARCHAR( 255 ) NOT NULL ,
-          `lti_context_id` VARCHAR( 255 ) NOT NULL ,
+          `lti_context_key` VARCHAR( 255 ) NOT NULL ,
           `c_internal_id` VARCHAR( 255 ) NOT NULL ,
           `updated_on` DATETIME NOT NULL,
-          PRIMARY KEY (`oauth_consumer_key`,`lti_context_id`),
+          PRIMARY KEY (`lti_context_key`),
           KEY `c_internal_id` (`c_internal_id`)
           ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;

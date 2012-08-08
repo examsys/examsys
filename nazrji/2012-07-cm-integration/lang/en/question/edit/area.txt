@@ -1,0 +1,13 @@
+<?php
+$string['But_Clear_All'] = 'Clear All';
+$string['But_Delete_point'] = 'Delete point';
+$string['But_your_answer'] = 'Your answer';
+$string['But_correct_answer'] = 'Correct answer';
+$string['Start_over'] = 'Start over';
+$string['Finished'] = 'Finish';
+$string['Eraser'] = 'Eraser';
+$string['Magnify'] = 'Magnify';
+$string['popUp_msg'] = 'Do you want to clear all lines?';
+$string['popUp_yes'] = 'Yes';
+$string['popUp_no'] = 'No';
+?>

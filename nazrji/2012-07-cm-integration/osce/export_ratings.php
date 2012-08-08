@@ -39,6 +39,7 @@
   }
   $result->close();
 
+  header('Pragma: public');
   header('Content-type: application/octet-stream');
   header("Content-Disposition: attachment; filename=" . $paper_title . ".csv");
 

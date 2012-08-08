@@ -99,7 +99,7 @@ if (count($critical_errors) == 0 and isset($_POST['token']) and $_POST['token'] 
           } elseif (strpos($userroles,'Invigilator') !== false) {
             $redirect_url .= "invigilator/";
           } elseif (strpos($userroles,'Student') !== false) {
-            $redirect_url .= "student/";
+            $redirect_url .= "students/";
           } elseif (strpos($userroles,'Staff') !== false) {
             $redirect_url .= "staff/";
           }

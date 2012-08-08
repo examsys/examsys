@@ -23,6 +23,27 @@
 */
 
 require '../include/sysadmin_auth.inc';
+
+function getLabs($labs, $mysqlidb) {
+  $html = '';
+  
+  $results = $mysqlidb->prepare("SELECT room_no FROM labs WHERE id IN ($labs)");
+  $results->execute();
+  $results->bind_result($room_no);
+  while ($results->fetch()) {
+    if ($html == '') {
+      $html = $room_no;
+    } else {
+      $html .= ', ' . $room_no;
+    }
+  }
+  $results->close();
+  
+  $html = '<span style="color:#FF6300">' . $html . '</span>';
+  
+  return $html;
+
+}
 ?>
 <html>
 <head>
@@ -34,13 +55,14 @@ require '../include/sysadmin_auth.inc';
   
   <style>
   .s {padding-left:6px}
+  .grey {color:#808080}
   </style>
   
   <script src="../js/staff_help.js" type="text/javascript"></script>
   <script language="javascript">
-  $(function () {
-    $('body').click(desel);
-  });
+    $(function () {
+      $('body').click(desel);
+    });
 
     function sel(divID, evt) {
       tmp_ID = document.myform.divID.value;
@@ -85,23 +107,24 @@ require '../include/sysadmin_auth.inc';
 ?>
 <table class="header" style="font-size:80%">
 <tr>
-<th colspan="4"><div class="breadcrumb"><a href="../staff/index.php"><?php echo $string['home']; ?></a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php"><?php echo $string['administrativetools']; ?></a></div><div style="margin-left:10px; font-size:200%; font-weight:bold"><?php echo $string['summativescheduling']; ?></th>
+<th colspan="5"><div class="breadcrumb"><a href="../staff/index.php"><?php echo $string['home']; ?></a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php"><?php echo $string['administrativetools']; ?></a></div><div style="margin-left:10px; font-size:200%; font-weight:bold"><?php echo $string['summativescheduling']; ?></th>
 <th style="text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(0); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="<?php echo $string['help']; ?>" border="0" /></a></th>
 </tr>
 <tr>
-<th><div class="mid s"><?php echo $string['title']; ?>&nbsp;</div></th>
+<th colspan="2"><div class="mid s"><?php echo $string['title']; ?>&nbsp;</div></th>
 <th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['month']; ?>&nbsp;</th>
 <th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['campus']; ?>&nbsp;</th>
 <th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['modules']; ?>&nbsp;</th>
 <th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['cohortsize']; ?>&nbsp;</th>
 
 </tr>
-<tr><th colspan="5" class="bevel"></th></tr>
+<tr><th colspan="6" class="bevel"></th></tr>
+  <tr><td colspan="6"><table border="0" class="subsect" style="width:100%"><tr><td><nobr>Unscheduled</nobr></td><td style="width:98%"><hr noshade="noshade" style="border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%" /></td></tr></table></td></tr>
 <?php
   $rowID = 0;
-  $months = array('january','february','march','april','may','june','july','august','september','october','november','december');
+  $months = array('january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december');
 
-  $results = $mysqli->prepare("SELECT property_id, paper_title, moduleID, period, barriers_needed, cohort_size, campus FROM (properties, scheduling) WHERE (start_date IS NULL OR end_date IS NULL) AND properties.property_id=scheduling.paperID");
+  $results = $mysqli->prepare("SELECT property_id, paper_title, moduleID, period, barriers_needed, cohort_size, campus FROM (properties, scheduling) WHERE start_date IS NULL AND properties.property_id=scheduling.paperID ORDER BY period");
   $results->execute();
   $results->store_result();
   $results->bind_result($property_id, $paper_title, $moduleID, $period, $barriers_needed, $cohort_size, $campus);
@@ -109,7 +132,24 @@ require '../include/sysadmin_auth.inc';
     $rowID++;
     $cohort_size = str_replace('<', '&lt;', $cohort_size);
     $cohort_size = str_replace('>', '&gt;', $cohort_size);
-    echo "<tr onclick=\"sel($property_id)\" onmouseover=\"lon($property_id)\" onmouseout=\"loff($property_id)\" ondblclick=\"viewDetails()\" id=\"$property_id\"><td class=\"s\">$paper_title</td><td class=\"s\">" . $string[$months[$period]] . "</td><td class=\"s\">$campus</td><td class=\"s\">$moduleID</td><td class=\"s\">$cohort_size</td></tr>\n";
+    echo "<tr onclick=\"sel($property_id)\" onmouseover=\"lon($property_id)\" onmouseout=\"loff($property_id)\" ondblclick=\"viewDetails()\" id=\"$property_id\">";
+    echo "<td class=\"s\" style=\"padding-left:24px\">$paper_title</td><td class=\"s\">" . $string[$months[$period]] . "</td><td class=\"s\">$campus</td><td class=\"s\">$moduleID</td><td class=\"s\">$cohort_size</td></tr>\n";
+  }
+  $results->close();
+?>
+  <tr><td colspan="6">&nbsp;</td></tr>
+  <tr><td colspan="6"><table border="0" class="subsect" style="width:100%"><tr><td><nobr>Scheduled</nobr></td><td style="width:98%"><hr noshade="noshade" style="border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%" /></td></tr></table></td></tr>
+<?php
+  $results = $mysqli->prepare("SELECT property_id, paper_title, moduleID, period, barriers_needed, cohort_size, campus, DATE_FORMAT(start_date,'$cfg_long_date_time'), end_date, labs FROM (properties, scheduling) WHERE start_date > NOW() AND properties.property_id=scheduling.paperID ORDER BY period");
+  $results->execute();
+  $results->store_result();
+  $results->bind_result($property_id, $paper_title, $moduleID, $period, $barriers_needed, $cohort_size, $campus, $start_date, $end_date, $labs);
+  while ($results->fetch()) {
+    $rowID++;
+    $cohort_size = str_replace('<', '&lt;', $cohort_size);
+    $cohort_size = str_replace('>', '&gt;', $cohort_size);
+    echo "<tr onclick=\"sel($property_id)\" onmouseover=\"lon($property_id)\" onmouseout=\"loff($property_id)\" ondblclick=\"viewDetails()\" id=\"$property_id\">";
+    echo "<td class=\"s\"><img src=\"../artwork/shortcut_calendar_icon.png\" width=\"16\" height=\"14\" border=\"0\" />&nbsp;$paper_title</td><td class=\"s\">" . $start_date . "</td><td class=\"s\">$campus " . getLabs($labs, $mysqli) . "</td><td class=\"s\">$moduleID</td><td class=\"s\">$cohort_size</td></tr>\n";
   }
   $results->close();
 ?>

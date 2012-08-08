@@ -1,22 +1,23 @@
 <?php
 require '../lang/' . $language . '/include/months.inc';
 
-$string['summativeexamdetails'] = 'Summative Exam Details';   // Niko, whole file please
-$string['administrativetools'] = 'Administrative Tools';
-$string['summativescheduling'] = 'Summative Exam Scheduling';
-$string['jumptopaper'] = 'Jump to Paper';
-$string['editproperties'] = 'Edit Properties';
-$string['converttoformative'] = 'Convert to Formative';
+$string['summativeexamdetails'] = 'Szczegóły egzaminu końcowego'; 
+$string['administrativetools'] = 'Narzędzia administracyjne';
+$string['summativescheduling'] = 'Planowanie egzaminu końcowego';
+$string['jumptopaper'] = 'Przejdź do akrusza';
+$string['editproperties'] = 'Edytuj właściwości';
+$string['converttoformative'] = 'Przekształć na egzamin formatywny';
 
-$string['papername'] = 'Paper Name';
-$string['paperowner'] = 'Paper Owner';
-$string['session'] = 'Session';
-$string['modules'] = 'Module(s)';
-$string['cohortsize'] = 'Cohort Size';
-$string['sittings'] = 'Sittings';
-$string['examperiod'] = 'Exam Period';
-$string['barriersneeded'] = 'Barriers Needed';
-$string['campus'] = 'Campus';
-$string['notes'] = 'Notes';
-$string['examtasks'] = 'Exam Tasks';
+$string['papername'] = 'Nazwa arkusza';
+$string['paperowner'] = 'Właściwości arkusza';
+$string['session'] = 'Sesja';
+$string['modules'] = 'Moduł(y)';
+$string['examduration'] = 'Czas trwania egzaminu'; 
+$string['cohortsize'] = 'Rozmiar grupy';
+$string['sittings'] = 'Posiedzenia'; 
+$string['examperiod'] = 'Okres egzaminacyjny'; 
+$string['barriersneeded'] = 'Wymagane ścianki rozdzielające';
+$string['campus'] = 'Kampus';
+$string['notes'] = 'Notatki';
+$string['examtasks'] = 'Zadania egzaminacyjne'; 
 ?>

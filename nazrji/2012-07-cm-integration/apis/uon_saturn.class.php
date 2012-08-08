@@ -67,7 +67,7 @@ Class UON_SATURN extends SmsUtils {
     $users = array();
     
     // Calculate what the current academic session is.
-    $session = (isset($_GET['session']) and $_GET['session'] != '') ? $_GET['session'] : DateUtils::get_current_academic_year();
+    $session = (isset($_GET['session']) and $_GET['session'] != '') ? $_GET['session'] : date_utils::get_current_academic_year();
     $session_parts = explode('/',$session);
     
     if (count($users) > 0) {

@@ -196,7 +196,7 @@ HTML;
 }
 
 function render_comments($comments, &$string) {
-  if(count($comments) > 0) {
+  if (count($comments) > 0) {
     $html = <<< HTML
         <table class="data" summary="{$string['reviewerscomments']}">
           <thead>

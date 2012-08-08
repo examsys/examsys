@@ -26,198 +26,186 @@
 * @package
 */
 
-  require '../include/staff_auth.inc';
-  require '../include/errors.inc';
-  require '../include/demo_replace.inc';
-  require_once '../classes/schoolutils.class.php';
-  require_once '../classes/networkutils.class.php';
-  
-  check_var('userID', 'GET', true, false);
+require '../include/staff_auth.inc';
+require '../include/errors.inc';
+require '../include/demo_replace.inc';
+require '../include/sort.inc';
+require_once '../classes/schoolutils.class.php';
+require_once '../classes/networkutils.class.php';
+require_once '../classes/dateutils.class.php';
 
-  if (strpos($userroles,'Demo') !== false) {
-    $demo = true;
+check_var('userID', 'GET', true, false);
+
+if (strpos($userroles,'Demo') !== false) {
+  $demo = true;
+} else {
+  $demo = false;
+}
+
+if (isset($_GET['tab'])) {
+  $tab = $_GET['tab'];
+} else {
+  $tab = 'log';
+}
+  
+function drawTabs($current_tab, $col_span, $right_text, $user_roles) {
+  global $string;
+
+  $html = "<tr><td colspan=\"" . ($col_span - 1) . "\" style=\"background-color:#F1F5FB\">";
+  $html .= '<table cellpadding="0" cellspacing="0" border="0" style="font-size:100%"><tr>';
+  
+  $tab_array = array('Log');
+   
+  if (stripos($user_roles,'Staff') !== false) {
+    $tab_array[] = 'Teams';
+  }
+
+  if (stripos($user_roles,'Admin') !== false and stripos($user_roles,'SysAdmin') === false) {
+    $tab_array[] = 'Admin';
+  }
+
+  if (stripos($user_roles,'Student') !== false or stripos($user_roles,'Graduate') !== false) {
+    $tab_array[] = 'Modules';
+    $tab_array[] = 'Notes';
+    $tab_array[] = 'Accessibility';
+    $tab_array[] = 'Metadata';
+  }
+
+  foreach($tab_array as $individual_tab) {
+    if ($individual_tab == $current_tab) {
+      $html .= "<td style=\"padding-top:0px; cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_on.gif)\" onclick=\"showTab('" . $individual_tab . "_tab')\">" . $string[strtolower($individual_tab)] . "</td>";
+    } else {
+      $html .= "<td style=\"padding-top:0px; cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_off.gif)\" onclick=\"showTab('" . $individual_tab . "_tab')\">" . $string[strtolower($individual_tab)] . "</td>";
+    }
+  }
+  $html .= "</tr></table></td><td align=\"right\" style=\"background-color:#F1F5FB\">$right_text</td></tr>\n";
+  return $html;
+}
+
+function formatsec($seconds) {
+  if ($seconds == '') {
+    $timestring = '';
   } else {
-    $demo = false;
+    $diff_hour = ($seconds / 60) / 60;
+    $tmp_position = strpos($diff_hour, ".");
+    if ($tmp_position > 0) $diff_hour = substr($diff_hour, 0, $tmp_position);
+    if ($diff_hour > 0) $seconds -= ($diff_hour * 60) * 60;
+    $diff_min = $seconds / 60;
+    $tmp_position = strpos($diff_min, ".");
+    if ($tmp_position > 0) {
+      $diff_min = substr($diff_min, 0, $tmp_position);
+    }
+    if ($diff_min > 0) $seconds -= $diff_min * 60;
+    $diff_sec = $seconds;
+    $timestring = '';
+    if ($diff_hour < 10) $timestring = '0';
+    $timestring .= "$diff_hour:";
+    if ($diff_min < 10) $timestring .= '0';
+    $timestring .= "$diff_min:";
+    if ($diff_sec < 10) $timestring .= '0';
+    $timestring .= $diff_sec;
   }
-  
-  if (isset($_GET['tab'])) {
-    $tab = $_GET['tab'];
+  return $timestring;
+}
+
+if (isset($_POST['update']) and $demo == false) {
+  $initials = '';
+  $first_names_array = explode(' ',$_POST['first_names']);
+  foreach ($first_names_array as $individual_name) {
+    $initials .= trim(substr($individual_name,0,1));
+  }
+  //Update 'users' table.
+  $tmp_roles = $_POST['roles'];
+  $grade = $_POST['grade'];
+
+  $tmp_first_names = $_POST['first_names'];
+  $tmp_surname = $_POST['surname'];
+  $tmp_email = $_POST['email'];
+      
+  if (isset($_POST['password']) and $_POST['password'] != '') {
+    $result = $mysqli->prepare("UPDATE users SET roles=?, title=?, initials=?, surname=?, grade=?, yearofstudy=?, username=?, password=?, email=?, first_names=?, gender=? WHERE id=?");
+    $result->bind_param('sssssisssssi', $tmp_roles, $_POST['title'], $initials, $tmp_surname, $grade, $_POST['year'], $_POST['username'], $_POST['password'], $tmp_email, $tmp_first_names, $_POST['gender'], $_POST['old_userID']); 
   } else {
-    $tab = 'log';
+    $result = $mysqli->prepare("UPDATE users SET roles=?, title=?, initials=?, surname=?, grade=?, yearofstudy=?, username=?, email=?, first_names=?, gender=? WHERE id=?");
+    $result->bind_param('sssssissssi', $tmp_roles, $_POST['title'], $initials, $tmp_surname, $grade, $_POST['year'], $_POST['username'], $tmp_email, $tmp_first_names, $_POST['gender'], $_POST['old_userID']);
   }
-  function drawTabs($current_tab, $col_span, $right_text, $user_roles) {
-    global $string;
-  
-    $html = "<tr><td colspan=\"" . ($col_span - 1) . "\" style=\"background-color:#F1F5FB\">";
-    $html .= '<table cellpadding="0" cellspacing="0" border="0" style="font-size:100%"><tr>';
-    
-    $tab_array = array('Log');
-     
-    if (stripos($user_roles,'Staff') !== false) {
-      $tab_array[] = 'Teams';
-    }
+  $result->execute();
+  $result->close();
 
-    if (stripos($user_roles,'Admin') !== false and stripos($user_roles,'SysAdmin') === false) {
-      $tab_array[] = 'Admin';
-    }
-
-    if (stripos($user_roles,'Student') !== false or stripos($user_roles,'Graduate') !== false) {
-      $tab_array[] = 'Modules';
-      $tab_array[] = 'Notes';
-      $tab_array[] = 'Accessibility';
-      $tab_array[] = 'Metadata';
-    }
-
-    foreach($tab_array as $individual_tab) {
-      if ($individual_tab == $current_tab) {
-        $html .= "<td style=\"padding-top:0px; cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_on.gif)\" onclick=\"showTab('" . $individual_tab . "_tab')\">" . $string[strtolower($individual_tab)] . "</td>";
-      } else {
-        $html .= "<td style=\"padding-top:0px; cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_off.gif)\" onclick=\"showTab('" . $individual_tab . "_tab')\">" . $string[strtolower($individual_tab)] . "</td>";
-      }
-    }
-    $html .= "</tr></table></td><td align=\"right\" style=\"background-color:#F1F5FB\">$right_text</td></tr>\n";
-    return $html;
-  }
-
-  function array_csort($marray, $column, $sort_order) {   //coded by Ichier2003
-    foreach ($marray as $row) {
-      $sortarr[] = $row[$column];
-    }
-    $sortarr = array_map('strtolower',$sortarr);
-    $sort_method = SORT_STRING;
-    if ($column == 'mark') $sort_method = SORT_NUMERIC;
-    if ($sort_order == 'asc') {
-      array_multisort($sortarr, SORT_ASC, $sort_method, $marray);
-    } else {
-      array_multisort($sortarr, SORT_DESC, $sort_method, $marray);
-    }
-    return $marray;
-  }
-
-  function formatsec($seconds) {
-    if ($seconds == '') {
-      $timestring = '';
-    } else {
-      $diff_hour = ($seconds / 60) / 60;
-      $tmp_position = strpos($diff_hour, ".");
-      if ($tmp_position > 0) $diff_hour = substr($diff_hour, 0, $tmp_position);
-      if ($diff_hour > 0) $seconds -= ($diff_hour * 60) * 60;
-      $diff_min = $seconds / 60;
-      $tmp_position = strpos($diff_min, ".");
-      if ($tmp_position > 0) {
-        $diff_min = substr($diff_min, 0, $tmp_position);
-      }
-      if ($diff_min > 0) $seconds -= $diff_min * 60;
-      $diff_sec = $seconds;
-      $timestring = '';
-      if ($diff_hour < 10) $timestring = '0';
-      $timestring .= "$diff_hour:";
-      if ($diff_min < 10) $timestring .= '0';
-      $timestring .= "$diff_min:";
-      if ($diff_sec < 10) $timestring .= '0';
-      $timestring .= $diff_sec;
-    }
-    return $timestring;
-  }
-
-  if (isset($_POST['update']) and $demo == false) {
-    $initials = '';
-    $first_names_array = explode(' ',$_POST['first_names']);
-    foreach ($first_names_array as $individual_name) {
-      $initials .= trim(substr($individual_name,0,1));
-    }
-    //Update 'users' table.
-    $tmp_roles = $_POST['roles'];
-    $grade = $_POST['grade'];
-
-    $tmp_first_names = $_POST['first_names'];
-    $tmp_surname = $_POST['surname'];
-    $tmp_email = $_POST['email'];
-        
-    if (isset($_POST['password']) and $_POST['password'] != '') {
-      $result = $mysqli->prepare("UPDATE users SET roles=?, title=?, initials=?, surname=?, grade=?, yearofstudy=?, username=?, password=?, email=?, first_names=?, gender=? WHERE id=?");
-      $result->bind_param('sssssisssssi', $tmp_roles, $_POST['title'], $initials, $tmp_surname, $grade, $_POST['year'], $_POST['username'], $_POST['password'], $tmp_email, $tmp_first_names, $_POST['gender'], $_POST['old_userID']); 
-    } else {
-      $result = $mysqli->prepare("UPDATE users SET roles=?, title=?, initials=?, surname=?, grade=?, yearofstudy=?, username=?, email=?, first_names=?, gender=? WHERE id=?");
-      $result->bind_param('sssssissssi', $tmp_roles, $_POST['title'], $initials, $tmp_surname, $grade, $_POST['year'], $_POST['username'], $tmp_email, $tmp_first_names, $_POST['gender'], $_POST['old_userID']);
-    }
-    $result->execute();
-    $result->close();
-
-    //Remove from teams if 'left'.
-    if ($grade == 'left') {
-      $result = $mysqli->prepare("DELETE FROM teams WHERE memberID=?");
-      $result->bind_param('i', $_POST['old_userID']);
-      $result->execute();
-      $result->close();
-    }
-
-    $username = $_POST['username'];
-    //Update 'sid' table;
-    $result = $mysqli->prepare("DELETE FROM sid WHERE userID=?");
+  //Remove from teams if 'left'.
+  if ($grade == 'left') {
+    $result = $mysqli->prepare("DELETE FROM teams WHERE memberID=?");
     $result->bind_param('i', $_POST['old_userID']);
     $result->execute();
     $result->close();
-    if (isset($_POST['sid']) and $_POST['sid'] != '' and $_POST['sid'] != $string['unknown']) {
-      $result = $mysqli->prepare("INSERT INTO sid VALUES (?,?)");
-      $result->bind_param('si', $_POST['sid'], $_POST['old_userID']);
-      $result->execute();
-      $result->close();
-    }
-  } elseif (isset($_POST['updateadmin'])) {
-    $result = $mysqli->prepare("DELETE FROM admin_access WHERE userID=?");
-    $result->bind_param('i', $_GET['userID']);
+  }
+
+  $username = $_POST['username'];
+  //Update 'sid' table;
+  $result = $mysqli->prepare("DELETE FROM sid WHERE userID=?");
+  $result->bind_param('i', $_POST['old_userID']);
+  $result->execute();
+  $result->close();
+  if (isset($_POST['sid']) and $_POST['sid'] != '' and $_POST['sid'] != $string['unknown']) {
+    $result = $mysqli->prepare("INSERT INTO sid VALUES (?,?)");
+    $result->bind_param('si', $_POST['sid'], $_POST['old_userID']);
     $result->execute();
     $result->close();
-    
-    for ($i=0; $i<$_POST['admin_school_no']; $i++) {
-      if (isset($_POST["sch$i"])) {
-        $result = $mysqli->prepare("INSERT INTO admin_access VALUES (NULL, ?, ?)");
-        $result->bind_param('ii', $_GET['userID'], $_POST["sch$i"]);
-        $result->execute();
-        $result->close();
-      }
-    }
-  } elseif (isset($_POST['updateaccess'])) {
-    $background = $_POST['background'];
-    if ($_POST['bg_radio'] == '0') $background = 'NULL';
-    $foreground = $_POST['foreground'];
-    if ($_POST['fg_radio'] == '0') $foreground = 'NULL';
-    $textsize = $_POST['textsize'];
-    $extra_time = $_POST['extra_time'];
-    $marks_color = $_POST['marks_color'];
-    if ($_POST['marks_radio'] == '0') $marks_color = 'NULL';
-    $themecolor = $_POST['themecolor'];
-    if ($_POST['theme_radio'] == '0') $themecolor = 'NULL';
-    $labelcolor = $_POST['labelcolor'];
-    if ($_POST['labels_radio'] == '0') $labelcolor = 'NULL';
-
-    $result = $mysqli->prepare("DELETE FROM special_needs WHERE userID=?");
-    $result->bind_param('i', $_GET['userID']);
-    $result->execute();
-    $result->close();
-
-    if ($background != 'NULL' or $foreground != 'NULL' or $marks_color != 'NULL' or $textsize != 'null' or $extra_time != 'null' or $themecolor != 'NULL' or $labelcolor != 'NULL') {
-      //echo "Database update<br />";
-      $result = $mysqli->prepare("INSERT INTO special_needs VALUES (NULL,?,?,?,?,?,?,?,?,?)");
-      $result->bind_param('issiissss', $_GET['userID'], $background, $foreground, $textsize, $extra_time, $marks_color, $themecolor, $labelcolor, $_POST['font']);
-      $result->execute();
-      $result->close();
-
-      $result = $mysqli->prepare("UPDATE users SET special_needs=1 WHERE id=?");
-      $result->bind_param('i', $_GET['userID']);
-      $result->execute();
-      $result->close();
-    }
-  } elseif (isset($_POST['save_metadata'])) {
-    for ($i=0; $i<$_POST['metadata_no']; $i++) {
-      //echo $i . '=' . $_POST["meta_value$i"] . ' (' . $_POST["meta_id$i"] . ')<br />';
-      $result = $mysqli->prepare("UPDATE users_metadata SET value=? WHERE id=?");
-      $result->bind_param('si', $_POST["meta_value$i"], $_POST["meta_id$i"]);
+  }
+} elseif (isset($_POST['updateadmin'])) {
+  $result = $mysqli->prepare("DELETE FROM admin_access WHERE userID=?");
+  $result->bind_param('i', $_GET['userID']);
+  $result->execute();
+  $result->close();
+  
+  for ($i=0; $i<$_POST['admin_school_no']; $i++) {
+    if (isset($_POST["sch$i"])) {
+      $result = $mysqli->prepare("INSERT INTO admin_access VALUES (NULL, ?, ?)");
+      $result->bind_param('ii', $_GET['userID'], $_POST["sch$i"]);
       $result->execute();
       $result->close();
     }
   }
+} elseif (isset($_POST['updateaccess'])) {
+  $background = $_POST['background'];
+  if ($_POST['bg_radio'] == '0') $background = 'NULL';
+  $foreground = $_POST['foreground'];
+  if ($_POST['fg_radio'] == '0') $foreground = 'NULL';
+  $textsize = $_POST['textsize'];
+  $extra_time = $_POST['extra_time'];
+  $marks_color = $_POST['marks_color'];
+  if ($_POST['marks_radio'] == '0') $marks_color = 'NULL';
+  $themecolor = $_POST['themecolor'];
+  if ($_POST['theme_radio'] == '0') $themecolor = 'NULL';
+  $labelcolor = $_POST['labelcolor'];
+  if ($_POST['labels_radio'] == '0') $labelcolor = 'NULL';
+
+  $result = $mysqli->prepare("DELETE FROM special_needs WHERE userID=?");
+  $result->bind_param('i', $_GET['userID']);
+  $result->execute();
+  $result->close();
+
+  if ($background != 'NULL' or $foreground != 'NULL' or $marks_color != 'NULL' or $textsize != 'null' or $extra_time != 'null' or $themecolor != 'NULL' or $labelcolor != 'NULL') {
+    //echo "Database update<br />";
+    $result = $mysqli->prepare("INSERT INTO special_needs VALUES (NULL,?,?,?,?,?,?,?,?,?)");
+    $result->bind_param('issiissss', $_GET['userID'], $background, $foreground, $textsize, $extra_time, $marks_color, $themecolor, $labelcolor, $_POST['font']);
+    $result->execute();
+    $result->close();
+
+    $result = $mysqli->prepare("UPDATE users SET special_needs=1 WHERE id=?");
+    $result->bind_param('i', $_GET['userID']);
+    $result->execute();
+    $result->close();
+  }
+} elseif (isset($_POST['save_metadata'])) {
+  for ($i=0; $i<$_POST['metadata_no']; $i++) {
+    //echo $i . '=' . $_POST["meta_value$i"] . ' (' . $_POST["meta_id$i"] . ')<br />';
+    $result = $mysqli->prepare("UPDATE users_metadata SET value=? WHERE id=?");
+    $result->bind_param('si', $_POST["meta_value$i"], $_POST["meta_id$i"]);
+    $result->execute();
+    $result->close();
+  }
+}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -732,7 +720,7 @@ a.access:hover {color:white}
     }
     if ($calendar_year != $old_year) {
       $html .= "<tr><td colspan=\"4\"><table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>" . $calendar_year;
-      if ($calendar_year == $most_recent_year) $html .= "&nbsp;&nbsp;<a href=\"#\" style=\"color:blue\" onclick=\"editModules('$calendar_year','$grade'); return false;\">" . $string['editmodules'] . "</a>";
+      if ($calendar_year == $most_recent_year or $calendar_year == date_utils::get_current_academic_year() ) $html .= "&nbsp;&nbsp;<a href=\"#\" style=\"color:blue\" onclick=\"editModules('$calendar_year','$grade'); return false;\">" . $string['editmodules'] . "</a>";
       $html .= "</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table></td></tr>\n";
     }
     $html .= '<tr>';
@@ -746,7 +734,7 @@ a.access:hover {color:white}
     $row_no++;
   }
   if ($results->num_rows == 0) {
-    $html .= "<tr><td colspan=\"4\"><table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>$most_recent_year&nbsp;&nbsp;<a href=\"#\" style=\"color:blue\" onclick=\"editModules('$most_recent_year','$grade'); return false;\">" . $string['editmodules'] . "</a></nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table></td></tr>\n";
+    $html .= "<tr><td colspan=\"4\"><table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>" . date_utils::get_current_academic_year() . "&nbsp;&nbsp;<a href=\"#\" style=\"color:blue\" onclick=\"editModules('$most_recent_year','$grade'); return false;\">" . $string['editmodules'] . "</a></nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table></td></tr>\n";
   }
   
   $results->close();
@@ -766,7 +754,7 @@ a.access:hover {color:white}
   echo "<tr><td class=\"coltitle\">&nbsp;</td></tr>\n";
   echo "<tr><td><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"width:100%\">\n";
   
-  $current_schools = SchoolUtils::getAdminSchools($_GET['userID'], $mysqli);
+  $current_schools = SchoolUtils::get_admin_schools($_GET['userID'], $mysqli);
    
   $old_faculty = '';
   $admin_school_no = 0;
@@ -779,12 +767,12 @@ a.access:hover {color:white}
     }
     
     if (strpos($userroles,'SysAdmin') === false) {
-      if (in_array($schoolID,$current_schools)) {
+      if (in_array($schoolID, $current_schools)) {
       echo "<tr><td style=\"padding-left:20px\">$school</td></tr>\n";
       }
     } else {
       echo '<tr><td class="sch_check">';
-      if (in_array($schoolID,$current_schools)) {
+      if (in_array($schoolID, $current_schools)) {
         echo "<input type=\"checkbox\" name=\"sch" . $admin_school_no . "\" value=\"$schoolID\" checked />";
       } else {
         echo "<input type=\"checkbox\" name=\"sch" . $admin_school_no . "\" value=\"$schoolID\" />";
@@ -797,7 +785,7 @@ a.access:hover {color:white}
   }
   $results->close();
   echo "</table>\n</td></tr>\n";
-  if (strpos($userroles,'SysAdmin') !== false) {
+  if (strpos($userroles, 'SysAdmin') !== false) {
     echo '<tr><td colspan="2" align="center"><input type="submit" name="updateadmin" value="' . $string['save'] . '" style="width:100px" /><input type="hidden" name="admin_school_no" value="' . $admin_school_no . '" /></td></tr>';
   }
   ?>

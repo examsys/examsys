@@ -166,7 +166,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
       if ($li_set == 0) {
         echo '<tr><td class="q_no">' . ($question_no + $question_offset) . '.&nbsp;</td><td>';
       }
-      echo '<p align="center">' . display_media($question['q_media'],$question['q_media_width'],$question['q_media_height']) . "</p>\n";
+      echo '<p align="center">' . display_media($question['q_media'], $question['q_media_width'], $question['q_media_height'], '') . "</p>\n";
       $li_set = 1;
     }
     if ($question['q_type'] != 'likert' and $question['q_type'] != 'calculation') {
@@ -182,7 +182,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
     // Special processing of Information Blocks.
     if ($li_set == 0) echo '<tr><td colspan="2" style="padding-left:10px; padding-right:10px">';
     if ($question['q_media'] != '') {
-      echo '<p align="center">' . display_media($question['q_media'], $question['q_media_width'], $question['q_media_height']) . "</p>\n";
+      echo '<p align="center">' . display_media($question['q_media'], $question['q_media_width'], $question['q_media_height'], '') . "</p>\n";
     }
     echo $question['leadin'];
     $li_set = 1;
@@ -304,7 +304,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
         if ($li_set == 0) {
           echo '<tr><td class="q_no">' . ($question_no + $question_offset) . '.&nbsp;</td><td>';
         }
-        echo '<p align="center">' . display_media($question['q_media'],$question['q_media_width'],$question['q_media_height']) . "</p>\n";
+        echo '<p align="center">' . display_media($question['q_media'], $question['q_media_width'], $question['q_media_height'], '') . "</p>\n";
         $li_set = 1;
       }
     
@@ -363,7 +363,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
         if ($display_option['option_text'] != '') echo $display_option['option_text'];
         if ($display_option['o_media'] != '') {
           if ($display_option['option_text'] != '') echo '<br />';
-          echo display_media($display_option['o_media'], $display_option['o_media_width'], $display_option['o_media_height']);
+          echo display_media($display_option['o_media'], $display_option['o_media_width'], $display_option['o_media_height'], '');
         }
         echo "</td></tr>\n";
         $marks += $display_option['marks_correct'];
@@ -414,13 +414,13 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
           if ($display_option['option_text'] != '') echo $display_option['option_text'];
           if ($display_option['o_media'] != '') {
             if ($display_option['option_text'] != '') echo '<br />';
-            echo display_media($display_option['o_media'],$display_option['o_media_width'],$display_option['o_media_height']);
+            echo display_media($display_option['o_media'], $display_option['o_media_width'], $display_option['o_media_height'], '');
           }
           echo "</td></tr>\n";
         } else {
           echo '<img src="../artwork/print_box_circle.png" width="24" height="24" alt="" />';
           if ($display_option['option_text'] != '') echo '&nbsp;' . $display_option['option_text'];
-          if ($display_option['o_media'] != '') echo '&nbsp;' . display_media($display_option['o_media'],$display_option['o_media_width'],$display_option['o_media_height']);
+          if ($display_option['o_media'] != '') echo '&nbsp;' . display_media($display_option['o_media'], $display_option['o_media_width'], $display_option['o_media_height'], '');
           echo '&nbsp;&nbsp;';
         }
         if ($tmp_part_id == $display_option['correct']) $marks = $display_option['marks_correct'];
@@ -431,7 +431,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
         if ($display_option['option_text'] != '') echo $display_option['option_text'];
         if ($display_option['o_media'] != '') {
           if ($display_option['option_text'] != '') echo '<br />';
-          echo display_media($display_option['o_media'], $display_option['o_media_width'], $display_option['o_media_height']);
+          echo display_media($display_option['o_media'], $display_option['o_media_width'], $display_option['o_media_height'], '');
         }
         echo "</td></tr>\n";
         if ($question['score_method'] == 'Mark per Option') {
@@ -837,7 +837,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
     $matching_answers = explode('|', $question['options'][0]['correct']);
 
     if ($matching_media[0] != '') {
-      echo '<p align="center">' . display_media($matching_media[0], $matching_media_width[0], $matching_media_height[0]) . '</p>';
+      echo '<p align="center">' . display_media($matching_media[0], $matching_media_width[0], $matching_media_height[0], '') . '</p>';
     }
     $text_scenarios = 0;
     for ($part_id=0; $part_id<count($matching_scenarios); $part_id++) {
@@ -870,7 +870,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
       echo '<li>';
       if (isset($matching_scenarios[$part_id - 1]) and $matching_scenarios[$part_id - 1] != '') echo '<div>' . $matching_scenarios[$part_id - 1] . '</div>';
       if (isset($matching_media[$part_id]) and $matching_media[$part_id] != '') {
-        echo "<div>" . display_media($matching_media[$part_id], $matching_media_width[$part_id], $matching_media_height[$part_id]) . "</div>\n";
+        echo "<div>" . display_media($matching_media[$part_id], $matching_media_width[$part_id], $matching_media_height[$part_id], '') . "</div>\n";
       }
       
       for ($i=0; $i<count($sub_answers); $i++) {
@@ -886,7 +886,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
   } elseif ($question['q_type'] == 'matrix') {
     $part_id = 1;
     if ($matching_media[0] != '') {
-      echo "<p align=\"center\">" . display_media($matching_media[0],$matching_media_width[0],$matching_media_height[0]) . "</p>\n";
+      echo "<p align=\"center\">" . display_media($matching_media[0], $matching_media_width[0], $matching_media_height[0], '') . "</p>\n";
     }
     echo '<blockquote><table cellpadding="2" cellspacing="0" border="1" class="matrix">';
     echo "<tr>\n<td colspan=\"2\">&nbsp;</td>";

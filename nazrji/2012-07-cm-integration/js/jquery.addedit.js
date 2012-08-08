@@ -68,8 +68,8 @@ $(function () {
 });
 
 function changeTab() {
-  if(!$(this).parent().hasClass('disabled')) {
-    if(!$(this).parent().hasClass('on')) {
+  if (!$(this).parent().hasClass('disabled')) {
+    if (!$(this).parent().hasClass('on')) {
       $('.tab-area').hide();
       $('.tabs li').each(function () {
         $(this).removeClass('on');
@@ -86,8 +86,8 @@ function changeTab() {
 
 function showNextOption() {
   var hiddenOptions = $('.option.hide');
-  if(hiddenOptions.length > 0) {
-    if(hiddenOptions.length == 1) {
+  if (hiddenOptions.length > 0) {
+    if (hiddenOptions.length == 1) {
       $('#add-option-holder').fadeOut('fast');
     }
     hiddenOptions.eq(0).removeClass('hide');

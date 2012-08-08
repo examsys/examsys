@@ -38,7 +38,7 @@ if ($current_media['filename'] != '') {
 ?>
             <tr>
               <th><?php echo $string['current'] . ' ' . $media_label ?></th>
-              <td><?php echo display_media($current_media['filename'], $current_media['width'], $current_media['height'], $media_index_display, $locked); ?></td>
+              <td><?php echo display_media($current_media['filename'], $current_media['width'], $current_media['height'], '', $media_index_display, $locked); ?></td>
             </tr>
 <?php      
 }

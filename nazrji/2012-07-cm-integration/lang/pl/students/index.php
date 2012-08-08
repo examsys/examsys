@@ -2,8 +2,8 @@
 require_once '../lang/' . $language . '/folder/details.php';
 
 $string['nopapers'] = 'Obecnie brak dostępnych arkuszy.';
-$string['to'] = 'to';  // Niko, from here downwards
-$string['feedbackonassessment'] = 'Feedback on assessment at';
-$string['screen'] = 'screen';
-$string['screens'] = 'screens';
+$string['to'] = 'do';  
+$string['feedbackonassessment'] = 'Odzew na ocenę w';
+$string['screen'] = 'ekran';
+$string['screens'] = 'ekrany';
 ?>

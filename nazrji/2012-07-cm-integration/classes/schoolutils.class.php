@@ -27,7 +27,7 @@
 
 Class SchoolUtils {
  
-  static function addSchool($facultyID, $school, $db) {
+  static function add_school($facultyID, $school, $db) {
    
     $result = $db->prepare("INSERT INTO schools(school, facultyID) VALUES (?, ?)");
     $result->bind_param('si', $school, $facultyID);
@@ -38,9 +38,38 @@ Class SchoolUtils {
     }
     
     return $db->insert_id;
+  }
+
+  static function get_school_list_by_id($db) {
+    $school_list = array();
+
+    $stmt = $db->prepare("SELECT id, school, facultyID FROM schools WHERE deleted IS NULL");
+    $stmt->execute();
+    $stmt->bind_result($id, $school, $faculityID);
+    while ($stmt->fetch()) {
+      $school_list[$id]['school'] = $school;
+      $school_list[$id]['faculityID'] = $faculityID;
+    }
+    $stmt->close();
+
+    return $school_list;
+  } 
+
+  static function get_school_list_by_name($db) {
+    $school_list = array();
+
+    $stmt = $db->prepare("SELECT id, school FROM schools WHERE deleted IS NULL");
+    $stmt->execute();
+    $stmt->bind_result($id, $school);
+    while ($stmt->fetch()) {
+      $school_list['school'] = $id;
+    }
+    $stmt->close();
+
+    return $school_list;
   }  
   
-  static function getAdminSchools($admin_userid, $db) {
+  static function get_admin_schools($admin_userid, $db) {
     $school_list = array();
     
     $stmt = $db->prepare("SELECT schools_id FROM admin_access WHERE userID=?");

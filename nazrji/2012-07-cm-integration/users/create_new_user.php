@@ -24,32 +24,9 @@
 * @package
 */
 
-  require '../include/admin_auth.inc';
-  require '../include/mb_string.inc.php';
-
-  function my_ucwords($s) {
-    $s = preg_replace_callback("/(?:^|-|\pZ|')([\pL]+)/su", 'fixcase_callback', $s);
-    return $s;         
-  } 
-    
-  function fixcase_callback($word) { 
-    $word = $word[1]; 
-    $word = mb_strtolower($word, 'UTF-8');
-        
-    if ($word == "de") return $word; 
-    
-    $word = mb_ucasefirst($word);
-       
-    if (mb_substr($word, 1, 1, 'UTF-8') == "'") {
-      if (mb_substr($word, 0, 1, 'UTF-8') == "D") {
-        $word = mb_strtolower($word, 'UTF-8');
-      } 
-      $next = mb_substr($word, 2, 1, 'UTF-8');
-      $next = mb_strtoupper($next, 'UTF-8');
-      $word = mb_substr_replace($word, $next, 2, 1, 'UTF-8');
-    }
-    return $word; 
-  } 
+  require_once '../include/admin_auth.inc';
+  require_once '../include/mb_string.inc.php';
+  require_once '../classes/userutils.class.php';
 
   $unique_username = true;
   if (isset($_POST['submit'])) {
@@ -93,24 +70,12 @@
     $initials = strtoupper($initials);
   
     $new_password = encpw($cfg_encrypt_salt, $_POST['new_username'], trim($_POST['new_password']));
-    $new_surname = my_ucwords(trim($_POST['new_surname']));
+    $new_surname = UserUtils::my_ucwords(trim($_POST['new_surname']));
     $new_username = trim($_POST['new_username']);
     $new_email = trim($_POST['new_email']);
-    $new_first_names = my_ucwords(trim($_POST['new_first_names']));
-  
-    $result = $mysqli->prepare("INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, NULL, 0, ?)");
-    $result->bind_param('ssssssssssi', $new_password, $_POST['new_grade'], $new_surname , $initials, $_POST['new_users_title'], $new_username, $new_email, $tmp_roles, $new_first_names, $_POST['new_gender'], $_POST['new_year']);
-    $result->execute();  
-    $result->close();
-    $userid = $mysqli->insert_id;
-    $to = trim($_POST['new_email']);
+    $new_first_names = UserUtils::my_ucwords(trim($_POST['new_first_names']));
     
-    if ($_POST['new_sid'] != '') {
-      $result = $mysqli->prepare("INSERT INTO sid VALUES (?,?)");
-      $result->bind_param('ss', $_POST['new_sid'], $userid);
-      $result->execute();  
-      $result->close();
-    }
+    UserUtils::createUser($new_username, $new_password, $_POST['new_users_title'],$new_first_names, $new_surname, $new_email, $_POST['new_grade'], $_POST['new_gender'], 1, $tmp_roles, $_POST['new_sid'], $mysqli);
     
     // Send out email welcome.
     if (isset($_POST['new_welcome']) and $_POST['new_welcome'] != '') {
@@ -158,6 +123,7 @@ MESSAGE;
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
   <title>Rogō: <?php echo "{$string['createnewuser']} $cfg_install_type"; ?></title>
   <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
@@ -167,7 +133,7 @@ MESSAGE;
   include '../include/user_search_options.inc';
 ?>
 <div id="content" class="content" style="font-size:80%">
-<p><?php echo $string['newaccountcreated'] . ' ' . $_POST['new_users_title'] . ' ' . $_POST['new_surname']; ?>.</p>
+<p>&nbsp;<?php echo $string['newaccountcreated'] . ' ' . $_POST['new_users_title'] . ' ' . $_POST['new_surname']; ?>.</p>
 </div>
     <?php
   } else {

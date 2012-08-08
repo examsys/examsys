@@ -46,17 +46,17 @@
     $old_letter = '';
     
     if ($id == '1') {
-      echo "<div style=\"display:block; width:100%\" id=\"list$id\">";
+      echo "<div style=\"display:block; width:100%; border-bottom:10px\" id=\"list$id\">";
     } else {
-      echo "<div style=\"display:none; width:100%\" id=\"list$id\">";
+      echo "<div style=\"display:none; width:100%; border-bottom:10px\" id=\"list$id\">";
     }
     
     echo drawTabs($id);
     
     if ($id == '1') {
-      echo "<div style=\"width:100%; height:660px; overflow-y:scroll; border:1px solid #95AEC8; background-color:white; font-size:90%\" id=\"list$id\">";
+      echo "<div style=\"width:100%; height:100%; overflow-y:scroll; border:1px solid #95AEC8; background-color:white; font-size:90%\" id=\"list$id\">";
     } else {
-      echo "<div style=\"width:100%; height:660px; overflow-y:scroll; border:1px solid #95AEC8; background-color:white; font-size:90%\" id=\"list$id\">";
+      echo "<div style=\"width:100%; height:100%; overflow-y:scroll; border:1px solid #95AEC8; background-color:white; font-size:90%\" id=\"list$id\">";
     }
     
     $mod_count = count($mod);
@@ -106,6 +106,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
   <title><?php echo $_POST['session']; ?> Modules</title>
   <script type="text/javascript">
@@ -120,16 +121,16 @@
 </html>
 <?php
   } else {
-  
-  if (isset($_GET['session']) and $_GET['session'] != '') {
-    $session = $_GET['session'];
-  } else {
-    $session =  DateUtils::get_current_academic_year();
-
-  }
+    if (isset($_GET['session']) and $_GET['session'] != '') {
+      $session = $_GET['session'];
+    } else {
+      $session = date_utils::get_current_academic_year();
+    }
 ?>
 <html>
 <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
 <title><?php echo $session; ?> Modules</title>
 <style type="text/css">
   body {font-family:Arial,sans-serif; font-size:90%; background-color:#E3EFFF; color:black; margin:8px 4px 4px 4px}
@@ -150,11 +151,30 @@
     document.getElementById('list3').style.display = 'none';
     
     document.getElementById(tabID).style.display = 'block';
+  }
   
+  function resizeList() {
+    var winW = 630, winH = 460;
+    if (document.body && document.body.offsetWidth) {
+      winW = document.body.offsetWidth;
+      winH = document.body.offsetHeight;
+    }
+    if (document.compatMode=='CSS1Compat' && document.documentElement && document.documentElement.offsetWidth ) {
+      winW = document.documentElement.offsetWidth;
+      winH = document.documentElement.offsetHeight;
+    }
+    if (window.innerWidth && window.innerHeight) {
+      winW = window.innerWidth;
+      winH = window.innerHeight;
+    }
+    winH -= 80;
+    document.getElementById('list1').style.height = winH + 'px';
+    document.getElementById('list2').style.height = winH + 'px';
+    document.getElementById('list3').style.height = winH + 'px';
   }
 </script>
 </head>
-<body>
+<body onload="resizeList()" onresize="resizeList()">
 <form name="teamform" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
 
 <?php
@@ -200,7 +220,7 @@
   echo "<input type=\"hidden\" name=\"userID\" value=\"" . $_GET['userID'] . "\" /></div></td>\n</tr>\n";
   echo "<input type=\"hidden\" name=\"session\" value=\"" . $session . "\" /></div></td>\n</tr>\n";
 ?>
-<br />
+<br /><br />
 <div align="center"><input style="width:120px" type="submit" name="submit" value="OK" />&nbsp;<input style="width:120px" type="submit" name="cancel" value="Cancel" onclick="window.close()" /></div>
 
 </form>

@@ -37,6 +37,7 @@ if (!isset($_POST['submit'])) {
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
   <title><?php echo $string['copyontopaper']; ?></title>
+  <link rel="stylesheet" type="text/css" href="../css/header.css" />
   <style type="text/css">
   body {font-family:Arial,sans-serif; margin:0px; background-color:#F1F5FB}
   td {font-size:80%}
@@ -83,7 +84,7 @@ if (!isset($_POST['submit'])) {
   echo "<form style=\"width:100%; height:100%;\" method=\"post\" name=\"theForm\" onsubmit=\"return checkForm()\" action=\"" . $_SERVER['PHP_SELF'] . "?q_id=" . $_GET['q_id'] . "\">\n";
 ?>
   <table cellpadding="6" cellspacing="0" border="0" width="100%">
-  <tr><td style="width:32px; background-color:white; border-bottom:1px solid #CCD9EA"><img src="../artwork/copy_onto_paper.png" width="32" height="32 alt="<?php echo $string['copyontopaper']; ?>" /></td><td style="background-color:white; font-size:150%; font-weight:bold; color:#5582D2; border-bottom:1px solid #CCD9EA"><?php echo $string['copyontopaper']; ?></td></tr>
+  <tr><td style="width:32px; background-color:white; border-bottom:1px solid #CCD9EA"><img src="../artwork/copy_onto_paper.png" width="32" height="32 alt="<?php echo $string['copyontopaper']; ?>" /></td><td class="midblue_header" style="background-color:white; font-size:150%; font-weight:bold; border-bottom:1px solid #CCD9EA"><?php echo $string['copyontopaper']; ?></td></tr>
   </table>
 
 

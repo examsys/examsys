@@ -131,13 +131,12 @@ label.error {
 .qline.highlight {background-color:#B3C8E8}
 
 #content .breakline td, .breakline td {
-  padding-top:14px;
+  padding-top:9px;
   vertical-align:middle
 }
 
 #content .breakline h4, .breakline h4 {
 	font-weight:normal;
-	color:#1e3287;
 	padding:0;
 	margin:4px 0 4px 8px;
 	font-size:80%;

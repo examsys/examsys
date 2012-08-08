@@ -181,7 +181,7 @@ require '../lang/' . $language. '/include/timezones.inc';
   }
   
   // Create the new paper.
-  $session = DateUtils::get_current_academic_year();
+  $session = date_utils::get_current_academic_year();
   
   if (isset($_POST['folder'])) {
     $folder = $_POST['folder'];
@@ -334,11 +334,11 @@ if ($_POST['paper_type'] == 'summative') {
     while ($module_details->fetch()) {
       if ($next_flag == 1) {
         $next_session = (substr($calendar_year,0,4) + 1) . '/' . (substr($calendar_year,-2) + 1);
-        $sel = (DateUtils::get_current_academic_year() == $next_session) ? ' selected="selected"' : '';
+        $sel = (date_utils::get_current_academic_year() == $next_session) ? ' selected="selected"' : '';
         echo "<option value=\"$next_session\"$sel>$next_session</option>\n";
         $next_flag = 0;
       }
-      $sel = (DateUtils::get_current_academic_year() == $calendar_year) ? ' selected="selected"' : '';
+      $sel = (date_utils::get_current_academic_year() == $calendar_year) ? ' selected="selected"' : '';
       echo "<option value=\"$calendar_year\"$sel>$calendar_year</option>\n";
     }
     echo "</select></td>\n";
@@ -512,7 +512,7 @@ if ($_POST['paper_type'] == 'summative') {
   if (strpos($userroles,'SysAdmin') !== false) {
     $result = $mysqli->prepare("SELECT DISTINCT moduleid, fullname FROM modules, schools WHERE moduleid != '' ORDER BY moduleID");
   } elseif (strpos($userroles,'Admin') !== false) {
-    $schoolIDs = implode(',', SchoolUtils::getAdminSchools($userID, $mysqli));
+    $schoolIDs = implode(',', SchoolUtils::get_admin_schools($userID, $mysqli));
     $result = $mysqli->prepare("SELECT DISTINCT moduleid, fullname FROM modules WHERE (schoolid IN ($schoolIDs) OR moduleid IN ($team_sql)) AND moduleid != '' ORDER BY moduleID");
   } else {
     $result = $mysqli->prepare("SELECT DISTINCT moduleid, fullname FROM modules WHERE moduleid IN ($team_sql) AND moduleid != '' ORDER BY moduleID");

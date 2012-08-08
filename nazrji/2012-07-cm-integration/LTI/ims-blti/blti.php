@@ -25,6 +25,9 @@ class BLTI {
   public $info = false;
   public $row = false;
   public $context_id = false; // Override context_id
+  private $db;
+  private $parm;
+
   function updateltikey($parm = false, $ltiid, $ltiname, $ltikey, $ltisec, $lticontext = '') {
     if ($parm['dbtype'] == 'mysqli') {
       $db = $parm['db'];
@@ -65,16 +68,22 @@ class BLTI {
     }
   }
 
-  function __construct($parm = false, $usesession = true, $doredirect = true) {
+  function __construct($db, $parm, $usesession = true, $doredirect = true) {
     // If this request is not an LTI Launch, either
     // give up or try to retrieve the context from session
+
+    $this->db=$db;
+    $this->parm=$parm;
+
     if (!is_basic_lti_request()) {
       if ($usesession === false) return;
       if (strlen(session_id()) > 0) {
         if (isset($_SESSION['_basiclti_lti_row'])) {
           $row = $_SESSION['_basiclti_lti_row'];
         }
-        if (isset($row)) $this->row = $row;
+        if (isset($row)) {
+          $this->row = $row;
+        }
         if (isset($_SESSION['_basiclti_lti_context_id'])) {
           $this->context_id = $_SESSION['_basiclti_lti_context_id'];
         }

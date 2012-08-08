@@ -36,7 +36,7 @@ if (isset($_GET['period'])) {
     $start_dateSQL = 'SUBDATE(NOW(), INTERVAL 1 YEAR)';
   }
 } else {
-  $start_dateSQL = 'SUBDATE(NOW(), INTERVAL 5 YEAR)';
+  $start_dateSQL = 'SUBDATE(NOW(), INTERVAL 7 YEAR)';
 }
 
 if (isset($_GET['server'])) {

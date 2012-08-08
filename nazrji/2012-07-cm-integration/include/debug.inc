@@ -133,22 +133,26 @@ Class debug_mysqli_stmt extends mysqli_stmt {
 	  parent::__construct($link, $query);
 	}
 
-    function execute() {
-      global $queryInfo;
-      $start = explode(' ', microtime());
-      parent::execute();
-      $end =  explode(' ', microtime());
-      $usec = floatval($end[0]) - floatval($start[0]);
-      $sec = $end[1] - $start[1];
-      $res=(float)$sec+(float)$usec;
-      $queryInfo[count($queryInfo)]['sql']['Duration'] = $res;
-    }
+  function execute() {
+    global $queryInfo;
+    $start = explode(' ', microtime());
+    parent::execute();
+    $end =  explode(' ', microtime());
+    $usec = floatval($end[0]) - floatval($start[0]);
+    $sec = $end[1] - $start[1];
+    $res=(float)$sec+(float)$usec;
+    $queryInfo[count($queryInfo)]['sql']['Duration'] = $res;
+  }
+
+  function fetch() {
+    return parent::fetch();
+  }
 	
 }
 
 function outputDebug() {
   if (strpos($userroles,'SysAdmin') !== false) {
-    echo outputLoadTimes();
+    outputLoadTimes();
   }
 }
 

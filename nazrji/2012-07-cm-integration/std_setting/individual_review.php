@@ -96,6 +96,7 @@ table {table-layout:auto}
 <script type="text/javascript" src="../tools/mee/mee/js/mee_src.js"></script>
 <script type="text/javascript" src="../js/ie_fix.js"></script>
 <script type="text/javascript" src="../js/flash_include.js"></script>
+<script type="text/javascript" src="../js/jquery.flash_q.js"></script>
 <script type="text/javascript" src="../js/staff_help.js"></script>
 <script language="JavaScript">
 <?php
@@ -486,20 +487,20 @@ table {table-layout:auto}
         echo '<tr><a name="' . $question_no . '"></a><td class="q_no">' . $question_no . '.&nbsp;</td><td valign="top">' . $scenario . '<br /><br />';
         $li_set = 1;
       }
-      if ($q_media != '' and $q_media != NULL and $q_type != 'hotspot' and $q_type != 'labelling' and $q_type != 'flash' and $q_type != 'extmatch') {
+      if ($q_media != '' and $q_media != NULL and $q_type != 'hotspot' and $q_type != 'labelling' and $q_type != 'flash' and $q_type != 'extmatch' and $q_type != 'area') {
         if (substr($q_media, -4) == '.gif' or substr($q_media, -4) == '.jpg' or substr($q_media, -4) == 'jpeg' or substr($q_media, -4) == '.png') {
           if ($li_set == 0) echo '<tr><a name="' . $question_no . '"></a><td class="q_no">' . $question_no . '.&nbsp;</td><td>';
           $li_set = 1;
-          echo "<p align=\"center\">" . display_media($q_media, $q_media_width, $q_media_height) . "</p>\n";
+          echo "<p align=\"center\">" . display_media($q_media, $q_media_width, $q_media_height, '') . "</p>\n";
         } else {
           if ($li_set == 0) {
             echo '<tr><a name="' . $question_no . '"></a><td class="q_no">' . $question_no . '.&nbsp;</td><td>';
           }
           $li_set = 1;
-          echo "<p align=\"center\">" . display_media($q_media, $q_media_width, $q_media_height) . "</p>\n";
+          echo "<p align=\"center\">" . display_media($q_media, $q_media_width, $q_media_height, '') . "</p>\n";
         }
       }
-      if ($q_type != 'likert' and $q_type != 'calculation' and $q_type != 'info' and $q_type != 'hotspot') {
+      if ($q_type != 'likert' and $q_type != 'calculation' and $q_type != 'info' and $q_type != 'hotspot' and $q_type != 'area') {
         if ($li_set == 0) {
           echo '<tr><a name="' . $question_no . '"></a><td class="q_no">' . $question_no . '.&nbsp;</td><td>';
         }
@@ -524,7 +525,7 @@ table {table-layout:auto}
       
     }
 
-    $options_array[] = array('q_type'=>$q_type, 'score_method'=>$score_method, 'display_method'=>$display_method, 'correct'=>$correct, 'scenario'=>$scenario, 'q_media'=>$q_media, 'q_media_width'=>$q_media_width, 'q_media_height'=>$q_media_height, 'option_text'=>$option_text, 'o_media'=>$o_media, 'o_media_width'=>$o_media_width, 'o_media_height'=>$o_media_height, 'marks_correct'=>$marks_correct, 'marks_incorrect'=>$marks_incorrect);
+    $options_array[] = array('q_type'=>$q_type, 'score_method'=>$score_method, 'display_method'=>$display_method, 'correct'=>$correct, 'scenario'=>$scenario, 'leadin'=>$leadin, 'q_media'=>$q_media, 'q_media_width'=>$q_media_width, 'q_media_height'=>$q_media_height, 'option_text'=>$option_text, 'o_media'=>$o_media, 'o_media_width'=>$o_media_width, 'o_media_height'=>$o_media_height, 'marks_correct'=>$marks_correct, 'marks_incorrect'=>$marks_incorrect);
   }         // End of While loop
   $result->close();
 

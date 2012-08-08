@@ -84,7 +84,8 @@
   }
 
   $mydata = file($cfg_tmpdir . $userID . '_scatter.dat');
-  for ($i=0; $i<count($mydata); $i=$i+2) {
+  $count_mydata = count($mydata) - 2;
+  for ($i=0; $i<$count_mydata; $i=$i+2) {
     $mark = trim($mydata[$i]);
     if ($mark >= -10) {
       $duration = round($mydata[$i + 1] / 60);

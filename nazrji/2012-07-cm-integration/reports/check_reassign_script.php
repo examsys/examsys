@@ -29,7 +29,7 @@ require '../classes/dateutils.class.php';
 
 function getModules($userID, $mysqlidb) {
   $modules = array();
-  $session = DateUtils::get_current_academic_year();
+  $session = date_utils::get_current_academic_year();
 
   $result = $mysqlidb->prepare("SELECT moduleid FROM student_modules WHERE calendar_year=? AND userID=?");
   $result->bind_param('si', $session, $userID);

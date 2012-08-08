@@ -77,6 +77,7 @@ function checkCopyYearForm() {
 	$message = '';
 
 	// Get the current academic session
+	$session = date_utils::get_current_academic_year();
 	$session_parts = explode('/',$session);
 	
 	// Get a list of existing (source) years
@@ -131,15 +132,15 @@ foreach($source_years as $s_year) {
 $sel_shown = false;
 $sel_mod = '';
 
-if(count($dest_years) == 1) {
+if (count($dest_years) == 1) {
 	$sel_mod = ' selected="selected"';
 	$sel_shown = true;
 }
 ?>
 						<option value=""<?php echo $sel_mod ?>>&nbsp;</option>
 <?php
-foreach($dest_years as $d_year) {
-if($sel_mod == '' and !$sel_shown and $d_year != $source_years[0]) {
+foreach ($dest_years as $d_year) {
+if ($sel_mod == '' and !$sel_shown and $d_year != $source_years[0]) {
 	$sel_mod = ' selected="selected"';
 	$sel_shown = true;
 } else {

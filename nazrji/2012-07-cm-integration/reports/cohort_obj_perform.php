@@ -22,12 +22,14 @@
 * @package
 */
 
-  require '../include/staff_auth.inc';
-  require '../include/mapping.inc';
-  require '../include/feedback.inc';
-  $paperID = $_GET['paperID'];
-  $startdate = $_GET['startdate'];
-  $enddate = $_GET['enddate'];
+require '../include/staff_auth.inc';
+require '../include/mapping.inc';
+require '../include/feedback.inc';
+require_once '../include/sort.inc';
+
+$paperID = $_GET['paperID'];
+$startdate = $_GET['startdate'];
+$enddate = $_GET['enddate'];
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"

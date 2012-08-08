@@ -122,7 +122,7 @@ require_once '../classes/stateutils.class.php';
 <div style="font-size:110%"><strong><?php echo $string['questiontype']; ?></strong><br /><select name="searchtype">
 <option value="%"><?php echo $string['alltypes']; ?></option>
 <?php
-  $qTypes = array('calculation'=>$string['calculation'],'dichotomous'=>$string['dichotomous'],'extmatch'=>$string['extmatch'],'blank'=>$string['blank'],'flash'=>$string['flash'],'hotspot'=>$string['hotspot'],'info'=>$string['info'],'labelling'=>$string['labelling'],'likert'=>$string['likert'],'matrix'=>$string['matrix'],'mcq'=>$string['mcq'],'mrq'=>$string['mrq'],'rank'=>$string['rank'],'sct'=>$string['sct'],'textbox'=>$string['textbox'],'true_false'=>$string['true_false']);
+  $qTypes = array('area'=>$string['area'],'calculation'=>$string['calculation'],'dichotomous'=>$string['dichotomous'],'extmatch'=>$string['extmatch'],'blank'=>$string['blank'],'flash'=>$string['flash'],'hotspot'=>$string['hotspot'],'info'=>$string['info'],'labelling'=>$string['labelling'],'likert'=>$string['likert'],'matrix'=>$string['matrix'],'mcq'=>$string['mcq'],'mrq'=>$string['mrq'],'rank'=>$string['rank'],'sct'=>$string['sct'],'textbox'=>$string['textbox'],'true_false'=>$string['true_false']);
   foreach ($qTypes as $tmp_type=>$tmp_title) {
     if (isset($_POST['searchtype']) and $_POST['searchtype'] == $tmp_type) {
       echo "<option value=\"$tmp_type\" selected>$tmp_title</option>\n";
@@ -350,10 +350,10 @@ require_once '../classes/stateutils.class.php';
   }
 ?>
   <tr><td>
-  <div style="margin-left:4px"><?php echo $string['module']; SearchUtils::displayTeamDropdown($teams, $userroles, $userID, $mysqli); ?></div>
-  <div style="margin-left:4px"><?php echo $string['owner']; SearchUtils::displayOwnersDropdown($teams, $userroles, $userID, $mysqli, 'questions'); ?></div>
-  <div style="margin-left:4px"><br /><?php echo $string['status']; SearchUtils::displayStatusDropdown(); ?></div>
-  <div style="margin-left:4px"><br /><?php echo $string['blooms']; SearchUtils::displayBloomsDropdown(); ?></div>
+  <div style="margin-left:4px"><?php echo $string['module']; search_utils::display_team_dropdown($teams, $userroles, $userID, $mysqli); ?></div>
+  <div style="margin-left:4px"><?php echo $string['owner']; search_utils::display_owners_dropdown($teams, $userroles, $userID, $mysqli, 'questions'); ?></div>
+  <div style="margin-left:4px"><br /><?php echo $string['status']; search_utils::display_status_dropdown(); ?></div>
+  <div style="margin-left:4px"><br /><?php echo $string['blooms']; search_utils::display_blooms_dropdown(); ?></div>
   
   <div style="margin-left:4px"><?php echo $string['keyword']; ?> <select style="width:175px" name="keywordID"><br />
   <option value=""></option>

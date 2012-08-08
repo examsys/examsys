@@ -32,8 +32,14 @@ require_once $cfg_web_root . 'classes/lang.class.php';
 require_once $cfg_web_root . 'lang/' . $language . '/include/common.inc'; // Include common language file that all scripts need
 require_once $cfg_web_root . 'classes/dbutils.class.php';
 require_once $cfg_web_root . 'classes/networkutils.class.php';
-require_once $cfg_web_root . 'LTI/ims-blti/blti.php';
+
+
+require_once $cfg_web_root . 'LTI/ims-lti/UoN_LTI.php';
 require_once  $cfg_web_root . 'include/lti_func.php';
+
+
+require_once $cfg_web_root . 'classes/lti_integration.class.php';
+
 
 // Check to see if the update script has been run.
 if ($rogo_version != '4.3') {
@@ -66,20 +72,36 @@ if (preg_match('|MSIE ([5-9].[0-9]{1,2})|', $_SERVER['HTTP_USER_AGENT'], $log_ve
   }
 
   session_start();
-  $lti = new BLTI(array('table' => 'lti_keys', 'dbtype' => 'mysqli', 'db' => &$mysqli), true, false);
+  $lti = new UoN_LTI($mysqli);
+  $lti->init_lti();
   if ($lti->valid) {
     //LTI Correct
+
+
     $check = usercheck($mysqli, $lti);
-    if ($check !== false) {
+
+
+    if ($check > 0) {
       list($password, $userID, $userroles, $title, $initials, $surname, $username, $email, $grade, $year, $special_needs, $record_no, $split_username) = db_userlookup($check[0], $mysqli, true);
       db_change_user($mysqli);
+    }
+    else {
+      $message = $string['authenticationfailed'] . "</p>\n<ul style=\"margin-left:80px\">\n<li>" . $string['usernamecasesensitive'] . "</li>\n<li>" . $string['pressf5'] . "</li>";
+      if ($db_errors != '') {
+        $message .= "<li>$db_errors</li>\n";
+      }
+      if ($_SERVER['PHP_SELF'] == '/index.php') {
+        $message .= "<li>" . $string['ifstuckinvigilator'] . " <a href=\"guest_account.php\" style=\"color:blue\"><strong>" . $string['tempaccount'] . "</strong></a></li>\n</ul>";
+      }
+      $message .= $fp_link;
+      access_denied($message, true);
     }
   }
 
   if (isset($lti->message) and $lti->message != 'Could not find context in session' and $lti->message != false) {
     // DO WE WANT THIS??
     $tempvar = $lti->message;
-    if (strpos($tempvar,'Expired timestamp') !== false) {
+    if (strpos($tempvar, 'Expired timestamp') !== false) {
       $tempvar = 'expiredtimestamp';
     }
     if (!isset($string[$lti->message])) {
@@ -93,6 +115,10 @@ if (preg_match('|MSIE ([5-9].[0-9]{1,2})|', $_SERVER['HTTP_USER_AGENT'], $log_ve
 
   if (!$lti->valid) {
     if (!isset($_SERVER['PHP_AUTH_USER']) and !($lti->valid)) {
+
+      //replace with function for standard login failure
+
+
       $message = $string['authenticationfailed'] . "</p>\n<ul style=\"margin-left:80px\">\n<li>" . $string['usernamecasesensitive'] . "</li>\n";
       if ($cfg_use_ldap == true) $message .= "<li>" . $string['tsonldap'] . "</li>\n";
       $message .= '<li>' . $string['pressf5'] . '</li>';
@@ -106,9 +132,9 @@ if (preg_match('|MSIE ([5-9].[0-9]{1,2})|', $_SERVER['HTTP_USER_AGENT'], $log_ve
       //
       //  MAIN AUTHENTICATION ROUTINES
       //
-      if (db_auth($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'], $mysqli) == false) {
+      if (($dbret = db_auth($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'], $mysqli)) <= 0) {
         //try LDAP
-        if ($cfg_use_ldap == true and $db_errors != '<strong>' . $string['notsaccount'] . '</strong>') {
+        if ($cfg_use_ldap == true and ($db_errors != '<strong>' . $string['notsaccount'] . '</strong>' or $dbret == -2)) {
           $ldap_user_data = array();
           if (ldap_auth($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'], $ldap_user_data) == true) {
             //Ad Account OK

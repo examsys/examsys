@@ -137,7 +137,7 @@ class personal_folders {
           $lst2 = $this->gettests($id);
           foreach ($lst2 as $v2) {
             list($property_id, $paper_title, $start_date, $end_date, $paper_type, $paper_ownerID, $deleted, $crypt_name) = $v2;
-            echo "<div style=\"padding-left:44px\"><a href=\"?paperlinkID=" . $plk . "\"><img src=\"../artwork/" . $icons[$paper_type] . "_16.gif\" width=\"16\" height=\"16\" border=\"0\" alt=\"" . $paper_type . "\" /></a>&nbsp;<a class=\"recent\"";
+            echo "<div style=\"padding-left:24px\"><a href=\"?paperlinkID=" . $plk . "\"><img src=\"../artwork/" . $icons[$paper_type] . "_16.gif\" width=\"16\" height=\"16\" border=\"0\" alt=\"" . $paper_type . "\" /></a>&nbsp;<a class=\"recent\"";
             if (strpos($paper_title, '[deleted') !== false) {
               echo ' style="color:#808080"';
             }

@@ -51,6 +51,7 @@ function head($text) {
   header($text);
 }
 
+head('Pragma: public');
 if ($ext == "xml") {
   head('Content-Type: text/xml; charset='. cfg_page_charset);
 } elseif ($ext == "zip") {

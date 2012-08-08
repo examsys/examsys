@@ -22,26 +22,21 @@
 * @package
 */
 
-require '../include/staff_auth.inc';
-require '../include/errors.inc';
+require_once '../include/staff_auth.inc';
+require_once '../include/errors.inc';
+require_once '../classes/userutils.class.php';
 
 check_var('teamID', 'GET', true, false);
 $teamID = $_GET['teamID'];
 
 if (isset($_POST['submit'])) {
   // Clear the team of all members.
-  $result = $mysqli->prepare("DELETE FROM teams WHERE name=?");
-  $result->bind_param('s', $teamID);
-  $result->execute();  
-  $result->close();
+  UserUtils::clear_team_by_team_name($teamID, $mysqli);
   
   // Insert a record for each team member.
   for ($i=0; $i<$_POST['staff_no']; $i++) {
     if (isset($_POST["staff$i"]) and $_POST["staff$i"] != '') {
-      $result = $mysqli->prepare("INSERT INTO teams VALUES (NULL,?,?,NULL,'System')");
-      $result->bind_param('si', $teamID, $_POST["staff$i"]);
-      $result->execute();  
-      $result->close();
+      UserUtils::add_staff_to_team($_POST["staff$i"], $teamID, $mysqli);
     }
   }
 ?>
@@ -67,7 +62,9 @@ if (isset($_POST['submit'])) {
 <html>
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset; ?>" />
 <title><?php echo $string['teammembers'] . ' ' . $_GET['teamID'] . ' ' . $cfg_install_type; ?></title>
+<link rel="stylesheet" type="text/css" href="../css/header.css" />
 <style type="text/css">
   body {font-family:Arial,sans-serif; font-size:90%; background-color:#F1F5FB; color:black; margin:0px}
   hr {width:100%; border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5}
@@ -108,19 +105,11 @@ if (isset($_POST['submit'])) {
 <form name="teamform" action="<?php echo $_SERVER['PHP_SELF'] . '?' . $_SERVER['QUERY_STRING']; ?>" method="post">
 
   <table cellpadding="6" cellspacing="0" border="0" width="100%">
-  <tr><td style="width:32px; background-color:white; border-bottom:1px solid #CCD9EA"><img src="../artwork/team_members.png" width="32" height="32 alt="Members" /></td><td style="background-color:white; font-size:150%; color:#5582D2; border-bottom:1px solid #CCD9EA"><strong><?php echo $string['teammembers']; ?> </strong><?php echo $_GET['teamID']; ?></td></tr>
+  <tr><td style="width:32px; background-color:white; border-bottom:1px solid #CCD9EA"><img src="../artwork/team_members.png" width="32" height="32 alt="Members" /></td><td class="dkblue_header" style="background-color:white; font-size:150%; border-bottom:1px solid #CCD9EA"><strong><?php echo $string['teammembers']; ?> </strong><?php echo $_GET['teamID']; ?></td></tr>
   </table>
 
 <?php
-  $team_members = array();
-  $result = $mysqli->prepare("SELECT memberID FROM teams WHERE name=?");
-  $result->bind_param('s', $_GET['teamID']);
-  $result->execute();
-  $result->bind_result($memberID);
-  while ($row = $result->fetch()) {
-    $team_members[] = $memberID;
-  }
-  $result->close();
+  $team_members = UserUtils::get_team_list_by_name($_GET['teamID'], $mysqli);
 
   echo "<div style=\"height:200px; overflow:auto; background-color:white; border:1px solid #CCD9EA; margin:12px 4px 8px 4px; font-size:90%\" id=\"list\">";
   $staff_no = 0;
@@ -135,7 +124,7 @@ if (isset($_POST['submit'])) {
   $result->bind_result($tmp_id, $tmp_surname, $tmp_initials, $tmp_first_names, $tmp_title);
   while ($result->fetch()) {
     if ($old_letter != strtoupper(substr($tmp_surname, 0, 1))) {
-      echo "<table border=\"0\" class=\"letter\"><tr><td><nobr>" . strtoupper(substr($tmp_surname, 0, 1)) . "</nobr></td><td style=\"width:95%\"><hr noshade=\"noshade\" /></td></tr></table>\n";
+      echo "<table border=\"0\" class=\"subsect\" style=\"width:100%\"><tr><td><nobr>" . strtoupper(substr($tmp_surname, 0, 1)) . "</nobr></td><td style=\"width:95%\"><hr noshade=\"noshade\" /></td></tr></table>\n";
     }
   
     $match = false;

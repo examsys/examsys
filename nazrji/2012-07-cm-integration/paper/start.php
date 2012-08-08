@@ -89,64 +89,6 @@ function randomQOverwrite(&$questions, $random_q_data, $paper_type, $user_answer
   echo "\n<input type=\"hidden\" name=\"q" . $q_no . "_randomID\" value=\"" . $question['q_id'] ."\" />\n";
 }
 
-function branchingQOverwrite(&$questions,$branching_q_data,$paper_type,$user_answers,$current_screen) {
-  global $mysqli, $userID, $sessionid;
-  $previous_user_answer = '';
-  for ($screen=1; $screen<=count($user_answers); $screen++) {
-    foreach ($user_answers[$screen] as $questionID=>$past_answer) {
-      if ($branching_q_data['scenario'] == $questionID) $previous_user_answer = $past_answer;
-    }
-  }
-  $target_questionIDs = explode(',',$branching_q_data['options'][$previous_user_answer-1]['option_text']);
-  
-  // Remove any additional records from log, if user goes down different 'branch'.
-  
-  foreach ($branching_q_data['options'] as $individual_option) {
-    //build a list of all optional questions
-    $optional_qids .= $individual_option['option_text'] . ',';
-  }
-  $optional_qids = array_unique(explode(',',$optional_qids)); //get the unique qids
-  foreach ($optional_qids as $op_qid) {
-    if (!in_array($op_qid,$target_questionIDs) and isset($user_answers[$current_screen][$op_qid])) {
-      //if any of the possible qids are set on this screen remove old answer as the user is no on a different branch 
-      $stmt = $mysqli->prepare("DELETE FROM log$paper_type WHERE userid=? AND screen=? AND started=? AND q_id=?");
-      $stmt->bind_param('iisi',$userID, $current_screen, $sessionid, $op_qid);
-      $stmt->execute();
-    }
-  }
-    
-  foreach ($target_questionIDs as $target_questionID) {
-    // Look up selected question and overwrite data.
-    $question_data = $mysqli->prepare("SELECT q_type, q_id, score_method, display_method, marks_correct, marks_incorrect, marks_partial, theme, scenario, leadin, correct, REPLACE(option_text,'\t','') AS option_text, q_media, q_media_width, q_media_height, o_media, o_media_width, o_media_height, notes, q_option_order FROM questions, options WHERE q_id=? AND questions.q_id=options.o_id ORDER BY id_num");
-    $question_data->bind_param('i', $target_questionID);
-    $question_data->execute();
-    $question_data->store_result();
-    $question_data->bind_result($q_type, $q_id, $score_method, $display_method, $marks_correct, $marks_incorrect, $marks_partial, $theme, $scenario, $leadin, $correct, $option_text, $q_media, $q_media_width, $q_media_height, $o_media, $o_media_width, $o_media_height, $notes, $q_option_order);
-    $question = array();
-    while ($question_data->fetch()) {
-      if ($question['q_id'] != $q_id or $question['display_pos'] != $display_pos) {
-        $question['theme'] = $theme;
-        $question['scenario'] = $scenario;
-        $question['leadin'] = $leadin;
-        $question['notes'] = $notes;
-        $question['q_type'] = $q_type;
-        $question['q_id'] = $q_id;
-        $question['display_pos'] = $display_pos;
-        $question['score_method'] = $score_method;
-        $question['display_method'] = $display_method;
-        $question['q_media'] = $q_media;
-        $question['q_media_width'] = $q_media_width;
-        $question['q_media_height'] = $q_media_height;
-        $question['q_option_order'] = $q_option_order;
-        $question['dismiss'] = $dismiss;
-      }
-      $question['options'][] = array('correct'=>$correct, 'option_text'=>$option_text, 'o_media'=>$o_media, 'o_media_width'=>$o_media_width, 'o_media_height'=>$o_media_height, 'marks_correct'=>$marks_correct, 'marks_incorrect'=>$marks_incorrect, 'marks_partial'=>$marks_partial);
-   }
-   $questions[] = $question;
-  }
-  echo "\n<input type=\"hidden\" name=\"q" . $branching_q_data['q_id'] . '_' . ($previous_user_answer-1) . "_branchID\" value=\"" . ($previous_user_answer-1) . "\" />\n";
-}
-
 function keywordQOverwrite(&$questions, $random_q_data, $paper_type, $user_answers, $current_screen, $q_no) {
   global $mysqli, $used_questions, $string;
   
@@ -405,6 +347,7 @@ if ($css != '') {
 <?php }?>
 <script type="text/javascript" src="../js/start.js"></script>
 <script type="text/javascript" src="../js/flash_include.js"></script>
+<script type="text/javascript" src="../js/jquery.flash_q.js"></script>
 <script language="javascript">
   window.history.go(1);
 <?php
@@ -603,6 +546,8 @@ if ($css != '') {
 
   var ajaxSave = function () {
     submitPending = true;
+    //hide any errors
+    $('#saveError').fadeOut('fast');
     //random page ID to stop IE caching results. arrrggg
     date = new Date();
     randomPageID = date.getTime();
@@ -711,7 +656,7 @@ echo ' onsubmit="return confirmSubmit()">';   // Warning message only in linear 
   echo '<tr><td><div class="paper">' . $paper_title . '</div>';
   $question_offset = 0;
   if ($no_screens > 1) {
-    echo '<table cellspacing="1" cellpadding="1" border="0" style="font-weight:bold;color:white"><tr>';
+    echo '<table cellspacing="1" cellpadding="1" border="0" class="screens"><tr>';
     for ($i=1; $i<=$no_screens; $i++) {
       echo "<td title=\"";
       if (isset($screen_data[$i])) {
@@ -834,8 +779,6 @@ echo ' onsubmit="return confirmSubmit()">';   // Warning message only in linear 
     }
     if ($question['q_type'] == 'random') {
       randomQOverwrite($questions_array, $question, $paper_type, $user_answers, $current_screen, $tmp_q_no);
-    } elseif ($question['q_type'] == 'branching') {
-      branchingQOverwrite($questions_array, $question, $paper_type, $user_answers, $current_screen);
     } elseif ($question['q_type'] == 'keyword_based') {
       keywordQOverwrite($questions_array, $question, $paper_type, $user_answers, $current_screen, $tmp_q_no);
     } else {
