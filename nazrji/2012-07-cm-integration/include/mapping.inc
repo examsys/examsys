@@ -130,7 +130,7 @@ HTML;
     $html .= <<< HTML
     		<input name="{$moduleid_forform}_session" type="hidden" value="{$session}"/>
     		<input name="{$moduleid_forform}_old_mappings" type="hidden" value="{$old_mappings}" />
-        <input name="{$moduleid_forform}_vle_api" type="hidden" value="$vle_api_cache[$moduleid_forform]"/>\n";
+        <input name="{$moduleid_forform}_vle_api" type="hidden" value="$vle_api_cache[$moduleid_forform]"/>
 
 HTML;
   }
