@@ -1,0 +1,1131 @@
+﻿<toolbar>
+  <home label="Home">
+    <items name="WYSIWYG Mode" image="home_wysiwyg.png" _class="mt_home_popup_item_big" id="mode_wysiwyg" checked="-1" command="modeWYSIWYG" />
+    <items name="Raw Mode" image="home_raw.png" _class="mt_home_popup_item_big" id="mode_raw" checked="-1" command="modeRaw" />
+    <items spacer="1" />
+    <items name="Display Mode" image="home_tick_blank.png" _class="mt_home_popup_item" id="mode_display" command="setDisplay" checked="-1" />
+    <items name="Inline Mode" image="home_tick_blank.png" _class="mt_home_popup_item" id="mode_inline" command="setInline"  checked="-1" />
+    <items spacer="1" />
+    <items name="Undo" image="home_undo_g.png" _class="mt_home_popup_item" id="tb_undo" command="doUndo" />
+    <items name="Redo" image="home_redo_g.png" _class="mt_home_popup_item" id="tb_redo" command="doRedo" />
+    <items name="Clear Equation" image="home_clear.png" _class="mt_home_popup_item" command="clear" />
+  </home>
+  <tabs name="Basic" id="basic" visibility="hide">
+    <panes name="Symbols" type="bigicons">
+      <items display="Basic" image="text.png" />
+      <items display="Basic" image="text.png" />
+    </panes>
+    <panes name="Formatted Text" type="list" itemwidth="75">
+      <items latex="\textrm" display="Dots" image="textrm.png" />
+      <items latex="\textit" display="Accents" image="textit.png" _class="mee_font_it" />
+    </panes>
+    <panes name="Recent Symbols" type="icons">
+      <items latex="\varepsilon" display="&#x03B5;" />
+      <items latex="\vartheta" display="&#x03D1;" />
+      <items latex="\varpi" display="&#x03D6;" />
+      <items latex="\varrho" display="&#x03F1;" />
+      <items latex="\varsigma" display="&#x03C2;" />
+      <items latex="\varphi" display="&#x03C6;" />
+      <items latex="\digamma" display="&#x03DC;" />
+      <items latex="\varkappa" display="&#x03F0;" />
+      <items latex="\varepsilon" display="&#x03B5;" />
+      <items latex="\vartheta" display="&#x03D1;" />
+      <items latex="\varpi" display="&#x03D6;" />
+      <items latex="\varrho" display="&#x03F1;" />
+      <items latex="\varsigma" display="&#x03C2;" />
+      <items latex="\varphi" display="&#x03C6;" />
+      <items latex="\digamma" display="&#x03DC;" />
+      <items latex="\varepsilon" display="&#x03B5;" />
+    </panes>
+  </tabs>
+  <tabs name="Symbols" id="symbols" visibility="show">
+    <panes name="Symbols" type="menus" history="1">
+      <items desc="Basic Maths" display="Basic" image="basic.png">
+        <sections heading="Basic Maths" _class="tbpm_grid">
+          <items latex="\pm " display="&#x00B1;" />
+          <items latex="\infty " display="&#x221E;" />
+          <items latex="=" display="=" />
+          <items latex="\neq " display="&#x2260;" />
+          <items latex="\times " display="&#x00D7;" />
+          <items latex="\div " display="&#x00F7;" />
+          <items latex="!" display="!" />
+          <items latex="\propto " display="&#x221D;" />
+          <items latex="&lt;" display="&lt;" />
+          <items latex="&gt;" display="&gt;" />
+          <items latex="\ll " display="&#x226A;" />
+          <items latex="\gg " display="&#x226B;" />
+          <items latex="\leq " display="&#x2264;" />
+          <items latex="\qeq " display="&#x2265;" />
+          <items latex="\mp " display="&#x2213;" />
+          <items latex="\cong " display="&#x2245;" />
+          <items latex="\approx " display="&#x2248;" />
+          <items latex="\equiv " display="&#x2261;" />
+          <items latex="\forall " display="&#x2200;" />
+          <items latex="\complement " display="&#x2201;" />
+          <items latex="\partial " display="&#x2202;" />
+          <items latex="\sqrt{$1}" display="&#x221A;" />
+          <items latex="\cup " display="&#x222A;" />
+          <items latex="\cap " display="&#x2229;" />
+          <items latex="\emptyset " display="&#x2205;" />
+          <items latex="%" display="%" />
+          <items latex="\degree " display="&#x00B0;" />
+          <items latex="\degree\mathrm{F}" display="&#x00B0;F" />
+          <items latex="\degree\mathrm{C}" display="&#x00B0;C" />
+          <items latex="\triangle " display="&#x25B3;" />
+          <items latex="\nabla " display="&#x2207;" />
+          <items latex="\exists " display="&#x2203;" />
+          <items latex="\in " display="&#x2208;" />
+          <items latex="\ni " display="&#x220B;" />
+          <items latex="\leftarrow " display="&#x2190;" />
+          <items latex="\uparrow " display="&#x2191;" />
+          <items latex="\rightarrow " display="&#x2192;" />
+          <items latex="\downarrow " display="&#x2193;" />
+          <items latex="\leftrightarrow " display="&#x2194;" />
+          <items latex="\neg " display="&#x00AC;" />
+          <items latex="\ast " display="&#x2217;" />
+          <items latex="\bullet " display="&#x2219;" />
+          <items latex="\vdots " display="&#x22EE;" />
+          <items latex="\cdots " display="&#x22EF;" />
+          <items latex="\ddots " display="&#x22F1;" />
+          <items latex="\aleph " display="&#x2135;" />
+          <items latex="\beth " display="&#x2136;" />
+        </sections>
+        <sections></sections>
+      </items>
+      <items desc="Greek" display="Greek" image="greek.png" popupwidth="257">
+        <sections heading="Lower Case" _class="tbpm_grid">
+          <items latex="\alpha " display="&#x03B1;" />
+          <items latex="\beta " display="&#x03B2;" />
+          <items latex="\gamma " display="&#x03B3;" />
+          <items latex="\delta " display="&#x03B4;" />
+          <items latex="\epsilon " display="&#x03F5;" />
+          <items latex="\zeta " display="&#x03B6;" />
+          <items latex="\eta " display="&#x03B7;" />
+          <items latex="\theta " display="&#x03B8;" />
+          <items latex="\iota " display="&#x03B9;" />
+          <items latex="\kappa " display="&#x03BA;" />
+          <items latex="\lambda " display="&#x03BB;" />
+          <items latex="\mu " display="&#x03BC;" />
+          <items latex="\nu " display="&#x03BD;" />
+          <items latex="\xi " display="&#x03BE;" />
+          <items latex="\omicron " display="&#x03BF;" />
+          <items latex="\pi " display="&#x03C0;" />
+          <items latex="\rho " display="&#x03C1;" />
+          <items latex="\sigma " display="&#x03C3;" />
+          <items latex="\tau " display="&#x03C4;" />
+          <items latex="\upsilon " display="&#x03C5;" />
+          <items latex="\phi " display="&#x03D5;" />
+          <items latex="\chi " display="&#x03C7;" />
+          <items latex="\psi " display="&#x03C8;" />
+          <items latex="\omega " display="&#x03C9;" />
+        </sections>
+        <sections heading="Upper Case" _class="tbpm_grid">
+          <items latex="\Gamma " display="&#x0393;" />
+          <items latex="\Delta " display="&#x0394;" />
+          <items latex="\Theta " display="&#x0398;" />
+          <items latex="\Lambda " display="&#x039B;" />
+          <items latex="\Xi " display="&#x039E;" />
+          <items latex="\Pi " display="&#x03A0;" />
+          <items latex="\Sigma " display="&#x03A3;" />
+          <items latex="\Upsilon " display="&#x03A5;" />
+          <items latex="\Phi " display="&#x03A6;" />
+          <items latex="\Psi " display="&#x03A8;" />
+          <items latex="\Omega " display="&#x03A9;" />
+        </sections>
+        <sections heading="Variants" _class="tbpm_grid">
+          <items latex="\varepsilon " display="&#x03B5;" />
+          <items latex="\vartheta " display="&#x03D1;" />
+          <items latex="\varpi " display="&#x03D6;" />
+          <items latex="\varrho " display="&#x03F1;" />
+          <items latex="\varsigma " display="&#x03C2;" />
+          <items latex="\varphi " display="&#x03C6;" />
+          <items latex="\digamma " display="&#x03DC;" />
+          <items latex="\varkappa " display="&#x03F0;" />
+        </sections>
+      </items>
+      <items desc="Arrows" display="Arrows" image="arrows.png" popupwidth="257">
+        <sections heading="Extensible Arrows" _class="tbpm_grid">
+          <items latex="\uparrow " display="&#x2191;" />
+          <items latex="\Uparrow " display="&#x21D1;" />
+          <items latex="\downarrow " display="&#x2193;" />
+          <items latex="\Downarrow " display="&#x21D3;" />
+          <items latex="\updownarrow " display="&#x2195;" />
+          <items latex="\Updownarrow " display="&#x21D5;" />
+        </sections>
+        <sections heading="Arrows" _class="tbpm_grid">
+          <items latex="\Leftrightarrow " display="&#x21D4;" />
+          <items latex="\Leftarrow " display="&#x21D0;" />
+          <items latex="\Rightarrow " display="&#x21D2;" />
+          <items latex="\leftrightarrow " display="&#x2194;" />
+          <items latex="\leftarrow " display="&#x2190;" />
+          <items latex="\gets " display="&#x2190;" />
+          <items latex="\rightarrow " display="&#x2192;" />
+          <items latex="\to " display="&#x2192;" />
+          <items latex="\mapsto" display="&#x21A6;" />
+          <items latex="\leftharpoonup " display="&#x21BC;" />
+          <items latex="\leftharpoondown " display="&#x21BD;" />
+          <items latex="\rightharpoonup " display="&#x21C0;" />
+          <items latex="\rightharpoondown " display="&#x21C1;" />
+          <items latex="\nearrow " display="&#x2197;" />
+          <items latex="\searrow " display="&#x2198;" />
+          <items latex="\nwarrow " display="&#x2196;" />
+          <items latex="\swarrow " display="&#x2199;" />
+          <items latex="\rightleftharpoons " display="&#x21CC;" />
+          <items latex="\hookrightarrow " display="&#x21AA;" />
+          <items latex="\hookleftarrow " display="&#x21A9;" />
+          <items latex="\longleftarrow " display="&#x27F5;" _class="tb_smallarrow"/>
+          <items latex="\Longleftarrow " display="&#x27F8;" _class="tb_smallarrow" />
+          <items latex="\longrightarrow " display="&#x27F6;" _class="tb_smallarrow" />
+          <items latex="\Longrightarrow " display="&#x27F9;" _class="tb_smallarrow" />
+          <items latex="\Longleftrightarrow " display="&#x27FA;" _class="tb_smallarrow" />
+          <items latex="\longleftrightarrow " display="&#x27F7;" _class="tb_smallarrow" />
+          <items latex="\longmapsto " display="&#x27FC;" _class="tb_smallarrow" />
+          <items latex="\circlearrowleft " display="&#x21BA;" />
+          <items latex="\circlearrowright " display="&#x21BB;" />
+          <items latex="\curvearrowleft " display="&#x21B6;" />
+          <items latex="\curvearrowright " display="&#x21B7;" />
+          <items latex="\downdownarrows " display="&#x21CA;" />
+          <items latex="\downharpoonleft " display="&#x21C3;" />
+          <items latex="\downharpoonright " display="&#x21C2;" />
+          <items latex="\leftarrowtail " display="&#x21A2;" />
+          <items latex="\leftleftarrows " display="&#x21C7;" />
+          <items latex="\leftrightarrows " display="&#x21C6;" />
+          <items latex="\leftrightharpoons " display="&#x21CB;" />
+          <items latex="\leftrightsquigarrow " display="&#x21AD;" />
+          <items latex="\Lleftarrow " display="&#x21DA;" />
+          <items latex="\looparrowleft " display="&#x21AB;" />
+          <items latex="\looparrowright " display="&#x21AC;" />
+          <items latex="\Lsh " display="&#x21B0;" />
+          <items latex="\multimap " display="&#x22B8;" />
+          <items latex="\nLeftarrow " display="&#x21CD;" />
+          <items latex="\nLeftrightarrow " display="&#x21CE;" />
+          <items latex="\nRightarrow " display="&#x21CF;" />
+          <items latex="\nleftarrow " display="&#x219A;" />
+          <items latex="\nleftrightarrow " display="&#x21AE;" />
+          <items latex="\nrightarrow " display="&#x219B;" />
+          <items latex="\rightarrowtail " display="&#x21A3;" />
+          <items latex="\rightleftarrows " display="&#x21C4;" />
+          <items latex="\rightrightarrows " display="&#x21C9;" />
+          <items latex="\rightsquigarrow " display="&#x21DD;" />
+          <items latex="\Rrightarrow " display="&#x21DB;" />
+          <items latex="\Rsh " display="&#x21B1;" />
+          <items latex="\twoheadleftarrow " display="&#x219E;" />
+          <items latex="\twoheadrightarrow " display="&#x21A0;" />
+          <items latex="\upharpoonleft " display="&#x21BF;" />
+          <items latex="\upharpoonright " display="&#x21BE;" />
+          <items latex="\upuparrows " display="&#x21C8;" />
+        </sections>
+      </items>
+      <items desc="Operators" display="Operators" image="operators.png" popupwidth="257">
+        <sections heading="Operators" _class="tbpm_grid">
+          <items latex="+" display="+" />
+          <items latex="-" display="&#x2212;" />
+          <items latex="\times " display="&#x00D7;" />
+          <items latex="\star " display="&#x22C6;" />
+          <items latex="=" display="=" />
+          <items latex="\mp " display="&#x2213;" />
+          <items latex="\pm " display="&#x00B1;" />
+          <items latex="\ast " display="&#x2217;" />
+          <items latex="\triangleleft " display="&#x25C3;" />
+          <items latex="\triangleright " display="&#x25B9;" />
+          <items latex="\bigtriangleup " display="&#x25B3;" />
+          <items latex="\bigtriangledown " display="&#x25BD;" />
+          <items latex="\wedge " display="&#x2227;" />
+          <items latex="\vee " display="&#x2228;" />
+          <items latex="\cap " display="&#x2229;" />
+          <items latex="\cup " display="&#x222A;" />
+          <items latex="\ddagger " display="&#x2021;" />
+          <items latex="\dagger " display="&#x2020;" />
+          <items latex="\sqcap " display="&#x2293;" />
+          <items latex="\sqcup " display="&#x2294;" />
+          <items latex="\uplus " display="&#x228E;" />
+          <items latex="\amalg " display="&#x2A3F;" />
+          <items latex="\diamond " display="&#x22C4;" />
+          <items latex="\bullet " display="&#x2219;" />
+          <items latex="\wr " display="&#x2240;" />
+          <items latex="\div " display="&#x00F7;" />
+          <items latex="\odot " display="&#x2299;" />
+          <items latex="\oslash " display="&#x2298;" />
+          <items latex="\otimes " display="&#x2297;" />
+          <items latex="\ominus " display="&#x2296;" />
+          <items latex="\oplus " display="&#x2295;" />
+          <items latex="\circ " display="&#x2218;" />
+          <items latex="\bigcirc " display="&#x25EF;" />
+          <items latex="\setminus " display="&#x2216;" />
+          <items latex="\cdot " display="&#x22C5;" />
+        </sections>
+        <sections></sections>
+      </items>
+      <items desc="Symbols" display="Symbols" image="symbols.png" popupwidth="257">
+        <sections heading="Symbols" _class="tbpm_grid">
+          <items latex="\S " display="&#x00A7;" />
+          <items latex="\hbar " display="&#x210F;" />
+          <items latex="\imath " display="&#x0131;" />
+          <items latex="\jmath " display="&#x0237;" />
+          <items latex="\ell " display="&#x2113;" />
+          <items latex="\aleph " display="&#x2135;" />
+          <items latex="\wp " display="&#x2118;" />
+          <items latex="\Re " display="&#x211C;" />
+          <items latex="\Im " display="&#x2111;" />
+          <items latex="\partial " display="&#x2202;" />
+          <items latex="\infty " display="&#x221E;" />
+          <items latex="\prime " display="&#x2032;" />
+          <items latex="\emptyset " display="&#x2205;" />
+          <items latex="\nabla " display="&#x2207;" />
+          <items latex="\top " display="&#x22A4;" />
+          <items latex="\bot " display="&#x22A5;" />
+          <items latex="\angle " display="&#x2220;" />
+          <items latex="\triangle " display="&#x25B3;" />
+          <items latex="\backslash " display="&#x2216;" />
+          <items latex="\forall " display="&#x2200;" />
+          <items latex="\exists " display="&#x2203;" />
+          <items latex="\neg " display="&#x00AC;" />
+          <items latex="\flat " display="&#x266D;" />
+          <items latex="\natural " display="&#x266E;" />
+          <items latex="\sharp " display="&#x266F;" />
+          <items latex="\clubsuit " display="&#x2663;" />
+          <items latex="\diamondsuit " display="&#x2662;" />
+          <items latex="\heartsuit " display="&#x2661;" />
+          <items latex="\spadesuit " display="&#x2660;" />
+          <items latex="\beth " display="&#x2136;" />
+          <items latex="\daleth " display="&#x2138;" />
+          <items latex="\gimel " display="&#x2137;" />
+          <items latex="\complement " display="&#x2201;" />
+          <items latex="\eth " display="&#208;" />
+          <items latex="\hslash " display="&#x210F;" _class="tb_font_bb" />
+          <items latex="\mho " display="&#x2127;" />
+          <items latex="\circledS " display="&#x24C8;" />
+          <items latex="\Bbbk " display="k" _class="tb_font_bb" />
+          <items latex="\Finv " display="&#x2132;" />
+          <items latex="\Game " display="&#x2141;" _class="tb_font_bb" />
+          <items latex="\surd " display="&#x221A;" />
+        </sections>
+        <sections></sections>
+      </items>
+      <items desc="Relations" display="Relations" image="relations.png" popupwidth="257">
+        <sections heading="Relations" _class="tbpm_grid">
+          <items latex="\propto " display="&#x221D;" />
+          <items latex="\sqsubseteq " display="&#x2291;" />
+          <items latex="\sqsupseteq " display="&#x2292;" />
+          <items latex="\parallel " display="&#x2225;" />
+          <items latex="\mid " display="&#x2223;" />
+          <items latex="\dashv " display="&#x22A3;" />
+          <items latex="\vdash " display="&#x22A2;" />
+          <items latex="\leq " display="&#x2264;" />
+          <items latex="\geq " display="&#x2265;" />
+          <items latex="\lt " display="&#x003C;" />
+          <items latex="\gt " display="&#x003E;" />
+          <items latex="\succ " display="&#x227B;" />
+          <items latex="\prec " display="&#x227A;" />
+          <items latex="\approx " display="&#x2248;" />
+          <items latex="\succeq " display="&#x2AB0;" />
+          <items latex="\preceq " display="&#x2AAF;" />
+          <items latex="\supset " display="&#x2273;" />
+          <items latex="\subset " display="&#x2282;" />
+          <items latex="\supseteq " display="&#x2287;" />
+          <items latex="\subseteq " display="&#x2286;" />
+          <items latex="\in " display="&#x2208;" />
+          <items latex="\ni " display="&#x220B;" />
+          <items latex="\notin " display="&#x2209;" />
+          <items latex="\owns " display="&#x220B;" />
+          <items latex="\gg " display="&#x226B;" />
+          <items latex="\ll " display="&#x226A;" />
+          <items latex="\sim " display="&#x223C;" />
+          <items latex="\simeq " display="&#x2243;" />
+          <items latex="\perp " display="&#x22A5;" />
+          <items latex="\equiv " display="&#x2261;" />
+          <items latex="\asymp " display="&#x224D;" />
+          <items latex="\smile " display="&#x2323;" />
+          <items latex="\frown " display="&#x2322;" />
+          <items latex="\ne " display="&#x2260;" />
+          <items latex="\neq " display="&#x2260;" />
+          <items latex="\cong " display="&#x2245;" />
+          <items latex="\doteq " display="&#x2250;" />
+          <items latex="\bowtie " display="&#x22C8;" />
+          <items latex="\models " display="&#x22A8;" />
+          <items latex="\notChar " display="&#x0338;" />
+        </sections>
+        <sections></sections>
+      </items>
+    </panes>
+    <panes name="Extra" type="hmenus" itemwidth="75">
+      <items desc="Dots" display="Dots" image="dots.png" popupwidth="160">
+        <sections heading="Dots" _class="tbpm_grid" history="1">
+          <items latex="\ldots " display="&#x2026;" />
+          <items latex="\cdots " display="&#x22EF;" />
+          <items latex="\vdots " display="&#x22EE;" />
+          <items latex="\ddots " display="&#x22F1;" />
+          <items latex="\dots " display="&#x2026;" />
+          <items latex="\dotsc " display="&#x2026;" />
+          <items latex="\dotsb " display="&#x22EF;" />
+          <items latex="\dotsm " display="&#x22EF;" />
+          <items latex="\dotsi " display="&#x22EF;" />
+          <items latex="\dotso " display="&#x2026;" />
+          <items latex="\ldotp " display="&#x002E;" />
+          <items latex="\cdotp " display="&#x22C5;" />
+          <items latex="\colon " display="&#x003A;" />
+        </sections>
+        <sections></sections>
+      </items>
+      <items desc="Accents" display="Accents" image="accents.png" _class="mee_font_it" popupwidth="160">
+        <sections heading="Accents" _class="tbpm_grid">
+          <items latex="\acute{$1}" wlatex="\acute ">
+            <display>
+              <![CDATA[
+            <span class="mee_elem" style="position: relative; ">
+              <span class="mee_elemsetbasic mee_accent_main mee_main" style="left: 0px; ">&#x02CA;</span>
+              <span class="mee_elemset mee_arg0 mee_arg">
+                <span class="mee_elem">
+                  <span class="mee_elemsetbasic mee_variable mee_main" basetext="x">x</span>
+                </span>
+              </span>
+            </span>
+            ]]>
+            </display>
+          </items>
+          <items latex="\grave{$1}" wlatex="\grave ">
+            <display>
+              <![CDATA[
+             <span class="mee_elem" style="position: relative; ">
+                <span class="mee_elemsetbasic mee_accent_main mee_main" basetext="&amp;#x02CB;" style="left: 0px; ">&#x02CB;</span>
+                <span class="mee_elemset mee_arg0 mee_arg">
+                  <span class="mee_elem">
+                    <span class="mee_elemsetbasic mee_variable mee_main" basetext="x">x</span>
+                  </span>
+                </span>
+              </span>
+            ]]>
+            </display>
+          </items>
+          <items latex="\dot{$1}"  wlatex="\dot ">
+            <display>
+              <![CDATA[
+              <span class="mee_elem" style="position: relative; ">
+                <span class="mee_elemsetbasic mee_accent_main mee_main" basetext="&amp;#x02D9;" style="left: 0px; ">&#x02D9;</span>
+                <span class="mee_elemset mee_arg0 mee_arg">
+                  <span class="mee_elem">
+                    <span class="mee_elemsetbasic mee_variable mee_main" basetext="x">x</span>
+                  </span>
+                </span>
+              </span>
+            ]]>
+            </display>
+          </items>
+          <items latex="\ddot{$1}" wlatex="\ddot ">
+            <display>
+              <![CDATA[
+               <span class="mee_elem" style="position: relative; ">
+                <span class="mee_elemsetbasic mee_accent_main mee_main" basetext="&amp;#x00A8;" style="left: 0px; ">&#x00A8;</span>
+                <span class="mee_elemset mee_arg0 mee_arg">
+                  <span class="mee_elem">
+                    <span class="mee_elemsetbasic mee_variable mee_main" basetext="x">x</span>
+                  </span>
+                </span>
+              </span>
+           ]]>
+            </display>
+          </items>
+          <items latex="\dddot{$1}" wlatex="\dddot ">
+            <display>
+              <![CDATA[
+              <span class="mee_elem" style="position: relative; padding-right: 2px; " al="w 19 h 33 t 0 b 0">
+                <span depth="1" elem="74" class="mee_elemsetbasic mee_dots mee_main" basetext="..." style="position: absolute; top: -0.57em;padding-left: 8px ">...</span>
+                <span class="mee_elemset mee_arg0 mee_arg" depth="1" al="w 14 h 33 t 0 b 0" style="">
+                  <span class="mee_elem" al="w 14 h 33 t 0 b 0">
+                    <span depth="1" elem="75" class="mee_elemsetbasic mee_variable mee_main" basetext="x">x</span>
+                  </span>
+                </span>
+              </span>
+            ]]>
+            </display>
+          </items>
+          <items latex="\ddddot{$1}" wlatex="\ddddot ">
+            <display>
+              <![CDATA[
+              <span class="mee_elem" style="position: relative; padding-right: 5px; " al="w 25 h 33 t 0 b 0">
+                <span depth="1" elem="76" class="mee_elemsetbasic mee_dots mee_main" basetext="...." style="padding-left:5px ;position: absolute; top: -0.57em; ">....</span>
+                <span class="mee_elemset mee_arg0 mee_arg" depth="1" al="w 14 h 33 t 0 b 0" style="">
+                  <span class="mee_elem" al="w 14 h 33 t 0 b 0">
+                    <span depth="1" elem="77" class="mee_elemsetbasic mee_variable mee_main" basetext="x">x</span>
+                  </span>
+                </span>
+              </span>
+            ]]>
+            </display>
+          </items>
+          <items latex="\tilde{$1}" wlatex="\tilde ">
+            <display>
+              <![CDATA[
+              <span class="mee_elem" style="position: relative; " al="w 15 h 33 t 0 b 0">
+                <span depth="1" elem="78" class="mee_elemsetbasic mee_accent_main mee_main" basetext="&amp;#x02DC;" style="left: 0px; ">&#x02DC;</span>
+                <span class="mee_elemset mee_arg0 mee_arg" depth="1" al="w 14 h 33 t 0 b 0">
+                  <span class="mee_elem" al="w 14 h 33 t 0 b 0">
+                    <span depth="1" elem="79" class="mee_elemsetbasic mee_variable mee_main" basetext="x">x</span>
+                  </span>
+                </span>
+              </span>
+            ]]>
+            </display>
+          </items>
+          <items latex="\bar{$1}" wlatex="\bar ">
+            <display>
+              <![CDATA[
+              <span class="mee_elem" style="position: relative; " al="w 15 h 33 t 0 b 0">
+                <span depth="1" elem="80" class="mee_elemsetbasic mee_accent_main mee_main" basetext="&amp;#x02C9;" style="left: 0px; ">&#x02C9;</span>
+                <span class="mee_elemset mee_arg0 mee_arg" depth="1" al="w 14 h 33 t 0 b 0">
+                  <span class="mee_elem" al="w 14 h 33 t 0 b 0">
+                    <span depth="1" elem="81" class="mee_elemsetbasic mee_variable mee_main" basetext="x">x</span>
+                  </span>
+                </span>
+              </span>
+            ]]>
+            </display>
+          </items>
+          <items latex="\breve{$1}" wlatex="\breve ">
+            <display>
+              <![CDATA[
+              <span class="mee_elem" style="position: relative; " al="w 15 h 33 t 0 b 0">
+                <span depth="1" elem="82" class="mee_elemsetbasic mee_accent_main mee_main" basetext="&amp;#x02C9;" style="left: 0px; ">&#x02D8;</span>
+                <span class="mee_elemset mee_arg0 mee_arg" depth="1" al="w 14 h 33 t 0 b 0">
+                  <span class="mee_elem" al="w 14 h 33 t 0 b 0">
+                    <span depth="1" elem="83" class="mee_elemsetbasic mee_variable mee_main" basetext="x">x</span>
+                  </span>
+                </span>
+              </span>
+            ]]>
+            </display>
+          </items>
+          <items latex="\check{$1}" wlatex="\check ">
+            <display>
+              <![CDATA[
+            <span class="mee_elem" style="position: relative; " al="w 15 h 33 t 0 b 0">
+              <span depth="1" elem="84" class="mee_elemsetbasic mee_accent_main mee_main" basetext="&amp;#x02D8;" style="left: 0px; ">&#x02C7;</span>
+              <span class="mee_elemset mee_arg0 mee_arg" depth="1" al="w 14 h 33 t 0 b 0">
+                <span class="mee_elem" al="w 14 h 33 t 0 b 0">
+                  <span depth="1" elem="85" class="mee_elemsetbasic mee_variable mee_main" basetext="x">x</span>
+                </span>
+              </span>
+            </span>
+            ]]>
+            </display>
+          </items>
+          <items latex="\hat{$1}" wlatex="\hat ">
+            <display>
+              <![CDATA[
+              <span class="mee_elem" style="position: relative; " al="w 15 h 33 t 0 b 0">
+                <span depth="1" elem="86" class="mee_elemsetbasic mee_accent_main mee_main" basetext="&amp;#x02C7;" style="left: 0px; ">&#x02C6;</span>
+                <span class="mee_elemset mee_arg0 mee_arg" depth="1" al="w 14 h 33 t 0 b 0">
+                  <span class="mee_elem" al="w 14 h 33 t 0 b 0">
+                    <span depth="1" elem="87" class="mee_elemsetbasic mee_variable mee_main" basetext="x">x</span>
+                  </span>
+                </span>
+              </span>
+            ]]>
+            </display>
+          </items>
+          <items latex="\vec{$1}" wlatex="\vec ">
+            <display>
+              <![CDATA[
+              <span class="mee_elem" style="position: relative; " al="w 15 h 33 t 0 b 0">
+                <span depth="1" elem="86" class="mee_elemsetbasic mee_accent_main mee_main" basetext="&amp;#x02C7;" style="left: 0px; ">&#x20D7;</span>
+                <span class="mee_elemset mee_arg0 mee_arg" depth="1" al="w 14 h 33 t 0 b 0">
+                  <span class="mee_elem" al="w 14 h 33 t 0 b 0">
+                    <span depth="1" elem="87" class="mee_elemsetbasic mee_variable mee_main" basetext="x">x</span>
+                  </span>
+                </span>
+              </span>
+            ]]>
+            </display>
+          </items>
+        </sections>
+        <sections heading="Wide Accents" _class="tbpm_grid">
+          <items latex="\widetilde{$1}" wlatex="\widetilde{">
+            <display>
+              <![CDATA[
+              <span class="mee_elem" style="position: relative; " al="w 29 h 33 t 0 b 0">
+                <span depth="1" elem="93" class="mee_elemsetbasic mee_accent_main mee_main" basetext="&amp;#x02DC;" style="font-family: MathJax_Size2; top: -0.45em; left: 0px; ">&#x02DC;</span>
+                <span class="mee_elemset mee_arg0 mee_arg" depth="1" al="w 28 h 33 t 0 b 0">
+                  <span depth="1" elem="94" class="mee_elemsetbasic mee_variable mee_main" basetext="x">xx</span>
+                </span>
+               ]]>
+            </display>
+          </items>
+
+          <items latex="\widehat{$1}" wlatex="\widehat{ ">
+            <display>
+              <![CDATA[
+            <span class="mee_elem" style="position: relative; " al="w 29 h 33 t 0 b 0">
+              <span depth="1" elem="96" class="mee_elemsetbasic mee_accent_main mee_main" basetext="&amp;#x02C6;" style="font-family: MathJax_Size2; top: -0.45em; left: 0px; ">&#x02C6;</span>
+              <span class="mee_elemset mee_arg0 mee_arg" depth="1" al="w 28 h 33 t 0 b 0">
+                <span depth="1" elem="97" class="mee_elemsetbasic mee_variable mee_main" basetext="x">xx</span>
+              </span>
+            </span>
+            ]]>
+            </display>
+          </items>
+        </sections>
+        <sections></sections>
+      </items>
+    </panes>
+    <panes name="Recent" id="recentsym" type="icons">
+    </panes>
+  </tabs>
+  <tabs name="Structures" id="structures" visibility="show">
+    <panes name="Main" type="menus">
+      <items desc="Brackets" display="Brackets" image="brackets.png" popupwidth="320">
+        <sections heading="Brackets Pairs" _class="tbpm_grid">
+          <items latex="($1)" display="(&lt;span class='tb_italic_x'&gt;x&lt;/span&gt;)" wlatex="\pbrackets{" mlatex="\pbrackets{$1}" />
+          <items latex="\lbrace$1\rbrace" display="{&lt;span class='tb_italic_x'&gt;x&lt;/span&gt;}" wlatex="\pbrace{" mlatex="\pbrace{$1}" />
+          <items latex="[$1]" display="[&lt;span class='tb_italic_x'&gt;x&lt;/span&gt;]" wlatex="\psqbrackets{" mlatex="\psqbrackets{$1}" />
+          <items latex="\lvert$1\rvert" display="|&lt;span class='tb_italic_x'&gt;x&lt;/span&gt;|" wlatex="\pvert{" mlatex="\pvert{$1}" />
+          <items latex="\lVert$1\rVert" display="&#x2225;&lt;span class='tb_italic_x'&gt;x&lt;/span&gt;&#x2225;" wlatex="\pVert{" mlatex="\pVert{$1}" />
+          <items latex="\langle$1\rangle" display="&#x27E8;&lt;span class='tb_italic_x'&gt;x&lt;/span&gt;&#x27E9;" wlatex="\pangle{" mlatex="\pangle{$1}" />
+          <items latex="\lceil$1\rceil" display="&#x2308;&lt;span class='tb_italic_x'&gt;x&lt;/span&gt;&#x2309;" wlatex="\pceil{" mlatex="\pceil{$1}" />
+          <items latex="\lfloor$1\rfloor" display="&#x230A;&lt;span class='tb_italic_x'&gt;x&lt;/span&gt;&#x230B;" wlatex="\pfloor{" mlatex="\pfloor{$1}" />
+          <items latex="\lgroup$1\rgroup" display="&#x27EE;&lt;span class='tb_italic_x'&gt;x&lt;/span&gt;&#x27EF;" wlatex="\pgroup{" mlatex="\pgroup{$1}" />
+          <items latex="\lmoustache$1\rmoustache" display="&#x23B0;&lt;span class='tb_italic_x'&gt;x&lt;/span&gt;&#x23B1;" wlatex="\pmoustache{" mlatex="\pmoustache{$1}" />
+        </sections>
+        <sections heading="Sizes Pairs" _class="tbpm_list" listwidth="53">
+          <items latex="\left$1\right" display="Auto" />
+          <items latex="\bigl$1\bigr" display="Size 1" />
+          <items latex="\Bigl$1\Bigr" display="Size 2" />
+          <items latex="\biggl$1\biggr" display="Size 3" />
+          <items latex="\Biggl$1\Biggr" display="Size 4" />
+        </sections>
+        <sections heading="Brackets Left" _class="tbpm_grid">
+          <items latex="(" display="(" />
+          <items latex="\lbrace " display="{" />
+          <items latex="[" display="[" />
+          <items latex="\lvert " display="|" />
+          <items latex="\lVert " display="&#x2225;" />
+          <items latex="\langle " display="&#x27E8;" />
+          <items latex="\lceil " display="&#x2308;" />
+          <items latex="\lfloor " display="&#x230A;" />
+          <items latex="\lgroup " display="&#x27EE;" />
+          <items latex="\lmoustache " display="&#x23B0;" />
+        </sections>
+        <sections heading="Sizes Left" _class="tbpm_list" listwidth="53">
+          <items latex="\left " display="Auto" />
+          <items latex="\bigl " display="Size 1" />
+          <items latex="\Bigl " display="Size 2" />
+          <items latex="\biggl " display="Size 3" />
+          <items latex="\Biggl " display="Size 4" />
+        </sections>
+        <sections heading="Brackets Right" _class="tbpm_grid">
+          <items latex=")" display=")" />
+          <items latex="\rbrace " display="}" />
+          <items latex="]" display="]" />
+          <items latex="\rvert " display="|" />
+          <items latex="\rVert " display="&#x2225;" />
+          <items latex="\rangle " display="&#x27E9;" />
+          <items latex="\rceil " display="&#x2309;" />
+          <items latex="\rfloor " display="&#x230B;" />
+          <items latex="\rgroup " display="&#x27EF;" />
+          <items latex="\rmoustache " display="&#x23B1;" />
+        </sections>
+        <sections heading="Sizes right" _class="tbpm_list" listwidth="53">
+          <items latex="\right " display="Auto" />
+          <items latex="\bigr " display="Size 1" />
+          <items latex="\Bigr " display="Size 2" />
+          <items latex="\biggr " display="Size 3" />
+          <items latex="\Biggr " display="Size 4" />
+        </sections>
+        <sections heading="Single Brackets" _class="tbpm_grid">
+          <items latex="\vert " display="|" />
+          <items latex="\Vert " display="&#x2225;" />
+          <items latex="/" display="/" />
+          <items latex="\backslash " display="\" />
+        </sections>
+        <sections heading="Sizes" _class="tbpm_list" listwidth="53">
+          <items latex="\big " display="Size 1" />
+          <items latex="\Big " display="Size 2" />
+          <items latex="\bigg " display="Size 3" />
+          <items latex="\Bigg " display="Size 4" />
+        </sections>
+      </items>
+      <items desc="Matrix" display="Matrix" image="matrix-menu.png" popupwidth="288">
+        <sections heading="Matrix" _class="tbpm_gridxbig">
+          <items latex="\begin{matrix}$1\end{matrix}" _class="tb_matrix" image="matrix1.png" />
+          <items latex="\begin{pmatrix}$1\end{pmatrix}" _class="tb_matrix" image="matrix2.png" />
+          <items latex="\begin{bmatrix}$1\end{bmatrix}" _class="tb_matrix" image="matrix3.png" />
+          <items latex="\begin{Bmatrix}$1\end{Bmatrix}" _class="tb_matrix" image="matrix4.png" />
+          <items latex="\begin{vmatrix}$1\end{vmatrix}" _class="tb_matrix" image="matrix5.png" />
+          <items latex="\begin{Vmatrix}$1\end{Vmatrix}" _class="tb_matrix" image="matrix6.png" />
+
+        </sections>
+        <sections></sections>
+      </items>
+      <items desc="Large" display="Large" image="text.png" popupwidth="256">
+        <sections heading="Integrals" _class="tbpm_gridbig">
+          <items latex="\int " display="&#x222B;" _class="tb_largeop_int"/>
+          <items latex="\intop " display="&#x222B;" _class="tb_largeop_int" />
+          <items latex="\iint " display="&#x222C;" _class="tb_largeop_int" />
+          <items latex="\iiint " display="&#x222D;" _class="tb_largeop_int" />
+          <items latex="\idotsint " _class="tb_largeop_int" image="idotsint.png" />
+          <items latex="\oint " display="&#x222E;" _class="tb_largeop_int" />
+        </sections>
+        <sections heading="Others" _class="tbpm_gridbig">
+          <items latex="\sum " display="&#x2211;" _class="tb_largeop" />
+          <items latex="\prod " display="&#x220F;" _class="tb_largeop" />
+          <items latex="\coprod " display="&#x2210;" _class="tb_largeop" />
+          <items latex="\bigvee " display="&#x22C1;" _class="tb_largeop" />
+          <items latex="\bigwedge " display="&#x22C0;" _class="tb_largeop" />
+          <items latex="\biguplus " display="&#x2A04;" _class="tb_largeop" />
+          <items latex="\bigcap " display="&#x22C2;" _class="tb_largeop" />
+          <items latex="\bigcup " display="&#x22C3;" _class="tb_largeop" />
+          <items latex="\bigotimes " display="&#x2A02;" _class="tb_largeop" />
+          <items latex="\bigoplus " display="&#x2A01;" _class="tb_largeop" />
+          <items latex="\bigodot " display="&#x2A00;" _class="tb_largeop" />
+          <items latex="\bigsqcup " display="&#x2A06;" _class="tb_largeop" />
+        </sections>
+      </items>
+      <items desc="Tables" display="Tables" image="boxed.png" popupwidth="200">
+        <sections heading="Tables" _class="tbpm_list" listwidth="100">
+          <items latex="\begin{align}$1\end{align}" display="Align" />
+          <items latex="\begin{align*}{rlrl}$1\end{align*}" display="Align *" />
+          <items latex="\begin{split}$1\end{split}" display="Split" />
+          <items latex="\begin{split*}{rl}$1\end{split*}" display="Split *" />
+          <items latex="\begin{gather}$1\end{gather}" display="Gather" />
+          <items latex="\begin{gather*}{c}$1\end{gather*}" display="Gather *" />
+          <items latex="\begin{multline}$1\end{multline}" display="Multline" />
+          <items latex="\begin{multline*}{c}$1\end{multline*}" display="Multline *" />
+          <items latex="\begin{cases}$1\end{cases}" display="Cases" />
+          <items latex="\begin{cases*}{l}$1\end{cases*}" display="Cases *" />
+          <items latex="\begin{equation}{l}$1\end{equation}" display="Equation" />
+          <items latex="\begin{array}{l}$1\end{array}" display="Array" />
+          <items latex="\begin{tabular}{l}$1\end{tabular}" display="Tabular" />
+          <items latex="\begin{eqnarray*}$1\end{eqnarray*}" display="Eqnarray" />
+          <items latex="\begin{aligned}$1\end{aligned}" display="Aligned" />
+        </sections>
+        <sections></sections>
+      </items>
+      <items desc="Trig" display="Trig" image="trig.png" popupwidth="159">
+        <sections heading="Trig" _class="tbpm_list" listwidth="53">
+          <items latex="\sin " display="sin" />
+          <items latex="\cos " display="cos" />
+          <items latex="\tan " display="tan" />
+          <items latex="\sinh " display="sinh" />
+          <items latex="\cosh " display="cosh" />
+          <items latex="\tanh " display="tanh" />
+          <items latex="\arcsin " display="arcsin" />
+          <items latex="\arccos " display="arccos" />
+          <items latex="\arctan " display="arctan" />
+          <items latex="\cot " display="cot" />
+          <items latex="\coth " display="coth" />
+          <items latex="\csc " display="csc" />
+        </sections>
+        <sections></sections>
+      </items>
+      <items display="Other" image="log.png" popupwidth="159">
+        <sections heading="Min Max" _class="tbpm_list" listwidth="53">
+          <items latex="\max " display="max" />
+          <items latex="\min " display="min" />
+        </sections>
+        <sections heading="Logs" _class="tbpm_list" listwidth="53">
+          <items latex="\ln " display="ln" />
+          <items latex="\log " display="log" />
+        </sections>
+        <sections heading="Limits" _class="tbpm_list" listwidth="53">
+          <items latex="\inf " display="inf" />
+          <items latex="\injlim " display="injlim" />
+          <items latex="\lim " display="lim" />
+          <items latex="\liminf " display="liminf" />
+          <items latex="\limsup " display="limsup" />
+        </sections>
+        <sections heading="Other" _class="tbpm_list" listwidth="53">
+          <items latex="\arg " display="arg" />
+          <items latex="\deg " display="deg" />
+          <items latex="\det " display="det" />
+          <items latex="\dim " display="dim" />
+          <items latex="\exp " display="exp" />
+          <items latex="\gcd " display="gcd" />
+          <items latex="\hom " display="hom" />
+          <items latex="\ker " display="ker" />
+          <items latex="\lg " display="lg" />
+          <items latex="\Pr " display="Pr" />
+          <items latex="\sec " display="sec" />
+        </sections>
+        <sections></sections>
+      </items>
+    </panes>
+    <panes name="Others" type="hmenus">
+      <items display="Fractions" image="frac-menu.png" popupwidth="160">
+        <sections heading="Fractions" _class="tbpm_listbig" listwidth="160">
+          <items latex="\frac{$1}{}" display="Fraction" image="frac.png" />
+          <items latex="\dfrac{$1}{}" display="Display Fraction" image="frac.png" />
+          <items latex="\tfrac{$1}{}" display="Text Fraction" image="frac.png" />
+          <items latex="\cfrac{$1}{}" display="Continuous Fraction" image="frac.png" />
+          <items latex="\binom{$1}{}" display="Binomial" image="frac.png" />
+        </sections>
+        <sections></sections>
+      </items>
+      <items display="Radicals" image="sqrt-menu.png" popupwidth="120">
+        <sections heading="Radicals" _class="tbpm_listbig" listwidth="120">
+          <items latex="\sqrt{$1}" display="Square Root" image="sqrt.png" />
+          <items latex="\sqrt[3]{$1}" display="Cube Root" image="sqrt-3.png" />
+          <items latex="\sqrt[4]{$1}" display="4th Root" image="sqrt-4.png" />
+          <items latex="\sqrt[n]{$1}" display="nth Root" image="sqrt-n.png" />
+        </sections>
+        <sections></sections>
+      </items>
+      <items display="Mods"  popupwidth="100" image="mod.png">
+        <sections heading="Mods" _class="tbpm_list">
+          <items latex="\bmod " display="&lt;span class='mee_font_it'&gt;x&lt;/span&gt;&#160;mod&#160;&lt;i&gt;y&lt;/i&gt;" mlatex="\bmod $1" />
+          <items latex="\pmod " display="&lt;i>x&lt;i'&gt;&#160;&#160;&#160;(mod&#160;&lt;i'&gt;y&lt;/i'&gt;)" mlatex="\pmod $1" />
+          <items latex="\mod " display="&lt;i>x&lt;/i'&gt;&#160;&#160;&#160;mod&#160;&lt;i'&gt;y&lt;/i'&gt;" mlatex="\mod $1" />
+          <items latex="\pod " display="&lt;i>x&lt;/i'&gt;&#160;&#160;&#160;(&lt;i'&gt;y&lt;/i'&gt;)" mlatex="\pod $1" />
+        </sections>
+        <sections></sections>
+      </items>
+    </panes>
+  </tabs>
+  <tabs name="Text" id="text" visibility="show">
+    <panes name="Text" type="bigicons">
+      <items latex="\text{$1}" display="Text" image="text.png" />
+      <items latex="\boxed{$1}" display="Boxed" image="boxed.png" />
+    </panes>
+    <panes name="Formatted Text" type="list" itemwidth="75">
+      <items latex="\textrm{$1}" display="Regular" image="textrm.png" />
+      <items latex="\textit{$1}" display="Italic" image="textit.png" _class="mee_font_it" />
+      <items latex="\textbf{$1}" display="Bold" image="textbf.png" _class="mee_font_bf" />
+    </panes>
+    <panes name="Math Fonts" type="list" itemwidth="110">
+      <items latex="\mathcal{$1}" _class="mee_font_cal">
+        <display><![CDATA[<span class='mee_variable'>CALIGRAPHY</span>]]></display>
+      </items>
+      <items latex="\mathscr{$1}" _class="mee_font_scr">
+        <display><![CDATA[<span class='mee_variable'>SCRIPT</span>]]></display>
+      </items>
+      <items latex="\mathrm{$1}" _class="mee_font_rm">
+        <display><![CDATA[<span class='mee_variable'>Regular</span>]]></display>
+      </items>
+      <items latex="\mathbf{$1}" _class="mee_font_bf">
+        <display><![CDATA[<span class='mee_variable'>Bold</span>]]></display>
+      </items>
+      <items latex="\mathbb{$1}" _class="mee_font_bb">
+        <display><![CDATA[<span class='mee_variable'>BLACKBOARD</span>]]></display>
+      </items>
+      <items latex="\mathit{$1}" _class="mee_font_it">
+        <display><![CDATA[<span class='mee_variable'>Italic</span>]]></display>
+      </items>
+      <items latex="\mathfrak{$1}" _class="mee_font_frak">
+        <display><![CDATA[<span class='mee_variable'>Fraktur</span>]]></display>
+      </items>
+      <items latex="\mathsf{$1}" _class="mee_font_sf">
+        <display><![CDATA[<span class='mee_variable'>Sans-Serif</span>]]></display>
+      </items>
+      <items latex="\mathtt{$1}" _class="mee_font_tt">
+        <display><![CDATA[<span class='mee_variable'>Typewriter</span>]]></display>
+      </items>
+    </panes>
+  </tabs>
+	<tabs name="Chemistry" id="chem" visibility="show">
+		<panes name="Chemistry" type="bigicons">
+			<items latex="\ce{$1}" id="chemmode" display="Chem" image="chem.png" />
+			<items />
+		</panes>
+		<panes name="Bonds + Reactions" type="menus">
+			<items display="Bonds" image="bonds.png" popupwidth="100">
+				<sections heading="Bonds" _class="tbpm_list">
+					<items latex="\sbond " display="A&#x2212;B" _class="tb_bonds" />
+					<items latex="\dbond " display="A=B" _class="tb_bonds" />
+					<items latex="\tbond " display="A&#x2261;B" _class="tb_bonds" />
+					<items latex="\bond{-&gt;}" display="A&#x2192;B" _class="tb_bonds" />
+					<items latex="\bond{&lt;-}" display="A&#x2190;B" _class="tb_bonds" />
+					<items latex="\bond{~}" display="A&#xE905;B" _class="tb_bonds" />
+					<items latex="\bond{~-}" display="A&#xE906;B" _class="tb_bonds" />
+					<items latex="\bond{~=}" display="A&#xE903;B" _class="tb_bonds" />
+					<items latex="\bond{-~-}" display="A&#xE904;B" _class="tb_bonds" />
+					<items latex="\bond{...}" display="A&#xE901;B" _class="tb_bonds" />
+					<items latex="\bond{....}" display="A&#xE902;B" _class="tb_bonds" />
+
+				</sections>
+				<sections />
+			</items>
+			<items display="Reactions" image="reactions.png" popupwidth="100">
+				<sections heading="Normal" _class="tbpm_list" listwidth="100">
+					<items latex="\-&gt;" display="A&#160;&#x27F6;&#160;B" _class="tb_bonds"/>
+					<items latex="\&lt;-" display="A&#160;&#x27F5;&#160;B" _class="tb_bonds" />
+					<items latex="\&lt;-&gt;" display="A&#160;&#x27F7;&#160;B" _class="tb_bonds" />
+					<items latex="\&lt;=&gt;" display="A&#160;&#xE907;&#160;B" _class="tb_bonds" />
+					<items latex="\&lt;=&gt;&gt;" display="A&#160;&#xE900;&#160;B" _class="tb_bonds" />
+				</sections>
+				<sections heading="With Text" _class="tbpm_list" listwidth="100">
+					<items latex="\;\xrightarrow[]{$1}\; " display="A&#160;&#x27F6;&#160;B" _class="tb_bonds"/>
+					<items latex="\;\xleftarrow[]{$1}\; " display="A&#160;&#x27F5;&#160;B" _class="tb_bonds" />
+					<items latex="\;\xleftrightarrow[]{$1}\; " display="A&#160;&#x27F7;&#160;B" _class="tb_bonds" />
+					<items latex="\;\xrightleftharpoons[]{$1}\; " display="A&#160;&#xE907;&#160;B" _class="tb_bonds" />
+				</sections>
+			</items>
+			<items desc="Brackets" display="Brackets" image="brackets.png" popupwidth="106">
+				<sections heading="Brackets Pairs" _class="tbpm_grid">
+					<items latex="($1)" display="(&lt;span class='tb_italic_x'&gt;x&lt;/span&gt;)" wlatex="\pbrackets{" />
+					<items latex="\lbrace$1\rbrace" display="{&lt;span class='tb_italic_x'&gt;x&lt;/span&gt;}" wlatex="\pbrack{" />
+					<items latex="[$1]" display="[&lt;span class='tb_italic_x'&gt;x&lt;/span&gt;]" wlatex="\psqbrackets{" />
+				</sections>
+				<sections heading="Sizes Pairs" _class="tbpm_list" listwidth="53">
+					<items latex="\left$1\right " display="Auto" />
+					<items latex="\bigl$1\bigr " display="Size 1" />
+					<items latex="\Bigl$1\Bigr " display="Size 2" />
+					<items latex="\biggl$1\biggr " display="Size 3" />
+					<items latex="\Biggl$1\Biggr " display="Size 4" />
+				</sections>
+				<sections heading="Brackets Left" _class="tbpm_grid">
+					<items latex="(" display="(" />
+					<items latex="\lbrace " display="{" />
+					<items latex="[" display="[" />
+				</sections>
+				<sections heading="Sizes Left" _class="tbpm_list" listwidth="53">
+					<items latex="\left " display="Auto" />
+					<items latex="\bigl " display="Size 1" />
+					<items latex="\Bigl " display="Size 2" />
+					<items latex="\biggl " display="Size 3" />
+					<items latex="\Biggl " display="Size 4" />
+				</sections>
+				<sections heading="Brackets Right" _class="tbpm_grid">
+					<items latex=")" display=")" />
+					<items latex="\rbrace " display="}" />
+					<items latex="]" display="]" />
+				</sections>
+				<sections heading="Sizes right" _class="tbpm_list" listwidth="53">
+					<items latex="\right " display="Auto" />
+					<items latex="\bigr " display="Size 1" />
+					<items latex="\Bigr " display="Size 2" />
+					<items latex="\biggr " display="Size 3" />
+					<items latex="\Biggr " display="Size 4" />
+				</sections>
+			</items>
+		</panes>
+		<panes name="Others" type="list" itemwidth="75">
+			<items display="Isotope" latex="\isotope_{}^{$1}" wlatex="\isotope_{}^{" image="isotope.png" />
+			<items display="Text" latex="\text{$1}" wlatex="\text{" image="textrm.png" />
+		</panes>
+		<panes name="Superscripts" id="" type="icons">
+			<items latex="^{+}" display="A&lt;sup&gt;+&lt;/sup&gt;" />
+			<items latex="^{-}" display="A&lt;sup&gt;-&lt;/sup&gt;" />
+			<items latex="^{e}" display="A&lt;sup&gt;e&lt;/sup&gt;" />
+			<items latex="^{\cdot}" display="A&lt;sup&gt;&#x22C5;&lt;/sup&gt;" />
+			<items latex="^{2}" display="A&lt;sup&gt;2&lt;/sup&gt;" />
+			<items latex="^{3}" display="A&lt;sup&gt;3&lt;/sup&gt;" />
+			<items latex="^{4}" display="A&lt;sup&gt;4&lt;/sup&gt;" />
+			<items latex="^{5}" display="A&lt;sup&gt;5&lt;/sup&gt;" />
+			<items latex="^{6}" display="A&lt;sup&gt;6&lt;/sup&gt;" />
+			<items latex="^{7}" display="A&lt;sup&gt;7&lt;/sup&gt;" />
+			<items latex="^{8}" display="A&lt;sup&gt;8&lt;/sup&gt;" />
+			<items latex="^{9}" display="A&lt;sup&gt;9&lt;/sup&gt;" />
+		</panes>
+		<panes name="Subscripts" id="" type="icons">
+			<items latex="_{+}" display="A&lt;sub&gt;+&lt;/sub&gt;" />
+			<items latex="_{-}" display="A&lt;sub&gt;-&lt;/sub&gt;" />
+			<items latex="_{e}" display="A&lt;sub&gt;e&lt;/sub&gt;" />
+			<items latex="_{\cdot}" display="A&lt;sub&gt;&#x22C5;&lt;/sub&gt;" />
+			<items latex="_{2}" display="A&lt;sub&gt;2&lt;/sub&gt;" />
+			<items latex="_{3}" display="A&lt;sub&gt;3&lt;/sub&gt;" />
+			<items latex="_{4}" display="A&lt;sub&gt;4&lt;/sub&gt;" />
+			<items latex="_{5}" display="A&lt;sub&gt;5&lt;/sub&gt;" />
+			<items latex="_{6}" display="A&lt;sub&gt;6&lt;/sub&gt;" />
+			<items latex="_{7}" display="A&lt;sub&gt;7&lt;/sub&gt;" />
+			<items latex="_{8}" display="A&lt;sub&gt;8&lt;/sub&gt;" />
+			<items latex="_{9}" display="A&lt;sub&gt;9&lt;/sub&gt;" />
+		</panes>
+		<panes name="Symbols" id="" type="icons">
+			<items latex="+" display="+" />
+			<items latex="-" display="&#x2212;" />
+			<items latex="\uparrow " display="&#x2191;" />
+			<items latex="\downarrow " display="&#x2193;" />
+			<items latex="\cdot " display="&#x22C5;" />
+			<items latex="\Delta " display="&#x0394;" />
+		</panes>
+
+	</tabs>
+	<tabs name="Context" id="context" visibility="show">
+    <panes name="Supscript / Superscript" type="bigicons" id="scripts">
+      <items latex="_{" display="Sub" image="subscript.png" />
+      <items latex="^{" display="Super" image="superscript.png" />
+    </panes>
+    <panes name="Bracket" type="menus" id="bracket_both">
+      <items desc="" display="Both" image="brackets.png" popupwidth="128">
+        <sections heading="Bracket Type" _class="tbpm_grid">
+          <items desc="" display="&lt;span class='tb_italic_x'&gt;x&lt;/span&gt;" command="changeBracket|both|none|none" />
+          <items desc="" display="(&lt;span class='tb_italic_x'&gt;x&lt;/span&gt;)" command="changeBracket|both|(|)" />
+          <items desc="" display="{&lt;span class='tb_italic_x'&gt;x&lt;/span&gt;}" command="changeBracket|both|lbrace|rbrace" />
+          <items desc="" display="[&lt;span class='tb_italic_x'&gt;x&lt;/span&gt;]" command="changeBracket|both|[|]" />
+          <items desc="" display="|&lt;span class='tb_italic_x'&gt;x&lt;/span&gt;|" command="changeBracket|both|lvert|rvert" />
+          <items desc="" display="&#x2225;&lt;span class='tb_italic_x'&gt;x&lt;/span&gt;&#x2225;" command="changeBracket|both|lVert\rVert" />
+          <items desc="" display="&#x27E8;&lt;span class='tb_italic_x'&gt;x&lt;/span&gt;&#x27E9;" command="changeBracket|both|langle|rangle" />
+          <items desc="" display="&#x2308;&lt;span class='tb_italic_x'&gt;x&lt;/span&gt;&#x2309;" command="changeBracket|both|lceil|rceil" />
+          <items desc="" display="&#x230A;&lt;span class='tb_italic_x'&gt;x&lt;/span&gt;&#x230B;" command="changeBracket|both|lfloor|rfloor" />
+          <items desc="" display="&#x27EE;&lt;span class='tb_italic_x'&gt;x&lt;/span&gt;&#x27EF;" command="changeBracket|both|lgroup|rgroup" />
+          <items desc="" display="&#x23B0;&lt;span class='tb_italic_x'&gt;x&lt;/span&gt;&#x23B1;" command="changeBracket|both|lmoustache|rmoustache" />
+        </sections>
+        <sections heading="Bracket Size" _class="tbpm_list" listwidth="64">
+          <items desc="Default" display="Default" command="changeBracketSize|both|default" />
+          <items desc="Auto Size" display="Auto" command="changeBracketSize|both|auto" />
+          <items desc="Size 1" display="Size 1" command="changeBracketSize|both|1" />
+          <items desc="Size 2" display="Size 2" command="changeBracketSize|both|2" />
+          <items desc="Size 3" display="Size 3" command="changeBracketSize|both|3" />
+          <items desc="Size 4" display="Size 4" command="changeBracketSize|both|4" />
+        </sections>
+      </items>
+      <items desc="" display="Left" image="bracket_ltype.png" popupwidth="128">
+        <sections heading="Bracket Type" _class="tbpm_grid">
+          <items desc="" display="" command="changeBracket|left|none" />
+          <items desc="" display="(" command="changeBracket|left|(" />
+          <items desc="" display="{" command="changeBracket|left|lbrace" />
+          <items desc="" display="[" command="changeBracket|left|[" />
+          <items desc="" display="|" command="changeBracket|left|lvert" />
+          <items desc="" display="&#x2225;" command="changeBracket|left|lVert" />
+          <items desc="" display="&#x27E8;" command="changeBracket|left|langle" />
+          <items desc="" display="&#x2308;" command="changeBracket|left|lceil" />
+          <items desc="" display="&#x230A;" command="changeBracket|left|lfloor" />
+          <items desc="" display="&#x27EE;" command="changeBracket|left|lgroup" />
+          <items desc="" display="&#x23B0;" command="changeBracket|left|lmoustache" />
+        </sections>
+        <sections heading="Bracket Size" _class="tbpm_list" listwidth="64">
+          <items desc="Default" display="Default" command="changeBracketSize|left|default" />
+          <items desc="Auto Size" display="Auto Size" command="changeBracketSize|left|auto" />
+          <items desc="Size 1" display="Size 1" command="changeBracketSize|left|1" />
+          <items desc="Size 2" display="Size 2" command="changeBracketSize|left|2" />
+          <items desc="Size 3" display="Size 3" command="changeBracketSize|left|3" />
+          <items desc="Size 4" display="Size 4" command="changeBracketSize|left|4" />
+        </sections>
+      </items>
+      <items desc="" display="Right" image="bracket_rtype.png" popupwidth="128">
+        <sections heading="Bracket Type" _class="tbpm_grid">
+          <items desc="" display="" command="changeBracket|right|none" />
+          <items desc="" display=")" command="changeBracket|right|)" />
+          <items desc="" display="}" command="changeBracket|right|rbrace" />
+          <items desc="" display="]" command="changeBracket|right|]" />
+          <items desc="" display="|" command="changeBracket|right|rvert" />
+          <items desc="" display="&#x2225;" command="changeBracket|right|rVert" />
+          <items desc="" display="&#x27E9;" command="changeBracket|right|rangle" />
+          <items desc="" display="&#x2309;" command="changeBracket|right|rceil" />
+          <items desc="" display="&#x230B;" command="changeBracket|right|rfloor" />
+          <items desc="" display="&#x27EF;" command="changeBracket|right|rgroup" />
+          <items desc="" display="&#x23B1;" command="changeBracket|right|rmoustache" />
+        </sections>
+        <sections heading="Bracket Size" _class="tbpm_list" listwidth="64">
+          <items desc="Default" display="Default" command="changeBracketSize|right|default" />
+          <items desc="Auto Size" display="Auto" command="changeBracketSize|right|auto" />
+          <items desc="Size 1" display="Size 1" command="changeBracketSize|right|1" />
+          <items desc="Size 2" display="Size 2" command="changeBracketSize|right|2" />
+          <items desc="Size 3" display="Size 3" command="changeBracketSize|right|3" />
+          <items desc="Size 4" display="Size 4" command="changeBracketSize|right|4" />
+        </sections>
+      </items>
+    </panes>
+    
+    <panes name="Bracket" type="menus" id="bracket_left">
+      <items desc="" display="Left" image="bracket_ltype.png" popupwidth="128">
+        <sections heading="Bracket Type" _class="tbpm_grid">
+          <items desc="" display="" command="changeBracket|left|none" />
+          <items desc="" display="(" command="changeBracket|left|(" />
+          <items desc="" display="{" command="changeBracket|left|lbrace" />
+          <items desc="" display="[" command="changeBracket|left|[" />
+          <items desc="" display="|" command="changeBracket|left|lvert" />
+          <items desc="" display="&#x2225;" command="changeBracket|left|lVert" />
+          <items desc="" display="&#x27E8;" command="changeBracket|left|langle" />
+          <items desc="" display="&#x2308;" command="changeBracket|left|lceil" />
+          <items desc="" display="&#x230A;" command="changeBracket|left|lfloor" />
+          <items desc="" display="&#x27EE;" command="changeBracket|left|lgroup" />
+          <items desc="" display="&#x23B0;" command="changeBracket|left|lmoustache" />
+        </sections>
+        <sections heading="Bracket Size" _class="tbpm_list" listwidth="64">
+          <items desc="Default" display="Default" command="changeBracketSize|left|default" />
+          <items desc="Auto Size" display="Auto Size" command="changeBracketSize|left|auto" />
+          <items desc="Size 1" display="Size 1" command="changeBracketSize|left|1" />
+          <items desc="Size 2" display="Size 2" command="changeBracketSize|left|2" />
+          <items desc="Size 3" display="Size 3" command="changeBracketSize|left|3" />
+          <items desc="Size 4" display="Size 4" command="changeBracketSize|left|4" />
+        </sections>
+      </items>
+      <items></items>
+    </panes>
+    
+    <panes name="Bracket" type="menus" id="bracket_right">
+      <items desc="" display="Right" image="bracket_rtype.png" popupwidth="128">
+        <sections heading="Bracket Type" _class="tbpm_grid">
+          <items desc="" display="" command="changeBracket|right|none" />
+          <items desc="" display=")" command="changeBracket|right|)" />
+          <items desc="" display="}" command="changeBracket|right|rbrace" />
+          <items desc="" display="]" command="changeBracket|right|]" />
+          <items desc="" display="|" command="changeBracket|right|rvert" />
+          <items desc="" display="&#x2225;" command="changeBracket|right|rVert" />
+          <items desc="" display="&#x27E9;" command="changeBracket|right|rangle" />
+          <items desc="" display="&#x2309;" command="changeBracket|right|rceil" />
+          <items desc="" display="&#x230B;" command="changeBracket|right|rfloor" />
+          <items desc="" display="&#x27EF;" command="changeBracket|right|rgroup" />
+          <items desc="" display="&#x23B1;" command="changeBracket|right|rmoustache" />
+        </sections>
+        <sections heading="Bracket Size" _class="tbpm_list" listwidth="64">
+          <items desc="Default" display="Default" command="changeBracketSize|right|default" />
+          <items desc="Auto Size" display="Auto" command="changeBracketSize|right|auto" />
+          <items desc="Size 1" display="Size 1" command="changeBracketSize|right|1" />
+          <items desc="Size 2" display="Size 2" command="changeBracketSize|right|2" />
+          <items desc="Size 3" display="Size 3" command="changeBracketSize|right|3" />
+          <items desc="Size 4" display="Size 4" command="changeBracketSize|right|4" />
+        </sections>
+      </items>
+      <items></items>
+    </panes>
+    <panes name="Matrix" type="menus" id="matrix">
+      <items latex="" display="Type" image="matrix-menu.png" popupwidth="288">
+        <sections heading="Matrix Type" _class="tbpm_gridxbig">
+          <items desc="ldots" _class="tb_matrix" command="changeMatrixType|matrix" image="matrix1.png" />
+          <items desc="cdots" _class="tb_matrix" command="changeMatrixType|pmatrix" image="matrix2.png" />
+          <items desc="cdots" _class="tb_matrix" command="changeMatrixType|bmatrix" image="matrix3.png" />
+          <items desc="cdots" _class="tb_matrix" command="changeMatrixType|Bmatrix" image="matrix4.png" />
+          <items desc="cdots" _class="tb_matrix" command="changeMatrixType|vmatrix" image="matrix5.png" />
+          <items desc="cdots" _class="tb_matrix" command="changeMatrixType|Vmatrix" image="matrix6.png" />
+
+        </sections>
+        <sections></sections>
+      </items>
+      <items />
+    </panes>
+    <panes name="Rows" type="list" itemwidth="100" id="matrix_rows">
+      <items display="&#160;Insert Row" image="row_insert.png" command="arrayInsertRow" />
+      <items display="&#160;Append Row" image="row_append.png" command="arrayAppendRow" />
+      <items display="&#160;Delete Row" image="row_delete.png" command="arrayDeleteRow" />
+    </panes>
+    <panes name="Columns" type="list" itemwidth="100" id="matrix_cols">
+      <items display="&#160;Insert Col" image="col_insert.png" command="arrayInsertCol" />
+      <items display="&#160;Append Col" image="col_append.png" command="arrayAppendCol" />
+      <items display="&#160;Delete Col" image="col_delete.png" command="arrayDeleteCol" />
+    </panes>
+    <panes name="Root" type="bigicons" id="sqrt">
+      <items latex="[" display="Type" image="sqrt-4.png" />
+      <items />
+    </panes>
+    <panes name="Math Fonts" type="menus" id="fonts">
+      <items desc="Change font type" display="Font" image="font.png" popupwidth="130">
+        <sections heading="Change Font" _class="tbpm_list" listwidth="130">
+          <items desc="Caligraphic Font" display="CALIGRAPHIC" _class="mee_font_cal" command="changeFontType|mathcal" />
+          <items desc="Script Font" display="SCRIPT" _class="mee_font_scr" command="changeFontType|mathscr" />
+          <items desc="Regular Font" display="Regular" _class="mee_font_rm" command="changeFontType|mathrm" />
+          <items desc="Bold Font" display="Bold" _class="mee_font_bf" command="changeFontType|mathbf" />
+          <items desc="Blackboard Font" display="BLACKBOARD" _class="mee_font_bb" command="changeFontType|mathbb" />
+          <items desc="Italic Font" display="Italic" _class="mee_font_it" command="changeFontType|mathit" />
+          <items desc="Fraktur Font" display="Fraktur" _class="mee_font_frak" command="changeFontType|mathfrak" />
+          <items desc="Sans-Serif Font" display="Sans-Serif" _class="mee_font_sf" command="changeFontType|mathsf" />
+          <items desc="Typewriter Font" display="Typewriter" _class="mee_font_tt" command="changeFontType|mathtt" />
+        </sections>
+        <sections />
+      </items>
+      <items />
+    </panes>
+    <panes name="Fraction" type="menus" id="fraction">
+      <items display="Fractions" image="frac.png" popupwidth="160">
+        <sections heading="" _class="tbpm_listbig" listwidth="160">
+          <items desc="" display="Fraction" image="frac.png" command="changeFracType|frac"/>
+          <items desc="" display="Display Fraction" image="frac.png" command="changeFracType|dfrac" />
+          <items desc="" display="Text Fraction" image="frac.png" command="changeFracType|tfrac" />
+          <items desc="" display="Continuous Fraction" image="frac.png" command="changeFracType|cfrac" />
+        </sections>
+        <sections></sections>
+      </items>
+      <items />
+    </panes>
+
+  </tabs>
+</toolbar>

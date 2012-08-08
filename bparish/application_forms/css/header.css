@@ -1,0 +1,56 @@
+.header {
+  border:0px;
+  font-size:100%;
+  width:100%;
+  border-collapse:collapse
+}
+.header th {
+  background-color:#F1F5FB;
+  font-weight:normal;
+  text-align:left;
+  padding:0px;
+  border:0px
+}
+.bevel {
+  width:100%;
+  height:3px;
+  background: -moz-linear-gradient(top, #F1F5FB, #CCD9EA);
+  background: -webkit-linear-gradient(top, #F1F5FB, #CCD9EA);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#E8EEF7', endColorstr='#CCD9EA');
+}
+
+.breadcrumb {
+  margin-top:2px;
+  margin-left:10px;
+  font-size:90%
+}
+
+.breadcrumb a:link {
+  color:blue;
+  text-decoration:none;
+  cursor:pointer
+}
+.breadcrumb a:visited {
+  color:blue;
+  text-decoration:none;
+  cursor:pointer
+}
+
+.breadcrumb a:hover {
+  color:blue;
+  text-decoration:underline;
+  cursor:pointer
+}
+
+.subsect {
+  margin-top:6px;
+  color:#1F497D
+}
+
+.dkblue_header {
+  color:#1F497D
+}
+
+.midblue_header {
+  color:#4F81BD
+}

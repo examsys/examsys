@@ -1,0 +1,112 @@
+ body {margin:0px; padding-top:0px; padding-bottom:0px; padding-right:0px; padding-left:213px; font-family:Arial,sans-serif; font-size:100%; background-color:white; color:black}
+ div#left-sidebar {position:absolute; top:0; left:0; width:195px; height:100%; padding-right:4px; padding-left:14px; padding-top:4px; padding-bottom:4px; background-color:#DFECFF; border-right: 1px solid #95AEC8; overflow:auto; font-size:75%}
+ @media screen {body>div#left-sidebar{position:fixed}}
+ * html body{overflow:hidden} 
+ * html div#content{height:100px; background-colour:#FFFFFF}
+ img {margin:0px; padding:0px;}
+ .divider {padding-left:10px; padding-bottom:2px; font-weight:bold}
+ .f {float:left; width:375px; padding-left:10px; font-size:90%; height:50px}
+ .file {float:left; width:375px; height:74px; padding-left:12px; font-size:90%}
+ .mee {font-size:120%; display:inline}
+
+ a {text-decoration:none}
+ a:link {color:#0000FF}
+ a:visited {color:#0000FF}
+ a:hover {color:#0000FF; text-decoration:underline}
+
+ a.blacklink:link {color:#000000}
+ a.blacklink:visited {color:#000000}
+ a.blacklink:hover {color:#000000}
+
+ a.greylink:link {color:#808080}
+ a.greylink:visited {color:#808080}
+ a.greylink:hover {color:#808080}
+
+.menuheading {padding-left:6px; color:#215DC6; font-weight:bold; cursor:pointer}
+.menuheading a:link {color:#215DC6; cursor:pointer}
+.menuheading a:visited {color:#215DC6; cursor:pointer}
+.menuheading a:hover {color:#428EFF; cursor:pointer}
+
+.sidebar {background-color:#6375D6}
+.popup {display:none; top:0px; left:190px; font-size:75%; position:fixed; line-height:170%; border:1px solid #ACA899; padding:2px; background-color:white; box-shadow:2px 2px 2px rgba(0, 0, 0, 0.50)}
+.popupitem {padding-left:14px; padding-right:14px; cursor:pointer}
+.popupitembold {padding-left:4px; font-weight:bold}
+
+.greymenuitem {width:190px; color:#808080}
+.greymenuitem a:link {color:#808080; text-decoration:none; cursor:pointer}
+.greymenuitem a:visited {color:#808080; text-decoration:none; cursor:pointer}
+.greymenuitem a:hover {color:#808080; text-decoration:none; cursor:pointer}
+
+.menuitem {width:190px}
+.menuitem span {width:120px; float:left}
+.menuitem a:link {color:black; text-decoration:none; cursor:pointer}
+.menuitem a:visited {color:black; text-decoration:none; cursor:pointer}
+.menuitem a:hover {color:blue; text-decoration:underline; cursor:pointer}
+
+textarea, input[type=text], select {font-family:Arail,sans-serif; border: 1px solid #7F9DB9}
+
+ .menu_list {
+ margin: 4px 0 0 0;
+ padding-left: 11px;
+ list-style: none;
+}
+
+.menu_list li {
+ padding-left: 24px;
+ width: 120px;
+ font-size: 90%;
+ margin: 0;
+}
+
+#break_controls {
+ list-style: none;
+}
+
+#break_controls li {
+ height: 16px;
+ margin-bottom: 6px;
+}
+
+.menu_list .break {
+ background: transparent url('../artwork/screen_icon.png') no-repeat left center;
+}
+
+.menu_list .break.greymenuitem {
+ background: transparent url('../artwork/screen_icon_grey.png') no-repeat left center;
+}
+
+#delete_break {
+ background: transparent url('../artwork/screen_icon_delete.png') no-repeat left center;
+}
+
+#delete_break.greymenuitem {
+ background: transparent url('../artwork/screen_icon_delete_off.png') no-repeat left center;
+}
+
+a.checklist {
+  color:black;
+  text-decoration:none;
+}
+
+ .ico {
+   text-align:center;
+   width:16px;
+ }
+
+.ico img {
+  border: 0;
+}
+
+.submenuheading {
+  font-weight:bold;
+  padding-top:15px;
+  margin-left:2px;
+}
+
+ #menu2b, #menu2c {
+  display: none;
+}
+
+div.iefixdiv {
+  padding-top: 1px;
+}
