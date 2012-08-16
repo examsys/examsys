@@ -55,15 +55,6 @@ if ($vle_api != '') {
       }
     ?>
   }
-  function importFromNLE() {
-  <?php
-      if ($vle_api != '') {
-        echo "alert(\"This is {$vle_name_a}-based module. To add a new session it must be added in the {$vle_name} system.\");\n";
-      } else {
-        echo "document.location.href=\"copy_session_from_NLE.php?module=" . $_GET['module'] . "\";\n";
-      }
-    ?>
-  }
 
   function editSession() {
     document.location.href='./edit_session.php?identifier=' + document.myform.identifier.value + '&module=<?php echo $_GET['module']; ?>&calendar_year=' + document.myform.session.value;
@@ -138,13 +129,8 @@ if ($vle_api != '') {
 <table style="margin-left:9px; font-size:90%; display:block" cellpadding="3" cellspacing="0" border="0" id="menu1a">
 <tr><td class="ico"><a href="#" onclick="hideSessCopyMenu(event); addSession(); return false;"><img src="../artwork/new_session_16.png" width="16" height="16" alt="" border="0" /></a></td><td class="menuitem"><a href="#" onclick="hideSessCopyMenu(event); addSession(); return false;"><?php echo $string['createsession']; ?></a></td></tr>
 <?php
-if (strpos($userroles,'SysAdmin') !== false) {
-?>
-  <tr><td class="ico"><a href="#" onclick="hideSessCopyMenu(event); importFromNLE(); return false;"><img src="../artwork/import_16.gif" width="16" height="16" alt="" border="0" /></a></td><td class="menuitem"><a href="#" onclick="hideSessCopyMenu(event); importFromNLE(); return false;"><?php echo sprintf($string['importnle'], $vle_name); ?></a></td></tr>
-<?php
-}
 if ($vle_api == '') {
-  echo '<tr><td class="ico"><a href="#" onclick="hideSessCopyMenu(event); importFromNLE(); return false;"><img src="../artwork/import_16.gif" width="16" height="16" alt="" border="0" /></a></td><td class="menuitem"><a href="load_session_from_txt.php?module=' . $_GET['module'] . '">' . $string['importfile'] . '</a></td></tr>';
+  echo '<tr><td class="ico"><a href="load_session_from_txt.php?module=' . $_GET['module'] . '"><img src="../artwork/import_16.gif" width="16" height="16" alt="" border="0" /></a></td><td class="menuitem"><a href="load_session_from_txt.php?module=' . $_GET['module'] . '">' . $string['importfile'] . '</a></td></tr>';
 }
 ?>
 <tr><td class="ico"><img src="../artwork/edit_grey.png" width="16" height="16" alt="" border="0" /></td><td class="greymenuitem"><?php echo $string['editsession']; ?></td></tr>
@@ -162,13 +148,8 @@ else {
 <table style="margin-left:9px; font-size:90%; display:none" cellpadding="3" cellspacing="0" border="0" id="menu1b">
 <tr><td class="ico"><a href="#" onclick="hideSessCopyMenu(event); addSession(); return false;"><img src="../artwork/new_session_16.png" width="16" height="16" alt="" border="0" /></a></td><td class="menuitem"><a href="#" onclick="hideSessCopyMenu(event); addSession(); return false;"><?php echo $string['createsession']; ?></a></td></tr>
 <?php
-if (strpos($userroles,'SysAdmin') !== false) {
-?>
-  <tr><td class="ico"><a href="#" onclick="hideSessCopyMenu(event); importFromNLE(); return false;"><img src="../artwork/import_16.gif" width="16" height="16" alt="" border="0" /></a></td><td class="menuitem"><a href="#" onclick="hideSessCopyMenu(event); importFromNLE(); return false;"><?php echo sprintf($string['importnle'], $vle_name); ?></a></td></tr>
-<?php
-}
 if ($vle_api == '') {
-  echo '<tr><td class="ico"><a href="#" onclick="hideSessCopyMenu(event); importFromNLE(); return false;"><img src="../artwork/import_16.gif" width="16" height="16" alt="" border="0" /></a></td><td class="menuitem"><a href="load_session_from_txt.php?module=' . $_GET['module'] . '">' . $string['importfile'] . '</a></td></tr>';
+  echo '<tr><td class="ico"><a href="load_session_from_txt.php?module=' . $_GET['module'] . '"><img src="../artwork/import_16.gif" width="16" height="16" alt="" border="0" /></a></td><td class="menuitem"><a href="load_session_from_txt.php?module=' . $_GET['module'] . '">' . $string['importfile'] . '</a></td></tr>';
 }
 ?>
 <tr><td class="ico"><img onclick="hideSessCopyMenu(event); editSession()" src="../artwork/edit.png" width="16" height="16" alt="" border="0" /></td><td class="menuitem"><a href="" onclick="hideSessCopyMenu(event); editSession(); return false;"><?php echo $string['editsession']; ?></a></td></tr>
@@ -186,13 +167,8 @@ else {
 <table style="margin-left:9px; font-size:90%; display:none" cellpadding="3" cellspacing="0" border="0" id="menu1c">
 <tr><td><a href="#" onclick="hideSessCopyMenu(event); addSession(); return false;"><img src="../artwork/new_session_16.png" width="16" height="16" alt="" border="0" /></a></td><td class="menuitem"><a href="#" onclick="hideSessCopyMenu(event); addSession(); return false;"><?php echo $string['createsession']; ?></a></td></tr>
 <?php
-if (strpos($userroles,'SysAdmin') !== false) {
-?>
-  <tr><td class="ico"><a href="#" onclick="hideSessCopyMenu(event); importFromNLE(); return false;"><img src="../artwork/import_16.gif" width="16" height="16" alt="" border="0" /></a></td><td class="menuitem"><a href="#" onclick="hideSessCopyMenu(event); importFromNLE(); return false;"><?php echo sprintf($string['importnle'], $vle_name); ?></a></td></tr>
-<?php
-}
 if ($vle_api == '') {
-  echo '<tr><td class="ico"><a href="#" onclick="hideSessCopyMenu(event); importFromNLE(); return false;"><img src="../artwork/import_16.gif" width="16" height="16" alt="" border="0" /></a></td><td class="menuitem"><a href="load_session_from_txt.php?module=' . $_GET['module'] . '">' . $string['importfile'] . '</a></td></tr>';
+  echo '<tr><td class="ico"><a href="load_session_from_txt.php?module=' . $_GET['module'] . '"><img src="../artwork/import_16.gif" width="16" height="16" alt="" border="0" /></a></td><td class="menuitem"><a href="load_session_from_txt.php?module=' . $_GET['module'] . '">' . $string['importfile'] . '</a></td></tr>';
 }
 ?>
 <tr><td class="ico"><img onclick="hideSessCopyMenu(event); editNLESession()" src="../artwork/edit.png" width="16" height="16" alt="" border="0" /></td><td class="menuitem"><a href="" onclick="hideSessCopyMenu(event); editNLESession(); return false;"><?php echo $string['editsession']; ?></a></td></tr>
