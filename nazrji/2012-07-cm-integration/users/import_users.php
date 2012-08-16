@@ -63,7 +63,7 @@
 
   require '../include/user_search_options.inc';
 ?>
-<div id="content" class="content" style="font-size:90%; padding-left:10px">
+<div id="content" class="content" style="padding-left:10px">
 <br />
 <?php
   if (isset($_POST['submit'])) {
@@ -106,7 +106,7 @@
 <br />
 <br />
 
-<table border="0" cellpadding="4" cellspacing="0" style="border:1px solid #95AEC8; width:730px; margin-left:auto; margin-right:auto">
+<table border="0" cellpadding="4" cellspacing="0" style="font-size:110%; border:1px solid #95AEC8; width:730px; margin-left:auto; margin-right:auto">
 <tr>
 <td style="width:56px; background-color:white"><img src="../artwork/multi_ids.png" width="48" height="48" alt="Icon" /></td><td style="text-align:left; font-size:160%; font-weight:bold; width:90%" class="midblue_header"><?php echo $string['importusers']; ?></span></td>
 </tr>

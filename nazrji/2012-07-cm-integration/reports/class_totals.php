@@ -308,8 +308,8 @@ ob_start();
 <div id="noteMsg"></div>
 </div>
 
-<div id="menudiv" style="font-size:80%; box-shadow:2px 2px 2px #808080; position:absolute; display:none; top:0px; left:0px;z-index:10000;" onmouseover="javascript:overpopupmenu=true;" onmouseout="javascript:overpopupmenu=false;">
-<table width="180" cellspacing="2" cellpadding="0" border="0" style="border:1px solid #C0C0C0; font-size:100%; background-color:white; border:collapse">
+<div id="menudiv" style="background-color:white; padding:1px; font-size:80%; position:absolute; display:none; top:0px; left:0px; z-index:10000; border:1px solid #868686; -moz-border-radius:4px; -webkit-border-radius:4px; border-radius:4px; box-shadow:2px 2px 2px rgba(100, 100, 100, 0.50)" onmouseover="javascript:overpopupmenu=true;" onmouseout="javascript:overpopupmenu=false;">
+<table width="180" cellspacing="2" cellpadding="0" border="0" style="font-size:100%; background-color:white">
   <tr><td>
     <table width="180" cellspacing="0" cellpadding="1" border="0" style="font-size:90%; background-color:white">
       <tr>

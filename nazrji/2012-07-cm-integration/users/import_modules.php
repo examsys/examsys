@@ -52,7 +52,7 @@ require_once '../classes/userutils.class.php';
 <?php
   require '../include/user_search_options.inc';
 ?>
-<div id="content" class="content" style="font-size:90%">
+<div id="content" class="content">
 <br />
 <br />
 <br />
@@ -107,7 +107,7 @@ require_once '../classes/userutils.class.php';
 
         // Query the modules for each student
         foreach ($students as $student) {
-          $student_databaseID = UserUtils::studentidExists($student['sid'], $mysqli);
+          $student_databaseID = UserUtils::studentid_exists($student['sid'], $mysqli);
           
           if ($student_databaseID !== false) {
             $students[$student['sid']]['dbID'] = $student_databaseID;
@@ -185,7 +185,7 @@ require_once '../classes/userutils.class.php';
     <?php
   } else {
 ?>
-<table border="0" cellpadding="4" cellspacing="0" style="width:730px; border:1px solid #95AEC8; margin-left:auto; margin-right:auto">
+<table border="0" cellpadding="4" cellspacing="0" style="font-size:110%; width:730px; border:1px solid #95AEC8; margin-left:auto; margin-right:auto">
 <tr>
 <td style="width:56px; background-color:white"><img src="../artwork/modules_icon.png" width="48" height="48" alt="Icon" /></td><td style="text-align:left; font-size:160%; font-weight:bold; width:90%" class="midblue_header"><?php echo $string['importmodules']; ?></span></td>
 </tr>

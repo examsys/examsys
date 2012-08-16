@@ -30,14 +30,15 @@
   }
   
   set_time_limit(0);
+  
   $path = str_replace('/admin', '', str_replace('\\', '/', dirname(__FILE__)));
   if ($path == '') {
     $path = $_SERVER['DOCUMENT_ROOT'];
   }
-
   require_once $path . '/config/config.inc.php';
-  require $path . '/classes/dateutils.class.php';
-  require_once $cfg_web_root . 'classes/dbutils.class.php';
+  require_once $path . '/classes/dateutils.class.php';
+  require_once $path . '/classes/dbutils.class.php';
+  require_once $path . '/classes/userutils.class.php';
 
   $mysqli = DBUtils::get_mysqli_link($cfg_db_host , $cfg_db_sysadmin_user, $cfg_db_sysadmin_passwd, $cfg_db_database, $cfg_db_charset, $dbclass);
 
@@ -129,17 +130,7 @@
                 $initials .= substr($tmp_name,0,1);
               }
 
-              $result = $mysqli->prepare("INSERT INTO users VALUES ('',?,?,?,?,?,?,'Student',NULL,?,?,NULL,0,?)");
-              $result->bind_param('ssssssssi', $sms->CourseCode, $sms->Surname, $initials, $sms->Title, $lookup_username, $sms->Email, $sms->Forename, $sms->Gender, $sms->YearofStudy);
-              $result->execute();
-              $result->close();
-
-              $tmp_userID = $mysqli->insert_id;    // Get the new Rogo userID
-
-              $result = $mysqli->prepare("INSERT INTO sid VALUES (?, ?)");
-              $result->bind_param('si', $sms->StudentID, $tmp_userID);
-              $result->execute();
-              $result->close();
+              $tmp_userID = UserUtils::create_user($lookup_username, '', $sms->Title, $sms->Forename, $sms->Surname, $sms->Email, $sms->CourseCode, $sms->Gender, $sms->YearofStudy, 'Student', $sms->StudentID, $mysqli);
 
               $current_users[$lookup_username]['userID'] = $tmp_userID;
               $current_users[$lookup_username]['grade'] = $sms->CourseCode;
@@ -164,15 +155,15 @@
               $current_users[$lookup_username]['delete'] = 0;
             }
             // Add student onto the module
-            $result = $mysqli->prepare("INSERT INTO student_modules VALUES (NULL, ?, ?, ?, 1, 1)");
-            $result->bind_param('iss', $tmp_userID, $module, $session);
-            $result->execute();
-            $result->close();
-            $enrolements++;
-            if ($enrolement_details == '') {
-              $enrolement_details = $lookup_username;
-            } else {
-              $enrolement_details .= ',' . $lookup_username;
+            $success = UserUtils::add_student_to_module($tmp_userID, $module, 1, $session, $mysqli) {
+
+            if ($success) {
+              $enrolements++;
+              if ($enrolement_details == '') {
+                $enrolement_details = $lookup_username;
+              } else {
+                $enrolement_details .= ',' . $lookup_username;
+              }
             }
 
             $student_data->close();

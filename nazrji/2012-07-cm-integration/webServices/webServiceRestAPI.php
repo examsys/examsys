@@ -400,7 +400,7 @@ Class webServiceRestAPI extends restAPI {
       return 'Incorrect value for roles: ' . $roles;
     }
     
-    $success = UserUtils::createUser($username, $password, $title, $firstnames, $surname, $email, $course, $gender, $yearofstudy, $roles, $studentid, $this->db);
+    $success = UserUtils::create_user($username, $password, $title, $firstnames, $surname, $email, $course, $gender, $yearofstudy, $roles, $studentid, $this->db);
     
     if (!$success) {
       return false;

@@ -58,39 +58,7 @@ function displayIcon($paper_type, $title, $initials, $surname, $shared, $locked)
   return $html;
 }
 
-function displayPaperIcon2($property_id, $paper_type, $screens, $paper_title, $start_date, $display_start_date, $display_end_date, $exam_duration, $title, $initials, $surname) {
-  global $folder, $string;
-  
-  echo '<div class="file">';
-  echo '<table cellpadding="0" cellspacing="0" border="0"><tr><td style="width:60px" align="center">';
-  $icon_type = $paper_type;
-  if (date("YmdHis", time()) >= $start_date) {
-    $locked = '_locked';
-  } else {
-    $locked = '';
-  }
-  echo "<a href=\"../paper/details.php?paperID=" . $property_id . "&folder=$folder&module=\">" . displayIcon($icon_type, $title, $initials, $surname, '', $locked) . "</a></td>\n";
-  echo "</td><td><a href=\"../paper/details.php?paperID=" . $property_id . "&folder=$folder&module=\" class=\"blacklink\">" . $paper_title . '</a><br />';
-  echo '  <span style="color:#808080">';
-  if ($screens == NULL) {
-    echo '0 ' . $string['screens'] . ', ';
-  } elseif ($screens == 1) {
-    echo $screens . ' ' . $string['screen'];
-  } else {
-    echo $screens . ' ' . $string['screens'];
-  }
-  echo ', <span style="color:red">' . $string['nomodulesset'] . '</span>';
-  echo '<br />';
-  echo '  ' . $display_start_date;
-  if ($icon_type == 2) {
-    echo ', ' . $exam_duration . $string['mins'];
-  } else {
-    echo ' to ' . $display_end_date;
-  }
-  echo "</td></tr></table></div>\n";
-}
-  
-function displayPaperIcon($paper_ownerID, $property_id, $paper_type, $screens, $paper_title, $start_date, $display_start_date, $display_end_date, $exam_duration, $title, $initials, $surname, $retired, $moduleID) {
+function display_paper_icon($paper_ownerID, $property_id, $paper_type, $screens, $paper_title, $start_date, $display_start_date, $display_end_date, $exam_duration, $title, $initials, $surname, $retired, $moduleID) {
   global $userroles, $type, $folder, $module, $mysqli, $userID, $teams, $string;
   
   if ($retired != '') {
@@ -111,7 +79,7 @@ function displayPaperIcon($paper_ownerID, $property_id, $paper_type, $screens, $
   } else {
     $title_class = 'greylink';
   }
-  if ($paper_ownerID == $userID or strpos($userroles,'Admin') !== false or strpos($userroles,'SysAdmin') !== false or ($icon_type != '2' and $icon_type != '4')) {
+  if ($paper_ownerID == $userID or strpos($userroles, 'Admin') !== false or strpos($userroles, 'SysAdmin') !== false or ($icon_type != '2' and $icon_type != '4')) {
     echo "<a class=\"blacklink\" href=\"../paper/details.php?paperID=" . $property_id . "&folder=$folder&module=$module\">" . displayIcon($icon_type, $title, $initials, $surname, '', $locked, $retired) . "</a></td>\n";
     echo "<td><a href=\"../paper/details.php?paperID=" . $property_id . "&folder=$folder&module=$module\" class=\"$title_class\">" . $paper_title . '</a><br />';
   } else {

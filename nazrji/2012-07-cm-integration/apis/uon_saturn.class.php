@@ -28,6 +28,9 @@ require_once $cfg_web_root . '/classes/dateutils.class.php';
 
 Class UON_SATURN extends SmsUtils {
 
+  public $campus;
+  public $url;
+
   function getUserData($username) {
     $user = array();
     $sources = $this->getStudentSources();
@@ -62,14 +65,79 @@ Class UON_SATURN extends SmsUtils {
       return false;
     }
   }
-  
-  function getModuleEnrolements($moduleID) {
+
+  function get_module($moduleID) {
     $users = array();
-    
+
     // Calculate what the current academic session is.
     $session = (isset($_GET['session']) and $_GET['session'] != '') ? $_GET['session'] : date_utils::get_current_academic_year();
-    $session_parts = explode('/',$session);
-    
+    $session_parts = explode('/', $session);
+    $replaced_module = str_replace('_UNMC', '', $moduleID);
+    $replaced_module = str_replace('_UNNC', '', $replaced_module);
+
+
+    $returned_data = @file_get_contents($this->url . "&code=$replaced_module&year=" . $session_parts[0]);
+    if ($returned_data !== false) {
+
+      $xml = @new SimpleXMLElement($returned_data);
+      if (is_object($xml) and !isset($xml->ErrorMessage)) {
+        return $xml;
+      }
+      else {
+        return false;
+      }
+    }
+    else {
+      return false;
+
+    }
+  }
+
+  function get_module_info($moduleID) {
+    $xml=$this->get_module($moduleID);
+    if (is_object($xml) and !isset($xml->ErrorMessage) and !isset($xml->Module->Error)) {
+      $moduletitle=$xml->Module->ModuleTitle;
+      $school='SchoolMissing';
+      if(isset($xml->School)) {
+        if(isset($xml->School->AdministeredBy)) {
+          $school=$xml->School->AdministeredBy;
+        }
+        else {
+          $school=$xml->School->ContributedBy;
+        }
+      }
+      return array($moduleID,$moduletitle,$school);
+    }
+    else {
+      return false;
+    }
+  }
+  function getModuleEnrolements($moduleID) {
+    $xml=$this->get_module($moduleID);
+    foreach ($xml->Module->Membership->Student as $sms) {
+      $sms->Title = trim($sms->Title);
+      $sms->Surname = trim($sms->Surname);
+      $sms->Forename = trim($sms->Forename);
+      $sms->CourseCode = trim($sms->CourseCode);
+      $sms->Username = trim($sms->Username);
+      $sms->Email = trim($sms->Email);
+      $sms->Gender = trim($sms->Gender);
+      $sms->YearofStudy = trim($sms->YearofStudy);
+      $sms->StudentID = trim($sms->StudentID);
+
+      $lookup_username = trim($sms->Username);
+
+      // Make sure we have a proper username - it can sometimes be blank in SATURN data
+      if ($sms->Email != '') {
+        // Try to extract from email address
+        $un_parts = explode('@', $sms->Email);
+        $lookup_username = $un_parts[0];
+      }
+      $users[$lookup_username]=array($sms->Title,$sms->Surname,$sms->Forename,$sms->CourseCode,$sms->Email,$sms->Gender,$sms->YearofStudy,$sms->StudentID);
+    }
+
+
+
     if (count($users) > 0) {
       return $users;
     } else {
@@ -79,12 +147,35 @@ Class UON_SATURN extends SmsUtils {
   }
   
   function getStudentSources() {
-    return array('&lt;No lookup&gt;'=>'','UK'=>'http://saturn-exports.nottingham.ac.uk/touchstonestudent.ashx?campus=uk');
+    return array('&lt;No lookup&gt;'=>'','UK'=>'http://saturn-exports.nottingham.ac.uk/touchstonestudent.ashx?campus=uk','Malaysia'=>'http://saturn-exports.nottingham.ac.uk/touchstonestudent.ashx?campus=malaysia','China'=>'http://saturn-exports.nottingham.ac.uk/touchstonestudent.ashx?campus=china');
   }
   
   function getModuleSources() {
     return array('&lt;No lookup&gt;'=>'','UK'=>'http://saturn-exports.nottingham.ac.uk/touchstone.ashx?campus=uk','Malaysia'=>'http://saturn-exports.nottingham.ac.uk/touchstone.ashx?campus=malaysia','China'=>'http://saturn-exports.nottingham.ac.uk/touchstone.ashx?campus=china');
   }
-  
+
+
+  function set_module($location) {
+    if($location == 'MY') {
+      $location = 'Malaysia';
+    }
+    elseif($location == 'CN') {
+      $location = 'China';
+    }
+    $arr=$this->getModuleSources();
+    if(!isset($arr[$location]))
+    {
+      $this->url='';
+      $this->campus=$location;
+      return;
+    }
+    $this->url=$arr[$location];
+    $this->campus=$location;
+  }
+
+  function get_module_name($modulecode) {
+$dat=$this->getModuleEnrolements($modulecode);
+  }
+
 }
 ?>

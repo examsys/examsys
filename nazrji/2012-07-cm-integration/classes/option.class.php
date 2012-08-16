@@ -191,9 +191,9 @@ Class Option extends TouchStoneObject {
     
     $valid = $this->validate();
     
-    if($valid === true) {
+    if ($valid === true) {
       // If $id is -1 we're inserting a new record
-      if($this->id == -1) {
+      if ($this->id == -1) {
         $params = array_merge(array('issiisssddd'), $this->_data);
         $query = <<< QUERY
 INSERT INTO options(o_id, option_text, o_media, o_media_width, o_media_height, feedback_right, feedback_wrong, correct, marks_correct, marks_incorrect, marks_partial)
@@ -213,13 +213,13 @@ QUERY;
       $result->execute();
       $success = ($result->affected_rows > -1);
       
-      if($success) {
-        if($this->id == -1) {
+      if ($success) {
+        if ($this->id == -1) {
           $this->id = $this->_mysqli->insert_id;
           $this->track_new($logger, $option_number);
         } else {
           // Log any changes
-          foreach($this->_modified_fields as $key => $value) {
+          foreach ($this->_modified_fields as $key => $value) {
             $db_field = (in_array($key, array_keys($this->_field_map))) ? $this->_field_map[$key] : $key;
             if ($value['message'] == '') {
               $this->track_change($logger, $option_number, $value['value'], $this->$key, $db_field);

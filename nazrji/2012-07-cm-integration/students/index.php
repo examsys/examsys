@@ -200,7 +200,11 @@ for ($i = 0; $i < count($modules); $i++) {
 <div id="content" class="content" style="font-size:80%">
 	<table cellpadding="0" cellspacing="0" border="0" width="100%">
 		<tr>
-      <td rowspan="2"style="background-color:#F1F5FB"><img style="margin:4px" src="../artwork/rogo_logo.gif" width="270" height="60" alt="Rogo" border="0" /></td>
+      <td rowspan="2"style="background-color:#F1F5FB; height:70px; padding-left:10px">
+        <img src="../artwork/r_logo.gif" width="56" height="60" alt="logo" border="0" style="float:left; padding-right:8px" />
+        <div style="color:#1F497D; font-size:28pt; font-weight:bold">Rogō</div>
+        <div style="color:#1F497D; font-size:9pt"><?php echo $string['eassessmentmanagementsystem']; ?></div>
+      </td>
       <td style="background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(1); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="Help" border="0" /></a></td>
     </tr>
 	  <tr>

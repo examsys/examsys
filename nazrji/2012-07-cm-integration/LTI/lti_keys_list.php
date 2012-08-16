@@ -108,7 +108,7 @@ require '../include/sysadmin_auth.inc';
 <?php
 require '../include/lti_keys_options.inc';
 ?>
-<div id="content" class="content" style="font-size:80%">
+<div id="content" class="content">
 
   <table class="header">
     <tr>

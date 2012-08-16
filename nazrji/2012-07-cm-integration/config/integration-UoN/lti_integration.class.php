@@ -8,8 +8,11 @@
  */
 
 require_once $cfg_web_root . 'classes/userutils.class.php';
+require_once $cfg_web_root . 'classes/smsutils.class.php';
 
 class lti_integration_extended extends lti_integration {
+
+  private $dept_code = array('MS' => 'Surgery', 'CC' => 'ACS', 'AA' => 'American & Canadian Studies', 'AC' => 'Archaeology', 'LA' => 'Urban Planning', 'AD' => 'Art History', 'MB' => 'Physiology & Pharmacology', 'ST' => 'Biosciences', 'AL' => 'CELE', 'EC' => 'Chemical Engineering', 'EN' => 'Mining Engineering', 'PC' => 'Chemistry', 'MC' => 'Public Health Medicine & Epidemiology', 'MG' => 'Obstetrics, Midwifery & Gynaecology', 'LI' => 'Trent Institute for Health Services Research', 'EV' => 'Structures', 'AB' => 'Classics', 'MR' => 'Pathology', 'PS' => 'Computer Science', 'LC' => 'Contemporary Chinese Studies', 'MZ' => 'Medicine', 'TT' => 'PGCE', 'AJ' => 'Critical Theory', 'RN' => 'Cultural Studies', 'LE' => 'Economics', 'EE' => 'Electrical & Electronic Engineering', 'EZ' => 'Engineering', 'IS' => 'Engineering Surveying & Space Geodesy', 'AE' => 'English', 'AR' => 'Modern Languages', 'EP' => 'Manufacturing Engineering & Operational Management', 'AF' => 'French', 'LQ' => 'Sociology', 'LG' => 'Geography', 'AG' => 'German', 'BR' => 'Training & Staff Development Unit', 'AS' => 'Portuguese', 'AH' => 'History', 'IT' => 'Information Technology', 'RH' => 'Institute of Hearing Research', 'NI' => 'Institute of Infections and Immunity', 'LW' => 'Institute of Work, Health & Organizations', 'OI' => 'International Office', 'UL' => 'Language Centre', 'LL' => 'Law', 'PL' => 'Life & Env Sciences', 'EM' => 'Materials Engineering & Materials Design', 'PM' => 'Theoretical Mechanics', 'EA' => 'Mechanical Engineering', 'AM' => 'Music', 'ZN' => 'Ningbo', 'SHS' => 'Nursing', 'PA' => 'Pharmacy', 'AP' => 'Philosophy', 'PP' => 'Physics', 'LD' => 'Politics', 'LP' => 'Psychology', 'AV' => 'Slavonic Studies', 'AT' => 'Theology', 'SV' => 'Vet School');
 
   static function user_add($username, $password) {
     // take user and password and add user to system
@@ -89,7 +92,36 @@ class lti_integration_extended extends lti_integration {
     return true;
   }
 
-  static function module_code_translate($c_internal_id, $course_title = "") {
+  static function lookup_school_code($code) {
+    $dept_code = array('MS' => 'Surgery', 'CC' => 'ACS', 'AA' => 'American & Canadian Studies', 'AC' => 'Archaeology', 'LA' => 'Urban Planning', 'AD' => 'Art History', 'MB' => 'Physiology & Pharmacology', 'ST' => 'Biosciences', 'AL' => 'CELE', 'EC' => 'Chemical Engineering', 'EN' => 'Mining Engineering', 'PC' => 'Chemistry', 'MC' => 'Public Health Medicine & Epidemiology', 'MG' => 'Obstetrics, Midwifery & Gynaecology', 'LI' => 'Trent Institute for Health Services Research', 'EV' => 'Structures', 'AB' => 'Classics', 'MR' => 'Pathology', 'PS' => 'Computer Science', 'LC' => 'Contemporary Chinese Studies', 'MZ' => 'Medicine', 'TT' => 'PGCE', 'AJ' => 'Critical Theory', 'RN' => 'Cultural Studies', 'LE' => 'Economics', 'EE' => 'Electrical & Electronic Engineering', 'EZ' => 'Engineering', 'IS' => 'Engineering Surveying & Space Geodesy', 'AE' => 'English', 'AR' => 'Modern Languages', 'EP' => 'Manufacturing Engineering & Operational Management', 'AF' => 'French', 'LQ' => 'Sociology', 'LG' => 'Geography', 'AG' => 'German', 'BR' => 'Training & Staff Development Unit', 'AS' => 'Portuguese', 'AH' => 'History', 'IT' => 'Information Technology', 'RH' => 'Institute of Hearing Research', 'NI' => 'Institute of Infections and Immunity', 'LW' => 'Institute of Work, Health & Organizations', 'OI' => 'International Office', 'UL' => 'Language Centre', 'LL' => 'Law', 'PL' => 'Life & Env Sciences', 'EM' => 'Materials Engineering & Materials Design', 'PM' => 'Theoretical Mechanics', 'EA' => 'Mechanical Engineering', 'AM' => 'Music', 'ZN' => 'Ningbo', 'SHS' => 'Nursing', 'PA' => 'Pharmacy', 'AP' => 'Philosophy', 'PP' => 'Physics', 'LD' => 'Politics', 'LP' => 'Psychology', 'AV' => 'Slavonic Studies', 'AT' => 'Theology', 'SV' => 'Vet School');
+  }
+
+
+  function sms_api($data) {
+    if ($data[0] != ' SMS') {
+      return '';
+    }
+    $SMS = SmsUtils::GetSmsUtils();
+
+    $SMS->set_module($data[2]);
+    return $SMS->url;
+  }
+
+
+  function module_code_translated_store($data) {
+    $return = '';
+    foreach ($data as $k => $v) {
+      $extra = '';
+      if ($v[0] == 'Manual') {
+        $extra = 'ZZ-';
+      }
+      $return = $return . '-' . $extra . $v[1] . '-' . $v[2];
+    }
+    $return = substr($return, 1);
+    return $return;
+  }
+
+  function module_code_translate($c_internal_id, $course_title = ' ') {
 
     // only get the shortname through  (courseID is only probably accessible via specific moodle webservices api
 
@@ -124,11 +156,14 @@ class lti_integration_extended extends lti_integration {
         $modcode = $modcode . '-' . $exploded[$a];
       }
       $modcode = substr($modcode, 1);
-      $schoolname = 'LTI';
-      if (isset($lti_school_list_lookup[$exploded[0]])) {
-        $schoolname = $lti_school_list_lookup[$exploded[0]];
+      $schoolname = 'UNKNOWN School';
+      if (isset($this->dept_code[$exploded[0]])) {
+        $schoolname = $this->dept_code[$exploded[0]];
       }
       $selfreg = 1;
+      if ($course_title == ' ') {
+        $course_title = 'MISSING: ';
+      }
       $data[] = array('Manual', $modcode, $campus, $schoolname, $selfreg, $course_title);
 
 
@@ -143,13 +178,13 @@ class lti_integration_extended extends lti_integration {
           //saturn codes are 6 chars
           // data is
 
-          $data[$b++] = array('SMS', $exploded[$a], 'CampusTODO', 'SchoolTODO', $selfreg, "MISSING:$course_title");
+          $data[$b++] = array('SMS', $exploded[$a], 'CampusMissing', 'UNKNOWN School', $selfreg, "MISSING:$course_title");
         }
         elseif (strlen($exploded[$a]) == 2) {
           // probably campus check
           if (in_array(strtoupper($exploded[$a]), array('UK', 'MY', 'CN'))) {
             for ($c = 0; $c < $b; $c++) {
-              if ($data[$c][2] == 'CampusTODO') {
+              if ($data[$c][2] == 'CampusMissing') {
                 $data[$c][2] = strtoupper($exploded[$a]);
               }
             }
@@ -169,8 +204,26 @@ class lti_integration_extended extends lti_integration {
     // sixth is the module title.  if it starts MISSING: then there is need for manual intervention to complete this correctly
 
     foreach ($data as $k => $v) {
- //     $returned = lookup_module_description($v);
- //      $data[$k] = $returned;
+
+      // TODO this is needing to be completed
+
+      if (substr($v[5], 0, 8) == 'MISSING:' and $v[0] == 'SMS') {
+        $sms = SmsUtils::GetSmsUtils();
+        $sms->set_module($v[2]);
+        $returned = $sms->get_module_info($v[1]);
+        if ($returned !== false) {
+          $data[$k][5] = $returned[1];
+          $data[$k][3] = $returned[2];
+        }
+
+
+      }
+
+      //     $returned = lookup_module_description($v);
+      //      $data[$k] = $returned;
+    }
+    if (count($data) == 1 and substr($data[0][5], 0, 8) == 'MISSING:' and strlen($data[0][5]) > 9) {
+      $data[0][5] = substr($data[0][5], 8);
     }
     // return the data
     return $data;

@@ -41,5 +41,6 @@ $string['type'] = 'Typ';
 $string['author'] = 'Autor';
 $string['duplicatefoldername'] = 'Ta nazwa folderu jest już wykorzystywana, użyj innej.';
 $string['loggedinas'] = 'Jesteś zalogowany jako';
-$string['eassessmentmanagementsystem'] = 'System zarządzania oceną';  
+$string['eassessmentmanagementsystem'] = 'System zarządzania oceną';
+$string['nomodules'] = 'Nie jesteś członkiem żadnego zespołu. Skontaktuj sie z nami, aby uzyskać pomoc:';  
 ?>

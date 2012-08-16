@@ -42,7 +42,7 @@
 <?php
   require '../include/lab_options.inc';
 ?>
-<div id="content" class="content" style="font-size:80%">
+<div id="content" class="content">
 <?php
   $results = $mysqli->prepare("SELECT name, address, hostname, campus, building, room_no, timetabling, it_support, plagarism, low_bandwidth FROM (ip_addresses, labs) WHERE ip_addresses.lab=labs.id AND labs.id=?");
   $results->bind_param('i', $_GET['labID']);

@@ -103,13 +103,15 @@
   }
   
   function menuRowOn(rowID) {
-    document.getElementById(rowID).style.backgroundColor='#316AC5';
-    document.getElementById(rowID).style.color='white';
+    document.getElementById(rowID).style.backgroundColor='#FFE7A2';
+    document.getElementById(rowID).style.borderColor='#FFBD69';
+    //document.getElementById(rowID).style.color='white';
   }
 
   function menuRowOff(rowID) {
     document.getElementById(rowID).style.backgroundColor='white';
-    document.getElementById(rowID).style.color='black';
+    document.getElementById(rowID).style.borderColor='white';
+    //document.getElementById(rowID).style.color='black';
   }
 
   function showMenu(submenuID, menuID, callingID, arrayID, urlID, e) {    

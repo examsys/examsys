@@ -100,7 +100,7 @@
 <?php
   require '../include/sessions_options.inc';
 ?>
-<div id="content" class="content" style="font-size:80%">
+<div id="content" class="content">
 <?php
   if (isset($_GET['module'])) {
     $module = $_GET['module'];

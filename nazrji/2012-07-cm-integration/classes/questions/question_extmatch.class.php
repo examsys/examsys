@@ -34,6 +34,7 @@ Class QuestionEXTMATCH extends Question {
   protected $_answer_negative = array();
   
   public $max_options = 26;
+  protected $min_options = 3;
   public $max_stems = 10;
   
   protected $_fields_required = array('type', 'leadin', 'option_order', 'owner_id', 'status');

@@ -6,4 +6,5 @@ $string['to'] = 'do';
 $string['feedbackonassessment'] = 'Odzew na ocenę w';
 $string['screen'] = 'ekran';
 $string['screens'] = 'ekrany';
+$string['eassessmentmanagementsystem'] = 'System zarządzania oceną';  
 ?>

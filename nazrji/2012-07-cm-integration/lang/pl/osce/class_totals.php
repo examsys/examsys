@@ -26,6 +26,6 @@ $string['honours pass'] = 'wyróżniające zaliczenie';
 $string['oscemarksheet'] = 'Arkusz punktacji OSCE';
 $string['feedback'] = 'Odzew';
 $string['studentprofile'] = 'Profil studenta';
-$string['unsatisfactory'] = 'Unsatisfactory';  // Niko
-$string['competent'] = 'Competent';  // Niko
+$string['unsatisfactory'] = 'Niesatysfakcjonujący'; 
+$string['competent'] = 'Dostateczny';
 ?>

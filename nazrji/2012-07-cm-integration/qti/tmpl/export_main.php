@@ -66,19 +66,6 @@
 
 	</style>
 <script language="JavaScript">
-  function move_in(img_name) {
-    document[img_name].src=onImg.src;
-  }
-
-  function move_out(img_name) {
-    document[img_name].src=offImg.src;
-  }
-  
-  onImg = new Image;
-  onImg.src = '../artwork/up_folder_icon_on.gif';
-  offImg = new Image;
-  offImg.src = '../artwork/up_folder_icon_off.gif';
-
   // Popup window code
   function newPopup(url) {
     notice=window.open(url,"properties","width=827,height=510,left="+(screen.width/2-325)+",top="+(screen.height/2-250)+",scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
@@ -94,7 +81,7 @@ $export_result = $result;
 require '../include/paper_options.inc';
 $result = $export_result;
 ?>
-<div id="content" class="content" style="font-size:80%">
+<div id="content" class="content">
 
 <?php
 
@@ -158,11 +145,11 @@ echo "</table>";
 		<td style="background-color:white; width:55px"><img src="../artwork/ims_logo.png" width="47" height="44" alt="IMS Logo" /></td><td style="width:445px"><span style="font-family:Arial,sans-serif; font-size:16pt; font-weight:bold; color:#5582D2"><?php printf($string['qtiexport'], $qti_ver) ?></span></td> 
 	</tr> 
 	<tr> 
-		<td style="background-color:#DFE8FF" colspan="2">
+		<td style="background-color:#F1F5FB" colspan="2">
 			<div style="margin-left:25px; line-height:150%; margin-top:10px; font-weight:bold"><?php printf($string['exportsready'], $qti_ver) ?></div>
 			<?php foreach ($files as $file) : ?>
 				<?php $path = $file->path; ?>
-				<div style="margin-left:25px; line-height:150%"><img src="../artwork/bullet_outline.gif" width="16" height="16" alt="bullet" />&nbsp;&nbsp;
+				<div style="margin-left:25px; line-height:150%"><img src="../artwork/import_16.gif" width="16" height="16" alt="bullet" />&nbsp;&nbsp;
 					<strong><a href="download.php?file=<?php echo(urlencode($file->filename)) ?>&path=<?php echo(urlencode($file->path)) ?>&title=<?php echo(urlencode($file->title)) ?>"><?php echo $string['download'] . ' ' . $file->title ?>.xml</a></strong>
 				</div>
 			<?php endforeach; ?>

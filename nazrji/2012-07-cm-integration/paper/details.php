@@ -381,7 +381,7 @@ function random_qMarks($random_questions) {
   ?>
     <div id="left-sidebar" class="sidebar">
     </div>
-    <div id="content" class="content" style="font-size:80%"><br />
+    <div id="content" class="content"><br />
   <?php
     echo "<div style=\"position:absolute; left:230px; top:10px\"><img src=\"../artwork/orange_alert_48.png\" width=\"48\" height=\"48\" /></div>\n";
     echo "<h1 class=\"midblue_header\" style=\"margin-left:70px;font-size:160%\">" . $string['papernotfound'] . "</h1>\n";
@@ -394,7 +394,7 @@ function random_qMarks($random_questions) {
   ?>
     <div id="left-sidebar" class="sidebar">
     </div>
-    <div id="content" class="content" style="font-size:80%"><br />
+    <div id="content" class="content"><br />
   <?php
     echo "<div style=\"position:absolute;left:230px;top:10px\"><img src=\"../artwork/full_bin.png\" width=\"48\" height=\"48\" /></div>\n";
     echo "<h1 class=\"midblue_header\" style=\"margin-left:70px;font-size:160%\">" . $string['paperdeleted'] . "</h1>\n";

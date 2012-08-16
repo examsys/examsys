@@ -37,4 +37,5 @@ $string['deleted_msg2'] = 'It can still be recovered from the <a href="' . $cfg_
 $string['deleted_msg3'] = 'You do not own this paper, you will need to get <a href="mailto:%s" style="color:blue">%s %s</a> to recover it.';
 $string['addscreenbreak'] = 'Add screen break';
 $string['deletescreenbreak'] = 'Delete screen break';
+$string['next'] = 'Next >>';
 ?>

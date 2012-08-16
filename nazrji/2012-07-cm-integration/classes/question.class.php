@@ -60,6 +60,7 @@ Class Question extends TouchStoneObject {
   protected $status = 'Normal';
   public $options = array();
   public $max_options = 20;
+  protected $min_options = 1;
   public $max_stems = 0;
   protected $_answer_positive = 'y';
   protected $_answer_negative = 'n';
@@ -1191,7 +1192,7 @@ QUERY;
       return array();
     }
 
-    if(!is_array($this->_changes)) {
+    if (!is_array($this->_changes)) {
       $this->_changes = array();
       // Load the changes into an array
       $result = $this->_mysqli->prepare("SELECT type, part, old, new, DATE_FORMAT(changed, '%d/%m/%Y') AS display_changed, title, initials, surname FROM (track_changes, users) WHERE track_changes.editor=users.id AND typeID=? ORDER BY changed DESC, users.id LIMIT 200");
@@ -1212,7 +1213,7 @@ QUERY;
    * @return array Array of keyword IDs
    */
   public function get_keywords() {
-    if(!is_array($this->_keywords)) {
+    if (!is_array($this->_keywords)) {
       $this->_keywords = array();
       
       // Load the keywords into an array
@@ -1390,7 +1391,7 @@ QUERY;
     $result->bind_param('i', $this->id);
     $result->execute();
     $result->store_result();
-    call_user_func_array(array($result, "bind_result"), $this->_data);
+    call_user_func_array(array($result, 'bind_result'), $this->_data);
     if ($result->fetch()) {
       $success = true;
       $found = $result->num_rows;
@@ -1418,10 +1419,10 @@ QUERY;
       $result->bind_param('i', $this->id);
       $result->execute();
       $result->store_result();
-      call_user_func_array(array($result, "bind_result"), $opt_data);
+      call_user_func_array(array($result, 'bind_result'), $opt_data);
       // TODO: handle 'correctness' more nicely
       $i = 1;
-      while($success == true and $success = $result->fetch()) {
+      while ($success == true and $success = $result->fetch()) {
         $this->options[$opt_data['id']] = Option::option_factory($this->_mysqli, $this->_user_id, $this, $i, $this->_lang_strings, $opt_data);
         $i++;
       }
@@ -1435,12 +1436,14 @@ QUERY;
   
   /**
    * Validate the question object before saving
-   * @return Ambigous <boolean, string>
+   * @return Mixed <boolean, string>
    */
   private function validate() {
     $rval = true;
     
     // If there are errors return an appropriate message
+
+    // Required fields
     $missing_fields = '';
     foreach($this->_fields_required as $req) {
       if (empty($this->$req)) $missing_fields .= $this->_pretty_names[$req] . ', ';
@@ -1448,7 +1451,32 @@ QUERY;
     if ($missing_fields != '') {
       $rval = $this->_lang_strings['missingfieldserror'] . ' ' . rtrim($missing_fields, ', ');
     }
-    
+
+    // Number of options
+    $opt_error = false;
+    if (count($this->options) < $this->min_options) {
+      $opt_error = true;
+    } else {
+      $valid_opts = 0;
+      foreach ($this->options as $option) {
+        if (!$option->is_blank()) {
+          $valid_opts++;
+        }
+      }
+      if ($valid_opts < $this->min_options) {
+        $opt_error = true;
+      }
+    }
+
+    if ($opt_error) {
+      $messg = sprintf($this->_lang_strings['validanswers'], $this->min_options);
+      if ($rval == true) {
+        $rval = $messg;
+      } else {
+        $rval .= '<br />' . $messg;
+      }
+    }
+
     return $rval;
   }
   
@@ -1461,8 +1489,7 @@ QUERY;
     
     // Call save() on the options too if successful
     $i = 1;
-    foreach($this->options as $oid => $option)
-    {
+    foreach($this->options as $oid => $option) {
       $media = $option->get_media();
       if ($option->is_blank()) {
         $success = $option->delete();

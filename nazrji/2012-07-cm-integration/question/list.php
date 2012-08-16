@@ -94,7 +94,7 @@
   require '../include/question_list_options.inc';
 ?>
 
-<div id="content" class="content" style="font-size:80%" onclick="hideMenus(event)">
+<div id="content" class="content" onclick="hideMenus(event)">
 <table class="header">
 <?php
   $question_no = 0;

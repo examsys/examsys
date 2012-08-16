@@ -35,6 +35,10 @@ require_once '../classes/dateutils.class.php';
 require_once '../classes/userutils.class.php';
 require_once '../classes/moduleutils.class.php';
 require_once '../classes/personal_folders.php';
+require_once '../classes/lti_integration.class.php';
+require_once '../classes/smsutils.class.php';
+require_once '../classes/schoolutils.class.php';
+require_once '../classes/facultyutils.class.php';
 
 global $cfg_long_date_time;
 
@@ -89,6 +93,9 @@ if (!$lti->valid) {
   $mysqli->close();
   exit;
 }
+if (!isset($lti_i)) {
+  $lti_i = lti_integration::load();
+}
 
 if (isset($_REQUEST['paperlinkID'])) {
   list($retlookup, $retlookup2) = $_SESSION['postlookup'][$_REQUEST['paperlinkID']];
@@ -115,8 +122,7 @@ if (!$lti->isInstructor()) {
     echo "<div style=\"position:absolute; left:10px; top:10px\"><img src=\"{$cfg_root_path}/artwork/access_denied.png\" width=\"48\" height=\"48\" /></div>\n";
     echo "<h1 style=\"margin-left:60px\">" . $string['unavailablepaper'] . "</h1>\n";
     exit();
-  }
-  else {
+  } else {
     //valid data
     list($c_internal_id, $upd) = $lti->lookup_lti_context();
     $session = date_utils::get_current_academic_year();
@@ -124,17 +130,11 @@ if (!$lti->isInstructor()) {
     // $c_internal_id is module code
     //    $module_id_out=i_lti_module_code_translate($c_internal_id);
 
-    $returned_check = module_utils::module_check_self_enrol($c_internal_id);
+    $returned_check = module_utils::module_check_self_enrol($c_internal_id, $mysqli);
 
-    /*
-    if(!UserUtils::isUserOnModule($userID, $c_internal_id, $session, $mysqli) and $returned_check === false ) {
-      display_error('Module ID error', 'Module code ' . $_GET['moduleid'] . ' not found.', false, true);
-    }
-    */
-
-    if (!UserUtils::isUserOnModule($userID, $c_internal_id, $session, $mysqli) and $returned_check !== false and !i_lti_allow_module_self_reg($c_internal_id)) {
+    if (!UserUtils::is_user_on_module($userID, $c_internal_id, $session, $mysqli) and $returned_check !== false and !$lti_i::allow_module_self_reg($c_internal_id)) {
       list($fullname, $school, $active, $selfenroll) = $returned_check;
-      if ($active == 1 and $selfenroll == 1 and !UserUtils::isUserOnModule($userID, $_GET['moduleid'], $_POST['session'], $mysqli)) {
+      if ($active == 1 and $selfenroll == 1 and !UserUtils::is_user_on_module($userID, $_GET['moduleid'], $_POST['session'], $mysqli)) {
         // Insert new module enrollment
         UserUtils::add_student_to_module($userID, $c_internal_id, 1, $session, $mysqli);
       }
@@ -146,40 +146,74 @@ if (!$lti->isInstructor()) {
     exit();
 
   }
-}
-else {
+} else {
   //staff
   if ($returned !== false) {
     // goto link
-    if (!i_lti_allow_staff_edit_link()) {
+
+    $returned2 = $lti->lookup_lti_context();
+    $mod = $returned2[0];
+    $data = $lti_i->module_code_translate($mod);
+    foreach ($data as $v) {
+      if (!UserUtils::staff_on_team($v[1], $mysqli)) {
+        UserUtils::add_staff_to_team($userID, $v[1], $mysqli);
+      }
+    }
+
+
+    if (!$lti_i::allow_staff_edit_link()) {
       $_SESSION['lti']['paperlink'] = $returned[0];
       header("location: ../user_index.php?id=" . $returned[0]);
       echo "Please click <a href='../user_index.php?id=" . $returned[0] . ".>here</a> to continue";
       exit();
-    }
-    else
-    {
+    } else {
       // allow editing of the stored link
       //TODO NO SUPPORT YET DONE
     }
 
-  }
-  else {
+  } else {
     // no existing stored link so need to create one
 
     $returned2 = $lti->lookup_lti_context();
 
-    if ($returned2 === false) {
-      $module_id = i_lti_module_code_translate($lti->getCourseName());
 
-      // TODO DEBUG ENABLE THE LINE BELOW
-      //$lti->add_lti_context($module_id);
+    if ($returned2 === false) {
+
+      //no context
+
+
+      $data = $lti_i->module_code_translate($lti->getCourseName(), $lti->get_context_title());
+
+
+      foreach ($data as $v) {
+
+        if (module_utils::module_exists($v[1], $mysqli)) {
+
+          $selfEnroll = 0;
+          if ($v[0] == 'Manual') {
+            $selfEnroll = 1;
+          }
+
+          $sms_api = $lti_i->sms_api($v);
+
+          $modcreate = module_utils::add_modules($v[1], $v[5], 1, $schoolID, '', $sms_api, $selfEnroll, 0, 0, 0, 0, 1, 0, $mysqli);
+
+          UserUtils::add_staff_to_team($userID, $v[1], $mysqli);
+
+        }
+
+      }
+
+      $module_store = $lti_i->module_code_translated_store($data);
+
+
+      $lti->add_lti_context($module_store);
 
       $returned2 = $lti->lookup_lti_context();
     }
 
-    //TODO DEBUG RMEOVE THIS AS FUDGE TO FORCE ALL MODULE TO MM1EM1
-    $returned2 = array('MM1EM1', 'Jan 5 2012, 21:22:22');
+    $mod = $returned2[0];
+    $data = $lti_i->module_code_translate($mod);
 
     list($c_internal_id, $upd) = $returned2;
     $moduleid = $c_internal_id;
@@ -228,15 +262,20 @@ END;
     echo "<table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>" . $string['papersoncurrentmodule'] . "</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
 
 
-    list($block_id, $plk) = listtreemodules($mysqli, $moduleid, $block_id, $plk, true);
+    foreach ($data as $v)
+    {
+      $moduleid = $v[1];
 
+
+      list($block_id, $plk) = listtreemodules($mysqli, $moduleid, $block_id, $plk, true);
+    }
     echo "<br/>";
 
     $personalfolders = new personal_folders($mysqli);
     $personalfolders->loadpersonalfolders($userID);
     $personalfolders->process();
-    echo "<table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>" . $string['myfolders'] . "</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
-    list($block_id, $plk) = $personalfolders->listtree(0, $block_id, $plk, 0);
+    //    echo "<table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>" . $string['myfolders'] . "</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
+    //    list($block_id, $plk) = $personalfolders->listtree(0, $block_id, $plk, 0);
   }
 }
 exit();

@@ -30,13 +30,12 @@ Abstract Class SmsUtils {
 
   static function GetSmsUtils() {
     global $cfg_sms_api, $cfg_web_root;
-    
-    
     if (isset($cfg_sms_api) and $cfg_sms_api != '') {
       require_once ($cfg_web_root . "/apis/" . $cfg_sms_api . ".class.php");
+
       return new $cfg_sms_api();
     }
-    
+
     return false;
   }
   

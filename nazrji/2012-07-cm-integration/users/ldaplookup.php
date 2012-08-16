@@ -89,7 +89,7 @@ require '../include/sort.inc';
 <body>
 <form method="post" name="myform" action="<?php echo $_SERVER['PHP_SELF']; ?>">
 <div style="text-align:center">
-<table>
+<table style="text-align:left">
 <?php
   if (isset($_POST['username']) and $_POST['username'] != '') {
     echo "<tr><td>".$string['username']."</td><td><input type=\"text\" name=\"username\" value=\"" . $_POST['username'] . "\" size=\"20\" style=\"border: 1px solid #800000; background-color:#FFC0C0\" /></td></tr>\n";

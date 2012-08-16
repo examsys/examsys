@@ -156,7 +156,7 @@ function getPaper($paperID) {
   $result->execute();
   $result->bind_result($paper_title, $moduleID, $session, $start_date, $end_date, $paper_type);
   while ($result->fetch()) {
-    echo "<table class=\"header\" style=\"font-size:80%\">\n";
+    echo "<table class=\"header\">\n";
     echo '<tr><th>';
     echo '<div class="breadcrumb"><a href="../staff/index.php">' . $string['home'] . '</a>';
     if ($folder != '') {
@@ -171,9 +171,9 @@ function getPaper($paperID) {
   $result->close();
   
 ?>
-<table class="header" style="font-size:80%">
+<table class="header">
 <tr><th style="padding-top:1px">
-  <table cellpadding="0" cellspacing="0" border="0" style="font-size:100%; width:378px">
+  <table cellpadding="0" cellspacing="0" border="0" style="font-size:90%; width:378px">
   <td style="cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_off.gif)" onclick="window.location.href='paper_mappings_by_session.php?paperID=<?php echo $_GET['paperID']; ?>&folder=<?php echo $_GET['folder']; ?>&module=<?php echo $_GET['module']; ?>'"><?php echo $string['bysession']; ?></td>
   <td style="cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_off.gif)" onclick="window.location.href='paper_mappings_by_question.php?paperID=<?php echo $_GET['paperID']; ?>&folder=<?php echo $_GET['folder']; ?>&module=<?php echo $_GET['module']; ?>'"><?php echo $string['byquestion']; ?></td>
   <td style="cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_on.gif)"><?php echo $string['longitudinal']; ?></td>
@@ -232,7 +232,7 @@ foreach ($objsBySession as $p_id => $module) {
 }
 
 //display
-echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"font-size:80%; background-color:white\">\n";
+echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\n";
 //table heading
 echo "<tr><th colspan=\"2\"></th>";
 $pcount = 0;

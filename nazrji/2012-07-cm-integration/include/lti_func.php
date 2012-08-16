@@ -31,18 +31,19 @@
 
 
 function usercheck($db, $lti) {
-  if(!isset($_SESSION['lti']['track'])) $_SESSION['lti']['track']='';
+  $lti_i = lti_integration::load();
+  if (!isset($_SESSION['lti']['track'])) $_SESSION['lti']['track'] = '';
   global $string, $userID, $userroles, $faculty, $title, $initials, $surname, $username, $email, $grade, $year, $special_needs, $db_errors, $cfg_root_path, $cfg_install_type, $cfg_db_database, $cfg_use_ldap, $fp_link;
   // $info = $lti->getUserKey(1);
-//  if( $_SESSION['lti']['track'] == 'reauth') {
-//    display_notice($string['ltifirstlogin'], $string['ltifirstlogindesc'], '/artwork/access_denied.png', $title_color = '#C00000');
-//    $_SESSION['lti']['track'] = 'reauth1';
-//    $db->close();
-//    exit;
-//  }
-  if( $_SESSION['lti']['track'] == 'reauth2' ) {
+  //  if( $_SESSION['lti']['track'] == 'reauth') {
+  //    display_notice($string['ltifirstlogin'], $string['ltifirstlogindesc'], '/artwork/access_denied.png', $title_color = '#C00000');
+  //    $_SESSION['lti']['track'] = 'reauth1';
+  //    $db->close();
+  //    exit;
+  //  }
+  if ($_SESSION['lti']['track'] == 'reauth2') {
     $returned2 = db_auth($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'], $db, false);
-    if($returned2>0) {
+    if ($returned2 > 0) {
       $lti->update_lti_user();
       $_SESSION['lti']['track'] = 'reauth3';
     }
@@ -75,13 +76,13 @@ function usercheck($db, $lti) {
     }
     if (isset($_SERVER['PHP_AUTH_USER'])) {
       $returned2 = db_auth($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'], $db, false);
-     if($returned2 == -1 ) {
-       // create user
-       i_lti_user_add($_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW']);
-       $returned2 = db_auth($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'], $db, false);
+      if ($returned2 == -1) {
+        // create user
+        $lti_i->user_add($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
+        $returned2 = db_auth($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'], $db, false);
 
 
-     }
+      }
       if ($returned2 > 0) {
         //insert ID into table
         $returned3 = $lti->add_lti_user($userID);
@@ -105,13 +106,13 @@ function usercheck($db, $lti) {
     }
 
   } else {
-    $authneeded=i_lti_user_time_check($returned[1]);
-    if($authneeded===true) {
+    $authneeded = $lti_i->user_time_check($returned[1]);
+    if ($authneeded === true) {
       display_notice($string['ltiadditionallogin'], $string['ltiadditionallogindesc'], '/artwork/access_denied.png', $title_color = '#C00000');
-       display_notice($string['ltifirstlogin'], $string['ltifirstlogindesc'], '/artwork/access_denied.png', $title_color = '#C00000');
+      display_notice($string['ltifirstlogin'], $string['ltifirstlogindesc'], '/artwork/access_denied.png', $title_color = '#C00000');
       //    $db->close();
       //    exit;
-      $_SESSION['lti']['track']='reauth';
+      $_SESSION['lti']['track'] = 'reauth';
       //TODO as all the rest of the reauth needs finishing
       $db->close();
       exit();

@@ -15,32 +15,30 @@
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
-* 
-* @author Simon Wilkinson
-* @version 1.0
-* @copyright Copyright (c) 2012 The University of Nottingham
-* @package
-*/
+ *
+ * @author Simon Wilkinson
+ * @version 1.0
+ * @copyright Copyright (c) 2012 The University of Nottingham
+ * @package
+ */
 
-  require '../include/sysadmin_auth.inc';
-  require '../include/errors.inc';
+require '../include/sysadmin_auth.inc';
+require '../include/errors.inc';
 
+require_once '../LTI/ims-lti/UoN_LTI.php';
+$lti = new UoN_LTI($mysqli);
 
-  check_var('LTIkeysID', 'POST', true, false);
+check_var('LTIkeysID', 'POST', true, false);
 
-  $tmp_LTIkeysID = $_POST['LTIkeysID'];
-  
-  $result = $mysqli->prepare("UPDATE lti_keys set `deleted`=NOW() WHERE id=?");
-  $result->bind_param('i', $tmp_LTIkeysID);
-  $result->execute();  
-  $result->close();
-  $mysqli->close();
+$lti->delete_lti_key($_POST['LTIkeysID']);
+
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>"/>
   <title><?php echo $string['ltikeydel']; ?></title>
   <script type="text/javascript">
     function updateParent() {
@@ -54,17 +52,20 @@
 sans-serif; font-size:90%; text-align:justifed">
 
 <table cellpadding="8" cellspacing="0" border="0" width="100%">
-<tr>
-<td valign="top"><img src="../artwork/delete_warning.png" width="48" height="48" border="0" alt="Recycle Bin" /></td>
+  <tr>
+    <td valign="top"><img src="../artwork/delete_warning.png" width="48" height="48" border="0" alt="Recycle Bin"/></td>
 
-<td><p>LTI Key successfully deleted.<p>
+    <td><p>LTI Key successfully deleted.
 
-<div style="text-align: center">
-<form action="" method="get">
-<input type="button" name="cancel" value="    OK    " onclick="javascript:window.close();" />
-</form>
-</div>
-</td></tr>
+      <p>
+
+      <div style="text-align: center">
+        <form action="" method="get">
+          <input type="button" name="cancel" value="    OK    " onclick="javascript:window.close();"/>
+        </form>
+      </div>
+    </td>
+  </tr>
 </table>
 
 </body>

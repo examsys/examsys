@@ -65,7 +65,7 @@ require_once '../classes/dateutils.class.php';
   }
 </script>
 
-<div style="z-index:20; display:none; background-color:white; position:fixed; left:190px; top:100px; width:630px; height:320px; border:1px solid #C0C0C0;  box-shadow:2px 2px 2px rgba(0, 0, 0, 0.50)" id="copy_submenu" onclick="showCopyMenu(true, event);">
+<div class="popup" style="z-index:20; display:none; background-color:white; position:fixed; left:190px; top:100px; width:630px; height:320px" id="copy_submenu" onclick="showCopyMenu(true, event);">
 <?php
 if ($cfg_summative_mgmt) {
   echo '<form method="post" action="../paper/copy.php" onsubmit="return checkCopyForm()">';
@@ -73,7 +73,7 @@ if ($cfg_summative_mgmt) {
   echo '<form method="post" action="../paper/copy.php">';
 }
 ?>
-<table cellpadding="1" cellspacing="1" border="0" style="font-size:90%; width:100%" id="table1">
+<table cellpadding="1" cellspacing="0" border="0" style="font-size:100%; width:100%" id="table1">
 <tr>
 <td colspan="5" style="background-color:#F2B100; height:5px; padding:0px"> </td>
 </tr>
@@ -141,9 +141,9 @@ if ($cfg_summative_mgmt) {
 <tr>
 <?php
 if ($paper_type == '2' and $cfg_summative_mgmt) {
-  echo '<td align="center" colspan="5"><input type="button" style="width:100px; display_block" value="Next >>" name="next" onclick="nextTable();" id="next_button" /><input type="submit" style="width:100px; display:none" value="' . $string['copypaper'] . '" name="submit" id="submit_button" /></td>';
+  echo '<td align="center" colspan="5"><input type="button" style="width:100px; display_block" value="' . $string['next'] . '" name="next" onclick="nextTable();" id="next_button" /><input type="submit" style="width:100px; display:none" value="' . $string['copypaper'] . '" name="submit" id="submit_button" /></td>';
 } else {
-  echo '<td align="center" colspan="5"><input type="button" style="width:100px; display:none" value="Next >>" name="next" onclick="nextTable();" id="next_button" /><input type="submit" style="width:100px; display:block" value="' . $string['copypaper'] . '" name="submit" /></td>';
+  echo '<td align="center" colspan="5"><input type="button" style="width:100px; display:none" value="' . $string['next'] . '" name="next" onclick="nextTable();" id="next_button" /><input type="submit" style="width:100px; display:block" value="' . $string['copypaper'] . '" name="submit" /></td>';
 }
 ?>
 </tr>

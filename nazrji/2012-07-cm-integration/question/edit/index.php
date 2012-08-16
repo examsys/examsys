@@ -413,7 +413,7 @@ endif;
 var qType = '<?php if (isset($question)) echo $question->get_type() ?>';
 var lang = {
 <?php
-$langstrings = array('allowpartial', 'validationerror', 'enterleadin', 'enterdescription', 'showmore', 'hidemore', 'enteroption', 'enteroptionshort', 'enteroption_kw', 'mrqconvert', 'entervignette', 'randomenterquestion', 'mappingwarning', 'markchangewarning');
+$langstrings = array('allowpartial', 'validationerror', 'enterleadin', 'enterdescription', 'showmore', 'hidemore', 'enteroption', 'enteroptionshort', 'enteroption_kw', 'mrqconvert', 'entervignette', 'enteroptiontext', 'selectarea', 'randomenterquestion', 'mappingwarning', 'markchangewarning');
 $first = true;
 foreach ($langstrings as $langstring) {
   if (!$first) {

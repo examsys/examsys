@@ -25,7 +25,8 @@
  */
 
 Class QuestionRANK extends Question {
-  
+
+  protected $min_options = 2;
   protected $_answer_negative = 0;
   protected $_allow_partial_marks = true;
   

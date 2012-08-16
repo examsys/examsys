@@ -10,14 +10,14 @@ $(function() {
           depends: function (element) {
             return ($('#option_media1').val() == '' && ($('#existing_media1').length ==0 || $('#existing_media1').val() == ''));
           }
-        } 
+        }
       },
       option_text2: {
         required: {
           depends: function (element) {
             return ($('#option_media2').val() == '' && ($('#existing_media2').length ==0 || $('#existing_media2').val() == ''));
           }
-        } 
+        }
       }
     },
     messages: {

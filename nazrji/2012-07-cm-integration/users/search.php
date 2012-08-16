@@ -201,6 +201,7 @@ if (isset($_GET['submit'])) {
   <title>Rogō: <?php echo $string['usermanagement'] . ' ' . $cfg_install_type; ?></title>
   <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
   <link rel="stylesheet" type="text/css" href="../css/header.css" />
+  <link rel="stylesheet" type="text/css" href="../css/warnings.css" />
   <style type="text/css">
   a {color:black}
   input[type=text], select {font-family:Arail,sans-serif; border: 1px solid #7F9DB9}
@@ -274,12 +275,16 @@ if (isset($_GET['submit'])) {
 <?php
   if (isset($_GET['submit']) or isset($_GET['paperID']) or isset($_GET['moduleID'])) {
     echo "<body>\n";
+    
     include '../include/user_search_options.inc';
-    echo "<div id=\"content\" class=\"content\" style=\"font-size:80%\">\n";
+    
+    echo "<div id=\"content\" class=\"content\">\n";
   } else {
     echo "<body style=\"margin:0px; background-color:white; color:black\">\n";
+    
     include '../include/user_search_options.inc';
-    echo "<div id=\"content\" class=\"content\" style=\"font-size:80%\">\n";
+    
+    echo "<div id=\"content\" class=\"content\">\n";
     echo "<table class=\"header\">\n";
     echo "<tr><th><div class=\"breadcrumb\"><a href=\"../staff/index.php\">" . $string['home'] . "</a></div><div onclick=\"qOff()\" style=\"font-size:200%; margin-left:10px\"><strong>" . $string['usersearch'] . "</div></th><th style=\"text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(92); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"Help\" border=\"0\" /></a></th></tr>";
     echo "<tr><th colspan=\"2\" class=\"bevel\"></th></tr>\n</table>\n</div>\n</body></html>\n";
@@ -385,7 +390,7 @@ if ($sortby == 'title') {
 <tr><th colspan="8" class="bevel"></th></tr>
 <?php
   if ($roles_sql == '') {
-    echo "</table>\n<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"width:100%\"><tr><td style=\"width:60px; height:32px; text-align:right; background-image:url('../artwork/non_owner_gradient.gif'); background-repeat:repeat-x\"><img src=\"../artwork/red_warning.png\" width=\"32\" height=\"32\" alt=\"Locked\" />&nbsp;&nbsp;</td><td style=\"height:32px; vertical-align:middle; background-image:url('../artwork/non_owner_gradient.gif'); background-repeat:repeat-x\">".$string['msg1']."</td></tr></table>\n</body>\n</html>\n";
+    echo "</table>\n<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"width:100%\"><tr><td class=\"redwarn\" style=\"width:60px; height:32px; text-align:right\"><img src=\"../artwork/red_warning.png\" width=\"32\" height=\"32\" alt=\"Locked\" />&nbsp;&nbsp;</td><td class=\"redwarn\" style=\"height:32px; vertical-align:middle\">".$string['msg1']."</td></tr></table>\n</body>\n</html>\n";
     exit;
   }
 

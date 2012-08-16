@@ -448,7 +448,7 @@ function display_feedback($sessionid, $temp_userID, $paperID, $paper_type, $log_
         }
         ?>
         <script language="javascript">
-          write_string('<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="<?php echo $paper[$question]['q_media_width']; ?>" height="<?php echo $paper[$question]['q_media_height']; ?>" id="externalinterfaceq<?php echo $question_no; ?>_1" align="top">');
+          write_string('<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="<?php echo $paper[$question]['q_media_width'] + 2; ?>" height="<?php echo $paper[$question]['q_media_height'] + 24; ?>" id="externalinterfaceq<?php echo $question_no; ?>_1" align="top">');
           write_string('<param name="movie" value="<?php echo $cfg_root_path ?>/question/edit/area.swf" />');
           write_string('<param name="quality" value="high" />');
           write_string('<param name="bgcolor" value="#ffffff" />');
@@ -461,7 +461,7 @@ function display_feedback($sessionid, $temp_userID, $paperID, $paper_type, $log_
           write_string('<param name="salign" value="top" />');
           write_string('<param name="allowScriptAccess" value="sameDomain" />');
           write_string('<!--[if !IE]>-->');
-          write_string('<object type="application/x-shockwave-flash" data="<?php echo $cfg_root_path ?>/question/edit/area.swf" id="externalinterfaceq<?php echo $question_no; ?>_2" width="<?php echo $paper[$question]['q_media_width']; ?>" height="<?php echo $paper[$question]['q_media_height']; ?>">');
+          write_string('<object type="application/x-shockwave-flash" data="<?php echo $cfg_root_path ?>/question/edit/area.swf" id="externalinterfaceq<?php echo $question_no; ?>_2" width="<?php echo $paper[$question]['q_media_width'] + 2; ?>" height="<?php echo $paper[$question]['q_media_height'] + 24; ?>">');
           write_string('<param name="movie" value="<?php echo $cfg_root_path ?>/question/edit/area.swf" />');
           write_string('<param name="quality" value="high" />');
           write_string('<param name="bgcolor" value="#ffffff" />');

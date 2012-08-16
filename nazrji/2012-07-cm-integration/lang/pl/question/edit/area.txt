@@ -3,6 +3,7 @@ $string['But_Clear_All'] = 'Wymaż wszystko';
 $string['But_Delete_point'] = 'Usuń punkt';
 $string['But_your_answer'] = 'Twoja odpowiedź';
 $string['But_correct_answer'] = 'Poprawna odpowiedź';
+$string['But_show_error'] = 'Pokaż błędy';
 $string['Start_over'] = 'Wznów';
 $string['Magnify'] = 'Powiększ';
 $string['Eraser'] = 'Kasownik';

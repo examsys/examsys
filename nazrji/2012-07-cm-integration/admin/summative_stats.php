@@ -51,7 +51,7 @@
 <?php
   require '../include/admin_options.inc';
 ?>
-<div id="content" class="content" style="font-size:80%">
+<div id="content" class="content">
 <table class="header">
 <tr>
 <th colspan="2"><div class="breadcrumb"><a href="../staff/index.php"><?php echo $string['home']; ?></a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php"><?php echo $string['administrativetools']; ?></a></a></div></th>

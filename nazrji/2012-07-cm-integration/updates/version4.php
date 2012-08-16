@@ -3168,6 +3168,39 @@ if (!isset($_POST['update'])) {
   }
   $result_col->close();
 
+
+  // 15/08/2012 - cczsa1 adding unknown school and faculty
+
+  require_once $cfg_web_root . 'classes/facultyutils.class.php';
+  require_once $cfg_web_root . 'classes/schoolutils.class.php';
+
+  $result = $mysqli->prepare("SELECT id FROM " . $cfg_db_database . ".faculty  WHERE name='UNKNOWN Faculty'");
+  $result->execute();
+  $result->store_result();
+  $result->bind_result($facultyID);
+  $result->fetch();
+  $rows=$result->num_rows();
+  $result->close();
+  if ($rows == 0) {
+    $facultyID = FacultyUtils::add_faculty('UNKNOWN Faculty', $mysqli );
+    echo "<li>Adding Unknown Faculty</li>\n";
+
+  }
+
+
+  $result = $mysqli->prepare("SELECT id FROM " . $cfg_db_database . ".`schools`  WHERE school='UNKNOWN School'");
+  $result->execute();
+  $result->store_result();
+  $result->bind_result($id1);
+  $result->fetch();
+  $rows=$result->num_rows();
+  $result->close();
+  if ($rows == 0) {
+    $scoolID = SchoolUtils::add_school(  $facultyID, 'UNKNOWN School', $mysqli);
+    echo "<li>Adding Unknown School</li>\n";
+  }
+
+
   // End ------------------------------------------------------------------
   echo "</ol>\n";
 

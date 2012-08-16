@@ -295,7 +295,7 @@ a.access:hover {color:white}
   require '../tools/colour_picker/colour_picker.inc';
   require '../include/user_search_options.inc';
 ?>
-<div id="content" class="content" style="font-size:80%">
+<div id="content" class="content">
 <table cellpadding="0" cellspacing="0" border="0" style="background-color:#F1F5FB; width:100%">
 <form name="myform" action="<?php echo $_SERVER['PHP_SELF']; ?>?userID=<?php echo $_GET['userID']; ?>" method="post">
 <?php
@@ -464,7 +464,7 @@ a.access:hover {color:white}
         $display_val = str_replace(' ', '', $value);
         $display_val = str_replace(',', '', $display_val);
         $display_val = $string[strtolower($display_val)];
-        if ($value == $tmp_roles) {
+        if (strtolower($value) == strtolower($tmp_roles)) {
           echo "<option value=\"$value\" selected>$display_val</option>";
         } else {
           echo "<option value=\"$value\">$display_val</option>";
@@ -802,13 +802,13 @@ a.access:hover {color:white}
   echo drawTabs('Notes', 4, $link_html, $tmp_roles);
   echo "<tr><td class=\"coltitle\">&nbsp;&nbsp;&nbsp;" . $string['date'] . "</td><td class=\"coltitle\">" . $string['paper'] . "</td><td class=\"coltitle\">" . $string['note'] . "</td><td class=\"coltitle\">" . $string['author'] . "</td></tr>\n";
   
-  $results = $mysqli->prepare("SELECT note, note_date, paper_id, moduleID, paper_title, CONCAT(title, ' ', initials, ' ', surname) AS note_author FROM (student_notes, properties, users) WHERE student_notes.paper_id=properties.property_id AND student_notes.note_authorID=users.id AND student_notes.userID=?");
+  $results = $mysqli->prepare("SELECT note, DATE_FORMAT(note_date, \"$cfg_short_date\"), paper_id, moduleID, paper_title, CONCAT(title, ' ', initials, ' ', surname) AS note_author FROM (student_notes, properties, users) WHERE student_notes.paper_id=properties.property_id AND student_notes.note_authorID=users.id AND student_notes.userID=?");
   $results->bind_param('i', $tmp_id);
   $results->execute();
   $results->store_result();
   $results->bind_result($note, $note_date, $note_paper_id, $note_moduleID, $paper_title, $note_author);
   while ($results->fetch()) {
-    echo "<tr><td>&nbsp;<img src=\"../artwork/notes_icon.gif\" width=\"14\" height=\"14\" alt=\"Note\" />&nbsp;$note_date</td><td><a href=\"../paper/details.php?paperID=" . $note_paper_id . "&module=" . $note_moduleID . "\">$paper_title</a></td><td>$note</td><td>$note_author</td></tr>";
+    echo "<tr><td>&nbsp;<img src=\"../artwork/notes_icon.gif\" width=\"14\" height=\"14\" alt=\"Note\" />&nbsp;$note_date</td><td style=\"padding-right:20px\"><a href=\"../paper/details.php?paperID=" . $note_paper_id . "&module=" . $note_moduleID . "\">$paper_title</a></td><td>$note</td><td>$note_author</td></tr>";
   }
   $results->close();
 ?>

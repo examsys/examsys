@@ -149,13 +149,17 @@
 <?php
   if (isset($_POST['submit'])) {
     echo "<body>\n";
+    
     require '../include/paper_search_options.inc';
-    echo "<div id=\"content\" class=\"content\" style=\"font-size:80%\">\n";
+    
+    echo "<div id=\"content\" class=\"content\">\n";
     echo "<table class=\"header\">\n";
   } else {
     echo "<body style=\"margin:0px; background-color:white; color:black\">\n";
+    
     require '../include/paper_search_options.inc';
-    echo "<div id=\"content\" class=\"content\" style=\"font-size:80%\">\n";
+    
+    echo "<div id=\"content\" class=\"content\">\n";
     echo "<table class=\"header\">\n";
     echo "<tr><th><div class=\"breadcrumb\"><a href=\"../staff/index.php\">" . $string['home'] . "</a></div><div style=\"font-size:200%; margin-left:10px\"><strong>" . $string['papersearch'] . "</strong></div></th><th style=\"text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(0); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"Help\" border=\"0\" /></a></th></tr>";
     echo "<tr><th colspan=\"2\" class=\"bevel\"></th></tr>\n</table>\n";

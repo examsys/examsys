@@ -25,32 +25,33 @@
 require '../include/staff_auth.inc';
 require '../include/errors.inc';
   
-  if (isset($_POST['ok']) or (isset($_POST['returnhit']) and $_POST['returnhit'] == '1')) {
-    $new_keyword = trim($_POST['new_keyword']);
-    if ($new_keyword != '') {
-      if ($_POST['module'] == '') {
-        $result = $mysqli->prepare("INSERT INTO keywords_user VALUES (NULL,$userID,?,'personal')");
-        $result->bind_param('s', $new_keyword);
-        $result->execute();  
-        $result->close();
-      } else {
-        // Get the numeric ID of the module to store in keywords_user as the userID.
-        $result = $mysqli->prepare("SELECT id FROM modules WHERE moduleid=?");
-        $result->bind_param('s', $_POST['module']);
-        $result->execute();
-        $result->bind_result($tmp_userID);
-        $result->fetch();
-        $result->close();
-      
-        $result = $mysqli->prepare("INSERT INTO keywords_user VALUES (NULL,$tmp_userID,?,'team')");
-        $result->bind_param('s', $new_keyword);
-        $result->execute();  
-        $result->close();
-      }
+if (isset($_POST['ok']) or (isset($_POST['returnhit']) and $_POST['returnhit'] == '1')) {
+  $new_keyword = trim($_POST['new_keyword']);
+  if ($new_keyword != '') {
+    if ($_POST['module'] == '') {
+      $result = $mysqli->prepare("INSERT INTO keywords_user VALUES (NULL,$userID,?,'personal')");
+      $result->bind_param('s', $new_keyword);
+      $result->execute();  
+      $result->close();
+    } else {
+      // Get the numeric ID of the module to store in keywords_user as the userID.
+      $result = $mysqli->prepare("SELECT id FROM modules WHERE moduleid=?");
+      $result->bind_param('s', $_POST['module']);
+      $result->execute();
+      $result->bind_result($tmp_userID);
+      $result->fetch();
+      $result->close();
+    
+      $result = $mysqli->prepare("INSERT INTO keywords_user VALUES (NULL,$tmp_userID,?,'team')");
+      $result->bind_param('s', $new_keyword);
+      $result->execute();  
+      $result->close();
     }
+  }
 ?>
 <html>
 <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
   <title>Add Keyword</title>
 </head>
@@ -69,6 +70,8 @@ require '../include/errors.inc';
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
 <title><?php echo $string['newkeyword']; ?></title>
 <script language="JavaScript">
   function illegalChar(codeID) {

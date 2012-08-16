@@ -247,13 +247,15 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
         if (isset($_POST[$qid])) {
           $saved_response = $_POST[$qid];
           
+          $subparts = explode(';', $saved_response);
+          
           $parts = explode(',', $saved_response);
           $tolerances = explode(',', $old_display_method);
           if ($parts[1] >= $tolerances[0] and $parts[2] <= $tolerances[1]) {
             $mark = $marks_correct;
           } elseif ($parts[1] >= $tolerances[2] and $parts[2] <= $tolerances[3]) {
             $mark = $marks_partial;
-          } else {
+          } elseif (isset($subparts[1]) and strlen($subparts[1]) > 0) {
             $mark = $marks_incorrect;
           }
         } else {

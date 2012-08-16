@@ -16,8 +16,11 @@ class UoN_LTI extends BLTI {
   function __construct($db, $parm = false) {
     $this->db = $db;
     if (is_array($parm) or is_string($parm)) $this->parm = $parm;
+  }
 
-
+  public function get_context_title() {
+    $title = $this->info['context_title'];
+    return $title;
   }
 
   public function init_lti($usesession = true, $doredirect = false) {
@@ -206,8 +209,9 @@ class UoN_LTI extends BLTI {
           echo nl2br($e->getTraceAsString());
         }
       }
-      $result = $this->db->prepare("DELETE FROM " . $this->parm['table_prefix'] . "lti_keys WHERE id=?");
-      $result->bind_param('i', $ltiid);
+      //  $result = $this->db->prepare("DELETE FROM " . $this->parm['table_prefix'] . "lti_keys WHERE id=?");
+      $stmt = $this->db->prepare("UPDATE " . $this->parm['table_prefix'] . "lti_keys set deleted=NOW() WHERE id=?");
+      $stmt->bind_param('i', $ltiid);
       $stmt->execute();
       $stmt->close();
 
@@ -242,8 +246,8 @@ class UoN_LTI extends BLTI {
       $stmt = $this->db->prepare("SELECT lti_user_equ, updated_on FROM " . $this->parm['table_prefix'] . "lti_user WHERE  lti_user_key=?");
       if ($this->db->error) {
         try {
-          $a=$this->db->error;
-          $b= $this->db->errno;
+          $a = $this->db->error;
+          $b = $this->db->errno;
           throw new Exception("0MySQL error $a <br /> Query:<br /> $query", $b);
         }
         catch (Exception $e) {
@@ -283,8 +287,8 @@ class UoN_LTI extends BLTI {
       $result = $this->db->prepare("UPDATE " . $this->parm['table_prefix'] . "lti_user set updated_on=NOW() WHERE lti_user_key=? ");
       if ($this->db->error) {
         try {
-          $a=$this->db->error;
-          $b= $this->db->errno;
+          $a = $this->db->error;
+          $b = $this->db->errno;
           throw new Exception("0MySQL error $a <br /> Query:<br /> $query", $b);
         }
         catch (Exception $e) {
@@ -296,14 +300,14 @@ class UoN_LTI extends BLTI {
       $result->execute();
       $result->close();
     }
-    return $ret;
+    return;
   }
 
 
   function lookup_lti_resource($lti_resource_key = false) {
     if ($lti_resource_key === false) $lti_resource_key = $this->getResourceKey();
     if ($this->parm['dbtype'] == 'mysqli') {
-      $stmt = $this->db->prepare("SELECT internal_id,internal_type FROM " . $this->parm['table_prefix'] . "lti_resource WHERE lti_resource_key=?");
+      $stmt = $this->db->prepare("SELECT internal_id,internal_type,updated_on FROM " . $this->parm['table_prefix'] . "lti_resource WHERE lti_resource_key=?");
       $stmt->bind_param('s', $lti_resource_key);
       $stmt->execute();
       $stmt->store_result();
@@ -322,10 +326,10 @@ class UoN_LTI extends BLTI {
   function add_lti_resource($internal_id, $internal_type, $lti_resource_key = false) {
     if ($lti_resource_key === false) $lti_resource_key = $this->getResourceKey();
     if ($this->parm['dbtype'] == 'mysqli') {
-      $result = $this->db->prepare("INSERT INTO " . $this->parm['table_prefix'] . "lti_resource (lti_resource_key, internal_id, internal_type,updated_on) VALUES (?, ?, ?) ");
+      $result = $this->db->prepare("INSERT INTO " . $this->parm['table_prefix'] . "lti_resource (lti_resource_key, internal_id, internal_type,updated_on) VALUES (?, ?, ?, NOW()) ");
       $result->bind_param('sss', $lti_resource_key, $internal_id, $internal_type);
       $result->execute();
-      $ret = $db->insert_id;
+      $ret = $this->db->insert_id;
       $result->close();
     }
     return $ret;
@@ -339,7 +343,7 @@ class UoN_LTI extends BLTI {
       $stmt->execute();
       $rows = $stmt->affected_rows;
       $stmt->close();
-      if($rows>0) {
+      if ($rows > 0) {
         return $rows;
       }
     }
@@ -363,7 +367,7 @@ class UoN_LTI extends BLTI {
       $result = $this->db->prepare("INSERT INTO " . $this->parm['table_prefix'] . "lti_context (lti_context_key, c_internal_id, updated_on) VALUES (?, ?, NOW()) ");
       $result->bind_param('ss', $lti_context_key, $c_internal_id);
       $result->execute();
-      $ret = $db->insert_id;
+      $ret = $this->db->insert_id;
       $result->close();
       //   }
     }
@@ -373,8 +377,9 @@ class UoN_LTI extends BLTI {
   function lookup_lti_context($lti_context_key = false) {
     if ($lti_context_key === false) $lti_context_key = $this->getResourceKey();
     if ($this->parm['dbtype'] == 'mysqli') {
-      $stmt = $this->db->prepare("SELECT c_internal_id,updated_on FROM " . $this->parm['table_prefix'] . "lti_context WHERE lti_context_key=?");
-      $stmt->bind_param('s', $lti_resource_key);
+      $sql = "SELECT c_internal_id,updated_on FROM " . $this->parm['table_prefix'] . "lti_context WHERE lti_context_key=?";
+      $stmt = $this->db->prepare($sql);
+      $stmt->bind_param('s', $lti_context_key);
       $stmt->execute();
       $stmt->store_result();
       $rows = $stmt->num_rows;

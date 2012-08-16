@@ -50,7 +50,7 @@ a.heading:hover {color:#428EFF; font-weight:bold}
   include '../include/admin_options.inc';
 ?>
 
-<div id="content" class="content" style="font-size:80%">
+<div id="content" class="content">
 
 <table class="header">
 <tr>

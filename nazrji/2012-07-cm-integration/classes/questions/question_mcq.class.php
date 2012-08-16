@@ -26,6 +26,7 @@
 
 Class QuestionMCQ extends Question {
 
+  protected $min_options = 2;
   protected $_allow_change_marking_method = false;
   
   function __construct($mysqli, $user_id, $lang_strings, $data = null) {

@@ -80,7 +80,7 @@
   $result->execute();
   $result->bind_result($paper_title, $moduleID, $session, $start_date, $end_date, $paper_type);
   while ($result->fetch()) {
-    echo "<table class=\"header\" style=\"font-size:80%\">\n";
+    echo "<table class=\"header\">\n";
     echo '<tr><th>';
     echo '<div class="breadcrumb"><a href="../staff/index.php">' . $string['home'] . '</a>';
     if ($folder != '') {
@@ -108,7 +108,7 @@
   $result->close();
   
   ?>
-  <table class="header" style="font-size:90%">
+  <table class="header">
   <tr><th style="padding-top:1px">
   <table cellpadding="0" cellspacing="0" border="0" style="font-size:90%; width:378px">
   <td style="cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; font-size:110%; background-image:url(../artwork/tab_off.gif)" onclick="window.location.href='paper_mappings_by_session.php?paperID=<?php echo $_GET['paperID']; ?>&folder=<?php echo $_GET['folder']; ?>&module=<?php echo $_GET['module']; ?>'"><?php echo $string['bysession']; ?></td>
@@ -134,13 +134,13 @@
   }
   if ($year_in_title == true) {
     if ($tmp_match != $session) {
-      echo "<table border=\"0\" cellpadding=\"1\" cellspacing=\"0\" style=\"width:100%; font-size:80%\">\n";
+      echo "<table border=\"0\" cellpadding=\"1\" cellspacing=\"0\" style=\"width:100%\">\n";
       echo "<tr><td style=\"width:40px; height:32px; text-align:right; background-image:url('../artwork/non_owner_gradient.gif'); background-repeat:repeat-x\"><img src=\"../artwork/non_owner_icon.png\" width=\"25\" height=\"30\" alt=\"Warning\" />&nbsp;&nbsp;</td><td colspan=\"7\" style=\"height:32px; vertical-align:middle; background-image:url('../artwork/non_owner_gradient.gif'); background-repeat:repeat-x\"><strong>" . $string['warning'] . "</strong>&nbsp;&nbsp;&nbsp;";
       printf($string['nomatchsession'], $tmp_match, $session);
       echo "</td></tr>\n</table>\n";
     }
   }
-  echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"  style=\"width:100%; font-size:80%; background-color:white\">\n";
+  echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"  style=\"width:100%\">\n";
   $old_p_id = 0;
   $row_no = 0;
   $temp_array = array();

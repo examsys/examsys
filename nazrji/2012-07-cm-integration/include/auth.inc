@@ -15,14 +15,14 @@
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
-* 
-* Authentication functions.
-* 
-* @author Anthony Brown
-* @version 1.0
-* @copyright Copyright (c) 2012 The University of Nottingham
-* @package
-*/
+ *
+ * Authentication functions.
+ *
+ * @author Anthony Brown
+ * @version 1.0
+ * @copyright Copyright (c) 2012 The University of Nottingham
+ * @package
+ */
 
 
 function display_notice($title, $msg, $icon, $title_color = 'black') {
@@ -31,7 +31,7 @@ function display_notice($title, $msg, $icon, $title_color = 'black') {
   echo "<html>\n<head>\n<title>$title</title>\n<style>\nbody {font-size:90%; font-family:Arial,sans-serif;background-color:#FCFCFC;color:#575757}\nh1 {color:#BF0000;font-size:150%}\n</style>\n</head>\n<body>\n";
   echo "<div style=\"position:absolute; left:10px; top:10px\"><img src=\"" . $cfg_root_path . $icon . "\" width=\"48\" height=\"48\" /></div>\n";
   echo "<h1 style=\"margin-left:60px; color:$title_color\">$title</h1>\n";
-  echo "<hr size=\"1\" align=\"left\" width=\"500\" style=\"margin-left:60px; color:#C0C0C0; background-color:#C0C0C0; height:1px; border:0px\" />\n<p style=\"margin-left:60px\">$msg</p>"; 
+  echo "<hr size=\"1\" align=\"left\" width=\"500\" style=\"margin-left:60px; color:#C0C0C0; background-color:#C0C0C0; height:1px; border:0px\" />\n<p style=\"margin-left:60px\">$msg</p>";
 }
 
 /**
@@ -43,15 +43,15 @@ function display_notice($title, $msg, $icon, $title_color = 'black') {
  */
 function access_denied($message, $output_header = false) {
   global $mysqli, $string, $cfg_root_path;
-  
+
   if ($output_header == true) {
     Header("WWW-authenticate: basic realm=\"Rogo\"");
     Header("HTTP/1.0 401 Unauthorised");
   }
   display_notice($string['accessdenied'], $message, '/artwork/access_denied.png', '#C00000');
-  
+
   echo "\n</body>\n</html>";
-  
+
   $mysqli->close();
   exit;
 }
@@ -69,15 +69,14 @@ function access_denied($message, $output_header = false) {
 require_once 'ldap.php';
 
 
-
 /**
- * This is function db_userlookup looks up a user in the local database and populates: 
- * 
+ * This is function db_userlookup looks up a user in the local database and populates:
+ *
  *  $userID, $userroles, $faculty, $title, $surname, $username, $grade, $year
  *
  * @param string $u username
  * @param mixed $db msqli object
- * @return array 
+ * @return array
  *
  */
 
@@ -125,15 +124,15 @@ function db_change_user($db) {
   global $cfg_db_inv_user, $cfg_db_inv_passwd;
 
   //select the aproprate database user
-  if (strpos($userroles,'SysAdmin') !== false) {
+  if (strpos($userroles, 'SysAdmin') !== false) {
     $result = $db->change_user($cfg_db_sysadmin_user, $cfg_db_sysadmin_passwd, $cfg_db_database);
-  } else if (strpos($userroles,'Staff') !== false or strpos($userroles,'Admin') !== false) {           // Process staff first to get higher priority than students
+  } else if (strpos($userroles, 'Staff') !== false or strpos($userroles, 'Admin') !== false) { // Process staff first to get higher priority than students
     $result = $db->change_user($cfg_db_staff_user, $cfg_db_staff_passwd, $cfg_db_database);
-  } else if (strpos($userroles,'Student') !== false) {
+  } else if (strpos($userroles, 'Student') !== false) {
     $result = $db->change_user($cfg_db_student_user, $cfg_db_student_passwd, $cfg_db_database);
-  } else if (strpos($userroles,'External Examiner') !== false) {
+  } else if (strpos($userroles, 'External Examiner') !== false) {
     $result = $db->change_user($cfg_db_external_user, $cfg_db_external_passwd, $cfg_db_database);
-  } else if (strpos($userroles,'Invigilator') !== false) {
+  } else if (strpos($userroles, 'Invigilator') !== false) {
     $result = $db->change_user($cfg_db_inv_user, $cfg_db_inv_passwd, $cfg_db_database);
   } else {
     $result = false;
@@ -159,7 +158,7 @@ function db_auth($u, $p, $db, $changeuser = true) {
   global $cfg_db_student_user, $cfg_db_student_passwd;
   global $cfg_db_external_user, $cfg_db_external_passwd;
   global $cfg_db_inv_user, $cfg_db_inv_passwd;
-  
+
   if ($u == '') {
     return 0;
   }
@@ -174,24 +173,24 @@ function db_auth($u, $p, $db, $changeuser = true) {
 
   if ($record_no > 0) {
 
-    if (substr($password,0,3) == '$1$') {
+    if (substr($password, 0, 3) == '$1$') {
       $encrypt_type = 'MD5';
     } else {
       $encrypt_type = 'SHA-512';
     }
 
     $encrypt_password = encpw($cfg_encrypt_salt, $u, $p, $encrypt_type);
-    
+
     if ($encrypt_password == $password) {
-      if ($encrypt_type == 'MD5') {          // Re-encrypt MD5 passwords using SHA-512.
+      if ($encrypt_type == 'MD5') { // Re-encrypt MD5 passwords using SHA-512.
         $encpw_details = encpw($cfg_encrypt_salt, $u, $p);
         $stmt = $db->prepare("UPDATE users SET password = ? WHERE username = ?");
         $stmt->bind_param('ss', $encpw_details, $u);
         $stmt->execute();
         $stmt->close();
-      }     
+      }
 
-      if (strpos($userroles,'Staff') !== false and count($split_username) > 1) {
+      if (strpos($userroles, 'Staff') !== false and count($split_username) > 1) {
         //for Sysadmin only 
         if ($split_username[1] == 'staff') {
           //set the role to staff
@@ -206,18 +205,17 @@ function db_auth($u, $p, $db, $changeuser = true) {
         }
       }
 
-      if ($changeuser){
-        $ret2=db_change_user($db);
-        if($ret2===false) {
-          $ret=-3;
-        }
-        else {
-          $ret=1;
+      if ($changeuser) {
+        $ret2 = db_change_user($db);
+        if ($ret2 === false) {
+          $ret = -3;
+        } else {
+          $ret = 1;
         }
       } else {
-        $ret=1;
+        $ret = 1;
       }
-      
+
       return $ret;
     } else {
       $db_errors = '<strong>' . $string['localtsauthfailed'] . '</strong>';
@@ -229,7 +227,7 @@ function db_auth($u, $p, $db, $changeuser = true) {
       $db_errors = '<strong>' . $string['notsaccount'] . '</strong>';
     }
     return -1;
-  } 
+  }
 }
 
 /**
@@ -243,19 +241,20 @@ function db_auth($u, $p, $db, $changeuser = true) {
  * @return string encrypted password
  *
  */
-function encpw($salt, $u, $p, $type='SHA-512') {
-  $supportsha=false;
+function encpw($salt, $u, $p, $type = 'SHA-512') {
+  $supportsha = false;
   if (version_compare(PHP_VERSION, '5.3.2') >= 0) {
-    $supportsha=true;
+    $supportsha = true;
   }
-  if ($type == 'SHA-512' and $supportsha==true ) {
-    $full_salt = '$6$' . $salt . '$';        // SHA-512
+  if ($type == 'SHA-512' and $supportsha == true) {
+    $full_salt = '$6$' . $salt . '$'; // SHA-512
     $new_password = crypt($p, $full_salt);
     $new_password = '$6$' . substr($new_password, strlen($full_salt));
   } else {
-    $full_salt = '$1$' . substr(md5($u), 0, 8) . '$';   // Simple MD5, for barckwards compatibility
+    $full_salt = '$1$' . substr(md5($u), 0, 8) . '$'; // Simple MD5, for barckwards compatibility
     $new_password = crypt($p, $full_salt);
   }
+  
   return $new_password;
 }
 
@@ -267,18 +266,18 @@ function encpw($salt, $u, $p, $type='SHA-512') {
  *
  */
 function gen_password($len = 8) {
-  $lower    = 'abcdefghijklmnoprrstuvwxyzabcdefghijklmnoprrstuvwxyz';
-  $upper    = 'ABCDEFGHIJKLMN0PQRSTUVWXYZABCDEFGHIJKLMN0PQRSTUVWXYZ';
-  $num      = '0123456789012345678901234501234567890123456789012345';
-  $special  = '!$%^&*-=+_.@~!?!$%^&*-=+_.@~!?!$%^&*-=+_.@~!?!$%^&*-';
+  $lower = 'abcdefghijklmnoprrstuvwxyzabcdefghijklmnoprrstuvwxyz';
+  $upper = 'ABCDEFGHIJKLMN0PQRSTUVWXYZABCDEFGHIJKLMN0PQRSTUVWXYZ';
+  $num = '0123456789012345678901234501234567890123456789012345';
+  $special = '!$%^&*-=+_.@~!?!$%^&*-=+_.@~!?!$%^&*-=+_.@~!?!$%^&*-';
 
   $pass = '';
-  $chars = array($lower,$lower,$lower,$special,$num,$num,$upper,$upper);
-  for($i = 0; $i < $len; $i++) {
-    if($i < 7) {
-      $pass .= substr($chars[$i],rand(0,51),1);
+  $chars = array($lower, $lower, $lower, $special, $num, $num, $upper, $upper);
+  for ($i = 0; $i < $len; $i++) {
+    if ($i < 7) {
+      $pass .= substr($chars[$i], rand(0, 51), 1);
     } else {
-      $pass .= substr($chars[rand(2,6)],rand(0,51),1);
+      $pass .= substr($chars[rand(2, 6)], rand(0, 51), 1);
     }
   }
   return $pass;
@@ -286,7 +285,7 @@ function gen_password($len = 8) {
 
 function getUserTeams($userID, $db) {
   $teams = array();
-  
+
   $result = $db->prepare("SELECT name FROM teams WHERE memberID=? AND name IS NOT NULL ORDER BY name");
   echo $db->error;
   $result->bind_param('i', $userID);
@@ -297,7 +296,7 @@ function getUserTeams($userID, $db) {
     $teams[$team_name] = $team_name;
   }
   $result->close();
-  
+
   return $teams;
 }
 

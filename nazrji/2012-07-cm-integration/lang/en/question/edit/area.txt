@@ -3,6 +3,7 @@ $string['But_Clear_All'] = 'Clear All';
 $string['But_Delete_point'] = 'Delete point';
 $string['But_your_answer'] = 'Your answer';
 $string['But_correct_answer'] = 'Correct answer';
+$string['But_show_error'] = 'Show error';
 $string['Start_over'] = 'Start over';
 $string['Finished'] = 'Finish';
 $string['Eraser'] = 'Eraser';

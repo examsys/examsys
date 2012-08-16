@@ -653,7 +653,7 @@ Class InstallUtils {
     }
 
     //create sysadmin user
-    UserUtils::createUser(  $_POST['SysAdmin_username'],
+    UserUtils::create_user( $_POST['SysAdmin_username'],
                             $_POST['SysAdmin_password'],
                             $_POST['SysAdmin_title'],
                             $_POST['SysAdmin_first'],
@@ -669,7 +669,7 @@ Class InstallUtils {
 
     //create 100 guest accounts
     for ($i=1; $i<=100; $i++) {
-      UserUtils::createUser(  'user' . $i,
+      UserUtils::create_user( 'user' . $i,
                               '', //blank password will be generated
                               'Dr',
                               'A',
@@ -683,6 +683,17 @@ Class InstallUtils {
                               self::$db
                             );
      }
+
+    //add unknown school & faculty
+
+    $facultyID = FacultyUtils::add_faculty('UNKNOWN Faculty',
+      self::$db
+    );
+
+    $scoolID = SchoolUtils::add_school(  $facultyID,
+      'UNKNOWN School',
+      self::$db
+    );
 
      //add traing school
     $facultyID = faculty_utils::add_faculty('Administrative and Support Units',
@@ -2122,7 +2133,7 @@ QUERY;
           ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
-      $this->tableList['lti_context'] = <<<QUERY
+    $this->tableList['lti_context'] = <<<QUERY
           CREATE TABLE IF NOT EXISTS `lti_context` (
           `lti_context_key` VARCHAR( 255 ) NOT NULL ,
           `c_internal_id` VARCHAR( 255 ) NOT NULL ,

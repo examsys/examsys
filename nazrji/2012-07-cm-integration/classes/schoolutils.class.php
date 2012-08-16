@@ -15,9 +15,9 @@
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
-* 
+*
 * Utility class for installer related functionality
-* 
+*
 * @author Anthony Brown, Simon Wilkinson
 * @version 1.0
 * @copyright Copyright (c) 2012 The University of Nottingham
@@ -26,9 +26,9 @@
 
 
 Class SchoolUtils {
- 
+
   static function add_school($facultyID, $school, $db) {
-   
+
     $result = $db->prepare("INSERT INTO schools(school, facultyID) VALUES (?, ?)");
     $result->bind_param('si', $school, $facultyID);
     $result->execute();
@@ -36,7 +36,7 @@ Class SchoolUtils {
     if ($db->errno != 0) {
       return false;
     }
-    
+
     return $db->insert_id;
   }
 
@@ -53,7 +53,7 @@ Class SchoolUtils {
     $stmt->close();
 
     return $school_list;
-  } 
+  }
 
   static function get_school_list_by_name($db) {
     $school_list = array();
@@ -67,11 +67,33 @@ Class SchoolUtils {
     $stmt->close();
 
     return $school_list;
-  }  
-  
+  }
+
+  static function get_school_id_by_name($school_name,$db) {
+
+    $stmt = $db->prepare("SELECT id FROM schools WHERE deleted IS NULL and school=?");
+    $stmt->bind_param('s',$school_name);
+    $stmt->execute();
+    $stmt->bind_result($id);
+    $stmt->store_result();
+    $stmt->fetch();
+    $row = $stmt->num_rows;
+    $stmt->close();
+    if($row == 0) {
+      $stmt = $db->prepare("SELECT id FROM schools WHERE deleted IS NULL and school='UNKNOWN School'");
+      $stmt->execute();
+      $stmt->bind_result($id);
+      $stmt->store_result();
+      $stmt->fetch();
+      $stmt->close();
+    }
+    return $id;
+  }
+
+
   static function get_admin_schools($admin_userid, $db) {
     $school_list = array();
-    
+
     $stmt = $db->prepare("SELECT schools_id FROM admin_access WHERE userID=?");
     $stmt->bind_param('i', $admin_userid);
     $stmt->execute();
@@ -80,7 +102,7 @@ Class SchoolUtils {
       $school_list[] = $school;
     }
     $stmt->close();
-  
+
     return $school_list;
   }
 }

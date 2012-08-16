@@ -23,8 +23,8 @@
 */
 
 $media = $question->get_media();
-$plugin_height = $media['height'] + 21;
-$plugin_width = ($media['width'] < 235) ? 235 : $media['width'];
+$plugin_height = $media['height'] + 24;
+$plugin_width = ($media['width'] < 235) ? 235 : $media['width'] + 2;
 $correct_full = ($question->get_correct_full() == '') ? 95 : $question->get_correct_full();
 $error_full = ($question->get_error_full() == '') ? 5 : $question->get_error_full();
 $correct_partial = ($question->get_correct_partial() == '') ? 90 : $question->get_correct_partial();

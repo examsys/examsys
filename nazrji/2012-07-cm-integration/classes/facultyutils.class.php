@@ -15,28 +15,50 @@
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
-* 
-* Utility class for installer related functionality
-* 
-* @author Anthony Brown, Simon Wilkinson
-* @version 1.0
-* @copyright Copyright (c) 2012 The University of Nottingham
-* @package
-*/
+ *
+ * Utility class for installer related functionality
+ *
+ * @author Anthony Brown, Simon Wilkinson
+ * @version 1.0
+ * @copyright Copyright (c) 2012 The University of Nottingham
+ * @package
+ */
 
 
 Class FacultyUtils {
- 
+
   static function add_faculty($faculty, $db) {
-   
+
     $result = $db->prepare("INSERT INTO faculty(name) VALUES(?)");
     $result->bind_param('s', $faculty);
     $result->execute();
     $result->close();
-    if($db->errno != 0) {
+    if ($db->errno != 0) {
       return false;
     }
-    
+
     return $db->insert_id;
-  }  
+  }
+
+  static function get_faculty_id_by_name($faculty, $db) {
+
+
+    $stmt = $db->prepare("SELECT id FROM schools WHERE name=?");
+    $stmt->bind_param('s', $faculty);
+    $stmt->execute();
+    $stmt->bind_result($id);
+    $stmt->store_result();
+    $stmt->fetch();
+    $row = $stmt->num_rows;
+    $stmt->close();
+    if ($row == 0) {
+      $stmt = $db->prepare("SELECT id FROM faculty WHERE deleted IS NULL and name='UNKNOWN Faculty'");
+      $stmt->execute();
+      $stmt->bind_result($id);
+      $stmt->store_result();
+      $stmt->fetch();
+      $stmt->close();
+    }
+    return $id;
+  }
 }

@@ -61,6 +61,7 @@ require_once 'detail_parts/details_scenario.php';
           <tbody>
             <tr>
               <td>
+                <div id="hs_holder">
 <?php
 if ($media['filename'] != '' and !$show_correction_intermediate):
   $tmp_correct = str_replace("'", "\'", trim($correct));
@@ -85,11 +86,12 @@ if ($media['filename'] != '' and !$show_correction_intermediate):
 <?php
 endif;
 ?>                
-                <input name="optionid1" value="<?php echo $option_id ?>" type="hidden" />
-                <input type="hidden" id="points1" name="points1" value="<?php echo $correct ?>" />
-                <input type="hidden" id="q_media" name="q_media" value="<?php echo $media['filename'] ?>" />
-                <input type="hidden" id="q_media_width" name="q_media_width" value="<?php echo $media['width'] ?>" />
-                <input type="hidden" id="q_media_height" name="q_media_height" value="<?php echo $media['height'] ?>" />
+                  <input name="optionid1" value="<?php echo $option_id ?>" type="hidden" />
+                  <input type="hidden" id="points1" name="points1" value="<?php echo $correct ?>" />
+                  <input type="hidden" id="q_media" name="q_media" value="<?php echo $media['filename'] ?>" />
+                  <input type="hidden" id="q_media_width" name="q_media_width" value="<?php echo $media['width'] ?>" />
+                  <input type="hidden" id="q_media_height" name="q_media_height" value="<?php echo $media['height'] ?>" />
+                </div>
               </td>
             </tr>
           </tbody>

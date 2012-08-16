@@ -23,7 +23,7 @@
 * @package
 */
 
-$menuNo=0;
+$menuNo = 0;
 
 function makeMenu($options) {
   global $menuNo, $cfg_root_path;

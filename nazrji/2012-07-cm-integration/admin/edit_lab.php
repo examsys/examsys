@@ -73,7 +73,7 @@ input, textarea {font-family:Arial,sans-serif; line-height:140%}
 <?php
   require '../include/lab_options.inc';
 ?>
-<div id="content" class="content" style="font-size:80%">
+<div id="content" class="content">
 <form action="<?php echo $_SERVER['PHP_SELF'] . '?labID=' . $_GET['labID']; ?>" method="post">
 
 <?php

@@ -88,7 +88,7 @@ require '../include/staff_auth.inc';
   require '../include/icon_display.inc';
 ?>
 
-<div id="content" class="content" style="font-size:80%">
+<div id="content" class="content">
 <form name="myform" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
 <?php
   // -- Create new folder ---------------------------------------------------
@@ -122,7 +122,7 @@ require '../include/staff_auth.inc';
   $stmt->close();
 ?>
 <script language="JavaScript">
-  function startPaper(paperID,fullsc) {
+  function startPaper(paperID, fullsc) {
     var winwidth = screen.width-80;
     var winheight = screen.height-80;
     if (fullsc == 0) {
@@ -154,7 +154,7 @@ require '../include/staff_auth.inc';
     echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"width:100%\"><tr><td style=\"width:32px\"><div class=\"greywarn\"><img src=\"../artwork/agent.png\" width=\"28\" height=\"28\" alt=\"Locked\" style=\"position:relative; left:6px; top:1px\" /></div></td><td><div class=\"greywarn\">&nbsp;&nbsp;" . $string['loggedinas'] . " " . substr($cfg_install_type, ($as_pos+4)) . "</div></td></tr></table>\n";
   }
 ?>
-<div style="padding-left:14px; padding-right:14px">
+<div style="padding-left:6px; padding-right:14px">
 <?php
 
   // Check for any news/announcements
@@ -178,7 +178,7 @@ require '../include/staff_auth.inc';
   $result->store_result();
   echo "<table border=\"0\" class=\"subsect\"><tr><td><nobr>" . $string['myrecentpapers'] . " (" . $result->num_rows() . ")</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
   while ($result->fetch()) {
-    echo "<div style=\"padding-left:12px\"><a href=\"../paper/details.php?paperID=" . $paperID . "&folder=&module=" . $moduleID . "\"><img src=\"../artwork/" . $icons[$paper_type] . "_16.gif\" width=\"16\" height=\"16\" border=\"0\" alt=\"" . $paper_type . "\" /></a>&nbsp;<a class=\"recent\"";
+    echo "<div style=\"padding-left:22px\"><a href=\"../paper/details.php?paperID=" . $paperID . "&folder=&module=" . $moduleID . "\"><img src=\"../artwork/" . $icons[$paper_type] . "_16.gif\" width=\"16\" height=\"16\" border=\"0\" alt=\"" . $paper_type . "\" /></a>&nbsp;<a class=\"recent\"";
     if (strpos($paper_title,'[deleted') !== false) echo ' style="color:#808080"';
     echo "href=\"../paper/details.php?paperID=" . $paperID . "&folder=&module=" . $moduleID . "\">" . $paper_title . "</a></div>\n";
   }
@@ -251,10 +251,10 @@ require '../include/staff_auth.inc';
     echo "<br />\n";
     // -- Display module folders ------------------------------------
     $module_no = count($modules_array);
-    if (strpos($userroles,'Admin') !== false) $module_no++;
+    if (strpos($userroles, 'Admin') !== false) $module_no++;
 
     echo "<table border=\"0\" class=\"subsect\"><tr><td><nobr>" . $string['mymodules'] . " ($module_no)</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
-    if (strpos($userroles,'SysAdmin') !== false) {
+    if (strpos($userroles, 'SysAdmin') !== false) {
       echo "<div class=\"f\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"width:60px\" align=\"center\"><a href=\"../folder/all.php\"><img src=\"../artwork/yellow_folder.png\" width=\"48\" height=\"48\" alt=\"Folder\" border=\"0\" align=\"middle\" /></a>&nbsp;</td><td><a href=\"../folder/all.php\" class=\"blacklink\"><strong>" . $string['allmodules']  . "</strong></a><br /><span style=\"color:#C00000\">(" . $string['sysadminonly'] . ")</span></td></tr></table></div>\n";
     } elseif (strpos($userroles,'Admin') !== false) {
       echo "<div class=\"f\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"width:60px\" align=\"center\"><a href=\"../folder/all.php\"><img src=\"../artwork/yellow_folder.png\" width=\"48\" height=\"48\" alt=\"Folder\" border=\"0\" align=\"middle\" /></a>&nbsp;</td><td><a href=\"../folder/all.php\" class=\"blacklink\"><strong>" . $string['allmodulesinschool'] . "</strong></a><br /><span style=\"color:#C00000\">(" . $string['adminonly'] . ")</span></td></tr></table></div>\n";
@@ -262,6 +262,10 @@ require '../include/staff_auth.inc';
     foreach ($modules_array as $folder_title => $url) {
 	    $title_parts = explode(' - ',$folder_title);
 	    echo "<div class=\"f\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"width:60px\" align=\"center\"><a href=\"$url\"><img src=\"../artwork/yellow_folder.png\" width=\"48\" height=\"48\" alt=\"Folder\" border=\"0\" align=\"middle\" /></a>&nbsp;</td><td><a href=\"$url\" class=\"blacklink\">" . $title_parts[0] . "</a><br /><span style=\"color:#808080\">" . $title_parts[1] . "</span></td></tr></table></div>\n";
+    }
+    
+    if ($module_no == 0) {
+      echo '<div style="color:#C00000; padding-left:15px"><img src="../artwork/small_yellow_warning_icon.gif" width="16" height="16" alt="!" /> <strong>' . $string['warning'] . '</strong> ' . $string['nomodules'] . ' <a href="mailto:' . $support_email . '">' . $support_email . '</div>';
     }
 
     echo '<br clear="left" /><br />';
@@ -274,7 +278,7 @@ require '../include/staff_auth.inc';
     if ($result->num_rows > 0) {
       echo "<table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>" . $string['unassignedpapers'] . " (" . $result->num_rows . ")<nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
       while ($result->fetch()) {
-        displayPaperIcon($userID, $property_id, $paper_type, $screens, $paper_title, $start_date, $display_start_date, $display_end_date, $exam_duration, $title, $initials, $surname, $retired, $moduleID);
+        display_paper_icon($userID, $property_id, $paper_type, $screens, $paper_title, $start_date, $display_start_date, $display_end_date, $exam_duration, $title, $initials, $surname, $retired, $moduleID);
       }
     }
     $result->close();

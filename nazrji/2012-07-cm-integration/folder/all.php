@@ -65,7 +65,7 @@
   require '../include/options_menu.inc';
 ?>
 
-<div id="content" class="content" style="font-size:80%">
+<div id="content" class="content">
 <table class="header">
 <tr><th><div class="breadcrumb"><a href="../staff/index.php"><?php echo $string['home']; ?></a></div><div style="font-size:220%; font-weight:bold; margin-left:10px"><?php echo $string['allmodules']; ?></div></td><td style="background-color:#F1F5FB; text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(1); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="<?php echo $string['help']; ?>" border="0" /></a></th></tr>
 <tr><th colspan="2" class="bevel"></th></tr>

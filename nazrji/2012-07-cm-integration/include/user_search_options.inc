@@ -213,27 +213,31 @@ if (isset($_GET['calendar_year'])) {
 <table style="font-size:100%; line-height:160%; display:block" cellpadding="3" cellspacing="0" border="0" id="menu2a">
 <tr><td><img src="../artwork/user_file_icon_grey_16.gif" width="16" height="16" alt="User Details" /></td><td class="greymenuitem"><?php echo $string['viewuserfile']; ?></td></tr>
 <?php
-  if (strpos($userroles,'Admin') !== false or strpos($userroles,'SysAdmin') !== false) {
+  if (strpos($userroles, 'Admin') !== false or strpos($userroles,'SysAdmin') !== false) {
     echo '<tr><td class="ico"><a href="create_new_user.php"><img src="../artwork/small_user_icon.gif" width="16" height="16" alt="Create User" border="0" /></td><td class="menuitem"><a href="create_new_user.php">' . $string['createnewuser'] . '</a></td></tr>';
-    if (strpos($userroles,'SysAdmin') !== false) {
+    if (strpos($userroles, 'SysAdmin') !== false) {
       echo '<tr><td class="ico"><img src="../artwork/delete_user_16_grey.png" width="16" height="16" alt="Create" border="0" /></a></td><td class="greymenuitem">Delete User</td></tr>';
     }
-  } else {
-    echo '<tr><td class="ico"><img src="../artwork/small_user_icon_grey.gif" width="16" height="16" alt="Create User" /></td><td class="greymenuitem">' . $string['createnewuser'] . '</td></tr>';
   }
 ?>
 </table>
 
 <table style="font-size:100%; line-height:160%; display:none" cellpadding="3" cellspacing="0" border="0" id="menu2b">
 <tr><td class="ico"><a href="#" onclick="viewProfileSingle(); return false;"><img src="../artwork/user_file_icon_16.gif" width="16" height="16" alt="Edit" border="0" /></a></td><td class="menuitem"><a id="edit" onclick="viewProfileSingle(); return false;" href="#"><?php echo $string['viewuserfile']; ?></a></td></tr>
-<tr><td class="ico"><img src="../artwork/small_user_icon_grey.gif" width="16" height="16" alt="Create" border="0" /></td><td class="greymenuitem"><?php echo $string['createnewuser']; ?></td></tr>
+<?php
+  if (strpos($userroles, 'Admin') !== false or strpos($userroles,'SysAdmin') !== false) {
+    echo '<tr><td class="ico"><img src="../artwork/small_user_icon_grey.gif" width="16" height="16" alt="Create" border="0" /></td><td class="greymenuitem">' . $string['createnewuser'] . '</td></tr>';
+  }
+?>
 </table>
 
 <table style="font-size:100%; line-height:160%; display:none" cellpadding="3" cellspacing="0" border="0" id="menu2c">
 <tr><td class="ico"><a onclick="viewProfileSingle(); return false;" href="#"><img src="../artwork/user_file_icon_16.gif" width="16" height="16" alt="Edit" border="0" /></a></td><td class="menuitem"><a id="edit" onclick="viewProfileSingle(); return false;" href="#"><?php echo $string['viewuserfile']; ?></a></td></tr>
-<tr><td class="ico"><a href="create_new_user.php"><img src="../artwork/small_user_icon.gif" width="16" height="16" alt="Create" border="0" /></a></td><td class="menuitem"><a href="create_new_user.php"><?php echo $string['createnewuser']; ?></a></td></tr>
 <?php
-  if (strpos($userroles,'SysAdmin') !== false) {
+  if (strpos($userroles, 'Admin') !== false or strpos($userroles,'SysAdmin') !== false) {
+    echo '<tr><td class="ico"><a href="create_new_user.php"><img src="../artwork/small_user_icon.gif" width="16" height="16" alt="Create" border="0" /></a></td><td class="menuitem"><a href="create_new_user.php">' . $string['createnewuser'] . '</a></td></tr>';
+  }
+  if (strpos($userroles, 'SysAdmin') !== false) {
     echo '<tr><td class="ico"><a href="#" onclick="deleteUser(); return false;"><img src="../artwork/delete_user_16.png" width="16" height="16" alt="Delete" border="0" /></a></td><td class="menuitem"><a href="#" onclick="deleteUser(); return false;">' . $string['deleteuser'] . '</a></td></tr>';
   }
 ?>
@@ -244,7 +248,7 @@ if (isset($_GET['calendar_year'])) {
 
 <br />
 <?php
-if (strpos($userroles,'Admin') !== false) {
+if (strpos($userroles, 'Admin') !== false) {
   echo "<div class=\"submenuheading\">{$string['cohorttasks']}</div>\n";
 }
 ?>
@@ -254,19 +258,17 @@ if (strpos($userroles,'Admin') !== false) {
 
 <table style="font-size:100%; line-height: 160%; display:block" cellpadding="3" cellspacing="0" border="0" id="menu3a">
 <?php
-  if (strpos($userroles,'Admin') !== false) {
+  if (strpos($userroles, 'Admin') !== false) {
     echo '<tr><td class="ico"><a href="import_users.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="' . $string['importusers'] . '" border="0" /></a></td><td class="menuitem"><a href="import_users.php">' . $string['importusers'] . '</a></td></tr>';
     echo '<tr><td class="ico"><a href="import_student_module_info.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="' . $string['importmodules'] . '" border="0" /></a></td><td class="menuitem"><a href="import_modules.php">' . $string['importmodules'] . '</a></td></tr>';
-  } else {
-    echo '<tr><td class="ico"><img src="../artwork/import_grey_16.gif" width="16" height="16" alt="' . $string['importusers'] . '" /></td><td class="greymenuitem">' . $string['importusers'] . '</td></tr>';
   }
 ?>
 </table>
 
 <table style="font-size:100%; line-height:160%; display:none" cellpadding="3" cellspacing="0" border="0" id="menu3b">
 <?php
-  if (strpos($userroles,'Admin') !== false) {
-    echo '<tr><td class="ico"><a href="load_cohort.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="' . $string['importusers'] . '" border="0" /></a></td><td class="menuitem"><a href="import_students.php">' . $string['importusers'] . '</a></td></tr>';
+  if (strpos($userroles, 'Admin') !== false) {
+    echo '<tr><td class="ico"><a href="import_users.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="' . $string['importusers'] . '" border="0" /></a></td><td class="menuitem"><a href="import_users.php">' . $string['importusers'] . '</a></td></tr>';
     echo '<tr><td class="ico"><a href="import_student_module_info.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="' . $string['importmodules'] . '" border="0" /></a></td><td class="menuitem"><a href="import_student_module_info.php">' . $string['importmodules'] . '</a></td></tr>';
   }
 ?>
@@ -274,8 +276,8 @@ if (strpos($userroles,'Admin') !== false) {
 
 <table style="font-size:100%; line-height:160%; display:none" cellpadding="3" cellspacing="0" border="0" id="menu3c">
 <?php
-  if (strpos($userroles,'Admin') !== false) {
-    echo '<tr><td class="ico"><a href="load_cohort.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="' . $string['importusers'] . '" border="0" /></a></td><td class="menuitem"><a href="import_students.php">' . $string['importusers'] . '</a></td></tr>';
+  if (strpos($userroles, 'Admin') !== false) {
+    echo '<tr><td class="ico"><a href="import_users.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="' . $string['importusers'] . '" border="0" /></a></td><td class="menuitem"><a href="import_users.php">' . $string['importusers'] . '</a></td></tr>';
     echo '<tr><td class="ico"><a href="import_student_module_info.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="' . $string['importmodules'] . '" border="0" /></a></td><td class="menuitem"><a href="import_modules.php">' . $string['importmodules'] . '</a></td></tr>';
   }
 ?>

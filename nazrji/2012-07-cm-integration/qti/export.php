@@ -30,7 +30,6 @@
 
 global $rogo_version;
 
-
 require_once 'include/inc.php';
 require_once 'local/local_load.php';
 require_once 'qti12/qti12_save.php';

@@ -33,7 +33,7 @@ class BLTI {
       $db = $parm['db'];
       if ($db->error) {
         try {
-          throw new Exception("0MySQL error $mysqli->error <br> Query:<br> $query", $msqli->errno);
+          throw new Exception("0MySQL error $mysqli->error <br /> Query:<br /> $query", $msqli->errno);
         }
         catch (Exception $e) {
           echo "Error No: " . $e->getCode() . " - " . $e->getMessage() . "<br />";
@@ -45,8 +45,6 @@ class BLTI {
       $stmt->execute();
 
     }
-
-
   }
 
   function addltikey($parm = false, $ltiname, $ltikey, $ltisec, $lticontext = '') {

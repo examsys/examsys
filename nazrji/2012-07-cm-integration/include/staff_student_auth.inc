@@ -73,6 +73,7 @@ if (preg_match('|MSIE ([5-9].[0-9]{1,2})|', $_SERVER['HTTP_USER_AGENT'], $log_ve
 
   session_start();
   $lti = new UoN_LTI($mysqli);
+
   $lti->init_lti();
   if ($lti->valid) {
     //LTI Correct

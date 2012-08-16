@@ -104,7 +104,7 @@ function echoButtons($year) {
   $stmt->close();
 ?>
 
-<div id="content" class="content" style="font-size:80%">
+<div id="content" class="content">
 <form action="" method="get">
 <table class="header">
 <tr><th>

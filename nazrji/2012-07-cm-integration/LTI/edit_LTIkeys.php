@@ -24,131 +24,133 @@
 
 require '../include/sysadmin_auth.inc';
 require '../include/errors.inc';
+require_once 'ims-lti/UoN_LTI.php';
+$lti = new UoN_LTI($mysqli);
 check_var('LTIkeysid', 'GET', true, false);
 
 if (isset($_POST['submit'])) {
-    $ltiname = trim($_POST['ltiname']);
-    $ltikey = trim($_POST['ltikey']);
-    $ltisec = trim($_POST['ltisec']);
-    $lticontext = trim($_POST['lticontext']);
-    $insert_id = BLTI::updateltikey(array('dbtype' => 'mysqli', 'db' => &$mysqli), $_GET['LTIkeysid'], $ltiname, $ltikey, $ltisec, $lticontext);
-    header("location: lti_keys_list.php");
+  $ltiname = trim($_POST['ltiname']);
+  $ltikey = trim($_POST['ltikey']);
+  $ltisec = trim($_POST['ltisec']);
+  $lticontext = trim($_POST['lticontext']);
+  $insert_id = $lti->update_lti_key($_GET['LTIkeysid'], $ltiname, $ltikey, $ltisec, $lticontext);
+  header("location: lti_keys_list.php");
 } else {
-    ?>
+  ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
   <html>
   <head>
-      <meta http-equiv="X-UA-Compatible" content="IE=edge">
-      <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>"/>
-      <title><?php echo $string['editltikeys'] . " $cfg_install_type"; ?></title>
-      <link rel="stylesheet" href="../css/add_edit.css" type="text/css"/>
-      <link rel="stylesheet" type="text/css" href="../css/submenu.css"/>
-      <link rel="stylesheet" type="text/css" href="../css/header.css"/>
-      <style type="text/css">
-          body {
-              font-family: Arial, sans-serif;
-              color: black;
-              background-color: white;
-              margin: 0px
-          }
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>"/>
+    <title><?php echo $string['editltikeys'] . " $cfg_install_type"; ?></title>
+    <link rel="stylesheet" href="../css/add_edit.css" type="text/css"/>
+    <link rel="stylesheet" type="text/css" href="../css/submenu.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/header.css"/>
+    <style type="text/css">
+      body {
+        font-family: Arial, sans-serif;
+        color: black;
+        background-color: white;
+        margin: 0px
+      }
 
-          td {
-              text-align: left
-          }
+      td {
+        text-align: left
+      }
 
-          input, textarea {
-              font-family: Arial, sans-serif;
-              color: black
-          }
+      input, textarea {
+        font-family: Arial, sans-serif;
+        color: black
+      }
 
-          .field {
-              font-weight: bold;
-              text-align: right;
-              padding-right: 10px
-          }
-      </style>
+      .field {
+        font-weight: bold;
+        text-align: right;
+        padding-right: 10px
+      }
+    </style>
 
-      <script language="JavaScript">
-          function checkForm() {
-              if (document.getElementById('ltiname').value == "" || document.getElementById('ltiname').value == "<?php echo $string['prompt1']; ?>" || document.getElementById('ltikey').value == "" || document.getElementById('ltikey').value == "<?php echo $string['prompt2']; ?>" || document.getElementById('ltisec').value == "" || document.getElementById('ltisec').value == "<?php echo  $string['prompt3']; ?>") {
-                  alert('<?php echo $string['enternameofschool'] ?>');
-                  return false;
-              }
-          }
-      </script>
+    <script language="JavaScript">
+      function checkForm() {
+        if (document.getElementById('ltiname').value == "" || document.getElementById('ltiname').value == "<?php echo $string['prompt1']; ?>" || document.getElementById('ltikey').value == "" || document.getElementById('ltikey').value == "<?php echo $string['prompt2']; ?>" || document.getElementById('ltisec').value == "" || document.getElementById('ltisec').value == "<?php echo  $string['prompt3']; ?>") {
+          alert('<?php echo $string['enternameofschool'] ?>');
+          return false;
+        }
+      }
+    </script>
   </head>
 <body>
 <?php
-    require '../include/lti_keys_options.inc';
+  require '../include/lti_keys_options.inc';
 
-    $result = $mysqli->prepare("SELECT id, oauth_consumer_key, secret, name, context_id FROM lti_keys WHERE id=?");
-    $result->bind_param('i', $_GET['LTIkeysid']);
-    $result->execute();
-    $result->bind_result($ltis['id'], $ltis['oauth_consumer_key'], $ltis['secret'], $ltis['name'], $ltis['context_id']);
-    $result->fetch();
-    $result->close();
+  $result = $mysqli->prepare("SELECT id, oauth_consumer_key, secret, name, context_id FROM lti_keys WHERE id=?");
+  $result->bind_param('i', $_GET['LTIkeysid']);
+  $result->execute();
+  $result->bind_result($ltis['id'], $ltis['oauth_consumer_key'], $ltis['secret'], $ltis['name'], $ltis['context_id']);
+  $result->fetch();
+  $result->close();
 
-    ?>
+  ?>
 <div id="content" class="content" style="font-size:80%">
   
 <table class="header">
-    <tr>
-        <th>
-            <div class="breadcrumb"><a href="../staff/index.php"><?php echo $string['home'] ?></a>&nbsp;&nbsp;<img
-                src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-"/>&nbsp;&nbsp;<a
-                href="../admin/index.php"><?php echo $string['administrativetools']; ?></a>&nbsp;&nbsp;<img
-                src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-"/>&nbsp;&nbsp;<a
-                href="lti_keys_list.php"><?php echo $string['ltikeys']; ?></a></div>
-            <div style="margin-left:10px; font-size:200%;
+  <tr>
+    <th>
+      <div class="breadcrumb"><a href="../staff/index.php"><?php echo $string['home'] ?></a>&nbsp;&nbsp;<img
+        src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-"/>&nbsp;&nbsp;<a
+        href="../admin/index.php"><?php echo $string['administrativetools']; ?></a>&nbsp;&nbsp;<img
+        src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-"/>&nbsp;&nbsp;<a
+        href="lti_keys_list.php"><?php echo $string['ltikeys']; ?></a></div>
+      <div style="margin-left:10px; font-size:200%;
 font-weight:bold"><?php echo $string['editltikeys']; ?></th>
-        <th style="text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#"
-                                                                                                onclick="launchHelp(233); return false;"><img
-            src="../artwork/small_help_icon.gif" width="16" height="16" alt="Help" border="0"/></a></th>
-    </tr>
-    <tr>
-        <th colspan="2" class="bevel"></th>
-    </tr>
+    <th style="text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#"
+                                                                                            onclick="launchHelp(233); return false;"><img
+      src="../artwork/small_help_icon.gif" width="16" height="16" alt="Help" border="0"/></a></th>
+  </tr>
+  <tr>
+    <th colspan="2" class="bevel"></th>
+  </tr>
 </table>
-    <div class="message">
-        <p style="font-size: 110%">
-            <span class="mandatory">*</span> <?php echo $string['mandatory'] ?>
-        </p>
-    </div>
-    <br/>
-    <div align="center">
-        <form name="edit_LTIkeys" method="post" onsubmit="return checkForm()"
-              action="<?php echo $_SERVER['PHP_SELF'] . '?LTIkeysid=' . $_GET['LTIkeysid']; ?>">
-            <table cellpadding="0" cellspacing="2" border="0">
-                <tr>
-                    <td class="field"><span class="mandatory">*</span> <?php echo $string['name']; ?></td>
-                    <td><input type="text" size="70" name="ltiname" id="ltiname" value="<?php echo $ltis['name']; ?>"/>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="field"><span class="mandatory">*</span> <?php echo $string['oauth_consume_key']; ?></td>
-                    <td><input type="text" size="70" name="ltikey" id="ltikey"
-                               value="<?php echo $ltis['oauth_consumer_key']; ?>"/></td>
-                </tr>
-                <tr>
-                    <td class="field"><span class="mandatory">*</span> <?php echo $string['oauth_secret']; ?></td>
-                    <td><input type="text" size="70" name="ltisec" id="ltisec" value="<?php echo $ltis['secret']; ?>"/>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="field"><?php echo $string['oauth_context_id']; ?></td>
-                    <td><input type="text" size="70" name="lticontext" id="lticontext"
-                               value="<?php echo $ltis['context_id']; ?>"/></td>
-                </tr>
+  <div class="message">
+    <p style="font-size: 110%">
+      <span class="mandatory">*</span> <?php echo $string['mandatory'] ?>
+    </p>
+  </div>
+  <br/>
+  <div align="center">
+    <form name="edit_LTIkeys" method="post" onsubmit="return checkForm()"
+          action="<?php echo $_SERVER['PHP_SELF'] . '?LTIkeysid=' . $_GET['LTIkeysid']; ?>">
+      <table cellpadding="0" cellspacing="2" border="0">
+        <tr>
+          <td class="field"><span class="mandatory">*</span> <?php echo $string['name']; ?></td>
+          <td><input type="text" size="70" name="ltiname" id="ltiname" value="<?php echo $ltis['name']; ?>"/>
+          </td>
+        </tr>
+        <tr>
+          <td class="field"><span class="mandatory">*</span> <?php echo $string['oauth_consume_key']; ?></td>
+          <td><input type="text" size="70" name="ltikey" id="ltikey"
+                     value="<?php echo $ltis['oauth_consumer_key']; ?>"/></td>
+        </tr>
+        <tr>
+          <td class="field"><span class="mandatory">*</span> <?php echo $string['oauth_secret']; ?></td>
+          <td><input type="text" size="70" name="ltisec" id="ltisec" value="<?php echo $ltis['secret']; ?>"/>
+          </td>
+        </tr>
+        <tr>
+          <td class="field"><?php echo $string['oauth_context_id']; ?></td>
+          <td><input type="text" size="70" name="lticontext" id="lticontext"
+                     value="<?php echo $ltis['context_id']; ?>"/></td>
+        </tr>
 
 
-            </table>
-            <p><input type="submit" style="width:100px" name="submit" value="<?php echo $string['save'] ?>">&nbsp;&nbsp;<input
-                style="width:100px" type="button" name="home" value="<?php echo $string['cancel'] ?>"
-                onclick="javascript:history.back();"/></p>
-        </form>
-    </div>
-    <?php
+      </table>
+      <p><input type="submit" style="width:100px" name="submit" value="<?php echo $string['save'] ?>">&nbsp;&nbsp;<input
+        style="width:100px" type="button" name="home" value="<?php echo $string['cancel'] ?>"
+        onclick="javascript:history.back();"/></p>
+    </form>
+  </div>
+  <?php
 }
 ?>
 </div>

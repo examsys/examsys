@@ -218,7 +218,7 @@ if (isset($state['showretired']) and $state['showretired'] == 'true') {
 <?php
   require '../include/folder_options.inc';
 ?>
-<div id="content" class="content" style="font-size:80%">
+<div id="content" class="content">
 <form name="myform" action="<?php echo $_SERVER['PHP_SELF'] . '?' . $_SERVER['QUERY_STRING']; ?>" method="post">
 <table class="header">
 <?php
@@ -270,9 +270,9 @@ if (isset($_GET['module']) and $_GET['module'] != '') {
     if ($tmp_userID == $userID) $add_member = true;
   }
   if ($member_details->num_rows > 0) $tmp_html .= '</ul>';
-  echo '<div style="box-shadow: 2px 2px 2px #C0C0C0; float:right; width:165px; margin-right:10px; border:1px solid #8492A6; background-color:#FCFCFC">';
+  echo '<div style="box-shadow:3px 3px 3px rgba(100, 100, 100, 0.50); float:right; width:165px; margin-right:10px; border:1px solid #8492A6; background-color:#FCFCFC">';
   if ($add_member == true or strpos($userroles,'Admin') !== false) {
-    echo '<div style="float:left; width:95%; padding:4px; background-color:#F1F5FB; border-bottom:1px solid #CFDBEB"><div style="float:left"><a href="" style="color:#254280" onclick="addTeamMember(); return false;" class="recent">' . $string['teammembers'] . '</a></div><div style="float:right"><a href="" onclick="addTeamMember(); return false;">' . $string['edit'] . '</a></div></div>';
+    echo '<div style="float:left; width:95%; padding:4px; background-color:#F1F5FB; border-bottom:1px solid #CFDBEB"><div style="float:left"><a href="" style="color:#254280" onclick="addTeamMember(); return false;" class="recent">' . $string['teammembers'] . '</a></div><div style="float:right"><a href="" onclick="addTeamMember(); return false;"><img src="../artwork/pencil_16.png" width="16" height="16" alt="' . $string['edit'] . '" border="0" /></a></div></div>';
   } else {
     echo '<div style="padding:4px; background-color:#F1F5FB; border-bottom:1px solid #CFDBEB">' . $string['teammembers'] . '</div>';
   }
@@ -343,7 +343,7 @@ $sent_clear_all = false;
 if ($display_papers) {
   if ($results->num_rows > 0) {
     while ($results->fetch()) {
-      if ($old_p_type != $paper_type and (isset($_GET['module']) AND $_GET['module'] != '') ) {
+      if ($old_p_type != $paper_type and (isset($_GET['module']) and $_GET['module'] != '') ) {
         if ($sent_clear_all == true) {
           echo "<br clear=\"all\" />";
         }
@@ -356,7 +356,7 @@ if ($display_papers) {
         echo "</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
         echo "<br />\n";
       }
-      displayPaperIcon($paper_ownerID, $property_id, $paper_type, $screens, $paper_title, $start_date, $display_start_date, $display_end_date, $exam_duration, $title, $initials, $surname, $retired, $moduleID);
+      display_paper_icon($paper_ownerID, $property_id, $paper_type, $screens, $paper_title, $start_date, $display_start_date, $display_end_date, $exam_duration, $title, $initials, $surname, $retired, $moduleID);
       $old_p_type = $paper_type;
       $file_no++;
     }

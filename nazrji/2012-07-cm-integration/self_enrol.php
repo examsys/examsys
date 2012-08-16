@@ -33,13 +33,13 @@ check_var('moduleid', 'GET', true, false);
 $session = date_utils::get_current_academic_year();
 
 //dose the user have an account?
-if (UserUtils::usernameExists($_SERVER['PHP_AUTH_USER'],$mysqli) === false ) {
+if (UserUtils::username_exists($_SERVER['PHP_AUTH_USER'], $mysqli) === false ) {
   //the user has no Rogo Account but has an LDAP acount so lets make one !
   $SMS = SMSutils::GetSmsUtils();
   $user_data = $SMS->getUserData($_SERVER['PHP_AUTH_USER']);
   if (count($user_data) > 0) {
     //valid acount found create user
-    UserUtils::createUser(
+    UserUtils::create_user(
                           $_SERVER['PHP_AUTH_USER'], 
                           $_SERVER['PHP_AUTH_PW'], 
                           $user_data['Title'], 
@@ -59,26 +59,14 @@ if (UserUtils::usernameExists($_SERVER['PHP_AUTH_USER'],$mysqli) === false ) {
     display_error($string['noaccountfound'], '', false, true);
   }
 }
-$returned_check=module_utils::module_check_self_enrol($_GET['moduleid']);
-if($returned_check === false) {
+$returned_check = module_utils::module_check_self_enrol($_GET['moduleid'], $mysqli);
+if ($returned_check === false) {
   display_error('Module ID error', 'Module code ' . $_GET['moduleid'] . ' not found.', false, true);
 }
 
-list($fullname, $school, $active, $selfenroll)=$returned_check;
-/*
-$result = $mysqli->prepare("SELECT fullname, school, active, selfenroll FROM modules, schools WHERE modules.schoolid=schools.id AND moduleid=?");
-$result->bind_param('s', $_GET['moduleid']);
-$result->execute();
-$result->bind_result($fullname, $school, $active, $selfenroll);
-$result->fetch();
-$result->close();
+list($fullname, $school, $active, $selfenroll) = $returned_check;
 
-if ($fullname == '') {
-  display_error('Module ID error', 'Module code ' . $_GET['moduleid'] . ' not found.', false, true);
-}
-*/
-
-if ($active == 1 and $selfenroll == 1 and isset($_POST['submit']) and !UserUtils::isUserOnModule($userID, $_GET['moduleid'], $_POST['session'], $mysqli)) {
+if ($active == 1 and $selfenroll == 1 and isset($_POST['submit']) and !UserUtils::is_user_on_module($userID, $_GET['moduleid'], $_POST['session'], $mysqli)) {
   // Insert new module enrollment
   UserUtils::add_student_to_module($userID, $_GET['moduleid'], 1, $_POST['session'], $mysqli);
 }
@@ -93,6 +81,16 @@ if ($active == 1 and $selfenroll == 1 and isset($_POST['submit']) and !UserUtils
   <style type="text/css">
   body {background-color:white; color:black; font-family:Arial,sans-serif; font-size:90%}
   .field {padding-top:4px; padding-left:6px; font-weight:bold}
+  .topbar {
+    height:70px;
+    background: -moz-linear-gradient(top, #EEEEEE, #C9C9C9);
+    background: -webkit-linear-gradient(top, #EEEEEE, #C9C9C9);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#EEEEEE', endColorstr='#C9C9C9');
+    vertical-align:middle;
+    font-size:150%;
+    font-weight:bold;
+    padding-left:6px
+  }
   </style>
 </head>
 
@@ -106,7 +104,7 @@ if ($active == 1 and $selfenroll == 1 and isset($_POST['submit']) and !UserUtils
   $years = array($session, $next_session);
   
   echo '<br /><div align="center"><table cellpadding="0" cellspacing="0" style="width:500px; border:1px #C8C8C8 solid">';
-  echo '<tr style="height:70px; width:100%; background-image:url(./artwork/grey_bar.png); background-repeat:repeat-x; font-size:150%; font-weight:bold; padding-left:6px"><td style="text-align:right; width:115px"><img src="./artwork/modules_icon.png" width="48" height="48" alt="modules" /></td><td style="text-align:left">&nbsp;&nbsp;' . $string['moduleselfenrolment'] . '</td></tr>';
+  echo '<tr><td class="topbar" style="text-align:right; width:55px"><img src="./artwork/modules_icon.png" width="48" height="48" alt="modules" /></td><td class="topbar" style="padding-left:15px; text-align:left">' . $string['moduleselfenrolment'] . '</td></tr>';
   echo '<tr><td colspan="2">&nbsp;</td></tr>';
   echo '<tr><td colspan="2"><table border="0" style="width:100%; text-align:left"><tr><td class="field" style="width:120px">' . $string['moduleid'] . '</td><td>' . $_GET['moduleid'] . '</td></tr>';
   echo '<tr><td class="field">' . $string['name'] . '</td><td>' . $fullname . '</td></tr>';
@@ -126,17 +124,17 @@ if ($active == 1 and $selfenroll == 1 and isset($_POST['submit']) and !UserUtils
     echo '<tr><td colspan="2">&nbsp;</td></tr>';
     echo '<tr><td colspan="2"><a href="/"><img src="/artwork/link.png" width="16" height="16" alt=">" border="0" /></a>&nbsp;<strong><a href="/students/" style="color:blue">' . $string['icanaccess'] . '</a></strong></td></tr>';
   } else {
-    echo '<tr><td colspan="2">' . sprintf($string['iwouldliketo'], $title, $surname) . '</td></tr>';
+    echo '<tr><td colspan="2">&nbsp;' . sprintf($string['iwouldliketo'], $title, $initials, $surname, $username) . '</td></tr>';
     echo '<tr><td colspan="2">&nbsp;</td></tr>';
     if ($active == 0) {
       echo '<tr><td colspan="2" style="color:#C00000">' . $string['notactive'] . '</td></tr>';
-      echo '<tr><td colspan="2" style="text-align:center"><input type="submit" name="submitdisabled" value="' . $string['enroll'] . '" style="width:100px" disabled />&nbsp;<input type="button" name="cancel" value="' . $string['cancel'] . '" style="width:100px" /></td></tr>';
+      echo '<tr><td colspan="2" style="text-align:center"><input type="submit" name="submitdisabled" value="' . $string['enroll'] . '" style="width:100px" disabled />&nbsp;<input type="button" name="cancel" value="' . $string['cancel'] . '" onclick="history.back();" style="width:100px" /></td></tr>';
     } else {
       if ($selfenroll == 0) {
         echo '<tr><td colspan="2" style="color:#C00000">' . $string['notavailableselfenrollment'] . '</td></tr>';
-        echo '<tr><td colspan="2" style="text-align:center"><input type="submit" name="submitdisabled" value="' . $string['enroll'] . '" style="width:100px" disabled />&nbsp;<input type="button" name="cancel" value="' . $string['cancel'] . '" style="width:100px" /></td></tr>';
+        echo '<tr><td colspan="2" style="text-align:center"><input type="submit" name="submitdisabled" value="' . $string['enroll'] . '" style="width:100px" disabled />&nbsp;<input type="button" name="cancel" value="' . $string['cancel'] . '" onclick="history.back();" style="width:100px" /></td></tr>';
       } else {
-        echo '<tr><td colspan="2" style="text-align:center"><input type="submit" name="submit" value="' . $string['enroll'] . '" style="width:100px" />&nbsp;<input type="button" name="cancel" value="' . $string['cancel'] . '" style="width:100px" /></td></tr>';
+        echo '<tr><td colspan="2" style="text-align:center"><input type="submit" name="submit" value="' . $string['enroll'] . '" style="width:100px" />&nbsp;<input type="button" name="cancel" value="' . $string['cancel'] . '" style="width:100px" onclick="history.back();" /></td></tr>';
 
       }
     }

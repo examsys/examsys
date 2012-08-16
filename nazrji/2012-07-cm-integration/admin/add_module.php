@@ -124,9 +124,9 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
           foreach ($names as $tmp_name) {
             $initials .= substr($tmp_name,0,1);
           }
-          $tmp_userID = UserUtils::usernameExists($student->Username, $mysqli);
+          $tmp_userID = UserUtils::username_exists($student->Username, $mysqli);
           if ($tmp_userID === false) {
-            $tmp_userID = UserUtils::createUser($student->Username, '', $student->Title, $student->Forename, $student->Surname, $student->Email, $student->CourseCode, $student->Gender, $student->YearofStudy, 'Student', $student->StudentID, $mysqli);
+            $tmp_userID = UserUtils::create_user($student->Username, '', $student->Title, $student->Forename, $student->Surname, $student->Email, $student->CourseCode, $student->Gender, $student->YearofStudy, 'Student', $student->StudentID, $mysqli);
           }
           // Add student onto the module
           UserUtils::add_student_to_module($tmp_userID, $module, 1, $session, $mysqli);
@@ -202,7 +202,7 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
   <?php
     require '../include/module_options.inc';
   ?>
-  <div id="content" class="content" style="font-size:80%">
+  <div id="content" class="content">
   <table class="header">
   <tr><th><div class="breadcrumb"><a href="../staff/index.php"><?php echo $string['home']; ?></a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php"><?php echo $string['administrativetools']; ?></a></div><div style="margin-left:10px; font-size:200%; font-weight:bold"><?php echo $string['createmodule']; ?></div></th><th style="text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(233); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="Help" border="0" /></a></th></tr>
   <tr><th colspan="2" class="bevel"></th></tr>

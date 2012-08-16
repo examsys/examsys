@@ -9,7 +9,7 @@
 
 require_once 'ims-lti\UoN_LTI.php';
 $root = str_replace('/include', '/', str_replace('\\', '/', dirname(__FILE__)));
-$root=$root .'/../';
+$root = $root . '/../';
 
 require_once  $root . 'config/config.inc.php';
 require_once $cfg_web_root . 'classes/dbutils.class.php';
@@ -18,17 +18,15 @@ require_once $cfg_web_root . 'classes/dbutils.class.php';
 $mysqli = DBUtils::get_mysqli_link($cfg_db_host, $cfg_db_username, $cfg_db_passwd, $cfg_db_database, $cfg_db_charset, $dbclass);
 
 
-
 $lti = new UoN_LTI($mysqli);
 
-$lti->init_lti(true,false);
+$lti->init_lti(true, false);
 
 print "<pre>";
 print_r($lti);
 
 
 var_dump($lti);
-
 
 
 echo $lti->dump();

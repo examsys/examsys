@@ -27,7 +27,8 @@
 require_once 'question_mcq.class.php';
 
 Class QuestionMRQ extends Question {
-  
+
+  protected $min_options = 3;
   protected $_fields_force = array('display_method');
   
   function __construct($mysqli, $user_id, $lang_strings, $data = null) {

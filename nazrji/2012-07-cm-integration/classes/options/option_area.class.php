@@ -25,6 +25,7 @@
  */
 
 Class OptionAREA extends Option {
+  protected $_fields_required = array('question_id', 'marks_correct', 'correct');
 
   /**
    * Is this option blank?

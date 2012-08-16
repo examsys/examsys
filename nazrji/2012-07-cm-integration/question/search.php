@@ -109,12 +109,16 @@ set_time_limit(0);
 <?php
   if (isset($_POST['submit'])) {
     echo "<body onselectstart=\"return false\">\n";
+    
     require '../include/question_search_options.inc';
-    echo "<div id=\"content\" class=\"content\" style=\"font-size:80%\">\n";
+    
+    echo "<div id=\"content\" class=\"content\">\n";
   } else {
     echo "<body style=\"margin:0px; background-color:white; color:black\">\n";
+    
     require '../include/question_search_options.inc';
-    echo "<div id=\"content\" class=\"content\" style=\"font-size:80%\">\n";
+    
+    echo "<div id=\"content\" class=\"content\">\n";
     echo "<table class=\"header\">\n";
     echo "<tr><th colspan=\"4\"><div class=\"breadcrumb\"><a href=\"../staff/index.php\">" . $string['home'] . "</a></div><div onclick=\"qOff()\" style=\"font-size:200%; margin-left:10px\"><strong>" . $string['questionsearch'] . "</div></th></tr>";
 ?>

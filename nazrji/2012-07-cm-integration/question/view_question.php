@@ -40,6 +40,7 @@
 <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
 <title>Preview</title>
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
 <style type="text/css">
   body {background-color:white; color:black; padding:0px; margin:0px; border:0px; font-family:Arial,sans-serif; font-size:90%}
   li {margin-left:15px; margin-right:15px; font-size:100%}
@@ -61,9 +62,10 @@
   .mee {font-size:120%; display:inline}
 </style>
 
-<script language="JavaScript" src="../js/flash_include.js"></script>
-<script type="text/javascript" src="/js/jquery-1.6.1.min.js"></script>
-<script type="text/javascript" src="/tools/mee/mee/js/mee_src.js"></script>
+<script type="text/javascript" src="../js/flash_include.js"></script>
+<script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
+<script type="text/javascript" src="../js/jquery.flash_q.js"></script>
+<script type="text/javascript" src="../tools/mee/mee/js/mee_src.js"></script>
 <script language="JavaScript">
 function write_string(p_string) {
   document.write(p_string);
@@ -81,7 +83,7 @@ function write_string(p_string) {
   $num_rows = $question_data->num_rows;
   echo "<table cellpadding=\"4\" cellspacing=\"0\" border=\"0\" width=\"100%\" style=\"table-layout:fixed\">\n";
   echo "<col width=\"40\"><col>\n";
-  while ($row = $question_data->fetch()) {
+  while ($question_data->fetch()) {
     if ($old_q_id != $q_id) {
       $question['theme'] = trim($theme);
       $question['scenario'] = trim($scenario);

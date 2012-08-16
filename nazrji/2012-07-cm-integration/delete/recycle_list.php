@@ -117,7 +117,7 @@ if (isset($_GET['folder'])) {
 <?php
   require '../include/recycle_options_menu.inc';
 ?>
-<div id="content" class="content" style="font-size:80%">
+<div id="content" class="content">
 <form name="myform" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="get">
 <table class="header">
 <?php
