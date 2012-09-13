@@ -138,7 +138,7 @@
           $result->store_result();
           $result->bind_result($q_group, $ownerID);
           $result->fetch();
-          $group_array = explode(';', $q_group);
+          $group_array = explode(';', strtoupper($q_group));
           
           if ($ownerID != $userID and !in_array('SYSTEM', $group_array) and count(array_intersect($group_array, $teams)) == 0) {
             // Not owner or on team so check schools
@@ -195,7 +195,7 @@
         $result->bind_result($moduleID, $paper_ownerID);
         while ($result->fetch()) {
           if ($paper_ownerID != $userID) {
-            $moduleIDs = explode(',',$moduleID);
+            $moduleIDs = explode(',', strtoupper($moduleID));
             foreach ($moduleIDs as $g) {
               if (isset($teams[$g])) { 
                 $on_team = true;
@@ -225,7 +225,7 @@
           $result->close();
           
           $access = false;
-          $moduleIDs = explode(';',$q_group);
+          $moduleIDs = explode(';', strtoupper($q_group));
           //$question_teams = explode(';', $q_group);
           foreach ($moduleIDs as $question_team) {
             if (isset($teams[$question_team])) $access = true;
