@@ -318,19 +318,23 @@ Class InstallUtils {
         } catch (Exception $e) {
           echo "Error No: " . $e->getCode() . " - " . $e->getMessage() . "<br >";
           echo nl2br($e->getTraceAsString());
-          exit();
         }
       }
 
       if (self::$db->errno != 0) {
         self::logWarning(array('501' => $string['logwarning1'] . self::$db->error));
         $ext = '';
-        while (self::$db->next_result()) {
-          if (self::$db->insert_id > 0) $ext = $ext . ' ' . self::$db->insert_id;
-        }
       }
       while (self::$db->more_results()) {
         self::$db->next_result();
+        if (self::$db->error) {
+          try {
+            throw new Exception("0MySQL error " . self::$db->error . " <br> Query:<br> ", self::$db->errno);
+          } catch (Exception $e) {
+            echo "Error No: " . $e->getCode() . " - " . $e->getMessage() . "<br >";
+            echo nl2br($e->getTraceAsString());
+          }
+        }
       }
     } else {
       self::logWarning(array('502' => $string['logwarning2']));
@@ -347,7 +351,6 @@ Class InstallUtils {
         } catch (Exception $e) {
           echo "Error No: " . $e->getCode() . " - " . $e->getMessage() . "<br >";
           echo nl2br($e->getTraceAsString());
-          exit();
         }
       }
       if (self::$db->errno != 0) {
@@ -355,6 +358,14 @@ Class InstallUtils {
         $ext = '';
         while (self::$db->more_results()) {
           self::$db->next_result();
+          if (self::$db->error) {
+            try {
+              throw new Exception("0MySQL error " . self::$db->error . " <br> Query:<br> ", self::$db->errno);
+            } catch (Exception $e) {
+              echo "Error No: " . $e->getCode() . " - " . $e->getMessage() . "<br >";
+              echo nl2br($e->getTraceAsString());
+            }
+          }
         }
       }
     } else {
