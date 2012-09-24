@@ -314,8 +314,8 @@ Class InstallUtils {
         self::logWarning(array('501' => $string['logwarning1'] . self::$db->error ));
       }
       $ext='';
-      while ($mysqli->next_result()) {
-        if($mysqli->insert_id>0) $ext=$ext . ' '.  $mysqli->insert_id;
+      while ($db->next_result()) {
+        if($db->insert_id>0) $ext=$ext . ' '.  $mysqli->insert_id;
       }
     } else {
       self::logWarning(array('502'=>  $string['logwarning2']));
@@ -329,8 +329,8 @@ Class InstallUtils {
         self::logWarning(array('503' =>  $string['logwarning3'] . self::$db->error ));
       }
       $ext='';
-      while ($mysqli->next_result()) {
-        if($mysqli->insert_id>0) $ext=$ext . ' '.  $mysqli->insert_id;
+      while ($db->next_result()) {
+        if($db->insert_id>0) $ext=$ext . ' '.  $mysqli->insert_id;
       }
     } else {
       self::logWarning(array('504'=> $string['logwarning4']));
