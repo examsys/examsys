@@ -778,6 +778,7 @@ Class InstallUtils {
     if (file_exists($rogo_path . '/config/config.inc.php')) {
       $errors['90'] =  "<p>" . sprintf($string['errors1'],$rogo_path."/config/config.inc.php") . "</p>";
       $errors['90'] .= "<p>" . sprintf($string['errors2'],"<a href=\"/staff\">") . "</a></p>";
+      self::displayError($errors);
     }
   }
 

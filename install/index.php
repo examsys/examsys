@@ -54,7 +54,7 @@ InstallUtils::displayHeader();
 InstallUtils::checkSoftware();
 InstallUtils::checkDirPermissionsPre();
 
-//have we got a config file ?
+//have we got a config file? exits if we do, as this is an install
 InstallUtils::configFile();
 
 //output form
