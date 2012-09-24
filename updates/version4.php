@@ -3472,6 +3472,7 @@ if (!isset($_POST['update'])) {
       } catch (Exception $e) {
         echo "Error No: " . $e->getCode() . " - " . $e->getMessage() . "<br >";
         echo nl2br($e->getTraceAsString());
+        echo 'query: ' . htmlentities($query);
         exit();
       }
     }
@@ -3491,6 +3492,7 @@ if (!isset($_POST['update'])) {
       } catch (Exception $e) {
         echo "Error No: " . $e->getCode() . " - " . $e->getMessage() . "<br >";
         echo nl2br($e->getTraceAsString());
+        echo 'query: ' . htmlentities($query);
         exit();
       }
     }
