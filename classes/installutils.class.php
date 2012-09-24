@@ -308,11 +308,11 @@ Class InstallUtils {
 
     if (file_exists($staff_help)) {
       $query = file_get_contents($staff_help);
-      self::$db->query("TRUNCATE staff_help"); 
+      self::$db->query("TRUNCATE staff_help");
       self::$db->multi_query($query);
       if (self::$db->error) {
         try {
-          throw new Exception("0MySQL error self::$db->error <br> Query:<br> ", self::$db->errno);
+          throw new Exception("0MySQL error " . self::$db->error . " <br> Query:<br> ", self::$db->errno);
         } catch (Exception $e) {
           echo "Error No: " . $e->getCode() . " - " . $e->getMessage() . "<br >";
           echo nl2br($e->getTraceAsString());
@@ -337,7 +337,7 @@ Class InstallUtils {
       self::$db->multi_query($query);
       if (self::$db->error) {
         try {
-          throw new Exception("0MySQL error self::$db->error <br> Query:<br> ", self::$db->errno);
+          throw new Exception("0MySQL error " . self::$db->error . " <br> Query:<br> ", self::$db->errno);
         } catch (Exception $e) {
           echo "Error No: " . $e->getCode() . " - " . $e->getMessage() . "<br >";
           echo nl2br($e->getTraceAsString());
