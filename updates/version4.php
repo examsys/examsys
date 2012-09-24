@@ -3474,14 +3474,13 @@ if (!isset($_POST['update'])) {
         echo nl2br($e->getTraceAsString());        exit();
       }
     }
-
-
     $ext='';
     while ($mysqli->next_result()) {
       if($mysqli->insert_id>0) $ext=$ext . ' '.  $mysqli->insert_id;
     }
     echo "<li>LOADED staff_help: " . $ext . "</li>\n";
   }
+
   if (isset($_POST['update_student_help'])) {
     $adjust = $mysqli->prepare("TRUNCATE student_help");
     if ($mysqli->error) {
