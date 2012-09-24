@@ -357,7 +357,6 @@ Class InstallUtils {
           self::$db->next_result();
         }
       }
-      while (self::$db->next_result()) ;
     } else {
       self::logWarning(array('504' => $string['logwarning4']));
     }
