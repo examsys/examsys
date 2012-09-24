@@ -25,7 +25,7 @@
  */
 
 $root = str_replace('/include', '/', str_replace('\\', '/', dirname(__FILE__)));
-require_once $cfg_web_root . 'include/auth.inc';
+require_once $root . 'include/auth.inc';
 try {
   require_once $root . 'config/config.inc.php';
 } catch (Exception $e) {
