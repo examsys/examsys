@@ -49,7 +49,7 @@
   <script type="text/javascript" src="../js/jquery.validate.min.js"></script>
   <script type="text/javascript">
     function updateMsg() {
-      document.getElementById('msg').innerHTML = '<?php echo $string['finished']; ?>';
+      document.getElementById('msg').innerHTML = '';
     }
   
     $(function () { $('#import_form').validate(); });
@@ -66,10 +66,9 @@
   require '../include/user_search_options.inc';
 ?>
 <div id="content" class="content" style="padding-left:10px">
-<br />
 <?php
   if (isset($_POST['submit'])) {
-    echo "<div id=\"msg\">" . $string['loading'] . "</div>\n<br />\n";
+    echo "<div id=\"msg\">" . $string['loading'] . "</div>\n";
     ob_flush();
     flush();
 
@@ -78,6 +77,7 @@
         echo uploadError($_FILES['csvfile']['error']);
         exit;
       } else {
+        
         $users = add_users_from_file($cfg_tmpdir . $userID . '_new_cohort.csv');
         unlink($cfg_tmpdir . $userID . '_new_cohort.csv');
         if (isset($users['error'])) {
@@ -87,6 +87,8 @@
           }
           echo "</ul>";
         } else {
+          echo $users['html'];
+          /*
           echo "<ul>\n";
           if (isset($users['added'])) {
             echo "<li>" . count($users['added']) . " " . $string['usersadded'] . "</li>\n";
@@ -99,6 +101,7 @@
             echo "<li>0 " . $string['usersupdated'] . "</li>\n";
           }
           echo "</ul>\n";
+          */
         }
       }
     }
