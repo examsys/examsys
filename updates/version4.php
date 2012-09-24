@@ -3477,8 +3477,11 @@ if (!isset($_POST['update'])) {
     }
 
 
-    while ($mysqli->next_result());
-    echo "<li>LOADED staff_help: " . $mysqli->insert_id . "</li>\n";
+    $ext='';
+    while ($mysqli->next_result()) {
+      if($mysqli->insert_id>0) $ext=$ext . ' '.  $mysqli->insert_id;
+    }
+    echo "<li>LOADED staff_help: " . $ext . "</li>\n";
   }
   if (isset($_POST['update_student_help'])) {
     $adjust = $mysqli->prepare("TRUNCATE student_help");
@@ -3506,8 +3509,11 @@ if (!isset($_POST['update'])) {
         exit();
       }
     }
-    while ($mysqli->next_result());
-    echo "<li>LOADED student_help: " . $mysqli->insert_id . "</li>\n";
+    $ext='';
+    while ($mysqli->next_result()) {
+      if($mysqli->insert_id>0) $ext=$ext . ' '.  $mysqli->insert_id;
+    }
+    echo "<li>LOADED student_help: " . $ext. "</li>\n";
   }
 
   // 02/05/2012 - Update the version number
