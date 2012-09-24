@@ -28,7 +28,7 @@ $root = str_replace('/include', '/', str_replace('\\', '/', dirname(__FILE__)));
 require_once $cfg_web_root . 'include/auth.inc';
 try {
   require_once $root . 'config/config.inc.php';
-} catch {
+} catch (Exception $e) {
    display_notice('Install Required', 'Rogō needs installing before use. The Installer is avalable <a href="./install/index.php">here</a>.', '../artwork/software_64.png', $title_color = '#C00000');
   echo "\n</body>\n</html>\n";
   exit;
