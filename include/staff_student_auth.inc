@@ -24,10 +24,25 @@
  * @package
  */
 
+/**
+*  This function is used to catch early errors and convert them to exeptions 
+*  so we can catch them. I is later replaced by the more complex customErrorHandler
+*  in include/custom_error_handler.inc
+*/
+function handle_early_errors($errno, $errstr, $errfile, $errline) {
+ if(strpos($errstr,'config.inc.php')) {
+    //turn a missing config file working into an exception so we can catch it
+    throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
+    return true;
+  }
+  return false;
+}
+set_error_handler("handle_early_errors");
+
 $root = str_replace('/include', '/', str_replace('\\', '/', dirname(__FILE__)));
 require_once $root . 'include/auth.inc';
 try {
-  require_once $root . 'config/config.inc.php';
+  include_once $root . 'config/config.inc.php';
 } catch (Exception $e) {
    display_notice('Install Required', 'Rogō needs installing before use. The Installer is avalable <a href="./install/index.php">here</a>.', '../artwork/software_64.png', $title_color = '#C00000');
   echo "\n</body>\n</html>\n";
