@@ -308,15 +308,25 @@ Class InstallUtils {
 
     if (file_exists($staff_help)) {
       $query = file_get_contents($staff_help);
-      self::$db->query("TRUNCATE staff_help");
+      self::$db->query("TRUNCATE staff_help"); 
       self::$db->multi_query($query);
+      if (self::$db->error) {
+        try {
+          throw new Exception("0MySQL error self::$db->error <br> Query:<br> ", self::$db->errno);
+        } catch (Exception $e) {
+          echo "Error No: " . $e->getCode() . " - " . $e->getMessage() . "<br >";
+          echo nl2br($e->getTraceAsString());
+          exit();
+        }
+      }
       if (self::$db->errno != 0) {
-        self::logWarning(array('501' => $string['logwarning1'] . self::$db->error ));
+        self::logWarning(array('501' => $string['logwarning1'] . self::$db->error));
+        $ext = '';
+        while (self::$db->next_result()) {
+          if (self::$db->insert_id > 0) $ext = $ext . ' ' . self::$db->insert_id;
+        }
       }
-      $ext='';
-      while (self::$db->next_result()) {
-        if(self::$db->insert_id>0) $ext=$ext . ' '.  self::$db->insert_id;
-      }
+
     } else {
       self::logWarning(array('502'=>  $string['logwarning2']));
     }
@@ -325,12 +335,21 @@ Class InstallUtils {
       $query = file_get_contents($student_help);
       self::$db->query("TRUNCATE student_help");
       self::$db->multi_query($query);
-      if (self::$db->errno != 0) {
-        self::logWarning(array('503' =>  $string['logwarning3'] . self::$db->error ));
+      if (self::$db->error) {
+        try {
+          throw new Exception("0MySQL error self::$db->error <br> Query:<br> ", self::$db->errno);
+        } catch (Exception $e) {
+          echo "Error No: " . $e->getCode() . " - " . $e->getMessage() . "<br >";
+          echo nl2br($e->getTraceAsString());
+          exit();
+        }
       }
-      $ext='';
-      while (self::$db->next_result()) {
-        if(self::$db->insert_id>0) $ext=$ext . ' '.  self::$db->insert_id;
+      if (self::$db->errno != 0) {
+        self::logWarning(array('503' => $string['logwarning3'] . self::$db->error));
+        $ext = '';
+        while (self::$db->next_result()) {
+          if (self::$db->insert_id > 0) $ext = $ext . ' ' . self::$db->insert_id;
+        }
       }
     } else {
       self::logWarning(array('504'=> $string['logwarning4']));
