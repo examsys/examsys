@@ -309,6 +309,8 @@ Class InstallUtils {
     if (file_exists($staff_help)) {
       $query = file_get_contents($staff_help);
       self::$db->query("TRUNCATE staff_help");
+
+      while (self::$db->next_result()) ;
       self::$db->multi_query($query);
       if (self::$db->error) {
         try {
@@ -319,6 +321,7 @@ Class InstallUtils {
           exit();
         }
       }
+
       if (self::$db->errno != 0) {
         self::logWarning(array('501' => $string['logwarning1'] . self::$db->error));
         $ext = '';
@@ -326,14 +329,15 @@ Class InstallUtils {
           if (self::$db->insert_id > 0) $ext = $ext . ' ' . self::$db->insert_id;
         }
       }
-
+      while (self::$db->next_result()) ;
     } else {
-      self::logWarning(array('502'=>  $string['logwarning2']));
+      self::logWarning(array('502' => $string['logwarning2']));
     }
 
     if (file_exists($student_help)) {
       $query = file_get_contents($student_help);
       self::$db->query("TRUNCATE student_help");
+      while (self::$db->next_result()) ;
       self::$db->multi_query($query);
       if (self::$db->error) {
         try {
@@ -351,8 +355,9 @@ Class InstallUtils {
           if (self::$db->insert_id > 0) $ext = $ext . ' ' . self::$db->insert_id;
         }
       }
+      while (self::$db->next_result()) ;
     } else {
-      self::logWarning(array('504'=> $string['logwarning4']));
+      self::logWarning(array('504' => $string['logwarning4']));
     }
 
   }
