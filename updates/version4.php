@@ -3452,53 +3452,62 @@ if (!isset($_POST['update'])) {
   // 02/05/2012 - Update the online help files.
   if (isset($_POST['update_staff_help'])) {
     $adjust = $mysqli->prepare("TRUNCATE staff_help");
+    if ($mysqli->error) {
+      try {
+        throw new Exception("0MySQL error $mysqli->error <br> Query:<br> ", $mysqli->errno);
+      } catch (Exception $e) {
+        echo "Error No: " . $e->getCode() . " - " . $e->getMessage() . "<br >";
+        echo nl2br($e->getTraceAsString());
+        exit();
+      }
+    }
     $adjust->execute();
     $adjust->close();
     echo "<li>TRUNCATE staff_help</li>\n";
-  
-    $filec=file('../install/staff_help.sql');
-    foreach($filec as $query) {
-      $query=trim(rtrim($query));
-      if(substr($query,0,11) == 'INSERT INTO')   { // ONLY DO INSERT STATEMENTS
-        $mysqli->query($query);
-        if ($mysqli->error) {
-          try {
-            throw new Exception("0MySQL error $mysqli->error <br> Query:<br> ", $mysqli->errno);
-          } catch (Exception $e) {
-            echo "Error No: " . $e->getCode() . " - " . $e->getMessage() . "<br >";
-            echo nl2br($e->getTraceAsString());
-            exit();
-          }
-        }
+    $file=file_get_contents('../install/staff_help.sql');
+  $mysqli->multi_query($file);
+    if ($mysqli->error) {
+      try {
+        throw new Exception("0MySQL error $mysqli->error <br> Query:<br> ", $mysqli->errno);
+      } catch (Exception $e) {
+        echo "Error No: " . $e->getCode() . " - " . $e->getMessage() . "<br >";
+        echo nl2br($e->getTraceAsString());
+        exit();
       }
-     }
+    }
 
 
-    echo "<li>LOADED staff_help</li>\n";
+    while ($mysqli->next_result());
+    echo "<li>LOADED staff_help: " . $mysqli->insert_id . "</li>\n";
   }
   if (isset($_POST['update_student_help'])) {
     $adjust = $mysqli->prepare("TRUNCATE student_help");
+    if ($mysqli->error) {
+      try {
+        throw new Exception("0MySQL error $mysqli->error <br> Query:<br> ", $mysqli->errno);
+      } catch (Exception $e) {
+        echo "Error No: " . $e->getCode() . " - " . $e->getMessage() . "<br >";
+        echo nl2br($e->getTraceAsString());
+        exit();
+      }
+    }
     $adjust->execute();
     $adjust->close();
     echo "<li>TRUNCATE student_help</li>\n";
-    
-    $filec=file('../install/student_help.sql');
-    foreach($filec as $query) {
-      $query=trim(rtrim($query));
-      if(substr($query,0,11) == 'INSERT INTO')   { // ONLY DO INSERT STATEMENTS
-        $mysqli->query($query);
-        if ($mysqli->error) {
-          try {
-            throw new Exception("0MySQL error $mysqli->error <br> Query:<br> ", $mysqli->errno);
-          } catch (Exception $e) {
-            echo "Error No: " . $e->getCode() . " - " . $e->getMessage() . "<br >";
-            echo nl2br($e->getTraceAsString());
-            exit();
-          }
-        }
+
+    $file=file_get_contents('../install/student_help.sql');
+    $mysqli->multi_query($file);
+    if ($mysqli->error) {
+      try {
+        throw new Exception("0MySQL error $mysqli->error <br> Query:<br> ", $mysqli->errno);
+      } catch (Exception $e) {
+        echo "Error No: " . $e->getCode() . " - " . $e->getMessage() . "<br >";
+        echo nl2br($e->getTraceAsString());
+        exit();
       }
     }
-    echo "<li>LOADED student_help</li>\n";
+    while ($mysqli->next_result());
+    echo "<li>LOADED student_help: " . $mysqli->insert_id . "</li>\n";
   }
 
   // 02/05/2012 - Update the version number

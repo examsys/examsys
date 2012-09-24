@@ -93,6 +93,9 @@ if (!$lti->valid) {
   $mysqli->close();
   exit;
 }
+
+
+
 if (!isset($lti_i)) {
   $lti_i = lti_integration::load();
 }
