@@ -309,9 +309,13 @@ Class InstallUtils {
     if (file_exists($staff_help)) {
       $query = file_get_contents($staff_help);
       self::$db->query("TRUNCATE staff_help");
-      self::$db->query($query);
+      self::$db->multi_query($query);
       if (self::$db->errno != 0) {
         self::logWarning(array('501' => $string['logwarning1'] . self::$db->error ));
+      }
+      $ext='';
+      while ($mysqli->next_result()) {
+        if($mysqli->insert_id>0) $ext=$ext . ' '.  $mysqli->insert_id;
       }
     } else {
       self::logWarning(array('502'=>  $string['logwarning2']));
@@ -320,9 +324,13 @@ Class InstallUtils {
     if (file_exists($student_help)) {
       $query = file_get_contents($student_help);
       self::$db->query("TRUNCATE student_help");
-      self::$db->query($query);
+      self::$db->multi_query($query);
       if (self::$db->errno != 0) {
         self::logWarning(array('503' =>  $string['logwarning3'] . self::$db->error ));
+      }
+      $ext='';
+      while ($mysqli->next_result()) {
+        if($mysqli->insert_id>0) $ext=$ext . ' '.  $mysqli->insert_id;
       }
     } else {
       self::logWarning(array('504'=> $string['logwarning4']));
