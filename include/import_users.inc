@@ -59,7 +59,7 @@ function add_users_from_file($fileName) {
       $header = array_flip($header);
       for ($i=0; $i<count($needed_cols1); $i++) {
         if (!isset($header[$needed_cols1[$i]]) and !isset($header[$needed_cols2[$i]])) {
-          $error['error'][] = "<li>" . sprintf($string['missingcolumn'],$needed_cols1[$i]) . "</li>";
+          $error['error'][] = "<li>" . sprintf($string['missingcolumn'], $needed_cols1[$i]) . "</li>";
         }
       }
       if (count($error) > 0) {
@@ -73,7 +73,7 @@ function add_users_from_file($fileName) {
     if (isset($header['type'])) {
       $role = str_replace('"','',trim($fields[$header['type']]));
     } else {
-      $roles = 'Student';
+      $role = 'Student';
     }
     if (isset($header['student_id'])) {
       $sid = str_replace('"','',trim($fields[$header['student_id']]));
@@ -139,11 +139,11 @@ function add_users_from_file($fileName) {
 
     // Override some fields if user type is Staff.
     if (strtolower($role) == 'staff') {
-      $roles = 'Staff';
+      $role = 'Staff';
       $course = 'University Lecturer';
       $year = 1;
     } elseif (strtolower($role) == 'external examiner') {
-      $roles = 'External Examiner';
+      $role = 'External Examiner';
       $course = 'Staff External Examiner';
       $year = 1;
     }
@@ -183,14 +183,14 @@ function add_users_from_file($fileName) {
       if ($password != '') {
         //we are updating the password from the CSV
         $encpw_password = encpw($cfg_encrypt_salt, $username, $password);
-        $result = $mysqli->prepare("UPDATE users SET yearofstudy=?, title=?, first_names=?, surname=?, grade=? , password=? WHERE username=?");
-        $result->bind_param('sssssss', $year, $title, $forname, $surname, $course, $encpw_password, $username);
+        $result = $mysqli->prepare("UPDATE users SET yearofstudy=?, title=?, first_names=?, surname=?, grade=?, password=?, roles=? WHERE username=?");
+        $result->bind_param('ssssssss', $year, $title, $forname, $surname, $course, $encpw_password, $role, $username);
         $result->execute();
         $result->close();
       } else {
         //no new password was provided in the CSV
-        $result = $mysqli->prepare("UPDATE users SET yearofstudy=?, title=?, first_names=?, surname=?, grade=? WHERE username=?");
-        $result->bind_param('ssssss', $year, $title, $forname, $surname, $course, $username);
+        $result = $mysqli->prepare("UPDATE users SET yearofstudy=?, title=?, first_names=?, surname=?, grade=?, roles=? WHERE username=?");
+        $result->bind_param('sssssss', $year, $title, $forname, $surname, $course, $role, $username);
         $result->execute();
         $result->close();
       }
