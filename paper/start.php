@@ -574,10 +574,10 @@ if ($css != '') {
           type: 'post',
           data: $('#qForm').serialize(),
           dataType: 'html',
-          timeout: 1000,
+          timeout: 2500,
           cache: false,
           tryCount : 0,    
-          retryLimit : 5, //try 5 times b4 error
+          retryLimit : 3, //try 3 times b4 error
           beforeSend: function() {
               submitPending = true;
               success = false;
