@@ -286,7 +286,7 @@
               if (count($objByModule) > 1) {
                 echo "$module: ";
               }
-              echo $mappingData['content'];
+              echo strip_tags($mappingData['content'], '<b><i><strong><em><sub><sup>');
               echo "&nbsp;&nbsp;&nbsp;<span title=\"$sessiontitle\" class=\"mapping\"><a href=\"" . $mappingData['session']['source_url'] . "\" target=\"_blank\"><img src=\"../artwork/small_link.png\" width=\"12\" height=\"12\" /></a>&nbsp;<a href=\"" . $mappingData['session']['source_url'] . "\" target=\"_blank\">" . $sessiondata ."</a></span>";
               echo '</li>';
             }

@@ -209,7 +209,7 @@ $paperID = $_GET['paperID'];
           echo '<tr><td colspan="4"><ul>';
           foreach ($sessionData["objectives"] as $id => $objectives) {
             if (is_array($objectives['mapped'])) {
-              echo '<li class="mapped">' . $objectives['content'] . ' <span class="mapping">';
+              echo '<li class="mapped">' . strip_tags($objectives['content'], '<b><i><strong><em><sub><sup>') . ' <span class="mapping">';
               $i = 0;
               foreach ($objectives['mapped'] as $q_id) {
                 if (array_key_exists($q_id,$excluded)) {
@@ -224,7 +224,7 @@ $paperID = $_GET['paperID'];
               echo'</span></li>';
             } else {
               //could display unmaped obj here !!
-              echo '<li class="unmapped">' . $objectives['content'] . '</li>';
+              echo '<li class="unmapped">' . strip_tags($objectives['content'], '<b><i><strong><em><sub><sup>') . '</li>';
             }
           }
           echo '</ul></td></tr>';

@@ -68,77 +68,21 @@ class VLE_UoNCM implements iVLEAPI {
 
       $i = 0;
       if (isset($input['cmapi']['module']['session'])) {
-        foreach ($input['cmapi']['module']['session'] as $session) {
-          // If no objectives don't bother showing the session
-          if (is_array($session['objectives'])) {
-            $sess_data = array(
-              'identifier' => $session['@attributes']['id'],
-              'class_code' => $session['code'],
-              'title' => $session['title'],
-              'occurrance' => date('d/m/y H:i', strtotime($session['start'])),
-              'calendar_year' => $calendar_year,
-              'VLE' => 'UoNCM',
-              'source_url' => $this->_root_url . 'view/' . $session['@attributes']['id'],
-              'mapped' => 0,
-              'objectives' => array()
-            );
-
-            $obs = $session['objectives']['outcome_session'];
-            if (isset($obs['@attributes'])) {
-              $obj_data = array(
-                'content' => (isset($obs['title']) and $obs['title'] != '') ? $obs['title'] : $obs['content'],
-                'id' => $obs['@attributes']['id']
-              );
-              $sess_data['objectives'][++$i] = $obj_data;
-            } else {
-              foreach ($obs as $objective) {
-                $obj_data = array(
-                  'content' => (isset($objective['title']) and $objective['title'] != '') ? $objective['title'] : $objective['content'],
-                  'id' => $objective['@attributes']['id'],
-                  'mapped' => 0
-                );
-                $sess_data['objectives'][++$i] = $obj_data;
-              }
-            }
-            $sessions[$session['@attributes']['id']] = $sess_data;
+        if (isset($input['cmapi']['module']['session']['@attributes'])) {
+          $this->process_session($sessions, $input['cmapi']['module']['session'], $calendar_year, $i);
+        } else {
+          foreach ($input['cmapi']['module']['session'] as $session) {
+            $this->process_session($sessions, $session, $calendar_year, $i);
           }
         }
       }
 
       if (isset($input['cmapi']['module']['learning_act'])) {
-        foreach ($input['cmapi']['module']['learning_act'] as $learning_act) {
-          // If no objectives don't bother showing the session
-          if (is_array($learning_act['objectives'])) {
-            $act_data = array(
-              'identifier' => $learning_act['@attributes']['id'],
-              'class_code' => '',
-              'title' => $learning_act['title'],
-              'occurrance' => 'Non-timetabled',
-              'calendar_year' => $calendar_year,
-              'VLE' => 'UoNCM',
-              'source_url' => $this->_root_url . 'view/' . $learning_act['@attributes']['id'],
-              'mapped' => 0,
-              'objectives' => array()
-            );
-
-            $obs = $learning_act['objectives']['outcome_learning_act'];
-            if (isset($obs['@attributes'])) {
-              $obj_data = array(
-                'content' => (isset($obs['title']) and $obs['title'] != '') ? $obs['title'] : $obs['content'],
-                'id' => $obs['@attributes']['id']
-              );
-              $act_data['objectives'][++$i] = $obj_data;
-            } else {
-              foreach ($obs as $objective) {
-                $obj_data = array(
-                  'content' => (isset($objective['title']) and $objective['title'] != '') ? $objective['title'] : $objective['content'],
-                  'id' => $objective['@attributes']['id'],
-                  'mapped' => 0
-                );
-                $act_data['objectives'][++$i] = $obj_data;
-              }
-            }
-            $sessions[$learning_act['@attributes']['id']] = $act_data;
+        if (isset($input['cmapi']['module']['learning_act']['@attributes'])) {
+          $this->process_learning_act($sessions, $input['cmapi']['module']['learning_act'], $calendar_year, $i);
+        } else {
+          foreach ($input['cmapi']['module']['learning_act'] as $learning_act) {
+            $this->process_learning_act($sessions, $learning_act, $calendar_year, $i);
           }
         }
       }
@@ -148,6 +92,90 @@ class VLE_UoNCM implements iVLEAPI {
       return $output;
     } else {
       return array();
+    }
+  }
+
+  /**
+   * @param $sessions List of sessions with objectives
+   * @param $session The current session
+   * @param $calendar_year
+   * @param $count
+   */
+  private function process_session(&$sessions, $session, $calendar_year, &$count) {
+    // If no objectives don't bother showing the session
+    if (is_array($session['objectives'])) {
+      $sess_data = array(
+        'identifier' => $session['@attributes']['id'],
+        'class_code' => $session['code'],
+        'title' => $session['title'],
+        'occurrance' => date('d/m/y H:i', strtotime($session['start'])),
+        'calendar_year' => $calendar_year,
+        'VLE' => 'UoNCM',
+        'source_url' => $this->_root_url . 'view/' . $session['@attributes']['id'],
+        'mapped' => 0,
+        'objectives' => array()
+      );
+
+      $obs = $session['objectives']['outcome_session'];
+      if (isset($obs['@attributes'])) {
+        $obj_data = array(
+          'content' => (isset($obs['title']) and $obs['title'] != '') ? $obs['title'] : $obs['content'],
+          'id' => $obs['@attributes']['id']
+        );
+        $sess_data['objectives'][++$count] = $obj_data;
+      } else {
+        foreach ($obs as $objective) {
+          $obj_data = array(
+            'content' => (isset($objective['title']) and $objective['title'] != '') ? $objective['title'] : $objective['content'],
+            'id' => $objective['@attributes']['id'],
+            'mapped' => 0
+          );
+          $sess_data['objectives'][++$count] = $obj_data;
+        }
+      }
+      $sessions[$session['@attributes']['id']] = $sess_data;
+    }
+  }
+
+  /**
+   * @param $sessions List of sessions with objectives
+   * @param $session The current session
+   * @param $calendar_year
+   * @param $count
+   */
+  private function process_learning_act(&$sessions, $learning_act, $calendar_year, &$count) {
+    // If no objectives don't bother showing the session
+    if (is_array($learning_act['objectives'])) {
+      $act_data = array(
+        'identifier' => $learning_act['@attributes']['id'],
+        'class_code' => '',
+        'title' => $learning_act['title'],
+        'occurrance' => 'Non-timetabled',
+        'calendar_year' => $calendar_year,
+        'VLE' => 'UoNCM',
+        'source_url' => $this->_root_url . 'view/' . $learning_act['@attributes']['id'],
+        'mapped' => 0,
+        'objectives' => array()
+      );
+
+      $obs = $learning_act['objectives']['outcome_learning_act'];
+      if (isset($obs['@attributes'])) {
+        $obj_data = array(
+          'content' => (isset($obs['title']) and $obs['title'] != '') ? $obs['title'] : $obs['content'],
+          'id' => $obs['@attributes']['id']
+        );
+        $act_data['objectives'][++$count] = $obj_data;
+      } else {
+        foreach ($obs as $objective) {
+          $obj_data = array(
+            'content' => (isset($objective['title']) and $objective['title'] != '') ? $objective['title'] : $objective['content'],
+            'id' => $objective['@attributes']['id'],
+            'mapped' => 0
+          );
+          $act_data['objectives'][++$count] = $obj_data;
+        }
+      }
+      $sessions[$learning_act['@attributes']['id']] = $act_data;
     }
   }
 }

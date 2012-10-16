@@ -102,8 +102,9 @@ HTML;
           } else {
             $checked = '';
           }
+          $obj_text = strip_tags($objectives['content'], '<b><i><strong><em><sub><sup>');
           $html .= <<< HTML
-        				<li><input id="objective{$objcount}" name="{$moduleid_forform}_objectives[]" value="{$objectives['id']}" type="checkbox"{$checked} /> <label for="objective{$objcount}">{$objectives['content']}</label></li>
+        				<li><input id="objective{$objcount}" name="{$moduleid_forform}_objectives[]" value="{$objectives['id']}" type="checkbox"{$checked} /> <label for="objective{$objcount}">{$obj_text}</label></li>
   
 HTML;
           $objcount++;
@@ -206,7 +207,7 @@ function displayObjectivesMappingForm($paper_id, $rogodb, $cfg_root_path) {
           } else {
             $checked = '';
           }
-          $html .= "\t<div style=\"margin-left:15px\"><input id=\"" . $moduleid . "obj$objcount\" name=\"" . $moduleid . "obj$objcount\" type=\"checkbox\" value=\"" . $objectives['id'] . "\" $checked />&nbsp;" . $objectives['content'] . "</div>\n";
+          $html .= "\t<div style=\"margin-left:15px\"><input id=\"" . $moduleid . "obj$objcount\" name=\"" . $moduleid . "obj$objcount\" type=\"checkbox\" value=\"" . $objectives['id'] . "\" $checked />&nbsp;" . strip_tags($objectives['content'], '<b><i><strong><em><sub><sup>') . "</div>\n";
           $objcount++;
         }
         $html .= "</div>\n";
