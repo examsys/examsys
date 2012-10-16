@@ -50,6 +50,7 @@ function getLabs($labs, $mysqlidb) {
   return $html;
 }
 ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -114,7 +115,7 @@ function getLabs($labs, $mysqlidb) {
 <div id="content" class="content">
 <table class="header">
 <tr>
-<th colspan="4"><div class="breadcrumb"><a href="../staff/index.php"><?php echo $string['home']; ?></a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php"><?php echo $string['administrativetools']; ?></a></div><div style="margin-left:10px; font-size:200%; font-weight:bold"><?php echo $string['summativescheduling']; ?></th>
+<th colspan="4"><div class="breadcrumb"><a href="../staff/index.php"><?php echo $string['home']; ?></a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php"><?php echo $string['administrativetools']; ?></a></div><div style="margin-left:10px; font-size:200%; font-weight:bold"><?php echo $string['summativescheduling']; ?></div></th>
 <th style="text-align:right; vertical-align:top; padding-top:2px; padding-right:6px"><a href="#" onclick="launchHelp(0); return false;"><img src="../artwork/small_help_icon.gif" width="16" height="16" alt="<?php echo $string['help']; ?>" border="0" /></a></th>
 </tr>
 <tr>
@@ -125,8 +126,8 @@ function getLabs($labs, $mysqlidb) {
 <th><img src="../artwork/header_vertical_line.gif" width="2" height="15" alt="line" border="0" />&nbsp;<?php echo $string['cohortsize']; ?>&nbsp;</th>
 
 </tr>
-<tr><th colspan="6" class="bevel"></th></tr>
-  <tr><td colspan="6"><table border="0" class="subsect" style="width:98%"><tr><td><nobr><?php echo $string['unscheduled']; ?></nobr></td><td style="width:98%"><hr noshade="noshade" style="border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%" /></td></tr></table></td></tr>
+<tr><th colspan="5" class="bevel"></th></tr>
+  <tr><td colspan="5"><table border="0" class="subsect" style="width:98%"><tr><td><nobr><?php echo $string['unscheduled']; ?></nobr></td><td style="width:98%"><hr noshade="noshade" style="border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%" /></td></tr></table></td></tr>
 <?php
   $rowID = 0;
   $months = array('january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december');
@@ -151,8 +152,8 @@ function getLabs($labs, $mysqlidb) {
   }
   $results->close();
 ?>
-  <tr><td colspan="6">&nbsp;</td></tr>
-  <tr><td colspan="6"><table border="0" class="subsect" style="width:98%"><tr><td><nobr><?php echo $string['scheduled']; ?></nobr></td><td style="width:98%"><hr noshade="noshade" style="border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%" /></td></tr></table></td></tr>
+  <tr><td colspan="5">&nbsp;</td></tr>
+  <tr><td colspan="5"><table border="0" class="subsect" style="width:98%"><tr><td><nobr><?php echo $string['scheduled']; ?></nobr></td><td style="width:98%"><hr noshade="noshade" style="border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%" /></td></tr></table></td></tr>
 <?php
   $results = $mysqli->prepare("SELECT property_id, paper_title, moduleID, period, barriers_needed, cohort_size, campus, DATE_FORMAT(start_date,'$cfg_long_date_time'), end_date, labs FROM (properties, scheduling) WHERE start_date > NOW() AND properties.property_id=scheduling.paperID AND deleted IS NULL ORDER BY period");
   $results->execute();
