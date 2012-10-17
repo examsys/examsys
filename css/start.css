@@ -25,7 +25,7 @@ pre {font-family:Arial,sans-serif;font-size:100%}
 .mee {font-size:120%; display:inline}
 .likert_button {text-align:center;width:40px;vertical-align:top}
 .latex {vertical-align:middle}
-#maincontent {font-size:100%;top:0px;overflow:auto;height:100%}
+#maincontent {font-size:100%;top:0px;overflow:auto}
 .framecontent {
   padding:6px;
   font-size:95%;
