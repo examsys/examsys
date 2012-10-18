@@ -184,16 +184,17 @@ function get_ss_pass(&$pass_score, &$distinction_score) {
   $question_no = 0;
 
   // Get question ratings.
-  $result = $mysqli->prepare("SELECT questionID, rating, method, status FROM standards_setting, questions WHERE standards_setting.questionID=questions.q_id AND paperID=? AND setterID=? AND std_set=?");
+  $result = $mysqli->prepare("SELECT questionID, rating, method, status, q_type, score_method FROM standards_setting, questions WHERE standards_setting.questionID=questions.q_id AND paperID=? AND setterID=? AND std_set=?");
   $result->bind_param('iis', $_GET['paperID'], $mark_parts[1], $mark_parts[2]);
   $result->execute();
-  $result->bind_result($questionID, $rating, $method, $status);
+  $result->bind_result($questionID, $rating, $method, $status, $q_type, $score_method);
   while ($result->fetch()) {
     if ($status != 'Experimental') {
       $individual_ratings = explode(',',$rating);
       $count_individual_ratings = count($individual_ratings);
       for ($i=0; $i<$count_individual_ratings; $i++) {
-        if (!isset($excluded[$questionID]) or substr($excluded[$questionID],$i,1) == 0) {
+        $bad_bonus_mark = ($q_type == 'rank' and $score_method == 'Bonus Mark' and isset($excluded[$questionID]) and strpos($excluded[$questionID], '1') !== false);
+        if ((!isset($excluded[$questionID]) or substr($excluded[$questionID],$i,1) == 0) and !$bad_bonus_mark) {
           if (in_array($individual_ratings[$i],$std_types)) $ebel_marks[$individual_ratings[$i]]++;
         }
         $std_total += $individual_ratings[$i];
@@ -210,7 +211,7 @@ function get_ss_pass(&$pass_score, &$distinction_score) {
     $result->execute();
     $result->bind_result($category, $percentage);
     while ($result->fetch()) {
-      $ebel_percents[$category] = $percentage;
+      $ebel_percents[$category] = round($percentage, 2);
     }
     $result->close();
 

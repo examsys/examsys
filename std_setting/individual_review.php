@@ -42,6 +42,23 @@ function ebelDropdown($dropdownID, $selected) {
   return $html;
 }
 
+function check_ebel_distinction_type($ebel) {
+  if (!isset($ebel[9])) {
+    return 'dna';
+  }
+
+  $type = 'top20';
+
+  for ($i = 9; $i < 18; $i++) {
+    if ($ebel[$i] > 0) {
+      $type = 'grid';
+      break;
+    }
+  }
+
+  return $type;
+}
+
 if (isset($_POSR['paperID'])) {
   $paperID = $_POST['paperID'];
 } else {
@@ -543,7 +560,7 @@ if (isset($_POSR['paperID'])) {
       $result->execute();
       $result->bind_result($percentage);
       while ($result->fetch()) {
-        $ebel[] = round($percentage, 2);
+        $ebel[] = (isset($percentage)) ? round($percentage, 2) : null;
       }
       $result->close();
     }
@@ -591,9 +608,12 @@ if (isset($_POSR['paperID'])) {
     echo "<tr>\n<td style=\"margin:0px\">" . $string['step3'] . "<br />";
     ?>
     <blockquote style="margin-top:8px; margin-bottom:8px">
-    <input type="radio" name="distinction_type" value="1"<?php if ($ebel[9] > 0) echo ' checked'; ?> /> <?php echo $string['gridbelow']; ?><br />
-    <input type="radio" name="distinction_type" value="2"<?php if ($ebel[9] === '0') echo ' checked'; ?> /> <?php echo $string['top20']; ?><br />
-    <input type="radio" name="distinction_type" value="3"<?php if ($ebel[9] === NULL) echo ' checked'; ?> /> <?php echo $string['donotapply']; ?><br />
+<?php
+    $ebel_dist = check_ebel_distinction_type($ebel);
+?>
+    <input type="radio" id="distinction_type_grid" name="distinction_type" value="1"<?php if ($ebel_dist == 'grid') echo ' checked="checked"'; ?> /> <label for="distinction_type_grid"><?php echo $string['gridbelow']; ?></label><br />
+    <input type="radio" id="distinction_type_t20" name="distinction_type" value="2"<?php if ($ebel_dist == 'top20') echo ' checked="checked"'; ?> /> <label for="distinction_type_t20"><?php echo $string['top20']; ?></label><br />
+    <input type="radio" id="distinction_type_dna" name="distinction_type" value="3"<?php if ($ebel_dist == 'dna') echo ' checked="checked"'; ?> /> <label for="distinction_type_dna"><?php echo $string['donotapply']; ?></label><br />
     </blockquote>
     <?php
     echo "</td>\n</tr>\n</table>\n</div>\n<br />\n";
