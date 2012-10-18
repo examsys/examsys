@@ -43,7 +43,7 @@ function ebelDropdown($dropdownID, $selected) {
 }
 
 function check_ebel_distinction_type($ebel) {
-  if (!isset($ebel[9]) or $ebel[9] == '') {
+  if (!isset($ebel[9]) or $ebel[9] === '') {
     return 'dna';
   }
 
