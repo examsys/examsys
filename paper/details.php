@@ -246,12 +246,25 @@ function check_latex($leadin, $scenario, $option_text, $score_method, $correct_f
     $latex = 1;
   }
 
-  // latex check class="mee"
-  if (strpos($leadin,'class="mee"') !== false or strpos($scenario,'class="mee"') !== false or strpos($option_text,'class="mee"') !== false or strpos($score_method,'class="mee"') !== false or strpos($correct_fback,'class="mee"') !== false or strpos($feedback_right,'class="mee"') !== false) {
+  // latex check class="mee" (with or without quotes)
+  if (check_latex_class(array($leadin, $scenario, $option_text, $score_method, $correct_fback, $feedback_right))) {
     $latex = 1;
   }
 
   return $latex;
+}
+
+/**
+ * @param $candidates Array of candidate strings to check for inclusion of the MEE class
+ * @return bool True if at least one of the candidates contains the class
+ */
+function check_latex_class($candidates) {
+  foreach ($candidates as $candidate) {
+    if (strpos($candidate,'class="mee"') !== false or strpos($candidate,'class=mee') !== false) {
+      return true;
+    }
+  }
+  return false;
 }
 
 /**
