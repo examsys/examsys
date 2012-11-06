@@ -37,8 +37,8 @@ Class QuestionSCT extends Question {
   protected $_fields_editable = array('theme', 'scenario', 'hypothesis', 'new_information', 'notes', 'correct_fback', 'incorrect_fback', 'display_method', 'option_order', 'bloom', 'status');
   protected $_fields_required = array('type', 'leadin', 'display_method', 'owner_id', 'status');
   
-  function __construct($mysqli, $user_id, $lang_strings, $data = null) {
-    parent::__construct($mysqli, $user_id, $lang_strings, $data);
+  function __construct($mysqli, $user_id, $lang_strings, $data = null, $question_mode='live') {
+    parent::__construct($mysqli, $user_id, $lang_strings, $data, $question_mode);
 
     $this->sct_types = array(
       array($this->_lang_strings['hypothesis'], $this->_lang_strings['veryunlikely'], $this->_lang_strings['unlikely'], $this->_lang_strings['neithernorlikely'], $this->_lang_strings['morelikely'], $this->_lang_strings['verylikely']),

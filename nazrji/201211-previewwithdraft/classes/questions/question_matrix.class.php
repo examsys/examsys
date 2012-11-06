@@ -35,8 +35,8 @@ Class QuestionMATRIX extends Question {
   protected $_fields_editable = array('theme', 'leadin', 'notes', 'correct_fback', 'score_method', 'option_order', 'bloom', 'status');
   protected $_fields_compound = array('stem');
   
-  function __construct($mysqli, $user_id, $lang_strings, $data = null) {
-    parent::__construct($mysqli, $user_id, $lang_strings, $data);
+  function __construct($mysqli, $user_id, $lang_strings, $data = null, $question_mode='live') {
+    parent::__construct($mysqli, $user_id, $lang_strings, $data, $question_mode);
     
     // 'correct' is not a unified field for Matrix because it is compound
     $this->_fields_unified = array('marks_correct' => $this->_lang_strings['markscorrect'], 'marks_incorrect' => $this->_lang_strings['marksincorrect']);

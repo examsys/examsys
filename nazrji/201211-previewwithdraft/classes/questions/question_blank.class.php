@@ -30,8 +30,8 @@ Class QuestionBLANK extends Question {
   protected $_answer_negative = null;
 
 
-  function __construct($mysqli, $user_id, $lang_strings, $data = null) {
-    parent::__construct($mysqli, $user_id, $lang_strings, $data);
+  function __construct($mysqli, $user_id, $lang_strings, $data = null, $question_mode='live') {
+    parent::__construct($mysqli, $user_id, $lang_strings, $data, $question_mode);
     
     $this->_fields_unified = array('text' => $this->_lang_strings['questionstem'], 'marks_correct' => $this->_lang_strings['markscorrect'], 'marks_incorrect' => $this->_lang_strings['marksincorrect']);
     $this->_display_methods = array('dropdown' => $this->_lang_strings['dropdownlists'], 'textboxes' => $this->_lang_strings['textboxes']);

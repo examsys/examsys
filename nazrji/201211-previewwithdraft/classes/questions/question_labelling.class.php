@@ -33,8 +33,8 @@ Class QuestionLABELLING extends Question {
   protected $_requires_flash = true;
   public $max_options = 1;
   
-  function __construct($mysqli, $user_id, $lang_strings, $data = null) {
-    parent::__construct($mysqli, $user_id, $lang_strings, $data);
+  function __construct($mysqli, $user_id, $lang_strings, $data = null, $question_mode='live') {
+    parent::__construct($mysqli, $user_id, $lang_strings, $data, $question_mode);
 
     // Convert the max number of options into a list of variables
     $this->option_order = 'display_order';

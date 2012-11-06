@@ -97,6 +97,7 @@ $string['changes'] = 'Changes';
 $string['comments'] = 'Comments';
 $string['mapping'] = 'Mapping';
 $string['performance'] = 'Performance';
+$string['preview'] = 'Preview';
 $string['limitedsave'] = 'Limited Save';
 $string['save'] = 'Save Changes';
 $string['questionlocked'] = 'This question is currently locked for editing by';

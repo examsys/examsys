@@ -29,8 +29,8 @@ Class QuestionMCQ extends Question {
   protected $min_options = 2;
   protected $_allow_change_marking_method = false;
   
-  function __construct($mysqli, $user_id, $lang_strings, $data = null) {
-    parent::__construct($mysqli, $user_id, $lang_strings, $data);
+  function __construct($mysqli, $user_id, $lang_strings, $data = null, $question_mode='live') {
+    parent::__construct($mysqli, $user_id, $lang_strings, $data, $question_mode);
 
     $this->_display_methods = array('vertical' => $this->_lang_strings['vertical'], 'vertical_other' => $this->_lang_strings['verticalother'], 'horizontal' => $this->_lang_strings['horizontal'], 'dropdown' => $this->_lang_strings['dropdownlist']);
   }

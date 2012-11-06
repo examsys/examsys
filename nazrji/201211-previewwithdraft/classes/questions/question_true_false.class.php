@@ -33,8 +33,8 @@ Class QuestionTRUE_FALSE extends Question {
   protected $_fields_change = array('option_correct', 'option_marks_correct', 'option_marks_incorrect');
   protected $_allow_change_marking_method = false;
 
-  function __construct($mysqli, $user_id, $lang_strings, $data = null) {
-    parent::__construct($mysqli, $user_id, $lang_strings, $data);
+  function __construct($mysqli, $user_id, $lang_strings, $data = null, $question_mode='live') {
+    parent::__construct($mysqli, $user_id, $lang_strings, $data, $question_mode);
     
     $this->_fields_unified = array('marks_correct' => $this->_lang_strings['markscorrect'], 'marks_incorrect' => $this->_lang_strings['marksincorrect']);
     $this->_display_methods = array('vertical' => $this->_lang_strings['vertical'], 'horizontal' => $this->_lang_strings['horizontal'], 'dropdown' => $this->_lang_strings['dropdownlist']);

@@ -49,7 +49,7 @@ function displayEditTab($created, $modified, $locked) {
 }
 
 function check_fullSave($q_id, $mysqli) {
-  if ($_POST['submit'] == 'Limited Save') {
+  if (isset($_POST['submit']) and $_POST['submit'] == 'Limited Save') {
     return false;
   }
 

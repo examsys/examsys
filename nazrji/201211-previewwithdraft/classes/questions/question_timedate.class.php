@@ -43,8 +43,8 @@ Class QuestionTIMEDATE extends Question {
   
   protected $_fields_editable = array('theme', 'scenario', 'leadin', 'notes', 'correct_fback', 'incorrect_fback', 'option_order', 'bloom', 'status', 'correct', 'format', 'start_year', 'end_year', 'td_year', 'td_month', 'td_day', 'td_hours', 'td_minutes', 'td_seconds');
   
-  function __construct($mysqli, $user_id, $lang_strings, $data = null) {
-    parent::__construct($mysqli, $user_id, $lang_strings, $data);
+  function __construct($mysqli, $user_id, $lang_strings, $data = null, $question_mode='live') {
+    parent::__construct($mysqli, $user_id, $lang_strings, $data, $question_mode);
 
     $this->_formats = array('1' => 'dd/MM/yyyy hh:mm:ss', '2' => 'dd/MM/yyyy hh:mm', '3' => 'dd/MM/yyyy', '4' => 'mm/dd/yyyy', '5' => 'dd/MMMM/yyyy', '6' => 'hh:mm:ss', '7' => 'hh:mm (' . strtolower($this->_lang_strings['date']) . ')', '8' => 'hh:mm (' . $this->_lang_strings['duration'] . ')');
 

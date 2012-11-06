@@ -15,7 +15,7 @@
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
-* 
+*
 * @author Simon Wilkinson
 * @version 1.0
 * @copyright Copyright (c) 2012 The University of Nottingham
@@ -65,11 +65,11 @@ function convert_year($old_year) {
 function gen_random_salt() {
   $salt = '';
   $characters = 'abcdefghijklmnopqrstuvwxzyABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  
+
   for ($i=0; $i<16; $i++) {
     $salt .= substr($characters, rand(0,61), 1);
   }
-  
+
   return $salt;
 }
 
@@ -79,9 +79,9 @@ function gen_random_salt() {
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
-    
+
     <title>Rogo <?php echo $rogo_version . ' to ' . $version; ?> update Script</title>
-    
+
     <link rel="stylesheet" type="text/css" href="../css/body.css" />
     <link rel="stylesheet" type="text/css" href="../css/header.css" />
     <style type="text/css">
@@ -105,7 +105,7 @@ function gen_random_salt() {
     <script type="text/javascript" src="../js/jquery.validate.min.js"></script>
   </head>
   <body>
-  <table class="header"> 
+  <table class="header">
     <tr>
       <th style="padding-top:4px; padding-bottom:4px; padding-left:16px">
       <img src="../artwork/r_logo.gif" width="56" height="60" alt="logo" border="0" style="float:left; padding-right:8px" />
@@ -116,9 +116,9 @@ function gen_random_salt() {
       <img src="../artwork/software_64.png" width="64" height="64" alt="Upgrade Icon" border="0" />
       </th>
     </tr>
-    <tr> 
-      <th colspan="2" class="bevel"></th> 
-    </tr> 
+    <tr>
+      <th colspan="2" class="bevel"></th>
+    </tr>
   </table>
 <?php
 if (!isset($_POST['update'])) {
@@ -127,7 +127,7 @@ if (!isset($_POST['update'])) {
       $(document).ready(function(){
           $("#installForm").validate();
       });
-      
+
       $(document).ready(function() {
         $('#useLdap').change(function() {
             $('#ldapOptions').toggle();
@@ -142,10 +142,10 @@ if (!isset($_POST['update'])) {
        <div><?php echo $string['warning1']; ?></div>
       <?php
     } else {
-      ?>    
+      ?>
       <form id="installForm" class="cmxform" method="post" action="<?php echo $_SERVER['PHP_SELF'];?>">
       <div><?php printf($string['msg1'], $version); ?></div>
-        <table class="h"><tr><td><nobr><?php echo $string['databaseadminuser']; ?></nobr></td><td class="line"><hr /></td></tr></table> 
+        <table class="h"><tr><td><nobr><?php echo $string['databaseadminuser']; ?></nobr></td><td class="line"><hr /></td></tr></table>
           <div><?php echo $string['msg2']; ?></div>
           <br />
           <div><label for="mysql_admin_user"><?php echo $string['dbusername']; ?></label> <input type="text" value="" name="mysql_admin_user" class="required" minlength="2" /> </div>
@@ -154,7 +154,7 @@ if (!isset($_POST['update'])) {
           <table class="h"><tr><td><nobr><?php echo $string['onlinehelpsystems']; ?></nobr></td><td class="line"><hr /></td></tr></table>
           <div><label for="update_staff_help"><?php echo $string['updatestaffhelp']; ?></label> <input type="checkbox" value="" name="update_staff_help" checked="checked" /></div>
           <div><label for="update_student_help"><?php echo $string['updatestudenthelp']; ?></label> <input type="checkbox" value="" name="update_student_help" checked="checked" /></div>
-     
+
        <div class="submit"> <input type="submit" name="update" value="<?php echo $string['startupdate']; ?>" /> </div>
      </form>
     <?php
@@ -168,7 +168,7 @@ if (!isset($_POST['update'])) {
   if (!isset($cfg_db_charset)) {
     $cfg_db_charset = 'latin1';
   }
-  
+
   $mysqli = DBUtils::get_mysqli_link($cfg_db_host , $_POST['mysql_admin_user'], $_POST['mysql_admin_pass'], $cfg_db_database, $cfg_db_charset, $dbclass);
 
   if ($mysqli->connect_error) {
@@ -177,10 +177,10 @@ if (!isset($_POST['update'])) {
     echo "</html>";
     exit;
   }
-  
+
   echo "\n<blockquote>\n<h1>" . $string['startingupdate'] . "</h1>\n<ol>";
   ob_start();
-  
+
   // 15/06/2011
   // Add index to improve performance for standards setting index page
   $result = $mysqli->prepare("SHOW INDEX FROM ebel");
@@ -207,12 +207,12 @@ if (!isset($_POST['update'])) {
     $adjust->execute();
     $adjust->close();
     echo "<li>ALTER TABLE log_late DROP COLUMN year</li>\n";
-    
+
     $adjust = $mysqli->prepare("ALTER TABLE log_late DROP COLUMN student_grade");
     $adjust->execute();
     $adjust->close();
     echo "<li>ALTER TABLE log_late DROP COLUMN student_grade</li>\n";
-    
+
     $adjust = $mysqli->prepare("ALTER TABLE log_late DROP COLUMN ipaddress");
     $adjust->execute();
     $adjust->close();
@@ -232,17 +232,17 @@ if (!isset($_POST['update'])) {
     $adjust->execute();
     $adjust->close();
     echo "<li>ALTER TABLE sys_errors ADD COLUMN fixed datetime</li>\n";
-    
+
     $adjust = $mysqli->prepare("ALTER TABLE sys_errors ADD COLUMN php_self text");
     $adjust->execute();
     $adjust->close();
     echo "<li>ALTER TABLE sys_errors ADD COLUMN php_self text</li>\n";
-    
+
     $adjust = $mysqli->prepare("ALTER TABLE sys_errors ADD COLUMN query_string text");
     $adjust->execute();
     $adjust->close();
     echo "<li>ALTER TABLE sys_errors ADD COLUMN query_string text</li>\n";
-    
+
     $adjust = $mysqli->prepare("ALTER TABLE sys_errors ADD COLUMN request_method enum('GET', 'HEAD', 'POST', 'PUT', 'DELETE')");
     $adjust->execute();
     $adjust->close();
@@ -269,9 +269,9 @@ if (!isset($_POST['update'])) {
       // Add to list of user IDs/dates <user_id>,<date>;<user_id>,<date>
       $group_list .= $setterID . ',' . str_replace(array(' ', '-', ':'), '', $std_set) . ';';
     }
-    $individual_reviews->close();  
+    $individual_reviews->close();
     $group_list = rtrim($group_list, ';');
-    
+
     // Update the group review setting group field to name/date string
     if ($group_list != ''){
       $update = $mysqli->prepare("UPDATE standards_setting SET group_review = ? WHERE paperID = ? AND method = 'Modified Angoff' AND group_review = 'Yes'");
@@ -325,10 +325,10 @@ if (!isset($_POST['update'])) {
     $sch_data->store_result();
     $sch_data->bind_result($schoolid, $school_name);
     while ($sch_data->fetch()) {
-      $schools[$school_name] = $schoolid; 
+      $schools[$school_name] = $schoolid;
     }
     $sch_data->close();
-    
+
     // Populate the new field
     foreach($schools as $school_name=>$schoolid) {
       $adjust = $mysqli->prepare("UPDATE modules SET schoolid=? WHERE school=?");
@@ -486,7 +486,7 @@ if (!isset($_POST['update'])) {
     flush();
   }
   $result->close();
-    
+
   //ADD new role based MySQL users
   $result = $mysqli->prepare("SELECT user FROM mysql.user WHERE user = '" . $cfg_db_database . "_stu'");
   $result->execute();
@@ -504,7 +504,7 @@ if (!isset($_POST['update'])) {
     $cfg_db_external_passwd  = gen_password(16);
     $cfg_db_sysadmin_user = $cfg_db_database . '_sys';
     $cfg_db_sysadmin_passwd = gen_password(16);
-    
+
     $priv_SQL = array();
     //create 'database user authentication user' and grant permissions
     $mysqli->query("CREATE USER  '" . $cfg_db_username . "'@'". $cfg_db_host . "' IDENTIFIED BY '" . $cfg_db_password . "'");
@@ -520,8 +520,8 @@ if (!isset($_POST['update'])) {
     $priv_SQL[] = "GRANT SELECT ON " . $cfg_db_database . ".labs TO '". $cfg_db_username . "'@'". $cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT ON " . $cfg_db_database . ".admin_access TO '". $cfg_db_username . "'@'". $cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT,INSERT ON " . $cfg_db_database . ".temp_users TO '". $cfg_db_username . "'@'". $cfg_db_host . "'";
-    $priv_SQL[] = "GRANT INSERT ON " . $cfg_db_database . ".sys_errors TO '". $cfg_db_username . "'@'". $cfg_db_host . "'";    
-    
+    $priv_SQL[] = "GRANT INSERT ON " . $cfg_db_database . ".sys_errors TO '". $cfg_db_username . "'@'". $cfg_db_host . "'";
+
     //create 'database user student user' and grant permissions
     $mysqli->query("CREATE USER  '" . $cfg_db_student_user . "'@'". $cfg_db_host . "' IDENTIFIED BY '" . $cfg_db_student_passwd . "'");
     echo "<li>NEW DB USER:: $cfg_db_student_user created</li>";
@@ -558,9 +558,9 @@ if (!isset($_POST['update'])) {
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $cfg_db_database . ".log_late TO '". $cfg_db_student_user . "'@'". $cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $cfg_db_database . ".log_metadata TO '". $cfg_db_student_user . "'@'". $cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $cfg_db_database . ".temp_users TO '". $cfg_db_student_user . "'@'". $cfg_db_host . "'";
-    $priv_SQL[] = "GRANT INSERT ON " . $cfg_db_database . ".sys_errors TO '". $cfg_db_student_user . "'@'". $cfg_db_host . "'";    
+    $priv_SQL[] = "GRANT INSERT ON " . $cfg_db_database . ".sys_errors TO '". $cfg_db_student_user . "'@'". $cfg_db_host . "'";
     $priv_SQL[] = "FLUSH PRIVILEGES";
- 
+
     //create 'database user external user' and grant permissions
     $mysqli->query("CREATE USER  '" . $cfg_db_external_user . "'@'". $cfg_db_host . "' IDENTIFIED BY '" . $cfg_db_external_passwd . "'");
     echo "<li>NEW DB USER:: $cfg_db_external_user created</li>";
@@ -583,9 +583,9 @@ if (!isset($_POST['update'])) {
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $cfg_db_database . ".log_late TO '" . $cfg_db_external_user . "'@'". $cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $cfg_db_database . ".log_metadata TO '" . $cfg_db_external_user . "'@'". $cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".review_comments TO '" . $cfg_db_external_user . "'@'". $cfg_db_host . "'";
-    $priv_SQL[] = "GRANT INSERT ON " . $cfg_db_database . ".sys_errors TO '" . $cfg_db_external_user . "'@'". $cfg_db_host . "'";  
+    $priv_SQL[] = "GRANT INSERT ON " . $cfg_db_database . ".sys_errors TO '" . $cfg_db_external_user . "'@'". $cfg_db_host . "'";
     $priv_SQL[] = "FLUSH PRIVILEGES";
-    
+
     //create 'database user staff user' and grant permissions
     $mysqli->query("CREATE USER  '" . $cfg_db_staff_user . "'@'". $cfg_db_host . "' IDENTIFIED BY '" . $cfg_db_staff_passwd . "'");
     echo "<li>NEW DB USER:: $cfg_db_staff_user created</li>";
@@ -613,7 +613,7 @@ if (!isset($_POST['update'])) {
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".objectives TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".relationships TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".review_comments TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
-    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $cfg_db_database . ".recent_papers TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";  
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $cfg_db_database . ".recent_papers TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".folders TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".teams TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $cfg_db_database . ".help_log TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
@@ -631,22 +631,22 @@ if (!isset($_POST['update'])) {
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".textbox_marking TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".textbox_remark TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $cfg_db_database . ".track_changes TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
-    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".temp_users TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";  
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".temp_users TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".sessions TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
 
     $mysqli->query("CREATE USER  '" . $cfg_db_sysadmin_user . "'@'". $cfg_db_host . "' IDENTIFIED BY '" . $cfg_db_sysadmin_passwd . "'");
     echo "<li>NEW DB USER:: $cfg_db_sysadmin_user created</li>";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE, ALTER, DROP  ON " . $cfg_db_database . ".* TO '". $cfg_db_sysadmin_user . "'@'". $cfg_db_host . "'";
     $priv_SQL[] = "FLUSH PRIVILEGES";
-    
+
     foreach ($priv_SQL as $sql) {
       $mysqli->query($sql);
 
       if ($mysqli->errno != 0) {
         echo '<li class="error">ERROR: could not set permissions ' . $sql . '</li>';
-      }  
+      }
     }
-    
+
     //Old users will be missing permision to delete from textbox_marking and textbox_remark just add them in
     $priv_SQL = Array();
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".textbox_marking TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
@@ -657,9 +657,9 @@ if (!isset($_POST['update'])) {
 
       if ($mysqli->errno != 0) {
         echo '<li class="error">ERROR: could not set permissions ' . $sql . '</li>';
-      }  
+      }
     }
-    
+
     ////////////////////////////////////////////////////////////////////////////
     //
     //  update the config file!!
@@ -681,7 +681,7 @@ if (!isset($_POST['update'])) {
     $new_cfg_str[] =  "// sysdamin db user\n";
     $new_cfg_str[] =  "  \$cfg_db_sysadmin_user = '$cfg_db_sysadmin_user';\n";
     $new_cfg_str[] =  "  \$cfg_db_sysadmin_passwd = '$cfg_db_sysadmin_passwd';\n";
-    
+
     $cfg = file($cfg_web_root . 'config/config.inc.php');
 
     //remove refrances to old vars
@@ -699,21 +699,21 @@ if (!isset($_POST['update'])) {
          $cfg_new[] = $line;
        }
     }
-        
+
     //add the new config chunk
     array_splice($cfg_new,18,0,$new_cfg_str);
-        
+
     if (file_exists($cfg_web_root . 'config/config.inc.php')) {
       rename($cfg_web_root. 'config/config.inc.php', $cfg_web_root . 'config/config.inc.old1.php');
     }
-    
+
     if (file_put_contents($cfg_web_root . 'config/config.inc.php', $cfg_new) === false) {
       echo "<li class=\"error\">" . $string['couldnotwrite'] . "</li>";
     }
     ///////////////////////  update the config file!! //////////////////////////////////////
-    
+
   } // END Create DB user
-  
+
   // 26/08/2011 - Add date and time formats to config file.
   $new_cfg_str[] =  "// Date formats in MySQL DATE_FORMAT format\n";
   $new_cfg_str[] =  "  \$cfg_short_date = '%m/%d/%y';\n";
@@ -732,7 +732,7 @@ if (!isset($_POST['update'])) {
     if (file_exists($cfg_web_root . 'config/config.inc.php')) {
       rename($cfg_web_root . 'config/config.inc.php', $cfg_web_root . 'config/config.inc.old2.php');
     }
-    
+
     if (file_put_contents($cfg_web_root . 'config/config.inc.php', $cfg) === false) {
       echo "<li class=\"error\">" . $string['couldnotwrite'] . "</li>";
     }
@@ -751,13 +751,13 @@ if (!isset($_POST['update'])) {
       $found = true;
     }
   }
-  
+
   if (!$found) {
     array_splice($cfg,16,0,$new_cfg_str);
     if (file_exists($cfg_web_root . 'config/config.inc.php')) {
       rename($cfg_web_root . 'config/config.inc.php', $cfg_web_root . 'config/config.inc.old3.php');
     }
-    
+
     if (file_put_contents($cfg_web_root . 'config/config.inc.php', $cfg) === false) {
       echo "<li class=\"error\">" . $string['couldnotwrite'] . "</li>";
     }
@@ -779,22 +779,22 @@ if (!isset($_POST['update'])) {
     echo "<li>ALTER TABLE questions CHANGE COLUMN score_method display_method text</li>\n";
     ob_flush();
     flush();
-    
+
     $adjust = $mysqli->prepare("ALTER TABLE questions ADD COLUMN score_method enum('Mark per Question','Mark per Option','Allow partial Marks','Bonus Mark')");
     $adjust->execute();
     $adjust->close();
     echo "<li>ALTER TABLE questions ADD COLUMN score_method enum('Mark per Question','Mark per Option','Allow partial Marks','Bonus Mark')</li>\n";
     ob_flush();
     flush();
-    
+
     $adjust = $mysqli->prepare("UPDATE questions SET score_method = 'Mark per Option' WHERE q_type != 'Calculation'");
     $adjust->execute();
     $adjust->close();
-    
+
     $adjust = $mysqli->prepare("UPDATE questions SET score_method = 'Mark per Question' WHERE q_type = 'Calculation'");
     $adjust->execute();
     $adjust->close();
-    
+
     // Update the BonusMark setting
     $q_data = $mysqli->prepare("SELECT q_id FROM questions WHERE display_method='BonusMark'");
     $q_data->execute();
@@ -806,7 +806,7 @@ if (!isset($_POST['update'])) {
       $adjust->close();
     }
     $q_data->close();
-    
+
     // Update the StrictOrder setting
     $q_data = $mysqli->prepare("SELECT q_id FROM questions WHERE display_method='StrictOrder'");
     $q_data->execute();
@@ -818,7 +818,7 @@ if (!isset($_POST['update'])) {
       $adjust->close();
     }
     $q_data->close();
-    
+
     // Update the AllItemsCorrect setting
     $q_data = $mysqli->prepare("SELECT q_id FROM questions WHERE display_method='AllItemsCorrect'");
     $q_data->execute();
@@ -830,8 +830,8 @@ if (!isset($_POST['update'])) {
       $adjust->close();
     }
     $q_data->close();
-    
-    
+
+
     // Update the SelectedPositive setting
     $q_data = $mysqli->prepare("SELECT q_id FROM questions WHERE display_method='SelectedPositive'");
     $q_data->execute();
@@ -843,7 +843,7 @@ if (!isset($_POST['update'])) {
       $adjust->close();
     }
     $q_data->close();
-    
+
     // Update the OrderNeighbours setting
     $q_data = $mysqli->prepare("SELECT q_id FROM questions WHERE display_method='OrderNeighbours'");
     $q_data->execute();
@@ -855,7 +855,7 @@ if (!isset($_POST['update'])) {
       $adjust->close();
     }
     $q_data->close();
-    
+
     $adjust = $mysqli->prepare("ALTER TABLE options CHANGE COLUMN marks marks_correct float");
     $adjust->execute();
     $adjust->close();
@@ -869,7 +869,7 @@ if (!isset($_POST['update'])) {
     echo "<li>ALTER TABLE options ADD COLUMN marks_incorrect float</li>\n";
     ob_flush();
     flush();
-    
+
     $adjust = $mysqli->prepare("ALTER TABLE options ADD COLUMN marks_partial float");
     $adjust->execute();
     $adjust->close();
@@ -884,7 +884,7 @@ if (!isset($_POST['update'])) {
     $adjust = $mysqli->prepare("UPDATE options SET marks_partial=0");
     $adjust->execute();
     $adjust->close();
-    
+
     // Update options for negative marking
     $q_data = $mysqli->prepare("SELECT q_id FROM questions WHERE display_method='TF_NegativeAbstain' OR display_method='YN_NegativeAbstain'");
     $q_data->execute();
@@ -930,7 +930,7 @@ if (!isset($_POST['update'])) {
     echo "<li>ALTER TABLE schools ADD COLUMN facultyID int</li>\n";
     ob_flush();
     flush();
-    
+
     // Populate the new field with Faculty IDs
     $q_data = $mysqli->prepare("SELECT id, name FROM faculty");
     $q_data->execute();
@@ -942,7 +942,7 @@ if (!isset($_POST['update'])) {
       $adjust->close();
     }
     $q_data->close();
-    
+
     $adjust = $mysqli->prepare("ALTER TABLE schools DROP COLUMN faculty");
     $adjust->execute();
     $adjust->close();
@@ -1000,14 +1000,14 @@ if (!isset($_POST['update'])) {
     echo "<li>CREATE TABLE ebel_grid_templates (id INT NOT NULL PRIMARY_KEY AUTO INCREMENT, EE tinyint, EI tinyint, EN tinyint, ME tinyint, MI tinyint, MN tinyint, HE tinyint, HI tinyint, HN tinyint, EE2 tinyint, EI2 tinyint, EN2 tinyint, ME2 tinyint, MI2 tinyint, MN2 tinyint, HE2 tinyint, HI2 tinyint, HN2 tinyint, name varchar(255))</li>\n";
     ob_flush();
     flush();
-    
+
     if (strpos(strtolower($_SERVER['HTTP_HOST']), 'nottingham.ac.uk') !== false) {
       $sql = array();
       $sql[] = "INSERT INTO `ebel_grid_templates` (id,EE,EI,EN,ME,MI,MN,HE,HI,HN,EE2,EI2,EN2,ME2,MI2,MN2,HE2,HI2,HN2,name) VALUES (1,65,60,55,60,55,50,55,50,45,0,0,0,0,0,0,0,0,0,'BMedSci')";
       $sql[] = "INSERT INTO `ebel_grid_templates` (id,EE,EI,EN,ME,MI,MN,HE,HI,HN,EE2,EI2,EN2,ME2,MI2,MN2,HE2,HI2,HN2,name) VALUES (2,80,60,55,55,50,35,45,35,30,0,0,0,0,0,0,0,0,0,'BMBS')";
       $sql[] = "UPDATE modules SET ebel_grid_template=1 WHERE vle_api = 'NLE'";
       $sql[] = "UPDATE modules SET ebel_grid_template=2 WHERE moduleid IN ('A13CLP','A14CHH','A14DOO','A14HCE','A14ONG','A14PSY','A14ACE')";
-      
+
       foreach ($sql as $q) {
         $adjust = $mysqli->prepare($q);
         $adjust->execute();
@@ -1026,7 +1026,7 @@ if (!isset($_POST['update'])) {
   $result->bind_result($column_type);
   $result->fetch();
   $result->close();
-  
+
   if (strpos($column_type,'smallint') !== false) {
     $result = $mysqli->prepare("ALTER TABLE papers CHANGE COLUMN question question INT(4) UNSIGNED NOT NULL DEFAULT 0;");
     $result->execute();
@@ -1060,7 +1060,7 @@ if (!isset($_POST['update'])) {
       flush();
     }
     $check->close();
-    
+
     $check = $mysqli->prepare("SELECT * FROM log0 WHERE q_id=? AND user_answer LIKE '%n%'");
     $check->bind_param('i', $questionID);
     $check->execute();
@@ -1076,7 +1076,7 @@ if (!isset($_POST['update'])) {
       flush();
     }
     $check->close();
-    
+
     $check = $mysqli->prepare("SELECT * FROM log2 WHERE q_id=? AND user_answer LIKE '%y%'");
     $check->bind_param('i', $questionID);
     $check->execute();
@@ -1092,7 +1092,7 @@ if (!isset($_POST['update'])) {
       flush();
     }
     $check->close();
-  
+
     $check = $mysqli->prepare("SELECT * FROM log2 WHERE q_id=? AND user_answer LIKE '%n%'");
     $check->bind_param('i', $questionID);
     $check->execute();
@@ -1108,21 +1108,21 @@ if (!isset($_POST['update'])) {
       flush();
     }
     $check->close();
-    
+
     $update_o_t = $mysqli->prepare("UPDATE options SET correct='t', marks_correct=1, marks_incorrect=-1 WHERE o_id=? AND correct='y'");
     $update_o_t->bind_param('i', $questionID);
     $update_o_t->execute();
     $update_o_t->close();
     ob_flush();
     flush();
-    
+
     $update_o_f = $mysqli->prepare("UPDATE options SET correct='f', marks_correct=1, marks_incorrect=-1 WHERE o_id=? AND correct='n'");
     $update_o_f->bind_param('i', $questionID);
     $update_o_f->execute();
     $update_o_f->close();
     ob_flush();
     flush();
-    
+
     $update_q = $mysqli->prepare("UPDATE questions SET q_type='dichotomous', display_method='TF_Positive', score_method='Mark per Option' WHERE q_id=?");
     $update_q->bind_param('i', $questionID);
     $update_q->execute();
@@ -1138,7 +1138,7 @@ if (!isset($_POST['update'])) {
   $adjust->close();
   ob_flush();
   flush();
-  
+
   // 15/09/2011 Update calculation questions so that they have two tolerances, one for full marks the other for partial
   $result = $mysqli->prepare("SELECT q_id, display_method FROM questions WHERE q_type='calculation'");
   $result->execute();
@@ -1149,7 +1149,7 @@ if (!isset($_POST['update'])) {
     if (count($old_method_parts) == 3) {
       $new_method_parts = array($old_method_parts[0], $old_method_parts[1], 0, $old_method_parts[2]);
       $new_method = implode(',', $new_method_parts);
-      
+
       $update_q = $mysqli->prepare("UPDATE questions SET display_method=? WHERE q_id=?");
       $update_q->bind_param('si', $new_method, $questionID);
       $update_q->execute();
@@ -1159,7 +1159,7 @@ if (!isset($_POST['update'])) {
     }
   }
   $result->close();
-  
+
   // 22/09/2011 - remove timedate question type
   $check = $mysqli->prepare("SELECT * FROM questions WHERE q_type='timedate'");
   $check->execute();
@@ -1172,7 +1172,7 @@ if (!isset($_POST['update'])) {
     ob_flush();
     flush();
   }
-  
+
   // 01/09/2011 - Remove the time/date question type
   $result = $mysqli->prepare("SELECT COLUMN_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='questions' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='q_type'");
   $result->execute();
@@ -1233,7 +1233,7 @@ if (!isset($_POST['update'])) {
       for ($i=8; $i<count($parts); $i++) {
         $new_correct .= ';' . $parts[$i];
       }
-      
+
       $adjust = $mysqli->prepare("UPDATE options SET correct=? WHERE o_id=?");
       $adjust->bind_param('si', $new_correct, $o_id);
       $adjust->execute();
@@ -1242,7 +1242,7 @@ if (!isset($_POST['update'])) {
   }
   if ($result->num_rows > 0) echo "<li>Updated the format of Labelling questions</li>";
   $result->close();
-  
+
   //ADD new role based MySQL users - 10/10/2011
   $result = $mysqli->prepare("SELECT user FROM mysql.user WHERE user = '" . $cfg_db_database . "_sct'");
   $result->execute();
@@ -1250,10 +1250,10 @@ if (!isset($_POST['update'])) {
   $result->bind_result($tmp_user);
   $result->fetch();
   if ($result->num_rows() == 0) {
-    
+
     $cfg_db_sct_username = $cfg_db_database . '_sct';
     $cfg_db_sct_password = gen_password(16);
-        
+
     $priv_SQL = array();
     //create 'database user SCT user' and grant permissions
     $mysqli->query("CREATE USER  '" . $cfg_db_sct_username . "'@'". $cfg_db_host . "' IDENTIFIED BY '" . $cfg_db_sct_password . "'");
@@ -1267,13 +1267,13 @@ if (!isset($_POST['update'])) {
     $priv_SQL[] = "GRANT SELECT ON " . $cfg_db_database . ".paper_notes TO '". $cfg_db_sct_username . "'@'". $cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".sct_reviews TO '". $cfg_db_sct_username . "'@'". $cfg_db_host . "'";
     $priv_SQL[] = "FLUSH PRIVILEGES";
-    
+
     foreach ($priv_SQL as $sql) {
       $mysqli->query($sql);
 
       if ($mysqli->errno != 0) {
         echo '<li class="error">ERROR: could not set permissions ' . $sql . '</li>';
-      }  
+      }
     }
     ////////////////////////////////////////////////////////////////////////////
     //
@@ -1284,24 +1284,24 @@ if (!isset($_POST['update'])) {
     $new_cfg_str[] =  "// SCT db user\n";
     $new_cfg_str[] =  "  \$cfg_db_sct_user = '$cfg_db_sct_username';\n";
     $new_cfg_str[] =  "  \$cfg_db_sct_passwd = '$cfg_db_sct_password';\n";
-    
+
     $cfg = file($cfg_web_root . 'config/config.inc.php');
 
     //add the new config chunk
     array_splice($cfg, 36, 0, $new_cfg_str);
-    
-    
+
+
     if (file_exists($cfg_web_root . 'config/config.inc.php')) {
       rename($cfg_web_root . 'config/config.inc.php', $cfg_web_root . 'config/config.inc.old1.php');
     }
-    
+
     if (file_put_contents($cfg_web_root . 'config/config.inc.php', $cfg) === false) {
       echo "<li class=\"error\">" . $string['couldnotwrite'] . "</li>";
     }
     ///////////////////////  update the config file!! //////////////////////////////////////
-    
+
   } // END Create SCT user
-  
+
   $cfg_db_inv_username = $cfg_db_database . '_inv';
 
   $result = $mysqli->prepare("SELECT user FROM mysql.user WHERE user = '" . $cfg_db_database . "_inv'");
@@ -1310,9 +1310,9 @@ if (!isset($_POST['update'])) {
   $result->bind_result($tmp_user);
   $result->fetch();
   if ($result->num_rows() == 0) {
-    
+
     $cfg_db_inv_password = gen_password(16);
-        
+
     $priv_SQL = array();
     //create 'database user SCT user' and grant permissions
     $mysqli->query("CREATE USER  '" . $cfg_db_inv_username . "'@'". $cfg_db_host . "' IDENTIFIED BY '" . $cfg_db_inv_password . "'");
@@ -1327,7 +1327,7 @@ if (!isset($_POST['update'])) {
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $cfg_db_database . ".student_notes TO '". $cfg_db_inv_username . "'@'". $cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $cfg_db_database . ".paper_notes TO '". $cfg_db_inv_username . "'@'". $cfg_db_host . "'";
     $priv_SQL[] = "FLUSH PRIVILEGES";
-    
+
     foreach ($priv_SQL as $sql) {
       $mysqli->query($sql);
 
@@ -1337,7 +1337,7 @@ if (!isset($_POST['update'])) {
 
       if ($mysqli->errno != 0) {
         echo '<li class="error">ERROR: could not set permissions ' . $sql . '</li>';
-      }  
+      }
     }
     ////////////////////////////////////////////////////////////////////////////
     //
@@ -1348,22 +1348,22 @@ if (!isset($_POST['update'])) {
     $new_cfg_str[] =  "// Invigilator user\n";
     $new_cfg_str[] =  "  \$cfg_db_inv_user = '$cfg_db_inv_username';\n";
     $new_cfg_str[] =  "  \$cfg_db_inv_passwd = '$cfg_db_inv_password';\n";
-    
+
     $cfg = file($cfg_web_root . 'config/config.inc.php');
 
     //add the new config chunk
     array_splice($cfg, 36, 0, $new_cfg_str);
-    
-    
+
+
     if (file_exists($cfg_web_root . 'config/config.inc.php')) {
       rename($cfg_web_root . 'config/config.inc.php', $cfg_web_root . 'config/config.inc.old1.php');
     }
-    
+
     if (file_put_contents($cfg_web_root . 'config/config.inc.php', $cfg) === false) {
       echo "<li class=\"error\">" . $string['couldnotwrite'] . "</li>";
     }
     ///////////////////////  update the config file!! //////////////////////////////////////
-    
+
   } // END Create DB user
 
   // 12/10/2011 - Add encrypted name for a paper.
@@ -1422,7 +1422,7 @@ if (!isset($_POST['update'])) {
     echo "<li>ALTER TABLE feedback_release ADD COLUMN type enum('objectives','questions')</li>\n";
     ob_flush();
     flush();
-    
+
     $update = $mysqli->prepare("UPDATE feedback_release SET type='objectives'");
     $update->execute();
     $update->close();
@@ -1449,14 +1449,14 @@ if (!isset($_POST['update'])) {
       $adjust->execute();
       $adjust->close();
     }
-    
+
     $adjust = $mysqli->prepare("ALTER TABLE log4_overall DROP COLUMN year");
     $adjust->execute();
     $adjust->close();
     echo "<li>ALTER TABLE log4_overall DROP COLUMN year</li>\n";
     ob_flush();
     flush();
-    
+
     $adjust = $mysqli->prepare("ALTER TABLE log4_overall CHANGE COLUMN yearofstudy year tinyint");
     $adjust->execute();
     $adjust->close();
@@ -1552,7 +1552,7 @@ if (!isset($_POST['update'])) {
     $adjust->execute();
     $adjust->close();
     echo "<li>CREATE TABLE log6 (id int not null primary key auto_increment, paperID smallint, reviewerID mediumint, peerID mediumint, started datetime, q_id int, rating tinyint)</li>\n";
-    
+
     $adjust = $mysqli->prepare("ALTER TABLE properties CHANGE COLUMN paper_type paper_type enum('0','1','2','3','4','5','6')");
     $adjust->execute();
     $adjust->close();
@@ -1561,7 +1561,7 @@ if (!isset($_POST['update'])) {
   $sql = "GRANT SELECT, INSERT, UPDATE ON " . $cfg_db_database . ".log6 TO '" . $cfg_db_student_user . "'@'". $cfg_db_host . "'";
   $mysqli->query($sql);
   echo "<li>GRANT SELECT, INSERT, UPDATE ON " . $cfg_db_database . ".log6 TO '" . $cfg_db_student_user . "'@'". $cfg_db_host . "'</li>\n";
-    
+
   $sql = "GRANT SELECT ON " . $cfg_db_database . ".log6 TO '" . $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
   $mysqli->query($sql);
   echo "<li>GRANT SELECT ON " . $cfg_db_database . ".log6 TO '" . $cfg_db_staff_user . "'@'". $cfg_db_host . "'</li>\n";
@@ -1638,15 +1638,15 @@ if (!isset($_POST['update'])) {
     }
     $cfg_new[] = $line;
   }
-  
+
   if (!$found) {
     //add the new config chunk
     array_splice($cfg_new,25,0,$new_cfg_str);
-        
+
     if (file_exists($cfg_web_root . 'config/config.inc.php')) {
       rename($cfg_web_root . 'config/config.inc.php', $cfg_web_root . 'config/config.inc.old1.php');
     }
-    
+
     if (file_put_contents($cfg_web_root . 'config/config.inc.php', $cfg_new) === false) {
       echo "<li class=\"error\">" . $string['couldnotwrite'] . "</li>";
     }
@@ -1938,10 +1938,10 @@ if (!isset($_POST['update'])) {
     $sch_data->store_result();
     $sch_data->bind_result($schoolid, $school_name);
     while ($sch_data->fetch()) {
-      $schools[$school_name] = $schoolid; 
+      $schools[$school_name] = $schoolid;
     }
     $sch_data->close();
-    
+
     // Populate the new field
     foreach($schools as $school_name=>$schoolid) {
       $adjust = $mysqli->prepare("UPDATE courses SET schoolid=? WHERE school=?");
@@ -2089,7 +2089,7 @@ if (!isset($_POST['update'])) {
   }
   $result->close();
 
-  // Adding missing indexes 
+  // Adding missing indexes
   $result = $mysqli->prepare("SHOW INDEX FROM users WHERE Key_name = 'idx_roles'");
   $result->execute();
   $result->store_result();
@@ -2115,9 +2115,9 @@ if (!isset($_POST['update'])) {
     if(!$mysqli->real_query("CREATE INDEX idx_setterID ON standards_setting (setterID)")) {
         echo "<li class=\"error\">" . $mysqli->error . "</li>\n";
     }
-  }    
+  }
   $result->close();
-  
+
   $result = $mysqli->prepare("SHOW INDEX FROM log_metadata WHERE Key_name = 'idx_log_metadata_student_grade'");
   $result->execute();
   $result->store_result();
@@ -2131,9 +2131,9 @@ if (!isset($_POST['update'])) {
     if(!$mysqli->real_query("CREATE INDEX idx_log_metadata_paperID ON log_metadata (paperID)")) {
         echo "<li class=\"error\">" . $mysqli->error . "</li>\n";
     }
-  } 
+  }
   $result->close();
-  
+
   $result = $mysqli->prepare("SHOW INDEX FROM log0 WHERE Key_name = 'idx_log0_screen'");
   $result->execute();
   $result->store_result();
@@ -2155,9 +2155,9 @@ if (!isset($_POST['update'])) {
     if(!$mysqli->real_query("CREATE INDEX idx_log3_screen ON log3 (screen)")) {
         echo "<li class=\"error\">" . $mysqli->error . "</li>\n";
     }
-  } 
+  }
   $result->close();
-  
+
   $result = $mysqli->prepare("SHOW INDEX FROM courses WHERE Key_name = 'idx_courses_name'");
   $result->execute();
   $result->store_result();
@@ -2167,7 +2167,7 @@ if (!isset($_POST['update'])) {
     if(!$mysqli->real_query("CREATE INDEX idx_courses_name ON courses (name)")) {
         echo "<li class=\"error\">" . $mysqli->error . "</li>\n";
     }
-  } 
+  }
   $result->close();
 
     @ob_flush();
@@ -2188,7 +2188,7 @@ if (!isset($_POST['update'])) {
     echo "<li>CREATE TABLE reference_material (id int not null primary key auto_increment, title varchar(255), content text, width  SMALLINT UNSIGNED, created datetime, deleted datetime)</li>\n";
     ob_flush();
     flush();
-    
+
     $sql = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".reference_material TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
     $mysqli->query($sql);
     echo "<li>GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".reference_material TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'</li>\n";
@@ -2208,7 +2208,7 @@ if (!isset($_POST['update'])) {
     echo "<li>CREATE TABLE reference_material (id int not null primary key auto_increment, title varchar(255), content text, created datetime, deleted datetime)</li>\n";
     ob_flush();
     flush();
-    
+
     $sql = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".reference_modules TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
     $mysqli->query($sql);
     echo "<li>GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".reference_modules TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'</li>\n";
@@ -2259,7 +2259,7 @@ if (!isset($_POST['update'])) {
     flush();
   }
   $result->close();
-  
+
   // 05/04/2012 - Enlarge the size of the integer for paper in papers table.
   $data_type = '';
   $result = $mysqli->prepare("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='papers' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='paper'");
@@ -2276,7 +2276,7 @@ if (!isset($_POST['update'])) {
     flush();
   }
   $result->close();
-  
+
   // 05/04/2012 - Enlarge the size of the integer for id in users table.
   $data_type = '';
   $result = $mysqli->prepare("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='users' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='id'");
@@ -2293,7 +2293,7 @@ if (!isset($_POST['update'])) {
     flush();
   }
   $result->close();
-  
+
   // 05/04/2012 - Enlarge the size of the integer for userID in sid table.
   $data_type = '';
   $result = $mysqli->prepare("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='sid' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='userID'");
@@ -2310,7 +2310,7 @@ if (!isset($_POST['update'])) {
     flush();
   }
   $result->close();
-  
+
   // 05/04/2012 - Enlarge the size of the integer for memberID in teams table.
   $data_type = '';
   $result = $mysqli->prepare("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='teams' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='memberID'");
@@ -2327,7 +2327,7 @@ if (!isset($_POST['update'])) {
     flush();
   }
   $result->close();
-  
+
   // 05/04/2012 - Enlarge the size of the integer for userID in log0 table.
   $data_type = '';
   $result = $mysqli->prepare("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='log0' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='userID'");
@@ -2344,7 +2344,7 @@ if (!isset($_POST['update'])) {
     flush();
   }
   $result->close();
-  
+
   // 05/04/2012 - Enlarge the size of the integer for q_paper in log0 table.
   $data_type = '';
   $result = $mysqli->prepare("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='log0' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='q_paper'");
@@ -2361,7 +2361,7 @@ if (!isset($_POST['update'])) {
     flush();
   }
   $result->close();
-  
+
   // 05/04/2012 - Enlarge the size of the integer for userID in log1 table.
   $data_type = '';
   $result = $mysqli->prepare("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='log1' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='userID'");
@@ -2378,7 +2378,7 @@ if (!isset($_POST['update'])) {
     flush();
   }
   $result->close();
-  
+
   // 05/04/2012 - Enlarge the size of the integer for q_paper in log1 table.
   $data_type = '';
   $result = $mysqli->prepare("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='log1' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='q_paper'");
@@ -2395,7 +2395,7 @@ if (!isset($_POST['update'])) {
     flush();
   }
   $result->close();
-  
+
   // 05/04/2012 - Enlarge the size of the integer for userID in log2 table.
   $data_type = '';
   $result = $mysqli->prepare("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='log2' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='userID'");
@@ -2412,7 +2412,7 @@ if (!isset($_POST['update'])) {
     flush();
   }
   $result->close();
-  
+
   // 05/04/2012 - Enlarge the size of the integer for q_paper in log2 table.
   $data_type = '';
   $result = $mysqli->prepare("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='log2' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='q_paper'");
@@ -2429,7 +2429,7 @@ if (!isset($_POST['update'])) {
     flush();
   }
   $result->close();
-  
+
   // 05/04/2012 - Enlarge the size of the integer for userID in log3 table.
   $data_type = '';
   $result = $mysqli->prepare("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='log3' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='userID'");
@@ -2446,7 +2446,7 @@ if (!isset($_POST['update'])) {
     flush();
   }
   $result->close();
-  
+
   // 05/04/2012 - Enlarge the size of the integer for q_paper in log3 table.
   $data_type = '';
   $result = $mysqli->prepare("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='log3' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='q_paper'");
@@ -2463,7 +2463,7 @@ if (!isset($_POST['update'])) {
     flush();
   }
   $result->close();
-  
+
   // 05/04/2012 - Enlarge the size of the integer for userID in log4 table.
   $data_type = '';
   $result = $mysqli->prepare("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='log4' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='userID'");
@@ -2480,7 +2480,7 @@ if (!isset($_POST['update'])) {
     flush();
   }
   $result->close();
-  
+
   // 05/04/2012 - Enlarge the size of the integer for q_paper in log4 table.
   $data_type = '';
   $result = $mysqli->prepare("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='log4' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='q_paper'");
@@ -2497,7 +2497,7 @@ if (!isset($_POST['update'])) {
     flush();
   }
   $result->close();
-  
+
   // 05/04/2012 - Enlarge the size of the integer for userID in log4_overall table.
   $data_type = '';
   $result = $mysqli->prepare("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='log4_overall' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='userID'");
@@ -2531,7 +2531,7 @@ if (!isset($_POST['update'])) {
     flush();
   }
   $result->close();
-  
+
   // 05/04/2012 - Enlarge the size of the integer for userID in log5 table.
   $data_type = '';
   $result = $mysqli->prepare("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='log5' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='userID'");
@@ -2548,7 +2548,7 @@ if (!isset($_POST['update'])) {
     flush();
   }
   $result->close();
-  
+
   // 05/04/2012 - Enlarge the size of the integer for q_paper in log5 table.
   $data_type = '';
   $result = $mysqli->prepare("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='log5' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='q_paper'");
@@ -2565,7 +2565,7 @@ if (!isset($_POST['update'])) {
     flush();
   }
   $result->close();
-  
+
   // 05/04/2012 - Enlarge the size of the integer for userID in log6 table.
   $data_type = '';
   $result = $mysqli->prepare("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='log6' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='peerID'");
@@ -2580,7 +2580,7 @@ if (!isset($_POST['update'])) {
     echo "<li>ALTER TABLE log6 CHANGE COLUMN peerID peerID int unsigned</li>\n";
     ob_flush();
     flush();
-    
+
     $adjust = $mysqli->prepare("ALTER TABLE log6 CHANGE COLUMN reviewerID reviewerID int unsigned");
     $adjust->execute();
     $adjust->close();
@@ -2606,7 +2606,7 @@ if (!isset($_POST['update'])) {
     flush();
   }
   $result->close();
-  
+
   // 05/04/2012 - Enlarge the size of the integer for userID in log_late table.
   $data_type = '';
   $result = $mysqli->prepare("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='log_late' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='userID'");
@@ -2640,7 +2640,7 @@ if (!isset($_POST['update'])) {
     flush();
   }
   $result->close();
-  
+
   // 05/04/2012 - Enlarge the size of the integer for q_paper in log_metadata table.
   $data_type = '';
   $result = $mysqli->prepare("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='log_metadata' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='paperID'");
@@ -2657,7 +2657,7 @@ if (!isset($_POST['update'])) {
     flush();
   }
   $result->close();
-  
+
   // 05/04/2012 - Enlarge the size of the integer for ownerID in questions table.
   $data_type = '';
   $result = $mysqli->prepare("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='questions' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='ownerID'");
@@ -2691,7 +2691,7 @@ if (!isset($_POST['update'])) {
     flush();
   }
   $result->close();
-  
+
   // 05/04/2012 - Enlarge the size of the integer for editor in track_changes table.
   $data_type = '';
   $result = $mysqli->prepare("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='track_changes' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='editor'");
@@ -2725,7 +2725,7 @@ if (!isset($_POST['update'])) {
     flush();
   }
   $result->close();
-  
+
   // 05/04/2012 - Enlarge the size of the integer for userID in textbox_remark table.
   $data_type = '';
   $result = $mysqli->prepare("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='textbox_remark' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='userID'");
@@ -2742,7 +2742,7 @@ if (!isset($_POST['update'])) {
     flush();
   }
   $result->close();
-  
+
   // 05/04/2012 - Enlarge the size of the integer for userID in student_modules table.
   $data_type = '';
   $result = $mysqli->prepare("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='student_modules' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='userID'");
@@ -2759,7 +2759,7 @@ if (!isset($_POST['update'])) {
     flush();
   }
   $result->close();
-  
+
   // 05/04/2012 - Enlarge the size of the integer for userID in student_notes table.
   $data_type = '';
   $result = $mysqli->prepare("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='student_notes' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='userID'");
@@ -2776,7 +2776,7 @@ if (!isset($_POST['update'])) {
     flush();
   }
   $result->close();
-  
+
   // 05/04/2012 - Enlarge the size of the integer for note_authorID in student_notes table.
   $data_type = '';
   $result = $mysqli->prepare("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='student_notes' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='note_authorID'");
@@ -2793,7 +2793,7 @@ if (!isset($_POST['update'])) {
     flush();
   }
   $result->close();
-  
+
   // 05/04/2012 - Enlarge the size of the integer for paper_id in student_notes table.
   $data_type = '';
   $result = $mysqli->prepare("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='student_notes' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='paper_id'");
@@ -2810,7 +2810,7 @@ if (!isset($_POST['update'])) {
     flush();
   }
   $result->close();
-  
+
   // 05/04/2012 - Enlarge the size of the integer for userID in special_needs table.
   $data_type = '';
   $result = $mysqli->prepare("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='special_needs' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='userID'");
@@ -2827,7 +2827,7 @@ if (!isset($_POST['update'])) {
     flush();
   }
   $result->close();
-  
+
   // 05/04/2012 - Enlarge the size of the integer for reviewer in review_comments table.
   $data_type = '';
   $result = $mysqli->prepare("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='review_comments' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='reviewer'");
@@ -3340,7 +3340,7 @@ if (!isset($_POST['update'])) {
     echo "<li>ALTER TABLE state ADD UNIQUE idx_user_state (userID, state_name, page)</li>\n";
     ob_flush();
     flush();
-    
+
     $sql = "GRANT SELECT, INSERT, UPDATE ON " . $cfg_db_database . ".state TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
     $mysqli->query($sql);
     echo "<li>GRANT SELECT, INSERT, UPDATE ON " . $cfg_db_database . ".state TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'</li>\n";
@@ -3373,13 +3373,13 @@ if (!isset($_POST['update'])) {
     }
     $cur_line++;
   }
-  
+
   if (!$found) {
     array_splice($cfg,$target_line,0,$new_cfg_str);
     if (file_exists($cfg_web_root . 'config/config.inc.php')) {
       rename($cfg_web_root . 'config/config.inc.php', $cfg_web_root . 'config/config.inc.old3.php');
     }
-    
+
     if (file_put_contents($cfg_web_root . 'config/config.inc.php', $cfg) === false) {
       echo "<li class=\"error\">" . $string['couldnotwrite'] . "</li>";
     }
@@ -3402,13 +3402,13 @@ if (!isset($_POST['update'])) {
       $found = true;
     }
   }
-  
+
   if (!$found) {
     array_splice($cfg,22,0,$new_cfg_str);
     if (file_exists($cfg_web_root . 'config/config.inc.php')) {
       rename($cfg_web_root . 'config/config.inc.php', $cfg_web_root . 'config/config.inc.old4.php');
     }
-    
+
     if (file_put_contents($cfg_web_root . 'config/config.inc.php', $cfg) === false) {
       echo "<li class=\"error\">" . $string['couldnotwrite'] . "</li>";
     }
@@ -3432,14 +3432,14 @@ if (!isset($_POST['update'])) {
       $found = true;
     }
   }
-  
+
   $cfg = $new_cfg_str;
-  
+
   if ($found) {
     if (file_exists($cfg_web_root . 'config/config.inc.php')) {
       rename($cfg_web_root . 'config/config.inc.php', $cfg_web_root . 'config/config.inc.old4.php');
     }
-    
+
     if (file_put_contents($cfg_web_root . 'config/config.inc.php', $cfg) === false) {
       echo "<li class=\"error\">" . $string['couldnotwrite'] . "</li>";
     }
@@ -3612,7 +3612,7 @@ if (!isset($_POST['update'])) {
   $result->close();
   @ob_flush();
   @flush();
-  
+
   // 16/05/2012 - Add encryption salt to config file.
   $new_cfg_str = array();
   //$new_cfg_str[] =  "  \$cfg_encrypt_salt = 'K8m2hzflkgjzdfgj';\n";
@@ -3630,13 +3630,13 @@ if (!isset($_POST['update'])) {
     }
     $cur_line++;
   }
-  
+
   if (!$found) {
     array_splice($cfg,$target_line,0,$new_cfg_str);
     if (file_exists($cfg_web_root . 'config/config.inc.php')) {
       rename($cfg_web_root . 'config/config.inc.php', $cfg_web_root . 'config/config.inc.old3.php');
     }
-    
+
     if (file_put_contents($cfg_web_root . 'config/config.inc.php', $cfg) === false) {
       echo "<li class=\"error\">" . $string['couldnotwrite'] . "</li>";
     }
@@ -3766,7 +3766,7 @@ if (!isset($_POST['update'])) {
     }
     echo "<li>Added  new autosave timeout to configuration file.</li>\n";
   }
-  
+
  // 28/05/2012 - Add permission for external examiners to view student help.
   $priv_SQL = array();
   $priv_SQL[] = "GRANT SELECT ON " . $cfg_db_database . ".student_help TO '". $cfg_db_external_user . "'@'". $cfg_db_host . "'";
@@ -3779,9 +3779,9 @@ if (!isset($_POST['update'])) {
 
     if ($mysqli->errno != 0) {
       echo '<li class="error">ERROR: could not set permissions ' . $sql . '</li>';
-    }  
+    }
   }
-  
+
   // 29/05/2012 - Add 'scheduling' tables
   $result = $mysqli->prepare("SELECT TABLE_NAME FROM information_schema.COLUMNS WHERE TABLE_NAME='scheduling' AND TABLE_SCHEMA='$cfg_db_database'");
   $result->execute();
@@ -3800,11 +3800,11 @@ if (!isset($_POST['update'])) {
     $adjust->execute();
     $adjust->close();
     echo "<li>ALTER TABLE scheduling ADD UNIQUE idx_paperID (paperID)</li>\n";
-    
+
     $sql = "GRANT SELECT, INSERT, DELETE ON " . $cfg_db_database . ".scheduling TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
     $mysqli->query($sql);
     echo "<li>GRANT SELECT, INSERT, DELETE ON " . $cfg_db_database . ".scheduling TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'</li>\n";
-    
+
     $new_cfg_str = array();
     $new_cfg_str[] =  "\$cfg_summative_mgmt = false;     // Set this to true for central summative exam administration.";
     $cfg = file($cfg_web_root . 'config/config.inc.php');
@@ -3820,13 +3820,13 @@ if (!isset($_POST['update'])) {
       }
       $cur_line++;
     }
-    
+
     if (!$found) {
       array_splice($cfg,$target_line,0,$new_cfg_str);
       if (file_exists($cfg_web_root . 'config/config.inc.php')) {
         rename($cfg_web_root . 'config/config.inc.php', $cfg_web_root . 'config/config.inc.old3.php');
       }
-      
+
       if (file_put_contents($cfg_web_root . 'config/config.inc.php', $cfg) === false) {
         echo "<li class=\"error\">" . $string['couldnotwrite'] . "</li>";
       }
@@ -3836,8 +3836,8 @@ if (!isset($_POST['update'])) {
     }
   }
   $result->close();
-  
-    
+
+
   // 15/06/2012 - Add performance tables to store p and d values against questions in the bank.
   $result = $mysqli->prepare("SELECT TABLE_NAME FROM information_schema.COLUMNS WHERE TABLE_NAME='performance_main' AND TABLE_SCHEMA='$cfg_db_database'");
   $result->execute();
@@ -3855,7 +3855,7 @@ if (!isset($_POST['update'])) {
     $adjust->execute();
     $adjust->close();
     echo "<li>ALTER TABLE performance_main ADD INDEX idx_q_id (q_id)</li>\n";
-    
+
     $sql = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".performance_main TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
     $mysqli->query($sql);
     echo "<li>GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".performance_main TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'</li>\n";
@@ -3871,7 +3871,7 @@ if (!isset($_POST['update'])) {
     $adjust->execute();
     $adjust->close();
     echo "<li>ALTER TABLE performance_details ADD INDEX idx_perform_id (perform_id)</li>\n";
-    
+
     $sql = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".performance_details TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'";
     $mysqli->query($sql);
     echo "<li>GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".performance_details TO '". $cfg_db_staff_user . "'@'". $cfg_db_host . "'</li>\n";
@@ -3890,9 +3890,9 @@ if (!isset($_POST['update'])) {
 
     if ($mysqli->errno != 0) {
       echo '<li class="error">ERROR: could not set permissions ' . $sql . '</li>';
-    }  
+    }
   }
-  
+
   // 26/06/2012 - add new index to review_comments
   $result = $mysqli->prepare("SHOW INDEX FROM review_comments WHERE Key_name = 'idx_q_paper'");
   $result->execute();
@@ -3903,7 +3903,7 @@ if (!isset($_POST['update'])) {
     if (!$mysqli->real_query("CREATE INDEX idx_q_paper ON review_comments (q_paper)")) {
       echo "<li>" . $mysqli->error . "</li>\n";
     }
-  } 
+  }
   $result->close();
 
   // Delete permission might be missing on papers and state (28/06/2012)
@@ -3920,7 +3920,7 @@ if (!isset($_POST['update'])) {
 
     if ($mysqli->errno != 0) {
       echo '<li class="error">ERROR: could not set permissions ' . $sql . '</li>';
-    }  
+    }
   }
   // 21/03/2012 - Move to InnoDB for all table except help tables SHOULD not go live untill ver 4.3 - With full testing
   $result = $mysqli->prepare("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE ENGINE='MyISAM' AND TABLE_SCHEMA = '" . $cfg_db_database . "'");
@@ -3939,7 +3939,7 @@ if (!isset($_POST['update'])) {
     ob_flush();
     flush();
   }
-  
+
   //update student_modules.moduleid to a char(25)
   $result = $mysqli->prepare("SELECT COLUMN_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='student_modules' AND TABLE_SCHEMA='touchstone' and COLUMN_NAME = 'moduleid' and COLUMN_TYPE = 'char(15)' AND TABLE_SCHEMA = '" . $cfg_db_database . "'");
   $result->execute();
@@ -4092,7 +4092,7 @@ if (!isset($_POST['update'])) {
     echo "<li>Adding Unknown School</li>\n";
   }
 
-  // 24/08/2012 -- add access to on External Examiners 
+  // 24/08/2012 -- add access to on External Examiners
   $sql = "GRANT SELECT ON " . $cfg_db_database . ".staff_help TO '". $cfg_db_external_user . "'@'". $cfg_db_host . "'";
   $mysqli->query($sql);
   echo "<li>$sql</li>\n";
@@ -4112,7 +4112,7 @@ if (!isset($_POST['update'])) {
   $sql = "GRANT SELECT,INSERT ON " . $cfg_db_database . ".help_searches TO '". $cfg_db_external_user . "'@'". $cfg_db_host . "'";
   $mysqli->query($sql);
   echo "<li>$sql</li>\n";
-  
+
   $sql = "FLUSH PRIVILEGES";
   $mysqli->query($sql);
 
@@ -4187,7 +4187,7 @@ if (!isset($_POST['update'])) {
   @flush();
 
 
-  
+
   $result = $mysqli->prepare("SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_NAME='lti_context' AND COLUMN_NAME='oauth_consumer_key' AND TABLE_SCHEMA='$cfg_db_database'");
   $result->execute();
   $result->store_result();
@@ -4448,7 +4448,7 @@ if (!isset($_POST['update'])) {
     $body = preg_replace($patterns, $replace, $body);
 
     $body_plain = strip_tags($body);
-    
+
     $update = $mysqli->prepare("UPDATE staff_help SET body=?, body_plain=? WHERE id=?");
     $update->bind_param('ssi', $body, $body_plain, $id);
     $update->execute();
@@ -4479,14 +4479,14 @@ if (!isset($_POST['update'])) {
     $body = preg_replace($patterns, $replace, $body);
 
     $body_plain = strip_tags($body);
-    
+
     $update = $mysqli->prepare("UPDATE student_help SET body=?, body_plain=? WHERE id=?");
     $update->bind_param('ssi', $body, $body_plain, $id);
     $update->execute();
     $update->close();
   }
   $result->close();
-  
+
   // 19/09/2012 - remove ID field from users_metadata
   $result = $mysqli->prepare("SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_NAME='users_metadata' AND COLUMN_NAME='id' AND TABLE_SCHEMA='$cfg_db_database'");
   $result->execute();
@@ -4498,9 +4498,9 @@ if (!isset($_POST['update'])) {
     } else {
       echo "<li>ALTER TABLE users_metadata DROP COLUMN id</li>\n";
     }
-  } 
+  }
   $result->close();
-  
+
   // 19/09/2012 - add new index to users_metadata
   $result = $mysqli->prepare("SHOW INDEX FROM users_metadata WHERE Key_name = 'idx_users_metadata'");
   $result->execute();
@@ -4512,7 +4512,7 @@ if (!isset($_POST['update'])) {
     } else {
       echo "<li>ALTER TABLE users_metadata ADD UNIQUE idx_users_metadata (userID, moduleID, type, calendar_year)</li>\n";
     }
-  } 
+  }
   $result->close();
 
   // 21/09/2012 - Create new 'class_totals_test_local' table to hold progress in class totals comparison test.
@@ -4557,7 +4557,7 @@ QUERY;
     flush();
   }
   $result->close();
-  
+
   // 25/09/2012 - Enlarge the size of the integer for note_authorID in paper_notes table.
   $data_type = '';
   $result = $mysqli->prepare("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='paper_notes' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='note_authorID'");
@@ -4574,7 +4574,7 @@ QUERY;
     flush();
   }
   $result->close();
-  
+
   // 25/09/2012 - Enlarge the size of the integer for note_authorID in student_help table.
   $data_type = '';
   $result = $mysqli->prepare("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='student_help' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='checkout_authorID'");
@@ -4591,7 +4591,7 @@ QUERY;
     flush();
   }
   $result->close();
-  
+
   // 25/09/2012 - Enlarge the size of the integer for setterID in standards_setting table.
   $data_type = '';
   $result = $mysqli->prepare("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='standards_setting' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='setterID'");
@@ -4608,7 +4608,7 @@ QUERY;
     flush();
   }
   $result->close();
-  
+
   // 25/09/2012 - Enlarge the size of the integer for note_authorID in staff_help table.
   $data_type = '';
   $result = $mysqli->prepare("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='staff_help' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='checkout_authorID'");
@@ -4625,7 +4625,7 @@ QUERY;
     flush();
   }
   $result->close();
-  
+
   // 25/09/2012 - Enlarge the size of the integer for student_userID in textbox_marking table.
   $data_type = '';
   $result = $mysqli->prepare("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='textbox_marking' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='student_userID'");
@@ -4642,7 +4642,7 @@ QUERY;
     flush();
   }
   $result->close();
-  
+
   // 25/09/2012 - Reduce size of the integer for paperID in textbox_marking table.
   $data_type = '';
   $result = $mysqli->prepare("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='textbox_marking' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='paperID'");
@@ -4659,13 +4659,13 @@ QUERY;
     flush();
   }
   $result->close();
-  
+
   //27/09/2012 - remove concatenated moduleID form properties and crate the properties_module linking table
   $result = $mysqli->prepare("SELECT TABLE_NAME FROM information_schema.COLUMNS WHERE TABLE_NAME='properties_modules' AND TABLE_SCHEMA='$cfg_db_database'");
   $result->execute();
   $result->store_result();
   $result->fetch();
-  if ($result->num_rows() == 0 ) { 
+  if ($result->num_rows() == 0 ) {
     $adjust = $mysqli->prepare("CREATE TABLE properties_modules (property_id mediumint(8) unsigned, idMod int, constraint pk_properties_module primary key (property_id, idMod)) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=latin1");
     $adjust->execute();
     $adjust->close();
@@ -4673,7 +4673,7 @@ QUERY;
     ob_flush();
     flush();
     $res = $mysqli->prepare("SELECT id, moduleid FROM modules");
-    $res->execute(); 
+    $res->execute();
     $res->bind_result($id,$moduleid);
     $modules = array();
     while ($res->fetch()) {
@@ -4682,7 +4682,7 @@ QUERY;
     $res->close();
     unset($res);
     $res = $mysqli->prepare("SELECT property_id, moduleID FROM properties");
-    $res->execute(); 
+    $res->execute();
     $res->store_result();
     $res->bind_result($property_id, $moduleID);
     $insert_res = $mysqli->prepare("INSERT INTO properties_modules VALUES (?, ?)");
@@ -4714,9 +4714,9 @@ QUERY;
     echo "<li>CREATE TABLE questions_modules (q_id int(4) unsigned, idMod int, constraint pk_questions_module primary key (q_id, idMod))</li>\n";
     ob_flush();
     flush();
-    
+
     $res = $mysqli->prepare("SELECT q_id, q_group FROM questions");
-    $res->execute(); 
+    $res->execute();
     $res->store_result();
     $res->bind_result($q_id, $moduleID);
     $insert_res = $mysqli->prepare("INSERT INTO questions_modules VALUES (?,?)");
@@ -4741,7 +4741,7 @@ QUERY;
     $adjust->close();
     echo "<li>ALTER TABLE questions DROP q_group</li>\n";
 
-    //'folders' => 'team_name' is not 1 to 1 so need a folders_modules_staff joining table 
+    //'folders' => 'team_name' is not 1 to 1 so need a folders_modules_staff joining table
     $adjust = $mysqli->prepare("CREATE TABLE folders_modules_staff (folders_id int unsigned, idMod int, constraint pk_properties_module primary key (folders_id, idMod)) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=latin1");
     $adjust->execute();
     $adjust->close();
@@ -4750,7 +4750,7 @@ QUERY;
     flush();
     unset($res);
     $res = $mysqli->prepare("SELECT id, team_name FROM folders");
-    $res->execute(); 
+    $res->execute();
     $res->store_result();
     $res->bind_result($folder_id, $team_name);
     $insert_res = $mysqli->prepare("INSERT INTO folders_modules_staff VALUES (?, ?)");
@@ -4777,23 +4777,23 @@ QUERY;
 
     //translate moduleID to idMod in all tables
     $mysqli->query("ALTER TABLE sessions DROP PRIMARY KEY");
-    $tables = array(  
-                    'objectives ' => 'moduleID', 
-                    'relationships' => 'module_id', 
-                    'sessions' => 'moduleID', 
-                    'sms_imports' => 'moduleid', 
-                    'student_modules' => 'moduleid', 
+    $tables = array(
+                    'objectives ' => 'moduleID',
+                    'relationships' => 'module_id',
+                    'sessions' => 'moduleID',
+                    'sms_imports' => 'moduleid',
+                    'student_modules' => 'moduleid',
                     'teams' => 'name'
                     );
     foreach ($tables as $table => $col) {
       echo "<li>UPDATING $col in $table</li>";
       ob_flush();
       flush();
-      foreach ($modules as $code => $id) { 
+      foreach ($modules as $code => $id) {
         $mysqli->query("UPDATE $table set $col = $id WHERE $col = '$code'");
       }
     }
-    //rename and rename and retype the columns 
+    //rename and rename and retype the columns
     $tables['reference_modules'] = 'moduleID'; //this just needs renaming
     $tables['users_metadata'] = 'moduleID'; //this just needs renaming
     foreach ($tables as $table => $col) {
@@ -4811,7 +4811,7 @@ QUERY;
     //TODO Indexes and GRANTS
   }
   $result->close();
-  
+
   // 02/11/2012 - Add new field to special_needs table.
   $findsql = "SELECT column_type from information_schema.COLUMNS where TABLE_NAME='special_needs'  and TABLE_SCHEMA='". $cfg_db_database . "'  and column_name='unanswered'";
   $result = $mysqli->prepare($findsql);
@@ -4827,7 +4827,23 @@ QUERY;
     echo "<li>$sql</li>";
   }
   $result->close();
-  
+
+  // 05/11/2012 - Add new field to questions table.
+  $findsql = "SELECT column_type from information_schema.COLUMNS where TABLE_NAME='questions'  and TABLE_SCHEMA='". $cfg_db_database . "'  and column_name='draft'";
+  $result = $mysqli->prepare($findsql);
+  $result->execute();
+  $result->store_result();
+  $result->bind_result($column_type);
+  $result->fetch();
+  if ($result->num_rows() == 0) {
+    $sql = "ALTER TABLE `questions` ADD COLUMN `draft` DATETIME NULL DEFAULT NULL";
+    $adjust = $mysqli->prepare($sql);
+    $adjust->execute();
+    $adjust->close();
+    echo "<li>$sql</li>";
+  }
+  $result->close();
+
   // End ------------------------------------------------------------------
   echo "</ol>\n";
 

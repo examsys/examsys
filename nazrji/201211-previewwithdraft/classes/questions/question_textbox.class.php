@@ -33,11 +33,11 @@ Class QuestionTEXTBOX extends Question {
 
   protected $_fields_editable = array('theme', 'scenario', 'leadin', 'notes', 'correct_fback', 'incorrect_fback', 'rows', 'columns', 'bloom', 'status');
   
-  function __construct($mysqli, $user_id, $lang_strings, $data = null) {    
+  function __construct($mysqli, $user_id, $lang_strings, $data = null, $question_mode='live') {
     // Populate display method with defaults
     $this->set_display_method('dummy');
     
-    parent::__construct($mysqli, $user_id, $lang_strings, $data);
+    parent::__construct($mysqli, $user_id, $lang_strings, $data, $question_mode);
     
     $this->_fields_unified = array('correct' => $this->_lang_strings['terms'], 'text' => $this->_lang_strings['editor'], 'marks_correct' => $this->_lang_strings['markscorrect'], 'marks_incorrect' => $this->_lang_strings['marksincorrect']);
   }
