@@ -1,1 +1,0 @@
-Delete any module you don't like but check dependencies!

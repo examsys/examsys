@@ -1,3 +1,0 @@
-<?php
-$string['teams'] = 'Zespoły:';
-?>
