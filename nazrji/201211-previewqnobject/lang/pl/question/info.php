@@ -1,0 +1,30 @@
+<?php
+$string['questioninformation'] = 'Informacje o pytaniu';
+$string['author'] = 'Autor'; 
+$string['status'] = 'Status'; //cognate //Status, Stan
+$string['created'] = 'Utworzone';
+$string['modified'] = 'Zmodyfikowane';
+$string['locked'] = 'Zablokowane';
+$string['teams'] = 'Zespoły';
+$string['followingpapers'] = 'Wykorzystywane w następujących arkuszach:';
+$string['Longitudinal'] = 'Długoterminowe';
+$string['normal'] = 'Normalne';
+$string['retired'] = 'Wycofane';
+$string['incomplete'] = 'Niekompletne';
+$string['experimental'] = 'Eksperymentalne';
+$string['beta'] = 'Beta'; //cognate
+$string['close'] = 'Zamknięte';
+$string['notused'] = '(To pytanie nie jest obecnie wykorzystywane w żadnym arkuszu)';
+$string['papername'] = 'Nazwa arkusza'; 
+$string['screenno'] = 'Numer ekranu';
+$string['examdate'] = 'Data egzaminu';
+$string['cohort'] = 'Grupa';
+$string['p'] = 'P';  //cognate
+$string['d'] = 'D'; //cognate
+$string['copyof'] = 'Kopia z'; 
+$string['sourcefor'] = 'Źródło dla';
+$string['na'] = 'Brak';
+$string['type'] = 'Typ';
+$string['questionno'] = 'Numer pytania';
+$string['copies'] = 'Kopie:';
+?>

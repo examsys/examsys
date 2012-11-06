@@ -1,0 +1,29 @@
+<?php
+$string['classtotals'] = 'Class Totals';
+$string['classtotalsmodule'] = 'Class Totals (%s students only)';
+$string['name'] = 'Name';
+$string['studentid'] = 'Student ID';
+$string['course'] = 'Course';
+$string['total'] = 'Total';
+$string['classification'] = 'Classification';
+$string['starttime'] = 'Start Time/Date';
+$string['examiner'] = 'Examiner';
+$string['summary'] = 'Summary';
+$string['cohortsize'] = 'Cohort Size:';
+$string['fail'] = 'Fail:';
+$string['pass'] = 'Pass:';
+$string['error'] = 'ERROR:';
+$string['noattendance'] = 'No Attendance';
+$string['clear fail'] = 'Clear Fail';
+$string['borderline'] = 'Borderline';
+$string['clear pass'] = 'Clear Pass';
+$string['borderline fail'] = 'Borderline fail';
+$string['borderline pass'] = 'Borderline pass';
+$string['good pass'] = 'Good pass';
+$string['honours pass'] = 'Honours PASS';
+$string['oscemarksheet'] = 'OSCE Mark Sheet';
+$string['feedback'] = 'Feedback';
+$string['studentprofile'] = 'Student Profile';
+$string['unsatisfactory'] = 'Unsatisfactory:';
+$string['competent'] = 'Competent:';
+?>
