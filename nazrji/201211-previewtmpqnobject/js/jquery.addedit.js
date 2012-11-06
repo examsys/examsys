@@ -65,6 +65,8 @@ $(function () {
   $('#addquestion').click(addQuestion);
 
   $(".tiptop").tipTip({defaultPosition: 'top'});
+
+  $('#preview_tab').click(doPreview);
 });
 
 function changeTab() {
@@ -80,8 +82,6 @@ function changeTab() {
       $('#' + id).fadeIn();
     }
   }
-
-  return false;
 }
 
 function showNextOption() {
@@ -234,4 +234,38 @@ function showMarksWarning(element) {
     }
   }
   return rval;
+}
+
+function doPreview(e) {
+  var data = $('#edit_form').serialize();
+  $.ajax({
+    url: '../../ajax/question/save.php',
+    type: 'POST',
+    data: data,
+    timeout: 3000,
+    success: saveSuccess,
+    error: function(jqXHR, textStatus, errorThrown) {
+      if(textStatus === "timeout") {
+          $('#preview_result').html('<p>Error: timeout</p>');
+      } else {
+          $('#preview_result').html('<p>Error: ' + textStatus + '</p>');
+      }
+    }
+  });
+
+  e.preventDefault();
+}
+
+function saveSuccess(data, textStatus, jqXHR) {
+  if (data.charAt(0) != '{') {
+    // Not JSON so must be error
+    $('#preview_result').html('<p>Error: ' + data + '</p>');
+  } else {
+    $.post('../../ajax/question/preview.php',
+            { q_data: data },
+            function(data) {
+              $('#preview_result').html(data);
+            }
+    );
+  }
 }

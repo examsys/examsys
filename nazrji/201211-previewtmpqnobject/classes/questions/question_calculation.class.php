@@ -58,9 +58,9 @@ Class QuestionCALCULATION extends Question {
    * Ensure that display_method is in correct format before calling parent save() function
    * @return integer
    */
-  public function save($clear_checkout = true) {
+  public function save($clear_checkout = true, $question_mode = 'live') {
     $this->set_display_method('dummy');
-    return parent::save($clear_checkout);
+    return parent::save($clear_checkout, $question_mode);
   }
 
   // ACCESSORS

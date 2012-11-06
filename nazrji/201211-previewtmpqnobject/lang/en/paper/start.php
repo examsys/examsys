@@ -1,7 +1,7 @@
 <?php
-require_once '../lang/' . $language . '/include/months.inc';
-require_once '../lang/' . $language . '/question/sct_shared.php';
-require_once '../lang/' . $language . '/include/paper_security.inc';
+require_once $cfg_web_root . 'lang/' . $language . '/include/months.inc';
+require_once $cfg_web_root . 'lang/' . $language . '/question/sct_shared.php';
+require_once $cfg_web_root . 'lang/' . $language . '/include/paper_security.inc';
 
 $string['survey'] = 'Survey';
 $string['assessment'] = 'Assessment';

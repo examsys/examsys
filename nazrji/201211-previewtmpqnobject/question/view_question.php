@@ -15,7 +15,7 @@
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
-* 
+*
 * @author Simon Wilkinson
 * @version 1.0
 * @copyright Copyright (c) 2012 The University of Nottingham
@@ -39,7 +39,7 @@
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
-  
+
   <title>Preview</title>
 
   <link rel="stylesheet" type="text/css" href="../css/body.css" />
@@ -56,46 +56,36 @@
   </script>
 </head>
 <body>
-<div id="maincontent">
 <?php
-  $old_q_id = '';
-  $question_data = $mysqli->prepare("SELECT q_type, q_id, score_method, display_method, marks_correct, marks_incorrect, marks_partial, theme, scenario, leadin, correct, REPLACE(option_text,'\t','') AS option_text, q_media, q_media_width, q_media_height, o_media, o_media_width, o_media_height, notes FROM questions, options WHERE q_id=? AND questions.q_id=options.o_id ORDER BY id_num");
-  $question_data->bind_param('i', $_GET['q_id']);
-  $question_data->execute();
-  $question_data->store_result();
-  $question_data->bind_result($q_type, $q_id, $score_method, $display_method, $marks_correct, $marks_incorrect, $marks_partial, $theme, $scenario, $leadin, $correct, $option_text, $q_media, $q_media_width, $q_media_height, $o_media, $o_media_width, $o_media_height, $notes);
-  $num_rows = $question_data->num_rows;
-  echo "<table cellpadding=\"4\" cellspacing=\"0\" border=\"0\" width=\"100%\" style=\"table-layout:fixed\">\n";
-  echo "<col width=\"40\"><col>\n";
-  while ($question_data->fetch()) {
-    if ($old_q_id != $q_id) {
-      $question['theme'] = trim($theme);
-      $question['scenario'] = trim($scenario);
-      $question['leadin'] = trim($leadin);
-      $question['notes'] = trim($notes);
-      $question['q_type'] = $q_type;
-      $question['q_id'] = $q_id;
-      $question['score_method'] = $score_method;
-      $question['display_method'] = $display_method;
-      $question['q_media'] = $q_media;
-      $question['q_media_width'] = $q_media_width;
-      $question['q_media_height'] = $q_media_height;
-      $question['dismiss'] = '';
-    }
-    $question['options'][] = array('correct'=>$correct, 'option_text'=>$option_text, 'o_media'=>$o_media, 'o_media_width'=>$o_media_width, 'o_media_height'=>$o_media_height, 'marks_correct'=>$marks_correct, 'marks_incorrect'=>$marks_incorrect, 'marks_partial'=>$marks_partial);
+$old_q_id = '';
+$question_data = $mysqli->prepare("SELECT q_type, q_id, score_method, display_method, marks_correct, marks_incorrect, marks_partial, theme, scenario, leadin, correct, REPLACE(option_text,'\t','') AS option_text, q_media, q_media_width, q_media_height, o_media, o_media_width, o_media_height, notes FROM questions, options WHERE q_id=? AND questions.q_id=options.o_id ORDER BY id_num");
+$question_data->bind_param('i', $_GET['q_id']);
+$question_data->execute();
+$question_data->store_result();
+$question_data->bind_result($q_type, $q_id, $score_method, $display_method, $marks_correct, $marks_incorrect, $marks_partial, $theme, $scenario, $leadin, $correct, $option_text, $q_media, $q_media_width, $q_media_height, $o_media, $o_media_width, $o_media_height, $notes);
+$num_rows = $question_data->num_rows;
+while ($question_data->fetch()) {
+  if ($old_q_id != $q_id) {
+    $question['theme'] = trim($theme);
+    $question['scenario'] = trim($scenario);
+    $question['leadin'] = trim($leadin);
+    $question['notes'] = trim($notes);
+    $question['q_type'] = $q_type;
+    $question['q_id'] = $q_id;
+    $question['score_method'] = $score_method;
+    $question['display_method'] = $display_method;
+    $question['q_media'] = $q_media;
+    $question['q_media_width'] = $q_media_width;
+    $question['q_media_height'] = $q_media_height;
+    $question['dismiss'] = '';
   }
-  $question_data->close();
-  
-  $question_no = 0;
-  $paper_type = 0;
-  $unanswered = false;
-  $user_answers[1] = array();
-  display_question($question, $paper_type, 1, '', $question_no, $question_offset, $user_answers, $unanswered);	
+  $question['options'][] = array('correct'=>$correct, 'option_text'=>$option_text, 'o_media'=>$o_media, 'o_media_width'=>$o_media_width, 'o_media_height'=>$o_media_height, 'marks_correct'=>$marks_correct, 'marks_incorrect'=>$marks_incorrect, 'marks_partial'=>$marks_partial);
+}
+$question_data->close();
 
-  $question_nos[] = $old_q_id;
-  echo "<table>\n";
- ?>
- </div>
- </body>
- </html>
- 
+include_once '../include/preview_question.inc.php';
+
+$question_nos[] = $old_q_id;
+?>
+</body>
+</html>

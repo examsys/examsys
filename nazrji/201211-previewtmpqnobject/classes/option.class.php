@@ -42,26 +42,26 @@ Class Option extends RogoObject {
   protected $marks_correct = 1;
   protected $marks_incorrect = 0;
   protected $marks_partial = 0;
-  
+
   protected static $_fields = array('question_id', 'text', 'media', 'media_width', 'media_height', 'correct_fback', 'incorrect_fback', 'correct', 'marks_correct', 'marks_incorrect', 'marks_partial');
   // 'media' should not appear in the list below as they are handled separately
   protected $_fields_editable = array('text', 'correct_fback', 'incorrect_fback', 'correct', 'marks_correct', 'marks_incorrect', 'marks_partial');
   protected $_fields_required = array('question_id', 'marks_correct');
-  
+
   protected $_question = null;
   protected $_number = -1;
   protected $_mysqli = null;
   protected $_user_id;
   protected $_data = array();
-  
+
   // Map our 'nice' property names to the database fields
   protected $_field_map = array('question_id' => 'o_id', 'text' => 'option_text', 'media' => 'o_media', 'media_width' => 'o_media_width', 'media_height' => 'o_media_height', 'correct_fback' => 'feedback_right', 'incorrect_fback' => 'feedback_wrong');
   protected $_pretty_names = array('question_id' => 'Question ID', 'text' => '', 'correct_fback' => 'Correct Feedback', 'incorrect_fback' => 'Incorrect Feedback', 'correct' => 'Correct Value', 'marks_correct' => 'Marks (correct)', 'marks_incorrect' => 'Marks (incorrect)', 'marks_partial' => 'Marks (partial)');
-  
+
   // Refrence to array of localised language strings
   protected $_lang_strings = null;
-  
-  
+
+
   /**
    * Create a new option object by either loading an existing option from the database or populating
    * properties from an associative array
@@ -75,15 +75,15 @@ Class Option extends RogoObject {
     $this->question_id = $question->id;
     $this->_number = $number;
     $this->_lang_strings = $lang_strings;
-    
+
     // Array of references to the fields.  Allows succinct use of call_user_func_array
     foreach(self::$_fields as $field) {
       $this->_data[] = &$this->$field;
     }
-    
+
     // Check the type of $data
     if(is_array($data)) {
-      // If it is an array, assume an associative array of fields for creating a new object (but not 
+      // If it is an array, assume an associative array of fields for creating a new object (but not
       // saving it to the database)
       foreach($data as $field => $val) {
         $this->$field = $val;
@@ -98,7 +98,7 @@ Class Option extends RogoObject {
       throw new DataTypeException($this->_lang_strings['optioninvalid']);
     }
   }
-  
+
   /**
    * Populate the 'standard' fields for this option
    * @param array $fields list of fields to populate
@@ -111,17 +111,17 @@ Class Option extends RogoObject {
     foreach ($fields as $section_name) {
       if (!in_array($section_name, $exclude, true)) {
         $field = $prefix . $section_name . $index;
-        
+
         // If 'correct' is not a unified field then its value if not in POST is negative
         if ($section_name == 'correct' and !isset($data[$field])) $data[$field] = $this->_question->get_answer_negative();
-        
+
         $value = (isset($data[$field])) ? $data[$field] : '';
         $method = "set_$section_name";
         $this->$method($value);
       }
     }
   }
-  
+
   /**
    * Populate the 'unified' fields for this option, which will come from data fields without a numeric index
    * @param array $fields list of fields to populate
@@ -144,7 +144,7 @@ Class Option extends RogoObject {
       }
     }
   }
-  
+
   /**
    * Populate the 'compound' fields for this option, which will come from data fields without a numeric index
    * Assumes that compound fields are unified so will only actually calculate the value for the first option
@@ -155,7 +155,7 @@ Class Option extends RogoObject {
    */
   public function populate_compound($fields, $data, &$existing_values, $prefix='', $message = '') {
     $message = ($message == '') ? $this->_lang_strings['editscenario'] : $message;
-    
+
     foreach ($fields as $section_name) {
       if (!isset($existing_values[$section_name])) {
         $get_method = "get_all_{$section_name}s";
@@ -170,7 +170,7 @@ Class Option extends RogoObject {
           } else {
             if (isset($old_val) and $old_val != '') {
               $this->log_compound_field_change($section_name, $section_name, $i, $old_val, '', $message);
-            } 
+            }
             ${$section_name}[] = '';
           }
         }
@@ -180,7 +180,7 @@ Class Option extends RogoObject {
       $this->$method($existing_values[$section_name]);
     }
   }
-  
+
   /**
    * Persist the object to the database
    * @return boolean Success or failure of the save operation
@@ -188,9 +188,9 @@ Class Option extends RogoObject {
   public function save($option_number = 0) {
     $success = false;
     $logger = new Logger($this->_mysqli);
-    
+
     $valid = $this->validate();
-    
+
     if ($valid === true) {
       // If $id is -1 we're inserting a new record
       if ($this->id == -1) {
@@ -204,7 +204,7 @@ QUERY;
         $params = array_merge(array('issiisssdddi'), $this->_data, array(&$this->id));
         $query = <<< QUERY
 UPDATE options
-SET o_id = ?, option_text = ?, o_media = ?, o_media_width = ?, o_media_height = ?, feedback_right = ?, feedback_wrong = ?, correct = ?, marks_correct = ?, marks_incorrect = ?, marks_partial = ? 
+SET o_id = ?, option_text = ?, o_media = ?, o_media_width = ?, o_media_height = ?, feedback_right = ?, feedback_wrong = ?, correct = ?, marks_correct = ?, marks_incorrect = ?, marks_partial = ?
 WHERE id_num = ?
 QUERY;
       }
@@ -212,7 +212,7 @@ QUERY;
       call_user_func_array (array($result,'bind_param'), $params);
       $result->execute();
       $success = ($result->affected_rows > -1);
-      
+
       if ($success) {
         if ($this->id == -1) {
           $this->id = $this->_mysqli->insert_id;
@@ -230,15 +230,15 @@ QUERY;
         }
       }
       $result->close();
-            
+
       $this->_modified_fields = array();
     } else {
       throw new ValidationException($valid);
     }
-    
+
     return $success;
   }
-  
+
   /**
    * Delete this option
    * @return bool True of false depending on success or failure of the delete operation
@@ -250,18 +250,18 @@ QUERY;
     $result = $this->_mysqli->prepare($query);
     $result->bind_param('i', $this->id);
     $result->execute();
-    
+
     $success = ($result->affected_rows > -1);
-    
+
     if($success) {
       $logger = new Logger($this->_mysqli);
       $this->track_delete($logger, $this->_number);
     }
-    
+
     return $success;
   }
-  
-  
+
+
   /**
    * Is this option blank?
    * @return boolean
@@ -269,9 +269,9 @@ QUERY;
   public function is_blank() {
     return ($this->text == '' and $this->media == '');
   }
-  
+
   /**
-   * Check that the minimum set of fields exist in the given data to create a new option 
+   * Check that the minimum set of fields exist in the given data to create a new option
    * @param array $data
    * @param array $files expects PHP FILES array
    * @param integer $index option number
@@ -280,17 +280,17 @@ QUERY;
   public function minimum_fields_exist($data, $files, $index) {
     return ((isset($data["option_text$index"]) and $data["option_text$index"] != '') or (isset($files["option_media$index"]) and ($files["option_media$index"]['name'] != 'none' and $files["option_media$index"]['name'] != '')));
   }
-  
+
   // ACCESSORS
-  
+
   /**
    * The the array of fields (properties) for this class
-   * @return multitype:string 
+   * @return multitype:string
    */
   public function get_editable_fields() {
     return $this->_fields_editable;
   }
-  
+
   /**
    * Get the ID of the question to which this option relates
    * @return string
@@ -321,15 +321,15 @@ QUERY;
    * @param string $value
    */
   public function set_text($value) {
-    
+
     $value = $this->replace_tex($value);
-     
+
     if($value != $this->text and !in_array('text', array_keys($this->_question->get_unified_fields()))) {
       $this->set_modified_field('text', $this->text, sprintf($this->_lang_strings['optiontext'], $this->_number));
     }
     $this->text = $value;
   }
-  
+
   /**
    * Get the question media as an array containing filename, width and height
    * @return array
@@ -337,7 +337,7 @@ QUERY;
   public function get_media() {
     return array('filename' => $this->media, 'width' => $this->media_width, 'height' => $this->media_height);
   }
-  
+
   /**
    * Set the question media as an array containing filename, width and height
    * @param mixed $value Array containing filename, width and height
@@ -350,7 +350,7 @@ QUERY;
       $this->media_height = (empty($value['height'])) ? 0 : $value['height'];
     }
   }
-  
+
   /**
    * Get the option correct feedback
    * @return string
@@ -359,7 +359,7 @@ QUERY;
     $this->correct_fback = $this->replace_mee_div($this->correct_fback);
     return $this->correct_fback;
   }
-  
+
   /**
    * Set the option correct feedback
    * @param string $value
@@ -371,7 +371,7 @@ QUERY;
       $this->correct_fback = $value;
     }
   }
-  
+
   /**
    * Get the option incorrect feedback
    * @return string
@@ -380,7 +380,7 @@ QUERY;
     $this->incorrect_fback = $this->replace_mee_div($this->incorrect_fback);
     return $this->incorrect_fback;
   }
-  
+
   /**
    * Set the option incorrect feedback
    * @param string $value
@@ -392,7 +392,7 @@ QUERY;
       $this->incorrect_fback = $value;
     }
   }
-  
+
   /**
    * Get the option correct answer
    * @return string
@@ -400,7 +400,7 @@ QUERY;
   public function get_correct() {
     return $this->correct;
   }
-  
+
   /**
    * Set the option correct answer
    * @param string $value
@@ -411,7 +411,7 @@ QUERY;
     }
     $this->correct = $value;
   }
-  
+
   /**
    * Get the option marks for correct answers
    * @return string
@@ -419,7 +419,7 @@ QUERY;
   public function get_marks_correct() {
     return $this->marks_correct;
   }
-  
+
   /**
    * Set the option marks for correct answers
    * @param string $value
@@ -430,7 +430,7 @@ QUERY;
     }
     $this->marks_correct = $value;
   }
-  
+
   /**
    * Get the option marks for incorrect answers
    * @return string
@@ -438,7 +438,7 @@ QUERY;
   public function get_marks_incorrect() {
     return $this->marks_incorrect;
   }
-  
+
   /**
    * Set the option marks for incorrect answers
    * @param string $value
@@ -449,7 +449,7 @@ QUERY;
     }
     $this->marks_incorrect = $value;
   }
-  
+
     /**
    * Get the option marks for partially correct answers
    * @return string
@@ -457,7 +457,7 @@ QUERY;
   public function get_marks_partial() {
     return $this->marks_partial;
   }
-  
+
   /**
    * Set the option marks for partially correct answers
    * @param string $value
@@ -468,9 +468,24 @@ QUERY;
     }
     $this->marks_partial = $value;
   }
-  
+
+  public function serialize() {
+    $o_data = array(
+      'correct' => $this->correct,
+      'option_text' => $this->text,
+      'o_media' => $this->media,
+      'o_media_width' => $this->media_width,
+      'o_media_height' => $this->media_height,
+      'marks_correct' => $this->marks_correct,
+      'marks_incorrect' => $this->marks_incorrect,
+      'marks_partial' => $this->marks_partial
+    );
+
+    return $o_data;
+  }
+
   // STATIC METHODS
-  
+
   /**
    * Get an array with the names of the properties of this class
    * @return array Array of property names
@@ -478,7 +493,7 @@ QUERY;
   public static function get_field_array() {
     return self::$_fields;
   }
-  
+
   /**
    * Get a list of options for the given question
    * @param int $question_id
@@ -486,15 +501,15 @@ QUERY;
    */
   public static function get_options($question_id) {
     $options = array();
-    
+
     return $options;
   }
-  
+
   public static function option_factory($mysqli, $user_id, $question, $number, &$lang_strings, $data=-1) {
     $object = null;
     $root = get_root_path();
     $root .= '/classes/';
-    
+
     $question_type = $question->get_type();
     $classname = 'Option' . strtoupper($question_type);
     $classfile = 'options/option_' . strtolower($question_type) . '.class.php';
@@ -503,7 +518,7 @@ QUERY;
     } else {
       $classname = 'Option';
     }
-      
+
     if($data != -1 and ctype_digit($data)) {
         try {
           $object = new $classname($mysqli, $user_id, $question, $number, $lang_strings, $data);
@@ -521,13 +536,13 @@ QUERY;
         throw new ClassNotFoundException(sprintf($lang_strings['noclasserror'], $classname));
       }
     }
-    
+
     return $object;
   }
-  
+
 
   // PRIVATE METHODS
-  
+
   /**
    * Get the actual data for the option from the database
    */
@@ -544,10 +559,10 @@ QUERY;
     call_user_func_array(array($result, "bind_result"), $this->_data);
     $result->fetch();
   }
-  
+
   private function validate() {
     $rval = true;
-    
+
     // If there are errors return an appropriate message
     $missing_fields = '';
     foreach($this->_fields_required as $req) {
@@ -556,10 +571,10 @@ QUERY;
     if($missing_fields != '') {
       $rval = 'The following required fields have not been supplied: ' . rtrim($missing_fields, ', ');
     }
-    
+
     return $rval;
   }
-  
+
   /**
    * Track the addition of a new option.  The message may be different in other question types so allow this method to be overridden
    * @param Logger $option_number
@@ -569,7 +584,7 @@ QUERY;
     $log_text = ($this->text != '') ? $this->text : $this->media;
     $logger->track_change($this->_lang_strings['newoption'], $this->question_id, $this->_user_id, '', $this->text, sprintf($this->_lang_strings['optionno'], $option_number));
   }
-    
+
   /**
    * Track the change of an option.  The message may be different in other question types so allow this method to be overridden
    * @param Logger $option_number
@@ -594,10 +609,10 @@ QUERY;
     } elseif (isset($this->_modified_fields['text'])) {
       $old_val = $this->_modified_fields['text']['value'];
     }
-    
+
     $logger->track_change($this->_lang_strings['deletedoption'], $this->question_id, $this->_user_id, $old_val, '', sprintf($this->_lang_strings['optionno'], $option_number));
   }
-  
+
   /**
    * Log a change to a compound field. The actual value logged will depend on the conversion type defined in $_fields_compound.
    * Also be aware that the field may be an array o must be converted to a string
@@ -610,9 +625,9 @@ QUERY;
    */
   protected function log_compound_field_change($field, $label, $index, $old_value, $new_value, $category='') {
     if ($category == '') $category = $this->_lang_strings['editquestion'];
-    
+
     $log_value_old = $log_value_new = '';
-    
+
     if (is_array($old_value)) {
       foreach ($old_value as $value) {
         $log_value_old .= $this->convert_compound_field_value($value, $this->_fields_compound[$field]) . ',';
@@ -629,12 +644,12 @@ QUERY;
     } else {
       $log_value_new .= $this->convert_compound_field_value($new_value, $this->_fields_compound[$field]);
     }
-    
+
     if ($log_value_old != '' or $log_value_new != '') {
       $this->_question->add_unified_field_modification($field . $index, $field . $index, $log_value_old, $log_value_new, $category);
     }
   }
-  
+
   protected function convert_compound_field_value($value, $type) {
     $converted = '';
     if ($value != '') {

@@ -58,12 +58,12 @@ Class QuestionAREA extends Question {
    * @return boolean Success or failure of the save operation
    * @throws ValidationException
    */
-  public function save($clear_checkout = true) {
+  public function save($clear_checkout = true, $question_mode = 'live') {
     // Make sure 'correct' value is set for option
     if ((!isset($this->correct) or $this->correct = '') and $this->points1 != '' and count($this->options) > 0) {
       $this->set_points1($this->points1);
     }
-    return parent::save($clear_checkout);
+    return parent::save($clear_checkout, $question_mode);
   }
 
   
