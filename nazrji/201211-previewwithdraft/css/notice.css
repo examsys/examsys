@@ -1,0 +1,22 @@
+body {
+  font-size:90%;
+  background-color:#FCFCFC;
+  color:#575757;
+}
+h1 {
+  color:#BF0000;
+  font-size:150%;
+  margin-left:70px;
+}
+hr {
+  margin-left:70px;
+  text-align:left;
+  color:#C0C0C0;
+  background-color:#C0C0C0;
+  height:1px;
+  border:0px;
+  width:400px;
+}
+p {
+  margin-left:70px;
+}
