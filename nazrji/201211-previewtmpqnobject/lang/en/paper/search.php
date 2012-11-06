@@ -1,0 +1,30 @@
+<?php
+$string['papersearch'] = 'Paper Search';
+$string['wordorphrase'] = 'Word or phrase';
+$string['formative'] = 'Formative Self-Assessment';
+$string['progresstest'] = 'Progress Test';
+$string['summative'] = 'Summative Exam';
+$string['survey'] = 'Survey';
+$string['oscestation'] = 'OSCE Station';
+$string['offlinepaper'] = 'Offline Paper';
+$string['peerreview'] = 'Peer Review';
+$string['accessibility'] = 'Accessibility';
+$string['date'] = 'Date';
+$string['lab'] = 'Lab';
+$string['anylab'] = '(any lab)';
+$string['ownership'] = 'Ownership';
+$string['owner'] = 'Owner';
+$string['anyowner'] = '(any owner)';
+$string['papers'] = 'Papers';
+$string['back'] = 'Back';
+$string['search'] = 'Search';
+$string['nothingfound'] = 'Nothing found in Papers for the query';
+$string['screen'] = 'Screen';
+$string['screens'] = 'Screens';
+$string['anymodule'] = '(any module)';
+$string['mypaperssonly'] = '(My papers only)';
+$string['type'] = 'Type';
+$string['author'] = 'Author';
+$string['to'] = 'to';
+$string['module'] = 'Module:';
+?>

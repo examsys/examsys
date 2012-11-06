@@ -1,0 +1,41 @@
+html {overflow:auto;height:100%}
+blockquote {font-size:100%}
+.objH {font-weight:bold;color:#316AC5}
+.fback {font-style:italic; color:#C00000}
+.label {color:#C00000}
+.usermk {padding-left:8px;padding-right:8px;background-color:#FFFF00;font-size:100%;color:black}
+.mkpad {padding-top:10px}
+.answerindent {margin-left:17px;margin-right:15px}
+.std {display:block;background-color:#f27000;color:white;width:35px;text-align:center}
+.exclude {color:red; text-decoration:line-through}
+input.exclude, select.exclude {border: 1px solid red}
+.box {width:90%; background-color:#E4EEFC; border:1px solid #B5C4DF; text-align:left}
+.scr_no {margin-left:25px}
+.screenbrk {
+  color:#15428B;
+  font-weight:bold;
+  font-size:90%;
+  height:70px;
+  width:100%;
+  border-top: 1px solid #B5C4DF;
+  background: -moz-linear-gradient(top, #E4EEFC, #FFFFFF);
+  background: -webkit-linear-gradient(top, #E4EEFC, #FFFFFF);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#E4EEFC', endColorstr='#FFFFFF');
+}
+.studentview {
+  color:#800000;
+  font-size:90%;
+  font-weight:bold;
+  padding-left:15px;
+  padding-bottom:2px
+}
+.staffview {
+  color:#800000;
+  font-size:90%;
+  height:70px;
+  width:100%;
+  padding-top:2px;
+  background: -moz-linear-gradient(top, #FF8282, #FFFFFF);
+  background: -webkit-linear-gradient(top, #FF8282, #FFFFFF);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FF8282', endColorstr='#FFFFFF');
+}
