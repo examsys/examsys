@@ -237,6 +237,8 @@ function showMarksWarning(element) {
 }
 
 function doPreview(e) {
+  $('#preview_result').html('<img src="../../artwork/working.gif" width="16" height="16" />');
+
   var data = $('#edit_form').serialize();
   $.ajax({
     url: '../../ajax/question/save.php',

@@ -215,6 +215,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
 <link rel="stylesheet" href="../../css/add_edit.css" type="text/css" />
 <link rel="stylesheet" href="../../css/warnings.css" type="text/css" />
 <link rel="stylesheet" href="../../css/tipTip.css" type="text/css" />
+<link rel="stylesheet" href="../../css/preview.css" type="text/css" />
 
 <?php echo $cfg_editor_javascript; ?>
 <script type="text/javascript" src="../../js/jquery-1.6.1.min.js"></script>
