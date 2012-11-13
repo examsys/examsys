@@ -1,0 +1,6 @@
+<?php
+
+$string['view'] = 'Zobacz wszystkie odpowiedzi';
+$string['instruction'] = 'Wybierz zakładkę a następnie kliknij pojedynczo aby zanotować odpowiedź. Kliknij ponownie jeśli odpowiedź chcesz zmienić.';
+
+?>

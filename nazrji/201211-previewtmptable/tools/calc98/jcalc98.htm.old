@@ -1,0 +1,527 @@
+<html>
+<head>
+<title>Virtual Calc98
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+</title>
+</head>
+<body style="background-color: #ECE9D8" link="white" vlink="white" alink="white" onLoad="nb()">
+<script language="javascript">
+<!-- --><H1>Sorry, you need a Javascript enabled browser to run this.</H1>
+<!-- Copyright (c) Flow Simulation Limited, 2000, 2002
+var k = 0;
+var n_ = 0;
+var p = 0;
+var H = 0;
+var K = 0;
+var j = true;
+var s = 0;
+var M = false;
+var B = 0;
+var v   = 14;
+var w = 12;
+var A = 3;
+var L    = 12;
+var u      = false;
+var b   = false;
+var J   = 'degrees';
+var d   = false;
+var F = new fb(L);
+var z;
+var o;
+var i_;
+var N;
+var G;
+var I;
+var E_;
+var h;
+function nb()
+{
+var e = location.search.substring(1, location.search.length).split('&');
+for(C=0; C < e.length; C++) {
+var y = e[C].split('=');
+var name = y[0];
+var I  = y[1];
+if(name == "value") {
+Nb(I);
+}
+if(name == "bgcolor") {
+if(I.charAt(0) >= '0' && I.charAt(0) <= '9') document.bgColor = "#" + I;
+else                                             document.bgColor =       I;
+}
+if(name == "form") {
+z = I;
+}
+if(name == "input") {
+o = I;
+}
+}
+if(z && o && opener) {
+Nb(opener.document[z][o].value);
+}
+Jb(p);
+}
+function Nb(sVal)
+{
+var I = parseFloat(sVal);
+if(I == I && !isNaN(I)) p = I;
+}
+function ab()
+{
+this.I = 0;
+this.op = '';
+}
+function fb(G)
+{
+for (C=0; G > C; C++) this[C] = new ab();
+}
+function Ib(I, op)
+{
+if(K == L) return false;
+for(C=K; C>0; C--)
+{
+F[C].I = F[C-1].I;
+F[C].op    = F[C-1].op;
+}
+F[0].I = I;
+F[0].op = op;
+K++;
+return true;
+}
+function wb(i_)
+{
+if(0 >= K) return false;
+op = F[0].op;
+var g = F[0].I;
+if(i_ && K == 1) {
+if     (op == '+')   p = g * (1.0 + p/100);
+else if(op == '-')   p = g * (1.0 - p/100);
+else if(op == '*')   p = g * p / 100;
+else if(op == '/')   p = g / p * 100;
+}
+else {
+if     (op == '+')   p = g + p;
+else if(op == '-')   p = g - p;
+else if(op == '*')   p = g * p;
+else if(op == '/')   p = g / p;
+}
+if     (op == 'pow')	p = Math.pow(g,   p);
+else if(op == 'root')	p = Math.pow(g, 1/p);
+for(C=0; K > C; C++)
+{
+F[C].I = F[C+1].I;
+F[C].op  = F[C+1].op;
+}
+K--;
+return (op != '(');
+}
+function Q()
+{
+var c = document.calc.display.value;
+var t = parseFloat(c);
+if(isNaN(t) || t != t)
+alert('Not a valid number: "' + c + '"');
+else
+p = t;
+Jb(p);
+return p;
+}
+function Jb(I)
+{
+p = I;
+var c = '' + p;
+if( c.indexOf('N') >= 0         ||
+c.indexOf('n') >= 0     ||
+p != p ||
+isNaN(p)           ) {
+Eb();
+return;
+}
+var C = c.indexOf('e');
+if(C >= 0)
+{
+var D = c.substring(C+1, c.length);
+if(C > w) C = w;
+c = c.substring(0, C);
+c += 'e' + D;
+}
+else
+{
+var f = Math.abs(p);
+var m = Math.floor(f);
+var r = f - m;
+var x = v - ('' + m).length - 1;
+if(!j && n_ > 0) x = n_;
+var l = '1000000000000000000000000000000000'.substring(0, x+1);
+if(m < 10000000000000) m = Math.floor(Math.floor(f * l + .5) / l);
+if(0 > p)	c = '-' + m;
+else			c = ' ' + m;
+var q = '0000000000000000000000000000000000' + Math.floor(0.5 + r*l);
+q = q.substring(q.length - x, q.length);
+if (j || n_ == 0)
+{
+for(C=q.length; C > 0; C--)
+if(q.charAt(C-1) != '0') break;
+q = q.substring(0, C);
+}
+if(q.length > 0) c += '.' + q;
+}
+if(M)
+{
+if(0 > B) c += 'e' + B;
+else           c += 'e+' + B;
+}
+if(0 > c.indexOf('.') && !d)
+{
+if(j || s > 0) c += '.';
+else                       c += ' ';
+}
+if(z && o && opener) {
+opener.document[z][o].value = c;
+}
+document.calc.display.value = ' ' + c;
+zb(false);
+b = false;
+}
+function Eb()
+{
+d = true;
+p = Number.NaN;
+document.calc.display.value = 'Overflow Error';
+zb(false);
+b = false;
+}
+function Mb()
+{
+K = 0;
+Bb();
+}
+function Bb()
+{
+d = false;
+M = false;
+kb();
+Jb(0);
+}
+function pb()
+{
+kb();
+if(Ib(0, '(')) Jb(p);
+else             Eb();
+}
+function S()
+{
+kb();
+while(wb());
+Jb(p);
+}
+function lb(op)
+{
+if     (op=='+'   || op=='-'   ) return 1;
+else if(op=='*'   || op=='/'   ) return 2;
+else if(op=='pow' || op=='root') return 3;
+else                             return 0;
+}
+function cb(op)
+{
+kb();
+if(K>0 && lb(F[0].op) >= lb(op)) wb();
+if(Ib(p, op)) Jb(p);
+else Eb();
+}
+function kb()
+{
+if(M)
+p = p * Math.exp(B * Math.LN10);
+j = true;
+M = false;
+s = 0;
+n_ = 0;
+}
+function xb()
+{
+kb();
+while(wb(u));
+Jb(p);
+}
+function Db(E_)
+{
+if(0 > B) E_ = -E_;
+if(k > A) return;
+B = B * 10 + E_;
+k++;
+}
+function Kb(E_)
+{
+if(0 > p) E_ = -E_;
+if(k > v-1) return;
+if(s > 0) {
+s = s * 10;
+p = p + (E_/s);
+n_++;
+}
+else p = p * 10 + E_;
+k++;
+}
+function Z(E_)
+{
+if(j) {
+p = 0;
+k = 1;
+j = false;
+}
+if(E_==0 && k==0) {
+Jb(p);
+return;
+}
+if(M) Db(E_);
+else                  Kb(E_);
+Jb(p);
+}
+function bb()
+{
+if(d) return;
+if (M) B = -B;
+else {
+kb();
+p = -p;
+}
+Jb(p);
+}
+function Cb()
+{
+if(j) {
+p = 0;
+k = 1;
+j = false;
+}
+if(s == 0) s = 1;
+Jb(p);
+}
+function jb()
+{
+if(u) { Y(); return; }
+if(j || M) return;
+M = true;
+B = 0;
+k = 0;
+s = 0;
+Jb(p);
+}
+function Fb(N)
+{
+if     (J == 'radians') return N;
+else if(J == 'grads'  ) return (Math.PI*N/200);
+else                        return (Math.PI*N/180);
+}
+function hb(N)
+{
+if     (J == 'radians') return N;
+else if(J == 'grads'  ) return (N*200/Math.PI);
+else                        return (N*180/Math.PI);
+}
+function P()
+{
+kb();
+if(b) {
+if(u) Jb(Math.log(p + Math.sqrt(p * p + 1.0)));
+else        Jb(0.5*(Math.exp(p) - Math.exp(-p)));
+}
+else {
+if(u) Jb(hb(Math.asin(p)));
+else        Jb(Math.sin(Fb(p)));
+}
+}
+function rb()
+{
+kb();
+if(b) {
+if(u) Jb(Math.log(p + Math.sqrt(p * p - 1.0)));
+else        Jb(0.5*(Math.exp(p) + Math.exp(-p)));
+}
+else {
+if(u) Jb(hb(Math.acos(p)));
+else        Jb(Math.cos(Fb(p)));
+}
+}
+function gb()
+{
+kb();
+if(b) {
+if(u) Jb(0.5*Math.log((1.0 + p)/(1.0 - p)));
+else        Jb((Math.exp(p) - Math.exp(-p))/(Math.exp(p) + Math.exp(-p)));
+}
+else {
+if(u) Jb(hb(Math.atan(p)));
+else        Jb(Math.tan(Fb(p)));
+}
+}
+function U()
+{
+kb();
+if(u) Jb(Math.exp(p*Math.LN2));
+else        Jb(Math.log(p)/Math.LN2);
+}
+function eb()
+{
+kb();
+if(u) Jb(Math.exp(p*Math.LN10));
+else        Jb(Math.log(p)/Math.LN10);
+}
+function X()
+{
+kb();
+if(u) Jb(Math.exp(p));
+else        Jb(Math.log(p));
+}
+function zb(h)
+{
+u = h;
+if(u)
+{
+document.mainkeypad.src = 'images/mainshifted__223x137.gif';
+document.funckeypad.src = 'images/funcshifted__219x108.gif';
+}
+else
+{
+document.mainkeypad.src = 'images/mainkeypad__223x137.gif';
+document.funckeypad.src = 'images/funckeypad__219x108.gif';
+}
+}
+function qb(hyper)
+{
+b = hyper;
+}
+function db()	{ kb(); H += p; Jb(p); }
+function V()	{ kb(); Jb(H); }
+function Ab()		{ kb(); H = p; Jb(p); }
+function tb()	{ kb(); var swap = p; Jb(F[0].I); F[0].I = swap; }
+function Y()		{ kb(); Jb(Math.PI); }
+function ib()		{ kb(); Jb(Math.random()); }
+function ob()		{ alert('This function is not available in the web version'); }
+function yb()	{ alert('This function is not available in the web version'); }
+function mb()		{ alert('This function is not available in the web version'); }
+function W()	{ alert('Units and constants are not available in the web version'); }
+function O()	{ alert('Units and constants are not available in the web version'); }
+function vb()	{ alert('The backspace is not yet available in the web version'); }
+function sb()		{ kb(); Jb(Math.sqrt(p)); }
+function Hb()	{ kb(); Jb(p * p); }
+function ub()
+{
+if(u) { R(); return; }
+kb();
+Jb(1.0/p);
+}
+function Lb()
+{
+if(u)	cb('root');
+else		cb('pow');
+}
+function R() {
+kb();
+var E_ = p;
+p = 1;
+if(0 > E_ || E_ > 200 || E_ != Math.floor(E_)) Eb();
+else {
+for(C=1; E_ >= C; C++) p *= C;
+Jb(p);
+}
+}
+function T()
+{
+if(u)	{ alert("jCalc98 - Copyright (c) Flow Simulation Limited, 2000, 2002"); zb(false); }
+else 		open('jcalchelp.html', 'help');
+}
+function Gb()
+{
+open('http://www.calculator.org/', 'calcpage');
+}
+// -->
+</script><!-- Compressed by JavaSquish -->
+<form name="calc" onSubmit="return false;">
+<table>
+<tr><td height="5"></td></tr>
+<tr>
+<td height="20">
+<center>
+<input size="24" name="display" onFocus="Jb(p)" onBlur="Q()">
+</center>
+</td>
+</tr>
+<tr><td height="10"></td></tr>
+<tr>
+<td>
+<center><img name="funckeypad" src="images/funckeypad__219x108.gif" border="0" usemap="#funckeypad" width="219" height="108"></center>
+</td>
+</tr>
+<tr>
+<td>
+<center><img name="mainkeypad" src="images/mainkeypad__223x137.gif" border="0" usemap="#mainkeypad" width="223" height="137"></center>
+</td>
+</tr>
+<tr>
+<td style="text-align: right; font-family: Arial,Helvetica,sans-serif; font-size: 7pt; color: black">www.calculator.org</td>
+</tr>
+</table>
+</form>
+<map name="funckeypad">
+<area SHAPE=rect HREF="javascript:zb(!u)"	COORDS="5,5,73,28">
+<area SHAPE=rect HREF="javascript:ub()"		COORDS="5,30,38,53">
+<area SHAPE=rect HREF="javascript:sb()"		COORDS="40,30,73,53">
+<area SHAPE=rect HREF="javascript:Hb()"		COORDS="75,30,108,53">
+<area SHAPE=rect HREF="javascript:eb()"		COORDS="110,30,143,53">
+<area SHAPE=rect HREF="javascript:X()"			COORDS="145,30,178,53">
+<area SHAPE=rect HREF="javascript:Lb()"		COORDS="180,30,213,53">
+<area SHAPE=rect HREF="javascript:O()"		COORDS="5,55,38,78">
+<area SHAPE=rect HREF="javascript:ib()"		COORDS="40,55,73,78">
+<area SHAPE=rect HREF="javascript:qb(!b)"	COORDS="75,55,108,78">
+<area SHAPE=rect HREF="javascript:P()"		COORDS="110,55,143,78">
+<area SHAPE=rect HREF="javascript:rb()"		COORDS="145,55,178,78">
+<area SHAPE=rect HREF="javascript:gb()"		COORDS="180,55,213,78">
+<area SHAPE=rect HREF="javascript:bb()"		COORDS="5,80,38,103">
+<area SHAPE=rect HREF="javascript:vb()"		COORDS="40,80,73,103">
+<area SHAPE=rect HREF="javascript:pb()"		COORDS="75,80,108,103">
+<area SHAPE=rect HREF="javascript:S()"		COORDS="110,80,143,103">
+<area SHAPE=rect HREF="javascript:Ab()"		COORDS="145,80,178,103">
+<area SHAPE=rect HREF="javascript:V()"		COORDS="180,80,213,103">
+</map>
+<map name="mainkeypad">
+<area SHAPE=rect HREF="javascript:Z(7)"		COORDS="8,3,48,33">
+<area SHAPE=rect HREF="javascript:Z(8)"		COORDS="50,3,90,33">
+<area SHAPE=rect HREF="javascript:Z(9)"		COORDS="92,3,132,33">
+<area SHAPE=rect HREF="javascript:Bb()"		COORDS="134,3,174,33">
+<area SHAPE=rect HREF="javascript:Mb()"		COORDS="176,3,216,33">
+<area SHAPE=rect HREF="javascript:Z(4)"		COORDS="8,35,48,65">
+<area SHAPE=rect HREF="javascript:Z(5)"		COORDS="50,35,90,65">
+<area SHAPE=rect HREF="javascript:Z(6)"		COORDS="92,35,132,65">
+<area SHAPE=rect HREF="javascript:cb('*')"		COORDS="134,35,174,65">
+<area SHAPE=rect HREF="javascript:cb('/')"		COORDS="176,35,216,65">
+<area SHAPE=rect HREF="javascript:Z(1)"		COORDS="8,67,48,97">
+<area SHAPE=rect HREF="javascript:Z(2)"		COORDS="50,67,90,97">
+<area SHAPE=rect HREF="javascript:Z(3)"		COORDS="92,67,132,97">
+<area SHAPE=rect HREF="javascript:cb('+')"		COORDS="134,67,174,97">
+<area SHAPE=rect HREF="javascript:cb('-')"		COORDS="176,67,216,97">
+<area SHAPE=rect HREF="javascript:Z(0)"		COORDS="8,99,48,129">
+<area SHAPE=rect HREF="javascript:Cb()"		COORDS="50,99,90,129">
+<area SHAPE=rect HREF="javascript:jb()"		COORDS="92,99,132,129">
+<area SHAPE=rect HREF="javascript:xb()"		COORDS="134,99,174,129">
+<area SHAPE=rect HREF="javascript:db()"		COORDS="176,99,216,129">
+<area SHAPE=rect HREF="javascript:Gb()"		COORDS="90,131,216,156">
+</map>
+</body>
+</html>
+<area SHAPE=rect HREF="javascript:jb()"		COORDS="92,99,132,129">
+<area SHAPE=rect HREF="javascript:xb()"		COORDS="134,99,174,129">
+<area SHAPE=rect HREF="javascript:db()"		COORDS="176,99,216,129">
+<area SHAPE=rect HREF="javascript:Gb()"		COORDS="90,131,216,156">
+</map>
+</body>
+</html>
