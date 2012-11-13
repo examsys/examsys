@@ -255,7 +255,7 @@ foreach ($langstrings as $langstring) {
 ?>
 };
 <?php
-if (!empty($_GET['tab']) and in_array($_GET['tab'], array('changes', 'comments', 'performance', 'mapping'))):
+if (!empty($_GET['tab']) and in_array($_GET['tab'], array('changes', 'comments', 'performance', 'mapping', 'preview'))):
 ?>
 $(function () {
   $('.tabs li a[rel=<?php echo $_GET['tab'] ?>]').trigger('click');

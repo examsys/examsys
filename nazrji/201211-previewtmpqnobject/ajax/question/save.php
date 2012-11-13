@@ -35,7 +35,12 @@ $critical_error = '';
 $paper_id = (isset($_POST['paperID'])) ? $_POST['paperID'] : -1;
 $state = array();
 
-$question = get_question($mode, $critical_error, $userObject, $paper_id, $string, $mysqli, 'draft');
+$question = get_question($mode, $critical_error, $userObject, $paper_id, $string, $mysqli);
+
+// Get any existing media
+$current_media = $question->get_media();
+
+$question->id = -1;
 
 if ($critical_error == '') {
   if (populate_question($question, $userObject->get_user_ID(), $mysqli, 'draft')) {

@@ -31,10 +31,10 @@
  * @param  object $mysqli         mysqli database connection
  * @return object                 The Question object
  */
-function get_question(&$mode, &$critical_error, $userObj, $paper_id, $string, $mysqli, $question_mode='live') {
+function get_question(&$mode, &$critical_error, $userObj, $paper_id, $string, $mysqli) {
   $question = false;
 
-	if (!isset($_REQUEST['q_id']) or $_REQUEST['q_id'] == -1 or $question_mode == 'draft') {
+	if (!isset($_REQUEST['q_id']) or $_REQUEST['q_id'] == -1) {
 	  // We're adding a new question
 	  $mode = $string['add'];
 
