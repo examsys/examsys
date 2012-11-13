@@ -21,7 +21,7 @@
 * @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */
-
+//todo check if needed and merge with userobject
   require '../include/staff_auth.inc';
   
   $prefix = $protocol . $_SERVER['HTTP_HOST'];
@@ -32,6 +32,6 @@
   $page = $parts[0];
 
   $result = $mysqli->prepare("REPLACE INTO state (userID, state_name, content, page) VALUES (?, ?, ?, ?)");
-  $result->bind_param('isss', $userID, $_REQUEST['state_name'], $_REQUEST['content'], $page);
+  $result->bind_param('isss', $userObject->get_user_ID(), $_REQUEST['state_name'], $_REQUEST['content'], $page);
   $result->execute();
 ?>

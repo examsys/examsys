@@ -31,23 +31,23 @@
   
   check_var('id', 'GET', true, false);
   
-  if (strpos($userroles,'Demo') !== false) {
+  if ($userObject->has_role('Demo')) {
     $demo = true;
   } else {
     $demo = false;
   }
   
   $showReflection = true;
-  if (strpos($userroles,'Staff') !== false or strpos($userroles,'SysAdmin') !== false) {
+  if ($userObject->has_role(array('Staff','SysAdmin'))) {
     if (isset($_GET['userID']) and $_GET['userID'] != '') {
-      $userID = $_GET['userID'];
+      $userID = $_GET['userID'];  //TODO Why is it doing this?
     } else {
       display_error($string['idmissing'], $string['idmissing_msg'], false, true, false);
     }
   }
 
   //check the feedback has been released !!!
-  if (strpos($userroles,'Student') !== false) {
+  if ($userObject->has_role('Student')=) {
     $result = $mysqli->prepare("SELECT property_id, date FROM feedback_release, properties WHERE properties.property_id=feedback_release.paper_id AND crypt_name=? AND date < NOW()");
     $result->bind_param('s', $_GET['id']);
     $result->execute();
@@ -89,7 +89,7 @@
   } else {
     $result = $mysqli->prepare("SELECT DATE_FORMAT(started,'%H:%i:%s') AS started, DATE_FORMAT(updated,'%H:%i:%s') AS updated FROM log$paper_type WHERE q_paper=? AND userID=? ORDER BY screen DESC LIMIT 1");
   }
-  $result->bind_param('ii', $paperID, $userID);
+  $result->bind_param('ii', $paperID, $userObject->get_user_ID());
   $result->execute();
   $result->bind_result($started, $updated);
   $result->store_result();
@@ -105,7 +105,7 @@
   $time_spent = $updated - $start_seconds;
 
   $result = $mysqli->prepare("SELECT username, title, initials, surname FROM users WHERE id=?");
-  $result->bind_param('i', $userID);
+  $result->bind_param('i', $userObject->get_user_ID());
   $result->execute();
   $result->bind_result($tmp_username, $title, $initials, $surname);
   $result->fetch();
@@ -172,7 +172,7 @@
     $result = $mysqli->prepare("SELECT q_id, mark, totalpos FROM log$paper_type WHERE q_id NOT IN (SELECT q_id FROM question_exclude WHERE q_paper=?) AND userID=? AND q_paper=? $startedSQL ORDER BY q_id, started");
   }
 
-  $result->bind_param('iii', $paperID, $userID, $paperID);
+  $result->bind_param('iii', $paperID, $userObject->get_user_ID(), $paperID);
   $result->execute();
   $result->bind_result($q_id, $mark, $totalpos);
   $total_student_mark = 0;

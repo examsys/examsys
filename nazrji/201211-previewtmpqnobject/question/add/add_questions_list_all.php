@@ -100,7 +100,8 @@ require_once '../../classes/questionutils.class.php';
 
   $question_array = array();
 
-  $result = $mysqli->prepare("SELECT q_id, q_type, leadin, q_media, q_media_width, q_media_height, DATE_FORMAT(last_edited,'$cfg_short_date') AS display_date, locked FROM questions WHERE ownerID=$userID AND status != 'retired' AND deleted IS NULL ORDER BY $order $direction");
+  $result = $mysqli->prepare("SELECT q_id, q_type, leadin, q_media, q_media_width, q_media_height, DATE_FORMAT(last_edited,'$cfg_short_date') AS display_date, locked FROM questions WHERE ownerID=? AND status != 'retired' AND deleted IS NULL ORDER BY $order $direction");
+  $result->bind_param('i',$userObject->get_user_ID());
   $result->execute();
   $result->bind_result($q_id, $q_type, $leadin, $q_media, $q_media_width, $q_media_height, $display_date, $locked);
   while ($result->fetch()) {

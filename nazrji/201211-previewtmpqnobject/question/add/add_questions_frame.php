@@ -34,7 +34,7 @@ $mysqli->close();
 </head>
 
   <frameset rows="*,32" frameborder="0" framespacing="0" border="0">
-    <frameset cols="134,*" frameborder="0" framespacing="0" border="0">
+    <frameset cols="154,*" frameborder="0" framespacing="0" border="0">
       <frame scrolling="no" src="add_questions_buttons.php" name="qbuttons">
       <frame scrolling="no" src="add_questions_iframe.php" name="qlist">
     </frameset>

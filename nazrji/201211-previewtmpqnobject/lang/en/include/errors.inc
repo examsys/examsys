@@ -12,4 +12,5 @@ $string['uploaderrormsg7'] = 'Unknown problem.';
 $string['fatalerrormsg0'] = 'Fatal Error';
 $string['fatalerrormsg1'] = 'A mandatory GET variable is missing.';
 $string['fatalerrormsg2'] = 'A mandatory POST variable is missing.';
+$string['fatalerrormsg3'] = 'A mandatory REQUEST variable is missing.';
 ?>

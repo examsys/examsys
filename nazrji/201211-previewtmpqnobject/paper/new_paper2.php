@@ -39,7 +39,7 @@ require '../lang/' . $language. '/include/timezones.inc';
 <?php
   // Delete any half completed papers owned by current user.
   $result = $mysqli->prepare("DELETE FROM properties WHERE deleted='0000-00-00 00:00:00' AND paper_ownerID=?");
-  $result->bind_param('i', $userID);
+  $result->bind_param('i', $userObject->get_user_ID());
   $result->execute();  
 
   // Check that the new paper name is not already used by any other paper (i.e. unique).
@@ -197,7 +197,7 @@ require '../lang/' . $language. '/include/timezones.inc';
   } else {
     $result = $mysqli->prepare("INSERT INTO properties VALUES (NULL,?,'20100101090000','20250101090000','Europe/London',?,'','','white','black','#316AC5','#C00000','1','1','1',40,70,?,?,'',?,1,'',NULL,'00000000000000',NOW(),0,0,'1','1','1','1','0',?,'',NULL,NULL,'0',0,'',NULL,NULL)");
   }
-  $result->bind_param('ssssss', $paper_name, $paper_types[$_POST['paper_type']], $userID, $folder, $default_rubric, $session);
+  $result->bind_param('ssssss', $paper_name, $paper_types[$_POST['paper_type']], $userObject->get_user_ID(), $folder, $default_rubric, $session);
   $result->execute();  
   $property_id = $mysqli->insert_id;
   $result->close();
@@ -511,10 +511,10 @@ if ($_POST['paper_type'] == 'summative') {
   $staff_modules_sql = "'" . implode("','", array_keys($staff_modules)) . "'";
   
   $module_no = 0;
-  if (strpos($userroles,'SysAdmin') !== false) {
+  if ($userObject->has_role('SysAdmin')) {
     $result = $mysqli->prepare("SELECT DISTINCT modules.id, moduleid, fullname FROM modules, schools ORDER BY moduleID");
-  } elseif (strpos($userroles,'Admin') !== false) {
-    $schoolIDs = implode(',', SchoolUtils::get_admin_schools($userID, $mysqli));
+  } elseif ($userObject->has_role('Admin')) {
+    $schoolIDs = implode(',', SchoolUtils::get_admin_schools($userObject->get_user_ID(), $mysqli));
     $result = $mysqli->prepare("SELECT DISTINCT modules.id, moduleid, fullname FROM modules WHERE (schoolid IN ($schoolIDs) OR modules.id IN ($staff_modules_sql)) AND ORDER BY moduleID");
   } else {
     $result = $mysqli->prepare("SELECT DISTINCT modules.id, moduleid, fullname FROM modules WHERE modules.id IN ($staff_modules_sql)  ORDER BY moduleID");

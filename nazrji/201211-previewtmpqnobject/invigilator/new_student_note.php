@@ -27,7 +27,7 @@
   if (isset($_POST['submit'])) {
     if ($_POST['note_id'] == '' or $_POST['note_id'] == '0') {
       $result = $mysqli->prepare("INSERT INTO student_notes VALUES (NULL,?,?,NOW(),?,?)");
-      $result->bind_param('isii', $_POST['student_userID'], $_POST['note'], $_POST['paperID'], $userID);
+      $result->bind_param('isii', $_POST['student_userID'], $_POST['note'], $_POST['paperID'], $userObject->get_user_ID());
       $result->execute();  
       $result->close();
     } else {

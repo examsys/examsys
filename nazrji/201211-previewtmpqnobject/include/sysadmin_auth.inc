@@ -26,12 +26,11 @@
 
 require_once 'staff_student_auth.inc';
   
-if (strpos($userroles,'SysAdmin') === false) {
+if (!$userObject->has_role('SysAdmin')) {
   access_denied($string['accessdeniedsysadmin'], true);
 } 
 
 // Get staff_modules.
-$staff_modules = get_staff_modules($userID, $mysqli);
-
+$staff_modules = $userObject->get_staff_modules();
 $types_array = array('Formative Self-Assessments', 'Progress Tests', 'Summative Exams', 'Surveys', 'OSCE Stations', 'Offline Papers', 'Peer Review');
 ?>

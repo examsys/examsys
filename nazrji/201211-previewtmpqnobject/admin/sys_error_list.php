@@ -25,7 +25,7 @@
 require '../include/sysadmin_auth.inc';
 require_once '../classes/stateutils.class.php';
 
-$state = $stateutil->getState($userID, $mysqli);
+$state = $stateutil->getState($userObject->get_user_ID(), $mysqli);
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -106,7 +106,7 @@ $state = $stateutil->getState($userID, $mysqli);
       } else {
         echo "$title&nbsp;$initials&nbsp;$surname";
       }
-      echo "</div></td><td><div class=\"err\">$tmp_userID</div>Quadcor3
+      echo "</div></td><td><div class=\"err\">$tmp_userID</div>
       </td></tr>\n";
     }
   }

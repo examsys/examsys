@@ -17,4 +17,6 @@ $string['na'] = 'Brak';
 $string['close'] = 'Zamknij';
 $string['fixed'] = 'Naprawiono';
 $string['username'] = 'Nazwa użytkownika';
+$string['backtrace'] = 'Back Trace'; //TODO Niko
+$string['variables'] = 'Variables'; //TODO Niko
 ?>

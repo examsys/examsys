@@ -29,8 +29,8 @@ if (isset($_POST['ok']) or (isset($_POST['returnhit']) and $_POST['returnhit'] =
   $new_keyword = trim($_POST['new_keyword']);
   if ($new_keyword != '') {
     if ($_POST['module'] == '') {
-      $result = $mysqli->prepare("INSERT INTO keywords_user VALUES (NULL,$userID,?,'personal')");
-      $result->bind_param('s', $new_keyword);
+      $result = $mysqli->prepare("INSERT INTO keywords_user VALUES (NULL,?,?,'personal')");
+      $result->bind_param('is', $userObject->get_user_ID(),$new_keyword);
       $result->execute();  
       $result->close();
     } else {

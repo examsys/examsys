@@ -32,7 +32,7 @@
  */
 
 function usercheck($db, $lti) {
-  global $string, $userID, $userroles, $faculty, $title, $initials, $surname, $username, $email, $grade, $year, $special_needs, $db_errors, $cfg_root_path, $cfg_install_type, $cfg_db_database, $cfg_use_ldap, $fp_link, $cfg_encrypt_salt;
+  global $string, $DISABLEDuserID, $userroles, $faculty, $title, $initials, $surname, $username, $email, $grade, $year, $special_needs, $db_errors, $cfg_root_path, $cfg_install_type, $cfg_db_database, $cfg_use_ldap, $fp_link, $cfg_encrypt_salt;
   
   $lti_i = lti_integration::load();
   if (!isset($_SESSION['lti']['track'])) $_SESSION['lti']['track'] = '';
@@ -87,7 +87,7 @@ function usercheck($db, $lti) {
       }
       if ($returned2 > 0) {
         //insert ID into table
-        $returned3 = $lti->add_lti_user($userID);
+        $returned3 = $lti->add_lti_user($userObject->get_user_ID());
         $returned4 = $lti->lookup_lti_user();
         $ret = db_change_user($db);
         return $returned4;

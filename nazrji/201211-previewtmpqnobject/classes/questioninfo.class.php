@@ -33,7 +33,7 @@ Class question_info {
    * @param object $db
    * @return formated HTML for display of question information
    */
-  static function full_question_information($q_id, $db) {
+  static function full_question_information($q_id, $db, $userObject) {
     global $cfg_short_date, $cfg_long_date_time, $userroles, $string;
     
     $html = '';
@@ -49,7 +49,7 @@ Class question_info {
     if ($q_group == '') $q_group = '<span style="color:#808080">' . $string['na'] . '</span>';
     if ($locked == '') $locked = '<span style="color:#808080">' . $string['na'] . '</span>';
 
-    if (strpos($userroles,'Demo') !== false) {
+    if ($userObject->has_role('Demo')) {
       $owner = 'Dr J, Bloggs (<a href="">joe.bloggs@uni.ac.uk</a>)';
     } else {
       $owner = "$title $initials $surname (<a href=\"mailto:$email\">$email</a>)";

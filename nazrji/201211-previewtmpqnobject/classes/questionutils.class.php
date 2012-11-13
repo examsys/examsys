@@ -125,18 +125,14 @@ SQL;
   * @param $q_id the id of the question
   * @return void 
   */
-  static function update_modules($modules, $q_id, $db) {
-    global $userID, $userroles, $staff_modules; //these will come form the users object later
+  static function update_modules($modules, $q_id, $db, $userObj) {
+    global $REPLACEMEuserIDold, $DISABLEDuserroles, $staff_modules; //these will come form the users object later
 
-    if(count($staff_modules) > 0 and strpos($userroles,'SysAdmin') !== false) {
-       $user_modules = get_staff_modules($userID, $db);
-    }
-
-    if(strpos($userroles,'SysAdmin') !== false) {
+    if($userObj->has_role('SysAdmin')) {
       //sysadmin 
       $user_can_delete = ''; //no restrictions
     } else {
-      $user_can_delete = "AND idMod IN (" . implode(',',array_keys($staff_modules)) . ")"; //users can only remove modules if they are on the team
+      $user_can_delete = "AND idMod IN (" . implode(',',array_keys($userObj->get_staff_modules())) . ")"; //users can only remove modules if they are on the team
     }
 
     $editProperties = $db->prepare("DELETE FROM properties_modules WHERE property_id = ? $user_can_delete");

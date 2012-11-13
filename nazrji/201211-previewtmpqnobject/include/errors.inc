@@ -33,10 +33,10 @@ require $cfg_web_root . 'lang/' . $language . '/include/errors.inc';
  * @param bool $display_support_email - if true display the support email address (if it is set)
  */
 function display_error($error_title, $error_description, $headers = true, $stop_execution = true, $display_support_email = true) {
-  global $mysqli, $support_email, $string, $cfg_root_path;
+  global $mysqli, $support_email, $string, $cfg_root_path, $cfg_page_charset;
   
   if ($headers == false) {
-    echo "<html>\n<head>\n<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n<meta http-equiv=\"content-type\" content=\"text/html;charset=$cfg_page_charset\" />\n<title>$title</title>\n<link rel=\"stylesheet\" type=\"text/css\" href=\"{$cfg_root_path}/css/body.css\" />\n<link rel=\"stylesheet\" type=\"text/css\" href=\"{$cfg_root_path}/css/notice.css\" />\n</head>\n<body>\n";
+    echo "<html>\n<head>\n<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n<meta http-equiv=\"content-type\" content=\"text/html;charset=$cfg_page_charset\" />\n<title>" . $error_title . "</title>\n<link rel=\"stylesheet\" type=\"text/css\" href=\"{$cfg_root_path}/css/body.css\" />\n<link rel=\"stylesheet\" type=\"text/css\" href=\"{$cfg_root_path}/css/notice.css\" />\n</head>\n<body>\n";
   }
   if ($display_support_email and $support_email != '') {
     $error_description .= '<br /><br /><span style="color:#808080">' . $string['errormsg'] . ' <a href="mailto:' . $support_email . '" style="color:blue">' . $support_email . '</a></span>';
@@ -100,9 +100,13 @@ function check_var($var_name, $method, $mandatory, $headers, $type = '') {
       if (!isset($_GET[$var_name]) or $_GET[$var_name] === '' ) {
         display_error($string['fatalerrormsg0'], $string['fatalerrormsg1'], $headers);
       }
-    } else {
+    } elseif ($method == 'POST') {
       if (!isset($_POST[$var_name]) or $_POST[$var_name] === '' ) {
         display_error($string['fatalerrormsg0'], $string['fatalerrormsg2'], $headers);
+      }
+    } else {
+      if (!isset($_REQUEST[$var_name]) or $_REQUEST[$var_name] === '' ) {
+        display_error($string['fatalerrormsg0'], $string['fatalerrormsg3'], $headers);
       }
     }
   }

@@ -151,7 +151,7 @@ Class debug_mysqli_stmt extends mysqli_stmt {
 }
 
 function outputDebug() {
-  if (strpos($userroles,'SysAdmin') !== false) {
+  if ($userObject->has_role('SysAdmin')) {
     outputLoadTimes();
   }
 }
@@ -211,7 +211,9 @@ function outputLoadTimes() {
     } else {
       echo "<li>";
     }
-    echo "<p>" . $query['sql']['Query'] . ' [' . $query['sql']['Duration'] . "] <a href=\"#\" onclick=\"var el=document.getElementById('debug_$id'); el.style.display=el.style.display=(el.style.display != 'none' ? 'none' : ''); return false;\">More ...</a></p>";
+    echo "<p>" . $query['sql']['Query'] . ' [' . $query['sql']['Duration'] . ']';
+    echo "<a href=\"#\" onclick=\"var el=document.getElementById('debug_$id'); el.style.display=el.style.display=(el.style.display != 'none' ? 'none' : ''); return false;\">More ...</a>&nbsp;";
+    echo "</p>";
     if (isset($query['sql']['error'])) echo "<strong>" . $query['sql']['error'] . "</strong>";
     echo "<div id=\"debug_$id\" style=\"display:none\"><pre>"; 
       var_dump($query['stack']);

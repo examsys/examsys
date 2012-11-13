@@ -44,9 +44,9 @@
     return $parts[count($parts)-1];
   }
   
-  if (strpos($userroles,'SysAdmin') !== false) {
+  if ($userObject->has_role('SysAdmin')) {
     $roles_check = 'AND roles IN ("SysAdmin","Admin","Staff")';
-  } elseif (strpos($userroles,'Admin') !== false) {
+  } elseif ($userObject->has_role('Admin')) {
     $roles_check = 'AND roles IN ("Admin","Staff")';
   } else {
     $roles_check = 'AND roles="Staff"';
@@ -78,9 +78,9 @@
     exit;
   }
 
-  if ($_GET['id'] != '1' and strpos($userroles,'SysAdmin') === false) {   // Don't record the homepage or SysAdmin activities.
+  if ($_GET['id'] != '1' and $userObject->has_role('SysAdmin')) {   // Don't record the homepage or SysAdmin activities.
     $result = $mysqli->prepare("INSERT INTO help_log VALUES (NULL, 'staff', ?, NOW(), ?)");
-    $result->bind_param('ii', $userID, $_GET['id']);
+    $result->bind_param('ii', $userObject->get_user_ID(), $_GET['id']);
     $result->execute();  
     $result->close();
   }
@@ -174,7 +174,7 @@
     echo "<br clear=\"all\" />\n<hr style=\"width:100%; background-color:#B6B6B6; color:#B6B6B6; height:1px; border:0px; margin-bottom:5px\" />\n</div>\n";
     echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"width:100%; font-size:90%\"><tr>";
     echo "<td style=\"padding-left:20px\"><a style=\"color:#003366\" href=\"#top\"><img src=\"../../artwork/top_icon.gif\" width=\"9\" height=\"12\" border=\"0\" alt=\"" . $string['top'] . "\" /></a>&nbsp;<a style=\"color:#003366\" href=\"#top\">" . $string['top'] . "</a></td><td style=\"padding-right:20px; text-align:right\">&copy; 2012, The University of Nottingham</td></tr>";
-    if (strpos($userroles,'SysAdmin') !== false) {
+    if ($userObject->has_role('SysAdmin')) {
       echo '<tr><td colspan="2" style="padding-right:20px; text-align:right; color:#316AC5">' . $protocol . $_SERVER['HTTP_HOST'] . $cfg_root_path . '/help/staff/index.php?id=' . $_GET['id'] . '</tr>';
     }
     echo "</table>\n";

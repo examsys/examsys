@@ -25,12 +25,12 @@
 */
 require_once 'staff_student_auth.inc';
 
-if (strpos($userroles,'Admin') === false) {
+if ($userObject->has_role('Admin')) {
   access_denied($string['accessdeniedadmin'],true);
 } 
 
 // Get staff_modules.
-$staff_modules = get_staff_modules($userID, $mysqli);
+$staff_modules = get_staff_modules($userObject->get_user_ID(), $mysqli, $userObject);
 
 $types_array = array('Formative Self-Assessments','Progress Tests','Summative Exams','Surveys','OSCE Stations','Spotters');
 ?>

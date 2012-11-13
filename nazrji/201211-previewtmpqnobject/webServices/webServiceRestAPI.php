@@ -250,7 +250,7 @@ Class webServiceRestAPI extends restAPI {
 
 
   public function getAvailableFeedback ($username,$moduleID) {
-    $tmp_userID = $this->getUserID($username);
+    $tmp_userID = $this->get_user_ID($username);
     
     $paper_no = 0;
     $old_yearID = -1;
@@ -302,7 +302,7 @@ Class webServiceRestAPI extends restAPI {
   public function getOwnerPaperList($username, $types) {
     global $protocol, $cfg_root_path;
         
-    $tmp_userID = $this->getUserID($username, true);
+    $tmp_userID = $this->get_user_ID($username, true);
     if ($tmp_userID == '') {
       return '';
     }
@@ -376,7 +376,7 @@ Class webServiceRestAPI extends restAPI {
   public function createAccount() {
     global $userroles;
     
-    if (strpos($userroles,'SysAdmin') === false) {
+    if ($userObject->has_role('SysAdmin')) {
       return 'accessdenied';
     }
     

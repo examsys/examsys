@@ -41,7 +41,7 @@ for ($i=1; $i<count($tmp_pIDs); $i++) {
 
     // Create a track changes record to say new question added.
     $trackChange = $mysqli->prepare("INSERT INTO track_changes VALUES (NULL,'Alter Paper', ?, ?, ?, '', NOW(), 'Delete Question')");
-    $trackChange->bind_param('iis', $tmp_paperID, $userID, $tmp_questionIDs[$i]);
+    $trackChange->bind_param('iis', $tmp_paperID, $userObject->get_user_ID(), $tmp_questionIDs[$i]);
     $trackChange->execute();
     $trackChange->close();
 

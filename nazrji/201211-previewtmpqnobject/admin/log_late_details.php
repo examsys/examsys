@@ -67,11 +67,11 @@
 
   $result = $mysqli->prepare("SELECT DISTINCT paper_type, paper_title, q_paper, userID FROM log_late, properties WHERE log_late.q_paper=properties.property_id GROUP BY userID ORDER BY paper_title");
   $result->execute();
-  $result->bind_result($paper_type, $paper_title, $paperID, $userID);
+  $result->bind_result($paper_type, $paper_title, $paperID, $uID);
   while ($result->fetch()) {
     $data[$paperID]['paper_title'] = $paper_title;
     $data[$paperID]['paper_type'] = $paper_type;
-    $data[$paperID]['students'][] = $userID;
+    $data[$paperID]['students'][] = $uID;
   }
   $result->close();
   

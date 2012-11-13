@@ -70,7 +70,7 @@ foreach ($question->options as $o_id => $option) {
 }
 
 for ($index = $num_options + 1; $index <= count($variables); $index++) {
-  $option = Option::option_factory($mysqli, $userID, $question, $index, $string);
+  $option = Option::option_factory($mysqli, $userObject->get_user_ID(), $question, $index, $string);
   $option->set_variable($variables[$index-1]);
   include 'options/opt_calculation.php';
 }

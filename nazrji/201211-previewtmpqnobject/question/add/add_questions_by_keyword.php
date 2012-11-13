@@ -133,7 +133,7 @@ require_once '../../classes/questionutils.class.php';
 
   $old_id = '';
   $result = $mysqli->prepare("SELECT questions.q_id, leadin, leadin_plain, q_type, DATE_FORMAT(last_edited,'$cfg_short_date') AS display_date, locked, parts FROM (questions, keywords_question) LEFT JOIN question_exclude ON questions.q_id=question_exclude.q_id WHERE questions.q_id=keywords_question.q_id AND keywords_question.keywordID IN ($keyword_ids) AND (ownerID=? $team_sql) AND status != 'retired' AND deleted IS NULL ORDER BY $order $direction, questions.q_id");
-  $result->bind_param('i', $userID);
+  $result->bind_param('i', $userObject->get_user_ID());
   $result->execute();
   $result->store_result();
   $result->bind_result($q_id, $leadin, $leadin_plain, $q_type, $display_date, $locked, $parts);

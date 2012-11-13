@@ -217,9 +217,9 @@ if (isset($_POST['submit'])) {
   }
   
   if ($_POST['module'] != '') {
-    $module_string = ' AND q_group LIKE ?';
-    $variables[] = '%' . $_POST['module'] . '%';
-    $params .= 's';
+    $module_string = ' AND idMod = ?';
+    $variables[] = $_POST['module'];
+    $params .= 'i';
   } else {
     $module_string = '';
   }
@@ -231,14 +231,8 @@ if (isset($_POST['submit'])) {
   } else {
     // If no specific owner set lock down by team (apart from SysAdmin).
     if (count($staff_modules) > 0 and $_POST['module'] == '') {
-      $user_string = " AND (q_group REGEXP '" . implode('|', $staff_modules) . "' OR questions.ownerID=$userID)";
-      /*
-      $user_string = ' AND (';
-      foreach ($teams as $individual_team) {
-        $user_string .= 'q_group LIKE "%' . $individual_team . '%" OR ';
-      }
-      $user_string .= 'questions.ownerID=' . $userID . ')';
-      */
+      $user_string = implode(',', array_keys($staff_modules));
+      $user_string = " AND (idMod IN ($user_string) OR users.id={$userObject->get_user_ID()})";
     } else {
       $user_string = '';
     }
@@ -306,9 +300,9 @@ if (isset($_POST['submit'])) {
   }
   
   if ($keywordsSQL == '') {
-    $sql = "SELECT DISTINCT title, initials, surname, q_type, q_id, leadin, DATE_FORMAT(last_edited,'$cfg_short_date') AS last_edited, ownerID, locked, status FROM (questions, users, options) WHERE questions.q_id = options.o_id AND questions.ownerID=users.id $search_string $module_string $user_string $status_string $locked_string $last_edited $q_type $bloom AND deleted IS NULL ORDER BY leadin_plain";
+    $sql = "SELECT DISTINCT title, initials, surname, q_type, questions.q_id, leadin, DATE_FORMAT(last_edited,'$cfg_short_date') AS last_edited, ownerID, locked, status FROM (questions, users, options, questions_modules) WHERE questions.q_id = questions_modules.q_id AND questions.q_id = options.o_id AND questions.ownerID=users.id $search_string $module_string $user_string $status_string $locked_string $last_edited $q_type $bloom AND deleted IS NULL ORDER BY leadin_plain";
   } else {
-    $sql = "SELECT DISTINCT title, initials, surname, q_type, questions.q_id, leadin, DATE_FORMAT(last_edited,'$cfg_short_date') AS last_edited, ownerID, locked, status FROM (questions, users, keywords_question, options) WHERE questions.q_id = options.o_id AND questions.q_id=keywords_question.q_id $keywordsSQL AND questions.ownerID=users.id $search_string $module_string $user_string $status_string $locked_string $last_edited $q_type $bloom AND deleted IS NULL ORDER BY leadin_plain, q_id";
+    $sql = "SELECT DISTINCT title, initials, surname, q_type, questions.q_id, leadin, DATE_FORMAT(last_edited,'$cfg_short_date') AS last_edited, ownerID, locked, status FROM (questions, users, keywords_question, options, questions_modules) WHERE questions.q_id = questions_modules.q_id AND questions.q_id = options.o_id AND questions.q_id=keywords_question.q_id $keywordsSQL AND questions.ownerID=users.id $search_string $module_string $user_string $status_string $locked_string $last_edited $q_type $bloom AND deleted IS NULL ORDER BY leadin_plain, questions.q_id";
   }
 
   $result = $mysqli->prepare($sql);

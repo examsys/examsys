@@ -80,15 +80,16 @@ if (isset($_GET['scrOfY'])) {
 <tr><th colspan="5" class="bevel"></th></tr>
 </table>
 <?php
-  $result = $mysqli->prepare("SELECT name, COUNT(groupID) AS count_no FROM teams WHERE name IN (SELECT name FROM teams WHERE memberID=?) GROUP BY teams.name");
-  $result->bind_param('i', $userID);
+  $sql = "SELECT modules.id, modules.moduleid, fullname, COUNT(groupID) AS count_no FROM (modules_staff, modules) WHERE modules_staff.idMod=modules.id AND idMod IN (" . implode(',', array_keys($userObject->get_staff_modules())) . ") GROUP BY fullname";
+  $result = $mysqli->prepare($sql);
+  $result->bind_param('i', $userObject->get_user_ID());
   $result->execute();
-  $result->bind_result($team_name, $count_no);
+  $result->bind_result($mod_id, $moduleid, $module_name, $count_no);
   while ($result->fetch()) {
     echo '<div class="foldername">';
     echo '<table cellpadding="0" cellspacing="0" border="0" style="font-size:100%"><tr><td style="width:66px" align="center">';
-    echo '  <a href="add_questions_by_team.php?team=' . $team_name . '&paperID=' . $paperID . '&display_pos=' . $display_pos . '&module=' . $module . '&folder=' . $folder . ' &scrOfY=' . $scrOfY . '"><img src="../../artwork/user_accounts_icon.png" width="48" height="48" alt="' . $team_name . '" border="0"  /></a><td>';
-    echo '  <td width="290"><a href="add_questions_by_team.php?team=' . $team_name . '&paperID=' . $paperID . '&display_pos=' . $display_pos . '&module=' . $module . '&folder=' . $folder . ' &scrOfY=' . $scrOfY . '">' . $team_name . '</a><br />';
+    echo '  <a href="add_questions_by_team.php?teamID=' . $mod_id . '&paperID=' . $paperID . '&display_pos=' . $display_pos . '&module=' . $module . '&folder=' . $folder . ' &scrOfY=' . $scrOfY . '"><img src="../../artwork/user_accounts_icon.png" width="48" height="48" alt="' . $module_name . '" border="0"  /></a><td>';
+    echo '  <td width="290"><a href="add_questions_by_team.php?teamID=' . $mod_id . '&paperID=' . $paperID . '&display_pos=' . $display_pos . '&module=' . $module . '&folder=' . $folder . ' &scrOfY=' . $scrOfY . '">' . $moduleid . ': ' . $module_name . '</a><br />';
     echo '  <span style="color:#808080">' . $count_no . ' ' . $string['members'] . '</span></td></tr></table>';
     echo "</div>\n";
   }

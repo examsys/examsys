@@ -347,7 +347,7 @@ class BLTI {
         $ret .= "getConsumerKey() = ".$this->getConsumerKey()."\n";
         $ret .= "getUserLKey() = ".$this->getUserLKey()."\n";
         $ret .= "getUserKey() = ".$this->getUserKey()."\n";
-        $ret .= "getUserID() = ".$this->getUserID()."\n";
+        $ret .= "getUserID() = ".$this->get_user_ID()."\n";
         $ret .= "getUserEmail() = ".$this->getUserEmail()."\n";
         $ret .= "getUserShortName() = ".$this->getUserShortName()."\n";
         $ret .= "getUserName() = ".$this->getUserName()."\n";

@@ -71,6 +71,16 @@ function get_list($list, $db) {
 
 <?php
   $result = $mysqli->prepare("SELECT moduleid, enrolements, enrolement_details, deletions, deletion_details, import_type FROM sms_imports WHERE updated=? ORDER BY moduleid");
+  $db = $mysqli;
+  if ($db->error) {
+    try {
+      throw new Exception("0MySQL error $db->error <br> Query:<br> $query", $db->errno);
+    } catch (Exception $e) {
+      echo "Error No: " . $e->getCode() . " - " . $e->getMessage() . "<br />";
+      echo nl2br($e->getTraceAsString());
+    }
+  }
+
   $result->bind_param('s',$_GET['day']);
   $result->execute();
   $result->store_result();

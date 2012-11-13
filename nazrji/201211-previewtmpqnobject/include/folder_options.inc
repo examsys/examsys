@@ -28,10 +28,10 @@ require_once '../include/sidebar_functions.inc';
 
 $modules_array = array();
 //$staff_modules is populated in staff_auth.inc
-$my_folders_array = get_folders($staff_modules, $userID, $mysqli);
+$my_folders_array = get_folders($staff_modules, $userObject->get_user_ID(), $mysqli);
 $full_modules_array = get_modules($staff_modules, $my_folders_array, $modules_array, $mysqli);
 $staff_modules_array = get_staff_module_links($staff_modules, $mysqli);
-$keywords_array = get_keywords($staff_modules, $userID, $mysqli);
+$keywords_array = get_keywords($staff_modules, $userObject->get_user_ID(), $mysqli);
 
 ?>
 <div id="left-sidebar" class="sidebar">
@@ -42,7 +42,7 @@ $keywords_array = get_keywords($staff_modules, $userID, $mysqli);
 <table class="sidebar_tbl">
 <?php
 
-  if ($folder_ownerID == $userID or (in_array($staff_module,$staff_modules)) == true or strpos($userroles,'SysAdmin') !== false) {
+  if ($folder_ownerID == $userObject->get_user_ID() or (in_array($staff_module,$staff_modules)) == true or $userObject->has_role('SysAdmin')) {
     echo '<tr><td class="ico"><a href="#" onclick="folderProperties(); return false;"><img src="' . $cfg_root_path . '/artwork/properties_icon.gif" width="16" height="16" alt="Properties" /></a></td><td class="menuitem"><a href="#" onclick="folderProperties(); return false;">' . $string['folderproperties'] . '</a></td></tr>';
     echo '<tr><td class="ico"><a href="' . $cfg_root_path . '/folder/details.php?module=' . $module . '&folder=' . $folder . '&newfolder=y"><img src="' . $cfg_root_path . '/artwork/folder_16.png" width="16" height="16" alt="New Folder" /></a></td><td class="menuitem"><a href="' . $cfg_root_path . '/folder/details.php?module=' . $module . '&folder=' . $_GET['folder'] . '&newfolder=y&newteam=' . $staff_module . '">' . $string['makesubfolder'] . '</a></td></tr>';
     echo '<tr><td class="ico"><a href="#" onclick="deleteFolder(); return false;"><img src="' . $cfg_root_path . '/artwork/red_cross.png" width="16" height="16" alt="Delete Folder" /></a></td><td class="menuitem"><a href="#" onclick="deleteFolder(); return false;">' . $string['deletefolder'] . '</a></td></tr>';
@@ -66,11 +66,11 @@ $keywords_array = get_keywords($staff_modules, $userID, $mysqli);
       <table class="sidebar_tbl">
     <?php
 
-    if (strpos($userroles,'SysAdmin') !== false) {
+    if ($userObject->has_role('SysAdmin')) {
       echo "<tr><td class=\"ico\"><a href=\"../admin/edit_module.php?moduleid=$module\"><img src=\"$cfg_root_path/artwork/admin_icon_16.gif\" width=\"16\" height=\"16\" alt=\"cog\" /></a></td><td class=\"menuitem\"><a href=\"../admin/edit_module.php?moduleid=$module\">" . $string['editpropertiessysadmin'] . "</a></td></tr>";
     }
     if (strpos($module_details['checklist'],'mapping') !== false ) {     // Curriculum mapping switched on for the module
-      if (in_array($module, $staff_modules) == true or strpos($userroles,'SysAdmin') !== false or strpos($userroles,'Admin') !== false ) {
+      if (in_array($module, $staff_modules) == true or $userObject->has_role(array('SysAdmin','Admin'))) {
         echo "<tr><td class=\"ico\"><a href=\"../mapping/sessions_list.php?module=" . $module . "\"><img src=\"$cfg_root_path/artwork/module_icon_16.png\" width=\"16\" height=\"16\" alt=\"modules\" /></a></td><td class=\"menuitem\"><a href=\"../mapping/sessions_list.php?module=" . $_GET['module'] . "\">" . $string['manageobjectives'] . "</a></td></tr>\n";
       } else {
         echo "<tr><td class=\"ico\"><img src=\"$cfg_root_path/artwork/module_icon_grey_16.png\" width=\"16\" height=\"16\" alt=\"modules\" /></td><td class=\"menuitem\" style=\"color:#808080\">" . $string['manageobjectives'] . "</td></tr>\n";

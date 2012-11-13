@@ -98,7 +98,7 @@ if ($group == '%') {
   $result->bind_param('isss', $moduleID, $calendar_year, $type, $group);
 }
 $result->execute();
-$result->bind_result($userID, $group, $surname, $first_names, $title, $student_id);
+$result->bind_result($userID, $group, $surname, $first_names, $title, $student_id); //TODO userID here?
 while ($result->fetch()) {
   $user_data[$userID]['group'] = $group;
   $user_data[$userID]['surname'] = $surname;

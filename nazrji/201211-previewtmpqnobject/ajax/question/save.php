@@ -28,8 +28,6 @@ require_once '../../classes/moduleutils.class.php';
 require_once '../../classes/paperutils.class.php';
 require_once '../../include/edit.inc';
 
-$save_source = 'AJAX';
-
 require_once '../../include/save_question.inc.php';
 
 $mode = 'none';
@@ -37,11 +35,11 @@ $critical_error = '';
 $paper_id = (isset($_POST['paperID'])) ? $_POST['paperID'] : -1;
 $state = array();
 
-$question = get_question($mode, $critical_error, $userID, $paper_id, $string, $mysqli, 'draft');
+$question = get_question($mode, $critical_error, $userObject, $paper_id, $string, $mysqli, 'draft');
 
 if ($critical_error == '') {
-  if (populate_question($question, $userID, $mysqli, 'draft')) {
-    $errors = save_question($question, $userID, $paper_id, $mode, $string, $state, $mysqli, 'draft');
+  if (populate_question($question, $userObject->get_user_ID(), $mysqli, 'draft')) {
+    $errors = save_question($question, $userObject->get_user_ID(), $paper_id, $mode, $string, $state, $mysqli, 'draft');
 
     if (count($errors) > 0) {
       echo '<li>' . implode('</li><li>', $errors) . '</li>';

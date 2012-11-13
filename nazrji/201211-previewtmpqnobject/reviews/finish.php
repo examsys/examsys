@@ -29,7 +29,7 @@ require '../include/errors.inc';
 check_var('id', 'GET', true, false);
 
 if ($stmt = $mysqli->prepare("SELECT background, foreground, textsize, marks_color, themecolor, labelcolor, font FROM special_needs WHERE userid=?")) {
-  $stmt->bind_param('i',$userID);
+  $stmt->bind_param('i',$userObject->get_user_ID());
   $stmt->execute();
   $stmt->store_result();
   $stmt->bind_result($bgcolor, $fgcolor, $textsize, $marks_color, $themecolor, $labelcolor, $font);
@@ -95,7 +95,7 @@ if ($userroles == 'External Examiner') {
   echo '</table>';
   
   if ($_POST['old_screen'] != '' and date("Ymd") <= $external_review_deadline) {  
-    record_comments($property_id, $_POST['old_screen'], $mysqli, $_POST, $userID, $review_type);
+    record_comments($property_id, $_POST['old_screen'], $mysqli, $_POST, $userObject->get_user_ID(), $review_type);
   } else {
     echo "Deadline = $external_review_deadline";
   }

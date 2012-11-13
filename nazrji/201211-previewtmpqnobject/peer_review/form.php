@@ -72,9 +72,9 @@ if ($type == '') {   // What metadata field to use.
 }
 
 // Get special settings for the Student.
-if ($special_needs == 1) {
+if ($special_needs == 1) { //TODO FIX THIS TO OBJECT
   $stmt = $mysqli->prepare("SELECT background, foreground, textsize, themecolor, labelcolor, font FROM special_needs WHERE userid=?");
-  $stmt->bind_param('i',$userID);
+  $stmt->bind_param('i',$userObject->get_user_ID());
   $stmt->execute();
   $stmt->store_result();
   $stmt->bind_result($bgcolor, $fgcolor, $textsize, $themecolor, $labelcolor, $font);
@@ -142,7 +142,7 @@ $columns = count($parts) - 1;
 // Get the group of the current user.
 if (stripos($userroles,'Student') !== false) {     // Student user
   $result = $mysqli->prepare("SELECT value FROM users_metadata WHERE moduleID=? AND calendar_year=? AND type=? AND userID=? LIMIT 1");
-  $result->bind_param('issi', $moduleID, $calendar_year, $type, $userID);
+  $result->bind_param('issi', $moduleID, $calendar_year, $type, $userObject->get_user_ID());
   $result->execute();
   $result->bind_result($group);
   $result->fetch();
@@ -167,7 +167,7 @@ if ($group == '') {
 if (isset($_POST['submit'] )) {
   // Check for any previously saved records.
   $result = $mysqli->prepare("SELECT id, peerID, q_id, rating FROM log6 WHERE reviewerID=? AND paperID=?");
-  $result->bind_param('ii', $userID, $property_id);
+  $result->bind_param('ii', $userObject->get_user_ID(), $property_id);
   $result->execute();
   $result->bind_result($id, $peerID, $q_id, $rating);
   while ($result->fetch()) {
@@ -189,7 +189,7 @@ if (isset($_POST['submit'] )) {
     $result->store_result();
     $result->bind_result($member_username, $member_title, $member_surname, $member_first_names, $member_userID);
     while ($result->fetch()) {
-      if ($member_userID != $userID) {   // Make sure current user cannot peer review themself.
+      if ($member_userID != $userObject->get_user_ID()) {   // Make sure current user cannot peer review themself.
         $row_no = 0;      
 
         foreach ($questions as $questionID=>$details) {
@@ -206,7 +206,7 @@ if (isset($_POST['submit'] )) {
             $result2->close();
           } else {
             $result2 = $mysqli->prepare("INSERT INTO log6 VALUES (NULL, ?, ?, ?, ?, ?, ?)");
-            $result2->bind_param('iiisii', $property_id, $userID, $member_userID, $current_time, $questionID, $rating);
+            $result2->bind_param('iiisii', $property_id, $userObject->get_user_ID(), $member_userID, $current_time, $questionID, $rating);
             $result2->execute();
             $result2->close();
           }
@@ -234,7 +234,7 @@ if (isset($_POST['submit'] )) {
         $result2->close();
       } else {
         $result2 = $mysqli->prepare("INSERT INTO log6 VALUES (NULL, ?, ?, ?, ?, ?, ?)");
-        $result2->bind_param('iiisii', $property_id, $userID, $member_userID, $current_time, $questionID, $rating);
+        $result2->bind_param('iiisii', $property_id, $userObject->get_user_ID(), $member_userID, $current_time, $questionID, $rating);
         $result2->execute();
         $result2->close();
       }
@@ -299,7 +299,7 @@ if (isset($_POST['submit'] )) {
   // Get existing values.
   $saved_results = array();
   $result = $mysqli->prepare("SELECT id, peerID, q_id, rating FROM log6 WHERE reviewerID=? AND paperID=?");
-  $result->bind_param('ii', $userID, $property_id);
+  $result->bind_param('ii', $userObject->get_user_ID(), $property_id);
   $result->execute();
   $result->bind_result($id, $peerID, $q_id, $rating);
   while ($result->fetch()) {
@@ -376,7 +376,7 @@ if (isset($_POST['submit'] )) {
     $result->execute();
     $result->bind_result($member_username, $member_title, $member_surname, $member_first_names, $member_userID);
     while ($result->fetch()) {
-      if ($member_userID != $userID) {   // Make sure current user cannot peer review themself.
+      if ($member_userID != $userObject->get_user_ID()) {   // Make sure current user cannot peer review themself.
         $row_no = 0;
         echo "<tr><td class=\"phototd\" rowspan=\"" . (count($questions) + 2) . "\">";
         $peer_photo = $cfg_web_root . 'users/photos/' . $member_username . '.jpg';

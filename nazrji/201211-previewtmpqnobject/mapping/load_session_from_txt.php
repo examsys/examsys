@@ -30,7 +30,7 @@ if (isset($_POST['submit'])) {
   $session_flag = false;
 
   if ($_FILES['txtfile']['name'] != 'none' and $_FILES['txtfile']['name'] != '') {
-    if (!move_uploaded_file($_FILES['txtfile']['tmp_name'], $cfg_tmpdir . $userID . '_load_objectives.txt'))  {
+    if (!move_uploaded_file($_FILES['txtfile']['tmp_name'], $cfg_tmpdir . $userObject->get_user_ID() . '_load_objectives.txt'))  {
       echo uploadError($_FILES['txtfile']['error']);
       exit;
     } else {
@@ -54,7 +54,7 @@ if (isset($_POST['submit'])) {
       $result->close();
       $identifier = $largest + 1;
       
-      $lines = file($cfg_tmpdir . $userID . '_load_objectives.txt');
+      $lines = file($cfg_tmpdir . $userObject->get_user_ID() . '_load_objectives.txt');
       foreach ($lines as $separate_line) {
 
         if (substr($separate_line,0,1) == '#') {   // Sub-heading
@@ -85,7 +85,7 @@ if (isset($_POST['submit'])) {
     }
   }
   
-  unlink($cfg_tmpdir . $userID . '_load_objectives.txt');
+  unlink($cfg_tmpdir . $userObject->get_user_ID() . '_load_objectives.txt');
   header("location: " . $protocol . $_SERVER['HTTP_HOST'] . $cfg_root_path . "/mapping/sessions_list.php?module=" . $_POST['module']);
 } else {
   //display the form

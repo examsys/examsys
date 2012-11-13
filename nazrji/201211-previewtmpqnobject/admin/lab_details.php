@@ -81,7 +81,7 @@
   echo "<br /><div><strong>" . $string['timetabling'] . "</strong></div>\n<div>$timetabling</div>\n";
   echo "<br /><div><strong>" . $string['itsupport'] . "</strong></div>\n<div>$it_support</div>\n";
   echo "<br /><div><strong>" . $string['plagarism'] . "</strong></div>\n<div>$plagarism</div>\n";
-  if (strpos($userroles,'SysAdmin') !== false or strpos($userroles,'Admin') !== false) {
+  if ($userObject->has_role(array('SysAdmin','Admin'))) {
     echo "<br /><br /><input type=\"button\" onclick=\"window.location='edit_lab.php?labID=" . $_GET['labID'] . "'\" value=\"" . $string['edit'] . "\" style=\"width:120px\" />\n";
   }
   echo "</td></tr>\n</table>\n";

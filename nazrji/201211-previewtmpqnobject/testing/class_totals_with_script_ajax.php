@@ -148,7 +148,7 @@ $paper_no = count($papers);
 $current_no = 0;
 
 $result = $mysqli->prepare("DELETE FROM class_totals_test_local WHERE user_id=?");
-$result->bind_param('i', $userID);
+$result->bind_param('i', $userObject->get_user_ID());
 $result->execute();
 
 $result = $mysqli->prepare("SELECT surname, first_names, username FROM users WHERE id=? LIMIT 1");
@@ -161,7 +161,7 @@ foreach ($papers as $paper) {
   $current_no++;
 
   $insert = $mysqli->prepare("INSERT INTO class_totals_test_local(user_id, paper_id, status) VALUES(?, ?, 'in_progress')");
-  $insert->bind_param('ii', $userID, $paper['paperID']);
+  $insert->bind_param('ii', $userObject->get_user_ID(), $paper['paperID']);
   $insert->execute();
   $insert->close();
 
@@ -193,7 +193,7 @@ foreach ($papers as $paper) {
   }
 
   $update = $mysqli->prepare("UPDATE class_totals_test_local SET status=?, errors=? WHERE user_id=? AND paper_id=?");
-  $update->bind_param('ssii', $status, $errors, $userID, $paper['paperID']);
+  $update->bind_param('ssii', $status, $errors, $userObject->get_user_ID(), $paper['paperID']);
   $update->execute();
   $update->close();
 }

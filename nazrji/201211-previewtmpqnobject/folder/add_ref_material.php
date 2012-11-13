@@ -104,7 +104,7 @@ for ($size=200; $size<850; $size+=50) {
   $modules_array = array();
   $total_modules = array_merge($teams, $modules_array);
     
-  $module_array = search_utils::get_teams($teams, $userroles, $userID, $mysqli);
+  $module_array = search_utils::get_teams($teams, $userroles, $userObject->get_user_ID(), $mysqli);
   $module_no = 0;
   $old_school = '';
   foreach ($module_array as $module) {
@@ -115,7 +115,7 @@ for ($size=200; $size<850; $size+=50) {
     if ($_GET['module'] == $module['id']) $match = true;
     
     if ($match == true) {
-      if (in_array($module['id'],$teams) or strpos($userroles,'SysAdmin') !== false) {
+      if (in_array($module['id'],$teams) or $userObject->has_role('SysAdmin')) {
         echo "<div class=\"r2\" id=\"divmod$module_no\"><input type=\"checkbox\" onclick=\"toggle('divmod$module_no');\" name=\"module$module_no\" id=\"module$module_no\" value=\"" . $module['recordid'] . "\" checked>&nbsp;" . $module['id'] . ": " . substr($module['fullname'],0,60) . "</div>\n";
       } else {
         echo "<div class=\"r2\" id=\"divmod$module_no\"><input type=\"checkbox\" name=\"dummymod$module_no\" value=\"" . $module['id'] . "\" checked disabled><input type=\"checkbox\" name=\"module$module_no\" id=\"module$module_no\" style=\"display:none\" value=\"" . $module['recordid'] . "\" checked>&nbsp;" . $module['id'] . ": " . substr($module['fullname'],0,60) . "</div>\n";

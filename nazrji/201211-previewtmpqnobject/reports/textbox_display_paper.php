@@ -27,7 +27,7 @@ require '../include/errors.inc';
 require '../include/media.inc';
   
 if ($stmt = $mysqli->prepare("SELECT background, foreground, textsize, marks_color, themecolor, labelcolor, font FROM special_needs WHERE userid=?")) {
-  $stmt->bind_param('i',$userID);
+  $stmt->bind_param('i',$userObject->get_user_ID());
   $stmt->execute();
   $stmt->store_result();
   $stmt->bind_result($bgcolor, $fgcolor, $textsize, $marks_color, $themecolor, $labelcolor, $font);

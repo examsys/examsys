@@ -27,7 +27,7 @@
 require '../include/staff_auth.inc';
 require '../include/demo_replace.inc';
 
-if (strpos($userroles,'Demo') !== false) {
+if ($userObject->has_role('Demo')) {
   $demo = true;
 } else {
   $demo = false;
@@ -47,7 +47,7 @@ if (isset($_GET['submit'])) {
 
   if (isset($_GET['sortby'])) $sortby = $_GET['sortby'];
   if (isset($_GET['ordering'])) $ordering = $_GET['ordering'];
-  if (isset($_GET['team']) and $_GET['team'] != '') $moduleID = $_GET['team'];
+  if (isset($_GET['module']) and $_GET['module'] != '') $moduleID = $_GET['module'];
   if (isset($_GET['calendar_year']) and $_GET['calendar_year'] != '') $calendar_year = $_GET['calendar_year'];
   
   if (isset($_GET['search_surname']) and $_GET['search_surname'] != '') {
@@ -113,7 +113,7 @@ if (isset($_GET['submit'])) {
 
   $user_no = 0;
   if ($roles_sql != '') {
-    if ((isset($_GET['module']) and $_GET['module'] != '') or (isset($_GET['inactive']) and $_GET['inactive'] != '') or (isset($_GET['adminstaff']) and $_GET['adminstaff'] != '') or (isset($_GET['invigilators']) and $_GET['invigilators'] != '')) {
+    if ((isset($_GET['staff']) and $_GET['staff'] != '') or (isset($_GET['inactive']) and $_GET['inactive'] != '') or (isset($_GET['adminstaff']) and $_GET['adminstaff'] != '') or (isset($_GET['invigilators']) and $_GET['invigilators'] != '')) {
       if ($_GET['module'] != '') {
         $query_string = "SELECT DISTINCT users.id, roles, NULL AS student_id, surname, initials, first_names, title, users.username, grade, yearofstudy, email FROM users, modules_student, modules WHERE modules_student.idMod = modules.id AND users.id=modules_student.userID AND modules_student.idMod = '" . $_GET['module'] . "' AND $roles_sql$surname_sql$title_sql$username_sql$initials_sql$calendar_year_sql AND user_deleted IS NULL ORDER BY " . $sortby . " " . $ordering;
       } else {
@@ -130,9 +130,9 @@ if (isset($_GET['submit'])) {
         if ($moduleID == '%') {
           $module_sql = '';
         } else {
-          $module_sql = " AND moduleid LIKE '$moduleID'";
+          $module_sql = " AND idMod LIKE '{$moduleID}'";
         }
-        $query_string = "SELECT DISTINCT users.id, roles, student_id, surname, initials, first_names, title, users.username, grade, yearofstudy, email FROM (users, student_modules) LEFT JOIN sid ON users.id=sid.userID WHERE users.id=student_modules.userID $module_sql$calendar_year_sql$roles_sql$surname_sql$title_sql$username_sql$student_id_sql$initials_sql AND user_deleted IS NULL ORDER BY " . $sortby . " " . $ordering;
+        $query_string = "SELECT DISTINCT users.id, roles, student_id, surname, initials, first_names, title, users.username, grade, yearofstudy, email FROM (users, modules_student) LEFT JOIN sid ON users.id=sid.userID WHERE users.id=modules_student.userID $module_sql$calendar_year_sql$roles_sql$surname_sql$title_sql$username_sql$student_id_sql$initials_sql AND user_deleted IS NULL ORDER BY " . $sortby . " " . $ordering;
       }
     }
     
@@ -166,7 +166,7 @@ if (isset($_GET['submit'])) {
   $moduleID = str_replace(",", "','", $paper_moduleID);
   $roles_sql = "AND roles='Student' AND grade != 'left'";
 
-  $query_string = "SELECT DISTINCT users.id, roles, student_id, surname, initials, first_names, title, users.username, grade, yearofstudy, email, moduleid FROM (users, student_modules) LEFT JOIN sid ON users.id=sid.userID WHERE users.id=student_modules.userID AND moduleid IN ('$moduleID') AND calendar_year='$paper_calendar_year' $roles_sql ORDER BY " . $sortby . " " . $ordering;
+  $query_string = "SELECT DISTINCT users.id, roles, student_id, surname, initials, first_names, title, users.username, grade, yearofstudy, email, moduleid FROM (users, modules_student) LEFT JOIN sid ON users.id=sid.userID WHERE users.id=modules_student.userID AND moduleid IN ('$moduleID') AND calendar_year='$paper_calendar_year' $roles_sql ORDER BY " . $sortby . " " . $ordering;
   $user_data = $mysqli->prepare($query_string);
   $user_data->execute();
   $user_data->bind_result($tmp_id, $tmp_roles, $tmp_student_id, $tmp_surname, $tmp_initials, $tmp_first_names, $tmp_title, $tmp_username, $tmp_grade, $tmp_yearofstudy, $tmp_email, $tmp_moduleid);
@@ -190,7 +190,7 @@ if (isset($_GET['submit'])) {
   $moduleID = $_GET['moduleID'];
   $roles_sql = "AND roles='Student' AND grade != 'left'";
 
-  $query_string = "SELECT DISTINCT users.id, roles, student_id, surname, initials, first_names, title, users.username, grade, yearofstudy, email, moduleid FROM (users, student_modules) LEFT JOIN sid ON users.id=sid.userID WHERE users.id=student_modules.userID AND moduleid IN ('$moduleID') AND calendar_year='$calendar_year' $roles_sql ORDER BY " . $sortby . " " . $ordering;
+  $query_string = "SELECT DISTINCT users.id, roles, student_id, surname, initials, first_names, title, users.username, grade, yearofstudy, email, moduleid FROM (users, modules_student) LEFT JOIN sid ON users.id=sid.userID WHERE users.id=modules_student.userID AND moduleid IN ('$moduleID') AND calendar_year='$calendar_year' $roles_sql ORDER BY " . $sortby . " " . $ordering;
   $user_data = $mysqli->prepare($query_string);
   $user_data->execute();
   $user_data->bind_result($tmp_id, $tmp_roles, $tmp_student_id, $tmp_surname, $tmp_initials, $tmp_first_names, $tmp_title, $tmp_username, $tmp_grade, $tmp_yearofstudy, $tmp_email, $tmp_moduleid);
@@ -422,7 +422,7 @@ if ($sortby == 'title') {
       echo "<tr><td colspan=\"8\"><table border=\"0\" class=\"subsect\" style=\"width:100%\"><tr><td><nobr>Year " . $tmp_yearofstudy . "</nobr></td><td style=\"width:99%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#CCCCCC; background-color:#CCCCCC; width:100%\" /></td></tr></table>\n</td></tr>\n";
     }
 
-    if (strpos($userroles,'SysAdmin') !== false) {
+    if ($userObject->has_role('SysAdmin')) {
       echo "<tr class=\"uline\" id=\"$x\" onclick=\"selUser('$tmp_id',$x,'2c',event); return false;\" ondblclick=\"profile('$tmp_id'); return false;\">";
       if (file_exists($cfg_web_root . 'users/photos/' . $tmp_username . '.jpg')) {
         echo '<td><img src="../artwork/photo.png" width="16" height="16" alt="Photo" /></td>';
@@ -506,7 +506,7 @@ if ($sortby == 'title') {
 <script language="JavaScript">
 <?php
   if ($user_data->num_rows > 0) {
-    if (strpos($userroles,'SysAdmin') !== false) {
+    if ($userObject->has_role('SysAdmin')) {
       echo "document.getElementById('menu3a').style.display = 'none';\n";
       echo "document.getElementById('menu3c').style.display = 'block';\n";
     } else {

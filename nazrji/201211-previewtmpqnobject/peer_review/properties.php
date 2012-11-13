@@ -351,7 +351,7 @@ if (isset($_POST['Submit'])) {
      $additional = '';
      
      $team_query = $mysqli->prepare("SELECT DISTINCT name FROM teams WHERE memberID=? ORDER BY name");
-     $team_query->bind_param('s', $userID);
+     $team_query->bind_param('s', $userObject->get_user_ID());
      $team_query->execute();
      $team_query->store_result();
      $team_query->bind_result($team_name);
@@ -370,7 +370,7 @@ if (isset($_POST['Submit'])) {
     if ($folder != '') $additional .= ' OR id=' . $folder;
      
     $folder_details = $mysqli->prepare("SELECT id, name FROM folders WHERE ownerID=? $additional ORDER BY name");
-    $folder_details->bind_param('s', $userID);
+    $folder_details->bind_param('s', $userObject->get_user_ID());
     $folder_details->execute();
     $folder_details->bind_result($folder_id, $folder_name);
     while ($folder_details->fetch()) {
@@ -634,7 +634,7 @@ if (isset($_POST['Submit'])) {
     if ($module_sql == '') {
       echo "<input type=\"hidden\" name=\"module_no\" id=\"module_no\" value=\"0\" /></div>\n";
     } else {
-      $module_array = search_utils::get_teams($teams, $userroles, $userID, $mysqli);
+      $module_array = search_utils::get_teams($teams, $userroles, $userObject->get_user_ID(), $mysqli);
       $module_no = 0;
       $old_school = '';
       foreach ($module_array as $module) {
@@ -646,7 +646,7 @@ if (isset($_POST['Submit'])) {
           if ($separate_module == $module['id']) $match = true;
         }
         if ($match == true) {
-          if (in_array($module['id'],$teams) or strpos($userroles,'SysAdmin') !== false) {
+          if (in_array($module['id'],$teams) or $userObject->has_role('SysAdmin')) {
             echo "<div class=\"indenton\" id=\"divmod$module_no\"><input type=\"checkbox\" onclick=\"toggle('divmod$module_no'); getMetadataDropdowns();\" name=\"module$module_no\" id=\"module$module_no\" value=\"" . $module['id'] . "\" checked>&nbsp;" . $module['id'] . ": " . substr($module['fullname'],0,60) . "</div>\n";
           } else {
             echo "<div class=\"indenton\" id=\"divmod$module_no\"><input type=\"checkbox\" name=\"dummymod$module_no\" value=\"" . $module['id'] . "\" checked disabled><input type=\"checkbox\" name=\"module$module_no\" id=\"module$module_no\" style=\"display:none\" value=\"" . $module['id'] . "\" checked>&nbsp;" . $module['id'] . ": " . substr($module['fullname'],0,60) . "</div>\n";

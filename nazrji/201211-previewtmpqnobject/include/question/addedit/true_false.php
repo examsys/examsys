@@ -47,7 +47,7 @@ require_once 'detail_parts/details_marking.php';
         <table id="q-options" class="form" summary="<?php echo $string['oeditsummary'] ?>">
 <?php
 if ($num_options == 0) {
-  $option = Option::option_factory($mysqli, $userID, $question, 1, $string);
+  $option = Option::option_factory($mysqli, $userObject->get_user_ID(), $question, 1, $string);
 }
 include 'options/opt_true_false.php';
 ?>

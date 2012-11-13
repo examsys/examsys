@@ -29,7 +29,7 @@
 * @package
 */
 
-if (strpos($userroles,'Demo') !== false) {
+if ($userObject->has_role('Demo')) {
   $demo = true;
 } else {
   $demo = false;

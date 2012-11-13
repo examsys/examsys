@@ -92,7 +92,7 @@
           $total_parts++;
         }
 
-        $std_query = "INSERT INTO standards_setting VALUES (NULL, $userID, $log_id, '$now', '$rating', $paperID, '$tmp_method', '$group_review')";
+        $std_query = "INSERT INTO standards_setting VALUES (NULL, ". $userObject->get_user_ID() .", $log_id, '$now', '$rating', $paperID, '$tmp_method', '$group_review')"; //TODO fix sql to prepared state
         if (!$mysqli->query($std_query)) {
           display_error('Error writing to standards_setting table', $mysqli->error, true, true);
           $mysqli->close();
@@ -106,7 +106,7 @@
             exit;
           }
           if ($rating != $_POST["old$log_id"]) {
-            $std_query = "INSERT INTO track_changes VALUES (NULL, 'Edit Question', $log_id, $userID, '" . $_POST["old$log_id"] . "', '$rating', '$now', 'Std Setting')";
+            $std_query = "INSERT INTO track_changes VALUES (NULL, 'Edit Question', $log_id, " . $userObject->get_user_ID() . ", '" . $_POST["old$log_id"] . "', '$rating', '$now', 'Std Setting')"; //todo fix sql to prepared state
             if (!$mysqli->query($std_query)) {
               display_error('Error writing to track_changes table', $mysqli->error, true, true);
               $mysqli->close();
@@ -375,7 +375,7 @@
     if ($tmp_method == 'Modified Angoff') $total_rating += $_POST["$qid"];
   }
 
-  $std_query = "INSERT INTO standards_setting VALUES (NULL,$userID,$log_id,'$now','$rating',$paperID,'$tmp_method','$group_review')";
+  $std_query = "INSERT INTO standards_setting VALUES (NULL," . $userObject->get_user_ID() . ",$log_id,'$now','$rating',$paperID,'$tmp_method','$group_review')"; //todo fix sql to prepared state
   if (!$mysqli->query($std_query)) {
     echo "<p>Error writing to standards_setting table: ". $mysqli->error . "</p>\n";
     echo "<p>Query: $std_query</p>\n";
@@ -391,7 +391,7 @@
       exit;
     }
     if ($rating != $_POST["old$log_id"]) {
-      $std_query = "INSERT INTO track_changes VALUES (NULL,'Edit Question',$log_id,$userID,'" . $_POST["old$log_id"] . "','$rating','$now','Std Setting')";
+      $std_query = "INSERT INTO track_changes VALUES (NULL,'Edit Question',$log_id," . $userObject->get_user_ID() . ",'" . $_POST["old$log_id"] . "','$rating','$now','Std Setting')"; //todo fix sql to prepared state
       if (!$mysqli->query($std_query)) {
         echo "<p>Error writing to track_changes: ". $mysqli->error . "</p>\n";
         echo "<p>Query: $std_query</p>\n";
@@ -406,18 +406,18 @@
     foreach($id_array as $individualID) {
       if (isset($_POST['distinction_type']) and $_POST['distinction_type'] == '3') {
         if ($individualID == 'EE2' or $individualID == 'EI2' or $individualID == 'EN2' or $individualID == 'ME2' or $individualID == 'MI2' or $individualID == 'MN2' or $individualID == 'HE2' or $individualID == 'HI2' or $individualID == 'HN2') {
-          $std_query = "INSERT INTO ebel VALUES (NULL,$userID,'$now','$individualID',NULL)";
+          $std_query = "INSERT INTO ebel VALUES (NULL," .$userObject->get_user_ID() . ",'$now','$individualID',NULL)"; //todo fix sql to prepared state
         } else {
-          $std_query = "INSERT INTO ebel VALUES (NULL,$userID,'$now','$individualID'," . $_POST[$individualID] . ")";
+          $std_query = "INSERT INTO ebel VALUES (NULL," .$userObject->get_user_ID() .",'$now','$individualID'," . $_POST[$individualID] . ")"; //todo fix sql to prepared state
         }
       } elseif (isset($_POST['distinction_type']) and $_POST['distinction_type'] == '2') {
         if ($individualID == 'EE2' or $individualID == 'EI2' or $individualID == 'EN2' or $individualID == 'ME2' or $individualID == 'MI2' or $individualID == 'MN2' or $individualID == 'HE2' or $individualID == 'HI2' or $individualID == 'HN2') {
-          $std_query = "INSERT INTO ebel VALUES (NULL,$userID,'$now','$individualID',0)";
+          $std_query = "INSERT INTO ebel VALUES (NULL,". $userObject->get_user_ID().",'$now','$individualID',0)"; //todo fix sql to prepared state
         } else {
-          $std_query = "INSERT INTO ebel VALUES (NULL,$userID,'$now','$individualID'," . $_POST[$individualID] . ")";
+          $std_query = "INSERT INTO ebel VALUES (NULL,". $userObject->get_user_ID(). ",'$now','$individualID'," . $_POST[$individualID] . ")";//todo fix sql to prepared state
         }
       } else {
-        $std_query = "INSERT INTO ebel VALUES (NULL,$userID,'$now','$individualID'," . $_POST[$individualID] . ")";
+        $std_query = "INSERT INTO ebel VALUES (NULL," . $userObject->get_user_ID() . ",'$now','$individualID'," . $_POST[$individualID] . ")";//todo fix sql to prepared state
       }
       if (!$mysqli->query($std_query)) {
         echo "<p>Error writing to ebel table: ". $mysqli->error . "</p>\n";
@@ -447,7 +447,7 @@
   $now = str_replace(' ','',$now);
   $now = str_replace('-','',$now);
   $now = str_replace(':','',$now);
-  $new_marking = '2,' . $userID . ',' . $now;
+  $new_marking = '2,' . $userObject->get_user_ID() . ',' . $now;
   $old_marking = '2,' . $_POST['setterID'] . ',' . $_POST['dateID'];
   $std_query = $mysqli->prepare("UPDATE properties SET marking=? WHERE property_id=? AND marking=?");
   $std_query->bind_param('sis', $new_marking, $paperID, $old_marking);
@@ -457,7 +457,7 @@
   $module = (isset($_GET['module'])) ? $_GET['module'] : '';
   $folder = (isset($_GET['folder'])) ? $_GET['folder'] : '';
   if (isset($_POST['continue'])) {
-    header("location: individual_review.php?&paperID=$paperID&method=" . $_GET['method'] . "&setterID=$userID&dateID=$now&module=$module&folder=$folder#$last_question");
+    header("location: individual_review.php?&paperID=$paperID&method=" . $_GET['method'] . "&setterID=" . $userObject->get_user_ID() ."&dateID=$now&module=$module&folder=$folder#$last_question");
   } else {
     header("location: index.php?paperID=$paperID&module=$module&folder=$folder");
   }

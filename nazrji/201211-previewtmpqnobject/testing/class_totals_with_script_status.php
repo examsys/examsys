@@ -64,7 +64,7 @@ $stmt->close();
 
 $results = array();
 $stmt = $mysqli->prepare("SELECT paper_id, status, errors FROM class_totals_test_local WHERE user_id=? ORDER BY id");
-$stmt->bind_param('i', $userID);
+$stmt->bind_param('i', $userObject->get_user_ID());
 $stmt->execute();
 $stmt->bind_result($paper_id, $status, $errors);
 while ($stmt->fetch()) {

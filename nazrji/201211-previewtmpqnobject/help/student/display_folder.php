@@ -49,8 +49,8 @@ require '../../include/staff_student_auth.inc';
 </head>
 
 <?php
-  if ((isset($_GET['id']) and $_GET['id'] != '1') or strpos($userroles,'SysAdmin') === false) {   // Don't record the homepage or SysAdmin activities.
-    $query = "INSERT INTO help_log VALUES (NULL, 'student', $userID, NOW(), " . $_GET['id'] . ")";
+  if ((isset($_GET['id']) and $_GET['id'] != '1') or $userObject->has_role('SysAdmin')) {   // Don't record the homepage or SysAdmin activities.
+    $query = "INSERT INTO help_log VALUES (NULL, 'student', $userObject->get_user_ID(), NOW(), " . $_GET['id'] . ")";
     if (!$mysqli->query($query)) {
       echo "<p>" . $mysqli->errno . " Error writing to log: $query.</p>";
     }

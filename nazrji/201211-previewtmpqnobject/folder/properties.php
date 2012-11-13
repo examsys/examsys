@@ -86,14 +86,10 @@ if (isset($_POST['moduleID'])) {
 $unique_name = true;
 
 if (isset($_POST['Submit'])) {
-  $module_string = '';
+  $module_array = array();
   for ($i=0; $i<$_POST['module_no']; $i++) {
     if (isset($_POST['module' . $i])) {
-      if ($module_string == '') {
-        $module_string = $_POST['module' . $i];
-      } else {
-        $module_string .= ',' . $_POST['module' . $i];
-      }
+      $module_array[] = $_POST['module' . $i];
     }
   }
   
@@ -103,7 +99,7 @@ if (isset($_POST['Submit'])) {
     
   if (strtolower($new_folder) != strtolower($_POST['old_folder'])) {
     $result = $mysqli->prepare("SELECT name FROM folders WHERE name=? AND ownerID=? LIMIT 1");
-    $result->bind_param('si', $new_folder, $userID);
+    $result->bind_param('si', $new_folder, $userObject->get_user_ID());
     $result->execute();
     $result->store_result();
     $result->bind_result($name);
@@ -113,13 +109,13 @@ if (isset($_POST['Submit'])) {
     } else {
 
       // Alter the name of the folder in the 'folders' table first.
-      $editProperties = $mysqli->prepare("UPDATE folders SET name=?, team_name=?, color=? WHERE name=? AND ownerID=?");
-      $editProperties->bind_param('ssssi', $new_folder, $module_string, $_POST['color'], $_POST['old_folder'], $userID);
+      $editProperties = $mysqli->prepare("UPDATE folders SET name=?, color=? WHERE name=? AND ownerID=?");
+      $editProperties->bind_param('sssi', $new_folder, $_POST['color'], $_POST['old_folder'], $userObject->get_user_ID());
       $editProperties->execute();  
       $editProperties->close();
 
       // Alter the prefix of any child folders.
-      if (!$mysqli->query("UPDATE folders SET name=REPLACE(name,\"" . $_POST['old_folder'] . ";\",\"" . $new_folder . ";\") WHERE name LIKE \"" . $_POST['old_folder'] . ";%\" AND ownerID=$userID")) {
+      if (!$mysqli->query("UPDATE folders SET name=REPLACE(name,\"" . $_POST['old_folder'] . ";\",\"" . $new_folder . ";\") WHERE name LIKE \"" . $_POST['old_folder'] . ";%\" AND ownerID=". $userObject->get_user_ID())) { //TODO this needs sql fixing to a prepare statement
         echo "<p class=\"error\">Folders Edit Error 2</p>\n<p>Query: " . $editProperties . "</p>\n<p>" . mysql_error($link_id) . "</p>\n";
         echo "</body>\n</html>\n";
         exit;
@@ -127,7 +123,7 @@ if (isset($_POST['Submit'])) {
       
       // Next update the folder name in the 'properties' table (moves papers).
       $editProperties = $mysqli->prepare("UPDATE properties SET folder=? WHERE folder=? AND paper_ownerID=?");
-      $editProperties->bind_param('ssi', $new_folder, $_POST['old_folder'], $userID);
+      $editProperties->bind_param('ssi', $new_folder, $_POST['old_folder'], $userObject->get_user_ID());
       $editProperties->execute();  
       $editProperties->close();
     }
@@ -136,12 +132,29 @@ if (isset($_POST['Submit'])) {
     
   } else {
     
-    $editProperties = $mysqli->prepare("UPDATE folders SET team_name=?, color=? WHERE name=? AND ownerID=?");
-    $editProperties->bind_param('sssi', $module_string, $_POST['color'], $_POST['old_folder'], $userID);
+    $editProperties = $mysqli->prepare("UPDATE folders SET color=? WHERE name=? AND ownerID=?");
+    $editProperties->bind_param('ssi', $_POST['color'], $_POST['old_folder'], $userObject->get_user_ID());
     $editProperties->execute();  
     $editProperties->close();
   }
-  if ($unique_name) {
+
+  if (count($module_array) > 0 ) {
+    //set the folder staff_modules
+    $editProperties = $mysqli->prepare("DELETE FROM folders_modules_staff WHERE folders_id = ?");
+    $editProperties->bind_param('i', $_POST['folder_id']);
+    $editProperties->execute();  
+    $editProperties->close();
+
+    $editProperties = $mysqli->prepare("INSERT INTO folders_modules_staff VALUES(?,?)");
+    foreach($module_array as $idMod) {
+      $editProperties->bind_param('ii', $_POST['folder_id'],  $idMod);
+      $editProperties->execute();  
+    }
+    $editProperties->close();
+
+  }
+
+  if ($unique_name AND 1 == 2) {
   ?>
     <body onload="closeWindow();">
     <form>
@@ -152,7 +165,7 @@ if (isset($_POST['Submit'])) {
   <?php
     exit;
   }
-  
+  exit;
   $color = $_POST['color'];
   $created = $_POST['created'];
   $owner = $_POST['owner'];
@@ -160,14 +173,25 @@ if (isset($_POST['Submit'])) {
   $folder_team = $_POST['folder_team'];
   
 } else {
-  $result = $mysqli->prepare("SELECT team_name, name, color, DATE_FORMAT(created, '$cfg_long_date_time'), title, initials, surname FROM folders, users WHERE folders.ownerID=users.id AND folders.id=?");
+  $result = $mysqli->prepare("SELECT folders.id, name, color, DATE_FORMAT(created, '$cfg_long_date_time'), title, initials, surname FROM folders, users WHERE folders.ownerID=users.id AND folders.id=?");
   $result->bind_param('i', $_GET['folder']);
   $result->execute();
-  $result->bind_result($folder_team, $full_path, $color, $created, $title, $initials, $surname);
+  $result->bind_result($folder_id, $full_path, $color, $created, $title, $initials, $surname);
   $result->fetch();
   $result->close();
   
   $owner = $title . ' ' . $initials . ', ' . $surname;
+
+  $folder_staff_modules = array();
+  $result = $mysqli->prepare("SELECT idMod, moduleID FROM folders,folders_modules_staff, modules WHERE folders.id = folders_modules_staff.folders_id AND modules.id = folders_modules_staff.idMod AND  folders.id=?");
+  $result->bind_param('i', $_GET['folder']);
+  $result->execute();
+  $result->bind_result($idMod, $moduleID);
+  while ($result->fetch()) {
+    $folder_staff_modules[$idMod] = $moduleID;
+  }
+  $result->close();
+
 }
 
 if ($unique_name) {
@@ -219,47 +243,30 @@ if ($unique_name) {
       echo "<tr><td align=\"right\" valign=\"top\">" . $string['created'] . "&nbsp;</td><td>$created</td></tr>\n";
        
       echo "<tr><td align=\"right\">" . $string['teams'] . "&nbsp;</td><td><div style=\"background-color:white; display:block; height:200px; width:100%; overflow-y:scroll; border:1px solid #7F9DB9; font-size:90%\">";
-      $modules_array = explode(',',$folder_team);
-      $total_modules = array_merge($teams, $modules_array);
-	    $module_sql = implode("','", $total_modules);
-       
-	    if ($module_sql != '') $module_sql = "'$module_sql'";
-	      if (strpos($userroles,'SysAdmin') !== false) {
-          $module_details = $mysqli->prepare("SELECT DISTINCT moduleid, fullname FROM modules ORDER BY moduleID");
-        } elseif (strpos($userroles,'Admin') !== false) {
-          $module_details = $mysqli->prepare("SELECT DISTINCT moduleid, fullname FROM modules, schools WHERE modules.school=schools.school AND faculty='$faculty' ORDER BY moduleID");
-        } else {
-          $module_details = $mysqli->prepare("SELECT DISTINCT moduleid, fullname FROM modules WHERE moduleid IN($module_sql) ORDER BY moduleID");
-        }
-        $module_details->execute();
-        $module_details->bind_result($moduleid, $fullname);
-        $module_no = 0;
-        while ($module_details->fetch()) {
-          $match = false;
-          foreach ($modules_array as $separate_module) {
-            if ($separate_module == $moduleid) $match = true;
-          }
-          if ($match == true) {
-            if (in_array($moduleid, $teams) or strpos($userroles, 'SysAdmin') !== false) {
-              echo "<div style=\"background-color:#B3C8E8\" id=\"divmodule$module_no\"><input type=\"checkbox\" onclick=\"toggle('divmodule$module_no')\" name=\"module$module_no\" id=\"module$module_no\" value=\"" . $moduleid . "\" checked>&nbsp;" . $moduleid . ": " . substr($fullname,0,60) . "</div>\n";
-            } else {
-              echo "<div style=\"background-color:#B3C8E8\" id=\"divmodule$module_no\"><input type=\"checkbox\" name=\"dummymodule$module_no\" value=\"" . $moduleid . "\" checked disabled><input type=\"checkbox\" name=\"module$module_no\" id=\"module$module_no\" style=\"display:none\" value=\"" . $moduleid . "\" checked>&nbsp;" . $moduleid . ": " . substr($fullname,0,60) . "</div>\n";
-            }
+      //$total_modules = $userObject->get_staff_accessable_modules();
+      $module_no = 0;
+      foreach ($userObject->get_staff_accessable_modules() as $IdMod => $module) {
+        if (isset($folder_staff_modules[$IdMod])) {
+          if ( $userObject->is_staff_user_on_module($IdMod) OR $userObject->has_role('SysAdmin')) {
+            echo "<div style=\"background-color:#B3C8E8\" id=\"divmodule$module_no\"><input type=\"checkbox\" onclick=\"toggle('divmodule$module_no')\" name=\"module$module_no\" id=\"module$module_no\" value=\"" . $module['idMod'] . "\" checked>&nbsp;" . $module['id'] . ": " . substr($module['fullname'],0,60) . "</div>\n";
           } else {
-            echo "<div style=\"background-color:white\" id=\"divmodule$module_no\"><input type=\"checkbox\" onclick=\"toggle('divmodule$module_no')\" name=\"module$module_no\" id=\"module$module_no\" value=\"" . $moduleid . "\">&nbsp;" . $moduleid . ": " . substr($fullname,0,60) . "</div>\n";
+            echo "<div style=\"background-color:#B3C8E8\" id=\"divmodule$module_no\"><input type=\"checkbox\" name=\"dummymodule$module_no\" value=\"" . $module['id'] . "\" checked disabled><input type=\"checkbox\" name=\"module$module_no\" id=\"module$module_no\" style=\"display:none\" value=\"" . $module['idMod'] . "\" checked>&nbsp;" . $module['id'] . ": " . substr($module['fullname'],0,60) . "</div>\n";
           }
-          $module_no++;
+        } else {
+          echo "<div style=\"background-color:white\" id=\"divmodule$module_no\"><input type=\"checkbox\" onclick=\"toggle('divmodule$module_no')\" name=\"module$module_no\" id=\"module$module_no\" value=\"" . $module['idMod'] . "\">&nbsp;" . $module['id'] . ": " . substr($module['fullname'],0,60) . "</div>\n";
         }
-        $module_details->close();
-        echo "<input type=\"hidden\" name=\"module_no\" id=\"module_no\" value=\"$module_no\" /></div>\n</td></tr>";
+        $module_no++;
+      }
+      echo "<input type=\"hidden\" name=\"module_no\" id=\"module_no\" value=\"$module_no\" /></div>\n</td></tr>";
       ?>
     </table>
   <br />
   <div align="center"><input type="submit" style="width:100px" name="Submit" value="<?php echo $string['save']; ?>">&nbsp;&nbsp;<input type="button" name="home" style="width:100px" value="<?php echo $string['cancel']; ?>" onclick="javascript:window.close();" /></div>
 <?php
+  echo '<input type="hidden" name="folder_id" value="' . $folder_id . '" />';
   echo '<input type="hidden" name="created" value="' . $created . '" />';
   echo '<input type="hidden" name="owner" value="' . $owner . '" />';
-  echo '<input type="hidden" name="folder_team" value="' . $folder_team . '" />';
+  echo '<input type="hidden" name="folder_team" value="' . implode(',', array_keys($folder_staff_modules)) . '" />';
 ?>
 </form>
 

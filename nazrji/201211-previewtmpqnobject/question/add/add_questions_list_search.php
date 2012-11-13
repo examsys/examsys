@@ -97,7 +97,7 @@ require_once '../../classes/questionutils.class.php';
     <option value="true_false" <?php if (isset($_GET['searchtype']) and $_GET['searchtype'] == 'true_false') echo 'selected '; ?>><?php echo $string['true_false']; ?></option>
   </select>
   <?php
-    search_utils::display_owners_dropdown($teams, $userroles, $userID, $mysqli, 'questions');
+    search_utils::display_owners_dropdown($userObject, $mysqli, 'questions');
   ?>
   &nbsp;<input type="submit" value=" <?php echo $string['search']; ?> " name="search" />
   </form>
@@ -159,8 +159,8 @@ require_once '../../classes/questionutils.class.php';
       } else {
         $team_sql = '';
       }
-      $result = $mysqli->prepare("SELECT DISTINCT questions.q_id, q_type, leadin, DATE_FORMAT(last_edited,'$cfg_short_date') AS display_date, locked FROM (questions, options) WHERE questions.q_id=options.o_id AND (questions.ownerID=$userID $team_sql) AND (leadin_plain LIKE ? OR theme LIKE ? OR scenario_plain LIKE ? OR notes LIKE ? OR option_text LIKE ?) AND q_type LIKE ? AND deleted IS NULL ORDER BY $order $direction, q_id");
-      $result->bind_param('ssssss', $searchterm, $searchterm, $searchterm, $searchterm, $searchterm, $_GET['searchtype']);
+      $result = $mysqli->prepare("SELECT DISTINCT questions.q_id, q_type, leadin, DATE_FORMAT(last_edited,'$cfg_short_date') AS display_date, locked FROM (questions, options) WHERE questions.q_id=options.o_id AND (questions.ownerID=?$team_sql) AND (leadin_plain LIKE ? OR theme LIKE ? OR scenario_plain LIKE ? OR notes LIKE ? OR option_text LIKE ?) AND q_type LIKE ? AND deleted IS NULL ORDER BY $order $direction, q_id");
+      $result->bind_param('issssss', $userObject->get_user_ID(), $searchterm, $searchterm, $searchterm, $searchterm, $searchterm, $_GET['searchtype']);
     } else {
       $result = $mysqli->prepare("SELECT DISTINCT questions.q_id, q_type, leadin, DATE_FORMAT(last_edited,'$cfg_short_date') AS display_date, locked FROM (questions, options) WHERE questions.q_id=options.o_id AND questions.ownerID=? AND (leadin_plain LIKE ? OR theme LIKE ? OR scenario_plain LIKE ? OR notes LIKE ? OR option_text LIKE ?) AND q_type LIKE ? AND deleted IS NULL ORDER BY $order $direction, q_id");
       $result->bind_param('issssss', $_GET['owner'], $searchterm, $searchterm, $searchterm, $searchterm, $searchterm, $_GET['searchtype']);

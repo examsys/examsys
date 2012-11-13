@@ -23,19 +23,29 @@
 */
 
 require '../include/sysadmin_auth.inc';
+require '../include/errors.inc';
+
+require '../classes/paperutils.class.php';
+
+check_var('paperID', 'GET', true, false);
+
+$paper_modules = Paper_utils::get_modules($_GET['paperID'], $mysqli);
+$module_id_list = implode(',',array_keys($paper_modules));
 
 // Get data about the paper which needs scheduling
-$results = $mysqli->prepare("SELECT property_id, paper_title, moduleID, calendar_year, period, barriers_needed, cohort_size, notes, sittings, campus, title, first_names, surname, email, exam_duration FROM (properties, scheduling, users) WHERE property_id=? AND properties.property_id=scheduling.paperID AND properties.paper_ownerID=users.id");
+$results = $mysqli->prepare("SELECT property_id, paper_title, calendar_year, period, barriers_needed, cohort_size, notes, sittings, campus, title, first_names, surname, email, exam_duration FROM (properties, scheduling, users) WHERE property_id=? AND properties.property_id=scheduling.paperID AND properties.paper_ownerID=users.id");
 $results->bind_param('i', $_GET['paperID']);
 $results->execute();
 $results->store_result();
-$results->bind_result($property_id, $paper_title, $moduleID, $calendar_year, $period, $barriers_needed, $cohort_size, $notes, $sittings, $campus, $title, $first_names, $surname, $email, $exam_duration);
+$results->bind_result($property_id, $paper_title, $calendar_year, $period, $barriers_needed, $cohort_size, $notes, $sittings, $campus, $title, $first_names, $surname, $email, $exam_duration);
 $results->fetch();
 $results->close();
 
+
 // Get student enrolments
 $module_sizes = array();
-$results = $mysqli->prepare("SELECT moduleID, COUNT(id) FROM student_modules WHERE moduleid IN ('" . str_replace(",", "','", $moduleID) . "') AND calendar_year=? GROUP BY moduleid");
+$query = "SELECT moduleID, COUNT(modules_student.id) FROM (modules_student, modules) WHERE modules_student.idMod=modules.id AND idMod IN ($module_id_list) AND calendar_year=? GROUP BY moduleid";
+$results = $mysqli->prepare($query);
 $results->bind_param('s', $calendar_year);
 $results->execute();
 $results->store_result();
@@ -47,7 +57,7 @@ $results->close();
 
 // Get extra time
 $extra_time_list = array();
-$results = $mysqli->prepare("SELECT extra_time FROM special_needs, student_modules WHERE special_needs.userID=student_modules.userID AND moduleid IN ('" . str_replace(",", "','", $moduleID) . "') AND calendar_year=?");
+$results = $mysqli->prepare("SELECT extra_time FROM (special_needs, modules_student) WHERE special_needs.userID=modules_student.userID AND idMod IN ($module_id_list) AND calendar_year=?");
 $results->bind_param('s', $calendar_year);
 $results->execute();
 $results->store_result();
@@ -60,6 +70,7 @@ while ($results->fetch()) {
   }
 }
 $results->close();
+
 ?>
 <html>
 <head>
@@ -126,9 +137,9 @@ $results->close();
   echo "<tr><td class=\"f1\">" . $string['paperowner'] . "</td><td>$title $first_names $surname (<a href=\"mailto:$email\">$email</a>)</td></tr>\n";  
   echo "<tr><td class=\"f1\">" . $string['session'] . "</td><td>$calendar_year</td></tr>\n";
   echo "<tr><td class=\"f1\">" . $string['modules'] . "</td><td>";
-  $module_list = explode(',', $moduleID);
-  foreach ($module_list as $individual_module) {  
-    echo "$individual_module<br />\n";
+
+  foreach ($paper_modules as $module_id=>$module_name) {
+    echo "$module_name<br />\n";
   }
   echo "</td></tr>\n";
   echo "<tr><td class=\"f1\">" . $string['examduration'] . "</td><td>$exam_duration</td></tr>\n";  

@@ -99,7 +99,7 @@
     $reason = trim($_POST['reason']);
     
     $result = $mysqli->prepare("INSERT INTO student_notes VALUES (NULL, ?, ?, NOW(), ?, ?)");
-    $result->bind_param('isis', $_POST['userID'], $reason, $_POST['paperID'], $userID);
+    $result->bind_param('isis', $_POST['userID'], $reason, $_POST['paperID'], $userObject->get_user_ID());
     $result->execute();
     $result->close();
   }

@@ -125,7 +125,7 @@ for ($size=200; $size<850; $size+=50) {
   echo "<div style=\"margin-top:1px; display:block; width:400px; height:604px; overflow-y:scroll; border:1px solid #7F9DB9; font-size:90%\">";
   $modules_array = array();
     
-  $module_array = search_utils::get_staff_modules($staff_modules, $userroles, $userID, $mysqli);
+  $module_array = search_utils::get_staff_modules($staff_modules, $userroles, $userObject->get_user_ID(), $mysqli,$userObject);
   $module_no = 0;
   $old_school = '';
   foreach ($module_array as $module) {
@@ -137,7 +137,7 @@ for ($size=200; $size<850; $size+=50) {
       if ($separate_module == $module['id']) $match = true;
     }
     if ($match == true) {
-      if (in_array($module['id'],$staff_modules) or strpos($userroles,'SysAdmin') !== false) {
+      if (in_array($module['id'],$staff_modules) or $userObject->has_role('SysAdmin')) {
         echo "<div class=\"r2\" id=\"divmod$module_no\"><input type=\"checkbox\" onclick=\"toggle('divmod$module_no');\" name=\"module$module_no\" id=\"module$module_no\" value=\"" . $module['idMod'] . "\" checked>&nbsp;" . $module['id'] . ": " . substr($module['fullname'],0,60) . "</div>\n";
       } else {
         echo "<div class=\"r2\" id=\"divmod$module_no\"><input type=\"checkbox\" name=\"dummymod$module_no\" value=\"" . $module['id'] . "\" checked disabled><input type=\"checkbox\" name=\"module$module_no\" id=\"module$module_no\" style=\"display:none\" value=\"" . $module['idMod'] . "\" checked>&nbsp;" . $module['id'] . ": " . substr($module['fullname'],0,60) . "</div>\n";

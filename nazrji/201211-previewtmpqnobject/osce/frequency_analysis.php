@@ -110,16 +110,16 @@
   $result = $mysqli->prepare("SELECT q_id, rating, userID FROM log4 WHERE q_paper=? AND started >= ? AND started <= ? ORDER BY userID");
   $result->bind_param('iss', $_GET['paperID'], $startdate, $enddate);
   $result->execute();
-  $result->bind_result($q_id, $rating, $userID);
+  $result->bind_result($q_id, $rating, $userObject->get_user_ID());
   while ($result->fetch()) {
-    if ($userID != $old_userID) $user_no++;
+    if ($userObject->get_user_ID() != $old_userID) $user_no++;
     if (!isset($frequencies[$q_id])) $frequencies[$q_id] = array(0=>0,1=>0,2=>0,3=>0,4=>0,5=>0);
     if (isset($frequencies[$q_id][$rating])) {
       $frequencies[$q_id][$rating]++;
     } else {
       $frequencies[$q_id][$rating] = 1;
     }
-    $old_userID = $userID;
+    $old_userID = $userObject->get_user_ID();
   }
   $result->close();
   

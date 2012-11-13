@@ -77,6 +77,7 @@ Class Question extends RogoObject {
   protected $_use_bloom = true;
 
   protected $_user_id;
+  protected $userObj;
   protected $_fields = array('type', 'theme', 'scenario', 'scenario_plain', 'leadin', 'leadin_plain', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'display_method', 'option_order', 'standards_setting', 'bloom', 'owner_id', 'media', 'media_width', 'media_height', 'checkout_time', 'checkout_author_id', 'created', 'last_edited', 'locked', 'deleted', 'status');
   protected $_fields_editable = array('theme', 'scenario', 'leadin', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'display_method', 'option_order', 'bloom', 'status');
   protected $_fields_required = array('type', 'leadin', 'score_method', 'option_order', 'owner_id', 'status');
@@ -125,10 +126,11 @@ Class Question extends RogoObject {
    * properties from an associative array
    * @param mixed $data
    */
-  function __construct($mysqli, $user_id, $lang_strings, $data = null) {
+  function __construct($mysqli, $userObj, $lang_strings, $data = null) {
     // Store the database connection reference and current user
     $this->_mysqli = $mysqli;
-    $this->_user_id = $user_id;
+    $this->_user_id = $userObj->get_user_ID();
+    $this->_userObj = $userObj;
     $this->_lang_strings = $lang_strings;
 
     // Initialise language specific elements
@@ -363,7 +365,7 @@ QUERY;
 
         if ($success) {
           //updates the teams/question modules
-          QuestionUtils::update_modules($this->teams, $this->id, $this->_mysqli);
+          QuestionUtils::update_modules($this->teams, $this->id, $this->_mysqli, $this->_userObj);
         }
 
         if ($success) {
@@ -1103,8 +1105,10 @@ QUERY;
       $editor->execute();
       $editor->bind_result($title, $initials, $surname);
       $editor->fetch();
+      if($editor->num_rows !== 0) {
+        $name = $title . ' ' . $initials . ' ' . $surname;
+      }
       $editor->close();
-      $name = $title . ' ' . $initials . ' ' . $surname;
     }
 
     return $name;
@@ -1367,7 +1371,7 @@ QUERY;
    * @throws ClassNotFoundException
    * @return object a question object of the correct type
    */
-  public static function question_factory($mysqli, $user_id, &$lang_strings, $data) {
+  public static function question_factory($mysqli, $userObj, &$lang_strings, $data) {
     $object = null;
 
     if(ctype_digit($data)) {
@@ -1392,7 +1396,7 @@ QUERY;
 
         try {
           include $classfile;
-          $object = new $classname($mysqli, $user_id, $lang_strings, $data);
+          $object = new $classname($mysqli, $userObj, $lang_strings, $data);
         } catch (Exception $ex) {
           throw new ClassNotFoundException(sprintf($lang_strings['noclasserror'], $classname));
         }
@@ -1405,7 +1409,7 @@ QUERY;
       $classfile = 'questions/question_' . strtolower($data) . '.class.php';
       try {
         include $classfile;
-        $object = new $classname($mysqli, $user_id, $lang_strings, null);
+        $object = new $classname($mysqli, $userObj, $lang_strings, null);
       } catch (Exception $ex) {
         throw new ClassNotFoundException(sprintf($lang_strings['noclasserror'], $classname));
       }

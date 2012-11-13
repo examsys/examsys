@@ -4828,8 +4828,36 @@ QUERY;
   }
   $result->close();
   
+
+  //cczsa11 07/11/2012 -- Add new fields to sys_error table.
+
+  $data_type = '';
+  $findsql = $mysqli->prepare("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME='sys_errors' AND TABLE_SCHEMA='$cfg_db_database' AND COLUMN_NAME='variables'");
+  $findsql->execute();
+  $findsql->store_result();
+  $findsql->bind_result($data_type);
+  $findsql->fetch();
+  if($findsql->num_rows() == 0) {
+    $sql="ALTER TABLE `sys_errors` ADD COLUMN `variables` LONGTEXT, ADD COLUMN `backtrace` LONGTEXT";
+    $adjust = $mysqli->prepare($sql);
+    if ($mysqli->error) {
+      try {
+        throw new Exception("0MySQL error $mysqli->error <br> Query:<br> $sql", $mysqli->errno);
+      }
+      catch (Exception $e) {
+        echo "Error No: " . $e->getCode() . " - " . $e->getMessage() . "<br />";
+        echo nl2br($e->getTraceAsString());
+      }
+    }
+    $adjust->execute();
+    $adjust->close();
+    echo "<li>$sql</li>";
+  }
+  $findsql->close();
+
   // End ------------------------------------------------------------------
   echo "</ol>\n";
+
 
   //Close the database
   $mysqli->close();

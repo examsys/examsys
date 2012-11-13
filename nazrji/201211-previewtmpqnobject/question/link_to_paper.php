@@ -100,7 +100,7 @@ if (!isset($_POST['submit'])) {
   }
 
   $result = $mysqli->prepare("SELECT DISTINCT property_id, paper_title, start_date, end_date, paper_type FROM properties WHERE (paper_ownerID=? $teamSQL) AND deleted IS NULL ORDER BY paper_title");
-  $result->bind_param('s', $userID);
+  $result->bind_param('s', $userObject->get_user_ID());
   $result->execute();
   $result->bind_result($property_id, $paper_title, $start_date, $end_date, $paper_type);
   while ($result->fetch()) {

@@ -113,7 +113,7 @@ function echoButtons($year) {
   if (isset($_GET['module'])) {
     echo '<div class="breadcrumb"><a href="../staff/index.php">' . $string['home'] . '</a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?module=' . $_GET['module'] . '">' . $_GET['module'] . '</a></div>';
   } else {
-    if (strpos($userroles,'SysAdmin') !== false) {
+    if ($userObject->has_role('SysAdmin')) {
       echo '<div class="breadcrumb"><a href="../staff/index.php">' . $string['home'] . '</a>&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="./index.php">' . $string['administrativetools'] . '</a></div>';
     } else {
       echo '<div class="breadcrumb"><a href="../staff/index.php">' . $string['home'] . '</a></div>';

@@ -67,11 +67,11 @@ if (!array_key_exists('file', $_FILES)) {
   exit;
 }
 
-$show_debug = IsAdminUser($userID);
+$show_debug = IsAdminUser($userObject->get_user_ID()); //todo replace with userobject function
 
 // create dir for qti to save into
 $base_dir = $cfg_web_root.'qti/imports/';
-$dir = GetAuthorName($userID)."/".date("Y-m-d")."/".date("H.i.s");
+$dir = GetAuthorName($userObject->get_user_ID())."/".date("Y-m-d")."/".date("H.i.s"); //todo replace with userobject function
 
 if (!file_exists($base_dir.$dir)) mkdir($base_dir.$dir, 0755, true);
 $save_params = new stdClass();

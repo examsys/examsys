@@ -34,7 +34,7 @@ check_var('enddate', 'GET', true, false);
 
 $displayDebug = false; //disable debud output in this script as it effects the output
 
-if (strpos($userroles,'Demo') !== false) {
+if ($userObject->has_role('Demo')) {
   $demo = true;
 } else {
   $demo = false;
@@ -261,7 +261,7 @@ if ($student_no > 0) {
   }
 
   $result->execute();
-  $result->bind_result($student_id, $username, $userID, $title, $surname, $first_names, $grade, $gender, $year, $started, $question_ID, $user_answer, $q_type, $screen);
+  $result->bind_result($student_id, $username, $uID, $title, $surname, $first_names, $grade, $gender, $year, $started, $question_ID, $user_answer, $q_type, $screen); //TODO replaced $userID with $uID
   $old_username = '';
   while ($result->fetch()) {
     if ($old_username != $username or $old_started != $started) {
@@ -269,7 +269,7 @@ if ($student_no > 0) {
     }
     $log_array[$rowID][$screen][$question_ID] = $user_answer;
     $log_array[$rowID]['student_id'] = demo_replace_number($student_id, $demo);
-    $log_array[$rowID]['userID'] = $userID;
+    $log_array[$rowID]['userID'] = $uID;
     $log_array[$rowID]['username'] = $username;
     $log_array[$rowID]['course'] = $grade;
     $log_array[$rowID]['year'] = $year;

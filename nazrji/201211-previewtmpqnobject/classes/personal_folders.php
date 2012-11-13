@@ -42,7 +42,8 @@ class personal_folders {
     foreach ($teams as $individual_team) {
       if (trim($individual_team) != '') $module_sql .= " OR team_name LIKE '%$individual_team%'";
     }
-    $resulta = $this->mysqli->prepare("SELECT id, name, team_name, color FROM folders WHERE (ownerID=$userID $module_sql)  AND deleted IS NULL ORDER BY name, id");
+    $resulta = $this->mysqli->prepare("SELECT id, name, team_name, color FROM folders WHERE (ownerID=? $module_sql)  AND deleted IS NULL ORDER BY name, id");
+    $resulta->bind_param('i',$userID);
     $resulta->execute();
     $resulta->bind_result($id, $name, $team_name, $color);
     $resulta->store_result();

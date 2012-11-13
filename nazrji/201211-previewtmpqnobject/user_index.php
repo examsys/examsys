@@ -63,7 +63,7 @@ function displayPrevTake($markTotal, $adjPercent, $totalRandomMark, $marking_sty
 if ($special_needs == 1) {
   //look up special_needs data
   if ($stmt = $mysqli->prepare("SELECT extra_time, textsize, font FROM special_needs WHERE userid=?")) {
-    $stmt->bind_param('i',$userID);
+    $stmt->bind_param('i',$userObject->get_user_ID());
     $stmt->execute();
     $stmt->store_result();
     $stmt->bind_result($extra_time, $textsize, $font);
@@ -126,7 +126,7 @@ if (stripos($userroles,'Student') !== false) {
   //Check this PC is registered for this exam
   $low_bandwidth = check_labs($test_type, $labs, $password, $mysqli);
 
-  $attempt = check_modules($userID, $moduleID, $calendar_year, $mysqli);
+  $attempt = check_modules($userObject->get_user_ID(), $moduleID, $calendar_year, $mysqli);
 }
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -151,7 +151,7 @@ if (stripos($userroles,'Student') !== false) {
   function startPaper() {
     var paperURL = "./paper/start.php?id=<?php echo $_GET['id']; ?>";
 <?php
-  if ((strpos($userroles,'Staff') !== false or strpos($userroles,'Admin') !== false) and isset($_GET['mode']) and $_GET['mode'] == 'preview') {
+  if (($userObject->has_role(array('Staff'),'Admin')) and isset($_GET['mode']) and $_GET['mode'] == 'preview') {
 ?>
     paperURL += '&mode=preview';
 <?php
@@ -263,14 +263,16 @@ if ($textsize > 120) {
   $display_date = '';
   
   if ($test_type == 0) {
-    $log_info = $mysqli->prepare("SELECT screen, SUM(mark) AS mark, DATE_FORMAT(started,\"%Y%m%d%H%i%s\") AS started, 0 AS paper_type, DATE_FORMAT(started,\"%d/%m/%Y %H:%i\") AS temp_date FROM log0 WHERE q_paper=$property_id AND userID=$userID GROUP BY started DESC, screen UNION SELECT screen, SUM(mark) AS mark, DATE_FORMAT(started,\"%Y%m%d%H%i%s\") AS started, 1 AS paper_type, DATE_FORMAT(started,\"%d/%m/%Y %H:%i\") AS temp_date FROM log1 WHERE q_paper=$property_id AND userID=$userID GROUP BY started DESC, screen");
+    $log_info = $mysqli->prepare("SELECT screen, SUM(mark) AS mark, DATE_FORMAT(started,\"%Y%m%d%H%i%s\") AS started, 0 AS paper_type, DATE_FORMAT(started,\"%d/%m/%Y %H:%i\") AS temp_date FROM log0 WHERE q_paper=? AND userID=? GROUP BY started DESC, screen UNION SELECT screen, SUM(mark) AS mark, DATE_FORMAT(started,\"%Y%m%d%H%i%s\") AS started, 1 AS paper_type, DATE_FORMAT(started,\"%d/%m/%Y %H:%i\") AS temp_date FROM log1 WHERE q_paper=? AND userID=? GROUP BY started DESC, screen");
+    $log_info->bind_param('iiii',$property_id,$userObject->get_user_ID(),$property_id,$userObject->get_user_ID());
   } else {
-    $log_info = $mysqli->prepare("SELECT MAX(screen) AS screen, SUM(mark) AS mark, DATE_FORMAT(started,\"%Y%m%d%H%i%s\") AS started, $test_type AS paper_type, DATE_FORMAT(started,\"%d/%m/%Y %H:%i\") AS temp_date FROM log$test_type WHERE q_paper=$property_id AND userID=$userID GROUP BY started DESC");
+    $log_info = $mysqli->prepare("SELECT MAX(screen) AS screen, SUM(mark) AS mark, DATE_FORMAT(started,\"%Y%m%d%H%i%s\") AS started, ? AS paper_type, DATE_FORMAT(started,\"%d/%m/%Y %H:%i\") AS temp_date FROM log$test_type WHERE q_paper= AND userID=? GROUP BY started DESC");
+    $log_info->bind_param('iii',$test_type,$property_id,$userObject->get_user_ID());
   }
   $log_info->execute();
-  $log_info->bind_result($log_max_screen, $log_mark, $log_started, $log_paper_type, $log_temp_date);
+  $log_info->bind_result($log_max_screen, $log_mark, $log_started, $log_paper_type, $log_temp_date); //TODO last 3 seem unused
   $log_info->store_result();
-  if (strpos($userroles,'Staff') !== false or strpos($userroles,'Admin') !== false) {
+  if ($userObject->has_role(array('Staff','Admin'))) {
     echo "<input type=\"button\" style=\"width:" . $button_width . "px; font-weight:bold\" value=\"" . $string['start'] . "\" name=\"start\" id=\"start\" onclick=\"startPaper();\" onkeypress=\"startPaper();\" />\n";
     if (time() < $paper_start or time() > $paper_end) {
       echo '<div style="font-size:90%;color:#C00000"><img src="./artwork/small_warning_16.png" width="16" height="16" alt="!" />&nbsp;' . $string['papernotavailablestudents'] . '</div>';

@@ -92,31 +92,51 @@ if (isset($_GET['order'])) {
 </tr>
 <tr><th colspan="5" class="bevel"></th></tr>
 <?php
-  $my_teams = '';
-  foreach ($teams as $individual_team) {
-    $my_teams .= " OR moduleID LIKE '%$individual_team%'";
-  }
+  $user_teams = $userObject->get_staff_modules();
+  $module_id_list = implode(',',array_keys($user_teams));
 
-  if($order == 'created') {
+  $my_teams = '';
+  if (count($user_teams) > 0) {
+    $my_teams = " OR idMod IN ($module_id_list)";
+  }  
+
+  if ($order == 'created') {
     $order = 'CAST(created AS DATE)';
   }
 
   $paper_icons = array('formative_16.gif', 'progress_16.gif', 'summative_16.gif', 'survey_16.gif', 'osce_16.gif', 'offline_16.gif', 'peer_review_16.gif');
+  $paper_details = array();
   
   if (isset($_GET['paper_type'])) {
-    $sql = "SELECT property_id, paper_title, paper_type, moduleID, DATE_FORMAT(created,'$cfg_short_date') AS created, title, initials, surname FROM (properties, users) WHERE paper_type='" . $_GET['paper_type'] . "' AND deleted IS NULL AND paper_ownerID=users.id AND (paper_ownerID=$userID $my_teams)";
+    $sql = "SELECT properties.property_id, paper_title, paper_type, DATE_FORMAT(created,'$cfg_short_date') AS created, title, initials, surname, modules.moduleid FROM (properties, properties_modules, modules, users) WHERE properties.property_id=properties_modules.property_id AND properties_modules.idMod=modules.id AND paper_type='" . $_GET['paper_type'] . "' AND deleted IS NULL AND paper_ownerID=users.id AND (paper_ownerID=" . $userObject->get_user_ID() . " $my_teams)";
   } else {
-    $sql = "SELECT property_id, paper_title, paper_type, moduleID, DATE_FORMAT(created,'$cfg_short_date') AS created, title, initials, surname FROM (properties, users) WHERE moduleID LIKE '%" . $_GET['team_name'] . "%' AND deleted IS NULL AND paper_ownerID=users.id";
+    $sql = "SELECT properties.property_id, paper_title, paper_type, DATE_FORMAT(created,'$cfg_short_date') AS created, title, initials, surname, modules.moduleid FROM (properties, properties_modules, modules, users) WHERE properties.property_id=properties_modules.property_id AND properties_modules.idMod=modules.id AND idMod = " . $_GET['teamID'] . " AND deleted IS NULL AND paper_ownerID=users.id";
   }
   $sql .= " ORDER BY {$order} " . strtoupper($direction);
-  
   $result = $mysqli->prepare($sql);
   $result->execute();
-  $result->bind_result($property_id, $paper_title, $paper_type, $moduleID, $created, $tmp_title, $tmp_initials, $tmp_surname);
+  $result->bind_result($property_id, $paper_title, $paper_type, $created, $title, $initials, $surname, $moduleid);
   while ($result->fetch()) {
-    echo '<tr><td class="f"><a href="add_questions_by_paper.php?question_paper=' . $property_id . '"><img src="../../artwork/' . $paper_icons[$paper_type] . '" width="16" height="16" alt="' . $string['folder'] . '" align="middle" /></a></td><td class="s"><a href="add_questions_by_paper.php?question_paper=' . $property_id . '">' . $paper_title . '</a></td><td class="s">' . $moduleID . '</td><td class="s">' . $tmp_surname . ', ' . $tmp_initials . '. ' . $tmp_title . '</td><td class="s">' . $created . '</td></tr>';
+    if (!isset($paper_details[$property_id])) {
+      $paper_details[$property_id] = array('paper_title'=>$paper_title, 'paper_type'=>$paper_type, 'created'=>$created, 'title'=>$title, 'initials'=>$initials, 'surname'=>$surname);
+    }
+    $paper_details[$property_id]['moduleid'][] = $moduleid;
   }
   $result->close();
+
+  foreach ($paper_details as $property_id=>$paper_detail) {
+    echo '<tr><td class="f"><a href="add_questions_by_paper.php?question_paper=' . $property_id . '"><img src="../../artwork/' . $paper_icons[$paper_detail['paper_type']] . '" width="16" height="16" alt="' . $string['folder'] . '" align="middle" /></a></td><td class="s"><a href="add_questions_by_paper.php?question_paper=' . $property_id . '">' . $paper_detail['paper_title'] . '</a></td><td class="s">';
+    $html = '';
+    foreach ($paper_detail['moduleid'] as $module) {
+      if ($html == '') {
+        $html = $module;
+      } else {
+        $html .= ', ' . $module;
+      }
+    }
+    echo $html . '</td><td class="s">' . $paper_detail['surname'] . ', ' . $paper_detail['initials'] . '. ' . $paper_detail['title'] . '</td><td class="s">' . $paper_detail['created'] . '</td></tr>';
+  }
+  
 ?>
 </table>
 </body>

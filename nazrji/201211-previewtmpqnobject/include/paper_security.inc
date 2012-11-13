@@ -78,7 +78,7 @@ function check_datetime($start_date, $end_date) {
   }
 }
 
-function check_modules($userID, $moduleID, $calendar_year, $mysqlidb) {
+function check_modules($userID, $moduleID, $calendar_year, $mysqlidb) { //TODO this needs fixing $moduleID is now an array!!!
   global $string, $title, $surname, $username;
   
   $attempt = 1;

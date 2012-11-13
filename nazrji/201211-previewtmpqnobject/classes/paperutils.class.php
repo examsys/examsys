@@ -33,7 +33,7 @@ Class Paper_utils {
   * @param $paperID the id of the paper or property_id
   * @return array 
   */
-  static function get_modules($paperID,$db) {
+  static function get_modules($paperID, $db) {
     $modules = array();
     $result = $db->prepare("SELECT idMod,moduleid FROM modules,properties_modules WHERE idMod = id AND  property_id = ?");
     $result->bind_param('i', $paperID);
@@ -52,15 +52,15 @@ Class Paper_utils {
   * @param $paperID the id of the paper or property_id
   * @return void 
   */
-  static function update_modules($paper_modules, $paperID, $db) {
-    global $userID, $userroles, $staff_modules; //these will come form the users object later
+  static function update_modules($paper_modules, $paperID, $db, $userObject) {
+    global $REPLACEMEuserIDold, $DISABLEDuserroles, $staff_modules; //these will come form the users object later
 
     if(count($staff_modules) < 0) {
-      $user_modules = get_staff_modules($userID, $db);
+      $user_modules = get_staff_modules($userObject->get_user_ID(), $db, $userObject->get_user_ID());
     }
 
     if(count($staff_modules) > 0) {
-      if(strpos($userroles,'SysAdmin')) {
+      if($userObject->has_role('SysAdmin')) {
         //sysadmin 
         $user_can_delete = ''; //no restrictions
       } else {

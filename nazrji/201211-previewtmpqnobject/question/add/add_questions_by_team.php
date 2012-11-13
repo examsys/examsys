@@ -74,7 +74,7 @@ require_once '../../classes/questionutils.class.php';
     $direction = 'asc';
   }
   $team = $_GET['team'];
-  $team_sql = "%" . $_GET['team'] . "%";
+  //$team_sql = "%" . $_GET['team'] . "%";
   
   $module = '';
   $folder = '';
@@ -85,11 +85,18 @@ require_once '../../classes/questionutils.class.php';
 
 
   echo "<form name=\"theform\" method=\"post\" action=\"do_add_questions.php?team=$team&display_pos=$display_pos&module=" . $_GET['module'] . "&folder=" . $_GET['folder'] . "&scrOfY=" . $_GET['scrOfY'] . "\">\n";
+
+  $stmt = $mysqli->prepare("SELECT moduleid, fullname FROM modules WHERE id=?");
+  $stmt->bind_param('i', $_GET['teamID']);
+  $stmt->execute();
+  $stmt->bind_result($moduleid, $fullname);
+  $stmt->fetch();
+  $stmt->close();
   ?>
   <input type="hidden" name="screen" value="1" />
   <table class="header" cellspacing="0" cellpadding="0">
   <?php
-  echo "<tr><th colspan=\"5\" style=\"font-size:160%; font-weight:bold\">&nbsp;" . $string['byteam'] . " - " .  $_GET['team'] . "</th></tr>\n";
+  echo "<tr><th colspan=\"5\" style=\"font-size:160%\"><strong>&nbsp;$moduleid:</strong> $fullname</th></tr>\n";
   if ($order == 'leadin' and $direction == 'asc') {
     echo "<tr><th colspan=\"2\">&nbsp;</th><th><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?team=$team&module=$module&folder=$folder&scrOfY=$scrOfY&order=leadin&direction=desc\">" . $string['question'] . "</a>&nbsp;<img src=\"../../artwork/desc.gif\" width=\"9\" height=\"7\" border=\"0\" /></th><th><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?team=$team&module=$module&folder=$folder&scrOfY=$scrOfY&order=q_type&direction=asc\">" . $string['type'] . "</a>&nbsp;</th><th><img src=\"../../artwork/header_vertical_line.gif\" width=\"2\" height=\"15\" alt=\"line\" border=\"0\" />&nbsp;<a style=\"color:black\" href=\"" . $_SERVER['PHP_SELF'] . "?team=$team&module=$module&folder=$folder&scrOfY=$scrOfY&order=last_edited&direction=asc\">" . $string['modified'] . "</a>&nbsp;</th></tr>\n";
   } elseif ($order == 'leadin' and $direction == 'desc') {
@@ -109,8 +116,8 @@ require_once '../../classes/questionutils.class.php';
   if ($order == 'leadin') $order = 'leadin_plain';
   
   
-  $stmt = $mysqli->prepare("SELECT q_id, q_type, leadin, q_media, q_media_width, q_media_height, DATE_FORMAT(last_edited,'$cfg_short_date') AS display_date, locked FROM questions WHERE q_group LIKE ? AND deleted IS NULL ORDER BY $order $direction");
-  $stmt->bind_param('s', $team_sql);
+  $stmt = $mysqli->prepare("SELECT questions.q_id, q_type, leadin, q_media, q_media_width, q_media_height, DATE_FORMAT(last_edited,'$cfg_short_date') AS display_date, locked FROM (questions, questions_modules) WHERE questions.q_id=questions_modules.q_id AND idMod=? AND deleted IS NULL ORDER BY $order $direction");
+  $stmt->bind_param('i', $_GET['teamID']);
   $stmt->execute();
   $stmt->store_result();
   $stmt->bind_result($q_id, $q_type, $leadin, $q_media, $q_media_width, $q_media_height, $display_date, $locked);

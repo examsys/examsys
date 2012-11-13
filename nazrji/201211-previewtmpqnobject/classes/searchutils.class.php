@@ -29,50 +29,11 @@ Class search_utils {
  
   /**
    * Get an array with staff modules information the current user has access to.
-   * @param array $staff_modules staff modules the current user is on
-   * @param string $userroles the role(s) of the current user
-   * @param integer $userID ID of the current user
-   * @param object $db database connection
    * @return array of staff module information
    */
-  static function get_staff_modules($staff_modules, $userroles, $userID, $db) {
-    $staff_modules_list = array();
-
-    $staff_modules_sql = implode("','", $staff_modules);
-    if ($staff_modules_sql != '') $staff_modules_sql = "'$staff_modules_sql'";
-    
-    if ($staff_modules_sql != '' or strpos($userroles,'Admin') !== false) {
-      if (strpos($userroles,'SysAdmin') !== false) {
-        $sql = "SELECT DISTINCT modules.id, moduleid, fullname, school FROM modules, schools WHERE modules.schoolid=schools.id ORDER BY school, moduleID";
-      } elseif (strpos($userroles,'Admin') !== false) {
-        $schoolIDs = implode(',', SchoolUtils::get_admin_schools($userID, $db));
-        if ($schoolIDs != '') {
-          $sql = "SELECT DISTINCT modules.id, moduleid, fullname, school FROM modules, schools WHERE modules.schoolid=schools.id AND schoolid IN ($schoolIDs) ORDER BY school, moduleID";
-        } elseif ($team_sql != '') {
-          $sql = "SELECT DISTINCT modules.id, moduleid, fullname, school FROM modules, schools WHERE modules.schoolid=schools.id AND moduleid IN ($staff_modules_sql) ORDER BY school, moduleID";
-        }
-      } else {
-        $sql = "SELECT DISTINCT modules.id, moduleid, fullname, school FROM modules, schools WHERE modules.schoolid=schools.id AND moduleid IN ($staff_modules_sql) ORDER BY school, moduleID";
-      }
-
-      if (isset($sql)) {
-        $staff_modules_no = 0;
-
-        $result = $db->prepare($sql);
-        $result->execute();
-        $result->bind_result($recordid, $moduleid, $fullname, $school);
-        while ($result->fetch()) {
-          $staff_modules_list[$staff_modules_no]['school'] = $school;
-          $staff_modules_list[$staff_modules_no]['id'] = $moduleid;
-          $staff_modules_list[$staff_modules_no]['idMod'] = $recordid;
-          $staff_modules_list[$staff_modules_no]['fullname'] = $fullname;
-          $staff_modules_no++;
-        }
-        $result->close();
-      }
-    }
-    
-    return $staff_modules_list;
+  static function get_staff_modules($staff_modules, $userroles, $userID, $db, $userObject) {
+    trigger_error("get_staff_modules:: Called and it has been removed", E_USER_WARNING);
+    return array();
   }
   
   /**
@@ -108,16 +69,14 @@ Class search_utils {
 
   /**
    * Display a dropdown list of available teams for the current user.
-   * @param array $teams teams the current user is on
-   * @param string $userroles the role(s) of the current user
-   * @param integer $userID ID of the current user
+   * @param object the current user object
    * @param object $db database connection
    * @return string HTML of the dropdown menu
    */
-  static function display_staff_modules_dropdown($staff_modules, $userroles, $userID, $db) {
+  static function display_staff_modules_dropdown($userObj, $db) {
     global $string;
     
-    $staff_modules = self::get_staff_modules($staff_modules, $userroles, $userID, $db);
+    $staff_modules = $userObj->get_staff_accessable_modules();
     
     echo "<select style=\"width:175px\" onchange=\"updateDropdownState(this,'module')\" name=\"module\">\n";
     echo "<option value=\"\">" . $string['anymodule'] . "</option>\n";
@@ -145,11 +104,13 @@ Class search_utils {
    * @param object $db database connection
    * @return array of name data
    */
-  static function get_owners($teams, $userroles, $db) {
-    if (strpos($userroles,'Admin') !== false) {
+  static function get_owners($userObj, $db) {
+    if ($userObj->has_role(array('SysAdmin','Admin'))) {
       $stmt = $db->prepare("SELECT DISTINCT id, REPLACE(title,'Professor','Prof') AS title, initials, surname FROM users WHERE roles LIKE 'Staff%' ORDER BY surname, initials");
     } else {
-      $stmt = $db->prepare("SELECT DISTINCT id, REPLACE(title,'Professor','Prof') AS title, initials, surname FROM users, teams WHERE users.id=teams.memberID AND name IN (\"" . implode('","', $teams) . "\") AND (roles LIKE 'Staff%' OR roles LIKE '%SysAdmin%') ORDER BY surname, initials");
+      $team_sql = implode(',',array_keys($userObj->get_staff_modules()));
+      if($team_sql != '') $team_sql = " AND idMod IN ($team_sql) ";
+      $stmt = $db->prepare("SELECT DISTINCT id, REPLACE(title,'Professor','Prof') AS title, initials, surname FROM users, modules_staff WHERE users.id=modules_staff.memberID $team_sql AND (roles LIKE 'Staff%' OR roles LIKE '%SysAdmin%') ORDER BY surname, initials");
     }
     $stmt->execute();
     $stmt->bind_result($id, $title, $initials, $surname);
@@ -166,23 +127,21 @@ Class search_utils {
 
   /**
    * Display a dropdown list of owners in teams available for the current user.
-   * @param array $teams teams the current user is on
-   * @param string $userroles the role(s) of the current user
-   * @param integer $userID ID of the current user
+   * @param object the current user object
    * @param object $db database connection
    * @param string $type used to control wording - whether dealing with papers or questions
    * @return string HTML of the dropdown menu
    */
-  static function display_owners_dropdown($teams, $userroles, $userID, $db, $type) {
+  static function display_owners_dropdown($userObj, $db, $type) {
     global $string, $state;
-    $owners = self::get_owners($teams, $userroles, $db);
+    $owners = self::get_owners($userObj, $db);
     
-    echo "<select style=\"width:175px\" onchange=\"updateDropdownState(this,'owner')\" name=\"owner\">\n";
+    echo "<select style=\"width:175px; font-size:90%\" onchange=\"updateDropdownState(this,'owner')\" name=\"owner\">\n";
     echo "<option value=\"\">" . $string['anyowner']. "</option>\n";
     if ($type == 'questions') {
-      echo "<option value=\"$userID\">" . $string['myquestionsonly']. "</option>\n";
+      echo "<option value=\"{$userObj->get_user_ID()}\">" . $string['myquestionsonly']. "</option>\n";
     } else {
-      echo "<option value=\"$userID\">" . $string['mypaperssonly']. "</option>\n";
+      echo "<option value=\"{$userObj->get_user_ID()}\">" . $string['mypaperssonly']. "</option>\n";
     }
     echo "<option value=\"%\" style=\"background-color:#ECE9D8\"></option>\n";
     

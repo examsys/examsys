@@ -26,12 +26,12 @@
  * Get a question object, either new ('Add' mode) or populated from database ('Edit' mode)
  * @param  string $mode           Editing mode - 'Add' or 'Edit'
  * @param  string $critical_error Description of any breaking errors that we encounter
- * @param  int    $userID
+ * @param  int    $user_id
  * @param  array  $string         Array of translated language strings
  * @param  object $mysqli         mysqli database connection
  * @return object                 The Question object
  */
-function get_question(&$mode, &$critical_error, $userID, $paper_id, $string, $mysqli, $question_mode='live') {
+function get_question(&$mode, &$critical_error, $userObj, $paper_id, $string, $mysqli, $question_mode='live') {
   $question = false;
 
 	if (!isset($_REQUEST['q_id']) or $_REQUEST['q_id'] == -1 or $question_mode == 'draft') {
@@ -44,9 +44,9 @@ function get_question(&$mode, &$critical_error, $userID, $paper_id, $string, $my
 	    $critical_error = sprintf($string['typeinvalid'], htmlentities($_REQUEST['type']));
 	  } else {
 	    try {
-	      $question = Question::question_factory($mysqli, $userID, $string, $_REQUEST['type']);
+	      $question = Question::question_factory($mysqli, $userObj, $string, $_REQUEST['type']);
 	      $question->set_type($_REQUEST['type']);
-	      $question->set_owner_id($userID);
+	      $question->set_owner_id($userObj->get_user_ID());
 	      $question->set_teams(Paper_utils::get_modules($paper_id, $mysqli));
 	    } catch (ClassNotFoundException $ex) {
 	      $critical_error = $ex->getMessage();
@@ -57,7 +57,7 @@ function get_question(&$mode, &$critical_error, $userID, $paper_id, $string, $my
 	  $mode = $string['edit'];
 
 	  try {
-	    $question = Question::question_factory($mysqli, $userID, $string, $_REQUEST['q_id']);
+	    $question = Question::question_factory($mysqli, $userObj, $string, $_REQUEST['q_id']);
 	  } catch (Exception $ex) {
 	    $critical_error = $ex->getMessage();
 	  }
@@ -69,11 +69,11 @@ function get_question(&$mode, &$critical_error, $userID, $paper_id, $string, $my
 /**
  * Populate a question object with data from the POST
  * @param  object $question The question object
- * @param  int $userID
+ * @param  int $user_id
  * @param  object $mysqli   mysqli database connection
  * @return boolean          True of OK to go ahead with saving question
  */
-function populate_question($question, $userID, $mysqli, $question_mode='live') {
+function populate_question($question, $user_id, $mysqli, $question_mode='live') {
   $do_save = false;
 
   if ($question->id == -1 or check_fullSave($question->id, $mysqli)) {
@@ -130,7 +130,7 @@ function populate_question($question, $userID, $mysqli, $question_mode='live') {
         $option->populate_unified($unified_part_names, $_POST, array_keys($compound_fields), 'option_');
       } else {
         // Create new option if have required data
-        $option = Option::option_factory($mysqli, $userID, $question, $option_no, $string, array('marks' => 1));
+        $option = Option::option_factory($mysqli, $user_id, $question, $option_no, $string, array('marks' => 1));
 
         if ($option->minimum_fields_exist($_POST, $_FILES, $option_no)) {
           $correct_fb = (isset($_POST["option_correct_fback$option_no"])) ? $_POST["option_correct_fback$option_no"] : '';
@@ -181,13 +181,13 @@ function populate_question($question, $userID, $mysqli, $question_mode='live') {
 /**
  * Save a populated question to the database
  * @param  object $question The question object
- * @param  int $userID
+ * @param  int $user_id
  * @param  int $paper_id
  * @param  string $mode     Editing mode - 'Add' or 'Edit'
  * @param  object $mysqli   mysqli database connection
  * @return array            Array containing any errors encountered during the saving process
  */
-function save_question($question, $userID, $paper_id, $mode, $string, &$state, $mysqli, $question_mode='live') {
+function save_question($question, $user_id, $paper_id, $mode, $string, &$state, $mysqli, $question_mode='live') {
   $errors = array();
   $clear_checkout = ($question_mode == 'live');
 
@@ -214,7 +214,7 @@ function save_question($question, $userID, $paper_id, $mode, $string, &$state, $
         insert_into_papers($paper_id, $question->id);
       }
 
-      save_keywords($question, $userID, true, $mysqli, $string);
+      save_keywords($question, $user_id, true, $mysqli, $string);
 
       if (isset($_POST['objective_modules'])) {
         // Write out curriculum mapping.
@@ -230,7 +230,7 @@ function save_question($question, $userID, $paper_id, $mode, $string, &$state, $
           $q_teams = $question->get_teams();
           if (is_array($q_teams) and count($q_teams) > 0) $team_for_state = $q_teams[0];
         }
-        $state = $stateutil->setState($userID, 'default_team', $team_for_state, '/question/edit/index.php', $mysqli);
+        $state = $stateutil->setState($user_id, 'default_team', $team_for_state, '/question/edit/index.php', $mysqli);
       }
 
       // Stuff not to do on correction/limited save
@@ -243,10 +243,10 @@ function save_question($question, $userID, $paper_id, $mode, $string, &$state, $
         // For likert, save the scale to a state to ease creation of multiple questions with same scale
         if ($mode == 'Add' and $question->get_type() == 'likert') {
           $scale_type = $question->get_scale_type();
-          $state = $stateutil->setState($userID, 'likert_format', $scale_type, '/question/edit/index.php', $mysqli);
+          $state = $stateutil->setState($user_id, 'likert_format', $scale_type, '/question/edit/index.php', $mysqli);
 
           if ($scale_type == 'custom') {
-            $state = $stateutil->setState($userID, 'likert_format', implode('|', $question->get_all_custom_scales()), '/question/edit/index.php', $mysqli);
+            $state = $stateutil->setState($user_id, 'likert_format', implode('|', $question->get_all_custom_scales()), '/question/edit/index.php', $mysqli);
           }
         }
       }

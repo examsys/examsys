@@ -37,7 +37,7 @@ require '../include/paper_security.inc';
 check_var('id', 'GET', true, false);
 
 if ($stmt = $mysqli->prepare("SELECT background, foreground, textsize, marks_color, themecolor, labelcolor, font FROM special_needs WHERE userid=?")) {
-  $stmt->bind_param('i',$userID);
+  $stmt->bind_param('i',$userObject->get_user_ID());
   $stmt->execute();
   $stmt->store_result();
   $stmt->bind_result($bgcolor, $fgcolor, $textsize, $marks_color, $themecolor, $labelcolor, $font);
@@ -53,7 +53,7 @@ $stmt->bind_result($property_id, $paper_type, $labs, $start_date, $end_date, $mo
 while ($stmt->fetch()) {
   $original_paper_type = $paper_type; //store the original paper type - needed to retrieve answers from the correct log and functionality related decisions 
   $attempt = 1; //default attempt to 1 overwritten if the student is resit candidate
-  if (strpos($userroles,'Student') !== false) {
+  if ($userObject->has_role('Student')) {
   
     // Check for additional password on the paper
     check_paper_password($password);
@@ -65,10 +65,10 @@ while ($stmt->fetch()) {
     $low_bandwidth = check_labs($paper_type, $labs, $password, $mysqli);
       
     //get modules if the user is a student and the paper is not formative
-    $attempt = check_modules($userID, $moduleID, $calendar_year, $mysqli);
+    $attempt = check_modules($userObject->get_user_ID(), $moduleID, $calendar_year, $mysqli);
 
     // Check for any metadata security restrictions
-    check_metadata($property_id, $userID, $moduleID, $mysqli);
+    check_metadata($property_id, $userObject->get_user_ID(), $moduleID, $mysqli);
 
     if (time() > $end_date and ($paper_type == '1' or $paper_type == '2')) {
       $paper_type = '_late';
@@ -78,7 +78,7 @@ while ($stmt->fetch()) {
 $stmt->free_result();
 $stmt->close();
 if (!isset($_GET['dont_record']) or $_GET['dont_record'] != true) {
-  record_marks($property_id, $mysqli, $userID, $paper_type, $grade, $year, $attempt, $userroles);
+  record_marks($property_id, $mysqli, $userObject->get_user_ID(), $paper_type, $grade, $year, $attempt, $userroles);
 }
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

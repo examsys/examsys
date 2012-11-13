@@ -25,6 +25,7 @@
 */
 
 require_once '../include/staff_auth.inc';
+require_once '../include/errors.inc';
 require_once '../include/add_edit.inc';  // to clear MS Office tags
 require_once '../classes/schoolutils.class.php';
 require_once '../classes/searchutils.class.php';
@@ -33,12 +34,14 @@ require_once '../classes/paperutils.class.php';
 require_once '../classes/moduleutils.class.php';
 require_once '../classes/questionutils.class.php';
 
+check_var('paperID', 'REQUEST', true, false);
+
 if (!isset($staff_modules)){
-   $staff_modules = get_staff_modules($userID, $mysqli);
+  $staff_modules = get_staff_modules($userObject->get_user_ID(), $mysqli, $userObject);
 }
 
-function output_labs($labs, $cfg_summative_mgmt, $paper_type, $userroles, $db) {
-  if ($cfg_summative_mgmt and $paper_type == '2' and strpos($userroles,'Admin') === false) {
+function output_labs($labs, $cfg_summative_mgmt, $paper_type, $userObject, $db) {
+  if ($cfg_summative_mgmt and $paper_type == '2' and !$userObject->has_role('Admin')) {
     $r1class = 'r1disabled';
     $r2class = 'r2disabled';
     $disabled = ' disabled';
@@ -146,7 +149,7 @@ if (isset($_POST['Submit'])) {
       $hide_if_unanswered = '0';
     }
     
-    if (($cfg_summative_mgmt and $paper_type == '2' and strpos($userroles,'Admin') !== false) or !$cfg_summative_mgmt or $paper_type != '2') {
+    if (($cfg_summative_mgmt and $paper_type == '2' and $userObject->has_role('Admin')) or !$cfg_summative_mgmt or $paper_type != '2') {
       $local_time = new DateTimeZone($cfg_timezone);
       $target_timezone = new DateTimeZone($_POST['timezone']);
       
@@ -314,13 +317,13 @@ if (isset($_POST['Submit'])) {
     $password = trim($_POST['password']);
     $paperID = $_POST['paperID'];
     
-    if ($cfg_summative_mgmt and $paper_type == '2' and strpos($userroles,'Admin') === false) {
+    if ($cfg_summative_mgmt and $paper_type == '2' and !$userObject->has_role('Admin')) {
       $editProperties = $mysqli->prepare("UPDATE properties SET paper_title=?, paper_prologue=?, paper_postscript=?, bgcolor=?, fgcolor=?, themecolor=?, labelcolor=?, fullscreen=?, marking=?, bidirectional=?, pass_mark=?, distinction_mark=?, folder=?, rubric=?, calculator=?, externals=?, display_correct_answer=?, display_students_response=?, display_question_mark=?, display_feedback=?, hide_if_unanswered=?, internal_reviewers=?, external_review_deadline=?, internal_review_deadline=?, sound_demo=?, password=? WHERE property_id=?");
       $editProperties->bind_param('ssssssssssiississsssssssssi', $paper_title, $tmp_prologue, $tmp_postscript, $bgcolor, $fgcolor, $themecolor, $labelcolor, $fullscreen, $tmp_marking, $bidirectional, $tmp_pass_mark, $tmp_distinction_mark, $folderID, $tmp_rubric, $tmp_calculator, $external_string, $display_correct_answer, $display_students_response, $display_question_mark, $display_feedback, $hide_if_unanswered, $internal_string, $external_review_deadline, $internal_review_deadline, $tmp_sound_demo, $password, $paperID);
       $editProperties->execute();
       $editProperties->close();
 
-      Paper_utils::update_modules($paper_modules,$paperID,$mysqli);
+      Paper_utils::update_modules($paper_modules,$paperID,$mysqli,$userObject);
     } else {
 
       $editProperties = $mysqli->prepare("UPDATE properties SET paper_title=?, paper_type=?, start_date=?, end_date=?, timezone=?, paper_prologue=?, paper_postscript=?, bgcolor=?, fgcolor=?, themecolor=?, labelcolor=?, fullscreen=?, marking=?, bidirectional=?, pass_mark=?, distinction_mark=?, folder=?, labs=?, rubric=?, calculator=?, externals=?, exam_duration=?, display_correct_answer=?, display_students_response=?, display_question_mark=?, display_feedback=?, hide_if_unanswered=?, calendar_year=?, internal_reviewers=?, external_review_deadline=?, internal_review_deadline=?, sound_demo=?, password=? WHERE property_id=?");
@@ -328,7 +331,7 @@ if (isset($_POST['Submit'])) {
       $editProperties->execute();
       $editProperties->close();
 
-      Paper_utils::update_modules($paper_modules,$paperID,$mysqli);
+      Paper_utils::update_modules($paper_modules,$paperID,$mysqli,$userObject);
     }
     
     // Release objectives-based feedback
@@ -515,7 +518,7 @@ if (isset($_POST['Submit'])) {
     $end_date = $end_date->format("Y/m/d H:i:s");
   }
   
-if ($cfg_summative_mgmt and $paper_type == '2' and strpos($userroles,'Admin') === false) {
+if ($cfg_summative_mgmt and $paper_type == '2' and !$userObject->has_role('Admin')) {
   $sum_disabled = ' disabled'; 
 } else {
   $sum_disabled = ''; 
@@ -872,7 +875,7 @@ if ($paper_type != '4' and $paper_type != '5') {
      if ($folder != '') $additional .= ' OR id=' . $folder;
 
      $folder_details = $mysqli->prepare("SELECT id, name FROM folders,folders_modules_staff WHERE folders.id = folders_modules_staff.folders_id AND (ownerID=?$additional) AND deleted IS NULL ORDER BY name");
-     $folder_details->bind_param('s', $userID);
+     $folder_details->bind_param('s', $userObject->get_user_ID());
      $folder_details->execute();
      $folder_details->bind_result($folder_id, $folder_name);
      while ($folder_details->fetch()) {
@@ -1110,7 +1113,7 @@ if ($paper_type != '4' and $paper_type != '5') {
 <tr>
 <td style="text-align:center; vertical-align:top" colspan="2">
 <?php
-    if ($cfg_summative_mgmt and $paper_type == '2' and strpos($userroles,'Admin') === false) {
+    if ($cfg_summative_mgmt and $paper_type == '2' and !$userObject->has_role('Admin')) {
       $sum_disabled = ' disabled'; 
     } else {
       $sum_disabled = ''; 
@@ -1324,7 +1327,7 @@ if ($paper_type != '4' and $paper_type != '5') {
     if ($module_sql == '') {
       echo "<input type=\"hidden\" name=\"module_no\" id=\"module_no\" value=\"0\" /></div>\n";
     } else {
-      $module_array = search_utils::get_staff_modules($staff_modules, $userroles, $userID, $mysqli);
+      $module_array = $userObject->get_staff_accessable_modules();
       $module_no = 0;
       $old_school = '';
       foreach ($module_array as $module) {
@@ -1336,7 +1339,7 @@ if ($paper_type != '4' and $paper_type != '5') {
           if ($separate_module == $module['id']) $match = true;
         }
         if ($match == true) {
-          if (in_array($module['id'],$staff_modules) or strpos($userroles,'SysAdmin') !== false) {
+          if (in_array($module['id'],$staff_modules) or $userObject->has_role('SysAdmin')) {
             echo "<div class=\"r2\" id=\"divmod$module_no\"><input type=\"checkbox\" onclick=\"toggle('divmod$module_no'); getMeta();\" name=\"module$module_no\" id=\"module$module_no\" value=\"" . $module['idMod'] . "\" checked>&nbsp;" . $module['id'] . ": " . substr($module['fullname'],0,60) . "</div>\n";
           } else {
             echo "<div class=\"r2\" id=\"divmod$module_no\"><input type=\"checkbox\" name=\"dummymod$module_no\" value=\"" . $module['idMod'] . "\" checked disabled><input type=\"checkbox\" name=\"module$module_no\" id=\"module$module_no\" style=\"display:none\" value=\"" . $module['id'] . "\" checked>&nbsp;" . $module['id'] . ": " . substr($module['fullname'],0,60) . "</div>\n";
@@ -1351,7 +1354,7 @@ if ($paper_type != '4' and $paper_type != '5') {
     }
     echo "</td>\n";
     
-    echo "<td>" . output_labs($labs, $cfg_summative_mgmt, $paper_type, $userroles, $mysqli) . "</td></tr>\n";
+    echo "<td>" . output_labs($labs, $cfg_summative_mgmt, $paper_type, $userObject, $mysqli) . "</td></tr>\n";
 
   ?>
   </td></tr>

@@ -67,25 +67,25 @@ ob_start();
   $stmt = $mysqli->prepare("SELECT id FROM users WHERE roles='left' OR roles='graduate'");
   $stmt->execute();
   $stmt->store_result();
-  $stmt->bind_result($userID);
+  $stmt->bind_result($userObject->get_user_ID());
   while ($stmt->fetch()) {
     // Delete from formative log.
     $deletequery = $mysqli->prepare("DELETE log0, log_metadata FROM log0 INNER JOIN log_metadata WHERE log0.userID=log_metadata.userID AND log0.q_paper=log_metadata.paperID AND log0.started=log_metadata.started AND log0.userID=?");
-    $deletequery->bind_param('s', $userID);
+    $deletequery->bind_param('s', $userObject->get_user_ID());
     $deletequery->execute();
     $log0_deleted += $deletequery->affected_rows;
     $deletequery->close();
     
     // Delete from progress test log.
     $deletequery = $mysqli->prepare("DELETE log1, log_metadata FROM log1 INNER JOIN log_metadata WHERE log1.userID=log_metadata.userID AND log1.q_paper=log_metadata.paperID AND log1.started=log_metadata.started AND log1.userID=?");
-    $deletequery->bind_param('s', $userID);
+    $deletequery->bind_param('s', $userObject->get_user_ID());
     $deletequery->execute();
     $log1_deleted += $deletequery->affected_rows;
     $deletequery->close();
     
     // Delete from lti_user table.
     $deletequery = $mysqli->prepare("DELETE lti_user WHERE user_id=?");
-    $deletequery->bind_param('s', $userID);
+    $deletequery->bind_param('s', $userObject->get_user_ID());
     $deletequery->execute();
     $lti_user_deleted += $deletequery->affected_rows;
     $deletequery->close();

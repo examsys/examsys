@@ -26,8 +26,8 @@
   require '../include/add_edit.inc';  // needed for the WYSIWYG editor
 
   $message = '';
-  if (file_exists("../email_templates/$userID.txt")) {
-    $file = fopen("../email_templates/$userID.txt",'r');
+  if (file_exists("../email_templates/" $userObject->get_user_ID() . ".txt")) {
+    $file = fopen("../email_templates/" $userObject->get_user_ID() . ".txt",'r');
     $from = fgets($file, 64000);
     $ccaddress = fgets($file, 64000);
     $bccaddress = fgets($file, 64000);
@@ -97,7 +97,7 @@
 <input type="submit" style="width:120px" name="submit" value="<?php echo $string['email_class'];?>" />&nbsp;<input type="button" name="cancel" style="width: 120px" value="<?php echo $string['cancel'];?>" onclick="window.close();" />
 <?php
   $result = $mysqli->prepare("SELECT email FROM users WHERE id=?");
-  $result->bind_param('i',$userID);
+  $result->bind_param('i',$userObject->get_user_ID());
   $result->execute();  
   $result->bind_result($from);
   $result->fetch();

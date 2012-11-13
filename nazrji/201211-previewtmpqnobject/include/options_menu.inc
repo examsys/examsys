@@ -28,19 +28,19 @@ require_once 'sidebar_functions.inc';
 
 $modules_array = array();
 //$staff_modules is populated in staff_auth.inc
-$my_folders_array = get_folders($staff_modules, $userID, $mysqli);
+$my_folders_array = get_folders($staff_modules, $userObject->get_user_ID(), $mysqli);
 $full_modules_array = get_modules($staff_modules, $my_folders_array, $modules_array, $mysqli);
 $staff_modules_array = get_staff_module_links($staff_modules, $mysqli);
-$keywords_array = get_keywords($staff_modules, $userID, $mysqli);
+$keywords_array = get_keywords($staff_modules, $userObject->get_user_ID(), $mysqli);
 
 ?><div id="left-sidebar" class="sidebar">
 <br />
 <table id="general" class="sidebar_tbl" style="margin-left:2px">
 <tr><td class="ico"><a href="#" onclick="launchHelp(1); return false;"><img src="<?php echo $cfg_root_path ?>/artwork/small_help_icon.gif" width="16" height="16" alt="Help" /></a></td><td class="menuitem"><a href="#" onclick="launchHelp(1); return false;"><?php echo $string['helpsupport']; ?></a></td></tr>
 <?php
-  if (strpos($userroles,'SysAdmin') !== false) {
+  if ($userObject->has_role('SysAdmin')) {
     echo '<tr><td class="ico"><a href="' . $cfg_root_path . '/admin/index.php"><img src="' . $cfg_root_path . '/artwork/admin_icon_16.gif" width="16" height="16" alt="Admin" /></a></td><td class="menuitem"><a href="' . $cfg_root_path . '/admin/index.php">' . $string['admintools'] . '</a></td></tr>';
-  } elseif (strpos($userroles,'Admin') !== false) {
+  } elseif ($userObject->has_role('Admin')) {
     echo '<tr><td class="ico"><a href="' . $cfg_root_path . '/admin/calendar.php?calyear=' . date("Y") . '#' . date("n") . '"><img src="' . $cfg_root_path . '/artwork/shortcut_calendar_icon.png" width="16" height="16" alt="Admin" /></a></td><td class="menuitem"><a href="' . $cfg_root_path . '/admin/calendar.php?calyear=' . date("Y") . '#' . date("n") . '">' . $string['calendar'] . '</a></td></tr>';
   }
 ?>
@@ -53,7 +53,7 @@ $keywords_array = get_keywords($staff_modules, $userID, $mysqli);
 <div class="submenuheading" id="papertasks"><?php echo $string['papertasks']; ?></div>
 <table class="sidebar_tbl">
 <?php
-  if (count($staff_modules) > 0 or strpos($userroles,'Admin') !== false) {    // Allow SysAdmin and Admin users not on any team to still create papers.
+  if (count($staff_modules) > 0 or $userObject->has_role('Admin')) {    // Allow SysAdmin and Admin users not on any team to still create papers.
     echo "<tr><td style=\"text-align:left\"><a href=\"#\" onclick=\"newPaper(); return false;\"><img style=\"text-align:center\" src=\"{$cfg_root_path}/artwork/new_paper_icon_16.gif\" width=\"16\" height=\"16\" alt=\"New Paper\" /></a></td><td class=\"menuitem\"><a href=\"#\" onclick=\"newPaper(); return false;\">" . $string['createnewpaper'] . "</a></td></tr>\n";
   } else {
     echo "<tr><td style=\"text-align:left; color:#808080\"><img style=\"text-align:center\" src=\"{$cfg_root_path}/artwork/new_paper_icon_16.gif\" width=\"16\" height=\"16\" alt=\"New Paper\" /></td><td class=\"menuitem\" style=\"color:#808080\">" . $string['createnewpaper'] . "</td></tr>\n";

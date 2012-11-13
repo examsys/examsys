@@ -31,7 +31,7 @@
       $current_ipaddress = NetworkUtils::get_ipaddress();
     
       $result = $mysqli->prepare("INSERT INTO paper_notes VALUES (NULL,?,NOW(),?,?,?)");
-      $result->bind_param('siis', $note, $_POST['paperID'], $userID, $current_ipaddress);
+      $result->bind_param('siis', $note, $_POST['paperID'], $userObject->get_user_ID(), $current_ipaddress);
       $result->execute();  
       $result->close();
     } else {

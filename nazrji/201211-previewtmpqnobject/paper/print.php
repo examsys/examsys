@@ -87,8 +87,8 @@ function randomQOverwrite(&$questions, $random_q_data, $paper_type, $user_answer
   echo "\n<input type=\"hidden\" name=\"q" . $q_no . "_randomID\" value=\"" . $question['q_id'] ."\" />\n";
 }
 
-function branchingQOverwrite(&$questions,$branching_q_data,$paper_type,$user_answers,$current_screen) {
-  global $mysqli, $userID, $sessionid;
+function branchingQOverwrite(&$questions,$branching_q_data,$paper_type,$user_answers,$current_screen,$userObject) {
+  global $mysqli, $DISABLEDuserID, $sessionid;
   $previous_user_answer = '';
   for ($screen=1; $screen<=count($user_answers); $screen++) {
     foreach ($user_answers[$screen] as $questionID=>$past_answer) {
@@ -108,7 +108,7 @@ function branchingQOverwrite(&$questions,$branching_q_data,$paper_type,$user_ans
     if (!in_array($op_qid,$target_questionIDs) and isset($user_answers[$current_screen][$op_qid])) {
       //if any of the possible qids are set on this screen remove old answer as the user is no on a different branch 
       $stmt = $mysqli->prepare("DELETE FROM log$paper_type WHERE userid=? AND screen=? AND started=? AND q_id=?");
-      $stmt->bind_param('iisi',$userID, $current_screen, $sessionid, $op_qid);
+      $stmt->bind_param('iisi',$userObject->get_user_ID(), $current_screen, $sessionid, $op_qid);
       $stmt->execute();
     }
   }
@@ -289,7 +289,7 @@ $current_screen = 1;
     });
   </script>
 </head>
-<body>
+<body>#
 
   <table cellpadding="0" cellspacing="0" border="0" width="100%">
   <tr><td valign="top">
@@ -351,7 +351,7 @@ $current_screen = 1;
     if ($question['q_type'] == 'random') {
       randomQOverwrite($questions_array,$question,$paper_type,$user_answers,$current_screen,$tmp_q_no);
     } elseif ($question['q_type'] == 'branching') {
-      branchingQOverwrite($questions_array,$question,$paper_type,$user_answers,$current_screen);
+      branchingQOverwrite($questions_array,$question,$paper_type,$user_answers,$current_screen,$userObject);
     } elseif ($question['q_type'] == 'keyword_based') {
       keywordQOverwrite($questions_array,$question,$paper_type,$user_answers,$current_screen,$tmp_q_no);
     } else {

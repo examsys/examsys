@@ -21,7 +21,7 @@
 * @copyright Copyright (c) 2012 The University of Nottingham
 * @package
 */
-
+//todo remove file as nothing includes it
 require_once 'add_edit.inc';
 
 function displayEditTab() {
@@ -58,7 +58,7 @@ function redirect($p_id) {
   exit;   // Stop script execution after the redirect.
 }
 
-function insert_into_questions($q_type, $theme, $scenario, $leadin, $correct_fback, $incorrect_fback, $display_method, $notes, $ownerID, $q_media, $q_media_width, $q_media_height, $creation_date, $last_edited, $bloom, $q_group, $status, $option_order) {
+function insert_into_questions($q_type, $theme, $scenario, $leadin, $correct_fback, $incorrect_fback, $display_method, $notes, $ownerID, $q_media, $q_media_width, $q_media_height, $creation_date, $last_edited, $bloom, $q_group, $status, $option_order) { //todo delete function as nothing calls it
   global $mysqli;
   
   //$theme = htmlspecialchars($theme);

@@ -103,7 +103,7 @@ if (isset($_POST['submit'])) {
   $result->close();
   
   $logger = new Logger($mysqli);
-  $success = $logger->track_change('Post-Exam Blank correction', $_GET['q_id'], $userID, $option_text, $new_option_text, 'Question/Stem');
+  $success = $logger->track_change('Post-Exam Blank correction', $_GET['q_id'], $userObject->get_user_ID(), $option_text, $new_option_text, 'Question/Stem');
   
   // Remark student answers
   $blank_details = explode("[blank", $new_option_text);

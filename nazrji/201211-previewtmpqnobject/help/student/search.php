@@ -107,9 +107,9 @@
     $search_results->bind_result($id, $title, $score);
     $total_hits = $search_results->num_rows;
     $page_size = 25;
-    if (strpos($userroles,'SysAdmin') === false and strpos($userroles,'External') === false) {   // Don't record SysAdmin searches.
+    if (!$userObject->has_role(array('SysAdmin','External'))) {   // Don't record SysAdmin searches.
       $result = $mysqli->prepare("INSERT INTO help_searches VALUES (NULL,'student',?, NOW(),?,?)");
-      $result->bind_param('isi', $userID, $_GET['searchstring'], $total_hits);
+      $result->bind_param('isi', $userObject->get_user_ID(), $_GET['searchstring'], $total_hits);
       $result->execute();  
       $result->close();
     }

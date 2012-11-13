@@ -708,11 +708,11 @@ if ($language != 'en') {
       }
     }
   }
-  $scatter_file = fopen($cfg_tmpdir . $userID. '_scatter.dat', 'w');              // Scatter plot data
+  $scatter_file = fopen($cfg_tmpdir . $userObject->get_user_ID(). '_scatter.dat', 'w');              // Scatter plot data
   fwrite($scatter_file,$scatter_data . "\n");
   fclose($scatter_file);
   
-  $distribution_file = fopen($cfg_tmpdir . $userID . '_distribution.dat', 'w');         // Distribution data
+  $distribution_file = fopen($cfg_tmpdir . $userObject->get_user_ID() . '_distribution.dat', 'w');         // Distribution data
   fwrite($distribution_file, serialize($distribution) . "\n");
   fclose($distribution_file);
 
@@ -862,7 +862,7 @@ if ($language != 'en') {
     // Email Class -----------------------------------------------------------------------------------------
     if (isset($_POST['emailclass']) and $_POST['emailclass'] == 'yes') {
       // Save the latest template to disk.
-      $file = fopen("../email_templates/$userID.txt", "w");
+      $file = fopen("../email_templates/" . $userObject->get_user_ID(), "w");
       fwrite($file,$_POST['from'] . "\n");
       fwrite($file,$_POST['ccaddress'] . "\n");
       fwrite($file,$_POST['bccaddress'] . "\n");

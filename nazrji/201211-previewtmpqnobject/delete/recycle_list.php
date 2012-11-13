@@ -126,7 +126,7 @@ if (isset($_GET['folder'])) {
 <?php
 echo '<tr onclick="qOff();"><th colspan="4"><div class="breadcrumb"><a href="../staff/index.php">' . $string['home'] . '</a></div><div style="font-size:200%; margin-left:10px; font-weight:bold">' . $string['recyclebin'] . '</div>';
 
-$recycle_bin = RecycleBin::get_recyclebin_contents($userID, $teams, $mysqli);
+$recycle_bin = RecycleBin::get_recyclebin_contents($userObject->get_user_ID(), $teams, $mysqli);
 
 $mysqli->close();
 

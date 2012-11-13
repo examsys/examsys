@@ -35,7 +35,7 @@ require '../include/media.inc';
 
 check_var('id', 'GET', true, false);
 
-getSpecialSettings($userID, $mysqli);
+getSpecialSettings($userObject->get_user_ID(), $mysqli);
   
 if ($paper_properties = $mysqli->prepare("SELECT property_id, labs, moduleID, calendar_year, display_correct_answer, display_question_mark, display_students_response, display_feedback, hide_if_unanswered, paper_title, paper_type, UNIX_TIMESTAMP(start_date), UNIX_TIMESTAMP(end_date), bgcolor, fgcolor, themecolor, labelcolor, marking, paper_postscript, pass_mark, latex_needed, password FROM properties WHERE crypt_name=?")) {
   $paper_properties->bind_param('s', $_GET['id']);
@@ -79,7 +79,7 @@ if ($paper_properties = $mysqli->prepare("SELECT property_id, labs, moduleID, ca
       
       // Check to see if the student has sat the paper
       $stmt = $mysqli->prepare("SELECT started FROM log$paper_type WHERE q_paper=? AND userID=?");
-      $stmt->bind_param('ii', $paperID, $userID);
+      $stmt->bind_param('ii', $paperID, $userObject->get_user_ID());
       $stmt->execute();
       $stmt->bind_result($sessionid);
       $stmt->store_result();
@@ -160,7 +160,7 @@ require '../config/finish.inc';
   if (isset($_GET['userid'])) {
     $temp_userID = $_GET['userid'];
   } else {
-    $temp_userID = $userID;
+    $temp_userID = $userObject->get_user_ID();
   }
   $old_q_id = 0;
   $old_screen = 0;

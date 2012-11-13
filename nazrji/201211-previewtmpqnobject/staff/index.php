@@ -25,20 +25,22 @@
 */
 
 require_once '../include/staff_student_auth.inc';
+require_once '../include/errors.inc';
 require_once '../include/sidebar_menu.inc';
 require_once '../classes/recyclebin.class.php';
 require_once '../config/index.inc';
 require_once '../classes/paperutils.class.php';
 
+global $userObject;
 
 // Redirect Students (if not also staff), External Examiners and Invigilators to their own areas.
-if (strpos($userroles,'Student') !== false and strpos($userroles,'Staff') === false and strpos($userroles,'Admin') === false and strpos($userroles,'SysAdmin') === false) {
+if ($userObject->has_role('Student') and !($userObject->has_role(array('Staff', 'Admin', 'SysAdmin')))) {
   header("location: ../students/");
   exit;
-} elseif ($userroles == 'External Examiner') {
+} elseif ($userObject->has_role('ExternalExaminer')) {
   header("location: ../reviews/");
   exit;
-} elseif ($userroles == 'Invigilator') {
+} elseif ($userObject->has_role('Invigilator')) {
   header("location: ../invigilator/");
   exit;
 }
@@ -101,7 +103,8 @@ require_once '../include/staff_auth.inc';
   $duplicate_name = 0;
   if (isset($_POST['submit'])) {
     $new_folder_name = $_POST['folder_name'];
-    $folder_details = $mysqli->prepare("SELECT name FROM folders WHERE ownerID=$userID");
+    $folder_details = $mysqli->prepare("SELECT name FROM folders WHERE ownerID=?");
+    $folder_details->bind_param('i', $userObject->get_user_ID());
     $folder_details->execute();
     $folder_details->bind_result($existing_folder_name);
     $folder_details->fetch();
@@ -111,8 +114,8 @@ require_once '../include/staff_auth.inc';
     $folder_details->close();
 
     if ($duplicate_name == 0) {
-      if ($folder_query = $mysqli->prepare("INSERT INTO folders VALUES (NULL, $userID, ?, '', NOW(), 'yellow', NULL)")) {
-        $folder_query->bind_param('s', $new_folder_name);
+      if ($folder_query = $mysqli->prepare("INSERT INTO folders VALUES (NULL, ?, ?, NOW(), 'yellow', NULL)")) {
+        $folder_query->bind_param('is', $userObject->get_user_ID(), $new_folder_name);
         $folder_query->execute();
         $folder_query->close();
       } else {
@@ -123,7 +126,7 @@ require_once '../include/staff_auth.inc';
 
   // Update the last log in date in users.
   $stmt = $mysqli->prepare("UPDATE users SET last_login=NOW() WHERE id=?");
-  $stmt->bind_param('i', $userID);
+  $stmt->bind_param('i', $userObject->get_user_ID());
   $stmt->execute();
   $stmt->close();
 ?>
@@ -178,7 +181,7 @@ require_once '../include/staff_auth.inc';
 
   // -- Display top 10 recent papers ----------------------------------
   $result = $mysqli->prepare("SELECT paperID, paper_title, accessed, paper_type FROM (recent_papers, properties) WHERE userID=? AND recent_papers.paperID=properties.property_id ORDER BY accessed DESC LIMIT 10");
-  $result->bind_param('i', $userID);
+  $result->bind_param('i', $userObject->get_user_ID());
   $result->execute();
   $result->bind_result($paperID, $paper_title, $accessed, $paper_type);
   $result->store_result();
@@ -193,7 +196,29 @@ require_once '../include/staff_auth.inc';
   $result->close();
 
   // -- Display any papers for review ---------------------------------
-  $result = $mysqli->prepare("SELECT paper_type, paper_title, property_id, bidirectional, fullscreen, DATE_FORMAT(internal_review_deadline,'%d/%m/%Y') AS internal_review_deadline, crypt_name FROM (properties, papers) WHERE deleted IS NULL AND internal_review_deadline >= NOW() AND properties.property_id=papers.paper AND internal_reviewers LIKE '%$userID%' GROUP BY paper");
+  $result = $mysqli->prepare("SELECT paper_type, paper_title, property_id, bidirectional, fullscreen, DATE_FORMAT(internal_review_deadline,'%d/%m/%Y') AS internal_review_deadline, crypt_name FROM (properties, papers) WHERE deleted IS NULL AND internal_review_deadline >= NOW() AND properties.property_id=papers.paper AND internal_reviewers LIKE ? GROUP BY paper");
+  $db=$mysqli;
+  if ($db->error) {
+    try {
+      throw new Exception("0MySQL error $db->error <br> Query:<br> $query", $db->errno);
+    }
+    catch (Exception $e) {
+      echo "Error No: " . $e->getCode() . " - " . $e->getMessage() . "<br />";
+      echo nl2br($e->getTraceAsString());
+    }
+  }
+  $tmp='%' . $userObject->get_user_ID() . '%';
+  $result->bind_param('i', $tmp);
+  $db=$mysqli;
+  if ($db->error) {
+    try {
+      throw new Exception("0MySQL error $db->error <br> Query:<br> $query", $db->errno);
+    }
+    catch (Exception $e) {
+      echo "Error No: " . $e->getCode() . " - " . $e->getMessage() . "<br />";
+      echo nl2br($e->getTraceAsString());
+    }
+  }
   $result->execute();
   $result->bind_result($paper_type, $paper_title, $property_id, $bidirectional, $fullscreen, $internal_review_deadline, $crypt_name);
   $result->store_result();
@@ -204,8 +229,8 @@ require_once '../include/staff_auth.inc';
   }
   while ($result->fetch()) {
     $reviewed = '';
-    $result2 = $mysqli->prepare("SELECT DATE_FORMAT(MAX(reviewed),'%d/%m/%Y %T') AS started FROM review_comments WHERE reviewer=$userID and q_paper=?");
-    $result2->bind_param('i', $property_id);
+    $result2 = $mysqli->prepare("SELECT DATE_FORMAT(MAX(reviewed),'%d/%m/%Y %T') AS started FROM review_comments WHERE reviewer=? and q_paper=?");
+    $result2->bind_param('ii', $userObject->get_user_ID(), $property_id);
     $result2->execute();
     $result2->bind_result($reviewed);
     $result2->fetch();
@@ -227,11 +252,12 @@ require_once '../include/staff_auth.inc';
 <?php
   // -- Display personal folders --------------------------------------
   $module_sql = '';
-  if (count($staff_modules) > 0) {
-    $module_sql == " OR idMod IN ('" . implode("','",array_keys($staff_modules)) . "'') ";
+  if (count($userObject->get_staff_modules()) > 0) {
+    $module_sql = " OR idMod IN (" . implode(",",array_keys($userObject->get_staff_modules())) . ")";
   }
 
-  $result = $mysqli->prepare("SELECT id, name, color FROM folders,folders_modules_staff WHERE folders.id = folders_modules_staff.folders_id AND (ownerID=$userID $module_sql) AND name NOT LIKE '%;%' AND deleted IS NULL ORDER BY name, id");
+  $result = $mysqli->prepare("SELECT id, name, color FROM folders LEFT JOIN folders_modules_staff ON folders.id = folders_modules_staff.folders_id WHERE  (ownerID=? $module_sql) AND name NOT LIKE '%;%' AND deleted IS NULL ORDER BY name, id");
+  $result->bind_param('i', $userObject->get_user_ID());
   $result->execute();
   $result->bind_result($id, $name, $color);
   $result->store_result();
@@ -251,7 +277,7 @@ require_once '../include/staff_auth.inc';
     }
   }
 
-  echo "<div class=\"f\"><a href=\"../delete/recycle_list.php\" class=\"blacklink\"><img style=\"vertical-align:middle; padding-right:8px\" src=\"../artwork/" . RecycleBin::get_recyclebin_icon($userID, $staff_modules, $mysqli) . "\" width=\"48\" height=\"48\" alt=\"Recycle Bin\" border=\"0\" align=\"middle\" />" . $string['recyclebin'] . "</a></div>\n";
+  echo "<div class=\"f\"><a href=\"../delete/recycle_list.php\" class=\"blacklink\"><img style=\"vertical-align:middle; padding-right:8px\" src=\"../artwork/" . RecycleBin::get_recyclebin_icon($userObject->get_user_ID(), $staff_modules, $mysqli) . "\" width=\"48\" height=\"48\" alt=\"Recycle Bin\" border=\"0\" align=\"middle\" />" . $string['recyclebin'] . "</a></div>\n";
 ?>
 <br clear="left" />
 <?php
@@ -259,12 +285,12 @@ require_once '../include/staff_auth.inc';
     echo "<br />\n";
     // -- Display module folders ------------------------------------
     $module_no = count($modules_array);
-    if (strpos($userroles, 'Admin') !== false) $module_no++;
+    if ($userObject->has_role('Admin')) $module_no++;
 
     echo "<table border=\"0\" class=\"subsect\"><tr><td><nobr>" . $string['mymodules'] . " ($module_no)</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
-    if (strpos($userroles, 'SysAdmin') !== false) {
+    if ($userObject->has_role('SysAdmin')) {
       echo "<div class=\"f\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"width:60px\" align=\"center\"><a href=\"../folder/all.php\"><img src=\"../artwork/yellow_folder.png\" width=\"48\" height=\"48\" alt=\"Folder\" border=\"0\" align=\"middle\" /></a>&nbsp;</td><td><a href=\"../folder/all.php\" class=\"blacklink\"><strong>" . $string['allmodules']  . "</strong></a><br /><span style=\"color:#C00000\">(" . $string['sysadminonly'] . ")</span></td></tr></table></div>\n";
-    } elseif (strpos($userroles,'Admin') !== false) {
+    } elseif ($userObject->has_role('Admin')) {
       echo "<div class=\"f\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"width:60px\" align=\"center\"><a href=\"../folder/all.php\"><img src=\"../artwork/yellow_folder.png\" width=\"48\" height=\"48\" alt=\"Folder\" border=\"0\" align=\"middle\" /></a>&nbsp;</td><td><a href=\"../folder/all.php\" class=\"blacklink\"><strong>" . $string['allmodulesinschool'] . "</strong></a><br /><span style=\"color:#C00000\">(" . $string['adminonly'] . ")</span></td></tr></table></div>\n";
     }
     foreach ($modules_array as $folder_title => $url) {
@@ -279,24 +305,29 @@ require_once '../include/staff_auth.inc';
     echo '<br clear="left" /><br />';
 
     // -- Display papers not assigned to a module -------------------
-    $result = $mysqli->prepare("SELECT DISTINCT properties.property_id, paper_type, MAX(screen) AS screens, paper_title, DATE_FORMAT(start_date,'$cfg_short_date') AS start_date, DATE_FORMAT(start_date,'$cfg_short_date %H:%i') AS display_start_date, DATE_FORMAT(end_date,'%d/%m/%y %H:%i') AS display_end_date, exam_duration, title, initials, surname, retired, properties.password FROM properties LEFT JOIN users ON properties.paper_ownerID=users.id LEFT JOIN papers ON properties.property_id=papers.paper LEFT JOIN properties_modules ON properties.property_id=properties_modules.property_id WHERE paper_ownerID=$userID AND idMod is NULL AND deleted IS NULL GROUP BY paper_title ORDER BY paper_title");
+    $result = $mysqli->prepare("SELECT DISTINCT properties.property_id, paper_type, MAX(screen) AS screens, paper_title, DATE_FORMAT(start_date,'$cfg_short_date') AS start_date, DATE_FORMAT(start_date,'$cfg_short_date %H:%i') AS display_start_date, DATE_FORMAT(end_date,'%d/%m/%y %H:%i') AS display_end_date, exam_duration, title, initials, surname, retired, properties.password FROM properties LEFT JOIN users ON properties.paper_ownerID=users.id LEFT JOIN papers ON properties.property_id=papers.paper LEFT JOIN properties_modules ON properties.property_id=properties_modules.property_id WHERE paper_ownerID=? AND idMod is NULL AND deleted IS NULL GROUP BY paper_title ORDER BY paper_title");
+    $result->bind_param('i', $userObject->get_user_ID());
     $result->execute();
     $result->bind_result($property_id, $paper_type, $screens, $paper_title, $start_date, $display_start_date, $display_end_date, $exam_duration, $title, $initials, $surname, $retired, $password);
     $result->store_result();
-    $moduleID = '';
     if ($result->num_rows > 0) {
       echo "<table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>" . $string['unassignedpapers'] . " (" . $result->num_rows . ")<nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
       while ($result->fetch()) {
-        display_paper_icon($userID, $property_id, $paper_type, $screens, $paper_title, $start_date, $display_start_date, $display_end_date, $exam_duration, $title, $initials, $surname, $retired, $moduleID, $password);
+        display_paper_icon($userObject->get_user_ID(), $property_id, $paper_type, $screens, $paper_title, $start_date, $display_start_date, $display_end_date, $exam_duration, $title, $initials, $surname, $retired, $password, $userObject);
       }
     }
     $result->close();
   }
 
   $mysqli->close();
-?>
-</div>
-</div>
 
+
+
+  ?>
+
+
+</div>
+</div>
 </body>
 </html>
+

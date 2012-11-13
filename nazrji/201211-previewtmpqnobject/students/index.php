@@ -30,7 +30,7 @@ require '../config/index.inc';
 require '../classes/dateutils.class.php';
 
 // Redirect External Examiners if they are straying
-if (strpos($userroles,'External Examiner') !== false) {
+if ($userObject->has_role('External Examiner')) {
   if ($_SERVER['PHP_SELF'] != '/staff/index.php' and $_SERVER['PHP_SELF'] != '/reviews/index.php' and $_SERVER['PHP_SELF'] != '/reviews/start.php' and $_SERVER['PHP_SELF'] != '/reviews/finish.php') {
     header("location: " . $protocol. $_SERVER['HTTP_HOST'] . $cfg_root_path . "/reviews/");
   }
@@ -63,7 +63,7 @@ $lab_info->close();
 $modules = array();
 $i = 0;
 if ($stmt = $mysqli->prepare("SELECT m.ModuleID, m.fullname, sm.calendar_year FROM modules m INNER JOIN student_modules sm on m.moduleID = sm.moduleid WHERE sm.userID = ? AND m.active = 1 ORDER BY sm.calendar_year ASC, m.fullname ASC")) {
-  $stmt->bind_param('i', $userID);
+  $stmt->bind_param('i', $userObject->get_user_ID());
   $stmt->execute();
   $stmt->bind_result($moduleID, $module_name, $module_year);
   while ($stmt->fetch()) {
@@ -123,7 +123,7 @@ for ($i = 0; $i < count($modules); $i++) {
 $papers_taken = array();
 $log_query = "SELECT DISTINCT q_paper FROM log2 WHERE userID=?";
 $stmt = $mysqli->prepare($log_query);
-$stmt->bind_param('i', $userID);
+$stmt->bind_param('i', $userObject->get_user_ID());
 $stmt->execute();
 $stmt->bind_result($q_paper);
 while ($stmt->fetch()) {

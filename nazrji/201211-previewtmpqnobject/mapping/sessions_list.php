@@ -27,7 +27,7 @@
   
   check_var('module', 'GET', true, false);
 
-  if (in_array($_GET['module'], $staff_modules) === false and strpos($userroles,'SysAdmin') === false) {
+  if (in_array($_GET['module'], $staff_modules) === false and !$userObject->has_role('SysAdmin')) {
     exit;
   }
 ?>

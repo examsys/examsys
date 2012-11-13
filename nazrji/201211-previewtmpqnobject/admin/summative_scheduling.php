@@ -132,41 +132,76 @@ function getLabs($labs, $mysqlidb) {
   $rowID = 0;
   $months = array('january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december');
   
-  $results = $mysqli->prepare("SELECT property_id, paper_title, moduleID, period, barriers_needed, cohort_size, campus FROM (properties, scheduling) WHERE start_date IS NULL AND properties.property_id=scheduling.paperID AND deleted IS NULL ORDER BY period");
+  $papers = array();
+  
+  $results = $mysqli->prepare("SELECT properties.property_id, paper_title, moduleid, period, barriers_needed, cohort_size, campus FROM (properties, properties_modules, modules, scheduling) WHERE start_date IS NULL AND properties.property_id=scheduling.paperID AND properties.property_id=properties_modules.property_id AND properties_modules.idMod=modules.id AND deleted IS NULL ORDER BY period");
   $results->execute();
   $results->store_result();
   $results->bind_result($property_id, $paper_title, $moduleID, $period, $barriers_needed, $cohort_size, $campus);
   while ($results->fetch()) {
-    $rowID++;
-    $cohort_size = str_replace('<', '&lt;', $cohort_size);
+    if (!isset($papers[$property_id])) {
+      $papers[$property_id] = array('paper_title'=>$paper_title, 'period'=>$period, 'barriers_needed'=>$barriers_needed, 'cohort_size'=>$cohort_size, 'campus'=>$campus);
+    }
+    $papers[$property_id]['modules'][] = $moduleID;
+  }
+  $results->close();
+  
+  foreach ($papers as $property_id=>$paper_details) {
+    $cohort_size = str_replace('<', '&lt;', $paper_details['cohort_size']);
     $cohort_size = str_replace('>', '&gt;', $cohort_size);
     
-    if ($period != '') {
-      $display_month = $string[$months[$period]];
+    if ($paper_details['period'] != '') {
+      $display_month = $string[$months[$paper_details['period']]];
     } else {
       $display_month = '&lt;unknown&gt;';
     }
     
     echo "<tr onclick=\"sel($property_id)\" onmouseover=\"lon($property_id)\" onmouseout=\"loff($property_id)\" ondblclick=\"viewDetails()\" id=\"$property_id\">";
-    echo "<td class=\"s\" style=\"padding-left:24px\">$paper_title</td><td class=\"s\">$display_month</td><td class=\"s\">$campus</td><td class=\"s\">$moduleID</td><td class=\"s\">$cohort_size</td></tr>\n";
+    echo "<td class=\"s\" style=\"padding-left:24px\">" . $paper_details['paper_title'] . "</td><td class=\"s\">$display_month</td><td class=\"s\">". $paper_details['campus'] . "</td><td class=\"s\">";
+    $html = '';
+    foreach ($paper_details['modules'] as $individual_module) {
+      if ($html == '') {
+        $html = $individual_module;
+      } else {
+        $html .= ', ' . $individual_module;
+      }
+    }
+    echo "$html</td><td class=\"s\">$cohort_size</td></tr>\n";
   }
-  $results->close();
 ?>
   <tr><td colspan="5">&nbsp;</td></tr>
   <tr><td colspan="5"><table border="0" class="subsect" style="width:98%"><tr><td><nobr><?php echo $string['scheduled']; ?></nobr></td><td style="width:98%"><hr noshade="noshade" style="border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%" /></td></tr></table></td></tr>
 <?php
-  $results = $mysqli->prepare("SELECT property_id, paper_title, moduleID, period, barriers_needed, cohort_size, campus, DATE_FORMAT(start_date,'$cfg_long_date_time'), end_date, labs FROM (properties, scheduling) WHERE start_date > NOW() AND properties.property_id=scheduling.paperID AND deleted IS NULL ORDER BY period");
+  $papers = array();
+  
+  $results = $mysqli->prepare("SELECT properties.property_id, paper_title, moduleid, period, barriers_needed, cohort_size, campus, DATE_FORMAT(start_date,'$cfg_long_date_time'), end_date, labs FROM (properties, properties_modules, modules, scheduling) WHERE start_date > NOW() AND properties.property_id=scheduling.paperID AND properties.property_id=properties_modules.property_id AND properties_modules.idMod=modules.id AND deleted IS NULL ORDER BY period");
   $results->execute();
   $results->store_result();
   $results->bind_result($property_id, $paper_title, $moduleID, $period, $barriers_needed, $cohort_size, $campus, $start_date, $end_date, $labs);
   while ($results->fetch()) {
-    $rowID++;
-    $cohort_size = str_replace('<', '&lt;', $cohort_size);
-    $cohort_size = str_replace('>', '&gt;', $cohort_size);
-    echo "<tr onclick=\"sel($property_id)\" onmouseover=\"lon($property_id)\" onmouseout=\"loff($property_id)\" ondblclick=\"viewDetails()\" id=\"$property_id\">";
-    echo "<td class=\"s\"><img src=\"../artwork/shortcut_calendar_icon.png\" width=\"16\" height=\"14\" border=\"0\" />&nbsp;$paper_title</td><td class=\"s\">" . $start_date . "</td><td class=\"s\">$campus " . getLabs($labs, $mysqli) . "</td><td class=\"s\">$moduleID</td><td class=\"s\">$cohort_size</td></tr>\n";
+    if (!isset($papers[$property_id])) {
+      $papers[$property_id] = array('paper_title'=>$paper_title, 'period'=>$period, 'barriers_needed'=>$barriers_needed, 'cohort_size'=>$cohort_size, 'campus'=>$campus, 'start_date'=>$start_date, 'end_date'=>$end_date, 'labs'=>$labs);
+    }
+    $papers[$property_id]['modules'][] = $moduleID;
   }
   $results->close();
+
+  foreach ($papers as $property_id=>$paper_details) {
+    $cohort_size = str_replace('<', '&lt;', $paper_details['cohort_size']);
+    $cohort_size = str_replace('>', '&gt;', $cohort_size);
+
+    echo "<tr onclick=\"sel($property_id)\" onmouseover=\"lon($property_id)\" onmouseout=\"loff($property_id)\" ondblclick=\"viewDetails()\" id=\"$property_id\">";
+    echo "<td class=\"s\"><img src=\"../artwork/shortcut_calendar_icon.png\" width=\"16\" height=\"14\" border=\"0\" />&nbsp;" . $paper_details['paper_title'] . "</td><td class=\"s\">" . $paper_details['start_date'] . "</td><td class=\"s\">$campus " . getLabs($paper_details['labs'], $mysqli) . "</td><td class=\"s\">";
+    $html = '';
+    foreach ($paper_details['modules'] as $individual_module) {
+      if ($html == '') {
+        $html = $individual_module;
+      } else {
+        $html .= ', ' . $individual_module;
+      }
+    }
+    echo "$html</td><td class=\"s\">$cohort_size</td></tr>\n";
+  }
 ?>
 </table>
 </div>

@@ -2095,6 +2095,8 @@ QUERY;
           `request_method` enum('GET','HEAD','POST','PUT','DELETE') default NULL,
           `paperID` mediumint unsigned default NULL,
           `post_data` text,
+          `variables` longtext,
+          `backtrace` longtext,
           PRIMARY KEY  (`id`)
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;

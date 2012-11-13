@@ -77,9 +77,9 @@ if ($returned_check === false) {
 
 list($fullname, $school, $active, $selfenroll) = $returned_check;
 
-if ($active == 1 and $selfenroll == 1 and isset($_POST['submit']) and !UserUtils::is_user_on_module($userID, $_GET['moduleid'], $_POST['session'], $mysqli)) {
+if ($active == 1 and $selfenroll == 1 and isset($_POST['submit']) and !UserUtils::is_user_on_module($userObject->get_user_ID(), $_GET['moduleid'], $_POST['session'], $mysqli)) {
   // Insert new module enrollment
-  UserUtils::add_student_to_module($userID, $_GET['moduleid'], 1, $_POST['session'], $mysqli);
+  UserUtils::add_student_to_module($userObject->get_user_ID(), $_GET['moduleid'], 1, $_POST['session'], $mysqli);
 }
 
 ?>

@@ -35,7 +35,7 @@ require_once '../../include/media.inc';
 require_once '../../include/metadata.inc';
 require_once '../../include/mapping.inc';
 
-$state = $stateutil->getState($userID, $mysqli);
+$state = $stateutil->getState($userObject->get_user_ID(), $mysqli);
 
 $question = null;
 $logger = new Logger($mysqli);
@@ -58,7 +58,7 @@ $save_source = 'FORM';
 
 require_once '../../include/save_question.inc.php';
 
-$question = get_question($mode, $critical_error, $userID, $paper_id, $string, $mysqli);
+$question = get_question($mode, $critical_error, $userObject, $paper_id, $string, $mysqli);
 
 // Handle upload of files for question types that require it
 if ($critical_error == '' and $question->requires_media() and (isset($_POST['submit_media']) or isset($_POST['q_media']))) {
@@ -96,7 +96,7 @@ if ($critical_error == '') {
   // If existing question, check how many summative papers it is on
   if ($mode == 'Edit') {
     $paper_count = $question->get_other_summative_count($paper_id);
-  }
+  } //TODO why is this block and above in distinct if statements
 
   // Get any existing media
   $current_media = $question->get_media();
@@ -165,19 +165,19 @@ if ($critical_error == '') {
     }
   } elseif ((isset($_POST['submit']) and $_POST['submit'] == $string['save']) or isset($_POST['addbank']) or isset($_POST['addpaper'])) {
     // Save data
-    $do_save = populate_question($question, $userID, $mysqli);
+    $do_save = populate_question($question, $userObject->get_user_ID(), $mysqli);
   } elseif (isset($_POST['submit-cancel']) and $_POST['submit-cancel'] == $string['cancel']) {
     $question->clear_checkout();
-    redirect();
+    redirect($userObject,$mysqli);
   }
 
   if ($do_save) {
     // If not errored then save the question
     if (count($errors) == 0) {
-      $errors = save_question($question, $userID, $paper_id, $mode, $string, $state, $mysqli);
+      $errors = save_question($question, $userObject->get_user_ID(), $paper_id, $mode, $string, $state, $mysqli);
     }
 
-    if (count($errors) == 0) redirect();
+    if (count($errors) == 0) redirect($userObject,$mysqli);
   }
 
   $q_type_display = '';
@@ -304,7 +304,7 @@ if ($critical_error == '') {
 <?php
   $banner_spacer = '';
   $editor = $question->get_checkout_author_name();
-  $q_disabled = check_edit_rights($question->id, $question->get_checkout_author_id(), $editor, $question->get_checkout_time('timestamp'), $question->get_locked(), $mysqli);
+  $q_disabled = check_edit_rights($question->id, $question->get_checkout_author_id(), $editor, $question->get_checkout_time('timestamp'), $question->get_locked(), $mysqli, $userObject);
 
   if ($q_disabled != '') {
     $banner_spacer = ' class="banner-spaced"';
@@ -402,7 +402,7 @@ if (count($question->get_teams()) > 0) {
   $q_teams = explode(',', $state['default_team']);
 }
 
-echo render_metadata($mysqli, $question, $question->use_bloom(), $q_teams, $q_disabled, $string);
+echo render_metadata($mysqli, $question, $question->use_bloom(), $q_teams, $q_disabled, $string, $userObject);
 ?>
         </div>
       </div>
@@ -457,10 +457,10 @@ echo render_objectives_mapping_form($mysqli, $paper_id, $string);
 
     <div id="button-bar">
 <?php
-echo save_buttons($mode, $q_disabled, $question->get_locked(), $question->allow_correction(), $userID, $question->get_checkout_author_id(), $paper_id, $paper_count, $string);
+echo save_buttons($mode, $q_disabled, $question->get_locked(), $question->allow_correction(), $userObject->get_user_ID(), $question->get_checkout_author_id(), $paper_id, $paper_count, $string);
 ?>
       <input type="hidden" id="q_id" name="q_id" value="<?php echo $question->id ?>" />
-      <input name="checkout_author" value="<?php echo $userID ?>" type="hidden" />
+      <input name="checkout_author" value="<?php echo $userObject->get_user_ID() ?>" type="hidden" />
       <input id="calling" name="calling" value="<?php echo $calling; ?>" type="hidden" />
       <input id="module" name="module" value="<?php echo $module; ?>" type="hidden" />
       <input id="folder" name="folder" value="<?php echo $folder; ?>" type="hidden" />

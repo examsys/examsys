@@ -24,17 +24,17 @@
 
 require '../include/staff_auth.inc';
 
-function keywords_from_file($fileName) {
-  global $mysqli, $userID;
+function keywords_from_file($fileName,$userObject) {
+  global $mysqli, $DISABLEDuserID;
 
   if ($_GET['module'] == '') {
     $type = 'personal';
-    $tmp_userID = $userID;
+    $tmp_userID = $userObject->get_user_ID();
     
     // Get the existing personal keywords.
     $existing_keywords = array();
     $result = $mysqli->prepare("SELECT keyword FROM keywords_user WHERE userID=?");
-    $result->bind_param('i', $userID);
+    $result->bind_param('i', $userObject->get_user_ID());
     $result->execute();
     $result->bind_result($keyword);
     while ($result->fetch()) {
@@ -78,12 +78,12 @@ function keywords_from_file($fileName) {
 
 if (isset($_POST['submit'])) {
   if ($_FILES['txtfile']['name'] != 'none' and $_FILES['txtfile']['name'] != '') {
-    if (!move_uploaded_file($_FILES['txtfile']['tmp_name'], $cfg_tmpdir . $userID . "_keywords.txt"))  {
+    if (!move_uploaded_file($_FILES['txtfile']['tmp_name'], $cfg_tmpdir . $userObject->get_user_ID() . "_keywords.txt"))  {
       echo uploadError($_FILES['txtfile']['error']);
       exit;
     } else {
-      keywords_from_file($cfg_tmpdir . $userID . '_keywords.txt');
-      unlink($cfg_tmpdir . $userID . '_keywords.txt');
+      keywords_from_file($cfg_tmpdir . $userObject->get_user_ID() . '_keywords.txt',$userObject->get_user_ID());
+      unlink($cfg_tmpdir . $userObject->get_user_ID() . '_keywords.txt');
       header("location: list_keywords.php?paperID=". $_GET['paperID'] . "&module=" . $_GET['module'] . "&folder=" . $_GET['folder']);
     }
   }

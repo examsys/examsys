@@ -26,7 +26,7 @@ require '../include/staff_auth.inc';
 require '../include/demo_replace.inc';
 require './osce.inc';
 
-if (strpos($userroles,'Demo') !== false) $demo = true;
+if ($userObject->has_role('Demo')) $demo = true;
 
 // Get the module ID and calendar year of the OSCE station.
 $result = $mysqli->prepare("SELECT username, title, surname, first_names, grade, yearofstudy, student_id FROM (users, sid) WHERE users.id=? AND users.id=sid.userID");

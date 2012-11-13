@@ -30,7 +30,7 @@
 
   $negative = 0;
   $scale_start = 0;
-  $mydata = file($cfg_tmpdir . $userID . '_scatter.dat');
+  $mydata = file($cfg_tmpdir . $userObject->get_user_ID() . '_scatter.dat');
   for ($i=0; $i<=count($mydata); $i=$i+2) {
     if (isset($mydata[$i])) {
       $mark = trim($mydata[$i]);
@@ -83,7 +83,7 @@
     ImageString($Image, 2, 14 + $negative, 243-($i*60), $i*60, $black);
   }
 
-  $mydata = file($cfg_tmpdir . $userID . '_scatter.dat');
+  $mydata = file($cfg_tmpdir . $userObject->get_user_ID() . '_scatter.dat');
   $count_mydata = count($mydata) - 2;
   for ($i=0; $i<$count_mydata; $i=$i+2) {
     $mark = trim($mydata[$i]);

@@ -36,7 +36,7 @@ class IE_qti12_Save extends IE_Main {
     print_p($params);
     echo "<h4>{$string['generaldebuginfo']}</h4>";
 
-    global $userID;
+    global $REPLACEMEuserIDold;
     $data->ownerID = $userID;
 
     $this->data =& $data;

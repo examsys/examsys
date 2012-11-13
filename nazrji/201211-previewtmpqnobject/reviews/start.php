@@ -43,7 +43,7 @@ if (isset($_GET['no_screens'])) {
 }
 
 $stmt = $mysqli->prepare("SELECT background, foreground, textsize, marks_color, themecolor, labelcolor, font FROM special_needs, users WHERE users.id=special_needs.userID AND special_needs=1 AND users.id=?");
-$stmt->bind_param('i', $userID);
+$stmt->bind_param('i', $userObject->get_user_ID());
 $stmt->execute();
 $stmt->store_result();
 $stmt->bind_result($bgcolor, $fgcolor, $textsize, $marks_color, $themecolor, $labelcolor, $font);
@@ -120,7 +120,7 @@ if (isset($_POST['sessionid'])) {
 } else {
   if (($paper_type == '1' or $paper_type == '2' or $paper_type == '3') and !isset($_GET['mode'])) {  //Mode is used for staff preview.
     $stmt = $mysqli->prepare("SELECT DATE_FORMAT(MAX(started),\"%Y%m%d%H%i%s\") AS started FROM log$paper_type WHERE q_paper=? AND userID=? GROUP BY screen DESC LIMIT 1");
-    $stmt->bind_param('ii', $property_id, $userID);
+    $stmt->bind_param('ii', $property_id, $userObject->get_user_ID());
     $stmt->execute();
     $stmt->store_result();
     $stmt->bind_result($sessionid);
@@ -302,7 +302,7 @@ echo '" onsubmit="return confirmSubmit()">';   // Warning message only in linear
   <tr><td valign="top">
   <?php
   if (isset($_POST['old_screen']) and (($_POST['old_screen'] != '' and time() <= $review_deadline and time() <= $start_date) or $start_date == '')) {
-    record_comments($property_id, $_POST['old_screen'], $mysqli, $_POST, $userID, $review_type);
+    record_comments($property_id, $_POST['old_screen'], $mysqli, $_POST, $userObject->get_user_ID(), $review_type);
   }
 
   echo $top_table_html;
@@ -340,7 +340,7 @@ echo '" onsubmit="return confirmSubmit()">';   // Warning message only in linear
   $previous_duration = 0;
   $screen_pre_submitted = 0;
   $reviews_array = array();
-  $result = $mysqli->prepare("SELECT q_id, category, comment, duration, action, response FROM review_comments WHERE q_paper=? AND screen=? AND reviewer=$userID");
+  $result = $mysqli->prepare("SELECT q_id, category, comment, duration, action, response FROM review_comments WHERE q_paper=? AND screen=? AND reviewer=$userObject->get_user_ID()");
   $result->bind_param('ii', $property_id, $current_screen);
   $result->execute();
   $result->store_result();

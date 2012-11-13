@@ -28,7 +28,7 @@ require_once '../classes/mappingutils.class.php';
 require_once '../classes/moduleutils.class.php';
 
 
-if (in_array($_GET['module'], $staff_modules) === false and strpos($userroles,'SysAdmin') === false) {
+if (in_array($_GET['module'], $staff_modules) === false and !$userObject->has_role('SysAdmin')) {
   exit;
 }
 
@@ -133,6 +133,7 @@ if ($vle_api != '') {
 <?php
 if ($vle_api == '') {
   echo '<tr><td class="ico"><a href="load_session_from_txt.php?module=' . $_GET['module'] . '"><img src="../artwork/import_16.gif" width="16" height="16" alt="" /></a></td><td class="menuitem"><a href="load_session_from_txt.php?module=' . $_GET['module'] . '">' . $string['importfile'] . '</a></td></tr>';
+  echo '<tr><td class="ico"><a href="export_session_to_txt.php?module=' . $_GET['module'] . '"><img src="../artwork/import_16.gif" width="16" height="16" alt="" /></a></td><td class="menuitem"><a href="export_session_to_txt.php?module=' . $_GET['module'] . '">Export Sessions</a></td></tr>';
 }
 ?>
 <tr><td class="ico"><img src="../artwork/edit_grey.png" width="16" height="16" alt="" /></td><td class="greymenuitem"><?php echo $string['editsession']; ?></td></tr>
@@ -140,8 +141,7 @@ if ($vle_api == '') {
 <?php
 if ($vle_api == '') {
 	echo '<tr><td class="ico"><img onclick="showSessCopyMenu(event)" src="../artwork/copy_icon.gif" width="16" height="16" alt="Copy year" /></td><td class="menuitem sub"><a href="#" onclick="showSessCopyMenu(event); return false;"><span>' . $string['copyyear'] . '</span></a></td></tr>';
-}
-else {
+} else {
 	echo '<tr><td class="ico"><img onclick="alert(\'Copy year is not available for ' . $vle_name . ' modules\') return false;" src="../artwork/copy_icon.gif" width="16" height="16" alt="" /></td><td class="menuitem sub"><a href="#" onclick="alert(\'Copy year is not available for ' . $vle_name . ' modules\'); return false;"><span>' . $string['copyyear'] . '</span></a></td></tr>';
 }
 ?>
@@ -152,6 +152,7 @@ else {
 <?php
 if ($vle_api == '') {
   echo '<tr><td class="ico"><a href="load_session_from_txt.php?module=' . $_GET['module'] . '"><img src="../artwork/import_16.gif" width="16" height="16" alt="" /></a></td><td class="menuitem"><a href="load_session_from_txt.php?module=' . $_GET['module'] . '">' . $string['importfile'] . '</a></td></tr>';
+  echo '<tr><td class="ico"><a href="export_session_to_xml.php?module=' . $_GET['module'] . '"><img src="../artwork/import_16.gif" width="16" height="16" alt="" /></a></td><td class="menuitem"><a href="export_session_to_xml.php?module=' . $_GET['module'] . '">Export Sessions</a></td></tr>';
 }
 ?>
 <tr><td class="ico"><img onclick="hideSessCopyMenu(event); editSession()" src="../artwork/edit.png" width="16" height="16" alt="" /></td><td class="menuitem"><a href="" onclick="hideSessCopyMenu(event); editSession(); return false;"><?php echo $string['editsession']; ?></a></td></tr>
@@ -171,6 +172,7 @@ else {
 <?php
 if ($vle_api == '') {
   echo '<tr><td class="ico"><a href="load_session_from_txt.php?module=' . $_GET['module'] . '"><img src="../artwork/import_16.gif" width="16" height="16" alt="" /></a></td><td class="menuitem"><a href="load_session_from_txt.php?module=' . $_GET['module'] . '">' . $string['importfile'] . '</a></td></tr>';
+  echo '<tr><td class="ico"><a href="export_session_to_xml.php?module=' . $_GET['module'] . '"><img src="../artwork/import_16.gif" width="16" height="16" alt="" /></a></td><td class="menuitem"><a href="export_session_to_xml.php?module=' . $_GET['module'] . '">Export Sessions</a></td></tr>';
 }
 ?>
 <tr><td class="ico"><img onclick="hideSessCopyMenu(event); editVLESession()" src="../artwork/edit.png" width="16" height="16" alt="" /></td><td class="menuitem"><a href="" onclick="hideSessCopyMenu(event); editVLESession(); return false;"><?php echo $string['editsession']; ?></a></td></tr>

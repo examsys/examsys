@@ -26,7 +26,8 @@
 
 require_once 'staff_student_auth.inc';
 
-if (strpos($userroles,'Admin') === false AND strpos($userroles,'Invigilator') === false) {
+//if (strpos($userroles,'Admin') === false AND strpos($userroles,'Invigilator') === false) {
+if (!$userObject->has_role('Admin', 'Invigilator')) {
   access_denied('You are attempting to access a <strong>Invigilator Only</strong> page.', false, true);
 } 
 ?>

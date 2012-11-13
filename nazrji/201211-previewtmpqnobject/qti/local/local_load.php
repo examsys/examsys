@@ -145,7 +145,7 @@ class IE_Local_Load extends IE_Main {
   }
 
   function LoadQuestion($q_id) {
-    global $userID, $show_debug;
+    global $REPLACEMEuserIDold, $show_debug;
     //echo "<div>Loading question $q_id</div>";
 
     // storage for question data

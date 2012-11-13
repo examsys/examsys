@@ -25,6 +25,7 @@
 require '../../include/staff_auth.inc';
 require '../../include/errors.inc';
 require_once '../../classes/questionutils.class.php';
+
 ?>
 <html>
 <head>
@@ -98,11 +99,12 @@ require_once '../../classes/questionutils.class.php';
   $id = 0;
   if ($order == 'leadin') $order = 'leadin_plain';
   if ($order == 'q_type') $order = 'CAST(q_type AS CHAR)';
+
+  $teams = $userObject->get_staff_modules();
+  $module_id_list = implode(',', array_keys($teams));
   
-  $myteams = implode("','", $teams);
-  
-  $stmt = $mysqli->prepare("SELECT q_id, q_type, leadin, q_media, q_media_width, q_media_height, DATE_FORMAT(last_edited,'$cfg_short_date') AS display_date, locked FROM questions WHERE status=? AND (ownerID=$userID OR q_group IN ('$myteams')) AND deleted IS NULL ORDER BY $order $direction");
-  $stmt->bind_param('s', $_GET['status']);
+  $stmt = $mysqli->prepare("SELECT questions.q_id, q_type, leadin, q_media, q_media_width, q_media_height, DATE_FORMAT(last_edited,'$cfg_short_date') AS display_date, locked FROM (questions, questions_modules, modules) WHERE questions.q_id=questions_modules.q_id AND questions_modules.idMod=modules.id AND status=? AND (ownerID=? OR modules.id IN ($module_id_list)) AND deleted IS NULL ORDER BY $order $direction");
+  $stmt->bind_param('si', $_GET['status'], $userObject->get_user_ID());
   $stmt->execute();
   $stmt->store_result();
   $stmt->bind_result($q_id, $q_type, $leadin, $q_media, $q_media_width, $q_media_height, $display_date, $locked);

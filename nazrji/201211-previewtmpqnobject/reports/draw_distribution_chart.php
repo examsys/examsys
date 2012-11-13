@@ -26,7 +26,7 @@
 
   require '../include/staff_auth.inc';
 
-  $mydata = file($cfg_tmpdir . $userID . '_distribution.dat');
+  $mydata = file($cfg_tmpdir . $userObject->get_user_ID() . '_distribution.dat');
   $mydata = unserialize($mydata[0]);
   
   $max_frequency = 0;

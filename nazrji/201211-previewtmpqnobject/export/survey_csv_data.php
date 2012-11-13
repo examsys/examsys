@@ -85,10 +85,10 @@ if ($_GET['complete'] == 1) {
   $stmt = $mysqli->prepare("SELECT userID, COUNT(id) AS answer_no FROM log3 WHERE q_paper=? AND started>=? AND started<=? GROUP BY userID");
   $stmt->bind_param('iss', $paper_id, $_GET['startdate'], $_GET['enddate']);
   $stmt->execute();
-  $stmt->bind_result($userID, $answer_no);
+  $stmt->bind_result($uID, $answer_no); //TODO replaced $userID with $uID
   while($stmt->fetch()) {
     if ($answer_no < $number_of_questions or $answer_no > $number_of_questions) {
-      $exclude .= " AND log3.userID != $userID";
+      $exclude .= " AND log3.userID != $uID";
     }
   }
   $stmt->close();

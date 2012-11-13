@@ -446,7 +446,7 @@ if (isset($_POST['submit'])) {
     $current_id = $_POST['id_' . $i];
     if ($current_id != $old_q_id) {
       if (strpos($old_status, '1') !== false) {
-        if ($result = $mysqli->prepare("INSERT INTO question_exclude VALUES (NULL, ?, ?, ?, $userID, NOW(), '')")) {
+        if ($result = $mysqli->prepare("INSERT INTO question_exclude VALUES (NULL, ?, ?, ?, $userObject->get_user_ID(), NOW(), '')")) {
           $result->bind_param('iis', $_GET['paperID'], $old_q_id, $old_status);
           $result->execute();
           $result->close();
@@ -460,7 +460,7 @@ if (isset($_POST['submit'])) {
     $old_q_id = $_POST['id_' . $i];
   }
   if (strpos($old_status, '1') !== false) {
-    if ($result = $mysqli->prepare("INSERT INTO question_exclude VALUES (NULL, ?, ?, ?, $userID, NOW(), '')")) {
+    if ($result = $mysqli->prepare("INSERT INTO question_exclude VALUES (NULL, ?, ?, ?, $userObject->get_user_ID(), NOW(), '')")) {
       $result->bind_param('iis', $_GET['paperID'], $old_q_id, $old_status);
       $result->execute();
       $result->close();

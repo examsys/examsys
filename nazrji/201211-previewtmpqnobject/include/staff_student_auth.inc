@@ -29,6 +29,10 @@
 *  so we can catch them. I is later replaced by the more complex customErrorHandler
 *  in include/custom_error_handler.inc
 */
+
+
+
+
 function handle_early_errors($errno, $errstr, $errfile, $errline) {
  if(strpos($errstr,'config.inc.php')) {
     //turn a missing config file working into an exception so we can catch it
@@ -57,6 +61,12 @@ require_once $cfg_web_root . 'LTI/ims-lti/UoN_LTI.php';
 require_once $cfg_web_root . 'include/lti_func.php';
 require_once $cfg_web_root . 'classes/lti_integration.class.php';
 
+require_once $cfg_web_root . 'classes/userobject.class.php';
+
+
+
+
+
 // Check to see if the update script has been run.
 if ($rogo_version != '4.4') {
   display_notice('Update Required', 'System needs configuring before use. Please contact your local system administrator.', '../artwork/software_64.png', $title_color = '#C00000');
@@ -80,7 +90,10 @@ if ($protocol == 'https://' and $_SERVER['SERVER_PORT'] != 443 and $_SERVER['SER
 }
 if (preg_match('|MSIE ([7-9].[0-9]{1,2})|', $_SERVER['HTTP_USER_AGENT'], $log_version) or preg_match('|Netscape6|', $_SERVER['HTTP_USER_AGENT'], $log_version) or preg_match('|Netscape\/7.0|', $_SERVER['HTTP_USER_AGENT'], $log_version) or preg_match('|Mozilla\/5.0|', $_SERVER['HTTP_USER_AGENT'], $log_version) or preg_match('|PHP-SOAP|', $_SERVER['HTTP_USER_AGENT'], $log_version)) {
   $mysqli = DBUtils::get_mysqli_link($cfg_db_host, $cfg_db_username, $cfg_db_passwd, $cfg_db_database, $cfg_db_charset, $dbclass);
-
+  if(!isset($userObject)) {
+    global $userObject;
+    $userObject = new UserObject($mysqli);
+  }
   session_start();
   $lti = new UoN_LTI($mysqli);
 
@@ -97,8 +110,12 @@ if (preg_match('|MSIE ([7-9].[0-9]{1,2})|', $_SERVER['HTTP_USER_AGENT'], $log_ve
         display_notice($string['UserMissing'], $string['UserMissingDesc'], '/artwork/access_denied.png', '#C00000');
         exit();
       }
-      list($password, $userID, $userroles, $title, $initials, $surname, $username, $email, $grade, $year, $special_needs, $record_no, $split_username) = $datareturned;
-      db_change_user($mysqli);
+
+      $userObject->old_load($datareturned);
+      //list($password, $userID, $userroles, $title, $initials, $surname, $username, $email, $grade, $year, $special_needs, $record_no, $split_username) = $datareturned;
+
+
+      db_change_user($mysqli,$userObject);
     } else {
       $message = $string['authenticationfailed'] . "</p>\n<ul style=\"margin-left:80px\">\n<li>" . $string['usernamecasesensitive'] . "</li>\n<li>" . $string['pressf5'] . "</li>";
       if ($db_errors != '') {
@@ -145,7 +162,7 @@ if (preg_match('|MSIE ([7-9].[0-9]{1,2})|', $_SERVER['HTTP_USER_AGENT'], $log_ve
       //
       //  MAIN AUTHENTICATION ROUTINES
       //
-      if (($dbret = db_auth($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'], $mysqli)) <= 0) {
+      if (($dbret = db_auth($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'], $mysqli,true,$userObject)) <= 0) {
         //try LDAP
         if ($cfg_use_ldap == true and ($db_errors != '<strong>' . $string['notsaccount'] . '</strong>' or $dbret == -2)) {
           $ldap_user_data = array();

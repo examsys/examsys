@@ -73,7 +73,7 @@
 </td>
 </tr>
 <?php
-  echo question_info::full_question_information($_GET['q_id'], $mysqli);
+  echo question_info::full_question_information($_GET['q_id'], $mysqli,$userObject);
 ?>
 </table>
 </div>

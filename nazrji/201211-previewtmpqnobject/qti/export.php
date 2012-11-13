@@ -43,7 +43,7 @@ if ($dest == "qti21") $dest = "qti20";
 
 $ids = GetVar("paperID");
 
-$show_debug = IsAdminUser($userID);
+$show_debug = IsAdminUser($userObject->get_user_ID()); //TODO replace with userobject function?
 
 // load in some paper information to display
 if ($ids != "") {
@@ -81,7 +81,7 @@ if ($dest == "qti12") {
 
 // create dir for qti to save into, and put in params
 $base_dir = $cfg_web_root.'qti/exports/';
-$dir = GetAuthorName($userID)."/".date("Y-m-d")."/".date("H.i.s");
+$dir = GetAuthorName($userObject->get_user_ID())."/".date("Y-m-d")."/".date("H.i.s"); //TODO replace with userobject function
 if (!file_exists($base_dir.$dir)) mkdir($base_dir.$dir, 0755, true);
 $save_params = new stdClass();
 $save_params->dir = $dir;

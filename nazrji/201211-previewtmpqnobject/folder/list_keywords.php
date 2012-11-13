@@ -126,7 +126,7 @@
   } else {
     // Get personal keywords
     $result = $mysqli->prepare("SELECT keywords_user.id, keyword FROM keywords_user WHERE keyword_type='personal' AND userid=? ORDER BY keyword");
-    $result->bind_param('s', $userID);
+    $result->bind_param('s', $userObject->get_user_ID());
     $result->execute();
     $result->bind_result($keywordID, $keyword);
     while ($result->fetch()) {

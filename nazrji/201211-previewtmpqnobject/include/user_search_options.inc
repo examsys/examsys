@@ -28,7 +28,7 @@ require_once '../classes/schoolutils.class.php';
 require_once '../classes/searchutils.class.php';
 require_once '../classes/stateutils.class.php';
 
-$state = $stateutil->getState($userID, $mysqli, $cfg_root_path . '/users/search.php');
+$state = $stateutil->getState($userObject->get_user_ID(), $mysqli, $cfg_root_path . '/users/search.php');
 
 if (isset($_GET['moduleID'])) {
   $moduleID = $_GET['moduleID'];
@@ -86,7 +86,7 @@ if (isset($_GET['calendar_year'])) {
 <tr><td><?php echo $string['username']; ?></td><td>&nbsp;</td><td><?php echo $string['studentid']; ?></td></tr>
 <tr><td><input type="text" name="search_username" size="9" value="<?php if (isset($_GET['search_username'])) echo $_GET['search_username']; ?>" /></td><td>&nbsp;</td><td><input type="text" name="student_id" size="9" value="<?php if (isset($_GET['student_id'])) echo $_GET['student_id']; ?>" /></td></tr>
 </table>
-<div><?php echo $string['module']; ?><br /><?php search_utils::display_staff_modules_dropdown($staff_modules, $userroles, $userID, $mysqli); ?></div>
+<div><?php echo $string['module']; ?><br /><?php search_utils::display_staff_modules_dropdown($userObject, $mysqli); ?></div>
 
 <div><?php echo $string['academicyear']; ?><br /><select name="calendar_year">
 <option value="%"><?php echo $string['anyyear']; ?></option>
@@ -151,7 +151,7 @@ if (isset($_GET['calendar_year'])) {
   } else {
     echo "<div><input class=\"chk\" type=\"checkbox\" id=\"chkbox5\" name=\"staff\" /> " . $string['staff'] . "</div>\n";
   }
-  if (strpos($userroles,'Admin') !== false) {
+  if ($userObject->has_role('Admin')) {
   if (isset($state['chkbox6']) and $state['chkbox6'] == 'true') {
       echo "<div><input class=\"chk\" type=\"checkbox\" id=\"chkbox6\" name=\"adminstaff\" checked /> " . $string['staffadmin'] . "</div>\n";
     } else {
@@ -213,9 +213,9 @@ if (isset($_GET['calendar_year'])) {
 <table class="sidebar_tbl" id="menu2a">
 <tr><td><img src="../artwork/user_file_icon_grey_16.gif" width="16" height="16" alt="User Details" /></td><td class="greymenuitem"><?php echo $string['viewuserfile']; ?></td></tr>
 <?php
-  if (strpos($userroles, 'Admin') !== false or strpos($userroles,'SysAdmin') !== false) {
+  if ($userObject->has_role(array('Admin','SysAdmin'))) {
     echo '<tr><td class="ico"><a href="create_new_user.php"><img src="../artwork/small_user_icon.gif" width="16" height="16" alt="Create User" /></td><td class="menuitem"><a href="create_new_user.php">' . $string['createnewuser'] . '</a></td></tr>';
-    if (strpos($userroles, 'SysAdmin') !== false) {
+    if ($userObject->has_role('SysAdmin')) {
       echo '<tr><td class="ico"><img src="../artwork/delete_user_16_grey.png" width="16" height="16" alt="Create" /></a></td><td class="greymenuitem">' . $string['deleteuser'] . '</td></tr>';
     }
   }
@@ -225,7 +225,7 @@ if (isset($_GET['calendar_year'])) {
 <table class="sidebar_tbl" style="display:none" id="menu2b">
 <tr><td class="ico"><a href="#" onclick="viewProfileSingle(); return false;"><img src="../artwork/user_file_icon_16.gif" width="16" height="16" alt="Edit" /></a></td><td class="menuitem"><a id="edit" onclick="viewProfileSingle(); return false;" href="#"><?php echo $string['viewuserfile']; ?></a></td></tr>
 <?php
-  if (strpos($userroles, 'Admin') !== false or strpos($userroles,'SysAdmin') !== false) {
+  if ($userObject->has_role(array('Admin','SysAdmin'))) {
     echo '<tr><td class="ico"><img src="../artwork/small_user_icon_grey.gif" width="16" height="16" alt="Create" /></td><td class="greymenuitem">' . $string['createnewuser'] . '</td></tr>';
   }
 ?>
@@ -234,10 +234,10 @@ if (isset($_GET['calendar_year'])) {
 <table class="sidebar_tbl" style="display:none" id="menu2c">
 <tr><td class="ico"><a onclick="viewProfileSingle(); return false;" href="#"><img src="../artwork/user_file_icon_16.gif" width="16" height="16" alt="Edit" /></a></td><td class="menuitem"><a id="edit" onclick="viewProfileSingle(); return false;" href="#"><?php echo $string['viewuserfile']; ?></a></td></tr>
 <?php
-  if (strpos($userroles, 'Admin') !== false or strpos($userroles,'SysAdmin') !== false) {
+  if ($userObject->has_role(array('Admin','SysAdmin'))) {
     echo '<tr><td class="ico"><a href="create_new_user.php"><img src="../artwork/small_user_icon.gif" width="16" height="16" alt="Create" /></a></td><td class="menuitem"><a href="create_new_user.php">' . $string['createnewuser'] . '</a></td></tr>';
   }
-  if (strpos($userroles, 'SysAdmin') !== false) {
+  if ($userObject->has_role('SysAdmin')) {
     echo '<tr><td class="ico"><a href="#" onclick="deleteUser(); return false;"><img src="../artwork/delete_user_16.png" width="16" height="16" alt="Delete" /></a></td><td class="menuitem"><a href="#" onclick="deleteUser(); return false;">' . $string['deleteuser'] . '</a></td></tr>';
   }
 ?>
@@ -245,14 +245,14 @@ if (isset($_GET['calendar_year'])) {
 
 <br />
 <?php
-if (strpos($userroles, 'Admin') !== false) {
+if ($userObject->has_role('Admin')) {
   echo "<div class=\"submenuheading\">{$string['cohorttasks']}</div>\n";
 }
 ?>
 
 <table class="sidebar_tbl" id="menu3a">
 <?php
-  if (strpos($userroles, 'Admin') !== false) {
+  if ($userObject->has_role('Admin')) {
     echo '<tr><td class="ico"><a href="import_users.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="' . $string['importusers'] . '" /></a></td><td class="menuitem"><a href="import_users.php">' . $string['importusers'] . '</a></td></tr>';
     echo '<tr><td class="ico"><a href="import_student_module_info.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="' . $string['importmodules'] . '" /></a></td><td class="menuitem"><a href="import_modules.php">' . $string['importmodules'] . '</a></td></tr>';
   }
@@ -261,7 +261,7 @@ if (strpos($userroles, 'Admin') !== false) {
 
 <table class="sidebar_tbl" style="display:none" id="menu3b">
 <?php
-  if (strpos($userroles, 'Admin') !== false) {
+  if ($userObject->has_role('Admin')) {
     echo '<tr><td class="ico"><a href="import_users.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="' . $string['importusers'] . '" /></a></td><td class="menuitem"><a href="import_users.php">' . $string['importusers'] . '</a></td></tr>';
     echo '<tr><td class="ico"><a href="import_student_module_info.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="' . $string['importmodules'] . '" /></a></td><td class="menuitem"><a href="import_student_module_info.php">' . $string['importmodules'] . '</a></td></tr>';
   }
@@ -270,7 +270,7 @@ if (strpos($userroles, 'Admin') !== false) {
 
 <table class="sidebar_tbl" style="display:none" id="menu3c">
 <?php
-  if (strpos($userroles, 'Admin') !== false) {
+  if ($userObject->has_role('Admin')) {
     echo '<tr><td class="ico"><a href="import_users.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="' . $string['importusers'] . '" /></a></td><td class="menuitem"><a href="import_users.php">' . $string['importusers'] . '</a></td></tr>';
     echo '<tr><td class="ico"><a href="import_student_module_info.php"><img src="../artwork/import_16.gif" width="16" height="16" alt="' . $string['importmodules'] . '" /></a></td><td class="menuitem"><a href="import_modules.php">' . $string['importmodules'] . '</a></td></tr>';
   }

@@ -26,7 +26,7 @@ require_once '../classes/schoolutils.class.php';
 require_once '../classes/searchutils.class.php';
 require_once '../classes/stateutils.class.php';
 
-$state = $stateutil->getState($userID, $mysqli, $cfg_root_path . '/paper/search.php');
+$state = $stateutil->getState($userObject->get_user_ID(), $mysqli, $cfg_root_path . '/paper/search.php');
 ?>
 <script language="JavaScript">
   function updateDropdownState(mySel, NameOfState) {
@@ -214,8 +214,8 @@ $state = $stateutil->getState($userID, $mysqli, $cfg_root_path . '/paper/search.
   }
 ?>
   <tr><td>
-  <div style="margin-left:4px"><?php echo $string['module']; ?> <?php search_utils::display_staff_modules_dropdown($staff_modules, $userroles, $userID, $mysqli); ?></div>
-  <div style="margin-left:4px"><?php echo $string['owner']; ?> <?php search_utils::display_owners_dropdown($staff_modules, $userroles, $userID, $mysqli, 'papers'); ?></div>
+  <div style="margin-left:4px"><?php echo $string['module']; ?> <?php search_utils::display_staff_modules_dropdown($userObject, $mysqli); ?></div>
+  <div style="margin-left:4px"><?php echo $string['owner']; ?> <?php search_utils::display_owners_dropdown($userObject, $mysqli, 'papers'); ?></div>
 </td></tr>
 </table>
 

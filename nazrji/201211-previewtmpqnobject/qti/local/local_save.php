@@ -46,7 +46,7 @@ class IE_Local_Save extends IE_Main {
 
   // main save function
   function Save($params, &$data) {
-    global $userID, $string;
+    global $REPLACEMEuserIDold, $string;
 
     echo "<h4>{$string['params']}</h4>";
     print_p($params);

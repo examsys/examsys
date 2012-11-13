@@ -22,7 +22,8 @@
 * @package
 */
 
-  require '../../include/staff_auth.inc';
+require '../../include/staff_auth.inc';
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -55,7 +56,7 @@
   $keyword_no = 0;
   
   $old_moduleID = '';
-  $stmt = $mysqli->prepare("SELECT moduleid, keyword, keywords_user.id FROM keywords_user, modules WHERE keywords_user.userID=modules.id AND moduleid IN ('" . implode("','",$teams) . "') ORDER BY moduleid, keyword");
+  $stmt = $mysqli->prepare("SELECT moduleid, keyword, keywords_user.id FROM keywords_user, modules WHERE keywords_user.userID=modules.id AND moduleid IN ('" . implode("','", $userObject->get_staff_modules()) . "') ORDER BY moduleid, keyword");
   $stmt->execute();
   $stmt->bind_result($moduleID, $keyword, $keywordID);
   while ($stmt->fetch()) {
@@ -69,7 +70,7 @@
   $stmt->close();
 
   echo "<table border=\"0\" style=\"padding-top:3px; padding-bottom:2px; width:100%; color:#1E3287; white-space:nowrap\"><tr><td>" . $string['mykeywords'] . " </td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
-  $stmt = $mysqli->prepare("SELECT id, keyword FROM keywords_user WHERE userID=$userID ORDER BY keyword");
+  $stmt = $mysqli->prepare("SELECT id, keyword FROM keywords_user WHERE userID=" . $userObject->get_user_ID() . " ORDER BY keyword");
   $stmt->execute();
   $stmt->bind_result($keywordID, $keyword);
   while ($stmt->fetch()) {

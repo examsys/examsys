@@ -29,11 +29,11 @@ require '../include/errors.inc';
 
 check_var('errorID', 'GET', true, false);
 
-$result = $mysqli->prepare("SELECT sys_errors.id, auth_user, title, initials, surname, DATE_FORMAT(occurred,'%d/%m/%y&nbsp;%H:%i:%s'), userID, errtype, errstr, errfile, errline, php_self, query_string, request_method, DATE_FORMAT(fixed,'%d/%m/%y&nbsp;%H:%i:%s'), paperID, post_data FROM sys_errors LEFT JOIN users ON sys_errors.userID=users.id WHERE sys_errors.id=?");
+$result = $mysqli->prepare("SELECT sys_errors.id, auth_user, title, initials, surname, DATE_FORMAT(occurred,'%d/%m/%y&nbsp;%H:%i:%s'), userID, errtype, errstr, errfile, errline, php_self, query_string, request_method, DATE_FORMAT(fixed,'%d/%m/%y&nbsp;%H:%i:%s'), paperID, post_data, variables, backtrace FROM sys_errors LEFT JOIN users ON sys_errors.userID=users.id WHERE sys_errors.id=?");
 $result->bind_param('i', $_GET['errorID']);
 $result->execute();
 $result->store_result();
-$result->bind_result($error_id, $auth_user, $title, $initials, $surname, $occurred, $userID, $errtype, $errstr, $errfile, $errline, $php_self, $query_string, $request_method, $fixed, $paperID, $post_data);
+$result->bind_result($error_id, $auth_user, $title, $initials, $surname, $occurred, $uID, $errtype, $errstr, $errfile, $errline, $php_self, $query_string, $request_method, $fixed, $paperID, $post_data, $variables, $backtrace); //TODO changed $userID to $uID
 $result->fetch();
 $result->close();
 
@@ -85,7 +85,7 @@ td {border: 1px solid #C0C0C0; padding:2px}
 <tr><td class="f"><?php echo $string['post']; ?></td><td><?php echo $post_data; ?></td></tr>
 <tr><td class="f"><?php echo $string['phpself']; ?></td><td><?php echo $php_self; ?></td></tr>
 <tr><td class="f"><?php echo $string['requestmethod']; ?></td><td><?php echo $request_method; ?></td></tr>
-<tr><td class="f"><?php echo $string['occurranceoferror']; ?></td><td><?php echo $similar_errors; ?></td></tr>
+<tr><td class="f" style="vertical-align: top;" ><?php echo $string['occurranceoferror']; ?></td><td><?php echo $similar_errors; ?></td></tr>
 <tr><td class="f"><?php echo $string['datefixed']; ?></td><td><?php echo ($fixed == '' ? 'n/a' : $fixed); ?></td></tr>
 </table>
 
@@ -101,6 +101,23 @@ if ($fixed == '') {
 ?>
 </div>
 </form>
+<table>
+    <tr><td class="f" style="vertical-align: top"><?php echo $string['backtrace']; ?></td><td><?php echo $backtrace; ?></td></tr>
+<?php
+echo <<<END
+  <tr><td class="f" style="vertical-align: top">
+END;
+
+echo $string['variables'] . '</td><td>';
+$variables=unserialize(base64_decode($variables));
+  var_dump($variables);
+echo <<<END
+    </td></tr>
+END;
+
+
+?>
+</table>
 <?php
 $mysqli->close();
 ?>

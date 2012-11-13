@@ -28,15 +28,16 @@ require_once $cfg_web_root . 'include/sidebar_menu.inc';
 require_once $cfg_web_root . 'include/sidebar_functions.inc';
 require_once $cfg_web_root . 'classes/paperutils.class.php';
 
+global $userObject;
 
 $paperID = $_GET['paperID'];
 
 $modules_array = array();
 
-$my_folders_array = get_folders($staff_modules, $userID, $mysqli);
+$my_folders_array = get_folders($staff_modules, $userObject->get_user_ID(), $mysqli);
 $full_modules_array = get_modules($staff_modules, $my_folders_array, $modules_array, $mysqli);
 $staff_modules_array = get_staff_module_links($staff_modules, $mysqli);
-$keywords_array = get_keywords($staff_modules, $userID, $mysqli);
+$keywords_array = get_keywords($staff_modules, $userObject->get_user_ID(), $mysqli);
 
 if (!isset($paper_title) or $paper_title == '') {
   $max_screen = 0;
@@ -306,10 +307,10 @@ $stmt->close();
 <input type="hidden" name="current_pos" id="current_pos" value="" />
 <?php
 $module_member = false;
-if ($paper_ownerID == $userID or strpos($userroles,'Admin') !== false or strpos($userroles,'SysAdmin') !== false) {
+if ($paper_ownerID == $userObject->get_user_ID() or $userObject->has_role(array('Admin','SysAdmin'))) {
   $module_member = true;
 } else {
-  if(in_array($moduleID, $staff_modules)) {
+  if(in_array($moduleID, $userObject->get_staff_modules())) {
     $module_member = true;
   }
 }
@@ -337,7 +338,7 @@ $stmt->close();
 
   if ($module_member == true) {
     if ($summative_lock == 1) {
-      if (strpos($userroles,'SysAdmin') !== false) {
+      if ($userObject->has_role('SysAdmin')) {
         echo "<tr><td><a href=\"\" onclick=\"noAdd('$start_date','$end_date'); return false;\"><img src=\"{$cfg_root_path}/artwork/add_questions_grey.gif\" width=\"16\" height=\"16\" alt=\"" . $string['addquestionspaper'] . "\" /></a></td><td class=\"greymenuitem\"><a href=\"#\" onclick=\"noAdd('$start_date','$end_date'); return false;\">" . $string['addquestionspaper'] . "</a></td></tr>\n";
         echo "<tr><td><a href=\"\" onclick=\"return paperProperties();\"><img src=\"{$cfg_root_path}/artwork/properties_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['editproperties'] . "\" /></a></td><td class=\"menuitem\"><a href=\"\" onclick=\"return paperProperties();\">" . $string['editproperties'] . "</a></td></tr>\n";
       } else {

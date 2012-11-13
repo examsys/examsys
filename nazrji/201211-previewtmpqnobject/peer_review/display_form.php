@@ -171,7 +171,7 @@ if ($review_type == '1') {
   $result->execute();
   $result->bind_result($member_username, $member_title, $member_surname, $member_first_names, $member_userID);
   while ($result->fetch()) {
-    if ($member_userID != $userID) {   // Make sure current user cannot peer review themself.
+    if ($member_userID != $userObject->get_user_ID()) {   // Make sure current user cannot peer review themself.
       display_user($review_type, $q_type, $questions, $saved_results, $cfg_web_root, $member_userID, $member_username, $member_title, $member_first_names, $member_surname, $display_photos, $columns, $parts, $marking);
     }
   }

@@ -45,7 +45,7 @@ $original_paper_type = $paper_type; //store the original paper type - needed to 
 
 $moduleID = Paper_utils::get_modules($property_id,$mysqli);
 
-if (strpos($userroles,'Student') !== false) {
+if ($userObject->has_role('Student')) {
 
   // Check for additional password on the paper
   check_paper_password($password);
@@ -57,10 +57,10 @@ if (strpos($userroles,'Student') !== false) {
   $low_bandwidth = check_labs($paper_type, $labs, $password, $mysqli);
 
   //get modules if the user is a student and the paper is not formative
-  $attempt = check_modules($userID, $moduleID, $calendar_year, $mysqli);
+  $attempt = check_modules($userObject->get_user_ID(), $moduleID, $calendar_year, $mysqli);
 
   // Check for any metadata security restrictions
-  check_metadata($property_id, $userID, $moduleID, $mysqli);
+  check_metadata($property_id, $userObject->get_user_ID(), $moduleID, $mysqli);
 
   if (time() > $end_date and ($paper_type == '1' or $paper_type == '2')) {
     $paper_type = '_late';
@@ -68,6 +68,6 @@ if (strpos($userroles,'Student') !== false) {
 }
 
 //TODO we need to add some error checking in here. maby wrap this whole function in a transaction ??
-$ret = record_marks($property_id, $mysqli, $userID, $paper_type, $grade, $year, $attempt, $userroles);
+$ret = record_marks($property_id, $mysqli, $userObject->get_user_ID(), $paper_type, $userObject->get_grade(), $userObject->get_year(), $attempt, $userObject->list_user_roles());
 echo $_POST['randomPageID'];
 ?>

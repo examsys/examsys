@@ -36,8 +36,8 @@ if ($_POST['questions_to_add'] != '') {
 
     // Create a track changes record to say new question added.
     $tmp_paperID = intval($_GET['paperID']);
-    $trackChange = $mysqli->prepare("INSERT INTO track_changes VALUES (NULL,'Alter Paper',?,$userID,'',?,NOW(),'Add Question')");
-    $trackChange->bind_param('is', $tmp_paperID, $item);
+    $trackChange = $mysqli->prepare("INSERT INTO track_changes VALUES (NULL,'Alter Paper',?,?,'',?,NOW(),'Add Question')");
+    $trackChange->bind_param('iis', $tmp_paperID, $userObject->get_user_ID(), $item);
     $trackChange->execute();
     $trackChange->close();
   }

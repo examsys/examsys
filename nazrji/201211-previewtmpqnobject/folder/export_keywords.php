@@ -41,7 +41,7 @@ if ($_GET['module'] != '') {
 } else {
   // Lookup personal keywords
   $result = $mysqli->prepare("SELECT keyword FROM keywords_user WHERE keyword_type='personal' AND userID=? ORDER BY keyword");
-  $result->bind_param('s', $userID);
+  $result->bind_param('s', $userObject->get_user_ID());
   $result->execute();
   $result->bind_result($keyword);
   while ($result->fetch()) {

@@ -54,13 +54,16 @@ require '../../include/staff_auth.inc';
 <div class="f"><a href="add_questions_paper_list.php?paper_type=4" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" align="middle" /></a>&nbsp;<a href="add_questions_paper_list.php?paper_type=4"><?php echo $string['osce station']; ?></a></div>
 <div class="f"><a href="add_questions_paper_list.php?paper_type=5" target="_top"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" align="middle" /></a>&nbsp;<a href="add_questions_paper_list.php?paper_type=5"><?php echo $string['offline paper']; ?></a></div>
 <br clear="all" />
-
+<?php
+  $teams = $userObject->get_staff_modules();
+?>
 <br />
 <table border="0" style="padding-left:10px; padding-right:2px; padding-bottom:5px; width:100%; color:#1E3287"><tr><td><nobr><?php echo $string['papersbyteam']; ?> (<?php echo count($teams); ?>)</nobr></td><td style="width:98%"><hr noshade="noshade" style="border:0px; height:1px; color:#CCCCCC; background-color:#CCCCCC; width:100%" /></td></tr></table>
 <br />
 <?php
-  foreach($teams as $team_name) {
-    echo '<div class="f"><a href="add_questions_paper_list.php?team_name=' . $team_name . '"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_paper_list.php?team_name=' . $team_name . '">' . $team_name .  '</a></div>';
+
+  foreach($teams as $teamID=>$team_name) {
+    echo '<div class="f"><a href="add_questions_paper_list.php?teamID=' . $teamID . '"><img src="../../artwork/yellow_folder.png" width="48" height="48" alt="Folder" border="0" align="middle" /></a>&nbsp;<a href="add_questions_paper_list.php?teamID=' . $teamID . '">' . $team_name .  '</a></div>';
   }
 ?>
 

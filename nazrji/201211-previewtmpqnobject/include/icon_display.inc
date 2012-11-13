@@ -22,6 +22,8 @@
 * @package
 */
 
+require_once '../classes/paperutils.class.php';
+
 function displayIcon($paper_type, $title, $initials, $surname, $locked,  $retired) {
   global $string;
   $paper_type = strval($paper_type);
@@ -62,9 +64,11 @@ function displayIcon($paper_type, $title, $initials, $surname, $locked,  $retire
   return $html;
 }
 
-function display_paper_icon($paper_ownerID, $property_id, $paper_type, $screens, $paper_title, $start_date, $display_start_date, $display_end_date, $exam_duration, $title, $initials, $surname, $retired, $moduleID, $password) {
-  global $userroles, $type, $folder, $module, $mysqli, $userID, $teams, $string;
+function display_paper_icon($paper_ownerID, $property_id, $paper_type, $screens, $paper_title, $start_date, $display_start_date, $display_end_date, $exam_duration, $title, $initials, $surname, $retired, $password, $userObj) {
+  global $DISABLEDuserroles, $type, $folder, $module, $mysqli, $DISABLEDuserID, $string;
   
+  $paper_modules = Paper_utils::get_modules($property_id, $mysqli);
+
   if ($retired != '') {
     echo '<div class="file retired">';
   } else {
@@ -83,7 +87,7 @@ function display_paper_icon($paper_ownerID, $property_id, $paper_type, $screens,
   } else {
     $title_class = 'greylink';
   }
-  if ($paper_ownerID == $userID or strpos($userroles, 'Admin') !== false or strpos($userroles, 'SysAdmin') !== false or ($icon_type != '2' and $icon_type != '4')) {
+  if ($paper_ownerID == $userObj->get_user_ID() or $userObj->has_role(array('Admin', 'SysAdmin')) or ($icon_type != '2' and $icon_type != '4')) {
     echo "<a class=\"blacklink\" href=\"../paper/details.php?paperID=" . $property_id . "&folder=$folder&module=$module\">" . displayIcon($icon_type, $title, $initials, $surname, $locked, $retired) . "</a></td>\n";
     echo "<td><a href=\"../paper/details.php?paperID=" . $property_id . "&folder=$folder&module=$module\" class=\"$title_class\">" . $paper_title . '</a>';
     if ($password != '') {
@@ -92,9 +96,11 @@ function display_paper_icon($paper_ownerID, $property_id, $paper_type, $screens,
     echo '<br />';
   } else {
     $access = false;
-    $paper_modules = explode(',', $moduleID);
-    foreach ($paper_modules as $individual_module) {
-      if (in_array($individual_module, $teams)) $access = true;
+    foreach ($paper_modules as $idmod => $individual_module) {
+      if ($userObj->is_staff_user_on_module($idmod)) {
+        $access = true;
+        break;
+      }
     }
   
     if ($access == true) {
@@ -125,10 +131,10 @@ function display_paper_icon($paper_ownerID, $property_id, $paper_type, $screens,
   } else {
     echo $screens . ' ' . $string['screens'];
   }
-  if ($moduleID == '') {
+  if (count($paper_modules) == 0) {
     echo ', <span style="color:red">No modules set</span>';
   } else {
-    if (isset($_GET['module']) and $_GET['module'] == '') echo ', ' . str_replace(',',', ',$moduleID);
+    if (isset($_GET['module']) and $_GET['module'] == '') echo ', ' . implode(',',$paper_modules);
   }
   echo '<br />';
   if ($display_start_date == '') {

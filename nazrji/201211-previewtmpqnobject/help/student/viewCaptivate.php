@@ -39,9 +39,9 @@
    
    echo "<embed width=\"100%\" height=\"100%\" src='./images/" . $_GET['tutorial'] . "' />";
   
-   if (strpos($userroles,'SysAdmin') === false and strpos($userroles,'External') === false) {   // Don't record the homepage or SysAdmin activities.
+   if ($userObject->has_role(array('SysAdmin','External'))) {   // Don't record the homepage or SysAdmin activities.
     $result = $mysqli->prepare("INSERT INTO help_tutorial_log VALUES (NULL, ?, ?, NOW(), ?)");
-    $result->bind_param('sis', 'student', $userID, $_GET['tutorial']);
+    $result->bind_param('sis', 'student', $userObject->get_user_ID(), $_GET['tutorial']);
     $result->execute();  
     $result->close();
   }
