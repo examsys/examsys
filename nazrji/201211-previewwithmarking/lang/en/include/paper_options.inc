@@ -20,6 +20,7 @@ $string['export12'] = 'Export 1.2';
 $string['import'] = 'Import';
 $string['currentquestiontasks'] = 'Current Question Tasks';
 $string['editquestion'] = 'Edit Question';
+$string['previewquestion'] = 'Preview Question';
 $string['information'] = 'Information';
 $string['copyontopaperx'] = 'Copy onto Paper X...';
 $string['linktopaper'] = 'Link to paper';

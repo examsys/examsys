@@ -99,7 +99,7 @@ function get_log_metadata_record_id($u_id, $p_id, $sessionid, $db) {
  * @param mixed $userroles 
  *
  */
-function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, $student_year, $attempt, $userroles) {
+function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, $student_year, $attempt, $userroles, $preview_q_id=null) {
   global $original_paper_type; //TODO: move this into the function definition
   $screen_no =  $_POST['old_screen'];
   $extra_duration = $_POST['previous_duration'];
@@ -113,8 +113,13 @@ function record_marks($paper_id, $dblink, $userid, $paper_type, $student_grade, 
   $branch_no = 0;
   $option_order = '';
   $old_display_pos = 0;
-  $questions = $dblink->prepare("SELECT q_id, scenario, q_type, option_text, q_media, correct, display_method, score_method, marks_correct, marks_incorrect, marks_partial, display_pos FROM papers, questions, options WHERE paper=? AND screen=? AND papers.question=questions.q_id AND questions.q_id=options.o_id ORDER BY display_pos, id_num");
-  $questions->bind_param('ii', $paper_id, $screen_no); 
+  if (isset($preview_q_id)) {
+    $questions = $dblink->prepare("SELECT q_id, scenario, q_type, option_text, q_media, correct, display_method, score_method, marks_correct, marks_incorrect, marks_partial, display_pos FROM papers, questions, options WHERE paper=? AND questions.q_id=? AND papers.question=questions.q_id AND questions.q_id=options.o_id ORDER BY display_pos, id_num");
+    $questions->bind_param('ii', $paper_id, $preview_q_id);
+  } else {
+    $questions = $dblink->prepare("SELECT q_id, scenario, q_type, option_text, q_media, correct, display_method, score_method, marks_correct, marks_incorrect, marks_partial, display_pos FROM papers, questions, options WHERE paper=? AND screen=? AND papers.question=questions.q_id AND questions.q_id=options.o_id ORDER BY display_pos, id_num");
+    $questions->bind_param('ii', $paper_id, $screen_no);
+  }
   $questions->execute();
   $questions->store_result();
   $questions->bind_result($q_id, $scenario, $q_type, $option_text, $q_media, $correct, $display_method, $score_method, $marks_correct, $marks_incorrect, $marks_partial, $display_pos);

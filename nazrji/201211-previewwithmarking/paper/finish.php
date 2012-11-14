@@ -15,10 +15,10 @@
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
-* 
-* Completes final log of the last screen to the 'logX' table and then will display feedback if the paper is in 'formative' 
+*
+* Completes final log of the last screen to the 'logX' table and then will display feedback if the paper is in 'formative'
 * mode or will display a confirmation notice to the examinee stating all answers and marks have been successfully recorded.
-* 
+*
 * @author Simon Wilkinson, Anthony Brown
 * @version 1.0
 * @copyright Copyright (c) 2012 The University of Nottingham
@@ -54,9 +54,9 @@ if ($paper_properties = $mysqli->prepare("SELECT property_id, labs, calendar_yea
     if (!isset($labelcolor) or $labelcolor == 'NULL' or $labelcolor == '') $labelcolor = $paper_labelcolor;
     if (!isset($font) or $font== 'NULL' or $font == '') $font = 'Arial';
     $attempt = 1; //default attempt to 1 overwritten if the student is resit candidate
-    
+
     $log_type = $paper_type;
-    $original_paper_type = $paper_type; //store the original paper type - needed to retrieve answers from the correct log and functionality related decisions 
+    $original_paper_type = $paper_type; //store the original paper type - needed to retrieve answers from the correct log and functionality related decisions
     $low_bandwidth = 0;
 
     if ($userObject->has_role('Staff') and isset($_GET['userid']) and $_GET['userid'] != $userObject->get_user_ID()) {
@@ -80,16 +80,16 @@ if ($paper_properties = $mysqli->prepare("SELECT property_id, labs, calendar_yea
       check_datetime($start_date, $end_date);
       //Check room security
       $low_bandwidth = check_labs($paper_type, $labs, $password, $mysqli);
-      
+
       // get modules if the user is a student and the paper is not formative
       $attempt = check_modules($userObject->get_user_ID(), $moduleID, $calendar_year, $mysqli);
-      
+
       // Check for any metadata security restrictions
       check_metadata($paperID, $userObject->get_user_ID(), $moduleID, $mysqli);
-      
+
       if (time() > $end_date and ($paper_type == '1' or $paper_type == '2')) {
         $paper_type = '_late';
-      }     
+      }
     }
     if (isset($_GET['type'])) $log_type = $_GET['type'];
   }
@@ -141,7 +141,7 @@ require '../config/finish.inc';
   if ($css != '') {
     echo "<style type=\"text/css\">\n$css\n</style>\n";
   }
-  
+
   if ($latex_needed == 1) {
    echo "<script type=\"text/javascript\" src=\"../js/jquery-1.6.1.min.js\"></script>";
    echo "<script type=\"text/javascript\" src=\"../tools/mee/mee/js/mee_src.js\"></script>";
@@ -166,6 +166,8 @@ require '../config/finish.inc';
 </head>
 
 <?php
+  $preview_q_id = (isset($_GET['q_id'])) ? $_GET['q_id'] : null;
+
   if ($userObject->has_role('Student')) {
     echo '<body oncontextmenu="return false;">';
   } else {
@@ -178,7 +180,7 @@ require '../config/finish.inc';
   }
   if ($current_screen > 1 and (!isset($_GET['dont_record']) or $_GET['dont_record'] != true)) {
     // Record answers from the previous screen.
-    record_marks($paperID, $mysqli, $userObject->get_user_ID(), $paper_type, $userObject->get_grade(), $userObject->get_year(), $attempt, $userObject->list_user_roles());
+    record_marks($paperID, $mysqli, $userObject->get_user_ID(), $paper_type, $userObject->get_grade(), $userObject->get_year(), $attempt, $userObject->list_user_roles(), $preview_q_id);
   }
 
   if (isset($_GET['userid'])) {
@@ -202,17 +204,19 @@ require '../config/finish.inc';
     $sessionid = $_POST['sessionid'];
   }
 
-  echo $top_table_html;
-  echo '<tr><td><div class="paper">' . $paper_title . '</div>';
-  if ($paper_type < 2 or $userObject->has_role(array('Staff','SysAdmin'))) {
-    echo '<span style="margin-left:5px; font-size:90%; color:white; font-weight:bold">' . $string['answersscreen'];
-    if (isset($_GET['userid'])) echo " for $tmp_title $tmp_surname, $tmp_initials ($tmp_student_id)";
-    echo '</span>';
+  if (!isset($_GET['q_id'])) {
+    echo $top_table_html;
+    echo '<tr><td><div class="paper">' . $paper_title . '</div>';
+    if ($paper_type < 2 or $userObject->has_role(array('Staff','SysAdmin'))) {
+      echo '<span style="margin-left:5px; font-size:90%; color:white; font-weight:bold">' . $string['answersscreen'];
+      if (isset($_GET['userid'])) echo " for $tmp_title $tmp_surname, $tmp_initials ($tmp_student_id)";
+      echo '</span>';
+    }
+    echo '</td>';
+    echo $logo_html;
+    echo '</table>';
   }
-  echo '</td>';
-  echo $logo_html;
-  echo '</table>';
-  
+
   $show_feedback = false;
   if ($paper_type == '0') {
     $show_feedback = true;
@@ -223,9 +227,9 @@ require '../config/finish.inc';
       $show_feedback = true;
     }
   }
-  
+
   if ($show_feedback) {
-    display_feedback($sessionid, $temp_userID, $paperID, $paper_type, $log_type, $paper_title, $paper_postscript, $marking, $userObject->list_user_roles(), $mysqli);
+    display_feedback($sessionid, $temp_userID, $paperID, $paper_type, $log_type, $paper_title, $paper_postscript, $marking, $userObject->list_user_roles(), $mysqli, $preview_q_id);
   } else {
     echo '<blockquote>';
     if ($language == 'en') {

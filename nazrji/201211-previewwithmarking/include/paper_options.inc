@@ -101,7 +101,8 @@ $stmt->close();
 <?php echo $cfg_js_root ?>
 <script language="JavaScript" src="<?php echo $cfg_root_path ?>/js/sidebar.js"></script>
 <script language="JavaScript">
-  function startPaper(fullsc) {
+  function startPaper(fullsc, preview) {
+    var urlMod = (typeof preview == 'undefined' || !preview) ? '' : '&q_id=' + getLastID(document.PapersMenu.questionID.value);
     <?php
     if ($paper_type == '4') {      // OSCE
     ?>
@@ -114,9 +115,9 @@ $stmt->close();
     } else {
     ?>
     if (fullsc == 0) {
-      window.open("<?php echo $cfg_root_path ?>/paper/start.php?id=<?php echo $crypt_name; ?>&mode=preview","paper","width="+(screen.width-80)+",height="+(screen.height-80)+",left=20,top=10,scrollbars=yes,toolbar=no,location=no,directories=no,status=yes,menubar=no,resizable");
+      window.open("<?php echo $cfg_root_path ?>/paper/start.php?id=<?php echo $crypt_name; ?>&mode=preview" + urlMod,"paper","width="+(screen.width-80)+",height="+(screen.height-80)+",left=20,top=10,scrollbars=yes,toolbar=no,location=no,directories=no,status=yes,menubar=no,resizable");
     } else {
-      window.open("<?php echo $cfg_root_path ?>/paper/start.php?id=<?php echo $crypt_name; ?>&mode=preview","paper","fullscreen=yes,left=20,top=10,scrollbars=yes,toolbar=no,location=no,directories=no,status=yes,menubar=no,resizable");
+      window.open("<?php echo $cfg_root_path ?>/paper/start.php?id=<?php echo $crypt_name; ?>&mode=preview" + urlMod,"paper","fullscreen=yes,left=20,top=10,scrollbars=yes,toolbar=no,location=no,directories=no,status=yes,menubar=no,resizable");
     }
     <?php
     }
@@ -421,6 +422,7 @@ $stmt->close();
 <tr><td class="ico"><img src="<?php echo $cfg_root_path ?>/artwork/copy_icon_grey.gif" width="16" height="16" alt="<?php echo $string['copyontopaperx']; ?>" /></td><td class="greymenuitem"><?php echo $string['copyontopaperx']; ?></td></tr>
 <tr><td class="ico"><img src="<?php echo $cfg_root_path ?>/artwork/link_grey.png" width="16" height="16" alt="Link 2 Paper" /></td><td class="greymenuitem"><?php echo $string['linktopaper']; ?></td></tr>
 <tr><td class="ico"><img src="<?php echo $cfg_root_path ?>/artwork/red_cross_grey.png" width="16" height="16" alt="<?php echo $string['removefrompaper']; ?>" /></td><td class="greymenuitem"><?php echo $string['removefrompaper']; ?></td></tr>
+<tr><td class="ico"><img src="<?php echo $cfg_root_path ?>/artwork/small_play_grey.png" width="16" height="16" alt="<?php echo $string['previewquestion']; ?>" /></td><td class="greymenuitem"><?php echo $string['previewquestion']; ?></td></tr>
 </table>
 
 <table class="sidebar_tbl" id="menu2b">
@@ -429,6 +431,7 @@ $stmt->close();
 <tr><td class="ico"><a id="copy" href="#" onclick="copyToPaper(); return false;"><img style="cursor:hand" onclick="copyToPaper(); return false;" src="<?php echo $cfg_root_path ?>/artwork/copy_icon.gif" width="16" height="16" alt="<?php echo $string['copyontopaperx']; ?>" /></a></td><td class="menuitem"><a id="copy" href="#" onclick="copyToPaper(); return false;"><?php echo $string['copyontopaperx']; ?></a></td></tr>
 <tr><td class="ico"><a id="link" href="#" onclick="linkToPaper(); return false;"><img style="cursor:hand" onclick="linkToPaper(); return false;" src="<?php echo $cfg_root_path ?>/artwork/link.png" width="16" height="16" alt="Link 2 Paper" border="0" /></a></td><td class="menuitem"><a id="link" href="#" onclick="linkToPaper(); return false;"><?php echo $string['linktopaper']; ?></a></td></tr>
 <tr><td class="ico"><a id="delete" href="#" onclick="deleteQuestion(); return false;"><img style="cursor:hand" onclick="deleteQuestion(); return false;" src="<?php echo $cfg_root_path ?>/artwork/red_cross.png" width="16" height="16" alt="<?php echo $string['removefrompaper']; ?>" /></a></td><td class="menuitem"><a id="delete" href="#" onclick="deleteQuestion(); return false;"><?php echo $string['removefrompaper']; ?></a></td></tr>
+<tr><td class="ico"><a id="preview" onclick="startPaper(<?php echo $fullscreen ?>, true); return false;" href="#"><img style="cursor:hand" onclick="startPaper(<?php echo $fullscreen ?>, true); return false;" src="<?php echo $cfg_root_path ?>/artwork/small_play.png" width="16" height="16" alt="<?php echo $string['previewquestion']; ?>" /></a></td><td class="menuitem"><a id="edit" onclick="startPaper(<?php echo $fullscreen ?>, true); return false;" href="#"><?php echo $string['previewquestion']; ?></a></td></tr>
 </table>
 
 <table class="sidebar_tbl" id="menu2c">
@@ -437,6 +440,7 @@ $stmt->close();
 <tr><td class="ico"><img style="cursor:hand" onclick="copyToPaper(); return false;" src="<?php echo $cfg_root_path ?>/artwork/copy_icon.gif" width="16" height="16" alt="<?php echo $string['copyontopaperx']; ?>" /></td><td class="menuitem"><a id="copy" href="#" onclick="copyToPaper(); return false;"><?php echo $string['copyontopaperx']; ?></a></td></tr>
 <tr><td class="ico"><img style="cursor:hand" onclick="linkToPaper(); return false;" src="<?php echo $cfg_root_path ?>/artwork/link.png" width="16" height="16" alt="Link 2 Paper" border="0" /></td><td class="menuitem"><a id="link" href="#" onclick="linkToPaper(); return false;"><?php echo $string['linktopaper']; ?></a></td></tr>
 <tr><td class="ico"><img src="<?php echo $cfg_root_path ?>/artwork/red_cross_grey.png" width="16" height="16" alt="<?php echo $string['removefrompaper']; ?>" /></td><td class="greymenuitem"><?php echo $string['removefrompaper']; ?></td></tr>
+<tr><td class="ico"><img src="<?php echo $cfg_root_path ?>/artwork/small_play_grey.png" width="16" height="16" alt="<?php echo $string['previewquestion']; ?>" /></td><td class="greymenuitem"><?php echo $string['previewquestion']; ?></td></tr>
 </table>
 
 <!--[if lt IE 9]>

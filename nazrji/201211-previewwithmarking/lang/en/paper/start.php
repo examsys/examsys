@@ -29,6 +29,7 @@ $string['javacheck1'] = 'Have you completed all the questions on this screen, yo
 $string['javacheck2'] = "Are you sure you wish to finish. After clicking 'OK' you will not be able to go back.";
 $string['error_keywords'] = 'ERROR: unable to find unique question for supplied keywords';
 $string['error_paper'] = 'The requested paper cannot be found.';
+$string['error_qtype'] = 'No question type defined.';
 $string['holddownctrlkey'] = '(Hold down &lt;CTRL&gt; key, then click mouse to toggle options on/off)';
 $string['msgselectable1'] = 'Too many options selected!\n\nOnly';
 $string['msgselectable2'] = 'items can be selected in this question.';

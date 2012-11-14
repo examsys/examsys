@@ -15,7 +15,7 @@ $string['false'] = 'Fałsz';
 $string['yes'] = 'Tak';
 $string['no'] = 'Nie';
 $string['abstain'] = 'Wstrzymany';
-$string['na'] = 'Żadna'; 
+$string['na'] = 'Żadna';
 $string['unanswered'] = 'Brak odpowiedzi';
 $string['unansweredquestion'] = '= pytanie bez odpowiedzi';
 $string['negmarking'] = 'ujemna punktacja';
@@ -29,6 +29,7 @@ $string['javacheck1'] = 'Czy wypełniłeś wszystkie odpowiedzi na ekranie - pow
 $string['javacheck2'] = "Czy na pewno chcesz finalizować? Po wybraniu 'OK' nie będziesz mógł powrócić.";
 $string['error_keywords'] = 'BŁĄD: nie można odszukać unikalnego pytania dla podanych słów kluczowych';
 $string['error_paper'] = 'Wskazany arkusz nie mógł być odnaleziony.';
+$string['error_qtype'] = 'No question type defined.'; // Niko
 $string['holddownctrlkey'] = '(Trzymając &lt;CTRL&gt; klikaj myszą aby zaznaczyć/odznaczyć opcje)';
 $string['msgselectable1'] = 'Zaznaczono zbyt dużo opcji!\n\nW tym pytaniu mogą być zaznaczone tylko';
 $string['msgselectable2'] = 'elementy.';

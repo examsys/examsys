@@ -21,6 +21,7 @@ $string['export12'] = 'Eksport 1.2'; //cognate
 $string['import'] = 'Import'; //cognate
 $string['currentquestiontasks'] = 'Działania dot. aktualnego pytania';
 $string['editquestion'] = 'Edytuj pytania';
+$string['previewquestion'] = 'Preview Question'; // Niko
 $string['information'] = 'Informacje';
 $string['copyontopaperx'] = 'Przekopiuj do arkusza X...';
 $string['moveup'] = 'Przesuń do góry';

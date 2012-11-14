@@ -67,7 +67,9 @@ if ($userObject->has_role('Student')) {
   }
 }
 
-//TODO we need to add some error checking in here. maby wrap this whole function in a transaction ??
-$ret = record_marks($property_id, $mysqli, $userObject->get_user_ID(), $paper_type, $userObject->get_grade(), $userObject->get_year(), $attempt, $userObject->list_user_roles());
+$preview_q_id = (isset($_GET['q_id'])) ? $_GET['q_id'] : null;
+
+//TODO we need to add some error checking in here. maybe wrap this whole function in a transaction ??
+$ret = record_marks($property_id, $mysqli, $userObject->get_user_ID(), $paper_type, $userObject->get_grade(), $userObject->get_year(), $attempt, $userObject->list_user_roles(), $preview_q_id);
 echo $_POST['randomPageID'];
 ?>
