@@ -1,0 +1,4 @@
+.breadcrumb {margin-top:2px; margin-left:10px; font-size:90%}
+.breadcrumb a:link {color:blue; text-decoration:none; cursor:pointer}
+.breadcrumb a:visited {color:blue; text-decoration:none; cursor:pointer}
+.breadcrumb a:hover {color:blue; text-decoration:underline; cursor:pointer}

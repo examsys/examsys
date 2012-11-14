@@ -1,0 +1,14 @@
+.announcement {
+  margin-left:30px;
+  margin-right:30px;
+  padding:5px;
+  line-height:150%;
+  background-color:#FFFFC0;
+  background: -moz-linear-gradient(top, #FFF6BD, #FFEC82);
+  background: -webkit-linear-gradient(top, #FFF6BD, #FFEC82);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFF6BD', endColorstr='#FFEC82');
+  border-top:1px solid #D0C890;
+  border-left:1px solid #D0C890;
+  border-right:1px solid #C0A880;
+  border-bottom:1px solid #C0A880;
+}

@@ -1,0 +1,18 @@
+body {
+  background-color:#F1F5FB;
+  font-size:90%;
+  text-align:justifed;
+}
+
+table {
+  width:100%;
+  border-collapse:collapse;
+}
+
+td {
+  padding:8px;
+}
+
+.icon {
+  vertical-align:top;
+}

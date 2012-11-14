@@ -1,0 +1,16 @@
+<?php
+$string['osceform'] = 'OSCE Form';
+$string['overallclassification'] = 'Overall Classification:';
+$string['feedback'] = 'Feedback';
+$string['clear fail'] = 'Clear Fail';
+$string['borderline'] = 'Borderline';
+$string['clear pass'] = 'Clear Pass';
+$string['fail'] = 'Fail';
+$string['borderline fail'] = 'Borderline fail';
+$string['borderline pass'] = 'Borderline pass';
+$string['pass'] = 'Pass';
+$string['good pass'] = 'Good pass';
+$string['honours pass'] = 'Honours PASS';
+$string['unsatisfactory'] = 'Unsatisfactory';
+$string['competent'] = 'Competent';
+?>
