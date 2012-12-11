@@ -1,0 +1,621 @@
+<?php
+// This file is part of Rogō
+//
+// Rogō is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Rogō is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+* 
+* Set of mapping functions used to map questions to objectives
+* 
+* @author Anthony Brown
+* @version 1.0
+* @copyright Copyright (c) 2012 The University of Nottingham
+* @package
+*/
+
+/**
+ * This is function displayObjectivesMappingForm it displays objectives by session
+ *
+ * @param int $paper_id 
+ * @param object $db
+ * 
+ */
+ 
+require_once $cfg_web_root . 'webServices/RestRequest.class';
+require_once $cfg_web_root . 'apis/VLEFactory.class.php';
+require_once $cfg_web_root . 'classes/dateutils.class.php';
+require_once $cfg_web_root . 'classes/mappingutils.class.php';
+require_once $cfg_web_root . 'classes/moduleutils.class.php';
+
+function render_objectives_mapping_form($db, $paper_id, &$string) {
+  global $vle_api_cache;
+
+  //get module and session from paper id
+  $modules_array = array();
+  $query = <<<QUERY
+SELECT DISTINCT m.moduleid, pm.idMod, p.calendar_year, p.paper_type FROM properties p INNER JOIN properties_modules pm ON p.property_id=pm.property_id INNER JOIN modules m ON pm.idMod=m.id WHERE p.property_id=?
+QUERY;
+  $result = $db->prepare($query);
+  $result->bind_param('i', $paper_id);
+  $result->execute();
+  $result->store_result();
+  $result->bind_result($moduleId, $idMod, $session, $paper_type);
+  while($result->fetch()) {
+    $modules_array[$idMod] = $moduleId;
+  }
+  if ($result->num_rows == 0) {
+    return 0;
+  }
+  $result->close();
+
+  if (isset($_GET['q_id'])) {
+    $q_id = $_GET['q_id'];
+  } else {
+    $q_id = '';
+  }
+  
+  $objsByModuleSession = getObjectives($modules_array, $session, $paper_id, $q_id, $db);
+
+  if (isset($objsByModuleSession['none_of_the_above'])) {
+    $none_of_the_above = $objsByModuleSession['none_of_the_above'];
+    unset($objsByModuleSession['none_of_the_above']);
+  }
+  
+  $html = '';
+  
+  foreach ($objsByModuleSession as $moduleid => $objsBySession) {
+    $moduleid_forform = str_replace(' ', '_', $moduleid);
+    $tmp = array_flip($modules_array);
+    $idmod = $tmp[$moduleid_forform];
+
+    $html .= <<< HTML
+        <h2>{$moduleid} {$string['objectives']}</h2>
+        
+        <ul class="objectives">
+
+HTML;
+    
+    $old_mappings = '';
+    $objcount = 0;
+    foreach($objsBySession as $id => $class) {
+      $heading = '';
+      if ($class['class_code'] != '') {
+        $heading .= $class['class_code'] . ' - ';
+      }
+      $heading .= $class['title'];
+      if ($class['occurrance'] != '') {
+        $heading .= '&nbsp;<span class="note">' . $class['occurrance'] . '</span>';
+      }
+      
+      $html .= <<< HTML
+    			<li class="top">
+            <a href="#">$heading</a>
+            <ul class="hide">
+
+HTML;
+      if (isset($class['objectives'])) {
+        foreach ($class['objectives'] as $objectives) {
+          if ($objectives['mapped'] != 0) {
+            $checked = ' checked="checked"';
+            $old_mappings .= $objectives['id'] . ',';
+          } else {
+            $checked = '';
+          }
+          $obj_text = strip_tags($objectives['content'], '<b><i><strong><em><sub><sup>');
+          $html .= <<< HTML
+        				<li><input id="objective{$objcount}" name="{$idmod}_objectives[]" value="{$objectives['id']}" type="checkbox"{$checked} /> <label for="objective{$objcount}">{$obj_text}</label></li>
+  
+HTML;
+          $objcount++;
+        }
+      } else {
+        $html .= <<< HTML
+            		<li>{$string['noobjectives']}</li>
+
+HTML;
+      }
+        
+      $html .= <<< HTML
+            </ul>
+          </li>
+
+HTML;
+    }
+    
+    $html .= <<< HTML
+        </ul>
+
+HTML;
+    $html .= <<< HTML
+    		<input name="{$idmod}_session" type="hidden" value="{$session}"/>
+    		<input name="{$idmod}_old_mappings" type="hidden" value="{$old_mappings}" />
+        <input name="{$idmod}_vle_api" type="hidden" value="$vle_api_cache[$idmod]"/>
+
+HTML;
+  }
+  
+  $checked = (isset($none_of_the_above['mapped'])) ? ' checked="checked"' : '';
+  $modules_string = implode(',',$modules_array);
+  $modules_keys_string = implode(',',array_keys($modules_array));
+  $nota_message = sprintf($string['noneabovemsg'], $modules_string);
+  $html .= <<< HTML
+        <p class="warning"><input value="-1" id="none_of_the_above" name="none_of_the_above" type="checkbox"{$checked} /><label for="none_of_the_above"><strong>{$string['noneabove']}</strong></label><br />{$nota_message}</p>
+        <input id="objective_modules" name="objective_modules" type="hidden" value="{$modules_keys_string}" />
+        
+HTML;
+    
+  return $html;
+}
+
+function displayObjectivesMappingForm($paper_id, $db,$cfg_root_path2) {
+  global $vle_api_cache,$configObject;
+
+  //get module and session from paper id
+  $modules_array = array();
+  $query = <<<QUERY
+SELECT DISTINCT m.moduleid, pm.idMod, p.calendar_year, p.paper_type FROM properties p INNER JOIN properties_modules pm ON p.property_id=pm.property_id INNER JOIN modules m ON pm.idMod=m.id WHERE p.property_id=?
+QUERY;
+  $result = $db->prepare($query);
+  $result->bind_param('i', $paper_id);
+  $result->execute();
+  $result->store_result();
+  $result->bind_result($moduleId, $idMod, $session, $paper_type);
+  while($result->fetch()) {
+    $modules_array[$idMod] = $moduleId;
+  }
+  if ($result->num_rows == 0) {
+    return 0;
+  }
+  $result->close();
+
+  if (isset($_GET['q_id'])) {
+    $q_id = $_GET['q_id'];
+  } else {
+    $q_id = '';
+  }
+  
+  $objsByModuleSession = getObjectives($modules_array, $session, $paper_id, $q_id, $db);
+
+  if (isset($objsByModuleSession['none_of_the_above'])) {
+    $none_of_the_above = $objsByModuleSession['none_of_the_above'];
+    unset($objsByModuleSession['none_of_the_above']);
+  }
+  
+  $html = '';
+  foreach ($objsByModuleSession as $moduleid => $objsBySession) {
+    $tmp = array_flip($modules_array);
+    $idmod = $tmp[$moduleid];
+
+    $html .= "<h1>$moduleid Objectives</h1>";
+    $old_mappings = '';
+    $objcount = 0;
+    foreach($objsBySession as $id => $class) {
+      if (isset($class['objectives']) and count($class['objectives']) > 0) {
+        $html .= "<div style=\"cursor:pointer; color:#316AC5; font-weight:bold; margin-top:6px\" onclick=\"showHide('$moduleid$id')\">";
+        if($class['mapped'] == 0) {
+          $html .= "<img id=\"img_$moduleid$id\" src='{$configObject->get('cfg_root_path')}/artwork/plus.png' />&nbsp;";
+          $display = 'none';
+        } else {
+          $html .= "<img id=\"img_$moduleid$id\" src='{$configObject->get('cfg_root_path')}/artwork/minus.png' />&nbsp;";
+          $display = 'block';
+        }
+
+        if ($class['class_code'] != '') {
+          $html .= $class['class_code'] . ' - ';
+        }
+        $html .= $class['title'];
+        if ($class['occurrance'] != '') {
+          $html .= '&nbsp;<span style="color:#808080; font-size:70%; font-weight:normal">' . $class['occurrance'] . '</span>';
+        }
+        $html .= "</div>\n<div id=\"div_$moduleid$id\" style=\"display:$display; font-size:90%\">\n";
+        //write out the objetives for this session
+        foreach ($class['objectives'] as $objectives) {
+          if ($objectives['mapped'] != 0) {
+            $checked = 'checked';
+            $old_mappings .= $objectives['id'] . ',';
+          } else {
+            $checked = '';
+          }
+          $html .= "\t<div style=\"margin-left:15px\"><input id=\"" . $idmod . "obj$objcount\" name=\"" . $idmod . "obj$objcount\" type=\"checkbox\" value=\"" . $objectives['id'] . "\" $checked />&nbsp;" . strip_tags($objectives['content'], '<b><i><strong><em><sub><sup>') . "</div>\n";
+          $objcount++;
+        }
+        $html .= "</div>\n";
+      } else {
+        $html .= "<div style=\"color:#808080; font-weight:bold; margin-top:6px\"><img src='{$configObject->get('cfg_root_path')}/artwork/grey_plus.gif' />&nbsp;";
+        if($class['class_code'] != '') {
+          $html .= $class['class_code'] . ' - ';
+        }
+        $html .= $class['title'];
+        if ($class['occurrance'] != '') {
+          $html .= '&nbsp;<span style="color:#808080; font-size:70%; font-weight:normal">' . $class['occurrance'] . '</span>';
+        }
+        $html .= "</div>\n";
+      }
+    }
+    $html .= "<input id=\"" . $idmod . "_objectiveCount\" name=\"" . $idmod . "_objectiveCount\" type=\"hidden\" value=\"$objcount\"/>\n";
+    $html .= "<input name=\"" . $idmod . "_session\" type=\"hidden\" value=\"$session\"/>\n";
+    $html .= "<input name=\"" . $idmod . "_old_mappings\" type=\"hidden\" value=\"$old_mappings\"/>\n";
+    $html .= "<input name=\"" . $idmod . "_vle_api\" type=\"hidden\" value=\"$vle_api_cache[$idmod]\"/>\n";
+  }
+
+  //display none of the above !
+  $html .= "<hr noshade=\"noshade\" style=\"border:0px; height:1px; text-align:left; background-color:#C0C0C0; color:#C0C0C0; width:40%\" />";
+  $html .= "<div style=\"color:#800000\">";
+  $checked = '';
+  if(isset($none_of_the_above['mapped'])) $checked = ' checked';
+  $modules_str = implode(', ', array_values($modules_array));
+  $html .= "<input type=\"checkbox\" value =\"-1\" name=\"none_of_the_above\"$checked /> <strong>None of the Above</strong><br />Check here if the current question does not match any of the above objectives from $modules_str.";
+  $html .= "</div>";
+
+
+  $html .= "<input id=\"paperID\" name=\"paperID\" type=\"hidden\" value=\"$paper_id\" />\n";
+  if (isset($_GET['q_id'])) {
+    $html .= "<input id=\"questionID\" name=\"questionID\" type=\"hidden\" value=\"" . $_GET['q_id'] . "\" />\n";
+  } else {
+    $html .= "<input id=\"questionID\" name=\"questionID\" type=\"hidden\" value=\"\" />\n";
+  }
+  $html .= "<input id=\"modules\" name=\"modules\" type=\"hidden\" value=\"" . implode(',', array_keys($modules_array)) . "\" />\n";
+  return $html;
+}
+
+
+/**
+ * This is function saveObjMappings it saves mappings to the relationships table in the Rogo database
+ *
+ * @param int $paper_id 
+ * @param int $question_id 
+ * @param object $db 
+ * 
+ */
+function save_objective_mappings($db, $modules, $paper_id, $question_id) {
+  if ($paper_id != '' and substr($paper_id,0,5) != 'find:') {
+    $modules = explode(',',$modules);
+    $old_mappings = '';
+    $new_mappings = '';
+
+    $sql = array();
+
+    foreach ($modules as $idMod) {
+      if (isset($_POST[$idMod . '_session'])) {
+        $session = $_POST[$idMod . '_session'];
+        $old_mappings = $_POST[$idMod . '_old_mappings'];
+        $vle_api = $_POST[$idMod . '_vle_api'];
+        if (isset($_POST[$idMod . '_objectives'])) {
+          foreach ($_POST[$idMod . '_objectives'] as $objective_id) {
+            $sql[] = "INSERT INTO relationships VALUES (NULL, $idMod, $paper_id, $question_id, $objective_id, '$session', '$vle_api')";
+            $new_mappings .= $objective_id . ',';
+          }
+        }
+    
+        //check for none of the above
+        if (isset($_POST['none_of_the_above']) and $_POST['none_of_the_above'] == -1 and count($sql) == 0) {
+          $sql[] = "INSERT INTO relationships VALUES (NULL, $idMod, $paper_id, $question_id, -1, '$session','$vle_api')";
+          $new_mappings .= '-1,';
+        } else {
+          $old_mappings .= '-1,';
+        }
+
+        if ($new_mappings != $old_mappings) {
+          // prepend the delete
+          if ($old_mappings != '') {
+            $delete = "DELETE FROM relationships WHERE idMod = $idMod AND paper_id = $paper_id AND question_id = $question_id AND calendar_year = '$session' AND vle_api= '$vle_api'";
+            array_unshift($sql, $delete);
+          }
+          foreach($sql as $query) {
+            if (!$result = $db->query($query)) {
+              echo "Question Mapping Error #1 " . $db->error . "<br/> $query <br/>";
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * This is function saveObjMappings it saves mappings to the relationships table in the Rogo database
+ *
+ * @param int $paper_id 
+ * @param int $question_id 
+ * @param object $db 
+ * 
+ */
+function saveObjMappings($paper_id, $question_id, $db) {
+  if (isset($_POST['modules']) and $paper_id != '' and substr($paper_id,0,5) != 'find:') {
+    $modules = $_POST['modules'];
+    $modules = explode(',',$modules);
+    foreach ($modules as $idMod) {
+      if (isset($_POST[$idMod . '_session'])) {
+        $session = $_POST[$idMod . '_session'];
+        $objectiveCount = $_POST[$idMod . '_objectiveCount'];
+        $old_mappings = $_POST[$idMod . '_old_mappings'];
+        $vle_api = $_POST[$idMod . '_vle_api'];
+        $sql = array();
+        $new_mappings = '';
+        for ($i = 0; $i < $objectiveCount; $i++ ) {
+          if (isset($_POST[$idMod . 'obj' . $i])) {
+            $sql[] = "INSERT INTO relationships VALUES (NULL, '$idMod', $paper_id, $question_id, " . $_POST[$idMod . 'obj' . $i] . ", '$session', '$vle_api')";
+            $new_mappings .= $_POST[$idMod . 'obj' . $i] . ',';
+          }
+        }
+        //check for none of the above
+        if (isset($_POST['none_of_the_above']) and $_POST['none_of_the_above'] == -1 AND count($sql) == 0) {
+          $sql[] = "INSERT INTO relationships VALUES (NULL, '$idMod', $paper_id, $question_id, -1, '$session', '$vle_api')";
+          $new_mappings .= '-1,';
+        } else {
+          $old_mappings .= '-1,';
+        }
+
+        if ($new_mappings != $old_mappings) {
+          //preappend the delete
+          if ($old_mappings != '') {
+            $delete = "DELETE FROM relationships WHERE idMod={$idMod} AND paper_id = $paper_id AND question_id = $question_id AND calendar_year = '$session' AND vle_api= '$vle_api'";
+            array_unshift($sql, $delete);
+          }
+          foreach($sql as $query) {
+            if (!$result = $db->query($query)) {
+              echo "Question Mapping Error #1 " . $db->error . "<br/> $query <br/>";
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+
+/**
+ * This is function getObjectives this function gets objectives to be mapped. It can Retrieve objectives from
+ * the internal database or an external application 
+ *
+ * @param string $thisModuleid module code
+ * @param string $session A session in the format yyyy/yy
+ * @param mixed $paperID 
+ * @param mixed $questionID 
+ * @param mixed $db 
+ * @return array an array of objectives and mappings
+ *
+ */
+ 
+$objsBySession_cache = array();
+$vle_api_cache = array(); // cache the vle api to save some queries
+
+function getObjectives($thisModuleid, $session, $paperID, $questionID, $db, $scope = 'latest') {
+  global $objsBySession_cache, $vle_api_cache,  $configObject;
+  $original_thisModuleid = $thisModuleid;
+  $objsBySession = array();
+
+  $module_list = $thisModuleid;
+  if (!is_array($module_list)) {
+    $module_list = array($thisModuleid);
+  }
+  foreach ($module_list as $thisidMod => $thisModuleid) {
+    // Get which API to use to get the learning objectives
+    $vle_api = MappingUtils::get_vle_api($thisidMod, $session, $vle_api_cache, $db);
+
+    if ($vle_api != '') {
+      // Get objectives from the VLE via REST request
+      if (!isset($objsBySession_cache[$thisModuleid]) or !isset($objsBySession_cache[$thisModuleid][$session]) or count($objsBySession_cache[$thisModuleid][$session]) == 0) {
+        $vle = VLEFactory::GetVLEAPI($vle_api);
+        $resp = $vle->getObjectives($thisModuleid, $session);
+        if ($resp != '') {
+          $objsBySession_cache[$thisModuleid][$session] = $resp;
+        }
+      }
+      if (isset($objsBySession_cache[$thisModuleid][$session][$thisModuleid])) {
+        $objsBySession[$thisModuleid] = $objsBySession_cache[$thisModuleid][$session][$thisModuleid];
+      }
+    } else {
+      // Use Rogō's internally stored objectves
+      if ($scope == 'all') {
+      	$sql = "SELECT sess_id, identifier, idMod, title, source_url, calendar_year, DATE_FORMAT(occurrence,' {$configObject->get('cfg_short_date')}') AS occurrence FROM sessions WHERE idMod = ? ORDER BY calendar_year, sess_id";
+      	$stmt = $db->prepare($sql);
+        $stmt->bind_param('i', $thisidMod);
+      } elseif ($session == '' and $scope == 'latest') {
+        $sql = "SELECT sess_id, identifier, idMod, title, source_url, calendar_year, DATE_FORMAT(occurrence,' {$configObject->get('cfg_short_date')}') AS occurrence FROM sessions WHERE idMod = ? AND calendar_year=(SELECT MAX(calendar_year) FROM objectives) ORDER BY sess_id";
+        $stmt = $db->prepare($sql);
+        $stmt->bind_param('i', $thisidMod);
+      } else {
+        $sql = "SELECT sess_id, identifier, idMod, title, source_url, calendar_year, DATE_FORMAT(occurrence,' {$configObject->get('cfg_short_date')}') AS occurrence FROM sessions WHERE idMod = ? AND calendar_year=? ORDER BY sess_id";
+        $stmt = $db->prepare($sql);
+        $stmt->bind_param('is', $thisidMod, $session);
+      }
+      $stmt->execute();
+      $stmt->store_result();
+      $stmt->bind_result($sess_id, $identifier, $idMod, $title, $source_url, $calendar_year, $occurrence);
+      while ($stmt->fetch()) {
+        $objsBySession[$thisModuleid][$identifier]['class_code'] = '';
+        $objsBySession[$thisModuleid][$identifier]['title'] = $title;
+        $objsBySession[$thisModuleid][$identifier]['occurrance'] = $occurrence;
+        $objsBySession[$thisModuleid][$identifier]['mapped'] = 0;
+        $objsBySession[$thisModuleid][$identifier]['identifier'] = $identifier;
+        $objsBySession[$thisModuleid][$identifier]['source_url'] = $source_url;
+        $objsBySession[$thisModuleid][$identifier]['calendar_year'] = $calendar_year;
+        $objsBySession[$thisModuleid][$identifier]['VLE'] = '';
+      }
+
+      $stmt->close();
+      if (isset($objsBySession[$thisModuleid]) and count($objsBySession[$thisModuleid]) > 0) {
+        //GET objs from Touchstone
+        foreach ($objsBySession[$thisModuleid] as $identifier => $sess) {
+          $sql = "SELECT obj_id,objective,sequence FROM objectives WHERE identifier=? AND calendar_year = ? ORDER BY sequence";
+          $stmt = $db->prepare($sql);
+          $stmt->bind_param('ss',$identifier,$sess['calendar_year']);
+          $stmt->execute();
+          //$stmt->store_result();
+          $stmt->bind_result($obj_id, $objective, $sequence);
+          $i = 0;
+          while ($stmt->fetch()) {
+            $objsBySession[$thisModuleid][$identifier]['objectives'][$obj_id]['content'] = $objective;
+            $objsBySession[$thisModuleid][$identifier]['objectives'][$obj_id]['id'] = $obj_id;
+            $objsBySession[$thisModuleid][$identifier]['objectives'][$obj_id]['mapped'] = 0;
+            $objsBySession[$thisModuleid][$identifier]['objectives'][$obj_id]['sequence'] = $sequence;
+            $i++;
+          }
+          $stmt->close();
+        }
+      }
+    }
+  }
+
+  //START:: get the currently mapped objectives in Rogo.
+  $mapped = array();
+  if ($questionID != '') {
+    $original_thisModuleid_in = "'" . implode("','", array_keys($original_thisModuleid)) . "'";
+    if ($result = $db->prepare("SELECT obj_id, question_id FROM relationships WHERE idMod IN($original_thisModuleid_in) AND paper_id=? AND calendar_year=? AND question_id IN ($questionID) AND vle_api=?")) {
+      $result->bind_param('iss', $paperID, $session, $vle_api);
+      $result->execute();
+      $result->bind_result($obj_id, $question_id);
+      while ($result->fetch()) {
+        $mapped[$obj_id][] = $question_id;
+      }
+      $result->close();
+    } else {
+      echo "Error: " . $db->error;
+    }
+  }
+  //END:: get the currently mapped objetives in Rogo
+  
+  //get all the objetives
+  foreach ($objsBySession as $moduleid => $sessions) {
+  	if (!empty($sessions)) {
+	    foreach ($sessions as $identifier => $tmp_session) {
+	      if (isset($tmp_session['objectives'])) {
+	        foreach ($tmp_session['objectives'] as $i => $objective) {
+	          if (array_key_exists($objective['id'],$mapped)) {
+	            $objsBySession[$moduleid][$identifier]['mapped'] = 1;
+	            $objsBySession[$moduleid][$identifier]['objectives'][$i]['mapped'] = $mapped[$objective['id']];
+	          } else {
+	            $objsBySession[$moduleid][$identifier]['objectives'][$i]['mapped'] = 0;
+	          }
+	        }
+	      }
+	    }
+  	}
+  }
+
+  //check for none of the above
+  if (isset($mapped[-1])) {
+    $objsBySession['none_of_the_above']['mapped'] = 1;
+  }
+
+  return $objsBySession;
+}
+
+/**
+ * This is function getObjectivesByMapping it gets a list of objectives with session information.
+ *
+ * @param syring $thisModuleid module code
+ * @param string $session A session in the format yyyy/yy
+ * @param int $paperID 
+ * @param int $questionID 
+ * @param object $db 
+ * @return array This is the return value description
+ *
+ */
+function getObjectivesByMapping($thisModuleid, $session, $paperID, $questionID, $db) {
+
+  $objsBySession = getObjectives($thisModuleid, $session, $paperID, $questionID, $db);
+  $objsByMapping = array();
+
+  if (isset($objsBySession['none_of_the_above']['mapped']) and $objsBySession['none_of_the_above']['mapped'] == 1) {
+    $objsByMapping['none_of_the_above']['mapped'] = 1;
+  }
+
+  foreach($objsBySession as $moduleid => $session) {
+  	if (!empty($session)) {
+	    foreach ($session as $identifier => $sessionData) {
+        if (is_array($sessionData) and isset($sessionData['objectives'])) {
+          foreach ($sessionData['objectives'] as $id => $obj) {
+	          if ($obj['mapped'] != 0) {
+	            $objsByMapping[$moduleid][$id] = $obj;
+	            $objsByMapping[$moduleid][$id]['session'] = $sessionData;
+	            unset($objsByMapping[$moduleid][$id]['session']['objectives']);
+	            unset($objsByMapping[$moduleid][$id]['session']['mapped']);
+	          }
+	        }
+	      }
+	    }
+  	}
+  }
+  
+  return $objsByMapping;
+}
+
+function copyObjectives($objectives, $module, $dest_session, $db) {
+	// Get highest identifier - can't rely on time as we may loop in < 1 second
+	$result = $db->prepare("SELECT MAX(identifier) AS largest FROM sessions WHERE moduleID = ?");
+	$result->bind_param('s', $module);
+	$result->execute();
+	$result->bind_result($largest);
+	$i = 0;
+	while ($result->fetch()) {
+		$identifier = $largest + 1;
+	}
+	if ($identifier < 10) {
+		$identifier = intval(time());
+	}
+	$result->close();
+    
+	// Loop through the sessions for the source year
+	foreach ($objectives[$module] as $session) {
+		$occurrence_parts = explode('/', $session['occurrance']);
+		$occurrence_new = date('Y-m-d H:i:s', mktime(9, 0, 0, $occurrence_parts[1], $occurrence_parts[0], $occurrence_parts[2] + 1));
+		
+		// Save it
+    $stmt = $db->prepare("INSERT INTO sessions(identifier, moduleID, title, source_url, calendar_year, occurrence) VALUES (?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param('ssssss', $identifier, $module, $session['title'], $session['source_url'], $dest_session, $occurrence_new);
+		$stmt->execute();
+		$err = $stmt->error;
+    $stmt->close();
+    
+    if(!empty($err)) {
+    	throw new Exception($err);
+    }
+    
+    // Get starting point for objective ID
+    $result = $db->prepare("SELECT MAX(obj_id) AS largest FROM objectives");
+    $result->execute();
+    $result->bind_result($largest);
+    while ($result->fetch()) {
+      $obj_id = $largest + 1;
+    }
+    if ($obj_id < 10) {
+      $obj_id = 123;
+    }
+    $result->close();
+    
+		// Loop through the objectives for the original session
+    if (isset($session['objectives'])) {
+      foreach ($session['objectives'] as $objective) {
+        // Save them against the new session identifier
+        $stmt = $db->prepare("INSERT INTO objectives(obj_id, objective, moduleID, identifier, calendar_year, sequence) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param('issssi', $obj_id, $objective['content'], $module, $identifier, $dest_session, $objective['sequence']);
+        $stmt->execute();
+        $err = $stmt->error;
+        $stmt->close();
+
+        if (!empty($err)) {
+          throw new Exception($err);
+        }
+        
+        $obj_id++;
+      }
+    }
+    
+		$identifier++;
+	}
+}
+
+?>

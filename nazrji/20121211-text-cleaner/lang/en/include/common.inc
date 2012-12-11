@@ -1,0 +1,57 @@
+<?php
+// This file is part of Rogō
+//
+// Rogō is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Rogō is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+
+$string['home'] = 'Home';
+$string['help'] = 'Help';
+$string['line'] = 'Line';
+$string['cancel'] = 'Cancel';
+$string['ok'] = 'OK';
+$string['save'] = 'Save';
+$string['accessdenied'] = 'Access Denied';
+$string['accessdeniedadmin'] = '<strong>Access Denied</strong><br />you are attempting to access a admin only screen.';
+$string['accessdeniedsysadmin'] = '<strong>Access Denied</strong><br />you are attempting to access a system admin only screen.';
+$string['denied_paper'] = 'You are attempting to access a <strong>paper you do not have rights to</strong>!';
+$string['denied_folder'] = 'You are attempting to access a <strong>folder you do not have rights to</strong>!';
+$string['denied_question'] = 'You are attempting to access a <strong>question you do not have rights to</strong>!';
+$string['denied_team'] = 'You are not a member of the <strong>%s</strong> module team.';
+$string['noldapusernamesupplied'] = 'No LDAP username or password supplied';
+$string['incorrectpassword'] = 'Incorrect password provided';
+$string['ldapserverunavailable'] = 'LDAP Server Unavalable';
+$string['noldapaccount'] = 'No LDAP account found!';
+$string['ldapservernosearch'] = 'LDAP Server Unavalable: unable to search';
+$string['nodatabaseconnection'] = 'Could not connect to the database please contact your administrator';
+$string['as'] = 'as';
+$string['localtsauthfailed'] = 'Local Rogō authentication failed.';
+$string['notsaccount'] = 'No Rogō account found!';
+$string['tempaccount'] = 'Temporary Account';
+$string['authenticationfailed'] = 'Authentication with Rogō has failed, please remember:';
+$string['usernamecasesensitive'] = 'Usernames/passwords are case-sensitive';
+$string['pressf5'] = "Press 'F5' on the keyboard to try logging in again";
+$string['tsonldap'] = 'Rogō uses the LDAP passwords';
+$string['ifstuckinvigilator'] = 'If you are still stuck ask an invigilator for a';
+$string['forgottenpassword'] = 'Forgotten Password';
+$string['warning'] = 'Warning';
+$string['secureconnection'] = 'Secure Connection Required';
+$string['secureconnectionmsg'] = 'Rogō can only be accessed through a secure web connection. Instead use:';
+$string['errormsg'] = 'If you repeatedly get this error please contact:';
+$string['ltifirstlogin'] = 'Rogō Authorisation';
+$string['ltifirstlogindesc'] = 'Rogō e-assessment system needs to confirm your identity to ensure you have the correct permissions.  This will only happen on your first visit and at infrequent intervals afterwards to ensure security.<br /><br /><input type="button" value=" Log In " onclick="window.location=\'./\'" />';
+$string['ltinotconfigured'] = 'The link you have followed has not yet been configured.';
+$string['LTIFAILURE'] = 'LTI Failure';
+$string['expiredtimestamp'] = 'Timestamp has now expired. Please go back and relaunch the link (do not hit refresh in the browser).';
+$string['UserMissing']='Associated User Missing';
+$string['UserMissingDesc'] = 'Somehow the associated user is missing from the rogo user system this is a serious error and you need to contact support';
+?>

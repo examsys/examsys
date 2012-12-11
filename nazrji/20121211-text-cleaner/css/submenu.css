@@ -1,0 +1,283 @@
+body {
+  padding-top:0px;
+  padding-bottom:0px;
+  padding-right:0px;
+  padding-left:223px;
+}
+
+div#left-sidebar {
+  position:absolute;
+  top:0;
+  left:0;
+  width:205px;
+  height:100%;
+  padding-right:4px;
+  padding-left:14px;
+  padding-top:4px;
+  padding-bottom:4px;
+  background-color:#DFECFF;
+  border-right: 1px solid #95AEC8;
+  overflow:auto;
+  font-size:75%;
+}
+
+@media screen {
+  body>div#left-sidebar{
+    position:fixed
+  }
+}
+
+* html body{
+  overflow:hidden
+}
+
+#content{
+  height:100px;
+  background-colour:#FFFFFF;
+  font-size:80%;
+}
+ 
+.divider {
+  padding-left:10px;
+  padding-bottom:2px;
+  font-weight:bold;
+}
+
+.f {
+  float:left;
+  width:375px;
+  padding-left:10px;
+  font-size:90%;
+  height:50px;
+}
+
+.file {
+  float:left;
+  width:375px;
+  height:74px;
+  padding-left:12px;
+  font-size:90%;
+}
+
+.mee {
+  font-size:120%;
+  display:inline
+}
+
+a.blacklink:link {
+  color:#000000;
+}
+
+a.blacklink:visited {
+  color:#000000;
+}
+
+a.blacklink:hover {
+  color:#000000;
+}
+
+a.greylink:link {
+  color:#808080;
+}
+
+a.greylink:visited {
+  color:#808080;
+}
+
+a.greylink:hover {
+  color:#808080;
+}
+
+.menuheading {
+  padding-left:6px;
+  color:#215DC6;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.menuheading a:link {
+  color:#215DC6;
+  cursor:pointer;
+}
+
+.menuheading a:visited {
+  color:#215DC6;
+  cursor:pointer;
+}
+
+.menuheading a:hover {
+  color:#428EFF;
+  cursor:pointer;
+}
+
+.sidebar {
+  background-color:#6375D6;
+}
+
+.sidebar_tbl {
+  border-spacing:0;
+  font-size:90%;
+  margin-left:9px;
+  width:185px;
+  border:none;
+}
+
+.sidebar_tbl td {
+  padding:4px;
+  border:none;
+}
+
+.popup {
+  display:none;
+  top:0px;
+  left:200px;
+  font-size:75%;
+  position:fixed;
+  line-height:160%;
+  border:1px solid #868686;
+  padding:2px;
+  background-color:white;
+  -moz-border-radius:4px;
+  -webkit-border-radius:4px;
+  border-radius:4px;
+  box-shadow:3px 3px 3px rgba(100, 100, 100, 0.50)
+}
+
+.popupitem {
+  padding-left:14px;
+  padding-right:14px;
+  cursor:pointer;
+  border:1px solid white;
+}
+
+.popupitembold {
+  padding-left:4px;
+  font-weight:bold;
+}
+
+.greymenuitem {
+  width:190px;
+  color:#808080;
+}
+
+.greymenuitem span {
+  width:100%;
+  float:left;
+  margin-right:15%;
+}
+
+.greymenuitem a:link {
+  color:#808080;
+  text-decoration:none;
+  cursor:pointer;
+}
+
+.greymenuitem a:visited {
+  color:#808080;
+  text-decoration:none;
+  cursor:pointer;
+}
+
+.greymenuitem a:hover {
+  color:#808080;
+  text-decoration:none;
+  cursor:pointer;
+}
+
+.menuitem {
+  width:100%
+}
+
+.menuitem span {
+  width:100%;
+  float:left;
+  margin-right:15%;
+}
+
+.menuitem a:link {
+  color:black;
+  text-decoration:none;
+  cursor:pointer;
+}
+
+.menuitem a:visited {
+  color:black;
+  text-decoration:none;
+  cursor:pointer;
+}
+
+.menuitem a:hover {
+  color:blue;
+  text-decoration:underline;
+  cursor:pointer;
+}
+
+.menuitem.sub span {
+  background: transparent url('../artwork/submenu_arrow.png') no-repeat 90% top;
+}
+
+.greymenuitem.sub span {
+  background: transparent url('../artwork/submenu_arrow_grey.png') no-repeat 90% top;
+}
+
+.menu_list {
+  margin: 4px 0 0 0;
+  padding-left: 13px;
+  list-style: none;
+}
+
+.menu_list li {
+  padding-left: 24px;
+  width: 120px;
+  font-size: 90%;
+  margin: 0;
+}
+
+#break_controls {
+  list-style: none;
+}
+
+#break_controls li {
+  height: 16px;
+  margin-bottom: 6px;
+}
+
+.menu_list .break {
+  background: transparent url('../artwork/screen_icon.png') no-repeat left center;
+}
+
+.menu_list .break.greymenuitem {
+  background: transparent url('../artwork/screen_icon_grey.png') no-repeat left center;
+}
+
+#delete_break {
+  background: transparent url('../artwork/screen_icon_delete.png') no-repeat left center;
+}
+
+#delete_break.greymenuitem {
+  background: transparent url('../artwork/screen_icon_delete_off.png') no-repeat left center;
+}
+
+a.checklist {
+  color:black;
+  text-decoration:none;
+}
+
+.ico {
+  text-align:center;
+  width:16px;
+}
+
+.submenuheading {
+  font-weight:bold;
+  padding-top:15px;
+  margin-left:2px;
+}
+
+#menu2b, #menu2c {
+  display: none;
+}
+
+div.iefixdiv {
+  padding-top: 1px;
+}

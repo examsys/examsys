@@ -1,0 +1,22 @@
+.dialog_header {
+  background-color:white;
+  text-align:left;
+  font-size:160%;
+  font-weight:bold;
+  color:#5582D2;
+}
+
+.dialog_body {
+  background-color:#F1F5FB;
+}
+
+.dialog_border {
+  border:1px solid #95AEC8;
+  border-collapse: collapse;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+.dialog_border td {
+  padding:4px;
+}
