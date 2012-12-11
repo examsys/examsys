@@ -118,6 +118,7 @@ Class Option extends RogoObject {
         $value = (isset($data[$field])) ? $data[$field] : '';
         $method = "set_$section_name";
         $this->$method($value);
+        $this->clean_field($section_name);
       }
     }
   }
@@ -139,6 +140,7 @@ Class Option extends RogoObject {
         if (isset($data[$field]) and $data[$field] != $old_value) {
           $set_method = "set_$section_name";
           $this->$set_method($data[$field]);
+          $this->clean_field($section_name);
           if ($save_changes) $this->_question->add_unified_field_modification($section_name, $section_label, $old_value, $data[$field]);
         }
       }
@@ -178,6 +180,7 @@ Class Option extends RogoObject {
       }
       $method = "set_all_{$section_name}s";
       $this->$method($existing_values[$section_name]);
+      $this->clean_field($section_name);
     }
   }
   

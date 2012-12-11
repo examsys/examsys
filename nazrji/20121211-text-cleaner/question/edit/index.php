@@ -30,6 +30,7 @@ require_once '../../classes/stateutils.class.php';
 require_once '../../classes/moduleutils.class.php';
 require_once '../../classes/questioninfo.class.php';
 require_once '../../classes/paperutils.class.php';
+require_once '../../classes/textcleaner.class.php';
 require_once '../../include/edit.inc';
 require_once '../../include/media.inc';
 require_once '../../include/metadata.inc';
@@ -112,6 +113,8 @@ if ($critical_error == '' and $question->requires_media() and (isset($_POST['sub
 
 if ($critical_error == '') {
   $question->add_default_correction_behaviours($cfg_web_root);
+  $text_cleaner = new TextCleaner();
+  $question->set_text_cleaner($text_cleaner);
 
   if ($mode == 'Edit') $q_no = $question->get_question_number($paper_id);
 
@@ -208,10 +211,6 @@ if ($critical_error == '') {
         $question->populate_compound_media($_FILES, $_POST, 'q_media', 'question_media');
       }
 
-      // Strip MS Office HTML.
-      $question->set_scenario(clearMSOtags($question->get_scenario()));
-      $question->set_leadin(clearMSOtags($question->get_leadin()));
-
       $question_teams = array();
       if (isset($_POST['teams'])) {
         //$question_teams = array_combine($_POST['teams'], $_POST['teams']);
@@ -230,6 +229,7 @@ if ($critical_error == '') {
           // Editing existing option
           $option = $question->options[$_POST["optionid$option_no"]];
           $part_names = $option->get_editable_fields();
+          $option->set_text_cleaner($text_cleaner);
 
           // Build arrays for compound fields
           $compound_fields = $option->get_compound_fields();
@@ -244,6 +244,7 @@ if ($critical_error == '') {
         } else {
           // Create new option if have required data
           $option = Option::option_factory($mysqli, $userObject->get_user_ID(), $question, $option_no, $string, array('marks' => 1));
+          $option->set_text_cleaner($text_cleaner);
 
           if ($option->minimum_fields_exist($_POST, $_FILES, $option_no)) {
             $correct_fb = (isset($_POST["option_correct_fback$option_no"])) ? $_POST["option_correct_fback$option_no"] : '';

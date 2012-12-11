@@ -32,7 +32,10 @@ Class RogoObject {
   
   // 'Compound' fields are concatenated within a question
   protected $_fields_compound = array();
-  
+
+  // Class to clean up text values
+  protected $_text_cleaner = null;
+
   /**
    * Record the value of a modified field so that it can be used for change tracking
    * @param string $name
@@ -120,5 +123,14 @@ Class RogoObject {
     }
     return $text;
   }
+
+  public function set_text_cleaner($cleaner) {
+    $this->_text_cleaner = $cleaner;
+  }
+
+  public function clean_field($field) {
+    $this->$field = $this->_text_cleaner->clean($this->$field);
+  }
+
 }
 

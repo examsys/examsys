@@ -118,7 +118,7 @@ Class Question extends RogoObject {
 
   // A list of correction behaviours that will be called sequentially for the Correct operation
   protected $_correctors = array();
-  
+
   
   /**
    * Create a new question object by either loading an existing question from the database or populating
@@ -189,6 +189,7 @@ Class Question extends RogoObject {
         
         $method = "set_$section_name";
         $this->$method($value);
+        $this->clean_field($section_name);
       }
     }
   }
@@ -245,6 +246,7 @@ Class Question extends RogoObject {
         }
         $method = "set_all_{$section_name}s";
         $this->$method($$section_name);
+        $this->clean_field($section_name);
       }
     }
   }
