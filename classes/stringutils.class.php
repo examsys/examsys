@@ -68,4 +68,17 @@ class StringUtils {
     return $suffix;
   }
 
+  /**
+   * Remove special characters and trim a string
+   * @param  string $string Subject string
+   * @return string         Cleaned version of the string
+   */
+  public static function clean_and_trim($string) {
+    $searches = array('&nbsp;');
+    $replaces = array(' ');
+
+    $string = str_replace($searches, $replaces, $string);
+
+    return trim($string);
+  }
 }
