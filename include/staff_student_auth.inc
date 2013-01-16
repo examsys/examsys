@@ -58,7 +58,7 @@ require_once $cfg_web_root . 'include/lti_func.php';
 require_once $cfg_web_root . 'classes/lti_integration.class.php';
 
 // Check to see if the update script has been run.
-if ($rogo_version != '4.3.1') {
+if ($rogo_version != '4.3.2') {
   display_notice('Update Required', 'System needs configuring before use. Please contact your local system administrator.', '../artwork/software_64.png', $title_color = '#C00000');
   echo "\n</body>\n</html>\n";
   exit;
