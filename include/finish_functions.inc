@@ -1666,7 +1666,6 @@ function display_feedback($sessionid, $temp_userID, $paperID, $paper_type, $log_
                 $std_part++;
                 $matching_user_option = 0;
                 foreach ($separate_user_answers as $single_user_answer) {
-                  if ($single_user_answer != '' and $single_user_answer != 'u') $unanswered = false;
                   if ($single_user_answer == $option_order[$tmp_option_no-1]+1) {
                     $matching_user_option = 1;
                   }
@@ -1687,7 +1686,6 @@ function display_feedback($sessionid, $temp_userID, $paperID, $paper_type, $log_
                   echo display_response($tmp_display_students_response, 'tick');
                 } else {
                   $all_correct = false;
-                  echo display_response($tmp_display_students_response, 'cross');
                 }
                 echo '&nbsp;</td><td';
                 if (substr($tmp_exclude,$section,1) == '1') echo ' class="exclude"';
@@ -1705,8 +1703,6 @@ function display_feedback($sessionid, $temp_userID, $paperID, $paper_type, $log_
                   echo display_response($tmp_display_students_response, 'cross');
                   $paper[$question]['mark'] += $paper[$question]['marks_incorrect'];
                   $all_correct = false;
-                } else {
-                  echo display_response($tmp_display_students_response, 'blank');
                 }
                 echo '&nbsp;</td><td';
                 if (substr($tmp_exclude,$section,1) == '1') echo ' class="exclude"';
