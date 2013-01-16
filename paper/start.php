@@ -574,7 +574,7 @@ if ($css != '') {
           type: 'post',
           data: $('#qForm').serialize(),
           dataType: 'html',
-          timeout: 2500,
+          timeout: 10000,
           cache: false,
           tryCount : 0,    
           retryLimit : 3, //try 3 times b4 error
