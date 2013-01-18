@@ -15,7 +15,7 @@
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
-* 
+*
 * @author Anthony Brown
 * @version 1.0
 * @copyright Copyright (c) 2012 The University of Nottingham
@@ -28,15 +28,15 @@
   require '../include/errors.inc';
   require '../include/feedback.inc';
   require_once '../include/sort.inc';
-  
+
   check_var('id', 'GET', true, false);
-  
+
   if (strpos($userroles,'Demo') !== false) {
     $demo = true;
   } else {
     $demo = false;
   }
-  
+
   $showReflection = true;
   if (strpos($userroles,'Staff') !== false or strpos($userroles,'SysAdmin') !== false) {
     if (isset($_GET['userID']) and $_GET['userID'] != '') {
@@ -80,7 +80,7 @@
     header("HTTP/1.0 404 Not Found");
     exit;
   }
-  
+
   //check the user sat the paper!
   if ($paper_type == '5') {
     $result = $mysqli->prepare("SELECT DATE_FORMAT(started,'%H:%i:%s') AS started, NULL AS updated FROM log5 WHERE q_paper=? AND userID=? LIMIT 1");
@@ -117,9 +117,9 @@
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
-  
+
   <title><?php echo $string['examfeedback']; ?></title>
-  
+
   <link rel="stylesheet" type="text/css" href="../css/body.css" />
   <link rel="stylesheet" type="text/css" href="../css/header.css" />
   <link rel="stylesheet" type="text/css" href="../css/warnings.css" />
@@ -153,19 +153,19 @@
   echo "<tr><th style=\"padding:10px\"><div style=\"font-size:220%; font-weight:bold\">$paper_title</div>\n";
   echo "<div><strong>$student_name " . $string['feedback'] . "</strong></div></th></tr>\n";
   echo "<tr><th class=\"bevel\"></th></tr>\n";
-  
+
   //get Cohort Data
   $chort_question_data = getCohortData($mysqli, $moduleID, $start_date, $end_date, '%', '%', '%', $paperID, $paper_type, '');
 
   //get users log data excluding exclued questions
   $qid_list = '';
   $question_data = array();
-  
+
   $startedSQL = '';
   if (isset($_GET['started'])) {
     $startedSQL = ' AND started = "' . $_GET['started'] . '"';;
   }
-  
+
   if($paper_type == '4') {
     $result = $mysqli->prepare("SELECT log4.q_id, rating as mark,score_method FROM log$paper_type LEFT JOIN questions ON log4.q_id = questions.q_id WHERE  log4.q_id NOT IN (SELECT q_id FROM question_exclude WHERE q_paper=?) AND userID=? AND q_paper=? $startedSQL ORDER BY  log4.q_id, started");
   } else {
@@ -187,7 +187,7 @@
     $qid_list .= $q_id . ',';
   }
   $result->close();
-  
+
   $objectives = array();
   $qid_list = substr($qid_list,0,-1);
   $objByModule = getObjectivesByMapping($moduleID, $session, $paperID, $qid_list, $mysqli);
@@ -195,7 +195,7 @@
   if (count($objByModule) > 0) {
     foreach ($objByModule as $module => $mappings) {
       foreach ($mappings as $id => $mappingData) {
-        if( $mappingData['session']['class_code'] != '') {
+        if ($mappingData['session']['class_code'] != '') {
           $sessiontitle = $mappingData['session']['class_code'];
         } else {
           $sessiontitle = $mappingData['session']['title'];
@@ -219,13 +219,22 @@
           }
           $objectives[$id]['session']['sessiontitle'] = $sessiontitle;
 
+
+          if (isset($objectives[$id]['chort_totalpos_sum'])) {
+            $objectives[$id]['chort_totalpos_sum'] += $chort_question_data[$q_id]['totalpos'];
+          } else {
+            $objectives[$id]['chort_totalpos_sum'] = $chort_question_data[$q_id]['totalpos'];
+          }
+          if (isset($objectives[$id]['chort_mark_sum'])) {
+            $objectives[$id]['chort_mark_sum'] += $chort_question_data[$q_id]['mark'];
+          } else {
+            $objectives[$id]['chort_mark_sum'] = $chort_question_data[$q_id]['mark'];
+          }
         }
         $objectives[$id]['ratio'] = $objectives[$id]['mark_sum']/$objectives[$id]['totalpos_sum'];
-        $objectives[$id]['chort_totalpos_sum'] = $chort_question_data[$q_id]['totalpos'];
-        $objectives[$id]['chort_mark_sum'] = $chort_question_data[$q_id]['mark'];
-        $objectives[$id]['chort_ratio'] = $chort_question_data[$q_id]['mark'] / $chort_question_data[$q_id]['totalpos'];
+        $objectives[$id]['chort_ratio'] = $objectives[$id]['chort_mark_sum'] / $objectives[$id]['chort_totalpos_sum'];
       }
-    }
+   }
     $objectives = array_csort($objectives, 'ratio', 'desc');
   }
 
@@ -244,7 +253,7 @@
   <h1><?php echo $string['learningobjectives']; ?></h1>
   <p><?php echo $string['explanation']; ?></p>
   <?php
-  
+
   echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"font-size:100%; line-height:150%\">\n";
   echo "<tr><td style=\"border-top: 1px solid #D6E5F5\">&nbsp;</td><td style=\"border-top: 1px solid #D6E5F5\"><img src=\"../artwork/vertical_spacer.gif\" width=\"1\" height=\"21\" alt=\"\" /></td><td colspan=\"3\" style=\"border-top: 1px solid #D6E5F5; color:#1E3287\">&nbsp;<nobr>" . $string['yourmark'] . "&nbsp;</nobr></td><td style=\"border-top: 1px solid #D6E5F5\"><img src=\"../artwork/vertical_spacer.gif\" width=\"1\" height=\"21\" alt=\"\" /></td><td style=\"border-top: 1px solid #D6E5F5; color:#1E3287\">&nbsp;" . $string['relative'] . "&nbsp;</td><td style=\"border-top: 1px solid #D6E5F5\"><img src=\"../artwork/vertical_spacer.gif\" width=\"1\" height=\"21\" alt=\"\" /></td><td style=\"border-top: 1px solid #D6E5F5; color:#1E3287\"><nobr>&nbsp;" . $string['qno'] . "&nbsp;</nobr></td><td style=\"border-top: 1px solid #D6E5F5\"><img src=\"../artwork/vertical_spacer.gif\" width=\"1\" height=\"21\" alt=\"\" /></td><td style=\"border-top: 1px solid #D6E5F5; color:#1E3287; text-align:center\">" . $string['objective'] . "</td></tr>";
   foreach($objectives as $id => $obj_data) {
@@ -256,9 +265,9 @@
     } else {
      $img_src = '../artwork/major_comment.png';
     }
-    
+
     if ($obj_data['mark_sum'] == '') $obj_data['mark_sum'] = 0;
-    
+
     //cohort performance comparison
     $comparison = round($objectives[$id]['mark_sum'] - ( $objectives[$id]['totalpos_sum'] * ($objectives[$id]['chort_mark_sum']/$objectives[$id]['chort_totalpos_sum'])),1);
     if($comparison == 0) {
@@ -282,14 +291,14 @@
   echo "<table style=\"font-size:100%; margin-left:4px\">\n";
   echo "<tr><td>" . $string['papertitle'] . "</td><td>$paper_title</td></tr>\n";
   echo "<tr><td>" . $string['startedat'] . "</td><td>$started</td></tr>\n";
-  
+
   //display student marks
   if ($paper_type < '3') {
     echo "<tr><td>" . $string['examlength'] . "</td><td>" . formatsec($exam_duration*60) . "</td></tr>\n";
     echo "<tr><td>" . $string['timespent'] . "</td><td>" . formatsec($time_spent) . "</td></tr>\n";
   }
   echo "</table>\n";
-  
+
   $mysqli->close();
 ?>
 </body>
