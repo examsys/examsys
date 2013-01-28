@@ -28,6 +28,7 @@
   require '../include/errors.inc';
   require '../include/feedback.inc';
   require_once '../include/sort.inc';
+  require_once '../include/calculate_marks.inc';
 
   check_var('id', 'GET', true, false);
 
@@ -166,12 +167,12 @@
     $startedSQL = ' AND started = "' . $_GET['started'] . '"';;
   }
 
-  if($paper_type == '4') {
-    $result = $mysqli->prepare("SELECT log4.q_id, rating as mark,score_method FROM log$paper_type LEFT JOIN questions ON log4.q_id = questions.q_id WHERE  log4.q_id NOT IN (SELECT q_id FROM question_exclude WHERE q_paper=?) AND userID=? AND q_paper=? $startedSQL ORDER BY  log4.q_id, started");
+  if ($paper_type == '4') {
+    $sql = "SELECT q_id, rating, NULL AS totalpos FROM log4 WHERE q_id NOT IN (SELECT q_id FROM question_exclude WHERE q_paper = ?) AND userID = ? AND q_paper = ? $startedSQL ORDER BY q_id, started";
   } else {
-    $result = $mysqli->prepare("SELECT q_id, mark, totalpos FROM log$paper_type WHERE q_id NOT IN (SELECT q_id FROM question_exclude WHERE q_paper=?) AND userID=? AND q_paper=? $startedSQL ORDER BY q_id, started");
+    $sql = "SELECT q_id, mark, totalpos FROM log$paper_type WHERE q_id NOT IN (SELECT q_id FROM question_exclude WHERE q_paper = ?) AND userID = ? AND q_paper = ? $startedSQL ORDER BY q_id, started";
   }
-
+  $result = $mysqli->prepare($sql);
   $result->bind_param('iii', $paperID, $userID, $paperID);
   $result->execute();
   $result->bind_result($q_id, $mark, $totalpos);
@@ -188,10 +189,24 @@
   }
   $result->close();
 
+  if ($paper_type == '4') {   // Get the maximum marks for OSCE station questions.
+    $result = $mysqli->prepare("SELECT q_id, q_type, display_method, score_method FROM questions, papers WHERE papers.question = questions.q_id AND paper = ?");
+    $result->bind_param('i', $paperID);
+    $result->execute();
+    $result->bind_result($q_id, $q_type, $display_method, $score_method);
+    $total_student_mark = 0;
+    while ($result->fetch()) {
+      $question_marks = 1;
+      $question_data[$q_id]['totalpos'] = qMarks($q_type, '', $question_marks, '', '', $display_method, $score_method);
+    }
+  }
+
   $objectives = array();
   $qid_list = substr($qid_list,0,-1);
   $objByModule = getObjectivesByMapping($moduleID, $session, $paperID, $qid_list, $mysqli);
+
   unset($objByModule['none_of_the_above']);
+
   if (count($objByModule) > 0) {
     foreach ($objByModule as $module => $mappings) {
       foreach ($mappings as $id => $mappingData) {
@@ -234,7 +249,7 @@
         $objectives[$id]['ratio'] = $objectives[$id]['mark_sum']/$objectives[$id]['totalpos_sum'];
         $objectives[$id]['chort_ratio'] = $objectives[$id]['chort_mark_sum'] / $objectives[$id]['chort_totalpos_sum'];
       }
-   }
+    }
     $objectives = array_csort($objectives, 'ratio', 'desc');
   }
 

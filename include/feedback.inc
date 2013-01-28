@@ -60,7 +60,7 @@ function getCohortData($mysqli, $moduleID, $startdate, $enddate, $repcourse, $re
     }
     $marks_query = "(SELECT log0.userID, sum(mark) AS total_mark FROM (log0, log_metadata) WHERE log0.started=log_metadata.started AND log0.q_paper=log_metadata.paperID AND log0.userID=log_metadata.userID AND q_paper=$paperID AND log_metadata.started>='$startdate' AND log_metadata.started<='$enddate' AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE '%staff%' AND student_grade NOT LIKE '%nhs%' AND year LIKE '" . $repyear . "'$student_modules_sql1 GROUP BY log0.userID, q_paper, log0.started) UNION ALL (SELECT log1.userID, sum(mark) AS total_mark FROM (log1, log_metadata) WHERE log1.started=log_metadata.started AND log1.q_paper=log_metadata.paperID AND log1.userID=log_metadata.userID AND q_paper=" . $paperID . " AND log_metadata.started>='$startdate' AND log_metadata.started<='$enddate' AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE '%staff%' AND student_grade NOT LIKE '%nhs%' AND year LIKE '" . $repyear . "'$student_modules_sql2 GROUP BY log1.userID, q_paper, log1.started) ORDER BY total_mark " . $direction;
   } elseif ($paper_type == '4') {
-    $marks_query = "SELECT log$paper_type.userID, sum(rating) AS total_mark FROM (log$paper_type, log_metadata) WHERE log$paper_type.started=log_metadata.started AND log$paper_type.q_paper=log_metadata.paperID AND log$paper_type.userID=log_metadata.userID AND q_paper=$paperID AND DATE_ADD(log_metadata.started, INTERVAL 2 MINUTE)>='$startdate' AND log_metadata.started<='$enddate' AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE '%staff%' AND student_grade NOT LIKE '%nhs%' AND student_grade LIKE '" . $repcourse . "' AND year LIKE '" . $repyear . "'$student_modules_sql GROUP BY log$paper_type.userID, q_paper, log$paper_type.started ORDER BY total_mark " . $direction;
+    $marks_query = "SELECT userID, sum(rating) AS total_mark FROM log4 WHERE q_paper=$paperID AND DATE_ADD(started, INTERVAL 2 MINUTE)>='$startdate' AND started<='$enddate'$student_modules_sql GROUP BY userID, q_paper, log$paper_type.started ORDER BY total_mark " . $direction;
   } else {
     $marks_query = "SELECT log$paper_type.userID, sum(mark) AS total_mark FROM (log$paper_type, log_metadata) WHERE log$paper_type.started=log_metadata.started AND log$paper_type.q_paper=log_metadata.paperID AND log$paper_type.userID=log_metadata.userID AND q_paper=$paperID AND DATE_ADD(log_metadata.started, INTERVAL 2 MINUTE)>='$startdate' AND log_metadata.started<='$enddate' AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE '%staff%' AND student_grade NOT LIKE '%nhs%' AND student_grade LIKE '" . $repcourse . "' AND year LIKE '" . $repyear . "'$student_modules_sql GROUP BY log$paper_type.userID, q_paper, log$paper_type.started ORDER BY total_mark " . $direction;
   }
@@ -108,9 +108,14 @@ function getCohortData($mysqli, $moduleID, $startdate, $enddate, $repcourse, $re
   $qid_list = '';
   $question_data = array();
   if ($student_list != '') {
-    $result = $mysqli->prepare("SELECT q_id, SUM(mark) AS mark, SUM(totalpos) AS totalpos FROM log$paper_type WHERE userID IN ($student_list) $excluded AND q_paper=$paperID GROUP BY q_id ORDER BY q_id");
+    if ($paper_type == '4') {
+      $sql = "SELECT COUNT(userID) AS user_count, q_id, SUM(rating) AS mark, SUM(1) AS totalpos FROM log4 WHERE userID IN ($student_list) $excluded AND q_paper=$paperID GROUP BY q_id ORDER BY q_id";
+    } else {
+      $sql = "SELECT COUNT(userID) AS user_count, q_id, SUM(mark) AS mark, SUM(totalpos) AS totalpos FROM log$paper_type WHERE userID IN ($student_list) $excluded AND q_paper=$paperID GROUP BY q_id ORDER BY q_id";
+    }
+    $result = $mysqli->prepare($sql);
     $result->execute();
-    $result->bind_result($q_id, $mark, $totalpos);
+    $result->bind_result($user_count, $q_id, $mark, $totalpos);
     while ($result->fetch()) {
       $question_data[$q_id]['totalpos'] = $totalpos;
       $question_data[$q_id]['mark'] = $mark;    
@@ -118,6 +123,18 @@ function getCohortData($mysqli, $moduleID, $startdate, $enddate, $repcourse, $re
     }
     $result->close();
   }
+
+  if ($paper_type == '4') {   // Get the maximum marks for OSCE station questions.
+    $result = $mysqli->prepare("SELECT q_id, q_type, display_method, score_method FROM questions, papers WHERE papers.question = questions.q_id AND paper = ?");
+    $result->bind_param('i', $paperID);
+    $result->execute();
+    $result->bind_result($q_id, $q_type, $display_method, $score_method);
+    $total_student_mark = 0;
+    while ($result->fetch()) {
+      $question_data[$q_id]['totalpos'] = qMarks($q_type, '', 1, '', '', $display_method, $score_method) * $user_count;
+    }
+  }  
+  
   return $question_data;
 }
 
