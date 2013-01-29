@@ -20,7 +20,7 @@
 *
 * @author Anthony Brown
 * @version 1.0
-* @copyright Copyright (c) 2012 The University of Nottingham
+* @copyright Copyright (c) 2013 The University of Nottingham
 * @package
 */
 
@@ -30,6 +30,7 @@ require_once $cfg_web_root . 'classes/moduleutils.class.php';
 require_once $cfg_web_root . 'classes/schoolutils.class.php';
 require_once $cfg_web_root . 'classes/facultyutils.class.php';
 require_once $cfg_web_root . 'classes/lang.class.php';
+require_once $cfg_web_root . 'classes/configobject.class.php';
 require_once $cfg_web_root . 'lang/' . $language . '/include/timezones.inc';
 
 Class InstallUtils {
@@ -57,7 +58,7 @@ Class InstallUtils {
   public static $cfg_db_staff_user;
   public static $cfg_db_staff_passwd;
   public static $cfg_db_external_user;
-  public static $cfg_db_external_passwd ;
+  public static $cfg_db_external_passwd;
   public static $cfg_db_sysadmin_user;
   public static $cfg_db_sysadmin_passwd;
   public static $cfg_db_sct_user;
@@ -77,8 +78,13 @@ Class InstallUtils {
   public static $cfg_ldap_bind_rdn;
   public static $cfg_ldap_bind_password;
   public static $cfg_ldap_user_prefix;
-  public static $cfg_use_ldap = 'false';
-
+  
+  public static $cfg_auth_ldap = 'false';
+  public static $cfg_auth_lti = 'true';
+  public static $cfg_auth_internal = 'true';
+  public static $cfg_auth_guest = 'true';
+  public static $cfg_auth_impersonation = 'true';
+ 
   public static $cfg_support_email;
   public static $emergency_support_numbers;
 
@@ -99,7 +105,7 @@ Class InstallUtils {
       });
     </script>
     <form id="installForm" class="cmxform" method="post" action="<?php echo $_SERVER['PHP_SELF'];?>">
-    
+
       <?php
         if (!defined('PHP_VERSION_ID')) {
           $version = explode('.', PHP_VERSION);
@@ -151,7 +157,11 @@ Class InstallUtils {
         ?>
         </select></div>
 
-        <table class="h"><tr><td><nobr><?php echo $string['ldapconfiguration']; ?></nobr></td><td class="line"><hr /></td></tr></table>
+        <table class="h"><tr><td><nobr><?php echo $string['authentication']; ?></nobr></td><td class="line"><hr /></td></tr></table>
+        <div><label for="useLti"><?php echo $string['allowlti']; ?></label><input id="useLti" name="useLti" type="checkbox" checked="checked" /> <img src="../artwork/help_tip.png" class="tipright" width="15" height="15" title="Allow authentication from successful LTI launch" /></div><br />
+        <div><label for="useInternal"><?php echo $string['allowintdb']; ?></label><input id="useInternal" name="useInternal" type="checkbox" checked="checked" /> <img src="../artwork/help_tip.png" class="tipright" width="15" height="15" title="Allow authentication from internal Rogo user database" /></div><br />
+        <div><label for="useGuest"><?php echo $string['allowguest']; ?></label><input id="useGuest" name="useGuest" type="checkbox" checked="checked" /> <img src="../artwork/help_tip.png" class="tipright" width="15" height="15" title="Allow guest temporary accouts for students who forget their normal log in details" /></div><br />
+        <div><label for="useImpersonation"><?php echo $string['allowimpersonation']; ?></label><input id="useImpersonation" name="useImpersonation" type="checkbox" checked="checked" /> <img src="../artwork/help_tip.png" class="tipright" width="15" height="15" title="Allow SysAdmin users to impersonate other users" /></div><br clear="all" /><br />
         <div><label for="useLdap"><?php echo $string['useldap']; ?></label><input id="useLdap" name="useLdap" type="checkbox" /></div>
         <div id="ldapOptions" style="display:none;">
           <br/>
@@ -159,7 +169,7 @@ Class InstallUtils {
           <div><label for="ldap_search_dn"><?php echo $string['searchdn']; ?></label> <input type="text" value="" id="ldap_search_dn" name="ldap_search_dn" /></div>
           <div><label for="ldap_bind_rdn"><?php echo $string['bindusername']; ?></label> <input type="text" value="" id="ldap_bind_rdn" name="ldap_bind_rdn" /></div>
           <div><label for="ldap_bind_password"><?php echo $string['bindpassword']; ?></label> <input type="password" value="" id="ldap_bind_password" name="ldap_bind_password" /></div>
-          <div><label for="ldap_user_prefix"><?php echo $string['userprefix']; ?></label> <input type="text" value="" id="ldap_user_prefix" name="ldap_user_prefix" /> <img src="../artwork/information_icon.gif" class="tipright" width="16" height="16" title="<?php echo $string['userprefixtip'] ?>" /></div>
+          <div><label for="ldap_user_prefix"><?php echo $string['userprefix']; ?></label> <input type="text" value="" id="ldap_user_prefix" name="ldap_user_prefix" /> <img src="../artwork/help_tip.png" class="tipright" width="15" height="15" title="<?php echo $string['userprefixtip'] ?>" /></div>
         </div>
 
       <table class="h"><tr><td><nobr><?php echo $string['sysadminuser']; ?></nobr></td><td class="line"><hr /></td></tr></table>
@@ -181,16 +191,16 @@ Class InstallUtils {
         <div><label for="SysAdmin_first"><?php echo $string['firstname']; ?></label> <input type="text" value="" name="SysAdmin_first" id="SysAdmin_first" class="required" /> </div>
         <div><label for="SysAdmin_last"><?php echo $string['surname']; ?></label> <input type="text" value="" id="SysAdmin_last" name="SysAdmin_last" class="required" minlength="3" /> </div>
         <div><label for="SysAdmin_email"><?php echo $string['emailaddress']; ?></label> <input type="text" value="" id="SysAdmin_email" name="SysAdmin_email" class="required email" /></div>
-        <div><label for="SysAdmin_username"><?php echo $string['username']; ?></label> <input type="text" value="" id="SysAdmin_username" name="SysAdmin_username" class="required" minlength="3"/></div>
+        <div><label for="SysAdmin_username"><?php echo $string['username']; ?></label> <input type="text" value="" id="SysAdmin_username" name="SysAdmin_username" class="required" minlength="3" /></div>
         <div><label for="SysAdmin_password"><?php echo $string['password']; ?></label> <input type="password" value="" id="SysAdmin_password" name="SysAdmin_password" class="required" minlength="8" /></div>
 
       <table class="h"><tr><td><nobr><?php echo $string['helpdb']; ?></nobr></td><td class="line"><hr /></td></tr></table>
-        <div><label for="loadHelp"><?php echo $string['loadhelp']; ?></label> <input id="loadHelp" name="loadHelp" type="checkbox" checked="checked"/></div>
+        <div><label for="loadHelp"><?php echo $string['loadhelp']; ?></label> <input id="loadHelp" name="loadHelp" type="checkbox" checked="checked" /></div>
 
       <table class="h"><tr><td><nobr><?php echo $string['supportemaila']; ?></nobr></td><td class="line"><hr /></td></tr></table>
         <div></div>
         <br />
-        <div><label for="support_email"><?php echo $string['supportemail']; ?></label> <input type="text" value="" id="support_email" name="support_email" class="" class="email"/> </div>
+        <div><label for="support_email"><?php echo $string['supportemail']; ?></label> <input type="text" value="" id="support_email" name="support_email" class="" class="email" /> </div>
 
       <table class="h"><tr><td><nobr><?php echo $string['supportnumbers']; ?></nobr></td><td class="line"><hr /></td></tr></table>
         <div><label for="emergency_support1"><?php echo $string['name']; ?></label> <input type="text" value="" id="emergency_support1" name="emergency_support1" class="" /> <?php echo $string['number']; ?> <input type="text" value="" name="emergency_support_number1" class="" /></div>
@@ -203,7 +213,8 @@ Class InstallUtils {
   }
 
   static function processForm() {
-    global $string;
+    global $string, $cfg_encrypt_salt;
+    
     self::$cfg_company = $_POST['company_name'];
     //check admin database user name and password and create the connection
     self::$cfg_db_host = $_POST['mysql_db_host'];
@@ -223,16 +234,43 @@ Class InstallUtils {
     self::$cfg_long_date_time = $_POST['cfg_long_date_time'];
     self::$cfg_timezone = $_POST['cfg_timezone'];
     self::$cfg_tmpdir = $_POST['tmpdir'];
-
+    
+    //Authentication
+    if (isset($_POST['useLti'])) {
+      self::$cfg_auth_lti = true;
+    } else {
+      self::$cfg_auth_lti = false;
+    }
+    if (isset($_POST['useInternal'])) {
+      self::$cfg_auth_internal = true;
+    } else {
+      self::$cfg_auth_internal = false;
+    }
+    if (isset($_POST['useGuest'])) {
+      self::$cfg_auth_guest = true;
+    } else {
+      self::$cfg_auth_guest = false;
+    }
+    if (isset($_POST['useImpersonation'])) {
+      self::$cfg_auth_impersonation = true;
+    } else {
+      self::$cfg_auth_impersonation = false;
+    }
+    if (isset($_POST['useLdap'])) {
+      self::$cfg_auth_ldap = true;
+    } else {
+      self::$cfg_auth_ldap = false;
+    }
+    
     //LDAP
     self::$cfg_ldap_server = $_POST['ldap_server'];
     self::$cfg_ldap_search_dn = $_POST['ldap_search_dn'];
     self::$cfg_ldap_bind_rdn = $_POST['ldap_bind_rdn'];
     self::$cfg_ldap_bind_password = $_POST['ldap_bind_password'];
-    if( self::$cfg_ldap_server != '' ) {
-      self::$cfg_use_ldap = 'true';
+    if (self::$cfg_ldap_server != '') {
+      self::$cfg_auth_ldap = true;
     } else {
-      self::$cfg_use_ldap = 'false';
+      self::$cfg_auth_ldap = false;
     }
     self::$cfg_ldap_user_prefix = $_POST['ldap_user_prefix'];
 
@@ -246,7 +284,7 @@ Class InstallUtils {
     }
     self::$emergency_support_numbers = rtrim(self::$emergency_support_numbers, ', ');
     self::$emergency_support_numbers .= ')';
-    
+
     // Check we can write to the config file first if not passwords will be lost!
     $rogo_path = str_ireplace('/install/index.php','',$_SERVER['SCRIPT_FILENAME']);
 
@@ -259,7 +297,7 @@ Class InstallUtils {
     }
 
     //CREATE and populate DB
-    self::$db = new mysqli(self::$cfg_db_host , self::$db_admin_username, self::$db_admin_passwd,'',self::$cfg_db_port);
+    self::$db = new mysqli(self::$cfg_db_host, self::$db_admin_username, self::$db_admin_passwd, '', self::$cfg_db_port);
 
     if (mysqli_connect_error()) {
       self::displayError(array('001' => mysqli_connect_error()));
@@ -272,8 +310,7 @@ Class InstallUtils {
     for ($i=0; $i<16; $i++) {
       $salt .= substr($characters, rand(0,61), 1);
     }
-    global $cfg_encrypt_salt;
-    $cfg_encrypt_salt=$salt;
+    $cfg_encrypt_salt = $salt;
 
     self::createDatabase(self::$cfg_db_name, self::$cfg_db_charset);
 
@@ -288,14 +325,13 @@ Class InstallUtils {
       echo "<p style=\"margin-left:10px\">" . $string['installed'] . "</p>\n";
       echo "<p style=\"margin-left:10px\">" . $string['deleteinstall'] . "</p>\n";
       echo "<p style=\"margin-left:10px\"><input type=\"button\" name=\"home\" value=\"" . $string['staffhomepage'] . "\" onclick=\"window.location='../staff/index.php'\" /></p>\n";
+    } else {
+      self::displayWarnings();
     }
-
-
   }
 
-
   /**
-  * Load the UoN help databases
+  * Load the Help databases
   *
   */
   static function loadHelp() {
@@ -314,9 +350,9 @@ Class InstallUtils {
       self::$db->multi_query($query);
       if (self::$db->error) {
         try {
-          throw new Exception("0MySQL error " . self::$db->error . " <br> Query:<br> ", self::$db->errno);
+          throw new Exception("MySQL error " . self::$db->error . " <br /> Query:<br /> ", self::$db->errno);
         } catch (Exception $e) {
-          echo "Error No: " . $e->getCode() . " - " . $e->getMessage() . "<br >";
+          echo "Error No: " . $e->getCode() . " - " . $e->getMessage() . "<br />";
           echo nl2br($e->getTraceAsString());
         }
       }
@@ -329,9 +365,9 @@ Class InstallUtils {
         self::$db->next_result();
         if (self::$db->error) {
           try {
-            throw new Exception("0MySQL error " . self::$db->error . " <br> Query:<br> ", self::$db->errno);
+            throw new Exception("MySQL error " . self::$db->error . " <br /> Query:<br /> ", self::$db->errno);
           } catch (Exception $e) {
-            echo "Error No: " . $e->getCode() . " - " . $e->getMessage() . "<br >";
+            echo "Error No: " . $e->getCode() . " - " . $e->getMessage() . "<br />";
             echo nl2br($e->getTraceAsString());
           }
         }
@@ -347,9 +383,9 @@ Class InstallUtils {
       self::$db->multi_query($query);
       if (self::$db->error) {
         try {
-          throw new Exception("0MySQL error " . self::$db->error . " <br> Query:<br> ", self::$db->errno);
+          throw new Exception("MySQL error " . self::$db->error . " <br /> Query:<br /> ", self::$db->errno);
         } catch (Exception $e) {
-          echo "Error No: " . $e->getCode() . " - " . $e->getMessage() . "<br >";
+          echo "Error No: " . $e->getCode() . " - " . $e->getMessage() . "<br />";
           echo nl2br($e->getTraceAsString());
         }
       }
@@ -360,9 +396,9 @@ Class InstallUtils {
           self::$db->next_result();
           if (self::$db->error) {
             try {
-              throw new Exception("0MySQL error " . self::$db->error . " <br> Query:<br> ", self::$db->errno);
+              throw new Exception("MySQL error " . self::$db->error . " <br /> Query:<br /> ", self::$db->errno);
             } catch (Exception $e) {
-              echo "Error No: " . $e->getCode() . " - " . $e->getMessage() . "<br >";
+              echo "Error No: " . $e->getCode() . " - " . $e->getMessage() . "<br />";
               echo nl2br($e->getTraceAsString());
             }
           }
@@ -371,7 +407,6 @@ Class InstallUtils {
     } else {
       self::logWarning(array('504' => $string['logwarning4']));
     }
-
   }
 
   /**
@@ -413,7 +448,7 @@ Class InstallUtils {
         @ob_flush();
         @flush();
       if (self::$db->errno != 0) {
-        self::displayError(array('012' => $string['displayerror3'] . self::$db->error . "</br> $sql"));
+        self::displayError(array('012' => $string['displayerror3'] . self::$db->error . "<br /> $sql"));
       }
     }
 
@@ -432,9 +467,9 @@ Class InstallUtils {
 
     $priv_SQL = array();
     //create 'database user authentication user' and grant permissions
-    self::$db->query("CREATE USER  '" . self::$cfg_db_username . "'@'". self::$cfg_db_host . "' IDENTIFIED BY '" . self::$cfg_db_password . "'");
+    self::$db->query("CREATE USER '" . self::$cfg_db_username . "'@'". self::$cfg_db_host . "' IDENTIFIED BY '" . self::$cfg_db_password . "'");
     if (self::$db->errno != 0) {
-      echo "CREATE USER  '" . self::$cfg_db_username . "'@'". self::$cfg_db_host . "' IDENTIFIED BY '" . self::$cfg_db_password . "'" . '<br />';
+      //echo "CREATE USER  '" . self::$cfg_db_username . "'@'". self::$cfg_db_host . "' IDENTIFIED BY '" . self::$cfg_db_password . "'" . '<br />';
       self::logWarning(array('013'=> $string['wdatabaseuser'] . self::$cfg_db_username . $string['wnotcreated']));
     }
     //$priv_SQL[] = "REVOKE ALL PRIVILEGES ON $dbname.* FROM '". self::$cfg_db_username . "'@'" . self::$cfg_db_host . "'";
@@ -508,11 +543,17 @@ Class InstallUtils {
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log_metadata TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT,INSERT,UPDATE ON " . $dbname . ".temp_users TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT INSERT ON " . $dbname . ".sys_errors TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
-    $priv_SQL[] = "GRANT INSERT ON " . $dbname . ".announcements TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";    
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".announcements TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".standards_setting TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".state TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".lti_resource TO '". self::$cfg_db_student_user . "'@'".self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".lti_context TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".log_extra_time TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".log_lab_end_time TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".paper_feedback TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT ON " . $dbname . ".modules_student TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".keywords_question TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".properties_modules TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
 
 
     $priv_SQL[] = "FLUSH PRIVILEGES";
@@ -557,6 +598,8 @@ Class InstallUtils {
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log_metadata TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".review_comments TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT INSERT ON " . $dbname . ".sys_errors TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".modules TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".keywords_question TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "FLUSH PRIVILEGES";
     foreach($priv_SQL as $sql) {
       self::$db->query($sql);
@@ -630,8 +673,13 @@ Class InstallUtils {
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".performance_details TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT ON " . $dbname . ".modules TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT INSERT ON " . $dbname . ".sms_imports TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
-
-
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".folders_modules_staff TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".modules_staff TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".properties_modules TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".paper_feedback TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".modules_student TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".questions_modules TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_db_host . "'";
+    
     $priv_SQL[] = "FLUSH PRIVILEGES";
     foreach ($priv_SQL as $sql) {
       self::$db->query($sql);
@@ -681,6 +729,12 @@ Class InstallUtils {
     $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".properties TO '". self::$cfg_db_inv_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".student_notes TO '". self::$cfg_db_inv_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".paper_notes TO '". self::$cfg_db_inv_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".log_lab_end_time TO '". self::$cfg_db_inv_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".properties_modules TO '". self::$cfg_db_inv_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".log_extra_time TO '". self::$cfg_db_inv_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".modules_student TO '". self::$cfg_db_inv_user . "'@'". self::$cfg_db_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".log2 TO '". self::$cfg_db_inv_user . "'@'". self::$cfg_db_host . "'";
+
     $priv_SQL[] = "FLUSH PRIVILEGES";
     foreach($priv_SQL as $sql) {
       self::$db->query($sql);
@@ -709,7 +763,7 @@ Class InstallUtils {
         self::logWarning(array('013'=> $string['wdatabaseuser']. self::$cfg_db_sysadmin_user . $string['wnotpermission']));
       }
     }
-
+    
     //create sysadmin user
     UserUtils::create_user( $_POST['SysAdmin_username'],
                             $_POST['SysAdmin_password'],
@@ -968,7 +1022,7 @@ Class InstallUtils {
     global $string;
 
     if (is_array(self::$warnings)) {
-      echo "<h2>". $string['errors14']."</h2>";
+      echo "<h1>". $string['errors14']."</h1>";
       echo "<div class=\"warning\">\n";
       foreach(self::$warnings as $message) {
         echo "\t<div>".$string['errors15']." $message</div>\n";
@@ -984,21 +1038,22 @@ Class InstallUtils {
   */
   static function displayHeader() {
     global $string, $version;
-    
+
     ?>
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html>
     <head>
-      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
       <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
-      
+
       <title>Rog&#333; Install script</title>
-      
+
       <link rel="stylesheet" type="text/css" href="../css/body.css" />
       <link rel="stylesheet" type="text/css" href="../css/header.css" />
       <link rel="stylesheet" type="text/css" href="../css/tipTip.css" />
       <style type="text/css">
         body {font-size:90%}
+        h1 {margin-left:16px; font-size:140%; color;#1F497D}
         .error {float:none; color:#C00000; padding-left: .5em; vertical-align:top}
         .warning {float:none; color:#C00000; padding-left: .5em; vertical-align:top}
         label {float:left; width:160px; padding-left:0em; text-align:right; padding-right:6px}
@@ -1012,7 +1067,7 @@ Class InstallUtils {
         form {padding:1em}
         form div {padding-left:2em}
       </style>
-      
+
       <script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
       <script type="text/javascript" src="../js/jquery.validate.min.js"></script>
       <script type="text/javascript" src="../js/jquery.tipTip.minified.js"></script>
@@ -1053,7 +1108,7 @@ Class InstallUtils {
   }
 
   static function writeConfigFile() {
-    global $version;
+    global $version, $cfg_encrypt_salt;
 
     $config = <<<CONFIG
 <?php
@@ -1063,7 +1118,7 @@ Class InstallUtils {
 *
 * @author Simon Wilkinson, Anthony Brown
 * @version 1.0
-* @copyright Copyright (c) 2012 The University of Nottingham
+* @copyright Copyright (c) 2013 The University of Nottingham
 * @package
 */
 
@@ -1080,7 +1135,7 @@ require \$root . '/include/path_functions.inc.php';
 \$cfg_tmpdir = '{cfg_tmpdir}';
 
 \$cfg_summative_mgmt = false;     // Set this to true for central summative exam administration.
-
+\$cfg_client_lookup = 'ipaddress';
 
 // Local database
   \$cfg_db_username = '{cfg_db_username}';
@@ -1126,8 +1181,13 @@ require \$root . '/include/path_functions.inc.php';
   \$cfg_ldap_bind_rdn      = '{cfg_ldap_bind_rdn}';
   \$cfg_ldap_bind_password = '{cfg_ldap_bind_password}';
   \$cfg_ldap_user_prefix   = '{cfg_ldap_user_prefix}';
-  \$cfg_use_ldap           = {cfg_use_ldap};
+  \$cfg_use_ldap           = {cfg_auth_ldap};
   \$cfg_encrypt_salt       = '{cfg_encrypt_salt}';    // Do not alter if not on LDAP.
+
+\\Authentication settings
+\$authentication = array(
+  {cfg_authentication_arrays}
+);
 
 // Institutional email domains
 // If using external authentication (e.g. LDAP) list the domains that will authenticate against the external system
@@ -1176,11 +1236,8 @@ switch (strtolower(\$_SERVER['HTTP_HOST'])) {
   \$emergency_support_numbers = {emergency_support_numbers};
 
 //Global DEBUG OUTPUT
-  if (isset(\$_SERVER['PHP_AUTH_USER']) AND \$_SERVER['PHP_AUTH_USER'] == '{SysAdmin_username}') {
-    require_once \$_SERVER['DOCUMENT_ROOT'] . 'include/debug.inc';
-  } else {
-    \$dbclass = 'mysqli';
-  }
+  \\require_once \$_SERVER['DOCUMENT_ROOT'] . 'include/debug.inc';   // Uncomment for debugging output (after uncommenting, comment out line below)
+  \$dbclass = 'mysqli';
   ?>
 CONFIG;
 
@@ -1221,12 +1278,33 @@ CONFIG;
     $config = str_replace('{cfg_ldap_bind_rdn}', self::$cfg_ldap_bind_rdn, $config);
     $config = str_replace('{cfg_ldap_bind_password}', self::$cfg_ldap_bind_password, $config);
     $config = str_replace('{cfg_ldap_user_prefix}', self::$cfg_ldap_user_prefix, $config);
-    $config = str_replace('{cfg_use_ldap}', self::$cfg_use_ldap, $config);
     
-
-
-    global $cfg_encrypt_salt;
-    $salt=$cfg_encrypt_salt; //=$salt;
+    if (self::$cfg_auth_ldap) {
+      $config = str_replace('{cfg_auth_ldap}', 'true', $config);
+    } else {
+      $config = str_replace('{cfg_auth_ldap}', 'false', $config);
+    }
+    
+    $authentication_arrays = array();
+    if (self::$cfg_auth_lti) {
+      $authentication_arrays[] = "array('ltilogin', array(), 'LTI Auth')";
+    }
+    if (self::$cfg_auth_guest) {
+      $authentication_arrays[] = "array('guestlogin', array(), 'Guest Login')";
+    }
+    if (self::$cfg_auth_impersonation) {
+      $authentication_arrays[] = "array('impersonation', array('separator' => '_'), 'Impersonation')";
+    }
+    if (self::$cfg_auth_internal) {
+      $authentication_arrays[] = "array('internaldb', array('table' => 'users', 'username_col' => 'username', 'passwd_col' => 'password', 'id_col' => 'id', 'encrypt' => 'SHA-512', 'encrypt_salt' => \$cfg_encrypt_salt), 'Internal Database')";
+    }
+    if (self::$cfg_auth_ldap) {
+      $authentication_arrays[] = "array('ldap', array('table' => 'users', 'username_col' => 'username', 'id_col' => 'id', 'ldap_server' => \$cfg_ldap_server, 'ldap_search_dn' => \$cfg_ldap_search_dn, 'ldap_bind_rdn' => \$cfg_ldap_bind_rdn, 'ldap_bind_password' => \$cfg_ldap_bind_password, 'ldap_user_prefix' => \$cfg_ldap_user_prefix), 'LDAP')";
+    }
+    
+    $config = str_replace('{cfg_authentication_arrays}', implode(",\n  ", $authentication_arrays), $config);
+        
+    $salt = $cfg_encrypt_salt; //=$salt;
 
     $config = str_replace('{cfg_encrypt_salt}', $salt, $config);
 
@@ -1240,7 +1318,6 @@ CONFIG;
       self::displayError(array(300=>'Could not write config file!'));
     }
   }
-
 }
 
 class databaseTables {
@@ -1250,16 +1327,16 @@ class databaseTables {
   function __construct($charset) {
     $this->tableList['admin_access'] = <<<QUERY
       CREATE TABLE `admin_access` (
-        `adminID` int NOT NULL auto_increment,
-        `userID` int unsigned default NULL,
-        `schools_id` int default NULL,
+        `adminID` int(11) NOT NULL auto_increment,
+        `userID` int(10) unsigned default NULL,
+        `schools_id` int(11) default NULL,
         PRIMARY KEY (`adminID`)
       ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['announcements'] = <<<QUERY
       CREATE TABLE `announcements` (
-        `id` int NOT NULL AUTO_INCREMENT,
+        `id` int(11) NOT NULL AUTO_INCREMENT,
         `title` varchar(255) DEFAULT NULL,
         `staff_msg` text,
         `student_msg` text,
@@ -1273,9 +1350,9 @@ QUERY;
 
     $this->tableList['class_totals_test_local'] = <<<QUERY
         CREATE TABLE `class_totals_test_local` (
-          `id` int NOT NULL AUTO_INCREMENT,
-          `user_id` int unsigned DEFAULT NULL,
-          `paper_id` mediumint unsigned DEFAULT NULL,
+          `id` int(11) NOT NULL AUTO_INCREMENT,
+          `user_id` int(10) unsigned DEFAULT NULL,
+          `paper_id` mediumint(8) unsigned DEFAULT NULL,
           `status` enum('in_progress','success','failure') DEFAULT NULL,
           `errors` text,
           PRIMARY KEY (`id`)
@@ -1284,11 +1361,11 @@ QUERY;
 
     $this->tableList['courses'] = <<<QUERY
         CREATE TABLE `courses` (
-          `id` int NOT NULL auto_increment,
+          `id` int(11) NOT NULL auto_increment,
           `name` varchar(255) default NULL,
           `description` varchar(255) default NULL,
           `deleted` datetime default NULL,
-          `schoolid` int default NULL,
+          `schoolid` int(11) default NULL,
           PRIMARY KEY (`id`),
           KEY `degree` (`name`),
           KEY `idx_courses_name` (`name`)
@@ -1297,8 +1374,8 @@ QUERY;
 
     $this->tableList['ebel'] = <<<QUERY
           CREATE TABLE `ebel` (
-            `id` int NOT NULL auto_increment,
-            `setterID` int unsigned default NULL,
+            `id` int(11) NOT NULL auto_increment,
+            `setterID` int(10) unsigned default NULL,
             `date_set` datetime default NULL,
             `category` char(3) default NULL,
             `percentage` float default NULL,
@@ -1309,7 +1386,7 @@ QUERY;
 
     $this->tableList['ebel_grid_templates'] = <<<QUERY
           CREATE TABLE `ebel_grid_templates` (
-            `id` int NOT NULL auto_increment,
+            `id` int(11) NOT NULL auto_increment,
             `EE` tinyint(4) default NULL,
             `EI` tinyint(4) default NULL,
             `EN` tinyint(4) default NULL,
@@ -1335,7 +1412,7 @@ QUERY;
 
     $this->tableList['faculty'] = <<<QUERY
           CREATE TABLE `faculty` (
-            `id` int NOT NULL auto_increment,
+            `id` int(11) NOT NULL auto_increment,
             `name` varchar(80) default NULL,
             `deleted` datetime default NULL,
             PRIMARY KEY  (`id`)
@@ -1344,8 +1421,8 @@ QUERY;
 
     $this->tableList['feedback_release'] = <<<QUERY
         CREATE TABLE `feedback_release` (
-          `idfeedback_release` int NOT NULL auto_increment,
-          `paper_id` mediumint unsigned default NULL,
+          `idfeedback_release` int(11) NOT NULL auto_increment,
+          `paper_id` mediumint(8) unsigned default NULL,
           `date` datetime NOT NULL,
           `type` enum('objectives','questions') default NULL,
           PRIMARY KEY  (`idfeedback_release`)
@@ -1357,7 +1434,6 @@ QUERY;
           `id` int(4) NOT NULL auto_increment,
           `ownerID` int(10) unsigned default NULL,
           `name` text,
-          `team_name` varchar(255) default NULL,
           `created` datetime default NULL,
           `color` enum('yellow','red','green','blue','grey') default NULL,
           `deleted` datetime default NULL,
@@ -1365,11 +1441,19 @@ QUERY;
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
+    $this->tableList['folders_modules_staff'] = <<<QUERY
+        CREATE TABLE `folders_modules_staff` (
+          `folders_id` int(10) unsigned NOT NULL DEFAULT '0',
+          `idMod` int(11) unsigned NOT NULL DEFAULT '0',
+          PRIMARY KEY  (`folders_id`,`idMod`)
+        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+QUERY;
+
     $this->tableList['help_log'] = <<<QUERY
         CREATE TABLE `help_log` (
           `id` int(11) NOT NULL auto_increment,
           `type` enum('student','staff') default NULL,
-          `userID` int unsigned default NULL,
+          `userID` int(10) unsigned default NULL,
           `accessed` datetime default NULL,
           `pageID` int(11) default NULL,
           PRIMARY KEY  (`id`)
@@ -1380,7 +1464,7 @@ QUERY;
         CREATE TABLE `help_searches` (
           `id` int(11) NOT NULL auto_increment,
           `type` enum('student','staff') default NULL,
-          `userID` int unsigned default NULL,
+          `userID` int(10) unsigned default NULL,
           `searched` datetime default NULL,
           `searchstring` text,
           `hits` int(11) default NULL,
@@ -1392,10 +1476,10 @@ QUERY;
         CREATE TABLE `help_tutorial_log` (
           `id` int(11) NOT NULL auto_increment,
           `type` enum('student','staff') default NULL,
-          `userID` int unsigned default NULL,
+          `userID` int(10) unsigned default NULL,
           `accessed` datetime default NULL,
           `tutorial` varchar(255) default NULL,
-          PRIMARY KEY  (`id`)
+          PRIMARY KEY (`id`)
         ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
@@ -1403,10 +1487,10 @@ QUERY;
         CREATE TABLE `ip_addresses` (
           `id` int(11) NOT NULL auto_increment,
           `lab` smallint(5) unsigned default NULL,
-          `address` char(15) default NULL,
+          `address` char(60) default NULL,
           `hostname` char(255) default NULL,
           `low_bandwidth` tinyint(4) default '0',
-          PRIMARY KEY  (`id`),
+          PRIMARY KEY (`id`),
           KEY `lab` (`lab`)
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
@@ -1422,10 +1506,10 @@ QUERY;
     $this->tableList['keywords_user'] = <<<QUERY
         CREATE TABLE `keywords_user` (
           `id` int(11) NOT NULL auto_increment,
-          `userID` int unsigned default NULL,
+          `userID` int(10) unsigned default NULL,
           `keyword` char(255) default NULL,
           `keyword_type` enum('personal','team') default NULL,
-          PRIMARY KEY  (`id`),
+          PRIMARY KEY (`id`),
           KEY `username` (`userID`)
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
@@ -1440,25 +1524,25 @@ QUERY;
           `timetabling` text,
           `it_support` text,
           `plagarism` text,
-          PRIMARY KEY  (`id`)
+          PRIMARY KEY (`id`)
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['log0'] = <<<QUERY
         CREATE TABLE `log0` (
-          `id` int NOT NULL auto_increment,
-          `userID` int unsigned default NULL,
-          `started` datetime NOT NULL default '0000-00-00 00:00:00',
-          `q_paper` mediumint unsigned NOT NULL default '0',
-          `q_id` int(4) NOT NULL default '0',
-          `mark` float default NULL,
-          `totalpos` tinyint(4) default NULL,
+          `id` int(8) NOT NULL auto_increment,
+          `userID` int(10) unsigned DEFAULT NULL,
+          `started` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+          `q_paper` mediumint(8) unsigned DEFAULT NULL,
+          `q_id` int(4) NOT NULL DEFAULT '0',
+          `mark` float DEFAULT NULL,
+          `totalpos` tinyint(4) DEFAULT NULL,
           `user_answer` text,
-          `screen` tinyint(3) unsigned default NULL,
-          `duration` mediumint default NULL,
-          `updated` datetime default NULL,
-          `dismiss` char(20) default NULL,
-          `option_order` varchar(255) default NULL,
+          `screen` tinyint(3) unsigned DEFAULT NULL,
+          `duration` mediumint(9) DEFAULT NULL,
+          `updated` datetime DEFAULT NULL,
+          `dismiss` char(20) DEFAULT NULL,
+          `option_order` varchar(255) DEFAULT NULL,
           PRIMARY KEY  (`id`),
           KEY `q_paper` (`q_paper`),
           KEY `username` (`userID`),
@@ -1469,19 +1553,19 @@ QUERY;
 
     $this->tableList['log1'] = <<<QUERY
         CREATE TABLE `log1` (
-          `id` int NOT NULL auto_increment,
-          `userID` int unsigned default NULL,
-          `started` datetime NOT NULL default '0000-00-00 00:00:00',
-          `q_paper` mediumint unsigned NOT NULL default '0',
-          `q_id` int(4) NOT NULL default '0',
-          `mark` float default NULL,
-          `totalpos` tinyint(4) default NULL,
+          `id` int(8) NOT NULL auto_increment,
+          `userID` int(10) unsigned DEFAULT NULL,
+          `started` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+          `q_paper` mediumint(8) unsigned DEFAULT NULL,
+          `q_id` int(4) NOT NULL DEFAULT '0',
+          `mark` float DEFAULT NULL,
+          `totalpos` tinyint(4) DEFAULT NULL,
           `user_answer` text,
-          `screen` tinyint(3) unsigned default NULL,
-          `duration` mediumint default NULL,
-          `updated` datetime default NULL,
-          `dismiss` char(20) default NULL,
-          `option_order` varchar(255) default NULL,
+          `screen` tinyint(3) unsigned DEFAULT NULL,
+          `duration` mediumint(9) DEFAULT NULL,
+          `updated` datetime DEFAULT NULL,
+          `dismiss` char(20) DEFAULT NULL,
+          `option_order` varchar(255) DEFAULT NULL,
           PRIMARY KEY  (`id`),
           KEY `q_paper` (`q_paper`),
           KEY `username` (`userID`),
@@ -1492,19 +1576,19 @@ QUERY;
 
     $this->tableList['log2'] = <<<QUERY
         CREATE TABLE `log2` (
-          `id` int NOT NULL auto_increment,
-          `userID` int unsigned default NULL,
-          `started` datetime NOT NULL default '0000-00-00 00:00:00',
-          `q_paper` mediumint unsigned NOT NULL default '0',
-          `q_id` int(4) NOT NULL default '0',
-          `mark` float default NULL,
-          `totalpos` tinyint(4) default NULL,
+          `id` int(8) NOT NULL auto_increment,
+          `userID` int(10) unsigned DEFAULT NULL,
+          `started` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+          `q_paper` mediumint(8) unsigned DEFAULT NULL,
+          `q_id` int(4) NOT NULL DEFAULT '0',
+          `mark` float DEFAULT NULL,
+          `totalpos` tinyint(4) DEFAULT NULL,
           `user_answer` text,
-          `screen` tinyint(3) unsigned default NULL,
-          `duration` mediumint default NULL,
-          `updated` datetime default NULL,
-          `dismiss` char(20) default NULL,
-          `option_order` varchar(255) default NULL,
+          `screen` tinyint(3) unsigned DEFAULT NULL,
+          `duration` mediumint(9) DEFAULT NULL,
+          `updated` datetime DEFAULT NULL,
+          `dismiss` char(20) DEFAULT NULL,
+          `option_order` varchar(255) DEFAULT NULL,
           PRIMARY KEY  (`id`),
           KEY `q_paper` (`q_paper`),
           KEY `username` (`userID`),
@@ -1515,20 +1599,20 @@ QUERY;
 
     $this->tableList['log3'] = <<<QUERY
         CREATE TABLE `log3` (
-          `id` int NOT NULL auto_increment,
-          `userID` int unsigned default NULL,
-          `started` datetime NOT NULL default '0000-00-00 00:00:00',
-          `q_paper` mediumint unsigned NOT NULL default '0',
-          `q_id` int(4) NOT NULL default '0',
-          `mark` float default NULL,
-          `totalpos` tinyint(4) default NULL,
+          `id` int(8) NOT NULL auto_increment,
+          `userID` int(10) unsigned DEFAULT NULL,
+          `started` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+          `q_paper` mediumint(8) unsigned DEFAULT NULL,
+          `q_id` int(4) NOT NULL DEFAULT '0',
+          `mark` float DEFAULT NULL,
+          `totalpos` tinyint(4) DEFAULT NULL,
           `user_answer` text,
-          `screen` tinyint(3) unsigned default NULL,
-          `duration` mediumint default NULL,
-          `updated` datetime default NULL,
-          `dismiss` char(20) default NULL,
-          `option_order` varchar(255) default NULL,
-          PRIMARY KEY  (`id`),
+          `screen` tinyint(3) unsigned DEFAULT NULL,
+          `duration` mediumint(9) DEFAULT NULL,
+          `updated` datetime DEFAULT NULL,
+          `dismiss` char(20) DEFAULT NULL,
+          `option_order` varchar(255) DEFAULT NULL,
+          PRIMARY KEY (`id`),
           KEY `q_paper` (`q_paper`),
           KEY `username` (`userID`),
           KEY `started` (`started`),
@@ -1539,13 +1623,13 @@ QUERY;
     $this->tableList['log4'] = <<<QUERY
         CREATE TABLE `log4` (
           `id` int NOT NULL auto_increment,
-          `userID` int unsigned default NULL,
-          `started` datetime default NULL,
-          `q_paper` mediumint unsigned default NULL,
-          `q_id` int(11) default NULL,
+          `userID` int(10) unsigned DEFAULT NULL,
+          `started` datetime DEFAULT NULL,
+          `q_paper` mediumint(8) unsigned DEFAULT NULL,
+          `q_id` int(11) DEFAULT NULL,
           `rating` text,
-          `q_parts` varchar(50) default NULL,
-          PRIMARY KEY  (`id`),
+          `q_parts` varchar(50) DEFAULT NULL,
+          PRIMARY KEY (`id`),
           KEY `q_paper` (`q_paper`),
           KEY `username` (`userID`),
           KEY `started` (`started`)
@@ -1554,18 +1638,18 @@ QUERY;
 
     $this->tableList['log4_overall'] = <<<QUERY
         CREATE TABLE `log4_overall` (
-          `id` int NOT NULL auto_increment,
-          `userID` int unsigned default NULL,
+          `id` int(11) NOT NULL auto_increment,
+          `userID` int(10) unsigned default NULL,
           `started` datetime default NULL,
-          `q_paper` mediumint unsigned default NULL,
+          `q_paper` mediumint unsigned DEFAULT NULL,
           `overall_rating` text,
-          `numeric_score` int(11) default NULL,
+          `numeric_score` int(11) DEFAULT NULL,
           `feedback` text,
-          `student_grade` char(25) default NULL,
-          `examinerID` mediumint unsigned default NULL,
-          `osce_type` enum('electronic','paper') default NULL,
-          `year` tinyint(4) default NULL,
-          PRIMARY KEY  (`id`),
+          `student_grade` char(25) DEFAULT NULL,
+          `examinerID` mediumint(8) unsigned DEFAULT NULL,
+          `osce_type` enum('electronic','paper') DEFAULT NULL,
+          `year` tinyint(4) DEFAULT NULL,
+          PRIMARY KEY (`id`),
           KEY `q_paper` (`q_paper`),
           KEY `username` (`userID`),
           KEY `started` (`started`)
@@ -1574,13 +1658,13 @@ QUERY;
 
     $this->tableList['log5'] = <<<QUERY
         CREATE TABLE `log5` (
-          `id` int NOT NULL auto_increment,
-          `userID` int unsigned default NULL,
-          `started` datetime default NULL,
-          `q_paper` mediumint unsigned default NULL,
-          `q_id` int(11) default NULL,
-          `mark` float default NULL,
-          `totalpos` tinyint(4) default NULL,
+          `id` int(11) NOT NULL auto_increment,
+          `userID` int(10) unsigned DEFAULT NULL,
+          `started` datetime DEFAULT NULL,
+          `q_paper` mediumint(8) unsigned DEFAULT NULL,
+          `q_id` int(11) DEFAULT NULL,
+          `mark` float DEFAULT NULL,
+          `totalpos` tinyint(4) DEFAULT NULL,
           PRIMARY KEY  (`id`),
           KEY `q_paper` (`q_paper`),
           KEY `username` (`userID`),
@@ -1590,34 +1674,60 @@ QUERY;
 
     $this->tableList['log6'] = <<<QUERY
         CREATE TABLE `log6` (
-          `id` int NOT NULL auto_increment,
-          `paperID` mediumint unsigned default NULL,
-          `reviewerID` int unsigned default NULL,
-          `peerID` int unsigned default NULL,
+          `id` int(11) NOT NULL auto_increment,
+          `paperID` mediumint(8) unsigned DEFAULT NULL,
+          `reviewerID` int(10) unsigned default NULL,
+          `peerID` int(10) unsigned default NULL,
           `started` datetime default NULL,
           `q_id` int(11) default NULL,
           `rating` tinyint(4) default NULL,
-          PRIMARY KEY  (`id`),
+          PRIMARY KEY (`id`),
           KEY `started` (`started`)
         ) ENGINE=InnoDB AUTO_INCREMENT=0  DEFAULT CHARSET={$charset}
 QUERY;
 
+    $this->tableList['log_extra_time'] = <<<QUERY
+        CREATE TABLE `log_extra_time` (
+          `id` int(10) unsigned NOT NULL auto_increment,
+          `labID` smallint(5) unsigned NOT NULL,
+          `paperID` mediumint(8) unsigned NOT NULL,
+          `invigilatorID` int(10) unsigned NOT NULL,
+          `userID` int(10) unsigned NOT NULL,
+          `extra_time` int(10) unsigned NOT NULL,
+          `end_date` int(10) unsigned NOT NULL,
+          PRIMARY KEY (`id`),
+          UNIQUE KEY `key_lab_id_paper_id_user_id` (`labID`,`paperID`,`userID`)
+        ) ENGINE=InnoDB DEFAULT CHARSET={$charset} PACK_KEYS=1
+QUERY;
+
+    $this->tableList['log_lab_end_time'] = <<<QUERY
+        CREATE TABLE `log_lab_end_time` (
+          `id` int(10) unsigned NOT NULL auto_increment,
+          `labID` smallint(5) unsigned NOT NULL,
+          `paperID` mediumint(8) unsigned NOT NULL,
+          `invigilatorID` int(10) unsigned NOT NULL,
+          `end_time` int(10) unsigned NOT NULL,
+          PRIMARY KEY (`id`),
+          UNIQUE KEY `key_lab_paper_invig_time` (`labID`,`paperID`,`invigilatorID`,`end_time`)
+        ) ENGINE=InnoDB DEFAULT CHARSET={$charset} PACK_KEYS=1
+QUERY;
+
     $this->tableList['log_late'] = <<<QUERY
         CREATE TABLE `log_late` (
-          `id` int NOT NULL auto_increment,
-          `userID` int unsigned default NULL,
+          `id` int(8) NOT NULL auto_increment,
+          `userID` int(10) unsigned default NULL,
           `started` datetime NOT NULL default '0000-00-00 00:00:00',
-          `q_paper` mediumint unsigned NOT NULL default '0',
+          `q_paper` int(10) unsigned DEFAULT NULL,
           `q_id` int(4) NOT NULL default '0',
           `mark` float default NULL,
           `totalpos` tinyint(4) default NULL,
           `user_answer` text,
           `screen` tinyint(3) unsigned default NULL,
-          `duration` mediumint default NULL,
+          `duration` mediumint(9) default NULL,
           `updated` datetime default NULL,
           `dismiss` char(20) default NULL,
           `option_order` varchar(255) default NULL,
-          PRIMARY KEY  (`id`),
+          PRIMARY KEY (`id`),
           KEY `q_paper` (`q_paper`),
           KEY `username` (`userID`)
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset} PACK_KEYS=1
@@ -1625,14 +1735,16 @@ QUERY;
 
     $this->tableList['log_metadata'] = <<<QUERY
         CREATE TABLE `log_metadata` (
-          `id` int NOT NULL auto_increment,
-          `userID` int unsigned default NULL,
-          `paperID` mediumint unsigned default NULL,
+          `id` int(11) NOT NULL auto_increment,
+          `userID` int(10) unsigned default NULL,
+          `paperID` mediumint(8) unsigned default NULL,
           `started` datetime default NULL,
           `ipaddress` char(15) default NULL,
           `student_grade` char(25) default NULL,
           `year` tinyint(4) default NULL,
           `attempt` tinyint(4) default NULL,
+          `completed` datetime DEFAULT NULL,
+          `lab_name` varchar(255) DEFAULT NULL,
           PRIMARY KEY  (`id`),
           KEY `userID` (`userID`,`paperID`,`started`),
           KEY `idx_log_metadata_student_grade` (`student_grade`),
@@ -1640,9 +1752,55 @@ QUERY;
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
+    $this->tableList['lti_context'] = <<<QUERY
+          CREATE TABLE IF NOT EXISTS `lti_context` (
+          `lti_context_key` VARCHAR(255) NOT NULL ,
+          `c_internal_id` VARCHAR(255) NOT NULL ,
+          `updated_on` DATETIME NOT NULL,
+          PRIMARY KEY (`lti_context_key`),
+          KEY `c_internal_id` (`c_internal_id`)
+          ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+QUERY;
+
+    $this->tableList['lti_keys'] = <<<QUERY
+          CREATE TABLE IF NOT EXISTS `lti_keys` (
+          `id` mediumint(9) NOT NULL AUTO_INCREMENT,
+          `oauth_consumer_key` char(255) NOT NULL,
+          `secret` char(255) DEFAULT NULL,
+          `name` char(255) DEFAULT NULL,
+          `context_id` char(255) DEFAULT NULL,
+          `deleted` datetime,
+          `updated_on` datetime,
+          PRIMARY KEY (`id`),
+          KEY `oauth_consumer_key` (`oauth_consumer_key`)
+          ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+QUERY;
+
+    $this->tableList['lti_resource'] = <<<QUERY
+        CREATE TABLE IF NOT EXISTS `lti_resource` (
+        `lti_resource_key` varchar(255) NOT NULL,
+        `internal_id` varchar(255) DEFAULT NULL,
+        `internal_type` varchar(255) NOT NULL,
+        `updated_on` datetime,
+        PRIMARY KEY (`lti_resource_key`),
+        KEY `destination2` (`internal_type`),
+        KEY `destination` (`internal_id`)
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+QUERY;
+
+    $this->tableList['lti_user'] = <<<QUERY
+          CREATE TABLE IF NOT EXISTS `lti_user` (
+          `lti_user_key` varchar(255) NOT NULL,
+          `lti_user_equ` varchar(255) NOT NULL,
+          `updated_on` datetime NOT NULL,
+          PRIMARY KEY (`lti_user_key`),
+          KEY `lti_user_equ` (`lti_user_equ`)
+         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+QUERY;
+
     $this->tableList['modules'] = <<<QUERY
         CREATE TABLE `modules` (
-          `id` int NOT NULL auto_increment,
+          `id` int(11) NOT NULL auto_increment,
           `moduleid` char(25) default NULL,
           `fullname` text,
           `active` tinyint(4) default NULL,
@@ -1650,23 +1808,47 @@ QUERY;
           `checklist` varchar(255) default NULL,
           `sms` varchar(255) default NULL,
           `selfenroll` tinyint(4) default NULL,
-          `schoolid` int default NULL,
+          `schoolid` int(11) default NULL,
           `neg_marking` tinyint(1) default NULL,
           `ebel_grid_template` int(11) default NULL,
-          PRIMARY KEY  (`id`),
+          PRIMARY KEY (`id`),
           KEY `guideid` (`moduleid`)
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset} PACK_KEYS=1
+QUERY;
+
+    $this->tableList['modules_staff'] = <<<QUERY
+        CREATE TABLE `modules_staff` (
+          `groupID` int(4) NOT NULL auto_increment,
+          `idMod` int(11) unsigned DEFAULT NULL,
+          `memberID` int(10) unsigned DEFAULT NULL,
+          `added` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+          `type` enum('System','Custom') DEFAULT NULL,
+          PRIMARY KEY (`groupID`),
+          KEY `name` (`idMod`)
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+QUERY;
+
+    $this->tableList['modules_student'] = <<<QUERY
+        CREATE TABLE `modules_student` (
+          `id` int(11) NOT NULL auto_increment,
+          `userID` int(10) unsigned DEFAULT NULL,
+          `idMod` int(11) unsigned DEFAULT NULL,
+          `calendar_year` enum('2008/09','2009/10','2010/11','2011/12','2012/13','2013/14','2014/15','2015/16','2016/17','2017/18','2018/19','2019/20') DEFAULT NULL,
+          `attempt` tinyint(4) DEFAULT NULL,
+          `auto_update` tinyint(4) DEFAULT NULL,
+          PRIMARY KEY (`id`)
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['objectives'] = <<<QUERY
         CREATE TABLE `objectives` (
           `obj_id` int(11) NOT NULL,
           `objective` text NOT NULL,
-          `moduleID` char(25) NOT NULL,
+          `idMod` int(11) unsigned NOT NULL DEFAULT '0',
           `identifier` bigint(20) unsigned NOT NULL,
-          `calendar_year` enum('2008/09','2009/10','2010/11','2011/12','2012/13','2013/14','2014/15','2015/16','2016/17','2017/18','2018/19','2019/20') NOT NULL,
+          `calendar_year` enum('2008/09','2009/10','2010/11','2011/12','2012/13','2013/14','2014/15','2015/16','2016/17','2017/18','2018/19','2019/20') NOT NULL DEFAULT '2008/09',
           `sequence` int(11) default NULL,
-          PRIMARY KEY  (`obj_id`,`moduleID`,`calendar_year`)
+          PRIMARY KEY (`obj_id`,`idMod`,`calendar_year`)
         ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
 QUERY;
 
@@ -1684,41 +1866,51 @@ QUERY;
           `marks_correct` float default NULL,
           `marks_incorrect` float default NULL,
           `marks_partial` float default NULL,
-          PRIMARY KEY  (`id_num`),
+          PRIMARY KEY (`id_num`),
           KEY `o_id` (`o_id`)
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset} PACK_KEYS=1
+QUERY;
+
+    $this->tableList['paper_feedback'] = <<<QUERY
+        CREATE TABLE `paper_feedback` (
+          `id` int(11) NOT NULL auto_increment,
+          `paperID` mediumint(8) unsigned NOT NULL,
+          `boundary` tinyint(3) unsigned NOT NULL,
+          `msg` text,
+          PRIMARY KEY (`id`)
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset} PACK_KEYS=1
 QUERY;
 
     $this->tableList['paper_metadata_security'] = <<<QUERY
         CREATE TABLE `paper_metadata_security` (
           `id` int(11) NOT NULL auto_increment,
-          `paperID` mediumint unsigned default NULL,
+          `paperID` mediumint(8) unsigned default NULL,
           `name` varchar(255) default NULL,
           `value` varchar(255) default NULL,
-          PRIMARY KEY  (`id`)
+          PRIMARY KEY (`id`)
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['paper_notes'] = <<<QUERY
         CREATE TABLE `paper_notes` (
-          `note_id` int NOT NULL auto_increment,
+          `note_id` int(11) NOT NULL auto_increment,
           `note` text,
           `note_date` datetime default NULL,
-          `paper_id` mediumint unsigned default NULL,
-          `note_authorID` int unsigned default NULL,
+          `paper_id` mediumint(8) unsigned default NULL,
+          `note_authorID` int(10) unsigned default NULL,
           `note_workstation` varchar(15) default NULL,
-          PRIMARY KEY  (`note_id`)
+          PRIMARY KEY (`note_id`)
         ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['papers'] = <<<QUERY
         CREATE TABLE `papers` (
           `p_id` int(4) NOT NULL auto_increment,
-          `paper` mediumint unsigned NOT NULL default '0',
+          `paper` mediumint(8) unsigned DEFAULT NULL,
           `question` int(4) unsigned NOT NULL default '0',
           `screen` tinyint(2) unsigned NOT NULL default '0',
           `display_pos` smallint(5) unsigned default NULL,
-          PRIMARY KEY  (`p_id`),
+          PRIMARY KEY (`p_id`),
           KEY `paper` (`paper`),
           KEY `question_idx` (`question`),
           KEY `screen` (`screen`),
@@ -1728,17 +1920,40 @@ QUERY;
 
     $this->tableList['password_tokens'] = <<<QUERY
         CREATE TABLE `password_tokens` (
-          `id` int NOT NULL auto_increment,
-          `user_id` int unsigned NOT NULL,
+          `id` int(11) NOT NULL auto_increment,
+          `user_id` int(11) unsigned DEFAULT NULL,
           `token` char(16) NOT NULL,
           `time` datetime NOT NULL,
-          PRIMARY KEY  (`id`)
+          PRIMARY KEY (`id`)
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+QUERY;
+
+    $this->tableList['performance_details'] = <<<QUERY
+          CREATE TABLE `performance_details` (
+          `perform_id` int(11) DEFAULT NULL,
+          `part_no` tinyint(4) DEFAULT NULL,
+          `p` tinyint(4) DEFAULT NULL,
+          `d` tinyint(4) DEFAULT NULL,
+          KEY `idx_perform_id` (`perform_id`)
+          ) ENGINE=InnoDB DEFAULT CHARSET={$charset};
+QUERY;
+
+    $this->tableList['performance_main']  = <<<QUERY
+          CREATE TABLE `performance_main` (
+          `id` int(11) NOT NULL AUTO_INCREMENT,
+          `q_id` int(10) unsigned DEFAULT NULL,
+          `paperID` int(10) unsigned DEFAULT NULL,
+          `percentage` tinyint(4) DEFAULT NULL,
+          `cohort_size` int(10) unsigned DEFAULT NULL,
+          `taken` date DEFAULT NULL,
+          PRIMARY KEY (`id`),
+          KEY `idx_q_id` (`q_id`)
+          ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset};
 QUERY;
 
     $this->tableList['properties'] = <<<QUERY
         CREATE TABLE `properties` (
-          `property_id` mediumint unsigned NOT NULL auto_increment,
+          `property_id` mediumint(8) unsigned NOT NULL auto_increment,
           `paper_title` varchar(255) default NULL,
           `start_date` datetime default NULL,
           `end_date` datetime default NULL,
@@ -1755,7 +1970,7 @@ QUERY;
           `bidirectional` enum('0','1') NOT NULL default '0',
           `pass_mark` tinyint(4) default NULL,
           `distinction_mark` tinyint(4) default NULL,
-          `paper_ownerID` int unsigned default NULL,
+          `paper_ownerID` int(10) unsigned default NULL,
           `folder` varchar(255) default NULL,
           `labs` text,
           `rubric` text,
@@ -1765,13 +1980,12 @@ QUERY;
           `deleted` datetime default NULL,
           `created` datetime default NULL,
           `random_mark` float default NULL,
-          `total_mark` mediumint default NULL,
+          `total_mark` mediumint(9) default NULL,
           `display_correct_answer` enum('0','1') default NULL,
           `display_question_mark` enum('0','1') default NULL,
           `display_students_response` enum('0','1') default NULL,
           `display_feedback` enum('0','1') default NULL,
           `hide_if_unanswered` enum('0','1') default NULL,
-          `moduleID` text,
           `calendar_year` enum('2002/03','2003/04','2004/05','2005/06','2006/07','2007/08','2008/09','2009/10','2010/11','2011/12','2012/13','2013/14','2014/15','2015/16','2016/17','2017/18','2018/19','2019/20') default NULL,
           `internal_reviewers` text,
           `external_review_deadline` date default NULL,
@@ -1781,7 +1995,7 @@ QUERY;
           `password` char(20) default NULL,
           `retired` datetime default NULL,
           `crypt_name` varchar(32) default NULL,
-          PRIMARY KEY  (`property_id`),
+          PRIMARY KEY (`property_id`),
           KEY `paper_title` (`paper_title`),
           KEY `paper_owner` (`paper_ownerID`),
           KEY `question_type` (`paper_type`),
@@ -1789,17 +2003,24 @@ QUERY;
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
+    $this->tableList['properties_modules'] = <<<QUERY
+        CREATE TABLE `properties_modules` (
+          `property_id` mediumint(8) unsigned NOT NULL DEFAULT '0',
+          `idMod` int(11) unsigned NOT NULL DEFAULT '0',
+          PRIMARY KEY (`property_id`,`idMod`)
+        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+QUERY;
 
     $this->tableList['question_exclude'] = <<<QUERY
         CREATE TABLE `question_exclude` (
-          `id` int NOT NULL auto_increment,
-          `q_paper` int default NULL,
-          `q_id` int default NULL,
+          `id` int(11) NOT NULL auto_increment,
+          `q_paper` int(11) default NULL,
+          `q_id` int(11) default NULL,
           `parts` varchar(255) default NULL,
           `userID` int unsigned default NULL,
           `date` datetime default NULL,
           `reason` text,
-          PRIMARY KEY  (`id`)
+          PRIMARY KEY (`id`)
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
@@ -1814,14 +2035,13 @@ QUERY;
           `incorrect_fback` text,
           `display_method` text,
           `notes` text,
-          `ownerID` int unsigned default NULL,
+          `ownerID` int(10) unsigned default NULL,
           `q_media` text,
           `q_media_width` varchar(100) default NULL,
           `q_media_height` varchar(100) default NULL,
           `creation_date` datetime default NULL,
           `last_edited` datetime default NULL,
           `bloom` enum('Knowledge','Comprehension','Application','Analysis','Synthesis','Evaluation') default NULL,
-          `q_group` text,
           `scenario_plain` text,
           `leadin_plain` text,
           `checkout_time` datetime default NULL,
@@ -1832,24 +2052,32 @@ QUERY;
           `status` enum('Normal','Retired','Incomplete','Experimental','Beta') default NULL,
           `q_option_order` enum('display order','alphabetic','random') default NULL,
           `score_method` enum('Mark per Question','Mark per Option','Allow partial Marks','Bonus Mark') default NULL,
-          PRIMARY KEY  (`q_id`)
+          PRIMARY KEY (`q_id`)
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset} PACK_KEYS=1
 QUERY;
 
 $this->tableList['questions_metadata'] = <<<QUERY
         CREATE TABLE `questions_metadata` (
-          `id` int NOT NULL auto_increment,
-          `questionID` int default NULL,
+          `id` int(11) NOT NULL auto_increment,
+          `questionID` int(11) default NULL,
           `type` varchar(255) default NULL,
           `value` varchar(255) default NULL,
-          PRIMARY KEY  (`id`)
+          PRIMARY KEY (`id`)
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+QUERY;
+
+$this->tableList['questions_modules'] = <<<QUERY
+        CREATE TABLE `questions_modules` (
+          `q_id` int(4) unsigned NOT NULL DEFAULT '0',
+          `idMod` int(11) unsigned NOT NULL DEFAULT '0',
+          PRIMARY KEY (`q_id`,`idMod`)
+        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['recent_papers'] = <<<QUERY
         CREATE TABLE `recent_papers` (
-          `userID` int unsigned NOT NULL default '0',
-          `paperID` mediumint unsigned NOT NULL default '0',
+          `userID` int(10) unsigned NOT NULL default '0',
+          `paperID` mediumint(8) unsigned NOT NULL default '0',
           `accessed` datetime default NULL,
           PRIMARY KEY  (`userID`,`paperID`)
         ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
@@ -1857,7 +2085,7 @@ QUERY;
 
     $this->tableList['reference_material'] = <<<QUERY
         CREATE TABLE `reference_material` (
-          `id` int NOT NULL AUTO_INCREMENT,
+          `id` int(11) NOT NULL AUTO_INCREMENT,
           `title` varchar(255) DEFAULT NULL,
           `content` text,
           `width` smallint(5) unsigned DEFAULT NULL,
@@ -1869,9 +2097,9 @@ QUERY;
 
     $this->tableList['reference_modules'] = <<<QUERY
         CREATE TABLE `reference_modules` (
-          `id` int NOT NULL AUTO_INCREMENT,
-          `refID` mediumint unsigned DEFAULT NULL,
-          `moduleID` mediumint unsigned DEFAULT NULL,
+          `id` int(11) NOT NULL AUTO_INCREMENT,
+          `refID` mediumint(8) unsigned DEFAULT NULL,
+          `idMod` int(11) unsigned DEFAULT NULL,
           PRIMARY KEY (`id`)
         ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
 QUERY;
@@ -1879,23 +2107,23 @@ QUERY;
     $this->tableList['reference_papers'] = <<<QUERY
         CREATE TABLE `reference_papers` (
           `id` int(11) NOT NULL AUTO_INCREMENT,
-          `paperID` mediumint unsigned DEFAULT NULL,
-          `refID` mediumint DEFAULT NULL,
+          `paperID` mediumint(8) unsigned DEFAULT NULL,
+          `refID` mediumint(9) DEFAULT NULL,
           PRIMARY KEY (`id`)
         ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['relationships'] = <<<QUERY
         CREATE TABLE `relationships` (
-          `rel_id` int NOT NULL auto_increment,
-          `module_id` char(15) NOT NULL,
-          `paper_id` mediumint unsigned NOT NULL,
+          `rel_id` int(11) NOT NULL auto_increment,
+          `idMod` int(11) unsigned DEFAULT NULL,
+          `paper_id` mediumint(8) unsigned DEFAULT NULL,
           `question_id` int(11) NOT NULL,
-          `obj_id` int NOT NULL,
-          `calendar_year` enum('2006/07','2007/08','2008/09','2009/10','2010/11','2011/12','2012/13','2013/14','2014/15','2015/16','2016/17','2017/18','2018/19','2019/20') NOT NULL,
-          `vle_api` varchar(255) DEFAULT NULL,
-          PRIMARY KEY  (`rel_id`),
-          KEY `module_id_idx` (`module_id`),
+          `obj_id` int(11) NOT NULL,
+          `calendar_year` enum('2006/07','2007/08','2008/09','2009/10','2010/11','2011/12','2012/13','2013/14','2014/15','2015/16','2016/17','2017/18','2018/19','2019/20') DEFAULT NULL,
+          `vle_api` varchar(255) NOT NULL DEFAULT '',
+          PRIMARY KEY (`rel_id`),
+          KEY `module_id_idx` (`idMod`),
           KEY `paper_id_idx` (`paper_id`),
           KEY `calendar_year` (`calendar_year`)
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
@@ -1903,58 +2131,73 @@ QUERY;
 
     $this->tableList['review_comments'] = <<<QUERY
         CREATE TABLE `review_comments` (
-          `id` int NOT NULL auto_increment,
-          `q_paper` mediumint unsigned default NULL,
-          `q_id` int default NULL,
+          `id` int(11) NOT NULL auto_increment,
+          `q_paper` mediumint(8) unsigned default NULL,
+          `q_id` int(11) default NULL,
           `category` tinyint(4) default NULL,
           `comment` text,
-          `reviewer` int unsigned default NULL,
+          `reviewer` int(10) unsigned default NULL,
           `reviewed` datetime default NULL,
           `action` enum('Not actioned','Read - disagree','Read - actioned') default NULL,
           `response` text,
           `review_type` enum('External','Internal') default NULL,
           `ipaddress` varchar(15) default NULL,
-          `duration` mediumint default NULL,
+          `duration` mediumint(9) default NULL,
           `screen` tinyint(4) default NULL,
-          PRIMARY KEY  (`id`),
+          PRIMARY KEY (`id`),
           KEY `idx_q_paper` (`q_paper`)
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
+    $this->tableList['scheduling'] = <<<QUERY
+          CREATE TABLE `scheduling` (
+          `id` int(11) NOT NULL AUTO_INCREMENT,
+          `paperID` mediumint(8) unsigned DEFAULT NULL,
+          `period` varchar(255) DEFAULT NULL,
+          `barriers_needed` tinyint(4) DEFAULT NULL,
+          `cohort_size` varchar(20) DEFAULT NULL,
+          `notes` text,
+          `sittings` tinyint(4) DEFAULT NULL,
+          `campus` varchar(255) DEFAULT NULL,
+          PRIMARY KEY (`id`),
+          UNIQUE KEY `idx_paperID` (`paperID`)
+           ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+QUERY;
+
     $this->tableList['schools'] = <<<QUERY
         CREATE TABLE `schools` (
-          `id` int NOT NULL auto_increment,
+          `id` int(11) NOT NULL auto_increment,
           `school` char(255) default NULL,
-          `facultyID` int default NULL,
+          `facultyID` int(11) default NULL,
           `deleted` datetime default NULL,
-          PRIMARY KEY  (`id`),
+          PRIMARY KEY (`id`),
           KEY `idx_facultyID` (`facultyID`)
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['sct_reviews'] = <<<QUERY
         CREATE TABLE `sct_reviews` (
-          `id` int NOT NULL auto_increment,
+          `id` int(11) NOT NULL auto_increment,
           `reviewer_name` text,
           `reviewer_email` text,
-          `paperID` mediumint unsigned default NULL,
-          `q_id` int default NULL,
+          `paperID` mediumint(8) unsigned default NULL,
+          `q_id` int(4) default NULL,
           `answer` tinyint(4) default NULL,
           `reason` text,
-          PRIMARY KEY  (`id`)
+          PRIMARY KEY (`id`)
         ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['sessions'] = <<<QUERY
         CREATE TABLE `sessions` (
-          `sess_id` int NOT NULL auto_increment,
+          `sess_id` int(11) NOT NULL auto_increment,
           `identifier` bigint(20) unsigned NOT NULL,
-          `moduleID` char(25) NOT NULL,
+          `idMod` int(11) unsigned NOT NULL DEFAULT '0',
           `title` text NOT NULL,
           `source_url` text,
-          `calendar_year` enum('2008/09','2009/10','2010/11','2011/12','2012/13','2013/14','2014/15','2015/16','2016/17','2017/18','2018/19','2019/20') NOT NULL,
+          `calendar_year` enum('2008/09','2009/10','2010/11','2011/12','2012/13','2013/14','2014/15','2015/16','2016/17','2017/18','2018/19','2019/20') NOT NULL DEFAULT '2008/09',
           `occurrence` datetime default NULL,
-          PRIMARY KEY  (`identifier`,`moduleID`,`calendar_year`),
+          PRIMARY KEY (`identifier`,`idMod`,`calendar_year`),
           KEY `sess_id` (`sess_id`)
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
@@ -1962,19 +2205,19 @@ QUERY;
     $this->tableList['sid'] = <<<QUERY
         CREATE TABLE `sid` (
           `student_id` char(15) default NULL,
-          `userID` int unsigned NOT NULL default '0',
+          `userID` int(10) unsigned NOT NULL default '0',
           PRIMARY KEY  (`userID`)
         ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['sms_imports'] = <<<QUERY
         CREATE TABLE `sms_imports` (
-          `id` int NOT NULL auto_increment,
+          `id` int(11) NOT NULL auto_increment,
           `updated` date default NULL,
-          `moduleid` char(25) default NULL,
-          `enrolements` int default NULL,
+          `idMod` int(11) unsigned default NULL,
+          `enrolements` int(11) default NULL,
           `enrolement_details` text,
-          `deletions` int default NULL,
+          `deletions` int(11) default NULL,
           `deletion_details` text,
           `import_type` varchar(255) default NULL,
           PRIMARY KEY  (`id`)
@@ -1983,17 +2226,18 @@ QUERY;
 
     $this->tableList['special_needs'] = <<<QUERY
         CREATE TABLE `special_needs` (
-          `special_id` int NOT NULL auto_increment,
-          `userID` int unsigned default NULL,
+          `special_id` int(11) NOT NULL auto_increment,
+          `userID` int(10) unsigned default NULL,
           `background` varchar(20) default NULL,
           `foreground` varchar(20) default NULL,
-          `textsize` int default NULL,
+          `textsize` int(11) default NULL,
           `extra_time` tinyint(4) default NULL,
           `marks_color` varchar(20) default NULL,
           `themecolor` varchar(20) default NULL,
           `labelcolor` varchar(20) default NULL,
           `font` varchar(50) default NULL,
-          PRIMARY KEY  (`special_id`)
+          `unanswered` varchar(20) default NULL,
+          PRIMARY KEY (`special_id`)
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
@@ -2005,7 +2249,7 @@ QUERY;
           `body_plain` text,
           `type` enum('page','pointer') default NULL,
           `checkout_time` datetime default NULL,
-          `checkout_authorID` int unsigned default NULL,
+          `checkout_authorID` int(10) unsigned default NULL,
           `roles` enum('SysAdmin','Admin','Staff') default NULL,
           `deleted` datetime default NULL,
           PRIMARY KEY  (`id`),
@@ -2015,15 +2259,15 @@ QUERY;
 
     $this->tableList['standards_setting'] = <<<QUERY
         CREATE TABLE `standards_setting` (
-          `id` int NOT NULL auto_increment,
-          `setterID` int unsigned default NULL,
-          `questionID` int default NULL,
+          `id` int(11) NOT NULL auto_increment,
+          `setterID` int(10) unsigned default NULL,
+          `questionID` int(11) default NULL,
           `std_set` datetime default NULL,
           `rating` text,
-          `paperID` mediumint unsigned NOT NULL default '0',
+          `paperID` mediumint(8) unsigned DEFAULT NULL,
           `method` enum('Modified Angoff','Angoff (Yes/No)','Ebel') default NULL,
           `group_review` text,
-          PRIMARY KEY  (`id`),
+          PRIMARY KEY (`id`),
           KEY `paperID` (`paperID`),
           KEY `idx_std_set` (`std_set`),
           KEY `idx_setterID` (`setterID`)
@@ -2032,7 +2276,7 @@ QUERY;
 
     $this->tableList['state'] = <<<QUERY
         CREATE TABLE `state` (
-          `userID` int unsigned DEFAULT NULL,
+          `userID` int(10) unsigned DEFAULT NULL,
           `state_name` varchar(255) DEFAULT NULL,
           `content` varchar(255) DEFAULT NULL,
           `page` varchar(255) DEFAULT NULL,
@@ -2042,48 +2286,36 @@ QUERY;
 
     $this->tableList['student_help'] = <<<QUERY
         CREATE TABLE `student_help` (
-          `id` smallint NOT NULL auto_increment,
+          `id` smallint(6) NOT NULL auto_increment,
           `title` text,
           `body` text,
           `body_plain` text,
           `type` enum('page','pointer') default NULL,
           `checkout_time` datetime default NULL,
-          `checkout_authorID` int unsigned default NULL,
+          `checkout_authorID` int(10) unsigned default NULL,
           `deleted` datetime default NULL,
-          PRIMARY KEY  (`id`),
+          PRIMARY KEY (`id`),
           FULLTEXT KEY `title` (`title`,`body_plain`)
         ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
-    $this->tableList['student_modules'] = <<<QUERY
-        CREATE TABLE `student_modules` (
-          `id` int NOT NULL auto_increment,
-          `userID` int unsigned default NULL,
-          `moduleid` char(25) NOT NULL,
-          `calendar_year` enum('2008/09','2009/10','2010/11','2011/12','2012/13','2013/14','2014/15','2015/16','2016/17','2017/18','2018/19','2019/20') default NULL,
-          `attempt` tinyint(4) default NULL,
-          `auto_update` tinyint(4) default NULL,
-          PRIMARY KEY  (`id`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
-QUERY;
-
     $this->tableList['student_notes'] = <<<QUERY
         CREATE TABLE `student_notes` (
-          `note_id` int NOT NULL auto_increment,
-          `userID` int unsigned default NULL,
+          `note_id` int(11) NOT NULL auto_increment,
+          `userID` int(10) unsigned default NULL,
           `note` text,
           `note_date` datetime default NULL,
-          `paper_id` mediumint unsigned NOT NULL default '0',
+          `paper_id` mediumint(8) unsigned DEFAULT NULL,
           `note_authorID` int unsigned default NULL,
-          PRIMARY KEY  (`note_id`)
+          PRIMARY KEY (`note_id`)
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['sys_errors'] = <<<QUERY
         CREATE TABLE `sys_errors` (
-          `id` int NOT NULL auto_increment,
+          `id` int(11) NOT NULL auto_increment,
           `occurred` datetime default NULL,
-          `userID` int unsigned default NULL,
+          `userID` int(11) unsigned default NULL,
           `auth_user` varchar(45) default NULL,
           `errtype` enum('Notice','Warning','Fatal Error','Unknown') default NULL,
           `errstr` text,
@@ -2095,25 +2327,15 @@ QUERY;
           `request_method` enum('GET','HEAD','POST','PUT','DELETE') default NULL,
           `paperID` mediumint unsigned default NULL,
           `post_data` text,
-          PRIMARY KEY  (`id`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
-QUERY;
-
-    $this->tableList['teams'] = <<<QUERY
-        CREATE TABLE `teams` (
-          `groupID` int(4) NOT NULL auto_increment,
-          `name` char(255) default NULL,
-          `memberID` int unsigned default NULL,
-          `added` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-          `type` enum('System','Custom') default NULL,
-          PRIMARY KEY  (`groupID`),
-          KEY `name` (`name`(20))
+          `variables` longtext,
+          `backtrace` longtext,
+          PRIMARY KEY (`id`)
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['temp_users'] = <<<QUERY
         CREATE TABLE `temp_users` (
-          `id` int NOT NULL auto_increment,
+          `id` int(11) NOT NULL auto_increment,
           `first_names` char(60) default NULL,
           `surname` char(50) default NULL,
           `title` enum('Dr','Miss','Mr','Mrs','Ms','Professor') default NULL,
@@ -2126,18 +2348,18 @@ QUERY;
 
     $this->tableList['textbox_marking'] = <<<QUERY
         CREATE TABLE `textbox_marking` (
-          `id` int NOT NULL auto_increment,
-          `paperID` mediumint unsigned default NULL,
-          `q_id` int default NULL,
-          `answer_id` int default NULL,
-          `markerID` int unsigned default NULL,
+          `id` int(11) NOT NULL auto_increment,
+          `paperID` mediumint(8) unsigned default NULL,
+          `q_id` int(11) default NULL,
+          `answer_id` int(11) default NULL,
+          `markerID` int(10) unsigned default NULL,
           `mark` float default NULL,
           `comments` text,
           `date` datetime default NULL,
           `phase` tinyint(4) default NULL,
           `logtype` tinyint(4) default NULL,
-          `student_userID` int unsigned default NULL,
-          PRIMARY KEY  (`id`),
+          `student_userID` int(10) unsigned default NULL,
+          PRIMARY KEY (`id`),
           KEY `paperID` (`paperID`),
           KEY `q_id` (`q_id`)
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
@@ -2145,10 +2367,10 @@ QUERY;
 
     $this->tableList['textbox_remark'] = <<<QUERY
         CREATE TABLE `textbox_remark` (
-          `id` int NOT NULL auto_increment,
-          `paperID` mediumint unsigned default NULL,
-          `userID` int unsigned default NULL,
-          PRIMARY KEY  (`id`)
+          `id` int(11) NOT NULL auto_increment,
+          `paperID` mediumint(8) unsigned default NULL,
+          `userID` int(10) unsigned default NULL,
+          PRIMARY KEY (`id`)
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
@@ -2157,12 +2379,12 @@ QUERY;
           `id` int(4) NOT NULL auto_increment,
           `type` varchar(40) default NULL,
           `typeID` int(4) default NULL,
-          `editor` int unsigned default NULL,
+          `editor` int(10) unsigned default NULL,
           `old` text,
           `new` text,
           `changed` datetime default NULL,
           `part` text,
-          PRIMARY KEY  (`id`),
+          PRIMARY KEY (`id`),
           KEY `typeID` (`typeID`)
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
@@ -2177,14 +2399,14 @@ QUERY;
           `username` char(15) default NULL,
           `email` char(65) default NULL,
           `roles` char(40) default NULL,
-          `id` int unsigned NOT NULL auto_increment,
+          `id` int(10) unsigned NOT NULL auto_increment,
           `first_names` char(60) default NULL,
           `gender` enum('Male','Female') default NULL,
           `last_login` datetime default NULL,
           `special_needs` tinyint(4) default '0',
           `yearofstudy` tinyint(4) default NULL,
           `user_deleted` datetime default NULL,
-          PRIMARY KEY  (`id`),
+          PRIMARY KEY (`id`),
           KEY `username_index` (`username`),
           KEY `idx_roles` (`roles`)
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset} PACK_KEYS=1
@@ -2192,100 +2414,13 @@ QUERY;
 
     $this->tableList['users_metadata'] = <<<QUERY
         CREATE TABLE `users_metadata` (
-          `userID` int unsigned default NULL,
-          `moduleID` int default NULL,
+          `userID` int(10) unsigned default NULL,
+          `idMod` int(11) unsigned default NULL,
           `type` varchar(255) default NULL,
           `value` varchar(255) default NULL,
           `calendar_year` enum('2010/11','2011/12','2012/13','2013/14','2014/15','2015/16','2016/17','2017/18','2018/19','2019/20') default NULL,
-          UNIQUE KEY `idx_users_metadata` (`userID`,`moduleID`,`type`,`calendar_year`)
+          UNIQUE KEY `idx_users_metadata` (`userID`,`idMod`,`type`,`calendar_year`)
         ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
-QUERY;
-
-
-    $this->tableList['lti_user'] = <<<QUERY
-          CREATE TABLE IF NOT EXISTS `lti_user` (
-          `lti_user_key` varchar(255) NOT NULL,
-          `lti_user_equ` varchar(255) NOT NULL,
-          `updated_on` datetime NOT NULL,
-          PRIMARY KEY (`lti_user_key`),
-          KEY `lti_user_equ` (`lti_user_equ`)
-         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
-QUERY;
-
-
-    $this->tableList['lti_resource'] = <<<QUERY
-        CREATE TABLE IF NOT EXISTS `lti_resource` (
-        `lti_resource_key` varchar(255) NOT NULL,
-        `internal_id` varchar(255) DEFAULT NULL,
-        `internal_type` varchar(255) NOT NULL,
-        `updated_on` datetime,
-        PRIMARY KEY (`lti_resource_key`),
-        KEY `destination2` (`internal_type`),
-        KEY `destination` (`internal_id`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
-QUERY;
-
-
-    $this->tableList['lti_keys'] = <<<QUERY
-          CREATE TABLE IF NOT EXISTS `lti_keys` (
-          `id` mediumint NOT NULL AUTO_INCREMENT,
-          `oauth_consumer_key` char(255 )NOT NULL,
-          `secret` char(255)DEFAULT NULL,
-          `name` char(255) DEFAULT NULL,
-          `context_id` char(255) DEFAULT NULL,
-          `deleted` datetime,
-          `updated_on` datetime,
-          PRIMARY KEY (`id`),
-          KEY `oauth_consumer_key` (`oauth_consumer_key`)
-          ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
-QUERY;
-
-    $this->tableList['lti_context'] = <<<QUERY
-          CREATE TABLE IF NOT EXISTS `lti_context` (
-          `lti_context_key` VARCHAR( 255 ) NOT NULL ,
-          `c_internal_id` VARCHAR( 255 ) NOT NULL ,
-          `updated_on` DATETIME NOT NULL,
-          PRIMARY KEY (`lti_context_key`),
-          KEY `c_internal_id` (`c_internal_id`)
-          ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
-QUERY;
-
-
-    $this->tableList['scheduling'] = <<<QUERY
-          CREATE TABLE `scheduling` (
-          `id` int NOT NULL AUTO_INCREMENT,
-          `paperID` mediumint unsigned DEFAULT NULL,
-          `period` varchar(255) DEFAULT NULL,
-          `barriers_needed` tinyint(4) DEFAULT NULL,
-          `cohort_size` varchar(20) DEFAULT NULL,
-          `notes` text,
-          `sittings` tinyint(4) DEFAULT NULL,
-          `campus` varchar(255) DEFAULT NULL,
-          PRIMARY KEY (`id`),
-          UNIQUE KEY `idx_paperID` (`paperID`)
-           ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
-QUERY;
-
-    $this->tableList['performace_main']  = <<<QUERY
-          CREATE TABLE `performance_main` (
-          `id` int NOT NULL AUTO_INCREMENT,
-          `q_id` int unsigned DEFAULT NULL,
-          `paperID` mediumint unsigned DEFAULT NULL,
-          `percentage` tinyint(4) DEFAULT NULL,
-          `cohort_size` int unsigned DEFAULT NULL,
-          `taken` date DEFAULT NULL,
-          PRIMARY KEY (`id`),
-          UNIQUE KEY `idx_q_id` (`q_id`)
-          ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset};
-QUERY;
-
-    $this->tableList['performance_details'] = <<<QUERY
-          CREATE TABLE `performance_details` (
-          `perform_id` int DEFAULT NULL,
-          `part_no` tinyint(4) DEFAULT NULL,
-          `p` tinyint(4) DEFAULT NULL,
-          `d` tinyint(4) DEFAULT NULL
-          ) ENGINE=InnoDB DEFAULT CHARSET={$charset};
 QUERY;
 
   }
