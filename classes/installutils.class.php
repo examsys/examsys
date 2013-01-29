@@ -555,7 +555,6 @@ Class InstallUtils {
     $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".keywords_question TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
     $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".properties_modules TO '". self::$cfg_db_student_user . "'@'". self::$cfg_db_host . "'";
 
-
     $priv_SQL[] = "FLUSH PRIVILEGES";
     foreach($priv_SQL as $sql) {
       self::$db->query($sql);
