@@ -33,8 +33,15 @@ require '../include/mapping.inc';
 require '../include/media.inc';
 require '../include/finish_functions.inc';
 require '../include/paper_security.inc';
+require_once '../include/demo_replace.inc';
 
 check_var('id', 'GET', true, false);
+
+if (strpos($userroles,'Demo') !== false) {
+  $demo = true;
+} else {
+  $demo = false;
+}
 
 getSpecialSettings($userID, $mysqli);
 
@@ -204,7 +211,11 @@ require '../config/finish.inc';
   echo '<tr><td><div class="paper">' . $paper_title . '</div>';
   if ($paper_type < 2 or strpos($userroles,'Staff') !== false or strpos($userroles,'SysAdmin') !== false) {
     echo '<span style="margin-left:5px; font-size:90%; color:white; font-weight:bold">' . $string['answersscreen'];
-    if (isset($_GET['userid'])) echo " for $tmp_title $tmp_surname, $tmp_initials ($tmp_student_id)";
+    $tmp_student_name = $tmp_title . ' ' . demo_replace($tmp_surname, $demo) . ', ' . demo_replace($tmp_initials, $demo);
+    $tmp_student_id = demo_replace_number($tmp_student_id, $demo);
+    if (isset($_GET['userid'])) {
+      echo " for $tmp_student_name ($tmp_student_id)";
+    }
     echo '</span>';
   }
   echo '</td>';

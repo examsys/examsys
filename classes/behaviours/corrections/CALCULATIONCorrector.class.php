@@ -95,43 +95,54 @@ class CALCULATIONCorrector extends Corrector {
             $variable_array = explode(',',$answer_parts[2]);
             $saved_response = $answer_parts[0];
             $var_no = 1;
-            foreach($variable_array as $individual_variable) {
-              $var = chr(64 + $var_no);
-              $$var = $individual_variable;
-              $var_no++;
-            }
-            $mark = 0;
-
-            eval ("\$answer = $answer_equation;");
-            $answer = round($answer, $decimals);
-
-            $tolerance_full = $this->_question->get_tolerance_full();
-            if (StringUtils::ends_with($tolerance_full, '%')) {
-              $tolerance_perc = rtrim($tolerance_full, '%');
-              $tolerance_full = $answer * ($tolerance_perc/100);
-            }
-            $tolerance_partial = $this->_question->get_tolerance_partial();
-            if (StringUtils::ends_with($tolerance_partial, '%')) {
-              $tolerance_perc = rtrim($tolerance_partial, '%');
-              $tolerance_partial = $answer * ($tolerance_perc/100);
-            }
-
-            $saved_response_clean = preg_replace('([^0-9\.\-])', '', $saved_response);
-            $difference = round(abs($saved_response_clean - $answer), 12);
-
-            if ($saved_response_clean != '') {
-              if ($saved_response_clean == $answer) {
-                $mark = $mark_correct;
-              } elseif ($difference > 0 and $difference <= $tolerance_full and $tolerance_full > 0) {
-                $mark = $mark_correct;
-              } elseif ($difference > 0 and $difference <= $tolerance_partial and $tolerance_partial > 0) {
-                $mark = $mark_partial;
-              } else {
-                $mark = $mark_incorrect;
-              }
-            }
-            $saved_response .= '|' . $answer . '|' . $answer_parts[2];
             
+            if (isset($answer_parts[2]) and $answer_parts[2] != '') {
+              foreach($variable_array as $individual_variable) {
+                $var = chr(64 + $var_no);
+                $$var = $individual_variable;
+                $var_no++;
+              }
+              $mark = 0;
+
+              eval ("\$answer = $answer_equation;");
+              $answer = round($answer, $decimals);
+
+              if ($answer != '' and is_nan($answer)) {    // Can't possible get Q correct if answer is not a number 
+                $mark = $mark_incorrect; 
+                $saved_response = $user_answer; 
+              } else { 
+                $tolerance_full = $this->_question->get_tolerance_full();
+                if (StringUtils::ends_with($tolerance_full, '%')) {
+                  $tolerance_perc = rtrim($tolerance_full, '%');
+                  $tolerance_full = $answer * ($tolerance_perc/100);
+                }
+                $tolerance_partial = $this->_question->get_tolerance_partial();
+                if (StringUtils::ends_with($tolerance_partial, '%')) {
+                  $tolerance_perc = rtrim($tolerance_partial, '%');
+                  $tolerance_partial = $answer * ($tolerance_perc/100);
+                }
+
+                $saved_response_clean = preg_replace('([^0-9\.\-])', '', $saved_response);
+                $difference = round(abs($saved_response_clean - $answer), 12);
+
+                if ($saved_response_clean != '') {
+                  if ($saved_response_clean == $answer) {
+                    $mark = $mark_correct;
+                  } elseif ($difference > 0 and $difference <= $tolerance_full and $tolerance_full > 0) {
+                    $mark = $mark_correct;
+                  } elseif ($difference > 0 and $difference <= $tolerance_partial and $tolerance_partial > 0) {
+                    $mark = $mark_partial;
+                  } else {
+                    $mark = $mark_incorrect;
+                  }
+                }
+                $saved_response .= '|' . $answer . '|' . $answer_parts[2];
+              }
+            } else {
+              $saved_response = $user_answer;
+              $mark = $mark_incorrect;
+            }
+           
             $updateLog = $this->_mysqli->prepare("UPDATE log{$paper_type} SET mark=?, user_answer=? WHERE id=? AND q_paper=?");
             $updateLog->bind_param('dsii', $mark, $saved_response, $id, $paper_id);
             $updateLog->execute();

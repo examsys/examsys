@@ -530,11 +530,8 @@ function getUserMark($q_id, $tmp_user_answer, $tmp_user_mark, $exclude, $status,
       for ($a=0; $a<$count_user_awnser; $a++) {
         if ($tmp_exclude{$a} == '0') {
           if ($question['display_method'] == 'dropdown') {
-            $correct_answer = strip_tags($question['correct'][$a][0]);
-            $student_answer = strip_tags($user_answers[$a+1]);
-            
-            $student_answer = html_entity_decode(trim(str_replace('&nbsp;', ' ', $student_answer)));
-            $correct_answer = trim(str_replace('&nbsp;', ' ', $correct_answer));
+            $student_answer = html_entity_decode(trim(str_replace('&nbsp;', ' ', $question['correct'][$a][0])));
+            $correct_answer = html_entity_decode(trim(str_replace('&nbsp;', ' ', $user_answers[$a+1])));
 
             if ($student_answer == $correct_answer) {
               $tmp_mark += $question['marks_correct'];
