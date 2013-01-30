@@ -44,13 +44,25 @@ $result->close();
   
   <link rel="stylesheet" type="text/css" href="../css/body.css" />
   <style type="text/css">
-    body {font-size:90%}
-    table {font-size:100%; width:100%}
+    body {font-size:110%}
+    table {font-size:100%; width:100%; line-height:150%}
     tr {border:1px solid #C0C0C0}
     a {color:black}
+    .title {
+      padding:6px;
+      font-size:150%;
+      font-weight:bold;
+      background: -moz-linear-gradient(top, #EAEAEA, #C0C0C0);
+      background: -webkit-linear-gradient(top, #EAEAEA, #C0C0C0);
+      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#EAEAEA', endColorstr='#C0C0C0');
+    }
     .n {color:#808080}
     .bl {font-weight:bold}
     .l {color:#808080}
+    .indent {padding-left:40px}
+    .letter {color:#316AC5; font-weight:bold; font-size:120%}
+    .qlink {background-color:#316AC5; font-weight:bold; font-size:120%; width:3.8%}
+    a.qlink {color:white}
   </style>
   
   <script language="JavaScript">
@@ -63,8 +75,17 @@ $result->close();
   </head>
 
   <body>
-  <div style="margin-left:10px; font-size:150%; font-weight:bold; color:#7F9DB9"><?php echo $paper_title; ?></div>
+  <div class="title"><?php echo $paper_title; ?></div>
   <form>
+  
+  <?php
+    echo "<table style=\"width:100%; text-align:center\">\n<tr>\n";
+    for ($i=1; $i<=26; $i++) {
+      echo "<td class=\"qlink\"><a href=\"#" . chr($i+64) . "\" class=\"qlink\">" . chr($i+64) . "</a></td>";
+    }
+    echo "</tr>\n</table>\n";
+  ?>
+  
   <table cellpadding="6" cellspacing="0" border="0" style="width:100%">
 <?php
   if (trim($moduleID) == '') {
@@ -74,17 +95,24 @@ $result->close();
   } else {
     // Get the students who are enrolled on the module/session.
     $student_no = 0;
+    $old_letter = '';
+    
     $result = $mysqli->prepare("SELECT users.id, surname, first_names, title, student_id, started FROM (student_modules, users, sid) LEFT JOIN log4_overall ON users.id=log4_overall.userID AND q_paper=? WHERE student_modules.userID=users.id AND users.id=sid.userID AND moduleid=? AND calendar_year=? ORDER BY surname, initials");
     $result->bind_param('iss', $paperID, $moduleID, $calendar_year);
     $result->execute();
     $result->bind_result($tmp_userID, $surname, $first_names, $title, $student_id, $started);
     while ($result->fetch()) {
+      $current_letter = strtoupper($surname{0});
+      if ($old_letter != $current_letter) {
+        echo "<tr><td colspan=\"3\" class=\"letter\"><a name=\"$current_letter\"></a>$current_letter</td></tr>";
+      }
       if ($started == '') {
-        echo "<tr class=\"bl\" onclick=\"load('$tmp_userID')\"><td>$title</td><td>$surname, <span class=\"n\">$first_names</span</td><td>$student_id</td></tr>\n";
+        echo "<tr class=\"bl\" onclick=\"load('$tmp_userID')\"><td class=\"indent\">$title</td><td>$surname, <span class=\"n\">$first_names</span</td><td>$student_id</td></tr>\n";
       } else {
-        echo "<tr class=\"l\" onclick=\"load('$tmp_userID')\"><td>$title</td><td>$surname, $first_names</td><td>$student_id</td></tr>\n";
+        echo "<tr class=\"l\" onclick=\"load('$tmp_userID')\"><td class=\"indent\">$title</td><td>$surname, $first_names</td><td>$student_id</td></tr>\n";
       }
       $student_no++;
+      $old_letter = $current_letter;
     }
     $result->close();
   }

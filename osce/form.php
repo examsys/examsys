@@ -45,13 +45,13 @@ if (isset($_POST['submit'])) {
   // Write individual ratings into Log4.
   for ($question = 1; $question <= $_POST['q_no']; $question++) {
     $tmp_val = ($_POST['q' . $question . '_val'] - 1);
-    if(isset( $_POST[$_POST['q' . $question . '_id'] . '_parts'] )) {
+    if (isset( $_POST[$_POST['q' . $question . '_id'] . '_parts'] )) {
       $q_parts = $_POST[$_POST['q' . $question . '_id'] . '_parts'];
     } else {
       $q_parts = '';
     }
     $result = $mysqli->prepare("INSERT INTO log4 VALUES (NULL, ?, ?, ?, ?, ?, ?)");
-    $result->bind_param('isssss', $_POST['userID'], $started, $_POST['paperID'], $_POST['q' . $question . '_id'], $tmp_val,$q_parts);
+    $result->bind_param('isssss', $_POST['userID'], $started, $_POST['paperID'], $_POST['q' . $question . '_id'], $tmp_val, $q_parts);
     $result->execute();
     $result->close();
     $total_score += ($_POST['q' . $question . '_val'] - 1);
@@ -67,8 +67,8 @@ if (isset($_POST['submit'])) {
   } else {
     $overall_val = $_POST['overall_val'];
   }
-  $result = $mysqli->prepare("INSERT INTO log4_overall VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'electronic')");
-  $result->bind_param('isssisssi', $_POST['userID'], $started, $_POST['paperID'], $overall_val, $total_score, $_POST['fback'], $_POST['grade'], $_POST['year'], $userID);
+  $result = $mysqli->prepare("INSERT INTO log4_overall VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, 'electronic', ?)");
+  $result->bind_param('isssissii', $_POST['userID'], $started, $_POST['paperID'], $overall_val, $total_score, $_POST['fback'], $_POST['grade'], $userID, $_POST['year']);
   $result->execute();
   $result->close();
 
@@ -128,10 +128,11 @@ if (isset($_POST['submit'])) {
   <link rel="stylesheet" type="text/css" href="../css/body.css" />
   <link rel="stylesheet" type="text/css" href="../css/osce.css" />
   <style type="text/css">
-    body {font-size:90%; background-color:<?php echo $bgcolor; ?>; color:<?php echo $fgcolor; ?>}
+    body {background-color:<?php echo $bgcolor; ?>; color:<?php echo $fgcolor; ?>}
     .t {color:<?php echo $themecolor; ?>}
   </style>
   
+  <script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
   <script language="JavaScript">
     function ans(q_id, rating) {
       document.getElementById('q' + q_id + '_val').value = rating;
@@ -172,11 +173,9 @@ if (isset($_POST['submit'])) {
       }
       rated = fails + borderlines + passes;
 
-
       document.getElementById('fails').value = fails;
       document.getElementById('borderlines').value = borderlines;
       document.getElementById('passes').value = passes;
-
 
    <?php
      if ($marking == '5') {
@@ -227,19 +226,21 @@ if (isset($_POST['submit'])) {
       document.getElementById('overall_val').value = rating;
       checkTotals();
     }
+    
+    $(document).ready(checkTotals);
   </script>
   </head>
 
   <body>
   <form method="post" action="<?php echo $_SERVER['PHP_SELF'] . '?id=' . $_GET['id']; ?>" name="osceform">
-  <table cellpadding="2" cellspacing="0" border="0"><tr>
+  <table cellpadding="0" cellspacing="0" border="0" style="width:100%"><tr>
 <?php
   if (file_exists($cfg_web_root . 'users/photos/' . $username . '.jpg')) {
-    echo '<td><img src="/users/photos/' . $username . '.jpg" width="90" height="135" style="border:1px solid #7F9DB9" alt="Photo" /></td>';
+    echo '<td class="photo"><img src="/users/photos/' . $username . '.jpg" width="90" height="135" style="border:1px solid #7F9DB9" alt="Photo" /></td>';
   } else {
-    echo '<td><img src="./test_photo.png" width="90" height="135" border="1" alt="Photo" /></td>';
+    echo '<td class="photo"><img src="./test_photo.png" width="90" height="135" border="1" alt="Photo" /></td>';
   }
-  echo "<td style=\"vertical-align:top; font-weight:bold; text-align:left\"><div style=\"font-size:150%; color:#7F9DB9\">$paper_title</div><br /><br /><div style=\"font-size:150%\">$title $surname, <span style=\"color:#808080\">$first_names</span></div><span style=\"color:#808080\">($student_id)</span></td></table>\n<table cellpadding=\"2\" cellspacing=\"0\" style=\"width:100%\">";
+  echo "<td style=\"vertical-align:top; font-weight:bold; text-align:left\"><div class=\"title\">$paper_title</div><br /><br /><div style=\"font-size:150%\">$title $surname, <span style=\"color:#808080\">$first_names</span></div><span style=\"color:#808080\">($student_id)</span></td></table>\n<table cellpadding=\"2\" cellspacing=\"0\" style=\"width:100%\">";
 
   if ($test == false) {
     // Query Log4 just in case form has already been submitted for this user.
@@ -248,7 +249,7 @@ if (isset($_POST['submit'])) {
     $result->bind_param('ii', $paperID, $_GET['userID']);
     $result->execute();
     $result->bind_result($q_id, $rating, $q_parts);
-    while ($row = $result->fetch()) {
+    while ($result->fetch()) {
       $stored_results[$q_id] = $rating;
       $stored_q_parts[$q_id] = $q_parts;
     }
@@ -281,7 +282,7 @@ if (isset($_POST['submit'])) {
     if (trim($notes) != '') {
       echo "<span style=\"color:$labelcolor\"><img src=\"../artwork/small_note_icon.png\" width=\"14\" height=\"14\" border=\"0\" alt=\"note\" />&nbsp;$notes</span><br />\n";
     }
-    echo $leadin;
+    echo strip_tags($leadin, '<b><i><strong><em><br><br />');
     if (isset($stored_results[$q_id])) {
       echo "<input type=\"hidden\" name=\"q" . $question_no . "_val\" id=\"q" . $question_no . "_val\" value=\"" . ($stored_results[$q_id] + 1) . "\">";
     } else {
@@ -299,6 +300,8 @@ if (isset($_POST['submit'])) {
     echo "</tr>\n";
     $question_no++;
   }
+  $result->close();
+  
   if ($cols == 2) {
     echo "<tr><td></td><td class=\"r\"><input type=\"text\" name=\"fails\" id=\"fails\" size=\"4\" style=\"font-size:60%; font-weight:bold; border:0px; text-align:right; background-color:#EAEAEA\" value=\"0\" /></td><td class=\"totals r\"><input type=\"text\" name=\"borderlines\" size=\"4\" id=\"borderlines\" style=\"font-size:60%; font-weight:bold; border:0px; text-align:right; background-color:#EAEAEA\" value=\"0\" /></td></tr>\n";
   } else {
@@ -316,10 +319,7 @@ if (isset($_POST['submit'])) {
     }
     echo "</tr></table>\n</td></tr>";
   }
-  
   echo "</table>\n";
-
-  $result->close();
 ?>
   <br />
   <blockquote>

@@ -92,6 +92,8 @@ $result->close();
   }
   $result->close();
   
+  var_dump($stored_q_parts);
+  
   $result = $mysqli->prepare("SELECT feedback, overall_rating FROM log4_overall WHERE q_paper=? AND userID=?");
   $result->bind_param('ii', $_GET['paperID'], $_GET['userID']);
   $result->execute();
@@ -122,7 +124,7 @@ $result->close();
       echo "<span style=\"color:$labelcolor\"><img src=\"../artwork/notes_icon.gif\" width=\"14\" height=\"14\" border=\"0\" alt=\"note\" />&nbsp;$notes</span><br />\n";
     }
  
-    echo parse_leadin($leadin,$stored_q_parts[$q_id]) . "</td>";
+    echo parse_leadin($leadin, $stored_q_parts[$q_id]) . "</td>";
     $sub_totals[$stored_results[$q_id]]++; 
     for ($i=0; $i<$cols; $i++) {
       if (array_key_exists($q_id,$stored_results) and $stored_results[$q_id] == $i) {
