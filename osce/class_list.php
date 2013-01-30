@@ -35,9 +35,10 @@ $result->bind_result($paperID, $paper_title, $moduleID, $calendar_year);
 $result->fetch();
 $result->close();
 ?>
+<!DOCTYPE html>
 <html>
 <head>
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="user-scalable=no"> 
   <meta http-equiv="content-type" content="text/html;charset=<?php echo $cfg_page_charset ?>" />
   
   <title>OSCE: Class List</title>
