@@ -78,12 +78,8 @@ if (count($teams) > 0) {
     if (strpos($userroles,'SysAdmin') !== false) {
       echo "<tr><td class=\"ico\"><a href=\"../admin/edit_module.php?moduleid=$module\"><img src=\"$cfg_root_path/artwork/admin_icon_16.gif\" width=\"16\" height=\"16\" alt=\"cog\" /></a></td><td class=\"menuitem\"><a href=\"../admin/edit_module.php?moduleid=$module\">" . $string['editpropertiessysadmin'] . "</a></td></tr>";
     }
-    if (strpos($module_details['checklist'],'mapping') !== false ) {     // Curriculum mapping switched on for the module
-      if (in_array($module, $teams) == true or strpos($userroles,'SysAdmin') !== false or strpos($userroles,'Admin') !== false ) {
-        echo "<tr><td class=\"ico\"><a href=\"../mapping/sessions_list.php?module=" . $module . "\"><img src=\"$cfg_root_path/artwork/module_icon_16.png\" width=\"16\" height=\"16\" alt=\"modules\" /></a></td><td class=\"menuitem\"><a href=\"../mapping/sessions_list.php?module=" . $_GET['module'] . "\">" . $string['manageobjectives'] . "</a></td></tr>\n";
-      } else {
-        echo "<tr><td class=\"ico\"><img src=\"$cfg_root_path/artwork/module_icon_grey_16.png\" width=\"16\" height=\"16\" alt=\"modules\" /></td><td class=\"menuitem\" style=\"color:#808080\">" . $string['manageobjectives'] . "</td></tr>\n";
-      }
+    if (strpos($module_details['checklist'], 'mapping') !== false ) {     // Curriculum mapping switched on for the module
+      echo "<tr><td class=\"ico\"><a href=\"../mapping/sessions_list.php?module=" . $_GET['module'] . "\"><img src=\"$cfg_root_path/artwork/module_icon_16.png\" width=\"16\" height=\"16\" alt=\"modules\" /></a></td><td class=\"menuitem\"><a href=\"../mapping/sessions_list.php?module=" . $_GET['module'] . "\">" . $string['manageobjectives'] . "</a></td></tr>\n";
     }
     echo "<tr><td class=\"ico\"><a href=\"../folder/list_keywords.php?module=$module\"><img src=\"$cfg_root_path/artwork/key.png\" width=\"16\" height=\"16\" alt=\"key\" /></a></td><td class=\"menuitem\"><a href=\"../folder/list_keywords.php?module=$module\">" . $string['managekeywords'] . "</a></td></tr>";
     echo "<tr><td class=\"ico\"><a href=\"../folder/list_ref_material.php?module=$module\"><img src=\"$cfg_root_path/artwork/ref_16.png\" width=\"16\" height=\"16\" alt=\"key\" /></a></td><td class=\"menuitem\"><a href=\"../folder/list_ref_material.php?module=$module\">" . $string['referencematerial'] . "</a></td></tr>";
