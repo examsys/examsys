@@ -29,7 +29,7 @@ require_once '../include/auth.inc';
 require_once '../classes/lang.class.php';
 require_once $cfg_web_root . 'classes/dbutils.class.php';
 
-$version = '4.3.2';
+$version = '4.3.3';
 
 set_time_limit(0);
 
