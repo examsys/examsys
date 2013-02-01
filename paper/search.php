@@ -121,8 +121,8 @@
   }
   if (isset($_POST['day']) and $_POST['day'] != '') {
     $date = 'AND start_date <= ? AND end_date >= ?';
-    $variables[] = $_POST['year'] . $_POST['month'] . $_POST['day'] . '000000';
     $variables[] = $_POST['year'] . $_POST['month'] . $_POST['day'] . '235959';
+    $variables[] = $_POST['year'] . $_POST['month'] . $_POST['day'] . '000000';
     $params .= 'ss';
   } else {
     $date = '';
@@ -143,7 +143,7 @@
   .f {float:left; width:375px; height:74px; padding-left:12px}
   </style>
   
-  <script src="../js/staff_help.js" type="text/javascript"></script>
+  <script type="text/javascript" src="../js/staff_help.js"></script>
   <script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
   <script type="text/javascript" src="../js/state.js"></script>
 </head>
