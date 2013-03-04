@@ -120,7 +120,7 @@ function write_string(p_string) {
   
 function filterKeypress(event) {
   // Allow: backspace, delete, tab and escape
-  if ( event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 189 || event.keyCode == 190 || event.keyCode == 110 || event.keyCode == 109 || event.keyCode == 9 || event.keyCode == 27 ||
+  if ( event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 189 || event.keyCode == 190 || event.keyCode == 110 || event.keyCode == 109 || event.keyCode == 173 || event.keyCode == 9 || event.keyCode == 27 ||
   // Allow: Ctrl+A
   (event.keyCode == 65 && event.ctrlKey === true) ||
   // Allow: home, end, left, right
