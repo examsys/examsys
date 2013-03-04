@@ -108,12 +108,12 @@ class CALCULATIONCorrector extends Corrector {
             $tolerance_full = $this->_question->get_tolerance_full();
             if (StringUtils::ends_with($tolerance_full, '%')) {
               $tolerance_perc = rtrim($tolerance_full, '%');
-              $tolerance_full = $answer * ($tolerance_perc/100);
+              $tolerance_full = abs($answer * ($tolerance_perc/100));
             }
             $tolerance_partial = $this->_question->get_tolerance_partial();
             if (StringUtils::ends_with($tolerance_partial, '%')) {
               $tolerance_perc = rtrim($tolerance_partial, '%');
-              $tolerance_partial = $answer * ($tolerance_perc/100);
+              $tolerance_partial = abs($answer * ($tolerance_perc/100));
             }
 
             $saved_response_clean = preg_replace('([^0-9\.\-])', '', $saved_response);
@@ -131,7 +131,7 @@ class CALCULATIONCorrector extends Corrector {
               }
             }
             $saved_response .= '|' . $answer . '|' . $answer_parts[2];
-            
+
             $updateLog = $this->_mysqli->prepare("UPDATE log{$paper_type} SET mark=?, user_answer=? WHERE id=? AND q_paper=?");
             $updateLog->bind_param('dsii', $mark, $saved_response, $id, $paper_id);
             $updateLog->execute();
