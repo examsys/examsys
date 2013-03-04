@@ -1975,7 +1975,7 @@ function display_feedback($sessionid, $temp_userID, $paperID, $paper_type, $log_
               echo "<option value=\"u\" selected=\"selected\">{$string['unanswered']}</option>\n";
             }
             foreach ($answer_list as $answer_option) {
-              if (isset($user_choices[$blank_count]) and html_entity_decode(StringUtils::clean_and_trim($answer_option)) == html_entity_decode(trim($user_choices[$blank_count]))) {
+              if (isset($user_choices[$blank_count]) and html_entity_decode(StringUtils::clean_and_trim($answer_option)) == html_entity_decode(StringUtils::clean_and_trim($user_choices[$blank_count]))) {
                 echo "<option value=\"\" selected>$answer_option</option>\n";
               } else {
                 echo "<option value=\"\">$answer_option</option>\n";
