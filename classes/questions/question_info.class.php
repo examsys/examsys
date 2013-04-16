@@ -25,12 +25,12 @@
  */
 
 Class QuestionINFO extends Question {
-  
-  protected $_allow_mapping = true;
+
+  protected $_allow_mapping = false;
   protected $_allow_correction = false;
   protected $_use_bloom = false;
   public $max_options = 1;
-  
+
   protected $_fields_required = array('type', 'leadin', 'score_method', 'option_order', 'owner_id', 'status');
 }
 
