@@ -202,7 +202,7 @@ if (isset($_POST['update']) and $demo == false and $userObject->has_role(array('
   }
 } elseif (isset($_POST['save_metadata']) and $userObject->has_role(array('Admin', 'SysAdmin'))) {
   for ($i=0; $i<$_POST['metadata_no']; $i++) {
-    $result = $mysqli->prepare("REPLACE INTO users_metadata (userID, moduleID, type, value, calendar_year) VALUES (?, ?, ?, ?, ?)");
+    $result = $mysqli->prepare("REPLACE INTO users_metadata (userID, idMod, type, value, calendar_year) VALUES (?, ?, ?, ?, ?)");
     $result->bind_param('iisss', $_GET['userID'], $_POST["meta_moduleID$i"], $_POST["meta_type$i"], $_POST["meta_value$i"], $_POST["meta_calendar_year$i"]);
     $result->execute();
     $result->close();
