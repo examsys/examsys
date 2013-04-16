@@ -85,11 +85,11 @@ if (isset($_GET['search_username'])) {
 }
 
 if (isset($_GET['student_id'])) {
-  $student_id = $_GET['student_id'];
+  $search_student_id = $_GET['student_id'];
 } else {
-  $student_id = '';
+  $search_student_id = '';
 }
-if (isset($username) and $search_surname == '' and $search_username == '' and $student_id == '' and !isset($_GET['module']) and !isset($_GET['calendar_year'])) {
+if (isset($username) and $search_surname == '' and $search_username == '' and $search_student_id == '' and !isset($_GET['module']) and !isset($_GET['calendar_year'])) {
   $search_username = $username;
 }
 ?>
@@ -105,7 +105,7 @@ if (isset($username) and $search_surname == '' and $search_username == '' and $s
 
 <table cellpadding="0" cellspacing="0" border="0" style="font-size:100%">
 <tr><td><?php echo $string['username']; ?></td><td>&nbsp;</td><td><?php echo $string['studentid']; ?></td></tr>
-<tr><td><input type="text" name="search_username" size="9" value="<?php echo $search_username; ?>" /></td><td>&nbsp;</td><td><input type="text" name="student_id" size="9" value="<?php echo $student_id; ?>" /></td></tr>
+<tr><td><input type="text" name="search_username" size="9" value="<?php echo $search_username; ?>" /></td><td>&nbsp;</td><td><input type="text" name="student_id" size="9" value="<?php echo $search_student_id; ?>" /></td></tr>
 </table>
 <div><?php echo $string['module']; ?><br /><?php 
 search_utils::display_staff_modules_dropdown($userObject, $mysqli); 
