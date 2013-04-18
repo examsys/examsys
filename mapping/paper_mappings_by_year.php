@@ -185,6 +185,7 @@ if (isset($papers_tmp)) {
   }
 }
 
+$objsBySession = array();
 foreach ($papers as $p_id => $paper) {
   $moduleIDs = Paper_utils::get_modules($paperID,$mysqli);
   $objsBySession[$p_id] = getObjectives($moduleIDs, $paper['session'], $p_id,$paper['questionID'], $mysqli);
