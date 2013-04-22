@@ -313,10 +313,10 @@ $current_ip_address = NULL;   //default overwritten by (check_labs)
 
 $current_ip_address = NetworkUtils::get_ipaddress();
 
-if ($userObject->has_role('Student')) {
+//get the module Ids for this paper
+$modIDs = array_keys(Paper_utils::get_modules($paperID, $mysqli));
 
-  //get the module Ids for this paper
-  $modIDs = array_keys(Paper_utils::get_modules($paperID, $mysqli));
+if ($userObject->has_role('Student')) {
 
   // Check for additional password on the paper
   check_paper_password($propertyObj->get_password(), $string);
@@ -355,6 +355,7 @@ $sessionid = false;
 $current_screen = 1;
 $is_fire_alarm = ( isset($_POST['fire_alarm']) and $_POST['fire_alarm'] == '1' );
 $summative_exam_session_started = false; //lab timing stated by invigilators
+$allow_timing = false;
 
 /*
 * Extract the posted variables.
@@ -386,6 +387,9 @@ if ($is_preview_mode_first_launch == true or ($is_first_launch and !$do_restart)
 
 $sessionid = $log_metadata->get_session_id();
 $metadataid = $log_metadata->get_metadata_id();
+
+// Only allow timing if ALL the modules of the paper allow
+$allow_timing = module_utils::modules_allow_timing($modIDs, $mysqli);
 
 /*
 * BP Determine the student's end_date timestamp for a summative exam that has been 'Started'.
@@ -1077,7 +1081,7 @@ if ($css != '') {
   $timer_label = '';
 
   $special_needs_percentage = $userObject->get_special_needs_percentage();
-  if ($propertyObj->get_exam_duration() != null) {
+  if ($allow_timing and $propertyObj->get_exam_duration() != null) {
     // Summative type. Time is only active in live.
     if (($propertyObj->get_paper_type() == '2' or $original_paper_type == 2) and $is_preview_mode === false) {
 

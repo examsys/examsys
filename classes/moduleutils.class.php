@@ -255,6 +255,18 @@ Class module {
     $result->execute();  
     $result->close();
   }
+
+  public function modules_allow_timing($module_ids, $db) {
+    // Only allow timing if ALL the modules of the paper allow
+    $mod_id_list = implode(',', $module_ids);
+    $stmt = $db->prepare("SELECT id FROM modules WHERE id IN ($mod_id_list) AND timed_exams = 0");
+    $stmt->execute();
+    $stmt->store_result();
+    $allow_timing = ($stmt->num_rows === 0);
+    $stmt->close();
+
+    return $allow_timing;
+  }
 }
 
 ?>
