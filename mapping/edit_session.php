@@ -336,7 +336,7 @@ if (isset($sess['objectives'])) {
   foreach ($sess['objectives'] as $id => $obj) {
     echo "\t<li id=\"li_$id\" style=\"margin:0.5em; margin-left:3.5em\">";
     echo '<img src="./up_on.png" onclick="promote( \'li_' . $id . '\' )" />&nbsp<img src="./down_on.png" onclick="demote( \'li_' . $id . '\' )" />&nbsp';
-    echo "<input class='editBox' onfocus=\"clearTextbox('obj_" . $id . "');\" id=\"obj_" . $id . "\" name=\"obj_" . $id . "\" type=\"text\" value=\"$obj\" />";
+    echo "<input class='editBox' onfocus=\"clearTextbox('obj_" . $id . "');\" id=\"obj_" . $id . "\" name=\"obj_" . $id . "\" type=\"text\" value=\"" . htmlentities($obj, ENT_QUOTES) . "\" />";
     echo "</li>\n";
   }
 }
