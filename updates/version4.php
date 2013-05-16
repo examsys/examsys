@@ -108,6 +108,10 @@ $old_version = $configObject->get('rogo_version');
     </tr>
   </table>
 <?php
+if (round($old_version,0) >= 5) {
+  echo "<p style=\"margin-left:10px\">Rog&#333; $old_version already installed.<br /><br />Please use <strong><a href=\"/updates/version5.php\">/updates/version5.php</a></strong></p>";
+  exit;
+}
 if (!isset($_POST['update'])) {
   ?>
 <script type="text/javascript">

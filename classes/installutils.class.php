@@ -1014,6 +1014,10 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
       $rogo_path = str_ireplace('/updates/version4.php','',$_SERVER['SCRIPT_FILENAME']);
     }
 
+    if (strpos($_SERVER['SCRIPT_FILENAME'], '/updates/version5.php') !== false) {
+      $rogo_path = str_ireplace('/updates/version5.php','',$_SERVER['SCRIPT_FILENAME']);
+    }
+
     if (is_writable($rogo_path . '/config/config.inc.php')) {
       return true;
     } else {
@@ -1035,6 +1039,10 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
     
     if (strpos($_SERVER['SCRIPT_FILENAME'], '/updates/version4.php') !== false) {
       $rogo_path = str_ireplace('/updates/version4.php','',$_SERVER['SCRIPT_FILENAME']);
+    }
+    
+    if (strpos($_SERVER['SCRIPT_FILENAME'], '/updates/version5.php') !== false) {
+      $rogo_path = str_ireplace('/updates/version5.php','',$_SERVER['SCRIPT_FILENAME']);
     }
     
     if (is_writable($rogo_path . '/config')) {
