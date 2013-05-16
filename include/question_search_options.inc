@@ -92,7 +92,7 @@ $state = $stateutil->getState($userObject->get_user_ID(), $mysqli, $configObject
     document.getElementById('menu' + ID).style.display = current;
 
     <?php
-      echo "icon = (document.getElementById('icon' + ID).getAttribute('src').indexOf('down_arrow_icon.gif')!=-1) ? '{$configObject->get('protocol')}" . $_SERVER['HTTP_HOST'] . "{$configObject->get('cfg_root_path')}/artwork/up_arrow_icon.gif' : '{$configObject->get('protocol')}" . $_SERVER['HTTP_HOST'] . "{$configObject->get('cfg_root_path')}/artwork/down_arrow_icon.gif';\n";
+      echo "icon = (document.getElementById('icon' + ID).getAttribute('src').indexOf('down_arrow_icon.gif')!=-1) ? '{$configObject->get('cfg_root_path')}/artwork/up_arrow_icon.gif' : '{$configObject->get('cfg_root_path')}/artwork/down_arrow_icon.gif';\n";
     ?>
     alttag = (document.getElementById('icon' + ID).getAttribute('alt') == 'Hide') ? 'Show' : 'Hide';
     document.getElementById('icon' + ID).setAttribute('src',icon);
@@ -117,7 +117,7 @@ $state = $stateutil->getState($userObject->get_user_ID(), $mysqli, $configObject
 
 <br />
 
-<table cellpadding="4" cellspacing="0" border="0" width="185">
+<table cellpadding="4" cellspacing="0" border="0" width="195">
 <tr><td style="margin:4px">
 <div style="font-size:110%"><strong><?php echo $string['wordorphrase']; ?></strong><br /><input type="text" name="searchterm" size="25" style="width:98%" value="<?php if (isset($_POST['searchterm'])) echo $_POST['searchterm']; ?>" /></div>
 <div style="font-size:110%"><strong><?php echo $string['questiontype']; ?></strong><br /><select name="searchtype">
@@ -405,14 +405,14 @@ $state = $stateutil->getState($userObject->get_user_ID(), $mysqli, $configObject
 <div style="text-align:center">
 <?php
   if (isset($_GET['paperID'])) {
-    echo '<input style="width:80px" type="button" name="back" value="' . $string['back'] . '" onclick="window.location=\'/paper/details.php?paperID=' . $_GET['paperID'] . '&module=' . $_GET['module'] . '&folder=' . $_GET['folder'] . '\'"/>';
+    echo '<input style="width:90px" type="button" name="back" value="' . $string['back'] . '" onclick="window.location=\'' . $configObject->get('cfg_root_path') . '/paper/details.php?paperID=' . $_GET['paperID'] . '&module=' . $_GET['module'] . '&folder=' . $_GET['folder'] . '\'"/>';
   } elseif (isset($_GET['module']) and $_GET['module'] != '') {
-    echo '<input style="width:80px" type="button" name="back" value="' . $string['back'] . '" onclick="window.location=\'/folder/details.php?module=' . $_GET['module'] . '&folder=' . $_GET['folder'] . '\'"/>';
+    echo '<input style="width:90px" type="button" name="back" value="' . $string['back'] . '" onclick="window.location=\'' . $configObject->get('cfg_root_path') . '/folder/details.php?module=' . $_GET['module'] . '&folder=' . $_GET['folder'] . '\'"/>';
   } else {
-    echo '<input style="width:80px" type="button" name="back" value="' . $string['back'] . '" onclick="window.location=\'/staff/index.php\'"/>';
+    echo '<input style="width:90px" type="button" name="back" value="' . $string['back'] . '" onclick="window.location=\'' . $configObject->get('cfg_root_path') . '/staff/index.php\'"/>';
   }
 ?>
-&nbsp;<input style="width:80px" type="submit" name="submit" value="<?php echo $string['search']; ?>" /></div>
+&nbsp;<input style="width:90px" type="submit" name="submit" value="<?php echo $string['search']; ?>" /></div>
 </td></tr>
 </table>
 
