@@ -49,7 +49,7 @@ $mysqli->close();
 
   <script type="text/javascript">
     function updateParent() {
-      window.opener.location.reload();
+      window.opener.location='../admin/list_modules.php';
       self.close();
     }
   </script>
