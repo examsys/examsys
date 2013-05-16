@@ -68,7 +68,7 @@ if (isset($_GET['paperID'])) {
   $result->close();
 
   $module_list = implode(',', array_keys($paper_modules));
-  $roles_sql = "AND roles='Student' AND grade != 'left'";
+  $roles_sql = "AND roles LIKE '%Student%' AND grade != 'left'";
 
   $query_string = "SELECT DISTINCT users.id, roles, student_id, surname, initials, first_names, title, users.username, grade, yearofstudy, email, m.moduleid FROM (users, modules_student) LEFT JOIN sid ON users.id=sid.userID INNER JOIN modules m ON modules_student.idMod=m.id WHERE users.id=modules_student.userID AND idMod IN ($module_list) AND calendar_year='$paper_calendar_year' $roles_sql ORDER BY " . $sortby . " " . $ordering;
   $user_data = $mysqli->prepare($query_string);
@@ -101,7 +101,7 @@ if (isset($_GET['paperID'])) {
   if ($module_list_safe != '') {
     $module_list_safe = rtrim($module_list_safe, ',');
 
-    $roles_sql = "AND roles='Student' AND grade != 'left'";
+    $roles_sql = "AND roles LIKE '%Student%' AND grade != 'left'";
 
     $query_string = "SELECT DISTINCT users.id, roles, student_id, surname, initials, first_names, title, users.username, grade, yearofstudy, email, m.moduleid FROM (users, modules_student) LEFT JOIN sid ON users.id=sid.userID INNER JOIN modules m ON modules_student.idMod=m.id WHERE users.id=modules_student.userID AND idMod IN ($module_list_safe) $calendar_year_sql $roles_sql ORDER BY " . $sortby . " " . $ordering;
     $user_data = $mysqli->prepare($query_string);
@@ -158,7 +158,7 @@ if (isset($_GET['paperID'])) {
   }
 
   $roles_sql = '';
-  if ((isset($_GET['students']) and $_GET['students'] != '') or (isset($_GET['student_id']) and $_GET['student_id'] != '') ) $roles_sql .= " OR roles='Student'";
+  if ((isset($_GET['students']) and $_GET['students'] != '') or (isset($_GET['student_id']) and $_GET['student_id'] != '') ) $roles_sql .= " OR roles LIKE '%Student%'";
   if (isset($_GET['staff']) and $_GET['staff'] != '') $roles_sql .= " OR roles LIKE '%Staff%'";
   if (isset($_GET['adminstaff']) and $_GET['adminstaff'] != '') $roles_sql .= " OR roles LIKE '%,Admin%'";
   if (isset($_GET['inactive']) and $_GET['inactive'] != '') $roles_sql .= " OR roles LIKE '%inactive%'";
