@@ -1537,11 +1537,11 @@ if ($completed_no > 0) {
   sort($median_mark_array);
   sort($median_percent_array);
   if (isEven($completed_no) == 'y') {
-    $median_mark = ($median_mark_array[($completed_no/2)-1] + $median_mark_array[($completed_no/2)-1]) / 2;
-    $median_percent = ($median_percent_array[($completed_no/2)-1] + $median_percent_array[($completed_no/2)-1]) / 2;
+    $median_mark = ($median_mark_array[($completed_no/2)-1] + $median_mark_array[($completed_no/2)]) / 2;
+    $median_percent = ($median_percent_array[($completed_no/2)-1] + $median_percent_array[($completed_no/2)]) / 2;
   } else {
-    $median_mark = $median_mark_array[($completed_no/2)-1];
-    $median_percent = $median_percent_array[($completed_no/2)-1];
+    $median_mark = $median_mark_array[floor($completed_no/2)];
+    $median_percent = $median_percent_array[floor($completed_no/2)];
   }
 } else {
   $mean_mark      = 0;
