@@ -1,0 +1,7 @@
+<?php
+
+$string['hotspots'] = 'Miejsca aktywne';
+$string['correctAnswers'] = 'Odpowiedzi poprawne';
+$string['incorrectAnswers'] = 'Odpowiedzi niepoprawne';
+
+?>

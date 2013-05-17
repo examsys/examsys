@@ -1,0 +1,387 @@
+<?php
+// This file is part of Rogō
+//
+// Rogō is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Rogō is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+* 
+* Rogō Dichotomous question unit tests.
+* 
+* @author Anthony Brown
+* @version 1.0
+* @copyright Copyright (c) 2012 The University of Nottingham
+* @package
+*/
+
+global $cfg_web_root;
+require_once "../include/calculate_marks.inc";
+require_once "./include/questionwrapper.class.php";
+
+class DichotomousTests extends \Enhance\TestFixture
+{
+
+  private $res;    
+
+  // SetUp
+  public function setUp() {
+    $this->res = \Enhance\Core::getCodeCoverageWrapper('QuestionWrapper');
+  }
+  
+  // TearDown
+  public function tearDown() {
+  
+  }
+
+  /**
+  * Test qMarks for a dichotomous question with Mark_per_option
+  */
+  public function dichotomous_mark_per_option() {
+
+    $question_type = 'dichotomous'; 
+    $tmp_exclude = ''; 
+    $question_marks = 1; 
+    $option_text = array(); 
+    $correct = array();
+    $display_method = 'TF_Positive'; 
+    $score_method = 'Mark per Option';
+
+    $tests = array(
+                    array('option_text'  => array(),
+                          'correct'      => array(),
+                          'expected_mark'=> 0
+                          ),
+                    array('option_text'  => array('1'),
+                          'correct'      => array('t'),
+                          'expected_mark'=> 1
+                          ),
+                    array('option_text'  => array('a','b','c','d','e'),
+                          'correct'      => array('t','f','f','t','t'),
+                          'expected_mark'=> 5
+                          ),
+                    array('option_text'  => array('a','b','c','d','e','a','b',
+                                                 'c','d','e'),
+                          'correct'      => array('t','f','f','t','t','t','f',
+                                                 'f','t','t'),
+                          'expected_mark'=> 10
+                          ),
+                    array('option_text'  => array('a','b','c','d','e','a','b',
+                                                 'c','d','e','a','b','c','d',
+                                                 'e','a','b','c','d','e'),
+                          'correct'      => array('t','f','f','t','t','t','f',
+                                                 'f','t','t','t','f','f','t',
+                                                 't','t','f','f','t','t'),
+                          'expected_mark'=> 20
+                          ),
+                  );
+
+    foreach($tests as $test) {
+      $mark = $this->res->qMarks($question_type, 
+                                $tmp_exclude, 
+                                $question_marks, 
+                                $test['option_text'], 
+                                $test['correct'], 
+                                $display_method, 
+                                $score_method);
+
+      \Enhance\Assert::areIdentical($test['expected_mark'], $mark);
+    }
+
+  }
+  /**
+  * Test qMarks for a dichotomous question with Mark_per_Question
+  *
+  *  This test is not applicable to dichotomous questions
+  */
+  private function dichotomous_mark_per_question() {
+    //not implimted for dichotomous questions
+    $score_method = 'Mark per Question';
+    \Enhance\Assert::areIdentical(0, 0);
+  }
+  private function dichotomous_10_mark_per_question() {
+    //not implimted for dichotomous questions
+    $score_method = 'Mark per Question';
+    \Enhance\Assert::areIdentical(0, 0);
+  }
+
+  /**
+  * Test qMarks for a dichotomous question with Mark_per_option 10 marks per stem
+  *
+  */
+  public function dichotomous_10_marks_per_option() {
+
+    $question_type = 'dichotomous'; 
+    $tmp_exclude = ''; 
+    $question_marks = 10; 
+    $option_text = array(); 
+    $correct = array();
+    $display_method = 'TF_Positive'; 
+    $score_method = 'Mark per Option';
+
+    $tests = array(
+                    array('option_text'  => array(),
+                          'correct'      => array(),
+                          'expected_mark'=> 0
+                          ),
+                    array('option_text'  => array('1'),
+                          'correct'      => array('t'),
+                          'expected_mark'=> 10
+                          ),
+                    array('option_text'  => array('a','b','c','d','e'),
+                          'correct'      => array('t','f','f','t','t'),
+                          'expected_mark'=> 50
+                          ),
+                    array('option_text'  => array('a','b','c','d','e','a','b',
+                                                 'c','d','e'),
+                          'correct'      => array('t','f','f','t','t','t','f',
+                                                 'f','t','t'),
+                          'expected_mark'=> 100
+                          ),
+                    array('option_text'  => array('a','b','c','d','e','a','b',
+                                                 'c','d','e','a','b','c','d',
+                                                 'e','a','b','c','d','e'),
+                          'correct'      => array('t','f','f','t','t','t','f',
+                                                 'f','t','t','t','f','f','t',
+                                                 't','t','f','f','t','t'),
+                          'expected_mark'=> 200
+                          )
+                  );
+
+    foreach($tests as $test) {
+      $mark = $this->res->qMarks($question_type, 
+                                $tmp_exclude, 
+                                $question_marks, 
+                                $test['option_text'], 
+                                $test['correct'], 
+                                $display_method, 
+                                $score_method);
+
+      \Enhance\Assert::areIdentical($mark, $test['expected_mark']);
+    }
+
+  }
+
+  /**
+  * Test qMarks for a dichotomous question with Mark_per_option 1 marks per 
+  * stem with exclusions
+  *
+  */
+  public function dichotomous_1_mark_per_option_with_exclude() {
+
+    $question_type = 'dichotomous'; 
+    $tmp_exclude = '00000'; 
+    $question_marks = 1; 
+    $option_text = array('a','b','c','d','e'); 
+    $correct = array('t','f','f','t','t');
+    $display_method = 'TF_Positive'; 
+    $score_method = 'Mark per Option';
+
+    $exclude = array(
+                      array('tmp_exclude' => '', 'expected_mark'=> 5),
+                      array('tmp_exclude' => '00000', 'expected_mark'=> 5),
+                      array('tmp_exclude' => '10000', 'expected_mark'=> 4),
+                      array('tmp_exclude' => '00001', 'expected_mark'=> 4),
+                      array('tmp_exclude' => '10101', 'expected_mark'=> 2),
+                      array('tmp_exclude' => '11111', 'expected_mark'=> 0),
+                    );
+    
+    foreach($exclude as  $test) {
+      $mark = $this->res->qMarks($question_type, $test['tmp_exclude'], $question_marks, 
+                                 $option_text, $correct, $display_method, 
+                                 $score_method);
+      
+      \Enhance\Assert::areIdentical($test['expected_mark'], $mark);
+    }
+
+  }
+
+  /**
+  * Test qMarks for a dichotomous question with Mark_per_option 10 marks per 
+  * stem with exclusions
+  *
+  */
+  public function dichotomous_10_marks_per_option_with_exclude() {
+
+    $question_type = 'dichotomous'; 
+    $tmp_exclude = '00000'; 
+    $question_marks = 10; 
+    $option_text = array('a','b','c','d','e'); 
+    $correct = array('t','f','f','t','t');
+    $display_method = 'TF_Positive'; 
+    $score_method = 'Mark per Option';
+    
+    $exclude = array(
+                      array('tmp_exclude' => '', 'expected_mark'=> 50),
+                      array('tmp_exclude' => '00000', 'expected_mark'=> 50),
+                      array('tmp_exclude' => '10000', 'expected_mark'=> 40),
+                      array('tmp_exclude' => '00001', 'expected_mark'=> 40),
+                      array('tmp_exclude' => '10101', 'expected_mark'=> 20),
+                      array('tmp_exclude' => '11111', 'expected_mark'=> 0),
+                    );
+    
+    foreach($exclude as  $test) {
+      $mark = $this->res->qMarks($question_type, $test['tmp_exclude'], $question_marks, 
+                                 $option_text, $correct, $display_method, 
+                                 $score_method);
+      
+      \Enhance\Assert::areIdentical($test['expected_mark'], $mark);
+    }
+
+  }
+
+  /**
+  * Test qRandomMarks for a dichotomous question with Mark_per_option
+  *
+  */
+  public function dichotomous_caculate_random_1_mark_mark_per_option() {
+
+    $question_type = 'dichotomous'; 
+    $tmp_exclude = ''; 
+    $marks_correct = 1; 
+    $option_text = array(); 
+    $correct = array();
+    $display_method = 'TF_Positive'; 
+    $score_method = 'Mark per Option';
+    $old_q_media_width = 0 ;
+    $old_q_media_height = 0;
+
+
+    $tests = array(
+                    array('option_text'  => array(),
+                          'correct'      => array(),
+                          'expected_mark'=> 0
+                          ),
+                    array('option_text'  => array('1'),
+                          'correct'      => array('t'),
+                          'expected_mark'=> 0.5
+                          ),
+                    array('option_text'  => array('a','b','c','d','e'),
+                          'correct'      => array('t','f','f','t','t'),
+                          'expected_mark'=> 2.5
+                          ),
+                    array('option_text'  => array('a','b','c','d','e','a','b',
+                                                 'c','d','e'),
+                          'correct'      => array('t','f','f','t','t','t','f',
+                                                 'f','t','t'),
+                          'expected_mark'=> 5
+                          ),
+                    array('option_text'  => array('a','b','c','d','e','a','b',
+                                                 'c','d','e','a','b','c','d',
+                                                 'e','a','b','c','d','e'),
+                          'correct'      => array('t','f','f','t','t','t','f',
+                                                 'f','t','t','t','f','f','t',
+                                                 't','t','f','f','t','t'),
+                          'expected_mark'=> 10
+                          ),
+                  );
+
+    foreach($tests as $test) {
+      $randomMarks = $this->res->qRandomMarks($question_type, 
+                                              $tmp_exclude, 
+                                              $marks_correct, 
+                                              $test['option_text'], 
+                                              $test['correct'], 
+                                              $display_method, 
+                                              $score_method, 
+                                              $old_q_media_width, 
+                                              $old_q_media_height);
+
+      \Enhance\Assert::areIdentical($randomMarks, $test['expected_mark']);
+    }
+  } 
+
+  /**
+  * Test qRandomMarks for a dichotomous question with Mark_per_Question
+  *
+  *  This test is not applicable to dichotomous questions
+  */
+  private function dichotomous_caculate_random_mark_mark_per_question() {
+    //not implimted for dichotomous questions
+    $score_method = 'Mark per Question';
+    \Enhance\Assert::areIdentical(0, 0);
+  }
+
+  /**
+  * Test qRandomMarks for a dichotomous question with Mark_per_option and 
+  * exclusion
+  *
+  */
+  public function dichotomous_caculate_random_mark_1_mark_per_option_with_exclude() {
+
+    $question_type = 'dichotomous'; 
+    $marks_correct = 1; 
+    $option_text = array('a','b','c','d','e'); 
+    $correct = array('t','f','f','t','t');
+    $display_method = 'TF_Positive'; 
+    $score_method = 'Mark per Option';
+    $old_q_media_width = 0 ;
+    $old_q_media_height = 0;
+    
+    $exclude = array(
+                      array('tmp_exclude' => '', 'expected_mark'=> (float)2.5),
+                      array('tmp_exclude' => '10000', 'expected_mark'=> (float)2),
+                      array('tmp_exclude' => '00001', 'expected_mark'=> (float)2),
+                      array('tmp_exclude' => '10101', 'expected_mark'=> (float)1),
+                      array('tmp_exclude' => '11111', 'expected_mark'=> (float)0),
+                    );
+    
+    foreach($exclude as  $test) {
+      
+      $randomMarks = $this->res->qRandomMarks($question_type, $test['tmp_exclude'], 
+                                              $marks_correct, $option_text, 
+                                              $correct, $display_method, 
+                                              $score_method, $old_q_media_width, 
+                                              $old_q_media_height);
+
+      \Enhance\Assert::areIdentical($test['expected_mark'], $randomMarks);
+    }
+
+  }
+  
+  /**
+  * Test qRandomMarks for a dichotomous question with 10 Mark_per_option with 
+  * exclusion
+  *
+  */
+  public function dichotomous_caculate_random_mark_10_marks_per_option_with_exclude() {
+    $question_type = 'dichotomous'; 
+    $marks_correct = 10; 
+    $option_text = array('a','b','c','d','e'); 
+    $correct = array('t','f','f','t','t');
+    $display_method = 'TF_Positive'; 
+    $score_method = 'Mark per Option';
+    $old_q_media_width = 0 ;
+    $old_q_media_height = 0;
+
+    $exclude = array(
+                      array('tmp_exclude' => '', 'expected_mark'=> (float)25),
+                      array('tmp_exclude' => '10000', 'expected_mark'=> (float)20),
+                      array('tmp_exclude' => '00001', 'expected_mark'=> (float)20),
+                      array('tmp_exclude' => '10101', 'expected_mark'=> (float)10),
+                      array('tmp_exclude' => '11111', 'expected_mark'=> (float)0),
+                    );
+    
+    foreach($exclude as  $test) {
+      
+      $randomMarks = $this->res->qRandomMarks($question_type, $test['tmp_exclude'], 
+                                              $marks_correct, $option_text, 
+                                              $correct, $display_method, 
+                                              $score_method, $old_q_media_width, 
+                                              $old_q_media_height);
+
+      \Enhance\Assert::areIdentical($test['expected_mark'], $randomMarks);
+    }
+  }
+
+}
+?>

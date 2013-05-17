@@ -1,0 +1,31 @@
+<?php
+// This file is part of Rogo
+//
+// Rogo is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Rogo is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Rogo.  If not, see <http://www.gnu.org/licenses/>.
+
+$string['osceform'] = 'OSCE Form';
+$string['overallclassification'] = 'Overall Classification:';
+$string['feedback'] = 'Feedback';
+$string['clear fail'] = 'Clear Fail';
+$string['borderline'] = 'Borderline';
+$string['clear pass'] = 'Clear Pass';
+$string['fail'] = 'Fail';
+$string['borderline fail'] = 'Borderline fail';
+$string['borderline pass'] = 'Borderline pass';
+$string['pass'] = 'Pass';
+$string['good pass'] = 'Good pass';
+$string['honours pass'] = 'Honours PASS';
+$string['unsatisfactory'] = 'Unsatisfactory';
+$string['competent'] = 'Competent';
+?>

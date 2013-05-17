@@ -1,0 +1,573 @@
+<?php
+// This file is part of Rogō
+//
+// Rogō is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Rogō is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+* 
+* Rogō authentication.class.php unit tests.
+* 
+* @author Anthony Brown
+* @version 1.0
+* @copyright Copyright (c) 2012 The University of Nottingham
+* @package
+*/
+
+require_once "../classes/authentication.class.php";
+
+class AuthenticationTest extends \Enhance\TestFixture
+{
+  
+  private $string;
+  
+  // SetUp
+  public function setUp() {    
+    
+  }
+
+  // TearDown
+  public function tearDown() {
+    $string['NoAuthenticationConfigured'] = 'No Authentication configured';
+    $string['NoAuthenticationConfiguredmessage'] = 'No Authentication configuration has been set in the config file. Please contact your local system administrator.';
+    $string['Authentication_callback_failure1'] = 'Failed to register callback for section ';
+    $string['Authentication_callback_failure2'] = ' with function';
+    $string['Authentication_issue1'] = 'Authentication Issue';
+    $string['Authentication_issue2'] = 'The authentication plugins couldnt log you in and, they the plugins didnt provide any further form or redirect. Press F5 to refresh if this is still unsuccessful please contact support: <a href="mailto:%s">%s</a>.<p>Please include the following debug in your email:</p><div style="margin-left:100px;">%s</div>';
+    $string['Authentication_notloggedin1'] = 'Authentication Issue';
+    $string['Authentication_notloggedin2'] = 'You are not logged in. Press F5 to refresh if this is still unsuccessful please contact support: <a href="mailto:%s">%s</a><p>Please include the following debug in your email:</p><div style="margin-left:100px;">%s</div>';
+    $string['NoLookupConfigured'] = 'No lookup configured';
+    $string['NoLookupConfiguredmessage'] = 'No lookup configuration has been set in the config file. Please contact your local system administrator.';
+    $string['guestbutton'] = 'Guest Login';
+    $string['authentication_lti_authmessage'] = 'Please Login to authenticate the LTI Connection.';
+    $this->string = $string;
+  }
+
+  /**
+  * test load config with no config set  
+  */
+  public function load_config_with_no_config_set() {
+  
+    //fake the config settings
+    $mock_config = \Enhance\MockFactory::createMock('ConfigObject');
+    $mock_config->addExpectation(
+                                    \Enhance\Expect::method('getbyref')
+                                            ->with('authentication')
+                                            ->returns(null)
+                                );
+    $mock_db = \Enhance\MockFactory::createMock('mysqli');
+    
+    $mock_un = \Enhance\MockFactory::createMock('UserNotices');
+    $mock_un->addExpectation(
+                              \Enhance\Expect::method('display_notice_and_exit')->times(1)
+                            );
+    UserNotices::set_mock_instance($mock_un);
+    $session = array();
+    $request = array();
+    $authentication = new Authentication($mock_config, $mock_db, $session, $request);
+    $mock_un->verifyExpectations();
+  }
+  
+  /**
+  * check behaviour if plugin is of the wron version  
+  */
+  public function plugin_apicheck_fail() {
+
+    //fake the auth plugin
+    $mock_auth_plugin = \Enhance\MockFactory::createMock('mock_auth');
+    $call_back_array = array();
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('apicheck')
+                                            ->returns(FALSE)
+                                );
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('init')
+                                            ->times(0)
+                                );
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('get_new_debug_messages')
+                                            ->returns(array())
+                                );
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('register_callback_routines')
+                                            ->times(0)
+                                );
+    
+    $mock_config = $this->build_config_mock($mock_auth_plugin);
+    
+    $session = array();
+    $request = array();
+    $authentication = new Authentication($mock_config, $mock_db, $session, $request);
+    $mock_auth_plugin->verifyExpectations();
+  }
+  
+  /*
+   * Normal auth function with one pugin and no callbacks 
+   */
+  public function plugin_apicheck_pass_no_callbacks_registered() {
+
+    //fake the auth plugin
+    $mock_auth_plugin = \Enhance\MockFactory::createMock('mock_auth');
+    $call_back_array = array();
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('apicheck')
+                                            ->returns(TRUE)
+                                );
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('init')
+                                            ->times(1)
+                                );
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('get_new_debug_messages')
+                                            ->returns(array())
+                                );
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('register_callback_routines')
+                                            ->times(1)
+                                            ->returns(array())
+                                );
+    
+    $mock_config = $this->build_config_mock($mock_auth_plugin);
+    
+    $session = array();
+    $request = array();
+    $authentication = new Authentication($mock_config, $mock_db, $session, $request);
+    $mock_auth_plugin->verifyExpectations();
+  }
+  
+  /*
+   * Normal auth function with one pugin and one callback
+   */
+  public function plugin_apicheck_pass_one_callbacks_registered() {
+
+    //fake the auth plugin
+    $mock_auth_plugin = \Enhance\MockFactory::createMock('mock_auth');
+    $call_back_array = array();
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('apicheck')
+                                            ->returns(TRUE)
+                                );
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('init')
+                                            ->times(1)
+                                );
+    
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('get_new_debug_messages')
+                                            ->returns(array())
+                                );
+    
+    $callbackarray[]=array(array($mock_auth_plugin, 'auth'), 'auth', 1, 'mockAuth');
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('register_callback_routines')
+                                            ->times(1)
+                                            ->returns($callbackarray)
+                                );
+    
+    
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('set_error')
+                                            ->times(0)
+                                );
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('auth')
+                                            ->times(0)
+                                );
+    
+    $mock_config = $this->build_config_mock($mock_auth_plugin);
+    
+    $session = array();
+    $request = array();
+    $authentication = new Authentication($mock_config, $mock_db, $session, $request);
+    $mock_auth_plugin->verifyExpectations();
+  }
+  
+  /*
+   * Normal auth function with one pugin registed auth forced to fail
+   * check auth is called and postauthfail but not post auth sucsess 
+   */
+  public function plugin_apicheck_pass_callbacks_registered_auth_fail() {
+    global $_SESSION;
+    $_SESSION['authenticationObj']['attempt'] = 1; //first attempt
+    
+    
+    //fake the auth plugin
+    $mock_auth_plugin = \Enhance\MockFactory::createMock('mock_auth');
+    $call_back_array = array();
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('apicheck')
+                                            ->returns(TRUE)
+                                );
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('init')
+                                            ->times(1)
+                                );
+    
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('get_new_debug_messages')
+                                            ->returns(array())
+                                );
+    
+    $callbackarray[]=array(array($mock_auth_plugin, 'auth'), 'auth', 1, 'mockAuth');
+    $callbackarray[]=array(array($mock_auth_plugin, 'postauth'), 'postauth', 1, 'mockAuth');
+    $callbackarray[]=array(array($mock_auth_plugin, 'postauthsuccess'), 'postauthsuccess', 1, 'mockAuth');
+    $callbackarray[]=array(array($mock_auth_plugin, 'postauthfail'), 'postauthfail', 1, 'mockAuth');
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('register_callback_routines')
+                                            ->times(1)
+                                            ->returns($callbackarray)
+                                );
+    
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('set_error')
+                                            ->times(0)
+                                );
+    $authobjreturn = new authobjreturn();
+    $authobjreturn->fail(1); //Im the first plug-in
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('auth')
+                                            ->times(1)
+                                            ->returns($authobjreturn)
+                                );
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('postauth')
+                                            ->times(1)
+                                );
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('postauthsuccess')
+                                            ->times(0)
+                                );
+    $postauthfailreturn = new postauthfailreturn();
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('postauthfail')
+                                            ->times(1)
+                                            ->returns($postauthfailreturn)
+                                );
+    
+    $mock_un = \Enhance\MockFactory::createMock('UserNotices');
+    $mock_un->addExpectation(
+                              \Enhance\Expect::method('display_notice_and_exit')
+                                ->times(1)
+                            );
+    UserNotices::set_mock_instance($mock_un);
+    
+    $mock_config = $this->build_config_mock($mock_auth_plugin);
+    
+    $request = array();
+    $authentication = new Authentication($mock_config, $mock_db, $_SESSION, $request);
+    $authentication->do_authentication($this->string);
+    $mock_auth_plugin->verifyExpectations();
+    $mock_un->verifyExpectations();
+  }
+  
+  /*
+   * Normal auth function with one pugin registed auth forced to fail
+   * check auth is called and postauthfail but not post auth sucsess 
+   */
+  public function plugin_apicheck_pass_callbacks_registered_auth_fail_with_postauth_callback() {
+    global $_SESSION;
+    $_SESSION['authenticationObj']['attempt'] = 1; //first attempt
+    
+    
+    //fake the auth plugin
+    $mock_auth_plugin = \Enhance\MockFactory::createMock('mock_auth');
+    $call_back_array = array();
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('apicheck')
+                                            ->returns(TRUE)
+                                );
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('init')
+                                            ->times(1)
+                                );
+    
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('get_new_debug_messages')
+                                            ->returns(array())
+                                );
+    
+    $callbackarray[]=array(array($mock_auth_plugin, 'auth'), 'auth', 1, 'mockAuth');
+    $callbackarray[]=array(array($mock_auth_plugin, 'postauth'), 'postauth', 1, 'mockAuth');
+    $callbackarray[]=array(array($mock_auth_plugin, 'postauthsuccess'), 'postauthsuccess', 1, 'mockAuth');
+    $callbackarray[]=array(array($mock_auth_plugin, 'postauthfail'), 'postauthfail', 1, 'mockAuth');
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('register_callback_routines')
+                                            ->times(1)
+                                            ->returns($callbackarray)
+                                );
+    
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('set_error')
+                                            ->times(0)
+                                );
+    $authobjreturn = new authobjreturn();
+    $authobjreturn->fail(1); //Im the first plug-in
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('auth')
+                                            ->times(1)
+                                            ->returns($authobjreturn)
+                                );
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('postauth')
+                                            ->times(1)
+                                );
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('postauthsuccess')
+                                            ->times(0)
+                                );
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('postauthfailreturncallback')
+                                            ->times(1)
+                                            ->returns( new postauthfailreturn() )
+                                );
+    $postauthfailreturn = new postauthfailreturn();
+    $postauthfailreturn->callback = array($mock_auth_plugin,'postauthfailreturncallback');
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('postauthfail')
+                                            ->times(1)
+                                            ->returns($postauthfailreturn)
+                                );
+    
+    $mock_un = \Enhance\MockFactory::createMock('UserNotices');
+    $mock_un->addExpectation(
+                              \Enhance\Expect::method('display_notice_and_exit')
+                                ->times(1)
+                            );
+    UserNotices::set_mock_instance($mock_un);
+    
+    $mock_config = $this->build_config_mock($mock_auth_plugin);
+    
+    $request = array();
+    $authentication = new Authentication($mock_config, $mock_db, $_SESSION, $request);
+    $authentication->do_authentication($this->string);
+    $mock_auth_plugin->verifyExpectations();
+    $mock_un->verifyExpectations();
+  }
+  
+  /*
+   * Normal auth function with one pugin registed auth forced to fail
+   * check auth is called and postauthfail but not post auth sucsess 
+   */
+  public function plugin_apicheck_pass_callbacks_registered_auth_pass() {
+    global $_SESSION;
+    $_SESSION['authenticationObj']['attempt'] = 1; //first attempt
+    
+    
+    //fake the auth plugin
+    $mock_auth_plugin = \Enhance\MockFactory::createMock('mock_auth');
+    $call_back_array = array();
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('apicheck')
+                                            ->returns(TRUE)
+                                );
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('init')
+                                            ->times(1)
+                                );
+    
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('get_new_debug_messages')
+                                            ->returns(array())
+                                );
+    
+    $callbackarray[]=array(array($mock_auth_plugin, 'auth'), 'auth', 1, 'mockAuth');
+    $callbackarray[]=array(array($mock_auth_plugin, 'postauth'), 'postauth', 1, 'mockAuth');
+    $callbackarray[]=array(array($mock_auth_plugin, 'postauthsuccess'), 'postauthsuccess', 1, 'mockAuth');
+    $callbackarray[]=array(array($mock_auth_plugin, 'postauthfail'), 'postauthfail', 1, 'mockAuth');
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('register_callback_routines')
+                                            ->times(1)
+                                            ->returns($callbackarray)
+                                );
+    
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('set_error')
+                                            ->times(0)
+                                );
+    $authobjreturn = new authobjreturn();
+    $authobjreturn->success(1,9999); //Im the first plug-in fake 9999 userID
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('auth')
+                                            ->times(1)
+                                            ->returns($authobjreturn)
+                                );
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('postauth')
+                                            ->times(1)
+                                );
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('postauthsuccess')
+                                            ->times(1)
+                                );
+    $postauthfailreturn = new postauthfailreturn();
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('postauthfail')
+                                            ->times(0)
+                                            ->returns($postauthfailreturn)
+                                );
+    
+
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('get_settings')
+                                            ->with('dont_break_on_success')
+                                            ->returns(TRUE)
+                                );
+   
+    $mock_un = \Enhance\MockFactory::createMock('UserNotices');
+    $mock_un->addExpectation(
+                              \Enhance\Expect::method('display_notice_and_exit')
+                                ->times(0)
+                            );
+    UserNotices::set_mock_instance($mock_un);
+    
+    $mock_config = $this->build_config_mock($mock_auth_plugin);
+    
+    $request = array();
+    $authentication = new Authentication($mock_config, $mock_db, $_SESSION, $request);
+    $authentication->do_authentication($this->string);
+    $mock_auth_plugin->verifyExpectations();
+    $mock_un->verifyExpectations();
+  }
+  
+  
+  /*
+   * Check the init callback is correctly registered and called
+   */
+  public function init_callback_check() {
+    $this->callback_check('init');
+  }
+  
+          
+  /*
+   * Check the preauth callback is correctly registered and called
+   */
+  public function preauth_callback_check() {
+    $this->callback_check('preauth');
+  }
+  
+  /*
+   * Check the auth callback is correctly registered and called
+   */
+  public function auth_callback_check() {
+    $authobjreturn = new authobjreturn();
+    $authobjreturn->success(1,9999);
+    $this->callback_check('auth', $authobjreturn);
+  }
+  
+  /*
+   * Check the auth callback is correctly registered and called
+   */
+  public function postauth_callback_check() {
+    
+    $this->callback_check('postauth');
+  }
+  
+  //TODO we may need more authentication.class tests to exercise its full functionality 
+  //'lookupuser', 'displaystdform', 'displayerrform', 'getauthobj', 'sessionstore'
+  
+  
+  
+  /*
+   * Generic function to register a callback and check its called
+   */
+  private function callback_check($callbacktype, $return = NULL) {
+  //fake the auth plugin
+    $mock_auth_plugin = \Enhance\MockFactory::createMock('mock_auth');
+    $call_back_array = array();
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('apicheck')
+                                            ->returns(TRUE)
+                                );
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('init')
+                                            ->times(1)
+                                );
+    
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('get_new_debug_messages')
+                                            ->returns(array())
+                                );
+    
+    $callbackarray[]=array(array($mock_auth_plugin,  $callbacktype . '_callback'), $callbacktype, 1, 'mockAuth');
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('register_callback_routines')
+                                            ->times(1)
+                                            ->returns($callbackarray)
+                                );
+    
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('set_error')
+                                            ->times(0)
+                                );
+    
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method('get_settings')
+                                            ->with('dont_break_on_success')
+                                            ->returns(TRUE)
+                                );
+    $mock_auth_plugin->addExpectation(
+                                    \Enhance\Expect::method($callbacktype . '_callback')
+                                            ->times(1)
+                                            ->returns($return)
+                                );
+    
+    $mock_config = $this->build_config_mock($mock_auth_plugin);
+    
+    $request = array();
+    $authentication = new Authentication($mock_config, $mock_db, $_SESSION, $request);
+    $authentication->do_authentication($this->string);
+    $mock_auth_plugin->verifyExpectations();
+  }
+  
+  private function build_config_mock($mock_auth_plugin) {
+    //fake the config settings
+    $mock_config = \Enhance\MockFactory::createMock('ConfigObject');
+    $mock_config->addExpectation(
+                                    \Enhance\Expect::method('get')
+                                            ->with('support_email')
+                                            ->returns('Test@test.com')
+                                );
+    
+    //overide the default already loged in action
+    $alreadyloggedin = \Enhance\MockFactory::createMock('alreadyloggedin');
+    $alreadyloggedin->addExpectation(
+                                    \Enhance\Expect::method('apicheck')
+                                            ->returns(TRUE)
+                                );
+    $alreadyloggedin->addExpectation(
+                                    \Enhance\Expect::method('init')
+                                );
+    $alreadyloggedin->addExpectation(
+                                    \Enhance\Expect::method('get_new_debug_messages')
+                                            ->returns(array())
+                                );
+    $alreadyloggedin->addExpectation(
+                                    \Enhance\Expect::method('register_callback_routines')
+                                            ->returns(array())
+                                );
+    $authentication = array(
+                              array('alreadyloggedin', array('mockclass'=>$alreadyloggedin, 'timeout' => 0), 'Internal Authentication'),
+                              array('mockAuth', array('mockclass'=>$mock_auth_plugin), 'Mock Auth plugin')
+                            );
+    $mock_config->addExpectation(
+                                    \Enhance\Expect::method('getbyref')
+                                            ->with('authentication')
+                                            ->returns($authentication)
+                                );
+    return $mock_config;
+  }
+  
+}
+
+
+?>

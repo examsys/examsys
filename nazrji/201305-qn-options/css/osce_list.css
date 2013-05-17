@@ -1,0 +1,50 @@
+table {
+  font-size:100%;
+  width:100%;
+  line-height:150%;
+}
+tr {
+  border:1px solid #C0C0C0;
+}
+td {
+  text-align:left;
+}
+a {
+  color:black;
+}
+.title {
+  padding:6px;
+  font-size:150%;
+  font-weight:bold;
+  background: -moz-linear-gradient(top, #EAEAEA, #C0C0C0);
+  background: -webkit-linear-gradient(top, #EAEAEA, #C0C0C0);
+  background-image: -ms-linear-gradient(top, #EAEAEA 0%, #C0C0C0 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#EAEAEA', endColorstr='#C0C0C0');
+}
+.n {
+  color:#808080;
+}
+.bl {
+  font-weight:bold;
+}
+.l {
+  color:#808080;
+}
+.indent {
+  padding-left:40px;
+}
+.letter {
+  color:#316AC5;
+  font-weight:bold;
+  font-size:120%;
+}
+.qlink {
+  text-align:center;
+  background-color:#316AC5;
+  font-weight:bold;
+  font-size:120%;
+  width:3.8%;
+}
+a.qlink {
+  color:white;
+}

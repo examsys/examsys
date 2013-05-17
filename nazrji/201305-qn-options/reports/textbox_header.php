@@ -1,0 +1,117 @@
+<?php
+// This file is part of Rogō
+//
+// Rogō is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Rogō is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+*
+* @author Simon Wilkinson
+* @version 1.0
+* @copyright Copyright (c) 2013 The University of Nottingham
+* @package
+*/
+
+require '../include/staff_auth.inc';
+require '../classes/stateutils.class.php';
+require_once '../include/errors.inc';
+
+$paperID    = check_var('paperID', 'GET', true, false, true);
+$startdate  = check_var('startdate', 'GET', true, false, true);
+$enddate    = check_var('enddate', 'GET', true, false, true);
+
+$state = $stateutil->getState($userObject->get_user_ID(), $mysqli);
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $configObject->get('cfg_page_charset') ?>" />
+
+  <title>Textbox Marking</title>
+
+  <link rel="stylesheet" type="text/css" href="../css/body.css" />
+  <link rel="stylesheet" type="text/css" href="../css/header.css" />
+  <style type="text/css">
+  body {font-size:90%}
+  </style>
+
+  <script type="text/javascript" src="../js/staff_help.js"></script>
+  <script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
+  <script type="text/javascript" src="../js/state.js"></script>
+  <script type="text/javascript">
+    function hideMarked() {
+      if (document.getElementById('hidemarked').checked == 1) {
+        setting = " checked";
+      } else {
+        setting = "";
+      }
+
+      parent.body.$('.marked').toggle();
+
+    }
+  </script>
+</head>
+
+<body>
+<?php
+  // Get some paper properties
+  $result = $mysqli->prepare("SELECT paper_type AS paper_type, paper_title FROM properties WHERE property_id = ?");
+  $result->bind_param('i', $_GET['paperID']);
+  $result->execute();
+  $result->bind_result($paper_type, $paper);
+  $result->fetch();
+  $result->close();
+
+  $candidate_no = 0;
+  if ($paper_type == '0' or $paper_type == '1' or $paper_type == '2') {
+    // Get how many students took the paper.
+    $result = $mysqli->prepare("SELECT DISTINCT lm.userID FROM log_metadata lm INNER JOIN users u ON lm.userID = u.id WHERE lm.paperID = ? AND DATE_ADD(lm.started, INTERVAL 2 MINUTE) >= ? AND lm.started <= ? AND (u.roles = 'Student' OR u.roles = 'graduate')");
+    $result->bind_param('iss', $paperID, $startdate, $enddate);
+    $result->execute();
+    $result->bind_result($tmp_userID);
+    while ($row = $result->fetch()) {
+      $candidate_no++;
+    }
+    $result->close();
+  }
+
+  $phase_description = '<strong>';
+  if (!isset($_GET['phase'])) {
+    $phase_description .= $string['finalisemarks'];
+    $tmp_phase = '';
+  } elseif ($_GET['phase'] == 1) {
+    $phase_description .= $string['primarymarking'];
+    $tmp_phase = '&phase=1';
+  } elseif ($_GET['phase'] == 2) {
+    $phase_description .= $string['secondmarking'];
+    $tmp_phase = '&phase=2';
+  }
+  $phase_description .= ":</strong> " . number_format($candidate_no) . " " . $string['candidates'];
+
+  echo "<table class=\"header\" style=\"font-size:90%\">\n<tr><th style=\"height:52px\">";
+  echo '<div class="breadcrumb"><a href="../staff/index.php" target="_top">' . $string['home'] . '</a>';
+  if (isset($_GET['folder']) and trim($_GET['folder']) != '') {
+    echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?folder=' . $_GET['folder'] . '" target="_top">' . folder_utils::get_folder_name($_GET['folder'], $mysqli) . '</a>';
+  } elseif (isset($_GET['module']) and $_GET['module'] != '') {
+    echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../folder/details.php?module=' . $_GET['module'] . '" target="_top">' . module_utils::get_moduleid_from_id($_GET['module'], $mysqli) . '</a>';
+  }
+  echo '&nbsp;&nbsp;<img src="../artwork/breadcrumb_arrow.png" width="4" height="7" alt="-" />&nbsp;&nbsp;<a href="../paper/details.php?paperID=' . $paperID . '" target="_top">' . $paper . '</a></div><div style="margin-left:10px; font-size:220%">' . $phase_description . '</div></th>';
+  echo "<th style=\"text-align:right; vertical-align:top; padding-top:2px; padding-right:6px\"><a href=\"#\" onclick=\"launchHelp(1); return false;\"><img src=\"../artwork/small_help_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['help'] . "\" border=\"0\" /></a><br /><input class=\"chk\" type=\"checkbox\" name=\"hidemarked\" id=\"hidemarked\" value=\"1\" onclick=\"hideMarked();\"";
+  if (isset($state['hidemarked']) and $state['hidemarked'] == 'true') echo ' checked';
+  echo "  /> " . $string['hidemarked'] . "</th></tr>\n";
+  echo "<tr><td colspan=\"2\" class=\"bevel\"></th></tr>\n";
+  echo "</table>\n";
+?>
+</body>
+</html>

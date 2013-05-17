@@ -1,0 +1,68 @@
+table {
+  border-collapse:collapse;
+}
+td {
+  text-align:center;
+}
+ul {
+  margin-top:0px;
+  margin-bottom:0px;
+}
+.q {
+  text-align:left;
+  border:1px solid #C0C0C0;
+}
+.r {
+  border:1px solid #C0C0C0;
+  color:#C0C0C0;
+  font-size:180%;
+  font-weight:bold;
+}
+.t {
+  text-align:left;
+  font-size:125%;
+  padding-top:10px;
+}
+.overall {
+  border:1px solid #C0C0C0;
+  width:20%;
+  height:35px;
+  text-align:center;
+}
+.part {
+  text-decoration:none;
+}
+.part_ok {
+  color:#3A8000;
+  text-decoration:underline;
+}
+.rating1 {
+  background-color:#D99594;
+}
+.rating2 {
+  background-color:#FABF8F;
+}
+.rating3 {
+  background-color:#C2D69B;
+}
+.totals {
+  background-color:#EAEAEA;
+}
+.totals_num {
+  font-weight:bold;
+  border:0px;
+  text-align:right;
+  background-color:#EAEAEA;
+}
+.title {
+  padding:6px;
+  font-size:150%;
+  font-weight:bold;
+  background: -moz-linear-gradient(top, #EAEAEA, #C0C0C0);
+  background: -webkit-linear-gradient(top, #EAEAEA, #C0C0C0);
+  background-image: -ms-linear-gradient(top, #EAEAEA 0%, #C0C0C0 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#EAEAEA', endColorstr='#C0C0C0');
+}
+.photo {
+  width:90px;
+}

@@ -1,0 +1,58 @@
+input {
+  font-size:90%
+}
+td {
+  text-align:left
+}
+p {
+  margin: 2px 0 8px 0
+}
+hr {
+  background-color:#95AEC8;
+  color:#95AEC8;
+  height:1px;
+  width:80%;
+  border:0;
+}
+.title {
+  font-size:24pt;
+  font-weight:bold;
+  color:#4F81BD
+}
+.f {
+  font-weight:bold;
+  text-align:right;
+  line-height:180%;
+  padding-right:6px
+}
+.w {
+  font-size:90%;
+  color:#C00000;
+  font-weight:bold
+}
+.warn {
+  color:#C00000;
+  font-weight:bold;
+}
+.logout {
+  float:right;
+  font-weight:bold;
+  color:#C00000;
+  cursor:pointer;
+}
+a.logout {
+  color:#C00000;
+}
+.testclip {
+  color:#D27800;
+  font-size:90%;
+  font-weight:bold;
+}
+.powered {
+  font-family:Arial,sans-serif;
+  float:right;
+  color:#4F81BD;
+  font-size:80%;
+  padding-right:8px;
+  line-height:100%;
+}

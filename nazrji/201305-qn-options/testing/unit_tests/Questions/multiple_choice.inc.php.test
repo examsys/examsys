@@ -1,0 +1,442 @@
+<?php
+// This file is part of Rogō
+//
+// Rogō is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Rogō is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+* 
+* Rogō Multiple Choice question unit tests.
+* 
+* @author Anthony Brown
+* @version 1.0
+* @copyright Copyright (c) 2012 The University of Nottingham
+* @package
+*/
+
+global $cfg_web_root;
+require_once "../include/calculate_marks.inc";
+require_once "./include/questionwrapper.class.php";
+ 
+/**
+* Changeable prams 
+* ----------------
+* Presentation: vertical, vertical_other (Vertical Option Buttons (with 'other' textbox), horizontal, dropdown. NOT TESTED used in marking functions and display functions
+* option_order: display order, alphabetic, random. NOT TESTED used in marking functions and display functions 
+* Marking Method: Mark per Option
+* Marks if Correct
+* Marks if Incorrect
+*
+* Status: Normal, Retired, Incomplete, Experimental, Beta. NOT TESTED its effect the reporting of marks on reports not how the question is marked
+*
+* Other interesting things
+* -------------------------
+* Can set ether 
+*        option text or 
+*        q_media or
+*        BOTH option text and q_media
+*  and the question is valid 
+*
+* Correct is an array with the same number of elements as options with a value set to the position of the correct option
+* e.g if there are 5 options and the third one is correct. $correct = array(0=>3,1=>3,2=>3,3=>3,4=>3,5=>3) 
+*/
+
+class MultipleChoiceTests extends \Enhance\TestFixture
+{
+
+  private $res;    
+
+  // SetUp
+  public function setUp() {
+    $this->res = \Enhance\Core::getCodeCoverageWrapper('QuestionWrapper');
+  }
+  
+  // TearDown
+  public function tearDown() {
+  
+  }
+
+  /**
+  * Test qMarks for a mcq question with Mark_per_option
+  */
+  public function mcq_caculate_mark_mark_per_option() {
+
+    $question_type = 'mcq'; 
+    $tmp_exclude = ''; 
+    $question_marks = 1; 
+    $option_text = array(); 
+    $correct = array();
+    $display_method = 'vertical'; 
+    $score_method = 'Mark per Option';
+
+    $tests = array(
+                    /*array('option_text'  => array(),
+                          'correct'      => array(),
+                          'expected_mark'=> 0
+                          ),*/
+                    array('option_text'  => array('a'),
+                          'correct'      => array('1'),
+                          'expected_mark'=> 1
+                          ),
+                    array('option_text'  => array('a','b','c','d','e'),
+                          'correct'      => array(3,3,3,3,3),
+                          'expected_mark'=> 1
+                          ),
+                    array('option_text'  => array('a','b','c','d','e','a','b',
+                                                 'c','d','e'),
+                          'correct'      => array(1,1,1,1,1,1,1,1,1,1),
+                          'expected_mark'=> 1
+                          ),
+                  );
+
+    foreach($tests as $test) {
+      $mark = $this->res->qMarks($question_type, 
+                                $tmp_exclude, 
+                                $question_marks, 
+                                $test['option_text'], 
+                                $test['correct'], 
+                                $display_method, 
+                                $score_method);
+
+      \Enhance\Assert::areIdentical($test['expected_mark'],$mark);
+    }
+
+  }
+
+
+  /**
+  * Test qMarks for a mcq question with Mark_per_option 10 marks per stem
+  *
+  */
+  public function mcq_caculate_mark_10_marks_per_option() {
+    $question_type = 'mcq'; 
+    $tmp_exclude = ''; 
+    $question_marks = 10; 
+    $option_text = array(); 
+    $correct = array();
+    $display_method = 'vertical'; 
+    $score_method = 'Mark per Option';
+
+    $tests = array(
+                    /*array('option_text'  => array(),
+                          'correct'      => array(),
+                          'expected_mark'=> 0
+                          ),*/
+                    array('option_text'  => array('a'),
+                          'correct'      => array('1'),
+                          'expected_mark'=> 10
+                          ),
+                    array('option_text'  => array('a','b','c','d','e'),
+                          'correct'      => array(3,3,3,3,3),
+                          'expected_mark'=> 10
+                          ),
+                    array('option_text'  => array('a','b','c','d','e','a','b',
+                                                 'c','d','e'),
+                          'correct'      => array(1,1,1,1,1,1,1,1,1,1),
+                          'expected_mark'=> 10
+                          ),
+                  );
+
+    foreach($tests as $test) {
+      $mark = $this->res->qMarks($question_type, 
+                                $tmp_exclude, 
+                                $question_marks, 
+                                $test['option_text'], 
+                                $test['correct'], 
+                                $display_method, 
+                                $score_method);
+
+      \Enhance\Assert::areIdentical($test['expected_mark'],$mark);
+    }
+
+  }
+
+  /**
+  * Test qMarks for a mcq question with Mark_per_option 1 marks per 
+  * stem with exclusions
+  *
+  */
+  public function mcq_caculate_mark_1_mark_per_option_with_exclude() {
+    $question_type = 'mcq'; 
+    $question_marks = 1; 
+    $display_method = 'vertical'; 
+    $score_method = 'Mark per Option';
+
+    $tests = array(
+                    array('option_text'  => array(),
+                          'correct'      => array(),
+                          'expected_mark'=> 1,
+                          'tmp_exclude' => '000000000'
+                          ),
+                    array('option_text'  => array('a'),
+                          'correct'      => array('1'),
+                          'expected_mark'=> 0,
+                          'tmp_exclude' => '1'
+                          ),
+                    array('option_text'  => array('a','b','c','d','e'),
+                          'correct'      => array(3,3,3,3,3),
+                          'expected_mark'=> 0,
+                          'tmp_exclude' => '1'
+                          ),
+                    array('option_text'  => array('a','b','c','d','e'),
+                          'correct'      => array(3,3,3,3,3),
+                          'expected_mark'=> 0,
+                          'tmp_exclude' => '1111111'
+                          ),
+                    array('option_text'  => array('a','b','c','d','e','a','b',
+                                                 'c','d','e'),
+                          'correct'      => array(1,1,1,1,1,1,1,1,1,1),
+                          'expected_mark'=> 0,
+                          'tmp_exclude' => '1'
+                          ),
+                    array('option_text'  => array('a','b','c','d','e','a','b',
+                                                 'c','d','e'),
+                          'correct'      => array(1,1,1,1,1,1,1,1,1,1),
+                          'expected_mark'=> 0,
+                          'tmp_exclude' => '11111111111111111111111'
+                          ),
+                  );
+
+    foreach($tests as $test) {
+      $mark = $this->res->qMarks($question_type, 
+                                $test['tmp_exclude'], 
+                                $question_marks, 
+                                $test['option_text'], 
+                                $test['correct'], 
+                                $display_method, 
+                                $score_method);
+
+      \Enhance\Assert::areIdentical($test['expected_mark'],$mark);
+    }
+
+  }
+
+  /**
+  * Test qMarks for a mcq question with Mark_per_option 10 marks per 
+  * stem with exclusions
+  *
+  */
+  public function mcq_caculate_mark_10_marks_per_option_with_exclude() {
+    $question_type = 'mcq'; 
+    $question_marks = 10; 
+    $display_method = 'vertical'; 
+    $score_method = 'Mark per Option';
+
+    $tests = array(
+                    array('option_text'  => array(),
+                          'correct'      => array(),
+                          'expected_mark'=> 10,
+                          'tmp_exclude' => '000000000'
+                          ),
+                    array('option_text'  => array('a'),
+                          'correct'      => array('1'),
+                          'expected_mark'=> 0,
+                          'tmp_exclude' => '1'
+                          ),
+                    array('option_text'  => array('a','b','c','d','e'),
+                          'correct'      => array(3,3,3,3,3),
+                          'expected_mark'=> 0,
+                          'tmp_exclude' => '1'
+                          ),
+                    array('option_text'  => array('a','b','c','d','e'),
+                          'correct'      => array(3,3,3,3,3),
+                          'expected_mark'=> 0,
+                          'tmp_exclude' => '1111111'
+                          ),
+                    array('option_text'  => array('a','b','c','d','e','a','b',
+                                                 'c','d','e'),
+                          'correct'      => array(1,1,1,1,1,1,1,1,1,1),
+                          'expected_mark'=> 0,
+                          'tmp_exclude' => '1'
+                          ),
+                    array('option_text'  => array('a','b','c','d','e','a','b',
+                                                 'c','d','e'),
+                          'correct'      => array(1,1,1,1,1,1,1,1,1,1),
+                          'expected_mark'=> 0,
+                          'tmp_exclude' => '11111111111111111111111'
+                          ),
+                  );
+
+    foreach($tests as $test) {
+      $mark = $this->res->qMarks($question_type, 
+                                $test['tmp_exclude'], 
+                                $question_marks, 
+                                $test['option_text'], 
+                                $test['correct'], 
+                                $display_method, 
+                                $score_method);
+
+      \Enhance\Assert::areIdentical($test['expected_mark'],$mark);
+    }
+  }
+
+  /**
+  * Test qRandomMarks for a mcq question with Mark_per_option
+  *
+  */
+  public function mcq_caculate_random_1_mark_mark_per_option() {
+    $question_type = 'mcq'; 
+    $question_marks = 1; 
+    $display_method = 'vertical'; 
+    $score_method = 'Mark per Option';
+    $old_q_media_width = 0 ;
+    $old_q_media_height = 0;
+    $tmp_exclude = '';
+
+    $tests = array(
+                    array('option_text'  => array('a'),
+                          'correct'      => array('1'),
+                          'expected_mark'=> 1.0,
+                          ),
+                    array('option_text'  => array('a','b','c','d','e'),
+                          'correct'      => array(3,3,3,3,3),
+                          'expected_mark'=> 0.2,
+                          ),
+                    array('option_text'  => array('a','b','c','d','e'),
+                          'correct'      => array(1,1,1,1,1),
+                          'expected_mark'=> 0.2,
+                          ),
+                    array('option_text'  => array('a','b','c','d','e','a','b',
+                                                 'c','d','e'),
+                          'correct'      => array(1,1,1,1,1,1,1,1,1,1),
+                          'expected_mark'=> 0.1,
+                          ),
+                  );
+
+    foreach($tests as $test) {
+      $randomMarks = $this->res->qRandomMarks($question_type, 
+                                              $tmp_exclude, 
+                                              $question_marks, 
+                                              $test['option_text'], 
+                                              $test['correct'], 
+                                              $display_method, 
+                                              $score_method, 
+                                              $old_q_media_width, 
+                                              $old_q_media_height);
+
+      \Enhance\Assert::areIdentical($test['expected_mark'],$randomMarks);
+    }
+  } 
+
+  /**
+  * Test qRandomMarks for a mcq question with Mark_per_Question
+  *
+  *  This test is not applicable to mcq questions
+  */
+  private function mcq_caculate_random_mark_mark_per_question() {
+    
+  }
+
+  /**
+  * Test qRandomMarks for a mcq question with Mark_per_option and 
+  * exclusion
+  *
+  */
+  public function mcq_caculate_random_mark_1_mark_per_option_with_exclude() {
+    $question_type = 'mcq'; 
+    $question_marks = 1; 
+    $display_method = 'vertical'; 
+    $score_method = 'Mark per Option';
+    $old_q_media_width = 0 ;
+    $old_q_media_height = 0;
+
+    $tests = array(
+                    array('option_text'  => array('a'),
+                          'correct'      => array('1'),
+                          'expected_mark'=> 1.0,
+                          'tmp_exclude' => '000000'
+                          ),
+                    array('option_text'  => array('a'),
+                          'correct'      => array('1'),
+                          'expected_mark'=> 0.0,
+                          'tmp_exclude' => '1'
+                          ),
+                    array('option_text'  => array('a','b','c','d','e'),
+                          'correct'      => array(3,3,3,3,3),
+                          'expected_mark'=> 0.0,
+                          'tmp_exclude' => '1'
+                          ),
+                    array('option_text'  => array('a','b','c','d','e'),
+                          'correct'      => array(1,1,1,1,1),
+                          'expected_mark'=> 0.2,
+                          'tmp_exclude' => '0'
+                          ),
+                  );
+
+    foreach($tests as $test) {
+      $randomMarks = $this->res->qRandomMarks($question_type, 
+                                              $test['tmp_exclude'], 
+                                              $question_marks, 
+                                              $test['option_text'], 
+                                              $test['correct'], 
+                                              $display_method, 
+                                              $score_method, 
+                                              $old_q_media_width, 
+                                              $old_q_media_height);
+
+      \Enhance\Assert::areIdentical($test['expected_mark'],$randomMarks);
+    }
+  }
+  
+  /**
+  * Test qRandomMarks for a mcq question with 10 Mark_per_option with 
+  * exclusion
+  *
+  */
+  public function mcq_caculate_random_mark_10_marks_per_option_with_exclude() {
+    $question_type = 'mcq'; 
+    $question_marks = 10; 
+    $display_method = 'vertical'; 
+    $score_method = 'Mark per Option';
+    $old_q_media_width = 0 ;
+    $old_q_media_height = 0;
+
+    $tests = array(
+                    array('option_text'  => array('a'),
+                          'correct'      => array('1'),
+                          'expected_mark'=> 10.0,
+                          'tmp_exclude' => '000000'
+                          ),
+                    array('option_text'  => array('a'),
+                          'correct'      => array('1'),
+                          'expected_mark'=> 0.0,
+                          'tmp_exclude' => '1'
+                          ),
+                    array('option_text'  => array('a','b','c','d','e'),
+                          'correct'      => array(3,3,3,3,3),
+                          'expected_mark'=> 0.0,
+                          'tmp_exclude' => '1'
+                          ),
+                    array('option_text'  => array('a','b','c','d','e'),
+                          'correct'      => array(1,1,1,1,1),
+                          'expected_mark'=> 2.0,
+                          'tmp_exclude' => '0'
+                          ),
+                  );
+
+    foreach($tests as $test) {
+      $randomMarks = $this->res->qRandomMarks($question_type, 
+                                              $test['tmp_exclude'], 
+                                              $question_marks, 
+                                              $test['option_text'], 
+                                              $test['correct'], 
+                                              $display_method, 
+                                              $score_method, 
+                                              $old_q_media_width, 
+                                              $old_q_media_height);
+
+      \Enhance\Assert::areIdentical($test['expected_mark'],$randomMarks);
+    }
+  }
+}
+?>

@@ -1,0 +1,58 @@
+<?php
+// This file is part of Rogō
+//
+// Rogō is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Rogō is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+* 
+* Rogō userobject.class.php unit tests.
+* 
+* @author Anthony Brown
+* @version 1.0
+* @copyright Copyright (c) 2012 The University of Nottingham
+* @package
+*/
+
+global $cfg_web_root;
+require_once "../classes/userobject.class.php";
+
+class UserObjectTests extends \Enhance\TestFixture
+{
+
+    private $target, $config, $db;
+
+    // SetUp
+    public function setUp() 
+    {   
+        $this->db = \Enhance\MockFactory::createMock('mysqli');
+        $this->config = \Enhance\MockFactory::createMock('ConfigObject');
+    	$this->target = \Enhance\Core::getCodeCoverageWrapper('UserObject', array($this->config, &$this->db));
+    }
+    
+    // TearDown
+    public function tearDown()
+    {
+    
+    }
+
+    /**
+    *   
+    */
+    public function test_is_special_needs() {
+
+        $res = $this->target->is_special_needs();
+        \Enhance\Assert::areIdentical(False, $res);
+    }
+
+}
