@@ -1003,13 +1003,13 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
   *
   */
   static function configFileIsWriteable() {
-        
+
     $rogo_path = '';
-    
+
     if (strpos($_SERVER['SCRIPT_FILENAME'], '/install/index.php')  !== false) {
       $rogo_path = str_ireplace('/install/index.php','',$_SERVER['SCRIPT_FILENAME']);
     }
-    
+
     if (strpos($_SERVER['SCRIPT_FILENAME'], '/updates/version4.php') !== false) {
       $rogo_path = str_ireplace('/updates/version4.php','',$_SERVER['SCRIPT_FILENAME']);
     }
@@ -1024,9 +1024,9 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
       return false;
     }
   }
-  
+
   /**
-  * Check that we write to the /config/ dir 
+  * Check that we write to the /config/ dir
   *
   */
   static function configPathIsWriteable() {
@@ -1036,11 +1036,11 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
     if (strpos($_SERVER['SCRIPT_FILENAME'], '/install/index.php')  !== false) {
       $rogo_path = str_ireplace('/install/index.php','',$_SERVER['SCRIPT_FILENAME']);
     }
-    
+
     if (strpos($_SERVER['SCRIPT_FILENAME'], '/updates/version4.php') !== false) {
       $rogo_path = str_ireplace('/updates/version4.php','',$_SERVER['SCRIPT_FILENAME']);
     }
-    
+
     if (strpos($_SERVER['SCRIPT_FILENAME'], '/updates/version5.php') !== false) {
       $rogo_path = str_ireplace('/updates/version5.php','',$_SERVER['SCRIPT_FILENAME']);
     }
@@ -1330,7 +1330,7 @@ require \$root . '/include/path_functions.inc.php';
   \$cfg_short_time_php = '{cfg_short_time_php}';
   \$cfg_timezone = '{cfg_timezone}';
   date_default_timezone_set(\$cfg_timezone);
-  
+
 //Reports
   $percent_decimals = 2;
 
@@ -2309,6 +2309,7 @@ QUERY;
           `status` enum('Normal','Retired','Incomplete','Experimental','Beta') default NULL,
           `q_option_order` enum('display order','alphabetic','random') default NULL,
           `score_method` enum('Mark per Question','Mark per Option','Allow partial Marks','Bonus Mark') default NULL,
+          `extra_data` text,
           PRIMARY KEY (`q_id`),
           KEY `idx_owner_deleted` (`ownerID`,`deleted`),
           KEY `idx_deleted` (`deleted`)

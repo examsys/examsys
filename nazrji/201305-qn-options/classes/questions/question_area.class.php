@@ -41,6 +41,7 @@ Class QuestionAREA extends Question {
   public $max_options = 1;
 
   protected $_fields_editable = array('theme', 'scenario', 'leadin', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'bloom', 'status', 'correct_full', 'error_full', 'correct_partial', 'error_partial');
+  protected $_fields_extra_data = array('correct_full', 'error_full', 'correct_partial', 'error_partial');
 
   function __construct($mysqli, $userObj, $lang_strings, $data = null) {
     parent::__construct($mysqli, $userObj, $lang_strings, $data);
@@ -84,10 +85,9 @@ Class QuestionAREA extends Question {
    * @param $correct_full
    */
   public function set_correct_full($value) {
-    if ($value != $this->get_correct_full()) {
+    if ($value != $this->correct_full) {
       $this->set_modified_field('correct_full', $this->correct_full);
       $this->correct_full = $value;
-      $this->set_display_method('dummy');
     }
   }
 
@@ -95,7 +95,6 @@ Class QuestionAREA extends Question {
    * @return mixed
    */
   public function get_correct_full() {
-    $this->get_display_method();
     return $this->correct_full;
   }
 
@@ -103,10 +102,9 @@ Class QuestionAREA extends Question {
    * @param $correct_partial
    */
   public function set_correct_partial($value) {
-    if ($value != $this->get_correct_partial()) {
+    if ($value != $this->correct_partial) {
       $this->set_modified_field('correct_partial', $this->correct_partial);
       $this->correct_partial = $value;
-      $this->set_display_method('dummy');
     }
   }
 
@@ -114,7 +112,6 @@ Class QuestionAREA extends Question {
    * @return mixed
    */
   public function get_correct_partial() {
-    $this->get_display_method();
     return $this->correct_partial;
   }
 
@@ -122,10 +119,9 @@ Class QuestionAREA extends Question {
    * @param $error_full
    */
   public function set_error_full($value) {
-    if ($value != $this->get_error_full()) {
+    if ($value != $this->error_full) {
       $this->set_modified_field('error_full', $this->error_full);
       $this->error_full = $value;
-      $this->set_display_method('dummy');
     }
   }
 
@@ -133,7 +129,6 @@ Class QuestionAREA extends Question {
    * @return mixed
    */
   public function get_error_full() {
-    $this->get_display_method();
     return $this->error_full;
   }
 
@@ -141,10 +136,9 @@ Class QuestionAREA extends Question {
    * @param $error_partial
    */
   public function set_error_partial($value) {
-    if ($value != $this->get_error_partial()) {
+    if ($value != $this->error_partial) {
       $this->set_modified_field('error_partial', $this->error_partial);
       $this->error_partial = $value;
-      $this->set_display_method('dummy');
     }
   }
 
@@ -152,31 +146,7 @@ Class QuestionAREA extends Question {
    * @return mixed
    */
   public function get_error_partial() {
-    $this->get_display_method();
     return $this->error_partial;
-  }
-
-  /**
-   * Set the display method
-   * @param string $value
-   */
-  public function set_display_method($value) {
-    $this->display_method = $this->correct_full . ',' . $this->error_full . ',' . $this->correct_partial . ',' . $this->error_partial;
-  }
-
-  /**
-   * Extract the display method into pseudo-properties
-   * @return string
-   */
-  public function get_display_method() {
-    if ($this->display_method != '') {
-      $parts = explode(',', $this->display_method);
-      $this->correct_full = $parts[0];
-      $this->error_full = $parts[1];
-      $this->correct_partial = $parts[2];
-      $this->error_partial = $parts[3];
-    }
-    return $this->display_method;
   }
 }
 

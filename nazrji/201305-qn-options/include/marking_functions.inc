@@ -151,15 +151,15 @@ function record_marks($paper_id, $db, $userid, $paper_type, $student_grade, $stu
   $random_on        = false;
   
   if (isset($preview_q_id)) {
-    $questions = $db->prepare("SELECT q_id, scenario, q_type, option_text, q_media, correct, display_method, score_method, marks_correct, marks_incorrect, marks_partial, display_pos FROM papers, questions, options WHERE paper=? AND questions.q_id=? AND papers.question=questions.q_id AND questions.q_id=options.o_id ORDER BY display_pos, id_num");
+    $questions = $db->prepare("SELECT q_id, scenario, q_type, option_text, q_media, correct, display_method, extra_data, score_method, marks_correct, marks_incorrect, marks_partial, display_pos FROM papers, questions, options WHERE paper=? AND questions.q_id=? AND papers.question=questions.q_id AND questions.q_id=options.o_id ORDER BY display_pos, id_num");
     $questions->bind_param('ii', $paper_id, $preview_q_id);
   } else {
-    $questions = $db->prepare("SELECT q_id, scenario, q_type, option_text, q_media, correct, display_method, score_method, marks_correct, marks_incorrect, marks_partial, display_pos FROM papers, questions, options WHERE paper=? AND screen=? AND papers.question=questions.q_id AND questions.q_id=options.o_id ORDER BY display_pos, id_num");
+    $questions = $db->prepare("SELECT q_id, scenario, q_type, option_text, q_media, correct, display_method, extra_data, score_method, marks_correct, marks_incorrect, marks_partial, display_pos FROM papers, questions, options WHERE paper=? AND screen=? AND papers.question=questions.q_id AND questions.q_id=options.o_id ORDER BY display_pos, id_num");
     $questions->bind_param('ii', $paper_id, $screen_no);
   }
   $questions->execute();
   $questions->store_result();
-  $questions->bind_result($q_id, $scenario, $q_type, $option_text, $q_media, $correct, $display_method, $score_method, $marks_correct, $marks_incorrect, $marks_partial, $display_pos);
+  $questions->bind_result($q_id, $scenario, $q_type, $option_text, $q_media, $correct, $display_method, $extra_data, $score_method, $marks_correct, $marks_incorrect, $marks_partial, $display_pos);
   while ($questions->fetch()) {
     if ($old_q_id != $q_id or $old_display_pos != $display_pos) {
       if ($q_type != 'info') $tmp_question_no++;
@@ -172,13 +172,13 @@ function record_marks($paper_id, $db, $userid, $paper_type, $student_grade, $stu
       if ($random_on == false and count($selected_q_id) > 0) {
         foreach ($selected_q_id as &$used_qid) {
 	        // Look up database.
-          $random_data = $db->prepare("SELECT q_id, scenario, q_type, option_text, q_media, correct, display_method, score_method, marks_correct FROM questions, options WHERE q_id = ? AND questions.q_id = options.o_id ORDER BY id_num");
+          $random_data = $db->prepare("SELECT q_id, scenario, q_type, option_text, q_media, correct, display_method, extra_data, score_method, marks_correct FROM questions, options WHERE q_id = ? AND questions.q_id = options.o_id ORDER BY id_num");
           $random_data->bind_param('i', $used_qid);
           $random_data->execute();
           $random_data->store_result();
-          $random_data->bind_result($new_q_id, $scenario, $q_type, $option_text, $q_media, $correct, $display_method, $score_method, $marks_correct);
+          $random_data->bind_result($new_q_id, $scenario, $q_type, $option_text, $q_media, $correct, $display_method, $extra_data, $score_method, $marks_correct);
           while ($random_data->fetch()) {
-            $paper_array[] = array('q_id'=>$new_q_id, 'scenario'=>$scenario, 'q_type'=>$q_type, 'option_text'=>$option_text, 'q_media'=>$q_media, 'correct'=>$correct, 'display_method'=>$display_method, 'score_method'=>$score_method, 'marks_correct'=>$marks_correct, 'marks_incorrect'=>$marks_incorrect, 'marks_partial'=>$marks_partial, 'question_no'=>$tmp_question_no, 'display_pos'=>$display_pos);
+            $paper_array[] = array('q_id'=>$new_q_id, 'scenario'=>$scenario, 'q_type'=>$q_type, 'option_text'=>$option_text, 'q_media'=>$q_media, 'correct'=>$correct, 'display_method'=>$display_method, 'extra_data'=>$extra_data, 'score_method'=>$score_method, 'marks_correct'=>$marks_correct, 'marks_incorrect'=>$marks_incorrect, 'marks_partial'=>$marks_partial, 'question_no'=>$tmp_question_no, 'display_pos'=>$display_pos);
           }
           if ($random_data->num_rows == 0) {
             $ex = new RandomQuestionNotFound(sprintf('Random question ID %s not found in paper %s', $used_qid, $paper_id));
@@ -192,7 +192,7 @@ function record_marks($paper_id, $db, $userid, $paper_type, $student_grade, $stu
         $random_on = true;
       }
     } else {
-      $paper_array[] = array('q_id'=>$q_id, 'scenario'=>$scenario, 'q_type'=>$q_type, 'option_text'=>$option_text, 'q_media'=>$q_media, 'correct'=>$correct, 'display_method'=>$display_method, 'score_method'=>$score_method, 'marks_correct'=>$marks_correct, 'marks_incorrect'=>$marks_incorrect, 'marks_partial'=>$marks_partial, 'question_no'=>$tmp_question_no, 'display_pos'=>$display_pos);
+      $paper_array[] = array('q_id'=>$q_id, 'scenario'=>$scenario, 'q_type'=>$q_type, 'option_text'=>$option_text, 'q_media'=>$q_media, 'correct'=>$correct, 'display_method'=>$display_method, 'extra_data'=>$extra_data, 'score_method'=>$score_method, 'marks_correct'=>$marks_correct, 'marks_incorrect'=>$marks_incorrect, 'marks_partial'=>$marks_partial, 'question_no'=>$tmp_question_no, 'display_pos'=>$display_pos);
     }
     $old_q_type = $q_type;
     $old_q_id = $q_id;
@@ -204,6 +204,7 @@ function record_marks($paper_id, $db, $userid, $paper_type, $student_grade, $stu
   $old_type             = '';
   $old_score_method     = '';
   $old_display_method   = '';
+  $old_extra_data       = '';
   $correct_rank         = true;
 
   $no_correct           = 0;
@@ -240,6 +241,7 @@ function record_marks($paper_id, $db, $userid, $paper_type, $student_grade, $stu
     $marks_correct    = $row['marks_correct'];
     $marks_incorrect  = $row['marks_incorrect'];
     $marks_partial    = $row['marks_partial'];
+    $extra_data       = $row['extra_data'];
 
     $display_pos = $row['display_pos'];
     if ($old_q_id != $q_id or $display_pos != $old_display_pos) {
@@ -272,6 +274,7 @@ function record_marks($paper_id, $db, $userid, $paper_type, $student_grade, $stu
       $old_type             = $q_type;
       $old_score_method     = $score_method;
       $old_display_method   = $display_method;
+      $old_extra_data       = $extra_data;
       $old_display_pos      = $display_pos;
 
       $old_marks_correct    = $marks_correct;
@@ -305,10 +308,10 @@ function record_marks($paper_id, $db, $userid, $paper_type, $student_grade, $stu
           $subparts = explode(';', $saved_response);
 
           $parts = explode(',', $saved_response);
-          $tolerances = explode(',', $old_display_method);
-          if ($parts[1] >= $tolerances[0] and $parts[2] <= $tolerances[1]) {
+          $tolerances = json_decode($old_extra_data, true);
+          if ($parts[1] >= $tolerances['correct_full'] and $parts[2] <= $tolerances['error_full']) {
             $mark = $marks_correct;
-          } elseif ($parts[1] >= $tolerances[2] and $parts[2] <= $tolerances[3]) {
+          } elseif ($parts[1] >= $tolerances['correct_partial'] and $parts[2] <= $tolerances['error_partial']) {
             $mark = $marks_partial;
           } elseif (isset($subparts[1]) and strlen($subparts[1]) > 0) {
             $mark = $marks_incorrect;

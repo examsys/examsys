@@ -60,13 +60,14 @@ Class Question extends RogoObject {
   protected $locked = null;
   protected $deleted = null;
   protected $status = 'Normal';
+  protected $extra_data = '';
   public $options = array();
   public $max_options = 20;
   protected $min_options = 1;
   public $max_stems = 0;
   protected $_answer_positive = 'y';
   protected $_answer_negative = 'n';
-  
+
   protected $_allow_change_marking_method = true;
   protected $_allow_negative_marks = null;
   protected $_requires_media = false;
@@ -75,11 +76,12 @@ Class Question extends RogoObject {
   protected $_allow_mapping = true;
   protected $_allow_correction = true;
   protected $_use_bloom = true;
-  
+
   protected $_user_id;
-  protected $_fields = array('type', 'theme', 'scenario', 'scenario_plain', 'leadin', 'leadin_plain', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'display_method', 'option_order', 'standards_setting', 'bloom', 'owner_id', 'media', 'media_width', 'media_height', 'checkout_time', 'checkout_author_id', 'created', 'last_edited', 'locked', 'deleted', 'status');
+  protected $_fields = array('type', 'theme', 'scenario', 'scenario_plain', 'leadin', 'leadin_plain', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'display_method', 'option_order', 'standards_setting', 'bloom', 'owner_id', 'media', 'media_width', 'media_height', 'checkout_time', 'checkout_author_id', 'created', 'last_edited', 'locked', 'deleted', 'status', 'extra_data');
   protected $_fields_editable = array('theme', 'scenario', 'leadin', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'display_method', 'option_order', 'bloom', 'status');
   protected $_fields_required = array('type', 'leadin', 'score_method', 'option_order', 'owner_id', 'status');
+  protected $_fields_extra_data = array();
 //  protected $_score_methods = array('Mark per Question', 'Mark per Option', 'Allow partial Marks', 'Bonus Mark');
   protected $_score_methods;
   protected $_display_methods = array();
@@ -87,39 +89,39 @@ Class Question extends RogoObject {
   protected $_mysqli = null;
   protected $_logger = null;
   protected $_data = array();
-  
+
   // These properties will be lazily loaded
   protected $_keywords = null;
   protected $_changes = null;
   protected $_comments = null;
   protected $_allow_partial_marks = false;
-  
+
   // These fields will be forced to the negative answer value. Useful for checkboxes that won't have a value posted if unset
   protected $_fields_force = array();
-  
+
   // 'Unified' fields are set to the same value for all options
   protected $_fields_unified;
   protected $_unified_field_modifications = array();
-  
+
   // These are the fields that are relevant for post-exam corrections
   protected $_fields_change = array('option_correct', 'option_marks_correct', 'option_marks_incorrect', 'option_marks_partial');
-  
+
   // Map our 'nice' property names to the database fields and 'parts' in track changes
   protected $_field_map = array('type' => 'q_type', 'option_order' => 'q_option_order', 'standards_setting' => 'std', 'owner_id' => 'ownerID', 'media' => 'q_media', 'media_width' => 'q_media_width', 'media_height' => 'q_media_height', 'checkout_author_id' => 'checkout_authorID', 'created' => 'creation_date');
   protected $_change_field_map;
   protected $_pretty_names;
   public static $types = array('blank', 'calculation', 'dichotomous', 'extmatch', 'flash', 'hotspot', 'info', 'keyword_based', 'labelling', 'likert', 'matrix', 'mcq', 'mrq', 'random', 'rank', 'sct', 'textbox', 'true_false', 'area');
-  
+
   // Always store English values in the database so need to look up score method against English version
   protected $_score_methods_db;
-  
+
   // Refrence to array of localised language strings
   protected $_lang_strings = null;
 
   // A list of correction behaviours that will be called sequentially for the Correct operation
   protected $_correctors = array();
-  
-  
+
+
   /**
    * Create a new question object by either loading an existing question from the database or populating
    * properties from an associative array
@@ -131,7 +133,7 @@ Class Question extends RogoObject {
     $this->_user_id = $userObj->get_user_ID();
     $this->_userObj = $userObj;
     $this->_lang_strings = $lang_strings;
-    
+
     // Initialise language specific elements
     $this->_score_methods = array($this->_lang_strings['markperquestion'], $this->_lang_strings['markperoption']);
     $this->_option_orders = array('display order' => $this->_lang_strings['displayorder'], 'alphabetic' => $this->_lang_strings['alphabetic'], 'random' => $this->_lang_strings['random']);
@@ -139,19 +141,19 @@ Class Question extends RogoObject {
     $this->_change_field_map = array('scenario_plain' => 'scenario', 'leadin_plain' => 'leadin', 'correct' => $this->_lang_strings['correctanswer']);
     // TODO: check if some question types need 'Display Method' instead of 'Presentation'
     $this->_pretty_names = array('type' => $this->_lang_strings['type'], 'leadin' => $this->_lang_strings['leadin'], 'score_method' => $this->_lang_strings['markingmethod'], 'display_method' => $this->_lang_strings['presentation'], 'option_order' => $this->_lang_strings['optionorder'], 'owner_id' => $this->_lang_strings['owner'], 'status' => $this->_lang_strings['status']);
-    
+
     $this->_score_methods_db = array($this->_lang_strings['markperquestion'] => 'Mark per Question', $this->_lang_strings['markperoption'] => 'Mark per Option', $this->_lang_strings['allowpartial'] => 'Allow partial Marks', $this->_lang_strings['bonusmark'] => 'Bonus Mark');
     $this->_statuses_db = array($this->_lang_strings['normal'] => 'Normal', $this->_lang_strings['retired'] => 'Retired', $this->_lang_strings['incomplete'] => 'Incomplete', $this->_lang_strings['experimental'] => 'Experimental', $this->_lang_strings['beta'] => 'Beta');
     $this->_blooms_db = array('' => '', $this->_lang_strings['knowledge'] => 'Knowledge', $this->_lang_strings['comprehension'] => 'Comprehension', $this->_lang_strings['application'] => 'Application', $this->_lang_strings['analysis'] => 'Analysis', $this->_lang_strings['synthesis'] => 'Synthesis', $this->_lang_strings['evaluation'] => 'Evaluation');
-    
+
     // Array of references to the fields.  Allows succinct use of call_user_func_array for saving
     foreach($this->_fields as $field) {
       $this->_data[] = &$this->$field;
     }
-    
+
     // Check the type of $data
     if (is_array($data)) {
-      // If it is an array, assume an associative array of fields for creating a new object (but not 
+      // If it is an array, assume an associative array of fields for creating a new object (but not
       // saving it to the database)
       foreach($data as $field => $val) {
         $this->$field = $val;
@@ -166,7 +168,7 @@ Class Question extends RogoObject {
       throw new DataTypeException($this->_lang_strings['questioninvalid']);
     }
   }
-  
+
   /**
    * Populate the 'standard' fields for this question
    * @param array $fields list of fields to populate
@@ -179,20 +181,20 @@ Class Question extends RogoObject {
       if (count($this->_fields_force) > 0 and !isset($data[$section_name]) and in_array($section_name, $this->_fields_force)) {
         $data[$section_name] = $this->_answer_negative;
       }
-      
+
       if(!in_array($section_name, $exclude) and isset($data[$section_name])) {
         $value = $data[$section_name];
-        
-        
+
+
         // TODO: what does this do in light of marking changes?
         if ($section_name == 'score_method' and isset($data['other']) and $data['other'] == 1) $value = 'other';
-        
+
         $method = "set_$section_name";
         $this->$method($value);
       }
     }
   }
-  
+
   /**
    * Populate media for this question
    * @param string $field name of the field to use in $media_data array
@@ -216,7 +218,7 @@ Class Question extends RogoObject {
       }
     }
   }
-  
+
   /**
    * Populate the 'compound' fields for this question. These fields are a concatenated version of number of form fields
    * @param array $fields list of fields to populate
@@ -239,7 +241,7 @@ Class Question extends RogoObject {
           } else {
             if (isset($old_val) and $old_val != '') {
               $this->add_unified_field_modification($section_name . $i, $section_name . $i, $old_val, '', $this->_lang_strings['editscenario']);
-            } 
+            }
             ${$section_name}[] = '';
           }
         }
@@ -248,7 +250,7 @@ Class Question extends RogoObject {
       }
     }
   }
-  
+
   /**
    * Populate 'compound' media for this question. These fields are a concatenated version of number of form fields.
    * Assumes the the first item in the compound field will be the general question media
@@ -262,7 +264,7 @@ Class Question extends RogoObject {
     $media_change = false;
     for ($i = 0; $i <= $this->max_stems; $i++) {
       $post_field = ($i == 0) ? $general_field : "{$prefix}$i";
-      
+
       $media_name = (isset($old_media['filenames'][$i])) ? $old_media['filenames'][$i] : '';
       if ($media_data[$post_field]['name'] != $media_name and ($media_data[$post_field]['name'] != 'none' and $media_data[$post_field]['name'] != '')) {
         if ($media_name != '') {
@@ -286,52 +288,53 @@ Class Question extends RogoObject {
     }
     $this->set_all_media($old_media);
   }
-  
-  
+
+
   /**
    * Persist the object to the database
    * @return boolean Success or failure of the save operation
    * @throws ValidationException
    */
   public function save($clear_checkout = true) {
-    
+
     $success = false;
     if ($this->_logger == null ) $this->_logger =  new Logger($this->_mysqli);
-    
+
     $valid = $this->validate();
-    
+
     if ($valid === true) {
       // Clear any existing checkout
       if ($clear_checkout) {
         $this->checkout_author_id = null;
         $this->checkout_time = null;
       }
-      
+
       // Make sure plain versions of scenario and leadin are up to date
       $this->get_scenario_plain();
       $this->get_leadin_plain();
-      
-      
+
+      $this->serialize_extra_data();
+
       // If $id is -1 we're inserting a new record
       if ($this->id == -1) {
         $this->created = date ('Y-m-d H:i:s');
         $this->last_edited = date ('Y-m-d H:i:s');
-        $params = array_merge(array('ssssssssssssssissssisssss'), $this->_data);
+        $params = array_merge(array('ssssssssssssssissssissssss'), $this->_data);
         $query = <<< QUERY
-INSERT INTO questions(q_type, theme, scenario, scenario_plain, leadin, leadin_plain, notes, correct_fback, incorrect_fback, score_method, 
-display_method, q_option_order, std, bloom, ownerID, q_media, q_media_width, q_media_height, checkout_time, checkout_authorID, 
-creation_date, last_edited, locked, deleted, status)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+INSERT INTO questions(q_type, theme, scenario, scenario_plain, leadin, leadin_plain, notes, correct_fback, incorrect_fback, score_method,
+display_method, q_option_order, std, bloom, ownerID, q_media, q_media_width, q_media_height, checkout_time, checkout_authorID,
+creation_date, last_edited, locked, deleted, status, extra_data)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 QUERY;
       } else {
         // Otherwise we're updating an existing one
-        $params = array_merge(array('ssssssssssssssissssisssssi'), $this->_data, array(&$this->id));
+        $params = array_merge(array('ssssssssssssssissssissssssi'), $this->_data, array(&$this->id));
         $this->last_edited = date('Y-m-d H:i:s');
         $query = <<< QUERY
 UPDATE questions
-SET q_type = ?, theme = ?, scenario = ?, scenario_plain = ?, leadin = ?, leadin_plain = ?, notes = ?, correct_fback = ?, incorrect_fback = ?, 
-score_method = ?, display_method = ?, q_option_order = ?, std = ?, bloom = ?, ownerID = ?, q_media = ?, q_media_width = ?, q_media_height = ?, 
-checkout_time = ?, checkout_authorID = ?, creation_date = ?, last_edited = ?, locked = ?, deleted = ?, status = ?
+SET q_type = ?, theme = ?, scenario = ?, scenario_plain = ?, leadin = ?, leadin_plain = ?, notes = ?, correct_fback = ?, incorrect_fback = ?,
+score_method = ?, display_method = ?, q_option_order = ?, std = ?, bloom = ?, ownerID = ?, q_media = ?, q_media_width = ?, q_media_height = ?,
+checkout_time = ?, checkout_authorID = ?, creation_date = ?, last_edited = ?, locked = ?, deleted = ?, status = ?, extra_data = ?
 WHERE q_id = ?
 QUERY;
       }
@@ -367,7 +370,7 @@ QUERY;
         }
       }
       $result->close();
-      
+
       if ($success) {
         //updates the teams/question modules
         QuestionUtils::update_modules($this->teams, $this->id, $this->_mysqli, $this->_userObj);
@@ -376,21 +379,21 @@ QUERY;
       if ($success) {
         $success = $this->save_options();
       }
-      
+
       $this->_modified_fields = array();
     } else {
       throw new ValidationException($valid);
     }
-    
+
     return $success;
   }
-  
+
   public function clear_checkout() {
     $success = false;
-    
+
     $this->checkout_author_id = null;
     $this->checkout_time = null;
-    
+
     $u_query = <<< QUERY
 UPDATE questions
 SET checkout_time = ?, checkout_authorID = ?
@@ -400,10 +403,10 @@ QUERY;
     $result->bind_param('sii', $this->checkout_time, $this->checkout_author_id, $this->id);
     $success = $result->execute();
     $result->close();
-    
+
     return $success;
   }
-  
+
   /**
    * Check out the question for editing
    * @param int $user_id ID of the user who is currently editing the question
@@ -411,10 +414,10 @@ QUERY;
    */
   public function checkout($user_id) {
     $success = false;
-    
+
     $this->checkout_author_id = $user_id;
     $this->checkout_time = date ("Y-m-d H:i:s");
-    
+
     $u_query = <<< QUERY
 UPDATE questions
 SET checkout_time = ?, checkout_authorID = ?
@@ -424,19 +427,19 @@ QUERY;
     $result->bind_param('sii', $this->checkout_time, $this->checkout_author_id, $this->id);
     $success = $result->execute();
     $result->close();
-    
+
     return $success;
   }
-  
+
   /**
    * Lock the question, e.g. when a summative paper has started
    * @return boolean Success or failure of the lock operation
    */
   public function lock() {
     $success = false;
-    
+
     $this->locked = date ("Y-m-d H:i:s");
-    
+
     $u_query = <<< QUERY
 UPDATE questions
 SET locked = ?
@@ -446,12 +449,12 @@ QUERY;
     $result->bind_param('si', $this->locked, $this->id);
     $success = $result->execute();
     $result->close();
-    
+
     return $success;
   }
-  
+
   /**
-   * Add a change to a unified field. This is a field that is the same across all options and so changes are logged at the question level 
+   * Add a change to a unified field. This is a field that is the same across all options and so changes are logged at the question level
    * @param string $label
    * @param string $old_value
    * @param string $new_value
@@ -459,12 +462,12 @@ QUERY;
    */
   public function add_unified_field_modification($field, $label, $old_value, $new_value, $category=null) {
     $category = ($category == null) ? $this->_lang_strings['editquestion'] : $category;
-    
+
     if (!in_array($field, $this->_unified_field_modifications)) {
       $this->_unified_field_modifications[$field] = array($category, $label, $old_value, $new_value);
     }
   }
-  
+
   /**
    * Does this question type use Bloom's Taxonomy?
    * @return boolean
@@ -472,7 +475,7 @@ QUERY;
   public function use_bloom() {
     return $this->_use_bloom;
   }
-  
+
   /**
    * Does this question type allow changes to the correct answer after it is locked?
    * @return boolean
@@ -480,7 +483,7 @@ QUERY;
   public function allow_correction() {
     return $this->_allow_correction;
   }
-  
+
   /**
    * Add the default correction behaviour based on the type of question
    * @throws ClassNotFoundException
@@ -537,7 +540,7 @@ QUERY;
 
     return $errors;
   }
-  
+
   /**
    * Does this question type require a media upload?
    * @return boolean
@@ -545,7 +548,7 @@ QUERY;
   public function requires_media() {
     return $this->_requires_media;
   }
-  
+
   /**
    * Does this question type require an intermediate screen when making corrections?
    * @return boolean
@@ -553,7 +556,7 @@ QUERY;
   public function requires_correction_intermediate() {
     return $this->_requires_correction_intermediate;
   }
-  
+
   /**
    * Does this question type require the Flash JavaScript includes?
    * @return boolean
@@ -561,7 +564,7 @@ QUERY;
   public function requires_flash() {
     return $this->_requires_flash;
   }
-  
+
   /**
    * Does this question type allow the marking method to be changed?
    * @return boolean
@@ -569,7 +572,7 @@ QUERY;
   public function allow_change_marking_method() {
     return $this->_allow_change_marking_method;
   }
-  
+
   /**
    * Does this question type allow partial parking?
    * @return boolean
@@ -577,7 +580,7 @@ QUERY;
   public function allow_partial_marks() {
     return $this->_allow_partial_marks;
   }
-  
+
   /**
    * Does this question type allow negative marking?  Check all the modules that the question is on
    * @return boolean
@@ -586,7 +589,7 @@ QUERY;
     if ($this->_allow_negative_marks == null) {
       $this->_allow_negative_marks = true;
       // Check all the modules that the question is on
-      $moduleIds = implode(',',array_keys($this->teams)); 
+      $moduleIds = implode(',',array_keys($this->teams));
       if ($moduleIds != '') {
         $result = $this->_mysqli->prepare("SELECT neg_marking FROM modules WHERE id IN (" . $moduleIds . ") AND neg_marking=0");
         $result->execute();
@@ -595,10 +598,10 @@ QUERY;
         $result->close();
       }
     }
-    
+
     return $this->_allow_negative_marks;
   }
-  
+
   /**
    * Does this question type allow mapping to learning outcomes?
    * @return boolean
@@ -677,20 +680,20 @@ QUERY;
 
     return $p_count;
   }
-  
+
   // ACCESSORS
-  
+
   /**
    * The the array of fields (properties) for this class
-   * @return multitype:string 
+   * @return multitype:string
    */
   public function get_editable_fields() {
     return $this->_fields_editable;
   }
-  
+
   /**
    * The the array of unified fields (properties) for this class
-   * @return multitype:string 
+   * @return multitype:string
    */
   public function get_unified_fields() {
     return $this->_fields_unified;
@@ -698,7 +701,7 @@ QUERY;
 
   /**
    * The the array of fields (properties) that are relevant for post-exam corrections for this class
-   * @return multitype:string 
+   * @return multitype:string
    */
   public function get_change_fields() {
     return $this->_fields_change;
@@ -711,7 +714,7 @@ QUERY;
   public function get_type() {
     return $this->type;
   }
-  
+
   /**
    * Set the question type
    * @param string $value
@@ -719,7 +722,7 @@ QUERY;
   public function set_type($value) {
     $this->type = $value;
   }
-  
+
   /**
    * Get the question theme
    * @return string
@@ -728,7 +731,7 @@ QUERY;
     $this->theme = $this->replace_mee_div($this->theme);
     return $this->theme;
   }
-  
+
   /**
    * Set the question theme
    * @param string $value
@@ -740,7 +743,7 @@ QUERY;
       $this->theme = $value;
     }
   }
-  
+
   /**
    * Get the question scenario
    * @return string
@@ -748,7 +751,7 @@ QUERY;
   public function get_scenario() {
     return $this->scenario;
   }
-  
+
   /**
    * Set the question scenario
    * @param string $value
@@ -761,7 +764,7 @@ QUERY;
       $this->scenario = $scenario;
     }
   }
-  
+
 	/**
    * Get the 'plain' version of the scenario, i.e. stripped of HTML and special characters
    * @return string
@@ -770,7 +773,7 @@ QUERY;
     $this->scenario_plain = trim(strip_tags($this->scenario));
     return $this->scenario_plain;
   }
-  
+
   /**
    * Get the question leadin
    * @return string
@@ -778,7 +781,7 @@ QUERY;
   public function get_leadin() {
     return $this->leadin;
   }
-  
+
   /**
    * Set the question leadin
    * @param string $value
@@ -789,7 +792,7 @@ QUERY;
       $this->leadin = $value;
     }
   }
-  
+
   /**
    * Get the 'plain' version of the leadin, i.e. stripped of HTML and special characters
    * @return string
@@ -798,7 +801,7 @@ QUERY;
     $this->leadin_plain = trim(strip_tags($this->leadin));
     return $this->leadin_plain;
   }
-  
+
   /**
    * Get the question notes
    * @return string
@@ -807,7 +810,7 @@ QUERY;
     $this->notes = $this->replace_mee_div($this->notes);
     return $this->notes;
   }
-  
+
   /**
    * Set the question notes
    * @param string $value
@@ -819,7 +822,7 @@ QUERY;
       $this->notes = $value;
     }
   }
-  
+
   /**
    * Get the question correct feedback
    * @return string
@@ -828,7 +831,7 @@ QUERY;
     $this->correct_fback = $this->replace_mee_div($this->correct_fback);
     return $this->correct_fback;
   }
-  
+
   /**
    * Set the question correct feedback
    * @param string $value
@@ -840,7 +843,7 @@ QUERY;
       $this->correct_fback = $value;
     }
   }
-  
+
   /**
    * Get the question incorrect feedback
    * @return string
@@ -849,7 +852,7 @@ QUERY;
     $this->incorrect_fback = $this->replace_mee_div($this->incorrect_fback);
     return $this->incorrect_fback;
   }
-  
+
   /**
    * Set the question incorrect feedback
    * @param string $value
@@ -861,7 +864,7 @@ QUERY;
       $this->incorrect_fback = $value;
     }
   }
-  
+
   /**
    * Get the question score method as an integer
    * @return string
@@ -873,7 +876,7 @@ QUERY;
       return array_search($this->score_method, $this->_score_methods_db);
     }
   }
-  
+
   /**
    * Set the question score method
    * @param string $value
@@ -885,7 +888,7 @@ QUERY;
       $this->score_method = $value_en;
     }
   }
-  
+
   /**
    * Get the question display method
    * @return string
@@ -893,7 +896,7 @@ QUERY;
   public function get_display_method() {
     return $this->display_method;
   }
-  
+
   /**
    * Set the question display method
    * @param string $value
@@ -904,7 +907,7 @@ QUERY;
       $this->display_method = $value;
     }
   }
-  
+
   /**
    * Return the scoring methods questions. The array may be overridden in sub-classes that do not support certain marking styles
    * @return array array of scoring method strings
@@ -912,7 +915,7 @@ QUERY;
   public function get_score_methods() {
     return $this->_score_methods;
   }
-  
+
   /**
    * Return the display methods of this question. The array is expected to be overridden in sub-classes
    * @return array array of display method key => value strings
@@ -920,7 +923,7 @@ QUERY;
   public function get_display_methods() {
     return $this->_display_methods;
   }
-  
+
   /**
    * Get the question option order
    * @return string
@@ -928,7 +931,7 @@ QUERY;
   public function get_option_order() {
     return $this->option_order;
   }
-  
+
   /**
    * Set the question option order
    * @param string $value
@@ -939,7 +942,7 @@ QUERY;
       $this->option_order = $value;
     }
   }
-  
+
   /**
    * Return the option orders available for this question
    * @return array array of scoring method key => value strings
@@ -947,7 +950,7 @@ QUERY;
   public function get_option_orders() {
     return $this->_option_orders;
   }
-  
+
   /**
    * Get the question standards setting mark
    * @return float
@@ -955,7 +958,7 @@ QUERY;
   public function get_standards_setting() {
     return $this->standards_setting;
   }
-  
+
   /**
    * Set the question standards setting mark
    * @param integer $value
@@ -966,7 +969,7 @@ QUERY;
       $this->standards_setting = $value;
     }
   }
-  
+
   /**
    * Get the question Bloom's Taxonomy setting
    * @return string
@@ -974,7 +977,7 @@ QUERY;
   public function get_bloom() {
     return array_search($this->bloom, $this->_blooms_db);
   }
-  
+
   /**
    * Set the question Bloom's Taxonomy setting
    * @param string $value
@@ -986,7 +989,7 @@ QUERY;
       $this->bloom = $value_en;
     }
   }
-  
+
   /**
    * Get the question owner ID
    * @return integer
@@ -994,7 +997,7 @@ QUERY;
   public function get_owner_id() {
     return $this->owner_id;
   }
-  
+
   /**
    * Set the question owner ID
    * @param integer $value
@@ -1005,7 +1008,7 @@ QUERY;
       $this->owner_id = $value;
     }
   }
-  
+
   /**
    * Get the question media as an array containing filename, width and height
    * @return array
@@ -1013,7 +1016,7 @@ QUERY;
   public function get_media() {
     return array('filename' => $this->media, 'width' => $this->media_width, 'height' => $this->media_height);
   }
-  
+
   /**
    * Get the question media filename only
    * @return array
@@ -1021,7 +1024,7 @@ QUERY;
   public function get_media_filename() {
     return $this->media;
   }
-  
+
   /**
    * Set the question media as an array containing filename, width and height
    * @param mixed $value Array containing filename, width and height
@@ -1034,7 +1037,7 @@ QUERY;
       $this->media_height = (empty($value['height'])) ? 0 : $value['height'];
     }
   }
-  
+
   /**
    * Get the groups (imploded version of teams) to which the question belongs
    * @return array
@@ -1042,7 +1045,7 @@ QUERY;
   protected function get_group() {
     return implode(';',$this->get_teams());
   }
-  
+
   /**
    * Get the teams to which the question belongs
    * @return array
@@ -1050,7 +1053,7 @@ QUERY;
   public function get_teams() {
     return $this->teams;
   }
-  
+
   /**
    * Set the modules/teams to which the question belongs
    * @param array $value
@@ -1060,13 +1063,13 @@ QUERY;
     // Sort the arrays so that we can compare directly. Should have few members so overhead will be small
     asort($this->teams);
     asort($value);
-    
+
     if (count($this->teams) != count($value) or $this->teams != $value) {
       $this->set_modified_field('teams', $this->teams);
       $this->teams = $value;
     }
   }
-  
+
   /**
    * Get the question checkout time
    * @return datetime
@@ -1078,7 +1081,7 @@ QUERY;
       return $this->checkout_time;
     }
   }
-  
+
   /**
    * Set the question checkout time
    * @param datetime $value
@@ -1124,7 +1127,7 @@ QUERY;
   public function set_checkout_author_id($value) {
     $this->checkout_author_id = $value;
   }
-  
+
   /**
    * Get the time at which the question was created
    * @return datetime
@@ -1136,7 +1139,7 @@ QUERY;
       return $this->created;
     }
   }
-  
+
   /**
    * Get the time at which the question was last edited
    * @return datetime
@@ -1148,7 +1151,7 @@ QUERY;
       return $this->last_edited;
     }
   }
-  
+
   /**
    * Get the time at which the question was locked, if set
    * @return datetime
@@ -1160,7 +1163,7 @@ QUERY;
       return $this->locked;
     }
   }
-  
+
   /**
    * Get whether the question is set as deleted
    * @return boolean
@@ -1172,7 +1175,7 @@ QUERY;
       return $this->deleted;
     }
   }
-  
+
   /**
    * Get the status of the question
    * @return string
@@ -1180,7 +1183,7 @@ QUERY;
   public function get_status() {
     return array_search($this->status, $this->_statuses_db);
   }
-  
+
   /**
    * Set the status of the question
    * @param string $value
@@ -1192,23 +1195,23 @@ QUERY;
       $this->status = $value_en;
     }
   }
-  
+
   /**
-   * Get the positive answer for this question 
+   * Get the positive answer for this question
    * @return string
    */
   public function get_answer_positive() {
     return $this->_answer_positive;
   }
-  
+
   /**
-   * Get the negative answer for this question 
+   * Get the negative answer for this question
    * @return string
    */
   public function get_answer_negative() {
     return $this->_answer_negative;
   }
-  
+
   /**
    * Get the change history of the question, lazily loaded
    * @return array Associative array containing date, section, old value, new value and user for the change
@@ -1230,10 +1233,10 @@ QUERY;
       }
       $result->close();
     }
-    
+
     return $this->_changes;
   }
-  
+
   /**
    * Get the keywords for the question, lazily loaded
    * @return array Array of keyword IDs
@@ -1241,7 +1244,7 @@ QUERY;
   public function get_keywords() {
     if (!is_array($this->_keywords)) {
       $this->_keywords = array();
-      
+
       // Load the keywords into an array
       $result = $this->_mysqli->prepare("SELECT keywordID FROM keywords_question WHERE q_id=?");
       $result->bind_param('i', $this->id);
@@ -1252,7 +1255,7 @@ QUERY;
       }
       $result->close();
     }
-    
+
     return $this->_keywords;
   }
 
@@ -1264,7 +1267,7 @@ QUERY;
     // Question class is not currently handling the persisting of keywords to the database
     $this->_keywords = $value;
   }
-    
+
   /**
    * Get external examiner comments on the question. Lazily loaded.
    * @param unknown_type $paper_id
@@ -1277,19 +1280,19 @@ QUERY;
 
     if(!is_array($this->_comments)) {
       $this->_comments = array();
-      
+
       if ($paper_id != -1) {
         $query = <<< QUERY
-SELECT paper_title, review_comments.id, category, comment, reviewed, title, initials, surname, action, response, review_type 
-FROM (review_comments, users) LEFT JOIN properties ON review_comments.q_paper=properties.property_id 
+SELECT paper_title, review_comments.id, category, comment, reviewed, title, initials, surname, action, response, review_type
+FROM (review_comments, users) LEFT JOIN properties ON review_comments.q_paper=properties.property_id
 WHERE review_comments.reviewer=users.id AND q_id=? AND q_paper=? ORDER BY surname
 QUERY;
         $result = $this->_mysqli->prepare($query);
         $result->bind_param('ii', $this->id, $paper_id);
       } else {
         $query = <<< QUERY
-SELECT paper_title, review_comments.id, category, comment, reviewed, title, initials, surname, action, response, review_type 
-FROM (review_comments, users) LEFT JOIN properties ON review_comments.q_paper=properties.property_id 
+SELECT paper_title, review_comments.id, category, comment, reviewed, title, initials, surname, action, response, review_type
+FROM (review_comments, users) LEFT JOIN properties ON review_comments.q_paper=properties.property_id
 WHERE review_comments.reviewer=users.id AND q_id=? ORDER BY q_paper, surname
 QUERY;
         $result = $this->_mysqli->prepare($query);
@@ -1302,10 +1305,10 @@ QUERY;
       }
       $result->close();
     }
-    
+
     return $this->_comments;
   }
-  
+
   /**
    * Set the comments list for the question
    * @param unknown_type $value
@@ -1316,9 +1319,9 @@ QUERY;
   }
 
   // STATIC METHODS
-  
+
   /**
-   * Delete the question with the given ID. Will not actually delete the question from the database, just mark 
+   * Delete the question with the given ID. Will not actually delete the question from the database, just mark
    * it as deleted
    * @param int $id
    * @return bool True or false depending on success or failure of the delete operation
@@ -1326,10 +1329,10 @@ QUERY;
   public static function delete($id, $mysqli) {
     // TODO: Track changes
     $success = false;
-    
+
     return Question::update_deletion_status($id, date ("Y-m-d H:i:s"), $mysqli);
   }
-  
+
   /**
    * Restore a previously deleted question
    * @param int $id
@@ -1337,10 +1340,10 @@ QUERY;
    */
   public static function restore($id) {
     $success = false;
-    
+
     return Question::update_deletion_status($id, null, $mysqli);
   }
-  
+
   /**
    * Return a question object of the correct type
    * @param object $mysqli database link
@@ -1351,7 +1354,7 @@ QUERY;
    */
   public static function question_factory($mysqli, $user_id, &$lang_strings, $data) {
     $object = null;
-    
+
     if(ctype_digit($data)) {
       // In some versions of PHP, bind_param may change the type of $data to int, so use a copy and
       // keep original for future use in ctype_digit() in question constructor
@@ -1395,7 +1398,7 @@ QUERY;
 
     return $object;
   }
-  
+
   // PRIVATE METHODS
 
   /**
@@ -1405,11 +1408,11 @@ QUERY;
     // Get the question
     $found = 0;
     $success = false;
-    
+
     $q_query = <<< QUERY
-SELECT q_type, theme, scenario, scenario_plain, leadin, leadin_plain, notes, correct_fback, incorrect_fback, score_method, display_method, 
- q_option_order, std, bloom, ownerID, q_media, q_media_width, q_media_height, checkout_time, checkout_authorID, creation_date, 
- last_edited, locked, deleted, status
+SELECT q_type, theme, scenario, scenario_plain, leadin, leadin_plain, notes, correct_fback, incorrect_fback, score_method, display_method,
+ q_option_order, std, bloom, ownerID, q_media, q_media_width, q_media_height, checkout_time, checkout_authorID, creation_date,
+ last_edited, locked, deleted, status, extra_data
 FROM questions
 WHERE q_id = ?
 QUERY;
@@ -1423,12 +1426,14 @@ QUERY;
       $found = $result->num_rows;
     }
     $result->close();
-    
+
+    $this->unserialize_extra_data();
+
     if ($found > 0) {
 
       //get the question modules
 $t_query = <<< QUERY
-  SELECT idMod, moduleId 
+  SELECT idMod, moduleId
   FROM questions_modules, modules
   WHERE q_id = ?  AND questions_modules.idMod = modules.id
 QUERY;
@@ -1450,7 +1455,7 @@ QUERY;
       foreach($opt_fields as $field) {
         $params[] = &$opt_data[$field];
       }
-      
+
       // Get the options
       $o_query = <<< QUERY
   SELECT id_num, o_id, option_text, o_media, o_media_width, o_media_height, feedback_right, feedback_wrong, correct, marks_correct, marks_incorrect, marks_partial
@@ -1473,17 +1478,17 @@ QUERY;
     } else {
       throw new RecordNotFoundException(sprintf($this->_lang_strings['norecorderror'], $this->id));
     }
-    
+
     return ($success !== false);
   }
-  
+
   /**
    * Validate the question object before saving
    * @return Mixed <boolean, string>
    */
   private function validate() {
     $rval = true;
-    
+
     // If there are errors return an appropriate message
 
     // Required fields
@@ -1522,14 +1527,41 @@ QUERY;
 
     return $rval;
   }
-  
+
+  /**
+   * Put all the extra data fields into an array and encode as JSON
+   * @return string JSON encoded string containing extra data fields
+   */
+  protected function serialize_extra_data() {
+    $extra = array();
+
+    foreach ($this->_fields_extra_data as $field) {
+      $extra[$field] = $this->$field;
+    }
+
+    $this->extra_data = json_encode($extra);
+  }
+
+  /**
+   * Unpack JSON string containing extra data into local fields
+   */
+  protected function unserialize_extra_data() {
+    $extra = json_decode($this->extra_data, true);
+
+    if (is_array($extra)) {
+      foreach ($extra as $field => $value) {
+        $this->$field = $value;
+      }
+    }
+  }
+
   /**
    * Save the options for this question, deleting any that are empty
    * @return boolean
    */
   private function save_options() {
     $success = true;
-    
+
     // Call save() on the options too if successful
     $i = 1;
     foreach($this->options as $oid => $option) {
@@ -1548,17 +1580,17 @@ QUERY;
           unset($this->options[$oid]);
         }
       }
-      
+
       if (!$success) break;
-      
+
       $i++;
     }
-    
+
     if ($success) $this->log_unified_field_modifications();
-    
+
     return $success;
   }
-  
+
   private function log_unified_field_modifications() {
     foreach ($this->_unified_field_modifications as $mod) {
       $this->_logger->track_change($mod[0], $this->id, $this->_user_id, $mod[2], $mod[3], $mod[1]);
@@ -1591,7 +1623,7 @@ QUERY;
    */
   private static function update_deletion_status($id, $status, $mysqli) {
     $success = false;
-    
+
     $d_query = <<< QUERY
 UPDATE questions
 SET deleted = ?
@@ -1601,7 +1633,7 @@ QUERY;
     $result->bind_param('si', $status, $id);
     $success = $result->execute();
     $result->close();
-    
+
     return $success;
   }
 }

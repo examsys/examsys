@@ -159,7 +159,7 @@ if (!isset($_POST['update'])) {
 
   // Backup the config file before proceeding.
   $updater_utils->backup_file($cfg_web_root, $old_version);
-  
+
 
   // Avoid repeated method calls
   $cfg_db_database      = $configObject->get('cfg_db_database');
@@ -224,7 +224,7 @@ if (!isset($_POST['update'])) {
     echo "<li>LOADED student_help: " . $ext . "</li>\n";
   }
   $mysqli->commit();
-  
+
   // 01/05/2013
   if (!$updater_utils->does_column_exist('users', 'password_expire')) {
     $updater_utils->execute_query("ALTER TABLE users ADD COLUMN password_expire int(11) unsigned", true);
@@ -234,15 +234,15 @@ if (!isset($_POST['update'])) {
   $new_lines = array("\$cfg_password_expire = 30;    // Set in days\n");
   $target_line = '$authentication = array';
   $updater_utils->add_line('$percent_decimals', $new_lines, 80, $cfg_web_root, $target_line, 7);
-  
- 
+
+
   // 08/05/2013 (uiznm) - Add permission for external examiners to see standards setting values
   if (!$updater_utils->has_grant($cfg_db_external_user, 'SELECT', 'standards_setting', $cfg_db_host)) {
     $sql = "GRANT SELECT ON " . $cfg_db_database . ".standards_setting TO '" . $cfg_db_external_user . "'@'" . $cfg_db_host . "'";
     $updater_utils->execute_query($sql, true);
   }
-  
-  
+
+
   // 09/05/2013 (brzsw) - Remove $protocol and insert $cfg_secure_connection
   $lines  = array();
   $cfg    = file($cfg_web_root . 'config/config.inc.php');
@@ -268,13 +268,43 @@ if (!isset($_POST['update'])) {
     ob_flush();
     flush();
   }
-  
+
   // 15/05/2013 (brzsw) - Add in new variable to control number of decimals for percentages.
   $new_lines = array("//Reports\n", "  \$percent_decimals = 0;\n");
   $updater_utils->add_line('$percent_decimals', $new_lines, 60, $cfg_web_root);
- 
- 
- 
+
+   // 17/05/2013 - nazrji -Add options column to questions
+  if (!$updater_utils->does_column_exist('questions', 'extra_data')) {
+    $updater_utils->execute_query("ALTER TABLE questions ADD COLUMN extra_data text", true);
+
+    // Update Area questions
+    $sql = "SELECT q_id, display_method FROM questions WHERE q_type = 'area'";
+
+    echo '<ul><li><ul>';
+    // Get all area questions
+    $area_qs = $mysqli->prepare($sql);
+    $area_qs->execute();
+    $area_qs->store_result();
+    $area_qs->bind_result($q_id, $display_method);
+    while ($area_qs->fetch()) {
+      if ($display_method != '') {
+        $parts = explode(',', $display_method);
+        $extra = array('correct_full' => $parts[0], 'error_full' => $parts[1], 'correct_partial' => $parts[2], 'error_partial' => $parts[3]);
+        $extra_json = json_encode($extra);
+        $sql2 = "UPDATE questions SET display_method='', extra_data = ? WHERE q_id = ?";
+        $area_upd = $mysqli->prepare($sql2);
+        $area_upd->bind_param('si', $extra_json, $q_id);
+        $area_upd->execute();
+        $area_upd->close();
+      }
+    }
+    $area_qs->close();
+    echo '<li>Updated AREA questions</li>';
+
+    echo '</ul></li></ul>';
+  }
+
+
   /*
    *****   NOW UPDATE THE INSTALLER SCRIPT   *****
    */
