@@ -993,17 +993,17 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
         }
         break;
       case 'textbox':
-        $textbox_size = explode('x',$question['display_method']);
+        $settings = json_decode($question['settings'], true);
         if ($display_option['option_text'] == 'plain') {
           if (isset($user_answers[$current_screen][$q_id]) and $user_answers[$current_screen][$q_id] == '' and $screen_pre_submitted == 1) {
-            echo "<blockquote><textarea class=\"unans\" name=\"q" . $question_no . "\" cols=\"" . $textbox_size[0] . "\" rows=\"" . $textbox_size[1] . "\">" . $user_answers[$current_screen][$q_id] . "</textarea></blockquote>\n";
+            echo "<blockquote><textarea class=\"unans\" name=\"q" . $question_no . "\" cols=\"" . $settings['columns'] . "\" rows=\"" . $settings['rows'] . "\">" . $user_answers[$current_screen][$q_id] . "</textarea></blockquote>\n";
             $unanswered = true;
           } else {
             $ans = '';
             if(isset($user_answers[$current_screen][$q_id])) {
               $ans = $user_answers[$current_screen][$q_id];
             }
-            echo "<blockquote><textarea name=\"q" . $question_no . "\" cols=\"" . $textbox_size[0] . "\" rows=\"" . $textbox_size[1] . "\">" . $ans . "</textarea></blockquote>\n";
+            echo "<blockquote><textarea name=\"q" . $question_no . "\" cols=\"" . $settings['columns'] . "\" rows=\"" . $settings['rows'] . "\">" . $ans . "</textarea></blockquote>\n";
           }
         } else {
           include_once('wysiwyg_editor.inc');
@@ -1012,8 +1012,8 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
             $ans = $user_answers[$current_screen][$q_id];
           }
 
-          $textbox_width  = ( 40 + ( $textbox_size[0] * 8 ) );
-          $textbox_height = ( $textbox_size[1] * 28 );
+          $textbox_width  = ( 40 + ( $settings['columns'] * 8 ) );
+          $textbox_height = ( $settings['rows'] * 28 );
 
           $background_colour = '';
 

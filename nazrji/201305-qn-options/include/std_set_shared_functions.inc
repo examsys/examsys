@@ -480,8 +480,8 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
       <?php
       break;
     case 'textbox':
-      $textbox_size = explode('x',$display_option['display_method']);
-      echo "<blockquote><textarea cols=\"" . $textbox_size[0] . "\" rows=\"" . $textbox_size[1] . "\"></textarea></blockquote>\n";
+      $settings = json_decode($display_option['settings'], true);
+      echo "<blockquote><textarea cols=\"" . $settings['columns'] . "\" rows=\"" . $settings['rows'] . "\"></textarea></blockquote>\n";
       echo "<pre style=\"width:90%; font-style:italic; color:#C00000\">" . wordwrap($feedback, 150) . "</pre>";
       $marks = $display_option['marks_correct'];
       

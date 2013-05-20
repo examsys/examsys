@@ -15,7 +15,7 @@
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
-* 
+*
 * @author Simon Wilkinson
 * @version 1.0
 * @copyright Copyright (c) 2013 The University of Nottingham
@@ -67,7 +67,7 @@ while ($stmt->fetch()) {
   if ($q_type != 'info') {
     $screen_data[$no_screens][] = array($q_type, $q_id);
   }
-  
+
   // If set overwrite the default colours with the current users' special settings
   if (!isset($bgcolor) or $bgcolor == 'NULL' or $bgcolor == '') $bgcolor = $paper_bgcolor;
   if (!isset($fgcolor) or $fgcolor == 'NULL' or $fgcolor == '') $fgcolor = $paper_fgcolor;
@@ -81,7 +81,7 @@ while ($stmt->fetch()) {
   if ($userObject->has_role('External Examiner')) {
     $review_type = 'External';
     $review_deadline = $external_review_deadline;
-  } else { 
+  } else {
     $review_type = 'Internal';
     $review_deadline = $internal_review_deadline;
   }
@@ -97,7 +97,7 @@ $stmt->close();
   $marking = $propertyObj->get_marking();
 
 // Get standards setting data
-if (substr($marking,0,1) == '2') 
+if (substr($marking,0,1) == '2')
 {
   $standards_setting = array();
   $tmp_parts = explode(',', $marking);
@@ -112,7 +112,7 @@ if (substr($marking,0,1) == '2')
 } else {
   $standards_setting = array();
 }
- 
+
 // Get any Reference Material
 $reference_materials = array();
 $ref_no = 0;
@@ -245,7 +245,7 @@ var lang = {
   }
   ?>
   };
-  
+
   function getWinH() {
     var winH = 460;
     if (document.body && document.body.offsetWidth) {
@@ -259,7 +259,7 @@ var lang = {
     }
     return winH;
   }
-  
+
   function changeRef(refID) {
     document.cookie = 'refpane=' + refID;
     winH = getWinH();
@@ -282,9 +282,9 @@ var lang = {
         echo "      }\n";
         echo "    }\n";
       }
-    ?>  
+    ?>
   }
-  
+
   function resizeReference() {
     winH = getWinH();
 <?php
@@ -294,7 +294,7 @@ var lang = {
     echo "      document.getElementById('framecontent' + i).style.height = (winH - $subtract) + 'px';\n";
     echo "    }\n";
   }
-?>  
+?>
   }
 <?php
   if ($bidirectional == 0) {
@@ -359,7 +359,7 @@ echo '" onsubmit="return confirmSubmit()">';   // Warning message only in linear
       } else {
         echo ' title="' . $no_questions . ' questions">';
       }
-      
+
       if ($i < $current_screen and isset($screen_data[$i])) {
         foreach ($screen_data[$i] as $screen_question) {
           if ($screen_question[0] != 'info' ) {
@@ -370,8 +370,8 @@ echo '" onsubmit="return confirmSubmit()">';   // Warning message only in linear
       echo "$i</div>\n";
     }
     echo "<div style=\"clear:both\"></div>\n";
-    
-    
+
+
     for ($i=1; $i<=$no_screens; $i++) {
       if ($i == $current_screen) {
         echo '<div class="scr_arrow"></div>';
@@ -379,15 +379,15 @@ echo '" onsubmit="return confirmSubmit()">';   // Warning message only in linear
         echo '<div class="scr_spacer">&nbsp;</div>';
       }
     }
-    
+
   }
   echo '</td>';
   echo $logo_html;
-  
+
   if (($start_of_day_ts > $review_deadline or time() > $start_date) and $start_date != '') {
     echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"width:100%\"><tr><td class=\"redwarn\" style=\"width:50px; height:32px; text-align:right\"><img src=\"../artwork/late_warning_icon.png\" style=\"padding-top:2px\" width=\"28\" height=\"28\" alt=\"Locked\" />&nbsp;&nbsp;</td><td class=\"redwarn\" style=\"height:32px; vertical-align:middle\"><strong>{$string['deadlineexpired']}</strong>&nbsp;&nbsp;&nbsp;{$string['deadlinepassed']}</td></tr></table>\n";
   }
-  
+
   $previous_duration = 0;
   $screen_pre_submitted = 0;
   $reviews_array = array();
@@ -413,11 +413,11 @@ echo '" onsubmit="return confirmSubmit()">';   // Warning message only in linear
   $old_theme = '';
   $previous_q_type = '';
 
-  $question_data = $mysqli->prepare("SELECT q_type, q_id, score_method, display_method, marks_correct, marks_incorrect, marks_partial, theme, scenario, leadin, correct, correct_fback, REPLACE(option_text,'\t','') AS option_text, q_media, q_media_width, q_media_height, o_media, o_media_width, o_media_height, notes, display_pos, q_option_order FROM papers, questions, options WHERE paper=? AND screen=? AND papers.question=questions.q_id AND questions.q_id=options.o_id ORDER BY display_pos, id_num");
+  $question_data = $mysqli->prepare("SELECT q_type, q_id, score_method, display_method, settings, marks_correct, marks_incorrect, marks_partial, theme, scenario, leadin, correct, correct_fback, REPLACE(option_text,'\t','') AS option_text, q_media, q_media_width, q_media_height, o_media, o_media_width, o_media_height, notes, display_pos, q_option_order FROM papers, questions, options WHERE paper=? AND screen=? AND papers.question=questions.q_id AND questions.q_id=options.o_id ORDER BY display_pos, id_num");
   $question_data->bind_param('ii', $property_id, $current_screen);
   $question_data->execute();
   $question_data->store_result();
-  $question_data->bind_result($q_type, $q_id, $score_method, $display_method, $marks_correct, $marks_incorrect, $marks_partial, $theme, $scenario, $leadin, $correct, $correct_fback, $option_text, $q_media, $q_media_width, $q_media_height, $o_media, $o_media_width, $o_media_height, $notes, $display_pos, $q_option_order);
+  $question_data->bind_result($q_type, $q_id, $score_method, $display_method, $settings, $marks_correct, $marks_incorrect, $marks_partial, $theme, $scenario, $leadin, $correct, $correct_fback, $option_text, $q_media, $q_media_width, $q_media_height, $o_media, $o_media_width, $o_media_height, $notes, $display_pos, $q_option_order);
   $num_rows = $question_data->num_rows;
   echo "<table cellpadding=\"4\" cellspacing=\"0\" border=\"0\" width=\"100%\" style=\"table-layout:fixed\">\n";
   echo "<col width=\"40\"><col>\n";
@@ -435,6 +435,7 @@ echo '" onsubmit="return confirmSubmit()">';   // Warning message only in linear
       $questions_array[$q_no]['display_pos'] = $display_pos;
       $questions_array[$q_no]['score_method'] = $score_method;
       $questions_array[$q_no]['display_method'] = $display_method;
+      $questions_array[$q_no]['settings'] = $settings;
       $questions_array[$q_no]['q_media'] = $q_media;
       $questions_array[$q_no]['q_media_width'] = $q_media_width;
       $questions_array[$q_no]['q_media_height'] = $q_media_height;
@@ -446,9 +447,9 @@ echo '" onsubmit="return confirmSubmit()">';   // Warning message only in linear
     $questions_array[$q_no]['options'][] = array('correct'=>$correct, 'option_text'=>$option_text, 'o_media'=>$o_media, 'o_media_width'=>$o_media_width, 'o_media_height'=>$o_media_height, 'marks_correct'=>$marks_correct, 'marks_incorrect'=>$marks_incorrect, 'marks_partial'=>$marks_partial);
   }
   $question_data->close();
-  
+
   $unanswered = false;
-  
+
   //display the questions
   foreach ($questions_array as &$question) {
     if ($screen_pre_submitted == 1 and $q_displayed == 0) echo "<tr><td colspan=\"2\"><span style=\"background-color:#FFC0C0\">&nbsp;&nbsp;&nbsp;&nbsp;</span> = unanswered question</td></tr>\n";
@@ -459,7 +460,7 @@ echo '" onsubmit="return confirmSubmit()">';   // Warning message only in linear
     $previous_q_type = $question['q_type'];
     $q_displayed++;
   }
-  
+
   echo "</table></td></tr>\n<tr><td valign=\"bottom\">\n<br />\n";
 
   $current_screen++;
@@ -492,7 +493,7 @@ echo '" onsubmit="return confirmSubmit()">';   // Warning message only in linear
     echo "<input type=\"submit\" style=\"width:120px\" name=\"next\" value=\"" . $string['screen'] . " $current_screen &gt;\" />&nbsp;\n";
   }
   echo '</td></tr></table>';
- 
+
 ?>
 </td></tr></table>
 </form>

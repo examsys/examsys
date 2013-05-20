@@ -328,6 +328,31 @@ if (!isset($_POST['update'])) {
       echo '<li>Updated CALCULATION questions</li>';
     }
 
+    // Update Textbox questions
+    $sql = "SELECT q_id, display_method FROM questions WHERE q_type = 'textbox' AND (settings = '' OR settings IS NULL) AND display_method != ''";
+
+    // Get all textbox questions
+    $area_qs = $mysqli->prepare($sql);
+    $area_qs->execute();
+    $area_qs->store_result();
+    $area_qs->bind_result($q_id, $display_method);
+    $count = 0;
+    while ($area_qs->fetch()) {
+      $parts = explode('x', $display_method);
+      $extra = array('columns' => $parts[0], 'rows' => $parts[1]);
+      $extra_json = json_encode($extra);
+      $sql2 = "UPDATE questions SET display_method='', settings = ? WHERE q_id = ?";
+      $area_upd = $mysqli->prepare($sql2);
+      $area_upd->bind_param('si', $extra_json, $q_id);
+      $area_upd->execute();
+      $area_upd->close();
+      $count++;
+    }
+    $area_qs->close();
+    if ($count > 0) {
+      echo '<li>Updated TEXTBOX questions</li>';
+    }
+
     echo '</ul></li>';
   // }
 

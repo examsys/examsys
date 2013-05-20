@@ -1849,7 +1849,6 @@ function display_feedback($sessionid, $temp_userID, $paperID, $paper_type, $log_
         }
         break;
       case 'textbox':
-        $textbox_size = explode('x', $paper[$question]['score_method']);
         if ($paper[$question]['scenario'] != '') {
           echo echo_content($paper[$question]['scenario']);
           if ($paper[$question]['q_media'] != '') {

@@ -795,16 +795,16 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
         }
         break;
       case 'textbox':
-        $textbox_size = explode('x',$question['display_method']);
+        $settings = json_decode($question['settings'], true);
         if ($display_option['option_text'] == 'plain') {
-          if ($textbox_size[1] == 1) {
-            echo "<blockquote><input type=\"text\" name=\"q" . $question_no . "\" size=\"" . $textbox_size[0] . "\" value=\"" . $question['correct_fback'] . "\" />";
+          if ($settings['rows'] == 1) {
+            echo "<blockquote><input type=\"text\" name=\"q" . $question_no . "\" size=\"" . $settings['columns'] . "\" value=\"" . $question['correct_fback'] . "\" />";
           } else {
-            echo "<blockquote><textarea name=\"q" . $question_no . "\" cols=\"" . $textbox_size[0] . "\" rows=\"" . $textbox_size[1] . "\">" . $question['correct_fback'] . "</textarea>";
+            echo "<blockquote><textarea name=\"q" . $question_no . "\" cols=\"" . $settings['columns'] . "\" rows=\"" . $settings['rows'] . "\">" . $question['correct_fback'] . "</textarea>";
           }
         } else {
           include_once('../include/wysiwyg_editor.inc');
-          echo "<textarea class=\"mceEditor\" id=\"q" . $question_no . "\" name=\"q" . $question_no . "\" style=\"width:" . (40 + ($textbox_size[0] * 8)) . "px; height:" . ($textbox_size[1] * 28) . "px\">" . $question['correct_fback'] . "</textarea>\n";
+          echo "<textarea class=\"mceEditor\" id=\"q" . $question_no . "\" name=\"q" . $question_no . "\" style=\"width:" . (40 + ($settings['columns'] * 8)) . "px; height:" . ($settings['rows'] * 28) . "px\">" . $question['correct_fback'] . "</textarea>\n";
         }
 
         echo "</blockquote>\n";
