@@ -274,35 +274,62 @@ if (!isset($_POST['update'])) {
   $updater_utils->add_line('$percent_decimals', $new_lines, 60, $cfg_web_root);
 
    // 17/05/2013 - nazrji -Add options column to questions
-  if (!$updater_utils->does_column_exist('questions', 'extra_data')) {
-    $updater_utils->execute_query("ALTER TABLE questions ADD COLUMN extra_data text", true);
+  // if (!$updater_utils->does_column_exist('questions', 'settings')) {
+  //   $updater_utils->execute_query("ALTER TABLE questions ADD COLUMN settings text", false);
+    echo '<li>ALTER TABLE questions ADD COLUMN settings text<ul>';
 
     // Update Area questions
-    $sql = "SELECT q_id, display_method FROM questions WHERE q_type = 'area'";
+    $sql = "SELECT q_id, display_method FROM questions WHERE q_type = 'area' AND (settings = '' OR settings IS NULL) AND display_method != ''";
 
-    echo '<ul><li><ul>';
     // Get all area questions
     $area_qs = $mysqli->prepare($sql);
     $area_qs->execute();
     $area_qs->store_result();
     $area_qs->bind_result($q_id, $display_method);
+    $count = 0;
     while ($area_qs->fetch()) {
-      if ($display_method != '') {
-        $parts = explode(',', $display_method);
-        $extra = array('correct_full' => $parts[0], 'error_full' => $parts[1], 'correct_partial' => $parts[2], 'error_partial' => $parts[3]);
-        $extra_json = json_encode($extra);
-        $sql2 = "UPDATE questions SET display_method='', extra_data = ? WHERE q_id = ?";
-        $area_upd = $mysqli->prepare($sql2);
-        $area_upd->bind_param('si', $extra_json, $q_id);
-        $area_upd->execute();
-        $area_upd->close();
-      }
+      $parts = explode(',', $display_method);
+      $extra = array('correct_full' => $parts[0], 'error_full' => $parts[1], 'correct_partial' => $parts[2], 'error_partial' => $parts[3]);
+      $extra_json = json_encode($extra);
+      $sql2 = "UPDATE questions SET display_method='', settings = ? WHERE q_id = ?";
+      $area_upd = $mysqli->prepare($sql2);
+      $area_upd->bind_param('si', $extra_json, $q_id);
+      $area_upd->execute();
+      $area_upd->close();
+      $count++;
     }
     $area_qs->close();
-    echo '<li>Updated AREA questions</li>';
+    if ($count > 0) {
+      echo '<li>Updated AREA questions</li>';
+    }
 
-    echo '</ul></li></ul>';
-  }
+    // Update Calculation questions
+    $sql = "SELECT q_id, display_method FROM questions WHERE q_type = 'calculation' AND (settings = '' OR settings IS NULL) AND display_method != ''";
+
+    // Get all calculation questions
+    $area_qs = $mysqli->prepare($sql);
+    $area_qs->execute();
+    $area_qs->store_result();
+    $area_qs->bind_result($q_id, $display_method);
+    $count = 0;
+    while ($area_qs->fetch()) {
+      $parts = explode(',', $display_method);
+      $extra = array('answer_decimals' => $parts[0], 'tolerance_full' => $parts[1], 'tolerance_partial' => $parts[2], 'units' => $parts[3]);
+      $extra_json = json_encode($extra);
+      $sql2 = "UPDATE questions SET display_method='', settings = ? WHERE q_id = ?";
+      $area_upd = $mysqli->prepare($sql2);
+      $area_upd->bind_param('si', $extra_json, $q_id);
+      $area_upd->execute();
+      $area_upd->close();
+      $count++;
+    }
+    $area_qs->close();
+    if ($count > 0) {
+      echo '<li>Updated CALCULATION questions</li>';
+    }
+
+    echo '</ul></li>';
+  // }
 
 
   /*

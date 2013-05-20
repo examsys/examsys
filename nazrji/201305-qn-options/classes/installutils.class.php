@@ -2309,7 +2309,7 @@ QUERY;
           `status` enum('Normal','Retired','Incomplete','Experimental','Beta') default NULL,
           `q_option_order` enum('display order','alphabetic','random') default NULL,
           `score_method` enum('Mark per Question','Mark per Option','Allow partial Marks','Bonus Mark') default NULL,
-          `extra_data` text,
+          `settings` text,
           PRIMARY KEY (`q_id`),
           KEY `idx_owner_deleted` (`ownerID`,`deleted`),
           KEY `idx_deleted` (`deleted`)

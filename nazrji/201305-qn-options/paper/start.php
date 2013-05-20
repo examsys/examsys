@@ -78,11 +78,11 @@ function randomQOverwrite($random_q_data, $user_answers, &$screen_data, &$used_q
 
   if ($unique) {
     // Look up selected question and overwrite data.
-    $question_data = $db->prepare("SELECT q_type, q_id, score_method, display_method, marks_correct, marks_incorrect, marks_partial, theme, scenario, leadin, correct, REPLACE(option_text,'\t','') AS option_text, q_media, q_media_width, q_media_height, o_media, o_media_width, o_media_height, notes, q_option_order FROM questions, options WHERE q_id=? AND questions.q_id=options.o_id ORDER BY id_num");
+    $question_data = $db->prepare("SELECT q_type, q_id, score_method, display_method, settings, marks_correct, marks_incorrect, marks_partial, theme, scenario, leadin, correct, REPLACE(option_text,'\t','') AS option_text, q_media, q_media_width, q_media_height, o_media, o_media_width, o_media_height, notes, q_option_order FROM questions, options WHERE q_id=? AND questions.q_id=options.o_id ORDER BY id_num");
     $question_data->bind_param('i', $selected_q_id);
     $question_data->execute();
     $question_data->store_result();
-    $question_data->bind_result($q_type, $q_id, $score_method, $display_method, $marks_correct, $marks_incorrect, $marks_partial, $theme, $scenario, $leadin, $correct, $option_text, $q_media, $q_media_width, $q_media_height, $o_media, $o_media_width, $o_media_height, $notes, $q_option_order);
+    $question_data->bind_result($q_type, $q_id, $score_method, $display_method, $settings, $marks_correct, $marks_incorrect, $marks_partial, $theme, $scenario, $leadin, $correct, $option_text, $q_media, $q_media_width, $q_media_height, $o_media, $o_media_width, $o_media_height, $notes, $q_option_order);
     while ($question_data->fetch()) {
       if (!isset($question['q_id']) or $question['q_id'] != $q_id) {
         $question['theme'] = $theme;
@@ -93,6 +93,7 @@ function randomQOverwrite($random_q_data, $user_answers, &$screen_data, &$used_q
         $question['q_id'] = $q_id;
         $question['score_method'] = $score_method;
         $question['display_method'] = $display_method;
+        $question['settings'] = $settings;
         $question['q_media'] = $q_media;
         $question['q_media_width'] = $q_media_width;
         $question['q_media_height'] = $q_media_height;
@@ -169,11 +170,11 @@ function keywordQOverwrite($random_q_data, $user_answers, &$screen_data, $used_q
 
   if ($unique) {
     // Look up selected question and overwrite the question data.
-    $question_data = $db->prepare("SELECT q_type, q_id, score_method, display_method, marks_correct, marks_incorrect, marks_partial, theme, scenario, leadin, correct, REPLACE(option_text,'\t','') AS option_text, q_media, q_media_width, q_media_height, o_media, o_media_width, o_media_height, notes, q_option_order FROM questions, options WHERE q_id = ? AND questions.q_id = options.o_id ORDER BY id_num");
+    $question_data = $db->prepare("SELECT q_type, q_id, score_method, display_method, settings, marks_correct, marks_incorrect, marks_partial, theme, scenario, leadin, correct, REPLACE(option_text,'\t','') AS option_text, q_media, q_media_width, q_media_height, o_media, o_media_width, o_media_height, notes, q_option_order FROM questions, options WHERE q_id = ? AND questions.q_id = options.o_id ORDER BY id_num");
     $question_data->bind_param('i', $selected_q_id);
     $question_data->execute();
     $question_data->store_result();
-    $question_data->bind_result($q_type, $q_id, $score_method, $display_method, $marks_correct, $marks_incorrect, $marks_partial, $theme, $scenario, $leadin, $correct, $option_text, $q_media, $q_media_width, $q_media_height, $o_media, $o_media_width, $o_media_height, $notes, $q_option_order);
+    $question_data->bind_result($q_type, $q_id, $score_method, $display_method, $settings, $marks_correct, $marks_incorrect, $marks_partial, $theme, $scenario, $leadin, $correct, $option_text, $q_media, $q_media_width, $q_media_height, $o_media, $o_media_width, $o_media_height, $notes, $q_option_order);
     while ($question_data->fetch()) {
       if (!isset($question['q_id']) or $question['q_id'] != $q_id) {
         $question['assigned_number'] = $random_q_data['assigned_number'];
@@ -188,6 +189,7 @@ function keywordQOverwrite($random_q_data, $user_answers, &$screen_data, $used_q
         $question['display_pos'] = $q_no;
         $question['score_method'] = $score_method;
         $question['display_method'] = $display_method;
+        $question['settings'] = $settings;
         $question['q_media'] = $q_media;
         $question['q_media_width'] = $q_media_width;
         $question['q_media_height'] = $q_media_height;
@@ -746,7 +748,7 @@ if ($css != '') {
       <?php //log which method the users submitted the page via ?>
       if (!!event) {
         if(event.target.id == 'finish') {
-          $('#qForm').attr('action',"finish.php?id=<?php echo $_GET['id'] . $url_mod; ?>&dont_record=true");  
+          $('#qForm').attr('action',"finish.php?id=<?php echo $_GET['id'] . $url_mod; ?>&dont_record=true");
         } else {
           $('#qForm').attr('action',"start.php?id=<?php echo $_GET['id'] . $url_mod; ?>&dont_record=true");
         }
@@ -766,10 +768,10 @@ if ($css != '') {
   <?php  //called on auto save time out ?>
   var autoSave = function() {
     submitType = 'autoSave';
-    
+
     <?php //this could take longer than the autosave timeout stop auto save to stop duplicate events ?>
     stopAutoSave();
-    
+
     <?php //save any data from wysiwyg  ?>
     if(typeof(tinyMCE) != "undefined"){
       tinyMCE.triggerSave();
@@ -810,15 +812,15 @@ if ($css != '') {
           type: 'post',
           data: $('#qForm').serialize(),
           dataType: 'html',
-          timeout: <?php 
+          timeout: <?php
                         //set the time out of one requst to be the maximum total time plus 5s for network latency
                         //php handles nomal timeouts. This is just to make sure the user wont wait forever if somthing
                         //weird happens
-                        echo ceil((($configObject->get('cfg_autosave_retrylimit') * $configObject->get('cfg_autosave_backoff_factor') * $configObject->get('cfg_autosave_settimeout')) + $configObject->get('cfg_autosave_settimeout') + 5)) * 1000; 
+                        echo ceil((($configObject->get('cfg_autosave_retrylimit') * $configObject->get('cfg_autosave_backoff_factor') * $configObject->get('cfg_autosave_settimeout')) + $configObject->get('cfg_autosave_settimeout') + 5)) * 1000;
                    ?>,
           cache: false,
           tryCount : 0,
-          retryLimit : <?php echo $configObject->get('cfg_autosave_retrylimit'); //try 3 times before erroring ?>, 
+          retryLimit : <?php echo $configObject->get('cfg_autosave_retrylimit'); //try 3 times before erroring ?>,
           beforeSend: function() {
           },
           fail: function() {
@@ -899,12 +901,12 @@ if ($css != '') {
   var saveFail = function () {
     <?php //rereister the autosave timer ?>
     startAutoSave();
-      
+
     $('#saveError').fadeIn('fast');
     $('#savemsg').html("");
     document.body.style.cursor = 'default';
     submitted = false;
-    
+
     return false;
   }
 
@@ -943,6 +945,7 @@ if ($css != '') {
                                           q_id,
                                           score_method,
                                           display_method,
+                                          settings,
                                           marks_correct,
                                           marks_incorrect,
                                           marks_partial,
@@ -978,6 +981,7 @@ if ($css != '') {
                                             q_id,
                                             score_method,
                                             display_method,
+                                            settings,
                                             marks_correct,
                                             marks_incorrect,
                                             marks_partial,
@@ -1009,7 +1013,7 @@ if ($css != '') {
   }
   $question_data->execute();
   $question_data->store_result();
-  $question_data->bind_result($screen, $q_type, $q_id, $score_method, $display_method, $marks_correct, $marks_incorrect, $marks_partial, $theme, $scenario, $leadin, $correct, $option_text, $q_media, $q_media_width, $q_media_height, $o_media, $o_media_width, $o_media_height, $notes, $display_pos, $q_option_order);
+  $question_data->bind_result($screen, $q_type, $q_id, $score_method, $display_method, $settings, $marks_correct, $marks_incorrect, $marks_partial, $theme, $scenario, $leadin, $correct, $option_text, $q_media, $q_media_width, $q_media_height, $o_media, $o_media_width, $o_media_height, $notes, $display_pos, $q_option_order);
   $num_rows = $question_data->num_rows;
 
   $q_no = 0;
@@ -1040,6 +1044,7 @@ if ($css != '') {
       $tmp_questions_array[$q_no]['display_pos'] = $display_pos;
       $tmp_questions_array[$q_no]['score_method'] = $score_method;
       $tmp_questions_array[$q_no]['display_method'] = $display_method;
+      $tmp_questions_array[$q_no]['settings'] = $settings;
       $tmp_questions_array[$q_no]['q_media'] = $q_media;
       $tmp_questions_array[$q_no]['q_media_width'] = $q_media_width;
       $tmp_questions_array[$q_no]['q_media_height'] = $q_media_height;

@@ -60,7 +60,7 @@ Class Question extends RogoObject {
   protected $locked = null;
   protected $deleted = null;
   protected $status = 'Normal';
-  protected $extra_data = '';
+  protected $settings = '';
   public $options = array();
   public $max_options = 20;
   protected $min_options = 1;
@@ -78,10 +78,10 @@ Class Question extends RogoObject {
   protected $_use_bloom = true;
 
   protected $_user_id;
-  protected $_fields = array('type', 'theme', 'scenario', 'scenario_plain', 'leadin', 'leadin_plain', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'display_method', 'option_order', 'standards_setting', 'bloom', 'owner_id', 'media', 'media_width', 'media_height', 'checkout_time', 'checkout_author_id', 'created', 'last_edited', 'locked', 'deleted', 'status', 'extra_data');
+  protected $_fields = array('type', 'theme', 'scenario', 'scenario_plain', 'leadin', 'leadin_plain', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'display_method', 'option_order', 'standards_setting', 'bloom', 'owner_id', 'media', 'media_width', 'media_height', 'checkout_time', 'checkout_author_id', 'created', 'last_edited', 'locked', 'deleted', 'status', 'settings');
   protected $_fields_editable = array('theme', 'scenario', 'leadin', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'display_method', 'option_order', 'bloom', 'status');
   protected $_fields_required = array('type', 'leadin', 'score_method', 'option_order', 'owner_id', 'status');
-  protected $_fields_extra_data = array();
+  protected $_fields_settings = array();
 //  protected $_score_methods = array('Mark per Question', 'Mark per Option', 'Allow partial Marks', 'Bonus Mark');
   protected $_score_methods;
   protected $_display_methods = array();
@@ -313,7 +313,7 @@ Class Question extends RogoObject {
       $this->get_scenario_plain();
       $this->get_leadin_plain();
 
-      $this->serialize_extra_data();
+      $this->serialize_settings();
 
       // If $id is -1 we're inserting a new record
       if ($this->id == -1) {
@@ -323,7 +323,7 @@ Class Question extends RogoObject {
         $query = <<< QUERY
 INSERT INTO questions(q_type, theme, scenario, scenario_plain, leadin, leadin_plain, notes, correct_fback, incorrect_fback, score_method,
 display_method, q_option_order, std, bloom, ownerID, q_media, q_media_width, q_media_height, checkout_time, checkout_authorID,
-creation_date, last_edited, locked, deleted, status, extra_data)
+creation_date, last_edited, locked, deleted, status, settings)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 QUERY;
       } else {
@@ -334,7 +334,7 @@ QUERY;
 UPDATE questions
 SET q_type = ?, theme = ?, scenario = ?, scenario_plain = ?, leadin = ?, leadin_plain = ?, notes = ?, correct_fback = ?, incorrect_fback = ?,
 score_method = ?, display_method = ?, q_option_order = ?, std = ?, bloom = ?, ownerID = ?, q_media = ?, q_media_width = ?, q_media_height = ?,
-checkout_time = ?, checkout_authorID = ?, creation_date = ?, last_edited = ?, locked = ?, deleted = ?, status = ?, extra_data = ?
+checkout_time = ?, checkout_authorID = ?, creation_date = ?, last_edited = ?, locked = ?, deleted = ?, status = ?, settings = ?
 WHERE q_id = ?
 QUERY;
       }
@@ -1412,7 +1412,7 @@ QUERY;
     $q_query = <<< QUERY
 SELECT q_type, theme, scenario, scenario_plain, leadin, leadin_plain, notes, correct_fback, incorrect_fback, score_method, display_method,
  q_option_order, std, bloom, ownerID, q_media, q_media_width, q_media_height, checkout_time, checkout_authorID, creation_date,
- last_edited, locked, deleted, status, extra_data
+ last_edited, locked, deleted, status, settings
 FROM questions
 WHERE q_id = ?
 QUERY;
@@ -1427,7 +1427,7 @@ QUERY;
     }
     $result->close();
 
-    $this->unserialize_extra_data();
+    $this->unserialize_settings();
 
     if ($found > 0) {
 
@@ -1532,21 +1532,21 @@ QUERY;
    * Put all the extra data fields into an array and encode as JSON
    * @return string JSON encoded string containing extra data fields
    */
-  protected function serialize_extra_data() {
+  protected function serialize_settings() {
     $extra = array();
 
-    foreach ($this->_fields_extra_data as $field) {
+    foreach ($this->_fields_settings as $field) {
       $extra[$field] = $this->$field;
     }
 
-    $this->extra_data = json_encode($extra);
+    $this->settings = json_encode($extra);
   }
 
   /**
    * Unpack JSON string containing extra data into local fields
    */
-  protected function unserialize_extra_data() {
-    $extra = json_decode($this->extra_data, true);
+  protected function unserialize_settings() {
+    $extra = json_decode($this->settings, true);
 
     if (is_array($extra)) {
       foreach ($extra as $field => $value) {

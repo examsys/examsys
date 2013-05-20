@@ -15,7 +15,7 @@
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
-* 
+*
 * @author Simon Wilkinson
 * @version 1.0
 * @copyright Copyright (c) 2013 The University of Nottingham
@@ -386,7 +386,7 @@ function check_ebel_distinction_type($ebel) {
   $reviews = array();
   $setterID = (!empty($_GET['setterID'])) ? $_GET['setterID'] : '';
   $date_id = (!empty($_GET['dateID'])) ? $_GET['dateID'] : '';
-  
+
   if ($setterID != '') {
     $tmp_date_id = $date_id;
     $result = $mysqli->prepare("SELECT std_set, rating, questionID FROM standards_setting WHERE paperID = ? AND setterID = ? AND std_set = ?");
@@ -398,7 +398,7 @@ function check_ebel_distinction_type($ebel) {
     }
     $result->close();
   }
-  
+
   // Load default setting from the Questions table and save to reviews array if no existing data
   $result = $mysqli->prepare("SELECT question, std FROM (papers, questions) WHERE paper = ? AND papers.question = questions.q_id");
   $result->bind_param('i', $_GET['paperID']);
@@ -460,12 +460,12 @@ function check_ebel_distinction_type($ebel) {
   $prologue_show = 1;
   $options_array = array();
   echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">\n";
-  
-  $result = $mysqli->prepare("SELECT screen, q_type, q_id, score_method, display_method, marks_correct, marks_incorrect, theme, scenario, leadin, correct, REPLACE(option_text,'\t','') AS option_text, q_media, q_media_width, q_media_height, o_media, o_media_width, o_media_height, notes, correct_fback FROM (papers, questions, options) WHERE paper=? AND papers.question=questions.q_id AND questions.q_id=options.o_id ORDER BY display_pos, id_num");
+
+  $result = $mysqli->prepare("SELECT screen, q_type, q_id, score_method, display_method, settings, marks_correct, marks_incorrect, theme, scenario, leadin, correct, REPLACE(option_text,'\t','') AS option_text, q_media, q_media_width, q_media_height, o_media, o_media_width, o_media_height, notes, correct_fback FROM (papers, questions, options) WHERE paper=? AND papers.question=questions.q_id AND questions.q_id=options.o_id ORDER BY display_pos, id_num");
   $result->bind_param('i', $_GET['paperID']);
   $result->execute();
   $result->store_result();
-  $result->bind_result($screen, $q_type, $q_id, $score_method, $display_method, $marks_correct, $marks_incorrect, $theme, $scenario, $leadin, $correct, $option_text, $q_media, $q_media_width, $q_media_height, $o_media, $o_media_width, $o_media_height, $notes, $correct_fback);
+  $result->bind_result($screen, $q_type, $q_id, $score_method, $display_method, $settings, $marks_correct, $marks_incorrect, $theme, $scenario, $leadin, $correct, $option_text, $q_media, $q_media_width, $q_media_height, $o_media, $o_media_width, $o_media_height, $notes, $correct_fback);
   while ($result->fetch()) {
     if ($prologue_show == 1 and $current_screen == 1 and $paper_prologue != '') {
       echo '<tr><td colspan="2" style="padding:20px; text-align:justify">' . $paper_prologue . '</td></tr>';
@@ -534,10 +534,10 @@ function check_ebel_distinction_type($ebel) {
       $old_screen = $screen;
       $old_correct_fback = $correct_fback;
       $options_array = array();          // Clear options array
-      
+
     }
 
-    $options_array[] = array('q_type'=>$q_type, 'score_method'=>$score_method, 'display_method'=>$display_method, 'correct'=>$correct, 'scenario'=>$scenario, 'leadin'=>$leadin, 'q_media'=>$q_media, 'q_media_width'=>$q_media_width, 'q_media_height'=>$q_media_height, 'option_text'=>$option_text, 'o_media'=>$o_media, 'o_media_width'=>$o_media_width, 'o_media_height'=>$o_media_height, 'marks_correct'=>$marks_correct, 'marks_incorrect'=>$marks_incorrect);
+    $options_array[] = array('q_type' => $q_type, 'score_method' => $score_method, 'display_method' => $display_method, 'settings' => $settings, 'correct' => $correct, 'scenario' => $scenario, 'leadin' => $leadin, 'q_media' => $q_media, 'q_media_width' => $q_media_width, 'q_media_height' => $q_media_height, 'option_text' => $option_text, 'o_media' => $o_media, 'o_media_width' => $o_media_width, 'o_media_height' => $o_media_height, 'marks_correct' => $marks_correct, 'marks_incorrect' => $marks_incorrect);
   }         // End of While loop
   $result->close();
 
@@ -558,7 +558,7 @@ function check_ebel_distinction_type($ebel) {
       }
       $result->close();
     }
-    
+
     if (empty($ebel)) {
       $templateID = '';
       // If empty look to see if there is a default grid to load
@@ -577,13 +577,13 @@ function check_ebel_distinction_type($ebel) {
         $result->bind_result($ebel[0], $ebel[1], $ebel[2], $ebel[3], $ebel[4], $ebel[5], $ebel[6], $ebel[7], $ebel[8], $ebel[9], $ebel[10], $ebel[11], $ebel[12], $ebel[13], $ebel[14], $ebel[15], $ebel[16], $ebel[17], $name);
         $result->fetch();
         $result->close();
-        
+
         for ($i=0; $i<18; $i++) {
           $ebel[$i] = round($ebel[$i] / 100, 2);
         }
       }
     }
-    
+
     echo "<br />\n<div class=\"key\">" . $string['step2'] . "<br />&nbsp;</div>\n<br />\n";
 
     echo "<div align=\"center\">\n<table cellpadding=\"5\" cellspacing=\"0\" border=\"0\">\n";
@@ -608,7 +608,7 @@ function check_ebel_distinction_type($ebel) {
     </blockquote>
     <?php
     echo "</div>\n<br />\n";
-    
+
     echo "<div align=\"center\">\n<table cellpadding=\"5\" cellspacing=\"0\" border=\"0\">\n";
     echo "<tr><td>&nbsp;</td><td style=\"width:200px; text-align:center\"><strong>" . $string['essential'] . "</strong></td><td style=\"width:200px; text-align:center\"><strong>" . $string['important'] . "</strong></td><td style=\"width:200px; text-align:center\"><strong>" . $string['nicetoknow'] . "</strong></td></tr>\n";
     echo "<tr><td style=\"text-align:right\"><strong>" . $string['easy'] . "</strong></td><td style=\"text-align:center; background-color:#F8F8F2\"><input type=\"text\" style=\"text-align:right; border:0px; color:red; text-decoration:line-through; background-color:#F8F8F2\" name=\"origee2\" size=\"3\" value=\"\" /><input type=\"text\" style=\"text-align:right; border:0px; background-color:#F8F8F2\" name=\"ee2\" size=\"7\" value=\"0\" />&nbsp;" . ebelDropdown('EE2',$ebel[9]) . "</td><td style=\"text-align:center; background-color:#F0F0E6\"><input type=\"text\" style=\"text-align:right; background-color:#F0F0E6; border:0px; color:red; text-decoration:line-through\" name=\"origei2\" size=\"3\" value=\"\" /><input type=\"text\" style=\"text-align:right; background-color:#F0F0E6; border:0px\" name=\"ei2\" size=\"7\" value=\"0\" />&nbsp;" . ebelDropdown('EI2',$ebel[10]) . "</td><td style=\"text-align:center; background-color:#E4E4D2\"><input type=\"text\" style=\"text-align:right; background-color:#E4E4D2; border:0px; color:red; text-decoration:line-through\" name=\"origen2\" size=\"3\" value=\"\" /><input type=\"text\" style=\"text-align:right; background-color:#E4E4D2; border:0px\" name=\"en2\" size=\"7\" value=\"0\" />&nbsp;" . ebelDropdown('EN2',$ebel[11]) . "</td><td style=\"border:0px\"><input type=\"text\" value=\"\" name=\"easy2_total\" size=\"8\" style=\"border: 0px\" /></td></tr>\n";
@@ -643,7 +643,7 @@ function check_ebel_distinction_type($ebel) {
     echo '<input class="chk" type="checkbox" id="banksave" name="banksave" value="1" />&nbsp;' . $string['savebank'];
   }
   $mysqli->close();
-  
+
 ?>
 </td><td colspan="2"></td></tr>
 </table>

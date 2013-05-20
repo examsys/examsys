@@ -41,7 +41,7 @@ Class QuestionAREA extends Question {
   public $max_options = 1;
 
   protected $_fields_editable = array('theme', 'scenario', 'leadin', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'bloom', 'status', 'correct_full', 'error_full', 'correct_partial', 'error_partial');
-  protected $_fields_extra_data = array('correct_full', 'error_full', 'correct_partial', 'error_partial');
+  protected $_fields_settings = array('correct_full', 'error_full', 'correct_partial', 'error_partial');
 
   function __construct($mysqli, $userObj, $lang_strings, $data = null) {
     parent::__construct($mysqli, $userObj, $lang_strings, $data);

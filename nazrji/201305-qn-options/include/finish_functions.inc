@@ -188,14 +188,14 @@ function display_feedback($sessionid, $temp_userID, $paperID, $paper_type, $log_
   $user_mark = 0;
 
   if (isset($preview_q_id)) {
-    $answer_data = $mysqlidb->prepare("SELECT 1, questions.q_id, q_type, theme, scenario, leadin, correct_fback, incorrect_fback, display_method, score_method, notes, q_media, q_media_width, q_media_height, option_text, o_media, o_media_width, o_media_height, feedback_right, feedback_wrong, correct, marks_correct, marks_incorrect, marks_partial, display_pos, status FROM (papers, questions, options) WHERE papers.question=questions.q_id AND paper = ? AND questions.q_id=options.o_id AND questions.q_id = ? ORDER BY screen, display_pos, id_num");
+    $answer_data = $mysqlidb->prepare("SELECT 1, questions.q_id, q_type, theme, scenario, leadin, correct_fback, incorrect_fback, display_method, score_method, settings, notes, q_media, q_media_width, q_media_height, option_text, o_media, o_media_width, o_media_height, feedback_right, feedback_wrong, correct, marks_correct, marks_incorrect, marks_partial, display_pos, status FROM (papers, questions, options) WHERE papers.question=questions.q_id AND paper = ? AND questions.q_id=options.o_id AND questions.q_id = ? ORDER BY screen, display_pos, id_num");
     $answer_data->bind_param('ii', $paperID, $preview_q_id);
   } else {
-    $answer_data = $mysqlidb->prepare("SELECT screen, questions.q_id, q_type, theme, scenario, leadin, correct_fback, incorrect_fback, display_method, score_method, notes, q_media, q_media_width, q_media_height, option_text, o_media, o_media_width, o_media_height, feedback_right, feedback_wrong, correct, marks_correct, marks_incorrect, marks_partial, display_pos, status FROM (papers, questions, options) WHERE papers.question=questions.q_id AND paper = ? AND questions.q_id=options.o_id ORDER BY screen, display_pos, id_num");
+    $answer_data = $mysqlidb->prepare("SELECT screen, questions.q_id, q_type, theme, scenario, leadin, correct_fback, incorrect_fback, display_method, score_method, settings, notes, q_media, q_media_width, q_media_height, option_text, o_media, o_media_width, o_media_height, feedback_right, feedback_wrong, correct, marks_correct, marks_incorrect, marks_partial, display_pos, status FROM (papers, questions, options) WHERE papers.question=questions.q_id AND paper = ? AND questions.q_id=options.o_id ORDER BY screen, display_pos, id_num");
     $answer_data->bind_param('i', $paperID);
   }
   $answer_data->execute();
-  $answer_data->bind_result($screen, $q_id, $q_type, $theme, $scenario, $leadin, $correct_fback, $incorrect_fback, $display_method, $score_method, $notes, $q_media, $q_media_width, $q_media_height, $option_text, $o_media, $o_media_width, $o_media_height, $feedback_right, $feedback_wrong, $correct, $marks_correct, $marks_incorrect, $marks_partial, $display_pos, $status);
+  $answer_data->bind_result($screen, $q_id, $q_type, $theme, $scenario, $leadin, $correct_fback, $incorrect_fback, $display_method, $score_method, $settings, $notes, $q_media, $q_media_width, $q_media_height, $option_text, $o_media, $o_media_width, $o_media_height, $feedback_right, $feedback_wrong, $correct, $marks_correct, $marks_incorrect, $marks_partial, $display_pos, $status);
   while ($answer_data->fetch()) {
     if ($old_q_id != $q_id or $old_display_pos != $display_pos) {  // New question.
      if ($old_q_id != 0) {
@@ -226,6 +226,7 @@ function display_feedback($sessionid, $temp_userID, $paperID, $paper_type, $log_
       $paper[$q_no]['q_media_width'] = $q_media_width;
       $paper[$q_no]['display_method'] = $display_method;
       $paper[$q_no]['score_method'] = $score_method;
+      $paper[$q_no]['settings'] = $settings;
       $paper[$q_no]['correct_fback'] = $correct_fback;
       $paper[$q_no]['incorrect_fback'] = $incorrect_fback;
       $paper[$q_no]['status'] = $status;
@@ -257,6 +258,7 @@ function display_feedback($sessionid, $temp_userID, $paperID, $paper_type, $log_
     $old_q_type = $q_type;
     $old_display_method = $display_method;
     $old_score_method = $score_method;
+    $old_settings = $settings;
     $old_q_media_width = $q_media_width;
     $old_q_media_height = $q_media_height;
     $old_status = $status;
@@ -303,11 +305,11 @@ function display_feedback($sessionid, $temp_userID, $paperID, $paper_type, $log_
       // Look up selected question and overwrite data.
       if (isset($selected_q_id) and $selected_q_id > 0) {
         $stems = 0;
-        $question_data = $mysqlidb->prepare("SELECT questions.q_id, q_type, theme, scenario, leadin, correct_fback, incorrect_fback, display_method, score_method, notes, q_media, q_media_width, q_media_height, option_text, o_media, o_media_width, o_media_height, feedback_right, feedback_wrong, correct, marks_correct, marks_incorrect, marks_partial, status FROM (questions, options) WHERE q_id=? AND questions.q_id=options.o_id ORDER BY id_num");
+        $question_data = $mysqlidb->prepare("SELECT questions.q_id, q_type, theme, scenario, leadin, correct_fback, incorrect_fback, display_method, score_method, settings, notes, q_media, q_media_width, q_media_height, option_text, o_media, o_media_width, o_media_height, feedback_right, feedback_wrong, correct, marks_correct, marks_incorrect, marks_partial, status FROM (questions, options) WHERE q_id=? AND questions.q_id=options.o_id ORDER BY id_num");
         $question_data->bind_param('i', $selected_q_id);
         $question_data->execute();
         $question_data->store_result();
-        $question_data->bind_result($q_id, $q_type, $theme, $scenario, $leadin, $correct_fback, $incorrect_fback, $display_method, $score_method, $notes, $q_media, $q_media_width, $q_media_height, $option_text, $o_media, $o_media_width, $o_media_height, $feedback_right, $feedback_wrong, $correct, $marks_correct, $marks_incorrect, $marks_partial, $status);
+        $question_data->bind_result($q_id, $q_type, $theme, $scenario, $leadin, $correct_fback, $incorrect_fback, $display_method, $score_method, $settings, $notes, $q_media, $q_media_width, $q_media_height, $option_text, $o_media, $o_media_width, $o_media_height, $feedback_right, $feedback_wrong, $correct, $marks_correct, $marks_incorrect, $marks_partial, $status);
         while ($question_data->fetch()) {
           if ($stems == 0) {
             $correct_no = 0;
@@ -325,6 +327,7 @@ function display_feedback($sessionid, $temp_userID, $paperID, $paper_type, $log_
             $paper[$i]['q_media_width'] = $q_media_width;
             $paper[$i]['display_method'] = $display_method;
             $paper[$i]['score_method'] = $score_method;
+            $paper[$i]['settings'] = $settings;
             $paper[$i]['correct_fback'] = $correct_fback;
             $paper[$i]['incorrect_fback'] = $incorrect_fback;
             $paper[$i]['status'] = $status;
@@ -614,16 +617,16 @@ function display_feedback($sessionid, $temp_userID, $paperID, $paper_type, $log_
 
         echo_content($tmp_leadin);
 
-        $score_array = explode(',', $paper[$question]['display_method']);
+        $settings = json_decode($paper[$question]['settings'], true);
 
-        $decimals = ($score_array[0] != '') ? $score_array[0] : 0;
+        $decimals = ($settings['answer_decimals'] != '') ? $settings['answer_decimals'] : 0;
 
-        $tolerance_full = $score_array[1];
+        $tolerance_full = $settings['tolerance_full'];
         if (StringUtils::ends_with($tolerance_full, '%')) {
           $tolerance_perc = rtrim($tolerance_full, '%');
           $tolerance_full = abs(round($tmp_answer[1] * ($tolerance_perc/100), 12));
         }
-        $tolerance_partial = $score_array[2];
+        $tolerance_partial = $settings['tolerance_partial'];
         if (StringUtils::ends_with($tolerance_partial, '%')) {
           $tolerance_perc = rtrim($tolerance_partial, '%');
           $tolerance_partial = abs(round($tmp_answer[1] * ($tolerance_perc/100), 12));
@@ -641,7 +644,7 @@ function display_feedback($sessionid, $temp_userID, $paperID, $paper_type, $log_
         $saved_response_clean = preg_replace('([^0-9\.\-])', '', $saved_response);
 
         if ($tmp_answer[0] == '') {
-          echo "<td>" . display_response($tmp_display_students_response, 'blank') . "<input type=\"text\" style=\"color:#808080; text-align:right\" name=\"q' . $question . '\" size=\"10\" value=\"" . $string['unanswered'] . "\" />" . $score_array[3];
+          echo "<td>" . display_response($tmp_display_students_response, 'blank') . "<input type=\"text\" style=\"color:#808080; text-align:right\" name=\"q' . $question . '\" size=\"10\" value=\"" . $string['unanswered'] . "\" />" . $settings['units'];
         } else {
           echo '<td>';
           if ($tmp_exclude == '1')  echo '<span class="exclude">';
@@ -673,15 +676,15 @@ function display_feedback($sessionid, $temp_userID, $paperID, $paper_type, $log_
           } else {
             echo display_response($tmp_display_students_response, 'cross');
           }
-          echo '<input type="text" style="text-align:right" name="q' . $question . '" size="10" value="' . $tmp_answer[0] . '" />' . $score_array[3];
+          echo '<input type="text" style="text-align:right" name="q' . $question . '" size="10" value="' . $tmp_answer[0] . '" />' . $settings['units'];
         }
         if ($tmp_display_correct_answer == '1') {
           if (!isset($tmp_answer[1])) {
             echo ' <strong>(<span style="color:#C00000">error!</span>)</strong>';
           } elseif (is_numeric($tmp_answer[1])) {
-            $decimals = ($score_array[0] != '') ? $score_array[0] : 0;
+            $decimals = ($settings['answer_decimals'] != '') ? $settings['answer_decimals'] : 0;
             echo ' <strong>(' . number_format($tmp_answer[1], $decimals, '.', '');
-            if ($score_array[3] != '') echo ' ' . $score_array[3];
+            if ($settings['units'] != '') echo ' ' . $settings['units'];
             echo ')</strong>';
           } else {
             echo ' <strong>(' . $tmp_answer[1] . ')</strong>';
@@ -692,12 +695,12 @@ function display_feedback($sessionid, $temp_userID, $paperID, $paper_type, $log_
 
         if (isset($tmp_answer[1])) {
           if ($saved_response_clean <> $tmp_answer[1] and $paper[$question]['mark'] == $paper[$question]['marks_correct'] and $tolerance_full > 0) {
-            echo ' ' . $string['withatoleranceof'] . ' ' . $score_array[1];
-            if (StringUtils::ends_with($score_array[1], '%')) echo " (" . (round($tmp_answer[1], $decimals) - $tolerance_full) . " - " . (round($tmp_answer[1], $decimals) + $tolerance_full) . ")";
+            echo ' ' . $string['withatoleranceof'] . ' ' . $settings['tolerance_full'];
+            if (StringUtils::ends_with($settings['tolerance_full'], '%')) echo " (" . (round($tmp_answer[1], $decimals) - $tolerance_full) . " - " . (round($tmp_answer[1], $decimals) + $tolerance_full) . ")";
           }
           if ($saved_response_clean <> $tmp_answer[1] and $paper[$question]['mark'] == $paper[$question]['marks_partial'] and $tolerance_partial > 0) {
-            echo ' ' . $string['withatoleranceof'] . ' ' . $score_array[2];
-            if (StringUtils::ends_with($score_array[2], '%')) echo " (" . (round($tmp_answer[1], $decimals) - $tolerance_partial) . " - " . (round($tmp_answer[1], $decimals) + $tolerance_partial) . ")";
+            echo ' ' . $string['withatoleranceof'] . ' ' . $settings['tolerance_partial'];
+            if (StringUtils::ends_with($settings['tolerance_partial'], '%')) echo " (" . (round($tmp_answer[1], $decimals) - $tolerance_partial) . " - " . (round($tmp_answer[1], $decimals) + $tolerance_partial) . ")";
           }
         }
 
@@ -2349,7 +2352,7 @@ echo '</script>';
   if ($preview_q_id == null) {
     echo display_summary($paper_type, $marking, $pass_mark, $user_mark, $total_random_mark, $total_marks, $string, $paperID, $mysqlidb);
   }
-  
+
   if ($paper_postscript != '') echo "<br />\n<blockquote>$paper_postscript</blockquote>\n";
   echo $bottom_html;
   if ($_SERVER['PHP_SELF'] == '/paper/finish.php') {

@@ -25,7 +25,7 @@
  */
 
 Class QuestionCALCULATION extends Question {
-  
+
   protected $units = '';
   protected $answer_decimals = 0;
   protected $tolerance_full = 0;
@@ -34,15 +34,16 @@ Class QuestionCALCULATION extends Question {
   public $max_options = 10;
   protected $_allow_partial_marks = true;
   protected $_allow_change_marking_method = false;
-  
+
   protected $_fields_editable = array('theme', 'scenario', 'leadin', 'notes', 'correct_fback', 'incorrect_fback', 'score_method', 'units', 'answer_decimals', 'tolerance_full', 'tolerance_partial', 'bloom', 'status');
   protected $_fields_change = array('option_correct', 'option_marks_correct', 'option_marks_incorrect', 'option_marks_partial', 'answer_decimals', 'tolerance_full', 'tolerance_partial');
-  
+  protected $_fields_settings = array('units', 'answer_decimals', 'tolerance_full', 'tolerance_partial');
+
   private $_variables = null;
-  
+
   function __construct($mysqli, $userObj, $lang_strings, $data = null) {
     parent::__construct($mysqli, $userObj, $lang_strings, $data);
-    
+
     $this->_score_methods = array($this->_lang_strings['allowpartial']);
     $this->_fields_unified = array('correct' => $this->_lang_strings['correctanswer'], 'marks_correct' => $this->_lang_strings['markscorrect'], 'marks_incorrect' => $this->_lang_strings['marksincorrect'], 'marks_partial' => $this->_lang_strings['markspartial']);
 
@@ -54,17 +55,8 @@ Class QuestionCALCULATION extends Question {
     $this->get_display_method();
   }
 
-  /**
-   * Ensure that display_method is in correct format before calling parent save() function
-   * @return integer
-   */
-  public function save($clear_checkout = true) {
-    $this->set_display_method('dummy');
-    return parent::save($clear_checkout);
-  }
-
   // ACCESSORS
-  
+
   /**
    * Get the variables for the question
    * @return integer
@@ -72,25 +64,23 @@ Class QuestionCALCULATION extends Question {
   public function get_variables() {
     return $this->_variables;
   }
-  
+
   /**
    * Get the units for the question
    * @return integer
    */
   public function get_units() {
-    $this->get_display_method();
     return $this->units;
   }
-  
+
   /**
    * Set the units for the question
    * @param unknown_type $value
    */
   public function set_units($value) {
-    if ($value != $this->get_units()) {
+    if ($value != $this->units) {
       $this->set_modified_field('units', $this->units);
       $this->units = $value;
-      $this->set_display_method('dummy');
     }
   }
 
@@ -99,19 +89,17 @@ Class QuestionCALCULATION extends Question {
    * @return integer
    */
   public function get_answer_decimals() {
-    $this->get_display_method();
     return $this->answer_decimals;
   }
-  
+
   /**
    * Set the number of decimal places for the question
    * @param unknown_type $value
    */
   public function set_answer_decimals($value) {
-    if ($value != $this->get_answer_decimals()) {
+    if ($value != $this->answer_decimals) {
       $this->set_modified_field('answer_decimals', $this->answer_decimals);
       $this->answer_decimals = $value;
-      $this->set_display_method('dummy');
     }
   }
 
@@ -120,19 +108,17 @@ Class QuestionCALCULATION extends Question {
    * @return integer
    */
   public function get_tolerance_full() {
-    $this->get_display_method();
     return $this->tolerance_full;
   }
-  
+
   /**
    * Set the full marks tolerance for the question
    * @param unknown_type $value
    */
   public function set_tolerance_full($value) {
-    if ($value != $this->get_tolerance_full()) {
+    if ($value != $this->tolerance_full) {
       $this->set_modified_field('tolerance_full', $this->tolerance_full);
       $this->tolerance_full = $value;
-      $this->set_display_method('dummy');
     }
   }
 
@@ -141,43 +127,18 @@ Class QuestionCALCULATION extends Question {
    * @return integer
    */
   public function get_tolerance_partial() {
-    $this->get_display_method();
     return $this->tolerance_partial;
   }
-  
+
   /**
    * Set the partial marks tolerance for the question
    * @param unknown_type $value
    */
   public function set_tolerance_partial($value) {
-    if ($value != $this->get_tolerance_partial()) {
+    if ($value != $this->tolerance_partial) {
       $this->set_modified_field('tolerance_partial', $this->tolerance_partial);
       $this->tolerance_partial = $value;
-      $this->set_display_method('dummy');
     }
-  }
-
-  /**
-   * Get the question display method, populating pseudo-properties as we go
-   * @return string
-   */
-  public function get_display_method() {
-    if ($this->display_method != '') {
-      $parts = explode(',', $this->display_method);
-      $this->answer_decimals = $parts[0];
-      $this->tolerance_full = $parts[1];
-      $this->tolerance_partial = $parts[2];
-      $this->units = $parts[3];
-    }
-    return $this->display_method;
-  }
-  
-  /**
-   * Set the display method for the question - this is a composite of decimals, tolerances and units
-   * @param unknown_type $value
-   */
-  public function set_display_method($value) {
-    $this->display_method = $this->answer_decimals . ',' . $this->tolerance_full . ',' . $this->tolerance_partial . ',' . $this->units;
   }
 }
 

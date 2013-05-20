@@ -15,7 +15,7 @@
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
-* 
+*
 * @author Simon Wilkinson
 * @version 1.0
 * @copyright Copyright (c) 2013 The University of Nottingham
@@ -34,9 +34,9 @@ function checkVariables($number) {
 
 function display_options($options, $q_id, $current_theme, $current_scenario, $current_leadin, $current_notes, $q_type, $std_method, $tmp_reviews, $exclude, $is_group) {
   global $marking, $question_no, $part_id, $labelcolor, $old_likert_label, $A, $B, $C, $D, $E, $F, $G, $H, $I, $J, $li_set, $bgcolor, $total_marks, $old_correct_fback, $stdID, $std_excluded, $string;
-  
+
   $display_inline = array('dichotomous', 'mrq', 'rank', 'flash');
-  
+
   if (array_key_exists($q_id, $exclude)) {
     $tmp_exclude = $exclude[$q_id];
   } else {
@@ -49,7 +49,7 @@ function display_options($options, $q_id, $current_theme, $current_scenario, $cu
   $part_id = 0;
   $marks = 0;
   if ($options[0]['q_type'] != 'likert') $old_likert_label = '';
-  
+
   // Determine if negative marking is used.
   $neg_marking = false;
   foreach ($options as $tmp_option) {
@@ -112,7 +112,7 @@ function display_options($options, $q_id, $current_theme, $current_scenario, $cu
     foreach ($options as $display_option) {
       $part_id++;
       $review_val = (in_array($options[0]['q_type'], $display_inline)) ? get_review($options[0]['q_type'], $std_method, $q_id, $part_id, $tmp_reviews, $is_group) : 0;
-      
+
       switch ($options[0]['q_type']) {
         case 'blank':
           $exclude_this = $tmp_exclude;
@@ -165,7 +165,7 @@ function display_options($options, $q_id, $current_theme, $current_scenario, $cu
       break;
     case 'calculation':
       $review_val = get_review($options[0]['q_type'], $std_method, $q_id, 1, $tmp_reviews, $is_group);
-      $score_array = explode(',',$options[0]['display_method']);
+      $settings = json_decode($options[0]['settings'], true);
       if ($li_set == 1) {
         echo '<tr><td></td><td>';
       } else {
@@ -177,8 +177,8 @@ function display_options($options, $q_id, $current_theme, $current_scenario, $cu
       if (isset($exclude[$q_id])) echo ' style="color:red; text-decoration:line-through"';
       echo ">" . str_ireplace($search,$replace,$current_leadin) . "</p>\n";
       //echo ">" . $current_leadin . "</p>\n";
-      
-      echo "<div><input type=\"text\" style=\"text-align:right\" name=\"q" . $question_no . "\" size=\"10\" />" . $score_array[3] .  "</div>\n";
+
+      echo "<div><input type=\"text\" style=\"text-align:right\" name=\"q" . $question_no . "\" size=\"10\" />" . $settings['units'] .  "</div>\n";
       echo "<div class=\"fback\">Answer = " . $options[0]['correct'] . "</div>\n<br />\n";
       echo "<div>";
       echo reviewScale($question_no, '', $options[0]['marks_correct'], $std_method, (isset($exclude[$q_id])), $review_val, $stdID, $std_excluded, $is_group);
@@ -195,10 +195,10 @@ function display_options($options, $q_id, $current_theme, $current_scenario, $cu
     case 'true_false':
       $review_val = get_review($options[0]['q_type'], $std_method, $q_id, 1, $tmp_reviews, $is_group);
       echo '<blockquote>';
-      
+
       $true_checked = '';
       $false_checked = '';
-      
+
       if ($options[0]['display_method'] == 'dropdown') {
         echo "<select name=\"q" . $question_no . "\">\n";
         echo "<option value=\"\"></option>\n";
@@ -218,7 +218,7 @@ function display_options($options, $q_id, $current_theme, $current_scenario, $cu
       } else {
         if ($options[0]['correct'] == 't') $true_checked = ' checked="checked"';
         if ($options[0]['correct'] == 'f') $false_checked = ' checked="checked"';
-        
+
         echo "<input type=\"radio\" name=\"q" . $question_no . "\" value=\"t\"$true_checked />&nbsp;True";
         if ($options[0]['display_method'] == 'horizontal') {
           echo '&nbsp;&nbsp;&nbsp;';
@@ -229,7 +229,7 @@ function display_options($options, $q_id, $current_theme, $current_scenario, $cu
         echo '</blockquote>';
         echo reviewScale($question_no, '', $options[0]['marks_correct'], $std_method, substr($tmp_exclude,0,1), $review_val, $stdID, $std_excluded, $is_group);
       }
-      
+
       $marks = $options[0]['marks_correct'];
       break;
     case 'mrq':
@@ -259,7 +259,7 @@ function display_options($options, $q_id, $current_theme, $current_scenario, $cu
       break;
     case 'extmatch':
       $matching_answers = explode('|', $options[0]['correct']);
-  
+
       if ($matching_media[0] != '') {
         echo '<p align="center">' . display_media($matching_media[0], $matching_media_width[0], $matching_media_height[0], '') . '</p>';
       }
@@ -298,7 +298,7 @@ function display_options($options, $q_id, $current_theme, $current_scenario, $cu
           echo "<br />\n";
           echo "<div class=\"option\"><select name=\"q" . $question_no . "_" . $part_id . "[]\" id=\"q" . $question_no . "_" . $part_id . "\" multiple=\"multiple\" size=\"$list_size\">\n";
         }
-  
+
         $answer_count = 0;
         $multi_answers = explode('$', $matching_users_answers[$part_id - 1]);
         $tmp_option_no = 1;
@@ -361,7 +361,7 @@ function display_options($options, $q_id, $current_theme, $current_scenario, $cu
             $image_parts = explode('~', $single_option);
             echo '<img src="../media/' . $image_parts[0] . '" width="' . $image_parts[1] . '" height="' . $image_parts[2] . '" border="0" />';
           } else {
-            echo $single_option; 
+            echo $single_option;
           }
           echo "</td><td>&nbsp;</td><td>";
           echo reviewScale($question_no, $part_id, $options[0]['marks_correct'], $std_method, substr($tmp_exclude,$part_id - 1,1), $review_val, $stdID, $std_excluded, $is_group);
@@ -380,7 +380,7 @@ function display_options($options, $q_id, $current_theme, $current_scenario, $cu
       $part_id = 1;
       echo "<table summary=\"Options for Hotspot question\">\n";
       $excl_string = '';
-            
+
       foreach ($matching_options as $single_option) {
         if (substr($tmp_exclude,$part_id - 1,1) == '1') {
           $excl_string = ' ;color:red; text-decoration:line-through';
@@ -451,7 +451,7 @@ function display_options($options, $q_id, $current_theme, $current_scenario, $cu
   // Display possible marks for question (if not Survey)
   if ($options[0]['q_type'] != 'hotspot' and $options[0]['q_type'] != 'likert' and $options[0]['q_type'] != 'mcq' and $options[0]['q_type'] != 'calculation' and $options[0]['q_type'] != 'dichotomous') echo '</blockquote>';
   if ($q_type < 3 and $options[0]['q_type'] != 'info') {
-        
+
       echo "<div class=\"mk\">($marks ";
       if ($marks == 1) {
         echo $string['mark'];
@@ -465,7 +465,7 @@ function display_options($options, $q_id, $current_theme, $current_scenario, $cu
       }
     if ($neg_marking) echo ', ' . $string['negmarking'];
     echo ")</div>\n<br /></td></tr>\n";
-    
+
     $total_marks += $marks;
   }
 }
