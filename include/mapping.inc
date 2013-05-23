@@ -15,9 +15,9 @@
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
-* 
+*
 * Set of mapping functions used to map questions to objectives
-* 
+*
 * @author Anthony Brown
 * @version 1.0
 * @copyright Copyright (c) 2013 The University of Nottingham
@@ -27,11 +27,11 @@
 /**
  * This is function displayObjectivesMappingForm it displays objectives by session
  *
- * @param int $paper_id 
+ * @param int $paper_id
  * @param object $db
- * 
+ *
  */
- 
+
 require_once $cfg_web_root . 'webServices/RestRequest.class';
 require_once $cfg_web_root . 'apis/VLEFactory.class.php';
 require_once $cfg_web_root . 'classes/dateutils.class.php';
@@ -64,27 +64,27 @@ QUERY;
   } else {
     $q_id = '';
   }
-  
+
   $objsByModuleSession = getObjectives($modules_array, $session, $paper_id, $q_id, $db);
 
   if (isset($objsByModuleSession['none_of_the_above'])) {
     $none_of_the_above = $objsByModuleSession['none_of_the_above'];
     unset($objsByModuleSession['none_of_the_above']);
   }
-  
+
   $html = '';
-  
+
   foreach ($objsByModuleSession as $moduleid => $objsBySession) {
     $tmp = array_flip($modules_array);
     $idmod = $tmp[$moduleid];
 
     $html .= <<< HTML
         <h2>{$moduleid} {$string['objectives']}</h2>
-        
+
         <ul class="objectives">
 
 HTML;
-    
+
     $old_mappings = '';
     $objcount = 0;
     foreach($objsBySession as $id => $class) {
@@ -96,7 +96,7 @@ HTML;
       if ($class['occurrance'] != '') {
         $heading .= '&nbsp;<span class="note">' . $class['occurrance'] . '</span>';
       }
-      
+
       $html .= <<< HTML
     			<li class="top">
             <a href="#">$heading</a>
@@ -114,7 +114,7 @@ HTML;
           $obj_text = strip_tags($objectives['content'], '<b><i><strong><em><sub><sup>');
           $html .= <<< HTML
         				<li><input id="objective{$objcount}" name="{$idmod}_objectives[]" value="{$objectives['id']}" type="checkbox"{$checked} /> <label for="objective{$objcount}">{$obj_text}</label></li>
-  
+
 HTML;
           $objcount++;
         }
@@ -124,14 +124,14 @@ HTML;
 
 HTML;
       }
-        
+
       $html .= <<< HTML
             </ul>
           </li>
 
 HTML;
     }
-    
+
     $html .= <<< HTML
         </ul>
 
@@ -139,11 +139,11 @@ HTML;
     $html .= <<< HTML
     		<input name="{$idmod}_session" type="hidden" value="{$session}"/>
     		<input name="{$idmod}_old_mappings" type="hidden" value="{$old_mappings}" />
-        <input name="{$idmod}_vle_api" type="hidden" value="$vle_api_cache[$idmod]"/>
+        <input name="{$idmod}_vle_api" type="hidden" value="{$vle_api_cache[$idmod][$session]}"/>
 
 HTML;
   }
-  
+
   $checked = (isset($none_of_the_above['mapped'])) ? ' checked="checked"' : '';
   $modules_string = implode(',',$modules_array);
   $modules_keys_string = implode(',',array_keys($modules_array));
@@ -151,9 +151,9 @@ HTML;
   $html .= <<< HTML
         <p class="warning"><input value="-1" id="none_of_the_above" name="none_of_the_above" type="checkbox"{$checked} /><label for="none_of_the_above"><strong>{$string['noneabove']}</strong></label><br />{$nota_message}</p>
         <input id="objective_modules" name="objective_modules" type="hidden" value="{$modules_keys_string}" />
-        
+
 HTML;
-    
+
   return $html;
 }
 
@@ -183,14 +183,14 @@ QUERY;
   } else {
     $q_id = '';
   }
-  
+
   $objsByModuleSession = getObjectives($modules_array, $session, $paper_id, $q_id, $db);
 
   if (isset($objsByModuleSession['none_of_the_above'])) {
     $none_of_the_above = $objsByModuleSession['none_of_the_above'];
     unset($objsByModuleSession['none_of_the_above']);
   }
-  
+
   $html = '';
   foreach ($objsByModuleSession as $moduleid => $objsBySession) {
     $tmp = array_flip($modules_array);
@@ -245,7 +245,7 @@ QUERY;
     $html .= "<input id=\"" . $idmod . "_objectiveCount\" name=\"" . $idmod . "_objectiveCount\" type=\"hidden\" value=\"$objcount\"/>\n";
     $html .= "<input name=\"" . $idmod . "_session\" type=\"hidden\" value=\"$session\"/>\n";
     $html .= "<input name=\"" . $idmod . "_old_mappings\" type=\"hidden\" value=\"$old_mappings\"/>\n";
-    $html .= "<input name=\"" . $idmod . "_vle_api\" type=\"hidden\" value=\"$vle_api_cache[$idmod]\"/>\n";
+    $html .= "<input name=\"" . $idmod . "_vle_api\" type=\"hidden\" value=\"{$vle_api_cache[$idmod][$session]}\"/>\n";
   }
 
   //display none of the above !
@@ -272,10 +272,10 @@ QUERY;
 /**
  * This is function saveObjMappings it saves mappings to the relationships table in the Rogo database
  *
- * @param int $paper_id 
- * @param int $question_id 
- * @param object $db 
- * 
+ * @param int $paper_id
+ * @param int $question_id
+ * @param object $db
+ *
  */
 function save_objective_mappings($db, $modules, $paper_id, $question_id) {
   if ($paper_id != '' and substr($paper_id,0,5) != 'find:') {
@@ -296,7 +296,7 @@ function save_objective_mappings($db, $modules, $paper_id, $question_id) {
             $new_mappings .= $objective_id . ',';
           }
         }
-    
+
         //check for none of the above
         if (isset($_POST['none_of_the_above']) and $_POST['none_of_the_above'] == -1 and count($sql) == 0) {
           $sql[] = "INSERT INTO relationships VALUES (NULL, $idMod, $paper_id, $question_id, -1, '$session','$vle_api')";
@@ -325,10 +325,10 @@ function save_objective_mappings($db, $modules, $paper_id, $question_id) {
 /**
  * This is function saveObjMappings it saves mappings to the relationships table in the Rogo database
  *
- * @param int $paper_id 
- * @param int $question_id 
- * @param object $db 
- * 
+ * @param int $paper_id
+ * @param int $question_id
+ * @param object $db
+ *
  */
 function saveObjMappings($paper_id, $question_id, $db) {
   if (isset($_POST['modules']) and $paper_id != '' and substr($paper_id,0,5) != 'find:') {
@@ -376,17 +376,17 @@ function saveObjMappings($paper_id, $question_id, $db) {
 
 /**
  * This is function getObjectives this function gets objectives to be mapped. It can Retrieve objectives from
- * the internal database or an external application 
+ * the internal database or an external application
  *
  * @param string $thisModuleid module code
  * @param string $session A session in the format yyyy/yy
- * @param mixed $paperID 
- * @param mixed $questionID 
- * @param mixed $db 
+ * @param mixed $paperID
+ * @param mixed $questionID
+ * @param mixed $db
  * @return array an array of objectives and mappings
  *
  */
- 
+
 $objsBySession_cache = array();
 $vle_api_cache = array(); // cache the vle api to save some queries
 
@@ -485,7 +485,7 @@ function getObjectives($thisModuleid, $session, $paperID, $questionID, $db, $sco
     }
   }
   //END:: get the currently mapped objetives in Rogo
-  
+
   //get all the objetives
   foreach ($objsBySession as $moduleid => $sessions) {
   	if (!empty($sessions)) {
@@ -517,9 +517,9 @@ function getObjectives($thisModuleid, $session, $paperID, $questionID, $db, $sco
  *
  * @param array $thisModuleid module code
  * @param string $session A session in the format yyyy/yy
- * @param int $paperID 
- * @param int $questionID 
- * @param object $db 
+ * @param int $paperID
+ * @param int $questionID
+ * @param object $db
  * @return array This is the return value description
  *
  */
@@ -548,7 +548,7 @@ function getObjectivesByMapping($thisModuleid, $session, $paperID, $questionID, 
 	    }
   	}
   }
-  
+
   return $objsByMapping;
 }
 
@@ -566,23 +566,23 @@ function copyObjectives($objectives, $idMod, $module, $dest_session, $db) {
 		$identifier = intval(time());
 	}
 	$result->close();
-    
+
 	// Loop through the sessions for the source year
 	foreach ($objectives[$module] as $session) {
 		$occurrence_parts = explode('/', $session['occurrance']);
 		$occurrence_new = date('Y-m-d H:i:s', mktime(9, 0, 0, $occurrence_parts[1], $occurrence_parts[0], $occurrence_parts[2] + 1));
-		
+
 		// Save it
     $stmt = $db->prepare("INSERT INTO sessions(identifier, idMod, title, source_url, calendar_year, occurrence) VALUES (?, ?, ?, ?, ?, ?)");
     $stmt->bind_param('sissss', $identifier, $idMod, $session['title'], $session['source_url'], $dest_session, $occurrence_new);
 		$stmt->execute();
 		$err = $stmt->error;
     $stmt->close();
-    
+
     if(!empty($err)) {
     	throw new Exception($err);
     }
-    
+
     // Get starting point for objective ID
     $result = $db->prepare("SELECT MAX(obj_id) AS largest FROM objectives");
     $result->execute();
@@ -594,7 +594,7 @@ function copyObjectives($objectives, $idMod, $module, $dest_session, $db) {
       $obj_id = 123;
     }
     $result->close();
-    
+
 		// Loop through the objectives for the original session
     if (isset($session['objectives'])) {
       foreach ($session['objectives'] as $objective) {
@@ -608,11 +608,11 @@ function copyObjectives($objectives, $idMod, $module, $dest_session, $db) {
         if (!empty($err)) {
           throw new Exception($err);
         }
-        
+
         $obj_id++;
       }
     }
-    
+
 		$identifier++;
 	}
 }
