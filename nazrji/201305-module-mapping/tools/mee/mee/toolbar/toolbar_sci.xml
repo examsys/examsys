@@ -1,0 +1,4 @@
+<toolbar>
+	<items latex="\times 10 ^{}" display="10&lt;sup&gt;n&lt;/sup&gt;" />
+	<items latex="e^{}" display="e&lt;sup&gt;n&lt;/sup&gt;" />
+</toolbar>

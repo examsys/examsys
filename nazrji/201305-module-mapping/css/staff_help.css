@@ -1,0 +1,48 @@
+body {
+  font-size:85%;
+  line-height:150%;
+}
+a {
+  color:blue;
+}
+p, div, td, ol {
+  color:#484848;
+}
+ul {
+  list-style:square outside;
+  color:#f27000;
+}
+h1 {
+  font-size:150%;
+  color:black;
+}
+h2 {
+  font-size:140%;
+  color:#f27000;
+}
+hr {
+  margin-left:0px;
+  text-align:left;
+}
+.path {
+  background-color:#F2F2F2;
+  color:#666666;
+  font-size:80%;
+  padding-left:10px;
+  border-bottom:1px solid #B6B6B6;
+}
+.subheading {
+  font-weight:bold;
+  font-style:italic;
+}
+.tutorial {
+  background-color:#FCF6CF;
+  width:95%;
+  cursor:pointer;
+}
+.image_brd {
+  border:1px solid black;
+}
+.image_no_brd {
+  border:0px;
+}

@@ -1,0 +1,172 @@
+Users
+=====
+
+This file lists the users that exist in the selenium-base database. These are standard users that will not be changed by the tests themselves.
+
+System Administrator
+--------------------
+
+U: selenium
+P: srh*63Hh
+
+
+Staff
+-----
+
+U: teststaff
+P: lxn&98X21
+
+
+Student
+-------
+
+U: teststudent1
+P: xhb@19T*
+
+U: teststudent2
+P: nrt%52YQ
+
+U: teststudent3
+P: ycm-75Xj
+
+U: teststudent4
+P: fiu&52K3
+
+U: teststudent5
+P: sjg!12T^
+
+U: teststudent6
+P: ara!68X7
+
+U: teststudent7
+P: ogk_14DI
+
+U: teststudent8
+P: ynh$58S$
+
+U: teststudent9
+P: ykp*90Q3
+
+U: teststudent10
+P: jgl!34Z^
+
+U: teststudent11
+P: bkt_66Y4
+
+U: teststudent12
+P: rmu_74L4
+
+U: teststudent13
+P: hii.420R
+
+U: teststudent14
+P: mon~61Qt
+
+U: teststudent15
+P: scd=50AH
+
+U: teststudent16
+P: rxg.70P!
+
+U: teststudent17
+P: ncp*45R*
+
+U: teststudent18
+P: iur^33Hk
+
+U: teststudent19
+P: rsh$01A7
+
+U: teststudent20
+P: nmr-00C5
+
+U: teststudent21
+P: fro*29Gz
+
+U: teststudent22
+P: vcg&60Jo
+
+U: teststudent23
+P: asx^33R&
+
+U: teststudent24
+P: rww+35Xo
+
+U: teststudent25
+P: cym=42KE
+
+U: teststudent26
+P: xsu!61I5
+
+U: teststudent27
+P: cmr_55R4
+
+U: teststudent28
+P: ktw@12W2
+
+U: teststudent29
+P: xwm.86JP
+
+U: teststudent30
+P: mus^02P5
+
+U: teststudent31
+P: bnf!52Q8
+
+U: teststudent32
+P: ivo&15Ap
+
+U: teststudent33
+P: hku&22HZ
+
+U: teststudent34
+P: ool-66P@
+
+U: teststudent35
+P: agh~58Ir
+
+U: teststudent36
+P: uvy^44G4
+
+U: teststudent37
+P: xlo&22Ka
+
+U: teststudent38
+P: ael?94U-
+
+U: teststudent39
+P: fco!27K&
+
+U: teststudent40
+P: gjw=57N-
+
+U: teststudent41
+P: mya=54Wj
+
+U: teststudent42
+P: wvc-55Q^
+
+U: teststudent43
+P: vnt.680n
+
+U: teststudent44
+P: dej+01T3
+
+U: teststudent45
+P: rwi&42Wt
+
+U: teststudent46
+P: ytw=14MD
+
+U: teststudent47
+P: bxm*41M1
+
+U: teststudent48
+P: xyi@03W.
+
+U: teststudent49
+P: fcr_90PU
+
+U: teststudent50
+P: gbf%16W6
+

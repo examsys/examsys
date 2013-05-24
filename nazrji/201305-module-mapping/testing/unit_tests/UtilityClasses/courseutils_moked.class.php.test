@@ -1,0 +1,139 @@
+<?php
+
+  require_once "../classes/courseutils.class.php";
+  require_once "../classes/schoolutils.class.php";
+
+class CourseUtilsTests extends \Enhance\TestFixture
+{
+    
+  private $schoolID;
+  private $name;
+  private $description;
+  private $target;
+  private $mysqli;
+  private $mysqli_stmt;
+
+  // SetUp
+  public function setUp() 
+  {
+    //get a default mysqli and mysqli_stmt mock for DB testing 
+    $this->db = new Mock_mysqli();
+    
+    $this->target = \Enhance\Core::getCodeCoverageWrapper('CourseUtils');
+    $this->name = 'MyTestCourse';
+    $this->description = 'Some course discription';
+  }
+  
+  // TearDown
+  public function tearDown()
+  {
+  
+  }
+
+  public function check_add_course_test() {
+    
+    //what happen if the course alredy exists
+    $data = array(
+                  array(
+                        array(0=>23)
+                        )
+                );
+    $this->db->load_mock_data($data);
+    $res = $this->target->add_course(21, $this->name, $this->description, $this->db);
+    \Enhance\Assert::areIdentical(true, $res);  
+
+    //course does not exist
+    $data = array(array());
+    $this->db->load_mock_data($data);
+    $res = $this->target->add_course(21, $this->name, $this->description, $this->db);
+    \Enhance\Assert::areIdentical(true, $res); 
+
+  }
+
+  public function check_course_exists() {
+      
+    //"SELECT id FROM courses WHERE name=?"
+    $data = array(
+                  array(
+                        array(0=>23)
+                        )
+                );
+    $this->db->load_mock_data($data);
+
+    //test 1 row returned 
+    $res = $this->target->course_exists($this->name,$this->db);
+    \Enhance\Assert::areIdentical(true, $res);
+
+    //test 5 row returned 
+    $data = array(
+                  array(  
+                    array(0=>23),
+                    array(1=>22),
+                    array(2=>24),
+                    array(3=>25),
+                    array(4=>26),
+                    array(5=>27)
+                  )
+                );
+    $this->db->load_mock_data($data);
+    $res = $this->target->course_exists($this->name,$this->db);
+    \Enhance\Assert::areIdentical(true, $res);
+
+
+    //test 0 row returned 
+    $data = array();
+    $this->db->load_mock_data($data);
+    $res = $this->target->course_exists($this->name,$this->db);
+    \Enhance\Assert::areIdentical(false, $res);
+
+  }
+  
+  
+  public function check_courseid_exists() {
+      
+    //"SELECT id FROM courses WHERE id=?"
+    $data = array(
+                  array(
+                        array(0=>23)
+                        )
+                );
+    $this->db->load_mock_data($data);
+
+    //test 1 row returned 
+    $res = $this->target->courseid_exists($this->name,$this->db);
+    \Enhance\Assert::areIdentical(true, $res);
+
+    //test 5 row returned 
+    $data = array(
+                  array(  
+                    array(0=>23),
+                    array(1=>22),
+                    array(2=>24),
+                    array(3=>25),
+                    array(4=>26),
+                    array(5=>27)
+                  )
+                );
+    $this->db->load_mock_data($data);
+    $res = $this->target->courseid_exists($this->name,$this->db);
+    \Enhance\Assert::areIdentical(true, $res);
+
+
+    //test 0 row returned 
+    $data = array();
+    $this->db->load_mock_data($data);
+    $res = $this->target->courseid_exists($this->name,$this->db);
+    \Enhance\Assert::areIdentical(false, $res);
+
+  }
+
+  public function check_delete_course() {
+    //positive case
+    $data = array(array());
+    $this->db->load_mock_data($data);
+    $res = $this->target->delete_course($this->name, $this->db);
+    \Enhance\Assert::areIdentical(true, $res); 
+  }
+
+}
+?>

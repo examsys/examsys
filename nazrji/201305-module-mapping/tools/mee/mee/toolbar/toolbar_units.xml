@@ -1,0 +1,57 @@
+<toolbar>
+	<items latex="^{}" display="x&lt;sup&gt;n&lt;/sup&gt;" />
+	<items latex="_{}" display="x&lt;sub&gt;n&lt;/sub&gt;" />
+	<items desc="Greek" display="&amp;alpha;" popupwidth="257">
+		<sections heading="Lower Case" _class="tbpm_grid">
+		  <items latex="\alpha " display="&#x03B1;" />
+		  <items latex="\beta " display="&#x03B2;" />
+		  <items latex="\gamma " display="&#x03B3;" />
+		  <items latex="\delta " display="&#x03B4;" />
+		  <items latex="\epsilon " display="&#x03F5;" />
+		  <items latex="\zeta " display="&#x03B6;" />
+		  <items latex="\eta " display="&#x03B7;" />
+		  <items latex="\theta " display="&#x03B8;" />
+		  <items latex="\iota " display="&#x03B9;" />
+		  <items latex="\kappa " display="&#x03BA;" />
+		  <items latex="\lambda " display="&#x03BB;" />
+		  <items latex="\mu " display="&#x03BC;" />
+		  <items latex="\nu " display="&#x03BD;" />
+		  <items latex="\xi " display="&#x03BE;" />
+		  <items latex="\omicron " display="&#x03BF;" />
+		  <items latex="\pi " display="&#x03C0;" />
+		  <items latex="\rho " display="&#x03C1;" />
+		  <items latex="\sigma " display="&#x03C3;" />
+		  <items latex="\tau " display="&#x03C4;" />
+		  <items latex="\upsilon " display="&#x03C5;" />
+		  <items latex="\phi " display="&#x03D5;" />
+		  <items latex="\chi " display="&#x03C7;" />
+		  <items latex="\psi " display="&#x03C8;" />
+		  <items latex="\omega " display="&#x03C9;" />
+		</sections>
+		<sections heading="Upper Case" _class="tbpm_grid">
+		  <items latex="\Gamma " display="&#x0393;" />
+		  <items latex="\Delta " display="&#x0394;" />
+		  <items latex="\Theta " display="&#x0398;" />
+		  <items latex="\Lambda " display="&#x039B;" />
+		  <items latex="\Xi " display="&#x039E;" />
+		  <items latex="\Pi " display="&#x03A0;" />
+		  <items latex="\Sigma " display="&#x03A3;" />
+		  <items latex="\Upsilon " display="&#x03A5;" />
+		  <items latex="\Phi " display="&#x03A6;" />
+		  <items latex="\Psi " display="&#x03A8;" />
+		  <items latex="\Omega " display="&#x03A9;" />
+		</sections>
+		<sections heading="Variants" _class="tbpm_grid">
+		  <items latex="\varepsilon " display="&#x03B5;" />
+		  <items latex="\vartheta " display="&#x03D1;" />
+		  <items latex="\varpi " display="&#x03D6;" />
+		  <items latex="\varrho " display="&#x03F1;" />
+		  <items latex="\varsigma " display="&#x03C2;" />
+		  <items latex="\varphi " display="&#x03C6;" />
+		  <items latex="\digamma " display="&#x03DC;" />
+		  <items latex="\varkappa " display="&#x03F0;" />
+		</sections>
+        </items>
+        <items>
+        </items>
+</toolbar>

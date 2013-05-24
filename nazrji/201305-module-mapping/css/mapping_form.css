@@ -1,0 +1,51 @@
+/* General classes */
+.hide {
+	display: none;
+}
+
+.warning {
+  color: #800000;
+}
+
+/* Mapping */
+.objectives li {
+	margin: 0;
+	list-style: none;
+  font-size: 90%;
+  margin-bottom: 8px;
+}
+
+.objectives .top a {
+  background: url('../artwork/plus.png') no-repeat 0px 2px;
+  padding-left: 16px;
+  margin-bottom: 6px;
+	color: #316AC5;
+	font-weight: bold;
+	text-decoration: none;
+}
+
+.objectives .top.open a {
+  background: url('../artwork/minus.png') no-repeat 0px 2px;
+}
+
+.objectives .top ul {
+	padding-left: 18px;
+}
+
+.objectives .top ul li {
+	margin: 0px;
+}
+
+/* Mapping page styles */
+#obj_form {
+	margin-left:10px
+}
+
+#obj_form h2, #obj_form ul {
+	margin-left: 0;
+	padding-left: 0;
+}
+
+#obj_form ul ul li {
+	padding-left: 14px;
+}

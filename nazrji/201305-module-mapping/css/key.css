@@ -1,0 +1,10 @@
+.key {
+  width:90%;
+  background-color:#E4EEFC;
+  border:1px solid #B5C4DF;
+  border-radius:4px;
+  text-align:left;
+  margin-left:auto;
+  margin-right:auto;
+  padding:6px;
+}

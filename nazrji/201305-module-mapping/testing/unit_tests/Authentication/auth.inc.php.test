@@ -1,0 +1,75 @@
+<?php
+// This file is part of Rogō
+//
+// Rogō is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Rogō is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+* 
+* Rogō auth.inc unit tests.
+* 
+* @author Anthony Brown
+* @version 1.0
+* @copyright Copyright (c) 2012 The University of Nottingham
+* @package
+*/
+
+global $cfg_web_root;
+require_once "../include/auth.inc";
+
+Class AuthIncWrapper {
+
+    function encpw($salt, $u, $p, $type) {
+        return encpw($salt, $u, $p, $type);
+    }
+
+    function gen_password($len) {
+        return gen_password($len);
+    }
+}
+
+class AuthInc extends \Enhance\TestFixture
+{
+
+    private $target;
+
+    // SetUp
+    public function setUp() 
+    {
+    	$this->target = \Enhance\Core::getCodeCoverageWrapper('AuthIncWrapper');
+
+    }
+    
+    // TearDown
+    public function tearDown()
+    {
+    
+    }
+
+    public function test_gen_password() {
+
+        $length = array(0,1,5,10,20,50,100);
+        foreach($length as $l) {
+            $res = $this->target->gen_password($l);
+            \Enhance\Assert::areIdentical($l, strlen($res));
+        }
+
+        //quick test that it genorates 1000 difrent passwords
+        $res = array();
+        for($i=1; $i<=1000; $i++) {
+            $res[$this->target->gen_password(8)] = 1;
+        }
+        \Enhance\Assert::areIdentical(1000, count($res));
+
+    }
+}

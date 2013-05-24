@@ -1,0 +1,609 @@
+<?php
+// This file is part of Rogō
+//
+// Rogō is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Rogō is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+* 
+* Rogō paper_security.inc unit tests.
+* 
+* @author Anthony Brown
+* @version 1.0
+* @copyright Copyright (c) 2012 The University of Nottingham
+* @package
+*/
+
+global $cfg_web_root;
+
+require_once $cfg_web_root . '/include/paper_security.inc';
+
+Class PaperSecurityWrapper {
+  
+  function check_labs($paper_type, $labs, $address, $pword, $string, $mysqlidb) {
+    return check_labs($paper_type, $labs, $address, $pword, $string, $mysqlidb);
+  }
+
+  function check_paper_password($password, $string, $show_form=false) {
+    return check_paper_password($password, $string, $show_form);
+  }
+
+  function check_datetime($start_date, $end_date) {
+    return check_datetime($start_date, $end_date);
+  }
+  
+  function check_modules($userObj, $moduleIDs, $calendar_year, $db) {
+    return check_modules($userObj, $moduleIDs, $calendar_year, $db);
+  }
+
+  function check_metadata($property_id, $userObj, $moduleIDs, $string, $db) {
+    return check_metadata($property_id, $userObj, $moduleIDs, $string, $db);
+  }
+
+  function render_password_form($string) {
+    return render_password_form($string);
+  }
+}
+
+class PaperSecurity extends \Enhance\TestFixture
+{
+    
+  private $target;
+  private $db;
+  private $minuet;
+  private $hour;
+  private $day;
+  private $string;
+
+  // SetUp
+  public function setUp() 
+  {
+    //get a default mysqli and mysqli_stmt mock for DB testing 
+    $this->db = new Mock_mysqli();
+    $this->target = \Enhance\Core::getCodeCoverageWrapper('PaperSecurityWrapper');
+    $this->minuet = 60;
+    $this->hour = $this->minuet * 60;
+    $this->day = $this->hour * 24;
+    $this->string = array(
+                    'denied_location' => 'denied_location',
+                    'denied_location' => 'denied_location',
+                    'specificpassword' => 'specificpassword',
+                    'passwordrequired' => 'passwordrequired',
+                    'specificpassword' => 'specificpassword',
+                    'error_metadata' => 'error_metadata',
+                    'enterpw' => 'enterpw'
+                  );
+  }
+  
+  // TearDown
+  public function tearDown()
+  {
+  
+  }
+  
+  //summative exams must be on a lab or have a password set or we should deny access 
+  public function summative_exam_has_no_labs_and_no_password() {
+    $paper_type = 2;
+    $labs = "";
+    $pword = '';
+    $address = '127.0.0.1';
+    
+    //TEST fail case no labs found
+    $mock = \Enhance\MockFactory::createMock('UserNotices');
+    $mock->addExpectation(
+                            \Enhance\Expect::method('access_denied')->times(1)
+                          );
+    UserNotices::set_mock_instance($mock);
+
+    $data = array(array(),);
+    $this->db->load_mock_data($data);
+    $res = $this->target->check_labs($paper_type, $labs, $address, $pword, $this->string, $this->db);
+    $mock->verifyExpectations();
+
+  }
+
+  //If a summative exam has no labs but has a password set we should allow access 
+  public function summative_exam_no_labs_but_password_is_set() {
+    $paper_type = 2;
+    $labs = "'A12','C20'";
+    $pword = 'ThisIsARubishPaperPassword';
+    $address = '127.0.0.1';
+    
+    //TEST Exit if a summative exam is on no labs and no password 
+    $mock = \Enhance\MockFactory::createMock('UserNotices');
+    $mock->addExpectation(
+                            \Enhance\Expect::method('access_denied')->times(0)
+                          );
+    UserNotices::set_mock_instance($mock);
+
+    $data = array(array(),);
+    $this->db->load_mock_data($data);
+    $res = $this->target->check_labs($paper_type, NULL, $address, $pword, $this->string, $this->db);
+    $mock->verifyExpectations();
+  
+  }
+
+  //summertive exam is on some labs and the IP of the accessing computer is in one of those labs - we should allow access
+  public function summative_exam_has_labs_2_and_IP_found_in_lab() {
+    $paper_type = 2;
+    $labs = "'A12','C20'";
+    $pword = '';
+    $address = '127.0.0.1';
+
+    $mock = \Enhance\MockFactory::createMock('UserNotices');
+    $mock->addExpectation(
+                            \Enhance\Expect::method('access_denied')->times(0)
+                          );
+    UserNotices::set_mock_instance($mock);
+    $data = array(
+                  array(
+                      array(0=>9)
+                    )
+                  );
+    $this->db->load_mock_data($data);
+    $res = $this->target->check_labs($paper_type, $labs, $address, $pword, $this->string, $this->db);
+    $mock->verifyExpectations();
+    \Enhance\Assert::areIdentical(9, $res);
+  }
+
+  //summertive exam is on some labs but the IP of the accessing computer is outside those labs - we should deny access
+  public function summative_exam_has_labs_2_and_IP_NOT_found_in_lab() {
+    $paper_type = 2;
+    $labs = "'A12','C20'";
+    $pword = '';
+    $address = '127.0.0.1';
+
+    $mock = \Enhance\MockFactory::createMock('UserNotices');
+    $mock->addExpectation(
+                            \Enhance\Expect::method('access_denied')->times(1)
+                          );
+    UserNotices::set_mock_instance($mock);
+    $data = array(                  );
+    $this->db->load_mock_data($data);
+    $res = $this->target->check_labs($paper_type, $labs, $address, $pword, $this->string, $this->db);
+    $mock->verifyExpectations();
+  }
+  
+  //paper has no password - we should allow access
+  public function paper_has_no_password() {
+    $mock = \Enhance\MockFactory::createMock('UserNotices');
+    $mock->addExpectation(
+                            \Enhance\Expect::method('access_denied')->times(0)
+                          );
+    UserNotices::set_mock_instance($mock);
+    $this->target->check_paper_password('', $this->string, false);
+    $mock->verifyExpectations();
+  }
+
+  //TEST paper has a password but $_COOKIE['paperpwd'] is not set should deny access
+  public function paper_has_a_password_but_it_is_not_supplyed() {
+   
+    unset($_COOKIE['paperpwd']);
+    unset($_POST['paperpwd']);
+    $mock = \Enhance\MockFactory::createMock('UserNotices');
+    $mock->addExpectation(
+                            \Enhance\Expect::method('access_denied')->times(1)
+                          );
+    UserNotices::set_mock_instance($mock);
+    $_POST['paperpwd'] = "WOOT";
+    $this->target->check_paper_password('SomeRandomPassword', $this->string, false);
+    $mock->verifyExpectations();
+  }
+
+  //TEST paper has a password and $_COOKIE['paperpwd'] is set but it is not correct should deny access
+  public function paper_has_a_password_wrong_password_set_in_COOKIE() {
+    
+    //TEST password set but $_COOKIE['paperpwd'] incorrect should deny access
+    $_COOKIE['paperpwd'] = 'ThisIsNotTheCorrectPassword';
+    unset($_POST['paperpwd']);
+    $mock = \Enhance\MockFactory::createMock('UserNotices');
+    $mock->addExpectation(
+                            \Enhance\Expect::method('access_denied')->times(1)
+                          );
+    UserNotices::set_mock_instance($mock);
+    $this->target->check_paper_password('SomeRandomPassword', $this->string, false);
+    $mock->verifyExpectations();
+  }
+
+  //TEST paper has a password but $_COOKIE['paperpwd'] is not set and show form is true should deny access
+  public function paper_has_a_password_but_it_is_not_supplyed_show_form_is_true() {
+    
+    unset($_COOKIE['paperpwd']);
+    unset($_POST['paperpwd']);
+    $mock = \Enhance\MockFactory::createMock('UserNotices');
+    $mock->addExpectation(
+                            \Enhance\Expect::method('display_notice')->times(1)
+                          );
+    $mock->addExpectation(
+                            \Enhance\Expect::method('exit_php')->times(1)
+                          );
+    UserNotices::set_mock_instance($mock);
+    ob_start();
+    $this->target->check_paper_password('SomeRandomPassword', $this->string, true);
+    ob_end_clean();
+    $mock->verifyExpectations();
+  }
+
+  //TEST paper needs a password but $_COOKIE['paperpwd'] unset and $_POST['paperpwd'] is correct and show form is true should allow access
+  public function paper_has_a_password_but_it_is_not_in_the_COOKIE_but_is_correct_in_POST_show_form_is_true() {
+    
+    unset($_COOKIE['paperpwd']);
+    $_POST['paperpwd'] = 'SomeRandomPassword';
+    $mock = \Enhance\MockFactory::createMock('UserNotices');
+    $mock->addExpectation(
+                            \Enhance\Expect::method('access_denied')->times(0)
+                          );
+    UserNotices::set_mock_instance($mock);
+    $this->target->check_paper_password('SomeRandomPassword', $this->string, true);
+    $mock->verifyExpectations();
+  }
+
+  //TEST password set but $_COOKIE['paperpwd'] unset and $_POST['paperpwd'] is incorrect and show form is true should deny access
+  public function paper_has_a_password_but_it_is_not_in_the_COOKIE_but_is_incorect_in_POST_show_form_is_true() {
+    
+    unset($_COOKIE['paperpwd']);
+    $_POST['paperpwd'] = 'ThisIsNotTheCorrectPassword';
+    $mock = \Enhance\MockFactory::createMock('UserNotices');
+    $mock->addExpectation(
+                            \Enhance\Expect::method('display_notice')->times(1)
+                          );
+    $mock->addExpectation(
+                            \Enhance\Expect::method('exit_php')->times(1)
+                          );
+    UserNotices::set_mock_instance($mock);
+    ob_start();
+    $this->target->check_paper_password('SomeRandomPassword', $this->string, true);
+    ob_end_clean();
+    $mock->verifyExpectations();
+  }
+
+  //TEST paper needs a password and $_COOKIE['paperpwd'] is set and matches password should allow access
+  public function paper_has_a_password_and_COOKIE_contains_correct_password() {
+    
+    $_COOKIE['paperpwd'] = 'SomeRandomPassword';
+    unset($_POST['paperpwd']);
+    $mock = \Enhance\MockFactory::createMock('UserNotices');
+    $mock->addExpectation(
+                            \Enhance\Expect::method('access_denied')->times(0)
+                          );
+    UserNotices::set_mock_instance($mock);
+    $this->target->check_paper_password('SomeRandomPassword', $this->string, false);
+    $mock->verifyExpectations();
+
+  }
+
+  //TEST valid dates 1 minuets after start of exam
+  public function one_minuet_after_start_of_exam() {
+    $mock = \Enhance\MockFactory::createMock('UserNotices');
+    $mock->addExpectation(
+                            \Enhance\Expect::method('access_denied')->times(0)
+                          );
+    UserNotices::set_mock_instance($mock);
+    $start_date = time() - $this->minuet;  
+    $end_date = time() + $this->hour; 
+    $this->target->check_datetime($start_date, $end_date);
+    $mock->verifyExpectations();
+  }
+
+  //TEST invalid dates 3 minuets before start of exam
+  public function three_minuet_before_start_of_exam() {
+    $mock = \Enhance\MockFactory::createMock('UserNotices');
+    $mock->addExpectation(
+                            \Enhance\Expect::method('access_denied')->times(1)
+                          );
+    UserNotices::set_mock_instance($mock);
+    $start_date = time() + (3 * $this->minuet);  
+    $end_date = time() + $this->hour; 
+    $this->target->check_datetime($start_date, $end_date);
+    $mock->verifyExpectations();
+  }
+
+  //TEST invalid dates 3 minuets before start of exam
+  public function one_minuet_59_sec_before_start_of_exam() {
+    $mock = \Enhance\MockFactory::createMock('UserNotices');
+    $mock->addExpectation(
+                            \Enhance\Expect::method('access_denied')->times(1)
+                          );
+    UserNotices::set_mock_instance($mock);
+    $start_date = time() + (2 * $this->minuet) + 1;  
+    $end_date = time() + $this->hour; 
+    $this->target->check_datetime($start_date, $end_date);
+    $mock->verifyExpectations();
+  }
+
+  //TEST invalid dates 3 minuets before start of exam
+  public function two_minuets_before_start_of_exam() {
+    $mock = \Enhance\MockFactory::createMock('UserNotices');
+    $mock->addExpectation(
+                            \Enhance\Expect::method('access_denied')->times(0)
+                          );
+    UserNotices::set_mock_instance($mock);
+    $start_date = time() + (2 * $this->minuet);  
+    $end_date = time() + $this->hour; 
+    $this->target->check_datetime($start_date, $end_date);
+    $mock->verifyExpectations();
+  }
+
+  //TEST one second after exam has started access allowed
+  public function one_second_after_exam_has_started() {
+    $mock = \Enhance\MockFactory::createMock('UserNotices');
+    $mock->addExpectation(
+                            \Enhance\Expect::method('access_denied')->times(0)
+                          );
+    UserNotices::set_mock_instance($mock);
+    $start_date = time() - 1;  
+    $end_date = time() + $this->hour; 
+    $this->target->check_datetime($start_date, $end_date);
+    $mock->verifyExpectations();
+  }
+
+
+  //TEST valid dates exactly the end of the exam
+  public function exactly_the_end_of_exam() {
+    $mock = \Enhance\MockFactory::createMock('UserNotices');
+    $mock->addExpectation(
+                            \Enhance\Expect::method('access_denied')->times(0)
+                          );
+    UserNotices::set_mock_instance($mock);
+    $start_date = time() - $this->hour;  
+    $end_date = time(); 
+    $this->target->check_datetime($start_date, $end_date);
+    $mock->verifyExpectations();
+  }
+
+  //TEST invalid dates 1 hour after end of exam
+  public function one_hour_after_the_end_of_exam() {
+    $mock = \Enhance\MockFactory::createMock('UserNotices');
+    $mock->addExpectation(
+                            \Enhance\Expect::method('access_denied')->times(0)
+                          );
+    UserNotices::set_mock_instance($mock);
+    $start_date = time() - (2 * $this->hour);  
+    $end_date = time() - $this->hour; 
+    $this->target->check_datetime($start_date, $end_date);
+    $mock->verifyExpectations();
+  }
+
+  //TEST invalid dates 1 hour and 1 second after end of exam
+  public function one_hour_and_1_second_after_the_end_of_exam() {
+    $mock = \Enhance\MockFactory::createMock('UserNotices');
+    $mock->addExpectation(
+                            \Enhance\Expect::method('access_denied')->times(1)
+                          );
+    UserNotices::set_mock_instance($mock);
+    $start_date = time() - (2 * $this->hour);  
+    $end_date = time() - $this->hour - 1; 
+    $this->target->check_datetime($start_date, $end_date);
+    $mock->verifyExpectations();
+  }
+
+  //TEST invalid dates 2 hours after end of exam
+  public function two_hours_after_end_of_exam() {
+    $mock = \Enhance\MockFactory::createMock('UserNotices');
+    $mock->addExpectation(
+                            \Enhance\Expect::method('access_denied')->times(1)
+                          );
+    UserNotices::set_mock_instance($mock);
+    $start_date = time() - (3 * $this->hour);  
+    $end_date = time() - (2 * $this->hour); 
+    $this->target->check_datetime($start_date, $end_date);
+    $mock->verifyExpectations();
+  }
+
+  //check guest users are allowed access to any module
+  public function check_modules_guest_users() {
+    $userObj = \Enhance\StubFactory::createStub('UserObject');
+    $moduleIDs = array('99');
+    $calendar_year = '2012/13';
+
+    //TEST username begins with user should always return 1
+    $_SERVER['PHP_AUTH_USER'] = 'user101';
+    $res = $this->target->check_modules($userObj, $moduleIDs, $calendar_year, $this->db);
+    \Enhance\Assert::areIdentical(1,$res);
+    $_SERVER['PHP_AUTH_USER'] = 'user1';
+    $res = $this->target->check_modules($userObj, $moduleIDs, $calendar_year, $this->db);
+    \Enhance\Assert::areIdentical(1,$res);
+    $_SERVER['PHP_AUTH_USER'] = 'user123123dfsdfsd';
+    $res = $this->target->check_modules($userObj, $moduleIDs, $calendar_year, $this->db);
+    \Enhance\Assert::areIdentical(1,$res);
+
+    //TEST username does not begin with user but user is in the name should call access_denied if no modules are found
+    $_SERVER['PHP_AUTH_USER'] = 'mzyuser';
+    $mock = \Enhance\MockFactory::createMock('UserNotices');
+    $mock->addExpectation(
+                            \Enhance\Expect::method('access_denied')->times(1)
+                          );
+    UserNotices::set_mock_instance($mock);
+    $res = $this->target->check_modules($userObj, array(), $calendar_year, $this->db);
+    $mock->verifyExpectations();
+  }
+
+  //check normal user with no modules are denied access
+  public function paper_on_module_normal_user_has_no_modules() {
+    $userObj = \Enhance\StubFactory::createStub('UserObject');
+    $moduleIDs = array('99');
+    $calendar_year = '2012/13';
+
+    $_SERVER['PHP_AUTH_USER'] = 'mzytmp1';
+    $mock = \Enhance\MockFactory::createMock('UserNotices');
+    $mock->addExpectation(
+                            \Enhance\Expect::method('access_denied')->times(1)
+                          );
+    UserNotices::set_mock_instance($mock);
+    $res = $this->target->check_modules($userObj, array(), $calendar_year, $this->db);
+    $mock->verifyExpectations();
+  }
+
+  //TEST normal user who is on modules but not the modules of this paper should call access_denied
+  public function paper_on_module_normal_user_has_incorrect_modules() {
+    $userObj = \Enhance\StubFactory::createStub('UserObject');
+    $moduleIDs = array('99');
+    $calendar_year = '2012/13';
+
+    $_SERVER['PHP_AUTH_USER'] = 'mzytmp1';
+    $data = array(array());
+    $this->db->load_mock_data($data);
+    $mock = \Enhance\MockFactory::createMock('UserNotices');
+    $mock->addExpectation(
+                            \Enhance\Expect::method('access_denied')->times(1)
+                          );
+    UserNotices::set_mock_instance($mock);
+    $res = $this->target->check_modules($userObj, $moduleIDs, $calendar_year, $this->db);
+    $mock->verifyExpectations();
+  }
+
+  //TEST normal user who is on the modules required for access to be granted
+  public function paper_on_module_normal_user_has_correct_modules() {
+    $userObj = \Enhance\StubFactory::createStub('UserObject');
+    $moduleIDs = array('99');
+    $calendar_year = '2012/13';
+
+    $_SERVER['PHP_AUTH_USER'] = 'mzytmp1';
+    $data = array(  
+                    array(
+                          array(0=>99,1=>5) //moduleid=99, attempt=5
+                        )
+                  );
+    $this->db->load_mock_data($data);
+    $mock = \Enhance\MockFactory::createMock('UserNotices');
+    $mock->addExpectation(
+                            \Enhance\Expect::method('access_denied')->times(0)
+                          );
+    UserNotices::set_mock_instance($mock);
+    $module_utils_stub = \Enhance\StubFactory::createStub('module_utils');
+    module_utils::set_mock_instance($module_utils_stub);
+    $res = $this->target->check_modules($userObj, $moduleIDs, $calendar_year, $this->db);
+    $mock->verifyExpectations();
+    \Enhance\Assert::areIdentical(5,$res);
+  }
+    
+  //paper has no meta data always allow access
+  public function paper_has_no_metadata() {
+    $property_id = 1;
+    $userObj = \Enhance\StubFactory::createStub('UserObject');
+    $moduleIDs = array('10','11');
+
+    //TEST PASS case no meta
+    $mock = \Enhance\MockFactory::createMock('UserNotices');
+    $mock->addExpectation(
+                            \Enhance\Expect::method('access_denied')->times(0)
+                          );
+    UserNotices::set_mock_instance($mock);
+    
+    $metadata = array();
+    $Paper_utils_mock = \Enhance\MockFactory::createMock('Paper_utils');
+    $Paper_utils_mock->addExpectation(
+                            \Enhance\Expect::method('get_metadata')->returns($metadata)
+                          );
+    Paper_utils::set_mock_instance($Paper_utils_mock);
+
+    $res = $this->target->check_metadata($property_id, $userObj, $moduleIDs, $this->string, $this->db);
+    $mock->verifyExpectations();
+  }
+
+  //TEST PASS case meta found and user has that meta data 
+  public function paper_has_metadata_and_user_has_correct_metadata() {
+    $property_id = 1;
+    $moduleIDs = array('10','11');
+
+    $userObj = \Enhance\MockFactory::createMock('UserObject');
+    $userObj->addExpectation(
+                            \Enhance\Expect::method('has_metadata')->returns(true)
+                          );
+
+    $UserNotices_mock = \Enhance\MockFactory::createMock('UserNotices');
+    $UserNotices_mock->addExpectation(
+                            \Enhance\Expect::method('access_denied')->times(0)
+                          );
+    UserNotices::set_mock_instance($UserNotices_mock);
+
+    $metadata = array(
+                       array(0=>'Group', 1=>'A'),
+                       array(0=>'Group', 1=>'B'),
+                    );
+    $Paper_utils_mock = \Enhance\MockFactory::createMock('Paper_utils');
+    $Paper_utils_mock->addExpectation(
+                            \Enhance\Expect::method('get_metadata')->returns($metadata)
+                          );
+    Paper_utils::set_mock_instance($Paper_utils_mock);
+
+    $res = $this->target->check_metadata($property_id, $userObj, $moduleIDs, $this->string, $this->db);
+    $UserNotices_mock->verifyExpectations();
+  }
+  
+  //TEST FAIL case meta found and user no meta data 
+  public function paper_has_metadata_and_user_has_no_metadata() {
+    $property_id = 1;
+    $moduleIDs = array('10','11');
+
+    $userObj = \Enhance\MockFactory::createMock('UserObject');
+    $userObj->addExpectation(
+                            \Enhance\Expect::method('has_metadata')->returns(false)
+                          );
+
+    $UserNotices_mock = \Enhance\MockFactory::createMock('UserNotices');
+    $UserNotices_mock->addExpectation(
+                            \Enhance\Expect::method('access_denied')->times(1)
+                          );
+    UserNotices::set_mock_instance($UserNotices_mock);
+    
+    $metadata = array(
+                       array(0=>'Group', 1=>'A'),
+                    );
+    $Paper_utils_mock = \Enhance\MockFactory::createMock('Paper_utils');
+    $Paper_utils_mock->addExpectation(
+                            \Enhance\Expect::method('get_metadata')->returns($metadata)
+                          );
+    Paper_utils::set_mock_instance($Paper_utils_mock);
+
+    $res = $this->target->check_metadata($property_id, $userObj, $moduleIDs, $this->string, $this->db);
+    $UserNotices_mock->verifyExpectations();
+  }
+
+  //TEST FAIL case meta found and user no meta data 
+  public function paper_has_metadata_and_user_has_incorrect_metadata() {
+    $property_id = 1;
+    $moduleIDs = array('10','11');
+
+    $userObj = \Enhance\MockFactory::createMock('UserObject');
+    $userObj->addExpectation(
+                            \Enhance\Expect::method('has_metadata')->returns(false)
+                          );
+
+    $mock = \Enhance\MockFactory::createMock('UserNotices');
+    $mock->addExpectation(
+                            \Enhance\Expect::method('access_denied')->times(2)
+                          );
+    UserNotices::set_mock_instance($mock);
+    
+    $metadata = array(
+                       array(0=>'Group', 1=>'Foo'),
+                       array(0=>'Group', 1=>'Bar'),
+                    );
+    $Paper_utils_mock = \Enhance\MockFactory::createMock('Paper_utils');
+    $Paper_utils_mock->addExpectation(
+                            \Enhance\Expect::method('get_metadata')->returns($metadata)
+                          );
+    Paper_utils::set_mock_instance($Paper_utils_mock);
+
+    $res = $this->target->check_metadata($property_id, $userObj, $moduleIDs, $this->string, $this->db);
+    $mock->verifyExpectations();
+  }
+
+  public function test_render_password_form() {
+    //nothing to test just here to stop warnings
+    $this->target->render_password_form(array('pwcontinue'=>'','enterpw'=>''));
+    \Enhance\Assert::areIdentical(1,1);
+  }
+}
+?>

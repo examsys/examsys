@@ -1,0 +1,244 @@
+<?php
+// This file is part of Rogō
+//
+// Rogō is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Rogō is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+*
+* Edit a students modules
+*
+* @author Simon Wilkinson
+* @version 1.0
+* @copyright Copyright (c) 2013 The University of Nottingham
+* @package
+*/
+
+require_once '../include/admin_auth.inc';
+require_once '../include/errors.inc';
+require_once '../classes/dateutils.class.php';
+require_once '../classes/userutils.class.php';
+
+$userID = check_var('userID', 'REQUEST', true, false, true);
+
+if (!UserUtils::userid_exists($userID, $mysqli)) {
+  $msg = sprintf($string['furtherassistance'], $configObject->get('support_email'), $configObject->get('support_email'));
+  $notice->display_notice_and_exit($mysqli, $string['pagenotfound'], $msg, $string['pagenotfound'], '../artwork/page_not_found.png', '#C00000', true, true);
+}
+
+function drawTabs($current_tab) {
+  global $string;
+
+  $html = '<table cellpadding="0" cellspacing="0" border="0" style="font-size:100%"><tr><td style="width:264px"><strong>' . $string['modulesfor'] . ' ' . $_GET['session'] . ':</strong></td>';
+  for ($i=1; $i<=3; $i++) {
+    if ($i == $current_tab) {
+      $html .= "<td style=\"cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; background-image:url(../artwork/tab_on.gif)\" onclick=\"showTab('list$i')\">" . $string[$i] . "</td>";
+    } else {
+      $html .= "<td style=\"cursor:pointer; width:126px; height:21px; color:white; text-align:center; font-weight:bold; background-image:url(../artwork/tab_off.gif)\" onclick=\"showTab('list$i')\">" . $string[$i] . "</td>";
+    }
+  }
+  $html .= "</tr></table>\n";
+  return $html;
+}
+
+function list_modules($mod, $id, $student_mod) {
+  $old_letter = '';
+
+  if ($id == '1') {
+    echo "<div style=\"display:block; width:100%; border-bottom:10px\" id=\"list$id\">";
+  } else {
+    echo "<div style=\"display:none; width:100%; border-bottom:10px\" id=\"list$id\">";
+  }
+
+  echo drawTabs($id);
+
+  if ($id == '1') {
+    echo "<div style=\"width:100%; height:100%; overflow-y:scroll; border:1px solid #95AEC8; background-color:white; font-size:90%\" id=\"list$id\">";
+  } else {
+    echo "<div style=\"width:100%; height:100%; overflow-y:scroll; border:1px solid #95AEC8; background-color:white; font-size:90%\" id=\"list$id\">";
+  }
+
+  $loop=0;
+  foreach ($mod as $idMod => $mod_info) {
+    $moduleid = $mod_info['moduleid'];
+    $fullname = $mod_info['fullname'];
+
+    if ($old_letter != strtoupper(substr($moduleid,0,1))) {
+      echo "<table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>&nbsp;" . strtoupper(substr($moduleid,0,1)) . "</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
+    }
+
+    if (isset($student_mod[$idMod]) and $student_mod[$idMod]['attempt'] == $id) {
+      echo "<div style=\"text-indent:-23px; padding-left:43px; background-color:#B3C8E8\" id=\"divmod" . $id . "_" . $loop . "\"><input type=\"checkbox\" onclick=\"toggle('divmod" . $id . "_" . $loop . "')\" name=\"mod" . $id . "_" . $loop . "\" id=\"mod" . $id . "_" . $loop . "\" value=\"" . $idMod . "\" checked />&nbsp;<label for=\"mod" . $id . "_" . $loop . "\">$moduleid:&nbsp;$fullname</label></div>\n";
+    } else {
+      echo "<div style=\"text-indent:-23px; padding-left:43px; background-color:white\" id=\"divmod" . $id . "_" . $loop . "\"><input type=\"checkbox\" onclick=\"toggle('divmod" . $id . "_" . $loop . "')\" name=\"mod" . $id . "_" . $loop . "\" id=\"mod" . $id . "_" . $loop . "\" value=\"" . $idMod . "\" />&nbsp;<label for=\"mod" . $id . "_" . $loop . "\">$moduleid:&nbsp;$fullname</label></div>\n";
+    }
+    $loop++;
+    $old_letter = strtoupper(substr($moduleid, 0, 1));
+  }
+  echo "</div>\n</div>\n";
+}
+
+if (isset($_POST['submit'])) {
+  for ($attempt=1; $attempt<=3; $attempt++) {
+    // Clear the student of all modules.
+    UserUtils::clear_student_modules_by_userID($_POST['userID'], $_POST['session'], $attempt, $mysqli);
+/*
+    $result = $mysqli->prepare("DELETE FROM modules_student WHERE userID = ? AND calendar_year = ? AND attempt = ?");
+    $result->bind_param('isi', $_POST['userID'], $_POST['session'], $attempt);
+    $result->execute();
+    $result->close();
+    */
+    // Insert a record for each module.
+    for ($i=0; $i<=$_POST['mod_count']; $i++) {
+      if (isset($_POST['mod' . $attempt . '_' . $i]) and $_POST['mod' . $attempt . '_' . $i] != '') {
+        UserUtils::add_student_to_module($_POST['userID'], $_POST['mod' . $attempt . '_' . $i], $attempt, $_POST['session'], $mysqli, 0);
+/*
+        $result = $mysqli->prepare( 'INSERT INTO modules_student VALUES (NULL, ?, ?, ?, ?, 0)' );
+        $result->bind_param('iisi', $_POST['userID'], $_POST['mod' . $attempt . '_' . $i], $_POST['session'], $attempt);
+        $result->execute();
+        $result->close();
+        */
+      }
+    }
+  }
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $configObject->get('cfg_page_charset') ?>" />
+
+  <title><?php echo $_POST['session'] . ' ' . $string['modules']; ?></title>
+
+  <script type="text/javascript">
+    function closeWindow() {
+      window.opener.location.href = 'details.php?userID=<?php echo $_POST['userID']; ?>&tab=modules';
+      self.close();
+    }
+  </script>
+</head>
+<body onload="closeWindow()">
+</body>
+</html>
+<?php
+  } else {
+    if (isset($_GET['session']) and $_GET['session'] != '') {
+      $session = $_GET['session'];
+    } else {
+      $session = date_utils::get_current_academic_year();
+    }
+?>
+<html>
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="content-type" content="text/html;charset=<?php echo $configObject->get('cfg_page_charset') ?>" />
+
+  <title><?php echo $session; ?> Modules</title>
+
+  <link rel="stylesheet" type="text/css" href="../css/body.css" />
+  <style type="text/css">
+    body {font-size:90%; background-color:#E3EFFF; margin:8px 4px 4px 4px}
+    td {font-size:90%}
+  </style>
+  <script language="JavaScript">
+    function toggle(objectID) {
+      if (document.getElementById(objectID).style.backgroundColor == 'white') {
+        document.getElementById(objectID).style.backgroundColor = '#B3C8E8';
+      } else {
+        document.getElementById(objectID).style.backgroundColor = 'white';
+      }
+    }
+
+    function showTab(tabID) {
+      document.getElementById('list1').style.display = 'none';
+      document.getElementById('list2').style.display = 'none';
+      document.getElementById('list3').style.display = 'none';
+
+      document.getElementById(tabID).style.display = 'block';
+    }
+
+    function resizeList() {
+      var winW = 630, winH = 460;
+      if (document.body && document.body.offsetWidth) {
+        winW = document.body.offsetWidth;
+        winH = document.body.offsetHeight;
+      }
+      if (document.compatMode=='CSS1Compat' && document.documentElement && document.documentElement.offsetWidth ) {
+        winW = document.documentElement.offsetWidth;
+        winH = document.documentElement.offsetHeight;
+      }
+      if (window.innerWidth && window.innerHeight) {
+        winW = window.innerWidth;
+        winH = window.innerHeight;
+      }
+      winH -= 80;
+      document.getElementById('list1').style.height = winH + 'px';
+      document.getElementById('list2').style.height = winH + 'px';
+      document.getElementById('list3').style.height = winH + 'px';
+    }
+  </script>
+</head>
+<body onload="resizeList()" onresize="resizeList()">
+<form name="teamform" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+
+<?php
+  // Get existing modules for the user in passed calendar year.
+  $student_modules = array();
+  $result = $mysqli->prepare("SELECT idMod, moduleid, attempt FROM modules_student, modules WHERE modules_student.idMod = modules.id AND userID=? AND calendar_year=?");
+  $result->bind_param('is', $_GET['userID'], $session);
+  $result->execute();
+  $result->bind_result($idMod, $moduleid, $attempt);
+  while ($result->fetch()) {
+    $student_modules[$idMod]['moduleid'] = $moduleid;
+    $student_modules[$idMod]['attempt'] = $attempt;
+  }
+  $result->close();
+
+  $module_no = 0;
+  $old_year = '';
+  $modules = array();
+  $mod_count = 0;
+
+  $result = $mysqli->prepare("SELECT modules.id, moduleid, fullname FROM modules, schools WHERE modules.schoolid=schools.id AND active=1 ORDER BY moduleid");
+  $result->execute();
+  $result->store_result();
+  $result->bind_result($idMod, $moduleid, $fullname);
+  while ($result->fetch()) {
+    $modules[$idMod]['moduleid'] = $moduleid;
+    $modules[$idMod]['fullname'] = $fullname;
+    $mod_count++;
+  }
+  $result->close();
+
+  if ($mod_count == 0) {
+    echo "<div style=\"color:#C00000\">&nbsp;<img src=\"../artwork/small_yellow_warning_icon.gif\" width=\"16\" height=\"16\" alt=\"Warning\" border=\"0\" />&nbsp;" . $string['nomodules'] . " <strong>" . $_GET['session'] . "</strong>.</div>";
+  } else {
+    list_modules($modules, 1, $student_modules);
+    list_modules($modules, 2, $student_modules);
+    list_modules($modules, 3, $student_modules);
+  }
+
+  echo "<input type=\"hidden\" name=\"mod_count\" value=\"$mod_count\" /></div></td>\n</tr>\n";
+  echo "<input type=\"hidden\" name=\"userID\" value=\"" . $_GET['userID'] . "\" /></div></td>\n</tr>\n";
+  echo "<input type=\"hidden\" name=\"session\" value=\"" . $session . "\" /></div></td>\n</tr>\n";
+?>
+<br /><br />
+<div align="center"><input style="width:120px" type="submit" name="submit" value="<?php echo $string['ok']; ?>" />&nbsp;<input style="width:120px" type="submit" name="cancel" value="<?php echo $string['cancel']; ?>" onclick="window.close()" /></div>
+
+</form>
+</body>
+</html>
+<?php
+  }
+  $mysqli->close();
+?>

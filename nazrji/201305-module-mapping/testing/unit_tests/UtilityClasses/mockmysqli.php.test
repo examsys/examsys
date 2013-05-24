@@ -1,0 +1,174 @@
+<?php
+// This file is part of Rogō
+//
+// Rogō is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Rogō is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+* 
+* Rogō Mock_mysqli, Mock_mysqli_result and Mock_mysqli_stmt unit tests.
+* 
+* @author Anthony Brown
+* @version 1.0
+* @copyright Copyright (c) 2012 The University of Nottingham
+* @package
+*/
+
+class MockMysqliTests extends \Enhance\TestFixture
+{
+    
+  // SetUp
+  public function setUp() 
+  {
+    $this->target = \Enhance\Core::getCodeCoverageWrapper('Mock_mysqli');
+  }
+  
+  // TearDown
+  public function tearDown()
+  {
+  
+  }
+
+  /**
+  * Test a normal prepered query
+  */
+  public function prepered_query_tests() {
+    $data = array(
+                  array(
+                    array(0=>'dummy11', 1=>'dummy12', 2=>'dummy13'),
+                    array(0=>'dummy21', 1=>'dummy22', 2=>'dummy23'),
+                    array(0=>'dummy31', 1=>'dummy32', 2=>'dummy33'),
+                    array(0=>'dummy41', 1=>'dummy42', 2=>'dummy43'),
+                  ),
+                  array(
+                    array(0=>'2dummy11', 1=>'2dummy12', 2=>'2dummy13'),
+                    array(0=>'2dummy21', 1=>'2dummy22', 2=>'2dummy23'),
+                    array(0=>'2dummy31', 1=>'2dummy32', 2=>'2dummy33'),
+                    array(0=>'2dummy41', 1=>'2dummy42', 2=>'2dummy43'),
+                  ),
+                );
+    $this->target->load_mock_data($data);
+
+    $sql = "SELECT dummy1, dummy2, dummy3 FROM dummyTable Where id > 1";
+    $result = $this->target->prepare($sql);
+    $result->execute();
+    $result->bind_result($ret1, $ret2, $ret3);
+    $res = array();
+    $i = 0;
+    while ($result->fetch()) {
+      $res[$i][0] = $ret1;
+      $res[$i][1] = $ret2;
+      $res[$i][2] = $ret3;
+      $i++;
+    }
+    $result->close();
+    \Enhance\Assert::areIdentical(TRUE, $data[0] === $res);
+
+    //check second query
+    $sql = "SELECT 2dummy1, 2dummy2, 2dummy3 FROM dummyTable2 Where id > 1";
+    $result = $this->target->prepare($sql);
+    $result->execute();
+    $result->bind_result($ret1, $ret2, $ret3);
+    $res = array();
+    $i = 0;
+    while ($result->fetch()) {
+      $res[$i][0] = $ret1;
+      $res[$i][1] = $ret2;
+      $res[$i][2] = $ret3;
+      $i++;
+    }
+    $result->close();
+    \Enhance\Assert::areIdentical(TRUE, $data[1] === $res);
+
+    //check to many queries
+    $sql = "SELECT 2dummy1, 2dummy2, 2dummy3 FROM dummyTable2 Where id > 1";
+    $result = $this->target->prepare($sql);
+    $result->execute();
+    $result->bind_result($ret1, $ret2, $ret3);
+    $res = $result->fetch();
+    \Enhance\Assert::areIdentical(FALSE, $res);
+
+    //check force_mysqli_stmt_fail
+    $this->target->set_force_mysqli_stmt_fail(TRUE);
+    $sql = "SELECT dummy1, dummy2, dummy3 FROM dummyTable Where id > 1";
+    $result = $this->target->prepare($sql);
+    $res = $result->execute();
+    \Enhance\Assert::areIdentical(FALSE, $res);
+  }
+
+  /**
+  * Test a normal prepered query
+  */
+  public function query_tests() {
+    $data = array(
+                    array(
+                      array(0=>'dummy11', 1=>'dummy12', 2=>'dummy13'),
+                      array(0=>'dummy21', 1=>'dummy22', 2=>'dummy23'),
+                      array(0=>'dummy31', 1=>'dummy32', 2=>'dummy33'),
+                      array(0=>'dummy41', 1=>'dummy42', 2=>'dummy43'),
+                    ),
+                );
+    $this->target->load_mock_data($data);
+
+    $sql = "SELECT dummy1, dummy2, dummy3 FROM dummyTable Where id > 1";
+    $result = $this->target->query($sql);
+    $res = array();
+    $i = 0;
+    while ($row = $result->fetch_array()) {
+      $res[$i] = $row;
+      $i++;
+    }
+    $result->free();
+    \Enhance\Assert::areIdentical(TRUE, $data[0] === $res);
+
+    //SELECT, SHOW, DESCRIBE or EXPLAIN queries will return a mysqli_result
+    $sql = "SELECT dummy1, dummy2, dummy3 FROM dummyTable Where id > 1";
+    $result = $this->target->query($sql);
+    \Enhance\Assert::isInstanceOfType('Mock_mysqli_result',$result);
+
+    $sql = "SHOW TABLES dummy1, dummy2, dummy3 FROM dummyTable Where id > 1";
+    $result = $this->target->query($sql);
+    \Enhance\Assert::isInstanceOfType('Mock_mysqli_result',$result);
+
+    $sql = "EXPLAIN SELECT dummy1, dummy2, dummy3 FROM dummyTable Where id > 1";
+    $result = $this->target->query($sql);
+    \Enhance\Assert::isInstanceOfType('Mock_mysqli_result',$result);
+
+    //For other successful queries mysqli_query() will return TRUE
+    $sql = "UPDATE dummyTable SET dummy1=1, dummy2=2, dummy=3 Where id > 1";
+    $result = $this->target->query($sql);
+    \Enhance\Assert::areIdentical(true,$result);
+    $sql = "";
+    $result = $this->target->query($sql);
+    \Enhance\Assert::areIdentical(true,$result);
+    $sql = "tsdfdsfdsfsdgdsgsdgsdgsdg";
+    $result = $this->target->query($sql);
+    \Enhance\Assert::areIdentical(true,$result);
+
+    //check force fail 
+    $this->target->set_force_fail(true);
+    $sql = "SELECT dummy1, dummy2, dummy3 FROM dummyTable Where id > 1";
+    $result = $this->target->query($sql);
+    \Enhance\Assert::areIdentical(false,$result);
+    $sql = "UPDATE dummyTable SET dummy1=1, dummy2=2, dummy=3 Where id > 1";
+    $result = $this->target->query($sql);
+    \Enhance\Assert::areIdentical(false,$result);
+    $sql = "";
+    $result = $this->target->query($sql);
+    \Enhance\Assert::areIdentical(false,$result);
+    $sql = "tsdfdsfdsfsdgdsgsdgsdgsdg";
+    $result = $this->target->query($sql);
+    \Enhance\Assert::areIdentical(false,$result);
+  }
+
+}

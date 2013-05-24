@@ -1,0 +1,76 @@
+body {
+  font-size: 90%
+}
+
+h1 {
+  font-size: 140%;
+  color: #1F497D
+}
+
+h2 {
+  font-size: 120%;
+  color: #1F497D
+}
+
+.error {
+  color: red;
+  font-weight: bold
+}
+
+.warning {
+  float: none;
+  color: red;
+  padding-left: .5em;
+  vertical-align: top
+}
+
+label {
+  float: left;
+  width: 150px;
+  padding-left: 0em;
+  text-align: left
+}
+
+p {
+  clear: both
+}
+
+.submit {
+  text-align: center;
+  padding-top: 2em
+}
+
+table {
+  border: none
+}
+
+.h {
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  width: 100%;
+  color: #1E3287
+}
+
+.h hr {
+  border: 0px;
+  height: 1px;
+  color: #E5E5E5;
+  background-color: #E5E5E5;
+  width: 100%
+}
+
+td.line {
+  width: 98%
+}
+
+input[type=text], input[type=password] {
+  width: 140px
+}
+
+form {
+  padding: 1em
+}
+
+form div {
+  padding-left: 2em
+}
