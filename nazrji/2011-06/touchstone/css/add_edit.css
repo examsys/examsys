@@ -1,9 +1,0 @@
-body {background-color:#F1F5FB; font-family:Arial,sans-serif; font-size:100%; margin:0px}
-h1 {font-family:Arial,sans-serif; font-weight:bold; font-size:140%; color:#1E3C7B}
-td {text-align:left}
-textarea, input[type=text], select {font-family:Arail,sans-serif; font-size:90%; border: 1px solid #7F9DB9}
-.section {font-family:Arial,sans-serif; font-weight:bold; font-size:130%; color:#6487DC}
-.field {text-align: right; font-weight:bold; font-size:85%; color:black; padding-right:6px}
-.error {font-family:Arial,sans-serif; font-size: 16pt; font-weight:bold; color:#C00000}
-.mandatory {font-family:'Courier New'; font-size:12pt; font-weight:bold; color:#C00000}
-.note {font-family: Arial,sans-serif; font-size:90%; font-weight:normal; color:#808080}
