@@ -412,8 +412,12 @@ function copyProperties($db, &$calendar_year, &$new_calendar_year, &$moduleIDs, 
   $result->fetch();
   $result->close();
 
-  $tmp_exam_duration = $exam_duration;
   $paper_type = $_POST['paper_type'];      // Override the paper type with what is posted.
+  if ($paper_type == 2 and $configObject->get('cfg_summative_mgmt')) {
+    $tmp_exam_duration = $_POST['duration'];
+  } else {
+    $tmp_exam_duration = $exam_duration;
+  }
 
   if ($paper_type == 2) {
     if ($configObject->get('cfg_summative_mgmt')) {
