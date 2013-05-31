@@ -15,9 +15,9 @@
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
-* 
+*
 * Implement VLE API for NLE
-* 
+*
 * @author Anthony Brown
 * @version 1.0
 * @copyright Copyright (c) 2013 The University of Nottingham
@@ -28,6 +28,8 @@ require_once 'VLEAPI.if.php';
 require_once $configObject->get('cfg_web_root') . 'webServices/RestRequest.class';
 
 class VLE_NLE implements iVLEAPI {
+  private $_mapping_level = self::LEVEL_SESSION;
+
   /**
    * Return objectives from the University of Nottingham Medical School Networked Learning Environment
    * @param $moduleID
@@ -42,11 +44,31 @@ class VLE_NLE implements iVLEAPI {
 
   /**
    * Get a friendly name for the source system, with the indefinite article if required
-   * @param bool $a
-   * @return string
+   * @param bool $a     Include the definite article?
+   * @param bool $long  Return the long form of the name?
+   * @return string     The name in the required format
    */
-  public function getFriendlyName($a = false) {
-    return ($a) ? 'an NLE' : 'NLE';
+  public function getFriendlyName($a = false, $long = false) {
+    $name = ($long) ? 'Networked Learning Environment' : 'NLE';
+    $name = ($a) ? 'a ' . $name : $name;
+    return $name;
+  }
+
+  /**
+   * Get the levels of mapping that are supported by this class
+   * @return array Array of mapping levels supported
+   */
+  public function getMappingLevels() {
+    return array(self::LEVEL_SESSION);
+  }
+
+  /**
+   * Set the mapping level at which the class should work
+   * @param integer $level Mapping level
+   */
+  public function setMappingLevel($level) {
+    // Ignore anything passed in, we only support session level mapping
+    $this->_mapping_level = self::LEVEL_SESSION;
   }
 }
 ?>

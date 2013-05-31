@@ -24,8 +24,13 @@
  * @package
  */
 
+class UnsupportedMappingLevelException extends Exception { }
+
 interface iVLEAPI
 {
+  const LEVEL_SESSION = 0;
+  const LEVEL_MODULE = 1;
+
   /**
    * Return objectives from the remote system
    * @param $moduleID
@@ -36,8 +41,21 @@ interface iVLEAPI
 
   /**
    * Get a friendly name for the source system, with the indefinite article if required
-   * @param bool $a
-   * @return string
+   * @param bool $a     Include the definite article?
+   * @param bool $long  Return the long form of the name?
+   * @return string     The name in the required format
    */
-  public function getFriendlyName($a = false);
+  public function getFriendlyName($a = false, $long = false);
+
+  /**
+   * Get the levels of mapping that are supported by this class
+   * @return array Array of mapping levels supported
+   */
+  public function getMappingLevels();
+
+  /**
+   * Set the mapping level at which the class should work
+   * @param integer $level Mapping level
+   */
+  public function setMappingLevel($level);
 }

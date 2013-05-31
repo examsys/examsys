@@ -40,7 +40,7 @@ $stmt->execute();
 $stmt->bind_result($modulecode, $fullname, $active, $schoolid, $school, $vle_api, $checklist, $sms, $selfenroll, $neg_marking, $current_ebel_grid, $timed_exams, $exam_q_feedback, $add_team_members);
 $stmt->fetch();
 $stmt->close();
-  
+
 $unique_moduleid = true;
 if (isset($_POST['submit']) and $_POST['modulecode'] != $_POST['old_modulecode']) {
   // Check for unique moduleid
@@ -105,7 +105,7 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
     $result->execute();
     $result->close();
   }
-  
+
   // Log any changes
   $logger = new Logger($mysqli);
   if ($modulecode != $new_modulecode)                     $logger->track_change('Module', $_GET['moduleid'], $userObject->get_user_ID(), $modulecode, $new_modulecode, $string['moduleid']);
@@ -153,6 +153,30 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
   <script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
   <script type="text/javascript" src="../js/jquery.validate.min.js"></script>
   <script language="JavaScript">
+<?php
+
+  // Set up mapping APIs
+  $mapping_js = "var vle_apis = [];\n";
+  $vle_apis = $configObject->get('vle_apis');
+  if (is_array($vle_apis)) {
+    foreach (array_keys($vle_apis) as $vle_api_id) {
+      $classname = 'VLE_' .$vle_api_id;
+      require_once "../apis/{$classname}.class.php";
+      $api = new $classname();
+      $vle_apis[$vle_api_id]['name'] = $api->getFriendlyName(false, true);
+      $vle_apis[$vle_api_id]['levels'] = $api->getMappingLevels();
+      $mapping_js .= "  vle_apis['{$vle_api_id}'] = [";
+      foreach ($vle_apis[$vle_api_id]['levels'] as $level) {
+        $mapping_js .= $level . ',';
+      }
+      $mapping_js = rtrim($mapping_js, ',');
+      $mapping_js .= "];\n";
+    }
+    echo $mapping_js;
+  }
+?>
+    var mapLevels = ['<?php echo $string['session'] ?>', '<?php echo $string['module'] ?>'];
+
     $(function () {
       $('#module_form').validate({
         messages: {
@@ -168,6 +192,12 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
 <?php
   }
 ?>
+      var currVLE = $('#vle_api').val();
+      var currMapLevels = vle_apis[currVLE];
+      for (i = 0; i < currMapLevels.length; i++) {
+        $('<input type="radio" name="map_level" id="map_level' + currMapLevels[i] + '" value="' + currMapLevels[i] + '" />').appendTo($('#map_level_holder'));
+        $('#map_level_holder').append(' ' + mapLevels[currMapLevels[i]]);
+      }
     });
 
     function showHideGrid() {
@@ -270,7 +300,20 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
     }
     echo '</select></td></tr>';
   ?>
-    <tr><td class="field"><?php echo $string['objapi']; ?></td><td><select name="vle_api"><option value=""><?php echo $string['nolookup']; ?></option><option value="UoNCM"<?php if ($vle_api == 'UoNCM') echo ' selected'; ?>><?php echo $string['uoncm']; ?></option><option value="NLE"<?php if ($vle_api == 'NLE') echo ' selected'; ?>><?php echo $string['nle']; ?></option></select></td></tr>
+    <tr><td class="field"><?php echo $string['objapi']; ?></td><td><select id="vle_api" name="vle_api"><option value=""><?php echo $string['nolookup']; ?></option>
+  <?php
+    foreach ($vle_apis as $vle_name => $vle_api_data) {
+      $selected = ($vle_api == $vle_name) ? ' selected="selected"' : '';
+  ?>
+      <option value="<?php echo $vle_name; ?>"<?php echo $selected; ?>><?php echo $vle_api_data['name'] . ' (' . $vle_name . ')'; ?></option>
+  <?php
+    }
+  ?>
+
+
+    </select>
+    <div id="map_level_holder"></div>
+    </td></tr>
     <tr><td class="field"><?php echo $string['summativechecklist']; ?></td><td><input type="checkbox" name="peer"<?php if ($peer == 1) echo ' checked="checked"'; ?> /> <?php echo $string['peerreview']; ?>, <input type="checkbox" name="external"<?php if ($external == 1) echo ' checked'; ?> /> <?php echo $string['externalexaminers']; ?>, <input onclick="showHideGrid()" type="checkbox" id="stdset" name="stdset"<?php if ($stdset == 1) echo ' checked'; ?> /> <?php echo $string['standardssetting']; ?>, <input type="checkbox" name="mapping"<?php if ($mapping == 1) echo ' checked'; ?> /> <?php echo $string['mapping']; ?></td></tr>
     <tr><td class="field"><?php echo $string['active']; ?></td><td><input type="checkbox" name="active"<?php if ($active == 1) echo ' checked="checked"'; ?> /></td></tr>
     <tr><td class="field"><?php echo $string['allowselfenrol']; ?></td><td><input type="checkbox" name="selfenroll"<?php if ($selfenroll == 1) echo ' checked="checked"'; ?> /></td></tr>

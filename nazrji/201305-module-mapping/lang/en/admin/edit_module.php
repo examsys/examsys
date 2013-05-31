@@ -23,4 +23,6 @@ $string['moduleidinuse'] = 'The module ID %s is already in use. Please enter an 
 $string['nolookup'] = '&lt;No lookup&gt;';
 $string['nle'] = 'Networked Learning Environment (NLE)';
 $string['uoncm'] = 'Curriculum Map (UoNCM)';
+$string['session'] = 'Session';
+$string['module'] = 'Module';
 ?>

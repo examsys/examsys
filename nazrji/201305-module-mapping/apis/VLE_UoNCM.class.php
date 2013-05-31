@@ -32,6 +32,7 @@ class VLE_UoNCM implements iVLEAPI {
 //  private $_root_url = 'http://curriculum.nottingham.ac.uk/%s/index.php/';
   private $_sess_year;
   private $_module_id;
+  private $_mapping_level = self::LEVEL_SESSION;
 
   private $_moodle_base_url = 'http://moodle.nottingham.ac.uk/local/uonlib/findcourse.php?m=%s&y=%s&nid=%s';
 
@@ -56,11 +57,31 @@ class VLE_UoNCM implements iVLEAPI {
 
   /**
    * Get a friendly name for the source system, with the indefinite article if required
-   * @param bool $a
-   * @return string
+   * @param bool $a     Include the definite article?
+   * @param bool $long  Return the long form of the name?
+   * @return string     The name in the required format
    */
-  public function getFriendlyName($a = false) {
+  public function getFriendlyName($a = false, $long = false) {
     return ($a) ? 'a Curriculum Map' : 'Curriculum Map';
+  }
+
+  /**
+   * Get the levels of mapping that are supported by this class
+   * @return array Array of mapping levels supported
+   */
+  public function getMappingLevels() {
+    return array(self::LEVEL_SESSION, self::LEVEL_MODULE);
+  }
+
+  /**
+   * Set the mapping level at which the class should work
+   * @param integer $level Mapping level
+   */
+  public function setMappingLevel($level) {
+    if (!in_array($level, $this->getMappingLevels())) {
+      throw new UnsupportedMappingLevelException();
+    }
+    $this->_mapping_level = $level;
   }
 
   /**
