@@ -189,16 +189,23 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
   if ($unique_moduleid == false) {
 ?>
       $('#modulecode').addClass('error');
+
 <?php
   }
 ?>
+      createMappingLevels();
+      $('#vle_api').change(createMappingLevels);
+    });
+
+    function createMappingLevels() {
+      $('#map_level_holder').html('');
       var currVLE = $('#vle_api').val();
       var currMapLevels = vle_apis[currVLE];
       for (i = 0; i < currMapLevels.length; i++) {
         $('<input type="radio" name="map_level" id="map_level' + currMapLevels[i] + '" value="' + currMapLevels[i] + '" />').appendTo($('#map_level_holder'));
         $('#map_level_holder').append(' ' + mapLevels[currMapLevels[i]]);
       }
-    });
+    }
 
     function showHideGrid() {
       if (document.getElementById('stdset').checked) {
