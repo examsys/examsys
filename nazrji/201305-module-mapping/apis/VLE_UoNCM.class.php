@@ -28,7 +28,8 @@ require_once 'VLEAPI.if.php';
 require_once $configObject->get('cfg_web_root') . 'webServices/RestRequest.class';
 
 class VLE_UoNCM implements iVLEAPI {
-  private $_root_url = 'http://curriculum.nottingham.ac.uk/%s/index.php/';
+  private $_root_url = 'http://cm.rji.ac.uk/%s/index.php/';
+//  private $_root_url = 'http://curriculum.nottingham.ac.uk/%s/index.php/';
   private $_sess_year;
   private $_module_id;
 
@@ -49,7 +50,8 @@ class VLE_UoNCM implements iVLEAPI {
 
     $res = $req->getResponseBody();
 
-    return $this->transformCMResponse($res, $session);
+    return $this->transformCMResponseModule($res, $session);
+//    return $this->transformCMResponse($res, $session);
   }
 
   /**
@@ -105,32 +107,12 @@ class VLE_UoNCM implements iVLEAPI {
       $sessions = array();
 
       $i = 0;
-      if (isset($input['cmapi']['module']['objectives']) and isset(isset($input['cmapi']['module']['objectives']['group'])) {
-        if (isset($input['cmapi']['module']['group']['@attributes'])) {
-          $this->process_session($sessions, $input['cmapi']['module']['objectives']['group'], $calendar_year, $i);
+      if (isset($input['cmapi']['module']['objectives']) and isset($input['cmapi']['module']['objectives']['group'])) {
+        if (isset($input['cmapi']['module']['objectives']['group']['@attributes'])) {
+          $this->process_group($sessions, $input['cmapi']['module']['objectives']['group'], $calendar_year, $i);
         } else {
-          foreach ($input['cmapi']['module']['objectives']['group'] as $session) {
-            $this->process_session($sessions, $session, $calendar_year, $i);
-          }
-        }
-      }
-
-      if (isset($input['cmapi']['module']['session'])) {
-        if (isset($input['cmapi']['module']['session']['@attributes'])) {
-          $this->process_session($sessions, $input['cmapi']['module']['session'], $calendar_year, $i);
-        } else {
-          foreach ($input['cmapi']['module']['session'] as $session) {
-            $this->process_session($sessions, $session, $calendar_year, $i);
-          }
-        }
-      }
-
-      if (isset($input['cmapi']['module']['learning_act'])) {
-        if (isset($input['cmapi']['module']['learning_act']['@attributes'])) {
-          $this->process_learning_act($sessions, $input['cmapi']['module']['learning_act'], $calendar_year, $i);
-        } else {
-          foreach ($input['cmapi']['module']['learning_act'] as $learning_act) {
-            $this->process_learning_act($sessions, $learning_act, $calendar_year, $i);
+          foreach ($input['cmapi']['module']['objectives']['group'] as $group) {
+            $this->process_group($sessions, $group, $calendar_year, $i);
           }
         }
       }
@@ -229,23 +211,31 @@ class VLE_UoNCM implements iVLEAPI {
     }
   }
 
+  /**
+   * Process objective groups for module level mapping
+   * @param  array   $sessions      Sessions extracted from group data
+   * @param  array   $group         Array of outcome groups
+   * @param  string  $calendar_year Academic year in the format YYYY/YY, e.g. 2012/13
+   * @param  integer $count         Count of sessions created
+   */
   private function process_group(&$sessions, $group, $calendar_year, &$count) {
     // If no objectives don't bother showing the session
     if (is_array($group['outcome_module'])) {
       $sess_data = array(
-        'identifier' => $session['@attributes']['id'],
-        'GUID' => $session['guid'],
-        'class_code' => $session['code'],
-        'title' => $session['title'],
-        'occurrance' => date('d/m/y H:i', strtotime($session['start'])),
+        'identifier' => $group['@attributes']['id'],
+        'GUID' => $group['@attributes']['id'],
+        'class_code' => '',
+        'title' => ($group['group_title'] == '') ? 'No group' : $group['group_title'],
+        'occurrance' => '',
         'calendar_year' => $calendar_year,
         'VLE' => 'UoNCM',
-        'source_url' => sprintf($this->_moodle_base_url, $this->_module_id, $this->_sess_year, $session['@attributes']['id']) . '&ses=' . $session['code'],
+        'source_url' => '',   // TODO
+        // 'source_url' => sprintf($this->_moodle_base_url, $this->_module_id, $this->_sess_year, $session['@attributes']['id']) . '&ses=' . $session['code'],
         'mapped' => 0,
         'objectives' => array()
       );
 
-      $obs = $session['objectives']['outcome_session'];
+      $obs = $group['outcome_module'];
       if (isset($obs['@attributes'])) {
         $obj_data = array(
           'content' => (isset($obs['title']) and $obs['title'] != '') ? $obs['title'] : $obs['content'],
@@ -262,7 +252,7 @@ class VLE_UoNCM implements iVLEAPI {
           $sess_data['objectives'][++$count] = $obj_data;
         }
       }
-      $sessions[$session['@attributes']['id']] = $sess_data;
+      $sessions[$group['@attributes']['id']] = $sess_data;
     }
   }
 }
