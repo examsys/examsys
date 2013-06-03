@@ -99,7 +99,7 @@ Class module {
     if ($moduleid == '') {  // No ID, don't bother to check the database.
       return false;
     }
-  
+
     // Check for unique moduleID
     $exists = true;
 
@@ -206,7 +206,7 @@ Class module {
    */
   public function get_moduleid_from_id($modID, $db) {
     $modID = intval($modID);
-    
+
     $result = $db->prepare("SELECT moduleid FROM modules WHERE id = ? AND mod_deleted IS NULL");
     $result->bind_param('i', $modID);
     $result->execute();
@@ -294,7 +294,7 @@ Class module {
     if ($idMod == '') {
       return false;
     }
-  
+
     $result = $db->prepare("UPDATE modules SET mod_deleted = NOW() WHERE id = ?");
     $result->bind_param('i', $idMod);
     $result->execute();
@@ -317,6 +317,28 @@ Class module {
     $stmt->close();
 
     return $allow_timing;
+  }
+
+  public static function get_mapping_js(&$vle_apis) {
+    // Set up mapping APIs
+    $mapping_js = "var vle_apis = [];\n";
+    $configObject = Config::get_instance();
+    if (is_array($vle_apis)) {
+      foreach (array_keys($vle_apis) as $vle_api_id) {
+        $classname = 'VLE_' .$vle_api_id;
+        require_once $configObject->get('cfg_web_root') . "/apis/{$classname}.class.php";
+        $api = new $classname();
+        $vle_apis[$vle_api_id]['name'] = $api->getFriendlyName(false, true);
+        $vle_apis[$vle_api_id]['levels'] = $api->getMappingLevels();
+        $mapping_js .= "  vle_apis['{$vle_api_id}'] = [";
+        foreach ($vle_apis[$vle_api_id]['levels'] as $level) {
+          $mapping_js .= $level . ',';
+        }
+        $mapping_js = rtrim($mapping_js, ',');
+        $mapping_js .= "];\n";
+      }
+      return $mapping_js;
+    }
   }
 }
 ?>

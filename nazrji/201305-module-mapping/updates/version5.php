@@ -402,7 +402,13 @@ if (!isset($_POST['update'])) {
 
   // TODO: add VLE APIs to config file
 
-  // TODO: add mapping level column to modules and relatiosnips tables
+  // 06/06/2013 - nazrji - add mapping level column to modules and relatiosnips tables
+  if (!$updater_utils->does_column_exist('modules', 'mapping_level')) {
+    $updater_utils->execute_query("ALTER TABLE modules ADD COLUMN map_level smallint(2) NOT NULL DEFAULT 0", true);
+  }
+  if (!$updater_utils->does_column_exist('relationships', 'mapping_level')) {
+    $updater_utils->execute_query("ALTER TABLE relationships ADD COLUMN map_level smallint(2) NOT NULL DEFAULT 0", true);
+  }
 
   /*
    *****   NOW UPDATE THE INSTALLER SCRIPT   *****

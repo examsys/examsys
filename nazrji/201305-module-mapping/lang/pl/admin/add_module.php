@@ -17,7 +17,7 @@
 $string['administrativetools'] = 'Narzędzia administracyjne';
 $string['entermoduleid'] = 'Podaj identyfikator modułu.';
 $string['entermoduletitle'] = 'Podaj tytuł modułu.';
-$string['selectschool'] = 'Wybierz katedrę dla modułu.'; 
+$string['selectschool'] = 'Wybierz katedrę dla modułu.';
 $string['moduleid'] = 'Identyfikator modułu';
 $string['name'] = 'Nazwa';
 $string['school'] = 'Katedra';
@@ -41,7 +41,8 @@ $string['modulefolder'] = 'Folder modułu';
 $string['studentcohort'] = 'Grupa studentów';
 $string['nolookup'] = '&lt;brak odnośnika&gt;';
 $string['ebelgrid'] = 'Szablon siatki metody Ebel';
-$string['timedexams'] = 'Egzaminy odmierzane czasowo'; 
+$string['timedexams'] = 'Egzaminy odmierzane czasowo';
 $string['questionbasedfeedback'] = 'Odzew na bazie pytania';
-$string['addteammembers'] = 'Dodaj członków zespołu';  
+$string['addteammembers'] = 'Dodaj członków zespołu';
+$string['maplevel'] = 'Mapping level'; // Niko
 ?>
