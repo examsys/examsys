@@ -402,13 +402,18 @@ if (!isset($_POST['update'])) {
 
   // TODO: add VLE APIs to config file
 
-  // 06/06/2013 - nazrji - add mapping level column to modules and relatiosnips tables
-  if (!$updater_utils->does_column_exist('modules', 'mapping_level')) {
+  // 03/06/2013 - nazrji - add mapping level column to modules and relatiosnips tables
+  if (!$updater_utils->does_column_exist('modules', 'map_level')) {
     $updater_utils->execute_query("ALTER TABLE modules ADD COLUMN map_level smallint(2) NOT NULL DEFAULT 0", true);
   }
-  if (!$updater_utils->does_column_exist('relationships', 'mapping_level')) {
+  if (!$updater_utils->does_column_exist('relationships', 'map_level')) {
     $updater_utils->execute_query("ALTER TABLE relationships ADD COLUMN map_level smallint(2) NOT NULL DEFAULT 0", true);
   }
+
+  // 03/06/2013 - nazrji - Add VLE APIs to config file.
+  $new_lines = array("\n// Objectives mapping\n", "\$vle_apis = array();\n");
+  $target_line = '$cfg_password_expire';
+  $updater_utils->add_line('$vle_apis', $new_lines, 80, $cfg_web_root, $target_line, 1);
 
   /*
    *****   NOW UPDATE THE INSTALLER SCRIPT   *****

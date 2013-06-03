@@ -201,7 +201,7 @@ Class UpdaterUtils {
       if (strpos($line, $search) !== false) {
         $found = true;
       }
-      if ($target_line != '' and strpos($line, '$authentication = array') !== false) {
+      if ($target_line != '' and strpos($line, $target_line) !== false) {
         $default_line = $line_no + $offset;
       }
       $line_no++;
