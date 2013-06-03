@@ -45,4 +45,6 @@ $string['timedexams'] = 'Egzaminy odmierzane czasowo';
 $string['questionbasedfeedback'] = 'Odzew na bazie pytania';
 $string['addteammembers'] = 'Dodaj członków zespołu';
 $string['maplevel'] = 'Mapping level'; // Niko
+$string['session'] = 'Session'; // Niko
+$string['module'] = 'Module'; // Niko
 ?>

@@ -180,8 +180,6 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
 <?php
   }
 ?>
-      createMappingLevels();
-      $('#vle_api').change(createMappingLevels);
     });
 
     function showHideGrid() {
@@ -286,7 +284,6 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
   ?>
     <tr><td class="field"><?php echo $string['objapi']; ?></td><td><select id="vle_api" name="vle_api"><option value=""><?php echo $string['nolookup']; ?></option>
   <?php
-  print_r($vle_apis);
     foreach ($vle_apis as $vle_name => $vle_api_data) {
       $selected = ($vle_api == $vle_name) ? ' selected="selected"' : '';
   ?>
@@ -294,8 +291,6 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
   <?php
     }
   ?>
-
-
     </select>
     <div id="map_level_holder"></div>
     </td></tr>

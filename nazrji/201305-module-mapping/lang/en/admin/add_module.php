@@ -45,4 +45,6 @@ $string['timedexams'] = 'Timed Exams';
 $string['questionbasedfeedback'] = 'Question-based Feedback';
 $string['addteammembers'] = 'Add team members';
 $string['maplevel'] = 'Mapping level';
+$string['session'] = 'Session';
+$string['module'] = 'Module';
 ?>

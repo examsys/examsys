@@ -23,6 +23,4 @@ $string['moduleidinuse'] = 'Identyfikator modułu %s jest już używany. Wprowad
 $string['nolookup'] = '&lt;brak odnośnika&gt;';
 $string['nle'] = 'Networked Learning Environment (NLE)'; //cognate
 $string['uoncm'] = 'Odwzorowanie programu nauczania  (UoNCM)';
-$string['session'] = 'Session';
-$string['module'] = 'Module';
 ?>

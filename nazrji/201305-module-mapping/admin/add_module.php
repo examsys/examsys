@@ -37,11 +37,13 @@ if (is_object($SMS)) {
 
 $unique_moduleid = true;
 $tmp_modulecode = '';
+$vle_api = '';
+$map_level = 0;
 
 if (isset($_POST['submit'])) {
   // Check for unique moduleID
   $modulecode = trim($_POST['modulecode']);
-  
+
   if (module_utils::module_exists($modulecode, $mysqli)) {
     $unique_moduleid = false;
   }
@@ -63,7 +65,7 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
   } else {
     $neg_marking = 0;
   }
-  $fullname = $schoolid = $vle_api = $sms_api = '';
+  $fullname = $schoolid = $sms_api = '';
   $peer = $stdset = $mapping = false;
 
   if (isset($_POST['fullname']))  $fullname = trim($_POST['fullname']);
@@ -74,9 +76,9 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
   if (isset($_POST['schoolid']))  $schoolid = $_POST['schoolid'];
   if (isset($_POST['vle_api']))   $vle_api = $_POST['vle_api'];
   if (isset($_POST['sms_api']))   $sms_api = $_POST['sms_api'];
-  
+
   $sms_import = 1;
-  
+
   if (isset($_POST['timed_exams'])) {
     $timed_exams = 1;
   } else {
@@ -92,10 +94,11 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
   } else {
     $add_team_members = 0;
   }
+  $map_level = $_POST['map_level'];
 
   $ebel_grid_template = $_POST['ebel_grid_template'];
 
-  $modID = module_utils::add_modules($modulecode, $fullname, $active, $schoolid, $vle_api, $sms_api, $selfenroll, $peer, $external, $stdset, $mapping, $neg_marking, $ebel_grid_template, $mysqli, $sms_import, $timed_exams, $exam_q_feedback, $add_team_members);
+  $modID = module_utils::add_modules($modulecode, $fullname, $active, $schoolid, $vle_api, $sms_api, $selfenroll, $peer, $external, $stdset, $mapping, $neg_marking, $ebel_grid_template, $mysqli, $sms_import, $timed_exams, $exam_q_feedback, $add_team_members, $map_level);
 
   $mysqli->close();
   header("location: list_modules.php");
@@ -121,8 +124,17 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
 
   <script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
   <script type="text/javascript" src="../js/jquery.validate.min.js"></script>
+  <script type="text/javascript" src="../js/jquery.editmodule.js"></script>
   <script src="../js/staff_help.js" type="text/javascript"></script>
   <script language="JavaScript">
+<?php
+  $vle_apis = $configObject->get('vle_apis');
+  $mu = module_utils::get_instance();
+  echo $mu->get_mapping_js($vle_apis);
+?>
+    var mapLevels = ['<?php echo $string['session'] ?>', '<?php echo $string['module'] ?>'];
+    var currMapLevel = <?php echo $map_level ?>;
+
     $(function () {
       $('#module_form').validate({
         messages: {
@@ -194,11 +206,18 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
   }
   echo '</select></td></tr>';
 ?>
-    <tr><td class="field"><?php echo $string['objapi']; ?></td><td><select name="vle_api">
-    <option value=""><?php echo $string['nolookup']; ?></option>
-    <option value="UoNCM"<?php if (isset($_POST['vle_api']) and $_POST['vle_api'] == 'UoNCM') echo ' selected'; ?>>Curriculum Map (UoNCM)</option>
-    <option value="NLE"<?php if (isset($_POST['vle_api']) and $_POST['vle_api'] == 'NLE') echo ' selected'; ?>>Networked Learning Environment (NLE)</option>
-    </select></td></tr>
+    <tr><td class="field"><?php echo $string['objapi']; ?></td><td><select id="vle_api" name="vle_api"><option value=""><?php echo $string['nolookup']; ?></option>
+  <?php
+    foreach ($vle_apis as $vle_name => $vle_api_data) {
+      $selected = ($vle_api == $vle_name) ? ' selected="selected"' : '';
+  ?>
+      <option value="<?php echo $vle_name; ?>"<?php echo $selected; ?>><?php echo $vle_api_data['name'] . ' (' . $vle_name . ')'; ?></option>
+  <?php
+    }
+  ?>
+    </select>
+    <div id="map_level_holder"></div>
+    </td></tr>
     <tr><td class="field"><?php echo $string['summativechecklist']; ?></td><td><input type="checkbox" name="peer" checked="checked" /> <?php echo $string['peerreview']; ?>, <input type="checkbox" name="external" checked /> <?php echo $string['externalexaminers']; ?>, <input onclick="showHideGrid()" type="checkbox" id="stdset" name="stdset" /> <?php echo $string['standardssetting']; ?>, <input type="checkbox" name="mapping" /> <?php echo $string['mapping']; ?></td></tr>
     <tr><td class="field"><?php echo $string['active']; ?></td><td><input type="checkbox" name="active" checked /></td></tr>
     <tr><td class="field"><?php echo $string['allowselfenrol']; ?></td><td><input type="checkbox" name="selfenroll" /></td></tr>
