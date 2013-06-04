@@ -51,8 +51,15 @@ class VLE_UoNCM implements iVLEAPI {
 
     $res = $req->getResponseBody();
 
-    return $this->transformCMResponseModule($res, $session);
-//    return $this->transformCMResponse($res, $session);
+    switch ($this->_mapping_level) {
+      case self::LEVEL_MODULE:
+        $objectives = $this->transformCMResponseModule($res, $session);
+        break;
+      default:
+        $objectives = $this->transformCMResponse($res, $session);
+        break;
+    }
+    return $objectives;
   }
 
   /**

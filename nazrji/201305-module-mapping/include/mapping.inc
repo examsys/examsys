@@ -233,9 +233,14 @@ function getObjectives($thisModuleid, $session, $paperID, $questionID, $db, $sco
   $objsBySession = array();
 
   $module_list = $thisModuleid;
+
   if (!is_array($module_list)) {
     $module_list = array($thisModuleid);
   }
+
+  // Get the mapping levels of the modules
+  $map_levels = MappingUtils::get_mapping_levels($module_list, $db);
+
   foreach ($module_list as $thisidMod => $thisModuleid) {
     // Get which API to use to get the learning objectives
     $vle_api = MappingUtils::get_vle_api($thisidMod, $session, $vle_api_cache, $db);
@@ -244,6 +249,8 @@ function getObjectives($thisModuleid, $session, $paperID, $questionID, $db, $sco
       // Get objectives from the VLE via REST request
       if (!isset($objsBySession_cache[$thisModuleid]) or !isset($objsBySession_cache[$thisModuleid][$session]) or count($objsBySession_cache[$thisModuleid][$session]) == 0) {
         $vle = VLEFactory::GetVLEAPI($vle_api);
+        $map_level = (isset($map_levels[$thisidMod])) ? $map_levels[$thisidMod] : iVLEAPI::LEVEL_SESSION;
+        $vle->setMappingLevel($map_level);
         $resp = $vle->getObjectives($thisModuleid, $session);
         if ($resp != '') {
           $objsBySession_cache[$thisModuleid][$session] = $resp;

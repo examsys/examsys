@@ -15,7 +15,7 @@
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
-* 
+*
 * @author Anthony Brown
 * @version 1.0
 * @copyright Copyright (c) 2013 The University of Nottingham
@@ -34,8 +34,11 @@ $session = date_utils::get_current_academic_year();
 $vle_api_cache = array();
 $vle_api = MappingUtils::get_vle_api($idMod, $session, $vle_api_cache, $mysqli);
 $module_code = module_utils::get_moduleid_from_id($_GET['module'], $mysqli);
+$map_levels = MappingUtils::get_mapping_levels($_GET['module'], $mysqli);
 if ($vle_api != '') {
   $vle = VLEFactory::GetVLEAPI($vle_api);
+  $map_level = (isset($map_levels[$_GET['module']])) ? $map_levels[$_GET['module']] : iVLEAPI::LEVEL_SESSION;
+  $vle->setMappingLevel($map_level);
   $objsBySession = $vle->getObjectives($module_code, $session);
   $vle_name = $vle->getFriendlyName();
   $vle_name_a = $vle->getFriendlyName(true);
@@ -59,7 +62,7 @@ if ($vle_api != '') {
   function editSession() {
     document.location.href='./edit_session.php?identifier=' + document.myform.identifier.value + '&module=<?php echo $_GET['module']; ?>&calendar_year=' + document.myform.session.value;
   }
-  
+
   function editVLESession() {
 <?php
   if ($vle_api != '') {
@@ -69,7 +72,7 @@ if ($vle_api != '') {
   }
 ?>
   }
-  
+
   function deleteSession() {
     notice=window.open("../delete/check_delete_session.php?moduleID=<?php echo $_GET['module']; ?>&session=" + document.myform.session.value + "&identifier=" + document.myform.identifier.value + "","notice","width=420,height=170,scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
     notice.moveTo(screen.width/2-210,screen.height/2-85);
@@ -77,7 +80,7 @@ if ($vle_api != '') {
       notice.focus();
     }
   }
-  
+
   function deleteVLESession() {
 <?php
 if ($vle_api != '') {
