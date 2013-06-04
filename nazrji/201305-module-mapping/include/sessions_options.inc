@@ -32,12 +32,12 @@ $idMod = $_GET['module'];
 
 $session = date_utils::get_current_academic_year();
 $vle_api_cache = array();
-$vle_api = MappingUtils::get_vle_api($idMod, $session, $vle_api_cache, $mysqli);
+$vle_api_data = MappingUtils::get_vle_api($idMod, $session, $vle_api_cache, $mysqli);
+$vle_api = $vle_api_data['api'];
+$map_level = $vle_api_data['level'];
 $module_code = module_utils::get_moduleid_from_id($_GET['module'], $mysqli);
-$map_levels = MappingUtils::get_mapping_levels($_GET['module'], $mysqli);
 if ($vle_api != '') {
   $vle = VLEFactory::GetVLEAPI($vle_api);
-  $map_level = (isset($map_levels[$_GET['module']])) ? $map_levels[$_GET['module']] : iVLEAPI::LEVEL_SESSION;
   $vle->setMappingLevel($map_level);
   $objsBySession = $vle->getObjectives($module_code, $session);
   $vle_name = $vle->getFriendlyName();

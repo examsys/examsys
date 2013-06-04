@@ -37,48 +37,31 @@ class MappingUtils {
   public static function get_vle_api($idMod, $session, &$vle_api_cache, $db) {
     if (!isset($vle_api_cache[$idMod][$session])) {
       // Are there any existing relationships for the module in this session?
-      $stmt = $db->prepare("SELECT vle_api FROM relationships WHERE idMod IN (" . $idMod . ") AND calendar_year = ? LIMIT 1");
-      $stmt->bind_param('s', $session);
+      $stmt = $db->prepare("SELECT vle_api, map_level FROM relationships WHERE idMod = ? AND calendar_year = ? LIMIT 1");
+      $stmt->bind_param('is', $idMod, $session);
       $stmt->execute();
       $stmt->store_result();
       if ($stmt->num_rows > 0) {
-        $stmt->bind_result($vle_api);
+        $stmt->bind_result($vle_api, $map_level);
         $stmt->fetch();
         $stmt->close();
+        $vle_api_data = array('api' => $vle_api, 'level' => $map_level);
       } else {
         // No existing relationships. Use VLE API as defined in the module
-        $stmt = $db->prepare("SELECT vle_api FROM modules WHERE id=? LIMIT 1");
+        $stmt = $db->prepare("SELECT vle_api, map_level FROM modules WHERE id=? LIMIT 1");
         $stmt->bind_param('s', $idMod);
         $stmt->execute();
-        $stmt->bind_result($vle_api);
+        $stmt->bind_result($vle_api, $map_level);
         $stmt->fetch();
         $stmt->close();
+        $vle_api_data = array('api' => $vle_api, 'level' => $map_level);
       }
 
-      $vle_api_cache[$idMod][$session] = $vle_api;
+      $vle_api_cache[$idMod][$session] = array('api' => $vle_api, 'level' => $map_level);
     } else {
-      $vle_api = $vle_api_cache[$idMod][$session];
+      $vle_api_data = $vle_api_cache[$idMod][$session];
     }
 
-    return $vle_api;
-  }
-
-  /**
-   * Get the mapping levels (e.g. session or module) of a list of modules
-   * @param  array $modules Array of modules in the form array(<idMod> => <module code>)
-   * @return array          Array of idMods with mapping level for the module
-   */
-  public static function get_mapping_levels($modules, $db) {
-    // Get the mapping levels of the modules
-    $mod_in = (is_array($modules)) ? implode(',', array_keys($module_list)) : $modules;
-    $sql = "SELECT id, map_level FROM modules WHERE id IN ($mod_in)";
-    $stmt = $db->prepare($sql);
-    $stmt->bind_result($lvl_idMod, $map_level);
-    $stmt->execute();
-    while ($stmt->fetch()) {
-      $map_levels[$lvl_idMod] = $map_level;
-    }
-
-    return $map_levels;
+    return $vle_api_data;
   }
 }

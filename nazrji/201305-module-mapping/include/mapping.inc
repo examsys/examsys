@@ -139,7 +139,8 @@ HTML;
     $html .= <<< HTML
     		<input name="{$idmod}_session" type="hidden" value="{$session}"/>
     		<input name="{$idmod}_old_mappings" type="hidden" value="{$old_mappings}" />
-        <input name="{$idmod}_vle_api" type="hidden" value="{$vle_api_cache[$idmod][$session]}"/>
+        <input name="{$idmod}_vle_api" type="hidden" value="{$vle_api_cache[$idmod][$session]['api']}"/>
+        <input name="{$idmod}_map_level" type="hidden" value="{$vle_api_cache[$idmod][$session]['level']}"/>
 
 HTML;
   }
@@ -179,16 +180,17 @@ function save_objective_mappings($db, $modules, $paper_id, $question_id) {
         $session = $_POST[$idMod . '_session'];
         $old_mappings = $_POST[$idMod . '_old_mappings'];
         $vle_api = $_POST[$idMod . '_vle_api'];
+        $map_level = $_POST[$idMod . '_map_level'];
         if (isset($_POST[$idMod . '_objectives'])) {
           foreach ($_POST[$idMod . '_objectives'] as $objective_id) {
-            $sql[] = "INSERT INTO relationships VALUES (NULL, $idMod, $paper_id, $question_id, $objective_id, '$session', '$vle_api')";
+            $sql[] = "INSERT INTO relationships (idMod, paper_id, question_id, obj_id, calendar_year, vle_api, map_level) VALUES ($idMod, $paper_id, $question_id, $objective_id, '$session', '$vle_api', $map_level)";
             $new_mappings .= $objective_id . ',';
           }
         }
 
         //check for none of the above
         if (isset($_POST['none_of_the_above']) and $_POST['none_of_the_above'] == -1 and count($sql) == 0) {
-          $sql[] = "INSERT INTO relationships VALUES (NULL, $idMod, $paper_id, $question_id, -1, '$session','$vle_api')";
+          $sql[] = "INSERT INTO relationships (idMod, paper_id, question_id, obj_id, calendar_year, vle_api, map_level) VALUES ($idMod, $paper_id, $question_id, -1, '$session','$vle_api', $map_level)";
           $new_mappings .= '-1,';
         } else {
           $old_mappings .= '-1,';
@@ -238,18 +240,16 @@ function getObjectives($thisModuleid, $session, $paperID, $questionID, $db, $sco
     $module_list = array($thisModuleid);
   }
 
-  // Get the mapping levels of the modules
-  $map_levels = MappingUtils::get_mapping_levels($module_list, $db);
-
   foreach ($module_list as $thisidMod => $thisModuleid) {
     // Get which API to use to get the learning objectives
-    $vle_api = MappingUtils::get_vle_api($thisidMod, $session, $vle_api_cache, $db);
+    $vle_api_data = MappingUtils::get_vle_api($thisidMod, $session, $vle_api_cache, $db);
+    $vle_api = $vle_api_data['api'];
+    $map_level = $vle_api_data['level'];
 
     if ($vle_api != '') {
       // Get objectives from the VLE via REST request
       if (!isset($objsBySession_cache[$thisModuleid]) or !isset($objsBySession_cache[$thisModuleid][$session]) or count($objsBySession_cache[$thisModuleid][$session]) == 0) {
         $vle = VLEFactory::GetVLEAPI($vle_api);
-        $map_level = (isset($map_levels[$thisidMod])) ? $map_levels[$thisidMod] : iVLEAPI::LEVEL_SESSION;
         $vle->setMappingLevel($map_level);
         $resp = $vle->getObjectives($thisModuleid, $session);
         if ($resp != '') {
