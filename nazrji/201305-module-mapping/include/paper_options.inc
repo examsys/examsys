@@ -30,6 +30,7 @@ require_once $cfg_web_root . 'include/mapping.inc';
 
 require_once $cfg_web_root . 'classes/paperutils.class.php';
 require_once $cfg_web_root . 'classes/paperproperties.class.php';
+require_once $cfg_web_root . 'classes/relationship.class.php';
 
 $userObject = UserObject::get_instance();
 
@@ -131,11 +132,11 @@ if (count($moduleIDs) > 0) {
     if (this.event) this.event.returnValue = false;
     return false;
   }
-  
+
   function getLastID(IDs) {
     var id_list = IDs.split(",");
     last_elm = id_list.length - 1;
-    
+
     return id_list[last_elm];
   }
 
@@ -174,13 +175,13 @@ if (count($moduleIDs) > 0) {
   function changeScreen(screenNo) {
     window.location='<?php echo $configObject->get('cfg_root_path') ?>/paper/change_screen_no.php?questionID=' + document.PapersMenu.pID.value + '&paperID=<?php echo $paperID; ?>&screen=' + screenNo + '&display_pos=' + document.PapersMenu.current_pos.value + '&folder=<?php echo $folder; ?>&module=<?php echo $module; ?>&scrOfY=' + document.getElementById('scrOfY').value;
   }
-  
+
   function incScreen() {
     screenNo = document.PapersMenu.screenNo.value;
     screenNo++;
     window.location='<?php echo $configObject->get('cfg_root_path') ?>/paper/change_screen_no.php?questionID=' + getLastID(document.PapersMenu.pID.value) + '&paperID=<?php echo $paperID; ?>&screen=' + screenNo + '&display_pos=' + document.PapersMenu.current_pos.value + '&folder=<?php echo $folder; ?>&module=<?php echo $module; ?>&scrOfY=' + document.getElementById('scrOfY').value;
   }
-  
+
   function addQuestions(display, screen_no) {
     winH = screen.height - 80
     winW = screen.width - 80
@@ -213,7 +214,7 @@ if (count($moduleIDs) > 0) {
       notice.focus();
     }
   }
-  
+
   function questionInfo() {
     notice=window.open("<?php echo $configObject->get('cfg_root_path') ?>/question/info.php?q_id=" + getLastID(document.PapersMenu.questionID.value) + "","notice","width=700,height=600,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
     notice.moveTo(screen.width/2-350,screen.height/2-300);
@@ -237,7 +238,7 @@ if (count($moduleIDs) > 0) {
     if (!e) var e = window.event;
     e.cancelBubble = true;
   }
-  
+
   function hideAssStatsMenu(e) {
     document.getElementById('stats_menu').style.display = 'none';
     if (!e) var e = window.event;
@@ -259,7 +260,7 @@ if (count($moduleIDs) > 0) {
     if (!e) var e = window.event;
     e.cancelBubble = true;
   }
-  
+
   function hideCopyMenu(e) {
     document.getElementById('copy_submenu').style.display = 'none';
     if (!e) var e = window.event;
@@ -327,7 +328,7 @@ if (count($moduleIDs) > 0) {
       echo "<tr><td><a href=\"{$configObject->get('cfg_root_path')}/mapping/paper_mappings_by_session.php?paperID=$paperID&paper_title=" . $properties->get_paper_title() . "&sd=" . $properties->get_start_date() . "&ed=" . $properties->get_end_date() . "&module=" . $module . "&folder=" . $folder . "\"><img src=\"{$configObject->get('cfg_root_path')}/artwork/curriculum_map_small.png\" width=\"16\" height=\"16\" alt=\"" . $string['mappedobjectives'] . "\" border=\"0\" /></a></td><td class=\"menuitem\"><a href=\"{$configObject->get('cfg_root_path')}/mapping/paper_mappings_by_session.php?paperID=$paperID&paper_title=" . $properties->get_paper_title() . "&sd=" . $properties->get_start_date() . "&ed=" . $properties->get_end_date() . "&module=" . $module . "&folder=" . $folder . "\">" . $string['mappedobjectives'] . "</a></td></tr>\n";
     }
   }
-  
+
 ?>
 <tr><td><a onclick="showCopyMenu(false, event); return false;" href="#"><img src="<?php echo $configObject->get('cfg_root_path') ?>/artwork/copy_icon.gif" width="16" height="16" alt="<?php echo $string['copypaper']; ?>" /></a></td><td class="menuitem sub"><span id="copy"><a onclick="showCopyMenu(false, event); return false;" href="#"><?php echo $string['copypaper']; ?></a></span></td></tr>
 <?php
@@ -336,7 +337,7 @@ if (count($moduleIDs) > 0) {
   } else {
     echo '<tr><td><img src="' . $configObject->get('cfg_root_path') . '/artwork/delete_paper_grey_16.gif" width="16" height="16" alt="' . $string['deletepaper'] . '" /></td><td class="greymenuitem">' . $string['deletepaper'] . '</td></tr>';
   }
-  
+
   echo '<tr><td><a href="#" onclick="retirePaper(); return false;"><img src="' . $configObject->get('cfg_root_path') . '/artwork/retire_16.png" width="16" height="16" border="0" alt="' . $string['retirepaper'] . '" /></a></td><td class="menuitem"><a href="#" onclick="retirePaper(); return false;">' . $string['retirepaper'] . '</a></td></tr>';
 
   if ($properties->get_item_no() == 0) {
@@ -461,12 +462,12 @@ if ($properties->get_paper_type() == '2') {
   if (date("His", $properties->get_start_date()) == date("His", $properties->get_end_date()) or date("His", $properties->get_start_date()) == '000000' or date("His", $properties->get_start_date()) == '000000') {
     echo "<tr><td><img src=\"{$configObject->get('cfg_root_path')}/artwork/small_yellow_warning_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['warning'] . "\" /></td><td><a href=\"\" class=\"checklist\" onclick=\"paperProperties(); return false;\">" . $string['examtime'] . "</a></td><td style=\"color:#C00000\"><strong>" . $string['incorrect'] . "</strong></td></tr>\n";
   }
-  
+
   // Duration
   if ($properties->get_exam_duration() == '') {
     echo "<tr><td><img src=\"{$configObject->get('cfg_root_path')}/artwork/small_yellow_warning_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['warning'] . "\" /></td><td><a href=\"\" class=\"checklist\" onclick=\"paperProperties(); return false;\">" . $string['duration'] . "</a></td><td style=\"color:#C00000\"><strong>" . $string['unset'] . "</strong></td></tr>\n";
   }
-  
+
   // Computer labs
   if ($properties->get_labs() == '') {
     echo "<tr><td><img src=\"{$configObject->get('cfg_root_path')}/artwork/small_yellow_warning_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['warning'] . "\" /></td><td><a href=\"\" class=\"checklist\" onclick=\"paperProperties(); return false;\">" . $string['computerlabs'] . "</a></td><td style=\"color:#C00000\"><strong>" . $string['unset'] . "</strong></td></tr>\n";
@@ -565,7 +566,7 @@ if ($properties->get_paper_type() == '2') {
     } else {
       echo "<tr><td><img src=\"{$configObject->get('cfg_root_path')}/artwork/small_yellow_warning_icon.gif\" width=\"16\" height=\"16\" alt=\"" . $string['warning'] . "\" /></td><td><a class=\"checklist\" href=\"{$configObject->get('cfg_root_path')}/std_setting/index.php?paperID=" . $_GET['paperID'] . "&module=" . $module . "&folder=" . $folder . "\">" . $string['standardsset'] . "</a></td>";
     }
-	
+
     if ($standards_set == 1) {
       echo "<td style=\"color:#008000\"><strong>" . $string['ok'] . "</strong></td></tr>\n";
     } elseif ($standards_set == 0.5) {
@@ -579,7 +580,7 @@ if ($properties->get_paper_type() == '2') {
   if (strpos($checklist, 'mapping') !== false) {
     $mappings_complete = 0;
     $tmp_session = $properties->get_calendar_year();
-    
+
     $question_list = array();
     $stmt = $mysqli->prepare("SELECT question FROM papers, questions WHERE paper = ? AND papers.question = questions.q_id AND q_type != 'info'");
     $stmt->bind_param('i', $paperID);
@@ -590,9 +591,9 @@ if ($properties->get_paper_type() == '2') {
     }
     $stmt->close();
     $tmp_question_list = implode(',', array_keys($question_list));
-    
+
     $objIDs = array();
-    
+
     $moduleIDs = Paper_utils::get_modules($paperID, $mysqli);
     $objsBySession = getObjectives($moduleIDs, $tmp_session, $paperID, $tmp_question_list, $mysqli);
     foreach ($objsBySession as $moduleCode) {
@@ -605,22 +606,19 @@ if ($properties->get_paper_type() == '2') {
         }
       }
     }
-    
+
     $mappings = array();
 
-    $stmt = $mysqli->prepare("SELECT question_id, obj_id FROM relationships WHERE paper_id = ? AND calendar_year = ?");
-    $stmt->bind_param('is', $paperID, $tmp_session);
-    $stmt->execute();
-    $stmt->bind_result($questionID, $obj_id);
-    while ($stmt->fetch()) {
-      if (isset($question_list[$questionID]) and isset($objIDs[$obj_id])) {
-        $mappings[$questionID] = $questionID;
+    if ($rels = Relationship::find($mysqli, '', $tmp_session, $paperID)) {
+      foreach ($rels as $rel) {
+        if (isset($question_list[$rel->get_question_id()]) and isset($objIDs[$rel->get_objective_id()])) {
+          $mappings[$rel->get_question_id()] = $rel->get_question_id();
+        }
       }
     }
-    $stmt->close();
-    
+
     $mappings_complete = count($mappings);
-    
+
     if ($mappings_complete < $properties->get_question_no()) {
       if ($mappings_complete == 0) {
         $tmp_color = '#C00000';
@@ -645,7 +643,7 @@ if ($properties->get_paper_type() == '2') {
   makeMenu($staff_modules_array);
   makeMenu($keywords_array);
   makeMenu(array($string['questions']=>$configObject->get('cfg_root_path') . '/question/search.php',$string['papers']=>$configObject->get('cfg_root_path') . '/paper/search.php',$string['people']=>$configObject->get('cfg_root_path') . '/users/search.php', '-'=>'-', $string['studentcohort']=>$configObject->get('cfg_root_path') . '/users/search.php?paperID=' . $_GET['paperID']));
-  
+
   if ($properties->get_summative_lock()) {
     $params = "&scrOfY=' + document.getElementById('scrOfY').value + '";
   } else {
@@ -657,7 +655,7 @@ if ($properties->get_paper_type() == '2') {
   } else {
     makeMenu(array($string['info']=>"{$configObject->get('cfg_root_path')}/question/edit/index.php?type=info$params",$string['keyword_based']=>"{$configObject->get('cfg_root_path')}/question/edit/index.php?type=keyword_based$params",$string['random']=>"{$configObject->get('cfg_root_path')}/question/edit/index.php?type=random$params","-"=>"-",$string['area']=>"{$configObject->get('cfg_root_path')}/question/edit/index.php?type=area$params",$string['calculation']=>"{$configObject->get('cfg_root_path')}/question/edit/index.php?type=calculation$params",$string['dichotomous']=>"{$configObject->get('cfg_root_path')}/question/edit/index.php?type=dichotomous$params",$string['extmatch']=>"{$configObject->get('cfg_root_path')}/question/edit/index.php?type=extmatch$params",$string['blank']=>"{$configObject->get('cfg_root_path')}/question/edit/index.php?type=blank$params",$string['hotspot']=>"{$configObject->get('cfg_root_path')}/question/edit/index.php?type=hotspot$params",$string['labelling']=>"{$configObject->get('cfg_root_path')}/question/edit/index.php?type=labelling$params",$string['likert']=>"{$configObject->get('cfg_root_path')}/question/edit/index.php?type=likert$params",$string['matrix']=>"{$configObject->get('cfg_root_path')}/question/edit/index.php?type=matrix$params",$string['mcq']=>"{$configObject->get('cfg_root_path')}/question/edit/index.php?type=mcq$params",$string['mrq']=>"{$configObject->get('cfg_root_path')}/question/edit/index.php?type=mrq$params",$string['rank']=>"{$configObject->get('cfg_root_path')}/question/edit/index.php?type=rank$params",$string['sct']=>"{$configObject->get('cfg_root_path')}/question/edit/index.php?type=sct$params",$string['textbox']=>"{$configObject->get('cfg_root_path')}/question/edit/index.php?type=textbox$params",$string['true_false']=>"{$configObject->get('cfg_root_path')}/question/edit/index.php?type=true_false$params"));
   }
-    
+
   if ($properties->get_summative_lock()) {
     makeMenu(array($string['export12']=>"{$configObject->get('cfg_root_path')}/qti/export.php?dest=qti12&paperID=$paperID&module=$module"));
   } else {

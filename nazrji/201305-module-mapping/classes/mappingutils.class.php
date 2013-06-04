@@ -24,6 +24,8 @@
  * @package
  */
 
+require_once 'relationship.class.php';
+
 class MappingUtils {
   /**
    * Get the VLE API that is in effect for the given module and academic year
@@ -37,15 +39,10 @@ class MappingUtils {
   public static function get_vle_api($idMod, $session, &$vle_api_cache, $db) {
     if (!isset($vle_api_cache[$idMod][$session])) {
       // Are there any existing relationships for the module in this session?
-      $stmt = $db->prepare("SELECT vle_api, map_level FROM relationships WHERE idMod = ? AND calendar_year = ? LIMIT 1");
-      $stmt->bind_param('is', $idMod, $session);
-      $stmt->execute();
-      $stmt->store_result();
-      if ($stmt->num_rows > 0) {
-        $stmt->bind_result($vle_api, $map_level);
-        $stmt->fetch();
-        $stmt->close();
-        $vle_api_data = array('api' => $vle_api, 'level' => $map_level);
+      $rels = Relationship::find($db, $idMod, $session, '', '', 1);
+      if ($rels !== false and count($rels) > 0) {
+        $vle_api = $rels[0]->get_vle_api();
+        $map_level = $rels[0]->get_map_level();
       } else {
         // No existing relationships. Use VLE API as defined in the module
         $stmt = $db->prepare("SELECT vle_api, map_level FROM modules WHERE id=? LIMIT 1");
@@ -54,10 +51,10 @@ class MappingUtils {
         $stmt->bind_result($vle_api, $map_level);
         $stmt->fetch();
         $stmt->close();
-        $vle_api_data = array('api' => $vle_api, 'level' => $map_level);
       }
 
-      $vle_api_cache[$idMod][$session] = array('api' => $vle_api, 'level' => $map_level);
+      $vle_api_data = array('api' => $vle_api, 'level' => $map_level);
+      $vle_api_cache[$idMod][$session] = $vle_api_data;
     } else {
       $vle_api_data = $vle_api_cache[$idMod][$session];
     }

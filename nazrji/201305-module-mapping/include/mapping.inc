@@ -37,6 +37,7 @@ require_once $cfg_web_root . 'apis/VLEFactory.class.php';
 require_once $cfg_web_root . 'classes/dateutils.class.php';
 require_once $cfg_web_root . 'classes/mappingutils.class.php';
 require_once $cfg_web_root . 'classes/moduleutils.class.php';
+require_once $cfg_web_root . 'classes/relationship.class.php';
 
 function render_objectives_mapping_form($db, $paper_id, &$string) {
   global $vle_api_cache;
@@ -315,15 +316,10 @@ function getObjectives($thisModuleid, $session, $paperID, $questionID, $db, $sco
   //START:: get the currently mapped objectives in Rogo.
   $mapped = array();
   if ($questionID != '') {
-    $original_thisModuleid_in = implode(',', array_keys($original_thisModuleid));
-    if ($result = $db->prepare("SELECT obj_id, question_id FROM relationships WHERE idMod IN ($original_thisModuleid_in) AND paper_id = ? AND calendar_year = ? AND question_id IN ($questionID) AND vle_api = ?")) {
-      $result->bind_param('iss', $paperID, $session, $vle_api);
-      $result->execute();
-      $result->bind_result($obj_id, $question_id);
-      while ($result->fetch()) {
-        $mapped[$obj_id][] = $question_id;
+    if ($rels = Relationship::find($db, array_keys($original_thisModuleid), $session, $paperID, explode(',', $questionID))) {
+      foreach ($rels as $rel) {
+        $mapped[$rel->get_objective_id()][] = $rel->get_question_id();
       }
-      $result->close();
     } else {
       echo "Error: " . $db->error;
     }
