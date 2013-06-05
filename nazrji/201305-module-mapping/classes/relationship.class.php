@@ -36,7 +36,12 @@ class Relationship {
   private $vle_api;
   private $map_level;
 
+  private $_db;
+  private $_db_error;
+
   function __construct($mysqli, $data = null) {
+    $this->_db = $mysqli;
+
     // Check the type of $data
     if (is_array($data)) {
       // If it is an array, assume an associative array of fields for creating a new object (but not
@@ -67,7 +72,7 @@ SELECT idMod, paper_id, question_id, obj_id, calendar_year, vle_api, map_level
 FROM relationships
 WHERE rel_id = ?
 QUERY;
-    $result = $this->_mysqli->prepare($q_query);
+    $result = $this->_db->prepare($q_query);
     $result->bind_param('i', $this->id);
     $result->execute();
     $result->store_result();
@@ -78,6 +83,30 @@ QUERY;
     $result->close();
 
     return $success;
+  }
+
+  public function save() {
+    if ($this->id != -1) {
+      throw new MethodNotImplementedException('UPDATE not yet implemented');
+    }
+
+    $sql = <<< QUERY
+INSERT INTO relationships (idMod, paper_id, question_id, obj_id, calendar_year, vle_api, map_level)
+VALUES (?, ?, ?, ?, ?, ?, ?)
+QUERY;
+    if ($stmt = $this->_db->prepare($sql)) {
+      $stmt->bind_param('iiiissi', $this->idMod, $this->paper_id, $this->question_id, $this->objective_id, $this->calendar_year, $this->vle_api, $this->map_level);
+      if (!$stmt->execute()) {
+        throw new DatabaseException($stmt->error . "<br/> $sql <br/>");
+      }
+      $stmt->close();
+
+      $this->id = $this->_db->insert_id;
+    } else {
+      throw new DatabaseException($this->_db->error . "<br/> $sql <br/>");
+    }
+
+    return true;
   }
 
   /**
@@ -134,6 +163,13 @@ QUERY;
    */
   public function get_map_level() {
     return $this->map_level;
+  }
+
+  /**
+   * @return string
+   */
+  public function get_db_error() {
+    return $this->_db_error;
   }
 
   /**

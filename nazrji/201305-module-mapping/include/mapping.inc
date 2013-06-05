@@ -174,7 +174,7 @@ function save_objective_mappings($db, $modules, $paper_id, $question_id) {
     $old_mappings = '';
     $new_mappings = '';
 
-    $sql = array();
+    $relationships = array();
 
     foreach ($modules as $idMod) {
       if (isset($_POST[$idMod . '_session'])) {
@@ -184,14 +184,30 @@ function save_objective_mappings($db, $modules, $paper_id, $question_id) {
         $map_level = $_POST[$idMod . '_map_level'];
         if (isset($_POST[$idMod . '_objectives'])) {
           foreach ($_POST[$idMod . '_objectives'] as $objective_id) {
-            $sql[] = "INSERT INTO relationships (idMod, paper_id, question_id, obj_id, calendar_year, vle_api, map_level) VALUES ($idMod, $paper_id, $question_id, $objective_id, '$session', '$vle_api', $map_level)";
+            $data = array(
+              'idMod' => $idMod,
+              'paper_id' => $paper_id,
+              'question_id' => $question_id,
+              'objective_id' => $objective_id,
+              'calendar_year' => $session,
+              'vle_api' => $vle_api,
+              'map_level' => $map_level);
+            $relationships[] = new Relationship($db, $data);
             $new_mappings .= $objective_id . ',';
           }
         }
 
         //check for none of the above
-        if (isset($_POST['none_of_the_above']) and $_POST['none_of_the_above'] == -1 and count($sql) == 0) {
-          $sql[] = "INSERT INTO relationships (idMod, paper_id, question_id, obj_id, calendar_year, vle_api, map_level) VALUES ($idMod, $paper_id, $question_id, -1, '$session','$vle_api', $map_level)";
+        if (isset($_POST['none_of_the_above']) and $_POST['none_of_the_above'] == -1 and count($relationships) == 0) {
+          $data = array(
+            'idMod' => $idMod,
+            'paper_id' => $paper_id,
+            'question_id' => $question_id,
+            'objective_id' => -1,
+            'calendar_year' => $session,
+            'vle_api' => $vle_api,
+            'map_level' => $map_level);
+          $relationships[] = new Relationship($db, $data);
           $new_mappings .= '-1,';
         } else {
           $old_mappings .= '-1,';
@@ -201,11 +217,15 @@ function save_objective_mappings($db, $modules, $paper_id, $question_id) {
           // prepend the delete
           if ($old_mappings != '') {
             $delete = "DELETE FROM relationships WHERE idMod = $idMod AND paper_id = $paper_id AND question_id = $question_id AND calendar_year = '$session' AND vle_api= '$vle_api'";
-            array_unshift($sql, $delete);
+            if (!$result = $db->query($delete)) {
+             echo "Question Mapping Error #1 " . $db->error . "<br/> $delete <br/>";
+            }
           }
-          foreach($sql as $query) {
-            if (!$result = $db->query($query)) {
-              echo "Question Mapping Error #1 " . $db->error . "<br/> $query <br/>";
+          foreach ($relationships as $rel) {
+            try {
+              $rel->save();
+            } catch (DatabaseException $ex) {
+              echo "Question Mapping Error #1 " . $ex->getMessage();
             }
           }
         }
@@ -316,7 +336,8 @@ function getObjectives($thisModuleid, $session, $paperID, $questionID, $db, $sco
   //START:: get the currently mapped objectives in Rogo.
   $mapped = array();
   if ($questionID != '') {
-    if ($rels = Relationship::find($db, array_keys($original_thisModuleid), $session, $paperID, explode(',', $questionID))) {
+    $rels = Relationship::find($db, array_keys($original_thisModuleid), $session, $paperID, explode(',', $questionID));
+    if ($rels !== false and is_array($rels)) {
       foreach ($rels as $rel) {
         $mapped[$rel->get_objective_id()][] = $rel->get_question_id();
       }

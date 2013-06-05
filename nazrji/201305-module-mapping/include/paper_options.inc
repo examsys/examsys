@@ -608,8 +608,8 @@ if ($properties->get_paper_type() == '2') {
     }
 
     $mappings = array();
-
-    if ($rels = Relationship::find($mysqli, '', $tmp_session, $paperID)) {
+    $rels = Relationship::find($mysqli, '', $tmp_session, $paperID);
+    if ($rels !== false and is_array($rels)) {
       foreach ($rels as $rel) {
         if (isset($question_list[$rel->get_question_id()]) and isset($objIDs[$rel->get_objective_id()])) {
           $mappings[$rel->get_question_id()] = $rel->get_question_id();
