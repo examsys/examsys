@@ -125,36 +125,26 @@ function hex_to_dec($data) {
 $mode = (isset($_GET['mode']) and $_GET['mode'] == 'text') ? 'text' : 'numeric';
 $numerals = array('i', 'ii', 'iii', 'iv', 'v', 'vi', 'vii', 'viii', 'ix', 'x', 'xi', 'xii', 'xiii', 'xiv', 'xv', 'xvi', 'xvii', 'xviii', 'xix', 'xx');
 
-$moduleID = Paper_utils::get_modules($paperID, $mysqli);
-$moduleID_in = implode(',', array_keys($moduleID));
-
-$user_modules = array();
+$user_sql = '';
 if (isset($_GET['repmodule']) and $_GET['repmodule'] != '') {
   $tmp_moduleID_in = $_GET['repmodule'];
-} else {
-  $tmp_moduleID_in = $moduleID_in;
-}
-
-$global_users = '';
-$calendar_year = $propertyObj->get_calendar_year();
-if ($calendar_year == '' or $calendar_year == '2006/07' or $calendar_year == '2007/08') {  // HACK: we don't have students by year before 2008/09
-  $mod_query = $mysqli->prepare("SELECT modules_student.idMod, userID, moduleID FROM modules_student, modules WHERE modules_student.idMod = modules.id AND idMod IN ($tmp_moduleID_in)");
-} else {
+  $calendar_year = $propertyObj->get_calendar_year();
   $mod_query = $mysqli->prepare("SELECT modules_student.idMod, userID, moduleID FROM modules_student, modules WHERE modules_student.idMod = modules.id AND idMod IN ($tmp_moduleID_in) AND calendar_year = ?");
   $mod_query->bind_param('s', $calendar_year);
-}
-$mod_query->execute();
-$mod_query->bind_result($idMod, $tmp_userID, $tmp_moduleid);
-$mod_query->store_result();
-while ($mod_query->fetch()) {
-  $user_modules[$tmp_userID]['idMod'] = $idMod;
-  if ($global_users == '') {
-    $global_users = $tmp_userID;
-  } else {
-    $global_users .= ',' . $tmp_userID;
+  $mod_query->execute();
+  $mod_query->bind_result($idMod, $tmp_userID, $tmp_moduleid);
+  $mod_query->store_result();
+  while ($mod_query->fetch()) {
+    $user_modules[$tmp_userID]['idMod'] = $idMod;
+    if ($user_sql == '') {
+      $user_sql = $tmp_userID;
+    } else {
+      $user_sql .= ',' . $tmp_userID;
+    }
   }
+  $mod_query->close();
+  $user_sql = 'AND userID IN (' . $user_sql . ')';
 }
-$mod_query->close();
 
 // Get any questions to exclude.
 $excluded = array();
@@ -259,18 +249,16 @@ $result->bind_result($number_of_questions);
 $result->fetch();
 $result->close();
 
-$exclude = '';
-
 $csv = '';
 
 // Get order of the class.
 $student_list = '';
 $paper_type = $propertyObj->get_paper_type();
 if ($paper_type == '0') {
-  $result = $mysqli->prepare("(SELECT log_metadata.userID, SUM(mark) AS total_mark FROM log0, log_metadata WHERE log0.metadataID = log_metadata.id AND paperID = ? AND started >= ? AND started <= ? AND userID IN ($global_users) GROUP BY log_metadata.userID, paperID, started) UNION ALL (SELECT log_metadata.userID, sum(mark) AS total_mark FROM log1, log_metadata WHERE log1.metadataID = log_metadata.id AND paperID = ? AND started >= ? AND started <= ? AND userID IN ($global_users) GROUP BY log_metadata.userID, paperID, started) ORDER BY total_mark");
+  $result = $mysqli->prepare("(SELECT log_metadata.userID, SUM(mark) AS total_mark FROM log0, log_metadata WHERE log0.metadataID = log_metadata.id AND paperID = ? AND started >= ? AND started <= ? $user_sql GROUP BY log_metadata.userID, paperID, started) UNION ALL (SELECT log_metadata.userID, sum(mark) AS total_mark FROM log1, log_metadata WHERE log1.metadataID = log_metadata.id AND paperID = ? AND started >= ? AND started <= ? $user_sql GROUP BY log_metadata.userID, paperID, started) ORDER BY total_mark");
   $result->bind_param('ississ', $paperID, $startdate, $enddate, $paperID, $startdate, $enddate);
 } else {
-  $result = $mysqli->prepare("SELECT log_metadata.userID, SUM(mark) AS total_mark FROM log$paper_type, log_metadata WHERE log$paper_type.metadataID = log_metadata.id AND paperID = ? AND DATE_ADD(started, INTERVAL 2 MINUTE) >= ? AND started <= ? AND userID IN ($global_users) GROUP BY log_metadata.userID, paperID, started ORDER BY total_mark");
+  $result = $mysqli->prepare("SELECT log_metadata.userID, SUM(mark) AS total_mark FROM log$paper_type, log_metadata WHERE log$paper_type.metadataID = log_metadata.id AND paperID = ? AND DATE_ADD(started, INTERVAL 2 MINUTE) >= ? AND started <= ? $user_sql GROUP BY log_metadata.userID, paperID, started ORDER BY total_mark");
   $result->bind_param('iss', $paperID, $startdate, $enddate);
 }
 $result->execute();
@@ -295,10 +283,10 @@ if ($student_no > 0) {
   $rowID = 0;
   // Capture the log data.
   if ($paper_type == '0') {
-    $result = $mysqli->prepare("(SELECT DISTINCT sid.student_id, username, log_metadata.userID, title, surname, first_names, grade, gender, year, started, log0.q_id, user_answer, q_type, screen FROM (log0, log_metadata, questions, users) LEFT JOIN sid ON users.id = sid.userID WHERE log0.metadataID = log_metadata.id AND log0.q_id = questions.q_id AND log_metadata.userID IN ($student_list) AND paperID = ? AND users.id = log_metadata.userID AND (users.roles='Student' OR users.roles='graduate')$exclude AND grade LIKE ? AND started >= ? AND started <= ?) UNION ALL (SELECT DISTINCT sid.student_id, username, log_metadata.userID, title, surname, first_names, grade, gender, year, started, log1.q_id, user_answer, q_type, screen FROM (log1, log_metadata, questions, users) LEFT JOIN sid ON users.id = sid.userID WHERE log1.metadataID = log_metadata.id AND log1.q_id = questions.q_id AND log_metadata.userID IN ($student_list) AND paperID = ? AND users.id = log_metadata.userID AND (users.roles='Student' OR users.roles='graduate')$exclude AND grade LIKE ? AND started >= ? AND started <= ?) ORDER BY surname, first_names, started, userID");
+    $result = $mysqli->prepare("(SELECT DISTINCT sid.student_id, username, log_metadata.userID, title, surname, first_names, grade, gender, year, started, log0.q_id, user_answer, q_type, screen FROM (log0, log_metadata, questions, users) LEFT JOIN sid ON users.id = sid.userID WHERE log0.metadataID = log_metadata.id AND log0.q_id = questions.q_id AND log_metadata.userID IN ($student_list) AND paperID = ? AND users.id = log_metadata.userID AND (users.roles='Student' OR users.roles='graduate') AND grade LIKE ? AND started >= ? AND started <= ?) UNION ALL (SELECT DISTINCT sid.student_id, username, log_metadata.userID, title, surname, first_names, grade, gender, year, started, log1.q_id, user_answer, q_type, screen FROM (log1, log_metadata, questions, users) LEFT JOIN sid ON users.id = sid.userID WHERE log1.metadataID = log_metadata.id AND log1.q_id = questions.q_id AND log_metadata.userID IN ($student_list) AND paperID = ? AND users.id = log_metadata.userID AND (users.roles='Student' OR users.roles='graduate') AND grade LIKE ? AND started >= ? AND started <= ?) ORDER BY surname, first_names, started, userID");
     $result->bind_param('isssisss', $paperID, $_GET['repcourse'], $startdate, $enddate, $paperID, $_GET['repcourse'], $startdate, $enddate);
   } else {
-    $result = $mysqli->prepare("SELECT DISTINCT sid.student_id, username, log_metadata.userID, title, surname, first_names, grade, gender, year, started, log$paper_type.q_id, user_answer, q_type, screen FROM (log$paper_type, log_metadata, questions, users) LEFT JOIN sid ON users.id = sid.userID WHERE log$paper_type.metadataID = log_metadata.id AND log$paper_type.q_id = questions.q_id AND log_metadata.userID IN ($student_list) AND paperID = ? AND users.id = log_metadata.userID AND (users.roles='Student' OR users.roles='graduate')$exclude AND grade LIKE ? AND DATE_ADD(started, INTERVAL 2 MINUTE) >= ? AND started <= ? ORDER BY surname, first_names, started, userID");
+    $result = $mysqli->prepare("SELECT DISTINCT sid.student_id, username, log_metadata.userID, title, surname, first_names, grade, gender, year, started, log$paper_type.q_id, user_answer, q_type, screen FROM (log$paper_type, log_metadata, questions, users) LEFT JOIN sid ON users.id = sid.userID WHERE log$paper_type.metadataID = log_metadata.id AND log$paper_type.q_id = questions.q_id AND log_metadata.userID IN ($student_list) AND paperID = ? AND users.id = log_metadata.userID AND (users.roles='Student' OR users.roles='graduate') AND grade LIKE ? AND DATE_ADD(started, INTERVAL 2 MINUTE) >= ? AND started <= ? ORDER BY surname, first_names, started, userID");
     $result->bind_param('isss', $paperID, $_GET['repcourse'], $startdate, $enddate);
   }
   $result->execute();
