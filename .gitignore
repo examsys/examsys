@@ -1,0 +1,5 @@
+/media/*
+/config/config*
+/qti/imports/*
+/qti/exports/*
+/users/photos/*
