@@ -1,0 +1,167 @@
+
+# /
+/.buildpath
+/.idea
+/.project
+/.settings
+/.tags*
+/lti-ims
+/safixperms.php
+/userlookuptest.php
+
+# /classes/options/
+
+# /classes/questions/
+
+# /config/
+/config/config.inc.*
+/config/integration
+
+# /email_templates/
+/email_templates/*.txt
+
+# /html5/
+/html5/qgraph.html
+
+# /include/question/
+
+# /include/question/addedit/
+
+# /include/question/addedit/correction_intermediates/
+
+# /include/question/addedit/detail_parts/
+
+# /include/question/addedit/media_upload/
+
+# /include/question/addedit/options/
+
+# /js/validation/
+
+# /lang/
+
+# /lang/en/
+
+# /lang/en/admin/
+
+# /lang/en/delete/
+
+# /lang/en/export/
+
+# /lang/en/folder/
+
+# /lang/en/help/
+
+# /lang/en/help/staff/
+
+# /lang/en/help/student/
+
+# /lang/en/import/
+
+# /lang/en/include/
+
+# /lang/en/install/
+
+# /lang/en/invigilator/
+
+# /lang/en/mapping/
+
+# /lang/en/osce/
+
+# /lang/en/paper/
+
+# /lang/en/qti/
+
+# /lang/en/question/
+
+# /lang/en/question/add/
+
+# /lang/en/question/edit/
+
+# /lang/en/reports/
+
+# /lang/en/reviews/
+
+# /lang/en/staff/
+
+# /lang/en/std_setting/
+
+# /lang/en/students/
+
+# /lang/en/updates/
+
+# /lang/en/users/
+
+# /lang/pl/
+
+# /lang/pl/admin/
+
+# /lang/pl/delete/
+
+# /lang/pl/export/
+
+# /lang/pl/folder/
+
+# /lang/pl/help/
+
+# /lang/pl/help/staff/
+
+# /lang/pl/help/student/
+
+# /lang/pl/import/
+
+# /lang/pl/include/
+
+# /lang/pl/invigilator/
+
+# /lang/pl/mapping/
+
+# /lang/pl/osce/
+
+# /lang/pl/paper/
+
+# /lang/pl/qti/
+
+# /lang/pl/question/
+
+# /lang/pl/question/add/
+
+# /lang/pl/question/edit/
+
+# /lang/pl/reports/
+
+# /lang/pl/reviews/
+
+# /lang/pl/staff/
+
+# /lang/pl/std_setting/
+
+# /lang/pl/students/
+
+# /lang/pl/updates/
+
+# /lang/pl/users/
+
+# /media/
+/media/*
+/media/*.*
+
+# /qti/exports/
+/qti/exports/*
+/qti/exports/*.*
+
+# /qti/imports/
+/qti/imports/*
+/qti/imports/*.*
+
+# /staff/
+
+# /students/
+
+# /temp/
+/temp/*.*
+
+# /testing/coverage/
+/testing/coverage/*.html
+
+# /users/photos/
+/users/photos/*.*
