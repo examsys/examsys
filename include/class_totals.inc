@@ -648,18 +648,18 @@ function getUserMark($q_id, $tmp_user_answer, $tmp_user_mark, $exclude, $status,
       $label_count = 0;
       $placeholders = 0;
       $i = 0;
-      $excluded_no = 0;
+      $excluded = array();
       $count_tmp_second_split = count($tmp_second_split);
       for ($label_no = 4; $label_no <= $count_tmp_second_split; $label_no += 4) {
         if (substr($tmp_second_split[$label_no],0,1) != '|') $label_count++;
         if (substr($tmp_second_split[$label_no],0,1) != '|' and $tmp_second_split[$label_no-2] > 219) {
+          $x = $tmp_second_split[$label_no-2];
+          $y = $tmp_second_split[$label_no-1] - 25;
           if ($tmp_exclude{$i} == '0') {
-            $x = $tmp_second_split[$label_no-2];
-            $y = $tmp_second_split[$label_no-1] - 25;
             $correct_labels[$x . 'x' . $y] = substr($tmp_second_split[$label_no],0,strpos($tmp_second_split[$label_no],'|'));
             $placeholders++;
           } else {
-            $excluded_no++;
+            $excluded[$x . 'x' . $y] = true;
           }
           $i++;
         }
@@ -681,16 +681,19 @@ function getUserMark($q_id, $tmp_user_answer, $tmp_user_mark, $exclude, $status,
         for ($a=0; $a<$count_user_split2; $a+=4) {
           $x = $user_split2[$a];
           $y = $user_split2[$a+1];
-          if (isset($correct_labels[$x . 'x' . $y]) and $correct_labels[$x . 'x' . $y] == $user_split2[$a+2]) {
-            $tmp_mark += $question['marks_correct'];
-            $correct += $question['marks_correct'];
-            $tmp_user_mark_array[$q_id][] = $question['marks_correct'];
-          } elseif (isset($correct_labels[$x . 'x' . $y]) and $correct_labels[$x . 'x' . $y] != $user_split2[$a+2]) {
-            $tmp_mark += $question['marks_incorrect'];
-            $correct += $question['marks_incorrect'];
-            $tmp_user_mark_array[$q_id][] = $question['marks_incorrect'];
-          } else {
-            $tmp_user_mark_array[$q_id][] = 0;
+          if (!isset($excluded[$x . 'x' . $y]))
+          {
+            if (isset($correct_labels[$x . 'x' . $y]) and $correct_labels[$x . 'x' . $y] == $user_split2[$a+2]) {
+              $tmp_mark += $question['marks_correct'];
+              $correct += $question['marks_correct'];
+              $tmp_user_mark_array[$q_id][] = $question['marks_correct'];
+            } elseif (isset($correct_labels[$x . 'x' . $y]) and $correct_labels[$x . 'x' . $y] != $user_split2[$a+2]) {
+              $tmp_mark += $question['marks_incorrect'];
+              $correct += $question['marks_incorrect'];
+              $tmp_user_mark_array[$q_id][] = $question['marks_incorrect'];
+            } else {
+              $tmp_user_mark_array[$q_id][] = 0;
+            }
           }
           $i++;
         }
