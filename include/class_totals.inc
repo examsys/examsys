@@ -1347,6 +1347,16 @@ if ($percent < 100) {
   }
 }
 
+if (substr($marking, 0, 1) == '2') {
+  get_ss_pass($ss_pass, $ss_hon);
+
+  for ($i=0; $i<$user_no; $i++) {
+    if (isset($user_results[$i]['adj_percent'])) {
+      $user_results[$i]['adj_percent'] = crankMark($user_results[$i]['percent'], $ss_pass, $ss_hon, $pass_mark, $distinction_mark);
+    }
+  }
+}
+
 if ($late_cohort_size > 0) {
   for ($i=0; $i < $late_cohort_size; $i++) {
     $late_user = $late_cohort[$i];
@@ -1458,16 +1468,6 @@ $tmp_sort = ($sortby != 'result' and $sortby != 'percent') ? $sortby : 'adj_perc
 if ($tmp_sort == 'adj_percent') $tmp_sort = 'mark';
 if ($tmp_sort == 'classification') $tmp_sort = 'mark';
 $user_results = array_csort($user_results, $tmp_sort, $ordering);
-
-if (substr($marking, 0, 1) == '2') {
-  get_ss_pass($ss_pass, $ss_hon);
-
-  for ($i=0; $i<$user_no; $i++) {
-    if (isset($user_results[$i]['adj_percent'])) {
-      $user_results[$i]['adj_percent'] = crankMark($user_results[$i]['percent'], $ss_pass, $ss_hon, $pass_mark, $distinction_mark);
-    }
-  }
-}
 
 function isEven($intNumber) {
   if ($intNumber % 2 == 0 ) {
