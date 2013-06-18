@@ -79,7 +79,6 @@ function displayQuestion($q_id, $theme, $scenario, $leadin, $q_type, $correct, $
           if ($log[$screen][$q_id][$i]['f'] == '') $log[$screen][$q_id][$i]['f'] = 0;
           echo '<w:p wsp:rsidR="00E97566" wsp:rsidRDefault="00E97566" wsp:rsidP="00E97566"/><w:p wsp:rsidR="00E97566" wsp:rsidRDefault="00E97566" wsp:rsidP="00E97566"><w:pPr><w:tabs><w:tab w:val="decimal" w:pos="500"/><w:tab w:val="left" w:pos="550"/><w:tab w:val="decimal" w:pos="1450"/><w:tab w:val="left" w:pos="1500"/><w:tab w:val="left" w:pos="2400"/></w:tabs><w:ind w:left="2340" w:hanging="2340"/></w:pPr><w:r><w:tab wx:wTab="795" wx:tlc="none" wx:cTlc="17"/><w:t>' . $log[$screen][$q_id][$i]['t'] . '</w:t></w:r><w:r><w:tab wx:wTab="180" wx:tlc="none" wx:cTlc="3"/><w:t>(' . round(($log[$screen][$q_id][$i]['t']/$candidates)*100) . '%)</w:t></w:r><w:r><w:tab wx:wTab="180" wx:tlc="none" wx:cTlc="3"/><w:t>' . $log[$screen][$q_id][$i]['f'] . '</w:t></w:r><w:r><w:tab wx:wTab="180" wx:tlc="none" wx:cTlc="3"/><w:t>(' . round(($log[$screen][$q_id][$i]['f']/$candidates)*100) . '%)</w:t></w:r><w:r><w:tab wx:wTab="720" wx:tlc="none" wx:cTlc="15"/></w:r><w:r><w:t>' . wordToUtf8($individual_option) . '</w:t></w:r></w:p>';
         }
-        //echo '</w:tbl>';
         echo '<w:p/>';
         $table_on = 0;
         break;
@@ -89,7 +88,7 @@ function displayQuestion($q_id, $theme, $scenario, $leadin, $q_type, $correct, $
         $i = 0;
         foreach ($options as $individual_option) {
           $i++;
-          if ($log[$screen][$q_id][1][$i] == '') {
+          if (!isset($log[$screen][$q_id][1][$i]) or $log[$screen][$q_id][1][$i] == '') {
             echo '<w:p><w:pPr><w:tabs><w:tab w:val="decimal" w:pos="900"/><w:tab w:val="left" w:pos="1080"/><w:tab w:val="left" w:pos="1800"/></w:tabs></w:pPr><w:r><w:tab wx:wTab="795" wx:tlc="none" wx:cTlc="17"/><w:t>0</w:t></w:r><w:r><w:tab wx:wTab="180" wx:tlc="none" wx:cTlc="3"/><w:t>(0%)</w:t></w:r><w:r><w:tab wx:wTab="720" wx:tlc="none" wx:cTlc="15"/></w:r><w:r><w:t>' . wordToUtf8($individual_option) . '</w:t></w:r></w:p>';
           } else {
             echo '<w:p><w:pPr><w:tabs><w:tab w:val="decimal" w:pos="900"/><w:tab w:val="left" w:pos="1080"/><w:tab w:val="left" w:pos="1800"/></w:tabs></w:pPr><w:r><w:tab wx:wTab="795" wx:tlc="none" wx:cTlc="17"/><w:t>' . $log[$screen][$q_id][1][$i] . '</w:t></w:r><w:r><w:tab wx:wTab="180" wx:tlc="none" wx:cTlc="3"/><w:t>(' . round(($log[$screen][$q_id][1][$i]/$candidates)*100) . '%)</w:t></w:r><w:r><w:tab wx:wTab="720" wx:tlc="none" wx:cTlc="15"/></w:r><w:r><w:t>' . wordToUtf8($individual_option) . '</w:t></w:r></w:p>';
@@ -277,7 +276,7 @@ function displayQuestion($q_id, $theme, $scenario, $leadin, $q_type, $correct, $
   }
 }
 
-$result = $mysqli->prepare("SELECT COUNT(question) AS question_no, paper_title FROM (properties, papers, questions) WHERE properties.property_id=papers.paper AND papers.question=questions.q_id AND q_type!='info' AND paper=? GROUP BY property_id");
+$result = $mysqli->prepare("SELECT COUNT(question) AS question_no, paper_title FROM (properties, papers, questions) WHERE properties.property_id = papers.paper AND papers.question = questions.q_id AND q_type != 'info' AND paper = ? GROUP BY property_id");
 $result->bind_param('i', $_GET['paperID']);
 $result->execute();
 $result->bind_result($number_of_questions, $paper);
@@ -286,17 +285,19 @@ $result->close();
 
 $exclude = '';
 if ($_GET['complete'] == 1) {
-  $result = $mysqli->prepare("SELECT userID, COUNT(id) AS answer_no FROM log3 WHERE q_paper=? AND started>=? AND started<=? GROUP BY userID");
+  $result = $mysqli->prepare("SELECT userID, COUNT(id) AS answer_no FROM log3 WHERE q_paper = ? AND started >= ? AND started <= ? GROUP BY userID");
   $result->bind_param('iss', $_GET['paperID'], $_GET['startdate'], $_GET['enddate']);
   $result->execute();
   $result->bind_result($tmp_username, $answer_no);
-  while ($row = $result->fetch()) {
+  while ($result->fetch()) {
     if ($answer_no < $number_of_questions or $answer_no > $number_of_questions) {
       $exclude .= ' AND log3.userID != "' . $tmp_username . '"';
     }
   }
   $result->close();
 }
+
+$paper = str_replace('&', '&amp;', $paper);
 
 echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
 echo '<?mso-application progid="Word.Document"?>
@@ -331,11 +332,11 @@ if ($hits > 0) {
   $options_buffer = array();
   $correct_buffer = array();
 
-  $result = $mysqli->prepare("SELECT screen, q_id, q_type, theme, scenario, leadin, option_text, display_method, q_media, q_media_width, q_media_height, correct FROM papers, questions, options WHERE papers.question=questions.q_id AND questions.q_id=options.o_id AND papers.paper=? ORDER BY screen, display_pos, id_num");
+  $result = $mysqli->prepare("SELECT screen, q_id, q_type, theme, scenario, leadin, option_text, display_method, q_media, q_media_width, q_media_height, correct FROM papers, questions, options WHERE papers.question=questions.q_id AND questions.q_id = options.o_id AND papers.paper = ? ORDER BY screen, display_pos, id_num");
   $result->bind_param('i', $_GET['paperID']);
   $result->execute();
   $result->bind_result($screen, $q_id, $q_type, $theme, $scenario, $leadin, $option_text, $display_method, $q_media, $q_media_width, $q_media_height, $correct);
-  while ($row = $result->fetch()) {
+  while ($result->fetch()) {
     $theme = str_replace('&nbsp;',' ',$theme);
     $scenario = str_replace('&nbsp;',' ',$scenario);
     $leadin = str_replace('&nbsp;',' ',$leadin);

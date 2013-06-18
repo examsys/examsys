@@ -35,6 +35,8 @@
   $result->bind_result($paper);
   $result->fetch();
   $result->close();
+  
+  $paper = str_replace('&', '&amp;', $paper);
 
   echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
   echo '<?mso-application progid="Word.Document"?><w:wordDocument xmlns:w="http://schemas.microsoft.com/office/word/2003/wordml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:sl="http://schemas.microsoft.com/schemaLibrary/2003/core" xmlns:aml="http://schemas.microsoft.com/aml/2001/core" xmlns:wx="http://schemas.microsoft.com/office/word/2003/auxHint" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:dt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882" xmlns:st1="urn:schemas-microsoft-com:office:smarttags" w:macrosPresent="no" w:embeddedObjPresent="no" w:ocxPresent="no" xml:space="preserve"><o:SmartTagType o:namespaceuri="urn:schemas-microsoft-com:office:smarttags" o:name="City"/><o:SmartTagType o:namespaceuri="urn:schemas-microsoft-com:office:smarttags" o:name="place"/><o:DocumentProperties><o:Title>';
@@ -56,7 +58,7 @@
   $result->bind_param('i', $_GET['paperID']);
   $result->execute();
   $result->bind_result($question);
-  while ($row = $result->fetch()) {
+  while ($result->fetch()) {
     $paper_structure[] = $question;
   }
   $result->close();
@@ -78,16 +80,16 @@ INNER JOIN users u ON lm.userID = u.id
 WHERE p.paper = ?
 AND lm.student_grade LIKE ?
 AND lm.year LIKE ?
-AND q.q_type='textbox'
+AND q.q_type = 'textbox'
 AND lm.started >= ? AND lm.started <= ?
-AND (u.roles = 'Student' OR u.roles = 'graduate')
+AND (u.roles LIKE '%Student%' OR u.roles = 'graduate')
 ORDER BY l.screen, p.display_pos
 SQL;
   $result = $mysqli->prepare($sql);
   $result->bind_param('issss', $_GET['paperID'], $_GET['repcourse'], $_GET['repyear'], $startdate, $enddate);
   $result->execute();
   $result->bind_result($screen, $theme, $tmp_username, $q_id, $leadin, $user_answer);
-  while ($row = $result->fetch()) {
+  while ($result->fetch()) {
     if ($old_q_id != $q_id or $old_screen < $screen) {
       $comment_flag = 0;
 
