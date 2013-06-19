@@ -26,6 +26,13 @@ $cfg_root_path = rtrim('/' . trim(str_replace($_SERVER['DOCUMENT_ROOT'], '', $ro
 
   <link rel="stylesheet" type="text/css" href="<?php echo $cfg_root_path ?>/css/body.css"/>
   <link rel="stylesheet" type="text/css" href="<?php echo $cfg_root_path ?>/css/login_form.css"/>
+  
+  <script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
+	<script>
+    $(document).ready(function(){
+      $('#username').focus();
+    });
+  </script>
 </head>
 
 <body>
@@ -58,7 +65,7 @@ HTML;
           <table>
               <tr>
                   <td><?php echo $string['username']; ?></td>
-                  <td><input type="text" name="ROGO_USER" value="<?php if (isset($_GET['guest_username'])) echo $_GET['guest_username']; ?>" class="field" /></td>
+                  <td><input type="text" name="ROGO_USER" id="username" value="<?php if (isset($_GET['guest_username'])) echo $_GET['guest_username']; ?>" class="field" /></td>
               </tr>
               <tr>
                   <td><?php echo $string['password']; ?></td>
