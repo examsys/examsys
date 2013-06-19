@@ -235,7 +235,7 @@ foreach ($user_results as $individual) {
 
             if ($paper_answers[$a] != '' and substr($tmp_exclude, $a+$sub_parts, 1) == '0') $csv .= ',Q' . $q_no . chr($a+65);
           }
-        } elseif (($question['q_type'] == 'dichotomous' or $question['q_type'] == 'blank' or $question['q_type']=='rank') and $question['score_method'] != 'Mark per Question') {
+        } elseif (($question['q_type'] == 'dichotomous' or $question['q_type'] == 'blank' or $question['q_type']=='rank') and ($question['score_method'] != 'Mark per Question' or $question['score_method'] != 'Allow partial Marks')) {
           if (!array_key_exists($q_id, $excluded) || $question['q_type']!='rank') {
             for ($a=0; $a<count($question['correct']); $a++) {            
               if (substr($tmp_exclude, $a, 1) == '0' && ($question['q_type']!='rank' || $question['correct'][$a]>0)) $csv .= ',Q' . $q_no . chr($a+65);
