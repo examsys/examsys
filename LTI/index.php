@@ -140,7 +140,7 @@ if (!$lti->isInstructor()) {
   //student
   if ($returned === false) {
     // no data selected for this
-    UserNotices::display_notice($string['warning'], $string['ltinotconfigured'], $configObject->get('cfg_root_path') . '/artwork/access_denied.png', $title_color = '#C00000');
+    UserNotices::display_notice($string['warning'], $string['ltinotconfigured'], '../artwork/access_denied.png', '#C00000');
     echo "\n</body>\n</html>\n";
     exit();
   } else {
@@ -159,13 +159,7 @@ if (!$lti->isInstructor()) {
         }
       }
     }
-    /* Cannot leave this in as it will cause an issue.
-     *  elseif (!UserUtils::is_user_on_module_by_name($userObject->get_user_ID(), $v[1], $session, $mysqli) and $returned_check !== false and !$lti_i::allow_module_self_reg($v)) {
-        UserNotices::display_notice($string['NotAddedToModuleTitle'], $string['lti_not_allow_add_selfreg'] . $v[1], '../artwork/exclamation_64.png','#C00000');
-        exit();
-      }
-    */
-    // do 'something' here
+
     $_SESSION['lti']['paperlink'] = $returned[0];
     header("location: ../user_index.php?id=" . $returned[0]);
     echo "Please click <a href='../user_index.php?id=" . $returned[0] . ".>here</a> to continue";
@@ -186,7 +180,8 @@ if (!$lti->isInstructor()) {
       if (!$userObject->is_staff_user_on_module($v[1]) and $lti_i::allow_staff_module_register($v) and $userObject->has_role(array('Staff', 'Admin', 'SysAdmin'))) {
         UserUtils::add_staff_to_module_by_modulecode($userObject->get_user_ID(), $v[1], $mysqli);
       } elseif (!$userObject->is_staff_user_on_module($v[1]) and !$lti_i::allow_staff_module_register($v) and $userObject->has_role(array('Staff', 'Admin', 'SysAdmin'))) {
-        UserNotices::display_notice($string['NotAddedToModuleTitle'], $string['NotAddedToModule'] . $v[1], '../artwork/exclamation_64.png','#C00000');
+        UserNotices::display_notice($string['NotAddedToModuleTitle'], $string['NotAddedToModule'] . $v[1], '../artwork/exclamation_64.png', '#C00000');
+        echo "\n</body>\n</html>\n";
         exit();
       }
     }
@@ -206,6 +201,7 @@ if (!$lti->isInstructor()) {
     // no existing stored link so need to create one
     if(!$userObject->has_role(array('Staff', 'Admin', 'SysAdmin'))) {
       UserNotices::display_notice($string['NoModCreateTitle2'], $string['NoModCreate2'], '../artwork/exclamation_64.png','#C00000');
+      echo "\n</body>\n</html>\n";
       exit();
     }
     $returned2 = $lti->lookup_lti_context();
@@ -220,7 +216,8 @@ if (!$lti->isInstructor()) {
       foreach ($data as $v) {
         if (!module_utils::module_exists($v[1], $mysqli) and  $lti_i::allow_module_create($v) ) {
           if (!$userObject->has_role(array('Staff', 'Admin', 'SysAdmin'))) {
-            UserNotices::display_notice($string['NoModCreateTitle2'], $string['NoModCreate2'] . $v[1], '../artwork/exclamation_64.png','#C00000');
+            UserNotices::display_notice($string['NoModCreateTitle2'], $string['NoModCreate2'] . $v[1], '../artwork/exclamation_64.png', '#C00000');
+            echo "\n</body>\n</html>\n";
             exit();
           }
           $peer = 1;
@@ -243,13 +240,13 @@ if (!$lti->isInstructor()) {
           $schoolID = SchoolUtils::get_school_id_by_name($v[3], $mysqli);
           $modcreate = module_utils::add_modules($v[1], $v[5], 1, $schoolID, '', $sms_api, $selfEnroll, $peer, $external, $stdset, $mapping, $neg_marking, 0, $mysqli, 1, 0, 1, 1);
         } elseif (!module_utils::module_exists($v[1], $mysqli) and  !$lti_i::allow_module_create($v)) {
-          UserNotices::display_notice($string['NoModCreateTitle'], $string['NoModCreate'] . $v[1], '../artwork/exclamation_64.png','#C00000');
+          UserNotices::display_notice($string['NoModCreateTitle'], $string['NoModCreate'] . $v[1], '../artwork/exclamation_64.png', '#C00000');
           exit();
         }
         if (!$userObject->is_staff_user_on_module($v[1]) and $lti_i::allow_staff_module_register($v) and $userObject->has_role(array('Staff', 'Admin', 'SysAdmin')) and module_utils::is_allowed_add_team_members_by_name($v[1],$mysqli) ) {
           UserUtils::add_staff_to_module_by_modulecode($userObject->get_user_ID(), $v[1], $mysqli);
         } elseif (!$userObject->is_staff_user_on_module($v[1]) and !$lti_i::allow_staff_module_register($v)) {
-          UserNotices::display_notice($string['NotAddedToModuleTitle'], $string['NotAddedToModule'] . $v[1], '../artwork/exclamation_64.png','#C00000');
+          UserNotices::display_notice($string['NotAddedToModuleTitle'], $string['NotAddedToModule'] . $v[1], '../artwork/exclamation_64.png', '#C00000');
           exit();
 
         }
@@ -299,7 +296,6 @@ END;
     $plk = 0;
     $block_id = 0;
 
-
     if (isset($error)) {
       foreach ($error as $e) {
         echo $e;
@@ -340,8 +336,8 @@ END;
 			</div></form>
 			<div>Module: $modinfo </div>
 END;
-
     }
+
     echo '<br />';
     if ($exit == 1) {
       $plk = 0;
@@ -352,13 +348,10 @@ END;
       @ob_clean();
       unset($_SESSION['_lti_context']);
       unset($_SESSION['lti']);
-      UserNotices::display_notice($string['NoPapers'], $string['NoPapersDesc'], '/artwork/access_denied.png', '#C00000');
+      UserNotices::display_notice($string['NoPapers'], $string['NoPapersDesc'], '../artwork/access_denied.png', '#C00000');
 
       echo '<p>Module(s): ' . $modinfo . '</p>';
-
     }
-
-
   }
 }
 ?>
