@@ -353,7 +353,13 @@ if ($textsize > 120) {
        <td></td>
        <td></td>
        <td class="f"><?php echo $string['timeremaining'] ?></td>
-       <td><?php echo $remaining_minutes .' '. $string['mins'] . ' ' . $remaining_seconds  .' '. $string['secs']?></td>
+       <?php
+       if ($remaining_time == 0) {
+         echo '<td><span style="background-color:#C00000; color:white">&nbsp;' . $remaining_minutes .' '. $string['mins'] . ' ' . $remaining_seconds  .' '. $string['secs'] . '&nbsp;</span></td>';
+       } else {
+         echo '<td>' . $remaining_minutes .' '. $string['mins'] . ' ' . $remaining_seconds  .' '. $string['secs'] . '</td>';
+       }
+       ?>
     </tr>
 
     <?php
@@ -383,7 +389,7 @@ if ($textsize > 120) {
     $log_info = $mysqli->prepare("SELECT l.screen, SUM(l.mark) AS mark, DATE_FORMAT(lm.started,\"%Y%m%d%H%i%s\") AS started, 0 AS paper_type, DATE_FORMAT(lm.started,\"%d/%m/%Y %H:%i\") AS temp_date FROM log0 l INNER JOIN log_metadata lm ON l.metadataID = lm.id WHERE lm.paperID = ? AND lm.userID = ? GROUP BY started DESC, l.screen UNION SELECT l.screen, SUM(l.mark) AS mark, DATE_FORMAT(lm.started,\"%Y%m%d%H%i%s\") AS started, 1 AS paper_type, DATE_FORMAT(lm.started,\"%d/%m/%Y %H:%i\") AS temp_date FROM log1 l INNER JOIN log_metadata lm ON l.metadataID = lm.id WHERE lm.paperID = ? AND lm.userID = ? GROUP BY started DESC, l.screen");
     $log_info->bind_param('iiii', $property_id, $userObject->get_user_ID(), $property_id, $userObject->get_user_ID());
   } else {
-    $log_info = $mysqli->prepare("SELECT MAX(l.screen) AS screen, SUM(l.mark) AS mark, DATE_FORMAT(lm.started,\"%Y%m%d%H%i%s\") AS started, ? AS paper_type, DATE_FORMAT(lm.started,\"%d/%m/%Y %H:%i\") AS temp_date FROM log$test_type l INNER JOIN log_metadata lm ON l.metadataID = lm.id WHERE lm.paperID = ? AND lm.userID = ? GROUP BY started DESC");
+    $log_info = $mysqli->prepare("SELECT MAX(l.screen) AS screen, SUM(l.mark) AS mark, DATE_FORMAT(lm.started,\"%Y%m%d%H%i%s\") AS started, ? AS paper_type, DATE_FORMAT(lm.started,\"%d/%m/%Y %H:%i\") AS temp_date FROM log_metadata lm LEFT JOIN log$test_type l ON l.metadataID = lm.id WHERE lm.paperID = ? AND lm.userID = ? GROUP BY started DESC");
     $log_info->bind_param('iii', $test_type, $property_id, $userObject->get_user_ID());
   }
   $log_info->execute();
