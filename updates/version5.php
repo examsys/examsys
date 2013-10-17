@@ -193,9 +193,23 @@ if (!isset($_POST['update'])) {
   @ob_flush();
   @flush();
 
+  // BACKPORTED FROM NEW 5.1f
   
-  
-  
+   /*
+   *****   ALL UPDATES SHOULD NOW BE PLACED IN DATESTAMPED FILES IN THE version5 FOLDER   *****
+   *
+   *****   UPDATE FILES CAN BE CREATED BY RUNNING /updates/create_update.php
+   */
+
+  // Run individual update files
+  $files = scandir($migration_path);
+  foreach ($files as $file) {
+    if (StringUtils::ends_with($file, '.php')) {
+      include $migration_path . '/' . $file;
+      $mysqli->commit();
+    }
+  }
+
   
   /*
    *****   NOW UPDATE THE INSTALLER SCRIPT   *****
