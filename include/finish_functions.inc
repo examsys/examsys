@@ -146,11 +146,12 @@ function display_feedback($temp_userID, $paperID, $paper_type, $log_type, $paper
   $configObject = Config::get_instance();
   $strong_on = '';
   $strong_off = '';
-
-  // Get any questions to exclude.
+	
   $excluded = array();
+	// Get any questions to exclude.
+  /*
+	$excluded = array();
   $exclude_query = $mysqlidb->prepare("SELECT q_id, parts FROM question_exclude WHERE q_paper = ?");
-  echo $mysqlidb->error;
   $exclude_query->bind_param('i', $paperID);
   $exclude_query->execute();
   $exclude_query->bind_result($exclude_q_id, $exclude_parts);
@@ -158,12 +159,13 @@ function display_feedback($temp_userID, $paperID, $paper_type, $log_type, $paper
     $excluded[$exclude_q_id] = $exclude_parts;
   }
   $exclude_query->close();
-
+	*/
+	
+	
   if ($paper_type == '2' and ($userObj->has_role(array('Staff', 'Admin', 'SysAdmin')))) {
     if (!isset($_GET['userID']) and !isset($_GET['q_id'])) { 
       $tmp_string = sprintf($string['thankyoumsg'], $paper_title);
       echo '<blockquote><p style="font-size:450%; font-family:\'Monotype Corsiva\',Rage,\'Brush Script MT\',\'Lucida Handwriting\',sans-serif">' . $string['thankyou'] . '</p><p>' . $tmp_string . '</p>';
-      //echo '<blockquote><p><img src="../artwork/thankyou.gif" width="238" height="76" alt="Thank You" /></p><p>' . $tmp_string . '</p><br />';
       if ($paper_postscript != '') echo "<p>$paper_postscript</p>\n";
       echo '</blockquote>';
 
@@ -175,7 +177,8 @@ function display_feedback($temp_userID, $paperID, $paper_type, $log_type, $paper
   $old_q_id = 0;
 
   // Get standards setting data
-  if ($marking{0} == '2') {
+  /*
+	if ($marking{0} == '2') {
     $standards_setting = array();
     $tmp_parts = explode(',', $marking);
     $std_data = $mysqlidb->prepare("SELECT questionID, rating FROM std_set_questions WHERE std_setID = ?");
@@ -189,6 +192,8 @@ function display_feedback($temp_userID, $paperID, $paper_type, $log_type, $paper
   } else {
     $standards_setting = array();
   }
+	*/
+  $standards_setting = array();
 
   // Capture the structure of the paper into an array.
   $paper = array();
@@ -426,7 +431,8 @@ function display_feedback($temp_userID, $paperID, $paper_type, $log_type, $paper
     display_error($string['useranswererror'], $mysqlidb->error);
   }
 
-  for ($question = 1; $question <= $q_no; $question++) {
+  /*
+	for ($question = 1; $question <= $q_no; $question++) {
     if (($paper_type != '2' or $userObj->has_role(array('Staff', 'Admin', 'SysAdmin'))) and $paper[$question]['q_type'] == 'enhancedcalc' and (isset($paper[$question]['user_answer']) and is_null($paper[$question]['mark']))) {
       require_once('../plugins/questions/enhancedcalc/enhancedcalc.class.php');
       $configObj = Config::get_instance();
@@ -448,6 +454,7 @@ function display_feedback($temp_userID, $paperID, $paper_type, $log_type, $paper
       $total_random_mark += qRandomMarks($paper[$question]['q_type'], $tmp_excluded, $paper[$question]['marks_correct'], $paper[$question]['option_text'], $paper[$question]['correct'], $paper[$question]['display_method'], $paper[$question]['score_method'], $paper[$question]['q_media_width'], $paper[$question]['q_media_height']);
     }
  }
+ */
 
   if ($preview_q_id == null) {
   ?>
@@ -471,7 +478,8 @@ function display_feedback($temp_userID, $paperID, $paper_type, $log_type, $paper
   <?php
   }
 
-  $midexam_clarification = $configObject->get('midexam_clarification');
+  /*
+	$midexam_clarification = $configObject->get('midexam_clarification');
 
   if ($paper_type == '2') {
     if (in_array('students', $midexam_clarification) or $userObj->has_role(array('Staff', 'Admin', 'SysAdmin'))) {
@@ -483,6 +491,7 @@ function display_feedback($temp_userID, $paperID, $paper_type, $log_type, $paper
       }
     }
   }
+	*/
 
   // Process the array for display.
   $old_screen = 1;
@@ -2295,9 +2304,11 @@ function display_feedback($temp_userID, $paperID, $paper_type, $log_type, $paper
     }
 
 		// Display any objectives mapped
-    echo display_mapped_objectives($moduleID, $calendar_year, $paperID, $paper[$question]['q_id'], $question, $q_type, $string, $mysqlidb);
-
-	if (isset($overrides[$paper[$question]['q_id']])) {
+		if (isset($moduleID)) {
+			echo display_mapped_objectives($moduleID, $calendar_year, $paperID, $paper[$question]['q_id'], $question, $q_type, $string, $mysqlidb);
+		}
+		
+		if (isset($overrides[$paper[$question]['q_id']])) {
       $paper[$question]['mark'] = $overrides[$paper[$question]['q_id']]['adjmark'];
     }
     // Write out the marks for the question
@@ -2328,6 +2339,8 @@ function display_feedback($temp_userID, $paperID, $paper_type, $log_type, $paper
     echo '<tr><td>&nbsp;</td></tr>';
   }
   echo '</table>';
+	
+	return $user_mark;
 }
 
 function display_mapped_objectives($moduleID, $calendar_year, $paperID, $q_id, $question, $q_type, $string, $db) {

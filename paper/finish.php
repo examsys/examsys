@@ -343,7 +343,7 @@ require '../config/finish.inc';
 
   $status_array = QuestionStatus::get_all_statuses($mysqli, $string, true);
   if ($show_feedback) {
-    display_feedback($temp_userID, $paperID, $paper_type, $log_type, $paper_title, $paper_postscript, $marking, $userObject, $metadataid, $mysqli, $status_array, $overrides, $preview_q_id);
+    $student_mark = display_feedback($temp_userID, $paperID, $paper_type, $log_type, $paper_title, $paper_postscript, $marking, $userObject, $metadataid, $mysqli, $status_array, $overrides, $preview_q_id);
 
     // Record the fact that the script has been viewed.
     $logger = new Logger($mysqli);

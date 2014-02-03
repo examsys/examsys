@@ -83,6 +83,7 @@ class ClassTotals {
   private $recache;
   private $question_statuses;
   private $marking_overrides;
+	private $paper_postscript;
 	
 	private $unmarked_enhancedcalc = false;
 	private $unmarked_textbox = false;
@@ -95,6 +96,7 @@ class ClassTotals {
     $this->paperID            = $propertyObj->get_property_id();
     $this->paper_type         = $propertyObj->get_paper_type();
     $this->calendar_year      = $propertyObj->get_calendar_year();
+		$this->paper_postscript		= $propertyObj->get_paper_postscript();
     $this->startdate          = $startdate;
     $this->enddate            = $enddate;
     $this->absent             = $absent;
@@ -200,6 +202,47 @@ class ClassTotals {
   public function get_user_no() {
     return $this->user_no;
   }
+	
+	public function get_script_mark($temp_userID, $log_type, $metadataid) {
+		global $display_correct_answer, $display_question_mark, $display_students_response, $display_feedback, $hide_if_unanswered, $is_exam_review_mode;
+	  
+		$userObject = UserObject::get_instance();
+		
+		// Turn on all feedback if staff and a student exam script is being reviewed.
+		$display_correct_answer     = 1;
+		$display_question_mark      = 1;
+		$display_students_response  = 1;
+		$display_feedback           = 1;
+		$hide_if_unanswered         = 0;
+		$is_exam_review_mode        = true;
+
+		// Get any marking override for the paper
+		$overrides = array();
+		$sql = "SELECT m.q_id, title, surname, date_marked, new_mark_type, adjmark
+						FROM marking_override m INNER JOIN users u ON m.marker_id = u.id
+						INNER JOIN log{$log_type} l ON m.log_id = l.id
+						WHERE user_id = ? AND paper_id = ?";
+		$result = $this->db->prepare($sql);
+		$result->bind_param('ii', $temp_userID, $this->paperID);
+		$result->execute();
+		$result->store_result();
+		$result->bind_result($o_q_id, $o_title, $o_surname, $o_date_marked, $o_new_mark_type, $o_adjmark);
+		while($result->fetch()) {
+			$overrides[$o_q_id] = array('q_id' => $o_q_id, 'title' => $o_title, 'surname' => $o_surname, 'date_marked' => $o_date_marked, 'new_mark_type' => $o_new_mark_type, 'adjmark' => $o_adjmark);
+		}
+		$result->close();
+		
+		//var_dump($temp_userID, $this->paperID, $this->paper_type, $log_type, $paper_title, $this->paper_postscript, $this->marking, $userObject, $metadataid, $this->db, $this->question_statuses, $overrides);
+
+		ob_start();
+
+		$paper_title = '';
+		$student_mark = display_feedback($temp_userID, $this->paperID, $this->paper_type, $log_type, $paper_title, $this->paper_postscript, $this->marking, $userObject, $metadataid, $this->db, $this->question_statuses, $overrides);
+		ob_end_clean();
+		//var_dump($student_mark);
+		
+		return $student_mark;
+	}
 
 	/**
 	 * Initiates the building of the main Class Totals report.

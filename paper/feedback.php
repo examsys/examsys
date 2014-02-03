@@ -202,7 +202,7 @@ require '../config/finish.inc';
   $result->close();
 
   $status_array = QuestionStatus::get_all_statuses($mysqli, $string, true);
-  display_feedback($temp_userID, $paperID, $paper_type, $log_type, $propertyObj->get_paper_title(), $propertyObj->get_paper_postscript(), $propertyObj->get_marking(), $userObject, $metadataid, $mysqli, $status_array, $overrides, $preview_q_id);
+  $student_mark = display_feedback($temp_userID, $paperID, $paper_type, $log_type, $propertyObj->get_paper_title(), $propertyObj->get_paper_postscript(), $propertyObj->get_marking(), $userObject, $metadataid, $mysqli, $status_array, $overrides, $preview_q_id);
 
   echo "</body>\n</html>";
   $mysqli->close();

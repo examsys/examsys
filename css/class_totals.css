@@ -18,6 +18,10 @@ td {
 .mk {
   padding-right:10px
 }
+.mk_err {
+  background-color: #C00000;
+	color: white;
+}
 .r {
   text-align:right;
 }

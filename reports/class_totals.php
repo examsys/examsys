@@ -25,12 +25,29 @@
 */
 
 set_time_limit(0);
+var_dump(time());
 
 require '../include/staff_auth.inc';
 require_once '../include/errors.inc';
 require_once '../classes/class_totals.class.php';
 require_once '../classes/folderutils.class.php';
 require_once '../classes/exam_announcements.class.php';
+
+require_once '../include/marking_functions.inc';
+require_once '../include/calculate_marks.inc';
+require_once '../include/errors.inc';
+require_once '../include/mapping.inc';
+require_once '../include/media.inc';
+require_once '../include/finish_functions.inc';
+require_once '../include/paper_security.inc';
+require_once '../classes/paperutils.class.php';
+require_once '../classes/logmetadata.class.php';
+require_once '../classes/paperproperties.class.php';
+require_once '../classes/mathsutils.class.php';
+require_once '../classes/log_lab_end_time.class.php';
+require_once '../classes/question_status.class.php';
+require_once '../include/demo_replace.inc';
+require_once '../LTI/ims-lti/UoN_LTI.php';
 
 $paperID    = check_var('paperID', 'GET', true, false, true);
 $startdate  = check_var('startdate', 'GET', true, false, true);
@@ -602,7 +619,7 @@ if ($language != 'en') {
         $reassign = 'y';
       }
 
-      if ($user_results[$i]['display_started'] == '') {  // Student did not take exam.
+      if ($user_results[$i]['display_started'] == '') {  // Student did NOT take exam.
         $bg_color = '#FFC0C0';
         $late_submissions = '';
         ?>
@@ -617,8 +634,13 @@ if ($language != 'en') {
         }
         echo "<td class=\"padl\">" . $user_results[$i]['student_grade'] . "</td><td colspan=\"" . (9 + count($metadata_cols)) . "\" style=\"text-align:center\">&lt;" . $string['noattendance'] . "&gt;</td></tr>\n";
         $absent_no++;
-      } else {
-        if (isset($log_late[$user_results[$i]['metadataID']])) {
+      } else {																					// Student did take the exam.
+			  
+				//if ($user_results[$i]['userID'] == 43351) {
+				//	$user_results[$i]['mark'] += 1;   // Use for testing the Class Totals/Exam Script checking script.
+        //}
+				
+				if (isset($log_late[$user_results[$i]['metadataID']])) {
           $late_submissions = 'y';
         } else {
           $late_submissions = 'n';
@@ -713,9 +735,18 @@ if ($language != 'en') {
           $ordered = '';
         }
 				
-				//$user_results[$i]['mark'] += 1;   // Use for testing the Class Totals/Exam Script checking script.
-				
-        if (round($user_results[$i]['percent'], $percent_decimals) < $pass_mark) {
+				$script_mark = $report->get_script_mark($user_results[$i]['userID'], $user_results[$i]['paper_type'], $user_results[$i]['metadataID']);
+				//$script_mark == $user_results[$i]['mark'];
+				if ($user_results[$i]['userID'] == 12821) {
+					$user_results[$i]['mark']++;
+				}
+				if ($script_mark != $user_results[$i]['mark']) {
+				//var_dump($script_mark, $user_results[$i]['mark'], $user_results[$i]['userID']);
+				//exit;
+          echo "<td class=\"mk mk_err r\">";
+          echo $user_results[$i]['mark'] . "</td>";
+          echo "<td class=\"mk_err r\">" . MathsUtils::formatNumber($user_results[$i]['percent'], $percent_decimals) . "%</td><td class=\"mk_err\">&nbsp;Marking&nbsp;Error</td>";
+        } elseif (round($user_results[$i]['percent'], $percent_decimals) < $pass_mark) {
           echo "<td class=\"mk $class$ordered fail r $role_css\">";
           if ($user_results[$i]['marking_complete'] == '0') echo '<img src="../artwork/small_yellow_warning_icon.gif" width="12" height="11" alt="' . $string['markingnotcomplete'] . '" />&nbsp;';
           echo $user_results[$i]['mark'] . "</td>";
@@ -1098,3 +1129,7 @@ if ($language != 'en') {
 <input type="hidden" id="metadataID" value="" /><input type="hidden" id="userID" value="" /><input type="hidden" id="log_type" value="" /><input type="hidden" id="reassign" value="" /><input type="hidden" id="loglate" value="" /><input type="hidden" id="percent" value="" />
 </body>
 </html>
+<?php
+var_dump(time());
+
+?>
