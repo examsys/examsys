@@ -84,8 +84,7 @@ if ($borderline_method) {
   $passmark = $propertyObj->get_pass_mark();
 }
 $distinction_mark = $propertyObj->get_distinction_mark();
-
-set_classification($user_results, $passmark, $user_no, $string);
+set_classification($propertyObj->get_marking(), $user_results, $passmark, $user_no, $string);
 rating_num_text($user_results, $user_no, $propertyObj, $string);
 $user_results = array_csort($user_results, $sortby, $ordering);
 
