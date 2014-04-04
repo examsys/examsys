@@ -36,4 +36,5 @@ $string['time_warning'] = 'Čas Zahájení a Čas ukončení je totožný!';
 $string['lab_warning'] = 'Upozornění: není nastavena žádná počítačová učebna!';
 $string['duration_warning'] = 'Není nastavena délka trvání!';
 $string['labs'] = 'Počítačové učebny';
+$string['metadata'] = 'Metadata';
 ?>

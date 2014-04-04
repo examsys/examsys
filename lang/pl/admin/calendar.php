@@ -37,4 +37,5 @@ $string['starttime'] = 'Czas rozpoczęcia';
 $string['endtime'] = 'Czas zakończenia';
 $string['duration'] = 'Czas trwania';
 $string['labs'] = 'Pracownie';
+$string['metadata'] = 'Metadata';
 ?>
