@@ -27,7 +27,6 @@
  */
 
 require_once './include/staff_student_auth.inc';
-require_once './include/toprightmenu.inc';
 
 require_once './classes/networkutils.class.php';
 require_once './classes/paperutils.class.php';
@@ -41,6 +40,8 @@ if ($userObject->has_role('External Examiner')) {
   header("location: invigilator/");
   exit();
 }
+
+require_once './include/toprightmenu.inc';
 
 function displayHead($string) {
 	$html = '';
