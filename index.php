@@ -41,8 +41,6 @@ if ($userObject->has_role('External Examiner')) {
   exit();
 }
 
-require_once './include/toprightmenu.inc';
-
 function displayHead($string) {
 	$html = '';
 	
@@ -144,6 +142,8 @@ if ($paper_no == 1 and $paper_display[0]['password'] == '') {
 	} else {
 		echo '<script type="text/javascript" src="./js/student_help.js"></script>';
 	}
+
+  require_once './include/toprightmenu.inc';
 ?>
 </head>
 <body>
