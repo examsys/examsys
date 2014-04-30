@@ -49,7 +49,7 @@ if (!isset($_POST['submit'])) {
   <script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
   <script type="text/javascript">
     function checkForm() {
-      var checkOption = $('input:radio[name=paperID]:checked').val();
+      var checkOption = $('input:radio[name=property_id]:checked').val();
 
       if (typeof checkOption == 'undefined') {
         alert("Please select which paper you would like to add the question to.");
