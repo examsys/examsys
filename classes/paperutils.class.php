@@ -45,13 +45,13 @@ Class PaperUtils {
   * @return mixed - False = no academic year found in title, string = the academic year that was found.
   */
   public function academic_year_from_title($paper_title) {
-		if (preg_match('/\d\d\d\d\D\d\d\d\d/', $paper_title, $matches) == 1) {
+		if (preg_match('/\d\d\d\d\/\d\d\d\d/', $paper_title, $matches) == 1) {
 			$tmp_match = substr($matches[0],0,4) . '/' . substr($matches[0], -2);
-		} elseif (preg_match('/\d\d\d\d\s\D\s\d\d\d\d/', $paper_title, $matches) == 1) {
+		} elseif (preg_match('/\d\d\d\d\s\/\s\d\d\d\d/', $paper_title, $matches) == 1) {
 			$tmp_match = substr($matches[0],0,4) . '/' . substr($matches[0], -2);
-		} elseif (preg_match('/\d\d\d\d\D\d\d/', $paper_title, $matches) == 1) {
+		} elseif (preg_match('/\d\d\d\d\/\d\d/', $paper_title, $matches) == 1) {
 			$tmp_match = substr($matches[0],0,4) . '/' . substr($matches[0], -2);
-		} elseif (preg_match('/\d\d\D\d\d/', $paper_title, $matches) == 1) {
+		} elseif (preg_match('/\d\d\/\d\d/', $paper_title, $matches) == 1) {
 			$tmp_match = '20' . substr($matches[0],0,2) . '/' . (substr($matches[0],0,2) + 1);	
 		} else {
 			$tmp_match = false;
