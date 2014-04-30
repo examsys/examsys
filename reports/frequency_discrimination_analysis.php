@@ -700,8 +700,8 @@ function displayQuestion($q_no, $q_id, $theme, $scenario, $leadin, $q_type, $cor
           }
           echo "<td>" . pStats($tmp_correct_no/$user_total, $q_id, $i) . "</td><td>" . dStats($d, $q_id, $i) . "</td><td>t=$t%</td><td>u=$u%</td><td>l=$l%</td>";
 
-          if (isset($tmp_std_array[$blank_count-1])) {
-            echo '<td class="std">' . $tmp_std_array[$blank_count-1] . '</td>';
+          if (isset($tmp_std_array[$i-1])) {
+            echo '<td class="std">' . $tmp_std_array[$i-1] . '</td>';
           }
           echo "<td id=\"q_" . ($ex_no) . "_1\"";
           if (isset($excluded[$q_id]) and substr($excluded[$q_id], $i-1,1) == '1' and $score_method == 'Mark per Option') echo ' class="excluded"';
