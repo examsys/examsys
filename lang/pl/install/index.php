@@ -104,7 +104,7 @@ $string['errors12'] = 'Dostęp do Rogō jest możliwy wyłącznie przez https. Z
 $string['errors13'] = 'Błąd';
 $string['errors14'] = 'Wygenerowano następujące ostrzeżenia';
 $string['errors15'] = 'Uwaga';
-$string['errors16'] = 'Rog&#333; wymaga prawa zapisu w swym pliku konfiguracyjnym %s/include/load_config.php. Jednym ze sposobów realizacji tego jest tymczasowe udzielenie praw zapisu do  %s/config i przywrócenie oryginalnych przywilejów zaraz po dokonaniu aktualizacji.';
+$string['errors16'] = 'Rog&#333; wymaga prawa zapisu w swym pliku konfiguracyjnym %s/config/config.inc.php. Jednym ze sposobów realizacji tego jest tymczasowe udzielenie praw zapisu do  %s/config i przywrócenie oryginalnych przywilejów zaraz po dokonaniu aktualizacji.';
 $string['installscript'] = 'Skrypt instalacyjny Rog&#333;';
 $string['systeminstallation'] = 'Instalacja systemu';
 

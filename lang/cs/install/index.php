@@ -104,7 +104,7 @@ $string['errors12'] = 'Přístup do Rogō je možný pouze pomocí https. Aktual
 $string['errors13'] = 'Chyba';
 $string['errors14'] = 'Byla generována následující varování"';
 $string['errors15'] = 'Varování';
-$string['errors16'] = 'Rogo vyžaduje schopnost tvořit jeho konfigurační soubor %s/config/config.inc.php, jedním ze způsobů, jak toto zvládnout je, že dočasně povolíte přístup osobě, která toto ovládá, do %s/config a po spuštění aktualizace toto oprávnění zrušíte.';
+$string['errors16'] = 'Rogo vyžaduje schopnost tvořit jeho konfigurační soubor %s/config/config.inc.php. Jedním ze způsobů, jak toto zvládnout je, že dočasně povolíte přístup osobě, která toto ovládá, do %s/config a po spuštění aktualizace toto oprávnění zrušíte.';
 $string['installscript'] = 'Instalační skript Rogō ';
 $string['systeminstallation'] = 'Instalace systému';
 

@@ -104,7 +104,7 @@ $string['errors12'] = 'Rog&#333; can only be accessed through https. Please upda
 $string['errors13'] = 'Error';
 $string['errors14'] = 'The following warnings were generated';
 $string['errors15'] = 'Warning';
-$string['errors16'] = 'Rog&#333; requires ability to write its config file %s/include/load_config.php, One way to fix this is you can temporarily allow write access to %s/config and change permissions once update has run.';
+$string['errors16'] = 'Rog&#333; requires ability to write its config file %s/config/config.inc.php. One way to fix this is you can temporarily allow write access to %s/config and change permissions once update has run.';
 $string['installscript'] = 'Rog&#333; Install script';
 $string['systeminstallation'] = 'System Installation';
 
