@@ -190,13 +190,21 @@ if ($critical_error == '') {
         $errors = $question->update_correct($correct_answers, $paper_id);
       }
 
+      $question_teams = array();
+      if (isset($_POST['teams'])) {
+        foreach ($_POST['teams'] as $idMod) {
+          $question_teams[$idMod] = module_utils::get_moduleid_from_id($idMod, $mysqli);
+        }
+      }
+      $question->set_teams($question_teams);
+
       // Save metadata
-      $part_names = array('bloom','status','teams');
+      $part_names = array('bloom', 'status');
       if (!isset($_POST['teams'])) {
         $_POST['teams'] = array();
       }
       foreach($part_names as $section_name) {
-        if(isset($_POST["$section_name"])) {
+        if (isset($_POST["$section_name"])) {
           $method = "set_$section_name";
           $question->$method($_POST["$section_name"]);
         }
@@ -231,11 +239,11 @@ if ($critical_error == '') {
 
       $question_teams = array();
       if (isset($_POST['teams'])) {
-        //$question_teams = array_combine($_POST['teams'], $_POST['teams']);
-        foreach($_POST['teams'] as $idMod) {
+        foreach ($_POST['teams'] as $idMod) {
           $question_teams[$idMod] = module_utils::get_moduleid_from_id($idMod, $mysqli);
         }
       }
+
       $question->set_teams($question_teams);
 
       $unified_part_names = $question->get_unified_fields();

@@ -1083,7 +1083,7 @@ QUERY;
     // Sort the arrays so that we can compare directly. Should have few members so overhead will be small
     asort($this->teams);
     asort($value);
-
+    
     if (count($this->teams) != count($value) or $this->teams != $value) {
       $this->set_modified_field('teams', $this->teams);
       $this->teams = $value;
