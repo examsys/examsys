@@ -16,7 +16,7 @@
 
 /**
  *
- * This script is the homepage of Internet Explorer when GTZEXAM1 logs in.
+ * This script is the summative exam homepage of Rogo.
  * It takes the user details of the student together with the IP address
  * for the log and redirects to the correct paper.
  *
@@ -315,6 +315,9 @@ if ($paper_no == 1 and $paper_display[0]['password'] == '') {
 	
   <script type="text/javascript" src="./js/jquery-1.6.1.min.js"></script>
   <script type="text/javascript" src="./js/toprightmenu.js"></script>
+  <?php
+    require_once './include/toprightmenu.inc';
+  ?>
 </head>
 <body>
 <?php

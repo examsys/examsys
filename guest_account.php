@@ -109,7 +109,7 @@ if (isset($_POST['submit'])) {
   $results = $mysqli->prepare("SELECT assigned_account FROM temp_users");
   $results->execute();
   $results->bind_result($assigned_account);
-  while ($row=$results->fetch()) {
+  while ($results->fetch()) {
     $used_accounts[$assigned_account] = true;
   }
   $results->close();
