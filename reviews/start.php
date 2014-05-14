@@ -263,7 +263,9 @@ if ($css != '') {
 <script type="text/javascript" src="../js/qhotspot.js"></script>
 <script type="text/javascript" src="../js/qarea.js"></script>
 <!-- HTML5 part end -->
-
+<?php
+  echo $configObject->get('cfg_js_root');
+?>
 <script language="JavaScript" type="text/javascript">
   window.history.go(1);
 <?php
