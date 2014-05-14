@@ -1069,7 +1069,7 @@ class ClassTotals {
     $late_ts = strtotime($this->enddate) + 7200;
     $late_end = date('Y-m-d H:i:s', $late_ts);
 
-    $result = $this->db->prepare("SELECT DISTINCT metadataID, userID, title, surname, first_names, DATE_FORMAT(started, '" . $this->config->get('cfg_long_date_time') . "') AS display_started, started FROM log_late, log_metadata, users WHERE log_late.metadataID = log_metadata.id AND log_metadata.userID = users.id AND paperID = ? AND started >= ? AND started <= ? ORDER BY surname, initials");
+    $result = $this->db->prepare("SELECT DISTINCT metadataID, userID, title, surname, first_names, DATE_FORMAT(started, '" . $this->config->get('cfg_long_date_time') . "') AS display_started, started FROM log_late, log_metadata, users WHERE log_late.metadataID = log_metadata.id AND log_metadata.userID = users.id AND paperID = ? AND DATE_ADD(started, INTERVAL 2 MINUTE) >= ? AND started <= ? ORDER BY surname, initials");
     $result->bind_param('iss', $this->paperID, $this->startdate, $late_end);
     $result->execute();
     $result->bind_result($metadataID, $userID, $title, $surname, $first_names, $display_started, $started);
