@@ -571,7 +571,6 @@ if ($textsize > 120) {
 	<img class="noimg" src="artwork/calc.png" />
 	<img class="noimg" src="artwork/no_save.png" />
 	<img class="noimg" src="artwork/fire_exit.png" />
-	<img class="noimg" src="artwork/title_gradient.png" />
 	
 	<script src="js/html5.images.js"></script> 
 	<script src="js/qsharedf.js"></script> 

@@ -80,16 +80,12 @@ if ($userObject->has_role('External Examiner')) {
   <script src="../js/ie_fix.js" type="text/javascript"></script>
   <script language="JavaScript">
     window.history.go(1);
-
-    function refreshparent() {
-      window.opener.location.reload();
-    }
   </script>
 </head>
 
-<body oncontextmenu="return false;" onload="refreshparent()">
+<body oncontextmenu="return false;">
 <?php
-  echo '<table cellpadding="4" cellspacing="0" border="0" style="width:100%; border-bottom:1px solid #164994; background-color:#2765AB; background-image:url(\'../artwork/title_gradient.png\'); background-repeat:repeat-y; background-position:center">';
+  echo '<table cellpadding="4" cellspacing="0" border="0" style="width:100%; background-color:#5590CF">';
   echo '<tr><td><div class="paper">' . $paper_title . '</div></td><td align="center" class="raised_tbl" width="50"><img src="../artwork/uni_logo.png" width="160" height="67" alt="University Logo" border="0" /></td></tr>';
   echo '</table>';
 
@@ -103,12 +99,12 @@ if ($userObject->has_role('External Examiner')) {
     echo "Deadline = " . date($configObject->get('cfg_long_date_php'), $external_review_deadline);
   }
   echo '<blockquote>';
-  //if ($language == 'en') {
+  if ($language == 'en') {
     echo '<p style="font-size:450%;font-family:\'Monotype Corsiva\',Rage,\'Brush Script MT\',\'Lucida Handwriting\',sans-serif">' . $string['thankyou'] . '</p>';
-  //} else {
+  } else {
     // Do not use fancy fonts for foreign lanuages due to extended character support issues.
-  //  echo '<p style="font-size:450%">' . $string['thankyou'] . '</p>';
-  //}
+    echo '<p style="font-size:450%">' . $string['thankyou'] . '</p>';
+  }
   echo '</blockquote>';
   echo '<div style="text-align:center; border: 1px black solid; padding:10px; margin-left:100px; margin-right:100px" align="center"><input type="button" name="close" value="&nbsp;' . $string['closewindow'] . '&nbsp;" onclick="window.close();" /></div>';
 

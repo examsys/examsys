@@ -1352,11 +1352,6 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
 if (empty(\$root)) \$root = str_replace('/config', '/', str_replace('\\\\', '/', dirname(__FILE__)));
 require \$root . '/include/path_functions.inc.php';
 
-// PHP session security settings
-	ini_set('session.cookie_secure', 1);
-	ini_set('session.cookie_httponly', 1);
-	ini_set('session.use_only_cookies', 1);
-
 \$rogo_version = '{rogo_version}';
 \$cfg_web_root = get_root_path() . '/';
 \$cfg_root_path = rtrim('/' . trim(str_replace(\$_SERVER['DOCUMENT_ROOT'], '', \$cfg_web_root), '/'), '/');
