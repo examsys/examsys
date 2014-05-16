@@ -686,12 +686,16 @@ function qa_mouseDragUp(){
 	this.dragging = false;
   this.button_test();
 	
-  if (this.qmode == 'answer') {
-    if (this.buttonOver>-1 && this.buttonBox[this.buttonOver][0] == 'toolbar/ico_help.png') window.open('../help/student/index.php?id=44');
-  } else {
-    if (this.buttonOver>-1 && this.buttonBox[this.buttonOver][0] == 'toolbar/ico_help.png') window.open('../help/staff/index.php?id=305');
+  if (this.buttonOver>-1 && this.buttonBox[this.buttonOver][0] == 'toolbar/ico_help.png') {
+    if (this.qmode == 'answer') {
+      window.open('../help/student/index.php?id=44');
+    } else if (this.qmode == 'edit') {
+      window.open('../../help/staff/index.php?id=305');
+    } else {
+      window.open('../help/staff/index.php?id=305');
+    }
   }
-  
+
   if (this.qmode == 'edit' || this.qmode == 'answer') {
 		this.global_zoom = false;
 		if (this.buttonBox[this.buttonBoxNames['toolbar/ico_zoom.png']][6] == 2) this.global_zoom = true;
