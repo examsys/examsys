@@ -59,7 +59,7 @@ $session = (isset($_GET['session']) and $_GET['session'] != '') ? $_GET['session
 $session_parts = explode('/', $session);
 
 // Do not include deleted modules or non-active modules.
-$module_data = $mysqli->prepare("SELECT modules.id, moduleid, sms FROM modules WHERE sms != '' AND mod_deleted IS NULL AND active = 1 ORDER BY moduleid LIMIT 10");
+$module_data = $mysqli->prepare("SELECT modules.id, moduleid, sms FROM modules WHERE sms != '' AND mod_deleted IS NULL AND active = 1 ORDER BY moduleid");
 $module_data->execute();
 $module_data->store_result();
 $module_data->bind_result($idMod, $module, $sms);
