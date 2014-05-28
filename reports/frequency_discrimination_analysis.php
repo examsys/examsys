@@ -594,6 +594,7 @@ function displayQuestion($q_no, $q_id, $theme, $scenario, $leadin, $q_type, $cor
         echo "<tr><td>" . pStats($p, $q_id, 1) . "</td><td colspan=\"3\">" . dStats($d, $q_id, 1)  . "</td></tr>\n";
         break;
       case 'blank':
+        echo '<br />';
         $blank_details = explode('[blank',$options[0]);
         $array_size = count($blank_details);
 
@@ -607,17 +608,18 @@ function displayQuestion($q_no, $q_id, $theme, $scenario, $leadin, $q_type, $cor
 
         $options[0] = preg_replace("| mark=\"([0-9]{1,3})\"|", "", $options[0]);
         $options[0] = preg_replace("| size=\"([0-9]{1,3})\"|", "", $options[0]);
-
+        
         $blank_count = 0;
         echo $blank_details[0];
         while ($blank_count < $array_size) {
           if (strpos($blank_details[$blank_count],'[/blank]') !== false) {
-            $end_start_tag = strpos($blank_details[$blank_count],']');
-            $start_end_tag = strpos($blank_details[$blank_count],'[/blank]');
-            $blank_options = substr($blank_details[$blank_count],($end_start_tag+1),($start_end_tag-1));
-            $remainder = substr($blank_details[$blank_count], ($start_end_tag+8));
+            $end_start_tag = strpos($blank_details[$blank_count], ']');
+            $start_end_tag = strpos($blank_details[$blank_count], '[/blank]');
+            $cut_length = $start_end_tag - $end_start_tag - 1;
+            $blank_options = substr($blank_details[$blank_count], ($end_start_tag + 1), $cut_length);
+            $remainder = substr($blank_details[$blank_count], ($start_end_tag + 8));
             if (isset($excluded[$q_id])) {
-              $tmp_exclude = substr($excluded[$q_id],$blank_count-1,1);
+              $tmp_exclude = substr($excluded[$q_id], $blank_count - 1, 1);
             } else {
               $tmp_exclude = '';
             }
@@ -647,7 +649,8 @@ function displayQuestion($q_no, $q_id, $theme, $scenario, $leadin, $q_type, $cor
         for ($i=1; $i<count($blank_details); $i++) {
           $end_start_tag = strpos($blank_details[$i],']');
           $start_end_tag = strpos($blank_details[$i],'[/blank]');
-          $blank_options = substr($blank_details[$i],($end_start_tag+1),($start_end_tag-1));
+          $cut_length = $start_end_tag - $end_start_tag - 1;
+          $blank_options = substr($blank_details[$i], ($end_start_tag+1), $cut_length);
 
           $blank_options = explode(',', $blank_options);
 
@@ -1676,8 +1679,9 @@ function displayQuestion($q_no, $q_id, $theme, $scenario, $leadin, $q_type, $cor
     .extmatch li {padding-bottom:14px; vertical-align:text-bottom; list-style-type:lower-roman}
     .correct {color:#000; font-weight:bold}
     .excluded {color:red; text-decoration:line-through}
-    .excluded img { border: 2px solid red}
+    .excluded img {border: 2px solid red}
     .excluded img.in-exclusion {border:0}
+    .in-exclusion:hover {background-color:#FFE7A2}
     td p:first-child {margin-top:0}
     .matrix {border:1px solid #808080; border-collapse:collapse}
     .matrix td {border:1px solid #808080}
