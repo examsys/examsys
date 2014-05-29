@@ -535,7 +535,7 @@ if ($language != 'en') {		// Make wider for non-English languages which have lon
       <td colspan="<?php echo $cols ?>">
         <table border="0" cellpadding="0" cellspacing="0" style="font-size:90%; width:100%">
           <tr>
-            <td class="redwarn" style="width:40px"><img src="../artwork/temp_account_warning.png" width="32" height="32" alt="Warning" /></td>
+            <td class="redwarn" style="width:40px; line-height:0"><img src="../artwork/temp_account_warning.png" width="32" height="32" alt="Warning" /></td>
             <td class="redwarn"><?php echo $string['temporaryaccountswarning'] ?></td>
           </tr>
         </table>
@@ -550,7 +550,7 @@ if ($language != 'en') {		// Make wider for non-English languages which have lon
       <td colspan="<?php echo $cols ?>">
         <table border="0" cellpadding="0" cellspacing="0" style="font-size:90%; width:100%">
           <tr>
-            <td class="redwarn" style="width:40px"><img src="../artwork/late_warning_icon.png" width="32" height="32" alt="<?php echo strip_tags($string['latesubmissionsmsg']) ?>" /></td>
+            <td class="redwarn" style="width:40px; line-height:0"><img src="../artwork/late_warning_icon.png" width="32" height="32" alt="<?php echo strip_tags($string['latesubmissionsmsg']) ?>" /></td>
             <td class="redwarn"><?php echo sprintf($string['latesubmissionsmsg'],  count($log_late)) . ' (<a style="color:black" href="#" onclick="launchHelp(221); return false;">' . $string['moredetails'] . '</a>)'; ?></td>
 					</tr>
 				</table>
@@ -565,7 +565,7 @@ if ($language != 'en') {		// Make wider for non-English languages which have lon
       <td colspan="<?php echo $cols ?>">
         <table border="0" cellpadding="0" cellspacing="0" style="font-size:90%; width:100%">
           <tr>
-            <td class="redwarn" style="width:40px"><img src="../artwork/unmarked_questions_warning.png" width="32" height="32" alt="Warning" /></td>
+            <td class="redwarn" style="width:40px; line-height:0"><img src="../artwork/unmarked_questions_warning.png" width="32" height="32" alt="Warning" /></td>
             <td class="redwarn"><?php echo $string['unmarkedenhancedcalc'] ?></td>
           </tr>
         </table>
@@ -580,7 +580,7 @@ if ($language != 'en') {		// Make wider for non-English languages which have lon
       <td colspan="<?php echo $cols ?>">
         <table border="0" cellpadding="0" cellspacing="0" style="font-size:90%; width:100%">
           <tr>
-            <td class="redwarn" style="width:40px"><img src="../artwork/unmarked_questions_warning.png" width="32" height="32" alt="Warning" /></td>
+            <td class="redwarn" style="width:40px; line-height:0"><img src="../artwork/unmarked_questions_warning.png" width="32" height="32" alt="Warning" /></td>
             <td class="redwarn"><?php echo $string['unmarkedtextbox'] ?></td>
           </tr>
         </table>
