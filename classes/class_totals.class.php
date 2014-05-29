@@ -801,8 +801,8 @@ class ClassTotals {
         for ($label_no = 4; $label_no <= $count_tmp_second_split; $label_no += 4) {
           if (substr($tmp_second_split[$label_no],0,1) != '|') $label_count++;
           if (substr($tmp_second_split[$label_no],0,1) != '|' and $tmp_second_split[$label_no-2] > 219) {
-            $x = $tmp_second_split[$label_no-2];
-            $y = $tmp_second_split[$label_no-1] - 25;
+            $x = round($tmp_second_split[$label_no-2]);
+            $y = round($tmp_second_split[$label_no-1]) - 25;
             $correct_labels[$x . 'x' . $y] = substr($tmp_second_split[$label_no], 0, strpos($tmp_second_split[$label_no],'|'));
             if ($tmp_exclude{$i} == '0') {
               $placeholders++;
@@ -812,7 +812,7 @@ class ClassTotals {
             $i++;
           }
         }
-
+    
         // Strip out width and height for graphical labels.
         $i = 0;
         foreach ($correct_labels as $key=>$value) {
@@ -824,13 +824,13 @@ class ClassTotals {
         if ($tmp_user_answer != '') {
           $user_split1 = explode(';', $tmp_user_answer);
           $user_split2 = explode('$', $user_split1[1]);
-
+    
           $i = 0;
           $correct = 0;
           $count_user_split2 = count($user_split2)-3;
           for ($a=0; $a<$count_user_split2; $a+=4) {
-            $x = $user_split2[$a];
-            $y = $user_split2[$a+1];
+            $x = round($user_split2[$a]);
+            $y = round($user_split2[$a+1]);
             $index = 0;
             if (isset($correct_labels[$x . 'x' . $y])) $index = $correct_labels_pos[$x . 'x' . $y];
             if ($tmp_exclude{$index} == '0') {
