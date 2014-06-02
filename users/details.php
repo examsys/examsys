@@ -235,10 +235,10 @@ if (isset($_POST['update']) and $demo == false and $userObject->has_role(array('
 
   <script type="text/javascript" src="../js/jquery-1.6.1.min.js"></script>
   <script language="javascript">
-    function reviewPaper(started, userid, surname, papername, log_type) {
+    function reviewPaper(started, userid, surname, papername, log_type, metadataID) {
       var winwidth = screen.width - 80;
       var winheight = screen.height - 80;
-      window.open("../paper/finish.php?id="+papername+"&previous="+started+"&userid="+userid+"&surname="+surname+"&log_type="+log_type+"","paper","width="+winwidth+",height="+winheight+",left=30,top=20,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+      window.open("../paper/finish.php?id="+papername+"&previous="+started+"&userid="+userid+"&surname="+surname+"&metadataID="+metadataID+"&log_type="+log_type+"","paper","width="+winwidth+",height="+winheight+",left=30,top=20,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
     }
 
     function showTab(tabID) {
@@ -688,15 +688,15 @@ if (isset($_POST['update']) and $demo == false and $userObject->has_role(array('
       // Only allow Admin/SysAdmin or current user to view this information
       $queries = array();
 			
-      $queries[] = "SELECT crypt_name, paper_title, paper_type, paperID, DATE_FORMAT(started,'%Y%m%d%H%i%s') AS started, DATE_FORMAT(started,'{$configObject->get('cfg_long_date_time')}') AS display_started, ipaddress FROM properties, log_metadata WHERE properties.property_id = log_metadata.paperID AND log_metadata.userID = ? ORDER BY started";
-      $queries[] = "SELECT crypt_name, paper_title, 4 AS paper_type, q_paper, DATE_FORMAT(started,'%Y%m%d%H%i%s') AS started, DATE_FORMAT(started,'{$configObject->get('cfg_long_date_time')}') AS display_started, NULL AS ipaddress FROM properties, log4_overall WHERE properties.property_id = log4_overall.q_paper AND userID = ? ORDER BY started";
-      $queries[] = "SELECT DISTINCT crypt_name, paper_title, 6 AS paper_type, paperID, DATE_FORMAT(started,'%Y%m%d%H%i%s') AS started, DATE_FORMAT(started,'{$configObject->get('cfg_long_date_time')}') AS display_started, NULL AS ipaddress FROM properties, log6 WHERE properties.property_id = log6.paperID AND reviewerID = ? ORDER BY started";
+      $queries[] = "SELECT crypt_name, paper_title, paper_type, paperID, DATE_FORMAT(started,'%Y%m%d%H%i%s') AS started, DATE_FORMAT(started,'{$configObject->get('cfg_long_date_time')}') AS display_started, ipaddress, log_metadata.id FROM properties, log_metadata WHERE properties.property_id = log_metadata.paperID AND log_metadata.userID = ? ORDER BY started";
+      $queries[] = "SELECT crypt_name, paper_title, 4 AS paper_type, q_paper, DATE_FORMAT(started,'%Y%m%d%H%i%s') AS started, DATE_FORMAT(started,'{$configObject->get('cfg_long_date_time')}') AS display_started, NULL AS ipaddress, NULL AS metadataID FROM properties, log4_overall WHERE properties.property_id = log4_overall.q_paper AND userID = ? ORDER BY started";
+      $queries[] = "SELECT DISTINCT crypt_name, paper_title, 6 AS paper_type, paperID, DATE_FORMAT(started,'%Y%m%d%H%i%s') AS started, DATE_FORMAT(started,'{$configObject->get('cfg_long_date_time')}') AS display_started, NULL AS ipaddress, NULL AS metadataID FROM properties, log6 WHERE properties.property_id = log6.paperID AND reviewerID = ? ORDER BY started";
 
       foreach ($queries as $query_sql) {
         $stmt = $mysqli->prepare($query_sql);
         $stmt->bind_param('i', $tmp_id);
         $stmt->execute();
-        $stmt->bind_result($crypt_name, $paper_title, $paper_type, $q_paper, $started, $display_started, $ipaddress);
+        $stmt->bind_result($crypt_name, $paper_title, $paper_type, $q_paper, $started, $display_started, $ipaddress, $metadataID);
         while ($stmt->fetch()) {
 					$paper[$results_no]['crypt_name']       = $crypt_name;
 					$paper[$results_no]['q_paper']          = $paper_title;
@@ -706,6 +706,7 @@ if (isset($_POST['update']) and $demo == false and $userObject->has_role(array('
 					$paper[$results_no]['started']          = $started;
 					$paper[$results_no]['display_started']  = $display_started;
 					$paper[$results_no]['ipaddress']        = $ipaddress;
+					$paper[$results_no]['metadataID']       = $metadataID;
 					$results_no++;
         }
         $stmt->close();
@@ -725,6 +726,7 @@ if (isset($_POST['update']) and $demo == false and $userObject->has_role(array('
         $paper[$results_no]['started']          = $accessed;
         $paper[$results_no]['display_started']  = $display_started;
         $paper[$results_no]['ipaddress']        = $ipaddress;
+				$paper[$results_no]['metadataID']       = null;
         $results_no++;
       }
       $stmt->close();
@@ -742,6 +744,7 @@ if (isset($_POST['update']) and $demo == false and $userObject->has_role(array('
         $paper[$results_no]['started']          = $tried;
         $paper[$results_no]['display_started']  = $display_started;
         $paper[$results_no]['ipaddress']        = $ipaddress;
+				$paper[$results_no]['metadataID']       = null;
         $results_no++;
       }
       $stmt->close();
@@ -756,13 +759,13 @@ if (isset($_POST['update']) and $demo == false and $userObject->has_role(array('
       }
       switch ($paper[$i]['type']) {
         case '0':
-          echo "<tr style=\"height:17px\"><td style=\"text-align:right\"><a href=\"#\" onclick=\"reviewPaper('" . $paper[$i]['started'] . "','" . $_GET['userID'] . "','" . str_replace("'","&#8217;",$tmp_surname) . "','" . $paper[$i]['crypt_name'] . "'," . $paper[$i]['type'] . "); return false;\"><img src=\"../artwork/formative_16.gif\" width=\"16\" height=\"16\" alt=\"Display marked paper for " . $tmp_surname . "\" /></a></td><td>&nbsp;<a href=\"../paper/details.php?paperID=" . $paper[$i]['id'] . "\">" . $paper[$i]['q_paper'] . "</a></td><td>" . $paper[$i]['paper_type'] . "</td><td>" . $paper[$i]['display_started'] . "</td><td>" . $paper[$i]['ipaddress'] . "</td></tr>\n";
+          echo "<tr style=\"height:17px\"><td style=\"text-align:right\"><a href=\"#\" onclick=\"reviewPaper('" . $paper[$i]['started'] . "','" . $_GET['userID'] . "','" . str_replace("'","&#8217;",$tmp_surname) . "','" . $paper[$i]['crypt_name'] . "'," . $paper[$i]['type'] . ",'" . $paper[$i]['metadataID'] . "'); return false;\"><img src=\"../artwork/formative_16.gif\" width=\"16\" height=\"16\" alt=\"Display marked paper for " . $tmp_surname . "\" /></a></td><td>&nbsp;<a href=\"../paper/details.php?paperID=" . $paper[$i]['id'] . "\">" . $paper[$i]['q_paper'] . "</a></td><td>" . $paper[$i]['paper_type'] . "</td><td>" . $paper[$i]['display_started'] . "</td><td>" . $paper[$i]['ipaddress'] . "</td></tr>\n";
           break;
         case '1':
-          echo "<tr style=\"height:17px\"><td style=\"text-align:right\"><a href=\"#\" onclick=\"reviewPaper('" . $paper[$i]['started'] . "','" . $_GET['userID'] . "','" . str_replace("'","&#8217;",$tmp_surname) . "','" . $paper[$i]['crypt_name'] . "'," . $paper[$i]['type'] . "); return false;\"><img src=\"../artwork/progress_16.gif\" width=\"16\" height=\"16\" alt=\"Display marked paper for " . $tmp_surname . "\" /></a></td><td>&nbsp;<a href=\"../paper/details.php?paperID=" . $paper[$i]['id'] . "\">" . $paper[$i]['q_paper'] . "</a></td><td>" . $paper[$i]['paper_type'] . "</td><td>" . $paper[$i]['display_started'] . "</td><td>" . $paper[$i]['ipaddress'] . "</td></tr>\n";
+          echo "<tr style=\"height:17px\"><td style=\"text-align:right\"><a href=\"#\" onclick=\"reviewPaper('" . $paper[$i]['started'] . "','" . $_GET['userID'] . "','" . str_replace("'","&#8217;",$tmp_surname) . "','" . $paper[$i]['crypt_name'] . "'," . $paper[$i]['type'] . ",'" . $paper[$i]['metadataID'] . "'); return false;\"><img src=\"../artwork/progress_16.gif\" width=\"16\" height=\"16\" alt=\"Display marked paper for " . $tmp_surname . "\" /></a></td><td>&nbsp;<a href=\"../paper/details.php?paperID=" . $paper[$i]['id'] . "\">" . $paper[$i]['q_paper'] . "</a></td><td>" . $paper[$i]['paper_type'] . "</td><td>" . $paper[$i]['display_started'] . "</td><td>" . $paper[$i]['ipaddress'] . "</td></tr>\n";
           break;
         case '2':
-          echo "<tr style=\"height:17px\"><td style=\"text-align:right\"><a href=\"#\" onclick=\"reviewPaper('" . $paper[$i]['started'] . "','" . $_GET['userID'] . "','" . str_replace("'","&#8217;",$tmp_surname) . "','" . $paper[$i]['crypt_name'] . "'," . $paper[$i]['type'] . "); return false;\"><img src=\"../artwork/summative_16.gif\" width=\"16\" height=\"16\" alt=\"Display marked paper for " . $tmp_surname . "\" /></a></td><td>&nbsp;<a href=\"../paper/details.php?paperID=" . $paper[$i]['id'] . "\"";
+          echo "<tr style=\"height:17px\"><td style=\"text-align:right\"><a href=\"#\" onclick=\"reviewPaper('" . $paper[$i]['started'] . "','" . $_GET['userID'] . "','" . str_replace("'","&#8217;",$tmp_surname) . "','" . $paper[$i]['crypt_name'] . "'," . $paper[$i]['type'] . ",'" . $paper[$i]['metadataID'] . "'); return false;\"><img src=\"../artwork/summative_16.gif\" width=\"16\" height=\"16\" alt=\"Display marked paper for " . $tmp_surname . "\" /></a></td><td>&nbsp;<a href=\"../paper/details.php?paperID=" . $paper[$i]['id'] . "\"";
           if ($paper[$i]['started'] == '') echo ' style="color:red"';
           echo ">" . $paper[$i]['q_paper'] . "</a></td><td";
           if ($paper[$i]['started'] == '') echo ' style="color:red"';
