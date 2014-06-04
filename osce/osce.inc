@@ -369,6 +369,7 @@ function load_osce_medians($db) {
 
 /**
  * Set pass fail classifications for all users.
+ * @param string $marking     - Marking method of the paper.
  * @param array $user_results	- Master array of student results.
  * @param int $passmark				- Pass mark of the paper expressed as a percentage.
  * @param int $user_no				- How many users there are in the master array.
@@ -393,7 +394,7 @@ function set_classification($marking, &$user_results, $passmark, $user_no, $stri
       break;
   }
   
-  for ($i=0; $i<$user_no; $i++) {
+  for ($i=0; $i<(int)$user_no; $i++) {
     if ($user_results[$i]['killer_fail']) {
       $user_results[$i]['classification'] = $string['fail'];
     } elseif ($passmark == 'N/A') {     // Passmark is set to N/A - therefore use global rating from OSCE mark sheet

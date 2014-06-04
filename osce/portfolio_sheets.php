@@ -39,6 +39,7 @@ $propertyObj = PaperProperties::get_paper_properties_by_id($paperID, $mysqli, $s
 
 $paper 				= $propertyObj->get_paper_title();
 $question_no	= $propertyObj->get_question_no();
+$marking      = $propertyObj->get_marking();
 
 if ($userObject->has_role('Demo')) {
   $demo = true;
@@ -62,7 +63,7 @@ if ($borderline_method) {
   $passmark = 'N/A';
 }
 
-set_classification($user_results, $passmark, $user_no, $string);
+set_classification($marking, $user_results, $passmark, $user_no, $string);
 
 header('Pragma: public');
 header('Content-disposition: attachment; filename=report.xml');
