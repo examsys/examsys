@@ -27,16 +27,21 @@ require_once '../classes/killer_question.class.php';
 
 /**
  * Save OSCE form data back to the database.
- * @param int $paperID							- ID of the OSCE station paper.
- * @param int $number_of_questions	- How many questions are on the paper.
+ * @param int $propertyObj					- Object of the OSCE station paper.
  * @param int $userID								- ID of the student
  * @param mixed $postdata						- $_POST data from the form.
  * @param object $db								- Link to MySQL database.
  */
-function save_osce_form($paperID, $number_of_questions, $userID, $postdata, $db) {
+function save_osce_form($propertyObj, $userID, $postdata, $db) {
     
 	$userObject = UserObject::get_instance();
-					
+  
+  $paperID      = $propertyObj->get_property_id();
+  $marking      = $propertyObj->get_marking();
+  $number_of_qs = $propertyObj->get_question_no();
+  $pass_mark    = $propertyObj->get_pass_mark();
+	$total_mark   = $propertyObj->get_total_mark();
+  
 	if ($postdata['userID'] != '') {
 		$result = $db->prepare("SELECT id FROM log4_overall WHERE q_paper = ? AND userID = ? LIMIT 1");
 		$result->bind_param('ii', $paperID, $userID);
@@ -65,7 +70,7 @@ function save_osce_form($paperID, $number_of_questions, $userID, $postdata, $db)
 
 		// Write individual ratings into Log4.
 		$numeric_score = 0;
-		for ($question = 1; $question <= $number_of_questions; $question++) {
+		for ($question = 1; $question <= $number_of_qs; $question++) {
 			$tmp_val = ($postdata['q' . $question . '_val'] - 1);
 			if (isset( $postdata[$postdata['q' . $question . '_id'] . '_parts'] )) {
 				$q_parts = $postdata[$postdata['q' . $question . '_id'] . '_parts'];
@@ -80,8 +85,18 @@ function save_osce_form($paperID, $number_of_questions, $userID, $postdata, $db)
 		}
 
 		// Update Log4_overall with the overall score.
-		$result = $db->prepare("UPDATE log4_overall SET numeric_score = ?, overall_rating = ?, feedback = ? WHERE id = ?");
-		$result->bind_param('issi', $numeric_score, $postdata['overall_val'], $postdata['fback'], $insertID);
+    if ($marking == '5') {
+      $user_percent = ($numeric_score / $total_mark) * 100;
+      if ($user_percent >= $pass_mark) {
+        $overall_rating = 'pass';
+      } else {
+        $overall_rating = 'fail';        
+      }
+    } else {
+      $overall_rating = $postdata['overall_val'];
+    }
+    $result = $db->prepare("UPDATE log4_overall SET numeric_score = ?, overall_rating = ?, feedback = ? WHERE id = ?");
+		$result->bind_param('issi', $numeric_score, $overall_rating, $postdata['fback'], $insertID);
 		$result->execute();
 		$result->close();
 	}

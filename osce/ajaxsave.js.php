@@ -89,7 +89,7 @@ var ajaxSave = function () {
             this.tryCount++;
             if (this.tryCount <= this.retryLimit) {
               <?php // Indicate the retry on the url ?>
-              if(this.tryCount == 1) {
+              if (this.tryCount == 1) {
                 this.url = this.url + "&retry=" + this.tryCount;
               } else {
                 this.url = this.url.replace("&retry=" + (this.tryCount - 1), "&retry=" + this.tryCount);

@@ -1388,6 +1388,7 @@ if ($properties->get_paper_type() != '4' and $properties->get_paper_type() != '5
       echo "</select></td></tr>";
       echo "<tr><td align=\"right\" valign=\"top\"><nobr>" . $string['overallclassification'] . "</nobr>&nbsp;</td><td valign=\"top\" colspan=\"3\"><select name=\"marking\">";
     ?>
+      <option value="5"<?php if ($properties->get_marking() == '5') echo ' selected'; ?> />N/A</option>
       <option value="7"<?php if ($properties->get_marking() == '7') echo ' selected'; ?> /><?php echo $string['overallclass5']; ?></option>
       <option value="3"<?php if ($properties->get_marking() == '3') echo ' selected'; ?> /><?php echo $string['overallclass2']; ?></option>
       <option value="4"<?php if ($properties->get_marking() == '4') echo ' selected'; ?> /><?php echo $string['overallclass3']; ?></option>

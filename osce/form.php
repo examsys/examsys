@@ -60,7 +60,7 @@ $killer_questions->load();
 if (isset($_POST) and count($_POST) > 0) {
   
   if (!isset($_GET['dont_record'])) {
-    save_osce_form($paperID, $number_of_qs, $userID, $_POST, $mysqli);
+    save_osce_form($propertyObj, $userID, $_POST, $mysqli);
   }
   if (isset($_GET['dont_redirect']) and $_GET['dont_redirect'] == true) {
     // Output the randomID so the JavaScript can check for success
@@ -122,9 +122,9 @@ if (isset($_POST) and count($_POST) > 0) {
   <style type="text/css">
   <?php
     if (strstr($_SERVER['HTTP_USER_AGENT'], 'iPhone') or strstr($_SERVER['HTTP_USER_AGENT'], 'iPad')) {
-      echo "body {background-color:" . $propertyObj->get_bgcolor() . "; color:" . $propertyObj->get_fgcolor() . "; font-size:100%}\n";
+      echo "body {background-color:" . $propertyObj->get_bgcolor() . "; margin-bottom:15px; color:" . $propertyObj->get_fgcolor() . "; font-size:100%}\n";
     } else {
-      echo "body {background-color:" . $propertyObj->get_bgcolor() . "; color:" . $propertyObj->get_fgcolor() . "; font-size:90%}\n";
+      echo "body {background-color:" . $propertyObj->get_bgcolor() . "; margin-bottom:15px; color:" . $propertyObj->get_fgcolor() . "; font-size:90%}\n";
     }
     ?>
     .t {color:<?php echo $propertyObj->get_themecolor(); ?>}
