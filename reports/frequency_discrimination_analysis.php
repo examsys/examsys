@@ -668,9 +668,15 @@ function displayQuestion($q_no, $q_id, $theme, $scenario, $leadin, $q_type, $cor
           } else {
             $unique_blank_options = array_intersect_key($blank_options, array_unique(array_map('strtolower', $blank_options)));
             $unique_blank_options = array_map('strtolower', $unique_blank_options);
+            
+            // Merge the same option on its own and with spaces (e.g. 'cat' and ' cat').
+            $new_blank_options = array();
+            foreach ($unique_blank_options as $blank_option) {
+              $new_blank_options[] = strtolower(trim($blank_option));
+            }
+            $unique_blank_options = array_unique($new_blank_options);
 
             foreach ($unique_blank_options as $blank_option) {
-              $blank_option = strtolower(trim($blank_option));
               if (isset($freq_log[$q_id][$i+1][$blank_option])) {
                 $tmp_correct_no += $freq_log[$q_id][$i+1][$blank_option];
               }
@@ -690,8 +696,8 @@ function displayQuestion($q_no, $q_id, $theme, $scenario, $leadin, $q_type, $cor
           $d_total += $d;
           $html = '';
 
-          $u = number_format(($tmp_top_no/$candidate_no)*100,0);
-          $l = number_format(($tmp_bottom_no/$candidate_no)*100,0);
+          $u = number_format(($tmp_top_no / $candidate_no) * 100, 0);
+          $l = number_format(($tmp_bottom_no / $candidate_no) * 100, 0);
 
           echo "<tr><td>" . chr($i+64) . ".</td>";
           if ($score_method == 'Mark per Option') {
@@ -701,13 +707,13 @@ function displayQuestion($q_no, $q_id, $theme, $scenario, $leadin, $q_type, $cor
               echo '<td>' . excludeButton($ex_no, $q_id, 0, 1, 1) . '</td>';
             }
           }
-          echo "<td>" . pStats($tmp_correct_no/$user_total, $q_id, $i) . "</td><td>" . dStats($d, $q_id, $i) . "</td><td>t=$t%</td><td>u=$u%</td><td>l=$l%</td>";
+          echo "<td>" . pStats($tmp_correct_no / $user_total, $q_id, $i) . "</td><td>" . dStats($d, $q_id, $i) . "</td><td>t=$t%</td><td>u=$u%</td><td>l=$l%</td>";
 
           if (isset($tmp_std_array[$i-1])) {
             echo '<td class="std">' . $tmp_std_array[$i-1] . '</td>';
           }
           echo "<td id=\"q_" . ($ex_no) . "_1\"";
-          if (isset($excluded[$q_id]) and substr($excluded[$q_id], $i-1,1) == '1' and $score_method == 'Mark per Option') echo ' class="excluded"';
+          if (isset($excluded[$q_id]) and substr($excluded[$q_id], $i-1, 1) == '1' and $score_method == 'Mark per Option') echo ' class="excluded"';
           echo ">";
           if ($display_method == 'dropdown') {
             $html = $blank_options[0];

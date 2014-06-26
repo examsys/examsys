@@ -58,16 +58,18 @@ $result->close();
 // Read user answers from log.
 $log_answers = array();
 if ($paper_type == '0') {
-  $result = $mysqli->prepare("(SELECT 0 AS type, l.id, l.user_answer FROM log0 l INNER JOIN log_metadata lm ON l.metadataID = lm.id WHERE l.q_id = ? AND lm.paperID = ? AND lm.started >= ? AND lm.started <= ?) UNION ALL (SELECT 1 AS type, l.id, l.user_answer FROM log1 l INNER JOIN log_metadata lm ON l.metadataID = lm.id WHERE l.q_id = ? AND lm.paperID = ? AND lm.started >= ? AND lm.started <= ?)");
+  $result = $mysqli->prepare("(SELECT 0 AS type, l.id, l.user_answer FROM log0 l, log_metadata lm WHERE l.metadataID = lm.id AND l.q_id = ? AND lm.paperID = ? AND lm.started >= ? AND lm.started <= ? AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE 'Staff%' AND student_grade NOT LIKE '%nhs%') UNION ALL (SELECT 1 AS type, l.id, l.user_answer FROM log1 l, log_metadata lm WHERE l.metadataID = lm.id AND l.q_id = ? AND lm.paperID = ? AND lm.started >= ? AND lm.started <= ? AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE 'Staff%' AND student_grade NOT LIKE '%nhs%')");
   $result->bind_param('iissiiss', $q_id, $paperID, $_GET['startdate'], $_GET['enddate'], $q_id, $paperID, $_GET['startdate'], $_GET['enddate']);
 } else {
-  $result = $mysqli->prepare("SELECT $paper_type AS type, l.id, l.user_answer FROM log$paper_type l INNER JOIN log_metadata lm ON l.metadataID = lm.id WHERE l.q_id = ? AND lm.paperID = ? AND lm.started >= ? AND lm.started <= ?");
+  //$result = $mysqli->prepare("SELECT $paper_type AS type, l.id, l.user_answer FROM log$paper_type l INNER JOIN log_metadata lm ON l.metadataID = lm.id WHERE l.q_id = ? AND lm.paperID = ? AND lm.started >= ? AND lm.started <= ? AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE 'Staff%' AND student_grade NOT LIKE '%nhs%'");
+  //$result->bind_param('iiss', $q_id, $paperID, $_GET['startdate'], $_GET['enddate']);
+  $result = $mysqli->prepare("SELECT $paper_type AS type, l.id, l.user_answer FROM log$paper_type l, log_metadata lm WHERE l.metadataID = lm.id AND l.q_id = ? AND lm.paperID = ? AND DATE_ADD(lm.started, INTERVAL 2 MINUTE) >= ? AND lm.started <= ? AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE 'Staff%' AND student_grade NOT LIKE '%nhs%'");
   $result->bind_param('iiss', $q_id, $paperID, $_GET['startdate'], $_GET['enddate']);
 }
 $result->execute();
 $result->bind_result($type, $id, $user_answer);
 while ($result->fetch()) {
-  $log_answers[$type][$id] = $user_answer;
+  $log_answers[$type][$id] = strtolower($user_answer);
 }
 $result->close();
 
@@ -197,7 +199,7 @@ if (isset($_POST['submit'])) {
 
 <?php
 } else {
-  $blank_details = explode('[blank',$option_text);
+  $blank_details = explode('[blank', $option_text);
   for ($i=1; $i<count($blank_details); $i++) {
     $end_start_tag = strpos($blank_details[$i],']');
     $start_end_tag = strpos($blank_details[$i],'[/blank]');
@@ -206,6 +208,13 @@ if (isset($_POST['submit'])) {
       $blanks = explode(',', $blank_options);
     }
   }
+  
+  // Merge the same option on its own and with spaces (e.g. 'cat' and ' cat').
+  $new_blanks = array();
+  foreach ($blanks as $blank) {
+    $new_blanks[] = strtolower(trim($blank));
+  }
+  $blanks = array_unique($new_blanks);
 ?>
 <!DOCTYPE html>
 <html>
