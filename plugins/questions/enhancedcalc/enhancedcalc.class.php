@@ -851,7 +851,7 @@ class EnhancedCalc extends Question implements questionInterface {
 			}
 		}
 		
-		if ($this->is_compound_question_var($inputVal) or (!is_numeric($inputVal) and $inputVal != 'ERROR')) {
+		if ($this->is_compound_question_var($inputVal) or (!is_numeric($inputVal) and $inputVal != 'ERROR' and $inputVal !== '')) {
 			$inputVal = $this->substitute_and_eval_vars($this->useranswer['vars'], $inputVal);
 			if (!is_numeric($inputVal)) {
 				 $inputVal = 'ERROR';
