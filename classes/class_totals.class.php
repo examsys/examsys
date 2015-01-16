@@ -38,6 +38,7 @@ require_once '../classes/mathsutils.class.php';
 require_once '../classes/results_cache.class.php';
 require_once '../classes/standard_setting.class.php';
 require_once '../classes/question_status.class.php';
+require_once $cfg_web_root . 'classes/questionutils.class.php';
 
 class ClassTotals {
 
@@ -583,7 +584,7 @@ class ClassTotals {
       $blank_details[$i] = substr($blank_details[$i],0,strpos($blank_details[$i],'[/blank]'));
       
       $answer_list = explode(',', $blank_details[$i]);
-      $answer_list[0] = str_replace("[/blank]", '', strip_tags($answer_list[0]));
+      $answer_list[0] = str_replace("[/blank]", '', strip_tags($answer_list[0], QuestionUtils::get_allowed_tags()));
       foreach ($answer_list as $individual_answer) {
         $correct[$i-1][] = html_entity_decode(trim($individual_answer));
       }
@@ -685,7 +686,7 @@ class ClassTotals {
           }
         }
       } elseif ($question['q_type'] == 'blank') {
-				$user_answers = explode('|', $tmp_user_answer);
+        $user_answers = explode('|', $tmp_user_answer);
         $count_user_answer = count($user_answers)-1;
         for ($a=0; $a<$count_user_answer; $a++) {
           if ($tmp_exclude{$a} == '0') {
@@ -706,7 +707,7 @@ class ClassTotals {
               $match = false;
               if (isset($question['correct'][$a])) {
                 foreach ($question['correct'][$a] as $correct_alternative) {
-                  if (strtolower(trim($user_answers[$a+1])) == strip_tags(strtolower(trim($correct_alternative)))) {
+                  if (strtolower(trim($user_answers[$a+1])) == strip_tags(strtolower(trim($correct_alternative)), QuestionUtils::get_allowed_tags())) {
                     $match = true;
                   }
                 }

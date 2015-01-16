@@ -32,6 +32,7 @@ require_once '../include/sort.inc';
 require_once '../classes/stringutils.class.php';
 require_once '../classes/paperutils.class.php';
 require_once '../classes/paperproperties.class.php';
+require_once $cfg_web_root . 'classes/questionutils.class.php';
 
 $paperID    = check_var('paperID', 'GET', true, false, true);
 $startdate  = check_var('startdate', 'GET', true, false, true);
@@ -580,7 +581,7 @@ if ($student_no > 0) {
               }
               break;
             case 'blank':
-              $correct_parts = explode(',', strip_tags($question['correct']));
+              $correct_parts = explode(',', strip_tags($question['correct'], QuestionUtils::get_allowed_tags()));
               for ($partID=1; $partID<count($correct_parts); $partID++) {
                 if (substr($tmp_exclude,$partID-1,1) == '0') {
                   if ($is_random) {

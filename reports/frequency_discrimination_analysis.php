@@ -39,6 +39,7 @@ require_once '../classes/exclusion.class.php';
 require_once '../classes/results_cache.class.php';
 require_once '../classes/standard_setting.class.php';
 require_once '../plugins/questions/enhancedcalc/enhancedcalc.class.php';
+require_once $cfg_web_root . 'classes/questionutils.class.php';
 
 //HTML5 part
 require_once '../lang/' . $language . '/question/edit/hotspot_correct.txt';
@@ -601,7 +602,7 @@ function displayQuestion($exclusions, $q_no, $q_id, $theme, $scenario, $leadin, 
         break;
       case 'blank':
         echo '<br />';
-        $blank_details = explode('[blank', strip_tags($options[0]));
+        $blank_details = explode('[blank', strip_tags($options[0], QuestionUtils::get_allowed_tags()));
         $array_size = count($blank_details);
 
         if ($score_method == 'Mark per Question') {

@@ -25,6 +25,7 @@
 require_once $cfg_web_root . 'classes/stringutils.class.php';
 require_once $cfg_web_root . 'classes/configobject.class.php';
 require_once $cfg_web_root . 'classes/exclusion.class.php';
+require_once $cfg_web_root . 'classes/questionutils.class.php';
 
 $configObject = Config::get_instance();
 
@@ -1992,7 +1993,7 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
           $answer_options = array();
           $answer_options = explode("[/blank]",substr($blank_details[$blank_count],(strpos($blank_details[$blank_count],']') + 1)));
           $answer_list = array();
-          $answer_list = explode(',', strip_tags($answer_options[0]));
+          $answer_list = explode(',', strip_tags($answer_options[0], QuestionUtils::get_allowed_tags()));
           $exclude_mod = (substr($tmp_exclude, $blank_count-1, 1) == '1') ? ' class="exclude"' : '';
           if ($paper[$question]['display_method'] == 'textboxes') {             // Textboxes
             $correct_flag = false;
