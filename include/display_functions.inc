@@ -706,7 +706,7 @@ function display_question($configObject, &$question, $paper_type, $calculator, $
           } else {
             $class_type = 'act';
           }
-          if ($display_option['option_text'] != '') echo "<span class=\"$class_type\" id=\"$question_no" . "_" . "$tmp_part_id\">" . htmlspecialchars($display_option['option_text']) . '</span>';
+          if ($display_option['option_text'] != '') echo "<span class=\"$class_type\" id=\"$question_no" . "_" . "$tmp_part_id\">" . $display_option['option_text'] . '</span>';
           if ($display_option['o_media'] != '') {
             if ($display_option['option_text'] != '') echo '<br />';
             echo display_media($display_option['o_media'],$display_option['o_media_width'],$display_option['o_media_height'], '');
@@ -718,14 +718,14 @@ function display_question($configObject, &$question, $paper_type, $calculator, $
           } else {
             echo "<input type=\"radio\" name=\"q" . $question_no . "\" value=\"" . $tmp_part_id . "\" />";
           }
-          if ($display_option['option_text'] != '') echo '&nbsp;' . htmlspecialchars($display_option['option_text']);
+          if ($display_option['option_text'] != '') echo '&nbsp;' . $display_option['option_text'];
           if ($display_option['o_media'] != '') echo '&nbsp;' . display_media($display_option['o_media'], $display_option['o_media_width'], $display_option['o_media_height'], '');
           echo '&nbsp;&nbsp;';
         } else {
           if (isset($user_answers[$current_screen][$q_id]) and $tmp_part_id == $user_answers[$current_screen][$q_id]) {
-            echo "<option value=\"" . $tmp_part_id . "\" selected>" . htmlspecialchars($display_option['option_text']) . "</option>\n";
+            echo "<option value=\"" . $tmp_part_id . "\" selected>" . $display_option['option_text'] . "</option>\n";
           } else {
-            echo "<option value=\"" . $tmp_part_id . "\">" . htmlspecialchars($display_option['option_text']) . "</option>\n";
+            echo "<option value=\"" . $tmp_part_id . "\">" . $display_option['option_text'] . "</option>\n";
           }
         }
         if ($tmp_part_id == $display_option['correct']) $marks = $display_option['marks_correct'];
@@ -753,7 +753,7 @@ function display_question($configObject, &$question, $paper_type, $calculator, $
           $class_type = 'act';
         }
 
-        if ($display_option['option_text'] != '') echo "<span class=\"$class_type\" id=\"$question_no" . "_" . "$part_id\">" . htmlspecialchars($display_option['option_text']) . '</span>';
+        if ($display_option['option_text'] != '') echo "<span class=\"$class_type\" id=\"$question_no" . "_" . "$part_id\">" . $display_option['option_text'] . '</span>';
         if ($display_option['o_media'] != '') {
           if ($display_option['option_text'] != '') echo '<br />';
           echo display_media($display_option['o_media'], $display_option['o_media_width'], $display_option['o_media_height'], '');
