@@ -625,7 +625,7 @@ function record_marks($paper_id, $db, $paper_type, $metadataID, $preview_q_id = 
             $mark += ($_POST[$qid] == $correct) ? $marks_correct : $marks_incorrect;
           }
         } elseif ($score_method == 'Mark per Question') {
-          if ($_POST[$qid] != 'u' and $_POST[$qid] <> $correct) $correct_rank = false;
+          if ($_POST[$qid] <> $correct) $correct_rank = false;
         } elseif ($score_method == 'Allow partial Marks') {
           if ($_POST[$qid] != 'u') {
             if ($_POST[$qid] != 0) {
