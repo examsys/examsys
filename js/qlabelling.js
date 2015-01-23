@@ -2199,25 +2199,35 @@ function ql_mouseDragUp(){
 			var tmp_unique_labels = [];
 			var tmp_clone_answerBox = this.answerBox.slice(0);
 			this.answerBox.length = 0;
-			j=0;
+			if (this.labelMulti == 'single'){
+				j=0;
 				for (i=0;i<tmp_clone_answerBox.length;i++) {
-						if (typeof(tmp_clone_answerBox[i][j])!='undefined') {
-							if (this.labelMulti == 'single' && n<20 && tmp_clone_answerBox[i][j][2]!='') {
-								var tmp_position = tmp_clone_answerBox[i][j][5]+','+tmp_clone_answerBox[i][j][6];
-								if (typeof(tmp_unique_positions[tmp_position]) == 'undefined') {
-									tmp_unique_positions[tmp_position] = n;
-									if (typeof(this.answerBox[n]) == 'undefined') this.answerBox[n] = new Array();
-									this.answerBox[n][0] = tmp_clone_answerBox[i][j];
-									this.answerBox[n][0][0] = n;
-									this.answerBox[n][0][4] = 0;
-									this.pholderBox[n][2] = this.answerBox[n][0][2];
-									this.pholderBox[n][5] = this.answerBox[n][0][5];
-									this.pholderBox[n][6] = this.answerBox[n][0][6];
-									if (this.pholderBox[n][5]<220) this.pholderBox[n][5] = -500;
-									n++;
-								}
+					if (typeof(tmp_clone_answerBox[i][j])!='undefined') {
+						if (n<20 && tmp_clone_answerBox[i][j][2]!='') {
+							var tmp_position = tmp_clone_answerBox[i][j][5]+','+tmp_clone_answerBox[i][j][6];
+							if (typeof(tmp_unique_positions[tmp_position]) == 'undefined') {
+								tmp_unique_positions[tmp_position] = n;
+								if (typeof(this.answerBox[n]) == 'undefined') this.answerBox[n] = new Array();
+								this.answerBox[n][0] = tmp_clone_answerBox[i][j];
+								this.answerBox[n][0][0] = n;
+								this.answerBox[n][0][4] = 0;
+								this.pholderBox[n][2] = this.answerBox[n][0][2];
+								this.pholderBox[n][5] = this.answerBox[n][0][5];
+								this.pholderBox[n][6] = this.answerBox[n][0][6];
+								if (this.pholderBox[n][5]<220) this.pholderBox[n][5] = -500;
+								n++;
 							}
-							if (this.labelMulti == 'multiple') {
+						}
+					}
+				}				
+			}
+
+			if (this.labelMulti == 'multiple'){
+				j=0;
+				for (i=0;i<tmp_clone_answerBox.length;i++) {
+					if (typeof(tmp_clone_answerBox[i])!='undefined') {							
+						for (j=0;j<tmp_clone_answerBox[i].length;j++) {
+							if (typeof(tmp_clone_answerBox[i][j])!='undefined') {							
 								var tmp_label = tmp_clone_answerBox[i][j][2];
 								if (tmp_label!='' && typeof(tmp_unique_labels[tmp_label]) == 'undefined') tmp_unique_labels[tmp_label] = o++;
 								if (tmp_label!='' && typeof(tmp_unique_labels[tmp_label]) != 'undefined') {
@@ -2230,8 +2240,10 @@ function ql_mouseDragUp(){
 								}
 							}
 						}
-					
-				}			
+					}
+				}
+			}
+			//}
 			for (n=this.answerBox.length;n<20;n++) {
 				this.answerBox[n] = new Array();
 				this.answerBox[n][0] = new Array(n,"text","","",0,5,30,5,30,"","");
