@@ -26,4 +26,7 @@ $string['createfolder'] = 'Create folder';
 $string['mypersonalkeywords'] = 'My Personal Keywords';
 $string['search'] = 'Search';
 $string['recent'] = 'Recent';
+$string['questions'] = 'Questions';
+$string['papers'] = 'Papers';
+$string['people'] = 'People';
 ?>

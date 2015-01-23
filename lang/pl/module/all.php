@@ -26,6 +26,7 @@ $string['createfolder'] = 'Utwórz folder';
 $string['mypersonalkeywords'] = 'Moje własne słowa kluczowe';
 $string['search'] = 'Szukaj';
 $string['recent'] = 'Niedawny';
-
-
+$string['questions'] = 'Pytania';
+$string['papers'] = 'Arkusze';
+$string['people'] = 'Osoby';
 ?>

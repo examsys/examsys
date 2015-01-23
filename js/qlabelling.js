@@ -2199,11 +2199,10 @@ function ql_mouseDragUp(){
 			var tmp_unique_labels = [];
 			var tmp_clone_answerBox = this.answerBox.slice(0);
 			this.answerBox.length = 0;
-			for (i=0;i<tmp_clone_answerBox.length;i++) {
-				if (typeof(tmp_clone_answerBox[i])!='undefined') {
-					for (j=0;j<tmp_clone_answerBox[i].length;j++) {
+			j=0;
+				for (i=0;i<tmp_clone_answerBox.length;i++) {
 						if (typeof(tmp_clone_answerBox[i][j])!='undefined') {
-							if (this.labelMulti == 'single' && n<20) {
+							if (this.labelMulti == 'single' && n<20 && tmp_clone_answerBox[i][j][2]!='') {
 								var tmp_position = tmp_clone_answerBox[i][j][5]+','+tmp_clone_answerBox[i][j][6];
 								if (typeof(tmp_unique_positions[tmp_position]) == 'undefined') {
 									tmp_unique_positions[tmp_position] = n;
@@ -2231,9 +2230,8 @@ function ql_mouseDragUp(){
 								}
 							}
 						}
-					}
-				}
-			}
+					
+				}			
 			for (n=this.answerBox.length;n<20;n++) {
 				this.answerBox[n] = new Array();
 				this.answerBox[n][0] = new Array(n,"text","","",0,5,30,5,30,"","");

@@ -26,4 +26,7 @@ $string['createfolder'] = 'Vytvořit složku';
 $string['mypersonalkeywords'] = 'Moje klíčová slova';
 $string['search'] = 'Hledat';
 $string['recent'] = 'Nedávné';
+$string['questions'] = 'Úlohy';
+$string['papers'] = 'Dokumenty';
+$string['people'] = 'Lidé';
 ?>
