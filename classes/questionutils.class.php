@@ -382,17 +382,6 @@ SQL;
     $type->close();
     return $qtype;
   }
-
-  /**
-   * Return the list of allowed html tags to exclude from stip_tags
-   * when presenting the answer to this question.
-   * 
-   * @return string allowed html tags
-   */
-  static function get_allowed_tags() {
-      $tags = "<SUB><SUP>";
-      return $tags;
-  }
   
 }
 ?>
