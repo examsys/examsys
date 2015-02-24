@@ -424,7 +424,7 @@ if (isset($_POST['Submit'])) {
       $_POST['timezone'] = $properties->get_timezone();
     }
 
-    if (($configObject->get('cfg_summative_mgmt') and $properties->get_paper_type() == '2' and $userObject->has_role(array('SysAdmin','Admin'))) or !$configObject->get('cfg_summative_mgmt') or  $properties->get_paper_type() != '2') {
+    if (($configObject->get('cfg_summative_mgmt') and $properties->get_paper_type() == '2' and $userObject->has_role(array('SysAdmin'))) or !$configObject->get('cfg_summative_mgmt') or  $properties->get_paper_type() != '2') {
   		$local_time = new DateTimeZone($configObject->get('cfg_timezone'));
   		$target_timezone = new DateTimeZone($_POST['timezone']);
 
