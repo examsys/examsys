@@ -134,7 +134,7 @@ if ($phase == 2) {
 if ($paper_type == '0') {
 
   $sql = <<< SQL
-SELECT 0 AS logtype, l.id, lm.userID, l.user_answer, t.mark, t.q_id, comments, reminders
+SELECT 0 AS logtype, l.id, lm.userID, l.user_answer, t.mark, l.q_id, comments, reminders
   FROM (log0 l, log_metadata lm, users u)
   LEFT JOIN textbox_marking t ON l.id = t.answer_id AND lm.paperID = t.paperID AND t.phase = ?
   WHERE lm.paperID = ?
@@ -145,7 +145,7 @@ SELECT 0 AS logtype, l.id, lm.userID, l.user_answer, t.mark, t.q_id, comments, r
   AND DATE_ADD(lm.started, INTERVAL 2 MINUTE) >= ?
   AND lm.started <= ?
 UNION ALL
-SELECT 1 AS logtype, l.id, lm.userID, l.user_answer, t.mark, t.q_id, comments, reminders
+SELECT 1 AS logtype, l.id, lm.userID, l.user_answer, t.mark, l.q_id, comments, reminders
   FROM (log1 l, log_metadata lm, users u)
   LEFT JOIN textbox_marking t ON l.id = t.answer_id AND lm.paperID = t.paperID AND t.phase = ?
   WHERE lm.paperID = ?
@@ -160,7 +160,7 @@ SQL;
   $result->bind_param('iiissiiiss', $phase, $paperID, $q_id, $startdate, $enddate, $phase, $paperID, $q_id, $startdate, $enddate);
 } else {
   $sql = <<< SQL
-SELECT $paper_type AS logtype, l.id, lm.userID, l.user_answer, t.mark, t.q_id, comments, reminders
+SELECT $paper_type AS logtype, l.id, lm.userID, l.user_answer, t.mark, l.q_id, comments, reminders
 FROM (log{$paper_type} l, log_metadata lm, users u)
 LEFT JOIN textbox_marking t ON l.id = t.answer_id AND lm.paperID = t.paperID AND t.phase = ?
 WHERE lm.paperID = ?
