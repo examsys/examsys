@@ -1658,8 +1658,11 @@ class PaperProperties {
                                 $enhancedcalc_ids[] = $possible;
                             }
                             break;
-                        default:
+                        case 'enhancedcalc':
                             $enhancedcalc_ids[] = $question['q_id'];
+                            break;
+                        default:
+                            break;
                     }
                 }
             }
