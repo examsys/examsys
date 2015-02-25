@@ -20,6 +20,7 @@
 
 # /email_templates/
 /email_templates/*.txt
+!/email_templates/index.html
 
 # /html5/
 /html5/qgraph.html
