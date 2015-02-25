@@ -28,6 +28,7 @@ set_time_limit(0);
 
 require '../include/staff_auth.inc';
 require_once '../include/errors.inc';
+require_once '../include/feedback.inc';
 require_once '../classes/class_totals.class.php';
 require_once '../classes/folderutils.class.php';
 require_once '../classes/exam_announcements.class.php';
@@ -825,7 +826,7 @@ echo draw_toprightmenu(30);
     // Email Class -----------------------------------------------------------------------------------------
     if ($paper_type < 2 and isset($_POST['emailclass']) and $_POST['emailclass'] == 'yes') {
       // Save the latest template to disk.
-      $file = fopen("../email_templates/" . $userObject->get_user_ID(), "w");
+      $file = fopen("../email_templates/" . $userObject->get_user_ID() . ".txt", "w");
       fwrite($file, $userObject->get_email() . "\n");
       fwrite($file, $_POST['ccaddress'] . "\n");
       fwrite($file, $_POST['bccaddress'] . "\n");
@@ -882,7 +883,12 @@ echo draw_toprightmenu(30);
         }
         $message = str_replace("{class-max-mark}", $stats['max_mark'], $message);
         $message = str_replace("{class-min-mark}", $stats['min_mark'], $message);
-        $message = str_replace("{class-mean-time}", formatsec(round($total_time / $stats['completed_no'],0)), $message);
+        if ($stats['completed_no'] == 0) {
+            $mean = 0;
+        } else {
+            $mean = round($stats['total_time'] / $stats['completed_no'], 0);
+        }
+        $message = str_replace("{class-mean-time}", formatsec($mean), $message);
         $message = str_replace("{random-mark}", number_format($report->get_total_random_mark(), 1, '.', ','), $message);
         $message = str_replace("{paper-title}", $paper, $message);
 
@@ -890,11 +896,21 @@ echo draw_toprightmenu(30);
 
         $subject = $_POST['subject'];
         $subject = str_replace("{total-paper-mark}", $report->get_total_marks(), $subject);
-        $subject = str_replace("{class-mean-mark}", round($total_mark / $stats['completed_no'], 1), $subject);
+        if ($stats['completed_no'] == 0) {
+            $mean = 0;
+        } else {
+            $mean = round($report->get_total_marks() / $stats['completed_no'] , 1);
+        }
+        $subject = str_replace("{class-mean-mark}", $mean, $subject);
         $subject = str_replace("{class-mean-percent}", $stats['mean_percent'], $subject);
         $subject = str_replace("{class-max-mark}", $stats['max_mark'], $subject);
         $subject = str_replace("{class-min-mark}", $stats['min_mark'], $subject);
-        $subject = str_replace("{class-mean-time}", formatsec(round($total_time / $stats['completed_no'],0)), $subject);
+        if ($stats['completed_no'] == 0) {
+            $mean = 0;
+        } else {
+            $mean = round($stats['total_time'] / $stats['completed_no'], 0);
+        }
+        $subject = str_replace("{class-mean-time}", formatsec($mean), $subject);
         $subject = str_replace("{random-mark}", number_format($report->get_total_random_mark(), 1, '.', ','), $subject);
         $subject = str_replace("{paper-title}", $paper, $subject);
 
