@@ -76,7 +76,7 @@ if (is_null($configObject->get('cfg_db_port'))) {
 $mysqli = DBUtils::get_mysqli_link($configObject->get('cfg_db_host'), $configObject->get('cfg_db_username'), $configObject->get('cfg_db_passwd'), $configObject->get('cfg_db_database'), $configObject->get('cfg_db_charset'), $notice, $configObject->get('dbclass'), $configObject->get('cfg_db_port'));
 
 // Check to see if the update script has been run.
-if ($configObject->get('rogo_version') != '6.0.3') {
+if ($configObject->get('rogo_version') != '6.0.4') {
   $notice->display_notice_and_exit($mysqli, 'Update Required', 'System needs configuring before use. Please contact your local system administrator.', 'Update Required', '../artwork/software_64.png', $title_color = '#C00000', true, true);
 }
 

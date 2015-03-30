@@ -32,7 +32,7 @@ require_once '../classes/dbutils.class.php';
 require_once '../classes/stringutils.class.php';
 require_once '../include/std_set_shared_functions.inc';
 
-$version = '6.0.3';
+$version = '6.0.4';
 $migration_path = 'version5';
 
 set_time_limit(0);
