@@ -49,7 +49,7 @@ function enhancedcalc_remark($paper_type, $paper_id, $q_id, $settings, $db, $mod
 
     if ($returnarray !== Q_MARKING_UNMARKED and $returnarray !== Q_MARKING_ERROR) {
       // Save the extra data back into the log record.
-      $sql = "UPDATE log{$paper_type} set mark = ?, adjmark = ?, totalpos = ?, user_answer = ?, errorstate = 0 WHERE id = ? LIMIT 1";
+      $sql = "UPDATE log{$paper_type} set mark = ?, adjmark = ?, totalpos = ?, user_answer = ? WHERE id = ? LIMIT 1";
       $storemark = $db->prepare($sql);
       $new_useranswerstring = $enhancedcalc->useranswer_to_string();
       $totalpos = $enhancedcalc->calculate_question_mark();
