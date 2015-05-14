@@ -47,15 +47,22 @@ function enhancedcalc_remark($paper_type, $paper_id, $q_id, $settings, $db, $mod
     $returnarray = $enhancedcalc->calculate_user_mark();
     $status[$returnarray]++;
 
-		if ($returnarray !== Q_MARKING_UNMARKED and $returnarray !== Q_MARKING_ERROR) {
+    if ($returnarray !== Q_MARKING_UNMARKED and $returnarray !== Q_MARKING_ERROR) {
       // Save the extra data back into the log record.
-      $sql = "UPDATE log{$paper_type} set mark = ?, adjmark = ?, totalpos = ?, user_answer = ? WHERE id = ? LIMIT 1";
+      $sql = "UPDATE log{$paper_type} set mark = ?, adjmark = ?, totalpos = ?, user_answer = ?, errorstate = 0 WHERE id = ? LIMIT 1";
       $storemark = $db->prepare($sql);
       $new_useranswerstring = $enhancedcalc->useranswer_to_string();
       $totalpos = $enhancedcalc->calculate_question_mark();
       $storemark->bind_param('dddsi', $enhancedcalc->qmark, $enhancedcalc->qmark, $totalpos, $new_useranswerstring, $id);
       $storemark->execute();
     }
+
+    // Log returned state.
+    $sql = "UPDATE log{$paper_type} set errorstate = ? WHERE id = ? LIMIT 1";
+    $storeerror = $db->prepare($sql);
+    $storeerror->bind_param('ii', $returnarray, $id);
+    $storeerror->execute();
+    
   }
   $result->close();
 	
