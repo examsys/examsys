@@ -295,16 +295,6 @@ function setUpLabelling(num, doorId, lang, image, config, answer, extra, colour,
                         this.answerBox[mli_index] = new Array();
                     this.answerBox[mli_index][mli_combo] = tmp_answer;
 
-                    //duplicates in edit for multi
-                    if (this.qmode == 'edit' && tmp_answer[2] != '') {
-                        var tmp_answer2 = tmp_answer.slice(0);
-                        tmp_answer2[5] = mli_pos_xb;
-                        tmp_answer2[6] = mli_pos_yb - this.yOffset;
-                        tmp_answer2[7] = mli_pos_xb;
-                        tmp_answer2[8] = mli_pos_yb - this.yOffset;
-                        tmp_answer2[4] = (mli_combo + 1);
-                        this.answerBox[mli_index][mli_combo + 1] = tmp_answer2;
-                    }
                 } else {
                     blank_count++;
                 }
@@ -362,6 +352,26 @@ function setUpLabelling(num, doorId, lang, image, config, answer, extra, colour,
             for (j = tmp_count - 1; j >= 0; j--)
                 if (typeof (this.answerBox[i][j]) == 'undefined')
                     this.answerBox[i].splice(j, 1);
+        }
+
+        //duplicates in edit for multi
+        for (i = 0; i < this.answerBox.length; i++) {
+            var tmp_add = true;
+            for (j = 0; j < this.answerBox[i].length; j++) {
+                var tmp_arr = this.answerBox[i][j].slice(0);
+                if (tmp_arr[5] < 220)
+                    tmp_add = false;
+            }
+            if (tmp_add) {
+                tmp_arr[4] = tmp_arr[5] = tmp_arr[6] = tmp_arr[7] = 0
+                var tmp_len = 0;
+                for (k = 0; k < this.answerBox.length; k++)
+                    for (l = 0; l < this.answerBox[k].length; l++)
+                        if (this.answerBox[k][l][2] != '')
+                            tmp_len++
+                if (tmp_len < 40)
+                    this.answerBox[i].push(tmp_arr);
+            }
         }
 
         //renumbering ids
@@ -2434,7 +2444,13 @@ function ql_mouseDragUp() {
             }
             if (tmp_add) {
                 tmp_arr[4] = tmp_arr[5] = tmp_arr[6] = tmp_arr[7] = 0
-                this.answerBox[i].push(tmp_arr);
+                var tmp_len = 0;
+                for (k = 0; k < this.answerBox.length; k++)
+                    for (l = 0; l < this.answerBox[k].length; l++)
+                        if (this.answerBox[k][l][2] != '')
+                            tmp_len++
+                if (tmp_len < 40)
+                    this.answerBox[i].push(tmp_arr);
             }
         }
     }
@@ -2706,8 +2722,8 @@ function rql(num) {
     this.allImagesLoaded = false;
     this.max_num_images = 0;
     this.pholderBox = new Array(); 		// label no. that's correct answer for each placeholder
-                                                // distractor placeholders have answer of -1
-                                                // sublevels of this keep all the placeholder data
+    // distractor placeholders have answer of -1
+    // sublevels of this keep all the placeholder data
     this.answerBox = new Array(); 		// sublevels of this keep all the label data
     this.imageBox = new Array(); 		// image pointers
     this.menuBox = new Array();
@@ -2724,20 +2740,20 @@ function rql(num) {
     this.panelActiveParts = new Array();        // array of positions panel's active elements
     this.global_edit = false;
     this.global_erase = false;
-    this.shape_x1 = this.shape_y1 = this.shape_x2 = this.shape_y2 = -1  
-                                                // temporary params of a new line/arrow/bobble
+    this.shape_x1 = this.shape_y1 = this.shape_x2 = this.shape_y2 = -1
+    // temporary params of a new line/arrow/bobble
     this.global_add = '';
     this.global_move = false;
     this.active_shape = this.active_shape_move = this.active_shape_x = this.active_shape_y = -1;
-                                                //defining panel's active parts
-                                                //toolbar/pan_colours.png
+    //defining panel's active parts
+    //toolbar/pan_colours.png
     this.def_colour_panel_parts();
 
     this.panelActiveParts.push('toolbar/pan_sizes.png');
     this.panelActiveParts['toolbar/pan_sizes.png'] = new Array();
     for (i = 0; i < 7; i++)
         this.panelActiveParts['toolbar/pan_sizes.png'][i] = 3 + ',' + (i * 19 + 3);
-                                                //'toolbar/pan_lines.png
+    //'toolbar/pan_lines.png
     this.panelActiveParts.push('toolbar/pan_lines.png');
     this.panelActiveParts['toolbar/pan_lines.png'] = new Array();
     for (i = 0; i < 7; i++)
@@ -2754,12 +2770,12 @@ function rql(num) {
 
     this.distractorTxt = new Array();       // distractors in comboboxes
     this.depthSwapperLabel = new Array();   // selected labels are swapped with this clip so label will be 
-                                            //on top of all others in same group
+    //on top of all others in same group
     this.qType = "label";                   // draggable label ("label"), drop down menu ("menu")
     this.labelMulti = "single";             // are labels unique or repeated ("single" / "multiple")?
     this.yOffset;                           // coords of everything made in label_add.swf include toolbar
-                                            // this need to be removed as image here 
-                                            // is loaded with this.y coord = 0
+    // this need to be removed as image here 
+    // is loaded with this.y coord = 0
 
     this.isCtrl = this.isShift = false;
     this.ShiftChange = false;
@@ -2770,10 +2786,10 @@ function rql(num) {
     this.doorId;
     this.slow_speed = 7;                        //parameter of slowing down speed
 
-    this.currentColours = Array('#FFFFFF', '#3F3F3F', '#000000', '#FF0000'); 
-                                                // fill, line, text, unanswered colours
+    this.currentColours = Array('#FFFFFF', '#3F3F3F', '#000000', '#FF0000');
+    // fill, line, text, unanswered colours
     this.lineThickness = 1;                     // current thickness of borders around draggable labels 
-                                                //and manually drawn lines / arrows (in pixels)
+    //and manually drawn lines / arrows (in pixels)
     this.fontChoices = Array(9, 10, 11, 12, 14, 16, 18); // font size in drop down menu
     this.fontSizes = Array(11, 12, 14, 16, 18, 20, 22);  // font size equivalent in Flash (not standard sizes)
     this.fontSizePos = 1;                       // current font size for labels (index from array above);

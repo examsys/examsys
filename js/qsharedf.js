@@ -149,12 +149,14 @@ function fillWrappedText(ctx,tt,tx,ty) {
 
 
 function findPos(obj) {
+  var loc_lft = 0; 
+  var loc_top = 0;  
   if (obj.offsetParent) {
 	do {
 		loc_lft += obj.offsetLeft;
 		loc_top += obj.offsetTop;
 	} while (obj = obj.offsetParent);
-	return [loc_lft,loc_top];
+	return {left:loc_lft,top:loc_top};
 	}
 }
 
