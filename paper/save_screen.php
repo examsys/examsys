@@ -101,6 +101,9 @@ if ($userObject->has_role('Staff') and check_staff_modules($moduleID, $userObjec
   // Check for any metadata security restrictions
   check_metadata($propertyObj->get_property_id(), $userObject, $modIDs, $string, $mysqli);
 
+  // Check if the student has clicked 'Finish'.
+  check_finished($propertyObj, $userObject, $string, $mysqli);
+
   $summative_exam_session_started = false;
 }
 
