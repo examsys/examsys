@@ -38,6 +38,7 @@ $string['msg1'] = 'Jste si skutečně jisti, že chcete odstranit veškeré doku
 $string['msg2'] = 'Jste si skutečně jisti, že chcete odstranit staré Přístupy k cvičným a průběžným testům?\n\n(Přístupy k sumativním zkouškám a průzkumům nebudou změněny)';
 $string['announcments'] = 'Novinky &amp; Oznámení';
 $string['imslti'] = 'Klíče LTI';
+$string['imssettings'] = 'IMS Settings';
 $string['questionstatuses'] = 'Statusy úloh';
 $string['savefailattempts'] = 'Uložit nezdařené pokusy';
 $string['testing'] = 'Testování systémů';
