@@ -153,7 +153,6 @@ Class GENERIC_SMS extends SmsUtils {
 
 
   //updates modules enrolements
-
   // $module & $idMod shouldnt both be needed in some respects as its a 1 to 1 relationship and $sms_api is also a parameter of the primary key in that table.
 // sms_api is the sms api used for the module
 // mysqli is the mysqli object
@@ -200,11 +199,11 @@ Class GENERIC_SMS extends SmsUtils {
     $student_data->close();
 
     // The replaced_module is handled internally to the new function
-    $lookupdata=$this->get_module($module);
+    $lookupdata = $this->get_module($module);
 
-    if((isset($lookupdata->error) and $lookupdata->error != '')) {
+    if ((isset($lookupdata->error) and $lookupdata->error != '')) {
       //log the issue
-      $variables = array( 'lookup' => &$lookupdata );
+      $variables = array('lookup' => &$lookupdata);
       $this->errorinfo['moduleerrorstate'][$lookupdata->error][] = $module;
       $this->errorinfo['moduleerrorstatedata'][$lookupdata->error][] = $variables;
       $errstr = 'The module lookup for modulecode: ' . $module . ' returned an error state of ' . $lookupdata->error;
@@ -216,14 +215,13 @@ Class GENERIC_SMS extends SmsUtils {
 
 
     // previous //is_object($xml) and !isset($xml->ErrorMessage) and !isset($xml->Module->ModuleError))
-
     // un inverted  the logic around to make it easier
 
-    if ($lookupdata === false or (isset($lookupdata->error) and $lookupdata->error != '')) {
-      $variables = array( 'lookup' => &$lookupdata );
+    if ($lookupdata === false or ( isset($lookupdata->error) and $lookupdata->error != '')) {
+      $variables = array('lookup' => &$lookupdata);
       $errstr = 'No Data returned from lookup for module: ' . $module;
-      $this->errorinfo['modulenodata'][]=$module;
-      $this->errorinfo['modulenodatadata'][]=$variables;
+      $this->errorinfo['modulenodata'][] = $module;
+      $this->errorinfo['modulenodatadata'][] = $variables;
       //log_error(0, 'CRON JOB', 'Application Warning', $errstr, 'uon_saturn2.class.php', 0, '', null, $variables, null);
       if (PHP_SAPI != 'cli') {
         echo $errstr . "\r\n";
@@ -306,7 +304,7 @@ Class GENERIC_SMS extends SmsUtils {
 
           // Check to see if any details of the user account need updating.
 
-          $new_roles=trim($sms->role);
+          $new_roles = trim($sms->role);
 
           $names = explode(' ', $sms->firstname);
           $tmp_initials = '';
@@ -316,19 +314,18 @@ Class GENERIC_SMS extends SmsUtils {
             }
           }
 
-          if (  $current_users[$lookup_username]['year'] != $sms->yearofstudy or
-                $tmp_initials != $current_users[$lookup_username]['initials'] or
-                $current_users[$lookup_username]['grade'] != $sms->coursecode or
-                $current_users[$lookup_username]['title'] != $sms->title or
-                $current_users[$lookup_username]['surname'] != $sms->surname  or
-                $current_users[$lookup_username]['first_names'] != $sms->firstname or
-                $current_users[$lookup_username]['roles'] != $new_roles or
-            (isset($current_users[$lookup_username]['email']) and $current_users[$lookup_username]['email'] != $sms->email )
-             ) {
-              $result = $mysqli->prepare("UPDATE users SET yearofstudy = ?, roles = ?, grade = ?, title = ?, surname = ?, first_names = ?, initials = ?, email = ? WHERE username = ?");
-              $result->bind_param('issssssss', $sms->yearofstudy, $new_roles, $sms->coursecode, $sms->title, $sms->surname, $sms->firstname, $tmp_initials, $sms->email, $lookup_username);
-              $result->execute();
-              $result->close();
+          if ($current_users[$lookup_username]['year'] != $sms->yearofstudy or
+              $tmp_initials != $current_users[$lookup_username]['initials'] or
+              $current_users[$lookup_username]['grade'] != $sms->coursecode or
+              $current_users[$lookup_username]['title'] != $sms->title or
+              $current_users[$lookup_username]['surname'] != $sms->surname or
+              $current_users[$lookup_username]['first_names'] != $sms->firstname or
+              $current_users[$lookup_username]['roles'] != $new_roles or ( isset($current_users[$lookup_username]['email']) and $current_users[$lookup_username]['email'] != $sms->email )
+          ) {
+            $result = $mysqli->prepare("UPDATE users SET yearofstudy = ?, roles = ?, grade = ?, title = ?, surname = ?, first_names = ?, initials = ?, email = ? WHERE username = ?");
+            $result->bind_param('issssssss', $sms->yearofstudy, $new_roles, $sms->coursecode, $sms->title, $sms->surname, $sms->firstname, $tmp_initials, $sms->email, $lookup_username);
+            $result->execute();
+            $result->close();
           }
 
           // Check if SID needs updating - rare but could happen
@@ -346,48 +343,46 @@ Class GENERIC_SMS extends SmsUtils {
             }
           }
         } else {
-          $variables = array( 'lookup' => &$sms, 'currentusers' => &$current_users );
+          $variables = array('lookup' => &$sms, 'currentusers' => &$current_users);
           $errstr = 'In cron job ERROR: unable to establish username for ' . $sms->title . ' ' . $sms->surname . ', ' . $sms->forename . ' (' . $sms->studentID . ')<br />';
           $this->errorinfo['unabletodetermineusername'][] = $errstr;
           $this->errorinfo['unabletodetermineusernamedata'][] = $variables;
           //log_error(0, 'CRON JOB', 'Application Warning', $errstr, 'uon_saturn2.class.php', 0, '', null, $variables, null);
           if (PHP_SAPI != 'cli') {
             echo $errstr . "\r\n";
+          }
         }
-      }
 
-      // Check for any extra students in Rogo but not in SATURN for module
-      foreach ($current_users as $username => $individual_user) {
-        if ($individual_user['delete'] == 1 and $individual_user['auto_update'] == 1) {
-          $result = $mysqli->prepare("DELETE FROM modules_student WHERE id = ?"); // Delete using primary key of 'modules_student'
-          $result->bind_param('i', $individual_user['smID']);
-          $result->execute();
-          $result->close();
-          $deletions++;
-          if ($deletion_details == '') {
-            $deletion_details = $username;
-          } else {
-            $deletion_details .= ',' . $username;
+        // Check for any extra students in Rogo but not in SATURN for module
+        foreach ($current_users as $username => $individual_user) {
+          if ($individual_user['delete'] == 1 and $individual_user['auto_update'] == 1) {
+            $result = $mysqli->prepare("DELETE FROM modules_student WHERE id = ?"); // Delete using primary key of 'modules_student'
+            $result->bind_param('i', $individual_user['smID']);
+            $result->execute();
+            $result->close();
+            $deletions++;
+            if ($deletion_details == '') {
+              $deletion_details = $username;
+            } else {
+              $deletion_details .= ',' . $username;
+            }
           }
         }
       }
-    }
 
-    if ($enrolements > 0 or $deletions > 0) {
+      if ($enrolements > 0 or $deletions > 0) {
 
         $import_type = $sms_api;
 
 
-      $result = $mysqli->prepare("INSERT INTO sms_imports VALUES (NULL, NOW(), ?, ?, ?, ?, ?, ?, ?)");
-      $result->bind_param('sisisss', $idMod, $enrolements, $enrolement_details, $deletions, $deletion_details, $import_type, $session);
-      $result->execute();
-      $result->close();
+        $result = $mysqli->prepare("INSERT INTO sms_imports VALUES (NULL, NOW(), ?, ?, ?, ?, ?, ?, ?)");
+        $result->bind_param('sisisss', $idMod, $enrolements, $enrolement_details, $deletions, $deletion_details, $import_type, $session);
+        $result->execute();
+        $result->close();
+      }
     }
   }
-  
   function createModules() {
     return false;
   }
 }
-
-?>
