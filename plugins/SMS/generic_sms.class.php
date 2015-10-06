@@ -384,6 +384,10 @@ Class GENERIC_SMS extends SmsUtils {
       $result->close();
     }
   }
+  
+  function createModules() {
+    return false;
+  }
 }
 
 ?>

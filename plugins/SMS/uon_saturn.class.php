@@ -474,6 +474,8 @@ Class UON_SATURN extends SmsUtils {
     return $this->deletion_no[$module];
   }
   
+  function createModules() {
+    return false;
+  }
+  
 }
-
-?>

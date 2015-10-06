@@ -67,5 +67,6 @@ Abstract Class SmsUtils {
   
   abstract protected function getModuleSources();
   
+  abstract public function createModules();
+
 }
-?>

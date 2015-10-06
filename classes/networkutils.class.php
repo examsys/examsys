@@ -45,8 +45,10 @@ Class NetworkUtils {
         if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
           $tmp_parts = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
           $tmp_client_ipaddress = trim($tmp_parts[0]);
-        } else {
+        } else if (array_key_exists('REMOTE_ADDR', $_SERVER)) {
           $tmp_client_ipaddress = $_SERVER['REMOTE_ADDR'];
+        } else {
+          $tmp_client_ipaddress = '127.0.0.1';
         }
       }
 

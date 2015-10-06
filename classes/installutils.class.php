@@ -1466,7 +1466,7 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
       <link rel="stylesheet" type="text/css" href="../css/header.css" />
       <style type="text/css">
         body {font-size:90%}
-        h1 {margin-left:16px; font-size:140%; color;#1F497D}
+        h1 {margin-left:16px; font-size:140%; color:#1F497D}
         .error {float:none; color:#C00000; padding-left: .5em; vertical-align:top}
         .warning {float:none; color:#C00000; padding-left: .5em; vertical-align:top}
         label {float:left; width:175px; padding-left:0em; text-align:right; padding-right:6px}
