@@ -44,7 +44,7 @@ class imsenterprise_settings {
                                     rolemap08,
                                     truncate_coursecodes,
                                     createnew_coursecodes,
-                                    createnew_categories,
+                                    createnew_schools,
                                     unenrol,
                                     mapshortname,
                                     mapfullname,
@@ -63,7 +63,7 @@ class imsenterprise_settings {
         $ims['file_location'], $ims['logto_location'], $ims['create_users'], $ims['delete_users'], $ims['fixcase_usernames'],
         $ims['fixcase_names'], $ims['sourcedid_failback'], $ims['rolemap01'], $ims['rolemap02'], $ims['rolemap03'],
         $ims['rolemap04'], $ims['rolemap05'], $ims['rolemap06'], $ims['rolemap07'], $ims['rolemap08'], $ims['truncate_coursecodes'],
-        $ims['createnew_coursecodes'], $ims['createnew_categories'], $ims['unenrol'], $ims['mapshortname'], $ims['mapfullname'],
+        $ims['createnew_coursecodes'], $ims['createnew_schools'], $ims['unenrol'], $ims['mapshortname'], $ims['mapfullname'],
         $ims['mapsummary'], $ims['restricttarget'], $ims['capitafix'], $ims['prev_time'], $ims['prev_path'], $ims['prev_md5']);
 
     $result->execute();
@@ -100,7 +100,7 @@ class imsenterprise_settings {
     $imscoursemapsummary = check_var('imscoursemapsummary', 'post', false, false, true);
     $imsrestricttarget = check_var('imsrestricttarget', 'post', false, false, true);
     $imscapitafix = check_var('imscapitafix', 'post', false, false, true);
-    $create_newcategories = check_var('createnewcategories', 'post', false, false, true);
+    $create_newcategories = check_var('createnewschools', 'post', false, false, true);
 
     if (isset($_POST['submit'])) {
       // Edit IMS Settings.
@@ -128,7 +128,7 @@ class imsenterprise_settings {
       mapsummary = ?,
       restricttarget = ?,
       capitafix = ?,
-      createnew_categories = ?
+      createnew_schools = ?
     WHERE id = 1");
       $result->bind_param('ssiiiiissssssssiiissssii', $imsfilelocation, $logtolocation, $createnewusers, $imsdeleteusers,
           $fixcaseusernames, $fixcasepersonalnames, $sourcedidfailback, $imsrolemap01, $imsrolemap02, $imsrolemap03, $imsrolemap04,
