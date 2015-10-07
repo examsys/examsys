@@ -194,7 +194,7 @@ $render = new html_renderer();
             $render->heading('h3', $string['coursesettings']);
             $render->text_input('truncatecoursecodes', 'truncatecoursecodes', $string['truncatecoursecodes'], $ims->truncate_coursecodes, $string['default'] . $string['zero'], $string['truncatecoursecodes_desc']);
             $render->checkbox_input('createnewcourses', 'createnewcourses', $string['createnewcourses'], $ims->createnew_coursecodes, $string['default'] . $string['no'], $string['createnewcourses_desc']);
-            $render->checkbox_input('createnewcategories', 'createnewcategories', $string['createnewcategories'], $ims->createnew_categories, $string['default'] . $string['no'], $string['createnewcategories_desc']);
+            $render->checkbox_input('createnewschools', 'createnewschools', $string['createnewschools'], $ims->createnew_schools, $string['default'] . $string['no'], $string['createnewschools_desc']);
             $render->checkbox_input('imsunenrol', 'imsunenrol', $string['allowunenrol'], $ims->unenrol, $string['default'] . $string['no'], $string['allowunenrol_desc']);
             $render->select($coursetags, 'imscoursemapshortname', 'imscoursemapshortname', $ims->mapshortname, $string['settingshortname'], $string['default'] . $string['coursecode'], $string['settingshortnamedescription']);
             $render->select($coursetags, 'imscoursemapfulltname', 'imscoursemapfullname', $ims->mapfullname, $string['settingfullname'], $string['default'] . $string['short'], $string['settingfullnamedescription']);
