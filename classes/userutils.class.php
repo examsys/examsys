@@ -51,11 +51,13 @@ Class UserUtils {
     }
 
     if (!self::username_exists($username, $db) and $username != '' and stristr('ps_', $username) === false) {
-      // Force re-build of initials off forenames.
-      $initial = explode(' ', $forname);
-      $initials = '';
-      foreach ($initial as $name) {
-        $initials .= substr($name, 0, 1);
+      if (empty($initials)) {
+        // Force re-build of initials off forenames.
+        $initial = explode(' ', $forname);
+        $initials = '';
+        foreach ($initial as $name) {
+          $initials .= substr($name, 0, 1);
+        }
       }
       $initials = strtoupper($initials);
 
