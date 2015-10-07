@@ -60,18 +60,6 @@ class Sms_Cron {
     return $mysqli;
   }
 
-  public function get_existing_modules($mysqli) {
-
-  }
-
-  public function get_sms_modules() {
-
-  }
-
-  public function create_module() {
-
-  }
-
   public function update_rogo_modules($mysqli, $sms_connection, $yearutils) {
     // Do not include deleted modules or non-active modules.
     $module_data = $mysqli->prepare("SELECT modules.id, moduleid, sms, academic_year_start "
