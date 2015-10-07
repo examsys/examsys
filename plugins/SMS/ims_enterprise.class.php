@@ -27,12 +27,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// Password policy constants.
-define ('PASSWORD_LOWER', 'abcdefghijklmnopqrstuvwxyz');
-define ('PASSWORD_UPPER', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
-define ('PASSWORD_DIGITS', '0123456789');
-define ('PASSWORD_NONALPHANUM', '.,;:!?_-+/*@#&$');
-
 /**
  * IMS Enterprise file enrolment plugin.
  *
@@ -41,12 +35,33 @@ define ('PASSWORD_NONALPHANUM', '.,;:!?_-+/*@#&$');
  */
 Class IMS_ENTERPRISE extends SmsUtils {
 
+  /** Default school ID if none is specified */
   const DEFAULT_SCHOOLID = 0;
-
+  /**
+   * The grouptype value for modules
+   */
+  const GROUP_MODULE = 'CLASSES';
+  /**
+   * The grouptype value for terms
+   */
+  const GROUP_TERM = 'TERM';
+  /**
+   * @var bool Whether modulecodes should be trucated or not
+   */
   protected $truncatemodulecodes;
+  /**
+   * @var bool Whether to create new modules or not
+   */
   protected $createnewmodules;
-  protected $createnewcategories;
+  /**
+   * @var bool Whether to create new schools or not
+   */
+  protected $createnewschools;
 
+  /**
+   * The IMS settings stored in the database
+   * @var stdClass 
+   */
   protected $ims_settings;
 
   /**
@@ -109,6 +124,10 @@ Class IMS_ENTERPRISE extends SmsUtils {
     $this->xmlcache = trim(preg_replace('{<' . $tagname . '\b.*?>.*?</' . $tagname . '>}is', '', $this->xmlcache, 1));
   }
 
+  /**
+   * Whether this SMS plugin is designed to create modules
+   * @return boolean
+   */
   public function createModules() {
     return true;
   }
@@ -125,11 +144,11 @@ Class IMS_ENTERPRISE extends SmsUtils {
     $settings = new imsenterprise_settings();
     $this->ims_settings = $settings->get_ims_settings($this->db);
     // Get configs.
-    $filename = $this->get_config('file_location');
-    $logtolocation = $this->get_config('logto_location');
-    $prevtime = $this->get_config('prev_time');
-    $prevmd5 = $this->get_config('prev_md5');
-    $prevpath = $this->get_config('prev_path');
+    $filename = $this->get_ims_setting('file_location');
+    $logtolocation = $this->get_ims_setting('logto_location');
+    $prevtime = $this->get_ims_setting('prev_time');
+    $prevmd5 = $this->get_ims_setting('prev_md5');
+    $prevpath = $this->get_ims_setting('prev_path');
 
     $this->logfp = false;
     if (!empty($logtolocation)) {
@@ -157,53 +176,39 @@ Class IMS_ENTERPRISE extends SmsUtils {
       // This is so we avoid wasting the server's efforts processing a file unnecessarily.
       if (empty($prevpath) || ($filename != $prevpath)) {
         $fileisnew = true;
+        $this->log_line('File is new.  Starting to process it!');
       } else if (isset($prevtime) && ($filemtime <= $prevtime)) {
         $this->log_line('File modification time is not more recent than last update - skipping processing.');
       } else if (isset($prevmd5) && ($md5 == $prevmd5)) {
         $this->log_line('File MD5 hash is same as on last update - skipping processing.');
       } else {
         $this->log_line('File is new.  Starting to process it!');
-        $fileisnew = true; // Let's process it!
+        $fileisnew = true;
       }
 
       if ($fileisnew) {
         $xml = new XMLReader();
         $xml->open($filename);
+        $person = 0;
+        $group = 0;
+        $membership = 0;
 
         while ($xml->read()) {
-          $enterprisexml = $xml->name === 'enterprise' && $xml->nodeType === XMLReader::ELEMENT;
-
-          if ($enterprisexml) {
-            $doc = new DOMDocument('1.0', 'UTF-8');
-            $xmlelement = simplexml_import_dom($doc->importNode($xml->expand(), true));
-
-            foreach ($xmlelement as $nodetag => $node) {
-              if ($nodetag === 'group') {
-                $grouptype = (string) $node->grouptype->typevalue;
-
-                if ($grouptype === 'CLASSES') {
-                  $this->process_group_tag($node);
-                }
-              }
-
-              if ($nodetag === 'person') {
-                $this->process_person_tag($node);
-              }
-
-              if ($nodetag === 'membership') {
-                $this->log_line('Processing module enrolments');
-                $this->process_membership_tag($node);
-              }
-            }
+          if ($xml->name === 'person' && $xml->nodeType === XMLReader::ELEMENT) {
+            $this->process_person_tag($xml->expand(), $xml->readOuterXml());
+          }
+          if ($xml->name === 'group' && $xml->nodeType === XMLReader::ELEMENT) {
+            $this->process_group_tag($xml->expand());
+          }
+          if ($xml->name === 'membership' && $xml->nodeType === XMLReader::ELEMENT) {
+            $this->process_membership_tag($xml->expand());
           }
         }
-
         $timeelapsed = time() - $starttime;
         $this->log_line('Process has completed. Time taken: ' . $timeelapsed . ' seconds.');
       }
-
       // These variables are stored so we can compare them against the IMS file, next time round.
-      $this->set_prev_configs($filemtime, $md5, $filename);
+      $this->set_prev_configs($filemtime, $filename, $md5);
     } else {
       $this->log_line('File not found: ' . $filename);
     }
@@ -214,16 +219,34 @@ Class IMS_ENTERPRISE extends SmsUtils {
   }
 
   /**
+   * Get the group type of a group node
+   * @param DOMNode $node
+   * @return boolean|string
+   */
+  protected function get_group_type($node) {
+    if (property_exists($node, 'grouptype')) {
+      $grouptype = (string) $node->grouptype->typevalue;
+      return $grouptype;
+    }
+    return false;
+  }
+
+  /**
    * Process the group tag. This defines a Rogō module.
    *
-   * @param string $node The raw contents of the XML element
+   * @param string $domnode The raw contents of the XML element
    */
-  protected function process_group_tag($node) {
+  protected function process_group_tag($domnode) {
 
+    $node = $this->get_xml_element($domnode);
+    $grouptype = $this->get_group_type($node);
+    if ($grouptype <> self::GROUP_MODULE) {
+      return;
+    }
     // Get configs.
-    $this->truncatemodulecodes = $this->get_config('truncate_coursecodes');
-    $this->createnewmodules = $this->get_config('createnew_coursecodes');
-    $this->createnewcategories = $this->get_config('createnew_categories');
+    $this->truncatemodulecodes = $this->get_ims_setting('truncate_coursecodes');
+    $this->createnewmodules = $this->get_ims_setting('createnew_coursecodes');
+    $this->createnewschools = $this->get_ims_setting('createnew_schools');
 
     // Process tag contents.
     $group = new stdClass();
@@ -235,7 +258,11 @@ Class IMS_ENTERPRISE extends SmsUtils {
     $group->startdate = substr((string) $node->timeframe->begin, -5, 5);
 
     if (!empty($faculty) && !$facultyid = FacultyUtils::facultyid_by_name($faculty, $this->db)) {
-      $facultyid = FacultyUtils::add_faculty($faculty, $this->db);
+      if ($this->createnewschools) {
+        $facultyid = FacultyUtils::add_faculty($faculty, $this->db);
+      } else {
+        $group->school = 0;
+      }
     }
 
     if (!empty($facultyid) && !empty($node->org->orgunit)) {
@@ -245,13 +272,13 @@ Class IMS_ENTERPRISE extends SmsUtils {
         if ($schoolname === $school) {
           $group->school = $schoolid;
         } else {
-          $group->school = SchoolUtils::add_school($facultyid, $school, $this->db);
+            $group->school = $this->create_school($facultyid, $school);
         }
       } else {
-        $group->school = SchoolUtils::add_school($facultyid, $school, $this->db);
+        $group->school = $this->create_school($facultyid, $school);
       }
     } else {
-      $group->school = (string) $node->org->orgunit;
+      $group->school = 0;
     }
 
     $recstatus = $node["recstatus"];
@@ -268,6 +295,27 @@ Class IMS_ENTERPRISE extends SmsUtils {
     }
   }
 
+  /**
+   * Create a new school in the specified faculty if the IMS settings allow new school creation
+   * @param int $facultyid
+   * @param string $school
+   * @return int School ID
+   */
+  protected function create_school($facultyid, $school) {
+    if ($this->createnewschools) {
+      $school = SchoolUtils::add_school($facultyid, $school, $this->db);
+    } else {
+      $school = 0;
+    }
+    return $school;
+  }
+
+  /**
+   * Create a new module or update it if it already exists
+   * @param stdClass $group
+   * @param int $recstatus
+   * @return int|void Return moduleid if module was created or updated.  Return void if the module was deleted.
+   */
   protected function create_module($group, $recstatus) {
     $active = 1;
     $selfenroll = 0;
@@ -278,7 +326,7 @@ Class IMS_ENTERPRISE extends SmsUtils {
     $mapping = true;
     $map_level = 0;
     $vle_api = '';
-    $sms_api = $this->get_config('file_location');
+    $sms_api = $this->get_ims_setting('file_location');
     $sms_import = 1;
     $timed_exams = 1;
     $exam_q_feedback = 1;
@@ -334,27 +382,131 @@ Class IMS_ENTERPRISE extends SmsUtils {
   }
 
   /**
+   * Get a SimleXML element from a DOMNode
+   * @param DOMNode $domnode
+   * @return SimpleXMLElement
+   */
+  protected function get_xml_element($domnode) {
+    $doc = new DOMDocument('1.0', 'UTF-8');
+    $node = simplexml_import_dom($doc->importNode($domnode, true));
+    return $node;
+  }
+
+  /**
+   * Get DOMNodelist via xpath query
+   * @param string $xml
+   * @param string $path
+   * @return DOMNodelist
+   */
+  protected function get_xpath_nodelist($xml, $path) {
+    $doc = new DOMDocument('1.0', 'UTF-8');
+    $doc->loadXML($xml);
+    $xpath = new DOMXPath($doc);
+    $nodelist = $xpath->query("$path");
+    return $nodelist;
+  }
+
+  /**
+   * Get the initials from an IMS person node
+   * @param string $xml
+   * @return string
+   */
+  protected function get_person_initials($xml) {
+    $path = "/person/name/n/partname[@partnametype='Initials']";
+    return $this->get_nodelist_value($xml, $path);
+  }
+  
+  /**
+   * Get the username from an IMS person node
+   * @param string $xml
+   * @return string
+   */
+  protected function get_person_username($xml) {
+    $path = "/person/userid[@useridtype='username']";
+    $username = $this->get_nodelist_value($xml, $path);
+    if (!empty($username)) {
+      return $username;
+    }
+    $path = "/person/userid";
+    $username = $this->get_nodelist_value($xml, $path);
+    if (!empty($username)) {
+      return $username;
+    }
+    return '';
+  }
+  
+  /**
+   * Get the Student ID from an IMS person node
+   * @param string $xml
+   * @return string
+   */
+  protected function get_person_studentid($xml) {
+    $path = "/person/userid[@useridtype='StudentId']";
+    return $this->get_nodelist_value($xml, $path);
+  }
+  
+  /**
+   * Get the first value in a node list
+   * @param string $xml
+   * @param path $path
+   * @return boolean|string
+   */
+  protected function get_nodelist_value($xml, $path) {
+    $nodelist = $this->get_xpath_nodelist($xml, $path);
+    if (!empty($nodelist->length)) {
+      return $nodelist->item(0)->nodeValue;
+    }
+    return false;
+  }
+  
+  /**
+   * Get a person's gender based on the gender node
+   * @param int $value
+   * @return string Gender
+   */
+  protected function get_person_gender($value) {
+    switch ($value) {
+      case 1:
+        $gender = 'Female';
+        break;
+      case 2:
+        $gender = 'Male';
+        break;
+      default:
+        $gender = 'Unknown';
+    }
+    return $gender;
+  }
+
+  /**
    * Process the person tag. This defines a Rogō user.
    *
-   * @param string $node The raw contents of the XML element
+   * @param string $domnode The raw contents of the XML element
    */
-  protected function process_person_tag($node) {
+  protected function process_person_tag($domnode, $xml) {
+    $node = $this->get_xml_element($domnode);
 
     // Get plugin configs.
-    $imssourcedidfailback = $this->get_config('sourcedid_failback'); //TODO decide what to do with this (if anything).
-    $fixcaseusernames = $this->get_config('fixcase_usernames');
-    $fixcasepersonalnames = $this->get_config('fixcase_names');
-    $imsdeleteusers = $this->get_config('delete_users');
-    $createnewusers = $this->get_config('create_users');
+    $sourcedidfailback = $this->get_ims_setting('sourcedid_failback');
+    $fixcaseusernames = $this->get_ims_setting('fixcase_usernames');
+    $fixcasepersonalnames = $this->get_ims_setting('fixcase_names');
+    $imsdeleteusers = $this->get_ims_setting('delete_users');
+    $createnewusers = $this->get_ims_setting('create_users');
 
     $person = new stdClass();
     $person->idnumber = (string) $node->sourcedid->id;
     $person->firstname = (string) $node->name->n->given;
     $person->surname = (string) $node->name->n->family;
-    $person->initials = (string) $node->name->n->partname[0]; //TODO read partname attributes properl.
+    $person->initials = $this->get_person_initials($xml);
     $person->title = (string) $node->name->n->prefix;
-    $person->gender = (string) $node->demographics->gender;
-    $person->username = (string) $node->userid;
+    $gender = (int) $node->demographics->gender;
+    $person->gender = $this->get_person_gender($gender);
+    if ($sourcedidfailback) {
+      $person->username = (string) $node->sourcedid->id;
+    } else {
+      $person->username = $this->get_person_username($xml);
+    }
+
     $person->email = (string) $node->email;
     $person->full = (string) $node->description->full;
     $person->school = (string) $node->org->orgunit;
@@ -406,9 +558,8 @@ Class IMS_ENTERPRISE extends SmsUtils {
               "- no username listed in IMS data for this person.");
         } else {
           // If they don't exist and they have a defined username, and $createnewusers == true, we create them.
-          // TODO: MDL-15863 this needs more work due to multiauth changes, use first auth for now.
-          $userid = UserUtils::create_user($person->username, '', '', $person->firstname, $person->surname, $person->email,
-              '', $person->gender, '', $person->role, $person->idnumber, $this->db, $person->initials);
+          $userid = UserUtils::create_user($person->username, '', $person->title, $person->firstname, $person->surname, $person->email,
+              $person->grade, $person->gender, '', $person->role, $person->idnumber, $this->db, $person->initials);
           $this->log_line("Created user record (' . $userid . ') for user '$person->username' (ID number $person->idnumber).");
         }
       } else if ($createnewusers) {
@@ -422,6 +573,10 @@ Class IMS_ENTERPRISE extends SmsUtils {
     }
   }
 
+  /**
+   * Delete a user
+   * @param stdClass $person
+   */
   protected function delete_user($person) {
       if ($userid = UserUtils::username_exists($person->username, $this->db)) {
         try {
@@ -442,13 +597,13 @@ Class IMS_ENTERPRISE extends SmsUtils {
    * Process the membership tag. This defines whether the specified Rogō users
    * should be added/removed as teachers/students.
    *
-   * @param string $node The raw contents of the XML element
+   * @param string $domnode The raw contents of the XML element
    */
-  protected function process_membership_tag($node) {
-
+  protected function process_membership_tag($domnode) {
+    $node = $this->get_xml_element($domnode);
     // Get plugin configs.
-    $truncatemodulecodes = $this->get_config('truncate_coursecodes');
-    $imscapitafix = $this->get_config('capitafix');
+    $truncatemodulecodes = $this->get_ims_setting('truncate_coursecodes');
+    $imscapitafix = $this->get_ims_setting('capitafix'); //TODO decide what to do with this. (Copied from Moodle code)
 
     $modulecode = (string) $node->sourcedid->id;
     $members = $node->member;
@@ -504,7 +659,7 @@ Class IMS_ENTERPRISE extends SmsUtils {
 
     $this->rolemappings = array();
     foreach ($imsroles as $imsrolenum => $imsrolename) {
-      $this->rolemappings[$imsrolenum] = $this->rolemappings[$imsrolename] = $this->get_config('rolemap' . $imsrolenum);
+      $this->rolemappings[$imsrolenum] = $this->rolemappings[$imsrolename] = $this->get_ims_setting('rolemap' . $imsrolenum);
     }
   }
 
@@ -519,7 +674,7 @@ Class IMS_ENTERPRISE extends SmsUtils {
 
     $this->modulemappings = array();
     foreach ($moduleattrs as $moduleattr) {
-      $this->modulemappings[$moduleattr] = $this->get_config('map' . $moduleattr);
+      $this->modulemappings[$moduleattr] = $this->get_ims_setting('map' . $moduleattr);
     }
   }
 
@@ -536,13 +691,25 @@ Class IMS_ENTERPRISE extends SmsUtils {
     return false;
   }
 
-  protected function get_config($property) {
+  /**
+   * Get a particular IMS setting (as stored in the database)
+   * @param string $property
+   * @return string
+   */
+  protected function get_ims_setting($property) {
     return $this->ims_settings->{$property};
   }
 
   /**
    * Set configuration options
    * @param array $configs
+   */
+  
+  /**
+   * 
+   * @param int $prev_time
+   * @param string $prev_path
+   * @param string $prev_md5
    */
   public function set_prev_configs($prev_time, $prev_path, $prev_md5) {
 
