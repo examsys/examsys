@@ -19,8 +19,8 @@ $string['allowunenrol'] = 'Allow the IMS data to <strong>unenrol</strong> studen
 $string['allowunenrol_desc'] = 'If enabled, course enrolments will be removed when specified in the Enterprise data.';
 $string['basicsettings'] = 'Basic settings';
 $string['coursesettings'] = 'Course data options';
-$string['createnewcategories'] = 'Create new course categories if not found in Rogō';
-$string['createnewcategories_desc'] = 'If the <org><orgunit> element is present in a course\'s incoming data, its content will be used to specify a category if the course is to be created from scratch. The plugin will NOT re-categorise existing courses.
+$string['createnewschools'] = 'Create new schools if not found in Rogō';
+$string['createnewschools_desc'] = 'If the <org><orgunit> element is present in a course\'s incoming data, its content will be used to specify a school if the module is to be created from scratch. The plugin will NOT re-categorise existing courses.
 
 If no category exists with the desired name, then a hidden category will be created.';
 $string['createnewcourses'] = 'Create new courses if not found in Rogō';
