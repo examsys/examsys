@@ -1,5 +1,5 @@
 <?php
-// This file is part of Rogō - http://Rogō.org/
+// This file is part of Rogō - http://Rogō.org/ using code original part of Moodle - http://moodle.org
 //
 // Rogō is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -14,13 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace plugins\IMS;
+
 /**
  * Class for dealing with role mappings in IMS Enterprise.
  *
  * @copyright  2010 Eugene Venter
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class imsenterprise_roles {
+class ims_enterprise_roles {
 
   /** @var imscode => ims role name. Role name mapping. */
   private $imsroles;

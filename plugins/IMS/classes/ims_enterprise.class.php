@@ -1,6 +1,5 @@
 <?php
-
-// This file is part of Rogō - http://Rogō.org/
+// This file is part of Rogō - http://Rogō.org/ based on code originally part of Moodle - http://moodle.org
 //
 // Rogō is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -23,9 +22,13 @@
  * but can also be imported via the UI (Admin Settings).
  * @package    enrol_imsenterprise
  * @copyright  2010 Eugene Venter
+ * @copyright  2015 onwards, University of Nottingham
  * @author     Eugene Venter - based on code by Dan Stowell
+ * @author     Barry Oosthuizen - based on code by Eugene Venter <barry.oosthuizen@nottingham.ac.uk>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+namespace plugins\IMS;
 
 /**
  * IMS Enterprise file enrolment plugin.
@@ -33,7 +36,7 @@
  * @copyright  2010 Eugene Venter
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-Class IMS_ENTERPRISE extends SmsUtils {
+class ims_enterprise {
 
   /** Default school ID if none is specified */
   const DEFAULT_SCHOOLID = 0;
@@ -84,6 +87,9 @@ Class IMS_ENTERPRISE extends SmsUtils {
    */
   protected $xmlcache;
 
+  /**
+   * @var stdClass DB Object 
+   */
   protected $db;
 
   /**
@@ -96,52 +102,16 @@ Class IMS_ENTERPRISE extends SmsUtils {
    */
   protected $rolemappings;
 
-  public function getUserData($username) {
-    return true;
-  }
-
-  public function getModuleEnrolements($moduleID) {
-    return true;
-  }
-
-  public function getStudentSources() {
-    return true;
-  }
-
-  public function getModuleSources() {
-    return true;
-  }
-
-  /**
-   * Remove complete tag from the cached data (including all its contents) - so
-   * that the cache doesn't grow to unmanageable size
-   *
-   * @param string $tagname Name of tag to look for
-   */
-  protected function remove_tag_from_cache($tagname) {
-    // Trim the cache so we're not in danger of running out of memory.
-    // "1" so that we replace only the FIRST instance.
-    $this->xmlcache = trim(preg_replace('{<' . $tagname . '\b.*?>.*?</' . $tagname . '>}is', '', $this->xmlcache, 1));
-  }
-
-  /**
-   * Whether this SMS plugin is designed to create modules
-   * @return boolean
-   */
-  public function createModules() {
-    return true;
-  }
-
   /**
    * Read in an IMS Enterprise file.
    * Originally designed to handle v1.1 files but should be able to handle earlier types as well, I believe.
    *
    */
-  public function process_sms_modules($mysqli) {
+  public function process($mysqli) {
 
     $this->db = $mysqli;
 
-    $settings = new imsenterprise_settings();
+    $settings = new ims_enterprise_settings();
     $this->ims_settings = $settings->get_ims_settings($this->db);
     // Get configs.
     $filename = $this->get_ims_setting('file_location');
@@ -187,20 +157,20 @@ Class IMS_ENTERPRISE extends SmsUtils {
       }
 
       if ($fileisnew) {
-        $xml = new XMLReader();
+        $xml = new \XMLReader();
         $xml->open($filename);
         $person = 0;
         $group = 0;
         $membership = 0;
 
         while ($xml->read()) {
-          if ($xml->name === 'person' && $xml->nodeType === XMLReader::ELEMENT) {
+          if ($xml->name === 'person' && $xml->nodeType === \XMLReader::ELEMENT) {
             $this->process_person_tag($xml->expand(), $xml->readOuterXml());
           }
-          if ($xml->name === 'group' && $xml->nodeType === XMLReader::ELEMENT) {
+          if ($xml->name === 'group' && $xml->nodeType === \XMLReader::ELEMENT) {
             $this->process_group_tag($xml->expand());
           }
-          if ($xml->name === 'membership' && $xml->nodeType === XMLReader::ELEMENT) {
+          if ($xml->name === 'membership' && $xml->nodeType === \XMLReader::ELEMENT) {
             $this->process_membership_tag($xml->expand());
           }
         }
@@ -249,7 +219,7 @@ Class IMS_ENTERPRISE extends SmsUtils {
     $this->createnewschools = $this->get_ims_setting('createnew_schools');
 
     // Process tag contents.
-    $group = new stdClass();
+    $group = new \stdClass();
     $group->modulecode = (string) $node->sourcedid->id;
     $group->long = (string) $node->description->long;
     $group->short = (string) $node->description->short;
@@ -257,9 +227,9 @@ Class IMS_ENTERPRISE extends SmsUtils {
     $faculty = (string) $node->org->orgname;
     $group->startdate = substr((string) $node->timeframe->begin, -5, 5);
 
-    if (!empty($faculty) && !$facultyid = FacultyUtils::facultyid_by_name($faculty, $this->db)) {
+    if (!empty($faculty) && !$facultyid = \FacultyUtils::facultyid_by_name($faculty, $this->db)) {
       if ($this->createnewschools) {
-        $facultyid = FacultyUtils::add_faculty($faculty, $this->db);
+        $facultyid = \FacultyUtils::add_faculty($faculty, $this->db);
       } else {
         $group->school = 0;
       }
@@ -267,8 +237,8 @@ Class IMS_ENTERPRISE extends SmsUtils {
 
     if (!empty($facultyid) && !empty($node->org->orgunit)) {
       $school = (string) $node->org->orgunit;
-      if ($schoolid = SchoolUtils::get_school_id_by_name($school, $this->db)) {
-        $schoolname = SchoolUtils::get_school_faculty($schoolid, $this->db);
+      if ($schoolid = \SchoolUtils::get_school_id_by_name($school, $this->db)) {
+        $schoolname = \SchoolUtils::get_school_faculty($schoolid, $this->db);
         if ($schoolname === $school) {
           $group->school = $schoolid;
         } else {
@@ -303,7 +273,7 @@ Class IMS_ENTERPRISE extends SmsUtils {
    */
   protected function create_school($facultyid, $school) {
     if ($this->createnewschools) {
-      $school = SchoolUtils::add_school($facultyid, $school, $this->db);
+      $school = \SchoolUtils::add_school($facultyid, $school, $this->db);
     } else {
       $school = 0;
     }
@@ -340,18 +310,18 @@ Class IMS_ENTERPRISE extends SmsUtils {
     switch ($recstatus) {
 
       case 3:
-        $moduleid = module_utils::get_idMod($modulecode, $this->db);
+        $moduleid = \module_utils::get_idMod($modulecode, $this->db);
         if ($moduleid) {
-          module_utils::delete_module($moduleid, $this->db);
+          \module_utils::delete_module($moduleid, $this->db);
           $this->log_line('Deleted module: ' . $modulecode);
         }
         break;
       case 1:
       case 2:
       default:
-        $moduleid = module_utils::get_idMod($modulecode, $this->db);
+        $moduleid = \module_utils::get_idMod($modulecode, $this->db);
         if (!$moduleid) {
-          $moduleid = module_utils::add_modules($modulecode, $fullname, $active, $schoolid, $vle_api, $sms_api, $selfenroll,
+          $moduleid = \module_utils::add_modules($modulecode, $fullname, $active, $schoolid, $vle_api, $sms_api, $selfenroll,
               $peer, $external, $stdset, $mapping, $neg_marking, $ebel_grid_template, $this->db, $sms_import, $timed_exams,
               $exam_q_feedback, $add_team_members, $map_level, $academic_year_start);
           $this->log_line('Created new modulecode: ' . $modulecode);
@@ -374,7 +344,7 @@ Class IMS_ENTERPRISE extends SmsUtils {
         $update['map_level'] = 0;
         $update['academic_year_start'] = $academic_year_start;
 
-        $updated = module_utils::update_module_by_code($moduleid, $update, $this->db);
+        $updated = \module_utils::update_module_by_code($moduleid, $update, $this->db);
         $this->log_line('Updated module: ' . $modulecode);
         return $updated;
 
@@ -387,7 +357,7 @@ Class IMS_ENTERPRISE extends SmsUtils {
    * @return SimpleXMLElement
    */
   protected function get_xml_element($domnode) {
-    $doc = new DOMDocument('1.0', 'UTF-8');
+    $doc = new \DOMDocument('1.0', 'UTF-8');
     $node = simplexml_import_dom($doc->importNode($domnode, true));
     return $node;
   }
@@ -399,9 +369,9 @@ Class IMS_ENTERPRISE extends SmsUtils {
    * @return DOMNodelist
    */
   protected function get_xpath_nodelist($xml, $path) {
-    $doc = new DOMDocument('1.0', 'UTF-8');
+    $doc = new \DOMDocument('1.0', 'UTF-8');
     $doc->loadXML($xml);
-    $xpath = new DOMXPath($doc);
+    $xpath = new \DOMXPath($doc);
     $nodelist = $xpath->query("$path");
     return $nodelist;
   }
@@ -493,7 +463,7 @@ Class IMS_ENTERPRISE extends SmsUtils {
     $imsdeleteusers = $this->get_ims_setting('delete_users');
     $createnewusers = $this->get_ims_setting('create_users');
 
-    $person = new stdClass();
+    $person = new \stdClass();
     $person->idnumber = (string) $node->sourcedid->id;
     $person->firstname = (string) $node->name->n->given;
     $person->surname = (string) $node->name->n->family;
@@ -551,14 +521,14 @@ Class IMS_ENTERPRISE extends SmsUtils {
       }
     } else { // Add or update record.
       // If the user exists (matching sourcedid) then we don't need to do anything.
-      if (!$userid = UserUtils::username_exists($person->username, $this->db) && $createnewusers) {
+      if (!$userid = \UserUtils::username_exists($person->username, $this->db) && $createnewusers) {
         // If they don't exist and haven't a defined username, we log this as a potential problem.
         if ((!isset($person->username)) || (strlen($person->username) == 0)) {
           $this->log_line("Cannot create new user for ID # $person->idnumber" .
               "- no username listed in IMS data for this person.");
         } else {
           // If they don't exist and they have a defined username, and $createnewusers == true, we create them.
-          $userid = UserUtils::create_user($person->username, '', $person->title, $person->firstname, $person->surname, $person->email,
+          $userid = \UserUtils::create_user($person->username, '', $person->title, $person->firstname, $person->surname, $person->email,
               $person->grade, $person->gender, '', $person->role, $person->idnumber, $this->db, $person->initials);
           $this->log_line("Created user record (' . $userid . ') for user '$person->username' (ID number $person->idnumber).");
         }
@@ -578,9 +548,9 @@ Class IMS_ENTERPRISE extends SmsUtils {
    * @param stdClass $person
    */
   protected function delete_user($person) {
-      if ($userid = UserUtils::username_exists($person->username, $this->db)) {
+      if ($userid = \UserUtils::username_exists($person->username, $this->db)) {
         try {
-          UserUtils::delete_userID($userid);
+          \UserUtils::delete_userID($userid);
           $this->log_line("Deleted user '$person->username' (ID number $person->idnumber).");
         } catch (Exception $ex) {
           $this->log_line("Error deleting '$person->username' (ID number $person->idnumber).");
@@ -612,9 +582,9 @@ Class IMS_ENTERPRISE extends SmsUtils {
       $roletype = (string) $member->role['roletype'];
       $idnumber = (string) $member->sourcedid->id;
       $status = (string) $member->role->status;
-      $userid = UserUtils::username_exists($username, $this->db);
+      $userid = \UserUtils::username_exists($username, $this->db);
       $start_date = substr((string) $member->role->timeframe->begin, -10, 4);
-      $success = UserUtils::add_student_to_module_by_name($userid, $modulecode, 1, $start_date, $this->db);
+      $success = \UserUtils::add_student_to_module_by_name($userid, $modulecode, 1, $start_date, $this->db);
     }
   }
 
@@ -634,7 +604,7 @@ Class IMS_ENTERPRISE extends SmsUtils {
    * @return stdClass beginning and/or ending is returned, in unix time, zero indicating not specified.
    */
   protected static function decode_timeframe($string) {
-    $ret = new stdClass();
+    $ret = new \stdClass();
     $ret->begin = $ret->end = 0;
     // Explanatory note: The matching will ONLY match if the attribute restrict="1"
     // because otherwise the time markers should be ignored (participation should be
@@ -654,7 +624,7 @@ Class IMS_ENTERPRISE extends SmsUtils {
    */
   protected function load_role_mappings() {
 
-    $imsroles = new imsenterprise_roles();
+    $imsroles = new ims_enterprise_roles();
     $imsroles = $imsroles->get_imsroles();
 
     $this->rolemappings = array();
@@ -669,26 +639,13 @@ Class IMS_ENTERPRISE extends SmsUtils {
    */
   protected function load_module_mappings() {
 
-    $imsnames = new imsenterprise_modules();
+    $imsnames = new ims_enterprise_modules();
     $moduleattrs = $imsnames->get_moduleattrs();
 
     $this->modulemappings = array();
     foreach ($moduleattrs as $moduleattr) {
       $this->modulemappings[$moduleattr] = $this->get_ims_setting('map' . $moduleattr);
     }
-  }
-
-  /**
-   * Called whenever anybody tries (from the normal interface) to remove a group
-   * member which is registered as being created by this component. (Not called
-   * when deleting an entire group or module at once.)
-   * @param int $itemid Item ID that was stored in the group_members entry
-   * @param int $groupid Group ID
-   * @param int $userid User ID being removed from group
-   * @return bool True if the remove is permitted, false to give an error
-   */
-  public function enrol_imsenterprise_allow_group_member_remove($itemid, $groupid, $userid) {
-    return false;
   }
 
   /**

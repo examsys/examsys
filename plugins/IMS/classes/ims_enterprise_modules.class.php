@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace plugins\IMS;
+
 /**
  * Mapping between Rogō module attributes and IMS enterprise group description tags
  *
@@ -21,7 +23,7 @@
  * @copyright 2011 Aaron C Spike
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class imsenterprise_modules {
+class ims_enterprise_modules {
 
   /** @var array IMS group description names */
   private $imsnames;
@@ -39,20 +41,6 @@ class imsenterprise_modules {
       'full' => 'full',
       'modulecode' => 'modulecode');
     $this->moduleattrs = array('shortname', 'fullname', 'summary');
-  }
-
-  /**
-   * Returns the assignable values for the module attribute
-   * @param string $moduleattr The module attribute (shortname, fullname...)
-   * @return array Array of assignable values
-   */
-  public function get_imsnames($moduleattr) {
-
-    $values = $this->imsnames;
-    if ($moduleattr == 'summary') {
-      $values = array_merge(array('ignore' => get_string('emptyattribute', 'enrol_imsenterprise')), $values);
-    }
-    return $values;
   }
 
   /**

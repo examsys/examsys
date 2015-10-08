@@ -1,5 +1,5 @@
 <?php
-// This file is part of Rogo
+// This file is part of Rogō - http://Rogō.org/ heavily based on code original part of Moodle - http://moodle.org
 //
 // Rogo is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,6 +13,14 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Rogo.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Strings for component 'enrol_imsenterprise', language 'en'.
+ *
+ * @package    enrol_imsenterprise
+ * @copyright  1999 onwards Martin Dougiamas  {@link http://moodle.com}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 $string['aftersaving...'] = 'Once you have saved your settings, you may wish to';
 $string['allowunenrol'] = 'Allow the IMS data to <strong>unenrol</strong> students/teachers';
@@ -52,7 +60,6 @@ $string['mailusers'] = 'Notify users by email';
 $string['messageprovider:imsenterprise_enrolment'] = 'IMS Enterprise enrolment messages';
 $string['manager'] = 'Manager';
 $string['miscsettings'] = 'Miscellaneous';
-$string['noneditingteacher'] = 'Non editing teacher';
 $string['pluginname'] = 'IMS Enterprise file';
 $string['pluginname_desc'] = 'This enrolment method will repeatedly check for and process a specially-formatted text file in the location that you specify.  The file must follow the IMS Enterprise specifications containing person, group, and membership XML elements.';
 $string['processphoto'] = 'Add user photo data to profile';

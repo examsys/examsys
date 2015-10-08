@@ -14,10 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace plugins\IMS;
 /**
  * Get and edit IMS enterprise settings
  */
-class imsenterprise_settings {
+class ims_enterprise_settings {
 
   /**
    * Get IMS settings

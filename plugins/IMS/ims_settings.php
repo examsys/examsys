@@ -13,15 +13,19 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
- *
+ * 
  * @author Barry Oosthuizen <barry.oosthuizen@nottingham.ac.uk>
  * @copyright Copyright (c) 2015 The University of Nottingham
  */
-require_once '../include/sysadmin_auth.inc';
-require_once '../include/errors.inc';
 
-$settings = new imsenterprise_settings();
+use plugins\IMS\ims_enterprise_settings;
+
+require_once '../../include/sysadmin_auth.inc';
+require_once '../../include/errors.inc';
+
+$settings = new ims_enterprise_settings();
 
 if (isset($_POST['submit'])) {
   $settings->save_ims_settings();
@@ -31,7 +35,7 @@ $ims = $settings->get_ims_settings($mysqli);
 $rolemappings = $settings->get_role_mappings();
 $coursetags = $settings->get_course_tags();
 
-$render = new html_renderer();
+$render = new \html_renderer();
 ?>
 <!DOCTYPE html>
 <html>
@@ -40,9 +44,9 @@ $render = new html_renderer();
     <meta http-equiv="content-type" content="text/html;charset=<?php echo $configObject->get('cfg_page_charset') ?>" />
     <title>Rog&#333;: <?php echo "IMS Settings " . $configObject->get('cfg_install_type') ?>
     </title>
-    <link rel="stylesheet" type="text/css" href="../css/body.css" />
-    <link rel="stylesheet" type="text/css" href="../css/header.css" />
-    <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/body.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/header.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/submenu.css" />
     <style type="text/css">
       #content {
         padding-bottom: 100px;
@@ -125,12 +129,12 @@ $render = new html_renderer();
       }
     </style>
     <?php echo $configObject->get('cfg_js_root') ?>
-    <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
-    <script type="text/javascript" src="../js/jquery-ui-1.10.4.min.js"></script>
-    <script type="text/javascript" src="../js/system_tooltips.js"></script>
-    <script type="text/javascript" src="../js/jquery.validate.min.js"></script>
-    <script type="text/javascript" src="../js/staff_help.js"></script>
-    <script type="text/javascript" src="../js/toprightmenu.js"></script>
+    <script type="text/javascript" src="../../js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="../../js/jquery-ui-1.10.4.min.js"></script>
+    <script type="text/javascript" src="../../js/system_tooltips.js"></script>
+    <script type="text/javascript" src="../../js/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="../../js/staff_help.js"></script>
+    <script type="text/javascript" src="../../js/toprightmenu.js"></script>
     <script>
       $(function () {
         $('#theform').validate({
@@ -149,21 +153,21 @@ $render = new html_renderer();
   <body>
     <div id="left-sidebar" class="sidebar">
       <div class="breadcrumb">
-        <a href="../index.php"><?php echo $string['home'] ?>
+        <a href="../../index.php"><?php echo $string['home'] ?>
         </a>
-        <img src="../artwork/breadcrumb_arrow.png" class="breadcrumb_arrow" alt="-"/>
-        <a href="../admin/index.php"><?php echo $string['administrativetools']; ?>
+        <img src="../../artwork/breadcrumb_arrow.png" class="breadcrumb_arrow" alt="-"/>
+        <a href="../../admin/index.php"><?php echo $string['administrativetools']; ?>
         </a>
       </div>
     </div>
     <?php
-    require '../include/toprightmenu.inc';
+    require '../../include/toprightmenu.inc';
     echo draw_toprightmenu(740);
     ?>
     <div id="content">
       <div class="head_title">
         <div>
-          <img alt="menu icon" src="../artwork/toprightmenu.gif" id="toprightmenu_icon" />
+          <img alt="menu icon" src="../../artwork/toprightmenu.gif" id="toprightmenu_icon" />
         </div>
         <div class="page_title"><?php echo $string['imssettings'] ?></div>
       </div>

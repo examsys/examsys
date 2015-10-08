@@ -382,7 +382,4 @@ Class GENERIC_SMS extends SmsUtils {
       }
     }
   }
-  function createModules() {
-    return false;
-  }
 }
