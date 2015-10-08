@@ -409,7 +409,7 @@ function set_classification($marking, &$user_results, $passmark, $user_no, $stri
     if ($user_results[$i]['killer_fail']) {
       $user_results[$i]['classification'] = $string['fail'];
     } elseif ($passmark == 'N/A') {     // Passmark is set to N/A - therefore use global rating from OSCE mark sheet
-      if (isset($user_results[$i]['rating']) and $user_results[$i]['rating'] > 0) {
+      if (isset($user_results[$i]['rating']) and $user_results[$i]['rating'] > 0 and !empty($labels)) {
         $rating_no = ($user_results[$i]['rating'] - 1);
         $user_results[$i]['classification'] = $labels[$rating_no];
       } else {
@@ -434,7 +434,7 @@ function rating_num_text(&$user_results, $user_no, $propertyObj, $string) {
   $labels = get_labels($propertyObj);
 
   for ($i=0; $i<$user_no; $i++) {
-    if (isset($user_results[$i]['rating'])) {
+    if (isset($user_results[$i]['rating']) and isset($labels[$user_results[$i]['rating']])) {
       $user_results[$i]['rating'] = $labels[$user_results[$i]['rating']];
     }
   }
@@ -464,6 +464,9 @@ function get_labels($propertyObj) {
       break;
     case '7':
       $labels = array(1=>'Fail', 2=>'Pass', 'ERROR'=>'ERROR');
+      break;
+    default:
+      $labels = array();
       break;
   }
   return $labels;
