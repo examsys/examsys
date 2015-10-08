@@ -1,5 +1,26 @@
 <?php
+// This file is part of Rogō
+//
+// Rogō is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Rogō is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * HTML renderer class
+ * 
+ * @author Barry Oosthuizen <barry.oosthuizen@nottingham.ac.uk>
+ * @copyright Copyright (c) 2015 The University of Nottingham
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class html_renderer {
 
   /**
@@ -47,6 +68,8 @@ class html_renderer {
    * @param string $default
    * @param string $default_description
    * @param string $tooltip
+   * @param bool $return
+   * @return string|void Return the HTML or echo it depending on the $return parameter
    */
   public function text_input($name, $id, $label, $default, $default_description, $tooltip = '', $return = false) {
     $input = '<div><div class="label">';
@@ -81,7 +104,7 @@ class html_renderer {
    * @param string $default_description
    * @param string $tooltip
    * @param bool $return
-   * @return string
+   * @return string|void Return the HTML or echo it depending on the $return parameter
    */
   public function checkbox_input($name, $id, $label, $default, $default_description, $tooltip = '', $return = false) {
     $checked = '';
@@ -117,11 +140,12 @@ class html_renderer {
    * 
    * @param string $text
    * @param string $return
-   * @return string|void
+   * @return string|void Return the HTML or echo it depending on the $return parameter
    */
   public function tooltip($text, $return = false) {
+    $configObj = Config::get_instance();
     $html = '<div class="tooltip">';
-    $html .= '<img alt="' . $text . '" src="../artwork/tooltip_icon.gif" class="help_tip" title="' . $text . '" />';
+    $html .= '<img alt="' . $text . '" src="' . $configObj->get('cfg_root_path') . '/artwork/tooltip_icon.gif" class="help_tip" title="' . $text . '" />';
     $html .= '</div>';
     if ($return) {
       return $html;
@@ -137,7 +161,7 @@ class html_renderer {
    * @param string $class
    * @param array $attributes
    * @param bool $return
-   * @return string|void
+   * @return string|void Return the HTML or echo it depending on the $return parameter
    */
   public function tag($tag, $text, $class = '', $attributes = null, $return = false) {
 
@@ -150,7 +174,7 @@ class html_renderer {
     }
 
     if (!empty($class)) {
-      $class_html .= " class=$class";
+      $class_html .= ' class="' . $class . '"';
     }
 
     $extra = trim(" $class_html $attributes_html");
@@ -168,7 +192,7 @@ class html_renderer {
    * 
    * @param string $class
    * @param bool $return
-   * @return string|void
+   * @return string|void Return the HTML or echo it depending on the $return parameter
    */
   public function start_div($class = '', $return = false) {
 
@@ -205,7 +229,7 @@ class html_renderer {
    * @param string $text
    * @param string $tooltip
    * @param bool $return
-   * @return string|void
+   * @return string|void Return the HTML or echo it depending on the $return parameter
    */
   public function heading($tag, $text, $tooltip = '', $return = false) {
     $html = $this->start_div('heading', true);
@@ -222,5 +246,4 @@ class html_renderer {
     }
     echo $html;
   }
-
 }

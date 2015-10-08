@@ -15,20 +15,19 @@
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
-*
-* Utility class for network related functionality
-*
-* @author Rob Ingram
-* @version 1.0
-* @copyright Copyright (c) 2014 The University of Nottingham
-* @package
-*/
-
+ *
+ * Utility class for network related functionality
+ *
+ * @author Rob Ingram
+ * @version 1.0
+ * @copyright Copyright (c) 2014 The University of Nottingham
+ * @package
+ */
 Class NetworkUtils {
-	/**
-	 * Get the IP address or name of the computer from the server headers
+  /**
+   * Get the IP address or name of the computer from the server headers
    * @return mixed client ip address
-	 */
+   */
   static function get_client_address() {
     $configObject = Config::get_instance();
 
@@ -59,7 +58,7 @@ Class NetworkUtils {
   }
 
   static function get_protocol() {
-    if ( (isset($_SERVER['HTTPS']) and $_SERVER['HTTPS'] == 'on') or (isset($_SERVER['REQUEST_SCHEME']) and $_SERVER['REQUEST_SCHEME'] == 'https') ) {
+    if ((isset($_SERVER['HTTPS']) and $_SERVER['HTTPS'] == 'on') or ( isset($_SERVER['REQUEST_SCHEME']) and $_SERVER['REQUEST_SCHEME'] == 'https')) {
       return 'https://';
     } else {
       return 'http://';
@@ -99,4 +98,3 @@ Class NetworkUtils {
     }
   }
 }
-?>
