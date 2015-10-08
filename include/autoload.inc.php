@@ -31,8 +31,12 @@ class autoloader {
    */
   public static function init() {
       spl_autoload_register(array('autoloader', 'load_class'));
-      // vendor
-      require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
+
+      $vendordirectory = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor';
+      if (file_exists($vendordirectory)) {
+        // vendor
+        include_once $vendordirectory . DIRECTORY_SEPARATOR . 'autoload.php';
+      }
   }
 
   /**
