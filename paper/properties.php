@@ -581,7 +581,9 @@ if (isset($_POST['Submit'])) {
       $properties->set_rubric(clearMSOtags($_POST['rubric_text']));
     }
 
-    if (!isset($_POST['marking']) or $_POST['marking'] == '') {
+    if (!isset($_POST['marking']) and $properties->get_paper_type() == 4) {
+      // Do nothing, the marking method is locked.
+    } elseif (!isset($_POST['marking']) or $_POST['marking'] == '') {
       $properties->set_marking(MARK_NO_ADJUSTMENT);
     } elseif ($_POST['marking'] == MARK_STD_SET) {
       $properties->set_marking($_POST['std_set']);
