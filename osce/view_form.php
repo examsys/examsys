@@ -200,6 +200,9 @@ $demo = true;
       $labels = array('Fail', 'Pass');
       $colors = array('#D99694', '#C2D69B');
       break;
+    default:
+      $labels = array();
+      break;
   }
 
 	// Killer Question check - final rating.
