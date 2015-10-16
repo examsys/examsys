@@ -68,7 +68,12 @@ foreach ($scales as $scale_group => $scale):
       $scale_found = true;
     } else {
       $sel = '';
-    } 
+    }
+
+    // Stop the 'Fail, Borderline, Pass' scale being selected by new questions. It is currently borked.
+    if ($value == 'Fail|Borderline|Pass' or $value == 'Neuspěl|Na hraně|Uspěl' or $value == 'Nie zdany|Na granicy|Zdany') {
+      $sel .= ' disabled="disabled"';
+    }
 ?>
                     <option value="<?php echo $value ?>"<?php echo $sel ?>><?php echo $text ?></option>
 <?php
