@@ -112,6 +112,7 @@ $string['ReviewSummary1'] = 'Review Summary - means (HTML)';
 $string['ReviewSummary2'] = 'Review Summary - percents (HTML)';
 $string['ReviewSummary3'] = 'Review Summary';
 $string['ReviewSummary4'] = 'Review Summary - means (CSV)';
+$string['standardssettingcsv'] = "Standard Settings summary as CSV file";
 $string['xhtml'] = 'XHTML';
 $string['word2003format'] = 'Word 2003 format';
 $string['rawdataxml'] = 'Raw data as XML file';

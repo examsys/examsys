@@ -363,6 +363,10 @@ require_once $cfg_web_root . 'classes/textboxmarkingutils.class.php';
       echo "<div class=\"bullet\"><a href=\"#\" onclick=\"go('../peer_review/summary_report_csv.php?',event)\">" . $string['ReviewSummary4'] . "</a></div>\n";
       break;
   }
+    
+  if ($properties->get_paper_type() != '6') {
+    echo "<div class=\"bullet\"><a href=\"#\" onclick=\"go('../reports/standards_setting_csv.php?',event)\">" . $string['standardssettingcsv'] . "</a></div>\n";
+  }
 
 ?>
 </td></tr></table>
