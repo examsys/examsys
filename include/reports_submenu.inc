@@ -197,6 +197,25 @@ require_once $cfg_web_root . 'classes/textboxmarkingutils.class.php';
   echo "</select></td></tr>\n";
 
   $moduleIDs = Paper_utils::get_modules($paperID, $mysqli);
+
+  $checklist = '';
+  if (count($moduleIDs) > 0) {
+    $moduleIDs = array_keys($moduleIDs);
+    $stmt = $mysqli->prepare("SELECT checklist FROM modules WHERE id IN (" . implode(',', $moduleIDs) . ")");
+    $stmt->execute();
+    $stmt->bind_result($tmp_checklist);
+    $check = array();
+    while ($stmt->fetch()) {
+      if ($tmp_checklist != '') {
+        $tmp = explode(',', $tmp_checklist);
+        foreach ($tmp as $c => $type) {
+          $check[] = $type;
+        }
+      }
+    }
+    $checklist = implode(',', $check);
+    $stmt->close();
+  }
   
   // Module drop down
   if ($properties->get_paper_type() != '3') {
@@ -364,7 +383,7 @@ require_once $cfg_web_root . 'classes/textboxmarkingutils.class.php';
       break;
   }
     
-  if ($properties->get_paper_type() != '6') {
+  if (($properties->get_paper_type() != '6') && (strpos($checklist, 'stdset') !== false)) {
     echo "<div class=\"bullet\"><a href=\"#\" onclick=\"go('../reports/standards_setting_csv.php?',event)\">" . $string['standardssettingcsv'] . "</a></div>\n";
   }
 
