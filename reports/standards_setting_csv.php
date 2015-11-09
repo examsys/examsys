@@ -49,25 +49,25 @@ function displayReviewCsv($review, $string) {
   }
   
   $output = '';
-    $output .= "'" . addslashes($rowOutcome) . "',";
+    $output .= addslashes($rowOutcome) . ",";
 
   if ($review['distinction_score'] != 'n/a') $review['distinction_score'] .= '%';
 
   if ($review['group_review'] != 'No') {
-    $output .= "'Group review',";
+    $output .= "Group review,";
   } else {
-    $output .= "'" . addslashes($review['name']) . "',";
+    $output .= addslashes($review['name']) . ",";
   }
   if ($review['distinction_score'] == '0.000000%') {
     $review['distinction_score'] = 'top 20%';
   }
 
-  $output .= "'" . addslashes($review['display_date']) . "',";
-  $output .= "'" . addslashes($review['pass_score']) . "',";
-  $output .= "'" . addslashes($review['distinction_score']) . "',";
-  $output .= "'" . addslashes($review['review_total']) . "',";
-  $output .= "'" . addslashes($review['total_marks']) . "',";
-  $output .= "'" . addslashes($review['method']) . "',";
+  $output .= addslashes($review['display_date']) . ",";
+  $output .= addslashes($review['pass_score']) . ",";
+  $output .= addslashes($review['distinction_score']) . ",";
+  $output .= addslashes($review['review_total']) . ",";
+  $output .= addslashes($review['total_marks']) . ",";
+  $output .= addslashes($review['method']) . ",";
 
   $output .= "\n";
 
@@ -93,14 +93,14 @@ $percent_decimals = $configObject->get('percent_decimals');
 
 if (is_array($reviews)) {
 
-  $csv .= "'" . addslashes($string['validate']) . "',";
-  $csv .= "'" . addslashes($string['standardsetter']) . "',";
-  $csv .= "'" . addslashes($string['date']) . "',";
-  $csv .= "'" . addslashes($string['passscore']) . "',";
-  $csv .= "'" . addslashes($string['distinction']) . "',";
-  $csv .= "'" . addslashes($string['reviewmarks']) . "',";
-  $csv .= "'" . addslashes($string['papertotal']) . "',";
-  $csv .= "'" . addslashes($string['method']) . "',";
+  $csv .= addslashes($string['validate']) . ",";
+  $csv .= addslashes($string['standardsetter']) . ",";
+  $csv .= addslashes($string['date']) . ",";
+  $csv .= addslashes($string['passscore']) . ",";
+  $csv .= addslashes($string['distinction']) . ",";
+  $csv .= addslashes($string['reviewmarks']) . ",";
+  $csv .= addslashes($string['papertotal']) . ",";
+  $csv .= addslashes($string['method']) . ",";
   $csv .= "\n";
 
   $csv .= ",,,,,,,\n";
