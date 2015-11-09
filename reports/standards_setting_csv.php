@@ -42,16 +42,18 @@ function displayReviewCsv($review, $string) {
     $rowOutcome = 'Ok';
   } else {
     $rowOutcome = 'Review Total != Total Marks';
-
   }
+
   if ($review['group_review'] != 'No') {
     $rowOutcome = "Group review";
   }
   
   $output = '';
-    $output .= addslashes($rowOutcome) . ",";
+  $output = addslashes($rowOutcome) . ",";
 
-  if ($review['distinction_score'] != 'n/a') $review['distinction_score'] .= '%';
+  if ($review['distinction_score'] != 'n/a') {
+    $review['distinction_score'] .= '%';
+  }
 
   if ($review['group_review'] != 'No') {
     $output .= "Group review,";
