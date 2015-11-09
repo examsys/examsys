@@ -37,8 +37,7 @@ $displayDebug = false; //disable debud output in this script as it effects the o
  * @return string
  */
 function displayReviewCsv($review, $string) {
-  $setter_id = $review['setter_id'];
-  
+
   if ($review['review_total'] == $review['total_marks']) {
     $rowOutcome = 'Ok';
   } else {
@@ -46,8 +45,7 @@ function displayReviewCsv($review, $string) {
 
   }
   if ($review['group_review'] != 'No') {
-    $rowOutcome = $string['groupreview'];
-    $setter_id = $review['group_review'];
+    $rowOutcome = "Group review";
   }
   
   $output = '';
@@ -56,7 +54,7 @@ function displayReviewCsv($review, $string) {
   if ($review['distinction_score'] != 'n/a') $review['distinction_score'] .= '%';
 
   if ($review['group_review'] != 'No') {
-    $output .= "'&lt;" . $string['groupreview'] . "&gt;',";
+    $output .= "'Group review',";
   } else {
     $output .= "'" . addslashes($review['name']) . "',";
   }
