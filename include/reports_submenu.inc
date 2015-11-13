@@ -385,6 +385,7 @@ require_once $cfg_web_root . 'classes/textboxmarkingutils.class.php';
     
   if (($properties->get_paper_type() != '6') && (strpos($checklist, 'stdset') !== false)) {
     echo "<div class=\"bullet\"><a href=\"#\" onclick=\"go('../reports/standards_setting_csv.php?',event)\">" . $string['standardssettingcsv'] . "</a></div>\n";
+    echo "<div class=\"bullet\"><a href=\"#\" onclick=\"go('../reports/standards_setting_angoff_full_csv.php?',event)\">" . $string['standardssettingangoffcsv'] . "</a></div>\n";
   }
 
 ?>

@@ -108,7 +108,7 @@ if (is_array($reviews)) {
   $csv .= ",,,,,,,\n";
 
   foreach ($reviews as $review) {
-    $csv .= displayReviewCsv($review, $userObject, $string);
+    $csv .= displayReviewCsv($review, $string);
   }
 
 } else {
