@@ -15,8 +15,7 @@
 // along with Rogo.  If not, see <http://www.gnu.org/licenses/>.
 
 require '../lang/' . $language . '/std_setting/index.php';
-#require '../lang/' . $language . '/std_setting/group_set_angoff.php';
+require '../lang/' . $language . '/statistics/questions_by_school.php';
 
-$string['validate'] = 'Validate';
 $string['nostandardsset'] = 'No standards have been set for this paper yet.';
 ?>
