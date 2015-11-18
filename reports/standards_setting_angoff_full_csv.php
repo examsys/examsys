@@ -50,7 +50,7 @@ if(!empty($exclusions->excluded)) {
   $excludedSql = " AND q.q_id NOT IN (" . $excludedSql . ")";
 }
 
-$stmt = $mysqli->prepare("SELECT ssq.rating, ss.setterID, ss.method, u.title, u.initials, u.surname, p.display_pos, q.q_id, q.theme, q.q_type, ss.std_set, ss.group_review FROM papers p INNER JOIN questions q ON p.question=q.q_id LEFT JOIN std_set_questions ssq ON p.question=ssq.questionID LEFT JOIN std_set ss ON ssq.std_setID=ss.id LEFT JOIN users u ON ss.setterID=u.id WHERE p.paper = ? " . $excludedSql . " ORDER BY ss.std_set,ss.setterID");
+$stmt = $mysqli->prepare("SELECT ssq.rating, ss.setterID, ss.method, u.title, u.initials, u.surname, p.display_pos, q.q_id, q.theme, q.q_type, ss.std_set, ss.group_review FROM papers p INNER JOIN questions q ON p.question=q.q_id LEFT JOIN std_set_questions ssq ON p.question=ssq.questionID LEFT JOIN std_set ss ON ssq.std_setID=ss.id LEFT JOIN users u ON ss.setterID=u.id WHERE p.paper = ? AND q_type != 'info' " . $excludedSql . " ORDER BY ss.std_set,ss.setterID");
 
 $csv = '';
 
