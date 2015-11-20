@@ -149,6 +149,8 @@ function add_users_from_file($fileName) {
       $gender = 'Male';
     } elseif ($title == 'Miss' or $title == 'Mrs' or $title == 'Ms') {
       $gender = 'Female';
+    } elseif ($title == 'Mx') {
+      $gender = 'Other';
     } else {
       $gender = 'NULL';
     }

@@ -310,6 +310,7 @@ if (strpos($_SERVER['HTTP_HOST'],'.uk') !== false) {
 <option value=""></option>
 <option value="Male"<?php if (isset($_POST['gender']) and $_POST['gender'] == 'Male') echo ' selected' ?>><?php echo $string['male'] ?></option>
 <option value="Female"<?php if (isset($_POST['gender']) and $_POST['gender'] == 'Female') echo ' selected' ?>><?php echo $string['female'] ?></option>
+<option value="Other"<?php if (isset($_POST['gender']) and $_POST['gender'] == 'Other') echo ' selected' ?>><?php echo $string['other'] ?></option>
 </select>
 </td>
 </tr>

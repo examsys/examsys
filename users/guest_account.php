@@ -176,7 +176,7 @@ if (isset($_POST['submit'])) {
 
 <tr><td style="text-align:center; padding:6px" colspan="2">
 <table cellpadding="2" cellspacing="0" style="width:100%; border:0px; text-align:left">
-<tr><td><?php echo $string['title']; ?></td><td><input type="radio" name="title" id="mr" value="Mr" /><label for="mr">Mr</label>&nbsp;&nbsp;<input type="radio" name="title" id="miss" value="Miss" /><label for="miss">Miss</label>&nbsp;&nbsp;<input type="radio" name="title" id="mrs" value="Mrs" /><label for="mrs">Mrs</label>&nbsp;&nbsp;<input type="radio" name="title" id="ms" value="Ms" /><label for="ms">Ms</label>&nbsp;&nbsp;<input type="radio" name="title" id="dr" value="Dr" /><label for="dr">Dr</label></td></tr>
+<tr><td><?php echo $string['title']; ?></td><td><input type="radio" name="title" id="mx" value="Mx" /><label for="mx">Mx</label>&nbsp;&nbsp;<input type="radio" name="title" id="mr" value="Mr" /><label for="mr">Mr</label>&nbsp;&nbsp;<input type="radio" name="title" id="miss" value="Miss" /><label for="miss">Miss</label>&nbsp;&nbsp;<input type="radio" name="title" id="mrs" value="Mrs" /><label for="mrs">Mrs</label>&nbsp;&nbsp;<input type="radio" name="title" id="ms" value="Ms" /><label for="ms">Ms</label>&nbsp;&nbsp;<input type="radio" name="title" id="dr" value="Dr" /><label for="dr">Dr</label></td></tr>
 <tr><td><?php echo $string['firstname']; ?></td><td><input type="text" name="first_names" id="first_names" value="" size="40" maxlength="60" required /></td></tr>
 <tr><td><?php echo $string['surname']; ?></td><td><input type="text" name="surname" id="surname" value="" size="40" maxlength="50" required /></td></tr>
 <tr><td><?php echo $string['studentid']; ?></td><td><input type="text" name="student_id" value="" size="20" /></td></tr>

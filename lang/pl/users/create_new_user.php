@@ -33,6 +33,7 @@ $string['sendwelcomeemail'] = 'Wyślij do użytkownika list powitalny (zawieraj�
 $string['createaccount'] = 'Utwórz konto';
 $string['male'] = 'Mężczyzna';
 $string['female'] = 'Kobieta';
+$string['other'] = 'Other';
 $string['universitystaff'] = 'Pracownik administracyjny uniwersytetu';
 $string['academiclecturer'] = 'Wykładowca';
 $string['administrator'] = 'Administrator'; //cognate

@@ -49,6 +49,7 @@ $string['course'] = 'Kurz';
 $string['na'] = 'N/A'; 
 $string['unknown'] = '&lt;neznámý&gt;';
 $string['unknowndegree'] = '&lt;neznámý titul&gt';
+$string['mx'] = 'Mx';
 $string['mr'] = 'Pan';
 $string['dr'] = 'MUDr'; 
 $string['miss'] = 'Slečna';

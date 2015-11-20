@@ -50,6 +50,7 @@ $string['course'] = 'Kurs';
 $string['na'] = 'Brak';
 $string['unknown'] = '&lt;nieznany&gt;';
 $string['unknowndegree'] = '&lt;nieznany stopień&gt';
+$string['mx'] = 'Mx';
 $string['mr'] = 'Pan';
 $string['dr'] = 'Dr'; //cognate
 $string['miss'] = 'Pani';

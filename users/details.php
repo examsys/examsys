@@ -369,8 +369,10 @@ if (isset($_POST['updateadmin']) and $userObject->has_role('SysAdmin')) {
 <?php
   if ($user_details['gender'] == 'Male') {
     $generic_icon = '../artwork/user_male_64.png';
-  } else {
+  } elseif ($user_details['gender'] == 'Female') {
     $generic_icon = '../artwork/user_female_64.png';
+  } else {
+    $generic_icon = '../artwork/user_mx_64.png';
   }
   if (stripos($user_details['roles'], 'Student') !== false) {
     $student_photo = UserUtils::student_photo_exist($user_details['username']);

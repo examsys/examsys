@@ -33,6 +33,7 @@ $string['sendwelcomeemail'] = 'Zaslat uvítací e-mail (včetně hesla)';
 $string['createaccount'] = 'Vytvořit účet';
 $string['male'] = 'Muž';
 $string['female'] = 'Žena';
+$string['other'] = 'Other';
 $string['universitystaff'] = 'Univerzitní zaměstnanec';
 $string['academiclecturer'] = 'Univerzitní lektor';
 $string['administrator'] = 'Administrator';

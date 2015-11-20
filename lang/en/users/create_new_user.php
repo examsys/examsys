@@ -33,6 +33,7 @@ $string['sendwelcomeemail'] = 'Send welcome email to user (inc. password)';
 $string['createaccount'] = 'Create Account';
 $string['male'] = 'Male';
 $string['female'] = 'Female';
+$string['other'] = 'Other';
 $string['universitystaff'] = 'University Staff';
 $string['academiclecturer'] = 'Academic Lecturer';
 $string['administrator'] = 'Administrator';

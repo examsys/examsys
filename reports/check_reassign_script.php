@@ -187,6 +187,8 @@ if (count($target_student) == 0) {
       } else {
         $user_icon = 'user_male_48.png';
       }
+    } elseif ($individual['title'] == 'Mx') {
+      $user_icon = 'user_mx_48.png';
     } else {
       $user_icon = 'user_female_48.png';
     }

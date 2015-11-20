@@ -125,8 +125,10 @@ if (isset($_POST['submit']) and !$errors) {
 
 if ($user_details['gender'] == 'Male') {
   $generic_icon = '../artwork/user_male_48.png';
-} else {
+} elseif ($user_details['gender'] == 'Female') {
   $generic_icon = '../artwork/user_female_48.png';
+} else {
+  $generic_icon = '../artwork/user_mx_48.png';
 }
 ?>
 <!DOCTYPE html>

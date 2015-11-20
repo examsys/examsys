@@ -72,7 +72,7 @@ Class UserUtils {
       }
 
       // Force valid value for gender or default to NULL
-      if (strtolower($gender) != 'male' and strtolower($gender) != 'female') {
+      if (strtolower($gender) != 'male' and strtolower($gender) != 'female' and strtolower($gender) != 'other') {
         $gender = null;
       }
 
