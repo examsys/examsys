@@ -205,11 +205,13 @@ if ($user_details['gender'] == 'Male') {
   
   echo "<tr><td>" . $string['gender'] . "</td><td><select name=\"gender\">";
   if ($user_details['gender'] == 'Male') {
-    echo "<option value=\"Male\" selected>" . $string['male'] . "</option>\n<option value=\"Female\">" . $string['female'] . "</option>\n";
+    echo "<option value=\"Male\" selected>" . $string['male'] . "</option>\n<option value=\"Female\">" . $string['female'] . "</option>\n<option value=\"Other\">" . $string['other'] . "</option>";
   } elseif ($user_details['gender'] == 'Female') {
-    echo "<option value=\"Male\">" . $string['male'] . "</option>\n<option value=\"Female\" selected>" . $string['female'] . "</option>\n";
+    echo "<option value=\"Male\">" . $string['male'] . "</option>\n<option value=\"Female\" selected>" . $string['female'] . "</option>\n<option value=\"Other\">" . $string['other'] . "</option>";
+  } elseif ($user_details['gender'] == 'Other') {
+    echo "<option value=\"Male\">" . $string['male'] . "</option>\n<option value=\"Female\">" . $string['female'] . "</option>\n<option value=\"Other\" selected>" . $string['other'] . "</option>";
   } else {
-    echo "<option value=\"\"></option>\n<option value=\"Male\">" . $string['male'] . "</option>\n<option value=\"Female\">" . $string['female'] . "</option>\n";
+    echo "<option value=\"\"></option>\n<option value=\"Male\">" . $string['male'] . "</option>\n<option value=\"Female\">" . $string['female'] . "</option>\n<option value=\"Other\">" . $string['other'] . "</option>\n";
   }  
   echo "</select></td></tr>";
 

@@ -33,6 +33,7 @@ $string['externalauth'] = '[zastosowanie zewnętrznej autoryzacji]';
 $string['gender'] = 'Płeć';
 $string['male'] = 'Mężczyzna';
 $string['female'] = 'Kobieta';
+$string['other'] = 'Other';
 $string['year'] = 'Rok';
 $string['yearofstudy'] = 'Rok studiów';
 $string['course'] = 'Kurs';

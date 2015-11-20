@@ -33,6 +33,7 @@ $string['externalauth'] = '[Použít externí autentizaci]';
 $string['gender'] = 'Pohlaví';
 $string['male'] = 'Muž';
 $string['female'] = 'Žena';
+$string['other'] = 'Other';
 $string['year'] = 'Rok';
 $string['yearofstudy'] = 'Rok studia';
 $string['course'] = 'Kurz';
