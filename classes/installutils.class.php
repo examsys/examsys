@@ -2764,6 +2764,7 @@ QUERY;
           `screen` tinyint(2) unsigned NOT NULL DEFAULT '0',
           `ipaddress` varchar(100) DEFAULT NULL,
           `failed` int(4) unsigned NOT NULL DEFAULT '0',
+           `status` varchar(50) DEFAULT NULL,
           PRIMARY KEY (`id`),
           KEY `idx_paperID` (`paperID`)
         ) ENGINE=InnoDB DEFAULT CHARSET={$charset}

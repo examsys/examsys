@@ -682,10 +682,10 @@ if ($propertyObj->get_paper_type() != '5') { // Do not allow saving for offline 
           data: $('#qForm').serialize(),
           dataType: 'html',
           timeout: <?php
-											// Set the time out of one requst to be the maximum total time plus 5s for network latency
-											// PHP handles normal timeouts. This is just to make sure the user won't wait forever if somthing
-											// weird happens.
-											echo ceil((($configObject->get('cfg_autosave_retrylimit') * $configObject->get('cfg_autosave_backoff_factor') * $configObject->get('cfg_autosave_settimeout')) + $configObject->get('cfg_autosave_settimeout') + 5)) * 1000;
+            // Set the time out of one requst to be the maximum total time plus 5s for network latency
+            // PHP handles normal timeouts. This is just to make sure the user won't wait forever if somthing
+            // weird happens.
+            echo ceil((($configObject->get('cfg_autosave_retrylimit') * $configObject->get('cfg_autosave_backoff_factor') * $configObject->get('cfg_autosave_settimeout')) + $configObject->get('cfg_autosave_settimeout') + 5)) * 1000;
                    ?>,
           cache: false,
           tryCount : 0,
@@ -696,30 +696,26 @@ if ($propertyObj->get_paper_type() != '5') { // Do not allow saving for offline 
             if (this.retry()) {
               return;
             } else  {
-              saveFail();
+              saveFail('fail');
               return;
             }
           },
           error: function(xhr, textStatus, errorThrown) {
-            if (textStatus == 'timeout' ) {
-              <?php
-              // We have timed out either  the server has gone away or somthing went wrong in the network
-              // Get the user to retry
-              ?>
-              saveFail();
-              return;
-            } else if (textStatus == 'error') {
+            if (textStatus == 'error') {
               if (this.retry()) {
                 return;
-              } else  {
-                saveFail();
-                return;
+              } else {
+                // errorThrown is the HTTP response.
+                if (errorThrown != '') {
+                    saveFail('http: ' + errorThrown);
+                    return;
+                }
               }
             }
-            saveFail();
+            saveFail(textStatus);
             return;
           },
-          success: function (ret_data, jqXHR, textStatus) {
+          success: function (ret_data, textStatus, jqXHR) {
             if (ret_data == randomPageID) {
               $('#save_failed').val('');
               <?php // Cache the form data to look for changes on next auto save ?>
@@ -730,7 +726,8 @@ if ($propertyObj->get_paper_type() != '5') { // Do not allow saving for offline 
             if (this.retry()) {
               return;
             } else  {
-              saveFail();
+              // marking_funcions.inc record_marks failed after retry.
+              saveFail('record marks failure');
               return;
             }
           },
@@ -768,16 +765,16 @@ if ($propertyObj->get_paper_type() != '5') { // Do not allow saving for offline 
     }
   }
 
-  var saveFail = function () {
+  var saveFail = function (textStatus) {
     <?php // Re-register the autosave timer ?>
     startAutoSave();
 
     current_val =  $('#save_failed').val();
     unix_now = Math.round($.now() / 1000);
     if (current_val == '') {
-      $('#save_failed').val(unix_now);
+      $('#save_failed').val(unix_now  + '-' + textStatus);
     } else {
-      $('#save_failed').val(current_val + '\n' + unix_now);
+      $('#save_failed').val(current_val + '\n' + unix_now + '-' + textStatus);
     }
 
     $('#saveError').fadeIn('fast');

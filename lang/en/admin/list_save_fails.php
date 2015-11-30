@@ -20,4 +20,5 @@ $string['paper'] = 'Paper';
 $string['client'] = 'Client';
 $string['datetime'] = 'Date/Time';
 $string['screen'] = 'Screen';
+$string['status'] = 'Status';
 ?>

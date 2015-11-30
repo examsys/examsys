@@ -20,4 +20,5 @@ $string['paper'] = 'Arkusz';
 $string['client'] = 'Użytkownik';
 $string['datetime'] = 'Data/Czas';
 $string['screen'] = 'Ekran';
+$string['status'] = 'Status';
 ?>
