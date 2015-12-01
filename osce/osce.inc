@@ -457,7 +457,7 @@ function get_labels($propertyObj) {
       $labels = array(1=>'Fail', 2=>'Borderline fail', 3=>'Borderline pass', 4=>'Pass', 5=>'Good pass', 'ERROR'=>'ERROR');
       break;
     case '5':
-      $labels = array(1=>'Unsatisfactory', 2=>'Competent', 'ERROR'=>'ERROR');
+      $labels = array('fail'=>'Unsatisfactory', 'pass'=>'Competent', 'ERROR'=>'ERROR');
       break;
     case '6':
       $labels = array(1=>'Clear FAIL', 2=>'BORDERLINE', 3=>'Clear PASS', 4=>'Honours PASS', 'ERROR'=>'ERROR');
