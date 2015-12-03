@@ -98,7 +98,7 @@ function copy_between_sessions (&$mappings_copy_objID, &$old_course, &$new_cours
                 $old_objGUID = NULL;
               }
               // VLE Objectives.
-              if (isset($new_course[$module][$identifier]['VLE']) and $new_course[$module][$identifier]['VLE'] != '') {
+              if (!empty($new_course[$module][$identifier]['VLE']) and !empty($old_course[$module][$identifier]['VLE'])) {
                 if ($new_course[$module][$identifier]['VLE'] == $old_course[$module][$identifier]['VLE']) {
                     if (isset($new_course[$module][$identifier]['objectives'])){
                         foreach ($new_course[$module][$identifier]['objectives'] as $new_obj) {
