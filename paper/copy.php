@@ -99,20 +99,22 @@ function copy_between_sessions (&$mappings_copy_objID, &$old_course, &$new_cours
               }
               // VLE Objectives.
               if (isset($new_course[$module][$identifier]['VLE']) and $new_course[$module][$identifier]['VLE'] != '') {
-                if ($new_course[$module][$identifier]['VLE'] == $old_course[$module][$identifier]['VLE']) {
-                    if (isset($new_course[$module][$identifier]['objectives'])){
-                        foreach ($new_course[$module][$identifier]['objectives'] as $new_obj) {
-                          if (((array_key_exists('id', $new_obj) and $new_obj['id'] == $old_objID)
-                                  or (array_key_exists('guid', $new_obj) and $new_obj['guid'] == $old_objGUID))
-                                  and (array_key_exists('content', $new_obj) and array_key_exists('content', $obj)
-                                          and $new_obj['content'] == $obj['content'])) {
-                            // Build a list of objectives that are still in both sessions
-                            $mappings_copy_objID[$old_objID] = $new_obj['id'];
-                            break;
-                          }
+                  if (isset($old_course[$module][$identifier]['VLE']) and $old_course[$module][$identifier]['VLE'] != '') {
+                    if ($new_course[$module][$identifier]['VLE'] == $old_course[$module][$identifier]['VLE']) {
+                        if (isset($new_course[$module][$identifier]['objectives'])){
+                            foreach ($new_course[$module][$identifier]['objectives'] as $new_obj) {
+                              if (((array_key_exists('id', $new_obj) and $new_obj['id'] == $old_objID)
+                                      or (array_key_exists('guid', $new_obj) and $new_obj['guid'] == $old_objGUID))
+                                      and (array_key_exists('content', $new_obj) and array_key_exists('content', $obj)
+                                              and $new_obj['content'] == $obj['content'])) {
+                                // Build a list of objectives that are still in both sessions
+                                $mappings_copy_objID[$old_objID] = $new_obj['id'];
+                                break;
+                              }
+                            }
                         }
                     }
-                }
+                  }
               // Internal Rogo Objectives.
               } else {
                 foreach ($new_course as $module => &$sessions) {
