@@ -238,12 +238,12 @@ Class webServiceRestAPI extends restAPI {
 			case 'getQStatsbyPaper':
 			  $paperID = null;
         $tmp = explode('/', $parms);
-        if (isset($tmp[0])) $paperID = $tmp[0];
+        if (isset($tmp[0])) $paperID = explode(',', $tmp[0]);
 				
         if ($paperID == null) {
           $this->sendResponse(400, '', '');
         } else {
-          $this->data = $this->getQStatsbyPaper(array($paperID));
+          $this->data = $this->getQStatsbyPaper($paperID);
 
           if ($this->data == '') {
             $this->sendResponse(400, '', '');
@@ -260,6 +260,10 @@ Class webServiceRestAPI extends restAPI {
   }
 	
 	public function getQStatsLastWeek() {
+      $userObject=UserObject::get_instance();
+      if (!$userObject->has_role(array('SysAdmin', 'Admin', 'Staff'))) {
+        return '';
+      }
 	  $papers = array();
 	
 	  $sql = "SELECT property_id FROM properties WHERE paper_type = '2' AND start_date > SUBDATE(NOW(), INTERVAL 4 WEEK) AND end_date < NOW() AND deleted IS NULL ORDER BY start_date";
@@ -278,22 +282,37 @@ Class webServiceRestAPI extends restAPI {
 	}
 
   public function getQStatsbyPaper($paperID) {
+    $userObject=UserObject::get_instance();
+    if (!$userObject->has_role(array('SysAdmin', 'Admin', 'Staff'))) {
+      return '';
+    }
+    
 	  $stats = array();
 		
 		$stat_no = 0;
 		$old_guid = 0;
-	
-	  $sql = 'SELECT
-							guid, percentage, cohort_size, taken, part_no, p, d, paperID
-						FROM
-							questions, performance_main, performance_details
-						WHERE
-							questions.q_id = performance_main.q_id AND
-							performance_main.id = performance_details.perform_id AND
-							paperID IN (' . implode(',', $paperID) . ')
-						ORDER BY questions.q_id, perform_id, part_no';
-						
-		$res = $this->db->prepare($sql);
+			
+		$sql = array();
+		$bind_types = array();
+		$bind_values = array();
+		foreach ($paperID as $id) {
+		     $sql[] = '?';
+		     $bind_types[] = 'i';
+		     $bind_values[] = &$id;
+		}
+        $params = implode(', ', $sql);
+        $sql = 'SELECT
+            guid, percentage, cohort_size, taken, part_no, p, d, paperID
+        FROM
+            questions, performance_main, performance_details
+        WHERE
+            questions.q_id = performance_main.q_id AND
+            performance_main.id = performance_details.perform_id AND
+            paperID IN (' . $params .')
+        ORDER BY questions.q_id, perform_id, part_no';
+        $res = $this->db->prepare($sql);
+        $bind_types = implode('', $bind_types);
+		call_user_func_array(array($res, "bind_param"), array_merge(array($bind_types), $bind_values));
     $res->execute();
     $res->store_result();
     $res->bind_result($guid, $percentage, $cohort_size, $taken, $part_no, $p, $d, $paperID);

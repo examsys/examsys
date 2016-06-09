@@ -15,6 +15,7 @@
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+* Display usage information for the student help pages.
 *
 * @author Simon Wilkinson
 * @version 1.0
@@ -22,7 +23,7 @@
 * @package
 */
 
-require '../../include/staff_student_auth.inc';
+require '../../include/sysadmin_auth.inc';
 require_once '../../classes/helputils.class.php';
 
 $id = null;
@@ -190,7 +191,8 @@ $end_date = $_POST['endyear'] . $_POST['endmonth'] . $_POST['endday'] . '000000'
   echo "<tr ><td>&nbsp;</td><td></td><td>&nbsp;</td></tr>\n";
 
   echo "<tr><td style=\"vertical-align:top\">";
-  $search_results = $mysqli->prepare("SELECT count(pageID) AS hits, title FROM help_log, student_help WHERE help_log.pageID=student_help.id AND help_log.type='student' AND accessed > '$start_date' AND accessed < '$end_date' GROUP BY pageID ORDER BY hits DESC, title");
+  $search_results = $mysqli->prepare("SELECT count(pageID) AS hits, title FROM help_log, student_help WHERE help_log.pageID=student_help.id AND help_log.type='student' AND accessed > ? AND accessed < ? GROUP BY pageID ORDER BY hits DESC, title");
+  $search_results->bind_param('ss', $start_date, $end_date);
   $search_results->execute();
   $search_results->store_result();
   $search_results->bind_result($hits, $title);
@@ -210,7 +212,8 @@ $end_date = $_POST['endyear'] . $_POST['endmonth'] . $_POST['endday'] . '000000'
 
   echo "\n</td><td style=\"width:20px\">&nbsp;</td><td style=\"vertical-align:top\">\n";
 
-  $search_results = $mysqli->prepare("SELECT COUNT(id) AS search_no, searchstring, hits FROM help_searches WHERE type='student' AND searched > '$start_date' AND searched < '$end_date' GROUP BY searchstring ORDER BY search_no DESC");
+  $search_results = $mysqli->prepare("SELECT COUNT(id) AS search_no, searchstring, hits FROM help_searches WHERE type='student' AND searched > ? AND searched < ? GROUP BY searchstring ORDER BY search_no DESC");
+  $search_results->bind_param('ss', $start_date, $end_date);
   $search_results->execute();
   $search_results->store_result();
   $search_results->bind_result($no_searches, $searchstring, $hits);
