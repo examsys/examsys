@@ -52,7 +52,14 @@ if (!file_exists($root . 'config/config.inc.php')) {
   $notice->display_notice_and_exit(null, 'Install Required', 'Rog&#333; needs installing before use. The Installer is avalable <a href="' . $cfg_root_path . '/install/index.php">here</a>.', 'Install Required', '../artwork/software_64.png', $title_color = '#C00000', true, true);
 }
 
-//start the session early as the lang class looks in the session 
+// Cookie sessions only.
+ini_set('session.use_only_cookies', 1);
+// Use secure cookie if on secure conenction.
+if ($configObject->get('cfg_secure_connection')) {
+    ini_set('session.cookie_secure', 1);
+    ini_set('session.cookie_httponly', 1);
+}
+//start the session early as the lang class looks in the session
 if ($configObject->get('cfg_session_name') != '') {
   session_name($configObject->get('cfg_session_name'));
 } else {
