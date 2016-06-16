@@ -127,7 +127,7 @@
     $error = true;
   }
   if (!$error) {
-    echo "OK";
+    echo "Tickety-Boo";
   }
 
 ?>

@@ -15,30 +15,9 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
---
--- Table structure for table `student_help`
---
-
-DROP TABLE IF EXISTS `student_help`;
 /*!40101 SET @saved_cs_client   = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `student_help` (
-  `id` smallint(6) NOT NULL AUTO_INCREMENT,
-  `title` mediumtext COLLATE utf8_unicode_ci,
-  `body` mediumtext COLLATE utf8_unicode_ci,
-  `body_plain` mediumtext COLLATE utf8_unicode_ci,
-  `type` enum('page','pointer') COLLATE utf8_unicode_ci DEFAULT NULL,
-  `checkout_time` datetime DEFAULT NULL,
-  `checkout_authorID` int(10) unsigned DEFAULT NULL,
-  `deleted` datetime DEFAULT NULL,
-  `language` char(5) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'en',
-  `articleid` smallint(6) unsigned NOT NULL,
-  `lastupdated` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `language` (`language`),
-  KEY `articleid` (`articleid`),
-  FULLTEXT KEY `title` (`title`,`body_plain`)
-) ENGINE=MyISAM AUTO_INCREMENT=111 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+TRUNCATE `student_help`;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
