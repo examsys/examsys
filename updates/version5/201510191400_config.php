@@ -7,7 +7,7 @@ if (!$updater_utils->does_table_exist('config')) {
                     `setting` varchar(100) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
                     `value` text COLLATE utf8_unicode_ci,
                     PRIMARY KEY (`component`,`setting`)
-                  ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Rogō configuration variables'";
+                  ) DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Rogō configuration variables'";
 
     $updater_utils->execute_query($createsql, true);
 
