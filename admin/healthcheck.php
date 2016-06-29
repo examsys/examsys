@@ -126,6 +126,32 @@
     echo "ERROR::Can not Connect to help_staff directory: " . $e->getMessage() . "\n";
     $error = true;
   }
+  // Check memcache.
+  $hosts = $configObject->get('cfg_memcache_host');
+  if (!empty($hosts)) {
+    $port = $configObject->get('cfg_memcache_port');
+    $memcache = new Memcache;
+    $servers = array();
+    foreach ($hosts as $memcacheserver) {
+        // Add servers.
+        $memcache->addServer($memcacheserver, $port);
+        $servers[] = $memcacheserver;
+    }
+    // Get stats to reforce cache.
+    $stats = $memcache->getExtendedStats();
+    // Get status of servers.
+    $memcacheerror = 0;
+    foreach ($servers as $host) {
+        $status = $stats[$host. ':' . $port];
+        if (!$status) {
+            $memcacheerror++;
+        }
+    }
+    if ($memcacheerror == count($servers)) {
+      echo "ERROR::Memcache server failure\n";
+      $error = true;
+    };
+  }
   if (!$error) {
     echo "Tickety-Boo";
   }
