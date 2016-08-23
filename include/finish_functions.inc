@@ -1516,7 +1516,7 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
                 }
               }
             }
-          } elseif ($paper[$question]['correct'][$tmp_part_id-1] > 0) {
+          } elseif (isset($paper[$question]['correct'][$tmp_part_id-1])) {
             $all_correct = false;
             if ($paper[$question]['score_method'] == 'Mark per Question' and $rank_answers[$tmp_part_id-1] != 'u') {
               echo '&nbsp;' . display_response($tmp_display_students_response, 'cross');
