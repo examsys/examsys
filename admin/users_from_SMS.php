@@ -51,6 +51,7 @@ $sms_connection = SmsUtils::GetSmsUtils();
 $mysqli = DBUtils::get_mysqli_link($configObject->get('cfg_db_host') , $configObject->get('cfg_db_sysadmin_user'), $configObject->get('cfg_db_sysadmin_passwd'), $configObject->get('cfg_db_database'), $configObject->get('cfg_db_charset'), $notice, $configObject->get('dbclass'));
 
 $useObject = new UserObject($configObject, $mysqli);
+$configObject->set_db_object($mysqli);
 $sms_url = $configObject->get_setting('core', 'cfg_sms_url') . '%';
 // Only include sms integration modules.
 // Do not include deleted modules or non-active modules.
