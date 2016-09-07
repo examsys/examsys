@@ -33,6 +33,7 @@ if ($updater_utils->check_version("6.2.0")) {
         $grantsql[] = "GRANT INSERT ON " . $dbname . ".access_log TO '". $cfg_db_internal_user . "'@'". $cfg_web_host . "'";
         $grantsql[] = "GRANT INSERT ON " . $dbname . ".denied_log TO '". $cfg_db_internal_user . "'@'". $cfg_web_host . "'";
         $grantsql[] = "GRANT SELECT ON " . $dbname . ".properties_reviewers TO '". $cfg_db_internal_user . "'@'". $cfg_web_host . "'";
+        $grantsql[] = "GRANT SELECT ON " . $dbname . ".keywords_link TO '". $cfg_db_internal_user . "'@'". $cfg_web_host . "'";
             
         foreach ($grantsql as $sql) {
             $updater_utils->execute_query($sql, true);

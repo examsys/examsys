@@ -18,7 +18,9 @@ if ($updater_utils->check_version("6.2.0") and !$updater_utils->has_updated('rog
     $priv_SQL[] = "GRANT SELECT ON " . $cfg_db_database . ".keywords_link TO '". $cfg_db_student_user . "'@'". $cfg_web_host . "'";
     $priv_SQL[] = "GRANT SELECT ON " . $cfg_db_database . ".keywords_link TO '" . $cfg_db_external_user . "'@'". $cfg_web_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $cfg_db_database . ".keywords_link TO '". $cfg_db_staff_user . "'@'". $cfg_web_host . "'";
-    
+    foreach ($priv_SQL as $sql) {
+        $updater_utils->execute_query($sql, true);
+    }
     // Migrate existing references.
     $sql = $mysqli->prepare("SELECT o_id, option_text FROM options, questions WHERE q_id = o_id AND q_type = 'keyword_based'");
     $sql->execute();
