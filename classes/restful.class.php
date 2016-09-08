@@ -28,6 +28,22 @@ class restful {
      * @var DB connection
      */
     private $db;
+
+    /**
+     * @var The last recevied http code
+     */
+    private $http_code;
+
+    /**
+     * Called when the object is unserialised.
+     */
+    public function __wakeup() {
+      // The serialised database object will be invalid,
+      // this object should only be serialised during an error report,
+      // so adding the current database connect seems like a waste of time.
+      $this->db = null;
+    }
+
     /**
      * Constuctor
      * @param mysqli $db
@@ -51,6 +67,7 @@ class restful {
         $options += $requestoptions;
         curl_setopt_array($curl, $options);
         $response = curl_exec($curl);
+        $this->http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         if (curl_errno($curl)) {
             $log = new Logger($this->db);
             $userObj = \UserObject::get_instance();
@@ -68,5 +85,13 @@ class restful {
         }
         curl_close($curl);
         return $response;
+    }
+
+    /**
+     * Returns the last recived http code
+     * @return integer http code
+     */
+    public function get_last_http_code() {
+        return $this->http_code;
     }
 }
