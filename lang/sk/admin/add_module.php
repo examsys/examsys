@@ -51,4 +51,5 @@ $string['module'] = 'Modul';
 $string['maplevel'] = 'Úroveň mapovania';
 $string['level'] = 'Úroveň';
 $string['tooltip_format'] = 'Vo formáte MM/DD';
+$string['duplicateerror'] = 'Module ID in use, please use another.';
 ?>
