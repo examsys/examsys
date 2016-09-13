@@ -422,7 +422,8 @@ if ($css != '') {
       echo "        if (flag == 0) {\n";
       echo "          $('#refhead' + i).css('top', (31 * i) + 'px');\n";
       echo "        } else {\n";
-      echo "          $('#refhead' + i).css('top', (winH - (" . count($reference_materials) . " - i) * 31) + 'px');\n";
+      echo "          $('#refhead' + i).css('top', '');\n";
+      echo "          $('#refhead' + i).css('bottom', ((" . count($reference_materials) . " - (i + 1)) * 31) + 'px');\n";
       echo "        }\n";
       echo "      }\n";
       echo "    }\n";
