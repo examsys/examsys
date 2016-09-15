@@ -35,7 +35,7 @@ $userObject = UserObject::get_instance();
 if ($userObject->has_role('Student') and !($userObject->has_role(array('Staff', 'Admin', 'SysAdmin')))) {
   header("location: ./paper/");
   exit();
-} elseif ($userObject->has_role('External Examiner')) {
+} elseif ($userObject->has_role('External Examiner') or $userObject->has_role('Internal Reviewer')) {
   header("location: ./reviews/");
   exit();
 } elseif ($userObject->has_role('Invigilator')) {

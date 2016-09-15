@@ -28,8 +28,8 @@
 
 require_once '../include/staff_student_auth.inc';
 
-// Redirect External Exminers and Invigilators to their own areas.
-if ($userObject->has_role('External Examiner')) {
+// Redirect special users to their own areas.
+if ($userObject->has_role('External Examiner') or $userObject->has_role('Internal Reviewer')) {
   header("location: ../reviews/");
   exit();
 } elseif ($userObject->has_role('Invigilator')) {
