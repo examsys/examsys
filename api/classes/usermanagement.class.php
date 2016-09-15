@@ -35,7 +35,7 @@ class usermanagement extends \api\abstractmanagement {
      * List of valid roles for students within Rogo that the API can assign.
      * @var array $studentroles
      */
-    private static $studentroles = array('Student', 'Left', 'Graduate');
+    private static $studentroles = array('Student', 'Left', 'Graduate', 'Suspended', 'Locked');
     /**
      * List of valid roles for staff members within Rogo that the API can assign.
      * @var array $staffroles
