@@ -466,7 +466,7 @@ if ($properties_list !== false and count($properties_list) > 0) {
     $end_time_h = $end_datetime->format('H');
     $end_time_m = $end_datetime->format('i');
 
-    $password = $property_object->get_password();
+    $password = $property_object->get_decrypted_password();
     ?>
 
           <div class="exam_details">

@@ -33,7 +33,7 @@ $mysqli = DBUtils::get_mysqli_link($configObject->get('cfg_db_host') , $configOb
 // Get some properties from the paper.
 $propertyObj = PaperProperties::get_paper_properties_by_crypt_name($crypt_name, $mysqli, $string, true);
 $paperID = $propertyObj->get_property_id();
-$paper_password = $propertyObj->get_password();
+$paper_password = $propertyObj->get_decrypted_password();
 $original_paper_type = $propertyObj->get_paper_type();
 
 if ($paper_password == '') {
