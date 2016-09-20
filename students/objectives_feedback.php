@@ -216,21 +216,21 @@ $textsize -= 10;
   $metadatatypes = '';
   if (isset($_GET['metadataID'])) {
     $metadataID_SQL = ' AND log_metadata.id = ?';
-    $metadataparams[] &= array($_GET['metadataID']);
+    $metadataparams = array(&$_GET['metadataID']);
     $metadatatypes = 'i';
   }
 
   if ($paper_type == '0' or $paper_type == '1') {
     $sql = "SELECT q_id, mark, totalpos, started FROM log0, log_metadata WHERE log0.metadataID = log_metadata.id AND q_id NOT IN (SELECT q_id FROM question_exclude WHERE paperID = ?) AND userID = ? AND paperID = ? UNION SELECT q_id, mark, totalpos, started FROM log1, log_metadata WHERE log1.metadataID = log_metadata.id AND q_id NOT IN (SELECT q_id FROM question_exclude WHERE paperID = ?) AND userID = ? AND paperID = ? $metadataID_SQL ORDER BY q_id, started";
-    $params = array_merge(array($paperID, $userID, $paperID, $paperID, $userID, $paperID), $metadataparams);
+    $params = array_merge(array(&$paperID, &$userID, &$paperID, &$paperID, &$userID, &$paperID), $metadataparams);
     $types = 'iiiiii' . $metadatatypes;
   } elseif ($paper_type == '4') {
     $sql = "SELECT log4.q_id, log4.rating, NULL, NULL AS totalpos FROM log4 INNER JOIN log4_overall l4o ON log4.log4_overallID = l4o.id WHERE log4.q_id NOT IN (SELECT q_id FROM question_exclude WHERE q_paper = ?) AND l4o.userID = ? AND l4o.q_paper = ? ORDER BY log4.q_id, l4o.started";
-    $params = array($paperID, $userID, $paperID);
+    $params = array(&$paperID, &$userID, &$paperID);
     $types = 'iii';
   } else {
     $sql = "SELECT q_id, mark, totalpos, NULL FROM log$paper_type, log_metadata WHERE log$paper_type.metadataID = log_metadata.id AND q_id NOT IN (SELECT q_id FROM question_exclude WHERE paperID = ?) AND userID = ? AND paperID = ? $metadataID_SQL ORDER BY q_id, started";
-    $params = array_merge(array($paperID, $userID, $paperID), $metadataparams);
+    $params = array_merge(array(&$paperID, &$userID, &$paperID), $metadataparams);
     $types = 'iii' . $metadatatypes;
   }
   $result = $mysqli->prepare($sql);
