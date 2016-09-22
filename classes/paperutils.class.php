@@ -606,7 +606,7 @@ Class PaperUtils {
         if (in_array($question_part[0], $checktypes)) {
           $interactive = true;
         } else if ($question_part[0] == 'random') {
-          $options = QuestionUtils::get_options_text($question_part[1], $db);
+          $options = random_utils::get_random_qids_for_question($question_part[1], $db);
           $types = array();
           foreach ($options as $opt) {
               $qtype = QuestionUtils::get_question_type($opt, $db);
