@@ -71,4 +71,5 @@ $string['basic'] = 'Základní';
 $string['none'] = 'žádná';
 $string['company'] = 'Společnost';
 $string['webserver'] = 'Web server';
+$string['errorslogged'] = 'Errors logged to file';
 ?>

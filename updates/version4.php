@@ -208,7 +208,6 @@ if (!isset($_POST['update'])) {
   $mysqli->autocommit(false);
 
 
-  error_reporting(-1);
   ob_start();
 
   echo "<div>Starting at " . date("H:i:s") . "</div>";

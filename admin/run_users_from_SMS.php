@@ -25,7 +25,6 @@
 */
 
 set_time_limit(0);
-error_reporting(E_ALL);
 
 require '../include/sysadmin_auth.inc';
 

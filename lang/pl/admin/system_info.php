@@ -71,4 +71,5 @@ $string['basic'] = 'Podstawowe';
 $string['none'] = 'brak';
 $string['company'] = 'Instytucja';
 $string['webserver'] = 'Serwer stron WWW';
+$string['errorslogged'] = 'Errors logged to file';
 ?>

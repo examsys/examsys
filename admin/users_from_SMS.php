@@ -45,9 +45,6 @@ if ($configObject->get('cfg_sms_api') == '') {
 }
 $sms_connection = SmsUtils::GetSmsUtils();
 
-//error_reporting(E_ALL);
-//ini_set('display_errors',1);
-
 $mysqli = DBUtils::get_mysqli_link($configObject->get('cfg_db_host') , $configObject->get('cfg_db_sysadmin_user'), $configObject->get('cfg_db_sysadmin_passwd'), $configObject->get('cfg_db_database'), $configObject->get('cfg_db_charset'), $notice, $configObject->get('dbclass'));
 
 $useObject = new UserObject($configObject, $mysqli);

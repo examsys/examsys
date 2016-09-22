@@ -176,7 +176,6 @@ if (!isset($_POST['update'])) {
     $cfg_web_host = $cfg_db_host;
   }
 
-  error_reporting(-1);
   ob_start();
   
   echo "\n<blockquote>\n<h1>" . $string['startingupdate'] . "</h1>";

@@ -1956,20 +1956,8 @@ if(!isset(\$_SERVER['HTTP_HOST'])) {
   \$_SERVER['HTTP_HOST']='';
 }
 
-//Server specific configuration based on hostname.
-switch (strtolower(\$_SERVER['HTTP_HOST'])) {
-  case 'rogo.local':
-    \$cfg_install_type = ' (local)';
-    break;
-  case 'rogotest.local':
-    \$cfg_install_type = ' (local testing)';
-    error_reporting(E_ALL);
-    break;
-  default:
-    \$cfg_install_type = '';
-    error_reporting(0);
-    break;
-}
+//A server specifc display name can be appended to rogo with the following
+\$cfg_install_type = '';
 
 //Warnings
   \$cfg_hour_warning = 10;       // Warning for summative exams

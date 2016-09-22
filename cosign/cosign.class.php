@@ -64,12 +64,10 @@ function cosign_auth($cfg = array(), $obstart = true)
 {
 
 
-  $level = error_reporting(E_ALL);
   if ($obstart) ob_start();
 
   $this->cosign_cfg = array_merge($this->cosign_cfg, $cfg);
   if (empty($this->cosign_cfg['CosignProtected'])) {
-    error_reporting($level);
     return false;
   }
   $service = "CosignFilter";
@@ -208,7 +206,6 @@ function cosign_auth($cfg = array(), $obstart = true)
           // flush output buffer if started in our script
           if ($obstart) ob_end_flush();
           if (is_resource($this->cosign_log)) fclose($this->cosign_log);
-          error_reporting($level);
           return true;
         }
     } else {
@@ -543,7 +540,6 @@ function cosign_auth($cfg = array(), $obstart = true)
   // flush output buffer
   if ($obstart) ob_end_flush();
   if (is_resource($this->cosign_log)) fclose($this->cosign_log);
-  error_reporting($level);
   return true;
 }
 

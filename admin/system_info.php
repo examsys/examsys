@@ -178,6 +178,7 @@ $e3 = $configObject->get('displayerrors');
 $e4 = $configObject->get('displayallerrors');
 $e5 = $configObject->get('errorshutdownhandling');
 $e6 = $configObject->get('errorcontexthandling');
+$e7 = $configObject->get('logerrors');
 
 function onoff($status, $html) {
   if ($status) {
@@ -193,6 +194,9 @@ $ErrorLogSettings .= $string['authdebug'];
 
 $ErrorLogSettings = onoff(($e3 === true), $ErrorLogSettings);
 $ErrorLogSettings .= $string['errorsonscreen'];
+
+$ErrorLogSettings = onoff(($e7 === true), $ErrorLogSettings);
+$ErrorLogSettings .= $string['errorslogged'];
 
 $ErrorLogSettings = onoff(($e4 === true), $ErrorLogSettings);
 $ErrorLogSettings .= $string['phpnotices'];
