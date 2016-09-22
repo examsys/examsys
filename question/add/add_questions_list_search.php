@@ -74,6 +74,12 @@ $status_array = QuestionStatus::get_all_statuses($mysqli, $string, true);
         }
       }
     }
+    function checkForm() {
+      if ($('#searchtype').val() == '%' && $('#searchterm').val() == '' && $('#owner').val() == '') {
+        alert("<?php echo $string['msg1']; ?>");
+        return false;
+      }
+    }
   </script>
 </head>
 
@@ -99,9 +105,9 @@ $status_array = QuestionStatus::get_all_statuses($mysqli, $string, true);
   <table class="header">
   <tr>
   <th colspan="6">
-  <form name="search" method="get" action="<?php echo $_SERVER['PHP_SELF']; ?>" autocomplete="off">
-  &nbsp;<strong><?php echo $string['wordphrase']; ?></strong> <input type="text" size="30" name="searchterm" <?php echo 'value="' . $searchterm . '" '; ?>/> <strong><?php echo $string['in']; ?></strong>
-  <select name="searchtype">
+  <form name="search" method="get" action="<?php echo $_SERVER['PHP_SELF']; ?>" autocomplete="off" onsubmit="return checkForm();">
+  &nbsp;<strong><?php echo $string['wordphrase']; ?></strong> <input type="text" size="30" name="searchterm" id="searchterm" <?php echo 'value="' . $searchterm . '" '; ?>/> <strong><?php echo $string['in']; ?></strong>
+  <select name="searchtype" id="searchtype">
     <option value="%"><?php echo $string['anytype']; ?></option>
     <option value="area" <?php if ($searchtype == 'area') echo 'selected '; ?>><?php echo $string['area']; ?></option>
     <option value="enhancedcalc" <?php if ($searchtype == 'enhancedcalc') echo 'selected '; ?>><?php echo $string['calculation']; ?></option>
@@ -170,13 +176,19 @@ $status_array = QuestionStatus::get_all_statuses($mysqli, $string, true);
   echo "<form name=\"theform\" method=\"post\" action=\"\" autocomplete=\"off\">\n";
   echo '<input type="hidden" name="screen" value="1" />';
 
-  if (isset($_GET['search']) or isset($_GET['sortby'])) {
+  if (isset($_GET['search'])) {
+    $search = true;
+    $qtype = check_var('searchtype', 'GET', true, false, true);
+  } else {
+    $search = false;
+  }
+
+  if ($search and ($searchterm != '' or $qtype != '%' or $owner != '')) {
+
     $old_id = 0;
     $searchterm = '%' . $searchterm . '%';
 
     if ($sortby == 'q_type') $sortby = 'CAST(q_type AS CHAR)';
-
-    $qtype = check_var('searchtype', 'GET', true, false, true);
     if ($qtype != '%') {
       $andqtype = "AND q_type = ?";
     } else {

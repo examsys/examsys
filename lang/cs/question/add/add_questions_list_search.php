@@ -27,4 +27,5 @@ $string['locked'] = 'Uzamčeno';
 $string['anyowner'] = '(libovolný vlastník)';
 $string['myquestionsonly'] = '(pouze moje úlohy)';
 $string['status'] = 'Status';
+$string['msg1'] = 'Search range is too large, please try to narrow your search.';
 ?>

@@ -130,7 +130,7 @@ Class search_utils {
   static function display_owners_dropdown($userObj, $db, $type, $string, $state, $font_size = 90) {
     $owners = self::get_owners($userObj, $db);
 
-    echo "<select style=\"width:185px; font-size:$font_size%\" onchange=\"updateDropdownState(this,'owner')\" name=\"owner\">\n";
+    echo "<select style=\"width:185px; font-size:$font_size%\" onchange=\"updateDropdownState(this,'owner')\" name=\"owner\" id=\"owner\">\n";
     echo "<option value=\"\">" . $string['anyowner']. "</option>\n";
     if ($type == 'questions') {
       echo "<option value=\"{$userObj->get_user_ID()}\">" . $string['myquestionsonly']. "</option>\n";
