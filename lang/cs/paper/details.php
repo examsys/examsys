@@ -61,4 +61,5 @@ $string['mismatchbrackets'] = 'Nalezeny nesourodé závorky.';
 $string['mismatchblanktags'] = 'Neodpovídající prázdná či rolovací políčka.';
 $string['nomatchsession'] = 'Datum v Názvu Testu (%s) neodpovídá sezení testu (%s).';
 $string['notsummativeexams'] = 'Nemělo by být použito k Sumativnímu testování';
+$string['problemwithpaper'] = 'There was a problem loading the paper';
 ?>

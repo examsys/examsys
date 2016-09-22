@@ -61,4 +61,5 @@ $string['next'] = 'Dalej >>';
 $string['na'] = 'Brak'; 
 $string['nomatchsession'] = 'Sesja w tytule arkusza (%s) nie odpowiada sesji arkusza (%s).';
 $string['notsummativeexams'] = 'Should not use with Summative Exams';
+$string['problemwithpaper'] = 'There was a problem loading the paper';
 ?>
