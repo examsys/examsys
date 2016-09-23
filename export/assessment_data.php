@@ -344,7 +344,7 @@ if ($student_no > 0) {
 		
     $log_array[$rowID][$screen][$question_ID] = $user_answer;
     $log_array[$rowID]['userID'] = $uID;
-    $users[$rowID] = $uID;
+    $users[$uID][] = $rowID;
     $log_array[$rowID]['username'] = $username;
     $log_array[$rowID]['course'] = $grade;
     $log_array[$rowID]['year'] = $year;
@@ -362,24 +362,23 @@ if ($student_no > 0) {
   $result->close();
   
   // Get student ids.
-  $users_list = implode(',', $users);
-  $result = $mysqli->prepare("SELECT student_id, userID FROM sid WHERE userID IN ($users_list)");
-  $result->execute();
-  $result->bind_result($sid, $userid);
-  while ($result->fetch()) {
-    foreach ($users as $idx => $value) {
-      if ($value == $userid) {
-        $log_array[$idx]['student_id'] = demo_replace_number($sid, $demo);
+  if (count($users) > 0) {
+    $users_list = implode(',', array_keys($users));
+    $result = $mysqli->prepare("SELECT student_id, userID FROM sid WHERE userID IN ($users_list)");
+    $result->execute();
+    $result->bind_result($sid, $userid);
+    while ($result->fetch()) {
+      foreach ($users[$userid] as $row) {
+        $log_array[$row]['student_id'] = demo_replace_number($sid, $demo);
       }
     }
-  }
-  for ($rowID = 1; $rowID < count($log_array); $rowID++) {
-    if (!isset($log_array[$rowID]['student_id'])) {
-      $log_array[$rowID]['student_id'] = null;
+    for ($rowID = 1; $rowID < count($log_array); $rowID++) {
+      if (!isset($log_array[$rowID]['student_id'])) {
+        $log_array[$rowID]['student_id'] = null;
+      }
     }
+    $result->close();
   }
-  $result->close();
-  
   $sortby = 'name';
   $ordering = 'asc';
   $log_array = array_csort($log_array, $sortby, $ordering);
