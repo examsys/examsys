@@ -213,7 +213,7 @@ while ($result->fetch()) {
           } else {
             if (isset($_POST["$qid"])) {
               $rating .= ',' . $_POST["$qid"];
-            } else {
+            } elseif ($score_method != 'Mark per Question') {
               $rating .= ',';
             }
           }

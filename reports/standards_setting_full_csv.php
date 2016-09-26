@@ -54,6 +54,7 @@ $stmt = $mysqli->prepare("SELECT ssq.rating, ss.setterID, ss.method, u.title, u.
                           q.q_type, ss.std_set, ss.group_review, ss.id, q.score_method, 
                           (SELECT count(*) FROM options WHERE o_id=q.q_id) AS option_no,
                           (SELECT count(*) FROM options WHERE o_id=q.q_id AND correct='y') AS mrq_correct_per_option,
+                          (SELECT count(*) FROM options WHERE o_id=q.q_id AND correct!='') AS rank_correct_per_option,
                           ssq.id
                           FROM papers p INNER JOIN questions q ON p.question=q.q_id 
                           LEFT JOIN std_set_questions ssq ON p.question=ssq.questionID 
@@ -72,7 +73,7 @@ if($stmt) {
   $stmt->bind_param('ss', $paperID, $paperID);
   $stmt->execute();
   $stmt->store_result();
-  $stmt->bind_result($rating, $setter_id, $method, $title, $initials, $surname, $display_pos, $q_id, $theme, $q_type, $date, $group_review, $ss_id, $score_method, $option_no, $mrq_correct_per_option, $ssq_id);
+  $stmt->bind_result($rating, $setter_id, $method, $title, $initials, $surname, $display_pos, $q_id, $theme, $q_type, $date, $group_review, $ss_id, $score_method, $option_no, $mrq_correct_per_option, $rank_correct_per_option, $ssq_id);
 
 
   $csvHeader = $string['date'] . "," . $string['standardsetter'];
@@ -88,21 +89,26 @@ if($stmt) {
     $ratingColumns = explode(",", $rating);
     $notNullRatingColumns = array_filter($ratingColumns);
 
-    // MRQ have valid ratings with null column values so need a special case
-    if($q_type == "mrq") {    
+    // MRQ and RANK questions have valid ratings with null column values so need a special case
+    if($q_type == "mrq" or $q_type == "rank") {
 
-      // $mrq_correct logic adapted from include/display_functions.inc, line 419
-      $mrq_correct = 0;
-      if ($score_method == 'Mark per Question') {
-        $mrq_correct = $option_no;
+      if ($q_type == "mrq" ) {
+        $correct_per_option = $mrq_correct_per_option;
       } else {
-        $mrq_correct = $mrq_correct_per_option;
+        $correct_per_option = $rank_correct_per_option;
       }
-
+      if ($score_method == 'Mark per Question') {
+        $mrq_correct = 1;
+      } elseif ($score_method == 'Bonus Mark') {
+        $mrq_correct = $correct_per_option + 1;
+      } else {
+        $mrq_correct = $correct_per_option;
+      }
       if($mrq_correct != count($notNullRatingColumns)) {
         $rating = $string['incomplete'] . "[COLUMNS-q_id" . $q_id . "]";
       }
-
+    } elseif($q_type == "sct" or $q_type == "textbox") {
+        $rating = $string['noncompatible'] . "[COLUMNS-q_id" . $q_id . "]";
     } else {
 
       // Clearly mark incomplete ratings
