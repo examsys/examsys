@@ -2243,14 +2243,15 @@ if ($properties->get_paper_type() != '4' and $properties->get_paper_type() != '5
   if (count($schools) > 0) {
     $schools_list = implode(',', $schools);
     if ($userObject->has_role('SysAdmin')) {
-      $school_sql = '';
+      $school_sql = 'AND user_deleted IS NULL';
     } else {
-      $school_sql = "AND schoolid IN ($schools_list)";
+      $school_sql = "AND schoolid IN ($schools_list) AND user_deleted IS NULL";
     }
     $admin_school_sql = <<< SQL
 UNION SELECT DISTINCT users.id, title, initials, surname, first_names
 FROM users, admin_access
 WHERE users.id = admin_access.userID AND admin_access.schools_id IN ($schools_list)
+AND user_deleted IS NULL
 SQL;
   }
 
@@ -2258,12 +2259,21 @@ SQL;
   $current_internals = $properties->get_internal_reviewers();
   $current_internals_sql = '';
   if (count($properties->get_internal_reviewers()) > 0) {
-    $current_internals_sql = 'UNION SELECT DISTINCT id, title, initials, surname, first_names FROM users WHERE id IN (' . implode(',', array_keys($current_internals)) . ')';
+    $current_internals_sql = 'UNION SELECT DISTINCT id, title, initials, surname, first_names FROM users WHERE id IN (' . implode(',', array_keys($current_internals)) . ') AND user_deleted IS NULL';
   }
   // Add internal reviwers to list.
-  $internal_reviwers = 'UNION SELECT DISTINCT id, title, initials, surname, first_names FROM users WHERE roles = "Internal Reviewer"';
-  
-  $query = "SELECT DISTINCT users.id, title, initials, surname, first_names FROM users, modules_staff, modules WHERE roles != 'Left' AND users.id = modules_staff.memberID AND modules.id = modules_staff.idMod $school_sql $admin_school_sql $current_internals_sql $internal_reviwers AND user_deleted IS NULL ORDER BY surname, initials";
+  $internal_reviwers = 'UNION SELECT DISTINCT id, title, initials, surname, first_names FROM users WHERE roles = "Internal Reviewer" AND user_deleted IS NULL';
+
+  // Dynamically choose tables and join based on role.
+  if ($userObject->has_role('SysAdmin')) {
+    $tables = "users, modules_staff";
+    $join = "users.id = modules_staff.memberID";
+  } else {
+    $tables = "users, modules_staff, modules";
+    $join = "users.id = modules_staff.memberID AND modules.id = modules_staff.idMod";
+  }
+
+  $query = "SELECT DISTINCT users.id, title, initials, surname, first_names FROM $tables WHERE roles != 'Left' AND $join $school_sql $admin_school_sql $current_internals_sql $internal_reviwers ORDER BY surname, initials";
   $internal_details = $mysqli->prepare($query);
   $internal_details->execute();
   $internal_details->bind_result($internal_id, $internal_title, $internal_initials, $internal_surname, $internal_first_names);

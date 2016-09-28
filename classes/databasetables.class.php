@@ -501,7 +501,8 @@ QUERY;
           `q_parts` varchar(50) DEFAULT NULL,
           `log4_overallID` int(11) unsigned DEFAULT NULL,
           PRIMARY KEY (`id`),
-          KEY `q_id` (`q_id`)
+          KEY `q_id` (`q_id`),
+          INDEX `log4_overallID` (`log4_overallID`)
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
