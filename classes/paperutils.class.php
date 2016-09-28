@@ -825,4 +825,25 @@ Class PaperUtils {
     $result->close();
     return $paperid;
   }
+  
+  /**
+   * Get papers running in academic session
+   * @param integer $session academic session
+   * @param string $type paper type
+   * @param mysqli $db db connection
+   * @return array rogo ids
+   */
+  static public function get_papers_by_session($session, $type, $db) {
+    $paperids = array();
+    $result = $db->prepare("SELECT property_id FROM properties WHERE calendar_year = ? AND paper_type = ? AND deleted IS NULL");
+    $result->bind_param('is', $session, $type);
+    $result->execute();
+    $result->store_result();
+    $result->bind_result($id);
+    while ($result->fetch()) {
+      $paperids[] = $id;
+    }
+    $result->close();
+    return $paperids;
+  }
 }

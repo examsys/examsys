@@ -167,6 +167,31 @@ class gradebook {
     }
     
     /**
+     * Get a gradebook for a paper with more user data than the default gradebook
+     * @param int $paperid id to search with
+     * @return array|bool detailed gradebook for paper or false  
+     */
+    public function get_user_detailed_paper_gradebook($paperid) {
+        if ($this->paper_graded($paperid)) {
+            $sql = $this->db->prepare("SELECT gu.userid, s.student_id, u.username, u.surname, u.first_names, gu.raw_grade, ROUND(gu.adjusted_grade, 2), gu.classification FROM
+                gradebook_paper p, gradebook_user gu, users u, sid s WHERE p.paperid = gu.paperid AND u.id = gu.userid AND u.id = s.userID AND p.paperid = ?");
+            $sql->bind_param('i', $paperid);
+            $sql->execute();
+            $sql->bind_result($userid, $studentid, $username, $surname, $first_names, $raw_grade, $adjusted_grade, $classification);
+            $users = array();
+            while ($sql->fetch()) {
+                $users[$userid] = array('student_id' => $studentid, 'raw_grade' => $raw_grade, 'adjusted_grade' => $adjusted_grade,
+                    'classification' => $classification, 'username' => $username, 'surname' => $surname, 'first_names' => $first_names);
+            }
+            $gradebook[$paperid] = $users;
+            $sql->close();
+            return $gradebook;
+        } else {
+            return false;
+        }
+    }
+    
+    /**
      * Get the gradebook for a module
      * @param string $moduleidtype type of id to serach on
      * @param int $moduleid id to search with

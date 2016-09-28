@@ -1,0 +1,34 @@
+properties_modules:
+  -
+    property_id: 1
+    idMod: 1
+  -
+    property_id: 2
+    idMod: 1
+  -
+    property_id: 2
+    idMod: 2
+modules_student:
+  -
+    userID: 1
+    idMod: 1
+  -
+    userID: 1
+    idMod: 2
+  -
+    userID: 2
+    idMod: 2
+modules:
+  -
+    id: 1
+    moduleid: "ABC100"
+    fullname: "Test Module"
+    externalid: "123456789"
+    academic_year_start: "01/07"
+  -
+    id: 2
+    moduleid: "ABC200"
+    fullname: "Test Module 2"
+    externalid: "987654321"
+    academic_year_start: "01/07"
+

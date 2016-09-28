@@ -59,4 +59,14 @@ class paperutilstest extends unittestdatabase {
         $this->assertTablesEqual($expectedpropertiesmodulestable, $querypropertiesmodulestable);  
     }
     
+    /**
+     * Test get papers by session
+     * @group gradebook
+     */
+    public function test_get_papers_by_session() {
+        $papers = array(2);
+        $this->assertEquals($papers, Paper_utils::get_papers_by_session('2016', 2, $this->db));
+        $papers = array();
+        $this->assertEquals($papers, Paper_utils::get_papers_by_session('2016', 1, $this->db));
+    }
 }

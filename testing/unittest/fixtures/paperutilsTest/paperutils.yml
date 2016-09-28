@@ -1,8 +1,12 @@
 properties:
   -
     property_id: 1
+    calendar_year: 2015
+    paper_type: 2
   -
     property_id: 2
+    calendar_year: 2016
+    paper_type: 2
 properties_modules:
   -
     property_id: 1

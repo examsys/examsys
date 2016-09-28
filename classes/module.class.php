@@ -808,4 +808,25 @@ Class module {
     }
     return true;
   }
+  
+  /**
+   * Get the modules whose final grade for a student is affected by a paper
+   * @param integer $paperid paper identifier
+   * @param integer $userid student identifier
+   * @param mylsqi $db db connection
+   * @return array list of module details
+   */
+  public static function get_modules_for_paper($paperid, $userid, $db) {
+    $modules = array();
+    $result = $db->prepare("SELECT m.moduleid, m.fullname, m.externalid FROM properties_modules pm, modules_student ms, modules m WHERE pm.idMod = ms.idMod AND m.id = pm.idMod AND pm.property_id = ? AND ms.userID = ?");
+    $result->bind_param('ii', $paperid, $userid);
+    $result->execute();
+    $result->store_result();
+    $result->bind_result($moduleid, $fullname, $externalid);
+    while ($result->fetch()) {
+      $modules[] = array('moduleid' => $moduleid, 'fullname' => $fullname, 'externalid' => $externalid);
+    }
+    $result->close();
+    return $modules;
+  }
 }

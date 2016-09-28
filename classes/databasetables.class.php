@@ -761,7 +761,8 @@ QUERY;
           `auto_update` tinyint(4) DEFAULT NULL,
           PRIMARY KEY (`id`),
           KEY `idx_userID` (`userID`),
-          KEY `idx_mod_calyear` (`calendar_year`,`idMod`)
+          KEY `idx_mod_calyear` (`calendar_year`,`idMod`),
+          KEY `idx_mod` (`idMod`)
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 

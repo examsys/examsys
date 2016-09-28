@@ -83,7 +83,7 @@ abstract class plugins {
      * Get install path of plugin
      * @return string path
      */
-    private function get_path() {
+    public function get_path() {
         return dirname(__DIR__) . DIRECTORY_SEPARATOR . $this->plugin_type . DIRECTORY_SEPARATOR . $this->plugin;
     }
     /**

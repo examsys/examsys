@@ -39,10 +39,15 @@ class render {
     /**
      * Constructor
      * @param object $configObject - rogo configuration object
+     * @param string $templatedir - path to templates
      * @return void 
      */
-    function __construct($configObject) {
-        $loader = new \Twig_Loader_Filesystem(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'templates');
+    function __construct($configObject, $templatedir = null) {
+        if (is_null($templatedir)) {
+            $loader = new \Twig_Loader_Filesystem(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'templates');
+        } else {
+            $loader = new \Twig_Loader_Filesystem($templatedir);
+        }
         $this->twig = new \Twig_Environment($loader, array(
             'cache' => false
         ));

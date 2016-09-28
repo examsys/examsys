@@ -88,6 +88,11 @@ abstract class plugins_sms extends \plugins\plugins {
      */
     abstract public function get_modules($externalid = null, $session = null);
     /**
+     * Write a gradebook for an academic session to a file to be processed by campus solutions.
+     * @param integer $session academic session to publish gradebook for
+     */
+    abstract public function publish_gradebook($session);
+    /**
      * Check if module import is supported by the plugin
      * @return array|bool import url and translation strings, false if module import not supported
      */
@@ -104,7 +109,7 @@ abstract class plugins_sms extends \plugins\plugins {
     abstract public function supports_course_import();
     /**
      * Check if enorlment import is supported by the plugin
-     * @return array|bool import url and translation strings, false if enrolment import not supported
+     * @return array|bool false if enrolment import not supported
      */
     abstract public function supports_enrol_import();
     /**

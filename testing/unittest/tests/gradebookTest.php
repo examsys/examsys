@@ -92,6 +92,22 @@ class gradebooktest extends unittestdatabase {
         // Test get paper gradebook - ERROR not found.
         $this->assertFalse($gradebook->get_paper_gradebook('paper', 2));
     }
+    /**
+     * Test get detailed paper gradebook function
+     * @group gradebook
+     */
+    public function test_get_user_detailed_paper_gradebook() {
+        $gradebook = new gradebook($this->db);
+        // Test get paper gradebook - SUCCESS.
+        $expected = array();
+        $users = array();
+        $users[1000] = array('student_id' => 12345678, 'raw_grade' => 60, 'adjusted_grade' => 62,
+                    'classification' => 'Pass', 'username' => 'unit', 'surname' => 'test', 'first_names' => '');
+        $expected[1] = $users;
+        $this->assertEquals($expected, $gradebook->get_user_detailed_paper_gradebook(1));
+        // Test get paper gradebook - ERROR not found.
+        $this->assertFalse($gradebook->get_user_detailed_paper_gradebook(2));
+    }
      /**
      * Test get module gradebook function
      * @group gradebook

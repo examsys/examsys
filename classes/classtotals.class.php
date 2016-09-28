@@ -1753,8 +1753,8 @@ class ClassTotals {
    */
   public function create_gradebook() {
     if ($this->gradebook_enabled) {
-        $gradebook = new gradebook($this->db);
-        return $gradebook->create_gradebook($this->paperID);
+      $gradebook = new gradebook($this->db);
+      return $gradebook->create_gradebook($this->paperID);
     }
     return false;
   }
@@ -1765,14 +1765,14 @@ class ClassTotals {
    */
   public function store_grades() {
     if ($this->gradebook_enabled) {
-        $gradebook = new gradebook($this->db);
-        for ($student = 0; $student < $this->user_no; $student++) {
-          $userid = $this->user_results[$student]['userID'];
-          $mark = $this->user_results[$student]['mark'];
-          $adjusted = MathsUtils::formatNumber($this->user_results[$student]['percent'], $this->percent_decimals);
-          $classification = $this->user_results[$student]['classification'];
-          $gradebook->store_grade($userid, $this->paperID, $mark, $adjusted, $classification);
-        }
+      $gradebook = new gradebook($this->db);
+      for ($student = 0; $student < $this->user_no; $student++) {
+        $userid = $this->user_results[$student]['userID'];
+        $mark = $this->user_results[$student]['mark'];
+        $adjusted = MathsUtils::formatNumber($this->user_results[$student]['percent'], $this->percent_decimals);
+        $classification = $this->user_results[$student]['classification'];
+        $gradebook->store_grade($userid, $this->paperID, $mark, $adjusted, $classification);
+      }
     }
   }
   
