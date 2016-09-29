@@ -846,4 +846,27 @@ Class PaperUtils {
     $result->close();
     return $paperids;
   }
+  
+  /**
+   * Get papers finalised in specific year
+   * @param integer $year year
+   * @param string $papertype type of paper
+   * @param mysqli $db db connection
+   * @return array list of ids of papers finialised in supplied year
+   */
+  static public function get_finalised_papers($year, $papertype, $db) {
+    $papers = array();
+    $result = $db->prepare("SELECT paperid
+      FROM gradebook_paper, properties
+      WHERE gradebook_paper.paperid = properties.property_id
+      AND properties.paper_type = ? AND DATE_FORMAT(timestamp, '%Y') = ?");
+    $result->bind_param('si', $papertype, $year);
+    $result->execute();
+    $result->bind_result($paperid);
+    while ($result->fetch()) {
+      $papers[] = $paperid;
+    }
+    $result->close();
+    return $papers;
+  }
 }

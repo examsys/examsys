@@ -69,4 +69,15 @@ class paperutilstest extends unittestdatabase {
         $papers = array();
         $this->assertEquals($papers, Paper_utils::get_papers_by_session('2016', 1, $this->db));
     }
+    
+    /**
+     * Test get finalised papers
+     * @group gradebook
+     */
+    public function test_get_finalised_papers() {
+        $papers = array(2);
+        $this->assertEquals($papers, Paper_utils::get_finalised_papers('2016', 2, $this->db));
+        $papers = array();
+        $this->assertEquals($papers, Paper_utils::get_finalised_papers('2016', 1, $this->db));
+    }
 }
