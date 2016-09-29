@@ -1324,7 +1324,7 @@ class ClassTotals {
     if ($this->paper_type == '0' or $this->paper_type == '1') {
       $result = $this->db->prepare("(SELECT log0.id, metadataID, 0 AS paper_type, questions.q_id, screen, duration, user_answer, q_type, mark FROM log0, questions WHERE log0.q_id = questions.q_id AND metadataID IN (" . implode(',', $metadataids) . ")) UNION ALL (SELECT log1.id, metadataID, 1 AS paper_type, questions.q_id, screen, duration, user_answer, q_type, mark FROM log1, questions WHERE log1.q_id = questions.q_id AND metadataID IN (" . implode(',', $metadataids) . ")) ORDER BY metadataID, screen");
     } elseif ($this->paper_type == '5') {
-      $result = $this->db->prepare("SELECT log$this->paper_type.id, metadataID, $this->paper_type AS paper_type, questions.q_id, 1 AS screen, 0 AS duration, NULL AS user_answer, q_type, mark FROM log$this->paper_type, questions WHERE log$this->paper_type.q_id = questions.q_id AND metadataID IN (" . implode(',', $metadataids) . ")");
+      $result = $this->db->prepare("SELECT log$this->paper_type.id, metadataID, $this->paper_type AS paper_type, questions.q_id, 1 AS screen, 0 AS duration, NULL AS user_answer, q_type, mark FROM log$this->paper_type, questions WHERE log$this->paper_type.q_id = questions.q_id AND metadataID IN (" . implode(',', $metadataids) . ") ORDER BY metadataID");
     } else {
       $result = $this->db->prepare("SELECT log$this->paper_type.id, metadataID, $this->paper_type AS paper_type, questions.q_id, screen, duration, user_answer, q_type, mark FROM log$this->paper_type, questions WHERE log$this->paper_type.q_id = questions.q_id AND metadataID IN (" . implode(',', $metadataids) . ") ORDER BY metadataID, screen");
     }
