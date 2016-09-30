@@ -18,7 +18,6 @@ $string['systeminformation'] = 'System Information';
 $string['table'] = 'Table';
 $string['records'] = 'Records';
 $string['updated'] = 'Updated';
-$string['engine'] = 'Engine';
 $string['application'] = 'Rogō application';
 $string['rogoplugins'] = 'Rogō plug-ins';
 $string['version'] = 'Version';

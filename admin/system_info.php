@@ -87,47 +87,34 @@ function format_space($space) {
 <table cellspacing="0" cellpadding="0" border="0" style="font-size:100%; text-align:left">
 <tr><td style="vertical-align:top">
 <table cellpadding="2" cellspacing="0" border="0" style="font-size:100%; text-align:left; width:360px">
-<tr><td style="width:180px" class="sechead"><?php echo $string['table']; ?></td><td class="sechead"><?php echo $string['records']; ?></td><td class="sechead"><?php echo $string['engine']; ?></td>
+<tr><td style="width:180px" class="sechead"><?php echo $string['table']; ?></td><td class="sechead"><?php echo $string['records']; ?></td>
 </tr>
 <?php
-	// Get info about the database tables
-  $result = $mysqli->prepare("SHOW TABLE STATUS");
-  $result->execute();
-  $result->store_result();
-  $result->bind_result($Name, $Engine, $Version, $Row_format, $Rows, $Avg_row_length, $Data_length, $Max_data_length, $Index_length, $Data_free, $Auto_increment, $Create_time, $Update_time, $Check_time, $Collation, $Checksum, $Create_options, $Comment);
-  while ($result->fetch()) {
-    if ($Name == 'log_late') {
-      $sub_result = $mysqli->prepare("SELECT COUNT(id) FROM log_late");   // Query to get an accurate figure for log_late.
-      $sub_result->execute();
-      $sub_result->store_result();
-      $sub_result->bind_result($Rows);
-      $sub_result->fetch();
-      $sub_result->close();
-      if ($Rows > 0) {
-        echo "<tr><td style=\"color:#C00000\">" . $Name . "&nbsp;<img src=\"../artwork/small_yellow_warning_icon.gif\" width=\"12\" height=\"11\" alt=\"" . $string['warning'] . "\" />&nbsp;<a href=\"log_late_details.php\">" . $string['More details'] . "</a></td>";
-        echo "<td style=\"text-align:right; color:#C00000\">" . number_format($Rows) . "</td>";
-     } else {
-        echo "<tr><td>" . $Name . "</td><td style=\"text-align:right\">" . number_format($Rows) . "</td>";
-      }
-    } elseif ($Name == 'temp_users') {
-      $sub_result = $mysqli->prepare("SELECT COUNT(id) FROM temp_users");   // Query to get an accurate figure for temp_users.
-      $sub_result->execute();
-      $sub_result->store_result();
-      $sub_result->bind_result($Rows);
-      $sub_result->fetch();
-      $sub_result->close();
-      if ($Rows > 0) {
-        echo "<tr><td style=\"color:#C00000\">" . $Name . "&nbsp;<img src=\"../artwork/small_yellow_warning_icon.gif\" width=\"12\" height=\"11\" alt=\"" . $string['warning'] . "\" />&nbsp;<a href=\"clear_guest_users.php\">" . $string['More details'] . "</a></td>";
-        echo "<td style=\"text-align:right; color:#C00000\">" . number_format($Rows) . "</td>";
-      } else {
-        echo "<tr><td>" . $Name . "</td><td style=\"text-align:right\">" . number_format($Rows) . "</td>";
-      }
-    } else {
-      echo "<tr><td>" . $Name . "</td><td style=\"text-align:right\">" . number_format($Rows) . "</td>";
-    }
-    echo "<td>" . $Engine . "</td></tr>\n";
+  // Get info about some database tables
+  $sub_result = $mysqli->prepare("SELECT COUNT(id) FROM log_late");   // Query to get an accurate figure for log_late.
+  $sub_result->execute();
+  $sub_result->store_result();
+  $sub_result->bind_result($Rows);
+  $sub_result->fetch();
+  $sub_result->close();
+  if ($Rows > 0) {
+    echo "<tr><td style=\"color:#C00000\">log_late&nbsp;<img src=\"../artwork/small_yellow_warning_icon.gif\" width=\"12\" height=\"11\" alt=\"" . $string['warning'] . "\" />&nbsp;<a href=\"log_late_details.php\">" . $string['More details'] . "</a></td>";
+    echo "<td style=\"text-align:right; color:#C00000\">" . number_format($Rows) . "</td>";
+  } else {
+    echo "<tr><td>log_late</td><td style=\"text-align:right\">" . number_format($Rows) . "</td>";
   }
-  $result->close();
+  $sub_result = $mysqli->prepare("SELECT COUNT(id) FROM temp_users");   // Query to get an accurate figure for temp_users.
+  $sub_result->execute();
+  $sub_result->store_result();
+  $sub_result->bind_result($Rows);
+  $sub_result->fetch();
+  $sub_result->close();
+  if ($Rows > 0) {
+    echo "<tr><td style=\"color:#C00000\">temp_users&nbsp;<img src=\"../artwork/small_yellow_warning_icon.gif\" width=\"12\" height=\"11\" alt=\"" . $string['warning'] . "\" />&nbsp;<a href=\"clear_guest_users.php\">" . $string['More details'] . "</a></td>";
+    echo "<td style=\"text-align:right; color:#C00000\">" . number_format($Rows) . "</td>";
+  } else {
+    echo "<tr><td>temp_users</td><td style=\"text-align:right\">" . number_format($Rows) . "</td>";
+  }
 
   echo "<tr><td colspan=\"4\">&nbsp;</td></tr>\n";
   echo "<tr><td colspan=\"3\" class=\"sechead\">" . $string['mysqlstatus'] . "</td><td colspan=\"2\"></td></tr>\n";

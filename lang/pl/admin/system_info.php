@@ -18,7 +18,6 @@ $string['systeminformation'] = 'Informacje systemowe';
 $string['table'] = 'Tablica';
 $string['records'] = 'Rekordy';
 $string['updated'] = 'Zaktualizowane';
-$string['engine'] = 'Mechanizm';
 $string['version'] = 'Wersja';
 $string['application'] = 'Aplikacja Rogō';
 $string['rogoplugins'] = 'Wtyczki Rogō';

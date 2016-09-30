@@ -18,7 +18,6 @@ $string['systeminformation'] = 'Systémové informace';
 $string['table'] = 'Tabulka';
 $string['records'] = 'Záznamy';
 $string['updated'] = 'Aktualizováno';
-$string['engine'] = 'Stroj';
 $string['application'] = 'Rogō aplikace';
 $string['version'] = 'Verze';
 $string['webroot'] = 'Web Root';
