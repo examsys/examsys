@@ -144,7 +144,6 @@ require '../include/sysadmin_auth.inc';
   }
   $menudata['modules']              = array('list_modules.php', 'modules_icon.png');
   $menudata['announcments']         = array('list_announcements.php', 'news_48.png');
-  $menudata['optimizetables']       = array('optimize_tables.php', 'optimize_tables_icon.png');
   $menudata['phpinfo']              = array('phpinfo.php', 'php.png');
   $menudata['questionstatuses']     = array('list_statuses.php', 'status_icon.png');
   $menudata['savefailattempts']     = array('list_save_fails.php', 'save_fail_48.png');

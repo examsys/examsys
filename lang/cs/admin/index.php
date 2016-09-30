@@ -25,7 +25,6 @@ $string['deniedlogwarnings'] = 'Upozornění na Odepřené přístupy';
 $string['ebelgridtemplates'] = 'Šablony Ebelovy mřížky';
 $string['faculties'] = 'Fakulty';
 $string['modules'] = 'Moduly';
-$string['optimizetables'] = 'Optimalizovat Tabulky';
 $string['phpinfo'] = 'phpinfo()';
 $string['schools'] ='Školy';
 $string['smsimports'] = 'Nahrát SMS ';
