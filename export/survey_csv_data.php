@@ -100,9 +100,8 @@ $hits = 0;
 
 $sql = <<< SQL
 SELECT DISTINCT sid.student_id, u.username, u.title, u.surname, u.initials, u.grade,
-u.gender, lm.year, lm.started, l.q_id, l.user_answer, q.q_type, l.screen
+u.gender, lm.year, lm.started, l.q_id, l.user_answer, l.screen
 FROM log3 l INNER JOIN log_metadata lm ON l.metadataID = lm.id
-INNER JOIN questions q ON l.q_id = q.q_id
 INNER JOIN users u ON lm.userID = u.id
 LEFT JOIN sid ON u.id = sid.userID
 WHERE lm.paperID = ?
@@ -114,7 +113,7 @@ SQL;
 $stmt = $mysqli->prepare($sql);
 $stmt->bind_param('issss', $paper_id, $rep_year, $rep_course, $_GET['startdate'], $_GET['enddate']);
 $stmt->execute();
-$stmt->bind_result($student_id, $username, $title, $surname, $initials, $grade, $gender, $year, $started, $q_id, $user_answer, $q_type, $screen);
+$stmt->bind_result($student_id, $username, $title, $surname, $initials, $grade, $gender, $year, $started, $q_id, $user_answer, $screen);
 while($stmt->fetch()) {
   $log_array[$username][$screen][$q_id] = $user_answer;
   $log_array[$username]['student_id'] = $student_id;
