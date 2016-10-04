@@ -971,7 +971,7 @@ QUERY;
 
     $this->tableList['question_statuses'] = <<<QUERY
         CREATE TABLE `question_statuses` (
-          `id` int(11) NOT NULL AUTO_INCREMENT,
+          `id` int(4) NOT NULL AUTO_INCREMENT,
           `name` varchar(255) NOT NULL,
           `exclude_marking` tinyint(4) NOT NULL DEFAULT '0',
           `retired` tinyint(3) NOT NULL,
@@ -1010,7 +1010,7 @@ QUERY;
           `deleted` datetime default NULL,
           `locked` datetime default NULL,
           `std` varchar(100) default NULL,
-          `status` tinyint(3) NOT NULL,
+          `status` int(4) NOT NULL,
           `q_option_order` enum('display order','alphabetic','random') default NULL,
           `score_method` enum('Mark per Question','Mark per Option','Allow partial Marks','Bonus Mark') default NULL,
           `settings` text,
@@ -1033,8 +1033,8 @@ QUERY;
 
 $this->tableList['questions_modules'] = <<<QUERY
         CREATE TABLE `questions_modules` (
-          `q_id` int(4) unsigned NOT NULL DEFAULT '0',
-          `idMod` int(11) unsigned NOT NULL DEFAULT '0',
+          `q_id` int(4) NOT NULL,
+          `idMod` int(11) NOT NULL ,
           KEY `idx_idmod` (`idMod`),
           PRIMARY KEY (`q_id`,`idMod`)
         ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
