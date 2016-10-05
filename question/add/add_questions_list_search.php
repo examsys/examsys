@@ -75,7 +75,7 @@ $status_array = QuestionStatus::get_all_statuses($mysqli, $string, true);
       }
     }
     function checkForm() {
-      if ($('#searchtype').val() == '%' && $('#searchterm').val() == '' && $('#owner').val() == '') {
+      if ($('#searchterm').val() == '' || ($('#searchtype').val() == '%' && $('#owner').val() == '')) {
         alert("<?php echo $string['msg1']; ?>");
         return false;
       }
@@ -183,7 +183,7 @@ $status_array = QuestionStatus::get_all_statuses($mysqli, $string, true);
     $search = false;
   }
 
-  if ($search and ($searchterm != '' or $qtype != '%' or $owner != '')) {
+  if ($search and ($searchterm != '' and ($qtype != '%' or $owner != ''))) {
 
     $old_id = 0;
     $searchterm = '%' . $searchterm . '%';
