@@ -39,17 +39,20 @@ if ($updater_utils->check_version("6.2.0")) {
         $configObject->set_setting('cfg_api_enabled', $configObject->get('cfg_api_enabled'), 'boolean');
         $updater_utils->record_update('rogo1829_newconfigs');
     }
-    // Update config names.
-    $updatesql = "UPDATE config set setting = 'summative_cohort_sizes' WHERE setting = 'cohort_sizes'";
-    $updater_utils->execute_query($updatesql, true);
-    $updatesql = "UPDATE config set setting = 'summative_max_sittings' WHERE setting = 'max_sittings'";
-    $updater_utils->execute_query($updatesql, true);
-    $updatesql = "UPDATE config set setting = 'paper_max_duration' WHERE setting = 'max_duration'";
-    $updater_utils->execute_query($updatesql, true);
-    $updatesql = "UPDATE config set setting = 'paper_timezones', type = 'timezones' WHERE setting = 'timezones'";
-    $updater_utils->execute_query($updatesql, true);
-    // New file config override setting.
-    $new_lines = array("// Override db config settings with configs in this file?\n","\$file_config_override = true;\r\n");
-    $target_line = '$cfg_api_enabled ';
-    $updater_utils->add_line($string, '$file_config_override', $new_lines, 191, $cfg_web_root, $target_line, 1);
+    if (!$updater_utils->has_updated('rogo1829_updateconfigs')) {
+      // Update config names.
+      $updatesql = "UPDATE config set setting = 'summative_cohort_sizes' WHERE setting = 'cohort_sizes'";
+      $updater_utils->execute_query($updatesql, true);
+      $updatesql = "UPDATE config set setting = 'summative_max_sittings' WHERE setting = 'max_sittings'";
+      $updater_utils->execute_query($updatesql, true);
+      $updatesql = "UPDATE config set setting = 'paper_max_duration' WHERE setting = 'max_duration'";
+      $updater_utils->execute_query($updatesql, true);
+      $updatesql = "UPDATE config set setting = 'paper_timezones', type = 'timezones' WHERE setting = 'timezones'";
+      $updater_utils->execute_query($updatesql, true);
+      // New file config override setting.
+      $new_lines = array("// Override db config settings with configs in this file?\n","\$file_config_override = true;\r\n");
+      $target_line = '$cfg_api_enabled ';
+      $updater_utils->add_line($string, '$file_config_override', $new_lines, 191, $cfg_web_root, $target_line, 1);
+      $updater_utils->record_update('rogo1829_updateconfigs');
+    }
 }
