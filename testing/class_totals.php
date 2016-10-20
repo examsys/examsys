@@ -27,9 +27,6 @@
 require '../include/sysadmin_auth.inc';
 set_time_limit(0);
 
-// Turn off all error reporting
-error_reporting(0);
-
 ob_start();
   
 function getData($url) {

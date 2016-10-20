@@ -27,6 +27,28 @@
 class encryp {
        
     /**
+     * Encrypt a password that can be de-crypted.
+     * 
+     * @param $string $password 
+     * @return $string encrypted passsword
+     */
+    public function mcrypt_password($password) {
+        $iv = mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND);
+        $enc = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, UserUtils::get_salt(), $password, MCRYPT_MODE_ECB, $iv);
+        return trim(base64_encode($enc));
+    }
+    /**
+    * Decrypt the password.
+     * 
+     * @param string $enc_password encrypted passsword
+     * @return string decrypted passsword
+     */
+    public function mdecrypt_password($encpassword) {
+        $iv = mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND);
+        $dec = mcrypt_decrypt(MCRYPT_RIJNDAEL_256, UserUtils::get_salt(), base64_decode($encpassword), MCRYPT_MODE_ECB, $iv);
+        return trim($dec);
+    }
+    /**
      * This is function encpw encrpts a password using SHA-512 for storage in the DB.
      * MD5 encryption is kept for backwards compatibility.
      *

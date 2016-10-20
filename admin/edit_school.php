@@ -30,11 +30,11 @@ $schoolid = check_var('schoolid', 'GET', true, false, true);
 $school = $string['prompt'];
 $faculty = '';
 
-$result = $mysqli->prepare("SELECT school, facultyID FROM schools WHERE id = ? AND deleted IS NULL");
+$result = $mysqli->prepare("SELECT school, facultyID, code, externalid, externalsys FROM schools WHERE id = ? AND deleted IS NULL");
 $result->bind_param('i', $schoolid);
 $result->execute();
 $result->store_result();
-$result->bind_result($school, $curr_faculty);
+$result->bind_result($school, $curr_faculty, $curr_code, $curr_externalid, $curr_externalsys);
 $result->fetch();
 if ($result->num_rows == 0) {
   $result->close();
@@ -44,25 +44,27 @@ if ($result->num_rows == 0) {
 $result->close();
 
 if (isset($_POST['submit'])) {
-  $school_tmp = trim( $_POST['school']);
-  $faculty = trim( $_POST['faculty']);
+  $school_tmp = check_var('school', 'POST', true, false, true);
+  $faculty = check_var('faculty', 'POST', true, false, true);
+  $code = check_var('code', 'POST', false, false, true);
+  $duplicate = false;
+  $changed = ($curr_faculty != $faculty or $school != $school_tmp or $curr_code != $code);
+  if (!SchoolUtils::update_school($schoolid, $faculty, $school_tmp, $code, $curr_externalid, $curr_externalsys, $mysqli)) {
+     $duplicate = true;
+  }
 
-  $changed = ($curr_faculty != $faculty or $school != $school_tmp);
-
-  if ($changed and SchoolUtils::school_exists_in_faculty($faculty, $school_tmp, $mysqli)) {
+  if ($changed and $duplicate) {
     $error = 'duplicate';
     $school = $school_tmp;
     $curr_faculty = $faculty;
   } else {
-    if ($changed) {
-      $result = $mysqli->prepare("UPDATE schools SET facultyID = ?, school = ? WHERE id = ?");
-      $result->bind_param('isi', $faculty, $school_tmp, $schoolid);
-      $result->execute();
-      $result->close();
-      
+    if ($changed) {     
       $logger = new Logger($mysqli);
       if ($school != $school_tmp)     $logger->track_change('School', $schoolid, $userObject->get_user_ID(), $school, $school_tmp, $string['name']);
       if ($curr_faculty != $faculty)  $logger->track_change('School', $schoolid, $userObject->get_user_ID(), $curr_faculty, $faculty, $string['faculty']);
+      if ($curr_code != $code) {
+        $logger->track_change('School', $schoolid, $userObject->get_user_ID(), $curr_code, $code, $string['code']);
+      }
     }
 
     header("location: list_schools.php");
@@ -72,11 +74,11 @@ if (isset($_POST['submit'])) {
 
 $faculties = 0;
 $faculty_list = array();
-$result = $mysqli->prepare("SELECT id, name FROM faculty WHERE deleted IS NULL ORDER BY name");
+$result = $mysqli->prepare("SELECT id, code, name FROM faculty WHERE deleted IS NULL ORDER BY name");
 $result->execute();
-$result->bind_result($facultyID, $name);
+$result->bind_result($facultyID, $code, $name);
 while ($result->fetch()) {
-  $faculty_list[] = array($facultyID, $name);
+  $faculty_list[] = array($facultyID, $code, $name);
   $faculties++;
 }
 $result->close();
@@ -153,10 +155,13 @@ $result->close();
     <?php
       foreach ($faculty_list as $faculty) {
         $sel = ($faculty[0] == $curr_faculty) ? ' selected="selected"' : '';
-        echo "<option value=\"{$faculty[0]}\"{$sel}>{$faculty[1]}</option>\n";
+        echo "<option value=\"{$faculty[0]}\"{$sel}>{$faculty[1]} {$faculty[2]}</option>\n";
       }
     ?>
     </select></td></tr>
+    <tr><td class="field"><?php echo $string['code'] ?></td><td><input type="text" size="30" maxlength="30" name="code" value="<?php echo $curr_code; ?>"/></td></tr>
+    <tr><td class="field"><?php echo $string['externalid'] ?></td><td><?php echo $curr_externalid; ?></td></tr>
+    <tr><td class="field"><?php echo $string['externalsys'] ?></td><td><?php echo $curr_externalsys; ?></td></tr>
     </table>
     <p><input type="submit" class="ok" name="submit" value="<?php echo $string['save'] ?>"><input class="cancel" id="cancel" type="button" name="home" value="<?php echo $string['cancel'] ?>" /></p>
   </form>

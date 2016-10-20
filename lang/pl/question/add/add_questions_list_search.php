@@ -27,4 +27,5 @@ $string['warningnoleadin'] = 'Uwaga: brak sformułowania pytania!';
 $string['locked'] = 'Zablokowane';
 $string['anyowner'] = '(każdy właściciel)';
 $string['myquestionsonly'] = '(tylko moje pytania)';
+$string['msg1'] = 'Search range is too large, please try to narrow your search.';
 ?>

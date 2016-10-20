@@ -48,15 +48,15 @@ class schoolutilstest extends unittestdatabase {
      */
     public function test_update_school() {
         // Check successful update.
-        $this->assertTrue(SchoolUtils::update_school(1, 1, 'test update school', $this->db));
+        $this->assertTrue(SchoolUtils::update_school(1, 1, 'test update school', null, '123456', 'external', $this->db));
         // Check unsuccessful update - duplicate name.
-        $this->assertFalse(SchoolUtils::update_school(2, 1, 'test update school', $this->db));
+        $this->assertFalse(SchoolUtils::update_school(2, 1, 'test update school', null, '123456', null, $this->db));
         // Check unsuccessful update - no school supplied.
-        $this->assertFalse(SchoolUtils::update_school(2, 1, '', $this->db));
+        $this->assertFalse(SchoolUtils::update_school(2, 1, '', 'TST2', '678912', null, $this->db));
         // Check unsuccessful update - no faculty supplied.
-        $this->assertFalse(SchoolUtils::update_school(2, '', 'test update school 2', $this->db));
+        $this->assertFalse(SchoolUtils::update_school(2, '', 'test update school 2', 'TST2', '678912', null, $this->db));
         // Check schools table update as expected.
-        $querytable = $this->getConnection()->createQueryTable('schools', 'SELECT id, school, facultyID FROM schools');
+        $querytable = $this->getConnection()->createQueryTable('schools', 'SELECT id, school, facultyID, code, externalid, externalsys FROM schools');
         $expectedtable = $this->get_expected_data_set('updatedschools')->getTable("schools");
         $this->assertTablesEqual($expectedtable, $querytable); 
     }
@@ -69,5 +69,20 @@ class schoolutilstest extends unittestdatabase {
         $this->assertTrue(SchoolUtils::school_in_use(1, $this->db));
         // Check not in use.
         $this->assertFalse(SchoolUtils::school_in_use(2, $this->db));
+    }    
+    /**
+     * Test getting school id from external id
+     * @group school
+     */
+    public function test_get_schoolid_from_externalid() {
+        $this->assertEquals(1, SchoolUtils::get_schoolid_from_externalid("ABC", $this->db));
+    }
+    /**
+     * Test comparing  faculties with external list
+     * @group achool
+     */
+    public function test_diff_external_schools_to_internal_schools() {
+        $external = array("ABCD", "EFGH", "IJKL");
+        $this->assertEquals(array("ABC"), SchoolUtils::diff_external_schools_to_internal_schools($external, 'external', $this->db));
     }
 }

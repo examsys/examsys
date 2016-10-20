@@ -115,6 +115,13 @@ Class Logger {
     return $change_data;
   }
 
+  /**
+   * Record that a user tried to access a page and tried to was denied access.
+   *
+   * @param int $user_id The internal rogo id of the user
+   * @param string $title The type of error
+   * @param string $msg Details about why the user was denied access
+   */
   public function record_access_denied($user_id, $title, $msg) {
     $current_address = NetworkUtils::get_client_address();
 
@@ -122,7 +129,10 @@ Class Logger {
 
     $path = str_replace($configObject->get('cfg_web_root'), '', $_SERVER['SCRIPT_FILENAME']);
 
-    $page = $path . '?'. $_SERVER['QUERY_STRING'];
+    if (isset($_SERVER['QUERY_STRING'])) {
+      // The page has a query part for it's URL.
+      $page = $path . '?'. $_SERVER['QUERY_STRING'];
+    }
 
     $result = $this->_mysqli->prepare('INSERT INTO denied_log VALUES(NULL, ?, NOW(), ?, ?, ?, ?)');
     $result->bind_param('issss', $user_id, $current_address, $page, $title, $msg);

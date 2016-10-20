@@ -28,29 +28,24 @@ require_once '../include/errors.inc';
 $facultyID = check_var('facultyID', 'REQUEST', true, false, true);
 
 // Check the Faculty ID actually exists for editing.
-$name = FacultyUtils::faculty_name_by_id($facultyID, $mysqli);
-if (!$name) {
+$details = FacultyUtils::get_faculty_details_by_id($facultyID, $mysqli);
+if (is_null($details['name'])) {
   $msg = sprintf($string['furtherassistance'], $configObject->get('support_email'), $configObject->get('support_email'));
   $notice->display_notice_and_exit($mysqli, $string['pagenotfound'], $msg, $string['pagenotfound'], '../artwork/page_not_found.png', '#C00000', true, true);
 }
 
 $duplicate = false;
 if (isset($_POST['submit'])) {
-  // Check for existing name
-  
-  if (FacultyUtils::facultyname_exists($_POST['new_faculty'], $mysqli)) {
+  $faculty = check_var('new_faculty', 'POST', true, false, true);
+  $code = check_var('code', 'POST', false, false, true);
+  if (!FacultyUtils::update_faculty($facultyID, $faculty, $code, $details['externalid'], $details['externalsys'], $mysqli)) {
     $duplicate = true;
-  }
-          
-  if (!$duplicate) {
-    $result = $mysqli->prepare("UPDATE faculty SET name = ? WHERE id = ?");
-    $result->bind_param('si', $_POST['new_faculty'], $facultyID);
-    $result->execute();
-    $result->close();
-    
+  } else {
     $logger = new Logger($mysqli);
-    if ($name != $_POST['new_faculty']) $logger->track_change('Faculty', $facultyID, $userObject->get_user_ID(), $name, $_POST['new_faculty'], 'name');
-
+    if ($details['name'] != $faculty) $logger->track_change('Faculty', $facultyID, $userObject->get_user_ID(), $details['name'], $faculty, $string['name']);
+    if ($details['code'] != $code) {
+      $logger->track_change('Faculty', $facultyID, $userObject->get_user_ID(), $details['code'], $code, $string['code']);
+    }
   ?>
 <!DOCTYPE html>
 <html>
@@ -104,17 +99,20 @@ if (isset($_POST['submit'])) {
 <body>
 <h1><?php echo $string['editfaculty']; ?></h1>
 <form id="theform" name="myform" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" autocomplete="off">
-<div>
+<table cellpadding="0" cellspacing="2" border="0">
 <?php
 if ($duplicate) {
-  echo '<input type="text" style="width:99%; background-color:#FFC0C0; border:solid 1px #C00000; color:#800000" name="new_faculty" value="' . $_POST['new_faculty'] . '" maxlength="80" required autofocus />';
+  echo '<td class="field">' . $string['name'] . '</td><td><input type="text" style="width:99%; background-color:#FFC0C0; border:solid 1px #C00000; color:#800000" name="new_faculty" value="' . $details['name'] .'" maxlength="80" required autofocus /></td></tr>';
   echo "<script>\nalert('" . $string['warning'] . "');\n</script>\n";
 } else {
-  echo '<input type="text" style="width:99%" name="new_faculty" value="' . $name . '" maxlength="80" required autofocus />';
+  echo '<tr><td class="field">' . $string['name'] . '</td><td><input type="text" style="width:99%" name="new_faculty" value="' . $details['name'] . '" maxlength="80" required autofocus /></td></tr>';
 }
 ?>
+<tr><td class="field"><?php echo $string["code"] ?></td><td><input type="text" size="30" maxlength="30" name="code" value="<?php echo $details['code']; ?>"/></td></tr>
+<tr><td class="field"><?php echo $string["externalid"] ?></td><td><?php echo $details['externalid']; ?></td></tr>
+<tr><td class="field"><?php echo $string['externalsys'] ?></td><td><?php echo $details['externalsys']; ?></td></tr>
 <input type="hidden" name="facultyID" value="<?php echo $facultyID ?>" />
-</div>
+</table>
 <div align="right"><input type="submit" name="submit" value="<?php echo $string['ok'] ?>" class="ok" /><input type="button" name="cancel" value="<?php echo $string['cancel'] ?>" class="cancel" style="margin-right:0" onclick="window.close();" /><input type="hidden" name="returnhit" value="" /></div>
 </form>
 

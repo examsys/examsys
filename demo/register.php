@@ -83,7 +83,7 @@ if (isset($_POST['submit'])) {
 	
 	$schoolID = SchoolUtils::add_school(1, 'School of Practice', $mysqli);   			// Make sure the 'School of Practice' school exists.
 
-	CourseUtils::add_course($schoolID, 'A10DEMO', 'Demonstration BSc', $mysqli);  // Make sure demo course exists.
+	CourseUtils::add_course($schoolID, 'A10DEMO', 'Demonstration BSc', null, null, $mysqli);  // Make sure demo course exists.
 	
 	$new_modid = module_utils::add_modules($new_moduleid, $_POST['new_grade2'], 1, $schoolID, NULL, NULL, true, true, true, false, false, true, false, $mysqli, 0, 0, 1, 1, '07/01');
 

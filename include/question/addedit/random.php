@@ -37,17 +37,23 @@
                   <ul id="questionlist" class="radio-list clearfix">
 <?php
 $i = 1;
-foreach ($question->options as $option):
-  $option_text = ltrim(strip_tags(QuestionUtils::get_leadin($option->get_text(), $mysqli)));
-  if (strlen($option_text) > 200) {
+$j = 0;
+$randomids = random_utils::get_random_qids_for_question($question->id, $mysqli);
+if ($randomids !== false) {
+  foreach ($question->options as $option) {
+    $qid = $randomids[$j];
+    $j++;
+    $option_text = ltrim(strip_tags(QuestionUtils::get_leadin($qid, $mysqli)));
+    if (strlen($option_text) > 200) {
       $option_text = wordwrap($option_text, 200);
       $option_text = substr($option_text, 0, strpos($option_text, "\n")) . '&hellip;';
-  }
+    }
 ?>
-                    <li><label for="option_text<?php echo $i ?>" class="fullwidth"><input id="option_text<?php echo $i ?>" name="option_text<?php echo $i ?>" value="<?php echo $option->get_text() ?>" type="checkbox" checked="checked" class="random-q" /> <?php echo $option_text ?></label><input name="optionid<?php echo $i ?>" value="<?php echo $option->id ?>" type="hidden" /></li>
+                    <li><label for="option_text<?php echo $i ?>" class="fullwidth"><input id="option_text<?php echo $i ?>" name="option_text<?php echo $i ?>" value="<?php echo $qid ?>" type="checkbox" checked="checked" class="random-q" /> <?php echo $option_text ?></label><input name="optionid<?php echo $i ?>" value="<?php echo $option->id ?>" type="hidden" /></li>
 <?php
   $i++;
-endforeach;
+  }
+}
 ?>
                   </ul>
                 </div>

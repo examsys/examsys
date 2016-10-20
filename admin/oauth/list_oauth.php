@@ -40,9 +40,6 @@ while ($result->fetch()) {
 $result->close();
 $render = new render($configObject);
 $toprightmenu = draw_toprightmenu();
-$config['cfg_page_charset'] = $configObject->get('cfg_page_charset');
-$config['cfg_install_type'] = $configObject->get('cfg_install_type');
-$config['rogo_version'] = $configObject->get('rogo_version');
 $lang['title'] = $string['oauthkeys'];
 $lang['view'] = $string['listoauthclient'];
 $lang['delete'] = $string['deleteoauthkeys'];
@@ -56,7 +53,7 @@ $additionaljs = "<script type=\"text/javascript\" src=\"../../js/jquery_tablesor
     <script type=\"text/javascript\" src=\"js/oauth.min.js\"></script>";
 $addtionalcss = "<link rel=\"stylesheet\" type=\"text/css\" href=\"../../css/list.css\"/>";
 $breadcrumb = array($string['home'] => "../../index.php", $string['administrativetools'] => "../index.php");
-$render->render_admin_header($lang, $config, $additionaljs, $addtionalcss);
+$render->render_admin_header($lang, $additionaljs, $addtionalcss);
 $render->render_admin_options('list_oauthclient.php', 'lti_key_16.png', $lang, $toprightmenu, 'admin/options_list.html');
 $render->render_admin_content($breadcrumb, $lang);
 $render->render_admin_list($oauth, $header);

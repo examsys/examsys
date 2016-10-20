@@ -28,7 +28,7 @@ require_once '../include/staff_auth.inc';
   <meta http-equiv="content-type" content="text/html;charset=<?php echo $configObject->get('cfg_page_charset') ?>" />
 	<title>Export to QTI</title>
 
-	<script type="text/javascript" src="./js/mootools-1.2.4.js"></script> 
+	<script type="text/javascript" src="./qti/js/mootools-1.2.4.js"></script>
 	
 	<style type="text/css">
 		body {background-color:white; color:black; font-family:Arial,sans-serif;margin:0px;}
@@ -60,11 +60,11 @@ require_once '../include/staff_auth.inc';
 	<?php foreach ($result['load']['data']->papers as & $paper) : ?>
 		<?php if (count($result['load']['data']->papers) > 1) : ?>
 			<tr><td colspan="6" class="divider" style="font-size:120%">Paper <?php echo $paper->paper_title ?></td></tr>
-			<tr><td colspan="6" style="height:5px"><img src="../../../artwork/divider_bar.gif" width="290" height="1"></td></tr>
+			<tr><td colspan="6" style="height:5px"><hr noshade="noshade" /></td></tr>
 		<?php endif; ?>
 		<?php foreach ($paper->screens as $s_id => $screen) : ?>
 			<tr><td colspan="6" class="divider">Screen <?php echo $s_id ?></td></tr>
-			<tr><td colspan="6" style="height:5px"><img src="../../../artwork/divider_bar.gif" width="290" height="1"></td></tr>
+			<tr><td colspan="6" style="height:5px"><hr noshade="noshade" /></td></tr>
 			<?php foreach ($screen->question_ids as $q_id) : ?>
 				<?php $question = FindQuestion($result['load']['data']->questions, $q_id); ?>
 					<tr>

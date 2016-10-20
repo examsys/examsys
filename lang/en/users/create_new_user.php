@@ -42,6 +42,7 @@ $string['externalstaff'] = 'External Staff';
 $string['nhslecturer'] = 'NHS Lecturer/Consultant';
 $string['nhsadmin'] = 'NHS Admin';
 $string['externalexaminer'] = 'External Examiner';
+$string['internalreviewer'] = 'Internal Reviewer';
 $string['standardssetter'] = 'Standards Setter';
 $string['invigilator'] = 'Invigilator';
 $string['students'] = 'Students';

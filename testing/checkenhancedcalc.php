@@ -35,8 +35,6 @@ require_once $cfg_web_root . 'include/custom_error_handler.inc';
 global $cfg_web_root;
 global $cfg_web_root;
 require $cfg_web_root . 'plugins/questions/enhancedcalc/enhancedcalc.class.php';
-error_reporting(E_ALL);
-
 
 echo "<html>";
 echo "Starting<br><br>";

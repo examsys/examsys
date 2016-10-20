@@ -22,8 +22,22 @@
 * @package
 */
 
+// Calculate what the current academic session is.
+$yearutils = new yearutils($mysqli);
+$current_session = $yearutils->get_current_session();
+$next_session = $yearutils->get_next_session();
+$academic_year = $yearutils->get_academic_session($current_session);
+$next_academic_year = $yearutils->get_academic_session($next_session);
 ?>
 <script>
+  $(document).ready(function() {
+      $('#sms').click(function() {
+        $('#sms').append('<img src="../artwork/working.gif" class="busyicon" />');
+     });
+     $('#sms2').click(function() {
+        $('#sms2').append('<img src="../artwork/working.gif" class="busyicon" />');
+     });
+  });
   function viewDetails() {
     window.location = "scheduling_details.php?paperID=" + $('#lineID').val();
   }
@@ -38,7 +52,28 @@
 <div style="display:none" id="menu1b">
 	<div class="menuitem"<a href="#" onclick="viewDetails(); return false;"><img class="sidebar_icon" src="../artwork/information_icon.gif" alt="" /><?php echo $string['viewdetails'] ?></a></div>
 </div>
-
+<div id="menu1c">
+<?php
+    if ($userObject->has_role(array('SysAdmin'))) {
+        $smsplugin_name = plugin_manager::get_plugin_type_enabled('plugin_sms');
+        foreach($smsplugin_name as $name) {
+            $smspluginns = 'plugins\SMS\\' . $name . '\\' . $name;
+            $smsplugin = new $smspluginns($mysqli, $userObject->get_user_ID());
+            $assessmentimport = $smsplugin->supports_assessment_import() ;
+            if ($assessmentimport !== false) {
+    ?>
+    <div id="sms" class="menuitem">
+        <a class="help_tip" title="<?php echo $assessmentimport['tooltip'] ?>" href="<?php echo $assessmentimport['url'] ?>?session=<?php echo $current_session ?>"><img class="sidebar_icon" src="../artwork/sync_16.png" alt="" /><?php echo $assessmentimport['blurb'] ?> (<?php echo $academic_year ?>)</a>
+    </div>
+    <div id="sms2" class="menuitem">
+        <a class="help_tip" title="<?php echo $assessmentimport['tooltip'] ?>" href="<?php echo $assessmentimport['url'] ?>?session=<?php echo $next_session ?>"><img class="sidebar_icon" src="../artwork/sync_16.png" alt="" /><?php echo $assessmentimport['blurb'] ?> (<?php echo $next_academic_year ?>)</a>
+    </div>
+    <?php
+            }
+        }
+    }
+    ?>
+</div>
 <input type="hidden" id="lineID" name="lineID" value="" />
 </form>
 </div>

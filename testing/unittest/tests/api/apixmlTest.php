@@ -83,7 +83,7 @@ class apixmltest extends unittestdatabase {
         $api = new \api\apixml($this->faculty);
         $api->validate('facultymanagement', 'managementrequest');
         $requestobject = new \api\facultymanagement($this->db);
-        $fields = array('id', 'name');
+        $fields = array('id', 'name', 'code', 'externalid');
         $actions = array('create');
         $perm['create'] = true;
         $userid = 1;
@@ -91,6 +91,7 @@ class apixmltest extends unittestdatabase {
             "statuscode" => 100,
             "status" => 'OK',
             "id" => 3,
+            "externalid" => null,
             "error" => null,
             "node" => 'create',
             "nodeid" => 'str1234');
@@ -124,6 +125,7 @@ class apixmltest extends unittestdatabase {
             "statuscode" => 100,
             "status" => 'OK',
             "id" => 2,
+            "externalid" => null,
             "error" => array(),
             "node" => 'create',
             "nodeid" => 'str1234');

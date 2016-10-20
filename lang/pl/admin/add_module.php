@@ -51,4 +51,5 @@ $string['session'] = 'Sesja';
 $string['module'] = 'Moduł'; 
 $string['level'] = 'poziom'; 
 $string['tooltip_format'] = 'Format to: MM/DD';
+$string['duplicateerror'] = 'Module ID in use, please use another.';
 ?>

@@ -24,4 +24,7 @@ $string['faculty'] = 'Wydział';
 $string['prompt'] = 'Katedra';
 $string['enternameofschool'] = 'Podaj nazwę dla katedry.';
 $string['duplicateerror'] = 'Nazwa katedry musi być unikalna w obszarze wydziału';
+$string['externalid'] = 'External ID';
+$string['externalsys'] = 'External System';
+$string['code'] = 'School Code';
 ?>

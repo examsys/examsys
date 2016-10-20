@@ -108,7 +108,7 @@ class ims_enterprise_settings {
       $component = 'plugin_ims';
       // Edit IMS Settings.
       foreach ($settings as $setting => $value) {
-        $result = $mysqli->prepare("INSERT INTO config VALUE (?, ?, ?)");
+        $result = $mysqli->prepare("INSERT INTO config (component, setting, value) VALUE (?, ?, ?)");
         $result->bind_param('sss', $component, $setting, $value);
         $result->execute();
         $result->close();

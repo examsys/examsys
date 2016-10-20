@@ -373,6 +373,16 @@ if (isset($_POST['Submit'])) {
       $properties->set_bidirectional($_POST['bidirectional']);
     }
 
+    // External system details;
+    $extid = check_var('externalid', 'POST', false, false, true);
+    $extsys = check_var('externalsys', 'POST', false, false, true);
+    if (!is_null($extid)) {
+      $properties->set_externalid($extid);
+    }
+    if (!is_null($extsys)) {
+      $properties->set_externalsys($extsys);
+    }
+    
     if ($properties->get_paper_type() == '6') {
       if (isset($_POST['display_photos'])) {
         $properties->set_display_correct_answer(1);
@@ -1319,9 +1329,32 @@ if ($properties->get_paper_type() != '4' and $properties->get_paper_type() != '5
       }
     }
     $folder_details->close();
-    echo "</select>\n</td></tr>\n";
-
+    
+    // External system details.
+    $sms = \plugins\plugins_sms::get_sms($mysqli);
+    if ($sms !== false) {
+        echo "</select>\n</td></tr>\n";
+        if ($userObject->has_role('SysAdmin')) {
+            // Sys admins can edit.
+            echo "<tr><td>" . $string['externalsys'] . "</td><td><select name=\"externalsys\">";
+            echo "<option value=\"\"></option>\n";
+            foreach ($sms as $s) {
+                if ($s == $properties->get_externalsys()) {
+                  $selected = "selected";
+                } else {
+                  $selected = "";
+                }
+                echo "<option value=\"$s\" $selected>$s</option>\n";
+            }
+            echo "</select></td></tr>";
+            echo "<tr><td>" . $string['externalid'] . "</td><td><input type=\"text\" size=\"30\" maxlength=\"255\" name=\"externalid\" value=\"" . $properties->get_externalid() . "\"></td></tr>";
+        } else {
+            // Non sys admins can only view.
+          echo "<tr><td>" . $string['externalid'] . "</td><td>" . $properties->get_externalid() . "</td></tr>";
+          echo "<tr><td>" . $string['externalsys']. "</td><td>" . $properties->get_externalsys() . "</td></tr>";
+        }
     echo "<tr><td colspan=\"4\">&nbsp;</td></tr>\n";
+    }
     if ($properties->get_paper_type() == '4') {
       echo '<input type="hidden" name="bgcolor" value="' . $properties->get_bgcolor() . '" />';
       echo '<input type="hidden" name="fgcolor" value="' . $properties->get_fgcolor() . '" />';
@@ -1579,6 +1612,19 @@ if ($properties->get_paper_type() != '4' and $properties->get_paper_type() != '5
 
 <table id="security" class="tabsection" style="display: none">
 <tr><td class="tabtitle"><img src="../artwork/security_heading_icon.png" alt="Icon" align="middle" /><?php echo $string['securityheading']; ?></td></tr>
+<?php
+  if ($properties->get_summative_lock() and $userObject->has_role(array('SysAdmin'))) {
+?>
+<tr>
+  <td>
+    <div class="yellowwarn">
+      <img src="../artwork/paper_locked_padlock.png" width="32" height="32" alt="Locked" /><span style="vertical-align:top; padding-left:10px"><?php echo $string['donotchangewarning']; ?></span>
+    </div>
+  </td>
+</tr>
+<?php
+  }
+?>
 <tr>
 <td style="text-align:center; vertical-align:top">
 <?php
@@ -2197,14 +2243,15 @@ if ($properties->get_paper_type() != '4' and $properties->get_paper_type() != '5
   if (count($schools) > 0) {
     $schools_list = implode(',', $schools);
     if ($userObject->has_role('SysAdmin')) {
-      $school_sql = '';
+      $school_sql = 'AND user_deleted IS NULL';
     } else {
-      $school_sql = "AND schoolid IN ($schools_list)";
+      $school_sql = "AND schoolid IN ($schools_list) AND user_deleted IS NULL";
     }
     $admin_school_sql = <<< SQL
 UNION SELECT DISTINCT users.id, title, initials, surname, first_names
 FROM users, admin_access
 WHERE users.id = admin_access.userID AND admin_access.schools_id IN ($schools_list)
+AND user_deleted IS NULL
 SQL;
   }
 
@@ -2212,10 +2259,21 @@ SQL;
   $current_internals = $properties->get_internal_reviewers();
   $current_internals_sql = '';
   if (count($properties->get_internal_reviewers()) > 0) {
-    $current_internals_sql = 'UNION SELECT DISTINCT id, title, initials, surname, first_names FROM users WHERE id IN (' . implode(',', array_keys($current_internals)) . ')';
+    $current_internals_sql = 'UNION SELECT DISTINCT id, title, initials, surname, first_names FROM users WHERE id IN (' . implode(',', array_keys($current_internals)) . ') AND user_deleted IS NULL';
+  }
+  // Add internal reviwers to list.
+  $internal_reviwers = 'UNION SELECT DISTINCT id, title, initials, surname, first_names FROM users WHERE roles = "Internal Reviewer" AND user_deleted IS NULL';
+
+  // Dynamically choose tables and join based on role.
+  if ($userObject->has_role('SysAdmin')) {
+    $tables = "users, modules_staff";
+    $join = "users.id = modules_staff.memberID";
+  } else {
+    $tables = "users, modules_staff, modules";
+    $join = "users.id = modules_staff.memberID AND modules.id = modules_staff.idMod";
   }
 
-  $query = "SELECT DISTINCT users.id, title, initials, surname, first_names FROM users, modules_staff, modules WHERE roles != 'Left' AND users.id = modules_staff.memberID AND modules.id = modules_staff.idMod $school_sql $admin_school_sql $current_internals_sql AND user_deleted IS NULL ORDER BY surname, initials";
+  $query = "SELECT DISTINCT users.id, title, initials, surname, first_names FROM $tables WHERE roles != 'Left' AND $join $school_sql $admin_school_sql $current_internals_sql $internal_reviwers ORDER BY surname, initials";
   $internal_details = $mysqli->prepare($query);
   $internal_details->execute();
   $internal_details->bind_result($internal_id, $internal_title, $internal_initials, $internal_surname, $internal_first_names);

@@ -30,4 +30,5 @@ $string['studentcohort'] = 'Grupa studentów';
 $string['currentmodule'] = 'Aktualny Moduł';
 $string['moduleimports'] = 'Importy dla modułu';
 $string['importsummary'] = 'Podsumowanie importu';
+$string['externalid'] = 'External ID';
 ?>

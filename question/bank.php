@@ -108,7 +108,8 @@ $_SESSION['nav_query'] = $_SERVER['QUERY_STRING'];
     $display_type = $string['byblooms']; 
     $zero_warning = $string['noquestionsbloom'];
   } elseif ($type == 'keyword') {
-    $display_type = $string['bykeyword']; 
+    $display_type = $string['bykeyword'];
+    $zero_warning = $string['noquestionskeyword'];
   } elseif ($type == 'status') {
     $display_type = $string['bystatus'];
     $zero_warning = $string['noquestionsstatus'];

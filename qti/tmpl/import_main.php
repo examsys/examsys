@@ -82,6 +82,11 @@ if ($module != '') {
 }
 echo "</div><div class=\"page_title\">$paper_title</div>";
 echo "</div>";
+
+if (!isset($qtiimportdirectory)) {
+  // Just in case the file is included from pages where this is not set.
+  $qtiimportdirectory = rogo_directory::get_directory('qti_import');
+}
 ?>
 <br/>
 <br/>
@@ -126,21 +131,21 @@ if (isset($result['load']['errors'][0])) $bad--;
 <?php endif; ?>
 			<div style="margin-left:25px; line-height:150%; margin-top:10px; font-weight:bold"><?php echo $string['moreinformation'] ?></div>
 			<div style="margin-left:25px; line-height:150%"><img src="../artwork/bullet_outline.gif" width="16" height="16" alt="bullet">&nbsp;
-				<a href="" onclick="newPopup('imports/<?php echo $dir ?>/result.html'); return false;"><?php echo $string['viewdetails'] ?></a>
+				<a href="" onclick="newPopup('<?php echo $qtiimportdirectory->url($dir . '/result.html'); ?>'); return false;"><?php echo $string['viewdetails'] ?></a>
 			</div>
 <?php if ($show_debug) : ?>
 			<div style="margin-left:25px; line-height:150%; margin-top:10px; font-weight:bold"><?php echo $string['debuginformation'] ?></div>
 			<div style="margin-left:25px; line-height:150%"><img src="../artwork/bullet_outline.gif" width="16" height="16" alt="bullet">&nbsp;
-				<a href="" onclick="newPopup('imports/<?php echo $dir ?>/debug_load.html'); return false;"><?php echo $string['loadingdebug'] ?></a>
+				<a href="" onclick="newPopup('<?php echo $qtiimportdirectory->url($dir . '/debug_load.html'); ?>'); return false;"><?php echo $string['loadingdebug'] ?></a>
 			</div>
 			<div style="margin-left:25px; line-height:150%"><img src="../artwork/bullet_outline.gif" width="16" height="16" alt="bullet">&nbsp;
-				<a href="" onclick="newPopup('imports/<?php echo $dir ?>/debug_int.html'); return false;"><?php echo $string['intermediateformatdebug'] ?></a>
+				<a href="" onclick="newPopup('<?php echo $qtiimportdirectory->url($dir . '/debug_int.html'); ?>'); return false;"><?php echo $string['intermediateformatdebug'] ?></a>
 			</div>
 			<div style="margin-left:25px; line-height:150%"><img src="../artwork/bullet_outline.gif" width="16" height="16" alt="bullet">&nbsp;
-				<a href="" onclick="newPopup('imports/<?php echo $dir ?>/debug_save.html'); return false;"><?php echo $string['savingdebug'] ?></a>
+				<a href="" onclick="newPopup('<?php echo $qtiimportdirectory->url($dir . '/debug_save.html'); ?>'); return false;"><?php echo $string['savingdebug'] ?></a>
 			</div>
 			<div style="margin-left:25px; line-height:150%"><img src="../artwork/bullet_outline.gif" width="16" height="16" alt="bullet">&nbsp;
-				<a href="" onclick="newPopup('imports/<?php echo $dir ?>/debug_res.html'); return false;"><?php echo $string['generaldebuginfo']?></a>
+				<a href="" onclick="newPopup('<?php echo $qtiimportdirectory->url($dir . '/debug_res.html'); ?>'); return false;"><?php echo $string['generaldebuginfo']?></a>
 			</div>
 <?php endif; ?>
 			<br />

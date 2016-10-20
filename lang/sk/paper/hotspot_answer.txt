@@ -1,0 +1,5 @@
+<?php      //cz
+
+$string['view'] = 'Zobraziť všetky odpovede';
+
+?>

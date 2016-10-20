@@ -27,7 +27,7 @@
 require_once 'staff_student_auth.inc';
 $userObject = UserObject::get_instance();
 
-if (!$userObject->has_role(array('Staff', 'External Examiner', 'SysCron', 'Invigilator'))) {
+if (!$userObject->has_role(array('Staff', 'External Examiner', 'SysCron', 'Invigilator', 'Internal Reviewer'))) {
   // Current user is not Staff, External Examiner or the system cron so display warning and exit.
   $msg = sprintf($string['furtherassistance'], $configObject->get('support_email'), $configObject->get('support_email'));
   $notice->display_notice_and_exit($mysqli, $string['pagenotfound'], $msg, $string['pagenotfound'], '/artwork/exclamation_48.png', '#C00000', true, true);
@@ -54,7 +54,19 @@ $external_allowed_pages = array(
                               "$cfg_root_path/ajax/reports/getAccessibility.php"=>1,
                               "$cfg_root_path/osce/form.php"=>1
                             );
-                            
+
+$internal_allowed_pages = array(   
+                              "$cfg_root_path/help/staff/index.php"=>1,
+                              "$cfg_root_path/help/staff/search.php"=>1,
+                              "$cfg_root_path/help/staff/toolbar.php"=>1,
+                              "$cfg_root_path/help/staff/toc_title.php"=>1,
+                              "$cfg_root_path/help/staff/toc.php"=>1,
+                              "$cfg_root_path/help/staff/display_page.php"=>1,
+                              "$cfg_root_path/reviews/index.php"=>1,
+                              "$cfg_root_path/reviews/start.php"=>1,
+                              "$cfg_root_path/reviews/finish.php"=>1
+                            );
+
 $invigilator_allowed_pages = array(   
                               "$cfg_root_path/ajax/invigilator/refresh_cohort_list.php"=>1,
                               "$cfg_root_path/ajax/invigilator/toilet_break.php"=>1,
@@ -87,6 +99,10 @@ if ($userObject->has_role('External Examiner')) {
   if (!isset($external_allowed_pages[$_SERVER['PHP_SELF']])) {
     header("location: " . $configObject->get('cfg_root_path') . "/reviews/");
   }
+} elseif ($userObject->has_role('Internal Reviewer')) {
+  if (!isset($internal_allowed_pages[$_SERVER['PHP_SELF']])) {
+    header("location: " . $configObject->get('cfg_root_path') . "/reviews/");
+  }
 } elseif ($userObject->has_role('Invigilator')) {
   if (!isset($invigilator_allowed_pages[$_SERVER['PHP_SELF']])) {
     header("location: " . $configObject->get('cfg_root_path') . "/invigilator/");
@@ -113,8 +129,8 @@ if ($userObject->has_role('SysCron')) {
   }
 }
 
-// Get teams if the user is not an External Examiner, sys cron or and invigilator.
-if ($userObject->has_role('External Examiner') or $userObject->has_role('SysCron') or $userObject->has_role('Invigilator')) {
+// Get teams if the user is not an External Examiner, internal reviewer, sys cron or and invigilator.
+if ($userObject->has_role('External Examiner') or $userObject->has_role('Internal Reviewer') or $userObject->has_role('SysCron') or $userObject->has_role('Invigilator')) {
   $staff_modules = array();
 } else {
   $staff_modules = $userObject->get_staff_modules();
@@ -131,7 +147,7 @@ $system_id = module_utils::get_idMod('SYSTEM', $mysqli);
 
 if ($userObject->has_role('SysAdmin')) {
   // SysAdmin can access anything!
-} elseif ($userObject->has_role('External Examiner') or $userObject->has_role('SysCron') or $userObject->has_role('Invigilator')) {
+} elseif ($userObject->has_role('External Examiner') or $userObject->has_role('Internal Reviewer') or $userObject->has_role('SysCron') or $userObject->has_role('Invigilator')) {
 } else {
   // Normal users can access things they own or are on the staff_module of only.
   $on_staff_module = false;

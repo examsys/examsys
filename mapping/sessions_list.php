@@ -129,8 +129,7 @@ if (!$module) {
 
   $old_session = '';
   $id = 0;
-	$first = true;
-
+  $first = true;
   if (count($objsBySession) > 0 and isset($objsBySession[$module])) {
     foreach ($objsBySession[$module] as $session) {
       if (isset($session['objectives'])) {

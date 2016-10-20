@@ -33,3 +33,4 @@ $string['paper_module_error'] = 'Module error';
 $string['paper_type_invalid'] = 'Paper type unknown';
 $string['paper_general_error'] = 'An error occured';
 $string['paper_nothing_to_update'] = 'Request updates nothing';
+$string['paper_externalid_inuse'] = 'External ID already in use';

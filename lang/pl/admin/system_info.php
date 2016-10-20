@@ -18,7 +18,6 @@ $string['systeminformation'] = 'Informacje systemowe';
 $string['table'] = 'Tablica';
 $string['records'] = 'Rekordy';
 $string['updated'] = 'Zaktualizowane';
-$string['engine'] = 'Mechanizm';
 $string['version'] = 'Wersja';
 $string['application'] = 'Aplikacja Rogō';
 $string['rogoplugins'] = 'Wtyczki Rogō';
@@ -71,4 +70,5 @@ $string['basic'] = 'Podstawowe';
 $string['none'] = 'brak';
 $string['company'] = 'Instytucja';
 $string['webserver'] = 'Serwer stron WWW';
+$string['errorslogged'] = 'Errors logged to file';
 ?>

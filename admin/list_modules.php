@@ -79,9 +79,9 @@ require '../include/sysadmin_auth.inc';
 	
 	echo draw_toprightmenu(233);
   
-  $result = $mysqli->prepare("SELECT modules.id, moduleid, fullname, school, active FROM modules LEFT JOIN schools ON modules.schoolid = schools.id WHERE mod_deleted IS NULL");
+  $result = $mysqli->prepare("SELECT modules.id, moduleid, fullname, schools.code, school, active FROM modules LEFT JOIN schools ON modules.schoolid = schools.id WHERE mod_deleted IS NULL");
   $result->execute();
-  $result->bind_result($id, $moduleid, $fullname, $school, $active);
+  $result->bind_result($id, $moduleid, $fullname, $schoolcode, $school, $active);
   $result->store_result();
 ?>
 <div id="content">
@@ -114,7 +114,7 @@ while ($result->fetch()) {
 		$class = 'l grey';
   }
   
-	echo "<tr class=\"$class\" id=\"$id\"><td>$moduleid</td><td>$fullname</td><td>$school</td><td>$tmp_active</td></tr>\n";
+	echo "<tr class=\"$class\" id=\"$id\"><td>$moduleid</td><td>$fullname</td><td>$schoolcode $school</td><td>$tmp_active</td></tr>\n";
 }
 $result->close();
 $mysqli->close();

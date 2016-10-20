@@ -606,7 +606,7 @@ Class PaperUtils {
         if (in_array($question_part[0], $checktypes)) {
           $interactive = true;
         } else if ($question_part[0] == 'random') {
-          $options = QuestionUtils::get_options_text($question_part[1], $db);
+          $options = random_utils::get_random_qids_for_question($question_part[1], $db);
           $types = array();
           foreach ($options as $opt) {
               $qtype = QuestionUtils::get_question_type($opt, $db);
@@ -780,10 +780,10 @@ Class PaperUtils {
    * @return array|bool array of paper details or false on error
    */
   static function get_paper_properties($id, $db) {
-    $result = $db->prepare("SELECT paper_title, paper_type, paper_ownerID, calendar_year, start_date, end_date, labs, exam_duration, timezone FROM properties WHERE property_id = ?");
+    $result = $db->prepare("SELECT paper_title, paper_type, paper_ownerID, calendar_year, start_date, end_date, labs, exam_duration, timezone, externalid, externalsys FROM properties WHERE property_id = ?");
     $result->bind_param('i', $id);
     $result->execute();
-    $result->bind_result($title, $type, $owner, $session, $startdatetime, $enddatetime, $labs, $duration, $timezone);
+    $result->bind_result($title, $type, $owner, $session, $startdatetime, $enddatetime, $labs, $duration, $timezone, $externalid, $externalsys);
     $result->fetch();
     if ($db->errno != 0) {
         $result->close();
@@ -798,8 +798,75 @@ Class PaperUtils {
                     'enddatetime' => $enddatetime,
                     'labs' => $labs,
                     'duration' => $duration,
-                    'timezone' => $timezone);
+                    'timezone' => $timezone,
+                    'externalid' => $externalid,
+                    'externalsys' => $externalsys);
     return $details;
   }
 
+  /**
+   * Get internal rogo properties id from external id
+   * @param string $externalid external system id
+   * @param mysqli $db db connection
+   * @return integer|bool rogo id or false on error
+   */
+  static public function get_id_from_externalid($externalid, $db) {
+    $result = $db->prepare("SELECT property_id FROM properties WHERE externalid = ? AND deleted IS NULL");
+    $result->bind_param('s', $externalid);
+    $result->execute();
+    $result->store_result();
+    $result->bind_result($id);
+    $result->fetch();
+    if ($result->num_rows == 0) {
+      $paperid = false;
+    } else {
+      $paperid = $id;
+    }
+    $result->close();
+    return $paperid;
+  }
+  
+  /**
+   * Get papers running in academic session
+   * @param integer $session academic session
+   * @param string $type paper type
+   * @param mysqli $db db connection
+   * @return array rogo ids
+   */
+  static public function get_papers_by_session($session, $type, $db) {
+    $paperids = array();
+    $result = $db->prepare("SELECT property_id FROM properties WHERE calendar_year = ? AND paper_type = ? AND deleted IS NULL");
+    $result->bind_param('is', $session, $type);
+    $result->execute();
+    $result->store_result();
+    $result->bind_result($id);
+    while ($result->fetch()) {
+      $paperids[] = $id;
+    }
+    $result->close();
+    return $paperids;
+  }
+  
+  /**
+   * Get papers finalised in specific year
+   * @param integer $year year
+   * @param string $papertype type of paper
+   * @param mysqli $db db connection
+   * @return array list of ids of papers finialised in supplied year
+   */
+  static public function get_finalised_papers($year, $papertype, $db) {
+    $papers = array();
+    $result = $db->prepare("SELECT paperid
+      FROM gradebook_paper, properties
+      WHERE gradebook_paper.paperid = properties.property_id
+      AND properties.paper_type = ? AND DATE_FORMAT(timestamp, '%Y') = ?");
+    $result->bind_param('si', $papertype, $year);
+    $result->execute();
+    $result->bind_result($paperid);
+    while ($result->fetch()) {
+      $papers[] = $paperid;
+    }
+    $result->close();
+    return $papers;
+  }
 }

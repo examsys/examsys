@@ -25,7 +25,6 @@ $string['deniedlogwarnings'] = 'Ostrzeżenia logu odmowy';
 $string['ebelgridtemplates'] = 'Szablony siatek metody Ebel';
 $string['faculties'] = 'Wydziały';
 $string['modules'] = 'Moduły';
-$string['optimizetables'] = 'Optymalizuj tablice';
 $string['phpinfo'] = 'phpinfo()';//cognate
 $string['questionstatuses'] = 'Statusy pytania';
 $string['savefailattempts'] = 'Zachowaj nieudane próby';
@@ -45,4 +44,6 @@ $string['imslti'] = 'Klucze LTI';
 $string['imssettings'] = 'IMS Settings';
 $string['academicsessions'] = 'Academic Sessions';
 $string['authentication'] = 'OAuth Authentication';
+$string['plugins'] = 'Plugins';
+$string['config'] = 'Configuration';
 ?>

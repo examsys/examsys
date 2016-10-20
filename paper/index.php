@@ -28,8 +28,8 @@
 
 require_once '../include/staff_student_auth.inc';
 
-// Redirect External Exminers and Invigilators to their own areas.
-if ($userObject->has_role('External Examiner')) {
+// Redirect special users to their own areas.
+if ($userObject->has_role('External Examiner') or $userObject->has_role('Internal Reviewer')) {
   header("location: ../reviews/");
   exit();
 } elseif ($userObject->has_role('Invigilator')) {
@@ -166,7 +166,7 @@ if ($paper_no == 1 and $paper_display[0]['password'] == '') {
   $ip_info->bind_result($computer_lab, $computer_lab_short);
   $ip_info->fetch();
   if ($ip_info->num_rows() == 0) {
-    $computer_lab = $computer_lab_short = '<span style="color:#C00000">' . $string['unknownIp'] . '</span>';
+    $computer_lab = $computer_lab_short = '<span style="color:#C00000">' . $string['unknownip'] . '</span>';
   }
   $computer_lab_short = ($computer_lab_short == '') ? $computer_lab : $computer_lab_short;
   $ip_info->close();

@@ -26,15 +26,25 @@ require '../include/staff_auth.inc';
 require '../include/errors.inc';
   
 $duplicate = false;
-if (isset($_POST['ok']) or (isset($_POST['returnhit']) and $_POST['returnhit'] == '1')) {
-  $add_faculty = trim($_POST['add_faculty']);
-  if ($add_faculty != '') {
-    // Check for existing name
-    if (FacultyUtils::facultyname_exists($add_faculty, $mysqli)) {
-      $duplicate = true;
+if (isset($_POST['ok'])) {
+  $add_faculty = check_var('add_faculty', 'POST', true, false, true);
+  $code = check_var('code', 'POST', false, false, true);
+  $externalid = check_var('externalid', 'POST', false, false, true);
+  $externalsys = check_var('externalsys', 'POST', false, false, true);
+  if (!is_null($add_faculty)) {
+    // Check for existing faculty code.
+    if (!is_null($code)) {
+        if (FacultyUtils::get_facultyid_by_code($code, $mysqli)) {
+            $duplicate = 'code';
+        }
     } else {
-      $duplicate = false;
-      FacultyUtils::add_faculty($add_faculty, $mysqli);
+        // Check for existing faculty name.
+        if (FacultyUtils::facultyname_exists($add_faculty, $mysqli)) {
+            $duplicate = 'name';
+        }
+    }
+    if ($duplicate === false) {
+      FacultyUtils::add_faculty($add_faculty, $mysqli, $code, $externalid, $externalsys);
     }
   }
   if (!$duplicate) {
@@ -57,6 +67,9 @@ if (isset($_POST['ok']) or (isset($_POST['returnhit']) and $_POST['returnhit'] =
 <?php
     exit();
   }
+} else {
+    $add_faculty = '';
+    $code = '';
 }
 ?>
 <!DOCTYPE html>
@@ -89,16 +102,42 @@ if (isset($_POST['ok']) or (isset($_POST['returnhit']) and $_POST['returnhit'] =
 <body>
 <h1><?php echo $string['addfaculty'] ?></h1>
 <form id="theform" name="myform" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" autocomplete="off">
-<div><?php
-if ($duplicate) {
-  echo '<input type="text" style="width:99%; background-color:#FFC0C0; border:solid 1px #C00000; color:#800000" id="add_faculty" name="add_faculty" value="' . $_POST['add_faculty'] . '" maxlength="80" required autofocus />';
+<table cellpadding="0" cellspacing="2" border="0">
+<?php
+if ($duplicate == 'code') {
+  echo '<tr><td class="field">' . $string['name'] . '</td><td><input type="text" style="width:99%" id="add_faculty" name="add_faculty" maxlength="80" value="' . $add_faculty .'" required autofocus /></td></tr>';
+  echo '<tr><td class="field">' . $string["code"] . '</td><td><input type="text" style="width:99%; background-color:#FFC0C0; border:solid 1px #C00000; color:#800000" name="code" value="' . $code . '" size="30" maxlength="30" required autofocus /></td></tr>';
+  echo "<script language=\"JavaScript\">\nalert('" . $string['facultywarning'] . "');\n</script>\n";
+} elseif($duplicate == 'name') {
+  echo '<tr><td class="field">' . $string['name'] . '</td><td><input type="text" style="width:99%; background-color:#FFC0C0; border:solid 1px #C00000; color:#800000" id="add_faculty" name="add_faculty" maxlength="80" value="' . $add_faculty .'" required autofocus /></td></tr>';
+  echo '<tr><td class="field">' . $string["code"] . '</td><td><input type="text" style="width:99%" name="code" value="' . $code . '" size="30" maxlength="30" required autofocus /></td></tr>';
   echo "<script language=\"JavaScript\">\nalert('" . $string['facultywarning'] . "');\n</script>\n";
 } else {
-  echo '<input type="text" style="width:99%" id="add_faculty" name="add_faculty" maxlength="80" required autofocus />';
+  echo '<tr><td class="field">' . $string['name'] . '</td><td><input type="text" style="width:99%" id="add_faculty" name="add_faculty" maxlength="80" value="" required autofocus /></td></tr>';
+  echo '<tr><td class="field">' . $string["code"] . '</td><td><input type="text" size="30" maxlength="30" name="code" value=""/></td></tr>';
+}
+$sms = \plugins\plugins_sms::get_sms($mysqli);
+if ($sms !== false) {
+?>
+<tr><td class="field"><?php echo $string['externalsys'] ?></td><td><select name="externalsys">
+<?php
+  echo "<option value=\"\"></option>\n";
+  foreach ($sms as $s) {
+    if (isset($externalsys) and $s == $externalsys) {
+      $selected = "selected";
+    } else {
+      $selected = "";
+    }
+    echo "<option value=\"$s\" $selected>$s</option>\n";
+  }
+?>
+</select></td></tr>
+<tr><td class="field"><?php echo $string['externalid'] ?></td><td><input type="text" size="30" maxlength="255" name="externalid" value=""></td></tr>
+<?php
 }
 ?>
-</div>
-<div align="right"><input type="submit" name="ok" value="<?php echo $string['ok'] ?>" class="ok" /><input type="button" name="cancel" value="<?php echo $string['cancel'] ?>" class="cancel" style="margin-right:0" onclick="window.close();" /><input type="hidden" name="returnhit" value="" /><input type="hidden" name="module" value="<?php if (isset($_GET['module'])) echo $_GET['module']; ?>" /></div>
+</table>
+<div align="right"><input type="submit" name="ok" value="<?php echo $string['ok'] ?>" class="ok" /><input type="button" name="cancel" value="<?php echo $string['cancel'] ?>" class="cancel" style="margin-right:0" onclick="window.close();" /><input type="hidden" name="module" value="<?php if (isset($_GET['module'])) echo $_GET['module']; ?>" /></div>
 </form>
 
 </body>

@@ -62,6 +62,12 @@ trait frontend_hooks {
     self::check_config();
     // Setup the config for behat and store a cloned instance of it.
     $config = RogoConfig::get_instance();
+    // Check Rogo is installed correctly.
+    if ($config->get('rogo_version') != $config->getxml('version')) {
+      $message = 'The version of Rogo in the config file (' . $config->get('rogo_version') . ')'
+          . ' does not match the version of the Rogo code (' . $config->getxml('version') . ')';
+      throw new Exception($message);
+    }
     self::$default_config = clone($config);
     $config->use_behat_site();
     self::$rogo_config = clone($config);
@@ -185,9 +191,9 @@ trait frontend_hooks {
         '301-400', '401-500'));
     $configObject = \Config::get_instance();
     $configObject->set_db_object(state::get_db());
-    $configObject->set_setting('timezones', $encoded_timezones);
-    $configObject->set_setting('cohort_sizes', $encoded_cohorts);
-    $configObject->set_setting('max_duration', 779);
-    $configObject->set_setting('max_sittings', 6);
+    $configObject->set_setting('timezones', $encoded_timezones, \Config::JSON);
+    $configObject->set_setting('cohort_sizes', $encoded_cohorts, \Config::JSON);
+    $configObject->set_setting('max_duration', 779, \Config::INTEGER);
+    $configObject->set_setting('max_sittings', 6, \Config::INTEGER);
   }
 }

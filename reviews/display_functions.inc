@@ -341,7 +341,7 @@ function display_question ($configObject, &$question, $paper_type, $calculator, 
 					echo "<canvas id='canvas" . $question_no . "' width='" . ($question['q_media_width'] + 2) . "' height='" . ($question['q_media_height'] + 1) . "'></canvas>\n";
 					echo "<br /><div style='width:100%;text-align: left;' id='canvasbox'></div>\n";
 					echo "<script>\n";
-					echo "setUpQuestion(" . $question_no . ", 'q" . $question_no . "','" . $language . "', '" . $mediadirectory->url($question['q_media'], false, false, true) . "', '" . $display_option['correct'] . "', '" . $display_option['correct'] . "',1,'#FFC0C0','area','review');\n";
+					echo "setUpQuestion(" . $question_no . ", 'q" . $question_no . "','" . $language . "', '" . $question['q_media'] . "', '" . $display_option['correct'] . "', '" . $display_option['correct'] . "',1,'#FFC0C0','area','review');\n";
 					echo "</script>\n";
 					//<!-- ==================================================== -->
 				} else {
@@ -377,7 +377,7 @@ function display_question ($configObject, &$question, $paper_type, $calculator, 
 					echo "write_string('</object>');\n";
 					echo "write_string('<!--<![endif]-->');\n";
 					echo "write_string('</object>');\n";
-					echo "sendTextToAS3('" . $language . "','q" . $question_no . "', 1, '" . $mediadirectory->url($question['q_media'], false, false, true) . "', '" . $display_option['correct'] . "', '" . $display_option['correct'] . "');\n";
+					echo "sendTextToAS3('" . $language . "','q" . $question_no . "', 1, '" . $mediadirectory->url($question['q_media']) . "', '" . $display_option['correct'] . "', '" . $display_option['correct'] . "');\n";
 					echo "</script>\n";
 				}
 				?>

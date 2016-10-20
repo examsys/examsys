@@ -468,11 +468,11 @@ class ims_enterprise {
         $programmename = \CourseUtils::get_course_name_by_id($programmeid, $this->db);
         if ($programmename !== $name) {
           $this->log_line('Created programme: ' . $name . ' - ' . $description);
-          \CourseUtils::add_course($schoolid, $name, $description, $this->db);
+          \CourseUtils::add_course($schoolid, $name, $description, null, null, $this->db);
         }
       } else {
         $this->log_line('Created programme: ' . $name . ' - ' . $description);
-        \CourseUtils::add_course($schoolid, $name, $description, $this->db);
+        \CourseUtils::add_course($schoolid, $name, $description, null, null, $this->db);
       }
     }
   }
@@ -1106,8 +1106,8 @@ class ims_enterprise {
    */
   public function set_prev_configs($prev_time, $prev_path, $prev_md5) {
     $configObject = \Config::get_instance();
-    $configObject->set_setting('prevtime', $prev_time, 'plugin_ims');
-    $configObject->set_setting('prevpath', $prev_path, 'plugin_ims');
-    $configObject->set_setting('prevmd5', $prev_md5, 'plugin_ims');
+    $configObject->set_setting('prevtime', $prev_time, null, 'plugin_ims');
+    $configObject->set_setting('prevpath', $prev_path, null, 'plugin_ims');
+    $configObject->set_setting('prevmd5', $prev_md5, null, 'plugin_ims');
   }
 }

@@ -5,17 +5,42 @@
             <xs:sequence>
                 <xs:element name="create" maxOccurs="unbounded" minOccurs="0">
                     <xs:complexType>
-                        <xs:choice>
-                            <xs:group ref="create"/>
-                            <xs:group ref="update"/>
-                        </xs:choice>
+                        <xs:sequence>
+                            <xs:element name="name" type="coursename"/>
+                            <xs:element name="description" type="description"/>
+                            <xs:choice>
+                                <xs:group ref="names"/>
+                                <xs:group ref="extids"/>
+                            </xs:choice>
+                            <xs:group ref="external" minOccurs="0"/>
+                        </xs:sequence>
+                        <xs:attribute type="xs:string" name="id" use="required"/>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="update" maxOccurs="unbounded" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:choice>
+                                <xs:element name="id" type="xs:integer"/>
+                                <xs:element name="externalid" type="externalid"/>
+                            </xs:choice>
+                            <xs:element name="name" type="coursename" minOccurs="0"/>
+                            <xs:element name="description" type="description" minOccurs="0"/>
+                            <xs:choice>
+                                <xs:group ref="updatenames"/>
+                                <xs:group ref="updateextids"/>
+                            </xs:choice>
+                        </xs:sequence>
                         <xs:attribute type="xs:string" name="id" use="required"/>
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="delete" maxOccurs="unbounded" minOccurs="0">
                     <xs:complexType>
                         <xs:sequence>
-                            <xs:element name="id" type="xs:integer"/>
+                            <xs:choice>
+                                <xs:element name="id" type="xs:integer"/>
+                                <xs:element name="externalid" type="externalid"/>
+                            </xs:choice>
                         </xs:sequence>
                         <xs:attribute type="xs:string" name="id" use="required"/>
                     </xs:complexType>
@@ -23,21 +48,32 @@
             </xs:sequence>
         </xs:complexType>
     </xs:element>
-    <xs:group name="create">
+    <xs:group name="names">
         <xs:sequence>
-            <xs:element name="name" type="coursename"/>
-            <xs:element name="description" type="description"/>
-            <xs:element name="school" type="school"/>
-            <xs:element name="faculty" type="faculty" minOccurs="0"/>
+            <xs:element name="school" type="schoolname"/>
+            <xs:element name="faculty" type="facultyname" minOccurs="0"/>
         </xs:sequence>
     </xs:group>
-    <xs:group name="update">
+    <xs:group name="extids">
         <xs:sequence>
-            <xs:element name="id" type="xs:integer"/>
-            <xs:element name="name" type="coursename" minOccurs="0"/>
-            <xs:element name="description" type="description" minOccurs="0"/>
-            <xs:element name="school" type="school" minOccurs="0"/>
-            <xs:element name="faculty" type="faculty" minOccurs="0"/>
+            <xs:element name="schoolextid" type="externalid"/>
+        </xs:sequence>
+    </xs:group>
+        <xs:group name="updatenames">
+        <xs:sequence>
+            <xs:element name="school" type="schoolname" minOccurs="0"/>
+            <xs:element name="faculty" type="facultyname" minOccurs="0"/>
+        </xs:sequence>
+    </xs:group>
+    <xs:group name="updateextids">
+        <xs:sequence>
+            <xs:element name="schoolextid" type="externalid" minOccurs="0"/>
+        </xs:sequence>
+    </xs:group>
+    <xs:group name="external">
+        <xs:sequence>
+            <xs:element name="externalid" type="externalid"/>
+            <xs:element name="externalsys" type="externalsys"/>
         </xs:sequence>
     </xs:group>
     <xs:simpleType name="coursename">
@@ -52,16 +88,28 @@
             <xs:maxLength value="255"/>
         </xs:restriction>
     </xs:simpleType>
-    <xs:simpleType name="school">
+    <xs:simpleType name="schoolname">
         <xs:restriction base="xs:string">
             <xs:minLength value="1"/>
             <xs:maxLength value="255"/>
         </xs:restriction>
     </xs:simpleType>
-    <xs:simpleType name="faculty">
+    <xs:simpleType name="facultyname">
         <xs:restriction base="xs:string">
             <xs:minLength value="1"/>
             <xs:maxLength value="80"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="externalid">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="1"/>
+            <xs:maxLength value="255"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="externalsys">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="1"/>
+            <xs:maxLength value="255"/>
         </xs:restriction>
     </xs:simpleType>
 </xs:schema>

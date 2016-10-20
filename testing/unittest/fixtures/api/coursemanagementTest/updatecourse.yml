@@ -4,6 +4,7 @@ courses:
     name: "TEST"
     description: "Test course"
     schoolid: 1
+    externalid: "123456"
 schools:
   -
     id: 1

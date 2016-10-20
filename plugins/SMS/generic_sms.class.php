@@ -378,11 +378,7 @@ Class GENERIC_SMS extends SmsUtils {
 
         $import_type = $sms_api;
 
-
-      $result = $mysqli->prepare("INSERT INTO sms_imports VALUES (NULL, NOW(), ?, ?, ?, ?, ?, ?, ?)");
-      $result->bind_param('sisisss', $idMod, $enrolements, $enrolement_details, $deletions, $deletion_details, $import_type, $session);
-      $result->execute();
-      $result->close();
+      module_utils::log_sms_imports($idMod, $enrolements, $enrolement_details, $deletions, $deletion_details, $import_type, $session, $mysqli);
     }
   }
 }

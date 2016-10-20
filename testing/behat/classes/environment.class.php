@@ -80,7 +80,9 @@ class environment {
           'Behat\MinkExtension' => array(
             'base_url' => self::get_behat_website(),
             'goutte' => null,
-            'selenium2' => null
+            'selenium2' => array(
+              'browser' => 'chrome',
+            ),
           ),
         ),
       ),

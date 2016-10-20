@@ -38,6 +38,7 @@ $string['people'] = 'Osoby';
 $string['noquestions'] = 'W banku nie znaleziono żadnych pytań.';
 $string['noquestionsbloom']  = 'W banku nie znaleziono żadnych pytań wg. taksonomi Blooma.';
 $string['noquestionsstatus'] = 'W banku nie znaleziono żadnych pytań wg. statusu.';
+$string['noquestionskeyword'] = 'No questions found in bank by keyword.';
 $string['noquestionsperformance'] = 'W banku nie znaleziono żadnych pytań na podstawie osiągnięć.';
 $string['noquestionsobjective'] = 'W banku nie znaleziono żadnych pytań powiązanych z celami kształcenia.';
 $string['search'] = 'Szukaj';

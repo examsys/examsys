@@ -38,7 +38,7 @@ trait basic {
   public function i_click($name, $selector) {
     $element = $this->find($selector, $name);
     if (is_null($element)) {
-      throw new \Exception("The $selector with the value of $name could not be found");
+      throw new \Exception("The \"$selector\" with the value of \"$name\" could not be found");
     }
     $element->click();
   }
@@ -54,10 +54,10 @@ trait basic {
   public function i_should_see($content, $selector) {
     $element = $this->find($selector, $content);
     if (is_null($element)) {
-      throw new \Exception("The $selector with the value of $name could not be found");
+      throw new \Exception("The \"$selector\" with the value of \"$content\" could not be found");
     }
     if ($this->running_javascript() and !$element->isVisible()) {
-      throw new \Exception("The $selector with the value of $name is hidden");
+      throw new \Exception("The \"$selector\" with the value of \"$content\" is hidden");
     }
   }
 }

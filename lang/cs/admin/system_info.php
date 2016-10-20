@@ -18,7 +18,6 @@ $string['systeminformation'] = 'Systémové informace';
 $string['table'] = 'Tabulka';
 $string['records'] = 'Záznamy';
 $string['updated'] = 'Aktualizováno';
-$string['engine'] = 'Stroj';
 $string['application'] = 'Rogō aplikace';
 $string['version'] = 'Verze';
 $string['webroot'] = 'Web Root';
@@ -71,4 +70,5 @@ $string['basic'] = 'Základní';
 $string['none'] = 'žádná';
 $string['company'] = 'Společnost';
 $string['webserver'] = 'Web server';
+$string['errorslogged'] = 'Errors logged to file';
 ?>

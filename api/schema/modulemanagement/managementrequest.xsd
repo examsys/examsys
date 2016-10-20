@@ -6,9 +6,30 @@
                 <xs:element name="create" maxOccurs="unbounded" minOccurs="0">
                     <xs:complexType>
                         <xs:sequence>
+                            <xs:element name="modulecode" type="modulecode"/>
+                            <xs:element name="name" type="modulename"/>
                             <xs:choice>
-                                <xs:group ref="create"/>
-                                <xs:group ref="update"/>
+                                <xs:group ref="names"/>
+                                <xs:group ref="extids"/>
+                            </xs:choice>
+                            <xs:element name="sms" type="sms" minOccurs="0"/>
+                            <xs:element name="externalid" type="externalid" minOccurs="0"/>
+                        </xs:sequence>
+                        <xs:attribute type="xs:string" name="id" use="required"/>
+                    </xs:complexType>
+                </xs:element>
+                 <xs:element name="update" maxOccurs="unbounded" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:choice>
+                                <xs:element name="id" type="xs:integer"/>
+                                <xs:element name="externalid" type="externalid"/>
+                            </xs:choice>
+                            <xs:element name="modulecode" type="modulecode" minOccurs="0"/>
+                            <xs:element name="name" type="modulename" minOccurs="0"/>
+                            <xs:choice>
+                                <xs:group ref="updatenames"/>
+                                <xs:group ref="updateextids"/>
                             </xs:choice>
                             <xs:element name="sms" type="sms" minOccurs="0"/>
                         </xs:sequence>
@@ -18,7 +39,10 @@
                 <xs:element name="delete" maxOccurs="unbounded" minOccurs="0">
                     <xs:complexType>
                         <xs:sequence>
-                            <xs:element name="id" type="xs:integer"/>
+                            <xs:choice>
+                                <xs:element name="id" type="xs:integer"/>
+                                <xs:element name="externalid" type="externalid"/>
+                            </xs:choice>
                         </xs:sequence>
                         <xs:attribute type="xs:string" name="id" use="required"/>
                     </xs:complexType>
@@ -26,21 +50,26 @@
             </xs:sequence>
         </xs:complexType>
     </xs:element>
-    <xs:group name="create">
+    <xs:group name="names">
         <xs:sequence>
-            <xs:element name="modulecode" type="modulecode"/>
-            <xs:element name="name" type="modulename"/>
-            <xs:element name="school" type="school"/>
-            <xs:element name="faculty" type="faculty" minOccurs="0"/>
+            <xs:element name="school" type="schoolname"/>
+            <xs:element name="faculty" type="facultyname" minOccurs="0"/>
         </xs:sequence>
     </xs:group>
-    <xs:group name="update">
+    <xs:group name="extids">
         <xs:sequence>
-            <xs:element name="id" type="xs:integer"/>
-            <xs:element name="modulecode" type="modulecode" minOccurs="0"/>
-            <xs:element name="name" type="modulename" minOccurs="0"/>
-            <xs:element name="school" type="school" minOccurs="0"/>
-            <xs:element name="faculty" type="faculty" minOccurs="0"/>
+            <xs:element name="schoolextid" type="externalid"/>
+        </xs:sequence>
+    </xs:group>
+    <xs:group name="updatenames">
+        <xs:sequence>
+            <xs:element name="school" type="schoolname" minOccurs="0"/>
+            <xs:element name="faculty" type="facultyname" minOccurs="0"/>
+        </xs:sequence>
+    </xs:group>
+    <xs:group name="updateextids">
+        <xs:sequence>
+            <xs:element name="schoolextid" type="externalid" minOccurs="0"/>
         </xs:sequence>
     </xs:group>
     <xs:simpleType name="modulecode">
@@ -68,6 +97,12 @@
         </xs:restriction>
     </xs:simpleType>
     <xs:simpleType name="sms">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="1"/>
+            <xs:maxLength value="255"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="externalid">
         <xs:restriction base="xs:string">
             <xs:minLength value="1"/>
             <xs:maxLength value="255"/>

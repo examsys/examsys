@@ -92,6 +92,8 @@ $string['tooltip_random'] = 'Rogo will calculate the number of marks a student w
 $string['tooltip_calculator'] = 'A JavaScript software calculator is available to students within the assessment.';
 $string['tooltip_audio'] = 'A test audio clip will be placed on the exam information page so students can test sound levels before starting.';
 $string['tooltip_osceclassification'] = 'Warning: Once marking has started the overall classification is not changeable.';
+$string['externalid'] = 'External System ID';
+$string['externalsys'] = 'External System';
 
 // Security tab
 $string['securitytab'] = 'Security';
@@ -109,7 +111,8 @@ $string['restricttolabs'] = 'Restrict to Labs';
 $string['restricttometadata'] = 'Restrict to Metadata';
 $string['na'] = 'N/A';
 $string['tooltip_password'] = 'This will put an extra password on the paper in addition to students logging into Rogo with their own personal password. This password can be given out to students within the computer lab.';
-        
+$string['donotchangewarning'] = 'This paper is locked. It is recommended you only make changes if no students have attempted this paper';
+
 // Reviewers tab
 $string['reviewerstab'] = 'Reviewers';
 $string['reviewersheading'] = 'Set internal/external reviewers and deadlines.';

@@ -21,4 +21,5 @@ $string['second'] = '2.';
 $string['override'] = 'Znovu oznámkovat';
 $string['unmarked'] = 'Neznámkováno';
 $string['question'] = 'Úloha';
+$string['selectallprimary']  = 'Select All?';
 ?>

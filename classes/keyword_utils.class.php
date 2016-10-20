@@ -82,4 +82,60 @@ Class keyword_utils {
     $keyword->close();
     return $keywordarray;
   }
+  
+  /**
+   * Function to get the keyword id based on the question id
+   * @param integer $q_id question id
+   * @param mysqli $db db connection
+   * @return integer|bool keyword id or false is non found
+   */
+  static public function get_keywordid_for_question($q_id, $db) {
+    $keyword = $db->prepare("SELECT keyword_id FROM keywords_link WHERE q_id = ?");
+    $keyword->bind_param('i', $q_id);
+    $keyword->execute();
+    $keyword->store_result();
+    $keyword->bind_result($keyword_id);
+    if ($keyword->num_rows == 0) {
+      $keyword_id = false;
+    } else {
+      $keyword->fetch();
+    }
+    $keyword->close();
+    return $keyword_id;
+  }
+  
+  /**
+   * Insert keyword/question reference row
+   * @param integer $q_id question id
+   * @param integer $keyword_id keyword id
+   * @param mysqli $db db connection
+   * @return bool true on success, false otherwise
+   */
+  static public function insert_keyword_link($q_id, $keyword_id, $db) {
+    $sql = $db->prepare("INSERT INTO keywords_link (q_id, keyword_id) VALUES (?, ?)");
+    $sql->bind_param('ii', $q_id, $keyword_id);
+    $sql->execute();
+    $sql->close();
+    if ($db->errno != 0) {
+        return false;
+    }
+    return true;
+  }
+  
+  /**
+   * Delete keyword/question reference row
+   * @param integer $q_id question id
+   * @param mysqli $db db connection
+   * @return bool true on success, false otherwise
+   */
+  static public function delete_keyword_link($q_id, $db) {
+    $sql = $db->prepare("DELETE FROM keywords_link WHERE q_id = ?");
+    $sql->bind_param('i', $q_id);
+    $sql->execute();
+    $sql->close();
+    if ($db->errno != 0) {
+        return false;
+    }
+    return true;
+  }
 }

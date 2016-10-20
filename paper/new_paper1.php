@@ -110,6 +110,15 @@ $paper_types = array('formative', 'progress', 'summative', 'survey', 'osce', 'of
         alert("<?php echo $string['msg1']; ?>");
         return false;
       }
+      <?php
+        if ($configObject->get_setting('core', 'summative_warn_external')) {
+        ?>
+        if ($('#paper_type').val() == 'summative') {
+          return confirm("<?php echo $string['msg3']; ?>");
+        }
+        <?php
+        }
+        ?>
     }
   </script>
 </head>
@@ -124,7 +133,13 @@ $paper_types = array('formative', 'progress', 'summative', 'survey', 'osce', 'of
 <tr>
 <td class="icon" onclick="activate('formative')" onmouseover="over('formative')" onmouseout="out('formative')" id="formative"><img src="../artwork/formative.png" width="48" height="48" alt="Formative Self-Assessment" /><br /><?php echo $string['formative self-assessment']; ?></td>
 <td class="icon" onclick="activate('progress')" onmouseover="over('progress')" onmouseout="out('progress')" id="progress"><img src="../artwork/progress.png" width="48" height="48" alt="Progress Test" /><br /><?php echo $string['progress test']; ?></td>
+<?php
+if (!$configObject->get_setting('core', 'summative_hide_external')) {
+    ?>
 <td class="icon" onclick="activate('summative')" onmouseover="over('summative')" onmouseout="out('summative')" id="summative"><img src="../artwork/summative.png" width="48" height="48" alt="Summative Exam" /><br /><?php echo $string['summative exam']; ?></td>
+<?php
+}
+?>
 <td class="icon" onclick="activate('survey')" onmouseover="over('survey')" onmouseout="out('survey')" id="survey"><img src="../artwork/survey.png" width="48" height="48" alt="Survey" /><br /><?php echo $string['survey']; ?></td>
 <td class="icon" onclick="activate('osce')" onmouseover="over('osce')" onmouseout="out('osce')" id="osce"><img src="../artwork/osce.png" width="48" height="48" alt="OSCE" /><br /><?php echo $string['osce station']; ?></td>
 <td class="icon" onclick="activate('offline')" onmouseover="over('offline')" onmouseout="out('offline')" id="offline"><img src="../artwork/offline.png" width="48" height="48" alt="Offline" /><br /><?php echo $string['offline paper']; ?></td>

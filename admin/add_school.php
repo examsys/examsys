@@ -23,19 +23,26 @@
 */
 
 require '../include/sysadmin_auth.inc';
+require_once '../include/errors.inc';
 
 $school = '';
 $faculty = '';
-
+$exists = false;
 if (isset($_POST['submit'])) {
-  $school = trim($_POST['school']);
-  $faculty = trim($_POST['facultyID']);
-
-  if (SchoolUtils::school_exists_in_faculty($faculty, $school, $mysqli)) {
-    $error = 'duplicate';
+  $school = check_var('school', 'POST', true, false, true);
+  $faculty = check_var('facultyID', 'POST', true, false, true);
+  $code = check_var('code', 'POST', false, false, true);
+  $externalid = check_var('externalid', 'POST', false, false, true);
+  $externalsys = check_var('externalsys', 'POST', false, false, true);
+  if (!is_null($code)) {
+    $exists = SchoolUtils::get_schoolid_by_code($code, $mysqli);
   } else {
-    $insert_id = SchoolUtils::add_school($faculty, $school, $mysqli);
-
+    if (SchoolUtils::school_exists_in_faculty($faculty, $school, $mysqli)) {
+      $exists = true;
+    }
+  }
+  if ($exists === false) {
+    $insert_id = SchoolUtils::add_school($faculty, $school, $mysqli, $code, $externalid, $externalsys);
     header("location: list_schools.php");
     exit();
   }
@@ -43,11 +50,11 @@ if (isset($_POST['submit'])) {
 
 $faculties = 0;
 $faculty_list = array();
-$result = $mysqli->prepare("SELECT id, name FROM faculty WHERE deleted IS NULL ORDER BY name");
+$result = $mysqli->prepare("SELECT id, code, name FROM faculty WHERE deleted IS NULL ORDER BY name");
 $result->execute();
-$result->bind_result($facultyID, $name);
+$result->bind_result($facultyID, $code, $name);
 while ($result->fetch()) {
-  $faculty_list[] = array($facultyID, $name);
+  $faculty_list[] = array($facultyID, $code, $name);
   $faculties++;
 }
 $result->close();
@@ -113,7 +120,7 @@ $result->close();
   <div align="center">
   <form id="theform" name="add_school" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>" autocomplete="off">
 <?php
-  if (isset($error) and $error = 'duplicate') {
+  if ($exists) {
 ?>
     <div class="form-error"><?php echo $string['duplicateerror'] ?></div>
 <?php
@@ -125,10 +132,32 @@ $result->close();
     <?php
       foreach ($faculty_list as $faculty) {
         $selected = ($faculty[0] == $faculty) ? ' selected="selected"' : '';
-        echo "<option value=\"{$faculty[0]}\"$selected>{$faculty[1]}</option>\n";
+        echo "<option value=\"{$faculty[0]}\"$selected>{$faculty[1]} {$faculty[2]}</option>\n";
       }
     ?>
     </select></td></tr>
+    <tr><td class="field"><?php echo $string['code'] ?></td><td><input type="text" size="30" maxlength="30" name="code" value=""/></td></tr>
+    <?php
+      $sms = \plugins\plugins_sms::get_sms($mysqli);
+      if ($sms !== false) {
+    ?>
+    <tr><td class="field"><?php echo $string['externalsys'] ?></td><td><select name="externalsys">
+    <?php
+      echo "<option value=\"\"></option>\n";
+      foreach ($sms as $s) {
+        if (isset($externalsys) and $s == $externalsys) {
+          $selected = "selected";
+        } else {
+          $selected = "";
+        }
+        echo "<option value=\"$s\" $selected>$s</option>\n";
+      }
+    ?>
+    </select></td></tr>
+    <tr><td class="field"><?php echo $string['externalid'] ?></td><td><input type="text" size="30" maxlength="255" name="externalid" value=""></td></tr>
+    <?php
+      }
+    ?>
     </table>
     <p><input type="submit" class="ok" name="submit" value="<?php echo $string['add'] ?>" /><input class="cancel" id="cancel" type="button" name="home" value="<?php echo $string['cancel'] ?>" /></p>
   </form>

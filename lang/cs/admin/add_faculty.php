@@ -16,4 +16,8 @@
 
 $string['addfaculty'] = 'Přidat fakultu';
 $string['facultywarning'] = 'Tento název fakulty již existuje. Vyberte, prosím, jiný.';
+$string['code'] = 'Faculty Code';
+$string['name'] = 'Name';
+$string['externalid'] = 'External ID';
+$string['externalsys'] = 'External System';
 ?>

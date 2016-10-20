@@ -71,9 +71,8 @@ require '../include/staff_auth.inc';
   $user_no = 0;
   $sql = <<< SQL
 SELECT l.q_id, u.grade, DATE_FORMAT(lm.started,"%d/%m/%Y %T") AS started, lm.year, u.surname,
-u.initials, u.title, REPLACE(l.user_answer,'"',"'") AS user_answer, q.q_type, lm.userID
+u.initials, u.title, REPLACE(l.user_answer,'"',"'") AS user_answer, lm.userID
 FROM log3 l INNER JOIN log_metadata lm ON l.metadataID = lm.id
-INNER JOIN questions q ON l.q_id = q.q_id
 INNER JOIN users u ON lm.userID = u.id
 WHERE lm.paperID = ?
 AND lm.year LIKE ?
@@ -83,11 +82,10 @@ AND lm.started >= ? AND lm.started <= ?
 ORDER BY u.surname, u.initials
 SQL;
 
-  // $result = $mysqli->prepare("SELECT log3.q_id, grade, DATE_FORMAT(log_metadata.started,\"%d/%m/%Y %T\") AS started, log_metadata.year, surname, initials, title, REPLACE(user_answer,'\"',\"'\") AS user_answer, q_type, log3.userID FROM (log3, log_metadata, questions, users) WHERE log3.q_paper=log_metadata.paperID AND log3.userID=log_metadata.userID AND log3.started=log_metadata.started AND log3.q_id=questions.q_id AND q_paper=? AND log_metadata.year LIKE ? AND users.id=log3.userID AND grade LIKE ? AND (users.roles='Student' OR users.roles='graduate')$exclude AND log_metadata.started>=? AND log_metadata.started<=? ORDER BY surname, initials");
   $result = $mysqli->prepare($sql);
   $result->bind_param('issss', $_GET['paperID'], $_GET['repyear'], $_GET['repcourse'], $_GET['startdate'], $_GET['enddate']);
   $result->execute();
-  $result->bind_result($question_ID, $grade, $started, $year, $surname, $initials, $title, $user_answer, $q_type, $user_ID);
+  $result->bind_result($question_ID, $grade, $started, $year, $surname, $initials, $title, $user_answer, $user_ID);
   while ($result->fetch()) {
     $log_array[$user_ID][$question_ID] = $user_answer;
     $log_array[$user_ID]['username'] = $user_ID;

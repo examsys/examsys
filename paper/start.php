@@ -33,7 +33,7 @@ require_once '../include/errors.inc';
 
 $userObject = UserObject::get_instance();
 
-if ($userObject->has_role('External Examiner')) {    // External examiners have their own separate UI.
+if ($userObject->has_role('External Examiner') or $userObject->has_role('Internal Reviewer')) {    // Special users have their own separate UI.
   $msg = sprintf($string['furtherassistance'], $configObject->get('support_email'), $configObject->get('support_email'));
   $notice->display_notice_and_exit($mysqli, $string['accessdenied'], $msg, $string['accessdenied'], $configObject->get('cfg_root_path') . '/artwork/access_denied.png', '#C00000', true, true);
 }
@@ -422,7 +422,8 @@ if ($css != '') {
       echo "        if (flag == 0) {\n";
       echo "          $('#refhead' + i).css('top', (31 * i) + 'px');\n";
       echo "        } else {\n";
-      echo "          $('#refhead' + i).css('top', (winH - (" . count($reference_materials) . " - i) * 31) + 'px');\n";
+      echo "          $('#refhead' + i).css('top', '');\n";
+      echo "          $('#refhead' + i).css('bottom', ((" . count($reference_materials) . " - (i + 1)) * 31) + 'px');\n";
       echo "        }\n";
       echo "      }\n";
       echo "    }\n";
@@ -1309,13 +1310,10 @@ function randomQOverwrite($random_q_data, $user_answers, &$screen_data, &$used_q
   }
 
   if ($selected_q_id == '') {
-    // Generate a random question ID.
-    $random_q_no = count($random_q_data['options']);
     $try = 0;
     $unique = false;
     while ($unique == false and $try < 9999) {
-      $selected_no = rand(0, $random_q_no-1);
-      $selected_q_id = $random_q_data['options'][$selected_no]['option_text'];
+      $selected_q_id = random_utils::generate_random_qid_from_block($random_q_data['q_id'], $db);
       if (!isset($used_questions[$selected_q_id])) $unique = true;
       $try++;
     }
@@ -1426,11 +1424,13 @@ function keywordQOverwrite($random_q_data, $user_answers, &$screen_data, &$used_
   }
 
   if ($selected_q_id == '') {
+    // Get the keyword id.
+    $keyword_id = keyword_utils::get_keywordid_for_question($random_q_data['q_id'], $db);
     // Generate a random question ID from keywords.
     $question_ids = array();
     $question_data = $db->prepare("SELECT DISTINCT k.q_id FROM keywords_question k, questions q WHERE k.q_id = q.q_id AND"
       . " k.keywordID = ? AND q.deleted is NULL");
-    $question_data->bind_param('i', $random_q_data['options'][0]['option_text']);
+    $question_data->bind_param('i', $keyword_id);
     $question_data->execute();
     $question_data->bind_result($q_id);
     while ($question_data->fetch()) {

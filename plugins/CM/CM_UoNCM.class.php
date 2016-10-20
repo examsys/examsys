@@ -25,7 +25,6 @@
 */
 
 require_once 'CMAPI.if.php';
-require_once dirname(dirname(__DIR__)) . '/webServices/RestRequest.class.php';
 
 class CM_UoNCM implements iCMAPI {
   private $_root_url;
@@ -38,29 +37,39 @@ class CM_UoNCM implements iCMAPI {
    * Return objectives from the University of Nottingham Curriculum Mapping system
    * @param string $moduleID the module code
    * @param int $session The year the academic year starts in
+   * @param mysqli $db database connection
    * @return mixed Array of session and objective data in format required by Rogō
    */
-  public function getObjectives($moduleID, $session) {
+  public function getObjectives($moduleID, $session, $db) {
     $configObject = Config::get_instance();
     $this->_sess_year = $session;
-    $this->_root_url = $configObject->get('cfg_cmap_url') . "/" . $this->_sess_year . "/index.php/";
+    $originalmodid = $moduleID;
+    // Map module code if necessary.
+    if ($session < 2016) {  
+      $moduleID = \plugins\plugins_mapping::do_mapping($db, $moduleID);
+    }
+    $this->_root_url = $configObject->get_setting('core', 'cfg_cmap_url') . "/" . $this->_sess_year . "/index.php/";
     $this->_module_id = $moduleID;
-    $this->_moodle_base_url = $configObject->get('cfg_moodle_base_url') . '/local/uonlib/findcourse.php?m=%s&y=%s&nid=%s';
-    $req = new RestRequest($this->_root_url . "api/find_json?search={$moduleID}&type=module&where=attribute&attrib=code&output=module_session_obs");
-    $req->execute();
-
-    $res = $req->getResponseBody();
-    
-    $response = $req->getResponseInfo();
-    if ($response['http_code'] == 0) {
+    $this->_moodle_base_url = $configObject->get_setting('core', 'cfg_moodle_base_url') . '/local/uonlib/findcourse.php?m=%s&y=%s&nid=%s';
+    $url = $this->_root_url . "api/find_json?search={$moduleID}&type=module&where=attribute&attrib=code&output=module_session_obs";
+    $req = new restful($db);
+    $options = array(CURLOPT_TIMEOUT => 10,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => false,
+            CURLOPT_HTTPHEADER => array('Accept: application/json'),
+            CURLOPT_SSLVERSION => 3,
+            CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.13) Gecko/20080311 Firefox/2.0.0.13'
+        );
+    $res = json_decode($req->get($url, $options), true);
+    if ($req->get_last_http_code() == 0) {
       $objectives = 'error';
     } else {
       switch ($this->_mapping_level) {
         case self::LEVEL_MODULE:
-          $objectives = $this->transformCMResponseModule($res, $session);
+          $objectives = $this->transformCMResponseModule($res, $session, $originalmodid);
           break;
         default:
-          $objectives = $this->transformCMResponse($res, $session);
+          $objectives = $this->transformCMResponse($res, $session, $originalmodid);
           break;
       }
     }
@@ -98,14 +107,15 @@ class CM_UoNCM implements iCMAPI {
   }
 
   /**
-   * Transform the data returned by the Curriculum Map into the format required by Rogō
-   * @param $data
+   * Transform the module level data returned by the Curriculum Map into the format required by Rogō
+   * @param array $input data
+   * @param integer $calendar_year year we are interested in
+   * @param string $originalmodid the orginal (non mapped) module id
+   * @return array data converted to rogo structure
    */
-  private function transformCMResponse($input, $calendar_year) {
+  private function transformCMResponse($input, $calendar_year, $mod_id) {
     if (isset($input['cmapi']['module'])) {
-      $mod_id = $input['cmapi']['module']['code'];
       $sessions = array();
-
       $i = 0;
       if (isset($input['cmapi']['module']['session'])) {
         if (isset($input['cmapi']['module']['session']['@attributes'])) {
@@ -116,7 +126,6 @@ class CM_UoNCM implements iCMAPI {
           }
         }
       }
-
       if (isset($input['cmapi']['module']['learning_act'])) {
         if (isset($input['cmapi']['module']['learning_act']['@attributes'])) {
           $this->process_learning_act($sessions, $input['cmapi']['module']['learning_act'], $calendar_year, $i);
@@ -126,20 +135,22 @@ class CM_UoNCM implements iCMAPI {
           }
         }
       }
-
       $output = array($mod_id => $sessions);
-
       return $output;
     } else {
       return array();
     }
   }
-
-  private function transformCMResponseModule($input, $calendar_year) {
+  /**
+   * Transform the session level data returned by the Curriculum Map into the format required by Rogō
+   * @param array $input data
+   * @param integer $calendar_year year we are interested in
+   * @param string $originalmodid the orginal (non mapped) module id
+   * @return array data converted to rogo structure
+   */
+  private function transformCMResponseModule($input, $calendar_year, $mod_id) {
     if (isset($input['cmapi']['module'])) {
-      $mod_id = $input['cmapi']['module']['code'];
       $sessions = array();
-
       $i = 0;
       if (isset($input['cmapi']['module']['objectives']) and isset($input['cmapi']['module']['objectives']['group'])) {
         if (isset($input['cmapi']['module']['objectives']['group']['@attributes'])) {
@@ -150,9 +161,7 @@ class CM_UoNCM implements iCMAPI {
           }
         }
       }
-
       $output = array($mod_id => $sessions);
-
       return $output;
     } else {
       return array();

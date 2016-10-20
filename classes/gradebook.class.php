@@ -31,6 +31,30 @@ class gradebook {
     private $db;
     
     /**
+     * External paper - externalid used to referece paper
+     * @var string
+     */
+    const EXTPAPER = 'extpaper';
+    
+    /**
+     * External module - externalid used to referece module
+     * @var string
+     */
+    const EXTMODULE = 'extmodule';
+    
+    /**
+     * Internal paper - rogo id used to referece paper
+     * @var string
+     */
+    const PAPER = 'paper';
+    
+    /**
+     * Internal module - rogo id used to referece module
+     * @var string
+     */
+    const MODULE = 'module';
+    
+    /**
      * Constructor
      * @param object $db
      * @return void 
@@ -107,19 +131,31 @@ class gradebook {
     
     /**
      * Get the gradebook for a paper
-     * @param int $paperid 
+     * @param string $paperidtype type of id to serach on
+     * @param int $paperid id to search with
      * @return array|bool gradebook for paper or false  
      */
-    public function get_paper_gradebook($paperid) {
-        if ($this->paper_graded($paperid)) {
-            $sql = $this->db->prepare("SELECT gu.userid, u.username, gu.raw_grade, ROUND(gu.adjusted_grade, 2), gu.classification FROM
-                gradebook_paper p, gradebook_user gu, users u WHERE p.paperid = gu.paperid AND u.id = gu.userid AND p.paperid = ?");
-            $sql->bind_param('i', $paperid);
+    public function get_paper_gradebook($paperidtype, $paperid) {
+        if ($paperidtype == self::EXTPAPER) {
+            $pid = \Paper_utils::get_id_from_externalid($paperid, $this->db);
+        } else {
+            $pid = $paperid;
+        }
+        
+        if ($this->paper_graded($pid)) {
+            $sql = $this->db->prepare("SELECT gu.userid, s.student_id, u.username, gu.raw_grade, ROUND(gu.adjusted_grade, 2), gu.classification FROM
+                gradebook_paper p, gradebook_user gu, users u, sid s WHERE p.paperid = gu.paperid AND u.id = gu.userid AND u.id = s.userID AND p.paperid = ?");
+            $sql->bind_param('i', $pid);
             $sql->execute();
-            $sql->bind_result($userid, $username, $raw_grade, $adjusted_grade, $classification);
+            $sql->bind_result($userid, $studentid, $username, $raw_grade, $adjusted_grade, $classification);
             $users = array();
             while ($sql->fetch()) {
-                $users[$userid] = array('raw_grade' => $raw_grade, 'adjusted_grade' => $adjusted_grade,
+                if ($paperidtype == self::EXTPAPER) {
+                    $uid = $studentid;
+                } else {
+                    $uid = $userid;
+                }
+                $users[$uid] = array('raw_grade' => $raw_grade, 'adjusted_grade' => $adjusted_grade,
                     'classification' => $classification, 'username' => $username);
             }
             $gradebook[$paperid] = $users;
@@ -131,31 +167,71 @@ class gradebook {
     }
     
     /**
-     * Get the gradebook for a modle
-     * @param int $moduleid 
+     * Get a gradebook for a paper with more user data than the default gradebook
+     * @param int $paperid id to search with
+     * @return array|bool detailed gradebook for paper or false  
+     */
+    public function get_user_detailed_paper_gradebook($paperid) {
+        if ($this->paper_graded($paperid)) {
+            $sql = $this->db->prepare("SELECT gu.userid, s.student_id, u.username, u.surname, u.first_names, gu.raw_grade, ROUND(gu.adjusted_grade, 2), gu.classification FROM
+                gradebook_paper p, gradebook_user gu, users u, sid s WHERE p.paperid = gu.paperid AND u.id = gu.userid AND u.id = s.userID AND p.paperid = ?");
+            $sql->bind_param('i', $paperid);
+            $sql->execute();
+            $sql->bind_result($userid, $studentid, $username, $surname, $first_names, $raw_grade, $adjusted_grade, $classification);
+            $users = array();
+            while ($sql->fetch()) {
+                $users[$userid] = array('student_id' => $studentid, 'raw_grade' => $raw_grade, 'adjusted_grade' => $adjusted_grade,
+                    'classification' => $classification, 'username' => $username, 'surname' => $surname, 'first_names' => $first_names);
+            }
+            $gradebook[$paperid] = $users;
+            $sql->close();
+            return $gradebook;
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Get the gradebook for a module
+     * @param string $moduleidtype type of id to serach on
+     * @param int $moduleid id to search with
      * @return array|bool gradebook for module or false
      */
-    public function get_module_gradebook($moduleid) {
+    public function get_module_gradebook($moduleidtype, $moduleid) {
+        if ($moduleidtype == self::EXTMODULE) {
+            $modid = \module_utils::get_id_from_externalid($moduleid, $this->db);
+        } else {
+            $modid = $moduleid;
+        }
+        
         $sql = $this->db->prepare("SELECT
-            p.paperid, gu.userid, u.username, gu.raw_grade, ROUND(gu.adjusted_grade, 2), gu.classification
+            p.paperid, pr.externalid, gu.userid, s.student_id, u.username, gu.raw_grade, ROUND(gu.adjusted_grade, 2), gu.classification
             FROM
                 gradebook_paper p, 
                 gradebook_user gu, 
                 users u,
-                properties_modules m
+                sid s,
+                properties_modules m,
+                properties pr
             WHERE
                 m.property_id = p.paperid AND
+                pr.property_id = p.paperid AND
                 p.paperid = gu.paperid AND 
                 u.id = gu.userid AND
+                u.id = s.userID  AND
                 m.idMod = ?");
-        $sql->bind_param('i', $moduleid);
+        $sql->bind_param('i', $modid);
         $sql->execute();
-        $sql->bind_result($paperid, $userid, $username, $raw_grade, $adjusted_grade, $classification);
+        $sql->bind_result($paperid, $extpaperid, $userid, $studentid, $username, $raw_grade, $adjusted_grade, $classification);
         $papers = array();
         while ($sql->fetch()) {
             $users = array('raw_grade' => $raw_grade, 'adjusted_grade' => $adjusted_grade, 'classification' => $classification,
                 'username' => $username);
-            $papers[$paperid][$userid] = $users;
+            if ($moduleidtype == self::EXTMODULE) {
+                $papers[$extpaperid][$studentid] = $users;
+            } else {
+                $papers[$paperid][$userid] = $users;    
+            }
         }
         $sql->close();
         $gradebook[$moduleid] = $papers;

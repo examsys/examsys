@@ -28,3 +28,5 @@ $string['404'] = '404 Page Not Found';
 $string['nopermission'] = 'You do not have permission to run this action';
 $string['mediatype'] = 'Media type not supported';
 $string['invalidtoken'] = 'The access token provided is invalid';
+$strings['external_faculty_invalid'] = 'External system faculty id invalid';
+$strings['external_school_invalid'] = 'External system school id invalid';

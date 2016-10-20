@@ -29,44 +29,13 @@ require_once './include/errors.inc';
 require_once './include/sidebar_menu.inc';
 require_once './config/index.inc';
 
-/**
-  * Get a list of internal reviews for the current user.
-  * @param int $userID  - Question ID of the random question to be loaded.
-  * @param object $db   - MySQL connection.
-  * @return array				- Array of paper details the current user should review.
-  */
-function get_review_papers($userID, $db) {
-  $papers = array();
-
-  $result = $db->prepare("SELECT paper_title, property_id, fullscreen, DATE_FORMAT(internal_review_deadline,'%d/%m/%Y') AS internal_review_deadline, crypt_name, paper_type FROM (properties, properties_reviewers) WHERE properties.property_id = properties_reviewers.paperID AND deleted IS NULL AND internal_review_deadline >= CURDATE() AND reviewerID = ? AND type = 'internal' ORDER BY paper_title");
-  $result->bind_param('i', $userID);
-  $result->execute();
-  $result->bind_result($paper_title, $property_id, $fullscreen, $internal_review_deadline, $crypt_name, $paper_type);
-  $result->store_result();    
-  while ($result->fetch()) {
-    $reviewed = '';
-    $result2 = $db->prepare("SELECT DATE_FORMAT(MAX(started),'%d/%m/%Y %T') AS started FROM review_metadata WHERE reviewerID = ? AND paperID = ?");
-    $result2->bind_param('ii', $userID, $property_id);
-    $result2->execute();
-    $result2->bind_result($reviewed);
-    $result2->fetch();
-    $result2->close();
-
-    $papers[] = array('paper_title'=>$paper_title, 'crypt_name'=>$crypt_name, 'fullscreen'=>$fullscreen, 'reviewed'=>$reviewed, 'internal_review_deadline'=>$internal_review_deadline, 'type' => $paper_type);
-  }
-
-  $result->close();
-
-  return $papers;
-}
-
 $userObject = UserObject::get_instance();
 
 // Redirect Students (if not also staff), External Examiners and Invigilators to their own areas.
 if ($userObject->has_role('Student') and !($userObject->has_role(array('Staff', 'Admin', 'SysAdmin')))) {
   header("location: ./paper/");
   exit();
-} elseif ($userObject->has_role('External Examiner')) {
+} elseif ($userObject->has_role('External Examiner') or $userObject->has_role('Internal Reviewer')) {
   header("location: ./reviews/");
   exit();
 } elseif ($userObject->has_role('Invigilator')) {
@@ -224,7 +193,8 @@ $announcements = announcement_utils::get_staff_announcements($mysqli);
   }  
   
   // -- Display any papers for review ---------------------------------
-  $review_papers = get_review_papers($userObject->get_user_ID(), $mysqli);
+  $internalreview = new internalreview($mysqli);
+  $review_papers = $internalreview->get_review_papers($userObject->get_user_ID());
 
   if (count($review_papers) > 0) {
     echo "<div class=\"subsect_table\" style=\"clear:both\"><div class=\"subsect_title\"><nobr>" . $string['papersforreview'] . "</nobr></div><div class=\"subsect_hr\"><hr noshade=\"noshade\" /></div></div>\n";

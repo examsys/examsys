@@ -221,7 +221,7 @@ class lti_uon_integration_extended extends lti_integration {
     $time1 = strtotime($time);
     $time2 = time();
     $timediff = $time2 - $time1;
-    if ($timediff > $this->config->get('lti_auth_timeout')) {
+    if ($timediff > $this->config->get_setting('core', 'lti_auth_timeout')) {
       return true;
     }
     return false;

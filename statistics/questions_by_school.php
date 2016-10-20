@@ -72,44 +72,37 @@ require '../include/errors.inc';
 <?php
 $master_array = array();
 
+// Get a list of all schools in Rogo.
 $result = $mysqli->prepare("SELECT schools.id, school, name FROM schools, faculty WHERE schools.facultyID = faculty.id AND school != 'Training' AND schools.deleted IS NULL AND faculty.deleted IS NULL ORDER BY name, school");
 $result->execute();
 $result->bind_result($id, $school, $faculty);
 while ($result->fetch()) {
-  $master_array[$school]['id'] = $id;
-  $master_array[$school]['faculty'] = $faculty;
-	$master_array[$school]['types'] = array('blank'=>0, 'dichotomous'=>0, 'flash'=>0, 'hotspot'=>0, 'labelling'=>0, 'likert'=>0, 'matrix'=>0, 'mcq'=>0, 'mrq'=>0, 'rank'=>0, 'textbox'=>0, 'info'=>0, 'extmatch'=>0, 'random'=>0, 'sct'=>0, 'keyword_based'=>0, 'true_false'=>0, 'area'=>0, 'enhancedcalc'=>0);
+  $master_array[$id]['name'] = $school;
+  $master_array[$id]['faculty'] = $faculty;
+  $master_array[$id]['types'] = array('blank'=>0, 'dichotomous'=>0, 'flash'=>0, 'hotspot'=>0, 'labelling'=>0, 'likert'=>0, 'matrix'=>0, 'mcq'=>0, 'mrq'=>0, 'rank'=>0, 'textbox'=>0, 'info'=>0, 'extmatch'=>0, 'random'=>0, 'sct'=>0, 'keyword_based'=>0, 'true_false'=>0, 'area'=>0, 'enhancedcalc'=>0);
 }
 $result->close();
 
-foreach ($master_array as $school => $data) {
-	// Get the modules which belong in the school first.
-	$moduleIDs = array();
-
-	$result = $mysqli->prepare("SELECT id FROM modules WHERE schoolid = ? AND active = 1 AND mod_deleted IS NULL");
-	$result->bind_param('i', $data['id']);
-	$result->execute();
-	$result->bind_result($id);
-	while ($result->fetch()) {
-		$moduleIDs[] = $id;
-	}
-	$result->close();
-	
-	$master_array[$school]['module_no'] = count($moduleIDs);
-
-	if (count($moduleIDs) > 0) {
-		// Get the papers.
-		$date_range = '';
-				
-		$result = $mysqli->prepare("SELECT DISTINCT questions.q_id, q_type FROM questions, questions_modules WHERE questions.q_id = questions_modules.q_id AND idMod IN (" . implode(',', $moduleIDs) . ") AND deleted IS NULL GROUP BY questions.q_id");
-		$result->execute();
-		$result->bind_result($q_id, $q_type);
-		while ($result->fetch()) {
-			$master_array[$school]['types'][$q_type]++;
-		}
-		$result->close();
-	}
+// Get a count of active questions by type for each school.
+$statssql = <<<SQL
+SELECT DISTINCT s.id, q.q_type, qm.q_id
+FROM schools s
+  JOIN faculty f ON s.facultyID = f.id
+  JOIN modules m ON m.schoolid = s.id
+  JOIN questions_modules qm ON qm.idMod = m.id
+  JOIN questions q ON q.q_id = qm.q_id
+WHERE s.school != 'Training'
+  AND s.deleted IS NULL AND f.deleted IS NULL
+  AND m.active = 1 AND m.mod_deleted IS NULL
+  AND q.deleted IS NULL
+SQL;
+$stats = $mysqli->prepare($statssql);
+$stats->execute();
+$stats->bind_result($id, $question_type, $count);
+while ($stats->fetch()) {
+  $master_array[$id]['types'][$question_type]++;
 }
+$stats->close();
 
 $old_faculty = '';
 $faculty_stats = $types;
@@ -120,9 +113,9 @@ foreach ($master_array as $school => $data) {
 			echo output_faculty_stats($faculty_stats, $types);
 	  }
 		echo '<tr><td colspan="19" class="faculty">' . $data['faculty'] . '</td></tr>';
-		$faculty_stats = array();
+		$faculty_stats = $types;
 	}
-  echo "<tr><td>" . $school . "</td>";
+  echo "<tr><td>" . $data['name'] . "</td>";
 	
 	foreach ($types as $type) {
 	  if ($data['types'][$type] == 0) {
@@ -140,6 +133,7 @@ foreach ($master_array as $school => $data) {
 
 	$old_faculty = $data['faculty'];
 }
+echo output_faculty_stats($faculty_stats, $types);
 ?>
 </table>
 

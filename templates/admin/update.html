@@ -1,0 +1,45 @@
+<form id="updateform" name="update_plugin" method="post" action="{{action}}" autocomplete="off">
+    <table id="maindata" class="header" cellspacing="0" cellpadding="2" border="0" style="width:100%">
+        <thead>
+            <tr>
+            {% for item in header %}
+              <th class="{{item.class}}" style="{{item.style}}">{{item.value}}</th>
+            {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for id,item in plugins %}
+            {% set pluginidx = loop.index0 %}
+            <tr class="l">
+                <td class="col10">{{id}}</td>
+                {% for i in item %}
+                    {% if loop.index0 == 2 %}
+                        {% if i == true %}
+                        <td class="col"><img src="{{path}}/artwork/tick.gif"></td>
+                        {% else %}
+                        <td class="col"><img src="{{path}}/artwork/cross.gif"></td>
+                        {% endif %}
+                    {% elseif loop.index0 == 3 %}
+                        <td class="col">{{i|raw}}</td>
+                    {% else %}
+                    <td class="col">{{i}}</td>
+                    {% endif %}
+                {% endfor %}
+            </tr>
+            {% endfor %}
+            <tr>
+                <td class="col10"></td>
+                <td class="col"></td>
+                <td class="col"></td>
+                <td class="col"></td>
+                <td class="col">
+                    <input type="submit" class="ok" name="{{lang.update}}" value="{{lang.update}}"/>
+                    <input type="submit" class="ok" name="{{lang.uninstall}}" value="{{lang.uninstall}}"/>
+                </td>
+            </tr>
+            <tr><td>{{lang.dbsettings}}</td></tr>
+            <tr><td class="field">{{lang.dbuser}}</td><td><input type="text" size="30" id="dbuser" name="dbuser" value=""/>
+            <tr><td class="field">{{lang.dbpasswd}}</td><td><input type="password" size="30" id="dbuser" name="dbpasswd" value=""/>
+        </tbody>
+    </table>
+</form>

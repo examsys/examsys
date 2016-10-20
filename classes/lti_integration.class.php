@@ -51,7 +51,7 @@ abstract class lti_integration {
      * @return bool
      */
     public function allow_module_self_reg() {
-        return $this->config->get('cfg_lti_allow_module_self_reg');
+        return $this->config->get_setting('core', 'cfg_lti_allow_module_self_reg');
     }
 
     /**
@@ -59,7 +59,7 @@ abstract class lti_integration {
      * @return bool
      */
     public function allow_staff_module_register() {
-        return $this->config->get('cfg_lti_allow_staff_module_register');
+        return $this->config->get_setting('core', 'cfg_lti_allow_staff_module_register');
     }
 
     /**
@@ -67,7 +67,7 @@ abstract class lti_integration {
      * @return bool
      */
     public function allow_module_create() {
-        return $this->config->get('cfg_lti_allow_module_create');
+        return $this->config->get_setting('core', 'cfg_lti_allow_module_create');
     }
     
     /**

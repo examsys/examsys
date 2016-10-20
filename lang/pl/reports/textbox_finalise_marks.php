@@ -21,4 +21,5 @@ $string['second'] = '2.';
 $string['override'] = 'Nadrzędna';
 $string['unmarked'] = 'brak oceny';
 $string['question'] = 'Pytanie';
+$string['selectallprimary']  = 'Select All?';
 ?>

@@ -353,11 +353,12 @@ echo "<div id=\"menu1\">\n";
 	?>
 	<div class="menuitem cascade" id="copy"><a href="#" onclick="showCopyMenu(false, event); return false;"><img class="sidebar_icon" src="<?php echo $configObject->get('cfg_root_path') ?>/artwork/copy_icon.gif" alt="<?php echo $string['copypaper'] ?>" /><?php echo $string['copypaper'] ?></a></div>
 	<?php
-		if ($properties->get_summative_lock() != 1) {
-			echo '<div class="menuitem"><a href="#" onclick="deletePaper(); return false"><img class="sidebar_icon" src="' . $configObject->get('cfg_root_path') . '/artwork/delete_paper_16.gif" alt="' . $string['deletepaper'] . '" />' . $string['deletepaper'] . '</a></div>';
-		} else {
-			echo '<div class="grey menuitem"><img class="sidebar_icon" src="' . $configObject->get('cfg_root_path') . '/artwork/delete_paper_grey_16.gif" alt="' . $string['deletepaper'] . '" />' . $string['deletepaper'] . '</div>';
-		}
+        // Disable paper deletion when summative paper is locked, or summative paper, centrally managed and user is a non admin.
+        if ($properties->get_summative_lock() == 1 or ($configObject->get('cfg_summative_mgmt') and $properties->get_paper_type() == '2' and !$userObject->has_role(array('Admin', 'SysAdmin')))) {
+          echo '<div class="grey menuitem"><img class="sidebar_icon" src="' . $configObject->get('cfg_root_path') . '/artwork/delete_paper_grey_16.gif" alt="' . $string['deletepaper'] . '" />' . $string['deletepaper'] . '</div>';
+        } else {
+          echo '<div class="menuitem"><a href="#" onclick="deletePaper(); return false"><img class="sidebar_icon" src="' . $configObject->get('cfg_root_path') . '/artwork/delete_paper_16.gif" alt="' . $string['deletepaper'] . '" />' . $string['deletepaper'] . '</a></div>';
+        }
 
 		echo '<div class="menuitem"><a href="#" onclick="retirePaper(); return false;"><img class="sidebar_icon" src="' . $configObject->get('cfg_root_path') . '/artwork/retire_16.png" alt="' . $string['retirepaper'] . '" />' . $string['retirepaper'] . '</a></div>';
 

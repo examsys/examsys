@@ -777,7 +777,7 @@ class UserObject extends RogoStaticSingleton {
 
     $configObject = Config::get_instance();
 
-    $getback = array('cfg_db_sysadmin_user', 'cfg_db_sysadmin_passwd', 'cfg_db_admin_user', 'cfg_db_admin_passwd', 'cfg_db_staff_user', 'cfg_db_staff_passwd', 'cfg_db_student_user', 'cfg_db_student_passwd', 'cfg_db_external_user', 'cfg_db_external_passwd', 'cfg_db_inv_user', 'cfg_db_inv_passwd', 'cfg_db_database');
+    $getback = array('cfg_db_sysadmin_user', 'cfg_db_sysadmin_passwd', 'cfg_db_admin_user', 'cfg_db_admin_passwd', 'cfg_db_staff_user', 'cfg_db_staff_passwd', 'cfg_db_student_user', 'cfg_db_student_passwd', 'cfg_db_external_user', 'cfg_db_external_passwd', 'cfg_db_internal_user', 'cfg_db_internal_passwd', 'cfg_db_inv_user', 'cfg_db_inv_passwd', 'cfg_db_database');
 
     $arr = $this->configObj->get($getback);
     foreach ($arr as $k => $v) {
@@ -793,6 +793,8 @@ class UserObject extends RogoStaticSingleton {
       $result = $this->db->change_user($cfg_db_student_user, $cfg_db_student_passwd, $cfg_db_database);
     } elseif ($this->has_role('External Examiner')) {
       $result = $this->db->change_user($cfg_db_external_user, $cfg_db_external_passwd, $cfg_db_database);
+    } elseif ($this->has_role('Internal Reviewer')) {
+      $result = $this->db->change_user($cfg_db_internal_user, $cfg_db_internal_passwd, $cfg_db_database);
     } elseif ($this->has_role('Invigilator')) {
       $result = $this->db->change_user($cfg_db_inv_user, $cfg_db_inv_passwd, $cfg_db_database);
     } else {

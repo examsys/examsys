@@ -14,5 +14,5 @@
 // You should have received a copy of the GNU General Public License
 // along with Rogo.  If not, see <http://www.gnu.org/licenses/>.
 
-$string['objectives_error'] = 'Error retriving objectives';
-$string['could_not_retrive_objectives'] = 'Learning objectives could not be retrived for the question.';
+$string['objectives_error'] = 'Error retrieving objectives';
+$string['could_not_retrieve_objectives'] = 'Learning objectives could not be retrieved for the question.';

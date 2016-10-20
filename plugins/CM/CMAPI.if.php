@@ -33,11 +33,12 @@ interface iCMAPI
 
   /**
    * Return objectives from the remote system
-   * @param $moduleID
-   * @param $session
+   * @param string $moduleID module code
+   * @param integer $session academic session
+   * @param mysqli $db database connection
    * @return mixed Array of session and objective data in format required by Rogō
    */
-  public function getObjectives($moduleID, $session);
+  public function getObjectives($moduleID, $session, $db);
 
   /**
    * Get a friendly name for the source system, with the indefinite article if required

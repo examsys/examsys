@@ -34,6 +34,7 @@ class schoolmanagementtest extends unittestdatabase {
             "statuscode" => 100,
             "status" => 'OK',
             "id" => 4,
+            "externalid" => null,
             "error" => null,
             "node" => 'create',
             "nodeid" => 1);
@@ -46,7 +47,9 @@ class schoolmanagementtest extends unittestdatabase {
         return array(
             "nodeid" => 1,
             "name" => 'CREATE',
-            "faculty" => 'Test faculty');
+            "faculty" => 'Test faculty',
+            "code" => 'TST',
+            "externalid" => "xyz");
     }
     /**
      * Create a response array for updates
@@ -57,8 +60,9 @@ class schoolmanagementtest extends unittestdatabase {
             "statuscode" => 100,
             "status" => 'OK',
             "id" => 1,
+            "externalid" => null,
             "error" => null,
-            "node" => 'create',
+            "node" => 'update',
             "nodeid" => 1);
     }
     /**
@@ -81,6 +85,7 @@ class schoolmanagementtest extends unittestdatabase {
             "statuscode" => 100,
             "status" => 'OK',
             "id" => 1,
+            "externalid" => null,
             "error" => null,
             "node" => 'delete',
             "nodeid" => 1);
@@ -116,13 +121,14 @@ class schoolmanagementtest extends unittestdatabase {
     public function test_create_success() {
         // Test school creation - SUCCESS
         $responsearray = $this->create_response_array();
+        $responsearray['externalid'] = "xyz";
         $params = $this->create_param_array();
         $school = new \api\schoolmanagement($this->db);
         $userid = 1;
         $this->assertEquals($responsearray, $school->create($params, $userid));
     }
     /**
-     * Test school create exception invalid school
+     * Test school create exception invalid school (external system)
      * @group api
      */
     public function test_create_exception_school() {
@@ -134,9 +140,27 @@ class schoolmanagementtest extends unittestdatabase {
         $responsearray['statuscode'] = 606;
         $responsearray['status'] = 'School already exists';
         $responsearray['id'] = 1;
+        $responsearray['externalid'] = "abcdef";
         $params = array(
             "nodeid" => 1,
             "name" => 'Test school',
+            "faculty" => 'Test faculty');
+        $this->assertEquals($responsearray, $school->create($params, $userid));
+    }
+    /**
+     * Test school create exception invalid school (non external system)
+     * @group api
+     */
+    public function test_create_exception_school2() {
+        $responsearray = $this->create_response_array();
+        $school = new \api\schoolmanagement($this->db);
+        $userid = 1;
+        $responsearray['statuscode'] = 606;
+        $responsearray['status'] = 'School already exists';
+        $responsearray['id'] = 2;
+        $params = array(
+            "nodeid" => 1,
+            "name" => 'Test school 2',
             "faculty" => 'Test faculty');
         $this->assertEquals($responsearray, $school->create($params, $userid));
     }
@@ -166,23 +190,25 @@ class schoolmanagementtest extends unittestdatabase {
     public function test_update_success() {
         // Test school update - SUCCESS
         $responsearray = $this->update_response_array();
+        $responsearray['externalid'] = "abcdef";
         $params = $this->update_param_array();
         $school = new \api\schoolmanagement($this->db);
         $userid = 1;
-        $this->assertEquals($responsearray, $school->create($params, $userid));
+        $this->assertEquals($responsearray, $school->update($params, $userid));
         // Test with no faculty provided i.e. school name update.
         $responsearray['id'] = 2;
+        $responsearray['externalid'] = null;
         $params = array(
             "nodeid" => 1,
             "id" => 2,
             "name" => 'Test school 2 update');
-        $this->assertEquals($responsearray, $school->create($params, $userid));
+        $this->assertEquals($responsearray, $school->update($params, $userid));
         // Test with no name provided i.e. faculty update.
         $params = array(
             "nodeid" => 1,
             "id" => 2,
             "faculty" => 'Test faculty 2');
-        $this->assertEquals($responsearray, $school->create($params, $userid));
+        $this->assertEquals($responsearray, $school->update($params, $userid));
     }
     /**
      * Test school update exception nothing to update
@@ -200,7 +226,7 @@ class schoolmanagementtest extends unittestdatabase {
         $responsearray['statuscode'] = 607;
         $responsearray['status'] = 'Request updates nothing';
         $responsearray['id'] = null;
-        $this->assertEquals($responsearray, $school->create($params, $userid));
+        $this->assertEquals($responsearray, $school->update($params, $userid));
     }
     /**
      * Test school update exception invalid school
@@ -216,7 +242,7 @@ class schoolmanagementtest extends unittestdatabase {
         $responsearray['status'] = 'School does not exist';
         $responsearray['id'] = null;
         $params['id'] = 100;
-        $this->assertEquals($responsearray, $school->create($params, $userid));
+        $this->assertEquals($responsearray, $school->update($params, $userid));
     }
     /**
      * Test school update exception no school supplied
@@ -233,7 +259,7 @@ class schoolmanagementtest extends unittestdatabase {
         $responsearray['id'] = null;
         $params['name'] = '';
         $params['faculty'] = 'Test faculty 2';
-        $this->assertEquals($responsearray, $school->create($params, $userid));
+        $this->assertEquals($responsearray, $school->update($params, $userid));
     }
     /**
      * Test school update exception invalid faculty
@@ -249,7 +275,7 @@ class schoolmanagementtest extends unittestdatabase {
         $responsearray['status'] = 'Faculty not supplied';
         $responsearray['id'] = null;
         $params['faculty'] = '';
-        $this->assertEquals($responsearray, $school->create($params, $userid));
+        $this->assertEquals($responsearray, $school->update($params, $userid));
     }
     /**
      * Test successful school deletion
@@ -258,6 +284,7 @@ class schoolmanagementtest extends unittestdatabase {
     public function test_delete_success() {
         // Test school deletion - SUCCESS.
         $responsearray = $this->delete_response_array();
+        $responsearray['externalid'] = "abcdef";
         $params = $this->delete_param_array();
         $school = new \api\schoolmanagement($this->db);
         $userid = 1;

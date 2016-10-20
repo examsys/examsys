@@ -54,21 +54,28 @@ abstract class unittestdatabase extends \PHPUnit_Extensions_Database_TestCase {
     /**
      * Set-up config and db connections.
      */
-    final public function setUp() {
+    public function setup_db() {
         $this->config = RogoConfig::get_instance();
         $this->default_config = clone($this->config);
         $this->config->use_phpunit_site();
         // Open db connection.
-        $this->db = new \mysqli($this->config->get('cfg_db_host'), $this->config->get('cfg_db_sysadmin_user'), $this->config->get('cfg_db_sysadmin_passwd'),
+        $this->db = new \mysqli($this->config->get('cfg_db_host'), $this->config->get('cfg_phpunit_db_user'), $this->config->get('cfg_phpunit_db_password'),
             $this->config->get('cfg_db_database'), $this->config->get('cfg_db_port'));
+        $this->config->set_db_object($this->db);
+    }
+    
+    /**
+     * Phpunit setup function.
+     */
+    public function setUp() {
+        $this->setup_db();
         parent::setUp();
     }
     
     /**
      * Tear down config object and close db connections.
-     * @return  
      */
-    final public function tearDown() {
+    public function tearDown() {
         // Reset the config object.
         RogoConfig::set_mock_instance(clone($this->default_config));
         // Close db connection.
@@ -94,7 +101,7 @@ abstract class unittestdatabase extends \PHPUnit_Extensions_Database_TestCase {
      * Get the fixure directory location for tests. 
      * @return string path to fixtures directory 
      */
-    final public function get_base_fixture_directory() {
+    public function get_base_fixture_directory() {
         return dirname(__DIR__) . DIRECTORY_SEPARATOR . 'fixtures' . DIRECTORY_SEPARATOR;
     }
     
@@ -102,7 +109,7 @@ abstract class unittestdatabase extends \PHPUnit_Extensions_Database_TestCase {
      * Delete the dataset.
      * @param dataset $dataset
      */
-    final public function delete_dataset($dataset) {
+    public function delete_dataset($dataset) {
         $delete = new \PHPUnit_Extensions_Database_Operation_DeleteAll;
         $delete->execute($this->conn, $dataset);
     }

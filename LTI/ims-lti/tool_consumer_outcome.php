@@ -1,10 +1,4 @@
 <?php
-if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
- error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
-} else { 
- error_reporting(E_ALL & ~E_WARNING & ~E_NOTICE);
-}
-
 $old_error_handler = set_error_handler("myErrorHandler");
 
 function myErrorHandler($errno, $errstr, $errfile, $errline)
@@ -13,8 +7,6 @@ function myErrorHandler($errno, $errstr, $errfile, $errline)
     if ( strpos($errstr, 'deprecated') !== false ) return true;
     return false;
 }
-
-ini_set("display_errors", 1);
 
 if ( !isset ( $_REQUEST['b64'] ) ) {
    die("Missing b64 parameter");

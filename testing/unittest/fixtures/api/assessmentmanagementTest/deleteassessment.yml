@@ -10,6 +10,7 @@ properties:
     paper_ownerID: 1
     labs: "1"
     paper_type: "0"
+    externalid: "123abc456"
   -
     property_id: 3
     paper_title: "Test create formative 3"

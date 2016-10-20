@@ -3,6 +3,8 @@ schools:
     id: 1
     school: "Test school"
     facultyID: 1
+    code: "TEST"
+    externalid: "abcdef"
   -
     id: 2
     school: "Test school 2"

@@ -25,7 +25,6 @@
 */
 
 set_time_limit(0);
-error_reporting(E_ALL);
 
 require '../include/sysadmin_auth.inc';
 
@@ -87,7 +86,7 @@ echo draw_toprightmenu();
 <?php
 // Only include sms integration modules.
 // Do not include deleted modules or non-active modules.
-$sms_url = $configObject->get('cfg_sms_url') . '%';
+$sms_url = $configObject->get_setting('core', 'cfg_sms_url') . '%';
 $module_data = $mysqli->prepare("SELECT modules.id, moduleid, sms FROM modules WHERE sms LIKE ? AND mod_deleted IS NULL AND active = 1 ORDER BY moduleid");
 $module_data->bind_param('s', $sms_url);
 $module_data->execute();

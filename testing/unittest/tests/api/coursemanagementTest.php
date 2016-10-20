@@ -34,6 +34,7 @@ class coursemanagementtest extends unittestdatabase {
             "statuscode" => 100,
             "status" => 'OK',
             "id" => 3,
+            "externalid" => null,
             "error" => null,
             "node" => 'create',
             "nodeid" => 1);
@@ -69,8 +70,9 @@ class coursemanagementtest extends unittestdatabase {
             "statuscode" => 100,
             "status" => 'OK',
             "id" => 1,
+            "externalid" => 123456,
             "error" => null,
-            "node" => 'create',
+            "node" => 'update',
             "nodeid" => 1);
     }
     /**
@@ -82,6 +84,7 @@ class coursemanagementtest extends unittestdatabase {
             "statuscode" => 100,
             "status" => 'OK',
             "id" => 1,
+            "externalid" => 123456,
             "error" => null,
             "node" => 'delete',
             "nodeid" => 1);
@@ -123,6 +126,24 @@ class coursemanagementtest extends unittestdatabase {
         $this->assertEquals($responsearray, $course->create($params, $userid));
     }
     /**
+     * Test successful course create with external id
+     * @group api
+     */
+    public function test_create_success_external() {
+        $responsearray = $this->create_response_array();
+        $responsearray['externalid'] = 123457;
+        $params =  array(
+            "nodeid" => 1,
+            "name" => 'CREATE',
+            "description" => 'Create test',
+            "schoolextid" => 'qwerty',
+            "facultyextid" => 'abcdefghi',
+            "externalid" => 123457);
+        $course = new \api\coursemanagement($this->db);
+        $userid = 1;
+        $this->assertEquals($responsearray, $course->create($params, $userid));
+    }
+    /**
      * Test successful course create - no faculty supplied
      * @group api
      */
@@ -151,6 +172,7 @@ class coursemanagementtest extends unittestdatabase {
         $responsearray['statuscode'] = 306;
         $responsearray['status'] = 'Course already exists';
         $responsearray['id'] = 1;
+        $responsearray['externalid'] = 123456;
         $params['name'] = "TEST";
         $this->assertEquals($responsearray, $course->create($params, $userid));
     }
@@ -166,6 +188,7 @@ class coursemanagementtest extends unittestdatabase {
         $responsearray['statuscode'] = 303;
         $responsearray['status'] = 'Faculty not supplied';
         $responsearray['id'] = null;
+        $responsearray['externalid'] = null;
         $params = array(
             "nodeid" => 1,
             "name" => 'CREATE',
@@ -183,13 +206,28 @@ class coursemanagementtest extends unittestdatabase {
         $params = $this->update_param_array();
         $course = new \api\coursemanagement($this->db);
         $userid = 1;
-        $this->assertEquals($responsearray, $course->create($params, $userid));
         // Test course update - SUCCESS name
         $params = array(
             "nodeid" => 1,
             "id" => 1,
             "name" => 'TESTUPDATE');
-        $this->assertEquals($responsearray, $course->create($params, $userid));
+        $this->assertEquals($responsearray, $course->update($params, $userid));
+    }
+    /**
+     * Test successful course update using external id
+     * @group api
+     */
+    public function test_update_success_external() {
+        $responsearray = $this->update_response_array();
+        $params = $this->update_param_array();
+        $course = new \api\coursemanagement($this->db);
+        $userid = 1;
+        // Test course update - SUCCESS name
+        $params = array(
+            "nodeid" => 1,
+            "externalid" => 123456,
+            "name" => 'TESTUPDATE2');
+        $this->assertEquals($responsearray, $course->update($params, $userid));
     }
     /**
      * Test course update exception invalid course
@@ -204,8 +242,9 @@ class coursemanagementtest extends unittestdatabase {
         $responsearray['statuscode'] = 301;
         $responsearray['status'] = 'Course does not exist';
         $responsearray['id'] = null;
+        $responsearray['externalid'] = null;
         $params['id'] = 100;
-        $this->assertEquals($responsearray, $course->create($params, $userid));
+        $this->assertEquals($responsearray, $course->update($params, $userid));
     }
     /**
      * Test course update exception school not supplied on faculty update
@@ -220,10 +259,11 @@ class coursemanagementtest extends unittestdatabase {
         $responsearray['statuscode'] = 307;
         $responsearray['status'] = 'School not supplied';
         $responsearray['id'] = null;
+        $responsearray['externalid'] = null;
         $params['faculty'] = 'Test faculty 2';
-        $this->assertEquals($responsearray, $course->create($params, $userid));
+        $this->assertEquals($responsearray, $course->update($params, $userid));
         // Check courses table.
-        $querytable = $this->getConnection()->createQueryTable('courses', 'SELECT id, name, description, schoolid FROM courses WHERE id = 1');
+        $querytable = $this->getConnection()->createQueryTable('courses', 'SELECT id, name, description, schoolid, externalid FROM courses WHERE id = 1');
         $expectedtable = $this->get_expected_data_set('updatecourse')->getTable("courses");  
         $this->assertTablesEqual($expectedtable, $querytable);
         // Check faculty table.
@@ -235,7 +275,7 @@ class coursemanagementtest extends unittestdatabase {
      * Test course update exception nothing to update
      * @group api
      */
-    public function test_update_exception_noupadte() {
+    public function test_update_exception_noupdate() {
         $responsearray = $this->update_response_array();
         $params = array(
             "nodeid" => 1,
@@ -248,9 +288,10 @@ class coursemanagementtest extends unittestdatabase {
         $responsearray['statuscode'] = 308;
         $responsearray['status'] = 'Request updates nothing';
         $responsearray['id'] = null;
-        $this->assertEquals($responsearray, $course->create($params, $userid));
+        $responsearray['externalid'] = null;
+        $this->assertEquals($responsearray, $course->update($params, $userid));
         // Check courses table.
-        $querytable = $this->getConnection()->createQueryTable('courses', 'SELECT id, name, description, schoolid FROM courses WHERE id = 1');
+        $querytable = $this->getConnection()->createQueryTable('courses', 'SELECT id, name, description, schoolid, externalid FROM courses WHERE id = 1');
         $expectedtable = $this->get_expected_data_set('updatecourse')->getTable("courses");  
         $this->assertTablesEqual($expectedtable, $querytable);
     }
@@ -267,7 +308,25 @@ class coursemanagementtest extends unittestdatabase {
         $this->assertEquals($responsearray, $course->delete($params, $userid));
         // Check that the remaining courses are correct, when we delete a course we actually just add a timestamp to the table
         // which makes creating a fixture to check against difficult so doing this instead
-        $querytable = $this->getConnection()->createQueryTable('courses', 'SELECT id, name, description, schoolid FROM courses WHERE deleted is NULL');
+        $querytable = $this->getConnection()->createQueryTable('courses', 'SELECT id, name, description, schoolid, externalid FROM courses WHERE deleted is NULL');
+        $expectedtable = $this->get_expected_data_set('deletecourse')->getTable("courses");  
+        $this->assertTablesEqual($expectedtable, $querytable);
+    }
+    /**
+     * Test successful course deletion with external id
+     * @group api
+     */
+    public function test_delete_success_external() {
+        $responsearray = $this->delete_response_array();
+        $params = array(
+            "nodeid" => 1,
+            "externalid" => 123456);
+        $course = new \api\coursemanagement($this->db);
+        $userid = 1;
+        $this->assertEquals($responsearray, $course->delete($params, $userid));
+        // Check that the remaining courses are correct, when we delete a course we actually just add a timestamp to the table
+        // which makes creating a fixture to check against difficult so doing this instead
+        $querytable = $this->getConnection()->createQueryTable('courses', 'SELECT id, name, description, schoolid, externalid FROM courses WHERE deleted is NULL');
         $expectedtable = $this->get_expected_data_set('deletecourse')->getTable("courses");  
         $this->assertTablesEqual($expectedtable, $querytable);
     }
@@ -284,6 +343,7 @@ class coursemanagementtest extends unittestdatabase {
         $responsearray['statuscode'] = 301;
         $responsearray['status'] = 'Course does not exist';
         $responsearray['id'] = null;
+        $responsearray['externalid'] = null;
         $params['id'] = 99;
         $this->assertEquals($responsearray, $course->delete($params, $userid));
         // Test course deletion- ERROR no id provided.
@@ -304,6 +364,7 @@ class coursemanagementtest extends unittestdatabase {
         $responsearray['statuscode'] = 302;
         $responsearray['status'] = 'Course not deleted, as users enrolled';
         $responsearray['id'] = null;
+        $responsearray['externalid'] = null;
         $params['id'] = 2;
         $this->assertEquals($responsearray, $course->delete($params, $userid)); 
     }

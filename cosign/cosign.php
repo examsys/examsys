@@ -26,7 +26,6 @@ function cosign_auth($cfg = array(), $obstart = true)
     global $cosign_cfg;
     global $cosign_log;
 
-    $level = error_reporting(E_ALL);
     if ($obstart) ob_start();
     $cosign_cfg = array();
     require_once("cosign_config.php");
@@ -35,7 +34,6 @@ function cosign_auth($cfg = array(), $obstart = true)
     }
     $cosign_cfg = array_merge($cosign_cfg, $cfg);
     if (empty($cosign_cfg['CosignProtected'])) {
-	error_reporting($level);
 	return false;
     }
     $service = "CosignFilter";
@@ -174,7 +172,6 @@ function cosign_auth($cfg = array(), $obstart = true)
 		// flush output buffer if started in our script
 		if ($obstart) ob_end_flush();
 		if (is_resource($cosign_log)) fclose($cosign_log);
-		error_reporting($level);
 		return true;
 	    }
 	} else {
@@ -509,7 +506,6 @@ function cosign_auth($cfg = array(), $obstart = true)
     // flush output buffer
     if ($obstart) ob_end_flush();
     if (is_resource($cosign_log)) fclose($cosign_log);
-    error_reporting($level);
     return true;
 }
 

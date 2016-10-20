@@ -12,14 +12,6 @@ require_once("../util/lti_util.php");
 // Note - We avoid using the session in this file to avoid deadlocks
 // If we were calling a web service on the same server
 
-if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
- error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
-} else { 
- error_reporting(E_ALL & ~E_WARNING & ~E_NOTICE);
-}
-
-ini_set("display_errors", 1);
-
 $oauth_consumer_secret = $_REQUEST['secret'];
 if (strlen($oauth_consumer_secret) < 1 ) $oauth_consumer_secret = 'secret';
 

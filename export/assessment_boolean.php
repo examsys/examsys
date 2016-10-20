@@ -146,23 +146,24 @@ if ($student_no > 0) {
   $rowID = 0;
   // Capture the log data.
   if ($paper_type == '0') {
-    $result = $mysqli->prepare("(SELECT DISTINCT sid.student_id, username, log_metadata.userID, title, surname, first_names, grade, gender, year, started, log0.q_id, user_answer, q_type, screen, settings FROM (log0, log_metadata, questions, users) LEFT JOIN sid ON users.id = sid.userID WHERE log0.metadataID = log_metadata.id AND log0.q_id = questions.q_id AND log_metadata.userID IN ($student_list) AND paperID = ? AND users.id = log_metadata.userID AND (users.roles='Student' OR users.roles='graduate') AND grade LIKE ? AND started >= ? AND started <= ?) UNION ALL (SELECT DISTINCT sid.student_id, username, log_metadata.userID, title, surname, first_names, grade, gender, year, started, log1.q_id, user_answer, q_type, screen, settings FROM (log1, log_metadata, questions, users) LEFT JOIN sid ON users.id = sid.userID WHERE log1.metadataID = log_metadata.id AND log1.q_id = questions.q_id AND log_metadata.userID IN ($student_list) AND paperID = ? AND users.id = log_metadata.userID AND (users.roles='Student' OR users.roles='graduate') AND grade LIKE ? AND started >= ? AND started <= ?) ORDER BY surname, first_names, started, userID");
+    $result = $mysqli->prepare("(SELECT DISTINCT username, log_metadata.userID, title, surname, first_names, grade, gender, year, started, log0.q_id, user_answer, q_type, screen, settings FROM (log0, log_metadata, questions, users) WHERE log0.metadataID = log_metadata.id AND log0.q_id = questions.q_id AND log_metadata.userID IN ($student_list) AND paperID = ? AND users.id = log_metadata.userID AND (users.roles='Student' OR users.roles='graduate') AND grade LIKE ? AND started >= ? AND started <= ?) UNION ALL (SELECT DISTINCT username, log_metadata.userID, title, surname, first_names, grade, gender, year, started, log1.q_id, user_answer, q_type, screen, settings FROM (log1, log_metadata, questions, users) WHERE log1.metadataID = log_metadata.id AND log1.q_id = questions.q_id AND log_metadata.userID IN ($student_list) AND paperID = ? AND users.id = log_metadata.userID AND (users.roles='Student' OR users.roles='graduate') AND grade LIKE ? AND started >= ? AND started <= ?) ORDER BY surname, first_names, started, userID");
     $result->bind_param('isssisss', $paperID, $_GET['repcourse'], $startdate, $enddate, $paperID, $_GET['repcourse'], $startdate, $enddate);
   } else {
-    $result = $mysqli->prepare("SELECT DISTINCT sid.student_id, username, log_metadata.userID, title, surname, first_names, grade, gender, year, started, log$paper_type.q_id, user_answer, q_type, screen, settings FROM (log$paper_type, log_metadata, questions, users) LEFT JOIN sid ON users.id = sid.userID WHERE log$paper_type.metadataID = log_metadata.id AND log$paper_type.q_id = questions.q_id AND log_metadata.userID IN ($student_list) AND paperID = ? AND users.id = log_metadata.userID AND (users.roles='Student' OR users.roles='graduate') AND grade LIKE ? AND DATE_ADD(started, INTERVAL 2 MINUTE) >= ? AND started <= ? ORDER BY surname, first_names, started, userID");
+    $result = $mysqli->prepare("SELECT DISTINCT username, log_metadata.userID, title, surname, first_names, grade, gender, year, started, log$paper_type.q_id, user_answer, q_type, screen, settings FROM (log$paper_type, log_metadata, questions, users) WHERE log$paper_type.metadataID = log_metadata.id AND log$paper_type.q_id = questions.q_id AND log_metadata.userID IN ($student_list) AND paperID = ? AND users.id = log_metadata.userID AND (users.roles='Student' OR users.roles='graduate') AND grade LIKE ? AND DATE_ADD(started, INTERVAL 2 MINUTE) >= ? AND started <= ? ORDER BY surname, first_names, started, userID");
     $result->bind_param('isss', $paperID, $_GET['repcourse'], $startdate, $enddate);
   }
 
   $result->execute();
-  $result->bind_result($student_id, $username, $uID, $title, $surname, $first_names, $grade, $gender, $year, $started, $question_ID, $user_answer, $q_type, $screen, $settings);
+  $result->bind_result($username, $uID, $title, $surname, $first_names, $grade, $gender, $year, $started, $question_ID, $user_answer, $q_type, $screen, $settings);
   $old_username = '';
+  $users = array();
   while ($result->fetch()) {
     if ($old_username != $username or $old_started != $started) {
       $rowID++;
     }
     $log_array[$rowID][$screen][$question_ID] = $user_answer;
-    $log_array[$rowID]['student_id'] = demo_replace_number($student_id, $demo);
     $log_array[$rowID]['userID'] = $uID;
+    $users[$uID][] = $rowID;
     $log_array[$rowID]['username'] = $username;
     $log_array[$rowID]['course'] = $grade;
     $log_array[$rowID]['year'] = $year;
@@ -180,6 +181,24 @@ if ($student_no > 0) {
   }
   $result->close();
 
+  // Get student ids.
+  if (count($users) > 0) {
+    $users_list = implode(',', array_keys($users));
+    $result = $mysqli->prepare("SELECT student_id, userID FROM sid WHERE userID IN ($users_list)");
+    $result->execute();
+    $result->bind_result($sid, $userid);
+    while ($result->fetch()) {
+      foreach ($users[$userid] as $row) {
+        $log_array[$row]['student_id'] = demo_replace_number($sid, $demo);
+      }
+    }
+    for ($rowID = 1; $rowID < count($log_array); $rowID++) {
+      if (!isset($log_array[$rowID]['student_id'])) {
+        $log_array[$rowID]['student_id'] = null;
+      }
+    }
+    $result->close();
+  }
   $sortby = 'name';
   $ordering = 'asc';
   $log_array = array_csort($log_array, $sortby, $ordering);

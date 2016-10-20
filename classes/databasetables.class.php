@@ -120,6 +120,7 @@ QUERY;
           `component` varchar(100) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'core',
           `setting` varchar(100) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
           `value` text COLLATE utf8_unicode_ci,
+          `type` VARCHAR(10) NULL,
           PRIMARY KEY (`component`,`setting`)
         ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
 QUERY;
@@ -131,7 +132,10 @@ QUERY;
           `description` varchar(255) default NULL,
           `deleted` datetime default NULL,
           `schoolid` int(11) default NULL,
+          `externalid` varchar(255) default NULL,
+          `externalsys` varchar(255) default NULL,
           PRIMARY KEY (`id`),
+          UNIQUE INDEX `externalid` (`externalid`),
           KEY `degree` (`name`),
           KEY `idx_courses_name` (`name`)
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
@@ -213,9 +217,14 @@ QUERY;
     $this->tableList['faculty'] = <<<QUERY
           CREATE TABLE `faculty` (
             `id` int(11) NOT NULL auto_increment,
+            `code` varchar(30) default NULL,
             `name` varchar(80) default NULL,
             `deleted` datetime default NULL,
-            PRIMARY KEY  (`id`)
+            `externalid` varchar(255) default NULL,
+            `externalsys` varchar(255) default NULL,
+            PRIMARY KEY  (`id`),
+            UNIQUE INDEX `code` (`code`),
+            UNIQUE INDEX `externalid` (`externalid`)
           ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
@@ -321,6 +330,14 @@ QUERY;
         ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
 QUERY;
 
+    $this->tableList['keywords_link'] = <<<QUERY
+        CREATE TABLE `keywords_link` (
+          `q_id` INT(4) NOT NULL,
+          `keyword_id` INT(11) NOT NULL,
+          PRIMARY KEY (`q_id`)
+        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+QUERY;
+
     $this->tableList['keywords_user'] = <<<QUERY
         CREATE TABLE `keywords_user` (
           `id` int(11) NOT NULL auto_increment,
@@ -369,7 +386,7 @@ QUERY;
           `duration` mediumint(9) DEFAULT NULL,
           `updated` datetime DEFAULT NULL,
           `dismiss` char(20) DEFAULT NULL,
-          `option_order` varchar(255) DEFAULT NULL,
+          `option_order` varchar(100) DEFAULT NULL,
           `metadataID` int(11) unsigned DEFAULT NULL,
           PRIMARY KEY  (`id`),
           UNIQUE KEY `idx_metadataID_qid_screen` (`metadataID`,`q_id`,`screen`),
@@ -390,7 +407,7 @@ QUERY;
           `duration` mediumint(9) DEFAULT NULL,
           `updated` datetime DEFAULT NULL,
           `dismiss` char(20) DEFAULT NULL,
-          `option_order` varchar(255) DEFAULT NULL,
+          `option_order` varchar(100) DEFAULT NULL,
           `metadataID` int(11) DEFAULT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
 QUERY;
@@ -408,7 +425,7 @@ QUERY;
           `duration` mediumint(9) DEFAULT NULL,
           `updated` datetime DEFAULT NULL,
           `dismiss` char(20) DEFAULT NULL,
-          `option_order` varchar(255) DEFAULT NULL,
+          `option_order` varchar(100) DEFAULT NULL,
           `metadataID` int(11) unsigned DEFAULT NULL,
           PRIMARY KEY  (`id`),
           UNIQUE KEY `idx_metadataID_qid_screen` (`metadataID`,`q_id`,`screen`),
@@ -429,7 +446,7 @@ QUERY;
           `duration` mediumint(9) DEFAULT NULL,
           `updated` datetime DEFAULT NULL,
           `dismiss` char(20) DEFAULT NULL,
-          `option_order` varchar(255) DEFAULT NULL,
+          `option_order` varchar(100) DEFAULT NULL,
           `metadataID` int(11) DEFAULT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
 QUERY;
@@ -447,7 +464,7 @@ QUERY;
           `duration` mediumint(9) DEFAULT NULL,
           `updated` datetime DEFAULT NULL,
           `dismiss` char(20) DEFAULT NULL,
-          `option_order` varchar(255) DEFAULT NULL,
+          `option_order` varchar(100) DEFAULT NULL,
           `metadataID` int(11) unsigned DEFAULT NULL,
           PRIMARY KEY  (`id`),
           UNIQUE KEY `idx_metadataID_qid_screen` (`metadataID`,`q_id`,`screen`),
@@ -468,7 +485,7 @@ QUERY;
           `duration` mediumint(9) DEFAULT NULL,
           `updated` datetime DEFAULT NULL,
           `dismiss` char(20) DEFAULT NULL,
-          `option_order` varchar(255) DEFAULT NULL,
+          `option_order` varchar(100) DEFAULT NULL,
           `metadataID` int(11) unsigned DEFAULT NULL,
           PRIMARY KEY  (`id`),
           UNIQUE KEY `idx_metadataID_qid_screen` (`metadataID`,`q_id`,`screen`),
@@ -484,7 +501,8 @@ QUERY;
           `q_parts` varchar(50) DEFAULT NULL,
           `log4_overallID` int(11) unsigned DEFAULT NULL,
           PRIMARY KEY (`id`),
-          KEY `q_id` (`q_id`)
+          KEY `q_id` (`q_id`),
+          INDEX `log4_overallID` (`log4_overallID`)
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
@@ -576,7 +594,7 @@ QUERY;
           `duration` mediumint(9) default NULL,
           `updated` datetime default NULL,
           `dismiss` char(20) default NULL,
-          `option_order` varchar(255) default NULL,
+          `option_order` varchar(100) default NULL,
           `metadataID` int(11) unsigned DEFAULT NULL,
           PRIMARY KEY  (`id`),
           UNIQUE KEY `idx_metadataID_qid_screen` (`metadataID`,`q_id`,`screen`)
@@ -701,7 +719,9 @@ QUERY;
           `add_team_members` tinyint(4) default NULL,
           `map_level` smallint(2) NOT NULL DEFAULT '0',
           `academic_year_start` char(5) NOT NULL,
+          `externalid` varchar(255) default NULL,
           PRIMARY KEY (`id`),
+          UNIQUE INDEX `externalid` (`externalid`),
           KEY `guideid` (`moduleid`),
           KEY `idx_moduleid_deleted` (`moduleid`,`mod_deleted`),
           KEY `idx_schoolid_deleted` (`schoolid`,`mod_deleted`)
@@ -741,7 +761,8 @@ QUERY;
           `auto_update` tinyint(4) DEFAULT NULL,
           PRIMARY KEY (`id`),
           KEY `idx_userID` (`userID`),
-          KEY `idx_mod_calyear` (`calendar_year`,`idMod`)
+          KEY `idx_mod_calyear` (`calendar_year`,`idMod`),
+          KEY `idx_mod` (`idMod`)
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
@@ -900,7 +921,10 @@ QUERY;
           `retired` datetime default NULL,
           `crypt_name` varchar(32) default NULL,
           `recache_marks` tinyint(3) unsigned DEFAULT '0',
+          `externalid` varchar(255) default NULL,
+          `externalsys` varchar(255) default NULL,
           PRIMARY KEY (`property_id`),
+          UNIQUE INDEX `externalid` (`externalid`),
           KEY `paper_title` (`paper_title`),
           KEY `paper_owner` (`paper_ownerID`),
           KEY `question_type` (`paper_type`),
@@ -947,7 +971,7 @@ QUERY;
 
     $this->tableList['question_statuses'] = <<<QUERY
         CREATE TABLE `question_statuses` (
-          `id` int(11) NOT NULL AUTO_INCREMENT,
+          `id` int(4) NOT NULL AUTO_INCREMENT,
           `name` varchar(255) NOT NULL,
           `exclude_marking` tinyint(4) NOT NULL DEFAULT '0',
           `retired` tinyint(3) NOT NULL,
@@ -986,7 +1010,7 @@ QUERY;
           `deleted` datetime default NULL,
           `locked` datetime default NULL,
           `std` varchar(100) default NULL,
-          `status` tinyint(3) NOT NULL,
+          `status` int(4) NOT NULL,
           `q_option_order` enum('display order','alphabetic','random') default NULL,
           `score_method` enum('Mark per Question','Mark per Option','Allow partial Marks','Bonus Mark') default NULL,
           `settings` text,
@@ -1009,10 +1033,19 @@ QUERY;
 
 $this->tableList['questions_modules'] = <<<QUERY
         CREATE TABLE `questions_modules` (
-          `q_id` int(4) unsigned NOT NULL DEFAULT '0',
-          `idMod` int(11) unsigned NOT NULL DEFAULT '0',
+          `q_id` int(4) NOT NULL,
+          `idMod` int(11) NOT NULL ,
           KEY `idx_idmod` (`idMod`),
           PRIMARY KEY (`q_id`,`idMod`)
+        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+QUERY;
+
+$this->tableList['random_link'] = <<<QUERY
+        CREATE TABLE `random_link` (
+          `id` INT(4) NOT NULL,
+          `q_id` INT(4) NOT NULL,
+          PRIMARY KEY (`id`, `q_id`),
+          INDEX `random_link_fk2` (`q_id`)
         ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
 QUERY;
 
@@ -1136,10 +1169,15 @@ QUERY;
     $this->tableList['schools'] = <<<QUERY
         CREATE TABLE `schools` (
           `id` int(11) NOT NULL auto_increment,
+          `code` varchar(30) default NULL,
           `school` char(255) default NULL,
           `facultyID` int(11) default NULL,
           `deleted` datetime default NULL,
+          `externalid` varchar(255) default NULL,
+          `externalsys` varchar(255) default NULL,
           PRIMARY KEY (`id`),
+          UNIQUE INDEX `code` (`code`),
+          UNIQUE INDEX `externalid` (`externalid`),
           KEY `idx_facultyID` (`facultyID`)
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
@@ -1428,7 +1466,7 @@ QUERY;
     $this->tableList['users_metadata'] = <<<QUERY
         CREATE TABLE `users_metadata` (
           `userID` int(10) unsigned default NULL,
-          `idMod` int(11) unsigned default NULL,
+          `idMod` int(11) default NULL,
           `type` varchar(255) default NULL,
           `value` varchar(255) default NULL,
           `calendar_year` INT(4),
@@ -1552,6 +1590,16 @@ $this->tableList['campus'] = <<<QUERY
             isdefault BOOLEAN NOT NULL default false,
             PRIMARY KEY (`id`),
             INDEX `campus_idx` (`name`)
+        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+QUERY;
+
+$this->tableList['plugins'] = <<<QUERY
+        CREATE TABLE `plugins` (
+            `component` VARCHAR(50) NOT NULL,
+            `version` VARCHAR(50) NOT NULL,
+            `type`  VARCHAR(50) NOT NULL,
+            `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (`component`)
         ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
 QUERY;
   }

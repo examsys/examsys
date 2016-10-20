@@ -40,6 +40,20 @@ class facultyutilstest extends unittestdatabase {
     public function test_count_schools_in_faculty() {
         // Check count does not include deleted schools.
         $this->assertEquals(1, FacultyUtils::count_schools_in_faculty(1, $this->db));
-
+    }
+    /**
+     * Test getting faculty name from external id
+     * @group faculty
+     */
+    public function test_get_facultyid_from_externalid() {
+        $this->assertEquals(1, FacultyUtils::get_facultyid_from_externalid("ABC", $this->db));
+    }
+    /**
+     * Test comparing  faculties with external list
+     * @group faculty
+     */
+    public function test_diff_external_faculties_to_internal_faculties() {
+        $external = array("ABC", "JKL");
+        $this->assertEquals(array("DEF"), FacultyUtils::diff_external_faculties_to_internal_faculties($external, 'external', $this->db));
     }
 }

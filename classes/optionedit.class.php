@@ -546,7 +546,7 @@ QUERY;
     $result->fetch();
   }
 
-  private function validate() {
+  protected function validate() {
     $rval = true;
     // If there are errors return an appropriate message
     $missing_fields = '';

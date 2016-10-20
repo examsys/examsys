@@ -77,13 +77,13 @@ class yearutils {
     public function get_supported_years($state = self::ALL) {
 
         if ($state == self::STAT) {
-            $filter = "WHERE stat_status = 1 AND deleted is NULL";
+            $filter = "WHERE stat_status = 1 AND deleted is NULL ORDER BY calendar_year ASC";
         } else if ($state == self::CAL) {
-            $filter = "WHERE cal_status = 1 AND deleted is NULL";
+            $filter = "WHERE cal_status = 1 AND deleted is NULL ORDER BY calendar_year ASC";
         } else if ($state == self::BOTH) {
-            $filter = "WHERE cal_status = 1 AND stat_status = 1 AND deleted is NULL";
+            $filter = "WHERE cal_status = 1 AND stat_status = 1 AND deleted is NULL ORDER BY calendar_year ASC";
         } else {
-            $filter = "WHERE deleted is NULL";
+            $filter = "WHERE deleted is NULL ORDER BY calendar_year ASC";
         }
 
         $supported_years = array();

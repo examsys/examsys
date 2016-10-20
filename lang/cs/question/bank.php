@@ -38,6 +38,7 @@ $string['people'] = 'Lidé';
 $string['noquestions'] = 'V Bance nebyly nalezeny žádné úlohy.';
 $string['noquestionsbloom']  = 'Nebyla nalezena žádná úloha na základě vyhledávání "dle Bloomovy taxonomie".';
 $string['noquestionsstatus'] = 'Nebyla nalezena žádná úloha na základě vyhledávání "dle Statusu".';
+$string['noquestionskeyword'] = 'No questions found in bank by keyword.';
 $string['noquestionsperformance'] = 'Nebyla nalezena žádná úloha na základě vyhledávání "dle Výkonu".';
 $string['noquestionsobjective'] = 'Nebyla nalezena žádná úloha na základě vyhledávání "dle Cílů".';
 $string['search'] = 'Hledat';

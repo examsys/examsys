@@ -31,11 +31,11 @@ require_once '../config/index.inc';
 
 $userObject = UserObject::get_instance();
 
-// Redirect Students (if not also staff), External Examiners and Invigilators to their own areas.
+// Redirect Students (if not also staff), and special users to their own areas.
 if ($userObject->has_role('Student') and !($userObject->has_role(array('Staff', 'Admin', 'SysAdmin')))) {
   header("location: ../students/");
   exit();
-} elseif ($userObject->has_role('External Examiner')) {
+} elseif ($userObject->has_role('External Examiner') or $userObject->has_role('Internal Reviewer')) {
   header("location: ../reviews/");
   exit();
 } elseif ($userObject->has_role('Invigilator')) {

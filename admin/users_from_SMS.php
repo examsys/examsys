@@ -45,13 +45,11 @@ if ($configObject->get('cfg_sms_api') == '') {
 }
 $sms_connection = SmsUtils::GetSmsUtils();
 
-//error_reporting(E_ALL);
-//ini_set('display_errors',1);
-
 $mysqli = DBUtils::get_mysqli_link($configObject->get('cfg_db_host') , $configObject->get('cfg_db_sysadmin_user'), $configObject->get('cfg_db_sysadmin_passwd'), $configObject->get('cfg_db_database'), $configObject->get('cfg_db_charset'), $notice, $configObject->get('dbclass'));
 
 $useObject = new UserObject($configObject, $mysqli);
-$sms_url = $configObject->get('cfg_sms_url') . '%';
+$configObject->set_db_object($mysqli);
+$sms_url = $configObject->get_setting('core', 'cfg_sms_url') . '%';
 // Only include sms integration modules.
 // Do not include deleted modules or non-active modules.
 $module_data = $mysqli->prepare("SELECT modules.id, moduleid, sms, academic_year_start FROM modules WHERE sms LIKE ? AND mod_deleted IS NULL AND active = 1 ORDER BY moduleid");

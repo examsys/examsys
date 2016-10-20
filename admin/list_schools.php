@@ -71,11 +71,11 @@
 
 <body>
 <?php
-  $result = $mysqli->prepare("SELECT schools.id, schools.school, faculty.name, faculty.deleted, (COUNT(modules.id) - COUNT(modules.mod_deleted)) FROM (schools, faculty)
-    LEFT JOIN modules ON schools.id = modules.schoolid WHERE schools.facultyID = faculty.id AND schools.deleted IS NULL GROUP BY faculty.name, school");
+  $result = $mysqli->prepare("SELECT schools.id, schools.code, schools.school, faculty.name, faculty.code, faculty.deleted, (COUNT(modules.id) - COUNT(modules.mod_deleted)) FROM (schools, faculty)
+    LEFT JOIN modules ON schools.id = modules.schoolid WHERE schools.facultyID = faculty.id AND schools.deleted IS NULL GROUP BY faculty.name, schools.code, school");
   $result->execute();
   $result->store_result();
-  $result->bind_result($id, $school, $faculty, $faculty_deleted, $module_no);
+  $result->bind_result($id, $code, $school, $faculty, $faculty_code, $faculty_deleted, $module_no);
   $faculties = $result->num_rows;
   require '../include/school_options.inc';
   require '../include/toprightmenu.inc';
@@ -92,7 +92,8 @@
 <table id="maindata" class="header tablesorter" cellspacing="0" cellpadding="2" border="0" style="width:100%">
 <thead>
 <tr>
-  <th class="col10" style="width:50%"><?php echo $string['name'] ?></th>
+  <th class="col10" style="width:10%"><?php echo $string['code'] ?></th>
+  <th class="col" style="width:40%"><?php echo $string['name'] ?></th>
   <th class="col" style="width:40%"><?php echo $string['faculty'] ?></th>
   <th class="col" style="width:10%"><?php echo $string['modules'] ?></th>
 </tr>
@@ -102,7 +103,7 @@
 <?php
 if ($faculties > 0) {
   while ($result->fetch()) {
-    echo "<tr id=\"$id\" class=\"l\"><td>$school</td><td>$faculty</td><td class=\"no\">" . number_format($module_no) . "</td></tr>\n";
+    echo "<tr id=\"$id\" class=\"l\"><td>$code</td><td>$school</td><td>$faculty_code $faculty</td><td class=\"no\">" . number_format($module_no) . "</td></tr>\n";
   }
   $result->close();
 } else {

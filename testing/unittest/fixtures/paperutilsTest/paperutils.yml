@@ -1,8 +1,12 @@
 properties:
   -
     property_id: 1
+    calendar_year: 2015
+    paper_type: 2
   -
     property_id: 2
+    calendar_year: 2016
+    paper_type: 2
 properties_modules:
   -
     property_id: 1
@@ -13,3 +17,10 @@ properties_modules:
   -
     property_id: 2
     idMod: 2
+gradebook_paper:
+  -
+    paperid: 1
+    timestamp: '2015-09-16 16:09:16'
+  -
+    paperid: 2
+    timestamp: '2016-09-16 16:09:16'

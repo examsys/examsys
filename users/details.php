@@ -487,7 +487,8 @@ if (isset($_POST['updateadmin']) and $userObject->has_role('SysAdmin')) {
   $paper_types = array('Formative Self-Assessment', 'Progress Test', 'Summative Exam', 'Survey', 'OSCE Station', 'Offline Paper', 'Peer Review');
 
   if ($log_viewable) {
-    if (stripos($user_details['roles'], 'External Examiner') !== false) {      // Get the papers the External is down to review.
+    // Get the papers the External/Internal is down to review.
+    if (stripos($user_details['roles'], 'External Examiner') !== false or stripos($user_details['roles'], 'Internal Reviewer') !== false) {
       $external_array = array();
 
       $sql = "SELECT DISTINCT
@@ -605,7 +606,7 @@ if (isset($_POST['updateadmin']) and $userObject->has_role('SysAdmin')) {
           echo "<tr><td><a href=\"#\" onclick=\"reviewPaper('" . $paper[$i]['started'] . "'," . $userID . ",'" . str_replace("'","&#8217;",$user_details['surname']) . "','" . $paper[$i]['crypt_name'] . "'," . $paper[$i]['type'] . ",'" . $paper[$i]['metadataID'] . "'); return false;\"><img src=\"../artwork/progress_16.gif\" width=\"16\" height=\"16\" alt=\"Display marked paper for " . $user_details['surname'] . "\" /></a></td><td><a href=\"../paper/details.php?paperID=" . $paper[$i]['id'] . "\">" . $paper[$i]['q_paper'] . "</a></td><td>" . $paper[$i]['paper_type'] . "</td><td>" . $paper[$i]['display_started'] . "</td><td>" . $paper[$i]['ipaddress'] . "</td></tr>\n";
           break;
         case '2':
-          if (stripos($user_details['roles'], 'External Examiner') !== false) {
+          if (stripos($user_details['roles'], 'External Examiner') !== false or stripos($user_details['roles'], 'Internal Reviewer') !== false) {
             echo "<tr><td><img src=\"../artwork/summative_16.gif\" width=\"16\" height=\"16\" /></td><td>&nbsp;<a href=\"../paper/details.php?paperID=" . $paper[$i]['id'] . "\"";
           } else {
             echo "<tr><td><a href=\"#\" onclick=\"reviewPaper('" . $paper[$i]['started'] . "'," . $userID . ",'" . str_replace("'","&#8217;",$user_details['surname']) . "','" . $paper[$i]['crypt_name'] . "'," . $paper[$i]['type'] . ",'" . $paper[$i]['metadataID'] . "'); return false;\"><img src=\"../artwork/summative_16.gif\" width=\"16\" height=\"16\" alt=\"Display marked paper for " . $user_details['surname'] . "\" /></a></td><td><a href=\"../paper/details.php?paperID=" . $paper[$i]['id'] . "\"";

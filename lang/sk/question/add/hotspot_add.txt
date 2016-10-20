@@ -1,0 +1,27 @@
+<?php         //cz
+
+$string['view'] = 'Zobraziť aktívne miesta vo všetkých vrstvách';
+
+$string['newLayer'] = 'Pridať časť úlohy';
+$string['deleteLayer'] = 'Odstrániť časť úlohy';
+$string['edit'] = 'Presunúť/upraviť aktívne miesta obrázka';
+$string['ellipse'] = 'Ovál';
+$string['rectangle'] = 'Obdĺžnik';
+$string['polygon'] = 'Mnohouholník';
+$string['erase'] = 'Zmazať aktívne miesta obrázka';
+
+$string['colour'] = 'Farba';
+$string['themecolours'] = 'Farebné motívy';
+$string['standardcolours'] = 'Štandardné farby';
+
+$string['yes'] = 'Áno';
+$string['no'] = 'Nie';
+$string['msgClose'] = 'Túto správu zavrieť';
+$string['warning'] = 'VAROVANIE';
+$string['errormessage1'] = 'Linky mnohouholníka sa prekrývajú.';
+$string['errormessage2'] = 'Toto môže mať za následok vznik prekryvu v aktívnom mieste obrázka a následné nesprávne oznámkovanie študentovej odpovede.';
+$string['cancel'] = 'Chcete odstrániť poslednú linku?';
+$string['errorcanvas'] = 'Canvas nie je podporovaný';
+$string['errorimageshotspot'] = 'HotSpotovú úlohu nie je možné zobraziť, keďže sa niektoré obrázky nenačítali.';
+
+?>

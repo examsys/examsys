@@ -21,4 +21,5 @@ $string['second'] = '2nd';
 $string['override'] = 'Override';
 $string['unmarked'] = 'unmarked';
 $string['question'] = 'Question';
+$string['selectallprimary']  = 'Select All?';
 ?>

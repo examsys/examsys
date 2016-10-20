@@ -6,6 +6,7 @@ modules:
     active: 1
     schoolid: 1
     academic_year_start: "07/01"
+    externalid: ""
   -
     id: 2
     moduleid: "TEST2"
@@ -45,6 +46,17 @@ users:
     username: "unit"
     roles: "Student"
     grade: "TEST2"
+  -
+    id: 1001
+    password: "12345678"
+    surname: "test"
+    username: "unit2"
+    roles: "Student"
+    grade: "TEST2"
+sid:
+  -
+    student_id: "00000001"
+    userID: 1001
 academic_year:
   -
     calendar_year: 2015
@@ -73,6 +85,12 @@ modules_student:
     id: 1
     idMod: 3
     UserID: 1000
+    calendar_year: 2016
+    attempt: 1
+  -
+    id: 2
+    idMod: 3
+    UserID: 1001
     calendar_year: 2016
     attempt: 1
 campus:

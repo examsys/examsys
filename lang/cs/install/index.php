@@ -109,5 +109,4 @@ $string['html5'] = "HTML5";
 $string['labsecuritytype'] = "Zabezpečení učebny";
 $string['IP'] = "IP adresa";
 $string['interactivequestions'] = "Nastavení interaktivních úloh.";
-
 ?>

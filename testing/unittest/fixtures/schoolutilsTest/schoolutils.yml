@@ -3,6 +3,8 @@ schools:
     id: 1
     school: "test school"
     facultyID: 1
+    externalid: "ABC"
+    externalsys: 'external'
   -
     id: 2
     school: "test school 2"
@@ -20,3 +22,9 @@ courses:
     description: "Test course 2"
     deleted: "1983-02-27 10:00:00"
     schoolid: 2
+faculty:
+  -
+    id: 1
+    code: "TEST"
+    name: "test faculty"
+modules:

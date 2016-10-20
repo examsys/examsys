@@ -22,4 +22,5 @@ $string['name'] = 'Nazwa';
 $string['next'] = 'Dalej >';
 $string['msg1'] = 'Wybierz typ arkusza jaki chcesz utworzyć.';
 $string['msg2'] = 'Podaj unikalną nazwę arkusza, który tworzysz.';
+$string['msg3'] = 'Summative exams are scheduled by an external system are you sure you want to continue?';
 ?>

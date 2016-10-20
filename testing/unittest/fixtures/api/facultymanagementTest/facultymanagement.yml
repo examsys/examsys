@@ -1,7 +1,9 @@
 faculty:
   -
     id: 1
-    name: "TEST"
+    name: "Test name"
+    code: "TEST"
+    externalid: "abcdef"
   -
     id: 2
     name: "TEST2"

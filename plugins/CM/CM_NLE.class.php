@@ -25,7 +25,6 @@
 */
 
 require_once 'CMAPI.if.php';
-require_once dirname(dirname(__DIR__)) . '/webServices/RestRequest.class.php';
 
 class CM_NLE implements iCMAPI {
   private $_mapping_level = self::LEVEL_SESSION;
@@ -34,17 +33,30 @@ class CM_NLE implements iCMAPI {
    * Return objectives from the University of Nottingham Medical School Networked Learning Environment
    * @param string $moduleID The module code to be looked up
    * @param int $session The year that the academic year starts in.
+   * @param mysqli $db database connection
    * @return mixed Array of session and objective data in format required by Rogō
    */
-  public function getObjectives($moduleID, $session) {
+  public function getObjectives($moduleID, $session, $db) {
     $configObject = Config::get_instance();
+    $originalmodid = $moduleID;
     // To create nle year paramerter. End year must be 2 digit.
     $endyear = $session + 1;
     $endyear = substr((string)$endyear, -2);
     $nle_year = (string)$session . '/' . $endyear;
-    $objectives = new RestRequest($configObject->get('cfg_nle_url') . "/webServices/RogoRestAPI.php?url=getObjectives/$moduleID/$nle_year");
-    $objectives->execute();
-    return $objectives->getResponseBody();
+    // Map module code if necessary.
+    $moduleID = \plugins\plugins_mapping::do_mapping($db, $moduleID);
+    $url = $configObject->get_setting('core', 'cfg_nle_url') . "/webServices/RogoRestAPI.php?url=getObjectives/$moduleID/$nle_year";
+    $objectives = new restful($db);
+    $options = array(CURLOPT_TIMEOUT => 10,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => false,
+            CURLOPT_HTTPHEADER => array('Accept: application/json'),
+            CURLOPT_SSLVERSION => 3,
+            CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.13) Gecko/20080311 Firefox/2.0.0.13'
+        );  
+    $response = json_decode($objectives->get($url, $options), true);
+    $mappedresponse = $this->map_response($response, $moduleID, $originalmodid);
+    return $mappedresponse;
   }
 
   /**
@@ -74,6 +86,25 @@ class CM_NLE implements iCMAPI {
   public function setMappingLevel($level) {
     // Ignore anything passed in, we only support session level mapping
     $this->_mapping_level = self::LEVEL_SESSION;
+  }
+  
+  /**
+   * Map new type modules codes to the old modules codes in NLE response
+   * @param string $response data from NLE
+   * @param string $newmodcode new style module code
+   * @param string $oldmodcode old style module code
+   * @return array NLE response mapped
+   */
+  private function map_response($response, $newmodcode, $oldmodcode) {
+      $keys = array_keys($response);
+      $index = array_search($oldmodcode, $keys);
+      if ($index !== false) {
+          $keys[$index] = $newmodcode;
+          $mappedarray = array_combine($keys, $response);
+      } else {
+          $mappedarray = array();
+      }
+      return $mappedarray;
   }
 }
 ?>

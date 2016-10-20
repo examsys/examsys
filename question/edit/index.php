@@ -45,6 +45,12 @@ $team = (!isset($_REQUEST['team'])) ? '' : $_REQUEST['team'];
 function save_options($question, $userObject, $db) {
   $unified_part_names = $question->get_unified_fields();
 
+  if ($question->get_type() == 'random') {
+    random_utils::delete_random_links($question->id, $db);
+  } elseif ($question->get_type() == 'keyword_based') {
+    keyword_utils::delete_keyword_link($question->id, $db);
+  }
+
   for ($option_no = 1; $option_no <= $question->max_options; $option_no++) {
     $option = null;
 

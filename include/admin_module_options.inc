@@ -30,6 +30,14 @@ $academic_year = $yearutils->get_academic_session($current_session);
 $next_academic_year = $yearutils->get_academic_session($next_session);
 ?>
 <script>
+  $(document).ready(function() {
+      $('#sms').click(function() {
+        $('#sms').append('<img src="../artwork/working.gif" class="busyicon" />');
+     });
+     $('#sms2').click(function() {
+        $('#sms2').append('<img src="../artwork/working.gif" class="busyicon" />');
+     });
+  });
   function editModule() {
     window.location.href='./edit_module.php?moduleid=' + $('#lineID').val();
   }
@@ -77,16 +85,38 @@ $next_academic_year = $yearutils->get_academic_session($next_session);
 <div id="menu2">
     <div class="menuitem"><a href="bulk_import_modules.php"><img class="sidebar_icon" src="../artwork/import_16.gif" alt="" /><?php echo $string['bulkmoduleimport'] ?></a></div>
     <?php
-        if ($configObject->get('cfg_sms_api') != '') {
+        $smsplugin_name = plugin_manager::get_plugin_type_enabled('plugin_sms');
+        if ($configObject->get('cfg_sms_api') != '' or count($smsplugin_name) > 0) {
     ?>
     <div class="menuitem"><a href="sms_import_summary.php"><img class="sidebar_icon" src="../artwork/shortcut_16.png" alt="<?php echo $string['importsummary']; ?>" /><?php echo $string['importsummary'] ?></a></div>
+    <?php
+        }
+    ?>
+    <?php
+        if ($configObject->get('cfg_sms_api') != '') {
+    ?>
     <div class="menuitem"><a href="run_users_from_SMS.php?session=<?php echo $current_session ?>"><img class="sidebar_icon" src="../artwork/ims_16.png" alt="<?php echo $string['importsummary'] ?>" />Run Imports (<?php echo $academic_year ?>)</a></div>
     <div class="menuitem"><a href="run_users_from_SMS.php?session=<?php echo $next_session ?>"><img class="sidebar_icon" src="../artwork/ims_16.png" alt="<?php echo $string['importsummary'] ?>" />Run Imports (<?php echo $next_academic_year ?>)</a></div>
     <?php
         }
     ?>
-</div>
 
+    <?php
+    if ($userObject->has_role(array('SysAdmin'))) {
+        foreach($smsplugin_name as $name) {
+            $smspluginns = 'plugins\SMS\\' . $name. '\\' . $name;
+            $smsplugin = new $smspluginns($mysqli, $userObject->get_user_ID());
+            $moduleimport = $smsplugin->supports_module_import();
+            if ($moduleimport !== false) {
+    ?>
+    <div id="sms" class="menuitem"><a class="help_tip" title="<?php echo $moduleimport['tooltip'] ?>" href="<?php echo $moduleimport['url'] ?>?session=<?php echo $current_session ?>"><img class="sidebar_icon" src="../artwork/sync_16.png" alt="" /><?php echo $moduleimport['blurb'] ?> (<?php echo $academic_year ?>)</a></div>
+    <div id="sms2" class="menuitem"><a class="help_tip" title="<?php echo $moduleimport['tooltip'] ?>" href="<?php echo $moduleimport['url'] ?>?session=<?php echo $next_session ?>"><img class="sidebar_icon" src="../artwork/sync_16.png" alt="" /><?php echo $moduleimport['blurb'] ?> (<?php echo $next_academic_year ?>)</a></div>
+    <?php
+            }
+        }
+    }
+    ?>
+</div>
 <input type="hidden" name="lineID" id="lineID" value="" />
 </form>
 </div>

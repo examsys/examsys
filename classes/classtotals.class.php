@@ -112,7 +112,7 @@ class ClassTotals {
     $this->marking_overrides  = array();
     $this->string             = $string;
     $this->percent_decimals   = $this->config->get('percent_decimals');
-    $this->gradebook_enabled  = $this->config->get('cfg_gradebook_enabled');
+    $this->gradebook_enabled  = $this->config->get_setting('core', 'cfg_gradebook_enabled');
     $this->question_statuses = QuestionStatus::get_all_statuses($db, array(), true);
   }
 
@@ -1324,7 +1324,7 @@ class ClassTotals {
     if ($this->paper_type == '0' or $this->paper_type == '1') {
       $result = $this->db->prepare("(SELECT log0.id, metadataID, 0 AS paper_type, questions.q_id, screen, duration, user_answer, q_type, mark FROM log0, questions WHERE log0.q_id = questions.q_id AND metadataID IN (" . implode(',', $metadataids) . ")) UNION ALL (SELECT log1.id, metadataID, 1 AS paper_type, questions.q_id, screen, duration, user_answer, q_type, mark FROM log1, questions WHERE log1.q_id = questions.q_id AND metadataID IN (" . implode(',', $metadataids) . ")) ORDER BY metadataID, screen");
     } elseif ($this->paper_type == '5') {
-      $result = $this->db->prepare("SELECT log$this->paper_type.id, metadataID, $this->paper_type AS paper_type, questions.q_id, 1 AS screen, 0 AS duration, NULL AS user_answer, q_type, mark FROM log$this->paper_type, questions WHERE log$this->paper_type.q_id = questions.q_id AND metadataID IN (" . implode(',', $metadataids) . ")");
+      $result = $this->db->prepare("SELECT log$this->paper_type.id, metadataID, $this->paper_type AS paper_type, questions.q_id, 1 AS screen, 0 AS duration, NULL AS user_answer, q_type, mark FROM log$this->paper_type, questions WHERE log$this->paper_type.q_id = questions.q_id AND metadataID IN (" . implode(',', $metadataids) . ") ORDER BY metadataID");
     } else {
       $result = $this->db->prepare("SELECT log$this->paper_type.id, metadataID, $this->paper_type AS paper_type, questions.q_id, screen, duration, user_answer, q_type, mark FROM log$this->paper_type, questions WHERE log$this->paper_type.q_id = questions.q_id AND metadataID IN (" . implode(',', $metadataids) . ") ORDER BY metadataID, screen");
     }
@@ -1753,8 +1753,8 @@ class ClassTotals {
    */
   public function create_gradebook() {
     if ($this->gradebook_enabled) {
-        $gradebook = new gradebook($this->db);
-        return $gradebook->create_gradebook($this->paperID);
+      $gradebook = new gradebook($this->db);
+      return $gradebook->create_gradebook($this->paperID);
     }
     return false;
   }
@@ -1765,14 +1765,14 @@ class ClassTotals {
    */
   public function store_grades() {
     if ($this->gradebook_enabled) {
-        $gradebook = new gradebook($this->db);
-        for ($student = 0; $student < $this->user_no; $student++) {
-          $userid = $this->user_results[$student]['userID'];
-          $mark = $this->user_results[$student]['mark'];
-          $adjusted = MathsUtils::formatNumber($this->user_results[$student]['percent'], $this->percent_decimals);
-          $classification = $this->user_results[$student]['classification'];
-          $gradebook->store_grade($userid, $this->paperID, $mark, $adjusted, $classification);
-        }
+      $gradebook = new gradebook($this->db);
+      for ($student = 0; $student < $this->user_no; $student++) {
+        $userid = $this->user_results[$student]['userID'];
+        $mark = $this->user_results[$student]['mark'];
+        $adjusted = MathsUtils::formatNumber($this->user_results[$student]['percent'], $this->percent_decimals);
+        $classification = $this->user_results[$student]['classification'];
+        $gradebook->store_grade($userid, $this->paperID, $mark, $adjusted, $classification);
+      }
     }
   }
   

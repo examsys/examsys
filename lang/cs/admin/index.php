@@ -25,7 +25,6 @@ $string['deniedlogwarnings'] = 'Upozornění na Odepřené přístupy';
 $string['ebelgridtemplates'] = 'Šablony Ebelovy mřížky';
 $string['faculties'] = 'Fakulty';
 $string['modules'] = 'Moduly';
-$string['optimizetables'] = 'Optimalizovat Tabulky';
 $string['phpinfo'] = 'phpinfo()';
 $string['schools'] ='Školy';
 $string['smsimports'] = 'Nahrát SMS ';
@@ -43,5 +42,8 @@ $string['questionstatuses'] = 'Statusy úloh';
 $string['savefailattempts'] = 'Uložit nezdařené pokusy';
 $string['testing'] = 'Testování systémů';
 $string['bug'] = 'Hlášení chyb';
-
+$string['academicsessions'] = 'Academic Sessions';
+$string['authentication'] = 'OAuth Authentication';
+$string['plugins'] = 'Plugins';
+$string['config'] = 'Configuration';
 ?>

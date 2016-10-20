@@ -62,6 +62,12 @@ trait backend {
     self::check_config();
     // Setup the config for behat and store a cloned instance of it.
     $config = RogoConfig::get_instance();
+    // Check Rogo is installed correctly.
+    if ($config->get('rogo_version') != $config->getxml('version')) {
+      $message = 'The version of Rogo in the config file (' . $config->get('rogo_version') . ')'
+          . ' does not match the version of the Rogo code (' . $config->getxml('version') . ')';
+      throw new Exception($message);
+    }
     self::$default_config = clone($config);
     $config->use_behat_site();
     self::$rogo_config = clone($config);

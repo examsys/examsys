@@ -1,10 +1,10 @@
 <div id="content">
     <div class="head_title">
-        <div><img src="../../artwork/toprightmenu.gif" id="toprightmenu_icon" /></div>
+        <div><img src="{{path}}/artwork/toprightmenu.gif" id="toprightmenu_icon" /></div>
         <div class="breadcrumb">
         {% for id,item in breadcrumb %}
             {%if loop.index0 != 0 %}
-            <img src="../../artwork/breadcrumb_arrow.png" class="breadcrumb_arrow" alt="-"/>
+            <img src="{{path}}/artwork/breadcrumb_arrow.png" class="breadcrumb_arrow" alt="-"/>
             {% endif %}
             <a href="{{item}}">{{id}}</a>
         {% endfor %}

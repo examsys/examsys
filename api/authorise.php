@@ -30,7 +30,7 @@ function error($error, $string, $mysqli, $configObject, $notice) {
 }
 
 // Exit if api not enabled.
-if (!$configObject->get('cfg_api_enabled')) {
+if (!$configObject->get_setting('core', 'cfg_api_enabled')) {
     error($string['pagenotfound'], $string, $mysqli, $configObject, $notice);
 }
 

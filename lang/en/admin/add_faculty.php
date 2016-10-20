@@ -15,5 +15,9 @@
 // along with Rogo.  If not, see <http://www.gnu.org/licenses/>.
 
 $string['addfaculty'] = 'Add Faculty';
-$string['facultywarning'] = 'Faculty name already exists. Please choose a different name.';
+$string['facultywarning'] = 'Faculty not unique or has been deleted. Please choose a different code or name.';
+$string['code'] = 'Faculty Code';
+$string['name'] = 'Name';
+$string['externalid'] = 'External ID';
+$string['externalsys'] = 'External System';
 ?>

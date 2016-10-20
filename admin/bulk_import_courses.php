@@ -139,7 +139,7 @@ ini_set("auto_detect_line_endings", true);
               if (in_array($courseid, $course_list)) {
                 echo "<tr><td></td><td class=\"existing\">$courseid</td><td class=\"existing\">$description</td><td class=\"existing\">". $string['alreadyexists'] . "</td></tr>\n";
               } else {
-                $success = CourseUtils::add_course($schoolID, $courseid, $description, $mysqli);
+                $success = CourseUtils::add_course($schoolID, $courseid, $description, null, null, $mysqli);
                 if ($success) {
                   echo "<tr><td><img src=\"../artwork/green_plus_16.png\" wodth=\"16\" height=\"16\" alt=\"Add\" /></td><td class=\"added\">$courseid</td><td class=\"added\">$description</td><td class=\"added\">". $string['added'] . "</td></tr>\n";
                   $coursesAdded++;

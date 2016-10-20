@@ -37,8 +37,8 @@ if (!UserUtils::userid_exists($userID, $mysqli)) {
   $notice->display_notice_and_exit($mysqli, $string['pagenotfound'], $msg, $string['pagenotfound'], '../artwork/page_not_found.png', '#C00000', true, true);
 }
 
-function drawTabs($current_tab, $string) {
-  $html = '<table cellpadding="0" cellspacing="0" border="0" style="width:100%; font-size:100%; background-color:#F1F5FB"><tr><td style="width:264px"><strong>' . $string['modulesfor'] . ' ' . $_GET['session'] . ':</strong></td>';
+function drawTabs($current_tab, $string, $session) {
+  $html = '<table cellpadding="0" cellspacing="0" border="0" style="width:100%; font-size:100%; background-color:#F1F5FB"><tr><td style="width:264px"><strong>' . $string['modulesfor'] . ' ' . $session . ':</strong></td>';
   for ($i=1; $i<=3; $i++) {
     if ($i == $current_tab) {
       $html .= "<td class=\"tabon\" onclick=\"showTab('list$i')\">" . $string[$i] . "</td>";
@@ -50,7 +50,7 @@ function drawTabs($current_tab, $string) {
   return $html;
 }
 
-function list_modules($mod, $id, $student_mod, $string) {
+function list_modules($mod, $id, $student_mod, $string, $session) {
   $old_letter = '';
 
   if ($id == '1') {
@@ -59,7 +59,7 @@ function list_modules($mod, $id, $student_mod, $string) {
     echo "<div class=\"content\" style=\"display:none\" id=\"list$id\">";
   }
 
-  echo drawTabs($id, $string);
+  echo drawTabs($id, $string, $session);
 
   if ($id == '1') {
     echo "<div style=\"width:100%; height:100%; overflow-y:scroll; border:1px solid #95AEC8; font-size:90%\" id=\"list$id\">";
@@ -127,9 +127,8 @@ if (isset($_POST['submit'])) {
 <?php
   } else {
     $yearutils = new yearutils($mysqli);
-    if (isset($_GET['session']) and $_GET['session'] != '') {
-      $session = $_GET['session'];
-    } else {
+    $session = check_var('session', 'GET', false, false, true);
+    if (empty($session)) {
       $session = $yearutils->get_current_session();
     }
 ?>
@@ -245,9 +244,9 @@ if (isset($_POST['submit'])) {
   if ($mod_count == 0) {
     echo "<div style=\"color:#C00000\">&nbsp;<img src=\"../artwork/small_yellow_warning_icon.gif\" width=\"12\" height=\"11\" alt=\"Warning\" />&nbsp;" . $string['nomodules'] . " <strong>" . $session . "</strong>.</div>";
   } else {
-    list_modules($modules, 1, $student_modules, $string);
-    list_modules($modules, 2, $student_modules, $string);
-    list_modules($modules, 3, $student_modules, $string);
+    list_modules($modules, 1, $student_modules, $string, $session);
+    list_modules($modules, 2, $student_modules, $string, $session);
+    list_modules($modules, 3, $student_modules, $string, $session);
   }
 
   echo "<input type=\"hidden\" name=\"mod_count\" value=\"$mod_count\" /></div></td>\n</tr>\n";

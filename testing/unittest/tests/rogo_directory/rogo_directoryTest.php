@@ -153,7 +153,7 @@ class rogo_directorytest extends UnitTest {
   }
 
   /**
-   * Tests the clear method will not fail if the directory is already empty.
+   * Tests the clear method will return false if server set to read only.
    *
    * @group rogo_directory
    */
@@ -170,6 +170,52 @@ class rogo_directorytest extends UnitTest {
     $this->assertCount(0, vfsStreamWrapper::getRoot()->getChild('test')->getChildren());
   }
 
+  /**
+   * Tests the clear method will return false if server set to read only.
+   *
+   * @group rogo_directory
+   */
+  public function test_clear_read_only() {
+    $this->config->set('cfg_readonly_host', true);
+    $this->rogodirectory->expects($this->any())->method('location')->willReturn($this->config->get('cfg_rogo_data') . '/test/');
+    // The contents of the directory.
+    $structre = array(
+      'test' => array(
+        'subdirectory' => array(),
+        'random' => array(
+          'testfile.txt' => 'test content',
+        ),
+        'testfile.txt' => 'test content',
+      )
+    );
+    vfsStream::setup(UnitTest::DATA_DIRECTORY, 0777, $structre);
+    $this->assertTrue(vfsStreamWrapper::getRoot()->hasChild('test'));
+    $this->assertCount(3, vfsStreamWrapper::getRoot()->getChild('test')->getChildren());
+    $this->assertFalse($this->rogodirectory->clear());
+    $this->assertTrue(vfsStreamWrapper::getRoot()->hasChild('test'));
+    $this->assertCount(3, vfsStreamWrapper::getRoot()->getChild('test')->getChildren());
+  }
+  
+  /**
+   * Tests the clear method will not fail if the directory is already empty.
+   *
+   * @group rogo_directory
+   */
+  public function test_clear_empty_read_only() {
+    $this->config->set('cfg_readonly_host', true);
+    $this->rogodirectory->expects($this->any())->method('location')->willReturn($this->config->get('cfg_rogo_data') . '/test/');
+    $structre = array(
+      'test' => array(),
+    );
+    vfsStream::setup(UnitTest::DATA_DIRECTORY, 0777, $structre);
+    $this->assertTrue(vfsStreamWrapper::getRoot()->hasChild('test'));
+    $this->assertCount(0, vfsStreamWrapper::getRoot()->getChild('test')->getChildren());
+    $this->assertFalse($this->rogodirectory->clear());
+    $this->assertTrue(vfsStreamWrapper::getRoot()->hasChild('test'));
+    $this->assertCount(0, vfsStreamWrapper::getRoot()->getChild('test')->getChildren());
+  }
+  
+  
   /**
    * Tests the clear method will not fail if the directory does not exist.
    *
@@ -325,6 +371,18 @@ class rogo_directorytest extends UnitTest {
   }
 
   /**
+   * Tests the check_permissions method returns true when the directory is usable (read only server).
+   *
+   * @group rogo_directory
+   */
+  public function test_check_permissions_read_only() {
+    $this->config->set('cfg_readonly_host', true);
+    $this->rogodirectory->expects($this->any())->method('location')->willReturn($this->config->get('cfg_rogo_data'));
+    vfsStreamWrapper::getRoot()->chmod(0500);
+    $this->assertTrue($this->rogodirectory->check_permissions());
+  }
+  
+  /**
    * Tests the check_permissions method returns false when the directory is not writable.
    *
    * @group rogo_directory
@@ -335,6 +393,17 @@ class rogo_directorytest extends UnitTest {
     $this->assertFalse($this->rogodirectory->check_permissions());
   }
 
+  /**
+   * Tests the check_permissions method returns false when the directory is not writable (read only server).
+   *
+   * @group rogo_directory
+   */
+  public function test_check_permissions_not_writable_read_only() {
+    $this->config->set('cfg_readonly_host', true);
+    $this->rogodirectory->expects($this->any())->method('location')->willReturn($this->config->get('cfg_rogo_data'));
+    $this->assertFalse($this->rogodirectory->check_permissions());
+  }
+  
   /**
    * Tests the check_permissions method returns false when the directory is not writable.
    *

@@ -22,4 +22,5 @@ $string['createschool'] = 'Create new School';
 $string['editschool'] = 'Edit School';
 $string['deleteschool'] = 'Delete School';
 $string['musthavefaculty'] = 'You must create at least one faculty in order to add schools.';
+$string['code'] = 'Code';
 ?>

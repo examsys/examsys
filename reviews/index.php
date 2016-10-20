@@ -35,13 +35,31 @@ require '../config/index.inc';  // Get the logo
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta http-equiv="content-type" content="text/html;charset=<?php echo $configObject->get('cfg_page_charset') ?>" />
-
+  <?php
+    if ($userObject->has_role(array('External Examiner'))) {
+  ?>
   <title><?php echo $string['externalexaminerarea']; ?></title>
-
+  <?php
+    } else {
+  ?>
+  <title><?php echo $string['papersforreview']; ?></title>
+  <?php
+    }
+  ?>
   <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
   <script type="text/javascript" src="../js/toprightmenu.js"></script>
   <script type="text/javascript" src="../js/staff_help.js"></script>
-  
+  <?php
+    if (!$userObject->has_role(array('External Examiner'))) {
+  ?>
+  <script>
+    function startPaper(paperID) {
+        window.open("./start.php?id="+paperID+"&review=1","paper");
+    }
+  </script>
+   <?php
+    }
+  ?>
   <link rel="stylesheet" type="text/css" href="../css/body.css" />
   <link rel="stylesheet" type="text/css" href="../css/header.css" />
   <link rel="stylesheet" type="text/css" href="../css/rogo_logo.css" />
@@ -62,6 +80,8 @@ require '../config/index.inc';  // Get the logo
 require '../include/toprightmenu.inc';
 
 echo draw_toprightmenu(1);
+
+if ($userObject->has_role(array('External Examiner'))) {
 ?>
 <div class="head_title">
   <div><img src="../artwork/toprightmenu.gif" id="toprightmenu_icon" /></div>
@@ -142,8 +162,37 @@ echo draw_toprightmenu(1);
   echo "</div>\n";
 
   $mysqli->close();
+  
+} else {
 ?>
-
+<div class="head_title">
+  <div><img src="../artwork/toprightmenu.gif" id="toprightmenu_icon" /></div>
+</div>
+<div class="indent">
+<h1><?php echo $string['papersforreview'] ?></h1>
+<p style="margin-left:15px; margin-right:15px; text-align:justify"><?php echo $string['msg4']; ?></p>
+<p style="margin-left:15px; margin-right:15px; text-align:justify"><?php echo $string['msg2']; ?></p>
+<table cellpadding="0" cellspacing="2" border="0" style="margin-left:10px; font-size:90%">
+<?php
+  $internalreview = new internalreview($mysqli);
+  $review_papers = $internalreview->get_review_papers($userObject->get_user_ID());
+  foreach($review_papers as $review_paper) {    
+    echo "<tr><td align=\"center\"><a href=\"#\" onclick=\"startPaper('" . $review_paper['crypt_name'] . "'); return false;\">" . Paper_utils::displayIcon($review_paper['type'], $review_paper['paper_title'], '', '', '', '') . "</a></td>\n";
+    echo "<td><a href=\"#\" onclick=\"startPaper('" . $review_paper['crypt_name'] . "'); return false;\">" . $review_paper['paper_title'] . "</a><br /><div style=\"color:#C00000\">" . $string['deadline'] . " " . $review_paper['internal_review_deadline'] . "</div>";
+    if ($review_paper['reviewed'] == '') {
+      echo "<span style=\"color:white; background-color:#FF4040\">&nbsp;" . $string['notreviewed'] . "&nbsp;</span>";
+    } else {
+      echo "<span style=\"color:#808080\">" . sprintf($string['reviewed'], $review_paper['reviewed']) . "</span>";
+    }
+    echo "</td></tr>\n<tr><td colspan=\"2\" style=\"font-size:80%\">&nbsp;</td>\n</tr>\n";
+  }
+  if (count($review_papers) == 0) {
+    echo "<tr><td colspan=\"2\"><p style=\"color:red\">" . $string['nopapersfound'] . "</p></td></tr>\n";
+  }
+  echo "</table>\n";
+  echo "</div>\n";
+}
+?>
 <br />
 
 <table class="oss">

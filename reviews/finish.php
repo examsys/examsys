@@ -63,7 +63,7 @@ if (isset($_POST['close'])) {
 }
 
 function close_window() {
-  $html = "<html>\n<head>\n<title>Rog&#333;</title>\n</head>\n<body onload=\"window.close();\"></body>\n</html>";
+  $html = "<html>\n<head>\n<title>Rog&#333;</title>\n</head>\n<body onload=\"window.close(); window.opener.location.reload();\"></body>\n</html>";
   
   return $html;
 }

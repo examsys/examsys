@@ -30,4 +30,5 @@ $string['studentcohort'] = 'Student Cohort';
 $string['currentmodule'] = 'Current Module';
 $string['moduleimports'] = 'Module Imports';
 $string['importsummary'] = 'Import Summary';
+$string['externalid'] = 'External ID';
 ?>

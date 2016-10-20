@@ -27,4 +27,5 @@ $string['warningnoleadin'] = 'WARNING: no question lead-in!';
 $string['locked'] = 'Locked';
 $string['anyowner'] = '(any owner)';
 $string['myquestionsonly'] = '(my questions only)';
+$string['msg1'] = 'Search range is too large, please try to narrow your search.';
 ?>

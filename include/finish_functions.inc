@@ -322,7 +322,9 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
       
       $possible_array = array();
       if ($paper[$i]['q_type'] == 'random') {
-        foreach ($paper[$i]['option_text'] as $checkID) {
+        // Get the random id.
+        $randomids = random_utils::get_random_qids_for_question($paper[$i]['q_id'], $mysqlidb);
+        foreach ($randomids as $checkID) {
           $used = false;
           for ($j = 1; $j <= $q_no; $j++) {
             if ($paper[$j]['q_id'] == $checkID) {
@@ -336,8 +338,10 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
         }
       } else {
         // Keyword.
+        // Get the keyword id.
+        $keyword_id = keyword_utils::get_keywordid_for_question($paper[$i]['q_id'], $mysqlidb);
         $keyword = $mysqlidb->prepare("SELECT q_id from keywords_question where keywordID = ?");
-        $keyword->bind_param('i', $paper[$i]['option_text'][0]);
+        $keyword->bind_param('i', $keyword_id);
         $keyword->execute();
         $keyword->store_result();
         $keyword->bind_result($checkID);
@@ -1513,7 +1517,7 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
                 }
               }
             }
-          } elseif ($paper[$question]['correct'][$tmp_part_id-1] > 0) {
+          } elseif (isset($paper[$question]['correct'][$tmp_part_id-1])) {
             $all_correct = false;
             if ($paper[$question]['score_method'] == 'Mark per Question' and $rank_answers[$tmp_part_id-1] != 'u') {
               echo '&nbsp;' . display_response($tmp_display_students_response, 'cross');

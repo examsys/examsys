@@ -33,4 +33,7 @@ $string['deadline'] = 'Deadline:';
 $string['notset'] = '&lt;not set&gt;';
 $string['preexamreviewpapers'] = 'Pre-Exam Review Papers';
 $string['postexamreviews'] = 'Post-Exam Reviews';
+$string['papersforreview'] = 'Papers for Review';
+$string['msg4'] = 'Below is a list of exam papers requiring review.  In the paper, beneath each question are four buttons for you to rate the question: 1) <span style="background-color:#C5E0B3">&nbsp;Question&nbsp;OK&nbsp;</span>, 2) <span style="background-color:#FFE599">&nbsp;Minor/some&nbsp;problems&nbsp;</span>, 3) <span style="background-color:#FF9090">&nbsp;Major/several&nbsp;problems&nbsp;</span> or 4) <span style="background-color:#C0C0C0">&nbsp;Cannot Comment&nbsp;</span> for any questions outside of your field of expertise. There is also a textbox to directly record your feedback to us where you feel there are points to raise.';
+
 ?>

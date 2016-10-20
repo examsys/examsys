@@ -30,9 +30,9 @@ require_once '../include/staff_auth.inc';
   
 	<title>Rog&#333; Import to QTI</title>
 
-	<script type="text/javascript" src="/qti/js/mootools-1.2.4.js"></script> 
+	<script type="text/javascript" src="./qti/js/mootools-1.2.4.js"></script>
 
-  <link rel="stylesheet" type="text/css" href="../css/body.css" />
+  <link rel="stylesheet" type="text/css" href="./css/body.css" />
 	<style type="text/css">
 		.divider {font-size:80%; padding-left:16px; padding-bottom:2px; font-weight:bold}
 		a {color:black}

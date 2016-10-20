@@ -102,10 +102,10 @@ class assessment {
         $configObject->set_db_object($db);
         $configObject->load_settings('core');
         $settings = (object) $configObject->get_setting('core');
-        $this->timezones = $settings->timezones;
-        $this->cohort_sizes = $settings->cohort_sizes;
-        $this->max_duration = $settings->max_duration;
-        $this->max_sittings = $settings->max_sittings;
+        $this->timezones = $settings->paper_timezones;
+        $this->cohort_sizes = $settings->summative_cohort_sizes;
+        $this->max_duration = $settings->paper_max_duration;
+        $this->max_sittings = $settings->summative_max_sittings;
     }
 
     /**
@@ -133,10 +133,20 @@ class assessment {
      * @param string $session - Academic session the paper is relevant to
      * @param array $modules - Modules that have the paper available to them
      * @param string $timezone - timezone paper is being taken in
+     * @param string $externalid - External system id
+     * @param string $externalsys - External system name
      * @return integer|bool - id of new assessment or false on error
      */
-    public function create($papertitle, $papertype, $paperowner, $startdate, $enddate, $labs, $duration, $session, $modules, $timezone) {
-
+    public function create($papertitle, $papertype, $paperowner, $startdate, $enddate, $labs, $duration, $session, $modules, $timezone, $externalid = null, $externalsys = null) {
+            
+        // Check externalid is unique.
+        if (!is_null($externalid)) {
+            $uniqueexternalid = Paper_utils::get_id_from_externalid($externalid, $this->db);
+            if ($uniqueexternalid !== false) {
+                throw new Exception('NON_UNIQUE_EXTID');
+            }
+        }
+        
         // Check title is unique.
         $uniquetitle = Paper_utils::is_paper_title_unique($papertitle, $this->db);
         if (!$uniquetitle) {
@@ -174,8 +184,7 @@ class assessment {
             throw new Exception('INVALID_DATES');
         }
         // Verify timezone is supported, revert to server timezone if not.
-        $decode_timezones = json_decode($this->timezones, true);
-        if (!array_key_exists($timezone, $decode_timezones)) {
+        if (!array_key_exists($timezone, $this->timezones)) {
             $timezone = $this->server_timezone;
         }
 
@@ -216,7 +225,9 @@ class assessment {
             'calculator' => array('i', $default_calc),
             'exam_duration' => array('i', $duration),
             'created' => array('s', $timestamp),
-            'calendar_year' => array('i', $session)
+            'calendar_year' => array('i', $session),
+            'externalid' => array('s', $externalid),
+            'externalsys' => array('s', $externalsys)
         );
         $property_id = $this->db_insert_assessment($params);
         if ($property_id) {
@@ -256,9 +267,11 @@ class assessment {
      * @param array $modules - Modules that have the paper available to them
      * @param string $timezone - timezone paper is being taken in
      * @param integer $userid - rogo user id of change implementor
+     * @param string $externalid - External system id
+     * @param string $externalsys - External system name
      * @return bool - true on success
      */
-    public function update($id, $papertitle, $papertype, $paperowner, $startdate, $enddate, $labs, $duration, $session, $modules, $timezone, $userid) {
+    public function update($id, $papertitle, $papertype, $paperowner, $startdate, $enddate, $labs, $duration, $session, $modules, $timezone, $userid, $externalid = null, $externalsys = null) {
 
         $changes = array();
         $params = array();
@@ -319,8 +332,7 @@ class assessment {
         }
         
         // Verify timezone is supported, revert to server timezone if not.
-        $decode_timezones = json_decode($this->timezones, true);
-        if (!array_key_exists($timezone, $decode_timezones)) {
+        if (!array_key_exists($timezone, $this->timezones)) {
             $timezone = $this->server_timezone;
         }
         if ($timezone != $details['timezone']) {
@@ -346,6 +358,16 @@ class assessment {
             $changes[] = array('old'=>$details['labs'], 'new'=>$labs, 'part'=>'labs');
         }
 
+        if ($externalid != $details['externalid']) {
+            $params['externalid'] = array('s', $externalid);
+            $changes[] = array('old'=>$details['externalid'], 'new'=>$externalid, 'part'=>'externalid');
+        }
+        
+        if ($externalsys != $details['externalsys']) {
+            $params['externalsys'] = array('s', $externalsys);
+            $changes[] = array('old'=>$details['externalsys'], 'new'=>$externalsys, 'part'=>'externalsys');
+        }
+        
         // Update if changes made.
         if (count($changes) > 0) {
             if (!$this->db_update_assessment($id, $params)) {
@@ -428,8 +450,7 @@ class assessment {
             return false;
         }
         // Enforce cohort size interface restrictions.
-        $decode_cohort_sizes = json_decode($this->cohort_sizes);
-        if (!in_array($cohort_size, $decode_cohort_sizes)) {
+        if (!in_array($cohort_size, $this->cohort_sizes)) {
             $cohort_size = '<whole cohort>';
         }
         // Enforce sittings interface restrictions.

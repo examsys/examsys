@@ -19,5 +19,6 @@ $string['name'] = 'Nazwa';
 $string['createfaculty'] = 'Utwórz nowy wydział';
 $string['editfaculty'] = 'Edytuj wydział';
 $string['deletefaculty'] = 'Usuń wydział';
-$string['schoolno'] = 'Liczba Katedr/Zakładów'; 
+$string['schoolno'] = 'Liczba Katedr/Zakładów';
+$string['code'] = 'Code';
 ?>

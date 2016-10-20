@@ -1,0 +1,24 @@
+courses:
+  -
+    id: 1
+    name: "test"
+    description: "a test"
+    schoolid: 1
+    externalid: "ABCD"
+    externalsys: "external"
+  -
+    id: 2
+    name: "test2"
+    description: "a test 2"
+    schoolid: 1
+    externalid: "WXYZ"
+    externalsys: "external"
+schools:
+  -
+    id: 1
+    school: "test"
+    facultyID: 1
+faculty:
+  -
+    id: 1
+    name: "test"

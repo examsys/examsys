@@ -3,6 +3,7 @@
     {% for key,val in response %}
     <{{ val.node }} id="{{val.nodeid}}">
 		<id>{{val.id}}</id>
+		<externalid>{{val.externalid}}</externalid>
         <statuscode>{{ val.statuscode }}</statuscode>
         <status>{{ val.status }}</status>
 		{% for key,error in val.error %}

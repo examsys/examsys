@@ -52,6 +52,9 @@ if (isset($_POST['submit'])) {
     case 'Staff External Examiner':
       $tmp_roles = 'External Examiner';
       break;
+    case 'Staff Internal Reviewer':
+      $tmp_roles = 'Internal Reviewer';
+      break;
     default:
       $tmp_roles = 'Student';
       break;
@@ -277,6 +280,7 @@ foreach ($titles as $tmp_title) {
 <option value="University Admin"><?php echo $string['administrator'] ?></option>
 <option value="Technical Staff"><?php echo $string['ittechnical'] ?></option>
 <option value="Standards Setter"><?php echo $string['standardssetter'] ?></option>
+<option value="Staff Internal Reviewer"><?php echo $string['internalreviewer'] ?></option>
 </optgroup>
 <optgroup label="<?php echo $string['externalstaff'] ?>">
 <?php

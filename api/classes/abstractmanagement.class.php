@@ -75,10 +75,15 @@ abstract class abstractmanagement {
      * return array response to operation, id of construct or error message.
      */
     public function get_response($data, $action, $nodeid = null, $error = null) {
+        // Not all APIs support externalid so set to null if not set.
+        if (!isset($data['externalid'])) {
+            $data['externalid'] = null;
+        }
         return $response = array(
             "statuscode" => $data['statuscode'],
             "status" => $data['status'],
             "id" => $data['id'],
+            "externalid" => $data['externalid'],
             "error" => $error,
             "node" => $action,
             "nodeid" => $nodeid);

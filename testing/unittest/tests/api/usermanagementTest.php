@@ -34,6 +34,7 @@ class usermanagementtest extends unittestdatabase {
             "statuscode" => 100,
             "status" => 'OK',
             "id" => 1003,
+            "externalid" => null,
             "error" => array(),
             "node" => 'create',
             "nodeid" => 1);
@@ -73,8 +74,9 @@ class usermanagementtest extends unittestdatabase {
             "statuscode" => 100,
             "status" => 'OK',
             "id" => 1001,
+            "externalid" => null,
             "error" => array(),
-            "node" => 'create',
+            "node" => 'update',
             "nodeid" => 1);
     }
     /**
@@ -85,6 +87,7 @@ class usermanagementtest extends unittestdatabase {
         return array(
             "nodeid" => 1,
             "id" => 1001,
+            "externalid" => null,
             "surname" => "",
             "forename" => "test",
             "modules" => array(array('name' => 'moduleid', 'id' => 0, 'value' => 2)));
@@ -98,6 +101,7 @@ class usermanagementtest extends unittestdatabase {
             "statuscode" => 100,
             "status" => 'OK',
             "id" => 1001,
+            "externalid" => null,
             "error" => null,
             "node" => 'delete',
             "nodeid" => 1);
@@ -240,7 +244,7 @@ class usermanagementtest extends unittestdatabase {
         $params = $this->update_param_array();
         $user = new \api\usermanagement($this->db);
         $userid = 1;
-        $this->assertEquals($responsearray, $user->create($params, $userid));
+        $this->assertEquals($responsearray, $user->update($params, $userid));
         // Check user is enrolled on expected moulde.
         $querytable = $this->getConnection()->createQueryTable('modules_student', 'SELECT id, userID, idMod FROM modules_student');
         $expectedtable = $this->get_expected_data_set('updateuser')->getTable("modules_student");  
@@ -262,7 +266,7 @@ class usermanagementtest extends unittestdatabase {
             "nodeid" => 1,
             "id" => 1002,
             "username" => "");
-        $this->assertEquals($responsearray, $user->create($params, $userid));
+        $this->assertEquals($responsearray, $user->update($params, $userid));
         $querytable = $this->getConnection()->createQueryTable('users', 'SELECT * FROM users WHERE id = 1002');
         $expectedtable = $this->get_expected_data_set('updateuser')->getTable("users");  
         $this->assertTablesEqual($expectedtable, $querytable);
@@ -283,7 +287,7 @@ class usermanagementtest extends unittestdatabase {
             "nodeid" => 1,
             "id" => 1002,
             "password" => "");
-        $this->assertEquals($responsearray, $user->create($params, $userid));
+        $this->assertEquals($responsearray, $user->update($params, $userid));
         $querytable = $this->getConnection()->createQueryTable('users', 'SELECT * FROM users WHERE id = 1002');
         $expectedtable = $this->get_expected_data_set('updateuser')->getTable("users");  
         $this->assertTablesEqual($expectedtable, $querytable);
@@ -304,7 +308,7 @@ class usermanagementtest extends unittestdatabase {
             "nodeid" => 1,
             "id" => 1002,
             "title" => "");
-        $this->assertEquals($responsearray, $user->create($params, $userid));
+        $this->assertEquals($responsearray, $user->update($params, $userid));
         $querytable = $this->getConnection()->createQueryTable('users', 'SELECT * FROM users WHERE id = 1002');
         $expectedtable = $this->get_expected_data_set('updateuser')->getTable("users");  
         $this->assertTablesEqual($expectedtable, $querytable);
@@ -325,7 +329,7 @@ class usermanagementtest extends unittestdatabase {
             "nodeid" => 1,
             "id" => 1002,
             "forename" => "");
-        $this->assertEquals($responsearray, $user->create($params, $userid));
+        $this->assertEquals($responsearray, $user->update($params, $userid));
         $querytable = $this->getConnection()->createQueryTable('users', 'SELECT * FROM users WHERE id = 1002');
         $expectedtable = $this->get_expected_data_set('updateuser')->getTable("users");  
         $this->assertTablesEqual($expectedtable, $querytable);
@@ -346,7 +350,7 @@ class usermanagementtest extends unittestdatabase {
             "nodeid" => 1,
             "id" => 1002,
             "surname" => "");
-        $this->assertEquals($responsearray, $user->create($params, $userid));
+        $this->assertEquals($responsearray, $user->update($params, $userid));
         $querytable = $this->getConnection()->createQueryTable('users', 'SELECT * FROM users WHERE id = 1002');
         $expectedtable = $this->get_expected_data_set('updateuser')->getTable("users");  
         $this->assertTablesEqual($expectedtable, $querytable);
@@ -367,7 +371,7 @@ class usermanagementtest extends unittestdatabase {
             "nodeid" => 1,
             "id" => 1002,
             "email" => "");
-        $this->assertEquals($responsearray, $user->create($params, $userid));
+        $this->assertEquals($responsearray, $user->update($params, $userid));
         $querytable = $this->getConnection()->createQueryTable('users', 'SELECT * FROM users WHERE id = 1002');
         $expectedtable = $this->get_expected_data_set('updateuser')->getTable("users");  
         $this->assertTablesEqual($expectedtable, $querytable);
@@ -388,7 +392,7 @@ class usermanagementtest extends unittestdatabase {
             "nodeid" => 1,
             "id" => 1002,
             "course" => "");
-        $this->assertEquals($responsearray, $user->create($params, $userid));
+        $this->assertEquals($responsearray, $user->update($params, $userid));
         $querytable = $this->getConnection()->createQueryTable('users', 'SELECT * FROM users WHERE id = 1002');
         $expectedtable = $this->get_expected_data_set('updateuser')->getTable("users");  
         $this->assertTablesEqual($expectedtable, $querytable);
@@ -409,7 +413,7 @@ class usermanagementtest extends unittestdatabase {
             "nodeid" => 1,
             "id" => 1002,
             "gender" => "");
-        $this->assertEquals($responsearray, $user->create($params, $userid));
+        $this->assertEquals($responsearray, $user->update($params, $userid));
         $querytable = $this->getConnection()->createQueryTable('users', 'SELECT * FROM users WHERE id = 1002');
         $expectedtable = $this->get_expected_data_set('updateuser')->getTable("users");  
         $this->assertTablesEqual($expectedtable, $querytable);
@@ -430,7 +434,7 @@ class usermanagementtest extends unittestdatabase {
             "nodeid" => 1,
             "id" => 1002,
             "year" => "");
-        $this->assertEquals($responsearray, $user->create($params, $userid));
+        $this->assertEquals($responsearray, $user->update($params, $userid));
         $querytable = $this->getConnection()->createQueryTable('users', 'SELECT * FROM users WHERE id = 1002');
         $expectedtable = $this->get_expected_data_set('updateuser')->getTable("users");  
         $this->assertTablesEqual($expectedtable, $querytable);
@@ -451,7 +455,7 @@ class usermanagementtest extends unittestdatabase {
             "nodeid" => 1,
             "id" => 1002,
             "role" => "");
-        $this->assertEquals($responsearray, $user->create($params, $userid));
+        $this->assertEquals($responsearray, $user->update($params, $userid));
         $querytable = $this->getConnection()->createQueryTable('users', 'SELECT * FROM users WHERE id = 1002');
         $expectedtable = $this->get_expected_data_set('updateuser')->getTable("users");  
         $this->assertTablesEqual($expectedtable, $querytable);
@@ -472,7 +476,7 @@ class usermanagementtest extends unittestdatabase {
             "nodeid" => 1,
             "id" => 1002,
             "studentid" => "");
-        $this->assertEquals($responsearray, $user->create($params, $userid));
+        $this->assertEquals($responsearray, $user->update($params, $userid));
         $querytable = $this->getConnection()->createQueryTable('users', 'SELECT * FROM users WHERE id = 1002');
         $expectedtable = $this->get_expected_data_set('updateuser')->getTable("users");  
         $this->assertTablesEqual($expectedtable, $querytable);
@@ -493,7 +497,7 @@ class usermanagementtest extends unittestdatabase {
             "nodeid" => 1,
             "id" => 1002,
             "initials" => "");
-        $this->assertEquals($responsearray, $user->create($params, $userid));
+        $this->assertEquals($responsearray, $user->update($params, $userid));
         $querytable = $this->getConnection()->createQueryTable('users', 'SELECT * FROM users WHERE id = 1002');
         $expectedtable = $this->get_expected_data_set('updateuser')->getTable("users");  
         $this->assertTablesEqual($expectedtable, $querytable);
@@ -514,7 +518,7 @@ class usermanagementtest extends unittestdatabase {
             "nodeid" => 1,
             "id" => 1002,
             "modules" => array());
-        $this->assertEquals($responsearray, $user->create($params, $userid));
+        $this->assertEquals($responsearray, $user->update($params, $userid));
         $querytable = $this->getConnection()->createQueryTable('users', 'SELECT * FROM users WHERE id = 1002');
         $expectedtable = $this->get_expected_data_set('updateuser')->getTable("users");  
         $this->assertTablesEqual($expectedtable, $querytable);
@@ -539,7 +543,7 @@ class usermanagementtest extends unittestdatabase {
             "username" => "unit3",
             "roles" => "Student",
             "course" => "TEST2");
-        $this->assertEquals($responsearray, $user->create($params, $userid));
+        $this->assertEquals($responsearray, $user->update($params, $userid));
         $querytable = $this->getConnection()->createQueryTable('users', 'SELECT * FROM users WHERE id = 1002');
         $expectedtable = $this->get_expected_data_set('updateuser')->getTable("users");  
         $this->assertTablesEqual($expectedtable, $querytable);
@@ -559,7 +563,7 @@ class usermanagementtest extends unittestdatabase {
         $responsearray['id'] = null;
         $params['id'] = '99';
         $params['surname'] = 'unknown';
-        $this->assertEquals($responsearray, $user->create($params, $userid));
+        $this->assertEquals($responsearray, $user->update($params, $userid));
     }
     /**
      * Test user update exception user id = 0
@@ -576,7 +580,7 @@ class usermanagementtest extends unittestdatabase {
         $responsearray['id'] = null;
         $params['id'] = '0';
         $params['surname'] = 'unknown';
-        $this->assertEquals($responsearray, $user->create($params, $userid));
+        $this->assertEquals($responsearray, $user->update($params, $userid));
     }
     /**
      * Test successful user deletion

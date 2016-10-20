@@ -93,7 +93,7 @@ if (count($critical_errors) == 0 and isset($_POST['token']) and $_POST['token'] 
           $delete->close();
 
           $redirect_url = $configObject->get('cfg_root_path') . "/";
-          if (strpos($userroles, 'External Examiner') !== false) {
+          if (strpos($userroles, 'External Examiner') !== false or strpos($userroles, 'Internal Reviewer') !== false ) {
             $redirect_url .= "reviews/";
           } elseif (strpos($userroles, 'Invigilator') !== false) {
             $redirect_url .= "invigilator/";

@@ -61,6 +61,8 @@ Class InstallUtils {
   public static $cfg_db_staff_passwd;
   public static $cfg_db_external_user;
   public static $cfg_db_external_passwd;
+  public static $cfg_db_internal_user;
+  public static $cfg_db_internal_passwd;
   public static $cfg_db_sysadmin_user;
   public static $cfg_db_sysadmin_passwd;
   public static $cfg_db_webservice_user;
@@ -594,6 +596,16 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
     $alter[] = "ALTER TABLE gradebook_user ADD CONSTRAINT gradebook_user_fk0 FOREIGN KEY (paperid) REFERENCES gradebook_paper(paperid)";
     $alter[] = "ALTER TABLE labs ADD CONSTRAINT labs_fk0 FOREIGN KEY (campus) REFERENCES campus(id)";
     $alter[] = "ALTER TABLE lti_context ADD CONSTRAINT lticontext_fk0 FOREIGN KEY (c_internal_id) REFERENCES modules(id)";
+    $alter[] = "ALTER TABLE keywords_link ADD CONSTRAINT `keywords_link_fk1` FOREIGN KEY (`q_id`) REFERENCES `questions` (`q_id`)";
+    $alter[] = "ALTER TABLE keywords_link ADD CONSTRAINT `keywords_link_fk2` FOREIGN KEY (`keyword_id`) REFERENCES `keywords_user` (`id`)";
+    $alter[] = "ALTER TABLE std_set_questions ADD CONSTRAINT `std_set_questions_fk1` FOREIGN KEY (`std_setID`) REFERENCES `std_set` (`id`)";
+    $alter[] = "ALTER TABLE random_link ADD CONSTRAINT `random_link_fk1` FOREIGN KEY (`id`) REFERENCES `questions` (`q_id`)";
+    $alter[] = "ALTER TABLE random_link ADD CONSTRAINT `random_link_fk2` FOREIGN KEY (`q_id`) REFERENCES `questions` (`q_id`)";
+    $alter[] = "ALTER TABLE users_metadata ADD CONSTRAINT `users_metadata_fk1` FOREIGN KEY (`idMod`) REFERENCES `modules` (`id`)";
+    $alter[] = "ALTER TABLE questions_module ADD CONSTRAINT `questions_modules_fk1` FOREIGN KEY (`q_id`) REFERENCES `questions` (`q_id`)";
+    $alter[] = "ALTER TABLE questions_module ADD CONSTRAINT `questions_modules_fk2` FOREIGN KEY (`idMod`) REFERENCES `modules` (`id`)";
+    $alter[] = "ALTER TABLE questions ADD CONSTRAINT `questions_fk1` FOREIGN KEY (`status`) REFERENCES `question_statuses` (`id`)";
+
     foreach ($alter as $a) {
         $res = self::$db->prepare($a);
         $res->execute();
@@ -606,7 +618,7 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
    * Load default data needed for rogo to function
    */
   static function loadData() {
-    global $timezone_array;
+    global $string, $timezone_array;
     // Add 3 academic sessions to the the new user started.
     $calendaryear = date('Y');
     $previouscalendaryear = date('Y') - 1;
@@ -622,25 +634,31 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
     $insert->execute();
     $insert->close();
     // Add user psermissions.
-    $permissions = array('assessmentmanagement/create' => 'Create/Update paper',
-        'assessmentmanagement/delete' => 'Delete a paper',
-        'assessmentmanagement/schedule' => 'SChedule a summative assessment',
-        'gradebook' => 'Gradebook',
-        'modulemanagement/create' => 'Create/Update a module',
-        'modulemanagement/delete' => 'Delete a module',
-        'modulemanagement/enrol' => 'Enrol Users onto a module',
-        'modulemanagement/unenrol' => 'UnEnrol Users from a module',
-        'usermanagement/create' => 'Create/Update a user',
-        'usermanagement/delete' => 'Delete a user',
-        'coursemanagement/create' => 'Create/Update a course',
-        'coursemanagement/delete' => 'Delete a course',
-        'schoolmanagement/create' => 'Create/Update a school',
-        'schoolmanagement/delete' => 'Delete a school',
-        'facultymanagement/create' => 'Create/Update a faculty',
-        'facultymanagement/delete' => 'Delete a faculty');
-    foreach ($permissions as $permission => $description) {
-        $insert = self::$db->prepare("INSERT INTO permissions (action, description) VALUES (?, ?)");
-        $insert->bind_param('ss', $permission, $description);
+    $permissions = array('assessmentmanagement/create',
+        'assessmentmanagement/update',
+        'assessmentmanagement/delete',
+        'assessmentmanagement/schedule',
+        'gradebook',
+        'modulemanagement/create',
+        'modulemanagement/update',
+        'modulemanagement/delete',
+        'modulemanagement/enrol',
+        'modulemanagement/unenrol',
+        'usermanagement/create',
+        'usermanagement/update',
+        'usermanagement/delete',
+        'coursemanagement/create',
+        'coursemanagement/delete',
+        'coursemanagement/update',
+        'schoolmanagement/create',
+        'schoolmanagement/delete',
+        'schoolmanagement/update',
+        'facultymanagement/create',
+        'facultymanagement/delete',
+        'facultymanagement/update');
+    foreach ($permissions as $permission) {
+        $insert = self::$db->prepare("INSERT INTO permissions (action) VALUES (?)");
+        $insert->bind_param('s', $permission);
         $insert->execute();
         $insert->close();
     }
@@ -649,15 +667,31 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
     $insert->execute();
     $insert->close();
     // Save json encoded list of timezones.
-    $encoded_timezones = json_encode($timezone_array);
-    $encoded_cohorts = json_encode(array('<whole cohort>', '0-10', '11-20', '21-30', '31-40', '41-50', '51-75', '76-100', '101-150', '151-200', '201-300',
-        '301-400', '401-500'));
+    $timezones = $timezone_array;
+    $cohorts = array('<whole cohort>', '0-10', '11-20', '21-30', '31-40', '41-50', '51-75', '76-100', '101-150', '151-200', '201-300',
+        '301-400', '401-500');
     $configObject = Config::get_instance();
     $configObject->set_db_object(self::$db);
-    $configObject->set_setting('timezones', $encoded_timezones);
-    $configObject->set_setting('cohort_sizes', $encoded_cohorts);
-    $configObject->set_setting('max_duration', 779);
-    $configObject->set_setting('max_sittings', 6);
+    $configObject->set_setting('paper_timezones', $timezones, 'timezones');
+    $configObject->set_setting('summative_cohort_sizes', $cohorts, 'csv');
+    $configObject->set_setting('paper_max_duration', 779, 'integer');
+    $configObject->set_setting('summative_max_sittings', 6, 'integer');
+    $configObject->set_setting('summative_hide_external', 0, 'boolean');
+    $configObject->set_setting('summative_warn_external', 0, 'boolean');
+    $configObject->set_setting('cfg_lti_allow_module_self_reg', 0, 'boolean');
+    $configObject->set_setting('cfg_lti_allow_staff_module_register', 0, 'boolean');
+    $configObject->set_setting('cfg_lti_allow_module_create', 0, 'boolean');
+    $configObject->set_setting('lti_integration', 'default', 'string');
+    $configObject->set_setting('lti_auth_timeout', 9072000, 'integer');
+    $configObject->set_setting('cfg_gradebook_enabled', 1, 'boolean');
+    $configObject->set_setting('cfg_api_enabled', 1, 'boolean');
+    $configObject->set_setting('paper_marks_postive', range(1, 20), 'csv');
+    $configObject->set_setting('paper_marks_negative', array(0, -0.25, -0.5, -1, -2, -3, -4, -5, -6, -7, -8, -9, -10), 'csv');
+    $configObject->set_setting('paper_marks_partial', array_merge(range(0, 1, 0.1), range(2, 5)), 'csv');
+    
+    self::createDefaultUsers();
+    self::createDefaultFacultiesSchoolsModules();
+    self::createQuestionStatuses();
   }
   
   /**
@@ -682,14 +716,7 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
     'errorstate_signed_log1_deleted',
     'errorstate_signed_log2',
     'errorstate_signed_log3',
-    'errorstate_signed_log_late',
-    'rogo1481alter_users_metadata',
-    'rogo1481alter_sms_imports',
-    'rogo1481alter_sessions',
-    'rogo1481alter_relationships',
-    'rogo1481alter_properties',
-    'rogo1481alter_objectives',
-    'rogo1481alter_modules_student');
+    'errorstate_signed_log_late');
     foreach ($updates as $update) {
         $insert = self::$db->prepare('INSERT INTO sys_updates VALUES (?, ?)');
         $insert->bind_param('ss', $update, $current_datetime);
@@ -796,6 +823,8 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
     self::$cfg_db_staff_passwd = gen_password() . gen_password();
     self::generateUserName('cfg_db_external_user', self::$cfg_db_basename . '_ext');
     self::$cfg_db_external_passwd  = gen_password() . gen_password();
+    self::generateUserName('cfg_db_internal_user', self::$cfg_db_basename . '_int');
+    self::$cfg_db_internal_passwd  = gen_password() . gen_password();
     self::generateUserName('cfg_db_sysadmin_user', self::$cfg_db_basename . '_sys');
     self::$cfg_db_sysadmin_passwd = gen_password() . gen_password();
     self::generateUserName('cfg_db_webservice_user', self::$cfg_db_basename . '_web');
@@ -867,6 +896,8 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".help_tutorial_log TO '". self::$cfg_db_student_user . "'@'". self::$cfg_web_host . "'";
     $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".client_identifiers TO '". self::$cfg_db_student_user . "'@'". self::$cfg_web_host . "'";
     $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".keywords_question TO '". self::$cfg_db_student_user . "'@'". self::$cfg_web_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".keywords_link TO '". self::$cfg_db_student_user . "'@'". self::$cfg_web_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".random_link TO '". self::$cfg_db_student_user . "'@'". self::$cfg_web_host . "'";
     $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".labs TO '". self::$cfg_db_student_user . "'@'". self::$cfg_web_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log0 TO '". self::$cfg_db_student_user . "'@'". self::$cfg_web_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log1 TO '". self::$cfg_db_student_user . "'@'". self::$cfg_web_host . "'";
@@ -939,6 +970,8 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
     $priv_SQL[] = "GRANT SELECT, INSERT ON " . $dbname . ".help_log TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_web_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT ON " . $dbname . ".help_searches TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_web_host . "'";
     $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".keywords_question TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_web_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".keywords_link TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_web_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".random_link TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_web_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log0 TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_web_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log1 TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_web_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log2 TO '" . self::$cfg_db_external_user . "'@'". self::$cfg_web_host . "'";
@@ -1006,6 +1039,48 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
    self::$db->commit();
 
     $priv_SQL = array();
+    //create 'database user internal user' and grant permissions
+    self::$db->query("CREATE USER  '" . self::$cfg_db_internal_user . "'@'". self::$cfg_web_host . "' IDENTIFIED BY '" . self::$cfg_db_internal_passwd . "'");
+    if (self::$db->errno != 0 && !self::$behat_install && !self::$phpunit_install) {
+      self::displayError(array('013'=> $string['wdatabaseuser'] . self::$cfg_db_internal_user . $string['wnotcreated'] . ' ' . self::$db->error ));
+    }
+    //$priv_SQL[] = "REVOKE ALL PRIVILEGES ON $dbname.* FROM '". self::$cfg_db_internal_user . "'@'". self::$cfg_web_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT ON " . $dbname . ".help_log TO '" . self::$cfg_db_internal_user . "'@'". self::$cfg_web_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT ON " . $dbname . ".help_searches TO '" . self::$cfg_db_internal_user . "'@'". self::$cfg_web_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".keywords_question TO '" . self::$cfg_db_internal_user . "'@'". self::$cfg_web_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".modules TO '" . self::$cfg_db_internal_user . "'@'". self::$cfg_web_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".modules_staff TO '" . self::$cfg_db_internal_user . "'@'". self::$cfg_web_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".options TO '" . self::$cfg_db_internal_user . "'@'". self::$cfg_web_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".papers TO '" . self::$cfg_db_internal_user . "'@'". self::$cfg_web_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".properties TO '" . self::$cfg_db_internal_user . "'@'". self::$cfg_web_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".questions TO '" . self::$cfg_db_internal_user . "'@'". self::$cfg_web_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".question_statuses TO '" . self::$cfg_db_internal_user . "'@'". self::$cfg_web_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".reference_material TO '" . self::$cfg_db_internal_user . "'@'". self::$cfg_web_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".reference_modules TO '" . self::$cfg_db_internal_user . "'@'". self::$cfg_web_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".reference_papers TO '" . self::$cfg_db_internal_user . "'@'". self::$cfg_web_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".review_comments TO '" . self::$cfg_db_internal_user . "'@'". self::$cfg_web_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".review_metadata TO '" . self::$cfg_db_internal_user . "'@'". self::$cfg_web_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".staff_help TO '" . self::$cfg_db_internal_user . "'@'". self::$cfg_web_host . "'";
+    $priv_SQL[] = "GRANT INSERT ON " . $dbname . ".sys_errors TO '" . self::$cfg_db_internal_user . "'@'". self::$cfg_web_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".users TO '". self::$cfg_db_internal_user . "'@'". self::$cfg_web_host . "'";
+    $priv_SQL[] = "GRANT INSERT ON " . $dbname . ".access_log TO '". self::$cfg_db_internal_user . "'@'". self::$cfg_web_host . "'";
+    $priv_SQL[] = "GRANT INSERT ON " . $dbname . ".denied_log TO '". self::$cfg_db_internal_user . "'@'". self::$cfg_web_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".properties_reviewers TO '". self::$cfg_db_internal_user . "'@'". self::$cfg_web_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".keywords_link TO '". self::$cfg_db_internal_user . "'@'". self::$cfg_web_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".random_link TO '". self::$cfg_db_internal_user . "'@'". self::$cfg_web_host . "'";
+    $priv_SQL[] = "FLUSH PRIVILEGES";
+    foreach ($priv_SQL as $sql) {
+      self::$db->query($sql);
+      @ob_flush();
+      @flush();
+      if (self::$db->errno != 0) {
+        self::displayError(array('013'=> $string['wdatabaseuser'] . self::$cfg_db_internal_user . $string['wnotpermission'] . ' ' . self::$db->error ));
+        self::$db->rollback();
+      }
+    }
+   self::$db->commit();
+
+    $priv_SQL = array();
     //create 'database user staff user' and grant permissions
     self::$db->query("CREATE USER  '" . self::$cfg_db_staff_user . "'@'". self::$cfg_web_host . "' IDENTIFIED BY '" . self::$cfg_db_staff_passwd . "'");
     if (self::$db->errno != 0 && !self::$behat_install && !self::$phpunit_install) {
@@ -1026,6 +1101,8 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".help_tutorial_log TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_web_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".hofstee TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_web_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".keywords_question TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_web_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".keywords_link TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_web_host . "'";
+    $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".random_link TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_web_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".keywords_user TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_web_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log0 TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_web_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log1 TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_web_host . "'";
@@ -1218,13 +1295,6 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
       }
     }
     self::$db->commit();
-
-    // Behat loads it's own defaults.
-    if (!self::$behat_install) {
-      self::createDefaultUsers();
-      self::createDefaultFacultiesSchoolsModules();
-      self::createQuestionStatuses();
-    }
 
     //FLUSH PRIVILEGES
     self::$db->query("FLUSH PRIVILEGES");
@@ -1804,6 +1874,9 @@ require \$root . '/include/path_functions.inc.php';
 //external examiner db user
   \$cfg_db_external_user = '{cfg_db_external}';
   \$cfg_db_external_passwd = '{cfg_db_external_passwd}';
+//internal reviewer db user
+  \$cfg_db_internal_user = '{cfg_db_internal}';
+  \$cfg_db_internal_passwd = '{cfg_db_internal_passwd}';
 //sysdamin db user
   \$cfg_db_sysadmin_user = '{cfg_db_sysadmin_user}';
   \$cfg_db_sysadmin_passwd = '{cfg_db_sysadmin_passwd}';
@@ -1842,14 +1915,6 @@ require \$root . '/include/path_functions.inc.php';
 
 // SMS Imports
   \$cfg_sms_api = '';
-
-// LTI these configure the default lti integration if you want more ability than this then you will need to override the lti_integration class using the lti_integration variable below to set the relative path & filename of the new integration class or left as blank or default to use the built in functionality.
-\$cfg_lti_allow_module_self_reg = false; // allows rogo to auto add student to module if selfreg is set for module if from lti launch
-\$cfg_lti_allow_staff_module_register = false; // allows rogo to register staff onto the module team if set to true and from lti launch and staff in vle
-\$cfg_lti_allow_module_create = false;  // allows rogo to create module if it doesnt exist
-
-\$lti_integration = 'default';
-\$lti_auth_timeout = 9072000; // length of lti authorisation in seconds
 
 \$authentication_fields_required_to_create_user = array('username', 'title', 'firstname', 'surname', 'email', 'role');
 
@@ -1894,20 +1959,8 @@ if(!isset(\$_SERVER['HTTP_HOST'])) {
   \$_SERVER['HTTP_HOST']='';
 }
 
-//Server specific configuration based on hostname.
-switch (strtolower(\$_SERVER['HTTP_HOST'])) {
-  case 'rogo.local':
-    \$cfg_install_type = ' (local)';
-    break;
-  case 'rogotest.local':
-    \$cfg_install_type = ' (local testing)';
-    error_reporting(E_ALL);
-    break;
-  default:
-    \$cfg_install_type = '';
-    error_reporting(0);
-    break;
-}
+//A server specifc display name can be appended to rogo with the following
+\$cfg_install_type = '';
 
 //Warnings
   \$cfg_hour_warning = 10;       // Warning for summative exams
@@ -1945,14 +1998,11 @@ switch (strtolower(\$_SERVER['HTTP_HOST'])) {
   \$cfg_oauth_refresh_token_lifetime = 1209600; // length of refresh token lifetime.
   \$cfg_oauth_always_issue_new_refresh_token = true; // enable or disable refresh tokens.
   
-  //gradebook setting
-  \$cfg_gradebook_enabled = true;
-  
   //IMS enterprise setting
   \$cfg_ims_enabled = false;
   
-  //API setting
-  \$cfg_api_enabled = true;
+  // Override db config settings with configs in this file?
+  \$file_config_override = true;
   ?>
 CONFIG;
 
@@ -1975,6 +2025,8 @@ CONFIG;
     $config = str_replace('{cfg_db_staff_passwd}', self::$cfg_db_staff_passwd, $config);
     $config = str_replace('{cfg_db_external}', self::$cfg_db_external_user, $config);
     $config = str_replace('{cfg_db_external_passwd}', self::$cfg_db_external_passwd, $config);
+    $config = str_replace('{cfg_db_internal}', self::$cfg_db_internal_user, $config);
+    $config = str_replace('{cfg_db_internal_passwd}', self::$cfg_db_internal_passwd, $config);
     $config = str_replace('{cfg_db_sysadmin_user}', self::$cfg_db_sysadmin_user, $config);
     $config = str_replace('{cfg_db_sysadmin_passwd}', self::$cfg_db_sysadmin_passwd, $config);
     $config = str_replace('{cfg_db_sct_user}', self::$cfg_db_sct_user, $config);

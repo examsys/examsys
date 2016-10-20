@@ -6,9 +6,39 @@
                 <xs:element name="create" maxOccurs="unbounded" minOccurs="0">
                     <xs:complexType>
                         <xs:sequence>
+                            <xs:element name="title" type="title"/>
+                            <xs:element name="type" type="type"/>
+                            <xs:element name="owner" type="xs:integer"/>
+                            <xs:element type="xs:gYear" name="session"/>
+                            <xs:element type="xs:dateTime" name="startdatetime"/>
+                            <xs:element type="xs:dateTime" name="enddatetime"/>
                             <xs:choice>
-                                <xs:group ref="create"/>
-                                <xs:group ref="update"/>
+                                <xs:element type="modules" name="modules"/>
+                                <xs:element type="extmodules" name="modules"/>
+                            </xs:choice>
+                            <xs:element type="xs:string" name="timezone" minOccurs="0"/>
+                            <xs:element name="duration" type="duration" minOccurs="0"/>
+                            <xs:element type="labs" name="labs" minOccurs="0"/>
+                            <xs:group ref="external" minOccurs="0"/>
+                        </xs:sequence>
+                        <xs:attribute type="xs:string" name="id"/>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="update" maxOccurs="unbounded" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:choice>
+                                <xs:element name="id" type="xs:integer"/>
+                                <xs:element name="externalid" type="externalid"/>
+                            </xs:choice>
+                            <xs:element name="title" type="title" minOccurs="0"/>
+                            <xs:element name="owner" type="xs:integer" minOccurs="0"/>
+                            <xs:element type="xs:gYear" name="session" minOccurs="0"/>
+                            <xs:element type="xs:dateTime" name="startdatetime" minOccurs="0"/>
+                            <xs:element type="xs:dateTime" name="enddatetime" minOccurs="0"/>
+                            <xs:choice>
+                                <xs:element type="modules" name="modules"/>
+                                <xs:element type="extmodules" name="modules"/>
                             </xs:choice>
                             <xs:element type="xs:string" name="timezone" minOccurs="0"/>
                             <xs:element name="duration" type="duration" minOccurs="0"/>
@@ -24,13 +54,17 @@
                             <xs:element name="title" type="title"/>
                             <xs:element type="xs:gYear" name="session"/>
                             <xs:element name="duration" type="duration"/>
-                            <xs:element name="month" type="month"/>
+                            <xs:element name="month" type="month" minOccurs="0"/>
                             <xs:element name="cohort_size" type="cohort" minOccurs="0"/>
                             <xs:element name="sittings" type="xs:integer" minOccurs="0"/>
                             <xs:element name="barriers" type="xs:boolean" minOccurs="0"/>
                             <xs:element name="campus" type="campus" minOccurs="0"/>
-                            <xs:element type="modules" name="modules"/>
+                            <xs:choice>
+                                <xs:element type="modules" name="modules"/>
+                                <xs:element type="extmodules" name="extmodules"/>
+                            </xs:choice>
                             <xs:element name="notes" type="notes" minOccurs="0"/>
+                            <xs:group ref="external" minOccurs="0"/>
                         </xs:sequence>
                         <xs:attribute type="xs:string" name="id"/>
                     </xs:complexType>
@@ -38,7 +72,10 @@
                 <xs:element name="delete" maxOccurs="unbounded" minOccurs="0">
                     <xs:complexType>
                         <xs:sequence>
-                            <xs:element name="id" type="xs:integer"/>
+                            <xs:choice>
+                                <xs:element name="id" type="xs:integer"/>
+                                <xs:element name="externalid" type="externalid"/>
+                            </xs:choice>
                         </xs:sequence>
                         <xs:attribute type="xs:string" name="id"/>
                     </xs:complexType>
@@ -46,26 +83,10 @@
             </xs:sequence>
         </xs:complexType>
     </xs:element>
-    <xs:group name="create">
+    <xs:group name="external">
         <xs:sequence>
-            <xs:element name="title" type="title"/>
-            <xs:element name="type" type="type"/>
-            <xs:element name="owner" type="xs:integer"/>
-            <xs:element type="xs:gYear" name="session"/>
-            <xs:element type="xs:dateTime" name="startdatetime"/>
-            <xs:element type="xs:dateTime" name="enddatetime"/>
-            <xs:element type="modules" name="modules"/>
-        </xs:sequence>
-    </xs:group>
-    <xs:group name="update">
-        <xs:sequence>
-            <xs:element name="id" type="xs:integer"/>
-            <xs:element name="title" type="title" minOccurs="0"/>
-            <xs:element name="owner" type="xs:integer" minOccurs="0"/>
-            <xs:element type="xs:gYear" name="session" minOccurs="0"/>
-            <xs:element type="xs:dateTime" name="startdatetime" minOccurs="0"/>
-            <xs:element type="xs:dateTime" name="enddatetime" minOccurs="0"/>
-            <xs:element type="modules" name="modules" minOccurs="0"/>
+            <xs:element name="externalid" type="externalid"/>
+            <xs:element name="externalsys" type="externalsys"/>
         </xs:sequence>
     </xs:group>
     <xs:complexType name="labs">
@@ -87,6 +108,19 @@
                 <xs:complexType>
                     <xs:simpleContent>
                         <xs:extension base="xs:integer">
+                            <xs:attribute type="xs:string" name="id" use="required"/>
+                        </xs:extension>
+                    </xs:simpleContent>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="extmodules">
+        <xs:sequence>
+            <xs:element name="moduleid" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:simpleContent>
+                        <xs:extension base="xs:string">
                             <xs:attribute type="xs:string" name="id" use="required"/>
                         </xs:extension>
                     </xs:simpleContent>
@@ -137,6 +171,18 @@
         <xs:restriction base="xs:integer">
             <xs:minInclusive value="0"/>
             <xs:maxInclusive value="11"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="externalid">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="1"/>
+            <xs:maxLength value="255"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="externalsys">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="1"/>
+            <xs:maxLength value="255"/>
         </xs:restriction>
     </xs:simpleType>
 </xs:schema>

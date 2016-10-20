@@ -20,4 +20,5 @@ $string['createfaculty'] = 'Nová fakulta';
 $string['editfaculty'] = 'Upravit fakultu';
 $string['deletefaculty'] = 'Odstranit fakultu';
 $string['schoolno'] = 'Číslo školy';
+$string['code'] = 'Code';
 ?>

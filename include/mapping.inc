@@ -32,8 +32,6 @@
  *
  */
 
-require_once $cfg_web_root . 'webServices/RestRequest.class.php';
-
 function render_objectives_mapping_form($db, $paper_id, &$string) {
   global $vle_api_cache;
 
@@ -281,9 +279,9 @@ function getObjectives($thisModuleid, $session, $paperID, $questionID, $db, $sco
       if (!isset($objsBySession_cache[$thisModuleid]) or !isset($objsBySession_cache[$thisModuleid][$session])) {
 				$vle = CMFactory::GetCMAPI($vle_api);
         $vle->setMappingLevel($map_level);
-        $resp = $vle->getObjectives($thisModuleid, $session);
+        $resp = $vle->getObjectives($thisModuleid, $session, $db);
 				if ($resp == 'error') {
-          throw new Exception('could_not_retrive_objectives');
+          throw new Exception('could_not_retrieve_objectives');
         }
         if ($resp != '') {
           $objsBySession_cache[$thisModuleid][$session] = $resp;

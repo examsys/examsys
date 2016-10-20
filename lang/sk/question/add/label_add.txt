@@ -1,0 +1,29 @@
+<?php        //cz
+
+$string['fillcolour'] = 'Farba výplne';
+$string['linecolour'] = 'Farba linky';
+$string['textcolour'] = 'Farby písma';
+$string['textsize'] = 'Veľkosť písma';
+$string['lines'] = 'Šírka linky';
+$string['erase'] = 'Vymazať popis/linku';
+$string['edit'] = 'Presunúť popis/linku';
+$string['line'] = 'Nakresliť linku ';
+$string['bobble'] = 'Kresliť bublinu';
+$string['arrow'] = 'Kresliť šípku';
+$string['single'] = 'Jedinečný popis';
+$string['multiple'] = 'Opakovaný popis';
+$string['label'] = 'Presúvací popis';
+$string['menu'] = 'Rozbaľovacia ponuka';
+
+$string['themecolours'] = 'Farebné motívy';
+$string['standardcolours'] = 'Štandardné farby';
+
+$string['yes'] = 'Áno';
+$string['no'] = 'Nie';
+$string['warning'] = 'VAROVANIE';
+$string['errormessage'] = 'Ak zmeníte opakované popisy na jedinečné, budú niektoré z nich na obrázku zmazané.';
+$string['continue'] = 'Chcete pokračovať?';
+$string['errorcanvas'] = 'Canvas nie je podporovaný';
+$string['errorimageslabelling'] = 'Štítkovaciu úlohu nie je možné zobraziť, keďže sa niektoré obrázky nenačítali.';
+
+?>

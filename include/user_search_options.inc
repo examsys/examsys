@@ -24,14 +24,14 @@
 * @package
 */
 
+
+require_once 'errors.inc';
+
 $stateutil = new StateUtils($userObject->get_user_ID(), $mysqli);
 $state = $stateutil->getState($configObject->get('cfg_root_path') . '/users/search.php');
 
-if (isset($_GET['calendar_year'])) {
-  $calendar_year = $_GET['calendar_year'];
-} else {
-  $calendar_year = '';
-}
+$calendar_year = check_var('calendar_year', 'GET', false, false, true);
+
 ?>
 <script type="text/javascript" src="../js/state.js"></script>
 <script>
@@ -164,7 +164,7 @@ if (isset($_GET['student_id'])) {
 } else {
   $search_student_id = '';
 }
-if (isset($username) and $search_surname == '' and $search_username == '' and $search_student_id == '' and !isset($_GET['module']) and !isset($_GET['calendar_year'])) {
+if (isset($username) and $search_surname == '' and $search_username == '' and $search_student_id == '' and !isset($_GET['module']) and is_null($calendar_year)) {
   $search_username = $username;
 }
 ?>
@@ -180,7 +180,7 @@ if (isset($username) and $search_surname == '' and $search_username == '' and $s
 
 <table cellpadding="0" cellspacing="0" border="0">
 <tr><td style="padding-left:0; padding-right:10px"><?php echo $string['username']; ?></td><td><?php echo $string['studentid'] ?></td></tr>
-<tr><td style="padding-left:0; padding-right:10px"><input type="text" name="search_username" size="10" value="<?php echo $search_username ?>" /></td><td><input type="text" id="student_id" name="student_id" size="10" value="<?php echo $search_student_id ?>" onchange="checkStudent(this.value);"/></td></tr>
+<tr><td style="padding-left:0; padding-right:10px"><input type="text" name="search_username" size="10" value="<?php echo $search_username ?>" /></td><td><input type="text" id="student_id" name="student_id" size="10" value="<?php echo $search_student_id ?>"/></td></tr>
 </table>
 <div><?php echo $string['module'] ?><br /><?php 
 search_utils::display_staff_modules_dropdown($userObject, $string, $mysqli); 
@@ -189,17 +189,8 @@ search_utils::display_staff_modules_dropdown($userObject, $string, $mysqli);
 <div><?php echo $string['academicyear'] ?><br /><select name="calendar_year">
 <option value="%"><?php echo $string['anyyear'] ?></option>
 <?php
-  $result = $mysqli->prepare("SELECT DISTINCT calendar_year FROM modules_student ORDER BY calendar_year DESC");
-  $result->execute();
-  $result->bind_result($tmp_calendar_year);
-  while ($result->fetch()) {
-    if ($tmp_calendar_year == $calendar_year) {
-      echo "<option value=\"$tmp_calendar_year\" selected>$tmp_calendar_year</option>\n";
-    } else {
-      echo "<option value=\"$tmp_calendar_year\">$tmp_calendar_year</option>\n";
-    }
-  }
-  $result->close();
+  $yearutils = new yearutils($mysqli);
+  echo $yearutils->get_calendar_year_dropdown_options(2, $calendar_year, $string);
 ?>
 </select></div>
 <br />
@@ -241,6 +232,11 @@ search_utils::display_staff_modules_dropdown($userObject, $string, $mysqli);
   } else {
     echo "<div><input class=\"chk\" type=\"checkbox\" id=\"chkbox4\" name=\"suspended\" /><label for=\"chkbox4\">" . $string['suspended'] . "</label></div>\n";
   }
+  if (isset($state['chkbox12']) and $state['chkbox12'] == 'true') {
+    echo "<div><input class=\"chk\" type=\"checkbox\" id=\"chkbox12\" name=\"locked\" checked /><label for=\"chkbox12\">" . $string['locked'] . "</label></div>\n";
+  } else {
+    echo "<div><input class=\"chk\" type=\"checkbox\" id=\"chkbox12\" name=\"locked\" /><label for=\"chkbox12\">" . $string['locked'] . "</label></div>\n";
+  }
   //----------------------------
   echo "<hr noshade=\"noshade\" style=\"height:1px; border:none; background-color:#808080; color:#808080\" />\n";
   if (isset($state['chkbox5']) and $state['chkbox5'] == 'true') {
@@ -276,6 +272,11 @@ search_utils::display_staff_modules_dropdown($userObject, $string, $mysqli);
     echo "<div><input class=\"chk chkstaff\" type=\"checkbox\" id=\"chkbox8\" name=\"externals\" checked /><label for=\"chkbox8\">" . $string['externalexaminers'] . "</label></div>\n";
   } else {
     echo "<div><input class=\"chk chkstaff\" type=\"checkbox\" id=\"chkbox8\" name=\"externals\" /><label for=\"chkbox8\">" . $string['externalexaminers'] . "</label></div>\n";
+  }
+  if (isset($state['chkbox13']) and $state['chkbox13'] == 'true') {
+    echo "<div><input class=\"chk chkstaff\" type=\"checkbox\" id=\"chkbox13\" name=\"internals\" checked /><label for=\"chkbox13\">" . $string['internalreviewers'] . "</label></div>\n";
+  } else {
+    echo "<div><input class=\"chk chkstaff\" type=\"checkbox\" id=\"chkbox13\" name=\"internals\" /><label for=\"chkbox13\">" . $string['internalreviewers'] . "</label></div>\n";
   }
   if (isset($state['chkbox9']) and $state['chkbox9'] == 'true') {
     echo "<div><input class=\"chk chkstaff\" type=\"checkbox\" id=\"chkbox9\" name=\"invigilators\" checked /><label for=\"chkbox9\">" . $string['invigilators'] . "</label></div>\n";

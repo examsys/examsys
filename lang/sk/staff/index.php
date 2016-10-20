@@ -1,0 +1,46 @@
+<?php          //cz
+require '../lang/' . $language . '/include/question_types.inc';
+require '../lang/' . $language . '/include/paper_types.inc';
+
+$string['admintools'] = 'Nastavenia';
+$string['calendar'] = 'Kalendár';
+$string['usermanagement'] = 'Nastavenie používateľov';
+$string['makeafolder'] = 'Vytvoriť priečinok';
+$string['mypersonalkeywords'] = 'Moje kľúčové slová';
+$string['papertasks'] = 'Možnosti dokumentu';
+$string['createnewpaper'] = 'Nový dokument';
+$string['listpapers'] = 'Prehľad dokumentov';
+$string['reviewed'] = 'Hodnotené';
+$string['notreviewed'] = 'Nehodnotené';
+$string['myfolders'] = 'Moje priečinky';
+$string['mymodules'] = 'Moje moduly';
+$string['sysadminonly'] = 'Len systémový správca';
+$string['adminonly'] = 'Len správca';
+$string['unassignedpapers'] = 'Nepriradené dokumenty';
+$string['recyclebin'] = 'Kôš';
+$string['allmodules'] = 'Všetky moduly...';
+$string['allmodulesinschool'] = 'Všetky moduly v škole...';
+$string['myrecentpapers'] = 'Moje naposledy otvorené dokumenty';
+$string['create'] = 'Vytvoriť';
+$string['newfolder'] = 'Nový priečinok';
+$string['questionbanktasks'] = 'Správa banky úloh';
+$string['questionsbytype'] = 'Úlohy podľa typu';
+$string['questionsbyteam'] = 'Úlohy podľa tímov';
+$string['questionsbykeyword'] = 'Úl. podľa kľúčových slov';
+$string['search'] = 'Hľadať';
+$string['createnewquestion'] = 'Nová úloha';
+$string['questions'] = 'Úlohy';
+$string['papers'] = 'Dokumenty';
+$string['people'] = 'Používatelia';
+$string['nomodulesset'] = 'Nie je nastavený žiadny modul';
+$string['screen'] = 'Obrazovka';
+$string['screens'] = 'Obrazovky';
+$string['mins'] = 'minút';
+$string['type'] = 'Typ';
+$string['author'] = 'Autor';
+$string['duplicatefoldername'] = 'Duplicitný názov priečinka, použite, prosím, iný.';
+$string['loggedinas'] = 'Ste prihlásený/á ako';
+$string['nomodules'] = 'Nie ste členom žiadneho tímu. Pre získanie pomoci, prosím, kontaktujte:';
+$string['papersforreview'] = 'Dokumenty k recenzii';
+$string['deadline'] = 'Termín:';
+?>

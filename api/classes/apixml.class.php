@@ -35,6 +35,12 @@ class apixml extends \api\apiabstract {
      */
     private $xml;
     /**
+     * Status codes
+     */
+    private $statuscodes = array(
+        'API_NO_PERMISSION' => 000
+    );
+    /**
      * Constructor
      * @param string $request - the xml request 
      */
@@ -116,7 +122,7 @@ class apixml extends \api\apiabstract {
                     }
                 } else {
                     $error = true;
-                    $data = array('status' => $langpack->get_string($this->langcomponent, 'nopermission'), 'id' => null);
+                    $data = array('statuscode' => $this->statuscodes['API_NO_PERMISSION'], 'status' => $langpack->get_string($this->langcomponent, 'nopermission'), 'id' => null);
                 }
                 if ($error) {
                     if ($node->hasAttribute('id')) { 

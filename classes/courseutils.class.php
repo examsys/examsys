@@ -33,11 +33,13 @@ Class CourseUtils {
    * @param integer $schoolid ID of the school the course belongs to
    * @param string $name code of the course e.g. B140
    * @param string $description a title for the course e.g. Neuroscience BSc
+   * @param integer $externalid external system id for the course
+   * @param integer $externalsys external system
    * @param object $db database connection
    *
    * @return integer new course id
    */
-  static function add_course($schoolid, $name, $description, $db) {
+  static function add_course($schoolid, $name, $description, $externalid, $externalsys, $db) {
 
     if ($name == '') {
       return false;
@@ -54,8 +56,8 @@ Class CourseUtils {
       }
     }
 
-    $result = $db->prepare("INSERT INTO courses (name, description, schoolid) VALUES (?, ?, ?)");
-    $result->bind_param('ssi', $name, $description, $schoolid);
+    $result = $db->prepare("INSERT INTO courses (name, description, schoolid, externalid, externalsys) VALUES (?, ?, ?, ?, ?)");
+    $result->bind_param('ssiss', $name, $description, $schoolid, $externalid, $externalsys);
     $result->execute();
     $result->close();
 
@@ -197,16 +199,16 @@ Class CourseUtils {
    * @return array details
    */
   static function get_course_details_by_id($id, $db) {
-    $result = $db->prepare("SELECT name, description, deleted, schoolid FROM courses WHERE id = ? LIMIT 1");
+    $result = $db->prepare("SELECT name, description, deleted, schoolid, externalid, externalsys FROM courses WHERE id = ? LIMIT 1");
     $result->bind_param('i', $id);
     $result->execute();
     $result->store_result();
-    $result->bind_result($name, $description, $deleted, $schoolid);
+    $result->bind_result($name, $description, $deleted, $schoolid, $externalid, $externalsys);
     if ($result->num_rows == 0) {
       $details = false;
     } else {
       $result->fetch();
-      $details = array('name'=>$name, 'description'=>$description, 'deleted'=>$deleted, 'schoolid'=>$schoolid);
+      $details = array('name'=>$name, 'description'=>$description, 'deleted'=>$deleted, 'schoolid'=>$schoolid, 'externalid'=>$externalid, 'externalsys' => $externalsys);
     }
     $result->close();
 
@@ -236,18 +238,20 @@ Class CourseUtils {
    * @param integer $schoolid ID of the school the course belongs to
    * @param string $name code of the course e.g. B140
    * @param string $description a title for the course e.g. Neuroscience BSc
+   * @param integer $externalid external system id for course
+   * @param integer $externalsys external system source
    * @param mysqli $db
    *
    * @return bool success response
    */
-  static function update_course($id, $schoolid, $name, $description, $db) {
+  static function update_course($id, $schoolid, $name, $description, $externalid, $externalsys, $db) {
     // Check if name already in use.
     $courseid = CourseUtils::get_course_id($name, $db);
     if ($courseid !== false and $courseid != $id) {
       return false;
     }
-    $result = $db->prepare("UPDATE courses set name = ?, description = ?, schoolid = ? WHERE id = ?");
-    $result->bind_param('ssii', $name, $description, $schoolid, $id);
+    $result = $db->prepare("UPDATE courses set name = ?, description = ?, schoolid = ?, externalid = ?, externalsys = ? WHERE id = ?");
+    $result->bind_param('ssissi', $name, $description, $schoolid, $externalid, $externalsys, $id);
     $result->execute();
     $result->close();
 
@@ -280,6 +284,74 @@ Class CourseUtils {
     $result->close();
     return $id;
   }
-}
 
+  /**
+   * Get the course id given external id
+   *
+   * @param string $externalid externalid of the course rogo id
+   * @param object $db database connection
+   *
+   * @return int|bool id of course or false
+  */
+  static function get_courseid_from_externalid($externalid, $db) {
+    $result = $db->prepare("SELECT id FROM courses WHERE externalid = ? AND deleted IS NULL");
+    $result->bind_param('s', $externalid);
+    $result->execute();
+    $result->store_result();
+    $result->bind_result($id);
+    $result->fetch();
+    if ($result->num_rows == 0) {
+      $result->close();
+      return false;
+    }
+    $result->close();
+    return $id;
+  }
+  
+  /**
+   * Compare the courses in the external system and rogo
+   * @param array $external list of external system courses
+   * @param string $sms the external student management system that is the source of the courses
+   * @param mysqli $db db connection
+   * @return array list of courses in rogo but not in external system
+   */
+  static function diff_external_courses_to_internal_courses($external, $sms, $db) {
+    $result = $db->prepare("SELECT id, externalid, deleted FROM courses WHERE externalid IS NOT NULL AND externalsys = ?");
+    $result->bind_param('s', $sms);
+    $result->execute();
+    $result->store_result();
+    $result->bind_result($id, $externalid, $deleted);
+    $diff = array();
+    while ($result->fetch()) {
+      // Mark for delete if not found in external list.
+      if(!in_array($externalid, $external)) {
+        $diff[] = $externalid;
+      } else {
+        // Restore if deleted in Rogo but found in external list.
+        if(!is_null($deleted)) {
+          self::restore_course($db, $id);
+        }
+      }
+    }
+    $result->close();
+    return $diff;
+  }
+  
+  /**
+   * Restore course from recycle bin
+   * @param mysqli $db db connection
+   * @param integer $id rogo id of course
+   * @return boolean true on success, false otherwise
+   */
+  static function restore_course($db, $id) {
+    $result = $db->prepare("UPDATE courses set deleted = NULL where id = ?");
+    $result->bind_param('i', $id);
+    $result->execute();
+    $result->close();
+    if ($db->errno != 0) {
+      return false;
+    }
+    return true;
+  }
+}
 ?>

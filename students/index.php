@@ -28,8 +28,8 @@ require '../include/staff_student_auth.inc';
 require_once '../include/icon_display.inc';
 require_once '../config/index.inc';
 
-// Redirect External Examiners if they are straying
-if ($userObject->has_role('External Examiner')) {
+// Redirect special users if they are straying
+if ($userObject->has_role('External Examiner') or $userObject->has_role('Internal Reviewer')) {
   $cfg_root_path = $configObject->get('cfg_root_path');
   if ($_SERVER['PHP_SELF'] != "$cfg_root_path/staff/index.php" and $_SERVER['PHP_SELF'] != "$cfg_root_path/reviews/index.php" and $_SERVER['PHP_SELF'] != "$cfg_root_path/reviews/start.php" and $_SERVER['PHP_SELF'] != "$cfg_root_path/reviews/finish.php") {
     header("location: ../reviews/");

@@ -70,7 +70,7 @@ abstract class rogo_directory {
 
     if ($question_interface != 'flash' && !empty($rogodata)) {
       // Data driectory configured and should be used.
-      if (!is_writable($rogodata)) {
+      if (!is_writable($rogodata) and !self::is_read_only()) {
         // Huston we have a problem.
         throw new directory_not_found('rogo_data');
       }
@@ -96,15 +96,22 @@ abstract class rogo_directory {
 
   /**
    * Check if the directory has the correct permissions.
-   *
    * @return boolean true on correct, false otherwise.
    */
   public function check_permissions() {
     $location = $this->location();
-    if (!is_writable($location) || !is_readable($location)) {
-      return false;
+    $readable = is_readable($location);
+    $writable = is_writable($location);
+    if (self::is_read_only()) {
+        if ($readable and !$writable) {
+            return true;
+        }
+    } else {
+        if ($readable and $writable) {
+            return true;
+        }
     }
-    return true;
+    return false;
   }
   
   /**
@@ -165,7 +172,7 @@ abstract class rogo_directory {
    * @return boolean true if all the contents were deleted, false otherwise.
    */
   protected function recursive_delete($location) {
-    if (!is_writable($location)) {
+    if (!is_writable($location) or self::is_read_only()) {
       // We cannot do any deletion.
       return false;
     }
@@ -337,5 +344,18 @@ abstract class rogo_directory {
       // The file cannot be retrived for the user.
       throw new file_not_found($fullpath);
     }
+  }
+  
+  /**
+   * Check if server is set to be read only
+   * @return boolean true if readonly server, false otherwise
+   */
+  public static function is_read_only() {
+    $config = Config::get_instance();
+    $readonlyhost = $config->get('cfg_readonly_host');
+    if (!empty($readonlyhost)) {
+      return $readonlyhost;
+    }
+    return false;
   }
 }

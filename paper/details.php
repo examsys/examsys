@@ -892,8 +892,12 @@ function check_latex_random($q_ids, $mysqli) {
       }
     }
   }
-
-  require '../include/paper_options.inc';
+  try {
+    require '../include/paper_options.inc';
+  } catch (Exception $e) {
+    $msg = sprintf($string['furtherassistance'], $configObject->get('support_email'), $configObject->get('support_email'));
+    $notice->display_notice_and_exit($mysqli, $string['problemwithpaper'], $msg, $string['problemwithpaper'], '/artwork/page_not_found.png', '#C00000', true, true);
+  }
   require '../include/toprightmenu.inc';
 
 	echo draw_toprightmenu();
@@ -999,9 +1003,12 @@ function check_latex_random($q_ids, $mysqli) {
   $question_number = 0;
   $marks_incorrect_error = false;
   $paper_warnings = array();
+  $nooptions = array('keyword_based', 'random');
   for ($x=1; $x<=$row_no; $x++) {
     $status = $status_array[$temp_array[$x]['status']];
-    if ($temp_array[$x]['options'] == 0 and isset($temp_array[$x]['o_media']) and count($temp_array[$x]['o_media']) == 0 and ($temp_array[$x]['q_type'] != 'textbox' or $temp_array[$x]['correct'] != 'placeholder')) $temp_array[$x]['warnings'] .= $string['nooptionsdefined'];
+    if ($temp_array[$x]['options'] == 0 and isset($temp_array[$x]['o_media']) and count($temp_array[$x]['o_media']) == 0 and !in_array($temp_array[$x]['q_type'], $nooptions) and ($temp_array[$x]['q_type'] != 'textbox' or $temp_array[$x]['correct'] != 'placeholder')) {
+      $temp_array[$x]['warnings'] .= $string['nooptionsdefined'];
+    }
     if ($status->get_display_warning()) $paper_warnings['status'][$status->get_name()][] = $question_number + 1;
     if ($old_screen != $temp_array[$x]['screen']) {
       if ($old_screen > 0) {

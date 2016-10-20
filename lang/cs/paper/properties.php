@@ -92,6 +92,8 @@ $string['tooltip_random'] = 'Rogo vypočítá ohodnocení, jakého by student do
 $string['tooltip_calculator'] = 'Studentům je v rámci testu k dispozici JavaScriptová kalkulačka.';
 $string['tooltip_audio'] = 'Na úvodní stránce Zkoušky bude umístěn zkušební zvukový klip, aby si studenti mohli upravit hlasitost ještě před zahájením testování.';
 $string['tooltip_osceclassification'] = 'Upozornění: jakmile je hodnocení zahájeno, nelze klasifikaci měnit.';
+$string['externalid'] = 'External System ID';
+$string['externalsys'] = 'External System';
 
 // Security tab
 $string['securitytab'] = 'Bezpečnost';
@@ -109,6 +111,7 @@ $string['restricttolabs'] = 'Omezit na učebny';
 $string['restricttometadata'] = 'Omezit na metadata';
 $string['na'] = 'N/A';
 $string['tooltip_password'] = 'Tímto se  přidá další přístupové heslo k testu; k heslu, kterým se studenti hlásí do systému. Toto heslo lze studentům sdělit až  v počítačové učebně před zkouškou samotnou.';
+$string['donotchangewarning'] = 'This paper is locked. It is recommended you only make changes if no students have attempted this paper';
 
 // Záložka Recenzenta 
 $string['reviewerstab'] = 'Recenzenti';

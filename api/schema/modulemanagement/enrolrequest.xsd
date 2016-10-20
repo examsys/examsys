@@ -6,8 +6,14 @@
                 <xs:element name="enrol" maxOccurs="unbounded" minOccurs="0">
                     <xs:complexType>
                         <xs:sequence>
-                            <xs:element name="userid" type="xs:integer"/>
-                            <xs:element name="moduleid" type="xs:integer"/>
+                            <xs:choice>
+                                <xs:element name="userid" type="xs:integer"/>
+                                <xs:element name="studentid" type="studentid"/>
+                            </xs:choice>
+                            <xs:choice>
+                                <xs:element name="moduleid" type="xs:integer"/>
+                                <xs:element name="moduleextid" type="externalid"/>
+                            </xs:choice>
                             <xs:element type="xs:gYear" name="session" minOccurs="0"/>
                             <xs:element name="attempt" type="attempt"/>
                         </xs:sequence>
@@ -17,8 +23,14 @@
                 <xs:element name="unenrol" maxOccurs="unbounded" minOccurs="0">
                     <xs:complexType>
                         <xs:sequence>
-                            <xs:element name="userid" type="xs:integer"/>
-                            <xs:element name="moduleid" type="xs:integer"/>
+                            <xs:choice>
+                                <xs:element name="userid" type="xs:integer"/>
+                                <xs:element name="studentid" type="studentid"/>
+                            </xs:choice>
+                            <xs:choice>
+                                <xs:element name="moduleid" type="xs:integer"/>
+                                <xs:element name="moduleextid" type="externalid"/>
+                            </xs:choice>
                             <xs:element type="xs:gYear" name="session"/>
                         </xs:sequence>
                         <xs:attribute type="xs:string" name="id" use="required"/>
@@ -31,6 +43,18 @@
         <xs:restriction base="xs:integer">
             <xs:minInclusive value="1"/>
             <xs:maxInclusive value="3"/>
+        </xs:restriction>
+    </xs:simpleType>        
+    <xs:simpleType name="externalid">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="1"/>
+            <xs:maxLength value="255"/>
+        </xs:restriction>
+    </xs:simpleType>
+        <xs:simpleType name="studentid">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="1"/>
+            <xs:maxLength value="15"/>
         </xs:restriction>
     </xs:simpleType>
 </xs:schema>

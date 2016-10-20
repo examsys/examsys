@@ -13,6 +13,7 @@ modules:
     active: 1
     schoolid: 1
     academic_year_start: "07/01"
+    externalid: "mod1234"
 schools:
   -
     id: 1
@@ -45,6 +46,7 @@ properties:
     paper_ownerID: 1
     labs: "1"
     paper_type: "2"
+    externalid: "ass1234"
 properties_modules:
   -
     property_id: 1
@@ -64,3 +66,7 @@ users:
     username: "sysadmin"
     roles: "Staff,SysAdmin"
     grade: "University Lecturer"
+sid:
+  -
+    student_id: 12345678
+    userID: 1000

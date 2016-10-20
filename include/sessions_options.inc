@@ -34,7 +34,7 @@ $module_code = module_utils::get_moduleid_from_id($_GET['module'], $mysqli);
 if ($vle_api != '') {
   $vle = CMFactory::GetCMAPI($vle_api);
   $vle->setMappingLevel($map_level);
-  $objsBySession = $vle->getObjectives($module_code, $session);
+  $objsBySession = $vle->getObjectives($module_code, $session, $mysqli);
   $vle_name = $vle->getFriendlyName();
   $vle_name_a = $vle->getFriendlyName(true);
 } else {

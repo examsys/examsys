@@ -6,10 +6,44 @@
                 <xs:element name="create" maxOccurs="unbounded" minOccurs="0">
                     <xs:complexType mixed="true">
                         <xs:sequence>
-                            <xs:choice>
-                                <xs:group ref="create"/>
-                                <xs:group ref="update"/>
-                            </xs:choice>
+                            <xs:element name="username" type="username"/>
+                            <xs:element name="surname" type="surname"/>
+                            <xs:element name="role" type="role"/>
+                            <xs:element name="title" type="title" minOccurs="0"/>
+                            <xs:element name="forename" type="forename" minOccurs="0"/>
+                            <xs:element name="initials" type="initials" minOccurs="0"/>
+                            <xs:element name="email" type="email" minOccurs="0"/>
+                            <xs:element name="password" type="password" minOccurs="0"/>
+                            <xs:element name="course" type="course" minOccurs="0"/>
+                            <xs:element name="gender" type="gender" minOccurs="0"/>
+                            <xs:element name="year" type="year" minOccurs="0"/>
+                            <xs:element name="studentid" type="studentid" minOccurs="0"/>
+                            <xs:element name="modules" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="moduleid" maxOccurs="unbounded">
+                                            <xs:complexType>
+                                                <xs:simpleContent>
+                                                    <xs:extension base="xs:integer">
+                                                        <xs:attribute type="xs:string" name="id" use="required"/>
+                                                    </xs:extension>
+                                                </xs:simpleContent>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                        <xs:attribute type="xs:string" name="id" use="required"/>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="update" maxOccurs="unbounded" minOccurs="0">
+                    <xs:complexType mixed="true">
+                        <xs:sequence>
+                            <xs:element name="id" type="xs:integer"/>
+                            <xs:element name="username" type="username" minOccurs="0"/>
+                            <xs:element name="surname" type="surname" minOccurs="0"/>
+                            <xs:element name="role" type="role" minOccurs="0"/>
                             <xs:element name="title" type="title" minOccurs="0"/>
                             <xs:element name="forename" type="forename" minOccurs="0"/>
                             <xs:element name="initials" type="initials" minOccurs="0"/>
@@ -49,21 +83,6 @@
             </xs:sequence>
         </xs:complexType>
     </xs:element>
-    <xs:group name="create">
-        <xs:sequence>
-            <xs:element name="username" type="username"/>
-            <xs:element name="surname" type="surname"/>
-            <xs:element name="role" type="role"/>
-        </xs:sequence>
-    </xs:group>
-    <xs:group name="update">
-        <xs:sequence>
-            <xs:element name="id" type="xs:integer"/>
-            <xs:element name="username" type="username" minOccurs="0"/>
-            <xs:element name="surname" type="surname" minOccurs="0"/>
-            <xs:element name="role" type="role" minOccurs="0"/>
-        </xs:sequence>
-    </xs:group>
     <xs:simpleType name="title">
         <xs:restriction base="xs:string">
             <xs:pattern value="Mx|Mr|Mrs|Miss|Ms|Dr|Professor"/>
@@ -112,8 +131,8 @@
     </xs:simpleType>
     <xs:simpleType name="year">
         <xs:restriction base="xs:integer">
-            <xs:minInclusive value="1"/>
-            <xs:maxInclusive value="5"/>
+            <xs:minInclusive value="0"/>
+            <xs:maxInclusive value="6"/>
             </xs:restriction>
         </xs:simpleType>
     <xs:simpleType name="role">

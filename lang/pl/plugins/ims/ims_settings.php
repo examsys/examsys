@@ -31,8 +31,12 @@ $string['createschools'] = 'Create new schools if not found in Rogō';
 $string['createschools_desc'] = 'If the <org><orgunit> element is present in a course\'s incoming data, its content will be used to specify a school if the module is to be created from scratch. The plugin will NOT re-categorise existing courses.
 
 If no category exists with the desired name, then a hidden category will be created.';
-$string['createcourses'] = 'Create new courses if not found in Rogō';
-$string['createcourses_desc'] = 'If enabled, the IMS Enterprise enrolment plugin can create new courses for any it finds in the IMS data but not in Rogō\'s database. Any newly-created courses are initially hidden.';
+$string['createmodules'] = 'Create new modules if not found in Rogō';
+$string['createmodules_desc'] = 'If enabled, the IMS Enterprise enrolment plugin can create new modules for any it finds in the IMS data but not in Rogō\'s database.' ;
+$string['createfaculties'] = 'Create new faculties if not found in Rogō';
+$string['createprogrammes'] = 'Create new programmes if not found in Rogō';
+$string['createprogrammes_desc'] = 'If enabled, the IMS Enterprise enrolment plugin can create new programmes for any it finds in the IMS data but not in Rogō\'s database. ';
+$string['createfaculties_desc'] = 'If enabled, the IMS Enterprise enrolment plugin can create new faculties for any it finds in the IMS data but not in Rogō\'s database. ';
 $string['createusers'] = 'Create user accounts for users not yet registered in Rogō';
 $string['createusers_desc'] = 'IMS Enterprise enrolment data typically describes a set of users. If enabled, accounts can be created for any users not found in Rogō\'s database.
 
@@ -49,7 +53,8 @@ $string['emptyattribute'] = 'Leave it empty';
 $string['filelockedmail'] = 'The text file you are using for IMS-file-based enrolments ({$a}) can not be deleted by the cron process.  This usually means the permissions are wrong on it.  Please fix the permissions so that Rogō can delete the file, otherwise it might be processed repeatedly.';
 $string['filelockedmailsubject'] = 'Important error: Enrolment file';
 $string['fixcasenames'] = 'Change  names to Title Case';
-$string['fixcasenames_desc'] = "This will break certain names like: McGuiness, Temple-Nugent, d'Aramitz, de Porthau";
+$string['fixcasenames_desc'] = "This would break certain names like: McGuiness, Temple-Nugent, d'Aramitz,
+de Porthau";
 $string['fixcaseusernames'] = 'Change usernames to lower case';
 $string['imstitle'] = 'IMS Enterprise enrolment';
 $string['imsrolesdescription'] = 'The IMS Enterprise specification includes 8 distinct role types. Please choose how you want them to be assigned in Rogō, including whether any of them should be ignored.';
@@ -92,8 +97,8 @@ $string['short'] = 'short';
 $string['long'] = 'long';
 $string['full'] = 'full';
 $string['coursecode'] = 'coursecode';
-$string['truncatecoursecodes'] = 'Truncate course codes to this length';
-$string['truncatecoursecodes_desc'] = 'In some situations you may have course codes which you wish to truncate to a specified length before processing. If so, enter the number of characters in this box. Otherwise, leave the box blank and no truncation will occur.';
+$string['truncatemodulecodes'] = 'Truncate module codes to this length';
+$string['truncatemodulecodes_desc'] = 'In some situations you may have module codes which you wish to truncate to a specified length before processing. If so, enter the number of characters in this box. Otherwise, leave the box blank and no truncation will occur.';
 $string['usecapitafix'] = 'Tick this box if using &quot;Capita&quot; (their XML format is slightly wrong)';
 $string['usecapitafix_desc'] = 'The student data system produced by Capita has been found to have one slight error in its XML output. If you are using Capita you should enable this setting - otherwise leave it un-ticked.';
 $string['usersettings'] = 'User data options';
@@ -105,6 +110,15 @@ $string['zero'] = '0';
 $string['staff'] = 'Staff';
 $string['invigilator'] = 'Invigilator';
 $string['externalexaminer'] = 'External examiner';
+$string['orgname'] = 'orgname tag';
+$string['orgunit'] = 'orgunit tag';
+$string['relationship'] = 'Lookup from relationship';
+$string['facultysource'] = 'Source of Faculty name';
+$string['facultysource_desc'] = 'The XML tag from which to derive the Faculty name';
+$string['schoolsource'] = 'Source of School name';
+$string['schoolsource_desc'] = 'The XML tag from which to derive the School name';
+$string['programmesource'] = 'Source of Programme name';
+$string['programmesource_desc'] = 'The XML tag from which to derive the Programme name';
 $string['validatexml'] = 'Validate the XML file against your local DTD file';
 $string['validatexml_desc'] = 'Whether to validate the xml against the dtd file'
     . ' (Your local DTD file must be in the same directory as the XML file and contain all proprietary definitions) '

@@ -28,19 +28,30 @@ class render {
     
     /**
      * Twig object
+     * @var twig
      */
     private $twig;
-    
+    /**
+     * Config object
+     * @var config
+     */
+    private $config;
     /**
      * Constructor
      * @param object $configObject - rogo configuration object
+     * @param string $templatedir - path to templates
      * @return void 
      */
-    function __construct($configObject) {
-        $loader = new \Twig_Loader_Filesystem(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'templates');
+    function __construct($configObject, $templatedir = null) {
+        if (is_null($templatedir)) {
+            $loader = new \Twig_Loader_Filesystem(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'templates');
+        } else {
+            $loader = new \Twig_Loader_Filesystem($templatedir);
+        }
         $this->twig = new \Twig_Environment($loader, array(
             'cache' => false
         ));
+        $this->config = $configObject;
     }
     
     /**
@@ -62,20 +73,21 @@ class render {
      * @return void
      */
     public function render_admin_list($data, $header) {
-        $data = array('data' => $data, 'header' => $header);
+        $data = array('data' => $data, 'header' => $header, 'path' => $this->config->get('cfg_root_path'));
         echo $this->twig->render('admin/list.html', $data);
     }
     
     /**
      * Render admin page header.
      * @param array $lang translations used in header
-     * @param array $config configuration items required
      * @param string $additionaljs additional javascript required
      * @param string $additionalcss additional css required
      * @return void
      */
-    public function render_admin_header($lang, $config, $additionaljs, $additionalcss) {
-        $data = array('lang' => $lang, 'config' => $config, 'additionaljs' => $additionaljs, 'additionalcss' => $additionalcss);
+    public function render_admin_header($lang, $additionaljs, $additionalcss) {
+        $data = array('lang' => $lang, 'additionaljs' => $additionaljs, 'additionalcss' => $additionalcss,
+        'installtype' => $this->config->get('cfg_install_type'), 'charset' => $this->config->get('cfg_page_charset'),
+        'path' => $this->config->get('cfg_root_path'));
         echo $this->twig->render('admin/header.html', $data);
     }
     
@@ -86,7 +98,7 @@ class render {
      * @return void
      */
     public function render_admin_content($breadcrumb, $lang) {
-        $data = array('breadcrumb' => $breadcrumb, 'lang' => $lang);
+        $data = array('breadcrumb' => $breadcrumb, 'lang' => $lang, 'path' => $this->config->get('cfg_root_path'));
         echo $this->twig->render('admin/content.html', $data);
     }
     
@@ -110,5 +122,19 @@ class render {
     public function render_admin_options($script, $image, $lang, $toprightmenu, $template = 'admin/options.html') {
         $data = array('script' => $script, 'image' => $image, 'lang' => $lang, 'toprightmenu' => $toprightmenu);
         echo $this->twig->render($template, $data);
+    }
+    
+    /**
+     * Render admin update rogo pane.
+     * @param array $plugins - array of plugins available
+     * @param array $header - headers for data
+     * @param string $action - the form action
+     * @param array $lang - array of language strings
+     * @return void
+     */
+    public function render_admin_update($plugins, $header, $action, $lang) {
+        $data = array ('plugins' => $plugins, 'header' => $header, 'path' => $this->config->get('cfg_root_path'),
+            'action' => $action, 'lang' => $lang);
+        echo $this->twig->render('admin/update.html', $data);
     }
 }

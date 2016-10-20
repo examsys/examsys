@@ -99,14 +99,15 @@ require '../include/sort.inc';
 $course_no = 0;
 $courses = array();
 
-$result = $mysqli->prepare("SELECT courses.id, school, name, description FROM courses LEFT JOIN schools ON courses.schoolid = schools.id WHERE name != 'left' AND name != 'none' AND courses.deleted IS NULL");
+$result = $mysqli->prepare("SELECT courses.id, schools.code, school, name, description FROM courses LEFT JOIN schools ON courses.schoolid = schools.id WHERE name != 'left' AND name != 'none' AND courses.deleted IS NULL");
 $result->execute();
-$result->bind_result($id, $school, $name, $description);
+$result->bind_result($id, $schoolcode, $school, $name, $description);
 while ($result->fetch()) {
   if ($school == '') $school = '<span style="color:#808080">unknown</span>';
   $courses[$course_no]['id'] = $id;
   $courses[$course_no]['code'] = $name;
   $courses[$course_no]['name'] = $description;
+  $courses[$course_no]['schoolcode'] = $schoolcode;
   $courses[$course_no]['school'] = $school;
   $course_no++;
 }
@@ -116,7 +117,7 @@ $mysqli->close();
 for ($i=0; $i<$course_no; $i++) {
   $id = $courses[$i]['id'];
 
-  echo "<tr id=\"$id\" class=\"l\"><td class=\"col\">" . $courses[$i]['code'] . "</td><td>" . $courses[$i]['name'] . "</td><td>" . $courses[$i]['school'] . "</td></tr>\n";
+  echo "<tr id=\"$id\" class=\"l\"><td class=\"col\">" . $courses[$i]['code'] . "</td><td>" . $courses[$i]['name'] . "</td><td>" . $courses[$i]['schoolcode'] . ' ' . $courses[$i]['school'] . "</td></tr>\n";
 }
 
 ?>

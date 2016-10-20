@@ -106,7 +106,7 @@ $variables = unserialize(base64_decode($variables));
 <tr><td class="f"><?php echo $string['post'] ?></td><td><?php echo $post_data ?></td></tr>
 <tr><td class="f"><?php echo $string['phpself'] ?></td><td><?php echo $php_self ?></td></tr>
 <tr><td class="f"><?php echo $string['requestmethod'] ?></td><td><?php echo $request_method ?></td></tr>
-<tr><td class="f" style="vertical-align: top" ><?php echo $string['occurranceoferror'] ?></td><td><?php echo $similar_errors ?></td></tr>
+<tr><td class="f" style="vertical-align: top" ><?php echo $string['occurrenceoferror'] ?></td><td><?php echo $similar_errors ?></td></tr>
 <tr><td class="f"><?php echo $string['datefixed'] ?></td><td><?php echo ($fixed == '' ? 'n/a' : $fixed); ?></td></tr>
 <tr><td class="f" style="vertical-align: top"><?php echo $string['backtrace'] ?></td><td><?php echo $backtrace ?></td></tr>
 <tr><td class="f" style="vertical-align: top"><?php echo $string['variables'] ?></td><td><?php if(isset($variables) and !($variables === '' or $variables === false)) {

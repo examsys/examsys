@@ -1,0 +1,7 @@
+<?php          //cz
+
+$string['hotspots'] = 'Úlohy s aktívnym miestom v obrázku';
+$string['correctAnswers'] = 'Správne odpovede';
+$string['incorrectAnswers'] = 'Chybné odpovede';
+
+?>

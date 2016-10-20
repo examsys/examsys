@@ -137,8 +137,6 @@ if (isset($_POST['submit'])) {
   $data->settings = new stdClass();
 
   $output = $lookup->userlookup($data);
-  ini_set('display_errors', 1);
-  ini_set('log_errors', 1);
   ini_set('xdebug.remote_autostart', 1);
   ini_set("display_errors", 1);
   ini_set('xdebug.var_display_max_childrren', -1);

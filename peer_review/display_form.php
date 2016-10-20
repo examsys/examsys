@@ -25,6 +25,7 @@
 require '../include/staff_auth.inc';
 require_once '../include/errors.inc';
 require_once '../include/paper_security.inc';
+require_once '../include/demo_replace.inc';
 
 $paperID = check_var('paperID', 'GET', true, false, true);
 
@@ -47,6 +48,7 @@ $labs							= $propertyObj->get_labs();
 $crypt_name				= $propertyObj->get_crypt_name();
 $review_type			= $propertyObj->get_display_question_mark();
 $modules					= $propertyObj->get_modules();
+$demo = is_demo($userObject);
 
 if ($calendar_year == '') {
   display_error('Error', 'No Academic Session is set.', false, true);
@@ -155,7 +157,7 @@ $result->close();
 echo "<form autocomplete=\"off\">\n";
 
 echo '<table cellpadding="4" cellspacing="0" border="0" style="width:100%; background-color:#5590CF">';
-echo '<tr><td><div class="paper">' . $paper_title . '</div><div class="group"><strong>' . $string['student'] . '</strong> ' . $student_title . ' ' . $student_surname . ', ' . $student_first_names . '<strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' . $string['group'] . '</strong> ' . $group . '</div></td><td width="160"><img src="../config/logo.png" width="160" height="67" alt="Logo" /></td></tr>';
+echo '<tr><td><div class="paper">' . $paper_title . '</div><div class="group"><strong>' . $string['student'] . '</strong> ' . $student_title . ' ' . demo_replace($student_surname, $demo) . ', ' . demo_replace($student_first_names, $demo) . '<strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' . $string['group'] . '</strong> ' . $group . '</div></td><td width="160"><img src="../config/logo.png" width="160" height="67" alt="Logo" /></td></tr>';
 echo '</table>';
 
 echo "<br />\n<table border=\"0\" cellpadding=\"3\" cellspacing=\"0\" style=\"margin-left:auto; margin-right:auto\">\n";
@@ -173,12 +175,12 @@ if ($review_type == '1') {
   $result->bind_result($member_username, $member_title, $member_surname, $member_first_names, $member_userID);
   while ($result->fetch()) {
     if ($member_userID != $userObject->get_user_ID()) {   // Make sure current user cannot peer review themself.
-      display_user($review_type, $q_type, $questions, $saved_results, $cfg_web_root, $member_userID, $member_username, $member_title, $member_first_names, $member_surname, $display_photos, $columns, $parts, $marking);
+      display_user($review_type, $q_type, $questions, $saved_results, $cfg_web_root, $member_userID, $member_username, $member_title, $member_first_names, $member_surname, $display_photos, $columns, $parts, $marking, $demo);
     }
   }
   $result->close();
 } else {
-  display_user($review_type, $q_type, $questions, $saved_results, $cfg_web_root, $_GET['userID'], $student_username, $student_title, $student_first_names, $student_surname, $display_photos, $columns, $parts, $marking);
+  display_user($review_type, $q_type, $questions, $saved_results, $cfg_web_root, $_GET['userID'], $student_username, $student_title, $student_first_names, $student_surname, $display_photos, $columns, $parts, $marking, $demo);
 }
 echo "</table>\n";
 
@@ -192,7 +194,7 @@ echo "</table>\n</form>\n";
 </html>
 </body>
 <?php
-function display_user($review_type, $q_type, $questions, $saved_results, $cfg_web_root, $member_userID, $member_username, $member_title, $member_first_names, $member_surname, $display_photos, $columns, $parts, $marking) {
+function display_user($review_type, $q_type, $questions, $saved_results, $cfg_web_root, $member_userID, $member_username, $member_title, $member_first_names, $member_surname, $display_photos, $columns, $parts, $marking, $demo) {
   $row_no = 0;
   $rowspan = ($review_type == '1') ? count($questions) + 2 : (count($questions) * 2) + 2;
   $photodirectory = rogo_directory::get_directory('user_photo');
@@ -202,7 +204,7 @@ function display_user($review_type, $q_type, $questions, $saved_results, $cfg_we
     echo "<img class=\"photo\" src=\"" . $photodirectory->url($photoname) . "\" width=\"90\" height=\"135\" />";
   }
   $first_names = explode(' ', $member_first_names);
-  echo "</td><td class=\"title\" colspan=\"" . ($columns + 1) . "\">$member_title " . $first_names[0] . " $member_surname</td></tr>\n";
+  echo "</td><td class=\"title\" colspan=\"" . ($columns + 1) . "\">$member_title " . demo_replace($first_names[0], $demo) . " " . demo_replace($member_surname, $demo) . "</td></tr>\n";
 
   echo "<tr><td></td>";
   if ($q_type == 'likert') {

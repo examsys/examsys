@@ -22,6 +22,8 @@
 * @package
 */
 
+require_once '../include/demo_replace.inc';
+
 function padDecimals($number, $rounding) {
   $number = round($number, $rounding);
 
@@ -90,13 +92,14 @@ if ($group == '%') {
 }
 $result->execute();
 $result->bind_result($userID, $group, $surname, $first_names, $title, $student_id);
+$demo = is_demo($userObject);
 while ($result->fetch()) {
 
   $user_data[$userID]['group']        = $group;
-  $user_data[$userID]['surname']      = $surname;
-  $user_data[$userID]['first_names']  = $first_names;
+  $user_data[$userID]['surname']      = demo_replace($surname, $demo);
+  $user_data[$userID]['first_names']  = demo_replace($first_names, $demo);
   $user_data[$userID]['title']        = $title;
-  $user_data[$userID]['student_id']   = $student_id;
+  $user_data[$userID]['student_id']   = demo_replace_number($student_id, $demo);
   $user_data[$userID]['userID']       = $userID;
 
   $groups[$group][$student_id]        = $student_id;

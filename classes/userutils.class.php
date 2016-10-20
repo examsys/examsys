@@ -27,13 +27,13 @@
 Class UserUtils {
 
   static function create_extended_user($username, $title, $forname, $surname, $email, $course, $gender, $year, $role, $sid, $db, $school, $coursedesc, $initials = null, $password = '') {
-    $courseok = CourseUtils::add_course($school, $course, $coursedesc, $db);
+    $courseok = CourseUtils::add_course($school, $course, $coursedesc, null, null, $db);
 
     if (($courseok !== true and $course != '') or $username == '' or $surname == '' or $email == '') {
       return false;
     }
 
-    if (!in_array($role, array('Staff', 'Student', 'SysAdmin', 'Admin', 'graduate', 'left', 'External Examiner', 'Standards Setter'))) {
+    if (!in_array($role, array('Staff', 'Student', 'SysAdmin', 'Admin', 'graduate', 'left', 'External Examiner', 'Standards Setter', 'Internal Reviewer'))) {
       // not a valid role
       return false;
     }
@@ -79,6 +79,11 @@ Class UserUtils {
 
       $salt = UserUtils::get_salt();
       $encrypt_password = $enc->encpw($salt, $username, $password);  // One way encrypt the password.
+
+      // Make sure empty string year is stored as null not 0.
+      if ($year == '') {
+        $year = null;
+      }
 
       // Add new record into users table.
       $result = $db->prepare("INSERT INTO users VALUES(?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, 0, ?, NULL, NULL)");
@@ -189,6 +194,11 @@ Class UserUtils {
         if (!in_array(strtolower($gender), $genders)) {
             $gender = null;
         }
+    }
+
+    // Make sure empty string year is stored as null not 0.
+    if ($year == '') {
+        $year = null;
     }
 
     // Update record into users table.

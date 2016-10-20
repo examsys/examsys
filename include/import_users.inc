@@ -168,6 +168,10 @@ function add_users_from_file($fileName) {
       $role = 'External Examiner';
       $course = 'Staff External Examiner';
       $year = 1;
+    } elseif (strtolower($role) == 'internal reviewer') {
+      $role = 'Internal Reviewer';
+      $course = 'Staff Internal Reviewer';
+      $year = 1;
     }
 
     $invalid_user = false;
@@ -253,7 +257,7 @@ function add_users_from_file($fileName) {
 		}
     $idMod = module_utils::get_idMod($module, $mysqli);
     if ($idMod !== false) {
-      if ($role != 'Staff' and $role != 'External Examiner' and $invalid_user != true and isset($header['modules']) and isset($header['session'])) {
+      if ($role != 'Staff' and $role != 'External Examiner' and $role != 'Internal Reviewer' and $invalid_user != true and isset($header['modules']) and isset($header['session'])) {
         //add students to modules
         UserUtils::add_student_to_module($tmp_userID, $idMod, 1, $session, $mysqli);
       }

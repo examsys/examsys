@@ -33,10 +33,10 @@ class gradebookttest extends unittestdatabase {
         return new PHPUnit_Extensions_Database_DataSet_YamlDataSet($this->get_base_fixture_directory() . "api" . DIRECTORY_SEPARATOR . "gradebookTest" . DIRECTORY_SEPARATOR . "gradebook.yml");
     }
     /**
-     * Test gradebook
+     * Test gradebook paper
      * @group api
      */
-    public function test_gradebook() {
+    public function test_gradebook_paper() {
         $gradebook = new \api\gradebook($this->db);
         // Test paper gradebook - SUCCESS.
         $expected = array();
@@ -47,6 +47,13 @@ class gradebookttest extends unittestdatabase {
         $this->assertEquals(array('OK', $expected), $gradebook->get('paper', 1));
         // Test paper gradebook - ERROR not found.
         $this->assertEquals(array('BAD', array('Gradebook not found for paper 2')), $gradebook->get('paper', 2));
+    }
+    /**
+     * Test gradebook module
+     * @group api
+     */
+    public function test_gradebook_module() {
+        $gradebook = new \api\gradebook($this->db);
         // Test module gradebook - SUCCESS.
         $expected = array();
         $papers = array();
@@ -56,5 +63,37 @@ class gradebookttest extends unittestdatabase {
         $this->assertEquals(array('OK', $expected), $gradebook->get('module', 1));
          // Test module gradebook - ERROR not found.
         $this->assertEquals(array('BAD', array('Gradebook not found for module 2')), $gradebook->get('module', 2));
+    }
+    /**
+     * Test gradebook paper using external ids
+     * @group api
+     */
+    public function test_gradebook_paper_ext() {
+        $gradebook = new \api\gradebook($this->db);
+        // Test paper gradebook - SUCCESS.
+        $expected = array();
+        $users = array();
+        $users["12345678"] = array('raw_grade' => 60, 'adjusted_grade' => 62,
+                    'classification' => 'Pass', 'username' => 'unit');
+        $expected["xyz987uvw"] = $users;
+        $this->assertEquals(array('OK', $expected), $gradebook->get('extpaper', "xyz987uvw"));
+        // Test paper gradebook - ERROR not found.
+        $this->assertEquals(array('BAD', array('Gradebook not found for extpaper xyz123uvw')), $gradebook->get('extpaper', "xyz123uvw"));
+    }
+    /**
+     * Test gradebook module using external ids
+     * @group api
+     */
+    public function test_gradebook_module_ext() {
+        $gradebook = new \api\gradebook($this->db);
+        // Test module gradebook - SUCCESS.
+        $expected = array();
+        $papers = array();
+        $papers["xyz987uvw"]["12345678"] = array('raw_grade' => 60, 'adjusted_grade' => 62,
+                    'classification' => 'Pass', 'username' => 'unit');
+        $expected["abc123def"] = $papers;
+        $this->assertEquals(array('OK', $expected), $gradebook->get('extmodule', "abc123def"));
+         // Test module gradebook - ERROR not found.
+        $this->assertEquals(array('BAD', array('Gradebook not found for extmodule abc789def')), $gradebook->get('extmodule', "abc789def"));
     }
 }

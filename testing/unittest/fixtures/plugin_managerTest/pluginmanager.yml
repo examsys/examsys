@@ -1,0 +1,16 @@
+config:
+  -
+    component: 'testplugin'
+    setting: 'installed'
+    value: 1
+    type: "boolean"
+  -
+    component: 'notestplugin'
+    setting: 'installed'
+    value: 0
+    type: "boolean"
+  -
+    component: 'testplugintype'
+    setting: 'enabled_plugin'
+    value: '["testplugin"]'
+    type: "json"

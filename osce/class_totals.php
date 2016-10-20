@@ -347,7 +347,7 @@ echo draw_toprightmenu();
   if ($propertyObj->get_end_date() <= time()) {
     $finished = true;
   }
-  if ($configObject->get('cfg_gradebook_enabled') and $finished and !$report->paper_graded()) {
+  if ($configObject->get_setting('core', 'cfg_gradebook_enabled') and $finished and !$report->paper_graded()) {
     if (isset($_POST['publishmarks']) and $_POST['publishmarks'] == 'yes') {
         $report->create_gradebook();
         $report->store_grades();

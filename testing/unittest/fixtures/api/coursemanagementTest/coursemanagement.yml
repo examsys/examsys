@@ -4,20 +4,24 @@ courses:
     name: "TEST"
     description: "Test course"
     schoolid: 1
+    externalid: "123456"
   -
     id: 2
     name: "TEST2"
     description: "Test course 2"
     schoolid: 1
+    externalid: null
 schools:
   -
     id: 1
     school: "Test school"
     facultyID: 1
+    externalid: "qwerty"
 faculty:
   -
     id: 1
     name: "TEST"
+    externalid: "abcdefghi"
 users:
   -
     id: 1000

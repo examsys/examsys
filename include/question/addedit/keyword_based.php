@@ -25,7 +25,7 @@
 if (count($question->options) > 0) {
   $option = reset($question->options);
   $option_id = $option->id;
-  $option_text = $option->get_text();
+  $option_text = keyword_utils::get_keywordid_for_question($question->id, $mysqli);
 } else {
   $option_id = -1;
   $option_text = '';

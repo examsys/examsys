@@ -34,6 +34,7 @@ class assessmentmanagementtest extends unittestdatabase {
             "statuscode" => 100,
             "status" => 'OK',
             "id" => 5,
+            "externalid" => null,
             "error" => array(),
             "node" => 'create',
             "nodeid" => 1);
@@ -68,6 +69,18 @@ class assessmentmanagementtest extends unittestdatabase {
             "labs" => array(array('id' => 0, 'value' => 'Test lab')));
     }
     /**
+     * Create a parameter array for updates for external ids
+     * @return array the param array  
+     */
+    private function update_ext_param_array() {
+        return array(
+            "nodeid" => 1,
+            "externalid" => "123abc456",
+            "title" => "Test Formative 2 update",
+            "extmodules" => array(array('id' => 0, 'value' => "abc123def")),
+            "labs" => array(array('id' => 0, 'value' => 'Test lab')));
+    }
+    /**
      * Create a response array for updates
      * @return array the resposne array  
      */
@@ -76,8 +89,23 @@ class assessmentmanagementtest extends unittestdatabase {
             "statuscode" => 100,
             "status" => 'OK',
             "id" => 2,
+            "externalid" => null,
             "error" => array(),
-            "node" => 'create',
+            "node" => 'update',
+            "nodeid" => 1);
+    }
+    /**
+     * Create a response array for updates for external ids
+     * @return array the resposne array  
+     */
+    private function update_ext_response_array() {
+        return array(
+            "statuscode" => 100,
+            "status" => 'OK',
+            "id" => 2,
+            "externalid" => "123abc456",
+            "error" => array(),
+            "node" => 'update',
             "nodeid" => 1);
     }
     /**
@@ -89,6 +117,7 @@ class assessmentmanagementtest extends unittestdatabase {
             "statuscode" => 100,
             "status" => 'OK',
             "id" => 5,
+            "externalid" => null,
             "error" => array(),
             "node" => 'schedule',
             "nodeid" => 1);
@@ -121,6 +150,7 @@ class assessmentmanagementtest extends unittestdatabase {
             "statuscode" => 100,
             "status" => 'OK',
             "id" => 1,
+            "externalid" => null,
             "error" => null,
             "node" => 'delete',
             "nodeid" => 1);
@@ -157,6 +187,21 @@ class assessmentmanagementtest extends unittestdatabase {
         // Test paper create- SUCCESS.
         $params = $this->create_param_array();
         $responsearray = $this->create_response_array();
+        $userid = 1;
+        $assessment = new \api\assessmentmanagement($this->db);
+        $this->assertEquals($responsearray, $assessment->create($params, $userid));
+    }
+    /**
+     * Test successful assessment creation using external id
+     * @group api
+     */
+    public function test_ext_create_success() {
+        // Test paper create- SUCCESS.
+        $params = $this->create_param_array();
+        $params['externalid'] = "qwertyberty";
+        $params['modules'] = array(array('id' => 0, 'value' => "abc123def"));
+        $responsearray = $this->create_response_array();
+        $responsearray['externalid'] = "qwertyberty";
         $userid = 1;
         $assessment = new \api\assessmentmanagement($this->db);
         $this->assertEquals($responsearray, $assessment->create($params, $userid));
@@ -337,9 +382,26 @@ class assessmentmanagementtest extends unittestdatabase {
         // Test paper update - SUCCESS update title.
         $params = $this->update_param_array();
         $responsearray = $this->update_response_array();
+        $responsearray['externalid'] = "123abc456";
         $userid = 1;
         $assessment = new \api\assessmentmanagement($this->db);
-        $this->assertEquals($responsearray, $assessment->create($params, $userid));
+        $this->assertEquals($responsearray, $assessment->update($params, $userid));
+        // Check properties_modules.
+        $querytable = $this->getConnection()->createQueryTable('properties_modules', 'SELECT property_id, idMod FROM properties_modules');
+        $expectedtable = $this->get_expected_data_set('updateassessment')->getTable("properties_modules");  
+        $this->assertTablesEqual($expectedtable, $querytable); 
+    }
+    /**
+     * Test successful assessment update using external ids
+     * @group api
+     */
+    public function test_ext_update_success() {
+        // Test paper update - SUCCESS update title.
+        $params = $this->update_ext_param_array();
+        $responsearray = $this->update_ext_response_array();
+        $userid = 1;
+        $assessment = new \api\assessmentmanagement($this->db);
+        $this->assertEquals($responsearray, $assessment->update($params, $userid));
         // Check properties_modules.
         $querytable = $this->getConnection()->createQueryTable('properties_modules', 'SELECT property_id, idMod FROM properties_modules');
         $expectedtable = $this->get_expected_data_set('updateassessment')->getTable("properties_modules");  
@@ -352,10 +414,11 @@ class assessmentmanagementtest extends unittestdatabase {
     public function test_update_startdate() {
         $params = $this->update_param_array();
         $responsearray = $this->update_response_array();
+        $responsearray['externalid'] = "123abc456";
         $params['startdatetime'] = "2016-01-25T08:00:00";
         $userid = 1;
         $assessment = new \api\assessmentmanagement($this->db);
-        $this->assertEquals($responsearray, $assessment->create($params, $userid));
+        $this->assertEquals($responsearray, $assessment->update($params, $userid));
     }
     /**
      * Test assessment update exception - nothing to update
@@ -381,7 +444,7 @@ class assessmentmanagementtest extends unittestdatabase {
         $responsearray['statuscode'] = 216;
         $responsearray['status'] = 'Request updates nothing';
         $responsearray['id'] = null;
-        $this->assertEquals($responsearray, $assessment->create($params, $userid));
+        $this->assertEquals($responsearray, $assessment->update($params, $userid));
     }
     /**
      * Test assessment update exception - nothing to update, no modules supplied
@@ -406,7 +469,7 @@ class assessmentmanagementtest extends unittestdatabase {
         $responsearray['statuscode'] = 216;
         $responsearray['status'] = 'Request updates nothing';
         $responsearray['id'] = null;
-        $this->assertEquals($responsearray, $assessment->create($params, $userid));
+        $this->assertEquals($responsearray, $assessment->update($params, $userid));
     }
     /**
      * Test assessment update exception - invalid paper id
@@ -422,7 +485,7 @@ class assessmentmanagementtest extends unittestdatabase {
         $responsearray['status'] = 'Paper does not exist';
         $responsearray['id'] = null;
         $params['id'] = 1000;
-        $this->assertEquals($responsearray, $assessment->create($params, $userid));
+        $this->assertEquals($responsearray, $assessment->update($params, $userid));
     }
     /**
      * Test assessment update invalid and empty labs.
@@ -438,7 +501,8 @@ class assessmentmanagementtest extends unittestdatabase {
             "nodeid" => 1,
             "duration" => 90,
             "modules" => array(array('id' => 0, 'value' => 1)));
-        $this->assertEquals($responsearray, $assessment->create($params, $userid));
+        $responsearray['externalid'] = "123abc456";
+        $this->assertEquals($responsearray, $assessment->update($params, $userid));
         // Test paper update - SUCCESS empty labs non fatal error.
         $params = $this->update_param_array();
         $assessment = new \api\assessmentmanagement($this->db);
@@ -446,12 +510,13 @@ class assessmentmanagementtest extends unittestdatabase {
         $params['id'] = 3;
         $params['labs'] = array(array('id' => 0, 'value' => ''));
         $responsearray['id'] = 3;
-        $this->assertEquals($responsearray, $assessment->create($params, $userid));
+        $responsearray['externalid'] = null;
+        $this->assertEquals($responsearray, $assessment->update($params, $userid));
         // We have done two updates that we want to check against the db now.
         // Assesment 2 - Check title / labs have not been changed in the db.
         // Assessment 3 - Check labs are null in the db.
         $querytable = $this->getConnection()->createQueryTable('properties', 'SELECT property_id, paper_title, start_date, end_date, exam_duration,
-            calendar_year, timezone, paper_ownerID, labs, paper_type FROM properties');
+            calendar_year, timezone, paper_ownerID, labs, paper_type, externalid FROM properties');
         $expectedtable = $this->get_expected_data_set('updateassessment')->getTable("properties");  
         $this->assertTablesEqual($expectedtable, $querytable); 
     }
@@ -470,7 +535,7 @@ class assessmentmanagementtest extends unittestdatabase {
         $responsearray['id'] = null;
         $params['id'] = 2;
         $params['title'] = "Test create formative 3";
-        $this->assertEquals($responsearray, $assessment->create($params, $userid));
+        $this->assertEquals($responsearray, $assessment->update($params, $userid));
     }
     /**
      * Test assessment update exception - invalid user
@@ -487,7 +552,7 @@ class assessmentmanagementtest extends unittestdatabase {
         $responsearray['id'] = null;
         $params['title'] = "Test Formative 2 update"; 
         $params['owner'] = 999;
-        $this->assertEquals($responsearray, $assessment->create($params, $userid));
+        $this->assertEquals($responsearray, $assessment->update($params, $userid));
     }
     /**
      * Test assessment update exception - invalid user role
@@ -503,7 +568,7 @@ class assessmentmanagementtest extends unittestdatabase {
         $responsearray['status'] = 'Assessment owner role is invalid';
         $responsearray['id'] = null;
         $params['owner'] = 1000;
-        $this->assertEquals($responsearray, $assessment->create($params, $userid));
+        $this->assertEquals($responsearray, $assessment->update($params, $userid));
     }
     /**
      * Test assessment update exception - invalid session
@@ -520,7 +585,7 @@ class assessmentmanagementtest extends unittestdatabase {
         $responsearray['id'] = null;
         $params['owner'] = 1;
         $params['session'] = 1970;
-        $this->assertEquals($responsearray, $assessment->create($params, $userid));
+        $this->assertEquals($responsearray, $assessment->update($params, $userid));
     }
     /**
      * Test assessment update exception - invalid dates
@@ -538,7 +603,7 @@ class assessmentmanagementtest extends unittestdatabase {
         $params['session'] = 2016;
         $params['startdatetime'] = "2016-05-30T10:00:00";
         $params['enddatetime'] = "2016-05-30T09:00:00";
-        $this->assertEquals($responsearray, $assessment->create($params, $userid));
+        $this->assertEquals($responsearray, $assessment->update($params, $userid));
     }
     /**
      * Test assessment update central summative control
@@ -551,6 +616,7 @@ class assessmentmanagementtest extends unittestdatabase {
         $this->config->set('cfg_summative_mgmt', true);
         $summativeparams = array(
             "id" => 4,
+            "type" => 'summative',
             "nodeid" => 9,
             "title" => "Test summative 666",
             "modules" => array(array('id' => 0, 'value' => 1)),
@@ -559,11 +625,12 @@ class assessmentmanagementtest extends unittestdatabase {
             "statuscode" => 214,
             "status" => 'This system is set-up to only allow the scheduling of summative exams',
             "id" => null,
+            "externalid" => null,
             "error" => array(),
-            "node" => 'create',
+            "node" => 'update',
             "nodeid" => 9);
         $assessment->create($summativeparams, $userid);
-        $this->assertEquals($summativeresponsearray, $assessment->create($summativeparams, $userid));
+        $this->assertEquals($summativeresponsearray, $assessment->update($summativeparams, $userid));
         // Test create summative - success not centrally managed
         $this->config->set('cfg_summative_mgmt', false);
         $summativeresponsearray['statuscode'] = 100;
@@ -571,7 +638,7 @@ class assessmentmanagementtest extends unittestdatabase {
         $summativeresponsearray['nodeid'] = 10;
         $summativeresponsearray['id'] = 4;
         $summativeparams['nodeid'] = 10;
-        $this->assertEquals($summativeresponsearray, $assessment->create($summativeparams, $userid));
+        $this->assertEquals($summativeresponsearray, $assessment->update($summativeparams, $userid));
     }
     /**
      * Test assessemnt scheduling success
@@ -607,7 +674,7 @@ class assessmentmanagementtest extends unittestdatabase {
         $this->assertEquals($responsearray, $assessment->schedule($params, $userid));
         // Check db.
         $querytable = $this->getConnection()->createQueryTable('properties', 'SELECT property_id, paper_title, start_date, end_date, exam_duration,
-            calendar_year, timezone, paper_ownerID, labs, paper_type FROM properties');
+            calendar_year, timezone, paper_ownerID, labs, paper_type, externalid FROM properties');
         $expectedtable = $this->get_expected_data_set('scheduleassessment')->getTable("properties");  
         $this->assertTablesEqual($expectedtable, $querytable);
         $querytable = $this->getConnection()->createQueryTable('properties_modules', 'SELECT property_id, idMod FROM properties_modules');
@@ -670,7 +737,7 @@ class assessmentmanagementtest extends unittestdatabase {
         // Check that the remaining properties are correct, when we delete a paper we actually jsut add a timestamp to the table
         // which makes creating a ficute to check against difficult so doing this instead
         $querytable = $this->getConnection()->createQueryTable('properties', 'SELECT property_id, paper_title, start_date, end_date, exam_duration,
-            calendar_year, timezone, paper_ownerID, labs, paper_type FROM properties WHERE deleted is NULL');
+            calendar_year, timezone, paper_ownerID, labs, paper_type, externalid FROM properties WHERE deleted is NULL');
         $expectedtable = $this->get_expected_data_set('deleteassessment')->getTable("properties");  
         $this->assertTablesEqual($expectedtable, $querytable);
     }

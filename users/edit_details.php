@@ -236,6 +236,7 @@ if ($user_details['gender'] == 'Male') {
   }
   $roles_array[] = 'Staff,Student';
   $roles_array[] = 'External Examiner';
+  $roles_array[] = 'Internal Reviewer';
   $roles_array[] = 'Staff,Standards Setter';
   $roles_array[] = 'Invigilator';
   $roles_array[] = 'Inactive Staff';
@@ -244,6 +245,7 @@ if ($user_details['gender'] == 'Male') {
   $roles_array[] = 'Graduate';
   $roles_array[] = 'Left';
   $roles_array[] = 'Suspended';
+  $roles_array[] = 'Locked';
 
   foreach ($roles_array as $value) {
     if (substr($value,0,1) == '#') {

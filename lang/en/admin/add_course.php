@@ -26,4 +26,6 @@ $string['editcourse'] = 'Edit Course';
 $string['deletecourse'] = 'Delete Course';
 $string['codecourse'] = 'Please enter a code for the course.';
 $string['titlecourse'] = 'Please enter a title for the course.';
+$string['externalid'] = 'External ID';
+$string['externalsys'] = 'External System';
 ?>

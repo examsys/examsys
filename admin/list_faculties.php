@@ -82,7 +82,7 @@
 <table id="maindata" class="header tablesorter" cellspacing="0" cellpadding="2" border="0" style="width:100%">
 <thead>
 <tr>
-<th class="col10"><?php echo $string['name'] ?></th><th><?php echo $string['schoolno'] ?></th><th style="width:50%" class="vert_div"></th>
+<th class="col10"><?php echo $string['code'] ?></th><th><?php echo $string['name'] ?></th><th><?php echo $string['schoolno'] ?></th><th style="width:50%" class="vert_div"></th>
 </tr>
 </thead>
 <tbody>
@@ -90,12 +90,12 @@
 $old_faculty = '';
 $id = 0;
 
-$result = $mysqli->prepare("SELECT faculty.id, name, (COUNT(school) - COUNT(schools.deleted)) FROM faculty LEFT JOIN schools ON schools.facultyID = faculty.id WHERE
-  faculty.deleted IS NULL GROUP BY name");
+$result = $mysqli->prepare("SELECT faculty.id, faculty.code, name, (COUNT(school) - COUNT(schools.deleted)) FROM faculty LEFT JOIN schools ON schools.facultyID = faculty.id WHERE
+  faculty.deleted IS NULL GROUP BY faculty.code, name");
 $result->execute();
-$result->bind_result($id, $name, $school_no);
+$result->bind_result($id, $code, $name, $school_no);
 while ($result->fetch()) {
-  echo "<tr id=\"$id\" class=\"l\"><td class=\"col10\">$name</td><td class=\"col10\" style=\"text-align:right\">$school_no</td><td></td></tr>\n";
+  echo "<tr id=\"$id\" class=\"l\"><td class=\"col10\">$code</td><td class=\"col10\">$name</td><td class=\"col10\" style=\"text-align:right\">$school_no</td><td></td></tr>\n";
 }
 $result->close();
 

@@ -92,6 +92,8 @@ $string['tooltip_random'] = 'Rog&#333; oszacuje jaką ocenę dostałby student o
 $string['tooltip_calculator'] = 'Kalkulator JavaScript dostępny jest dla studentów podczas egzaminu.';
 $string['tooltip_audio'] = 'Na stronie informacyjnej egzaminu umieszczony będzie próbny klip audio, umożliwiający studentom sprawdzenie poziomu dźwięku.';
 $string['tooltip_osceclassification'] = 'Warning: Once marking has started the overall classification is not changeable.';
+$string['externalid'] = 'External System ID';
+$string['externalsys'] = 'External System';
 
 // Security tab
 $string['securitytab'] = 'Bezpieczeństwo';
@@ -109,6 +111,7 @@ $string['restricttolabs'] = 'Ogranicz do pracowni';
 $string['restricttometadata'] = 'Ogranicz do metadanych';
 $string['na'] = 'Brak';//data
 $string['tooltip_password'] = 'W wyniku tego dodane zostanie do arkusza uzupełniające hasło obok hasła stosowanego przez studenta do logowania się do Rogo. Hasło to można udostępnić studentom znajdującym sie w pracowni komputerowej.';
+$string['donotchangewarning'] = 'This paper is locked. It is recommended you only make changes if no students have attempted this paper';
 
 // Reviewers tab
 $string['reviewerstab'] = 'Recenzenci';
