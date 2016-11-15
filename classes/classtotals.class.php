@@ -317,7 +317,7 @@ class ClassTotals {
     $old_type           = '';
     $old_score_method   = '';
 
-    $result = $this->db->prepare("SELECT options1.option_text, leadin, scenario, q_media_width, q_media_height, options2.correct, options2.marks_correct, options2.marks_incorrect, options2.option_text, q_type, display_method, score_method, status, settings FROM options AS options1, questions LEFT JOIN options AS options2 ON questions.q_id = options2.o_id WHERE options1.option_text = questions.q_id AND options1.o_id = ?");
+    $result = $this->db->prepare("SELECT options1.q_id, leadin, scenario, q_media_width, q_media_height, options2.correct, options2.marks_correct, options2.marks_incorrect, options2.option_text, q_type, display_method, score_method, status, settings FROM random_link AS options1, questions LEFT JOIN options AS options2 ON questions.q_id = options2.o_id WHERE options1.q_id = questions.q_id AND options1.id = ?");
     $result->bind_param('i', $questionID);
     $result->execute();
     $result->store_result();
