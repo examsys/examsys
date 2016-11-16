@@ -354,18 +354,7 @@ class UserObject extends RogoStaticSingleton {
     $this->staffModules = array();
 
     if ($this->has_role('Admin')) {
-      $result = $this->db->prepare("SELECT idMod, moduleID
-        FROM modules_staff, modules
-        WHERE modules_staff.idMod = modules.id and memberID = ?
-        AND modules.moduleID IS NOT NULL
-        and mod_deleted IS NULL
-        UNION
-        SELECT id, moduleID
-        FROM modules, admin_access
-        WHERE admin_access.schools_id = modules.schoolid
-        AND userID = ?
-        AND modules.moduleID IS NOT NULL
-        and mod_deleted IS NULL");
+      $result = $this->db->prepare("(SELECT idMod, moduleID FROM modules_staff, modules WHERE modules_staff.idMod = modules.id and memberID = ? AND modules.moduleID IS NOT NULL and mod_deleted IS NULL) UNION (SELECT id, moduleID FROM modules, admin_access WHERE admin_access.schools_id = modules.schoolid AND userID = ? AND modules.moduleID IS NOT NULL and mod_deleted IS NULL)");
       $result->bind_param('ii', $this->userID, $this->userID);
     } else {
       $result = $this->db->prepare("SELECT idMod, moduleID FROM modules_staff, modules WHERE modules_staff.idMod = modules.id AND memberID = ? AND modules.moduleID IS NOT NULL AND mod_deleted IS NULL ORDER BY modules.moduleID");
