@@ -83,32 +83,40 @@
 <tr><td style="vertical-align:top; width:50%; border-right:#95AEC8 1px solid">
 <?php
   $old_faculty = '';
+  $old_facultycode = '';
+  $old_facultyid = 0;
   $old_school = '';
   $module_block = false;
   $block_id = 0;
   if ($userObject->has_role('SysAdmin')) {
-    $results = $mysqli->prepare("SELECT DISTINCT modules.id, faculty.name as faculty, schools.school, moduleid, fullname FROM (schools, faculty) LEFT JOIN modules ON schools.id = modules.schoolid WHERE schools.facultyID=faculty.id AND schools.deleted IS NULL AND active = 1 AND mod_deleted IS NULL ORDER BY faculty.name, school, moduleid");
+    $results = $mysqli->prepare("SELECT DISTINCT modules.id, faculty.code, faculty.name, faculty.id, schools.school, schools.code, moduleid, fullname FROM (schools, faculty) LEFT JOIN modules ON schools.id = modules.schoolid WHERE schools.facultyID=faculty.id AND schools.deleted IS NULL AND active = 1 AND mod_deleted IS NULL ORDER BY faculty.code, faculty.name, school, moduleid");
   } else {
-    $results = $mysqli->prepare("SELECT DISTINCT modules.id, faculty.name as faculty, schools.school, moduleid, fullname FROM (schools, faculty, admin_access, modules) WHERE schools.facultyID = faculty.id AND schools.id = modules.schoolid AND schools.id = admin_access.schools_id AND admin_access.userID = ? AND schools.deleted IS NULL AND active = 1 AND mod_deleted IS NULL ORDER BY faculty.name, school, moduleid");
+    $results = $mysqli->prepare("SELECT DISTINCT modules.id, faculty.code, faculty.name, faculty.id, schools.school, schools.code, moduleid, fullname FROM (schools, faculty, admin_access, modules) WHERE schools.facultyID = faculty.id AND schools.id = modules.schoolid AND schools.id = admin_access.schools_id AND admin_access.userID = ? AND schools.deleted IS NULL AND active = 1 AND mod_deleted IS NULL ORDER BY faculty.code, faculty.name, school, moduleid");
     $results->bind_param('i', $userObject->get_user_ID());
   }
   $results->execute();
-  $results->bind_result($modID, $faculty, $school, $moduleid, $fullname);
+  $results->bind_result($modID, $facultycode, $faculty, $facultyid, $school, $schoolcode, $moduleid, $fullname);
   while ($results->fetch()) {
-    if ($old_faculty != $faculty or $old_school != $school) {
+    if ($old_facultyid != $facultyid or $old_school != $school) {
       if ($module_block == true) {
         echo "</div>\n";
         $module_block = false;
       }
     }
-    if ($old_faculty != $faculty) {
-      echo "<table border=\"0\" class=\"subsect\"><tr><td><nobr>$faculty</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
+    if (is_null($facultycode)) {
+      if ($old_faculty != $faculty) {
+        echo "<table border=\"0\" class=\"subsect\"><tr><td><nobr>$facultycode $faculty</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
+      }
+    } else {
+      if ($old_facultycode != $facultycode) {
+        echo "<table border=\"0\" class=\"subsect\"><tr><td><nobr>$facultycode $faculty</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
+      }
     }
     if ($old_school != $school) {
       if ($moduleid == '') {
-        echo "<div class=\"greysch\"><img src=\"../artwork/folder_16_grey.png\" alt=\"folder\" />$school</div>\n";
+        echo "<div class=\"greysch\"><img src=\"../artwork/folder_16_grey.png\" alt=\"folder\" />$schoolcode $school</div>\n";
       } else {
-        echo "<div class=\"sch\" id=\"$block_id\">$school</div>\n";
+        echo "<div class=\"sch\" id=\"$block_id\">$schoolcode $school</div>\n";
       }
       if ($module_block == false) {
         echo "<div id=\"block$block_id\" style=\"display:none\">";
@@ -119,6 +127,8 @@
     if ($moduleid != '') {
       echo "<div class=\"mod\" id=\"$modID\">$moduleid: $fullname</div>\n";
     }
+    $old_facultyid = $facultyid;
+    $old_facultycode = $facultycode;
     $old_faculty = $faculty;
     $old_school = $school;
   }
