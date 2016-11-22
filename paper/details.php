@@ -252,9 +252,9 @@ function have_valid_labels($correct) {
 
 /**
  * Get details of all the questions that make up a random question block.
- * @param int $questionID       - ID of the random question to look up.
- * @param object $configObject  - Configuration object.
- * @return array                - Array of the questions that make up a random question block.
+ * @param int $questionID				- ID of the random question to look up.
+ * @param object $configObject	- Configuration object.
+ * @return array								- Array of the questions that make up a random question block.
  */
 function randomDetails($questionID, $configObject, $db) {
   $question_no = 0;
@@ -266,7 +266,7 @@ function randomDetails($questionID, $configObject, $db) {
   $old_correct = array();
   $old_option_text = array();
 
-  $result = $db->prepare("SELECT theme, options1.q_id, leadin, scenario, q_media_width, q_media_height, options2.correct, options2.marks_correct, options2.option_text, q_type, display_method, score_method, DATE_FORMAT(last_edited,' {$configObject->get('cfg_short_date')}'), status, settings FROM random_link AS options1, questions LEFT JOIN options AS options2 ON questions.q_id = options2.o_id WHERE options1.q_id=questions.q_id AND options1.id=? ");
+  $result = $db->prepare("SELECT theme, options1.option_text, leadin, scenario, q_media_width, q_media_height, options2.correct, options2.marks_correct, options2.option_text, q_type, display_method, score_method, DATE_FORMAT(last_edited,' {$configObject->get('cfg_short_date')}'), status, settings FROM options AS options1, questions LEFT JOIN options AS options2 ON questions.q_id = options2.o_id WHERE options1.option_text=questions.q_id AND options1.o_id=? ");
   $result->bind_param('i', $questionID);
   $result->execute();
   $result->store_result();
@@ -322,6 +322,7 @@ function randomDetails($questionID, $configObject, $db) {
     $random_questions[$question_no]['random_mark'] = qRandomMarks($old_q_type, '', $old_marks, $old_option_text, $old_correct, $old_display_method, $old_score_method, $old_q_media_width, $old_q_media_height);
   }
   $result->close();
+	
   return $random_questions;
 }
 
@@ -707,7 +708,11 @@ function check_latex_random($q_ids, $mysqli) {
     }
     if ($latex == 0) {
       if ($q_type == 'random') {
-        $rnd_q_ids[] = random_utils::get_random_qids_for_question($q_id, $mysqli);
+        // Skip if random question not defined.
+        // No options defined message will be displayed to user.
+        if ($option_text != '') {
+          $rnd_q_ids[] = $option_text;
+        }
       } else {
         $latex = check_latex($leadin, $scenario, $option_text, $score_method, $correct_fback, $feedback_right);
       }
