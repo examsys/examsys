@@ -117,62 +117,62 @@ if (isset($_POST['submit'])) {
   // Remark student answers
   $blank_details = explode("[blank", $new_option_text);
   $no_answers = count($blank_details) - 1;
-  	
-	$totalpos = 0;
-	for ($i = 1; $i <= $no_answers; $i++) {
-		if (preg_match("|mark=\"([0-9]{1,3})\"|", $blank_details[$i], $mark_matches)) {
-			$totalpos += $mark_matches[1];
-			$individual_q_mark = $mark_matches[1];
-		} else {
-			$totalpos += $marks_correct;
-			$individual_q_mark = $marks_correct;
-		}		
-	}
+  
+  $totalpos = 0;
+  for ($i = 1; $i <= $no_answers; $i++) {
+    if (preg_match("|mark=\"([0-9]{1,3})\"|", $blank_details[$i], $mark_matches)) {
+      $totalpos += $mark_matches[1];
+      $individual_q_mark = $mark_matches[1];
+    } else {
+      $totalpos += $marks_correct;
+      $individual_q_mark = $marks_correct;
+    }
+  }
 
-	foreach ($log_answers as $log_type=>$log_data) {
+  foreach ($log_answers as $log_type=>$log_data) {
     foreach ($log_data as $id=>$log_answer) {
-			$mark = 0;
-			$have_answer = false;
-			$saved_response = '';
+      $mark = 0;
+      $have_answer = false;
+      $saved_response = '';
       $user_parts = json_decode($log_answer);
-			
-			for ($i = 0; $i < $no_answers; $i++) {
-				$blank_details = explode("[blank", $new_option_text);
-				$blank_details[$i] = substr($blank_details[$i], (strpos($blank_details[$i], ']') + 1));
-				$blank_details[$i] = substr($blank_details[$i], 0, strpos($blank_details[$i], '[/blank]'));
-				$answer_list = explode(',', $blank_details[$i]);
+      // Required to shift array indexes.
+      $blank_details_redo = array();
+      $j = 0;
+      $blank_details = explode("[blank", $new_option_text);
+      for ($i = 1; $i <= $no_answers; $i++) {
+        // Strip out answers from $blank_details
+        // n.b. First item in $blank_details not required
+        $blank_details_redo[$j] = substr($blank_details[$i], (strpos($blank_details[$i], ']') + 1));
+        $blank_details_redo[$j] = substr($blank_details[$i], 0, strpos($blank_details[$i], '[/blank]'));
+        $answer_list = explode(',', $blank_details_redo[$j]);
+        if ($user_parts[$j] != 'u' and $user_parts[$j] != '') {
+          $have_answer = true;
+          $is_correct = false;
+          foreach ($answer_list as $individual_answer) {
+            if (str_replace('&nbsp;', ' ', trim(strtolower($user_parts[$j]))) == str_replace('&nbsp;', ' ', trim(strtolower($individual_answer)))) {
+              $is_correct = true;
+              break;
+            }
+          }
+          $mark += ($is_correct) ? $individual_q_mark : $marks_incorrect;
+        }
+        $j++;
+      }
+      // Recalculate if mark per question
+      if ($score_method == 'Mark per Question') {
+        if ($have_answer) {
+          $mark = ($mark == $totalpos) ? $marks_correct : $marks_incorrect;
+        }
+      }
+      // Update marks in the database
+      $result = $mysqli->prepare("UPDATE log$log_type SET mark = ? WHERE id = ?");
+      $result->bind_param('ii', $mark, $id);
+      $result->execute();
+      $result->close();
+    }
+  }
 
-				$answer_list[0] = str_replace("[/blank]", '', $answer_list[0]);
-			
-				if ($user_parts[$i] != 'u' and $user_parts[$i] != '') {
-					$have_answer = true;
-					$is_correct = false;
-					foreach ($answer_list as $individual_answer) {
-						if (str_replace('&nbsp;', ' ', trim(strtolower($user_parts[$i]))) == str_replace('&nbsp;', ' ', trim(strtolower($individual_answer)))) {
-							$is_correct = true;
-							break;
-						}
-					}
-					$mark += ($is_correct) ? $individual_q_mark : $marks_incorrect;
-				}		
-			}		
-		
-			// Recalculate if mark per question
-			if ($score_method == 'Mark per Question') {
-				if ($have_answer) {
-					$mark = ($mark == $totalpos) ? $marks_correct : $marks_incorrect;
-				}
-			}
-			
-			// Update marks in the database
-			$result = $mysqli->prepare("UPDATE log$log_type SET mark = ? WHERE id = ?");
-			$result->bind_param('ii', $mark, $id);
-			$result->execute();
-			$result->close();
-		}
-	}
-	
-	// Set paper to re-cache marks again after the change.
+  // Set paper to re-cache marks again after the change.
   $propertyObj->set_recache_marks(1);
   $propertyObj->save();
 
