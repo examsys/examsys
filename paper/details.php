@@ -537,6 +537,7 @@ function check_latex_random($q_ids, $mysqli) {
 
     $('#stats_menu').hide();
     $('#copy_submenu').hide();
+    $('#copy_from_submenu').hide();
 
     if (evt != null) {
       evt.cancelBubble = true;
@@ -587,6 +588,7 @@ function check_latex_random($q_ids, $mysqli) {
 
     $('#stats_menu').hide();
     $('#copy_submenu').hide();
+    $('#copy_from_submenu').hide();
 
     hideMenus();
 
@@ -606,6 +608,7 @@ function check_latex_random($q_ids, $mysqli) {
 	
 		$('#left-sidebar').click(function() {
 			$('#copy_submenu').hide();
+            $('#copy_from_submenu').hide();
 		});
 
 		$(window).click(function(event) {

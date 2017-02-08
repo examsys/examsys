@@ -143,4 +143,11 @@ $string['questions'] = 'Questions';
 $string['people'] = 'People';
 $string['namewarning'] = 'This name is already being used by an existing paper!';
 $string['type'] = 'Type';
+
+$string['copyfrompaper'] = 'Copy questions from paper';
+$string['paperslinkquestions'] = 'Link to Orignal Papers Questions';
+$string['papercopyquestions'] = 'Duplicate Orignal Papers Questions';
+$string['copyquestionsblurb'] = 'n.b. Objective mappings will also be copied.';
+$string['cancel'] = 'Cancel';
+$string['ok'] = 'Ok';
 ?>

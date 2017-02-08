@@ -102,6 +102,14 @@ class UserObject extends RogoStaticSingleton {
     $langpack = new \langpack();
     $this->langstrings = $langpack->get_all_strings($this->langcomponent);
   }
+ /**
+  * Destory UserObject
+  * 
+  * Useful in unit tests.
+  */
+  public function destory() {
+    self::$inst = null;
+  }
 
   public function error_handling($context = null) {
     return error_handling($this);

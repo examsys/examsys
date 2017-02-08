@@ -29,14 +29,14 @@ require_once '../include/errors.php';
 require_once '../include/media.inc';
 require_once '../include/mapping.inc';
 
-$paperid = check_var('paperID', 'POST', true, false, true);
+$paperid = param::required('paperID', param::INT, param::FETCH_POST);
 
 if (!Paper_utils::paper_exists($paperid, $mysqli)) {
   $msg = sprintf($string['furtherassistance'], $configObject->get('support_email'), $configObject->get('support_email'));
   $notice->display_notice_and_exit($mysqli, $string['pagenotfound'], $msg, $string['pagenotfound'], '../artwork/page_not_found.png', '#C00000', true, true);
 }
-
-if (!Paper_utils::is_paper_title_unique($_POST['new_paper'], $mysqli)) {			// If the paper title is unique.
+$new_paper_title = param::optional('new_paper', null, param::TEXT, param::FETCH_POST);
+if (!Paper_utils::is_paper_title_unique($new_paper_title, $mysqli)) {			// If the paper title is unique.
   ?>
 <html>
 <head>
@@ -55,7 +55,7 @@ if (!Paper_utils::is_paper_title_unique($_POST['new_paper'], $mysqli)) {			// If
   </tr>
   <tr>
   <td style="background-color:#FFC0C0">
-  <p style="font-size:90%"><?php printf($string['nameused'], $_POST['new_paper']); ?></p>
+  <p style="font-size:90%"><?php printf($string['nameused'], $new_paper_title); ?></p>
 
   <div align="center"><input style="width:120px" type="button" value="<?php echo $string['back'] ?>" name="back" onclick="window.history.go(-1);"></div>
   </td>
@@ -71,81 +71,42 @@ if (!Paper_utils::is_paper_title_unique($_POST['new_paper'], $mysqli)) {			// If
   exit;
 }
 
-/**
- * This function compares the old and the new courses session objectives to see which can be copied.
- * 
- * @param array $mappings_copy_objID - objectives to map
- * @param array $old_course - old course objective information
- * @param array $new_course - new course objective information
- */
-function copy_between_sessions (&$mappings_copy_objID, &$old_course, &$new_course) {
-      foreach ($old_course as $module => &$sessions) {
-        foreach ($sessions as $identifier => &$session) {
-          if (!empty($session['objectives'])) {
-            foreach ($session['objectives'] as &$obj) {
-              if (isset( $obj['id'])) {
-                $old_objID = $obj['id'];
-              } else {
-                $old_objID = NULL;
-              }
-              if (isset($obj['guid'])) {
-                $old_objGUID = $obj['guid'];
-              } else {
-                $old_objGUID = NULL;
-              }
-              // VLE Objectives.
-              if (!empty($new_course[$module][$identifier]['VLE']) and !empty($old_course[$module][$identifier]['VLE'])) {
-                if ($new_course[$module][$identifier]['VLE'] == $old_course[$module][$identifier]['VLE']) {
-                    if (isset($new_course[$module][$identifier]['objectives'])){
-                        foreach ($new_course[$module][$identifier]['objectives'] as $new_obj) {
-                          if (((array_key_exists('id', $new_obj) and $new_obj['id'] == $old_objID)
-                                  or (array_key_exists('guid', $new_obj) and $new_obj['guid'] == $old_objGUID))
-                                  and (array_key_exists('content', $new_obj) and array_key_exists('content', $obj)
-                                          and $new_obj['content'] == $obj['content'])) {
-                            // Build a list of objectives that are still in both sessions
-                            $mappings_copy_objID[$old_objID] = $new_obj['id'];
-                            break;
-                          }
-                        }
-                    }
-                }
-              // Internal Rogo Objectives.
-              } elseif (isset($new_course[$module][$identifier]['VLE']) and isset($old_course[$module][$identifier]['VLE'])) {
-                if ($new_course[$module][$identifier]['VLE'] === '' and $old_course[$module][$identifier]['VLE'] === '') {
-                  foreach ($new_course as $module => &$sessions) {
-                    foreach ($sessions as $identifier => &$session) {
-                      if (isset($session['objectives'])){
-                        foreach ($session['objectives'] as $new_obj) {
-                          if (array_key_exists('content', $new_obj) and array_key_exists('content', $obj)) {
-                            // Brefore comparing the contents strip out all no alpha numeric characters and convert to lowecase.
-                            $new_content_check = strtolower($new_obj['content']);
-                            $new_content_check = preg_replace("/[^a-z0-9]/", '', $new_content_check);
-                            $old_content_check = strtolower($obj['content']);
-                            $old_content_check = preg_replace("/[^a-z0-9]/", '', $old_content_check);
-                            if ($new_content_check == $old_content_check) {
-                                // Build a list of objectives that are still in both sessions
-                                $mappings_copy_objID[$old_objID] = $new_obj['id'];
-                                break;
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+$calendar_year = $new_calendar_year = '';
+$moduleIDs = NULL;
+$error = array();
+$copytype = param::optional('copytype', null, param::ALPHA, param::FETCH_POST);
+$update = param::optional('copyfrompaper', false, param::BOOLEAN, param::FETCH_POST);
+
+// Only copy properties if new paper created.
+if ($update === false) {
+  // Copy the properties (properties table)
+  $postparams['paperID'] = $paperid;
+  $postparams['paper_type'] = param::required('paper_type', param::INT, param::FETCH_POST);      // Override the paper type with what is posted.
+  $postparams['duration_hours'] = param::optional('duration_hours', 0, param::INT, param::FETCH_POST);
+  $postparams['duration_mins'] = param::optional('duration_mins', 0, param::INT, param::FETCH_POST);
+  $postparams['new_paper'] = $new_paper_title;
+  $postparams['session'] = param::optional('session', null, param::INT, param::FETCH_POST);
+  $postparams['barriers_needed'] = param::optional('barriers_needed', 0, param::INT, param::FETCH_POST);
+  $postparams['period'] = param::optional('period', null, param::INT, param::FETCH_POST);
+  $postparams['cohort_size'] = param::optional('cohort_size', '<whole cohort>', param::ALPHANUM, param::FETCH_POST);
+  $postparams['notes'] = param::optional('notes', null, param::ALPHANUM, param::FETCH_POST);
+  $postparams['sittings'] = param::optional('sittings', 1, param::INT, param::FETCH_POST);
+  $postparams['campus'] = param::optional('campus', null, param::ALPHANUM, param::FETCH_POST);
+  $copypaper = Paper_utils::copyProperties($calendar_year, $new_calendar_year, $moduleIDs, $postparams);
+  $calendar_year = $copypaper['calendar_year'];
+  $new_calendar_year = $copypaper['new_calendar_year'];
+  $moduleIDs = $copypaper['moduleIDs'];
+  $new_paper_id = $copypaper['new_paper_id'];
+} else {
+  $new_paper_id = param::required('currentpid', param::INT, param::FETCH_POST);
+  $properties = Paper_utils::get_paper_properties($new_paper_id, $mysqli);
+  $new_calendar_year = $properties['session'];
+  $properties = Paper_utils::get_paper_properties($paperid, $mysqli);
+  $calendar_year = $properties['session'];
+  $moduleIDs = Paper_utils::get_modules($new_paper_id, $mysqli);
 }
 
-$calendar_year = $new_calendar_year = '';
-$moduleID = NULL;
-$error = array();
-if ($_POST['copytype'] == 'paperonly') {        // Copy the paper only!
-  // Copy the properties (properties table)
-  $new_paper_id = copyProperties($mysqli, $calendar_year, $new_calendar_year, $moduleIDs, $userObject, $configObject);
+if ($copytype == 'paperonly') {        // Copy the paper only!
 
   // Copy the question pointers (papers table)
   $result = $mysqli->prepare("SELECT question, screen, display_pos FROM papers WHERE paper = ?");
@@ -156,7 +117,6 @@ if ($_POST['copytype'] == 'paperonly') {        // Copy the paper only!
   $qids = array();
   while ($result->fetch()) {
     $qids[] = $question;
-    
     Paper_utils::add_question($new_paper_id, $question, $screen, $display_pos, $mysqli);
   }
   $result->close();
@@ -172,11 +132,10 @@ if ($_POST['copytype'] == 'paperonly') {        // Copy the paper only!
       $result->close();
     } else {
         // We are copying between sessions we need to check for changed sessions/objectives
-        $mappings_copy_objID = array();
         $old_course = getObjectives($moduleIDs, $calendar_year, $paperid, '', $mysqli);
         $new_course = getObjectives($moduleIDs, $new_calendar_year, $paperid, '', $mysqli);
         if (count($old_course) > 0 and count($new_course) > 0) {
-            copy_between_sessions($mappings_copy_objID, $old_course, $new_course);
+            $mappings_copy_objID = Paper_utils::copy_between_sessions($old_course, $new_course);
             //Copy the objectives for each session where the objective still exists
             $result = $mysqli->prepare("INSERT INTO relationships (SELECT NULL, idMod, ? as paper_id, question_id, ?, ?, vle_api, map_level"
               . " FROM relationships WHERE question_id IN ($qids) AND paper_id = ? AND obj_id = ?)");
@@ -190,8 +149,6 @@ if ($_POST['copytype'] == 'paperonly') {        // Copy the paper only!
     }
   }
 } else {    // Copy the paper and the questions.
-  // Copy the properties (properties table)
-  $new_paper_id = copyProperties($mysqli, $calendar_year, $new_calendar_year, $moduleIDs, $userObject, $configObject);
   $mediadirectory = rogo_directory::get_directory('media');
 
   // Get question statuses
@@ -438,11 +395,10 @@ if ($_POST['copytype'] == 'paperonly') {        // Copy the paper only!
     }
   } else {
     // We are copying between sessions we need to check for changed sessions/objectives
-    $mappings_copy_objID = array();
     $old_course = getObjectives($moduleIDs, $calendar_year, $paperid, '', $mysqli);
     $new_course = getObjectives($moduleIDs, $new_calendar_year, $paperid, '', $mysqli);
     if (count($old_course) > 0 and count($new_course) > 0) {
-        copy_between_sessions($mappings_copy_objID, $old_course, $new_course);
+        $mappings_copy_objID = Paper_utils::copy_between_sessions($old_course, $new_course);
 
         // Copy the objectives for each session where the objective still exists
         $result = $mysqli->prepare("INSERT INTO relationships (SELECT NULL, idMod, ?, ?, ?, ?, vle_api, map_level FROM"
@@ -493,7 +449,9 @@ if ($_POST['copytype'] == 'paperonly') {        // Copy the paper only!
 </head>
 <?php
   if (count($error) == 0) {
-  	echo "<body onload=\"javascript:window.location='" . $configObject->get('cfg_root_path') . "/paper/details.php?paperID=$new_paper_id&module=" . $_POST['module'] . "&folder=" . $_POST['folder'] . "';\">";
+    $module = param::optional('module', '', param::INT, param::FETCH_POST);
+    $folder = param::optional('folder', '', param::INT, param::FETCH_POST);
+    echo "<body onload=\"javascript:window.location='" . $configObject->get('cfg_root_path') . "/paper/details.php?paperID=$new_paper_id&module=" . $module . "&folder=" . $folder . "';\">";
   } else {
 ?>
   <body onclick="hideMenus()">
@@ -530,203 +488,6 @@ if ($_POST['copytype'] == 'paperonly') {        // Copy the paper only!
 <?php
 }
 $mysqli->close();
-
-/**
- * Copies the paper properties record.
- *
- * @param object $db						- Link to MySQL database
- * @param string $calendar_year	- Looks up and updates the academic session - used with learning objectives
- * @param string $moduleIDs			- Looks up and updates the modules the paper is on - used with learning objectives
- * @param object $userObj				- Currently logged in user object.
- * @param object $configObject	- Configuration settings object.
- *
- * @return int - ID of the newly inserted property record.
- */
-function copyProperties($db, &$calendar_year, &$new_calendar_year, &$moduleIDs, $userObj, $configObject) {
-
-  $userID = $userObj->get_user_ID();
-  $moduleIDs = Paper_utils::get_modules($_POST['paperID'], $db);
-
-  $result = $db->prepare("SELECT property_id,
-    paper_title,
-    start_date,
-    end_date,
-    timezone,
-    paper_type,
-    paper_prologue,
-    paper_postscript,
-    bgcolor,
-    fgcolor,
-    themecolor,
-    labelcolor,
-    fullscreen,
-    marking,
-    bidirectional,
-    pass_mark,
-    distinction_mark,
-    paper_ownerID,
-    folder,
-    labs,
-    rubric,
-    calculator,
-    exam_duration,
-    deleted,
-    created,
-    random_mark, 
-    total_mark,
-    display_correct_answer,
-    display_question_mark,
-    display_students_response,
-    display_feedback,
-    hide_if_unanswered,
-    calendar_year,
-    external_review_deadline,
-    internal_review_deadline,
-    sound_demo,
-    latex_needed,
-    password,
-    retired,
-    crypt_name,
-    recache_marks
-    FROM properties WHERE property_id = ? LIMIT 1");
-  $result->bind_param('i', $_POST['paperID']);
-  $result->execute();
-  $result->store_result();
-  $result->bind_result($property_id, $paper_title, $start_date, $end_date, $timezone, $paper_type, $paper_prologue, $paper_postscript, $bgcolor, $fgcolor, $themecolor, $labelcolor, $fullscreen, $marking, $bidirectional, $pass_mark, $distinction_mark, $paper_owner, $folder, $labs, $rubric, $calculator, $exam_duration, $deleted, $created, $random_mark, $total_mark, $display_correct_answer, $display_question_mark, $display_students_response, $display_feedback, $hide_if_unanswered, $calendar_year,  $external_review_deadline, $internal_review_deadline, $sound_demo, $latex_needed, $password, $retired, $crypt_name, $recache_marks);
-  $result->fetch();
-  $result->close();
-
-  $paper_type = $_POST['paper_type'];      // Override the paper type with what is posted.
-  if ($paper_type == 2 and $configObject->get('cfg_summative_mgmt')) {
-		$duration = 0;
-		if (isset($_POST['duration_hours'])) {
-			$duration += ($_POST['duration_hours'] * 60);
-		}
-		if (isset($_POST['duration_mins'])) {
-			$duration += $_POST['duration_mins'];
-		}
-		$tmp_exam_duration = $duration;
-  } else {
-    $tmp_exam_duration = $exam_duration;
-  }
-
-  if ($paper_type == 2) {
-    if ($configObject->get('cfg_summative_mgmt')) {
-      $tmp_start_date = NULL;
-      $tmp_end_date = NULL;
-			$labs = NULL;
-    } else {
-      $tmp_start_date = '20200505090000';
-      $tmp_end_date = '20200505100000';
-    }
-  } else {
-    $tmp_start_date = $start_date;
-    $tmp_end_date = $end_date;
-  }
-  $tmp_random_mark = $random_mark;
-  if ($tmp_random_mark == '') $tmp_random_mark = NULL;
-  $tmp_total_mark = $total_mark;
-  if ($tmp_total_mark == '') $tmp_total_mark = NULL;
-
-  $tmp_external_review_deadline = $external_review_deadline;
-  if ($tmp_external_review_deadline == '') $tmp_external_review_deadline = NULL;
-
-  $tmp_internal_review_deadline = $internal_review_deadline;
-  if ($tmp_internal_review_deadline == '') $tmp_internal_review_deadline = NULL;
-
-  if (isset($_POST['session'])) {
-    $new_calendar_year = $_POST['session'];
-    if ($new_calendar_year == '') {
-      $new_calendar_year = NULL;
-    }
-  } else {
-		$academic_year_title = Paper_utils::academic_year_from_title($_POST['new_paper']);
-		if ($academic_year_title !== false) {
-			$new_calendar_year = $academic_year_title;
-		} else {
-			$new_calendar_year = $calendar_year;
-		}
-  }
-
-  $assessment = new assessment($db, $configObject);
-  $unixtime = time();
-  $created = date("Y-m-d H:i:s", $unixtime);
-  $params = array(
-    'paper_title' => array('s', $_POST['new_paper']),
-    'start_date' => array('s', $tmp_start_date),
-    'end_date' => array('s', $tmp_end_date),
-    'timezone' => array('s', $timezone),
-    'paper_type' => array('s', $paper_type),
-    'paper_prologue' => array('s', $paper_prologue),
-    'paper_postscript' => array('s', $paper_postscript),
-    'bgcolor' => array('s', $bgcolor),
-    'fgcolor' => array('s', $fgcolor),
-    'themecolor' => array('s', $themecolor),
-    'labelcolor' => array('s', $labelcolor),
-    'fullscreen' => array('s', $fullscreen),
-    'marking' => array('s', $marking),
-    'bidirectional' => array('s', $bidirectional),
-    'pass_mark' => array('i', $pass_mark),
-    'distinction_mark' => array('i', $distinction_mark),
-    'paper_ownerID' => array('i', $userID),
-    'folder' => array('s', $folder),
-    'labs' => array('s', $labs),
-    'rubric' => array('s', $rubric),
-    'calculator' => array('i', $calculator),
-    'exam_duration' => array('i', $tmp_exam_duration),
-    'deleted' => array('s', NULL),
-    'created' => array('s', $created),
-    'random_mark' => array('d', $tmp_random_mark),
-    'total_mark' => array('i', $tmp_total_mark),
-    'display_correct_answer' => array('s', $display_correct_answer),
-    'display_question_mark' => array('s', $display_question_mark),
-    'display_students_response' => array('s', $display_students_response),
-    'display_feedback' => array('s', $display_feedback),
-    'hide_if_unanswered' => array('s', $hide_if_unanswered),
-    'calendar_year' => array('i', $new_calendar_year),
-    'external_review_deadline' => array('s', $tmp_external_review_deadline),
-    'internal_review_deadline' => array('s', $tmp_internal_review_deadline),
-    'sound_demo' => array('s', $sound_demo),
-    'latex_needed' => array('i', $latex_needed),
-    'password' => array('s', $password),
-    'retired' => array('s', NULL),
-    'recache_marks' => array('i', 0)
-  );
-  $new_paper_id = $assessment->db_insert_assessment($params);
-  $update_params = array('crypt_name' => array('s', $new_paper_id . $unixtime . $userID));
-  $assessment->db_update_assessment($new_paper_id, $update_params);
-  
-
-  // Get the old reviewers and populate the new paper with.
-  $result2 = $db->prepare("SELECT reviewerID, type FROM properties_reviewers WHERE paperID = ?");
-  $result2->bind_param('i', $_POST['paperID']);
-  $result2->execute();
-  $result2->store_result();
-  $result2->bind_result($reviewerID, $type);
-  while ($result2->fetch()) {
-    $stmt = $db->prepare("INSERT INTO properties_reviewers VALUES (NULL, ?, ?, ?)");
-    $stmt->bind_param('iis', $new_paper_id, $reviewerID, $type);
-    $stmt->execute();
-    $stmt->close();
-  }
-  $result2->close();
-
-  // Set the modules on the new paper
-  Paper_utils::update_modules($moduleIDs, $new_paper_id, $db, $userObj);
-
-  if ($paper_type == $assessment::TYPE_SUMMATIVE and $configObject->get('cfg_summative_mgmt')) {
-    if (isset($_POST['barriers_needed'])) {
-      $barriers_needed = 1;
-    } else {
-      $barriers_needed = 0;
-    }
-    $assessment->schedule($new_paper_id, $_POST['period'], $barriers_needed, $_POST['cohort_size'], $_POST['notes'], $_POST['sittings'], $_POST['campus']);
-  }
-
-
-
-  return $new_paper_id;
-}
 ?>
 </body>
 </html>

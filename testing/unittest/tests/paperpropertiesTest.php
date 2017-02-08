@@ -46,9 +46,8 @@ class paperpropertiestest extends unittestdatabase {
      * @group paper
      */
     public function test_set_password() {
-        // Create user object.
-        $userobject = new UserObject($this->config, $this->db);
-        $userobject->set_user_ID(1);
+        // Load user id 1.
+        $this->userobject->load(1);
         // Set new password.
         $newpassword = 'newpassword';
         $properties = PaperProperties::get_paper_properties_by_id(45, $this->db, '');
