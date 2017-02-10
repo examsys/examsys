@@ -1965,7 +1965,7 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
           if ($paper[$question]['display_method'] == 'textboxes') {             // Textboxes
             $correct_flag = false;
             foreach ($answer_list as $individual_answer) {
-              if (trim(strtolower($individual_answer)) == trim(strtolower($user_choices[$blank_count]))) {
+              if (isset($user_choices[$blank_count]) and trim(strtolower($individual_answer)) == trim(strtolower($user_choices[$blank_count]))) {
                 $correct_flag = true;
               }
             }
@@ -1977,7 +1977,7 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
               echo "<input type=\"text\" size=\"20\" name=\"q" . $question . "_" . $blank_count . "\" value=\"" . htmlentities($user_choices[$blank_count]) .  "\"$exclude_mod />";
               echo display_response($tmp_display_students_response, 'tick');
             } else {
-              if ($user_choices[$blank_count] == 'u') {
+              if (!isset($user_choices[$blank_count]) or $user_choices[$blank_count] == 'u') {
                 echo "<input type=\"text\" size=\"20\" name=\"q" . $question . "_" . $blank_count . "\" value=\"" . $string['unanswered'] .  "\" style=\"color: #808080\"$exclude_mod />";
               } else {
                 if (substr($tmp_exclude, $blank_count, 1) == '0') {
