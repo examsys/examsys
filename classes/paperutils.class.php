@@ -1001,6 +1001,12 @@ Class PaperUtils {
       $order = 'CAST(created AS DATE)';
     }
     $sql .= " ORDER BY {$order} " . strtoupper($direction);
+    if (strpos($order, 'surname') === false) {
+      $sql .= ', users.surname ASC';
+    }
+    if (strpos($order, 'moduleid') === false) {
+      $sql .= ', modules.moduleid ASC';
+    }
     $result = $mysqli->prepare($sql);
     $result->execute();
     $result->bind_result($property_id, $paper_title, $paper_type, $created, $title, $initials, $surname, $moduleid);
