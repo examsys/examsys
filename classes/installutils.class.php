@@ -104,7 +104,6 @@ Class InstallUtils {
   public static $cfg_uselookupXML = 'false';
   
   public static $cfg_labsecuritytype;
-  public static $cfg_interactivequestions;
 
   public static $cfg_support_email;
   public static $emergency_support_numbers;
@@ -428,7 +427,6 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
     
     //Other settings 
     self::$cfg_labsecuritytype = $_POST['labsecuritytype'];
-    self::$cfg_interactivequestions = $_POST['interactivequestions'];
   
     // Check we can write to the config file first if not passwords will be lost!
     $rogo_path = str_ireplace('/install/index.php','', normalise_path($_SERVER['SCRIPT_FILENAME']));
@@ -457,15 +455,12 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
     }
     $cfg_encrypt_salt = $salt;
 
-    $configObj = Config::get_instance();
-
     $authentication = array(
       array('internaldb', array('table' => '', 'username_col' => '', 'passwd_col' => '', 'id_col' => '', 'sql_extra' => '', 'encrypt' => 'SHA-512', 'encrypt_salt' => $cfg_encrypt_salt), 'Internal Database')
     );
-    $configObj->set('authentication', $authentication);
+    $configObject->set('authentication', $authentication);
     
     InstallUtils::checkDBUsers();
-
 
     self::createDatabase(self::$cfg_db_name, self::$cfg_db_charset);
 
@@ -485,12 +480,125 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
 
     //Write out the config file
     self::writeConfigFile();
+
+    // Fix help file image paths.
+    if (isset($_POST['loadHelp'])) {
+      // Set db object in config.
+      @$mysqli = new mysqli(self::$cfg_db_host, self::$db_admin_username, self::$db_admin_passwd, self::$cfg_db_name, self::$cfg_db_port);
+      if ($mysqli->connect_error == '') {
+        $mysqli->set_charset(self::$cfg_db_charset);
+      }
+      $configObject->set_db_object($mysqli);
+      require_once '../include/path_functions.inc.php';
+      $cfg_web_root = get_root_path() . '/';
+      $cfg_root_path = rtrim('/' . trim(str_replace(normalise_path($_SERVER['DOCUMENT_ROOT']), '', $cfg_web_root), '/'), '/');
+      $configObject->set('cfg_root_path', $cfg_root_path);
+      self::correct_staff_path();
+      self::correct_student_path();
+    }
+
     if (!is_array(self::$warnings)) {
       echo "<p style=\"margin-left:10px\">" . $string['installed'] . "</p>\n";
       echo "<p style=\"margin-left:10px\">" . $string['deleteinstall'] . "</p>\n";
       echo "<p style=\"margin-left:10px\"><input type=\"button\" class=\"ok\" name=\"home\" value=\"" . $string['staffhomepage'] . "\" onclick=\"window.location='../index.php'\" /></p>\n";
     } else {
       self::displayWarnings();
+    }
+  }
+
+  /**
+   * Correct path of staff help file images as may not be in root web server directory.
+   */
+  static public function correct_staff_path() {
+    set_time_limit(0);
+    $configObject = Config::get_instance();
+    $webroot = $configObject->get('cfg_root_path');
+    // Ensure there is a trailing slash.
+    if (substr($webroot, -1) !== '/') {
+      $webroot .= '/';
+    }
+    // The substitution will replace the old src tag with a new one that.
+    $regexp = '#src="\/getfile\.php\?type\=help_staff&amp;filename\=(.*?)"#';
+    $substitution = 'src="' . $webroot . 'getfile.php?type=help_staff&amp;filename=$1"';
+    // If we find any images in help files update them.
+    $result = $configObject->db->prepare("SELECT id, body FROM staff_help WHERE body LIKE '%<img%'");
+    $result->execute();
+    $result->store_result();
+    $result->bind_result($id, $body);
+    while ($result->fetch()) {
+      $newbody = preg_replace($regexp, $substitution, $body);
+      if ($newbody != $body) {
+        // There was a change, so update the record.
+        $update = $configObject->db->prepare("UPDATE staff_help SET body = ? WHERE id = ?");
+        $update->bind_param('si', $newbody, $id);
+        $update->execute();
+        $update->close();
+      }
+    }
+    $result->close();
+  }
+
+  /**
+   * Correct path of student help file images as may not be in root web server directory.
+   */
+  static public function correct_student_path() {
+    set_time_limit(0);
+    $configObject = Config::get_instance();
+    $webroot = $configObject->get('cfg_root_path');
+    // Ensure there is a trailing slash.
+    if (substr($webroot, -1) !== '/') {
+      $webroot .= '/';
+    }
+    // The substitution will replace the old src tag with a new one that.
+    $regexp = '#src="\/getfile\.php\?type\=help_student&amp;filename\=(.*?)"#';
+    $substitution = 'src="' . $webroot . 'getfile.php?type=help_student&amp;filename=$1"';
+    // If we find any images in help files update them.
+    $result = $configObject->db->prepare("SELECT id, body FROM student_help WHERE body LIKE '%<img%'");
+    $result->execute();
+    $result->store_result();
+    $result->bind_result($id, $body);
+    while ($result->fetch()) {
+      $newbody = preg_replace($regexp, $substitution, $body);
+      if ($newbody != $body) {
+        // There was a change, so update the record.
+        $update = $configObject->db->prepare("UPDATE student_help SET body = ? WHERE id = ?");
+        $update->bind_param('si', $newbody, $id);
+        $update->execute();
+        $update->close();
+      }
+    }
+    $result->close();
+  }
+
+  /**
+   * Download and install language packs.
+   */
+  static public function download_langpacks() {
+    $configObject = Config::get_instance();
+    $version = $configObject->getxml('version');
+    $url = $configObject->getxml('translations', 'url');
+    if (!is_null($url)) {
+      $workingdir = getcwd();
+      chdir(dirname(__DIR__));
+      // Download language packs.
+      $fullurl = $url . '/' . $version . '/rogo.zip';
+      $file = @file_get_contents($fullurl);
+      if ($file === false or file_put_contents("translations.zip", $file) === false) {
+        echo "Error downloading language packs from $fullurl, you will need to manually install them.";
+      } else {
+        // Unzip archive.
+        $zip = new ZipArchive;
+        $res = $zip->open('translations.zip');
+        if ($res === TRUE) {
+          $zip->extractTo(getcwd());
+          $zip->close();
+          // Remove zip and temporary directories.
+          unlink('translations.zip');
+        } else {
+          echo('Cannot extract language packs, you will need to manually extract them.');
+        }
+      }
+      chdir($workingdir);
     }
   }
 
@@ -2054,9 +2162,6 @@ CONFIG;
     $config = str_replace('{cfg_tmpdir}', self::$cfg_tmpdir, $config);
     $config = str_replace('{cfg_tablesorter_date_time}', self::$cfg_tablesorter_date_time, $config);
     $config = str_replace('{labsecuritytype}', self::$cfg_labsecuritytype, $config);
-    $config = str_replace('{interactivequestions}', self::$cfg_interactivequestions, $config);
-
-
 
     $authentication_arrays = array();
     if (self::$cfg_auth_lti) {

@@ -57,7 +57,6 @@ abstract class rogo_directory {
     if (!empty(InstallUtils::$cfg_rogo_data)) {
       // Rogo is being installed. We should take the settings from InstallUtills
       $rogodata = InstallUtils::$cfg_rogo_data;
-      $question_interface = InstallUtils::$cfg_interactivequestions;
     } else {
       $config = Config::get_instance();
       // This will be null if the user has not configured it.
