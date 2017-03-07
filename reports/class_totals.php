@@ -494,6 +494,7 @@ echo draw_toprightmenu(30);
         $bg_color = '#FFC0C0';
         $late_submissions = '';
         $class = '';
+        $user_results[$i]['attempt'] = 0;
         ?>
         <tr class="nonattend" id="res<?php echo $i+1 ?>" onclick="popMenu(6, event); setVars('', '<?php echo $userID; ?>', '<?php echo $paper_type; ?>', '<?php echo $reassign ?>', '<?php echo $late_submissions ?>', '<?php echo $percent; ?>');"><td>&nbsp;</td>
         <?php

@@ -197,6 +197,14 @@ if (!$is_exam_review_mode and !$is_question_preview_mode and !$is_formative_revi
   $log_metadata->set_completed_to_now();
 }
 
+// Check user has taken the paper. If they have not we need to stop them in their tracks as there is no feedback for them to review.
+if ($userObject->has_role('Student')) {
+  if (!$userObject->user_completed_paper($paperID)) {
+    $msg = sprintf($string['furtherassistance'], $configObject->get('support_email'), $configObject->get('support_email'));
+    $notice->display_notice_and_exit($mysqli, $string['pagenotfound'], $msg, $string['accessdenied'], '/artwork/page_not_found.png', '#C00000', true, true);
+  }
+}
+
 require '../config/finish.inc';
 ?>
 <!DOCTYPE html>

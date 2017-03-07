@@ -864,4 +864,21 @@ class UserObject extends RogoStaticSingleton {
     }
   }
   
+  /**
+  * Check if the user has completed a paper
+  * @param integer $id - paper id
+  * @return bool true if user has completed the paper
+  */
+  public function user_completed_paper($id) {
+    $result = $this->db->prepare("SELECT NULL FROM log_metadata WHERE userID = ? and paperID = ? and completed IS NOT null");
+    $result->bind_param('ii', $this->userID, $id);
+    $result->execute();
+    $result->store_result();
+    if ($result->num_rows > 0) {
+        $result->close();
+        return true;
+    }
+    $result->close();
+    return false;
+  }
 }
