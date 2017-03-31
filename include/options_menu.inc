@@ -56,7 +56,7 @@ if (!$userObject->has_role('Standards Setter')) {
   echo '</ul>';
 }
 ?>
-<div id="displaycredits">Rog&#333; <?php echo $configObject->get('rogo_version') ?> - &copy; 2016</div>
+<div id="displaycredits">Rog&#333; <?php echo $configObject->get('rogo_version') ?> - &copy; 2017</div>
 
 </div>
 
