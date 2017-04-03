@@ -156,6 +156,10 @@ if (!isset($_POST['update'])) {
     echo "</html>";
     exit;
   }
+
+  // Set db object in config.
+  $configObject->set_db_object($mysqli);
+
   $updater_utils = new UpdaterUtils($mysqli, $configObject->get('cfg_db_database'));
 
   // Backup the config file before proceeding.
@@ -208,6 +212,8 @@ if (!isset($_POST['update'])) {
     $staffhelp = rogo_directory::get_directory('help_staff');
     $staffhelp->create();
     $staffhelp->copy_from_default();
+    // Fix path of help file images as may not be in root web dir.
+    InstallUtils::correct_staff_path();
     echo "<li>LOADED staff_help: " . $ext . "</li>\n";
   }
 
@@ -234,6 +240,8 @@ if (!isset($_POST['update'])) {
     $studenthelp = rogo_directory::get_directory('help_student');
     $studenthelp->create();
     $studenthelp->copy_from_default();
+    // Fix path of help file images as may not be in root web dir.
+    InstallUtils::correct_student_path();
     echo "<li>LOADED student_help: " . $ext . "</li>\n";
   }
   $mysqli->commit();

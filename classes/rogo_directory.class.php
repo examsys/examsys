@@ -57,7 +57,6 @@ abstract class rogo_directory {
     if (!empty(InstallUtils::$cfg_rogo_data)) {
       // Rogo is being installed. We should take the settings from InstallUtills
       $rogodata = InstallUtils::$cfg_rogo_data;
-      $question_interface = InstallUtils::$cfg_interactivequestions;
     } else {
       $config = Config::get_instance();
       // This will be null if the user has not configured it.
@@ -342,6 +341,12 @@ abstract class rogo_directory {
     $fullpath = $this->fullpath($filename);
     if (empty($filename) || !file_exists($fullpath) || !is_readable($fullpath)) {
       // The file cannot be retrived for the user.
+      throw new file_not_found($fullpath);
+    }
+    // Check real path of file is in the real path of the directory.
+    $realfullpath = realpath($fullpath);
+    $realdirpath = realpath($this->location());
+    if (strpos($realfullpath, $realdirpath) !== 0) {
       throw new file_not_found($fullpath);
     }
   }
