@@ -16,6 +16,7 @@
 
 namespace testing\unittest;
 use Config as RogoConfig;
+use UserObject as RogoUserObject;
     
 /**
  * Unit test database class
@@ -41,6 +42,9 @@ abstract class unittestdatabase extends \PHPUnit_Extensions_Database_TestCase {
      */
     public $config;
     
+    /** @var object $userObject user object used during test. */
+    public $userobject;
+    
     /**
      * @var object $default_config config object used to reset test.
      */
@@ -57,11 +61,13 @@ abstract class unittestdatabase extends \PHPUnit_Extensions_Database_TestCase {
     public function setup_db() {
         $this->config = RogoConfig::get_instance();
         $this->default_config = clone($this->config);
-        $this->config->use_phpunit_site();
         // Open db connection.
         $this->db = new \mysqli($this->config->get('cfg_db_host'), $this->config->get('cfg_phpunit_db_user'), $this->config->get('cfg_phpunit_db_password'),
             $this->config->get('cfg_db_database'), $this->config->get('cfg_db_port'));
         $this->config->set_db_object($this->db);
+        // Create user object.
+        $this->userobject = new RogoUserObject($this->config, $this->db);
+        $this->config->use_phpunit_site();
     }
     
     /**
@@ -78,6 +84,8 @@ abstract class unittestdatabase extends \PHPUnit_Extensions_Database_TestCase {
     public function tearDown() {
         // Reset the config object.
         RogoConfig::set_mock_instance(clone($this->default_config));
+        // Destory user object.
+        $this->userobject->destory();
         // Close db connection.
         $this->db->close();
         parent::tearDown();

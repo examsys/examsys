@@ -16,6 +16,7 @@
 
 namespace testing\behat\steps\frontend;
 use Behat\Gherkin\Node\PyStringNode,
+    Behat\Behat\Definition\Call\Given as Given,
     Behat\Gherkin\Node\TableNode;
 
 /**
@@ -28,7 +29,7 @@ use Behat\Gherkin\Node\PyStringNode,
  */
 trait authentication {
   /**
-   * Log the user into Rogo.
+   * Log into Rogo.
    *
    * @Given /^I login as "([^"]*)"$/
    * @param $username The username to be logged in.
@@ -39,5 +40,16 @@ trait authentication {
     $this->i_set_field("ROGO_USER", $username);
     $this->i_set_field("ROGO_PW", $username);
     $this->i_click("rogo-login-form-std", "button");
+  }
+  
+  /**
+   * Log out Rogo.
+   *
+   * @Then /^I log out$/
+   * @param $username The username to be logged in.
+   */
+  public function i_log_out() {
+    $this->toggle_main_menu();
+    $this->i_click("signout", "id");
   }
 }

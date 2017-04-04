@@ -39,7 +39,7 @@
 $i = 1;
 $j = 0;
 $randomids = random_utils::get_random_qids_for_question($question->id, $mysqli);
-if ($randomids !== false) {
+if (count($randomids) > 0) {
   foreach ($question->options as $option) {
     $qid = $randomids[$j];
     $j++;

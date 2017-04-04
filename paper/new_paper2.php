@@ -24,7 +24,7 @@
 
 require '../include/staff_auth.inc';
 require_once '../include/sort.inc';
-require '../lang/' . $language. '/include/timezones.inc';
+require '../include/timezones.php';
 
 $assessment = new assessment($mysqli, $configObject);
 $papertype = $assessment->get_type_value($_POST['paper_type']);
@@ -479,10 +479,18 @@ if ($papertype == $assessment::TYPE_SUMMATIVE) {
   $module_no = 0;
   $module_array = $userObject->get_staff_accessable_modules();
   $current_school = '---';
+  $old_schoolcode = '';
   foreach($module_array as $module) {
-    if ($module['school'] != $current_school) {
-      $current_school = $module['school'];
-			echo "<div class=\"subsect_table\"><div class=\"subsect_title\"><nobr>" . $module['school'] . "&nbsp;</nobr></div><div class=\"subsect_hr\"><hr noshade=\"noshade\" /></div></div>\n";
+    if (is_null($module['schoolcode'])) {
+      if ($module['school'] != $current_school or !is_null($old_schoolcode)) {
+        $current_school = $module['school'];
+        echo "<div class=\"subsect_table\"><div class=\"subsect_title\"><nobr>" . $module['school'] . "&nbsp;</nobr></div><div class=\"subsect_hr\"><hr noshade=\"noshade\" /></div></div>\n";
+      }
+    } else {
+      if ($module['schoolcode'] != $old_schoolcode) {
+        $old_schoolcode = $module['schoolcode'];
+        echo "<div class=\"subsect_table\"><div class=\"subsect_title\"><nobr>" . $module['schoolcode'] . ' ' . $module['school'] . "&nbsp;</nobr></div><div class=\"subsect_hr\"><hr noshade=\"noshade\" /></div></div>\n";
+      }
     }
     if (isset($_POST['module']) and $_POST['module'] == $module['idMod']) {
       echo "<div class=\"r2\" id=\"div$module_no\"><input type=\"checkbox\" onclick=\"toggle($module_no)\" name=\"mod$module_no\" id=\"mod$module_no\" value=\"" . $module['idMod'] . "\" checked /><label for=\"mod$module_no\">" . $module['id'] . " - " . substr($module['fullname'],0,60) . "</label></div>\n";
@@ -490,6 +498,7 @@ if ($papertype == $assessment::TYPE_SUMMATIVE) {
       echo "<div class=\"r1\" id=\"div$module_no\"><input type=\"checkbox\" onclick=\"toggle($module_no)\" name=\"mod$module_no\" id=\"mod$module_no\" value=\"" . $module['idMod'] . "\" /><label for=\"mod$module_no\">" . $module['id'] . " - " . substr($module['fullname'],0,60) . "</label></div>\n";
     }
     $module_no++;
+    $old_schoolcode = $module['schoolcode'];
   }
 
   echo "</div>\n";

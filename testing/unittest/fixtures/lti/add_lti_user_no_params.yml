@@ -1,0 +1,10 @@
+lti_user:
+  -
+    lti_user_key: "bandits:69"
+    lti_user_equ: "1000"
+  -
+    lti_user_key: "test:1"
+    lti_user_equ: "1000"
+  -
+    lti_user_key: "test:2"
+    lti_user_equ: "1001"

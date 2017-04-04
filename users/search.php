@@ -26,7 +26,7 @@
 
 require '../include/staff_auth.inc';
 require_once '../include/demo_replace.inc';
-require_once '../include/errors.inc';
+require_once '../include/errors.php';
 
 function get_special_needs($db) {
   $needs_array = array();
@@ -366,13 +366,13 @@ $temporary_yearid = check_var('tmp_yearID', $_GET, false, true, true);
   if (isset($_GET['submit']) or !is_null($paper_id) or !is_null($module_id)) {
     echo "<body>\n";
 
-    include '../include/user_search_options.inc';
+    include '../include/user_search_options.php';
 
     echo "<div id=\"content\" class=\"content\">\n";
   } else {
     echo "<body>\n";
 
-    include '../include/user_search_options.inc';
+    include '../include/user_search_options.php';
 
     echo "<div id=\"content\" class=\"content\">\n";
     echo "<div class=\"head_title\">\n";

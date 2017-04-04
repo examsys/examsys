@@ -23,7 +23,7 @@
 */
 
 require '../include/staff_auth.inc';
-require_once '../include/errors.inc';
+require_once '../include/errors.php';
 
 $displayDebug = false; //disable debug output in this script as it effects the output
 

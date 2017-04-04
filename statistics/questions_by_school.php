@@ -24,7 +24,7 @@
 
 require '../include/sysadmin_auth.inc';
 require '../include/sidebar_menu.inc';
-require '../include/errors.inc';
+require '../include/errors.php';
 ?>
 <!DOCTYPE html>
 <html>
@@ -73,12 +73,12 @@ require '../include/errors.inc';
 $master_array = array();
 
 // Get a list of all schools in Rogo.
-$result = $mysqli->prepare("SELECT schools.id, school, name FROM schools, faculty WHERE schools.facultyID = faculty.id AND school != 'Training' AND schools.deleted IS NULL AND faculty.deleted IS NULL ORDER BY name, school");
+$result = $mysqli->prepare("SELECT schools.id, schools.code, school, faculty.code, name FROM schools, faculty WHERE schools.facultyID = faculty.id AND school != 'Training' AND schools.deleted IS NULL AND faculty.deleted IS NULL ORDER BY name, school");
 $result->execute();
-$result->bind_result($id, $school, $faculty);
+$result->bind_result($id, $code, $school, $faculty_code, $faculty);
 while ($result->fetch()) {
-  $master_array[$id]['name'] = $school;
-  $master_array[$id]['faculty'] = $faculty;
+  $master_array[$id]['name'] = $code . ' ' . $school;
+  $master_array[$id]['faculty'] = $faculty_code . ' ' . $faculty;
   $master_array[$id]['types'] = array('blank'=>0, 'dichotomous'=>0, 'flash'=>0, 'hotspot'=>0, 'labelling'=>0, 'likert'=>0, 'matrix'=>0, 'mcq'=>0, 'mrq'=>0, 'rank'=>0, 'textbox'=>0, 'info'=>0, 'extmatch'=>0, 'random'=>0, 'sct'=>0, 'keyword_based'=>0, 'true_false'=>0, 'area'=>0, 'enhancedcalc'=>0);
 }
 $result->close();

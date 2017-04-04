@@ -25,7 +25,7 @@
 */
 
 require '../include/staff_auth.inc';
-require '../include/errors.inc';
+require '../include/errors.php';
 
 $tmp_identifier = check_var('identifier', 'GET', true, false, true);
 $tmp_session    = check_var('session', 'GET', true, false, true);

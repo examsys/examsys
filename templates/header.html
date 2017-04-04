@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta http-equiv="content-type" content="text/html;charset={{charset}}"/>
+
+        <title>{{"Rog&#333;:"|raw}} {{lang.title}} {{installtype}}</title>
+
+        <link rel="stylesheet" type="text/css" href="{{path}}/css/body.css"/>
+{% for sheetname in data.css %}
+        <link rel="stylesheet" type="text/css" href="{{path}}{{sheetname}}"/>
+{% endfor %}
+
+{% for scriptname in data.scripts %}
+        <script type="text/javascript" src="{{path}}{{scriptname}}"></script>
+{% endfor %}
+    </head>
+    <body>

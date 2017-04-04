@@ -1,0 +1,9 @@
+lti_resource:
+  -
+    lti_resource_key: "test:8"
+    internal_id: "6"
+    internal_type: "module"
+  -
+    lti_resource_key: "test:9"
+    internal_id: "1"
+    internal_type: "paper"

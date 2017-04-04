@@ -15,16 +15,16 @@
 // along with Rogo.  If not, see <http://www.gnu.org/licenses/>.
 
 //HTML5 part
-require $configObject->get('cfg_web_root') . 'lang/' . $language . '/question/edit/hotspot_correct.txt';
-require $configObject->get('cfg_web_root') . 'lang/' . $language . '/question/edit/area.txt';
-require $configObject->get('cfg_web_root') . 'lang/' . $language . '/question/add/hotspot_add.txt';
-require $configObject->get('cfg_web_root') . 'lang/' . $language . '/question/add/label_add.txt';
+require $configObject->get('cfg_web_root') . 'lang/' . $language . '/question/edit/hotspot_correct.php';
+require $configObject->get('cfg_web_root') . 'lang/' . $language . '/question/edit/area.php';
+require $configObject->get('cfg_web_root') . 'lang/' . $language . '/question/add/hotspot_add.php';
+require $configObject->get('cfg_web_root') . 'lang/' . $language . '/question/add/label_add.php';
 $jstring = $string; //to pass it to JavaScript HTML5 modules
 //HTML5 part
 
-require $configObject->get('cfg_web_root') . 'lang/' . $language . '/include/status.inc';
-require $configObject->get('cfg_web_root') . 'lang/' . $language . '/include/blooms.inc';
-require $configObject->get('cfg_web_root') . 'lang/' . $language . '/include/question_types.inc';
+require $configObject->get('cfg_web_root') . 'lang/' . $language . '/include/status.php';
+require $configObject->get('cfg_web_root') . 'lang/' . $language . '/include/blooms.php';
+require $configObject->get('cfg_web_root') . 'lang/' . $language . '/include/question_types.php';
 require $configObject->get('cfg_web_root') . 'lang/' . $language . '/question/sct_shared.php';
 require $configObject->get('cfg_web_root') . 'lang/' . $language . '/question/info.php';
 require $configObject->get('cfg_web_root') . 'lang/' . $language . '/question/edit/likert_scales.php';

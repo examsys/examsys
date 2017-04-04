@@ -23,7 +23,7 @@
 */
 
 require '../include/sysadmin_auth.inc';
-require_once '../include/errors.inc';
+require_once '../include/errors.php';
 
 check_var('moduleid', 'GET', true, false, false);
 

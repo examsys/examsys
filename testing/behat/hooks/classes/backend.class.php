@@ -53,6 +53,15 @@ trait backend {
   /** Stores the dataloader used to initilise the data the  */
   private static $dataloader;
 
+  /** Stores a copy of $_GET before a scenario. */
+  private $get;
+
+  /** Stores a copy of $_POST before a scenario. */
+  private $post;
+
+  /** Stores a copy of $_REQUEST before a scenario. */
+  private $request;
+
   /**
    * Actions to perform before the suite is run.
    *
@@ -103,6 +112,9 @@ trait backend {
   public function setup_scenario(BeforeScenarioScope $event) {
     self::check_config();
     state::start_transaction(state::TRANSACTION_SCENARIO);
+    $this->get = $_GET;
+    $this->post = $_POST;
+    $this->request = $_REQUEST;
   }
 
   /**
@@ -119,6 +131,9 @@ trait backend {
     directory::reset_directories();
     // Reset any locally stored data.
     $this->reset();
+    $_GET = $this->get;
+    $_POST = $this->post;
+    $_REQUEST = $this->request;
   }
 
   /**

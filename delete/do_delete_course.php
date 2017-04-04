@@ -25,7 +25,7 @@
 */
 
 require '../include/sysadmin_auth.inc';
-require '../include/errors.inc';
+require '../include/errors.php';
 
 $tmp_courseID = check_var('courseID', 'POST', true, false, true);
 

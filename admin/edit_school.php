@@ -23,7 +23,7 @@
 */
 
 require '../include/sysadmin_auth.inc';
-require_once '../include/errors.inc';
+require_once '../include/errors.php';
 
 $schoolid = check_var('schoolid', 'GET', true, false, true);
 

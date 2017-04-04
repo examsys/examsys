@@ -731,11 +731,12 @@ QUERY;
     $this->tableList['modules_staff'] = <<<QUERY
         CREATE TABLE `modules_staff` (
           `groupID` int(4) NOT NULL auto_increment,
-          `idMod` int(11) unsigned DEFAULT NULL,
-          `memberID` int(10) unsigned DEFAULT NULL,
+          `idMod` int(11) NOT NULL,
+          `memberID` int(10) UNSIGNED NOT NULL,
           `added` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
           PRIMARY KEY (`groupID`),
-          KEY `name` (`idMod`)
+          KEY `name` (`idMod`),
+          KEY `idx_memberID` (`memberID`)
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
@@ -804,17 +805,19 @@ QUERY;
           `paperID` mediumint(8) unsigned NOT NULL,
           `boundary` tinyint(3) unsigned NOT NULL,
           `msg` text,
-          PRIMARY KEY (`id`)
+          PRIMARY KEY (`id`),
+          KEY `idx_paperID` (`paperID`)
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['paper_metadata_security'] = <<<QUERY
         CREATE TABLE `paper_metadata_security` (
           `id` int(11) NOT NULL auto_increment,
-          `paperID` mediumint(8) unsigned default NULL,
+          `paperID` mediumint(8) unsigned NOT NULL,
           `name` varchar(255) default NULL,
           `value` varchar(255) default NULL,
-          PRIMARY KEY (`id`)
+          PRIMARY KEY (`id`),
+          KEY `idx_paperID` (`paperID`)
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
@@ -1017,7 +1020,8 @@ QUERY;
           `guid` char(40),
           PRIMARY KEY (`q_id`),
           KEY `idx_owner_deleted` (`ownerID`,`deleted`),
-          KEY `idx_deleted` (`deleted`)
+          KEY `idx_deleted` (`deleted`),
+          KEY `idx_guid` (`guid`)
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
@@ -1486,7 +1490,6 @@ QUERY;
     $this->tableList['permissions'] = <<<QUERY
         CREATE TABLE permissions (
             action varchar(80) NOT NULL,
-            description varchar(255) NOT NULL,
             PRIMARY KEY (action)
         ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
 QUERY;

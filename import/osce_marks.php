@@ -23,9 +23,11 @@
 */
 
 require '../include/staff_auth.inc';
-require_once '../include/errors.inc';
+require_once '../include/errors.php';
 
 $paperID = check_var('paperID', 'GET', true, false, true);
+$moduleID = check_var('module', 'GET', true, false, true);
+$properties = PaperProperties::get_paper_properties_by_id($paperID, $mysqli, $string, false);
 
 function marks_from_file($notice, $userObj, $paperID, $fileName, $db, $string) {
   $configObject = Config::get_instance();
@@ -248,6 +250,7 @@ if (!$graded and isset($_POST['submit'])) {
 
   <title><?php echo $string['importoscemarks']; ?></title>
 
+  <link rel="stylesheet" href="../css/header.css" type="text/css" />
   <link rel="stylesheet" href="../css/body.css" type="text/css">
   <link rel="stylesheet" href="../css/dialog.css" type="text/css">
   <link rel="stylesheet" href="../css/submenu.css" type="text/css">
@@ -255,6 +258,7 @@ if (!$graded and isset($_POST['submit'])) {
     span.killer {float: none}
   </style>	
   <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
+  <script type="text/javascript" src="../js/toprightmenu.js"></script>
 	<script>
     $(function () {
 		  $('html').click(function() {
@@ -263,13 +267,30 @@ if (!$graded and isset($_POST['submit'])) {
 		});
 	</script>
 </head>
-
+<?php
+  require '../include/toprightmenu.inc';
+  echo draw_toprightmenu();
+?>
 <body>
 <?php
-  require '../include/paper_options.inc';
+  require '../include/paper_options.php';
 ?>
 
 <div id="content">
+<div class="head_title">
+<div><img src="../artwork/toprightmenu.gif" id="toprightmenu_icon" /></div>
+<?php
+  // Create page breadcrumbs.
+  echo "<div class=\"breadcrumb\"><a href=\"../index.php\">" . $string['home'] . "</a>";
+  if (!is_null($moduleID)) {
+    echo '<img src="../artwork/breadcrumb_arrow.png" class="breadcrumb_arrow" alt="-" /><a href="../module/index.php?module=' . $moduleID . '">' . module_utils::get_moduleid_from_id($moduleID, $mysqli) . '</a>';
+    echo '<img src="../artwork/breadcrumb_arrow.png" class="breadcrumb_arrow" alt="-" /><a href="../paper/type.php?module=' . $moduleID . '&type=' . $properties->get_paper_type() . '">' . Paper_utils::type_to_name($properties->get_paper_type(), $string) . '</a>';
+  }
+  echo '<img src="../artwork/breadcrumb_arrow.png" class="breadcrumb_arrow" alt="-" /><a href="../paper/details.php?module=' . $moduleID . '&paperID=' . $paperID . '">' . $properties->get_paper_title() . '</a>';
+  // Display page title.
+  echo "</div><div class=\"page_title\">" . $string['importoscemarks'] . "</div>";
+?>
+</div>
 <br />
 <br />
 

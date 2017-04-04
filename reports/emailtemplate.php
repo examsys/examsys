@@ -23,7 +23,7 @@
 */
 
 require '../include/staff_auth.inc';
-require_once '../include/errors.inc';
+require_once '../include/errors.php';
 
 $emailtemplatedir = rogo_directory::get_directory('email_templates');
 if (!$emailtemplatedir->check_permissions()) {

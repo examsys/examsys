@@ -36,6 +36,10 @@
       notice.focus();
     }
   }
+
+  function searchUserLinks() {
+    window.location.href = './search_users.php?LTIkeysid=' + $('#lineID').val();
+  }
 </script>
 
 <div id="left-sidebar" class="sidebar">
@@ -46,12 +50,14 @@
 			<div class="menuitem"><a href="add_LTIkeys.php"><img class="sidebar_icon" src="../artwork/lti_key_16.png" alt="<?php echo $string['createLTIkeys'] ?>" /><?php echo $string['createLTIkeys'] ?></a></div>
 			<div class="grey menuitem"><img class="sidebar_icon" src="../artwork/edit_grey.png" alt="<?php echo $string['editLTIkeys'] ?>" /><?php echo $string['editLTIkeys'] ?></div>
 			<div class="grey menuitem"><img class="sidebar_icon" src="../artwork/red_cross_grey.png" alt="<?php echo $string['deleteLTIkeys'] ?>" /><?php echo $string['deleteLTIkeys'] ?></div>
+      <div class="grey menuitem"><img class="sidebar_icon" src="../artwork/link_grey.png" alt="<?php echo $string['searchuserlinks'] ?>" /><?php echo $string['searchuserlinks'] ?></div>
 		</div>
 
 		<div style="display:none" id="menu1b">
 			<div class="menuitem"><a href="add_LTIkeys.php"><img class="sidebar_icon" src="../artwork/lti_key_16.png" alt="<?php echo $string['createLTIkeys'] ?>" /><?php echo $string['createLTIkeys'] ?></a></div>
 			<div class="menuitem"><a href="#" onclick="editLTIkeys(); return false;"><img class="sidebar_icon" src="../artwork/edit.png" alt="<?php echo $string['editLTIkeys'] ?>" /><?php echo $string['editLTIkeys'] ?></a></div>
 			<div class="menuitem"><a href="#" onclick="deleteLTIkeys(); return false;"><img class="sidebar_icon" src="../artwork/red_cross.png" alt="<?php echo $string['deleteLTIkeys'] ?>" /><?php echo $string['deleteLTIkeys'] ?></a></div>
+      <div class="menuitem"><a href="#" onclick="searchUserLinks(); return false;"><img class="sidebar_icon" src="../artwork/clear_lti_link.png" alt="<?php echo $string['searchuserlinks'] ?>" /><?php echo $string['searchuserlinks'] ?></a></div>
 		</div>
 
     <input type="hidden" id="lineID" name="lineID" value=""/>

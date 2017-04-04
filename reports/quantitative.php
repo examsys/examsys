@@ -118,16 +118,6 @@
             break;
           case 'labelling':
 ?>
-    <div align="center">
-      <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="https://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=7,0,0,0" width="<?php echo $q_media_width + 35; ?>" height="<?php echo $q_media_height; ?>" id="label_answer" align="middle">
-      <param name="allowScriptAccess" value="sameDomain" />
-      <param name="movie" value="label_analysis.swf" />
-      <param name="quality" value="high" />
-      <param name="bgcolor" value="#ffffff" />
-      <param name="FlashVars" value="imageName=<?php echo $q_media; ?>&labels=<?php echo $correct; ?>" />
-      <embed src="label_analysis.swf" FlashVars="imageName=<?php echo $q_media; ?>&labels=<?php echo $correct; ?>" quality="high" bgcolor="#ffffff" width="<?php echo $q_media_width + 35; ?>" height="<?php echo $q_media_height; ?>" name="label_answer" align="middle" allowScriptAccess="sameDomain" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" />
-      </object>
-    </div>
     <br />
 <?php
             echo "<p>\n<table cellpadding=\"4\" cellspacing=\"0\" border=\"0\">\n";
@@ -218,16 +208,6 @@
             break;
           case 'hotspot':
             ?>
-            <div align="center">
-              <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="https://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=7,0,19,0" id="hotspot<?php echo $q_no; ?>" width="<?php echo ($q_media_width + 2); ?>" height="<?php echo ($q_media_height + 40); ?>" align="middle">
-              <param name="allowScriptAccess" value="sameDomain" />
-              <param name="movie" value="hotspot_analysis.swf" />
-              <param name="quality" value="high" />
-              <param name="bgcolor" value="#ffffff" />
-              <param name="FlashVars" value="imageName=<?php echo $q_media; ?>&config=<?php echo $correct; ?>&answers=<?php echo $log[$screen][$q_id][1]['coords']; ?>" />
-              <embed src="hotspot_analysis.swf" FlashVars="imageName=<?php echo $q_media; ?>&config=<?php echo $correct; ?>&answers=<?php echo $log[$screen][$q_id][1]['coords']; ?>" quality="high" bgcolor="#ffffff" width="<?php echo ($q_media_width + 2); ?>" height="<?php echo ($q_media_height + 40); ?>" swLiveConnect=true id="hotspot<?php echo $q_no; ?>" name="hotspot<?php echo $q_no; ?>" align="middle" allowScriptAccess="sameDomain" type="application/x-shockwave-flash" pluginspage="https://www.macromedia.com/go/getflashplayer" />
-              </object>
-            </div>
             <?php
             echo "<p>\n<table cellpadding=\"4\" cellspacing=\"0\" border=\"0\">\n";
             echo "<tr><td class=\"figures\">Correct</td><td>" . $log[$screen][$q_id][1][1] . "</td></tr>\n";

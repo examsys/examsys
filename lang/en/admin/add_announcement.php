@@ -15,7 +15,7 @@
 // along with Rogo.  If not, see <http://www.gnu.org/licenses/>.
 
 require '../lang/' . $language . '/admin/list_announcements.php';
-require '../lang/' . $language . '/include/months.inc';
+require '../lang/' . $language . '/include/months.php';
 
 $string['addannouncement'] = 'Add Announcement';
 $string['Title'] = 'Title';

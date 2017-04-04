@@ -23,9 +23,9 @@
 */
 require '../include/staff_auth.inc';
 require_once '../include/sort.inc';
-require_once '../lang/' . $language . '/include/question_types.inc';
+require_once '../lang/' . $language . '/include/question_types.php';
 require_once '../classes/questionbank.class.php';
-require_once '../include/errors.inc';
+require_once '../include/errors.php';
 
 $type = check_var('type', 'GET', true, false, true);
 

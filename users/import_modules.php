@@ -50,7 +50,7 @@ ini_set("auto_detect_line_endings", true);
 
   <body>
 <?php
-  require '../include/user_search_options.inc';
+  require '../include/user_search_options.php';
 ?>
 <div id="content">
 <br />

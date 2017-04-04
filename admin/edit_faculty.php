@@ -23,7 +23,7 @@
 */
 
 require '../include/staff_auth.inc';
-require_once '../include/errors.inc';
+require_once '../include/errors.php';
 
 $facultyID = check_var('facultyID', 'REQUEST', true, false, true);
 

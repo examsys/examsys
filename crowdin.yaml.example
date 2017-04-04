@@ -1,0 +1,22 @@
+project_identifier: rogo
+api_key: <api key>
+base_url: https://api.crowdin.com
+base_path: <base path>
+preserve_hierarchy: true
+
+files:
+  -
+    source: '/lang/en/**/*'
+    translation: '/lang/%two_letters_code%/**/%original_file_name%'
+  -
+    source: '/api/lang/en/*'
+    translation: '/api/lang/%two_letters_code%/%original_file_name%'
+  -
+    source: '/classes/lang/en/*'
+    translation: '/classes/lang/%two_letters_code%/%original_file_name%'
+  -
+    source: '/testing/lang/en/*'
+    translation: '/testing/lang/%two_letters_code%/%original_file_name%'
+  -
+    source: '/LTI/lang/en/*'
+    translation: '/LTI/lang/%two_letters_code%/%original_file_name%'

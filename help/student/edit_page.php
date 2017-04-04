@@ -23,7 +23,7 @@
 */
 
 require '../../include/sysadmin_auth.inc';
-require '../../include/errors.inc';
+require '../../include/errors.php';
 
 $pageid = check_var('id', 'REQUEST', true, false, true);
 $help_system = new OnlineHelp($userObject, $configObject, $string, $notice, 'student', $language, $mysqli);

@@ -27,13 +27,13 @@
 */
 
 require_once '../include/staff_auth.inc';
-require_once '../include/errors.inc';
+require_once '../include/errors.php';
 require_once '../include/demo_replace.inc';
 
-$userID = check_var('userID', 'GET', true, false, true);
-$student_id = check_var('student_id', 'GET', false, false, true);
-$search_surname = check_var('search_surname', 'GET', false, false, true);
-$search_username = check_var('search_username', 'GET', false, false, true);
+$userID = check_var('userID', 'GET', true, false, true, param::INT);
+$student_id = check_var('student_id', 'GET', false, false, true, param::TEXT);
+$search_surname = check_var('search_surname', 'GET', false, false, true, param::TEXT);
+$search_username = check_var('search_username', 'GET', false, false, true, param::TEXT);
 
 if ($userObject->has_role('Demo')) {
   $demo = true;
@@ -41,11 +41,7 @@ if ($userObject->has_role('Demo')) {
   $demo = false;
 }
 
-if (isset($_GET['tab'])) {
-  $tab = $_GET['tab'];
-} else {
-  $tab = 'log';
-}
+$tab = param::optional('tab', 'log', param::ALPHA, param::FETCH_GET);
 
 function drawTabs($current_tab, $col_span, $right_text, $user_roles, $bg_color, $string) {
   $html = "<tr><td colspan=\"" . ($col_span - 1) . "\" style=\"background-color:$bg_color\">";
@@ -105,38 +101,72 @@ function formatsec($seconds) {
   return $timestring;
 }
 
+$updateadmin = param::optional('updateadmin', null, param::ALPHA, param::FETCH_POST);
+$updateaccess = param::optional('updateaccess', null, param::ALPHA, param::FETCH_POST);
+$save_metadata = param::optional('save_metadata', null, param::ALPHA, param::FETCH_POST);
 
-if (isset($_POST['updateadmin']) and $userObject->has_role('SysAdmin')) {
+if (!is_null($updateadmin) and $userObject->has_role('SysAdmin')) {
   UserUtils::clear_admin_access($userID, $mysqli);
 
-  for ($i=0; $i<$_POST['admin_school_no']; $i++) {
-    if (isset($_POST["sch$i"])) {
+  $admin_school_no = param::optional('admin_school_no', 0, param::INT, param::FETCH_POST);
+  for ($i=0; $i < $admin_school_no; $i++) {
+    $school = param::optional("sch$i", null, param::INT, param::FETCH_POST);
+    if (!is_null($school)) {
       $result = $mysqli->prepare("INSERT INTO admin_access VALUES (NULL, ?, ?)");
-      $result->bind_param('ii', $userID, $_POST["sch$i"]);
+      $result->bind_param('ii', $userID, $school);
       $result->execute();
       $result->close();
     }
   }
-} elseif (isset($_POST['updateaccess']) and $userObject->has_role(array('Admin', 'SysAdmin'))) {
-  $background = $_POST['background'];
-  if ($_POST['bg_radio'] == '0') $background = NULL;
-  $foreground = $_POST['foreground'];
-  if ($_POST['fg_radio'] == '0') $foreground = NULL;
-  $textsize = $_POST['textsize'];
-  $extra_time = $_POST['extra_time'];
-  $font = ($_POST['font'] != '') ? $_POST['font'] : NULL;
-  $marks_color = $_POST['marks_color'];
-  if ($_POST['marks_radio'] == '0') $marks_color = NULL;
-  $themecolor = $_POST['themecolor'];
-  if ($_POST['theme_radio'] == '0') $themecolor = NULL;
-  $labelcolor = $_POST['labelcolor'];
-  if ($_POST['labels_radio'] == '0') $labelcolor = NULL;
-  $unansweredcolor = $_POST['unansweredcolor'];
-  if ($_POST['unanswered_radio'] == '0') $unansweredcolor = NULL;
-  $dismisscolor = $_POST['dismisscolor'];
-  if ($_POST['dismiss_radio'] == '0') $dismisscolor = NULL;
-  $medical = trim($_POST['medical']);
-  $breaks = trim($_POST['breaks']);
+} elseif (!is_null($updateaccess) and $userObject->has_role(array('Admin', 'SysAdmin'))) {
+  $colour_background = param::optional('bg_radio', false, param::BOOLEAN, param::FETCH_POST);
+  $colour_forground = param::optional('fg_radio', false, param::BOOLEAN, param::FETCH_POST);
+  $colour_marks = param::optional('marks_radio', false, param::BOOLEAN, param::FETCH_POST);
+  $colour_theme = param::optional('theme_radio', false, param::BOOLEAN, param::FETCH_POST);
+  $colour_labels = param::optional('labels_radio', false, param::BOOLEAN, param::FETCH_POST);
+  $colour_unanswered = param::optional('unanswered_radio', false, param::BOOLEAN, param::FETCH_POST);
+  $colour_dismiss = param::optional('dismiss_radio', false, param::BOOLEAN, param::FETCH_POST);
+
+  if ($colour_background) {
+    $background = param::optional('background', null, param::TEXT, param::FETCH_POST);
+  } else {
+    $background = null;
+  }
+  if ($colour_forground) {
+    $foreground = param::optional('foreground', null, param::TEXT, param::FETCH_POST);
+  } else {
+    $foreground = null;
+  }
+  $textsize = param::optional('textsize', 0, param::INT, param::FETCH_POST);
+  $extra_time = param::optional('extra_time', 0, param::INT, param::FETCH_POST);
+  $font = param::optional('font', null, param::ALPHA, param::FETCH_POST);
+  if ($colour_marks) {
+    $marks_color = param::optional('marks_color', null, param::TEXT, param::FETCH_POST);
+  } else {
+    $marks_color = null;
+  }
+  if ($colour_theme) {
+    $themecolor = param::optional('themecolor', null, param::TEXT, param::FETCH_POST);
+  } else {
+    $themecolor = null;
+  }
+  if ($colour_labels) {
+    $labelcolor = param::optional('labelcolor', null, param::TEXT, param::FETCH_POST);
+  } else {
+    $labelcolor = null;
+  }
+  if ($colour_unanswered) {
+    $unansweredcolor = param::optional('unansweredcolor', null, param::TEXT, param::FETCH_POST);
+  } else {
+    $unansweredcolor = null;
+  }
+  if ($colour_dismiss) {
+    $dismisscolor = param::optional('dismisscolor', null, param::TEXT, param::FETCH_POST);
+  } else {
+    $dismisscolor = null;
+  }
+  $medical = trim(param::optional('medical', '', param::TEXT, param::FETCH_POST));
+  $breaks = trim(param::optional('breaks', '', param::TEXT, param::FETCH_POST));
 
   $result = $mysqli->prepare("DELETE FROM special_needs WHERE userID = ?");
   $result->bind_param('i', $userID);
@@ -154,10 +184,16 @@ if (isset($_POST['updateadmin']) and $userObject->has_role('SysAdmin')) {
     $result->execute();
     $result->close();
   }
-} elseif (isset($_POST['save_metadata']) and $userObject->has_role(array('Admin', 'SysAdmin'))) {
-  for ($i=0; $i<$_POST['metadata_no']; $i++) {
+} elseif (!is_null($save_metadata) and $userObject->has_role(array('Admin', 'SysAdmin'))) {
+  $metadata_no = param::optional('metadata_no', 0, param::INT, param::FETCH_POST);
+  for ($i=0; $i < $metadata_no; $i++) {
+    $meta_moduleID = param::optional("meta_moduleID$i", null, param::INT, param::FETCH_POST);
+    $meta_type = param::optional("meta_type$i", null, param::TEXT, param::FETCH_POST);
+    $meta_value = param::optional("meta_value$i", null, param::TEXT, param::FETCH_POST);
+    $meta_calendar_year = param::optional("meta_calendar_year$i", null, param::INT, param::FETCH_POST);
+
     $result = $mysqli->prepare("REPLACE INTO users_metadata (userID, idMod, type, value, calendar_year) VALUES (?, ?, ?, ?, ?)");
-    $result->bind_param('iisss', $userID, $_POST["meta_moduleID$i"], $_POST["meta_type$i"], $_POST["meta_value$i"], $_POST["meta_calendar_year$i"]);
+    $result->bind_param('iisss', $userID, $meta_moduleID, $meta_type, $meta_value, $meta_calendar_year);
     $result->execute();
     $result->close();
   }
@@ -338,7 +374,7 @@ if (isset($_POST['updateadmin']) and $userObject->has_role('SysAdmin')) {
   }
   
   require '../tools/colour_picker/colour_picker.inc';
-  require '../include/user_search_options.inc';
+  require '../include/user_search_options.php';
   require '../include/toprightmenu.inc';
 	echo draw_toprightmenu();
 
@@ -682,6 +718,7 @@ if (isset($_POST['updateadmin']) and $userObject->has_role('SysAdmin')) {
 
   $yearutils = new yearutils($mysqli);
   $current_session = $yearutils->get_current_session();
+  $year_names = $yearutils->get_supported_years();
   while ($results->fetch()) {
     $user_modules[$row_no]['moduleid'] = $moduleid;
     $user_modules[$row_no]['fullname'] = $fullname;
@@ -705,7 +742,8 @@ if (isset($_POST['updateadmin']) and $userObject->has_role('SysAdmin')) {
 
   for ($i=0; $i<$row_no; $i++) {
     if ($user_modules[$i]['calendar_year'] != $old_year) {
-      echo "<tr><td colspan=\"4\"><table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>" . $user_modules[$i]['calendar_year'];
+      $display_year = $year_names[$user_modules[$i]['calendar_year']];
+      echo "<tr><td colspan=\"4\"><table border=\"0\" style=\"padding-bottom:5px; width:100%; color:#1E3287\"><tr><td><nobr>" . $display_year;
       if (($user_modules[$i]['calendar_year'] == $most_recent_year or $user_modules[$i]['calendar_year'] == $current_session) and $userObject->has_role(array('Admin', 'SysAdmin'))) {
         echo "&nbsp;&nbsp;<a href=\"#\" onclick=\"editModules('" . $user_modules[$i]['calendar_year'] . "','" . $user_details['grade'] . "'); return false;\"><img src=\"../artwork/pencil_16.png\" width=\"16\" height=\"16\" alt=\"" . $string['editmodules'] . "\" /></a>";
       }

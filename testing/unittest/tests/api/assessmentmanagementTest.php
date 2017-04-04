@@ -330,6 +330,24 @@ class assessmentmanagementtest extends unittestdatabase {
         $this->assertEquals($responsearray, $assessment->create($params, $userid));
     }
     /**
+     * Test exception on assessment creation - no modules
+     * @group api
+     */
+    public function test_create_exception_nomodules() {
+        // Test paper create - ERROR invalid modules.
+        $params = $this->create_param_array();
+        $responsearray = $this->create_response_array();
+        $userid = 1;
+        $assessment = new \api\assessmentmanagement($this->db);
+        $responsearray['statuscode'] = 218;
+        $responsearray['status'] = 'Paper was not assigned any modules';
+        $responsearray['id'] = null;
+        $params['startdatetime'] = "2016-05-30T09:00:00";
+        $params['enddatetime'] = "2016-05-30T10:00:00";
+        $params['modules'] = array();
+        $this->assertEquals($responsearray, $assessment->create($params, $userid));
+    }
+    /**
      * Test exception on assessment creation - invalid labs
      * @group api
      */
@@ -343,7 +361,6 @@ class assessmentmanagementtest extends unittestdatabase {
         $responsearray['status'] = 'OK';
         $error[0] = 'Invalid lab Test lab 3';
         $responsearray['error'] = $error;
-        $params['modules'] = array();
         $params['labs'] = array(array('id' => 0, 'value' => 'Test lab 3'));
         $this->assertEquals($responsearray, $assessment->create($params, $userid));
     }
@@ -362,7 +379,6 @@ class assessmentmanagementtest extends unittestdatabase {
         $responsearray['status'] = 'This system is set-up to only allow the scheduling of summative exams';
         $responsearray['error'] = array();
         $responsearray['id'] = null;
-        $params['modules'] = array();
         $params['labs'] = array();
         $params['type'] = 'summative';
         $params['title'] = "Test summative"; 
@@ -519,23 +535,6 @@ class assessmentmanagementtest extends unittestdatabase {
             calendar_year, timezone, paper_ownerID, labs, paper_type, externalid FROM properties');
         $expectedtable = $this->get_expected_data_set('updateassessment')->getTable("properties");  
         $this->assertTablesEqual($expectedtable, $querytable); 
-    }
-    /**
-     * Test assessment update exception - invalid title
-     * @group api
-     */
-    public function test_update_exception_title() {
-        // Test paper update - EXCEPTION title in use.
-        $params = $this->update_param_array();
-        $responsearray = $this->update_response_array();
-        $userid = 1;
-        $assessment = new \api\assessmentmanagement($this->db);
-        $responsearray['statuscode'] = 206;
-        $responsearray['status'] = 'Assessment title is already in use';
-        $responsearray['id'] = null;
-        $params['id'] = 2;
-        $params['title'] = "Test create formative 3";
-        $this->assertEquals($responsearray, $assessment->update($params, $userid));
     }
     /**
      * Test assessment update exception - invalid user
@@ -702,7 +701,25 @@ class assessmentmanagementtest extends unittestdatabase {
         $error[0] = 'Invalid module 99';
         $responsearray['error'] = $error;
         $params['title'] = "Test Summative 99";
-        $params['modules'] = array(array('id' => 0, 'value' => 99));
+        $params['modules'] = array(array('id' => 0, 'value' => 99), array('id' => 1, 'value' => 2));
+        $this->assertEquals($responsearray, $assessment->schedule($params, $userid));
+    }
+    /**
+     * Test assessemnt scheduling success - no modules
+     * @group api
+     */
+    public function test_schedule_exception_nomodules() {
+        // Test scheduling with invalid modules - non fatal error.
+        $this->config->set('cfg_summative_mgmt', true);
+        $responsearray = $this->schedule_response_array();
+        $params = $this->schedule_param_array();
+        $userid = 1;
+        $assessment = new \api\assessmentmanagement($this->db);
+        $responsearray['statuscode'] = 218;
+        $responsearray['status'] = 'Paper was not assigned any modules';
+        $responsearray['id'] = null;
+        $params['title'] = "Test Summative 99";
+        $params['modules'] = array();
         $this->assertEquals($responsearray, $assessment->schedule($params, $userid));
     }
     /**

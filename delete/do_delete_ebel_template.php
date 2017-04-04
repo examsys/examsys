@@ -25,7 +25,7 @@
 */
 
 require '../include/admin_auth.inc';
-require '../include/errors.inc';
+require '../include/errors.php';
   
 $gridID = check_var('gridID', 'POST', true, false, true);
 

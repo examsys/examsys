@@ -140,7 +140,7 @@ MESSAGE;
 <body>
 <?php
   require '../include/toprightmenu.inc';
-  include '../include/user_search_options.inc';
+  include '../include/user_search_options.php';
   
 	echo draw_toprightmenu();
 ?>
@@ -205,7 +205,7 @@ MESSAGE;
 
 <body>
 <?php
-  require '../include/user_search_options.inc';
+  require '../include/user_search_options.php';
   require '../include/toprightmenu.inc';
 
 	echo draw_toprightmenu();

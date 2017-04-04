@@ -23,7 +23,7 @@
 */
 
 require '../include/sysadmin_auth.inc';
-require '../include/errors.inc';
+require '../include/errors.php';
 
 $announcementid = check_var('announcementid', 'REQUEST', true, false, true);
 

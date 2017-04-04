@@ -47,7 +47,11 @@ function padDecimals($number, $rounding) {
 
 // Get questions on the paper
 $questions = array();
-$result = $mysqli->prepare("SELECT q_type, question, leadin, display_method, option_text FROM (papers, questions, options) WHERE papers.question = questions.q_id AND questions.q_id = options.o_id AND paper = ? ORDER BY display_pos, id_num");
+$sql = "SELECT q_type, question, leadin, display_method, option_text "
+    . "FROM (papers, questions, options) "
+    . "WHERE papers.question = questions.q_id AND questions.q_id = options.o_id AND paper = ? AND options.o_id = papers.question "
+    . "ORDER BY display_pos, id_num";
+$result = $mysqli->prepare($sql);
 $result->bind_param('i', $paperID);
 $result->execute();
 $result->bind_result($q_type, $questionID, $leadin, $display_method, $option_text);
@@ -109,12 +113,17 @@ $result->close();
 
 $users = array_keys($user_data);
 $users = implode(',', $users);
+$questionids = implode(',', array_keys($questions));
 
-if ($users != '') {
+if ($users != '' and $questionids != '') {
 	// Load results from Log6
 	$reviewers = array();
 
-	$result = $mysqli->prepare("SELECT reviewerID, peerID, q_id, rating FROM log6 WHERE reviewerID IN ($users) AND paperID = ? AND started > ? AND started < ? ORDER BY started");
+	$review_sql = "SELECT reviewerID, peerID, q_id, rating "
+      . "FROM log6 "
+      . "WHERE reviewerID IN ($users) AND q_id IN($questionids) "
+      . "AND paperID = ? AND started > ? AND started < ? ORDER BY started";
+	$result = $mysqli->prepare($review_sql);
 	$result->bind_param('iss', $paperID, $startdate, $enddate);
 	$result->execute();
 	$result->bind_result($reviewerID, $peerID, $q_id, $rating);
@@ -142,6 +151,11 @@ function parse_group_data($questions, &$user_data) {
     $student_marks = 0;
     if (isset($student['data'])) {
       foreach ($student['data'] as $questionID => $question_data) {
+        if (empty($questions[$questionID]['scale_size'])) {
+          // Not a valid peer review question type,
+          // we should not bother trying to analyse it.
+          continue;
+        }
         $review_no      = 0;
         $review_total   = 0;
         $sub_student    = 0;
@@ -180,12 +194,16 @@ function parse_group_data($questions, &$user_data) {
 function parse_single_data($questions, &$user_data) {
   global $reviewers;
 
-  
   foreach ($user_data as $studentID => $student) {
     $available_marks = 0;
     $student_marks = 0;
     if (isset($student['data'])) {
       foreach ($student['data'] as $questionID => $question_data) {
+        if (empty($questions[$questionID]['scale_size'])) {
+          // Not a valid peer review question type,
+          // we should not bother trying to analyse it.
+          continue;
+        }
         $review_no = 0;
         $review_total = 0;
         $sub_student = 0;

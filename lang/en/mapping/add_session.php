@@ -15,7 +15,7 @@
 // along with Rogo.  If not, see <http://www.gnu.org/licenses/>.
 
 require '../lang/' . $language . '/mapping/sessions_list.php';
-require '../lang/' . $language . '/include/months.inc';
+require '../lang/' . $language . '/include/months.php';
 
 $string['newsession'] = 'New Session';
 $string['title'] = 'Title';

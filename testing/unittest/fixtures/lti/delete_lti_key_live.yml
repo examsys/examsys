@@ -1,0 +1,6 @@
+lti_keys:
+  -
+    id: 1
+    oauth_consumer_key: "test"
+    secret: "testsecret"
+    name: "test lti"

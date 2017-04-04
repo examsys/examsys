@@ -72,10 +72,18 @@ Class search_utils {
     echo "<option value=\"\">" . $string['anymodule'] . "</option>\n";
 
     $old_school = '';
+    $old_schoolcode= '';
     foreach ($staff_modules as $module) {
-      if ($module['school'] != $old_school) {
-        if ($old_school != '') echo "</optgroup>\n";
-        echo "<optgroup label=\"" . $module['school'] . "\">\n";
+      if (is_null($module['schoolcode'])) {
+        if ($module['school'] != $old_school or !is_null($old_schoolcode)) {
+          if ($old_school != '') echo "</optgroup>\n";
+          echo "<optgroup label=\"" . $module['school'] . "\">\n";
+        }
+      } else {
+         if ($module['schoolcode'] != $old_schoolcode) {
+           if ($old_schoolcode != '') echo "</optgroup>\n";
+           echo "<optgroup label=\"" . $module['schoolcode'] . ' ' . $module['school'] . "\">\n";
+         }
       }
       if ((isset($_POST['module']) and $module['idMod'] == $_POST['module']) or (isset($_GET['module']) and $module['idMod'] == $_GET['module']) or (isset($_GET['team']) and $module['idMod'] == $_GET['team']) or (isset($_POST['module']) and $module['idMod'] == $_POST['module']) or (isset($_GET['module']) and $module['idMod'] === $_GET['module']) or (isset($_GET['module']) and $module['id'] === $_GET['module'])) {
         echo "<option value=\"" . $module['idMod'] . "\" selected>" . $module['id'] . ": " . $module['fullname'] . "</option>\n";
@@ -83,6 +91,7 @@ Class search_utils {
         echo "<option value=\"" . $module['idMod'] . "\">" . $module['id'] . ": " . $module['fullname'] . "</option>\n";
       }
       $old_school = $module['school'];
+      $old_schoolcode = $module['schoolcode'];
     }
     echo "</optgroup>\n</select>\n";
   }

@@ -23,7 +23,7 @@
 */
 
 require '../include/staff_auth.inc';
-require_once '../include/errors.inc';
+require_once '../include/errors.php';
 require_once '../classes/paperproperties.class.php';
 
 $paperID = check_var('paperID', 'REQUEST', true, false, true);

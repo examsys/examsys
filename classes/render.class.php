@@ -53,7 +53,19 @@ class render {
         ));
         $this->config = $configObject;
     }
-    
+
+    /**
+     * Render an abitary template file.
+     *
+     * @param array $data Data for the template
+     * @param array $lang Language strings
+     * @param string $template The template filename
+     */
+    public function render($data, $lang, $template) {
+        $data = array('data' => $data, 'lang' => $lang, 'path' => $this->config->get('cfg_root_path'));
+        echo $this->twig->render($template, $data);
+    }
+
     /**
      * Render xml reponse.
      * @param string $template - template location
@@ -136,5 +148,10 @@ class render {
         $data = array ('plugins' => $plugins, 'header' => $header, 'path' => $this->config->get('cfg_root_path'),
             'action' => $action, 'lang' => $lang);
         echo $this->twig->render('admin/update.html', $data);
+    }
+    
+    public function render_html5_js($jsstring) {
+        $data = array ('path' => $this->config->get('cfg_root_path'), 'jsstring' => $jsstring);
+        echo $this->twig->render('html5_js.html', $data);
     }
 }

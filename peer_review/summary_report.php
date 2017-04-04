@@ -24,7 +24,7 @@
 */
 
 require_once '../include/staff_auth.inc';
-require_once '../include/errors.inc';
+require_once '../include/errors.php';
 require_once '../include/sort.inc';
 
 $paperID    = check_var('paperID', 'GET', true, false, true);

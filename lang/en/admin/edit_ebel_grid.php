@@ -14,6 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Rogo.  If not, see <http://www.gnu.org/licenses/>.
 
-require '../lang/' . $language . '/include/ebel_grid_options.inc';
+require '../lang/' . $language . '/include/ebel_grid_options.php';
 require '../lang/' . $language . '/admin/add_ebel_grid.php';
 ?>

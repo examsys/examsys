@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Rogo.  If not, see <http://www.gnu.org/licenses/>.
 
-require '../lang/' . $language . '/include/paper_options.inc';
-require '../lang/' . $language . '/include/months.inc';
+require '../lang/' . $language . '/include/paper_options.php';
+require '../lang/' . $language . '/include/months.php';
 require '../lang/' . $language . '/paper/new_paper2.php';
 
 $string['importoscemarks'] = 'Import OSCE Station Marks';

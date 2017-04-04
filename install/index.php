@@ -56,7 +56,7 @@ $cfg_web_root = get_root_path() . '/';
 $cfg_root_path = ltrim(str_replace($_SERVER['DOCUMENT_ROOT'], '', $cfg_web_root), '/');
 
 require_once dirname(__DIR__) . '/include/auth.inc';
-$includes = array('include/timezones.inc', 'install/index.php');
+$includes = array('install/index.php');
 $language = LangUtils::getLang($cfg_web_root);
 foreach ($includes as $file) {
   $lang_path = "{$cfg_web_root}lang/$language/" . $file;
@@ -64,7 +64,7 @@ foreach ($includes as $file) {
     require $lang_path;
   }
 }
-
+require_once dirname(__DIR__) . '/include/timezones.php';
 // Get the code version.
 $version = $configObject->getxml('version');
 

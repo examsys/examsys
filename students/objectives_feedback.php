@@ -26,7 +26,7 @@ require '../include/staff_student_auth.inc';
 
 require_once '../include/demo_replace.inc';
 require_once '../include/mapping.inc';
-require_once '../include/errors.inc';
+require_once '../include/errors.php';
 require_once '../include/feedback.inc';
 require_once '../include/sort.inc';
 require_once '../include/calculate_marks.inc';

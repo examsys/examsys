@@ -23,7 +23,7 @@
 */
 
 require '../include/staff_auth.inc';
-require '../include/errors.inc';
+require '../include/errors.php';
 require '../include/media.inc';
 require_once '../include/mapping.inc';
 require_once '../classes/questionbank.class.php';
@@ -339,7 +339,10 @@ if (!isset($_POST['submit'])) {
               $outcomes = json_decode($_POST['outcomes'], true);
 
               $mappings = $mysqli->prepare("SELECT question_id, obj_id FROM relationships WHERE question_id = ? AND idMod = ?");
-              echo $mysqli->error;
+
+              if ($mysqli->error) {
+                echo $string['showerror'];
+              }
               $mappings->bind_param('ii', $q_IDs[$i], $_GET['module']);
               $mappings->execute();
               $mappings->store_result();

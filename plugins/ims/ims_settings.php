@@ -24,7 +24,7 @@
 use plugins\ims\ims_enterprise_settings;
 
 require_once '../../include/sysadmin_auth.inc';
-require_once '../../include/errors.inc';
+require_once '../../include/errors.php';
 
 // Exit if ims not enabled.
 if (!$configObject->get('cfg_ims_enabled')) {

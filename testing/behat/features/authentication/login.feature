@@ -18,7 +18,7 @@ Feature: Login
       | username |
       | student1 |
     When I login as "student1"
-    Then I should see "No exams found" "content"
+    Then I should see "No exams found"
 
   @javascript
   Scenario: Student user login with JavaScript
@@ -26,4 +26,4 @@ Feature: Login
       | username |
       | student1 |
     When I login as "student1"
-    Then I should see "No exams found" "content"
+    Then I should see "No exams found"

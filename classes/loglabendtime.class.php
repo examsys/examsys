@@ -46,6 +46,16 @@ class LogLabEndTime {
   private $start_timestamp = false;
 
   /**
+   * Called when the object is unserialised.
+   */
+  public function __wakeup() {
+    // The serialised database object will be invalid,
+    // this object should only be serialised during an error report,
+    // so adding the current database connect seems like a waste of time.
+    $this->db = null;
+  }
+
+  /**
    * @param Lab $lab_id
    * @param PropertyObject $property_object Object holding the properties for the paper
    * @param mysqli $db

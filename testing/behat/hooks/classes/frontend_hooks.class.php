@@ -185,11 +185,14 @@ trait frontend_hooks {
    * Sets some values that are usually installed by default.
    */
   protected static function special_config() {
-    require __DIR__ . '/../../../../lang/en/include/timezones.inc';
+    global $string;
+    $configObject = \Config::get_instance();
+    $cfg_web_root = $configObject->get('cfg_web_root');
+    $language = \LangUtils::getLang($cfg_web_root);
+    require __DIR__ . '/../../../../include/timezones.php';
     $encoded_timezones = json_encode($timezone_array);
     $encoded_cohorts = json_encode(array('<whole cohort>', '0-10', '11-20', '21-30', '31-40', '41-50', '51-75', '76-100', '101-150', '151-200', '201-300',
         '301-400', '401-500'));
-    $configObject = \Config::get_instance();
     $configObject->set_db_object(state::get_db());
     $configObject->set_setting('timezones', $encoded_timezones, \Config::JSON);
     $configObject->set_setting('cohort_sizes', $encoded_cohorts, \Config::JSON);

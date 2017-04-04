@@ -77,7 +77,7 @@ require_once '../include/staff_auth.inc';
 </head>
 
 <?php
-require '../include/paper_options.inc';
+require '../include/paper_options.php';
 ?>
 <div id="content">
 <?php

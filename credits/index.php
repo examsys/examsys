@@ -82,8 +82,6 @@ Adam Clarke<br />
 <tr><td><?php echo $string['javascriptlibrary']; ?></td><td>jQuery 1.11.1 - <a href="http://jquery.com" target="_blank">jquery.com</a><br />
 jQuery UI 1.10.4 - <a href="http://jqueryui.com" target="_blank">http://jqueryui.com</a></td></tr>
 <tr><td colspan="2">&nbsp;</td></tr>
-<tr><td><?php echo $string['mp3player']; ?></td><td>MP3 Player 0.6.0 - <a href="http://flash-mp3-player.net/" target="_blank">flash-mp3-player.net</a></td></tr>
-<tr><td colspan="2">&nbsp;</td></tr>
 <tr><td><?php echo $string['videoplayer']; ?></td><td>FLV Player 1.6.0 - <a href="http://flv-player.net/players/maxi/" target="_blank">flv-player.net/players/maxi/</a></td></tr>
 <tr><td colspan="2">&nbsp;</td></tr>
 <tr><td><?php echo $string['metadata']; ?></td><td>GetID3 1.8.5 - <a href="http://getid3.sourceforge.net/">getid3.sourceforge.net</a></td></tr>

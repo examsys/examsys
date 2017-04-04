@@ -15,7 +15,7 @@
 // along with Rogo.  If not, see <http://www.gnu.org/licenses/>.
 
 require '../lang/' . $language . '/paper/details.php';
-require 'shared.inc';
+require 'shared.php';
 
 $string['exporttoqti'] = 'Export to QTI';
 $string['qtiexport'] = 'QTI %s Export';

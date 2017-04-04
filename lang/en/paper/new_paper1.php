@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Rogo.  If not, see <http://www.gnu.org/licenses/>.
 
-require_once '../lang/' . $language . '/include/paper_types.inc';
+require_once '../lang/' . $language . '/include/paper_types.php';
 
 $string['createnewpaper'] = 'Create new Paper';
 $string['papertype'] = 'Paper Types';

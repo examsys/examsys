@@ -23,7 +23,7 @@
 */
 
 require '../../include/sysadmin_auth.inc';    // Only let SysAdmin staff delete pages.
-require '../../include/errors.inc';
+require '../../include/errors.php';
 
 $originalID = check_var('id', 'GET', true, false, true);
 

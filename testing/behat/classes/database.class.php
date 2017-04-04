@@ -77,8 +77,6 @@ class database {
     InstallUtils::checkDBUsers();
     InstallUtils::createDirectories();
     InstallUtils::createDatabase($config->get('cfg_db_database'), $config->get('cfg_db_charset'));
-    // Create constraints.
-    InstallUtils::createConstraints();
   }
 
   /**

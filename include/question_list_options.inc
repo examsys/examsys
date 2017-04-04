@@ -26,7 +26,7 @@
 
 require_once $cfg_web_root . 'include/sidebar_menu.inc';
 require_once $cfg_web_root . 'include/sidebar_functions.inc';
-require_once $cfg_web_root . 'include/errors.inc';
+require_once $cfg_web_root . 'include/errors.php';
 require_once $cfg_web_root . 'include/mapping.inc';
 
 $module = check_var('module', 'GET', true, false, true);

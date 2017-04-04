@@ -22,13 +22,13 @@
 */
 
 require '../include/sysadmin_auth.inc';
-require_once '../include/errors.inc';
-require '../lang/' . $language. '/include/timezones.inc';
+require_once '../include/errors.php';
+require '../include/timezones.php';
 require '../include/toprightmenu.inc';
 
 if (isset($_POST['submit'])) {
     foreach ($configObject->get_setting('core') as $setting => $value) {
-        $new_value = check_var($setting, 'POST', false, false, true);
+        $new_value = param::optional($setting, '', param::RAW, param::FETCH_POST);
         // Timezones are display in a multi selectbox so the post will be an array.
         if ($setting == 'paper_timezones') {
             $arrayvalue = array();

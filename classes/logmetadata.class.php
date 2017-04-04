@@ -48,6 +48,16 @@ class LogMetadata {
   private $userObject;
 
   /**
+   * Called when the object is unserialised.
+   */
+  public function __wakeup() {
+    // The serialised database object will be invalid,
+    // this object should only be serialised during an error report,
+    // so adding the current database connect seems like a waste of time.
+    $this->db = null;
+  }
+
+  /**
    * Create new object to represent the Log Metadata table
    * @param integer    $userID     ID of the user we're dealing with
    * @param integer    $paper_id   ID of the current paper

@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Rogo.  If not, see <http://www.gnu.org/licenses/>.
 
-require_once '../lang/' . $language . '/include/paper_types.inc';
+require_once '../lang/' . $language . '/include/paper_types.php';
 require_once '../lang/' . $language . '/paper/new_paper1.php';
-require_once '../lang/' . $language . '/include/months.inc';
+require_once '../lang/' . $language . '/include/months.php';
 
 $string['availability'] = 'Availability';
 $string['summativeexamdetails'] = 'Summative Exam Details';

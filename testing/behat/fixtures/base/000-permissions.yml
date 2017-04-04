@@ -3,49 +3,33 @@
 permissions:
   -
     action: "assessmentmanagement/create"
-    description: "Create/Update paper"
   -
     action: "assessmentmanagement/delete"
-    description: "Delete a paper"
   -
     action: "assessmentmanagement/schedule"
-    description: "SChedule a summative assessment"
   -
     action: "gradebook"
-    description: "Gradebook"
   -
     action: "modulemanagement/create"
-    description: "Create/Update a module"
   -
     action: "modulemanagement/delete"
-    description: "Delete a module"
   -
     action: "modulemanagement/enrol"
-    description: "Enrol Users onto a module"
   -
     action: "modulemanagement/unenrol"
-    description: "UnEnrol Users from a module"
   -
     action: "usermanagement/create"
-    description: "Create/Update a user"
   -
     action: "usermanagement/delete"
-    description: "Delete a user"
   -
     action: "coursemanagement/create"
-    description: "Create/Update a course"
   -
     action: "coursemanagement/delete"
-    description: "Delete a course"
   -
     action: "schoolmanagement/create"
-    description: "Create/Update a school"
   -
     action: "schoolmanagement/delete"
-    description: "Delete a school"
   -
     action: "facultymanagement/create"
-    description: "Create/Update a faculty"
   -
     action: "facultymanagement/delete"
-    description: "Delete a faculty"

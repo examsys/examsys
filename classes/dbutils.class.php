@@ -57,6 +57,56 @@ Class DBUtils {
     return $mysqli;
   }
 
+  
+  /**
+   * Check binded parameters and type
+   *
+   * @param Array $bindtype Bind data type
+   * @param Array $bindvalue Bind data value
+   * @param string Sql to bind
+   * @return boolean
+   */
+  public static function check_sqlparams($bindtype, $bindvalue, $sql) {
+    if (is_array($bindvalue) && !empty($bindvalue) && is_array($bindtype) && !empty($bindtype) && (substr_count($sql, "?") === count($bindvalue)) && (count($bindvalue) === count($bindtype))) {
+      $error = false;
+      while (!empty($bindtype)) {
+        if ($error === true) {
+          break;
+        }
+        $type = array_pop($bindtype);
+        $param = array_pop($bindvalue);
+        if (!preg_match('/^(i|d|s|b)$/', $type)) {
+          return false;
+        }
+        switch ($type) {
+          case "i":
+            if (!is_int($param)) {
+              $error = true;
+            }
+            break;
+          case "d":
+            if (!is_float($param)) {
+              $error = true;
+            }
+            break;
+          case "s":
+            if (!is_string($param)) {
+              $error = true;
+            }
+            break;
+          case "b":
+            break;
+          default:
+            $error = true;
+        }
+      }
+      if (!$error) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   /**
    * Checks if the schema for a table supports full text search indexing.
    *
@@ -107,7 +157,7 @@ Class DBUtils {
     $selection = '';
     $properties = array_keys($params);
     foreach ($properties as $prop) {
-        $selection .= $prop . ' = ?, ';
+      $selection .= $prop . ' = ?, ';
     }
     $selection = rtrim($selection, ', ');
     $values = array_values($params);
@@ -115,20 +165,20 @@ Class DBUtils {
     $bind_types = array();
     $bind_values = array();
     foreach ($values as $idx => $val) {
-        // Check valid bind_param type.
-        if (preg_match('/^(i|d|s|b)$/', $val[0])) {
-            $bind_types[] = $val[0];
-        } else {
-            return false;
-        }
-        $bind_values[] = $val[1];
+      // Check valid bind_param type.
+      if (preg_match('/^(i|d|s|b)$/', $val[0])) {
+        $bind_types[] = $val[0];
+      } else {
+        return false;
+      }
+      $bind_values[] = $val[1];
     }
     $bind_types = implode('', $bind_types);
     $bind_types .= 'i';
     $bind_values[] = $id;
     $bind_values_ref = array();
     foreach ($bind_values as $key => $value)  {
-        $bind_values_ref[$key] = &$bind_values[$key]; 
+      $bind_values_ref[$key] = &$bind_values[$key]; 
     }
     // Run generated query.
     $result = $db->prepare($command . $selection . $filter);
@@ -136,7 +186,7 @@ Class DBUtils {
     $result->execute();
     $result->close();
     if ($db->errno != 0) {
-        return false;
+      return false;
     }
     return true;
   }
@@ -155,7 +205,7 @@ Class DBUtils {
     $selection = '';
     $properties = array_keys($params);
     foreach ($properties as $prop) {
-        $selection .= $prop . ', ';
+      $selection .= $prop . ', ';
     }
     $selection = rtrim($selection, ', ');
     $selection .= ') VALUES (';
@@ -164,21 +214,21 @@ Class DBUtils {
     $bind_types = array();
     $bind_values = array();
     foreach ($values as $idx => $val) {
-        // Check valid bind_param type.
-        if (preg_match('/^(i|d|s|b)$/', $val[0])) {
-            $bind_types[] = $val[0];
-        } else {
-            return false;
-        }
-        $bind_values[] = $val[1];
-        $selection .= '?, ';
+      // Check valid bind_param type.
+      if (preg_match('/^(i|d|s|b)$/', $val[0])) {
+        $bind_types[] = $val[0];
+      } else {
+        return false;
+      }
+      $bind_values[] = $val[1];
+      $selection .= '?, ';
     }
     $selection = rtrim($selection, ', ');
     $selection .= ')';
     $bind_types = implode('', $bind_types);
     $bind_values_ref = array();
     foreach ($bind_values as $key => $value)  {
-        $bind_values_ref[$key] = &$bind_values[$key]; 
+      $bind_values_ref[$key] = &$bind_values[$key]; 
     }
     // Run generated query.
     $result = $db->prepare($command . $selection);
@@ -186,11 +236,11 @@ Class DBUtils {
     $result->execute();
     $result->close();
     if ($db->errno != 0) {
-        return false;
+      return false;
     }
     return $db->insert_id;
   }
-
+  
   /**
    * Run sql file
    * @param string $file file location

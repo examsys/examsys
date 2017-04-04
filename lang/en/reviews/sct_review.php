@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Rogo.  If not, see <http://www.gnu.org/licenses/>.
 
-require '../lang/' . $language . '/include/common.inc';
+require '../lang/' . $language . '/include/common.php';
 require '../lang/' . $language . '/question/sct_shared.php';
 
 $string['notallowed'] = 'Access to this paper is not currently allowed.';

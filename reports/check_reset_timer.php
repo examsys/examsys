@@ -23,7 +23,7 @@
 */
 
 require '../include/staff_auth.inc';
-require_once '../include/errors.inc';
+require_once '../include/errors.php';
 
 $metadataID = check_var('metadataID', 'GET', true, false, true);
 $userID     = check_var('userID', 'GET', true, false, true);

@@ -90,7 +90,7 @@ if (isset($_POST['submit'])) {
   
 <body>
   <?php
-    require '../include/ebel_grid_options.inc';
+    require '../include/ebel_grid_options.php';
 		require '../include/toprightmenu.inc';
 
 		echo draw_toprightmenu();

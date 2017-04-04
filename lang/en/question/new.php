@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
-require $configObject->get('cfg_web_root') . 'lang/' . $language . '/include/question_types.inc';
+require $configObject->get('cfg_web_root') . 'lang/' . $language . '/include/question_types.php';
 
 $string['newquestion'] = 'New Question';
 $string['area_desc'] = 'Allows student to specify an area over a background image as their answer.';

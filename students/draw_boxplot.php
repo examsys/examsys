@@ -25,7 +25,7 @@
 */
 
 require '../include/staff_student_auth.inc';
-require_once '../include/errors.inc';
+require_once '../include/errors.php';
 
 $scale        = check_var('scale', 'GET', true, false, true);
 $exam         = check_var('exam', 'GET', true, false, true);

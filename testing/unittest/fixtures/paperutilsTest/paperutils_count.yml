@@ -1,0 +1,110 @@
+users:
+  -
+    id: 1
+    username: 'admin'
+    roles: 'SysAdmin'
+    password: 'boo'
+    surname: 'Admin'
+  -
+    id: 2
+    username: 'staff'
+    roles: 'Staff'
+    password: 'boo'
+    surname: 'Staff'
+  -
+    id: 3
+    username: 'student'
+    roles: 'Student'
+    password: 'boo'
+    surname: 'Student'
+properties:
+  -
+    property_id: 1
+    calendar_year: 2015
+    paper_type: '1'
+    paper_ownerID: 2
+  -
+    property_id: 2
+    calendar_year: 2016
+    paper_type: '2'
+    paper_ownerID: 2
+  -
+    property_id: 3
+    calendar_year: 2016
+    paper_type: '3'
+    paper_ownerID: 2
+  -
+    property_id: 4
+    calendar_year: 2016
+    paper_type: '4'
+    paper_ownerID: 2
+  -
+    property_id: 5
+    calendar_year: 2016
+    paper_type: '4'
+    paper_ownerID: 1
+  -
+    property_id: 6
+    calendar_year: 2016
+    paper_type: '2'
+    paper_ownerID: 1
+    deleted: '2016-09-16 16:09:16'
+modules:
+  -
+    id: 1
+    academic_year_start: '01/07'
+  -
+    id: 2
+    academic_year_start: '01/07'
+properties_modules:
+  -
+    property_id: 1
+    idMod: 1
+  -
+    property_id: 3
+    idMod: 2
+  -
+    property_id: 5
+    idMod: 1
+papers:
+  -
+    p_id: 1
+    paper: 1
+  -
+    p_id: 2
+    paper: 4
+question_statuses:
+  -
+    id: 1
+    name: normal
+    retired: 0
+    is_default: 1
+    display_order: 1
+questions:
+  -
+    q_id: 1
+    status: 1
+    deleted: null
+    ownerID: 2
+  -
+    q_id: 2
+    status: 1
+    deleted: null
+    ownerID: 2
+  -
+    q_id: 3
+    status: 1
+    deleted: null
+    ownerID: 1
+  -
+    q_id: 4
+    status: 1
+    ownerID: 1
+    deleted: '2016-09-16 16:09:16'
+questions_modules:
+  -
+    q_id: 1
+    idMod: 1
+  -
+    q_id: 3
+    idMod: 2

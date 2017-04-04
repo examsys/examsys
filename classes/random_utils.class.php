@@ -43,7 +43,7 @@ Class random_utils {
    * Function to get the random question ids based on the parent question id
    * @param integer $id question id
    * @param mysqli $db db connection
-   * @return array|bool random question ids or false is non found
+   * @return array random question ids
    */
   static public function get_random_qids_for_question($id, $db) {
     $random = $db->prepare("SELECT q_id FROM random_link WHERE id = ?");
@@ -51,13 +51,9 @@ Class random_utils {
     $random->execute();
     $random->store_result();
     $random->bind_result($q_id);
-    if ($random->num_rows == 0) {
-      $qids = false;
-    } else {
-      $qids = array();
-      while ($random->fetch()) {
-        $qids[] = $q_id;
-      }
+    $qids = array();
+    while ($random->fetch()) {
+      $qids[] = $q_id;
     }
     $random->close();
     return $qids;

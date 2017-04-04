@@ -232,6 +232,7 @@
     echo "<option value=\"1\">1%</option>\n";
     echo "<option value=\"5\">5%</option>\n";
     echo "<option value=\"10\">10%</option>\n";
+    echo "<option value=\"15\">15%</option>\n";
     echo "<option value=\"25\">25%</option>\n";
     echo "<option value=\"27\">27%</option>\n";
     echo "<option value=\"33.3\">33.3%</option>\n";

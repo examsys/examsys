@@ -27,7 +27,7 @@
 */
 
 require_once '../include/sysadmin_auth.inc';
-require_once '../include/errors.inc';
+require_once '../include/errors.php';
 require_once '../include/demo_replace.inc';
 
 $userID = check_var('userID', 'GET', true, false, true);

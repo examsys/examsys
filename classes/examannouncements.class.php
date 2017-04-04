@@ -31,6 +31,16 @@ class ExamAnnouncements {
   private $string;
 
   /**
+   * Called when the object is unserialised.
+   */
+  public function __wakeup() {
+    // The serialised database object will be invalid,
+    // this object should only be serialised during an error report,
+    // so adding the current database connect seems like a waste of time.
+    $this->db = null;
+  }
+
+  /**
    * @param int $paperID    - ID of the exam paper we are dealing with
    * @param object $db      - Link to mysqli
    * @param string $string  - Language translations

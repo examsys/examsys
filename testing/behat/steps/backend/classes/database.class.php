@@ -32,7 +32,7 @@ use testing\behat\helpers\database\state;
  */
 trait database {
   /** @var string The name of the database state used by database steps. */
-  private $db_state_name = '';
+  private $db_state_name = 'databaseteststate';
 
   /**
    * Checks that there are an expected number of rows in a database table.

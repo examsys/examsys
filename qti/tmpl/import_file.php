@@ -52,7 +52,7 @@ require_once '../include/staff_auth.inc';
 
 <body>
 <?php
-require '../include/paper_options.inc';
+require '../include/paper_options.php';
 require '../include/toprightmenu.inc';
 
 echo draw_toprightmenu();

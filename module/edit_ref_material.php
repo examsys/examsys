@@ -23,7 +23,7 @@
 */
 
 require '../include/staff_auth.inc';
-require '../include/errors.inc';
+require '../include/errors.php';
 
 $refID = check_var('refID', 'GET', true, false, true);
 
@@ -163,10 +163,17 @@ for ($size=200; $size<850; $size+=50) {
 
   $module_no = 0;
   $old_school = '';
+  $old_schoolcode = '';
   foreach ($module_array as $modID=>$module) {
-		if ($module['school'] != $old_school) {
-			echo "<table border=\"0\" class=\"school\"><tr><td><nobr>" . $module['school'] . "</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
-		}
+    if (is_null($module['schoolcode'])) {
+      if ($module['school'] != $old_school or !is_null($old_schoolcode)) {
+        echo "<table border=\"0\" class=\"school\"><tr><td><nobr>" . $module['school'] . "</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
+      }
+    } else {
+        if ($module['schoolcode'] != $old_schoolcode) {
+          echo "<table border=\"0\" class=\"school\"><tr><td><nobr>" . $module['schoolcode']  . ' ' . $module['school'] . "</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
+        }
+    }
     $match = false;
     foreach ($ref_modules as $separate_module) {
       if ($separate_module == $module['id']) $match = true;
@@ -180,8 +187,9 @@ for ($size=200; $size<850; $size+=50) {
     } else {
       echo "<div class=\"r1\" id=\"divmod$module_no\"><input type=\"checkbox\" onclick=\"toggle('divmod$module_no');\" name=\"mod$module_no\" id=\"mod$module_no\" value=\"$modID\"><label for=\"mod$module_no\">" . $module['id'] . ": " . substr($module['fullname'], 0, 60) . "</label></div>\n";
     }
-    $module_no++;  
-    $old_school = $module['school'];        
+    $module_no++;
+    $old_school = $module['school'];
+    $old_schoolcode = $module['schoolcode']; 
   }
   echo "<input type=\"hidden\" name=\"module_no\" id=\"module_no\" value=\"$module_no\" /></div>\n";
 ?>

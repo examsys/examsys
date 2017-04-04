@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Rogo.  If not, see <http://www.gnu.org/licenses/>.
 
-require '../lang/' . $language . '/delete/delete.inc';
+require '../lang/' . $language . '/delete/delete.php';
 
 $string['confirmdelete'] = 'Confirm Pointer Delete';
 $string['msg'] = 'Removing this question from the paper will only alter the paper.<br /><br />It does <strong>not</strong> delete the actual question in the question bank.';

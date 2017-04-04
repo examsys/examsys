@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Rogo.  If not, see <http://www.gnu.org/licenses/>.
 
-require '../lang/' . $language . '/include/user_search_options.inc';
+require '../lang/' . $language . '/include/user_search_options.php';
 
 $string['sendwelcomeemail'] = 'Send welcome email to user';
 $string['csvfile'] = 'CSV File:';

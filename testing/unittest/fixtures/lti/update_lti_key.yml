@@ -1,0 +1,15 @@
+lti_keys:
+  -
+    id: 1
+    oauth_consumer_key: "newconsumerkey"
+    secret: "DoNotTellAnyone"
+    name: "New name"
+    context_id: "context"
+    deleted: null
+  -
+    id: 2
+    oauth_consumer_key: "test2"
+    secret: "MyLittleSecret"
+    name: "test lti 2"
+    context_id: null
+    deleted: null

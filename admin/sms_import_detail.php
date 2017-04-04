@@ -24,7 +24,7 @@
 
 require '../include/sysadmin_auth.inc';
 require '../include/sidebar_menu.inc';
-require '../include/errors.inc';
+require '../include/errors.php';
   
 check_var('day', 'GET', true, false, false);
 

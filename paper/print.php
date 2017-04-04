@@ -30,14 +30,14 @@ require '../include/staff_auth.inc';
 require '../include/print_functions.inc';
 require '../include/media.inc';
 require '../config/index.inc';
-require_once '../include/errors.inc';
+require_once '../include/errors.php';
 
 //HTML5 part
-require_once '../lang/' . $language . '/question/edit/hotspot_correct.txt';
-require_once '../lang/' . $language . '/question/edit/area.txt';
-require_once '../lang/' . $language . '/paper/hotspot_answer.txt';
-require_once '../lang/' . $language . '/paper/hotspot_question.txt';
-require_once '../lang/' . $language . '/paper/label_answer.txt';
+require_once '../lang/' . $language . '/question/edit/hotspot_correct.php';
+require_once '../lang/' . $language . '/question/edit/area.php';
+require_once '../lang/' . $language . '/paper/hotspot_answer.php';
+require_once '../lang/' . $language . '/paper/hotspot_question.php';
+require_once '../lang/' . $language . '/paper/label_answer.php';
 $jstring = $string; //to pass it to JavaScript HTML5 modules
 //HTML5 part
 
@@ -257,18 +257,14 @@ $current_screen = 1;
   <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
   <script type="text/javascript" src="../tools/mee/mee/js/mee_src.js"></script>
   <script type="text/javascript" src="../js/start.js"></script>
-  <script type="text/javascript" src="../js/flash_include.js"></script>
 	
-	<!-- HTML5 part start -->
-	<script type='text/javascript'><?php echo "var lang_string = ".  json_encode($jstring) . ";\n";?></script>
-	<script type="text/javascript" src="../js/html5.images.js"></script>
-	<script type="text/javascript" src="../js/qsharedf.js"></script>
-	<script type="text/javascript" src="../js/qlabelling.js"></script>
-	<script type="text/javascript" src="../js/qhotspot.js"></script>
-	<script type="text/javascript" src="../js/qarea.js"></script>
-	<!-- HTML5 part end -->
-
-  <?php echo $configObject->get('cfg_js_root'); ?>
+  <?php 
+  
+    $render = new render($configObject);
+    $render->render_html5_js(json_encode($jstring));
+    echo $configObject->get('cfg_js_root'); 
+  
+  ?>
 
   <script>
     $(function () {

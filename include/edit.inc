@@ -62,7 +62,7 @@ function redirect($userObj, $q_id, $configObj, $db) {
     
     header('location: ' . $url);
   } else {
-    header('location: ' . $configObj->get('cfg_root_path') . '/staff/index.php');
+    header('location: ' . $configObj->get('cfg_root_path') . '/');
   }
   $db->close();
   exit;   // Stop script execution after the redirect.

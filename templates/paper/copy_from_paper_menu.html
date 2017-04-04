@@ -1,0 +1,59 @@
+<script>
+  $(function () {
+    $(".cancel").click(function(event) {
+      $('#copy_from_submenu').hide();
+      event.stopPropagation();
+    });
+  });
+</script>
+<div class="popup" style="z-index: 20; font-size: 90%; background-color: white; top: 120px; width: 630px; height: 346px;" id="copy_from_submenu" onclick="showCopyFromMenu(true, event);">
+    <form method="post" action="{{data.action}}" autocomplete="off">
+        <input type="hidden" name="paper_type" value="{{data.papertype}}" />
+        <input type="hidden" name="currentpid" value="{{data.paperid}}" />
+        <input type="hidden" name="copyfrompaper" value="1" />
+        <div id="table1div" style="width:100%">
+            <table cellpadding="1" cellspacing="0" border="0" style="font-size:100%; width:100%" id="table1">
+                <tbody>
+                    <tr>
+                        <td colspan="2" style="background-color:#F2B100; height:5px; padding:0"> </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td colspan="1" style="text-align:right">{{lang.papers}}</td>
+                        <td colspan="1">
+                            <select name="paperID" id="paperID">
+                                {% for id,item in data.papers %}
+                                {%if id != data.paperid %}
+                                <option value="{{id}}">{{item.paper_title}}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td align="center"><input type="radio" name="copytype" value="paperonly">{{lang.paperslinkquestions}}</td>
+                        <td align="center"><input type="radio" name="copytype" value="paperquestions" checked="">{{lang.papercopyquestions}}</td>
+                    </tr>
+                    <tr>
+                        <td align="center"><img src="../artwork/copy_question_links.png" width="120" height="130"></td>
+                        <td align="center"><img src="../artwork/copy_questions.png" width="120" height="130"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="text-align:center">{{lang.copyquestionsblurb}}</td>
+                    </tr>
+                    <tr>
+                        <td align="center" colspan="2">
+                            <input type="button" class="cancel" value="{{lang.cancel}}" name="cancel" id="cancel">
+                            <input type="submit" class="ok" value="{{lang.ok}}" name="submit" id="submit_button">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </form>
+</div>

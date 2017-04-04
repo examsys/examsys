@@ -1,0 +1,16 @@
+lti_keys:
+  -
+    id: 1
+    oauth_consumer_key: "test"
+    secret: "testsecret"
+    name: "test lti"
+  -
+    id: 2
+    oauth_consumer_key: "test2"
+    secret: "MyLittleSecret"
+    name: "test lti 2"
+  -
+    id: 3
+    oauth_consumer_key: "newkey"
+    secret: "IWillNeverTell"
+    name: "My new system"

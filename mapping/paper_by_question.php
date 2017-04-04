@@ -24,7 +24,7 @@
 
 require '../include/staff_auth.inc';
 require '../include/mapping.inc';
-require '../include/errors.inc';
+require '../include/errors.php';
 
 $paperID = check_var('paperID', 'GET', true, false, true);
 

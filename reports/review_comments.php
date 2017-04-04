@@ -26,14 +26,14 @@
 
 require '../include/staff_auth.inc';
 require '../include/media.inc';
-require_once '../include/errors.inc';
+require_once '../include/errors.php';
 
 //HTML5 part
-require_once '../lang/' . $language . '/question/edit/hotspot_correct.txt';
-require_once '../lang/' . $language . '/question/edit/area.txt';
-require_once '../lang/' . $language . '/paper/hotspot_answer.txt';
-require_once '../lang/' . $language . '/paper/hotspot_question.txt';
-require_once '../lang/' . $language . '/paper/label_answer.txt';
+require_once '../lang/' . $language . '/question/edit/hotspot_correct.php';
+require_once '../lang/' . $language . '/question/edit/area.php';
+require_once '../lang/' . $language . '/paper/hotspot_answer.php';
+require_once '../lang/' . $language . '/paper/hotspot_question.php';
+require_once '../lang/' . $language . '/paper/label_answer.php';
 $jstring = $string; //to pass it to JavaScript HTML5 modules
 //HTML5 part
 
@@ -177,50 +177,13 @@ function displayQuestion($q_no, $q_id, $theme, $scenario, $leadin, $q_type, $cor
       ?>
       <br />
 			<?php
-				if ($configObject->get('cfg_interactive_qs') == 'html5') {
-					//<!-- ======================== HTML5 part include find ================= -->
-					echo "<canvas id='canvas" . $q_no . "' width='" . ($q_media_width + 2) . "' height='" . ($q_media_height + 1) . "'></canvas>\n";
-					echo "<div style='width:100%;text-align: left;' id='canvasbox'></div>\n";
-					echo "<script>\n";
-					echo "setUpQuestion(" . $q_no . ", 'q" . $q_no . "','" . $language . "', '" . $q_media . "', '" . $correct . "', '','','#FFC0C0','area','script');\n";
-					echo "</script>\n";
-					//<!-- ==================================================== -->
-				} else {
-        	echo "<script>\n";
-					echo "write_string('<object classid=\"clsid:d27cdb6e-ae6d-11cf-96b8-444553540000\" width=\"" . ($q_media_width + 2) . "\" height=\"" . ($q_media_height + 1) . "\" id=\"externalinterfaceq" . $q_no . "_1\" align=\"top\">');\n";
-					echo "write_string('<param name=\"movie\" value=\"" . $configObject->get('cfg_root_path') . "/question/edit/area.swf\" />');\n";
-					echo "write_string('<param name=\"quality\" value=\"high\" />');\n";
-					echo "write_string('<param name=\"bgcolor\" value=\"#ffffff\" />');\n";
-					echo "write_string('<param name=\"play\" value=\"true\" />');\n";
-					echo "write_string('<param name=\"loop\" value=\"true\" />');\n";
-					echo "write_string('<param name=\"wmode\" value=\"opaque\" />');\n";
-					echo "write_string('<param name=\"scale\" value=\"showall\" />');\n";
-					echo "write_string('<param name=\"menu\" value=\"true\" />');\n";
-					echo "write_string('<param name=\"devicefont\" value=\"false\" />');\n";
-					echo "write_string('<param name=\"salign\" value=\"top\" />');\n";
-					echo "write_string('<param name=\"allowScriptAccess\" value=\"sameDomain\" />');\n";
-					echo "write_string('<!--[if !IE]>-->');\n";
-					echo "write_string('<object type=\"application/x-shockwave-flash\" data=\"" . $configObject->get('cfg_root_path') . "/question/edit/area.swf\" id=\"externalinterfaceq" . $q_no . "_2\" width=\"" . ($q_media_width + 2) . "\" height=\"" . ($q_media_height + 1) . "\">');\n";
-					echo "write_string('<param name=\"movie\" value=\"" . $configObject->get('cfg_root_path') . "/question/edit/area.swf\" />');\n";
-					echo "write_string('<param name=\"quality\" value=\"high\" />');\n";
-					echo "write_string('<param name=\"bgcolor\" value=\"#ffffff\" />');\n";
-					echo "write_string('<param name=\"play\" value=\"true\" />');\n";
-					echo "write_string('<param name=\"loop\" value=\"true\" />');\n";
-					echo "write_string('<param name=\"wmode\" value=\"opaque\" />');\n";
-					echo "write_string('<param name=\"scale\" value=\"showall\" />');\n";
-					echo "write_string('<param name=\"menu\" value=\"true\" />');\n";
-					echo "write_string('<param name=\"devicefont\" value=\"false\" />');\n";
-					echo "write_string('<param name=\"salign\" value=\"top\" />');\n";
-					echo "write_string('<param name=\"allowScriptAccess\" value=\"sameDomain\" />');\n";
-					echo "write_string('<!--<![endif]-->');\n";
-					echo "write_string('<a href=\"https://www.adobe.com/go/getflash\"> <img src=\"https://www.adobe.com/images/shared/download_buttons/get_flash_player.gif\" alt=\"Get Adobe Flash player\" /></a>');\n";
-					echo "write_string('<!--[if !IE]>-->');\n";
-					echo "write_string('</object>');\n";
-					echo "write_string('<!--<![endif]-->');\n";
-					echo "write_string('</object>');\n";
-          echo "sendTextToAS3('$language', 'q$q_no', 1, '" . $mediadirectory->url($q_media, false, false, true) . "', '" . $correct . "', '');\n";
-					echo "</script>\n<br />";
-         }          
+    			//<!-- ======================== HTML5 part include find ================= -->
+    			echo "<canvas id='canvas" . $q_no . "' width='" . ($q_media_width + 2) . "' height='" . ($q_media_height + 1) . "'></canvas>\n";
+    			echo "<div style='width:100%;text-align: left;' id='canvasbox'></div>\n";
+    			echo "<script>\n";
+    			echo "setUpQuestion(" . $q_no . ", 'q" . $q_no . "','" . $language . "', '" . $q_media . "', '" . $correct . "', '','','#FFC0C0','area','script');\n";
+    			echo "</script>\n";
+    			//<!-- ==================================================== -->
 			?>
       <input type="hidden" name="q<?php echo $q_no; ?>" id="q<?php echo $q_no; ?>" />
       <?php
@@ -319,28 +282,13 @@ function displayQuestion($q_no, $q_id, $theme, $scenario, $leadin, $q_type, $cor
   <div align="center">
 	<?php
 	$configObject          = Config::get_instance();
-	if ($configObject->get('cfg_interactive_qs') == 'html5') {
-		//<!-- ======================== HTML5 part rep disc ================= -->
-		echo "<canvas id='canvas" . $q_no . "' width='" . ($q_media_width + 220) . "' height='" . $tmp_height . "'></canvas>\n";
-		echo "<br /><div style='width:100%;text-align: left;' id='canvasbox'></div>\n";
-		echo "<script>\n";
-		echo "setUpQuestion(" . $q_no . ", 'flash" . $q_no . "', '" . $language . "', '" . $q_media . "', '" . trim($correct) . "', '', '','#FFC0C0','labelling','analysis');\n";
-		echo "</script>\n";
-		//<!-- ==================================================== -->
-	} else {
-		echo "<script>\n";
-		echo "function swfLoaded" . $q_no . "(message) {\n";
-		echo "var num = message.substring(5,message.length);\n";
-		echo "setUpFlash(num, message, '" . $language . "', '" . $q_media . "', '" . trim($correct) . "', '','#FFC0C0');}\n";
-		echo "write_string('<object classid=\"clsid:d27cdb6e-ae6d-11cf-96b8-444553540000\" codebase=\"https://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0\" id=\"flash" . $q_no . "\" width=\"" . ($q_media_width + 250) . "\" height=\"" . $tmp_height . "\" align=\"middle\">');\n";
-		echo "write_string('<param name=\"allowScriptAccess\" value=\"always\" />');\n";
-		echo "write_string('<param name=\"movie\" value=\"" . $configObject->get('cfg_root_path') . "/reports/label_analysis.swf\" />');\n";
-		echo "write_string('<param name=\"quality\" value=\"high\" />');\n";
-		echo "write_string('<param name=\"bgcolor\" value=\"#ffffff\" />');\n";
-		echo "write_string('<embed src=\"" . $configObject->get('cfg_root_path') . "/reports/label_analysis.swf\" quality=\"high\" bgcolor=\"#ffffff\" width=\"" . ($q_media_width + 250) . "\" height=\"" . $tmp_height . "\" swliveconnect=\"true\" id=\"flash" . $q_no . "\" name=\"flash" . $q_no . "\" align=\"middle\" allowScriptAccess=\"always\" type=\"application/x-shockwave-flash\" pluginspage=\"https://www.macromedia.com/go/getflashplayer\" />');\n";
-		echo "write_string('</object>');\n";
-		echo "</script>\n";
-	}
+	//<!-- ======================== HTML5 part rep disc ================= -->
+	echo "<canvas id='canvas" . $q_no . "' width='" . ($q_media_width + 220) . "' height='" . $tmp_height . "'></canvas>\n";
+	echo "<br /><div style='width:100%;text-align: left;' id='canvasbox'></div>\n";
+	echo "<script>\n";
+	echo "setUpQuestion(" . $q_no . ", 'flash" . $q_no . "', '" . $language . "', '" . $q_media . "', '" . trim($correct) . "', '', '','#FFC0C0','labelling','analysis');\n";
+	echo "</script>\n";
+	//<!-- ==================================================== -->
 	?>
 	</div>
   <br />
@@ -353,28 +301,13 @@ function displayQuestion($q_no, $q_id, $theme, $scenario, $leadin, $q_type, $cor
         ?>
         <div>
         <?php
-        if ($configObject->get('cfg_interactive_qs') == 'html5') {
-          //"<!-- ======================== HTML5 part include finf ================= -->
+        //"<!-- ======================== HTML5 part include finf ================= -->
           echo "<canvas id='canvas" . $q_no . "' width='" . $tmp_width . "' height='" . $tmp_height . "'></canvas>\n";
           echo "<br /><div style='width:100%;text-align: left;' id='canvasbox'></div>\n";
           echo "<script>\n";
           echo "setUpQuestion(" . $q_no . ", 'flash" . $q_no . "', '" . $language . "', '" . $q_media . "', '" . str_replace('&nbsp;', ' ', $correct) . "', '', '0,0,0000000000000','#FFC0C0','hotspot','script');\n";
           echo "</script>\n";
           //<!-- ==================================================== -->
-        } else {
-          echo "<script>\n";
-          echo "function swfLoaded" . $q_no . "(message) {\n";
-          echo "var num = message.substring(5,message.length);\n";
-          echo "setUpFlash(num, message, '" . $language . "', '" . $q_media . "', '" . str_replace('&nbsp;', ' ', $correct) . "', '', '1,1,0000000000000','#FFC0C0');}\n";
-          echo "write_string('<object classid=\"clsid:d27cdb6e-ae6d-11cf-96b8-444553540000\" codebase=\"https://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0\" id=\"flash" . $q_no . "\" width=\"" . $tmp_width . "\" height=\"" . $tmp_height . "\" align=\"middle\">');\n";
-          echo "write_string('<param name=\"allowScriptAccess\" value=\"always\" />');\n";
-          echo "write_string('<param name=\"movie\" value=\"" . $configObject->get('cfg_root_path') . "/paper/hotspot_answer.swf\" />');\n";
-          echo "write_string('<param name=\"quality\" value=\"high\" />');\n";
-          echo "write_string('<param name=\"bgcolor\" value=\"#ffffff\" />');\n";
-          echo "write_string('<embed src=\"" . $configObject->get('cfg_root_path') . "/paper/hotspot_answer.swf\" quality=\"high\" bgcolor=\"white\" width=\"" . $tmp_width . "\" height=\"" . $tmp_height . "\" swliveconnect=\"true\" id=\"flash" . $q_no . "\" name=\"flash" . $q_no . "\" align=\"middle\" allowScriptAccess=\"always\" type=\"application/x-shockwave-flash\" pluginspage=\"https://www.macromedia.com/go/getflashplayer\" />');\n";
-          echo "write_string('</object>');\n";
-          echo "</script>\n";
-        }
         ?>
         </div>
         <?php
@@ -625,18 +558,8 @@ $result->close();
     echo "<script type=\"text/javascript\" src=\"../js/jquery-migrate-1.2.1.min.js\"></script>\n";
     echo "<script type=\"text/javascript\" src=\"../tools/mee/mee/js/mee_src.js\"></script>\n";
   }
-  if ($configObject->get('cfg_interactive_qs') == 'html5') {
-    echo "<script>var lang_string = " .  json_encode($jstring) . ";\n</script>\n";
-    echo "<script type=\"text/javascript\" src=\"../js/html5.images.js\"></script>\n";
-    echo "<script type=\"text/javascript\" src=\"../js/qsharedf.js\"></script>\n";
-    echo "<script type=\"text/javascript\" src=\"../js/qlabelling.js\"></script>\n";
-    echo "<script type=\"text/javascript\" src=\"../js/qhotspot.js\"></script>\n";
-    echo "<script type=\"text/javascript\" src=\"../js/qarea.js\"></script>\n";
-	} else {
-    echo "<script type=\"text/javascript\" src=\"../js/ie_fix.js\"></script>\n";
-    echo "<script type=\"text/javascript\" src=\"../js/flash_include.js\"></script>\n";
-    echo "<script type=\"text/javascript\" src=\"../js/jquery.flash_q.js\"></script>\n";
-  }
+  $render = new render($configObject);
+  $render->render_html5_js(json_encode($jstring));
   ?>
 
 	

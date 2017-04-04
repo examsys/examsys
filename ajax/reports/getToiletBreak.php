@@ -23,7 +23,7 @@
 */
 
 require '../../include/staff_auth.inc';
-require '../../include/errors.inc';
+require '../../include/errors.php';
 
 $breakID  = check_var('breakID', 'GET', true, false, true);
 

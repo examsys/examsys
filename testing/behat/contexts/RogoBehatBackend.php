@@ -39,6 +39,6 @@ use testing\behat\rogo_unit_test;
 class RogoBehatBackend extends rogo_unit_test {
   use \testing\behat\steps\backend\include_backend,
       \testing\behat\steps\database\datageneration,
+      \testing\behat\steps\common\include_common,
       \testing\behat\hooks\backend;
-
 }

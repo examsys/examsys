@@ -24,7 +24,7 @@
 
 require_once '../include/sysadmin_auth.inc';
 require_once '../include/toprightmenu.inc';
-require_once '../include/errors.inc';
+require_once '../include/errors.php';
 
 $pluginslist = plugin_manager::listplugins();
 
@@ -109,7 +109,7 @@ foreach ($pluginslist as $plugin => $pluginns) {
     $newversion = $p->get_file_version();
     $oldversion = $p->get_plugin_version();
     $update = "";
-    if ($p->is_version_higher($newversion, $oldversion) or $newversion === $oldversion or $oldversion === false) {
+    if (version::is_version_higher($newversion, $oldversion) or $newversion === $oldversion or $oldversion === false) {
         $install = true;
         if (!empty($error[$plugin])) {
             $update = "<div class=\"error\">" . $error[$plugin] . "</div>";

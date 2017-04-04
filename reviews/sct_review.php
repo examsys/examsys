@@ -24,7 +24,7 @@
 
 require_once '../include/load_config.php';
 require_once '../include/media.inc';
-require_once '../include/errors.inc';
+require_once '../include/errors.php';
 require_once '../include/sct_review.inc';
 
 // Connect to the database as the SCT user.

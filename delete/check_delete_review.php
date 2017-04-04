@@ -25,7 +25,7 @@
 */
 
 require '../include/staff_auth.inc';
-require '../include/errors.inc';
+require '../include/errors.php';
 
 $std_setID = check_var('std_setID', 'GET', true, false, true);
 

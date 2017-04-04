@@ -1,0 +1,9 @@
+.adHocWindow{
+    position: absolute;
+    background-color: #fff; 
+    max-width: 650px;
+    padding: 5px;
+    border: solid #ebebeb;
+    opacity: 0.1;
+    font-size: 13px;
+}

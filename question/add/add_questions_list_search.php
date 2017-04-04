@@ -23,7 +23,7 @@
 */
 
 require '../../include/staff_auth.inc';
-require '../../include/errors.inc';
+require '../../include/errors.php';
 require '../../include/media.inc';
 
 $stateutil = new StateUtils($userObject->get_user_ID(), $mysqli);

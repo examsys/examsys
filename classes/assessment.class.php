@@ -83,6 +83,16 @@ class assessment {
      */
     private $langcomponent = 'classes/assessment';
 
+  /**
+   * Called when the object is unserialised.
+   */
+  public function __wakeup() {
+    // The serialised database object will be invalid,
+    // this object should only be serialised during an error report,
+    // so adding the current database connect seems like a waste of time.
+    $this->db = null;
+  }
+
     /**
      * @brief Constuctor
      * @param mysqli $db
@@ -148,8 +158,9 @@ class assessment {
         }
         
         // Check title is unique.
+        // External system paper title may not be unique.
         $uniquetitle = Paper_utils::is_paper_title_unique($papertitle, $this->db);
-        if (!$uniquetitle) {
+        if (!$uniquetitle and is_null($externalid)) {
             throw new Exception('NON_UNIQUE_TITLE');
         }
 
@@ -172,6 +183,10 @@ class assessment {
         $validsession = array_key_exists($session, $yearutils->get_supported_years());
         if (!$validsession) {
              throw new Exception('INVALID_SESSION');
+        }
+        // Check modules.
+        if (count($modules) == 0) {
+            throw new Exception('INVALID_NO_MODULES');
         }
         
         // Set up start date and end date based on timezone.
@@ -278,8 +293,9 @@ class assessment {
         $details = Paper_utils::get_paper_properties($id, $this->db);
         if ($papertitle != $details['title']) {
             // Check title is unique.
+            // External system paper title may not be unique.
             $uniquetitle = Paper_utils::is_paper_title_unique($papertitle, $this->db);
-            if (!$uniquetitle) {
+            if (!$uniquetitle and is_null($externalid)) {
                 throw new Exception('NON_UNIQUE_TITLE');
             }
             $params['paper_title'] = array('s', $papertitle);

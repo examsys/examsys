@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Rogo.  If not, see <http://www.gnu.org/licenses/>.
 
-require_once '../lang/' . $language . '/include/paper_options.inc';
-require_once '../lang/' . $language . '/include/paper_types.inc';
+require_once '../lang/' . $language . '/include/paper_options.php';
+require_once '../lang/' . $language . '/include/paper_types.php';
 
 $string['folderproperties'] = 'Folder Properties';
 $string['showretired'] = 'Show retired';

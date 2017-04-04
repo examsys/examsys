@@ -24,7 +24,7 @@
 
 require '../include/sysadmin_auth.inc';
 require '../include/sidebar_menu.inc';
-require '../include/errors.inc';
+require '../include/errors.php';
 require '../include/year_tabs.inc';
 
 $current_year = check_var('calyear', 'GET', true, false, true);
@@ -81,17 +81,17 @@ $current_year = check_var('calyear', 'GET', true, false, true);
 <?php
 $master_array = array();
 
-$result = $mysqli->prepare("SELECT schools.id, school, name FROM schools, faculty WHERE schools.facultyID = faculty.id AND school != 'Training' AND schools.deleted IS NULL AND faculty.deleted IS NULL ORDER BY name, school");
+$result = $mysqli->prepare("SELECT schools.id, schools.code, school, faculty.code, name FROM schools, faculty WHERE schools.facultyID = faculty.id AND school != 'Training' AND schools.deleted IS NULL AND faculty.deleted IS NULL ORDER BY name, school");
 $result->execute();
-$result->bind_result($id, $school, $faculty);
+$result->bind_result($id, $code, $school, $faculty_code, $faculty);
 while ($result->fetch()) {
-  $master_array[$school]['id'] = $id;
-  $master_array[$school]['faculty'] = $faculty;
-	$master_array[$school]['exams'] = 0;
-	$master_array[$school]['objectives'] = 0;
-	$master_array[$school]['questions'] = 0;
-	$master_array[$school]['cohort_performance'] = 0;
-	$master_array[$school]['external_examiner'] = 0;
+  $master_array[$code . ' ' . $school]['id'] = $id;
+  $master_array[$code . ' ' . $school]['faculty'] = $faculty_code . ' ' . $faculty;
+  $master_array[$code . ' ' . $school]['exams'] = 0;
+  $master_array[$code . ' ' . $school]['objectives'] = 0;
+  $master_array[$code . ' ' . $school]['questions'] = 0;
+  $master_array[$code . ' ' . $school]['cohort_performance'] = 0;
+  $master_array[$code . ' ' . $school]['external_examiner'] = 0;
 }
 $result->close();
 

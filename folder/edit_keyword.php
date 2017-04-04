@@ -23,7 +23,7 @@
 */
 
 require '../include/staff_auth.inc';
-require '../include/errors.inc';
+require '../include/errors.php';
 
 if (isset($_POST['submit'])) {
   $result = $mysqli->prepare("UPDATE keywords_user SET keyword = ? WHERE id = ?");

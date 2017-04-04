@@ -18,9 +18,18 @@ faculty:
 lti_keys:
   -
     id: 1
-    oauth_consumer_key: "testkey"
+    oauth_consumer_key: "test"
     secret: "testsecret"
     name: "test lti"
+    context_id: null
+    deleted: null
+  -
+    id: 2
+    oauth_consumer_key: "test2"
+    secret: "MyLittleSecret"
+    name: "test lti 2"
+    context_id: null
+    deleted: null
 lti_context:
   -
     lti_context_key: "test:1"
@@ -39,10 +48,24 @@ lti_user:
     lti_user_key: "test:2"
     lti_user_equ: "1001"
     updated_on: "2016-02-11 17:29:11"
+lti_resource:
+  -
+    lti_resource_key: "test:9"
+    internal_id: "1"
+    internal_type: "paper"
+    updated_on: "2016-02-11 17:29:11"
+  -
+    lti_resource_key: "test:8"
+    internal_id: "2"
+    internal_type: "paper"
+    updated_on: "2016-02-11 19:29:11"
 users:
   -
     id: 1000
     password: "12345678"
+    title: "Miss"
+    first_names: "one"
+    initials: "o"
     surname: "test"
     username: "unit"
     roles: "Student"
@@ -50,6 +73,9 @@ users:
   -
     id: 1001
     password: "87654321"
+    title: "Mx"
+    first_names: "two"
+    initials: "t"
     surname: "staff"
     username: "staff"
     roles: "Staff"

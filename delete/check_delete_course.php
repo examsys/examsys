@@ -25,7 +25,7 @@
 */
 
 require '../include/sysadmin_auth.inc';
-require '../include/errors.inc';
+require '../include/errors.php';
 
 $courseID = check_var('courseID', 'GET', true, false, true);
 

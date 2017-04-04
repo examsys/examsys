@@ -25,10 +25,18 @@
  */
 Class module {
 
+  /** @var string Language component name. */
+  protected $langcomponent = 'classes/module';
+  /** @var array language strings */
+  protected $langstrings; 
+  
   /**
   * constructor
   */
-  public function __construct() {}
+  public function __construct() {
+    $langpack = new \langpack();
+    $this->langstrings = $langpack->get_all_strings($this->langcomponent);
+  }
 
   /**
    * Gets a list of staff on a modules' team.
@@ -386,13 +394,7 @@ Class module {
                                mod_deleted IS NULL
                             ");
     if ($db->error) {
-      try {
-        throw new Exception("MySQL error $db->error", $db->errno);
-      }
-      catch (Exception $e) {
-        echo "Error No: " . $e->getCode() . " - " . $e->getMessage() . "<br />";
-        echo nl2br($e->getTraceAsString());
-      }
+      echo $this->langstrings['showerror'] . "<br >";
     }
     $result->bind_param('i', $modID);
     $result->execute();

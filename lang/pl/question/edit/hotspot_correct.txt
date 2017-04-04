@@ -1,7 +1,0 @@
-<?php
-$string['hotspots'] = 'Miejsca aktywne';
-$string['correctAnswers'] = 'Odpowiedzi poprawne';
-$string['incorrectAnswers'] = 'Odpowiedzi niepoprawne';
-$string['errorcanvas'] = 'Przeglądarka nie udostępnia Canvas';
-$string['errorimageshotspot'] = 'Pytanie z miejscem aktywnym nie mogło być przedstawione gdyż niektóre obrazy nie zostały załadowane.';
-?>

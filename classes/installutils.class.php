@@ -50,7 +50,6 @@ Class InstallUtils {
   public static $cfg_db_username;
   public static $cfg_db_password;
   public static $cfg_db_charset;
-  public static $cfg_page_charset;
 
   public static $cfg_web_host;
   public static $cfg_rogo_data;
@@ -130,9 +129,20 @@ Class InstallUtils {
   /** Stores if the install is being done via cli. */
   public static $cli = false;
 
+  /**
+   * Called when the object is unserialised.
+   */
+  public function __wakeup() {
+    // The serialised database object will be invalid,
+    // this object should only be serialised during an error report,
+    // so adding the current database connect seems like a waste of time.
+    $this->db = null;
+  }
+
   static function displayForm() {
     global $string, $language, $timezone_array;
 
+    $configObject = Config::get_instance();
     ?>
     <script type="text/javascript" src="../js/system_tooltips.js"></script>
     <script>
@@ -158,7 +168,6 @@ Class InstallUtils {
         <div><label for="web_host"><?php echo $string['webhost']; ?></label> <input type="text" value="127.0.0.1" id="web_host" name="web_host" class="required" minlength="3" maxlength="10" /></div>
         <div><label for="rogo_data"><?php echo $string['datadirectory']; ?></label> <input type="text" id="rogo_data" name="rogo_data" value="<?php echo dirname(__DIR__) . DIRECTORY_SEPARATOR ?>" /></div>
         <div><label for="tmpdir"><?php echo $string['tempdirectory']; ?></label> <input type="text" id="tmpdir" name="tmpdir" value="/tmp/" /></div>
-        <div style="clear: left"><label for="page_charset"><?php echo $string['pagecharset']; ?></label> <select id="page_charset" name="page_charset"><option value="UTF-8">UTF-8</option><option value="ISO-8859-1">ISO 8859-1</option></select></div>
 
       <table class="h"><tr><td><nobr><?php echo $string['databaseadminuser']; ?></nobr></td><td class="line"><hr /></td></tr></table>
         <div><?php echo $string['needusername']; ?></div>
@@ -171,8 +180,6 @@ Class InstallUtils {
         <div><label for="mysql_db_host"><?php echo $string['databasehost']; ?></label> <input type="text" value="127.0.0.1" id="mysql_db_host" name="mysql_db_host" class="required" /></div>
         <div><label for="mysql_db_port"><?php echo $string['databaseport']; ?></label> <input type="text" value="3306" id="mysql_db_port" name="mysql_db_port" class="required" /></div>
         <div><label for="mysql_db_name"><?php echo $string['databasename']; ?></label> <input type="text" value="rogo" id="mysql_db_name" name="mysql_db_name" class="required" minlength="3" /></div>
-        <div><label for="mysql_db_charset"><?php echo $string['databasecharset']; ?></label> <select id="mysql_db_charset" name="mysql_db_charset"><option value="utf8">UTF-8</option><option value="latin1">latin1</option></select></div>
-
         <div><label for="mysql_baseusername"><?php echo $string['rdbbasename']; ?></label> <input type="text" value="rogo" id="mysql_baseusername" name="mysql_baseusername" class="required" minlength="3" maxlength="10" /></div>
 
       <table class="h"><tr><td><nobr><?php echo $string['timedateformats']; ?></nobr></td><td class="line"><hr /></td></tr></table>
@@ -259,10 +266,10 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
       <table class="h"><tr><td><nobr><?php echo $string['helpdb']; ?></nobr></td><td class="line"><hr /></td></tr></table>
         <div><label for="loadHelp"><?php echo $string['loadhelp']; ?></label> <input id="loadHelp" name="loadHelp" type="checkbox" checked="checked" /></div>
         
-      <table class="h"><tr><td><nobr><?php echo $string['interactivequestions']; ?></nobr></td><td class="line"><hr /></td></tr></table>
-        <div><label><?php echo $string['flash']; ?></label> <input name="interactivequestions" value="flash" type="radio"/><img src="../artwork/tooltip_icon.gif" class="help_tip" title="Adobe Flash is best for backwards browser compatibility but will be deprecated in future versions.  HTML5 is best for future proofing and works in IE9, Firefox 23, chrome 28.0 and Safari 5.1 and above" /></div>
-        <div><label><?php echo $string['html5']; ?></label> <input name="interactivequestions" type="radio" value="html5" checked = "checked"/></div>
-        
+      <table class="h"><tr><td><nobr><?php echo $string['translationpack']; ?></nobr></td><td class="line"><hr /></td></tr></table>
+        <div><label for="loadtranslations"><?php echo $string['loadtranslations']; ?></label> <input id="loadtranslations" name="loadtranslations" type="checkbox"/></div><br/><br/>
+        <div><?php echo sprintf($string['manualtranslations'], $configObject->getxml('translations', 'url')); ?></div>
+
       <table class="h"><tr><td><nobr><?php echo $string['labsecuritytype']; ?></nobr></td><td class="line"><hr /></td></tr></table>
         <div><label><?php echo $string['IP']; ?></label> <input name="labsecuritytype" value="ipaddress" type="radio" checked = "checked" /><img src="../artwork/tooltip_icon.gif" class="help_tip" title="Rogo can lock summative exams to either IP address or hostname. If your institution uses static IPs then chose IP address otherwise chose hostname. " /></div>
         <div><label><?php echo $string['hostname']; ?></label> <input name="labsecuritytype" type="radio" value="hostname" /></div>
@@ -310,10 +317,9 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
     $configObject = Config::get_instance();
     
     self::$cfg_company = $_POST['company_name'];
-    self::$cfg_page_charset = $_POST['page_charset'];
 
     self::$cfg_db_host = $_POST['mysql_db_host'];
-    self::$cfg_db_charset = $_POST['mysql_db_charset'];
+    self::$cfg_db_charset = 'utf8';
     self::$cfg_db_port = $_POST['mysql_db_port'];
     self::$cfg_db_name = $_POST['mysql_db_name'];
     self::$db_admin_username = $_POST['mysql_admin_user'];
@@ -478,6 +484,11 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
       self::loadHelp();
     }
 
+    // Download language packs and install.
+    if (isset($_POST['loadtranslations'])) {
+      self::download_langpacks();
+    }
+
     //Write out the config file
     self::writeConfigFile();
 
@@ -495,6 +506,17 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
       $configObject->set('cfg_root_path', $cfg_root_path);
       self::correct_staff_path();
       self::correct_student_path();
+    }
+
+    // Install composer and dependencies.
+    try {
+      $composer_method = composer_utils::INSTALL_NODEV;
+      composer_utils::setup($composer_method);
+    } catch (Exception $e) {
+      // Non fatal warning.
+      echo "<div class=\"warning\">\n";
+      echo "\t<div>" . $e->getMessage() . "</div>\n";
+      echo "</div>\n";
     }
 
     if (!is_array(self::$warnings)) {
@@ -713,6 +735,10 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
     $alter[] = "ALTER TABLE questions_module ADD CONSTRAINT `questions_modules_fk1` FOREIGN KEY (`q_id`) REFERENCES `questions` (`q_id`)";
     $alter[] = "ALTER TABLE questions_module ADD CONSTRAINT `questions_modules_fk2` FOREIGN KEY (`idMod`) REFERENCES `modules` (`id`)";
     $alter[] = "ALTER TABLE questions ADD CONSTRAINT `questions_fk1` FOREIGN KEY (`status`) REFERENCES `question_statuses` (`id`)";
+    $alter[] = "ALTER TABLE paper_feedback ADD CONSTRAINT `paper_feedback_fk1` FOREIGN KEY (`paperID`) REFERENCES `properties` (`property_id`)";
+    $alter[] = "ALTER TABLE paper_metadata_security ADD CONSTRAINT `paper_metadata_security_fk1` FOREIGN KEY (`paperID`) REFERENCES `properties` (`property_id`)";
+    $alter[] = "ALTER TABLE modules_staff ADD CONSTRAINT `modules_staff_fk1` FOREIGN KEY (`idMod`) REFERENCES `modules` (`id`)";
+    $alter[] = "ALTER TABLE modules_staff ADD CONSTRAINT `modules_staff_fk2` FOREIGN KEY (`memberID`) REFERENCES `users` (`id`)";
 
     foreach ($alter as $a) {
         $res = self::$db->prepare($a);
@@ -1749,7 +1775,7 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
   }
 
   /**
-  * Check for installed software versions PHP, Apache
+  * Check for installed software versions PHP
   *
   */
   static function checkSoftware() {
@@ -1761,14 +1787,6 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
       $server = preg_split("/[\/ ]/", $_SERVER['SERVER_SOFTWARE']);
     } else {
       $server = array('');
-    }
-    // Apache
-    if ($server[0] == 'Apache') {
-        $apache = $server[1];
-        $apache_min_ver = $configObject->getxml('webserver', 'apache', 'min_version');
-        if ($apache < $apache_min_ver) {
-            $errors['201'] = sprintf($string['errors9'], $apache_min_ver, $apache);
-        }
     }
     // php
     $php_min_ver = $configObject->getxml('php', 'min_version');
@@ -1954,14 +1972,13 @@ require \$root . '/include/path_functions.inc.php';
 \$cfg_web_root = get_root_path() . '/';
 \$cfg_root_path = rtrim('/' . trim(str_replace(normalise_path(\$_SERVER['DOCUMENT_ROOT']), '', \$cfg_web_root), '/'), '/');
 \$cfg_secure_connection = true;    // If true site must be accessed via HTTPS
-\$cfg_page_charset 	   = '{cfg_page_charset}';
+\$cfg_page_charset 	   = 'UTF-8';
 \$cfg_company = '{cfg_company}';
 \$cfg_academic_year_start = '07/01';
 \$cfg_tmpdir = '{cfg_tmpdir}';
 
 \$cfg_summative_mgmt = false;     // Set this to true for central summative exam administration.
 \$cfg_client_lookup = '{labsecuritytype}'; //ipadress or name
-\$cfg_interactive_qs = '{interactivequestions}'; //flash or html5
 
 
   \$cfg_web_host = '{cfg_web_host}';
@@ -2121,7 +2138,6 @@ CONFIG;
     $config = str_replace('{cfg_db_host}', self::$cfg_db_host, $config);
     $config = str_replace('{cfg_db_port}', self::$cfg_db_port, $config);
     $config = str_replace('{cfg_db_charset}', self::$cfg_db_charset, $config);
-    $config = str_replace('{cfg_page_charset}', self::$cfg_page_charset, $config);
     $config = str_replace('{cfg_company}', self::$cfg_company, $config);
 
     $config = str_replace('{cfg_db_database}', self::$cfg_db_name, $config);

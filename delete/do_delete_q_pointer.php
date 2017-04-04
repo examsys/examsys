@@ -25,7 +25,7 @@
 */
 
 require '../include/staff_auth.inc';
-require '../include/errors.inc';
+require '../include/errors.php';
 
 check_var('questionID', 'POST', true, false, false);
 check_var('pID', 'POST', true, false, false);
@@ -70,7 +70,7 @@ for ($i=0; $i<count($tmp_pIDs); $i++) {
     $logger = new Logger($mysqli);
     $logger->track_change('Paper', $tmp_paperID, $userObject->get_user_ID(), $tmp_questionIDs[$i], '', 'Delete Question');
   } else {
-    display_error('Papers Delete Error', $mysqli->error);
+    display_error('Papers Delete Error', $string['showerror']);
   }
 }
 
@@ -80,7 +80,7 @@ if ($_POST['paperID'] != '') {
     $result->execute();
     $result->close();
   } else {
-    display_error($string['updateerror'], $result->error);
+    display_error($string['updateerror'], $string['showerror']);
   }
 }
 $mysqli->close();

@@ -23,7 +23,7 @@
  */
 
 require_once './include/staff_student_auth.inc';
-require_once './include/errors.inc';
+require_once './include/errors.php';
 
 // Get the request variables.
 $type = check_var('type', 'REQUEST', false, true, true);

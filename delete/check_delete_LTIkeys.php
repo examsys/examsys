@@ -25,7 +25,7 @@
 */
 
 require '../include/sysadmin_auth.inc';
-require_once '../include/errors.inc';
+require_once '../include/errors.php';
 require_once '../LTI/ims-lti/UoN_LTI.php';
 
 $LTIkeysid = check_var('LTIkeysID', 'GET', true, false, true);

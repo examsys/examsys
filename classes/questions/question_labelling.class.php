@@ -30,7 +30,7 @@ Class QuestionLABELLING extends QuestionEdit {
       
   protected $points1 = '';
   protected $_requires_media = true;
-  protected $_requires_flash = true;
+  protected $_requires_html5 = true;
   public $max_options = 1;
   
   function __construct($mysqli, $userObj, $lang_strings, $data = null) {

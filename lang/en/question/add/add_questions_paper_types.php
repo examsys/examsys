@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Rogo.  If not, see <http://www.gnu.org/licenses/>.
 
-require $cfg_web_root . 'lang/' . $language . '/include/paper_types.inc';
+require $cfg_web_root . 'lang/' . $language . '/include/paper_types.php';
 
 $string['papersbytype'] = 'Papers by Type';
 $string['papersbyteam'] = 'Papers by Team';

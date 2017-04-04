@@ -22,7 +22,7 @@
 */
 
 require '../../include/sysadmin_auth.inc';
-require_once '../../include/errors.inc';
+require_once '../../include/errors.php';
 require '../../include/toprightmenu.inc';
 
 $campusobj = new campus($mysqli);

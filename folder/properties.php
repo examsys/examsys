@@ -23,7 +23,7 @@
 */
 
 require '../include/staff_auth.inc';
-require_once '../include/errors.inc';
+require_once '../include/errors.php';
 
 $folderID = check_var('folder', 'GET', true, false, true);
 
@@ -154,7 +154,7 @@ if (isset($_POST['Submit'])) {
 
       // Alter the prefix of any child folders.
       if ($mysqli->error) {
-        echo "<p class=\"error\">Folders Edit Error 2</p>\n<p>Query: " . $editProperties . "</p>\n<p>" . mysql_error($link_id) . "</p>\n";
+        echo "<p class=\"error\">Folders Edit Error</p>\n<p>" . $string['showerror'] . "</p>\n";
         echo "</body>\n</html>\n";
         exit;
       }
@@ -280,11 +280,18 @@ if ($unique_name) {
 
       $module_no = 0;
       $old_school = '';
+      $old_schoolcode = '';
       
       foreach ($userObject->get_staff_accessable_modules() as $IdMod => $module) {
-				if ($module['school'] != $old_school) {
-					echo "<table border=\"0\" class=\"school\"><tr><td><nobr>" . $module['school'] . "</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
-				}
+        if (is_null($module['schoolcode'])) {
+          if ($module['school'] != $old_school or !is_null($old_schoolcode)) {
+            echo "<table border=\"0\" class=\"school\"><tr><td><nobr>" . $module['school'] . "</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
+          }
+        } else {
+          if ($module['schoolcode'] != $old_schoolcode) {
+            echo "<table border=\"0\" class=\"school\"><tr><td><nobr>" . $module['schoolcode'] . ' ' . $module['school'] . "</nobr></td><td style=\"width:98%\"><hr noshade=\"noshade\" style=\"border:0px; height:1px; color:#E5E5E5; background-color:#E5E5E5; width:100%\" /></td></tr></table>\n";
+          }
+        }
         if (isset($folder_staff_modules[$IdMod])) {
           if ($userObject->is_staff_user_on_module($IdMod) or $userObject->has_role('SysAdmin')) {
             echo "<div class=\"r2\" id=\"divmodule$module_no\"><input type=\"checkbox\" onclick=\"toggle('divmodule$module_no')\" name=\"module$module_no\" id=\"module$module_no\" value=\"" . $module['idMod'] . "\" checked>&nbsp;<label for=\"module$module_no\">" . $module['id'] . ": " . substr($module['fullname'],0,60) . "</label></div>\n";
@@ -296,6 +303,7 @@ if ($unique_name) {
         }
         $module_no++;
         $old_school = $module['school'];
+        $old_schoolcode = $module['schoolcode'];
       }
 
       echo "<input type=\"hidden\" name=\"module_no\" id=\"module_no\" value=\"$module_no\" /></div>\n</td></tr>";

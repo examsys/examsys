@@ -23,7 +23,7 @@
 */
 
 require '../include/sysadmin_auth.inc';
-require_once '../include/errors.inc';
+require_once '../include/errors.php';
 
 $userid = check_var('userID', 'GET', true, false, true);
 

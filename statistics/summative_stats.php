@@ -23,7 +23,7 @@
 */
 
 require '../include/sysadmin_auth.inc';
-require '../include/errors.inc';
+require '../include/errors.php';
 require '../include/year_tabs.inc';
 
 $current_year = check_var('calyear', 'GET', true, false, true);

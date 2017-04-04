@@ -61,13 +61,9 @@ abstract class rogo_directory {
       $config = Config::get_instance();
       // This will be null if the user has not configured it.
       $rogodata = $config->get('cfg_rogo_data');
-      // The directory locations in flash questions are hardcoded to be
-      // relative to the Rogo root directory, so we need to verify that
-      // flash is not the interface used.
-      $question_interface = $config->get('cfg_interactive_qs');
     }
 
-    if ($question_interface != 'flash' && !empty($rogodata)) {
+    if (!empty($rogodata)) {
       // Data driectory configured and should be used.
       if (!is_writable($rogodata) and !self::is_read_only()) {
         // Huston we have a problem.
@@ -79,7 +75,7 @@ abstract class rogo_directory {
       }
       $path = $rogodata;
     } else {
-      // Data directory not configured, or flash question interfaces are defined.
+      // Data directory not configured.
       // We should return the root Rogo path.
       $path = $this->default_base_directory();
     }

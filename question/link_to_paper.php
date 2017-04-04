@@ -23,7 +23,7 @@
 */
 
 require '../include/staff_auth.inc';
-require '../include/errors.inc';
+require '../include/errors.php';
 require_once '../include/mapping.inc';
 require_once '../classes/questionbank.class.php';
 

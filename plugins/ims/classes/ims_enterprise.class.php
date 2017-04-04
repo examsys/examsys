@@ -1017,7 +1017,7 @@ class ims_enterprise {
     $username = $this->get_username($studentid);
     // If username not found fall back to use the sourcedid.
     if ($username === '' and $this->sourcedidfailback) {
-      $username = (string) $node->sourcedid->id;
+      $username = (string) $member->sourcedid->id;
     }
 
     if ($this->capitafix) {

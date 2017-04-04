@@ -39,6 +39,11 @@ trait datageneration {
    */
   protected $datagenerator_map = array(
     'users' => array('users', 'core', 'create_user'),
+    'papers' => array('papers', 'core', 'create_paper'),
+    'questions' => array('questions', 'core', 'create_question'),
+    'modules' => array('modules', 'core', 'create_module'),  
+    'academic_year' => array('academic_year', 'core', 'create_academic_year'),    
+    'module_teams' => array('modules', 'core', 'create_module_team'),    
   );
 
   /**

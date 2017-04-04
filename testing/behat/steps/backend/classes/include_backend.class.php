@@ -27,5 +27,6 @@ namespace testing\behat\steps\backend;
  * @subpackage behat
  */
 trait include_backend {
-  use database;
+  use database,
+      param;
 }

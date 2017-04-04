@@ -23,7 +23,7 @@
 */
 
 require '../include/staff_auth.inc';
-require '../include/errors.inc';
+require '../include/errors.php';
 
 check_var('id', 'GET', true, false, false);
 
@@ -85,7 +85,6 @@ function close_window() {
     .paper {font-size:180%; color:white; font-weight:bold}
   </style>
 
-  <script src="../js/ie_fix.js" type="text/javascript"></script>
   <script>
     window.history.go(1);
   </script>

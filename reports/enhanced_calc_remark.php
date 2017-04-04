@@ -25,7 +25,7 @@
 */
 
 require '../include/staff_auth.inc';
-require_once '../include/errors.inc';
+require_once '../include/errors.php';
 require_once '../plugins/questions/enhancedcalc/enhancedcalc.class.php';
 
 $q_id  = check_var('q_id', 'GET', true, false, true);

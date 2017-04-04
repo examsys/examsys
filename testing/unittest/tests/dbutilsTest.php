@@ -57,6 +57,49 @@ class dbutilstest extends unittestdatabase {
     }
     
     /**
+     * Test function check_sqlparams
+     * @group dbutils
+     */
+    public function test_check_sqlparams() {
+      
+      $bindtype = array("i","i","s");
+      $bindvalue = array(4, 7, "hello");
+      $sql = "select something from somewhere where thisis = ? and thatis = ? and theyall = ? ";
+      $checker = DBUtils::check_sqlparams($bindtype, $bindvalue, $sql);
+      $this->assertTrue($checker);
+      
+      $bindtype = array("i","i","s");
+      $bindvalue = array("4", 7, "hello"); // "4" is not int
+      $sql = "select something from somewhere where thisis = ? and thatis = ? and theyall = ? ";
+      $checker = DBUtils::check_sqlparams($bindtype, $bindvalue, $sql);
+      $this->assertFalse($checker);
+      
+      $bindtype = array("i","i","s", "d"); // More types than values
+      $bindvalue = array(4, 7, "hello");
+      $sql = "select something from somewhere where thisis = ? and thatis = ? and theyall = ? ";
+      $checker = DBUtils::check_sqlparams($bindtype, $bindvalue, $sql);
+      $this->assertFalse($checker);
+      
+      $bindtype = array("i","i","s"); 
+      $bindvalue = array(4, 7, "hello", "100"); // More value than types
+      $sql = "select something from somewhere where thisis = ? and thatis = ? and theyall = ? ";
+      $checker = DBUtils::check_sqlparams($bindtype, $bindvalue, $sql);
+      $this->assertFalse($checker);
+      
+      $bindtype = array("i","i","s");
+      $bindvalue = array(4, 7, "hello");
+      $sql = "select something from somewhere where thisis = ? and thatis = ? and theyall = ? but notwant = ?"; // More ? than value/type
+      $checker = DBUtils::check_sqlparams($bindtype, $bindvalue, $sql);
+      $this->assertFalse($checker);
+      
+      $bindtype = array("i","i","s");
+      $bindvalue = array(4, 7, 5); // 5 is not string
+      $sql = "select something from somewhere where thisis = ? and thatis = ? and theyall = ? ";
+      $checker = DBUtils::check_sqlparams($bindtype, $bindvalue, $sql);
+      $this->assertFalse($checker);
+    }
+    
+    /**
      * Test generic db upadte function
      * @group dbutils
      */

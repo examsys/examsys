@@ -25,8 +25,8 @@
 */
 
 require_once '../include/staff_student_auth.inc';
-require_once '../include/errors.inc';
-require_once '../include/paper_security.inc';
+require_once '../include/errors.php';
+require_once '../include/paper_security.php';
 require_once '../include/demo_replace.inc';
 
 

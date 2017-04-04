@@ -1,6 +1,0 @@
-<?php       //cz
-
-$string['view'] = 'Zobraziť všetky odpovede';
-$string['instruction'] = 'Pre záznam odpovede kliknite na vybrané miesto. Ak chcete odpoveď zmeniť, kliknite znova.';
-
-?>

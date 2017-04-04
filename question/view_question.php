@@ -23,7 +23,7 @@
 */
 
 require '../include/staff_auth.inc';
-require '../include/question_types.inc';
+require '../include/question_types.php';
 require '../include/display_functions.inc';
 require '../include/media.inc';
 
@@ -93,23 +93,12 @@ $question['assigned_number'] = (isset($_GET['qNo'])) ? $_GET['qNo'] : 1;
   <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
   <script type="text/javascript" src="../js/jquery-migrate-1.2.1.min.js"></script>
   <script type="text/javascript" src="../js/start.js"></script>
-  <script type="text/javascript" src="../js/flash_include.js"></script>
   <script type="text/javascript" src="../tools/mee/mee/js/mee_src.js"></script>
   
   <?php
   if ($question['q_type'] == 'hotspot' or $question['q_type'] == 'labelling' or $question['q_type'] == 'area') {
-    if ($configObject->get('cfg_interactive_qs') == 'html5') {
-      echo "<script type=\"text/javascript\">\nvar lang_string = " . json_encode($jstring) . "\n</script>\n";
-      echo "<script type=\"text/javascript\" src=\"../js/html5.images.js\"></script>\n";
-      echo "<script type=\"text/javascript\" src=\"../js/qsharedf.js\"></script>\n";
-      echo "<script type=\"text/javascript\" src=\"../js/qlabelling.js\"></script>\n";
-      echo "<script type=\"text/javascript\" src=\"../js/qhotspot.js\"></script>\n";
-      echo "<script type=\"text/javascript\" src=\"../js/qarea.js\"></script>\n";
-    } else {
-      echo "<script type=\"text/javascript\" src=\"../js/ie_fix.js\"></script>\n";
-      echo "<script type=\"text/javascript\" src=\"../js/flash_include.js\"></script>\n";
-      echo "<script type=\"text/javascript\" src=\"../js/jquery.flash_q.js\"></script>\n";
-    }
+    $render = new render($configObject);
+    $render->render_html5_js(json_encode($jstring));
   }
   echo $configObject->get('cfg_js_root');
   ?>

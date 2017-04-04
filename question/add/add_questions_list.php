@@ -23,7 +23,7 @@
 */
 
 require '../../include/staff_auth.inc';
-require '../../include/errors.inc';
+require '../../include/errors.php';
 
 // Get question statuses
 $status_array = QuestionStatus::get_all_statuses($mysqli, $string, true);

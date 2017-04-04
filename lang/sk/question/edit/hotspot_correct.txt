@@ -1,9 +1,0 @@
-<?php         //cz
-
-$string['hotspots'] = 'Úlohy s aktívnym miestom v obrázku';
-$string['correctAnswers'] = 'Správne odpovede';
-$string['incorrectAnswers'] = 'Chybné odpovede';
-$string['errorcanvas'] = 'Canvas nie je podporovaný';
-$string['errorimageshotspot'] = 'HotSpotovú úlohu nie je možné zobraziť, keďže sa niektoré obrázky nenačítali.';
-
-?>

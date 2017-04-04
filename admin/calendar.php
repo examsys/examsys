@@ -28,7 +28,7 @@ require '../include/staff_auth.inc';
 require '../include/sidebar_menu.inc';
 require '../include/sort.inc';
 require '../include/year_tabs.inc';
-require_once '../lang/' . $language . '/include/timezones.inc';
+require_once '../include/timezones.php';
 
 if (isset($_GET['calyear'])) {
   $current_year = $_GET['calyear'];
@@ -335,11 +335,11 @@ $default_timezone = $timezone_array[$configObject->get('cfg_timezone')];
 <?php
   // Get faculty and school info
   $schools = array($string['default']=>array('-1'=>$string['allschools']));
-  $stmt = $mysqli->prepare("SELECT schools.id, faculty.name, school FROM schools, faculty WHERE faculty.id = schools.facultyID AND faculty.deleted IS NULL and schools.deleted IS NULL ORDER BY faculty.name, school");
+  $stmt = $mysqli->prepare("SELECT schools.id, faculty.code, faculty.name, schools.code, school FROM schools, faculty WHERE faculty.id = schools.facultyID AND faculty.deleted IS NULL and schools.deleted IS NULL ORDER BY faculty.name, school");
   $stmt->execute();
-  $stmt->bind_result($id, $faculty, $school);
+  $stmt->bind_result($id, $faculty_code, $faculty, $school_code, $school);
   while ($stmt->fetch()) {
-    $schools[$faculty][$id] = $school;
+    $schools[$faculty_code . ' ' . $faculty][$id] = $school_code . ' ' . $school;
   }
   $stmt->close();
 

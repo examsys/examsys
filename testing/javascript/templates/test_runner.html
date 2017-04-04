@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{scripts.config.test}} Unit Tests</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{webroot}}/node_modules/qunitjs/qunit/qunit.css">
+    <!-- Load JavaScript required by the test suite -->
+{% for item in scripts.config.required_js %}
+    <script src="{{webroot}}/{{item}}"></script>
+{% endfor %}
+    <!-- End of the JavaScript required by the test suite -->
+  </head>
+  <body>
+    <div id="qunit"></div>
+    <div id="qunit-fixture">{{scripts.config.fixture_html|raw}}</div>
+    <script src="{{webroot}}/node_modules/qunitjs/qunit/qunit.js"></script>
+    <!-- Start loafing the Javascript unit tests. -->
+{% for item in scripts.tests %}
+    <script src="{{webroot}}/{{item}}"></script>
+{% endfor %}
+    <!-- JavaScript unit tests loaded. -->
+  </body>
+</html>

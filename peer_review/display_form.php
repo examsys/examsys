@@ -23,8 +23,8 @@
 */
 
 require '../include/staff_auth.inc';
-require_once '../include/errors.inc';
-require_once '../include/paper_security.inc';
+require_once '../include/errors.php';
+require_once '../include/paper_security.php';
 require_once '../include/demo_replace.inc';
 
 $paperID = check_var('paperID', 'GET', true, false, true);

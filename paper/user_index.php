@@ -25,8 +25,8 @@
 */
 
 require_once '../include/staff_student_auth.inc';
-require_once '../include/errors.inc';
-require_once '../include/paper_security.inc';
+require_once '../include/errors.php';
+require_once '../include/paper_security.php';
 
 
 // Redirect Invigilators to their own areas.
@@ -470,11 +470,6 @@ if ($textsize > 120) {
   if ($sound_demo == '1') {
     echo "<tr><td colspan=\"4\" style=\"text-align:center\">";
     echo "<audio src=\"{$configObject->get('cfg_root_path')}/paper/sound_demo.mp3\" controls>\n";
-    echo "<span class=\"testclip\">" . $string['testclip'] . "</span>&nbsp;&nbsp;<object type=\"application/x-shockwave-flash\" data=\"{$configObject->get('cfg_root_path')}/paper/player_mp3_maxi.swf\" width=\"200\" height=\"20\">\n";
-    echo "<param name=\"wmode\" value=\"transparent\" />\n";
-    echo "<param name=\"movie\" value=\"{$configObject->get('cfg_root_path')}/paper/player_mp3_maxi.swf\" />\n";
-    echo "<param name=\"FlashVars\" value=\"mp3={$configObject->get('cfg_root_path')}/paper/sound_demo.mp3&amp;showstop=1&amp;showvolume=1&amp;bgcolor1=ffa50b&amp;bgcolor2=d07600\" />\n";
-    echo "</object>";
     echo "</audio> <img src=\"../artwork/tooltip_icon.gif\" class=\"help_tip\" title=\"" . $string['tooltip_testclip'] . "\" />\n";
     echo "</td></tr>\n";
   }
@@ -588,17 +583,8 @@ if ($textsize > 120) {
 	<img class="noimg" src="../artwork/fire_exit.png" />
 
   <?php
-  if ($configObject->get('cfg_interactive_qs') == 'html5') {
-    echo "<script type=\"text/javascript\" src=\"../js/html5.images.js\"></script>\n";
-    echo "<script type=\"text/javascript\" src=\"../js/qsharedf.js\"></script>\n";
-    echo "<script type=\"text/javascript\" src=\"../js/qlabelling.js\"></script>\n";
-    echo "<script type=\"text/javascript\" src=\"../js/qhotspot.js\"></script>\n";
-    echo "<script type=\"text/javascript\" src=\"../js/qarea.js\"></script>\n";
-  } else {
-    echo "<script type=\"text/javascript\" src=\"../js/ie_fix.js\"></script>\n";
-    echo "<script type=\"text/javascript\" src=\"../js/flash_include.js\"></script>\n";
-    echo "<script type=\"text/javascript\" src=\"../js/jquery.flash_q.js\"></script>\n";
-  }
+    $render = new render($configObject);
+    $render->render_html5_js(json_encode($jstring));
   ?>
 	<img class="noimg" src="../js/images/combined.png" />
 </body>

@@ -1,0 +1,24 @@
+{
+  "name": "rogo-oss",
+  "version": "6.3.0",
+  "private": true,
+  "description": "eAssessment Management System",
+  "repository": {
+    "type": "git",
+    "url": "https://bitbucket.org/rogoOOS/rog.git"
+  },
+  "bugs": {
+    "url": "https://rogo-eassessment.atlassian.net"
+  },
+  "author": "University of Nottingham",
+  "license": "GPL-3.0",
+  "homepage": "http://rogo-oss.nottingham.ac.uk/",
+  "devDependencies": {
+    "eslint": "^3.6.1",
+    "grunt": "^1.0.1",
+    "grunt-contrib-cssmin": "^1.0.2",
+    "grunt-contrib-uglify": "^2.0.0",
+    "grunt-eslint": "^19.0.0",
+    "qunitjs": "^2.0.1"
+  }
+}

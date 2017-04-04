@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Rogo.  If not, see <http://www.gnu.org/licenses/>.
 
-require $cfg_web_root . 'lang/' . $language . '/include/status.inc';
-require $cfg_web_root . 'lang/' . $language . '/include/question_types.inc';
+require $cfg_web_root . 'lang/' . $language . '/include/status.php';
+require $cfg_web_root . 'lang/' . $language . '/include/question_types.php';
 
 $string['question'] = 'Question';
 $string['type'] = 'Type';

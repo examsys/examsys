@@ -25,7 +25,7 @@
 */
 
 require '../include/staff_auth.inc';
-require_once '../include/errors.inc';
+require_once '../include/errors.php';
 
 $total_possible_mark = check_var('tpm', 'GET', true, false, true);
 $student_mark        = check_var('mark', 'GET', true, false, true);

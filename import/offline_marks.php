@@ -23,8 +23,8 @@
 */
 
 require '../include/staff_auth.inc';
-require_once '../include/question_types.inc';
-require_once '../include/errors.inc';
+require_once '../include/question_types.php';
+require_once '../include/errors.php';
 
 ini_set("auto_detect_line_endings", true);
 
@@ -259,7 +259,7 @@ function marks_from_file($fileName, $paperID, $string, $properties, $db) {
   <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
 <body onclick="hideMenus()">
 <?php
-  require '../include/paper_options.inc';
+  require '../include/paper_options.php';
   require '../include/toprightmenu.inc';
 
   echo draw_toprightmenu();

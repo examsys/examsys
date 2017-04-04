@@ -22,7 +22,7 @@
  * @package
  */
 require_once '../include/staff_auth.inc';
-require_once '../include/errors.inc';
+require_once '../include/errors.php';
 
 if (isset($_GET['module'])) {
   $module = $_GET['module'];
@@ -59,9 +59,9 @@ if (isset($_GET['module'])) {
 </head>
 
 <?php
-// paper_options.inc modifies result!  Store it temporarily
+// paper_options.php modifies result!  Store it temporarily
 $import_result = $result;
-require '../include/paper_options.inc';
+require '../include/paper_options.php';
 require '../include/toprightmenu.inc';
 
 echo draw_toprightmenu();

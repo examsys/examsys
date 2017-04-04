@@ -14,6 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Rogo.  If not, see <http://www.gnu.org/licenses/>.
 
-require '../../lang/' . $language . '/include/months.inc';
+require '../../lang/' . $language . '/include/months.php';
 require '../../lang/' . $language . '/help/staff/stats.php';
 ?>

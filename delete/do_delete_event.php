@@ -25,7 +25,7 @@
 */
 
 require '../include/sysadmin_auth.inc';
-require '../include/errors.inc';
+require '../include/errors.php';
 
 $eventID = check_var('eventID', 'POST', true, false, true);
 

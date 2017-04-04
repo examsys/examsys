@@ -24,6 +24,17 @@ class composer_utils {
   /** Composer should get the laest versions of the depedencies and update the lock file. */
   const UPDATE = 2;
 
+  /** Composer should install dependancies respecting the lock file, skipping dev packages. */
+  const INSTALL_NODEV = 3;
+
+  /** Composer should get the laest versions of the depedencies and update the lock file, skipping dev packages. */
+  const UPDATE_NODEV = 4;
+  
+  /**
+   * Language pack component.
+   */
+  const langcomponent = 'classes/composerutils';
+  
   /**
    * Ensures that composer is installed, uptodate and has installed all the projects dependancies.
    *
@@ -35,10 +46,10 @@ class composer_utils {
     // Change to the root Rogo directory.
     chdir(__DIR__ . '/..');
     self::install_update();
-    if ($method === self::UPDATE) {
-      self::update_dependancies();
+    if ($method === self::UPDATE or $method === self::UPDATE_NODEV) {
+      self::update_dependancies($method);
     } else {
-      self::fetch_dependancies();
+      self::fetch_dependancies($method);
     }
     chdir($workingdir);
   }
@@ -49,42 +60,53 @@ class composer_utils {
    * @return void
    */
   protected static function install_update() {
+    $langpack = new langpack();
     if (!file_exists(__DIR__ . '/../composer.phar')) {
       // Composer needs to be installed.
       passthru("curl http://getcomposer.org/installer | php", $statuscode);
       if ($statuscode != 0) {
-        throw new Exception('Cannot install composer, on Windows you will need to manually download it.');
+        throw new Exception($langpack->get_string(self::langcomponent, 'cannotinstall'));
       }
     } else {
       // Composer needs to be updated.
       passthru("php composer.phar self-update", $statuscode);
       if ($statuscode != 0) {
-        throw new Exception('Cannot update composer.');
+        throw new Exception($langpack->get_string(self::langcomponent, 'cannotupdate'));
       }
     }
   }
 
   /**
    * Downloads and installs all the files required by the composer.lock file for the project.
-   *
+   * @param integer $method install method
    * @return void
    */
-  protected static function fetch_dependancies() {
-    passthru("php composer.phar install", $statuscode);
+  protected static function fetch_dependancies($method) {
+    $langpack = new langpack();
+    $devflag = '';
+    if ($method === self::INSTALL_NODEV) {
+      $devflag = '--no-dev';
+    }
+    passthru("php composer.phar install $devflag", $statuscode);
     if ($statuscode != 0) {
-      throw new Exception('Could not install components.');
+      throw new Exception($langpack->get_string(self::langcomponent, 'couldnotinstallcomp'));
     }
   }
 
   /**
    * Downloads and installs all the files required by the composer.json file for the project.
-   *
+   * @param integer $method update method
    * @return void
    */
-  protected static function update_dependancies() {
-    passthru("php composer.phar update", $statuscode);
+  protected static function update_dependancies($method) {
+    $langpack = new langpack();
+    $devflag = '';
+    if ($method === self::UPDATE_NODEV) {
+      $devflag = '--no-dev';
+    }
+    passthru("php composer.phar update $devflag", $statuscode);
     if ($statuscode != 0) {
-      throw new Exception('Could not update components.');
+      throw new Exception($langpack->get_string(self::langcomponent, 'couldnotupdatecomp'));
     }
   }
 }

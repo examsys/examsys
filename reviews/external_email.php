@@ -23,7 +23,7 @@
 */
 
 require '../include/staff_auth.inc';
-require_once '../include/errors.inc';
+require_once '../include/errors.php';
 require_once '../config/external_email_msg.php';
 
 $paperID = check_var('paperID', 'GET', true, false, true);

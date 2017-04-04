@@ -53,15 +53,11 @@ $cfg_root_path = rtrim('/' . trim(str_replace(normalise_path($_SERVER['DOCUMENT_
 		}
 	}
 
-	if ($this->configObj->get('cfg_interactive_qs') == 'html5') {
 ?>
-			if (!isCanvasSupported()){
-			  $('.html5warn').fadeIn();
-			}
-<?php
-	}
-?>
-		    			
+      if (!isCanvasSupported()){
+        $('.html5warn').fadeIn();
+      }
+
       $('#theform').validate({
         errorClass: 'errfield',
         errorPlacement: function(error,element) {
@@ -79,13 +75,7 @@ $cfg_root_path = rtrim('/' . trim(str_replace(normalise_path($_SERVER['DOCUMENT_
 </head>
 
 <body>
-<?php
-	if ($this->configObj->get('cfg_interactive_qs') == 'html5') {
-?>
 <div class="html5warn"><?php echo $string['html5warn'] ?></div>
-<?php
-  }
-?>
 <form method="post" id="theform" autocomplete="off">
     <div class="mainbox">
 

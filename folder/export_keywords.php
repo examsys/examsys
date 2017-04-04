@@ -23,7 +23,7 @@
 */
 
 require '../include/staff_auth.inc';
-require '../include/errors.inc';
+require '../include/errors.php';
 
 header('Content-Type: text/plain');
 header('Content-Disposition: attachment; filename=keywords.txt');

@@ -1,0 +1,22 @@
+<table id="maindata" class="header tablesorter" cellspacing="0" cellpadding="2" border="0" style="width:100%">
+  <thead>
+    <tr>
+      <th class="col header">{{lang.title}}</th>
+      <th class="col header">{{lang.surname}}</th>
+      <th class="col header">{{lang.firstnames}}</th>
+      <th class="col header">{{lang.username}}</th>
+      <th class="col header">{{lang.externalid}}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for id, item in data %}
+    <tr id="{{id}}" class="l">
+      <td class="col">{{item.title}}</td>
+      <td class="col">{{item.surname}}</td>
+      <td class="col">{{item.firstnames}}</td>
+      <td class="col">{{item.username}}</td>
+      <td class="col">{{item.externalid}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>

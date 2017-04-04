@@ -109,14 +109,12 @@ Class UserUtils {
    * @throws Exception
    */
   static function insert_student_id($db, $studentid, $userid) {
+    $langcomponent = 'classes/userutils';
+    $langpack = new \langpack();
+    $langstrings = $langpack->get_all_strings($langcomponent);
     $result = $db->prepare("INSERT INTO sid VALUES(?, ?)");
     if ($db->error) {
-      try {
-        throw new Exception("MySQL error $db->error <br /> Query:<br /> ", $db->errno);
-      } catch (Exception $e) {
-        echo "Error No: " . $e->getCode() . " - " . $e->getMessage() . "<br />";
-        echo nl2br($e->getTraceAsString());
-      }
+      echo $langstrings['showerror'] . "<br >";
     }
     $result->bind_param('si', $studentid, $userid);
     $result->execute();
@@ -877,20 +875,6 @@ Class UserUtils {
     }
 
     return $found;
-  }
-
-  /**
-   * Delete all the LTI records associated with a Rogo user ID.
-   *
-   * @param int $userID - ID of the Rogo user.
-   * @param object $db  - database connection.
-   *
-   */
-  static function clear_lti_user($userID, $db) {
-    $result = $db->prepare("DELETE FROM lti_user WHERE lti_user_equ = ?");
-    $result->bind_param('i', $userID);
-    $result->execute();
-    $result->close();
   }
 
  /**

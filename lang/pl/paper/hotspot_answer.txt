@@ -1,3 +1,0 @@
-<?php
-$string['view'] = 'Zobacz wszystkie odpowiedzi';
-?>

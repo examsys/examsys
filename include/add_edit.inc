@@ -24,7 +24,7 @@
 * @package
 */
 
-require_once 'errors.inc';
+require_once 'errors.php';
 
 /**
  * Takes in an HTML string and trys to remove as much superfluous formatting as possible.

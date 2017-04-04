@@ -67,6 +67,21 @@ class UserObject extends RogoStaticSingleton {
 	private $dismiss;
 
   private $impersonateduser;
+  
+  /** @var string Language component name. */
+  protected $langcomponent = 'classes/userobject';
+  /** @var array language strings */
+  protected $langstrings; 
+
+  /**
+   * Called when the object is unserialised.
+   */
+  public function __wakeup() {
+    // The serialised database object will be invalid,
+    // this object should only be serialised during an error report,
+    // so adding the current database connect seems like a waste of time.
+    $this->db = null;
+  }
 
   /**
    * constructor
@@ -83,6 +98,17 @@ class UserObject extends RogoStaticSingleton {
     $this->db = & $db;
     $this->configObj = & $configObject;
     self::$inst = $this;
+        
+    $langpack = new \langpack();
+    $this->langstrings = $langpack->get_all_strings($this->langcomponent);
+  }
+ /**
+  * Destory UserObject
+  * 
+  * Useful in unit tests.
+  */
+  public function destory() {
+    self::$inst = null;
   }
 
   public function error_handling($context = null) {
@@ -545,26 +571,27 @@ class UserObject extends RogoStaticSingleton {
 
     if ($staff_modules_sql != '' or $this->has_role(array('SysAdmin', 'Admin'))) {
       if ($this->has_role('SysAdmin')) {
-        $sql = "SELECT DISTINCT modules.id, moduleid, fullname, school FROM modules, schools WHERE modules.schoolid = schools.id AND active = 1 AND mod_deleted IS NULL ORDER BY school, moduleID";
+        $sql = "SELECT DISTINCT modules.id, moduleid, fullname, schools.code, school FROM modules, schools WHERE modules.schoolid = schools.id AND active = 1 AND mod_deleted IS NULL ORDER BY school, moduleID";
       } elseif ($this->has_role('Admin')) {
         $schoolIDs = implode(',', SchoolUtils::get_admin_schools($this->userID, $this->db));
         if ($schoolIDs != '') {
-          $sql = "(SELECT DISTINCT modules.id, moduleid, fullname, school FROM modules, schools WHERE modules.schoolid = schools.id AND modules.id IN ($staff_modules_sql) AND active = 1 AND mod_deleted IS NULL) UNION (SELECT DISTINCT modules.id, moduleid, fullname, school FROM modules, schools WHERE modules.schoolid = schools.id AND schoolid IN ($schoolIDs) AND active = 1 AND mod_deleted IS NULL) ORDER BY school, moduleID";
+          $sql = "(SELECT DISTINCT modules.id, moduleid, fullname, schools.code, school FROM modules, schools WHERE modules.schoolid = schools.id AND modules.id IN ($staff_modules_sql) AND active = 1 AND mod_deleted IS NULL) UNION (SELECT DISTINCT modules.id, moduleid, fullname, school FROM modules, schools WHERE modules.schoolid = schools.id AND schoolid IN ($schoolIDs) AND active = 1 AND mod_deleted IS NULL) ORDER BY school, moduleID";
         } elseif ($staff_modules_sql != '') {
-          $sql = "SELECT DISTINCT modules.id, moduleid, fullname, school FROM modules, schools WHERE modules.schoolid = schools.id AND modules.id IN ($staff_modules_sql) AND active = 1 AND mod_deleted IS NULL ORDER BY school, moduleID";
+          $sql = "SELECT DISTINCT modules.id, moduleid, fullname, schools.code, school FROM modules, schools WHERE modules.schoolid = schools.id AND modules.id IN ($staff_modules_sql) AND active = 1 AND mod_deleted IS NULL ORDER BY school, moduleID";
         } else {
           // Admin is not on any Schools or Modules.
           return $staff_modules_list;
         }
       } else {
-        $sql = "SELECT DISTINCT modules.id, moduleid, fullname, school FROM modules, schools WHERE modules.schoolid = schools.id AND modules.id IN ($staff_modules_sql) AND active = 1 AND mod_deleted IS NULL ORDER BY school, moduleID";
+        $sql = "SELECT DISTINCT modules.id, moduleid, fullname, schools.code, school FROM modules, schools WHERE modules.schoolid = schools.id AND modules.id IN ($staff_modules_sql) AND active = 1 AND mod_deleted IS NULL ORDER BY school, moduleID";
       }
 
       if (isset($sql)) {
         $result = $this->db->prepare($sql);
         $result->execute();
-        $result->bind_result($idMod, $moduleid, $fullname, $school);
+        $result->bind_result($idMod, $moduleid, $fullname, $schoolcode, $school);
         while ($result->fetch()) {
+          $staff_modules_list[$idMod]['schoolcode'] = $schoolcode;
           $staff_modules_list[$idMod]['school'] = $school;
           $staff_modules_list[$idMod]['id'] = $moduleid;
           $staff_modules_list[$idMod]['idMod'] = $idMod;
@@ -830,16 +857,28 @@ class UserObject extends RogoStaticSingleton {
       $notice = UserNotices::get_instance();
       $notice->display_notice('Change DB user failed', $msg, '../artwork/exclamation_64.png', '#C00000', true, false);
       if ($this->db->error) {
-        try {
-          throw new Exception("MySQL error " . $this->db->error ."<br /> ", $this->db->errno);
-        } catch (Exception $e) {
-          echo "<p>Error No: " . $e->getCode() . " - " . $e->getMessage() . "</p>";
-          echo '<p>' . nl2br($e->getTraceAsString()) . '</p>';
-          echo "<body>\n</html>";
-          exit();
-        }
+        echo $this->langstrings['showerror'] . "<br >";
+        echo "<body>\n</html>";
+        exit();
       }
     }
   }
   
+  /**
+  * Check if the user has completed a paper
+  * @param integer $id - paper id
+  * @return bool true if user has completed the paper
+  */
+  public function user_completed_paper($id) {
+    $result = $this->db->prepare("SELECT NULL FROM log_metadata WHERE userID = ? and paperID = ? and completed IS NOT null");
+    $result->bind_param('ii', $this->userID, $id);
+    $result->execute();
+    $result->store_result();
+    if ($result->num_rows > 0) {
+        $result->close();
+        return true;
+    }
+    $result->close();
+    return false;
+  }
 }

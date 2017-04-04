@@ -23,7 +23,7 @@
 */
 
 require '../../include/sysadmin_auth.inc';
-require '../../include/errors.inc';
+require '../../include/errors.php';
 
 header('Content-Type: text/html; charset=utf8');
 

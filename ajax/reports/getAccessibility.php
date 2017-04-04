@@ -23,7 +23,7 @@
 */
 
 require '../../include/staff_auth.inc';
-require '../../include/errors.inc';
+require '../../include/errors.php';
 
 $userID  = check_var('userID', 'GET', true, false, true);
 

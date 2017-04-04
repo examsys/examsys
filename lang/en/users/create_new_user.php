@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Rogo.  If not, see <http://www.gnu.org/licenses/>.
 
-require $cfg_web_root . '/lang/' . $language . '/include/user_search_options.inc';
-require $cfg_web_root . '/lang/' . $language . '/include/titles.inc';
+require $cfg_web_root . '/lang/' . $language . '/include/user_search_options.php';
+require $cfg_web_root . '/lang/' . $language . '/include/titles.php';
 
 $string['createnewuser'] = 'Create New User';
 $string['getldapdetails'] = 'Get LDAP details';

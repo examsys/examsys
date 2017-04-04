@@ -1,0 +1,126 @@
+modules:
+  -
+    id: 1
+    moduleid: "ABC100"
+    fullname: "Test Module"
+    externalid: "123456789"
+    academic_year_start: "01/07"
+    vle_api: ''
+    checklist: "mapping"
+    map_level: 7
+  -
+    id: 2
+    moduleid: "ABC200"
+    fullname: "Test Module 2"
+    externalid: "987654321"
+    academic_year_start: "01/07"
+    vle_api: ''
+    checklist: "mapping"
+    map_level: 7
+  -
+    id: 3
+    moduleid: "ABC300"
+    fullname: "Test Module 3"
+    externalid: "432198765"
+    academic_year_start: "01/07"
+    vle_api: ''
+    checklist: "mapping"
+    map_level: 7
+properties:
+  -
+    property_id: 1
+    paper_title: "Paper 1"
+    calendar_year: 2015
+    paper_type: "2"
+    paper_ownerID: 1
+    exam_duration: null
+  -
+    property_id: 2
+    paper_title: "Paper 2"
+    calendar_year: 2016
+    paper_type: "2"
+    paper_ownerID: 1
+    exam_duration: 90
+  -
+    property_id: 3
+    paper_title: "paper copy test"
+    calendar_year: 2017
+    paper_type: "1"
+    paper_ownerID: 1
+    exam_duration: 90
+properties_modules:
+  -
+    property_id: 1
+    idMod: 1
+  -
+    property_id: 2
+    idMod: 1
+  -
+    property_id: 2
+    idMod: 2
+  -
+    property_id: 3
+    idMod: 1
+  -
+    property_id: 3
+    idMod: 2
+sessions:
+  -
+    sess_id: 1
+    identifier: 12345
+    idMod: 1
+    title: "test"
+    source_url: "https://www.example.com"
+    calendar_year: 2015
+    occurrence: "2017-01-09 11:00:00"
+  -
+    sess_id: 2
+    identifier: 67890
+    idMod: 1
+    title: "test"
+    source_url: "https://www.example.com"
+    calendar_year: 2017
+    occurrence: "2018-01-09 11:00:00"
+objectives:
+  -
+    obj_id: 123
+    objective: "a"
+    idMod: 1
+    identifier: 12345
+    calendar_year: 2015
+    sequence: 1
+  -
+    obj_id: 124
+    objective: "b"
+    idMod: 1
+    identifier: 12345
+    calendar_year: 2015
+    sequence: 2
+  -
+    obj_id: 125
+    objective: "c"
+    idMod: 1
+    identifier: 12345
+    calendar_year: 2015
+    sequence: 3
+  -
+    obj_id: 126
+    objective: "a"
+    idMod: 1
+    identifier: 67890
+    calendar_year: 2017
+    sequence: 1
+  -
+    obj_id: 127
+    objective: "b"
+    idMod: 1
+    identifier: 67890
+    calendar_year: 2017
+    sequence: 2
+  -
+    obj_id: 128
+    objective: "c"
+    idMod: 1
+    identifier: 67890
+    calendar_year: 2017
+    sequence: 3

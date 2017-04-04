@@ -23,7 +23,7 @@
 */
 
 require '../include/staff_auth.inc';
-require_once '../include/errors.inc';
+require_once '../include/errors.php';
 require_once '../include/media.inc';
 
 $paperID = check_var('paperID', 'GET', true, false, true);
@@ -63,7 +63,7 @@ if (isset($_POST['submit'])) {
 
 <body>
 <?php
-  require '../include/paper_options.inc';
+  require '../include/paper_options.php';
   require '../include/toprightmenu.inc';
 
   echo draw_toprightmenu();

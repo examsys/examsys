@@ -102,6 +102,16 @@ class Config extends RogoStaticSingleton {
     return "ConfigObject!";
   }
 
+  /**
+   * Called when the object is unserialised.
+   */
+  public function __wakeup() {
+    // The serialised database object will be invalid,
+    // this object should only be serialised during an error report,
+    // so adding the current database connect seems like a waste of time.
+    $this->db = null;
+  }
+
   protected function __construct() {
 
     // Get out of the box config information.
@@ -312,6 +322,14 @@ class Config extends RogoStaticSingleton {
     $this->set('cfg_db_database', $this->get('cfg_phpunit_db_database'));
     // Use the correct user data directory.
     $this->set('cfg_rogo_data', $this->get('cfg_phpunit_data'));
+    // Fix the password salt for unit tests.
+    $authentication = $this->get('authentication');
+    foreach($authentication as &$authmethod) {
+      if ($authmethod[0] === 'internaldb') {
+        $authmethod[1]['encrypt_salt'] = 'F1rIPkEU8HV7HFnp';
+      }
+    }
+    $this->set('authentication', $authentication);
     // Default host to be writable.
     $this->set('cfg_readonly_host', false);
     // Set file config override to false so we can test changes effectively.
@@ -631,6 +649,28 @@ class Config extends RogoStaticSingleton {
       }
     }
     return null;
+  }
+
+  /**
+   * Override an xml setting value. This should only be used during testing to override settings.
+   *
+   * @param mixed $value the value to be used.
+   * @param string $parent name of xml node
+   * @param string $child xml child node name
+   * @param string $grandchild xml grandchild node name
+   */
+  public function override_xml($value, $parent, $child = '', $grandchild = '') {
+    $xmldata = json_decode($this->xmldata);
+    if (is_string($parent)) {
+      if ($child == '' and $grandchild == '') {
+        $xmldata->$parent = $value;
+      } elseif ($child != '' and $grandchild == '') {
+        $xmldata->$parent->$child = $value;
+      } else {
+        $xmldata->$parent->$child->$grandchild = $value;
+      }
+    }
+    $this->xmldata = json_encode($xmldata);
   }
 
   function &getbyref($var) {

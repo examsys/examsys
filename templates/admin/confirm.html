@@ -1,0 +1,6 @@
+<p><strong>{{data.message}}</strong></p>
+<div class="button_bar">
+  <form action="{{data.formaction}}" method="post" autocomplete="off">
+    <input type="submit" name="confirm" value="{{lang.submit}}"/>
+    <input type="button" id="close" name="cancel" value="{{lang.cancel}}" class="cancel" onclick="javascript:window.close();"/>
+  </form>

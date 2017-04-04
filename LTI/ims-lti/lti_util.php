@@ -1,6 +1,15 @@
 <?php
 
-require_once 'OAuth.php';
+use LTI\OAuthConsumer,
+    LTI\OAuthDataStore,
+    LTI\OAuthRequest,
+    LTI\OAuthServer,
+    LTI\OAuthSignatureMethod_HMAC_SHA1,
+    LTI\OAuthToken,
+    LTI\OAuthUtil,
+    LTI\TrivialOAuthDataStore;
+
+$OAuth_last_computed_siguature = false;
 
 // Returns true if this is a Basic LTI message
 // with minimum values to meet the protocol
@@ -67,18 +76,22 @@ class BLTI {
     } elseif (!is_array($parm)) {
       $this->message = 'Constructor requires a secret or database information.';
       return;
-    } else {
-      $sql = 'SELECT * FROM '.$parm['table'].' WHERE '.
-          ($parm['key_column'] ? $parm['key_column'] : 'oauth_consumer_key').
-          '='.
-          "'".mysql_real_escape_string($oauth_consumer_key)."'";
-      $result = mysql_query($sql);
-      $num_rows = mysql_num_rows($result);
+    } else {      
+        
+      $key_column = $parm['key_column'] ? $parm['key_column'] : 'oauth_consumer_key';
+      $table = \param::clean($parm['table'], \param::ALPHA);
+      $sql = "SELECT * FROM  $table WHERE $key_column = ?";
+      $result = $mysqli->prepare($sql);
+      $result->bind_param('i', $oauth_consumer_key);
+      $result->execute();
+      $result->store_result();
+      $num_rows = $result->num_rows;
+      
       if ($num_rows != 1) {
         $this->message = 'Your consumer is not authorized oauth_consumer_key=' . $oauth_consumer_key;
         return;
       } else {
-        while ($row = mysql_fetch_assoc($result)) {
+        while ($row = mysqli_fetch_assoc($result)) {
           $secret = $row[$parms['secret_column'] ? $parms['secret_column'] : 'secret'];
           $context_id = $row[$parms['context_column'] ? $parms['context_column'] : 'context_id'];
           if ( $context_id ) $this->context_id = $context_id;
@@ -366,50 +379,6 @@ class BLTI {
   public function get_course_id() {
     return $this->course_id;
   }
-}
-
-/**
- * A Trivial memory-based store - no support for tokens
- */
-class TrivialOAuthDataStore extends OAuthDataStore {
-	private $consumers = array();
-
-	function add_consumer($consumer_key, $consumer_secret) {
-		$this->consumers[$consumer_key] = $consumer_secret;
-	}
-
-	function lookup_consumer($consumer_key) {
-		if (strpos($consumer_key, "http://" ) === 0) {
-			$consumer = new OAuthConsumer($consumer_key,"secret", NULL);
-			return $consumer;
-		}
-		if ($this->consumers[$consumer_key]) {
-			$consumer = new OAuthConsumer($consumer_key,$this->consumers[$consumer_key], NULL);
-			return $consumer;
-		}
-		return NULL;
-	}
-
-	function lookup_token($consumer, $token_type, $token) {
-		return new OAuthToken($consumer, "");
-	}
-
-	// Return NULL if the nonce has not been used
-	// Return $nonce if the nonce was previously used
-	function lookup_nonce($consumer, $token, $nonce, $timestamp) {
-		// Should add some clever logic to keep nonces from
-		// being reused - for no we are really trusting
-		// that the timestamp will save us
-		return NULL;
-	}
-
-	function new_request_token($consumer) {
-			return NULL;
-	}
-
-	function new_access_token($token, $consumer) {
-			return NULL;
-	}
 }
 
 function signParameters($oldparms, $endpoint, $method, $oauth_consumer_key, $oauth_consumer_secret, $submit_text = false, $org_id = false, $org_desc = false) {

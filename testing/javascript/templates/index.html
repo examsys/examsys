@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Rogō JavaScript Unit Tests</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{webroot}}/testing/javascript/templates/javascript_unit.css">
+  </head>
+  <body>
+    <h1>Rogō JavaScript Unit Tests</h1>
+{% for item in scripts.suites %}
+    <div class="testsuite">
+      <h2><a href="{{webroot}}/testing/javascript/test_runner.php?suite={{item}}">{{item}}</a></h2>
+      <iframe id="{{item}}-test" src="{{webroot}}/testing/javascript/test_runner.php?suite={{item}}"></iframe>
+    </div>
+{% endfor %}
+  </body>
+</html>

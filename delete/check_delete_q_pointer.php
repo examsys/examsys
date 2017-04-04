@@ -25,7 +25,7 @@
 */
 
 require '../include/staff_auth.inc';
-require '../include/errors.inc';
+require '../include/errors.php';
 
 $questionID = check_var('questionID', 'GET', true, false, true);
 $pID				=	check_var('pID', 'GET', true, false, true);

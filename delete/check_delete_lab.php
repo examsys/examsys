@@ -25,7 +25,7 @@
 */
 
 require '../include/admin_auth.inc';
-require_once '../include/errors.inc';
+require_once '../include/errors.php';
 
 $labID = check_var('labID', 'GET', true, false, true);
 

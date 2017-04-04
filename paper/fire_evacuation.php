@@ -31,10 +31,17 @@
 
 require '../include/staff_student_auth.inc';
 require_once '../include/marking_functions.inc';
-require_once '../include/errors.inc';
-require_once '../include/paper_security.inc';
+require_once '../include/errors.php';
+require_once '../include/paper_security.php';
 
-$id = check_var('id', 'GET', true, false, true);
+$id = check_var('id', 'GET', true, false, true, param::ALPHANUM); // While it is an int, the numbers are too large for 32-bit PHP.
+$mode = param::optional('mode', '', param::ALPHA);
+$getmode = param::optional('mode', '', param::ALPHA, param::FETCH_GET);
+$q_id = param::optional('q_id', null, param::INT, param::FETCH_GET);
+$do_not_record = param::optional('dont_record', false, param::BOOLEAN, param::FETCH_GET);
+$old_screen = param::optional('old_screen', '', param::INT, param::FETCH_POST);
+$post_screen = param::optional('current_screen', 0, param::INT, param::FETCH_POST);
+$previous_duration = param::optional('previous_duration', 0, param::INT, param::FETCH_POST);
 
 $userObject = UserObject::get_instance();
 
@@ -55,11 +62,11 @@ $password       = $propertyObj->get_password();
  *
  */
 // Are we in a staff test and preview mode?
-$is_preview_mode = ( $userObject->has_role(array('Staff','SysAdmin')) and isset( $_REQUEST['mode'] ) and $_REQUEST['mode'] == 'preview' );
+$is_preview_mode = ($userObject->has_role(array('Staff','SysAdmin')) and $mode === 'preview');
 // Are we in a staff test and preview mode and on the first screen?
-$is_preview_mode_first_launch = ( $is_preview_mode == true and isset($_GET['mode']) and $_GET['mode'] == 'preview' );
+$is_preview_mode_first_launch = ($is_preview_mode == true and $getmode === 'preview');
 // Are we in a staff single question testmode
-$is_question_preview_mode = ( isset($_GET['q_id']) );
+$is_question_preview_mode = !is_null($q_id);
 
 /*
 * Set the default colour scheme for this paper and allow current users' special settings to override
@@ -124,7 +131,7 @@ $metadataID = $log_metadata->get_metadata_id();
 *                                with dont_record set to true so this is not executed
 */
 if ($is_question_preview_mode == false) {
-  if ((isset($_POST['old_screen']) and $_POST['old_screen'] != '') and (!isset($_GET['dont_record']) or $_GET['dont_record'] != true)) {
+  if ($old_screen != '' and !$do_not_record) {
     record_marks($propertyObj->get_property_id(), $mysqli, $propertyObj->get_paper_type(), $metadataID);
   }
 }
@@ -150,15 +157,13 @@ if ($is_question_preview_mode == false) {
   <p class="norun"><?php echo $string['donotrun'] ?></p>
   <p><strong><?php echo $string['bottom_msg'] ?> </strong><input type="submit" name="next" value="<?php echo $string['continue'] ?>" class="ok" /></p>
 <?php
-  echo "<input type=\"hidden\" name=\"current_screen\" value=\"" . ($_POST['current_screen'] - 1) . "\" />\n";
-  if (isset($_POST['sessionid'])) {
-    echo "<input type=\"hidden\" name=\"sessionid\" value=\"" . $_POST['sessionid'] . "\" />\n";
-  } else {
-    echo "<input type=\"hidden\" name=\"sessionid\" value=\"" . date("YmdHis", time()) . "\" />\n";
-  }
-  echo "<input type=\"hidden\" name=\"page_start\" value=\"" . date("YmdHis", time()) . "\" />\n";
-  echo "<input type=\"hidden\" name=\"old_screen\" value=\"" . ($_POST['current_screen'] - 1) . "\" />\n";
-  echo "<input type=\"hidden\" name=\"previous_duration\" value=\"" . $_POST['previous_duration'] . "\" />\n";
+  echo "<input type=\"hidden\" name=\"current_screen\" value=\"" . ($post_screen - 1) . "\" />\n";
+  $currentdatetime = date("YmdHis", time());
+  $postsessionid = param::optional('sessionid', $currentdatetime, param::ALPHANUM, param::FETCH_POST);
+  echo "<input type=\"hidden\" name=\"sessionid\" value=\"" . $postsessionid . "\" />\n";
+  echo "<input type=\"hidden\" name=\"page_start\" value=\"" . $currentdatetime . "\" />\n";
+  echo "<input type=\"hidden\" name=\"old_screen\" value=\"" . ($post_screen - 1) . "\" />\n";
+  echo "<input type=\"hidden\" name=\"previous_duration\" value=\"" . $previous_duration . "\" />\n";
   echo "<input type=\"hidden\" name=\"button_pressed\" value=\"\" />\n";
   echo "<input type=\"hidden\" name=\"fire_alarm\" value=\"1\" />\n";
 

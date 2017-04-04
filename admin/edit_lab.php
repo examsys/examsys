@@ -23,7 +23,7 @@
 */
 
 require '../include/sysadmin_auth.inc';
-require '../include/errors.inc';
+require '../include/errors.php';
 
 $lab_id = check_var('labID', 'REQUEST', true, false, true);
 

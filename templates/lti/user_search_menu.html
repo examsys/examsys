@@ -1,0 +1,30 @@
+<body>
+    {{toprightmenu|raw}}
+    <div id="left-sidebar" class="sidebar">
+    <p><strong>{{lang.search_desc}}</strong></p>
+    <form name="usersearch" method="post" action="{{script.search}}">
+      <div>
+        <label for="internalid">{{lang.searchinternalid}}</label>
+        <input id="internalid" type="text" name="internalid" value="{{script.form.internalid}}"/>
+      </div>
+      <div>
+        <label for="externalid">{{lang.searchexternalid}}</label>
+        <input id="externalid" type="text" name="externalid" value="{{script.form.externalid}}"/>
+      </div>
+      <input type="submit" value="{{lang.search}}"/>
+    </form>
+
+    <br/>
+    <div class="submenuheading">{{lang.optionstitle}}</div>
+    <form name="optionsform" autocomplete="off">
+    <div id="menu1a">
+        <div class="menuitem"><img class="sidebar_icon" src="../artwork/{{image.unlink_dimmed}}" alt="" />{{lang.unlink}}</div>
+    </div>
+
+    <div style="display:none" id="menu1b">
+        <div onclick="unlinkuser('{{script.unlink}}');" class="menuitem"><a onclick="return false;" href=""><img class="sidebar_icon" src="../artwork/{{image.unlink}}" alt="{{lang.unlink}}" />{{lang.unlink}}</a></div>
+    </div>
+
+    <input type="hidden" id="lineID" name="lineID" value=""/>
+    </form>
+    </div>

@@ -34,7 +34,7 @@ Class QuestionAREA extends QuestionEdit {
   protected $correct_partial;
   protected $error_partial;
   protected $_requires_media = true;
-  protected $_requires_flash = true;
+  protected $_requires_html5 = true;
   protected $_allow_partial_marks = true;
   protected $_allow_negative_marks = true;
   protected $score_method = 'Allow partial Marks';

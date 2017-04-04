@@ -29,10 +29,10 @@
 $root = str_replace('/include', '/', str_replace('\\', '/', dirname(__FILE__)));
 include_once $root . '/../include/load_config.php';
 $cfg_web_root = $configObject->get('cfg_web_root');
-require_once $cfg_web_root . 'lang/' . $language . '/include/common.inc'; // Include common language file that all scripts need
+require_once $cfg_web_root . 'lang/' . $language . '/include/common.php'; // Include common language file that all scripts need
 require_once $cfg_web_root . 'include/custom_error_handler.inc';
 
-global $cfg_web_root;
+require '../include/sysadmin_auth.inc';
 global $cfg_web_root;
 require $cfg_web_root . 'plugins/questions/enhancedcalc/enhancedcalc.class.php';
 

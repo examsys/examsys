@@ -29,9 +29,26 @@ Class UpdaterUtils {
   private $mysqli;
   private $db_name;
 
+  /** @var string Language component name. */
+  protected $langcomponent = 'classes/updaterutils';
+  /** @var array language strings */
+  protected $langstrings;   
+
+  /**
+   * Called when the object is unserialised.
+   */
+  public function __wakeup() {
+    // The serialised database object will be invalid,
+    // this object should only be serialised during an error report,
+    // so adding the current database connect seems like a waste of time.
+    $this->mysqli = null;
+  }
+
   public function __construct($mysqli, $db_name) {
     $this->mysqli  = $mysqli;
     $this->db_name = $db_name;
+    $langpack = new \langpack();
+    $this->langstrings = $langpack->get_all_strings($this->langcomponent);
   }
   
   /**
@@ -281,23 +298,17 @@ Class UpdaterUtils {
       }
     } elseif ($this->mysqli->warning_count > 0) {
       if ($update_display) echo '</li>';
-      echo '<li class="warning">WARNING: ' . $sql;
+      echo '<li class="warning">WARNING: ' . $this->langstrings['showerror'];
       $e = $this->mysqli->get_warnings();
       do {
-        echo "<br />Warning No: $e->errno: - $e->message\n";
+        echo "<br />Warning: " . $this->langstrings['showerror'] . "\n";
       } while ($e->next());
       echo "</li>\n";
     } else {
       if ($update_display) echo '</li>';
       echo '<li class="error">ERROR: ' . $sql;
       if ($this->mysqli->error) {
-        try {
-          $err = $this->mysqli->error;
-          $mess = $this->mysqli->errno;
-          throw new Exception("MySQL error $err", $mess);
-        } catch (Exception $e) {
-          echo "<br />Error No: " . $e->getCode() . " - " . $e->getMessage();
-        }
+        echo $this->langstrings['showerror'] . "<br >";
       }
       echo "</li>\n";
     }
@@ -346,14 +357,16 @@ Class UpdaterUtils {
     $code_version = $configObject->getxml('version');
     $dev_system = $configObject->get('cfg_dev_system');
 
+    $checkcode = (version::is_version_higher($code_version, $version) or $code_version == $version);
     if ($dev_system) {
       // A dev system may need to upgrade even if the config file has been updated.
-      $run_update = ($cfg_version <= $version and $code_version >= $version);
+      $checkcfg = (version::is_version_higher($version, $cfg_version) or $cfg_version == $version);
     } else {
       // Production systems should not run update files for versions that were built if the config file is
       // for that version of Rogo, as they should have already been run.
-      $run_update = ($cfg_version < $version and $code_version >= $version);
+      $checkcfg = version::is_version_higher($version, $cfg_version);
     }
+    $run_update = ($checkcfg and $checkcode);
     return $run_update;
   }
 

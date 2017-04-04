@@ -178,7 +178,6 @@ class users extends generator {
       throw new data_error('Must pass an array or object');
     }
     $usernumber = ++self::$userscreated;
-
     $defaults = array(
       'username' => self::$defaultusername . $usernumber,
       'surname' => $this->random_value('surnames'),
@@ -238,7 +237,7 @@ class users extends generator {
     $query->bind_param('ssssssssssiisi', $data['password'], $data['grade'], $data['surname'], $data['initials'], $data['username'],
         $data['title'], $data['email'], $data['roles'], $data['first_names'], $data['gender'], $data['special_needs'],
         $data['yearsofstudy'], $data['user_deleted'], $data['password_expire']);
-    if (!$query->execute()) { var_dump($query->error_no, $query->error);
+    if (!$query->execute()) {
       // The user was not successfully inserted.
       throw new data_error("User {$data['username']} not inserted into database");
     }

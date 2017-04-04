@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Rogo.  If not, see <http://www.gnu.org/licenses/>.
 
-require '../lang/' . $language . '/delete/delete.inc';
+require '../lang/' . $language . '/delete/delete.php';
 
 $string['msg'] = 'Deleting the paper does <em>not</em> delete the actual questions in the question bank.<br /><br /><strong>Are you sure you wish to delete this paper?</strong>';
 $string['paperlocked'] = 'Paper Locked';

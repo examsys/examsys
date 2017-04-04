@@ -91,6 +91,16 @@ class PaperProperties {
 
   private $_date_timezone = null;
 
+  /**
+   * Called when the object is unserialised.
+   */
+  public function __wakeup() {
+    // The serialised database object will be invalid,
+    // this object should only be serialised during an error report,
+    // so adding the current database connect seems like a waste of time.
+    $this->db = null;
+  }
+
   public function __construct($db) {
   	$this->db = $db;
     $this->configObject = Config::get_instance();
@@ -206,7 +216,7 @@ class PaperProperties {
       $property_object->set_exam_duration($exam_duration);
       $property_object->set_calendar_year($calendar_year);
       $property_object->set_calendar_year($calendar_year);
-      $property_object->set_password($password);
+      $property_object->password = $password;
       $property_object->set_timezone($timezone);
       $property_object->set_display_start_date();
       $property_object->set_display_start_time();
@@ -1635,7 +1645,7 @@ class PaperProperties {
    */
   public function set_password($password) {
     $paperID = $this->get_property_id();
-    $old_password = $this->password;
+    $old_password = $this->get_decrypted_password();
 
     if ($password != '') {
         $this->password = $this->encrypt_password($paperID . $password);

@@ -167,7 +167,7 @@ function rgb_hex($input) {
 <tr><td colspan="2">
 <div style="position:absolute; left:17px; font-size:90%"><?php echo $string['new']; ?></div>
 <div id="swatch" style="width:50px; height:50px; position:relative; top:16px; left:0px; background-color:white; border:1px solid #808080"></div>
-<div id="current" style="width:50px; height:50px; position:relative; top:18px; left;0px; background-color:white; border:1px solid #808080"></div>
+<div id="current" style="width:50px; height:50px; position:relative; top:18px; left:0px; background-color:white; border:1px solid #808080"></div>
 <div style="position:relative; top:24px; left:15px; font-size:90%"><?php echo $string['old']; ?></div>
 </td></tr>
 </table>

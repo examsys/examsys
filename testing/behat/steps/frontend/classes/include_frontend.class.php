@@ -29,5 +29,6 @@ namespace testing\behat\steps\frontend;
 trait include_frontend {
   use authentication,
       basic,
-      forms;
+      forms,
+      menu;
 }

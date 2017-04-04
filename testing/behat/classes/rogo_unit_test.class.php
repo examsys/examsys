@@ -83,7 +83,7 @@ class rogo_unit_test implements Context {
    * @return mixed
    */
   public function __get($name) {
-    if (empty($this->data[$name])) {
+    if (!isset($this->data[$name])) {
       return null;
     }
     return $this->data[$name];

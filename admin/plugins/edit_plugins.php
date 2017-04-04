@@ -22,7 +22,7 @@
 */
 
 require '../../include/sysadmin_auth.inc';
-require_once '../../include/errors.inc';
+require_once '../../include/errors.php';
 
 $plugin = check_var('pid', 'REQUEST', true, false, true);
 $installed = plugin_manager::plugin_installed($plugin);
@@ -64,7 +64,7 @@ if (isset($_POST['submit'])) {
     foreach ($configObject->get_setting($plugin) as $setting => $value) {
         $type = $configObject->get_setting_type($plugin, $setting);
         if ($setting != "installed") {
-            $new_value = check_var($setting, 'POST', false, false, true);
+            $new_value = param::optional($setting, '', param::RAW, param::FETCH_POST);
             // Check value is of expected type. No change if not expected type.
             if (!Config::check_type($new_value, $type)) {
                 $new_value = $value;

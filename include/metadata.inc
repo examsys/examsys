@@ -214,8 +214,14 @@ META;
       $team_id = $individual_team['id'];
       $fullname = $individual_team['fullname'];
       $team_idMod = $individual_team['idMod'];
-
-      if ($individual_team['school'] != $prev_heading) {
+      if (is_null($individual_team['schoolcode'])) {
+        $school = $individual_team['school'];
+        $schoolhtml = $school;
+      } else {
+        $school = $individual_team['schoolcode'];
+        $schoolhtml = $individual_team['schoolcode'] . ' ' . $individual_team['school'];
+      }
+      if ($school != $prev_heading) {
         if ($prev_heading != '') {
           $html .= <<< META
               	</ul>
@@ -223,11 +229,15 @@ META;
 META;
         }
         $html .= <<< HEADING
-  							<h4><span class="opaque">{$individual_team['school']}</span></h4>
+  							<h4><span class="opaque">{$schoolhtml}</span></h4>
                 <ul class="radio-list clearfix">
 
 HEADING;
-        $prev_heading = $individual_team['school'];
+        if (is_null($individual_team['schoolcode'])) {
+          $prev_heading = $individual_team['school'];
+        } else {
+          $prev_heading = $individual_team['schoolcode'];
+        }
       }
 
       // Selected if: in existing teams for the question OR we have a module ID passed and the user is on that team (or is sysadmin)

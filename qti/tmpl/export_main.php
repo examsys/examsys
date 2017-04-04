@@ -61,10 +61,10 @@ require_once '../include/staff_auth.inc';
   </script>
 </head>
 <?php
-// paper_options.inc modifies result!  Store it temporarily
+// paper_options.php modifies result!  Store it temporarily
 $export_result = $result;
 
-require '../include/paper_options.inc';
+require '../include/paper_options.php';
 require '../include/toprightmenu.inc';
 
 echo draw_toprightmenu();

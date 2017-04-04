@@ -22,7 +22,7 @@
  */
 
 require '../include/sysadmin_auth.inc';
-require_once '../include/errors.inc';
+require_once '../include/errors.php';
 
 // Get all sessions.
 $result = $mysqli->prepare("SELECT calendar_year, academic_year, cal_status, stat_status FROM academic_year WHERE deleted is NULL");

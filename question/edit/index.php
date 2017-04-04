@@ -27,7 +27,7 @@ require_once '../../include/edit.inc';
 require_once '../../include/media.inc';
 require_once '../../include/metadata.inc';
 require_once '../../include/mapping.inc';
-require_once '../../include/errors.inc';
+require_once '../../include/errors.php';
 
 $stateutil = new StateUtils($userObject->get_user_ID(), $mysqli);
 $state = $stateutil->getState();
@@ -461,19 +461,9 @@ if ($question != null and file_exists($cfg_web_root . 'js/validation/jquery.' . 
 <script type="text/javascript" src="../../js/toprightmenu.js"></script>
 <?php
 endif;
-if ($question != null and $question->requires_flash()):
-?>
-<script type="text/javascript" src="../../js/ie_fix.js"></script>
-<script type="text/javascript" src="../../js/flash_include.js"></script>
-<!--HTML5 part start ---------- -->
-<script type='text/javascript'><?php echo "var lang_string = ".  json_encode($jstring) . ";\n";?></script>
-<script type="text/javascript" src="../../js/html5.images.js"></script>
-<script type="text/javascript" src="../../js/qsharedf.js"></script>
-<script type="text/javascript" src="../../js/qlabelling.js"></script>
-<script type="text/javascript" src="../../js/qhotspot.js"></script>
-<script type="text/javascript" src="../../js/qarea.js"></script>
-<!--HTML5 part end-->
-<?php
+if ($question != null and $question->requires_html5()):
+$render = new render($configObject);
+$render->render_html5_js(json_encode($jstring));
 endif;
 ?>
 <script>

@@ -428,6 +428,7 @@ function log_error($userid, $username, $error_type, $errstr, $errfile, $errline,
 
   }
   if ($variables != '' and !is_string($variables)) {
+    $variables = error_handling($variables);
     try {
       $variables = base64_encode(serialize($variables));
     } catch (Exception $e) {

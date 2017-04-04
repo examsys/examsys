@@ -25,7 +25,7 @@
 */
 
 require '../include/sysadmin_auth.inc';
-require '../include/errors.inc';
+require '../include/errors.php';
 
 $errorID = check_var('errorID', 'GET', true, false, true);
 

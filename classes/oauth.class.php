@@ -41,7 +41,17 @@ class oauth {
      * The oauth storage object.
      */
     private $storage;
-    
+
+    /**
+     * Called when the object is unserialised.
+     */
+    public function __wakeup() {
+        // The serialised database object will be invalid,
+        // this object should only be serialised during an error report,
+        // so adding the current database connect seems like a waste of time.
+        $this->db = null;
+    }
+
     /**
      * Constructor
      * @param object $configObject - rogo configuration object

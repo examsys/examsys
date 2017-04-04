@@ -53,14 +53,6 @@ $marks_partial = $configObject->get_setting('core', 'paper_marks_partial');
 $mark_range = range(100, 50);
 $error_range = range(0, 50);
 ?>
-<script type="text/javascript" src="../../js/jquery.flash_q.js"></script>
-<script>
-//<![CDATA[
-$(function () {
-  sendTextToAS3('<?php echo $language ?>', 'option_correct', '2', <?php echo "'" . $mediadirectory->url($media['filename'], false, false, true) . "', '" . $correct . "'" ?>);
-});
-//]]>
-</script>
 
 				<table id="q-details" class="form" summary="<?php echo $string['qeditsummary'] ?>">
 					<tbody>
@@ -83,7 +75,6 @@ if ($media['filename'] != '' and !$show_correction_intermediate):
   $tmp_correct = str_replace("&nbsp;", " ", $tmp_correct);
   $tmp_correct = preg_replace('/\r\n/', '', $tmp_correct);
 
-if ($configObject->get('cfg_interactive_qs') == 'html5') {
   //<!-- ======================== HTML5 part ================= -->
   echo '<canvas id="canvas1" width="' . $plugin_width . '" height="' . ($plugin_height+3) . '"></canvas>' . "\n";
   echo '<br /><div style="width:100%;text-align: left;" id="canvasbox"></div>' . "\n";
@@ -91,40 +82,6 @@ if ($configObject->get('cfg_interactive_qs') == 'html5') {
 	echo 'setUpQuestion(1, "option_correct", "' . $language . '", "' . $media['filename'] . '", "' . $correct . '", "", "", "#FFC0C0", "area", "2");' . "\n";
   echo '</script>' . "\n";
   //<!-- ==================================================== -->
-} else {
-	echo '<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="' . $plugin_width . '" height="' . $plugin_height . '" id="externalinterfaceoption_correct_1" align="top">' . "\n";
-	echo '<param name="movie" value="' . $configObject->get('cfg_root_path') . '/question/edit/area.swf" />' . "\n";
-	echo '<param name="quality" value="high" />' . "\n";
-	echo '<param name="bgcolor" value="#ffffff" />' . "\n";
-	echo '<param name="play" value="true" />' . "\n";
-	echo '<param name="loop" value="true" />' . "\n";
-	echo '<param name="wmode" value="opaque" />' . "\n";
-	echo '<param name="scale" value="showall" />' . "\n";
-	echo '<param name="menu" value="true" />' . "\n";
-	echo '<param name="devicefont" value="false" />' . "\n";
-	echo '<param name="salign" value="top" />' . "\n";
-	echo '<param name="allowScriptAccess" value="sameDomain" />' . "\n";
-	echo '<!--<param name="FlashVars" value="imgtt=Isles" />-->' . "\n";
-	echo '<!--[if !IE]>-->' . "\n";
-	echo '<object type="application/x-shockwave-flash" data="' . $configObject->get('cfg_root_path') . '/question/edit/area.swf" id="externalinterfaceoption_correct_2" width="' . $plugin_width . '" height="' . $plugin_height . '">' . "\n";
-	echo '<param name="movie" value="' . $configObject->get('cfg_root_path') . '/question/edit/area.swf" />' . "\n";
-	echo '<param name="quality" value="high" />' . "\n";
-	echo '<param name="bgcolor" value="#ffffff" />' . "\n";
-	echo '<param name="play" value="true" />' . "\n";
-	echo '<param name="loop" value="true" />' . "\n";
-	echo '<param name="wmode" value="opaque" />' . "\n";
-	echo '<param name="scale" value="showall" />' . "\n";
-	echo '<param name="menu" value="true" />' . "\n";
-	echo '<param name="devicefont" value="false" />' . "\n";
-	echo '<param name="salign" value="top" />' . "\n";
-	echo '<param name="allowScriptAccess" value="sameDomain" />' . "\n";
-	echo '<!--<![endif]-->' . "\n";
-	echo '<a href="https://www.adobe.com/go/getflash"> <img src="https://www.adobe.com/images/shared/download_buttons/get_flash_player.gif" alt="Get Adobe Flash player" /></a>' . "\n";
-	echo '<!--[if !IE]>-->' . "\n";
-	echo '</object>' . "\n";
-	echo '<!--<![endif]-->' . "\n";
-	echo '</object>' . "\n";
-} 
 endif;
 ?>                
                 <input name="optionid1" value="<?php echo $option_id; ?>" type="hidden" />

@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Rogo.  If not, see <http://www.gnu.org/licenses/>.
 
-require '../lang/' . $language . '/include/question_types.inc';
-require '../lang/' . $language . '/include/paper_types.inc';
-require '../lang/' . $language . '/delete/delete.inc';
+require '../lang/' . $language . '/include/question_types.php';
+require '../lang/' . $language . '/include/paper_types.php';
+require '../lang/' . $language . '/delete/delete.php';
 
 $string['recyclebintasks'] = 'Recycle Bin Tasks';
 $string['restorethisitem'] = 'Restore this item';

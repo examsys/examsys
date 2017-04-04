@@ -15,7 +15,7 @@
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace testing\behat;
-use Behat\MinkExtension\Context\RawMinkContext,
+use Behat\MinkExtension\Context\MinkContext,
     Behat\Behat\Exception\PendingException;
 use testing\datagenerator\loader;
 use coding_exception,
@@ -32,7 +32,7 @@ use coding_exception,
  * @package testing
  * @subpackage behat
  */
-class rogo_test extends RawMinkContext {
+class rogo_test extends MinkContext {
   /**
    * Get a data generator for adding information into the Rogo database.
    *

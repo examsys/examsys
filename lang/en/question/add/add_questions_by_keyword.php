@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Rogo.  If not, see <http://www.gnu.org/licenses/>.
 
-require '../../lang/' . $language . '/include/question_types.inc';
+require '../../lang/' . $language . '/include/question_types.php';
 
 $string['bykeywords'] = 'By Keyword';
 $string['question'] = 'Question';

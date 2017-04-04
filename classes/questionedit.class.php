@@ -66,7 +66,7 @@ Class QuestionEdit extends RogoObject {
   protected $_allow_negative_marks = null;
   protected $_requires_media = false;
   protected $_requires_correction_intermediate = false;
-  protected $_requires_flash = false;
+  protected $_requires_html5 = false;
   protected $_allow_mapping = true;
   protected $_allow_correction = true;
   protected $_allow_new_options = false;
@@ -120,6 +120,10 @@ Class QuestionEdit extends RogoObject {
   // A list of correction behaviours that will be called sequentially for the Correct operation
   protected $_correctors = array();
 
+  /** @var string Language component name. */
+  protected $langcomponent = 'classes/questionedit';
+  /** @var array language strings */
+  protected $langstrings; 
 
   /**
    * Create a new question object by either loading an existing question from the database or populating
@@ -144,6 +148,8 @@ Class QuestionEdit extends RogoObject {
     $this->_score_methods_db = array($this->_lang_strings['markperquestion'] => 'Mark per Question', $this->_lang_strings['markperoption'] => 'Mark per Option', $this->_lang_strings['allowpartial'] => 'Allow partial Marks', $this->_lang_strings['bonusmark'] => 'Bonus Mark');
     $this->_blooms_db = array('' => '', $this->_lang_strings['knowledge'] => 'Knowledge', $this->_lang_strings['comprehension'] => 'Comprehension', $this->_lang_strings['application'] => 'Application', $this->_lang_strings['analysis'] => 'Analysis', $this->_lang_strings['synthesis'] => 'Synthesis', $this->_lang_strings['evaluation'] => 'Evaluation');
 
+    $langpack = new \langpack();
+    $this->langstrings = $langpack->get_all_strings($this->langcomponent);
     // Array of references to the fields.  Allows succinct use of call_user_func_array for saving
     foreach($this->_fields as $field) {
       $this->_data[] = &$this->$field;
@@ -294,8 +300,6 @@ Class QuestionEdit extends RogoObject {
    * @throws ValidationException
    */
   public function save($clear_checkout = true) {
-
-
     $success = false;
     if ($this->_logger == null ) $this->_logger =  new Logger($this->_mysqli);
 
@@ -348,12 +352,7 @@ QUERY;
       $result->execute();
       $success = ($result->affected_rows > -1);
       if ($this->_mysqli->error) {
-        try {
-          throw new Exception("MySQL error " . $this->_mysqli->error . "<br /> Query:<br /> $query", $this->_mysqli->errno);
-        } catch (Exception $e) {
-          echo "Error No: " . $e->getCode() . " - " . $e->getMessage() . "<br />";
-          echo nl2br($e->getTraceAsString());
-        }
+        echo $this->langstrings['showerror'] . "<br >";
       }
       if ($success) {
         if ($this->id == -1) {
@@ -576,11 +575,11 @@ QUERY;
   }
 
   /**
-   * Does this question type require the Flash JavaScript includes?
+   * Does this question type require the html5 JavaScript includes?
    * @return boolean
    */
-  public function requires_flash() {
-    return $this->_requires_flash;
+  public function requires_html5() {
+    return $this->_requires_html5;
   }
 
   /**

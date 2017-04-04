@@ -21,6 +21,7 @@
  * @copyright Copyright (c) 2014 The University of Nottingham
  * @package
  */
+require_once '../../include/errors.php';
 
 class Database {
   var $type = "SELECT";
@@ -428,13 +429,8 @@ class Database {
     $query .= ")";
     $stmt = $mysqli->prepare($query);
     if ($mysqli->error) {
-      try {
-        throw new Exception("MySQL $query error $mysqli->error <br> Query:<br> ", $mysqli->errno );
-      } catch (Exception $e) {
-        echo "Error No: " . $e->getCode() . " - " . $e->getMessage() . "<br >";
-        echo nl2br($e->getTraceAsString());
-        exit();
-      }
+      echo $string['showerror'] . "<br >";
+      exit();
     }
     $params[0] = $stmt;
     call_user_func_array('mysqli_stmt_bind_param', $params);

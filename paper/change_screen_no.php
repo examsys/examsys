@@ -23,7 +23,7 @@
 */
 
 require '../include/staff_auth.inc';
-require '../include/errors.inc';
+require '../include/errors.php';
 
 $screen				= check_var('screen', 'GET', true, false, true);
 $paperID			= check_var('paperID', 'GET', true, false, true);
@@ -36,7 +36,7 @@ if ($result = $mysqli->prepare("UPDATE papers SET screen = ? WHERE paper = ? AND
   $result->execute();
   $result->close();
 } else {
-  display_error("Papers Update Error 1", $mysqli->error);
+  display_error("Papers Update Error 1", $string['showerror']);
 }
 
 // Increase the screen of all questions with a higher display_pos that the question we are dealing with.
@@ -45,7 +45,7 @@ if ($result = $mysqli->prepare("UPDATE papers SET screen = screen+1 WHERE paper 
   $result->execute();
   $result->close();
 } else {
-  display_error("Papers Update Error 2", $mysqli->error);
+  display_error("Papers Update Error 2", $string['showerror']);
 }
 
 // Redirect back to paper/details.php

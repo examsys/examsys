@@ -65,11 +65,12 @@ if (isset($_GET['teamID'])) {
 </head>
 <?php
 
-$paper_type = (isset($_GET['paper_type'])) ? $_GET['paper_type'] : 0;
 
-if (isset($_GET['order'])) {
-  $order = $_GET['order'];
-  $direction = $_GET['direction'];
+$order = param::optional('order', null, param::ALPHA, param::FETCH_GET);
+$direction = param::optional('direction', null, param::ALPHA, param::FETCH_GET);
+if (!is_null($order)) {
+  $order = $order;
+  $direction = $direction;
 } else {
   $order = 'paper_title';
   $direction = 'asc';
@@ -89,37 +90,12 @@ if (isset($_GET['order'])) {
 </thead>
 <tbody>
 <?php
-  $user_teams = $userObject->get_staff_modules();
-  $module_id_list = implode(',', array_keys($user_teams));
-
-  $my_teams = '';
-  if (count($user_teams) > 0) {
-    $my_teams = " OR idMod IN ($module_id_list)";
-  }  
-
-  if ($order == 'created') {
-    $order = 'CAST(created AS DATE)';
-  }
-
   $paper_icons = array('formative_16.gif', 'progress_16.gif', 'summative_16.gif', 'survey_16.gif', 'osce_16.gif', 'offline_16.gif', 'peer_review_16.gif');
   $paper_details = array();
   
-  if (isset($_GET['paper_type'])) {
-    $sql = "SELECT properties.property_id, paper_title, paper_type, DATE_FORMAT(created,' {$configObject->get('cfg_long_date')}') AS created, title, initials, surname, modules.moduleid FROM (properties, properties_modules, modules, users) WHERE properties.property_id=properties_modules.property_id AND properties_modules.idMod=modules.id AND paper_type='" . $_GET['paper_type'] . "' AND deleted IS NULL AND paper_ownerID=users.id AND (paper_ownerID=" . $userObject->get_user_ID() . " $my_teams)";
-  } else {
-    $sql = "SELECT properties.property_id, paper_title, paper_type, DATE_FORMAT(created,' {$configObject->get('cfg_long_date')}') AS created, title, initials, surname, modules.moduleid FROM (properties, properties_modules, modules, users) WHERE properties.property_id=properties_modules.property_id AND properties_modules.idMod=modules.id AND idMod = " . $_GET['teamID'] . " AND deleted IS NULL AND paper_ownerID=users.id";
-  }
-  $sql .= " ORDER BY {$order} " . strtoupper($direction);
-  $result = $mysqli->prepare($sql);
-  $result->execute();
-  $result->bind_result($property_id, $paper_title, $paper_type, $created, $title, $initials, $surname, $moduleid);
-  while ($result->fetch()) {
-    if (!isset($paper_details[$property_id])) {
-      $paper_details[$property_id] = array('paper_title'=>$paper_title, 'paper_type'=>$paper_type, 'created'=>$created, 'title'=>$title, 'initials'=>$initials, 'surname'=>$surname);
-    }
-    $paper_details[$property_id]['moduleid'][] = $moduleid;
-  }
-  $result->close();
+  $type = param::optional('paper_type', null, param::INT, param::FETCH_GET); 
+  $teamid = param::optional('teamID', null, param::INT, param::FETCH_GET); 
+  $paper_details = PaperUtils::get_available_papers($userObject, $order, $direction, $type, $teamid);
 
   foreach ($paper_details as $property_id=>$paper_detail) {
     echo '<tr><td class="f"><a href="add_questions_by_paper.php?question_paper=' . $property_id . '"><img src="../../artwork/' . $paper_icons[$paper_detail['paper_type']] . '" width="16" height="16" alt="' . $string['folder'] . '" align="middle" /></a></td><td class="s"><a href="add_questions_by_paper.php?question_paper=' . $property_id . '">' . $paper_detail['paper_title'] . '</a></td><td class="s">';

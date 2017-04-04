@@ -25,7 +25,7 @@
 */
 
 require '../include/admin_auth.inc';
-require '../include/errors.inc';
+require '../include/errors.php';
 require '../include/import_users.inc';
 require_once '../include/demo_replace.inc';
 
@@ -66,7 +66,7 @@ ob_start();
     echo "<body>\n";
   }
 
-  require '../include/user_search_options.inc';
+  require '../include/user_search_options.php';
 ?>
 <div id="content" class="content" style="padding-left:10px">
 <?php

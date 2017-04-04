@@ -143,8 +143,7 @@ class state {
       return;
     }
 
-    $cleandatasql = "TRUNCATE " . $originalstate['name'];
-    self::$db->query($cleandatasql);
+    self::truncate_table($originalstate['name']);
 
     if ($originalstate['rows'] == 0) {
       // The original table had no data, so the reset is done now.
@@ -154,10 +153,12 @@ class state {
     $repopulatesql = "INSERT INTO " . $originalstate['name'] .
         " SELECT * FROM " . self::$temptables[$statename][$originalstate['name']];
     self::$db->query($repopulatesql);
+    self::exception_if_query_error();
     self::reset_autoincrement($originalstate['name'], $originalstate['auto_increment'], $newstate['auto_increment']);
     // Drop the temporay table.
     $dropsql = "DROP TEMPORARY TABLE " . self::$temptables[$statename][$originalstate['name']];
     self::$db->query($dropsql);
+    self::exception_if_query_error();
     unset(self::$temptables[$statename][$originalstate['name']]);
   }
 
@@ -173,6 +174,7 @@ class state {
       // Change the auto increment value, reset it.
       $incrementsql = "ALTER TABLE " . $table . " AUTO_INCREMENT = $originalincrement";
       $incrementquery = self::$db->prepare($incrementsql);
+      self::exception_if_query_error();
       $incrementquery->execute();
       $incrementquery->close();
     }
@@ -283,6 +285,18 @@ class state {
   protected static function truncate_table($table) {
     $sql = "TRUNCATE TABLE $table";
     self::$db->query($sql);
+    self::exception_if_query_error();
+  }
+
+  /**
+   * Throws an exception if the last run query had an error.
+   *
+   * @throws Exception
+   */
+  protected static function exception_if_query_error() {
+    if (self::$db->errno != 0) {
+      throw new Exception(self::$db->errno . ' :  ' . self::$db->error);
+    }
   }
 
   /**

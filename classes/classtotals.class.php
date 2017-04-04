@@ -83,6 +83,16 @@ class ClassTotals {
   private $unmarked_textbox = false;
   private $gradebook_enabled;
 
+  /**
+   * Called when the object is unserialised.
+   */
+  public function __wakeup() {
+    // The serialised database object will be invalid,
+    // this object should only be serialised during an error report,
+    // so adding the current database connect seems like a waste of time.
+    $this->db = null;
+  }
+
   public function __construct($studentsonly, $percent, $ordering, $absent, $sortby, $userObject, $propertyObj, $startdate, $enddate, $repcourse, $repmodule, $db, $string) {
     $this->db                 = $db;
     $this->demo               = is_demo($userObject);

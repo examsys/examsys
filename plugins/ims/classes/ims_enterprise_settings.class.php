@@ -70,7 +70,7 @@ class ims_enterprise_settings {
     global $mysqli;
 
     if ($mysqli->connect_error) {
-        die('Connect Error (' . $mysqli->connect_errno . ') '  . $mysqli->connect_error);
+        die('System Error');
     }
 
     $settings = array();

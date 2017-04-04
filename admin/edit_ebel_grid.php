@@ -23,7 +23,7 @@
 */
 
 require '../include/sysadmin_auth.inc';
-require '../include/errors.inc';
+require '../include/errors.php';
   
 $gridID = check_var('id', 'GET', true, false, true);
 
@@ -118,7 +118,7 @@ if (isset($_POST['submit'])) {
   
 <body>
   <?php
-    require '../include/ebel_grid_options.inc';
+    require '../include/ebel_grid_options.php';
 		require '../include/toprightmenu.inc';
 
 		echo draw_toprightmenu();

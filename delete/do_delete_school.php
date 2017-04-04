@@ -25,7 +25,7 @@
 */
 
 require '../include/sysadmin_auth.inc';
-require_once '../include/errors.inc';
+require_once '../include/errors.php';
 
 $schoolID = check_var('schoolID', 'POST', true, false, true);
 

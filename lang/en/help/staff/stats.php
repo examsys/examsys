@@ -15,7 +15,7 @@
 // along with Rogo.  If not, see <http://www.gnu.org/licenses/>.
 
 require '../../lang/' . $language . '/help/staff/index.php';
-require '../../lang/' . $language . '/include/months.inc';
+require '../../lang/' . $language . '/include/months.php';
 
 $string['dates'] = 'Dates';
 $string['page'] = 'Page';

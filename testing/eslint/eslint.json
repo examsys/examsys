@@ -1,0 +1,12 @@
+{
+  "env": {
+    "browser": true,
+    "jquery": true
+  },
+  "_comment": "For a list of rules see: http://eslint.org/docs/rules/",
+  "extends": "eslint:recommended",
+  "rules": {
+    "no-undef": "warn",
+    "no-unused-vars": "warn"
+  }
+}

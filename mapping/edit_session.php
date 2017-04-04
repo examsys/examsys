@@ -23,7 +23,7 @@
 */
 
 require '../include/staff_auth.inc';
-require '../include/errors.inc';
+require '../include/errors.php';
 
 $identifier     = check_var('identifier', 'REQUEST', true, false, true);
 $calendar_year  = check_var('calendar_year', 'GET', true, false, true);

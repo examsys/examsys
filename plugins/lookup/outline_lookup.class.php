@@ -49,6 +49,16 @@ class outline_lookup {
   protected $impliments_api_lookup_version = 0;
 
   /**
+   * Called when the object is unserialised.
+   */
+  public function __wakeup() {
+    // The serialised database object will be invalid,
+    // this object should only be serialised during an error report,
+    // so adding the current database connect seems like a waste of time.
+    $this->db = null;
+  }
+
+  /**
    * @param $calling_object object its called from
    * @param $settings array settings options
    * @param $number int the number this is

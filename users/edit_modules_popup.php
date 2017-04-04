@@ -25,7 +25,7 @@
 */
 
 require_once '../include/admin_auth.inc';
-require_once '../include/errors.inc';
+require_once '../include/errors.php';
 
 $userID = check_var('userID', 'REQUEST', true, false, true);
 $student_id = check_var('student_id', 'REQUEST', false, false, true);
@@ -131,13 +131,14 @@ if (isset($_POST['submit'])) {
     if (empty($session)) {
       $session = $yearutils->get_current_session();
     }
+    $display_year = $yearutils->get_academic_session($session);
 ?>
 <html>
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta http-equiv="content-type" content="text/html;charset=<?php echo $configObject->get('cfg_page_charset') ?>" />
 
-  <title>Rog&#333;: <?php echo $session; ?> Modules</title>
+  <title>Rog&#333;: <?php echo $display_year; ?> Modules</title>
 
   <link rel="stylesheet" type="text/css" href="../css/body.css" />
   <link rel="stylesheet" type="text/css" href="../css/tabs.css" />
@@ -242,11 +243,11 @@ if (isset($_POST['submit'])) {
   $result->close();
 
   if ($mod_count == 0) {
-    echo "<div style=\"color:#C00000\">&nbsp;<img src=\"../artwork/small_yellow_warning_icon.gif\" width=\"12\" height=\"11\" alt=\"Warning\" />&nbsp;" . $string['nomodules'] . " <strong>" . $session . "</strong>.</div>";
+    echo "<div style=\"color:#C00000\">&nbsp;<img src=\"../artwork/small_yellow_warning_icon.gif\" width=\"12\" height=\"11\" alt=\"Warning\" />&nbsp;" . $string['nomodules'] . " <strong>" . $display_year . "</strong>.</div>";
   } else {
-    list_modules($modules, 1, $student_modules, $string, $session);
-    list_modules($modules, 2, $student_modules, $string, $session);
-    list_modules($modules, 3, $student_modules, $string, $session);
+    list_modules($modules, 1, $student_modules, $string, $display_year);
+    list_modules($modules, 2, $student_modules, $string, $display_year);
+    list_modules($modules, 3, $student_modules, $string, $display_year);
   }
 
   echo "<input type=\"hidden\" name=\"mod_count\" value=\"$mod_count\" /></div></td>\n</tr>\n";

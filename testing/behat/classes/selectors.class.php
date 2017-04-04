@@ -20,7 +20,7 @@ use \Behat\Mink\Session;
 
 /**
  * Used to define things that behat can select in Rogo
- * 
+ *
  * @author Neill Magill <neill.magill@nottingham.ac.uk>
  * @copyright Copyright (c) 2015 The University of Nottingham
  * @package testing
@@ -29,7 +29,7 @@ use \Behat\Mink\Session;
 class selectors {
   /**
    * An array of selector types that can be used by behat tests,
-   * unless built into behat directly they should also have an 
+   * unless built into behat directly they should also have an
    * entry in self::$rogoselectors.
    *
    * @var array
@@ -52,28 +52,102 @@ class selectors {
     'fieldset' => 'fieldset',
     'table' => 'table',
     // Rogo selectors.
+    'menu' => 'menu', //<div class="sidebar
+    'sub_menu' => 'sub_menu', //<div id="popup3" class="popup"
+    'menu_section' => 'menu_section', //<div class="submenuheading"
+    'navigation' => 'navigation', //<div class="breadcrumb"
+    'paper_title' => 'paper_title', // PAPER_title => <div class="PAGE_title" 
+    'content' => 'content', //<table id="sortable" class="header"
+    'admin_tool_link' => 'admin_tool_link',
+    'pop_page_title' => 'pop_page_title',
     'menu_item' => 'menu_item',
+    'page_title' => 'page_title',  
+    'content_section' => 'content_section',
+    'folder' => 'folder',
+    'search_menu' => 'search_menu',  
+    'main_menu' => 'main_menu',
+    'main_menu_icon' => 'main_menu_icon',
+    'main_menu_item' => 'main_menu_item', //<div id="toprightmenu" 
+    'sub_search_menu_item' => 'sub_search_menu_item',
   );
 
   /**
    * An array containing XPATH selectors for elements of Rogo that behat can select.
    * The key is the name of the selector, the value the XPATH string describing it.
-   * 
-   * @var array 
+   *
+   * @var array
    */
   protected static $rogoselectors = array(
     'menu_item' => <<<XPATH
-//div[contains(concat(' ', normalize-space(@class), ' '), ' menuitem ')]/a
+//div[contains(concat(' ', normalize-space(@class), ' '), ' menuitem ') and contains(normalize-space(.) , %locator%)]
 XPATH
-  );
+     ,'mainmenuicon' => <<<XPATH
+//img[contains(@id,'toprightmenu_icon')]
+XPATH
+     ,'admin_tool_link' => <<<XPATH
+//div[contains(concat(' ', normalize-space(@class), ' '), ' container ') and contains(normalize-space(.) , %locator%)]
+XPATH
+    ,'sub_menu' => <<<XPATH
+//div[contains(concat(' ', normalize-space(@class), ' '), ' popup ') and contains(normalize-space(.) , %locator%)]      
+XPATH
+    ,'menu_section' => <<<XPATH
+//div[contains(concat(' ', normalize-space(@class), ' '), ' submenuheading ') and contains(normalize-space(.) , %locator%)]      
+XPATH
+
+    ,'pagetitle ' => <<<XPATH
+//div[contains(concat(' ', normalize-space(@class), ' '), ' submenuheading ') and contains(normalize-space(.) , %locator%)]      
+XPATH
+
+    ,'navigation' => <<<XPATH
+//div[contains(concat(' ', normalize-space(@class), ' '), ' breadcrumb ') and contains(normalize-space(.) , %locator%)]      
+XPATH
+    ,'content' => <<<XPATH
+//table[contains(concat(' ', normalize-space(@id), ' '), ' content ') and contains(normalize-space(.) , %locator%)]      
+XPATH
+    ,'paper_title' => <<<XPATH
+//div[contains(concat(' ', normalize-space(@class), ' '), ' page_title ') and contains(normalize-space(.) , %locator%)]      
+XPATH
+     ,'pop_page_title' => <<<XPATH
+//title[contains(concat(' ', normalize-space(.), ' '), %locator%)]
+XPATH
+     ,'menu' => <<<XPATH
+//div[contains(@class, 'sidebar')]
+XPATH
+      ,'main_menu' => <<<XPATH
+//div[contains(@id, 'toprightmenu')]
+XPATH
+      ,'main_menu_item' => <<<XPATH
+//div[contains(concat(' ', normalize-space(@class), ' '), ' trm_div ') and contains(normalize-space(.) , %locator%)]      
+XPATH
+      ,'main_menu_icon' => <<<XPATH
+//img[@id='toprightmenu_icon']
+XPATH
+    ,'search_menu' => <<<XPATH
+//div[contains(@id, 'popup0') and contains(@style, 'display: block;')]
+XPATH
+    ,'sub_search_menu_item' => <<<XPATH
+//div[contains(concat(' ', normalize-space(@class), ' '), ' popupitem ') and contains(normalize-space(.) , %locator%)]      
+XPATH
+    ,'content_section' => <<<XPATH
+//div[contains(concat(' ', normalize-space(@class), ' '), ' subsect_title ')]/nobr
+XPATH
+    ,'folder' => <<<XPATH
+//div[contains(concat(' ', normalize-space(@class), ' '), ' f_details ')]/a
+XPATH
+   );
 
   /**
-   * Get the custom Rogo selector list.
-   * 
+   * Get the custom Rogo selector list or a selector.
+   *
+   * @param string $selectorname
    * @return array
    */
-  public static function get_selectors() {
-    return self::$rogoselectors;
+  public static function get_selectors($selectorname = null) {
+    if (empty($selectorname)){
+      return self::$rogoselectors;
+    } else {
+      return self::$rogoselectors[$selectorname];
+    }
   }
 
   /**

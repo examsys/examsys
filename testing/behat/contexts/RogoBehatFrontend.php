@@ -38,5 +38,6 @@ use testing\behat\rogo_test;
 class RogoBehatFrontend extends rogo_test {
   use \testing\behat\hooks\frontend_hooks,
       \testing\behat\steps\database\datageneration,
+      \testing\behat\steps\common\include_common,
       \testing\behat\steps\frontend\include_frontend;
 }

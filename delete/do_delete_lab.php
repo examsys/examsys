@@ -24,7 +24,7 @@
 */
 
 require '../include/admin_auth.inc';
-require '../include/errors.inc';
+require '../include/errors.php';
 
 $labID = check_var('labID', 'POST', true, false, true);
 

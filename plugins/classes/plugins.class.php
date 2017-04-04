@@ -30,11 +30,6 @@ namespace plugins;
  */
 abstract class plugins {
     /**
-     * Plugin version format
-     * @var string
-     */
-    const PLUGIN_VERSION_FORMAT = "/^(?P<release>[0-9]{1,3}).(?P<major>[0-9]{1,3}).(?P<minor>[0-9]{1,3})$/";
-    /**
      * The database connection.
      * @var mysqli
      */
@@ -79,44 +74,23 @@ abstract class plugins {
      * @var string
      */
     private $path;
+
+    /**
+     * Called when the object is unserialised.
+     */
+    public function __wakeup() {
+        // The serialised database object will be invalid,
+        // this object should only be serialised during an error report,
+        // so adding the current database connect seems like a waste of time.
+        $this->db = null;
+    }
+
     /**
      * Get install path of plugin
      * @return string path
      */
     public function get_path() {
         return dirname(__DIR__) . DIRECTORY_SEPARATOR . $this->plugin_type . DIRECTORY_SEPARATOR . $this->plugin;
-    }
-    /**
-     * Check version is in correct format.
-     * @param string $version to check
-     * @return boolean true if correct, false otherwise
-     */
-    private function check_version_foramt($version) {
-        return preg_match(self::PLUGIN_VERSION_FORMAT,$version);
-    }
-    /**
-     * Sort list of plugin version into ascending order
-     * @param array list of versions
-     * @return array sorted list of versions
-     */
-    private function sort_version($fileversion) {
-        $unsorted = array();
-        $sorted = array();
-        // Filter the relase, major and minor numbers.
-        foreach ($fileversion as $version) {
-            preg_match(self::PLUGIN_VERSION_FORMAT, $version, $filtered);
-            $unsorted[] = $filtered;
-            $release[] = $filtered['release'];
-            $major[] = $filtered['major'];
-            $minor[] = $filtered['minor'];
-        }
-        // Multi sort each array.
-        array_multisort($release, SORT_ASC, $major, SORT_ASC, $minor, SORT_ASC, $unsorted);
-        // Store the full version in the correct order.
-        foreach ($unsorted as $key => $value) {
-            $sorted[] = $value[0];
-        }
-        return $sorted;
     }
     /**
      * Remove plugin version
@@ -142,36 +116,6 @@ abstract class plugins {
         $this->path = $this->get_path();
         // Load version info.
         require $this->path . DIRECTORY_SEPARATOR . 'version.php';
-    }
-    /**
-     * Check if version is higher.
-     * @param string $new new version to check
-     * @param string $old old version to check
-     * @return boolean true new version higher than old, false otherwise
-     */
-    public function is_version_higher($new, $old) {
-        preg_match(self::PLUGIN_VERSION_FORMAT, $new, $newarray);
-        preg_match(self::PLUGIN_VERSION_FORMAT, $old, $oldarray);
-        if (count($newarray) > 0 and count($oldarray) > 0 ) {
-            if ($newarray['release'] > $oldarray['release']) {
-                // Higher release number.
-                return true;
-            } elseif ($newarray['release'] == $oldarray['release']) {
-                // Release number matches.
-                if ($newarray['major'] > $oldarray['major']) {
-                    // Higher major number.
-                    return true;
-                } elseif ($newarray['major'] == $oldarray['major']) {
-                    // Major number matches.
-                    if ($newarray['minor'] > $oldarray['minor']) {
-                        // Higher minor number.
-                        return true;
-                    }
-                }
-            }
-        }
-        // Old version is higher.
-        return false;
     }
     /**
      * Install plugin.
@@ -207,22 +151,22 @@ abstract class plugins {
                 try {
                     // Supports accumlative patches.
                     // Only runs patches for versions higher than currently installed version.
-                    if ($this->is_version_higher($this->version, $currentversion)) {
+                    if (\version::is_version_higher($this->version, $currentversion)) {
                         // Get update files available.
                         $updatefiles = glob($pluginpath . 'update*');
                         $fileversion = array();
                         foreach ($updatefiles as $file) {
                             $v = ltrim(rtrim(basename($file), '.sql'), 'update');
                             // Check version format is correct.
-                            if ($this->check_version_foramt($v)) {
+                            if (\version::check_version_format($v)) {
                               $fileversion[] = $v;
                             }
                         }
                         if (count($fileversion) > 0) {
                             // Run each update file in numeric ascending order.
-                            $fileversion = $this->sort_version($fileversion);
+                            $fileversion = \version::sort_version($fileversion);
                             foreach ($fileversion as $version) {
-                                if (!$this->is_version_higher($version, $currentversion) or $this->is_version_higher($version, $this->version)) {
+                                if (!\version::is_version_higher($version, $currentversion) or \version::is_version_higher($version, $this->version)) {
                                     // Skip updates from previously installed versions and from future versions.
                                     continue;
                                 }
@@ -284,15 +228,15 @@ abstract class plugins {
      */
     public function check_plugin_dependencies() {
         $new_plugin_version = $this->version;
-        if (!$this->check_version_foramt($new_plugin_version)) {
+        if (!\version::check_version_format($new_plugin_version)) {
             // Cannot install plugin with incorrect version format.
             return 'INCORRECT_VERSION';
         }
         $current_rogo_version = $this->config->get('rogo_version');
         $current_plugin_version = $this->get_plugin_version();
         $plugin_requires_rogo = $this->requires;
-        if (!$this->is_version_higher($plugin_requires_rogo, $current_rogo_version)) {
-            if ($this->is_version_higher($current_plugin_version, $new_plugin_version)) {
+        if (!\version::is_version_higher($plugin_requires_rogo, $current_rogo_version)) {
+            if (\version::is_version_higher($current_plugin_version, $new_plugin_version)) {
                 // Cannot install current version higher.
                 return 'CURRENT_VERSION_HIGHER';
             } elseif ($current_plugin_version == $new_plugin_version) {
@@ -326,10 +270,10 @@ abstract class plugins {
             $this->installedversion = $version;
         }
         // Installed so check if we are upgrading.
-        if ($this->is_version_higher($currentversion, $version)) {
+        if (\version::is_version_higher($currentversion, $version)) {
             // Do not support rolling back plugins.
             return false;
-        } elseif ($this->is_version_higher($version, $currentversion)) {
+        } elseif (\version::is_version_higher($version, $currentversion)) {
             $updatesql = $this->db->prepare("UPDATE plugins SET version = ? WHERE component = ?");
             $updatesql->bind_param('ss', $version, $this->plugin);
             $updatesql->execute();

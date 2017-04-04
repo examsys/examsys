@@ -67,7 +67,7 @@ if ($configObject->get('cfg_session_name') != '') {
 }
 $return = session_start();
 
-require_once $cfg_web_root . 'lang/' . $language . '/include/common.inc'; // Include common language file that all scripts need
+require_once $cfg_web_root . 'lang/' . $language . '/include/common.php'; // Include common language file that all scripts need
 require_once $cfg_web_root . 'include/custom_error_handler.inc';
 
 if (is_null($configObject->get('cfg_db_port'))) {

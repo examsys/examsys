@@ -54,7 +54,8 @@ class assessmentmanagement extends \api\abstractmanagement {
         'PAPER_SCHEDULE_SUMMATIVE' => 214,
         'PAPER_INVALID_TYPE' => 215,
         'PAPER_NOTHING_TO_UPDATE' => 216,
-        'PAPER_EXTERNALID_INUSE' => 217
+        'PAPER_EXTERNALID_INUSE' => 217,
+        'PAPER_INVALID_NO_MODULES' => 218
     );
     
     /**
@@ -96,7 +97,7 @@ class assessmentmanagement extends \api\abstractmanagement {
     private function handle_exception($exception) {
         $langpack = new \langpack();
         $strings = $langpack->get_strings($this->langcomponent, array('paper_calendar_year_invalid', 'paper_owner_role_invalid',
-            'paper_owner_does_not_exist', 'paper_title_inuse', 'paper_startdate_invalid', 'paper_general_error','paper_type_invalid', 'paper_externalid_inuse'));
+            'paper_owner_does_not_exist', 'paper_title_inuse', 'paper_startdate_invalid', 'paper_general_error','paper_type_invalid', 'paper_externalid_inuse', 'paper_no_modules'));
         switch ($exception) {
             case 'NON_UNIQUE_TITLE':
                 return array('statuscode' => $this->statuscodes['PAPER_INVALID_TITLE'], 'status' => $strings['paper_title_inuse'], 'id' => null);
@@ -112,6 +113,8 @@ class assessmentmanagement extends \api\abstractmanagement {
                 return array('statuscode' => $this->statuscodes['PAPER_INVALID_START'], 'status' => $strings['paper_startdate_invalid'], 'id' => null);
             case 'NON_UNIQUE_EXTID':
                 return array('statuscode' => $this->statuscodes['PAPER_EXTERNALID_INUSE'], 'status' => $strings['paper_externalid_inuse'], 'id' => null);
+            case 'INVALID_NO_MODULES':
+                return array('statuscode' => $this->statuscodes['PAPER_INVALID_NO_MODULES'], 'status' => $strings['paper_no_modules'], 'id' => null);
             default:
                 return array('statuscode' => $this->statuscodes['PAPER_GENERAL_ERROR'], 'status' => $strings['paper_general_error'], 'id' => null);
         }

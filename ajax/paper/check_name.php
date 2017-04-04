@@ -25,7 +25,7 @@
 */
 
 require '../../include/staff_auth.inc';
-require_once '../../include/errors.inc';
+require_once '../../include/errors.php';
 
 $name = check_var('name', 'POST', true, false, true);
 

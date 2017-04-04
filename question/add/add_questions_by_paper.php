@@ -23,8 +23,8 @@
 */
 
 require '../../include/staff_auth.inc';
-require '../../include/errors.inc';
-require '../../include/question_types.inc';
+require '../../include/errors.php';
+require '../../include/question_types.php';
 
 $question_paper = check_var('question_paper', 'GET', true, false, true);
 

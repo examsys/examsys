@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Rogo.  If not, see <http://www.gnu.org/licenses/>.
 
-require '../lang/' . $language . '/include/blooms.inc';
-require '../lang/' . $language . '/include/status.inc';
-require '../lang/' . $language . '/include/question_types.inc';
+require '../lang/' . $language . '/include/blooms.php';
+require '../lang/' . $language . '/include/status.php';
+require '../lang/' . $language . '/include/question_types.php';
 
 $string['question'] = 'Question';
 $string['questions'] = 'Questions';

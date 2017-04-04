@@ -25,7 +25,7 @@
 */
 
 require '../include/sysadmin_auth.inc';
-require_once '../include/errors.inc';
+require_once '../include/errors.php';
 
 $announcementID = check_var('announcementID', 'POST', true, false, true);
 

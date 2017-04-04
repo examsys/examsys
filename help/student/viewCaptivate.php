@@ -23,7 +23,7 @@
 */
 
 require '../../include/staff_student_auth.inc';
-require '../include/errors.inc';
+require '../include/errors.php';
 
 $tutorial = check_var('tutorial', 'GET', true, false, true);
 ?>

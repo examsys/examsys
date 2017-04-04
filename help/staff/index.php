@@ -23,7 +23,7 @@
 */
 
 require '../../include/staff_auth.inc';
-require_once '../../include/errors.inc';
+require_once '../../include/errors.php';
 
 if (isset($_GET['id'])) {
   $id = $_GET['id'];

@@ -25,8 +25,9 @@
 
 require_once '../include/load_config.php';
 require_once '../include/auth.inc';
+require_once '../include/errors.php';
 require_once '../include/std_set_shared_functions.inc';
-require_once dirname(__DIR__) . '/lang/' . $language . '/include/timezones.inc';
+require_once '../include/timezones.php';
 require_once dirname(__DIR__) . '/lang/' . $language . '/install/index.php';
 
 // Get the code version.
@@ -131,7 +132,17 @@ if (!isset($_POST['update'])) {
       </table>
       <div><label for="update_staff_help"><?php echo $string['updatestaffhelp']; ?></label> <input type="checkbox" value="" name="update_staff_help" checked="checked" /></div>
       <div><label for="update_student_help"><?php echo $string['updatestudenthelp']; ?></label> <input type="checkbox" value="" name="update_student_help" checked="checked" /></div>
-
+      <table class="h">
+          <tr>
+              <td>
+                  <nobr><?php echo $string['translationpacks']; ?></nobr>
+              </td>
+              <td class="line">
+                  <hr />
+              </td>
+          </tr>
+      </table>
+      <div><label for="update_translationpack"><?php echo $string['updatetranslationpack']; ?></label> <input type="checkbox" value="" name="update_translationpack" /></div>
       <div class="submit"><input type="submit" name="update" value="<?php echo $string['startupdate']; ?>" class="ok" /></div>
   </form>
     <?php
@@ -195,13 +206,8 @@ if (!isset($_POST['update'])) {
     $file = file_get_contents('../install/staff_help.sql');
     $mysqli->multi_query($file);
     if ($mysqli->error) {
-      try {
-        throw new Exception("MySQL error $mysqli->error <br /> Query:<br /> ", $mysqli->errno);
-      } catch (Exception $e) {
-        echo "Error No: " . $e->getCode() . " - " . $e->getMessage() . "<br />";
-        echo nl2br($e->getTraceAsString());
-        exit();
-      }
+      echo $string['showerror'] . "<br />";
+      exit();
     }
     $ext = '';
     while ($mysqli->more_results()) {
@@ -223,13 +229,8 @@ if (!isset($_POST['update'])) {
     $file = file_get_contents('../install/student_help.sql');
     $mysqli->multi_query($file);
     if ($mysqli->error) {
-      try {
-        throw new Exception("MySQL error $mysqli->error <br /> Query:<br /> ", $mysqli->errno);
-      } catch (Exception $e) {
-        echo "Error No: " . $e->getCode() . " - " . $e->getMessage() . "<br />";
-        echo nl2br($e->getTraceAsString());
-        exit();
-      }
+      echo $string['showerror'] . "<br />";
+      exit();
     }
     $ext = '';
     while ($mysqli->more_results()) {
@@ -858,11 +859,24 @@ QUERY;
 
   $mysqli->commit();
 
+  // Update language packs.
+  if (isset($_POST['update_translationpack'])) {
+    InstallUtils::download_langpacks();
+  }
+
 	/*
    *****   NOW UPDATE THE INSTALLER SCRIPT   *****
    */
 
   // End of updates -----------------------------------------------------------------
+
+  // Update composer and dependencies.
+  try {
+    $composer_method = composer_utils::UPDATE_NODEV;
+    composer_utils::setup($composer_method);
+  } catch (Exception $e) {
+      echo "<li class=\"error\">" . $e->getMessage() . "</li>";
+  }
 
   // Final housekeeping activities - put all updates above this line
   $updated = $updater_utils->update_version($version, $string, $cfg_web_root);

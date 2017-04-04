@@ -27,7 +27,7 @@
 set_time_limit(0);
 
 require '../include/staff_auth.inc';
-require_once '../include/errors.inc';
+require_once '../include/errors.php';
 require_once '../include/feedback.inc';
 
 $paperID    = check_var('paperID', 'GET', true, false, true);
@@ -482,26 +482,24 @@ echo draw_toprightmenu(30);
       } else {
         $reassign = 'y';
       }
-
-      if ($user_results[$i]['display_started'] == '') {  // Student did not take exam.
+      
+      if (strpos($user_results[$i]['roles'], 'Staff') !== false) {
+        $role_css = 'staff';
+      } else {
+        $role_css = '';
+      }
+      
+      if ($user_results[$i]['display_started'] == '') {
+        // Setup the row for an absent user.
         $bg_color = '#FFC0C0';
         $late_submissions = '';
+        $class = '';
+        $user_results[$i]['attempt'] = 0;
         ?>
         <tr class="nonattend" id="res<?php echo $i+1 ?>" onclick="popMenu(6, event); setVars('', '<?php echo $userID; ?>', '<?php echo $paper_type; ?>', '<?php echo $reassign ?>', '<?php echo $late_submissions ?>', '<?php echo $percent; ?>');"><td>&nbsp;</td>
         <?php
-        echo "<td>$title</td>";
-        echo "<td>$surname</td>";
-        echo "<td>$first_names</td>";
-        
-        
-        if ($user_results[$i]['student_id'] == '') {
-          echo "<td class=\"grey\">" . $string['unknown'] . "</td>";
-        } else {
-          echo "<td>" . $user_results[$i]['student_id'] . "</td>";
-        }
-        echo "<td>" . $user_results[$i]['student_grade'] . "</td><td colspan=\"" . (9 + count($metadata_cols)) . "\" style=\"text-align:center\">&lt;" . $string['noattendance'] . "&gt;</td></tr>\n";
-        $absent_no++;
       } else {
+        // Setup the row for a user who took the exam.
         if (isset($log_late[$user_results[$i]['metadataID']])) {
           $late_submissions = 'y';
         } else {
@@ -524,11 +522,6 @@ echo draw_toprightmenu(30);
 						$distribution[$temp_location] = 1;
 					}
 					$scatter_data .= $temp_location . "\n" . $user_results[$i]['duration'] . "\n";
-        }
-        if (strpos($user_results[$i]['roles'], 'Staff') !== false) {
-          $role_css = 'staff';
-        } else {
-          $role_css = '';
         }
         if (isset($log_late[$user_results[$i]['metadataID']])) {
           $icon = 'log_late_16.gif';
@@ -553,49 +546,56 @@ echo draw_toprightmenu(30);
           $alt = $string['displaypaper'];
         }
         echo " style=\"cursor:hand\" onclick=\"popMenu(5, event); setVars('" . $user_results[$i]['metadataID'] . "'," . $user_results[$i]['userID'] . ",'" . $user_results[$i]['paper_type'] . "','$reassign','$late_submissions','" . MathsUtils::formatNumber($user_results[$i]['percent'], $percent_decimals) . "');" . "\"";
-        echo "><td class=\"$class $role_css\"><img src=\"../artwork/$icon\" class=\"picon\" /></td>";
-        
-        if (strpos($user_results[$i]['username'], 'user') === 0) {
-          echo "<td class=\"$class tmpacc $role_css\">Mr</td>";
-          echo "<td class=\"$class tmpacc $role_css\">Guest</td>";
-          echo "<td class=\"$class tmpacc $role_css\">" . str_replace('User','Account #',$user_results[$i]['surname']);
-          $guestusers = true;
+        echo "><td class=\"$class $role_css\"><img src=\"../artwork/$icon\" class=\"picon\" /></td>"; 
+      }
+
+      // Display the student names and any relevant note and icons.
+      if (strpos($user_results[$i]['username'], 'user') === 0) {
+        echo "<td class=\"$class tmpacc $role_css\">Mr</td>";
+        echo "<td class=\"$class tmpacc $role_css\">Guest</td>";
+        echo "<td class=\"$class tmpacc $role_css\">" . str_replace('User','Account #',$user_results[$i]['surname']);
+        $guestusers = true;
+      } else {
+        echo "<td class=\"$class $role_css\">" . $user_results[$i]['title'] . "</td>";
+        echo "<td class=\"$class $role_css\">" . $user_results[$i]['surname'] . "</td>";
+        echo "<td class=\"$class $role_css\">" . $user_results[$i]['first_names'];
+      }
+      if ($report->has_special_need($user_results[$i]['userID']) or $user_results[$i]['attempt'] > 1 or isset($toilet_breaks[$user_results[$i]['userID']])) {
+        echo '&nbsp;&nbsp;';
+      }
+      if ($report->has_special_need($user_results[$i]['userID'])) {
+        echo '<img src="../artwork/accessibility_16.png" class="accessibility" alt="' . $string['alternativearrangements'] . '" onclick="viewAccessibility(' . $user_results[$i]['userID'] . ', event)" title="' . $string['viewaccessibility'] . '" />';
+      }
+      $student_id = $user_results[$i]['username'];
+      if (!empty($user_results[$i]['attempt']) and $user_results[$i]['attempt'] > 1) {
+        echo '&nbsp;<img src="../artwork/resit.png" width="16" height="16" alt="Resit" title="' . $string['resitcandidate'] . '" />';
+      }
+      if (isset($notes[$user_results[$i]['userID']]) and $notes[$user_results[$i]['userID']] == 'y') {
+        echo '<img src="../artwork/notes_icon.gif" alt="Notes" class="note" onclick="viewNote(' . $user_results[$i]['userID'] . ', event)" title="' . $string['viewstudentnote'] . '" />';
+      }
+      if (isset($toilet_breaks[$user_results[$i]['userID']])) {
+        foreach ($toilet_breaks[$user_results[$i]['userID']] as $toilet_break) {
+          echo '<img src="../artwork/wc.png" alt="Toilet" class="icon16_active" onclick="viewToiletBreak(' . $toilet_break . ', event)" />';          
+        }
+      }
+      echo "</td>";
+      
+      if ($user_results[$i]['student_id'] == '') {
+        if (strpos($user_results[$i]['roles'], 'Staff') !== false) {
+          echo "<td class=\"grey $class $role_css\">&nbsp;</td>";
         } else {
-          echo "<td class=\"$class $role_css\">" . $user_results[$i]['title'] . "</td>";
-          echo "<td class=\"$class $role_css\">" . $user_results[$i]['surname'] . "</td>";
-          echo "<td class=\"$class $role_css\">" . $user_results[$i]['first_names'];
+          echo "<td class=\"grey $class $role_css\">" . $string['unknown'] . "</td>";
         }
-        if ($report->has_special_need($user_results[$i]['userID']) or $user_results[$i]['attempt'] > 1 or isset($toilet_breaks[$user_results[$i]['userID']])) {
-          echo '&nbsp;&nbsp;';
-        }
-        if ($report->has_special_need($user_results[$i]['userID'])) {
-          echo '<img src="../artwork/accessibility_16.png" class="accessibility" alt="' . $string['alternativearrangements'] . '" onclick="viewAccessibility(' . $user_results[$i]['userID'] . ', event)" title="' . $string['viewaccessibility'] . '" />';
-        }
-        $student_id = $user_results[$i]['username'];
-        if ($user_results[$i]['attempt'] > 1) {
-          echo '&nbsp;<img src="../artwork/resit.png" width="16" height="16" alt="Resit" title="' . $string['resitcandidate'] . '" />';
-        }
-        if (isset($notes[$user_results[$i]['userID']]) and $notes[$user_results[$i]['userID']] == 'y') {
-          echo '<img src="../artwork/notes_icon.gif" alt="Notes" class="note" onclick="viewNote(' . $user_results[$i]['userID'] . ', event)" title="' . $string['viewstudentnote'] . '" />';
-        }
-        if (isset($toilet_breaks[$user_results[$i]['userID']])) {
-          foreach ($toilet_breaks[$user_results[$i]['userID']] as $toilet_break) {
-            echo '<img src="../artwork/wc.png" alt="Toilet" class="icon16_active" onclick="viewToiletBreak(' . $toilet_break . ', event)" />';          
-          }
-        }
-        echo "</td>";
-        
-        if ($user_results[$i]['student_id'] == '') {
-          if (strpos($user_results[$i]['roles'], 'Staff') !== false) {
-            echo "<td class=\"grey $class $role_css\">&nbsp;</td>";
-          } else {
-            echo "<td class=\"grey $class $role_css\">" . $string['unknown'] . "</td>";
-          }
-        } else {
-          echo "<td class=\"$class $role_css\">" . $user_results[$i]['student_id'] . "</td>";
-        }
-        echo "<td class=\"$class $role_css\">" . $user_results[$i]['student_grade'] . "</td>";
-       			
+      } else {
+        echo "<td class=\"$class $role_css\">" . $user_results[$i]['student_id'] . "</td>";
+      }
+      echo "<td class=\"$class $role_css\">" . $user_results[$i]['student_grade'] . "</td>";
+
+      // Display result information.
+      if ($user_results[$i]['display_started'] == '') {  // Student did not take exam.
+        echo "<td colspan=\"" . (9 + count($metadata_cols)) . "\" style=\"text-align:center\">&lt;" . $string['noattendance'] . "&gt;</td></tr>\n";
+        $absent_no++;
+      } else {
 				//$user_results[$i]['mark'] += 1;   // Use for testing the Class Totals/Exam Script checking script.
 				
         if ($user_results[$i]['classification'] == 'Fail') {
