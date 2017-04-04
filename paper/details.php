@@ -714,7 +714,7 @@ function check_latex_random($q_ids, $mysqli) {
     }
     if ($latex == 0) {
       if ($q_type == 'random') {
-        $rnd_q_ids = random_utils::get_random_qids_for_question($q_id, $mysqli);
+        $rnd_q_ids = array_merge($rnd_q_ids, random_utils::get_random_qids_for_question($q_id, $mysqli));
       } else {
         $latex = check_latex($leadin, $scenario, $option_text, $score_method, $correct_fback, $feedback_right);
       }
