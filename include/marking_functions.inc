@@ -619,11 +619,14 @@ function record_marks($paper_id, $db, $paper_type, $metadataID, $preview_q_id = 
             }
           }
         } elseif ($score_method == 'Bonus Mark') {
-          if ($part_answer != 0) {
-            $mark += ($correct != 0) ? $marks_correct : $marks_incorrect;
+          if ($part_answer != 'u') {
+            if ($part_answer != 0) {
+              $mark += ($part_answer == $correct) ? $marks_correct : $marks_incorrect;
+            }
             if ($part_answer <> $correct) $correct_rank = false;
+          } else {
+            $correct_rank = false;
           }
-          if ($part_answer == 0 and $correct != 0) $correct_rank = false;
         }
         if ($score_method == 'Mark per Question') {
           $totalpos = $marks_correct;

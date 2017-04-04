@@ -1453,7 +1453,7 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
                     $all_correct = false;
                   }
                 } else {
-                  if ($rank_answers[$tmp_part_id-1] == $paper[$question]['correct'][$tmp_part_id-1] or ($paper[$question]['score_method'] == 'Bonus Mark' and $rank_answers[$tmp_part_id-1] > 0 and $paper[$question]['correct'][$tmp_part_id-1] > 0)) {
+                  if ($rank_answers[$tmp_part_id-1] == $paper[$question]['correct'][$tmp_part_id-1]) {
                     echo display_response($tmp_display_students_response, 'tick');
                     $paper[$question]['mark'] += $paper[$question]['marks_correct'];
                     // Not all correct if Bonus Mark but not exact match
@@ -1464,7 +1464,7 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
                         echo display_response($tmp_display_students_response, 'cross');
                         $paper[$question]['mark'] += $paper[$question]['marks_incorrect'];
                         $all_correct = false;
-                      } elseif (($rank_answers[$tmp_part_id-1] > '0') or ($paper[$question]['score_method'] == 'Mark per Option')) {
+                      } elseif ($rank_answers[$tmp_part_id-1] > '0') {
                         echo display_response($tmp_display_students_response, 'cross');
                         $paper[$question]['mark'] += $paper[$question]['marks_incorrect'];
                         $all_correct = false;
