@@ -142,8 +142,11 @@ if (isset($_POST['submit'])) {
       for ($i = 1; $i <= $no_answers; $i++) {
         // Strip out answers from $blank_details
         // n.b. First item in $blank_details not required
+        // Step 1. get all contents after ]
         $blank_details_redo[$j] = substr($blank_details[$i], (strpos($blank_details[$i], ']') + 1));
-        $blank_details_redo[$j] = substr($blank_details[$i], 0, strpos($blank_details[$i], '[/blank]'));
+        // Step 2. get all contents before [/blank]
+        $blank_details_redo[$j] = substr($blank_details_redo[$j], 0, (strpos($blank_details[$i], '[/blank]') - 1));
+        // $blank_details_redo is now what was between ] and [/blank]
         $answer_list = explode(',', $blank_details_redo[$j]);
         if ($user_parts[$j] != 'u' and $user_parts[$j] != '') {
           $have_answer = true;

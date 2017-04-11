@@ -575,7 +575,7 @@ class UserObject extends RogoStaticSingleton {
       } elseif ($this->has_role('Admin')) {
         $schoolIDs = implode(',', SchoolUtils::get_admin_schools($this->userID, $this->db));
         if ($schoolIDs != '') {
-          $sql = "(SELECT DISTINCT modules.id, moduleid, fullname, schools.code, school FROM modules, schools WHERE modules.schoolid = schools.id AND modules.id IN ($staff_modules_sql) AND active = 1 AND mod_deleted IS NULL) UNION (SELECT DISTINCT modules.id, moduleid, fullname, school FROM modules, schools WHERE modules.schoolid = schools.id AND schoolid IN ($schoolIDs) AND active = 1 AND mod_deleted IS NULL) ORDER BY school, moduleID";
+          $sql = "(SELECT DISTINCT modules.id, moduleid, fullname, schools.code, school FROM modules, schools WHERE modules.schoolid = schools.id AND modules.id IN ($staff_modules_sql) AND active = 1 AND mod_deleted IS NULL) UNION (SELECT DISTINCT modules.id, moduleid, fullname, schools.code, school FROM modules, schools WHERE modules.schoolid = schools.id AND schoolid IN ($schoolIDs) AND active = 1 AND mod_deleted IS NULL) ORDER BY school, moduleID";
         } elseif ($staff_modules_sql != '') {
           $sql = "SELECT DISTINCT modules.id, moduleid, fullname, schools.code, school FROM modules, schools WHERE modules.schoolid = schools.id AND modules.id IN ($staff_modules_sql) AND active = 1 AND mod_deleted IS NULL ORDER BY school, moduleID";
         } else {
