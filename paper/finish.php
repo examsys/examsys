@@ -52,7 +52,6 @@ $q_id = param::optional('q_id', null, param::INT, param::FETCH_GET);
 $getuser = param::optional('userID', 0, param::INT, param::FETCH_GET);
 $metadataid = param::optional('metadataID', 0, param::INT, param::FETCH_GET);
 $do_not_record = param::optional('dont_record', false, param::BOOLEAN, param::FETCH_GET);
-$log_override = param::optional('log_type', -1, param::INT, param::FETCH_GET);
 
 $demo		= is_demo($userObject);
 $userID = $userObject->get_user_ID();
@@ -92,11 +91,8 @@ $attempt = 1; // Default attempt to 1 overwritten if the student is resit candid
 
 $log_type = $paper_type;    // Set log_type to current type of the paper.
 
-// Formative and progress tests can be changed into each other.
-// Unfortunatly this means that the students answers may not be in the log table that the paper currently suggests.
-// So we will allow this parameter to modify which log table we look at in these cases.
-if (($paper_type == '0' or $paper_type == '1') and ($log_override == 0 or $log_override == 1)) {
-  $log_type = $log_override;
+if (isset($_GET['log_type']) and (($_GET['log_type'] == '0' or $_GET['log_type'] == '1') or $userObject->has_role(array('SysAdmin', 'Admin', 'Staff')))) {  // If paper Formative/Progress Test allow override by $_GET.
+  $log_type = $_GET['log_type'];
 }
 
 $low_bandwidth = 0;
