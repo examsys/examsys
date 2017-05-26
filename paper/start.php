@@ -38,18 +38,10 @@ if ($userObject->has_role('External Examiner') or $userObject->has_role('Interna
   $notice->display_notice_and_exit($mysqli, $string['accessdenied'], $msg, $string['accessdenied'], $configObject->get('cfg_root_path') . '/artwork/access_denied.png', '#C00000', true, true);
 }
 
-// Get parameters.
-$id = check_var('id', 'GET', true, false, true, param::ALPHANUM); // While it is an int, the numbers are too large for 32-bit PHP.
-$mode = param::optional('mode', '', param::ALPHA);
-$getmode = param::optional('mode', '', param::ALPHA, param::FETCH_GET);
-$post_screen = param::optional('current_screen', null, param::INT, param::FETCH_POST);
-$q_id = param::optional('q_id', null, param::INT, param::FETCH_GET);
-$q_number = param::optional('qNo', null, param::INT, param::FETCH_GET);
-$do_not_record = param::optional('dont_record', false, param::BOOLEAN, param::FETCH_GET);
-$refpane = param::optional('refpane', null, param::INT, param::FETCH_POST);
+check_var('id', 'GET', true, false, false);
 
 // Get the paper properties
-$propertyObj = PaperProperties::get_paper_properties_by_crypt_name($id, $mysqli, $string, true);
+$propertyObj = PaperProperties::get_paper_properties_by_crypt_name($_GET['id'], $mysqli, $string, true);
 
 $deleted = $propertyObj->get_deleted();
 
@@ -68,16 +60,16 @@ $paperID = $propertyObj->get_property_id();
  */
 
 // Are we in a staff test and preview mode?
-$is_preview_mode = ($userObject->has_role(array('Staff', 'Admin', 'SysAdmin')) and $mode === 'preview');
+$is_preview_mode = ($userObject->has_role(array('Staff', 'Admin', 'SysAdmin')) and isset($_REQUEST['mode']) and $_REQUEST['mode'] == 'preview');
 
 // Are we on the first screen?
-$is_first_launch = is_null($post_screen);
+$is_first_launch = !isset($_POST['current_screen']);
 
 // Are we in a staff test and preview mode and on the first screen?
-$is_preview_mode_first_launch = ($is_preview_mode == true and $getmode === 'preview');
+$is_preview_mode_first_launch = ($is_preview_mode == true and isset($_GET['mode']) and $_GET['mode'] == 'preview');
 
 // Are we in a staff single question test mode?
-$is_question_preview_mode = !is_null($q_id);
+$is_question_preview_mode = (isset($_GET['q_id']));
 
 if (!$is_first_launch) require '../include/marking_functions.inc';
 
@@ -150,7 +142,7 @@ if ($lab_object = $lab_factory->get_lab_based_on_client($current_address)) {
 */
 $log_metadata = null;
 $current_screen = 1;
-$is_fire_alarm = param::optional('fire_alarm', false, param::BOOLEAN, param::FETCH_POST);
+$is_fire_alarm = (isset($_POST['fire_alarm']) and $_POST['fire_alarm'] == '1');
 $summative_exam_session_started = false; //lab timing stated by invigilators
 $allow_timing = false;
 
@@ -158,15 +150,14 @@ $allow_timing = false;
 * Extract the posted variables.
 */
 if (!$is_first_launch) {
-  $button_pressed = param::optional('button_pressed', '', param::TEXT, param::FETCH_POST);
-  if ($button_pressed == 'next') {
-    $current_screen = $post_screen;
-  } elseif ($button_pressed == 'previous') {
-    $current_screen = $post_screen - 2;
-  } elseif ($button_pressed == 'jump_screen') {
-    $current_screen = param::optional('jump_screen', 0, param::INT, param::FETCH_POST);
+  if ($_POST['button_pressed'] == 'next') {
+    $current_screen = $_POST['current_screen'];
+  } elseif ($_POST['button_pressed'] == 'previous') {
+    $current_screen = $_POST['current_screen'] - 2;
+  } elseif ($_POST['button_pressed'] == 'jump_screen') {
+    $current_screen = $_POST['jump_screen'];
   } elseif ($is_fire_alarm) {
-    $current_screen = $post_screen;
+    $current_screen = $_POST['current_screen'];
   }
 }
 
@@ -217,7 +208,7 @@ if ($is_preview_mode === false and time() > $propertyObj->get_end_date() and ($p
 *                                with dont_record set to true so this is not executed
 */
 if (!$is_question_preview_mode) {
-  if (!$is_first_launch and !$do_not_record) {
+  if (!$is_first_launch and (!isset($_GET['dont_record']) or $_GET['dont_record'] != true)) {
     record_marks($paperID, $mysqli, $propertyObj->get_paper_type(), $metadataID);
   }
 }
@@ -302,7 +293,7 @@ $max_ref_width 				= get_max_reference_width($reference_materials);
 require '../config/start.inc';
 echo "<!DOCTYPE html>\n<html>\n<head>\n";
 
-$url_mod = ($is_question_preview_mode) ? '&q_id=' . $q_id . '&qNo=' . $q_number : '';
+$url_mod = ($is_question_preview_mode) ? '&q_id=' . $_GET['q_id'] . '&qNo=' . $_GET['qNo'] : '';
 ?>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $configObject->get('cfg_page_charset') ?>" />
@@ -378,8 +369,8 @@ if ($css != '') {
 <?php
   if (count($reference_materials) > 0) {
     echo "\$(function () {\n";
-    if (!is_null($refpane)) {
-      echo "  changeRef(" . $refpane . ");\n";
+    if (isset($_POST['refpane'])) {
+      echo "  changeRef(" . $_POST['refpane'] . ");\n";
     } else {
       echo "  changeRef();\n";
       echo "  resizeReference();\n";
@@ -501,7 +492,7 @@ if ($css != '') {
   $(document).ready(function () {
     $('#jumpscreen').change(function () {
       $('#button_pressed').val('jump_screen');
-      $('#qForm').attr('action',"start.php?id=<?php echo $id ?>&dont_record=true");
+      $('#qForm').attr('action',"start.php?id=<?php echo $_GET['id'] ?>&dont_record=true");
       return userSubmit(null);
     });
   });
@@ -583,9 +574,9 @@ if ($propertyObj->get_paper_type() != '5') { // Do not allow saving for offline 
     $('#savemsg').html("<img src=\"../artwork/busy.gif\" class=\"busyicon\" />");
     <?php // Log which method the users submitted the page via ?>
       if ($('#button_pressed').val() == 'finish') {
-        $('#qForm').attr('action',"finish.php?id=<?php echo $id . $url_mod; ?>&dont_record=true");
+        $('#qForm').attr('action',"finish.php?id=<?php echo $_GET['id'] . $url_mod; ?>&dont_record=true");
       } else {
-        $('#qForm').attr('action',"start.php?id=<?php echo $id . $url_mod; ?>&dont_record=true");
+        $('#qForm').attr('action',"start.php?id=<?php echo $_GET['id'] . $url_mod; ?>&dont_record=true");
       }
 
     //if (last_saved_user_answers !== formData<?php if (!isset($user_answers[$current_screen])) echo ' || true' ?>) {
@@ -624,7 +615,7 @@ if ($propertyObj->get_paper_type() != '5') { // Do not allow saving for offline 
     ajaxSave(1);
     alert('<?php echo $string['forcesave']; ?>');
     submitType = 'forcedSubmit';
-    $('#qForm').attr('action',"finish.php?id=<?php echo $id . $url_mod; ?>&dont_record=true");
+    $('#qForm').attr('action',"finish.php?id=<?php echo $_GET['id'] . $url_mod; ?>&dont_record=true");
     $('#qForm').submit();
   }
 
@@ -677,7 +668,7 @@ if ($propertyObj->get_paper_type() != '5') { // Do not allow saving for offline 
       tinyMCE.triggerSave();
     }
     $.ajax({
-          url: 'save_screen.php?id=<?php echo $id . $url_mod; ?>&ans_changed=' + ans_changed + '&submitType=' + submitType + '&rnd=' + randomPageID + '<?php echo html_entity_decode($url_mod) ?>',
+          url: 'save_screen.php?id=<?php echo $_GET['id'] . $url_mod; ?>&ans_changed=' + ans_changed + '&submitType=' + submitType + '&rnd=' + randomPageID + '<?php echo html_entity_decode($url_mod) ?>',
           type: 'post',
           data: $('#qForm').serialize(),
           dataType: 'html',
@@ -804,9 +795,9 @@ if ($propertyObj->get_paper_type() != '5') { // Do not allow saving for offline 
       submitType = 'userSubmit';
       $('#button_pressed').val('fire_exit');
       if (usingAjax) {
-        $('#qForm').attr('action',"fire_evacuation.php?id=<?php echo $id ?>&dont_record=true");
+        $('#qForm').attr('action',"fire_evacuation.php?id=<?php echo $_GET['id'] ?>&dont_record=true");
       } else {
-        $('#qForm').attr('action',"fire_evacuation.php?id=<?php echo $id ?>");
+        $('#qForm').attr('action',"fire_evacuation.php?id=<?php echo $_GET['id'] ?>");
       }
       ajaxSave(1);
     });
@@ -866,7 +857,7 @@ if ($propertyObj->get_paper_type() != '5') { // Do not allow saving for offline 
                                       ORDER BY
                                       display_pos,
                                       id_num");
-    $question_data->bind_param('ii', $paperID, $q_id);
+    $question_data->bind_param('ii', $paperID, $_GET['q_id']);
   } else {
     $question_data = $mysqli->prepare("SELECT
                                             screen,
@@ -924,8 +915,8 @@ if ($propertyObj->get_paper_type() != '5') { // Do not allow saving for offline 
         $assigned_number++;
         $no_on_screen++;
       }
-			if (!is_null($q_number)) {
-				$tmp_questions_array[$q_no]['assigned_number'] = $q_number;   // Preview mode, use the number that is passed in.
+			if (isset($_GET['qNo'])) {
+				$tmp_questions_array[$q_no]['assigned_number'] = $_GET['qNo'];   // Preview mode, use the number that is passed in.
 			} else {
 				$tmp_questions_array[$q_no]['assigned_number'] = $assigned_number;
       }
@@ -1031,9 +1022,9 @@ if ($propertyObj->get_paper_type() != '5') { // Do not allow saving for offline 
   echo "<div id=\"maincontent\">\n";
 
   if ($current_screen < $no_screens) {
-    echo "<form method=\"post\" id=\"qForm\" name=\"questions\" action=\"" . $_SERVER['PHP_SELF'] . "?id=" . $id . $url_mod . "\" autocomplete=\"off\">";
+    echo "<form method=\"post\" id=\"qForm\" name=\"questions\" action=\"" . $_SERVER['PHP_SELF'] . "?id=" . $_GET['id'] . $url_mod . "\" autocomplete=\"off\">";
   } else {
-    echo "<form method=\"post\" id=\"qForm\" name=\"questions\" action=\"finish.php?id=" . $id . $url_mod . "\" autocomplete=\"off\">";
+    echo "<form method=\"post\" id=\"qForm\" name=\"questions\" action=\"finish.php?id=" . $_GET['id'] . $url_mod . "\" autocomplete=\"off\">";
   }
   echo $hidden_html;
   ?>
@@ -1219,9 +1210,9 @@ if (count($reference_materials) > 0) {
 }
 $mysqli->close();
 
-if (!is_null($refpane)) {
+if (isset($_POST['refpane'])) {
   echo "<script>\n";
-  echo "  changeRef(" . $refpane . ");\n";
+  echo "  changeRef(" . $_POST['refpane'] . ");\n";
   echo "</script>\n";
 }
 
@@ -1249,14 +1240,13 @@ function get_screens($is_question_preview_mode, $paperID, $db) {
   // Get how many screens make up the question paper.
   $screen_data = array();
   if ($is_question_preview_mode) {
-    $q_id = param::optional('q_id', 0, param::INT, param::FETCH_GET);
     $stmt = $db->prepare("SELECT 1, q_type, q_id
                               FROM
                                 questions
                               WHERE
                                 questions.q_id = ?
                               ");
-    $stmt->bind_param('i', $q_id);
+    $stmt->bind_param('i', $_GET['q_id']);
   } else {
     $stmt = $db->prepare("SELECT
                                 screen, q_type, question

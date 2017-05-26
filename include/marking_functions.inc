@@ -109,9 +109,8 @@ function save_user_responses($paper_type, $metadataID, $screen_no, $response_dat
   // Check for any save fails.
   if ($paper_type == 2) {   // Only log fails on summative exams.
     $ipaddress = NetworkUtils::get_client_address();
-    $save_failed = param::optional('save_failed', '', param::RAW, param::FETCH_POST);
-    if ($save_failed != '') {
-      $failures = explode('<br />', nl2br($save_failed));
+    if (isset($_POST['save_failed']) and $_POST['save_failed'] != '') {
+      $failures = explode('<br />', nl2br($_POST['save_failed']));
       foreach ($failures as $failure) {
         $parts = explode('-', $failure);
         $stmt = $db->prepare("INSERT INTO save_fail_log VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?)");
@@ -137,7 +136,9 @@ function save_user_responses($paper_type, $metadataID, $screen_no, $response_dat
   if (count($response_data) > 0) { 		// Could happen on a screen with just an info block
     $save_answers->close();
   }
+  
 
+  
   return $save_ok;
 }
 
@@ -147,14 +148,16 @@ function save_user_responses($paper_type, $metadataID, $screen_no, $response_dat
  * @param mixed $paper_id
  * @param mixed $screen_no
  * @param mixed $dblink
+
  * @param mixed $paper_type T
  * @param mixed $metadataID
- * @throws MissingParameter
+
+ *
  */
 function record_marks($paper_id, $db, $paper_type, $metadataID, $preview_q_id = null) {
   global $original_paper_type; //TODO: move this into the function definition
-  $screen_no = param::required('old_screen', param::INT, param::FETCH_POST);
-  $extra_duration = param::required('previous_duration', param::INT, param::FETCH_POST);
+  $screen_no = $_POST['old_screen'];
+  $extra_duration = $_POST['previous_duration'];
 
   // Load the structure of the paper into a local array.
   $paper_array = array();
@@ -182,7 +185,7 @@ function record_marks($paper_id, $db, $paper_type, $metadataID, $preview_q_id = 
       $random_on = false;
     }
     if ($q_type == 'random' or $q_type == 'keyword_based') {
-      $selected_q_id[] = param::optional('q' . $tmp_question_no . '_randomID', 0, param::INT, param::FETCH_POST);
+      $selected_q_id[] = (isset($_POST['q' . $tmp_question_no . '_randomID'])) ? $_POST['q' . $tmp_question_no . '_randomID'] : 0;
 
       if ($random_on == false and count($selected_q_id) > 0) {
         foreach ($selected_q_id as &$used_qid) {
@@ -286,7 +289,11 @@ function record_marks($paper_id, $db, $paper_type, $metadataID, $preview_q_id = 
       } elseif ($old_type == 'dichotomous') {
         finalise_dichotomous($old_score_method, $old_marks_correct, $old_marks_incorrect, $no_correct, $no_incorrect, $saved_response, $totalpos, $mark);
       }
-      $option_order = param::optional("order$question_no", '', param::TEXT, param::FETCH_POST);
+      if (isset($_POST["order$question_no"])) {
+        $option_order = $_POST["order$question_no"];
+      } else {
+        $option_order = '';
+      }
       if ($question_no > 0 and $old_type != 'info') {
         $tmp_duration = time_to_seconds($submit_time) - time_to_seconds($_POST['page_start']);
         if ($tmp_duration < 0) $tmp_duration += 86400;
@@ -320,9 +327,10 @@ function record_marks($paper_id, $db, $paper_type, $metadataID, $preview_q_id = 
     }
 
     $log_id = $q_id;
-    $option_order = param::optional("order$question_no", '', param::TEXT, param::FETCH_POST);
-    if ($option_order !== '') {
-      $option_order = explode(',', $option_order);
+    if (isset($_POST["order$question_no"])) {
+      $option_order = explode(',', $_POST["order$question_no"]);
+    } else {
+      $option_order = '';
     }
     $question_part++;
 
@@ -330,8 +338,9 @@ function record_marks($paper_id, $db, $paper_type, $metadataID, $preview_q_id = 
       case 'area':
         $mark = 0;
         $qid = 'q' . $question_no;
-        $saved_response = param::optional($qid, '', param::TEXT, param::FETCH_POST);
-        if ($saved_response !== '') {
+        if (isset($_POST[$qid])) {
+          $saved_response = $_POST[$qid];
+
           $subparts = explode(';', $saved_response);
 
           $parts = explode(',', $saved_response);
@@ -343,6 +352,8 @@ function record_marks($paper_id, $db, $paper_type, $metadataID, $preview_q_id = 
           } elseif (isset($subparts[1]) and strlen($subparts[1]) > 0) {
             $mark = $marks_incorrect;
           }
+        } else {
+          $saved_response = '';
         }
         $totalpos = $marks_correct;
 
@@ -360,15 +371,16 @@ function record_marks($paper_id, $db, $paper_type, $metadataID, $preview_q_id = 
           $totalpos = $settings['marks_correct'];
         } else {
           $totalpos = null;
-        }
-        $calcanswers = param::required('qid', param::RAW, param::FETCH_POST);
-        if (is_array($calcanswers[$log_id])) {
-          $saved_response = EnhancedCalc::process_user_answer($calcanswers[$log_id], $_SESSION['qid'][$log_id]);
-        }
+        }  
+        $saved_response = EnhancedCalc::process_user_answer($_POST['qid'][$log_id], $_SESSION['qid'][$log_id]);
         break;
       case 'dichotomous':
         $qid = 'q' . $question_no . '_' . $question_part;
-        $user_response = param::optional($qid, '', param::ALPHA, param::FETCH_POST);
+        if (isset($_POST[$qid])) {
+          $user_response = $_POST[$qid];
+        } else {
+          $user_response = '';
+        }
         if ($user_response == '') {
           $saved_response .= 'u';
         } else {
@@ -385,7 +397,11 @@ function record_marks($paper_id, $db, $paper_type, $metadataID, $preview_q_id = 
         break;
       case 'likert':
         $qid = 'q' . $question_no . '_' . $question_part;
-        $user_response = param::optional($qid, '', param::TEXT, param::FETCH_POST);
+        if (isset($_POST[$qid])) {
+          $user_response = $_POST[$qid];
+        } else {
+          $user_response = '';
+        }
 
         if ($user_response == '') {
           $saved_response .= 'u';
@@ -394,12 +410,20 @@ function record_marks($paper_id, $db, $paper_type, $metadataID, $preview_q_id = 
         }
         break;
       case 'mcq':
-        $dismiss = param::optional("dismiss$question_no", '', param::TEXT, param::FETCH_POST);
+        if (isset($_POST["dismiss$question_no"])) {
+          $dismiss = $_POST["dismiss$question_no"];
+        } else {
+          $dismiss = '';
+        }
         $qid = 'q' . $question_no;
-        $saved_response = param::optional($qid, '', param::TEXT, param::FETCH_POST);
+        if (isset($_POST[$qid])) {
+          $saved_response = $_POST[$qid];
+        } else {
+          $saved_response = '';
+        }
         if ($saved_response == 'other') { // Survey use - 'other' textbox.
           $qid = 'q' . $question_no . '_other';
-          $saved_response = 'other:' . param::optional($qid, '', param::TEXT, param::FETCH_POST);
+          $saved_response = 'other:' . $_POST[$qid];
         }
         if ($saved_response == '') $saved_response = '0';
         if ($totalpos == 0) {
@@ -414,10 +438,14 @@ function record_marks($paper_id, $db, $paper_type, $metadataID, $preview_q_id = 
         }
         break;
       case 'mrq':
-        $dismiss = param::optional("dismiss$question_no", '', param::TEXT, param::FETCH_POST);
+        if (isset($_POST["dismiss$question_no"])) {
+          $dismiss = $_POST["dismiss$question_no"];
+        } else {
+          $dismiss = '';
+        }
         $qid = 'q' . $question_no . '_' . $question_part;
-        $user_response = param::optional($qid, 'n', param::ALPHA, param::FETCH_POST);
-        if ($user_response === 'y') {
+        if (isset($_POST[$qid]) and $_POST[$qid] == 'y') {
+          $user_response = 'y';
           $mrq_options_selected++;
         } else {
           $user_response = 'n';
@@ -482,10 +510,9 @@ function record_marks($paper_id, $db, $paper_type, $metadataID, $preview_q_id = 
             } else {
                 $correct_answers = array();
             }
-            $execmatch_answers = param::optional($qid, null, param::ALPHANUM, param::FETCH_POST);
-            if (!is_null($execmatch_answers)) {
-              $answer_count = count($execmatch_answers);
-              if ($score_method == 'Mark per Question' and (is_array($execmatch_answers) or $execmatch_answers != 'u')) {
+            if (isset($_POST[$qid])) {
+              $answer_count = count($_POST[$qid]);
+              if ($score_method == 'Mark per Question' and (is_array($_POST[$qid]) or $_POST[$qid] != 'u')) {
                 $all_items_abstain = false;
               }
             } else {
@@ -495,24 +522,24 @@ function record_marks($paper_id, $db, $paper_type, $metadataID, $preview_q_id = 
             for ($i = 0; $i < $answer_count; $i++) {
               if ($i == 0) {
                 if (count($correct_answers) == 1) {
-                  $saved_response .= $execmatch_answers;
+                  $saved_response .= $_POST[$qid];
                 } else {
-                  $saved_response .= $execmatch_answers[$i];
+                  $saved_response .= $_POST[$qid][$i];
                 }
               } else {
-                $saved_response .= '$' . $execmatch_answers[$i];
+                $saved_response .= '$' . $_POST[$qid][$i];
               }
 
               if ($answer_count == 1) {
-                if ($execmatch_answers == $correct_answers[0]) {
+                if ($_POST[$qid] == $correct_answers[0]) {
                   $mark += $marks_correct;
                   $all_items_abstain = false;
-                } elseif ($execmatch_answers != 'u') {
+                } elseif ($_POST[$qid] != 'u') {
                   $mark += $marks_incorrect;
                   $all_items_abstain = false;
                 }
               } else {
-                if (in_array($execmatch_answers[$i], $correct_answers)) {
+                if (in_array($_POST[$qid][$i], $correct_answers)) {
                   $mark += $marks_correct;
                 } else {
                   $mark += $marks_incorrect;
@@ -548,25 +575,22 @@ function record_marks($paper_id, $db, $paper_type, $metadataID, $preview_q_id = 
             if (trim($single_scenario) != '') {
               $question_parts++;
               $qid = 'q' . $question_no . '_' . $option_no;
-              $matrix_option_answer = param::optional($qid, null, param::ALPHANUM, param::FETCH_POST);
-              if ($matrix_option_answer == $correct_options[$option_no - 1]) {
+              if (isset($_POST[$qid]) and $_POST[$qid] == $correct_options[$option_no - 1]) {
                 $mark += $marks_correct;
                 $no_correct++;
-              } elseif (!is_null($matrix_option_answer) and $matrix_option_answer != 'u') {
+              } elseif (isset($_POST[$qid]) and $_POST[$qid] != 'u') {
                 $mark += $marks_incorrect;
                 $no_incorrect++;
               }
               if ($option_no == 1) {
-                if (!is_null($matrix_option_answer)) {
-                  $saved_response = $matrix_option_answer;
+                if (isset($_POST[$qid])) {
+                  $saved_response = $_POST[$qid];
                 } else {
                   $saved_response = '';
                 }
               } else {
                 $saved_response .= '|';
-                if (!is_null($matrix_option_answer)) {
-                  $saved_response .= $matrix_option_answer;
-                }
+                if (isset($_POST[$qid])) $saved_response .= $_POST[$qid];
               }
               $option_no++;
             }
@@ -586,29 +610,32 @@ function record_marks($paper_id, $db, $paper_type, $metadataID, $preview_q_id = 
         }
         break;
       case 'rank':
-        $dismiss = param::optional("dismiss$question_no", '', param::TEXT, param::FETCH_POST);
-        $qid = 'q' . $question_no . '_' . $question_part;
-        $part_answer = param::optional($qid, 'u', param::ALPHANUM, param::FETCH_POST);
-        if ($saved_response == '') {
-          $saved_response = $part_answer;
+        if (isset($_POST["dismiss$question_no"])) {
+          $dismiss = $_POST["dismiss$question_no"];
         } else {
-          $saved_response .= ',' . $part_answer;
+          $dismiss = '';
+        }
+        $qid = 'q' . $question_no . '_' . $question_part;
+        if ($saved_response == '') {
+          $saved_response = $_POST[$qid];
+        } else {
+          $saved_response .= ',' . $_POST[$qid];
         }
         if ($score_method == 'Mark per Option') {
-          if ($part_answer != 'u') {
-            $mark += ($part_answer == $correct) ? $marks_correct : $marks_incorrect;
+          if ($_POST[$qid] != 'u') {
+            $mark += ($_POST[$qid] == $correct) ? $marks_correct : $marks_incorrect;
           }
         } elseif ($score_method == 'Mark per Question') {
-          if ($part_answer <> $correct) $correct_rank = false;
+          if ($_POST[$qid] <> $correct) $correct_rank = false;
         } elseif ($score_method == 'Allow partial Marks') {
-          if ($part_answer != 'u') {
-            if ($part_answer != 0) {
+          if ($_POST[$qid] != 'u') {
+            if ($_POST[$qid] != 0) {
               if ($correct != 0) {
-                if ($part_answer == $correct) {
+                if ($_POST[$qid] == $correct) {
                   $mark += $marks_correct;
-                } elseif ($part_answer == ($correct + 1)) {
+                } elseif ($_POST[$qid] == ($correct + 1)) {
                   $mark += $marks_partial;
-                } elseif ($part_answer == ($correct - 1)) {
+                } elseif ($_POST[$qid] == ($correct - 1)) {
                   $mark += $marks_partial;
                 } else {
                   $mark += $marks_incorrect;
@@ -619,11 +646,11 @@ function record_marks($paper_id, $db, $paper_type, $metadataID, $preview_q_id = 
             }
           }
         } elseif ($score_method == 'Bonus Mark') {
-          if ($part_answer != 0) {
+          if ($_POST[$qid] != 0) {
             $mark += ($correct != 0) ? $marks_correct : $marks_incorrect;
-            if ($part_answer <> $correct) $correct_rank = false;
+            if ($_POST[$qid] <> $correct) $correct_rank = false;
           }
-          if ($part_answer == 0 and $correct != 0) $correct_rank = false;
+          if ($_POST[$qid] == 0 and $correct != 0) $correct_rank = false;
         }
         if ($score_method == 'Mark per Question') {
           $totalpos = $marks_correct;
@@ -632,9 +659,18 @@ function record_marks($paper_id, $db, $paper_type, $metadataID, $preview_q_id = 
         }
         break;
       case 'sct':
-        $dismiss = param::optional("dismiss$question_no", '', param::TEXT, param::FETCH_POST);
+        if (isset($_POST["dismiss$question_no"])) {
+          $dismiss = $_POST["dismiss$question_no"];
+        } else {
+          $dismiss = '';
+        }
         $qid = 'q' . $question_no;
-        $saved_response = param::optional($qid, 0, param::INT, param::FETCH_POST);
+        if (isset($_POST[$qid])) {
+          $saved_response = $_POST[$qid];
+        } else {
+          $saved_response = '';
+        }
+        if ($saved_response == '') $saved_response = '0';
 
         if ($saved_response == $question_part) {
           $max = 0;
@@ -651,7 +687,12 @@ function record_marks($paper_id, $db, $paper_type, $metadataID, $preview_q_id = 
         $dismiss = '';
 
         $qid = 'q' . $question_no;
-        $saved_response = param::optional($qid, 'u', param::ALPHA, param::FETCH_POST);
+        if (isset($_POST[$qid])) {
+          $saved_response = $_POST[$qid];
+        } else {
+          $saved_response = '';
+        }
+
         if ($saved_response == '') $saved_response = 'u';
 
         if ($saved_response == $correct) {
@@ -670,12 +711,17 @@ function record_marks($paper_id, $db, $paper_type, $metadataID, $preview_q_id = 
         $saved_response = array();
         for ($i = 1; $i <= $no_answers; $i++) {
           $qid = 'q' . $question_no . '_' . $i;
+<<<<<<< HEAD
           $blank_answer = param::optional($qid, null, param::TEXT, param::FETCH_POST);
           if (!is_null($blank_answer)) {
             if ($blank_answer == '') {
+=======
+          if (isset($_POST[$qid])) {
+            if ($_POST[$qid] == '') {
+>>>>>>> parent of e2ccfb4... ROGO-1943 Exam page cross site scripting protection
               $saved_response[] = 'u';
             } else {
-              $saved_response[] = $blank_answer;
+              $saved_response[] = $_POST[$qid];
             }
           }
 
@@ -694,11 +740,11 @@ function record_marks($paper_id, $db, $paper_type, $metadataID, $preview_q_id = 
 
           $answer_list[0] = str_replace("[/blank]", '', $answer_list[0]);
           if ($display_method == 'textboxes') {
-            if (!is_null($blank_answer) and $blank_answer != 'u' and $blank_answer != '') {
+            if (isset($_POST[$qid]) and $_POST[$qid] != 'u' and $_POST[$qid] != '') {
               $have_answer = true;
               $is_correct = false;
               foreach ($answer_list as $individual_answer) {
-                if (str_replace('&nbsp;', ' ', trim(strtolower($blank_answer))) == str_replace('&nbsp;', ' ', trim(strtolower($individual_answer)))) {
+                if (str_replace('&nbsp;', ' ', trim(strtolower($_POST[$qid]))) == str_replace('&nbsp;', ' ', trim(strtolower($individual_answer)))) {
                   $is_correct = true;
                   break;
                 }
@@ -706,9 +752,9 @@ function record_marks($paper_id, $db, $paper_type, $metadataID, $preview_q_id = 
               $mark += ($is_correct) ? $individual_q_mark : $marks_incorrect;
             }
           } else {
-            if (!is_null($blank_answer) and $blank_answer != 'u') {
+            if (isset($_POST[$qid]) and $_POST[$qid] != 'u') {
               $have_answer = true;
-              $mark += (str_replace('&nbsp;', ' ', trim($blank_answer)) == str_replace('&nbsp;', ' ', trim($answer_list[0]))) ? $individual_q_mark : $marks_incorrect;
+              $mark += (str_replace('&nbsp;', ' ', trim($_POST[$qid])) == str_replace('&nbsp;', ' ', trim($answer_list[0]))) ? $individual_q_mark : $marks_incorrect;
             }
           }
         }
@@ -724,13 +770,17 @@ function record_marks($paper_id, $db, $paper_type, $metadataID, $preview_q_id = 
         break;
       case 'textbox':
         $qid = 'q' . $question_no;
-        if (!is_array($settings)) {
-          $settings = json_decode($settings, true);
-        }
-        if (!isset($settings['editor']) or $settings['editor'] == 'plain') {
-          $saved_response = htmlspecialchars(param::optional($qid, '', param::RAW, param::FETCH_POST));
+        if (isset($_POST[$qid])) {
+          if (!is_array($settings)) {
+            $settings = json_decode($settings, true);
+          }
+          if (!isset($settings['editor']) or $settings['editor'] == 'plain') {
+            $saved_response = htmlspecialchars($_POST[$qid]);
+          } else {
+            $saved_response = $_POST[$qid];
+          }
         } else {
-          $saved_response = param::optional($qid, '', param::HTML, param::FETCH_POST);
+          $saved_response = '';
         }
         $mark = null;
         $totalpos = $marks_correct;
@@ -739,9 +789,8 @@ function record_marks($paper_id, $db, $paper_type, $metadataID, $preview_q_id = 
         $qid = 'q' . $question_no;
         $mark = 0;
         $all_correct = true;
-        $hotspot_answer = param::optional($qid, null, param::TEXT, param::FETCH_POST);
-        if (!is_null($hotspot_answer)) {
-          $saved_response = $hotspot_answer;
+        if (isset($_POST[$qid])) {
+          $saved_response = $_POST[$qid];
           $sub_parts = explode('|', $saved_response);
           foreach ($sub_parts as $sub_part) {
             if ($sub_part{0} == 1) {
@@ -772,7 +821,11 @@ function record_marks($paper_id, $db, $paper_type, $metadataID, $preview_q_id = 
         break;
       case 'labelling':
         $qid = 'q' . $question_no;
-        $saved_response = param::optional($qid, '', param::TEXT, param::FETCH_POST);
+        if (isset($_POST[$qid])) {
+          $saved_response = $_POST[$qid];
+        } else {
+          $saved_response = '';
+        }
         if ($saved_response != '') {
           $tmp_first_split = explode(';', $saved_response);
           $tmp_second_split = explode('$', $tmp_first_split[0]);
@@ -796,7 +849,11 @@ function record_marks($paper_id, $db, $paper_type, $metadataID, $preview_q_id = 
         break;
       case 'flash':
         $qid = 'q' . $question_no;
-        $saved_response = param::optional($qid, '', param::TEXT, param::FETCH_POST);
+        if (isset($_POST[$qid])) {
+          $saved_response = $_POST[$qid];
+        } else {
+          $saved_response = '';
+        }
         $flash_args = explode(',', $saved_response);
         $mark = $flash_args[0]; // Get student marks from Flash.
         $totalpos += $marks_correct;
@@ -812,10 +869,13 @@ function record_marks($paper_id, $db, $paper_type, $metadataID, $preview_q_id = 
   } elseif ($old_type == 'dichotomous') {
     finalise_dichotomous($old_score_method, $old_marks_correct, $old_marks_incorrect, $no_correct, $no_incorrect, $saved_response, $totalpos, $mark);
   }
-  $option_order = param::optional("order$question_no", '', param::TEXT, param::FETCH_POST);
+  if (isset($_POST["order$question_no"])) {
+    $option_order = $_POST["order$question_no"];
+  } else {
+    $option_order = '';
+  }
   if ($question_no > 0 and $q_type != 'info') {
-    $page_start = param::required('page_start', param::ALPHANUM, param::FETCH_POST);
-    $tmp_duration = time_to_seconds($submit_time) - time_to_seconds($page_start);
+    $tmp_duration = time_to_seconds($submit_time) - time_to_seconds($_POST['page_start']);
     if ($tmp_duration < 0) $tmp_duration += 86400;
     $tmp_duration += $extra_duration;
 
@@ -875,11 +935,10 @@ function finalise_rank($old_score_method, $correct_rank, $old_marks_correct, $ol
 }
 
 function finalise_mrq($old_score_method, $old_display_method, $correct_rank, $old_marks_correct, $old_marks_incorrect, $question_no, $mrq_options_selected, $totalpos, &$mark, &$question_part, &$qid, &$saved_response) {
-  $abstained = param::optional('q' . $question_no . '_abstain', null, param::ALPHA, param::FETCH_POST);
-  if (!is_null($abstained)) {
-    $mark = 0;
-    $saved_response = 'a';
-  } elseif ($old_score_method == 'Mark per Question') {
+	if (isset($_POST['q' . $question_no . '_abstain'])) {
+	  $mark = 0;
+		$saved_response = 'a';
+	} elseif ($old_score_method == 'Mark per Question') {
     if ($correct_rank) {
       $mark = $old_marks_correct;
     } else {
@@ -891,11 +950,10 @@ function finalise_mrq($old_score_method, $old_display_method, $correct_rank, $ol
   if ($old_display_method == 'other') {
     $question_part++;
     $qid = 'q' . $question_no . '_' . $question_part;
-    $next_response = param::optional($qid, null, param::ALPHA, param::FETCH_POST);
-    if ($next_response == 'y') {
+    if (isset($_POST[$qid]) and $_POST[$qid] == 'y') {
       $saved_response .= 'y';
       $qid = 'q' . $question_no . '_other';
-      $saved_response .= param::optional($qid, null, param::TEXT, param::FETCH_POST);
+      $saved_response .= $_POST[$qid];
     } else {
       $saved_response .= 'n';
     }
