@@ -43,7 +43,7 @@ $id = check_var('id', 'GET', true, false, true, param::ALPHANUM); // While it is
 $mode = param::optional('mode', '', param::ALPHA);
 $getmode = param::optional('mode', '', param::ALPHA, param::FETCH_GET);
 $post_screen = param::optional('current_screen', null, param::INT, param::FETCH_POST);
-$get_qid = param::optional('q_id', null, param::INT, param::FETCH_GET);
+$q_id = param::optional('q_id', null, param::INT, param::FETCH_GET);
 $q_number = param::optional('qNo', null, param::INT, param::FETCH_GET);
 $do_not_record = param::optional('dont_record', false, param::BOOLEAN, param::FETCH_GET);
 $refpane = param::optional('refpane', null, param::INT, param::FETCH_POST);
@@ -77,7 +77,7 @@ $is_first_launch = is_null($post_screen);
 $is_preview_mode_first_launch = ($is_preview_mode == true and $getmode === 'preview');
 
 // Are we in a staff single question test mode?
-$is_question_preview_mode = !is_null($get_qid);
+$is_question_preview_mode = !is_null($q_id);
 
 if (!$is_first_launch) require '../include/marking_functions.inc';
 
@@ -302,7 +302,7 @@ $max_ref_width 				= get_max_reference_width($reference_materials);
 require '../config/start.inc';
 echo "<!DOCTYPE html>\n<html>\n<head>\n";
 
-$url_mod = ($is_question_preview_mode) ? '&q_id=' . $get_qid . '&qNo=' . $q_number : '';
+$url_mod = ($is_question_preview_mode) ? '&q_id=' . $q_id . '&qNo=' . $q_number : '';
 ?>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $configObject->get('cfg_page_charset') ?>" />
@@ -866,7 +866,7 @@ if ($propertyObj->get_paper_type() != '5') { // Do not allow saving for offline 
                                       ORDER BY
                                       display_pos,
                                       id_num");
-    $question_data->bind_param('ii', $paperID, $get_qid);
+    $question_data->bind_param('ii', $paperID, $q_id);
   } else {
     $question_data = $mysqli->prepare("SELECT
                                             screen,
@@ -1249,14 +1249,14 @@ function get_screens($is_question_preview_mode, $paperID, $db) {
   // Get how many screens make up the question paper.
   $screen_data = array();
   if ($is_question_preview_mode) {
-    $get_qid = param::optional('q_id', 0, param::INT, param::FETCH_GET);
+    $q_id = param::optional('q_id', 0, param::INT, param::FETCH_GET);
     $stmt = $db->prepare("SELECT 1, q_type, q_id
                               FROM
                                 questions
                               WHERE
                                 questions.q_id = ?
                               ");
-    $stmt->bind_param('i', $get_qid);
+    $stmt->bind_param('i', $q_id);
   } else {
     $stmt = $db->prepare("SELECT
                                 screen, q_type, question
