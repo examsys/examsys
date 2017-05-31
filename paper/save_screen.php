@@ -29,25 +29,18 @@ require_once '../include/marking_functions.inc';
 require_once '../include/errors.php';
 require_once '../include/paper_security.php';
 
-$answer_changed = param::optional('ans_changed', false, param::BOOLEAN);
-$random_page_id = param::optional('randomPageID', 'ERR_NO_PAGE_ID', param::ALPHANUM, param::FETCH_POST);
-
-if (!$answer_changed) {
-  echo $random_page_id;
+if ($_GET['ans_changed'] == '0') {
+  echo $_POST['randomPageID'];
   exit();
 }
 
 $displayDebug = false; // AJAX call so debug info messes up the output.
 
-$id = check_var('id', 'GET', true, false, true, param::ALPHANUM); // While it is an int, the numbers are too large for 32-bit PHP.
-$retry = param::optional('retry', 0, param::INT);
-$mode = param::optional('mode', '', param::ALPHA);
-$submit_type = param::optional('submitType', '', param::ALPHA, param::FETCH_GET);
-$old_screen = param::optional('old_screen', 0, param::INT, param::FETCH_POST);
+check_var('id', 'GET', true, false, false);
 
 // Calculate how long this request should be processed based on the config vars and the retry number.
-if (!is_null($retry) and $retry > 0 and $retry <= $configObject->get('cfg_autosave_retrylimit')) {
-  $extra_time = 1 + ceil($configObject->get('cfg_autosave_backoff_factor') * intval($retry) *  $configObject->get('cfg_autosave_settimeout'));
+if ( isset($_GET['retry']) and is_numeric($_GET['retry']) and $_GET['retry'] > 0 and $_GET['retry'] <= $configObject->get('cfg_autosave_retrylimit') ) {
+  $extra_time = 1 + ceil($configObject->get('cfg_autosave_backoff_factor') * intval($_GET['retry']) *  $configObject->get('cfg_autosave_settimeout'));
 } else {
   $extra_time = 1;
 }
@@ -55,7 +48,7 @@ if (!is_null($retry) and $retry > 0 and $retry <= $configObject->get('cfg_autosa
 // Kill this request if it is taking to long the JavaScript will retry if it can.
 set_time_limit($configObject->get('cfg_autosave_settimeout') + $extra_time);
 
-$propertyObj = PaperProperties::get_paper_properties_by_crypt_name($id, $mysqli, $string, true);
+$propertyObj = PaperProperties::get_paper_properties_by_crypt_name($_GET['id'], $mysqli, $string, true);
 
 $original_paper_type = $propertyObj->get_paper_type(); // Store the original paper type - needed to retrieve answers from the correct log and functionality related decisions
 
@@ -106,7 +99,7 @@ if ($userObject->has_role('Staff') and check_staff_modules($moduleID, $userObjec
   $summative_exam_session_started = false;
 }
 
-$is_preview = ($mode === 'preview');
+$is_preview = (isset($_POST['mode']) and $_POST['mode'] == 'preview');
 
 $paper_scheduled = ($propertyObj->get_start_date() !== null);
 if ($propertyObj->get_exam_duration() != null and $propertyObj->get_paper_type() == '2') {
@@ -118,7 +111,7 @@ if (!$is_preview and time() > $propertyObj->get_end_date() and ( $propertyObj->g
   $propertyObj->set_paper_type('_late');
 }
 
-$preview_q_id = param::optional('q_id', null, param::INT, param::FETCH_GET);
+$preview_q_id = (isset($_GET['q_id'])) ? $_GET['q_id'] : null;
 
 $log_metadata = new LogMetadata($userObject->get_user_ID(), $propertyObj->get_property_id(), $mysqli);
 if ($log_metadata->get_record() === false) {
@@ -126,8 +119,8 @@ if ($log_metadata->get_record() === false) {
 }
 $metadataid = $log_metadata->get_metadata_id();
 
-if ($submit_type === 'userSubmit') {
-  $log_metadata->set_highest_screen($old_screen);
+if ($_GET['submitType'] == 'userSubmit') {
+  $log_metadata->set_highest_screen($_POST['old_screen']);
 }
 
 try {
@@ -138,7 +131,7 @@ try {
 
 if ($ret === true) {
   // Everthing worked.
-  echo $random_page_id;
+  echo $_POST['randomPageID'];
 } else {
   echo 'ERROR';
 }
