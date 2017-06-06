@@ -872,7 +872,7 @@ QUERY;
 
   // Update composer and dependencies.
   try {
-    $composer_method = composer_utils::UPDATE_NODEV;
+    $composer_method = composer_utils::INSTALL_NODEV;
     composer_utils::setup($composer_method);
   } catch (Exception $e) {
       echo "<li class=\"error\">" . $e->getMessage() . "</li>";
