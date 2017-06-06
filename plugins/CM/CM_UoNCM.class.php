@@ -57,7 +57,6 @@ class CM_UoNCM implements iCMAPI {
             CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_SSL_VERIFYHOST => false,
             CURLOPT_HTTPHEADER => array('Accept: application/json'),
-            CURLOPT_SSLVERSION => 3,
             CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.13) Gecko/20080311 Firefox/2.0.0.13'
         );
     $res = json_decode($req->get($url, $options), true);
