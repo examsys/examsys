@@ -252,6 +252,16 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
   foreach ($cfg_sms_sources as $key=>$value) {
     echo "<option value=\"$value\">$key</option>\n";
   }
+  // SMS might be a plugin.
+  $plugins = array();
+  $userObj = userObject::get_instance();
+  $smsplugin_name = plugin_manager::get_plugin_type_enabled('plugin_sms');
+  foreach($smsplugin_name as $name) {
+    $smspluginns = 'plugins\SMS\\' . $name. '\\' . $name;
+    $smsplugin = new $smspluginns($mysqli, $userObj->get_user_ID());
+    $value = $smsplugin->get_name();
+    echo "<option value=\"$value\">$value</option>\n";
+  }
   echo '</select></td></tr>';
 ?>
     <tr><td class="field"><?php echo $string['academicyearstart'] ?></td><td><input type="text"  name="academic_year_start" value="<?php echo $configObject->get('cfg_academic_year_start') ?>" style="width:50px" required /> <img src="../artwork/tooltip_icon.gif" class="help_tip" title="<?php echo $string['tooltip_format'] ?>" /></td></tr>
