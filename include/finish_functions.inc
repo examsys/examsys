@@ -1969,12 +1969,14 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
                 $correct_flag = true;
               }
             }
+            // Decode commas.
+            $display_userchoice = str_replace('&#44;', ',', $user_choices[$blank_count]);
             if ($correct_flag == true) {
               if (substr($tmp_exclude, $blank_count, 1) == '0') {
                 $paper[$question]['mark'] += $paper[$question]['marks_correct'];
               }
               $have_answer = true;
-              echo "<input type=\"text\" size=\"20\" name=\"q" . $question . "_" . $blank_count . "\" value=\"" . htmlentities($user_choices[$blank_count]) .  "\"$exclude_mod />";
+              echo "<input type=\"text\" size=\"20\" name=\"q" . $question . "_" . $blank_count . "\" value=\"" . $display_userchoice .  "\"$exclude_mod />";
               echo display_response($tmp_display_students_response, 'tick');
             } else {
               if (!isset($user_choices[$blank_count]) or $user_choices[$blank_count] == 'u') {
@@ -1984,7 +1986,7 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
                   $paper[$question]['mark'] += $paper[$question]['marks_incorrect'];
                 }
                 $have_answer = true;
-                echo "<input type=\"text\" size=\"20\" name=\"q" . $question . "_" . $blank_count . "\" value=\"" . htmlentities($user_choices[$blank_count]) .  "\"$exclude_mod />";
+                echo "<input type=\"text\" size=\"20\" name=\"q" . $question . "_" . $blank_count . "\" value=\"" . $display_userchoice .  "\"$exclude_mod />";
                 echo display_response($tmp_display_students_response, 'cross');
               }
             }
