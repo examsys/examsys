@@ -88,6 +88,8 @@ class PaperProperties {
   private $unmarked_student_enhancedcalc;
   private $externalid;
   private $externalsys;
+  private $unmarked_textbox;
+  private $unmarked_student_textbox;
 
   private $_date_timezone = null;
 
@@ -1805,12 +1807,12 @@ class PaperProperties {
                 if (!$excluded->is_question_excluded($question['q_id'])) {
                     switch ($question['type']) {
                         case 'random':
-                            foreach (QuestionUtils::get_random_calc_question($question['q_id'], $this->db) as $possible) {
+                            foreach (QuestionUtils::get_random_question($question['q_id'], 'enhancedcalc') as $possible) {
                                 $enhancedcalc_ids[] = $possible;
                             }
                             break;
                         case 'keyword_based':
-                            foreach (QuestionUtils::get_keyword_calc_question($question['q_id'], $this->db) as $possible) {
+                            foreach (QuestionUtils::get_keyword_question($question['q_id'], 'enhancedcalc') as $possible) {
                                 $enhancedcalc_ids[] = $possible;
                             }
                             break;
@@ -1854,6 +1856,102 @@ class PaperProperties {
         }
     }
 
+    /**
+     * Check state of unmarked textbox questions
+     * @param int $studentsonly only check students in cohort
+     * @return bool are there unmarked questions?
+     */
+    public function unmarked_textbox($studentsonly = 0) {
+        if ($studentsonly) {
+            $check = $this->unmarked_student_textbox;
+        } else {
+            $check = $this->unmarked_textbox;
+        }
+
+        if ($check === null) {
+            $this->load_unmarked_textbox($studentsonly);
+        }
+
+        if ($studentsonly) {
+            return $this->unmarked_student_textbox;
+        } else {
+            return $this->unmarked_textbox;
+        }
+    }
+    
+    /**
+     * Check if textbox answers have been marked
+     * @param int $studentsonly only check students in cohort
+     */
+    private function load_unmarked_textbox($studentsonly = 0) {
+        if ($studentsonly) {
+            $this->unmarked_student_textbox = false;
+        } else {
+            $this->unmarked_textbox = false;
+        }
+        
+        if (!isset($this->questions)) {
+            $this->load_questions();
+        }
+
+        $textbox_ids = array();
+
+        $paperID = $this->get_property_id();
+        $paperType = $this->get_paper_type();
+        $excluded = new Exclusion($paperID, $this->db);
+        $excluded->load();
+
+        if (is_array($this->questions) and count($this->questions) > 0) {
+            // Textbox questions may be hidden in random blocks of keyword baed questions so we have to check all possibilities.
+            foreach ($this->questions as $question) {
+                // Skip excluded questions.
+                if (!$excluded->is_question_excluded($question['q_id'])) {
+                    switch ($question['type']) {
+                        case 'random':
+                            foreach (QuestionUtils::get_random_question($question['q_id'], 'textbox') as $possible) {
+                                $textbox_ids[] = $possible;
+                            }
+                            break;
+                        case 'keyword_based':
+                            foreach (QuestionUtils::get_keyword_question($question['q_id'], 'textbox') as $possible) {
+                                $textbox_ids[] = $possible;
+                            }
+                            break;
+                        case 'textbox':
+                            $textbox_ids[] = $question['q_id'];
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+
+        // Find unmarked questions.
+        if (count($textbox_ids) > 0) {
+
+            if ($studentsonly) {
+                $rolesql = "AND (users.roles = 'Student' OR users.roles = 'graduate')";
+            } else {
+                $rolesql = '';
+            }
+            $result = $this->db->prepare("SELECT log$paperType.id FROM log$paperType, log_metadata, users WHERE log$paperType.metadataID = log_metadata.id "
+              . "AND users.id = log_metadata.userID AND q_id IN (" . implode(',', $textbox_ids) . ") AND paperID = ? AND mark IS NULL $rolesql LIMIT 1");
+            $result->bind_param('i', $paperID);
+            $result->execute();
+            $result->store_result();
+            $result->bind_result($id);
+            if ($result->num_rows > 0) {
+                if ($studentsonly) {
+                    $this->unmarked_student_textbox = true;
+                } else {
+                    $this->unmarked_textbox = true;
+                }
+            }
+            $result->close();
+        }
+    }
+    
     public function q_type_exist($type) {
             $paperID = $this->get_property_id();
 
