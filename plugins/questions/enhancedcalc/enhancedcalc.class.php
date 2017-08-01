@@ -1135,7 +1135,9 @@ class EnhancedCalc extends Question implements questionInterface {
 				}
 			}
 		}
-
+		// Only want distinct failed answers.
+		// We could have duplicates if answer/variable in a parent question is used in multiple variables in a child question.
+		$failed_answers = array_unique($failed_answers);
 		$screen = $extra['current_question']['screen'];
 		if (in_array('ERROR', $this->useranswer['vars'])) {
 			echo "<p><input type=\"text\" style=\"text-align:right\" name=\"qid[" . $this->id . "][uans]\" data-screen=\"$screen\" size=\"10\" value=\"\" disabled=\"disabled\" />" . $dispunits . $marking_precision_feedback . "</p>\n";
