@@ -29,7 +29,6 @@ require_once '../include/mb_string.inc.php';
 require '../include/toprightmenu.inc';
 
 $render = new render($configObject);
-$toprightmenu = draw_toprightmenu();
 $lang['title'] = $string['createnewuser'];
 $additionaljs = "<script type=\"text/javascript\" src=\"../js/jquery.validate.min.js\"></script>";
 $additionaljs .= "<script type=\"text/javascript\" src=\"../js/jquery.user.js\"></script>";
@@ -45,10 +44,10 @@ $addtionalcss = "<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/dialog.c
 $breadcrumb = array($string['home'] => "../index.php");
 $action = $_SERVER['PHP_SELF'];
 $render->render_admin_header($lang, $additionaljs, $addtionalcss);
-$render->render_admin_options('', '', $lang, $toprightmenu);
 include '../include/user_search_options.php';
 $render->render_admin_content($breadcrumb, $lang);
-
+echo '<body>';
+echo draw_toprightmenu();
 $submit = (bool) param::optional('submit', null, param::TEXT, param::FETCH_POST);
 $unique_username = false;
 
@@ -68,7 +67,7 @@ if ($submit) {
   $new_welcome = check_var('new_welcome', 'POST', false, false, true, param::BOOLEAN);
 
   // Check for valid and unique username
-  $unique_username = UserUtils::username_is_valid($new_username) and !UserUtils::username_exists($new_username, $mysqli);
+  $unique_username = UserUtils::username_is_valid($new_username) && !UserUtils::username_exists($new_username, $mysqli);
 }
 
 if ($submit and $unique_username) {
