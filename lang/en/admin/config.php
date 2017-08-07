@@ -49,3 +49,4 @@ $string['paper_editor_supports_mathjax'] = 'List of editors that support mathjax
 $string['misc_logo_main'] = 'Logo used in Rog&#333;.';
 $string['misc_logo_email'] = 'Logo used in emails.';
 $string['api_allow_superuser'] = 'Enable/Disable API super users. These users can call the API for any external system.';
+$string['apilogfile'] = 'Location of api log file. Leave blank to disable logging.';

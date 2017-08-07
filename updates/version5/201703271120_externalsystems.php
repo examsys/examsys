@@ -26,6 +26,8 @@ if ($updater_utils->check_version("6.4.0")) {
         $updater_utils->execute_query($datasql, true);
         // Add api super user.
         $configObject->set_setting('api_allow_superuser', 0, 'boolean');
+        // Set log location of api.
+        $configObject->set_setting('apilogfile', '', 'string');
         $updater_utils->record_update('externalsys');
     }
 }

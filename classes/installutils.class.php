@@ -991,6 +991,7 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
     $configObject->set_setting('misc_logo_main', 'logo.png', 'string');
     $configObject->set_setting('misc_logo_email', 'alt_logo.png', 'string');
     $configObject->set_setting('api_allow_superuser', 0, 'boolean');
+    $configObject->set_setting('apilogfile', '', 'string');
     // Add external systems.
     $insert = self::$db->prepare("INSERT INTO external_systems (name, type) values ('ims_enterprise', 'plugin')");
     $insert->execute();
