@@ -1770,19 +1770,30 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
   }
 
   /**
-  * Check that we do not have a config file and that we can write one
+  * Check that we do not have a config file and display error if we do.
   *
   */
   static function configFile() {
     global $string;
-    $rogo_path = dirname(__DIR__);
     $errors = array();
-    if (file_exists($rogo_path . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'config.inc.php')) {
-      $errors['90'] =  sprintf($string['errors1'], $rogo_path."/config/config.inc.php");
+    if (self::config_exists()) {
+      $errors['90'] =  $string['errors1'];
       self::displayError($errors);
     }
   }
 
+  /**
+   * Does the config file exist.
+   * @return boolean
+   */
+  static function config_exists() {
+    $rogo_path = dirname(__DIR__);
+    if (file_exists($rogo_path . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'config.inc.php')) {
+      return true;
+    }
+    return false;
+  }
+  
   /**
   * Check that  config file is writeable
   *
@@ -2002,20 +2013,6 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
       }
       self::displayError($errors, $fatal);
     }
-  }
-
-  /**
-  * Check we are accessing through HTTPS for security
-  *
-  */
-  static function checkHTTPS() {
-    global $string;
-
-    if ($_SERVER['SERVER_PORT'] != 443 and $_SERVER['SERVER_PORT'] != 8080) {
-      self::displayError(array(100=> $string['errors12']));
-      return false;
-    }
-    return true;
   }
 
   /**

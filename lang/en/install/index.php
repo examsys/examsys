@@ -96,7 +96,7 @@ $string['wdatabaseuser'] = 'Database user ';
 $string['wnotcreated'] = ' could not be created';
 $string['wnotpermission'] = ' could not set permissions';
 $string['logwarning20'] = 'Unable to FLUSH PRIVILEGES';
-$string['errors1'] = 'Rog&#333; has already been installed!<ul><li>Remove/rename <tt>%s</tt> to run set up again.</li><li>or go to the <a href="../index.php">staff homepage</a></li></ul>';
+$string['errors1'] = 'Rog&#333; has already been installed!<ul>Please contact a system adminstrator. You should go back to your <li><a href="../index.php"> Homepage</a></li></ul>';
 $string['errors3'] = 'Rog&#333; requires %s to exist and be writeable to the webserver';
 $string['errors7'] = 'Rog&#333; requires %s/temp to exist and be writeable to the webserver';
 $string['errors10'] = 'Rog&#333; requires PHP version %s or above you have %s';
