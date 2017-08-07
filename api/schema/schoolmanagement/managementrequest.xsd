@@ -7,14 +7,14 @@
                     <xs:complexType>
                         <xs:sequence>
                             <xs:element name="name" type="school"/>
-                            <xs:element name="code" type="code" minOccurs="0/>
+                            <xs:element name="code" type="code" minOccurs="0"/>
                             <xs:choice>
                                 <xs:element name="faculty" type="faculty" minOccurs="0"/>
                                 <xs:element name="facultyextid" type="externalid" minOccurs="0"/>
                             </xs:choice>
                             <xs:group ref="external" minOccurs="0"/>
-                            <xs:attribute type="xs:string" name="id" use="required"/>
                         </xs:sequence>
+                        <xs:attribute type="xs:string" name="id" use="required"/>
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="update" maxOccurs="unbounded" minOccurs="0">
@@ -26,7 +26,7 @@
                             </xs:choice>
                             <xs:element name="id" type="xs:integer"/>
                             <xs:element name="name" type="school" minOccurs="0"/>
-                            <xs:element name="code" type="code" minOccurs="0/>
+                            <xs:element name="code" type="code" minOccurs="0"/>
                             <xs:choice>
                                 <xs:element name="faculty" type="faculty" minOccurs="0"/>
                                 <xs:element name="facultyextid" type="externalid" minOccurs="0"/>

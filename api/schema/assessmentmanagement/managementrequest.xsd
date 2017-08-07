@@ -14,7 +14,7 @@
                             <xs:element type="xs:dateTime" name="enddatetime"/>
                             <xs:choice>
                                 <xs:element type="modules" name="modules"/>
-                                <xs:element type="extmodules" name="modules"/>
+                                <xs:element type="extmodules" name="extmodules"/>
                             </xs:choice>
                             <xs:element type="xs:string" name="timezone" minOccurs="0"/>
                             <xs:element name="duration" type="duration" minOccurs="0"/>
@@ -38,7 +38,7 @@
                             <xs:element type="xs:dateTime" name="enddatetime" minOccurs="0"/>
                             <xs:choice>
                                 <xs:element type="modules" name="modules"/>
-                                <xs:element type="extmodules" name="modules"/>
+                                <xs:element type="extmodules" name="extmodules"/>
                             </xs:choice>
                             <xs:element type="xs:string" name="timezone" minOccurs="0"/>
                             <xs:element name="duration" type="duration" minOccurs="0"/>
