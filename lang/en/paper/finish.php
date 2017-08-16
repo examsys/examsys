@@ -43,6 +43,7 @@ $string['adjusted'] = '(adjusted)';
 $string['feedback'] = 'Feedback';
 $string['msg1'] = 'Thank you for completing <strong>%s</strong>. Your responses have been recorded.';
 $string['msg2'] = 'To log out please click “Close window” and then press &lt;CTRL&gt; &lt;ALT&gt; and &lt;DELETE&gt to log out of your workstation.';
+$string['msg2short'] = 'Please press &lt;CTRL&gt; &lt;ALT&gt; and &lt;DELETE&gt to log out of your workstation.';
 $string['closewindow'] = 'Close Window';
 $string['overallcorrectorder'] = 'Overall correct order (Bonus Mark)';
 $string['outof'] = 'out of';
