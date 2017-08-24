@@ -41,8 +41,8 @@ $result->execute();
 $result->bind_result($ltis['id'], $ltis['oauth_consumer_key'], $ltis['secret'], $ltis['name'], $ltis['context_id']);
 $result->fetch();
 $result->close();
-
-if (isset(param::optional('submit', null, param::TEXT, param::FETCH_POST))) {
+$submit = param::optional('submit', null, param::TEXT, param::FETCH_POST);
+if (!is_null($submit)) {
   $ltiname = trim(param::optional('ltiname', null, param::TEXT, param::FETCH_POST));
   $ltikey = trim(param::optional('ltikey', null, param::TEXT, param::FETCH_POST));
   $ltisec = trim(param::optional('ltisec', null, param::TEXT, param::FETCH_POST));

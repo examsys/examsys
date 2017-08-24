@@ -26,7 +26,8 @@ require '../include/sysadmin_auth.inc';
 require_once 'ims-lti/UoN_LTI.php';
 $lti = new UoN_LTI();
 $lti->init_lti0($mysqli);
-if (isset(param::optional('submit', null, param::TEXT, param::FETCH_POST))) {
+$submit = param::optional('submit', null, param::TEXT, param::FETCH_POST);
+if (!is_null($submit)) {
   $ltiname = trim(param::optional('ltiname', null, param::TEXT, param::FETCH_POST));
   $ltikey = trim(param::optional('ltikey', null, param::TEXT, param::FETCH_POST));
   $ltisec = trim(param::optional('ltisec', null, param::TEXT, param::FETCH_POST));
