@@ -62,7 +62,7 @@ abstract class plugins_sms extends \plugins\plugins {
     protected function type_install() {
         // Add external system to external systems table
         $external = new \external_systems();
-        return $external->insert_external_system($this->plugin, \external_systems::PLUGIN);
+        return $external->insert_external_system($this::SMS, \external_systems::PLUGIN);
     }
     /**
      * Uninstall steps for sms plugin.
