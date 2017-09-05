@@ -28,6 +28,32 @@ if ($updater_utils->check_version("6.4.0")) {
         $configObject->set_setting('api_allow_superuser', 0, 'boolean');
         // Set log location of api.
         $configObject->set_setting('apilogfile', '', 'string');
+        // Alter external system keys.
+        // courses.
+        $altersqldrop = "DROP INDEX `externalid` on courses";
+        $updater_utils->execute_query($altersqldrop, true);
+        $altersqladd = "ALTER TABLE courses ADD UNIQUE KEY `externalid` (`externalid`, `externalsys`)";
+        $updater_utils->execute_query($altersqladd, true);
+        // faculty.
+        $altersqldrop = "DROP INDEX `externalid` on faculty";
+        $updater_utils->execute_query($altersqldrop, true);
+        $altersqladd = "ALTER TABLE faculty ADD UNIQUE KEY `externalid` (`externalid`, `externalsys`)";
+        $updater_utils->execute_query($altersqladd, true);
+        // modules.
+        $altersqldrop = "DROP INDEX `externalid` on modules";
+        $updater_utils->execute_query($altersqldrop, true);
+        $altersqladd = "ALTER TABLE modules ADD UNIQUE KEY `externalid` (`externalid`, `sms`)";
+        $updater_utils->execute_query($altersqladd, true);
+        // properties.
+        $altersqldrop = "DROP INDEX `externalid` on properties";
+        $updater_utils->execute_query($altersqldrop, true);
+        $altersqladd = "ALTER TABLE properties ADD UNIQUE KEY `externalid` (`externalid`, `externalsys`)";
+        $updater_utils->execute_query($altersqladd, true);
+        // schools.
+        $altersqldrop = "DROP INDEX `externalid` on schools";
+        $updater_utils->execute_query($altersqldrop, true);
+        $altersqladd = "ALTER TABLE schools ADD UNIQUE KEY `externalid` (`externalid`, `externalsys`)";
+        $updater_utils->execute_query($altersqladd, true);
         $updater_utils->record_update('externalsys');
     }
 }

@@ -135,7 +135,7 @@ QUERY;
           `externalid` varchar(255) default NULL,
           `externalsys` varchar(255) default NULL,
           PRIMARY KEY (`id`),
-          UNIQUE INDEX `externalid` (`externalid`),
+          UNIQUE INDEX `externalid` (`externalid`, `externalsys`),
           KEY `degree` (`name`),
           KEY `idx_courses_name` (`name`)
         ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
@@ -224,7 +224,7 @@ QUERY;
             `externalsys` varchar(255) default NULL,
             PRIMARY KEY  (`id`),
             UNIQUE INDEX `code` (`code`),
-            UNIQUE INDEX `externalid` (`externalid`)
+            UNIQUE INDEX `externalid` (`externalid`, `externalsys`)
           ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
@@ -721,7 +721,7 @@ QUERY;
           `academic_year_start` char(5) NOT NULL,
           `externalid` varchar(255) default NULL,
           PRIMARY KEY (`id`),
-          UNIQUE INDEX `externalid` (`externalid`),
+          UNIQUE INDEX `externalid` (`externalid`, `sms`),
           KEY `guideid` (`moduleid`),
           KEY `idx_moduleid_deleted` (`moduleid`,`mod_deleted`),
           KEY `idx_schoolid_deleted` (`schoolid`,`mod_deleted`)
@@ -927,7 +927,7 @@ QUERY;
           `externalid` varchar(255) default NULL,
           `externalsys` varchar(255) default NULL,
           PRIMARY KEY (`property_id`),
-          UNIQUE INDEX `externalid` (`externalid`),
+          UNIQUE INDEX `externalid` (`externalid`, `externalsys`),
           KEY `paper_title` (`paper_title`),
           KEY `paper_owner` (`paper_ownerID`),
           KEY `question_type` (`paper_type`),
@@ -1181,7 +1181,7 @@ QUERY;
           `externalsys` varchar(255) default NULL,
           PRIMARY KEY (`id`),
           UNIQUE INDEX `code` (`code`),
-          UNIQUE INDEX `externalid` (`externalid`),
+          UNIQUE INDEX `externalid` (`externalid`, `externalsys`),
           KEY `idx_facultyID` (`facultyID`)
         ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
