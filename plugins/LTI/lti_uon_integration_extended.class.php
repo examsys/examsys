@@ -30,6 +30,7 @@ class lti_uon_integration_extended extends lti_integration {
   const CS_MODULE_SPACE = "/(?P<module>[A-Z]{4}[F1-5][0-9]{3})-(?P<offering>[0-9]{1,2})-(?P<campus>UNNC|UNUK|UNMC)-(?P<semster>[A-Z]{3})-(?P<year>[0-9]{4})$/";
   const CS_NON_MODULE_SPACE = "/^((?P<school>[A-Z]{2,4})-)?(?P<module>[0-9A-Z-]{1,25})-(?P<campus>UNNC|UNUK|UNMC|CN|MY|UK)-(?P<year>[0-9]{4})$/";
   const CS_META_MODULE_CHECK = "/^!((?P<school>[A-Z]{2,4})-)?(?P<module>[0-9A-Z-]{1,25})-(?P<campus>UNNC|UNUK|UNMC|CN|MY|UK)-(?P<year>[0-9]{4})$/";
+  const CS_COURSE_ID = "/^(?P<id>[0-9]{6})_(?P<offering>[0-9]{1,2})_(?P<term>[0-9]{4})$/";
   
   private $dept_code = array('MS' => 'Surgery', 'CC' => 'ACS', 'AA' => 'American & Canadian Studies',
     'AC' => 'Archaeology', 'LA' => 'Urban Planning', 'AD' => 'Art History', 'MB' => 'Physiology & Pharmacology',
@@ -56,7 +57,6 @@ class lti_uon_integration_extended extends lti_integration {
    * @return array rogo module information
    */
   private function process_cs_naming_convention($mysqli, $moduleshortcode, $course_title = ' ') {
-    // only get the shortname through  (courseID is only probably accessible via specific moodle webservices api
     $data = array();
     $fin = strlen($course_title);
     if (strpos($course_title, '(') !== false) $fin = strpos($course_title, '(') - 1;
@@ -77,7 +77,7 @@ class lti_uon_integration_extended extends lti_integration {
       if ($info['campus'] != 'UNUK') {
         $info['module']  .= '_' . $info['campus'];
       }
-      $data[] = array('SMS', $info['module'] , $info['campus'], 'UNKNOWN School', 0, $course_title);
+      $data[] = array('SMS', $info['module'] , $info['campus'], 'UNKNOWN School', 0, $course_title, 'Campus Solutions');
     }
     if (count($data) == 0) {
       // Non module name space.
@@ -233,22 +233,42 @@ class lti_uon_integration_extended extends lti_integration {
    * @return string|bool SMS url or false on exception
    */
   public function sms_api($data) {
-
+    // Non module space modules.
     if ($data[0] != 'SMS') {
       return '';
     }
-    $SMS = SmsUtils::GetSmsUtils();
-    if ($SMS === false) {
-      // Attempting to create a module not via the SMS - exception.
-      return false;
-    } else {
-      $SMS->set_module($data[2]);
-			
-      return $SMS->url;
-    }
+    // Old SMS plugins define a url.
+    if (count($data) != 7) {
+      $SMS = SmsUtils::GetSmsUtils();
+      if ($SMS === false) {
+        // Attempting to create a module not via the SMS - exception.
+        return false;
+      } else {
+        $SMS->set_module($data[2]);
 
+        return $SMS->url;
+      }
+    } else {
+      // New SMS plugins define a placeholder.
+      return $data[6];
+    }
   }
 
+  /**
+   * Translate source id in rogo external id.
+   * @param srting $sourceid source id from VLE
+   * @return mixed module external id or null
+   */
+  public function module_id_translate($sourceid) {
+    // Regular expression to match XXXXXX_Y_ZZZZ occurences in course id where XXXXXX is the module id, Y is the offering,
+    // ZZZZ is the term. We only care about the module id.
+    preg_match(self::CS_COURSE_ID, $sourceid, $info);
+    if (count($info) > 0) {
+      return $info['id'];
+    }
+    return null;
+  }
+  
   /**
    * Convert VLE module shortcode into Rogo moduleid 
    * @param mysqli $mysqli db connection
@@ -280,7 +300,7 @@ class lti_uon_integration_extended extends lti_integration {
     // fourth is School it belongs to as text
     // fifth is if its self registration module
     // sixth is the module title.  if it starts MISSING: then there is need for manual intervention to complete this correctly
-
+    // seventh is optional. The SMS placeholder stored against a module instead of a URL by new SMS plugins.
     if (count($data) === 0) {
       return false;
     }

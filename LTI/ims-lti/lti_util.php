@@ -302,6 +302,18 @@ class BLTI {
 		return $this->course_id;
 	}
 
+	/**
+	 * Get the external ID for VLE course.
+	 * @return mixed clean value or null.
+	 */
+	function getExternalID() {
+		$sourcedid = $this->info['lis_course_section_sourcedid'];
+		if (empty($sourcedid)) {
+			return null;
+		}
+		return $sourcedid;
+	}
+
 	function getCourseName() {
 		$label = $this->info['context_label'];
 		$title = $this->info['context_title'];

@@ -196,7 +196,7 @@ class lti_integrationtest extends unittestdatabase {
         $moduleshortcode = 'COMP1112-3-UNUK-SPR-1617';
         $moduletitle = 'Mathematics for Computer Science';
         $exploded = explode('-', $moduleshortcode);
-        $expected = array(array('SMS', $exploded[0], 'UNUK', 'UNKNOWN School', 0, $moduletitle));
+        $expected = array(array('SMS', $exploded[0], 'UNUK', 'UNKNOWN School', 0, $moduletitle, 'Campus Solutions'));
         $this->assertEquals($expected, $lti_i->module_code_translate($this->db, $moduleshortcode, $moduletitle));
     }
     /**
@@ -212,7 +212,7 @@ class lti_integrationtest extends unittestdatabase {
         $moduleshortcode = 'COMP1112-3-UNUK-SPR-1617';
         $moduletitle = ' ';
         $exploded = explode('-', $moduleshortcode);
-        $expected = array(array('SMS', $exploded[0], 'UNUK', 'UNKNOWN School', 0, 'MISSING COURSE TITLE'));
+        $expected = array(array('SMS', $exploded[0], 'UNUK', 'UNKNOWN School', 0, 'MISSING COURSE TITLE', 'Campus Solutions'));
         $this->assertEquals($expected, $lti_i->module_code_translate($this->db, $moduleshortcode, $moduletitle));
     }
     /**

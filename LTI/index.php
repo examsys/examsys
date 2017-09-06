@@ -220,7 +220,8 @@ if (!$lti->isInstructor()) {
             exit(); 
           }
           $schoolID = SchoolUtils::get_school_id_by_name($moduleinfo[3], $mysqli);
-          $modid = module_utils::add_modules($moduleinfo[1], $moduleinfo[5], 1, $schoolID, '', $sms_api, $selfEnroll, $peer, $external, $stdset, $mapping, $neg_marking, 0, $mysqli, 1, 0, 1, 1, '07/01');
+          $externalid = $lti_i->module_id_translate($lti->getExternalID());
+          $modid = module_utils::add_modules($moduleinfo[1], $moduleinfo[5], 1, $schoolID, '', $sms_api, $selfEnroll, $peer, $external, $stdset, $mapping, $neg_marking, 0, $mysqli, 1, 0, 1, 1, 0, '07/01', $externalid);
           if ($modid === false) {
             $problem = true;
           }
