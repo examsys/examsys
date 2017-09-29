@@ -15,7 +15,7 @@
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
-* 
+*
 * @author Simon Wilkinson
 * @version 1.0
 * @copyright Copyright (c) 2014 The University of Nottingham
@@ -102,9 +102,9 @@ $stats = $report->get_stats();                        // Generate the main stati
 $results_cache = new ResultsCache($mysqli);
 if ($results_cache->should_cache($propertyObj, $percent, $absent)) {
   $results_cache->save_paper_cache($paperID, $stats);                 // Cache general paper stats
-  
+
   $results_cache->save_student_mark_cache($paperID, $user_results);   // Cache student/paper marks
-  
+
   $results_cache->save_median_question_marks($paperID, $q_medians);   // Cache the question/paper medians
 }
 
@@ -115,34 +115,34 @@ rating_num_text($user_results, $user_no, $propertyObj, $string);
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta http-equiv="content-type" content="text/html;charset=<?php echo $configObject->get('cfg_page_charset') ?>" />
-  
+
   <title>Rog&#333;: <?php echo $string['classtotals'] . ' ' . $configObject->get('cfg_install_type'); ?></title>
-  
+
   <link rel="stylesheet" type="text/css" href="../css/body.css" />
   <link rel="stylesheet" type="text/css" href="../css/header.css" />
   <link rel="stylesheet" type="text/css" href="../css/list.css" />
   <link rel="stylesheet" type="text/css" href="../css/class_totals.css" />
   <link rel="stylesheet" type="text/css" href="../css/popup_menu.css" />
   <link rel="stylesheet" type="text/css" href="../css/warnings.css" />
-  
+
   <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
   <script type="text/javascript" src="../js/jquery_tablesorter/jquery.tablesorter.js"></script>
   <script type="text/javascript" src="../js/staff_help.js"></script>
   <script type="text/javascript" src="../js/popup_menu.js"></script>
   <script type="text/javascript" src="../js/toprightmenu.js"></script>
-  <script>   
+  <script>
 
     function popupPublishMarks() {
       var winwidth = 785;
       var winheight = 150;
       templatewin = window.open("../reports/publishmarks.php","templatewin","width="+winwidth+",height="+winheight+",left=30,top=20,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
       templatewin.moveTo(screen.width/2-350,screen.height/2-275);
-    } 
-    
+    }
+
     function setVars(metadataID, currentUserID) {
       $('#metadataID').val(metadataID);
       $('#userID').val(currentUserID);
-      
+
       if (metadataID == '') {
         $('#item1').removeClass('popup_row');
         $('#item1').addClass('popup_row_disabled');
@@ -155,24 +155,24 @@ rating_num_text($user_results, $user_no, $propertyObj, $string);
         $('#item2').removeClass('popup_row_disabled');
       }
     }
-    
+
 	<?php
 		if (count($user_results) > 0) {
 	?>
     $(function () {
       if ($("#maindata").find("tr").size() > 1) {
-        $("#maindata").tablesorter({ 
-          // sort on the first column and third column, order asc 
+        $("#maindata").tablesorter({
+          // sort on the first column and third column, order asc
           dateFormat: '<?php echo $configObject->get('cfg_tablesorter_date_time'); ?>',
-          sortList: [[2,0],[3,0]] 
+          sortList: [[2,0],[3,0]]
         });
       }
-     
+
       $(document).click(function() {
         $('#menudiv').hide();
         $('#toprightmenu').hide();
       });
-      
+
       // View OSCE Script
       $('#item1').click(function() {
         $('#menudiv').hide();
@@ -182,7 +182,7 @@ rating_num_text($user_results, $user_no, $propertyObj, $string);
           window.open("view_form.php?paperID=<?php echo $paperID; ?>&userID=" + $('#userID').val() + "","paper","width="+winwidth+",height="+winheight+",left=30,top=20,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
         }
       });
-      
+
       // View Feedback
       $('#item2').click(function() {
         $('#menudiv').hide();
@@ -192,13 +192,13 @@ rating_num_text($user_results, $user_no, $propertyObj, $string);
           window.open("../students/objectives_feedback.php?id=<?php echo $crypt_name; ?>&userID=" + $('#userID').val() + "&metadataID=" + $('#metadataID').val() + "","feedback","width="+winwidth+",height="+winheight+",left=30,top=20,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
         }
       });
-      
+
       // View student profile
       $('#item3').click(function() {
         $('#menudiv').hide();
         window.location = '../users/details.php?userID=' + $('#userID').val();
       });
-      
+
     });
 	<?php
 		}
@@ -210,7 +210,7 @@ rating_num_text($user_results, $user_no, $propertyObj, $string);
 <body>
 <?php
 require '../include/toprightmenu.inc';
-	
+
 echo draw_toprightmenu();
 
 ?>
@@ -219,17 +219,17 @@ echo draw_toprightmenu();
     <div class="popup_icon"><img src="../artwork/osce_16.gif" width="16" height="16" alt="" /></div>
     <div class="popup_title"><?php echo $string['oscemarksheet'] ?></div>
   </div>
-  
+
   <div class="popup_row" id="item2">
     <div class="popup_icon"><img src="../artwork/ok_comment.png" width="16" height="16" alt="" /></div>
     <div class="popup_title"><?php echo $string['feedback']; ?></div>
   </div>
-  
+
   <div class="popup_divider_row">
     <div class="popup_icon"></div>
     <div class="popup_title"><img src="../artwork/popup_divider.png" width="100%" height="3" alt="-" /></div>
   </div>
-  
+
   <div class="popup_row" id="item3">
     <div class="popup_icon"><img src="../artwork/small_user_icon.gif" width="16" height="16" alt="" /></div>
     <div class="popup_title"><?php echo $string['studentprofile'] ?></div>
@@ -254,7 +254,7 @@ echo draw_toprightmenu();
       }
     }
   }
-  
+
   $column_no = count($table_order) + count($metadata_cols);
 
   echo "<div class=\"head_title\">\n";
@@ -266,7 +266,7 @@ echo draw_toprightmenu();
     echo '<img src="../artwork/breadcrumb_arrow.png" class="breadcrumb_arrow" alt="-" /><a href="../module/index.php?module=' . $_GET['module'] . '">' . module_utils::get_moduleid_from_id($_GET['module'], $mysqli) . '</a>';
   }
   echo '<img src="../artwork/breadcrumb_arrow.png" class="breadcrumb_arrow" alt="-" /><a href="../paper/details.php?paperID=' . $paperID . '">' . $paper . '</a></div>';
-  
+
   if (isset($_GET['repmodule']) and $_GET['repmodule'] != '') {
     $report_title = sprintf($string['classtotalsmodule'], $_GET['repmodule']);
   } else {
@@ -286,30 +286,30 @@ echo draw_toprightmenu();
     echo "</tr>\n";
   }
   echo "</thead>\n<tbody>";
-  
+
 	if ($user_no == 0) {
     $msg = sprintf($string['noattempts'], $report->nicedate($startdate), $report->nicedate($enddate));
 		echo "</tbody>\n</table>\n" . $notice->info_strip($msg) . "\n</div>\n</body>\n</html>";
     exit;
 	}
- 
+
   for ($i=0; $i<$user_no; $i++) {
     if ($user_results[$i]['started'] == '') {   // No attendance
       echo "<tr class=\"nonattend\" onclick=\"popMenu(3, event); setVars('', '" . $user_results[$i]['userID'] . "');\"><td>&nbsp;</td><td>" . $user_results[$i]['title'] . "</td><td>" . $user_results[$i]['surname'] . "</td><td>" . $user_results[$i]['first_names'] . "</td><td>" . $user_results[$i]['student_id'] . "</td><td colspan=\"" . ($column_no - 2) . "\" style=\"text-align:center\">&lt;" . $string['noattendance'] . "&gt;</td></tr>\n";
     } else {
       echo "<tr onclick=\"popMenu(3, event); setVars('" . $user_results[$i]['metadataID'] . "', '" . $user_results[$i]['userID'] . "');\">\n";
-      echo "<td class=\"greyln\"><img src=\"../artwork/osce_16.gif\" class=\"picon\" /></td>";
+      echo "<td class=\"greyln\"><img src=\"../artwork/osce_16.gif\" class=\"picon\" title=\"" . $string['osce'] . "\" alt=\"" . $string['osce'] . "\" /></td>";
       echo '<td class="greyln col">' . $user_results[$i]['title'] . '</td>';
       echo '<td class="greyln col">' . $user_results[$i]['surname'] . '</td>';
       echo '<td class="greyln col">' . $user_results[$i]['first_names'] . '</td>';
       echo '<td class="greyln col">' . $user_results[$i]['student_id'] . '</td>';
       echo '<td class="greyln col">' . $user_results[$i]['grade'] . '</td>';
       echo '<td class="greyln col">' . $user_results[$i]['mark'] . '</td>';
-            
+
       if ($borderline_method) {
         echo '<td class="greyln col">' . $user_results[$i]['rating'] . '</td>';
       }
-      
+
       echo '<td class="greyln col">' . $user_results[$i]['classification'];
 			if ($user_results[$i]['killer_fail'] == $string['fail']) {
         echo '&nbsp;<img src="../artwork/skull_16.png" width=16" height="16" alt="skull" />';
@@ -330,19 +330,19 @@ echo draw_toprightmenu();
 
   echo "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"line-height:150%\">\n";
   echo "<tr><td align=\"right\" style=\"width:110px\">" . $string['cohortsize'] . "</td><td style=\"text-align:right; width:40px\">" . $user_no . "</td></tr>\n";
-  
+
   if ($borderline_method) {
     echo "<tr><td align=\"right\">" . $string['passmark'] . "</td><td style=\"text-align:right\">" . round($passmark, 2) . "</td><td>% (" . $string['borderlinemethod'] . ")</td></tr>\n";
   } elseif ($propertyObj->get_pass_mark() != 102) {  // Not the N/A option
     echo "<tr><td align=\"right\">" . $string['passmark'] . "</td><td style=\"text-align:right\">" . $propertyObj->get_pass_mark() . "</td><td>%</td></tr>\n";
   }
-  
+
   $labels = get_labels($propertyObj);
   foreach ($labels as $i => $label) {
     echo "<tr><td align=\"right\">" . $string[strtolower($label)] . "</td><td style=\"text-align:right\">" . $classifications[$i] . "</td></tr>\n";
   }
   echo "</table>\n";
-  
+
   $finished = false;
   if ($propertyObj->get_end_date() <= time()) {
     $finished = true;
@@ -360,7 +360,7 @@ echo draw_toprightmenu();
         echo "</form>\n</div>\n";
     }
   }
-  
+
   $mysqli->close();
 ?>
 <input type="hidden" id="userID" value="" />

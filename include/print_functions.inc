@@ -449,6 +449,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
             $blank_details[$blank_count] = substr($blank_details[$blank_count], (strpos($blank_details[$blank_count],']') + 1));
             $answer_options = explode('[/blank]',$blank_details[$blank_count]);
             $answer_list = explode(',',$answer_options[0]);
+            $answer_list = param::clean_array($answer_list, param::TEXT);
             shuffle($answer_list);            // Shuffle the answers up.
             for ($i=1; $i<=count($answer_list); $i++) {
               echo '<li>' . htmlentities(trim($answer_list[$i-1])) . '</li>';
@@ -470,6 +471,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
 
         if (isset($user_answers[$current_screen][$q_id])) {
           $blank_user_answers = json_decode($user_answers[$current_screen][$q_id]);
+          $blank_user_answers = param::clean_array($blank_user_answers, param::TEXT);
         } else {
           $blank_user_answers = array();
         }
@@ -522,6 +524,7 @@ function display_question(&$question, $paper_type, $current_screen, $old_q_type,
             $blank_details[$blank_count] = substr($blank_details[$blank_count], (strpos($blank_details[$blank_count],']') + 1));
             $answer_options = explode('[/blank]',$blank_details[$blank_count]);
             $answer_list = explode(',',$answer_options[0]);
+            $answer_list = param::clean_array($answer_list, param::TEXT);
             echo '<strong>' . $blank_count . '.</strong>&nbsp;<img src="../artwork/print_box_a.png" width="23" height="23" alt="" /> ';
 
             echo $answer_options[1]; // Bit after the closing [/blank] tag.

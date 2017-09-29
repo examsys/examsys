@@ -76,9 +76,9 @@ class gradebookttest extends unittestdatabase {
         $users["12345678"] = array('raw_grade' => 60, 'adjusted_grade' => 62,
                     'classification' => 'Pass', 'username' => 'unit');
         $expected["xyz987uvw"] = $users;
-        $this->assertEquals(array('OK', $expected), $gradebook->get('extpaper', "xyz987uvw"));
+        $this->assertEquals(array('OK', $expected), $gradebook->get('extpaper', "xyz987uvw", "test rogo api"));
         // Test paper gradebook - ERROR not found.
-        $this->assertEquals(array('BAD', array('Gradebook not found for extpaper xyz123uvw')), $gradebook->get('extpaper', "xyz123uvw"));
+        $this->assertEquals(array('BAD', array('Gradebook not found for extpaper xyz123uvw')), $gradebook->get('extpaper', "xyz123uvw", "test rogo api"));
     }
     /**
      * Test gradebook module using external ids
@@ -92,8 +92,8 @@ class gradebookttest extends unittestdatabase {
         $papers["xyz987uvw"]["12345678"] = array('raw_grade' => 60, 'adjusted_grade' => 62,
                     'classification' => 'Pass', 'username' => 'unit');
         $expected["abc123def"] = $papers;
-        $this->assertEquals(array('OK', $expected), $gradebook->get('extmodule', "abc123def"));
+        $this->assertEquals(array('OK', $expected), $gradebook->get('extmodule', "abc123def", "test rogo api"));
          // Test module gradebook - ERROR not found.
-        $this->assertEquals(array('BAD', array('Gradebook not found for extmodule abc789def')), $gradebook->get('extmodule', "abc789def"));
+        $this->assertEquals(array('BAD', array('Gradebook not found for extmodule abc789def')), $gradebook->get('extmodule', "abc789def", "test rogo api"));
     }
 }

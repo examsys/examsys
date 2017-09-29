@@ -138,13 +138,13 @@ $result->close();
     </select></td></tr>
     <tr><td class="field"><?php echo $string['code'] ?></td><td><input type="text" size="30" maxlength="30" name="code" value=""/></td></tr>
     <?php
-      $sms = \plugins\plugins_sms::get_sms($mysqli);
-      if ($sms !== false) {
+      $external = new \external_systems();
+      $extsys = $external->get_all_externalsystems();
     ?>
     <tr><td class="field"><?php echo $string['externalsys'] ?></td><td><select name="externalsys">
     <?php
       echo "<option value=\"\"></option>\n";
-      foreach ($sms as $s) {
+      foreach ($extsys as $i => $s) {
         if (isset($externalsys) and $s == $externalsys) {
           $selected = "selected";
         } else {
@@ -155,9 +155,6 @@ $result->close();
     ?>
     </select></td></tr>
     <tr><td class="field"><?php echo $string['externalid'] ?></td><td><input type="text" size="30" maxlength="255" name="externalid" value=""></td></tr>
-    <?php
-      }
-    ?>
     </table>
     <p><input type="submit" class="ok" name="submit" value="<?php echo $string['add'] ?>" /><input class="cancel" id="cancel" type="button" name="home" value="<?php echo $string['cancel'] ?>" /></p>
   </form>

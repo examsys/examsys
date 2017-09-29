@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Rogo.  If not, see <http://www.gnu.org/licenses/>.
 
+$string['admintools'] = 'Administrative Tools';
+$string['usermanagement'] = 'User Management';
 $string['genmsg'] = 'Search by any or all of the criteria below.';
 $string['name'] = 'Name';
 $string['username'] = 'Username';

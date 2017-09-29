@@ -25,6 +25,10 @@
 */
 
 require '../include/admin_auth.inc';
+require '../include/toprightmenu.inc';
+
+// Instantiate Twig renderer.
+$render = new render($configObject);
 
 ini_set("auto_detect_line_endings", true);
 
@@ -37,43 +41,44 @@ function returnTrueFalse($value) {
     return false;
   }
 }
+$lang['title'] = $string['bulkmoduleimport'];
+$additionaljs = "<script type=\"text/javascript\" src=\"../js/jquery.validate.min.js\"></script>
+                <script>
+                    $(function () {
+                      $('#import_form').validate();
+                      
+                      $('#cancel').click(function() {
+                        history.back();
+                      });
+                    });
+                </script>";
+$addtionalcss = "<link rel=\"stylesheet\" type=\"text/css\" href=\"../css/dialog.css\" />
+                <link rel=\"stylesheet\" type=\"text/css\" href=\"../css/breadcrumb.css\" />
+                <style type=\"text/css\">
+                    p {margin:0; padding:0}
+                    h1 {font-size:120%; font-weight:bold}
+                    label.error {display:block; color:#f00}
+                    li {list-style-type: none}
+                    .existing {color:#808080; background-image: url('../artwork/arrow_circle_double.png'); background-repeat:no-repeat; line-height:20px; text-indent:20px}
+                    .added {color:black; background-image: url('../artwork/green_plus_16.png'); background-repeat:no-repeat; line-height:20px; text-indent:20px}
+                    .failed {color:#C00000; background-image: url('../artwork/red_cross_16.png'); background-repeat:no-repeat; line-height:20px; text-indent:20px}
+                </style>";
+$render->render_admin_header($lang, $additionaljs, $addtionalcss);
 ?>
-<!DOCTYPE html>
-<html>
-  <head>
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta http-equiv="content-type" content="text/html;charset=<?php echo $configObject->get('cfg_page_charset') ?>" />
-  <title><?php echo $string['bulkmoduleimport'] . ' ' . $configObject->get('cfg_install_type') ?></title>
-  <link rel="stylesheet" type="text/css" href="../css/body.css" />
-  <link rel="stylesheet" type="text/css" href="../css/dialog.css" />
-  <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
-  <style type="text/css">
-    p {margin:0; padding:0}
-    h1 {font-size:120%; font-weight:bold}
-    label.error {display:block; color:#f00}
-    li {list-style-type: none}
-    .existing {color:#808080; background-image: url('../artwork/arrow_circle_double.png'); background-repeat:no-repeat; line-height:20px; text-indent:20px}
-    .added {color:black; background-image: url('../artwork/green_plus_16.png'); background-repeat:no-repeat; line-height:20px; text-indent:20px}
-    .failed {color:#C00000; background-image: url('../artwork/red_cross_16.png'); background-repeat:no-repeat; line-height:20px; text-indent:20px}
-  </style>
-  <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
-  <script type="text/javascript" src="../js/jquery.validate.min.js"></script>
-  <script>
-    $(function () {
-      $('#import_form').validate();
-      
-      $('#cancel').click(function() {
-        history.back();
-      });
-    });
-  </script>
-  </head>
-
-  <body>
+<body>
 <?php
   require '../include/admin_module_options.inc';  
+  echo draw_toprightmenu();
 ?>
-<div id="content">
+<div id="content" class="content">
+<?php
+  echo $render->render_admin_navigation(array(
+    '/' => $string['home'],
+    '/admin/index.php' => $string['admintools'],
+    '/admin/list_modules.php' => $string['modules'],
+    '/users/bulk_import_modules.php' => $string['bulkmoduleimport'],
+  ));
+?>
 <br />
 <br />
 <?php
@@ -247,9 +252,7 @@ function returnTrueFalse($value) {
 </tr>
 </table>
 
-</div>
 <?php
   }
+  $render->render_admin_footer();
 ?>
-</body>
-</html>

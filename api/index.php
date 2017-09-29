@@ -52,7 +52,7 @@ if ($configObject->get_setting('core', 'cfg_api_enabled')) {
         $request = 'modulemanagement';
         $response = 'moduleManagementEnrolResponse';
         $operations = array('enrol', 'unenrol');
-        $fields = array('userid', 'attempt', 'moduleid', 'session', 'studentid', 'moduleextid');
+        $fields = array('userid', 'attempt', 'moduleid', 'session', 'studentid', 'moduleextid', 'moduleextsys');
         $xsd = 'enrolrequest';
         process($request, $operations, $fields, $response, $oauth, $api, $langpack, $render, $xsd, $mysqli);
     });
@@ -152,8 +152,13 @@ if ($configObject->get_setting('core', 'cfg_api_enabled')) {
                 } else {
                     $templatename = 'module';
                 }
+                $external = new \external_systems();
+                // What external system is the client mapped to.
+                $user_id = $oauth->get_client_user($client_id);
+                $extsysinfo = $external->get_mapped_externalsystem_info($client_id);
+                $extsys = $extsysinfo['name'];
                 // Process the request.
-                $request = $gradebook->get($filtername, $filterid);
+                $request = $gradebook->get($filtername, $filterid, $extsys);
                 $response = $request[1];
                 if ($request[0] == 'OK') {
                     $template = 'api/' . $templatename . '_gradebook.xml';
@@ -244,7 +249,7 @@ function process ($request, $operations, $fields, $response, $oauth, $api, $lang
         } else {
             $responsedata = array();
             $classname = '\\api\\' . $request;
-            $requestobject = new $classname($mysqli);
+            $requestobject = new $classname($mysqli, $client_id);
 
             // Process the request.
             $data = $api->process($request, $xsd);

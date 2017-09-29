@@ -17,7 +17,8 @@
 namespace testing\behat\steps\frontend;
 use Behat\Gherkin\Node\PyStringNode,
     Behat\Gherkin\Node\TableNode,
-    PHPUnit_Framework_Assert;
+    PHPUnit_Framework_Assert,
+    Exception;
 
 /**
  * Basic core step definitions.
@@ -65,7 +66,7 @@ trait basic {
   /**
    * Keep browser live, for debuging
    * 
-   * @Given /^I pause "(?P<seconds_number>\d+)"$/
+   * @Given /^I pause "(?P<seconds_number>\d+)" seconds$/
    * @param int $seconds 
    */
   public function i_wait_seconds($seconds) {

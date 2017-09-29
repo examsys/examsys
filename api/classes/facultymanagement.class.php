@@ -65,7 +65,12 @@ class facultymanagement extends \api\abstractmanagement {
             $facultyid = false;
             // Check external id unique.
             if (!empty($params['externalid'])) {
-                $facultyid = \FacultyUtils::get_facultyid_from_externalid($params['externalid'], $this->db);
+                // What external system is the client mapped to.
+                if (empty($params['externalsys'])) {
+                    $params['externalsys'] = null;
+                }
+                $params['externalsys'] = $this->get_external_system($params['externalsys']);
+                $facultyid = \FacultyUtils::get_facultyid_from_externalid($params['externalid'], $params['externalsys'], $this->db);
             }
             // Check faculty code unique.
             if (!$facultyid and !empty($params['code'])) {
@@ -113,9 +118,14 @@ class facultymanagement extends \api\abstractmanagement {
             , 'faculty_already_exists', 'faculty_name_not_supplied', 'faculty_nothing_to_update'));
         if (isset($params['id']) and $params['id'] !== '') {
             $facultyid = \FacultyUtils::faculty_name_by_id($params['id'], $this->db);
-        } elseif (isset($params['externalid']) and $params['externalid'] !== '') {
+        } elseif (!empty($params['externalid'])) {
+            // What external system is the client mapped to.
+            if (empty($params['externalsys'])) {
+                $params['externalsys'] = null;
+            }
+            $params['externalsys'] = $this->get_external_system($params['externalsys']);
             // Try using external system id to update faculty.
-            $facultyid = \FacultyUtils::get_facultyid_from_externalid($params['externalid'], $this->db);
+            $facultyid = \FacultyUtils::get_facultyid_from_externalid($params['externalid'], $params['externalsys'], $this->db);
             if ($facultyid) {
                 $params['id'] = $facultyid;
             }
@@ -165,9 +175,14 @@ class facultymanagement extends \api\abstractmanagement {
             , 'faculty_does_not_exist'));
         if (isset($params['id']) and $params['id'] !== '') {
             $facultyid = \FacultyUtils::faculty_name_by_id($params['id'], $this->db);
-        } elseif (isset($params['externalid']) and $params['externalid'] !== '') {
+        } elseif (!empty($params['externalid'])) {
+            // What external system is the client mapped to.
+            if (empty($params['externalsys'])) {
+                $params['externalsys'] = null;
+            }
+            $params['externalsys'] = $this->get_external_system($params['externalsys']);
             // Try using external system id to delete faculty.
-            $params['id'] = \FacultyUtils::get_facultyid_from_externalid($params['externalid'], $this->db);
+            $params['id'] = \FacultyUtils::get_facultyid_from_externalid($params['externalid'], $params['externalsys'], $this->db);
             $facultyid = true;
         } else {
             $facultyid = false;

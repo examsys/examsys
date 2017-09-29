@@ -30,3 +30,5 @@ $string['fatalerrormsg2'] = 'A mandatory POST variable is missing.';
 $string['fatalerrormsg3'] = 'A mandatory REQUEST variable is missing.';
 $string['fatalerrorarray'] = 'A mandatory Array variable is missing.';
 $string['showerror'] = 'System error';
+$string['show'] = 'Show';
+$string['results'] = 'results';

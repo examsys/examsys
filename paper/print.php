@@ -264,13 +264,10 @@ $current_screen = 1;
     $render->render_html5_js(json_encode($jstring));
     echo $configObject->get('cfg_js_root'); 
   
+    if($configObject->get_setting('core', 'paper_mathjax')) {
+      $render->render(null, null, 'mathjax.html');
+    }
   ?>
-
-  <script>
-    $(function () {
-      window.print();
-    });
-  </script>
 </head>
 <body>
 
@@ -357,6 +354,10 @@ $current_screen = 1;
 
   $mysqli->close();
 ?>
-
+<script>
+  $(function () {
+    window.print();
+  });
+</script>
 </body>
 </html>

@@ -87,7 +87,7 @@ function clearMSOtags($sHTML) {
  * @return html of editor
  */
 function wysiwyg_editor($name, $replace, $content='', $type = '', $width=756, $height=120) {
-  global $cfg_editor_name;
+  global $cfg_editor_name, $string;
 
   $html = '';
 
@@ -100,8 +100,11 @@ function wysiwyg_editor($name, $replace, $content='', $type = '', $width=756, $h
     $html .= "<textarea class=\"$type\" id=\"$replace\" name=\"$replace\" style=\"width:" . $width . "px; height:" . $height . "px; margin: 0\" rows=\"5\" cols=\"20\">$content</textarea>\n";
   } else {
     //If no editor is specified, output plain textarea.
+    $configObject = Config::get_instance();
+    $render = new render($configObject);
+    $html .= $render->render(array('id' => $replace), null, 'mathjaxpreview.html');
     $height = $height - 6;
-    $html .= "<textarea name=\"$replace\" style=\"width:" . $width . "px; height:" . $height . "px\">$content</textarea>\n";
+    $html .= "<p>" . $string['mathjaxinstructions'] . "</p><textarea onkeyup=\"Preview" . $replace . ".Update()\" id=\"$replace\" name=\"$replace\" style=\"width:" . $width . "px; height:" . $height . "px\">$content</textarea>\n";
   }
 
   return $html;

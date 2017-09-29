@@ -15,7 +15,7 @@ CREATE TABLE `marking_override` (
   `reason` VARCHAR(255) NULL ,
   PRIMARY KEY (`id`),
   UNIQUE KEY `log_id` (`log_id`, `log_type`)
-  ) ENGINE=InnoDB DEFAULT CHARSET={$cfg_db_charset};
+  ) DEFAULT CHARSET={$cfg_db_charset};
 QUERY;
 
   $updater_utils->execute_query($sql, true);

@@ -22,7 +22,6 @@
  * @package
  */
 
-require_once '../include/load_config.php';
 require '../include/sysadmin_auth.inc';
 
 $migration_path = 'version5';

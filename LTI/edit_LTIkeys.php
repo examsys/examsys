@@ -41,12 +41,12 @@ $result->execute();
 $result->bind_result($ltis['id'], $ltis['oauth_consumer_key'], $ltis['secret'], $ltis['name'], $ltis['context_id']);
 $result->fetch();
 $result->close();
-
-if (isset($_POST['submit'])) {
-  $ltiname    = trim($_POST['ltiname']);
-  $ltikey     = trim($_POST['ltikey']);
-  $ltisec     = trim($_POST['ltisec']);
-  $lticontext = trim($_POST['lticontext']);
+$submit = param::optional('submit', null, param::TEXT, param::FETCH_POST);
+if (!is_null($submit)) {
+  $ltiname = trim(param::optional('ltiname', null, param::TEXT, param::FETCH_POST));
+  $ltikey = trim(param::optional('ltikey', null, param::TEXT, param::FETCH_POST));
+  $ltisec = trim(param::optional('ltisec', null, param::TEXT, param::FETCH_POST));
+  $lticontext = trim(param::optional('lticontext', null, param::TEXT, param::FETCH_POST));
   
   $insert_id = $lti->update_lti_key($LTIkeysid, $ltiname, $ltikey, $ltisec, $lticontext);
   
@@ -116,7 +116,7 @@ if (isset($_POST['submit'])) {
 
   <br/>
   <div align="center">
-    <form id="theform" name="edit_LTIkeys" method="post" action="<?php echo $_SERVER['PHP_SELF'] . '?LTIkeysid=' . $_GET['LTIkeysid'] ?>" autocomplete="off">
+      <form id="theform" name="edit_LTIkeys" method="post" action="<?php echo url::fromGlobals() ?>" autocomplete="off">
       <table cellpadding="0" cellspacing="2" border="0">
         <tr>
           <td class="field"><?php echo $string['name']; ?></td>

@@ -10,7 +10,7 @@
                             <xs:element name="description" type="description"/>
                             <xs:choice>
                                 <xs:group ref="names"/>
-                                <xs:group ref="extids"/>
+                                <xs:element name="schoolextid" type="externalid"/>
                             </xs:choice>
                             <xs:group ref="external" minOccurs="0"/>
                         </xs:sequence>
@@ -22,13 +22,13 @@
                         <xs:sequence>
                             <xs:choice>
                                 <xs:element name="id" type="xs:integer"/>
-                                <xs:element name="externalid" type="externalid"/>
+                                <xs:group ref="external"/>
                             </xs:choice>
                             <xs:element name="name" type="coursename" minOccurs="0"/>
                             <xs:element name="description" type="description" minOccurs="0"/>
                             <xs:choice>
                                 <xs:group ref="updatenames"/>
-                                <xs:group ref="updateextids"/>
+                                <xs:element name="schoolextid" type="externalid" minOccurs="0"/>
                             </xs:choice>
                         </xs:sequence>
                         <xs:attribute type="xs:string" name="id" use="required"/>
@@ -39,7 +39,7 @@
                         <xs:sequence>
                             <xs:choice>
                                 <xs:element name="id" type="xs:integer"/>
-                                <xs:element name="externalid" type="externalid"/>
+                                <xs:group ref="external"/>
                             </xs:choice>
                         </xs:sequence>
                         <xs:attribute type="xs:string" name="id" use="required"/>
@@ -54,26 +54,16 @@
             <xs:element name="faculty" type="facultyname" minOccurs="0"/>
         </xs:sequence>
     </xs:group>
-    <xs:group name="extids">
-        <xs:sequence>
-            <xs:element name="schoolextid" type="externalid"/>
-        </xs:sequence>
-    </xs:group>
-        <xs:group name="updatenames">
+    <xs:group name="updatenames">
         <xs:sequence>
             <xs:element name="school" type="schoolname" minOccurs="0"/>
             <xs:element name="faculty" type="facultyname" minOccurs="0"/>
         </xs:sequence>
     </xs:group>
-    <xs:group name="updateextids">
-        <xs:sequence>
-            <xs:element name="schoolextid" type="externalid" minOccurs="0"/>
-        </xs:sequence>
-    </xs:group>
     <xs:group name="external">
         <xs:sequence>
             <xs:element name="externalid" type="externalid"/>
-            <xs:element name="externalsys" type="externalsys"/>
+            <xs:element name="externalsys" type="externalsys" minOccurs="0"/>
         </xs:sequence>
     </xs:group>
     <xs:simpleType name="coursename">

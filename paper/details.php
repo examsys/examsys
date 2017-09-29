@@ -632,6 +632,11 @@ function check_latex_random($q_ids, $mysqli) {
   <script type="text/javascript" src="../js/jquery.paperdetails.js"></script>
 <?php
   }
+  // Instantiate Twig renderer.
+  $render = new render($configObject);
+  if($configObject->get_setting('core', 'paper_mathjax')) {
+    $render->render(null, null, 'mathjax.html');
+  }
 ?>
 </head>
 
@@ -910,30 +915,47 @@ function check_latex_random($q_ids, $mysqli) {
   $exam_announcementObj = new ExamAnnouncements($paperID, $mysqli, $string);
   $exam_announcements = $exam_announcementObj->get_announcements();
 
-  echo "<div class=\"head_title\">\n";
-  echo "<div><img src=\"../artwork/toprightmenu.gif\" id=\"toprightmenu_icon\" /></div>\n";
-  echo "<div class=\"breadcrumb\"><a href=\"../index.php\">" . $string['home'] . "</a>";
-  if ($module) {
-    echo '<img src="../artwork/breadcrumb_arrow.png" class="breadcrumb_arrow" alt="-" /><a href="../module/index.php?module=' . $module . '">' . module_utils::get_moduleid_from_id($module, $mysqli) . '</a>';
-    echo '<img src="../artwork/breadcrumb_arrow.png" class="breadcrumb_arrow" alt="-" /><a href="../paper/type.php?module=' . $module . '&type=' . $properties->get_paper_type() . '">' . Paper_utils::type_to_name($properties->get_paper_type(), $string) . '</a>';
-  } elseif ($folder) {
-    echo '<img src="../artwork/breadcrumb_arrow.png" class="breadcrumb_arrow" alt="-" /><a href="../folder/index.php?folder=' . $folder . '">' . folder_utils::get_folder_name($folder, $mysqli) . '</a>';
-  } else {
-    $paper_modules = Paper_utils::get_modules($paperID, $mysqli);  // Get the modules from paper properties
-    reset($paper_modules);
-    $moduleID = key($paper_modules);
-    if ($moduleID != '') {
-      $module_code = $paper_modules[$moduleID];
-      echo '<img src="../artwork/breadcrumb_arrow.png" class="breadcrumb_arrow" alt="-" /><a href="../module/index.php?module=' . $moduleID . '">' . $module_code . '</a>';
-      echo '<img src="../artwork/breadcrumb_arrow.png" class="breadcrumb_arrow" alt="-" /><a href="../paper/type.php?module=' . $moduleID . '&type=' . $properties->get_paper_type() . '">' . Paper_utils::type_to_name($properties->get_paper_type(), $string) . '</a>';
+  // initial link of breadcrumb
+  $links = array('/' => 'Home');
+
+  if ($folder) {
+    // links of parent folders
+    $folderName = folder_utils::get_folder_name($folder, $mysqli);
+    foreach (folder_utils::get_parent_list($folderName, $userObject, $mysqli) as $parentId => $parentName) {
+      $href = '/folder/index.php?folder=' . $parentId;
+      $links[$href] = $parentName;
     }
+
+    // link of current folder
+    $href = '/folder/index.php?folder=' . $folder;
+    $links[$href] = false === strpos($folderName, ';') ? $folderName : substr($folderName, strrpos($folderName, ';') + 1);
+  } else {
+    if (is_null($module)) {
+      // Get the modules from paper properties
+      $modules = Paper_utils::get_modules($paperID, $mysqli);
+      $module = key($modules);
+    }
+    // link to module
+    $href = '../module/index.php?module=' . $module ;
+    $links[$href] = module_utils::get_moduleid_from_id($module, $mysqli);
+ 
+    // link to module
+    $href = '../paper/type.php?module=' . $module . '&type=' . $properties->get_paper_type();
+    $links[$href] = Paper_utils::type_to_name($properties->get_paper_type(), $string);
   }
-  echo '</div>';
+
+  // link of current paper
+  $href = '/paper/details.php?paperID=' . $paperID;
+  $links[$href] = $properties->get_paper_title();
+
+  // breadcrumb
+  echo $render->render_admin_navigation($links);
+
   $title_class = 'page_title';
   if ($properties->get_retired() != '') {
     $title_class .= ' retired';
   }
-  echo '<div onclick="qOff()" class="' . $title_class . '">' . $properties->get_paper_title() . '</div>';
+  echo '<div class="head_title"><div onclick="qOff()" class="' . $title_class . '">' . $properties->get_paper_title() . '</div>';
   echo "</div>\n";
   
   echo "<table style=\"table-layout: fixed\" class=\"header\" id=\"sortable\">\n";
@@ -967,6 +989,18 @@ function check_latex_random($q_ids, $mysqli) {
     <th class="m vert_div">&nbsp;<?php echo $string['marks']; ?>&nbsp;</th>
     <th class="d vert_div">&nbsp;<?php echo $string['modified']; ?>&nbsp;</th>
     </tr>
+  <?php
+  if ($properties->get_paper_type() == '4' & in_array($properties->get_marking(), array(1, 5))) {			// OSCE stations
+  ?>
+    <tr>
+      <td colspan="6">
+        <div class="yellowwarn">
+          <strong><?php echo $string['warning'];?></strong>
+          <?php echo $string['overall_classification_warning']?><a href="#" onclick="return paperProperties(); return false;"><?php echo $string['clickhere']; ?></a>
+        </div>
+      </td>
+    </tr>
+  <?php } ?>
    <?php
     $gradebook = new gradebook($mysqli);
     $graded = $gradebook->paper_graded($paperID);

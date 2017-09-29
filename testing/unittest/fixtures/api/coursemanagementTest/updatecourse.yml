@@ -5,6 +5,7 @@ courses:
     description: "Test course"
     schoolid: 1
     externalid: "123456"
+    externalsys: "test rogo api"
 schools:
   -
     id: 1

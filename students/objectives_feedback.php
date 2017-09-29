@@ -23,7 +23,7 @@
 */
 
 require '../include/staff_student_auth.inc';
-
+require_once '../include/paper_security.php';
 require_once '../include/demo_replace.inc';
 require_once '../include/mapping.inc';
 require_once '../include/errors.php';
@@ -59,9 +59,13 @@ if (isset($_GET['userID'])) {
 
 // Get some paper properties
 $propertyObj = PaperProperties::get_paper_properties_by_crypt_name($_GET['id'], $mysqli, $string, true);
-
+$paperID = $propertyObj->get_property_id();
+// Check is staff on module.
+$moduleID = Paper_utils::get_modules($paperID, $mysqli);
+$staffmodule = $userObject->has_role('Staff') and check_staff_modules($moduleID, $userObject);
 // Check the feedback has been released !!!
-if ($userObject->has_role('Student')) {
+// Access allowed if user role is staff,student (admins should ensure staff,student users are not students in modules they are staff on)
+if ($userObject->has_role('Student') and !$staffmodule) {
   if (!$propertyObj->is_objective_fb_released()) {
     $msg = sprintf($string['furtherassistance'], $configObject->get('support_email'), $configObject->get('support_email'));
     $notice->display_notice_and_exit($mysqli, $string['pagenotfound'], $msg, $string['pagenotfound'], '../artwork/page_not_found.png', '#C00000', true, true);
@@ -73,7 +77,6 @@ if (!isset($_GET['ordering'])) {
   $direction = 'asc';
 }
 
-$paperID        = $propertyObj->get_property_id();
 $paper_title    = $propertyObj->get_paper_title();
 $paper_type     = $propertyObj->get_paper_type();
 $session        = $propertyObj->get_calendar_year();
@@ -90,7 +93,6 @@ if ($userObject->has_role('Student')) {
 } else {
   $logger->record_access($userObject->get_user_ID(), 'Objectives-based feedback report', '/mapping/user_feedback.php?' . $_SERVER['QUERY_STRING']);    // Staff write in the URL details
 }
-$moduleID = Paper_utils::get_modules($paperID, $mysqli);
 
 // Check the user sat the paper!
 $bound = false;

@@ -147,11 +147,22 @@ class assessmentmanagement extends \api\abstractmanagement {
         if (empty($params['timezone'])) {
             $params['timezone'] = $configObject->get('cfg_timezone');
         }
+        // Default null externalid.
+        if (empty($params['externalid'])) {
+            $params['externalid'] = null;
+            $params['externalsys'] = null;
+        } else {
+            // What external system is the client mapped to.
+            if (empty($params['externalsys'])) {
+                $params['externalsys'] = null;
+            }
+            $params['externalsys'] = $this->get_external_system($params['externalsys']);
+        }
         // Check modules
         $modulesarray = array();
         if (!empty($params['extmodules'])) {
             foreach ($params['extmodules'] as $module) {
-                $moduleid = \module_utils::get_id_from_externalid($module['value'], $this->db);
+                $moduleid = \module_utils::get_id_from_externalid($module['value'], $params['externalsys'], $this->db);
                 if ($moduleid) {
                     $modulesarray[] = $moduleid;
                 } else {
@@ -186,14 +197,6 @@ class assessmentmanagement extends \api\abstractmanagement {
             }
             // Create exam.
             try {
-                // Default null externalid.
-                if (empty($params['externalid'])) {
-                    $params['externalid'] = null;
-                }
-                // Default null externalsys.
-                if (empty($params['externalsys'])) {
-                    $params['externalsys'] = null;
-                }
                 $id = $paper->create($params['title'], $papertype, $params['owner'], $params['startdatetime'],
                     $params['enddatetime'], $labs, $params['duration'], $params['session'], $modulesarray, $params['timezone'], $params['externalid'], $params['externalsys']);
                 if ($id) {
@@ -224,9 +227,14 @@ class assessmentmanagement extends \api\abstractmanagement {
         if (isset($params['id']) and $params['id'] !== '') {
             // Try internal rogo id.
             $paperid = \Paper_utils::paper_exists($params['id'], $this->db);
-        } elseif (isset($params['externalid']) and $params['externalid'] !== '') {
+        } elseif (!empty($params['externalid'])) {
+            // What external system is the client mapped to.
+            if (empty($params['externalsys'])) {
+                $params['externalsys'] = null;
+            }
+            $params['externalsys'] = $this->get_external_system($params['externalsys']);
             // Try using external system id.
-            $paperid = \Paper_utils::get_id_from_externalid($params['externalid'], $this->db);
+            $paperid = \Paper_utils::get_id_from_externalid($params['externalid'], $params['externalsys'], $this->db);
             $params['id'] = $paperid;
         }
         // Get current paper properties.
@@ -289,7 +297,7 @@ class assessmentmanagement extends \api\abstractmanagement {
         $modulesarray = array();
         if (!empty($params['extmodules'])) {
             foreach ($params['extmodules'] as $module) {
-                $moduleid = \module_utils::get_id_from_externalid($module['value'], $this->db);
+                $moduleid = \module_utils::get_id_from_externalid($module['value'], $params['externalsys'], $this->db);
                 if ($moduleid) {
                     $modulesarray[] = $moduleid;
                 } else {
@@ -373,12 +381,22 @@ class assessmentmanagement extends \api\abstractmanagement {
         $configObject = \Config::get_instance();
         $paper = new \assessment($this->db, $configObject);
         $papertype = $paper::TYPE_SUMMATIVE;
-
+        // Default null externalid.
+        if (empty($params['externalid'])) {
+            $params['externalid'] = null;
+            $params['externalsys'] = null;
+        } else {
+            // What external system is the client mapped to.
+            if (empty($params['externalsys'])) {
+                $params['externalsys'] = null;
+            }
+            $params['externalsys'] = $this->get_external_system($params['externalsys']);
+        }
         // Check modules
         $modulesarray = array();
         if (!empty($params['extmodules'])) {
             foreach ($params['extmodules'] as $module) {
-                $modid = \module_utils::get_id_from_externalid($module['value'], $this->db);
+                $modid = \module_utils::get_id_from_externalid($module['value'], $params['externalsys'], $this->db);
                 if ($modid) {
                     $modulesarray[] = $modid;
                 } else {
@@ -416,14 +434,6 @@ class assessmentmanagement extends \api\abstractmanagement {
         }
         if (empty($params['notes'])) {
             $params['notes'] = null;
-        }
-        // Default null externalid.
-        if (empty($params['externalid'])) {
-            $params['externalid'] = null;
-        }
-        // Default null externalsys.
-        if (empty($params['externalsys'])) {
-            $params['externalsys'] = null;
         }
         // Create.
         try {
@@ -469,9 +479,14 @@ class assessmentmanagement extends \api\abstractmanagement {
             , 'paper_does_not_exist'));
         if (isset($params['id']) and $params['id'] !== '') {
             $paperexists = \Paper_utils::paper_exists($params['id'], $this->db);
-        } elseif (isset($params['externalid']) and $params['externalid'] !== '') {
+        } elseif (!empty($params['externalid'])) {
+            // What external system is the client mapped to.
+            if (empty($params['externalsys'])) {
+                $params['externalsys'] = null;
+            }
+            $params['externalsys'] = $this->get_external_system($params['externalsys']);
             // Try using external system id.
-            $paperid = \Paper_utils::get_id_from_externalid($params['externalid'], $this->db);
+            $paperid = \Paper_utils::get_id_from_externalid($params['externalid'], $params['externalsys'], $this->db);
             $params['id'] = $paperid;
             $paperexists = true;
         } else {

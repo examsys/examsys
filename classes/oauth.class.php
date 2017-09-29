@@ -293,6 +293,10 @@ class oauth {
      * @return void
      */
     public function delete_oauthclient($client) {
+        // Delete external system mappings.
+        $external = new \external_systems();
+        $external->delete_external_system_mapping($client);
+        // Delete client.
         $result = $this->db->prepare("DELETE FROM oauth_clients WHERE client_id = ?");
         $result->bind_param('s', $client);
         $result->execute();

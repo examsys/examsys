@@ -646,11 +646,15 @@ function record_marks($paper_id, $db, $paper_type, $metadataID, $preview_q_id = 
             }
           }
         } elseif ($score_method == 'Bonus Mark') {
-          if ($_POST[$qid] != 0) {
+          // Part answer is not N/A
+          if ($part_answer != 0) {
+            // Mark if correct answer is not N/A
             $mark += ($correct != 0) ? $marks_correct : $marks_incorrect;
-            if ($_POST[$qid] <> $correct) $correct_rank = false;
+            // Do not assign bonus mark if part answer is not correct or absention.
+            if (($part_answer <> $correct) or $part_answer == 'u') $correct_rank = false;
           }
-          if ($_POST[$qid] == 0 and $correct != 0) $correct_rank = false;
+          // Do not assign bonus mark if part answer is not correct or absention.
+          if (($part_answer == 0 and $correct != 0) or $part_answer == 'u') $correct_rank = false;
         }
         if ($score_method == 'Mark per Question') {
           $totalpos = $marks_correct;
@@ -711,12 +715,15 @@ function record_marks($paper_id, $db, $paper_type, $metadataID, $preview_q_id = 
         $saved_response = array();
         for ($i = 1; $i <= $no_answers; $i++) {
           $qid = 'q' . $question_no . '_' . $i;
-          if (isset($_POST[$qid])) {
-            if ($_POST[$qid] == '') {
-              $saved_response[] = 'u';
-            } else {
-              $saved_response[] = $_POST[$qid];
-            }
+          // If the parameter is not sent for some reason assume the part is unanswered.
+          $blank_answer = param::optional($qid, 'u', param::TEXT, param::FETCH_POST);
+          if (trim($blank_answer) === '') {
+            // Assume an answer composed only of spaces is unanswered.
+            $saved_response[] = 'u';
+          } else {
+            // Encode commas.
+            $blank_answer = str_replace(',', '&#44;', $blank_answer);
+            $saved_response[] = $blank_answer;
           }
 
           if (preg_match("|mark=\"([0-9]{1,3})\"|", $blank_details[$i], $mark_matches)) {
@@ -733,6 +740,9 @@ function record_marks($paper_id, $db, $paper_type, $metadataID, $preview_q_id = 
           $answer_list = explode(',', $blank_details[$i]);
 
           $answer_list[0] = str_replace("[/blank]", '', $answer_list[0]);
+          // Ensure that the answers are filtered to the same level as the user's answers.
+          // This will ensure that they can match correctly.
+          $answer_list = param::clean_array($answer_list, param::TEXT);
           if ($display_method == 'textboxes') {
             if (isset($_POST[$qid]) and $_POST[$qid] != 'u' and $_POST[$qid] != '') {
               $have_answer = true;
@@ -938,7 +948,7 @@ function finalise_mrq($old_score_method, $old_display_method, $correct_rank, $ol
     } else {
       $mark = $old_marks_incorrect;
     }
-  } elseif ($old_score_method == 'Mark per Option' and $mrq_options_selected > $totalpos) {
+  } elseif ($old_score_method == 'Mark per Option' and ($mrq_options_selected * $old_marks_correct) > $totalpos) {
     $mark = 0;
   }
   if ($old_display_method == 'other') {

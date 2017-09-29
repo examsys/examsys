@@ -1,0 +1,27 @@
+question_statuses:
+  -
+    id: 1
+    name: normal
+    retired: 0
+    is_default: 1
+    display_order: 1
+
+papers:
+  -
+    paper: 1
+  -
+    paper: 2
+
+questions:
+  -
+    q_id: 1
+    scenario: 'This is a test'
+    leadin: 'Is the world round or flat?'
+    status: 1
+  -
+    q_id: 2
+    scenario: 'This is a test2'
+    leadin: 'Is the world round?'
+    status: 1
+
+killer_questions:

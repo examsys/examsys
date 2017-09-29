@@ -123,7 +123,7 @@ class schoolmanagementtest extends unittestdatabase {
         $responsearray = $this->create_response_array();
         $responsearray['externalid'] = "xyz";
         $params = $this->create_param_array();
-        $school = new \api\schoolmanagement($this->db);
+        $school = new \api\schoolmanagement($this->db, 'test1');
         $userid = 1;
         $this->assertEquals($responsearray, $school->create($params, $userid));
     }
@@ -135,7 +135,7 @@ class schoolmanagementtest extends unittestdatabase {
         // Test school creation - ERROR school already exists
         $responsearray = $this->create_response_array();
         $params = $this->create_param_array();
-        $school = new \api\schoolmanagement($this->db);
+        $school = new \api\schoolmanagement($this->db, 'test1');
         $userid = 1;
         $responsearray['statuscode'] = 606;
         $responsearray['status'] = 'School already exists';
@@ -153,7 +153,7 @@ class schoolmanagementtest extends unittestdatabase {
      */
     public function test_create_exception_school2() {
         $responsearray = $this->create_response_array();
-        $school = new \api\schoolmanagement($this->db);
+        $school = new \api\schoolmanagement($this->db, 'test1');
         $userid = 1;
         $responsearray['statuscode'] = 606;
         $responsearray['status'] = 'School already exists';
@@ -172,7 +172,7 @@ class schoolmanagementtest extends unittestdatabase {
          // Test school creation - ERROR faculty not supplied
         $responsearray = $this->create_response_array();
         $params = $this->create_param_array();
-        $school = new \api\schoolmanagement($this->db);
+        $school = new \api\schoolmanagement($this->db, 'test1');
         $userid = 1;
         $responsearray['statuscode'] = 605;
         $responsearray['status'] = 'Faculty not supplied';
@@ -192,7 +192,7 @@ class schoolmanagementtest extends unittestdatabase {
         $responsearray = $this->update_response_array();
         $responsearray['externalid'] = "abcdef";
         $params = $this->update_param_array();
-        $school = new \api\schoolmanagement($this->db);
+        $school = new \api\schoolmanagement($this->db, 'test1');
         $userid = 1;
         $this->assertEquals($responsearray, $school->update($params, $userid));
         // Test with no faculty provided i.e. school name update.
@@ -221,7 +221,7 @@ class schoolmanagementtest extends unittestdatabase {
             "id" => 1,
             "name" => 'Test school',
             "faculty" => 'Test faculty');
-        $school = new \api\schoolmanagement($this->db);
+        $school = new \api\schoolmanagement($this->db, 'test1');
         $userid = 1;
         $responsearray['statuscode'] = 607;
         $responsearray['status'] = 'Request updates nothing';
@@ -236,7 +236,7 @@ class schoolmanagementtest extends unittestdatabase {
         // Test school update - ERROR school does not exist
         $responsearray = $this->update_response_array();
         $params = $this->update_param_array();
-        $school = new \api\schoolmanagement($this->db);
+        $school = new \api\schoolmanagement($this->db, 'test1');
         $userid = 1;
         $responsearray['statuscode'] = 601;
         $responsearray['status'] = 'School does not exist';
@@ -252,7 +252,7 @@ class schoolmanagementtest extends unittestdatabase {
         // Test school update - ERROR school does not exist
         $responsearray = $this->update_response_array();
         $params = $this->update_param_array();
-        $school = new \api\schoolmanagement($this->db);
+        $school = new \api\schoolmanagement($this->db, 'test1');
         $userid = 1;
         $responsearray['statuscode'] = 602;
         $responsearray['status'] = 'School not updated';
@@ -269,7 +269,7 @@ class schoolmanagementtest extends unittestdatabase {
         // Test school update - ERROR faculty invalid
         $responsearray = $this->update_response_array();
         $params = $this->update_param_array();
-        $school = new \api\schoolmanagement($this->db);
+        $school = new \api\schoolmanagement($this->db, 'test1');
         $userid = 1;
         $responsearray['statuscode'] = 605;
         $responsearray['status'] = 'Faculty not supplied';
@@ -286,7 +286,7 @@ class schoolmanagementtest extends unittestdatabase {
         $responsearray = $this->delete_response_array();
         $responsearray['externalid'] = "abcdef";
         $params = $this->delete_param_array();
-        $school = new \api\schoolmanagement($this->db);
+        $school = new \api\schoolmanagement($this->db, 'test1');
         $userid = 1;
         $this->assertEquals($responsearray, $school->delete($params, $userid));
         // Check that the remaining schools are correct, when we delete a school we actually just add a timestamp to the table
@@ -303,7 +303,7 @@ class schoolmanagementtest extends unittestdatabase {
         // Test deleting a non existance school.
         $responsearray = $this->delete_response_array();
         $params = $this->delete_param_array();
-        $school = new \api\schoolmanagement($this->db);
+        $school = new \api\schoolmanagement($this->db, 'test1');
         $userid = 1;
         $responsearray['statuscode'] = 601;
         $responsearray['status'] = 'School does not exist';
@@ -323,7 +323,7 @@ class schoolmanagementtest extends unittestdatabase {
         // Test deleting a school in use - in a course.
         $responsearray = $this->delete_response_array();
         $params = $this->delete_param_array();
-        $school = new \api\schoolmanagement($this->db);
+        $school = new \api\schoolmanagement($this->db, 'test1');
         $userid = 1;
         $responsearray['statuscode'] = 604;
         $responsearray['status'] = 'School not deleted, as in use by a course or module';

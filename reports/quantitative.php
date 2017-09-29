@@ -422,23 +422,10 @@
   $result->fetch();
   $result->close();
 
-  $exclude = '';
-  if ($_GET['complete'] == 1) {
-    $result = $mysqli->prepare("SELECT userID, COUNT(id) AS answer_no FROM log3 WHERE q_paper = ? AND started >= ? AND started <= ? GROUP BY userID");
-    $result->bind_param('iss', $_GET['paperID'], $_GET['startdate'], $_GET['enddate']);
-    $result->execute();
-    $result->bind_result($tmp_userID, $answer_no);
-    while ($result->fetch()) {
-      if ($answer_no < $number_of_questions or $answer_no > $number_of_questions) {
-        // log_metadata aliased as lm in queries below for brevity
-        $exclude .= ' AND lm.userID!=' . $tmp_userID;
-      }
-    }
-    $result->close();
-  }
+  $exclude = param::optional('complete', false, param::BOOLEAN, param::FETCH_GET);
 
   $log_array = array();
-  $hits = get_quantitative_log_data($_GET['paperID'], $_GET['repcourse'], $_GET['startdate'], $_GET['enddate'], $exclude, $log_array, $mysqli);
+  $hits = get_quantitative_log_data($_GET['paperID'], $_GET['repcourse'], $_GET['startdate'], $_GET['enddate'], $exclude, $log_array, $mysqli, $number_of_questions);
 
   $module_code = '';
   $module = (isset($_GET['module']) and $_GET['module'] != '') ? $_GET['module'] : '';

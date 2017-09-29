@@ -23,17 +23,46 @@
 */
 
 /**
- * Get qualitative data for survey reports
+ * Get quantitative data for survey reports
  * @param  integer $paper_id   ID of paper we're reporting on
  * @param  string  $course     Name of course
  * @param  string  $start_date Start date for report
  * @param  string  $end_date   End date for report
- * @param  string  $exclude    SQL snippet to exclude certain users
+ * @param  boolean  $exclude   Exclude non completed user instances
  * @param  array   $log_array  Reference to array that will be populatesd with the data
  * @param  mysqli  $db         Database connection
+ * @param integer $number_of_questions number of questions in paper
  * @return integer             Number of records we're returning
  */
-function get_quantitative_log_data($paper_id, $course, $start_date, $end_date, $exclude, &$log_array, $db) {
+function get_quantitative_log_data($paper_id, $course, $start_date, $end_date, $exclude, &$log_array, $db, $number_of_questions) {
+  $excluded = '';
+  if ($exclude) {
+    $result = $db->prepare("SELECT 
+      lm.userID,
+      COUNT(l.id) AS answer_no
+    FROM
+      log3 l,
+      log_metadata lm
+    WHERE
+      l.metadataID = lm.id
+      AND lm.paperID = ?
+      AND lm.started >= ?
+      AND lm.started <= ?
+      AND l.user_answer NOT IN ('u', '')
+    GROUP BY lm.userID
+    HAVING answer_no <> ?");
+    $result->bind_param('issi', $paper_id, $paper_id, $end_date, $number_of_questions);
+    $result->execute();
+    $result->bind_result($tmp_userid, $answer_no);
+    $excludedusers = array();
+    while ($result->fetch()) {
+      $excludedusers[] = $tmp_userid;
+    }
+    $result->close();
+    if (count($excludedusers) > 0) {
+      $excluded = 'AND lm.userID NOT IN (' . implode(',', $excludedusers) . ') ';
+    }
+  }
   $hits = 0;
   // Capture the log data first.
   $sql = <<< SQL
@@ -42,7 +71,7 @@ FROM log3 l INNER JOIN log_metadata lm ON l.metadataID = lm.id
 INNER JOIN questions q ON l.q_id = q.q_id
 INNER JOIN users u on lm.userID = u.id
 WHERE lm.paperID = ?
-AND (u.roles='Student' OR u.roles='graduate')$exclude
+AND (u.roles='Student' OR u.roles='graduate') $excluded
 AND u.grade LIKE ?
 AND lm.started >= ? AND lm.started <= ?
 SQL;

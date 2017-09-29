@@ -16,6 +16,7 @@
 
 require $cfg_web_root . '/lang/' . $language . '/include/user_search_options.php';
 require $cfg_web_root . '/lang/' . $language . '/include/titles.php';
+require $cfg_web_root . '/lang/' . $language . '/users/details.php';
 
 $string['createnewuser'] = 'Create New User';
 $string['getldapdetails'] = 'Get LDAP details';
@@ -35,9 +36,9 @@ $string['male'] = 'Male';
 $string['female'] = 'Female';
 $string['other'] = 'Other';
 $string['universitystaff'] = 'University Staff';
-$string['academiclecturer'] = 'Academic Lecturer';
-$string['administrator'] = 'Administrator';
-$string['ittechnical'] = 'IT/Technical';
+$string['academiclecturer'] = 'University Lecturer';
+$string['administrator'] = 'University Admin';
+$string['ittechnical'] = 'Technical Staff';
 $string['externalstaff'] = 'External Staff';
 $string['nhslecturer'] = 'NHS Lecturer/Consultant';
 $string['nhsadmin'] = 'NHS Admin';

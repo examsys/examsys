@@ -50,7 +50,7 @@ Class UserUtils {
       return false;
     }
 
-    if (!self::username_exists($username, $db) and $username != '' and stristr('ps_', $username) === false) {
+    if (!self::username_exists($username, $db) and self::username_is_valid($username) and stristr('ps_', $username) === false) {
       // Force re-build of initials off forenames.
       if ($initials == '') {
           $initial = explode(' ', $forname);
@@ -143,7 +143,7 @@ Class UserUtils {
 
     $current = self::get_full_details_by_ID($id, $db);
 
-    if (empty($username) or  empty($surname) or empty($role) or empty($current['username'])) {
+    if (!self::username_is_valid($username) or empty($surname) or empty($role) or empty($current['username'])) {
       return false;
     }
 
@@ -252,6 +252,24 @@ Class UserUtils {
     $stmt->close();
 
     return $success;
+  }
+
+  /**
+   * Check if username is valid.
+   *
+   * @param string $username username
+   *
+   * @return bool true when valid, otherwise false
+   *
+   */
+  static function username_is_valid($username) {
+    $is_guest_name = (substr(strtolower($username), 0, 4) == 'user' and is_numeric(substr($username, 4)));
+
+    if (trim($username) == '' or $is_guest_name) {
+      return false;
+    }
+
+    return true;
   }
 
   /**
@@ -688,7 +706,7 @@ Class UserUtils {
       return 0;
     } else {
       $result = $db->prepare("INSERT INTO modules_student VALUES (NULL, ?, ?, ?, ?, ?)");
-      $result->bind_param('iisii', $tmp_userID, $idMod, $session, $attempt, $auto_update);
+      $result->bind_param('iiiii', $tmp_userID, $idMod, $session, $attempt, $auto_update);
       $result->execute();
       $result->close();
       if ($db->errno != 0) {
@@ -772,7 +790,7 @@ Class UserUtils {
     } else {
       $sql = "SELECT userID FROM modules_student WHERE userID = ? AND idMod IN ($idMod) AND calendar_year = ?";
       $result = $db->prepare($sql);
-      $result->bind_param('is', $tmp_userID, $session);
+      $result->bind_param('ii', $tmp_userID, $session);
     }
 
     $result->execute();

@@ -18,7 +18,8 @@
 namespace testing\behat\steps\frontend;
 use Behat\Gherkin\Node\PyStringNode,
     Behat\Gherkin\Node\TableNode,
-   testing\behat\selectors;
+    testing\behat\selectors,
+    Exception;
 
 /**
  * Basic core step definitions.
@@ -46,7 +47,7 @@ trait menu {
       $title = $menuitem["menu_items"];
       $element = $this->find('link', $title);
       if (empty($element)) {
-        throw new Exception("$menuitem is not in the menu");
+        throw new Exception("$title is not in the menu");
       }
     }
   }
@@ -65,7 +66,7 @@ trait menu {
       throw new Exception("The menu name or items is empty");
     }
     foreach ($menuitems->getHash() as $menuitem) {
-      $title = $menuitem["item"];
+      $title = $menuitem["items"];
       //$element = $this->find('sub_menu', $title);
       $menuitem = $this->find("xpath", "//div[contains(concat(' ', normalize-space(@class), ' '), ' submenuheading ') and contains(normalize-space(.) , '" . $menu_section . "')]/following-sibling::div/div[contains(concat(' ', normalize-space(@class), ' '), ' menuitem ') and contains(normalize-space(.) , '" . $title  . "')]");
       if (empty($menuitem)) {
@@ -90,7 +91,7 @@ trait menu {
       $title = $menuitem["menu_items"];
       $element = $this->find('sub_menu', $title);
       if (empty($element)) {
-        throw new Exception("$menuitem is not in the submenu");
+        throw new Exception("$title is not in the submenu");
       }
     }
   }
@@ -142,34 +143,10 @@ trait menu {
     }
 
     foreach ($menuitems->getHash() as $menuitem) {
-      $item = $menuitem['Item'];
-      switch ($item) {
-        case "Administrative Tools":
-          $element = $this->find("main_menu_item", 'Administrative Tools');
-          if (empty($element)) {
-            throw new \Exception('$item in main menu could not be found');
-          }
-          break;
-        case "Help and Support":
-          $element = $this->find("main_menu_item", 'Help');
-          if (empty($element)) {
-            throw new \Exception('$item in main menu could not be found');
-          }
-          break;
-        case "Sign Out":
-          $element = $this->find("main_menu_item", 'Sign Out');
-          if (empty($element)) {
-            throw new \Exception('$item in main menu could not be found');
-          }
-          break;
-        case "About Rogo":
-          $element = $this->find("main_menu_item", 'About Rog');
-          if (empty($element)) {
-            throw new \Exception('$item in main menu could not be found');
-          }
-          break;
-        default:
-          throw new \Exception('main menu could not be found');
+      $title = $menuitem['Item'];
+      $element = $this->find('main_menu_item', $title);
+      if (empty($element)) {
+        throw new Exception("$title is not in the submenu");
       }
     }
   }

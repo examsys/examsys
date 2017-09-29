@@ -25,41 +25,37 @@
 */
 
 require_once '../include/admin_auth.inc';
+require '../include/toprightmenu.inc';
 
 ini_set("auto_detect_line_endings", true);
-?>
-<!DOCTYPE html>
-<html>
-<head>
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta http-equiv="content-type" content="text/html;charset=<?php echo $configObject->get('cfg_page_charset') ?>" />
-  
-	<title><?php echo $string['impmodtitle'] . ' ' . $configObject->get('cfg_install_type'); ?></title>
-  
-	<link rel="stylesheet" type="text/css" href="../css/body.css" />
-  <link rel="stylesheet" type="text/css" href="../css/dialog.css" />
-  <link rel="stylesheet" type="text/css" href="../css/header.css" />
-  <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
-  <link rel="stylesheet" type="text/css" href="../css/list.css" />
-  <style type="text/css">
-    p {margin:0; padding:0}
-    label.error {display:block; color:#f00}
-  </style>
-  <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
-</head>
 
+// Instantiate Twig renderer.
+$render = new render($configObject);
+$lang['title'] = $string['impmodtitle'];
+$additionaljs = "";
+$addtionalcss = "<link rel=\"stylesheet\" type=\"text/css\" href=\"../css/dialog.css\" />
+                <link rel=\"stylesheet\" type=\"text/css\" href=\"../css/list.css\" />
+                <link rel=\"stylesheet\" type=\"text/css\" href=\"../css/breadcrumb.css\" />
+                <style type=\"text/css\">
+                    label.error {display:block; color:#f00}
+                </style>";
+$render->render_admin_header($lang, $additionaljs, $addtionalcss);
+?>
   <body>
 <?php
   require '../include/user_search_options.php';
+  echo draw_toprightmenu();
 ?>
-<div id="content">
-<br />
-<br />
-<br />
-
+<div id="content" class="content">
 <?php
+  echo $render->render_admin_navigation(array(
+      '/' => $string['home'],
+      '/admin/index.php' => $string['admintools'],
+      '/users/search.php' => $string['usermanagement'],
+      '/users/import_users.php' => $string['importmodules'],
+  ));
   $file_problem = false;
-
+  echo "<br /><br />";
   if (isset($_POST['submit'])) {
     if ($_FILES['csvfile']['name'] != 'none' and $_FILES['csvfile']['name'] != '') {
       if (!move_uploaded_file($_FILES['csvfile']['tmp_name'],  $configObject->get('cfg_tmpdir') . $userObject->get_user_ID() . "_cohort_update.csv"))  {
@@ -67,7 +63,6 @@ ini_set("auto_detect_line_endings", true);
         exit;
       } else {
         ?>
-        <br /><br /><br />
         <table class="dialog_border" style="width:600px">
         <tr>
         <td class="dialog_header"><img src="../artwork/modules_icon.png" width="48" height="48" alt="Icon" />&nbsp;&nbsp;<?php echo $string['importmodules'] ?></td>

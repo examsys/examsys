@@ -27,7 +27,6 @@ $root = "$root/../";
 require_once $root . 'include/load_config.php';
 require_once $cfg_web_root . 'include/auth.inc';
 require_once $cfg_web_root . 'include/custom_error_handler.inc';
-require_once $cfg_web_root . 'lang/' . $language . '/include/common.php';   // Include common language file that all scripts need
 
 $displayDebug = false; //XML call so debug info messes up the output
 

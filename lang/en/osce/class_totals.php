@@ -55,4 +55,5 @@ $string['marking6'] = array('Clear FAIL', 'BORDERLINE', 'Clear PASS', 'Honours P
 $string['marking7'] = array('Fail', 'Pass');
 $string['publishmarks'] = 'Publish Marks';
 $string['gradepublish'] = 'Marks Published';
+$string['osce'] = 'OSCE paper';
 ?>

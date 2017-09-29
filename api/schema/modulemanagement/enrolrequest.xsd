@@ -12,7 +12,7 @@
                             </xs:choice>
                             <xs:choice>
                                 <xs:element name="moduleid" type="xs:integer"/>
-                                <xs:element name="moduleextid" type="externalid"/>
+                                <xs:group ref="external"/>
                             </xs:choice>
                             <xs:element type="xs:gYear" name="session" minOccurs="0"/>
                             <xs:element name="attempt" type="attempt"/>
@@ -29,7 +29,7 @@
                             </xs:choice>
                             <xs:choice>
                                 <xs:element name="moduleid" type="xs:integer"/>
-                                <xs:element name="moduleextid" type="externalid"/>
+                                <xs:group ref="external"/>
                             </xs:choice>
                             <xs:element type="xs:gYear" name="session"/>
                         </xs:sequence>
@@ -39,6 +39,12 @@
             </xs:sequence>
         </xs:complexType>
     </xs:element>
+    <xs:group name="external">
+        <xs:sequence>
+            <xs:element name="moduleextid" type="externalid"/>
+            <xs:element name="moduleextsys" type="externalsys" minOccurs="0"/>
+        </xs:sequence>
+    </xs:group>
     <xs:simpleType name="attempt">
         <xs:restriction base="xs:integer">
             <xs:minInclusive value="1"/>
@@ -51,7 +57,13 @@
             <xs:maxLength value="255"/>
         </xs:restriction>
     </xs:simpleType>
-        <xs:simpleType name="studentid">
+    <xs:simpleType name="externalsys">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="1"/>
+            <xs:maxLength value="255"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="studentid">
         <xs:restriction base="xs:string">
             <xs:minLength value="1"/>
             <xs:maxLength value="15"/>

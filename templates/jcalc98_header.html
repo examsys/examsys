@@ -1,0 +1,16 @@
+<link rel="stylesheet" type="text/css" href="{{path}}/css/jcalc98.css"/>
+<script type="text/javascript" src="{{path}}/js/jquery-ui-1.10.4.min.js"></script>
+<script type="text/javascript" src="{{path}}/js/jcalc98.min.js"></script>
+<script>
+    $(function () {
+        $('.calc').draggable();
+        $('#lab_off').click(function() {
+            $('.calc').css('display', 'none');
+        });
+        $('.sciCalculator').click(function() {
+            $('.calc').css('display', 'block');
+            $('.calc').css('top',10);
+            $('.calc').css('left',$(window).width() - 280);
+        });
+    });
+</script>

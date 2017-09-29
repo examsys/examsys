@@ -18,7 +18,7 @@
 *
 * Creates a new user (staff or student).
 *
-* @author Simon Wilkinson
+* @author Simon Wilkinson / Richard Whitefoot (UEA)
 * @version 1.0
 * @copyright Copyright (c) 2014 The University of Nottingham
 * @package
@@ -26,57 +26,58 @@
 
 require_once '../include/admin_auth.inc';
 require_once '../include/mb_string.inc.php';
+require '../include/toprightmenu.inc';
 
-$unique_username = true;
-$problem = false;
+$render = new render($configObject);
+$lang['title'] = $string['createnewuser'];
+$additionaljs = "<script type=\"text/javascript\" src=\"../js/jquery.validate.min.js\"></script>";
+$additionaljs .= "<script type=\"text/javascript\" src=\"../js/jquery.user.js\"></script>";
+$additionaljs .= "<script type=\"text/javascript\" src=\"../js/jquery.create_new_user.js\"></script>";
 
-if (isset($_POST['submit'])) {
-  // Check for unique username
-  if (UserUtils::username_exists($_POST['new_username'], $mysqli) !== false) {
-    $unique_username = false;
-    $problem = true;
-  }
+$addtionalcss = "<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/dialog.css\" />
+        <link rel=\"stylesheet\" type=\"text/css\" href=\"/css/list.css\" />
+        <style type=\"text/css\">
+          .dialog_table {background-color:#F1F5FB; border: 1px solid #95AEC8; margin-top:40px; margin-left:auto; margin-right:auto}
+          .field {text-align:right; padding-right:6px; width:120px}
+        </style>";
 
-  switch($_POST['new_grade']) {
-    case 'University Lecturer':
-    case 'University Admin':
-    case 'Technical Staff':
-    case 'NHS Lecturer':
-    case 'NHS Admin':
-    case 'Standards Setter':
-      $tmp_roles = 'Staff';
-      break;
-    case 'Invigilator':
-      $tmp_roles = 'Invigilator';
-      break;
-    case 'Staff External Examiner':
-      $tmp_roles = 'External Examiner';
-      break;
-    case 'Staff Internal Reviewer':
-      $tmp_roles = 'Internal Reviewer';
-      break;
-    default:
-      $tmp_roles = 'Student';
-      break;
-  }
+$breadcrumb = array($string['home'] => "../index.php");
+$action = $_SERVER['PHP_SELF'];
+$render->render_admin_header($lang, $additionaljs, $addtionalcss);
+include '../include/user_search_options.php';
+$render->render_admin_content($breadcrumb, $lang);
+echo '<body>';
+echo draw_toprightmenu();
+$submit = (bool) param::optional('submit', null, param::TEXT, param::FETCH_POST);
+$unique_username = false;
 
-  $new_password = trim($_POST['new_password']);
-  $new_surname = UserUtils::my_ucwords(trim($_POST['new_surname']));
-  $new_username = trim($_POST['new_username']);
-  $new_email = trim($_POST['new_email']);
-  $new_first_names = UserUtils::my_ucwords(trim($_POST['new_first_names']));
-  $new_grade = $_POST['new_grade'];
-	$new_year = (isset($_POST['new_year']) ? $_POST['new_year'] : 1);
+if ($submit) {
+
+  $new_password = trim(check_var('new_password', 'POST', true, false, true, param::TEXT));
+  $new_surname = UserUtils::my_ucwords(trim(check_var('new_surname', 'POST', true, false, true, param::TEXT)));
+  $new_username = trim(check_var('new_username', 'POST', true, false, true, param::TEXT));
+  $new_email = trim(check_var('new_email', 'POST', true, false, true, param::EMAIL));
+  $new_first_names = UserUtils::my_ucwords(trim(check_var('new_first_names', 'POST', true, false, true, param::TEXT)));
+  $new_grade = check_var('new_grade', 'POST', false, false, true, param::TEXT);
+  $new_year = check_var('new_year', 'POST', true, false, true, param::INT);
+  $new_roles = check_var('new_roles', 'POST', false, false, true, param::TEXT);
+  $new_sid = check_var('new_sid', 'POST', false, false, true, param::ALPHANUM);
+  $new_users_title = check_var('new_users_title', 'POST', true, false, true, param::ALPHANUM);
+  $new_gender = check_var('new_gender', 'POST', false, false, true, param::ALPHANUM);
+  $new_welcome = check_var('new_welcome', 'POST', false, false, true, param::BOOLEAN);
+
+  // Check for valid and unique username
+  $unique_username = UserUtils::username_is_valid($new_username) && !UserUtils::username_exists($new_username, $mysqli);
 }
 
-if (isset($_POST['submit']) and $unique_username == true) {
-  if ($new_username == '' or strpos($new_username, '_') !== false or $new_surname == '' or $new_email == '' or $new_first_names == '' or $new_grade == '') {
+if ($submit and $unique_username) {
+  if ($new_username == '' or strpos($new_username, '_') !== false or $new_surname == '' or $new_email == '' or $new_first_names == '' or $new_roles == '' or $new_grade == '') {
     $problem = true;
   } else {
-    $new_userID = UserUtils::create_user($new_username, $new_password, $_POST['new_users_title'], $new_first_names, $new_surname, $new_email, $new_grade, $_POST['new_gender'], $new_year, $tmp_roles, $_POST['new_sid'], $mysqli);
+    $new_userID = UserUtils::create_user($new_username, $new_password, $new_users_title, $new_first_names, $new_surname, $new_email, $new_grade, $new_gender, $new_year, $new_roles, $new_sid, $mysqli);
 
     // Send out email welcome.
-    if (isset($_POST['new_welcome']) and $_POST['new_welcome'] != '') {
+    if (isset($new_welcome) and $new_welcome != '') {
       $result = $mysqli->prepare("SELECT email FROM users WHERE username = ?");
       $result->bind_param('s', $userObject->get_username());
       $result->execute();
@@ -88,7 +89,7 @@ if (isset($_POST['submit']) and $unique_username == true) {
       $headers = "From: $tmp_email\n";
       $headers .= "MIME-Version: 1.0\nContent-type: text/html; charset=UTF-8\n";
       $headers .= "bcc: $tmp_email\n";
-      $sname = ucwords($_POST['new_surname']);
+      $sname = ucwords($new_surname);
       $message = <<< MESSAGE
 <!DOCTYPE html>
 <html>
@@ -101,15 +102,15 @@ h2 {font-size:120%}
 </style>
 </head>
 <body>
-<p>{$string['dear']} {$_POST['new_users_title']} {$sname},</p>
+<p>{$string['dear']} {$new_users_title} {$sname},</p>
 <p>{$string['email1']}</p>
-<p>{$string['username']}: {$_POST['new_username']}<br />
-{$string['password']}: {$_POST['new_password']}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"color:#808080\">{$string['casesensitive']}</span></p>
+<p>{$string['username']}: {$new_username}<br />
+{$string['password']}: {$new_password}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"color:#808080\">{$string['casesensitive']}</span></p>
 MESSAGE;
 
-      if (strpos($tmp_roles,'Staff') !== false) {
+      if (strpos($new_roles,'Staff') !== false) {
         $message .= "<p>" . $string['email2'] . " <a href=\"https://{$_SERVER['HTTP_HOST']}/\">https://{$_SERVER['HTTP_HOST']}/staff/</a></p>";
-      } elseif (strpos($tmp_roles,'Student') !== false) {
+      } elseif (strpos($new_roles,'Student') !== false) {
         $message .= "<p>" . $string['email2'] . " <a href=\"https://{$_SERVER['HTTP_HOST']}/\">https://{$_SERVER['HTTP_HOST']}/students/</a></p>";
       } else {
         $message .= "<p>" . $string['email2'] . " <a href=\"https://{$_SERVER['HTTP_HOST']}/\">https://{$_SERVER['HTTP_HOST']}/</a></p>";
@@ -118,108 +119,16 @@ MESSAGE;
       $message .= "</body>\n</html>";
       mail ($new_email, $subject, $message, $headers) or print "<p>" . $string['couldnotsend'] . " <strong>" . $new_email . "</strong>.</p>";
     }
-    ?>
-<!DOCTYPE html>
-<html>
-<head>
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta http-equiv="content-type" content="text/html;charset=<?php echo $configObject->get('cfg_page_charset') ?>" />
-
-  <title>Rog&#333;: <?php echo $string['createnewuser'] . ' ' . $configObject->get('cfg_install_type') ?></title>
-
-  <link rel="stylesheet" type="text/css" href="../css/body.css" />
-  <link rel="stylesheet" type="text/css" href="../css/header.css" />
-  <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
-  <link rel="stylesheet" type="text/css" href="../css/dialog.css" />
-  <link rel="stylesheet" type="text/css" href="../css/list.css" />
-  
-  <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
-  <script type="text/javascript" src="../js/staff_help.js"></script>
-  <script type="text/javascript" src="../js/toprightmenu.js"></script>
-</head>
-<body>
-<?php
-  require '../include/toprightmenu.inc';
-  include '../include/user_search_options.php';
-  
-	echo draw_toprightmenu();
 ?>
-<div id="content">
-<div class="head_title">
-  <div><img src="../artwork/toprightmenu.gif" id="toprightmenu_icon" /></div>
-  <div class="breadcrumb"><a href="../index.php"><?php echo $string['home'] ?></a></div>
-  <div class="page_title"><?php echo $string['createnewuser'] ?></div>
-</div>
-
-<p>&nbsp;<?php echo $string['newaccountcreated'] . ' ' . $_POST['new_users_title'] . ' ' . $_POST['new_surname'] ?>.</p>
+<p>&nbsp;<?php echo $string['newaccountcreated'] . ' ' . $new_users_title . ' ' . $new_surname ?>.</p>
 <div>&nbsp;<input type="button" name="gotouser" value="View Account" class="ok" onclick="window.location='details.php?userID=<?php echo $new_userID ?>'" /></div>
-
-</div>
-      <?php
+<?php
     }
   }
-  if (!isset($_POST['submit']) or $problem) {
+  if (!$submit or !$unique_username) {
 ?>
-<!DOCTYPE html>
-<html>
-<head>
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta http-equiv="content-type" content="text/html;charset=<?php echo $configObject->get('cfg_page_charset') ?>" />
 
-  <title>Rog&#333;: <?php echo "{$string['createnewuser']} {$configObject->get('cfg_install_type')}" ?></title>
-
-  <link rel="stylesheet" type="text/css" href="../css/body.css" />
-  <link rel="stylesheet" type="text/css" href="../css/header.css" />
-  <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
-  <link rel="stylesheet" type="text/css" href="../css/dialog.css" />
-  <link rel="stylesheet" type="text/css" href="../css/list.css" />
-  <style>
-    .dialog_table {background-color:#F1F5FB; border: 1px solid #95AEC8; margin-top:40px; margin-left:auto; margin-right:auto}
-    .field {text-align:right; padding-right:6px; width:120px}
-  </style>
-
-  <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
-  <script type="text/javascript" src="../js/jquery.validate.min.js"></script>
-  <script type="text/javascript" src="../js/staff_help.js"></script>
-  <script type="text/javascript" src="../js/toprightmenu.js"></script>
-  <script>
-    $(function () {
-      $('#theform').validate({
-        errorClass: 'errfield',
-        errorPlacement: function(error,element) {
-          return true;
-        }
-      });
-      $('form').removeAttr('novalidate');
-      
-      $('#ldaplookup').click(function() {
-        notice = window.open("ldaplookup.php","ldap","width=650,height=300,left=30,top=20,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
-        notice.moveTo(screen.width/2-325, screen.height/2-150);
-        if (window.focus) {
-          notice.focus();
-        }        
-      });
-    });
-  </script>
-</head>
-
-<body>
-<?php
-  require '../include/user_search_options.php';
-  require '../include/toprightmenu.inc';
-
-	echo draw_toprightmenu();
-?>
-<div id="content">
-
-  <div class="head_title">
-    <div><img src="../artwork/toprightmenu.gif" id="toprightmenu_icon" /></div>
-    <div class="breadcrumb"><a href="../index.php"><?php echo $string['home'] ?></a></div>
-    <div class="page_title"><?php echo $string['createnewuser'] ?></div>
-  </div>
-
-<form method="post" id="theform" name="newUser" action="<?php echo $_SERVER['PHP_SELF']; ?>" autocomplete="off">
-
+<form method="post" id="theform" name="newUser" action="<?php echo $action; ?>" autocomplete="off">
 <table border="0" cellspacing="0" cellpadding="3" class="dialog_table">
 <tr><td class="dialog_header" style="border-bottom: 1px solid #95AEC8; line-height:170%" colspan="2"><img src="../artwork/user_female_32.png" width="32" height="32" alt="User Icon" style="float:left; padding-right:8px" /><?php echo $string['createnewuser'] ?></td></tr>
 <?php
@@ -236,11 +145,11 @@ MESSAGE;
   }
 ?>
 <tr><td class="field"><?php echo $string['title'] ?></td><td>
-<select id="new_users_title" name="new_users_title" size="1">
+<select id="new_users_title" name="new_users_title" size="1" required>
 
 <?php
 if ($language != 'en') {
-  echo "<option value=\"\"></option>\n";
+  echo "<option label=\"\"></option>\n";
 }
 $titles = explode(',', $string['title_types']);
 foreach ($titles as $tmp_title) {
@@ -248,19 +157,20 @@ foreach ($titles as $tmp_title) {
 }
 ?>
 </select></td></tr>
-<tr><td class="field"><?php echo $string['firstnames'] ?></td><td><input<?php if (isset($_POST['submit']) and (!isset($new_first_names) or $new_first_names == '')) echo ' class="required"'; ?> type="text" id="new_first_names" name="new_first_names" size="40" maxlength="60" value="<?php if (isset($new_first_names)) echo $new_first_names; ?>" required /></td></tr>
+<tr><td class="field"><?php echo $string['firstnames'] ?></td><td><input<?php if ($submit and (!isset($new_first_names) or $new_first_names == '')) echo ' class="required"'; ?> type="text" id="new_first_names" name="new_first_names" size="40" maxlength="60" value="<?php if (isset($new_first_names)) echo $new_first_names; ?>" required /></td></tr>
 <tr><td class="field"><?php echo $string['lastname'] ?></td><td><input<?php if (isset($new_surname) and $new_surname == '') echo ' class="required"'; ?> type="text" id="new_surname" name="new_surname" size="40" maxlength="35" value="<?php if (isset($new_surname)) echo $new_surname; ?>" required /></td></tr>
+<tr><td class="field"><?php echo $string['studentid'] ?></td><td><input id="new_studentid" type="text" size="15" name="new_sid" /><span style="color:#808080"><?php echo $string['onlyifstudent']; ?></span></td></tr>
 <tr><td class="field"><?php echo $string['email'] ?></td><td><input<?php if (isset($new_email) and $new_email == '') echo ' class="required"'; ?> type="email" id="new_email" name="new_email" size="40" maxlength="65" value="<?php if (isset($new_email)) echo $new_email; ?>" required /></td></tr>
 <tr><td class="field"><?php echo $string['username'] ?></td><td><input<?php if (isset($new_username) and ($new_username == '' or strpos($new_username, '_') !== false or !$unique_username)) echo ' class="required"'; ?> type="text" id="new_username" name="new_username" size="12" maxlength="15" value="<?php if (isset($new_username)) echo $new_username; ?>" autocomplete="off" required />
 &nbsp;&nbsp;&nbsp;<?php echo $string['password'] ?> <input type="text" id="new_password" name="new_password" value="<?php
-  if (isset($_POST['password'])) {
-    echo $_POST['password'];
+  if (isset($new_password)) {
+    echo $new_password;
   } else {
     echo gen_password();
   }
 ?>" size="12" autocomplete="off" required /></td></tr>
 <tr><td class="field"><?php echo $string['yearofstudy'] ?></td><td>
-<select id="new_yos" name="new_year">
+<select id="new_yos" name="new_year" required>
 <?php
   for ($tmp_year=1; $tmp_year<=6; $tmp_year++) {
     if ($tmp_year == 1) {
@@ -272,10 +182,87 @@ foreach ($titles as $tmp_title) {
 ?>
 </select>
 </td></tr>
-<tr><td class="field"><?php echo $string['typecourse'] ?></td><td>
-<select name="new_grade" id="new_grade" size="1" style="width:350px"<?php if (isset($new_grade) and $new_grade == '') echo ' class="required"' ?> required>
-<option value=""></option>
-<optgroup label="<?php echo $string['universitystaff']; ?>">
+<tr>
+<td class="field"><?php echo $string['gender'] ?></td><td>
+<select id="new_gender" name="new_gender" size="1">
+<option label=" "></option>
+<option value="Male"<?php if (isset($new_gender) and $new_gender == 'Male') echo ' selected' ?>><?php echo $string['male'] ?></option>
+<option value="Female"<?php if (isset($new_gender) and $new_gender == 'Female') echo ' selected' ?>><?php echo $string['female'] ?></option>
+<option value="Other"<?php if (isset($new_gender) and $new_gender == 'Other') echo ' selected' ?>><?php echo $string['other'] ?></option>
+</select>
+</td>
+</tr>
+<tr><td class="field"><?php echo $string['status'] ?></td><td>
+<?php
+  echo "<select name=\"new_roles\" id=\"new_roles\" class=\"required\" required>";
+  echo "<option label=\"\" value=\"\"> </option>";
+
+  $old_optgroup = '';
+
+  $roles_array = array('#Staff', 'Staff');
+  if ($userObject->has_role('SysAdmin')) {
+    $roles_array[] = 'Staff,Admin';
+    $roles_array[] = 'Staff,SysAdmin';
+  } elseif ($userObject->has_role('Admin')) {
+    $roles_array[] = 'Staff,Admin';
+  }
+  $roles_array[] = 'External Examiner';
+  $roles_array[] = 'Internal Reviewer';
+  $roles_array[] = 'Staff,Standards Setter';
+  $roles_array[] = 'Invigilator';
+  $roles_array[] = '#Students';
+  $roles_array[] = 'Student';
+  $roles_array[] = 'Staff,Student';
+
+  foreach ($roles_array as $value) {
+    if (substr($value,0,1) == '#') {
+      $parentRole = $string[substr($value,1)];
+      echo "<optgroup label=\"" . $parentRole . "\">\n";
+    } else {
+      $display_val = str_replace(' ', '', $value);
+      $display_val = str_replace(',', '', $display_val);
+      $display_val = $string[strtolower($display_val)];
+      echo "<option value=\"$value\" data-parent=\"$parentRole\">$display_val</option>";
+    }
+
+    if (substr($value,0,1) == '#') {
+      $old_optgroup = $value;
+      if($old_optgroup != $value) {
+        echo "</optgroup>\n";
+      }
+    }
+
+  }
+  echo "</optgroup>\n</select>\n";
+?>
+</td></tr>
+<tr><td class="field" id="typecourse"><?php echo $string['typecourse']; ?></td><td>
+<select name="new_grade" id="new_grade" size="1" style="width:350px" data-prev-parent="" required>
+<?php  
+  echo "<option label=\"\" value=\"\"> </option>";
+  
+  $old_school = '';
+  $result = $mysqli->prepare("SELECT DISTINCT c.name, c.description, s.school FROM courses c INNER JOIN schools s ON c.schoolid=s.id WHERE s.school NOT IN ('university','NHS','N/A') ORDER BY s.school, c.name");
+  $result->execute();
+  $result->bind_result($name, $description, $school);
+  while ($result->fetch()) {
+    if ($old_school != $school) {
+      echo "<optgroup data-role=\"Students\" label=\"$school\">\n";
+    }
+    
+    echo "<option value=\"$name\">$name: $description</option>\n";
+    
+    $old_school = $school;
+    
+    if ($old_school != $school) {
+      echo "</optgroup>";
+    }
+  }
+  $result->close();
+  
+  echo "\n";
+?>
+<optgroup data-role="Staff" label="<?php echo $string['universitystaff']; ?>">
 <option value="University Lecturer"><?php echo $string['academiclecturer'] ?></option>
 <option value="University Admin"><?php echo $string['administrator'] ?></option>
 <option value="Technical Staff"><?php echo $string['ittechnical'] ?></option>
@@ -291,53 +278,20 @@ if (strpos($_SERVER['HTTP_HOST'],'.uk') !== false) {
 ?>
 <option value="Staff External Examiner"><?php echo $string['externalexaminer'] ?></option>
 <option value="Invigilator"><?php echo $string['invigilator'] ?></option>
-<?php
-  $old_school = '';
-  $result = $mysqli->prepare("SELECT DISTINCT c.name, c.description, s.school FROM courses c INNER JOIN schools s ON c.schoolid=s.id WHERE s.school NOT IN ('university','NHS','N/A') ORDER BY s.school, c.name");
-  $result->execute();
-  $result->bind_result($name, $description, $school);
-  while ($result->fetch()) {
-    if ($old_school != $school) {
-      echo "</optgroup>\n<optgroup label=\"" . $string['students'] . " - $school\">\n";
-    }
-    echo "<option value=\"$name\">$name: $description</option>\n";
-    $old_school = $school;
-  }
-  $result->close();
-?>
-</optgroup>
-</select>
-</td></tr>
-
-<tr>
-<td class="field"><?php echo $string['gender'] ?></td><td>
-<select id="new_gender" name="new_gender" size="1">
-<option value=""></option>
-<option value="Male"<?php if (isset($_POST['gender']) and $_POST['gender'] == 'Male') echo ' selected' ?>><?php echo $string['male'] ?></option>
-<option value="Female"<?php if (isset($_POST['gender']) and $_POST['gender'] == 'Female') echo ' selected' ?>><?php echo $string['female'] ?></option>
-<option value="Other"<?php if (isset($_POST['gender']) and $_POST['gender'] == 'Other') echo ' selected' ?>><?php echo $string['other'] ?></option>
-</select>
-</td>
-</tr>
-<tr><td class="field"><?php echo $string['studentid'] ?></td><td><input id="new_studentid" type="text" size="15" name="new_sid" /></td></tr>
-<tr><td class="field"&nbsp;</td><td style="color:#808080"><?php echo $string['onlyifstudent'] ?></td></tr>
+</select></td></tr>
 <tr><td colspan="2">&nbsp;</td></tr>
 <tr><td>&nbsp;</td><td><input type="checkbox" name="new_welcome" value="1" /><?php echo $string['sendwelcomeemail'] ?></td></tr>
 <tr><td colspan="2" style="text-align:center; padding-bottom:12px">
 <input type="submit" name="submit" value="<?php echo $string['createaccount'] ?>" class="ok" /><input type="button" name="cancel" value="<?php echo $string['cancel'] ?>" class="cancel" onclick="history.back();" /></td></tr>
 </table>
-
 </form>
-
 <?php
   }
-  $mysqli->close();
+$mysqli->close();
 
-  if ($unique_username != true) {
-    echo '<script>alert("' . sprintf($string['usernameinuse'], $_POST['new_username']) . '")</script>';
-  }
+if ($submit and !$unique_username) {
+  echo '<script>alert("' . sprintf($string['usernameinuse'], $new_username) . '")</script>';
+}
+
+$render->render_admin_footer();
 ?>
-</div>
-
-</body>
-</html>

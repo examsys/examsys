@@ -277,8 +277,17 @@ require '../config/finish.inc';
       window.close();
     });
     
+    if (window.opener == null) {
+      $('#close').css('display','none');
+    }
 	});
 </script>
+<?php
+  if($configObject->get_setting('core', 'paper_mathjax')) {
+    $render = new render($configObject);
+    $render->render(null, null, 'mathjax.html');
+  }
+?>
 </head>
 <body>
 <?php
@@ -334,20 +343,8 @@ require '../config/finish.inc';
   }
 
   // Get any marking override for the paper
-  $overrides = array();
-  $sql = "SELECT m.q_id, title, surname, date_marked, new_mark_type, adjmark
-          FROM marking_override m INNER JOIN users u ON m.marker_id = u.id
-          INNER JOIN log{$log_type} l ON m.log_id = l.id
-          WHERE user_id = ? AND paper_id = ?";
-  $result = $mysqli->prepare($sql);
-  $result->bind_param('ii', $temp_userID, $paperID);
-  $result->execute();
-  $result->store_result();
-  $result->bind_result($o_q_id, $o_title, $o_surname, $o_date_marked, $o_new_mark_type, $o_adjmark);
-  while($result->fetch()) {
-    $overrides[$o_q_id] = array('q_id' => $o_q_id, 'title' => $o_title, 'surname' => $o_surname, 'date_marked' => $o_date_marked, 'new_mark_type' => $o_new_mark_type, 'adjmark' => $o_adjmark);
-  }
-  $result->close();
+  $paper_utils = Paper_utils::get_instance();
+  $overrides = $paper_utils->get_marking_overrides($log_type, $temp_userID, $paperID);
   
   $status_array = QuestionStatus::get_all_statuses($mysqli, $string, true);
   if ($show_feedback) {

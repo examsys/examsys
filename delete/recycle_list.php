@@ -40,7 +40,7 @@ if (isset($_GET['module'])) {
 if (isset($_GET['folder'])) {
   $folder = $_GET['folder'];
 } else {
-  $folder = '';  
+  $folder = '';
 }
 ?>
 <!DOCTYPE html>
@@ -48,9 +48,9 @@ if (isset($_GET['folder'])) {
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta http-equiv="content-type" content="text/html;charset=<?php echo $configObject->get('cfg_page_charset') ?>" />
-  
+
   <title>Rog&#333;: <?php echo $string['recyclebin'] . ' ' . $configObject->get('cfg_install_type'); ?></title>
-  
+
   <link rel="stylesheet" type="text/css" href="../css/body.css" />
   <link rel="stylesheet" type="text/css" href="../css/header.css" />
   <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
@@ -87,7 +87,7 @@ if (isset($_GET['folder'])) {
     function clearAll() {
       $('.highlight').removeClass('highlight');
     }
-  
+
     function selQ(lineID, itemID, evt) {
       $('#menu1a').hide();
       $('#menu1b').show();
@@ -117,10 +117,10 @@ if (isset($_GET['folder'])) {
       clearAll();
       $('#itemID').val('');
     }
-    
+
     $(function () {
       if ($("#maindata").find("tr").size() > 1) {
-        $("#maindata").tablesorter({ 
+        $("#maindata").tablesorter({
           dateFormat: '<?php echo $configObject->get('cfg_tablesorter_date_time'); ?>',
           sortList: [[1,0]]
         });
@@ -135,7 +135,8 @@ if (isset($_GET['folder'])) {
   require '../include/toprightmenu.inc';
 
 	echo draw_toprightmenu();
-$recycle_bin = RecycleBin::get_recyclebin_contents($userObject, $mysqli);
+$recycleObj = new RecycleBin( );
+$recycle_bin = $recycleObj->get_recyclebin_contents();
 
 $mysqli->close();
 
@@ -151,13 +152,13 @@ if (count($recycle_bin) > 0) {
 
 ?>
 <div id="content">
-  
+
 <div class="head_title">
   <div><img src="../artwork/toprightmenu.gif" id="toprightmenu_icon" /></div>
   <div class="breadcrumb"><a href="../index.php"><?php echo $string['home'] ?></a></div>
   <div class="page_title"><?php echo $string['recyclebin'] ?></div>
-</div>  
-  
+</div>
+
 <table id="maindata" class="header tablesorter" cellspacing="0" cellpadding="0" border="0" style="width:100%">
 <thead>
   <tr>
@@ -182,6 +183,14 @@ for ($item=0; $item<$list_size; $item++) {
     echo "<tr class=\"l\" id=\"link_$item\" onselectstart=\"return false\" onclick=\"selQ($item,'f" . $recycle_bin[$item]['id'] . "',event)\"><td class=\"icon\"><img src=\"../artwork/yellow_folder.png\" width=\"16\" height=\"16\" /></td><td>" . $split_name[0] . "</td><td>" . dateDisplay($recycle_bin[$item]['deleted']) . "</td><td><nobr>" . $string['folder'] . "</nobr></td></tr>\n";
   } elseif ($recycle_bin[$item]['type'] == 'academic_year') {
     echo "<tr class=\"l\" id=\"link_$item\" onselectstart=\"return false\" onclick=\"selQ($item,'a" . $recycle_bin[$item]['id'] . "',event)\"><td class=\"icon\"><img src=\"../artwork/add_sessions_16.png\" width=\"16\" height=\"16\" /></td><td>" . $split_name[0] . "</td><td>" . dateDisplay($recycle_bin[$item]['deleted']) . "</td><td><nobr>" . $string['academicsession'] . "</nobr></td></tr>\n";
+  } elseif ($recycle_bin[$item]['type'] == 'modules') {
+    echo "<tr class=\"l\" id=\"link_$item\" onselectstart=\"return false\" onclick=\"selQ($item,'m" . $recycle_bin[$item]['id'] . "',event)\"><td class=\"icon\"><img src=\"../artwork/module_icon_16.png\" width=\"16\" height=\"16\" /></td><td>" . $split_name[0] . "</td><td>" . dateDisplay($recycle_bin[$item]['deleted']) . "</td><td><nobr>" . $string['module'] . "</nobr></td></tr>\n";
+  } elseif ($recycle_bin[$item]['type'] == 'courses') {
+    echo "<tr class=\"l\" id=\"link_$item\" onselectstart=\"return false\" onclick=\"selQ($item,'c" . $recycle_bin[$item]['id'] . "',event)\"><td class=\"icon\"><img src=\"../artwork/degree_icon_16.png\" width=\"16\" height=\"16\" /></td><td>" . $split_name[0] . "</td><td>" . dateDisplay($recycle_bin[$item]['deleted']) . "</td><td><nobr>" . $string['course'] . "</nobr></td></tr>\n";
+  } elseif ($recycle_bin[$item]['type'] == 'schools') {
+    echo "<tr class=\"l\" id=\"link_$item\" onselectstart=\"return false\" onclick=\"selQ($item,'s" . $recycle_bin[$item]['id'] . "',event)\"><td class=\"icon\"><img src=\"../artwork/school_icon_16.png\" width=\"16\" height=\"16\" /></td><td>" . $split_name[0] . "</td><td>" . dateDisplay($recycle_bin[$item]['deleted']) . "</td><td><nobr>" . $string['school'] . "</nobr></td></tr>\n";
+  } elseif ($recycle_bin[$item]['type'] == 'faculty') {
+    echo "<tr class=\"l\" id=\"link_$item\" onselectstart=\"return false\" onclick=\"selQ($item,'u" . $recycle_bin[$item]['id'] . "',event)\"><td class=\"icon\"><img src=\"../artwork/faculty_16.png\" width=\"16\" height=\"16\" /></td><td>" . $split_name[0] . "</td><td>" . dateDisplay($recycle_bin[$item]['deleted']) . "</td><td><nobr>" . $string['faculty'] . "</nobr></td></tr>\n";
   } else {
     echo "<tr class=\"l\" id=\"link_$item\" onselectstart=\"return false\" onclick=\"selQ($item,'q" . $recycle_bin[$item]['id'] . "',event)\"><td class=\"icon\"><img src=\"../artwork/question_item_icon.gif\" width=\"16\" height=\"16\" /></td><td>" . $split_name[0] . "</td><td>" . dateDisplay($recycle_bin[$item]['deleted']) . "</td><td><nobr>" . $string[strtolower($recycle_bin[$item]['subtype'])] . "</nobr></td></tr>\n";
   }

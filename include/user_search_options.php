@@ -198,12 +198,13 @@ search_utils::display_staff_modules_dropdown($userObject, $string, $mysqli);
   ?></a></td></tr>
   </table>
 
+<?php if (isset($state['advanced']) and $state['advanced'] == 'block') : ?>
+  <div id="menu3" style="margin-left:15px; width:180px; display: <?= $state['advanced'] ?>">
+<?php else : ?>
+  <div id="menu3" style="margin-left:15px; width:180px; display:none">
+<?php endif; ?>
+
 <?php
-  if (isset($state['advanced']) and $state['advanced'] == 'block') {
-    echo "<div id=\"menu3\" style=\"margin-left:15px; width:180px; display:" . $state['advanced'] . "\">\n";
-  } else {
-    echo "<div id=\"menu3\" style=\"margin-left:15px; width:180px; display:none\">\n";
-  }
   if (isset($state['chkbox1']) and $state['chkbox1'] == 'false') {
     echo "<div><input class=\"chk\" type=\"checkbox\" id=\"chkbox1\" name=\"students\" /><label for=\"chkbox1\">" . $string['students'] . "</label></div>\n";
   } else {
@@ -276,6 +277,18 @@ search_utils::display_staff_modules_dropdown($userObject, $string, $mysqli);
     echo "<div><input class=\"chk chkstaff\" type=\"checkbox\" id=\"chkbox9\" name=\"invigilators\" /><label for=\"chkbox9\">" . $string['invigilators'] . "</label></div>\n";
   }
 ?>
+</div>
+
+<br />
+
+<div style="text-align:center">
+    <?= ucfirst($string['show']) ?>
+    <select name="limit">
+        <option>100</option>
+        <option selected>1000</option>
+        <option>10000</option>
+    </select>
+    <?= strtolower($string['results']) ?>
 </div>
 
 <br />

@@ -1,0 +1,45 @@
+.formElments,.previewWrapper{
+    display: block;
+    font-size: 15px;
+    font-family: inherit;
+    padding: 5px 0px 10px 5px;
+    float: left;
+}
+.formElments{
+    width:58%
+}
+.previewWrapper{
+    width: 38%;
+}
+.previewWrapper h3{
+    margin-bottom: 10px;
+    margin-top: 20px;
+}
+#rubyPreview{
+    background: #fff;
+    padding: 10% 10% 10% 10%;
+    text-align: center;
+    width: 80%;
+    font-size: 25px;
+    min-height: 96px;
+}
+.formElments title{
+    display: block;
+    padding: 10px 0px 10px 0px;
+}
+.formElments input{
+    height: 20px;
+    padding: 5px;
+    border-radius: 5px;
+}
+.mceActionPanel{
+    float: left;
+    width: 100%;
+    display: block;
+}
+.mceActionPanel input{
+    padding: 5px 15px 5px 15px;
+}
+.formElments textarea{
+    width:90%;
+}

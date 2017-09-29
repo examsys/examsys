@@ -1,0 +1,5 @@
+denied_log:
+  -
+    id: 1
+    userID: 1
+    msg: 'An attempt to access a file outside the allowed media directories was made.'

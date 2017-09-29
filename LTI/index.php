@@ -133,8 +133,9 @@ if (!$lti->isInstructor()) {
       }
     }
     $_SESSION['lti']['paperlink'] = $returned[0];
-    header("location: ../paper/user_index.php?id=" . $returned[0]);
-    echo "Please click <a href='../paper/user_index.php?id=" . $returned[0] . ".>here</a> to continue";
+    $href = '../paper/user_index.php?id=' . $returned[0];
+    header("location: {$href}");
+    echo sprintf($string['redirectmessage'], $href);
     exit();
 
   }
@@ -158,8 +159,9 @@ if (!$lti->isInstructor()) {
     
     if (!$lti_i->allow_staff_edit_link()) {
       $_SESSION['lti']['paperlink'] = $returned[0];
-      header("location: ../paper/user_index.php?id=" . $returned[0]);
-      echo "Please click <a href='../paper/user_index.php?id=" . $returned[0] . ".>here</a> to continue";
+      $href = '../paper/user_index.php?id=' . $returned[0];
+      header("location: {$href}");
+      echo sprintf($string['redirectmessage'], $href);
       exit();
     } else {
       // allow editing of the stored link
@@ -218,7 +220,8 @@ if (!$lti->isInstructor()) {
             exit(); 
           }
           $schoolID = SchoolUtils::get_school_id_by_name($moduleinfo[3], $mysqli);
-          $modid = module_utils::add_modules($moduleinfo[1], $moduleinfo[5], 1, $schoolID, '', $sms_api, $selfEnroll, $peer, $external, $stdset, $mapping, $neg_marking, 0, $mysqli, 1, 0, 1, 1, '07/01');
+          $externalid = $lti_i->module_id_translate($lti->getExternalID());
+          $modid = module_utils::add_modules($moduleinfo[1], $moduleinfo[5], 1, $schoolID, '', $sms_api, $selfEnroll, $peer, $external, $stdset, $mapping, $neg_marking, 0, $mysqli, 1, 0, 1, 1, 0, '07/01', $externalid);
           if ($modid === false) {
             $problem = true;
           }
@@ -326,7 +329,7 @@ END;
       unset($_SESSION['lti']);
       UserNotices::display_notice($string['NoPapers'], $string['NoPapersDesc'], '../artwork/access_denied.png', '#C00000');
 
-      echo '<p>Module(s): ' . $modules . '</p>';
+      echo sprintf('<p>%s: %s</p>', $string['modulescaption'], $modules);
     }
   }
 }

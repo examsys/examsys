@@ -905,12 +905,13 @@ Class PaperUtils {
   /**
    * Get internal rogo properties id from external id
    * @param string $externalid external system id
+   * @param string $externalsys external system source
    * @param mysqli $db db connection
    * @return integer|bool rogo id or false on error
    */
-  static public function get_id_from_externalid($externalid, $db) {
-    $result = $db->prepare("SELECT property_id FROM properties WHERE externalid = ? AND deleted IS NULL");
-    $result->bind_param('s', $externalid);
+  static public function get_id_from_externalid($externalid, $externalsys, $db) {
+    $result = $db->prepare("SELECT property_id FROM properties WHERE externalid = ? AND externalsys = ? AND deleted IS NULL");
+    $result->bind_param('ss', $externalid, $externalsys);
     $result->execute();
     $result->store_result();
     $result->bind_result($id);
@@ -1224,5 +1225,32 @@ Class PaperUtils {
       $assessment->schedule($new_paper_id, $postparams['period'], $postparams['barriers_needed'], $postparams['cohort_size'], $postparams['notes'] , $postparams['sittings'] , $postparams['campus']);
     }
     return array('calendar_year' => $calendar_year, 'new_calendar_year' => $new_calendar_year, 'moduleIDs' => $moduleIDs, 'new_paper_id' => $new_paper_id);
+  }
+
+  /**
+   * Get marking overrides for a user on a paper
+   * @param enum $log_type type of paper
+   * @param integer $temp_userID user id
+   * @param integer $paperID paper id
+   * @return array
+   */
+  public function get_marking_overrides($log_type, $temp_userID, $paperID) {
+      $overrides = array();
+      $configObject = \Config::get_instance();
+      $db = $configObject->db;
+      $sql = "SELECT m.q_id, title, surname, date_marked, new_mark_type, adjmark
+          FROM marking_override m INNER JOIN users u ON m.marker_id = u.id
+          INNER JOIN log{$log_type} l ON m.log_id = l.id
+          WHERE user_id = ? AND paper_id = ?";
+      $result = $db->prepare($sql);
+      $result->bind_param('ii', $temp_userID, $paperID);
+      $result->execute();
+      $result->store_result();
+      $result->bind_result($o_q_id, $o_title, $o_surname, $o_date_marked, $o_new_mark_type, $o_adjmark);
+      while($result->fetch()) {
+        $overrides[$o_q_id] = array('q_id' => $o_q_id, 'title' => $o_title, 'surname' => $o_surname, 'date_marked' => $o_date_marked, 'new_mark_type' => $o_new_mark_type, 'adjmark' => $o_adjmark);
+      }
+      $result->close();
+      return $overrides;
   }
 }

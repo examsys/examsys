@@ -728,6 +728,7 @@ function display_option($firstoption, $q_id, $question_no, &$part_id, $display_o
           $blank_details[$blank_count] = substr($blank_details[$blank_count], (strpos($blank_details[$blank_count],']') + 1));
           $answer_options = explode('[/blank]', $blank_details[$blank_count]);
           $answer_list = explode(',', $answer_options[0]);
+          $answer_list = param::clean_array($answer_list, param::TEXT);
           echo "<select name=\"q" . $question_no . "_" . $part_id . "\"";
           if (substr($exclude, $blank_count-1, 1) == '1') echo ' style="background-color: rgb(255, 192, 192); color: rgb(128, 0, 0);"';
           echo ">\n";

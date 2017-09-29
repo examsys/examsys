@@ -109,7 +109,7 @@ if ($userObject->has_role('Staff') and check_staff_modules($moduleID, $userObjec
   check_paper_password($propertyObj->get_property_id(), $propertyObj->get_password(), $string, $mysqli);
 
   // Check time security.
-  check_datetime($propertyObj->get_start_date(), $propertyObj->get_end_date(), $string, $mysqli);
+  check_datetime($propertyObj->get_start_date(), $propertyObj->get_end_date(), $string, $mysqli, $is_first_launch);
 
   //Check room security.
   $low_bandwidth = check_labs(  $propertyObj->get_paper_type(),
@@ -150,12 +150,13 @@ $allow_timing = false;
 * Extract the posted variables.
 */
 if (!$is_first_launch) {
-  if ($_POST['button_pressed'] == 'next') {
-    $current_screen = $_POST['current_screen'];
-  } elseif ($_POST['button_pressed'] == 'previous') {
-    $current_screen = $_POST['current_screen'] - 2;
-  } elseif ($_POST['button_pressed'] == 'jump_screen') {
-    $current_screen = $_POST['jump_screen'];
+  $button_pressed = param::optional('button_pressed', '', param::TEXT, param::FETCH_POST);
+  if ($button_pressed == 'next') {
+    $current_screen = $post_screen;
+  } elseif ($button_pressed == 'previous') {
+    $current_screen = $post_screen - 2;
+  } elseif ($button_pressed == 'jumpscreen') {
+    $current_screen = param::optional('jumpscreen', 0, param::INT, param::FETCH_POST);
   } elseif ($is_fire_alarm) {
     $current_screen = $_POST['current_screen'];
   }
@@ -169,6 +170,8 @@ if ($is_preview_mode_first_launch == true or ($is_first_launch and !$do_restart)
   $log_metadata->create_new_record($current_address, $userObject->get_grade(), $userObject->get_year(), $attempt, $lab_name);
 
 } elseif ($log_metadata->get_record() == false) { //load the data and check for no records
+  // Check the time again, just in case the user realised they can add a post screen check to get around the first launch check.
+  check_datetime($propertyObj->get_start_date(), $propertyObj->get_end_date(), $string, $mysqli, true);
   //we have no log_metadata record so make one
   $log_metadata->create_new_record($current_address, $userObject->get_grade(), $userObject->get_year(), $attempt, $lab_name);
 }
@@ -350,13 +353,44 @@ if ($css != '') {
   echo "<style type=\"text/css\">\n$css\n</style>\n";
 }
 ?>
-<script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
-<?php
-  if ($propertyObj->get_latex_needed() == 1) {
-    echo "<script type=\"text/javascript\" src=\"../js/jquery-migrate-1.2.1.min.js\"></script>\n";
-    echo "<script type=\"text/javascript\" src=\"../tools/mee/mee/js/mee_src.js\"></script>\n";
-  }
 
+<style type="text/css">
+    #enhancedcalc_warning{
+        position:absolute;
+        top:100px;
+        left:100px;
+        width:500px;
+        height:250px;
+        border:3px solid #1958B7;
+        background-color:#fff
+    }
+    #enhancedcalc_warning_icon{
+        float:left;
+        margin:10px 15px 10px 10px
+    }
+    #enhancedcalc_warning_msg{
+        margin:10px 10px 10px 90px;
+        text-align:left
+    }
+    #enhancedcalc_warning_buttons{
+        position:absolute;
+        bottom:0;
+        width:100%;
+        background-color:#EAEAEA;
+        text-align:right;
+        padding-top:5px;
+        padding-bottom:5px
+    }
+</style>
+
+<script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
+
+<?php if ($propertyObj->get_latex_needed() == 1) : ?>
+<script type="text/javascript" src="../js/jquery-migrate-1.2.1.min.js"></script>
+<script type="text/javascript" src="../tools/mee/mee/js/mee_src.js"></script>
+<?php endif; ?>
+
+<?php
   if (Paper_utils::need_interactiveQ($screen_data, $current_screen, $mysqli)) {
     $render = new render($configObject);
     $render->render_html5_js(json_encode($jstring));
@@ -364,6 +398,7 @@ if ($css != '') {
 
   echo $configObject->get('cfg_js_root');
 ?>
+
 <script>
   window.history.go(1);
 <?php
@@ -379,6 +414,7 @@ if ($css != '') {
     echo "});\n";
   }
 ?>
+
   var lang = {
   <?php
   $langstrings = array('msgselectable1', 'msgselectable2', 'msgselectable3', 'msgselectable4');
@@ -429,7 +465,7 @@ if ($css != '') {
 
 
   var resizeReference = function() {
-		winH = $(window).height();
+    winH = $(window).height();
 <?php
   if (count($reference_materials) > 0) {
     $subtract = (31 * count($reference_materials)) + 11;
@@ -445,20 +481,24 @@ if ($css != '') {
   }
 
   var submitted = false;
-<?php
-  if ($is_question_preview_mode === true) {
-?>
+  <?php if ($is_question_preview_mode === true) : ?>
   var confirmSubmit = function(event) {
     conductSave(event);
   }
-<?php
-  } elseif ($propertyObj->get_bidirectional() == 0) {   // Linear navigation
-?>
+  <?php elseif ($propertyObj->get_bidirectional() == 0) : // Linear navigation ?>
   var confirmSubmit = function(event) {
     if ($('#button_pressed').val() == 'finish') {
       showDialog("<?php echo $string['javacheck2'] ?>");
     } else {
-      showDialog("<?php echo $string['javacheck1'] ?>");
+      var msg = "<?php echo $string['javacheck1'] ?>";
+      if ($('.ecalc-answer').length > 0) {
+        var ecalcQuestions = [];
+        $('.ecalc-answer').each(function(){
+          ecalcQuestions[ecalcQuestions.length] = this.id.substring(1);
+        });
+        msg = "<?php echo $string['javacheck3'] ?>".replace('[X]', ecalcQuestions.join());
+      }
+      showDialog(msg);
     }
 
     $("#dialog_ok").click(function(event) {
@@ -467,13 +507,10 @@ if ($css != '') {
       $("#overlay").hide();
       conductSave(event);
     });
-
   }
-<?php
-  } else {                              // Bi-directional navigation
-?>
+  <?php else : // Bi-directional navigation ?>
   var confirmSubmit = function(event) {
-	  if (submitted == true) {
+    if (submitted == true) {
       return false;
     }
     if ($('#button_pressed').val() == 'finish') {
@@ -484,27 +521,47 @@ if ($css != '') {
         $("#overlay").hide();
         conductSave(event);
       });
+    } else if ($('#isEnhancedCalc').val() == '1' && $('#missingCalcAnswer').val() != '1') {
+      var ecalcQuestions = [];
+      $('.ecalc-answer').each(function(){
+        if ($(this).val() == '') {
+          ecalcQuestions[ecalcQuestions.length] = $(this).attr('data-screen');
+        }
+      });
+
+      if (ecalcQuestions.length > 0) {
+        var msg = '<?= $string['answerrequired'] ?><br/><br/><strong><?= $string['answerrequired_confirm'] ?></strong>'.replace('[X]', ecalcQuestions.join());
+        showEnhancedcalcWarning(msg);
+        $("#enhancedcalc_warning_ok").click(function(event) {
+          submitted = true;
+          $('body').css('cursor','wait');
+          $("#overlay").hide();
+          conductSave(event);
+        });
+      } else {
+        conductSave(event);
+      }
     } else {
       conductSave(event);
     }
   }
 
   $(document).ready(function () {
-    $('#jumpscreen').change(function () {
-      $('#button_pressed').val('jump_screen');
-      $('#qForm').attr('action',"start.php?id=<?php echo $_GET['id'] ?>&dont_record=true");
-      return userSubmit(null);
+    $('#jumpscreen').change(function (event) {
+      $('#button_pressed').val('jumpscreen');
+      $('#qForm').attr('action',"start.php?id=<?= $id ?>&dont_record=true");
+      submitType = 'userSubmit';
+      return checkSubmit(event);
     });
   });
-<?php
-  }
+  <?php endif;
 
 if ($propertyObj->get_paper_type() != '5') { // Do not allow saving for offline papers.
 	// Bind save function to the screen for fault tolerant form saving ?>
   var usingAjax = false;
   var submitType = '';
   var autoSaveRef = '';
-	var last_save_point = (new Date).getTime();
+  var last_save_point = (new Date).getTime();
   var last_saved_user_answers = null;    <?php // Holds the data of the last successful auto save ?>
 
   $(document).ready(function () {
@@ -537,6 +594,10 @@ if ($propertyObj->get_paper_type() != '5') { // Do not allow saving for offline 
 					return true;
 				}
 		});
+
+        $("#info_dialog_ok").click(function(event) {
+            $("#info_overlay").hide();
+  });
   });
 
   <?php // Normal user submit by clicking on next, previous, finish or jump screen ?>
@@ -552,7 +613,15 @@ if ($propertyObj->get_paper_type() != '5') { // Do not allow saving for offline 
       $('#button_pressed').attr('value',event.target.id);
     }
 
-    $("#dialog_cancel").click(function() {
+    $("#dialog_cancel, #enhancedcalc_warning_cancel").click(function(event) {
+      if ($('#button_pressed').val() == 'jumpscreen') {
+        $('#jumpscreen option').each(function () {
+          if (this.defaultSelected) {
+            this.selected = true;
+            return false;
+          }
+        });
+      }
       $('#savemsg').html("");
       $('body').css('cursor','default');
       $("#overlay").hide();
@@ -587,33 +656,30 @@ if ($propertyObj->get_paper_type() != '5') { // Do not allow saving for offline 
   }
 
   function showDialog(msg) {
-    $("#overlay").show();
     $("#dialog_cancel").focus();
     $("#submit_dialog_msg").html(msg);
     $("#submit_dialog").css('left', (($(window).width() / 2) - 250) + 'px');
     $("#submit_dialog").css('top', (($(window).height() / 2) - 100) + 'px');
+    $(".dialogs").hide();
+    $("#submit_dialog").show();
+    $("#overlay").show();
   }
 
-  var userSubmit = function (event) {
-    <?php // Save any data from wysiwyg  ?>
-    if (typeof(tinyMCE) != "undefined") {
-      tinyMCE.triggerSave();
-    }
-
-    var formData = $('#qForm').serialize();
-    submitType = 'userSubmit';
-    stopAutoSave();
-    if (!!event) {
-      $('#button_pressed').attr('value',event.target.id);
-    }
-    confirmSubmit();
+  function showEnhancedcalcWarning(msg) {
+    $("#enhancedcalc_warning_cancel").focus();
+    $("#enhancedcalc_warning_msg").html(msg);
+    $("#enhancedcalc_warning").css('left', (($(window).width() / 2) - 250) + 'px');
+    $("#enhancedcalc_warning").css('top', (($(window).height() / 2) - 200) + 'px');
+    $(".dialogs").hide();
+    $("#enhancedcalc_warning").show();
+    $("#overlay").show();
   }
 
   <?php  // Called when a user has run out of time by UpdateTimerWithRemainingTime in start.js ?>
   var forceSave = function() {
     stopAutoSave();
     ajaxSave(1);
-    alert('<?php echo $string['forcesave']; ?>');
+    info_dialog('<?php echo $string['forcesave']; ?>');
     submitType = 'forcedSubmit';
     $('#qForm').attr('action',"finish.php?id=<?php echo $_GET['id'] . $url_mod; ?>&dont_record=true");
     $('#qForm').submit();
@@ -725,8 +791,8 @@ if ($propertyObj->get_paper_type() != '5') { // Do not allow saving for offline 
                 saveFail('record_marks', this.url, ret_data);
               } else {
                   // Strip out the title of the html as thats is all we are interested in.
-                  htmlstart = ret_data.indexOf("<title>") + 7; 
-                  htmlend = ret_data.indexOf("</title>"); 
+                  htmlstart = ret_data.indexOf("<title>") + 7;
+                  htmlend = ret_data.indexOf("</title>");
                   htmltitle = ret_data.substring(htmlstart, htmlend);
                   if (htmltitle == '') {
                       htmltitle = 'html response';
@@ -807,6 +873,15 @@ if ($propertyObj->get_paper_type() != '5') { // Do not allow saving for offline 
 ?>
 </script>
 <script type="text/javascript" src="../js/start.js"></script>
+<?php
+$render = new render($configObject);
+if($configObject->get_setting('core', 'paper_mathjax')) {
+  $render->render(null, null, 'mathjax.html');
+}
+if($propertyObj->get_calculator()) {
+  $render->render(null, null, 'jcalc98_header.html');
+}
+?>
 </head>
 <?php
 
@@ -915,12 +990,12 @@ if ($propertyObj->get_paper_type() != '5') { // Do not allow saving for offline 
         $assigned_number++;
         $no_on_screen++;
       }
-			if (isset($_GET['qNo'])) {
-				$tmp_questions_array[$q_no]['assigned_number'] = $_GET['qNo'];   // Preview mode, use the number that is passed in.
-			} else {
-				$tmp_questions_array[$q_no]['assigned_number'] = $assigned_number;
+      if (!is_null($q_number)) {
+        $tmp_questions_array[$q_no]['assigned_number'] = $q_number;   // Preview mode, use the number that is passed in.
+      } else {
+        $tmp_questions_array[$q_no]['assigned_number'] = $assigned_number;
       }
-			$tmp_questions_array[$q_no]['no_on_screen'] = $no_on_screen;
+      $tmp_questions_array[$q_no]['no_on_screen'] = $no_on_screen;
       $tmp_questions_array[$q_no]['screen'] = $screen;
       $tmp_questions_array[$q_no]['theme'] = trim($theme);
       $tmp_questions_array[$q_no]['scenario'] = trim($scenario);
@@ -1018,7 +1093,9 @@ if ($propertyObj->get_paper_type() != '5') { // Do not allow saving for offline 
   } else {
     echo '<body onload="' . $method . ';" onunload="KillClock();">';
   }
-
+  if($propertyObj->get_calculator()) {
+    $render->render(null, null, 'jcalc98.html');
+  }
   echo "<div id=\"maincontent\">\n";
 
   if ($current_screen < $no_screens) {
@@ -1098,22 +1175,50 @@ if ($propertyObj->get_paper_type() != '5') { // Do not allow saving for offline 
     echo $exam_announcementObj->display_student_announcements();
   }
 
+  // Start displaying questions
   echo "<table cellpadding=\"0\" cellspacing=\"4\" border=\"0\" width=\"100%\" style=\"table-layout:fixed\">\n";
   echo "<col width=\"40\"><col>\n";
-  // Display the questions
+
+  // Display each question
   foreach ($questions_array as &$question) {
-    if ($question['screen'] == $current_screen) {
-      if ($screen_pre_submitted == 1 and $q_displayed == 0) echo "<tr style=\"display:none\" id=\"unansweredkey\"><td colspan=\"2\"><span class=\"unans\">&nbsp;&nbsp;&nbsp;&nbsp;</span> " . $string['unansweredquestion'] . "</td></tr>\n";
-      if ($q_displayed == 0 and $current_screen == 1 and $propertyObj->get_paper_prologue() != '') echo '<tr><td colspan="2" style="padding:20px; text-align:justify">' . $propertyObj->get_paper_prologue() . '</td></tr>';
-      if ($q_displayed == 0 and $question['theme'] == '') echo "<tr><td colspan=\"2\">&nbsp;</td></tr>\n";
+    // Previous question type
+    $previous_q_type = $question['q_type'];
 
-			display_question($configObject, $question, $propertyObj->get_paper_type(), $calculator, $current_screen, $previous_q_type, $question_no, $user_answers, $unanswered);
-
-			$previous_q_type = $question['q_type'];
-      $q_displayed++;
+    // Question not on this screen, don't display
+    if ($question['screen'] != $current_screen) {
+      continue;
     }
+
+    // refer to all questions on displayed question
+    $question['paper_questions'] = &$questions_array;
+
+    // Flag telling there is a linked question on this screen
+    $is_enhancedcalc = $question['q_type'] == 'enhancedcalc' or (isset($is_enhancedcalc) and true === $is_enhancedcalc);
+
+    if ($screen_pre_submitted == 1 and $q_displayed == 0) {
+      echo "<tr style=\"display:none\" id=\"unansweredkey\">"
+        . "<td colspan=\"2\"><span class=\"unans\">&nbsp;&nbsp;&nbsp;&nbsp;</span> "
+        . $string['unansweredquestion']
+        . "</td></tr>\n";
+    }
+
+    // Attempt to display paper prolog
+    if ($q_displayed == 0 and $current_screen == 1 and $propertyObj->get_paper_prologue() != '') {
+      echo '<tr><td colspan="2" style="padding:20px; text-align:justify">'
+        . $propertyObj->get_paper_prologue()
+        . '</td></tr>';
+    }
+
+    if ($q_displayed == 0 and $question['theme'] == '') {
+      echo "<tr><td colspan=\"2\">&nbsp;</td></tr>\n";
+    }
+
+    display_question($configObject, $question, $propertyObj->get_paper_type(), $calculator, $current_screen, $previous_q_type, $question_no, $user_answers, $unanswered);
+
+    $q_displayed++;
   }
 
+  // End of questions display
   echo "</table></td></tr>\n<tr><td>\n<br />\n";
 
   $current_screen++;
@@ -1123,6 +1228,7 @@ if ($propertyObj->get_paper_type() != '5') { // Do not allow saving for offline 
   echo "<input type=\"hidden\" name=\"previous_duration\" value=\"$previous_duration\" />\n";
   echo "<input type=\"hidden\" id=\"button_pressed\" name=\"button_pressed\" value=\"next\" />\n";
   echo "<input type=\"hidden\" id=\"randomPageID\" name=\"randomPageID\" value=\"\" />\n";
+  echo "<input type=\"hidden\" id=\"isEnhancedCalc\" name=\"isEnhancedCalc\" value=\"{$is_enhancedcalc}\" />\n";
   if ($is_question_preview_mode) {
     echo "<input type=\"hidden\" id=\"mode\" name=\"mode\" value=\"preview\" />\n";
   } else {
@@ -1163,14 +1269,11 @@ if ($propertyObj->get_paper_type() != '5') { // Do not allow saving for offline 
       if ($current_screen > 2) {
         echo '<input id="previous" type="submit" name="prev" value="&lt; ' . $string['screen'] . ' ' . ($current_screen - 2) . '" />';
       }
-      if ($original_paper_type == '0' or $original_paper_type == '1' or $original_paper_type == '2') {
-        echo '<select name="jump_screen" id="jumpscreen">';
-        for ($i=1; $i<=$no_screens; $i++) {
-          if ($i == ($current_screen - 1)) {
-            echo "<option value=\"$i\" selected>$i</option>";
-          } else {
-            echo "<option value=\"$i\">$i</option>";
-          }
+      if (in_array($original_paper_type, array('0', '1', '2'))) {
+        echo '<select name="jumpscreen" id="jumpscreen">';
+        for ($i = 1; $i <= $no_screens; $i++) {
+          $selected = $i == ($current_screen - 1) ? ' selected' : '';
+          echo "<option value=\"$i\"$selected>$i</option>";
         }
         echo '</select>';
       }
@@ -1191,9 +1294,26 @@ if ($propertyObj->get_paper_type() != '5') { // Do not allow saving for offline 
 </form>
 </div>
 <div id="overlay">
-  <div id="submit_dialog">
+  <div id="submit_dialog" class="dialogs">
     <div id="submit_dialog_icon"><img src="../artwork/question_mark_64.png" width="64" height="64" alt="?" /></div><p id="submit_dialog_msg"></p>
     <div id="submit_dialog_buttons"><input type="button" name="dialog_ok" id="dialog_ok" class="ok" value="OK" /><input type="button" name="dialog_cancel" id="dialog_cancel" class="cancel" value="Cancel" />&nbsp;&nbsp;</div>
+  </div>
+  <div id="enhancedcalc_warning" class="dialogs">
+    <div id="enhancedcalc_warning_icon">
+        <img src="../artwork/question_mark_64.png" width="64" height="64" alt="?" />
+    </div>
+    <p id="enhancedcalc_warning_msg"></p>
+    <div id="enhancedcalc_warning_buttons">
+        <input type="button" name="dialog_cancel" id="enhancedcalc_warning_cancel" value="Go back" />
+        <input type="button" name="dialog_ok" id="enhancedcalc_warning_ok" value="Pass" />
+        &nbsp;&nbsp;
+    </div>
+  </div>
+</div>
+<div id="info_overlay">
+  <div id="info_submit_dialog">
+    <div id="info_submit_dialog_icon"><img src="../artwork/question_mark_64.png" width="64" height="64" alt="?" /></div><p id="info_submit_dialog_msg"></p>
+    <div id="info_submit_dialog_buttons"><input type="button" name="info_dialog_ok" id="info_dialog_ok" class="ok" value="OK" /></div>
   </div>
 </div>
 <?php
@@ -1370,7 +1490,7 @@ function randomQOverwrite($random_q_data, $user_answers, &$screen_data, &$used_q
     } else {
         $error = true;
     }
-    
+
   } else {
     $error = true;
   }

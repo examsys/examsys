@@ -36,5 +36,3 @@ $cfg_web_root          = $configObject->get('cfg_web_root');
 $cfg_editor_javascript = $configObject->get('cfg_editor_javascript');
 $cfg_editor_name       = $configObject->get('cfg_editor_name');
 
-$language = LangUtils::getLang($cfg_web_root);
-LangUtils::loadlangfile(str_replace($cfg_web_root, '', str_replace('\\', '/', ($_SERVER['SCRIPT_FILENAME']))));

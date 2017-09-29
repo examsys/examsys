@@ -55,13 +55,24 @@ abstract class abstractmanagement {
      * The database connection.
      */
     protected $db;
+    /**
+     * The oauth client id.
+     */
+    protected $client_id;
+    /**
+     * The config object.
+     */
+    protected $config;
     
     /**
      * Constructor
      * @param mysqli $mysqli the database connection
+     * @param string $client_id the oauth client connecting
      */
-    public function __construct($mysqli) {
+    public function __construct($mysqli, $client_id = null) {
         $this->db = $mysqli;
+        $this->client_id = $client_id;
+        $this->config = \Config::get_instance();
     }
     
     /**
@@ -105,5 +116,34 @@ abstract class abstractmanagement {
             }
         }
         return false;
+    }
+    
+    /**
+     * Get the external system the request is for
+     * @param string $externalsys system provided in request (used by sms plugins)
+     * @return string external system
+     */
+    public function get_external_system($externalsys) {
+        if (is_null($this->client_id)) {
+            // SMS plugin
+            return $externalsys;
+        } else {
+            // API so check external system mapping.
+            $external = new \external_systems();
+            $system = $external->get_mapped_externalsystem_info($this->client_id);
+            if (count($system) == 2) {
+                // Mapped so can only manipulate $system.
+                return $system['name'];
+            } else {
+                // Super users can call the api for an external system.
+                if ($this->config->get_setting('core', 'api_allow_superuser')) {
+                    // Not mapped to specific external system so can manipulate any.
+                    return $externalsys;
+                } else {
+                    // A null external system will cause future checks to fail.
+                    return null;
+                }
+            }
+        }
     }
 }

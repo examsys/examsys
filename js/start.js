@@ -1,3 +1,11 @@
+// Dialog box
+function info_dialog(msg) {
+    $("#info_overlay").show();
+    $("#info_submit_dialog_msg").html(msg);
+    $("#info_submit_dialog").css('left', (($(window).width() / 2) - 250) + 'px');
+    $("#info_submit_dialog").css('top', (($(window).height() / 2) - 100) + 'px');
+}
+
 function UpdateClock( hours, minutes, seconds) {
   KillClock();
   
@@ -98,7 +106,7 @@ function rankCheck() {
     if(loopSel != '0' && loopSel != 'u' && loopSel == sel) count++;
   });
   if (count > 1) {
-    alert(lang['msgselectable3'] + ' ' + sel  + lang['msgselectable4']);
+    info_dialog(lang['msgselectable3'] + ' ' + sel  + lang['msgselectable4']);
     $(this).val('u');
   }
 }
@@ -126,18 +134,6 @@ function multimatchingCheck(questionid, options_total, selectable) {
 }
 
 $(document).ready(function(){
-
-  $('.calc').click(function() {
-    if (typeof(calc) == 'object' && calc.closed != true) {
-      calc.focus();
-    } else {
-      calc = window.open("../tools/calc98/jcalc98.php","calculator","width=250,height=364,top=10,left="+($(window).width() - 280)+"scrollbars=no,resizable=no,toolbar=no,location=no,directories=no,status=no,menubar=no");
-      if (window.focus) {
-        calc.focus();
-      }
-    }
-  });
-  
   $('#previous').click(function() {
     $('#button_pressed').val('previous');
   });
@@ -153,7 +149,6 @@ $(document).ready(function(){
   $('.inact').click(function() {
     onoff($(this).attr('id'));
   });
-
 });
 
 function onoff(objID) {
@@ -220,5 +215,13 @@ function filterKeypress(event) {
       event.preventDefault();
       return false;
     }
+  }
+}
+// Wrapper for window.close, if not a popup we move back a page.
+function close_window () {
+  if (window.opener == null) {
+    parent.history.back();
+  } else {
+    window.close();
   }
 }

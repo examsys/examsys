@@ -84,42 +84,82 @@ class Review {
     $this->metadataID = $reviewID;
   }
 
+  /**
+   * Get and save the comments made for a page of the review screen.
+   *
+   * @param int $screen_no The screen number that should be saved.
+   */
   public function record_comments($screen_no) {
     $question_no = 0;
     $old_q_id = NULL;
     $submit_time = date("YmdHis", time());
+    
+    // Get page post variables.
+    $previous_duration = param::required('previous_duration', param::INT, param::FETCH_POST);
+    $pagestart = param::required('page_start', param::ALPHANUM, param::FETCH_POST);
 
-    $stmt = $this->db->prepare("SELECT q_id, q_type FROM (papers, questions) WHERE paper = ? AND screen = ? AND papers.question = questions.q_id ORDER BY display_pos");
-    $stmt->bind_param('ii', $this->paperID, $screen_no);
+    // Get the questions, along with details of any stored comments.
+    // This query needs to work in the following circumstances:
+    // * No users have submitted comments to any of the questions on the paper.
+    // * The user has submitted some comments for a question on the screen.
+    // * Another user has submitted comments for the paper.
+    $sql = <<<SQL
+SELECT q.q_id, q.q_type, rc.id AS r_id
+FROM questions q
+JOIN papers p ON p.question = q.q_id
+LEFT JOIN review_metadata rm ON rm.paperID = p.paper AND rm.reviewerID = ?
+LEFT JOIN review_comments rc ON rc.metadataid = rm.id AND rc.q_id = q.q_id
+WHERE p.paper = ? AND p.screen = ?
+ORDER BY p.display_pos
+SQL;
+    $stmt = $this->db->prepare($sql);
+    $stmt->bind_param('iii', $this->reviewerID, $this->paperID, $screen_no);
     $stmt->execute();
-    $stmt->bind_result($q_id, $q_type);
+    $stmt->bind_result($q_id, $q_type, $commentid);
     $stmt->store_result();
+    
+    // Calculate the duration, while it is stored against each comment, it seems to be calculated on a per page basis.
+    $tmp_duration = $this->time_to_seconds($submit_time) - $this->time_to_seconds($pagestart);
+    if ($tmp_duration < 0) {
+      $tmp_duration += 86400;
+    }
+    $tmp_duration += $previous_duration;
+    
+    // Prepare the queries that will be used in the loop, we might need to insert or update so prepare both.
+    $insertsql = <<<SQL
+INSERT INTO review_comments
+VALUES (NULL, ?, ?, ?, 'Not actioned', '', ?, ?, ?)
+SQL;
+    $insert = $this->db->prepare($insertsql);
+    $insert->bind_param('iisiii', $q_id, $category, $extcomments, $tmp_duration, $screen_no, $this->metadataID);
+
+    $updatesql = <<<SQL
+UPDATE review_comments
+SET q_id = ?, category = ?, comment = ?, duration = ?, screen = ?, metadataID = ? WHERE id = ?
+SQL;
+    $update = $this->db->prepare($updatesql);
+    $update->bind_param('iisiiii', $q_id, $category, $extcomments, $tmp_duration, $screen_no, $this->metadataID, $commentid);
+
     while ($stmt->fetch()) {
       if ($old_q_id != $q_id) {
         // Record external examiner comments.
         if ($q_type != 'info') {
           $question_no++;
+          // Get the post variables for the question.
+          $extcomments = param::optional("extcomments$question_no", null, param::TEXT, param::FETCH_POST);
+          $category = param::optional("exttype$question_no", null, param::INT, param::FETCH_POST);
 
-          $result = $this->db->prepare("DELETE FROM review_comments WHERE metadataID = ? AND q_id = ?");
-          $result->bind_param('ii', $this->metadataID, $q_id);
-          $result->execute();  
-          $result->close();
-
-          $tmp_duration = $this->time_to_seconds($submit_time) - $this->time_to_seconds($_POST['page_start']);
-          if ($tmp_duration < 0) $tmp_duration += 86400;
-          $tmp_duration += $_POST['previous_duration'];
-          if (isset($_POST["extcomments$question_no"])) {
-            $extcomments = $_POST["extcomments$question_no"];
-
-            $result = $this->db->prepare("INSERT INTO review_comments VALUES (NULL, ?, ?, ?, 'Not actioned', '', $tmp_duration, ?, ?)");
-            $result->bind_param('iisii', $q_id, $_POST["exttype$question_no"], $extcomments, $_POST['old_screen'], $this->metadataID);
-            $result->execute();
-            $result->close();
+          if (!is_null($extcomments) && !is_null($commentid)) {
+            $update->execute();
+          } elseif (!is_null($extcomments)) {
+            $insert->execute();
           }
         }
       }
       $old_q_id = $q_id;
-    }                    // End of while loop.
+    } // End of while loop.
+    $insert->close();
+    $update->close();
     $stmt->close();
   }
 

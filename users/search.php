@@ -15,500 +15,542 @@
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
-*
-* The results screen of a search for a user(s).
-*
-* @author Simon Wilkinson
-* @version 1.0
-* @copyright Copyright (c) 2014 The University of Nottingham
-* @package
-*/
-
+ *
+ * The results screen of a search for a user(s).
+ *
+ * @author Simon Wilkinson
+ * @version 1.0
+ * @copyright Copyright (c) 2014 The University of Nottingham
+ * @package
+ */
 require '../include/staff_auth.inc';
 require_once '../include/demo_replace.inc';
 require_once '../include/errors.php';
 
-function get_special_needs($db) {
-  $needs_array = array();
-  $result = $db->prepare("SELECT userID FROM special_needs");
-  $result->execute();
-  $result->bind_result($tmp_userID);
-  while ($result->fetch()) {
-    $needs_array[$tmp_userID] = '1';
-  }
-  $result->close();
-  
-  return $needs_array;
-}
+$demo = $userObject->has_role('Demo');
 
-if ($userObject->has_role('Demo')) {
-  $demo = true;
-} else {
-  $demo = false;
-}
-$sortby = 'surname';
-$ordering = 'asc';
-$moduleID = check_var('module', $_REQUEST, false, true, true);
-$calendar_year = check_var('calendar_year', $_GET, false, true, true);
+$sortby = param::optional('sortby', 'surname', param::ALPHA, param::FETCH_GET);
+$ordering = param::optional('ordering', 'asc', param::ALPHA, param::FETCH_GET);
 
-$get_staff = !is_null(check_var('staff', $_GET, false, true, true));
-$get_inactive = !is_null(check_var('inactive', $_GET, false, true, true));
-$get_sysadmin = !is_null(check_var('sysadminstaff', $_GET, false, true, true));
-$get_admin = !is_null(check_var('adminstaff', $_GET, false, true, true));
-$get_invigilators = !is_null(check_var('invigilators', $_GET, false, true, true));
-$get_standardstaff = !is_null(check_var('standardsstaff', $_GET, false, true, true));
-$get_external = !is_null(check_var('externals', $_GET, false, true, true));
-$get_internal = !is_null(check_var('internals', $_GET, false, true, true));
-$get_students = !is_null(check_var('students', $_GET, false, true, true));
-$get_graduates = !is_null(check_var('graduates', $_GET, false, true, true));
-$get_leavers = !is_null(check_var('leavers', $_GET, false, true, true));
-$get_suspended = !is_null(check_var('suspended', $_GET, false, true, true));
-$get_locked = !is_null(check_var('locked', $_GET, false, true, true));
+$moduleID = param::optional('module', null, param::INT, param::FETCH_GET);
+$calendar_year = param::optional('calendar_year', '%', param::INT, param::FETCH_GET);
 
-$student_id = check_var('student_id', $_GET, false, true, true);
-$search_surname = check_var('search_surname', $_GET, false, true, true);
-$search_username = check_var('search_username', $_GET, false, true, true);
+$get_staff = param::optional('staff', true, param::BOOLEAN, param::FETCH_GET);
+$get_inactive = param::optional('inactive', true, param::BOOLEAN, param::FETCH_GET);
+$get_sysadmin = param::optional('sysadminstaff', true, param::BOOLEAN, param::FETCH_GET);
+$get_admin = param::optional('adminstaff', false, param::BOOLEAN, param::FETCH_GET);
+$get_invigilators = param::optional('invigilators', false, param::BOOLEAN, param::FETCH_GET);
+$get_standardstaff = param::optional('standardsstaff', false, param::BOOLEAN, param::FETCH_GET);
+$get_external = param::optional('externals', false, param::BOOLEAN, param::FETCH_GET);
+$get_internal = param::optional('internals', false, param::BOOLEAN, param::FETCH_GET);
+$get_students = param::optional('students', false, param::BOOLEAN, param::FETCH_GET);
+$get_graduates = param::optional('graduates', false, param::BOOLEAN, param::FETCH_GET);
+$get_leavers = param::optional('leavers', false, param::BOOLEAN, param::FETCH_GET);
+$get_suspended = param::optional('suspended', false, param::BOOLEAN, param::FETCH_GET);
+$get_locked = param::optional('locked', false, param::BOOLEAN, param::FETCH_GET);
 
-if (is_null($calendar_year) or $calendar_year === '%') {
-  $calendar_year_sql = '';
-  $calendar_year_param_types = '';
-  $calendar_year_params = array();
-} else {
-  $calendar_year_sql = " AND calendar_year = ?";
-  $calendar_year_param_types = 'i';
-  $calendar_year_params = array($calendar_year);
-}
+$student_id = param::optional('student_id', null, param::INT, param::FETCH_GET);
+$search_surname = param::optional('search_surname', null, param::TEXT, param::FETCH_GET);
+$search_username = param::optional('search_username', null, param::TEXT, param::FETCH_GET);
 
-$needs_array = get_special_needs($mysqli);
+$submit = param::optional('submit', null, param::ALPHA, param::FETCH_GET);
 
-// We should only display the first 10,000 rows to avoid browser issues.
-$limit = 10000;
+// Define page variables.
+$pages = 1;
+$first = 0;
+$last = 0;
+$counter = 0;
 
-if (isset($_GET['submit'])) {
-  $username_sql = '';
-  $username_param_types = '';
-  $username_params = array();
-  $title_sql = '';
-  $title_param_types = '';
-  $title_params = array();
-  $surname_sql = '';
-  $surname_param_types = '';
-  $surname_params = array();
-  $initials_sql = '';
-  $initials_param_types = '';
-  $initials_params = array();
-  $student_id_sql = '';
-  $student_id_param_types = '';
-  $student_id_params = array();
-  $param_types = '';
-  $params = array();
-
-  if (!is_null($search_surname)) {
-    $tmp_surname = str_replace("*", "%", trim($search_surname));
-
-    $tmp_titles = explode(',', $string['title_types']);
-    foreach ($tmp_titles as $tmp_title) {
-      if (substr_count(strtolower($tmp_surname), strtolower($tmp_title . ' ')) > 0) {
-        $title_sql = " AND title = ?";
-        $title_param_types = 's';
-        $title_params = array($tmp_title);
-      }
-      $tmp_surname = preg_replace("/(" . $tmp_title . " )/i","",$tmp_surname);
+if (!is_null($submit)) {
+    // max number of results per page
+    $limit_default = 100;
+    $limit = param::optional('limit', $limit_default, param::INT, param::FETCH_GET);
+    if ($limit < 1) {
+        $limit = $limit_default;
     }
 
-    $sections = preg_split('[,.]',$tmp_surname);
-    if (count($sections) > 1) {    // Search for initials.
-      if (strlen($sections[0]) < strlen($sections[1])) {
-        $tmp_initials = $mysqli->real_escape_string(trim($sections[0]));
-        $tmp_surname = trim($sections[1]);
-      } else {
-        $tmp_initials = $mysqli->real_escape_string(trim($sections[1]));
-        $tmp_surname = trim($sections[0]);
-      }
-      $initials_sql = " AND initials LIKE ?";
-      $initials_param_types = 's';
-      $initials_params = array($tmp_initials . '%');
+    // current page of results
+    $page = param::optional('page', 1, param::INT, param::FETCH_GET);
+    if ($page < 1) {
+        $page = 1;
     }
-    $tmp_surname = $mysqli->real_escape_string(str_replace('*', '%', $tmp_surname));
-    $surname_sql = " AND surname LIKE ?";
-    $surname_param_types = 's';
-    $surname_params = array($tmp_surname);
-  }
 
-  if (!is_null($search_username) and $search_username !== '') {
-    $tmp_username = $mysqli->real_escape_string(str_replace('*', '%', trim($search_username)));
-    $username_sql = " AND users.username LIKE ?";
-    $username_param_types = 's';
-    $username_params[] = $tmp_username;
-  }
+    // query offset
+    $offset = $page * $limit - $limit;
 
-  if (!is_null($student_id) and $student_id !== '') {
-    $tmp_studentid = $mysqli->real_escape_string(trim($student_id));
-    $student_id_sql = " AND student_id = ?";
-    $student_id_param_types = 'i';
-    $student_id_params[] = $tmp_studentid;
-  }
+    // accumulaters for query builder
+    $conditions = array();
+    $parameters = array();
+    $types = array();
 
-  $roles_sql = '';
-  if ($get_students or (!is_null($student_id) and $student_id !== '')) $roles_sql .= " OR roles LIKE '%Student'";
-  if ($get_staff) $roles_sql .= " OR roles LIKE '%Staff%'";
-  if ($get_admin) $roles_sql .= " OR roles LIKE '%,Admin%'";
-  if ($get_sysadmin) $roles_sql .= " OR roles LIKE '%,SysAdmin%'";
-  if ($get_standardstaff) $roles_sql .= " OR roles LIKE '%,Standards Setter%'";
-  if ($get_inactive) $roles_sql .= " OR roles LIKE '%inactive%'";
-  if ($get_external) $roles_sql .= " OR (roles = 'External Examiner' AND grade != 'left')";
-  if ($get_internal) $roles_sql .= " OR (roles = 'Internal Reviewer' AND grade != 'left')";
-  if ($get_invigilators) $roles_sql .= " OR roles = 'Invigilator'";
-  if ($get_graduates) $roles_sql .= " OR roles = 'Graduate'";
-  if ($get_leavers) $roles_sql .= " OR roles = 'left'";
-  if ($get_suspended) $roles_sql .= " OR roles = 'suspended'";
-  if ($get_locked) $roles_sql .= " OR roles = 'locked'";
-  if ($roles_sql != '') $roles_sql = '(' . substr($roles_sql,4) . ')';
-  if (!$get_leavers and $get_staff) $roles_sql .= " AND grade != 'left'";
+    // find by module
+    if ($moduleID) {
+        $conditions[] = '(modules_student.idMod = ? OR modules_staff.idMod = ?)';
+        array_push($parameters, $moduleID, $moduleID);
+        $types[] = 'ii';
+    }
 
-	$user_no = 0;
-  if ($roles_sql != '') {
-    $seach_for_staff = ($get_staff or $get_inactive or $get_sysadmin or $get_admin or $get_invigilators or $get_standardstaff);
-    $search_for_reviewers = ($get_external or $get_internal);
+    // find by calendar year
+    if ($calendar_year !== '%') {
+        $conditions[] = 'calendar_year = ?';
+        $parameters[] = $calendar_year;
+        $types[] = 'i';
+    }
 
-    if ($seach_for_staff and !is_null($moduleID)) {
-      $query_string = "(SELECT DISTINCT users.id, roles, student_id, surname, initials, first_names, title, users.username, grade, yearofstudy, email
-      FROM (users, modules_student, modules)
-      LEFT JOIN sid ON users.id = sid.userID
-      WHERE modules_student.idMod = modules.id
-      AND users.id = modules_student.userID
-      AND modules_student.idMod = ?
-      AND $roles_sql$surname_sql$title_sql$username_sql$initials_sql$calendar_year_sql
-      AND user_deleted IS NULL)
-      UNION
-      (SELECT DISTINCT users.id, roles, student_id, surname, initials, first_names, title, users.username, grade, yearofstudy, email
-      FROM (users, modules_staff, modules)
-      LEFT JOIN sid ON users.id = sid.userID
-      WHERE modules_staff.idMod = modules.id
-      AND users.id = modules_staff.memberID
-      AND modules_staff.idMod = ?
-      AND $roles_sql$surname_sql$title_sql$username_sql$initials_sql
-      AND user_deleted IS NULL LIMIT $limit)";
-      $sql_params = array($moduleID);
-      $param_types = 's' . $surname_param_types . $title_param_types . $username_param_types . $initials_param_types .
-          $calendar_year_param_types . 's' . $surname_param_types . $title_param_types . $username_param_types .
-          $initials_param_types;
-      $params = array_merge($sql_params, $surname_params, $title_params, $username_params, $initials_params,
-          $calendar_year_params, $sql_params, $surname_params, $title_params, $username_params, $initials_params);
-    } elseif ($seach_for_staff or $search_for_reviewers) {
-      $query_string = "SELECT DISTINCT users.id, roles, student_id, surname, initials, first_names, title, users.username, grade, yearofstudy, email
-        FROM users
-        LEFT JOIN sid ON users.id = sid.userID
-        WHERE $roles_sql$surname_sql$title_sql$username_sql$initials_sql
-        AND user_deleted IS NULL LIMIT $limit";
-      $param_types = $surname_param_types . $title_param_types . $username_param_types . $initials_param_types;
-      $params = array_merge($surname_params, $title_params, $username_params, $initials_params);
-    } elseif (is_null($moduleID)) {
-      // Students no module link.
-      $query_string = "SELECT DISTINCT users.id, roles, student_id, surname, initials, first_names, title, users.username, grade, yearofstudy, email
-        FROM users
-        LEFT JOIN sid ON users.id = sid.userID
-        WHERE $roles_sql$surname_sql$title_sql$username_sql$student_id_sql$initials_sql
-        AND user_deleted IS NULL LIMIT $limit";
-      $param_types = $surname_param_types . $title_param_types . $username_param_types . $student_id_param_types .
-          $initials_param_types;
-      $params = array_merge($surname_params, $title_params, $username_params, $student_id_params, $initials_params);
+    // find by name
+    if (!is_null($search_surname)) {
+        $tmp_surname = str_replace("*", "%", trim($search_surname));
+
+        // lookup titles
+        $tmp_titles = explode(',', $string['title_types']);
+        foreach ($tmp_titles as $tmp_title) {
+            if (substr_count(strtolower($tmp_surname), strtolower($tmp_title . ' ')) > 0) {
+                $conditions[] = 'title = ?';
+                $parameters[] = $tmp_title;
+                $types[] = 's';
+            }
+            $tmp_surname = preg_replace("/(" . $tmp_title . " )/i", "", $tmp_surname);
+        }
+
+        // find initials
+        $sections = preg_split('[,.]', $tmp_surname);
+        if (count($sections) > 1) {    // Search for initials.
+            if (strlen($sections[0]) < strlen($sections[1])) {
+                $tmp_initials = $mysqli->real_escape_string(trim($sections[0]));
+                $tmp_surname = trim($sections[1]);
+            } else {
+                $tmp_initials = $mysqli->real_escape_string(trim($sections[1]));
+                $tmp_surname = trim($sections[0]);
+            }
+            $conditions[] = 'initials LIKE ?';
+            $parameters[] = $tmp_initials . '%';
+            $types[] = 's';
+        }
+
+        // find remaining names
+        $tmp_surname = explode(' ', $tmp_surname);
+        $condition = array();
+        foreach ($tmp_surname as $name) {
+            $name = $mysqli->real_escape_string(str_replace('*', '%', $name));
+            if (false === array_key_exists($name, $condition)) {
+                $condition[$name] = 'surname LIKE ? OR first_names LIKE ?';
+                $types[] = 'ss';
+                array_push($parameters, $name, $name);
+            }
+        }
+        if (count($condition) > 0) {
+            $conditions[] = sprintf('(%s)', implode(' OR ', $condition));
+        }
+    }
+
+    // find by username
+    if (!is_null($search_username) and trim($search_username) !== '') {
+        $tmp_username = $mysqli->real_escape_string(str_replace('*', '%', trim($search_username)));
+        $conditions[] = 'users.username LIKE ?';
+        $parameters[] = $tmp_username;
+        $types[] = 's';
+    }
+
+    // find by student id
+    if (!is_null($student_id) and $student_id !== '') {
+        $tmp_studentid = $mysqli->real_escape_string(trim($student_id));
+        $conditions[] = 'student_id = ?';
+        $parameters[] = $tmp_studentid;
+        $types[] = 'i';
+    }
+
+    // filter by roles
+    $roles = array();
+    if ($get_students or ( !is_null($student_id) and $student_id !== '')) {
+        $roles[] = "roles LIKE '%Student'";
+    }
+    if ($get_staff) {
+        $roles[] = "roles LIKE '%Staff%'";
+    }
+    if ($get_admin) {
+        $roles[] = "roles LIKE '%,Admin%'";
+    }
+    if ($get_sysadmin) {
+        $roles[] = "roles LIKE '%,SysAdmin%'";
+    }
+    if ($get_standardstaff) {
+        $roles[] = "roles LIKE '%,Standards Setter%'";
+    }
+    if ($get_inactive) {
+        $roles[] = "roles LIKE '%inactive%'";
+    }
+    if ($get_external) {
+        $roles[] = "(roles = 'External Examiner' AND grade != 'left')";
+    }
+    if ($get_internal) {
+        $roles[] = "(roles = 'Internal Reviewer' AND grade != 'left')";
+    }
+    if ($get_invigilators) {
+        $roles[] = "roles = 'Invigilator'";
+    }
+    if ($get_graduates) {
+        $roles[] = "roles = 'Graduate'";
+    }
+    if ($get_leavers) {
+        $roles[] = "roles = 'left'";
+    }
+    if ($get_suspended) {
+        $roles[] = "roles = 'suspended'";
+    }
+    if ($get_locked) {
+        $roles[] = "roles = 'locked'";
+    }
+    if (count($roles) > 0) {
+        $conditions[] = sprintf('(%s)', implode(' OR ', $roles));
+    }
+    if (!$get_leavers and $get_staff) {
+        $conditions[] = "grade <> 'left'";
+    }
+
+    // execute query
+    if (count($roles) > 0) {
+        // SQL parts
+        $sql_counter = 'COUNT(DISTINCT users.id) AS counter';
+        $sql_fields = 'DISTINCT users.id, roles, student_id, surname, initials, first_names, title, users.username, grade, yearofstudy, email, special_id';
+        $sql_template = ' FROM users'
+                . ' LEFT JOIN modules_student ON users.id = modules_student.userID'
+                . ' LEFT JOIN modules_staff ON users.id = modules_staff.memberID'
+                . ' LEFT JOIN sid ON users.id = sid.userID'
+                . ' LEFT JOIN special_needs ON users.id = special_needs.userID'
+                . ' LEFT JOIN modules ON (modules_student.idMod = modules.id OR modules_staff.idMod = modules.id)'
+                . ' WHERE user_deleted IS NULL AND ' . implode(' AND ', $conditions);
+        $sql_count = sprintf('SELECT %s%s', $sql_counter, $sql_template);
+        $sql_list = sprintf('SELECT %s%s ORDER BY %s %s LIMIT %d OFFSET %d', $sql_fields, $sql_template, $sortby, $ordering, $limit, $offset);
+        
+        // arguments to bind to queries
+        $arguments = array(implode('', $types));
+        foreach ($parameters as &$param) {
+            $arguments[] = &$param;
+        }
+
+        // prepare counter query
+        if (false === $stmt = $mysqli->prepare($sql_count)) {
+            throw new \RuntimeException($mysqli->error);
+        }
+
+        // bind parameters to counter query
+        if (count($parameters) > 0) {
+            if (false === call_user_func_array(array($stmt, 'bind_param'), $arguments)) {
+                throw new \RuntimeException($stmt->error);
+            }
+        }
+
+        // execute counter query
+        if (false === $stmt->execute()) {
+            throw new \RuntimeException($stmt->error);
+        }
+
+        // fetch total items count
+        $stmt->bind_result($counter);
+        $stmt->fetch();
+        $stmt->close();
+
+        // calculate first and last items in thispage
+        $first = $offset + 1;
+        $last = min(array($offset + $limit, $counter));
+        if ($last == 0) {
+            $first = 0;
+        }
+        // calculate total number pages
+        $pages = ceil($counter / $limit);
+
+        // prepare list query
+        if (false === $stmt = $mysqli->prepare($sql_list)) {
+            throw new \RuntimeException($mysqli->error);
+        }
+
+        // bind parameters to list query
+        if (count($parameters) > 0) {
+            if (false === call_user_func_array(array($stmt, 'bind_param'), $arguments)) {
+                throw new \RuntimeException($stmt->error);
+            }
+        }
+
+        // execute list query
+        if (false === $stmt->execute()) {
+            throw new \RuntimeException($stmt->error);
+        }
+
+        // bind list query results to variables
+        $stmt->bind_result($tmp_id, $tmp_roles, $tmp_student_id, $tmp_surname, $tmp_initials, $tmp_first_names, $tmp_title, $tmp_username, $tmp_grade, $tmp_yearofstudy, $tmp_email, $tmp_special_id);
+        $stmt->store_result();
+    }
+}
+
+$module_id = param::optional('moduleID', null, param::INT, param::FETCH_GET);
+$paper_id = param::optional('paperID', null, param::INT, param::FETCH_GET);
+$team = param::optional('team', null, param::ALPHANUM, param::FETCH_GET);
+$email = param::optional('email', null, param::EMAIL, param::FETCH_GET);
+$temporary_surname = param::optional('tmp_surname', null, param::ALPHA, param::FETCH_GET);
+$temporary_courseid = param::optional('tmp_courseID', null, param::INT, param::FETCH_GET);
+$temporary_yearid = param::optional('tmp_yearID', null, param::INT, param::FETCH_GET);
+
+$render = new render($configObject);
+
+// links on breadcrumb
+$links = array(
+    '/' => $string['home'],
+    '/users/search.php' => $string['usermanagement'],
+);
+if ($moduleID) {
+    $href = '/../module/index.php?module=' . $moduleID;
+    $links[$href] = module_utils::get_moduleid_from_id($moduleID, $mysqli);
+}
+
+// search has result
+if (true === $has_result = !is_null($submit) or ! is_null($paper_id) or ! is_null($module_id)) {
+    // current page label on breadcrumb
+    $links[] = $string['usersearch'];
+
+    // result detail
+    if ($paper_id) {
+        $result_detail = implode(', ', array_values($paper_modules)) . ' (' . $paper_calendar_year . ')';
+    } elseif (!is_null($search_surname)) {
+        $result_detail = $search_surname;
+    } elseif (!is_null($moduleID) and $moduleID !== '%') {
+        $result_detail = module_utils::get_moduleid_from_id($moduleID, $mysqli);
+        if (!is_null($calendar_year) and $calendar_year !== '%' and $get_students) {
+            $result_detail .= ' (' . $calendar_year . ')';
+        }
+    } elseif (!is_null($search_username)) {
+        $result_detail = $search_username;
+    } elseif (!is_null($student_id)) {
+        $result_detail = $student_id;
+    } elseif ($calendar_year > 0) {
+        $result_detail = $calendar_year;
     } else {
-      // Students on a particular module.
-      $roles_sql = ' AND ' . $roles_sql;
-      $module_sql = " AND idMod LIKE ? ";
-      $module_params = array($moduleID);
-      $query_string = "SELECT DISTINCT users.id, roles, student_id, surname, initials, first_names, title, users.username, grade, yearofstudy, email
-        FROM (users, modules_student)
-        LEFT JOIN sid ON users.id = sid.userID
-        WHERE users.id = modules_student.userID $module_sql$calendar_year_sql$roles_sql$surname_sql$title_sql$username_sql$student_id_sql$initials_sql
-        AND user_deleted IS NULL LIMIT $limit";
-      $param_types = 's' . $calendar_year_param_types . $surname_param_types . $title_param_types . $username_param_types .
-          $student_id_param_types . $initials_param_types;
-      $params = array_merge($module_params, $calendar_year_params, $surname_params, $title_params, $username_params,
-          $student_id_params, $initials_params);
+        $result_detail = '';
     }
 
-    // Create an array of references to the parameter values.
-    $ref_params = array();
-    foreach ($params as &$param) {
-      $ref_params[] = &$param;
-    }
-
-    $user_data = $mysqli->prepare($query_string);
-    if (count($params) > 0) {
-      // Only call if the query has parameters.
-      call_user_func_array(array($user_data, "bind_param"), array_merge(array($param_types), $ref_params));
-    }
-    $user_data->execute();
-    $user_data->bind_result($tmp_id, $tmp_roles, $tmp_student_id, $tmp_surname, $tmp_initials, $tmp_first_names, $tmp_title, $tmp_username, $tmp_grade, $tmp_yearofstudy, $tmp_email);
-    $user_data->store_result();
-    $user_no = number_format($user_data->num_rows);
-  }
+    $table_order = array('#1', '#2', $string['title'], 'Surname', 'First Names', $string['username'], $string['studentid'], $string['year'], $string['course']);
+    $photodirectory = rogo_directory::get_directory('user_photo');
 }
-
-$module_id = check_var('moduleID', $_GET, false, true, true);
-$paper_id = check_var('paperID', $_GET, false, true, true);
-$team = check_var('team', $_GET, false, true, true);
-$email = check_var('email', $_GET, false, true, true);
-$temporary_surname = check_var('tmp_surname', $_GET, false, true, true);
-$temporary_courseid = check_var('tmp_courseID', $_GET, false, true, true);
-$temporary_yearid = check_var('tmp_yearID', $_GET, false, true, true);
 ?>
 <!DOCTYPE html>
 <html>
-<head>
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta http-equiv="content-type" content="text/html;charset=<?php echo $configObject->get('cfg_page_charset') ?>" />
-  <title>Rog&#333;: <?php echo $string['usermanagement'] . ' ' . $configObject->get('cfg_install_type'); ?></title>
-  <link rel="stylesheet" type="text/css" href="../css/body.css" />
-  <link rel="stylesheet" type="text/css" href="../css/header.css" />
-  <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
-  <link rel="stylesheet" type="text/css" href="../css/list.css" />
-  <link rel="stylesheet" type="text/css" href="../css/warnings.css" />
-  <style type="text/css">
-    a {color:black}
-    .coltitle {cursor:hand; background-color:#F1F5FB; color:black}
-    #usertable td {padding-left:6px}
-    .fn {color:#A5A5A5}
-    .uline {line-height: 150%}
-    .uline:hover {background-color:#FFE7A2}
-    .uline.highlight {background-color:#FFBD69}
-    td {padding-left: 0 !important}
-    .l {line-height: 160%}
-  </style>
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta http-equiv="content-type" content="text/html;charset=<?php echo $configObject->get('cfg_page_charset') ?>" />
+        <title>Rog&#333;: <?php echo $string['usermanagement'] . ' ' . $configObject->get('cfg_install_type'); ?></title>
+        <link rel="stylesheet" type="text/css" href="../css/body.css" />
+        <link rel="stylesheet" type="text/css" href="../css/header.css" />
+        <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
+        <link rel="stylesheet" type="text/css" href="../css/list.css" />
+        <link rel="stylesheet" type="text/css" href="../css/warnings.css" />
+        <style type="text/css">
+            a {color:black}
+            .coltitle {cursor:hand; background-color:#F1F5FB; color:black}
+            #usertable td {padding-left:6px}
+            .fn {color:#A5A5A5}
+            .uline {line-height: 150%}
+            .uline:hover {background-color:#FFE7A2}
+            .uline.highlight {background-color:#FFBD69}
+            td {padding-left: 0 !important}
+            .l {line-height: 160%}
+        </style>
 
-  <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
-  <script type="text/javascript" src="../js/jquery_tablesorter/jquery.tablesorter.js"></script>
-  <script type="text/javascript" src="../js/staff_help.js"></script>
-  <script type="text/javascript" src="../js/toprightmenu.js"></script>
-  <script>
-    function addUserID(ID, clearall) {
-      if (clearall) {
-        $('#userID').val(',' + ID);
-      } else {
-        cur_value = $('#userID').val() + ',' + ID;
-        $('#userID').val(cur_value);
-      }
-    }
+        <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
+        <script type="text/javascript" src="../js/jquery_tablesorter/jquery.tablesorter.js"></script>
+        <script type="text/javascript" src="../js/staff_help.js"></script>
+        <script type="text/javascript" src="../js/toprightmenu.js"></script>
+        <script>
+            function addUserID(ID, clearall) {
+                if (clearall) {
+                    $('#userID').val(',' + ID);
+                } else {
+                    cur_value = $('#userID').val() + ',' + ID;
+                    $('#userID').val(cur_value);
+                }
+            }
 
-    function subUserID(ID) {
-      var tmpuserID = ',' + ID;
-      new_value = $('#userID').val().replace(tmpuserID, '');
-      $('#userID').val(new_value);
-    }
+            function subUserID(ID) {
+                var tmpuserID = ',' + ID;
+                new_value = $('#userID').val().replace(tmpuserID, '');
+                $('#userID').val(new_value);
+            }
 
-    function clearAll() {
-      $('.highlight').removeClass('highlight');
-    }
+            function clearAll() {
+                $('.highlight').removeClass('highlight');
+            }
 
-    function selUser(userID, lineID, menuID, roles, evt) {
-      $('#menu2a').hide();
-      $('#menu' + menuID).show();
+            function selUser(userID, lineID, menuID, roles, evt) {
+                $('#menu2a').hide();
+                $('#menu' + menuID).show();
 
-      if (evt.ctrlKey == false && evt.metaKey == false) {
-        clearAll();
-        $('#' + lineID).addClass('highlight');
-        addUserID(userID, true);
-      } else {
-        if ($('#' + lineID).hasClass('highlight')) {
-          $('#' + lineID).removeClass('highlight');
-          subUserID(userID);
-        } else {
-          $('#' + lineID).addClass('highlight');
-          addUserID(userID, false);
-        }
-      }
-      $('#roles').val(roles);
-      checkRoles();
-      
-      evt.stopPropagation();
-    }
+                if (evt.ctrlKey == false && evt.metaKey == false) {
+                    clearAll();
+                    $('#' + lineID).addClass('highlight');
+                    addUserID(userID, true);
+                } else {
+                    if ($('#' + lineID).hasClass('highlight')) {
+                        $('#' + lineID).removeClass('highlight');
+                        subUserID(userID);
+                    } else {
+                        $('#' + lineID).addClass('highlight');
+                        addUserID(userID, false);
+                    }
+                }
+                $('#roles').val(roles);
+                checkRoles();
 
-    function userOff() {
-      $('#menu2a').show();
-      $('#menu2b').hide();
-      $('#menu2c').hide();
+                evt.stopPropagation();
+            }
 
-      clearAll();
-    }
+            function userOff() {
+                $('#menu2a').show();
+                $('#menu2b').hide();
+                $('#menu2c').hide();
 
-    function profile(userID) {
-      document.location.href='details.php?search_surname=<?php echo $search_surname; ?>'
-              + '&search_username=<?php echo $search_username ?>&student_id=<?php echo $student_id; ?>'
-              + '&moduleID=<?php echo $team; if (!is_null($moduleID)) echo '&module=' . $moduleID; ?>'
-              + '&calendar_year=<?php echo $calendar_year ?>&students=<?php if ($get_students) echo 'on'; ?>'
-              + '&submit=Search&userID=' + userID + '&email=<?php echo $email; ?>'
-              + '&tmp_surname=<?php echo $temporary_surname; ?>&tmp_courseID=<?php echo $temporary_courseid; ?>'
-              + '&tmp_yearID=<?php echo $temporary_yearid; ?>';
-    }
-    
-    $(function () {
-      if ($("#maindata").find("tr").size() > 1) {
-        $("#maindata").tablesorter({ 
-          // sort on the third column, order asc 
-          sortList: [[3,0]] 
-        });
-      }
+                clearAll();
+            }
 
-      $(document).click(function() {
-        $('#menudiv').hide();
-      });
-    });
-  </script>
-</head>
+            function profile(userID) {
+                document.location.href = 'details.php?search_surname=<?php echo $search_surname; ?>'
+                        + '&search_username=<?php echo $search_username ?>&student_id=<?php echo $student_id; ?>'
+                        + '&moduleID=<?php echo $team; ?><?php if (!is_null($moduleID)) echo '&module=' . $moduleID; ?>'
+                        + '&calendar_year=<?php echo $calendar_year ?>&students=<?php if ($get_students) echo 'on'; ?>'
+                        + '&submit=Search&userID=' + userID + '&email=<?php echo $email; ?>'
+                        + '&tmp_surname=<?php echo $temporary_surname; ?>&tmp_courseID=<?php echo $temporary_courseid; ?>'
+                        + '&tmp_yearID=<?php echo $temporary_yearid; ?>';
+            }
 
-<?php
-  require '../include/toprightmenu.inc';
+            $(function () {
+                if ($("#maindata").find("tr").size() > 1) {
+                    $("#maindata").tablesorter({
+                        // sort on the third column, order asc
+                        sortList: [[3, 0]]
+                    });
+                }
 
-	echo draw_toprightmenu(92);
-	
-  if (isset($_GET['submit']) or !is_null($paper_id) or !is_null($module_id)) {
-    echo "<body>\n";
+                $(document).click(function () {
+                    $('#menudiv').hide();
+                });
+            });
+        </script>
+    </head>
+    <body>
+        <?php
+        // left hand side menu
+        include '../include/user_search_options.php';
+        // hidden topright menu
+        require '../include/toprightmenu.inc';
+        echo draw_toprightmenu(92);
+        ?>
 
-    include '../include/user_search_options.php';
+        <div id="content" class="content">
+            <?php echo $render->render_admin_navigation($links); ?>
 
-    echo "<div id=\"content\" class=\"content\">\n";
-  } else {
-    echo "<body>\n";
+            <div class="head_title">
+                <div class="page_title">
+                    <?php echo $string['usersearch']; ?>
+                    <?php if ($has_result) : ?>
+                    (<?= number_format($first) ?> <?php echo $string['to']; ?> <?= number_format($last) ?> <?php echo $string['of']; ?> <?= number_format($counter) ?>):
+                        <span style="font-weight: normal">
+                            <?= $result_detail ?>
+                        </span>
+                    <?php endif; ?>
+                </div>
 
-    include '../include/user_search_options.php';
+            <?php if ($pages > 1) : ?>
+                <?php $url = Url::fromGlobals(); ?>
+                <div style="margin-left: 10px;">
+                    <?php for ($i = 1; $i <= $pages; $i++) : ?>
+                        <?php if ($i == $page) : ?>
+                            <strong>
+                        <?php else : ?>
+                            <a href="<?= $url->setQueryValue('page', $i); ?>">
+                        <?php endif; ?>
+                        <?= $i ?>
+                        <?php if ($i == $page) : ?>
+                            </strong>
+                        <?php else : ?>
+                            </a>
+                        <?php endif; ?>
+                        <?php if ($i < $pages) : ?>&nbsp;|&nbsp;<?php endif; ?>
+                    <?php endfor; ?>
+                </div>
+            <?php endif; ?>
+            </div>
 
-    echo "<div id=\"content\" class=\"content\">\n";
-    echo "<div class=\"head_title\">\n";
-    echo "<div><img src=\"../artwork/toprightmenu.gif\" id=\"toprightmenu_icon\" /></div>";
-    echo "<div class=\"breadcrumb\"><a href=\"../index.php\">" . $string['home'] . "</a>";
-    if (!is_null($moduleID)) {
-      echo '<img src="../artwork/breadcrumb_arrow.png" class="breadcrumb_arrow" alt="-" /><a href="../module/index.php?module=' . $moduleID . '">' . module_utils::get_moduleid_from_id($moduleID, $mysqli) . '</a>';
-    }
-    echo "</div><div class=\"page_title\">" . $string['usersearch'] . "</div>";
-    echo "</div>\n</div>\n</body></html>\n";
-    exit();     // There is no search submit so just exit.
-  }
-?>
-
-<form method="get" action="<?php echo $_SERVER['PHP_SELF']; ?>?sortby=<?php echo $sortby; ?>&order=<?php echo $ordering; ?>" autocomplete="off">
-
-<div class="head_title">
-<div style="float:right; vertical-align:top"><img src="../artwork/toprightmenu.gif" id="toprightmenu_icon" /></div>
-<?php
-echo "<div class=\"breadcrumb\"><a href=\"../index.php\">" . $string['home'] . "</a>";
-if (!is_null($moduleID)) {
-  echo '<img src="../artwork/breadcrumb_arrow.png" class="breadcrumb_arrow" alt="-" /><a href="../module/index.php?module=' . $moduleID . '">' . module_utils::get_moduleid_from_id($moduleID, $mysqli) . '</a>';
-}
-echo "</div><div class=\"page_title\">" . $string['usersearch'] . " ($user_no): <span style=\"font-weight: normal\">";
-if (!is_null($paper_id)) {
-  echo implode(', ', array_values($paper_modules)) . ' (' . $paper_calendar_year . ')';
-} elseif (!is_null($search_surname)) {
-  echo "'" . $search_surname . "'";
-} elseif (!is_null($moduleID) and $moduleID !== '%') {
-  echo module_utils::get_moduleid_from_id($moduleID, $mysqli);
-  if (!is_null($calendar_year) and $calendar_year !== '%' and $get_students) {
-    echo ' (' . $calendar_year . ')';
-  }
-} elseif (!is_null($search_username)) {
-  echo $search_username;
-} elseif (!is_null($student_id)) {
-  echo $student_id;
-} elseif (!is_null($calendar_year) and $calendar_year != '%') {
-  echo $calendar_year;
-}
-echo "</span></div>\n";
-echo "</div>\n";
-
-if ($roles_sql == '') {
-  echo "<div>" . $notice->info_strip($string['msg1'], 100) . "</div>";
-  exit();
-}
-
-if ($user_data->num_rows == $limit) {
-  echo " <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"width:100%\"><tr><td class=\"redwarn\" style=\"width:40px; line-height:0; padding-left:0\"><img src=\"../artwork/exclamation_red_bg.png\" width=\"32\" height=\"32\" alt=\""
-    . $string['warning'] . "\" /></td>" . "<td class=\"redwarn\">" . $string['largeresult'] . "</td></tr></table>";
-}
-
-$table_order = array('#1', '#2', $string['title'], 'Surname', 'First Names', $string['username'], $string['studentid'], $string['year'], $string['course']);
-echo "<table id=\"maindata\" class=\"header tablesorter\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"width:100%\">\n";
-echo "<thead>\n";
-echo "<tr>\n";
-foreach ($table_order as $display) {
-  if ($display{0} == '#') {
-    echo "<th>&nbsp;</th>";
-  } else {
-    echo "<th class=\"col\">$display</th>\n";
-  }    
-}
-?>
-</tr>
-</thead>
-
-<tbody>
-<?php
-
-if ($user_data->num_rows == 0) {
-  echo "</table>" . $notice->info_strip($string['msg2'], 100) . "</div>\n</body>\n</html>\n";
-  exit();
-}
-
-$x = 0;
-$photodirectory = rogo_directory::get_directory('user_photo');
-while ($user_data->fetch()) {
-  if ($userObject->has_role('SysAdmin')) {
-    echo "<tr class=\"l\" id=\"$x\" onclick=\"selUser('$tmp_id',$x,'2c','" . $tmp_roles . "',event); return false;\" ondblclick=\"profile('$tmp_id'); return false;\">";
-  } else {
-    echo "<tr class=\"l\" id=\"$x\" onclick=\"selUser('$tmp_id',$x,'2b','" . $tmp_roles . "',event); return false;\" ondblclick=\"profile('$tmp_id'); return false;\">";
-  }
-  $photoname = UserUtils::student_photo_exist($tmp_username);
-  if ($photoname) {
-    echo '<td><img src="../artwork/photo.png" width="16" height="16" alt="Photo" /></td>';
-  } else {
-    echo '<td></td>';
-  }
-  if (array_key_exists($tmp_id, $needs_array)) {
-    echo '<td><img src="../artwork/accessibility_16.png" width="16" height="16" /></td>';
-  } else {
-    echo '<td></td>';
-  }
-
-  if ($tmp_title != null) {
-    $lowertitle = mb_strtolower($tmp_title);
-    if (array_key_exists($lowertitle, $string)) {
-      echo '<td>' . $string[$lowertitle] . '</td>';
-    } else {
-      echo '<td></td>';
-    }
-  } else {
-    echo '<td></td>';
-  }
-  
-  if ($tmp_first_names == '') $tmp_first_names = ' ';
-  if ($tmp_surname == '') $tmp_surname = ' ';
-  echo '<td>' . demo_replace($tmp_surname, $demo, true, $tmp_surname{0}) . '</td>';
-  echo '<td>' . demo_replace($tmp_first_names, $demo, true, $tmp_first_names{0}) . '</td>';
-  echo '<td>' . demo_replace($tmp_username, $demo, false) . '</td>';
-      
-  if (strpos($tmp_roles, 'Student') !== false) {
-    if ($tmp_student_id == NULL) {
-      echo '<td class="fn">' . $string['unknown'] . '</td>';
-    } else {
-      echo '<td>' . demo_replace_number($tmp_student_id, $demo) . '</td>';
-    }
-  } elseif (strpos($tmp_roles, 'Staff') !== false) {
-    echo "<td>Staff</td>";
-  } else {
-    echo "<td class=\"fn\">" . $string['na'] . "</td>";
-  }
-  echo "<td>$tmp_yearofstudy</td>";
-  echo "<td>$tmp_grade</td></tr>\n";
-  
-  $x++;
-}
-
-$user_data->close();
-$mysqli->close();
-?>
-</tbody>
-</table>
-</div>
-
-</body>
+            <?php if ($has_result) : ?>
+                <form method="get" action="<?php echo $_SERVER['PHP_SELF']; ?>?sortby=<?php echo $sortby; ?>&order=<?php echo $ordering; ?>" autocomplete="off">
+                    <table id="maindata" class="header tablesorter" cellspacing="0" cellpadding="0" border="0" style="width:100%">
+                        <thead>
+                            <tr>
+                                <?php foreach ($table_order as $display) : ?>
+                                    <?php if ($display{0} == '#') : ?>
+                                        <th>&nbsp;</th>
+                                    <?php else : ?>
+                                        <th class="col"><?= $display ?></th>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            </tr>
+                        </thead>
+                        <?php
+                            if (!is_null($submit) and empty($roles)) {
+                                echo '</table>';
+                                echo $notice->info_strip($string['msg1'], 100);
+                            } else {
+                        ?>
+                        <tbody>
+                            <?php
+                            $x = 0;
+                            if (!is_null($submit) and count($roles) > 0) {
+                                while ($stmt->fetch()) :
+                                    ?>
+                                    <tr class="l" id="<?= $x ?>" onclick="selUser('<?= $tmp_id ?>', <?= $x ?>, '2c', '<?= $tmp_roles ?>', event); return false;" ondblclick="profile('<?= $tmp_id ?>'); return false;">
+                                        <td>
+                                            <?php if (false !== $photoname = UserUtils::student_photo_exist($tmp_username)) : ?>
+                                                <img src="../artwork/photo.png" width="16" height="16" alt="Photo" />
+                                            <?php endif; ?>
+                                        </td>
+                                        <td>
+                                            <?php if ($tmp_special_id) : ?>
+                                                <img src="../artwork/accessibility_16.png" width="16" height="16" />
+                                            <?php endif; ?>
+                                        </td>
+                                        <td>
+                                            <?php if (array_key_exists(mb_strtolower($tmp_title), $string)) : ?>
+                                                <?= $string[mb_strtolower($tmp_title)] ?>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td><?= $tmp_surname == '' ? demo_replace($tmp_surname, $demo, true, ' ') : demo_replace($tmp_surname, $demo, true, $tmp_surname{0}) ?></td>
+                                        <td><?= $tmp_first_names == '' ? demo_replace($tmp_first_names, $demo, true, ' ') : demo_replace($tmp_first_names, $demo, true, $tmp_first_names{0}) ?></td>
+                                        <td><?= demo_replace($tmp_username, $demo, false) ?></td>
+                                        <td class="fn">
+                                            <?php if (false !== strpos($tmp_roles, 'Student')) : ?>
+                                                <?= is_null($tmp_student_id) ? $string['unknown'] : demo_replace_number($tmp_student_id, $demo) ?>
+                                            <?php elseif (false !== strpos($tmp_roles, 'Staff')) : ?>
+                                                Staff
+                                            <?php else: ?>
+                                                <?= $string['na'] ?>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td>
+                                            <?= $tmp_yearofstudy ?>
+                                        </td>
+                                        <td>
+                                            <?= $tmp_grade ?>
+                                        </td>
+                                    </tr>
+                                    <?php
+                                    $x++;
+                                endwhile;
+                                $stmt->close();
+                                $mysqli->close();
+                            }
+                            ?>
+                        </tbody>
+                    </table>
+                    <?php
+                        }
+                    ?>
+                </form>
+            <?php endif; ?>
+    </body>
 </html>

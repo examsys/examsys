@@ -22,8 +22,8 @@
 * @package
 */
 
-$root = str_replace('/include', '/', str_replace('\\', '/', dirname(__FILE__)));
-$cfg_root_path = rtrim('/' . trim(str_replace(normalise_path($_SERVER['DOCUMENT_ROOT']), '', $root), '/'), '/');
+$configObject = Config::get_instance();
+$cfg_root_path = $configObject->get('cfg_root_path');
 ?>
 <!DOCTYPE html>
 <head>

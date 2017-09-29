@@ -26,6 +26,12 @@ academic_year:
   -
     calendar_year: 2016
     academic_year: "2016/17"
+  -
+    calendar_year: 2017
+    academic_year: "2017/18"
+  -
+    calendar_year: 2018
+    academic_year: "2018/19"
 faculty:
   -
     id: 1

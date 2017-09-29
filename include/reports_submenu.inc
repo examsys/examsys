@@ -299,9 +299,13 @@
     echo "<div class=\"bullet\"><a href=\"#\" onclick=\"go('../reports/review_comments.php?type=external&',event)\">" . $string['externalexaminers'] . "</a></div>\n";
     echo "<div class=\"reports_header\">" . $string['cohortreports'] . "</div>\n";
     echo "<div class=\"bullet\"><a href=\"#\" onclick=\"go('../reports/class_totals.php?',event)\">" . $string['classtotals'] . "</a></div>\n";
-    echo "<div class=\"bullet\"><a href=\"#\" onclick=\"go('../reports/class_totals_xml.php?',event)\">" . $string['classtotalsexcel2003'] . "</a></div>\n";
-    echo "<div class=\"bullet\"><a href=\"#\" onclick=\"go('../reports/class_totals_csv.php?',event)\">" . $string['classtotalscsv'] . "</a></div>\n";
-
+    if ($properties->unmarked_enhancedcalc(1) or $properties->unmarked_textbox(1)) {
+      echo "<div class=\"greybullet\">" . $string['classtotalsexcel2003'] . "</div>\n";
+      echo "<div class=\"greybullet\">" . $string['classtotalscsv'] . "</div>\n";
+    } else {
+      echo "<div class=\"bullet\"><a href=\"#\" onclick=\"go('../reports/class_totals_xml.php?',event)\">" . $string['classtotalsexcel2003'] . "</a></div>\n";
+      echo "<div class=\"bullet\"><a href=\"#\" onclick=\"go('../reports/class_totals_csv.php?',event)\">" . $string['classtotalscsv'] . "</a></div>\n";
+    }
     if ($properties->get_paper_type() != '5') {
 			if ($properties->q_type_exist('textbox')) {
         echo "<div class=\"reports_header\">" . $string['textboxmarking'] . "</div>\n";

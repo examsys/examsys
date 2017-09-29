@@ -58,9 +58,20 @@ class schoolmanagement extends \api\abstractmanagement {
         $langpack = new \langpack();
         $strings = $langpack->get_strings($this->langcomponent, array('school_not_created', 'school_already_exists', 'faculty_not_supplied' ,'external_faculty_invalid'));
         $faculty = true;
+        // Default null externalid.
+        if (!isset($params['externalid'])) {
+            $params['externalid'] = null;
+            $params['externalsys'] = null;
+        } else {
+            // What external system is the client mapped to.
+            if (empty($params['externalsys'])) {
+                $params['externalsys'] = null;
+            }
+            $params['externalsys'] = $this->get_external_system($params['externalsys']);
+        }
         // Get faculty if provided.
-        if (isset($params['facultyextid']) and $params['facultyextid'] !== '') {
-            $facultyid = \FacultyUtils::get_facultyid_from_externalid($params['facultyextid'], $this->db);
+        if (!empty($params['facultyextid'])) {
+            $facultyid = \FacultyUtils::get_facultyid_from_externalid($params['facultyextid'], $params['externalsys'], $this->db);
             if (!$facultyid) {
                 $data = array('statuscode' => $this->statuscodes['SCHOOL_FACULTY_EXTID_INVALID'], 'status' => $strings['external_faculty_invalid'], 'id' => null, 'externalid' => null);
                 return $this->get_response($data, 'create', $params['nodeid']);
@@ -73,14 +84,6 @@ class schoolmanagement extends \api\abstractmanagement {
         } else {
             $faculty = false;
         }
-        // Default null externalid.
-        if (!isset($params['externalid'])) {
-            $params['externalid'] = null;
-        }
-        // Default null externalsys.
-        if (!isset($params['externalsys'])) {
-            $params['externalsys'] = null;
-        }
         // Default null code.
         if (!isset($params['code'])) {
             $params['code'] = null;
@@ -88,7 +91,7 @@ class schoolmanagement extends \api\abstractmanagement {
         if ($faculty) {
             $schoolid = false;
             if (!empty($params['externalid'])) {
-                $schoolid = \SchoolUtils::get_schoolid_from_externalid($params['externalid'], $this->db);
+                $schoolid = \SchoolUtils::get_schoolid_from_externalid($params['externalid'], $params['externalsys'], $this->db);
             }
             if (!$schoolid and !empty($params['code'])) {
                 $schoolid = \SchoolUtils::get_schoolid_by_code($params['code'], $this->db);
@@ -126,9 +129,14 @@ class schoolmanagement extends \api\abstractmanagement {
         $faculty = true;
         if (!empty($params['id'])) {
             $schoolid = \SchoolUtils::schoolid_exists($params['id'], $this->db);
-        } elseif (isset($params['externalid']) and $params['externalid'] !== '') {
+        } elseif (!empty($params['externalid'])) {
+            // What external system is the client mapped to.
+            if (empty($params['externalsys'])) {
+                $params['externalsys'] = null;
+            }
+            $params['externalsys'] = $this->get_external_system($params['externalsys']);
             // Try using external system id to update school.
-            $schoolid = \SchoolUtils::get_schoolid_from_externalid($params['externalid'], $this->db);
+            $schoolid = \SchoolUtils::get_schoolid_from_externalid($params['externalid'], $params['externalsys'], $this->db);
             $params['id'] = $schoolid;
         } else {
             $schoolid = false;
@@ -158,7 +166,7 @@ class schoolmanagement extends \api\abstractmanagement {
         
         // Get faculty if provided.
         if (!empty($params['facultyextid'])) {
-            $facultyid = \FacultyUtils::get_facultyid_from_externalid($params['facultyextid'], $this->db);
+            $facultyid = \FacultyUtils::get_facultyid_from_externalid($params['facultyextid'], $params['externalsys'], $this->db);
             if (!$facultyid) {
                 $data = array('statuscode' => $this->statuscodes['SCHOOL_FACULTY_EXTID_INVALID'], 'status' => $strings['external_faculty_invalid'], 'id' => null, 'externalid' => null);
                 return $this->get_response($data, 'update', $params['nodeid']);
@@ -213,9 +221,14 @@ class schoolmanagement extends \api\abstractmanagement {
             , 'school_does_not_exist'));
         if (!empty($params['id'])) {
             $schoolid = \SchoolUtils::schoolid_exists($params['id'], $this->db);
-        } elseif (isset($params['externalid']) and $params['externalid'] !== '') {
+        } elseif (!empty($params['externalid'])) {
+            // What external system is the client mapped to.
+            if (empty($params['externalsys'])) {
+                $params['externalsys'] = null;
+            }
+            $params['externalsys'] = $this->get_external_system($params['externalsys']);
             // Try using external system id to delete school.
-            $params['id'] = \SchoolUtils::get_schoolid_from_externalid($params['externalid'], $this->db);
+            $params['id'] = \SchoolUtils::get_schoolid_from_externalid($params['externalid'], $params['externalsys'], $this->db);
             $schoolid = true;
         } else {
             $schoolid = false;

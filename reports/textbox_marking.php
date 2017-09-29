@@ -111,6 +111,12 @@ HTML;
         });
     });
   </script>
+  <?php
+    if($configObject->get_setting('core', 'paper_mathjax')) {
+      $render = new render($configObject);
+      $render->render(null, null, 'mathjax.html');
+    }
+  ?>
 </head>
 
 <body>
@@ -175,7 +181,7 @@ SELECT 1 AS logtype, l.id, lm.userID, l.user_answer, t.mark, l.q_id, comments, r
   AND l.q_id = ?
   AND DATE_ADD(lm.started, INTERVAL 2 MINUTE) >= ?
   AND lm.started <= ? $marked $studentstr
-ORDER BY l.id
+ORDER BY id
 SQL;
   $result = $mysqli->prepare($sql);
   $result->bind_param('iiissiiiss', $phase, $paperID, $q_id, $startdate, $enddate, $phase, $paperID, $q_id, $startdate, $enddate);
@@ -311,7 +317,6 @@ $half_marks = true;
           $q_no++;
           echo "<a name=\"q$q_no\">$q_no.&nbsp;</a>";
         }
-        if ($properties->get_calculator() == 1) echo '<br /><a href="#" onclick="openCalculator(); return false;"><img src="../artwork/calc.png" width="24" height="24" alt="Calculator" /></a>';
         echo "</td><td>$scenario<br />\n<br />";
         $li_set = 1;
       }

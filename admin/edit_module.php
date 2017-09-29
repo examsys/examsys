@@ -275,9 +275,15 @@ if (isset($_POST['submit']) and $moduleid_in_use == false) {
         echo "<option value=\"$value\">$key</option>\n";
       }
     }
-    // SMS might be IMS enterprise or rogo web service.
-    if (!in_array($module['sms'], $cfg_sms_sources)) {
-        echo "<option value=\"" . $module['sms'] .  "\" selected>" . $module['sms'] . "</option>\n";
+    // SMS might be IMS enterprise, rogo web service or a plugin.
+    $externalsys = new \external_systems();
+    $extsys = $externalsys->get_all_externalsystems();
+    foreach ($extsys as $key=>$value) {
+      if ($module['sms'] == $value) {
+        echo "<option value=\"$value\" selected>$value</option>\n";
+      } else {
+        echo "<option value=\"$value\">$value</option>\n";
+      }
     }
     echo '</select></td></tr>';
   ?>

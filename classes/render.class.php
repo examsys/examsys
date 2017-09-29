@@ -60,9 +60,12 @@ class render {
      * @param array $data Data for the template
      * @param array $lang Language strings
      * @param string $template The template filename
+     * @param string $additionaljs additional javascript required
+     * @param string $additionalcss additional css required
      */
-    public function render($data, $lang, $template) {
-        $data = array('data' => $data, 'lang' => $lang, 'path' => $this->config->get('cfg_root_path'));
+    public function render($data, $lang, $template, $additionaljs = "", $additionalcss = "") {
+        $data = array('data' => $data, 'lang' => $lang, 'path' => $this->config->get('cfg_root_path'), 'charset' => $this->config->get('cfg_page_charset'),
+        'additionaljs' => $additionaljs, 'additionalcss' => $additionalcss);
         echo $this->twig->render($template, $data);
     }
 
@@ -153,5 +156,25 @@ class render {
     public function render_html5_js($jsstring) {
         $data = array ('path' => $this->config->get('cfg_root_path'), 'jsstring' => $jsstring);
         echo $this->twig->render('html5_js.html', $data);
+    }
+
+    /**
+     * Render page breadcrumb from an associative array which keys must be the relative
+     * path for a page and the values are the title to display.
+     *
+     * @param array $links
+     * @return string
+     */
+    public function render_admin_navigation(array $links) {
+        $path = $this->config->get('cfg_root_path');
+        $current = count($links) > 0 ? array_pop($links) : '';
+        
+        $data = array (
+            'path' => $path,
+            'links' => $links,
+            'current' => $current,
+        );
+        
+        return $this->twig->render('admin/navigation.html', $data);
     }
 }

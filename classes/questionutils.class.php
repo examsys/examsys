@@ -409,17 +409,18 @@ SQL;
     return $qtype;
   }
 
-  /**
-    * Based on the parent random block id get the possible calculation questions.
+   /**
+    * Based on the parent random block id get the possible questions based on type.
     *
     * @param int $q_id question
-    * @param mysqli $db
-    * @return array $possible list of possible calculation questions
+    * @param string $q_type question type
+    * @return array $possible list of possible questions
     */
-   static function get_random_calc_question($q_id, $db) {
+   static function get_random_question($q_id, $q_type) {
+       $configObject = Config::get_instance();
        $possible = array();
-       $random = $db->prepare("SELECT q.q_id FROM questions q, random_link r WHERE q.q_id = r.q_id AND q_type ='enhancedcalc' and r.id = ?");
-       $random->bind_param('i', $q_id);
+       $random = $configObject->db->prepare("SELECT q.q_id FROM questions q, random_link r WHERE q.q_id = r.q_id AND q_type = ? and r.id = ?");
+       $random->bind_param('is', $q_id, $q_type);
        $random->execute();
        $random->bind_result($random_id);
        while ($random->fetch()) {
@@ -430,17 +431,18 @@ SQL;
    }
 
    /**
-    * Based on the parent keyword block id get the possible calculation questions.
+    * Based on the parent keyword block id get the possible questions based on type.
     *
     * @param int $q_id question
-    * @param mysqli $db
-    * @return array $possible list of possible calculation questions
+    * @param string $q_type question type
+    * @return array $possible list of possible questions
     */
-   static function get_keyword_calc_question($q_id, $db) {
+   static function get_keyword_question($q_id, $q_type) {
+       $configObject = Config::get_instance();
        $possible = array();
-       $random = $db->prepare("SELECT q_id FROM questions WHERE q_type ='enhancedcalc' AND q_id in ("
+       $random = $configObject->db->prepare("SELECT q_id FROM questions WHERE q_type = ? AND q_id in ("
            . "SELECT keywords_question.q_id FROM keywords_question, keywords_link WHERE keywordID = keyword_id AND keywords_link.q_id = ?)");
-       $random->bind_param('i', $q_id);
+       $random->bind_param('is', $q_id, $q_type);
        $random->execute();
        $random->bind_result($random_id);
        while ($random->fetch()) {

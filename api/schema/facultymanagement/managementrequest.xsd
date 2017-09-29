@@ -18,7 +18,7 @@
                         <xs:sequence>
                             <xs:choice>
                                 <xs:element name="id" type="xs:integer"/>
-                                <xs:element name="externalid" type="externalid"/>
+                                <xs:group ref="external"/>
                             </xs:choice>
                             <xs:element name="name" type="faculty" minOccurs="0"/>
                             <xs:element name="code" type="code" minOccurs="0"/>
@@ -31,7 +31,7 @@
                         <xs:sequence>
                             <xs:choice>
                                 <xs:element name="id" type="xs:integer"/>
-                                <xs:element name="externalid" type="externalid"/>
+                                <xs:group ref="external"/>
                             </xs:choice>
                         </xs:sequence>
                         <xs:attribute type="xs:string" name="id" use="required"/>
@@ -43,7 +43,7 @@
     <xs:group name="external">
         <xs:sequence>
             <xs:element name="externalid" type="externalid"/>
-            <xs:element name="externalsys" type="externalsys"/>
+            <xs:element name="externalsys" type="externalsys" minOccurs="0"/>
         </xs:sequence>
     </xs:group>
     <xs:simpleType name="code">

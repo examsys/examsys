@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Rogo.  If not, see <http://www.gnu.org/licenses/>.
 
-require_once '../lang/' . $language . '/include/paper_security.php';
-require_once '../lang/' . $language . '/question/sct_shared.php';
+require_once dirname(dirname(dirname(__DIR__))) . '/lang/' . $language . '/include/paper_security.php';
+require_once dirname(dirname(dirname(__DIR__))) . '/lang/' . $language . '/question/sct_shared.php';
 
 $string['question'] = 'Question';
 $string['norights'] = 'You do not have rights to see this paper.';
@@ -43,6 +43,7 @@ $string['adjusted'] = '(adjusted)';
 $string['feedback'] = 'Feedback';
 $string['msg1'] = 'Thank you for completing <strong>%s</strong>. Your responses have been recorded.';
 $string['msg2'] = 'To log out please click “Close window” and then press &lt;CTRL&gt; &lt;ALT&gt; and &lt;DELETE&gt to log out of your workstation.';
+$string['msg2short'] = 'Please press &lt;CTRL&gt; &lt;ALT&gt; and &lt;DELETE&gt to log out of your workstation.';
 $string['closewindow'] = 'Close Window';
 $string['overallcorrectorder'] = 'Overall correct order (Bonus Mark)';
 $string['outof'] = 'out of';

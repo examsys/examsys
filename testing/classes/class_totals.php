@@ -23,109 +23,30 @@
 * @package
 */
 
+require_once dirname(dirname(__DIR__)) . '/include/finish_functions.inc';
+
 /**
  * Class for class_totals functions used in summative exam check test.
  */
 class class_totals {
 
   /**
-   * Function to get the html from a page we wish to scrape.
+   * Function to parse marks in display_feedback
    *
-   * @param string $url - the page we wish to scrape
-   * @param string $username - the user we are to login with
-   * @param string $password - the users password
-   * @return string $output - page response html
-   */
-  function getData($url, $username, $password) {
-    $ch = curl_init($url);
-
-    curl_setopt($ch, CURLOPT_POSTFIELDS, "ROGO_USER=" . $username . "&ROGO_PW=" . $password . "&rogo-login-form-std=SignIn");
-    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_USERAGENT,'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.13) Gecko/20080311 Firefox/2.0.0.13');
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Accept-Language: en-us,en;q=0.5'));
-
-    $output = curl_exec($ch);
-    curl_close($ch);
-
-    if (strpos($output,'<title>Log In</title>') !== false) {
-      //V4.4 needing authentication
-      $output = null;
-    }
-    return $output;
-  }
-
-  /**
-   * Function to strip out image tag from the mark and percent columns in reports/class_totals.php.
-   * @param string $line
-   * @return string
-   */
-  function tidyLine($line) {
-    $line = str_replace('<img src="../artwork/small_yellow_warning_icon.gif" width="12" height="11" alt="Marking not complete" />&nbsp;', '', $line);
-    $parts = explode('>', $line);
-    $parts2 = explode('<', $parts[1]);
-
-    return str_replace('&nbsp;', '', $parts2[0]);
-  }
-
-  /**
-   * Function to parse marks on reports/class_totals.php.
-   *
-   * @param string $data - html from page we are scraping
-   * @return array $marks
-   */
-  function parseRawMarks($data) {
-    // No result
-    if ($data == NULL) {
-      return false;
-    }
-    // Asking for authentication
-    if (strpos($data, 'rogo-login-form-std')) {
-      return false;
-    }
-    $marks = array();
-    $line = 0;
-    $data_line = explode('<tr', $data);
-
-    foreach ($data_line as $row) {
-      if (strpos($row, ' id="res') !== false) {
-        $cols = explode('<td', $row);
-
-        $tmp_parts = explode("setVars('", $cols[0]);
-
-        $tmp_parts2 = explode(',', $tmp_parts[1]);
-        $tmp_userID = $tmp_parts2[1];
-
-        $marks[$line]['mark'] = $this->tidyLine($cols[7]);
-        $marks[$line]['percent'] = $this->tidyLine($cols[8]);
-        $marks[$line]['metadataID'] = str_replace("'", "", $tmp_parts2[0]);
-        $marks[$line]['userID'] = $tmp_userID;
-
-        $line++;
-      }
-    }
-    return $marks;
-  }
-
-  /**
-   * Function to parse marks on paper/finish.php
-   *
-   * @param string $data - html from page we are scraping
+   * @param string $data - html from function
    * @return float $mark
    */
   function parseScript($data) {
-    if ($data == NULL) {
+    if (empty($data)) {
       return false;
     }
-    $main_data = explode('<body', $data);
 
-    $data_line = explode('<tr', $main_data[1]);
+    $mark = 0;
+    $main_data = explode('<div class="key">', $data);
+    $data_line = explode('<tr', $main_data[2]);
 
     foreach ($data_line as $row) {
-            $found = strpos($row, 'Your mark');
+      $found = strpos($row, 'Your mark');
       if ($found !== false) {
         $cols = explode('>', $row);
 
@@ -147,10 +68,12 @@ class class_totals {
    * @param type $start_dateSQL - start date range of papers checked
    * @param type $end_dateSQL - end date range of papers checked
    * @param type $server - the server we are checking
+   * @param array $string - translation strings
+   * @param object $userObject logged in user object
    * @param type $paperid - the papers we want to check (optional, all if not supplied)
    */
-  public function process_papers($mysqli, $username, $password, $rootpath, $userid, $start_dateSQL, $end_dateSQL, $server, $paperid = '') {
-
+  public function process_papers($mysqli, $username, $password, $rootpath, $userid, $start_dateSQL, $end_dateSQL, $server, $string, $userObject, $paperid = '') {
+    global $display_correct_answer, $display_students_response, $display_feedback, $display_question_mark;
     $papers = array();
 
     if ($paperid != '') {
@@ -174,11 +97,19 @@ class class_totals {
     $result->execute();
 
     $result = $mysqli->prepare("SELECT surname, first_names, username FROM users WHERE id = ? LIMIT 1");
+    
+    $status_array = QuestionStatus::get_all_statuses($mysqli, $string, true);
+    $paper_utils = Paper_utils::get_instance();
+    // Turn on all feedback if staff and a student exam script is being reviewed.
+    $display_correct_answer     = 1;
+    $display_question_mark      = 1;
+    $display_students_response  = 1;
+    $display_feedback           = 1;
     foreach ($papers as $paper) {
-      $url = $server . $rootpath . "/reports/class_totals.php?paperID=" . $paper['paperID'] . "&startdate=" . $paper['start_date'] . "&enddate=" . $paper['end_date'] . "&repmodule=&repcourse=%&sortby=student_id&module=1&folder=&percent=100&absent=0&direction=asc&studentsonly=1";
-
-      $output = $this->getData($url, $username, $password);
-      $marks_set = $this->parseRawMarks($output);
+      $propertyObj = PaperProperties::get_paper_properties_by_crypt_name($paper['crypt_name'], $mysqli, $string, true);
+      $report = new ClassTotals(1, 100, 'asc', 0, 'name', $userObject, $propertyObj, $paper['start_date'], $paper['end_date'], '%', '', $mysqli, $string);
+      $report->compile_report(false);
+      $marks_set = $report->get_user_results();
 
       $current_no++;
 
@@ -190,18 +121,25 @@ class class_totals {
       $errors = '';
       if ($marks_set === false) {
         $marks_set = array();
-        $errors = "<ul><li>Couldn't access class_totals</li>\n";
+        $errors = "<ul><li>Couldn't access class totals</li>\n";
       }
+      
       foreach ($marks_set as $mark) {
-        $url = $server . $rootpath . "/paper/finish.php?id=" . $paper['crypt_name'] . "&metadataID=" . $mark['metadataID'] . "&userID=" . $mark['userID'] . "&surname=Test&log_type=2&percent=" . str_replace('%' ,'', $mark['percent']) . "&disable_mappings=1";
-        $output = $this->getData($url, $username, $password);
+        $overrides = $paper_utils->get_marking_overrides('2', $mark['userID'], $paper['paperID']);
+        $log_metadata = new LogMetadata($mark['userID'], $paper['paperID'], $mysqli);
+        $log_metadata->get_record();
+        ob_start(); // Start output buffering
+        display_feedback($propertyObj, $mark['userID'], '2', $userObject, $log_metadata, $mysqli, $status_array, $overrides, null);
+        $output = ob_get_contents(); // Store buffer in variable
+        ob_end_clean(); // End buffering and clean up
+
         $script_mark = $this->parseScript($output);
 
         if ($script_mark === false) {
           if ($errors == '') {
             $errors = '<ul>';
           }
-          $errors .= "<li>Couldn't access finish</li>\n";
+          $errors .= "<li>Couldn't access feedback</li>\n";
         }
 
         if ($script_mark != $mark['mark']) {

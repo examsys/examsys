@@ -710,7 +710,7 @@ if (!is_null($updateadmin) and $userObject->has_role('SysAdmin')) {
   $user_modules = array();
   $current_year = false;
 
-  $results = $mysqli->prepare("SELECT DISTINCT modules.id, modules.moduleid, fullname, modules_student.calendar_year, attempt FROM (modules_student, modules) WHERE modules_student.idMod = modules.id AND userID = ? ORDER BY modules_student.calendar_year DESC, modules.moduleid");
+  $results = $mysqli->prepare("SELECT DISTINCT modules.id, modules.moduleid, fullname, modules_student.calendar_year, attempt FROM (modules_student, modules) WHERE mod_deleted IS NULL AND modules_student.idMod = modules.id AND userID = ? ORDER BY modules_student.calendar_year DESC, modules.moduleid");
   $results->bind_param('i', $userID);
   $results->execute();
   $results->store_result();

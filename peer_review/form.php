@@ -366,7 +366,9 @@ if (isset($_POST['submit'] )) {
 
     echo "</select>\n";
   }
-  echo '</div></td><td width="160"><img src="../config/logo.png" width="160" height="67" alt="Logo" /></td></tr>';
+  $themedirectory = rogo_directory::get_directory('theme');
+  $logo_path = $themedirectory->url($configObject->get_setting('core', 'misc_logo_main'));
+  echo '</div></td><td width="160"><img src="' . $logo_path . '" width="160" height="67" alt="Logo" /></td></tr>';
   echo '</table>';
 
   echo "<br />\n<table border=\"0\" cellpadding=\"3\" cellspacing=\"0\" style=\"margin-left:auto; margin-right:auto\">\n";

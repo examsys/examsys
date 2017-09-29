@@ -29,8 +29,8 @@
 * @package
 */
 
-require '../include/sysadmin_auth.inc';
-include_once '../include/load_config.php';
+require dirname(__DIR__) . '/include/sysadmin_auth.inc';
+include_once dirname(__DIR__) . '/include/load_config.php';
 require_once 'classes/class_totals.php';
 
 set_time_limit(0);
@@ -80,9 +80,9 @@ $password = $_POST['passwd'];
 
 if (isset($_POST['paper']) and $_POST['paper'] != '') {
     $class_totals = new class_totals();
-    $class_totals->process_papers($mysqli, $username, $password, $rootpath, $userid, $start_dateSQL, $end_dateSQL, $server, $_POST['paper']);
+    $class_totals->process_papers($mysqli, $username, $password, $rootpath, $userid, $start_dateSQL, $end_dateSQL, $server, $string, $userObject, $_POST['paper']);
 } else {
     $class_totals = new class_totals();
-    $class_totals->process_papers($mysqli, $username, $password, $rootpath, $userid, $start_dateSQL, $end_dateSQL, $server);
+    $class_totals->process_papers($mysqli, $username, $password, $rootpath, $userid, $start_dateSQL, $end_dateSQL, $server, $string, $userObject);
 }
 ?>

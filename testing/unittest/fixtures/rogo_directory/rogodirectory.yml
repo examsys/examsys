@@ -1,0 +1,11 @@
+users:
+  -
+    id: 1
+    password: "87654321"
+    username: "staff1"
+    roles: "Staff"
+    grade: "University Lecturer"
+    title: "Dr"
+    initials: "JL"
+    surname: "Baxter"
+denied_log:

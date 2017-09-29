@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="content-type" content="text/html;charset={{charset}}" />
+  
+  <title>{{lang.title}}</title>
+
+  <link rel="stylesheet" type="text/css" href="{{path}}/css/body.css" />
+  <link rel="stylesheet" type="text/css" href="{{path}}/css/check_delete.css" />
+</head>
+
+<body>
+<p><strong>{{lang.msg}}</strong></p>
+
+<div class="button_bar">
+  <form action="{{data.action}}" method="post" autocomplete="off">
+    <input type="hidden" name="id" value="{{data.id}}"/>
+    <input class="delete" type="submit" name="submit" value="{{lang.delete}}"/><input class="cancel" type="button" name="cancel" value="{{lang.cancel}}" onclick="javascript:window.close();"/>
+  </form>
+</div>
+    
+</body>
+</html>

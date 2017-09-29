@@ -8,6 +8,9 @@ academic_year:
   -
     calendar_year: 2017
     academic_year: "2017/18"
+  -
+    calendar_year: 2018
+    academic_year: "2018/19"
 properties:
   -
     property_id: 1

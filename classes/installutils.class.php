@@ -50,7 +50,10 @@ Class InstallUtils {
   public static $cfg_db_username;
   public static $cfg_db_password;
   public static $cfg_db_charset;
+  public static $cfg_db_engine;
+  public static $cfg_db_help_engine;
 
+  public static $cfg_root_path;
   public static $cfg_web_host;
   public static $cfg_rogo_data;
   public static $cfg_db_basename;
@@ -87,11 +90,11 @@ Class InstallUtils {
   public static $cfg_ldap_bind_password;
   public static $cfg_ldap_user_prefix;
 
-  public static $cfg_auth_ldap = 'false';
-  public static $cfg_auth_lti = 'true';
-  public static $cfg_auth_internal = 'true';
-  public static $cfg_auth_guest = 'true';
-  public static $cfg_auth_impersonation = 'true';
+  public static $cfg_auth_ldap = false;
+  public static $cfg_auth_lti = true;
+  public static $cfg_auth_internal = true;
+  public static $cfg_auth_guest = true;
+  public static $cfg_auth_impersonation = true;
 
   public static $cfg_lookup_ldap_server;
   public static $cfg_lookup_ldap_search_dn;
@@ -99,9 +102,9 @@ Class InstallUtils {
   public static $cfg_lookup_ldap_bind_password;
   public static $cfg_lookup_ldap_user_prefix;
 
-  public static $cfg_uselookupLdap = 'false';
-  public static $cfg_uselookupXML = 'false';
-  
+  public static $cfg_uselookupLdap = false;
+  public static $cfg_uselookupXML = false;
+
   public static $cfg_labsecuritytype;
 
   public static $cfg_support_email;
@@ -109,7 +112,7 @@ Class InstallUtils {
 
   /** @var bool Stores if this is a behat installation. */
   public static $behat_install = false;
-  
+
   /** @var bool Stores if this is a phpunit installation. */
   public static $phpunit_install = false;
 
@@ -128,6 +131,9 @@ Class InstallUtils {
 
   /** Stores if the install is being done via cli. */
   public static $cli = false;
+
+  /** Stores if the settings for cli install. */
+  private static $settings;
 
   /**
    * Called when the object is unserialised.
@@ -148,11 +154,11 @@ Class InstallUtils {
     <script>
       $(function () {
         $("#installForm").validate();
-      
+
         $('#useLdap').change(function() {
           $('#ldapOptions').toggle();
         });
-      
+
         $('#uselookupLdap').change(function() {
           $('#ldaplookupOptions').toggle();
         });
@@ -180,6 +186,15 @@ Class InstallUtils {
         <div><label for="mysql_db_host"><?php echo $string['databasehost']; ?></label> <input type="text" value="127.0.0.1" id="mysql_db_host" name="mysql_db_host" class="required" /></div>
         <div><label for="mysql_db_port"><?php echo $string['databaseport']; ?></label> <input type="text" value="3306" id="mysql_db_port" name="mysql_db_port" class="required" /></div>
         <div><label for="mysql_db_name"><?php echo $string['databasename']; ?></label> <input type="text" value="rogo" id="mysql_db_name" name="mysql_db_name" class="required" minlength="3" /></div>
+        <div><label for="mysql_db_engine"><?php echo $string['databaseengine']; ?></label> <select id="mysql_db_engine" name="mysql_db_engine" class="required">
+          <option value="InnoDB" selected>InnoDB</option>
+          <option value="ndbcluster">ndbcluster</option>
+        </select><img src="../artwork/tooltip_icon.gif" class="help_tip" title="<?php echo $string['databaseenginetooltip']; ?>" /></div>
+        <div><label for="mysql_db_help_engine"><?php echo $string['databasehelpengine']; ?></label> <select id="mysql_db_help_engine" name="mysql_db_help_engine" class="required">
+          <option value="InnoDB">InnoDB</option>
+          <option value="MyISAM" selected>MyISAM</option>
+          <option value="ndbcluster">ndbcluster</option>
+        </select><img src="../artwork/tooltip_icon.gif" class="help_tip" title="<?php echo $string['helpdatabaseenginetooltip']; ?>" /></div>
         <div><label for="mysql_baseusername"><?php echo $string['rdbbasename']; ?></label> <input type="text" value="rogo" id="mysql_baseusername" name="mysql_baseusername" class="required" minlength="3" maxlength="10" /></div>
 
       <table class="h"><tr><td><nobr><?php echo $string['timedateformats']; ?></nobr></td><td class="line"><hr /></td></tr></table>
@@ -265,7 +280,7 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
 
       <table class="h"><tr><td><nobr><?php echo $string['helpdb']; ?></nobr></td><td class="line"><hr /></td></tr></table>
         <div><label for="loadHelp"><?php echo $string['loadhelp']; ?></label> <input id="loadHelp" name="loadHelp" type="checkbox" checked="checked" /></div>
-        
+
       <table class="h"><tr><td><nobr><?php echo $string['translationpack']; ?></nobr></td><td class="line"><hr /></td></tr></table>
         <div><label for="loadtranslations"><?php echo $string['loadtranslations']; ?></label> <input id="loadtranslations" name="loadtranslations" type="checkbox"/></div><br/><br/>
         <div><?php echo sprintf($string['manualtranslations'], $configObject->getxml('translations', 'url')); ?></div>
@@ -273,7 +288,7 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
       <table class="h"><tr><td><nobr><?php echo $string['labsecuritytype']; ?></nobr></td><td class="line"><hr /></td></tr></table>
         <div><label><?php echo $string['IP']; ?></label> <input name="labsecuritytype" value="ipaddress" type="radio" checked = "checked" /><img src="../artwork/tooltip_icon.gif" class="help_tip" title="Rogo can lock summative exams to either IP address or hostname. If your institution uses static IPs then chose IP address otherwise chose hostname. " /></div>
         <div><label><?php echo $string['hostname']; ?></label> <input name="labsecuritytype" type="radio" value="hostname" /></div>
-      
+
       <table class="h"><tr><td><nobr><?php echo $string['supportemaila']; ?></nobr></td><td class="line"><hr /></td></tr></table>
         <div></div>
         <br />
@@ -309,22 +324,106 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
       return false;
     }
 
-    return true;    
+    return true;
   }
-  
-  static function processForm() {
+
+  /**
+   * Load and verify settings file.
+   */
+  static function loadSettings() {
+    self::$settings = json_encode(simplexml_load_file(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'settings.xml', 'SimpleXMLElement', LIBXML_NOCDATA));
+  }
+
+  /**
+   * Get settings.
+   *
+   * @param integer $type parameter type
+   * @param boolean $required is parameter required
+   * @param string $parent name of xml node
+   * @param string $child xml child node name
+   * @param string $grandchild xml grandchild node name
+   * @return value of xml node
+   */
+  static function getSettings($type, $required, $parent, $child = '', $grandchild = '') {
+    $setting = $parent . '//' . $child . '//' . $grandchild;
+    $xmldata = json_decode(self::$settings);
+    if (is_string($parent)) {
+      if (isset($xmldata->$parent)) {
+        if ($child == '' and $grandchild == '') {
+          return self::check_setting($xmldata->$parent, $type, $required, $setting);
+        } elseif ($child != '' and $grandchild == '') {
+          if (isset($xmldata->$parent->$child)) {
+             return self::check_setting($xmldata->$parent->$child, $type, $required, $setting);
+          }
+        } else {
+          if (isset($xmldata->$parent->$child->$grandchild)) {
+             return self::check_setting($xmldata->$parent->$child->$grandchild, $type, $required, $setting);
+          }
+        }
+      }
+    }
+    return self::check_setting(null, $type, $required, $setting);
+  }
+
+  /**
+   * Check and clean a setting
+   *
+   * @param string $value value of setting
+   * @param integer $type type of setting
+   * @param boolean $required is setting required
+   * @param string $setting xml path of setting
+   * @return cleaned settings
+   */
+  private function check_setting($value, $type, $required, $setting) {
+    global $string;
+    if (is_array($value)) {
+      $clean = param::clean_array($value, $type, $required);
+    } else {
+      $clean = param::clean($value, $type);
+    }
+    if (empty($clean) or $clean === false) {
+      if ($required) {
+        throw new MissingParameter(sprintf($string['invalidsetting'], $setting));
+      } else {
+        switch ($type) {
+          case param::BOOLEAN:
+            $clean = false;
+            break;
+          default:
+            $clean = null;
+            break;
+        }
+      }
+    }
+    return $clean;
+  }
+
+  static function processForm($args = array()) {
     global $string, $cfg_encrypt_salt;
     $configObject = Config::get_instance();
-    
-    self::$cfg_company = $_POST['company_name'];
 
-    self::$cfg_db_host = $_POST['mysql_db_host'];
+    if (!self::$cli) {
+      self::$cfg_company = param::required('company_name', param::TEXT, param::FETCH_POST);
+      self::$cfg_db_host = param::required('mysql_db_host', param::TEXT, param::FETCH_POST);
+      self::$cfg_db_port = param::required('mysql_db_port', param::INT, param::FETCH_POST);
+      self::$cfg_db_name = param::required('mysql_db_name', param::TEXT, param::FETCH_POST);
+      self::$cfg_db_engine = param::required('mysql_db_engine', param::ALPHA, param::FETCH_POST);
+      self::$cfg_db_help_engine = param::required('mysql_db_help_engine', param::ALPHA, param::FETCH_POST);
+      self::$db_admin_username = param::required('mysql_admin_user', param::TEXT, param::FETCH_POST);
+      self::$db_admin_passwd = param::required('mysql_admin_pass', param::TEXT, param::FETCH_POST);
+    } else {
+      self::$cfg_company = self::getSettings(param::TEXT, true, 'company');
+      self::$cfg_db_host = param::clean($args['mysql_db_host'], param::TEXT);
+      self::$cfg_db_port = param::clean($args['mysql_db_port'], param::INT);
+      self::$cfg_db_name = param::clean($args['mysql_db_name'], param::TEXT);
+      self::$cfg_db_engine = self::getSettings(param::ALPHA, true, 'database', 'engine');
+      self::$cfg_db_help_engine = self::getSettings(param::ALPHA, true, 'database', 'help_engine');
+      self::$db_admin_username = param::clean($args['mysql_admin_user'], param::TEXT);
+      self::$db_admin_passwd = param::clean($args['mysql_admin_pass'], param::TEXT);
+    }
+
     self::$cfg_db_charset = 'utf8';
-    self::$cfg_db_port = $_POST['mysql_db_port'];
-    self::$cfg_db_name = $_POST['mysql_db_name'];
-    self::$db_admin_username = $_POST['mysql_admin_user'];
-    self::$db_admin_passwd = $_POST['mysql_admin_pass'];
-    
+
     // Check mysql version.
     $check = mysqli_connect(self::$cfg_db_host, self::$db_admin_username, self::$db_admin_passwd);
 
@@ -338,9 +437,14 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
         self::displayError(array('002' => sprintf($string['errors17'], $mysql_min_ver, $mysql_version)));
     }
     $check->close();
-    
-    self::$cfg_web_host = $_POST['web_host'];
-    self::$cfg_rogo_data = $_POST['rogo_data'];
+
+    if (!self::$cli) {
+      self::$cfg_web_host = param::required('web_host', param::TEXT, param::FETCH_POST);
+      self::$cfg_rogo_data = param::required('rogo_data', param::TEXT, param::FETCH_POST);
+    } else {
+      self::$cfg_web_host = self::getSettings(param::TEXT, true, 'server', 'host');
+      self::$cfg_rogo_data = self::getSettings(param::TEXT, true, 'server', 'data');
+    }
     if (!file_exists(self::$cfg_rogo_data)) {
       self::displayError(array('003' => sprintf($string['errors18'], self::$cfg_rogo_data)));
     }
@@ -352,96 +456,128 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
     // On windows we must escape the slashes.
     self::$cfg_rogo_data = str_replace('\\', '\\\\', self::$cfg_rogo_data);
 
-    self::$cfg_db_basename = $_POST['mysql_baseusername'];
-
-    self::$cfg_SysAdmin_username = $_POST['SysAdmin_username'];
-
-    self::$cfg_short_date = $_POST['cfg_short_date'];
-    self::$cfg_long_date = $_POST['cfg_long_date'];
-    self::$cfg_long_date_time = $_POST['cfg_long_date_time'];
-    self::$cfg_short_date_time = $_POST['cfg_short_date_time'];
-    self::$cfg_long_date_php = $_POST['cfg_long_date_php'];
-    self::$cfg_short_date_php = $_POST['cfg_short_date_php'];
-    self::$cfg_long_time_php = $_POST['cfg_long_time_php'];
-    self::$cfg_short_time_php = $_POST['cfg_short_time_php'];
-    self::$cfg_search_leadin_length = $_POST['cfg_search_leadin_length'];
-    self::$cfg_timezone = $_POST['cfg_timezone'];
-    self::$cfg_tmpdir = $_POST['tmpdir'];
+    if (!self::$cli) {
+      self::$cfg_db_basename = param::required('mysql_baseusername', param::TEXT, param::FETCH_POST);
+      self::$cfg_SysAdmin_username = param::required('SysAdmin_username', param::TEXT, param::FETCH_POST);
+      self::$cfg_short_date = param::required('cfg_short_date', param::TEXT, param::FETCH_POST);
+      self::$cfg_long_date = param::required('cfg_long_date', param::TEXT, param::FETCH_POST);
+      self::$cfg_long_date_time = param::required('cfg_long_date_time', param::TEXT, param::FETCH_POST);
+      self::$cfg_short_date_time = param::required('cfg_short_date_time', param::TEXT, param::FETCH_POST);
+      self::$cfg_long_date_php = param::required('cfg_long_date_php', param::TEXT, param::FETCH_POST);
+      self::$cfg_short_date_php = param::required('cfg_short_date_php', param::TEXT, param::FETCH_POST);
+      self::$cfg_long_time_php = param::required('cfg_long_time_php', param::TEXT, param::FETCH_POST);
+      self::$cfg_short_time_php = param::required('cfg_short_time_php', param::TEXT, param::FETCH_POST);
+      self::$cfg_search_leadin_length = param::required('cfg_search_leadin_length', param::INT, param::FETCH_POST);
+      self::$cfg_timezone = param::required('cfg_timezone', param::TEXT, param::FETCH_POST);
+      self::$cfg_tmpdir = param::required('tmpdir', param::TEXT, param::FETCH_POST);
+    } else {
+      self::$cfg_db_basename = self::getSettings(param::TEXT, true, 'database', 'prefix');
+      self::$cfg_SysAdmin_username = self::getSettings(param::TEXT, true, 'sysadmin', 'username');
+      self::$cfg_short_date = self::getSettings(param::TEXT, true, 'timedate', 'mysqlshortdate');
+      self::$cfg_long_date = self::getSettings(param::TEXT, true, 'timedate', 'mysqllongdate');
+      self::$cfg_long_date_time = self::getSettings(param::TEXT, true, 'timedate', 'mysqllongdatetime');
+      self::$cfg_short_date_time = self::getSettings(param::TEXT, true, 'timedate', 'mysqlshortdatetime');
+      self::$cfg_long_date_php = self::getSettings(param::TEXT, true, 'timedate', 'phplongdate');
+      self::$cfg_short_date_php = self::getSettings(param::TEXT, true, 'timedate', 'phpshortdate');
+      self::$cfg_long_time_php = self::getSettings(param::TEXT, true, 'timedate', 'phplongdatetime');
+      self::$cfg_short_time_php = self::getSettings(param::TEXT, true, 'timedate', 'phpshortdatetime');
+      self::$cfg_search_leadin_length = 160;
+      self::$cfg_timezone = self::getSettings(param::TEXT, true, 'timedate', 'timezone');
+      self::$cfg_tmpdir = self::getSettings(param::TEXT, true, 'server', 'temp');
+    }
     if (self::$cfg_long_date_time == "%d/%m/%Y %H:%i") {
       self::$cfg_tablesorter_date_time = 'uk';
     } else {
       self::$cfg_tablesorter_date_time = 'us';
     }
     //Authentication
-    if (isset($_POST['useLti'])) {
-      self::$cfg_auth_lti = true;
+    if (!self::$cli) {
+      self::$cfg_auth_lti = param::optional('useLti', false, param::BOOLEAN, param::FETCH_POST);
+      self::$cfg_auth_internal = param::optional('useInternal', false, param::BOOLEAN, param::FETCH_POST);
+      self::$cfg_auth_guest = param::optional('useGuest', false, param::BOOLEAN, param::FETCH_POST);
+      self::$cfg_auth_impersonation = param::optional('useImpersonation', false, param::BOOLEAN, param::FETCH_POST);
+      self::$cfg_auth_ldap = param::optional('useLdap', false, param::BOOLEAN, param::FETCH_POST);
     } else {
-      self::$cfg_auth_lti = false;
+      self::$cfg_auth_lti = self::getSettings(param::BOOLEAN, false, 'authentication', 'lti');
+      self::$cfg_auth_internal = self::getSettings(param::BOOLEAN, false, 'authentication', 'internaldb');
+      self::$cfg_auth_guest = self::getSettings(param::BOOLEAN, false, 'authentication', 'summativeguestlogin');
+      self::$cfg_auth_impersonation = self::getSettings(param::BOOLEAN, false, 'authentication', 'userimpersonation');
+      self::$cfg_auth_ldap = self::getSettings(param::BOOLEAN, false, 'authentication', 'ldap');
     }
-    if (isset($_POST['useInternal'])) {
-      self::$cfg_auth_internal = true;
-    } else {
-      self::$cfg_auth_internal = false;
-    }
-    if (isset($_POST['useGuest'])) {
-      self::$cfg_auth_guest = true;
-    } else {
-      self::$cfg_auth_guest = false;
-    }
-    if (isset($_POST['useImpersonation'])) {
-      self::$cfg_auth_impersonation = true;
-    } else {
-      self::$cfg_auth_impersonation = false;
-    }
-    if (isset($_POST['useLdap'])) {
-      self::$cfg_auth_ldap = true;
-    } else {
-      self::$cfg_auth_ldap = false;
-    }
-
 
     //LDAP
-    self::$cfg_ldap_server = $_POST['ldap_server'];
-    self::$cfg_ldap_search_dn = $_POST['ldap_search_dn'];
-    self::$cfg_ldap_bind_rdn = $_POST['ldap_bind_rdn'];
-    self::$cfg_ldap_bind_password = $_POST['ldap_bind_password'];
-    if (self::$cfg_ldap_server != '') {
-      self::$cfg_auth_ldap = true;
+    if (!self::$cli) {
+      self::$cfg_ldap_server = param::optional('ldap_server', null, param::TEXT, param::FETCH_POST);
+      self::$cfg_ldap_search_dn = param::optional('ldap_bind_rdn', null, param::TEXT, param::FETCH_POST);
+      self::$cfg_ldap_bind_rdn = param::optional('ldap_bind_rdn', null, param::TEXT, param::FETCH_POST);
+      self::$cfg_ldap_bind_password = param::optional('ldap_bind_password', null, param::TEXT, param::FETCH_POST);
+      self::$cfg_ldap_user_prefix = param::optional('ldap_user_prefix', null, param::TEXT, param::FETCH_POST);
     } else {
-      self::$cfg_auth_ldap = false;
+      self::$cfg_ldap_server = self::getSettings(param::TEXT, false, 'ldap', 'server');
+      self::$cfg_ldap_search_dn = self::getSettings(param::TEXT, false, 'ldap', 'searchdn');
+      self::$cfg_ldap_bind_rdn = self::getSettings(param::TEXT, false, 'ldap', 'username');
+      self::$cfg_ldap_bind_password = self::getSettings(param::TEXT, false, 'ldap', 'password');
+      self::$cfg_ldap_user_prefix = self::getSettings(param::TEXT, false, 'ldap', 'prefix');
     }
-    self::$cfg_ldap_user_prefix = $_POST['ldap_user_prefix'];
 
     //LDAP for lookup
-    self::$cfg_lookup_ldap_server = $_POST['ldap_lookup_server'];
-    self::$cfg_lookup_ldap_search_dn = $_POST['ldap_lookup_search_dn'];
-    self::$cfg_lookup_ldap_bind_rdn = $_POST['ldap_lookup_bind_rdn'];
-    self::$cfg_lookup_ldap_bind_password = $_POST['ldap_lookup_bind_password'];
-    self::$cfg_lookup_ldap_user_prefix = $_POST['ldap_lookup_user_prefix'];
-
+    if (!self::$cli) {
+      self::$cfg_uselookupLdap = param::optional('uselookupLdap', null, param::BOOLEAN, param::FETCH_POST);
+      self::$cfg_lookup_ldap_server = param::optional('ldap_lookup_server', null, param::TEXT, param::FETCH_POST);
+      self::$cfg_lookup_ldap_search_dn = param::optional('ldap_lookup_search_dn', null, param::TEXT, param::FETCH_POST);
+      self::$cfg_lookup_ldap_bind_rdn = param::optional('ldap_lookup_bind_rdn', null, param::TEXT, param::FETCH_POST);
+      self::$cfg_lookup_ldap_bind_password = param::optional('ldap_lookup_bind_password', null, param::TEXT, param::FETCH_POST);
+      self::$cfg_lookup_ldap_user_prefix = param::optional('ldap_lookup_user_prefix', null, param::TEXT, param::FETCH_POST);
+    } else {
+      self::$cfg_uselookupLdap = self::getSettings(param::BOOLEAN, false, 'lookup', 'ldap');
+      self::$cfg_lookup_ldap_server = self::getSettings(param::TEXT, false, 'ldap', 'server');
+      self::$cfg_lookup_ldap_search_dn = self::getSettings(param::TEXT, false, 'ldap', 'searchdn');
+      self::$cfg_lookup_ldap_bind_rdn = self::getSettings(param::TEXT, false, 'ldap', 'username');
+      self::$cfg_lookup_ldap_bind_password = self::getSettings(param::TEXT, false, 'ldap', 'password');
+      self::$cfg_lookup_ldap_user_prefix = self::getSettings(param::TEXT, false, 'ldap', 'prefix');
+    }
+    // XML for lookup.
+    if (!self::$cli) {
+      self::$cfg_uselookupXML = param::optional('uselookupXML', null, param::BOOLEAN, param::FETCH_POST);
+    } else {
+      self::$cfg_uselookupXML = self::getSettings(param::BOOLEAN, false, 'lookup', 'xml');
+    }
     //ASSISTANCE
-    self::$cfg_support_email = $_POST['support_email'];
+    if (!self::$cli) {
+      self::$cfg_support_email = param::required('support_email', param::TEXT, param::FETCH_POST);
+    } else {
+      self::$cfg_support_email = self::getSettings(param::TEXT, true, 'supportemail');
+    }
     self::$emergency_support_numbers = 'array(';
     for ($i = 1; $i<=3; $i++) {
-      if ($_POST["emergency_support$i"] != '') {
-        self::$emergency_support_numbers .= "'" . $_POST["emergency_support$i"] . "'=>'" . $_POST["emergency_support_number$i"] . "', ";
+      if (!self::$cli) {
+        $supportname = param::optional("emergency_support$i", null, param::TEXT, param::FETCH_POST);
+        if (!is_null($supportname)) {
+          self::$emergency_support_numbers .= "'" . $supportname . "'=>'" . param::optional("emergency_support_number$i", null, param::TEXT, param::FETCH_POST) . "', ";
+        }
+      } else {
+        $name = self::getSettings(param::TEXT, false, "contact$i", 'name');
+        $number = self::getSettings(param::TEXT, false, "contact$i", 'telephone');
+        if (is_string($name) and is_string($number)) {
+          self::$emergency_support_numbers .= "'" . $name . "'=>'" . $number . "', ";
+        }
       }
     }
     self::$emergency_support_numbers = rtrim(self::$emergency_support_numbers, ', ');
     self::$emergency_support_numbers .= ')';
-    
-    
-    //Other settings 
-    self::$cfg_labsecuritytype = $_POST['labsecuritytype'];
-  
+    //Other settings
+    if (!self::$cli) {
+      self::$cfg_labsecuritytype = param::optional("labsecurity", 'ipaddress', param::TEXT, param::FETCH_POST);
+    } else {
+      self::$cfg_labsecuritytype = self::getSettings(param::TEXT, true, "labsecurity", 'type');
+    }
     // Check we can write to the config file first if not passwords will be lost!
-    $rogo_path = str_ireplace('/install/index.php','', normalise_path($_SERVER['SCRIPT_FILENAME']));
-
-    if (file_exists($rogo_path . '/config/config.inc.php')) {
-      if (!is_writable($rogo_path . '/config/config.inc.php')) {
+    self::$rogo_path = dirname(__DIR__);
+    if (file_exists(self::$rogo_path . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'config.inc.php')) {
+      if (!is_writable(self::$rogo_path . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'config.inc.php')) {
         self::displayError(array(300=>'Could not write config file!'));
       }
-    } elseif (!is_writable($rogo_path . '/config')) {
+    } elseif (!is_writable(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'config')) {
       self::displayError(array(300=>'Could not write config file!'));
     }
 
@@ -465,64 +601,78 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
       array('internaldb', array('table' => '', 'username_col' => '', 'passwd_col' => '', 'id_col' => '', 'sql_extra' => '', 'encrypt' => 'SHA-512', 'encrypt_salt' => $cfg_encrypt_salt), 'Internal Database')
     );
     $configObject->set('authentication', $authentication);
-    
+
     InstallUtils::checkDBUsers();
 
-    self::createDatabase(self::$cfg_db_name, self::$cfg_db_charset);
+    self::createDatabase(self::$cfg_db_name, self::$cfg_db_charset, self::$cfg_db_engine, self::$cfg_db_help_engine);
 
     // Create constraints.
     self::createConstraints();
-    
+
     // Load default data
     self::loadData();
-    
+
     // Update sys_updates table
     self::updateSysUpdates();
-    
-    //LOAD help if requested
-    if (isset($_POST['loadHelp'])) {
-      self::loadHelp();
+
+    // Get Help and lang pack parameters.
+    if (!self::$cli) {
+      $load_help = param::optional('loadHelp', false, param::BOOLEAN, param::FETCH_POST);
+      $download_lang = param::optional('loadtranslations', false, param::BOOLEAN, param::FETCH_POST);
+    } else {
+      $load_help = self::getSettings(param::BOOLEAN, false, 'help');
+      $download_lang = self::getSettings(param::BOOLEAN, false, 'translations');
     }
 
+    //LOAD help if requested
+    if ($load_help) {
+      self::loadHelp();
+    }
     // Download language packs and install.
-    if (isset($_POST['loadtranslations'])) {
+    if ($download_lang) {
       self::download_langpacks();
     }
 
     //Write out the config file
     self::writeConfigFile();
 
+    // We will need the root path.
+    $configObject->set('cfg_root_path', self::$cfg_root_path);
     // Fix help file image paths.
-    if (isset($_POST['loadHelp'])) {
+    if ($load_help) {
       // Set db object in config.
       @$mysqli = new mysqli(self::$cfg_db_host, self::$db_admin_username, self::$db_admin_passwd, self::$cfg_db_name, self::$cfg_db_port);
       if ($mysqli->connect_error == '') {
         $mysqli->set_charset(self::$cfg_db_charset);
       }
       $configObject->set_db_object($mysqli);
-      require_once '../include/path_functions.inc.php';
-      $cfg_web_root = get_root_path() . '/';
-      $cfg_root_path = rtrim('/' . trim(str_replace(normalise_path($_SERVER['DOCUMENT_ROOT']), '', $cfg_web_root), '/'), '/');
-      $configObject->set('cfg_root_path', $cfg_root_path);
       self::correct_staff_path();
       self::correct_student_path();
     }
 
-    // Install composer and dependencies.
+    // Install npm and dependencies.
     try {
-      $composer_method = composer_utils::INSTALL_NODEV;
-      composer_utils::setup($composer_method);
+      $npm_method = npm_utils::INSTALL_NODEV;
+      npm_utils::setup($npm_method);
     } catch (Exception $e) {
       // Non fatal warning.
-      echo "<div class=\"warning\">\n";
-      echo "\t<div>" . $e->getMessage() . "</div>\n";
-      echo "</div>\n";
+      if (!self::$cli) {
+        echo "<div class=\"warning\">\n";
+        echo "\t<div>" . $e->getMessage() . "</div>\n";
+        echo "</div>\n";
+      } else {
+        cli_utils::prompt($e->getMessage());
+      }
     }
 
     if (!is_array(self::$warnings)) {
-      echo "<p style=\"margin-left:10px\">" . $string['installed'] . "</p>\n";
-      echo "<p style=\"margin-left:10px\">" . $string['deleteinstall'] . "</p>\n";
-      echo "<p style=\"margin-left:10px\"><input type=\"button\" class=\"ok\" name=\"home\" value=\"" . $string['staffhomepage'] . "\" onclick=\"window.location='../index.php'\" /></p>\n";
+      if (!self::$cli) {
+        echo "<p style=\"margin-left:10px\">" . $string['installed'] . "</p>\n";
+        echo "<p style=\"margin-left:10px\">" . $string['deleteinstall'] . "</p>\n";
+        echo "<p style=\"margin-left:10px\"><input type=\"button\" class=\"ok\" name=\"config\" value=\"" . $string['config'] . "\" onclick=\"window.location='" . $configObject->get('cfg_root_path') . "/admin/config.php'\" /></p>\n";
+      } else {
+        cli_utils::prompt($string['installed']);
+      }
     } else {
       self::displayWarnings();
     }
@@ -539,6 +689,8 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
     if (substr($webroot, -1) !== '/') {
       $webroot .= '/';
     }
+    // Strip out double forward slash.
+    $webroot = preg_replace('#/+#','/',$webroot);
     // The substitution will replace the old src tag with a new one that.
     $regexp = '#src="\/getfile\.php\?type\=help_staff&amp;filename\=(.*?)"#';
     $substitution = 'src="' . $webroot . 'getfile.php?type=help_staff&amp;filename=$1"';
@@ -571,6 +723,8 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
     if (substr($webroot, -1) !== '/') {
       $webroot .= '/';
     }
+    // Strip out double forward slash.
+    $webroot = preg_replace('#/+#','/',$webroot);
     // The substitution will replace the old src tag with a new one that.
     $regexp = '#src="\/getfile\.php\?type\=help_student&amp;filename\=(.*?)"#';
     $substitution = 'src="' . $webroot . 'getfile.php?type=help_student&amp;filename=$1"';
@@ -602,6 +756,13 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
     if (!is_null($url)) {
       $workingdir = getcwd();
       chdir(dirname(__DIR__));
+      // Download supported languages xml.
+      $url = $configObject->getxml('translations', 'url');
+      $fullurl = $url . '/' . $version . '/languages.xml';
+      $file = @file_get_contents($fullurl);
+      if ($file === false or file_put_contents('languages.xml', $file) === false) {
+        echo "Error downloading latest languages.xml from $fullurl, you may need to manually install it.";
+      }
       // Download language packs.
       $fullurl = $url . '/' . $version . '/rogo.zip';
       $file = @file_get_contents($fullurl);
@@ -630,8 +791,8 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
   */
   static function loadHelp() {
     global $string;
-    $staff_help = './staff_help.sql';
-    $student_help = './student_help.sql';
+    $staff_help = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'install' . DIRECTORY_SEPARATOR . 'staff_help.sql';
+    $student_help = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'install' . DIRECTORY_SEPARATOR . 'student_help.sql';
 
     //make sure we are using the right DB
     self::$db->select_db(self::$cfg_db_name);
@@ -739,15 +900,18 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
     $alter[] = "ALTER TABLE paper_metadata_security ADD CONSTRAINT `paper_metadata_security_fk1` FOREIGN KEY (`paperID`) REFERENCES `properties` (`property_id`)";
     $alter[] = "ALTER TABLE modules_staff ADD CONSTRAINT `modules_staff_fk1` FOREIGN KEY (`idMod`) REFERENCES `modules` (`id`)";
     $alter[] = "ALTER TABLE modules_staff ADD CONSTRAINT `modules_staff_fk2` FOREIGN KEY (`memberID`) REFERENCES `users` (`id`)";
+    $alter[] = "ALTER TABLE review_comments ADD CONSTRAINT `metadata_fk0` FOREIGN KEY (`metadataID`) REFERENCES `review_metadata` (`id`)";
+    $alter[] = "ALTER TABLE external_systems_mapping ADD CONSTRAINT `external_systems_mapping_fk1` FOREIGN KEY (`ext_id`) REFERENCES `external_systems` (`id`)";
+    $alter[] = "ALTER TABLE external_systems_mapping ADD CONSTRAINT `external_systems_mapping_fk2` FOREIGN KEY (`client_id`) REFERENCES `oauth_clients` (`client_id`)";
 
     foreach ($alter as $a) {
         $res = self::$db->prepare($a);
         $res->execute();
         $res->close();
     }
-    
+
   }
-  
+
   /**
    * Load default data needed for rogo to function
    */
@@ -822,16 +986,25 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
     $configObject->set_setting('paper_marks_postive', range(1, 20), 'csv');
     $configObject->set_setting('paper_marks_negative', array(0, -0.25, -0.5, -1, -2, -3, -4, -5, -6, -7, -8, -9, -10), 'csv');
     $configObject->set_setting('paper_marks_partial', array_merge(range(0, 1, 0.1), range(2, 5)), 'csv');
-    
+    $configObject->set_setting('paper_mathjax', 1, 'boolean');
+    $configObject->set_setting('paper_editor_supports_mathjax',array("plain"), 'csv');
+    $configObject->set_setting('misc_logo_main', 'logo.png', 'string');
+    $configObject->set_setting('misc_logo_email', 'alt_logo.png', 'string');
+    $configObject->set_setting('api_allow_superuser', 0, 'boolean');
+    $configObject->set_setting('apilogfile', '', 'string');
+    // Add external systems.
+    $insert = self::$db->prepare("INSERT INTO external_systems (name, type) values ('ims_enterprise', 'plugin')");
+    $insert->execute();
+    $insert->close();
     self::createDefaultUsers();
     self::createDefaultFacultiesSchoolsModules();
     self::createQuestionStatuses();
   }
-  
+
   /**
    * Update the sys updates table as we just did a clean install and do not want the update process
    * running these updates again.
-   * 
+   *
    * This list should not be added to as all new updates should be tied to a release.
    */
   static function updateSysUpdates() {
@@ -876,30 +1049,54 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
    */
   static protected function get_sysadmin_details() {
     if (empty(self::$sysadmin_username)) {
-      self::$sysadmin_username = $_POST['SysAdmin_username'];
+      if (!self::$cli) {
+        self::$sysadmin_username = param::required('SysAdmin_username', param::TEXT, param::FETCH_POST);
+      } else {
+        self::$sysadmin_username = self::getSettings(param::TEXT, true, 'sysadmin', 'username');
+      }
     }
     if (empty(self::$sysadmin_password)) {
-      self::$sysadmin_password = $_POST['SysAdmin_password'];
+      if (!self::$cli) {
+        self::$sysadmin_password = param::required('SysAdmin_password', param::TEXT, param::FETCH_POST);
+      } else {
+        self::$sysadmin_password = self::getSettings(param::TEXT, true, 'sysadmin', 'password');
+      }
     }
     if (empty(self::$sysadmin_title)) {
-      self::$sysadmin_title = $_POST['SysAdmin_title'];
+      if (!self::$cli) {
+        self::$sysadmin_title = param::required('SysAdmin_title', param::TEXT, param::FETCH_POST);
+      } else {
+        self::$sysadmin_title = self::getSettings(param::TEXT, true, 'sysadmin', 'title');
+      }
     }
     if (empty(self::$sysadmin_first)) {
-      self::$sysadmin_first = $_POST['SysAdmin_first'];
+        if (!self::$cli) {
+        self::$sysadmin_first = param::required('SysAdmin_first', param::TEXT, param::FETCH_POST);
+      } else {
+        self::$sysadmin_first = self::getSettings(param::TEXT, true, 'sysadmin', 'forename');
+      }
     }
     if (empty(self::$sysadmin_last)) {
-      self::$sysadmin_last = $_POST['SysAdmin_last'];
+        if (!self::$cli) {
+        self::$sysadmin_last = param::required('SysAdmin_last', param::TEXT, param::FETCH_POST);
+      } else {
+        self::$sysadmin_last = self::getSettings(param::TEXT, true, 'sysadmin', 'surname');
+      }
     }
     if (empty(self::$sysadmin_email)) {
-      self::$sysadmin_email = $_POST['SysAdmin_email'];
+      if (!self::$cli) {
+        self::$sysadmin_email = param::required('SysAdmin_email', param::TEXT, param::FETCH_POST);
+      } else {
+        self::$sysadmin_email = self::getSettings(param::TEXT, true, 'sysadmin', 'email');
+      }
     }
   }
-  
+
   /**
   * create the database and users if they do not exist
   *
   */
-  static function createDatabase($dbname, $dbcharset) {
+  static function createDatabase($dbname, $dbcharset, $dbengine = 'InnoDB', $dbhelpengine = 'MyISAM') {
     global $string;
     $res = self::$db->prepare("SHOW DATABASES LIKE '$dbname'");
     $res->execute();
@@ -928,7 +1125,7 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
     self::$db->change_user(self::$db_admin_username, self::$db_admin_passwd,self::$cfg_db_name);
 
     //create tables
-    $tables = new databaseTables($dbcharset);
+    $tables = new databaseTables($dbcharset, $dbengine, $dbhelpengine);
     self::$db->autocommit(false);
     while ($sql = $tables->next()) {
       $res = self::$db->query($sql);
@@ -1416,7 +1613,7 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".scheduling TO '". self::$cfg_db_webservice_user . "'@'". self::$cfg_web_host . "'";
     $priv_SQL[] = "GRANT INSERT ON " . $dbname . ".track_changes TO '". self::$cfg_db_webservice_user . "'@'". self::$cfg_web_host . "'";
 
-    
+
     $priv_SQL[] = "FLUSH PRIVILEGES";
     foreach ($priv_SQL as $sql) {
       self::$db->query($sql);
@@ -1573,41 +1770,36 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
   }
 
   /**
-  * Check that we do not have a config file and that we can write one
+  * Check that we do not have a config file and display error if we do.
   *
   */
   static function configFile() {
     global $string;
-
-    $rogo_path = str_ireplace('/install/index.php','', normalise_path($_SERVER['SCRIPT_FILENAME']));
     $errors = array();
-    if (file_exists($rogo_path . '/config/config.inc.php')) {
-      $errors['90'] =  sprintf($string['errors1'], $rogo_path."/config/config.inc.php");
+    if (self::config_exists()) {
+      $errors['90'] =  $string['errors1'];
       self::displayError($errors);
     }
   }
 
   /**
+   * Does the config file exist.
+   * @return boolean
+   */
+  static function config_exists() {
+    $rogo_path = dirname(__DIR__);
+    if (file_exists($rogo_path . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'config.inc.php')) {
+      return true;
+    }
+    return false;
+  }
+  
+  /**
   * Check that  config file is writeable
   *
   */
   static function configFileIsWriteable() {
-
-    $rogo_path = '';
-
-    if (strpos(normalise_path($_SERVER['SCRIPT_FILENAME']), '/install/index.php')  !== false) {
-      $rogo_path = str_ireplace('/install/index.php','',  normalise_path($_SERVER['SCRIPT_FILENAME']));
-    }
-
-    if (strpos(normalise_path($_SERVER['SCRIPT_FILENAME']), '/updates/version4.php') !== false) {
-      $rogo_path = str_ireplace('/updates/version4.php','', normalise_path($_SERVER['SCRIPT_FILENAME']));
-    }
-
-    if (strpos(normalise_path($_SERVER['SCRIPT_FILENAME']), '/updates/version5.php') !== false) {
-      $rogo_path = str_ireplace('/updates/version5.php','', normalise_path($_SERVER['SCRIPT_FILENAME']));
-    }
-
-    if (is_writable($rogo_path . '/config/config.inc.php')) {
+    if (is_writable(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'config.inc.php')) {
       return true;
     } else {
       return false;
@@ -1619,22 +1811,7 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
   *
   */
   static function configPathIsWriteable() {
-
-    $rogo_path = '';
-
-    if (strpos(normalise_path($_SERVER['SCRIPT_FILENAME']), '/install/index.php')  !== false) {
-      $rogo_path = str_ireplace('/install/index.php','',normalise_path($_SERVER['SCRIPT_FILENAME']));
-    }
-
-    if (strpos(normalise_path($_SERVER['SCRIPT_FILENAME']), '/updates/version4.php') !== false) {
-      $rogo_path = str_ireplace('/updates/version4.php','',normalise_path($_SERVER['SCRIPT_FILENAME']));
-    }
-
-    if (strpos(normalise_path($_SERVER['SCRIPT_FILENAME']), '/updates/version5.php') !== false) {
-      $rogo_path = str_ireplace('/updates/version5.php','',normalise_path($_SERVER['SCRIPT_FILENAME']));
-    }
-
-    if (is_writable($rogo_path . '/config')) {
+    if (is_writable(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'config')) {
       return true;
     } else {
       return false;
@@ -1714,6 +1891,13 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
     if (!$staffhelp->check_permissions()) {
       $errors['108'] = sprintf($string['errors3'], $staffhelp->location());
     }
+    //theme
+    $themedirectory = rogo_directory::get_directory('theme');
+    $themedirectory->create();
+    $themedirectory->copy_from_default();
+    if (!$themedirectory->check_permissions()) {
+      $errors['109'] = sprintf($string['errors3'], $themedirectory->location());
+    }
     if (count($errors) > 0) {
       self::displayError($errors);
     }
@@ -1724,12 +1908,10 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
   */
   static function checkDirPermissionsPre() {
     global $string;
-    // This should work for both windows and UNIX style paths.
-    self::$rogo_path = str_ireplace('/install/index.php','', normalise_path($_SERVER['SCRIPT_FILENAME']));
     $errors = array();
-
-    if (!is_writable(self::$rogo_path . '/config/config.inc.php')) {
-      if (!is_writable(self::$rogo_path . '/config')) {
+    self::$rogo_path = dirname(__DIR__);
+    if (!is_writable(self::$rogo_path . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'config.inc.php')) {
+      if (!is_writable(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'config')) {
         $errors['901'] = sprintf($string['errors16'], self::$rogo_path, self::$rogo_path);
       }
     }
@@ -1745,17 +1927,21 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
   */
   static function checkDirPermissionsPost() {
     global $string;
-    self::$rogo_path = str_ireplace('/install/index.php','', normalise_path($_SERVER['SCRIPT_FILENAME']));
     $errors = array();
+    if (!self::$cli) {
+      $tmp = param::required('tmpdir', param::TEXT, param::FETCH_POST);
+    } else {
+      $tmp = self::getSettings(param::TEXT, true, 'server', 'temp');
+    }
     //tmp
-    if (!is_writable($_POST['tmpdir'])) {
-      $errors['100'] = sprintf($string['errors3'], $_POST['tmpdir']);
+    if (!is_writable($tmp)) {
+      $errors['100'] = sprintf($string['errors3'], $tmp);
     }
     if (count($errors) > 0) {
       self::displayError($errors);
     }
   }
-  
+
   static function checkDBUsers() {
     $errors = array();
 
@@ -1767,7 +1953,7 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
 
       }
     }
-    
+
     if (count($errors) > 0) {
       self::displayError($errors);
     }
@@ -1803,30 +1989,39 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
           $errors[$errorcode] = sprintf($string['errors11'], $extension);
         }
     }
+    // Escape before composer update if errors.
     if (count($errors) > 0) {
       self::displayError($errors);
     }
-  }
-
-  /**
-  * Check we are accessing through HTTPS for security
-  *
-  */
-  static function checkHTTPS() {
-    global $string;
-
-    if ($_SERVER['SERVER_PORT'] != 443 and $_SERVER['SERVER_PORT'] != 8080) {
-      self::displayError(array(100=> $string['errors12']));
-      return false;
+    // Install composer and dependencies.
+    try {
+      if (!InstallUtils::$behat_install and !InstallUtils::$phpunit_install) {
+        composer_utils::setup(composer_utils::INSTALL_NODEV);
+      }
+    } catch (Exception $e) {
+      $errorcode += 1;
+      $errors[$errorcode] = $e->getMessage();
     }
-    return true;
+
+    if (count($errors) > 0) {
+      $langpack = new langpack();
+      if ($errors[$errorcode] == $langpack->get_string('classes/composerutils', 'cannotinstall')) {
+          $fatal = true;
+      } else {
+          // Non fatal error if cannot be updated.
+          $fatal = false;
+      }
+      self::displayError($errors, $fatal);
+    }
   }
 
   /**
-  * Display errors with a nice message
-  *
-  */
-  static function displayError($error = '') {
+   * Display errors with a nice message
+   * @param string|array $error error message(s)
+   * @param boolean $fatal is error fatal
+   *
+   */
+  static function displayError($error = '', $fatal = true) {
     global $string;
 
     if (!self::$cli) {
@@ -1835,7 +2030,14 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
     if (is_array($error)) {
       foreach($error as $errCode => $message) {
         if (self::$cli) {
-          cli_utils::prompt($string['errors13'] . "$errCode: $message");
+          $filter = FILTER_SANITIZE_STRING;
+          $options = array(
+            'options' => array(
+              'default' => null,
+             ),
+            'flags' => FILTER_FLAG_NO_ENCODE_QUOTES
+          );
+          cli_utils::prompt($string['errors13'] . "$errCode: " . filter_var($message, $filter, $options));
         } else {
           echo "\t<div><img src=\"../artwork/small_yellow_warning_icon.gif\" width=\"12\" height=\"11\" alt=\"!\" /> <strong>" . $string['errors13'] . " $errCode:</strong> $message</div>\n";
         }
@@ -1843,9 +2045,13 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
     }
     if (!self::$cli) {
       echo "</div>\n";
-      self::displayFooter();
+      if ($fatal) {
+        self::displayFooter();
+      }
     }
-    exit;
+    if ($fatal) {
+        exit;
+    }
   }
 
   /**
@@ -1952,7 +2158,7 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
 
   static function writeConfigFile() {
     global $version, $cfg_encrypt_salt;
-
+    require_once dirname(__DIR__) . '/include/path_functions.inc.php';
     $config = <<<CONFIG
 <?php
 /**
@@ -1965,12 +2171,9 @@ $php_date_url = 'http://www.php.net/manual/en/function.date.php';
 * @package
 */
 
-if (empty(\$root)) \$root = str_replace('/config', '/', str_replace('\\\\', '/', dirname(__FILE__)));
-require \$root . '/include/path_functions.inc.php';
-
 \$rogo_version = '{rogo_version}';
-\$cfg_web_root = get_root_path() . '/';
-\$cfg_root_path = rtrim('/' . trim(str_replace(normalise_path(\$_SERVER['DOCUMENT_ROOT']), '', \$cfg_web_root), '/'), '/');
+\$cfg_web_root = '{cfg_web_root}';
+\$cfg_root_path = '{cfg_root_path}';
 \$cfg_secure_connection = true;    // If true site must be accessed via HTTPS
 \$cfg_page_charset 	   = 'UTF-8';
 \$cfg_company = '{cfg_company}';
@@ -2100,7 +2303,7 @@ if(!isset(\$_SERVER['HTTP_HOST'])) {
   \$support_email = '{cfg_support_email}';
   \$emergency_support_numbers = {emergency_support_numbers};
   \$midexam_clarification = array('invigilators', 'students');
-  
+
 //Global DEBUG OUTPUT
   //require_once \$_SERVER['DOCUMENT_ROOT'] . 'include/debug.inc';   // Uncomment for debugging output (after uncommenting, comment out line below)
   \$dbclass = 'mysqli';
@@ -2122,16 +2325,28 @@ if(!isset(\$_SERVER['HTTP_HOST'])) {
   \$cfg_oauth_access_lifetime = 1209600; // length of access token lifetime.
   \$cfg_oauth_refresh_token_lifetime = 1209600; // length of refresh token lifetime.
   \$cfg_oauth_always_issue_new_refresh_token = true; // enable or disable refresh tokens.
-  
+
   //IMS enterprise setting
   \$cfg_ims_enabled = false;
-  
+
   // Override db config settings with configs in this file?
   \$file_config_override = true;
   ?>
 CONFIG;
 
     $config = str_replace('{rogo_version}', $version, $config);
+    $cfg_web_root = get_root_path();
+    // Ensure there is a trailing slash.
+    if (substr($cfg_web_root, -1) !== '/') {
+      $cfg_web_root .= '/';
+    }
+    $config = str_replace('{cfg_web_root}', $cfg_web_root, $config);
+    if (!self::$cli) {
+      self::$cfg_root_path = rtrim('/' . trim(str_replace(normalise_path($_SERVER['DOCUMENT_ROOT']), '', $cfg_web_root), '/'), '/');
+    } else {
+      self::$cfg_root_path = self::getSettings(param::TEXT, true, 'server', 'root');
+    }
+    $config = str_replace('{cfg_root_path}', self::$cfg_root_path, $config);
     $config = str_replace('{SysAdmin_username}', 'USERNMAE_FOR_DEBUG', $config);
     $config = str_replace('{cfg_web_host}', self::$cfg_web_host, $config);
     $config = str_replace('{cfg_rogo_data}', self::$cfg_rogo_data, $config);
@@ -2198,40 +2413,39 @@ CONFIG;
 
     $config = str_replace('{cfg_authentication_arrays}', implode(",\n  ", $authentication_arrays), $config);
 
-    $lookup_arrays= array();
+    $lookup_arrays = array();
     if (self::$cfg_uselookupLdap) {
-      $lookup_arrays[]=  "array('ldap', array('ldap_server' => '{cfg_lookup_ldap_server}', 'ldap_search_dn' => '{cfg_lookup_ldap_search_dn}', 'ldap_bind_rdn' => '{cfg_lookup_ldap_bind_rdn}', 'ldap_bind_password' => '{cfg_lookup_ldap_bind_password}', 'ldap_user_prefix' => '{cfg_lookup_ldap_user_prefix}', 'ldap_attributes' => array('sAMAccountName' => 'username', 'sn' => 'surname', 'title' => 'title', 'givenName' => 'firstname', 'department' => 'school', 'mail' => 'email',  'cn' => 'username',  'employeeType' => 'role',  'initials' => 'initials'), 'lowercasecompare' => true, 'storeprepend' => 'ldap_'), 'LDAP')";
+      $lookup_arrays[] = "array('ldap', array('ldap_server' => '{cfg_lookup_ldap_server}', 'ldap_search_dn' => '{cfg_lookup_ldap_search_dn}', 'ldap_bind_rdn' => '{cfg_lookup_ldap_bind_rdn}', 'ldap_bind_password' => '{cfg_lookup_ldap_bind_password}', 'ldap_user_prefix' => '{cfg_lookup_ldap_user_prefix}', 'ldap_attributes' => array('sAMAccountName' => 'username', 'sn' => 'surname', 'title' => 'title', 'givenName' => 'firstname', 'department' => 'school', 'mail' => 'email',  'cn' => 'username',  'employeeType' => 'role',  'initials' => 'initials'), 'lowercasecompare' => true, 'storeprepend' => 'ldap_'), 'LDAP')";
     }
     if (self::$cfg_uselookupXML) {
-      $lookup_arrays[]= "array('XML', array('baseurl' => 'http://exports/', 'userlookup' => array( 'url' => '/student.ashx?campus=uk', 'mandatoryurlfields' => array('username'), 'urlfields' => array('username' => 'username'), 'xmlfields' => array('StudentID' => 'studentID', 'Title' => 'title', 'Forename' => 'firstname', 'Surname' => 'surname', 'Email' => 'email', 'Gender' => 'gender', 'YearofStudy' => 'yearofstudy', 'School' => 'school', 'Degree' => 'degree', 'CourseCode' => 'coursecode', 'CourseTitle' => 'coursetitle', 'AttendStatus' => 'attendstatus'), 'oneitemreturned' => true, 'override' => array('firstname' => true), 'storeprepend' => 'sms_userlookup_')), 'XML')";
+      $lookup_arrays[] = "array('XML', array('baseurl' => 'http://exports/', 'userlookup' => array( 'url' => '/student.ashx?campus=uk', 'mandatoryurlfields' => array('username'), 'urlfields' => array('username' => 'username'), 'xmlfields' => array('StudentID' => 'studentID', 'Title' => 'title', 'Forename' => 'firstname', 'Surname' => 'surname', 'Email' => 'email', 'Gender' => 'gender', 'YearofStudy' => 'yearofstudy', 'School' => 'school', 'Degree' => 'degree', 'CourseCode' => 'coursecode', 'CourseTitle' => 'coursetitle', 'AttendStatus' => 'attendstatus'), 'oneitemreturned' => true, 'override' => array('firstname' => true), 'storeprepend' => 'sms_userlookup_')), 'XML')";
     }
 
     $config = str_replace('{cfg_lookup_arrays}', implode(",\n  ", $lookup_arrays), $config);
 
-    $salt = $cfg_encrypt_salt; //=$salt;
+    $salt = $cfg_encrypt_salt;
 
     $config = str_replace('{cfg_encrypt_salt}', $salt, $config);
-
-    $config = str_replace('{cfg_ldap_server}', self::$cfg_ldap_server, $config);
-    $config = str_replace('{cfg_ldap_search_dn}', self::$cfg_ldap_search_dn, $config);
-    $config = str_replace('{cfg_ldap_bind_rdn}', self::$cfg_ldap_bind_rdn, $config);
-    $config = str_replace('{cfg_ldap_bind_password}', self::$cfg_ldap_bind_password, $config);
-    $config = str_replace('{cfg_ldap_user_prefix}', self::$cfg_ldap_user_prefix, $config);
-
-
-    $config = str_replace('{cfg_lookup_ldap_server}', self::$cfg_lookup_ldap_server, $config);
-    $config = str_replace('{cfg_lookup_ldap_search_dn}', self::$cfg_lookup_ldap_search_dn, $config);
-    $config = str_replace('{cfg_lookup_ldap_bind_rdn}', self::$cfg_lookup_ldap_bind_rdn, $config);
-    $config = str_replace('{cfg_lookup_ldap_bind_password}', self::$cfg_lookup_ldap_bind_password, $config);
-    $config = str_replace('{cfg_lookup_ldap_user_prefix}', self::$cfg_lookup_ldap_user_prefix, $config);
-
-    $config = str_replace('{SERVER_NAME}', $_SERVER['HTTP_HOST'], $config);
-
-    if (file_exists(self::$rogo_path . '/config/config.inc.php')) {
-      rename(self::$rogo_path . '/config/config.inc.php', self::$rogo_path . '/config/config.inc.old.php');
+    if (self::$cfg_auth_ldap) {
+      $config = str_replace('{cfg_ldap_server}', self::$cfg_ldap_server, $config);
+      $config = str_replace('{cfg_ldap_search_dn}', self::$cfg_ldap_search_dn, $config);
+      $config = str_replace('{cfg_ldap_bind_rdn}', self::$cfg_ldap_bind_rdn, $config);
+      $config = str_replace('{cfg_ldap_bind_password}', self::$cfg_ldap_bind_password, $config);
+      $config = str_replace('{cfg_ldap_user_prefix}', self::$cfg_ldap_user_prefix, $config);
+    }
+    if (self::$cfg_uselookupLdap) {
+      $config = str_replace('{cfg_lookup_ldap_server}', self::$cfg_lookup_ldap_server, $config);
+      $config = str_replace('{cfg_lookup_ldap_search_dn}', self::$cfg_lookup_ldap_search_dn, $config);
+      $config = str_replace('{cfg_lookup_ldap_bind_rdn}', self::$cfg_lookup_ldap_bind_rdn, $config);
+      $config = str_replace('{cfg_lookup_ldap_bind_password}', self::$cfg_lookup_ldap_bind_password, $config);
+      $config = str_replace('{cfg_lookup_ldap_user_prefix}', self::$cfg_lookup_ldap_user_prefix, $config);
     }
 
-    if (file_put_contents(self::$rogo_path . '/config/config.inc.php', $config) === false) {
+    if (file_exists(self::$rogo_path . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'config.inc.php')) {
+      rename(self::$rogo_path . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'config.inc.php' , self::$rogo_path . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'config.inc.old.php');
+    }
+
+    if (file_put_contents(self::$rogo_path . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'config.inc.php', $config) === false) {
       self::displayError(array(300=>'Could not write config file!'));
     }
   }

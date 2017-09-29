@@ -20,5 +20,8 @@
     "grunt-contrib-uglify": "^2.0.0",
     "grunt-eslint": "^19.0.0",
     "qunitjs": "^2.0.1"
+  },
+  "dependencies": {
+    "mathjax": "^2.7.0"
   }
 }

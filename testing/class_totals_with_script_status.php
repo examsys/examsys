@@ -29,7 +29,7 @@
  * @package
  */
 
-require '../include/sysadmin_auth.inc';
+require dirname(__DIR__) . '/include/sysadmin_auth.inc';
 
 $end_dateSQL = 'NOW()';
 if (isset($_GET['period']) and $_GET['period'] != '') {

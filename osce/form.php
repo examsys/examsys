@@ -48,10 +48,10 @@ $number_of_qs = $propertyObj->get_question_no();
 
 $killer_questions = new Killer_question($paperID, $mysqli);
 $killer_questions->load();
-  
+
 
 if (isset($_POST) and count($_POST) > 0) {
-  
+
   if (!isset($_GET['dont_record'])) {
     save_osce_form($propertyObj, $userID, $_POST, $mysqli);
   }
@@ -125,48 +125,56 @@ if (isset($_POST) and count($_POST) > 0) {
 
   <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
   <script>
-    function ans(q_id, rating) {
+    function ans(q_id, rating,max_col) {
+      var colors = ['#D99694', '#E5B9B7', '#FFC169', '#C2D69B', '#C2DFFF','#5ea2ef','#4b0082', '#4b00FF','#9400d3','#9400FF'];
       $('#q' + q_id + '_val').val(rating);
-      if (rating == 1) {
-        $('#c' + q_id + '_1').css('background-color', '#D99594');
-        $('#c' + q_id + '_2').css('background-color', '');
-        if (document.getElementById('c' + q_id + '_3')) {
-          $('#c' + q_id + '_3').css('background-color', '');
+      for(var i=0; i< max_col+1; i++) {
+        if (rating == i) {
+          $('#c' + q_id + '_' + i).css('background-color', colors[i - 1]);
+        } else {
+          $('#c' + q_id + '_' + i).css('background-color', '');
         }
-      } else if (rating == 2) {
-        $('#c' + q_id + '_2').css('background-color', '#FABF8F');
-        $('#c' + q_id + '_1').css('background-color', '');
-        if (document.getElementById('c' + q_id + '_3')) {
-          $('#c' + q_id + '_3').css('background-color', '');
-        }
-      } else if (rating == 3) {
-        $('#c' + q_id + '_3').css('background-color', '#C2D69B');
-        $('#c' + q_id + '_1').css('background-color', '');
-        $('#c' + q_id + '_2').css('background-color', '');
       }
-
       checkTotals();
     }
 
     function checkTotals() {
-      var rated = 0;
-      var fails = 0;
-      var borderlines = 0;
-      var passes = 0;
+      var rated=level1=level2=level3=level4=level5=level6=level7=level8=level9=level10=0;
       for (i=1; i<=<?php echo $number_of_qs; ?>; i++) {
         if ($('#q' + i + '_val').val() == '1') {
-          fails++;
+          level1++;
         } else if ($('#q' + i + '_val').val() == '2') {
-          borderlines++;
+          level2++;
         } else if ($('#q' + i + '_val').val() == '3') {
-          passes++;
+          level3++;
+        } else if ($('#q' + i + '_val').val() == '4') {
+          level4++;
+        } else if ($('#q' + i + '_val').val() == '5') {
+          level5++;
+        } else if ($('#q' + i + '_val').val() == '6') {
+          level6++;
+        } else if ($('#q' + i + '_val').val() == '7') {
+          level7++;
+        } else if ($('#q' + i + '_val').val() == '8') {
+          level8++;
+        } else if ($('#q' + i + '_val').val() == '9') {
+          level9++;
+        } else if ($('#q' + i + '_val').val() == '10') {
+          level10++;
         }
       }
-      rated = fails + borderlines + passes;
+      rated = level1 + level2 + level3 + level4 + level5 + level6 + level7 + level8 + level9 + level10;
 
-      $('#fails').val(fails);
-      $('#borderlines').val(borderlines);
-      $('#passes').val(passes);
+      $('#level1').val(level1);
+      $('#level2').val(level2);
+      $('#level3').val(level3);
+      $('#level4').val(level4);
+      $('#level5').val(level5);
+      $('#level6').val(level6);
+      $('#level7').val(level7);
+      $('#level8').val(level8);
+      $('#level9').val(level9);
+      $('#level10').val(level10);
 
    <?php
      if ($marking == '5') {
@@ -259,25 +267,33 @@ $photoname = UserUtils::student_photo_exist($username);
 
   // Get the questions.
   $question_no = 1;
+  $max_cols = 0;
   $cell_colors = array('#D99594', '#FABF8F', '#C2D69B');
-	
+  /**
+   * Getting the max column number
+   */
+  $max_cols_result = $mysqli->prepare("SELECT display_method FROM papers, questions WHERE paper = ? AND papers.question = questions.q_id ORDER BY display_method limit 1");
+  $max_cols_result->bind_param('i', $paperID);
+  $max_cols_result->execute();
+  $max_cols_result->bind_result($display_method);
+  while ($max_cols_result->fetch()) {
+    $max_cols = substr_count($display_method, '|');
+  }
   $result = $mysqli->prepare("SELECT q_id, q_type, theme, notes, scenario, leadin, display_method FROM papers, questions WHERE paper = ? AND papers.question = questions.q_id ORDER BY display_pos");
   $result->bind_param('i', $paperID);
   $result->execute();
   $result->bind_result($q_id, $q_type, $theme, $notes, $scenario, $leadin, $display_method);
   while ($result->fetch()) {
-    if ($question_no == 1) {				// Header row
       $cols = substr_count($display_method, '|');
-    }
 
     if (trim($theme) != '') echo "<tr><td colspan=\"4\" class=\"t\">$theme</td></tr>\n";
-    
+
     if ($killer_questions->is_killer_question($q_id)) {
       $killer = 'killer';
     } else {
       $killer = 'non_killer';
     }
-    
+
     echo "<tr><td class=\"q {$killer}\">";
     if (trim($notes) != '') {
       echo "<span style=\"color:" . $propertyObj->get_labelcolor() . "\"><img src=\"../artwork/small_note_icon.png\" width=\"14\" height=\"14\" alt=\"note\" />&nbsp;$notes</span><br />\n";
@@ -290,11 +306,13 @@ $photoname = UserUtils::student_photo_exist($username);
     }
     echo "<input type=\"hidden\" name=\"q" . $question_no . "_id\" value=\"$q_id\"></td>";
 
-    for ($i=0; $i<$cols; $i++) {
+    for ($i=0; $i<$max_cols; $i++) {
       if (isset($stored_results[$q_id]) and $stored_results[$q_id] == $i) {
-        echo "<td style=\"background-color:" . $cell_colors[$i] . "\" class=\"r\" id=\"c" . $question_no . "_" . ($i+1) . "\" onclick=\"ans($question_no," . ($i+1) . ")\">$i</td>";
+        echo "<td style=\"background-color:" . $cell_colors[$i] . "\" class=\"r\" id=\"c" . $question_no . "_" . ($i+1) . "\" onclick=\"ans($question_no," . ($i+1) . "," . $cols . ")\">$i</td>";
+      } else if($i >= $cols) {
+        echo "<td class=\"r\" style=\"background: #cfcfcf\">$i</td>";
       } else {
-        echo "<td class=\"r\" id=\"c" . $question_no . "_" . ($i+1) . "\" onclick=\"ans($question_no," . ($i+1) . ")\">$i</td>";
+        echo "<td class=\"r\" id=\"c" . $question_no . "_" . ($i+1) . "\" onclick=\"ans($question_no," . ($i+1) . "," . $cols . ")\">$i</td>";
       }
     }
     echo "</tr>\n";
@@ -302,11 +320,12 @@ $photoname = UserUtils::student_photo_exist($username);
   }
   $result->close();
 
-  if ($cols == 2) {
-    echo "<tr><td></td><td class=\"totals r\"><input type=\"text\" name=\"fails\" id=\"fails\" size=\"4\" style=\"font-size:60%; font-weight:bold; border:0px; text-align:right; background-color:#EAEAEA\" value=\"0\" /></td><td class=\"totals r\"><input type=\"text\" name=\"borderlines\" size=\"4\" id=\"borderlines\" style=\"font-size:60%; font-weight:bold; border:0px; text-align:right; background-color:#EAEAEA\" value=\"0\" /></td></tr>\n";
-  } else {
-    echo "<tr><td></td><td class=\"totals r\"><input type=\"text\" name=\"fails\" id=\"fails\" size=\"4\" style=\"font-size:60%; font-weight:bold; border:0px; text-align:right; background-color:#EAEAEA\" value=\"0\" /></td><td class=\"totals r\"><input type=\"text\" name=\"borderlines\" size=\"4\" id=\"borderlines\" style=\"font-size:60%; font-weight:bold; border:0px; text-align:right; background-color:#EAEAEA\" value=\"0\" /></td><td class=\"totals r\"><input type=\"text\" name=\"passes\" size=\"4\" id=\"passes\" style=\"font-size:60%; font-weight:bold; border:0px; text-align:right; background-color:#EAEAEA\" value=\"0\" /></td></tr>\n";
+  $elements = array('level1','level2','level3','level4','level5','level6','level7','level8','level9','level10');
+  echo '<tr><td></td>';
+  for($i=0; $i< $max_cols; $i++) {
+    echo "<td class=\"totals r\"><input type=\"text\" name=\"$elements[$i]\" id=\"$elements[$i]\" size=\"4\" style=\"font-size:60%; font-weight:bold; border:0px; text-align:right; background-color:#EAEAEA\" value=\"0\" /></td>";
   }
+  echo '</tr>';
 
   if ($marking == '3' or $marking == '4' or $marking == '6' or $marking == '7') {
     if (!isset($overall_rating)) $overall_rating = '0';

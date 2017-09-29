@@ -40,22 +40,27 @@ if ($user_details === false) {
   $notice->display_notice_and_exit($mysqli, $string['pagenotfound'], $msg, $string['pagenotfound'], '../artwork/page_not_found.png', '#C00000', true, true);
 }
 
-if (isset($_POST['submit']) and $_POST['username'] != $_POST['prev_username']) {
-  // Check new username is not already used. Overwriting usernames could screw up other accounts.
-  if (UserUtils::username_exists($_POST['username'], $mysqli)) {
-    $errors = 'Username exists';
+$submit = param::optional('submit', null, param::TEXT, param::FETCH_POST);
+$username = param::optional('username', null, param::ALPHANUM, param::FETCH_POST);
+$prev_username = param::optional('prev_username', null, param::ALPHANUM, param::FETCH_POST);
+
+if ($submit and $username != $prev_username) {
+  // Check new username is valid and is not already used. Overwriting usernames could screw up other accounts.
+  if (!UserUtils::username_is_valid($username)) {
+    $errors = $string['usernameinvalid'];
+  } elseif (UserUtils::username_exists($username, $mysqli)) {
+    $errors = $string['usernameexists'];
   }
-}  
+}
 
-
-if (isset($_POST['submit']) and !$errors) {
+if ($submit and !$errors) {
   $cfg_web_root = $configObject->get('cfg_web_root');
 
   if (!empty($_FILES['photofile']['name'])) {
     $photodirectory = rogo_directory::get_directory('user_photo');
     // First check if the user has an image already, if they do delete it.
     // This stops an image type of a different type blocking the display of the uploaded image.
-    $student_photo = UserUtils::student_photo_exist($_POST['username']);
+    $student_photo = UserUtils::student_photo_exist($username);
     if ($student_photo !== false) {
       unlink($photodirectory->fullpath($student_photo));
     }
@@ -66,50 +71,44 @@ if (isset($_POST['submit']) and !$errors) {
     // Ensure the file extenstion is lower case or it will not load on some Operating systems.
     $file_ext = strtolower($explode[$count]);
 
-    if (!move_uploaded_file($_FILES['photofile']['tmp_name'],  $photodirectory->fullpath($_POST['username'] . '.' . $file_ext))) {
+    if (!move_uploaded_file($_FILES['photofile']['tmp_name'],  $photodirectory->fullpath($username . '.' . $file_ext))) {
       log_error($userObject->get_user_ID(), 'Edit User', 'Application Error', 'Error uploading user photo - error: ' . $_FILES['photofile']['error'], $_SERVER['PHP_SELF'], 49, '', null, null, null);
     }
   }
-  
+
   $initials = '';
-  $first_names_array = explode(' ', $_POST['first_names']);
+  $first_names = param::optional('first_names', null, param::TEXT, param::FETCH_POST);
+  $first_names_array = explode(' ', $first_names);
   foreach ($first_names_array as $individual_name) {
     $initials .= trim(substr($individual_name,0,1));
   }
   // Update 'users' table.
-  $tmp_roles = $_POST['roles'];
-  
-	$gender = $_POST['gender'];
-	if ($gender == '') $gender = NULL;
+  $tmp_roles = param::optional('roles', null, param::TEXT, param::FETCH_POST);
 
-  $result = $mysqli->prepare("UPDATE users SET roles = ?, title = ?, initials = ?, surname = ?, grade = ?, yearofstudy = ?, username = ?, email = ?, first_names = ?, gender = ? WHERE id = ?");
-  $result->bind_param('sssssissssi', $tmp_roles, $_POST['title'], $initials, $_POST['surname'], $_POST['grade'], $_POST['year'], $_POST['username'], $_POST['email'], $_POST['first_names'], $gender, $userID);
-  $result->execute();
-  $result->close();
-  
-  // Remove from teams if 'left'.
-  if (strtolower($tmp_roles) == 'left') {
-    UserUtils::clear_staff_modules_by_userID($userID, $mysqli);
-  }
+  $gender = param::optional('gender', null, param::TEXT, param::FETCH_POST);
+  if ($gender == '') $gender = null;
 
-  // Remove from admin access if role changed from Admin
-  if ($userObject->has_role('SysAdmin')) {
-    if ($tmp_roles != $_POST['prev_roles'] and $_POST['prev_roles'] == 'Staff,Admin') {
-      UserUtils::clear_admin_access($userID, $mysqli);
+  $title = param::optional('title', null, param::TEXT, param::FETCH_POST);
+  $surname = param::optional('surname', null, param::TEXT, param::FETCH_POST);
+  $grade = param::optional('grade', null, param::TEXT, param::FETCH_POST);
+  $year = param::optional('year', null, param::INT, param::FETCH_POST);
+  $email = param::optional('email', null, param::EMAIL, param::FETCH_POST);
+  $sid = param::optional('sid', null, param::TEXT, param::FETCH_POST);
+
+  if (false === UserUtils::update_user($userID, $username, '', $title, $first_names, $surname, $email, $grade, $gender, $year, $tmp_roles, $sid, $mysqli, $initials)) {
+    $errors = $string['unabletosaveuserdetails'];
+  } else {
+    // Remove from teams if 'left'.
+    if (strtolower($tmp_roles) == 'left') {
+      UserUtils::clear_staff_modules_by_userID($userID, $mysqli);
     }
-  }
 
-  // Update 'sid' table;
-  $result = $mysqli->prepare("DELETE FROM sid WHERE userID = ?");
-  $result->bind_param('i', $userID);
-  $result->execute();
-  $result->close();
-
-  if (isset($_POST['sid']) and $_POST['sid'] != '' and $_POST['sid'] != $string['unknown']) {
-    $result = $mysqli->prepare("INSERT INTO sid VALUES (?, ?)");
-    $result->bind_param('si', $_POST['sid'], $userID);
-    $result->execute();
-    $result->close();
+    // Remove from admin access if role changed from Admin
+    if ($userObject->has_role('SysAdmin')) {
+      if ($tmp_roles != $_POST['prev_roles'] and $_POST['prev_roles'] == 'Staff,Admin') {
+        UserUtils::clear_admin_access($userID, $mysqli);
+      }
+    }
   }
 ?>
 <!DOCTYPE html>
@@ -126,7 +125,7 @@ if (isset($_POST['submit']) and !$errors) {
     </script>
   </head>
   <body>
-    
+
   </body>
 </html>
 <?php
@@ -179,8 +178,8 @@ if ($user_details['gender'] == 'Male') {
   }
   echo "</select> <input type=\"text\" value=\"" . $user_details['first_names'] . "\" name=\"first_names\" required /> <input type=\"text\" value=\"" . $user_details['surname'] . "\" name=\"surname\" required /></td></tr>\n";
   echo "<tr><td>" . $string['studentid'] . "</td><td><input type=\"text\" value=\"" . $user_details['student_id'] . "\" name=\"sid\" /></td></tr>\n";
-  if ($errors == 'Username exists') {
-    echo "<tr><td>" . $string['username'] . "</td><td><input type=\"text\" value=\"" . $_POST['username'] . "\" name=\"username\" class=\"form-error\" required />&nbsp;&nbsp;<span style=\"color:#C00000\">" . $string['usernameexists'] . "</span></td></tr>\n";
+  if ($errors) {
+    echo "<tr><td>" . $string['username'] . "</td><td><input type=\"text\" value=\"" . $username . "\" name=\"username\" class=\"form-error\" required />&nbsp;&nbsp;<span style=\"color:#C00000\">" . $errors . "</span></td></tr>\n";
   } else {
     echo "<tr><td>" . $string['username'] . "</td><td><input type=\"text\" value=\"" . $user_details['username'] . "\" name=\"username\" required /></td></tr>\n";
   }
@@ -200,7 +199,7 @@ if ($user_details['gender'] == 'Male') {
   }
   if ($found == 0) echo "<option value=\"" . $user_details['grade'] . "\" selected>" . $user_details['grade'] . ": " . $string['unknown'] . "</option>\n";
   $course_details->close();
-  
+
   echo "</select></td></tr>\n";
   echo "<tr><td>" . $string['yearofstudy'] . "</td><td><select name=\"year\">";
   for ($i=1; $i<=6; $i++) {
@@ -211,7 +210,7 @@ if ($user_details['gender'] == 'Male') {
     }
   }
   echo "</select></td></tr>";
-  
+
   echo "<tr><td>" . $string['gender'] . "</td><td><select name=\"gender\">";
   if ($user_details['gender'] == 'Male') {
     echo "<option value=\"Male\" selected>" . $string['male'] . "</option>\n<option value=\"Female\">" . $string['female'] . "</option>\n<option value=\"Other\">" . $string['other'] . "</option>";
@@ -221,7 +220,7 @@ if ($user_details['gender'] == 'Male') {
     echo "<option value=\"Male\">" . $string['male'] . "</option>\n<option value=\"Female\">" . $string['female'] . "</option>\n<option value=\"Other\" selected>" . $string['other'] . "</option>";
   } else {
     echo "<option value=\"\"></option>\n<option value=\"Male\">" . $string['male'] . "</option>\n<option value=\"Female\">" . $string['female'] . "</option>\n<option value=\"Other\">" . $string['other'] . "</option>\n";
-  }  
+  }
   echo "</select></td></tr>";
 
   echo "<tr><td>" . $string['status'] . "</td><td><select name=\"roles\">";

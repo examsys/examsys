@@ -6,4 +6,4 @@ modules:
     active: 1
     schoolid: 1
     academic_year_start: "07/01"
-    sms: "unittest"
+    sms: "test rogo api"

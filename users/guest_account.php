@@ -28,6 +28,9 @@
 require_once '../include/load_config.php';
 require_once '../include/auth.inc';
 
+$language = LangUtils::getLang($cfg_web_root);
+LangUtils::loadlangfile(str_replace($cfg_web_root, '', str_replace('\\', '/', ($_SERVER['SCRIPT_FILENAME']))));
+
 $mysqli = new mysqli($configObject->get('cfg_db_host'), $configObject->get('cfg_db_student_user'), $configObject->get('cfg_db_student_passwd'), $configObject->get('cfg_db_database'));
 
 // Check client address of current user is in a lab.

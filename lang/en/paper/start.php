@@ -15,17 +15,17 @@
 // along with Rogo.  If not, see <http://www.gnu.org/licenses/>.
 
 //HTML5 part
-require_once '../lang/' . $language . '/question/edit/hotspot_correct.php';
-require_once '../lang/' . $language . '/question/edit/area.php';
-require_once '../lang/' . $language . '/paper/hotspot_answer.php';
-require_once '../lang/' . $language . '/paper/hotspot_question.php';
-require_once '../lang/' . $language . '/paper/label_answer.php';
+require_once dirname(dirname(dirname(__DIR__))) . '/lang/' . $language . '/question/edit/hotspot_correct.php';
+require_once dirname(dirname(dirname(__DIR__))) . '/lang/' . $language . '/question/edit/area.php';
+require_once dirname(dirname(dirname(__DIR__))) . '/lang/' . $language . '/paper/hotspot_answer.php';
+require_once dirname(dirname(dirname(__DIR__))) . '/lang/' . $language . '/paper/hotspot_question.php';
+require_once dirname(dirname(dirname(__DIR__))) . '/lang/' . $language . '/paper/label_answer.php';
 $jstring = $string; //to pass it to JavaScript HTML5 modules
 //HTML5 part
 
-require_once '../lang/' . $language . '/include/months.php';
-require_once '../lang/' . $language . '/question/sct_shared.php';
-require_once '../lang/' . $language . '/include/paper_security.php';
+require_once dirname(dirname(dirname(__DIR__))) . '/lang/' . $language . '/include/months.php';
+require_once dirname(dirname(dirname(__DIR__))) . '/lang/' . $language . '/question/sct_shared.php';
+require_once dirname(dirname(dirname(__DIR__))) . '/lang/' . $language . '/include/paper_security.php';
 
 $string['survey'] = 'Survey';
 $string['assessment'] = 'Assessment';
@@ -54,6 +54,7 @@ $string['fireexit'] = 'Fire Exit';
 $string['pleasecomplete'] = 'Complete all questions before clicking &#145;Screen %d &gt;&#146;, you will not be able to go back.';
 $string['javacheck1'] = 'Have you completed all the questions on this screen, you will NOT be able to go back.<br /><br /><strong>Are you sure you wish to continue?</strong>';
 $string['javacheck2'] = "Are you sure you wish to finish?<br /><br /><strong>After clicking 'OK' you will not be able to go back.</strong>";
+$string['javacheck3'] = 'Have you completed all the questions on this screen, you will NOT be able to go back.<br /><br /><strong>The answer to question(s) [X] should be provided as it forms the basis of a subsequent question.</strong>';
 $string['error_random'] = '<strong>ERROR:</strong> Unable to find unique question for random question block.';
 $string['error_keywords'] = '<strong>ERROR:</strong> Unable to find unique question for supplied keywords.';
 $string['error_paper'] = 'The requested paper cannot be found.';
@@ -75,4 +76,11 @@ $string['answer_to'] = 'answer to';
 $string['decimal_places'] = 'decimal places';
 $string['significant_figures'] = 'significant figures';
 $string['forcesave'] = 'Your time has expired and your answers have been saved';
+$string['previewmathjax'] = 'Answer Preview';
+$string['mathjaxinstructions'] = '<b>Tip:</b> Enter latex formula within <span class="tex2jax_ignore">$$</span> for inline mode, or <span class="tex2jax_ignore">$$$</span> for display mode.';
+$string['failedanswer'] = 'You failed to answer question %s, this provides the value required for this question. This question will also be treated as if you failed to answer it.';
+$string['answerrequired'] = 'The answer to this question(s) [X] should be provided as it forms the basis of a subsequent question. If you cannot answer the question then you have the option to pass. Any subsequent dependent questions will be treated as if you failed to answer them.';
+$string['answerrequired_confirm'] = 'Do you still wish to pass this question or go back and answer it?';
+$string['go_back'] = 'Go back';
+$string['pass'] = 'Pass';
 ?>

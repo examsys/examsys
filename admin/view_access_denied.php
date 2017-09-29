@@ -37,6 +37,8 @@ require '../include/sysadmin_auth.inc';
   <link rel="stylesheet" type="text/css" href="../css/list.css" />
   <style>
     .d {background-image: url('../artwork/access_denied_16.gif'); background-repeat:no-repeat; background-position: left center; padding-left:20px}
+    .clearall{float: right;margin-top: -0.4em;color: #000;margin-right: 8%;font-size: 50%;text-decoration: none;padding: 0.5em;}
+    a:hover.clearall, a:link.clearall, a:visited.clearall{text-decoration: none;}
   </style>
 
   <?php echo $configObject->get('cfg_js_root') ?>
@@ -47,12 +49,20 @@ require '../include/sysadmin_auth.inc';
   <script>
     $(function () {
       if ($("#maindata").find("tr").size() > 1) {
-        $("#maindata").tablesorter({ 
+        $("#maindata").tablesorter({
           dateFormat: '<?php echo $configObject->get('cfg_tablesorter_date_time'); ?>',
-          sortList: [[0,1]] 
+          sortList: [[0,1]]
         });
       }
     });
+
+    function clearAll() {
+      return confirm("<?php echo $string['confirm_clear_all_logs'];?>");
+    }
+
+    function clear_a_log() {
+      return confirm("<?php echo $string['confirm_clear_a_log'];?>");
+    }
   </script>
 </head>
 <body>
@@ -63,13 +73,13 @@ echo draw_toprightmenu();
 ?>
 
 <div id="content">
-  
+
 <div class="head_title">
   <img src="../artwork/toprightmenu.gif" id="toprightmenu_icon" />
   <div class="breadcrumb"><a href="../index.php"><?php echo $string['home'] ?></a><img src="../artwork/breadcrumb_arrow.png" class="breadcrumb_arrow" alt="-" /><a href="./index.php"><?php echo $string['administrativetools'] ?></a></div>
-  <div class="page_title"><?php echo $string['deniedlogwarnings'] ?></div>
+  <div class="page_title"><?php echo $string['deniedlogwarnings'] ?><a href="?clear=all" onclick="return clearAll()"><button class="clearall" ><?php echo $string['clear_all_button_text']; ?></button></a></div>
 </div>
-  
+
 <table id="maindata" class="header tablesorter" cellspacing="0" cellpadding="2" border="0" style="width:100%">
 <thead>
 <tr>
@@ -81,15 +91,31 @@ echo draw_toprightmenu();
 </thead>
 <tbody>
 <?php
-$result = $mysqli->prepare("SELECT UNIX_TIMESTAMP(tried), ipaddress, page, msg, users.id, users.title, initials, surname FROM denied_log, users WHERE denied_log.userID = users.id ORDER BY tried DESC LIMIT 10000");
-$result->execute();
-$result->store_result();
-$result->bind_result($tried, $ipaddress, $page, $msg, $userID, $title, $initials, $surname);
-while ($result->fetch()) {
-  $tried_date = new DateTime();
-  $tried_date->setTimestamp($tried);
+$logs = new access_denied_logs();
+$log_list = $logs->get_access_denied_logs();
+$clear_all = param::optional('clear', null, param::TEXT, param::FETCH_GET);
+$clear_a_log = param::optional('log_id', null, param::INT, param::FETCH_GET);
 
-  echo "<tr class=\"l\"><td class=\"d\">" . $tried_date->format($configObject->get('cfg_long_date_php') . ' ' . $configObject->get('cfg_long_time_php')) . "</td><td><a href=\"../users/details.php?submit=Search&userID=$userID\">$title $initials $surname</a></td><td>$page</td><td>$msg</td></tr>\n";
+if (isset($clear_all)) {
+  $logs->delete_access_denied_logs();
+  header( 'Location: view_access_denied.php' ) ;
+
+} elseif (isset($clear_a_log)) {
+  $logs->delete_a_access_denied_log($clear_a_log);
+  header( 'Location: view_access_denied.php' ) ;
+
+} else {
+  foreach ($log_list as $log ) {
+    $tried_date = new DateTime();
+    $tried_date->setTimestamp($log['tried']);
+
+    echo "<tr class=\"l\">
+      <td class=\"d\"><a href=\"?log_id=". $log['id'] ."\" onclick=\"return clear_a_log()\" >" . $tried_date->format($configObject->get('cfg_long_date_php') . ' ' . $configObject->get('cfg_long_time_php')) . "</a></td>
+      <td><a href=\"../users/details.php?submit=Search&userID=". $log['userID'] ."\">". $log['title'] ." ". $log['initials'] ." ". $log['surname'] ."</a></td>
+      <td>". $log['page'] ."</td>
+      <td>". $log['msg'] ."</td>
+      </tr>\n";
+  }
 }
 ?>
 </tbody>

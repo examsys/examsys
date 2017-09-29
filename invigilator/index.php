@@ -322,6 +322,8 @@ if ($lab_object !== false) {
 <body>
 <?php
 if (!$lab_object) {
+  $loggerObj = new Logger($mysqli);
+  $loggerObj->record_access_denied($userObject->get_user_ID(),$string['fatalerrormsg0'], $string['unknowncomputer']);
   echo "<div style=\"background-color:white\">\n";
   echo '<div style="float:right; padding-right:5px"><a href="../logout.php"><img src="../artwork/student_logout.png" width="24" height="24" /></a></div>';
   emergencyNumbers($configObject->get('emergency_support_numbers'), $string, 68);

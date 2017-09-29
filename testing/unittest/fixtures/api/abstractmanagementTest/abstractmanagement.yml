@@ -1,0 +1,24 @@
+oauth_clients:
+  -
+    client_id: 'test1'
+    client_secret: 'test'
+    redirect_uri: 'https://www.example.com'
+    user_id: 1
+  -
+    client_id: 'test2'
+    client_secret: 'test2'
+    redirect_uri: 'https://www.example.com'
+    user_id: 2
+external_systems:
+  -
+    id: 1
+    name: 'test rogo api'
+    type: 'api'
+  -
+    id: 2
+    name: 'test rogo plugin'
+    type: 'plugin'
+external_systems_mapping:
+  -
+    ext_id: 1
+    client_id: 'test1'

@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
-use testing\unittest\UnitTest;
+use testing\unittest\unittestdatabase;
 use org\bovigo\vfs\vfsStreamWrapper;
 use org\bovigo\vfs\vfsStream;
 
@@ -26,7 +26,7 @@ use org\bovigo\vfs\vfsStream;
  * @copyright Copyright (c) 2016 onwards The University of Nottingham
  * @package tests
  */
-class rogo_directorytest extends UnitTest {
+class rogo_directorytest extends unittestdatabase {
   /** @var rogo_directory Stores a mock version of the rogo_directory class. */
   protected $rogodirectory;
 
@@ -35,7 +35,7 @@ class rogo_directorytest extends UnitTest {
 
   public function setUp() {
     parent::setUp();
-    $this->rogodirectory = $this->getMockForAbstractClass('rogo_directory');
+    $this->rogodirectory = $this->getMockForAbstractClass('rogo_directory', array(), '', true, true, true, array('valid_path'));
     // Ensure the root path is set to a known value.
     $this->config->set('cfg_root_path', $this->webroot);
   }
@@ -45,6 +45,23 @@ class rogo_directorytest extends UnitTest {
     parent::tearDown();
   }
 
+  /**
+   * Get init data set from yml
+   * @return dataset
+   */
+  public function getDataSet() {
+    return new PHPUnit_Extensions_Database_DataSet_YamlDataSet($this->get_base_fixture_directory() . "rogo_directory" . DIRECTORY_SEPARATOR . "rogodirectory.yml");
+  }
+
+  /**
+   * Get expected data set from yml
+   * @param string $name fixture file name
+   * @return dataset
+   */
+  public function get_expected_data_set($name) {
+    return new PHPUnit_Extensions_Database_DataSet_YamlDataSet($this->get_base_fixture_directory() . "rogo_directory" . DIRECTORY_SEPARATOR . $name . ".yml");
+  }
+    
   /**
    * Tests the create method will create a directory, based on the return value of the location method.
    *
@@ -81,7 +98,7 @@ class rogo_directorytest extends UnitTest {
   public function test_create_not_writable() {
     // Set the location of the rogo directory to be a sub direcotry called test.
     $this->rogodirectory->expects($this->any())->method('location')->willReturn($this->config->get('cfg_rogo_data') . '/test/');
-    vfsStream::setup(UnitTest::DATA_DIRECTORY, 0000); // Set the data directory to not be wriatable.
+    vfsStream::setup(unittestdatabase::DATA_DIRECTORY, 0000); // Set the data directory to not be writable.
     $this->assertFalse(vfsStreamWrapper::getRoot()->hasChild('test'));
     $this->rogodirectory->create();
   }
@@ -94,7 +111,7 @@ class rogo_directorytest extends UnitTest {
   public function test_create_root_has_700_permissions() {
     // Set the location of the rogo directory to be a sub direcotry called test.
     $this->rogodirectory->expects($this->any())->method('location')->willReturn($this->config->get('cfg_rogo_data') . '/test/');
-    vfsStream::setup(UnitTest::DATA_DIRECTORY, 0700);
+    vfsStream::setup(unittestdatabase::DATA_DIRECTORY, 0700);
     $this->assertFalse(vfsStreamWrapper::getRoot()->hasChild('test'));
     $this->rogodirectory->create();
     $this->assertTrue(vfsStreamWrapper::getRoot()->hasChild('test'));
@@ -109,14 +126,14 @@ class rogo_directorytest extends UnitTest {
     // Set the location of the rogo directory to be a sub direcotry called test.
     $this->rogodirectory->expects($this->any())->method('location')->willReturn($this->config->get('cfg_rogo_data') . '/test/');
     // The contents of the directory.
-    $structre = array(
+    $structure = array(
       'test' => array(
         'subdirectory' => array(),
         'random' => array(),
         'testfile.txt' => 'test content',
       )
     );
-    vfsStream::setup(UnitTest::DATA_DIRECTORY, 0777, $structre);
+    vfsStream::setup(unittestdatabase::DATA_DIRECTORY, 0777, $structure);
     $this->assertTrue(vfsStreamWrapper::getRoot()->hasChild('test'));
     $this->assertCount(3, vfsStreamWrapper::getRoot()->getChild('test')->getChildren());
     $this->rogodirectory->create();
@@ -135,7 +152,7 @@ class rogo_directorytest extends UnitTest {
   public function test_clear() {
     $this->rogodirectory->expects($this->any())->method('location')->willReturn($this->config->get('cfg_rogo_data') . '/test/');
     // The contents of the directory.
-    $structre = array(
+    $structure = array(
       'test' => array(
         'subdirectory' => array(),
         'random' => array(
@@ -144,7 +161,7 @@ class rogo_directorytest extends UnitTest {
         'testfile.txt' => 'test content',
       )
     );
-    vfsStream::setup(UnitTest::DATA_DIRECTORY, 0777, $structre);
+    vfsStream::setup(unittestdatabase::DATA_DIRECTORY, 0777, $structure);
     $this->assertTrue(vfsStreamWrapper::getRoot()->hasChild('test'));
     $this->assertCount(3, vfsStreamWrapper::getRoot()->getChild('test')->getChildren());
     $this->assertTrue($this->rogodirectory->clear());
@@ -159,10 +176,10 @@ class rogo_directorytest extends UnitTest {
    */
   public function test_clear_empty() {
     $this->rogodirectory->expects($this->any())->method('location')->willReturn($this->config->get('cfg_rogo_data') . '/test/');
-    $structre = array(
+    $structure = array(
       'test' => array(),
     );
-    vfsStream::setup(UnitTest::DATA_DIRECTORY, 0777, $structre);
+    vfsStream::setup(unittestdatabase::DATA_DIRECTORY, 0777, $structure);
     $this->assertTrue(vfsStreamWrapper::getRoot()->hasChild('test'));
     $this->assertCount(0, vfsStreamWrapper::getRoot()->getChild('test')->getChildren());
     $this->assertTrue($this->rogodirectory->clear());
@@ -179,7 +196,7 @@ class rogo_directorytest extends UnitTest {
     $this->config->set('cfg_readonly_host', true);
     $this->rogodirectory->expects($this->any())->method('location')->willReturn($this->config->get('cfg_rogo_data') . '/test/');
     // The contents of the directory.
-    $structre = array(
+    $structure = array(
       'test' => array(
         'subdirectory' => array(),
         'random' => array(
@@ -188,7 +205,7 @@ class rogo_directorytest extends UnitTest {
         'testfile.txt' => 'test content',
       )
     );
-    vfsStream::setup(UnitTest::DATA_DIRECTORY, 0777, $structre);
+    vfsStream::setup(unittestdatabase::DATA_DIRECTORY, 0777, $structure);
     $this->assertTrue(vfsStreamWrapper::getRoot()->hasChild('test'));
     $this->assertCount(3, vfsStreamWrapper::getRoot()->getChild('test')->getChildren());
     $this->assertFalse($this->rogodirectory->clear());
@@ -204,10 +221,10 @@ class rogo_directorytest extends UnitTest {
   public function test_clear_empty_read_only() {
     $this->config->set('cfg_readonly_host', true);
     $this->rogodirectory->expects($this->any())->method('location')->willReturn($this->config->get('cfg_rogo_data') . '/test/');
-    $structre = array(
+    $structure = array(
       'test' => array(),
     );
-    vfsStream::setup(UnitTest::DATA_DIRECTORY, 0777, $structre);
+    vfsStream::setup(unittestdatabase::DATA_DIRECTORY, 0777, $structure);
     $this->assertTrue(vfsStreamWrapper::getRoot()->hasChild('test'));
     $this->assertCount(0, vfsStreamWrapper::getRoot()->getChild('test')->getChildren());
     $this->assertFalse($this->rogodirectory->clear());
@@ -235,7 +252,7 @@ class rogo_directorytest extends UnitTest {
   public function test_clear_no_permissions() {
     $this->rogodirectory->expects($this->any())->method('location')->willReturn($this->config->get('cfg_rogo_data') . '/test/');
     // The contents of the directory.
-    $structre = array(
+    $structure = array(
       'test' => array(
         'subdirectory' => array(),
         'random' => array(
@@ -244,7 +261,7 @@ class rogo_directorytest extends UnitTest {
         'testfile.txt' => 'test content',
       )
     );
-    vfsStream::setup(UnitTest::DATA_DIRECTORY, 0000, $structre);
+    vfsStream::setup(unittestdatabase::DATA_DIRECTORY, 0000, $structure);
     vfsStreamWrapper::getRoot()->getChild('test')->chmod(0000);
     $this->assertTrue(vfsStreamWrapper::getRoot()->hasChild('test'));
     $this->assertCount(3, vfsStreamWrapper::getRoot()->getChild('test')->getChildren());
@@ -261,7 +278,7 @@ class rogo_directorytest extends UnitTest {
   public function test_clear_no_permissions2() {
     $this->rogodirectory->expects($this->any())->method('location')->willReturn($this->config->get('cfg_rogo_data') . '/test/');
     // The contents of the directory.
-    $structre = array(
+    $structure = array(
       'test' => array(
         'subdirectory' => array(),
         'random' => array(
@@ -270,7 +287,7 @@ class rogo_directorytest extends UnitTest {
         'testfile.txt' => 'test content',
       )
     );
-    vfsStream::setup(UnitTest::DATA_DIRECTORY, 0000, $structre);
+    vfsStream::setup(unittestdatabase::DATA_DIRECTORY, 0000, $structure);
     vfsStreamWrapper::getRoot()->getChild('test')->getChild('random')->chmod(0000);
     $this->assertTrue(vfsStreamWrapper::getRoot()->hasChild('test'));
     $this->assertCount(3, vfsStreamWrapper::getRoot()->getChild('test')->getChildren());
@@ -288,16 +305,51 @@ class rogo_directorytest extends UnitTest {
    */
   public function test_verify_file() {
     $this->rogodirectory->expects($this->any())->method('location')->willReturn($this->config->get('cfg_rogo_data') . '/test/');
+    $this->rogodirectory->expects($this->once())->method('valid_path')->willReturn(true);
     // The contents of the directory.
-    $structre = array(
+    $structure = array(
       'test' => array(
         'testfile.txt' => 'test content',
       ),
     );
-    vfsStream::setup(UnitTest::DATA_DIRECTORY, 0777, $structre);
+    vfsStream::setup(unittestdatabase::DATA_DIRECTORY, 0777, $structure);
     $this->assertTrue(vfsStreamWrapper::getRoot()->hasChild('test'));
     $this->assertTrue(vfsStreamWrapper::getRoot()->getChild('test')->hasChild('testfile.txt'));
     $this->rogodirectory->verify_file('testfile.txt');
+  }
+
+  /**
+   * Tests the verify_file method throws an invalid path file exception
+   * 
+   * @group rogo_directory
+   */
+  public function test_verify_invalid_file() {
+    $this->rogodirectory->expects($this->any())->method('location')->willReturn($this->config->get('cfg_rogo_data') . '/test/');
+    // The contents of the directory.
+    $structure = array(
+      'test' => array(
+        'testfile.txt' => 'test content',
+      ),
+      'roottestfile.txt' => 'root test content',
+    );
+    vfsStream::setup(unittestdatabase::DATA_DIRECTORY, 0777, $structure);
+    $this->assertTrue(vfsStreamWrapper::getRoot()->hasChild('test'));
+    $this->assertTrue(vfsStreamWrapper::getRoot()->getChild('test')->hasChild('testfile.txt'));
+    $this->assertTrue(vfsStreamWrapper::getRoot()->hasChild('roottestfile.txt'));
+    $this->userobject->load(1);
+    try {
+      $this->rogodirectory->verify_file('../roottestfile.txt');
+    } catch (Exception $e) {
+      if ($e->getMessage() == 'Invalid file path.') {
+        // Test denied log entery exists.
+        $query = $this->getConnection()->createQueryTable('denied_log', 'SELECT id, userID, msg FROM denied_log');
+        $expected = $this->get_expected_data_set('expected_rogodirectory')->getTable("denied_log");
+        $this->assertTablesEqual($expected, $query);
+        return;
+      }
+      $this->fail('Exception \'Invalid file path.\' expected but ' . $e->getMessage() . ' thrown instead.');
+    }
+    $this->fail('Exception \'Invalid file path.\' not thrown.');
   }
 
   /**
@@ -309,12 +361,13 @@ class rogo_directorytest extends UnitTest {
   public function test_verify_file_that_does_not_exist() {
     $this->rogodirectory->expects($this->any())->method('location')->willReturn($this->config->get('cfg_rogo_data') . '/test/');
     // The contents of the directory.
-    $structre = array(
+    $structure = array(
       'test' => array(),
     );
-    vfsStream::setup(UnitTest::DATA_DIRECTORY, 0777, $structre);
+    vfsStream::setup(unittestdatabase::DATA_DIRECTORY, 0777, $structure);
     $this->assertTrue(vfsStreamWrapper::getRoot()->hasChild('test'));
     $this->assertFalse(vfsStreamWrapper::getRoot()->getChild('test')->hasChildren());
+    $this->userobject->load(1);
     $this->rogodirectory->verify_file('testfile.txt');
   }
 
@@ -327,14 +380,15 @@ class rogo_directorytest extends UnitTest {
   public function test_verify_file_that_does_not_exist2() {
     $this->rogodirectory->expects($this->any())->method('location')->willReturn($this->config->get('cfg_rogo_data') . '/test/');
     // The contents of the directory.
-    $structre = array(
+    $structure = array(
       'test' => array(
         'random.txt' => 'test content',
       ),
     );
-    vfsStream::setup(UnitTest::DATA_DIRECTORY, 0777, $structre);
+    vfsStream::setup(unittestdatabase::DATA_DIRECTORY, 0777, $structure);
     $this->assertTrue(vfsStreamWrapper::getRoot()->hasChild('test'));
     $this->assertTrue(vfsStreamWrapper::getRoot()->getChild('test')->hasChildren());
+    $this->userobject->load(1);
     $this->rogodirectory->verify_file('testfile.txt');
   }
 
@@ -347,16 +401,17 @@ class rogo_directorytest extends UnitTest {
   public function test_verify_file_that_does_not_exist3() {
     $this->rogodirectory->expects($this->any())->method('location')->willReturn($this->config->get('cfg_rogo_data') . '/test/');
     // The contents of the directory.
-    $structre = array(
+    $structure = array(
       'test' => array(
         'random' => array(
           'testfile.txt' => 'test content',
         ),
       ),
     );
-    vfsStream::setup(UnitTest::DATA_DIRECTORY, 0777, $structre);
+    vfsStream::setup(unittestdatabase::DATA_DIRECTORY, 0777, $structure);
     $this->assertTrue(vfsStreamWrapper::getRoot()->hasChild('test'));
     $this->assertTrue(vfsStreamWrapper::getRoot()->getChild('test')->hasChildren());
+    $this->userobject->load(1);
     $this->rogodirectory->verify_file('testfile.txt');
   }
 
@@ -463,12 +518,12 @@ class rogo_directorytest extends UnitTest {
    * @group rogo_directory
    */
   public function test_url_defaults() {
-    $structre = array(
+    $structure = array(
       'test' => array(
         'testfile.txt' => 'test content',
       ),
     );
-    vfsStream::setup(UnitTest::DATA_DIRECTORY, 0777, $structre);
+    vfsStream::setup(unittestdatabase::DATA_DIRECTORY, 0777, $structure);
     $url = $this->rogodirectory->url('testfile.txt');
     $this->assertContains($this->webroot . 'getfile.php?', $url);
     $this->assertContains('type=Mock_rogo_directory', $url);
@@ -482,12 +537,12 @@ class rogo_directorytest extends UnitTest {
    * @group rogo_directory
    */
   public function test_url_no_forcedownload() {
-    $structre = array(
+    $structure = array(
       'test' => array(
         'testfile.txt' => 'test content',
       ),
     );
-    vfsStream::setup(UnitTest::DATA_DIRECTORY, 0777, $structre);
+    vfsStream::setup(unittestdatabase::DATA_DIRECTORY, 0777, $structure);
     $url = $this->rogodirectory->url('testfile.txt', false);
     $this->assertContains($this->webroot . 'getfile.php?', $url);
     $this->assertContains('type=Mock_rogo_directory', $url);
@@ -501,12 +556,12 @@ class rogo_directorytest extends UnitTest {
    * @group rogo_directory
    */
   public function test_url_forcedownload() {
-    $structre = array(
+    $structure = array(
       'test' => array(
         'testfile.txt' => 'test content',
       ),
     );
-    vfsStream::setup(UnitTest::DATA_DIRECTORY, 0777, $structre);
+    vfsStream::setup(unittestdatabase::DATA_DIRECTORY, 0777, $structure);
     $url = $this->rogodirectory->url('testfile.txt', true);
     $this->assertContains($this->webroot . 'getfile.php?', $url);
     $this->assertContains('type=Mock_rogo_directory', $url);
@@ -543,12 +598,12 @@ class rogo_directorytest extends UnitTest {
    * @group rogo_directory
    */
   public function test_url_not_escaped() {
-    $structre = array(
+    $structure = array(
       'test' => array(
         'testfile.txt' => 'test content',
       ),
     );
-    vfsStream::setup(UnitTest::DATA_DIRECTORY, 0777, $structre);
+    vfsStream::setup(unittestdatabase::DATA_DIRECTORY, 0777, $structure);
     $url = $this->rogodirectory->url('testfile.txt', false, false, false);
     $this->assertContains($this->webroot . 'getfile.php?', $url);
     $this->assertContains('type=Mock_rogo_directory', $url);
@@ -562,12 +617,12 @@ class rogo_directorytest extends UnitTest {
    * @group rogo_directory
    */
   public function test_url_escaped() {
-    $structre = array(
+    $structure = array(
       'test' => array(
         'testfile.txt' => 'test content',
       ),
     );
-    vfsStream::setup(UnitTest::DATA_DIRECTORY, 0777, $structre);
+    vfsStream::setup(unittestdatabase::DATA_DIRECTORY, 0777, $structure);
     $url = $this->rogodirectory->url('testfile.txt', false, false, true);
     $this->assertContains(htmlentities($this->webroot . 'getfile.php?', ENT_HTML5), $url);
     $this->assertContains('type&equals;Mock&lowbar;rogo&lowbar;directory', $url);
@@ -582,12 +637,12 @@ class rogo_directorytest extends UnitTest {
    * @group rogo_directory
    */
   public function test_url_escaped2() {
-    $structre = array(
+    $structure = array(
       'test' => array(
         'testfile.txt' => 'test content',
       ),
     );
-    vfsStream::setup(UnitTest::DATA_DIRECTORY, 0777, $structre);
+    vfsStream::setup(unittestdatabase::DATA_DIRECTORY, 0777, $structure);
     $url = $this->rogodirectory->url('testfile.txt', true, false, true);
     $this->assertContains(htmlentities($this->webroot . 'getfile.php?', ENT_HTML5), $url);
     $this->assertContains('type&equals;Mock&lowbar;rogo&lowbar;directory', $url);
@@ -612,10 +667,10 @@ class rogo_directorytest extends UnitTest {
     $fixtures = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'fixtures' . DIRECTORY_SEPARATOR . 'rogo_directory' . DIRECTORY_SEPARATOR;
     $this->rogodirectory->expects($this->any())->method('default_base_directory')->willReturn($fixtures);
     // Setup the data directory, with no files in it.
-    $structre = array(
+    $structure = array(
       'files' => array(),
     );
-    vfsStream::setup(UnitTest::DATA_DIRECTORY, 0777, $structre);
+    vfsStream::setup(unittestdatabase::DATA_DIRECTORY, 0777, $structure);
     $this->rogodirectory->copy_from_default();
     // The two fixture files should be copied.
     $this->assertCount(2, vfsStreamWrapper::getRoot()->getChild('files')->getChildren());

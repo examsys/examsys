@@ -69,10 +69,6 @@ try {
   exit(0);
 }
 
-// Setup some variables that are needed by scripts that are included further down.
-$cfg_web_root = get_root_path() . '/';
-$cfg_root_path = ltrim(str_replace($_SERVER['DOCUMENT_ROOT'], '', $cfg_web_root), '/');
-
 // Ensure any caches are cleared.
 if (function_exists('opcache_reset')) {
     opcache_reset();

@@ -23,4 +23,5 @@ $string['copyerror'] = 'Question Number $q_no) Copy Error (Question) File <stron
 $string['completemsg'] = 'Your paper and questions have been copied but the following image have not been copied.';
 $string['filecopywarning'] = 'File Copy Warning';
 $string['calculation_link_update_error'] = 'Error recalculating links for linked calculation questions - <strong>\'%s\'</strong>';
+$string['paperlockedwarning'] = 'This paper is now locked and cannot be modified.';
 ?>

@@ -25,6 +25,8 @@
  */
 
 require_once '../include/load_config.php';
+$language = LangUtils::getLang($cfg_web_root);
+LangUtils::loadlangfile(str_replace($cfg_web_root, '', str_replace('\\', '/', ($_SERVER['SCRIPT_FILENAME']))));
 
 if (strcmp($configObject->get('cfg_install_type'), 'demo') != 0) { // If the installation type is not set to 'demo' then exit.
   header("HTTP/1.0 404 Not Found");
@@ -38,6 +40,7 @@ require_once '../include/custom_error_handler.inc';
 
 $notice = UserNotices::get_instance();
 $mysqli = DBUtils::get_mysqli_link($configObject->get('cfg_db_host'), $configObject->get('cfg_db_sysadmin_user'), $configObject->get('cfg_db_sysadmin_passwd'), $configObject->get('cfg_db_database'), $configObject->get('cfg_db_charset'), $notice, $configObject->get('dbclass'));
+$configObject->set_db_object($mysqli);
 
 function adduser($course, $tmp_roles, $new_username, $mysqli) {
   $new_password = trim($_POST['new_password']);

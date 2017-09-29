@@ -188,7 +188,7 @@ class assessmentmanagementtest extends unittestdatabase {
         $params = $this->create_param_array();
         $responsearray = $this->create_response_array();
         $userid = 1;
-        $assessment = new \api\assessmentmanagement($this->db);
+        $assessment = new \api\assessmentmanagement($this->db, 'test1');
         $this->assertEquals($responsearray, $assessment->create($params, $userid));
     }
     /**
@@ -203,7 +203,7 @@ class assessmentmanagementtest extends unittestdatabase {
         $responsearray = $this->create_response_array();
         $responsearray['externalid'] = "qwertyberty";
         $userid = 1;
-        $assessment = new \api\assessmentmanagement($this->db);
+        $assessment = new \api\assessmentmanagement($this->db, 'test1');
         $this->assertEquals($responsearray, $assessment->create($params, $userid));
     }
     /**
@@ -215,7 +215,7 @@ class assessmentmanagementtest extends unittestdatabase {
         $params = $this->create_param_array();
         $responsearray = $this->create_response_array();
         $userid = 1;
-        $assessment = new \api\assessmentmanagement($this->db);
+        $assessment = new \api\assessmentmanagement($this->db, 'test1');
         $params['title'] = "Test create formative"; 
         $responsearray['statuscode'] = 206;
         $responsearray['status'] = 'Assessment title is already in use';
@@ -231,7 +231,7 @@ class assessmentmanagementtest extends unittestdatabase {
         $params = $this->create_param_array();
         $responsearray = $this->create_response_array();
         $userid = 1;
-        $assessment = new \api\assessmentmanagement($this->db);
+        $assessment = new \api\assessmentmanagement($this->db, 'test1');
         $responsearray['statuscode'] = 215;
         $responsearray['status'] = 'Paper type unknown';
         $responsearray['id'] = null;
@@ -248,7 +248,7 @@ class assessmentmanagementtest extends unittestdatabase {
         $params = $this->create_param_array();
         $responsearray = $this->create_response_array();
         $userid = 1;
-        $assessment = new \api\assessmentmanagement($this->db);
+        $assessment = new \api\assessmentmanagement($this->db, 'test1');
         $responsearray['statuscode'] = 207;
         $responsearray['status'] = 'Assessment owner is invalid';
         $responsearray['id'] = null;
@@ -266,7 +266,7 @@ class assessmentmanagementtest extends unittestdatabase {
         $params = $this->create_param_array();
         $responsearray = $this->create_response_array();
         $userid = 1;
-        $assessment = new \api\assessmentmanagement($this->db);
+        $assessment = new \api\assessmentmanagement($this->db, 'test1');
         $responsearray['statuscode'] = 208;
         $responsearray['status'] = 'Assessment owner role is invalid';
         $responsearray['id'] = null;
@@ -282,7 +282,7 @@ class assessmentmanagementtest extends unittestdatabase {
         $params = $this->create_param_array();
         $responsearray = $this->create_response_array();
         $userid = 1;
-        $assessment = new \api\assessmentmanagement($this->db);
+        $assessment = new \api\assessmentmanagement($this->db, 'test1');
         $responsearray['statuscode'] = 209;
         $responsearray['status'] = 'Calendar year invalid';
         $responsearray['id'] = null;
@@ -299,7 +299,7 @@ class assessmentmanagementtest extends unittestdatabase {
         $params = $this->create_param_array();
         $responsearray = $this->create_response_array();
         $userid = 1;
-        $assessment = new \api\assessmentmanagement($this->db);
+        $assessment = new \api\assessmentmanagement($this->db, 'test1');
         $responsearray['statuscode'] = 212;
         $responsearray['id'] = null;
         $responsearray['status'] = 'End date must be after start date';
@@ -317,7 +317,7 @@ class assessmentmanagementtest extends unittestdatabase {
         $params = $this->create_param_array();
         $responsearray = $this->create_response_array();
         $userid = 1;
-        $assessment = new \api\assessmentmanagement($this->db);
+        $assessment = new \api\assessmentmanagement($this->db, 'test1');
         $responsearray['statuscode'] = 211;
         $responsearray['status'] = 'Module error';
         $responsearray['id'] = null;
@@ -338,7 +338,7 @@ class assessmentmanagementtest extends unittestdatabase {
         $params = $this->create_param_array();
         $responsearray = $this->create_response_array();
         $userid = 1;
-        $assessment = new \api\assessmentmanagement($this->db);
+        $assessment = new \api\assessmentmanagement($this->db, 'test1');
         $responsearray['statuscode'] = 218;
         $responsearray['status'] = 'Paper was not assigned any modules';
         $responsearray['id'] = null;
@@ -356,7 +356,7 @@ class assessmentmanagementtest extends unittestdatabase {
         $params = $this->create_param_array();
         $responsearray = $this->create_response_array();
         $userid = 1;
-        $assessment = new \api\assessmentmanagement($this->db);
+        $assessment = new \api\assessmentmanagement($this->db, 'test1');
         $responsearray['statuscode'] = 100;
         $responsearray['status'] = 'OK';
         $error[0] = 'Invalid lab Test lab 3';
@@ -373,7 +373,7 @@ class assessmentmanagementtest extends unittestdatabase {
         $params = $this->create_param_array();
         $responsearray = $this->create_response_array();
         $userid = 1;
-        $assessment = new \api\assessmentmanagement($this->db);
+        $assessment = new \api\assessmentmanagement($this->db, 'test1');
         $this->config->set('cfg_summative_mgmt', true);
         $responsearray['statuscode'] = 214;
         $responsearray['status'] = 'This system is set-up to only allow the scheduling of summative exams';
@@ -400,7 +400,7 @@ class assessmentmanagementtest extends unittestdatabase {
         $responsearray = $this->update_response_array();
         $responsearray['externalid'] = "123abc456";
         $userid = 1;
-        $assessment = new \api\assessmentmanagement($this->db);
+        $assessment = new \api\assessmentmanagement($this->db, 'test1');
         $this->assertEquals($responsearray, $assessment->update($params, $userid));
         // Check properties_modules.
         $querytable = $this->getConnection()->createQueryTable('properties_modules', 'SELECT property_id, idMod FROM properties_modules');
@@ -416,7 +416,7 @@ class assessmentmanagementtest extends unittestdatabase {
         $params = $this->update_ext_param_array();
         $responsearray = $this->update_ext_response_array();
         $userid = 1;
-        $assessment = new \api\assessmentmanagement($this->db);
+        $assessment = new \api\assessmentmanagement($this->db, 'test1');
         $this->assertEquals($responsearray, $assessment->update($params, $userid));
         // Check properties_modules.
         $querytable = $this->getConnection()->createQueryTable('properties_modules', 'SELECT property_id, idMod FROM properties_modules');
@@ -433,7 +433,7 @@ class assessmentmanagementtest extends unittestdatabase {
         $responsearray['externalid'] = "123abc456";
         $params['startdatetime'] = "2016-01-25T08:00:00";
         $userid = 1;
-        $assessment = new \api\assessmentmanagement($this->db);
+        $assessment = new \api\assessmentmanagement($this->db, 'test1');
         $this->assertEquals($responsearray, $assessment->update($params, $userid));
     }
     /**
@@ -456,7 +456,7 @@ class assessmentmanagementtest extends unittestdatabase {
             "timezone" => "Europe/London");
         $responsearray = $this->update_response_array();
         $userid = 1;
-        $assessment = new \api\assessmentmanagement($this->db);
+        $assessment = new \api\assessmentmanagement($this->db, 'test1');
         $responsearray['statuscode'] = 216;
         $responsearray['status'] = 'Request updates nothing';
         $responsearray['id'] = null;
@@ -481,7 +481,7 @@ class assessmentmanagementtest extends unittestdatabase {
             "timezone" => "Europe/London");
         $responsearray = $this->update_response_array();
         $userid = 1;
-        $assessment = new \api\assessmentmanagement($this->db);
+        $assessment = new \api\assessmentmanagement($this->db, 'test1');
         $responsearray['statuscode'] = 216;
         $responsearray['status'] = 'Request updates nothing';
         $responsearray['id'] = null;
@@ -496,7 +496,7 @@ class assessmentmanagementtest extends unittestdatabase {
         $params = $this->update_param_array();
         $responsearray = $this->update_response_array();
         $userid = 1;
-        $assessment = new \api\assessmentmanagement($this->db);
+        $assessment = new \api\assessmentmanagement($this->db, 'test1');
         $responsearray['statuscode'] = 210;
         $responsearray['status'] = 'Paper does not exist';
         $responsearray['id'] = null;
@@ -511,7 +511,7 @@ class assessmentmanagementtest extends unittestdatabase {
         // Test paper update - SUCCESS do not pass labs or title.
         $responsearray = $this->update_response_array();
         $userid = 1;
-        $assessment = new \api\assessmentmanagement($this->db);
+        $assessment = new \api\assessmentmanagement($this->db, 'test1');
         $params = array(
             "id" => 2,
             "nodeid" => 1,
@@ -521,7 +521,7 @@ class assessmentmanagementtest extends unittestdatabase {
         $this->assertEquals($responsearray, $assessment->update($params, $userid));
         // Test paper update - SUCCESS empty labs non fatal error.
         $params = $this->update_param_array();
-        $assessment = new \api\assessmentmanagement($this->db);
+        $assessment = new \api\assessmentmanagement($this->db, 'test1');
         $params['title'] = "Test Formative 3 update";
         $params['id'] = 3;
         $params['labs'] = array(array('id' => 0, 'value' => ''));
@@ -532,7 +532,7 @@ class assessmentmanagementtest extends unittestdatabase {
         // Assesment 2 - Check title / labs have not been changed in the db.
         // Assessment 3 - Check labs are null in the db.
         $querytable = $this->getConnection()->createQueryTable('properties', 'SELECT property_id, paper_title, start_date, end_date, exam_duration,
-            calendar_year, timezone, paper_ownerID, labs, paper_type, externalid FROM properties');
+            calendar_year, timezone, paper_ownerID, labs, paper_type, externalid, externalsys FROM properties');
         $expectedtable = $this->get_expected_data_set('updateassessment')->getTable("properties");  
         $this->assertTablesEqual($expectedtable, $querytable); 
     }
@@ -545,7 +545,7 @@ class assessmentmanagementtest extends unittestdatabase {
         $params = $this->update_param_array();
         $responsearray = $this->update_response_array();
         $userid = 1;
-        $assessment = new \api\assessmentmanagement($this->db);
+        $assessment = new \api\assessmentmanagement($this->db, 'test1');
         $responsearray['statuscode'] = 207;
         $responsearray['status'] = 'Assessment owner is invalid';
         $responsearray['id'] = null;
@@ -562,7 +562,7 @@ class assessmentmanagementtest extends unittestdatabase {
         $params = $this->update_param_array();
         $responsearray = $this->update_response_array();
         $userid = 1;
-        $assessment = new \api\assessmentmanagement($this->db);
+        $assessment = new \api\assessmentmanagement($this->db, 'test1');
         $responsearray['statuscode'] = 208;
         $responsearray['status'] = 'Assessment owner role is invalid';
         $responsearray['id'] = null;
@@ -578,7 +578,7 @@ class assessmentmanagementtest extends unittestdatabase {
         $params = $this->update_param_array();
         $responsearray = $this->update_response_array();
         $userid = 1;
-        $assessment = new \api\assessmentmanagement($this->db);
+        $assessment = new \api\assessmentmanagement($this->db, 'test1');
         $responsearray['statuscode'] = 209;
         $responsearray['status'] = 'Calendar year invalid';
         $responsearray['id'] = null;
@@ -595,7 +595,7 @@ class assessmentmanagementtest extends unittestdatabase {
         $params = $this->update_param_array();
         $responsearray = $this->update_response_array();
         $userid = 1;
-        $assessment = new \api\assessmentmanagement($this->db);
+        $assessment = new \api\assessmentmanagement($this->db, 'test1');
         $responsearray['statuscode'] = 212;
         $responsearray['status'] = 'End date must be after start date';
         $responsearray['id'] = null;
@@ -611,7 +611,7 @@ class assessmentmanagementtest extends unittestdatabase {
     public function test_update_exception_summative() {
         // Test update summative - ERROR centrally managed
         $userid = 1;
-        $assessment = new \api\assessmentmanagement($this->db);
+        $assessment = new \api\assessmentmanagement($this->db, 'test1');
         $this->config->set('cfg_summative_mgmt', true);
         $summativeparams = array(
             "id" => 4,
@@ -649,7 +649,7 @@ class assessmentmanagementtest extends unittestdatabase {
         $responsearray = $this->schedule_response_array();
         $params = $this->schedule_param_array();
         $userid = 1;
-        $assessment = new \api\assessmentmanagement($this->db);
+        $assessment = new \api\assessmentmanagement($this->db, 'test1');
         $this->assertEquals($responsearray, $assessment->schedule($params, $userid));
     }
     /**
@@ -669,7 +669,7 @@ class assessmentmanagementtest extends unittestdatabase {
             "month" => 0,
             "modules" => array(array('id' => 0, 'value' => 1)));
         $userid = 1;
-        $assessment = new \api\assessmentmanagement($this->db);
+        $assessment = new \api\assessmentmanagement($this->db, 'test1');
         $this->assertEquals($responsearray, $assessment->schedule($params, $userid));
         // Check db.
         $querytable = $this->getConnection()->createQueryTable('properties', 'SELECT property_id, paper_title, start_date, end_date, exam_duration,
@@ -693,7 +693,7 @@ class assessmentmanagementtest extends unittestdatabase {
         $responsearray = $this->schedule_response_array();
         $params = $this->schedule_param_array();
         $userid = 1;
-        $assessment = new \api\assessmentmanagement($this->db);
+        $assessment = new \api\assessmentmanagement($this->db, 'test1');
         $responsearray['statuscode'] = 100;
         $responsearray['status'] = 'OK';
         $responsearray['id'] = 5;
@@ -714,7 +714,7 @@ class assessmentmanagementtest extends unittestdatabase {
         $responsearray = $this->schedule_response_array();
         $params = $this->schedule_param_array();
         $userid = 1;
-        $assessment = new \api\assessmentmanagement($this->db);
+        $assessment = new \api\assessmentmanagement($this->db, 'test1');
         $responsearray['statuscode'] = 218;
         $responsearray['status'] = 'Paper was not assigned any modules';
         $responsearray['id'] = null;
@@ -731,7 +731,7 @@ class assessmentmanagementtest extends unittestdatabase {
         $responsearray = $this->schedule_response_array();
         $params = $this->schedule_param_array();
         $userid = 1;
-        $assessment = new \api\assessmentmanagement($this->db);
+        $assessment = new \api\assessmentmanagement($this->db, 'test1');
         $responsearray['statuscode'] = 206;
         $responsearray['status'] = 'Assessment title is already in use';
         $responsearray['id'] = null;
@@ -749,7 +749,7 @@ class assessmentmanagementtest extends unittestdatabase {
         $responsearray = $this->delete_response_array();
         $params = $this->delete_param_array();
         $userid = 1;
-        $assessment = new \api\assessmentmanagement($this->db);
+        $assessment = new \api\assessmentmanagement($this->db, 'test1');
         $this->assertEquals($responsearray, $assessment->delete($params, $userid));
         // Check that the remaining properties are correct, when we delete a paper we actually jsut add a timestamp to the table
         // which makes creating a ficute to check against difficult so doing this instead
@@ -767,7 +767,7 @@ class assessmentmanagementtest extends unittestdatabase {
         $responsearray = $this->delete_response_array();
         $params = $this->delete_param_array();
         $userid = 1;
-        $assessment = new \api\assessmentmanagement($this->db);
+        $assessment = new \api\assessmentmanagement($this->db, 'test1');
         $responsearray['statuscode'] = 202;
         $responsearray['status'] = 'Paper does not exist';
         $responsearray['id'] = null;
@@ -777,7 +777,7 @@ class assessmentmanagementtest extends unittestdatabase {
         $params = array(
             "nodeid" => 1);
         $userid = 1;
-        $assessment = new \api\assessmentmanagement($this->db);
+        $assessment = new \api\assessmentmanagement($this->db, 'test1');
         $this->assertEquals($responsearray, $assessment->delete($params, $userid));
     }
     /**
@@ -789,7 +789,7 @@ class assessmentmanagementtest extends unittestdatabase {
         $responsearray = $this->delete_response_array();
         $params = $this->delete_param_array();
         $userid = 1;
-        $assessment = new \api\assessmentmanagement($this->db);
+        $assessment = new \api\assessmentmanagement($this->db, 'test1');
         $responsearray['statuscode'] = 203;
         $responsearray['id'] = null;
         $responsearray['status'] = 'Assessment not deleted, as has been taken by a user';

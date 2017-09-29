@@ -136,7 +136,7 @@ class gradebooktest extends unittestdatabase {
         $users[12345678] = array('raw_grade' => 60, 'adjusted_grade' => 62,
                     'classification' => 'Pass', 'username' => 'unit');
         $expected["ass1234"] = $users;
-        $this->assertEquals($expected, $gradebook->get_paper_gradebook('extpaper', "ass1234"));
+        $this->assertEquals($expected, $gradebook->get_paper_gradebook('extpaper', "ass1234", "test rogo api"));
         // Test get paper gradebook - ERROR not found.
         $this->assertFalse($gradebook->get_paper_gradebook('extpaper', "ass5678"));
     }
@@ -152,7 +152,7 @@ class gradebooktest extends unittestdatabase {
         $papers["ass1234"][12345678] = array('raw_grade' => 60, 'adjusted_grade' => 62,
                     'classification' => 'Pass', 'username' => 'unit');
         $expected["mod1234"] = $papers;
-        $this->assertEquals($expected, $gradebook->get_module_gradebook('extmodule', "mod1234"));
+        $this->assertEquals($expected, $gradebook->get_module_gradebook('extmodule', "mod1234", "test rogo api"));
         // Test get module gradebook - ERROR not found.
         $this->assertFalse($gradebook->get_module_gradebook('extmodule', "mod5678"));
     }

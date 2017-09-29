@@ -99,13 +99,19 @@ if ($update === false) {
   $new_paper_id = $copypaper['new_paper_id'];
 } else {
   $new_paper_id = param::required('currentpid', param::INT, param::FETCH_POST);
-  $properties = Paper_utils::get_paper_properties($new_paper_id, $mysqli);
-  $new_calendar_year = $properties['session'];
+  $properties = PaperProperties::get_paper_properties_by_id($new_paper_id, $mysqli, $string);
+  if ($properties->get_summative_lock() == 1) {
+    $msg = sprintf($string['furtherassistance'], $configObject->get('support_email'), $configObject->get('support_email'));
+    $notice->display_notice_and_exit(null, $string['paperlockedwarning'], $msg, $string['paperlockedwarning'], '../artwork/page_not_found.png', '#C00000', true, true);
+  }
+  $new_calendar_year = $properties->get_calendar_year();
   $properties = Paper_utils::get_paper_properties($paperid, $mysqli);
   $calendar_year = $properties['session'];
   $moduleIDs = Paper_utils::get_modules($new_paper_id, $mysqli);
 }
 
+//Killer question object
+$KillerQuestionsObj = new Killer_Question($paperid,$mysqli);
 if ($copytype == 'paperonly') {        // Copy the paper only!
 
   // Copy the question pointers (papers table)
@@ -148,6 +154,8 @@ if ($copytype == 'paperonly') {        // Copy the paper only!
 
     }
   }
+  // Copying all the killer questions
+  $KillerQuestionsObj->copy_killer_questions($new_paper_id);
 } else {    // Copy the paper and the questions.
   $mediadirectory = rogo_directory::get_directory('media');
 
@@ -265,6 +273,12 @@ if ($copytype == 'paperonly') {        // Copy the paper only!
         $addQuestion->bind_param('ssssssssisssssssissss', $q_type, $theme, $scenario, $leadin, $correct_fback, $incorrect_fback, $display_method, $notes, $userObject->get_user_ID(), $new_q_media, $q_media_width, $q_media_height, $bloom, $scenario_plain, $leadin_plain, $std, $new_status, $q_option_order, $score_method, $settings, $guid);
         $addQuestion->execute();
         $new_qids[] = $question_id = $mysqli->insert_id;
+        //making duplicate question a killer question
+        if($KillerQuestionsObj->is_killer_question($question)){
+          $copyKillerQuestion = new Killer_Question($new_paper_id,$mysqli);
+          $copyKillerQuestion->set_question($question_id);
+          $copyKillerQuestion->save();
+        }
         if ($q_type == 'enhancedcalc') $calculation_qid_map[$q_id] = $question_id;
         $addQuestion->close();
 
@@ -378,6 +392,7 @@ if ($copytype == 'paperonly') {        // Copy the paper only!
     $qData->free_result();
     $qData->close();
   }
+
   $result->free_result();
   $result->close();
 

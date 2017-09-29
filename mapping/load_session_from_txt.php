@@ -65,7 +65,7 @@ if (isset($_POST['submit'])) {
           $identifier++;
      
           $stmt = $mysqli->prepare("INSERT INTO sessions VALUES (NULL, ?, ?, ?, '', ?, NOW())");
-          $stmt->bind_param('siss', $identifier, $modID, $title, $session);
+          $stmt->bind_param('sisi', $identifier, $modID, $title, $session);
           $stmt->execute();
           $stmt->close();
           $session_flag = true;
@@ -79,7 +79,7 @@ if (isset($_POST['submit'])) {
           }
         
           $stmt = $mysqli->prepare("INSERT INTO objectives VALUES (?, ?, ?, ?, ?, ?)");
-          $stmt->bind_param('isissi', $obj_id, $separate_line, $modID, $identifier, $session, $obj_id);
+          $stmt->bind_param('isisii', $obj_id, $separate_line, $modID, $identifier, $session, $obj_id);
           $stmt->execute();
           $stmt->close();
           $obj_id++;

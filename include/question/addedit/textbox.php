@@ -26,6 +26,9 @@ $num_options = count($question->options);
 $columns = range(10, 120, 10);
 $rows = range(1, 15);
 $editors = array('plain' => $string['plaintext'], 'WYSIWYG' => $string['wysiwyg']);
+if($configObject->get_setting('core', 'paper_mathjax')) {
+  $editors['mathjax'] = $string['mathjax'];
+}
 $editor = $question->get_editor();
 $terms = $question->get_terms();
 

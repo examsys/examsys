@@ -291,11 +291,6 @@ pre {
 .defaultSkin table.mceLayout {
   margin-top: 6px;
 }
-.calc {
-  cursor: pointer;
-  width: 24px;
-  height: 24px;
-}
 #fire_exit {
   width: 30px;
   height: 30px;
@@ -309,7 +304,7 @@ pre {
   font-size: 90%;
   padding-left: 10px;
 }
-#overlay {
+#overlay, #info_overlay {
   display: none;
   position: absolute;
   left: 0;
@@ -320,7 +315,7 @@ pre {
   z-index: 1000;
   background: rgba(255,255,255,.5);
 }
-#submit_dialog {
+#submit_dialog, #info_submit_dialog{
   position: absolute;
   top: 100px;
   left: 100px;
@@ -329,15 +324,15 @@ pre {
   border: 3px solid #1958B7;
   background-color: white;
 }
-#submit_dialog_icon {
+#submit_dialog_icon, #info_submit_dialog_icon {
   float: left;
   margin: 10px 15px 10px 10px;
 }
-#submit_dialog_msg {
+#submit_dialog_msg, #info_submit_dialog_msg{
   margin: 10px 10px 10px 20px;
   text-align: left; 
 }
-#submit_dialog_buttons {
+#submit_dialog_buttons, #info_submit_dialog_buttons {
   position: absolute;
   bottom: 0;
   width: 100%;

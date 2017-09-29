@@ -22,6 +22,7 @@ properties:
     labs: "1"
     paper_type: "0"
     externalid: "123abc456"
+    externalsys: "test rogo api"
   -
     property_id: 3
     paper_title: "Test Formative 3 update"

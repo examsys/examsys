@@ -1,0 +1,38 @@
+users:
+  -
+    id: 1
+    surname: 'test name'
+    username: 'test_username'
+    password: 'password'
+
+properties:
+  -
+    property_id: 1
+    fullscreen: 1
+    bidirectional: 1
+
+  -
+      property_id: 2
+      fullscreen: 1
+      bidirectional: 1
+
+save_fail_log:
+  -
+    userid: 1
+    paperid: 1
+    screen: 1
+    ipaddress: '127.0.0.1'
+    failed: '1'
+    status: 'test'
+    request_url: 'Test request'
+    response_data: 'This is response data'
+
+  -
+    userid: 1
+    paperid: 2
+    screen: 1
+    ipaddress: '127.0.0.1'
+    failed: '1'
+    status: 'test'
+    request_url: 'Test request'
+    response_data: 'This is response data'

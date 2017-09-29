@@ -199,7 +199,7 @@ class paperutilstest extends unittestdatabase {
         $calendar_year = $new_calendar_year = '';
         $papercopy = PaperUtils::copyProperties($calendar_year, $new_calendar_year, $moduleIDs, $postparams);
         // Need require until mapping made a class.
-        $cfg_web_root = get_root_path() . '/';
+        $cfg_web_root = $this->config->get('cfg_web_root');
         require_once $cfg_web_root . 'include/mapping.inc';
         $old_course = getObjectives($papercopy['moduleIDs'], $papercopy['calendar_year'], 1, '', $this->db);
         $new_course = getObjectives($papercopy['moduleIDs'], $papercopy['new_calendar_year'], 1, '', $this->db);
@@ -222,7 +222,7 @@ class paperutilstest extends unittestdatabase {
         $calendar_year = $new_calendar_year = '';
         $papercopy = PaperUtils::copyProperties($calendar_year, $new_calendar_year, $moduleIDs, $postparams);
         // Need require until mapping made a class.
-        $cfg_web_root = get_root_path() . '/';
+        $cfg_web_root = $this->config->get('cfg_web_root');
         require_once $cfg_web_root . 'include/mapping.inc';
         // Fake getObjectives return. Ideally we would mock the CMAP response but that involves more rework.
         $old_course = array('A14ACE' => array(

@@ -5,6 +5,12 @@ academic_year:
   -
     calendar_year: 2016
     academic_year: "2016/17"
+  -
+    calendar_year: 2017
+    academic_year: "2017/18"
+  -
+    calendar_year: 2018
+    academic_year: "2018/19"
 properties:
   -
     property_id: 1
@@ -29,6 +35,7 @@ properties:
     labs: "1"
     paper_type: "0"
     externalid: "123abc456"
+    externalsys: "test rogo api"
   -
     property_id: 3
     paper_title: "Test create formative 3"
@@ -93,6 +100,7 @@ modules:
     schoolid: 1
     academic_year_start: "07/01"
     externalid: "abc123def"
+    sms: "test rogo api"
 schools:
   -
     id: 1
@@ -143,3 +151,18 @@ properties_modules:
   -
     property_id: 1
     idMod: 1
+oauth_clients:
+  -
+    client_id: 'test1'
+    client_secret: 'test'
+    redirect_uri: 'https://www.example.com'
+    user_id: 1
+external_systems:
+  -
+    id: 1
+    name: 'test rogo api'
+    type: 'api'
+external_systems_mapping:
+  -
+    ext_id: 1
+    client_id: 'test1'

@@ -29,7 +29,7 @@
  * @package
  */
 
-require '../include/sysadmin_auth.inc';
+require dirname(__DIR__) . '/include/sysadmin_auth.inc';
 
 $papers = array();
 $result = $mysqli->prepare("SELECT property_id, paper_title, DATE_FORMAT(start_date,'%d/%m/%Y') FROM properties WHERE paper_type = '2' AND start_date < NOW() AND deleted IS NULL ORDER BY property_id");

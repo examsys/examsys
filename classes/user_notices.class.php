@@ -80,6 +80,7 @@ Class user_notices extends RogoStaticSingleton {
       echo "<title>$title</title>\n";
       echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"{$rp}/css/body.css\" />\n";
       echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"{$rp}/css/notice.css\" />\n";
+      echo "<script type=\"text/javascript\" src=\"{$rp}/js/start.js\"></script>";
       echo "</head>\n<body>\n";
     }
     echo '<div class="notice">';

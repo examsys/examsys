@@ -24,11 +24,19 @@
  */
 
 require_once '../include/load_config.php';
+
+$language = LangUtils::getLang($cfg_web_root);
+// If supported lang pack not installed install them.
+if(!LangUtils::langPackInstalled($language)) {
+    InstallUtils::download_langpacks();
+}
+
 require_once '../include/auth.inc';
 require_once '../include/errors.php';
 require_once '../include/std_set_shared_functions.inc';
 require_once '../include/timezones.php';
 require_once dirname(__DIR__) . '/lang/' . $language . '/install/index.php';
+require_once dirname(__DIR__) . '/lang/' . $language . '/updates/version5.php';
 
 // Get the code version.
 $version = $configObject->getxml('version');
@@ -69,7 +77,7 @@ $old_version = $configObject->get('rogo_version');
   </table>
 <?php
 if (round($old_version,0) < 5) {
-  echo "<p style=\"margin-left:10px\">Rog&#333; $old_version is installed.<br /><br />Please use <strong><a href=\"/updates/version4.php\">/updates/version4.php</a></strong> before running /updates/version5.php</p>";
+  echo "<p style=\"margin-left:10px\">Rog&#333; $old_version is installed.<br /><br />Please updgrade to version 6.3.0 before proceeding with this upgrade.</p>";
   exit;
 }
 if (!isset($_POST['update'])) {
@@ -130,8 +138,8 @@ if (!isset($_POST['update'])) {
               </td>
           </tr>
       </table>
-      <div><label for="update_staff_help"><?php echo $string['updatestaffhelp']; ?></label> <input type="checkbox" value="" name="update_staff_help" checked="checked" /></div>
-      <div><label for="update_student_help"><?php echo $string['updatestudenthelp']; ?></label> <input type="checkbox" value="" name="update_student_help" checked="checked" /></div>
+      <div><label for="update_staff_help"><?php echo $string['updatestaffhelp']; ?></label> <input type="checkbox" name="update_staff_help" checked="checked" /></div>
+      <div><label for="update_student_help"><?php echo $string['updatestudenthelp']; ?></label> <input type="checkbox" name="update_student_help" checked="checked" /></div>
       <table class="h">
           <tr>
               <td>
@@ -142,7 +150,7 @@ if (!isset($_POST['update'])) {
               </td>
           </tr>
       </table>
-      <div><label for="update_translationpack"><?php echo $string['updatetranslationpack']; ?></label> <input type="checkbox" value="" name="update_translationpack" /></div>
+      <div><label for="update_translationpack"><?php echo $string['updatetranslationpack']; ?></label> <input type="checkbox" name="update_translationpack" /></div>
       <div class="submit"><input type="submit" name="update" value="<?php echo $string['startupdate']; ?>" class="ok" /></div>
   </form>
     <?php
@@ -159,10 +167,12 @@ if (!isset($_POST['update'])) {
     $cfg_db_charset = $configObject->get('cfg_db_charset');
   }
 
-  $mysqli = DBUtils::get_mysqli_link($configObject->get('cfg_db_host'), $_POST['mysql_admin_user'], $_POST['mysql_admin_pass'], $configObject->get('cfg_db_database'), $cfg_db_charset, $notice, $configObject->get('dbclass'), $configObject->get('cfg_db_port'));
+  $mysql_admin_user = param::required('mysql_admin_user', param::TEXT, param::FETCH_POST);
+  $mysql_admin_pass = param::required('mysql_admin_pass', param::TEXT, param::FETCH_POST);
+  $mysqli = DBUtils::get_mysqli_link($configObject->get('cfg_db_host'), $mysql_admin_user, $mysql_admin_pass, $configObject->get('cfg_db_database'), $cfg_db_charset, $notice, $configObject->get('dbclass'), $configObject->get('cfg_db_port'));
 
   if ($mysqli->connect_error) {
-    echo "<div>Failed to contect to MySQL using " . $_POST['mysql_admin_user'] . '' . $_POST['mysql_admin_pass'] . '</div>';
+    echo "<div>Failed to contect to MySQL using " . $mysql_admin_user . '</div>';
     echo "</body>";
     echo "</html>";
     exit;
@@ -199,53 +209,6 @@ if (!isset($_POST['update'])) {
   flush();
 
   $mysqli->autocommit(false);
-  // 01/05/2013 - Update the online help files.
-  if (isset($_POST['update_staff_help'])) {
-    $updater_utils->execute_query("TRUNCATE staff_help", true);
-
-    $file = file_get_contents('../install/staff_help.sql');
-    $mysqli->multi_query($file);
-    if ($mysqli->error) {
-      echo $string['showerror'] . "<br />";
-      exit();
-    }
-    $ext = '';
-    while ($mysqli->more_results()) {
-      $mysqli->next_result();
-      if ($mysqli->insert_id > 0) $ext = $ext . ' ' . $mysqli->insert_id;
-    }
-    // Ensure all help images are in the correct location.
-    $staffhelp = rogo_directory::get_directory('help_staff');
-    $staffhelp->create();
-    $staffhelp->copy_from_default();
-    // Fix path of help file images as may not be in root web dir.
-    InstallUtils::correct_staff_path();
-    echo "<li>LOADED staff_help: " . $ext . "</li>\n";
-  }
-
-  if (isset($_POST['update_student_help'])) {
-    $updater_utils->execute_query("TRUNCATE student_help", true);
-
-    $file = file_get_contents('../install/student_help.sql');
-    $mysqli->multi_query($file);
-    if ($mysqli->error) {
-      echo $string['showerror'] . "<br />";
-      exit();
-    }
-    $ext = '';
-    while ($mysqli->more_results()) {
-      $mysqli->next_result();
-      if ($mysqli->insert_id > 0) $ext = $ext . ' ' . $mysqli->insert_id;
-    }
-    // Ensure all help images are in the correct location.
-    $studenthelp = rogo_directory::get_directory('help_student');
-    $studenthelp->create();
-    $studenthelp->copy_from_default();
-    // Fix path of help file images as may not be in root web dir.
-    InstallUtils::correct_student_path();
-    echo "<li>LOADED student_help: " . $ext . "</li>\n";
-  }
-  $mysqli->commit();
 
   // 01/05/2013
   if (!$updater_utils->does_column_exist('users', 'password_expire')) {
@@ -375,7 +338,7 @@ if (!isset($_POST['update'])) {
 
   // 17/05/2013 (brzsw) - Add cache_paper_stats table
   if (!$updater_utils->does_table_exist('cache_paper_stats')) {
-    $sql = "CREATE TABLE cache_paper_stats (paperID mediumint(8) unsigned not null, cached int unsigned, max_mark decimal(10,5), max_percent decimal(10,5), min_mark decimal(10,5), min_percent decimal(10,5), q1 decimal(10,5), q2 decimal(10,5), q3 decimal(10,5), mean_mark decimal(10,5), mean_percent decimal(10,5), stdev_mark decimal(10,5), stdev_percent decimal(10,5), UNIQUE KEY `paperID` (`paperID`)) ENGINE=InnoDB";
+    $sql = "CREATE TABLE cache_paper_stats (paperID mediumint(8) unsigned not null, cached int unsigned, max_mark decimal(10,5), max_percent decimal(10,5), min_mark decimal(10,5), min_percent decimal(10,5), q1 decimal(10,5), q2 decimal(10,5), q3 decimal(10,5), mean_mark decimal(10,5), mean_percent decimal(10,5), stdev_mark decimal(10,5), stdev_percent decimal(10,5), UNIQUE KEY `paperID` (`paperID`))";
     $updater_utils->execute_query($sql, true);
 
     $sql = 'GRANT SELECT, INSERT, UPDATE, DELETE ON ' . $cfg_db_database . '.cache_paper_stats TO \'' . $cfg_db_staff_user . '\'@\'' . $cfg_web_host . '\'';
@@ -391,7 +354,7 @@ if (!isset($_POST['update'])) {
 
   // 20/05/2013 (brzsw) - Add cache_student_paper_marks table
   if (!$updater_utils->does_table_exist('cache_student_paper_marks')) {
-    $sql = "CREATE TABLE cache_student_paper_marks (paperID mediumint(8) unsigned not null, userID int(10) unsigned, mark decimal(10,5), percent decimal(10,5)) ENGINE=InnoDB";
+    $sql = "CREATE TABLE cache_student_paper_marks (paperID mediumint(8) unsigned not null, userID int(10) unsigned, mark decimal(10,5), percent decimal(10,5))";
     $updater_utils->execute_query($sql, true);
 
     $sql = "ALTER TABLE cache_student_paper_marks ADD CONSTRAINT pk_paperID_userID PRIMARY KEY (paperID, userID)";
@@ -407,7 +370,7 @@ if (!isset($_POST['update'])) {
 
   // 20/05/2013 (brzsw) - Add cache_median_question_marks table
   if (!$updater_utils->does_table_exist('cache_median_question_marks')) {
-    $sql = "CREATE TABLE cache_median_question_marks (paperID mediumint(8) unsigned not null, questionID int(10) unsigned, median decimal(10,5), mean decimal(10,5) ) ENGINE=InnoDB";
+    $sql = "CREATE TABLE cache_median_question_marks (paperID mediumint(8) unsigned not null, questionID int(10) unsigned, median decimal(10,5), mean decimal(10,5) )";
     $updater_utils->execute_query($sql, true);
 
     $sql = "ALTER TABLE cache_median_question_marks ADD CONSTRAINT pk_paperID_questionID PRIMARY KEY (paperID, questionID)";
@@ -435,11 +398,7 @@ if (!isset($_POST['update'])) {
   }
 
   // 03/06/2013 - nazrji - Add VLE APIs to config file.
-  if ($configObject->get('cfg_company') == 'University of Nottingham') {
-    $new_lines = array("\n// Objectives mapping\n", "\$vle_apis = array('UoNCM' => '', 'NLE' => '');\n");
-  } else {
-    $new_lines = array("\n// Objectives mapping\n", "\$vle_apis = array();\n");
-  }
+  $new_lines = array("\n// Objectives mapping\n", "\$vle_apis = array();\n");
   $target_line = '$cfg_password_expire';
   $updater_utils->add_line($string, '$vle_apis', $new_lines, 80, $cfg_web_root, $target_line, 1);
 
@@ -481,7 +440,7 @@ if (!isset($_POST['update'])) {
 
   // 28/06/2013 (brzsw) - chaning the standards setting tables
   if (!$updater_utils->does_table_exist('std_set')) {
-    $sql = "CREATE TABLE std_set (id int unsigned not null primary key auto_increment, setterID int(10) unsigned not null, paperID mediumint(8) unsigned not null, std_set datetime, method enum('Modified Angoff','Angoff (Yes/No)','Ebel','Hofstee'), group_review text, pass_score decimal(10,6), distinction_score decimal(10,6)) ENGINE=InnoDB";
+    $sql = "CREATE TABLE std_set (id int unsigned not null primary key auto_increment, setterID int(10) unsigned not null, paperID mediumint(8) unsigned not null, std_set datetime, method enum('Modified Angoff','Angoff (Yes/No)','Ebel','Hofstee'), group_review text, pass_score decimal(10,6), distinction_score decimal(10,6))";
     $updater_utils->execute_query($sql, true);
 
     $sql = 'GRANT SELECT, INSERT, UPDATE, DELETE ON ' . $cfg_db_database . '.std_set TO \'' . $cfg_db_staff_user . '\'@\'' . $cfg_web_host . '\'';
@@ -493,7 +452,7 @@ if (!isset($_POST['update'])) {
     $sql = 'GRANT SELECT ON ' . $cfg_db_database . '.std_set TO \'' . $cfg_db_student_user . '\'@\'' . $cfg_web_host . '\'';
     $updater_utils->execute_query($sql, true);
 
-    $sql = "CREATE TABLE std_set_questions (id int unsigned not null primary key auto_increment, std_setID int unsigned not null, questionID int(11) unsigned not null, rating text) ENGINE=InnoDB";
+    $sql = "CREATE TABLE std_set_questions (id int unsigned not null primary key auto_increment, std_setID int unsigned not null, questionID int(11) unsigned not null, rating text)";
     $updater_utils->execute_query($sql, true);
 
     $sql = 'GRANT SELECT, INSERT, UPDATE, DELETE ON ' . $cfg_db_database . '.std_set_questions TO \'' . $cfg_db_staff_user . '\'@\'' . $cfg_web_host . '\'';
@@ -624,7 +583,7 @@ if (!isset($_POST['update'])) {
     }
 
     if (!$updater_utils->does_table_exist('hofstee')) {
-      $sql = "CREATE TABLE hofstee (std_setID int unsigned not null, whole_numbers tinyint, x1_pass tinyint, x2_pass tinyint, y1_pass tinyint, y2_pass tinyint, x1_distinction tinyint, x2_distinction tinyint, y1_distinction tinyint, y2_distinction tinyint, marking tinyint) ENGINE=InnoDB";
+      $sql = "CREATE TABLE hofstee (std_setID int unsigned not null, whole_numbers tinyint, x1_pass tinyint, x2_pass tinyint, y1_pass tinyint, y2_pass tinyint, x1_distinction tinyint, x2_distinction tinyint, y1_distinction tinyint, y2_distinction tinyint, marking tinyint)";
       $updater_utils->execute_query($sql, true);
 
       $sql = 'GRANT SELECT, INSERT, UPDATE, DELETE ON ' . $cfg_db_database . '.hofstee TO \'' . $cfg_db_staff_user . '\'@\'' . $cfg_web_host . '\'';
@@ -772,7 +731,7 @@ CREATE TABLE `question_statuses` (
   `change_locked` tinyint(3) NOT NULL DEFAULT '1',
   `validate` tinyint(3) NOT NULL DEFAULT '1',
   `display_order` tinyint(3) unsigned NOT NULL DEFAULT '255',
-  PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET={$cfg_db_charset};
+  PRIMARY KEY (`id`)) DEFAULT CHARSET={$cfg_db_charset};
 QUERY;
     $updater_utils->execute_query($sql, true);
 
@@ -826,7 +785,7 @@ CREATE TABLE `sys_updates` (
   `name` varchar(255),
   `updated` datetime NOT NULL,
   KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=0;
+) AUTO_INCREMENT=0;
 QUERY;
     $updater_utils->execute_query($sql, true);
     
@@ -858,9 +817,60 @@ QUERY;
   }
 
   $mysqli->commit();
+  
+  // 01/05/2013 - Update the online help files.
+  $update_staff_help = param::optional('update_staff_help', false, param::BOOLEAN, param::FETCH_POST);
+  if (!is_null($update_staff_help)) {
+    $updater_utils->execute_query("TRUNCATE staff_help", true);
+
+    $file = file_get_contents('../install/staff_help.sql');
+    $mysqli->multi_query($file);
+    if ($mysqli->error) {
+      echo $string['showerror'] . "<br />";
+      exit();
+    }
+    $ext = '';
+    while ($mysqli->more_results()) {
+      $mysqli->next_result();
+      if ($mysqli->insert_id > 0) $ext = $ext . ' ' . $mysqli->insert_id;
+    }
+    // Ensure all help images are in the correct location.
+    $staffhelp = rogo_directory::get_directory('help_staff');
+    $staffhelp->create();
+    $staffhelp->copy_from_default();
+    // Fix path of help file images as may not be in root web dir.
+    InstallUtils::correct_staff_path();
+    echo "<li>LOADED staff_help: " . $ext . "</li>\n";
+  }
+
+  $update_student_help = param::optional('update_student_help', false, param::BOOLEAN, param::FETCH_POST);
+  if ($update_student_help) {
+    $updater_utils->execute_query("TRUNCATE student_help", true);
+
+    $file = file_get_contents('../install/student_help.sql');
+    $mysqli->multi_query($file);
+    if ($mysqli->error) {
+      echo $string['showerror'] . "<br />";
+      exit();
+    }
+    $ext = '';
+    while ($mysqli->more_results()) {
+      $mysqli->next_result();
+      if ($mysqli->insert_id > 0) $ext = $ext . ' ' . $mysqli->insert_id;
+    }
+    // Ensure all help images are in the correct location.
+    $studenthelp = rogo_directory::get_directory('help_student');
+    $studenthelp->create();
+    $studenthelp->copy_from_default();
+    // Fix path of help file images as may not be in root web dir.
+    InstallUtils::correct_student_path();
+    echo "<li>LOADED student_help: " . $ext . "</li>\n";
+  }
+  $mysqli->commit();
 
   // Update language packs.
-  if (isset($_POST['update_translationpack'])) {
+  $update_translationpack = param::optional('update_translationpack', false, param::BOOLEAN, param::FETCH_POST);
+  if ($update_translationpack) {
     InstallUtils::download_langpacks();
   }
 
@@ -870,10 +880,10 @@ QUERY;
 
   // End of updates -----------------------------------------------------------------
 
-  // Update composer and dependencies.
+  // Update npm and dependencies.
   try {
-    $composer_method = composer_utils::INSTALL_NODEV;
-    composer_utils::setup($composer_method);
+    $npm_method = npm_utils::INSTALL_NODEV;
+    npm_utils::setup($npm_method);
   } catch (Exception $e) {
       echo "<li class=\"error\">" . $e->getMessage() . "</li>";
   }
@@ -891,6 +901,11 @@ QUERY;
   echo "<div>Ended at " . date("H:i:s") . "</div>";
   echo "\n<h2>" . $string['actionrequired'] . "</h2>\n<ol>";
   echo "\n<li>" . $string['readonly'] . "</li>\n";
-  echo "</ol>\n<div>" . $string['finished'] . "</div>\n<div style=\"text-align:center\"><input type=\"button\" class=\"ok\" value=\" " . $string['home'] . " \" onclick=\"window.location('" . $configObject->get('cfg_root_path') . "/')\" /></div><blockquote>\n";
+  echo "</ol>\n<div>" . $string['finished'] . "</div>\n<div style=\"text-align:center\"><input type=\"button\" class=\"ok\" value=\" " . $string['home'] . " \" onclick=\"go_home()\" /></div><blockquote>\n";
 }
 ?>
+<script>
+function go_home() {
+  window.location='../index.php';
+}
+</script>

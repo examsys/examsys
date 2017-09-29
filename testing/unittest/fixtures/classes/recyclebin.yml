@@ -1,0 +1,71 @@
+users:
+  -
+    id: 1
+    surname: 'test name'
+    username: 'test_username'
+    password: 'password'
+
+faculty:
+  -
+    id: 1
+    code: 'a100'
+    name: 'computer Science'
+    deleted: '2015-11-03 01:56:26'
+
+folders:
+  -
+    id: 1
+    ownerID: 1
+    name: 'test_folder'
+    deleted: '2015-11-03 01:56:26'
+
+schools:
+  -
+    id: 1
+    school: 'computer Science'
+    facultyID: 1
+    deleted: '2015-11-03 01:56:26'
+
+courses:
+  -
+    id: 1
+    name: 'computer Science'
+    deleted: '2015-11-03 01:56:26'
+    schoolid: '1'
+
+question_statuses:
+  -
+    id: 1
+    name: 'Normal'
+    exclude_marking: 0
+    retired: 0
+    is_default: 0
+    change_locked: 1
+    validate: 1
+    display_order: 1
+
+questions:
+  -
+    q_id: 1
+    q_type: 'blank'
+    leadin: 'Test question'
+    ownerID: 1
+    deleted: '2015-11-03 01:56:26'
+    status: 1
+
+properties:
+  -
+    property_id: 1
+    fullscreen: 1
+    bidirectional: 0
+    paper_ownerID: 1
+    deleted: '2015-11-03 01:56:26'
+
+modules:
+  -
+    id: 1
+    fullname: 'Module test'
+    mod_deleted: '2015-11-03 01:56:26'
+    map_level: 0
+    academic_year_start: '2017'
+

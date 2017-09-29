@@ -152,16 +152,20 @@ Class Logger {
   /**
    * Record application warning
    * @param integer $userid id of user that had the error
-   * @param $string $type type of error
-   * @param $string $errorstring the error
-   * @param $string $errorfile the file
+   * @param string $type type of error
+   * @param string $errorstring the error
+   * @param string $errorfile the file
    * @param integer $errorline the line number
+   * @param array|string $variables variables to log
    */
-  public function record_application_warning($userid, $type, $errorstring, $errorfile, $errorline) {
-    $log_error = $this->_mysqli->prepare("INSERT INTO sys_errors (id, occurred, userID, auth_user, errtype, errstr, errfile, errline) 
-        VALUES (NULL, NOW(), ?, ?, ?, ?, ?, ?)");
+  public function record_application_warning($userid, $type, $errorstring, $errorfile, $errorline, $variables = '') {
+    if ($variables != '' and !is_string($variables)) {
+        $variables = base64_encode(serialize($variables));
+    }
+    $log_error = $this->_mysqli->prepare("INSERT INTO sys_errors (id, occurred, userID, auth_user, errtype, errstr, errfile, errline, variables) 
+        VALUES (NULL, NOW(), ?, ?, ?, ?, ?, ?, ?)");
     $errortype = 'Application Warning';
-    $log_error->bind_param('isssss', $userid, $type, $errortype, $errorstring, $errorfile, $errorline);
+    $log_error->bind_param('issssss', $userid, $type, $errortype, $errorstring, $errorfile, $errorline, $variables);
     $log_error->execute();
     $log_error->close();
   }

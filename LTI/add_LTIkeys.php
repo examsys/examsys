@@ -26,14 +26,15 @@ require '../include/sysadmin_auth.inc';
 require_once 'ims-lti/UoN_LTI.php';
 $lti = new UoN_LTI();
 $lti->init_lti0($mysqli);
-if (isset($_POST['submit'])) {
-  $ltiname = trim($_POST['ltiname']);
-  $ltikey = trim($_POST['ltikey']);
-  $ltisec = trim($_POST['ltisec']);
-  $lticontext = trim($_POST['lticontext']);
+$submit = param::optional('submit', null, param::TEXT, param::FETCH_POST);
+if (!is_null($submit)) {
+  $ltiname = trim(param::optional('ltiname', null, param::TEXT, param::FETCH_POST));
+  $ltikey = trim(param::optional('ltikey', null, param::TEXT, param::FETCH_POST));
+  $ltisec = trim(param::optional('ltisec', null, param::TEXT, param::FETCH_POST));
+  $lticontext = trim(param::optional('lticontext', null, param::TEXT, param::FETCH_POST));
   $insert_id = $lti->add_lti_key($ltiname, $ltikey, $ltisec, $lticontext);
   header("location: lti_keys_list.php");
-	exit();
+  exit();
 } else {
   ?>
 <!DOCTYPE html>
@@ -90,7 +91,7 @@ if (isset($_POST['submit'])) {
 
   <br/>
   <div align="center">
-    <form id="theform" name="add_LTIkeys" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>" autocomplete="off">
+      <form id="theform" name="add_LTIkeys" method="post" action="<?php echo url::fromGlobals(); ?>" autocomplete="off">
       <table>
         <tr>
           <td class="field"><?php echo $string['name']; ?></td>

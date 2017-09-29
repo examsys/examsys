@@ -276,19 +276,7 @@ function displayQuestion($q_id, $theme, $scenario, $leadin, $q_type, $correct, $
   }
 }
 
-$exclude = '';
-if ($_GET['complete'] == 1) {
-  $result = $mysqli->prepare("SELECT userID, COUNT(id) AS answer_no FROM log3 WHERE q_paper = ? AND started >= ? AND started <= ? GROUP BY userID");
-  $result->bind_param('iss', $paperID, $startdate, $enddate);
-  $result->execute();
-  $result->bind_result($tmp_username, $answer_no);
-  while ($result->fetch()) {
-    if ($answer_no < $number_of_questions or $answer_no > $number_of_questions) {
-      $exclude .= ' AND log3.userID != "' . $tmp_username . '"';
-    }
-  }
-  $result->close();
-}
+$exclude = param::optional('complete', false, param::BOOLEAN, param::FETCH_GET);
 
 $paper = str_replace('&', '&amp;', $propertyObj->get_paper_title());
 $number_of_questions = $propertyObj->get_question_no();
@@ -311,7 +299,7 @@ echo '<w:body><wx:sect><wx:sub-section>';
 echo '<w:p><w:pPr><w:pStyle w:val="Heading1"/></w:pPr><w:r><w:t>' . StringUtils::wordToUtf8($paper) . '</w:t></w:r></w:p>';
 
 $log_array = array();
-$hits = get_quantitative_log_data($paperID, $_GET['repcourse'], $startdate, $enddate, $exclude, $log_array, $mysqli);
+$hits = get_quantitative_log_data($paperID, $_GET['repcourse'], $startdate, $enddate, $exclude, $log_array, $mysqli, $number_of_questions);
 
 $table_on = 0;
 

@@ -22,4 +22,5 @@ $string['createcourse'] = 'Create new Course';
 $string['bulkcourseimport'] = 'Bulk Course Import';
 $string['editcourse'] = 'Edit Course';
 $string['deletecourse'] = 'Delete Course';
+$string['admintools'] = 'Administrative Tools';
 ?>

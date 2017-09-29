@@ -1,0 +1,144 @@
+<div id="calc" class="calc" onload="nb();" onkeydown="return checkButton(event);" onkeyup="return checkShift(event);">
+  <div align="center" style="margin-top:6px">
+    <table>
+      <tr>
+          <td colspan="5">
+            <form name="calc" onsubmit="return false;">
+              <input id="ans" type="text" size="20" name="display" readonly />
+            </form>
+          </td>
+      </tr>
+      <tr class="spaced">
+          <td colspan="5" class="trigmode">
+              <input type="radio" id="trigmode_deg" name="trigmode" value="deg" checked="checked" class="offscreen" />
+              <label for="trigmode_deg" id="lab_deg" class="label-button selected" onclick="changeTrigMode(this)">Deg</label>
+              <input type="radio" id="trigmode_rad" name="trigmode" value="rad" class="offscreen" />
+              <label for="trigmode_rad" id="lab_rad" class="label-button" onclick="changeTrigMode(this)">Rad</label>
+              <input type="radio" id="trigmode_grad" name="trigmode" value="grad" class="offscreen" />
+              <label for="trigmode_grad" id="lab_grad" class="label-button" onclick="changeTrigMode(this)">Grad</label>
+              <label id="lab_off" class="label-button off">Off</label>
+          </td>
+      </tr>
+      <tr class="spaced">
+          <td><div class="b"><a href="javascript: shifted(P)" class="b1">asin</a></div></td>
+          <td><div class="b"><a href="javascript: shifted(rb)" class="b1">acos</a></div></td>
+          <td><div class="b"><a href="javascript: shifted(gb)" class="b1">atan</a></div></td>
+          <td><div class="b"><a href="javascript: unShifted(X)" class="b1">ln</a></div></td>
+          <td><div class="b"><a href="javascript: unShifted(eb)" class="b1">log</a></div></td>
+      </tr>
+
+      <tr>
+          <td><div class="b"><a href="javascript: unShifted(P)" class="b1">sin</a></div></td>
+          <td><div class="b"><a href="javascript: unShifted(rb)" class="b1">cos</a></div></td>
+          <td><div class="b"><a href="javascript: unShifted(gb)" class="b1">tan</a></div></td>
+          <td><div class="b"><a id="btn_hyp" href="javascript: qb(!b)" class="b1">hyp</a></div></td>
+          <td><div class="b"><a href="javascript: shifted(eb)" class="b1">&nbsp;10<sup><i><span style="font-family:'Times New Roman',serif; font-size:130%; padding-left:2px">x</span></i></sup></a></div></td>
+      </tr>
+      <tr>
+          <td><div class="b"><a href="javascript: shifted(xb)" class="b1">%</a></div></td>
+          <td><div class="b"><a href="javascript: shifted(Lb)" class="b1" style="font-family:'Times New Roman'"><sup><i>x</i></sup>&radic;</a></div></td>
+          <td><div class="b"><a href="javascript: sb()" class="b1" style="font-family:'Times New Roman'">&radic;</a></div></td>
+          <td><div class="b"><a href="javascript: shifted(jb)" class="b1"><span style="font-family:'Times New Roman',serif; font-size:150%">&pi;</span></a></div></td>
+          <td><div class="b"><a href="javascript: shifted(X)" class="b1">&nbsp;e<sup><i><span style="font-family:'Times New Roman',serif; font-size:130%; padding-left:2px">x</span></i></sup></a></div></td>
+      </tr>
+      <tr>
+          <td><div class="b"><a href="javascript: Hb()" class="b1"><span style="font-family:'Times New Roman'; font-size:150%"><i>x</i></span><span style="font-size:90%; padding-left:1px"><sup>2</sup></span></a></div></td>
+          <td><div class="b"><a href="javascript: cube()" class="b1"><span style="font-family:'Times New Roman'; font-size:150%"><i>x</i></span><span style="font-size:90%; padding-left:1px"><sup>3</sup></span></a></div></td>
+          <td><div class="b"><a href="javascript: unShifted(Lb)" class="b1">&nbsp;<span style="font-family:'Times New Roman',serif; font-size:150%"><i>x</i></span><span style="font-size:90%; padding-left:1px"><sup><i>y</i></sup></span></a></div></td>
+          <td><div class="b"><a href="javascript: unShifted(ub)" class="b1">1/<span style="font-family:'Times New Roman',serif; font-size:110%"><i>x</i></span></a></div></td>
+          <td><div class="b"><a href="javascript: shifted(ub)" class="b1"><span style="font-family:'Times New Roman',serif; font-size:150%"><i>x</i></span>!</a></div></td>
+      </tr>
+      <tr class="spaced">
+        <td>
+          <div class="b"><a href="javascript: bb()" class="b2">&plusmn;</a></div>
+        </td>
+        <td>
+          <div class="b"><a href="javascript: pb()" class="b2">(</a></div>
+        </td>
+        <td>
+          <div class="b"><a href="javascript: S()" class="b2">)</a></div>
+        </td>
+        <td>
+          <div class="b"><a href="javascript: Bb()" class="ac">CE</a></div>
+        </td>
+        <td>
+          <div class="b"><a href="javascript: Mb()" class="ac">AC</a></div>
+        </td>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div class="b"><a href="javascript: Z(7)" class="b2">7</a></div>
+        </td>
+        <td>
+          <div class="b"><a href="javascript: Z(8)" class="b2">8</a></div>
+        </td>
+        <td>
+          <div class="b"><a href="javascript: Z(9)" class="b2">9</a></div>
+        </td>
+        <td>
+          <div class="b"><a href="javascript: cb('/')" class="b2">&divide;</a></div>
+        </td>
+        <td>
+          <div class="b"><a href="javascript: db()" class="b2 memBut">M+</a></div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div class="b"><a href="javascript: Z(4)" class="b2">4</a></div>
+        </td>
+        <td>
+          <div class="b"><a href="javascript: Z(5)" class="b2">5</a></div>
+        </td>
+        <td>
+          <div class="b"><a href="javascript: Z(6)" class="b2">6</a></div>
+        </td>
+        <td>
+          <div class="b"><a href="javascript: cb('*')" class="b2">&times;</a></div>
+        </td>
+        <td>
+          <div class="b"><a href="javascript: Ab()" class="b2 memBut">Min</a></div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div class="b"><a href="javascript: Z(1)" class="b2">1</a></div>
+        </td>
+        <td>
+          <div class="b"><a href="javascript: Z(2)" class="b2">2</a></div>
+        </td>
+        <td>
+          <div class="b"><a href="javascript: Z(3)" class="b2">3</a></div>
+        </td>
+        <td>
+          <div class="b"><a href="javascript: cb('-')" class="b2">-</a></div>
+        </td>
+        <td>
+          <div class="b"><a id="btn_mr" href="javascript: V()" class="b2 memBut">MR</a></div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div class="b"><a href="javascript: Z(0)" class="b2">0</a></div>
+        </td>
+        <td>
+          <div class="b"><a href="javascript: Cb('+')" class="b2">.</a></div>
+        </td>
+        <td>
+          <div class="b"><a href="javascript: unShifted(xb)" class="b2">=</a></div>
+        </td>
+        <td>
+          <div class="b"><a href="javascript: cb('+')" class="b2">+</a></div>
+        </td>
+        <td>
+          <div class="b"><a href="javascript: unShifted(jb)" class="b2">EXP</a></div>
+        </td>
+      </tr>
+      <tr class="spaced">
+        <td colspan="5" style="text-align:right; font-family:Arial,sans-serif; font-size:7pt; color:black">
+          www.calculator.org
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>

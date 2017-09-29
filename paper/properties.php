@@ -23,7 +23,6 @@
 * @copyright Copyright (c) 2014 The University of Nottingham
 * @package
 */
-
 require_once '../include/staff_auth.inc';
 require_once '../include/errors.php';
 require_once '../include/add_edit.inc';  // to clear MS Office tags
@@ -1331,30 +1330,29 @@ if ($properties->get_paper_type() != '4' and $properties->get_paper_type() != '5
     $folder_details->close();
     
     // External system details.
-    $sms = \plugins\plugins_sms::get_sms($mysqli);
-    if ($sms !== false) {
-        echo "</select>\n</td></tr>\n";
-        if ($userObject->has_role('SysAdmin')) {
-            // Sys admins can edit.
-            echo "<tr><td>" . $string['externalsys'] . "</td><td><select name=\"externalsys\">";
-            echo "<option value=\"\"></option>\n";
-            foreach ($sms as $s) {
-                if ($s == $properties->get_externalsys()) {
-                  $selected = "selected";
-                } else {
-                  $selected = "";
-                }
-                echo "<option value=\"$s\" $selected>$s</option>\n";
+    $external = new \external_systems();
+    $extsys = $external->get_all_externalsystems();
+    echo "</select>\n</td></tr>\n";
+    if ($userObject->has_role('SysAdmin')) {
+        // Sys admins can edit.
+        echo "<tr><td>" . $string['externalsys'] . "</td><td><select name=\"externalsys\">";
+        echo "<option value=\"\"></option>\n";
+        foreach ($extsys as $i => $s) {
+            if ($s == $properties->get_externalsys()) {
+              $selected = "selected";
+            } else {
+              $selected = "";
             }
-            echo "</select></td></tr>";
-            echo "<tr><td>" . $string['externalid'] . "</td><td><input type=\"text\" size=\"30\" maxlength=\"255\" name=\"externalid\" value=\"" . $properties->get_externalid() . "\"></td></tr>";
-        } else {
-            // Non sys admins can only view.
-          echo "<tr><td>" . $string['externalid'] . "</td><td>" . $properties->get_externalid() . "</td></tr>";
-          echo "<tr><td>" . $string['externalsys']. "</td><td>" . $properties->get_externalsys() . "</td></tr>";
+            echo "<option value=\"$s\" $selected>$s</option>\n";
         }
-    echo "<tr><td colspan=\"4\">&nbsp;</td></tr>\n";
+        echo "</select></td></tr>";
+        echo "<tr><td>" . $string['externalid'] . "</td><td><input type=\"text\" size=\"30\" maxlength=\"255\" name=\"externalid\" value=\"" . $properties->get_externalid() . "\"></td></tr>";
+    } else {
+        // Non sys admins can only view.
+      echo "<tr><td>" . $string['externalid'] . "</td><td>" . $properties->get_externalid() . "</td></tr>";
+      echo "<tr><td>" . $string['externalsys']. "</td><td>" . $properties->get_externalsys() . "</td></tr>";
     }
+    echo "<tr><td colspan=\"4\">&nbsp;</td></tr>\n";
     if ($properties->get_paper_type() == '4') {
       echo '<input type="hidden" name="bgcolor" value="' . $properties->get_bgcolor() . '" />';
       echo '<input type="hidden" name="fgcolor" value="' . $properties->get_fgcolor() . '" />';

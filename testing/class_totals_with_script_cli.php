@@ -25,7 +25,8 @@
 * @package
 */
 
-include_once '../include/load_config.php';
+include_once dirname(__DIR__) . '/include/load_config.php';
+$language = LangUtils::getLang($cfg_web_root);
 require_once 'classes/class_totals.php';
 
 $cfg_web_host = $configObject->get('cfg_web_host');
@@ -76,9 +77,11 @@ $end_dateSQL = 'NOW()';
 $start_dateSQL = 'SUBDATE(NOW(), INTERVAL 1 DAY)';
 $server = 'https://' . $cfg_web_host . '/';
 $class_totals = new class_totals();
-
+$configObject->db = $mysqli;
+$userObject = new UserObject($configObject, $configObject->db);
+$userObject->load($userid);
 // Process the papers in range checking the totals.
-$class_totals->process_papers($mysqli, $cfg_cron_user, $cfg_cron_passwd, $rootpath, $userid, $start_dateSQL, $end_dateSQL, $server);
+$class_totals->process_papers($configObject->db, $cfg_cron_user, $cfg_cron_passwd, $rootpath, $userid, $start_dateSQL, $end_dateSQL, $server, $string, $userObject);
 // Get any failures.
 $status = 'failure';
 $testresult = $mysqli->prepare("SELECT user_id, paper_id, errors FROM class_totals_test_local WHERE status = ? and user_id = $userid");

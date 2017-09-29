@@ -337,7 +337,7 @@ function display_question($configObject, &$question, $paper_type, $calculator, $
   if ($question['q_type'] != 'info' and $question['q_type'] != 'sct') {
     if ($question['scenario'] != '' and $question['q_type'] != 'extmatch' and $question['q_type'] != 'matrix' and $question['q_type'] != 'likert' and $question['q_type'] != 'enhancedcalc') {
       echo '<tr><td class="q_no">' . $question['assigned_number'] . '.&nbsp;';
-      if ($calculator == 1) echo '<br /><img class="calc" src="../artwork/calc.png" alt="' . $string['calculator'] . '" />';
+      if ($calculator == 1) echo '<br /><img class="sciCalculator" src="../artwork/calc.png" alt="' . $string['calculator'] . '" />';
       echo "</td><td>";
       if ($question['notes'] != '') echo '<p class="note"><img src="../artwork/notes_icon.gif" width="16" height="16" alt="' . $string['note'] . '" />&nbsp;<strong>' . $string['note'] . ':</strong>&nbsp;' . $question['notes'] . '</p>';
       echo $question['scenario'] . "<br />\n<br />";
@@ -346,7 +346,7 @@ function display_question($configObject, &$question, $paper_type, $calculator, $
     if ($question['q_media'] != '' and $question['q_type'] != 'hotspot' and $question['q_type'] != 'labelling' and $question['q_type'] != 'flash' and $question['q_type'] != 'extmatch' and $question['q_type'] != 'area' and $question['q_type'] != 'enhancedcalc') {
       if ($li_set == 0) {
         echo '<tr><td class="q_no">' . $question['assigned_number'] . '.&nbsp;';
-        if ($calculator == 1) echo '<br /><img class="calc" src="../artwork/calc.png" alt="' . $string['calculator'] . '" />';
+        if ($calculator == 1) echo '<br /><img class="sciCalculator" src="../artwork/calc.png" alt="' . $string['calculator'] . '" />';
         echo '</td><td>';
       }
       echo '<p align="center">' . display_media($question['q_media'], $question['q_media_width'], $question['q_media_height'], '') . "</p>\n";
@@ -355,7 +355,7 @@ function display_question($configObject, &$question, $paper_type, $calculator, $
     if ($question['q_type'] != 'likert') {
       if ($li_set == 0) {
         echo '<tr><td class="q_no">' . $question['assigned_number'] . '.&nbsp;';
-        if ($calculator == 1) echo '<br /><img class="calc" src="../artwork/calc.png" alt="' . $string['calculator'] . '" />';
+        if ($calculator == 1) echo '<br /><img class="sciCalculator" src="../artwork/calc.png" alt="' . $string['calculator'] . '" />';
         echo '</td><td>';
       }
       $li_set = 1;
@@ -492,7 +492,7 @@ function display_question($configObject, &$question, $paper_type, $calculator, $
       if ($question['scenario'] != '') {
         echo "<tr><td class=\"question_no\">" . $question['assigned_number'] . ".&nbsp;</td><td style=\"width:49%; background-color:#E4EEFC; border-bottom:1px solid #B5C4DF; font-weight:bold; padding:2px; color:#000040\">" . $string['clinicalvignette'] . "</td></tr>\n";
         echo '<tr><td style="vertical-align:top; text-align:right">';
-        if ($calculator == 1) echo '<br /><img class="calc" src="../artwork/calc.png" alt="' . $string['calculator'] . '" />';
+        if ($calculator == 1) echo '<br /><img class="sciCalculator" src="../artwork/calc.png" alt="' . $string['calculator'] . '" />';
         echo "</td><td>";
         if ($question['notes'] != '') echo '<p class="note"><img src="../artwork/notes_icon.gif" width="16" height="16" alt="' . $string['note'] . '" />&nbsp;<strong>' . $string['note'] . ':</strong>&nbsp;' . $question['notes'] . '</p>';
         echo $question['scenario'] . "<br />\n<br />";
@@ -501,7 +501,7 @@ function display_question($configObject, &$question, $paper_type, $calculator, $
       if ($question['q_media'] != '') {
         if ($li_set == 0) {
           echo '<tr><td class="q_no">' . $question['assigned_number'] . '.&nbsp;';
-          if ($calculator == 1) echo '<br /><img class="calc" src="../artwork/calc.png" alt="' . $string['calculator'] . '" />';
+          if ($calculator == 1) echo '<br /><img class="sciCalculator" src="../artwork/calc.png" alt="' . $string['calculator'] . '" />';
           echo '</td><td>';
         }
         echo '<p align="center">' . display_media($question['q_media'],$question['q_media_width'],$question['q_media_height'], '') . "</p>\n";
@@ -626,7 +626,10 @@ function display_question($configObject, &$question, $paper_type, $calculator, $
       case 'enhancedcalc':
         // no options for enhanced calc now stored in settings
 
-        $extra = array('num_on_screen' => $question_no);
+        $extra = array(
+          'num_on_screen' => $question_no,
+          'current_question' => $question,
+        );
 
         $question['object']->render_paper($extra);
         $question['object']->load_all_user_answers($user_answers);
@@ -956,6 +959,8 @@ function display_question($configObject, &$question, $paper_type, $calculator, $
             $blank_details[$blank_count] = substr($blank_details[$blank_count], (strpos($blank_details[$blank_count],']') + 1));
             $answer_options = explode('[/blank]',$blank_details[$blank_count]);
             $answer_list = explode(',',$answer_options[0]);
+            // Ensure that the correct answer is filtered in the same way as the user's answer.
+            $answer_list = param::clean_array($answer_list, param::TEXT);
             if (isset($blank_user_answers[$part_id - 1]) and $blank_user_answers[$part_id - 1] == 'u' and $screen_pre_submitted == 1) {
               echo "<select name=\"q" . $question_no . "_" . $part_id . "\" class=\"unans\">\n";
               $unanswered = true;
@@ -993,7 +998,7 @@ function display_question($configObject, &$question, $paper_type, $calculator, $
         if (!in_array($question_no, $textboxes_seen)) {
           $textboxes_seen[] = $question_no;
           $settings = json_decode($question['settings'], true);
-          if (!isset($settings['editor']) or $settings['editor'] == 'plain') {
+          if (!isset($settings['editor']) or $settings['editor'] == 'plain' or $settings['editor'] == 'mathjax') {
             if (isset($user_answers[$current_screen][$q_id]) and $user_answers[$current_screen][$q_id] == '' and $screen_pre_submitted == 1) {
               echo "<textarea class=\"unans\" name=\"q" . $question_no . "\" cols=\"" . $settings['columns'] . "\" rows=\"" . $settings['rows'] . "\">" . $user_answers[$current_screen][$q_id] . "</textarea>\n";
               $unanswered = true;
@@ -1002,7 +1007,17 @@ function display_question($configObject, &$question, $paper_type, $calculator, $
               if (isset($user_answers[$current_screen][$q_id])) {
                 $ans = $user_answers[$current_screen][$q_id];
               }
-              echo "<textarea name=\"q" . $question_no . "\" cols=\"" . $settings['columns'] . "\" rows=\"" . $settings['rows'] . "\">" . $ans . "</textarea>\n";
+              if ($settings['editor'] == 'mathjax') {
+                $render = new render($configObject);
+                $render->render(array('id' => 'q' . $question_no), null, 'mathjaxpreview.html');
+                echo "<p>" . $string['mathjaxinstructions'] . "</p>";
+                echo "<textarea onkeyup=\"Previewq" . $question_no . ".Update()\" id=\"q" . $question_no . "\" name=\"q" . $question_no . "\" cols=\"" . $settings['columns'] . "\" rows=\"" . $settings['rows'] . "\">" . $ans . "</textarea>\n";
+                echo "<p>" . $string['previewmathjax'] . "</p>";
+                echo "<div id=\"MathPreviewq" . $question_no . "\" style=\"border:1px solid; padding: 3px; width:50%; margin-top:5px\"></div><div id=\"MathBufferq" . $question_no . "\" style=\"border:1px solid; padding: 3px; width:50%; margin-top:5px; visibility:hidden; position:absolute; top:0; left: 0\"></div>";
+                echo "<script>Previewq" . $question_no . ".Init();</script>";
+              } else {
+                echo "<textarea name=\"q" . $question_no . "\" cols=\"" . $settings['columns'] . "\" rows=\"" . $settings['rows'] . "\">" . $ans . "</textarea>\n";
+              }
             }
           } else {
             include_once('wysiwyg_editor.inc');
@@ -1199,7 +1214,7 @@ function display_question($configObject, &$question, $paper_type, $calculator, $
 		} elseif ($question['display_method'] == 'dropdown') {
       echo '</select></div>';
     }
-  } elseif ($question['q_type'] == 'dichotomous' or $question['q_type'] == 'mrq' or $question['q_type'] == 'rank') {
+  } elseif (in_array($question['q_type'], array('dichotomous', 'mrq', 'rank'))) {
     $answer = (isset($user_answers[$current_screen][$q_id])) ? $user_answers[$current_screen][$q_id] : '';
     if ($question['display_method'] == 'other') {
       $part_id++;
@@ -1359,7 +1374,7 @@ function display_question($configObject, &$question, $paper_type, $calculator, $
   }
 
   // Write out the hidden field for the dismiss facility.
-  if ($question['q_type'] == 'mcq' or $question['q_type'] == 'mrq' or $question['q_type'] == 'rank') {
+  if (in_array($question['q_type'], array('mcq', 'mrq', 'rank'))) {
     if (isset($user_dismiss[$current_screen][$q_id]) and $user_dismiss[$current_screen][$q_id] != '') {
       echo "\n<div><input type=\"hidden\" name=\"dismiss$question_no\" id=\"dismiss$question_no\" value=\"" . $user_dismiss[$current_screen][$q_id] . "\" /></div>\n";
     } else {
@@ -1368,7 +1383,9 @@ function display_question($configObject, &$question, $paper_type, $calculator, $
   }
 
   // Display possible marks for question (if not Survey)
-  if ($question['q_type'] != 'hotspot' and $question['q_type'] != 'likert' and $question['q_type'] != 'info' and $question['q_type'] != 'enhancedcalc' and $question['q_type'] != 'matrix') echo '</blockquote>';
+  if (!in_array($question['q_type'], array('hotspot', 'likert', 'info', 'enhancedcalc', 'matrix'))) {
+    echo '</blockquote>';
+  }
   if ($paper_type < 3) {
     if ($marks == 0) {
       echo "</td></tr>\n<tr><td colspan=\"2\">&nbsp;</td></tr>\n";

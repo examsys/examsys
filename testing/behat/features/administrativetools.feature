@@ -37,6 +37,7 @@ Feature: Administrative Tools
          | Testing | Test |
          | User Management | User |
 
+   @javascript
    Scenario: more Admin tools links
       Given I login as "admin"
       Then I should see "Administrative Tools" "menu_item"
@@ -45,3 +46,4 @@ Feature: Administrative Tools
       Then I should see "Clear Old Logs" "admin_tool_link"
       Then I should see "Clear Training" "admin_tool_link"
       Then I should see "phpinfo()" "admin_tool_link"
+

@@ -55,6 +55,12 @@ $paper = $propertyObj->get_paper_title();
   <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
   <script type="text/javascript" src="../js/staff_help.js"></script>
   <script type="text/javascript" src="../js/toprightmenu.js"></script>
+  <?php
+    if($configObject->get_setting('core', 'paper_mathjax')) {
+      $render = new render($configObject);
+      $render->render(null, null, 'mathjax.html');
+    }
+  ?>
 </head>
 
 <body>

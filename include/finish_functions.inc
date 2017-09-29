@@ -22,6 +22,12 @@
 * @package
 */
 
+require_once 'mapping.inc';
+require_once 'media.inc';
+require_once dirname(__DIR__) . '/LTI/ims-lti/UoN_LTI.php';
+require_once dirname(__DIR__) . '/lang/' . $language . '/paper/finish.php';
+require_once dirname(__DIR__). '/lang/' . $language . '/paper/start.php';
+
 $configObject = Config::get_instance();
 
 function can_display_feedback($paper_type, $moduleID, $userObject) {
@@ -1940,6 +1946,8 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
 
         if (isset($paper[$question]['user_answer'])) {
           $user_choices = json_decode($paper[$question]['user_answer']);
+          // Ensure historical answers are filtered in the same way as newer answers.
+          $user_choices = param::clean_array($user_choices, param::TEXT);
         } else {
           $user_choices = array('u','u','u','u','u','u','u','u','u','u','u','u','u','u','u','u','u','u','u','u','u','u');
         }
@@ -1961,6 +1969,8 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
           $answer_options = explode("[/blank]",substr($blank_details[$blank_count + 1],(strpos($blank_details[$blank_count + 1],']') + 1)));
           $answer_list = array();
           $answer_list = explode(',', $answer_options[0]);
+          // Ensure that the correct answer cannot contain characters that are not allowed.
+          $answer_list = param::clean_array($answer_list, param::TEXT);
           $exclude_mod = (substr($tmp_exclude, $blank_count, 1) == '1') ? ' class="exclude"' : '';
           if ($paper[$question]['display_method'] == 'textboxes') {             // Textboxes
             $correct_flag = false;

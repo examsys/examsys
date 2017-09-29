@@ -63,9 +63,14 @@ class coursemanagement extends \api\abstractmanagement {
         if (isset($params['id']) and $params['id'] !== '') {
             // Using internal rogo id to update course.
             $courseid = \CourseUtils::courseid_exists($params['id'], $this->db);  
-        } elseif (isset($params['externalid']) and $params['externalid'] !== '') {
+        } elseif (!empty($params['externalid'])) {
+            // What external system is the client mapped to.
+            if (empty($params['externalsys'])) {
+                $params['externalsys'] = null;
+            }
+            $params['externalsys'] = $this->get_external_system($params['externalsys']);
             // Try using external system id to update course.
-            $courseid = \CourseUtils::get_courseid_from_externalid($params['externalid'], $this->db);
+            $courseid = \CourseUtils::get_courseid_from_externalid($params['externalid'], $params['externalsys'], $this->db);
             $params['id'] = $courseid;
         } else {
             $courseid = false;
@@ -82,9 +87,9 @@ class coursemanagement extends \api\abstractmanagement {
         }
 
         // Use external school/faculty id if provided
-        if (isset($params['schoolextid']) and $params['schoolextid'] !== '') {
+        if (!empty($params['schoolextid'])) {
             // Get school id if school external id provided.
-            $schoolid = \SchoolUtils::get_schoolid_from_externalid($params['schoolextid'], $this->db);
+            $schoolid = \SchoolUtils::get_schoolid_from_externalid($params['schoolextid'], $params['externalsys'], $this->db);
             if ($schoolid) {
                 $faculty = true;
             } else {
@@ -154,9 +159,20 @@ class coursemanagement extends \api\abstractmanagement {
         $strings = $langpack->get_strings($this->langcomponent, array('course_not_created', 'course_already_exists', 'faculty_not_supplied', 'external_school_invalid'));
         $faculty = true;
         $schoolid = false;
-        if (isset($params['schoolextid']) and $params['schoolextid'] !== '') {
+        // Default null externalid.
+        if (empty($params['externalid'])) {
+            $params['externalid'] = null;
+            $params['externalsys'] = null;
+        } else {
+            // What external system is the client mapped to.
+            if (empty($params['externalsys'])) {
+                $params['externalsys'] = null;
+            }
+            $params['externalsys'] = $this->get_external_system($params['externalsys']);
+        }
+        if (!empty($params['schoolextid'])) {
             // Get school id if school external id provided.
-            $schoolid = \SchoolUtils::get_schoolid_from_externalid($params['schoolextid'], $this->db);
+            $schoolid = \SchoolUtils::get_schoolid_from_externalid($params['schoolextid'], $params['externalsys'], $this->db);
             if (!$schoolid) {
                 $data = array('statuscode' => $this->statuscodes['COURSE_SCHOOL_EXTID_INVALID'], 'status' => $strings['external_school_invalid'], 'id' => null, 'externalid' => null);
                 return $this->get_response($data, 'create', $params['nodeid']);
@@ -179,14 +195,6 @@ class coursemanagement extends \api\abstractmanagement {
             // Create Course.
             $courseid = \CourseUtils::get_course_id($params['name'], $this->db);
             if (!$courseid) {
-                // Default null externalid.
-                if (empty($params['externalid'])) {
-                    $params['externalid'] = null;
-                }
-                // Default null externalsys.
-                if (empty($params['externalsys'])) {
-                    $params['externalsys'] = null;
-                }
                 $id = \CourseUtils::add_course($schoolid, $params['name'], $params['description'], $params['externalid'], $params['externalsys'], $this->db);
                 if ($id) {
                     $data = array('statuscode' => $this->statuscodes['OK'], 'status' => 'OK', 'id' => $id, 'externalid' => $params['externalid']);
@@ -217,9 +225,14 @@ class coursemanagement extends \api\abstractmanagement {
         if (isset($params['id']) and $params['id'] !== '') {
             // Try using rogo internal id to delete course.
             $courseid = \CourseUtils::courseid_exists($params['id'], $this->db);
-        } elseif (isset($params['externalid']) and $params['externalid'] !== '') {
+        } elseif (!empty($params['externalid'])) {
+            // What external system is the client mapped to.
+            if (empty($params['externalsys'])) {
+                $params['externalsys'] = null;
+            }
+            $params['externalsys'] = $this->get_external_system($params['externalsys']);
             // Try using external system id to delete course.
-            $courseid = \CourseUtils::get_courseid_from_externalid($params['externalid'], $this->db);
+            $courseid = \CourseUtils::get_courseid_from_externalid($params['externalid'], $params['externalsys'], $this->db);
             $params['id'] = $courseid;
         } else {
             $courseid = false;

@@ -313,11 +313,19 @@ if ($exam_duration !== null) {
     paperURL += '&mode=preview';
 <?php
   }
+  if ($fullscreen) {
 ?>
     exam = window.open(paperURL,"paper","fullscreen=<?php echo $fullscreen; ?>,width="+(screen.width-80)+",height="+(screen.height-80)+",left=20,top=10,scrollbars=yes,menubar=no,titlebar=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable=yes");
     if (window.focus) {
       exam.focus();
     }
+<?php
+  } else {
+?>
+    window.location = paperURL;
+<?php
+  }
+?>
   }
 
   function reviewPaper(metadataID, type) {
@@ -335,6 +343,12 @@ if ($exam_duration !== null) {
     $(document).tooltip({ items: ".help_tip[title]", position: { my: "top+10", at: "center+125" }  });
   });
   </script>
+  <?php
+    if($configObject->get_setting('core', 'paper_mathjax')) {
+      $render = new render($configObject);
+      $render->render(null, null, 'mathjax.html');
+    }
+  ?>
 </head>
 <body>
 <div style="text-align:right; padding-right:2px;"><img src="../artwork/toprightmenu.gif" id="toprightmenu_icon" /></div>

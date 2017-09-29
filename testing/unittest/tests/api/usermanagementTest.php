@@ -138,7 +138,7 @@ class usermanagementtest extends unittestdatabase {
         // Test s create - SUCCESS.
         $responsearray = $this->create_response_array();
         $params = $this->create_param_array();
-        $user = new \api\usermanagement($this->db);
+        $user = new \api\usermanagement($this->db, 'test1');
         $userid = 1;
         $this->assertEquals($responsearray, $user->create($params, $userid));
         // Check user is enrolled on expected moulde.
@@ -154,7 +154,7 @@ class usermanagementtest extends unittestdatabase {
         // Test s create - SUCCESS.
         $responsearray = $this->create_response_array();
         $params = $this->create_staff_param_array();
-        $user = new \api\usermanagement($this->db);
+        $user = new \api\usermanagement($this->db, 'test1');
         $userid = 1;
         $this->assertEquals($responsearray, $user->create($params, $userid));
         // Check user is enrolled on expected moulde.
@@ -170,7 +170,7 @@ class usermanagementtest extends unittestdatabase {
         // Test user create - ERROR already exists
         $responsearray = $this->create_response_array();
         $params = $this->create_param_array();
-        $user = new \api\usermanagement($this->db);
+        $user = new \api\usermanagement($this->db, 'test1');
         $userid = 1;
         $responsearray['statuscode'] = 706;
         $responsearray['status'] = 'User already exists';
@@ -186,7 +186,7 @@ class usermanagementtest extends unittestdatabase {
         // Test user create - ERROR invalid role
         $responsearray = $this->create_response_array();
         $params = $this->create_param_array();
-        $user = new \api\usermanagement($this->db);
+        $user = new \api\usermanagement($this->db, 'test1');
         $userid = 1;
         $responsearray['statuscode'] = 707;
         $responsearray['status'] = 'User has invalid role';
@@ -204,7 +204,7 @@ class usermanagementtest extends unittestdatabase {
         // Test user create - ERROR invalid course
         $responsearray = $this->create_response_array();
         $params = $this->create_param_array();
-        $user = new \api\usermanagement($this->db);
+        $user = new \api\usermanagement($this->db, 'test1');
         $userid = 1;
         $responsearray['statuscode'] = 705;
         $responsearray['status'] = 'Course does not exist';
@@ -223,7 +223,7 @@ class usermanagementtest extends unittestdatabase {
         // Test s create - SUCCESS.
         $responsearray = $this->create_response_array();
         $params = $this->create_staff_param_array();
-        $user = new \api\usermanagement($this->db);
+        $user = new \api\usermanagement($this->db, 'test1');
         $userid = 1;
         $responsearray['statuscode'] = 705;
         $responsearray['status'] = 'Course does not exist';
@@ -242,7 +242,7 @@ class usermanagementtest extends unittestdatabase {
         // Test user update - SUCCESS.
         $responsearray = $this->update_response_array();
         $params = $this->update_param_array();
-        $user = new \api\usermanagement($this->db);
+        $user = new \api\usermanagement($this->db, 'test1');
         $userid = 1;
         $this->assertEquals($responsearray, $user->update($params, $userid));
         // Check user is enrolled on expected moulde.
@@ -256,7 +256,7 @@ class usermanagementtest extends unittestdatabase {
      */
     public function test_update_exception_noupdate() {
         $responsearray = $this->update_response_array();
-        $user = new \api\usermanagement($this->db);
+        $user = new \api\usermanagement($this->db, 'test1');
         $userid = 1;
         $responsearray['statuscode'] = 708;
         $responsearray['status'] = 'Request updates nothing';
@@ -277,7 +277,7 @@ class usermanagementtest extends unittestdatabase {
      */
     public function test_update_exception_noupdate2() {
         $responsearray = $this->update_response_array();
-        $user = new \api\usermanagement($this->db);
+        $user = new \api\usermanagement($this->db, 'test1');
         $userid = 1;
         $responsearray['statuscode'] = 708;
         $responsearray['status'] = 'Request updates nothing';
@@ -298,7 +298,7 @@ class usermanagementtest extends unittestdatabase {
      */
     public function test_update_exception_noupdate3() {
         $responsearray = $this->update_response_array();
-        $user = new \api\usermanagement($this->db);
+        $user = new \api\usermanagement($this->db, 'test1');
         $userid = 1;
         $responsearray['statuscode'] = 708;
         $responsearray['status'] = 'Request updates nothing';
@@ -319,7 +319,7 @@ class usermanagementtest extends unittestdatabase {
      */
     public function test_update_exception_noupdate4() {
         $responsearray = $this->update_response_array();
-        $user = new \api\usermanagement($this->db);
+        $user = new \api\usermanagement($this->db, 'test1');
         $userid = 1;
         $responsearray['statuscode'] = 708;
         $responsearray['status'] = 'Request updates nothing';
@@ -340,7 +340,7 @@ class usermanagementtest extends unittestdatabase {
      */
     public function test_update_exception_noupdate5() {
         $responsearray = $this->update_response_array();
-        $user = new \api\usermanagement($this->db);
+        $user = new \api\usermanagement($this->db, 'test1');
         $userid = 1;
         $responsearray['statuscode'] = 708;
         $responsearray['status'] = 'Request updates nothing';
@@ -361,7 +361,7 @@ class usermanagementtest extends unittestdatabase {
      */
     public function test_update_exception_noupdate6() {
         $responsearray = $this->update_response_array();
-        $user = new \api\usermanagement($this->db);
+        $user = new \api\usermanagement($this->db, 'test1');
         $userid = 1;
         $responsearray['statuscode'] = 708;
         $responsearray['status'] = 'Request updates nothing';
@@ -382,7 +382,7 @@ class usermanagementtest extends unittestdatabase {
      */
     public function test_update_exception_noupdate7() {
         $responsearray = $this->update_response_array();
-        $user = new \api\usermanagement($this->db);
+        $user = new \api\usermanagement($this->db, 'test1');
         $userid = 1;
         $responsearray['statuscode'] = 708;
         $responsearray['status'] = 'Request updates nothing';
@@ -403,7 +403,7 @@ class usermanagementtest extends unittestdatabase {
      */
     public function test_update_exception_noupdate8() {
         $responsearray = $this->update_response_array();
-        $user = new \api\usermanagement($this->db);
+        $user = new \api\usermanagement($this->db, 'test1');
         $userid = 1;
         $responsearray['statuscode'] = 708;
         $responsearray['status'] = 'Request updates nothing';
@@ -424,7 +424,7 @@ class usermanagementtest extends unittestdatabase {
      */
     public function test_update_exception_noupdate9() {
         $responsearray = $this->update_response_array();
-        $user = new \api\usermanagement($this->db);
+        $user = new \api\usermanagement($this->db, 'test1');
         $userid = 1;
         $responsearray['statuscode'] = 708;
         $responsearray['status'] = 'Request updates nothing';
@@ -445,7 +445,7 @@ class usermanagementtest extends unittestdatabase {
      */
     public function test_update_exception_noupdate10() {
         $responsearray = $this->update_response_array();
-        $user = new \api\usermanagement($this->db);
+        $user = new \api\usermanagement($this->db, 'test1');
         $userid = 1;
         $responsearray['statuscode'] = 708;
         $responsearray['status'] = 'Request updates nothing';
@@ -466,7 +466,7 @@ class usermanagementtest extends unittestdatabase {
      */
     public function test_update_exception_noupdate11() {
         $responsearray = $this->update_response_array();
-        $user = new \api\usermanagement($this->db);
+        $user = new \api\usermanagement($this->db, 'test1');
         $userid = 1;
         $responsearray['statuscode'] = 708;
         $responsearray['status'] = 'Request updates nothing';
@@ -487,7 +487,7 @@ class usermanagementtest extends unittestdatabase {
      */
     public function test_update_exception_noupdate12() {
         $responsearray = $this->update_response_array();
-        $user = new \api\usermanagement($this->db);
+        $user = new \api\usermanagement($this->db, 'test1');
         $userid = 1;
         $responsearray['statuscode'] = 708;
         $responsearray['status'] = 'Request updates nothing';
@@ -508,7 +508,7 @@ class usermanagementtest extends unittestdatabase {
      */
     public function test_update_exception_noupdate13() {
         $responsearray = $this->update_response_array();
-        $user = new \api\usermanagement($this->db);
+        $user = new \api\usermanagement($this->db, 'test1');
         $userid = 1;
         $responsearray['statuscode'] = 708;
         $responsearray['status'] = 'Request updates nothing';
@@ -529,7 +529,7 @@ class usermanagementtest extends unittestdatabase {
      */
     public function test_update_exception_noupdate14() {
         $responsearray = $this->update_response_array();
-        $user = new \api\usermanagement($this->db);
+        $user = new \api\usermanagement($this->db, 'test1');
         $userid = 1;
         $responsearray['statuscode'] = 708;
         $responsearray['status'] = 'Request updates nothing';
@@ -556,7 +556,7 @@ class usermanagementtest extends unittestdatabase {
         // Test user update - ERROR user does not exist
         $responsearray = $this->update_response_array();
         $params = $this->update_param_array();
-        $user = new \api\usermanagement($this->db);
+        $user = new \api\usermanagement($this->db, 'test1');
         $userid = 1;
         $responsearray['statuscode'] = 701;
         $responsearray['status'] = 'User does not exist';
@@ -573,7 +573,7 @@ class usermanagementtest extends unittestdatabase {
         // Test user update - ERROR user does not exist
         $responsearray = $this->update_response_array();
         $params = $this->update_param_array();
-        $user = new \api\usermanagement($this->db);
+        $user = new \api\usermanagement($this->db, 'test1');
         $userid = 1;
         $responsearray['statuscode'] = 701;
         $responsearray['status'] = 'User does not exist';
@@ -590,7 +590,7 @@ class usermanagementtest extends unittestdatabase {
         // Test user deletion - SUCCESS.
         $responsearray = $this->delete_response_array();
         $params = $this->delete_param_array();
-        $user = new \api\usermanagement($this->db);
+        $user = new \api\usermanagement($this->db, 'test1');
         $userid = 1;
         $this->assertEquals($responsearray, $user->delete($params, $userid));
         // Check that the remaining user are correct, when we delete a user we actually just add a timestamp to the table
@@ -607,7 +607,7 @@ class usermanagementtest extends unittestdatabase {
         // Test deleting a non existance user.
         $responsearray = $this->delete_response_array();
         $params = $this->delete_param_array();
-        $user = new \api\usermanagement($this->db);
+        $user = new \api\usermanagement($this->db, 'test1');
         $userid = 1;
         $responsearray['statuscode'] = 701;
         $responsearray['status'] = 'User does not exist';
@@ -627,7 +627,7 @@ class usermanagementtest extends unittestdatabase {
         // Test deleting a user in use. case 1 - in log_metadata
         $responsearray = $this->delete_response_array();
         $params = $this->delete_param_array();
-        $user = new \api\usermanagement($this->db);
+        $user = new \api\usermanagement($this->db, 'test1');
         $userid = 1;
         $responsearray['statuscode'] = 704;
         $responsearray['status'] = 'User not deleted, as they have taken a paper';

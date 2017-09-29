@@ -1,0 +1,62 @@
+users:
+  -
+    id: 1
+    password: "87654321"
+    surname: "sysadmin"
+    username: "sysadmin"
+    roles: "Staff,SysAdmin"
+    grade: "University Lecturer"
+  -
+    id: 2
+    password: "12345678"
+    surname: "sysadmin2"
+    username: "sysadmin2"
+    roles: "Staff,SysAdmin"
+    grade: "University Lecturer"
+  -
+    id: 3
+    password: "qwerty"
+    surname: "sysadmin3"
+    username: "sysadmin3"
+    roles: "Staff,SysAdmin"
+    grade: "University Lecturer"
+oauth_clients:
+  -
+    client_id: 'test1'
+    client_secret: 'test'
+    redirect_uri: 'https://www.example.com'
+    user_id: 1
+  -
+    client_id: 'test2'
+    client_secret: 'test'
+    redirect_uri: 'https://www.example.com'
+    user_id: 2
+  -
+    client_id: 'test3'
+    client_secret: 'test'
+    redirect_uri: 'https://www.example.com'
+    user_id: 3
+external_systems:
+  -
+    id: 1
+    name: 'external api'
+    type: 'api'
+  -
+    id: 2
+    name: 'external api 2'
+    type: 'api'
+  -
+    id: 3
+    name: 'Campus Solutions'
+    type: 'plugin'
+  -
+    id: 5
+    name: 'external api 3'
+    type: 'api'
+external_systems_mapping:
+  -
+    client_id: 'test1'
+    ext_id: 1
+  -
+    client_id: 'test2'
+    ext_id: 2

@@ -44,7 +44,7 @@ Class QuestionLIKERT extends QuestionEdit {
     parent::__construct($mysqli, $userObj, $lang_strings, $data);
 
     $this->_scale_types = array(
-    	$this->_lang_strings['oscescales'] => array('0|1' => '0, 1', '0|1|2' => '0, 1, 2', $this->_lang_strings['failpass3'] => $this->_lang_strings['failpass']),
+      $this->_lang_strings['oscescales'] => array('0|1' => '0, 1', '0|1|2' => '0, 1, 2', '0|1|2|3' => '0, 1, 2, 3', '0|1|2|3|4' => '0, 1, 2, 3, 4', '0|1|2|3|4|5' => '0, 1, 2, 3, 4, 5'),
     	'3 ' . $this->_lang_strings['pointscales'] => array($this->_lang_strings['lowhigh3'] => $this->_lang_strings['lowhigh'], $this->_lang_strings['neveralways3'] => $this->_lang_strings['neveralways'], $this->_lang_strings['disagre3'] => $this->_lang_strings['disagre3point']),
     	'4 ' . $this->_lang_strings['pointscales'] => array($this->_lang_strings['lowhigh4'] => $this->_lang_strings['lowhigh'], $this->_lang_strings['neveralways4'] => $this->_lang_strings['neveralways'], $this->_lang_strings['disagre4'] => $this->_lang_strings['disagre4point']),
     	'5 ' . $this->_lang_strings['pointscales'] => array($this->_lang_strings['lowhigh5'] => $this->_lang_strings['lowhigh'], $this->_lang_strings['neveralways5'] => $this->_lang_strings['neveralways'], $this->_lang_strings['disagre5a'] => $this->_lang_strings['disagre5pointneither'], $this->_lang_strings['disagre5b'] => $this->_lang_strings['disagre5pointuncertain'], $this->_lang_strings['disagre5c'] => $this->_lang_strings['disagre5pointneutral'])

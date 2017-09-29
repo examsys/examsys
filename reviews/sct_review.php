@@ -23,6 +23,10 @@
 */
 
 require_once '../include/load_config.php';
+
+$language = LangUtils::getLang($cfg_web_root);
+LangUtils::loadlangfile(str_replace($cfg_web_root, '', str_replace('\\', '/', ($_SERVER['SCRIPT_FILENAME']))));
+
 require_once '../include/media.inc';
 require_once '../include/errors.php';
 require_once '../include/sct_review.inc';

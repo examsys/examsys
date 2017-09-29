@@ -36,9 +36,10 @@ abstract class abstractpublish {
      * Operation to get published rogo data.
      * @param string $filtername - component name
      * @param integer $filterid - component id
+     * @param string $externalsys - external system
      * @return array response to operation, published data or error message.
      */
-    abstract public function get($filtername, $filterid);
+    abstract public function get($filtername, $filterid, $externalsys = null);
     
     /**
      * The database connection.

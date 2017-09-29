@@ -35,4 +35,8 @@ $string['save'] = 'Save';
 $string['badaddressesmsg'] = 'The following IP addresses were invalid and not added to the lab: %s. Other addresses were saved.';
 $string['backtolab'] = 'Back to lab details';
 $string['listcampuses'] = 'Campuses';
+$string['editlab'] = 'Edit Lab';
+$string['badaddressesinvalid'] = 'The following IP addresses are invalid: %s.';
+$string['badaddressesinuse'] = 'The following IP addresses are already in use: %s.';
+$string['computerlabs'] = 'Computer Labs';
 ?>

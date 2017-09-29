@@ -21,7 +21,7 @@
  * @copyright Copyright (c) 2014 The University of Nottingham
  * @package
  */
-require_once '../../include/errors.php';
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'include' . DIRECTORY_SEPARATOR . 'errors.php';
 
 class Database {
   var $type = "SELECT";

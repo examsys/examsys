@@ -18,7 +18,7 @@ require_once '../util/lti_util.php';
 $oauth_consumer_secret = $_REQUEST['secret'];
 if (strlen($oauth_consumer_secret) < 1 ) $oauth_consumer_secret = 'secret';
 ?>
-<form method="post" action="" autocomplete="off">
+<form method="post" action="<?= url::fromGlobals() ?>" autocomplete="off">
 <p>
 Service URL: <input type="text" name="url" size="130" disabled="disabled" value="<?php echo($_REQUEST['url']);?>"/><br/>
 lis_result_sourcedid: <input type="text" name="sourcedid" disabled="disabled" size="100" value="<?php echo($_REQUEST['sourcedid']);?>"/><br/>

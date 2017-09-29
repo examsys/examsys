@@ -105,15 +105,21 @@ function check_paper_password($paperID, $password, $string, $db, $show_form = fa
  * @param string $end_date    - End date/time of the assessment.
  * @param array $string       - Language translation strings.
  * @param object $db          - The MySQL connection.
+ * @param boolean $first_start - If the exam is being started, rather than continued.
+ *                               We should not allow new starts after the end time.
+ *                               Optional. Default: false.
  */
-function check_datetime($start_date, $end_date, $string, $db) {
+function check_datetime($start_date, $end_date, $string, $db, $first_start = false) {
   $notice = UserNotices::get_instance();
-
+  $end_comparison = time();
+  if (!$first_start) {
+    // If the exam has already been started allow access for 60 minutes after the end of the exam.
+    $end_comparison -= 3600;
+  }
   // Allow 1 minute before the start time of the assessment.
-  // Allow 60 minutes after the end time of the assessment.
-  if ((time()+60) < $start_date or (time()-3600) > $end_date) {
+  if ((time()+60) < $start_date or $end_comparison > $end_date) {
     $msg = sprintf($string['error_time'], date('d/m/Y H:i',$start_date), date('d/m/Y H:i',$end_date));
-    $fullmsg = $msg . '<br /><br /><input type="button" name="close" value="' . $string['ok'] . '" onclick="window.close()" class="OK" />';
+    $fullmsg = $msg . '<br /><br /><input type="button" name="close" value="' . $string['ok'] . '" onclick="close_window()" class="OK" />';
     $notice->display_notice_and_exit($db, $string['accessdenied'], $fullmsg, $msg, '/artwork/summative_scheduling.png', '#C00000', true, true);
   }
 }
@@ -137,7 +143,7 @@ function check_finished($propertyObj, $userObj, $string, $db) {
   
   if ($completed != '') {
     $msg = sprintf($string['alreadycompleted'], date('d/m/Y H:i', $completed));
-    $fullmsg = $msg . '<br /><br /><input type="button" name="close" value="' . $string['ok'] . '" onclick="window.close()" class="OK" />';
+    $fullmsg = $msg . '<br /><br /><input type="button" name="close" value="' . $string['ok'] . '" onclick="close_window()" class="OK" />';
     $notice->display_notice_and_exit($db, $string['accessdenied'], $fullmsg, $msg, '/artwork/square_exclamation_48.png', '#C00000', true, true);
   }
   

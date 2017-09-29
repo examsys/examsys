@@ -46,4 +46,90 @@ class moduleutilstest extends unittestdatabase {
         $modules = array();
         $this->assertEquals($modules, module_utils::get_modules_for_paper(1, 2, $this->db));
     }
+    /**
+     * Test get full details using internal id
+     * @group modules
+     */
+    public function test_get_full_details_internalid() {
+        $detailsarray = array( 'idMod' => 2,
+                  'moduleid' => 'ABC200',
+                  'fullname' => 'Test Module 2',
+                  'school' => 'test school',
+                  'active' => null,
+                  'vle_api' => null,
+                  'checklist' => null,
+                  'sms' => 'external',
+                  'selfenroll' => null,
+                  'schoolid' => 1,
+                  'neg_marking' => null,
+                  'ebel_grid_template' => null,
+                  'timed_exams' => null,
+                  'exam_q_feedback' => null,
+                  'add_team_members' => null,
+                  'map_level' => 0,
+                  'academic_year_start' => '01/07',
+                  'externalid' => '987654321');
+        $details = module_utils::get_full_details('internal', 2, $this->db);
+        $this->assertEquals($detailsarray, $details);
+    }
+    /**
+     * Test get full details using wrapper function get_full_details_by_ID
+     * @group modules
+     */
+    public function test_get_full_details_by_ID() {
+        $detailsarray = array( 'idMod' => 2,
+                  'moduleid' => 'ABC200',
+                  'fullname' => 'Test Module 2',
+                  'school' => 'test school',
+                  'active' => null,
+                  'vle_api' => null,
+                  'checklist' => null,
+                  'sms' => 'external',
+                  'selfenroll' => null,
+                  'schoolid' => 1,
+                  'neg_marking' => null,
+                  'ebel_grid_template' => null,
+                  'timed_exams' => null,
+                  'exam_q_feedback' => null,
+                  'add_team_members' => null,
+                  'map_level' => 0,
+                  'academic_year_start' => '01/07',
+                  'externalid' => '987654321');
+        $details = module_utils::get_full_details_by_ID(2, $this->db);
+        $this->assertEquals($detailsarray, $details);
+    }
+    /**
+     * Test get full details using external id
+     * @group modules
+     */
+    public function test_get_full_details_externalid() {
+        $detailsarray = array( 'idMod' => 2,
+                  'moduleid' => 'ABC200',
+                  'fullname' => 'Test Module 2',
+                  'school' => 'test school',
+                  'active' => null,
+                  'vle_api' => null,
+                  'checklist' => null,
+                  'sms' => 'external',
+                  'selfenroll' => null,
+                  'schoolid' => 1,
+                  'neg_marking' => null,
+                  'ebel_grid_template' => null,
+                  'timed_exams' => null,
+                  'exam_q_feedback' => null,
+                  'add_team_members' => null,
+                  'map_level' => 0,
+                  'academic_year_start' => '01/07',
+                  'externalid' => '987654321');
+        $details = module_utils::get_full_details('external', '987654321', $this->db, 'external');
+        $this->assertEquals($detailsarray, $details);
+    }
+    /**
+     * Test get full details using invalid id type
+     * @group modules
+     */
+    public function test_get_full_details_invalid() {
+        $details = module_utils::get_full_details('placeholder', 2, $this->db);
+        $this->assertFalse($details);
+    }
 }

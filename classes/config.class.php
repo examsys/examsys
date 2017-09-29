@@ -30,7 +30,7 @@ class Config extends RogoStaticSingleton {
    * Areas of the Rogo system that can be confifured.
    * @var array list of areas
    */
-  public static $config_area = array('api', 'gradebook', 'lti', 'paper', 'summative', 'url');
+  public static $config_area = array('api', 'gradebook', 'lti', 'paper', 'summative', 'url', 'misc');
   /**
    * @var array
    */
@@ -305,6 +305,16 @@ class Config extends RogoStaticSingleton {
     // Set file config override to false so we can test changes effectively.
     $this->set('file_config_override', false);
     $this->behatsetup = true;
+    // Set cfg_root_path and cfg_js_root to behat site.
+    $cfg_root_path = $this->set('cfg_root_path', $this->get('cfg_behat_website'));
+    $cfg_js_root = <<< SCRIPT
+<script>
+  if (typeof cfgRootPath == 'undefined') {
+    var cfgRootPath = '$cfg_root_path';
+  }
+</script>
+SCRIPT;
+    $this->set('cfg_js_root', $cfg_js_root);
   }
   
   /**

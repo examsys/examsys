@@ -59,13 +59,8 @@ class Languageselection_auth extends outline_authentication {
     $this->savetodebug('session store of input data key is ROGO_language');
     if (isset($_REQUEST['ROGO_language'])) {
       $_SESSION['ROGO_language'] = $_REQUEST['ROGO_language'];
-			
-			$language = LangUtils::getLang($cfg_web_root);
-			$lang_path = "{$cfg_web_root}lang/$language/" . str_replace($cfg_web_root, '', $_SERVER['SCRIPT_FILENAME']);
-
-			if (file_exists($lang_path)) {
-				require $lang_path;
-			}
+      $language = LangUtils::getLang($cfg_web_root);
+      LangUtils::loadlangfile(str_replace($cfg_web_root, '', str_replace('\\', '/', ($_SERVER['SCRIPT_FILENAME']))));
     }
 
     return $sessionstoreobj;

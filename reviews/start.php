@@ -488,8 +488,22 @@ var lang = {
     });
   });
 </script>
+<?php
+  $render = new render($configObject);
+  if($configObject->get_setting('core', 'paper_mathjax')) {
+    $render->render(null, null, 'mathjax.html');
+  }
+  if($propertyObj->get_calculator()) {
+    $render->render(null, null, 'jcalc98_header.html');
+  }
+?>
 </head>
 <body onload="StartClock()" onunload="KillClock()">
+<?php
+if($propertyObj->get_calculator()) {
+  $render->render(null, null, 'jcalc98.html');
+}
+?>
 <div id="maincontent">
 <?php
 if ($current_screen < $no_screens) {

@@ -6,7 +6,8 @@ modules:
     active: 1
     schoolid: 1
     academic_year_start: "07/01"
-    externalid: ""
+    externalid: "12345678"
+    sms: "test rogo api"
   -
     id: 2
     moduleid: "TEST2"
@@ -14,7 +15,7 @@ modules:
     active: 1
     schoolid: 1
     academic_year_start: "07/01"
-    sms: "unittest"
+    sms: "test rogo api"
   -
     id: 3
     moduleid: "TEST3"
@@ -64,6 +65,12 @@ academic_year:
   -
     calendar_year: 2016
     academic_year: "2016/17"
+  -
+    calendar_year: 2017
+    academic_year: "2017/18"
+  -
+    calendar_year: 2018
+    academic_year: "2018/19"
 properties:
   -
     property_id: 1
@@ -105,3 +112,18 @@ labs:
     campus: 1
     building: "Test building"
     room_no: 1
+oauth_clients:
+  -
+    client_id: 'test1'
+    client_secret: 'test'
+    redirect_uri: 'https://www.example.com'
+    user_id: 1
+external_systems:
+  -
+    id: 1
+    name: 'test rogo api'
+    type: 'api'
+external_systems_mapping:
+  -
+    ext_id: 1
+    client_id: 'test1'

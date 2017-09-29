@@ -31,4 +31,6 @@ $string['moduletranslatemessage'] = 'There is a problem with the module code as 
 $string['moduletranslatecode'] = '<p>Incoming Module Code: %s</p>';
 $string['modulecreateerror'] = 'Module creation error';
 $string['modulecreatemessage'] = 'Modules cannot be created that do not exist within the student management system. For further assistance contact: <a href="mailto:%s">%s</a>';
+$string['redirectmessage'] = 'Please click <a href="%s">here</a> to continue';
+$string['modulescaption'] = 'Module(s)';
 ?>

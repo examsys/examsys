@@ -116,10 +116,7 @@ if ($userObject->has_role('External Examiner')) {
 // Redirect the system cron if it is straying
 // $cron_allowed_pages is an array that contains the set of scripts that the system cron
 // CAN access all other pages should exit the cron
-$cron_allowed_pages = array("$cfg_root_path/testing/testing/class_totals_with_script_cli.php"=>1,
-                            "$cfg_root_path/reports/class_totals.php"=>1,
-                            "$cfg_root_path/reports/draw_distribution_chart.php"=>1,
-                            "$cfg_root_path/reports/draw_scatter_plot.php"=>1);
+$cron_allowed_pages = array("$cfg_root_path/testing/testing/class_totals_with_script_cli.php");
 
 if ($userObject->has_role('SysCron')) {
   if (!isset($cron_allowed_pages[$_SERVER['PHP_SELF']])) {

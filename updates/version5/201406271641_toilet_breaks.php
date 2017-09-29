@@ -8,7 +8,7 @@ CREATE TABLE `toilet_breaks` (
   `break_taken` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `paperID` (`paperID`)
-) ENGINE=InnoDB AUTO_INCREMENT=0;
+) AUTO_INCREMENT=0;
 QUERY;
   $updater_utils->execute_query($sql, true);
 

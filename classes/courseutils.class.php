@@ -289,13 +289,14 @@ Class CourseUtils {
    * Get the course id given external id
    *
    * @param string $externalid externalid of the course rogo id
+   * @param string $externalsys external system source
    * @param object $db database connection
    *
    * @return int|bool id of course or false
   */
-  static function get_courseid_from_externalid($externalid, $db) {
-    $result = $db->prepare("SELECT id FROM courses WHERE externalid = ? AND deleted IS NULL");
-    $result->bind_param('s', $externalid);
+  static function get_courseid_from_externalid($externalid, $externalsys, $db) {
+    $result = $db->prepare("SELECT id FROM courses WHERE externalid = ? AND externalsys = ? AND deleted IS NULL");
+    $result->bind_param('ss', $externalid,$externalsys);
     $result->execute();
     $result->store_result();
     $result->bind_result($id);

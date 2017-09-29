@@ -1,6 +1,7 @@
 <?php
 $url = 'https://' . $_SERVER['HTTP_HOST'] . $configObject->get('cfg_root_path');
-$logo_path = 'https://' . $_SERVER['HTTP_HOST'] . $configObject->get('cfg_root_path') . '/config/logo.png';
+$themedirectory = rogo_directory::get_directory('theme');
+$logo_path = $themedirectory->url($configObject->get_setting('core', 'misc_logo_email'));
 $support_email = $configObject->get('support_email');
 
 $string['message0'] = "<div style=\"text-align:right\"><img src=\"\$logo_path\" width=\"160\" height=\"67\" /></div><p>Dear \$external_title \$external_surname,</p>\n<p>The online assessment <strong>\$paper_title</strong> is now available for you to log in and review. Please complete the review by the end of <strong>\$deadline</strong>. The exam will be delivered using our online assessment system Rog&#333;. To review the paper please log in at: <a href=\"\$rogo_url\">\$rogo_url</a></p>\n<p>Any problems with accessing the paper please do not hesitate to contact me. Technical support for Rog&#333; is also available from: <a href=\"mailto:\$support_email\">\$support_email</a></p>\n<p>Kind regards</p>\n<p>\$users_name</p>\n";

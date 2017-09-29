@@ -17,6 +17,7 @@
 /config/config.inc.*
 /config/integration
 /config/selenium.inc.php
+/config/settings.xml
 
 # /email_templates/
 /email_templates/*.txt
@@ -190,6 +191,5 @@ config/phpunit.xml
 selenium-server-standalone-*.jar
 web.config
 node_modules/
-crowdin.yaml
-crowdin-cli.jar
+crowdin.yml
 config/campuses.inc

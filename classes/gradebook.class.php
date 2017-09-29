@@ -143,11 +143,12 @@ class gradebook {
      * Get the gradebook for a paper
      * @param string $paperidtype type of id to serach on
      * @param int $paperid id to search with
+     * @param string $externalsys external system source
      * @return array|bool gradebook for paper or false  
      */
-    public function get_paper_gradebook($paperidtype, $paperid) {
+    public function get_paper_gradebook($paperidtype, $paperid, $externalsys = null) {
         if ($paperidtype == self::EXTPAPER) {
-            $pid = \Paper_utils::get_id_from_externalid($paperid, $this->db);
+            $pid = \Paper_utils::get_id_from_externalid($paperid, $externalsys, $this->db);
         } else {
             $pid = $paperid;
         }
@@ -205,11 +206,12 @@ class gradebook {
      * Get the gradebook for a module
      * @param string $moduleidtype type of id to serach on
      * @param int $moduleid id to search with
+     * @param string $externalsys external system source
      * @return array|bool gradebook for module or false
      */
-    public function get_module_gradebook($moduleidtype, $moduleid) {
+    public function get_module_gradebook($moduleidtype, $moduleid, $externalsys = null) {
         if ($moduleidtype == self::EXTMODULE) {
-            $modid = \module_utils::get_id_from_externalid($moduleid, $this->db);
+            $modid = \module_utils::get_id_from_externalid($moduleid, $externalsys, $this->db);
         } else {
             $modid = $moduleid;
         }

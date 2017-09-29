@@ -67,6 +67,9 @@ if ($configObject->get('cfg_session_name') != '') {
 }
 $return = session_start();
 
+$language = LangUtils::getLang($cfg_web_root);
+LangUtils::loadlangfile(str_replace($cfg_web_root, '', str_replace('\\', '/', ($_SERVER['SCRIPT_FILENAME']))));
+
 require_once $cfg_web_root . 'lang/' . $language . '/include/common.php'; // Include common language file that all scripts need
 require_once $cfg_web_root . 'include/custom_error_handler.inc';
 

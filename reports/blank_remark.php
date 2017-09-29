@@ -75,10 +75,12 @@ if (isset($_POST['submit'])) {
   // Iterate around all words marked for correction
   for ($i=0; $i<$_POST['word_count']; $i++) {
     if (isset($_POST['word' . $i])) {
+      // Encode commas.
+      $word = str_replace(',', '&#44;', $_POST['word' . $i]);
       if ($option_list == '') {
-        $option_list = $_POST['word' . $i];
+        $option_list = $word;
       } else {
-        $option_list .= ',' . $_POST['word' . $i];
+        $option_list .= ',' . $word;
       }
     }
   }

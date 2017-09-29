@@ -25,11 +25,14 @@ require '../../include/sysadmin_auth.inc';
 require_once '../../include/errors.php';
 require '../../include/toprightmenu.inc';
 
+$external = new \external_systems();
+
 if (isset($_POST['submit'])) {
-    $client = check_var('client', 'POST', true, false, true);
-    $secret = check_var('secret', 'POST', true, false, true);
-    $uri = check_var('uri', 'POST', true, false, true);
-    $userid = check_var('userid', 'POST', true, false, true);
+    $client = check_var('client', 'POST', true, false, true, param::TEXT);
+    $secret = check_var('secret', 'POST', true, false, true, param::TEXT);
+    $uri = check_var('uri', 'POST', true, false, true, param::URL);
+    $userid = check_var('userid', 'POST', true, false, true, param::INT);
+    $extsys = param::optional('extsys', null, param::INT, param::FETCH_POST);
     $oauth = new oauth($configObject);
     $storage = $oauth->get_storage();
     $storage->setClientDetails($client, $secret, $uri, null, null, $userid);
@@ -72,7 +75,13 @@ if (isset($_POST['submit'])) {
         $oauth->add_permission('gradebook', $client, true);
     } else {
         $oauth->add_permission('gradebook', $client, false);
-    } 
+    }
+    if (!is_null($extsys)) {
+        if (!$external->insert_external_system_mapping($client, $extsys)) {
+            // External system no longer exists so abandon attempt to create client.
+            $oauth->delete_oauthclient($client);
+        }
+    }
     header("location: list_oauthclient.php", true, 303);
     exit();
 } else {
@@ -94,6 +103,8 @@ if (isset($_POST['submit'])) {
         $clientperms[] = $action;
     }
     $result->close();
+    // External systems.
+    $extsys = $external->get_all_api_externalsystems();
 }
 
 $render = new render($configObject);
@@ -144,7 +155,16 @@ $render->render_admin_content($breadcrumb, $lang);
             <tr><td class="field"><?php echo $string['client'] ?></td><td><input type="text" size="80" maxlength="80" id="client" name="client" value="" required /></td></tr>
             <tr><td class="field"><?php echo $string['secret'] ?></td><td><input type="text" size="80" maxlength="80" id="secret" name="secret" value="" required /></td></tr>
             <tr><td class="field"><?php echo $string['uri'] ?></td><td><input type="text" size="80" maxlength="2000" id="uri" name="uri" value="" required /></td></tr>
-            
+            <tr><td class="field"><?php echo $string['extsys'] ?></td><td>
+            <select name="extsys" id="extsys">
+                <option value=""></option>
+                <?php
+                    foreach ($extsys as $id => $name) {
+                        echo "<option value=\"$id\">$name</option>\n";
+                    }
+                ?>
+            </select>
+            </td></tr>
             <?php
                 foreach ($clientperms as $action) {
                     echo "<tr><td class=\"field\">" . $string[$action] . "</td><td><input type=\"checkbox\" name=\"" . $action . "\"/></td></tr>"; 

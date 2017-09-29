@@ -59,7 +59,7 @@ class questions extends generator {
         "bloom" => null,
         "scenario_plain" => "defult scenario_plain",
         "leadin_plain" => "",
-        "checkout_time" => "",
+        "checkout_time" => null,
         "checkout_authorID" => "",
         "deleted" => null,
         "locked" => null,

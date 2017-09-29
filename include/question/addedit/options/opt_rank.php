@@ -23,8 +23,7 @@
 */
 
 $hidden = (($num_options == 0 and $index > 6) or ($num_options > 0 and $index > $num_options)) ? ' hide' : '';
-$correct_vals = array('' => '', '0' => $string['na']);
-for ($i = 1; $i <= 20; $i++) {
+for ($i = 0; $i <= 20; $i++) {
   $postfix = '';
   if ($language == 'en') {
     $postfix = 'th';
@@ -32,7 +31,11 @@ for ($i = 1; $i <= 20; $i++) {
     if ($i == 2) $postfix = 'nd';
     if ($i == 3) $postfix = 'rd';
     }
-  $correct_vals[$i] = $i . $postfix;
+  if ($i == 0) {
+    $correct_vals[$i] = $string['na'];
+  } else {
+    $correct_vals[$i] = $i . $postfix;
+  }
 }
 if ($index %2 == 0) {
   $alt_c = ' class="alt"';
@@ -51,7 +54,7 @@ $spaced = ($index > 1) ? ' spaced-top' : '';
               <td class="small align-centre spaced-bottom<?php echo $spaced ?>">
                 <select id="option_correct<?php echo $index ?>" name="option_correct<?php echo $index ?>">
 <?php 
-echo ViewHelper::render_options($correct_vals, $option->get_correct(), 3);
+echo ViewHelper::render_options($correct_vals, $option->get_correct(), 3, true);
 ?>
                 </select>
               </td>

@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Rogo.  If not, see <http://www.gnu.org/licenses/>.
 
-$string['cannotinstall'] = 'Cannot install composer, on Windows you will need to manually download it.';
+$string['cannotinstall'] = 'Cannot install composer, on Windows you will need to manually download it. Please go to <a href="https://getcomposer.org/download/">getcomposer.org</a> for instructions on downloading the composer phar file. Saving it to the Rogo base directory.';
 $string['cannotupdate'] = 'Cannot update composer.';
 $string['couldnotinstallcomp'] = 'Could not install components.';
 $string['couldnotupdatecomp'] = 'Could not update components.';

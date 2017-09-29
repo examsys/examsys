@@ -65,6 +65,12 @@ $mediadirectory = rogo_directory::get_directory('media');
       mapWindow.moveTo(100,100);
     }
   </script>
+  <?php
+    if($configObject->get_setting('core', 'paper_mathjax')) {
+      $render = new render($configObject);
+      $render->render(null, null, 'mathjax.html');
+    }
+  ?>
 </head>
 
 <body>

@@ -153,20 +153,12 @@ class param {
         );
         break;
       case self::RAW:
+      case self::TEXT:
         $filter = FILTER_UNSAFE_RAW;
         $options = array(
           'options' => array(
             'default' => null,
           ),
-        );
-        break;
-      case self::TEXT:
-        $filter = FILTER_SANITIZE_STRING;
-        $options = array(
-          'options' => array(
-            'default' => null,
-          ),
-          'flags' => FILTER_FLAG_NO_ENCODE_QUOTES
         );
         break;
       case self::URL:
@@ -207,6 +199,9 @@ class param {
       case self::HTML:
         $return = self::purify_html($return);
         break;
+      case self::TEXT:
+        $return = strip_tags($return);
+        break;
       case self::LOCAL_URL:
         $rogo_url = Config::get_instance()->get('cfg_web_host');
         // We now know if it is a valid ULR ot not, we just need to ensure it is for the local instance of Rogo.
@@ -225,7 +220,7 @@ class param {
   }
 
   /**
-   * Recurcively ensures that all the values in an array are of the specified type.
+   * Recursively ensures that all the values in an array are of the specified type.
    *
    * @param array $value The value to clean
    * @param int $type The type of value the value should be.
@@ -263,7 +258,7 @@ class param {
     // Then we clean the text and return it.
     return $purifier->purify($html);
   }
-  
+
   /**
    * Gets the named parameter, returns the default value if it is not present or invalid.
    * 

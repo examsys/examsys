@@ -75,7 +75,7 @@ class schoolutilstest extends unittestdatabase {
      * @group school
      */
     public function test_get_schoolid_from_externalid() {
-        $this->assertEquals(1, SchoolUtils::get_schoolid_from_externalid("ABC", $this->db));
+        $this->assertEquals(1, SchoolUtils::get_schoolid_from_externalid("ABC", 'external', $this->db));
     }
     /**
      * Test comparing  faculties with external list

@@ -1779,6 +1779,12 @@ function displayQuestion($exclusions, $q_no, $q_id, $theme, $scenario, $leadin, 
       return false;
     }
   </script>
+  <?php
+    if($configObject->get_setting('core', 'paper_mathjax')) {
+      $render = new render($configObject);
+      $render->render(null, null, 'mathjax.html');
+    }
+  ?>
 </head>
 
 <body>

@@ -115,6 +115,7 @@ $string['modified'] = 'Modified:';
 $string['editor'] = 'Editor';
 $string['plaintext'] = 'Plain Text';
 $string['wysiwyg'] = 'WYSIWYG';
+$string['mathjax'] = 'MathJax';
 $string['changes'] = 'Changes';
 $string['comments'] = 'Comments';
 $string['mapping'] = 'Mapping';
@@ -282,5 +283,8 @@ $string['tooltip_formula'] = 'Click link for more details in the online help.';
 // Textbox
 $string['reminders'] = 'Reminders';
 $string['reminder_no'] = 'Reminder #%d';
+
+$string['previewmathjax'] = 'Preview';
+$string['mathjaxinstructions'] = 'Enter latex formula within <span class="tex2jax_ignore">$$</span> for inline mode, or <span class="tex2jax_ignore">$$$</span> for display mode.';
 
 

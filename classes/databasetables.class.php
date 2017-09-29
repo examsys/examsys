@@ -26,7 +26,7 @@ class databaseTables {
 
   private $tableList = array();
 
-  function __construct($charset) {
+  function __construct($charset, $engine = 'InnoDB', $helpEngine = 'MyISAM') {
     $this->tableList['access_log'] = <<<QUERY
       CREATE TABLE `access_log` (
         `id` int(11) unsigned NOT NULL auto_increment,
@@ -36,7 +36,7 @@ class databaseTables {
         `ipaddress` char(60) default NULL,
         `page` varchar(255) default NULL,
         PRIMARY KEY (`id`)
-      ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+      ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['admin_access'] = <<<QUERY
@@ -46,7 +46,7 @@ QUERY;
         `schools_id` int(11) default NULL,
         PRIMARY KEY (`adminID`),
         KEY idx_schoolsid_userid (schools_id, userID )
-      ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+      ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['announcements'] = <<<QUERY
@@ -60,7 +60,7 @@ QUERY;
         `enddate` datetime DEFAULT NULL,
         `deleted` datetime DEFAULT NULL,
         PRIMARY KEY (`id`)
-      ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+      ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['cache_median_question_marks'] = <<<QUERY
@@ -70,7 +70,7 @@ QUERY;
         `median` decimal(10,5) DEFAULT NULL,
         `mean` decimal(10,5) DEFAULT NULL,
         PRIMARY KEY (`paperID`,`questionID`)
-      ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+      ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['cache_paper_stats'] = <<<QUERY
@@ -89,7 +89,7 @@ QUERY;
         `stdev_mark` decimal(10,5) DEFAULT NULL,
         `stdev_percent` decimal(10,5) DEFAULT NULL,
         PRIMARY KEY (`paperID`)
-      ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+      ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['cache_student_paper_marks'] = <<<QUERY
@@ -100,7 +100,7 @@ QUERY;
         `percent` decimal(10,5) DEFAULT NULL,
         PRIMARY KEY (`paperID`,`userID`),
         KEY `idx_userID` (`userID`)
-      ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+      ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
 
@@ -112,7 +112,7 @@ QUERY;
           `status` enum('in_progress','success','failure') DEFAULT NULL,
           `errors` text,
           PRIMARY KEY (`id`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
         
     $this->tableList['config'] = <<<QUERY
@@ -122,7 +122,7 @@ QUERY;
           `value` text COLLATE utf8_unicode_ci,
           `type` VARCHAR(10) NULL,
           PRIMARY KEY (`component`,`setting`)
-        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['courses'] = <<<QUERY
@@ -135,10 +135,10 @@ QUERY;
           `externalid` varchar(255) default NULL,
           `externalsys` varchar(255) default NULL,
           PRIMARY KEY (`id`),
-          UNIQUE INDEX `externalid` (`externalid`),
+          UNIQUE INDEX `externalid` (`externalid`, `externalsys`),
           KEY `degree` (`name`),
           KEY `idx_courses_name` (`name`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['denied_log'] = <<<QUERY
@@ -151,7 +151,7 @@ QUERY;
         `title` varchar(255) default NULL,
         `msg` text default NULL,
         PRIMARY KEY (`id`)
-      ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+      ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['ebel'] = <<<QUERY
@@ -160,7 +160,7 @@ QUERY;
             `category` char(3) default NULL,
             `percentage` float default NULL,
             PRIMARY KEY (`std_setID`,`category`)
-          ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+          ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['ebel_grid_templates'] = <<<QUERY
@@ -186,7 +186,7 @@ QUERY;
             `HN2` tinyint(4) default NULL,
             `name` varchar(255) default NULL,
             PRIMARY KEY  (`id`)
-          ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+          ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['exam_announcements'] = <<<QUERY
@@ -198,7 +198,7 @@ QUERY;
             `msg` text,
             `created` datetime,
             UNIQUE INDEX `idx_paperID_q_id` (`paperID`,`q_id`)
-          ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+          ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['extra_cal_dates'] = <<<QUERY
@@ -211,7 +211,7 @@ QUERY;
             `bgcolor` varchar(16) NOT NULL,
             `deleted` datetime DEFAULT NULL,
             PRIMARY KEY (`id`)
-          ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+          ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['faculty'] = <<<QUERY
@@ -224,8 +224,8 @@ QUERY;
             `externalsys` varchar(255) default NULL,
             PRIMARY KEY  (`id`),
             UNIQUE INDEX `code` (`code`),
-            UNIQUE INDEX `externalid` (`externalid`)
-          ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+            UNIQUE INDEX `externalid` (`externalid`, `externalsys`)
+          ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['feedback_release'] = <<<QUERY
@@ -235,7 +235,7 @@ QUERY;
           `date` datetime NOT NULL,
           `type` enum('objectives','questions','cohort_performance','external_examiner') default NULL,
           PRIMARY KEY  (`idfeedback_release`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['folders'] = <<<QUERY
@@ -247,7 +247,7 @@ QUERY;
           `color` enum('yellow','red','green','blue','grey') default NULL,
           `deleted` datetime default NULL,
           PRIMARY KEY  (`id`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['folders_modules_staff'] = <<<QUERY
@@ -255,7 +255,7 @@ QUERY;
           `folders_id` int(10) unsigned NOT NULL DEFAULT '0',
           `idMod` int(11) unsigned NOT NULL DEFAULT '0',
           PRIMARY KEY  (`folders_id`,`idMod`)
-        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['help_log'] = <<<QUERY
@@ -266,7 +266,7 @@ QUERY;
           `accessed` datetime default NULL,
           `pageID` int(11) default NULL,
           PRIMARY KEY  (`id`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$helpEngine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['help_searches'] = <<<QUERY
@@ -278,7 +278,7 @@ QUERY;
           `searchstring` text,
           `hits` int(11) default NULL,
           PRIMARY KEY  (`id`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$helpEngine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['help_tutorial_log'] = <<<QUERY
@@ -289,7 +289,7 @@ QUERY;
           `accessed` datetime default NULL,
           `tutorial` varchar(255) default NULL,
           PRIMARY KEY (`id`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$helpEngine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['hofstee'] = <<<QUERY
@@ -306,7 +306,7 @@ QUERY;
           `y2_distinction` tinyint(4) DEFAULT NULL,
           `marking` tinyint(4) DEFAULT NULL,
            PRIMARY KEY (`std_setID`)
-        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['client_identifiers'] = <<<QUERY
@@ -319,7 +319,7 @@ QUERY;
           PRIMARY KEY (`id`),
           KEY `lab` (`lab`),
           KEY `address_idx` (`address`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['keywords_question'] = <<<QUERY
@@ -327,7 +327,7 @@ QUERY;
           `q_id` int(11) default NULL,
           `keywordID` int(11) default NULL,
           PRIMARY KEY (`q_id`, `keywordID`)
-        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['keywords_link'] = <<<QUERY
@@ -335,7 +335,7 @@ QUERY;
           `q_id` INT(4) NOT NULL,
           `keyword_id` INT(11) NOT NULL,
           PRIMARY KEY (`q_id`)
-        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['keywords_user'] = <<<QUERY
@@ -346,7 +346,7 @@ QUERY;
           `keyword_type` enum('personal','team') default NULL,
           PRIMARY KEY (`id`),
           KEY `username` (`userID`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['killer_questions'] = <<<QUERY
@@ -356,7 +356,7 @@ QUERY;
           `q_id` int(4) unsigned NOT NULL DEFAULT '0',
           PRIMARY KEY (`id`),
           KEY `idx_paperID` (`paperID`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['labs'] = <<<QUERY
@@ -370,7 +370,7 @@ QUERY;
           `it_support` text,
           `plagarism` text,
           PRIMARY KEY (`id`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['log0'] = <<<QUERY
@@ -391,7 +391,7 @@ QUERY;
           PRIMARY KEY  (`id`),
           UNIQUE KEY `idx_metadataID_qid_screen` (`metadataID`,`q_id`,`screen`),
           KEY `q_id` (`q_id`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset} PACK_KEYS=1
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset} PACK_KEYS=1
 QUERY;
 
     $this->tableList['log0_deleted'] = <<<QUERY
@@ -409,7 +409,7 @@ QUERY;
           `dismiss` char(20) DEFAULT NULL,
           `option_order` varchar(100) DEFAULT NULL,
           `metadataID` int(11) DEFAULT NULL
-        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['log1'] = <<<QUERY
@@ -430,7 +430,7 @@ QUERY;
           PRIMARY KEY  (`id`),
           UNIQUE KEY `idx_metadataID_qid_screen` (`metadataID`,`q_id`,`screen`),
           KEY `q_id` (`q_id`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset} PACK_KEYS=1
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset} PACK_KEYS=1
 QUERY;
 
     $this->tableList['log1_deleted'] = <<<QUERY
@@ -448,7 +448,7 @@ QUERY;
           `dismiss` char(20) DEFAULT NULL,
           `option_order` varchar(100) DEFAULT NULL,
           `metadataID` int(11) DEFAULT NULL
-        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['log2'] = <<<QUERY
@@ -469,7 +469,7 @@ QUERY;
           PRIMARY KEY  (`id`),
           UNIQUE KEY `idx_metadataID_qid_screen` (`metadataID`,`q_id`,`screen`),
           KEY `q_id` (`q_id`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset} PACK_KEYS=1
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset} PACK_KEYS=1
 QUERY;
 
     $this->tableList['log3'] = <<<QUERY
@@ -490,7 +490,7 @@ QUERY;
           PRIMARY KEY  (`id`),
           UNIQUE KEY `idx_metadataID_qid_screen` (`metadataID`,`q_id`,`screen`),
           KEY `q_id` (`q_id`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset} PACK_KEYS=1
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset} PACK_KEYS=1
 QUERY;
 
     $this->tableList['log4'] = <<<QUERY
@@ -503,7 +503,7 @@ QUERY;
           PRIMARY KEY (`id`),
           KEY `q_id` (`q_id`),
           INDEX `log4_overallID` (`log4_overallID`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['log4_overall'] = <<<QUERY
@@ -523,7 +523,7 @@ QUERY;
           KEY `q_paper` (`q_paper`),
           KEY `username` (`userID`),
           KEY `started` (`started`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['log5'] = <<<QUERY
@@ -537,7 +537,7 @@ QUERY;
           PRIMARY KEY  (`id`),
           UNIQUE KEY `idx_metadataID_qid` (`metadataID`,`q_id`),
           KEY `q_id` (`q_id`)
-       ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+       ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['log6'] = <<<QUERY
@@ -552,7 +552,7 @@ QUERY;
           PRIMARY KEY (`id`),
           KEY `started` (`started`),
           KEY `q_id` (`q_id`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['log_extra_time'] = <<<QUERY
@@ -565,7 +565,7 @@ QUERY;
           `extra_time` int(10) unsigned NOT NULL,
           PRIMARY KEY (`id`),
           UNIQUE KEY `key_lab_id_paper_id_user_id` (`labID`,`paperID`,`userID`)
-        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['log_lab_end_time'] = <<<QUERY
@@ -578,7 +578,7 @@ QUERY;
           `end_time` int(10) unsigned NOT NULL,
           PRIMARY KEY (`id`),
           UNIQUE KEY `key_lab_paper_invig_time` (`labID`,`paperID`,`invigilatorID`,`end_time`)
-        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['log_late'] = <<<QUERY
@@ -598,7 +598,7 @@ QUERY;
           `metadataID` int(11) unsigned DEFAULT NULL,
           PRIMARY KEY  (`id`),
           UNIQUE KEY `idx_metadataID_qid_screen` (`metadataID`,`q_id`,`screen`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['log_metadata'] = <<<QUERY
@@ -618,7 +618,7 @@ QUERY;
           KEY `userID` (`userID`,`paperID`,`started`),
           KEY `idx_log_metadata_student_grade` (`student_grade`),
           KEY `idx_log_metadata_paperID` (`paperID`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['log_metadata_deleted'] = <<<QUERY
@@ -634,7 +634,7 @@ QUERY;
           `completed` datetime DEFAULT NULL,
           `lab_name` varchar(255) DEFAULT NULL,
           `highest_screen` tinyint(3) unsigned DEFAULT NULL
-        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['lti_context'] = <<<QUERY
@@ -644,7 +644,7 @@ QUERY;
           `updated_on` DATETIME NOT NULL,
           PRIMARY KEY (`lti_context_key`),
           KEY `c_internal_id` (`c_internal_id`)
-          ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+          ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['lti_keys'] = <<<QUERY
@@ -658,7 +658,7 @@ QUERY;
           `updated_on` datetime,
           PRIMARY KEY (`id`),
           KEY `oauth_consumer_key` (`oauth_consumer_key`)
-          ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+          ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['lti_resource'] = <<<QUERY
@@ -670,7 +670,7 @@ QUERY;
         PRIMARY KEY (`lti_resource_key`),
         KEY `destination2` (`internal_type`),
         KEY `destination` (`internal_id`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['lti_user'] = <<<QUERY
@@ -680,7 +680,7 @@ QUERY;
           `updated_on` datetime NOT NULL,
           PRIMARY KEY (`lti_user_key`),
           KEY `lti_user_equ` (`lti_user_equ`)
-         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+         ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['marking_override'] = <<<QUERY
@@ -697,7 +697,7 @@ QUERY;
           `reason` VARCHAR(255) NULL,
           PRIMARY KEY (`id`),
           UNIQUE KEY `log_id` (`log_id`, `log_type`)
-          ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+          ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['modules'] = <<<QUERY
@@ -721,11 +721,11 @@ QUERY;
           `academic_year_start` char(5) NOT NULL,
           `externalid` varchar(255) default NULL,
           PRIMARY KEY (`id`),
-          UNIQUE INDEX `externalid` (`externalid`),
+          UNIQUE INDEX `externalid` (`externalid`, `sms`),
           KEY `guideid` (`moduleid`),
           KEY `idx_moduleid_deleted` (`moduleid`,`mod_deleted`),
           KEY `idx_schoolid_deleted` (`schoolid`,`mod_deleted`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['modules_staff'] = <<<QUERY
@@ -737,7 +737,7 @@ QUERY;
           PRIMARY KEY (`groupID`),
           KEY `name` (`idMod`),
           KEY `idx_memberID` (`memberID`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['academic_year'] = <<<QUERY
@@ -749,7 +749,7 @@ QUERY;
           `deleted` datetime DEFAULT NULL,
           `deletedby` int(10),
           PRIMARY KEY (`calendar_year`)
-        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['modules_student'] = <<<QUERY
@@ -764,7 +764,7 @@ QUERY;
           KEY `idx_userID` (`userID`),
           KEY `idx_mod_calyear` (`calendar_year`,`idMod`),
           KEY `idx_mod` (`idMod`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['objectives'] = <<<QUERY
@@ -777,7 +777,7 @@ QUERY;
         `sequence` int(11) DEFAULT NULL,
         PRIMARY KEY (`obj_id`,`idMod`,`calendar_year`),
         KEY `idx_identifier_calendar_year_sequence` (`identifier`,`calendar_year`,`sequence`)
-        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['options'] = <<<QUERY
@@ -796,7 +796,7 @@ QUERY;
           `marks_partial` float default NULL,
           PRIMARY KEY (`id_num`),
           KEY `o_id` (`o_id`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['paper_feedback'] = <<<QUERY
@@ -807,7 +807,7 @@ QUERY;
           `msg` text,
           PRIMARY KEY (`id`),
           KEY `idx_paperID` (`paperID`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['paper_metadata_security'] = <<<QUERY
@@ -818,7 +818,7 @@ QUERY;
           `value` varchar(255) default NULL,
           PRIMARY KEY (`id`),
           KEY `idx_paperID` (`paperID`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['paper_notes'] = <<<QUERY
@@ -830,7 +830,7 @@ QUERY;
           `note_authorID` int(10) unsigned default NULL,
           `note_workstation` char(100) default NULL,
           PRIMARY KEY (`note_id`)
-        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['papers'] = <<<QUERY
@@ -845,7 +845,7 @@ QUERY;
           KEY `question_idx` (`question`),
           KEY `screen` (`screen`),
           KEY `paper_2` (`paper`,`display_pos`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['password_tokens'] = <<<QUERY
@@ -855,7 +855,7 @@ QUERY;
           `token` char(16) NOT NULL,
           `time` datetime NOT NULL,
           PRIMARY KEY (`id`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['performance_details'] = <<<QUERY
@@ -865,7 +865,7 @@ QUERY;
           `p` tinyint(4) DEFAULT NULL,
           `d` tinyint(4) DEFAULT NULL,
           KEY `idx_perform_id` (`perform_id`)
-          ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+          ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['performance_main']  = <<<QUERY
@@ -878,7 +878,7 @@ QUERY;
           `taken` date DEFAULT NULL,
           PRIMARY KEY (`id`),
           KEY `idx_q_id` (`q_id`)
-          ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+          ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['properties'] = <<<QUERY
@@ -927,14 +927,14 @@ QUERY;
           `externalid` varchar(255) default NULL,
           `externalsys` varchar(255) default NULL,
           PRIMARY KEY (`property_id`),
-          UNIQUE INDEX `externalid` (`externalid`),
+          UNIQUE INDEX `externalid` (`externalid`, `externalsys`),
           KEY `paper_title` (`paper_title`),
           KEY `paper_owner` (`paper_ownerID`),
           KEY `question_type` (`paper_type`),
           KEY `crypt_name_idx` (`crypt_name`),
           KEY `idx_owner_deleted` (`paper_ownerID`,`deleted`),
           KEY `date_idx` (`start_date`, `end_date`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['properties_modules'] = <<<QUERY
@@ -943,7 +943,7 @@ QUERY;
           `idMod` int(11) unsigned NOT NULL DEFAULT '0',
           PRIMARY KEY (`property_id`,`idMod`),
           KEY `idx_idmod` (`idMod`)
-        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['properties_reviewers'] = <<<QUERY
@@ -955,7 +955,7 @@ QUERY;
           PRIMARY KEY (`id`),
           KEY `idx_paperID` (`paperID`),
           KEY `idx_type` (`type`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['question_exclude'] = <<<QUERY
@@ -969,7 +969,7 @@ QUERY;
           `reason` text,
           KEY `idx_q_id` (`q_id`),
           PRIMARY KEY (`id`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['question_statuses'] = <<<QUERY
@@ -985,7 +985,7 @@ QUERY;
           `colour` char(7) DEFAULT '#000000',
           `display_order` tinyint(3) unsigned NOT NULL DEFAULT '255',
           PRIMARY KEY (`id`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['questions'] = <<<QUERY
@@ -1022,7 +1022,7 @@ QUERY;
           KEY `idx_owner_deleted` (`ownerID`,`deleted`),
           KEY `idx_deleted` (`deleted`),
           KEY `idx_guid` (`guid`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
 $this->tableList['questions_metadata'] = <<<QUERY
@@ -1032,7 +1032,7 @@ $this->tableList['questions_metadata'] = <<<QUERY
           `type` varchar(255) default NULL,
           `value` varchar(255) default NULL,
           PRIMARY KEY (`id`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
 $this->tableList['questions_modules'] = <<<QUERY
@@ -1041,7 +1041,7 @@ $this->tableList['questions_modules'] = <<<QUERY
           `idMod` int(11) NOT NULL ,
           KEY `idx_idmod` (`idMod`),
           PRIMARY KEY (`q_id`,`idMod`)
-        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
 $this->tableList['random_link'] = <<<QUERY
@@ -1050,7 +1050,7 @@ $this->tableList['random_link'] = <<<QUERY
           `q_id` INT(4) NOT NULL,
           PRIMARY KEY (`id`, `q_id`),
           INDEX `random_link_fk2` (`q_id`)
-        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['recent_papers'] = <<<QUERY
@@ -1059,7 +1059,7 @@ QUERY;
           `paperID` mediumint(8) unsigned NOT NULL default '0',
           `accessed` datetime default NULL,
           PRIMARY KEY  (`userID`,`paperID`)
-        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['reference_material'] = <<<QUERY
@@ -1071,7 +1071,7 @@ QUERY;
           `created` datetime DEFAULT NULL,
           `deleted` datetime DEFAULT NULL,
           PRIMARY KEY (`id`)
-        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['reference_modules'] = <<<QUERY
@@ -1080,7 +1080,7 @@ QUERY;
           `refID` mediumint(8) unsigned DEFAULT NULL,
           `idMod` int(11) unsigned DEFAULT NULL,
           PRIMARY KEY (`id`)
-        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['reference_papers'] = <<<QUERY
@@ -1089,7 +1089,7 @@ QUERY;
           `paperID` mediumint(8) unsigned DEFAULT NULL,
           `refID` mediumint(9) DEFAULT NULL,
           PRIMARY KEY (`id`)
-        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['relationships'] = <<<QUERY
@@ -1106,7 +1106,7 @@ QUERY;
           KEY `module_id_idx` (`idMod`),
           KEY `paper_id_idx` (`paper_id`),
           KEY `calendar_year` (`calendar_year`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['review_comments'] = <<<QUERY
@@ -1121,7 +1121,7 @@ QUERY;
           `screen` tinyint(4) default NULL,
           `metadataID` int(11) unsigned NOT NULL DEFAULT '0',
           PRIMARY KEY (`id`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['review_metadata'] = <<<QUERY
@@ -1136,7 +1136,7 @@ QUERY;
           `paper_comment` text,
           PRIMARY KEY (`id`),
           KEY `idx_paperID` (`paperID`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['save_fail_log'] = <<<QUERY
@@ -1152,7 +1152,7 @@ QUERY;
           `response_data` varchar(50) DEFAULT NULL,
           PRIMARY KEY (`id`),
           KEY `idx_paperID` (`paperID`)
-        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['scheduling'] = <<<QUERY
@@ -1167,7 +1167,7 @@ QUERY;
           `campus` varchar(255) DEFAULT NULL,
           PRIMARY KEY (`id`),
           UNIQUE KEY `idx_paperID` (`paperID`)
-           ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+           ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['schools'] = <<<QUERY
@@ -1181,9 +1181,9 @@ QUERY;
           `externalsys` varchar(255) default NULL,
           PRIMARY KEY (`id`),
           UNIQUE INDEX `code` (`code`),
-          UNIQUE INDEX `externalid` (`externalid`),
+          UNIQUE INDEX `externalid` (`externalid`, `externalsys`),
           KEY `idx_facultyID` (`facultyID`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['sct_reviews'] = <<<QUERY
@@ -1196,7 +1196,7 @@ QUERY;
           `answer` tinyint(4) default NULL,
           `reason` text,
           PRIMARY KEY (`id`)
-        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['sessions'] = <<<QUERY
@@ -1210,7 +1210,7 @@ QUERY;
           `occurrence` datetime default NULL,
           PRIMARY KEY (`identifier`,`idMod`,`calendar_year`),
           KEY `sess_id` (`sess_id`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['sid'] = <<<QUERY
@@ -1218,7 +1218,7 @@ QUERY;
           `student_id` char(15) default NULL,
           `userID` int(10) unsigned NOT NULL default 0,
           PRIMARY KEY  (`userID`,`student_id`)
-        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['sms_imports'] = <<<QUERY
@@ -1233,7 +1233,7 @@ QUERY;
           `import_type` varchar(255) default NULL,
           `academic_year` INT(4),
           PRIMARY KEY (`id`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['special_needs'] = <<<QUERY
@@ -1254,7 +1254,7 @@ QUERY;
 					`breaks` text,
 					PRIMARY KEY (`special_id`),
           UNIQUE KEY `idx_userID` (`userID`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['staff_help'] = <<<QUERY
@@ -1275,7 +1275,7 @@ QUERY;
           KEY `language` (`language`),
           KEY `articleid` (`articleid`),
           FULLTEXT KEY `title` (`title`,`body_plain`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8
+        ) ENGINE={$helpEngine} AUTO_INCREMENT=0 DEFAULT CHARSET=utf8
 QUERY;
 
     $this->tableList['std_set'] = <<<QUERY
@@ -1289,7 +1289,7 @@ QUERY;
           `pass_score` decimal(10,6) DEFAULT NULL,
           `distinction_score` decimal(10,6) DEFAULT NULL,
           PRIMARY KEY (`id`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['std_set_questions'] = <<<QUERY
@@ -1299,7 +1299,7 @@ QUERY;
           `questionID` int(11) unsigned NOT NULL,
           `rating` text,
           PRIMARY KEY (`id`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['state'] = <<<QUERY
@@ -1309,7 +1309,7 @@ QUERY;
           `content` varchar(255) DEFAULT NULL,
           `page` varchar(255) DEFAULT NULL,
           UNIQUE KEY `idx_user_state` (`userID`,`state_name`,`page`)
-        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['student_help'] = <<<QUERY
@@ -1329,7 +1329,7 @@ QUERY;
           KEY `language` (`language`),
           KEY `articleid` (`articleid`),
           FULLTEXT KEY `title` (`title`,`body_plain`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8
+        ) ENGINE={$helpEngine} AUTO_INCREMENT=0 DEFAULT CHARSET=utf8
 QUERY;
 
     $this->tableList['student_notes'] = <<<QUERY
@@ -1341,7 +1341,7 @@ QUERY;
           `paper_id` mediumint(8) unsigned DEFAULT NULL,
           `note_authorID` int unsigned default NULL,
           PRIMARY KEY (`note_id`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['sys_errors'] = <<<QUERY
@@ -1363,7 +1363,7 @@ QUERY;
           `variables` longtext,
           `backtrace` longtext,
           PRIMARY KEY (`id`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['sys_updates'] = <<<QUERY
@@ -1371,7 +1371,7 @@ QUERY;
           `name` varchar(255) DEFAULT NULL,
           `updated` datetime NOT NULL,
           KEY `name` (`name`)
-        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['temp_users'] = <<<QUERY
@@ -1384,7 +1384,7 @@ QUERY;
           `assigned_account` char(10) default NULL,
           `reserved` datetime default NULL,
           PRIMARY KEY  (`id`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['textbox_marking'] = <<<QUERY
@@ -1405,7 +1405,7 @@ QUERY;
 					UNIQUE KEY `idx_unique` (`phase`,`answer_id`,`logtype`),
 					KEY `paperID` (`paperID`),
 					KEY `q_id` (`q_id`)
-					) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+					) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['textbox_remark'] = <<<QUERY
@@ -1414,7 +1414,7 @@ QUERY;
           `paperID` mediumint(8) unsigned default NULL,
           `userID` int(10) unsigned default NULL,
           PRIMARY KEY (`id`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['toilet_breaks'] = <<<QUERY
@@ -1425,7 +1425,7 @@ QUERY;
           `break_taken` datetime NOT NULL,
           PRIMARY KEY (`id`),
           KEY `paperID` (`paperID`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['track_changes'] = <<<QUERY
@@ -1441,7 +1441,7 @@ QUERY;
           PRIMARY KEY (`id`),
           KEY `typeID` (`typeID`),
           KEY `type` (`type`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['users'] = <<<QUERY
@@ -1464,7 +1464,7 @@ QUERY;
           PRIMARY KEY (`id`),
           UNIQUE KEY `username_index` (`username`),
           KEY `idx_roles` (`roles`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['users_metadata'] = <<<QUERY
@@ -1475,7 +1475,7 @@ QUERY;
           `value` varchar(255) default NULL,
           `calendar_year` INT(4),
           UNIQUE KEY `idx_users_metadata` (`userID`,`idMod`,`type`,`calendar_year`)
-        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['webservice_permissions'] = <<<QUERY
@@ -1484,14 +1484,14 @@ QUERY;
             action varchar(80) NOT NULL,
             access BOOLEAN NOT NULL default false,
             PRIMARY KEY (client_id,action)
-        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
     $this->tableList['permissions'] = <<<QUERY
         CREATE TABLE permissions (
             action varchar(80) NOT NULL,
             PRIMARY KEY (action)
-        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
 $this->tableList['gradebook_paper'] = <<<QUERY
@@ -1499,7 +1499,7 @@ $this->tableList['gradebook_paper'] = <<<QUERY
             paperid int(8) NOT NULL,
             timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY (`paperid`)
-        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
 $this->tableList['gradebook_user'] = <<<QUERY
@@ -1510,7 +1510,7 @@ $this->tableList['gradebook_user'] = <<<QUERY
             adjusted_grade float DEFAULT NULL,
             classification varchar(50) DEFAULT NULL,
             PRIMARY KEY (paperid, userid)
-        )  ENGINE=InnoDB DEFAULT CHARSET={$charset}
+        )  ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
 $this->tableList['oauth_clients'] = <<<QUERY
@@ -1523,7 +1523,7 @@ $this->tableList['oauth_clients'] = <<<QUERY
             user_id VARCHAR(80),
             CONSTRAINT clients_client_id_pk PRIMARY KEY (client_id),
             KEY `idx_user_id` (`user_id`)
-        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
 $this->tableList['oauth_access_tokens'] = <<<QUERY
@@ -1534,7 +1534,7 @@ $this->tableList['oauth_access_tokens'] = <<<QUERY
             expires TIMESTAMP NOT NULL,
             scope VARCHAR(2000),
             CONSTRAINT access_token_pk PRIMARY KEY (access_token)
-        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
 $this->tableList['oauth_authorization_codes'] = <<<QUERY
@@ -1546,7 +1546,7 @@ $this->tableList['oauth_authorization_codes'] = <<<QUERY
             expires TIMESTAMP NOT NULL,
             scope VARCHAR(2000),
             CONSTRAINT auth_code_pk PRIMARY KEY (authorization_code)
-        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
 $this->tableList['oauth_refresh_tokens'] = <<<QUERY
@@ -1557,7 +1557,7 @@ $this->tableList['oauth_refresh_tokens'] = <<<QUERY
             scope VARCHAR(2000),
             CONSTRAINT refresh_token_pk PRIMARY KEY (refresh_token),
             KEY `idx_user_id` (`user_id`)
-        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
 $this->tableList['oauth_users'] = <<<QUERY
@@ -1567,14 +1567,14 @@ $this->tableList['oauth_users'] = <<<QUERY
             first_name VARCHAR(255),
             last_name VARCHAR(255),
             CONSTRAINT username_pk PRIMARY KEY (username)
-        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
 $this->tableList['oauth_scopes'] = <<<QUERY
         CREATE TABLE oauth_scopes (
             scope TEXT,
             is_default BOOLEAN
-        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
 $this->tableList['oauth_jwt'] = <<<QUERY
@@ -1583,7 +1583,7 @@ $this->tableList['oauth_jwt'] = <<<QUERY
             subject VARCHAR(80),
             public_key VARCHAR(2000),
             CONSTRAINT jwt_client_id_pk PRIMARY KEY (client_id)
-        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
 $this->tableList['campus'] = <<<QUERY
@@ -1593,7 +1593,7 @@ $this->tableList['campus'] = <<<QUERY
             isdefault BOOLEAN NOT NULL default false,
             PRIMARY KEY (`id`),
             INDEX `campus_idx` (`name`)
-        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
 $this->tableList['plugins'] = <<<QUERY
@@ -1603,7 +1603,26 @@ $this->tableList['plugins'] = <<<QUERY
             `type`  VARCHAR(50) NOT NULL,
             `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY (`component`)
-        ) ENGINE=InnoDB DEFAULT CHARSET={$charset}
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
+QUERY;
+
+$this->tableList['external_systems'] = <<<QUERY
+        CREATE TABLE external_systems (
+            `id` int(8) NOT NULL AUTO_INCREMENT,
+            `name` varchar(255) NOT NULL,
+            `type` varchar(30) NOT NULL,
+            PRIMARY KEY (`id`),
+            UNIQUE INDEX `name_idx` (`name`)
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
+QUERY;
+
+$this->tableList['external_systems_mapping'] = <<<QUERY
+        CREATE TABLE external_systems_mapping (
+            `client_id` varchar(80) NOT NULL,
+            `ext_id` int(8) NOT NULL,
+            PRIMARY KEY (`client_id`),
+            UNIQUE INDEX `client_id_idx` (`client_id`)
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
   }
   

@@ -39,6 +39,7 @@ $propertyObj->set_paper_colour_scheme($userObject, $bgcolor, $fgcolor, $textsize
 
 $paperID    = $propertyObj->get_property_id();
 $paper_type	= $propertyObj->get_paper_type();
+$start_date	= $propertyObj->get_start_date();
 
 if ($userObject->has_role('External Examiner')) {
   $review_type = 'External';
@@ -54,17 +55,21 @@ $review = new Review($paperID, $userid, $review_type, $mysqli);
 
 if (isset($_POST['close'])) {
   $review->record_general_comments($_POST['paper_comments'], false);
-  echo close_window();
+  echo close_window($propertyObj->get_fullscreen());
   exit();
 } elseif (isset($_POST['finish'])) {
   $review->record_general_comments($_POST['paper_comments'], true);
-  echo close_window();
+  echo close_window($propertyObj->get_fullscreen());
   exit(); 
 }
 
-function close_window() {
-  $html = "<html>\n<head>\n<title>Rog&#333;</title>\n</head>\n<body onload=\"window.close(); window.opener.location.reload();\"></body>\n</html>";
-  
+function close_window($fullscreen) {
+  if ($fullscreen == 1) {
+    $html = "<html>\n<head>\n<title>Rog&#333;</title>\n</head>\n<body onload=\"window.close(); window.opener.location.reload();\"></body>\n</html>";
+  } else {
+    header("location: index.php", true, 303);
+    exit();
+  }
   return $html;
 }
 ?>
@@ -94,13 +99,15 @@ function close_window() {
   <form method="post" action="<?php echo $_SERVER['PHP_SELF'] ?>?id=<?php echo $_GET['id'] ?>" autocomplete="off">
 <?php
   echo '<table cellpadding="4" cellspacing="0" border="0" style="width:100%; background-color:#5590CF">';
-  echo '<tr><td><div class="paper">' . $propertyObj->get_paper_title() . '</div><div style="color:white; font-weight:bold">' . $string['reviewcomplete'] . '</div></td><td align="center" class="raised_tbl" width="50"><img src="../config/logo.png" width="160" height="67" alt="University Logo" /></td></tr>';
+  $themedirectory = rogo_directory::get_directory('theme');
+  $logo_path = $themedirectory->url($configObject->get_setting('core', 'misc_logo_main'));
+  echo '<tr><td><div class="paper">' . $propertyObj->get_paper_title() . '</div><div style="color:white; font-weight:bold">' . $string['reviewcomplete'] . '</div></td><td align="center" class="raised_tbl" width="50"><img src="' . $logo_path . '" width="160" height="67" alt="University Logo" /></td></tr>';
   echo '</table>';
 
   $configObject = Config::get_instance();
   $start_of_day_ts = strtotime('midnight');
 
-  if ($_POST['old_screen'] != '' and $start_of_day_ts <= $review_deadline) {
+  if (isset($_POST['old_screen']) and (($_POST['old_screen'] != '' and $start_of_day_ts <= $review_deadline and time() <= $start_date) or $start_date == '')) {
     $review->record_comments($_POST['old_screen']);
   } else {
     echo $string['deadline'] . ' = ' . date($configObject->get('cfg_long_date_php'), $review_deadline);

@@ -5,23 +5,27 @@ courses:
     description: "Test course"
     schoolid: 1
     externalid: "123456"
+    externalsys: "test rogo api"
   -
     id: 2
     name: "TEST2"
     description: "Test course 2"
     schoolid: 1
     externalid: null
+    externalsys: null
 schools:
   -
     id: 1
     school: "Test school"
     facultyID: 1
     externalid: "qwerty"
+    externalsys: "test rogo api"
 faculty:
   -
     id: 1
     name: "TEST"
     externalid: "abcdefghi"
+    externalsys: "test rogo api"
 users:
   -
     id: 1000
@@ -37,3 +41,18 @@ users:
     username: "sysadmin"
     roles: "Staff,SysAdmin"
     grade: "University Lecturer"
+oauth_clients:
+  -
+    client_id: 'test1'
+    client_secret: 'test'
+    redirect_uri: 'https://www.example.com'
+    user_id: 1
+external_systems:
+  -
+    id: 1
+    name: 'test rogo api'
+    type: 'api'
+external_systems_mapping:
+  -
+    ext_id: 1
+    client_id: 'test1'

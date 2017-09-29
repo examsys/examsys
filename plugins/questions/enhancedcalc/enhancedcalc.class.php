@@ -65,7 +65,7 @@ class EnhancedCalc extends Question implements questionInterface {
 			$sz = strlen($matches[0]);
 			$units = trim(substr($input, $sz));
 			$numb = $matches[0];
-			
+
 			return array($numb, $units);
 		} else {
 			return array($input, '');  // No number matched
@@ -125,7 +125,7 @@ class EnhancedCalc extends Question implements questionInterface {
 			if (!isset($this->useranswer['vars'])) {
 				$this->error = 'No Variables stored';
 				$this->qmark = 0;
-        
+
 				return Q_MARKING_UNCALC_ANSWER;
 			}
 
@@ -179,7 +179,7 @@ class EnhancedCalc extends Question implements questionInterface {
 					if ($variablessplit === 'ERROR') {
 						$this->error = "variable $key is ERROR";
 						$this->qmark = 0;
-						
+
 						return Q_MARKING_UNANSWERABLE;
 					}
 				}
@@ -193,7 +193,7 @@ class EnhancedCalc extends Question implements questionInterface {
 				 *
 				 */
 				$this->useranswer['cans'] = $enhancedcalcObj->calculate_correct_ans($this->useranswer['vars'], $this->useranswer['ans']['formula_used']);
-              } catch (Exception $e) {
+			} catch (Exception $e) {
 				//TODO: catch different errors "no connection", "unable to evaluate"
 				if (stripos($e->getMessage(), 'connect') !== false) {
 					$returnstatus = Q_MARKING_UNMARKED;   // Set to unmarked as there is no connection to R serve.
@@ -208,7 +208,7 @@ class EnhancedCalc extends Question implements questionInterface {
 
 				return $returnstatus;
 			}
-      
+
 			try {
 				if (isset($this->settings['tolerance_full'])) {
 					$this->settings['tolerance_full'] = $this->set_blank_to_zero($this->settings['tolerance_full']);
@@ -327,7 +327,7 @@ class EnhancedCalc extends Question implements questionInterface {
 				$this->qmark = 0;
 				$returnstatus = Q_MARKING_NOTANS;
 				$this->useranswer['status']['overall'] = $returnstatus;
-				
+
 				return $returnstatus;
 			}
 
@@ -337,7 +337,7 @@ class EnhancedCalc extends Question implements questionInterface {
 				$this->useranswer['status']['exact'] = false;
 				$returnstatus = Q_MARKING_WRONG;
 				$this->useranswer['status']['overall'] = $returnstatus;
-				
+
 				return $returnstatus;
 			}
 
@@ -471,7 +471,7 @@ class EnhancedCalc extends Question implements questionInterface {
 						$this->qmark = $this->settings['marks_incorrect'];
 						$returnstatus = Q_MARKING_WRONG;
 						$this->useranswer['status']['overall'] = $returnstatus;
-						
+
 						return $returnstatus;
 					}
 				}
@@ -539,7 +539,7 @@ class EnhancedCalc extends Question implements questionInterface {
 	 */
 	static public function process_user_answer(&$postdata, &$session) {
 		$data = $session;
-    
+
 		foreach ($postdata as $key => $value) {
 			$data[$key] = $value;
 		}
@@ -632,7 +632,7 @@ class EnhancedCalc extends Question implements questionInterface {
 	}
 
 	/*
-	 * return the passed value or 0 if the value is an empty string 
+	 * return the passed value or 0 if the value is an empty string
 	 */
 
 	private function set_blank_to_zero($val) {
@@ -647,7 +647,7 @@ class EnhancedCalc extends Question implements questionInterface {
 	 */
 
 	public function render() {
-			
+
 	}
 
 	/**
@@ -893,7 +893,7 @@ class EnhancedCalc extends Question implements questionInterface {
 	}
 
 	/**
-	 * Split the q_id from a linked answer 
+	 * Split the q_id from a linked answer
 	 * @param type $varval
 	 * @return type rogo q_id
 	 */
@@ -912,7 +912,7 @@ class EnhancedCalc extends Question implements questionInterface {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * test to see if a var is built from previous vars
 	 * @param  string  var min or max
@@ -924,11 +924,11 @@ class EnhancedCalc extends Question implements questionInterface {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * replace $A,$B,$C .... in a string and evluate using php eval
 	 * N.B ONLY Used to calculate compound question varables only in in Rserve mode
-	 * 
+	 *
 	 * @param  array $vars array('$VARNAME'=>VALUE)
 	 * @param string $formula sting in the format "($A+$B)/$C"
 	 * @return bool
@@ -937,19 +937,19 @@ class EnhancedCalc extends Question implements questionInterface {
 		$varname = array_keys($vars);
 		$varvalue = array_values($vars);
 		$vars_subed = str_replace($varname, $varvalue, $formula);
-    
+
 		return @eval( "return (string)(" . $vars_subed . ");");
 	}
-	
+
 	/**
-	 * Split the q_id and varname from a linked question var 
+	 * Split the q_id and varname from a linked question var
 	 * @param type $varval
 	 * @return type array(varname, q_id)
 	 */
 	public function parse_linked_question_var($varval) {
 		$varname = substr($varval, 3, 2);
 		$qid = intval(substr($varval, 5));
-		
+
 		return array($varname, $qid);
 	}
 
@@ -1120,21 +1120,39 @@ class EnhancedCalc extends Question implements questionInterface {
 		} else if ($this->is_strict_sf_enabled()) {
 			$marking_precision_feedback = " <span class=\"calc_fb\">(" . $string['answer_to'] . " " . $this->settings['sf'] . " " . $string['significant_figures'] . ")</span>";
 		}
-		
+
 		echo $leadin;
-		
-		if (in_array('ERROR', $varvalue, true)) {
-			echo "<p><input type=\"text\" style=\"text-align:right\" name=\"qid[" . $this->id . "][uans]\" size=\"10\" value=\"\" disabled=\"disabled\" />" . $dispunits . $marking_precision_feedback . "</p>\n";
+
+		// Find any previous failed/unanswered related question
+		$failed_answers = array();
+		foreach ($this->useranswer['vars'] as $key => $value) {
+			if ($value == 'ERROR' and isset($this->settings['vars'][$key]['min'])) {
+				$failed_answer_id = substr($this->settings['vars'][$key]['min'], 3);
+				foreach ($extra['current_question']['paper_questions'] as $question_on_paper) {
+					if (isset($question_on_paper['q_id']) and $failed_answer_id == $question_on_paper['q_id'] and isset($question_on_paper['assigned_number'])) {
+						$failed_answers[] = $question_on_paper['assigned_number'];
+					}
+				}
+			}
+		}
+		// Only want distinct failed answers.
+		// We could have duplicates if answer/variable in a parent question is used in multiple variables in a child question.
+		$failed_answers = array_unique($failed_answers);
+		$screen = $extra['current_question']['screen'];
+		if (in_array('ERROR', $this->useranswer['vars'])) {
+			echo "<p><input type=\"text\" style=\"text-align:right\" name=\"qid[" . $this->id . "][uans]\" data-screen=\"$screen\" size=\"10\" value=\"\" disabled=\"disabled\" />" . $dispunits . $marking_precision_feedback . "</p>\n";
+			echo "<p><strong>" . sprintf($string['failedanswer'], implode(', ', $failed_answers)) . "</strong></p>";
+			echo "<input type=\"hidden\" name=\"missingCalcAnswer\" id=\"missingCalcAnswer\" value=\"1\">";
 		} else {
 			if (isset($this->useranswer['uans']) and $this->useranswer['uans'] == '') {
-				echo "<div><input type=\"text\" style=\"text-align:right\" name=\"qid[" . $this->id . "][uans]\" size=\"10\" class=\"unans ecalc-answer\" />" . $dispunits . $marking_precision_feedback . "</div>\n";
+				echo "<div><input type=\"text\" style=\"text-align:right\" name=\"qid[" . $this->id . "][uans]\" data-screen=\"$screen\" size=\"10\" class=\"unans ecalc-answer\" />" . $dispunits . $marking_precision_feedback . "</div>\n";
 			} else {
 				if ((isset($this->useranswer['uans']) and $this->useranswer['uans'] != '')) { // Or $screen_pre_submitted == 0
 					$ans = $this->useranswer['uans'];
 
-					echo "<div><input type=\"text\" style=\"text-align:right\" id=\"q{$extra['num_on_screen']}\" name=\"qid[" . $this->id . "][uans]\" size=\"10\" value=\"" . $ans . "\" class=\"ecalc-answer\" />" . $dispunits . $marking_precision_feedback . "</div>\n";
+					echo "<div><input type=\"text\" style=\"text-align:right\" id=\"q{$extra['num_on_screen']}\" name=\"qid[" . $this->id . "][uans]\" data-screen=\"$screen\" size=\"10\" value=\"" . $ans . "\" class=\"ecalc-answer\" />" . $dispunits . $marking_precision_feedback . "</div>\n";
 				} else {
-					echo "<div><input type=\"text\" style=\"text-align:right\" class=\"ecalc-answer\" id=\"q{$extra['num_on_screen']}\" name=\"qid[" . $this->id . "][uans]\" size=\"10\" value=\"\" />" . $dispunits . $marking_precision_feedback . "</div>\n";
+					echo "<div><input type=\"text\" style=\"text-align:right\" class=\"ecalc-answer\" id=\"q{$extra['num_on_screen']}\" name=\"qid[" . $this->id . "][uans]\" data-screen=\"$screen\" size=\"10\" value=\"\" />" . $dispunits . $marking_precision_feedback . "</div>\n";
 					$unanswered = true;
 				}
 			}
@@ -1149,7 +1167,7 @@ class EnhancedCalc extends Question implements questionInterface {
 	 */
 	public function get_question_vars() {
 		$this->decode_settings();
-		
+
 		return (isset($this->settings['vars'])) ? $this->settings['vars'] : array();
 	}
 
@@ -1163,7 +1181,7 @@ class EnhancedCalc extends Question implements questionInterface {
 
 	public function get_user_vars() {
 		$this->decode_settings();
-		
+
 		return $this->useranswer['vars'];
 	}
 

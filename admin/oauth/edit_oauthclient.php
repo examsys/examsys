@@ -25,11 +25,14 @@ require '../../include/sysadmin_auth.inc';
 require_once '../../include/errors.php';
 require '../../include/toprightmenu.inc';
 
+$external = new \external_systems();
+
 if (isset($_POST['submit'])) {
-    $client = check_var('client', 'POST', true, false, true);
-    $secret = check_var('secret', 'POST', true, false, true);
-    $uri = check_var('uri', 'POST', true, false, true);
-    $userid = check_var('userid', 'POST', true, false, true);
+    $client = check_var('client', 'POST', true, false, true, param::TEXT);
+    $secret = check_var('secret', 'POST', true, false, true, param::TEXT);
+    $uri = check_var('uri', 'POST', true, false, true, param::URL);
+    $userid = check_var('userid', 'POST', true, false, true, param::INT);
+    $extsys = param::optional('extsys', null, param::INT, param::FETCH_POST);
     $oauth = new oauth($configObject);
     $storage = $oauth->get_storage();
     $storage->setClientDetails($client, $secret, $uri, null, null, $userid);
@@ -74,7 +77,11 @@ if (isset($_POST['submit'])) {
     } else {
         $oauth->set_permission('gradebook', $client, false);
     }
-    
+    if (!is_null($extsys)) {
+        $external->update_external_system_mapping($client, $extsys);
+    } else {
+        $external->delete_external_system_mapping($client);
+    }
     header("location: list_oauthclient.php", true, 303);
     exit();
 } else {
@@ -99,7 +106,14 @@ if (isset($_POST['submit'])) {
         $clientperms[$action] = $access;
     }
     $result->close();
-
+    // External systems.
+    $extsys = $external->get_all_api_externalsystems();
+    $extsysinfo = $external->get_mapped_externalsystem_info($client);
+    if (count($extsysinfo) == 2) {
+        $currentextsys = $extsysinfo['id'];
+    } else {
+        $currentextsys = null;
+    }
 }
 
 $render = new render($configObject);
@@ -143,7 +157,22 @@ $render->render_admin_content($breadcrumb, $lang);
                 echo "<input type=\"hidden\" name=\"client\" id=\"client\" value=\"" . $id . "\"/>";
                 echo "<input type=\"hidden\" name=\"userid\" id=\"userid\" value=\"" . $client[2] . "\"/>";
             }
-       
+        ?>
+            <tr><td class="field"><?php echo $string['extsys'] ?></td><td>
+            <select name="extsys" id="extsys">
+                <option value=""></option>
+                <?php
+                    foreach ($extsys as $id => $name) {
+                        if ($id === $currentextsys) {
+                            echo "<option value=\"$id\" selected=\"selected\">$name</option>\n";
+                        } else {
+                            echo "<option value=\"$id\">$name</option>\n";
+                        }
+                    }
+                ?>
+            </select>
+            </td></tr>
+        <?php
             foreach ($clientperms as $action => $access) {
                 if ($access) {
                     echo "<tr><td class=\"field\">" . $string[$action] . "</td><td><input type=\"checkbox\" name=\"" . $action . "\" checked /></td></tr>";

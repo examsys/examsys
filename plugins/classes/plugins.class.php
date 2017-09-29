@@ -86,6 +86,25 @@ abstract class plugins {
     }
 
     /**
+     * Plugin type specific install steps
+     * These should be implemented by overriding these methods in the plugin types base class
+     * @return bool true on success
+     */
+    protected function type_install() {
+        // By defult do nothing unless overridden.
+        return true;
+    }
+    /**
+     * Plugin type specific uninstall steps
+     * These should be implemented by overriding these methods in the plugin types base class
+     * @return bool true on success
+     */
+    protected function type_uninstall() {
+        // By defult do nothing unless overridden.
+        return true;
+    }
+    
+    /**
      * Get install path of plugin
      * @return string path
      */
@@ -142,6 +161,10 @@ abstract class plugins {
                         if (!\DBUtils::run_sql($installfile, $dbuser, $dbpasswd)) {
                             throw new \Exception("DBUtils::run_sql install.sql failed.");
                         }
+                    }
+                    // Run plugin type install steps.
+                    if (!$this->type_install()) {
+                        throw new \Exception("type_install failed.");
                     }
                 } catch (\Exception $e) {
                     return 'SCHEMA_FAIL';
@@ -210,6 +233,10 @@ abstract class plugins {
                     if (!\DBUtils::run_sql($uninstallfile, $dbuser, $dbpasswd)) {
                         throw new \Exception("DBUtils::run_sql uninstall.sql failed.");
                     }
+                }
+                // Run plugin type uninstall steps.
+                if (!$this->type_uninstall()) {
+                    throw new \Exception("type_uninstall failed.");
                 }
             } catch (\Exception $e) {
                 return 'DROP_SCHEMA_FAIL';

@@ -116,13 +116,13 @@ if ($duplicate == 'code') {
   echo '<tr><td class="field">' . $string['name'] . '</td><td><input type="text" style="width:99%" id="add_faculty" name="add_faculty" maxlength="80" value="" required autofocus /></td></tr>';
   echo '<tr><td class="field">' . $string["code"] . '</td><td><input type="text" size="30" maxlength="30" name="code" value=""/></td></tr>';
 }
-$sms = \plugins\plugins_sms::get_sms($mysqli);
-if ($sms !== false) {
+$external = new \external_systems();
+$extsys = $external->get_all_externalsystems();
 ?>
 <tr><td class="field"><?php echo $string['externalsys'] ?></td><td><select name="externalsys">
 <?php
   echo "<option value=\"\"></option>\n";
-  foreach ($sms as $s) {
+  foreach ($extsys as $i => $s) {
     if (isset($externalsys) and $s == $externalsys) {
       $selected = "selected";
     } else {
@@ -133,9 +133,6 @@ if ($sms !== false) {
 ?>
 </select></td></tr>
 <tr><td class="field"><?php echo $string['externalid'] ?></td><td><input type="text" size="30" maxlength="255" name="externalid" value=""></td></tr>
-<?php
-}
-?>
 </table>
 <div align="right"><input type="submit" name="ok" value="<?php echo $string['ok'] ?>" class="ok" /><input type="button" name="cancel" value="<?php echo $string['cancel'] ?>" class="cancel" style="margin-right:0" onclick="window.close();" /><input type="hidden" name="module" value="<?php if (isset($_GET['module'])) echo $_GET['module']; ?>" /></div>
 </form>

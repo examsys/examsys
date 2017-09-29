@@ -26,7 +26,7 @@ require '../include/staff_auth.inc';
 require_once '../include/errors.php';
 
 $paperID = check_var('paperID', 'GET', true, false, true);
-$moduleID = check_var('module', 'GET', true, false, true);
+$moduleID = check_var('module', 'GET', false, false, true);
 $properties = PaperProperties::get_paper_properties_by_id($paperID, $mysqli, $string, false);
 
 function marks_from_file($notice, $userObj, $paperID, $fileName, $db, $string) {

@@ -27,34 +27,34 @@ require '../include/errors.php';
 
 $exists = false;
 $new_keyword = '';
-  
-if (isset($_POST['ok']) or (isset($_POST['returnhit']) and $_POST['returnhit'] == '1')) {
-  $new_keyword = trim($_POST['new_keyword']);
+
+$submit = param::optional('ok', '', param::TEXT, param::FETCH_POST);
+$new_keyword = param::optional('new_keyword', '', param::TEXT, param::FETCH_POST);
+$module = param::optional('module', '', param::INT, param::FETCH_REQUEST);
+
+if ($submit != '') {
   if ($new_keyword != '') {
-    if ($_POST['module'] == '') {
-		  $type = 'personal';
-			$owner = $userObject->get_user_ID();
-		} else {
-		  $type = 'team';
-			$owner = $_POST['module'];
-		}
-		
-		$result = $mysqli->prepare("SELECT keyword FROM keywords_user WHERE keyword = ? AND userID = ? AND keyword_type = ?");
-		$result->bind_param('sis', $new_keyword, $owner, $type);
-		$result->execute();  
+    if ($module == '') {
+      $type = 'personal';
+      $owner = $userObject->get_user_ID();
+      } else {
+        $type = 'team';
+        $owner = $module;
+    }
+    $result = $mysqli->prepare("SELECT keyword FROM keywords_user WHERE keyword = ? AND userID = ? AND keyword_type = ?");
+    $result->bind_param('sis', $new_keyword, $owner, $type);
+    $result->execute();  
     $result->store_result();
     $result->bind_result($keyword);
-		if ($result->num_rows > 0) {
-		  $exists = true;
-		}
-		$result->close();
-		
-		if (!$exists) {
-			$result = $mysqli->prepare("INSERT INTO keywords_user VALUES (NULL, ?, ?, ?)");
-			$result->bind_param('iss', $owner, $new_keyword, $type);
-			$result->execute();  
-			$result->close();
-
+    if ($result->num_rows > 0) {
+      $exists = true;
+    }
+    $result->close();
+    if (!$exists) {
+      $result = $mysqli->prepare("INSERT INTO keywords_user VALUES (NULL, ?, ?, ?)");
+      $result->bind_param('iss', $owner, $new_keyword, $type);
+      $result->execute();  
+      $result->close();
 ?>
 <!DOCTYPE html>
 <html>
@@ -65,7 +65,7 @@ if (isset($_POST['ok']) or (isset($_POST['returnhit']) and $_POST['returnhit'] =
 </head>
 <?php
   if ($new_keyword != '') {
-    echo "<body onload=\"window.opener.location.href='list_keywords.php?module=" . $_POST['module'] . "'; window.close();\">\n";
+    echo "<body onload=\"window.opener.location.href='list_keywords.php?module=" . $module . "'; window.close();\">\n";
   } else {
     echo "<body onload=\"window.close();\">\n";
   }
@@ -73,9 +73,9 @@ if (isset($_POST['ok']) or (isset($_POST['returnhit']) and $_POST['returnhit'] =
 </body>
 </html>
 <?php
-			exit();
-		}
-	}
+      exit();
+    }
+  }
 }
 ?>
 <!DOCTYPE html>
@@ -125,9 +125,6 @@ if (isset($_POST['ok']) or (isset($_POST['returnhit']) and $_POST['returnhit'] =
       } else if (codeID == 126) {
         alert("<?php echo $string['character']; ?> '~' <?php echo $string['illegal']; ?>");
         event.returnValue = false;
-      } else if (codeID == 13) {
-        document.myform.returnhit.value = '1';
-        document.myform.submit();
       }
     }
     
@@ -149,7 +146,7 @@ if ($exists) {
 <?php
 }
 ?>
-<input type="submit" name="ok" value="<?php echo $string['ok']; ?>" class="ok" /><input type="button" name="cancel" value="<?php echo $string['cancel']; ?>" class="cancel" onclick="window.close();" /><input type="hidden" name="returnhit" value="" /><input type="hidden" name="module" value="<?php if (isset($_REQUEST['module'])) echo $_REQUEST['module']; ?>" /></div>
+<input type="submit" name="ok" value="<?php echo $string['ok']; ?>" class="ok" /><input type="button" name="cancel" value="<?php echo $string['cancel']; ?>" class="cancel" onclick="window.close();" /><input type="hidden" name="module" value="<?php echo $module; ?>" /></div>
 </form>
 
 </body>

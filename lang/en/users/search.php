@@ -24,4 +24,6 @@ $string['msg1'] = "<strong>Warning:</strong>&nbsp;&nbsp;You have not ticked any 
 $string['msg2'] = 'No users found for specified search criteria';
 $string['largeresult'] = 'Large number of users found, only the first 10,000 are displayed.'
   . ' Please try narrowing your search criteria.';
+$string['to'] = 'to';
+$string['of'] = 'of';
 ?>

@@ -62,4 +62,7 @@ $string['na'] = 'N/A';
 $string['nomatchsession'] = 'The session in the paper title (%s) does not match the paper session (%s).';
 $string['notsummativeexams'] = 'Should not use with Summative Exams';
 $string['problemwithpaper'] = 'There was a problem loading the paper';
+$string['warning'] = 'Warning';
+$string['overall_classification_warning'] = 'Please don\'t forget to set the overall classification for this test: ';
+$string['clickhere'] = 'Click here to set the overall classification';
 ?>

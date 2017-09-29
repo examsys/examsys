@@ -315,7 +315,7 @@ function customErrorHandler($errno, $errstr, $errfile, $errline, $context) {
     $post_data = '';
     if (isset($_POST)) {
       foreach ($_POST as $key => $value) {
-        if ($key != 'ROGO_PW') {
+        if ($key != 'ROGO_PW' and $key != 'passwd') {
 					if (is_array($value)) { 
 						$value = var_export($value, true);
 					}

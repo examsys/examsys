@@ -47,6 +47,6 @@ class courseutilstest extends unittestdatabase {
      */
     public function test_get_courseid_from_externalid() {
         $external = "ABCD";
-        $this->assertEquals(1, CourseUtils::get_courseid_from_externalid($external, $this->db));
+        $this->assertEquals(1, CourseUtils::get_courseid_from_externalid($external, 'external', $this->db));
     }
 }

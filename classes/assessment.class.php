@@ -151,7 +151,7 @@ class assessment {
             
         // Check externalid is unique.
         if (!is_null($externalid)) {
-            $uniqueexternalid = Paper_utils::get_id_from_externalid($externalid, $this->db);
+            $uniqueexternalid = Paper_utils::get_id_from_externalid($externalid, $externalsys, $this->db);
             if ($uniqueexternalid !== false) {
                 throw new Exception('NON_UNIQUE_EXTID');
             }

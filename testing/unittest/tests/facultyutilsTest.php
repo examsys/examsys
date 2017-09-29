@@ -46,7 +46,7 @@ class facultyutilstest extends unittestdatabase {
      * @group faculty
      */
     public function test_get_facultyid_from_externalid() {
-        $this->assertEquals(1, FacultyUtils::get_facultyid_from_externalid("ABC", $this->db));
+        $this->assertEquals(1, FacultyUtils::get_facultyid_from_externalid("ABC", 'external', $this->db));
     }
     /**
      * Test comparing  faculties with external list

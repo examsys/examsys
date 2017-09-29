@@ -121,8 +121,8 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
         $smsplugin->update_module_enrolments($externalid, $session);
     }
   }
-  
-  
+
+
   header("location: list_modules.php");
   exit();
 } else {
@@ -167,9 +167,11 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
 
     $(function () {
       $('#theform').validate({
-        errorClass: 'errfield',
-        errorPlacement: function(error,element) {
-          return true;
+        rules: {
+          fullname: {
+            required: true,
+            maxlength: 80
+          }
         }
       });
       $('form').removeAttr('novalidate');
@@ -190,7 +192,7 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
       });
       $('#cancel').click(function() {
         history.back();
-      });    
+      });
     });
   </script>
   </head>
@@ -208,7 +210,7 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
 		<div class="breadcrumb"><a href="../index.php"><?php echo $string['home']; ?></a><img src="../artwork/breadcrumb_arrow.png" class="breadcrumb_arrow" /><a href="./index.php"><?php echo $string['administrativetools'] ?></a><img src="../artwork/breadcrumb_arrow.png" class="breadcrumb_arrow" /><a href="list_modules.php"><?php echo $string['modules'] ?></a></div>
 		<div class="page_title"><?php echo $string['createmodule']; ?></div>
   </div>
-	
+
   <br />
 
   <form id="theform" name="module_form" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>" autocomplete="off">
@@ -252,14 +254,10 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
   foreach ($cfg_sms_sources as $key=>$value) {
     echo "<option value=\"$value\">$key</option>\n";
   }
-  // SMS might be a plugin.
-  $plugins = array();
-  $userObj = userObject::get_instance();
-  $smsplugin_name = plugin_manager::get_plugin_type_enabled('plugin_sms');
-  foreach($smsplugin_name as $name) {
-    $smspluginns = 'plugins\SMS\\' . $name. '\\' . $name;
-    $smsplugin = new $smspluginns($mysqli, $userObj->get_user_ID());
-    $value = $smsplugin->get_name();
+  // SMS might be IMS enterprise, rogo web service or a plugin.
+  $externalsys = new \external_systems();
+  $extsys = $externalsys->get_all_externalsystems();
+  foreach ($extsys as $key=>$value) {
     echo "<option value=\"$value\">$value</option>\n";
   }
   echo '</select></td></tr>';

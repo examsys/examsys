@@ -96,11 +96,15 @@ $question['assigned_number'] = (isset($_GET['qNo'])) ? $_GET['qNo'] : 1;
   <script type="text/javascript" src="../tools/mee/mee/js/mee_src.js"></script>
   
   <?php
+  $render = new render($configObject);
   if ($question['q_type'] == 'hotspot' or $question['q_type'] == 'labelling' or $question['q_type'] == 'area') {
-    $render = new render($configObject);
     $render->render_html5_js(json_encode($jstring));
   }
   echo $configObject->get('cfg_js_root');
+
+  if($configObject->get_setting('core', 'paper_mathjax')) {
+    $render->render(null, null, 'mathjax.html');
+  }
   ?>
 </head>
 <body>

@@ -88,7 +88,6 @@ Feature: Searching Papers,People and their related Academic Sessions
       | Add Questions to Paper |
       | Edit Properties |
       | Reports |
-      | Mapped Objectives |
       | Copy Paper |
       | Delete Paper |
       | Retire Paper |
