@@ -209,19 +209,36 @@ if (!is_null($submit)) {
 
     // execute query
     if (count($roles) > 0) {
-        // SQL parts
-        $sql_counter = 'COUNT(DISTINCT users.id) AS counter';
-        $sql_fields = 'DISTINCT users.id, roles, student_id, surname, initials, first_names, title, users.username, grade, yearofstudy, email, special_id';
-        $sql_template = ' FROM users'
-                . ' LEFT JOIN modules_student ON users.id = modules_student.userID'
-                . ' LEFT JOIN modules_staff ON users.id = modules_staff.memberID'
-                . ' LEFT JOIN sid ON users.id = sid.userID'
-                . ' LEFT JOIN special_needs ON users.id = special_needs.userID'
-                . ' LEFT JOIN modules ON (modules_student.idMod = modules.id OR modules_staff.idMod = modules.id)'
-                . ' WHERE user_deleted IS NULL AND ' . implode(' AND ', $conditions);
-        $sql_count = sprintf('SELECT %s%s', $sql_counter, $sql_template);
-        $sql_list = sprintf('SELECT %s%s ORDER BY %s %s LIMIT %d OFFSET %d', $sql_fields, $sql_template, $sortby, $ordering, $limit, $offset);
-        
+        // Fields.
+        $sql_counter = 'SELECT COUNT(DISTINCT users.id) AS counter';
+        $sql_fields = 'SELECT DISTINCT users.id, roles, student_id, surname, initials, first_names, title, users.username, grade, yearofstudy, email, special_id';
+        // Student template.
+        $sql_student_template = " FROM users
+          LEFT JOIN modules_student ON users.id = modules_student.userID
+          LEFT JOIN sid ON users.id = sid.userID
+          LEFT JOIN special_needs ON users.id = special_needs.userID 
+          LEFT JOIN modules ON modules_student.idMod = modules.id
+          WHERE user_deleted IS NULL AND " . implode(' AND ', $conditions);
+        // Staff template.
+        $sql_staff_template = " FROM users
+          LEFT JOIN modules_staff ON users.id = modules_staff.memberID 
+          LEFT JOIN sid ON users.id = sid.userID
+          LEFT JOIN special_needs ON users.id = special_needs.userID 
+          LEFT JOIN modules ON modules_staff.idMod = modules.id
+          WHERE user_deleted IS NULL AND " . implode(' AND ', $conditions);
+        // UNION the templates and order,sort,limit,offset.
+        $sql_count = sprintf('%s%s UNION %s%s', $sql_counter, $sql_student_template, $sql_counter, $sql_staff_template);
+        $sql_list = sprintf('%s%s UNION %s%s ORDER BY %s %s LIMIT %d OFFSET %d',
+          $sql_fields,
+          $sql_student_template,
+          $sql_fields,
+          $sql_staff_template,
+          $sortby,
+          $ordering,
+          $limit,
+          $offset
+        );
+
         // arguments to bind to queries
         $arguments = array(implode('', $types));
         foreach ($parameters as &$param) {
@@ -246,8 +263,10 @@ if (!is_null($submit)) {
         }
 
         // fetch total items count
-        $stmt->bind_result($counter);
-        $stmt->fetch();
+        $stmt->bind_result($count);
+        while ($stmt->fetch()) {
+          $counter += $count;
+        }
         $stmt->close();
 
         // calculate first and last items in thispage
