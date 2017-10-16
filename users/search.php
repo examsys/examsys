@@ -111,7 +111,7 @@ if (!is_null($submit)) {
             if (substr_count(strtolower($tmp_surname), strtolower($tmp_title . ' ')) > 0) {
                 $conditions[] = 'title = ?';
                 $parameters[] = $tmp_title;
-                $types[] = 's';
+                $types[] = 'ss';
             }
             $tmp_surname = preg_replace("/(" . $tmp_title . " )/i", "", $tmp_surname);
         }
@@ -128,7 +128,7 @@ if (!is_null($submit)) {
             }
             $conditions[] = 'initials LIKE ?';
             $parameters[] = $tmp_initials . '%';
-            $types[] = 's';
+            $types[] = 'ss';
         }
 
         // find remaining names
@@ -138,7 +138,7 @@ if (!is_null($submit)) {
             $name = $mysqli->real_escape_string(str_replace('*', '%', $name));
             if (false === array_key_exists($name, $condition)) {
                 $condition[$name] = 'surname LIKE ? OR first_names LIKE ?';
-                $types[] = 'ss';
+                $types[] = 'ssss';
                 array_push($parameters, $name, $name);
             }
         }
@@ -152,7 +152,7 @@ if (!is_null($submit)) {
         $tmp_username = $mysqli->real_escape_string(str_replace('*', '%', trim($search_username)));
         $conditions[] = 'users.username LIKE ?';
         $parameters[] = $tmp_username;
-        $types[] = 's';
+        $types[] = 'ss';
     }
 
     // find by student id
@@ -160,7 +160,7 @@ if (!is_null($submit)) {
         $tmp_studentid = $mysqli->real_escape_string(trim($student_id));
         $conditions[] = 'student_id = ?';
         $parameters[] = $tmp_studentid;
-        $types[] = 'i';
+        $types[] = 'ii';
     }
 
     // filter by roles
@@ -248,7 +248,10 @@ if (!is_null($submit)) {
         foreach ($parameters as &$param) {
             $arguments[] = &$param;
         }
-
+        // As query is a union we need to duplicate the arguments.
+        foreach ($parameters as &$param) {
+            $arguments[] = &$param;
+        }
         // prepare counter query
         if (false === $stmt = $mysqli->prepare($sql_count)) {
             throw new \RuntimeException($mysqli->error);
