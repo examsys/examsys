@@ -85,17 +85,21 @@ if (!is_null($submit)) {
 
     // find by module
     if ($moduleID) {
-        $conditions[] = '(modules_student.idMod = ? OR modules_staff.idMod = ?)';
-        array_push($parameters, $moduleID, $moduleID);
-        $types[] = 'ii';
+        $studentmodules = " AND modules_student.idMod = $moduleID";
+        $staffconditions = " AND modules_staff.idMod = $moduleID";
+    } else {
+        $studentmodules = '';
+        $staffconditions = '';
     }
 
     // find by calendar year
     if ($calendar_year !== '%') {
-        $conditions[] = 'calendar_year = ?';
-        $parameters[] = $calendar_year;
-        $types[] = 'i';
+        $studentyear = " AND calendar_year = $calendar_year";
+    } else {
+        $studentyear = '';
     }
+
+    $studentconditions = $studentmodules . $studentyear;
 
     // find by name
     if (!is_null($search_surname)) {
@@ -218,14 +222,14 @@ if (!is_null($submit)) {
           LEFT JOIN sid ON users.id = sid.userID
           LEFT JOIN special_needs ON users.id = special_needs.userID 
           LEFT JOIN modules ON modules_student.idMod = modules.id
-          WHERE user_deleted IS NULL AND " . implode(' AND ', $conditions);
+          WHERE user_deleted IS NULL" . $studentconditions . " AND " . implode(' AND ', $conditions);
         // Staff template.
         $sql_staff_template = " FROM users
           LEFT JOIN modules_staff ON users.id = modules_staff.memberID 
           LEFT JOIN sid ON users.id = sid.userID
           LEFT JOIN special_needs ON users.id = special_needs.userID 
           LEFT JOIN modules ON modules_staff.idMod = modules.id
-          WHERE user_deleted IS NULL AND " . implode(' AND ', $conditions);
+          WHERE user_deleted IS NULL" . $staffconditions . " AND " . implode(' AND ', $conditions);
         // UNION the templates and order,sort,limit,offset.
         $sql_count = sprintf('%s%s UNION %s%s', $sql_counter, $sql_student_template, $sql_counter, $sql_staff_template);
         $sql_list = sprintf('%s%s UNION %s%s ORDER BY %s %s LIMIT %d OFFSET %d',
