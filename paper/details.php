@@ -803,7 +803,7 @@ function check_latex_random($q_ids, $mysqli) {
       // If summative paper is not locked and the question is locked
       // - unlock it if it has not been answered by a student
       } elseif (!$properties->get_summative_lock() and $locked != '') {
-        if (!QuestionUtils::question_answered_in_summative($p_id, $q_id, $mysqli)) {
+        if (!QuestionUtils::question_answered_in_summative($q_id, $mysqli)) {
           QuestionUtils::unlock_question($q_id, $mysqli);
         }
       }

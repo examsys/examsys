@@ -85,17 +85,21 @@ if (!is_null($submit)) {
 
     // find by module
     if ($moduleID) {
-        $conditions[] = '(modules_student.idMod = ? OR modules_staff.idMod = ?)';
-        array_push($parameters, $moduleID, $moduleID);
-        $types[] = 'ii';
+        $studentmodules = " AND modules_student.idMod = $moduleID";
+        $staffconditions = " AND modules_staff.idMod = $moduleID";
+    } else {
+        $studentmodules = '';
+        $staffconditions = '';
     }
 
     // find by calendar year
     if ($calendar_year !== '%') {
-        $conditions[] = 'calendar_year = ?';
-        $parameters[] = $calendar_year;
-        $types[] = 'i';
+        $studentyear = " AND calendar_year = $calendar_year";
+    } else {
+        $studentyear = '';
     }
+
+    $studentconditions = $studentmodules . $studentyear;
 
     // find by name
     if (!is_null($search_surname)) {
@@ -107,7 +111,7 @@ if (!is_null($submit)) {
             if (substr_count(strtolower($tmp_surname), strtolower($tmp_title . ' ')) > 0) {
                 $conditions[] = 'title = ?';
                 $parameters[] = $tmp_title;
-                $types[] = 's';
+                $types[] = 'ss';
             }
             $tmp_surname = preg_replace("/(" . $tmp_title . " )/i", "", $tmp_surname);
         }
@@ -124,7 +128,7 @@ if (!is_null($submit)) {
             }
             $conditions[] = 'initials LIKE ?';
             $parameters[] = $tmp_initials . '%';
-            $types[] = 's';
+            $types[] = 'ss';
         }
 
         // find remaining names
@@ -134,7 +138,7 @@ if (!is_null($submit)) {
             $name = $mysqli->real_escape_string(str_replace('*', '%', $name));
             if (false === array_key_exists($name, $condition)) {
                 $condition[$name] = 'surname LIKE ? OR first_names LIKE ?';
-                $types[] = 'ss';
+                $types[] = 'ssss';
                 array_push($parameters, $name, $name);
             }
         }
@@ -148,7 +152,7 @@ if (!is_null($submit)) {
         $tmp_username = $mysqli->real_escape_string(str_replace('*', '%', trim($search_username)));
         $conditions[] = 'users.username LIKE ?';
         $parameters[] = $tmp_username;
-        $types[] = 's';
+        $types[] = 'ss';
     }
 
     // find by student id
@@ -156,7 +160,7 @@ if (!is_null($submit)) {
         $tmp_studentid = $mysqli->real_escape_string(trim($student_id));
         $conditions[] = 'student_id = ?';
         $parameters[] = $tmp_studentid;
-        $types[] = 'i';
+        $types[] = 'ii';
     }
 
     // filter by roles
@@ -209,25 +213,45 @@ if (!is_null($submit)) {
 
     // execute query
     if (count($roles) > 0) {
-        // SQL parts
-        $sql_counter = 'COUNT(DISTINCT users.id) AS counter';
-        $sql_fields = 'DISTINCT users.id, roles, student_id, surname, initials, first_names, title, users.username, grade, yearofstudy, email, special_id';
-        $sql_template = ' FROM users'
-                . ' LEFT JOIN modules_student ON users.id = modules_student.userID'
-                . ' LEFT JOIN modules_staff ON users.id = modules_staff.memberID'
-                . ' LEFT JOIN sid ON users.id = sid.userID'
-                . ' LEFT JOIN special_needs ON users.id = special_needs.userID'
-                . ' LEFT JOIN modules ON (modules_student.idMod = modules.id OR modules_staff.idMod = modules.id)'
-                . ' WHERE user_deleted IS NULL AND ' . implode(' AND ', $conditions);
-        $sql_count = sprintf('SELECT %s%s', $sql_counter, $sql_template);
-        $sql_list = sprintf('SELECT %s%s ORDER BY %s %s LIMIT %d OFFSET %d', $sql_fields, $sql_template, $sortby, $ordering, $limit, $offset);
-        
+        // Fields.
+        $sql_counter = 'SELECT COUNT(DISTINCT users.id) AS counter';
+        $sql_fields = 'SELECT DISTINCT users.id, roles, student_id, surname, initials, first_names, title, users.username, grade, yearofstudy, email, special_id';
+        // Student template.
+        $sql_student_template = " FROM users
+          LEFT JOIN modules_student ON users.id = modules_student.userID
+          LEFT JOIN sid ON users.id = sid.userID
+          LEFT JOIN special_needs ON users.id = special_needs.userID 
+          LEFT JOIN modules ON modules_student.idMod = modules.id
+          WHERE user_deleted IS NULL" . $studentconditions . " AND " . implode(' AND ', $conditions);
+        // Staff template.
+        $sql_staff_template = " FROM users
+          LEFT JOIN modules_staff ON users.id = modules_staff.memberID 
+          LEFT JOIN sid ON users.id = sid.userID
+          LEFT JOIN special_needs ON users.id = special_needs.userID 
+          LEFT JOIN modules ON modules_staff.idMod = modules.id
+          WHERE user_deleted IS NULL" . $staffconditions . " AND " . implode(' AND ', $conditions);
+        // UNION the templates and order,sort,limit,offset.
+        $sql_count = sprintf('%s%s UNION %s%s', $sql_counter, $sql_student_template, $sql_counter, $sql_staff_template);
+        $sql_list = sprintf('%s%s UNION %s%s ORDER BY %s %s LIMIT %d OFFSET %d',
+          $sql_fields,
+          $sql_student_template,
+          $sql_fields,
+          $sql_staff_template,
+          $sortby,
+          $ordering,
+          $limit,
+          $offset
+        );
+
         // arguments to bind to queries
         $arguments = array(implode('', $types));
         foreach ($parameters as &$param) {
             $arguments[] = &$param;
         }
-
+        // As query is a union we need to duplicate the arguments.
+        foreach ($parameters as &$param) {
+            $arguments[] = &$param;
+        }
         // prepare counter query
         if (false === $stmt = $mysqli->prepare($sql_count)) {
             throw new \RuntimeException($mysqli->error);
@@ -246,8 +270,10 @@ if (!is_null($submit)) {
         }
 
         // fetch total items count
-        $stmt->bind_result($counter);
-        $stmt->fetch();
+        $stmt->bind_result($count);
+        while ($stmt->fetch()) {
+          $counter += $count;
+        }
         $stmt->close();
 
         // calculate first and last items in thispage

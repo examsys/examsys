@@ -106,12 +106,22 @@ function qMarks($question_type, $tmp_exclude, $question_marks, $option_text, $co
       break;
     case 'likert':
       $marks = 0;
-      if ($display_method == '0|1|2|false' or $display_method == '0|1|2|true'
-          or $display_method == 'Fail|Borderline|Pass|false' or $display_method == 'Fail|Borderline|Pass|true') {
+      // Old marking scale left for backwards compatibility when display old papers.
+      if ($display_method == 'Fail|Borderline|Pass|false' or $display_method == 'Fail|Borderline|Pass|true') {
         $marks = 2;
-      } elseif ($display_method == '0|1|false' or $display_method == '0|1|true') {
-        $marks = 1;
+      } else {
+        // OSCE stations are integer based so search for max integer.
+        $scores = explode('|', $display_method);
+        // Ignore n/a index.
+        $scores = array_slice($scores, 0, count($scores) - 1);
+        sort($scores);
+        $max_score = $scores[count($scores) - 1];
+        // Check if max index value is an integer.
+        if (filter_var($max_score, FILTER_VALIDATE_INT)) {
+          $marks = $max_score;
+        }
       }
+      // Other types are not marked per se so we can leave as 0.
       break;
     case 'mcq':
     case 'true_false':
