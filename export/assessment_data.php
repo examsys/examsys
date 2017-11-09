@@ -123,10 +123,20 @@ $mode = (isset($_GET['mode']) and $_GET['mode'] == 'text') ? 'text' : 'numeric';
 $numerals = array('i', 'ii', 'iii', 'iv', 'v', 'vi', 'vii', 'viii', 'ix', 'x', 'xi', 'xii', 'xiii', 'xiv', 'xv', 'xvi', 'xvii', 'xviii', 'xix', 'xx');
 
 $user_sql = '';
-if (isset($_GET['repmodule']) and $_GET['repmodule'] != '') {
-  $tmp_moduleID_in = $_GET['repmodule'];
+// The repmodule parameter can be an comma separated list of integers.
+// Examples of matches:
+// 123
+// 123,456
+// 123, 456
+// Values that match this are safe for direct use in the SQL.
+$repmodule_options = array(
+  'default' => null,
+  'regexp' => '#\d+(,\s?\d+)*#',
+);
+$repmodule = param::optional('repmodule', '', param::REGEXP, param::FETCH_GET, $repmodule_options);
+if ($repmodule !== '') {
   $calendar_year = $propertyObj->get_calendar_year();
-  $mod_query = $mysqli->prepare("SELECT modules_student.idMod, userID, moduleID FROM modules_student, modules WHERE modules_student.idMod = modules.id AND idMod IN ($tmp_moduleID_in) AND calendar_year = ?");
+  $mod_query = $mysqli->prepare("SELECT modules_student.idMod, userID, moduleID FROM modules_student, modules WHERE modules_student.idMod = modules.id AND idMod IN ($repmodule) AND calendar_year = ?");
   $mod_query->bind_param('i', $calendar_year);
   $mod_query->execute();
   $mod_query->bind_result($idMod, $tmp_userID, $tmp_moduleid);
