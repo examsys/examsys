@@ -127,20 +127,21 @@ if (isset($_GET['repmodule']) and $_GET['repmodule'] != '') {
   $tmp_moduleID_in = $_GET['repmodule'];
   $calendar_year = $propertyObj->get_calendar_year();
   $mod_query = $mysqli->prepare("SELECT modules_student.idMod, userID, moduleID FROM modules_student, modules WHERE modules_student.idMod = modules.id AND idMod IN ($tmp_moduleID_in) AND calendar_year = ?");
-  $mod_query->bind_param('s', $calendar_year);
+  $mod_query->bind_param('i', $calendar_year);
   $mod_query->execute();
   $mod_query->bind_result($idMod, $tmp_userID, $tmp_moduleid);
   $mod_query->store_result();
+  $moduleusers = array();
   while ($mod_query->fetch()) {
     $user_modules[$tmp_userID]['idMod'] = $idMod;
-    if ($user_sql == '') {
-      $user_sql = $tmp_userID;
-    } else {
-      $user_sql .= ',' . $tmp_userID;
-    }
+    $moduleusers[] = $tmp_userID;
+  }
+  if (empty($moduleusers)) {
+    // If there are no enrolled users we need to make an in that will not find anyone.
+    $moduleusers[] = 'NULL';
   }
   $mod_query->close();
-  $user_sql = 'AND userID IN (' . $user_sql . ')';
+  $user_sql = 'AND userID IN (' . implode(',', $moduleusers) . ')';
 }
 
 // Get any questions to exclude.

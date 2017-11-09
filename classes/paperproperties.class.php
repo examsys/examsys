@@ -64,6 +64,7 @@ class PaperProperties {
   private $display_students_response;
   private $display_feedback;
   private $hide_if_unanswered;
+  /** @var int The reference to the year that the paper is on. */
   private $calendar_year;
   private $internal_reviewers;
   private $external_review_deadline;
@@ -1503,14 +1504,14 @@ class PaperProperties {
   }
 
   /**
-   * @return string $calendar_year
+   * @return int $calendar_year
    */
   public function get_calendar_year() {
     return $this->calendar_year;
   }
 
   /**
-   * @param string $calendar_year
+   * @param int $calendar_year
    */
   public function set_calendar_year($calendar_year) {
     $old_calendar_year = $this->calendar_year;
