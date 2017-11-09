@@ -598,6 +598,9 @@ class ClassTotals {
 
       $answer_list = explode(',', $blank_details[$i]);
       $answer_list[0] = str_replace("[/blank]", '', $answer_list[0]);
+      // Ensure that the answers are filtered to the same level as the user's answers.
+      // This will ensure that they can match correctly.
+      $answer_list = param::clean_array($answer_list, param::TEXT);
       foreach ($answer_list as $individual_answer) {
         $correct[$i-1][] = html_entity_decode(trim($individual_answer));
       }
