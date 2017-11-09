@@ -64,6 +64,12 @@ class param {
   /** A RFC-2396 URL. */
   const URL = 12;
   
+  /** A regular expression. */
+  const REGEXP = 13;
+
+  /** A special datatime format, yyyymmddhhmmss. */
+  const SQLDATETIME = 14;
+
   /** Find the named variable in the Get array. */
   const FETCH_GET = '_GET';
   
@@ -170,11 +176,14 @@ class param {
           ),
         );
         break;
+      case self::SQLDATETIME:
+        $filter = FILTER_VALIDATE_REGEXP;
+        $options = array( 'options' =>array('regexp' => '/^([12]\d{3}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])([01][0-9]|2[0-3])[0-5]\d[0-5]\d)$/',));
+        break;
       default:
         throw new coding_exception('invalid_type');
         break;
     }
-
     // Filter the input.
     $return = filter_var($value, $filter, $options);
 
