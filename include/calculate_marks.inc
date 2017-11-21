@@ -382,6 +382,10 @@ function qRandomMarks($question_type, $tmp_exclude, $marks_correct, $option_text
       $random_mark *= $marks_correct;
       break;
     case 'blank':
+      if ($display_method == 'textboxes') {
+        // No random mark adjustment needed.
+        break;
+      }
       $blank_details = explode('[blank',$option_text[0]);
       $array_size = count($blank_details);
       $blank_count = 1;
