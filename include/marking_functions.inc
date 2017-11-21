@@ -781,10 +781,12 @@ function record_marks($paper_id, $db, $paper_type, $metadataID, $preview_q_id = 
         break;
       case 'labelling':
         $qid = 'q' . $question_no;
-        $saved_response = param::optional($qid, '', param::TEXT, param::FETCH_POST);
+        // We cannot clean it fully in one go.
+        $saved_response = param::optional($qid, '', param::RAW, param::FETCH_POST);
         if ($saved_response != '') {
           $tmp_first_split = explode(';', $saved_response);
-          $tmp_second_split = explode('$', $tmp_first_split[0]);
+          // Clean the mark and total number of items.
+          $tmp_second_split = param::clean_array(explode('$', $tmp_first_split[0]), param::INT);
           if ($tmp_first_split[1] != '') {
             $all_items_abstain = false;
           }
@@ -802,6 +804,16 @@ function record_marks($paper_id, $db, $paper_type, $metadataID, $preview_q_id = 
           }
           $totalpos = $marks_correct;
         }
+        // Ensure all values are correct and recombine into a final response.
+        $user_answer = param::clean_array(explode('$', $tmp_first_split[1]), param::TEXT);
+        $saved_response = implode(
+            ';',
+            array(
+              implode('$', $tmp_second_split),
+              implode('$', $user_answer),
+            )
+          );
+
         break;
       case 'flash':
         $qid = 'q' . $question_no;
