@@ -209,7 +209,7 @@ class param {
         $return = self::purify_html($return);
         break;
       case self::TEXT:
-        $return = strip_tags($return);
+        $return = self::strip_tags($return);
         break;
       case self::LOCAL_URL:
         $rogo_url = Config::get_instance()->get('cfg_web_host');
@@ -251,6 +251,24 @@ class param {
       }
     }
     return $return;
+  }
+
+  /**
+   * A wrapper for php's string_tags function.
+   *
+   * It is here to smooth over any edge cases.
+   *
+   * @param string $text
+   * @return string
+   */
+  protected static function strip_tags($text) {
+    $postfix = '';
+    if (substr($text, -1) === '<') {
+      // strip_tags will remove a less than if it is the final character. We wish to leave it in.
+      $postfix = '<';
+    }
+    $return = strip_tags($text);
+    return $return . $postfix;
   }
 
   /**
