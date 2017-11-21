@@ -36,7 +36,7 @@ properties:
   -
     property_id: 45
     calendar_year: 2015
-    paper_type: 1
+    paper_type: 2
     password: "EC1VbYJtOq8NsidA+q60rDEzjZZ8eHmHm6dEtfVBpeQ="
 users:
   -
@@ -46,4 +46,128 @@ users:
     username: "sysadmin"
     roles: "Staff,SysAdmin"
     grade: "University Lecturer"
+  -
+    id: 999
+    password: "12345678"
+    surname: "student"
+    username: "student"
+    roles: "Student"
+    grade: "TEST"
 track_changes:
+log_metadata:
+  -
+    id: 1
+    userID: 999
+    paperID: 45
+  -
+    id: 2
+    userID: 1
+    paperID: 45
+log2:
+  -
+    id: 1
+    q_id: 1
+    errorstate: 0
+    metadataID: 1
+    mark: null
+  -
+    id: 2
+    q_id: 2
+    errorstate: 0
+    metadataID: 1
+    mark: null
+  -
+    id: 3
+    q_id: 3
+    errorstate: 0
+    metadataID: 1
+    mark: 1
+  -
+    id: 4
+    q_id: 4
+    errorstate: 0
+    metadataID: 1
+    mark: 1
+  -
+    id: 5
+    q_id: 5
+    errorstate: 0
+    metadataID: 1
+    mark: null
+  -
+    id: 6
+    q_id: 1
+    errorstate: 0
+    metadataID: 2
+    mark: 1
+  -
+    id: 7
+    q_id: 2
+    errorstate: 0
+    metadataID: 2
+    mark: null
+  -
+    id: 8
+    q_id: 3
+    errorstate: 0
+    metadataID: 2
+    mark: null
+  -
+    id: 9
+    q_id: 4
+    errorstate: 0
+    metadataID: 2
+    mark: 1
+  -
+    id: 10
+    q_id: 5
+    errorstate: 0
+    metadataID: 2
+    mark: null
+questions:
+  -
+    q_id: 1
+    q_type: "enhancedcalc"
+    status: 1
+  -
+    q_id: 2
+    q_type: "enhancedcalc"
+    status: 1
+  -
+    q_id: 3
+    q_type: "enhancedcalc"
+    status: 1
+  -
+    q_id: 4
+    q_type: "enhancedcalc"
+    status: 1
+  -
+    q_id: 5
+    q_type: "area"
+    status: 1
+papers:
+  -
+    p_id: 1
+    paper: 45
+    question: 1
+    screen: 1
+  -
+    p_id: 2
+    paper: 45
+    question: 2
+    screen: 2
+  -
+    p_id: 3
+    paper: 45
+    question: 3
+    screen: 3
+  -
+    p_id: 4
+    paper: 45
+    question: 4
+    screen: 4
+  -
+    p_id: 5
+    paper: 45
+    question: 5
+    screen: 5

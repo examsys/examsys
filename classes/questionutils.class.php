@@ -494,5 +494,20 @@ SQL;
         $query->close();
         return $questions;
     }
+
+    /**
+     * Get settings for question
+     * @param integer $qid
+     * @return string
+     */
+    static public function get_settings($qid) {
+        $configObject = Config::get_instance();
+        $result = $configObject->db->prepare("SELECT settings FROM questions WHERE q_id = ?");
+        $result->bind_param('i', $qid);
+        $result->execute();
+        $result->bind_result($settings);
+        $result->fetch();
+        $result->close();
+        return $settings;
+    }
 }
-?>

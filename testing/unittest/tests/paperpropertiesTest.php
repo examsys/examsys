@@ -62,4 +62,56 @@ class paperpropertiestest extends unittestdatabase {
         $expectedchangestable = $this->get_expected_data_set('paperproperties_updated')->getTable("track_changes");
         $this->assertTablesEqual($expectedchangestable, $querychangestable);
     }
+
+    /**
+     * Test calculation question getter - all users
+     * @group paper
+     */
+    public function test_get_enhancedcalc_questions_all() {
+        // Load user id 1.
+        $this->userobject->load(1);
+        $properties = PaperProperties::get_paper_properties_by_id(45, $this->db, '');
+        $expected = array(1, 2, 3);
+        $this->assertEquals($expected, $properties->get_enhancedcalc_questions(0));
+    }
+
+    /**
+     * Test calculation question getter - all users after unmarked_enhancedcalc called for student
+     * @group paper
+     */
+    public function test_get_enhancedcalc_questions_all_2() {
+        // Load user id 1.
+        $this->userobject->load(1);
+        $properties = PaperProperties::get_paper_properties_by_id(45, $this->db, '');
+        $properties->unmarked_enhancedcalc(0);
+        $properties->unmarked_enhancedcalc(1);
+        $expected = array(1, 2, 3);
+        $this->assertEquals($expected, $properties->get_enhancedcalc_questions(0));
+    }
+
+    /**
+     * Test calculation question getter - student users
+     * @group paper
+     */
+    public function test_get_enhancedcalc_questions_student() {
+        // Load user id 1.
+        $this->userobject->load(1);
+        $properties = PaperProperties::get_paper_properties_by_id(45, $this->db, '');
+        $expected = array(1, 2);
+        $this->assertEquals($expected, $properties->get_enhancedcalc_questions(1));
+    }
+
+    /**
+     * Test calculation question getter - student users after unmarked_enhancedcalc called for all
+     * @group paper
+     */
+    public function test_get_enhancedcalc_questions_student_2() {
+        // Load user id 1.
+        $this->userobject->load(1);
+        $properties = PaperProperties::get_paper_properties_by_id(45, $this->db, '');
+        $properties->unmarked_enhancedcalc(1);
+        $properties->unmarked_enhancedcalc(0);
+        $expected = array(1, 2);
+        $this->assertEquals($expected, $properties->get_enhancedcalc_questions(1));
+    }
 }
