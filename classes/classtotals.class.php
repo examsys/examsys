@@ -602,7 +602,7 @@ class ClassTotals {
       // This will ensure that they can match correctly.
       $answer_list = param::clean_array($answer_list, param::TEXT);
       foreach ($answer_list as $individual_answer) {
-        $correct[$i-1][] = html_entity_decode(trim($individual_answer));
+        $correct[$i-1][] = html_entity_decode(StringUtils::clean_and_trim($individual_answer));
       }
     }
 
@@ -704,16 +704,17 @@ class ClassTotals {
       } elseif ($question['q_type'] == 'blank') {
         $user_answers = json_decode($tmp_user_answer);
         $count_user_answer = count($user_answers);
-        for ($a=0; $a<$count_user_answer; $a++) {
+        for ($a = 0; $a < $count_user_answer; $a++) {
           if ($tmp_exclude{$a} == '0') {
+            // Ensure that the students answer is encoded in the same way as the correct answers.
+            $student_answer = html_entity_decode(StringUtils::clean_and_trim($user_answers[$a]));
             if ($question['display_method'] == 'dropdown') {
-              $student_answer = html_entity_decode(trim(str_replace('&nbsp;', ' ', $question['correct'][$a][0])));
-              $correct_answer = html_entity_decode(trim(str_replace('&nbsp;', ' ', $user_answers[$a])));
-
+              // In a drop down list the correct answer is always the first one entered; all the others are incorrect alternatives.
+              $correct_answer = $question['correct'][$a][0];
               if ($student_answer == $correct_answer) {
                 $tmp_mark += $question['marks_correct'];
                 $tmp_user_mark_array[$q_id][] = $question['marks_correct'];
-              } elseif ($user_answers[$a] != 'u' and $user_answers[$a] != '') {
+              } elseif ($student_answer != 'u' and $student_answer != '') {
                 $tmp_mark += $question['marks_incorrect'];
                 $tmp_user_mark_array[$q_id][] = $question['marks_incorrect'];
               } else {
@@ -721,11 +722,9 @@ class ClassTotals {
               }
             } else {
               $match = false;
-              // Encode commas.
-              $question['correct'][$a] = str_replace(',', '&#44;', $question['correct'][$a]);
               if (isset($question['correct'][$a])) {
                 foreach ($question['correct'][$a] as $correct_alternative) {
-                  if (strtolower(trim($user_answers[$a])) == strtolower(trim($correct_alternative))) {
+                  if (strtolower($student_answer) == strtolower($correct_alternative)) {
                     $match = true;
                   }
                 }
