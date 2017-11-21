@@ -1139,7 +1139,7 @@ class EnhancedCalc extends Question implements questionInterface {
 		// We could have duplicates if answer/variable in a parent question is used in multiple variables in a child question.
 		$failed_answers = array_unique($failed_answers);
 		$screen = $extra['current_question']['screen'];
-		if (in_array('ERROR', $this->useranswer['vars'])) {
+		if (in_array('ERROR', $this->useranswer['vars'], true)) {
 			echo "<p><input type=\"text\" style=\"text-align:right\" name=\"qid[" . $this->id . "][uans]\" data-screen=\"$screen\" size=\"10\" value=\"\" disabled=\"disabled\" />" . $dispunits . $marking_precision_feedback . "</p>\n";
 			echo "<p><strong>" . sprintf($string['failedanswer'], implode(', ', $failed_answers)) . "</strong></p>";
 			echo "<input type=\"hidden\" name=\"missingCalcAnswer\" id=\"missingCalcAnswer\" value=\"1\">";
