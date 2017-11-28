@@ -93,69 +93,53 @@ class param {
       case self::ALPHA:
         $filter = FILTER_SANITIZE_STRING;
         $options = array(
-          'options' => array(
-            'default' => null,
-          ),
+          'options' => $opt,
           'flags' => FILTER_FLAG_NO_ENCODE_QUOTES,
         );
         break;
       case self::ALPHANUM:
         $filter = FILTER_SANITIZE_STRING;
         $options = array(
-          'options' => array(
-            'default' => null,
-          ),
+          'options' => $opt,
           'flags' => FILTER_FLAG_NO_ENCODE_QUOTES,
         );
         break;
       case self::BOOLEAN:
         $filter = FILTER_VALIDATE_BOOLEAN;
         $options = array(
-          'options' => array(
-            'default' => null,
-          ),
+          'options' => $opt,
           'flags' => FILTER_NULL_ON_FAILURE,
         );
         break;
       case self::EMAIL:
         $filter = FILTER_VALIDATE_EMAIL;
         $options = array(
-          'options' => array(
-            'default' => null,
-          ),
+          'options' => $opt,
         );
         break;
       case self::FLOAT:
         $filter = FILTER_VALIDATE_FLOAT;
         $options = array(
-          'options' => array(
-            'default' => null,
-          ),
+          'options' => $opt,
         );
         break;
       case self::HTML:
         $filter = FILTER_UNSAFE_RAW;
         $options = array(
-          'options' => array(
-            'default' => null,
-          ),
+          'options' => $opt,
         );
         break;
       case self::INT:
         $filter = FILTER_VALIDATE_INT;
         $options = array(
-          'options' => array(
-            'default' => null,
-          ),
+          'options' => $opt,
           'flags' => FILTER_FLAG_ALLOW_OCTAL | FILTER_FLAG_ALLOW_HEX,
         );
         break;
       case self::IP_ADDRESS:
         $filter = FILTER_VALIDATE_IP;
         $options = array(
-          'options' => array(
-            'default' => null,
-          ),
+          'options' => $opt,
           'flags' => FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6,
         );
         break;
@@ -163,18 +147,14 @@ class param {
       case self::TEXT:
         $filter = FILTER_UNSAFE_RAW;
         $options = array(
-          'options' => array(
-            'default' => null,
-          ),
+          'options' => $opt,
         );
         break;
       case self::URL:
       case self::LOCAL_URL:
         $filter = FILTER_VALIDATE_URL;
         $options = array(
-          'options' => array(
-            'default' => null,
-          ),
+          'options' => $opt,
         );
         break;
       case self::REGEXP:
@@ -241,20 +221,21 @@ class param {
    * @param array $value The value to clean
    * @param int $type The type of value the value should be.
    * @param bool $required When true throw an exception if the result is filtered to be an empty string or null.
+   * @param array $opt Cleaning options.
    * @return array The array containing only cleaned values or null if it does not match the type defined.
    */
-  public static function clean_array(array $value, $type, $required = false) {
+  public static function clean_array(array $value, $type, $required = false, $opt = array('default' => null)) {
     $return = array();
     foreach ($value as $key => $part) {
       if (!is_array($part)) {
-        $clean = self::clean($part, $type);
+        $clean = self::clean($part, $type, $opt);
         if ($required and (is_null($clean) or $clean === '')) {
           // Nothing valid passed, throw an exception.
           throw new MissingParameter();
         }
         $return[$key] = $clean;
       } else {
-        $return[$key] = self::clean_array($part, $type);
+        $return[$key] = self::clean_array($part, $type, false, $opt);
       }
     }
     return $return;
@@ -296,18 +277,19 @@ class param {
   /**
    * Gets the named parameter, returns the default value if it is not present or invalid.
    * 
-   * @param string $name The name of the parameter to retrive.
+   * @param string $name The name of the parameter to retrieve.
    * @param mixed $default The default value for the parameter.
    * @param int $type The type of value the parameter should contain.
    * @param string $from Should be param::FETCH_REQUEST (default), param::FETCH_GET or param::FETCH_POST
+   * @param array $opt Cleaning options.
    * @return mixed
    */
-  public static function optional($name, $default, $type, $from = self::FETCH_REQUEST) {
+  public static function optional($name, $default, $type, $from = self::FETCH_REQUEST, $opt = array('default' => null)) {
     $value = self::fetch($name, $from);
     if (is_array($value)) {
-      $clean = self::clean_array($value, $type);
+      $clean = self::clean_array($value, $type, false, $opt);
     } else {
-      $clean = self::clean($value, $type);
+      $clean = self::clean($value, $type, $opt);
     }
     if (is_null($clean) or $clean === '') {
       $clean = $default;
@@ -318,18 +300,19 @@ class param {
   /**
    * Gets the named parameter, if it is invalid or does not exisit an error is generated.
    * 
-   * @param string $name The name of the parameter to retrive.
+   * @param string $name The name of the parameter to retrieve.
    * @param int $type The type of value the parameter should contain.
    * @param string $from Should be param::FETCH_REQUEST (default), param::FETCH_GET or param::FETCH_POST
+   * @param array $opt Cleaning options.
    * @return mixed
    * @throws MissingParameter
    */
-  public static function required($name, $type, $from = self::FETCH_REQUEST) {
+  public static function required($name, $type, $from = self::FETCH_REQUEST, $opt = array('default' => null)) {
     $value = self::fetch($name, $from);
     if (is_array($value)) {
-      $clean = self::clean_array($value, $type, true);
+      $clean = self::clean_array($value, $type, true, $opt);
     } else {
-      $clean = self::clean($value, $type);
+      $clean = self::clean($value, $type, $opt);
     }
     if (is_null($clean) or $clean === '') {
       // Nothing valid passed, throw an exception.
