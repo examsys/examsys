@@ -176,6 +176,12 @@ class param {
           ),
         );
         break;
+      case self::REGEXP:
+        $filter = FILTER_VALIDATE_REGEXP;
+         $options = array(
+          'options' => $opt,
+        );
+        break;
       case self::SQLDATETIME:
         $filter = FILTER_VALIDATE_REGEXP;
         $options = array( 'options' =>array('regexp' => '/^([12]\d{3}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])([01][0-9]|2[0-3])[0-5]\d[0-5]\d)$/',));
