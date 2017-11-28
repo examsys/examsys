@@ -84,9 +84,10 @@ class param {
    * 
    * @param mixed $value The value to clean
    * @param int $type The type of value the value should be.
+   * @param array $opt Cleaning options.
    * @return mixed The cleaned string or null if it does not match the type defined.
    */
-  public static function clean($value, $type) {
+  public static function clean($value, $type, $opt = array('default' => null)) {
     // Setup the parameters for the filter_var function.
     switch ($type) {
       case self::ALPHA:
