@@ -250,6 +250,10 @@ class param {
    * @return string
    */
   protected static function strip_tags($text) {
+    if ($text === '' or preg_match('#<.*>#', $text) === 0) {
+      // No html.
+      return $text;
+    }
     $postfix = '';
     if (substr($text, -1) === '<') {
       // strip_tags will remove a less than if it is the final character. We wish to leave it in.

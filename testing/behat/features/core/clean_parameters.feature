@@ -182,6 +182,10 @@ Feature: Cleaning variables
       | less than at end < | less than at end < |
       | > greater than at start | > greater than at start |
       | greater than at end > | greater than at end > |
+      | <less than no space at start | <less than no space at start |
+      | less than<no space | less than<no space |
+      | >less than<no space | >less than<no space |
+      | less than<no space > | less than |
 
   Scenario Outline: Verifying url input
     Given I clean "<input>" as "URL"
