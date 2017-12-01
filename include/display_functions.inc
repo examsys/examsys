@@ -933,7 +933,8 @@ function display_question($configObject, &$question, $paper_type, $calculator, $
               if (isset($blank_user_answers[$blank_count - 1])) {
                 $ans = $blank_user_answers[$blank_count - 1];
               }
-              $screen_output[$blank_count] = preg_replace("|\[blank.*\].*\[/blank\]|","<input type=\"text\" name=\"q" . $question_no . "_" . $blank_count . "\" value=\"" . htmlentities($ans). "\" size=\"$blank_size[$blank_count]\" />",$blank_details[$blank_count]);
+              $encoded_ans = htmlentities($ans, ENT_COMPAT | ENT_HTML5, Config::get_instance()->get('cfg_page_charset'), false);
+              $screen_output[$blank_count] = preg_replace("|\[blank.*\].*\[/blank\]|","<input type=\"text\" name=\"q" . $question_no . "_" . $blank_count . "\" value=\"" . $encoded_ans . "\" size=\"$blank_size[$blank_count]\" />",$blank_details[$blank_count]);
             }
             $blank_count++;
           }
