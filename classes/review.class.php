@@ -149,9 +149,9 @@ SQL;
           $extcomments = param::optional("extcomments$question_no", null, param::TEXT, param::FETCH_POST);
           $category = param::optional("exttype$question_no", null, param::INT, param::FETCH_POST);
 
-          if (!is_null($extcomments) && !is_null($commentid)) {
+          if (!is_null($category) && !is_null($commentid)) {
             $update->execute();
-          } elseif (!is_null($extcomments)) {
+          } elseif (!is_null($category)) {
             $insert->execute();
           }
         }
