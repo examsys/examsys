@@ -64,6 +64,7 @@ class PaperProperties {
   private $display_students_response;
   private $display_feedback;
   private $hide_if_unanswered;
+  /** @var int The reference to the year that the paper is on. */
   private $calendar_year;
   private $internal_reviewers;
   private $external_review_deadline;
@@ -90,7 +91,7 @@ class PaperProperties {
   private $externalsys;
   private $unmarked_textbox;
   private $unmarked_student_textbox;
-
+  private $enhancedcalc_questions;
   private $_date_timezone = null;
 
   /**
@@ -1503,14 +1504,14 @@ class PaperProperties {
   }
 
   /**
-   * @return string $calendar_year
+   * @return int $calendar_year
    */
   public function get_calendar_year() {
     return $this->calendar_year;
   }
 
   /**
-   * @param string $calendar_year
+   * @param int $calendar_year
    */
   public function set_calendar_year($calendar_year) {
     $old_calendar_year = $this->calendar_year;
@@ -1829,6 +1830,8 @@ class PaperProperties {
         // Find unmarked questions.
         if (count($enhancedcalc_ids) > 0) {
 
+            $this->enhancedcalc_questions = array();
+
             // Some error states are fatal we should skip over these to avoid an infitie loop trying to mark them,
             // Affected questions will be flagged to the staff member marking.
             $skiperrorstates = array(-5);
@@ -1838,14 +1841,17 @@ class PaperProperties {
             } else {
                 $rolesql = '';
             }
-            $result = $this->db->prepare("SELECT log$paperType.id FROM log$paperType, log_metadata, users WHERE log$paperType.metadataID = log_metadata.id "
+            $result = $this->db->prepare("SELECT distinct log$paperType.q_id FROM log$paperType, log_metadata, users WHERE log$paperType.metadataID = log_metadata.id "
               . "AND users.id = log_metadata.userID AND q_id IN (" . implode(',', $enhancedcalc_ids) . ") AND paperID = ? AND mark IS NULL and errorstate not in ("
-              . implode(',', $skiperrorstates) . ") $rolesql LIMIT 1");
+              . implode(',', $skiperrorstates) . ") $rolesql ORDER BY 1");
             $result->bind_param('i', $paperID);
             $result->execute();
             $result->store_result();
-            $result->bind_result($id);
+            $result->bind_result($qid);
             if ($result->num_rows > 0) {
+                while ($result->fetch()) {
+                    $this->enhancedcalc_questions[] = $qid;
+                }
                 if ($studentsonly) {
                     $this->unmarked_student_enhancedcalc = true;
                 } else {
@@ -1854,6 +1860,33 @@ class PaperProperties {
             }
             $result->close();
         }
+    }
+
+    /**
+     * List of all calculation questions on paper
+     * @param int $studentsonly only check students in cohort
+     * @return array
+     */
+    public function get_enhancedcalc_questions($studentsonly = 0) {
+        if ($studentsonly) {
+            // Do we have student only questions?
+            $check = $this->unmarked_student_enhancedcalc;
+            // Force reload if we have non studnent questions.
+            if ($this->unmarked_enhancedcalc === true) {
+              $check = null;
+            }
+        } else {
+            // Do we have non student questions?
+            $check = $this->unmarked_enhancedcalc;
+            // Force reload if we have studnent questions.
+            if ($this->unmarked_student_enhancedcalc === true) {
+              $check = null;
+            }
+        }
+        if ($check === null) {
+            $this->load_unmarked_enhancedcalc($studentsonly);
+        }
+        return $this->enhancedcalc_questions;
     }
 
     /**

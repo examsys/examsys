@@ -178,6 +178,14 @@ Feature: Cleaning variables
       | Café | Café |
       | æìřčžšíýúáÚůú | æìřčžšíýúáÚůú |
       | n < 20 and x > 10 | n < 20 and x > 10 |
+      | < less than at start | < less than at start |
+      | less than at end < | less than at end < |
+      | > greater than at start | > greater than at start |
+      | greater than at end > | greater than at end > |
+      | <less than no space at start | <less than no space at start |
+      | less than<no space | less than<no space |
+      | >less than<no space | >less than<no space |
+      | less than<no space > | less than |
 
   Scenario Outline: Verifying url input
     Given I clean "<input>" as "URL"

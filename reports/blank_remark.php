@@ -65,25 +65,27 @@ if ($paper_type == '0') {
 $result->execute();
 $result->bind_result($type, $id, $user_answer);
 while ($result->fetch()) {
-  $log_answers[$type][$id] = strtolower($user_answer);
+  // Decode user answers into an array of lowercase strings.
+  $tmp_answer = json_decode($user_answer);
+  foreach ($tmp_answer as &$answer) {
+    $answer = strtolower(StringUtils::clean_and_trim($answer));
+  }
+  $log_answers[$type][$id] = $tmp_answer;
 }
 $result->close();
 
 if (isset($_POST['submit'])) {
-  $option_list = '';
+  $option_list_array = array();
 
   // Iterate around all words marked for correction
   for ($i=0; $i<$_POST['word_count']; $i++) {
     if (isset($_POST['word' . $i])) {
       // Encode commas.
       $word = str_replace(',', '&#44;', $_POST['word' . $i]);
-      if ($option_list == '') {
-        $option_list = $word;
-      } else {
-        $option_list .= ',' . $word;
-      }
+      $option_list_array[] = $word;
     }
   }
+  $option_list = implode(',', $option_list_array);
 
   $blank_details = explode('[blank', $option_text);
   for ($i=1; $i<count($blank_details); $i++) {
@@ -132,11 +134,10 @@ if (isset($_POST['submit'])) {
   }
 
   foreach ($log_answers as $log_type=>$log_data) {
-    foreach ($log_data as $id=>$log_answer) {
+    foreach ($log_data as $id => $user_parts) {
       $mark = 0;
       $have_answer = false;
       $saved_response = '';
-      $user_parts = json_decode($log_answer);
       // Required to shift array indexes.
       $blank_details_redo = array();
       $j = 0;
@@ -154,7 +155,7 @@ if (isset($_POST['submit'])) {
           $have_answer = true;
           $is_correct = false;
           foreach ($answer_list as $individual_answer) {
-            if (str_replace('&nbsp;', ' ', trim(strtolower($user_parts[$j]))) == str_replace('&nbsp;', ' ', trim(strtolower($individual_answer)))) {
+            if ($user_parts[$j] == strtolower(StringUtils::clean_and_trim($individual_answer))) {
               $is_correct = true;
               break;
             }
@@ -209,7 +210,7 @@ if (isset($_POST['submit'])) {
     $end_start_tag = strpos($blank_details[$i],']');
     $start_end_tag = strpos($blank_details[$i],'[/blank]');
     $blank_options = substr($blank_details[$i],($end_start_tag+1),($start_end_tag-1));
-    if ($i == $_GET['blank']) {
+    if ($i == $_GET['blank'] && $blank_options !== '') {
       $blanks = explode(',', $blank_options);
     }
   }
@@ -291,9 +292,7 @@ $unique_list = array_fill_keys($blanks, 0);
 
 foreach ($log_answers as $log_type) {
   foreach ($log_type as $id=>$log_answer) {
-    $parts = json_decode($log_answer);
-    foreach ($parts as $part) {
-      $word = strtolower(trim($part));
+    foreach ($log_answer as $word) {
       if ($word != 'u') {
         if (isset($unique_list[$word])) {
           $unique_list[$word]++;

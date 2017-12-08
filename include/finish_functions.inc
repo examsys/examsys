@@ -1974,19 +1974,24 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
           $exclude_mod = (substr($tmp_exclude, $blank_count, 1) == '1') ? ' class="exclude"' : '';
           if ($paper[$question]['display_method'] == 'textboxes') {             // Textboxes
             $correct_flag = false;
-            foreach ($answer_list as $individual_answer) {
-              if (isset($user_choices[$blank_count]) and trim(strtolower($individual_answer)) == trim(strtolower($user_choices[$blank_count]))) {
-                $correct_flag = true;
+            if (isset($user_choices[$blank_count])) {
+              $user_answer = html_entity_decode(StringUtils::clean_and_trim($user_choices[$blank_count]));
+              foreach ($answer_list as $individual_answer) {
+                $possible_correct = html_entity_decode(StringUtils::clean_and_trim($individual_answer));
+                if (strtolower($possible_correct) == strtolower($user_answer)) {
+                  $correct_flag = true;
+                }
               }
+            } else {
+              // Not answered.
+              $user_answer = '';
             }
-            // Decode commas.
-            $display_userchoice = str_replace('&#44;', ',', $user_choices[$blank_count]);
             if ($correct_flag == true) {
               if (substr($tmp_exclude, $blank_count, 1) == '0') {
                 $paper[$question]['mark'] += $paper[$question]['marks_correct'];
               }
               $have_answer = true;
-              echo "<input type=\"text\" size=\"20\" name=\"q" . $question . "_" . $blank_count . "\" value=\"" . $display_userchoice .  "\"$exclude_mod />";
+              echo "<input type=\"text\" size=\"20\" name=\"q" . $question . "_" . $blank_count . "\" value=\"" . $user_answer .  "\"$exclude_mod />";
               echo display_response($tmp_display_students_response, 'tick');
             } else {
               if (!isset($user_choices[$blank_count]) or $user_choices[$blank_count] == 'u') {
@@ -1996,7 +2001,7 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
                   $paper[$question]['mark'] += $paper[$question]['marks_incorrect'];
                 }
                 $have_answer = true;
-                echo "<input type=\"text\" size=\"20\" name=\"q" . $question . "_" . $blank_count . "\" value=\"" . $display_userchoice .  "\"$exclude_mod />";
+                echo "<input type=\"text\" size=\"20\" name=\"q" . $question . "_" . $blank_count . "\" value=\"" . $user_answer .  "\"$exclude_mod />";
                 echo display_response($tmp_display_students_response, 'cross');
               }
             }

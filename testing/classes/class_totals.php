@@ -24,6 +24,7 @@
 */
 
 require_once dirname(dirname(__DIR__)) . '/include/finish_functions.inc';
+require_once dirname(dirname(__DIR__)) . '/plugins/questions/enhancedcalc/helpers/enhancedcalc_helper.php';
 
 /**
  * Class for class_totals functions used in summative exam check test.
@@ -107,6 +108,13 @@ class class_totals {
     $display_feedback           = 1;
     foreach ($papers as $paper) {
       $propertyObj = PaperProperties::get_paper_properties_by_crypt_name($paper['crypt_name'], $mysqli, $string, true);
+      // Mark calculation questions.
+      if ($propertyObj->unmarked_enhancedcalc(1)) {
+        $qids = $propertyObj->get_enhancedcalc_questions(1);
+        foreach ($qids as $qid) {
+          enhancedcalc_remark('2', $paper['paperID'], $qid, QuestionUtils::get_settings($qid), $mysqli, 'all');
+        }
+      }
       $report = new ClassTotals(1, 100, 'asc', 0, 'name', $userObject, $propertyObj, $paper['start_date'], $paper['end_date'], '%', '', $mysqli, $string);
       $report->compile_report(false);
       $marks_set = $report->get_user_results();
