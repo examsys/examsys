@@ -1,6 +1,6 @@
 $(function() {
     jQuery.validator.addMethod("calcanswer", function(value, element) {
-      return this.optional( element ) || /^[+-]?[0-9]*[.]?[0-9]+[ a-zA-Z0-9/^%]*$/.test( value );
+      return this.optional( element ) || /^[+-]?[0-9]*[.]?[0-9]+[\s.]*$/.test( value );
     }, lang['entervalidcalcanswer']);
     jQuery.validator.addClassRules('ecalc-answer', {
         calcanswer: true

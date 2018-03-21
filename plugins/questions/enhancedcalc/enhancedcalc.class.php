@@ -562,7 +562,7 @@ class EnhancedCalc extends Question implements questionInterface {
 			  param::REGEXP,
 			  array(
 				'default' => '',
-				'regexp' => '#^[+-]?[0-9]*[.]?[0-9]*[ a-zA-Z0-9/^%]*$#',
+				'regexp' => '#^[+-]?[0-9]*[.]?[0-9]*[\s\w0-9/^%\p{L}]*$#',
 			  )
 			);
 		}
@@ -1083,7 +1083,7 @@ class EnhancedCalc extends Question implements questionInterface {
 				// Make drop down of units
 				$dispunits = "&nbsp;&nbsp;<select name='qid[" . $this->id . "][uansunit]'>";
 				foreach ($this->settings['answersexp'] as $key => $value) {
-					if ($key == $this->useranswer['uansunit']) {
+					if (isset($this->useranswer['uansunit']) and $key == $this->useranswer['uansunit']) {
 						$dispunits = $dispunits . "<option value='$key' selected>$key</option>";
 					} else {
 						$dispunits = $dispunits . "<option value='$key'>$key</option>";
