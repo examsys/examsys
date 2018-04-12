@@ -84,7 +84,7 @@ abstract class plugins_sms extends \plugins\plugins {
         $enabled = $this->config->get_setting('plugin_SMS', 'enabled_plugin');
         if (!is_null($enabled)) {
             if (is_array($enabled)) {
-                if (!array_search($this->plugin, $enabled)) {
+                if (!in_array($this->plugin, $enabled)) {
                     $enabled[] = $this->plugin;
                 }
             } else {
