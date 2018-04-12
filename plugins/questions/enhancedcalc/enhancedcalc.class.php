@@ -556,15 +556,27 @@ class EnhancedCalc extends Question implements questionInterface {
 		$data = $session;
 
 		foreach ($postdata as $key => $value) {
-			// Clean the value.
-			$data[$key] = param::clean(
-			  $value,
-			  param::REGEXP,
-			  array(
-				'default' => '',
-				'regexp' => '/^[+-]?[0-9]+[\.]?[0-9]*[\s\w\d^%\p{L}]*$/u',
-			  )
-			);
+			if ($key == 'uans') {
+			  // Clean the answer value.
+			  $data[$key] = param::clean(
+			    $value,
+			    param::REGEXP,
+			    array(
+				  'default' => '',
+				  'regexp' => '/^[+-]?[0-9]+[\.]?[0-9]*[\s\w\d^%\p{L}]*$/u',
+				)
+			  );
+			} elseif ($key == 'uansunit') {
+			  // Clean the unit value.
+			  $data[$key] = param::clean(
+			    $value,
+			    param::REGEXP,
+			    array(
+				 'default' => '',
+				 'regexp' => '/^[\s\w\d^%\p{L}]*$/u',
+				)
+			  );
+			}
 		}
 
 		$return = json_encode($data);
