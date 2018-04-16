@@ -18,6 +18,7 @@ if ($updater_utils->check_version("6.5.0")) {
     $result->execute();
     $result->store_result();
     $result->bind_result($property_id, $password);
+    $passwords = array();
     while ($result->fetch()) {
       $oldpass = rogo2272_mdecrypt_password($password);
       $passwords[$property_id] = \encryp::openssl_encrypt_decrypt("encrypt", $oldpass) ;
@@ -37,6 +38,7 @@ if ($updater_utils->check_version("6.5.0")) {
     $result2->execute();
     $result2->store_result();
     $result2->bind_result($component, $setting, $value);
+    $passwords = array();
     while ($result2->fetch()) {
       $oldpass = rogo2272_mdecrypt_password($value);
       $passwords[$component] = array($setting, \encryp::openssl_encrypt_decrypt("encrypt", $oldpass));
@@ -44,7 +46,9 @@ if ($updater_utils->check_version("6.5.0")) {
 
     $update2 = $mysqli->prepare("UPDATE config SET value = ? WHERE setting = ? and component = ? and type = 'password'");
     foreach ($passwords as $component => $setting) {
-      $update2->bind_param('sss', $setting[1], $setting[0], $component);
+      $value = $setting[1];
+      $name = $setting[0];
+      $update2->bind_param('sss', $value, $name, $component);
       $update2->execute();
     }
 

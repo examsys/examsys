@@ -67,15 +67,16 @@ $data['stuhelperror'] = false;
 $data['langerror'] = false;
 if ($updater_utils->check_version("6.4.0")) {
   $data['versionerror'] = true;
-  $lang['warning1'] = sprintf($string['warning1'], $old_version);
-  $lang['warning2'] = $string['warning2'];
+  $lang['warning1'] = sprintf($string['versionwarning1'], $old_version);
+  $lang['warning2'] = $string['versionwarning2'];
   $render->render($data, $lang, '/updates/update.html');
   $render->render_admin_footer();
   exit;
 }
+$configwarning = false;
 if (!isset($_POST['update'])) {
   $updating = true;
-  $lang['updatefromversion'] = $string['updatefromversion'];
+  $lang['updatefromversion'] = sprintf($string['updatefromversion'], $old_version, $version);
   if (!InstallUtils::configFileIsWriteable()) {
     $lang['warningmsg1'] = $string['warning1'];
     $lang['warningmsg2'] = $string['warning2'];
