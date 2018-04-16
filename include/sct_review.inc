@@ -28,7 +28,7 @@ require_once $cfg_web_root . 'include/errors.php';
 $crypt_name = check_var('id', 'REQUEST', true, false, true);
 
 $mysqli = DBUtils::get_mysqli_link($configObject->get('cfg_db_host') , $configObject->get('cfg_db_staff_user'), $configObject->get('cfg_db_staff_passwd'), $configObject->get('cfg_db_database'), $configObject->get('cfg_db_charset'), $notice, $configObject->get('dbclass'));
-
+$configObject->set_db_object($mysqli);
 // Get some properties from the paper.
 $propertyObj = PaperProperties::get_paper_properties_by_crypt_name($crypt_name, $mysqli, $string, true);
 $paperID = $propertyObj->get_property_id();
