@@ -313,9 +313,11 @@ Class UpdaterUtils {
       echo "</li>\n";
     }
 
+    if ($update_display) {
     ob_flush();
     flush();
-    
+    }
+
     return $insertID;
   }
 

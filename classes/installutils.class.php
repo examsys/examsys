@@ -232,7 +232,7 @@ Class InstallUtils {
    * @param string $setting xml path of setting
    * @return cleaned settings
    */
-  private function check_setting($value, $type, $required, $setting) {
+  private static function check_setting($value, $type, $required, $setting) {
     global $string;
     if (is_array($value)) {
       $clean = param::clean_array($value, $type, $required);
@@ -468,6 +468,7 @@ Class InstallUtils {
       $load_help = param::optional('loadHelp', false, param::BOOLEAN, param::FETCH_POST);
       $download_lang = param::optional('loadtranslations', false, param::BOOLEAN, param::FETCH_POST);
     } else {
+      $configObject->set('cfg_root_path', self::getSettings(param::TEXT, true, 'server', 'root'));
       $load_help = self::getSettings(param::BOOLEAN, false, 'help');
       $download_lang = self::getSettings(param::BOOLEAN, false, 'translations');
     }
