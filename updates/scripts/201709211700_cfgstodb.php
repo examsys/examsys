@@ -11,7 +11,7 @@ if ($updater_utils->check_version("6.5.0")) {
     $updater_utils->replace_line($string, $replace, '', $cfg_web_root);
     // Clean value.
     $clean_cfg_summative_mgmt = param::clean($configObject->get('cfg_summative_mgmt'), param::BOOLEAN);
-    if (is_null($clean_cfg_summative_mgmt) or $clean_cfg_summative_mgmt === '') {
+    if (is_null($clean_cfg_summative_mgmt) or $clean_cfg_summative_mgmt == '') {
       $clean_cfg_summative_mgmt = 0;
     }
     $sql = "INSERT INTO config (component, setting, value, type) VALUES ('core', 'cfg_summative_mgmt', " . $clean_cfg_summative_mgmt . ", '" . Config::BOOLEAN . "')";
@@ -42,7 +42,7 @@ if ($updater_utils->check_version("6.5.0")) {
     $configObject->set_setting('system_install_type', $configObject->get('cfg_install_type'), Config::STRING);
     // Clean value.
     $clean_cfg_ims_enabled = param::clean($configObject->get('cfg_ims_enabled'), param::BOOLEAN);
-    if (is_null($clean_cfg_ims_enabled) or $clean_cfg_ims_enabled === '') {
+    if (is_null($clean_cfg_ims_enabled) or $clean_cfg_ims_enabled == '') {
       $clean_cfg_ims_enabled = 0;
     }
     $sql = "INSERT INTO config (component, setting, value, type) VALUES ('core', 'cfg_ims_enabled', " . $clean_cfg_ims_enabled . ", '" . Config::BOOLEAN . "')";
