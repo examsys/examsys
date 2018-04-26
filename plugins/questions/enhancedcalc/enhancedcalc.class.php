@@ -563,7 +563,7 @@ class EnhancedCalc extends Question implements questionInterface {
 			    param::REGEXP,
 			    array(
 				  'default' => '',
-				  'regexp' => '/^[+-]?[0-9]+[\.]?[0-9]*[\s\w\d^%\p{L}]*$/u',
+				  'regexp' => '/^[+-]?[0-9]+[\.]?[0-9]*[\s\w\d\/^%-°\p{L}]*$/u',
 				)
 			  );
 			} elseif ($key == 'uansunit') {
@@ -573,7 +573,7 @@ class EnhancedCalc extends Question implements questionInterface {
 			    param::REGEXP,
 			    array(
 				 'default' => '',
-				 'regexp' => '/^[\s\w\d^%\p{L}]*$/u',
+				 'regexp' => '/^[\s\w\d\/^%-°\p{L}]*$/u',
 				)
 			  );
 			}
