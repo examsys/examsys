@@ -122,7 +122,7 @@ class enhancedcalculationTest extends \testing\unittest\UnitTest {
     $return12 = EnhancedCalc::process_user_answer($post12, $emptyarray);
     $this->assertEquals(json_encode($post12), $return12);
 
-    // Latex for subscript
+    // Degree symbol
     $post13 = array(
       'uans' => '14',
       'uansunit' => '°C',
