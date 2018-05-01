@@ -166,14 +166,7 @@ if (!isset($_REQUEST['q_id']) or $_REQUEST['q_id'] == -1) {
       $question = QuestionEdit::question_factory($mysqli, $userObject, $string, $_GET['type']);
       $question->set_type($_GET['type']);
       $question->set_owner_id($userObject->get_user_ID());
-      if ($paper_id !== -1) {
-        // Adding directly to a paper.
-        $modules = Paper_utils::get_modules($paper_id, $mysqli);
-      } else {
-        // Adding via a module.
-        $modules = array($module);
-      }
-      $question->set_teams($modules);
+      $question->set_teams(Paper_utils::get_modules($paper_id, $mysqli));
     } catch (ClassNotFoundException $ex) {
       $critical_error = $ex->getMessage();
     }
