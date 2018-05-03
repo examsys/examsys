@@ -70,8 +70,8 @@ while ($result->fetch()) {
       $dist = 9999999;
     }
 
-    // Don't include absolutely correct answers in the list
-    if ($dist !== '0') { //'0.00%'
+    // Don't include absolutely correct answers in the list.
+    if (!$answer_obj->is_user_ans_correct()) {
       $log_answers[] = array('paper_type' => $type, 'id' => $id, 'answer_obj' => $answer_obj, 'mark' => strval($mark), 'user_id' => $user_id, 'distance' => $dist);
     }
   }
