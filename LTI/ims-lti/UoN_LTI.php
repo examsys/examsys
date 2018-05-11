@@ -682,4 +682,18 @@ class UoN_LTI extends BLTI {
     $response = replaceResultRequest($grade, $sourcedid, $endpoint, $oauth_consumer_key, $oauth_consumer_secret);
     return $response;
   }
+
+  /**
+   * Check that paperlink matches that of paper we are viewing
+   * @param string $cryptname crypt name of paper
+   * @return void
+   */
+  public function check_paper_link($cryptname) {
+    if (isset($_SESSION['lti']['paperlink'])) {
+      if ($cryptname !== $_SESSION['lti']['paperlink']) {
+        // No match so set lti launch as invalid.
+        $this->valid = false;
+      }
+    }
+  }
 }

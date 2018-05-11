@@ -2481,6 +2481,9 @@ function display_summary($paper_type, $marking, $pass_mark, $user_mark, $total_r
   
   if ($total_marks > 0 and $paper_type != 3) {
     $lti = UoN_LTI::get_instance();
+    $propertyObj = PaperProperties::get_paper_properties_by_id($paperID, $db, $string, true);
+    $cryptname = $propertyObj->get_crypt_name();
+    $lti->check_paper_link($cryptname);
     $html .= '<br /><div class="key">';
     $html .= '<table cellpadding="2" cellspacing="0" border="0" style="text-align:left">';
     $html .= '<tr><td colspan="3" style="padding:0 0 0.6em 0; font-weight:bold; font-size:120%">' . $string['summaryofmarks'] . '</td></tr>';
