@@ -174,7 +174,7 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
   $max_screen       = $propertyObj->get_max_screen();
   $moduleID         = $propertyObj->get_modules();
   $calendar_year    = $propertyObj->get_calendar_year();
-  
+  $cryptname  = $propertyObj->get_crypt_name();
   $metadataid = $log_metadata->get_metadata_id();
 
   $configObject = Config::get_instance();
@@ -2387,7 +2387,7 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
 
   // Marks summary
   if ($preview_q_id == null) {
-    echo display_summary($paper_type, $marking, $pass_mark, $user_mark, $total_random_mark, $total_marks, $string, $paperID, $log_metadata, $mysqlidb);
+    echo display_summary($paper_type, $marking, $pass_mark, $user_mark, $total_random_mark, $total_marks, $string, $paperID, $log_metadata, $mysqlidb, $cryptname);
   }
 
   if ($paper_postscript != '') echo "<br />\n<blockquote>$paper_postscript</blockquote>\n";
@@ -2472,7 +2472,23 @@ function display_question_mark($tmp_display_question_mark, &$paper, $q_type, $qu
   return $html;
 }
 
-function display_summary($paper_type, $marking, $pass_mark, $user_mark, $total_random_mark, $total_marks, $string, $paperID, $log_metadata, $db) {
+/**
+ * Display the summary information
+ *
+ * @param string $paper_type type of paper
+ * @param integer $marking marking scheme
+ * @param float $pass_mark papers pass mark
+ * @param float $user_mark users mark
+ * @param float $total_random_mark total probable marks if you guessed
+ * @param float $total_marks total marks for paper available
+ * @param array $string langauge translations
+ * @param integer $paperID the paper id
+ * @param object $log_metadata the papers metadata
+ * @param object $db db connection
+ * @param string $cryptname the papers crypt name
+ * @return string
+ */
+function display_summary($paper_type, $marking, $pass_mark, $user_mark, $total_random_mark, $total_marks, $string, $paperID, $log_metadata, $db, $cryptname) {
   $configObject = Config::get_instance();
   $html = '';
   
@@ -2481,8 +2497,6 @@ function display_summary($paper_type, $marking, $pass_mark, $user_mark, $total_r
   
   if ($total_marks > 0 and $paper_type != 3) {
     $lti = UoN_LTI::get_instance();
-    $propertyObj = PaperProperties::get_paper_properties_by_id($paperID, $db, $string, true);
-    $cryptname = $propertyObj->get_crypt_name();
     $lti->check_paper_link($cryptname);
     $html .= '<br /><div class="key">';
     $html .= '<table cellpadding="2" cellspacing="0" border="0" style="text-align:left">';
