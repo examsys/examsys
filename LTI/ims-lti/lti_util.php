@@ -715,27 +715,8 @@ function sendOAuthBodyPOST($method, $endpoint, $oauth_consumer_key, $oauth_consu
 	$header = $acc_req->to_header();
 	$header = $header . "\r\nContent-Type: " . $content_type . "\r\n";
 
-	$response = post_socket_xml($endpoint,$body,$header);
-	if ( $response !== false && strlen($response) > 0) return $response;
-
-	$params = array('http' => array(
-			'method' => 'POST',
-			'content' => $body,
-			'header' => $header
-			));
-
-	$ctx = stream_context_create($params);
-  try {
-    $fp = @fopen($endpoint, 'r', false, $ctx);
-	} catch (Exception $e) {
-		$fp = false;
-	}
-	if ($fp) {
-		$response = @stream_get_contents($fp);
-	} else {  // Try CURL
-		$headers = explode("\r\n",$header);
-		$response = sendXmlOverPost($endpoint, $body, $headers);
-	}
+	$headers = explode("\r\n",$header);
+	$response = sendXmlOverPost($endpoint, $body, $headers);
 
 	if ($response === false) {
 		throw new Exception("Problem reading data from $endpoint, $php_errormsg");
@@ -755,6 +736,10 @@ function sendXmlOverPost($url, $xml, $header) {
   curl_setopt($ch, CURLOPT_POSTFIELDS, $xml);
 
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); // ask for results to be returned
+
+  curl_setopt($ch,CURLOPT_TIMEOUT, 10);
+  curl_setopt($ch,CURLOPT_SSL_VERIFYPEER, 1);
+  curl_setopt($ch,CURLOPT_SSL_VERIFYHOST, 1);
 
   // Send to remote and return data to caller.
   $result = curl_exec($ch);
