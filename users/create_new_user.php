@@ -218,8 +218,8 @@ foreach ($titles as $tmp_title) {
 
   foreach ($roles_array as $value) {
     if (substr($value,0,1) == '#') {
-      $parentRole = $string[substr($value,1)];
-      echo "<optgroup label=\"" . $parentRole . "\">\n";
+      $parentRole = substr($value,1);
+      echo "<optgroup label=\"" . $string[$parentRole] . "\">\n";
     } else {
       $display_val = str_replace(' ', '', $value);
       $display_val = str_replace(',', '', $display_val);
