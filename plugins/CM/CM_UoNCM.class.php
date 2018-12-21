@@ -45,7 +45,7 @@ class CM_UoNCM implements iCMAPI {
     $this->_sess_year = $session;
     $originalmodid = $moduleID;
     // Map module code if necessary.
-    if ($session < 2016) {  
+    if ($session < 2018) {
       $moduleID = \plugins\plugins_mapping::do_mapping($db, $moduleID);
     }
     $this->_root_url = $configObject->get_setting('core', 'cfg_cmap_url') . "/" . $this->_sess_year . "/index.php/";
