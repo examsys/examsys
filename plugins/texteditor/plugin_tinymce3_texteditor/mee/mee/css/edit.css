@@ -1,0 +1,152 @@
+.mee_edit
+{
+    border-bottom:1px solid #909090;
+    cursor:text;
+}
+
+.mee_edit_eqn
+{
+    height:240px !important;
+    font-family:MathJax_Main;
+    z-index:10;
+    background-color:white;
+    font-size:120%;
+}
+
+.mee_elemset_empty
+{
+    border:1px dashed red;
+}
+.mee_basic_large_inner
+{
+    z-index:20;
+}
+.mee_input_size
+{
+    font-family:MathJax_Main; 
+    border:none;
+    padding:0;
+    margin:0;
+    display:none;
+}
+.mee_elem_input_box
+{
+    z-index:5;
+    position:absolute;
+    left:100px;
+    top:100px;
+    font-family:MathJax_Main; 
+    border:0;
+    border-style:none;
+    padding:0;
+    margin:0;
+    width:20px;
+    background:none;
+}
+.mee_elem_input_box:focus
+{
+    outline:none;
+}
+.mee_edit_highlight
+{
+    z-index:5;
+    position:absolute;
+    left:100px;
+    top:100px;
+    width:100px;
+    height:100px;
+    background-image:url(../images/edit/highlight_red.png);
+}
+
+.mee_edit_highlight_multi
+{
+    z-index:5;
+    position:absolute;
+    left:100px;
+    top:100px;
+    width:100px;
+    height:100px;
+    background-image:url(../images/edit/highlight_blue.png);
+}
+
+.mee_edit_highlight_elem
+{
+    z-index:5;
+    position:absolute;
+    left:100px;
+    top:100px;
+    width:100px;
+    height:100px;
+    background-image:url(../images/edit/highlight_green.png);
+}
+
+.mee_elem_input
+{
+    color:blue;
+    z-index:15;
+}
+.mee_edit_eqn span
+{
+    white-space:nowrap;
+}
+
+/* debug stuff */
+.dump_set
+{
+    padding-left:20px;
+}
+.dump_set_elemes
+{
+    padding-left:20px;
+}
+.dump_elem_part
+{
+    padding-left:20px;
+}
+.dump_set
+{
+    border:1px solid blue;
+}
+.mee_edit_raw
+{
+    position:relative;
+    left:-1px;
+    top:-3px;
+    font-family:Monospace;
+    font-size:13px;
+    display:none;
+}
+.dump_no_parent
+{
+    color:red;
+}
+.mee_ie7_highlight 
+{
+    border:1px solid green;
+}
+
+.mee_font_math .label { font-family:MathJax_Math }
+.mee_font_main .label { font-family:MathJax_Main }
+.mee_font_cal .label { font-family:MathJax_Caligraphic }
+.mee_font_scr .label { font-family:MathJax_Script }
+.mee_font_rm .label { font-family:MathJax_Main; font-style:normal }
+.mee_font_bf .label { font-weight:bold; }
+.mee_font_bf_txt .label { font-family:MathJax_Main; font-weight:bold }
+.mee_font_bb .label { font-family:MathJax_AMS }
+.mee_font_it .label { }
+.mee_font_frak .label { font-family:MathJax_Fraktur }
+.mee_font_sf .label { font-family:MathJax_SansSerif }
+.mee_font_tt .label { font-family:MathJax_Typewriter }
+.mee_font_oldstyle .label { font-family:MathJax_Caligraphic }
+
+.tb_bonds 
+{
+    font-family:MathJax_Main;
+    font-size:150%;
+}
+.tb_bonds .label
+{
+    position:relative;
+    top:-2px;
+}
+

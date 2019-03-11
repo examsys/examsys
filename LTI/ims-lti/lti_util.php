@@ -1,12 +1,9 @@
 <?php
 
 use LTI\OAuthConsumer,
-    LTI\OAuthDataStore,
     LTI\OAuthRequest,
     LTI\OAuthServer,
     LTI\OAuthSignatureMethod_HMAC_SHA1,
-    LTI\OAuthToken,
-    LTI\OAuthUtil,
     LTI\TrivialOAuthDataStore;
 
 $OAuth_last_computed_siguature = false;
@@ -393,309 +390,6 @@ class BLTI {
   }
 }
 
-function signParameters($oldparms, $endpoint, $method, $oauth_consumer_key, $oauth_consumer_secret, $submit_text = false, $org_id = false, $org_desc = false) {
-	global $last_base_string;
-	$parms = $oldparms;
-	if ( ! isset($parms["lti_version"]) ) $parms["lti_version"] = "LTI-1p0";
-	if ( ! isset($parms["lti_message_type"]) ) $parms["lti_message_type"] = "basic-lti-launch-request";
-	if ( ! isset($parms["oauth_callback"]) ) $parms["oauth_callback"] = "about:blank";
-	if ( $org_id ) $parms["tool_consumer_instance_guid"] = $org_id;
-	if ( $org_desc ) $parms["tool_consumer_instance_description"] = $org_desc;
-	if ( $submit_text ) $parms["ext_submit"] = $submit_text;
-
-	$test_token = '';
-
-	$hmac_method = new OAuthSignatureMethod_HMAC_SHA1();
-	$test_consumer = new OAuthConsumer($oauth_consumer_key, $oauth_consumer_secret, NULL);
-
-	$acc_req = OAuthRequest::from_consumer_and_token($test_consumer, $test_token, $method, $endpoint, $parms);
-	$acc_req->sign_request($hmac_method, $test_consumer, $test_token);
-
-	// Pass this back up "out of band" for debugging
-	$last_base_string = $acc_req->get_signature_base_string();
-
-	$newparms = $acc_req->get_parameters();
-
-  // Don't want to pull GET parameters into POST data so
-  // manually pull back the oauth_ parameters
-  foreach($newparms as $k => $v) {
-		if ( strpos($k, "oauth_") === 0 ) {
-			$parms[$k] = $v;
-		}
-  }
-
-	return $parms;
-}
-
-function postLaunchHTML($newparms, $endpoint, $debug = false, $iframeattr = false) {
-	global $last_base_string;
-	$r = "<div id=\"ltiLaunchFormSubmitArea\">\n";
-	if ( $iframeattr ) {
-			$r = "<form action=\"".$endpoint."\" name=\"ltiLaunchForm\" id=\"ltiLaunchForm\" method=\"post\" target=\"basicltiLaunchFrame\" encType=\"application/x-www-form-urlencoded\" autocomplete=\"off\">\n" ;
-	} else {
-			$r = "<form action=\"".$endpoint."\" name=\"ltiLaunchForm\" id=\"ltiLaunchForm\" method=\"post\" encType=\"application/x-www-form-urlencoded\" autocomplete=\"off\">\n" ;
-	}
-	$submit_text = $newparms['ext_submit'];
-	foreach($newparms as $key => $value) {
-			$key = htmlspecialchars($key);
-			$value = htmlspecialchars($value);
-			if ( $key == "ext_submit" ) {
-				$r .= "<input type=\"submit\" name=\"";
-			} else {
-				$r .= "<input type=\"hidden\" name=\"";
-			}
-			$r .= $key;
-			$r .= "\" value=\"";
-			$r .= $value;
-			$r .= "\"/>\n";
-	}
-	if ($debug) {
-			$r .= "<script language=\"javascript\"> \n";
-			$r .= "  //<![CDATA[ \n" ;
-			$r .= "function basicltiDebugToggle() {\n";
-			$r .= "    var ele = document.getElementById(\"basicltiDebug\");\n";
-			$r .= "    if(ele.style.display == \"block\") {\n";
-			$r .= "        ele.style.display = \"none\";\n";
-			$r .= "    }\n";
-			$r .= "    else {\n";
-			$r .= "        ele.style.display = \"block\";\n";
-			$r .= "    }\n";
-			$r .= "} \n";
-			$r .= "  //]]> \n" ;
-			$r .= "</script>\n";
-			$r .= "<a id=\"displayText\" href=\"javascript:basicltiDebugToggle();\">";
-			$r .= get_string("toggle_debug_data","basiclti")."</a>\n";
-			$r .= "<div id=\"basicltiDebug\" style=\"display:none\">\n";
-			$r .=  "<b>".get_string("basiclti_endpoint","basiclti")."</b><br/>\n";
-			$r .= $endpoint . "<br/>\n&nbsp;<br/>\n";
-			$r .=  "<b>".get_string("basiclti_parameters","basiclti")."</b><br/>\n";
-			foreach($newparms as $key => $value ) {
-				$key = htmlspecialchars($key);
-				$value = htmlspecialchars($value);
-				$r .= "$key = $value<br/>\n";
-			}
-			$r .= "&nbsp;<br/>\n";
-			$r .= "<p><b>".get_string("basiclti_base_string","basiclti")."</b><br/>\n".$last_base_string."</p>\n";
-			$r .= "</div>\n";
-	}
-	$r .= "</form>\n";
-	if ($iframeattr) {
-		$r .= "<iframe name=\"basicltiLaunchFrame\"  id=\"basicltiLaunchFrame\" src=\"\"\n";
-		$r .= $iframeattr . ">\n<p>".get_string("frames_required","basiclti")."</p>\n</iframe>\n";
-	}
-	if (!$debug) {
-		$ext_submit = "ext_submit";
-		$ext_submit_text = $submit_text;
-		$r .= " <script type=\"text/javascript\"> \n" .
-				"  //<![CDATA[ \n" .
-				"    document.getElementById(\"ltiLaunchForm\").style.display = \"none\";\n" .
-				"    nei = document.createElement('input');\n" .
-				"    nei.setAttribute('type', 'hidden');\n" .
-				"    nei.setAttribute('name', '".$ext_submit."');\n" .
-				"    nei.setAttribute('value', '".$ext_submit_text."');\n" .
-				"    document.getElementById(\"ltiLaunchForm\").appendChild(nei);\n" .
-				"    document.ltiLaunchForm.submit(); \n" .
-				"  //]]> \n" .
-				" </script> \n";
-	}
-	$r .= "</div>\n";
-	return $r;
-}
-
-/* This is a bit of homage to Moodle's pattern of internationalisation */
-function get_string($key,$bundle) {
-	return $key;
-}
-
-function do_post_request($url, $data, $optional_headers = null) {
-  $params = array('http' => array(
-              'method' => 'POST',
-              'content' => $data
-            ));
-
-  if ($optional_headers !== null) {
-     $header = $optional_headers . "\r\n";
-  }
-  // $header = $header . "Content-type: application/x-www-form-urlencoded\r\n";
-  $params['http']['header'] = $header;
-  $ctx = stream_context_create($params);
-  $fp = @fopen($url, 'rb', false, $ctx);
-  if (!$fp) {
-    throw new Exception("Problem with $url, $php_errormsg");
-  }
-  $response = @stream_get_contents($fp);
-  if ($response === false) {
-    throw new Exception("Problem reading data from $url, $php_errormsg");
-  }
-  return $response;
-}
-
-// Parse a descriptor
-function launchInfo($xmldata) {
-	$xml = new SimpleXMLElement($xmldata);
-	if ( ! $xml ) {
-		 echo("Error parsing Descriptor XML\n");
-		 return;
-	}
-	$launch_url = $xml->secure_launch_url[0];
-	if ( ! $launch_url ) $launch_url = $xml->launch_url[0];
-	if ( $launch_url ) $launch_url = (string) $launch_url;
-	$custom = array();
-	if ( $xml->custom[0]->parameter )
-	foreach ( $xml->custom[0]->parameter as $resource) {
-		$key = (string) $resource['key'];
-		$key = strtolower($key);
-		$nk = '';
-		for($i = 0; $i < strlen($key); $i++) {
-			$ch = substr($key, $i, 1);
-			if ($ch >= "a" && $ch <= "z") $nk .= $ch;
-			elseif ( $ch >= "0" && $ch <= "9" ) $nk .= $ch;
-			else $nk .= "_";
-		}
-		$value = (string) $resource;
-		$custom["custom_".$nk] = $value;
-	}
-	return array("launch_url" => $launch_url, "custom" => $custom ) ;
-}
-
-  function curPageURL() {
-    $pageURL = (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != "on")
-             ? 'http'
-             : 'https';
-    $pageURL .= "://";
-    $pageURL .= $_SERVER['HTTP_HOST'];
-    $pageURL .= $_SERVER['PHP_SELF'];
-    return $pageURL;
-  }
-
-
-function getLastOAuthBodyBaseString() {
-	global $LastOAuthBodyBaseString;
-	return $LastOAuthBodyBaseString;
-}
-
-function getLastOAuthBodyHashInfo() {
-	global $LastOAuthBodyHashInfo;
-	return $LastOAuthBodyHashInfo;
-}
-
-
-function getOAuthKeyFromHeaders() {
-	$request_headers = OAuthUtil::get_headers();
-
-	if (@substr($request_headers['Authorization'], 0, 6) == "OAuth ") {
-		$header_parameters = OAuthUtil::split_header($request_headers['Authorization']);
-
-		return $header_parameters['oauth_consumer_key'];
-	}
-	return false;
-}
-
-function handleOAuthBodyPOST($oauth_consumer_key, $oauth_consumer_secret) {
-	$request_headers = OAuthUtil::get_headers();
-
-	// Must reject application/x-www-form-urlencoded
-	if ($request_headers['Content-Type'] == 'application/x-www-form-urlencoded' ) {
-			throw new Exception("OAuth request body signing must not use application/x-www-form-urlencoded");
-	}
-
-	if (@substr($request_headers['Authorization'], 0, 6) == "OAuth ") {
-		$header_parameters = OAuthUtil::split_header($request_headers['Authorization']);
-
-		$oauth_body_hash = $header_parameters['oauth_body_hash'];
-	}
-
-	if (!isset($oauth_body_hash)) {
-		throw new Exception("OAuth request body signing requires oauth_body_hash body");
-	}
-
-	// Verify the message signature
-	$store = new TrivialOAuthDataStore();
-	$store->add_consumer($oauth_consumer_key, $oauth_consumer_secret);
-
-	$server = new OAuthServer($store);
-
-	$method = new OAuthSignatureMethod_HMAC_SHA1();
-	$server->add_signature_method($method);
-	$request = OAuthRequest::from_request();
-
-	global $LastOAuthBodyBaseString;
-	$LastOAuthBodyBaseString = $request->get_signature_base_string();
-
-	try {
-		$server->verify_request($request);
-	} catch (Exception $e) {
-		$message = $e->getMessage();
-		throw new Exception("OAuth signature failed: " . $message);
-	}
-
-	$postdata = file_get_contents('php://input');
-
-	$hash = base64_encode(sha1($postdata, TRUE));
-
-	global $LastOAuthBodyHashInfo;
-	$LastOAuthBodyHashInfo = "hdr_hash=$oauth_body_hash body_len=".strlen($postdata)." body_hash=$hash";
-
-	if ( $hash != $oauth_body_hash ) {
-		throw new Exception("OAuth oauth_body_hash mismatch");
-	}
-
-	return $postdata;
-}
-
-// From: http://php.net/manual/en/function.file-get-contents.php
-function post_socket_xml($endpoint, $data, $moreheaders = false) {
-	$url = parse_url($endpoint);
-
-	if (!isset($url['port'])) {
-		if ($url['scheme'] == 'http') { $url['port']=80; }
-		elseif ($url['scheme'] == 'https') { $url['port']=443; }
-	}
-
-	$url['query']=isset($url['query'])?$url['query']:'';
-
-	$hostport = ':'.$url['port'];
-	if ($url['scheme'] == 'http' && $hostport == ':80' ) $hostport = '';
-	if ($url['scheme'] == 'https' && $hostport == ':443' ) $hostport = '';
-
-	$url['protocol'] = $url['scheme'] . '://';
-	$eol="\r\n";
-
-  $uri = "/";
-  if ( isset($url['path'])) $uri = $url['path'];
-  if ( isset($url['query']) and strlen($url['query']) > 0 ) $uri .= '?'.$url['query'];
-  if ( isset($url['fragment']) and strlen($url['fragment']) > 0 ) $uri .= '#'.$url['fragment'];
-
-  $headers =  "POST " . $uri . " HTTP/1.0" . $eol.
-              "Host: " . $url['host'] . $hostport . $eol.
-              "Referer: " . $url['protocol'] . $url['host'] . $url['path'] . $eol.
-              "Content-Length: ".strlen($data).$eol;
-  if ( is_string($moreheaders) ) $headers .= $moreheaders;
-  $len = strlen($headers);
-  if (substr($headers,$len-2) != $eol) {
-    $headers .= $eol;
-  }
-  $headers .= $eol . $data;
-  try {
-    $fp = fsockopen($url['host'], $url['port'], $errno, $errstr, 30);
-    if ($fp) {
-      fputs($fp, $headers);
-      $result = '';
-      while (!feof($fp)) {
-        $result .= fgets($fp, 128);
-      }
-      fclose($fp);
-      //removes headers
-      $pattern="/^.*\r\n\r\n/s";
-      $result=preg_replace($pattern,'',$result);
-      return $result;
-    }
-  } catch(Exception $e) {
-    return false;
-  }
-  return false;
-}
-
 function sendOAuthBodyPOST($method, $endpoint, $oauth_consumer_key, $oauth_consumer_secret, $content_type, $body) {
 	$hash = base64_encode(sha1($body, TRUE));
 
@@ -715,51 +409,51 @@ function sendOAuthBodyPOST($method, $endpoint, $oauth_consumer_key, $oauth_consu
 	$header = $acc_req->to_header();
 	$header = $header . "\r\nContent-Type: " . $content_type . "\r\n";
 
-	$response = post_socket_xml($endpoint,$body,$header);
-	if ( $response !== false && strlen($response) > 0) return $response;
+	$headers = explode("\r\n",$header);
+	$response = sendXmlOverPost($endpoint, $body, $headers);
 
-	$params = array('http' => array(
-			'method' => 'POST',
-			'content' => $body,
-			'header' => $header
-			));
-
-	$ctx = stream_context_create($params);
-  try {
-    $fp = @fopen($endpoint, 'r', false, $ctx);
-	} catch (Exception $e) {
-		$fp = false;
+	if ($response['result'] === false) {
+		$configObject = Config::get_instance();
+		$logger = new \logger($configObject->db);
+		$userObj = \UserObject::get_instance();
+		$userid = $userObj->get_user_ID();
+		$type = 'LTI Post';
+		$errorstring = "Problem reading data from " . $endpoint . ", " . $response['error'];
+		$errorfile = $_SERVER['PHP_SELF'];
+		$errorline = __LINE__ - 10;
+		$logger->record_application_warning($userid, $type, $errorstring, $errorfile, $errorline);
 	}
-	if ($fp) {
-		$response = @stream_get_contents($fp);
-	} else {  // Try CURL
-		$headers = explode("\r\n",$header);
-		$response = sendXmlOverPost($endpoint, $body, $headers);
-	}
-
-	if ($response === false) {
-		throw new Exception("Problem reading data from $endpoint, $php_errormsg");
-	}
-	return $response;
+	return $response['result'];
 }
 
+/**
+ * Send some xml via a curl post
+ *
+ * @param string $url service to send request to
+ * @param string $xml the xml to send
+ * @param string $header the header to send
+ * @return array
+ */
 function sendXmlOverPost($url, $xml, $header) {
-  if ( ! function_exists('curl_init') ) return false;
+  $configObject = Config::get_instance();
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $url);
 
   // For xml, change the content-type.
-  curl_setopt ($ch, CURLOPT_HTTPHEADER, $header);
+  curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 
   curl_setopt($ch, CURLOPT_POST, 1);
   curl_setopt($ch, CURLOPT_POSTFIELDS, $xml);
 
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); // ask for results to be returned
-
+  curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $configObject->get_setting('core', 'lti_ssl_verifypeer'));
+  curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, $configObject->get_setting('core', 'lti_ssl_verifyhost'));
   // Send to remote and return data to caller.
-  $result = curl_exec($ch);
+  $response['result'] = curl_exec($ch);
+  $response['error'] = curl_error($ch);
   curl_close($ch);
-  return $result;
+  return $response;
 }
 
 function getPOXGradeRequest() {
@@ -789,47 +483,15 @@ function getPOXGradeRequest() {
 </imsx_POXEnvelopeRequest>';
 }
 
-function getPOXRequest() {
-    return '<?xml version = "1.0" encoding = "UTF-8"?>
-<imsx_POXEnvelopeRequest xmlns = "http://www.imsglobal.org/services/ltiv1p1/xsd/imsoms_v1p0">
-  <imsx_POXHeader>
-    <imsx_POXRequestHeaderInfo>
-      <imsx_version>V1.0</imsx_version>
-      <imsx_messageIdentifier>MESSAGE</imsx_messageIdentifier>
-    </imsx_POXRequestHeaderInfo>
-  </imsx_POXHeader>
-  <imsx_POXBody>
-    <OPERATION>
-      <resultRecord>
-        <sourcedGUID>
-          <sourcedId>SOURCEDID</sourcedId>
-        </sourcedGUID>
-      </resultRecord>
-    </OPERATION>
-  </imsx_POXBody>
-</imsx_POXEnvelopeRequest>';
-}
-
-function getPOXResponse() {
-    return '<?xml version="1.0" encoding="UTF-8"?>
-<imsx_POXEnvelopeResponse xmlns="http://www.imsglobal.org/services/ltiv1p1/xsd/imsoms_v1p0">
-    <imsx_POXHeader>
-        <imsx_POXResponseHeaderInfo>
-            <imsx_version>V1.0</imsx_version>
-            <imsx_messageIdentifier>%s</imsx_messageIdentifier>
-            <imsx_statusInfo>
-                <imsx_codeMajor>%s</imsx_codeMajor>
-                <imsx_severity>status</imsx_severity>
-                <imsx_description>%s</imsx_description>
-                <imsx_messageRefIdentifier>%s</imsx_messageRefIdentifier>
-            </imsx_statusInfo>
-        </imsx_POXResponseHeaderInfo>
-    </imsx_POXHeader>
-    <imsx_POXBody>%s
-    </imsx_POXBody>
-</imsx_POXEnvelopeResponse>';
-}
-
+/**
+ * Post grade
+ * @param float $grade the grade
+ * @param string $sourcedid the source system item id
+ * @param string $endpoint teh source system
+ * @param string $oauth_consumer_key oauth consumer key
+ * @param string $oauth_consumer_secret oauth consumer secret
+ * @return array|null
+ */
 function replaceResultRequest($grade, $sourcedid, $endpoint, $oauth_consumer_key, $oauth_consumer_secret) {
 	$method="POST";
 	$content_type = "application/xml";
@@ -840,7 +502,10 @@ function replaceResultRequest($grade, $sourcedid, $endpoint, $oauth_consumer_key
 			getPOXGradeRequest());
 
 	$response = sendOAuthBodyPOST($method, $endpoint, $oauth_consumer_key, $oauth_consumer_secret, $content_type, $postBody);
-	return parseResponse($response);
+	if ($response !== false) {
+		return parseResponse($response);
+	}
+	return null;
 }
 
 function parseResponse($response) {
@@ -872,4 +537,3 @@ function parseResponse($response) {
 	}
 	return $retval;
 }
-?>

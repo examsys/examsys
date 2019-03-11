@@ -15,6 +15,7 @@
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
 use testing\unittest\unittestdatabase;
+use PHPUnit\DbUnit\DataSet\YamlDataSet;
 use org\bovigo\vfs\vfsStreamWrapper;
 use org\bovigo\vfs\vfsStream;
 
@@ -50,7 +51,7 @@ class rogo_directorytest extends unittestdatabase {
    * @return dataset
    */
   public function getDataSet() {
-    return new PHPUnit_Extensions_Database_DataSet_YamlDataSet($this->get_base_fixture_directory() . "rogo_directory" . DIRECTORY_SEPARATOR . "rogodirectory.yml");
+    return new YamlDataSet($this->get_base_fixture_directory() . "rogo_directory" . DIRECTORY_SEPARATOR . "rogodirectory.yml");
   }
 
   /**
@@ -59,7 +60,7 @@ class rogo_directorytest extends unittestdatabase {
    * @return dataset
    */
   public function get_expected_data_set($name) {
-    return new PHPUnit_Extensions_Database_DataSet_YamlDataSet($this->get_base_fixture_directory() . "rogo_directory" . DIRECTORY_SEPARATOR . $name . ".yml");
+    return new YamlDataSet($this->get_base_fixture_directory() . "rogo_directory" . DIRECTORY_SEPARATOR . $name . ".yml");
   }
     
   /**
@@ -676,5 +677,126 @@ class rogo_directorytest extends unittestdatabase {
     $this->assertCount(2, vfsStreamWrapper::getRoot()->getChild('files')->getChildren());
     $this->assertTrue(vfsStreamWrapper::getRoot()->getChild('files')->hasChild('test.gif'));
     $this->assertTrue(vfsStreamWrapper::getRoot()->getChild('files')->hasChild('testfile.txt'));
+  }
+
+  /**
+   * Tests the clear_subdir method will empty the sub directory, but not delete the sub directory itself or parent directory contents.
+   *
+   * @group rogo_directory
+   */
+  public function test_clear_subdir() {
+    $this->rogodirectory->expects($this->any())->method('location')->willReturn($this->config->get('cfg_rogo_data') . '/test/');
+    $this->rogodirectory->expects($this->once())->method('valid_path')->willReturn(true);
+    // The contents of the directory.
+    $structure = array(
+      'test' => array(
+        'subdir' => array(
+          'testfile.txt' => 'test content',
+        ),
+        'testfile.txt' => 'test content',
+      )
+    );
+    vfsStream::setup(unittestdatabase::DATA_DIRECTORY, 0777, $structure);
+    $this->assertTrue(vfsStreamWrapper::getRoot()->hasChild('test'));
+    $this->assertCount(2, vfsStreamWrapper::getRoot()->getChild('test')->getChildren());
+    $this->assertCount(1, vfsStreamWrapper::getRoot()->getChild('test')->getChild('subdir')->getChildren());
+    $this->assertTrue($this->rogodirectory->clear_subdir('subdir'));
+    $this->assertTrue(vfsStreamWrapper::getRoot()->hasChild('test'));
+    $this->assertCount(2, vfsStreamWrapper::getRoot()->getChild('test')->getChildren());
+    $this->assertCount(0, vfsStreamWrapper::getRoot()->getChild('test')->getChild('subdir')->getChildren());
+  }
+
+  /**
+   * Tests the clear_subdir method will return false if server set to read only.
+   *
+   * @group rogo_directory
+   */
+  public function test_subdir_clear_empty() {
+    $this->rogodirectory->expects($this->any())->method('location')->willReturn($this->config->get('cfg_rogo_data') . '/test/');
+    $this->rogodirectory->expects($this->once())->method('valid_path')->willReturn(true);
+    $structure = array(
+      'test' => array(
+        'subdir' => array(),
+      )
+    );
+    vfsStream::setup(unittestdatabase::DATA_DIRECTORY, 0777, $structure);
+    $this->assertCount(0, vfsStreamWrapper::getRoot()->getChild('test')->getChild('subdir')->getChildren());
+    $this->assertTrue($this->rogodirectory->clear_subdir('subdir'));
+    $this->assertCount(0, vfsStreamWrapper::getRoot()->getChild('test')->getChild('subdir')->getChildren());
+  }
+
+  /**
+   * Tests the clear_subdir method will return false if server set to read only.
+   *
+   * @group rogo_directory
+   */
+  public function test_clear_subdir_read_only() {
+    $this->config->set('cfg_readonly_host', true);
+    $this->rogodirectory->expects($this->any())->method('location')->willReturn($this->config->get('cfg_rogo_data') . '/test/');
+    // The contents of the directory.
+    $structure = array(
+      'test' => array(
+        'subdir' => array(
+          'testfile.txt' => 'test content',
+        ),
+        'testfile.txt' => 'test content',
+      )
+    );
+    vfsStream::setup(unittestdatabase::DATA_DIRECTORY, 0777, $structure);
+    $this->assertCount(1, vfsStreamWrapper::getRoot()->getChild('test')->getChild('subdir')->getChildren());
+    $this->assertFalse($this->rogodirectory->clear_subdir('subdir'));
+    $this->assertCount(1, vfsStreamWrapper::getRoot()->getChild('test')->getChild('subdir')->getChildren());
+  }
+
+  /**
+   * Tests the clear_subdir method will not fail if the directory is already empty.
+   *
+   * @group rogo_directory
+   */
+  public function test_clear_subdir_empty_read_only() {
+    $this->config->set('cfg_readonly_host', true);
+    $this->rogodirectory->expects($this->any())->method('location')->willReturn($this->config->get('cfg_rogo_data') . '/test/');
+    $structure = array(
+      'test' => array(
+        'subdir' => array(),
+      )
+    );
+    vfsStream::setup(unittestdatabase::DATA_DIRECTORY, 0777, $structure);
+    $this->assertCount(0, vfsStreamWrapper::getRoot()->getChild('test')->getChild('subdir')->getChildren());
+    $this->assertFalse($this->rogodirectory->clear_subdir('subdir'));
+    $this->assertCount(0, vfsStreamWrapper::getRoot()->getChild('test')->getChild('subdir')->getChildren());
+  }
+
+  /**
+   * Tests the clear_subdir method will not fail if the directory does not exist.
+   *
+   * @group rogo_directory
+   */
+  public function test_clear_subdir_no_directory() {
+    $this->rogodirectory->expects($this->any())->method('location')->willReturn($this->config->get('cfg_rogo_data') . '/test/');
+    $this->assertFalse($this->rogodirectory->clear_subdir('subdir'));
+  }
+
+  /**
+   * Tests the clear method return false if it cannot clear the directory.
+   *
+   * @group rogo_directory
+   */
+  public function test_clear_subdir_no_permissions() {
+    $this->rogodirectory->expects($this->any())->method('location')->willReturn($this->config->get('cfg_rogo_data') . '/test/');
+    // The contents of the directory.
+    $structure = array(
+      'test' => array(
+        'subdir' => array(
+          'testfile.txt' => 'test content',
+        ),
+        'testfile.txt' => 'test content',
+      )
+    );
+    vfsStream::setup(unittestdatabase::DATA_DIRECTORY, 0000, $structure);
+    vfsStreamWrapper::getRoot()->getChild('test')->getChild('subdir')->chmod(0000);
+    $this->assertCount(1, vfsStreamWrapper::getRoot()->getChild('test')->getChild('subdir')->getChildren());
+    $this->assertFalse($this->rogodirectory->clear_subdir('subdir'));
+    $this->assertCount(1, vfsStreamWrapper::getRoot()->getChild('test')->getChild('subdir')->getChildren());
   }
 }

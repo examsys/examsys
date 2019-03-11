@@ -182,7 +182,7 @@ search_utils::display_staff_modules_dropdown($userObject, $string, $mysqli);
 <option value="%"><?php echo $string['anyyear'] ?></option>
 <?php
   $yearutils = new yearutils($mysqli);
-  echo $yearutils->get_calendar_year_dropdown_options(2, $calendar_year, $string);
+  echo $yearutils->get_calendar_year_dropdown_options(2, $calendar_year, $string, $yearutils::USERS);
 ?>
 </select></div>
 <br />

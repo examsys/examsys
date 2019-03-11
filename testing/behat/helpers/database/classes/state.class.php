@@ -306,6 +306,6 @@ class state {
    */
   public static function table_list() {
     $tablelist = self::$db->query('SHOW TABLES');
-    return $tablelist->fetch_all(MYSQL_NUM);
+    return $tablelist->fetch_all(MYSQLI_NUM);
   }
 }

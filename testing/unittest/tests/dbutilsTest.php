@@ -15,6 +15,7 @@
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
 use testing\unittest\unittestdatabase;
+use PHPUnit\DbUnit\DataSet\YamlDataSet;
 
 /**
  * Test dbutils class
@@ -31,7 +32,7 @@ class dbutilstest extends unittestdatabase {
      * @return dataset
      */
     public function getDataSet() {
-        return new PHPUnit_Extensions_Database_DataSet_YamlDataSet($this->get_base_fixture_directory() . "dbutilsTest" . DIRECTORY_SEPARATOR . "campus.yml");
+        return new YamlDataSet($this->get_base_fixture_directory() . "dbutilsTest" . DIRECTORY_SEPARATOR . "campus.yml");
     }
     
     /**
@@ -40,7 +41,7 @@ class dbutilstest extends unittestdatabase {
      * @return dataset
      */
     public function get_expected_data_set($name) {
-        return new PHPUnit_Extensions_Database_DataSet_YamlDataSet($this->get_base_fixture_directory() . "dbutilsTest" . DIRECTORY_SEPARATOR . $name . ".yml");
+        return new YamlDataSet($this->get_base_fixture_directory() . "dbutilsTest" . DIRECTORY_SEPARATOR . $name . ".yml");
     }
     
     /**

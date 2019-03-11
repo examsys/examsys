@@ -54,6 +54,15 @@ class requirements {
         $ext[$extension] = true;
       }
     }
+    // Check optional extenstions.
+    $optional_extenstions = $configObject->getxml('php', 'optional_extenstions');
+    foreach ($optional_extenstions->extension as $opt) {
+      if (!in_array($opt, $phpModules)) {
+        $ext[$opt] = 'warn';
+      } else {
+        $ext[$opt] = true;
+      }
+    }
     return $ext;
   }
 
@@ -129,18 +138,6 @@ class requirements {
     foreach ($phpext as $idx => $val) {
       if (!$val) {
         throw new Exception('PHP extension ' . strtoupper($idx) . ' missing.');
-      }
-    }
-    // Install composer and dependencies.
-    if (!InstallUtils::$behat_install and !InstallUtils::$phpunit_install) {
-      if (self::composer() !== true) {
-        throw new Exception('Composer not installed / failed to install libraries.');
-      }
-    }
-    // Install NPM dependencies.
-    if (!InstallUtils::$behat_install and !InstallUtils::$phpunit_install) {
-      if (self::npm() !== true) {
-        throw new Exception('NPM not installed / failed to install libraries');
       }
     }
   }

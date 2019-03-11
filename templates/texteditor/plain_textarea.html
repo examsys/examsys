@@ -1,0 +1,58 @@
+{#This file is part of Rogō
+
+Rogō is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Rogō is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+#}
+
+{#
+This template is for the editor display.
+
+author Dr Joseph Baxter <joseph.baxter@nottingham.ac.uk>
+copyright 2018 onwards The University of Nottingham
+
+Required variables:
+
+data.editormathjax - flag to indicate if mathjax editor in use
+data.questionno - question number
+data.unanswered - flag to indicate if question has previously been answered
+data.editorcolumns -number of columns in editor
+data.editorrows - number of row in editor
+data.useranswer - users answer
+data.style - inline styling
+
+Required localised text -
+lang.mathjaxinstructions - instructions
+lang.previewmathjax - preview
+
+#}
+{% if data.editormathjax == true %}
+{% include 'mathjaxpreview.html' %}
+<p>{{lang.mathjaxinstructions|raw}}</p>
+    {% if data.style == '' %}
+    <textarea onkeyup="Preview{{data.questionno}}.Update()" {% if data.unanswered %} class="unans" {% else %} class="plaintextarea" {% endif %} id="q{{data.questionno}}" name="q{{data.questionno}}" {% if data.editorcolumns %} cols="{{data.editorcolumns}}" {% endif %} {% if data.editorrows %} cols="{{data.editorrows}}" {% endif %}>{{data.useranswer}}</textarea>
+{% else %}
+    <textarea onkeyup="Preview{{data.questionno}}.Update()" {% if data.unanswered %} class="unans" {% else %} class="plaintextarea" {% endif %} id="q{{data.questionno}}" name="q{{data.questionno}}" style="{{data.style}}" {% if data.editorcolumns %} cols="{{data.editorcolumns}}" {% endif %} {% if data.editorrows %} cols="{{data.editorrows}}" {% endif %}>{{data.useranswer}}</textarea>
+    {% endif %}
+{% else %}
+    {% if data.style == '' %}
+    <textarea {% if data.unanswered %} class="unans" {% else %} class="plaintextarea" {% endif %} id="q{{data.questionno}}" name="q{{data.questionno}}" {% if data.editorcolumns %} cols="{{data.editorcolumns}}" {% endif %} {% if data.editorrows %} cols="{{data.editorrows}}" {% endif %}>{{data.useranswer}}</textarea>
+    {% else %}
+    <textarea {% if data.unanswered %} class="unans" {% else %} class="plaintextarea" {% endif %} id="q{{data.questionno}}" name="q{{data.questionno}}" style="{{data.style}}" {% if data.editorcolumns %} cols="{{data.editorcolumns}}" {% endif %} {% if data.editorrows %} cols="{{data.editorrows}}" {% endif %}>{{data.useranswer}}</textarea>
+    {% endif %}
+{% endif %}
+{% if data.editormathjax %}
+<p>{{lang.previewmathjax}}</p>
+<div id="MathPreview{{data.questionno}}" style="border:1px solid; padding: 3px; width:50%; margin-top:5px"></div>
+<div id="MathBuffer{{data.questionno}}" style="border:1px solid; padding: 3px; width:50%; margin-top:5px; visibility:hidden; position:absolute; top:0; left: 0"></div>
+<script>Preview{{data.questionno}}.Init();</script>
+{% endif %}

@@ -17,15 +17,8 @@
 $string['osceform'] = 'OSCE Form';
 $string['overallclassification'] = 'Overall Classification:';
 $string['feedback'] = 'Feedback';
-$string['clear fail'] = 'Clear Fail';
-$string['borderline'] = 'Borderline';
-$string['clear pass'] = 'Clear Pass';
-$string['fail'] = 'Fail';
-$string['borderline fail'] = 'Borderline fail';
-$string['borderline pass'] = 'Borderline pass';
-$string['pass'] = 'Pass';
-$string['good pass'] = 'Good pass';
-$string['honours pass'] = 'Honours PASS';
-$string['unsatisfactory'] = 'Unsatisfactory';
-$string['competent'] = 'Competent';
-?>
+$string['marking3'] = array('Clear Fail', 'Borderline', 'Clear Pass');
+$string['marking4'] = array('Fail', 'Borderline Fail', 'Borderline pass', 'Pass', 'Good Pass');
+$string['marking5'] = array('Unsatisfactory', 'Competent');
+$string['marking6'] = array('Clear FAIL', 'BORDERLINE', 'Clear PASS', 'Honours PASS');
+$string['marking7'] = array('Fail', 'Pass');

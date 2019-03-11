@@ -1,0 +1,9 @@
+.question-leadin-popup {
+    position: absolute;
+    background-color: #fff;
+    max-width: 650px;
+    padding: 5px;
+    border: 2px #316ac5 solid;
+    opacity: 1;
+    font-size: 13px;
+}

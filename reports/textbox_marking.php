@@ -23,7 +23,6 @@
 */
 require '../include/staff_auth.inc';
 require '../include/errors.php';
-require '../include/media.inc';
 
 $stateutil = new StateUtils($userObject->get_user_ID(), $mysqli);
 $state = $stateutil->getState();
@@ -117,6 +116,11 @@ HTML;
       $render = new render($configObject);
       $render->render(null, null, 'mathjax.html');
     }
+    $texteditorplugin = \plugins\plugins_texteditor::get_editor();
+    $texteditorplugin->display_header();
+
+    // Check if any 3d file types are enabled and render js.
+    threed_handler::render_js($string);
   ?>
 </head>
 
@@ -337,9 +341,14 @@ $half_marks = true;
         $media_list = explode('|', $q_media);
         $media_list_width = explode('|', $q_media_width);
         $media_list_height = explode('|', $q_media_height);
+        $questiondata = new plugins\questions\textbox\renderdata();
+        $render = new render($configObject);
         for ($i=0; $i<count($media_list); $i++) {
           if ($media_list[$i] != '') {
-            echo '<p align="center">' . display_media($media_list[$i], $media_list_width[$i], $media_list_height[$i], '') . "</p>\n";
+            $questiondata->set_media($media_list[$i], $media_list_width[$i], $media_list_height[$i], '', true);
+            echo '<div class="mediadiv">';
+            $render->render($questiondata, $string, 'paper/media.html');
+            echo "</div>\n";
           }
         }
       }

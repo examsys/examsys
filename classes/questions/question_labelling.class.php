@@ -96,9 +96,11 @@ Class QuestionLABELLING extends QuestionEdit {
     $option_text = '';
     $s_split = explode('|', $first_split[11]);
     foreach ($s_split as $ind_label) {
-      $label_parts = explode('$', $ind_label);
-      if (trim($label_parts[4]) != '') {
-        $option_text .= ',' . $label_parts[4];
+      if ($ind_label != '') {
+        $label_parts = explode('$', $ind_label);
+        if (trim($label_parts[4]) != '') {
+          $option_text .= ',' . $label_parts[4];
+        }
       }
     }
     

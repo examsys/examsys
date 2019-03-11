@@ -9,5 +9,6 @@ track_changes:
     type: "Paper"
     typeID: 45
     editor: 1
-    new: "newpassword"
+    new: "********"
+    old: "********"
     part: "password"

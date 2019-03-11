@@ -58,7 +58,7 @@ $next_academic_year = $yearutils->get_academic_session($next_session);
         $smsplugin_name = plugin_manager::get_plugin_type_enabled('plugin_sms');
         foreach($smsplugin_name as $name) {
             $smspluginns = 'plugins\SMS\\' . $name . '\\' . $name;
-            $smsplugin = new $smspluginns($mysqli, $userObject->get_user_ID());
+            $smsplugin = new $smspluginns($userObject->get_user_ID());
             $assessmentimport = $smsplugin->supports_assessment_import() ;
             if ($assessmentimport !== false) {
     ?>

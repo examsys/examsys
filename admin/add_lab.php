@@ -43,7 +43,7 @@ $addresses = explode(PHP_EOL, trim(param::optional('addresses', null, param::TEX
 
 if ($submit) { // Validate addresses
     $labFactory = new LabFactory($mysqli);
-    $hotsname_lookup = $configObject->get_setting('core', 'system_hostname_lookup');
+    $hostname_lookup = $configObject->get_setting('core', 'system_hostname_lookup');
     if ($hostname_lookup) {
       $test_re = '/^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$/';
     } else {
@@ -67,7 +67,7 @@ if ($submit) { // Validate addresses
 
         foreach ($addresses as $address) { // Insert the new IP addresses.
             $address = trim($address);
-            if ($$hotsname_lookup) {
+            if ($hostname_lookup) {
               $hostname = $address;
             } else {
               $hostname = gethostbyaddr($address);

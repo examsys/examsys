@@ -106,12 +106,12 @@ class coursemanagement extends \api\abstractmanagement {
                     $faculty = false;
                 }
             }
-            // Mark something is to be updated.
-            if ($details['schoolid'] != $schoolid) {
-                $change = true;
-            }
         } else {
             $schoolid = $details['schoolid'];
+        }
+        // Mark something is to be updated.
+        if ($details['schoolid'] != $schoolid) {
+          $change = true;
         }
         // If creating/updating module with a new school, faculty needs to be supplied.
         if ($faculty) {

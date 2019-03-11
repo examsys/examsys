@@ -1,0 +1,1020 @@
+academic_year:
+  -
+    calendar_year: 2018
+    academic_year: "2018/19"
+properties:
+  -
+    property_id: 1
+    paper_title: "Paper 1"
+    calendar_year: 2018
+    paper_type: "2"
+    created: "2018-01-09 14:30:00"
+    paper_ownerID: 1
+  -
+    property_id: 2
+    paper_title: "Paper 2"
+    calendar_year: 2018
+    paper_type: "2"
+    created: "2018-01-09 14:30:00"
+    paper_ownerID: 1
+question_statuses:
+  -
+    id: 1
+    name: "status1"
+    exclude_marking: 0
+    retired: 0
+questions:
+  -
+    q_id: 1
+    q_type: "extmatch"
+    status: 1
+    theme: "Paris - Extended Matching"
+    scenario: "<div>It is now known as;</div>|<div>It's football team is called</div>|<div>It's most famous landmark is the</div>|||||||"
+    leadin: "<div>The capital of France was established in the 3rd century BC.</div>"
+    q_option_order: "random"
+    score_method: "Mark per Option"
+    settings: "[]"
+  -
+    q_id: 2
+    q_type: "dichotomous"
+    status: 1
+    theme: ""
+    scenario: ""
+    leadin: "<p>1 mark per correct option,&nbsp;alphabetic order</p>\r\n<p>These are countries in Europe</p>"
+    q_option_order: "alphabetic"
+    score_method: "Mark per Option"
+    settings: "[]"
+  -
+    q_id: 3
+    q_type: "rank"
+    status: 1
+    theme: ""
+    scenario: ""
+    leadin: "<p>2&nbsp;mark per correctly selected option</p>\r\n<p>Please rank the following&nbsp;numbers that start with the letter T starting with the&nbsp;highest first</p>"
+    q_option_order: "display order"
+    score_method: "Mark per Option"
+    settings: "[]"
+  -
+    q_id: 4
+    q_type: "mcq"
+    status: 1
+    theme: ""
+    scenario: ""
+    leadin: "<p>25 December is usually known as Christmas Day in the United Kingdom.</p>"
+    q_option_order: "random"
+    score_method: "Mark per Option"
+    settings: "[]"
+  -
+    q_id: 5
+    q_type: "true_false"
+    status: 1
+    theme: ""
+    scenario: ""
+    leadin: "<div>Christmas Day falls on 24th December</div>"
+    q_option_order: "display order"
+    score_method: "Mark per Question"
+    settings: "[]"
+  -
+    q_id: 6
+    q_type: "enhancedcalc"
+    status: 1
+    theme: ""
+    scenario: "<div>Calculation scenario</div>"
+    leadin: "<div>A square is $A cm by $B cm. What is the area correct to a whole number?</div>"
+    q_option_order: "display order"
+    score_method: "Allow partial Marks"
+    settings: "{\"strictdisplay\":true,\"strictzeros\":false,\"dp\":\"0\",\"tolerance_full\":\"0\",\"fulltoltyp\":\"#\",\"tolerance_partial\":\"0\",\"parttoltyp\":\"#\",\"marks_partial\":0,\"marks_incorrect\":0,\"marks_correct\":1,\"marks_unit\":0,\"show_units\":false,\"answers\":[{\"formula\":\"$A*$B\",\"units\":\"cm\"}],\"vars\":{\"$A\":{\"min\":\"2\",\"max\":\"10\",\"inc\":\"1\",\"dec\":\"0\"},\"$B\":{\"min\":\"5\",\"max\":\"10\",\"inc\":\"1\",\"dec\":\"0\"}}}"
+  -
+    q_id: 7
+    q_type: "enhancedcalc"
+    status: 1
+    theme: "Linked Calculation Question"
+    scenario: ""
+    leadin: "<div>Answer to previous question multiplied by 10</div>\r\n<div>$A * $B</div>"
+    q_option_order: "display order"
+    score_method: "Allow partial Marks"
+    settings: "{\"strictdisplay\":true,\"strictzeros\":false,\"dp\":\"0\",\"tolerance_full\":0,\"fulltoltyp\":\"#\",\"tolerance_partial\":0,\"parttoltyp\":\"#\",\"marks_partial\":0,\"marks_incorrect\":0,\"marks_correct\":1,\"marks_unit\":\"N\\/A\",\"show_units\":true,\"answers\":[{\"formula\":\"$A*$B\",\"units\":\"\"}],\"vars\":{\"$A\":{\"min\":\"ans6\",\"max\":\"ans6\",\"inc\":\"0\",\"dec\":\"0\"},\"$B\":{\"min\":\"10\",\"max\":\"10\",\"inc\":\"0\",\"dec\":\"0\"}}}"
+  -
+    q_id: 8
+    q_type: "area"
+    status: 1
+    theme: ""
+    scenario: ""
+    leadin: "<div>Draw around the front windscreen.</div>"
+    q_option_order: "display order"
+    score_method: "Allow partial Marks"
+    settings: "{\"correct_full\":\"90\",\"error_full\":\"10\",\"correct_partial\":\"80\",\"error_partial\":\"20\"}"
+  -
+    q_id: 9
+    q_type: "hotspot"
+    status: 1
+    theme: ""
+    scenario: "<div>Look at the contents of the student's briefcase. Can you spot the contraband chocolate calculator?</div>"
+    leadin: "A) Chocolate calculator"
+    q_option_order: "display order"
+    score_method: "Mark per Option"
+    settings: "[]"
+  -
+    q_id: 10
+    q_type: "labelling"
+    status: 1
+    theme: "-ve marking"
+    scenario: ""
+    leadin: "<p>Complete the food chain diagram</p>\r\n<p>Image and text labels, 1 mark per option, -0.5 incorrect</p>"
+    q_option_order: "display order"
+    score_method: "Mark per Option"
+    settings: "[]"
+  -
+    q_id: 11
+    q_type: "sct"
+    status: 1
+    theme: ""
+    scenario: "<div>You sit down on your sofa in front of the TV, you place the pizza that was delivered moments ago on the coffee table beside you. You switch on netflix, login into your account and select the first episode of the new series. This is going to be epic. Suddenly the screen does black?</div>"
+    leadin: "<div>Consider: There has been a power cut.</div>~<div>You notice all the other lights and electrical items are off too.</div>"
+    q_option_order: "display order"
+    score_method: "Mark per Option"
+    settings: "[]"
+  -
+    q_id: 12
+    q_type: "textbox"
+    status: 1
+    theme: ""
+    scenario: ""
+    leadin: "<p>Explain how you came to your answer</p>"
+    q_option_order: "display order"
+    score_method: "Mark per Option"
+    settings: "{\"columns\":\"80\",\"rows\":\"4\",\"editor\":\"mathjax\",\"terms\":\"\"}"
+  -
+    q_id: 13
+    q_type: "mrq"
+    status: 1
+    theme: ""
+    scenario: ""
+    leadin: "<div>Which of these wheels belong to a car.</div>"
+    q_option_order: "display order"
+    score_method: "Mark per Option"
+    settings: "[]"
+  -
+    q_id: 14
+    q_type: "blank"
+    status: 1
+    theme: "capitals"
+    scenario: ""
+    leadin: "<div>London is the capital of?</div>"
+    q_option_order: "display order"
+    score_method: "Mark per Option"
+    settings: "[]"
+  -
+    q_id: 15
+    q_type: "matrix"
+    status: 1
+    theme: ""
+    scenario: "Word|Excel|PowerPoint|Access5|Publisher|Data File||||"
+    leadin: "<p>Match the file types to the appropriate extension.</p>\r\n<p>Alphabetic&nbsp;option order, 1 mark per option</p>"
+    q_option_order: "alphabetic"
+    score_method: "Mark per Option"
+    settings: "[]"
+  -
+    q_id: 16
+    q_type: "likert"
+    status: 1
+    theme: "GENERAL FEEDBACK"
+    scenario: ""
+    leadin: "<div>I experienced&nbsp;no difficulties registering at the University</div>"
+    q_option_order: "display order"
+    score_method: "Mark per Option"
+    settings: "[]"
+  -
+    q_id: 17
+    q_type: "random"
+    status: 1
+    theme: ""
+    scenario: ""
+    leadin: "<div>I experienced&nbsp;no difficulties registering at the University</div>"
+    q_option_order: "display order"
+    score_method: "Mark per Option"
+    settings: "[]"
+options:
+  -
+    o_id: 1
+    option_text: "Paris"
+    o_media: ""
+    o_media_width: "0"
+    o_media_height: "0"
+    correct: "1|3|2|||||||"
+    id_num: 1
+    marks_correct: 1
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 1
+    option_text: "Eifel Tower"
+    o_media: ""
+    o_media_width: "0"
+    o_media_height: "0"
+    correct: "1|3|2|||||||"
+    id_num: 2
+    marks_correct: 1
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 1
+    option_text: "Paris Saint-Germain F.C."
+    o_media: ""
+    o_media_width: "0"
+    o_media_height: "0"
+    correct: "1|3|2|||||||"
+    id_num: 3
+    marks_correct: 1
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 1
+    option_text: "Derby"
+    o_media: ""
+    o_media_width: "0"
+    o_media_height: "0"
+    correct: "1|3|2|||||||"
+    id_num: 4
+    marks_correct: 1
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 1
+    option_text: "Intu Centre"
+    o_media: ""
+    o_media_width: "0"
+    o_media_height: "0"
+    correct: "1|3|2|||||||"
+    id_num: 5
+    marks_correct: 1
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 1
+    option_text: "Derby County FC"
+    o_media: ""
+    o_media_width: "0"
+    o_media_height: "0"
+    correct: "1|3|2|||||||"
+    id_num: 6
+    marks_correct: 1
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 2
+    option_text: "Italy"
+    o_media: ""
+    o_media_width: "0"
+    o_media_height: "0"
+    correct: "t"
+    id_num: 7
+    marks_correct: 1
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 2
+    option_text: "France"
+    o_media: ""
+    o_media_width: "0"
+    o_media_height: "0"
+    correct: "t"
+    id_num: 8
+    marks_correct: 1
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 2
+    option_text: "Canada"
+    o_media: ""
+    o_media_width: "0"
+    o_media_height: "0"
+    correct: "f"
+    id_num: 9
+    marks_correct: 1
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 3
+    option_text: "One"
+    o_media: ""
+    o_media_width: "0"
+    o_media_height: "0"
+    correct: "0"
+    id_num: 10
+    marks_correct: 2
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 3
+    option_text: "Two"
+    o_media: ""
+    o_media_width: "0"
+    o_media_height: "0"
+    correct: "2"
+    id_num: 11
+    marks_correct: 2
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 3
+    option_text: "Three"
+    o_media: ""
+    o_media_width: "0"
+    o_media_height: "0"
+    correct: "1"
+    id_num: 12
+    marks_correct: 2
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 3
+    option_text: "Four"
+    o_media: ""
+    o_media_width: "0"
+    o_media_height: "0"
+    correct: "0"
+    id_num: 13
+    marks_correct: 2
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 3
+    option_text: "Five"
+    o_media: ""
+    o_media_width: "0"
+    o_media_height: "0"
+    correct: "0"
+    id_num: 14
+    marks_correct: 2
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 3
+    option_text: "Six"
+    o_media: ""
+    o_media_width: "0"
+    o_media_height: "0"
+    correct: "0"
+    id_num: 15
+    marks_correct: 2
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 3
+    option_text: "Seven"
+    o_media: ""
+    o_media_width: "0"
+    o_media_height: "0"
+    correct: "0"
+    id_num: 16
+    marks_correct: 2
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 4
+    option_text: "True"
+    o_media: ""
+    o_media_width: "0"
+    o_media_height: "0"
+    correct: "1"
+    id_num: 17
+    marks_correct: 1
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 4
+    option_text: "False"
+    o_media: ""
+    o_media_width: "0"
+    o_media_height: "0"
+    correct: "1"
+    id_num: 18
+    marks_correct: 1
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 4
+    option_text: "Maybe"
+    o_media: ""
+    o_media_width: "0"
+    o_media_height: "0"
+    correct: "1"
+    id_num: 19
+    marks_correct: 1
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 4
+    option_text: "Depends on which country you're in"
+    o_media: ""
+    o_media_width: "0"
+    o_media_height: "0"
+    correct: "f"
+    id_num: 20
+    marks_correct: 1
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 5
+    option_text: ""
+    o_media: ""
+    o_media_width: "0"
+    o_media_height: "0"
+    correct: "1"
+    id_num: 21
+    marks_correct: 1
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 8
+    option_text: ""
+    o_media: ""
+    o_media_width: "0"
+    o_media_height: "0"
+    correct: "19d,3c,10c,41,cf,6a,14d,6b,18b,68,19d,3c"
+    id_num: 22
+    marks_correct: 1
+    marks_incorrect: 0
+    marks_partial: 0.5
+  -
+    o_id: 9
+    option_text: ""
+    o_media: ""
+    o_media_width: "0"
+    o_media_height: "0"
+    correct: "Chocolate calculator~16711680~polygon~16a,399,152,3c7,1a9,3ed,106,407,f9,3a6~0~"
+    id_num: 23
+    marks_correct: 1
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 10
+    option_text: ",beetle3.png~80~75,earwig3.png~80~92,snail3.png~100~47,spider,ant,fruit,plants"
+    o_media: ""
+    o_media_width: "0"
+    o_media_height: "0"
+    correct: "4144959;1;16777215;10;0;100;19;100;92;single;label;0$0$370$173$beetle3.png~80~75|1$0$371$300$earwig3.png~80~92|2$0$5$54$snail3.png~100~47|3$0$537$103$spider|4$0$5$78$ant|5$0$110$78$fruit|6$0$539$472$plants|;"
+    id_num: 24
+    marks_correct: 1
+    marks_incorrect: -0.5
+    marks_partial: 0
+  -
+    o_id: 11
+    option_text: "very unlikely"
+    o_media: ""
+    o_media_width: "0"
+    o_media_height: "0"
+    correct: "0"
+    id_num: 25
+    marks_correct: 1
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 11
+    option_text: "unlikely"
+    o_media: ""
+    o_media_width: "0"
+    o_media_height: "0"
+    correct: "0"
+    id_num: 26
+    marks_correct: 1
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 11
+    option_text: "neither likely nor unlikely"
+    o_media: ""
+    o_media_width: "0"
+    o_media_height: "0"
+    correct: "0"
+    id_num: 27
+    marks_correct: 1
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 11
+    option_text: "more likely"
+    o_media: ""
+    o_media_width: "0"
+    o_media_height: "0"
+    correct: "0"
+    id_num: 28
+    marks_correct: 1
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 11
+    option_text: "very likely"
+    o_media: ""
+    o_media_width: "0"
+    o_media_height: "0"
+    correct: "1"
+    id_num: 29
+    marks_correct: 1
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 13
+    option_text: "Steering wheel"
+    o_media: ""
+    o_media_width: "0"
+    o_media_height: "0"
+    correct: "y"
+    id_num: 31
+    marks_correct: 1
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 13
+    option_text: "Spare wheel"
+    o_media: ""
+    o_media_width: "0"
+    o_media_height: "0"
+    correct: "y"
+    id_num: 32
+    marks_correct: 1
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 13
+    option_text: "Wheel of Fortune"
+    o_media: ""
+    o_media_width: "0"
+    o_media_height: "0"
+    correct: "n"
+    id_num: 33
+    marks_correct: 1
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 13
+    option_text: "Yoga Wheel"
+    o_media: ""
+    o_media_width: "0"
+    o_media_height: "0"
+    correct: "n"
+    id_num: 34
+    marks_correct: 1
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 14
+    option_text: "<div>London is the capital of [blank]England,Scotland,Wales,Northern Ireland[/blank]</div>"
+    o_media: ""
+    o_media_width: "0"
+    o_media_height: "0"
+    correct: ""
+    id_num: 35
+    marks_correct: 1
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 15
+    option_text: ".PUB"
+    o_media: ""
+    o_media_width: null
+    o_media_height: null
+    correct: "3|4|2|5|1|6||||"
+    id_num: 36
+    marks_correct: 1
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 15
+    option_text: ".PPT"
+    o_media: ""
+    o_media_width: null
+    o_media_height: null
+    correct: "3|4|2|5|1|6||||"
+    id_num: 37
+    marks_correct: 1
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 15
+    option_text: ".DOC"
+    o_media: ""
+    o_media_width: null
+    o_media_height: null
+    correct: "3|4|2|5|1|6||||"
+    id_num: 38
+    marks_correct: 1
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 15
+    option_text: ".XLS"
+    o_media: ""
+    o_media_width: null
+    o_media_height: null
+    correct: "3|4|2|5|1|6||||"
+    id_num: 39
+    marks_correct: 1
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 15
+    option_text: ".MDB"
+    o_media: ""
+    o_media_width: null
+    o_media_height: null
+    correct: "3|4|2|5|1|6||||"
+    id_num: 40
+    marks_correct: 1
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 15
+    option_text: ".DAT"
+    o_media: ""
+    o_media_width: null
+    o_media_height: null
+    correct: "3|4|2|5|1|6||||"
+    id_num: 41
+    marks_correct: 1
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 16
+    option_text: null
+    o_media: ""
+    o_media_width: "0"
+    o_media_height: "0"
+    correct: "NULL"
+    id_num: 42
+    marks_correct: 1
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 17
+    option_text: null
+    o_media: ""
+    o_media_width: "0"
+    o_media_height: "0"
+    correct: ""
+    id_num: 43
+    marks_correct: 1
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 17
+    option_text: null
+    o_media: ""
+    o_media_width: "0"
+    o_media_height: "0"
+    correct: ""
+    id_num: 44
+    marks_correct: 1
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 17
+    option_text: null
+    o_media: ""
+    o_media_width: "0"
+    o_media_height: "0"
+    correct: ""
+    id_num: 45
+    marks_correct: 1
+    marks_incorrect: 0
+    marks_partial: 0
+  -
+    o_id: 17
+    option_text: null
+    o_media: ""
+    o_media_width: "0"
+    o_media_height: "0"
+    correct: ""
+    id_num: 46
+    marks_correct: 1
+    marks_incorrect: 0
+    marks_partial: 0
+papers:
+  -
+    p_id: 1
+    paper: 1
+    question: 1
+    screen: 1
+    display_pos: 1
+  -
+    p_id: 2
+    paper: 1
+    question: 2
+    screen: 2
+    display_pos: 2
+  -
+    p_id: 3
+    paper: 1
+    question: 3
+    screen: 3
+    display_pos: 3
+  -
+    p_id: 4
+    paper: 1
+    question: 4
+    screen: 4
+    display_pos: 4
+  -
+    p_id: 5
+    paper: 1
+    question: 5
+    screen: 5
+    display_pos: 5
+  -
+    p_id: 6
+    paper: 1
+    question: 6
+    screen: 6
+    display_pos: 6
+  -
+    p_id: 7
+    paper: 1
+    question: 7
+    screen: 7
+    display_pos: 7
+  -
+    p_id: 8
+    paper: 1
+    question: 8
+    screen: 8
+    display_pos: 8
+  -
+    p_id: 9
+    paper: 1
+    question: 9
+    screen: 9
+    display_pos: 9
+  -
+    p_id: 10
+    paper: 1
+    question: 10
+    screen: 10
+    display_pos: 10
+  -
+    p_id: 11
+    paper: 1
+    question: 11
+    screen: 11
+    display_pos: 11
+  -
+    p_id: 12
+    paper: 1
+    question: 12
+    screen: 12
+    display_pos: 12
+  -
+    p_id: 13
+    paper: 1
+    question: 13
+    screen: 13
+    display_pos: 13
+  -
+    p_id: 14
+    paper: 1
+    question: 14
+    screen: 14
+    display_pos: 14
+  -
+    p_id: 15
+    paper: 1
+    question: 15
+    screen: 15
+    display_pos: 15
+  -
+    p_id: 16
+    paper: 1
+    question: 16
+    screen: 16
+    display_pos: 16
+  -
+    p_id: 17
+    paper: 2
+    question: 17
+    screen: 1
+    display_pos: 1
+random_link:
+  -
+    id: 17
+    q_id: 2
+  -
+    id: 17
+    q_id: 3
+  -
+    id: 17
+    q_id: 5
+  -
+    id: 17
+    q_id: 13
+users:
+  -
+    id: 1
+    password: "12345678"
+    surname: "student"
+    username: "student"
+    roles: "Student"
+    grade: "TEST"
+    initials: "a"
+    title: "Mx"
+    gender: "other"
+    first_names: "test"
+properties_modules:
+  -
+    property_id: 1
+    idMod: 1
+  -
+    property_id: 2
+    idMod: 1
+modules:
+  -
+    id: 1
+    moduleid: "ABC100"
+    fullname: "Test Module"
+    externalid: "123456789"
+    academic_year_start: "01/07"
+    vle_api: ''
+    checklist: "mapping"
+    map_level: 7
+modules_student:
+  -
+    id: 1
+    userID: 1
+    idMod: 1
+    calendar_year: 2018
+sid:
+  -
+    student_id: "1234567890"
+    userID: 1
+log_metadata:
+  -
+    id: 1
+    userID: 1
+    paperID: 1
+    started: "2018-01-01 09:00:00"
+    year: 1
+  -
+    id: 2
+    userID: 1
+    paperID: 2
+    started: "2018-01-01 09:00:00"
+    year: 1
+log2:
+  -
+    id: 1
+    q_id: 1
+    mark: 3
+    adjmark: 3
+    user_answer: "1|3|2"
+    errorstate: 0
+    screen: 1
+    metadataID: 1
+  -
+    id: 2
+    q_id: 2
+    mark: 3
+    adjmark: 3
+    user_answer: "ttf"
+    errorstate: 0
+    screen: 2
+    metadataID: 1
+  -
+    id: 3
+    q_id: 3
+    mark: 14
+    adjmark: 14
+    user_answer: "0,2,1,0,0,0,0"
+    errorstate: 0
+    screen: 3
+    metadataID: 1
+  -
+    id: 4
+    q_id: 4
+    mark: 1
+    adjmark: 1
+    user_answer: "1"
+    errorstate: 0
+    screen: 4
+    metadataID: 1
+  -
+    id: 5
+    q_id: 5
+    mark: 1
+    adjmark: 1
+    user_answer: "f"
+    errorstate: 0
+    screen: 5
+    metadataID: 1
+  -
+    id: 6
+    q_id: 6
+    mark: 0
+    adjmark: 0
+    user_answer: "{\"vars\":{\"$A\":6,\"$B\":6},\"uans\":\"36\",\"uansunit\":\"\",\"uansnumb\":\"36\",\"ans\":{\"guessedunits\":\"\",\"formula_used\":\"$A*$B\",\"units_used\":\"cm\",\"tolerance_full\":0,\"tolerance_fullans\":36,\"tolerance_fullansneg\":36,\"tolerance_partial\":0,\"tolerance_partialans\":36,\"tolerance_partialansneg\":36},\"status\":{\"units\":false,\"exact\":false,\"overall\":0},\"cans\":36}"
+    errorstate: 0
+    screen: 6
+    metadataID: 1
+  -
+    id: 7
+    q_id: 7
+    mark: 1
+    adjmark: 1
+    user_answer: "{\"vars\":{\"$A\":\"36\",\"$B\":\"10\"},\"uans\":\"360\",\"uansunit\":\"\",\"uansnumb\":\"360\",\"ans\":{\"guessedunits\":\"\",\"formula_used\":\"$A*$B\",\"units_used\":\"\",\"tolerance_full\":0,\"tolerance_fullans\":360,\"tolerance_fullansneg\":360,\"tolerance_partial\":0,\"tolerance_partialans\":360,\"tolerance_partialansneg\":360},\"status\":{\"units\":true,\"exact\":true,\"tolerance_partial\":true,\"tolerance_full\":true,\"strictdp\":true,\"overall\":1},\"cans\":360,\"cans_dist\":\"0\"}"
+    errorstate: 0
+    screen: 7
+    metadataID: 1
+  -
+    id: 8
+    q_id: 8
+    mark: 0
+    adjmark: 0
+    user_answer: "43.3,80.1,23.4,5872,1712,1459;ca,72,db,6b,e9,61,f9,51,fe,47,108,44,12b,42,1a4,4b,19c,60,194,6c,182,71,de,70,ca,72, "
+    errorstate: 0
+    screen: 8
+    metadataID: 1
+  -
+    id: 9
+    q_id: 9
+    mark: 1
+    adjmark: 1
+    user_answer: "1,330,995"
+    errorstate: 0
+    screen: 9
+    metadataID: 1
+  -
+    id: 10
+    q_id: 10
+    mark: 4
+    adjmark: 4
+    user_answer: "4$4;370$148$beetle3.png$t$371$275$earwig3.png$t$537$78$spider$t$539$447$plants$t$"
+    errorstate: 0
+    screen: 10
+    metadataID: 1
+  -
+    id: 11
+    q_id: 11
+    mark: 0
+    adjmark: 0
+    user_answer: "1"
+    errorstate: 0
+    screen: 11
+    metadataID: 1
+  -
+    id: 12
+    q_id: 12
+    mark: null
+    adjmark: null
+    user_answer: "test mathjax $$\\theta$$"
+    errorstate: 0
+    screen: 12
+    metadataID: 1
+  -
+    id: 13
+    q_id: 13
+    mark: 2
+    adjmark: 2
+    user_answer: "yynn"
+    errorstate: 0
+    screen: 13
+    metadataID: 1
+  -
+    id: 14
+    q_id: 14
+    mark: 1
+    adjmark: 1
+    user_answer: "[\"England\"]"
+    errorstate: 0
+    screen: 14
+    metadataID: 1
+  -
+    id: 15
+    q_id: 15
+    mark: 6
+    adjmark: 6
+    user_answer: "3|4|2|5|1|6"
+    errorstate: 0
+    screen: 15
+    metadataID: 1
+  -
+    id: 16
+    q_id: 16
+    mark: 0
+    adjmark: 0
+    user_answer: "3"
+    errorstate: 0
+    screen: 16
+    metadataID: 1
+  -
+    id: 17
+    q_id: 17
+    mark: 1
+    adjmark: 1
+    user_answer: "f"
+    errorstate: 0
+    screen: 1
+    metadataID: 2
+config:
+  -
+    component: "core"
+    setting: "support_contact_email"
+    value: "[\"test@example.com\",\"joseph.baxter@example.com\"]"
+    type: "email"

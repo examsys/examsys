@@ -286,8 +286,9 @@ $string['tooltip_formula'] = 'Click link for more details in the online help.';
 // Textbox
 $string['reminders'] = 'Reminders';
 $string['reminder_no'] = 'Reminder #%d';
-
-$string['previewmathjax'] = 'Preview';
-$string['mathjaxinstructions'] = 'Enter latex formula within <span class="tex2jax_ignore">$$</span> for inline mode, or <span class="tex2jax_ignore">$$$</span> for display mode.';
-
+// 3d
+$string['threeinfo'] = 'Hold the left mouse button to rotate the object, hold the right button to pan,  and use the mouse wheel to zoom in/out. The final position of the object is not saved.';
+$string['threereset'] = 'Reset';
+$string['threeload'] = 'Load';
+$string['threeplyerror'] = 'Your browser does not support the display of %s files.';
 

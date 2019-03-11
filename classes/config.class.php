@@ -499,7 +499,7 @@ SCRIPT;
   }
 
   function append($var, $value) {
-    $this->settings['core'][$var].= $value;
+    $this->settings['core'][$var] .= $value;
   }
 
   /**

@@ -51,12 +51,24 @@ class api {
      * API object.
      */
     private $api;
-     
+
+    /**
+     * The request.
+     * @var object
+     */
+    public $request;
+
+    /**
+     * The response.
+     * @var object
+     */
+    public $response;
+
     /**
      * Constructor
      * @param object $app the slim application
      * @param mysqli $db db connection
-     * @param object $configObject configutations
+     * @param object $configObject configurations
      */
     public function __construct($app, $db, $configObject) {
         $this->app = $app;
@@ -99,21 +111,21 @@ class api {
             file_put_contents($this->logfile , $updatelog, FILE_APPEND);
         }
     }
-    
+
     /**
      * Set the header for the response.
      * @param string $type - header type
      */
     public function set_header($type = 'text/xml') {
-        $this->app->response()->header("Content-Type", $type);
+        $this->response->withHeader("Content-Type", $type);
     }
-    
+
     /**
      * Get the body of the request.
      * @return string - body of request.
      */
     public function get_body() {
-        return $this->app->request->getBody();
+        return $this->request->getBody();
     }
 
     /**
@@ -121,7 +133,7 @@ class api {
      * @return string - user agent 
      */
     public function get_user_agent() {
-        return $this->app->request->headers->get('USER_AGENT');
+        return $this->request->getHeaderLine('USER_AGENT');
     }
     
     /**
@@ -130,15 +142,15 @@ class api {
      * @return string - parameter 
      */
     public function get_parameter($parameter) {
-        return $this->app->request->params($parameter);
+        return $this->request->getQueryParam($parameter);
     }
     
      /**
-     * Get the path of the request.
-     * @return string - path 
-     */
+      * Get the path of the request.
+      * @return string - path
+      */
     public function get_path() {
-        return $this->app->request->getPath();
+        return $this->request->getUri()->getBasePath() . '/' . $this->request->getUri()->getPath();
     }
     
     
@@ -147,7 +159,7 @@ class api {
      * @return string|bool - media type if valid, false otherwise
      */
     public function get_mediatype() {
-        $mediatype = $this->app->request()->getMediaType();
+        $mediatype = $this->request->getMediaType();
         if ($mediatype == 'text/xml') {
             $this->mediatype = $mediatype;
             return $mediatype;
@@ -168,8 +180,8 @@ class api {
         $this->set_header($this->get_mediatype());
         // Get body of request.
         $body = $this->get_body();
-        $this->api = new \api\apixml($body);  
-        // Valdate request.
+        $this->api = new \api\apixml($body);
+        // Validate request.
         $errorresp = $this->api->validate($folder, $type);
         if (count($errorresp) > 0) {
             return array('BAD', $errorresp);

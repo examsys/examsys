@@ -24,11 +24,9 @@
 
 require '../include/staff_student_auth.inc';
 require_once '../include/paper_security.php';
-require_once '../include/demo_replace.inc';
 require_once '../include/mapping.inc';
 require_once '../include/errors.php';
 require_once '../include/feedback.inc';
-require_once '../include/sort.inc';
 require_once '../include/calculate_marks.inc';
 
 check_var('id', 'GET', true, false, false);
@@ -134,7 +132,7 @@ $result->execute();
 $result->bind_result($tmp_username, $title, $initials, $surname);
 $result->fetch();
 $result->close();
-$student_name = $title . ' ' . demo_replace($initials, $demo) . ' ' . demo_replace($surname, $demo);
+$student_name = $title . ' ' . \demo::demo_replace($initials, $demo) . ' ' . \demo::demo_replace($surname, $demo);
 
 $textsize = 100;
 $font = 'Arial';
@@ -328,7 +326,7 @@ $textsize -= 10;
         }
       }
     }
-    $objectives = array_csort($objectives, 'ratio', 'desc');
+    $objectives = \sort::array_csort($objectives, 'ratio', 'desc');
   }
 
   if (count($objectives) == 0) {

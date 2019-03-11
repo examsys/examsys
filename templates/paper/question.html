@@ -1,0 +1,86 @@
+{#This file is part of Rogō
+
+ Rogō is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ Rogō is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+#}
+
+{#
+This template is for the master question display.
+
+author Dr Joseph Baxter <joseph.baxter@nottingham.ac.uk>
+copyright 2018 onwards The University of Nottingham
+
+Required variables - 
+data.displaydefault - flag to indicate if default settings should be displayed
+data.displayscenario - flag to indicate if scenario should be displayed
+data.scenario - scenario
+data.displaymedia - flag to indicate if media should be displayed
+data.displayleadin - flag to indicate if leadin should be displayed
+data.leadin - leadin
+data.questiontemplate - name of question specific template
+data.papertype - paper type
+data.finalmarks - question total marks
+data.questionno - question number
+data.scoremethod - score method
+data.bonus - flag to indicate if bonus marks should be displayed
+data.negativemarking  - flag to indicate if negative marking should be displayed
+data.optionorder - the order of options in a question
+data.questiontype - the question type
+
+Required localised strings -
+lang.mark - mark
+lang.negmarking - negative marking
+#}
+{% if data.displaydefault %}
+        {% if data.displayscenario %}
+        {{data.scenario|raw}}<br /><br />
+        {% endif %}
+        {% if data.displaymedia %}
+        <div class="mediadiv">
+            {% include 'paper/media.html' %}
+        </div>
+        {% endif %}
+        {% if data.displayleadin %}
+        {{data.leadin|raw}}
+        {% endif %}
+{% endif %}
+{% include data.questiontemplate %}
+{# If not a survey paper #}
+{% if data.papertype != 3 %}
+    {% if data.finalmarks == 0 %}
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">&nbsp;</td>
+    </tr>
+    {% else %}
+        <div id="q{{data.questionno}}_mk" class="mk">({{data.finalmarks}} {% if data.finalmarks == 1 %} {{lang.mark}} {% else %} {{lang.marks}} {% endif %}
+        {% if data.scoremethod == 'bonus' %}
+    {{data.bonus}}
+        {% endif %}
+        {% if data.negativemarking %}
+    , {{lang.negmarking}}
+        {% endif %}
+    )
+        </div>
+        <br />
+        </td>
+    </tr>
+    {% endif %}
+{% else %}
+        </td>
+    </tr>
+{% endif %}
+{% if data.questiontype != 'info' %}
+    <input type="hidden" name="order{{data.questionno}}" value="{{data.optionorder}}" />
+{% endif %}

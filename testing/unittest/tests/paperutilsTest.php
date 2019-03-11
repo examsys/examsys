@@ -15,6 +15,7 @@
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
 use testing\unittest\unittestdatabase;
+use PHPUnit\DbUnit\DataSet\YamlDataSet;
 
 /**
  * Test paperutils class
@@ -31,7 +32,7 @@ class paperutilstest extends unittestdatabase {
      * @return dataset
      */
     public function getDataSet() {
-        return new PHPUnit_Extensions_Database_DataSet_YamlDataSet($this->get_base_fixture_directory() . "paperutilsTest" . DIRECTORY_SEPARATOR . "paperutils.yml");
+        return new YamlDataSet($this->get_base_fixture_directory() . "paperutilsTest" . DIRECTORY_SEPARATOR . "paperutils.yml");
     }
     /**
      * Get expected data set from yml
@@ -39,7 +40,7 @@ class paperutilstest extends unittestdatabase {
      * @return dataset
      */
     public function get_expected_data_set($name) {
-        return new PHPUnit_Extensions_Database_DataSet_YamlDataSet($this->get_base_fixture_directory() . "paperutilsTest" . DIRECTORY_SEPARATOR . $name . ".yml");
+        return new YamlDataSet($this->get_base_fixture_directory() . "paperutilsTest" . DIRECTORY_SEPARATOR . $name . ".yml");
     }
     
     /**
@@ -398,5 +399,27 @@ class paperutilstest extends unittestdatabase {
         $mappings_copy_objID = Paper_utils::copy_between_sessions($old_course, $new_course);
         $expected_mappings = array();
         $this->assertEquals($expected_mappings, $mappings_copy_objID);
+    }
+
+    /**
+     * Test creating list of parent link calc question in a paper
+     * @group assessment
+     */
+    public function test_get_linked_question_parents() {
+      $expected = array(2);
+      // Build paper.
+      $properties = PaperProperties::get_paper_properties_by_id(1, $this->db, '');
+      $tmp_questions_array = $properties->build_paper(false, null, null);
+      // Mock paper start fudge.
+      foreach ($tmp_questions_array as $question) {
+        if ($question['q_type'] == 'enhancedcalc') {
+          require_once 'plugins/questions/enhancedcalc/enhancedcalc.class.php';
+          $question['object'] = new EnhancedCalc($this->config);
+          $question['object']->load($question);
+        }
+        $questions_array[] = $question;
+      }
+      unset($tmp_questions_array);
+      $this->assertEquals($expected, PaperUtils::get_linked_question_parents($questions_array));
     }
 }

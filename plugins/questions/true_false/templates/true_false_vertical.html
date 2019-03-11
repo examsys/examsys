@@ -1,0 +1,46 @@
+{#This file is part of Rogō
+
+ Rogō is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ Rogō is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+#}
+
+{#
+This template is for the true/false type with vertical radio button display.
+
+author Dr Joseph Baxter <joseph.baxter@nottingham.ac.uk>
+copyright 2018 onwards The University of Nottingham
+
+Required variables:
+
+data.questionno - question number
+data.unanswered - flag to indicate if question has previously been answered
+data.trueselected - flag to indicate if true has previously been selected
+data.falseselected - flag to indicate if false has previously been selected
+data.abstainselected - flag to indicate if abstain has previously been selected
+data.labelcolour - colour of label, controlled by user accessibility settings
+data.negativemarking - flag to indicate if negative marking is enabled
+
+Required localised text -
+lang.true - true
+lang.false - false
+lang.abstain - abstain
+#}
+<blockquote style="line-height:175%" {% if data.unanswered %} class="unans" {% endif %}>
+    <input type="radio" name="q{{data.questionno}}" value="t" {% if data.trueselected %} checked="checked" {% endif %} />&nbsp;{{lang.true}}
+    <br />
+    <input type="radio" name="q{{data.questionno}}" value="f" {% if data.falseselected%} checked="checked" {% endif %} />&nbsp;{{lang.false}}
+    <br />
+    {% if data.negativemarking %}
+    <input type="radio" name="q{{data.questionno}}" value="a" {% if data.abstainselected %} checked="checked" {% endif %} />&nbsp;<span style="color:{{data.labelcolour}}">{{lang.abstain}}</span>
+    {% endif %}
+</blockquote>

@@ -74,7 +74,6 @@ abstract class plugins {
      * @var string
      */
     private $path;
-
     /**
      * Called when the object is unserialised.
      */
@@ -128,9 +127,9 @@ abstract class plugins {
     /**
      * Constructor
      */
-    public function __construct($mysqli) {
-        $this->db = $mysqli;
+    public function __construct() {
         $this->config = \Config::get_instance();
+        $this->db = $this->config->db;
         // Get path to plugin.
         $this->path = $this->get_path();
         // Load version info.
@@ -239,7 +238,7 @@ abstract class plugins {
         return 'OK';
     }
     /**
-     * Unistall a plugin
+     * Uninstall a plugin
      * Removes database schema of plugin and sets appropiate flags in config
      * Does not remove the code
      * @param string $dbuser user to run db command

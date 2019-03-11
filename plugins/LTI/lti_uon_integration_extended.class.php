@@ -256,7 +256,7 @@ class lti_uon_integration_extended extends lti_integration {
 
   /**
    * Translate source id in rogo external id.
-   * @param srting $sourceid source id from VLE
+   * @param string $sourceid source id from VLE
    * @return mixed module external id or null
    */
   public function module_id_translate($sourceid) {

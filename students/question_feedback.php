@@ -31,7 +31,6 @@ require_once '../include/errors.php';
 require_once '../include/mapping.inc';
 require_once '../include/finish_functions.inc';
 require_once '../include/paper_security.php';
-require_once '../include/media.inc';
 
 //HTML5 part
 require_once '../lang/' . $language . '/paper/finish.php';
@@ -156,10 +155,8 @@ require '../config/finish.inc';
   <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
   <script type="text/javascript" src="../js/student_help.js"></script>
   <?php
-  if ($propertyObj->get_latex_needed() == 1) {
-    echo "<script type=\"text/javascript\" src=\"../js/jquery-migrate-1.2.1.min.js\"></script>\n";
-    echo "<script type=\"text/javascript\" src=\"../tools/mee/mee/js/mee_src.js\"></script>\n";
-  }  
+  $texteditorplugin = \plugins\plugins_texteditor::get_editor();
+  $texteditorplugin->display_header();
   $render = new render($configObject);
   $render->render_html5_js(json_encode($jstring));
   if($configObject->get_setting('core', 'paper_mathjax')) {

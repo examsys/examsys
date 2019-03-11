@@ -65,10 +65,11 @@ $data['versionerror'] = false;
 $data['staffhelperror'] = false;
 $data['stuhelperror'] = false;
 $data['langerror'] = false;
-if ($updater_utils->check_version("6.4.0")) {
+$min_version = "6.5.0";
+if ($updater_utils->check_version($min_version)) {
   $data['versionerror'] = true;
   $lang['warning1'] = sprintf($string['versionwarning1'], $old_version);
-  $lang['warning2'] = $string['versionwarning2'];
+  $lang['warning2'] = sprintf($string['versionwarning2'], $min_version);
   $render->render($data, $lang, '/updates/update.html');
   $render->render_admin_footer();
   exit;

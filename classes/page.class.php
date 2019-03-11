@@ -32,8 +32,8 @@ class page {
   public static function title($pagetitle) {
     $configObject  = Config::get_instance();
     $userObject = UserObject::get_instance();
-    // Install type.
     if (!is_null($configObject->db)) {
+      // Install type.
       $type = $configObject->get_setting('core', 'system_install_type');
       if (!is_null($type)) {
         $pagetitle .= " " . $type;

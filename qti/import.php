@@ -35,13 +35,15 @@ foreach ($status_tmp as $sid => $status) {
   }
 }
 
-$max_screen = 0;
-
-$stmt = $mysqli->prepare("SELECT paper_title, moduleID, folder, paper_ownerID, moduleID, DATE_FORMAT(start_date,'%Y%m%d%H%i%S') AS start_date, DATE_FORMAT(end_date,'%Y%m%d%H%i%S') AS end_date, DATE_FORMAT(created,'%Y%m%d%H%i%S') AS created, MAX(screen) AS screen, fullscreen, MAX(display_pos) AS display_pos, paper_type, labs, calendar_year, exam_duration, crypt_name, display_question_mark FROM properties_modules, modules, properties LEFT JOIN papers ON properties.property_id = papers.paper WHERE properties.property_id = properties_modules.property_id AND properties_modules.idMod = modules.id AND properties.property_id = ? GROUP BY paper_title");
+$stmt = $mysqli->prepare("SELECT paper_title, moduleID, DATE_FORMAT(start_date,'%Y%m%d%H%i%S') AS start_date,
+  DATE_FORMAT(end_date,'%Y%m%d%H%i%S') AS end_date, paper_type
+  FROM properties_modules, modules, properties LEFT JOIN papers ON properties.property_id = papers.paper
+  WHERE properties.property_id = properties_modules.property_id AND properties_modules.idMod = modules.id AND properties.property_id = ?
+  GROUP BY paper_title, moduleID, start_date, end_date, paper_type");
 
 $stmt->bind_param('i', $paperID);
 $stmt->execute();
-$stmt->bind_result($paper_title, $paper_moduleID, $tmp_folder, $paper_ownerID, $tmp_module, $start_date, $end_date, $created, $max_screen, $fullscreen, $max_display_pos, $paper_type, $labs, $session, $exam_duration, $crypt_name, $display_question_mark);
+$stmt->bind_result($paper_title, $paper_moduleID, $start_date, $end_date, $paper_type);
 while ($stmt->fetch()) {
 
   if (date("YmdHis", time()) >= $start_date and date("YmdHis", time()) <= $end_date) {

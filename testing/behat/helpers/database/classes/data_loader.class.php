@@ -46,7 +46,7 @@ abstract class Data_Loader {
   /**
    * Do some base setup of the database before PHPUnitdb goes to work.
    * 
-   * Required by PHPUnit_Extensions_Database_TestCase_Trait
+   * Required by TestCaseTrait
    */
   protected function setUp() {
     if ($this->load_help) {
@@ -54,6 +54,9 @@ abstract class Data_Loader {
     }
   }
 
+  protected function tearDown() {
+
+  }
   /**
    * Load the help data into the database.
    *

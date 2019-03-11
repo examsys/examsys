@@ -25,7 +25,6 @@
 require '../include/staff_auth.inc';
 require_once '../include/errors.php';
 require_once '../include/paper_security.php';
-require_once '../include/demo_replace.inc';
 
 $paperID = check_var('paperID', 'GET', true, false, true);
 
@@ -48,7 +47,7 @@ $labs							= $propertyObj->get_labs();
 $crypt_name				= $propertyObj->get_crypt_name();
 $review_type			= $propertyObj->get_display_question_mark();
 $modules					= $propertyObj->get_modules();
-$demo = is_demo($userObject);
+$demo = \demo::is_demo($userObject);
 
 if ($calendar_year == '') {
   display_error('Error', 'No Academic Session is set.', false, true);
@@ -159,7 +158,7 @@ echo "<form autocomplete=\"off\">\n";
 echo '<table cellpadding="4" cellspacing="0" border="0" style="width:100%; background-color:#5590CF">';
 $themedirectory = rogo_directory::get_directory('theme');
 $logo_path = $themedirectory->url($configObject->get_setting('core', 'misc_logo_main'));
-echo '<tr><td><div class="paper">' . $paper_title . '</div><div class="group"><strong>' . $string['student'] . '</strong> ' . $student_title . ' ' . demo_replace($student_surname, $demo) . ', ' . demo_replace($student_first_names, $demo) . '<strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' . $string['group'] . '</strong> ' . $group . '</div></td><td width="160"><img src="' . $logo_path . '" width="160" height="67" alt="Logo" /></td></tr>';
+echo '<tr><td><div class="paper">' . $paper_title . '</div><div class="group"><strong>' . $string['student'] . '</strong> ' . $student_title . ' ' . \demo::demo_replace($student_surname, $demo) . ', ' . \demo::demo_replace($student_first_names, $demo) . '<strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' . $string['group'] . '</strong> ' . $group . '</div></td><td width="160"><img src="' . $logo_path . '" width="160" height="67" alt="Logo" /></td></tr>';
 echo '</table>';
 
 echo "<br />\n<table border=\"0\" cellpadding=\"3\" cellspacing=\"0\" style=\"margin-left:auto; margin-right:auto\">\n";
@@ -206,7 +205,7 @@ function display_user($review_type, $q_type, $questions, $saved_results, $cfg_we
     echo "<img class=\"photo\" src=\"" . $photodirectory->url($photoname) . "\" width=\"90\" height=\"135\" />";
   }
   $first_names = explode(' ', $member_first_names);
-  echo "</td><td class=\"title\" colspan=\"" . ($columns + 1) . "\">$member_title " . demo_replace($first_names[0], $demo) . " " . demo_replace($member_surname, $demo) . "</td></tr>\n";
+  echo "</td><td class=\"title\" colspan=\"" . ($columns + 1) . "\">$member_title " . \demo::demo_replace($first_names[0], $demo) . " " . \demo::demo_replace($member_surname, $demo) . "</td></tr>\n";
 
   echo "<tr><td></td>";
   if ($q_type == 'likert') {

@@ -204,3 +204,15 @@ Feature: Cleaning variables
       | 128.243.48.6 | null |
       | www.example.com | null |
       | https://www.example.com/page.php?id=4&page=first | https://www.example.com/page.php?id=4&page=first |
+
+  Scenario Outline: Verifying filename input
+    Given I clean "<input>" as "FILENAME"
+    Then the clean result should be "<output>"
+
+    Examples:
+      | input | output |
+      | test.csv | test.csv |
+      | test_1.csv | test_1.csv |
+      | test/1.csv | test1.csv |
+      | test(1).csv | test1.csv |
+      | / | null|

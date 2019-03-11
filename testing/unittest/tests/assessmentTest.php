@@ -15,7 +15,7 @@
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
 use testing\unittest\unittestdatabase;
-
+use PHPUnit\DbUnit\DataSet\YamlDataSet;
 /**
  * Test assessment class
  * 
@@ -27,7 +27,7 @@ use testing\unittest\unittestdatabase;
 class assessmenttest extends unittestdatabase {
     /**
      * Create a paper
-     * @parmam string $papertitle paper title
+     * @param string $papertitle paper title
      * @param integer $papertype paper type
      * @return paperid 
      */
@@ -48,7 +48,7 @@ class assessmenttest extends unittestdatabase {
      * @return dataset
      */
     public function getDataSet() {
-        return new PHPUnit_Extensions_Database_DataSet_YamlDataSet($this->get_base_fixture_directory() . "assessmentTest" . DIRECTORY_SEPARATOR . "assessment.yml");
+        return new YamlDataSet($this->get_base_fixture_directory() . "assessmentTest" . DIRECTORY_SEPARATOR . "assessment.yml");
     }
     /**
      * Get expected data set from yml
@@ -56,7 +56,7 @@ class assessmenttest extends unittestdatabase {
      * @return dataset
      */
     public function get_expected_data_set($name) {
-        return new PHPUnit_Extensions_Database_DataSet_YamlDataSet($this->get_base_fixture_directory() . "assessmentTest" . DIRECTORY_SEPARATOR . $name . ".yml");
+        return new YamlDataSet($this->get_base_fixture_directory() . "assessmentTest" . DIRECTORY_SEPARATOR . $name . ".yml");
     }
     /**
      * Test assessemnt type values
@@ -96,15 +96,8 @@ class assessmenttest extends unittestdatabase {
      */
     public function test_create_unique_paper_title() {
         $this->create_paper("Test schedule summative", 2);
-        try {
-            $this->create_paper("Test schedule summative", 2);
-        } catch (Exception $e) {
-            if ($e->getMessage() == 'NON_UNIQUE_TITLE') {
-                return;
-            }
-            $this->fail('Exception NON_UNIQUE_TITLE expected but ' . $e->getMessage() . ' thrown instead.');
-        }
-        $this->fail('Exception NON_UNIQUE_TITLE not thrown.');
+        $this->expectExceptionMessage('NON_UNIQUE_TITLE');
+        $this->create_paper("Test schedule summative", 2);
     }
     /**
      * Test unique paper title on paper creation - external system
@@ -131,15 +124,8 @@ class assessmenttest extends unittestdatabase {
      * @group assessment
      */
     public function test_create_valid_paper_type() {
-        try {
-            $this->create_paper("Test schedule summative", 1000);
-        } catch (Exception $e) {
-            if ($e->getMessage() == 'INVALID_PAPER_TYPE') {
-                return;
-            }
-            $this->fail('Exception INVALID_PAPER_TYPE expected but ' . $e->getMessage() . ' thrown instead.');
-        }
-        $this->fail('Exception INVALID_PAPER_TYPE not thrown.');
+        $this->expectExceptionMessage('INVALID_PAPER_TYPE');
+        $this->create_paper("Test schedule summative", 1000);
     }
     /**
      * Test valid paper owner on paper creation
@@ -157,15 +143,8 @@ class assessmenttest extends unittestdatabase {
         $session = 2016;
         $modules = array(1);
         $timezone = "Europe/London";
-        try {
-            $assessment->create($papertitle, $papertype, $paperowner, $startdate, $enddate, $labs, $duration, $session, $modules, $timezone);
-        } catch (Exception $e) {
-            if ($e->getMessage() == 'INVALID_USER') {
-                return;
-            }
-            $this->fail('Exception INVALID_USER expected but ' . $e->getMessage() . ' thrown instead.');
-        }
-        $this->fail('Exception INVALID_USER not thrown.');
+        $this->expectExceptionMessage('INVALID_USER');
+        $assessment->create($papertitle, $papertype, $paperowner, $startdate, $enddate, $labs, $duration, $session, $modules, $timezone);
     }
     /**
      * Test valid paper owner type on paper creation
@@ -183,15 +162,8 @@ class assessmenttest extends unittestdatabase {
         $session = 2016;
         $modules = array(1);
         $timezone = "Europe/London";
-        try {
-            $assessment->create($papertitle, $papertype, $paperowner, $startdate, $enddate, $labs, $duration, $session, $modules, $timezone);
-        } catch (Exception $e) {
-            if ($e->getMessage() == 'INVALID_ROLE') {
-                return;
-            }
-            $this->fail('Exception INVALID_ROLE expected but ' . $e->getMessage() . ' thrown instead.');
-        }
-        $this->fail('Exception INVALID_ROLE not thrown.');
+        $this->expectExceptionMessage('INVALID_ROLE');
+        $assessment->create($papertitle, $papertype, $paperowner, $startdate, $enddate, $labs, $duration, $session, $modules, $timezone);
     }
     /**
      * Test valid session on paper creation
@@ -209,15 +181,8 @@ class assessmenttest extends unittestdatabase {
         $session = 0000;
         $modules = array(1);
         $timezone = "Europe/London";
-        try {
-            $assessment->create($papertitle, $papertype, $paperowner, $startdate, $enddate, $labs, $duration, $session, $modules, $timezone);
-        } catch (Exception $e) {
-            if ($e->getMessage() == 'INVALID_SESSION') {
-                return;
-            }
-            $this->fail('Exception INVALID_SESSION expected but ' . $e->getMessage() . ' thrown instead.');
-        }
-        $this->fail('Exception INVALID_SESSION not thrown.');
+        $this->expectExceptionMessage('INVALID_SESSION');
+        $assessment->create($papertitle, $papertype, $paperowner, $startdate, $enddate, $labs, $duration, $session, $modules, $timezone);
     }
     /**
      * Test valid dates on paper creation
@@ -235,15 +200,8 @@ class assessmenttest extends unittestdatabase {
         $session = 2016;
         $modules = array(1);
         $timezone = "Europe/London";
-        try {
-            $assessment->create($papertitle, $papertype, $paperowner, $startdate, $enddate, $labs, $duration, $session, $modules, $timezone);
-        } catch (Exception $e) {
-            if ($e->getMessage() == 'INVALID_DATES') {
-                return;
-            }
-            $this->fail('Exception INVALID_DATES expected but ' . $e->getMessage() . ' thrown instead.');
-        }
-        $this->fail('Exception INVALID_DATES not thrown.');
+        $this->expectExceptionMessage('INVALID_DATES');
+        $assessment->create($papertitle, $papertype, $paperowner, $startdate, $enddate, $labs, $duration, $session, $modules, $timezone);
     }
     /**
      * Test no modules on paper creation
@@ -261,15 +219,8 @@ class assessmenttest extends unittestdatabase {
         $session = 2016;
         $modules = array();
         $timezone = "Europe/London";
-        try {
-            $assessment->create($papertitle, $papertype, $paperowner, $startdate, $enddate, $labs, $duration, $session, $modules, $timezone);
-        } catch (Exception $e) {
-            if ($e->getMessage() == 'INVALID_NO_MODULES') {
-                return;
-            }
-            $this->fail('Exception INVALID_NO_MODULES expected but ' . $e->getMessage() . ' thrown instead.');
-        }
-        $this->fail('Exception INVALID_NO_MODULES not thrown.');
+        $this->expectExceptionMessage('INVALID_NO_MODULES');
+        $assessment->create($papertitle, $papertype, $paperowner, $startdate, $enddate, $labs, $duration, $session, $modules, $timezone);
     }
     /**
      * Test assessemnt update
@@ -331,15 +282,8 @@ class assessmenttest extends unittestdatabase {
         $modules = array(1);
         $timezone = "Europe/London";
         $userid = 1;
-        try {
-            $assessment->update($id, $newtitle, $papertype, $paperowner, $startdate, $enddate, $labs, $duration, $session, $modules, $timezone, $userid);
-        } catch (Exception $e) {
-            if ($e->getMessage() == 'NON_UNIQUE_TITLE') {
-                return;
-            }
-            $this->fail('Exception NON_UNIQUE_TITLE expected but ' . $e->getMessage() . ' thrown instead.');
-        }
-        $this->fail('Exception NON_UNIQUE_TITLE not thrown.');
+        $this->expectExceptionMessage('NON_UNIQUE_TITLE');
+        $assessment->update($id, $newtitle, $papertype, $paperowner, $startdate, $enddate, $labs, $duration, $session, $modules, $timezone, $userid);
     }
     /**
      * Test unique paper title on paper update - external system
@@ -382,15 +326,8 @@ class assessmenttest extends unittestdatabase {
         $modules = array(1);
         $timezone = "Europe/London";
         $userid = 1;
-        try {
-            $assessment->update($id, $papertitle, $papertype, $paperowner, $startdate, $enddate, $labs, $duration, $session, $modules, $timezone, $userid);
-        } catch (Exception $e) {
-            if ($e->getMessage() == 'INVALID_USER') {
-                return;
-            }
-            $this->fail('Exception INVALID_USER expected but ' . $e->getMessage() . ' thrown instead.');
-        }
-        $this->fail('Exception INVALID_USER not thrown.');
+        $this->expectExceptionMessage('INVALID_USER');
+        $assessment->update($id, $papertitle, $papertype, $paperowner, $startdate, $enddate, $labs, $duration, $session, $modules, $timezone, $userid);
     }
     /**
      * Test valid paper owner type on paper update
@@ -410,15 +347,8 @@ class assessmenttest extends unittestdatabase {
         $modules = array(1);
         $timezone = "Europe/London";
         $userid = 1;
-        try {
-            $assessment->update($id, $papertitle, $papertype, $paperowner, $startdate, $enddate, $labs, $duration, $session, $modules, $timezone, $userid);
-        } catch (Exception $e) {
-            if ($e->getMessage() == 'INVALID_ROLE') {
-                return;
-            }
-            $this->fail('Exception INVALID_ROLE expected but ' . $e->getMessage() . ' thrown instead.');
-        }
-        $this->fail('Exception INVALID_ROLE not thrown.');
+        $this->expectExceptionMessage('INVALID_ROLE');
+        $assessment->update($id, $papertitle, $papertype, $paperowner, $startdate, $enddate, $labs, $duration, $session, $modules, $timezone, $userid);
     }
     /**
      * Test valid session on paper update
@@ -438,15 +368,8 @@ class assessmenttest extends unittestdatabase {
         $modules = array(1);
         $timezone = "Europe/London";
         $userid = 1;
-        try {
-            $assessment->update($id, $papertitle, $papertype, $paperowner, $startdate, $enddate, $labs, $duration, $session, $modules, $timezone, $userid);
-        } catch (Exception $e) {
-            if ($e->getMessage() == 'INVALID_SESSION') {
-                return;
-            }
-            $this->fail('Exception INVALID_SESSION expected but ' . $e->getMessage() . ' thrown instead.');
-        }
-        $this->fail('Exception INVALID_SESSION not thrown.');
+        $this->expectExceptionMessage('INVALID_SESSION');
+        $assessment->update($id, $papertitle, $papertype, $paperowner, $startdate, $enddate, $labs, $duration, $session, $modules, $timezone, $userid);
     }
      /**
      * Test valid dates on paper update
@@ -467,15 +390,8 @@ class assessmenttest extends unittestdatabase {
         $modules = array(1);
         $timezone = "Europe/London";
         $userid = 1;
-        try {
-            $assessment->update($id, $papertitle, $papertype, $paperowner, $startdate, $enddate, $labs, $duration, $session, $modules, $timezone, $userid);
-        } catch (Exception $e) {
-            if ($e->getMessage() == 'INVALID_DATES') {
-                return;
-            }
-            $this->fail('Exception INVALID_DATES expected but ' . $e->getMessage() . ' thrown instead.');
-        }
-        $this->fail('Exception INVALID_DATES not thrown.');
+        $this->expectExceptionMessage('INVALID_DATES');
+        $assessment->update($id, $papertitle, $papertype, $paperowner, $startdate, $enddate, $labs, $duration, $session, $modules, $timezone, $userid);
     }
     /**
      * Test assessemnt scheduling

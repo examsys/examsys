@@ -1,0 +1,114 @@
+{#This file is part of Rogō
+
+ Rogō is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ Rogō is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+#}
+
+{#
+This template is for the calculation question type.
+
+author Dr Joseph Baxter <joseph.baxter@nottingham.ac.uk>
+copyright 2018 onwards The University of Nottingham
+
+Required variables:
+
+data.displayscenario - flag to indicate if a scenario can be displayed
+data.scenario - the questions scenario
+data.displaymedia - flag to indicate if question media can be displayed
+data.leadin - the questions leadin
+data.error - flag to indicate if an error has occurred in calculating answer
+data.id - question id
+data.screen - screen the question is displayed on
+data.showunits - flag to indicate if the display units drop down should be displayed
+data.numunitoptions - the number of display units available
+data.options - the options available
+options.key - option value
+options.selected - flag to indicate if option was previously selected
+data.option - single option available
+data.feedbackprecision - the type precision of selected dp/sf
+data.feedbackprecisionvalue - the value of the precision
+data.useranswered - flag to indicate if the question has been previously answered
+data.failedanswer - warning displayed if this is a child of a linked question and the parent has not been answered
+data.answer - the users previous answer
+data.numonscreen - the question number
+data.assignednumber - question number
+
+Required localised text -
+lang.answer_to - answer to
+lang.decimal_places - decimal places
+lang.significant_figures - significant figues
+#}
+{% if data.displayscenario %}
+<p>{{data.scenario|raw}}</p>
+{% endif %}
+{% if data.displaymedia %}
+<p align="center">
+    {% include 'paper/media.html' %}
+</p>
+{% endif %}
+{{data.leadin|raw}}
+{% if data.error %}
+<p>
+    <input type="text" style="text-align:right" name="qid[{{data.id}}][uans]" data-assignednum="{{data.assignednumber}}" data-linkparent="{{data.linkparent}}" data-screen="{{data.screen}}" size="10" value="" disabled="disabled" />
+    &nbsp;&nbsp;
+    {% if data.showunits %}
+        {% if data.numunitoptions > 1 %}
+    <select name='qid[{{data.id}}][uansunit]'>
+            {% for key,selected in data.options %}
+        <option value='{{key}}' {% if selected %} selected {% endif %}>{{key}}</option>
+            {% endfor %}
+    </select>
+        {% else %}
+    {{data.option}}<input type="hidden" name="qid[{{data.id}}][uansunit]" value="{[data.option}}" />
+        {% endif %}
+    {% endif %}
+    {% if data.feedbackprecision == 'dp' %}
+    <span class="calc_fb">({{lang.answer_to}} {{data.feedbackprecisionvalue}} {{lang.decimal_places}})</span>
+    {% elseif data.feedbackprecision == 'sf' %}
+    <span class="calc_fb">({{lang.answer_to}} {{data.feedbackprecisionvalue}} {{lang.significant_figures}}</span>
+    {% endif %}
+</p>
+<p>
+    <strong>{{data.failedanswer}}</strong>
+</p>
+<input type="hidden" name="missingCalcAnswer" id="missingCalcAnswer" value="1">
+{% else %}
+<div>
+    {# not attempted #}
+    {% if data.useranswered == 0%}
+    <input type="text" style="text-align:right" id="q{{data.numonscreen}}" name="qid[{{data.id}}][uans]" data-assignednum="{{data.assignednumber}}" data-linkparent="{{data.linkparent}}" data-screen="{{data.screen}}" size="10" class="unans ecalc-answer" />
+    {# answered #}
+    {% elseif data.useranswered == 1 %}
+    <input type="text" style="text-align:right" id="q{{data.numonscreen}}" name="qid[{{data.id}}][uans]" data-assignednum="{{data.assignednumber}}" data-linkparent="{{data.linkparent}}" data-screen="{{data.screen}}" size="10" value="{{data.answer}}" class="ecalc-answer" />
+    {# unanswered #}
+    {% elseif data.useranswered == 2 %}
+    <input type="text" style="text-align:right" id="q{{data.numonscreen}}" name="qid[{{data.id}}][uans]" data-assignednum="{{data.assignednumber}}" data-linkparent="{{data.linkparent}}" data-screen="{{data.screen}}" size="10" value="" class="ecalc-answer"/>
+    {% endif %}
+    {% if data.showunits %}
+        {% if data.numunitoptions > 1 %}
+    <select name='qid[{{data.id}}][uansunit]'>
+            {% for key,selected in data.options %}
+        <option value='{{key}}' {% if selected %} selected {% endif %}>{{key}}</option>
+            {% endfor %}
+    </select>
+        {% else %}
+    {{data.option}}<input type="hidden" name="qid[{{data.id}}][uansunit]" value="{{data.option}}" />
+        {% endif %}
+    {% endif %}
+    {% if data.feedbackprecision == 'dp' %}
+    <span class="calc_fb">({{lang.answer_to}} {{data.feedbackprecisionvalue}} {{lang.decimal_places}})</span>
+    {% elseif data.feedbackprecision == 'sf' %}
+    <span class="calc_fb">({{lang.answer_to}} {{data.feedbackprecisionvalue}} {{lang.significant_figures}}</span>
+    {% endif %}
+</div>
+{% endif %}

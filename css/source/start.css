@@ -150,17 +150,10 @@ pre {
 .extmatch_opt_table ol {
   list-style-type: upper-alpha;
 }
-.mee {
-  font-size: 120%;
-  display: inline;
-}
 .likert_button {
   text-align: center;
   width: 40px;
   vertical-align: top;
-}
-.latex {
-  vertical-align: middle;
 }
 .thetime {
   font-size: 120%;
@@ -288,9 +281,7 @@ pre {
   margin-bottom: 1px;
   vertical-align: middle;
 }
-.defaultSkin table.mceLayout {
-  margin-top: 6px;
-}
+
 #fire_exit {
   width: 30px;
   height: 30px;
@@ -401,4 +392,14 @@ div.error {
     font-weight: bold;
     margin-top: 1em;
     margin-bottom: 1em;
+}
+.keyworderror {
+    color:#C00000;
+}
+.randomerror {
+    color:#f00;
+}
+.threecaption {
+  font-size: small;
+  color: grey;
 }

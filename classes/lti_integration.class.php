@@ -92,4 +92,11 @@ abstract class lti_integration {
      * @return string SMS url
      */
     abstract public function sms_api($data);
+
+    /**
+     * Translate source id in rogo external id.
+     * @param string $sourceid source id from VLE
+     * @return mixed module external id or null
+     */
+    abstract public function module_id_translate($sourceid);
 }

@@ -54,7 +54,7 @@ if(!$userObject->has_role('Standards Setter')) {
       }
       foreach ($team_members as $team_member) {
         if ($userObject->has_role('Demo')) {
-          $tmp_html .= "<li><span style=\"color:black\">" . demo_replace_name($i) . "</span></li>\n";
+          $tmp_html .= "<li><span style=\"color:black\">" . \demo::demo_replace_name($i) . "</span></li>\n";
           $i++;
         } elseif ($userObject->has_role(array('SysAdmin', 'Admin'))) {
           $tmp_html .= "<li><a style=\"color:black\" href=\"../users/details.php?userID=" . $team_member['userID'] . "&module=$module\">" . $team_member['surname'] . ", " . $team_member['initials'] . ". " . $team_member['title'] . "</a></li>\n";

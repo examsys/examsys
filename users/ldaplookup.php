@@ -25,7 +25,6 @@
  */
 
 require '../include/admin_auth.inc';
-require '../include/sort.inc';
 
 if (isset($_REQUEST['LOOKUP'])) {
   if (isset($_SESSION['ldaplookupdata'][$_REQUEST['LOOKUP']])) {
@@ -225,7 +224,7 @@ if (isset($_POST['submit'])) {
     }
 
     if ($user > 1) {
-			$user_data = array_csort($user_data, 'first_names', 'asc');
+			$user_data = \sort::array_csort($user_data, 'first_names', 'asc');
 		}
 		unset($_SESSION['ldaplookupdata']);
 		

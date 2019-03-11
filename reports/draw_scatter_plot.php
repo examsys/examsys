@@ -48,8 +48,8 @@
   $black		= ImageColorAllocate($Image, 0, 0, 0);
   $dkgreen	= ImageColorAllocate($Image, 83, 129, 53);
 
-  $font      = '../fonts/SourceSansPro-Regular.ttf';
-  $bold_font = '../fonts/SourceSansPro-Semibold.ttf';
+  $font      = dirname(__dir__) . DIRECTORY_SEPARATOR . 'fonts' . DIRECTORY_SEPARATOR . 'SourceSansPro-Regular.ttf';
+  $bold_font = dirname(__dir__)  . DIRECTORY_SEPARATOR . 'fonts' . DIRECTORY_SEPARATOR . 'SourceSansPro-Semibold.ttf';
 
   ImageLine($Image, 45, 250, 740 + $negative, 250, $dkgrey);
   ImageLine($Image, 45, 190, 740 + $negative, 190, $ltgrey);
@@ -89,7 +89,7 @@
   $count_mydata = count($mydata) - 2;
   for ($i=0; $i<$count_mydata; $i=$i+2) {
     $mark = trim($mydata[$i]);
-    $duration = round($mydata[$i + 1] / 60);
+    $duration = round(intval($mydata[$i + 1]) / 60);
     if ($duration > 0 and $mark >= -10) {
       if ($mark < $_GET['pmk']) {
         ImageFilledRectangle($Image, ($mark * 7) + 40 + $negative, 249 - $duration, ($mark * 7) + 41 + $negative, 250 - $duration, $red);

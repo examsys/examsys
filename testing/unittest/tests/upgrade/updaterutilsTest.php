@@ -15,6 +15,7 @@
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
 use testing\unittest\unittestdatabase;
+use PHPUnit\DbUnit\DataSet\YamlDataSet;
 
 /**
  * Test the UpdaterUtils class.
@@ -29,7 +30,7 @@ class updaterutilstest extends unittestdatabase {
   protected $updateutil;
   
   public function getDataSet() {
-    return new PHPUnit_Extensions_Database_DataSet_YamlDataSet($this->get_base_fixture_directory() . "upgrade" . DIRECTORY_SEPARATOR . "updaterutils.yml");
+    return new YamlDataSet($this->get_base_fixture_directory() . "upgrade" . DIRECTORY_SEPARATOR . "updaterutils.yml");
   }
 
   /**

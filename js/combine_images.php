@@ -106,7 +106,7 @@ echo "Saving as $target<br />";
 ob_flush();
 imagepng($resim, $target);
 
-$target = "html5.images.js";
+$target = "html5.images.min.js";
 echo "Saving js data as $target<br />";
 file_put_contents($target, $output);
 /*echo "<pre>";

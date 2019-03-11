@@ -57,7 +57,7 @@ class modules extends generator {
     $db = loader::get_database();
     $defaults = array(
         'active' => 1, 'schoolID' => 1, 'vle_api' => null, 'sms_api' => null, 'selfEnroll' => null,
-        'peer' => null, 'external' => null, 'stdset' => null, 'mapping' => null, 'neg_marking' => null, 'ebel_grid_template' => null,
+        'peer' => null, 'external' => null, 'stdset' => null, 'mapping' => null, 'neg_marking' => 0, 'ebel_grid_template' => null,
         'db' => $db, 'sms_import' => 0, 'timed_exams' => 0, 'exam_q_feedback' => 1, 'add_team_members' => 1,
         'map_level' => 0, 'academic_year_start' => '07/01');
     $settings = array_merge($parameters, $defaults);

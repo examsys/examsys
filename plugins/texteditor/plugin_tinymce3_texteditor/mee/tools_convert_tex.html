@@ -1,0 +1,30 @@
+<HTML>
+	<HEAD>
+		<META NAME="GENERATOR" Content="Microsoft Visual Studio .NET 7.1">
+        <script src="mee/jquery/jquery-1.6.1.js"></script>
+		<TITLE></TITLE>
+	</HEAD>
+	<BODY>
+    <script>
+    var data = {
+    '\\uparrow': { base: 'base_arrows_ext', text: '&#x2191;' },
+    '\\Uparrow': { base: 'base_arrows_ext', text: '&#x21D1;' },
+    '\\downarrow': { base: 'base_arrows_ext', text: '&#x2193;' },
+    '\\Downarrow': { base: 'base_arrows_ext', text: '&#x21D3;' },
+    '\\updownarrow': { base: 'base_arrows_ext', text: '&#x2195;' },
+    '\\Updownarrow': { base: 'base_arrows_ext', text: '&#x21D5;' },
+    };
+    
+    for (name in data)
+    {
+        var item = data[name];
+        var span = $('<div>');
+        var desc = name.substr(1);
+        var code = item.text;
+        var text = "{ desc: '"+desc+"', latex: '\\"+name+"', text: '"+code+"' },";
+        span.text(text);
+        $(document.body).append(span);
+    }
+    </script>
+	</BODY>
+</HTML>

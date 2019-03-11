@@ -1,0 +1,108 @@
+academic_year:
+  -
+    calendar_year: 2018
+    academic_year: "2018/19"
+config:
+  -
+    component: 'core'
+    setting: 'cfg_calc_type'
+    value: 'phpEval'
+    type: 'string'
+  -
+    component: 'core'
+    setting: 'cfg_calc_settings'
+    value: '{host:,port:,timeout:}'
+    type: 'assoc'
+  -
+    component: "core"
+    setting: "support_contact_email"
+    value: "[\"test@example.com\"]"
+    type: "email"
+question_statuses:
+  -
+    id: 1
+    name: normal
+    retired: 0
+    is_default: 1
+    display_order: 1
+questions:
+  -
+    q_id: 1
+    q_type: "enhancedcalc"
+    theme: ""
+    scenario: "<div>Calculation scenario</div>"
+    leadin: "<div>A square is $A cm by $B cm. What is the area correct to a whole number?</div>"
+    correct_fback: ""
+    incorrect_fback: null
+    display_method: ""
+    notes: "Calculation student notes"
+    ownerID: "1"
+    q_media: ""
+    q_media_width: 0
+    q_media_height: 0
+    creation_date: "2018-01-19 09:30:34"
+    last_edited: "2018-01-19 09:30:34"
+    bloom: null
+    scenario_plain: "Calculation scenario"
+    leadin_plain: "A square is $A cm by $B cm. What is the area correct to a whole number?"
+    checkout_time: null
+    checkout_authorID: null
+    deleted: null
+    locked: null
+    std: null
+    status: 1
+    q_option_order: "display order"
+    score_method: "Allow partial Marks"
+    settings: "{\"strictdisplay\":true,\"strictzeros\":false,\"dp\":\"0\",\"tolerance_full\":\"0\",\"fulltoltyp\":\"#\",\"tolerance_partial\":\"0\",\"parttoltyp\":\"#\",\"marks_partial\":0,\"marks_incorrect\":0,\"marks_correct\":3,\"marks_unit\":0,\"show_units\":true,\"answers\":[{\"formula\":\"$A*$B\",\"units\":\"cm\"}],\"vars\":{\"$A\":{\"min\":\"2\",\"max\":\"10\",\"inc\":\"1\",\"dec\":\"0\"},\"$B\":{\"min\":\"5\",\"max\":\"10\",\"inc\":\"1\",\"dec\":\"0\"}}}"
+    guid: "1270015a61baba23b405.40698002"
+papers:
+  -
+    p_id: 1
+    paper: 1
+    question: 1
+    screen: 1
+    display_pos: 1
+properties:
+  -
+    property_id: 1
+    paper_title: "test formative"
+    start_date: "2018-02-19 00:00:00"
+    end_date: "2032-02-02 00:00:00"
+    timezone: "Europe/London"
+    paper_type: "0"
+    paper_prologue: ""
+    paper_postscript: ""
+    bgcolor: "white"
+    fgcolor: "black"
+    themecolor: "#316AC5"
+    labelcolor: "#C00000"
+    fullscreen: "0"
+    marking: "0"
+    bidirectional: "1"
+    pass_mark: 40
+    distinction_mark: 70
+    paper_ownerID: 1
+    folder: ""
+    labs: ""
+    rubric: ""
+    calculator: 1
+    exam_duration: null
+    deleted: null
+    created: "2018-01-19 09:28:26"
+    random_mark: 7.97499
+    total_mark: 42
+    display_correct_answer: "1"
+    display_question_mark: "1"
+    display_students_response: "1"
+    display_feedback: "1"
+    hide_if_unanswered: "0"
+    calendar_year: 2018
+    external_review_deadline: null
+    internal_review_deadline: null
+    sound_demo: "0"
+    password: null
+    retired: null
+    crypt_name: "115163541061"
+    recache_marks: 0
+    externalid: null
+    externalsys: null

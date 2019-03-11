@@ -233,7 +233,12 @@ if ($paper_no == 1 and $paper_display[0]['password'] == '') {
     }
     $papers = array();
     foreach ($staff_modules as $idMod => $moduleID) {
-      $paper_q = $mysqli->prepare("SELECT DISTINCT properties.property_id, MAX(screen) AS screens, paper_title, DATE_FORMAT(start_date,'{$configObject->get('cfg_long_date_time')}') AS display_start_date, exam_duration, crypt_name, fullscreen, labs FROM properties LEFT JOIN papers ON properties.property_id = papers.paper LEFT JOIN properties_modules ON properties.property_id = properties_modules.property_id WHERE paper_type='2' AND start_date > NOW() AND start_date < DATE_ADD(NOW(), INTERVAL 42 DAY) AND idMod = ?  AND deleted IS NULL AND retired IS NULL GROUP BY paper_title HAVING MAX(screen) > 0 ORDER BY paper_type, paper_title");
+      $paper_q = $mysqli->prepare("SELECT DISTINCT properties.property_id, MAX(papers.screen) AS screens, properties.paper_title,
+        DATE_FORMAT(start_date,'{$configObject->get('cfg_long_date_time')}') AS display_start_date, properties.exam_duration, properties.crypt_name, properties.fullscreen, properties.labs
+        FROM properties LEFT JOIN papers ON properties.property_id = papers.paper LEFT JOIN properties_modules ON properties.property_id = properties_modules.property_id
+        WHERE paper_type='2' AND start_date > NOW() AND start_date < DATE_ADD(NOW(), INTERVAL 42 DAY) AND idMod = ?  AND deleted IS NULL AND retired IS NULL
+        GROUP BY properties.paper_title, properties.property_id, properties.exam_duration, properties.crypt_name, properties.fullscreen, properties.labs HAVING MAX(screen) > 0
+        ORDER BY properties.paper_type, properties.paper_title");
       $paper_q->bind_param('i', $idMod);
       $paper_q->execute();
       $paper_q->store_result();

@@ -1,0 +1,21 @@
+config:
+  -
+    component: "plugin_tinymce3_texteditor"
+    setting: "installed"
+    value: 1
+    type: "boolean"
+  -
+    component: "plugin_plain_texteditor"
+    setting: "installed"
+    value: 1
+    type: "boolean"
+  -
+    component: "plugin_plain_texteditor"
+    setting: "supports_mathjax"
+    value: 1
+    type: "boolean"
+  -
+    component: "plugin_texteditor"
+    setting: "enabled_plugin"
+    value: "[\"plugin_tinymce3_texteditor\"]"
+    type: "json"

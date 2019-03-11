@@ -17,6 +17,7 @@
 namespace testing\unittest;
 use Config as RogoConfig;
 use org\bovigo\vfs\vfsStream;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Unit tests with no phpunit database.
@@ -26,7 +27,7 @@ use org\bovigo\vfs\vfsStream;
  * @copyright Copyright (c) 2016 onwards The University of Nottingham
  * @package tests
  */
-abstract class UnitTest extends \PHPUnit_Framework_TestCase {
+abstract class UnitTest extends TestCase {
   /** @var object $default_config config object used during test. */
   public $config;
 

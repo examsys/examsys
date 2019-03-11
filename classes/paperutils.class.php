@@ -531,11 +531,14 @@ Class PaperUtils {
     }
 
     $paper_no = 0;
-    $paper_query = $db->prepare("SELECT property_id, paper_type, crypt_name, paper_title, bidirectional, fullscreen, MAX(screen) AS max_screen, labs, calendar_year, password, completed FROM (papers, properties) LEFT JOIN log_metadata ON properties.property_id = log_metadata.paperID AND userID = ? WHERE papers.paper = properties.property_id AND (labs != '' OR password != '') AND ({$type_sql}) AND deleted IS NULL AND start_date < DATE_ADD(NOW(),interval 15 minute) AND end_date > NOW() $exclude_sql GROUP BY paper");
+    $paper_query = $db->prepare("SELECT property_id, paper_type, crypt_name, paper_title, bidirectional, MAX(screen) AS max_screen, labs, calendar_year, password, completed
+      FROM (papers, properties) LEFT JOIN log_metadata ON properties.property_id = log_metadata.paperID AND userID = ?
+      WHERE papers.paper = properties.property_id AND (labs != '' OR password != '') AND ({$type_sql}) AND deleted IS NULL AND start_date < DATE_ADD(NOW(),interval 15 minute)
+      AND end_date > NOW() $exclude_sql GROUP BY calendar_year, paper_type, paper_title, property_id, completed, crypt_name, paper_type, labs, bidirectional, password");
     $paper_query->bind_param('i', $userObj->get_user_ID());
     $paper_query->execute();
     $paper_query->store_result();
-    $paper_query->bind_result($property_id, $paper_type, $crypt_name, $paper_title, $bidirectional, $fullscreen, $max_screen, $labs, $calendar_year, $password, $completed);
+    $paper_query->bind_result($property_id, $paper_type, $crypt_name, $paper_title, $bidirectional, $max_screen, $labs, $calendar_year, $password, $completed);
     while ($paper_query->fetch()) {
       if ($labs != '') {
         $machineOK = false;
@@ -813,7 +816,6 @@ Class PaperUtils {
       external_review_deadline,
       internal_review_deadline,
       sound_demo,
-      latex_needed,
       password
     FROM properties WHERE property_id = ?");
     $result->bind_param('i', $id);
@@ -853,7 +855,6 @@ Class PaperUtils {
       $external_review_deadline,
       $internal_review_deadline,
       $sound_demo,
-      $latex_needed,
       $password);
     $result->fetch();
     if ($db->errno != 0) {
@@ -896,7 +897,6 @@ Class PaperUtils {
                     'external_review_deadline' => $external_review_deadline,
                     'internal_review_deadline' => $internal_review_deadline,
                     'sound_demo' => $sound_demo,
-                    'latex_needed' => $latex_needed,
                     'password' => $password
                     );
     return $details;
@@ -1197,7 +1197,6 @@ Class PaperUtils {
       'external_review_deadline' => array('s', $tmp_external_review_deadline),
       'internal_review_deadline' => array('s', $tmp_internal_review_deadline),
       'sound_demo' => array('s', $properties['sound_demo']),
-      'latex_needed' => array('i', $properties['latex_needed']),
       'password' => array('s', $properties['password'])
     );
     $new_paper_id = $assessment->db_insert_assessment($params);
@@ -1252,5 +1251,36 @@ Class PaperUtils {
       }
       $result->close();
       return $overrides;
+  }
+
+  /**
+   * Get list of question ids for parents of linked questions.
+   * @param $questions questions array from paper
+   * @return array
+   */
+  public static function get_linked_question_parents($questions) {
+    $linked = array();
+    foreach ($questions as &$question) {
+      if ($question['q_type'] === 'enhancedcalc') {
+        $settings = json_decode($question['settings'], true);
+        foreach ($settings['vars'] as $var_name => $var_data) {
+          if ($question['object']->is_linked_ans($var_data['min'])) {
+            $linked[] = $question['object']->parse_linked_ans($var_data['min']);
+          }
+          if ($question['object']->is_linked_ans($var_data['max'])) {
+            $linked[] = $question['object']->parse_linked_ans($var_data['max']);
+          }
+          if ($question['object']->is_linked_question_var($var_data['min'])) {
+            list($var, $qid)= $question['object']->parse_linked_question_var($var_data['min']);
+            $linked[] = $qid;
+          }
+          if ($question['object']->is_linked_question_var($var_data['max'])) {
+            list($var, $qid)= $question['object']->parse_linked_question_var($var_data['max']);
+            $linked[] = $qid;
+          }
+        }
+      }
+    }
+    return array_unique($linked);
   }
 }

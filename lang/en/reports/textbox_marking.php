@@ -36,4 +36,7 @@ $string['mark_progress'] = 'Student %d of %d';
 $string['answer_saved'] = 'Marks saved';
 $string['noattempts'] = 'This paper has not been attempted by any students between <strong>%s &ndash; %s</strong>.';
 $string['tooltip_comments'] = 'Comments are only for staff. These cannot be viewed by students.';
-?>
+$string['threeinfo'] = 'Hold the left mouse button to rotate the object, hold the right button to pan,  and use the mouse wheel to zoom in/out.';
+$string['threereset'] = 'Reset';
+$string['threeload'] = 'Load';
+$string['threeplyerror'] = 'Your browser does not support the display of %s files.';

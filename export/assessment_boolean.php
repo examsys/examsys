@@ -56,7 +56,7 @@ $paper_buffer = $report->get_paper_buffer();
 
 $user_no = count($user_results);
 
-$demo = is_demo($userObject);
+$demo = \demo::is_demo($userObject);
 
 header('Pragma: public');
 header('Content-type: application/octet-stream');
@@ -169,8 +169,8 @@ if ($student_no > 0) {
     $log_array[$rowID]['year'] = $year;
     $log_array[$rowID]['started'] = $started;
     $log_array[$rowID]['title'] = $title;
-    $log_array[$rowID]['surname'] = demo_replace($surname, $demo);
-    $log_array[$rowID]['first_names'] = demo_replace($first_names, $demo);
+    $log_array[$rowID]['surname'] = \demo::demo_replace($surname, $demo);
+    $log_array[$rowID]['first_names'] = \demo::demo_replace($first_names, $demo);
     $log_array[$rowID]['name'] = str_replace("'", "", $surname) . ',' . $first_names;
     $log_array[$rowID]['gender'] = $gender;
     $log_array[$rowID]['$questionID'] = json_decode($settings, true);
@@ -189,7 +189,7 @@ if ($student_no > 0) {
     $result->bind_result($sid, $userid);
     while ($result->fetch()) {
       foreach ($users[$userid] as $row) {
-        $log_array[$row]['student_id'] = demo_replace_number($sid, $demo);
+        $log_array[$row]['student_id'] = \demo::demo_replace_number($sid, $demo);
       }
     }
     for ($rowID = 1; $rowID < count($log_array); $rowID++) {
@@ -201,7 +201,7 @@ if ($student_no > 0) {
   }
   $sortby = 'name';
   $ordering = 'asc';
-  $log_array = array_csort($log_array, $sortby, $ordering);
+  $log_array = \sort::array_csort($log_array, $sortby, $ordering);
 
 
 //********************************

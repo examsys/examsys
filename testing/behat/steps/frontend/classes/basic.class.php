@@ -17,7 +17,6 @@
 namespace testing\behat\steps\frontend;
 use Behat\Gherkin\Node\PyStringNode,
     Behat\Gherkin\Node\TableNode,
-    PHPUnit_Framework_Assert,
     Exception;
 
 /**
@@ -90,7 +89,7 @@ trait basic {
     }
     $this->getSession()->switchToWindow($windows[1]); // Set focus window
     $thistitle= $session->getDriver()->getWebDriverSession()->title(); // Get window title
-    PHPUnit_Framework_Assert::assertEquals($thistitle, $title, "Windows title not find");
+    \PHPUnit\Framework\Assert::assertEquals($thistitle, $title, "Windows title not find");
   }
   
   /**

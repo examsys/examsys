@@ -104,23 +104,13 @@ pre {
 .extmatch_opt_table ol {
   list-style-type: upper-alpha;
 }
-.mee {
-  font-size: 120%;
-  display: inline;
-}
 .likert_button {
   text-align: center;
   width: 40px;
   vertical-align: top;
 }
-.latex {
-  vertical-align: middle;
-}
 .likert_button {
   text-align: center;
   width: 40px;
   vertical-align: top;
-}
-.latex {
-  vertical-align: middle;
 }

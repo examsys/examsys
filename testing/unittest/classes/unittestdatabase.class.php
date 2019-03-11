@@ -18,7 +18,12 @@ namespace testing\unittest;
 use Config as RogoConfig;
 use UserObject as RogoUserObject;
 use org\bovigo\vfs\vfsStream;
-    
+use PHPUnit\Framework\TestCase;
+use PHPUnit\DbUnit\TestCaseTrait;
+use PHPUnit\DbUnit\Operation;
+use mysqli;
+use PDO;
+
 /**
  * Unit test database class
  * 
@@ -27,7 +32,11 @@ use org\bovigo\vfs\vfsStream;
  * @copyright Copyright (c) 2016 onwards The University of Nottingham
  * @package tests
  */
-abstract class unittestdatabase extends \PHPUnit_Extensions_Database_TestCase {
+abstract class unittestdatabase extends TestCase {
+    use TestCaseTrait {
+        setUp as protected parentSetUp;
+        tearDown as protected parentTearDown;
+    }
     /**
      * @var pdo object $pdo Only instantiate pdo once for test clean-up/fixture load.
      */
@@ -66,7 +75,7 @@ abstract class unittestdatabase extends \PHPUnit_Extensions_Database_TestCase {
         $this->config = RogoConfig::get_instance();
         $this->default_config = clone($this->config);
         // Open db connection.
-        $this->db = new \mysqli($this->config->get('cfg_db_host'), $this->config->get('cfg_phpunit_db_user'), $this->config->get('cfg_phpunit_db_password'),
+        $this->db = new mysqli($this->config->get('cfg_db_host'), $this->config->get('cfg_phpunit_db_user'), $this->config->get('cfg_phpunit_db_password'),
             $this->config->get('cfg_db_database'), $this->config->get('cfg_db_port'));
         $this->config->set_db_object($this->db);
         // Create user object.
@@ -81,7 +90,7 @@ abstract class unittestdatabase extends \PHPUnit_Extensions_Database_TestCase {
      */
     public function setUp() {
         $this->setup_db();
-        parent::setUp();
+        $this->parentSetUp();
     }
     
     /**
@@ -94,7 +103,7 @@ abstract class unittestdatabase extends \PHPUnit_Extensions_Database_TestCase {
         $this->userobject->destory();
         // Close db connection.
         $this->db->close();
-        parent::tearDown();
+        $this->parentTearDown();
     }
 
     /**
@@ -104,7 +113,7 @@ abstract class unittestdatabase extends \PHPUnit_Extensions_Database_TestCase {
     final public function getConnection() {
         if ($this->conn === null) {
             if (self::$pdo == null) {
-                self::$pdo = new \PDO("mysql:dbname=" . $this->config->get('cfg_db_database') . ";" . "host=" . $this->config->get('cfg_db_host'), $this->config->get('cfg_phpunit_db_user'), $this->config->get('cfg_phpunit_db_password'));
+                self::$pdo = new PDO("mysql:dbname=" . $this->config->get('cfg_db_database') . ";" . "host=" . $this->config->get('cfg_db_host'), $this->config->get('cfg_phpunit_db_user'), $this->config->get('cfg_phpunit_db_password'));
             }
             $this->conn = $this->createDefaultDBConnection(self::$pdo, $this->config->get('cfg_db_database'));
         }
@@ -124,7 +133,8 @@ abstract class unittestdatabase extends \PHPUnit_Extensions_Database_TestCase {
      * @param dataset $dataset
      */
     public function delete_dataset($dataset) {
-        $delete = new \PHPUnit_Extensions_Database_Operation_DeleteAll;
+        $delete = new Operation\DeleteAll();
+
         $delete->execute($this->conn, $dataset);
     }
 }

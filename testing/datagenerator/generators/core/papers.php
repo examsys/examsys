@@ -95,6 +95,16 @@ class papers extends generator {
     $paper = new assessment($db, $conf);
     $session = date("Y");
 
+    $yearutils = new yearutils($db);
+    $supported = $yearutils->get_supported_years();
+
+    if (!array_key_exists($session, $supported)) {
+      $generator = new academic_year();
+      $parameters['calendar_year'] = $session;
+      $parameters['academic_year'] = $session . '/' . (date("y") + 1);
+      $generator->create_academic_year($parameters);
+    }
+
     $moduleid = self::test_get_moduleidbyname($modulename, $db);
     $moduleids = array($moduleid); // create() need array type $moduleids 
 

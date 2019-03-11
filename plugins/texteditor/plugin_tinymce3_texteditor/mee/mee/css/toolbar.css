@@ -1,0 +1,618 @@
+.mee_toolbar
+{
+    font-family:Arial;
+    font-size:10pt;
+    cursor:default;
+}
+
+.mee_toolbar_single 
+{
+    font-family:Arial;
+    font-size:10pt;
+    cursor:default;  
+    background-color:#D9E4F3;
+    border-bottom:1px solid #8db2e3;
+    height:22px;
+    padding-top:2px;
+}
+
+.units {
+   width:75px;
+   padding:0;
+   margin:0;
+   display:inline-block;
+   overflow:hidden;
+} 
+
+.sci {
+   width:170px;
+   padding:0;
+   margin:0;
+   display:inline-block;
+   text-align:right;
+   overflow:hidden;
+} 
+
+.mt_main
+{
+    background-color:#F1F5FB;
+    border-bottom:1px solid #477DCC;
+    height:22px;
+    padding-top:2px;
+}
+
+.mt_tabs
+{
+    clear:both;
+}
+
+.mt_home a
+{
+    float:left;
+    background-color:#D9E3F3;
+    background-repeat:no-repeat;
+    width:56px;
+    height:22px;
+    margin-left:4px;
+}
+
+.mt_tab a
+{
+    float:left;
+    height:19px;
+    width:75px;
+    text-align:center;
+    padding-top:3px;
+    margin-left:4px;
+    color:black !important;
+    text-decoration:none;    
+}
+  
+.mt_tab a:hover
+{
+    background-color:#FFE7A2;
+    text-decoration:none;    
+}
+
+.mt_tab_active a
+{
+    border-top: 1px solid #477DCC;
+    border-left: 1px solid #477DCC;
+    border-right: 1px solid #477DCC;
+    background-color:white !important;
+}
+
+.mt_tab_active a:hover
+{
+    background-color:#D9E3F3;
+}
+
+.mt_tabblock
+{
+    height:90px;
+    padding-left:3px;
+    border-bottom:1px solid #8B9097;
+}
+
+.mt_tabpanecont
+{
+    float:left;
+    height:81px;
+    position:relative;
+    padding-right:2px;
+    padding-top:3px;
+}
+
+.mt_tabdivider
+{
+    float:left;
+    height:90px;
+    width:3px;
+    margin-right:3px;
+}
+
+.mt_tabpane
+{
+    height:85px;
+    position:absolute;
+    left:0;
+}
+
+
+.mt_tabpanelabel
+{
+    float:left;
+    font-family:Calibri;
+    font-size:11px;
+    font-weight:normal;
+    top:70px;
+    text-align:center;
+    position:relative;
+    color:#4E81C8;
+}
+
+/****************/
+/* Home Popup Styling */
+/****************/
+.mt_home_popup
+{
+    clear:both;
+    z-index:50;
+    margin-left:0 !important;
+    margin-top:1px !important;
+    position:absolute;
+    left:0;
+    top:100px;
+    background-image:url(../images/toolbar/popupmenu.png); 
+    padding-left:2px;
+    padding-right:9px;
+    padding-top:2px;
+    padding-bottom:9px;
+}
+
+.mt_home_inner
+{
+    width:220px; /* needs to be definable in js file */
+    background-color:white;
+    overflow:auto;
+    max-height:400px;
+    padding:5px;
+}
+.mt_home_popup_spacer
+{
+    height:13px;
+    background-image:url(../images/toolbar/home_spacer.png); 
+}
+.mt_home_popup_item_big
+{
+    cursor:pointer;  
+    height:58px;
+    position:relative;
+}
+.mt_home_popup_item_big img
+{
+    padding:3px;
+}
+
+.mt_home_popup_item_big span.mt_home_popup_item_label
+{
+    position:absolute;
+    top:19px;
+    left:60px;
+}
+
+.mt_home_popup_item
+{
+    cursor:pointer;  
+    position:relative;
+}
+
+.mt_home_popup_item span.mt_home_popup_item_label
+{
+    position:absolute;
+    top:1px;
+    left:28px;
+    margin:6px;
+}
+
+.mt_home_popup_check
+{
+    position:absolute;
+    left:180px;
+    top:13px;
+}
+.mt_home_popup_item .mt_home_popup_check
+{
+    top:0;
+}
+
+/****************/
+/* Pane styling */
+/****************/
+
+/* Symbol Icon */
+
+.mee_toolbar_single .tb_symbol
+{
+    font-size:120%;
+    float:right;
+    padding:0;
+    margin-bottom:1px;
+    margin-right:1px;
+    font-family:MathJax_Main;
+}
+
+.tb_symbol
+{
+    font-size:120%;
+    float:left;
+    padding:0;
+    margin-bottom:1px;
+    margin-right:1px;
+    font-family:MathJax_Main;
+}
+
+.tb_symbol a
+{
+    height:22px;
+    width:22px;
+    cursor:pointer;  
+    display:block;
+    text-align:center;
+}
+
+/* Big Menu Icon */
+.tb_menu
+{
+    width:60px;
+    height:69px;
+    cursor:pointer;
+    text-align:center;
+    float:left;
+    margin-right:1px;
+    background-repeat:no-repeat;
+}
+
+.tb_menu a div
+{
+    float:none;
+}
+
+.tb_menu a:hover
+{
+}
+
+.tb_menu .icon
+{
+    padding-top:10px;
+}
+
+.tb_menu .text
+{
+}
+
+.tb_menu .arrow
+{
+}
+
+
+/* Small Menu Icon */
+.tb_menu_small
+{
+    width:25px;
+    height:25px;
+    cursor:pointer;
+    text-align:center;
+    float:right;
+    margin-right:0;
+    background-repeat:no-repeat;
+    font-family:MathJax_Main;
+}
+
+.tb_menu_small a div
+{
+    float:none;
+}
+
+.tb_menu_small a:hover
+{
+}
+
+.tb_menu_small .icon
+{
+    padding-top:0;
+}
+
+.tb_menu_small .text
+{
+  width:25px;
+}
+
+.tb_menu_small .arrow
+{
+  width:12px
+}
+
+/* Horiz menu */
+.tb_menu_horiz
+{
+    cursor:pointer;
+    clear:both;
+    height:22px;
+    width:102px;
+    margin-bottom:1px;
+}
+
+.tb_menu_horiz a:hover
+{
+
+}
+
+.tb_menu_horiz .icon
+{
+    float:left;
+    padding-top:3px;
+    padding-left:3px;
+}
+
+.tb_menu_horiz .text
+{
+    padding-top:2px;
+    padding-left:1px;
+    float:left;
+}
+
+.tb_menu_horiz .arrow
+{
+    float:left;
+    padding-top:3px;
+    padding-left:3px;
+}
+
+/* big icon no menu */
+.tb_bigicons
+{
+    float:left;
+    width:60px;
+    height:69px;
+    text-align:center;
+    margin:0;
+    position:relative;
+    cursor:pointer;  
+}
+
+.tb_bigicons .label
+{
+    width:100%;
+    padding-top:48px;
+}
+
+.tb_bigicons .icon
+{
+    width:32px;
+    height:32px;
+    padding-left:14px;
+    padding-right:14px;
+    position:absolute;
+    padding-top:10px;
+}
+
+/* list item, no menu */
+.tb_list
+{
+    float:left;
+    width:102px;
+    height:22px;
+    text-align:left;
+    margin:0;
+    position:relative;
+    cursor:pointer;  
+}
+
+.tb_list .label
+{
+    width:100%;
+    position:relative;
+    left:3px;
+    top:3px;
+}
+
+.tb_list .icon span
+{
+    position:relative;
+    left:3px;
+    top:3px;
+    height:16px;
+    position:relative;
+}
+
+/**********************/
+/* Popup menu classes */
+/**********************/
+.tb_popupmenu
+{
+    clear:both;
+    z-index:50;
+    margin-left:0 !important;
+    margin-top:1px !important;
+    position:absolute;
+    left:0;
+    background-image:url(../images/toolbar/popupmenu.png); 
+    padding-left:2px;
+    padding-right:9px;
+    padding-top:2px;
+    padding-bottom:9px;
+}
+
+.tb_popupmenu_inner
+{
+    width:329px; /* needs to be definable in js file */
+    background-color:white;
+    overflow:hidden;
+    max-height:400px;
+}
+.tb_popupmenu_footer
+{
+    height:11px;
+    background-image:url(../images/toolbar/popup-bottom.png);
+}
+
+.tb_popupmenu .tbpm_header
+{
+    background-color:#f0f2f5;
+    float:none;
+    clear:both;
+    padding-left:6px;
+    padding-top:1px;
+    padding-bottom:1px;
+    font-size:80%;
+    font-weight:bold;
+}
+
+/********************/
+/* Popup Menu Items */
+/********************/
+
+.tbpm_item
+{
+    float:left;
+    width:98px;
+    height:98px;
+    text-align:center;
+    margin:0;
+    position:relative;
+}
+
+.tbpm_item .label
+{
+    width:100%;
+    padding-top:80px;
+}
+
+.tbpm_item .icon
+{
+    width:80px;
+    height:80px;
+    padding-left:12px;
+    padding-right:12px;
+    vertical-align:middle;
+    text-align:center;
+    position:absolute;
+    margin-top:auto;
+}
+
+
+.tbpm_list
+{
+    height:24px;
+    width:100%;
+    margin:0;
+    position:relative;
+    float:left;
+}
+
+.tbpm_list .label
+{
+    padding-top:3px;
+    padding-left:5px;
+}
+
+.tbpm_list .icon
+{
+}
+
+.tbpm_listbig
+{
+    height:36px;
+    width:100%;
+    margin:0;
+    position:relative;
+    float:left;
+}
+
+.tbpm_listbig .label
+{
+    padding-top:8px;
+    padding-left:5px;
+}
+
+.tbpm_listbig .icon
+{
+    float:left;
+    padding:2px;
+}
+
+.tbpm_grid
+{
+    float:left;
+    width:32px;
+    height:32px;
+    text-align:center;
+    margin:0;
+    position:relative;
+}
+
+.tbpm_grid .label
+{
+    width:100%;
+    font-size:180%;
+    font-family:MathJax_Main;
+    padding-top:2px;
+}
+.tb_smallarrow .label
+{   
+    font-size:130%;
+    padding-top:5px;
+}
+.tb_font_bb .label 
+{
+    font-family:MathJax_AMS;
+}
+
+.tbpm_gridbig
+{
+    float:left;
+    width:64px;
+    height:64px;
+    text-align:center;
+    margin:0;
+    position:relative;
+}
+
+.tbpm_gridbig .label
+{
+    width:100%;
+    font-size:180%;
+    font-family:MathJax_Main;
+    padding-top:2px;
+}
+
+.tbpm_gridxbig
+{
+    float:left;
+    width:96px;
+    height:96px;
+    text-align:center;
+    margin: 0;
+    position:relative;
+}
+
+.tbpm_gridxbig .label
+{
+    width: 100%;
+    font-size: 180%;
+    font-family: MathJax_Main;
+    padding-top:2px;
+}
+
+.tb_matrix .label
+{
+    padding-top:35px;
+}
+.tb_smallarrow .label
+{   
+    font-size:130%;
+    padding-top:5px;
+}
+.tb_font_bb .label 
+{
+    font-family:MathJax_AMS;
+}
+.tb_italic_x
+{
+    font-family:MathJax_Main;
+    font-style:italic;
+}
+.tb_largeop .label
+{
+    font-family:MathJax_Size2;
+    position:relative;
+    top:3px;
+}
+.tb_largeop_int .label
+{
+    font-family:MathJax_Size2;
+    position:relative;
+    left:-4px;
+    top:3px;
+}

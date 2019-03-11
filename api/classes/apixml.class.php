@@ -59,7 +59,7 @@ class apixml extends \api\apiabstract {
         libxml_use_internal_errors(true);
         // Load dom object.
         $this->data = new \DOMDocument();
-        $this->data->loadXML($this->xml);
+        @$this->data->loadXML($this->xml);
         $schema = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'schema' . DIRECTORY_SEPARATOR . $folder
         . DIRECTORY_SEPARATOR . $type . '.xsd';
         $errorresp = array();

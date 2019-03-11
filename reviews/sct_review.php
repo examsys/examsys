@@ -27,7 +27,6 @@ require_once '../include/load_config.php';
 $language = LangUtils::getLang($cfg_web_root);
 LangUtils::loadlangfile(str_replace($cfg_web_root, '', str_replace('\\', '/', ($_SERVER['SCRIPT_FILENAME']))));
 
-require_once '../include/media.inc';
 require_once '../include/errors.php';
 require_once '../include/sct_review.inc';
 
@@ -41,6 +40,9 @@ $reviewer_email = check_var('reviewer_email', $form_fields, true, false, true);
 
 function display_question($question, &$question_no, $answers, $string) {
   $question_no++;
+  $configObj = Config::get_instance();
+  $questiondata = \questiondata::get_datastore('sct');
+  $render = new render($configObj);
 
   if ($question['scenario'] != '') {
     echo "<tr><td class=\"q_no\">" . $question_no . ".&nbsp;</td><td style=\"background-color:#E4EEFC; border-bottom:1px solid #B5C4DF; font-weight:bold\">" . $string['clinicalvignette'] . "</td></tr>\n";
@@ -53,7 +55,10 @@ function display_question($question, &$question_no, $answers, $string) {
     if ($li_set == 0) {
       echo '<tr><td class="q_no">' . $question_no . '.&nbsp;</td><td>';
     }
-    echo '<p style="text-align:center">' . display_media($question['q_media'], $question['q_media_width'], $question['q_media_height'], '') . "</p>\n";
+    echo '<div class="mediadiv">';
+    $questiondata->set_media($question['q_media'], $question['q_media_width'], $question['q_media_height'], '');
+    $render->render($questiondata, $string, 'paper/media.html');
+    echo "</div>\n";
     $li_set = 1;
   }
 

@@ -86,7 +86,27 @@ class demo_auth extends internaldb_auth {
       $new_moduleid=$this->request['new_grade2'];
     }
 
-    module_utils::add_modules($new_moduleid, $_POST['new_grade2'], 1, $this->settings['school']);
+    module_utils::add_modules(
+        $new_moduleid,
+        $_POST['new_grade2'],
+        1,
+        $this->settings['school'],
+        '',
+        '',
+        0,
+        false,
+        false,
+        false,
+        true,
+        0,
+        null,
+        $this->db,
+        0,
+        0,
+        1,
+        1,
+        '07/01'
+    );
 
     return $preauthobj;
 

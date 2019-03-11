@@ -1,0 +1,25 @@
+schools:
+  -
+    id: 1
+    code: null
+    school: 'Training'
+modules:
+  -
+    id: 1
+    moduleid: 'INIT'
+    fullname: 'Init Module'
+    active: 0
+    vle_api: 'CMAP'
+    checklist: 'peer,external'
+    sms: ''
+    selfenroll: 1
+    schoolid: 1
+    neg_marking: 1
+    ebel_grid_template: 0
+    mod_deleted: null
+    timed_exams: 1
+    exam_q_feedback: 1
+    add_team_members: 0
+    map_level: 1
+    academic_year_start: '06/02'
+    externalid: '987654321'

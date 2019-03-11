@@ -26,7 +26,6 @@
 
 require '../include/staff_auth.inc';
 require '../include/sidebar_menu.inc';
-require '../include/sort.inc';
 require '../include/year_tabs.inc';
 require_once '../include/timezones.php';
 
@@ -117,6 +116,7 @@ $default_timezone = $timezone_array[$configObject->get('cfg_timezone')];
   <?php echo $configObject->get('cfg_js_root') ?>
   <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
   <script>
+    var mins = '<?php echo $string['mins'] ?>';
     var lab_names = new Array();
     <?php
     // Get computer lab information.
@@ -154,7 +154,7 @@ $default_timezone = $timezone_array[$configObject->get('cfg_timezone')];
 
       $('#callout').css('left', left_pos);
       $('#callout').css('top', top_pos + p.height() + 12);
-      $('#duration').html(duration + ' mins');
+      $('#duration').html(duration + ' ' + mins);
 
       if (start_time == end_time) {
         $('#start_time2').html(start_time);
@@ -528,7 +528,7 @@ $stmt->close();
     $paper_details[$paper_no]['duration']     = $duration;
     $paper_no++;
 
-    if ($start_time + $duration/60 > 23) {
+    if (intval($start_time) + $duration/60 > 23) {
       $prev_paper_no = $paper_no - 1;
       $paper_details[$paper_no]                  = $paper_details[$prev_paper_no];
       $paper_details[$paper_no]['title']         = $title . ' ' . $string['eventcont'] ;
@@ -556,7 +556,7 @@ $stmt->close();
   // Sort all papers correctly by start time
   $sortby = 'start_time';
   $ordering = 'asc';
-  $paper_details = array_csort($paper_details, $sortby, $ordering);
+  $paper_details = \sort::array_csort($paper_details, $sortby, $ordering);
 
   $cellID = 0;
   for ($i=1; $i<=12; $i++) {

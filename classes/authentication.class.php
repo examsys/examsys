@@ -718,7 +718,7 @@ class Authentication {
       $return_data = '';
       $error = false;
       foreach ($data->plugins as $number => $item) {
-        if (count($item->error) > 0) {
+        if (!empty($item->error)) {
           $error = true;
         }
         if ($number != 0) {

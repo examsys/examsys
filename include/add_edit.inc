@@ -81,30 +81,15 @@ function clearMSOtags($sHTML) {
  * @param string $name - name for editor 
  * @param string $replace - id for editor
  * @param string $content - current content
- * @param string $type - TinyMCE only - type of editor i.e. mceEditorSimple/mceEditor
- * @param int $width width of textarea
- * @param int $height  height of textarea
+ * @param string $type - TinyMCE only - type of editor i.e. standard
  * @return html of editor
  */
-function wysiwyg_editor($name, $replace, $content='', $type = '', $width=756, $height=120) {
+function wysiwyg_editor($name, $replace, $content='', $type = '') {
   global $string;
-  $configObject = Config::get_instance();
   $html = '';
   $content = htmlspecialchars($content);
-
-  if ($configObject->get_setting('core', 'misc_editor_name') == 'tinymce') {
-    if ($type == '') {
-      $type = 'mceEditor';
-    }
-    $html .= "<textarea class=\"$type\" id=\"$replace\" name=\"$replace\" style=\"width:" . $width . "px; height:" . $height . "px; margin: 0\" rows=\"5\" cols=\"20\">$content</textarea>\n";
-  } else {
-    //If no editor is specified, output plain textarea.
-    $render = new render($configObject);
-    $html .= $render->render(array('id' => $replace), null, 'mathjaxpreview.html');
-    $height = $height - 6;
-    $html .= "<p>" . $string['mathjaxinstructions'] . "</p><textarea onkeyup=\"Preview" . $replace . ".Update()\" id=\"$replace\" name=\"$replace\" style=\"width:" . $width . "px; height:" . $height . "px\">$content</textarea>\n";
-  }
-
+  $texteditorplugin = \plugins\plugins_texteditor::get_editor();
+  $html .=  $texteditorplugin->get_textarea($name, $replace, $content, $type);
   return $html;
 }
 

@@ -1,0 +1,60 @@
+{#This file is part of Rogō
+
+Rogō is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Rogō is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+#}
+
+{#
+This template is for the admin editor display.
+
+author Dr Joseph Baxter <joseph.baxter@nottingham.ac.uk>
+copyright 2018 onwards The University of Nottingham
+
+Required variables:
+
+data.editormathjax - flag to indicate if mathjax editor in use
+data.id - identifier
+data.name - name
+data.content - text editor content
+data.style - inline styling
+
+Required localised text -
+lang.mathjaxinstructions - instructions
+lang.previewmathjax - preview
+
+#}
+{% if data.editormathjax == true %}
+{% include 'mathjaxpreview.html' %}
+<p>{{lang.mathjaxinstructions|raw}}</p>
+    {% if data.style == '' %}
+    <textarea onkeyup="Preview{{data.id}}.Update()" class="plaintextarea" id="q{{data.id}}" name="{{data.id}}">{{data.content}}</textarea>
+{% else %}
+    <textarea onkeyup="Preview{{data.id}}.Update()" class="plaintextarea" id="q{{data.id}}" name="{{data.id}}" style="{{data.style}}">{{data.content}}</textarea>
+    {% endif %}
+{% else %}
+    {% if data.style == '' %}
+    <textarea class="plaintextarea" id="{{data.id}}" name="{{data.id}}">{{data.content}}</textarea>
+    {% else %}
+    <textarea class="plaintextarea" id="{{data.id}}" name="{{data.id}}" style="{{data.style}}">{{data.content}}</textarea>
+    {% endif %}
+{% endif %}
+{% if data.editormathjax %}
+<tr>
+<th>{{lang.previewmathjax}}</th>
+<td>
+    <div id="MathPreview{{data.id}}" style="border:1px solid; padding: 3px; width:50%; margin-top:5px"></div>
+    <div id="MathBuffer{{data.id}}" style="border:1px solid; padding: 3px; width:50%; margin-top:5px; visibility:hidden; position:absolute; top:0; left: 0"></div>
+</td>
+<script>Preview{{data.id}}.Init();</script>
+</tr>
+{% endif %}

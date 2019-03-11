@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
-require_once __DIR__ . '/sort.inc';
-
 /**
  *
  * @author Simon Wilkinson
@@ -135,7 +133,7 @@ function get_students($modules, $property_object, $log_lab_end_time, $allow_timi
 
     $column = 'surname';
     $sort_order = 'asc';
-    $student_object = array_csort($student_object, $column, $sort_order);
+    $student_object = \sort::array_csort($student_object, $column, $sort_order);
 
     foreach( $student_object as $student_id => $student_obj) {
       process_student_list($log_lab_end_time, $log_extra_time, $student_obj, $property_object, $configObject, $notes_array, $toilet_break_array, $allow_timing, $string, $db);

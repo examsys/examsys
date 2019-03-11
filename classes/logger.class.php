@@ -52,6 +52,10 @@ Class Logger {
       if (is_array($orig_val)) $orig_val = implode(',', $orig_val);
       if (is_array($new_val)) $new_val = implode(',', $new_val);
 
+      if ($part === 'password') {
+        $new_val = '********';
+        $orig_val = '********';
+      }
       $query = "INSERT INTO track_changes(type, typeID, editor, old, new, changed, part) VALUES (?,?,?,?,?,NOW(),?)";
 
       $result = $this->_mysqli->prepare($query);

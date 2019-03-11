@@ -1,0 +1,40 @@
+{#This file is part of Rogō
+
+ Rogō is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ Rogō is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+#}
+
+{#
+This template is for the true/false type with drop down display.
+
+author Dr Joseph Baxter <joseph.baxter@nottingham.ac.uk>
+copyright 2018 onwards The University of Nottingham
+
+Required variables:
+
+data.questionno - question number
+data.unanswered - flag to indicate if question has previously been answered
+data.trueselected - flag to indicate if true has previously been selected
+data.falseselected - flag to indicate if false has previously been selected
+
+Required localised text -
+lang.true - true
+lang.false - false
+#}
+<blockquote style="line-height:175%" {% if data.unanswered %} class="unans" {% endif %}>
+    <select name="q{{data.questionno}}">
+        <option value=""></option>
+        <option value="t" {% if data.trueselected %} selected {% endif %}>{{lang.true}}</option>
+        <option value="f" {% if data.falseselected%} selected {% endif %}>{{lang.false}}</option>
+    </select>
+</blockquote>

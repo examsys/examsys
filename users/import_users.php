@@ -26,7 +26,6 @@
 require '../include/admin_auth.inc';
 require '../include/errors.php';
 require '../include/import_users.inc';
-require_once '../include/demo_replace.inc';
 require '../include/toprightmenu.inc';
 
 // Instantiate Twig renderer.

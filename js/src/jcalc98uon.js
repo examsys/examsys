@@ -1,0 +1,11 @@
+$(function () {
+    $('.calc').draggable();
+    $('#lab_off').click(function() {
+        $('.calc').css('display', 'none');
+    });
+    $('.sciCalculator').click(function() {
+        $('.calc').css('display', 'block');
+        $('.calc').css('top',10);
+        $('.calc').css('left',$(window).width() - 280);
+    });
+});

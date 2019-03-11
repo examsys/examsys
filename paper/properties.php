@@ -36,6 +36,11 @@ define('MARK_STD_SET', '2');
 
 $paperID = check_var('paperID', 'REQUEST', true, false, true);
 
+$exam_duration_hours = param::optional('exam_duration_hours', 0, param::INT, param::FETCH_POST);
+$exam_duration_mins = param::optional('exam_duration_mins', 0, param::INT, param::FETCH_POST);
+$ext_tyear = param::optional('ext_tyear', null, param::INT, param::FETCH_POST);
+$int_tyear = param::optional('int_tyear', null, param::INT, param::FETCH_POST);
+$texteditorplugin = \plugins\plugins_texteditor::get_editor();
 /**
  * Define callbacks to be used when retrieving tracked changes
  * @param  array  $changed_reviewers    Array of reviewers referenced in changes
@@ -484,23 +489,15 @@ if (isset($_POST['Submit'])) {
         $calendar_year = ($_POST['calendar_year'] == '') ? NULL : $_POST['calendar_year'];
         $properties->set_calendar_year($calendar_year);
       }
-      if (isset($_POST['exam_duration_hours']) or isset($_POST['exam_duration_mins'])) {
-			  $exam_duration = 0;
-				if (isset($_POST['exam_duration_hours'])) {
-					$exam_duration += ($_POST['exam_duration_hours'] * 60);
-				}
-				if (isset($_POST['exam_duration_mins'])) {
-					$exam_duration += $_POST['exam_duration_mins'];
-				}
-        if (!$locked) {
-					$properties->set_exam_duration($exam_duration);
-				}
-			} else {
-				$exam_duration = NULL;
-        if (!$locked) {
-					$properties->set_exam_duration($exam_duration);
-				}
-			}
+
+      // Set exam duration (in minutes).
+      $exam_duration = $exam_duration_hours * 60;
+      $exam_duration += $exam_duration_mins;
+
+      if (!$locked) {
+        $properties->set_exam_duration($exam_duration);
+      }
+
       $lab_string = '';
       for ($i=0; $i<$_POST['lab_no']; $i++) {
         if (isset($_POST["lab$i"])) {
@@ -513,29 +510,32 @@ if (isset($_POST['Submit'])) {
       }
       $properties->set_labs($lab_string);
     }
-
-    $leap = is_leap($_POST['ext_tyear']);
-    if ($leap == true and $_POST['ext_tmonth'] == '02' and ($_POST['ext_tday'] == '30' or $_POST['ext_tday'] == '31')) $_POST['ext_tday'] = '29';
-    if ($leap == false and $_POST['ext_tmonth'] == '02' and ($_POST['ext_tday'] == '29' or $_POST['ext_tday'] == '30' or $_POST['ext_tday'] == '31')) $_POST['ext_tday'] = '28';
+    if (!empty($ext_tyear)) {
+      $leap = is_leap($ext_tyear);
+      if ($leap == true and $_POST['ext_tmonth'] == '02' and ($_POST['ext_tday'] == '30' or $_POST['ext_tday'] == '31')) $_POST['ext_tday'] = '29';
+      if ($leap == false and $_POST['ext_tmonth'] == '02' and ($_POST['ext_tday'] == '29' or $_POST['ext_tday'] == '30' or $_POST['ext_tday'] == '31')) $_POST['ext_tday'] = '28';
+    }
     if (($_POST['ext_tmonth'] == '04' or $_POST['ext_tmonth'] == '06' or $_POST['ext_tmonth'] == '09' or $_POST['ext_tmonth'] == '11') and $_POST['ext_tday'] == '31') $_POST['ext_tday'] = '30';
 
-    if ($_POST['ext_tyear'] == '' or $_POST['ext_tmonth'] == '' or $_POST['ext_tday'] == '') {
+    if (empty($ext_tyear) or $_POST['ext_tmonth'] == '' or $_POST['ext_tday'] == '') {
       $properties->set_external_review_deadline(NULL);
     } else {
-      $tmp_date = new DateTime($_POST['ext_tyear'] . '-' . $_POST['ext_tmonth'] . '-' . $_POST['ext_tday']);
+      $tmp_date = new DateTime($ext_tyear . '-' . $_POST['ext_tmonth'] . '-' . $_POST['ext_tday']);
       $properties->set_external_review_deadline($tmp_date->format('Y-m-d'));
       unset($tmp_date);
     }
 
-    $leap = is_leap($_POST['int_tyear']);
-    if ($leap == true and $_POST['int_tmonth'] == '02' and ($_POST['int_tday'] == '30' or $_POST['int_tday'] == '31')) $_POST['int_tday'] = '29';
-    if ($leap == false and $_POST['int_tmonth'] == '02' and ($_POST['int_tday'] == '29' or $_POST['int_tday'] == '30' or $_POST['int_tday'] == '31')) $_POST['int_tday'] = '28';
+    if (!empty($int_tyear)) {
+      $leap = is_leap($int_tyear);
+      if ($leap == true and $_POST['int_tmonth'] == '02' and ($_POST['int_tday'] == '30' or $_POST['int_tday'] == '31')) $_POST['int_tday'] = '29';
+      if ($leap == false and $_POST['int_tmonth'] == '02' and ($_POST['int_tday'] == '29' or $_POST['int_tday'] == '30' or $_POST['int_tday'] == '31')) $_POST['int_tday'] = '28';
+    }
     if (($_POST['int_tmonth'] == '04' or $_POST['int_tmonth'] == '06' or $_POST['int_tmonth'] == '09' or $_POST['int_tmonth'] == '11') and $_POST['int_tday'] == '31') $_POST['int_tday'] = '30';
 
-    if ($_POST['int_tyear'] == '' or $_POST['int_tmonth'] == '' or  $_POST['int_tday'] == '') {
+    if (empty($int_tyear) or $_POST['int_tmonth'] == '' or  $_POST['int_tday'] == '') {
       $properties->set_internal_review_deadline(NULL);
     } else {
-      $tmp_date = new DateTime($_POST['int_tyear'] . '-' . $_POST['int_tmonth'] . '-' . $_POST['int_tday']);
+      $tmp_date = new DateTime($int_tyear . '-' . $_POST['int_tmonth'] . '-' . $_POST['int_tday']);
       $properties->set_internal_review_deadline($tmp_date->format('Y-m-d'));
     }
 
@@ -568,18 +568,18 @@ if (isset($_POST['Submit'])) {
       }
     }
 
-		$properties->set_paper_prologue(clearMSOtags($_POST['paper_prologue']));
+		$properties->set_paper_prologue(clearMSOtags($texteditorplugin->prepare_text_for_save($_POST['paper_prologue'])));
 
     if (isset($_POST['osce_marking_guidance'])) {
-      $properties->set_paper_postscript(clearMSOtags($_POST['osce_marking_guidance']));
+      $properties->set_paper_postscript(clearMSOtags($texteditorplugin->prepare_text_for_save($_POST['osce_marking_guidance'])));
     } else {
-      $properties->set_paper_postscript(clearMSOtags($_POST['paper_postscript']));
+      $properties->set_paper_postscript(clearMSOtags($texteditorplugin->prepare_text_for_save($_POST['paper_postscript'])));
     }
 
     if ($properties->get_paper_type() == '6') {
       $properties->set_rubric($_POST['type']);      // Reuse the 'rubric' field to store which field in the metadata to use for groups.
     } else {
-      $properties->set_rubric(clearMSOtags($_POST['rubric_text']));
+      $properties->set_rubric(clearMSOtags($texteditorplugin->prepare_text_for_save($_POST['rubric_text'])));
     }
 
     if (!isset($_POST['marking']) and $properties->get_paper_type() == 4) {
@@ -969,19 +969,14 @@ if ($configObject->get_setting('core', 'cfg_summative_mgmt') and $properties->ge
   <link rel="stylesheet" type="text/css" href="../css/warnings.css"/>
 
   <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
-  <script type="text/javascript" src="../js/jquery-migrate-1.2.1.min.js"></script>
   <script type="text/javascript" src="../js/jquery.validate.min.js"></script>
   <script type="text/javascript" src="../js/jquery-ui-1.10.4.min.js"></script>
   <script type="text/javascript" src="../js/system_tooltips.js"></script>
 <?php
-  if($configObject->get_setting('core', 'misc_editor_name') === 'tinymce') {
-      $render = new render($configObject);
-      $tinmymcedata['file'] = 'tiny_config_properties';
-      $render->render($tinmymcedata, null, 'tinymce.html');
-  }
+  $texteditorplugin->display_header();
+  $texteditorplugin->get_javascript_config(\plugins\plugins_texteditor::PROPERTIES);
 ?>
   <script type="text/javascript" src="../js/staff_help.js"></script>
-  <script type="text/javascript" src="../tools/mee/mee/js/mee_src.js"></script>
 <?php
   if ($properties->get_paper_type() == '2' or $properties->get_paper_type() == '5') {
 ?>
@@ -1211,7 +1206,7 @@ if ($configObject->get_setting('core', 'cfg_summative_mgmt') and $properties->ge
 <?php
   require '../tools/colour_picker/colour_picker.inc';
 ?>
-<table border="0" cellpadding="0" cellspacing="5" style="width:100%; height:645px; font-size:90%">
+<table border="0" cellpadding="0" cellspacing="5" style="width:100%; font-size:90%">
 <tr><td valign="top" style="background-color:white; border:1px solid #828790; width:120px">
 
 <table cellspacing="0" cellpadding="0" border="0" style="font-size:90%; width:140px">
@@ -1472,8 +1467,9 @@ if ($properties->get_paper_type() != '4' and $properties->get_paper_type() != '5
       echo '</td></tr>';
       echo "<tr><td colspan=\"4\">&nbsp;</td></tr>\n";
       echo "<tr><td colspan=\"4\">" . $string['markingguidance'] . "</td></tr>\n";
-      echo "<tr><td colspan=\"4\" style=\"padding: 0\"><textarea class=\"mceEditor\" id=\"osce_marking_guidance\" name=\"osce_marking_guidance\" style=\"width:100%; height:230px\">" .  htmlspecialchars($properties->get_paper_postscript(), ENT_NOQUOTES) . "</textarea></td></tr>";
-
+      echo "<tr><td colspan=\"4\" style=\"padding: 0\">";
+      $texteditorplugin->get_textarea('osce_marking_guidance', 'osce_marking_guidance', $texteditorplugin->get_text_for_display(htmlspecialchars($properties->get_paper_postscript()), ENT_NOQUOTES), plugins\plugins_texteditor::TYPE_STANDARD, "width:100%; height:230px;");
+      echo "</td></tr>";
     } elseif ($properties->get_paper_type() == '6') {  // Peer Review
       $review = $properties->get_display_question_mark();
 
@@ -1603,12 +1599,12 @@ if ($properties->get_paper_type() != '4' and $properties->get_paper_type() != '5
 
 <table id="prologue" class="tabsection" style="display: none">
 <tr><td class="tabtitle"><img src="../artwork/prologue_heading_icon.png" alt="Icon" align="middle" /><?php echo $string['prologueheading']; ?></td></tr>
-<tr><td><textarea class="mceEditor" id="paper_prologue" name="paper_prologue" style="width:100%; height:537px"><?php echo htmlspecialchars($properties->get_paper_prologue(), ENT_NOQUOTES); ?></textarea></td></tr>
+<tr><td><?php $texteditorplugin->get_textarea('paper_prologue', 'paper_prologue', $texteditorplugin->get_text_for_display(htmlspecialchars($properties->get_paper_prologue()), ENT_NOQUOTES), plugins\plugins_texteditor::TYPE_STANDARD, "width:100%; height:537px"); ?></td></tr>
 </table>
 
 <table id="postscript" class="tabsection" style="display: none">
 <tr><td class="tabtitle"><img src="../artwork/postscript_heading_icon.png" alt="Icon" align="middle" /><?php echo $string['postscriptheading']; ?></td></tr>
-<tr><td><textarea class="mceEditor" id="paper_postscript" name="paper_postscript" style="width:100%; height:537px"><?php echo htmlspecialchars($properties->get_paper_postscript(), ENT_NOQUOTES); ?></textarea></td></tr>
+<tr><td><?php $texteditorplugin->get_textarea('paper_postscript', 'paper_postscript', $texteditorplugin->get_text_for_display(htmlspecialchars($properties->get_paper_postscript()), ENT_NOQUOTES), plugins\plugins_texteditor::TYPE_STANDARD, "width:100%; height:537px"); ?></td></tr>
 </table>
 
 <table id="security" class="tabsection" style="display: none">
@@ -1696,7 +1692,7 @@ if ($properties->get_paper_type() != '4' and $properties->get_paper_type() != '5
       $split_hour = $start_date->format('H');
       $split_minute = $start_date->format('i');
     } else {
-      $split_year = $split_month = $split_day = $split_hour = $split_minute = '';
+      $split_year = $split_month = $split_day = $split_hour = $split_minute = 0;
     }
 
     // Available from Day
@@ -1803,7 +1799,7 @@ if ($properties->get_paper_type() != '4' and $properties->get_paper_type() != '5
       $split_hour = $end_date->format('H');
       $split_minute = $end_date->format('i');
     } else {
-      $split_year = $split_month = $split_day = $split_hour = $split_minute = '';
+      $split_year = $split_month = $split_day = $split_hour = $split_minute = 0;
     }
 
     echo "<td align=\"right\">" . $string['to'] . "&nbsp;</td><td>";
@@ -1966,7 +1962,7 @@ if ($properties->get_paper_type() != '4' and $properties->get_paper_type() != '5
 
 <table id="rubric" class="tabsection" style="display: none">
   <tr><td class="tabtitle"><img src="../artwork/rubric_heading_icon.png" alt="Icon" align="middle" /><?php echo $string['rubricheading']; ?></td></tr>
-	<tr><td class="sectionmain"><textarea class="mceEditor" id="rubric_text" name="rubric_text" style="width:100%; height:537px"><?php echo htmlspecialchars($properties->get_rubric(), ENT_NOQUOTES); ?></textarea></td></tr>
+  <tr><td><?php $texteditorplugin->get_textarea('rubric_text', 'rubric_text', $texteditorplugin->get_text_for_display(htmlspecialchars($properties->get_rubric()), ENT_NOQUOTES), plugins\plugins_texteditor::TYPE_STANDARD, "width:100%; height:537px"); ?></td></tr>
 </table>
 
 <table id="feedback" class="tabsection" style="display: none">

@@ -1,0 +1,84 @@
+{#This file is part of Rogō
+
+ Rogō is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ Rogō is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+#}
+
+{#
+This template is for the dichotomous question type.
+
+author Dr Joseph Baxter <joseph.baxter@nottingham.ac.uk>
+copyright 2018 onwards The University of Nottingham
+
+Required variables:
+data.labelcolour - colour of label, controlled by user accessibility settings.
+data.displayTF - displays true/false options if true otherwise Y/N
+data.options - the options available to select
+options.question_no - the question number
+options.optionno - the option number
+options.useranswer  - the users previous answer
+options.abstain - display abstain method if true
+options.optiontext - the text of the option
+options.displayoptionmedia - flag to indicate if media can be displayed for the option
+options.optionmedia - the option media
+data.partid - the question part id
+#}
+<blockquote>
+    <table cellpadding="2" cellspacing="0" border="0">
+        <tr>
+            <td align="center" width="40" style="color:{{data.labelcolour}}; font-size:90%">
+{% if data.displayTF %}
+                {{lang.true}}
+{% else %}
+                {{lang.yes}}
+{% endif %}
+            </td>
+            <td width="40" align="center" style="color:{{data.labelcolour}};font-size:90%">
+{% if data.displayTF %}
+                {{lang.false}}
+{% else %}
+                {{lang.no}}
+{% endif %}
+            </td>
+{% if data.displayAbstain %}
+            <td width="40" align="center" style="color:{{data.labelcolour}}; font-size:90%">
+                {{lang.abstain}}
+            </td>
+            <td>&nbsp;</td>
+{% endif %}
+        </tr>
+{% for i,p in data.options %}
+        <tr id="q{{p.question_no}}_opt{{data.partid}}" {% if p.unanswered %} class="unans"{% endif %}>
+            <td align="center">
+                <input type="radio" name="{{p.optionno}}" value="t" {% if p.useranswer == 't' %} checked="checked" {% endif %}/>
+            </td>
+            <td align="center">
+                <input type="radio" name="{{p.optionno}}" value="f" {% if p.useranswer == 'f' %} checked="checked" {% endif %}/>
+            </td>
+    {% if p.abstain %}
+            <td align="center">
+                <input type="radio" name="{{p.optionno}}" value="a" {% if p.useranswer == 'a' %} checked="checked" {% endif %}/>
+            </td>
+    {% endif %}
+            <td>
+    {% if p.optiontext != '' %}
+                {{p.optiontext}}<br />
+    {% endif %}
+    {% if p.displayoptionmedia %}
+                {% include 'paper/media.html' with {'data': p.optionmedia} %}
+    {% endif %}
+            </td>
+        </tr>
+{% endfor %}
+    </table>
+</blockquote>

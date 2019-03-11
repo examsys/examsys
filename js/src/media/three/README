@@ -1,0 +1,40 @@
+# Three js Rogo library
+
+These file enable Rogo to display different types of 3d image files.
+
+obj.js - .obj file support
+pdb.js - .pdb file support
+ply.js - .ply fiel support
+threeshared.js - common functions used by all file types.
+
+The subdirectories container helper functions copied from the threejs examples:
+
+controlers
+##########
+
+TrackballControls.js - allows users to manipulate the 3b object as if using a trackball.
+
+changes:
+
+- all console calls have been removed
+
+loaders
+#######
+DDSLoader.js - allows dds files to be loaded onto a obj file
+MTLLoader.js - allows mtl files to be read to help load material files onto an obj file
+OBJLoader.js - allows obj files to be loaded
+PDBLoader.js - allows pdb files to be loaded
+PLYLoader.js - allows ply files to be loaded
+
+changes:
+
+- all console calls have been removed
+
+renderers
+#########
+
+CSS2DRenderer.js - allows the rendering of css2 within a scene (used by pdb loader to render labels)
+
+changes:
+
+- all console calls have been removed

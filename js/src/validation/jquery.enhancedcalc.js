@@ -1,6 +1,6 @@
 $(function() {
   $('#edit_form').submit(function () { 
-    tinyMCE.triggerSave();
+    triggerSave();
   });
 
   jQuery.validator.addMethod("calcvariable", function(value, element) {
@@ -9,7 +9,7 @@ $(function() {
     // a floating point or integer number i.e. 10.1,
     // a link to another questions answer or variable i.e. ans10 or var$A99,
     // a simple formula using [+,-,*,/] i.e. $A/$B
-    return this.optional( element ) || /^((\$[A-Z][0-9]*|var\$[A-Z][0-9]*|ans[0-9]*|[0-9]*[.]?[0-9]+)([+-/*]?))+$/.test( value );
+    return this.optional( element ) || /^((\$[A-Z][0-9]*|var\$[A-Z][0-9]*|ans[0-9]*|[-]?[0-9]*[.]?[0-9]+)([+-/*]?))+$/.test( value );
   }, lang['entervalidvariable']);
 
   $('#edit_form').validate({
@@ -145,11 +145,8 @@ $(function() {
     errorPlacement: function(error, element) {
       if (element.attr('name') == 'leadin') {
         error.insertAfter('#leadin_parent');
-				
-				$('#leadin_parent.defaultSkin table.mceLayout').css({'border-color' : '#C00000'});
-				$('#leadin_parent.defaultSkin table.mceLayout').css({'box-shadow' : '0 0 6px rgba(200, 0, 0, 0.85)'});
-				$('#leadin_parent.defaultSkin table.mceLayout tr.mceFirst td').css({'border-top-color' : '#C00000'});
-				$('#leadin_parent.defaultSkin table.mceLayout tr.mceLast td').css({'border-bottom-color' : '#C00000'});
+        $('#leadin_tbl').css({'border-color' : '#C00000'});
+        $('#leadin_tbl').css({'box-shadow' : '0 0 6px rgba(200, 0, 0, 0.85)'});
       } else if (element.attr('name') == 'option_formula1') {
         error.insertBefore('#option_formula1');
       } else {

@@ -307,7 +307,7 @@ class RAF {
 		if ($handle = opendir($dir)) {
 			while (false !== ($entry = readdir($handle))) {
 				if ($entry != '.' and $entry != '..' and $entry != 'raf.json') {
-					$new_media = unique_filename($entry);
+					$new_media = media_handler::unique_filename($entry);
 					rename($tmp_path . $this->userID . '/' . $entry, $mediadirectory->fullpath($new_media));
 					$this->data = str_replace($entry, $new_media, $this->data);
 				}

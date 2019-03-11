@@ -24,7 +24,6 @@
 
 require '../include/staff_auth.inc';
 require '../include/errors.php';
-require '../include/sort.inc';
   
 $q_id = check_var('q_id', 'GET', true, false, true);
   
@@ -150,7 +149,7 @@ $q_id = check_var('q_id', 'GET', true, false, true);
   
   $sortby = 'calendar_year';
   $ordering = 'asc';
-  $display_data = array_csort($display_data, $sortby, $ordering); 
+  $display_data = \sort::array_csort($display_data, $sortby, $ordering);
  
   $row = 0;
   foreach ($display_data as $display_line) {

@@ -1,0 +1,38 @@
+{#This file is part of Rogō
+
+ Rogō is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ Rogō is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+#}
+
+{#
+This template is for the info question type.
+
+author Dr Joseph Baxter <joseph.baxter@nottingham.ac.uk>
+copyright 2018 onwards The University of Nottingham
+
+Required variables:
+
+data.displaymedia - flag to indicate if there is media to display
+data.displayleadin - flag to indicate if there is a leadin to display
+data.leadin - the leadin
+#}
+<tr>
+    <td colspan="2" style="padding-left:10px; padding-right:10px">
+{% if data.displaymedia %}
+        <p align="center">
+{% include 'paper/media.html' %}
+        </p>
+{% endif %}
+{% if data.displayleadin %}
+        {{data.leadin|raw}}
+{% endif %}

@@ -25,7 +25,6 @@
 require '../include/staff_auth.inc';
 require '../include/question_types.php';
 require '../include/display_functions.inc';
-require '../include/media.inc';
 
 $marks_color = '#808080';
 $themecolor = '#316AC5';
@@ -91,9 +90,11 @@ $question['assigned_number'] = (isset($_GET['qNo'])) ? $_GET['qNo'] : 1;
   <link rel="stylesheet" type="text/css" href="../css/start.css" />
 
   <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
-  <script type="text/javascript" src="../js/jquery-migrate-1.2.1.min.js"></script>
-  <script type="text/javascript" src="../js/start.js"></script>
-  <script type="text/javascript" src="../tools/mee/mee/js/mee_src.js"></script>
+  <script type="text/javascript" src="../js/start.min.js"></script>
+<?php
+  $texteditorplugin = \plugins\plugins_texteditor::get_editor();
+  $texteditorplugin->display_header();
+?>
   
   <?php
   $render = new render($configObject);
@@ -105,6 +106,8 @@ $question['assigned_number'] = (isset($_GET['qNo'])) ? $_GET['qNo'] : 1;
   if($configObject->get_setting('core', 'paper_mathjax')) {
     $render->render(null, null, 'mathjax.html');
   }
+  // Check if any 3d file types are enabled and render js.
+  threed_handler::render_js($string);
   ?>
 </head>
 <body>
@@ -112,11 +115,29 @@ $question['assigned_number'] = (isset($_GET['qNo'])) ? $_GET['qNo'] : 1;
   <table cellpadding="4" cellspacing="0" border="0" width="100%" style="table-layout:fixed">
   <col width="40"><col>
 <?php
-  display_question($configObject, $question, $paper_type, 0, 1, '', $question_no, $user_answers, $unanswered);
+  display_question($configObject, $question, $paper_type, 0, 1, '', $question_no, $user_answers, $unanswered, $texteditorplugin);
 
   $question_nos[] = $old_q_id;
-  echo "<table>\n";
+  echo "</table></div>";
+  // Paper dataset.
+  $dataset['name'] = 'paper';
+  $dataset['attributes']['timed'] = false;
+  $dataset['attributes']['refcount'] = 0;
+  $render->render($dataset, array(), 'paper/dataset.html');
+  // User dataset.
+  $datasetuser['name'] = 'user';
+  $datasetuser['attributes']['student'] = false;
+  $render->render($datasetuser, array(), 'paper/dataset.html');
+  // CSS dataset.
+  $datasetcss['name'] = 'css';
+  $datasetcss['attributes']['bgcolor'] = $bgcolor;
+  $datasetcss['attributes']['textsize'] = $textsize;
+  $datasetcss['attributes']['unanswered_color'] = $unanswered_color;
+  $datasetcss['attributes']['themecolor'] = $themecolor;
+  $datasetcss['attributes']['marks_color'] = $marks_color;
+  $datasetcss['attributes']['dismiss_color'] = '#A5A5A5';
+  $datasetcss['attributes']['special_needs'] = $userObject->is_special_needs();
+  $render->render($datasetcss, array(), 'paper/dataset.html');
  ?>
- </div>
  </body>
  </html>

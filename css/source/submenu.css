@@ -88,10 +88,6 @@ div#left-sidebar {
   display: table-cell;
   vertical-align: middle;
 }
-.mee {
-  font-size: 120%;
-  display: inline;
-}
 a.blacklink:link {
   color: #000000;
 }

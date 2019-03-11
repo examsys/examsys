@@ -262,3 +262,27 @@ audio {
   width: 280px;
   height: 45px;
 }
+.editorStandard {
+  width:756px;
+  height:220px;
+  margin:0;
+}
+.editorBasic {
+  width:756px;
+  height:220px;
+  margin:0;
+}
+.editorSimple {
+  width:756px;
+  height:220px;
+  margin:0;
+}
+.plaintextarea {
+  width:756px;
+  height:220px;
+  margin:0;
+}
+.mediadiv {
+  margin: auto;
+  text-align: center;
+}

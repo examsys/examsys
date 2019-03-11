@@ -1,3 +1,7 @@
+academic_year:
+  -
+    calendar_year: 2016
+    academic_year: "2016/17"
 modules_student:
   -
     id: 1
@@ -5,3 +9,32 @@ modules_student:
     UserID: 1000
     calendar_year: 2016
     attempt: 1
+users:
+  -
+    id: 1
+    password: "87654321"
+    username: "student1"
+    roles: "Student"
+    grade: "TEST"
+    title: "Mr"
+    initials: "JL"
+    surname: "Baxter"
+    first_names: "Joseph"
+    email: "joseph.baxter@example.com"
+    gender: "Male"
+  -
+    id: 2
+    password: "87654321"
+    username: "student2"
+    roles: "Student"
+    grade: "TEST"
+    title: "Mr"
+    initials: "JL"
+    surname: "Baxter"
+    first_names: "Joseph"
+    email: "joseph.baxter@example.com"
+    gender: "Male"
+sid:
+  -
+    userID: 1
+    student_id: 1

@@ -66,67 +66,71 @@ if ($q_marks !== false) {
   $result->fetch();
   $result->close();
 
-  $sql = <<< QUERY
-INSERT INTO marking_override (log_id, log_type, user_id, q_id, paper_id, marker_id, date_marked, new_mark_type, reason)
-VALUES (?, ?, ?, ?, ?, ?, NOW(), ?, ?) ON DUPLICATE KEY UPDATE
-marker_id = ?, new_mark_type = ?, date_marked = NOW(), reason = ?
+  $new_mark = $q_marks[$mark_type];
+  if ($new_mark !== $orig_mark) {
+
+    $sql = <<< QUERY
+  INSERT INTO marking_override (log_id, log_type, user_id, q_id, paper_id, marker_id, date_marked, new_mark_type, reason)
+  VALUES (?, ?, ?, ?, ?, ?, NOW(), ?, ?) ON DUPLICATE KEY UPDATE
+  marker_id = ?, new_mark_type = ?, date_marked = NOW(), reason = ?
 QUERY;
 
-  $or_id = -1;
+    $or_id = -1;
 
-  try {
-    $result = $mysqli->prepare($sql);
-    if ($result) {
-      $result->bind_param('iiiiiississ', $log_id, $log, $user_id, $q_id, $paper_id, $marker_id, $mark_type, $reason, $marker_id, $mark_type, $reason);
-      $result2 = $result->execute();
-      if ($result2 !== false) {
-        $status = 'OK';
-      }
-      $result->close();
-    }
-
-    if ($status == 'OK') {
-      $or_id = $mysqli->insert_id;
-
-      $new_mark = $q_marks[$mark_type];
-
-      // Update the mark mark
-      $sql = "UPDATE log{$log} SET mark = ?, adjmark = ? WHERE id = ? AND q_id = ?";
+    try {
       $result = $mysqli->prepare($sql);
       if ($result) {
-        $result->bind_param('ddii', $new_mark, $new_mark, $log_id, $q_id);
+        $result->bind_param('iiiiiississ', $log_id, $log, $user_id, $q_id, $paper_id, $marker_id, $mark_type, $reason, $marker_id, $mark_type, $reason);
         $result2 = $result->execute();
-        $result->store_result();
-        if ($result2 == false) {
-          $status = 'ERROR';
-        } else {
-          // Invalidate the cache so it will get rebuilt with new mark
-          $assessment = new assessment($mysqli, $configObject);
-          $update_params = array(
-            'recache_marks' => array('i', 1)
-          );
-          $cache_result = $assessment->db_update_assessment($paper_id, $update_params);
-          if ($cache_result == false) {
-            $status = 'ERROR';
-          }
+        if ($result2 !== false) {
+          $status = 'OK';
         }
         $result->close();
       }
+
+      if ($status == 'OK') {
+        $or_id = $mysqli->insert_id;
+
+        // Update the mark mark
+        $sql = "UPDATE log{$log} SET mark = ?, adjmark = ? WHERE id = ? AND q_id = ?";
+        $result = $mysqli->prepare($sql);
+        if ($result) {
+          $result->bind_param('ddii', $new_mark, $new_mark, $log_id, $q_id);
+          $result2 = $result->execute();
+          $result->store_result();
+          if ($result2 == false) {
+            $status = 'ERROR';
+          } else {
+            // Invalidate the cache so it will get rebuilt with new mark
+            $assessment = new assessment($mysqli, $configObject);
+            $update_params = array(
+              'recache_marks' => array('i', 1)
+            );
+            $cache_result = $assessment->db_update_assessment($paper_id, $update_params);
+            if ($cache_result == false) {
+              $status = 'ERROR';
+            }
+          }
+          $result->close();
+        }
+      }
+    } catch (exception $ex) {
+      $status = 'ERROR';
     }
-  } catch (exception $ex) {
-    $status = 'ERROR';
-  }
 
-  if ($status == 'ERROR') {
-    $mysqli->rollback();
+    if ($status == 'ERROR') {
+      $mysqli->rollback();
+    } else {
+      $mysqli->commit();
+
+      $logger = new Logger($mysqli);
+      $logger->track_change('enhancedcalc_override', $or_id, $marker_id, $orig_mark, $new_mark, $q_id);
+    }
+
+    $mysqli->autocommit(true);
   } else {
-    $mysqli->commit();
-
-    $logger = new Logger($mysqli);
-    $logger->track_change('enhancedcalc_override', $or_id, $marker_id, $orig_mark, $new_mark, $q_id);
+    $status = 'OK';
   }
-
-  $mysqli->autocommit(true);
 }
 
 echo $status;

@@ -15,6 +15,7 @@
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
 use testing\unittest\unittestdatabase;
+use PHPUnit\DbUnit\DataSet\YamlDataSet;
 
 /**
  * Test coursemanagement api class
@@ -39,6 +40,7 @@ class coursemanagementtest extends unittestdatabase {
             "node" => 'create',
             "nodeid" => 1);
     }
+
     /**
      * Create a parameter array for creation
      * @return array the param array  
@@ -51,6 +53,7 @@ class coursemanagementtest extends unittestdatabase {
             "school" => 'School test',
             "faculty" => 'Faculty test');
     }
+
     /**
      * Create a parameter array for updates
      * @return array the param array  
@@ -61,6 +64,7 @@ class coursemanagementtest extends unittestdatabase {
             "id" => 1,
             "description" => 'Test course update');
     }
+
     /**
      * Create a response array for updates
      * @return array the resposne array  
@@ -75,6 +79,7 @@ class coursemanagementtest extends unittestdatabase {
             "node" => 'update',
             "nodeid" => 1);
     }
+
     /**
      * Create a response array for deletion
      * @return array the response array  
@@ -89,6 +94,7 @@ class coursemanagementtest extends unittestdatabase {
             "node" => 'delete',
             "nodeid" => 1);
     }
+
     /**
      * Create a parameter array for deletion
      * @return array the param array  
@@ -98,21 +104,24 @@ class coursemanagementtest extends unittestdatabase {
             "nodeid" => 1,
             "id" => 1);
     }
+
     /**
      * Get init data set from yml
      * @return dataset
      */
     public function getDataSet() {
-        return new PHPUnit_Extensions_Database_DataSet_YamlDataSet($this->get_base_fixture_directory() . "api" . DIRECTORY_SEPARATOR . "coursemanagementTest" . DIRECTORY_SEPARATOR . "coursemanagement.yml");
+        return new YamlDataSet($this->get_base_fixture_directory() . "api" . DIRECTORY_SEPARATOR . "coursemanagementTest" . DIRECTORY_SEPARATOR . "coursemanagement.yml");
     }
+
     /**
      * Get expected data set from yml
      * @param string $name fixture file name
      * @return dataset
      */
     public function get_expected_data_set($name) {
-        return new PHPUnit_Extensions_Database_DataSet_YamlDataSet($this->get_base_fixture_directory() . "api" . DIRECTORY_SEPARATOR .  "coursemanagementTest" . DIRECTORY_SEPARATOR . $name . ".yml");
+        return new YamlDataSet($this->get_base_fixture_directory() . "api" . DIRECTORY_SEPARATOR .  "coursemanagementTest" . DIRECTORY_SEPARATOR . $name . ".yml");
     }
+
     /**
      * Test successful course create
      * @group api
@@ -125,6 +134,7 @@ class coursemanagementtest extends unittestdatabase {
         $userid = 1;
         $this->assertEquals($responsearray, $course->create($params, $userid));
     }
+
     /**
      * Test successful course create with external id
      * @group api
@@ -143,6 +153,7 @@ class coursemanagementtest extends unittestdatabase {
         $userid = 1;
         $this->assertEquals($responsearray, $course->create($params, $userid));
     }
+
     /**
      * Test successful course create - no faculty supplied
      * @group api
@@ -159,6 +170,7 @@ class coursemanagementtest extends unittestdatabase {
             "school" => 'Test school');
         $this->assertEquals($responsearray, $course->create($params, $userid));
     }
+
     /**
      * Test course create exception course exists
      * @group api
@@ -176,6 +188,7 @@ class coursemanagementtest extends unittestdatabase {
         $params['name'] = "TEST";
         $this->assertEquals($responsearray, $course->create($params, $userid));
     }
+
     /**
      * Test course create exception invalid faculty
      * @group api
@@ -196,6 +209,7 @@ class coursemanagementtest extends unittestdatabase {
             "school" => 'School test invalid');
         $this->assertEquals($responsearray, $course->create($params, $userid));
     }
+
     /**
      * Test successful course update
      * @group api
@@ -203,7 +217,6 @@ class coursemanagementtest extends unittestdatabase {
     public function test_update_success() {
         // Test course update - SUCCESS description
         $responsearray = $this->update_response_array();
-        $params = $this->update_param_array();
         $course = new \api\coursemanagement($this->db, 'test1');
         $userid = 1;
         // Test course update - SUCCESS name
@@ -213,13 +226,13 @@ class coursemanagementtest extends unittestdatabase {
             "name" => 'TESTUPDATE');
         $this->assertEquals($responsearray, $course->update($params, $userid));
     }
+
     /**
      * Test successful course update using external id
      * @group api
      */
     public function test_update_success_external() {
         $responsearray = $this->update_response_array();
-        $params = $this->update_param_array();
         $course = new \api\coursemanagement($this->db, 'test1');
         $userid = 1;
         // Test course update - SUCCESS name
@@ -229,6 +242,23 @@ class coursemanagementtest extends unittestdatabase {
             "name" => 'TESTUPDATE2');
         $this->assertEquals($responsearray, $course->update($params, $userid));
     }
+
+    /**
+     * Test updating course school with external school id
+     * @group api
+     */
+    public function test_update_school() {
+      $responsearray = $this->update_response_array();
+      $course = new \api\coursemanagement($this->db, 'test1');
+      $userid = 1;
+      // Test course update - SUCCESS name
+      $params = array(
+        "nodeid" => 1,
+        "externalid" => 123456,
+        "schoolextid" => 'berty');
+      $this->assertEquals($responsearray, $course->update($params, $userid));
+    }
+
     /**
      * Test course update exception invalid course
      * @group api
@@ -246,6 +276,7 @@ class coursemanagementtest extends unittestdatabase {
         $params['id'] = 100;
         $this->assertEquals($responsearray, $course->update($params, $userid));
     }
+
     /**
      * Test course update exception school not supplied on faculty update
      * @group api
@@ -271,6 +302,7 @@ class coursemanagementtest extends unittestdatabase {
         $expectedtable = $this->get_expected_data_set('updatecourse')->getTable("faculty");  
         $this->assertTablesEqual($expectedtable, $querytable);
     }
+
     /**
      * Test course update exception nothing to update
      * @group api
@@ -295,6 +327,7 @@ class coursemanagementtest extends unittestdatabase {
         $expectedtable = $this->get_expected_data_set('updatecourse')->getTable("courses");  
         $this->assertTablesEqual($expectedtable, $querytable);
     }
+
     /**
      * Test successful course deletion
      * @group api
@@ -312,6 +345,7 @@ class coursemanagementtest extends unittestdatabase {
         $expectedtable = $this->get_expected_data_set('deletecourse')->getTable("courses");  
         $this->assertTablesEqual($expectedtable, $querytable);
     }
+
     /**
      * Test successful course deletion with external id
      * @group api
@@ -330,6 +364,7 @@ class coursemanagementtest extends unittestdatabase {
         $expectedtable = $this->get_expected_data_set('deletecourse')->getTable("courses");  
         $this->assertTablesEqual($expectedtable, $querytable);
     }
+
     /**
      * Test course deletion exception course does not exist
      * @group api
@@ -351,6 +386,7 @@ class coursemanagementtest extends unittestdatabase {
             "nodeid" => 1);
         $this->assertEquals($responsearray, $course->delete($params, $userid));
     }
+
     /**
      * Test course deletion exception course in use
      * @group api

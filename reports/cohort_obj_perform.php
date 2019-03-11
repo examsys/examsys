@@ -25,7 +25,6 @@
 require '../include/staff_auth.inc';
 require '../include/mapping.inc';
 require '../include/feedback.inc';
-require_once '../include/sort.inc';
 require_once '../include/errors.php';
 
 $paperID = check_var('paperID', 'GET', true, false, true);
@@ -135,7 +134,7 @@ $enddate = check_var('enddate', 'GET', true, false, true);
     }
     $sortby = 'ratio';
     $ordering = 'desc';
-    $objectives = array_csort($objectives, $sortby, $ordering, SORT_NUMERIC);
+    $objectives = \sort::array_csort($objectives, $sortby, $ordering, SORT_NUMERIC);
 
     //Display the feedback
     ?>

@@ -30,7 +30,7 @@
 ?>
   function go(url, evt) {
     $('#stats_menu').hide();
-    if ($('#completerpt').attr('checked')) {
+    if ($('#completerpt').is(':checked')) {
       completerpt = 1;
     } else {
       completerpt = 0;
@@ -65,12 +65,12 @@
     }
     
     $('#stats_menu').hide();
-    if ($('#absent').attr('checked')) {
+    if ($('#absent').is(':checked')) {
       absent = '&absent=1';
     } else {
       absent = '&absent=0';
     }
-    if ($('#studentsonly').attr('checked')) {
+    if ($('#studentsonly').is(':checked')) {
       studentsonly = '&studentsonly=1';
     } else {
       studentsonly = '&studentsonly=0';

@@ -91,10 +91,3 @@ extarea, input[type=text], select, textarea, input[type=password] {
 .cancel {
   margin-right: 0;
 }
-.greySkin table.mceLayout {
-  border-left: 0 !important;
-  border-right: 0 !important;
-}
-.greySkin table.mceLayout tr.mceLast td {
-  border-bottom: 0 !important;  
-}

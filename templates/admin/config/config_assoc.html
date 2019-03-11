@@ -3,14 +3,30 @@
         <label for="{{data.setting}}_host">{{data.setting}}</label>
         <img src="{{path}}/artwork/tooltip_icon.gif" class="help_tip" title="{{attribute(lang, data.setting)}}" />
     </div>
-    <div class="configvalue">
-        {% for idx in data.item %}
+    {% if data.setting == 'system_mediatypes' %}
+        <div class="configtable">
+            {% for idx in data.item %}
             {{idx.i}}
-            <input class="{{data.type}}" type="text" id="{{data.setting}}_{{idx.i}}" name="{{data.setting}}_{{idx.i}}" value="{{idx.v|raw}}" {{data.disabled}} />
-            </br>
-       {% endfor %}
+            {% set checked = '' %}
+            {% if idx.v == true %}
+                {% set checked = 'checked' %}
+            {% endif %}
+            <input type="checkbox" id="{{data.setting}}_{{idx.i}}" name="{{data.setting}}_{{idx.i}}" {{checked}} {{data.disabled}} />
+            {% endfor %}
+        </div>
         {% if data.disabled != "" %}
         <div class="configextra">{{lang.fileoverride}}</div>
         {% endif %}
-    </div>
+    {% else %}
+        <div class="configvalue">
+            {% for idx in data.item %}
+                {{idx.i}}
+                <input class="{{data.type}}" type="text" id="{{data.setting}}_{{idx.i}}" name="{{data.setting}}_{{idx.i}}" value="{{idx.v|raw}}" {{data.disabled}} />
+                </br>
+           {% endfor %}
+            {% if data.disabled != "" %}
+            <div class="configextra">{{lang.fileoverride}}</div>
+            {% endif %}
+        </div>
+    {% endif %}
 </div>

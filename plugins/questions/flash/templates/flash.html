@@ -1,0 +1,55 @@
+{#This file is part of Rogō
+
+ Rogō is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ Rogō is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+#}
+
+{#
+This template is for the flash question type.
+
+author Dr Joseph Baxter <joseph.baxter@nottingham.ac.uk>
+copyright 2018 onwards The University of Nottingham
+
+Required variables:
+
+data.questionno - the question number
+data.mediawidth - width of the media
+data.mediaheight - height of the media
+data.mediafile - the media file
+data.bgcolor - background colour
+data.displayscenario - flag to indicate if there is a scenario to display
+data.scenario - the question scenario
+data.mediaurl - the media url
+#}
+<script>
+    function flash{{data.questionno}}_DoFSCommand(command, args) {
+        $('#q{{data.questionno}}').val(args);
+    }
+</script>
+<div align="center">
+    <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="https://fpdownload.macromedia.com/get/shockwave/cabs/flash/swflash.cab" id="flash{{data.questionno}}" width="{{data.mediawidth}}px" height="{{data.mediaheight}}px" align="middle">
+    <param name="wmode" value="opaque" />
+    <param name="allowScriptAccess" value="sameDomain" />
+    <param name="movie" value="{{data.mediaurl}}" />
+    <param name="quality" value="high" />
+    <param name="bgcolor" value="{{data.bgcolor}}" />
+{% if data.displayscenario %}
+    <param name="FlashVars" value="{{data.scenario}}">
+{% endif %}
+    <embed style="z-index:0;" src="{{data.mediaurl}}";{% if data.displayscenario %} FlashVars="{{data.scenario}}";{% endif %} wmode="opaque"
+            quality="high" bgcolor="{{data.bgcolor}}" width="{{data.mediawidth}}" height="{{data.mediaheight}}" swLiveConnect=true id="flash{{data.questionno}}"
+            name="flash{{data.questionno}}" align="middle" allowScriptAccess="sameDomain" type="application/x-shockwave-flash"
+            pluginspage="https://get.adobe.com/flashplayer/" />
+    </object>
+</div>
+<input type="hidden" id="q{{data.questionno}}" name="q{{data.questionno}}" value="0,0" />

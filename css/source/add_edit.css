@@ -608,9 +608,7 @@ textarea[disabled], textarea[readonly="readonly"], select:disabled, input[type=t
 .editor-disabled {
   height: 140px;
   overflow: auto;
-	background-image: url('../tools/tinymce/jscripts/tiny_mce/themes/advanced/img/disabled_icons.gif');
-	background-repeat: no-repeat;
-	padding-top: 26px;
+  padding-top: 26px;
 }
 
 .editor-disabled p {

@@ -15,8 +15,8 @@
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace testing\behat\helpers\database;
-use PHPUnit_Extensions_Database_TestCase_Trait;
-use PHPUnit_Extensions_Database_DataSet_YamlDataSet;
+use PHPUnit\DbUnit\TestCaseTrait;
+use PHPUnit\DbUnit\DataSet\YamlDataSet;
 use PDO;
 
 /**
@@ -28,7 +28,7 @@ use PDO;
  * @subpackage behat
  */
 class Default_Loader extends Data_Loader {
-  use PHPUnit_Extensions_Database_TestCase_Trait {
+  use TestCaseTrait {
     setUp as public load;
     tearDown as public clean;
   }
@@ -70,7 +70,7 @@ class Default_Loader extends Data_Loader {
     }
     // Create the dataset.
     $firstfixture = array_shift($fixtures);
-    $dataset = new PHPUnit_Extensions_Database_DataSet_YamlDataSet($firstfixture);
+    $dataset = new YamlDataSet($firstfixture);
     // Build up the dataset.
     foreach ($fixtures as $fixture) {
       $dataset->addYamlFile($fixture);

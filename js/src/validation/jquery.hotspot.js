@@ -1,6 +1,6 @@
 $(function() {
   $('#edit_form').submit(function () {
-    tinyMCE.triggerSave();
+    triggerSave();
   })
   $('#edit_form').validate({
     ignore: '',

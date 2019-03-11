@@ -30,7 +30,7 @@ require_once dirname(dirname(__DIR__)) . '/include/sysadmin_auth.inc';
 require_once dirname(dirname(__DIR__)) . '/include/autoload.inc.php';
 
 autoloader::init();
-if (file_exists(dirname(dirname(__DIR__)) . '/node_modules/qunitjs/qunit/qunit.js')) {
+if (file_exists(dirname(dirname(__DIR__)) . '/node_modules/qunit/qunit/qunit.js')) {
     $suite = param::optional('suite', '', param::ALPHANUM);
     
     // Find the test files.

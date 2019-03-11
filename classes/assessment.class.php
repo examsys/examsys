@@ -100,7 +100,6 @@ class assessment {
      */
     function __construct($db, $configObject) {
         $this->db = $db;
-        $this->summative_mgmt = $configObject->get_setting('core', 'cfg_summative_mgmt');
         $this->server_timezone = $configObject->get('cfg_timezone');
         $this->type = array('formative' => self::TYPE_FORMATIVE,
             'progress' => self::TYPE_PROGRESS,
@@ -116,6 +115,7 @@ class assessment {
         $this->cohort_sizes = $settings->summative_cohort_sizes;
         $this->max_duration = $settings->paper_max_duration;
         $this->max_sittings = $settings->summative_max_sittings;
+        $this->summative_mgmt = $settings->cfg_summative_mgmt;
     }
 
     /**

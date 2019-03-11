@@ -104,8 +104,8 @@
   $dkgreen = ImageColorAllocate($Image, 83, 129, 53);
   $blue    = ImageColorAllocate($Image, 91, 155, 213);
   
-  $font      = '../fonts/SourceSansPro-Regular.ttf';
-  $bold_font = '../fonts/SourceSansPro-Semibold.ttf';
+  $font      = dirname(__dir__) . DIRECTORY_SEPARATOR . 'fonts' . DIRECTORY_SEPARATOR . 'SourceSansPro-Regular.ttf';
+  $bold_font = dirname(__dir__)  . DIRECTORY_SEPARATOR . 'fonts' . DIRECTORY_SEPARATOR . 'SourceSansPro-Semibold.ttf';
 
   // Label x axis
   if (!isset($_GET['plotuser'])) {

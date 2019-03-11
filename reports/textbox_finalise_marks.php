@@ -34,12 +34,12 @@ $paper_type = $propertyObj->get_paper_type();
 function load_marks($paperID, $q_id, $phase, $db) {
   $marks = array();
   
-  $result = $db->prepare("SELECT answer_id, mark FROM textbox_marking WHERE paperID = ? AND q_id = ? AND phase = ?");
+  $result = $db->prepare("SELECT answer_id, mark, comments FROM textbox_marking WHERE paperID = ? AND q_id = ? AND phase = ?");
   $result->bind_param('iii', $paperID, $q_id, $phase);
   $result->execute();
-  $result->bind_result($answer_id, $mark);
+  $result->bind_result($answer_id, $mark, $comment);
   while ($result->fetch()) {
-    $marks[$answer_id] = $mark;
+    $marks[$answer_id] = array('mark' => $mark, 'comment' => $comment);
   }
   $result->close();
 
@@ -107,114 +107,56 @@ if (isset($_POST['submit'])) {
     $msg = sprintf($string['furtherassistance'], $contactemail, $contactemail);
     $notice->display_notice_and_exit($mysqli, $string['pagenotfound'], $msg, $string['pagenotfound'], '../artwork/page_not_found.png', '#C00000', true, true);
   }
-  
-  $primary_marks = load_marks($paperID, $q_id, 1, $mysqli);
-  
+
+  $primary_marks = $marks = load_marks($paperID, $q_id, 1, $mysqli);
   $secondary_marks = load_marks($paperID, $q_id, 2, $mysqli);
-  
+
   $marks_correct = load_question_mark($q_id, $mysqli);
 
-?>
-<!DOCTYPE html>
-<html>
-<head>
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta http-equiv="content-type" content="text/html;charset=<?php echo $configObject->get('cfg_page_charset') ?>" />
-  <title><?php echo page::title('Rog&#333;: ' . $string['finalisemarks']); ?></title>
+  $render = new render($configObject);
+  $lang['title'] =  $string['finalisemarks'];
+  $headerdata = array(
+    'css' => array(
+      '/css/header.css',
+      '/css/textbox_finalise_marks.css',
+    ),
+    'scripts' => array(
+      '/js/jquery-1.11.1.min.js',
+      '/js/staff_help.js',
+      '/js/toprightmenu.js',
+      '/js/textbox_finalise.min.js',
+    ),
+  );
+  if($configObject->get_setting('core', 'paper_mathjax')) {
+    $headerdata['scripts'][] = '/js/mathjax-config.min.js';
+    $headerdata['scripts'][] = '/node_modules/mathjax/MathJax.js?config=TeX-MML-AM_HTMLorMML';
+  }
+  $render->render($headerdata, $lang, 'header.html');
 
-  <link rel="stylesheet" type="text/css" href="../css/body.css" />
-  <link rel="stylesheet" type="text/css" href="../css/header.css" />
-  <link rel="stylesheet" type="text/css" href="../css/textbox_finalise_marks.css" />
 
-  <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
-  <script type="text/javascript" src="../js/staff_help.js"></script>
-  <script type="text/javascript" src="../js/toprightmenu.js"></script>
-  <script>
-    // Check select all button
-    function selectall() {
-      var total = 0;
-      var count = 0;
-      $(".primarychk").each(function() {
-        if ($(this).is(':checked')) {
-          count++;
-          total++;
-        } else {
-          total++;
-        }
-      });
-      if (count === total) {
-        $("#selectallprimary").prop("checked", true);
-      }
-    }
-    $(function() {
-      // Check select all button if all primary mark radio buttons selected on load.
-      $(document).ready(function(){
-        selectall();
-      });
-      $("input:radio").click(function() {
-        str = $(this).attr('id');
-        
-        dropdownID = str.replace('mark', 'override');
-        $("#" + dropdownID).val('');        
-      });
-      
-      $("select").click(function() {
-        str = $(this).attr('id');
-        
-        radioID = str.replace('override', 'mark');
-        
-        
-        $('input:radio[name=' + radioID + ']').removeAttr('checked');
-      });
-      // Select all primary marks radio buttons.
-      $("#selectallprimary").change(function() {
-        if ($("#selectallprimary").is(':checked')) {
-          $(".primarychk").each(function() {
-            $(this).prop("checked", true);
-          });
-        } else {
-          $(".primarychk").each(function() {
-            $(this).prop("checked", false);
-          });
-        }
-      });
-      // Check select all button if all primary mark radio buttons selected.
-      $(".primarychk").click(function() {
-        selectall();
-      });
-      // Uncheck select all button if a secondary mark has been selected.
-      $(".secondarychk").click(function() {
-        $("#selectallprimary").prop("checked", false);
-      });
-    })
-  </script>
-  <?php
-    if($configObject->get_setting('core', 'paper_mathjax')) {
-      $render = new render($configObject);
-      $render->render(null, null, 'mathjax.html');
-    }
-  ?>
-</head>
-
-<body>
-  <div id="content">
-<?php
+  $breadcrumb[$string['home']] = '../index.php';
+  if (isset($_GET['folder']) and trim($_GET['folder']) != '') {
+    $link = "../folder/index.php?folder=" . $_GET['folder'];
+    $name = folder_utils::get_folder_name($_GET['folder'], $mysqli);
+    $breadcrumb[$name] = $link;
+  } elseif (isset($_GET['module']) and $_GET['module'] != '') {
+    $link = "../module/index.php?module=" . $_GET['module'];
+    $name = module_utils::get_moduleid_from_id($_GET['module'], $mysqli);
+    $breadcrumb[$name] = $link;
+  }
+  $link = "../paper/details.php?paperID=" . $paperID;
+  $name = $propertyObj->get_paper_title();
+  $breadcrumb[$name] = $link;
   require '../include/toprightmenu.inc';
 
-	echo draw_toprightmenu();
+  $toprightmenu = draw_toprightmenu();
+  $render->render_admin_options('', '', $lang, $toprightmenu, 'admin/no_sidebar.html');
+  $render->render_admin_content($breadcrumb, $lang);
 
   echo "<form action=\"" . $_SERVER['PHP_SELF'] . "?paperID=" . $paperID . "&module=" . $_GET['module'] . "&folder=" . $_GET['folder'] . "&repcourse=" . $_GET['repcourse'] . "\" method=\"post\" autocomplete=\"off\">\n";
-  echo '<div class="head_title">';
-  echo '<div><img src="../artwork/toprightmenu.gif" id="toprightmenu_icon" /></div>';
-  echo '<div class="breadcrumb" style="height:20px"><a href="../index.php">' . $string['home'] . '</a>';
-  if (isset($_GET['folder']) and trim($_GET['folder']) != '') {
-    echo '<img src="../artwork/breadcrumb_arrow.png" class="breadcrumb_arrow" alt="-" /><a href="../folder/index.php?folder=' . $_GET['folder'] . '">' . folder_utils::get_folder_name($_GET['folder'], $mysqli) . '</a>';
-  } elseif (isset($_GET['module']) and $_GET['module'] != '') {
-    echo '<img src="../artwork/breadcrumb_arrow.png" class="breadcrumb_arrow" alt="-" /><a href="../module/index.php?module=' . $_GET['module'] . '">' . module_utils::get_moduleid_from_id($_GET['module'], $mysqli) . '</a>';
-  }
-  echo '<img src="../artwork/breadcrumb_arrow.png" class="breadcrumb_arrow" alt="-" /><a href="../paper/details.php?paperID=' . $paperID . '">' . $propertyObj->get_paper_title() . '</a></div></div>';
-  echo '<table class="header"><tr><th><div class="page_title">' . $string['finalisemarks'] . ': <span style="font-weight:normal"> ' . $string['question'] . ' ' . $_GET['qNo'] . '</span></div></th><th style="text-align:center; vertical-align:bottom"><div style="width:70px; font-size:110%">'.$string['first'].'</div></th><th style="text-align:center; vertical-align:bottom"><div style="width:70px; font-size:110%">'.$string['second'].'</div></td><th style="text-align:center; vertical-align:bottom"><div style="width:70px; font-size:110%">'.$string['override'].'</div></th></tr>';
 
+  echo '<table class="header"><tr><th><div class="page_title"><span style="font-weight:normal"> ' . $string['question'] . ' ' . $_GET['qNo'] . '</span></div></th><th style="text-align:center; vertical-align:bottom"><div style="width:70px; font-size:110%">'.$string['first'].'</div></th><th style="text-align:center; vertical-align:bottom"><div style="width:70px; font-size:110%">'.$string['second'].'</div></td><th style="text-align:center; vertical-align:bottom"><div style="width:70px; font-size:110%">'.$string['override'].'</div></th></tr>';
+  echo '<tr><td colspan="4"><img src="../artwork/tooltip_icon.gif" />' . $string['comments'] . '</td></tr>';
   $student_no = 0;
 
   // Get student answers
@@ -263,11 +205,11 @@ SQL;
   $result->bind_result($logtype, $log_id, $tmp_userID, $user_answer, $user_mark);
   while ($result->fetch()) {
       $student_no++;
-      if (isset($primary_marks[$log_id]) and $primary_marks[$log_id] === $user_mark) {
+      if (isset($primary_marks[$log_id]['mark']) and $primary_marks[$log_id]['mark'] === $user_mark) {
         $primary_checked = ' checked';
         $secondary_checked = '';
         $override = false;
-      } elseif (isset($secondary_marks[$log_id]) and $secondary_marks[$log_id] === $user_mark) {
+      } elseif (isset($secondary_marks[$log_id]['mark']) and $secondary_marks[$log_id]['mark'] === $user_mark) {
         $primary_checked = '';
         $secondary_checked = ' checked';
         $override = false;
@@ -279,16 +221,24 @@ SQL;
       if (trim($user_answer) != '') {
       echo "<tr class=\"l\"><td class=\"ans\">" . nl2br($user_answer) . "<br />&nbsp;</td>";
 
-      if (isset($secondary_marks[$log_id]) and isset($primary_marks[$log_id]) and abs($primary_marks[$log_id] - $secondary_marks[$log_id]) > 1) {
-        echo "<td class=\"primary noans\">" . $primary_marks[$log_id] . "<input class=\"primarychk\" type=\"radio\" name=\"mark$student_no\" id=\"mark$student_no\" value=\"" . $primary_marks[$log_id] . "\" $primary_checked /></td><td class=\"secondary noans\">" . $secondary_marks[$log_id] . "<input type=\"radio\" name=\"mark$student_no\" id=\"mark$student_no\" value=\"" . $secondary_marks[$log_id] . "\" $secondary_checked /><input type=\"hidden\" name=\"log_id$student_no\" value=\"$log_id\" /></td><td class=\"override noans\">" . displayMarks($student_no, $marks_correct, $override, $user_mark);
+      if (isset($secondary_marks[$log_id]['mark']) and isset($primary_marks[$log_id]['mark']) and abs($primary_marks[$log_id]['mark'] - $secondary_marks[$log_id]['mark']) > 1) {
+        echo "<td class=\"primary noans\">" . $primary_marks[$log_id]['mark'] . "<input class=\"primarychk\" type=\"radio\" name=\"mark$student_no\" id=\"mark$student_no\" value=\"" . $primary_marks[$log_id]['mark'] . "\" $primary_checked /></td><td class=\"secondary noans\">" . $secondary_marks[$log_id]['mark'] . "<input type=\"radio\" name=\"mark$student_no\" id=\"mark$student_no\" value=\"" . $secondary_marks[$log_id]['mark'] . "\" $secondary_checked /><input type=\"hidden\" name=\"log_id$student_no\" value=\"$log_id\" /></td><td class=\"override noans\">" . displayMarks($student_no, $marks_correct, $override, $user_mark);
       } else {
-        if (isset($primary_marks[$log_id])) {
-          echo "<td class=\"primary\">" . $primary_marks[$log_id] . "<input class=\"primarychk\" type=\"radio\" name=\"mark$student_no\" id=\"mark$student_no\" value=\"" . $primary_marks[$log_id] . "\" $primary_checked /></td>";
+        if (isset($primary_marks[$log_id]['mark'])) {
+          echo "<td class=\"primary\">" . $primary_marks[$log_id]['mark'] . "<input class=\"primarychk\" type=\"radio\" name=\"mark$student_no\" id=\"mark$student_no\" value=\"" . $primary_marks[$log_id]['mark'] . "\" $primary_checked />";
+          if (isset($secondary_marks[$log_id]['mark'])) {
+            echo "<img src=\"../artwork/tooltip_icon.gif\" class=\"help_tip\" title=\"" . $primary_marks[$log_id]['comment'] . "\" />";
+          }
+          echo "</td>";
         } else {
           echo "<td class=\"unmarked\">" . $string['unmarked'] . "</td>";
         }
-        if (isset($secondary_marks[$log_id])) {
-          echo "<td class=\"secondary\">" . $secondary_marks[$log_id] . "<input class=\"secondarychk\" type=\"radio\" name=\"mark$student_no\" id=\"mark$student_no\" value=\"" . $secondary_marks[$log_id] . "\" $secondary_checked /></td>";
+        if (isset($secondary_marks[$log_id]['mark'])) {
+          echo "<td class=\"secondary\">" . $secondary_marks[$log_id]['mark'] . "<input class=\"secondarychk\" type=\"radio\" name=\"mark$student_no\" id=\"mark$student_no\" value=\"" . $secondary_marks[$log_id]['mark'] . "\" $secondary_checked />";
+          if (isset($primary_marks[$log_id]['mark'])) {
+            echo "<img src=\"../artwork/tooltip_icon.gif\" class=\"help_tip\" title=\"" . $secondary_marks[$log_id]['comment'] . "\" />";
+          }
+          echo "</td>";
         } else {
           echo "<td class=\"secondary missing\">&nbsp;</td>";
         }
@@ -297,13 +247,13 @@ SQL;
     } else {
       // User answer is blank.
       echo "<tr class=\"l\"><td class=\"ans\" style=\"color: #C00000\"><img src=\"../artwork/small_yellow_warning_icon.gif\" width=\"12\" height=\"11\" alt=\"!\" />&nbsp;" . $string['noanswer'] . "<br />&nbsp;</td>";
-      if (isset($primary_marks[$log_id])) {
-        echo "<td class=\"primary noans\">" . $primary_marks[$log_id] . "<input class=\"primarychk\" type=\"radio\" name=\"mark$student_no\" id=\"mark$student_no\" value=\"" . $primary_marks[$log_id] . "\" $primary_checked/></td>";
+      if (isset($primary_marks[$log_id]['mark'])) {
+        echo "<td class=\"primary noans\">" . $primary_marks[$log_id]['mark'] . "<input class=\"primarychk\" type=\"radio\" name=\"mark$student_no\" id=\"mark$student_no\" value=\"" . $primary_marks[$log_id]['mark'] . "\" $primary_checked/></td>";
       } else {
         echo "<td class=\"unmarked\">" . $string['unmarked'] . "</td>";
       }
-      if (isset($secondary_marks[$log_id])) {
-        echo "<td class=\"secondary noans\"\">" . $secondary_marks[$log_id] . "<input class=\"secondarychk\" type=\"radio\" name=\"mark$student_no\" id=\"mark$student_no\" value=\"" . $secondary_marks[$log_id] . "\" $secondary_checked/>
+      if (isset($secondary_marks[$log_id]['mark'])) {
+        echo "<td class=\"secondary noans\"\">" . $secondary_marks[$log_id]['mark'] . "<input class=\"secondarychk\" type=\"radio\" name=\"mark$student_no\" id=\"mark$student_no\" value=\"" . $secondary_marks[$log_id]['mark'] . "\" $secondary_checked/>
             <input type=\"hidden\" name=\"log_id$student_no\" value=\"$log_id\" /></td>";
       } else {
         echo "<td class=\"secondary noans missing\">&nbsp;</td>";
@@ -328,9 +278,8 @@ SQL;
 </div>
 </form>
 </div>
-</body>
-</html>
 
 <?php
+  $render->render(array(), array(), 'footer.html');
 }
 ?>

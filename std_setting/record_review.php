@@ -111,22 +111,28 @@ while ($result->fetch()) {
       if ($old_type == 'rank' and $old_score_method == 'Bonus Mark') {
         $question_part++;
         $qid = 'std' . $question_no . '_' . $question_part;
+        $qstd = param::optional($qid, '', param::ALPHANUM, param::FETCH_POST);
         if ($rating == '') {
-          $rating = $_POST["$qid"];
+          $rating = $qstd;
         } else {
-          $rating .= ',' . $_POST["$qid"];
+          $rating .= ',' . $qstd;
         }
-        if ($_POST["$qid"] != '') $last_question = $question_no;
-        if ($tmp_method == 'Modified Angoff') {
-          $total_rating += $_POST["$qid"];
+        if ($qstd != '') {
+          $last_question = $question_no;
+          if ($tmp_method == 'Modified Angoff') {
+            $total_rating += $qstd;
+          }
         }
         $total_parts++;
       } elseif ($old_type == 'mrq' and $old_score_method == 'Mark per Question') {
         $qid = 'std' . $question_no . '_1';
-        $rating = $_POST["$qid"];
-        if ($_POST["$qid"] != '') $last_question = $question_no;
-        if ($tmp_method == 'Modified Angoff') {
-          $total_rating += $_POST["$qid"];
+        $qstd = param::optional($qid, '', param::ALPHANUM, param::FETCH_POST);
+        $rating = $qstd;
+        if ($qstd != '') {
+          $last_question = $question_no;
+          if ($tmp_method == 'Modified Angoff') {
+            $total_rating += $qstd;
+          }
         }
         $total_parts++;
       }
@@ -163,37 +169,42 @@ while ($result->fetch()) {
   if ($question_no > 0) {
     // Default format for $qid
     $qid = 'std' . $question_no;
+    $qstd = param::optional($qid, '', param::ALPHANUM, param::FETCH_POST);
     switch ($q_type) {
       case 'area':
       case 'enhancedcalc':
       case 'mcq':
       case 'true_false':
         if ($question_part == 1) {
-          if (isset($_POST["std$question_no"])) {
-            $rating = $_POST["std$question_no"];
-          } else {
-            $rating = '';
+          $rating = $qstd;
+          if ($qstd != '') {
+            if ($tmp_method == 'Modified Angoff') {
+              $total_rating += $qstd;
+            }
+            $last_question = $question_no;
           }
-          if ($tmp_method == 'Modified Angoff') {
-            $total_rating += $_POST["$qid"];
-          }
-          if (isset($qid) and isset($_POST["$qid"])) $last_question = $question_no;
           $total_parts++;
         }
         break;
       case 'dichotomous':
         $qid = 'std' . $question_no . '_' . $question_part;
-        if (isset($_POST["$qid"])) {
+        try {
+          // Need to ignore if not present.
+          $qstd = param::required($qid, param::ALPHANUM, param::FETCH_POST);
           if ($rating == '') {
-            $rating = $_POST["$qid"];
+            $rating = $qstd;
           } else {
-            $rating .= ',' . $_POST["$qid"];
+            $rating .= ',' . $qstd;
+          }
+        } catch (\MissingParameter $e) {
+          // Nothing to do.
+        }
+        if ($qstd != '') {
+          $last_question = $question_no;
+          if ($tmp_method == 'Modified Angoff') {
+            $total_rating += $qstd;
           }
         }
-        if ($tmp_method == 'Modified Angoff') {
-          $total_rating += $_POST["$qid"];
-        }
-        if (isset($_POST["$qid"]) and $_POST["$qid"] != '') $last_question = $question_no;
         $total_parts++;
         break;
       case 'hotspot':
@@ -201,18 +212,15 @@ while ($result->fetch()) {
         $no_parts = count($subparts);
         for ($i=1; $i<=$no_parts; $i++) {
           $qid = 'std' . $question_no . '_' . $i;
-          if ($tmp_method == 'Modified Angoff') {
-            $total_rating += $_POST["$qid"];
+          $qstd = param::optional($qid, '', param::ALPHANUM, param::FETCH_POST);
+          if ($tmp_method == 'Modified Angoff' and $qstd != '') {
+            $total_rating += $qstd;
           }
           if ($i == 1) {
-            if (isset($_POST["$qid"])) {
-              $rating = $_POST["$qid"];
-            } else {
-              $rating = '';
-            }
+            $rating = $qstd;
           } else {
-            if (isset($_POST["$qid"])) {
-              $rating .= ',' . $_POST["$qid"];
+            if ($qstd != '') {
+              $rating .= ',' . $qstd;
             } elseif ($score_method != 'Mark per Question') {
               $rating .= ',';
             }
@@ -223,33 +231,28 @@ while ($result->fetch()) {
       case 'mrq':
         if ($score_method == 'Mark per Question') {
           $qid = 'std' . $question_no . '_1';
-          $rating = $_POST[$qid];
+          $rating = param::optional($qid, '', param::ALPHANUM, param::FETCH_POST);
         } else {
           $qid = 'std' . $question_no . '_' . $question_part;
+          $qstd = param::optional($qid, '', param::ALPHANUM, param::FETCH_POST);
           if ($correct == 'y' and $score_method != 'Mark per Question') {
             if ($question_part == 1) {
-              $rating = $_POST["$qid"];
+              $rating = $qstd;
             } else {
-              $rating .= ',' . $_POST["$qid"];
+              $rating .= ',' . $qstd;
             }
-            if ($tmp_method == 'Modified Angoff') {
-              $total_rating += $_POST["$qid"];
+            if ($qstd != '') {
+              $last_question = $question_no;
+              if ($tmp_method == 'Modified Angoff') {
+                $total_rating += $qstd;
+              }
             }
-            if ($_POST["$qid"] != '') $last_question = $question_no;
             $total_parts++;
           } elseif ($correct == 'n' and $score_method != 'Mark per Question') {
             if ($question_part == 1) {
-              if (isset($_POST[$qid])) {
-                $rating = $_POST[$qid];
-              } else {
-                $rating = '';
-              }
+              $rating = $qstd;
             } else {
-              if (isset($_POST[$qid])) {
-                $rating .= ',' . $_POST[$qid];
-              } else {
-                $rating .= ',';
-              }
+              $rating .= ',' . $qstd;
             }
           }
         }
@@ -265,16 +268,22 @@ while ($result->fetch()) {
 
           for ($part_id=1; $part_id<=$scenarios; $part_id++) {
             $qid = 'std' . $question_no . '_' . $part_id;
-            if (isset($_POST["$qid"])) {
+            try {
+              // Need to ignore if not present.
+              $qstd = param::required($qid, param::ALPHANUM, param::FETCH_POST);
               if ($rating == '') {
-                $rating = $_POST["$qid"];
+                $rating = $qstd;
               } else {
-                $rating .= ',' . $_POST["$qid"];
+                $rating .= ',' . $qstd;
               }
-              if ($tmp_method == 'Modified Angoff') {
-                $total_rating += $_POST["$qid"];
+              if ($qstd != '') {
+                $last_question = $question_no;
+                if ($tmp_method == 'Modified Angoff') {
+                  $total_rating += $qstd;
+                }
               }
-              if ($_POST["$qid"] != '') $last_question = $question_no;
+            } catch (\MissingParameter $e) {
+              // Nothing to do.
             }
             $total_parts++;
           }
@@ -286,7 +295,7 @@ while ($result->fetch()) {
         if ($question_part == 1) {
           if ($score_method == 'Mark per Question') {
             $qid = 'std' . $question_no . '_1';
-            $rating = $_POST["$qid"];
+            $rating = param::optional($qid, '', param::ALPHANUM, param::FETCH_POST);
           } else {
             $correct_options = explode('|', $correct);
             $matching_scenarios = explode('|', $scenario);
@@ -308,15 +317,18 @@ while ($result->fetch()) {
               $answer_count = count($correct_answers);
               for ($i=1; $i<=$answer_count; $i++) {
                 $qid = 'std' . $question_no . '_' . $part_id;
+                $qstd = param::optional($qid, '', param::ALPHANUM, param::FETCH_POST);
                 if ($rating == '') {
-                  $rating = $_POST["$qid"];
+                  $rating = $qstd;
                 } else {
-                  $rating .= ',' . $_POST["$qid"];
+                  $rating .= ',' . $qstd;
                 }
-                if ($tmp_method == 'Modified Angoff') {
-                  $total_rating += $_POST["$qid"];
+                if ($qstd != '') {
+                  $last_question = $question_no;
+                  if ($tmp_method == 'Modified Angoff') {
+                    $total_rating += $qstd;
+                  }
                 }
-                if ($_POST["$qid"] != '') $last_question = $question_no;
                 $total_parts++;
                 $part_id++;
               }
@@ -327,18 +339,20 @@ while ($result->fetch()) {
       case 'rank':
         if ($score_method == 'Mark per Question') {
           $qid = 'std' . $question_no . '_1';
-          $rating = $_POST["$qid"];
+          $rating = param::optional($qid, '', param::ALPHANUM, param::FETCH_POST);
         } else {          
           $qid = 'std' . $question_no . '_' . $question_part;
-          $current_rating = (isset($_POST["$qid"])) ? $_POST["$qid"] : '';
+          $current_rating = param::optional($qid, '', param::ALPHANUM, param::FETCH_POST);
           if ($question_part == 1) {
             $rating = $current_rating;
           } else {
             $rating .= ',' . $current_rating;
           }
-          if ($current_rating != '') $last_question = $question_no;
-          if ($tmp_method == 'Modified Angoff') {
-            $total_rating += $current_rating;
+          if ($current_rating != '') {
+            $last_question = $question_no;
+            if ($tmp_method == 'Modified Angoff') {
+              $total_rating += $current_rating;
+            }
           }
         }
         $total_parts++;
@@ -348,13 +362,16 @@ while ($result->fetch()) {
         if ($tmp_method == 'Modified Angoff') {
           for ($mark_part = $marks_correct; $mark_part > 0; $mark_part--) {
             $qid = 'std' . $question_no . '_' . $mark_part;
+            $qstd = param::optional($qid, '', param::ALPHANUM, param::FETCH_POST);
             if ($rating == '') {
-              $rating = $_POST[$qid];
+              $rating = $qstd;
             } else {
-              $rating .= ',' . $_POST[$qid];
+              $rating .= ',' . $qstd;
             }
-            $total_rating += $_POST["$qid"];
-            if ($_POST["$qid"] != '') $last_question = $question_no;
+            if ($qstd != '') {
+              $last_question = $question_no;
+              $total_rating += $qstd;
+            }
             $total_parts++;
           }
         }
@@ -365,16 +382,22 @@ while ($result->fetch()) {
         $rating = '';
         for ($i=1; $i<=$no_answers; $i++) {
           $qid = 'std' . $question_no . '_' . $i;
-          if(isset($_POST["$qid"])) {
+          try {
+            // Need to ignore if not present.
+            $qstd = param::required($qid, param::ALPHANUM, param::FETCH_POST);
             if ($i == 1) {
-              $rating = $_POST["$qid"];
+              $rating = $qstd;
             } else {
-              $rating .= ',' . $_POST["$qid"];
+              $rating .= ',' . $qstd;
             }
-            if ($_POST["$qid"] != '') $last_question = $question_no;
-            if ($tmp_method == 'Modified Angoff') {
-              $total_rating += $_POST["$qid"];
+            if ($qstd != '') {
+              $last_question = $question_no;
+              if ($tmp_method == 'Modified Angoff') {
+                $total_rating += $qstd;
+              }
             }
+          } catch (\MissingParameter $e) {
+            // Nothing to do.
           }
           $total_parts++;
         }
@@ -385,16 +408,22 @@ while ($result->fetch()) {
         for ($label_no = 4; $label_no <= count($tmp_second_split); $label_no += 4) {
           if (substr($tmp_second_split[$label_no],0,1) != '|' and $tmp_second_split[$label_no-2] > 200) {
             $qid = 'std' . $question_no . '_' . $question_part;
-            if (isset($_POST["$qid"])) {
+            try {
+              // Need to ignore if not present.
+              $qstd = param::required($qid, param::ALPHANUM, param::FETCH_POST);
               if ($rating == '') {
-                $rating = $_POST["$qid"];
+                $rating = $qstd;
               } else {
-                $rating .= ',' . $_POST["$qid"];
+                $rating .= ',' . $qstd;
               }
-              if ($tmp_method == 'Modified Angoff') {
-                $total_rating += $_POST["$qid"];
+              if ($qstd != '') {
+                $last_question = $question_no;
+                if ($tmp_method == 'Modified Angoff') {
+                  $total_rating += $qstd;
+                }
               }
-              if ($_POST["$qid"] != '') $last_question = $question_no;
+            } catch (\MissingParameter $e) {
+              // Nothing to do.
             }
             $total_parts++;
             $question_part++;
@@ -403,10 +432,13 @@ while ($result->fetch()) {
         break;
       case 'flash':
         $rating = $_POST["std$question_no"];
-        if ($tmp_method == 'Modified Angoff') {
-          $total_rating += $_POST["$qid"];
+        $qstd = param::optional($qid, '', param::ALPHANUM, param::FETCH_POST);
+        if ($qstd != '') {
+          $last_question = $question_no;
+          if ($tmp_method == 'Modified Angoff') {
+            $total_rating += $qstd;
+          }
         }
-        if ($_POST["$qid"] != '') $last_question = $question_no;
         $total_parts++;
         break;
     }
@@ -417,22 +449,28 @@ $result->close();
 $question_part++;
 if ($old_type == 'rank' and $old_score_method == 'Bonus Mark') {
   $qid = 'std' . $question_no . '_' . $question_part;
+  $qstd = param::optional($qid, '', param::ALPHANUM, param::FETCH_POST);
   if ($rating == '') {
-    $rating = $_POST["$qid"];
+    $rating = $qstd;
   } else {
-    $rating .= ',' . $_POST["$qid"];
+    $rating .= ',' . $qstd;
   }
-  if ($_POST["$qid"] != '') $last_question = $question_no;
-  if ($tmp_method == 'Modified Angoff') {
-    $total_rating += $_POST["$qid"];
+  if ($qstd != '') {
+    $last_question = $question_no;
+    if ($tmp_method == 'Modified Angoff') {
+      $total_rating += $qstd;
+    }
   }
   $total_parts++;
 } elseif ($old_type == 'mrq' and $old_score_method == 'Mark per Question') {
   $qid = 'std' . $question_no . '_1';
-  $rating = $_POST["$qid"];
-  if ($_POST["$qid"] != '') $last_question = $question_no;
-  if ($tmp_method == 'Modified Angoff') {
-    $total_rating += $_POST["$qid"];
+  $qstd = param::optional($qid, '', param::ALPHANUM, param::FETCH_POST);
+  $rating = $qstd;
+  if ($qstd != '') {
+    $last_question = $question_no;
+    if ($tmp_method == 'Modified Angoff') {
+      $total_rating += $qstd;
+    }
   }
 }
 

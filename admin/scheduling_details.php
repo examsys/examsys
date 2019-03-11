@@ -24,7 +24,6 @@
 
 require '../include/sysadmin_auth.inc';
 require_once '../include/errors.php';
-require_once '../include/demo_replace.inc';
 
 $paperid = check_var('paperID', 'GET', true, false, true);
 
@@ -155,7 +154,7 @@ $results->close();
   echo "<tr><td class=\"f1\">" . $string['papername'] . "</td><td>$paper_title</td></tr>\n";
   $display_name = "$title $first_names $surname";
   if ($userObject->has_role('Demo')) {
-    $display_name = demo_replace_name(0);
+    $display_name = \demo::demo_replace_name(0);
     $email = 'joe.bloggs@uni.ac.uk';
   }
   echo "<tr><td class=\"f1\">" . $string['paperowner'] . "</td><td>$display_name (<a href=\"mailto:$email\">$email</a>)</td></tr>\n";  

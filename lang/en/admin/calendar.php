@@ -39,4 +39,4 @@ $string['labs'] = 'Labs';
 $string['metadata'] = 'Metadata';
 $string['extraevents'] = '<strong>SysAdmin:</strong> Double-click on the calender to add extra events.';
 $string['eventcont'] = '(cont.)';
-?>
+$string['mins'] = 'mins';

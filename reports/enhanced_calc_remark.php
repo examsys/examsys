@@ -123,7 +123,7 @@ $q_marks = array_flip($marks_arr);
 
   <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
   <script type="text/javascript" src="../js/jquery-ui-1.10.4.min.js"></script>
-  <script type="text/javascript" src="../js/jquery.enhancedcalc_override.js"></script>
+  <script type="text/javascript" src="../js/jquery.enhancedcalc_override.min.js"></script>
   <script>
     langStrings = {'saveerror': '<?php echo $string['saveerror'] ?>', 'nomarkmsg' : '<?php echo $string['nomarkmsg'] ?>'};
   </script>
@@ -230,7 +230,7 @@ foreach ($log_answers2 as $innerans) {
   ?>
     <td><input type="textbox" id="reason_<?php echo $answer['id'] ?>" name="reason_<?php echo $answer['id'] ?>" size="30" maxlength="255" value="<?php echo $reason ?>" /></td>
     <td>
-      <button id="save_<?php echo $answer['id'] ?>" type="button" data-logid="<?php echo $answer['id'] ?>" class="save-row"><?php echo $string['save'] ?></button>
+      <input type="hidden" id="save_<?php echo $answer['id'] ?>" data-logid="<?php echo $answer['id'] ?>" class="save-row" />
       <input type="hidden" id="log_type_<?php echo $answer['id'] ?>" name="log_type_<?php echo $answer['id'] ?>" value="<?php echo $answer['paper_type'] ?>" />
       <input type="hidden" id="user_id_<?php echo $answer['id'] ?>" name="user_id_<?php echo $answer['id'] ?>" value="<?php echo $answer['user_id'] ?>" />
     </td>
@@ -242,7 +242,10 @@ foreach ($log_answers2 as $innerans) {
     </tbody>
   </table>
 </div>
-<div style="text-align:center"><input type="button" name="cancel" value="<?php echo $string['done'] ?>" style="width:100px" onclick="window.close();" /></div>
+<div style="text-align:center">
+  <button id="save_all" type="button" class="save-all"><?php echo $string['save'] ?></button>
+  <button id="" onclick="window.close();"><?php echo $string['done'] ?></button>
+</div>
 
   <input type="hidden" id="q_id" name="q_id" value="<?php echo $q_id ?>" />
   <input type="hidden" id="paper_id" name="paper_id" value="<?php echo $paperID ?>" />

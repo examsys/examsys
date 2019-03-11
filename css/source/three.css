@@ -1,0 +1,27 @@
+.threebutton {
+    background-color: silver;
+    border-radius: 5px;
+    border: none;
+    color: black;
+    padding: 5px 15px;
+    text-align: center;
+    text-decoration: none;
+    margin: 2px 2px;
+}
+.threebutton:disabled {
+    color: grey;
+    cursor: not-allowed;
+}
+.threeblock {
+    border: thin solid black;
+    cursor:grab;
+    margin: auto;
+}
+.threeloading {
+    border: thin solid black;
+    margin: auto;
+    background-image: url("/artwork/large_spin.gif");
+    background-repeat: no-repeat;
+    background-position: center;
+    display: none;
+}

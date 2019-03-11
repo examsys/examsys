@@ -1,0 +1,65 @@
+{#This file is part of Rogō
+
+ Rogō is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ Rogō is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+#}
+
+{#
+This template is for the rank question type display.
+
+author Dr Joseph Baxter <joseph.baxter@nottingham.ac.uk>
+copyright 2018 onwards The University of Nottingham
+
+Required variables:
+
+data.questionno - question number
+data.options - options
+options.optionno - option number
+options.optiontext - option text
+options.unans - flag to indicate if option has previously been answered
+options.inact - flag to indicate if option has previously been set as dismissed
+options.selected - list of ranks
+data.dismiss - record of which options have been dismissed by the user
+
+Required localised text -
+lang.na - not applicable
+#}
+<blockquote>
+    <table cellpadding="2" cellspacing="0" border="0">
+{% for i,p in data.options %}
+        <tr {% if p.unans %} class="unans" {% endif %}>
+            <td class="option">
+                <select name="{{p.optionno}}" id ="{{p.optionno}}" class="rankselect q{{data.questionno}}">
+                    <option value="u"></option>
+    {# Display each rank option with computed ordinal #}
+    {% for idx,selected in p.selected %}
+                    <option value="{{idx}}" {% if selected.value %} selected {% endif %}>
+                            {% if selected.ordinal == 0 %}
+                                {{lang.na}} 
+                            {% else %}
+                                {{selected.ordinal}}
+                            {% endif %}
+                    </option>
+    {% endfor %}
+                </select>
+            </td>
+            <td>
+                <span {% if p.inact %} class="inact" {% else %} class="act" {% endif %} id="{{p.optionno}}">{{p.optiontext}}</span>
+            </td>
+        </tr>
+{% endfor %}
+    </table>
+    <div>
+        <input type="hidden" name="dismiss{{data.questionno}}" id="dismiss{{data.questionno}}" value="{{data.dismiss}}" />
+    </div>
+</blockquote>

@@ -20,8 +20,10 @@ $string['enterpw'] = 'Please enter the password for this paper';
 $string['pwcontinue'] = 'Continue';
 $string['denied_location'] = 'Access to this paper is not permitted from your current location.';
 $string['error_time'] = 'The paper you are attempting to access is only available between %s and %s';
-$string['notregistered'] = '%s %s (%s) is not registered on <strong>%s</strong> in <strong>%s</strong>.';
+$string['nomodules'] = '%s %s (%s) is not registered to take this paper.';
+$string['notregistered'] = '%s %s (%s) is not registered on following modules: %s.';
 $string['error_module'] = 'This paper is not on any module.';
-$string['error_metadata'] = 'User metadata does not match <strong>%s: %s</strong>';
+$string['error_metadata'] = '%s %s (%s) metadata does not match <strong>%s: %s</strong>';
 $string['alreadycompleted'] = 'Assessment has already been completed at <strong>%s</strong>.';
-?>
+$string['ipmismatchtitle'] = 'Please logout of this device';
+$string['ipmismatchblurb'] = '%s %s (%s) you appear to be logged into this exam on %s. This device is blocked from proceeding in this exam.<br/>Notify the invigilator if you are unsure what actions to take.';

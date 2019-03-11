@@ -1,0 +1,121 @@
+{#This file is part of Rogō
+
+ Rogō is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ Rogō is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+#}
+
+{#
+This template is for the script concordance test type display.
+
+author Dr Joseph Baxter <joseph.baxter@nottingham.ac.uk>
+copyright 2018 onwards The University of Nottingham
+
+Required variables:
+
+data.assignednumber - question number
+data.displaycalc - flag to indicate if there is calculator to display
+data.displaynotes - flag to indicate if there are notes to display
+data.notes - notes
+data.scenario - scenario
+data.displaymedia - flag to indicate if there is media to display
+data.scttitle - title
+data.scthyp - hypothesis
+data.sctinfo - information
+data.scttitlelower - title in lowercase
+data.unanswered - flag to indicate if the question has been answered previously
+data.options - options
+options.position - option part id
+options.optiontext - option text
+data.dismiss - record of which options have been dismissed by the user
+
+Required localised text -
+lang.clinicalvignette - vignette
+lang.calculator - calculator
+lang.note - note
+lang.newinformation - new information
+
+#}
+{% if data.displayscenario %}
+<tr>
+    <td class="question_no">
+        {{data.assignednumber}}.&nbsp;
+    </td>
+    <td style="background-color:#E4EEFC; border-bottom:1px solid #B5C4DF; font-weight:bold; padding:2px; color:#000040">
+        {{lang.clinicalvignette}}
+    </td>
+</tr>
+<tr>
+    <td style="vertical-align:top; text-align:right">
+    {% if data.displaycalc %}
+        <br />
+        <img class="sciCalculator" src="{{path}}/artwork/calc.png" alt="{{lang.calculator}}" />
+    {% endif %}
+    </td>
+    <td>
+        {% if data.displaynotes %}
+        <p class="note">
+         <img src="{{path}}/artwork/notes_icon.gif" width="16" height="16" alt="{{lang.note}}" />&nbsp;<strong>{{lang.note}}:</strong>&nbsp;{{data.notes}}
+        </p>
+        {% endif %}
+    {{data.scenario|raw}}<br />
+    <br />
+{% endif %}
+{% if data.displaymedia %}
+    <p align="center">
+        {% include 'paper/media.html' %}
+    </p>
+{% endif %}
+<table cellpadding="2" cellspacing="0" border="0" style="width:100%">
+    <tr>
+        <td style="background-color:#E4EEFC; border-bottom:1px solid #B5C4DF; font-weight:bold">
+            {{data.scttitle}}
+        </td>
+        <td style="width:2%">&nbsp;</td>
+        <td style="background-color:#E4EEFC; border-bottom:1px solid #B5C4DF; font-weight:bold">
+            {{lang.newinformation}}
+        </td>
+    </tr>
+    <tr>
+        <td style="vertical-align:top">
+            {{data.scthyp|raw}}
+        </td>
+        <td style="width:2%">&nbsp;</td>
+        <td style="vertical-align:top">
+            {{data.sctinfo|raw}}
+        </td>
+    </tr>
+</table>
+<p>
+    <strong>
+        {{data.scttitlelower}}
+    </strong>
+</p>
+<blockquote {% if data.unanswered %} class="unans" {% endif %}>
+    <table cellpadding="2" cellspacing="0" border="0">
+{% for i,p in data.options %}
+        <tr>
+            <td>
+                <input type="radio" id="{{p.optionno}}" name="q{{data.questionno}}" value="{{p.position}}" {% if p.selected %} checked="checked" {% endif %} />
+            </td>
+            <td>
+    {% if p.optiontextdisplay %}
+                <span {% if p.inact %} class="inact" {% else %} class="act" {% endif %} id="{{data.questionno}}_{{i}}">{{p.optiontext}}</span>
+            </td>
+        </tr>
+    {% endif %}
+{% endfor %}
+    </table>
+    <div>
+        <input type="hidden" name="dismiss{{data.questionno}}" id="dismiss{{data.questionno}}" value="{{data.dismiss}}" />
+    </div>
+</blockquote>

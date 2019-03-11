@@ -20,6 +20,12 @@ schools:
     facultyID: 1
     externalid: "qwerty"
     externalsys: "test rogo api"
+  -
+    id: 2
+    school: "Test school 2"
+    facultyID: 1
+    externalid: "berty"
+    externalsys: "test rogo api"
 faculty:
   -
     id: 1

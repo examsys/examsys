@@ -231,7 +231,7 @@ class modulemanagement extends \api\abstractmanagement {
                     $params['externalid'] = null;
                 }
                 $id = \module_utils::add_modules($params['modulecode'], $params['name'], 1, $schoolid, '', $params['sms'],
-                    '', false, false, false, false, '', '', $this->db, false, '', '', '', 0, '07/01', $params['externalid']);
+                    '', false, false, false, false, 0, '', $this->db, false, '', '', '', 0, '07/01', $params['externalid']);
                 if ($id) {
                     $data = array('statuscode' => $this->statuscodes['OK'], 'status' => 'OK', 'id' => $id, 'externalid' => $params['externalid']);
                 } else {
@@ -323,7 +323,11 @@ class modulemanagement extends \api\abstractmanagement {
                 }
             }
         }
-        
+        // Update external id if new one provided.
+        if (!empty($params['newexternalid'])) {
+            $details['externalid'] = $params['newexternalid'];
+            $change = true;
+        }
         if ($modcodeinuse) {
             $data = array('statuscode' => $this->statuscodes['MODULE_ALREADY_EXISTS'], 'status' => $strings['module_already_exists'], 'id' => $modid, 'externalid' => null);
         } else {
@@ -340,10 +344,6 @@ class modulemanagement extends \api\abstractmanagement {
                 // Get student management system if not provided.
                 if ((empty($params['sms']))) {
                     $params['sms'] = $details['sms'];
-                }
-                // Get externalid if not provided.
-                if ((!isset($params['externalid']) or $params['externalid'] === '')) {
-                    $params['externalid'] = $details['externalid'];
                 }
                 // Update Module.
                 if ($change) {

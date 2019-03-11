@@ -44,7 +44,8 @@ $tutorial = check_var('tutorial', 'GET', true, false, true);
 
    if (!$userObject->has_role('SysAdmin')) {   // Don't record the homepage or SysAdmin activities.
     $result = $mysqli->prepare("INSERT INTO help_tutorial_log VALUES (NULL, ?, ?, NOW(), ?)");
-    $result->bind_param('sis', 'staff', $userObject->get_user_ID(), $tutorial);
+    $result->bind_param('sis', $staff, $userObject->get_user_ID(), $tutorial);
+    $staff = 'staff';
     $result->execute();
     $result->close();
   }

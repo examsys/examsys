@@ -24,6 +24,11 @@ config:
     setting: "support_contact_email"
     value: "[\"test@example.com\",\"joseph.baxter@example.com\"]"
     type: "email"
+  -
+    component: "core"
+    setting: "cfg_summative_mgmt"
+    value: 0
+    type: "boolean"
 academic_year:
   -
     calendar_year: 2015
@@ -43,6 +48,19 @@ properties:
     calendar_year: 2015
     paper_type: 2
     password: "EC1VbYJtOq8NsidA+q60rDEzjZZ8eHmHm6dEtfVBpeQ="
+  -
+    property_id: 1
+    calendar_year: 2015
+    paper_type: 2
+  -
+    property_id: 2
+    calendar_year: 2015
+    paper_type: 1
+    exam_duration: 60
+  -
+    property_id: 3
+    calendar_year: 2015
+    paper_type: 0
 users:
   -
     id: 1
@@ -58,16 +76,23 @@ users:
     username: "student"
     roles: "Student"
     grade: "TEST"
+    initials: "a"
+    title: "Mx"
+    gender: "other"
+    first_names: "test"
 track_changes:
 log_metadata:
   -
     id: 1
     userID: 999
     paperID: 45
+    started: "2015-01-01 09:00:00"
+    year: 1
   -
     id: 2
     userID: 1
     paperID: 45
+    started: "2015-02-01 10:00:00"
 log2:
   -
     id: 1
@@ -75,30 +100,40 @@ log2:
     errorstate: 0
     metadataID: 1
     mark: null
+    screen: 1
+    user_answer: 1
   -
     id: 2
     q_id: 2
     errorstate: 0
     metadataID: 1
     mark: null
+    screen: 2
+    user_answer: 2
   -
     id: 3
     q_id: 3
     errorstate: 0
     metadataID: 1
     mark: 1
+    screen: 3
+    user_answer: 5
   -
     id: 4
     q_id: 4
     errorstate: 0
     metadataID: 1
     mark: 1
+    screen: 4
+    user_answer: 7
   -
     id: 5
     q_id: 5
     errorstate: 0
     metadataID: 1
     mark: null
+    screen: 5
+    user_answer: 10
   -
     id: 6
     q_id: 1
@@ -154,6 +189,15 @@ questions:
     q_id: 2
     q_type: "enhancedcalc"
     status: 1
+    theme: 'test theme'
+    scenario: 'test scenario'
+    leadin: 'test leadin'
+    notes: 'test notes'
+    q_media_width: 0
+    q_media_height: 0
+    q_option_order: 'display order'
+    score_method: 'Allow partial Marks'
+    settings: '{"strictdisplay":true,"strictzeros":false,"dp":"0","tolerance_full":"0","fulltoltyp":"#","tolerance_partial":"0","parttoltyp":"#","marks_partial":0,"marks_incorrect":0,"marks_correct":1,"marks_unit":0,"show_units":true,"answers":[{"formula":"$A*$B","units":"cm"}],"vars":{"$A":{"min":"2","max":"10","inc":"1","dec":"0"},"$B":{"min":"5","max":"10","inc":"1","dec":"0"}}}'
   -
     q_id: 3
     q_type: "enhancedcalc"
@@ -166,6 +210,52 @@ questions:
     q_id: 5
     q_type: "area"
     status: 1
+  -
+    q_id: 6
+    q_type: "mcq"
+    status: 1
+    theme: 'test theme 2'
+    scenario: 'test scenario 2'
+    leadin: 'test leadin 2'
+    notes: 'test notes 2'
+    q_media: '1517406311.png'
+    q_media_width: 480
+    q_media_height: 105
+    q_option_order: 'random'
+    display_method: 'vertical'
+    score_method: 'Mark per Option'
+    settings: '[]'
+options:
+  -
+    o_id: 6
+    correct: 1
+    option_text: 'true'
+    o_media: '1517409282.jpg'
+    o_media_width: 951
+    o_media_height: 121
+    marks_correct: 2
+    marks_incorrect: -2
+    marks_partial: 0
+  -
+    o_id: 6
+    correct: 1
+    option_text: 'false'
+    o_media: ''
+    o_media_width: 0
+    o_media_height: 0
+    marks_correct: 2
+    marks_incorrect: -2
+    marks_partial: 0
+  -
+    o_id: 6
+    correct: 1
+    option_text: 'maybe'
+    o_media: ''
+    o_media_width: 0
+    o_media_height: 0
+    marks_correct: 2
+    marks_incorrect: -2
+    marks_partial: 0
 papers:
   -
     p_id: 1
@@ -192,3 +282,45 @@ papers:
     paper: 45
     question: 5
     screen: 5
+  -
+    p_id: 6
+    paper: 1
+    question: 2
+    screen: 1
+    display_pos: 1
+  -
+    p_id: 7
+    paper: 1
+    question: 6
+    screen: 1
+    display_pos: 2
+modules:
+  -
+    id: 1
+    moduleid: "TEST"
+    timed_exams: 1
+    map_level: 0
+    academic_year_start: "07/01"
+  -
+    id: 2
+    moduleid: "TEST2"
+    timed_exams: 0
+    map_level: 0
+    academic_year_start: "07/01"
+properties_modules:
+  -
+    property_id: 1
+    idMod: 2
+  -
+    property_id: 45
+    idMod: 1
+modules_student:
+  -
+    id: 1
+    userID: 999
+    idMod: 1
+    calendar_year: 2015
+sid:
+  -
+    student_id: "1234567890"
+    userID: 999

@@ -1,0 +1,11 @@
+.dialog_header {
+    background-color: white;
+    text-align: left;
+    font-size: 160%;
+    font-weight: bold;
+    color: #295AAD;
+}
+
+.dialog_body {
+    background-color: #EEF4FF;
+}

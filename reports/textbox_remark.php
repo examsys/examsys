@@ -141,7 +141,7 @@ if (isset($_POST['submit'])) {
 	$marks_array = array();
   if ($paper_type == '0') {
 		$sql = <<< SQL
-			SELECT SUM(adjmark) AS adjmark_total, userID, username
+			SELECT SUM(adjmark) AS adjmark_total, log_metadata.userID, users.username
 				FROM log0, log_metadata, questions, users
 				WHERE log0.metadataID = log_metadata.id
 				AND paperID = ?
@@ -151,8 +151,9 @@ if (isset($_POST['submit'])) {
 				AND (roles LIKE '%Student%' OR roles = 'Graduate')
 				AND DATE_ADD(started, INTERVAL $time_int MINUTE) >= ?
 				AND started <= ?
+			GROUP BY log_metadata.userID, users.username
 			UNION ALL
-			SELECT SUM(adjmark) AS adjmark_total, userID, username
+			SELECT SUM(adjmark) AS adjmark_total, log_metadata.userID, users.username
 				FROM log1, log_metadata, questions, users
 				WHERE log1.metadataID = log_metadata.id
 				AND paperID = ?
@@ -162,13 +163,13 @@ if (isset($_POST['submit'])) {
 				AND (roles LIKE '%Student%' OR roles = 'Graduate')
 				AND DATE_ADD(started, INTERVAL $time_int MINUTE) >= ?
 				AND started <= ?
-			GROUP BY metadataID
+			GROUP BY log_metadata.userID, users.username
 SQL;
 		$result = $mysqli->prepare($sql);
 		$result->bind_param('ississ', $paperID, $startdate, $enddate, $paperID, $startdate, $enddate);
 	} else {
 		$sql = <<< SQL
-			SELECT SUM(adjmark) AS adjmark_total, userID, username
+			SELECT SUM(adjmark) AS adjmark_total, log_metadata.userID, users.username
 				FROM log$paper_type, log_metadata, questions, users
 				WHERE log$paper_type.metadataID = log_metadata.id
 				AND paperID = ?
@@ -178,7 +179,7 @@ SQL;
 				AND (roles LIKE '%Student%' OR roles = 'Graduate')
 				AND DATE_ADD(started, INTERVAL $time_int MINUTE) >= ?
 				AND started <= ?
-				GROUP BY metadataID
+				GROUP BY log_metadata.userID, users.username
 SQL;
 		$result = $mysqli->prepare($sql);
 		$result->bind_param('iss', $paperID, $startdate, $enddate);
@@ -196,7 +197,11 @@ SQL;
 	$result->close();
 
 	// Add in total marks for the textbox questions (primary mark).
-	$result = $mysqli->prepare("SELECT SUM(mark) AS sum_mark, users.username, users.id, student_id FROM textbox_marking, users LEFT JOIN sid ON users.id = sid.userID WHERE users.id = textbox_marking.student_userID AND paperID = ? AND phase = 1 GROUP BY student_userID ORDER BY student_id");
+	$result = $mysqli->prepare("SELECT SUM(mark) AS sum_mark, users.username, users.id, sid.student_id
+		FROM textbox_marking, users LEFT JOIN sid ON users.id = sid.userID
+		WHERE users.id = textbox_marking.student_userID AND paperID = ? AND phase = 1
+		GROUP BY textbox_marking.student_userID, sid.student_id
+		ORDER BY sid.student_id");
   $result->bind_param('i', $paperID);
   $result->execute();
   $result->bind_result($sum_mark, $username, $userID, $student_id);

@@ -25,7 +25,7 @@
  * @copyright Copyright (c) 2014 The University of Nottingham
  * @package
  */
-class lti_default_integration_extended  extends lti_integration {
+class lti_default_integration_extended extends lti_integration {
 
   /**
    * Check last time logged in and decide if re-authentication should be done
@@ -46,9 +46,14 @@ class lti_default_integration_extended  extends lti_integration {
    */
   public function module_code_translate($mysqli, $c_internal_id, $course_title = '') {
 
-    // this function translates the incoming course code and course title it returns an array (containing possibly multiple records) of an array containing string if Manual or SMS for sms ones, the module code, a campus code (text) , school as a string (gets lookedup against rogo to get id later, a 1 for self reg enable [0 for disable] and the course title
-
-    return array(array('Manual', $c_internal_id, 'CampusTODO', 'SchoolTODO', 0, "MISSING:$course_title"));
+    // This function translates the incoming course code and course title it returns an array (containing possibly multiple records)
+    // of an array containing string if Manual or SMS for sms ones,
+    // the module code,
+    // a campus code (text) ,
+    // school as a string (gets lookedup against rogo to get id later,
+    // a 1 for self reg enable [0 for disable]
+    // and the course title.
+    return array(array('Manual', $c_internal_id, 'CampusTODO', 'UNKNOWN School', 0, "MISSING:$course_title"));
   }
 
   /**
@@ -60,4 +65,12 @@ class lti_default_integration_extended  extends lti_integration {
     return '';
   }
 
+  /**
+   * Translate source id in rogo external id.
+   * @param string $sourceid source id from VLE
+   * @return mixed module external id or null
+   */
+  public function module_id_translate($sourceid) {
+    return null;
+  }
 }

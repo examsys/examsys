@@ -26,7 +26,6 @@
 
 require '../include/staff_auth.inc';
 require_once '../include/errors.php';
-require_once '../include/demo_replace.inc';
 require_once '../include/calculate_marks.inc';
 
 $paperID  = check_var('paperID', 'GET', true, false, true);
@@ -112,8 +111,10 @@ li {padding-bottom:10px}
 </style>
 
 <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
-<script type="text/javascript" src="../js/jquery-migrate-1.2.1.min.js"></script>
-<script type="text/javascript" src="../tools/mee/mee/js/mee_src.js"></script>
+<?php
+  $texteditorplugin = \plugins\plugins_texteditor::get_editor();
+  $texteditorplugin->display_header();
+?>
 
 </head>
 <body>
@@ -126,9 +127,9 @@ li {padding-bottom:10px}
 
 <div style="position:absolute; top:0; left:0; width:100%">
 <?php
-$demo = is_demo($userObject);
+$demo = \demo::is_demo($userObject);
 $student_details = UserUtils::get_user_details($userID, $mysqli);
-$name = demo_replace($student_details['title'], $demo) . ' ' . demo_replace($student_details['surname'], $demo) . ', ' . demo_replace($student_details['first_names'], $demo) . ' (' . demo_replace($student_details['student_id'], $demo) . ')';
+$name = \demo::demo_replace($student_details['title'], $demo) . ' ' . \demo::demo_replace($student_details['surname'], $demo) . ', ' . \demo::demo_replace($student_details['first_names'], $demo) . ' (' . \demo::demo_replace($student_details['student_id'], $demo) . ')';
 
 echo "<table class=\"header\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"font-size:90%\">\n";
 echo "<tr><th><div style=\"padding-left:10px; font-size:200%; font-weight:bold\">" . $propertyObj->get_paper_title() . "</div><div style=\"padding-left:10px\">$name</div></th></tr>\n";

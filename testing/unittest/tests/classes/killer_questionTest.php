@@ -15,6 +15,7 @@
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
 use testing\unittest\unittestdatabase;
+use PHPUnit\DbUnit\DataSet\YamlDataSet;
 
 /**
  * Test Killer Question class
@@ -31,7 +32,7 @@ class Killer_Questiontest extends unittestdatabase {
    * @return dataset
    */
   public function getDataSet() {
-    return new PHPUnit_Extensions_Database_DataSet_YamlDataSet($this->get_base_fixture_directory() . "classes" . DIRECTORY_SEPARATOR . "killer_question.yml");
+    return new YamlDataSet($this->get_base_fixture_directory() . "classes" . DIRECTORY_SEPARATOR . "killer_question.yml");
   }
   /**
    * Get expected data set from yml
@@ -39,7 +40,7 @@ class Killer_Questiontest extends unittestdatabase {
    * @return dataset
    */
   public function get_expected_data_set($name) {
-    return new PHPUnit_Extensions_Database_DataSet_YamlDataSet($this->get_base_fixture_directory() . "classes" . DIRECTORY_SEPARATOR . $name . ".yml");
+    return new YamlDataSet($this->get_base_fixture_directory() . "classes" . DIRECTORY_SEPARATOR . $name . ".yml");
   }
   /**
    * Test checks a questions a killer

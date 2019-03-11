@@ -125,7 +125,7 @@ if (isset($_POST['day']) and $_POST['day'] != '') {
   if (!isset($_POST['submit'])) {
     echo "<div><img src=\"../artwork/toprightmenu.gif\" id=\"toprightmenu_icon\" /></div>";
     echo "<div class=\"breadcrumb\"><a href=\"../index.php\">" . $string['home'] . "</a>";
-    if (isset($_REQUEST['module'])) {
+    if (isset($_REQUEST['module'])  and $_REQUEST['module'] != '') {
       echo '<img src="../artwork/breadcrumb_arrow.png" class="breadcrumb_arrow" alt="-" /><a href="../module/index.php?module=' . $_REQUEST['module'] . '">' . module_utils::get_moduleid_from_id($_REQUEST['module'], $mysqli) . '</a>';
     }
     echo "</div><div class=\"page_title\">" . $string['papersearch'] . "</div>";
@@ -142,7 +142,7 @@ if (isset($_POST['day']) and $_POST['day'] != '') {
     }
 	  if ($type_problem) {
       echo "<div><img src=\"../artwork/toprightmenu.gif\" id=\"toprightmenu_icon\" />";
-      if (isset($_REQUEST['module'])) {
+      if (isset($_REQUEST['module']) and $_REQUEST['module'] != '') {
         echo '<img src="../artwork/breadcrumb_arrow.png" class="breadcrumb_arrow" alt="-" /><a href="../module/index.php?module=' . $_REQUEST['module'] . '">' . module_utils::get_moduleid_from_id($_REQUEST['module'], $mysqli) . '</a>';
       }
       echo "</div><div class=\"breadcrumb\"><a href=\"../index.php\">" . $string['home'] . "</a></div>";
@@ -153,14 +153,14 @@ if (isset($_POST['day']) and $_POST['day'] != '') {
 			echo "</body>\n</html>\n";
 			exit;
 		}
-    $sql = "SELECT properties.property_id, title, initials, surname, GROUP_CONCAT(DISTINCT moduleID SEPARATOR ', '), paper_ownerID, paper_type, MAX(screen) AS screens, paper_title, DATE_FORMAT(start_date,'%Y%m%d%H%i%s') AS start_date, DATE_FORMAT(start_date,'{$configObject->get('cfg_long_date_time')}') AS display_start_date, DATE_FORMAT(end_date,'{$configObject->get('cfg_long_date_time')}') AS display_end_date, retired
+    $sql = "SELECT properties.property_id, users.title, users.initials, users.surname, GROUP_CONCAT(DISTINCT moduleID SEPARATOR ', '), paper_type, MAX(screen) AS screens, paper_title, DATE_FORMAT(start_date,'%Y%m%d%H%i%s') AS start_date, DATE_FORMAT(start_date,'{$configObject->get('cfg_long_date_time')}') AS display_start_date, DATE_FORMAT(end_date,'{$configObject->get('cfg_long_date_time')}') AS display_end_date, retired
 						FROM (properties, users, properties_modules, modules)
 						LEFT JOIN papers ON properties.property_id = papers.paper
 						WHERE properties.property_id = properties_modules.property_id
 						AND properties_modules.idMod = modules.id
 						AND properties.paper_ownerID = users.id $paper $owner $lab $moduleid $date $type
 						AND deleted IS NULL
-						GROUP BY paper_title";
+						GROUP BY properties.paper_type, properties.paper_title, properties.property_id, properties.retired, users.surname, users.title, users.initials";
 		$results = $mysqli->prepare($sql);
     if (count($variables) > 0) {
 	    array_unshift($variables, $params);
@@ -172,11 +172,11 @@ if (isset($_POST['day']) and $_POST['day'] != '') {
     }
     $results->execute();
     $results->store_result();
-    $results->bind_result($property_id, $title, $initials, $surname, $moduleID, $paper_ownerID, $paper_type, $screens, $paper_title, $start_date, $display_start_date, $display_end_date, $retired);
+    $results->bind_result($property_id, $title, $initials, $surname, $moduleID, $paper_type, $screens, $paper_title, $start_date, $display_start_date, $display_end_date, $retired);
 
     echo "<div><img src=\"../artwork/toprightmenu.gif\" id=\"toprightmenu_icon\" /></div>";
     echo "<div class=\"breadcrumb\"><a href=\"../index.php\">" . $string['home'] . "</a>";
-    if (isset($_REQUEST['module'])) {
+    if (isset($_REQUEST['module']) and $_REQUEST['module'] != '') {
       echo '<img src="../artwork/breadcrumb_arrow.png" class="breadcrumb_arrow" alt="-" /><a href="../module/index.php?module=' . $_REQUEST['module'] . '">' . module_utils::get_moduleid_from_id($_REQUEST['module'], $mysqli) . '</a>';
     }
     echo "</div><div class=\"page_title\">" . $string['papersearch'] . " (" . number_format($results->num_rows) . "):&nbsp;<span style=\"font-weight: normal\">'" . $_POST['searchterm'] . "'</span></div>";

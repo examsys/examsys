@@ -1,0 +1,29 @@
+<br /><br /><br />
+<div align="center">
+    <table border="0" cellpadding="4" cellspacing="0" style="border:1px solid #95AEC8; font-size:120%; width:600px">
+        <tr>
+            <td valign="middle" align="left" style="width:56px; background-color:white">
+                <img src="{{path}}/artwork/upload_48.png" width="48" height="48" alt="Icon" />
+                <span style="font-size:140%; font-weight:bold" class="dialog_header">{{lang.bulkmoduleimport}}</span>
+            </td>
+        </tr>
+        <tr>
+            <td align="left" class="dialog_body">
+                <ul>
+                    {% for item in data.exists %}
+                    <li class="existing">{{item}} - {{lang.alreadyexists}}</li>
+                    {% endfor %}
+                    {% for item in data.added %}
+                    <li class="added">{{item}} - {{lang.added}}</li>
+                    {% endfor %}
+                    {% for item in data.failed %}
+                    <li class="fail">{{item}} - {{lang.failed}}</li>
+                    {% endfor %}
+                </ul>
+                <div style="text-align:center">
+                    <input type="button" name="ok" value="{{lang.ok}}" onclick="{{data.onclick}}" class="ok" />
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>

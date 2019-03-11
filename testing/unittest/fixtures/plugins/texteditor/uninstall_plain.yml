@@ -1,0 +1,11 @@
+config:
+  -
+    component: "plugin_plain_texteditor"
+    setting: "installed"
+    value: 0
+    type: "boolean"
+  -
+    component: "plugin_plain_texteditor"
+    setting: "supports_mathjax"
+    value: 1
+    type: "boolean"

@@ -117,7 +117,7 @@ if (isset($_POST['submit']) and $unique_moduleid == true) {
     $smsplugin_name = plugin_manager::get_plugin_type_enabled('plugin_sms');
     foreach($smsplugin_name as $name) {
       $smspluginns = 'plugins\SMS\\' . $name. '\\' . $name;
-      $smsplugin = new $smspluginns($mysqli, $userObj->get_user_ID());
+      $smsplugin = new $smspluginns($userObj->get_user_ID());
       if ($sms_api === $smsplugin->get_name()) {
         if ($smsplugin->supports_module_import() !== false) {
           $smsplugin->update_module_enrolments($externalid, $session);

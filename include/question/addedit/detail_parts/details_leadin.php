@@ -27,11 +27,3 @@ $field_editor = (isset($field_leadin)) ? $field_leadin : 'leadin';
 $label_editor = (isset($label_leadin)) ? $label_leadin : '<label for="' . $field_editor . '">' . $string['leadin'] . '</label><br /><span class="note">' . $string['leadinmsg'] . '</span>';
 $value_editor = $question->get_leadin();
 require 'details_editor.php';
-if (in_array($cfg_editor_name, $configObject->get_setting('core', 'paper_editor_supports_mathjax')) and $configObject->get_setting('core', 'paper_mathjax')) {
-  echo "<tr>";
-  echo "<th>" . $string['previewmathjax'] . "</th>";
-  echo "<td><div id=\"MathPreviewleadin\" style=\"border:1px solid; padding: 3px; width:50%; margin-top:5px\"></div><div id=\"MathBufferleadin\" style=\"border:1px solid; padding: 3px; width:50%; margin-top:5px; visibility:hidden; position:absolute; top:0; left: 0\"></div></td>";
-  echo "<script>Previewleadin.Init();</script>";
-  echo "</tr>";
-}
-?>

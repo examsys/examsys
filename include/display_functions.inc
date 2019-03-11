@@ -191,33 +191,15 @@ function get_unanswered_screens($screen_no, $screen_data, $user_answers, $questi
   return $incomplete_screens;
 }
 
-/**
-* Replace error string from reference to blank user answer to previous question with presentation text in a way that is safe for strings containing equations
- * @param  string $haystack    The string within which the replacement will be made
- * @param  string $needle      String to search for
- * @param  string $replacement Replacement string
- * @return string              The original string with occurrences of $needle replaced with $replacement with HTML for highlighting when not part of an equation
- */
-function calc_replace_error_safe($haystack, $needle, $replacement) {
-  $matches = array();
-  preg_match_all('/<(div|span) *class="mee">.*<\/\1>/U', $haystack, $matches);
-
-  if (is_array($matches) and count($matches) > 0) {
-    $match_count = 1;
-    foreach ($matches[0] as $match) {
-      $haystack = str_replace($match, str_replace($needle, $replacement, $match), $haystack);
-      $match_count++;
-    }
-  }
-
-  return str_replace($needle, '<span style="color:red; font-weight:bold">' . $replacement . '</span>', $haystack);
-}
-
-function display_question($configObject, &$question, $paper_type, $calculator, $current_screen, $old_q_type, &$question_no, $user_answers, &$unanswered) {
+function display_question($configObject, &$question, $paper_type, $calculator, $current_screen, $old_q_type, &$question_no, $user_answers, &$unanswered, $texteditorplugin) {
   global $labelcolor, $old_likert_label, $old_likert_cols, $screen_pre_submitted, $A, $B, $C, $D, $E, $F, $G, $H, $I, $J, $li_set, $bgcolor, $li_set, $used_questions, $user_dismiss, $user_order, $string, $language, $unanswered_color;
 
   // Get the media directory object.
   $mediadirectory = rogo_directory::get_directory('media');
+
+  $configObj = Config::get_instance();
+  $questiondata = \questiondata::get_datastore($question['q_type']);
+  $render = new render($configObj);
 
   $q_id = $question['q_id'];
   $option_no = count($question['options']);
@@ -302,7 +284,10 @@ function display_question($configObject, &$question, $paper_type, $calculator, $
         if ($calculator == 1) echo '<br /><img class="sciCalculator" src="../artwork/calc.png" alt="' . $string['calculator'] . '" />';
         echo '</td><td>';
       }
-      echo '<p align="center">' . display_media($question['q_media'], $question['q_media_width'], $question['q_media_height'], '') . "</p>\n";
+      echo '<div class="mediadiv">';
+      $questiondata->set_media($question['q_media'], $question['q_media_width'], $question['q_media_height'], '', true);
+      $render->render($questiondata, $string, 'paper/media.html');
+      echo "</div>\n";
       $li_set = 1;
     }
     if ($question['q_type'] != 'likert') {
@@ -320,7 +305,10 @@ function display_question($configObject, &$question, $paper_type, $calculator, $
     // Special processing of Information Blocks.
     if ($li_set == 0) echo '<tr><td colspan="2" style="padding-left:10px; padding-right:10px">';
     if ($question['q_media'] != '') {
-      echo '<p align="center">' . display_media($question['q_media'], $question['q_media_width'], $question['q_media_height'], '') . "</p>\n";
+      echo '<div class="mediadiv">';
+      $questiondata->set_media($question['q_media'], $question['q_media_width'], $question['q_media_height'], '', true);
+      $render->render($questiondata, $string, 'paper/media.html');
+      echo "</div>\n";;
     }
     echo $question['leadin'];
     $li_set = 1;
@@ -457,7 +445,10 @@ function display_question($configObject, &$question, $paper_type, $calculator, $
           if ($calculator == 1) echo '<br /><img class="sciCalculator" src="../artwork/calc.png" alt="' . $string['calculator'] . '" />';
           echo '</td><td>';
         }
-        echo '<p align="center">' . display_media($question['q_media'],$question['q_media_width'],$question['q_media_height'], '') . "</p>\n";
+        echo '<div class="mediadiv">';
+        $questiondata->set_media($question['q_media'], $question['q_media_width'], $question['q_media_height'], '', true);
+        $render->render($questiondata, $string, 'paper/media.html');
+        echo "</div>\n";
         $li_set = 1;
       }
 
@@ -571,7 +562,8 @@ function display_question($configObject, &$question, $paper_type, $calculator, $
         if ($display_option['option_text'] != '') echo $display_option['option_text'];
         if ($display_option['o_media'] != '') {
           if ($display_option['option_text'] != '') echo '<br />';
-          echo display_media($display_option['o_media'], $display_option['o_media_width'], $display_option['o_media_height'], '');
+          $questiondata->set_media($display_option['o_media'], $display_option['o_media_width'], $display_option['o_media_height'], '', true);
+          $render->render($questiondata, $string, 'paper/media.html');
         }
         echo "</td></tr>\n";
         $marks += $display_option['marks_correct'];
@@ -630,7 +622,8 @@ function display_question($configObject, &$question, $paper_type, $calculator, $
           if ($display_option['option_text'] != '') echo "<span class=\"$class_type\" id=\"$question_no" . "_" . "$tmp_part_id\">" . $display_option['option_text'] . '</span>';
           if ($display_option['o_media'] != '') {
             if ($display_option['option_text'] != '') echo '<br />';
-            echo display_media($display_option['o_media'],$display_option['o_media_width'],$display_option['o_media_height'], '');
+            $questiondata->set_media($display_option['o_media'], $display_option['o_media_width'], $display_option['o_media_height'], '', true);
+            $render->render($questiondata, $string, 'paper/media.html');
           }
           echo "</td></tr>\n";
         } elseif ($question['display_method'] == 'horizontal') {
@@ -641,7 +634,11 @@ function display_question($configObject, &$question, $paper_type, $calculator, $
             echo "<input type=\"radio\" name=\"q" . $question_no . "\" value=\"" . $tmp_part_id . "\" />";
           }
           if ($display_option['option_text'] != '') echo '&nbsp;' . $display_option['option_text'];
-          if ($display_option['o_media'] != '') echo '&nbsp;' . display_media($display_option['o_media'], $display_option['o_media_width'], $display_option['o_media_height'], '');
+          if ($display_option['o_media'] != '') {
+            $questiondata->set_media($display_option['o_media'], $display_option['o_media_width'], $display_option['o_media_height'], '', true);
+            echo '&nbsp;';
+            $render->render($questiondata, $string, 'paper/media.html');
+          }
           echo "</div>";
         } else {
           if (isset($user_answers[$current_screen][$q_id]) and $tmp_part_id == $user_answers[$current_screen][$q_id]) {
@@ -678,7 +675,8 @@ function display_question($configObject, &$question, $paper_type, $calculator, $
         if ($display_option['option_text'] != '') echo "<span class=\"$class_type\" id=\"$question_no" . "_" . "$part_id\">" . $display_option['option_text'] . '</span>';
         if ($display_option['o_media'] != '') {
           if ($display_option['option_text'] != '') echo '<br />';
-          echo display_media($display_option['o_media'], $display_option['o_media_width'], $display_option['o_media_height'], '');
+          $questiondata->set_media($display_option['o_media'], $display_option['o_media_width'], $display_option['o_media_height'], '', true);
+          $render->render($questiondata, $string, 'paper/media.html');
         }
         echo "</td></tr>\n";
         if ($question['score_method'] == 'Mark per Option') {
@@ -962,19 +960,25 @@ function display_question($configObject, &$question, $paper_type, $calculator, $
                 $ans = $user_answers[$current_screen][$q_id];
               }
               if ($settings['editor'] == 'mathjax') {
-                $render = new render($configObject);
+                $render = new render($configObject. dirname(__DIR__) . DIRECTORY_SEPARATOR . 'plugins'
+                  . DIRECTORY_SEPARATOR . 'texteditor' . DIRECTORY_SEPARATOR . 'plugin_plain_texteditor' . DIRECTORY_SEPARATOR . 'templates');
                 $render->render(array('id' => 'q' . $question_no), null, 'mathjaxpreview.html');
                 echo "<p>" . $string['mathjaxinstructions'] . "</p>";
-                echo "<textarea onkeyup=\"Previewq" . $question_no . ".Update()\" id=\"q" . $question_no . "\" name=\"q" . $question_no . "\" cols=\"" . $settings['columns'] . "\" rows=\"" . $settings['rows'] . "\">" . $ans . "</textarea>\n";
+                echo "<textarea onkeyup=\"Preview" . $question_no . ".Update()\" id=\"q" . $question_no . "\" name=\"q" . $question_no . "\" cols=\"" . $settings['columns'] . "\" rows=\"" . $settings['rows'] . "\">" . $ans . "</textarea>\n";
                 echo "<p>" . $string['previewmathjax'] . "</p>";
-                echo "<div id=\"MathPreviewq" . $question_no . "\" style=\"border:1px solid; padding: 3px; width:50%; margin-top:5px\"></div><div id=\"MathBufferq" . $question_no . "\" style=\"border:1px solid; padding: 3px; width:50%; margin-top:5px; visibility:hidden; position:absolute; top:0; left: 0\"></div>";
-                echo "<script>Previewq" . $question_no . ".Init();</script>";
+                echo "<div id=\"MathPreview" . $question_no . "\" style=\"border:1px solid; padding: 3px; width:50%; margin-top:5px\"></div><div id=\"MathBuffer" . $question_no . "\" style=\"border:1px solid; padding: 3px; width:50%; margin-top:5px; visibility:hidden; position:absolute; top:0; left: 0\"></div>";
+                echo "<script>Preview" . $question_no . ".Init();</script>";
               } else {
                 echo "<textarea name=\"q" . $question_no . "\" cols=\"" . $settings['columns'] . "\" rows=\"" . $settings['rows'] . "\">" . $ans . "</textarea>\n";
               }
             }
           } else {
-            include_once('wysiwyg_editor.inc');
+            if (isset($user_answers[$current_screen][$q_id]) and $user_answers[$current_screen][$q_id] == '' and $screen_pre_submitted == 1) {
+              $texteditorplugin->get_javascript_config(\plugins\plugins_texteditor::UNANSWERED);
+            } else {
+              $texteditorplugin->get_javascript_config(\plugins\plugins_texteditor::ANSWERED);
+            }
+
             $ans = '';
             if (isset($user_answers[$current_screen][$q_id])) {
               $ans = $user_answers[$current_screen][$q_id];
@@ -988,9 +992,8 @@ function display_question($configObject, &$question, $paper_type, $calculator, $
             if (isset($user_answers[$current_screen][$q_id]) and $user_answers[$current_screen][$q_id] == '' and $screen_pre_submitted == 1) {
               $background_colour = 'background-color:red;';
             }
-            ?>
-            <textarea class="mceEditor" id="q<?php echo $question_no ?>" name="q<?php echo $question_no ?>" style="<?php echo $background_colour; ?>width:<?php echo $textbox_width ?>px; height:<?php echo $textbox_height ?>px"><?php echo $ans ?></textarea><?php echo "\n"; ?>
-            <?php
+            $texteditorplugin->get_textarea('q' . $question_no, 'q' . $question_no, $ans, plugins\plugins_texteditor::TYPE_STANDARD,
+              $background_colour . ' width: ' . $textbox_width . 'px; height: ' . $textbox_height . 'px;');
           }
           $marks += $display_option['marks_correct'];
         }
@@ -1194,7 +1197,10 @@ function display_question($configObject, &$question, $paper_type, $calculator, $
     $matching_answers = explode('|', $question['options'][0]['correct']);
 
     if ($matching_media[0] != '') {
-      echo '<p align="center">' . display_media($matching_media[0],$matching_media_width[0],$matching_media_height[0], '') . '</p>';
+      echo '<div class="mediadiv">';
+      $questiondata->set_media($matching_media[0],$matching_media_width[0],$matching_media_height[0], '', true);
+      $render->render($questiondata, $string, 'paper/media.html');
+      echo '</div>';
     }
 
     array_unshift($matching_scenarios, '');
@@ -1231,7 +1237,10 @@ function display_question($configObject, &$question, $paper_type, $calculator, $
       echo '<li>';
       if (isset($matching_scenarios[$part_id]) and $matching_scenarios[$part_id] != '') echo '<div>' . $matching_scenarios[$part_id] . '</div>';
       if (isset($matching_media[$part_id]) and $matching_media[$part_id] != '') {
-        echo "<div>" . display_media($matching_media[$part_id], $matching_media_width[$part_id], $matching_media_height[$part_id], '') . "</div>\n<br />";
+        echo "<div>";
+        $questiondata->set_media($matching_media[$part_id], $matching_media_width[$part_id], $matching_media_height[$part_id], '', true);
+        $render->render($questiondata, $string, 'paper/media.html');
+        echo "</div>\n<br />";
       }
       if(isset($matching_answers[$part_id-1])) {
         $sub_answers = explode('$', $matching_answers[$part_id - 1]);

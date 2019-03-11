@@ -16,6 +16,7 @@
 
 include 'lti_common.php';
 
+$string['invaliduser'] = 'The LTi request is not for the user logged into Rogo. Please reload the page to login.';
 $string['NoPapers'] = 'No Papers for this module';
 $string['NoPapersDesc'] = 'There are no papers available for this module.  This is probably because you have just created a new link from the VLE with a new module and therefore havent got any papers currently configured.<br /><br />Please <a href="../" target="_blank">launch Rogo</a> to create a paper'; //close the browser (<strong>very important</strong>) and then go to the Rogo homepage and create a paper.
 

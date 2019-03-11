@@ -68,14 +68,12 @@ if (isset($_POST['save_changes'])) {
   
   <link rel="stylesheet" type="text/css" href="../../css/body.css" />
   <link rel="stylesheet" type="text/css" href="../../css/help.css" />
-<?php
-  if($configObject->get_setting('core', 'misc_editor_name') === 'tinymce') {
-      $render = new render($configObject);
-      $tinmymcedata['file'] = 'tiny_config_help_student';
-      $render->render($tinmymcedata, null, 'tinymce.html');
-  }
-?>
   <script type="text/javascript" src="../../js/jquery-1.11.1.min.js"></script>
+<?php
+  $texteditorplugin = \plugins\plugins_texteditor::get_editor();
+  $texteditorplugin->display_header();
+  $texteditorplugin->get_javascript_config(\plugins\plugins_texteditor::HELP_STUDENT);
+?>
   <script type="text/javascript" src="../../js/help.js"></script>
   <script>
     $(function () {
@@ -107,7 +105,7 @@ if (isset($_POST['save_changes'])) {
   }
 
   echo "<p style=\"margin-left:20px\"><input type=\"text\" style=\"color:#295AAD; font-size:160%; border: 1px solid #C0C0C0; font-weight:bold\" size=\"50\" name=\"page_title\" value=\"" . $page_details['title'] . "\" required /></p>\n";
-  echo "<textarea class=\"mceEditor\" id=\"edit1\" name=\"edit1\" style=\"width:100%; height:500px\">" .  htmlspecialchars($page_details['body'], ENT_NOQUOTES) . "</textarea>\n";
+  echo $texteditorplugin->get_textarea('edit1', 'edit1', htmlspecialchars($page_details['body'], ENT_NOQUOTES), plugins\plugins_texteditor::TYPE_STANDARD);
 
   // Check for lockout.
   $current_time = date('YmdHis');

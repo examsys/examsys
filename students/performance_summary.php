@@ -26,8 +26,6 @@
 
 require '../include/staff_student_auth.inc';
 require_once '../include/errors.php';
-require_once '../include/demo_replace.inc';
-require_once '../include/sort.inc';
 require_once '../include/toprightmenu.inc';
 
 if (isset($_GET['userID'])) {
@@ -114,7 +112,7 @@ function get_taken_papers($userID, $db) {
   
   $sortby = 'calendar_year';
   $ordering = 'desc';
-  $papers = array_csort($papers, $sortby, $ordering);
+  $papers = \sort::array_csort($papers, $sortby, $ordering);
 
   return $papers;
 }
@@ -246,9 +244,9 @@ if (!$userObject->has_role('Student')) {  // Do not create popup menu if student
 <?php
 }
 
-$demo = is_demo($userObject);
+$demo = \demo::is_demo($userObject);
 $student_details = UserUtils::get_user_details($userID, $mysqli);
-$name = demo_replace($student_details['title'], $demo) . ' ' . demo_replace($student_details['surname'], $demo) . ', ' . demo_replace($student_details['first_names'], $demo) . ' (' . demo_replace($student_details['student_id'], $demo) . ')';
+$name = \demo::demo_replace($student_details['title'], $demo) . ' ' . \demo::demo_replace($student_details['surname'], $demo) . ', ' . \demo::demo_replace($student_details['first_names'], $demo) . ' (' . \demo::demo_replace($student_details['student_id'], $demo) . ')';
 ?>
 
 

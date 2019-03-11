@@ -55,4 +55,7 @@ $string['tooltip_unidirectional'] = 'Once you have submitted a screen you will n
 $string['tooltip_adjustmark'] = 'Your percentage will be automatically adjusted post-exam to account for the random mark someone could get by guessing at random. You are therefore advised to answer all questions on the paper.';
 $string['tooltip_testclip'] = 'This is a test audio clip for you to test your headphones and volume are set correctly.';
 $string['photoid'] = 'Photo ID';
-?>
+$string['ok'] = 'OK';
+$string['questionmark'] = '?';
+$string['ipmismatchtitle'] = 'You appear to be logged into this exam on another device.';
+$string['ipmismatchblurb'] = 'This device will now assume control of the exam. Notify the invigilator if you are unsure how to proceed.';

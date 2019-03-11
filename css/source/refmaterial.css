@@ -1,0 +1,28 @@
+table {
+    font-size:100%
+}
+input, textarea {
+    line-height:140%
+}
+input[type=checkbox] {
+    margin-left:20px
+}
+.r1 {
+    text-indent:-23px;
+    padding-left:23px;
+    background-color:white
+}
+.r2 {
+    text-indent:-23px;
+    padding-left:23px;
+    background-color:#FFBD69
+}
+.school {
+    margin-top:10px;
+    width:100%;
+    background-color:white;
+    color:#1E3287
+}
+#ref_content {
+    height:600px;
+}

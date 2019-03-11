@@ -18,9 +18,9 @@ Feature: Searching Papers,People and their related Academic Sessions
          | m3 | m3 |
       Given the following "academic_year" exist:
          | calendar_year | academic_year |
-         | 2015 | 2015/16 |
          | 2016 | 2016/17 |
          | 2017 | 2017/18 |
+         | 2018 | 2018/19 |
       Given the following "papers" exist:
          | papertitle | papertype | paperowner | modulename |
          | paper1 | 2 | myteacher3 | m1 |

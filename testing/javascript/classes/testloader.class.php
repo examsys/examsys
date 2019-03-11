@@ -57,7 +57,7 @@ class TestLoader {
     // Add the relative location of the files to the tests array.
     foreach ($files as $file) {
       $path_parts = pathinfo($file);
-      $directory = normalise_path($path_parts['dirname']);
+      $directory = str_replace('\\', '/', $path_parts['dirname']);
       $relativepath = str_replace($rootpath, '', $directory);
       $this->tests[] = $relativepath . '/' . $path_parts['basename'];
     }

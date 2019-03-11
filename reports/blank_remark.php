@@ -314,9 +314,9 @@ foreach ($unique_list as $word=>$occurrance) {
   }
 
   if ($match) {
-    echo '<tr id="div' . $word_count . '" class="r2"><td class="c1"><input type="checkbox" onclick="toggle(\'div'. $word_count . '\')" name="word' . $word_count . '" value="' . $word . '" checked="checked" /></td><td class="c2">' . $word . '</td><td class="o">' . $occurrance . '</td></tr>';
+    echo '<tr id="div' . $word_count . '" class="r2"><td class="c1"><input type="checkbox" onclick="toggle(\'div'. $word_count . '\')" name="word' . $word_count . '" value="' . htmlspecialchars($word) . '" checked="checked" /></td><td class="c2">' . $word . '</td><td class="o">' . $occurrance . '</td></tr>';
   } else {
-    echo '<tr id="div' . $word_count . '" class="r1"><td class="c1"><input type="checkbox" onclick="toggle(\'div'. $word_count . '\')" name="word' . $word_count . '" value="' . $word . '" /></td><td class="c2">' . $word . '</td><td class="o">' . $occurrance . '</td></tr>';
+    echo '<tr id="div' . $word_count . '" class="r1"><td class="c1"><input type="checkbox" onclick="toggle(\'div'. $word_count . '\')" name="word' . $word_count . '" value="' . htmlspecialchars($word) . '" /></td><td class="c2">' . $word . '</td><td class="o">' . $occurrance . '</td></tr>';
   }
   $word_count++;
 }

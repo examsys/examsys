@@ -122,10 +122,54 @@ function create_page($language, $articleid, $page_details, $help_table, $db) {
   $roles = $page_details['roles'];
 
   if ($help_table == 'staff_help') {
-    $result = $db->prepare("INSERT INTO $help_table VALUES (NULL, ?, ?, ?, ?, NULL, NULL, ?, NULL, ?, ?, '0000-00-00 00:00:00')");
+    $result = $db->prepare("INSERT INTO $help_table (
+        id,
+        title,
+        body,
+        body_plain,
+        type,
+        checkout_time,
+        checkout_authorID,
+        roles,
+        deleted,
+        language,
+        articleid)
+      VALUES (
+        NULL,
+        ?,
+        ?,
+        ?,
+        ?,
+        NULL,
+        NULL,
+        ?,
+        NULL,
+        ?,
+        ?)");
     $result->bind_param('ssssssi', $title, $body, $body_plain, $type, $roles, $language, $articleid);
   } else {
-    $result = $db->prepare("INSERT INTO $help_table VALUES (NULL, ?, ?, ?, ?, NULL, NULL, NULL, ?, ?, '0000-00-00 00:00:00')");
+    $result = $db->prepare("INSERT INTO $help_table (
+        id,
+        title,
+        body,
+        body_plain,
+        type,
+        checkout_time,
+        checkout_author,
+        deleted,
+        language,
+        articleid)
+      VALUES (
+        NULL,
+        ?,
+        ?,
+        ?,
+        ?,
+        NULL,
+        NULL,
+        NULL,
+        ?,
+        ?)");
     $result->bind_param('sssssi', $title, $body, $body_plain, $type, $language, $articleid);
   }
 	$result->execute();

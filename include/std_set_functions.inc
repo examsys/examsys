@@ -36,6 +36,10 @@ function display_options($screen, $options, $q_id, $current_theme, $current_scen
   $display_inline = array('dichotomous', 'mrq', 'rank', 'flash');
   $mediadirectory = rogo_directory::get_directory('media');
 
+  $configObj = Config::get_instance();
+  $questiondata = \questiondata::get_datastore($options[0]['q_type']);
+  $render = new render($configObj);
+
   $option_no = count($options);
   $total_rank_no = 0;
   $require_na = false;
@@ -265,7 +269,10 @@ function display_options($screen, $options, $q_id, $current_theme, $current_scen
       $matching_answers = explode('|', $options[0]['correct']);
 
       if ($matching_media[0] != '') {
-        echo '<p align="center">' . display_media($matching_media[0], $matching_media_width[0], $matching_media_height[0], '') . '</p>';
+        echo '<div class="mediadiv">';
+        $questiondata->set_media($matching_media[0], $matching_media_width[0], $matching_media_height[0], '');
+        $render->render($questiondata, $string, 'paper/media.html');
+        echo '</div>';
       }
       $text_scenarios = 0;
       for ($part_id=0; $part_id<10; $part_id++) {
@@ -290,7 +297,10 @@ function display_options($screen, $options, $q_id, $current_theme, $current_scen
           echo ">" . $matching_scenarios[$part_id - 1] . "</div>";
         }
         if (isset($matching_media[$part_id]) and $matching_media[$part_id] != '') {
-          echo "<p>" . display_media($matching_media[$part_id], $matching_media_width[$part_id], $matching_media_height[$part_id], '') . "</p>\n";
+          echo "<p>";
+          $questiondata->set_media($matching_media[$part_id], $matching_media_width[$part_id], $matching_media_height[$part_id], '');
+          $render->render($questiondata, $string, 'paper/media.html');
+          echo "</p>\n";
         }
         $sub_answers = explode('$',$matching_answers[$part_id - 1]);
         $list_size = 10;
@@ -408,7 +418,10 @@ function display_options($screen, $options, $q_id, $current_theme, $current_scen
     case 'matrix':
       $part_id = 1;
       if ($matching_media[0] != '') {
-        echo "<p align=\"center\">" . display_media($matching_media[0], $matching_media_width[0], $matching_media_height[0], '') . "</p>\n";
+        echo "<div class=\"mediadiv\">";
+        $questiondata->set_media($matching_media[0], $matching_media_width[0], $matching_media_height[0], '');
+        $render->render($questiondata, $string, 'paper/media.html');
+        echo "</div>\n";
       }
       echo '<table cellpadding="2" cellspacing="0" border="1" class="matrix">';
       echo "<tr><td colspan=\"2\">&nbsp;</td>\n";

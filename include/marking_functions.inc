@@ -482,44 +482,51 @@ function record_marks($paper_id, $db, $paper_type, $metadataID, $preview_q_id = 
             } else {
                 $correct_answers = array();
             }
-            $execmatch_answers = param::optional($qid, null, param::ALPHANUM, param::FETCH_POST);
-            if (!is_null($execmatch_answers)) {
-              $answer_count = count($execmatch_answers);
-              if ($score_method == 'Mark per Question' and (is_array($execmatch_answers) or $execmatch_answers != 'u')) {
-                $all_items_abstain = false;
-              }
-            } else {
-              $answer_count = 0;
-            }
-
-            for ($i = 0; $i < $answer_count; $i++) {
-              if ($i == 0) {
-                if (count($correct_answers) == 1) {
-                  $saved_response .= $execmatch_answers;
+            // Can only compare user answer and correct answer if correct answer exists.
+            if ($correct_answers !== false) {
+              $execmatch_answers = param::optional($qid, null, param::ALPHANUM, param::FETCH_POST);
+              if (!is_null($execmatch_answers)) {
+                if (is_array($execmatch_answers)) {
+                  $answer_count = count($execmatch_answers);
                 } else {
-                  $saved_response .= $execmatch_answers[$i];
+                  $answer_count = 1;
                 }
-              } else {
-                $saved_response .= '$' . $execmatch_answers[$i];
-              }
-
-              if ($answer_count == 1) {
-                if ($execmatch_answers == $correct_answers[0]) {
-                  $mark += $marks_correct;
-                  $all_items_abstain = false;
-                } elseif ($execmatch_answers != 'u') {
-                  $mark += $marks_incorrect;
+                if ($score_method == 'Mark per Question' and (is_array($execmatch_answers) or $execmatch_answers != 'u')) {
                   $all_items_abstain = false;
                 }
               } else {
-                if (in_array($execmatch_answers[$i], $correct_answers)) {
-                  $mark += $marks_correct;
+                $answer_count = 0;
+              }
+
+              for ($i = 0; $i < $answer_count; $i++) {
+                if ($i == 0) {
+                  if (count($correct_answers) == 1) {
+                    $saved_response .= $execmatch_answers;
+                  } else {
+                    $saved_response .= $execmatch_answers[$i];
+                  }
                 } else {
-                  $mark += $marks_incorrect;
+                  $saved_response .= '$' . $execmatch_answers[$i];
+                }
+
+                if ($answer_count == 1) {
+                  if ($execmatch_answers == $correct_answers[0]) {
+                    $mark += $marks_correct;
+                    $all_items_abstain = false;
+                  } elseif ($execmatch_answers != 'u') {
+                    $mark += $marks_incorrect;
+                    $all_items_abstain = false;
+                  }
+                } else {
+                  if (in_array($execmatch_answers[$i], $correct_answers)) {
+                    $mark += $marks_correct;
+                  } else {
+                    $mark += $marks_incorrect;
+                  }
                 }
               }
+              $totalpos += count($correct_answers) * $marks_correct;
             }
-            $totalpos += count($correct_answers) * $marks_correct;
             $option_no++;
           }
         }

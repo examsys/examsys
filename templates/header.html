@@ -3,7 +3,9 @@
     <head>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta http-equiv="content-type" content="text/html;charset={{charset}}"/>
-
+{% for id,value in data.metadata %}
+        <meta http-equiv="{{id}}" content="{{value}}"/>
+{% endfor %}
         <title>{{"Rog&#333;:"|raw}} {{lang.title}}</title>
 
         <link rel="stylesheet" type="text/css" href="{{path}}/css/body.css"/>
@@ -14,5 +16,8 @@
 {% for scriptname in data.scripts %}
         <script type="text/javascript" src="{{path}}{{scriptname}}"></script>
 {% endfor %}
+        {% if data.texteditor != '' %}
+            {% include data.texteditor %}
+        {% endif %}
     </head>
     <body>

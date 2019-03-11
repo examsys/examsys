@@ -27,9 +27,7 @@
 */
 
 require '../include/staff_auth.inc';
-require_once '../include/media.inc';
 require_once '../include/errors.php';
-require_once '../include/sort.inc';
 require_once '../include/errors.php';
 
 require_once '../plugins/questions/enhancedcalc/enhancedcalc.class.php';
@@ -518,7 +516,9 @@ function count_labels($correct) {
 function displayQuestion($exclusions, $q_no, $q_id, $theme, $scenario, $leadin, $q_type, $correct, $q_media, $q_media_width, $q_media_height, $options, $o_media, $bottom_log, $top_log, $freq_log, $correct_buf, $candidate_no, $score_method, $display_method, $themecolor, $std) {
   global $ex_no, $d_no, $d_total, $user_total, $language, $string;
 
-	$configObject = Config::get_instance();
+  $configObject = Config::get_instance();
+  $questiondata = \questiondata::get_datastore($q_type);
+  $render = new render($configObject);
   $mediadirectory = rogo_directory::get_directory('media');
 
   if ($theme != '') echo "<tr><td colspan=\"2\"><h1 style=\"color:$themecolor\">$theme</h1></td></tr>\n";
@@ -545,7 +545,10 @@ function displayQuestion($exclusions, $q_no, $q_id, $theme, $scenario, $leadin, 
       if (trim(str_replace('&nbsp;', '', $scenario)) != '') echo "$scenario<br /><br />\n";
       if ($q_type != 'hotspot' and $q_type != 'timedate' and $q_type != 'enhancedcalc' and $q_type != 'flash' and $q_type != 'area') echo "$leadin</div>\n";
       if ($q_media != '' and $q_type != 'hotspot' and $q_type != 'labelling' and $q_type != 'flash' and $q_type != 'area') {
-        echo "<p align=\"center\">" . display_media($q_media, $q_media_width, $q_media_height, '') . "</p>\n";
+        echo "<div class=\"mediadiv\">";
+        $questiondata->set_media($q_media, $q_media_width, $q_media_height, '', true);
+        $render->render($questiondata, $string, 'paper/media.html');
+        echo "</div>\n";
       }
       if ($q_type != 'hotspot' and $q_type != 'labelling' and $q_type != 'enhancedcalc' and $q_type != 'blank' and $q_type != 'flash' and $q_type != 'area') echo "<p>\n<table cellpadding=\"4\" cellspacing=\"0\" border=\"0\">\n";
     }
@@ -568,7 +571,10 @@ function displayQuestion($exclusions, $q_no, $q_id, $theme, $scenario, $leadin, 
         } else {
           echo excludeButton($ex_no, $q_id, '0', 1, 1);
         }
-        echo "</div><p>" . display_media($q_media, $q_media_width, $q_media_height, '#7F9DB9') . "</p>\n";
+        echo "</div><p>";
+        $questiondata->set_media($q_media, $q_media_width, $q_media_height, '#7F9DB9', true);
+        $render->render($questiondata, $string, 'paper/media.html');
+        echo "</p>\n";
         if (!isset($freq_log[$q_id][1]['correct'])) $freq_log[$q_id][1]['correct'] = 0;
         if (!isset($freq_log[$q_id][1]['partial'])) $freq_log[$q_id][1]['partial'] = 0;
         if (!isset($freq_log[$q_id][1]['incorrect'])) $freq_log[$q_id][1]['incorrect'] = 0;
@@ -804,12 +810,13 @@ function displayQuestion($exclusions, $q_no, $q_id, $theme, $scenario, $leadin, 
         }
         break;
       case 'enhancedcalc':
-        if (!isset($freq_log[$q_id][1]['correct'])) $freq_log[$q_id][1]['correct'] = '';
+        if (!isset($freq_log[$q_id][1]['correct'])) {
+          $freq_log[$q_id][1]['correct'] = 0;
+        }
 
-	
         $d = calcDiscrimination($candidate_no, $top_log[$q_id], $bottom_log[$q_id], 1, 'correct');
-				
-        if (isset($freq_log[$q_id][1]['correct']) and $user_total != 0) {
+
+        if ($freq_log[$q_id][1]['correct'] !== 0 and $user_total != 0) {
           $t = number_format(($freq_log[$q_id][1]['correct'] / $user_total)*100, 0);
         } else {
           $t = 0;
@@ -837,7 +844,11 @@ function displayQuestion($exclusions, $q_no, $q_id, $theme, $scenario, $leadin, 
         echo "<td><input type=\"button\" onclick=\"return clacCorrect($q_id, $i)\" value=\"" . $string['Correct'] . "\" /></td>";
         echo "</tr>\n";
         echo "<tr><td colspan=\"7\">&nbsp;</td></tr>";
-        $p = (isset($freq_log[$q_id]) and $user_total != 0) ? $freq_log[$q_id][1]['correct']/$user_total : 0;
+        if ($freq_log[$q_id][1]['correct'] !== 0 and $user_total != 0) {
+          $p = $freq_log[$q_id][1]['correct']/$user_total;
+        } else {
+          $p = 0;
+        }
         echo "<tr><td></td><td>" . pStats($p, $q_id, 1) . "</td><td colspan=\"5\">" . dStats($d, $q_id, 1) . "</td></tr>";
         break;
       case 'true_false':
@@ -1147,7 +1158,8 @@ function displayQuestion($exclusions, $q_no, $q_id, $theme, $scenario, $leadin, 
           if ($individual_option != '') echo "$individual_option\n";
           if (is_array($o_media[$i - 1])) {
             echo '<br />';
-            echo display_media($o_media[$i - 1][0], $o_media[$i - 1][1], $o_media[$i - 1][2], '');
+            $questiondata->set_media($o_media[$i - 1][0], $o_media[$i - 1][1], $o_media[$i - 1][2], '', true);
+            $render->render($questiondata, $string, 'paper/media.html');
           }
           echo "</td></tr>\n";
         }
@@ -1217,7 +1229,8 @@ function displayQuestion($exclusions, $q_no, $q_id, $theme, $scenario, $leadin, 
           echo ">$individual_option";
           if (is_array($o_media[$i - 1])) {
             echo '<br />';
-            echo display_media($o_media[$i - 1][0], $o_media[$i - 1][1], $o_media[$i - 1][2], '');
+            $questiondata->set_media($o_media[$i - 1][0], $o_media[$i - 1][1], $o_media[$i - 1][2], '', true);
+            $render->render($questiondata, $string, 'paper/media.html');
           }
           echo "</td></tr>\n";
         }
@@ -1398,7 +1411,7 @@ function displayQuestion($exclusions, $q_no, $q_id, $theme, $scenario, $leadin, 
         $i++;
       }
     }
-    $top_words = array_csort($top_words,$sortby,$ordering);
+    $top_words = \sort::array_csort($top_words,$sortby,$ordering);
 
     $bottom_words = array();
     if (isset($bottom_log[$q_id]['words'])) {
@@ -1409,7 +1422,7 @@ function displayQuestion($exclusions, $q_no, $q_id, $theme, $scenario, $leadin, 
         $i++;
       }
     }
-    $bottom_words = array_csort($bottom_words,$sortby,$ordering);
+    $bottom_words = \sort::array_csort($bottom_words,$sortby,$ordering);
 
     echo "<tr><td colspan=\"2\"><strong>" . $string['TopGroup'] . ":</strong></td><td colspan=\"2\"><strong>" . $string['BottomGroup'] . ":</strong></td></tr>\n";
     $mean_word_count_top = (isset($top_log[$q_id]) and $candidate_no != 0) ? $top_log[$q_id]['word_count'] / $candidate_no : 0;
@@ -1571,7 +1584,10 @@ function displayQuestion($exclusions, $q_no, $q_id, $theme, $scenario, $leadin, 
     }
     echo "<ol class=\"extmatch\">";
     if ($tmp_media_array[0] != '') {
-      echo "<p align=\"center\">" . display_media($tmp_media_array[0],$tmp_media_width_array[0],$tmp_media_height_array[0], '') . "</p>\n";
+      echo "<div class=\"mediadiv\">";
+      $questiondata->set_media($tmp_media_array[0],$tmp_media_width_array[0],$tmp_media_height_array[0], '', true);
+      $render->render($questiondata, $string, 'paper/media.html');
+      echo "</div>\n";
     }
     $std_part = 0;
     $section = 0;
@@ -1580,7 +1596,10 @@ function displayQuestion($exclusions, $q_no, $q_id, $theme, $scenario, $leadin, 
       $correct_stems = 0;
       echo "<li>\n";
       if (isset($tmp_media_array[$i]) and $tmp_media_array[$i] != '') {
-        echo "<p>" . display_media($tmp_media_array[$i], $tmp_media_width_array[$i], $tmp_media_height_array[$i], '') . "</p>\n";
+        echo "<p>";
+        $questiondata->set_media($tmp_media_array[$i], $tmp_media_width_array[$i], $tmp_media_height_array[$i], '', true);
+        $render->render($questiondata, $string, 'paper/media.html');
+        echo "</p>\n";
       }
       if (isset($tmp_ext_scenarios[$i-1])) echo "<div>" . $tmp_ext_scenarios[$i-1] . "</div>\n";
 
@@ -1722,7 +1741,6 @@ function displayQuestion($exclusions, $q_no, $q_id, $theme, $scenario, $leadin, 
     td p:first-child {margin-top: 0}
     .matrix {border:1px solid #808080; border-collapse: collapse}
     .matrix td {border:1px solid #808080}
-    .mee {display: inline}
     .subsect_table {margin-left: 6px; margin-bottom: 10px}
   </style>
 
@@ -1730,14 +1748,14 @@ function displayQuestion($exclusions, $q_no, $q_id, $theme, $scenario, $leadin, 
   <script type="text/javascript" src="../js/staff_help.js"></script>
   <script type="text/javascript" src="../js/toprightmenu.js"></script>
 <?php
-  if ($propertyObj->get_latex_needed() == 1) {
-    echo "<script type=\"text/javascript\" src=\"../js/jquery-migrate-1.2.1.min.js\"></script>\n";
-    echo "<script type=\"text/javascript\" src=\"../tools/mee/mee/js/mee_src.js\"></script>\n";
-  }
+  $texteditorplugin = \plugins\plugins_texteditor::get_editor();
+  $texteditorplugin->display_header();
 
   $render = new render($configObject);
   $render->render_html5_js(json_encode($jstring));
 
+  // Check if any 3d file types are enabled and render js.
+  threed_handler::render_js($string);
 ?>
 
   <script>

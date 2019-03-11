@@ -23,7 +23,6 @@
 */
 
 require '../include/sysadmin_auth.inc';
-require '../include/sort.inc';
 
 ?>
 <!DOCTYPE html>

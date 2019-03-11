@@ -24,7 +24,6 @@
 
 require '../../include/staff_auth.inc';
 require '../../include/errors.php';
-require '../../include/media.inc';
 
 $stateutil = new StateUtils($userObject->get_user_ID(), $mysqli);
 $state = $stateutil->getState($configObject->get('cfg_root_path') . '/question/search.php');
@@ -44,14 +43,15 @@ $status_array = QuestionStatus::get_all_statuses($mysqli, $string, true);
   <style type="text/css">
     body {font-size: 90%}
     p, td {font-size: 90%}
-    .mee {display: inline}
 
 <?php echo QuestionStatus::generate_status_css($status_array); ?>
   </style>
 
   <script type="text/javascript" src="../../js/jquery-1.11.1.min.js"></script>
-  <script type="text/javascript" src="../../js/jquery-migrate-1.2.1.min.js"></script>
-  <script type="text/javascript" src="../../tools/mee/mee/js/mee_src.js"></script>
+<?php
+  $texteditorplugin = \plugins\plugins_texteditor::get_editor();
+  $texteditorplugin->display_header();
+?>
   <script type="text/javascript" src="../../js/state.js"></script>
   <script>
     function Qpreview(qID) {

@@ -176,8 +176,6 @@ html5
 nbproject/
 artwork/pspbrwse.jbf
 help/staff/images/pspbrwse.jbf
-tools/tinymce/jscripts/tiny_mce/plugins/mee/img/pspbrwse.jbf
-tools/mee/mee/images/pspbrwse.jbf
 
 *.phprj
 
@@ -193,3 +191,12 @@ web.config
 node_modules/
 crowdin.yml
 config/campuses.inc
+
+.vagrant/*
+.npm/*
+/results
+chromedriver
+geckodriver
+geckodriver.tar.gz
+selenium-chrome.zip
+selenium-server.jar

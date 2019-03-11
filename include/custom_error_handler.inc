@@ -76,6 +76,9 @@ function exceptionHandler($exception) {
     );*/
   }
   // trace always ends with {main}
+  if (!isset($key)) {
+    $key = 0;
+  }
   $result[] = '#' . ++$key . ' {main}';
 
   // write tracelines into main template
@@ -178,6 +181,8 @@ function error_handling($context = null) {
         $context1[$key] = 'XMLReader';  
       } elseif (is_object($value) and (get_class($value) === 'ErrorException' or get_class($value) === 'Exception')) {
         $context1[$key] = 'ErrorException Object';
+      } elseif (is_object($value) and get_class($value) === 'Error') {
+        $context1[$key] = 'Error';
       } elseif (is_object($value)) {
         $context1[$key] = clone $value;
       } elseif (is_array($value) and $key === 'string' and (!($configObject->get('debug_lang_string') === true))) {

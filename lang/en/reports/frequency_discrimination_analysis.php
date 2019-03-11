@@ -66,4 +66,7 @@ $string['randomwarning'] = '<strong>Warning:</strong> Random question block ques
 $string['keywordwarning'] = '<strong>Warning:</strong> Keyword-based questions cannot be analysed in this report.';
 $string['paperpublishedwarning'] = '<strong>Paper grades have been published.</strong>&nbsp;&nbsp;&nbsp;Marking adjustment can no longer occur.';
 $string['paperlockedclick'] ='Click for more details';
-?>
+$string['threeinfo'] = 'Hold the left mouse button to rotate the object, hold the right button to pan,  and use the mouse wheel to zoom in/out.';
+$string['threereset'] = 'Reset';
+$string['threeload'] = 'Load';
+$string['threeplyerror'] = 'Your browser does not support the display of %s files.';

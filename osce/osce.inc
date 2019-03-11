@@ -307,10 +307,10 @@ function load_osce_results($propertyObj, $demo, $configObj, $question_no, $db) {
     $user_results[$user_no]['year']             = $year;
     $user_results[$user_no]['display_started']  = $display_started;
     $user_results[$user_no]['title']            = $title;  
-    $user_results[$user_no]['surname']          = demo_replace($surname, $demo);
-    $user_results[$user_no]['initials']         = demo_replace($initials, $demo);
-    $user_results[$user_no]['first_names']      = demo_replace($first_names, $demo);
-    $user_results[$user_no]['student_id']       = demo_replace_number($student_id, $demo);
+    $user_results[$user_no]['surname']          = \demo::demo_replace($surname, $demo);
+    $user_results[$user_no]['initials']         = \demo::demo_replace($initials, $demo);
+    $user_results[$user_no]['first_names']      = \demo::demo_replace($first_names, $demo);
+    $user_results[$user_no]['student_id']       = \demo::demo_replace_number($student_id, $demo);
     $user_results[$user_no]['gender']           = $gender;
     $user_results[$user_no]['feedback']         = $feedback;
     $user_results[$user_no]['examiner']         = $examiner_title . ' ' . $examiner_initials . ' ' . $examiner_surname;

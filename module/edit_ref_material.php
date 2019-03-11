@@ -26,7 +26,7 @@ require '../include/staff_auth.inc';
 require '../include/errors.php';
 
 $refID = check_var('refID', 'GET', true, false, true);
-
+$texteditorplugin = \plugins\plugins_texteditor::get_editor();
 if (!refmaterials_utils::refmaterials_exist($refID, $mysqli)) {
   $contactemail = support::get_email();
   $msg = sprintf($string['furtherassistance'], $contactemail, $contactemail);
@@ -34,9 +34,10 @@ if (!refmaterials_utils::refmaterials_exist($refID, $mysqli)) {
 }
 
 if (isset($_POST['submit'])) {
+  $content = $texteditorplugin->prepare_text_for_save($_POST['ref_content']);
   // Write the reference material
   $result = $mysqli->prepare("UPDATE reference_material SET title = ?, content = ?, width = ? WHERE id = ?");
-  $result->bind_param('sssi', $_POST['title'], $_POST['ref_content'], $_POST['width'], $_GET['refID']);
+  $result->bind_param('sssi', $_POST['title'], $content, $_POST['width'], $_GET['refID']);
   $result->execute();
   
   // Add it to the modules
@@ -83,23 +84,12 @@ $result->close();
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <link rel="stylesheet" type="text/css" href="../css/body.css" />
   <link rel="stylesheet" type="text/css" href="../css/header.css" />
-  <style type="text/css">
-    input, textarea {line-height:140%}
-    input[type=checkbox] {margin-left:20px}
-    .r1 {text-indent:-23px; padding-left:23px; background-color:white}
-    .r2 {text-indent:-23px; padding-left:23px; background-color:#FFBD69}
-    .school {margin-top:10px; width:100%; background-color:white; color:#1E3287}
-  </style>
-<?php
-  if($configObject->get_setting('core', 'misc_editor_name') === 'tinymce') {
-      $render = new render($configObject);
-      $tinmymcedata['file'] = 'tiny_config';
-      $render->render($tinmymcedata, null, 'tinymce.html');
-  }
-?>
+  <link rel="stylesheet" type="text/css" href="../css/refmaterial.css" />
   <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
-  <script type="text/javascript" src="../js/jquery-migrate-1.2.1.min.js"></script>
-  <script type="text/javascript" src="../tools/mee/mee/js/mee_src.js"></script>
+<?php
+  $texteditorplugin->display_header();
+  $texteditorplugin->get_javascript_config(\plugins\plugins_texteditor::CONFIG);
+?>
   <script type="text/javascript" src="../js/jquery.validate.min.js"></script>
   <script type="text/javascript" src="../js/staff_help.js"></script>
 	<script type="text/javascript" src="../js/toprightmenu.js"></script>
@@ -150,7 +140,7 @@ for ($size=200; $size<850; $size+=50) {
   }
 }
 ?></select></td><td><?php echo $string['modules']; ?></td></tr>
-<tr><td><textarea name="ref_content" id="ref_content" rows="40" cols="100" style="height:600px" class="mceEditor"><?php echo $content; ?></textarea></td><td style="vertical-align:top">
+<tr><td><?php $texteditorplugin->get_textarea('ref_content', 'ref_content', $texteditorplugin->get_text_for_display($content), plugins\plugins_texteditor::TYPE_STANDARD); ?></td><td style="vertical-align:top">
 <?php
   echo "<div style=\"margin-top:1px; display:block; width:420px; height:604px; overflow-y:scroll; border:1px solid #909090; font-size:90%\">";
 

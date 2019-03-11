@@ -24,11 +24,14 @@
 
   require '../include/staff_auth.inc';
   require '../include/survey_quantitative.inc.php';
-  require '../include/media.inc';
 
   function displayQuestion($q_no, $q_id, $theme, $scenario, $leadin, $q_type, $correct, $q_media, $q_media_width, $q_media_height, $options, $log, $correct_buf, $screen, $candidates) {
       global $old_likert_scale, $old_score_method, $old_display_method, $table_on, $string;
-      
+
+    $configObj = Config::get_instance();
+    $questiondata = \questiondata::get_datastore($q_type);
+    $render = new render($configObj);
+
       if ($q_type != 'likert' and $q_type != 'textbox' and $table_on == 1) {
         echo "</table>\n<table cellpadding=\"4\" cellspacing=\"0\" border=\"0\">\n";
         $old_likert_scale = '';
@@ -51,13 +54,19 @@
           echo "<tr><td class=\"q_no\">$q_no.&nbsp;</td><td>$scenario<br /><br />\n";
           echo $leadin;
           if ($q_media != '' and $q_type != 'hotspot' and $q_type != 'labelling') {
-            echo "<p align=\"center\">" . display_media($q_media, $q_media_width, $q_media_height, '') . "</p>\n";
+            echo "<div class=\"mediadiv\">";
+            $questiondata->set_media($q_media, $q_media_width, $q_media_height, '');
+            $render->render($questiondata, $string, 'paper/media.html');
+            echo "</div>\n";
           }
           if ($q_type != 'hotspot' and $q_type != 'labelling') echo "<table cellpadding=\"4\" cellspacing=\"0\" border=\"0\">\n";
         } elseif ($q_type != 'likert') {
           echo "<tr><td class=\"q_no\">$q_no.&nbsp;</td><td>$leadin\n";
           if ($q_media != '' and $q_type != 'hotspot' and $q_type != 'labelling') {
-            echo "<p align=\"center\">" . display_media($q_media, $q_media_width, $q_media_height, '') . "</p>\n";
+            echo "<div class=\"mediadiv\">";
+            $questiondata->set_media($q_media, $q_media_width, $q_media_height, '');
+            $render->render($questiondata, $string, 'paper/media.html');
+            echo "</div>\n";
           }
           if ($q_type != 'hotspot' and $q_type != 'labelling') echo "<table cellpadding=\"4\" cellspacing=\"0\" border=\"0\">\n";
         }
@@ -339,12 +348,18 @@
         $tmp_answers_array = explode('|',$correct_buf[0]);
         echo "<tr><td class=\"q_no\">$q_no.&nbsp;</td><td><p>$leadin</p>\n<ol type=\"i\">";
         if ($tmp_media_array[0] != '') {
-          echo "<p align=\"center\">" . display_media($tmp_media_array[0], $tmp_media_width_array[0], $tmp_media_height_array[0], '') . "</p>\n";
+          echo "<div class=\"mediadiv\">";
+          $questiondata->set_media($tmp_media_array[0], $tmp_media_width_array[0], $tmp_media_height_array[0], '');
+          $render->render($questiondata, $string, 'paper/media.html');
+          echo "</div>\n";
         }
         for ($i=1; $i<=(substr_count($scenario,'|')+1); $i++) {
           echo "<li>\n";
           if ($tmp_media_array[$i] != '') {
-            echo "<p>" . display_media($tmp_media_array[$i], $tmp_media_width_array[$i], $tmp_media_height_array[$i], '') . "</p>\n";
+            echo "<p>";
+            $questiondata->set_media($tmp_media_array[$i], $tmp_media_width_array[$i], $tmp_media_height_array[$i], '');
+            $render->render($questiondata, $string, 'paper/media.html');
+            echo "</p>\n";
           }
           if ($tmp_ext_scenarios[$i-1]) echo "<p>" . $tmp_ext_scenarios[$i-1] . "</p>\n";
           echo "<p>\n<table cellpadding=\"4\" cellspacing=\"0\" border=\"0\">\n";

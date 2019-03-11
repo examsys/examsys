@@ -34,18 +34,15 @@ Redirect /user_index.php /paper/user_index.php
 
 ##
 ## Down for maintenance code - uncomment during upgrades
+## Replacing <ip address> with machine given permissin to access during upgrade
+## You can have mulitple RewriteCond lines for mulitple machines
 ##
 #Options -MultiViews +FollowSymLinks
 #RewriteEngine On
 
 ## Only the IP address below will be able to access the site
-#RewriteCond %{REMOTE_ADDR} !128.243.253.107 [NC]
-#RewriteRule !(maintenance/.*)$ /maintenance/? [R=307,L]
-
-#AuthType Basic
-#AuthName "My6776Protected Are337878a787878"
-#AuthUserFile c:\dev\web\rogo8080\t2\htpasswd.htpasswd
-#Require valid-user
+#RewriteCond %{REMOTE_ADDR} !<ip address> [NC]
+#RewriteRule !(maintenance/db/.*)$ /maintenance/db/? [R=307,L]
 
 <IfModule headers_module>
   header set X-Clacks-Overhead "GNU Terry Pratchett"

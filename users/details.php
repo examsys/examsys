@@ -28,7 +28,6 @@
 
 require_once '../include/staff_auth.inc';
 require_once '../include/errors.php';
-require_once '../include/demo_replace.inc';
 
 $userID = check_var('userID', 'GET', true, false, true, param::INT);
 $student_id = check_var('student_id', 'GET', false, false, true, param::TEXT);
@@ -381,11 +380,11 @@ if (!is_null($updateadmin) and $userObject->has_role('SysAdmin')) {
 
   if ($demo == true) {
     // Hide the personal details.
-    $user_details['surname'] = demo_replace($user_details['surname'], $demo);
-    $user_details['first_names'] = demo_replace($user_details['first_names'], $demo);
-    $user_details['initials'] = demo_replace($user_details['initials'], $demo);
-    $user_details['student_id'] = demo_replace_number($user_details['student_id'], $demo);
-    $user_details['email'] = demo_replace_username($user_details['email'], $demo);
+    $user_details['surname'] = \demo::demo_replace($user_details['surname'], $demo);
+    $user_details['first_names'] = \demo::demo_replace($user_details['first_names'], $demo);
+    $user_details['initials'] = \demo::demo_replace($user_details['initials'], $demo);
+    $user_details['student_id'] = \demo::demo_replace_number($user_details['student_id'], $demo);
+    $user_details['email'] = \demo::demo_replace_username($user_details['email'], $demo);
   }
 
   $course_details = CourseUtils::get_course_details_by_name($user_details['grade'], $mysqli);
@@ -455,7 +454,7 @@ if (!is_null($updateadmin) and $userObject->has_role('SysAdmin')) {
     echo "</tr>\n";    
   }
   if ($demo) {
-    echo "<tr><td class=\"field\">" . $string['username'] . "</td><td>" . demo_replace_username($user_details['username'], $demo) . "</td>";
+    echo "<tr><td class=\"field\">" . $string['username'] . "</td><td>" . \demo::demo_replace_username($user_details['username'], $demo) . "</td>";
   } else {
     echo "<tr><td class=\"field\">" . $string['username'] . "</td><td>" . $user_details['username'] . "</td>";
   }

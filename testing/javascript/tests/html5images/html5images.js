@@ -19,7 +19,7 @@
 QUnit.test( "HTML5 images object", function(assert) {
   var done = assert.async();
   // Load the script we are testing.
-  jQuery.getScript('../../js/html5.images.js').done(function() {
+  jQuery.getScript('../../js/html5.images.min.js').done(function() {
     // Check the object if contains exists as we expect.
     assert.ok(menuImages, 'menuImages is defined');
     for (var image in menuImages) {

@@ -20,3 +20,5 @@ $string['yes'] = "Yes";
 $string['no'] = "No";
 $string['unauthorised'] = "Authorisation denied";
 $string['save'] = "Save";
+$string['statenotsupplied'] = "State not supplied.";
+$string['clientnotsupplied'] = "Client ID not supplied.";

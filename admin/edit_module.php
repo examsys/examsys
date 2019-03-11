@@ -105,7 +105,7 @@ if (isset($_POST['submit']) and $moduleid_in_use == false) {
   $module['academic_year_start'] = trim($_POST['academic_year_start']);
   $module['schoolid'] = $_POST['schoolid'];
   $module['ebel_grid_template'] = $_POST['ebel_grid_template'];
-
+  $module['externalid'] = check_var('externalid', 'POST', false, false, true);
   module_utils::update_module_by_code($_POST['old_modulecode'], $module, $mysqli);
 
   $mysqli->close();
@@ -328,7 +328,7 @@ if (isset($_POST['submit']) and $moduleid_in_use == false) {
     }
     $result->close();
     ?></select></td></tr>
-    <tr><td class="field"><?php echo $string['externalid'] ?></td><td><?php echo $module['externalid'] ?></td></tr>
+    <tr><td class="field"><?php echo $string['externalid'] ?></td><td><input type="text" size="30" maxlength="255" name="externalid" value="<?php echo $module['externalid'] ?>"></td></tr>
   <?php
     echo "</table>\n";
     echo "<input type=\"hidden\" name=\"old_modulecode\" value=\"" . $module['moduleid'] . "\" />\n";

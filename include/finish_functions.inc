@@ -23,7 +23,6 @@
 */
 
 require_once 'mapping.inc';
-require_once 'media.inc';
 require_once dirname(__DIR__) . '/LTI/ims-lti/UoN_LTI.php';
 require_once dirname(__DIR__) . '/lang/' . $language . '/paper/finish.php';
 require_once dirname(__DIR__). '/lang/' . $language . '/paper/start.php';
@@ -180,7 +179,8 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
   $configObject = Config::get_instance();
   $strong_on = '';
   $strong_off = '';
-  
+  $render = new render($configObject);
+
   // Populate a blank array of completed screens.
   $completed_screens = array_fill(1, $max_screen, false);
 
@@ -606,6 +606,8 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
     $option_order = explode(',',$paper[$question]['option_order']);
     $question_no = $display_no;
 
+    $questiondata = \questiondata::get_datastore($q_type);
+
     switch ($q_type) {
       case 'area':
         if ($paper[$question]['scenario'] != '') echo_content($paper[$question]['scenario']);
@@ -684,7 +686,12 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
 
         $paper[$question]['mark'] = 0;
         if (!empty($paper[$question]['scenario'])) echo_content($paper[$question]['scenario']);
-        if (!empty($paper[$question]['q_media'])) echo "<br /><p align=\"center\">" . display_media($paper[$question]['q_media'], $paper[$question]['q_media_width'], $paper[$question]['q_media_height'], '') . "</p>\n";
+        if (!empty($paper[$question]['q_media'])) {
+          echo "<br /><div class=\"mediadiv\">";
+          $questiondata->set_media($paper[$question]['q_media'], $paper[$question]['q_media_width'], $paper[$question]['q_media_height'], '', true);
+          $render->render($questiondata, $string, 'paper/media.html');
+          echo "</div>\n";
+        }
         echo_content($paper[$question]['leadin']);
         echo '<table cellpadding="0" cellspacing="1" border="0">';
 
@@ -811,7 +818,10 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
       case 'info':
         echo "<tr><td colspan=\"2\" style=\"padding-left:10px; padding-right:10px\">";
         if ($paper[$question]['q_media'] != '' and $paper[$question]['q_media'] != null) {
-          echo '<p align="center">' . display_media($paper[$question]['q_media'],$paper[$question]['q_media_width'],$paper[$question]['q_media_height'],$question_no) . "</p>\n";
+          echo "<div class=\"mediadiv\">";
+          $questiondata->set_media($paper[$question]['q_media'], $paper[$question]['q_media_width'], $paper[$question]['q_media_height'], '', true);
+          $render->render($questiondata, $string, 'paper/media.html');
+          echo "</div>\n";
         }
         echo $paper[$question]['leadin'];
         echo "</td></tr>\n";
@@ -823,7 +833,12 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
         }
 
         if ($paper[$question]['scenario'] != '') echo_content($paper[$question]['scenario']);
-        if ($paper[$question]['q_media'] != '') echo "<p align=\"center\">" . display_media($paper[$question]['q_media'],$paper[$question]['q_media_width'],$paper[$question]['q_media_height'], '') . "</p>\n";
+        if ($paper[$question]['q_media'] != '') {
+          echo "<div class=\"mediadiv\">";
+          $questiondata->set_media($paper[$question]['q_media'], $paper[$question]['q_media_width'], $paper[$question]['q_media_height'], '', true);
+          $render->render($questiondata, $string, 'paper/media.html');
+          echo "</div>\n";
+        }
         echo_content($paper[$question]['leadin']);
         echo "<table cellpadding=\"0\" cellspacing=\"1\" border=\"0\">\n";
         for ($part_id=0; $part_id<$no_options; $part_id++) {
@@ -938,7 +953,12 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
       case 'mrq':
         $std_part = 0;
         if ($paper[$question]['scenario'] != '') echo_content($paper[$question]['scenario']);
-        if ($paper[$question]['q_media'] != '') echo "<p align=\"center\">" . display_media($paper[$question]['q_media'],$paper[$question]['q_media_width'],$paper[$question]['q_media_height'], '') . "</p>\n";
+        if ($paper[$question]['q_media'] != '') {
+          echo "<div class=\"mediadiv\">";
+          $questiondata->set_media($paper[$question]['q_media'], $paper[$question]['q_media_width'], $paper[$question]['q_media_height'], '', true);
+          $render->render($questiondata, $string, 'paper/media.html');
+          echo "</div>\n";
+        }
         echo_content($paper[$question]['leadin']);
 
         // Check to see if the user has answered any options.
@@ -983,7 +1003,8 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
               }
               if ($tmp_exclude{0} == '1') echo '</span>';
               if ($paper[$question]['o_media'][$tmp_part_id] != '') {
-                echo display_media($paper[$question]['o_media'][$tmp_part_id], $paper[$question]['o_media_width'][$tmp_part_id] ,$paper[$question]['o_media_height'][$tmp_part_id], '') . "\n";
+                $questiondata->set_media($paper[$question]['o_media'][$tmp_part_id], $paper[$question]['o_media_width'][$tmp_part_id] ,$paper[$question]['o_media_height'][$tmp_part_id], '', true);
+                $render->render($questiondata, $string, 'paper/media.html');
                 if (trim($paper[$question]['option_text'][$tmp_part_id]) == '' and substr($tmp_exclude,0,1) == '1') echo '<span style="color:red">' . $string['isexcluded'] . '</span>';
               }
               echo "</td></tr>\n";
@@ -999,7 +1020,8 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
               }
               if ($tmp_exclude{0} == '1') echo '</span>';
               if ($paper[$question]['o_media'][$tmp_part_id] != '') {
-                echo display_media($paper[$question]['o_media'][$tmp_part_id], $paper[$question]['o_media_width'][$tmp_part_id], $paper[$question]['o_media_height'][$tmp_part_id], '') . "\n";
+                $questiondata->set_media($paper[$question]['o_media'][$tmp_part_id], $paper[$question]['o_media_width'][$tmp_part_id], $paper[$question]['o_media_height'][$tmp_part_id], '', true);
+                $render->render($questiondata, $string, 'paper/media.html');
                 if (trim($paper[$question]['option_text'][$tmp_part_id]) == '' and $tmp_exclude{0} == '1') echo '<span style="color:red">' . $string['isexcluded'] . '</span>';
               }
               echo "</td></tr>\n";
@@ -1032,7 +1054,8 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
               }
               if ($tmp_exclude{0} == '1') echo '</span>';
               if ($paper[$question]['o_media'][$tmp_part_id] != '') {
-                echo display_media($paper[$question]['o_media'][$tmp_part_id], $paper[$question]['o_media_width'][$tmp_part_id], $paper[$question]['o_media_height'][$tmp_part_id], '') . "\n";
+                $questiondata->set_media($paper[$question]['o_media'][$tmp_part_id], $paper[$question]['o_media_width'][$tmp_part_id], $paper[$question]['o_media_height'][$tmp_part_id], '', true);
+                $render->render($questiondata, $string, 'paper/media.html');
                 if (trim($paper[$question]['option_text'][$tmp_part_id]) == '' and $tmp_exclude{0} == '1') echo '<span style="color:red">' . $string['isexcluded'] . '</span>';
               }
               if ($tmp_display_feedback == '1') {
@@ -1051,7 +1074,8 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
               }
               if ($tmp_exclude{0} == '1') echo '</span>';
               if ($paper[$question]['o_media'][$tmp_part_id] != '') {
-                echo display_media($paper[$question]['o_media'][$tmp_part_id], $paper[$question]['o_media_width'][$tmp_part_id], $paper[$question]['o_media_height'][$tmp_part_id], '') . "\n";
+                $questiondata->set_media($paper[$question]['o_media'][$tmp_part_id], $paper[$question]['o_media_width'][$tmp_part_id], $paper[$question]['o_media_height'][$tmp_part_id], '', true);
+                $render->render($questiondata, $string, 'paper/media.html');
                 if (trim($paper[$question]['option_text'][$tmp_part_id]) == '' and $tmp_exclude{0} == '1') echo '<span style="color:red">' . $string['isexcluded'] . '</span>';
               }
               echo "</td></tr>\n";
@@ -1080,7 +1104,12 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
       case 'sct':
         $paper[$question]['mark'] = 0;
         echo "<table cellpadding=\"3\" cellspacing=\"0\" border=\"0\" style=\"width:100%\"><tr><td colspan=\"3\" style=\"background-color:#E4EEFC; border-bottom:1px solid #B5C4DF; font-weight:bold\">" . $string['clinicalvignette'] . "</td></tr>\n<tr><td colspan=\"2\">" . $paper[$question]['scenario'] . "</td></tr>\n";
-        if ($paper[$question]['q_media'] != '') echo "<tr><td colspan=\"3\"><p align=\"center\">" . display_media($paper[$question]['q_media'], $paper[$question]['q_media_width'], $paper[$question]['q_media_height'], '') . "</p></td></tr>\n";
+        if ($paper[$question]['q_media'] != '') {
+          echo "<tr><td colspan=\"3\"><div class=\"mediadiv\">";
+          $questiondata->set_media($paper[$question]['q_media'], $paper[$question]['q_media_width'], $paper[$question]['q_media_height'], '', true);
+          $render->render($questiondata, $string, 'paper/media.html');
+          echo "</div></td></tr>\n";
+        }
 
         $sct_parts = explode('~',$paper[$question]['leadin']);
         echo "<tr><td colspan=\"3\">&nbsp;</td></tr>\n";
@@ -1217,7 +1246,12 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
         $paper[$question]['totalpos'] = 0;
 
         if ($paper[$question]['scenario'] != '') echo_content($paper[$question]['scenario']);
-        if ($paper[$question]['q_media'] != '') echo "<p align=\"center\">" . display_media($paper[$question]['q_media'], $paper[$question]['q_media_width'], $paper[$question]['q_media_height'], '') . "</p>\n";
+        if ($paper[$question]['q_media'] != '') {
+          echo "<div class=\"mediadiv\">";
+          $questiondata->set_media($paper[$question]['q_media'], $paper[$question]['q_media_width'], $paper[$question]['q_media_height'], '', true);
+          $render->render($questiondata, $string, 'paper/media.html');
+          echo "</div>\n";
+        }
         echo_content($paper[$question]['leadin']);
 
         $true_checked = '';
@@ -1392,7 +1426,12 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
         }
 
         if ($paper[$question]['scenario'] != '') echo_content($paper[$question]['scenario']);
-        if ($paper[$question]['q_media'] != '') echo "<p align=\"center\">" . display_media($paper[$question]['q_media'], $paper[$question]['q_media_width'], $paper[$question]['q_media_height'], '') . "</p>\n";
+        if ($paper[$question]['q_media'] != '') {
+          echo "<div class=\"mediadiv\">";
+          $questiondata->set_media($paper[$question]['q_media'], $paper[$question]['q_media_width'], $paper[$question]['q_media_height'], '', true);
+          $render->render($questiondata, $string, 'paper/media.html');
+          echo "</div>\n";
+        }
         echo_content($paper[$question]['leadin']);
 
         $na_count = 0;
@@ -1603,7 +1642,10 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
         $total_scenarios = max($text_scenarios, $media_scenarios);
 
         if ($matching_media[0] != '') {
-          echo "<p align=\"center\">" . display_media($matching_media[0], $matching_media_width[0], $matching_media_height[0], '') . "</p>\n";
+          echo "<div class=\"mediadiv\">";
+          $questiondata->set_media($matching_media[0], $matching_media_width[0], $matching_media_height[0], '', true);
+          $render->render($questiondata, $string, 'paper/media.html');
+          echo "</div>\n";
         }
         $i = 0;
         $section = 0;
@@ -1618,7 +1660,10 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
           echo '<li>';
           if ($single_scenario != '') echo "$single_scenario<br />";
           if (isset($matching_media[$i+1]) and $matching_media[$i+1] != '') {
-            echo "<p>" . display_media($matching_media[$i+1], $matching_media_width[$i+1], $matching_media_height[$i+1], '') . "</p>\n";
+            echo "<div>";
+            $questiondata->set_media($matching_media[$i+1], $matching_media_width[$i+1], $matching_media_height[$i+1], '', true);
+            $render->render($questiondata, $string, 'paper/media.html');
+            echo "</div>\n";
           }
           echo '<br />';
           $separate_answers = array();
@@ -1782,7 +1827,10 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
         $correct_answers = explode('|', $paper[$question]['correct'][0]);
         echo_content($paper[$question]['leadin']);
         if ($matching_media[0] != '') {
-          echo '<p align="center">' . display_media($matching_media[0], $matching_media_width[0], $matching_media_height[0], '') . '</p>';
+          echo "<div class=\"mediadiv\">";
+          $questiondata->set_media($matching_media[0], $matching_media_width[0], $matching_media_height[0], '', true);
+          $render->render($questiondata, $string, 'paper/media.html');
+          echo "</div>";
         }
 
         echo '<table cellpadding="2" cellspacing="0" border="1" class="matrix">';
@@ -1869,14 +1917,20 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
         if ($paper[$question]['scenario'] != '') {
           echo echo_content($paper[$question]['scenario']);
           if ($paper[$question]['q_media'] != '') {
-            echo "<p align=\"center\">" . display_media($paper[$question]['q_media'], $paper[$question]['q_media_width'], $paper[$question]['q_media_height'], '') . "</p>\n";
+            echo "<div class=\"mediadiv\">";
+            $questiondata->set_media($paper[$question]['q_media'], $paper[$question]['q_media_width'], $paper[$question]['q_media_height'], '', true);
+            $render->render($questiondata, $string, 'paper/media.html');
+            echo "</div>\n";
           }
           echo '<p';
           if ($tmp_exclude{0} == '1') echo ' class="exclude"';
           echo '>' . $paper[$question]['leadin'] . "</p>\n";
         } else {
           if ($paper[$question]['q_media'] != '') {
-            echo "<br /><p align=\"center\">" . display_media($paper[$question]['q_media'], $paper[$question]['q_media_width'], $paper[$question]['q_media_height'], '') . "</p>\n";
+            echo "<div class=\"mediadiv\">";
+            $questiondata->set_media($paper[$question]['q_media'], $paper[$question]['q_media_width'], $paper[$question]['q_media_height'], '', true);
+            $render->render($questiondata, $string, 'paper/media.html');
+            echo "</div>\n";
           }
           echo '<div';
           if ($tmp_exclude{0} == '1') echo ' class="exclude"';
@@ -1915,12 +1969,18 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
         if ($paper[$question]['scenario'] != '') {
           echo_content($paper[$question]['scenario']);
           if ($paper[$question]['q_media'] != '') {
-            echo "<p align=\"center\">" . display_media($paper[$question]['q_media'], $paper[$question]['q_media_width'], $paper[$question]['q_media_height'], '') . "</p>\n";
+            echo "<div class=\"mediadiv\">";
+            $questiondata->set_media($paper[$question]['q_media'], $paper[$question]['q_media_width'], $paper[$question]['q_media_height'], '', true);
+            $render->render($questiondata, $string, 'paper/media.html');
+            echo "</div>\n";
           }
           echo_content($paper[$question]['leadin']);
         } else {
           if ($paper[$question]['q_media'] != '') {
-            echo '<br /><p align="center">' . display_media($paper[$question]['q_media'], $paper[$question]['q_media_width'], $paper[$question]['q_media_height'], '') . "</p>\n";
+            echo "<div class=\"mediadiv\">";
+            $questiondata->set_media($paper[$question]['q_media'], $paper[$question]['q_media_width'], $paper[$question]['q_media_height'], '', true);
+            $render->render($questiondata, $string, 'paper/media.html');
+            echo "</div>\n";
           }
           echo_content($paper[$question]['leadin']);
         }
@@ -1932,12 +1992,18 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
         if ($paper[$question]['scenario'] != '') {
           echo_content($paper[$question]['scenario']);
           if ($paper[$question]['q_media'] != '') {
-            echo '<p style="text-align:center">' . display_media($paper[$question]['q_media'], $paper[$question]['q_media_width'], $paper[$question]['q_media_height'], '') . "</p>\n";
+            echo "<div class=\"mediadiv\">";
+            $questiondata->set_media($paper[$question]['q_media'], $paper[$question]['q_media_width'], $paper[$question]['q_media_height'], '', true);
+            $render->render($questiondata, $string, 'paper/media.html');
+            echo "</div>\n";
           }
           echo_content($paper[$question]['leadin']);
         } else {
           if ($paper[$question]['q_media'] != '') {
-            echo '<br /><p style="text-align:center">' . display_media($paper[$question]['q_media'], $paper[$question]['q_media_width'], $paper[$question]['q_media_height'], '') . "</p>\n";
+            echo "<div class=\"mediadiv\">";
+            $questiondata->set_media($paper[$question]['q_media'], $paper[$question]['q_media_width'], $paper[$question]['q_media_height'], '', true);
+            $render->render($questiondata, $string, 'paper/media.html');
+            echo "</div>\n";
           }
           echo_content($paper[$question]['leadin']);
         }
@@ -2338,8 +2404,13 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
         echo_content($paper[$question]['leadin']);
 
         $movie = ($tmp_display_correct_answer == '0') ? $paper[$question]['q_media'] : $paper[$question]['o_media'][0];
-        $answered = explode(',', $paper[$question]['user_answer']);
-        if (!isset($paper[$question]['user_answer']) or $answered[0] == 0) {
+        $answered = array();
+        if (!isset($paper[$question]['user_answer'])) {
+          $answered[0] = 0;
+        } else {
+          $answered = explode(',', $paper[$question]['user_answer']);
+        }
+        if ($answered[0] == 0) {
           reset_feedback($hide_if_unanswered);
           if ($hide_if_unanswered == '1') {
             $movie = $paper[$question]['q_media'];

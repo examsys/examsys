@@ -15,6 +15,7 @@
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
 use testing\unittest\unittestdatabase;
+use PHPUnit\DbUnit\DataSet\YamlDataSet;
 
 
 /**
@@ -31,7 +32,7 @@ class lti_integrationtest extends unittestdatabase {
      * @return dataset
      */
     public function getDataSet() {
-        return new PHPUnit_Extensions_Database_DataSet_YamlDataSet($this->get_base_fixture_directory() . "lti_integrationTest" . DIRECTORY_SEPARATOR . "lti_integration.yml");
+        return new YamlDataSet($this->get_base_fixture_directory() . "lti_integrationTest" . DIRECTORY_SEPARATOR . "lti_integration.yml");
     }
     /**
      * Test sms spi - saturn sms
@@ -295,7 +296,7 @@ class lti_integrationtest extends unittestdatabase {
         $this->config->set_setting('lti_integration', 'default', \Config::STRING);
         $moduleshortcode = 'PHAR4018';
         $moduletitle = 'Advanced Drug Discovery';
-        $expected = array(array('Manual', $moduleshortcode, 'CampusTODO', 'SchoolTODO', 0, "MISSING:$moduletitle"));
+        $expected = array(array('Manual', $moduleshortcode, 'CampusTODO', 'UNKNOWN School', 0, "MISSING:$moduletitle"));
         $lti = UoN_LTI::get_instance();
         $lti_i = $lti->load();
         $this->assertEquals($expected, $lti_i->module_code_translate($this->db, $moduleshortcode, $moduletitle));

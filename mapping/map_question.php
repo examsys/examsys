@@ -27,7 +27,6 @@ require '../include/question_types.php';
 require '../include/mapping.inc';
 require '../include/errors.php';
 require '../include/display_functions.inc';
-require '../include/media.inc';
 $jstring = $string; //to pass it to JavaScript HTML5 modules
 $paperID = check_var('paperID', 'REQUEST', true, false, true);
 
@@ -76,16 +75,18 @@ function display_q($configObject, $target_id, $db) {
   $screen_pre_submitted = 0;
   $user_answers = array();
 
-	if ($question['q_type'] == 'enhancedcalc') {
-		require_once('../plugins/questions/enhancedcalc/enhancedcalc.class.php');
-		if (!isset($configObj)) {
-			$configObj = Config::get_instance();
-		}
-		$question['object'] = new EnhancedCalc($configObj);
-		$question['object']->load($question);
-	}
-  
-  display_question($configObject, $question, $paper_type, 0, 1, '', $question_no, $user_answers, $unanswered);
+  if ($question['q_type'] == 'enhancedcalc') {
+    $question['screen'] = 1;
+    require_once('../plugins/questions/enhancedcalc/enhancedcalc.class.php');
+    if (!isset($configObj)) {
+      $configObj = Config::get_instance();
+    }
+    $question['object'] = new EnhancedCalc($configObj);
+    $question['object']->load($question);
+  }
+
+  $texteditorplugin = \plugins\plugins_texteditor::get_editor();
+  display_question($configObject, $question, $paper_type, 0, 1, '', $question_no, $user_answers, $unanswered, $texteditorplugin);
 
   $question_nos[] = $old_q_id;
   echo "</table>\n";
@@ -102,6 +103,10 @@ $render->render_html5_js(json_encode($jstring));
   <?php echo $configObject->get('cfg_js_root') ?>
   <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
   <script type="text/javascript" src="../js/jquery.mappingform.js"></script>
+  <?php
+    $texteditorplugin = \plugins\plugins_texteditor::get_editor();
+    $texteditorplugin->display_header();
+  ?>
   <script>
     $(function () {
       $('#cancel').click(function() {

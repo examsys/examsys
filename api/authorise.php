@@ -35,9 +35,20 @@ if (!$configObject->get_setting('core', 'cfg_api_enabled')) {
     error($string['pagenotfound'], $string, $mysqli, $configObject, $notice);
 }
 
+// Check for required parameters and record in denied log if missing.
+try {
+  $client_id = param::required('client_id', param::ALPHANUM, param::FETCH_REQUEST);
+} catch (MissingParameter $e) {
+  error($string['clientnotsupplied'], $string, $mysqli, $configObject, $notice);
+}
+try {
+    $state = param::required('state', param::ALPHANUM, param::FETCH_REQUEST);
+} catch (MissingParameter $e) {
+    error($string['statenotsupplied'], $string, $mysqli, $configObject, $notice);
+}
+// Proccess auth.
 if (isset($_POST['submit'])) {
     $authorised = check_var('authorised', 'POST', true, false, true);
-    $client_id = check_var('client_id', 'POST', true, false, true);
     $userid = $userObject->get_user_ID();
     $oauth = new oauth($configObject);
     if ($userid != $oauth->get_client_user($client_id)) {
@@ -51,13 +62,6 @@ if (isset($_POST['submit'])) {
     }
     if (!$resp[0]) {
         error($resp[1], $string, $mysqli, $configObject, $notice);
-    }
-} else {
-    $client_id = check_var('client_id', 'GET', true, false, true);
-	if (!isset($_GET['state'])) {
-        error('State not supplied.', $string, $mysqli, $configObject, $notice);
-    } else {
-    	$state = $_GET['state'];
     }
 }
 ?>

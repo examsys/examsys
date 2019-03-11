@@ -131,7 +131,7 @@ class users extends generator {
   /** @var string[] An array of titles that can be used for users. */
   protected static $titles = array('Dr', 'Miss', 'Mr', 'Mrs', 'Mx', 'Prof');
   /** @var string[] All the valid roles for a user. */
-  protected static $roles = array(0 => 'Student', 'Staff', 'SysAdmin', 'Admin', 'graduate', 'left', 'External Examiner', 'Invigilator', 'Inactive Staff');
+  protected static $roles = array('Student', 'Staff', 'SysAdmin', 'Admin', 'graduate', 'left', 'External Examiner', 'Invigilator', 'Inactive Staff', 'Internal Reviewer', 'Standards Setter');
   /** @var string[] Possible genders. */
   protected static $gender = array('Female', 'Male', 'Other');
   /** @var string[] possible years of study. */
@@ -142,7 +142,9 @@ class users extends generator {
     'University Lecturer',
     'Technical Staff',
     'Staff External Examiner',
+    'Staff Internal Reviewer',
     'Invigilator',
+    'Standards Setter',
     'none',
     '',
   );
@@ -235,7 +237,7 @@ class users extends generator {
     $query = $db->prepare($sql);
     $query->bind_param('ssssssssssiisi', $data['password'], $data['grade'], $data['surname'], $data['initials'], $data['username'],
         $data['title'], $data['email'], $data['roles'], $data['first_names'], $data['gender'], $data['special_needs'],
-        $data['yearsofstudy'], $data['user_deleted'], $data['password_expire']);
+        $data['yearofstudy'], $data['user_deleted'], $data['password_expire']);
     if (!$query->execute()) {
       // The user was not successfully inserted.
       throw new data_error("User {$data['username']} not inserted into database");

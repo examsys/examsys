@@ -45,6 +45,6 @@
     <frame scrolling="no" resizable="no" src="add_random_question_controls.php?q_no=<?php echo $_GET['q_no']; ?>&questionlist=<?php echo $questionlist; ?>&question_no=<?php echo $question_no; ?>" name="controls">
   </frameset>
   <noframes>
-    <?php echo $string['frameserr'];?>
+    <?php echo $string['browsererr'];?>
   </noframes>
 </html>

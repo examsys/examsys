@@ -70,11 +70,11 @@
 
 <body>
 <?php
-  $result = $mysqli->prepare("SELECT schools.id, schools.code, schools.school, faculty.name, faculty.code, faculty.deleted, (COUNT(modules.id) - COUNT(modules.mod_deleted)) FROM (schools, faculty)
-    LEFT JOIN modules ON schools.id = modules.schoolid WHERE schools.facultyID = faculty.id AND schools.deleted IS NULL GROUP BY faculty.name, schools.code, school");
+  $result = $mysqli->prepare("SELECT schools.id, schools.code, schools.school, faculty.name, faculty.code, (COUNT(modules.id) - COUNT(modules.mod_deleted)) FROM (schools, faculty)
+    LEFT JOIN modules ON schools.id = modules.schoolid WHERE schools.facultyID = faculty.id AND schools.deleted IS NULL GROUP BY faculty.code, faculty.name, schools.code, schools.school, schools.id");
   $result->execute();
   $result->store_result();
-  $result->bind_result($id, $code, $school, $faculty, $faculty_code, $faculty_deleted, $module_no);
+  $result->bind_result($id, $code, $school, $faculty, $faculty_code, $module_no);
   $faculties = $result->num_rows;
   require '../include/school_options.inc';
   require '../include/toprightmenu.inc';

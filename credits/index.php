@@ -84,8 +84,6 @@ jQuery UI 1.10.4 - <a href="http://jqueryui.com" target="_blank">http://jqueryui
 <tr><td colspan="2">&nbsp;</td></tr>
 <tr><td><?php echo $string['videoplayer']; ?></td><td>FLV Player 1.6.0 - <a href="http://flv-player.net/players/maxi/" target="_blank">flv-player.net/players/maxi/</a></td></tr>
 <tr><td colspan="2">&nbsp;</td></tr>
-<tr><td><?php echo $string['metadata']; ?></td><td>GetID3 1.8.5 - <a href="http://getid3.sourceforge.net/">getid3.sourceforge.net</a></td></tr>
-<tr><td colspan="2">&nbsp;</td></tr>
 <tr><td><?php echo $string['graphics']; ?></td><td><a href="http://www.iconfinder.com/" target="_blank">www.iconfinder.com</a><br />
 <a href="http://www.psdgraphics.com/" target="_blank">www.psdgraphics.com</a><br />
 <a href="http://pixel-mixer.com/" target="_blank">pixel-mixer.com</a><br />

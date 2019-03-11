@@ -1,0 +1,55 @@
+{#This file is part of Rogō
+
+ Rogō is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ Rogō is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+#}
+
+{#
+This template is for the leadin question type.
+
+author Dr Joseph Baxter <joseph.baxter@nottingham.ac.uk>
+copyright 2018 onwards The University of Nottingham
+
+Required variables:
+
+data.questionno - the question number
+data.mediawidth - width of the media
+data.mediaheight - height of the media
+data.language - language the media uses
+data.mediafile - the media file
+data.tmpcorrect - the correct answer
+data.useranswer - the users answer
+data.markscorrect - marks for a correct answer
+data.marksincorrect - marks for an incorrect answer
+data.scoremethod - the scoremethod
+data.marks - the total marks available
+#}
+<div align="left">
+    <!-- ======================== HTML5 part include disp ================= -->
+    <canvas class="labelling" id="canvas{{data.questionno}}" width="{{data.mediawidth + 220}}px" height="{{data.mediaheight}}px"></canvas>
+    <br /><div id="canvasbox"></div>
+    <script>
+    setUpQuestion("{{data.questionno}}",
+    "flash{{data.questionno}}",
+    "{{data.language}}",
+    "{{data.mediafile}}",
+    "{{data.tmpcorrect|raw}}",
+    "{{data.useranswer|raw}}",
+    "{{data.markscorrect}}~{{data.marksincorrect}}~{{data.scoremethod}}",
+    "#FFC0C0",
+    "labelling",
+    "answer");
+    </script>
+    <!-- ==================================================== -->
+</div>
+<input type="hidden" name="q{{data.questionno}}" id="q{{data.questionno}}" {% if data.unanswered %} value="0{{data.marks}}" {% else %} value="{{data.useranswer}}" {% endif %}/>

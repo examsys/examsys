@@ -110,8 +110,10 @@ Class QuestionUtils {
    * @return string
    */
   static function clean_leadin($leadin, $limit=160) {
-    if (strpos($leadin, 'class="mee"') === false AND strpos($leadin, 'class=mee') === false) {
-      $leadin = strip_tags($leadin);                                     // No equation, strip all tags
+    $texteditorplugin = \plugins\plugins_texteditor::get_editor();
+    // Check if editor has clean rule i.e. for equations.
+    if ($texteditorplugin->clean_leadin($leadin)) {
+      $leadin = strip_tags($leadin);
       if (mb_strlen($leadin) > $limit and $limit != 0) {
         $leadin = mb_substr($leadin, 0, $limit) . '...';
       }
@@ -509,5 +511,69 @@ SQL;
         $result->fetch();
         $result->close();
         return $settings;
+    }
+
+    /**
+     * Get correct answer for question
+     * Used when question is a random block and method for getting correct answer varies.
+     * @param array $question question data to be updated
+     * @param integer $id question id
+     * @param mysqli $db db connection
+     * @return mixed
+     */
+    public static function get_correct_answer($question, $id, $db) {
+        $result = $db->prepare("SELECT q_id, q_type, correct, option_text, score_method FROM questions LEFT JOIN options ON questions.q_id = options.o_id  WHERE questions.q_id = ? ORDER BY id_num");
+        $result->bind_param('i', $id);
+        $result->execute();
+        $result->store_result();
+        $result->bind_result($q_id, $q_type, $correct, $option_text, $score_method);
+        $question['correct'] = '';
+        $question['correct_text'] = '';
+        while ($result->fetch()) {
+            $question['ID'] = $q_id;
+            $question['type'] = $q_type;
+            $question['score_method'] = $score_method;
+            $question['correct'] = self::fix_correct($q_type, $correct, $question['correct'], $option_text);
+            $question['option_text'] = $option_text;
+            $question['correct_text'] .= "\t" . $option_text;
+        }
+        $result->close();
+        return $question;
+    }
+
+    /**
+     * Some question type store the correct answer oddly so lets find it
+     * @param string $q_type question type
+     * @param string $correct question.correct
+     * @param string $old_correct what was supplied as correct
+     * @param string $option_text option.option_text
+     * @return string
+     */
+    public static function fix_correct($q_type, $correct, $old_correct, $option_text) {
+        if ($q_type === 'blank') {
+            // Fill in the blank questions only ever have one entry in the option table,
+            // the blanks that need to be filled in are stored in the option_text field of the table.
+            $old_correct = '';
+            // All of the areas a student needs to fill in are surrounded by [blank][/blank]
+            // with each option displayed to a student as a comma separated list.
+            $split1 = explode('[blank', $option_text);
+            for ($i=1; $i<count($split1); $i++) {
+                // The first entry in the comma separated list is the correct answer.
+                $split2 = explode(',', substr($split1[$i],1,strpos($split1[$i],'[/blank]')-1));
+                $old_correct .= ',' . $split2[0];
+            }
+        } else if ($q_type == 'mcq' or $q_type == 'enhancedcalc') {
+            $old_correct = ',' . $correct;
+        } elseif ($q_type != 'extmatch' and $q_type != 'matrix') {
+            $old_correct .= ',' . $correct;
+        } else {
+            $old_correct = ',' . str_replace('|',",",$correct);
+            // If there is a comma at the end remove it.
+            if (substr($old_correct, -1, 1) == ',') {
+                $old_correct = substr($old_correct, 0, strlen($old_correct) - 1);
+            }
+        }
+
+        return $old_correct;
     }
 }

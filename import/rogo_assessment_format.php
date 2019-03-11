@@ -24,7 +24,6 @@
 
 require '../include/staff_auth.inc';
 require_once '../include/errors.php';
-require_once '../include/media.inc';
 
 $paperID = check_var('paperID', 'GET', true, false, true);
 

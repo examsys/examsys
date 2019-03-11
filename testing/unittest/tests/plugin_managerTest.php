@@ -15,6 +15,7 @@
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
 use testing\unittest\unittestdatabase;
+use PHPUnit\DbUnit\DataSet\YamlDataSet;
 
 /**
  * Test plugin_manager class
@@ -31,7 +32,7 @@ class plugin_managertest extends unittestdatabase {
      * @return dataset
      */
     public function getDataSet() {
-        return new PHPUnit_Extensions_Database_DataSet_YamlDataSet($this->get_base_fixture_directory() . "plugin_managerTest" . DIRECTORY_SEPARATOR . "pluginmanager.yml");
+        return new YamlDataSet($this->get_base_fixture_directory() . "plugin_managerTest" . DIRECTORY_SEPARATOR . "pluginmanager.yml");
     }
     /**
      * Test listing enabled plugin for type

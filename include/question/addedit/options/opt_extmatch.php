@@ -46,11 +46,18 @@ $locked = ($dis_class != '');
 <?php
 
 if (isset($all_media['filenames'][$index]) and $all_media['filenames'][$index] != '') {
-  $current_media_html =  display_media($all_media['filenames'][$index], $all_media['widths'][$index], $all_media['heights'][$index], '', $index, $locked);
+  $configObj = Config::get_instance();
+  $questiondata = new plugins\questions\extmatch\renderdata();
+  $render = new render($configObj);
+  $questiondata->set_media($all_media['filenames'][$index], $all_media['widths'][$index], $all_media['heights'][$index], '', false, $index, $locked);
 ?>
               <tr<?php echo $alt_c ?>>
                 <th><?php echo $string['current'] . ' ' . $string['media'] ?></th>
-                <td><?php echo $current_media_html ?></td>
+                <td>
+                  <?php
+                  $render->render($questiondata, $string, 'paper/media.html');
+                  ?>
+                </td>
               </tr>
 <?php
 }

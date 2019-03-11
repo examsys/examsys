@@ -205,6 +205,23 @@ class LogMetadata {
     }
   }
 
+  /**
+   * Get the metadata ipaddress.
+   * @return string
+   */
+  public function get_ipaddress() {
+    return $this->ipaddress;
+  }
+
+  /**
+   * Set the metadata ipaddress.
+   * @param string $ipaddress
+   */
+  public function set_ipaddress($ipaddress) {
+    $this->ipaddress = $ipaddress;
+    $this->save();
+  }
+
   /*
   * PRIVATE FUNCTIONS
   */

@@ -43,14 +43,33 @@ Class UserUtils {
     return $userid;
   }
 
-  static function create_user($username, $password, $title, $forname, $surname, $email, $course, $gender, $year, $role, $sid, $db, $initials = null) {
+  /**
+   * Create a new user account
+   *
+   * @param string $username a username the user will login with
+   * @param string $password a password the user will use on login
+   * @param string $title the users title - Mr, Mrs etc
+   * @param string $forname the users first name
+   * @param string $surname the users family name
+   * @param string $email the users email address
+   * @param string $course the couse the user is registered on / staff type
+   * @param string $gender the users gender
+   * @param integer $year the users year of study
+   * @param string $role the users role i.e. Student, Staff
+   * @param string $sid the users student ID
+   * @param mysqli $db the database connection
+   * @param string $initials the users initials
+   * @param bool $guest flag to enable guest account creation
+   * @return bool
+   */
+  static function create_user($username, $password, $title, $forname, $surname, $email, $course, $gender, $year, $role, $sid, $db, $initials = null, $guest = false) {
     $username = trim($username);
     $surname = trim($surname);
     if (empty($username) or empty($surname) or empty($role)) {
       return false;
     }
 
-    if (!self::username_exists($username, $db) and self::username_is_valid($username) and stristr('ps_', $username) === false) {
+    if (!self::username_exists($username, $db) and self::username_is_valid($username, $guest) and stristr('ps_', $username) === false) {
       // Force re-build of initials off forenames.
       if ($initials == '') {
           $initial = explode(' ', $forname);
@@ -209,10 +228,14 @@ Class UserUtils {
         return false;
     }
     if (isset($sid) and $sid != '') {
+      if (is_null($current['studentid'])) {
+        $result = $db->prepare("INSERT INTO sid (student_id, userID) VALUES (?, ?)");
+      } else {
         $result = $db->prepare("UPDATE sid SET student_id = ? WHERE userID = ?");
-        $result->bind_param('si', $sid, $id);
-        $result->execute();
-        $result->close();
+      }
+      $result->bind_param('si', $sid, $id);
+      $result->execute();
+      $result->close();
     }
     if ($db->errno != 0) {
         return false;
@@ -258,14 +281,15 @@ Class UserUtils {
    * Check if username is valid.
    *
    * @param string $username username
+   * @param bool $guest allow guest account usernames to be flagged as valid
    *
    * @return bool true when valid, otherwise false
    *
    */
-  static function username_is_valid($username) {
+  static function username_is_valid($username, $guest = false) {
     $is_guest_name = (substr(strtolower($username), 0, 4) == 'user' and is_numeric(substr($username, 4)));
 
-    if (trim($username) == '' or $is_guest_name) {
+    if (trim($username) == '' or ($is_guest_name and !$guest)) {
       return false;
     }
 

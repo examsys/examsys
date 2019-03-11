@@ -1,0 +1,35 @@
+{#This file is part of Rogō
+
+Rogō is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Rogō is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+#}
+
+{#
+This template is for the editor display.
+
+author Dr Joseph Baxter <joseph.baxter@nottingham.ac.uk>
+copyright 2018 onwards The University of Nottingham
+
+Required variables:
+
+data.type - type of editor i.e. simple
+data.questionno - question number
+data.style - inline styling
+data.content - text editor content
+
+#}
+{% if data.style == '' %}
+<textarea class="{{data.type}}" id="q{{data.questionno}}" name="q{{data.questionno}}">{{data.useranswer|raw}}</textarea>
+{% else %}
+<textarea class="{{data.type}}" id="q{{data.questionno}}" name="q{{data.questionno}}" style="{{data.style}}">{{data.useranswer|raw}}</textarea>
+{% endif %}

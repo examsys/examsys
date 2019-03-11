@@ -235,7 +235,16 @@ if (isset($_POST) and count($_POST) > 0) {
 
     $(document).ready(checkTotals);
   </script>
-  <?php require './ajaxsave.js.php'; ?>
+  <?php
+    require './ajaxsave.js.php';
+    $texteditorplugin = \plugins\plugins_texteditor::get_editor();
+    $texteditorplugin->display_header();
+    if($configObject->get_setting('core', 'paper_mathjax')) {
+      $render = new render($configObject);
+      $render->render(null, null, 'mathjax.html');
+    }
+  ?>
+
   </head>
 
   <body>
@@ -269,11 +278,11 @@ $photoname = UserUtils::student_photo_exist($username);
   // Get the questions.
   $question_no = 1;
   $max_cols = 0;
-  $cell_colors = array('#D99594', '#FABF8F', '#C2D69B');
+  $cell_colors = array('#D99694', '#E5B9B7', '#FFC169', '#C2D69B', '#C2DFFF','#5ea2ef','#4b0082', '#4b00FF','#9400d3','#9400FF');
   /**
    * Getting the max column number
    */
-  $max_cols_result = $mysqli->prepare("SELECT display_method FROM papers, questions WHERE paper = ? AND papers.question = questions.q_id ORDER BY display_method limit 1");
+  $max_cols_result = $mysqli->prepare("SELECT display_method FROM papers, questions WHERE paper = ? AND papers.question = questions.q_id ORDER BY CHAR_LENGTH(display_method) - CHAR_LENGTH(REPLACE(display_method, '|', '')) desc limit 1");
   $max_cols_result->bind_param('i', $paperID);
   $max_cols_result->execute();
   $max_cols_result->bind_result($display_method);

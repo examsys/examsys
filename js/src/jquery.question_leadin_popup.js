@@ -1,0 +1,20 @@
+/*
+ * Display a non-modal popup, called on hover events in question search results
+ */
+
+$(document).ready(function(){
+	$('.extended-leadin').hover(function(){
+		var extendedLeadin = $(this).data('extended-leadin');
+		// Delete any extra ones that may have appeared
+		$('.question-leadin-popup').remove();
+		$('<p class="question-leadin-popup" id="question-leadin-popup-' + $(this).parent().attr('id') + '"></p>')
+			.text(extendedLeadin)
+			.appendTo('body')
+			.fadeIn(200);
+	}, function() {
+		var popupId = $(this).parent().attr('id');
+		$('#question-leadin-popup-' + popupId).fadeOut(200, function() { $('#question-leadin-popup-' + popupId).remove(); } );
+	}).mousemove(function(e) {
+		$('#question-leadin-popup-' + $(this).parent().attr('id')).css({ top: e.pageY + 20, left: e.pageX + 10 });
+	})
+});

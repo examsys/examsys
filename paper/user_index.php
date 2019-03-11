@@ -40,7 +40,11 @@ check_var('id', 'GET', true, false, false);
 function load_attempts($test_type, $paperID, $userObj, $db) {
   $prev_attempts = array();
 
-  $result = $db->prepare("SELECT lm.id, MAX(l.screen) AS screen, SUM(l.mark) AS mark, DATE_FORMAT(lm.started,\"%Y%m%d%H%i%s\") AS started, ? AS paper_type, DATE_FORMAT(lm.started,\"%d/%m/%Y %H:%i\") AS temp_date FROM log_metadata lm LEFT JOIN log$test_type l ON l.metadataID = lm.id WHERE started IS NOT NULL AND lm.paperID = ? AND lm.userID = ? AND screen IS NOT NULL GROUP BY started DESC");
+  $result = $db->prepare("SELECT lm.id, MAX(l.screen) AS screen, SUM(l.mark) AS mark, DATE_FORMAT(lm.started,\"%Y%m%d%H%i%s\") AS started, ? AS paper_type,
+    DATE_FORMAT(lm.started,\"%d/%m/%Y %H:%i\") AS temp_date
+    FROM log_metadata lm LEFT JOIN log$test_type l ON l.metadataID = lm.id
+    WHERE started IS NOT NULL AND lm.paperID = ? AND lm.userID = ? AND screen IS NOT NULL
+    GROUP BY lm.started, lm.id DESC");
   $result->bind_param('iii', $test_type, $paperID, $userObj->get_user_ID());
   $result->execute();
   $result->bind_result($metadataID, $log_max_screen, $log_mark, $log_started, $log_paper_type, $log_temp_date);
@@ -51,7 +55,11 @@ function load_attempts($test_type, $paperID, $userObj, $db) {
 	
   if ($test_type == '0') {
     // If type is Formative query the Progress Test log table as well and add into array if max screen is not blank.
-    $result = $db->prepare("SELECT lm.id, MAX(l.screen) AS screen, SUM(l.mark) AS mark, DATE_FORMAT(lm.started,\"%Y%m%d%H%i%s\") AS started, 1 AS paper_type, DATE_FORMAT(lm.started,\"%d/%m/%Y %H:%i\") AS temp_date FROM log_metadata lm LEFT JOIN log1 l ON l.metadataID = lm.id WHERE started IS NOT NULL AND lm.paperID = ? AND lm.userID = ? AND screen IS NOT NULL GROUP BY started DESC");
+    $result = $db->prepare("SELECT lm.id, MAX(l.screen) AS screen, SUM(l.mark) AS mark, DATE_FORMAT(lm.started,\"%Y%m%d%H%i%s\") AS started, 1 AS paper_type,
+      DATE_FORMAT(lm.started,\"%d/%m/%Y %H:%i\") AS temp_date
+      FROM log_metadata lm LEFT JOIN log1 l ON l.metadataID = lm.id
+      WHERE started IS NOT NULL AND lm.paperID = ? AND lm.userID = ? AND screen IS NOT NULL
+      GROUP BY lm.started, lm.id DESC");
     $result->bind_param('ii', $paperID, $userObj->get_user_ID());
     $result->execute();
     $result->bind_result($metadataID, $log_max_screen, $log_mark, $log_started, $log_paper_type, $log_temp_date);
@@ -108,9 +116,12 @@ function have_previously_started($attempts) {
 
 function calculate_duration($normal, $extra_time_mins, $special_needs_percentage) {
   $mins = $normal;
-  if ($extra_time_mins != NULL) $mins .= ' + ' . $extra_time_mins;
-  if ($special_needs_percentage != NULL) $mins .= ' + ' . ($normal / 100) * $special_needs_percentage;
-
+  if ($extra_time_mins != NULL) {
+    $mins += $extra_time_mins;
+  }
+  if ($special_needs_percentage != NULL) {
+    $mins += ($normal / 100) * $special_needs_percentage;
+  }
   return $mins;
 }
 
@@ -237,6 +248,7 @@ $remaining_time = 0;
 $log_metadata = new LogMetadata($userObject->get_user_ID(), $propertyObj->get_property_id(), $mysqli);
 // $log_metadata->get_record will return true if this user has stared this exam. false otherwise
 $exam_started = $log_metadata->get_record('', false);
+$ipmismatch = false;
 
 if ($exam_duration !== null) {
 
@@ -258,6 +270,16 @@ if ($exam_duration !== null) {
         // then the paper duration e.g in multiple sittings
         $remaining_time = $exam_duration_sec + $extra_time_secs;
         $display_remaining_time = false;
+      }
+    }
+    // Check current IP address with that of attempt in log.
+    // Warn user that they need to log out if they are logged into mulitple devices in this exam.
+    if ($current_address !== $log_metadata->get_ipaddress()) {
+      if (!is_null($log_metadata->get_ipaddress())) {
+         $ipmismatch = true;
+      }
+      if ($exam_started) {
+        $log_metadata->set_ipaddress($current_address);
       }
     }
     $extra_time_mins    = $extra_time_secs / 60;
@@ -301,6 +323,10 @@ if ($exam_duration !== null) {
   <script type="text/javascript" src="../js/jquery-ui-1.10.4.min.js"></script>
   <script type="text/javascript" src="../js/toprightmenu.js"></script>
   <script type="text/javascript" src="../js/student_help.js"></script>
+<?php
+  $texteditorplugin = \plugins\plugins_texteditor::get_editor();
+  $texteditorplugin->display_header();
+?>
   <script>
   function startPaper() {
 <?php
@@ -335,21 +361,38 @@ if ($exam_duration !== null) {
       exam.focus();
     }
   }
-  
+
   $(function () {
+    $("#overlay").hide();
+
+    $("#info_dialog_ok").click(function(event) {
+      $("#info_overlay").hide();
+    });
+
     $(document).click(function() {
       $('#toprightmenu').fadeOut();
     });
     
     $(document).tooltip({ items: ".help_tip[title]", position: { my: "top+10", at: "center+125" }  });
-  });
-  </script>
-  <?php
-    if($configObject->get_setting('core', 'paper_mathjax')) {
-      $render = new render($configObject);
-      $render->render(null, null, 'mathjax.html');
+
+    <?php if ($ipmismatch) {
+    ?>
+    $("#info_overlay").show();
+    $("#info_submit_dialog_title").html("<?php echo $string['ipmismatchtitle'] ?>");
+    $("#info_submit_dialog_msg").html("<?php echo $string['ipmismatchblurb'] ?>");
+    $("#info_submit_dialog").css('left', (($(window).width() / 2) - 250) + 'px');
+    $("#info_submit_dialog").css('top', (($(window).height() / 2) - 100) + 'px');
+    <?php
     }
-  ?>
+    ?>
+    });
+    </script>
+    <?php
+      if($configObject->get_setting('core', 'paper_mathjax')) {
+        $render = new render($configObject);
+        $render->render(null, null, 'mathjax.html');
+      }
+    ?>
 </head>
 <body>
 <div style="text-align:right; padding-right:2px;"><img src="../artwork/toprightmenu.gif" id="toprightmenu_icon" /></div>
@@ -592,7 +635,7 @@ if ($textsize > 120) {
 <div class="powered"><i>powered by</i> Rog&#333; <?php echo $configObject->get_setting('core', 'rogo_version'); ?></div>
 
 	<!-- Cache often used scripts and images -->
-	<script src="../js/start.js"></script>
+	<script src="../js/start.min.js"></script>
 	<img class="noimg" src="../artwork/calc.png" />
 	<img class="noimg" src="../artwork/no_save.png" />
 	<img class="noimg" src="../artwork/fire_exit.png" />
@@ -602,5 +645,13 @@ if ($textsize > 120) {
     $render->render_html5_js(json_encode($jstring));
   ?>
 	<img class="noimg" src="../js/images/combined.png" />
+<div id="info_overlay">
+    <div id="info_submit_dialog">
+        <div id="info_submit_dialog_icon"><img src="../artwork/question_mark_64.png" width="64" height="64" alt="<?php echo $string['questionmark'] ?>" /></div>
+        <p id="info_submit_dialog_title"></p>
+        <p id="info_submit_dialog_msg"></p>
+        <div id="info_submit_dialog_buttons"><input type="button" name="info_dialog_ok" id="info_dialog_ok" class="ok" value="<?php echo $string['ok'] ?>" /></div>
+    </div>
+</div>
 </body>
 </html>

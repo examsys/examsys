@@ -24,7 +24,6 @@
 
 require '../include/staff_auth.inc';
 require '../include/errors.php';
-require '../include/media.inc';
 require_once '../include/mapping.inc';
 require_once '../classes/questionbank.class.php';
 
@@ -227,7 +226,7 @@ if (!isset($_POST['submit'])) {
         $new_q_media = '';
         foreach ($media_array as $individual_media) {
           if ($individual_media != '' and $individual_media != 'NULL') {
-            $new_media_name = unique_filename($individual_media);
+            $new_media_name = media_handler::unique_filename($individual_media);
             if (file_exists($mediadirectory->fullpath($individual_media))){
               if (!copy($mediadirectory->fullpath($individual_media), $mediadirectory->fullpath($new_media_name))) {
                 display_error('File Copy Error 1', sprintf($string['error1'], $new_media_name));
@@ -281,7 +280,7 @@ if (!isset($_POST['submit'])) {
           $new_o_media = '';
           foreach ($media_array as $individual_media) {
             if ($individual_media != '' and $individual_media != 'NULL') {
-              $new_media_name = unique_filename($individual_media);
+              $new_media_name = media_handler::unique_filename($individual_media);
               if (file_exists($mediadirectory->fullpath($individual_media))){
                 if (!copy($mediadirectory->fullpath($individual_media), $mediadirectory->fullpath($new_media_name))) {
                   display_error('File Copy Error 2', sprintf($string['error2'], $new_media_name, $individual_media));

@@ -1,0 +1,35 @@
+<br />
+<br />
+<table border="0" cellpadding="4" cellspacing="0" style="width:900px; border:1px solid #95AEC8; margin-left:auto; margin-right:auto">
+    <tr>
+        <td class="dialog_header" style="width:56px"><img src="{{path}}/artwork/upload_48.png" width="48" height="48" alt="Icon" /></td><td class="dialog_header midblue_header" style="width:844px">{{lang.bulkmoduleimport}}</span></td>
+    </tr>
+    <tr>
+        <td align="left" style="padding:10px" class="dialog_body" colspan="2">
+
+            <p style="text-align:justify">{{lang.intro}}</p>
+            <br />
+            <div>{{lang.mandatoryfields}}
+                <ol>
+                {% for item in data.required %}
+                    <li>{{item}} - {{lang[item]}}</li>
+                {% endfor %}
+                </ol>
+            </div>
+            <div>{{lang.optionalfields}}
+                <ol>
+                    {% for item in data.optional %}
+                    <li>{{item}} - {{lang[item]}}</li>
+                    {% endfor %}
+                </ol>
+            </div>
+            <div align="center">
+                <form id="import_form" name="import" method="post" action="{{data.formaction}}" enctype="multipart/form-data" autocomplete="off">
+                    <p><strong>{{lang.csvfile}}</strong> <input type="file" size="50" name="csvfile" class="required" /></p>
+                    <br />
+                    <p><input type="submit" class="ok" value="{{lang.import}}" name="submit" /><input class="cancel" id="cancel" type="button" value="{{lang.cancel}}" name="cancel" /></p>
+                </form>
+            </div>
+        </td>
+    </tr>
+</table>

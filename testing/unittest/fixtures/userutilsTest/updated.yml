@@ -1,0 +1,30 @@
+users:
+  -
+    id: 1
+    username: "student1"
+    roles: "Student"
+    grade: "TEST"
+    title: "Mr"
+    initials: "J"
+    surname: "Baxter"
+    first_names: "Joe"
+    email: "joseph.baxter@example.com"
+    gender: "Male"
+  -
+    id: 2
+    username: "student2"
+    roles: "Student"
+    grade: "TEST"
+    title: "Dr"
+    initials: "J"
+    surname: "Baxter"
+    first_names: "Joseph"
+    email: "joe.baxter@example.com"
+    gender: "Male"
+sid:
+  -
+    userID: 1
+    student_id: 12345678
+  -
+    userID: 2
+    student_id: 87654321

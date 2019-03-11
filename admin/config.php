@@ -30,11 +30,23 @@ if (isset($_POST['submit'])) {
     foreach ($configObject->get_setting('core') as $setting => $value) {
         $type = $configObject->get_setting_type('core', $setting);
         if ($type === Config::ASSOC) {
-            $new_value = array();
+          $new_value = array();
+          // Media types have a boolean value.
+          if ($setting == 'system_mediatypes') {
             foreach ($value as $name => $oldval) {
-                $newval =  param::optional($setting . '_' . $name, '', param::TEXT, param::FETCH_POST);
-                $new_value[$name] = $newval;
+              $enabled = param::optional($setting . '_' . str_replace('.', '_', $name), false, param::BOOLEAN, param::FETCH_POST);
+              if ($enabled) {
+                $new_value[$name] = 1;
+              } else {
+                $new_value[$name] = 0;
+              }
             }
+          } else {
+            foreach ($value as $name => $oldval) {
+              $newval = param::optional($setting . '_' . $name, '', param::TEXT, param::FETCH_POST);
+              $new_value[$name] = $newval;
+            }
+          }
         } else {
             $new_value = param::optional($setting, '', param::RAW, param::FETCH_POST);
             // Timezones are display in a multi selectbox so the post will be an array.
@@ -132,6 +144,7 @@ foreach ($displayconfigs as $area => $conf) {
             foreach ($value as $i => $v) {
               $data['item'][$idx]['i'] = htmlspecialchars($i);
               $data['item'][$idx]['v'] = htmlspecialchars($v);
+
               $idx++;
             }
             $render->render($data, $string, 'admin/config/config_assoc.html');

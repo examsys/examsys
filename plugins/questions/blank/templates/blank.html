@@ -1,0 +1,47 @@
+{#This file is part of Rogō
+
+ Rogō is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ Rogō is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+#}
+
+{#
+This template is for the fill in the blank question type with drop down display.
+
+author Dr Joseph Baxter <joseph.baxter@nottingham.ac.uk>
+copyright 2018 onwards The University of Nottingham
+
+Required variables:
+
+data.blankoptions - array of text and fill in the blank options
+blankoptions.itemtype - blurb or blank option list
+blankoptions.itemcount - id of fill in the blank option list
+blankoptions.unans - flag indicating if fill in the blank has been previously answered
+blankoptions.itemvalue - blurb text or blank option
+itemvalue.answer - option
+itemvalue.selected - flag indicating if option was previously seleced
+data.questionno - the question number
+#}
+<p>
+{% for i,p in data.blankoptions %}
+    {% if p.itemtype == 'blurb' %}
+    {{p.itemvalue|raw}}
+    {% else %}
+    <select name="q{{data.questionno}}_{{p.itemcount}}" {% if p.unans %} class="unans" {% endif %}>
+                    <option value="u"></option>
+       {% for a in p.itemvalue %}
+                    <option value="{{a.answer}}" {% if a.selected %} selected {% endif %}>{{a.answer}}</option>
+       {% endfor %}
+    </select>
+    {% endif %}
+{% endfor %}
+</p>

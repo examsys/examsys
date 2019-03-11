@@ -15,6 +15,7 @@
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
 use testing\unittest\unittestdatabase;
+use PHPUnit\DbUnit\DataSet\YamlDataSet;
 
 /**
  * Test paperutils class count methods.
@@ -26,7 +27,7 @@ use testing\unittest\unittestdatabase;
  */
 class paperutils_counttest extends unittestdatabase {
   public function getDataSet() {
-    return new PHPUnit_Extensions_Database_DataSet_YamlDataSet($this->get_base_fixture_directory() . "paperutilsTest" . DIRECTORY_SEPARATOR . "paperutils_count.yml");
+    return new YamlDataSet($this->get_base_fixture_directory() . "paperutilsTest" . DIRECTORY_SEPARATOR . "paperutils_count.yml");
   }
 
   /**

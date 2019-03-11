@@ -117,9 +117,9 @@ QUERY;
         
     $this->tableList['config'] = <<<QUERY
         CREATE TABLE `config` (
-          `component` varchar(100) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'core',
-          `setting` varchar(100) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-          `value` text COLLATE utf8_unicode_ci,
+          `component` varchar(100) NOT NULL DEFAULT 'core',
+          `setting` varchar(100) NOT NULL DEFAULT '',
+          `value` text,
           `type` VARCHAR(10) NULL,
           PRIMARY KEY (`component`,`setting`)
         ) ENGINE={$engine} DEFAULT CHARSET={$charset}
@@ -157,7 +157,7 @@ QUERY;
     $this->tableList['ebel'] = <<<QUERY
           CREATE TABLE `ebel` (
             `std_setID` int(10) unsigned NOT NULL,
-            `category` char(3) default NULL,
+            `category` char(3) NOT NULL,
             `percentage` float default NULL,
             PRIMARY KEY (`std_setID`,`category`)
           ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
@@ -324,8 +324,8 @@ QUERY;
 
     $this->tableList['keywords_question'] = <<<QUERY
         CREATE TABLE `keywords_question` (
-          `q_id` int(11) default NULL,
-          `keywordID` int(11) default NULL,
+          `q_id` int(11) NOT NULL,
+          `keywordID` int(11) NOT NULL,
           PRIMARY KEY (`q_id`, `keywordID`)
         ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
@@ -711,7 +711,7 @@ QUERY;
           `sms` varchar(255) default NULL,
           `selfenroll` tinyint(4) default NULL,
           `schoolid` int(11) default NULL,
-          `neg_marking` tinyint(1) default NULL,
+          `neg_marking` tinyint(1) default 0,
           `ebel_grid_template` int(11) default NULL,
           `mod_deleted` datetime default NULL,
           `timed_exams` tinyint(4) default NULL,
@@ -919,7 +919,6 @@ QUERY;
           `external_review_deadline` date default NULL,
           `internal_review_deadline` date default NULL,
           `sound_demo` enum('0','1') default '0',
-          `latex_needed` tinyint(4) default '0',
           `password` char(255) default NULL,
           `retired` datetime default NULL,
           `crypt_name` varchar(32) default NULL,
@@ -1215,8 +1214,8 @@ QUERY;
 
     $this->tableList['sid'] = <<<QUERY
         CREATE TABLE `sid` (
-          `student_id` char(15) default NULL,
-          `userID` int(10) unsigned NOT NULL default 0,
+          `student_id` char(15) NOT NULL,
+          `userID` int(10) unsigned NOT NULL,
           PRIMARY KEY  (`userID`,`student_id`)
         ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
@@ -1257,6 +1256,7 @@ QUERY;
         ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
+if ($helpEngine != 'ndbcluster') {
     $this->tableList['staff_help'] = <<<QUERY
         CREATE TABLE `staff_help` (
           `id` smallint(6) NOT NULL auto_increment,
@@ -1268,16 +1268,36 @@ QUERY;
           `checkout_authorID` int(10) unsigned default NULL,
           `roles` enum('SysAdmin','Admin','Staff') default NULL,
           `deleted` datetime default NULL,
-          `language` char(5) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'en',
+          `language` char(5) NOT NULL DEFAULT 'en',
           `articleid` smallint(6) unsigned NOT NULL,
-          `lastupdated` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+          `lastupdated` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
           PRIMARY KEY  (`id`),
           KEY `language` (`language`),
           KEY `articleid` (`articleid`),
           FULLTEXT KEY `title` (`title`,`body_plain`)
-        ) ENGINE={$helpEngine} AUTO_INCREMENT=0 DEFAULT CHARSET=utf8
+        ) ENGINE={$helpEngine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
-
+} else {
+    $this->tableList['staff_help'] = <<<QUERY
+        CREATE TABLE `staff_help` (
+          `id` smallint(6) NOT NULL auto_increment,
+          `title` mediumtext,
+          `body` mediumtext,
+          `body_plain` mediumtext,
+          `type` enum('page','pointer') default NULL,
+          `checkout_time` datetime default NULL,
+          `checkout_authorID` int(10) unsigned default NULL,
+          `roles` enum('SysAdmin','Admin','Staff') default NULL,
+          `deleted` datetime default NULL,
+          `language` char(5) NOT NULL DEFAULT 'en',
+          `articleid` smallint(6) unsigned NOT NULL,
+          `lastupdated` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+          PRIMARY KEY  (`id`),
+          KEY `language` (`language`),
+          KEY `articleid` (`articleid`)
+        ) ENGINE={$helpEngine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+QUERY;
+}
     $this->tableList['std_set'] = <<<QUERY
         CREATE TABLE `std_set` (
           `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -1312,6 +1332,7 @@ QUERY;
         ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
+if ($helpEngine != 'ndbcluster') {
     $this->tableList['student_help'] = <<<QUERY
         CREATE TABLE `student_help` (
           `id` smallint(6) NOT NULL auto_increment,
@@ -1322,16 +1343,35 @@ QUERY;
           `checkout_time` datetime default NULL,
           `checkout_authorID` int(10) unsigned default NULL,
           `deleted` datetime default NULL,
-          `language` char(5) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'en',
+          `language` char(5) NOT NULL DEFAULT 'en',
           `articleid` smallint(6) unsigned NOT NULL,
-          `lastupdated` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+          `lastupdated` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
           PRIMARY KEY (`id`),
           KEY `language` (`language`),
           KEY `articleid` (`articleid`),
           FULLTEXT KEY `title` (`title`,`body_plain`)
-        ) ENGINE={$helpEngine} AUTO_INCREMENT=0 DEFAULT CHARSET=utf8
+        ) ENGINE={$helpEngine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
-
+} else {
+    $this->tableList['student_help'] = <<<QUERY
+        CREATE TABLE `student_help` (
+          `id` smallint(6) NOT NULL auto_increment,
+          `title` mediumtext,
+          `body` mediumtext,
+          `body_plain` mediumtext,
+          `type` enum('page','pointer') default NULL,
+          `checkout_time` datetime default NULL,
+          `checkout_authorID` int(10) unsigned default NULL,
+          `deleted` datetime default NULL,
+          `language` char(5) NOT NULL DEFAULT 'en',
+          `articleid` smallint(6) unsigned NOT NULL,
+          `lastupdated` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+          PRIMARY KEY (`id`),
+          KEY `language` (`language`),
+          KEY `articleid` (`articleid`)
+        ) ENGINE={$helpEngine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+QUERY;
+}
     $this->tableList['student_notes'] = <<<QUERY
         CREATE TABLE `student_notes` (
           `note_id` int(11) NOT NULL auto_increment,
@@ -1517,7 +1557,7 @@ $this->tableList['oauth_clients'] = <<<QUERY
         CREATE TABLE oauth_clients (
             client_id VARCHAR(80) NOT NULL,
             client_secret VARCHAR(80),
-            redirect_uri VARCHAR(2000) NOT NULL,
+            redirect_uri TEXT NOT NULL,
             grant_types VARCHAR(80),
             scope VARCHAR(100),
             user_id VARCHAR(80),
@@ -1532,7 +1572,7 @@ $this->tableList['oauth_access_tokens'] = <<<QUERY
             client_id VARCHAR(80) NOT NULL,
             user_id VARCHAR(255),
             expires TIMESTAMP NOT NULL,
-            scope VARCHAR(2000),
+            scope TEXT,
             CONSTRAINT access_token_pk PRIMARY KEY (access_token)
         ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
@@ -1542,9 +1582,9 @@ $this->tableList['oauth_authorization_codes'] = <<<QUERY
             authorization_code VARCHAR(40) NOT NULL,
             client_id VARCHAR(80) NOT NULL,
             user_id VARCHAR(255),
-            redirect_uri VARCHAR(2000),
+            redirect_uri TEXT,
             expires TIMESTAMP NOT NULL,
-            scope VARCHAR(2000),
+            scope TEXT,
             CONSTRAINT auth_code_pk PRIMARY KEY (authorization_code)
         ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
@@ -1554,7 +1594,7 @@ $this->tableList['oauth_refresh_tokens'] = <<<QUERY
             refresh_token VARCHAR(40) NOT NULL,
             client_id VARCHAR(80) NOT NULL,
             user_id VARCHAR(255), expires TIMESTAMP NOT NULL,
-            scope VARCHAR(2000),
+            scope TEXT,
             CONSTRAINT refresh_token_pk PRIMARY KEY (refresh_token),
             KEY `idx_user_id` (`user_id`)
         ) ENGINE={$engine} DEFAULT CHARSET={$charset}
@@ -1563,7 +1603,7 @@ QUERY;
 $this->tableList['oauth_users'] = <<<QUERY
         CREATE TABLE oauth_users (
             username VARCHAR(255) NOT NULL,
-            password VARCHAR(2000),
+            password TEXT,
             first_name VARCHAR(255),
             last_name VARCHAR(255),
             CONSTRAINT username_pk PRIMARY KEY (username)
@@ -1581,7 +1621,7 @@ $this->tableList['oauth_jwt'] = <<<QUERY
         CREATE TABLE oauth_jwt (
             client_id VARCHAR(80) NOT NULL,
             subject VARCHAR(80),
-            public_key VARCHAR(2000),
+            public_key TEXT,
             CONSTRAINT jwt_client_id_pk PRIMARY KEY (client_id)
         ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;

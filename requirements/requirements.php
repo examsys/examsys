@@ -29,6 +29,12 @@ if (is_null($configObject->get('cfg_web_root'))) {
   require_once '../include/path_functions.inc.php';
   $cfg_web_root = get_root_path() . '/';
   $configObject->set('cfg_web_root', $cfg_web_root);
+} elseif (!file_exists($configObject->get('cfg_web_root'))) {
+  // A configuration file exists, but the configured web root does not exist.
+  require_once '../include/path_functions.inc.php';
+  $cfg_web_root = get_root_path() . '/';
+  $configObject->set('cfg_web_root', $cfg_web_root);
+  $badconfigfile = true;
 }
 $language = LangUtils::getLang($cfg_web_root);
 
@@ -45,6 +51,19 @@ if(!LangUtils::langPackInstalled($language)) {
 
 LangUtils::loadlangfile(str_replace($cfg_web_root, '', str_replace('\\', '/', ($_SERVER['SCRIPT_FILENAME']))));
 
+if (!isset($string)) {
+  // The language files were not loaded. This means that either it is not configured for the Rogo root directory,
+  // or there is a differnece in case on a system that is not case sensitive.
+  InstallUtils::displayError(['91' => 'Could not load language files. Please check the case of the cfg_web_root setting.']);
+  die();
+}
+
+if (isset($badconfigfile)) {
+  // The cfg_web_root setting directory does not exist.
+  InstallUtils::displayError(['92' => $string['invalidconfig']]);
+  die();
+}
+
 $php_min_ver = $configObject->getxml('php', 'min_version');
 $phpversion = requirements::check_php_version();
 $phpext = requirements::check_php_extensions();
@@ -57,9 +76,9 @@ foreach ($phpext as $idx => $val) {
 
 // Lang packs.
 if ($langpackfound === 1) {
-  $info['langpacks'] = array($string['langpacksfound'], false);
+  $info['langpacks'] = array($string['langpacksfound'], true);
 } elseif ($langpackfound === 2) {
-  $info['langpacks'] = array(sprintf($string['langpacksmissing'], $language), false);
+  $info['langpacks'] = array(sprintf($string['langpacksmissing'], $language), 'warn');
 }
 // php version.
 if (!$phpversion) {
@@ -82,28 +101,18 @@ if (InstallUtils::config_exists()){
 }
 // php extensions.
 foreach ($phpext as $idx => $val) {
-    if (!$val) {
+    if ($val === false) {
       $blurb = sprintf($string['phpextension'], $idx);
-      $info[$idx] = array($blurb ,false);
-    } else {
+      $info[$idx] = array($blurb, false);
+    } elseif ($val === true) {
       $blurb = sprintf($string['phpextensionsuccess'], $idx);
-      $info[$idx] = array($blurb ,true);
+      $info[$idx] = array($blurb, true);
+    } else {
+      $blurb = sprintf($string['phpextensionwarn'], $idx);
+      $info[$idx] = array($blurb, 'warn');
     }
 }
-// Install composer and dependencies.
-$composer = requirements::composer();
-if ($composer === true) {
-  $info['composer'] = array($string['composersuccess'], true);
-} else {
-  $info['composer'] = array($composer, false);
-}
-// Install npm dependencies.
-$npm = requirements::npm();
-if ($npm === true) {
-  $info['npm'] = array($string['npmsuccess'], true);
-} else {
-  $info['npm'] = array($npm, false);
-}
+
 $html = <<<HTML
   <div class="requirements-header">
     <div class="requirements-body-item">Requirement</div>
@@ -113,17 +122,17 @@ HTML;
 echo $html;
 foreach ($info as $idx => $val) {
   echo "<div class=\"requirements-body\"><div class=\"requirements-body-item\">$val[0]</div><div class=\"requirements-body-item\">";
-  if ($val[1]) {
+  if ($val[1] === true) {
     echo "<img src=\"../artwork/tick.png\" id=\"yes\" /></div>";
-  }elseif ($idx === 'langpacks') {
-    echo "<img src=\"../artwork/exclamation.png\" id=\"warn\" /></div>";
-  } else {
+  } elseif ($val[1] === false) {
     echo "<img src=\"../artwork/cross.png\" id=\"no\" /></div>";
+  } else {
+    echo "<img src=\"../artwork/exclamation.png\" id=\"warn\" /></div>";
   }
   echo "</div>";
 }
 echo "<div class=\"requirements-body\">";
-if ($phpversion and $phpallext and $composer and $dbversion) {
+if ($phpversion and $phpallext and $dbversion) {
   if (InstallUtils::config_exists()){
     echo "<button id=\"update\" class=\"updatebutton\" onclick=\"run_update()\">Update</button>";
   } else {

@@ -1,0 +1,60 @@
+{#This file is part of Rogō
+
+ Rogō is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ Rogō is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+#}
+
+{#
+This template is for the multiple choice question type with horizontal radio buttons display.
+
+author Dr Joseph Baxter <joseph.baxter@nottingham.ac.uk>
+copyright 2018 onwards The University of Nottingham
+
+Required variables:
+
+data.unanswered - flag to indicate if question has previously been answered
+data.questionno - question number
+data.options - the options
+options.selected - flag to indicate if option has previously been selected
+options.optiontextdisplay - flag to indicate if there is option text to display
+options.displayoptionmedia - flag to indicate if there is option media to display
+options.optionmedia - the option media
+options.optiontext - the option text
+options.position - option position
+data.negativemarking - flag to indicate if negative marking is enabled
+data.abstainselected - flag to indicate if abstain option has previously been selected
+data.labelcolour - colour of label, controlled by user accessibility settings.
+data.dismiss - record of which options have been dismissed by the user
+
+Required localised text -
+lang.abstain - abstain
+#}
+<blockquote {% if data.unanswered %} class="unans" {% endif %}>
+{% for i,p in data.options %}
+    <div style="float:left; margin-right:15px; margin-bottom:15px">
+        <input type="radio" name="q{{data.questionno}}" value="{{p.position}}" {% if p.selected %} checked="checked" {% endif %} />
+    {% if p.optiontextdisplay %}
+            &nbsp;{{p.optiontext|raw}}
+    {% endif %}
+    {% if p.displayoptionmedia %}
+        {% include 'paper/media.html' with {'data': p.optionmedia} %}
+    {% endif %}
+    </div>
+{% endfor %}
+{% if data.negativemarking %}
+    <input type="radio" name="q{{data.questionno}}" value="a" {% if data.abstainselected %} checked="checked" {% endif %} /><span style="color:{{data.labelcolour}}">{{lang.abstain}}</span>
+{% endif %}
+<div>
+    <input type="hidden" name="dismiss{{data.questionno}}" id="dismiss{{data.questionno}}" value="{{data.dismiss}}" />
+</div>
+</blockquote>

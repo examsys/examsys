@@ -28,7 +28,6 @@ require_once '../include/staff_auth.inc';
 require_once '../include/icon_display.inc';
 require_once '../include/sidebar_menu.inc';
 require_once '../include/errors.php';
-require_once '../include/demo_replace.inc';
 
 $folder = check_var('folder', 'GET', true, false, true);
 
@@ -199,7 +198,15 @@ if (isset($_GET['newfolder']) and $_GET['newfolder'] == 'y' and !isset($_POST['s
 }
 
 // Get current owner papers.
-$query_string = "SELECT DISTINCT paper_ownerID, property_id, paper_type, MAX(screen) AS screens, paper_title, DATE_FORMAT(start_date,'%Y%m%d%H%i%s') AS start_date, DATE_FORMAT(start_date,'{$configObject->get('cfg_long_date_time')}') AS display_start_date, DATE_FORMAT(end_date,'{$configObject->get('cfg_long_date_time')}') AS display_end_date, exam_duration, title, initials, surname, retired, properties.password FROM (properties, users) LEFT JOIN papers ON properties.property_id=papers.paper WHERE properties.paper_ownerID=users.id AND folder=\"$folder\" AND deleted IS NULL GROUP BY paper_title ORDER BY paper_type, paper_title";
+$query_string = "SELECT DISTINCT properties.paper_ownerID, properties.property_id, properties.paper_type, MAX(papers.screen) AS screens, properties.paper_title,
+  DATE_FORMAT(properties.start_date,'%Y%m%d%H%i%s') AS start_date, DATE_FORMAT(properties.start_date,'{$configObject->get('cfg_long_date_time')}') AS display_start_date,
+  DATE_FORMAT(properties.end_date,'{$configObject->get('cfg_long_date_time')}') AS display_end_date, properties.exam_duration, users.title, users.initials, users.surname,
+  properties.retired, properties.password
+  FROM (properties, users) LEFT JOIN papers ON properties.property_id=papers.paper
+  WHERE properties.paper_ownerID=users.id AND folder=\"$folder\" AND deleted IS NULL
+  GROUP BY properties.paper_title, properties.property_id, properties.paper_type, properties.retired, properties.exam_duration,
+  users.surname, users.initials, users.title, properties.password, properties.paper_ownerID
+  ORDER BY properties.paper_type, properties.paper_title";
 $results = $mysqli->prepare($query_string);
 $results->execute();
 $results->bind_result($paper_ownerID, $property_id, $paper_type, $screens, $paper_title, $start_date, $display_start_date, $display_end_date, $exam_duration, $title, $initials, $surname, $retired, $password);

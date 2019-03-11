@@ -111,7 +111,7 @@ $enddate		= check_var('enddate', 'GET', true, false, true);
   $q_no = 0;
 
   $sql = <<< SQL
-SELECT DISTINCT l.screen, q.theme, lm.started, u.username, u.surname, l.q_id, q.leadin, l.user_answer
+SELECT DISTINCT l.screen, p.display_pos, q.theme, lm.started, u.username, u.surname, l.q_id, q.leadin, l.user_answer
 FROM log3 l INNER JOIN log_metadata lm ON l.metadataID = lm.id
 INNER JOIN papers p ON p.question = l.q_id AND p.screen = l.screen AND p.paper = lm.paperID
 INNER JOIN questions q ON l.q_id = q.q_id
@@ -128,7 +128,7 @@ SQL;
   $result = $mysqli->prepare($sql);
   $result->bind_param('issss', $_GET['paperID'], $_GET['repcourse'], $_GET['repyear'], $startdate, $enddate);
   $result->execute();
-  $result->bind_result($screen, $theme, $started, $tmp_username, $surname, $q_id, $leadin, $user_answer);
+  $result->bind_result($screen, $displaypos, $theme, $started, $tmp_username, $surname, $q_id, $leadin, $user_answer);
 
   while ($result->fetch()) {
     if ($theme != '') $old_theme = $theme;

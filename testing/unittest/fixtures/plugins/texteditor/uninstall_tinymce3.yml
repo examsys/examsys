@@ -1,0 +1,6 @@
+config:
+  -
+    component: "plugin_tinymce3_texteditor"
+    setting: "installed"
+    value: 0
+    type: "boolean"

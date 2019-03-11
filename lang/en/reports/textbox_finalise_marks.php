@@ -22,4 +22,5 @@ $string['override'] = 'Override';
 $string['unmarked'] = 'unmarked';
 $string['question'] = 'Question';
 $string['selectallprimary']  = 'Select All?';
+$string['comments'] = 'Hover over the information icon to view marker comments.';
 ?>

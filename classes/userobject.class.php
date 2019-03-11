@@ -284,7 +284,7 @@ class UserObject extends RogoStaticSingleton {
       return false;
     }
 
-    if (count($this->staffModules) < 1) {
+    if (empty($this->staffModules)) {
       $this->load_staff_modules();
     }
 
@@ -305,7 +305,7 @@ class UserObject extends RogoStaticSingleton {
       return false;
     }
 
-    if (count($this->staffTeamModules) < 1) {
+    if (empty($this->staffTeamModules)) {
       $this->load_staff_team_modules();
     }
 
@@ -340,7 +340,7 @@ class UserObject extends RogoStaticSingleton {
       return false;
     }
 
-    if (count($this->staffModules) < 1) {
+    if (empty($this->staffModules)) {
       $this->load_staff_modules();
     }
 
@@ -640,7 +640,7 @@ class UserObject extends RogoStaticSingleton {
       return false;
     }
 
-    if (count($this->studentModules) < 1) {
+    if (empty($this->studentModules)) {
       $this->load_student_modules();
     }
 

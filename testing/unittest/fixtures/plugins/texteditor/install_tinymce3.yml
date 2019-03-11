@@ -1,0 +1,11 @@
+config:
+  -
+    component: "plugin_tinymce3_texteditor"
+    setting: "installed"
+    value: 1
+    type: "boolean"
+plugins:
+  -
+    component: "plugin_tinymce3_texteditor"
+    type: "texteditor"
+    version: "1.0.0"

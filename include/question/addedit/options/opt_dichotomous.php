@@ -51,11 +51,18 @@ $locked = ($dis_class != '');
   if ($option->id != -1) { 
     $media = $option->get_media();
     if ($media['filename'] != '') {
-      $current_media_html =  display_media($media['filename'], $media['width'], $media['height'], '', $index, $locked);
+      $configObj = Config::get_instance();
+      $questiondata = new plugins\questions\dichotomous\renderdata();
+      $render = new render($configObj);
+      $questiondata->set_media($media['filename'], $media['width'], $media['height'], '', false, $index, $locked);
 ?>
               <tr<?php echo $alt_c ?>>
                 <th><?php echo $string['current'] . ' ' . $string['media'] ?></th>
-                <td><?php echo $current_media_html ?></td>
+                <td>
+                  <?php
+                  $render->render($questiondata, $string, 'paper/media.html');
+                  ?>
+                </td>
                 <td>&nbsp;</td>
               </tr>
 <?php

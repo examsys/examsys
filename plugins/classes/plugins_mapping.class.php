@@ -48,7 +48,7 @@ abstract class plugins_mapping extends \plugins\plugins {
         if (count($mappingplugin_name) > 0) {
             $mappingplugin_name = $mappingplugin_name[0];
             $mappingplugin_object = 'plugins\\mapping\\' . $mappingplugin_name . '\\' . $mappingplugin_name;
-            $mapping = new $mappingplugin_object($db);
+            $mapping = new $mappingplugin_object();
             return $mapping->get_mapping($source);
         } else {
             return $source;

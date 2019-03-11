@@ -24,7 +24,6 @@
 
 require_once '../../include/staff_auth.inc';
 require_once '../../include/edit.inc';
-require_once '../../include/media.inc';
 require_once '../../include/metadata.inc';
 require_once '../../include/mapping.inc';
 require_once '../../include/errors.php';
@@ -67,6 +66,7 @@ function get_post_params($part_names, $option, $option_no) {
 }
 
 function save_options($question, $userObject, $db) {
+  global $string;
   $unified_part_names = $question->get_unified_fields();
 
   if ($question->get_type() == 'random') {
@@ -77,10 +77,20 @@ function save_options($question, $userObject, $db) {
 
   for ($option_no = 1; $option_no <= $question->max_options; $option_no++) {
     $option = null;
-
-    if (isset($_POST["optionid$option_no"]) and $_POST["optionid$option_no"] != -1) {
+    $check = false;
+    if ($question->get_type() === 'enhancedcalc') {
+      if (isset($question->options[$option_no])) {
+        $check = true;
+        $option = $question->options[$option_no];
+      }
+    } else {
+      if (isset($_POST["optionid$option_no"]) and $_POST["optionid$option_no"] != -1) {
+        $check = true;
+        $option = $question->options[$_POST["optionid$option_no"]];
+      }
+    }
+    if ($check) {
       // Editing existing option
-      $option = $question->options[$_POST["optionid$option_no"]];
       $part_names = $option->get_editable_fields();
       try {
         $postparams = get_post_params($part_names, $option, $option_no);
@@ -102,8 +112,6 @@ function save_options($question, $userObject, $db) {
       $option = OptionEdit::option_factory($db, $userObject->get_user_ID(), $question, $option_no, $string, array('marks' => 1));
 
       if ($option->minimum_fields_exist($_POST, $_FILES, $option_no)) {
-        $correct_fb = (isset($_POST["option_correct_fback$option_no"])) ? $_POST["option_correct_fback$option_no"] : '';
-        $incorrect_fb = (isset($_POST["option_incorrect_fback$option_no"])) ? $_POST["option_incorrect_fback$option_no"] : '';
 
         $part_names = $option->get_editable_fields();
         try {
@@ -132,13 +140,18 @@ function save_options($question, $userObject, $db) {
       $old_media = $option->get_media();
       if (isset($_FILES["option_media$option_no"]) and $_FILES["option_media$option_no"]['name'] != $old_media['filename'] and ($_FILES["option_media$option_no"]['name'] != 'none' and $_FILES["option_media$option_no"]['name'] != '')) {
         if ($old_media['filename'] != '') {
-          deleteMedia($old_media['filename']);
+          media_handler::deleteMedia($old_media['filename']);
         }
-        $option->set_media(uploadFile("option_media$option_no"));
+        $newmedia = media_handler::uploadFile("option_media$option_no");
+        if ($newmedia !== false) {
+          $option->set_media($newmedia);
+        } else {
+          return $string['mediauploaderror'];
+        }
       } else {
         // Delete existing media if asked
         if (isset($_POST["delete_media$option_no"]) AND $_POST["delete_media$option_no"] == 'on') {
-          deleteMedia($old_media['filename']);
+          media_handler::deleteMedia($old_media['filename']);
           $option->set_media(array('filename' => '', 'width' => 0, 'height' => 0));
         }
       }
@@ -166,7 +179,14 @@ if (!isset($_REQUEST['q_id']) or $_REQUEST['q_id'] == -1) {
       $question = QuestionEdit::question_factory($mysqli, $userObject, $string, $_GET['type']);
       $question->set_type($_GET['type']);
       $question->set_owner_id($userObject->get_user_ID());
-      $question->set_teams(Paper_utils::get_modules($paper_id, $mysqli));
+      if ($paper_id !== -1) {
+        // Adding directly to a paper.
+        $modules = Paper_utils::get_modules($paper_id, $mysqli);
+      } else {
+        // Adding via a module.
+        $modules = array($module => module_utils::get_instance()->get_moduleid_from_id($module, $mysqli));
+      }
+      $question->set_teams($modules);
     } catch (ClassNotFoundException $ex) {
       $critical_error = $ex->getMessage();
     }
@@ -189,7 +209,7 @@ if ($critical_error == '' and $question->requires_media() and (isset($_POST['sub
     $new_media['width'] = (isset($_POST['q_media_width']) and $_POST['q_media_width'] != '') ? $_POST['q_media_width'] : 0;
     $new_media['height'] = (isset($_POST['q_media_height']) and $_POST['q_media_height'] != '') ? $_POST['q_media_height'] : 0;
   } else {
-    $new_media = uploadFile('q_media');
+    $new_media = media_handler::uploadFile('q_media');
   }
   if ($new_media !== false) {
     $question->set_media($new_media);
@@ -203,7 +223,7 @@ if ($critical_error == '' and $question->requires_media() and (isset($_POST['sub
     $label_images = array();
     for ($i = 1; $i <= 6; $i++) {
       if (isset($_FILES['label_media' . $i]) and $_FILES['label_media' . $i]['name'] != '') {
-        $lab_media = uploadFile('label_media' . $i);
+        $lab_media = media_handler::uploadFile('label_media' . $i);
         if ($lab_media !== false) {
           $label_images[] = $lab_media;
         }
@@ -462,16 +482,17 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
 <link rel="stylesheet" href="../../css/add_edit.css" type="text/css" />
 <link rel="stylesheet" href="../../css/mapping_form.css" type="text/css" />
 <link rel="stylesheet" href="../../css/warnings.css" type="text/css" />
-
-<?php
-  if($configObject->get_setting('core', 'misc_editor_name') === 'tinymce') {
-      $render = new render($configObject);
-      $tinmymcedata['file'] = 'tiny_config_question_editor';
-      $render->render($tinmymcedata, null, 'tinymce.html');
-  }
-?>
 <script type="text/javascript" src="../../js/jquery-1.11.1.min.js"></script>
-<script type="text/javascript" src="../../js/jquery-migrate-1.2.1.min.js"></script>
+<?php
+  $texteditorplugin = \plugins\plugins_texteditor::get_editor();
+  $texteditorplugin->display_header();
+  $texteditorplugin->get_javascript_config(\plugins\plugins_texteditor::QUESTION);
+
+  $render = new render($configObject);
+
+  // Check if any 3d file types are enabled and render js.
+  threed_handler::render_js($string);
+?>
 <script type="text/javascript" src="../../js/jquery-ui-1.10.4.min.js"></script>
 <script type="text/javascript" src="../../js/system_tooltips.js"></script>
 <script type="text/javascript" src="../../js/state.js"></script>
@@ -480,17 +501,16 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
 <script type="text/javascript" src="../../js/jquery.mappingform.js"></script>
 <script type="text/javascript" src="../../js/jquery.formhelpers.js"></script>
 <?php
-if ($question != null and file_exists($cfg_web_root . 'js/validation/jquery.' . $question->get_type() . '.min.js')):
+if ($question != null and file_exists($cfg_web_root . 'js/validation/jquery.' . $question->get_type() . '.min.js')) {
 ?>
 <script type="text/javascript" src="../../js/jquery.validate.min.js"></script>
 <script type="text/javascript" src="../../js/validation/jquery.<?php echo $question->get_type() ?>.min.js"></script>
 <script type="text/javascript" src="../../js/toprightmenu.js"></script>
 <?php
-endif;
-if ($question != null and $question->requires_html5()):
-$render = new render($configObject);
-$render->render_html5_js(json_encode($jstring));
-endif;
+}
+if ($question != null and $question->requires_html5()) {
+  $render->render_html5_js(json_encode($jstring));
+}
 ?>
 <script>
 var qType = '<?php if (isset($question)) echo $question->get_type() ?>';
@@ -508,19 +528,17 @@ foreach ($langstrings as $langstring) {
 ?>
 };
 <?php
-if (!empty($_GET['tab']) and in_array($_GET['tab'], array('changes', 'comments', 'performance', 'mapping'))):
+if (!empty($_GET['tab']) and in_array($_GET['tab'], array('changes', 'comments', 'performance', 'mapping'))) {
 ?>
 $(function () {
-  $('.tabs li a[rel=<?php echo $_GET['tab'] ?>]').trigger('click');
+    $('.tabs li a[rel=<?php echo $_GET['tab'] ?>]').trigger('click');
 });
 <?php
-endif;
+}
 ?>
 </script>
-<script type="text/javascript" src="../../tools/mee/mee/js/mee_src.js"></script>
 <?php
-  if (in_array($configObject->get_setting('core', 'misc_editor_name'), $configObject->get_setting('core', 'paper_editor_supports_mathjax')) and $configObject->get_setting('core', 'paper_mathjax')) {
-    $render = new render($configObject);
+  if ($configObject->get_setting($texteditorplugin->get_name(), 'supports_mathjax') and $configObject->get_setting('core', 'paper_mathjax')) {
     $render->render(null, null, 'mathjax.html');
   }
 ?>

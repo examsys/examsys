@@ -23,7 +23,6 @@
 */
 
 require_once '../include/staff_auth.inc';
-require_once '../include/media.inc';
 require_once '../include/std_set_functions.inc';
 require_once '../include/errors.php';
 
@@ -126,12 +125,13 @@ function check_ebel_distinction_type($reviewID, $db) {
     });
   </script>
 <?php
-  if ($propertyObj->get_latex_needed() == 1) {
-    echo "<script type=\"text/javascript\" src=\"../js/jquery-migrate-1.2.1.min.js\"></script>\n";
-    echo "<script type=\"text/javascript\" src=\"../tools/mee/mee/js/mee_src.js\"></script>\n";
-  }
+  $texteditorplugin = \plugins\plugins_texteditor::get_editor();
+  $texteditorplugin->display_header();
   $render = new render($configObject);
   $render->render_html5_js(json_encode($jstring));
+  if ($configObject->get_setting('core', 'paper_mathjax')) {
+    $render->render(null, null, 'mathjax.html');
+  }
 ?>
   <script>
   <?php
@@ -482,7 +482,10 @@ function check_ebel_distinction_type($reviewID, $db) {
   $result->execute();
   $result->store_result();
   $result->bind_result($screen, $q_type, $q_id, $score_method, $display_method, $settings, $marks_correct, $marks_incorrect, $theme, $scenario, $leadin, $correct, $option_text, $q_media, $q_media_width, $q_media_height, $o_media, $o_media_width, $o_media_height, $notes, $correct_fback, $settings);
+  $configObj = Config::get_instance();
+  $render = new render($configObj);
   while ($result->fetch()) {
+    $questiondata = \questiondata::get_datastore($q_type);
     if ($prologue_show == 1 and $current_screen == 1 and $paper_prologue != '') {
       echo '<tr><td colspan="2" style="padding:20px; text-align:justify">' . $paper_prologue . '</td></tr>';
       $prologue_show = 0;
@@ -520,13 +523,19 @@ function check_ebel_distinction_type($reviewID, $db) {
         if (substr($q_media, -4) == '.gif' or substr($q_media, -4) == '.jpg' or substr($q_media, -4) == 'jpeg' or substr($q_media, -4) == '.png') {
           if ($li_set == 0) echo '<tr><a name="' . $question_no . '"></a><td class="q_no">' . $question_no . '.&nbsp;</td><td>';
           $li_set = 1;
-          echo "<p align=\"center\">" . display_media($q_media, $q_media_width, $q_media_height, '') . "</p>\n";
+          echo "<div class=\"mediadiv\">";
+          $questiondata->set_media($q_media, $q_media_width, $q_media_height, '');
+          $render->render($questiondata, $string, 'paper/media.html');
+          echo "</div>\n";
         } else {
           if ($li_set == 0) {
             echo '<tr><a name="' . $question_no . '"></a><td class="q_no">' . $question_no . '.&nbsp;</td><td>';
           }
           $li_set = 1;
-          echo "<p align=\"center\">" . display_media($q_media, $q_media_width, $q_media_height, '') . "</p>\n";
+          echo "<div class=\"mediadiv\">";
+          $questiondata->set_media($q_media, $q_media_width, $q_media_height, '');
+          $render->render($questiondata, $string, 'paper/media.html');
+          echo "</div>\n";
         }
       }
       if ($q_type != 'likert' and $q_type != 'enhancedcalc' and $q_type != 'info' and $q_type != 'hotspot' and $q_type != 'area') {

@@ -83,6 +83,18 @@ if (!$lti->valid) {
   exit;
 }
 
+list($lti_user, $user_updated) = $lti->lookup_lti_user();
+if ($lti_user !== $userObject->get_user_ID()) {
+  // The LTi request is not for the logged in user or the user has not had their external account properly connected to Rogo,
+  // so force a logout and display a message.
+  session_unset();
+  session_destroy();
+  session_write_close();
+  setcookie(session_name(), '', 0, '/');
+  UserNotices::display_notice($string['LTIFAILURE'], $string['invaliduser'], '../artwork/access_denied.png', '#C00000');
+  die();
+}
+
 if (!isset($lti_i)) {
   $lti_i = $lti->load();
 }

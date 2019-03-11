@@ -146,7 +146,7 @@ function print_p($elem, $expandfirst = true, $trim = 100, $max_level = 10, $prin
 
     echo "<div class='print_body' id='print_nice_".$nice_id."' style='".$style."'>";
     $nice_id++;
-    if (count($elem) > 0) {
+    if (is_array($elem) and count($elem) > 0) {
       echo "<table border=\"0\" cellspacing=\"0\" cellpadding=\"2\" style=\"width:100%\">";
       $color = 0;
       foreach ($elem as $k => $v) {

@@ -26,7 +26,6 @@
 
 require_once '../include/staff_auth.inc';
 require_once '../include/errors.php';
-require_once '../include/media.inc';
 require_once '../include/mapping.inc';
 
 $paperid = param::required('paperID', param::INT, param::FETCH_POST);
@@ -202,7 +201,7 @@ if ($copytype == 'paperonly') {        // Copy the paper only!
             if ($line == 0) {
               $new_media_name = '';
               if (trim($individual_media) != '' and trim($individual_media) != 'NULL') {
-                $new_media_name = unique_filename($individual_media);
+                $new_media_name = media_handler::unique_filename($individual_media);
                 if (file_exists($mediadirectory->fullpath($individual_media))) {
                   if (!copy($mediadirectory->fullpath($individual_media), $mediadirectory->fullpath($new_media_name))) {
                     $error[] = sprintf($string['copyerror'], $individual_media);
@@ -233,7 +232,7 @@ if ($copytype == 'paperonly') {        // Copy the paper only!
         $new_o_media = '';
         foreach ($media_array as $individual_media) {
           if (trim($individual_media) != '' and trim($individual_media) != 'NULL') {
-            $new_media_name = unique_filename($individual_media);
+            $new_media_name = media_handler::unique_filename($individual_media);
             if (file_exists($mediadirectory->fullpath($individual_media))) {
               if (!copy($mediadirectory->fullpath($individual_media), $mediadirectory->fullpath($new_media_name))) {
                 $error[] = sprintf($string['copyerror'], $individual_media);

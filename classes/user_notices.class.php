@@ -80,7 +80,7 @@ Class user_notices extends RogoStaticSingleton {
       echo "<title>$title</title>\n";
       echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"{$rp}/css/body.css\" />\n";
       echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"{$rp}/css/notice.css\" />\n";
-      echo "<script type=\"text/javascript\" src=\"{$rp}/js/start.js\"></script>";
+      echo "<script type=\"text/javascript\" src=\"{$rp}/js/start.min.js\"></script>";
       echo "</head>\n<body>\n";
     }
     echo '<div class="notice">';
@@ -92,6 +92,18 @@ Class user_notices extends RogoStaticSingleton {
     if ($output_footer == true) {
       echo "\n</body>\n</html>";
     }
+  }
+
+  /**
+   * This function will output an ajax response
+   *
+   * @param object $db database object
+   * @param string $title title to display
+   * @param string $msg string the message
+   */
+  public function ajax_notice($title, $msg) {
+    header('HTTP/1.1 403 Forbidden');
+    echo "<b>" . $title . "</b><br/>" . $msg;
   }
 
   /**
@@ -118,7 +130,11 @@ Class user_notices extends RogoStaticSingleton {
         $logger->record_access_denied(0, $title, $reason); // Record attempt in access denied log, userID set to zero.
       }
     }
-    $this->display_notice($title, $msg, $icon, $title_color, $output_header, $output_footer);
+    if (defined("AJAX_REQUEST") and AJAX_REQUEST === true) {
+      $this->ajax_notice($title, $reason);
+    } else {
+      $this->display_notice($title, $msg, $icon, $title_color, $output_header, $output_footer);
+    }
     exit;
   }
 
@@ -137,7 +153,7 @@ Class user_notices extends RogoStaticSingleton {
    *
    */
   public function access_denied($db, $string, $message, $output_header = false, $output_footer = true) {
-    $this->display_notice_and_exit($db, $string['accessdenied'], $message, $string['accessdenied'], '/artwork/access_denied.png', '#C00000', $output_header, $output_footer);
+    $this->display_notice_and_exit($db, $string['accessdenied'], $message, $message, '/artwork/access_denied.png', '#C00000', $output_header, $output_footer);
   }
 
 }

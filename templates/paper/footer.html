@@ -1,0 +1,128 @@
+{#This file is part of Rogō
+
+ Rogō is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ Rogō is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+#}
+
+{#
+This template is for the paper footer display.
+
+author Dr Joseph Baxter <joseph.baxter@nottingham.ac.uk>
+copyright 2018 onwards The University of Nottingham
+
+Required variables - 
+data.current_screen - the current screen
+data.page_start - timestamp when screen was first viewed
+data.old_screen - the last screen
+data.previous_duration - duration screen was viewed previously
+data.refpane - is there a reference panel
+data.previewmode - are we in question preview mode
+data.msg - a call out mesage
+data.adminview - does the user have admin rights
+data.fire - fire action flag
+data.copyright - copyright notice
+data.previousscreen - previous screen number
+data.bidirectional - is this paper in bidirectional mode
+data.previous - is there a previous screen
+data.jumpscreen - can we jump to another screen
+data.jumpscreenoptions - list of possible screen to jump to
+data.endscreen - is this the last screen
+
+Required localised language strings -
+lang.savefailed
+lang.tryagain
+lang.finish
+lang.screen
+#}
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <br />
+            <input type="hidden" name="current_screen" value="{{data.current_screen}}" />
+            <input type="hidden" name="page_start" value="{{data.page_start}}" />
+            <input type="hidden" name="old_screen" value="{{data.old_screen}}" />
+            <input type="hidden" name="previous_duration" value="{{data.previous_duration}}" />
+            <input type="hidden" id="button_pressed" name="button_pressed" value="next" />
+            <input type="hidden" id="randomPageID" name="randomPageID" value="" />
+            <input type="hidden" name="refpane" id="refpane" value="{{data.refpane}}" />
+{% if data.previewmode %}
+            <input type="hidden" id="mode" name="mode" value="preview" />
+{% endif %}
+{% if data.previewmode %}
+    {% if data.msg != '' %}
+            <div class="callout">
+                <div id="calloutTxt">
+                    {{data.msg}}
+                </div>
+                <b class="notch"></b>
+            </div>
+    {% endif %}
+{% endif %}
+            <div id="saveError">
+                <img src="{{path}}/artwork/no_save.png" width="60" height="60" alt="Warning" />
+                <div>
+                    <span style="color:#C42828; font-weight:bold">
+                        {{lang.savefailed}}
+                    </span>
+                    <br />
+                    {{lang.tryagain}}
+                </div>
+            </div>
+{# Display the paper footer admin or student information #}
+{% if data.adminview %}
+            <input id="finish" type="button" value="{{lang.finish}}" />
+{% else %}
+            <table cellpadding="0" cellspacing="0" border="0" style="width:100%; background-color:#5590CF; min-height:29px">
+                <tr>
+    {% if data.fire %}
+                    <td id="fire_exit"></td>
+    {% endif %}
+                    <td class="copyright">{{data.copyright}}</td>
+                    <td style="width:14em;text-align:center">
+
+                        <span style="color:white">
+                             {{data.timerlabel}} <span id="theTime" type="text" class="thetime"></span>
+                        </span>
+                    </td>
+                    <td align="right">
+                        <span id="savemsg"></span>
+    {# Display additional controls for bidirectional papers #}
+    {% if data.bidirectional %}
+        {% if data.previous %}
+                        <input id="previous" type="button" value="{{data.previousbutton}}" />
+        {% endif %}
+        {% if data.jumpscreen %}
+                        <select name="jumpscreen" id="jumpscreen">
+            {% for id,selected in data.jumpscreenoptions %}
+                            <option value="{{id}}"{{selected}}>{{id}}</option>
+            {% endfor %}
+                        </select>
+        {% endif %}
+    {% endif %}
+    {% if data.endscreen %}
+                        <input id="finish" type="button" value="{{lang.finish}}" />
+    {% else %}
+                        <input id="next" type="button" value="{{data.nextbutton}}" />
+    {% endif %}
+                    </td>
+                </tr>
+            </table>
+{% endif %}
+        </td>
+    </tr>
+</table>
+<textarea id="save_failed" name="save_failed" style="display:none"></textarea>
+</form>
+</div>

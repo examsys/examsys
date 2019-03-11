@@ -1,0 +1,314 @@
+.indent
+{
+    padding-left:20px;
+}
+
+.mee_progress
+{
+    position:fixed;
+    left:10px;
+    bottom:10px;
+    border:1px solid #767676;
+    background-color:#f4f4f9;
+    padding:1px;
+    font-size:9pt;
+    z-index:1000;
+}
+.mee_blankspace
+{
+    color:transparent;
+    z-index:-100;
+}
+/* stop line wrapping */
+.mee span
+{
+    white-space:nowrap;
+}
+
+/* Main container */
+.mee
+{
+    /*padding: 1em;*/
+    font-family:MathJax_Main;
+}
+div.mee
+{
+}
+/* set of elements */
+.mee_elemset
+{
+    position:relative;
+}
+
+/* single element */
+.mee_elem
+{
+    position:relative;
+    z-index:10;
+    /*border: 1px dashed blue;*/
+}
+
+/* elements main component */
+.mee_main
+{
+    position:relative; /* THIS HAS TO BE 'RELATIVE' OR NESTED SIZING DOESNT WORK CORRECTLY */
+    padding-right:1px;
+}
+
+/* elements superscript component */
+.mee_superscript
+{
+    position:absolute;
+    top:0;
+
+}
+/* elements subscript component */
+.mee_subscript
+{
+    position:absolute;
+    bottom:0;
+}
+
+
+/* variable - ie x y */
+.mee_variable
+{
+    font-family:MathJax_Math;
+}
+
+/* greek letters */
+.mee_greek
+{
+    /*font-style: italic;*/
+    font-family:MathJax_Math;
+}
+/* command element */
+.mee_command_elem
+{
+    margin-left:0.1em;
+    margin-right:0.1em;
+}
+
+
+/* large operators \int \sum */
+.mee_basic_large_inner
+{
+    font-family:MathJax_Size2; 
+    padding-right:1em;   
+    z-index:20;
+}
+
+.mee_large_shrunk .mee_idotsint_dots
+{
+    position:absolute;
+    left:0.53em;
+}
+.mee_large_shrunk .mee_idotsint_rint
+{
+    padding-left:0.6em;
+}
+ .mee_idotsint_dots
+{
+    position:absolute;
+    left:0.75em;
+}
+ .mee_idotsint_rint
+{
+    padding-left:0.67em;
+}
+
+/* accents */
+.mee_accent_main
+{
+    position:absolute;
+    left:0.1em;
+}
+
+/* vector special changes */
+.mee_vector
+{
+    position:absolute;
+    left:0.1em;
+    bottom:0em;
+}
+
+.mee_dots
+{
+    letter-spacing:-2;
+}
+/* DEBUG - Hightlight and args left over */
+.mee_arg
+{
+}
+
+/* for \sqrt */
+.mee_sqrt_super
+{
+    left:0.2em;
+}
+.mee_sqrt_bar
+{
+    position: absolute;
+}
+.mee_sqrt_bar_big
+{
+    border-left:0.1em solid black;
+}
+/* for \boxed */
+.mee_boxed
+{
+    border:1px solid black;
+    position:absolute;
+}
+
+/* debug */
+.mee_row
+{
+}
+
+.mee_col
+{
+}
+
+
+.mee_font_arial
+{
+    font-family:Arial Unicode MS;
+}
+.mee_font_arial_2
+{
+    position:absolute;
+    left:0;
+    top:0.15em;
+}
+/* Fonts */
+.mee_font_math .mee_variable { font-family:MathJax_Math }
+.mee_font_main .mee_variable { font-family:MathJax_Main }
+.mee_font_cal .mee_variable { font-family:MathJax_Caligraphic }
+.mee_font_scr .mee_variable { font-family:MathJax_Script }
+.mee_font_rm .mee_variable { font-family:MathJax_Main; font-style:normal }
+.mee_font_bf .mee_variable { font-weight:bold }
+.mee_font_bf_txt .mee_variable { font-family:MathJax_Main; font-weight:bold }
+.mee_font_bb .mee_variable { font-family:MathJax_AMS }
+.mee_font_it .mee_variable { }
+.mee_font_frak .mee_variable { font-family:MathJax_Fraktur }
+.mee_font_sf .mee_variable { font-family:MathJax_SansSerif }
+.mee_font_tt .mee_variable { font-family:MathJax_Typewriter }
+.mee_font_oldstyle .mee_variable { font-family:MathJax_Caligraphic }
+
+.mee_font_math .mee_elemsetbasic { font-family:MathJax_Math }
+.mee_font_main .mee_elemsetbasic { font-family:MathJax_Main }
+.mee_font_cal .mee_elemsetbasic { font-family:MathJax_Caligraphic }
+.mee_font_scr .mee_elemsetbasic { font-family:MathJax_Script }
+.mee_font_rm .mee_elemsetbasic { font-family:MathJax_Main; font-style:normal }
+.mee_font_bf .mee_elemsetbasic { font-weight:bold; }
+.mee_font_bf_txt .mee_elemsetbasic { font-family:MathJax_Main; font-weight:bold }
+.mee_font_bb .mee_elemsetbasic { font-family:MathJax_AMS }
+.mee_font_it .mee_elemsetbasic {  }
+.mee_font_frak .mee_elemsetbasic { font-family:MathJax_Fraktur }
+.mee_font_sf .mee_elemsetbasic { font-family:MathJax_SansSerif }
+.mee_font_tt .mee_elemsetbasic { font-family:MathJax_Typewriter }
+.mee_font_oldstyle .mee_elemsetbasic { font-family:MathJax_Caligraphic }
+
+/* fractions */
+.mee_frac_upper 
+{
+}
+.mee_frac_lower
+{
+}
+.mee_matrix_col
+{
+}
+.mee_matrix_row
+{
+    
+}
+.mee_pmod
+{
+    padding-left:0.9em;
+}
+.mee_binary
+{
+    padding-left:0.2em;
+    padding-right:0.2em;
+}
+.mee_operator
+{
+    padding-left:0.2em;
+    padding-right:0.2em;
+}
+.mee_arrows
+{
+    padding-left:0.2em;
+}
+
+.mee_bracket_part
+{
+    position:absolute;
+    left:0;
+    top:0;
+    font-family:MathJax_Brackets;
+}
+
+.mee_bracket_part_mid
+{
+    font-family:MathJax_Brackets;
+}
+.mee_phantom
+{
+    color:transparent;
+}
+.mee_vphantom
+{
+    color:transparent;
+    position:absolute !important;
+}
+.mee_hline
+{
+    position:absolute;
+    border-top:1px solid black;
+    left:1px;
+}
+.mee_bar
+{
+    position:absolute;
+    left:0;
+}
+.mee_array_border
+{
+    position:absolute;
+    border:1px solid black;
+}
+.mee_vline
+{
+    position:absolute;
+    border-left:1px solid black;
+}
+.mee_elem_answer_input
+{
+    font-family:MathJax_Main;
+}
+
+.mee_tinymce_cont
+{
+    font-family:MathJax_Main;
+}
+.mee_large_font_loader
+{
+    position:absolute;
+    left:0;
+    top:0;
+    display:block;
+    color:transparent;
+}
+
+.mee_barend
+{
+    position:absolute;
+}
+
+.mee_iframe
+{
+    text-align:center;
+}

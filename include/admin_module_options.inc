@@ -105,7 +105,7 @@ $next_academic_year = $yearutils->get_academic_session($next_session);
     if ($userObject->has_role(array('SysAdmin'))) {
         foreach($smsplugin_name as $name) {
             $smspluginns = 'plugins\SMS\\' . $name. '\\' . $name;
-            $smsplugin = new $smspluginns($mysqli, $userObject->get_user_ID());
+            $smsplugin = new $smspluginns($userObject->get_user_ID());
             $moduleimport = $smsplugin->supports_module_import();
             if ($moduleimport !== false) {
     ?>

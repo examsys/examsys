@@ -1,0 +1,77 @@
+{#This file is part of Rogō
+
+ Rogō is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ Rogō is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+#}
+
+{#
+This template is for the master question header display.
+
+author Dr Joseph Baxter <joseph.baxter@nottingham.ac.uk>
+copyright 2018 onwards The University of Nottingham
+
+Required variables - 
+data.unansweredkey - flag to indicate if unanswered question key should be displayed
+data.displayprologue - flag to indicate if prologue should be displayed
+data.prologue - prologue
+data.displaytheme - flag to indicate if theme should be displayed
+data.theme - theme
+data.displaydefault - flag to indicate if default settings should be displayed
+data.assignednumber - question number
+data.displaycalc - flag to indicate if calculator should be displayed
+data.displaynotes - flag to indicate if notes should be displayed
+data.notes - notes
+
+Required localised strings -
+lang.unansweredquestion - unanswered questions blurb
+lang.calculator - calculator
+lang.note - note
+#}
+{% if data.unansweredkey %}
+    <tr style="display:none" id="unansweredkey">
+        <td colspan="2">
+            <span class="unans">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            {{lang.unansweredquestion}}
+        </td>
+    </tr>
+{% endif %}
+{% if data.displayprologue %}
+    <tr>
+        <td colspan="2" style="padding:20px; text-align:justify">
+            {{data.prologue|raw}}
+        </td>
+    </tr>
+{% endif %}
+{% if data.displaytheme %}
+    <tr>
+        <td colspan="2" class="theme">
+            {{data.theme}}
+        </td>
+    </tr>
+{% endif %}
+{% if data.displaydefault %}
+    <tr>
+        <td class="q_no">{{data.assignednumber}}.&nbsp;
+        {% if data.displaycalc %}
+            <br />
+            <img class="sciCalculator" src="{{path}}/artwork/calc.png" alt="{{lang.calculator}}" />
+        {% endif %}
+        </td>
+        <td>
+        {% if data.displaynotes %}
+        <p class="note">
+            <img src="{{path}}/artwork/notes_icon.gif" width="16" height="16" alt="{{lang.note}}" />
+            &nbsp;<strong>{{lang.note}}:</strong>&nbsp;{{data.notes}}
+        </p>
+        {% endif %}
+{% endif %}

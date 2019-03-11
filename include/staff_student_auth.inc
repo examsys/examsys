@@ -49,6 +49,11 @@ if ($configObject->get('cfg_session_name') != '') {
 } else {
   session_name('RogoAuthentication');
 }
+
+if (ini_get('session.save_handler') === "memcache" or ini_get('session.save_handler') === "memcached") {
+  $sessionhandler = new memcachesessionhandler();
+  session_set_save_handler($sessionhandler);
+}
 $return = session_start();
 
 $language = LangUtils::getLang($cfg_web_root);

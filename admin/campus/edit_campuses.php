@@ -41,7 +41,7 @@ if (isset($_POST['submit'])) {
     $name = check_var('name', 'POST', true, false, true);
     $duplicate = $campusobj->check_campus_name_inuse($name);
     if (!$duplicate or $name == $details['campusname']) {
-        if ($details['isdefault'] or $_POST['defaultchk']) {
+        if ($details['isdefault'] or empty($_POST['defaultchk'])) {
 
             $params['name'] = array('s', $name);
             $params['isdefault'] = array('i', 1);

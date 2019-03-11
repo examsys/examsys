@@ -1,0 +1,323 @@
+academic_year:
+  -
+    calendar_year: 2018
+    academic_year: "2018/19"
+log_late:
+  -
+    id: 1
+    q_id: 2
+    user_answer: '2'
+    duration: 10
+    screen: 1
+    dismiss: '1000'
+    option_order: '0,1,2,3'
+    metadataID: 1
+  -
+    id: 2
+    q_id: 3
+    user_answer: '2'
+    duration: 10
+    screen: 2
+    dismiss: '1000'
+    option_order: '0,1,2,3'
+    metadataID: 8
+log2:
+  -
+    id: 2
+    q_id: 2
+    user_answer: '1'
+    duration: 5
+    screen: 1
+    dismiss: '0000'
+    option_order: '0,1,2,3'
+    metadataID: 1
+    mark: 1
+  -
+    id: 4
+    q_id: 2
+    user_answer: '1'
+    duration: 5
+    screen: 1
+    dismiss: '0000'
+    option_order: '0,1,2,3'
+    metadataID: 2
+    mark: 1
+  -
+    id: 5
+    q_id: 3
+    user_answer: '1'
+    duration: 5
+    screen: 2
+    dismiss: '0000'
+    option_order: '0,1,2,3'
+    metadataID: 2
+    mark: 2
+  -
+    id: 6
+    q_id: 2
+    user_answer: '1'
+    duration: 5
+    screen: 1
+    dismiss: '0000'
+    option_order: '0,1,2,3'
+    metadataID: 3
+    mark: 1
+  -
+    id: 7
+    q_id: 3
+    user_answer: '0'
+    duration: 5
+    screen: 2
+    dismiss: '0000'
+    option_order: '0,1,2,3'
+    metadataID: 3
+    mark: 0
+  -
+   id: 8
+   q_id: 2
+   user_answer: '1'
+   duration: 5
+   screen: 1
+   dismiss: '0000'
+   option_order: '0,1,3,2'
+   metadataID: 8
+   mark: 1
+log1:
+  -
+    id: 2
+    q_id: 2
+    user_answer: '1'
+    duration: 5
+    screen: 1
+    dismiss: '0000'
+    option_order: '0,1,2,3'
+    metadataID: 5
+    mark: 1
+  -
+    id: 3
+    q_id: 2
+    user_answer: '3'
+    duration: 5
+    screen: 1
+    dismiss: '0000'
+    option_order: '0,1,2,3'
+    metadataID: 6
+    mark: 0
+log0:
+  -
+    id: 3
+    q_id: 2
+    user_answer: '1'
+    duration: 5
+    screen: 2
+    dismiss: '0000'
+    option_order: '0,1,2,3'
+    metadataID: 2
+  -
+    id: 2
+    q_id: 2
+    user_answer: '1'
+    duration: 5
+    screen: 1
+    dismiss: '0000'
+    option_order: '0,1,2,3'
+    metadataID: 4
+    mark: 4
+  -
+    id: 4
+    q_id: 2
+    user_answer: '4'
+    duration: 5
+    screen: 1
+    dismiss: '0000'
+    option_order: '0,1,2,3'
+    metadataID: 7
+    mark: 2
+properties:
+  -
+    property_id: 1
+    calendar_year: 2018
+    paper_type: 3
+  -
+    property_id: 2
+    calendar_year: 2018
+    paper_type: 2
+  -
+    property_id: 3
+    calendar_year: 2018
+    paper_type: 0
+log_metadata:
+  -
+    id: 1
+    userID: 1
+    paperID: 1
+    started: '2018-01-01 00:00:00'
+  -
+    id: 2
+    userID: 1
+    paperID: 2
+    started: '2018-01-01 00:00:00'
+    year: 2
+  -
+    id: 3
+    userID: 2
+    paperID: 2
+    started: '2018-01-04 00:00:00'
+    year: 1
+  -
+    id: 4
+    userID: 1
+    paperID: 3
+    started: '2018-01-01 00:00:00'
+    year: 2
+  -
+    id: 5
+    userID: 1
+    paperID: 3
+    started: '2017-01-01 00:00:00'
+    year: 2
+  -
+    id: 6
+    userID: 2
+    paperID: 3
+    started: '2016-01-01 00:00:00'
+    year: 1
+  -
+    id: 7
+    userID: 2
+    paperID: 3
+    started: '2016-01-01 00:00:00'
+    year: 1
+  -
+    id: 8
+    userID: 2
+    paperID: 3
+    started: '2016-01-01 00:00:00'
+    year: 1
+users:
+  -
+    id: 1
+    password: "87654321"
+    username: "student1"
+    roles: "Student"
+    grade: "TEST"
+    title: "Mr"
+    initials: "JL"
+    surname: "Baxter"
+    gender: "Male"
+    first_names: "Joseph"
+    yearofstudy: 2
+  -
+    id: 2
+    password: "87654321"
+    username: "staff"
+    roles: "Staff"
+    grade: "University Staff"
+    title: "Dr"
+    initials: "JL"
+    surname: "Baxter"
+    gender: "Female"
+    first_names: "Josephine"
+    yearofstudy: 1
+sid:
+  -
+    student_id: "123456789"
+    userID: 1
+question_statuses:
+-
+    id: 1
+    name: "status1"
+    exclude_marking: 0
+    retired: 0
+questions:
+  -
+    q_id: 2
+    q_type: "mcq"
+    status: 1
+    theme: 'test theme'
+    scenario: 'test scenario'
+    leadin: 'test leadin'
+    notes: 'test notes'
+    q_media: '1517406311.png'
+    q_media_width: 480
+    q_media_height: 105
+    q_option_order: 'random'
+    display_method: 'vertical'
+    score_method: 'Mark per Option'
+    settings: '[]'
+  -
+    q_id: 3
+    q_type: "mcq"
+    status: 1
+    theme: 'test theme'
+    scenario: 'test scenario'
+    leadin: 'test leadin'
+    notes: 'test notes'
+    q_media: '1517406311.png'
+    q_media_width: 480
+    q_media_height: 105
+    q_option_order: 'random'
+    display_method: 'vertical'
+    score_method: 'Mark per Option'
+    settings: '[]'
+options:
+  -
+    o_id: 2
+    correct: 1
+    option_text: 'true'
+    o_media: '1517409282.jpg'
+    o_media_width: 951
+    o_media_height: 121
+    marks_correct: 2
+    marks_incorrect: -2
+    marks_partial: 0
+  -
+    o_id: 2
+    correct: 1
+    option_text: 'false'
+    o_media: ''
+    o_media_width: 0
+    o_media_height: 0
+    marks_correct: 2
+    marks_incorrect: -2
+    marks_partial: 0
+  -
+    o_id: 2
+    correct: 1
+    option_text: 'maybe'
+    o_media: ''
+    o_media_width: 0
+    o_media_height: 0
+    marks_correct: 2
+    marks_incorrect: -2
+    marks_partial: 0
+  -
+    o_id: 3
+    correct: 1
+    option_text: 'true'
+    o_media: '1517409282.jpg'
+    o_media_width: 951
+    o_media_height: 121
+    marks_correct: 2
+    marks_incorrect: -2
+    marks_partial: 0
+  -
+    o_id: 3
+    correct: 1
+    option_text: 'false'
+    o_media: ''
+    o_media_width: 0
+    o_media_height: 0
+    marks_correct: 2
+    marks_incorrect: -2
+    marks_partial: 0
+  -
+    o_id: 3
+    correct: 1
+    option_text: 'maybe'
+    o_media: ''
+    o_media_width: 0
+    o_media_height: 0
+    marks_correct: 2
+    marks_incorrect: -2
+    marks_partial: 0

@@ -70,6 +70,7 @@ class database {
     InstallUtils::$cfg_db_webservice_user = $config->get('base_database') . '_web';
     InstallUtils::$cfg_db_sct_user = $config->get('base_database') . '_sct';
     InstallUtils::$cfg_db_inv_user = $config->get('base_database') . '_inv';
+    InstallUtils::$cfg_db_internal_user = $config->get('base_database') . '_int';
     InstallUtils::$cfg_cron_user = 'cron';
 
     // Details of the admin user.
@@ -86,7 +87,7 @@ class database {
     // Start installing the base Rogo database.
     InstallUtils::checkDBUsers();
     InstallUtils::createDirectories();
-    InstallUtils::createDatabase($config->get('cfg_db_database'), $config->get('cfg_db_charset'));
+    InstallUtils::createDatabase($config->get('cfg_db_database'), $config->get('cfg_db_charset'), $config->get('cfg_db_collation'));
   }
 
   /**

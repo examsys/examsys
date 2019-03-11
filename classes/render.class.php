@@ -39,7 +39,7 @@ class render {
     /**
      * Constructor
      * @param object $configObject - rogo configuration object
-     * @param string $templatedir - path to templates
+     * @param string|array $templatedir - path to templates or list of paths to search for template
      * @return void 
      */
     function __construct($configObject, $templatedir = null) {

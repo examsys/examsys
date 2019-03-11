@@ -27,7 +27,6 @@
 require_once '../include/staff_auth.inc';
 require_once '../include/icon_display.inc';
 require_once '../include/errors.php';
-require_once '../include/demo_replace.inc';
 require_once '../include/sidebar_menu.inc';
 
 $module = check_var('module', 'GET', true, false, true);
@@ -149,13 +148,24 @@ if (!$userObject->has_role('Standards Setter') && $_GET['type'] == 2) {
   echo "<div class=\"f\"><div class=\"f_icon\"><a href=\"../admin/calendar.php#week" . date("W") . "\"><img src=\"../artwork/calendar_icon.png\" alt=\"Folder\" /></a></div><div class=\"f_details\"><a href=\"../admin/calendar.php#week" . date("W") . "\">" . $string['examcalendar'] . "<br />" . date('Y') . "</a></div></div>\n";
 }
 
-// UPDATED SQL query simplified removed the modules table as no data was coming from it. Also removed distinct as group by was doing it. The user data is returned but for some reason the icons alt tags (that contain the user data don't display
+$select = "SELECT properties.calendar_year, properties.paper_ownerID, properties.property_id, MAX(papers.screen) AS screens, properties.paper_title,
+    DATE_FORMAT(start_date,'%Y%m%d%H%i%s') AS start_date, DATE_FORMAT(start_date,'{$configObject->get('cfg_long_date_time')}') AS display_start_date,
+    DATE_FORMAT(end_date,'{$configObject->get('cfg_long_date_time')}') AS display_end_date, properties.exam_duration, users.title, users.initials,
+    users.surname, properties.retired, properties.password";
+$groupby = " GROUP BY properties.calendar_year, properties.paper_title, properties.property_id, properties.paper_ownerID, properties.retired, users.surname,
+    properties.exam_duration, properties.password, users.title, users.initials";
+$orderby = " ORDER BY properties.calendar_year DESC, properties.paper_title";
 if ($_GET['module'] != '0') {
-  $sql = "SELECT calendar_year, paper_ownerID, properties.property_id, MAX(screen) AS screens, paper_title, DATE_FORMAT(start_date,'%Y%m%d%H%i%s') AS start_date, DATE_FORMAT(start_date,'{$configObject->get('cfg_long_date_time')}') AS display_start_date, DATE_FORMAT(end_date,'{$configObject->get('cfg_long_date_time')}') AS display_end_date, exam_duration, title, initials, surname, retired, properties.password FROM (properties, properties_modules, users) LEFT JOIN papers ON properties.property_id = papers.paper WHERE properties.property_id = properties_modules.property_id AND properties_modules.idMod = ? AND paper_type = ? AND properties.paper_ownerID = users.id  AND deleted IS NULL GROUP BY paper_title ORDER BY calendar_year DESC, paper_title";
+  $sql = $select .
+    " FROM (properties, properties_modules, users) LEFT JOIN papers ON properties.property_id = papers.paper
+    WHERE properties.property_id = properties_modules.property_id AND properties_modules.idMod = ? AND properties.paper_type = ? AND properties.paper_ownerID = users.id 
+    AND properties.deleted IS NULL" . $groupby . $orderby;
   $results = $mysqli->prepare($sql);
   $results->bind_param('is', $module, $type);
 } else {
-  $sql = "SELECT calendar_year, paper_ownerID, properties.property_id, MAX(screen) AS screens, paper_title, DATE_FORMAT(start_date,'%Y%m%d%H%i%s') AS start_date, DATE_FORMAT(start_date,'{$configObject->get('cfg_long_date_time')}') AS display_start_date, DATE_FORMAT(end_date,'{$configObject->get('cfg_long_date_time')}') AS display_end_date, exam_duration, title, initials, surname, retired, properties.password FROM (properties, users) LEFT JOIN properties_modules ON properties.property_id = properties_modules.property_id LEFT JOIN papers ON properties.property_id = papers.paper WHERE properties_modules.idMod IS NULL AND paper_type = ? AND properties.paper_ownerID = users.id AND paper_ownerID = ? AND deleted IS NULL GROUP BY paper_title ORDER BY calendar_year DESC, paper_title";
+  $sql = $select .
+  " FROM (properties, users) LEFT JOIN properties_modules ON properties.property_id = properties_modules.property_id LEFT JOIN papers ON properties.property_id = papers.paper
+  WHERE properties_modules.idMod IS NULL AND properties.paper_type = ? AND properties.paper_ownerID = users.id AND paper_ownerID = ? AND properties.deleted IS NULL" . $groupby . $orderby;
   $results = $mysqli->prepare($sql);
   $results->bind_param('si', $type, $userObject->get_user_ID());
 }

@@ -345,79 +345,6 @@ function random_qMarks($random_questions) {
     return 'ERR';
   }
 }
-
-/**
- * Check the parts of a question to see if they contain equations and therefore need to include LaTeX processing code
- * @param string $leadin
- * @param string $scenario
- * @param string $option_text
- * @param string $score_method
- * @param string $correct_fback
- * @param string $feedback_right
- * @return int
- */
-function check_latex($leadin, $scenario, $option_text, $score_method, $correct_fback, $feedback_right) {
-  $latex = 0;
-
-  // latex check [tex]
-  if (strpos($leadin,'[tex]') !== false or strpos($scenario,'[tex]') !== false or strpos($option_text,'[tex]') !== false or strpos($score_method,'[tex]') !== false or strpos($correct_fback,'[tex]') !== false or strpos($feedback_right,'[tex]') !== false) {
-    $latex = 1;
-  }
-
-  // latex check [tex]
-  if (strpos($leadin,'[texi]') !== false or strpos($scenario,'[texi]') !== false or strpos($option_text,'[texi]') !== false or strpos($score_method,'[texi]') !== false or strpos($correct_fback,'[texi]') !== false or strpos($feedback_right,'[texi]') !== false) {
-    $latex = 1;
-  }
-
-  // latex check $$
-  if (strpos($leadin,'$$') !== false or strpos($scenario,'$$') !== false or strpos($option_text,'$$') !== false or strpos($score_method,'$$') !== false or strpos($correct_fback,'$$') !== false or strpos($feedback_right,'$$') !== false) {
-    $latex = 1;
-  }
-
-  // latex check class="mee" (with or without quotes)
-  if (check_latex_class(array($leadin, $scenario, $option_text, $score_method, $correct_fback, $feedback_right))) {
-    $latex = 1;
-  }
-
-  return $latex;
-}
-
-/**
- * @param $candidates Array of candidate strings to check for inclusion of the MEE class
- * @return bool True if at least one of the candidates contains the class
- */
-function check_latex_class($candidates) {
-  foreach ($candidates as $candidate) {
-    if (strpos($candidate,'class="mee"') !== false or strpos($candidate,'class=mee') !== false) {
-      return true;
-    }
-  }
-  return false;
-}
-
-/**
- * Check the random questions on the paper to see if they require LaTeX
- * @param $q_ids
- * @param $mysqli
- * @return int
- */
-function check_latex_random($q_ids, $mysqli) {
-  $q_ids = implode(',', $q_ids);
-  $latex = 0;
-  if ($q_ids != '') {
-    $result = $mysqli->prepare("SELECT leadin, scenario, option_text, score_method, correct_fback, feedback_right FROM questions INNER JOIN options ON questions.q_id = options.o_id WHERE questions.q_id IN ($q_ids)");
-    $result->execute();
-    $result->store_result();
-    $result->bind_result($leadin, $scenario, $option_text, $score_method, $correct_fback, $feedback_right);
-    while ($result->fetch()) {
-      $latex = check_latex($leadin, $scenario, $option_text, $score_method, $correct_fback, $feedback_right);
-      if ($latex == 1) {
-        break;
-      }
-    }
-  }
-  return $latex;
-}
 ?>
 <!DOCTYPE html>
 <html>
@@ -431,7 +358,7 @@ function check_latex_random($q_ids, $mysqli) {
   <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
   <link rel="stylesheet" type="text/css" href="../css/screen.css" />
   <link rel="stylesheet" type="text/css" href="../css/warnings.css" />
-  <link rel="stylesheet" type="text/css" href="../css/adhocwindow.css" />
+  <link rel="stylesheet" type="text/css" href="../css/question_leadin_popup.css" />
   <!--[if lt IE 8]>
   <style type="text/css">
     td.ie-fullwidth {
@@ -456,13 +383,15 @@ function check_latex_random($q_ids, $mysqli) {
 
   <script type="text/javascript" src="../js/staff_help.js"></script>
   <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
-	<script type="text/javascript" src="../js/jquery-migrate-1.2.1.min.js"></script>
   <script type="text/javascript" src="../js/jquery-ui-1.10.4.min.js"></script>
-  <script type="text/javascript" src="../tools/mee/mee/js/mee_src.js"></script>
   <script type="text/javascript" src="../js/jquery.rquerystring.js"></script>
   <script type="text/javascript" src="../js/toprightmenu.js"></script>
   <script type="text/javascript" src="../js/page_scroll.js"></script>
-  <script type="text/javascript" src="../js/adhocwindow.js"></script>
+  <script type="text/javascript" src="../js/jquery.question_leadin_popup.min.js"></script>
+<?php
+  $texteditorplugin = \plugins\plugins_texteditor::get_editor();
+  $texteditorplugin->display_header();
+?>
 <script defer="defer">
   var paperID = '<?php echo $paperID ?>';
 
@@ -675,7 +604,6 @@ function check_latex_random($q_ids, $mysqli) {
   $row_no2            = 0;
   $old_display_pos    = -1;
   $temp_array         = array();
-  $latex              = 0;
   $old_q_id           = 0;
   $old_q_type         = '';
   $old_marks          = 0;
@@ -692,7 +620,6 @@ function check_latex_random($q_ids, $mysqli) {
   $total_marks        = 0;
   $options            = 0;
   $neg_marking        = false;
-  $rnd_q_ids          = array();
   $q_mod_check        = array();
 
   // Get the questions (if any).
@@ -718,13 +645,7 @@ function check_latex_random($q_ids, $mysqli) {
     if (isset($settings['marks_incorrect'])) {
       $marks_incorrect = $settings['marks_incorrect'];
     }
-    if ($latex == 0) {
-      if ($q_type == 'random') {
-        $rnd_q_ids = array_merge($rnd_q_ids, random_utils::get_random_qids_for_question($q_id, $mysqli));
-      } else {
-        $latex = check_latex($leadin, $scenario, $option_text, $score_method, $correct_fback, $feedback_right);
-      }
-    }
+
     // Check for negative marking
     if ($marks_incorrect < 0) {
       $neg_marking = true;
@@ -759,7 +680,9 @@ function check_latex_random($q_ids, $mysqli) {
           $total_random_mark += qRandomMarks($old_q_type, $tmp_exclude, $old_marks, $old_option_text, $old_correct, $old_display_method, $old_score_method, $old_q_media_width, $old_q_media_height);
         }
       }
-      if ($do_marking) $total_marks += $temp_array[$row_no2]['marks'];
+      if ($do_marking and $temp_array[$row_no2]['marks'] !== 'ERR') {
+        $total_marks += $temp_array[$row_no2]['marks'];
+      }
       $temp_array[$row_no2]['display_method'] = $old_display_method;
       $temp_array[$row_no2]['score_method'] = $old_score_method;
       if ($row_no2 > 0 and $properties->get_paper_type() < 3) {
@@ -868,7 +791,9 @@ function check_latex_random($q_ids, $mysqli) {
         $total_random_mark += qRandomMarks($old_q_type, $tmp_exclude, $old_marks, $old_option_text, $old_correct, $old_display_method, $old_score_method, $old_q_media_width, $old_q_media_height);
       }
     }
-    if ($do_marking) $total_marks += $temp_array[$row_no2]['marks'];
+    if ($do_marking and $temp_array[$row_no2]['marks'] !== 'ERR') {
+      $total_marks += $temp_array[$row_no2]['marks'];
+    }
     $temp_array[$row_no2]['display_pos'] = $old_display_pos;
     $temp_array[$row_no2]['score_method'] = $old_score_method;
     if ($properties->get_paper_type() < 3) {
@@ -877,16 +802,11 @@ function check_latex_random($q_ids, $mysqli) {
 			checkProblems($old_q_type, $temp_array, $row_no2, $tmp_exclude, $old_option_text, $old_correct, $string, $status_array, $old_settings, $properties, $mysqli);
 		}
 		
-    // If we had random questions on paper need to check if they need LaTeX
-    if ($latex == 0 and count($rnd_q_ids) > 0) {
-      $latex = check_latex_random($rnd_q_ids, $mysqli);
-    }
-		
-    if ((round($total_random_mark, 4) != round($properties->get_random_mark(), 4) or $total_marks != $properties->get_total_mark() or $latex != $properties->get_latex_needed()) and $properties->get_paper_type() != '3') {   // Calculate random and total marks
+
+    if ((round($total_random_mark, 4) != round($properties->get_random_mark(), 4) or $total_marks != $properties->get_total_mark()) and $properties->get_paper_type() != '3') {   // Calculate random and total marks
       $update_params = array(
         'random_mark' => array('d', $total_random_mark),
-        'total_mark' => array('i', $total_marks),
-        'latex_needed' => array('i', $latex)
+        'total_mark' => array('i', $total_marks)
       );
       $assessment->db_update_assessment($paperID, $update_params);
 
@@ -918,7 +838,7 @@ function check_latex_random($q_ids, $mysqli) {
   $exam_announcements = $exam_announcementObj->get_announcements();
 
   // initial link of breadcrumb
-  $links = array('/' => 'Home');
+  $links = array('/' => $string['home']);
 
   if ($folder) {
     // links of parent folders
@@ -1134,12 +1054,12 @@ function check_latex_random($q_ids, $mysqli) {
       echo "<td class=\"q_no\">$question_number.</td>";
     }
 
-    echo "<td class=\"l\" ";
+    echo "<td class=\"l";
     if (strlen($temp_array[$x]['fulltext']) > $leadinlength) {
-      echo ' onmouseover="showAdHocWindow(event,\''.htmlspecialchars($temp_array[$x]['fulltext']).'\');" ';
-      echo ' onmouseleave="hideAdHocWindow();" ';
+        $fullText = QuestionUtils::clean_leadin($temp_array[$x]['fulltext'], 0);
+        echo ' extended-leadin" data-extended-leadin="'.htmlspecialchars($fullText);
     }
-    echo '>';
+    echo '">';
     echo $theme_str;
     if ($temp_array[$x]['q_type'] == 'random') {
       echo $temp_array[$x]['leadin'];
@@ -1184,9 +1104,7 @@ function check_latex_random($q_ids, $mysqli) {
     } else {
       if (!$status_array[$temp_array[$x]['status']]->get_exclude_marking() and $temp_array[$x]['marks'] === 'ERR') {
         // Only ever get in here for random questions
-        if (count($temp_array[$x]['marks']) > 0) {
-          echo '<td style="text-align:right; vertical-align:top"><img src="../artwork/small_yellow_warning_icon.gif" width="12" height="11" title="' . $string['variablenomarks'] . '" alt="' . $string['variablenomarks'] . '" /></td>';
-        }
+        echo '<td style="text-align:right; vertical-align:top"><img src="../artwork/small_yellow_warning_icon.gif" width="12" height="11" title="' . $string['variablenomarks'] . '" alt="' . $string['variablenomarks'] . '" /></td>';
         $marks_incorrect_error = true;
       } elseif ($status_array[$temp_array[$x]['status']]->get_exclude_marking()) {
         echo '<td style="text-align:right; vertical-align:top">' . $string['na'] . '</td>';
@@ -1194,7 +1112,7 @@ function check_latex_random($q_ids, $mysqli) {
         echo '<td class="m">' . $temp_array[$x]['marks'] . '</td>';
       }
     }
-    if (!$status_array[$temp_array[$x]['status']]->get_exclude_marking()) {
+    if (!$status_array[$temp_array[$x]['status']]->get_exclude_marking() and $temp_array[$x]['marks'] !== 'ERR') {
     	$screen_marks += $temp_array[$x]['marks'];
     }
     echo '<td class="d">' . $temp_array[$x]['display_last_edited'] . '</td>';
@@ -1218,7 +1136,7 @@ function check_latex_random($q_ids, $mysqli) {
     if ($row_no > 0 and $properties->get_paper_type() != '3' and $properties->get_paper_type() != '4') {
       echo "<tr><td colspan=\"4\"></td><td id=\"marks_total\" style=\"border-top:1px solid black; padding-right:4px\" align=\"right\">";
       if ($marks_incorrect_error == true) {
-        echo '<img src="../artwork/small_yellow_warning_icon.gif" width="12" height="11" alt="' . $string['variablenomarks'] . '" />';
+        echo '<img src="../artwork/small_yellow_warning_icon.gif" width="12" height="11" title="' . $string['variablenomarks'] . '" alt="' . $string['variablenomarks'] . '" />';
       } else {
         echo $total_marks;
       }

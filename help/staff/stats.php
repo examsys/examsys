@@ -187,7 +187,11 @@ $end_date = $_POST['endyear'] . $_POST['endmonth'] . $_POST['endday'] . '000000'
   echo "<tr ><td>&nbsp;</td><td></td><td>&nbsp;</td></tr>\n";
 
   echo "<tr><td style=\"vertical-align:top\">";
-  $search_results = $mysqli->prepare("SELECT count(pageID) AS hits, title FROM help_log, staff_help WHERE help_log.pageID = staff_help.id AND help_log.type = 'staff' AND accessed > ? AND accessed < ? GROUP BY pageID ORDER BY hits DESC, title");
+  $search_results = $mysqli->prepare("SELECT count(pageID) AS hits, title
+    FROM help_log, staff_help
+    WHERE help_log.pageID = staff_help.id AND help_log.type = 'staff' AND accessed > ? AND accessed < ?
+    GROUP BY title
+    ORDER BY hits DESC, title");
   $search_results->bind_param('ss', $start_date, $end_date);
   $search_results->execute();
   $search_results->store_result();
@@ -208,7 +212,11 @@ $end_date = $_POST['endyear'] . $_POST['endmonth'] . $_POST['endday'] . '000000'
 
   echo "\n</td><td style=\"width:20px\">&nbsp;</td><td style=\"vertical-align:top\">\n";
 
-  $search_results = $mysqli->prepare("SELECT COUNT(id) AS search_no, searchstring, hits FROM help_searches WHERE type='staff' AND searched > ? AND searched < ? GROUP BY searchstring ORDER BY search_no DESC");
+  $search_results = $mysqli->prepare("SELECT COUNT(id) AS search_no, searchstring, hits
+    FROM help_searches
+    WHERE type='staff' AND searched > ? AND searched < ?
+    GROUP BY searchstring, hits
+    ORDER BY search_no DESC");
   $search_results->bind_param('ss', $start_date, $end_date);
   $search_results->execute();
   $search_results->store_result();

@@ -123,7 +123,21 @@ abstract class rogo_directory {
   public function clear() {
     return $this->recursive_delete($this->location());
   }
-  
+
+  /**
+   * Delete the contents of a sub directory.
+   * @param string subdir sub directory to delete
+   * @return boolean true if all the contents were deleted, false otherwise.
+   */
+  public function clear_subdir($subdir) {
+    $path = $this->location() . DIRECTORY_SEPARATOR . $subdir;
+    // Ensure this is a vaild subdir before deleting.
+    if ($this->valid_path($path)) {
+      return $this->recursive_delete($path);
+    }
+    return false;
+  }
+
   /**
    * Copy files from the default location into the configured location.
    * 

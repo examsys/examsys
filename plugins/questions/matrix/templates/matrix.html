@@ -1,0 +1,55 @@
+{#This file is part of Rogō
+
+ Rogō is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ Rogō is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+#}
+
+{#
+This template is for the matrix question type.
+
+author Dr Joseph Baxter <joseph.baxter@nottingham.ac.uk>
+copyright 2018 onwards The University of Nottingham
+
+Required variables:
+
+data.matchoptions - the options
+matchoptions.option - option text
+matchoptions.value - option value
+matchoptions.selected - flag to indicate if option has previously been selected
+data.matchscenarios - option scenarios
+matchscenarios.id - scenario id
+matchscenarios.value - scenario value
+matchscenarios.unanswered - flag to indicate if option has previously been answered
+data.questionno - question number
+#}
+<table cellpadding="2" cellspacing="0" border="1" class="matrix">
+    <tr>
+        <td colspan="2">&nbsp;</td>
+{% for m in data.matchoptions %}
+        <td>{{m.option}}</td>
+{% endfor %}
+    </tr>
+{% for i,s in data.matchscenarios %}
+    <tr {% if s.unanswered %} class="unans" {% endif %}>
+        <td align="right">{{s.id}}.</td>
+        <td>{{s.value}}</td>
+    {% for m in data.matchoptions %}
+        <td>
+            <div align="center">
+                <input type="radio" name="q{{data.questionno}}_{{i+1}}" value="{{m.value}}" {% if m.selected[i+1] %} checked="checked" {% endif %}/>
+            </div>
+        </td>
+    {% endfor %}
+    </tr>
+{% endfor %}
+</table>

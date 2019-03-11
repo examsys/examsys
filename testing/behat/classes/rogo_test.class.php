@@ -16,7 +16,7 @@
 
 namespace testing\behat;
 use Behat\MinkExtension\Context\MinkContext,
-    Behat\Behat\Exception\PendingException;
+    Behat\Behat\Tester\Exception\PendingException;
 use testing\datagenerator\loader;
 use coding_exception,
     Exception;
@@ -165,7 +165,7 @@ class rogo_test extends MinkContext {
    *
    * @return boolean
    */
-  protected function running_javascript() {
+  public function running_javascript() {
     return get_class($this->getSession()->getDriver()) !== 'Behat\Mink\Driver\GoutteDriver';
   }
 }

@@ -44,7 +44,6 @@ if (count($keyword_names) < substr_count($keywordIDs, ',')) {
   $notice->display_notice_and_exit($mysqli, $string['pagenotfound'], $msg, $string['pagenotfound'], '../artwork/page_not_found.png', '#C00000', true, true);
 }
 
-$mysqli->close();
 ?>
 <!DOCTYPE html>
 <html>

@@ -100,7 +100,7 @@ function cosign_auth($cfg = array(), $obstart = true)
     }
     $service_cookie_val = substr($service_cookie_val, strlen($service_cookie)+1);
     $dest = substr($_SERVER['QUERY_STRING'], $p+1);
-    if (ereg($this->cosign_cfg['CosignValidReference'], $dest) === false) {
+    if (preg_match($this->cosign_cfg['CosignValidReference'], $dest) !== 1) {
       $this->cosign_debug("CosignValid: Invalid validation destination $dest");
       ob_end_flush();
       header("Location: {$this->cosign_cfg['CosignValidationErrorRedirect']}");

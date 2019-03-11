@@ -369,7 +369,7 @@ Class QuestionENHANCEDCALC extends QuestionEdit {
    */
   public function get_marks_source() {
     // For this question type this object will provide the marks data
-    if (count($this->id) != -1) {
+    if ($this->id != -1) {
       return $this;
     } else {
       return false;

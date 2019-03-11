@@ -1,0 +1,11 @@
+body {
+    font-size: 90%
+}
+.email {
+    width:300px;
+    color:#316ac5
+}
+#message {
+    width:780px;
+    height:450px;
+}

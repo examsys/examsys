@@ -16,8 +16,7 @@
 
 namespace testing\behat;
 use Behat\Behat\Context\Context,
-    Behat\Behat\Exception\PendingException;
-use PHPUnit_Framework_Assert;
+    Behat\Behat\Tester\Exception\PendingException;
 use testing\datagenerator\loader;
 use coding_exception,
     Exception;
@@ -31,7 +30,7 @@ use coding_exception,
  * @subpackage behat
  */
 class rogo_unit_test implements Context {
-  /** 
+  /**
    * Stores any custom variables assigned to the class.
    * 
    * This is to allow steps within a test using the context to store information easily.
@@ -60,8 +59,8 @@ class rogo_unit_test implements Context {
    * @param array $arguments the arguments passed to the function
    */
   public function __call($name, $arguments) {
-    if (method_exists('PHPUnit_Framework_Assert', $name)) {
-      return call_user_func_array("PHPUnit_Framework_Assert::$name", $arguments);
+    if (method_exists('PHPUnit\Framework\Assert', $name)) {
+      return call_user_func_array("PHPUnit\Framework\Assert::$name", $arguments);
     }
     throw new coding_exception("The method $name does not exist");
   }

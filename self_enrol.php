@@ -80,10 +80,7 @@ if ($mod_details['active'] == 1 and $mod_details['selfenroll'] == 1 and isset($_
 <form name="myform" method="post" action="<?php echo $_SERVER['PHP_SELF'] . '?mod=' . $module ?>" autocomplete="off">
 <?php
 
-  $year_parts = explode('/',$session);
-  $next_session = ($year_parts[0] + 1) . '/' . ($year_parts[1] + 1);
-  
-  $years = array($session, $next_session);
+  $years = array($session, $session + 1);
   
   echo '<br /><div align="center"><table cellpadding="0" cellspacing="0" style="width:500px; border:1px #C8C8C8 solid">';
   echo '<tr><td class="topbar" style="text-align:right; width:55px"><img src="./artwork/modules_icon.png" width="48" height="48" alt="modules" /></td><td class="topbar" style="padding-left:15px; text-align:left">' . $string['moduleselfenrolment'] . '</td></tr>';
@@ -94,9 +91,9 @@ if ($mod_details['active'] == 1 and $mod_details['selfenroll'] == 1 and isset($_
   echo '<tr><td class="field">' . $string['academicyear'] . '</td><td><select name="session">';
   foreach ($years as $year) {
     if (isset($_POST['session']) and $_POST['session'] == $year) {
-      echo '<option value="' . $year . '" selected>' . $year . '</option>';
+      echo '<option value="' . $year . '" selected>' . $yearutils->get_academic_session($year) . '</option>';
     } else {
-      echo '<option value="' . $year . '">' . $year . '</option>';
+      echo '<option value="' . $year . '">' . $yearutils->get_academic_session($year) . '</option>';
     }
   }
   echo '</select></td></tr>';

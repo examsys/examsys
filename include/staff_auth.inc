@@ -37,79 +37,84 @@ if (!$userObject->has_role(array('Staff', 'External Examiner', 'SysCron', 'Invig
 // Redirect External Examiners if they are straying
 // $external_allowed_pages is an array that contains the set of scripts that External Examiners 
 // CAN access all other pages should redirect to the /reviews/ section
-$cfg_root_path = $configObject->get('cfg_root_path');
+$url = Url::fromGlobals();
+$path = $url->getPath();
 $external_allowed_pages = array(   
-                              "$cfg_root_path/help/staff/index.php"=>1,
-                              "$cfg_root_path/help/staff/search.php"=>1,
-                              "$cfg_root_path/help/staff/toolbar.php"=>1,
-                              "$cfg_root_path/help/staff/toc_title.php"=>1,
-                              "$cfg_root_path/help/staff/toc.php"=>1,
-                              "$cfg_root_path/help/staff/display_page.php"=>1,
-                              "$cfg_root_path/reviews/index.php"=>1,
-                              "$cfg_root_path/reviews/start.php"=>1,
-                              "$cfg_root_path/reviews/finish.php"=>1,
-                              "$cfg_root_path/reviews/class_totals.php"=>1,
-                              "$cfg_root_path/reports/draw_distribution_chart.php"=>1,
-                              "$cfg_root_path/reports/draw_scatter_plot.php"=>1,
-                              "$cfg_root_path/ajax/reports/getNote.php"=>1,
-                              "$cfg_root_path/ajax/reports/getAccessibility.php"=>1,
-                              "$cfg_root_path/osce/form.php"=>1
+                              "/help/staff/index.php"=>1,
+                              "/help/staff/search.php"=>1,
+                              "/help/staff/toolbar.php"=>1,
+                              "/help/staff/toc_title.php"=>1,
+                              "/help/staff/toc.php"=>1,
+                              "/help/staff/display_page.php"=>1,
+                              "/reviews/index.php"=>1,
+                              "/reviews/start.php"=>1,
+                              "/reviews/finish.php"=>1,
+                              "/reviews/class_totals.php"=>1,
+                              "/reports/draw_distribution_chart.php"=>1,
+                              "/reports/draw_scatter_plot.php"=>1,
+                              "/ajax/reports/getNote.php"=>1,
+                              "/ajax/reports/getAccessibility.php"=>1,
+                              "/osce/form.php"=>1,
+                              "/reviews/"=>1
                             );
 
 $internal_allowed_pages = array(   
-                              "$cfg_root_path/help/staff/index.php"=>1,
-                              "$cfg_root_path/help/staff/search.php"=>1,
-                              "$cfg_root_path/help/staff/toolbar.php"=>1,
-                              "$cfg_root_path/help/staff/toc_title.php"=>1,
-                              "$cfg_root_path/help/staff/toc.php"=>1,
-                              "$cfg_root_path/help/staff/display_page.php"=>1,
-                              "$cfg_root_path/reviews/index.php"=>1,
-                              "$cfg_root_path/reviews/start.php"=>1,
-                              "$cfg_root_path/reviews/finish.php"=>1
+                              "/help/staff/index.php"=>1,
+                              "/help/staff/search.php"=>1,
+                              "/help/staff/toolbar.php"=>1,
+                              "/help/staff/toc_title.php"=>1,
+                              "/help/staff/toc.php"=>1,
+                              "/help/staff/display_page.php"=>1,
+                              "/reviews/index.php"=>1,
+                              "/reviews/start.php"=>1,
+                              "/reviews/finish.php"=>1,
+                              "/reviews/"=>1
                             );
 
 $invigilator_allowed_pages = array(   
-                              "$cfg_root_path/ajax/invigilator/refresh_cohort_list.php"=>1,
-                              "$cfg_root_path/ajax/invigilator/toilet_break.php"=>1,
-                              "$cfg_root_path/invigilator/check_exam_announcements.php"=>1,
-                              "$cfg_root_path/invigilator/check_unfinish_exam.php"=>1,
-                              "$cfg_root_path/invigilator/do_unfinish_exam.php"=>1,
-                              "$cfg_root_path/invigilator/extend_time.php"=>1,
-                              "$cfg_root_path/invigilator/index.php"=>1,
-                              "$cfg_root_path/invigilator/new_paper_note.php"=>1,
-                              "$cfg_root_path/invigilator/new_student_note.php"=>1,
-                              "$cfg_root_path/invigilator/test.php"=>1
+                              "/ajax/invigilator/refresh_cohort_list.php"=>1,
+                              "/ajax/invigilator/toilet_break.php"=>1,
+                              "/invigilator/check_exam_announcements.php"=>1,
+                              "/invigilator/check_unfinish_exam.php"=>1,
+                              "/invigilator/do_unfinish_exam.php"=>1,
+                              "/invigilator/extend_time.php"=>1,
+                              "/invigilator/index.php"=>1,
+                              "/invigilator/new_paper_note.php"=>1,
+                              "/invigilator/new_student_note.php"=>1,
+                              "/invigilator/test.php"=>1,
+                              "/invigilator/"=>1
                             );
 
 $standards_setter_allowed_pages = array(
-                                      "$cfg_root_path/index.php"=>1,
-                                      "$cfg_root_path/module/index.php"=>1,
-                                      "$cfg_root_path/paper/type.php"=>1,
-                                      "$cfg_root_path/std_setting/index.php"=>1,
-                                      "$cfg_root_path/std_setting/individual_review.php"=>1,
-                                      "$cfg_root_path/std_setting/hofstee.php"=>1,
-                                      "$cfg_root_path/std_setting/get_group.php"=>1,
-                                      "$cfg_root_path/std_setting/group_set_angoff.php"=>1,
-                                      "$cfg_root_path/delete/check_delete_review.php"=>1,
-                                      "$cfg_root_path/delete/do_delete_review.php"=>1
+                                      "/index.php"=>1,
+                                      "/module/index.php"=>1,
+                                      "/paper/type.php"=>1,
+                                      "/std_setting/index.php"=>1,
+                                      "/std_setting/individual_review.php"=>1,
+                                      "/std_setting/hofstee.php"=>1,
+                                      "/std_setting/get_group.php"=>1,
+                                      "/std_setting/group_set_angoff.php"=>1,
+                                      "/delete/check_delete_review.php"=>1,
+                                      "/delete/do_delete_review.php"=>1,
+                                      "/"=>1
                             );
 
 $standards_setter_allowed_pages = array_merge($external_allowed_pages, $standards_setter_allowed_pages);                           
 
 if ($userObject->has_role('External Examiner')) {
-  if (!isset($external_allowed_pages[$_SERVER['PHP_SELF']])) {
+  if (!isset($external_allowed_pages[$path])) {
     header("location: " . $configObject->get('cfg_root_path') . "/reviews/");
   }
 } elseif ($userObject->has_role('Internal Reviewer')) {
-  if (!isset($internal_allowed_pages[$_SERVER['PHP_SELF']])) {
+  if (!isset($internal_allowed_pages[$path])) {
     header("location: " . $configObject->get('cfg_root_path') . "/reviews/");
   }
 } elseif ($userObject->has_role('Invigilator')) {
-  if (!isset($invigilator_allowed_pages[$_SERVER['PHP_SELF']])) {
+  if (!isset($invigilator_allowed_pages[$path])) {
     header("location: " . $configObject->get('cfg_root_path') . "/invigilator/");
   }
 } elseif($userObject->has_role('Standards Setter')) {
-  if (!isset($standards_setter_allowed_pages[$_SERVER['PHP_SELF']])) {
+  if (!isset($standards_setter_allowed_pages[$path])) {
     header("location: " . $configObject->get('cfg_root_path') . "/");
   }
 }
@@ -117,12 +122,12 @@ if ($userObject->has_role('External Examiner')) {
 // Redirect the system cron if it is straying
 // $cron_allowed_pages is an array that contains the set of scripts that the system cron
 // CAN access all other pages should exit the cron
-$cron_allowed_pages = array("$cfg_root_path/testing/testing/class_totals_with_script_cli.php");
+$cron_allowed_pages = array("/testing/testing/class_totals_with_script_cli.php");
 
 if ($userObject->has_role('SysCron')) {
-  if (!isset($cron_allowed_pages[$_SERVER['PHP_SELF']])) {
+  if (!isset($cron_allowed_pages[$path])) {
     $logger = new Logger($mysqli);
-    $logger->record_access_denied($userObject->get_user_ID(), $_SERVER['PHP_SELF'], $string['crondisallowed']);
+    $logger->record_access_denied($userObject->get_user_ID(), $path, $string['crondisallowed']);
     exit;
   }
 }

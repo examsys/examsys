@@ -25,7 +25,6 @@
 
 require_once '../include/staff_auth.inc';
 require_once '../include/errors.php';
-require_once '../include/sort.inc';
 
 $paperID    = check_var('paperID', 'GET', true, false, true);
 $startdate  = check_var('startdate', 'GET', true, false, true);
@@ -268,7 +267,7 @@ require_once 'summary_report.inc';
   }
 
   // Sort the data.
-  $master_array = array_csort($master_array, $sortby, $ordering);
+  $master_array = \sort::array_csort($master_array, $sortby, $ordering);
   
   for ($i=0; $i<$user_number; $i++) {
     if ($master_array[$i]['student_id'] != '') {

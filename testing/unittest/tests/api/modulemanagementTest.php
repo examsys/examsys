@@ -15,6 +15,7 @@
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
 use testing\unittest\unittestdatabase;
+use PHPUnit\DbUnit\DataSet\YamlDataSet;
 
 /**
  * Test modulemanagement api class
@@ -154,7 +155,7 @@ class modulemanagementtest extends unittestdatabase {
      * @return dataset
      */
     public function getDataSet() {
-        return new PHPUnit_Extensions_Database_DataSet_YamlDataSet($this->get_base_fixture_directory() . "api" . DIRECTORY_SEPARATOR . "modulemanagementTest" . DIRECTORY_SEPARATOR . "modulemanagement.yml");
+        return new YamlDataSet($this->get_base_fixture_directory() . "api" . DIRECTORY_SEPARATOR . "modulemanagementTest" . DIRECTORY_SEPARATOR . "modulemanagement.yml");
     }
     /**
      * Get expected data set from yml
@@ -162,7 +163,7 @@ class modulemanagementtest extends unittestdatabase {
      * @return dataset
      */
     public function get_expected_data_set($name) {
-        return new PHPUnit_Extensions_Database_DataSet_YamlDataSet($this->get_base_fixture_directory() . "api" . DIRECTORY_SEPARATOR .  "modulemanagementTest" . DIRECTORY_SEPARATOR . $name . ".yml");
+        return new YamlDataSet($this->get_base_fixture_directory() . "api" . DIRECTORY_SEPARATOR .  "modulemanagementTest" . DIRECTORY_SEPARATOR . $name . ".yml");
     }
     /**
      * Test successful module creation
@@ -279,6 +280,30 @@ class modulemanagementtest extends unittestdatabase {
             "faculty" => 'Test faculty');
         $this->assertEquals($responsearray, $module->update($params, $userid));
     }
+    /**
+     * Test successful module update with a new external id
+     * @group api
+     */
+    public function test_update_new_external_id() {
+      // Test module update name.
+      $responsearray = $this->update_response_array();
+      $params = $this->update_param_array();
+      $module = new \api\modulemanagement($this->db, 'test1');
+      $userid = 1;
+      $this->assertEquals($responsearray, $module->update($params, $userid));
+      // Test module update module code.
+      $params = array(
+        "nodeid" => 1,
+        "externalid" => '12345678',
+        "newexternalid" => '87654321');
+      $responsearray["id"]= 1;
+      $responsearray["externalid"] = "87654321";
+      $this->assertEquals($responsearray, $module->update($params, $userid));
+      // Check update occured.
+      $querytable = $this->getConnection()->createQueryTable('modules', 'SELECT id, moduleid, fullname, active, schoolid, academic_year_start, externalid, sms FROM modules where externalid = "87654321"');
+      $expectedtable = $this->get_expected_data_set('updatemodule2')->getTable("modules");
+      $this->assertTablesEqual($expectedtable, $querytable);
+  }
     /**
      * Test module update exception nothing to update
      * @group api

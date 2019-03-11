@@ -1,0 +1,94 @@
+{#This file is part of Rogō
+
+ Rogō is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ Rogō is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+#}
+
+{#
+This template is for the exact match question type.
+
+author Dr Joseph Baxter <joseph.baxter@nottingham.ac.uk>
+copyright 2018 onwards The University of Nottingham
+
+Required variables:
+
+data.extmatchdisplaymedia - flag to indicate if question media is available
+data.matchoptions - the options
+data.split - where to split the options table
+data.matchstem - the stems
+matchstem.scenario - the stem scenario
+matchstem.display  - flag to indicate if stem media is available
+matchstem.media  - the stem media
+matchstem.answerno - stem number of answers
+matchstem.matchingoptions - the stem options
+matchstem.subanswers - multi answers
+matchstem.listsize - size of multi option list
+matchstem.value - value of stem option
+matchstem.selected - flag to indicate if option was selected previously
+data.questionno - the question number
+data.matchoptionsno - number of options
+
+Required localised text -
+lang.holddownctrlkey - user instructions on how to multi select options.
+#}
+{% if data.extmatchdisplaymedia %}
+<p align="center">
+    {% include 'paper/media.html' %}
+</p>
+{% endif %}
+{# Display options table #}
+<table class="extmatch_opt_table">
+    <tr>
+        <td>
+            <ol>
+{% for o in data.matchoptions %}
+                <li>{{o}}</li>
+    {% if loop.index0 == data.split %}
+            </ol>
+        </td>
+        <td style="vertical-align:top">
+            <ol start="{{loop.index0 + 2}}">
+    {% endif %}
+{% endfor %}
+            </ol>
+        </td>
+    </tr>
+</table>
+{# Display question stems #}
+<ol class="extmatch">
+{% for m in data.matchstem %}
+<li>
+    <div>{{m.scenario|raw}}</div>
+    {% if m.display %}
+    <div>{% include 'paper/media.html' with {'data': m.media} %}</div><br />
+    {% endif %}
+    {% if m.answerno == 1 %}
+    <select {% if m.unanswered %} class="unans" {% endif %} name="q{{data.questionno}}_{{loop.index}}" size="1">
+        <option value="u"></option>
+    {% else %}
+    <br />
+    <div class="option">
+        <select {% if m.unanswered %} class="unans" {% endif %} onchange="multimatchingCheck('q{{data.questionno}}_{{loop.index}}','{{m.matchingoptions}}','{{m.subanswers}}');" name="q{{data.questionno}}_{{loop.index}}[]" id="q{{data.questionno}}_{{loop.index}}" multiple="multiple" size="{{m.listsize}}">
+    {% endif %}
+    {% for o in m.matchingoption %}
+            <option value="{{o.value}}" {% if o.selected %} selected {% endif %}>{{o.option}}</option>
+    {% endfor %}
+        </select>
+    {% if m.answerno > 1 %}
+        <div class="mk">{{lang.holddownctrlkey}}</div>
+    {% endif %}
+    </div>
+</li>
+{% endfor %}
+</ol>
+<input type="hidden" name="multimatching{{data.questionno}}_options" value="{{data.matchoptionsno}}" />

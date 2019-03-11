@@ -1,0 +1,67 @@
+{#This file is part of Rogō
+
+ Rogō is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ Rogō is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+#}
+
+{#
+This template is for the paper header display.
+
+author Dr Joseph Baxter <joseph.baxter@nottingham.ac.uk>
+copyright 2018 onwards The University of Nottingham
+
+Required variables - 
+data.action - form to post data to
+data.previewmode - are we in question preview mode
+data.papertitle - paper title
+data.screen - screen display info
+data.logopath - path to site logo
+#}
+<div id="maincontent">
+    <form method="post" id="qForm" name="questions" action="{{data.action}}" autocomplete="off">
+{% for number,id in data.hidden %}
+        <input type="hidden" name="q{{number}}_randomID" value="{{id}}" />
+{% endfor %}
+        <table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+{# Not all information shown on question preview #}
+{% if data.previewmode %}
+            <tr>
+                <td>
+{% else %}
+            <tr>
+                <td valign="top">
+                    <table cellpadding="4" cellspacing="0" border="0" style="width:100%; background-color:#5590CF">
+                        <tr>
+                            <td>
+                                <div class="paper">{{data.papertitle}}</div>
+{% for s in data.screen %}
+                                <div class="{{s.screentype}}" title="{{s.noquestions}} {{s.noquestionsclass}}">
+                                    {{s.pageno}}
+                                </div>
+{% endfor %}
+                                <div style="clear:both"></div>
+{% for s in data.screen %}
+                                <div class="{{s.screentype2}}"></div>
+{% endfor %}
+                            </td>
+                            <td width="160">
+                                <img src="{{data.logopath}}" width="160" height="67" alt="Logo" />
+                            </td>
+                        </tr>
+                    </table>
+{% endif %}
+
+{{data.examclarification|raw}}
+
+                    <table cellpadding="0" cellspacing="4" border="0" width="100%" style="table-layout:fixed">
+                        <col width="40"><col>

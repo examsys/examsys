@@ -877,7 +877,7 @@ function qh_mouseDragMove(e){
       if (this.global_edit) this.cur = 'not-allowed';
 			if (this.global_edit && this.test_result!='') this.cur = 'move';
 			if (this.global_edit && this.test_result!='' && this.test_result.indexOf('$')<this.test_result.length-1) this.cur = 'default';
-			if (this.global_erase && this.test_result!='') this.cur = 'url(' + cfgRootPath +  '/js/images/cur_erase.cur) 6 5, default';//this works only in css3 browsers otherwise whole cursor is ignored
+			if (this.global_erase && this.test_result!='') this.cur = 'url(/js/images/cur_erase.cur) 6 5, default';//this works only in css3 browsers otherwise whole cursor is ignored
 			if (over_object) this.cur = 'pointer';
 			if (this.handle_over != -1) this.cur = 'move';
 

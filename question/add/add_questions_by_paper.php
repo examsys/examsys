@@ -51,14 +51,15 @@ $status_array = QuestionStatus::get_all_statuses($mysqli, $string, true);
     .divider {font-size:80%; font-weight:bold; padding-left:6px}
     .s {padding-left:6px}
     .q_no {text-align:right; width:35px}
-    .mee { display: inline; }
 
 <?php echo QuestionStatus::generate_status_css($status_array); ?>
   </style>
 
   <script type="text/javascript" src="../../js/jquery-1.11.1.min.js"></script>
-  <script type="text/javascript" src="../../js/jquery-migrate-1.2.1.min.js"></script>
-  <script type="text/javascript" src="../../tools/mee/mee/js/mee_src.js"></script>
+<?php
+  $texteditorplugin = \plugins\plugins_texteditor::get_editor();
+  $texteditorplugin->display_header();
+?>
   <script>
     function Qpreview(qID) {
       parent.previewurl.location = '../view_question.php?q_id=' + qID;

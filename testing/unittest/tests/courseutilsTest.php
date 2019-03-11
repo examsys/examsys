@@ -15,6 +15,7 @@
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
 use testing\unittest\unittestdatabase;
+use PHPUnit\DbUnit\DataSet\YamlDataSet;
 
 /**
  * Test courseutils class
@@ -31,7 +32,7 @@ class courseutilstest extends unittestdatabase {
      * @return dataset
      */
     public function getDataSet() {
-        return new PHPUnit_Extensions_Database_DataSet_YamlDataSet($this->get_base_fixture_directory() . "courseutilsTest" . DIRECTORY_SEPARATOR . "courseutils.yml");
+        return new YamlDataSet($this->get_base_fixture_directory() . "courseutilsTest" . DIRECTORY_SEPARATOR . "courseutils.yml");
     }
     /**
      * Test comparing  courses with external list

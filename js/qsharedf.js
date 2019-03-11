@@ -19,10 +19,6 @@ function setUpQuestion(num, canvasId, lang, image, config, answer, extra, colour
   } else if (mode == 'edit') {
     jspathprefix = '../../';
   }
-
-  //preload cursors
-  $.get(jspathprefix + 'js/images/cur_erase.cur', function() { });
-  $.get(jspathprefix + 'js/images/cur_cross.cur', function() { });
 	
   if (type == 'labelling') {
 		rq[num] = new rql(num);

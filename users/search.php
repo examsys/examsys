@@ -24,7 +24,6 @@
  * @package
  */
 require '../include/staff_auth.inc';
-require_once '../include/demo_replace.inc';
 require_once '../include/errors.php';
 
 $demo = $userObject->has_role('Demo');
@@ -166,48 +165,48 @@ if (!is_null($submit)) {
     // filter by roles
     $roles = array();
     if ($get_students or ( !is_null($student_id) and $student_id !== '')) {
-        $roles[] = "roles LIKE '%Student'";
+        $roles[] = "roles = 'Student'";
     }
     if ($get_staff) {
-        $roles[] = "roles LIKE '%Staff%'";
+        $roles[] = "roles = 'Staff'";
     }
     if ($get_admin) {
-        $roles[] = "roles LIKE '%,Admin%'";
+        $roles[] = "roles = 'Staff,Admin'";
     }
     if ($get_sysadmin) {
-        $roles[] = "roles LIKE '%,SysAdmin%'";
+        $roles[] = "roles = 'Staff,SysAdmin'";
     }
     if ($get_standardstaff) {
-        $roles[] = "roles LIKE '%,Standards Setter%'";
+        $roles[] = "roles = 'Staff,Standards Setter'";
     }
     if ($get_inactive) {
-        $roles[] = "roles LIKE '%inactive%'";
+        $roles[] = "roles = 'Inactive Staff'";
     }
     if ($get_external) {
-        $roles[] = "(roles = 'External Examiner' AND grade != 'left')";
+        $roles[] = "(roles = 'External Examiner')";
     }
     if ($get_internal) {
-        $roles[] = "(roles = 'Internal Reviewer' AND grade != 'left')";
+        $roles[] = "(roles = 'Internal Reviewer')";
     }
     if ($get_invigilators) {
         $roles[] = "roles = 'Invigilator'";
     }
     if ($get_graduates) {
-        $roles[] = "roles = 'Graduate'";
+        $roles[] = "roles = 'graduate'";
     }
     if ($get_leavers) {
         $roles[] = "roles = 'left'";
     }
     if ($get_suspended) {
-        $roles[] = "roles = 'suspended'";
+        $roles[] = "roles = 'Suspended'";
     }
     if ($get_locked) {
-        $roles[] = "roles = 'locked'";
+        $roles[] = "roles = 'Locked'";
     }
     if (count($roles) > 0) {
         $conditions[] = sprintf('(%s)', implode(' OR ', $roles));
     }
-    if (!$get_leavers and $get_staff) {
+    if (!$get_leavers) {
         $conditions[] = "grade <> 'left'";
     }
 
@@ -224,6 +223,8 @@ if (!is_null($submit)) {
           LEFT JOIN modules ON modules_student.idMod = modules.id
           WHERE user_deleted IS NULL" . $studentconditions . " AND " . implode(' AND ', $conditions);
         // Staff template.
+        // Need to get only staff,student roles to aviud duplication.
+        $conditions = str_replace('Student', 'Staff,Student', $conditions);
         $sql_staff_template = " FROM users
           LEFT JOIN modules_staff ON users.id = modules_staff.memberID 
           LEFT JOIN sid ON users.id = sid.userID
@@ -353,7 +354,7 @@ if (true === $has_result = !is_null($submit) or ! is_null($paper_id) or ! is_nul
         $result_detail = '';
     }
 
-    $table_order = array('#1', '#2', $string['title'], 'Surname', 'First Names', $string['username'], $string['studentid'], $string['year'], $string['course']);
+    $table_order = array('#1', '#2', $string['title'], $string['surname'], $string['firstname'], $string['username'], $string['studentid'], $string['year'], $string['course']);
     $photodirectory = rogo_directory::get_directory('user_photo');
 }
 ?>
@@ -545,12 +546,12 @@ if (true === $has_result = !is_null($submit) or ! is_null($paper_id) or ! is_nul
                                                 <?= $string[mb_strtolower($tmp_title)] ?>
                                             <?php endif; ?>
                                         </td>
-                                        <td><?= $tmp_surname == '' ? demo_replace($tmp_surname, $demo, true, ' ') : demo_replace($tmp_surname, $demo, true, $tmp_surname{0}) ?></td>
-                                        <td><?= $tmp_first_names == '' ? demo_replace($tmp_first_names, $demo, true, ' ') : demo_replace($tmp_first_names, $demo, true, $tmp_first_names{0}) ?></td>
-                                        <td><?= demo_replace($tmp_username, $demo, false) ?></td>
+                                        <td><?= $tmp_surname == '' ? \demo::demo_replace($tmp_surname, $demo, true, ' ') : \demo::demo_replace($tmp_surname, $demo, true, $tmp_surname{0}) ?></td>
+                                        <td><?= $tmp_first_names == '' ? \demo::demo_replace($tmp_first_names, $demo, true, ' ') : \demo::demo_replace($tmp_first_names, $demo, true, $tmp_first_names{0}) ?></td>
+                                        <td><?= \demo::demo_replace($tmp_username, $demo, false) ?></td>
                                         <td class="fn">
                                             <?php if (false !== strpos($tmp_roles, 'Student')) : ?>
-                                                <?= is_null($tmp_student_id) ? $string['unknown'] : demo_replace_number($tmp_student_id, $demo) ?>
+                                                <?= is_null($tmp_student_id) ? $string['unknown'] : \demo::demo_replace_number($tmp_student_id, $demo) ?>
                                             <?php elseif (false !== strpos($tmp_roles, 'Staff')) : ?>
                                                 Staff
                                             <?php else: ?>

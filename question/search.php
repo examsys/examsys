@@ -45,18 +45,20 @@ $status_array = QuestionStatus::get_all_statuses($mysqli, $string, true);
   <link rel="stylesheet" type="text/css" href="../css/header.css" />
   <link rel="stylesheet" type="text/css" href="../css/tablesort.css" />
   <link rel="stylesheet" type="text/css" href="../css/question_list.css" />
-  <link rel="stylesheet" type="text/css" href="../css/adhocwindow.css" />
+  <link rel="stylesheet" type="text/css" href="../css/question_leadin_popup.css" />
   <style type="text/css">
 		<?php echo QuestionStatus::generate_status_css($status_array); ?>
   </style>
 
   <script type="text/javascript" src="../js/staff_help.js"></script>
   <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
-  <script type="text/javascript" src="../js/jquery-migrate-1.2.1.min.js"></script>
   <script type="text/javascript" src="../js/jquery_tablesorter/jquery.tablesorter.js"></script>
   <script type="text/javascript" src="../js/toprightmenu.js"></script>
-  <script type="text/javascript" src="../tools/mee/mee/js/mee_src.js"></script>
-  <script type="text/javascript" src="../js/adhocwindow.js"></script>
+<?php
+  $texteditorplugin = \plugins\plugins_texteditor::get_editor();
+  $texteditorplugin->display_header();
+?>
+  <script type="text/javascript" src="../js/jquery.question_leadin_popup.min.js"></script>
   <script>
     function addQID(qID, clearall) {
       if (clearall) {
@@ -347,7 +349,7 @@ if (isset($_GET['submit'])) {
 
   if ($keywordsSQL == '') {
     $sql = "SELECT DISTINCT title, initials, surname, q_type,"
-      . " questions.q_id, theme, leadin,"
+      . " questions.q_id, theme, leadin, leadin_plain,"
       . " DATE_FORMAT(last_edited,' {$configObject->get('cfg_short_date')}') AS last_edited,"
       . " ownerID, locked, status, name FROM (questions, question_statuses, users)"
       . " LEFT JOIN questions_modules ON questions.q_id = questions_modules.q_id"
@@ -357,7 +359,7 @@ if (isset($_GET['submit'])) {
       . " AND deleted IS NULL ORDER BY leadin_plain";
   } else {
     $sql = "SELECT DISTINCT title, initials, surname, q_type,"
-      . " questions.q_id, theme, leadin, DATE_FORMAT(last_edited,' {$configObject->get('cfg_short_date')}') AS last_edited,"
+      . " questions.q_id, theme, leadin, leadin_plain, DATE_FORMAT(last_edited,' {$configObject->get('cfg_short_date')}') AS last_edited,"
       . " ownerID, locked, status, name FROM (questions, question_statuses, users, keywords_question)"
       . " LEFT JOIN questions_modules ON questions.q_id = questions_modules.q_id"
       . " LEFT OUTER JOIN options ON options.o_id = questions.q_id"
@@ -376,7 +378,7 @@ if (isset($_GET['submit'])) {
   }
   $result->execute();
   $result->store_result();
-  $result->bind_result($title, $initials, $surname, $q_type, $q_id, $theme, $leadin, $last_edited, $ownerID, $locked, $status, $status_name);
+  $result->bind_result($title, $initials, $surname, $q_type, $q_id, $theme, $leadin, $leadin_plain, $last_edited, $ownerID, $locked, $status, $status_name);
 
   $hits = $result->num_rows;
 
@@ -429,15 +431,14 @@ if (isset($_GET['submit'])) {
       $tmp_leadin = $sct_parts[0];
     }
     if ($locked != '') {
-      echo '<td class="l" ';
+      echo '<td class="l';
     } else {
-      echo '<td class="u" ';
+      echo '<td class="u';
     }
     if (strlen($fullText) > $leadinlength) {
-      echo ' onmouseover="showAdHocWindow(event,\''.htmlspecialchars($fullText).'\');" ';
-      echo ' onmouseleave="hideAdHocWindow();" ';
+      echo ' extended-leadin" data-extended-leadin="'.htmlspecialchars($fullText);
     }
-    echo '>';
+    echo '">';
     if (trim($theme) != '') {
       echo '<span class="t">' . $theme . '</span><br />&nbsp;&nbsp;&nbsp;&nbsp;';
     }

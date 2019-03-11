@@ -24,10 +24,14 @@
 * @package
 */
 
+define('AJAX_REQUEST', true);
+
 require_once '../include/staff_student_auth.inc';
 require_once '../include/marking_functions.inc';
 require_once '../include/errors.php';
 require_once '../include/paper_security.php';
+
+require $cfg_web_root . 'lang/' . $language . '/include/paper_security.php';
 
 $answer_changed = param::optional('ans_changed', false, param::BOOLEAN);
 $random_page_id = param::optional('randomPageID', 'ERR_NO_PAGE_ID', param::ALPHANUM, param::FETCH_POST);
@@ -105,6 +109,12 @@ if ($userObject->has_role('Staff') and check_staff_modules($moduleID, $userObjec
   // Check if the student has clicked 'Finish'.
   check_finished($propertyObj, $userObject, $string, $mysqli);
 
+  // Check current IP address with that of attempt in log.
+  // Warn user they are logged into mulitple devices in this exam.
+  if ($propertyObj->get_paper_type() == '2') {
+    check_ipmismatch($propertyObj->get_property_id(), $current_address, $string, $userObject, $mysqli);
+  }
+  
   $summative_exam_session_started = false;
 }
 
@@ -116,7 +126,7 @@ if ($propertyObj->get_exam_duration() != null and $propertyObj->get_paper_type()
   $summative_exam_session_started = $log_lab_end_time->get_session_end_date_datetime();
 }
 
-if (!$is_preview and time() > $propertyObj->get_end_date() and ( $propertyObj->get_paper_type() == '1' or ( $propertyObj->get_paper_type() == '2' and $paper_scheduled and $summative_exam_session_started == false))) {
+if (!$is_preview and time() > $propertyObj->get_end_date() and ($propertyObj->get_paper_type() == '1' or ($propertyObj->get_paper_type() == '2' and $paper_scheduled and $summative_exam_session_started == false))) {
   $propertyObj->set_paper_type('_late');
 }
 
@@ -144,4 +154,3 @@ if ($ret === true) {
 } else {
   echo 'ERROR';
 }
-?>

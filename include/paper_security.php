@@ -36,7 +36,7 @@
  * @param array $string       - Language translation strings.
  * @param object $db          - The MySQL connection.
  * 
- * @return int	- 1 = lab requires low bandwidth, 0 = lab is high bandwidth
+ * @return int - 1 = lab requires low bandwidth, 0 = lab is high bandwidth
  */
 function check_labs($paper_type, $lab_needed, $address, $pword, $string, $db) {
   $low_bandwidth = 0;
@@ -124,6 +124,13 @@ function check_datetime($start_date, $end_date, $string, $db, $first_start = fal
   }
 }
 
+/**
+ * Check if the paper has been completed
+ * @param object $propertyObj paper object
+ * @param object $userObj user object
+ * @param array $string tranlsations
+ * @param object $db database object
+ */
 function check_finished($propertyObj, $userObj, $string, $db) {
   $notice = UserNotices::get_instance();
   
@@ -146,7 +153,6 @@ function check_finished($propertyObj, $userObj, $string, $db) {
     $fullmsg = $msg . '<br /><br /><input type="button" name="close" value="' . $string['ok'] . '" onclick="close_window()" class="OK" />';
     $notice->display_notice_and_exit($db, $string['accessdenied'], $fullmsg, $msg, '/artwork/square_exclamation_48.png', '#C00000', true, true);
   }
-  
 }
 
 function check_staff_modules($moduleID, $userObject) {
@@ -164,10 +170,17 @@ function check_staff_modules($moduleID, $userObject) {
   return $on_module;
 }
 
+/**
+ * Check if the user is enrolled on the module
+ * @param object $userObj user object
+ * @param array $moduleIDs list of modules
+ * @param integer $calendar_year year of module enrolment
+ * @param array $string tranlsations
+ * @param object $db database object
+ * @return integer
+ */
 function check_modules($userObj, $moduleIDs, $calendar_year, $string, $db) {
   $notice = UserNotices::get_instance();
-  $configObject = Config::get_instance();
-  $yearutils = new yearutils($db);
   $attempt = 1;
   $usern = $userObj->get_username();
   $contactemail = support::get_email();
@@ -182,45 +195,72 @@ function check_modules($userObj, $moduleIDs, $calendar_year, $string, $db) {
       $stmt->bind_result($moduleid, $attempt);
       $stmt->store_result();
       if ($stmt->num_rows == 0) {
-        if ($calendar_year == '') $calendar_year = $yearutils->get_current_session(); //'current year';
-        $html = '';
+        $moduleslist = '';
         foreach ($moduleIDs as $modID) {
           $mod_details = module_utils::get_full_details_by_ID($modID, $db);
-          if ($html == '') {
-            $html = $mod_details['moduleid'];
+          if ($moduleslist == '') {
+            $moduleslist = $mod_details['moduleid'];
           } else {
-            $html .= ', ' . $mod_details['moduleid'];
+            $moduleslist .= ', ' . $mod_details['moduleid'];
           }
         }
+        $reason = sprintf($string['notregistered'], $userObj->get_first_names(), $userObj->get_surname(), $userObj->get_username(), $moduleslist);
         $msg = sprintf($string['furtherassistance'], $contactemail, $contactemail);
-        $notice->display_notice_and_exit($db, $string['pagenotfound'], $msg, $string['pagenotfound'], '../artwork/page_not_found.png', '#C00000', true, true);
+        $notice->display_notice_and_exit($db, $string['pagenotfound'], $msg, $reason, '../artwork/page_not_found.png', '#C00000', true, true);
       } else {
         $stmt->fetch();
       }
       $stmt->close();
     } else {
+      $reason = sprintf($string['nomodules'], $userObj->get_first_names(), $userObj->get_surname(), $userObj->get_username());
       $msg = sprintf($string['furtherassistance'], $contactemail, $contactemail);
-      $notice->display_notice_and_exit($db, $string['pagenotfound'], $msg, $string['pagenotfound'], '../artwork/page_not_found.png', '#C00000', true, true);
+      $notice->display_notice_and_exit($db, $string['pagenotfound'], $msg, $reason, '../artwork/page_not_found.png', '#C00000', true, true);
     }
   }
 
   return $attempt;
 }
 
+/**
+ * Check if the paper metadata security settings are met
+ * @param object $property_id paper object
+ * @param object $userObj user object
+ * @param array $moduleIDs list of modules
+ * @param array $string tranlsations
+ * @param object $db database object
+ */
 function check_metadata($property_id, $userObj, $moduleIDs, $string, $db) {
   $contactemail = support::get_email();
   if (!$userObj->is_temporary_account()) {			// Do not check metadata security if temporary account
     $notice = UserNotices::get_instance();
-    $configObject = Config::get_instance();
     $metadata = Paper_utils::get_metadata($property_id, $db);
 
     foreach ($metadata as $security_type=>$security_value) {
       if (!$userObj->has_metadata($moduleIDs, $security_type, $security_value)) {
-        $tmp_string = sprintf($string['error_metadata'], $security_type, $security_value);
         $msg = sprintf($string['furtherassistance'], $contactemail, $contactemail);
-        $notice->display_notice_and_exit($db, $string['pagenotfound'], $msg, $string['pagenotfound'], '../artwork/page_not_found.png', '#C00000', true, true);
+        $reason = sprintf($string['error_metadata'], $userObj->get_first_names(), $userObj->get_surname(), $userObj->get_username(), $security_type, $security_value);
+        $notice->display_notice_and_exit($db, $string['pagenotfound'], $msg, $reason, '../artwork/page_not_found.png', '#C00000', true, true);
       }
     }
+  }
+}
+
+/**
+ * Check current IP address with that of attempt in log.
+ * @param integer $paperid paper identifer
+ * @param string $current_address
+ * @param array $string tranlsations
+ * @param object $userObj user object
+ * @param object $db database object
+ */
+function check_ipmismatch($paperid, $current_address, $string, $userObj, $db) {
+  $log_metadata = new LogMetadata($userObj->get_user_ID(), $paperid, $db);
+  $log_metadata->get_record('', false);
+  // Warn user they are logged into mulitple devices in this exam and log them out.
+  if (!is_null($log_metadata->get_ipaddress()) and $current_address !== $log_metadata->get_ipaddress()) {
+    $msg = sprintf($string['ipmismatchblurb'], $userObj->get_first_names(), $userObj->get_surname(), $userObj->get_username(), $log_metadata->get_ipaddress());
+    $notice = UserNotices::get_instance();
+    $notice->display_notice_and_exit($db, $string['ipmismatchtitle'], $msg, $msg, '../artwork/page_not_found.png', '#C00000');
   }
 }
 

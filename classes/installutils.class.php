@@ -48,6 +48,7 @@ Class InstallUtils {
   public static $cfg_db_username;
   public static $cfg_db_password;
   public static $cfg_db_charset;
+  public static $cfg_db_collation;
   public static $cfg_db_engine;
   public static $cfg_db_help_engine;
 
@@ -280,8 +281,6 @@ Class InstallUtils {
       self::$db_admin_passwd = param::clean($args['mysql_admin_pass'], param::TEXT);
     }
 
-    self::$cfg_db_charset = 'utf8';
-
     // Check mysql version.
     if (!requirements::check_db(self::$cfg_db_host, self::$db_admin_username, self::$db_admin_passwd)) {
       $mysql_min_ver = $configObject->getxml('database', 'mysql', 'min_version');
@@ -358,7 +357,7 @@ Class InstallUtils {
     //LDAP
     if (!self::$cli) {
       self::$cfg_ldap_server = param::optional('ldap_server', null, param::TEXT, param::FETCH_POST);
-      self::$cfg_ldap_search_dn = param::optional('ldap_bind_rdn', null, param::TEXT, param::FETCH_POST);
+      self::$cfg_ldap_search_dn = param::optional('ldap_search_dn', null, param::TEXT, param::FETCH_POST);
       self::$cfg_ldap_bind_rdn = param::optional('ldap_bind_rdn', null, param::TEXT, param::FETCH_POST);
       self::$cfg_ldap_bind_password = param::optional('ldap_bind_password', null, param::TEXT, param::FETCH_POST);
       self::$cfg_ldap_user_prefix = param::optional('ldap_user_prefix', null, param::TEXT, param::FETCH_POST);
@@ -435,6 +434,10 @@ Class InstallUtils {
     if (mysqli_connect_error()) {
       self::displayError(array('001' => mysqli_connect_error()));
     }
+
+    // Enforce utf8mb4
+    self::$cfg_db_charset = 'utf8mb4';
+    self::$cfg_db_collation = 'utf8mb4_unicode_ci';
     self::$db->set_charset(self::$cfg_db_charset);
 
     //create salt as this is needed to generate the passwords that are created in the next function rather than created during config file settings
@@ -452,7 +455,7 @@ Class InstallUtils {
 
     InstallUtils::checkDBUsers();
 
-    self::createDatabase(self::$cfg_db_name, self::$cfg_db_charset, self::$cfg_db_engine, self::$cfg_db_help_engine);
+    self::createDatabase(self::$cfg_db_name, self::$cfg_db_charset, self::$cfg_db_collation, self::$cfg_db_engine, self::$cfg_db_help_engine);
 
     // Create constraints.
     self::createConstraints();
@@ -460,7 +463,13 @@ Class InstallUtils {
     // Load default data
     self::loadData();
 
-    // Update sys_updates table
+    // Load default plugins.
+    $configObject->set('cfg_db_host', self::$cfg_db_host);
+    $configObject->set('cfg_db_database', self::$cfg_db_name);
+    $configObject->set('dbclass', 'mysqli');
+    plugin_manager::install_core_plugins(self::$db_admin_username, self::$db_admin_passwd);
+
+    // Update sys_updates table.
     self::updateSysUpdates();
 
     // Get Help and lang pack parameters.
@@ -468,7 +477,7 @@ Class InstallUtils {
       $load_help = param::optional('loadHelp', false, param::BOOLEAN, param::FETCH_POST);
       $download_lang = param::optional('loadtranslations', false, param::BOOLEAN, param::FETCH_POST);
     } else {
-      $configObject->set('cfg_root_path', self::getSettings(param::TEXT, true, 'server', 'root'));
+      $configObject->set('cfg_root_path', self::getSettings(param::TEXT, false, 'server', 'root'));
       $load_help = self::getSettings(param::BOOLEAN, false, 'help');
       $download_lang = self::getSettings(param::BOOLEAN, false, 'translations');
     }
@@ -701,7 +710,7 @@ Class InstallUtils {
     $configObject->set_setting('paper_marks_negative', array(0, -0.25, -0.5, -1, -2, -3, -4, -5, -6, -7, -8, -9, -10), Config::CSV);
     $configObject->set_setting('paper_marks_partial', array_merge(range(0, 1, 0.1), range(2, 5)), Config::CSV);
     $configObject->set_setting('paper_mathjax', 1, Config::BOOLEAN);
-    $configObject->set_setting('paper_editor_supports_mathjax',array("plain"), Config::CSV);
+    $configObject->set_setting('paper_mee', 0, Config::BOOLEAN);
     $configObject->set_setting('misc_logo_main', 'logo.png', Config::STRING);
     $configObject->set_setting('misc_logo_email', 'alt_logo.png', Config::STRING);
     $configObject->set_setting('api_allow_superuser', 0, Config::BOOLEAN);
@@ -759,7 +768,29 @@ Class InstallUtils {
     $configObject->set_setting('paper_autosave_backoff_factor', 1.5, Config::DOUBLE);
     $configObject->set_setting('summative_midexam_clarification', array('invigilators', 'students'), Config::CSV);
     $configObject->set_setting('system_password_expire', 30, Config::INTEGER);
-    $configObject->set_setting('misc_editor_name', 'tinymce', Config::STRING);
+    $configObject->set_setting('lti_ssl_verifypeer', 1, Config::BOOLEAN);
+    $configObject->set_setting('lti_ssl_verifyhost', 2, Config::INTEGER);
+    $filetypes = array();
+    foreach (media_handler::SUPPORTED as $name => $type) {
+      // Threejs disabled by default.
+      if ($type === questiondata::THREED or $type === questiondata::ARCHIVE) {
+        $filetypes[$name] = 0;
+      } else {
+        $filetypes[$name] = 1;
+      }
+    }
+    $configObject->set_setting('system_mediatypes', $filetypes, Config::ASSOC);
+    $configObject->set_setting('paper_threejs', 0, Config::BOOLEAN);
+    $maxsize = ini_get('upload_max_filesize');
+    $unit = preg_replace('/[^bkmgtpezy]/i', '', $maxsize);
+    $maxsize = preg_replace('/[^0-9\.]/', '', $maxsize);
+    if ($unit) {
+      // Find the position of the unit in the ordered string which is the power of magnitude to multiply a kilobyte by.
+      $maxsize = round($maxsize * pow(1024, stripos('bkmgtpezy', $unit[0])));
+    } else {
+      $maxsize = round($maxsize);
+    }
+    $configObject->set_setting('system_maxmediasize', $maxsize, Config::INTEGER);
     // Add external systems.
     $insert = self::$db->prepare("INSERT INTO external_systems (name, type) values ('ims_enterprise', 'plugin')");
     $insert->execute();
@@ -864,7 +895,7 @@ Class InstallUtils {
   * create the database and users if they do not exist
   *
   */
-  static function createDatabase($dbname, $dbcharset, $dbengine = 'InnoDB', $dbhelpengine = 'MyISAM') {
+  static function createDatabase($dbname, $dbcharset, $dbcollation, $dbengine = 'InnoDB', $dbhelpengine = 'MyISAM') {
     global $string;
     $configObject = Config::get_instance();
     $configObject->db = self::$db;
@@ -878,15 +909,7 @@ Class InstallUtils {
     }
     $res->close();
 
-    switch ($dbcharset) {
-      case 'utf8':
-        $collation = 'utf8_general_ci';
-        break;
-      default:
-        $collation = 'latin1_swedish_ci';
-    }
-
-    self::$db->query("CREATE DATABASE $dbname CHARACTER SET = $dbcharset COLLATE = $collation"); //have to use query here oldvers of php throw an error
+    self::$db->query("CREATE DATABASE $dbname CHARACTER SET = $dbcharset COLLATE = $dbcollation"); //have to use query here oldvers of php throw an error
     if (self::$db->errno != 0) {
       self::displayError(array('011' => $string['displayerror2']));
     }
@@ -1017,6 +1040,7 @@ Class InstallUtils {
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".log_metadata TO '". self::$cfg_db_student_user . "'@'". self::$cfg_web_host . "'";
     $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".lti_resource TO '". self::$cfg_db_student_user . "'@'".self::$cfg_web_host . "'";
     $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".lti_context TO '". self::$cfg_db_student_user . "'@'". self::$cfg_web_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".lti_user TO '". self::$cfg_db_student_user . "'@'". self::$cfg_web_host . "'";
     $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".marking_override TO '". self::$cfg_db_student_user . "'@'". self::$cfg_web_host . "'";
     $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".modules TO '". self::$cfg_db_student_user . "'@'". self::$cfg_web_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT ON " . $dbname . ".modules_student TO '". self::$cfg_db_student_user . "'@'". self::$cfg_web_host . "'";
@@ -1172,6 +1196,7 @@ Class InstallUtils {
     $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".properties_reviewers TO '". self::$cfg_db_internal_user . "'@'". self::$cfg_web_host . "'";
     $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".keywords_link TO '". self::$cfg_db_internal_user . "'@'". self::$cfg_web_host . "'";
     $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".random_link TO '". self::$cfg_db_internal_user . "'@'". self::$cfg_web_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".config TO '". self::$cfg_db_internal_user . "'@'". self::$cfg_web_host . "'";
     $priv_SQL[] = "FLUSH PRIVILEGES";
     foreach ($priv_SQL as $sql) {
       self::$db->query($sql);
@@ -1220,6 +1245,7 @@ Class InstallUtils {
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".log_metadata TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_web_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".lti_resource TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_web_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".lti_context TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_web_host . "'";
+    $priv_SQL[] = "GRANT SELECT ON " . $dbname . ".lti_user TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_web_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE ON " . $dbname . ".marking_override TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_web_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT ON " . $dbname . ".modules TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_web_host . "'";
     $priv_SQL[] = "GRANT SELECT, INSERT, UPDATE, DELETE ON " . $dbname . ".modules_staff TO '". self::$cfg_db_staff_user . "'@'". self::$cfg_web_host . "'";
@@ -1535,7 +1561,9 @@ Class InstallUtils {
                               '1',
                               'Student',
                               '',
-                              self::$db
+                              self::$db,
+                              '',
+                              true
                             );
     }
     self::$db->commit();
@@ -1847,7 +1875,7 @@ Class InstallUtils {
 \$cfg_web_root = '{cfg_web_root}';
 \$cfg_root_path = '{cfg_root_path}';
 \$cfg_secure_connection = true;    // If true site must be accessed via HTTPS
-\$cfg_page_charset 	   = 'UTF-8';
+\$cfg_page_charset = 'UTF-8';
 \$cfg_tmpdir = '{cfg_tmpdir}';
 
   \$cfg_web_host = '{cfg_web_host}';
@@ -1857,8 +1885,9 @@ Class InstallUtils {
   \$cfg_db_username = '{cfg_db_username}';
   \$cfg_db_passwd   = '{cfg_db_passwd}';
   \$cfg_db_database = '{cfg_db_database}';
-  \$cfg_db_host 	  = '{cfg_db_host}';
-  \$cfg_db_charset 	= '{cfg_db_charset}';
+  \$cfg_db_host = '{cfg_db_host}';
+  \$cfg_db_charset = '{cfg_db_charset}';
+  \$cfg_db_collation = '{cfg_db_collation}';
 //student db user
   \$cfg_db_student_user = '{cfg_db_student_user}';
   \$cfg_db_student_passwd = '{cfg_db_student_passwd}';
@@ -1931,7 +1960,6 @@ if(!isset(\$_SERVER['HTTP_HOST'])) {
 }
 
 //Global DEBUG OUTPUT
-  //require_once \$_SERVER['DOCUMENT_ROOT'] . 'include/debug.inc';   // Uncomment for debugging output (after uncommenting, comment out line below)
   \$dbclass = 'mysqli';
 
   \$display_auth_debug = false; // set this to display debug on failed authentication
@@ -1959,7 +1987,7 @@ CONFIG;
     }
     $config = str_replace('{cfg_web_root}', $cfg_web_root, $config);
     if (self::$cli) {
-      self::$cfg_root_path = self::getSettings(param::TEXT, true, 'server', 'root');
+      self::$cfg_root_path = self::getSettings(param::TEXT, false, 'server', 'root');
     }
     $config = str_replace('{cfg_root_path}', self::$cfg_root_path, $config);
     $config = str_replace('{SysAdmin_username}', 'USERNMAE_FOR_DEBUG', $config);
@@ -1968,6 +1996,7 @@ CONFIG;
     $config = str_replace('{cfg_db_host}', self::$cfg_db_host, $config);
     $config = str_replace('{cfg_db_port}', self::$cfg_db_port, $config);
     $config = str_replace('{cfg_db_charset}', self::$cfg_db_charset, $config);
+    $config = str_replace('{cfg_db_collation}', self::$cfg_db_collation, $config);
 
     $config = str_replace('{cfg_db_database}', self::$cfg_db_name, $config);
     $config = str_replace('{cfg_db_username}', self::$cfg_db_username, $config);

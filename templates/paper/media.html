@@ -1,0 +1,96 @@
+{#This file is part of Rogō
+
+ Rogō is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ Rogō is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+#}
+
+{#
+This template is for the question media display.
+
+author Dr Joseph Baxter <joseph.baxter@nottingham.ac.uk>
+copyright 2018 onwards The University of Nottingham
+
+Required variables - 
+data.mediaid - id
+data.mediatype - type of media
+data.mediawidth - width
+data.mediaheight - height
+data.mediabordercolour - border colour
+data.mediaurl - url
+data.mediafile - file path
+
+Required localised strings -
+lang.audiofile - audio file
+lang.audioclip - audio clip
+lang.iframes - iframe support message
+lang.datafile - datafile
+lang.delete - delete
+lang.deleteimage - delete image
+#}
+{# Display unknown media #}
+{% if data.mediaid != -1 %}
+<div id="media{{data.mediaid}}" class="media">
+{% endif %}
+{# Display images #}
+{% if data.mediatype == 2 %}
+    <img src="{{data.mediaurl}}" width="{{data.mediawidth}}" height="{{data.mediaheight}}" alt="{{lang.image}}"
+    {% if data.mediaborder %} 
+     style="border: 1px solid {{data.mediabordercolour}}"
+    {% endif %}
+     />
+{# Display audio #}
+{% elseif data.mediatype == 3 %}
+    <img src="audio_icon_32.gif" width="32" height="32" alt="{{lang.audiofile}}" />
+    <a href="{{data.mediaurl}}">{{lang.audioclip}}</a>
+{# Display documents #}
+{% elseif data.mediatype == 4 %}
+    <iframe src="{{data.mediaurl}}" width="{{data.mediawidth}}" height="{{data.mediaheight}}" align="center">{{lang.iframes}}</iframe>
+{# Display flash #}
+{% elseif data.mediatype == 5 %}
+    <object type="application/x-shockwave-flash" data="{{path}}/paper/player_flv_maxi.swf" width="{{data.mediawidth}}" height="{{data.mediaheight}}>
+        <param name="movie" value="{{path}}/paper/player_flv_maxi.swf" />
+        <param name="FlashVars" value="flv={{data.mediaurl}}&amp;buffermessage=&amp;showplayer=always&amp;showvolume=1&amp;showstop=1&amp;showtime=1&amp;margin=1" />
+    </object>
+{# Display mp3 #}
+{% elseif data.mediatype == 6 %}
+    {% if data.mediaedit %}
+    {{data.mediafile}}&nbsp;
+    {% endif %}
+    <audio src="{{data.mediaurl}}" controls>
+    </audio>
+{# Display movie #}
+{% elseif data.mediatype == 7 %}
+    <embed src="{{data.mediaurl}}" width="{{data.mediawidth}}" height="{{data.mediaheight}}" border="1" autoplay="true" loop="false" alt="{{lang.datafile}}" wmode="opaque"></embed>
+{% elseif data.mediatype == 8 or data.mediatype == 9 %}
+    <div class="threeblock"
+         data-ext="{{data.mediaext}}"
+         data-url="{{data.mediaurl|raw}}"
+         data-width="{{data.mediawidth}}"
+         data-height="{{data.mediaheight}}"
+         data-delay="{{data.mediadelay}}"
+         data-loadstring="{{lang.threeload}}"
+         data-resetstring="{{lang.threereset}}"
+         data-infostring="{{lang.threeinfo}}"
+         data-errorstring="{{lang.threeplyerror}}"
+         data-mtl="{{data.mediaextra.mtl}}"
+         data-obj="{{data.mediaextra.obj}}">
+    </div>
+{% else %}
+    <embed src="{{data.mediaurl}}" width="{{data.mediawidth}}" height="{{data.mediaheight}}" border="1" alt="{{lang.datafile}}" wmode="opaque"></embed>
+{% endif %}
+{# Display controls to edit media #}
+{% if data.mediadelete %}
+    <a href="#" class="media-delete" rel="{{data.mediaid}}"><img class="align-bottom" src="{{path}}/artwork/red_cross.png" width="16" height="16" alt="{{lang.delete}}" /></a></div>
+    <label class="hide"><input type="checkbox" id="delete_media{{data.mediaid}}" name="delete_media{{data.mediaid}}" /> {{lang.deleteimage}} {{data.mediaid}}</label>
+    <input type="hidden" id="existing_media{{data.mediaid}}" name="existing_media{{data.mediaid}}" value="{{data.mediafile}}" />
+{% endif %}

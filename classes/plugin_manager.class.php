@@ -29,21 +29,30 @@
 class plugin_manager {
     /**
      * Whitelist of plugin types supported by rogo.
-     * const array not supported in php below 5.6 so using a static
      * @const PLUGINTYPE_WHITELIST
      */
-    private static $PLUGINTYPE_WHITELIST = array('mapping', 'SMS');
+     const PLUGINTYPE_WHITELIST = array('mapping', 'SMS', 'texteditor');
+
+    /**
+     * Define core plugins.
+     * Associate array (plugin namespace, enabled by default flag)
+     * @const CORE_PLUGINS
+     */
+     const CORE_PLUGINS = array(
+      array('namespace' => 'plugins\texteditor\plugin_tinymce3_texteditor\plugin_tinymce3_texteditor', 'enabled' => true),
+      array('namespace' => 'plugins\texteditor\plugin_plain_texteditor\plugin_plain_texteditor', 'enabled' => false));
+
     /**
      * List available plugins.
      * @return array available plugins (name => namespace)
      */
-    static function listplugins() {
+    public static function listplugins() {
         $directory = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . '*';
         $folders = glob($directory, GLOB_ONLYDIR);
         $plugins = array();
         foreach ($folders as $folder) {
             $type = basename($folder);
-            if (in_array($type, self::$PLUGINTYPE_WHITELIST)) {
+            if (in_array($type, self::PLUGINTYPE_WHITELIST)) {
                 $sub = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $type . DIRECTORY_SEPARATOR . '*';
                 $subfolders = glob($sub, GLOB_ONLYDIR);
                 foreach ($subfolders as $subfolder) {
@@ -57,12 +66,12 @@ class plugin_manager {
      * List available plugin types.
      * @return array available plugin types
      */
-    static function listplugintypes() {
+    public static function listplugintypes() {
         $directory = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . '*';
         $folders = glob($directory, GLOB_ONLYDIR);
         $plugintype = array();
         foreach ($folders as $folder) {
-            if (in_array(basename($folder), self::$PLUGINTYPE_WHITELIST)) {
+            if (in_array(basename($folder), self::PLUGINTYPE_WHITELIST)) {
                 $plugintype[] = 'plugin_' . basename($folder);
             }   
         }
@@ -72,7 +81,7 @@ class plugin_manager {
      * Get all enabled plugins
      * @return array list of enabeld plugins
      */
-    static function get_all_enabled_plugins() {
+    public static function get_all_enabled_plugins() {
         $enabledplugins = array();
         $plugintypes = self::listplugintypes();
         foreach ($plugintypes as $type) {
@@ -86,7 +95,7 @@ class plugin_manager {
      * @param string $type type of plugin
      * @return array list of plugins that are enabled of this type
      */
-    static function get_plugin_type_enabled($type) {
+    public static function get_plugin_type_enabled($type) {
         $config = Config::get_instance();
         $enabled = $config->get_setting($type, 'enabled_plugin');
         if (!is_null($enabled)) {
@@ -114,7 +123,7 @@ class plugin_manager {
      * @param string $plugin name of plugin
      * @return bool true is installed false otherise.
      */
-    static function plugin_installed($plugin) {
+    public static function plugin_installed($plugin) {
         $config = Config::get_instance();
         $installed = $config->get_setting($plugin, 'installed');
         if ($installed >= 1) {
@@ -122,5 +131,22 @@ class plugin_manager {
         } else {
             return false;
         }
+    }
+
+    /**
+     * Install all core plugins
+     * @param string $db_admin_username db user
+     * @param string $db_admin_passwd password fro db user
+     */
+    public static function install_core_plugins($db_admin_username, $db_admin_passwd) {
+      foreach (self::CORE_PLUGINS as $core) {
+        $pluginns = $core['namespace'];
+        $enabled = $core['enabled'];
+        $plugin = new $pluginns();
+        $plugin->install($db_admin_username, $db_admin_passwd);
+        if ($enabled) {
+          $plugin->enable_plugin();
+        }
+      }
     }
 }

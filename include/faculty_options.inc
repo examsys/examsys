@@ -74,7 +74,7 @@ if ($userObject->has_role(array('SysAdmin'))) {
     $smsplugin_name = plugin_manager::get_plugin_type_enabled('plugin_sms');
     foreach($smsplugin_name as $name) {
         $smspluginns = 'plugins\SMS\\' . $name . '\\' . $name;
-        $smsplugin = new $smspluginns($mysqli, $userObject->get_user_ID());
+        $smsplugin = new $smspluginns($userObject->get_user_ID());
         $facultyimport = $smsplugin->supports_faculty_import();
         if ($facultyimport !== false) {
 ?>

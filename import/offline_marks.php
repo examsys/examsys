@@ -47,7 +47,7 @@ function marks_from_file($fileName, $paperID, $string, $properties, $db) {
   // Get the questions on the paper.
   $paper = array();
   $question_no = 0;
-  $result = $db->prepare("SELECT question, sum(marks_correct) AS sum FROM papers, options WHERE paper = ? AND papers.question = options.o_id GROUP BY question ORDER BY screen, display_pos");
+  $result = $db->prepare("SELECT question, sum(marks_correct) AS sum FROM papers, options WHERE paper = ? AND papers.question = options.o_id GROUP BY question, screen, display_pos ORDER BY screen, display_pos");
   $result->bind_param('i', $paperID);
   $result->execute();
   $result->bind_result($question, $marks_correct);

@@ -70,6 +70,9 @@ class param {
   /** A special datatime format, yyyymmddhhmmss. */
   const SQLDATETIME = 14;
 
+  /** A safe file name */
+  const FILENAME = 15;
+
   /** Find the named variable in the Get array. */
   const FETCH_GET = '_GET';
   
@@ -145,6 +148,7 @@ class param {
         break;
       case self::RAW:
       case self::TEXT:
+      case self::FILENAME:
         $filter = FILTER_UNSAFE_RAW;
         $options = array(
           'options' => $opt,
@@ -197,6 +201,15 @@ class param {
         break;
       case self::TEXT:
         $return = self::strip_tags($return);
+        break;
+      case self::FILENAME:
+        // Remove anything which isn't a word, number or fullstop.
+        $cleaned = preg_replace('#[^\w\d\.]#u', '', $return);
+        if ($cleaned === '' and $cleaned !== $return) {
+          $return = null;
+        } else {
+          $return = $cleaned;
+        }
         break;
       case self::LOCAL_URL:
         $rogo_url = Config::get_instance()->get('cfg_web_host');

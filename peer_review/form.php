@@ -27,7 +27,6 @@
 require_once '../include/staff_student_auth.inc';
 require_once '../include/errors.php';
 require_once '../include/paper_security.php';
-require_once '../include/demo_replace.inc';
 
 
 check_var('id', 'GET', true, false, false);
@@ -78,7 +77,7 @@ $paper_prologue	= $propertyObj->get_paper_prologue();
 $display_photos = $propertyObj->get_display_correct_answer();
 $review					= $propertyObj->get_display_question_mark();
 $type						= $propertyObj->get_rubric();
-$demo = is_demo($userObject);
+$demo = \demo::is_demo($userObject);
 /*
 * Set the default colour scheme for this paper and allow current users' special settings to override
 * $bgcolor, $fgcolor, $textsize, $marks_color, $themecolor, $labelcolor, $font, $unanswered_color are passed by reference!!
@@ -295,7 +294,7 @@ if (isset($_POST['submit'] )) {
   echo '<table cellpadding="4" cellspacing="0" border="0" style="width:100%; background-color:#5590CF">';
   echo '<tr><td>';
   echo '<div style="float:right; padding-right:10px; position: relative; top: 10px"><a href="../logout.php"><img src="../artwork/student_logout.png" width="24" height="24" /></a></div>';
-  echo '<div class="paper">' . $paper_title . '</div><div class="group"><strong>' . $string['Reviewer'] . ':</strong> ' . $userObject->get_title() . ' ' . demo_replace($userObject->get_surname(), $demo) . '<strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' . $string['Group'] . ':</strong> ' . $group . '</strong></div></td></tr></table>';
+  echo '<div class="paper">' . $paper_title . '</div><div class="group"><strong>' . $string['Reviewer'] . ':</strong> ' . $userObject->get_title() . ' ' . \demo::demo_replace($userObject->get_surname(), $demo) . '<strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' . $string['Group'] . ':</strong> ' . $group . '</strong></div></td></tr></table>';
   
   echo '<p class="thankyou">' . $string['Thank You'] . '</p>';
 
@@ -346,7 +345,7 @@ if (isset($_POST['submit'] )) {
   echo "<form method=\"post\" action=\"" . $_SERVER['PHP_SELF'] . "?id=" . $_GET['id'] . "\" autocomplete=\"off\">\n";
 
   echo '<table cellpadding="4" cellspacing="0" border="0" style="width:100%; background-color:#5590CF">';
-  echo '<tr><td><div class="paper">' . $paper_title . '</div><div class="group"><strong>'.$string['Reviewer'].':</strong> ' . $userObject->get_title() . ' ' . demo_replace($userObject->get_surname(), $demo) . '<strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'.$string['Group'].':</strong> ';
+  echo '<tr><td><div class="paper">' . $paper_title . '</div><div class="group"><strong>'.$string['Reviewer'].':</strong> ' . $userObject->get_title() . ' ' . \demo::demo_replace($userObject->get_surname(), $demo) . '<strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'.$string['Group'].':</strong> ';
   if ($userObject->has_role('Student')) {
     echo $group;
   } else {
@@ -394,7 +393,7 @@ if (isset($_POST['submit'] )) {
           echo "<img class=\"photo\" src=\"" . $photodirectory->url($photoname) . "\" width=\"90\" height=\"135\" border=\"0\" />";
         }
         $first_names = explode(' ', $member_first_names);
-        echo "</td><td class=\"title\" colspan=\"" . ($columns + 1) . "\">$member_title " . demo_replace($first_names[0], $demo) . " " . demo_replace($member_surname, $demo) . "</td></tr>\n";
+        echo "</td><td class=\"title\" colspan=\"" . ($columns + 1) . "\">$member_title " . \demo::demo_replace($first_names[0], $demo) . " " . \demo::demo_replace($member_surname, $demo) . "</td></tr>\n";
 
         echo "<tr><td></td>";
         for ($i=0; $i<$columns; $i++) {

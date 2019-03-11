@@ -23,7 +23,6 @@
 */
 
 require '../include/staff_auth.inc';
-require_once '../include/media.inc';
 require_once '../include/errors.php';
 
 $paperID = check_var('paperID', 'REQUEST', true, false, true);
@@ -41,7 +40,9 @@ function saveResponseData($optID, $experts, $max_experts, $db) {
 
 function display_question($question, &$question_no, $reviews, &$string, $db) {
   $question_no++;
-
+  $configObj = Config::get_instance();
+  $questiondata = \questiondata::get_datastore('sct');
+  $render = new render($configObj);
   if ($question['scenario'] != '') {
     echo "<tr><td class=\"q_no\">" . $question_no . ".&nbsp;</td><td style=\"background-color:#E4EEFC; border-bottom:1px solid #B5C4DF; font-weight:bold; padding:2px; color:#000040\">{$string['clinicalvignette']}</td></tr>\n";
     echo '<tr><td style="vertical-align:top; text-align:right"></td><td>';
@@ -53,7 +54,10 @@ function display_question($question, &$question_no, $reviews, &$string, $db) {
     if ($li_set == 0) {
       echo '<tr><td class="q_no">' . $question_no . '.&nbsp;</td><td>';
     }
-    echo '<p align="center">' . display_media($question['q_media'], $question['q_media_width'], $question['q_media_height'], '') . "</p>\n";
+    echo '<div class="mediadiv">';
+    $questiondata->set_media($question['q_media'], $question['q_media_width'], $question['q_media_height'], '');
+    $render->render($questiondata, $string, 'paper/media.html');
+    echo "</div>\n";
     $li_set = 1;
   }
 

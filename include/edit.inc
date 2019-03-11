@@ -304,14 +304,12 @@ function disable_locked($question, &$dis_class, &$dis_readonly) {
  * @param string $id - name for editor 
  * @param string $field - id for editor
  * @param string $value - current content
- * @param string $type TinyMCE only - type of editor i.e. mceEditorSimple/mceEditor
- * @param int $width width of textarea
- * @param int $height  height of textarea
+ * @param string $type TinyMCE only - type of editor i.e. simple
  * @return html of editor
  */
-function wysywig_or_non_editable($dis_class, $id, $field, $value, $type = '', $width=756, $height=220) {
+function wysywig_or_non_editable($dis_class, $id, $field, $value, $type = '') {
   if ($dis_class == '') {
-    $html = wysiwyg_editor($id, $field, $value, $type, $width, $height );
+    $html = wysiwyg_editor($id, $field, $value, $type);
   } else {
     $value_safe = htmlentities(htmlspecialchars_decode($value));
     $html = <<< HTML

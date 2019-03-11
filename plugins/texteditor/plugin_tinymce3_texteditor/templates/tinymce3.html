@@ -1,0 +1,42 @@
+{#This file is part of Rogō
+
+Rogō is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Rogō is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+#}
+
+{#
+This template is for the editor header.
+
+author Dr Joseph Baxter <joseph.baxter@nottingham.ac.uk>
+copyright 2018 onwards The University of Nottingham
+
+Required variables:
+
+data.mee - load deprecated mee js for old style maths.
+#}
+<link rel="stylesheet" type="text/css" href="{{path}}/plugins/texteditor/plugin_tinymce3_texteditor/css/tinymce3.css" />
+<script>
+    var cfgRootPath = '{{path}}';
+</script>
+{% if data.mee %}
+<script type="text/javascript" src="{{path}}/js/jquery-migrate-1.2.1.min.js"></script>
+<script type="text/javascript" src="{{path}}/plugins/texteditor/plugin_tinymce3_texteditor/mee/mee/js/mee_src.js"></script>
+<script type="text/javascript" src="{{path}}/plugins/texteditor/plugin_tinymce3_texteditor/mee/mee/js/mee.js"></script>
+{% endif %}
+<script>
+    function triggerSave() {
+        if (typeof(tinyMCE) != "undefined") {
+            tinyMCE.triggerSave();
+        }
+    };
+</script>

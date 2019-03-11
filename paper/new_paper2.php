@@ -23,7 +23,6 @@
 */
 
 require '../include/staff_auth.inc';
-require_once '../include/sort.inc';
 require '../include/timezones.php';
 
 $assessment = new assessment($mysqli, $configObject);

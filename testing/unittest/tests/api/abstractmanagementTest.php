@@ -15,6 +15,7 @@
 // along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
 
 use testing\unittest\unittestdatabase;
+use PHPUnit\DbUnit\DataSet\YamlDataSet;
 
 /**
  * Test abstract api functions
@@ -30,7 +31,7 @@ class abstractmanagementtest extends unittestdatabase {
      * @return dataset
      */
     public function getDataSet() {
-        return new PHPUnit_Extensions_Database_DataSet_YamlDataSet($this->get_base_fixture_directory() . "api" . DIRECTORY_SEPARATOR . "abstractmanagementTest" . DIRECTORY_SEPARATOR . "abstractmanagement.yml");
+        return new YamlDataSet($this->get_base_fixture_directory() . "api" . DIRECTORY_SEPARATOR . "abstractmanagementTest" . DIRECTORY_SEPARATOR . "abstractmanagement.yml");
     }
     /**
      * Test get external system api

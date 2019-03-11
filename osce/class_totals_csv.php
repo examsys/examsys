@@ -26,12 +26,10 @@
 
 require '../include/staff_auth.inc';
 
-require_once '../include/demo_replace.inc';
 require_once '../include/errors.php';
-require_once '../include/sort.inc';
 require_once './osce.inc';
 
-$demo = is_demo($userObject);
+$demo = \demo::is_demo($userObject);
 
 $paperID   = check_var('paperID', 'GET', true, false, true);
 $startdate = check_var('startdate', 'GET', true, false, true);
@@ -83,7 +81,7 @@ $distinction_mark = $propertyObj->get_distinction_mark();
 
 set_classification($propertyObj->get_marking(), $user_results, $passmark, $user_no, $string);
 rating_num_text($user_results, $user_no, $propertyObj, $string);
-$user_results = array_csort($user_results, $sortby, $ordering);
+$user_results = \sort::array_csort($user_results, $sortby, $ordering);
 
 $stats = $report->get_stats();                        // Generate the main statistics
 

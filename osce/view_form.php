@@ -25,7 +25,6 @@
 */
 
 require '../include/staff_student_auth.inc';
-require '../include/demo_replace.inc';
 require './osce.inc';
 
 if ($userObject->has_role('Demo')) $demo = true;
@@ -63,9 +62,9 @@ $result->close();
 
 $original_username = $username;
 if (isset($demo) and $demo == true) {
-  $surname = demo_replace($surname, $demo);
-  $first_names = demo_replace($first_names, $demo);
-  $student_id = demo_replace_number($student_id, $demo);
+  $surname = \demo::demo_replace($surname, $demo);
+  $first_names = \demo::demo_replace($first_names, $demo);
+  $student_id = \demo::demo_replace_number($student_id, $demo);
 }
 
 $paper_title  = $propertyObj->get_paper_title();
@@ -126,22 +125,29 @@ $photoname = UserUtils::student_photo_exist($username);
     $stored_q_parts[$q_id] = $q_parts;
   }
   $result->close();
-  
+
+  /**
+   * Getting the max column number
+   */
+  $max_cols_result = $mysqli->prepare("SELECT display_method FROM papers, questions WHERE paper = ? AND papers.question = questions.q_id ORDER BY CHAR_LENGTH(display_method) - CHAR_LENGTH(REPLACE(display_method, '|', '')) desc limit 1");
+  $max_cols_result->bind_param('i', $paperID);
+  $max_cols_result->execute();
+  $max_cols_result->bind_result($display_method);
+  while ($max_cols_result->fetch()) {
+    $max_cols = substr_count($display_method, '|');
+  }
+
   // Get the questions.
   $question_no = 1;
-  $sub_totals = array(0=>0, 1=>0, 2=>0, 3=>0, 4=>0, 5=>0);
-  $cell_colors = array('#FF8080', '#FFC169', '#50E850');
-  $rating_class = array('rating1', 'rating2', 'rating3');
-  
+  $sub_totals = array(0=>0, 1=>0, 2=>0, 3=>0, 4=>0, 5=>0, 6=>0, 7=>0, 8=>0, 9=>0);
+  $cell_colors = array('#D99694', '#E5B9B7', '#FFC169', '#C2D69B', '#C2DFFF','#5ea2ef','#4b0082', '#4b00FF','#9400d3','#9400FF');
+
   $result = $mysqli->prepare("SELECT q_id, q_type, theme, notes, scenario, leadin, display_method FROM papers, questions WHERE paper = ? AND papers.question = questions.q_id ORDER BY display_pos");
   $result->bind_param('i', $paperID);
   $result->execute();
   $result->bind_result($q_id, $q_type, $theme, $notes, $scenario, $leadin, $display_method);
   while ($result->fetch()) {
-    if ($question_no == 1) {
-      // Header row
-      $cols = substr_count($display_method, '|');
-    }
+    $cols = substr_count($display_method, '|');
     if (trim($theme) != '') {
       echo "<tr><td colspan=\"4\" class=\"t\">$theme</td></tr>\n";
     }
@@ -161,47 +167,46 @@ $photoname = UserUtils::student_photo_exist($username);
     }
  
     echo parse_leadin($leadin, $stored_q_parts[$q_id]) . "</td>";
-    $sub_totals[$stored_results[$q_id]]++; 
-    for ($i=0; $i<$cols; $i++) {
-      if (array_key_exists($q_id, $stored_results) and $stored_results[$q_id] == $i) {
-        echo "<td class=\"" . $rating_class[$i] . " r\">$i</td>";
+    $sub_totals[$stored_results[$q_id]]++;
+    for ($i=0; $i<$max_cols; $i++) {
+      if (isset($stored_results[$q_id]) and $stored_results[$q_id] == $i) {
+        echo "<td style=\"background-color:" . $cell_colors[$i] . "\" class=\"r\" id=\"c" . $question_no . "_" . ($i+1) . "\">$i</td>";
+      } else if($i >= $cols) {
+        echo "<td class=\"r\" style=\"background: #cfcfcf\">$i</td>";
       } else {
-        echo "<td class=\"r\">$i</td>";
+        echo "<td class=\"r\" id=\"c" . $question_no . "_" . ($i+1) . "\">$i</td>";
       }
     }
     echo "</tr>\n";
     $question_no++;
   }
   echo "<tr><td></td>";
-  for ($i=0; $i<$cols; $i++) {
+  for ($i=0; $i<$max_cols; $i++) {
     echo "<td class=\"rating\"><input type=\"text\" name=\"fails\" size=\"4\" style=\"border:0px; text-align:right\" value=\"" . $sub_totals[$i] . "\" /></td>";
   }  
   echo "</tr></table>\n<br /><div><strong>" . $string['overallclassification'] . "</strong></div><input type=\"hidden\" name=\"overallscore\" id=\"overallscore\" value=\"0\" /><table cellpadding=\"2\" cellspacing=\"0\" border=\"0\" style=\"width:100%\"><tr id=\"row_overall\">";
   $result->close();
-	
+
   switch ($marking) {
     case '3':
-      $labels = array('Clear Fail', 'Borderline', 'Clear Pass');
+      $labels = $string['marking3'];
       $colors = array('#D99594', '#FABF8F', '#C2D69B');
       break;
     case '4':
-      $labels = array('Fail', 'Borderline Fail', 'Borderline pass', 'Pass', 'Good Pass');
+      $labels = $string['marking4'];
       $colors = array('#D99694', '#E5B9B7', '#FFC169', '#D7E3BC', '#C2D69B');
       break;
     case '5':
-      $labels = array('Unsatisfactory', 'Competent');
+      $labels = $string['marking5'];
       $colors = array('#D99594', '#C2D69B');
       break;
     case '6':
-      $labels = array('Clear FAIL', 'BORDERLINE', 'Clear PASS', 'Honours PASS');
+      $labels = $string['marking6'];
       $colors = array('#D99694', '#E5B9B7', '#D7E3BC', '#C2D69B');
       break;
     case '7':
-      $labels = array('Fail', 'Pass');
-      $colors = array('#D99694', '#C2D69B');
-      break;
-    default:
-      $labels = array();
+      $labels = $string['marking7'];
+      $colors = array('#D99594', '#C2D69B');
       break;
   }
 
@@ -212,9 +217,9 @@ $photoname = UserUtils::student_photo_exist($username);
 
   for ($i=0; $i<count($labels); $i++) {
     if ($overall_rating == ($i+1)) {
-      echo "<td class=\"overall\" style=\"background-color:" . $colors[$i] . "\">" . $string[strtolower($labels[$i])] . "</td>\n";
+      echo "<td class=\"overall\" style=\"background-color:" . $colors[$i] . "\">" . $labels[$i] . "</td>\n";
     } else {
-      echo "<td class=\"overall\">" . $string[strtolower($labels[$i])] . "</td>\n";
+      echo "<td class=\"overall\">" . $labels[$i] . "</td>\n";
     }
   }
   ?>

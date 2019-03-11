@@ -1,0 +1,83 @@
+{#This file is part of Rogō
+
+ Rogō is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ Rogō is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+#}
+
+{#
+This template is for the likert question type.
+
+author Dr Joseph Baxter <joseph.baxter@nottingham.ac.uk>
+copyright 2018 onwards The University of Nottingham
+
+Required variables:
+data.displaylikertnotes - flag to indicate if there is a note to display 
+data.likertnotescolspan - col span of notes
+data.notes - the notes
+data.displaylikertscenario - flag to indicate if there is a note to scenario 
+data.likertscenariocolspan - col span of scenario
+data.scenario - the scenario
+data.displayna  - flag to indicate if n/a option should be displayed
+data.labelcolour - the label colour - controlled by user accessibility options
+data.scale - the likert scale
+data.unanswered - flag to indicate if question has previously been answered
+data.assignednumber - question number
+data.leadin - question leadin
+data.scaleopt - scale options
+scaleopt.selected - flag to indicate if option has previously been selected
+data.id - question id
+
+Required localised text -
+lang.note - note
+lang.na - not applicable
+#}
+<table cellpadding="4" cellspacing="0" border="0">
+    <col width="40"><col>
+{% if data.displaylikertnotes %}
+    <tr>
+        <td></td>
+        <td colspan="{{data.likertnotescolspan}}" class="note">
+            <img src="{{path}}/artwork/notes_icon.gif" width="16" height="16" alt="Note" />
+            &nbsp;<strong>{{lang.note}}:</strong>&nbsp;{{data.notes}}
+        </td>
+    </tr>
+{% endif %}
+{% if data.displaylikertscenario %}
+    <tr>
+        <td colspan="{{data.likertscenariocolspan}}">
+            {{data.scenario|raw}}
+        </td>
+    </tr>
+{% endif %}
+    <tr>
+        <td></td>
+        <td></td>
+{% if data.displayna %}
+        <td style="vertical-align:bottom; text-align:center; color:{{data.labelcolour}}; font-size:80%">
+            {{lang.na}}
+        </td>
+{% endif %}
+{% for i in data.scale %}
+        <td style="vertical-align:bottom; text-align:center; color:{{data.labelcolour}}; font-size:80%">
+            {{i|raw}}
+        </td>
+{% endfor %}
+    </tr>
+    <tr {% if data.unanswered %} class="unans" {% endif %}>
+        <td class="q_no">{{data.assignednumber}}.&nbsp;</td><td>{{data.leadin|raw}}</td>
+{% for i,selected in data.scaleopt %}
+        <td class="likert_button">
+            <input type="radio" name="q{{data.id}}" value="{{i}}" {% if selected %} checked=\"checked\" {% endif %}/>
+        </td>
+{% endfor %}
+    </tr>

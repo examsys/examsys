@@ -53,20 +53,15 @@ $display_deadline = $external_review_deadline->format('l jS M Y');
 
   <link rel="stylesheet" type="text/css" href="../css/body.css" />
   <link rel="stylesheet" type="text/css" href="../css/header.css" />
-  <style>
-    body {font-size: 90%}
-    .email {width:300px; color:#316ac5}
-  </style>
-  
+  <link rel="stylesheet" type="text/css" href="../css/externalemail.css" />
+  <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
+
 <?php
-  if($configObject->get_setting('core', 'misc_editor_name') === 'tinymce') {
-      $render = new render($configObject);
-      $tinmymcedata['file'] = 'tiny_config_externals_email';
-      $render->render($tinmymcedata, null, 'tinymce.html');
-  }
+  $texteditorplugin = \plugins\plugins_texteditor::get_editor();
+  $texteditorplugin->display_header();
+  $texteditorplugin->get_javascript_config(\plugins\plugins_texteditor::EXTERNAL);
 ?>
   <script type="text/javascript" src="../js/staff_help.js"></script>
-  <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
   <script type="text/javascript" src="../js/toprightmenu.js"></script>
   <script>
     $(function () {
@@ -167,7 +162,7 @@ if (isset($_POST['submit'])) {
     <td><?php echo $string['subject'] ?></td><td><input type="text" size="70" name="subject" value="<?php echo $subject ?>" /></td>
     </tr>
     <tr>
-    <td colspan="3"><textarea class="mceEditor" id="message" name="message" style="width:780px; height:450px"><?php echo htmlspecialchars($message, ENT_NOQUOTES) ?></textarea></p>
+    <td colspan="3"><?php $texteditorplugin->get_textarea('message', 'message', htmlspecialchars($message, ENT_NOQUOTES), plugins\plugins_texteditor::TYPE_STANDARD); ?></td>
     </tr>
 
     <tr>

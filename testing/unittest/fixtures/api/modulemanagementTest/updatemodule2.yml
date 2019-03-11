@@ -1,0 +1,10 @@
+modules:
+  -
+    id: 1
+    moduleid: "TEST"
+    fullname: "Test module"
+    active: 1
+    schoolid: 1
+    academic_year_start: "07/01"
+    externalid: "87654321"
+    sms: "test rogo api"

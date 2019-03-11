@@ -131,7 +131,7 @@
   $hosts = $configObject->get('cfg_memcache_host');
   if (!empty($hosts)) {
     $port = $configObject->get('cfg_memcache_port');
-    $memcache = new Memcache;
+    $memcache = new Memcached();
     $servers = array();
     foreach ($hosts as $memcacheserver) {
         // Add servers.
@@ -139,7 +139,7 @@
         $servers[] = $memcacheserver;
     }
     // Get stats to reforce cache.
-    $stats = $memcache->getExtendedStats();
+    $stats = $memcache->getStats();
     // Get status of servers.
     $memcacheerror = 0;
     foreach ($servers as $host) {

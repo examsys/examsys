@@ -64,7 +64,7 @@ require_once 'detail_parts/details_presentation.php';
               <th class="align-top"><span class="mandatory">*</span> <label for="option_text"><?php echo $string['question'] ?></label></th>
               <td>
 <?php
-  echo wysywig_or_non_editable($dis_class, 'edit_common1', 'option_text', $scanario_text, 'mceEditorBasic', 695, 250);
+  echo wysywig_or_non_editable($dis_class, 'edit_common1', 'option_text', $scanario_text, plugins\plugins_texteditor::TYPE_BASIC);
 ?>
               </td>
             </tr>

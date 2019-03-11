@@ -30,10 +30,8 @@ require_once '../include/marking_functions.inc';
 require_once '../include/calculate_marks.inc';
 require_once '../include/errors.php';
 require_once '../include/mapping.inc';
-require_once '../include/media.inc';
 require_once '../include/finish_functions.inc';
 require_once '../include/paper_security.php';
-require_once '../include/demo_replace.inc';
 require_once '../LTI/ims-lti/UoN_LTI.php';
 
 //HTML5 part
@@ -54,7 +52,7 @@ $metadataid = param::optional('metadataID', 0, param::INT, param::FETCH_GET);
 $do_not_record = param::optional('dont_record', false, param::BOOLEAN, param::FETCH_GET);
 $log_override = param::optional('log_type', -1, param::INT, param::FETCH_GET);
 
-$demo		= is_demo($userObject);
+$demo = \demo::is_demo($userObject);
 $userID = $userObject->get_user_ID();
 
 //get the paper properties
@@ -82,7 +80,6 @@ $end_date                   = $propertyObj->get_end_date();
 $marking                    = $propertyObj->get_marking();
 $paper_postscript           = $propertyObj->get_paper_postscript();
 $pass_mark                  = $propertyObj->get_pass_mark();
-$latex_needed               = $propertyObj->get_latex_needed();
 $password                   = $propertyObj->get_password();
 $moduleID                   = $propertyObj->get_modules();
 
@@ -129,8 +126,6 @@ if ($userObject->has_role(array('External Examiner'))) {
   // No further security checks.
 } else {
   $modIDs = array_keys($moduleID);
-
-  if ($paper_type == 2) $latex_needed = 0;  // Students get no feedback for summative exams so don't load the Latex library
 
   // Check for additional password on the paper
   check_paper_password($propertyObj->get_property_id(), $password, $string, $mysqli);
@@ -228,6 +223,8 @@ require '../config/finish.inc';
 <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
 
 <?php
+  $texteditorplugin = \plugins\plugins_texteditor::get_editor();
+  $texteditorplugin->display_header();
   $css = '';
   if ($userObject->is_special_needs() and $bgcolor != '#FFFFFF' and $bgcolor != 'white') {
     $css .= "select,input{background-color:$bgcolor;color:$fgcolor;font-family:$font,sans-serif}\n";
@@ -259,14 +256,10 @@ require '../config/finish.inc';
   }
 
   echo "<script type=\"text/javascript\" src=\"../js/student_help.js\"></script>\n";
-  if ($show_feedback) {     // Do not JavaScript files if feedback is not displayed.
-    if ($latex_needed == 1) {
-      echo "<script type=\"text/javascript\" src=\"../js/jquery-migrate-1.2.1.min.js\"></script>\n";
-      echo "<script type=\"text/javascript\" src=\"../tools/mee/mee/js/mee_src.js\"></script>\n";
-    }
-    $render = new render($configObject);
-    $render->render_html5_js(json_encode($jstring));
-  }
+
+  $render = new render($configObject);
+  $render->render_html5_js(json_encode($jstring));
+
   echo $configObject->get('cfg_js_root');
 ?>
 <script>
@@ -298,6 +291,9 @@ require '../config/finish.inc';
     $render = new render($configObject);
     $render->render(null, null, 'mathjax.html');
   }
+
+  // Check if any 3d file types are enabled and render js.
+  threed_handler::render_js($string);
 ?>
 </head>
 <body>
@@ -336,8 +332,8 @@ require '../config/finish.inc';
       echo '<span style="margin-left:5px; font-size:90%; color:white; font-weight:bold">' . $string['student'] . ' ' . $tmp_student_id . '</span>';
     } elseif ($paper_type < 2 or $userObject->has_role(array('Staff', 'Admin', 'SysAdmin', 'External Examiner'))) {
       echo '<span style="margin-left:5px; font-size:90%; color:white; font-weight:bold">' . $string['answersscreen'];
-      $tmp_student_name = $tmp_title . ' ' . demo_replace($tmp_surname, $demo) . ', ' . demo_replace($tmp_initials, $demo);
-      $tmp_student_id = demo_replace_number($tmp_student_id, $demo);
+      $tmp_student_name = $tmp_title . ' ' . \demo::demo_replace($tmp_surname, $demo) . ', ' . \demo::demo_replace($tmp_initials, $demo);
+      $tmp_student_id = \demo::demo_replace_number($tmp_student_id, $demo);
       echo ' ' . $tmp_student_name;
       if ($tmp_student_id != '') {
         echo " ($tmp_student_id)";
