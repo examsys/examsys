@@ -92,5 +92,5 @@ lang.deleteimage - delete image
 {% if data.mediadelete %}
     <a href="#" class="media-delete" rel="{{data.mediaid}}"><img class="align-bottom" src="{{path}}/artwork/red_cross.png" width="16" height="16" alt="{{lang.delete}}" /></a></div>
     <label class="hide"><input type="checkbox" id="delete_media{{data.mediaid}}" name="delete_media{{data.mediaid}}" /> {{lang.deleteimage}} {{data.mediaid}}</label>
-    <input type="hidden" id="existing_media{{data.mediaid}}" name="existing_media{{data.mediaid}}" value="{{data.mediafile}}" />
 {% endif %}
+<input type="hidden" id="existing_media{{data.mediaid}}" name="existing_media{{data.mediaid}}" value="{{data.mediafile}}" />
