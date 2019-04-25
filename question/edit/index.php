@@ -501,6 +501,9 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
 <script type="text/javascript" src="../../js/jquery.mappingform.js"></script>
 <script type="text/javascript" src="../../js/jquery.formhelpers.js"></script>
 <?php
+if ($question != null and file_exists($cfg_web_root . 'js/addedit/jquery.addedit.' . $question->get_type() . '.min.js')) { ?>
+<script type="text/javascript" src="../../js/addedit/jquery.addedit.<?php echo $question->get_type() ?>.min.js"></script>
+<?php }
 if ($question != null and file_exists($cfg_web_root . 'js/validation/jquery.' . $question->get_type() . '.min.js')) {
 ?>
 <script type="text/javascript" src="../../js/jquery.validate.min.js"></script>
