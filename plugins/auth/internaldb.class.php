@@ -161,6 +161,7 @@ class internaldb_auth extends outline_authentication {
       //sucessfull internaldb authentication
       $this->retdata->success($this->number, $id);
       $this->retdata->message = 'Internal DB Correctly Authenticated';
+      $this->retdata->postredirect = true;
 
       return $authobj;
     }
