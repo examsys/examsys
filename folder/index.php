@@ -174,13 +174,25 @@ echo '</div>';
 echo "</div>\n<br />\n";
 
 // Get any sub-folders first.
-$tmp_string = '';
+$module_sql = '';
 if (count($staff_modules) > 0) {
-  $tmp_string = " OR idMod IN ('" . implode("','",array_keys($staff_modules)) . "')";
+  $module_sql = " OR idMod IN ('" . implode("','",array_keys($staff_modules)) . "')";
 }
 
 $tmp_folder_name = $orig_folder_name . ';%';
-$folder_details = $mysqli->prepare("SELECT folders.id, name, color FROM folders WHERE (ownerID = ?) AND name LIKE ? AND deleted IS NULL ORDER BY name, folders.id");
+$query_string = <<<SQL
+  SELECT DISTINCT id, name, color
+  FROM folders
+  LEFT JOIN folders_modules_staff ON folders.id = folders_modules_staff.folders_id
+  WHERE (
+    ownerID = ?
+    $module_sql
+  ) AND
+    name LIKE ?
+    AND deleted IS NULL
+  ORDER BY name, folders.id
+SQL;
+$folder_details = $mysqli->prepare($query_string);
 $folder_details->bind_param('is', $userObject->get_user_ID(), $tmp_folder_name);
 $folder_details->execute();
 $folder_details->bind_result($id, $name, $color);

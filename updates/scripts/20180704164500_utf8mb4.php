@@ -47,14 +47,14 @@ if ($updater_utils->check_version("7.0.0")) {
     $sqlkeyword2 = "ALTER TABLE keywords_question MODIFY COLUMN `keywordID` int(11) NOT NULL";
     $updater_utils->execute_query($sqlkeyword2, false);
     // Staff help tables changes.
-    $sqlstaff = "ALTER TABLE staff_help MODIFY COLUMN `language` char(5) NOT NULL DEFAULT 'en'";
+    $sqlstaff = "ALTER TABLE staff_help MODIFY COLUMN `lastupdated` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP";
     $updater_utils->execute_query($sqlstaff, false);
-    $sqlstaff2 = "ALTER TABLE staff_help MODIFY COLUMN `lastupdated` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP";
+    $sqlstaff2 = "ALTER TABLE staff_help MODIFY COLUMN `language` char(5) NOT NULL DEFAULT 'en'";
     $updater_utils->execute_query($sqlstaff2, false);
     // Student help tables changes.
-    $sqlstudent = "ALTER TABLE student_help MODIFY COLUMN `language` char(5) NOT NULL DEFAULT 'en'";
+    $sqlstudent = "ALTER TABLE student_help MODIFY COLUMN `lastupdated` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP";
     $updater_utils->execute_query($sqlstudent, false);
-    $sqlstudent2 = "ALTER TABLE student_help MODIFY COLUMN `lastupdated` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP";
+    $sqlstudent2 = "ALTER TABLE student_help MODIFY COLUMN `language` char(5) NOT NULL DEFAULT 'en'";
     $updater_utils->execute_query($sqlstudent2, false);
     // Sid table changes.
     $sqlsid = "ALTER TABLE sid MODIFY COLUMN `student_id` char(15) NOT NULL";
