@@ -793,7 +793,7 @@ function record_marks($paper_id, $db, $paper_type, $metadataID, $preview_q_id = 
         if ($saved_response != '') {
           $tmp_first_split = explode(';', $saved_response);
           // Clean the mark and total number of items.
-          $tmp_second_split = param::clean_array(explode('$', $tmp_first_split[0]), param::INT);
+          $tmp_second_split = param::clean_array(explode('$', $tmp_first_split[0]), param::FLOAT);
           if ($tmp_first_split[1] != '') {
             $all_items_abstain = false;
           }
