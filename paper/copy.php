@@ -425,7 +425,7 @@ if ($copytype == 'paperonly') {        // Copy the paper only!
         $nw_calyr = 0;
         $nw_oldid = 0;
         $nw_oldpapid = 0;
-        $bw_oldoid = 0;
+        $nw_oldoid = 0;
         $result->bind_param('iiisiii', $nw_paperid, $nw_qid, $nw_mapid, $nw_calyr, $nw_oldid, $nw_oldpapid, $nw_oldoid);
         if ($mysqli->error) {
           $error[] = $string['showerror'];

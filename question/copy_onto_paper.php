@@ -241,6 +241,8 @@ if (!isset($_POST['submit'])) {
             }
           }
         }
+      } else {
+        $new_q_media = '';
       }
       
       if ($q_type == "extmatch") { // Above foreach loop remove empty q_media value, which is needed for mapping scenarios and its medias when display/editing a extmatch question.

@@ -32,6 +32,7 @@ class authobjreturn {
   public $datas;
   public $statuses;
   public $username;
+  public $postredirect = false;
 
   function __construct() {
     $this->returned		= ROGO_AUTH_OBJ_FAILED;

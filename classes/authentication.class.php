@@ -543,6 +543,12 @@ class Authentication {
 
     // need to save some data for allready logged in authentication
     $this->store_data_in_session();
+
+    // If redirect is set, redirect user to same page but with GET
+    if ($authobj->postredirect) {
+      header('Location: ' . $_SERVER['REQUEST_URI'], true, 303);
+      exit();
+    }
   }
 
   /**

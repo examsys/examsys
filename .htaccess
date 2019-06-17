@@ -1,8 +1,15 @@
 Options -Indexes
-<Files ~ "\.inc$">
-  Order allow,deny
-  Deny from all
-</Files>
+<IfModule !mod_authz_host.c>
+    <Files ~ "\.inc$">
+      Order allow,deny
+      Deny from all
+    </Files>
+</IfModule>
+<IfModule mod_authz_host.c>
+    <Files ~ "\.inc$">
+      Require all denied
+    </Files>
+</IfModule>
 
 ##
 ## Cache-Control Headers

@@ -56,6 +56,7 @@ while ($question_data->fetch()) {
     $question['q_media_height'] = $q_media_height;
     $question['dismiss'] = '';
     $question['settings'] = $settings;
+    $question['screen'] = 1; // Preview questions are always on the first screen.
     if ($q_type == 'enhancedcalc') {
       if (!is_array($settings)) {
         $settings = json_decode($settings, true);

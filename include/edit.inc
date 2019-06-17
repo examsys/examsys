@@ -53,13 +53,16 @@ function redirect($userObj, $q_id, $configObj, $db) {
   }
 
   if (isset($_SESSION['nav_page'])) {
-    $url = $_SESSION['nav_page'] . '?' . $_SESSION['nav_query'];
-    $url = preg_replace("/&scrOfY=[0-9]+/", "", $url);
-
-    if (isset($_POST['scrOfY'])) {
-      $url .= '&scrOfY=' . $_POST['scrOfY'];
+    // Replace scrOfY with POST param if set, otherwise remove cleanly
+    parse_str($_SESSION['nav_query'], $param_array);
+    $scrOfY = param::optional('scrOfY', null, param::FLOAT, param::FETCH_POST);
+    if (!is_null($scrOfY)) {
+      $param_array['scrOfY'] = $scrOfY;
+    } elseif (isset($param_array['scrOfY'])) {
+      unset($param_array['scrOfY']);
     }
-    
+    $url = $_SESSION['nav_page'] . '?' . http_build_query($param_array);
+
     header('location: ' . $url);
   } else {
     header('location: ' . $configObj->get('cfg_root_path') . '/');
