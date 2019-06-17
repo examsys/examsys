@@ -105,6 +105,7 @@ class tinymce3editortest extends unittestdatabase {
     $tinymce = new \plugins\texteditor\plugin_tinymce3_texteditor\plugin_tinymce3_texteditor();
     $this->assertEquals('editorSimple', $tinymce->get_type(\plugins\plugins_texteditor::TYPE_SIMPLE));
     $this->assertEquals('editorBasic', $tinymce->get_type(\plugins\plugins_texteditor::TYPE_BASIC));
+    $this->assertEquals('editorStandardUans', $tinymce->get_type(plugins\plugins_texteditor::TYPE_STANDARD_UANS));
     $this->assertEquals('editorStandard', $tinymce->get_type('meh'));
   }
 

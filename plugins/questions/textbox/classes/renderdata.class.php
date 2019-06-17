@@ -161,10 +161,11 @@ class renderdata extends \questiondata {
         }
       }
 
+      $this->file = $this->editor . '_config_answered';
       if ($useranswer == '' and $screen_pre_submitted == 1) {
-        $this->file = $this->editor . '_config_unanswered';
+        $type = \plugins\plugins_texteditor::TYPE_STANDARD_UANS;
       } else {
-        $this->file = $this->editor . '_config_answered';
+        $type = \plugins\plugins_texteditor::TYPE_STANDARD;
       }
 
       $this->editorconfig = $this->editor . '_config.html';
@@ -182,7 +183,7 @@ class renderdata extends \questiondata {
       $this->useranswer = $useranswer;
 
       $this->editortextarea = $this->editor . '_textarea.html';
-      $this->type = $texteditorplugin->get_type(\plugins\plugins_texteditor::TYPE_STANDARD);
+      $this->type = $texteditorplugin->get_type($type);
       $this->style = $background_colour . "width:" . $textbox_width . "px; height:" . $textbox_height . "px";
       $this->textboxesseen = $textboxes_seen;
       $marks = $this->marks;

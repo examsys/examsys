@@ -99,6 +99,9 @@ class plugin_tinymce3_texteditor extends \plugins\plugins_texteditor {
       case \plugins\plugins_texteditor::TYPE_BASIC:
         $type = 'editorBasic';
         break;
+      case \plugins\plugins_texteditor::TYPE_STANDARD_UANS:
+        $type = 'editorStandardUans';
+        break;
       default:
         $type = 'editorStandard';
         break;
