@@ -29,6 +29,7 @@ LangUtils::loadlangfile(str_replace($cfg_web_root, '', str_replace('\\', '/', ($
 $notice = UserNotices::get_instance();
 
 $mysqli = DBUtils::get_mysqli_link($configObject->get('cfg_db_host'), $configObject->get('cfg_db_username'), $configObject->get('cfg_db_passwd'), $configObject->get('cfg_db_database'), $configObject->get('cfg_db_charset'), $notice, $configObject->get('dbclass'));
+$configObject->set_db_object($mysqli);
 
 $email = (isset($_GET['email'])) ? $_GET['email'] : '';
 $message = '';
