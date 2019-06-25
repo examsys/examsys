@@ -227,7 +227,7 @@ SQL;
         if (isset($primary_marks[$log_id]['mark'])) {
           echo "<td class=\"primary\">" . $primary_marks[$log_id]['mark'] . "<input class=\"primarychk\" type=\"radio\" name=\"mark$student_no\" id=\"mark$student_no\" value=\"" . $primary_marks[$log_id]['mark'] . "\" $primary_checked />";
           if (isset($secondary_marks[$log_id]['mark'])) {
-            echo "<img src=\"../artwork/tooltip_icon.gif\" class=\"help_tip\" title=\"" . $primary_marks[$log_id]['comment'] . "\" />";
+            echo "<img src=\"../artwork/tooltip_icon.gif\" class=\"help_tip\" title=\"" . htmlspecialchars($primary_marks[$log_id]['comment']) . "\" />";
           }
           echo "</td>";
         } else {
@@ -236,7 +236,7 @@ SQL;
         if (isset($secondary_marks[$log_id]['mark'])) {
           echo "<td class=\"secondary\">" . $secondary_marks[$log_id]['mark'] . "<input class=\"secondarychk\" type=\"radio\" name=\"mark$student_no\" id=\"mark$student_no\" value=\"" . $secondary_marks[$log_id]['mark'] . "\" $secondary_checked />";
           if (isset($primary_marks[$log_id]['mark'])) {
-            echo "<img src=\"../artwork/tooltip_icon.gif\" class=\"help_tip\" title=\"" . $secondary_marks[$log_id]['comment'] . "\" />";
+            echo "<img src=\"../artwork/tooltip_icon.gif\" class=\"help_tip\" title=\"" . htmlspecialchars($secondary_marks[$log_id]['comment']) . "\" />";
           }
           echo "</td>";
         } else {
