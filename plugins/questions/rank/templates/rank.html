@@ -54,7 +54,7 @@ lang.na - not applicable
                 </select>
             </td>
             <td>
-                <span {% if p.inact %} class="inact" {% else %} class="act" {% endif %} id="{{p.optionno}}">{{p.optiontext}}</span>
+                <span {% if p.inact %} class="inact" {% else %} class="act" {% endif %} id="{{data.questionno}}_{{p.position}}">{{p.optiontext}}</span>
             </td>
         </tr>
 {% endfor %}
