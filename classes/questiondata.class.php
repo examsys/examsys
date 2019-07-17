@@ -670,7 +670,7 @@ abstract class questiondata {
 
     $this->process_options($part_id, $useranswer, $userdismissed, $screen_pre_submitted);
 
-    $this->finalmarks = $this->get_marks($display_option['marks_correct']);;
+    $this->finalmarks = $this->get_marks($display_option['marks_correct']);
     if ($paper_properties['type'] < 3) {
       if ($this->finalmarks != 0) {
         if ($question['score_method'] == 'Bonus Mark') {
