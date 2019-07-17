@@ -29,8 +29,11 @@ include_once 'Corrector.class.php';
 class MATRIXCorrector extends Corrector {
   /**
    * Change the correct answer after the question has been locked. Update user marks in summative log table
-   * @param integer $new_correct new correct answer
-   * @param integer $paper_id
+   * @param array $new_correct fields that are relevant for post-exam corrections
+   * @param integer $paper_id paper identifier
+   * @param boolean $prev_changes have there been previous changes
+   * @param string $paper_type type of paper
+   * @return array
    */
   public function execute($new_correct, $paper_id, &$prev_changes, $paper_type) {
     $new_correct_val = $new_correct['option_correct'];
@@ -47,7 +50,7 @@ class MATRIXCorrector extends Corrector {
     for ($i = 0; $i < $this->_question->max_stems; $i++) {
       $data['option_correct' . strval($i + 1)] = $new_correct_val[$i];
       $correct_count += ($new_correct_val[$i] > 0) ? 1 : 0;
-      if (count($new_correct_val[$i]) > 0 and $new_correct_val[$i] != $old_correct[$i]) {
+      if (isset($new_correct_val[$i]) and $new_correct_val[$i] != $old_correct[$i]) {
         $changes = true;
       }
     }
