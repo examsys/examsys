@@ -33,7 +33,9 @@ if ($configObject->get('cfg_session_name') != '') {
 $return = session_start();
 
 session_unset();
-session_destroy();
+if (session_status() == PHP_SESSION_ACTIVE) {
+  session_destroy();
+}
 session_write_close();
 setcookie(session_name(), '', 0, '/');
 header('Location: ./');
