@@ -119,6 +119,8 @@ Class MathsUtils {
 
   /**
    * Returns a percentile from a list of numbers
+   * Not sure what the idea here was as this is not a percentile calculation
+   * see https://www.dummies.com/education/math/statistics/how-to-calculate-percentiles-in-statistics/
    * @param array set of numbers to base the percentile on
    * @param float the percentile required
    * @return float the requested percentile
@@ -126,14 +128,22 @@ Class MathsUtils {
   static function percentile($data, $percentile) {
     $count = count($data);
     if ($count == 0) {
-      return '';
+      return 0.0;
     }
+
+    // If any of the array elements are not a number we cannot calculate the percentile so return 0.
+    foreach ($data as $idx) {
+      if (!is_numeric($idx)) {
+        return 0.0;
+      }
+    }
+
     if (0 < $percentile and $percentile < 1 ) {
       $p = $percentile;
     } elseif( 1 < $percentile and $percentile <= 100 ) {
       $p = $percentile * .01;
     } else {
-      return '';
+      return 0.0;
     }
     $allindex     = ($count-1) * $p;
     $intvalindex  = intval($allindex);
