@@ -49,7 +49,7 @@ lang.abstain - abstain
             </td>
             <td>
             {% if p.optiontextdisplay %}
-            <span {% if p.inact %} class="inact" {% else %} class="act" {% endif %} id="{{data.questionno}}_{{i}}"> {{p.optiontext|raw}}</span></br>
+            <span {% if p.inact %} class="inact" {% else %} class="act" {% endif %} id="{{data.questionno}}_{{p.position}}"> {{p.optiontext|raw}}</span></br>
             {% endif %}
             {% if p.displayoptionmedia %}
                 {% include 'paper/media.html' with {'data': p.optionmedia} %}

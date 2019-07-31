@@ -83,7 +83,7 @@ lang.significant_figures - significant figues
 </p>
 <input type="hidden" name="missingCalcAnswer" id="missingCalcAnswer" value="1">
 {% else %}
-<div>
+<div class="enhancedcalc">
     {# not attempted #}
     {% if data.useranswered == 0%}
     <input type="text" style="text-align:right" id="q{{data.numonscreen}}" name="qid[{{data.id}}][uans]" data-assignednum="{{data.assignednumber}}" data-linkparent="{{data.linkparent}}" data-screen="{{data.screen}}" size="10" class="unans ecalc-answer" />
@@ -108,7 +108,30 @@ lang.significant_figures - significant figues
     {% if data.feedbackprecision == 'dp' %}
     <span class="calc_fb">({{lang.answer_to}} {{data.feedbackprecisionvalue}} {{lang.decimal_places}})</span>
     {% elseif data.feedbackprecision == 'sf' %}
-    <span class="calc_fb">({{lang.answer_to}} {{data.feedbackprecisionvalue}} {{lang.significant_figures}}</span>
+    <span class="calc_fb">({{lang.answer_to}} {{data.feedbackprecisionvalue}} {{lang.significant_figures}})</span>
     {% endif %}
 </div>
+{% endif %}
+{# If not a survey paper #}
+{% if data.papertype != 3 %}
+{% if data.finalmarks == 0 %}
+</td>
+</tr>
+<tr>
+    <td colspan="2">&nbsp;</td>
+</tr>
+{% else %}
+<div id="q{{data.assignednumber}}_mk" class="mk">({{data.finalmarks}} {% if data.finalmarks == 1 %} {{lang.mark}} {% else %} {{lang.marks}} {% endif %}
+    {% if data.negativemarking %}
+    , {{lang.negmarking}}
+    {% endif %}
+    )
+</div>
+<br />
+</td>
+</tr>
+{% endif %}
+{% else %}
+</td>
+</tr>
 {% endif %}

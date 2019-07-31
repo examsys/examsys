@@ -32,6 +32,12 @@ abstract class plugins_texteditor extends \plugins\plugins {
      * Type of the editor.
      * @var string
      */
+    const TYPE_STANDARD_UANS = 'standarduans';
+
+    /**
+     * Type of the editor.
+     * @var string
+     */
     const TYPE_STANDARD = 'standard';
 
     /**

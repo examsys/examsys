@@ -1239,7 +1239,8 @@ class EnhancedCalc extends Question implements questionInterface {
 		}
 
 		$questiondata['linkparent'] = $this->get_link_parent();
-		$marks = $this->settings['marks_correct'];
+		$questiondata['finalmarks'] = $this->settings['marks_correct'];
+		$questiondata['negativemarking'] = $this->is_negative_marked();
 		$render->render($questiondata, $string, 'enhancedcalc.html');
 	}
 
