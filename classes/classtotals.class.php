@@ -549,7 +549,7 @@ class ClassTotals {
     while (isset($_GET["meta$i"])) {
       $meta_parts = explode('=', $_GET["meta$i"]);
       if ($meta_parts[1] != '%') {
-        if ($this->user_results[$user_number][$meta_parts[0]] != $meta_parts[1]) {
+        if ($this->user_results[$user_number]['meta_' . $meta_parts[0]] != $meta_parts[1]) {
           $this->user_results[$user_number]['visible'] = false;
         }
       }
