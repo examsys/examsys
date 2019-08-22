@@ -1765,8 +1765,12 @@ class PaperProperties {
     /**
      * Check if calculation answers have been marked
      * @param int $studentsonly only check students in cohort
+     * @return void
      */
     private function load_unmarked_enhancedcalc($studentsonly = 0) {
+        if (!$this->paper_stores_user_answers()) {
+            return;
+        }
         if ($studentsonly) {
             $this->unmarked_student_enhancedcalc = false;
         } else {
@@ -1898,8 +1902,12 @@ class PaperProperties {
     /**
      * Check if textbox answers have been marked
      * @param int $studentsonly only check students in cohort
+     * @return void
      */
     private function load_unmarked_textbox($studentsonly = 0) {
+        if (!$this->paper_stores_user_answers()) {
+            return;
+        }
         if ($studentsonly) {
             $this->unmarked_student_textbox = false;
         } else {
@@ -2626,4 +2634,22 @@ class PaperProperties {
     }
     return $paper_buffer;
   }
+
+    /**
+     * Checks if the paper stores answers given by a student taking the paper.
+     *
+     * Peer review papers are excluded from this because although students are
+     * giving answers they are acting as markers.
+     *
+     * @return boolean
+     */
+    protected function paper_stores_user_answers() {
+      $stores_user_answers = array(
+        '0' => '0', // Formative.
+        '1' => '1', // Progress test.
+        '2' => '2', // Summative.
+        '3' => '3', // Survey.
+      );
+      return isset($stores_user_answers[$this->get_paper_type()]);
+    }
 }
