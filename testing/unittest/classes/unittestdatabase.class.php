@@ -118,6 +118,13 @@ abstract class unittestdatabase extends TestCase {
         $this->config->use_phpunit_site();
         vfsStream::setup(self::DATA_DIRECTORY, 0777);
         $this->config->set('cfg_rogo_data', vfsStream::url(self::DATA_DIRECTORY));
+        // Load 'current' session into database if not already created. Needs to be here as config table required.
+        $yearutils = new \yearutils($db);
+        $currentsession = $yearutils->get_current_session();
+        if (!$yearutils->check_calendar_year($currentsession)) {
+            $datagenerator = $this->get_datagenerator('academic_year', 'core');
+            $datagenerator->create_academic_year(array('year' => $currentsession . '/01/01'));
+        }
     }
 
     /**

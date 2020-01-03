@@ -40,11 +40,19 @@ class PaperPropertiesGetUsersTest extends testing\unittest\unittestdatabase {
   protected $module1, $module2;
 
   /**
+   * The current academic session
+   * @var integer $currentsession
+   */
+  protected $currentsession;
+
+  /**
    * Generate common data for test.
    *
    * @throws \testing\datagenerator\not_found
    */
   public function datageneration() : void {
+    $yearutils = new \yearutils($this->db);
+    $this->currentsession = $yearutils->get_current_session();
     $usergen = $this->get_datagenerator('users', 'core');
     $this->student1 = $usergen->create_user(['roles' => 'Student', 'sid' => '24680', 'surname' => 'Smith']);
     $this->student2 = $usergen->create_user(['roles' => 'Student', 'sid' => '13579', 'surname' => 'Johnson']);
@@ -70,6 +78,7 @@ class PaperPropertiesGetUsersTest extends testing\unittest\unittestdatabase {
       'papertype' => \assessment::TYPE_FORMATIVE,
       'paperowner' => $admin['username'],
       'modulename' => [$this->module1['fullname']],
+      'calendaryear' => $this->currentsession,
     ];
     $paper = $this->get_datagenerator('papers', 'core')->create_paper($paperparams);
 
@@ -98,6 +107,7 @@ class PaperPropertiesGetUsersTest extends testing\unittest\unittestdatabase {
       'papertype' => \assessment::TYPE_FORMATIVE,
       'paperowner' => $admin['username'],
       'modulename' => [$this->module1['fullname'], $this->module2['fullname']],
+      'calendaryear' => $this->currentsession,
     ];
     $paper = $this->get_datagenerator('papers', 'core')->create_paper($paperparams);
 
@@ -119,7 +129,8 @@ class PaperPropertiesGetUsersTest extends testing\unittest\unittestdatabase {
    * @group paper
    */
   public function test_metadata() {
-    $oldyear = $this->get_datagenerator('academic_year', 'core')->create_academic_year(['year' => '2 years ago']);
+    $datagenerator = $this->get_datagenerator('academic_year', 'core');
+    $oldyear = $datagenerator->create_academic_year(array('calendar_year' => 2017, 'academic_year' => '2017/18'));
     // Create a student with metadata.
     $usergen = $this->get_datagenerator('users', 'core');
     $student = $usergen->create_user(['roles' => 'Student', 'sid' => '64537', 'surname' => 'Appleton']);
@@ -132,6 +143,7 @@ class PaperPropertiesGetUsersTest extends testing\unittest\unittestdatabase {
       'papertype' => \assessment::TYPE_FORMATIVE,
       'paperowner' => $admin['username'],
       'modulename' => [$this->module1['fullname']],
+      'calendaryear' => $this->currentsession,
     ];
     $papergen = $this->get_datagenerator('papers', 'core');
     $paper = $papergen->create_paper($paperparams);
