@@ -64,7 +64,7 @@ require_once '../include/errors.php';
   <form id="theform" name="edit_course" method="post" action="" autocomplete="off">
     <table cellpadding="0" cellspacing="2" border="0" style="text-align:left">
     <?php
-      echo "<tr><td class=\"field\">" . $string['code'] . "</td><td><input type=\"text\" size=\"10\" maxlength=\"255\" name=\"course\" value=\"$tmp_course\" /></td></tr>\n";
+      echo "<tr><td class=\"field\">" . $string['code'] . "</td><td><input type=\"text\" size=\"10\" maxlength=\"255\" name=\"course\" value=\"\" /></td></tr>\n";
     ?>
     <tr><td class="field"><?php echo $string['name'] ?></td><td><input type="text" size="70" maxlength="255" name="description" value="<?php if (isset($_POST['description'])) echo $_POST['description']; ?>" required /></td></tr>
     <tr><td class="field"><?php echo $string['school'] ?></td><td><select name="school" required>
