@@ -29,6 +29,7 @@ require_once '../include/errors.php';
 $facultyID = check_var('facultyID', 'REQUEST', true, false, true);
 $faculty = check_var('new_faculty', 'POST', true, false, true);
 $code = check_var('code', 'POST', false, false, true);
+$details = FacultyUtils::get_faculty_details_by_id($facultyID, $mysqli);
 if (!FacultyUtils::update_faculty($facultyID, $faculty, $code, $details['externalid'], $details['externalsys'], $mysqli)) {
   echo json_encode('ERROR');
 } else {
