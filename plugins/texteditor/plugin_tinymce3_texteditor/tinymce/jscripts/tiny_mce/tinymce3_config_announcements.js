@@ -18,6 +18,13 @@ requirejs(['tinyMCE', 'rogoconfig'], function (tinyMCE, config) {
 
 
     setup: function (ed) {
+      ed.onInit.add(function (ed, evt) {
+        var dom = ed.dom;
+        tinymce.dom.Event.add(dom.getRoot(), 'blur', function (e) {
+          // Do something when the editor window is blured.
+          tinyMCE.triggerSave();
+        });
+      });
       // If there is no text content, return nothing.
       // After http://alastairc.ac/2010/03/removing-emtpy-html-tags-from-tinymce/
       ed.onPostProcess.add(function (ed, o) {
