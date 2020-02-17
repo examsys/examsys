@@ -64,7 +64,10 @@ define(['rogoconfig', 'jquery'], function(config, $) {
                 } else if (window.opener == undefined || $(this).attr('data-help')) {
                     history.back();
                 } else {
-                    window.close();
+                    if ($(this).attr('id') != 'dialog_cancel') {
+                        // Non paper dialog so close window.
+                        window.close();
+                    }
                 }
             });
 
