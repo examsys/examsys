@@ -37,6 +37,6 @@
         <p><label for="label_media5" class="heavy"><?php echo $string['image'] ?> 5</label> <input id="label_media5" name="label_media5" size="45" type="file" /></p>
         <p class="compact"><label for="label_media6" class="heavy"><?php echo $string['image'] ?> 6</label> <input id="label_media6" name="label_media6" size="45" type="file" /></p>
       </div>
-      <p class="align-centre"><input type="button" name="cancel" value="<?php echo $string['cancel'] ?>" onclick="javascript: history.back();" class="cancel" /> <input type="submit" name="submit_media" value="<?php echo $string['next'] ?>" class="submit cancel" /></p>
+      <p class="align-centre"><input type="button" name="cancel" value="<?php echo $string['cancel'] ?>" class="cancel" /> <input type="submit" data-popupid="submit_media" id="submit_media" name="submit_media" value="<?php echo $string['next'] ?>" class="cancel" /></p>
     </div>
   </div>

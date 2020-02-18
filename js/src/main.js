@@ -207,7 +207,8 @@ requirejs.config({
         jquerymrq: "plugins/questions/mrq/js/modules/validatequestion.min",
         jqueryrandom: "plugins/questions/random/js/modules/validatequestion.min",
         jqueryrank: "plugins/questions/rank/js/modules/validatequestion.min",
-        jquerysct: "plugins/questions/sct/js/modules/validatequestion.min"
+        jquerysct: "plugins/questions/sct/js/modules/validatequestion.min",
+        polyfill: "js/modules/polyfill.min",
     },
     shim: {
         // Mathjax configration.
@@ -265,4 +266,9 @@ requirejs(['toprightmenu'], function (MENU) {
 requirejs(['ui'], function (UI) {
     var ui = new UI();
     ui.init();
+});
+
+requirejs(['polyfill'], function (Polyfill) {
+    var polyfill = new Polyfill();
+    polyfill.init();
 });

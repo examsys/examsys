@@ -78,7 +78,7 @@ if ($media['filename'] != '' and !$show_correction_intermediate):
     data-qno="1"
     data-qmedia="' . $media["filename"] . '"
     data-qcorrect="' . $correct . '"
-    data-user""
+    data-user=""
     data-marking=""
     width="' . $plugin_width . '" height="' . ($plugin_height+3) . '"></canvas>' . "\n";
   echo '<br /><div style="width:100%;text-align: left;" id="canvasbox"></div>' . "\n";

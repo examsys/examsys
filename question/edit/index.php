@@ -474,7 +474,6 @@ if ($critical_error == '') {
   $notice->display_notice_and_exit($mysqli, $string['error'], $critical_error, $string['error'], '/artwork/page_not_found.png', '#C00000', true, true);
 }
 
-echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
 ?>
 <!DOCTYPE html>
 <html>
@@ -514,7 +513,7 @@ threed_handler::render_js($string);
 <?php
 if ($question != null and file_exists($cfg_web_root . 'plugins/questions/' . $question->get_type() . '/js/editinit.min.js')) {
 ?>
-<script src="/plugins/questions/<?php echo $question->get_type() ?>/js/editinit.min.js"/></script>
+<script src="/plugins/questions/<?php echo $question->get_type() ?>/js/editinit.min.js"></script>
 <?php
 }
 ?>

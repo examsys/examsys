@@ -60,7 +60,6 @@ define(['rogoconfig', 'jquery'], function(config, $) {
             $('.cancel').click(function () {
                 if ($(this).attr('data-popupid')) {
                     $('#' + $(this).attr('data-popupid')).hide();
-                    $('#' + $(this).attr('data-popupid')).hide();
                 } else if (window.opener == undefined || $(this).attr('data-help')) {
                     history.back();
                 } else {
