@@ -85,7 +85,7 @@ $imageurl = rogo_directory::get_directory('media')->url($media['filename']);
                     data-setup="<?php echo htmlentities(trim($_POST['points1'])); ?>"
                     data-answers="<?php echo $fix_data; ?>"
                 ></div>
-                <input type="hidden" name="option_correct1" id="option_correct1" value="" />
+                <input type="hidden" name="option_correct1" id="option_correct1" value="<?php echo $fix_data; ?>" />
                 <input type="hidden" name="option_marks_correct" id="option_marks_correct" value="<?php echo $_POST['option_marks_correct']; ?>" />
                 <input type="hidden" name="option_marks_incorrect" id="option_marks_incorrect" value="<?php echo $_POST['option_marks_incorrect']; ?>" />
                 <input type="hidden" name="corrected" value="OK" />
