@@ -39,7 +39,7 @@ while ($result->fetch()) {
         foreach ($layers as $layer) {
             $sub_parts = explode(',', $layer);
             if ($tmp_user_answer == '') {
-                // Might not be a sub parts to if not answered.
+                // Might not be a sub parts if not answered.
                 if (isset($sub_parts[1])) {
                     $tmp_user_answer = $sub_parts[1];
                     if (isset($sub_parts[2])) {
@@ -48,7 +48,7 @@ while ($result->fetch()) {
                 }
             } else {
                 $tmp_user_answer .= '|';
-                // Might not be a sub parts to if not answered.
+                // Might not be a sub parts if not answered.
                 if (isset($sub_parts[1])) {
                     $tmp_user_answer .= $sub_parts[1];
                     if (isset($sub_parts[2])) {
