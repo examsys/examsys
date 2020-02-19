@@ -63,23 +63,22 @@ requirejs(['invigilator', 'jquery', 'jqueryui'], function (INV, $) {
         setInterval(inv.clarifyMethod, 10000);
     }
 
-    $('#close_rubric').click(function() {
+    $('.rubricclose').click(function() {
         $('#' + $(this).attr('data-id')).hide();
         $('#opaque').hide();
     });
 
-    $('#newpaper').click(function() {
+    $('.papernote').click(function() {
         inv.newPaperNote($(this).attr('data-id'));
     });
 
-    $('#viewrubric').click(function() {
+    $('.viewrubric').click(function() {
         inv.viewRubric($(this).attr('data-id'));
     });
 
-    $("tr[id^=l]").each(function() {
-        $(this).click(function(e) {
-            inv.popMenu($(this).attr('data-userid'), $(this).attr('data-paperid'), $(this).attr('data-timing'), e);
-        });
+    // Student rows are dynamically re-created via an ajax call so need the event re-created.
+    $(document).on('click', '.student', function(e){
+        inv.popMenu($(this).attr('data-userid'), $(this).attr('data-paperid'), $(this).attr('data-timing'), e);
     });
 
     $('.popupmenu').mouseover(function() {

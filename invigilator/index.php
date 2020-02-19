@@ -155,7 +155,7 @@ if ($properties_list !== false and count($properties_list) > 0) {
     $calendar_year  = $property_object->get_calendar_year();
     $rubric         = $property_object->get_rubric();
 
-    echo "<div class=\"rubric\" id=\"rubric_$property_id\"><div class=\"rubrictitle\">" . $string['examrubric'] . "<img id='close_rubric' data-id=\"rubric_$property_id\" src=\"../artwork/lrg_close.png\" class=\"rubricclose\" alt=\"Close\" /></div><div class=\"rubric_txt\">$rubric</div>\n</div>\n";
+    echo "<div class=\"rubric\" id=\"rubric_$property_id\"><div class=\"rubrictitle\">" . $string['examrubric'] . "<img data-id=\"rubric_$property_id\" src=\"../artwork/lrg_close.png\" class=\"rubricclose\" alt=\"Close\" /></div><div class=\"rubric_txt\">$rubric</div>\n</div>\n";
 
     // Get modules for this paper and check if timing is allowed
     $timed_modules = $all_modules = 0;
@@ -312,7 +312,7 @@ if ($properties_list !== false and count($properties_list) > 0) {
               </tr>
 
               <tr>
-                <td colspan="4"><input type="button" id="newpaper" data-id="<?php echo $property_id; ?>" value="<?php echo $string['papernote'] ?>" class="ok" /><input type="button" id="viewrubric" data-id="<?php echo $property_id; ?>" value="<?php echo $string['viewrubric'] ?>" class="ok" /></td>
+                <td colspan="4"><input type="button" data-id="<?php echo $property_id; ?>" value="<?php echo $string['papernote'] ?>" class="ok papernote" /><input type="button" data-id="<?php echo $property_id; ?>" value="<?php echo $string['viewrubric'] ?>" class="ok viewrubric" /></td>
               </tr>
 
             </table>

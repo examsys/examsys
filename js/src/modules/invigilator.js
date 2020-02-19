@@ -176,7 +176,7 @@ define(['jquery', 'jqueryui'], function($) {
                     paperID:$('#paperID').val()
                 },
                 function() {
-                    scope.refreshCohortList( $('#paperID').val() );
+                    scope.refreshCohortList($('#paperID').val());
                 });
         };
 
