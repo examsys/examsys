@@ -59,29 +59,20 @@ class HOTSPOTCorrector extends Corrector
                         $mark = 0;
                         $all_correct = true;
                         $hotspot_answer = hotspot_helper::get_instance()->mark($answers, $new_correct['points1']);
-                        if (!is_null($hotspot_answer)) {
-                            $saved_response = $hotspot_answer;
-                            $sub_parts = explode('|', $saved_response);
-                            foreach ($sub_parts as $sub_part) {
-                                if ($sub_part{0} == 1) {
-                                    $mark += $marks_correct;
-                                } else {
-                                    $all_correct = false;
-                                    if ($saved_response != 'u') {
-                                        $mark += $marks_incorrect;
-                                    }
-                                }
+                        $saved_response = $hotspot_answer;
+                        $sub_parts = explode('|', $saved_response);
+                        foreach ($sub_parts as $sub_part) {
+                            if ($sub_part{0} == 1) {
+                                $mark += $marks_correct;
+                            } else {
+                                $all_correct = false;
+                                $mark += $marks_incorrect;
                             }
-                        } else {
-                            $all_correct = false;
-                            $saved_response = '';
                         }
                         // Override marks if 'Mark per Question' is set.
                         if ($this->_question->get_score_method() == 'Mark per Question') {
                             if ($all_correct) {
                                 $mark = $marks_correct;
-                            } elseif ($saved_response == 'u' or $saved_response == '') {
-                                $mark = 0;
                             } else {
                                 $mark = $marks_incorrect;
                             }
