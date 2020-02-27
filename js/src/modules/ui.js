@@ -58,14 +58,20 @@ define(['rogoconfig', 'jquery'], function(config, $) {
              * Cancel button.
              */
             $('.cancel').click(function () {
-                if ($(this).attr('data-popupid')) {
-                    $('#' + $(this).attr('data-popupid')).hide();
-                } else if (window.opener == undefined || $(this).attr('data-help')) {
-                    history.back();
-                } else {
-                    if ($(this).attr('id') != 'dialog_cancel') {
-                        // Non paper dialog so close window.
-                        window.close();
+                if ($(this).attr('id') != 'submit-cancel') {
+                    // Submit-cancel buttons call redirect code so do nothing.
+                    if ($(this).attr('data-popupid')) {
+                        // Otherwise hide if we are a popup.
+                        $('#' + $(this).attr('data-popupid')).hide();
+                    } else if (window.opener == undefined || $(this).attr('data-help')) {
+                        // Or move back in history.
+                        history.back();
+                    } else {
+                        // Do nothing.
+                        if ($(this).attr('id') != 'dialog_cancel') {
+                            // Non paper dialog so close window.
+                            window.close();
+                        }
                     }
                 }
             });
