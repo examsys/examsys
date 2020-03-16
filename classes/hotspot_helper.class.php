@@ -32,6 +32,9 @@ class hotspot_helper extends RogoStaticSingleton
     /** The character that separates information in the user anser. */
     const ANSWER_SEPARATOR = ',';
 
+    /** An unaswered question */
+    const UNSWERED_QUESTION = array('u');
+
     /**
      * The active instance of this class.
      *
@@ -115,8 +118,10 @@ class hotspot_helper extends RogoStaticSingleton
         // correct,x,y
         // The answer mode questions are in the form:
         // x,y
+        // Unanswered questions are in the form:
+        // u
         $parts = explode(self::ANSWER_SEPARATOR, $answer);
-        if (count($parts) === 3) {
+        if ($parts[0] != 'u' and count($parts) === 3) {
             array_shift($parts);
         }
         return implode(self::ANSWER_SEPARATOR, $parts);

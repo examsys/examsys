@@ -37,24 +37,13 @@ while ($result->fetch()) {
         $tmp_user_answer = '';
         $layers = explode('|', $user_answer);
         foreach ($layers as $layer) {
-            $sub_parts = explode(',', $layer);
-            if ($tmp_user_answer == '') {
-                // Might not be a sub parts if not answered.
-                if (isset($sub_parts[1])) {
-                    $tmp_user_answer = $sub_parts[1];
-                    if (isset($sub_parts[2])) {
-                        $tmp_user_answer .= ',' . $sub_parts[2];
-                    }
-                }
-            } else {
+            if ($tmp_user_answer != '') {
                 $tmp_user_answer .= '|';
-                // Might not be a sub parts if not answered.
-                if (isset($sub_parts[1])) {
-                    $tmp_user_answer .= $sub_parts[1];
-                    if (isset($sub_parts[2])) {
-                        $tmp_user_answer .= ',' . $sub_parts[2];
-                    }
-                }
+            }
+            $layeranswer = hotspot_helper::layer_answer_strip_correct_information($layer);
+            // Might not be a sub parts if not answered.
+            if ($layeranswer != hotspot_helper::UNSWERED_QUESTION) {
+                $tmp_user_answer .= $layeranswer;
             }
         }
         $fix_data .= ';' . $id . ',' . $tmp_user_answer;
