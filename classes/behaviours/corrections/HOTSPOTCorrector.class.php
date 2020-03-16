@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Rogō
 //
 // Rogō is free software: you can redistribute it and/or modify
@@ -26,89 +27,76 @@
 
 require_once 'Corrector.class.php';
 
-class HOTSPOTCorrector extends Corrector {
-  /**
-   * Change the correct answer after the question has been locked. Update user marks in summative log table
-   * @param integer $new_correct new correct answer
-   * @param integer $paper_id
-   */
-  public function execute($new_correct, $paper_id, &$changes, $paper_type) {
-    $errors = array();
-		
-    $old_points = $this->_question->get_points1();
-    $option = reset($this->_question->options);
-    $marks_correct = $option->get_marks_correct();
-    $marks_incorrect = $option->get_marks_incorrect();
+class HOTSPOTCorrector extends Corrector
+{
+    /**
+     * Change the correct answer after the question has been locked. Update user marks in summative log table
+     * @param integer $new_correct new correct answer
+     * @param integer $paper_id
+     */
+    public function execute($new_correct, $paper_id, &$changes, $paper_type)
+    {
+        $errors = array();
+        
+        $old_points = $this->_question->get_points1();
+        $option = reset($this->_question->options);
+        $marks_correct = $option->get_marks_correct();
+        $marks_incorrect = $option->get_marks_incorrect();
+        $this->_question->set_points1($new_correct['points1']);
+        $this->_question->add_unified_field_modification('points', 'points', $old_points, $new_correct['points1'], $this->_lang_strings['postexamchange']);
 
-    $changes = true;
+        try {
+            if (!$this->_question->save()) {
+                $errors[] = $this->_lang_strings['datasaveerror'];
+            } else {
+                // Marking MUST not be client side.
+                $student_records = explode(';', $new_correct['option_correct1']);
+                foreach ($student_records as $student_record) {
+                    if (strlen($student_record) > 0) {
+                        $database_id = substr($student_record, 0, strpos($student_record, ','));
+                        $answers = ltrim(strstr($student_record, ','), ',');
+                        $answers = rtrim($answers, ',');
+                        $mark = 0;
+                        $all_correct = true;
+                        $hotspot_answer = hotspot_helper::get_instance()->mark($answers, $new_correct['points1']);
+                        $saved_response = $hotspot_answer;
+                        $sub_parts = explode('|', $saved_response);
+                        foreach ($sub_parts as $sub_part) {
+                            if ($sub_part[0] == 1) {
+                                $mark += $marks_correct;
+                            } else {
+                                $all_correct = false;
+                                $mark += $marks_incorrect;
+                            }
+                        }
+                        // Override marks if 'Mark per Question' is set.
+                        if ($this->_question->get_score_method() == 'Mark per Question') {
+                            if ($all_correct) {
+                                $mark = $marks_correct;
+                            } else {
+                                $mark = $marks_incorrect;
+                            }
+                            $totalpos = $marks_correct;
+                        } else {
+                            $totalpos = (substr_count($new_correct['points1'], '|') + 1) * $marks_correct;
+                        }
 
-    $this->_question->set_points1($new_correct['points1']);
-    $this->_question->add_unified_field_modification('points', 'points', $old_points, $new_correct['points1'], $this->_lang_strings['postexamchange']);
-
-    if ($changes) {
-			try {
-    	  if (!$this->_question->save()) {
-    	    $errors[] = $this->_lang_strings['datasaveerror'];
-    	  } else {
-					$student_records = explode(';', $new_correct['option_correct1']);
-          $max_layers = 0;
-					
-          foreach ($student_records as $student_record) {
-            if (strlen($student_record) > 0) {
-              $layers = explode('|', $student_record);
-              $mark = 0;
-              $correct_count = 0;
-              $layer_no = 0;
-              foreach ($layers as $layer) {
-                $sub_parts = explode(',', $layer);
-                if ($layer_no == 0) {
-                  $database_id = $sub_parts[0];
-                  $is_correct = $sub_parts[1];
-                } else {
-                  $is_correct = $sub_parts[0];
+                        $result = $this->_mysqli->prepare("UPDATE log{$paper_type} SET mark = ?, totalpos = ?, user_answer = ? WHERE id = ?");
+                        $result->bind_param('disi', $mark, $totalpos, $hotspot_answer, $database_id);
+                        $result->execute();
+                        $result->close();
+                    }
                 }
-
-                if ($is_correct == 1) {
-                  $mark += $marks_correct;
-                  $correct_count++;
-                } else {
-                  $mark += $marks_incorrect;
-                }
-
-                $layer_no++;
-                $max_layers = ($layer_no > $max_layers) ? $layer_no : $max_layers;
-              }
-
-              if ($this->_question->get_score_method() == 'Mark per Question') {
-                $totalpos = $marks_correct;
-                if ($correct_count == $max_layers) {
-                  $mark = $marks_correct;
-                } else {
-                  $mark = $marks_incorrect;
-                }
-              } else {
-                $totalpos = $marks_correct * $max_layers;
-              }
-
-              $first_comma = strpos($student_record, ',') + 1;
-              $tmp_user_answer = substr($student_record, $first_comma);
-							
-							$result = $this->_mysqli->prepare("UPDATE log{$paper_type} SET mark = ?, totalpos = ?, user_answer = ? WHERE id = ?");
-              $result->bind_param('disi', $mark, $totalpos, $tmp_user_answer, $database_id);
-              $result->execute();
-              $result->close();
             }
-          }
-    	  }
-    	} catch (ValidationException $vex) {
-    	  $errors[] = $vex->getMessage();
-    	}
+        } catch (ValidationException $vex) {
+            $errors[] = $vex->getMessage();
+        }
 
-      if (count($errors) == 0) {
-        $this->invalidate_paper_cache($paper_id);
-      }
+        if (count($errors) == 0) {
+            $this->invalidate_paper_cache($paper_id);
+        }
+
+
+        return $errors;
     }
-
-    return $errors;
-  }
 }

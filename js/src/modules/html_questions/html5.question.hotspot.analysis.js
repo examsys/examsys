@@ -19,7 +19,7 @@
  * @author Neill Magill <neill.magill@nottingham.ac.uk>
  * @copyright Copyright (c) 2016 The University of Nottingham
  */
-define(['log', 'hotspot', 'lang', 'html5_chk', 'hotspot_answer', 'jquery'], function(Log, Hotspot, Lang, Menu_checkbox, Hotspot_answer, $) {
+define(['log', 'hotspot', 'lang', 'html5_chk', 'answer_hotspot', 'jquery'], function(Log, Hotspot, Lang, Menu_checkbox, Answer_hotspot, $) {
   /**
    * Constructor for the hotspot question in analysis mode.
    * @returns {hotspot_analysis}
@@ -168,7 +168,7 @@ define(['log', 'hotspot', 'lang', 'html5_chk', 'hotspot_answer', 'jquery'], func
       if (answer.length !== 3) {
         Log('Answer invalid (layer: ' + layer.index + ')', 'error');
       } else {
-        layer.add_analysis_answer(new Hotspot_answer(answer[1], answer[2], answer[0]));
+        layer.add_analysis_answer(new Answer_hotspot(answer[1], answer[2], answer[0]));
       }
     }
   };
