@@ -112,7 +112,7 @@ class hotspot_helper extends RogoStaticSingleton
      * @param string $answer
      * @return string
      */
-    protected function layer_answer_strip_correct_information($answer)
+    public function layer_answer_strip_correct_information($answer)
     {
         // A hotspot answer is stored in the form:
         // correct,x,y

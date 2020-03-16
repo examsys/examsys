@@ -40,7 +40,7 @@ while ($result->fetch()) {
             if ($tmp_user_answer != '') {
                 $tmp_user_answer .= '|';
             }
-            $layeranswer = hotspot_helper::layer_answer_strip_correct_information($layer);
+            $layeranswer = hotspot_helper::get_instance()->layer_answer_strip_correct_information($layer);
             // Nothing to add if layer unaswered.
             if ($layeranswer != hotspot_helper::UNSWERED_QUESTION) {
                 $tmp_user_answer .= $layeranswer;
