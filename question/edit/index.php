@@ -112,7 +112,7 @@ function save_options($question, $userObject, $db) {
             $option->populate_unified($unified_part_names, $_POST, array_keys($compound_fields), 'option_');
         } else {
             // Create new option if have required data
-                $option = OptionEdit::option_factory($db, $userObject->get_user_ID(), $question, $option_no, $string, array('marks' => 1));
+            $option = OptionEdit::option_factory($db, $userObject->get_user_ID(), $question, $option_no, $string, array('marks' => 1));
             if ($option->minimum_fields_exist($_POST, $_FILES, $option_no)) {
                 $part_names = $option->get_editable_fields();
                 try {
