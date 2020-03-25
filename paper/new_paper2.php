@@ -319,6 +319,9 @@ foreach ($module_array as $module) {
     $jsdataset['name'] = 'jsutils';
     $jsdataset['attributes']['xls'] = json_encode($string);
     $render->render($jsdataset, array(), 'dataset.html');
+    $dataset['name'] = 'dataset';
+    $dataset['attributes']['remotesummative'] = $configObject->get_setting('core', 'summative_remote');
+    $render->render($dataset, array(), 'dataset.html');
 ?>
 </body>
 </html>

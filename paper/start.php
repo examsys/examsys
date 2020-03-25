@@ -115,12 +115,19 @@ $current_address = NetworkUtils::get_client_address();
 //get the module Ids for this paper
 $modIDs = array_keys(Paper_utils::get_modules($paperID, $mysqli));
 $moduleID = $propertyObj->get_modules();
+$remote = $configObject->get_setting('core', 'summative_remote');
 
 if ($userObject->has_role('Staff') and check_staff_modules($moduleID, $userObject)) {
     // No further security checks.
 } else {    // Treat as student with extra security checks.
     // Check for additional password on the paper.
-    check_paper_password($propertyObj->get_property_id(), $propertyObj->get_password(), $string, $mysqli);
+    check_paper_password(
+        $propertyObj->get_property_id(),
+        $propertyObj->get_password(),
+        $string,
+        $mysqli,
+        $remote
+    );
 
     // Check time security.
     check_datetime($propertyObj->get_start_date(), $propertyObj->get_end_date(), $string, $mysqli, $is_first_launch);
@@ -205,7 +212,7 @@ $allow_timing = $propertyObj->display_timer();
 * If a summative exam session has been started  then record late answers in log_late
 */
 $paper_scheduled = ($propertyObj->get_start_date() !== null);
-if ($propertyObj->get_exam_duration() != null and $papertype == '2' and !$is_question_preview_mode) {
+if (!$remote and $propertyObj->get_exam_duration() != null and $papertype == '2' and !$is_question_preview_mode) {
     // Has this lab had an end time set?
     $log_lab_end_time = new LogLabEndTime($lab_id, $propertyObj, $mysqli);
     $summative_exam_session_started = $log_lab_end_time->get_session_end_date_datetime();
@@ -360,7 +367,7 @@ foreach ($tmp_questions_array as $question) {
 if ($allow_timing and $propertyObj->get_exam_duration() != null) {
     $timed = true;
     // Summative type. Time is only active in live.
-    if (($papertype == '2') and $is_preview_mode === false) {
+    if (!$remote and $papertype == '2' and $is_preview_mode === false) {
         // Has the student been allotted extra time by an invigilator?
         $student_object['user_ID'] = $userObject->get_user_ID();
         $student_object['special_needs_percentage'] = $special_needs_percentage;
@@ -620,6 +627,10 @@ if (!is_null($remaining_time)) {
     $datasetuser['attributes']['remaining_time'] = $remaining_time;
 }
 $render->render($datasetuser, array(), 'dataset.html');
+// Overwrite translation for remote summative exams.
+if ($remote) {
+    $string['tryagain'] = $string['remotetryagain'];
+}
 // JS utils dataset.
 $jsdataset['name'] = 'jsutils';
 $jsdataset['attributes']['xls'] = json_encode($string);

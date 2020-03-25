@@ -331,6 +331,9 @@ if ($show_feedback) {
         $logger->record_access($userObject->get_user_ID(), 'Assessment script', $paperID);  // Students write in the paperID
     }
 } else {
+    if ($paper_type == '2' and $configObject->get_setting('core', 'summative_remote')) {
+        echo '<div class="logissue"><img src="../artwork/logissue.png"/><a href="' . $configObject->get_setting('core', 'summative_issuelink') . '" target="_blank">' . $string['logissue'] . '</a></div>';
+    }
     echo '<blockquote>';
     echo '<div class="thankyou">' . $string['thankyou'] . '</div>';
     echo '<p>' . sprintf($string['msg1'], $paper_title) . '</p><br />';

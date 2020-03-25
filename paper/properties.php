@@ -1741,6 +1741,7 @@ $render = new render($configObject);
 $dataset['name'] = 'dataset';
 $dataset['attributes']['type'] = $properties->get_paper_type();
 $dataset['attributes']['id'] = $paperID;
+$dataset['attributes']['remotesummative'] = $configObject->get_setting('core', 'summative_remote');
 $render->render($dataset, array(), 'dataset.html');
 // JS utils dataset.
 $jsdataset['name'] = 'jsutils';

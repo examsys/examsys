@@ -270,9 +270,14 @@ function check_ipmismatch($paperid, $current_address, $string, $userObj, $db)
 {
     $log_metadata = new LogMetadata($userObj->get_user_ID(), $paperid, $db);
     $log_metadata->get_record('', false);
+    $configObject = Config::get_instance();
+    $blurb = $string['ipmismatchblurb'];
+    if ($configObject->get_setting('core', 'summative_remote')) {
+        $blurb = $string['remoteipmismatchblurb'];
+    }
     // Warn user they are logged into mulitple devices in this exam and log them out.
     if (!is_null($log_metadata->get_ipaddress()) and $current_address !== $log_metadata->get_ipaddress()) {
-        $msg = sprintf($string['ipmismatchblurb'], $userObj->get_first_names(), $userObj->get_surname(), $userObj->get_username(), $log_metadata->get_ipaddress());
+        $msg = sprintf($blurb, $userObj->get_first_names(), $userObj->get_surname(), $userObj->get_username(), $log_metadata->get_ipaddress());
         $notice = UserNotices::get_instance();
         $notice->display_notice_and_exit($db, $string['ipmismatchtitle'], $msg, $msg, '../artwork/page_not_found.png', '#C00000');
     }

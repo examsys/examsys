@@ -59,3 +59,6 @@ $string['ok'] = 'OK';
 $string['questionmark'] = '?';
 $string['ipmismatchtitle'] = 'You appear to be logged into this exam on another device.';
 $string['ipmismatchblurb'] = 'This device will now assume control of the exam. Notify the invigilator if you are unsure how to proceed.';
+$string['remoteipmismatchblurb'] = 'This device will now assume control of the exam.';
+$string['waitforpassword'] = 'You may start once you have received the exam password.';
+$string['logissue'] = 'Log an issue with the exam';

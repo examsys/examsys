@@ -65,6 +65,7 @@ $string['msgselectable4'] = '.\n\nPlease select a different ranking.';
 // Ajax failed save message
 $string['savefailed'] = 'Save Failed!';
 $string['tryagain'] = 'If the problem persists please inform an invigilator / administrator.';
+$string['remotetryagain'] = 'Please try again.';
 $string['questionclarification'] = 'Question Clarification';
 $string['question'] = 'Question';
 $string['answer_to'] = 'answer to';

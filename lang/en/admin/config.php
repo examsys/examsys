@@ -97,3 +97,5 @@ $string['editor_plaintext'] = 'Plain text editor';
 $string['editor_wysiwyg'] = 'WYSIWYG editor';
 $string['editor_mathjax'] = 'MathJax editor';
 $string['paper_hide_repeat_scenario'] = 'Hide repeat scenarios on papers (>95% similarity)';
+$string['summative_remote'] = 'Enable/Disable remote summative exam functionality.';
+$string['summative_issuelink'] = 'Link to issue reporting site for remote summative exams.';
