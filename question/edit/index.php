@@ -76,50 +76,50 @@ function save_options($question, $userObject, $db) {
     keyword_utils::delete_keyword_link($question->id, $db);
   }
 
-  for ($option_no = 1; $option_no <= $question->max_options; $option_no++) {
-    $option = null;
-    $check = false;
-    if ($question->get_type() === 'enhancedcalc') {
-      if (isset($question->options[$option_no])) {
-        $check = true;
-        $option = $question->options[$option_no];
-      }
-    } else {
-      if (isset($_POST["optionid$option_no"]) and $_POST["optionid$option_no"] != -1) {
-        $check = true;
-        $option = $question->options[$_POST["optionid$option_no"]];
-      }
-    }
-    if ($check) {
-      // Editing existing option
-      $part_names = $option->get_editable_fields();
-      try {
-        $postparams = get_post_params($part_names, $option, $option_no);
-      } catch (\Exception $e) {
-        return $e->getMessage();
-      }
-      // Build arrays for compound fields
-      $compound_fields = $option->get_compound_fields();
-      if (!isset($existing_values)) $existing_values = array();
-      $option->populate_compound(array_keys($compound_fields), $_POST, $existing_values, 'option_');
-
-      // Save editable fields that aren't unified
-      $option->populate($part_names, $option_no, $postparams, array_merge(array_keys($unified_part_names), array_keys($compound_fields)), 'option_');
-
-      // Save fields that are the same across options
-      $option->populate_unified($unified_part_names, $_POST, array_keys($compound_fields), 'option_');
-    } else {
-      // Create new option if have required data
-      $option = OptionEdit::option_factory($db, $userObject->get_user_ID(), $question, $option_no, $string, array('marks' => 1));
-
-      if ($option->minimum_fields_exist($_POST, $_FILES, $option_no)) {
-
-        $part_names = $option->get_editable_fields();
-        try {
-          $postparams = get_post_params($part_names, $option, $option_no);
-        } catch (\Exception $e) {
-          return $e->getMessage();
+    for (
+        $option_no = 1; $option_no <= $question->max_options; $option_no++
+    ) {
+        $option = null;
+        $check = false;
+        if ($question->get_type() === 'enhancedcalc') {
+            if (isset($question->options[$option_no])) {
+                $check = true;
+                $option = $question->options[$option_no];
+            }
+        } else {
+            if (isset($_POST["optionid$option_no"]) and $_POST["optionid$option_no"] != -1) {
+                $check = true;
+                $option = $question->options[$_POST["optionid$option_no"]] ?? null;
+            }
         }
+        if ($check && !is_null($option)) {
+            // Editing existing option
+            $part_names = $option->get_editable_fields();
+            try {
+                    $postparams = get_post_params($part_names, $option, $option_no);
+            } catch (\Exception $e) {
+                  return $e->getMessage();
+            }
+            // Build arrays for compound fields
+            $compound_fields = $option->get_compound_fields();
+            if (!isset($existing_values)) {
+                $existing_values = array();
+            }
+            $option->populate_compound(array_keys($compound_fields), $_POST, $existing_values, 'option_');
+            // Save editable fields that aren't unified
+            $option->populate($part_names, $option_no, $postparams, array_merge(array_keys($unified_part_names), array_keys($compound_fields)), 'option_');
+            // Save fields that are the same across options
+            $option->populate_unified($unified_part_names, $_POST, array_keys($compound_fields), 'option_');
+        } else {
+            // Create new option if have required data
+                $option = OptionEdit::option_factory($db, $userObject->get_user_ID(), $question, $option_no, $string, array('marks' => 1));
+            if ($option->minimum_fields_exist($_POST, $_FILES, $option_no)) {
+                $part_names = $option->get_editable_fields();
+                try {
+                    $postparams = get_post_params($part_names, $option, $option_no);
+                } catch (\Exception $e) {
+                    return $e->getMessage();
+                }
 
         // Build arrays for compound fields
         $compound_fields = $option->get_compound_fields();
