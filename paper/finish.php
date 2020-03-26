@@ -332,7 +332,11 @@ if ($show_feedback) {
     }
 } else {
     if ($paper_type == '2' and $configObject->get_setting('core', 'summative_remote')) {
-        echo '<div class="logissue"><img src="../artwork/logissue.png"/><a href="' . $configObject->get_setting('core', 'summative_issuelink') . '" target="_blank">' . $string['logissue'] . '</a></div>';
+        $link = $configObject->get_setting('core', 'summative_issuelink');
+        if (!empty($link)) {
+            echo '<div class="logissue"><img src="../artwork/logissue.png"/>'
+                . '<a href="' . $link . '" target="_blank">' . $string['logissue'] . '</a></div>';
+        }
     }
     echo '<blockquote>';
     echo '<div class="thankyou">' . $string['thankyou'] . '</div>';

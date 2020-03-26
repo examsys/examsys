@@ -553,7 +553,11 @@ if ($start_available and $remaining_available and $metadata_security) {
 echo '<br />&nbsp;';
 // Display a link for issue reporting for remote summative exams.
 if ($test_type == '2' and $remote) {
-    echo '<div class="logissue"><img src="../artwork/logissue.png"/><a href="' . $configObject->get_setting('core', 'summative_issuelink') . '" target="_blank">' . $string['logissue'] . '</a></div>';
+    $link = $configObject->get_setting('core', 'summative_issuelink');
+    if (!empty($link)) {
+        echo '<div class="logissue"><img src="../artwork/logissue.png"/>'
+        . '<a href="' . $link . '" target="_blank">' . $string['logissue'] . '</a></div>';
+    }
 }
 
 if ($test_type != '2') {
