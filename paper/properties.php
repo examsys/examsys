@@ -40,6 +40,7 @@ $exam_duration_hours = param::optional('exam_duration_hours', 0, param::INT, par
 $exam_duration_mins = param::optional('exam_duration_mins', 0, param::INT, param::FETCH_POST);
 $ext_tyear = param::optional('ext_tyear', null, param::INT, param::FETCH_POST);
 $int_tyear = param::optional('int_tyear', null, param::INT, param::FETCH_POST);
+$remote = $configObject->get_setting('core', 'summative_remote');
 $texteditorplugin = \plugins\plugins_texteditor::get_editor();
 /**
  * Define callbacks to be used when retrieving tracked changes
@@ -985,7 +986,7 @@ if ($configObject->get_setting('core', 'cfg_summative_mgmt') and $properties->ge
     $(function () {
       var type = <?php echo $properties->get_paper_type() ?>;
       var datecheck = false;
-      if (<?php echo $configObject->get_setting('core', 'summative_remote'); ?>) {
+      if (<?php echo $remote; ?>) {
         if (type == 5) {
           datecheck = true;
         }
@@ -1097,7 +1098,7 @@ if ($configObject->get_setting('core', 'cfg_summative_mgmt') and $properties->ge
         return false;
       }
 
-      if ($('#paper_type').val() == '2' && <?php echo $configObject->get_setting('core', 'summative_remote'); ?> == 0) {
+      if ($('#paper_type').val() == '2' && <?php echo $remote; ?> == 0) {
         if ($('#fday').val() != $('#tday').val() || $('#fmonth').val() != $('#tmonth').val() || $('#fyear').val() != $('#tyear').val()) {
           alert ("<?php echo $string['msg2']; ?>");
           return false;

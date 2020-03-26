@@ -2485,7 +2485,8 @@ class PaperProperties {
     public function display_timer() {
       $configObject = \Config::get_instance();
       // Foramtive, Progressive or REMOTE summative papers that have a duration set should use the timer.
-      if ($this->paper_type == '0' || $this->paper_type == '1' || $configObject->get_setting('core', 'summative_remote')) {
+      if ($this->paper_type == '0' || $this->paper_type == '1' ||
+          ($this->paper_type ==  '2' && $configObject->get_setting('core', 'summative_remote'))) {
         if ($this->get_exam_duration() != null) {
            return true;
         }

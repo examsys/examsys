@@ -263,7 +263,8 @@ ob_start();
     }
 
     <?php
-    if ($paper_type == '1' or ($paper_type == '2' and $configObject->get_setting('core', 'summative_remote'))) {   // Do not allow reset of timer for Summative exams.
+    // Only allow reset of timer for Progress tests and Remote Summative exams.
+    if ($paper_type == '1' or ($paper_type == '2' and $configObject->get_setting('core', 'summative_remote'))) {
     ?>
     function resetTimer() {
       $('#menudiv').hide();
@@ -363,7 +364,8 @@ echo draw_toprightmenu(30);
     <div class="popup_title"><?php echo $string['reassigntouser']; ?></div>
   </div>
   <?php
-  if ($paper_type == '1' or ($paper_type == '2' and $configObject->get_setting('core', 'summative_remote'))) {   // Do not allow reset of timer for Summative exams.
+  // Only allow reset of timer for Progress tests and Remote Summative exams.
+  if ($paper_type == '1' or ($paper_type == '2' and $configObject->get_setting('core', 'summative_remote'))) {
     $action = 'resetTimer();';
     $class = 'popup_row';
   } else {
