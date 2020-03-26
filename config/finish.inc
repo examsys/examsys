@@ -17,7 +17,9 @@
     $bottom_html = '<br /><table cellpadding="2" cellspacing="0" border="0" style="width:100%; background-color:#5590CF">';
   }
   $properties = PaperProperties::get_paper_properties_by_id($paperID, $mysqli, $string);
-  if ($properties->get_fullscreen() == 1) {
+  if ($properties->get_paper_type() == '2' and $configObject->get_setting('core', 'summative_remote')) {
+    $leaving_rules = $string['msg2remote'];
+  } elseif ($properties->get_fullscreen() == 1) {
     $leaving_rules = $string['msg2'];
   } else {
     $leaving_rules = $string['msg2short'];

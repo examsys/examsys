@@ -134,3 +134,9 @@ input[type=button].notok:hover {
   padding-top: 5px;
   padding-bottom: 5px;
 }
+.logissue {
+  float: right;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+}

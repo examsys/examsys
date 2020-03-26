@@ -108,3 +108,9 @@ input.exclude, select.exclude {
   font-weight: bold;
   line-height: 140%;
 }
+.logissue {
+  float: right;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+}

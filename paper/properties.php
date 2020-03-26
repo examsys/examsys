@@ -983,8 +983,21 @@ if ($configObject->get_setting('core', 'cfg_summative_mgmt') and $properties->ge
   <script type="text/javascript" src="../js/jquery.datecopy.js"></script>
   <script>
     $(function () {
-      $('.datecopy').change(dateCopy);
-    })
+      var type = <?php echo $properties->get_paper_type() ?>;
+      var datecheck = false;
+      if (<?php echo $configObject->get_setting('core', 'summative_remote'); ?>) {
+        if (type == 5) {
+          datecheck = true;
+        }
+      } else {
+        if (type == 2 || type == 5) {
+          datecheck = true;
+        }
+      }
+      if (datecheck) {
+        $('.datecopy').change(dateCopy);
+      }
+    });
   </script>
 <?php
 }
@@ -1084,7 +1097,7 @@ if ($configObject->get_setting('core', 'cfg_summative_mgmt') and $properties->ge
         return false;
       }
 
-      if ($('#paper_type').val() == '2') {
+      if ($('#paper_type').val() == '2' && <?php echo $configObject->get_setting('core', 'summative_remote'); ?> == 0) {
         if ($('#fday').val() != $('#tday').val() || $('#fmonth').val() != $('#tmonth').val() || $('#fyear').val() != $('#tyear').val()) {
           alert ("<?php echo $string['msg2']; ?>");
           return false;

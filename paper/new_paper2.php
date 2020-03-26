@@ -192,8 +192,21 @@ $papertype = $assessment->get_type_value($_POST['paper_type']);
   <script type="text/javascript" src="../js/jquery.datecopy.js"></script>
   <script>
     $(function () {
-      $('.datecopy').change(dateCopy);
-    })
+      var type = <?echo $papertype; ?>;
+      var datecheck = false;
+      if (<?php echo $configObject->get_setting('core', 'summative_remote'); ?>) {
+        if (type == 5) {
+          datecheck = true;
+        }
+      } else {
+        if (type == 2 || type == 5) {
+          datecheck = true;
+        }
+      }
+      if (datecheck) {
+        $('.datecopy').change(dateCopy);
+      }
+    });
   </script>
 <?php
 }
