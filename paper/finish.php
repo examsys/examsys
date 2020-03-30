@@ -315,11 +315,12 @@ if (is_null($q_id)) {
     echo '</table>';
 }
 
-  // Get any marking override for the paper
-  $paper_utils = Paper_utils::get_instance();
-  $overrides = $paper_utils->get_marking_overrides($log_type, $temp_userID, $paperID);
-  
-  $status_array = QuestionStatus::get_all_statuses($mysqli, $string, true);
+// Get any marking override for the paper
+$paper_utils = Paper_utils::get_instance();
+$overrides = $paper_utils->get_marking_overrides($log_type, $temp_userID, $paperID);
+
+$status_array = QuestionStatus::get_all_statuses($mysqli, $string, true);
+$remote = $configObject->get_setting('core', 'summative_remote');
 if ($show_feedback) {
     display_feedback($propertyObj, $temp_userID, $log_type, $userObject, $log_metadata, $mysqli, $status_array, $overrides, $preview_q_id);
 
@@ -331,7 +332,7 @@ if ($show_feedback) {
         $logger->record_access($userObject->get_user_ID(), 'Assessment script', $paperID);  // Students write in the paperID
     }
 } else {
-    if ($paper_type == '2' and $configObject->get_setting('core', 'summative_remote')) {
+    if ($paper_type == '2' and $remote) {
         $link = $configObject->get_setting('core', 'summative_issuelink');
         if (!empty($link)) {
             echo '<div class="logissue"><img src="../artwork/logissue.png"/>'
@@ -346,7 +347,11 @@ if ($show_feedback) {
     }
     echo '</blockquote>';
     if ($paper_type == '2') {
-        echo '<br /><div class="key" style="text-align:center">' . $leaving_rules . '<br /><br /><input type="button" name="close" id="close" value="' . $string['closewindow'] . '" class="ok" /></div>';
+        echo '<br /><div class="key" style="text-align:center">' . $leaving_rules;
+        if (!$remote) {
+            echo '<br /><br /><input type="button" name="close" id="close" value="' . $string['closewindow'] . '" class="ok" />';
+        }
+        echo '</div>';
     } else {
         echo '<br /><div align="center"><input type="button" name="close" id="close" value="' . $string['closewindow'] . '" class="ok" /></div>';
     }
@@ -360,6 +365,8 @@ if ($show_feedback) {
   $miscdataset['name'] = 'dataset';
   $miscdataset['attributes']['language'] = $language;
   $miscdataset['attributes']['rootpath'] = $cfg_root_path;
+  $miscdataset['attributes']['papertype'] = $paper_type;
+  $miscdataset['attributes']['remotesummative'] = $remote;
   $render->render($miscdataset, array(), 'dataset.html');
   $render->render(array('rootpath' => $cfg_root_path), html5_helper::get_instance()->get_lang_strings(), 'html5_footer.html');
   echo "</body>\n</html>";
