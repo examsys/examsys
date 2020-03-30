@@ -114,3 +114,7 @@ input.exclude, select.exclude {
   display: flex;
   align-items: center;
 }
+.logoutandclose {
+  text-decoration: underline;
+  cursor: pointer;
+}

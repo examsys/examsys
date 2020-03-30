@@ -60,6 +60,9 @@ class assessment {
     // Cenrtalised summative management?
     private $summative_mgmt;
 
+    // Are remote summatives enabled?
+    private $summative_remote;
+
     // Server time zone.
     private $server_timezone;
 
@@ -116,6 +119,7 @@ class assessment {
         $this->max_duration = $settings->paper_max_duration;
         $this->max_sittings = $settings->summative_max_sittings;
         $this->summative_mgmt = $settings->cfg_summative_mgmt;
+        $this->summative_remote = $settings->summative_remote ;
     }
 
     /**
@@ -206,7 +210,11 @@ class assessment {
         // Set the summative rubric
         if ($papertype == self::TYPE_SUMMATIVE) {
             $langpack = new langpack();
-            $default_rubric = $langpack->get_string($this->langcomponent, 'summative_rubric');
+            if ($this->summative_remote) {
+                $default_rubric = $langpack->get_string($this->langcomponent, 'remote_summative_rubric');
+            } else {
+                $default_rubric = $langpack->get_string($this->langcomponent, 'summative_rubric');
+            }
         } else {
             $default_rubric = '';
         }

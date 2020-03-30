@@ -287,6 +287,19 @@ require '../config/finish.inc';
 	});
 </script>
 <?php
+  if ($paper_type == '2' and $configObject->get_setting('core', 'summative_remote')) {
+?>
+<script>
+    $(function () {
+      $('.logoutandclose').click(function() {
+          window.close();
+          window.opener.location.href = cfgRootPath + '/logout.php';
+      });
+    });
+</script>
+<?php
+  }
+
   if($configObject->get_setting('core', 'paper_mathjax')) {
     $render = new render($configObject);
     $render->render(null, null, 'mathjax.html');
@@ -373,7 +386,11 @@ require '../config/finish.inc';
     if ($paper_postscript != '') echo "<p>$paper_postscript</p>\n";
     echo '</blockquote>';
     if ($paper_type == '2') {
-      echo '<br /><div class="key" style="text-align:center">' . $leaving_rules . '<br /><br /><input type="button" name="close" id="close" value="' . $string['closewindow'] . '" class="ok" /></div>';
+      echo '<br /><div class="key" style="text-align:center">' . $leaving_rules;
+      if (!$configObject->get_setting('core', 'summative_remote')) {
+        echo '<br /><br /><input type="button" name="close" id="close" value="' . $string['closewindow'] . '" class="ok" />';
+      }
+      echo '</div>';
     } else {
       echo '<br /><div align="center"><input type="button" name="close" id="close" value="' . $string['closewindow'] . '" class="ok" /></div>';
     }
