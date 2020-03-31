@@ -38,20 +38,22 @@ if (!file_exists($rogo_path . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARAT
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'include' . DIRECTORY_SEPARATOR . 'load_config.php';
 
 // Lets look to see what arguments have been passed.
-$options = 'ha:lr';
+$options = 'ha:lrt::';
 $longoptions = array(
     'help',
     'account:',
     'ldap',
     'archive',
+    'target::',
 );
 
 $optionslist = getopt($options, $longoptions);
-$help = 'Rogo archive script options'
+$help = 'Rogo archive script options. Archives all graduated and left accounts, unless the target param is specified'
     . PHP_EOL . PHP_EOL . "-h, --help \t\tDisplay help"
     . PHP_EOL . PHP_EOL . "-a, --account, \t\tRogo account to log process against [Required]"
     . PHP_EOL . PHP_EOL . "-l, --ldap, \t\tRogo is using ldap accounts [Optional]"
-    . PHP_EOL . PHP_EOL . "-r, --archive, \t\tArchive data to a seperate database [Optional]";
+    . PHP_EOL . PHP_EOL . "-r, --archive, \t\tArchive data to a seperate database [Optional]"
+    . PHP_EOL . PHP_EOL . "-t, --target, \t\tTarget a single user account [Optional]";
 
 if ((isset($optionslist['h']) or isset($optionslist['help'])) or ((!isset($optionslist['a']) and !isset($optionslist['account'])))) {
     // Display some help information.
@@ -75,6 +77,19 @@ if (isset($optionslist['r']) or isset($optionslist['archive'])) {
     $archive = 1;
 } else {
     $archive = 0;
+}
+
+if (isset($optionslist['t'])) {
+    $target = 1;
+    $targetted_user = $optionslist['t'];
+    cli_utils::prompt('Archiving account: ' . $targetted_user);
+} elseif (isset($optionslist['target'])) {
+    $target = 1;
+    $targetted_user = $optionslist['target'];
+    cli_utils::prompt('Archiving account: ' . $targetted_user);
+} else {
+    $target = 0;
+    cli_utils::prompt('Archiving all LEFT and GRADUATE accounts');
 }
 
 $cfg_db_host = $configObject->get('cfg_db_host');
@@ -133,7 +148,13 @@ $log0_deleted_overall = 0;
 $log1_deleted_overall = 0;
 $lti_user_deleted_overall = 0;
 
-$stmt = $mysqli->prepare("SELECT id FROM " . $cfg_db_database . ".users WHERE roles='left' OR roles='graduate'");
+// Archive all left and graduate accounts.
+if ($target == 0) {
+    $stmt = $mysqli->prepare('SELECT id FROM ' . $cfg_db_database . ".users WHERE roles='left' OR roles='graduate'");
+} else {
+    $stmt = $mysqli->prepare('SELECT id FROM ' . $cfg_db_database . ".users WHERE username = '" . $targetted_user . "'");
+}
+
 $stmt->execute();
 $stmt->store_result();
 $stmt->bind_result($user_to_delete);
