@@ -294,6 +294,19 @@ if ($exam_duration !== null) {
     $timer           = new Timer($log_metadata, $exam_duration, $special_needs_percentage);
     $remaining_time  = $timer->calculate_remaining_time();
 
+    // We are a remote summative.
+    if ($test_type == '2') {
+      // Check current IP address with that of attempt in log.
+      // Warn user that they need to log out if they are logged into mulitple devices in this exam.
+      if ($current_address !== $log_metadata->get_ipaddress()) {
+        if (!is_null($log_metadata->get_ipaddress())) {
+          $ipmismatch = true;
+        }
+        if ($exam_started) {
+          $log_metadata->set_ipaddress($current_address);
+        }
+      }
+    }
     $extra_time_mins = null;
   }
 
@@ -382,9 +395,9 @@ if ($exam_duration !== null) {
     ?>
     $("#info_overlay").show();
     $("#info_submit_dialog_title").html("<?php echo $string['ipmismatchtitle'] ?>");
-    var blurb = jsxls.lang_string['ipmismatchblurb'];
+    var blurb = "<?php echo $string['ipmismatchblurb']; ?>";
     if (<?php echo $remote; ?>) {
-      blurb = jsxls.lang_string['remoteipmismatchblurb'];
+      blurb = "<?php echo $string['remoteipmismatchblurb']; ?>";
     }
     $("#info_submit_dialog_msg").html(blurb);
     $("#info_submit_dialog").css('left', (($(window).width() / 2) - 250) + 'px');
