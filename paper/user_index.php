@@ -304,6 +304,19 @@ if ($exam_duration !== null) {
         $timer           = new Timer($log_metadata, $exam_duration, $special_needs_percentage);
         $remaining_time  = $timer->calculate_remaining_time();
 
+        // We are a remote summative.
+        if ($test_type == '2') {
+            // Check current IP address with that of attempt in log.
+            // Warn user that they need to log out if they are logged into mulitple devices in this exam.
+            if ($current_address !== $log_metadata->get_ipaddress()) {
+                if (!is_null($log_metadata->get_ipaddress())) {
+                    $ipmismatch = true;
+                }
+                if ($exam_started) {
+                    $log_metadata->set_ipaddress($current_address);
+                }
+            }
+        }
         $extra_time_mins = null;
     }
 
