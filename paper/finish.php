@@ -375,7 +375,7 @@ require '../config/finish.inc';
     }
   } else {
     if ($paper_type == '2' and $configObject->get_setting('core', 'summative_remote')) {
-      $link = $configObject->get_setting('core', 'summative_issuelink');
+      $link = $configObject->get_setting('core', 'summative_issuelink2');
       if (!empty($link)) {
         echo '<div class="logissue"><img src="../artwork/logissue.png"/><a href="' . $link . '" target="_blank">' . $string['logissue'] . '</a></div>';
       }

@@ -61,4 +61,4 @@ $string['ipmismatchtitle'] = 'You appear to be logged into this exam on another 
 $string['ipmismatchblurb'] = 'This device will now assume control of the exam. Notify the invigilator if you are unsure how to proceed.';
 $string['remoteipmismatchblurb'] = 'Your exam attempt will resume on this device.';
 $string['waitforpassword'] = 'You may start once you have received the exam password.';
-$string['logissue'] = 'Log an issue with the exam';
+$string['logissue'] = 'Log an issue that stops you completing the exam';

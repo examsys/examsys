@@ -78,5 +78,5 @@ $string['student'] = 'Student';
 $string['started'] = 'Started';
 $string['finished'] = 'Finished';
 $string['comments'] = 'Comments:';
-$string['logissue'] = 'Log an issue with the exam';
+$string['logissue'] = 'Log an issue you had during the exam';
 ?>

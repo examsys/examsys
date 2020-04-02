@@ -92,4 +92,5 @@ $string['system_mediatypes'] = 'Media types that can be uploaded to the system.'
 $string['paper_threejs'] = 'Enable/Disable deprecated threejs rendering.';
 $string['system_maxmediasize'] = 'Maximum size of media file that can be uploaded (in bytes).';
 $string['summative_remote'] = 'Enable/Disable remote summative exam functionality.';
-$string['summative_issuelink'] = 'Link to issue reporting site for remote summative exams.';
+$string['summative_issuelink'] = 'Link to issue reporting site for remote summative exams on the paper index screen.';
+$string['summative_issuelink2'] = 'Link to issue reporting site for remote summative exams on the paper finish screen.';
