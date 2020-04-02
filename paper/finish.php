@@ -333,7 +333,7 @@ if ($show_feedback) {
     }
 } else {
     if ($paper_type == '2' and $remote) {
-        $link = $configObject->get_setting('core', 'summative_issuelink');
+        $link = $configObject->get_setting('core', 'summative_issuelink2');
         if (!empty($link)) {
             echo '<div class="logissue"><img src="../artwork/logissue.png"/>'
                 . '<a href="' . $link . '" target="_blank">' . $string['logissue'] . '</a></div>';
