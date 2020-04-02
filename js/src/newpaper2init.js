@@ -23,9 +23,19 @@ requirejs(['datecopy', 'form', 'newpaperform', 'jquery'], function (DATECOPY, FO
     var date = new DATECOPY();
     var form = new FORM();
     var type = $('#paper_type').val();
+    var datecheck = false;
+    if ($('#dataset').attr('data-remotesummative')) {
+        if (type == 'offline') {
+            datecheck = true;
+        }
+    } else {
+        if (type == 'summative' || type == 'offline') {
+            datecheck = true;
+        }
+    }
     $(function () {
         $('.datecopy').change(function() {
-            if(type == 'summative' || type == 'offline') {
+            if (datecheck) {
                 date.dateCopy(this);
             }
         });

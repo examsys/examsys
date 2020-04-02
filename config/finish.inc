@@ -16,8 +16,11 @@ if (isset($low_bandwidth) and $low_bandwidth == 1) {
     $logo_html = '<td width="160" style="vertical_align:bottom"><img src="' . $logo_path . '" width="160" height="67" alt="Logo" /></td></tr>';
     $bottom_html = '<br /><table cellpadding="2" cellspacing="0" border="0" style="width:100%; background-color:#5590CF">';
 }
-  $properties = PaperProperties::get_paper_properties_by_id($paperID, $mysqli, $string);
-if ($properties->get_fullscreen() == 1) {
+
+$properties = PaperProperties::get_paper_properties_by_id($paperID, $mysqli, $string);
+if ($properties->get_paper_type() == '2' and $configObject->get_setting('core', 'summative_remote')) {
+    $leaving_rules = '<div class="logoutandclose">' . $string['msg2remote'] . '</div>';
+} elseif ($properties->get_fullscreen() == 1) {
     $leaving_rules = $string['msg2'];
 } else {
     $leaving_rules = $string['msg2short'];

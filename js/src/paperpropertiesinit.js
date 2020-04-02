@@ -31,10 +31,19 @@ requirejs(['paperproperties', 'colourpicker', 'datecopy', 'form', 'alert', 'help
     properties.paperid = $('#dataset').attr('data-id');
     var type = $('#dataset').attr('data-type');
     var noadd = $('#noadd').val();
-
+    var datecheck = false;
+    if ($('#dataset').attr('data-remotesummative')) {
+        if (type == 5) {
+            datecheck = true;
+        }
+    } else {
+        if (type == 2 || type == 5) {
+            datecheck = true;
+        }
+    }
     var date = new DATECOPY();
     $('.datecopy').change(function () {
-        if(type == 2 || type == 5) {
+        if (datecheck) {
             date.dateCopy(this);
         }
     });

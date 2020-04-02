@@ -27,3 +27,4 @@ $string['error_metadata'] = '%s %s (%s) metadata does not match <strong>%s: %s</
 $string['alreadycompleted'] = 'Assessment has already been completed at <strong>%s</strong>.';
 $string['ipmismatchtitle'] = 'Please logout of this device';
 $string['ipmismatchblurb'] = '%s %s (%s) you appear to be logged into this exam on %s. This device is blocked from proceeding in this exam.<br/>Notify the invigilator if you are unsure what actions to take.';
+$string['remoteipmismatchblurb'] = '%s %s (%s) You appear to be logged into this exam from a different network address (IP): %s. This device is blocked from proceeding in this exam.';

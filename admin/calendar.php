@@ -38,6 +38,8 @@ if (isset($_GET['calyear'])) {
 
 function display_papers($day_no, $subtract, $current_year, $current_month, $paper_details, &$papers, &$cellID, $string, $default_timezone, $userObject, $mysqli)
 {
+    $configObject = Config::get_instance();
+    $remote = $configObject->get_setting('core', 'summative_remote');
     echo "<table id=\"month_grid\" cellspacing=\"0\" cellpadding=\"2\" style=\"width:100%\">\n";
     foreach ($paper_details as $paper) {
         if ($paper['type'] == 'extra_date') {
@@ -81,6 +83,24 @@ function display_papers($day_no, $subtract, $current_year, $current_month, $pape
                 if ($paper['type'] == '4') {
                     echo '<img src="../artwork/small_osce_icon.png" width="16" height="16" alt="OSCE Station" title="OSCE Station"  />';
                 }
+
+                $properties = PaperProperties::get_paper_properties_by_id($paper['property_id'], $mysqli, $string);
+                $paper['password']  = $properties->get_decrypted_password();
+                if ($properties->get_paper_type() == '2' and $remote) {
+                    $start =  $properties->get_display_start_date();
+                    $end  = $properties->get_display_end_date();
+                    $fromdate = date('ymd', $properties->get_start_date());
+                    $todate = date('ymd', $properties->get_end_date());
+                    // Flag paper as running over multiple days.
+                    if ($fromdate != $todate) {
+                        echo '<img src="../artwork/calendar.png" alt="' . $string['multipledays'] . '" title="' . $string['multipledays'] . '" />';
+
+                    }
+                } else {
+                    $start = $paper['start_time'];
+                    $end  = $paper['end_time'];
+                }
+
                 $metadata = '';
                 if (isset($paper['metadata'])) {
                     foreach ($paper['metadata'] as $individual_metadata) {
@@ -95,14 +115,12 @@ function display_papers($day_no, $subtract, $current_year, $current_month, $pape
                     echo ':' . $paper['start_minute'];
                 }
                 echo '&nbsp;' . $paper['am_pm'] . '</td>';
-                $properties = PaperProperties::get_paper_properties_by_id($paper['property_id'], $mysqli, $string);
-                $paper['password']  = $properties->get_decrypted_password();
                 echo "<td class=\"p\">
             <div class=\"pd\"
             data-cellid='$cellID'
             data-ptype=\"" . $paper['type'] . '"
-            data-stime="' . $paper['start_time'] . '"
-            data-etime="' . $paper['end_time'] . '"
+            data-stime="' . $start . '"
+            data-etime="' . $end . '"
             data-duration="' . $paper['duration'] . '"
             data-labs="' . $paper['labs'] . '"
             data-pass="' . $paper['password'] . '"

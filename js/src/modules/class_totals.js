@@ -270,8 +270,8 @@ define(['jquery', 'helplauncher'], function($, HELPLAUNCHER) {
          * Reset exam timer for student.
          */
         this.resetTimer = function() {
-            // Only allowed on progessive.
-            if (this.papertype == '1') {
+            // Only allow reset of timer for Progress tests and Remote Summative exams.
+            if (this.papertype == '1' || (this.papertype == '2' && $('#dataset').attr('data-remotesummative'))) {
                 $('#menudiv').hide();
                 var reassign = window.open("/reports/check_reset_timer.php?userID=" + this.userid + "&paperID=" + this.paperid + "&metadataID=" + this.metadataid + "", "reassign", "width=550,height=200,left=" + (screen.width / 2 - 275) + ",top=" + (screen.height / 2 - 100) + ",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
                 if (window.focus) {

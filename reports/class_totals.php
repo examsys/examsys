@@ -217,8 +217,8 @@ echo draw_toprightmenu(30);
     <div class="popup_title"><?php echo $string['reassigntouser']; ?></div>
   </div>
   <?php
-    // Allow reset of timer for progressive exams.
-    if ($paper_type == '1') {
+    // Only allow reset of timer for Progress tests and Remote Summative exams.
+    if ($paper_type == '1' or ($paper_type == '2' and $configObject->get_setting('core', 'summative_remote'))) {
         $class = 'popup_row';
     } else {
         $class = 'popup_row_disabled';
@@ -867,6 +867,9 @@ if ($user_no > 0) {
   $jsdataset['name'] = 'jsutils';
   $jsdataset['attributes']['xls'] = json_encode($string);
   $render->render($jsdataset, array(), 'dataset.html');
+  $dataset['name'] = 'dataset';
+  $dataset['attributes']['remotesummative'] = $configObject->get_setting('core', 'summative_remote');
+  $render->render($dataset, array(), 'dataset.html');
 ?>
 </body>
 </html>

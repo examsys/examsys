@@ -31,7 +31,9 @@ $userID     = check_var('userID', 'GET', true, false, true);
 $paperID    = check_var('paperID', 'GET', true, false, true);
 
 $properties = PaperProperties::get_paper_properties_by_id($paperID, $mysqli, $string);
-if ($properties->get_paper_type() != '1') {   // Only allow timer reset of Progress Test papers.
+$paper_type = $properties->get_paper_type();
+// Only allow reset of timer for Progress tests and Remote Summative exams.
+if ($paper_type != '1' and ($paper_type == '2' and !$configObject->get_setting('core', 'summative_remote'))) {
     $contactemail = support::get_email();
     $msg = sprintf($string['furtherassistance'], $contactemail, $contactemail);
     $notice->display_notice_and_exit($mysqli, $string['pagenotfound'], $msg, $string['pagenotfound'], '../artwork/page_not_found.png', '#C00000', true, true);

@@ -139,6 +139,8 @@ $password           = $propertyObj->get_password();
 $modIDs             = array_keys($propertyObj->get_modules());
 $deleted            = $propertyObj->get_deleted();
 
+$remote = $configObject->get_setting('core', 'summative_remote');
+
 // If OSCE paper or if the paper has been deleted we should exit as this is an invalid page.
 if ($test_type == '4' or $deleted != null) {
     $contactemail = support::get_email();
@@ -168,9 +170,10 @@ $previously_submitted = 0;
 
 $low_bandwidth = 0;
 if ($userObject->has_role('Student')) {
-    // Check for additional password on the paper
-    check_paper_password($propertyObj->get_property_id(), $password, $string, $mysqli, true);
-
+    // Check for additional password on the paper if remote summatives not in operation.
+    if (!$remote) {
+        check_paper_password($propertyObj->get_property_id(), $password, $string, $mysqli, true);
+    }
     //Check this PC is registered for this exam
     $low_bandwidth = check_labs($test_type, $labs, $current_address, $password, $string, $mysqli);
 
@@ -192,7 +195,7 @@ $exam_started = $log_metadata->get_record('', false);
 $ipmismatch = false;
 
 if ($exam_duration !== null) {
-    if ($test_type == '2') {
+    if ($test_type == '2' and !$remote) {
         $student_object['special_needs_percentage'] = $special_needs_percentage;
         $student_object['user_ID']   = $userObject->get_user_ID();
         $log_lab_end_time = new LogLabEndTime($lab_id, $propertyObj, $mysqli);
@@ -224,13 +227,26 @@ if ($exam_duration !== null) {
         }
         $extra_time_mins    = $extra_time_secs / 60;
     } else {
-        if ($test_type == '1') {
+        if ($test_type == '1' or $test_type == '2') {
             $display_remaining_time = true;
         }
         $studentID       = $userObject->get_user_ID();
         $timer           = new Timer($log_metadata, $exam_duration, $special_needs_percentage);
         $remaining_time  = $timer->calculate_remaining_time();
 
+        // We are a remote summative.
+        if ($test_type == '2') {
+            // Check current IP address with that of attempt in log.
+            // Warn user that they need to log out if they are logged into mulitple devices in this exam.
+            if ($current_address !== $log_metadata->get_ipaddress()) {
+                if (!is_null($log_metadata->get_ipaddress())) {
+                    $ipmismatch = true;
+                }
+                if ($exam_started) {
+                    $log_metadata->set_ipaddress($current_address);
+                }
+            }
+        }
         $extra_time_mins = null;
     }
 
@@ -451,7 +467,11 @@ if ($start_available === false) {
 } elseif ($metadata_security === false) {
     echo "<div style=\"color:#C00000;font-size:90%\">$metadata_msg</div>\n";
 } elseif ($test_type == '2' and !$userObject->has_role('External Examiner')) {
-    echo '<div style="color:#C00000;font-size:90%">' . $string['donotstart'] . "</div>\n";
+    if ($configObject->get_setting('core', 'summative_remote')) {
+        echo '<div style="color:#C00000;font-size:90%">' . $string['waitforpassword'] . "</div>\n";
+    } else {
+        echo '<div style="color:#C00000;font-size:90%">' . $string['donotstart'] . "</div>\n";
+    }
 }
 
 if ($test_type == 2) {
@@ -472,6 +492,15 @@ if ($start_available and $remaining_available and $metadata_security) {
 }
 
 echo '<br />&nbsp;';
+
+// Display a link for issue reporting for remote summative exams.
+if ($test_type == '2' and $remote) {
+    $link = $configObject->get_setting('core', 'summative_issuelink');
+    if (!empty($link)) {
+        echo '<div class="logissue"><img src="../artwork/logissue.png"/>'
+        . '<a href="' . $link . '" target="_blank">' . $string['logissue'] . '</a></div>';
+    }
+}
 
 if ($test_type != '2') {
     // Display previous attempts
@@ -505,6 +534,7 @@ $dataset['attributes']['ipmismatch'] = $ipmismatch;
 $dataset['attributes']['id'] = $id;
 $dataset['attributes']['mode'] = $mode;
 $dataset['attributes']['fullscreen'] = $fullscreen;
+$dataset['attributes']['remotesummative'] = $configObject->get_setting('core', 'summative_remote');
 $render->render($dataset, array(), 'dataset.html');
 ?>
 </body>

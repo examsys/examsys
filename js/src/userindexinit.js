@@ -30,7 +30,11 @@ requirejs(['userindex', 'jsxls', 'jquery'], function (USER, jsxls, $) {
     if ($('#dataset').attr('data-ipmismatch')) {
         $("#info_overlay").show();
         $("#info_submit_dialog_title").html(jsxls.lang_string['ipmismatchtitle']);
-        $("#info_submit_dialog_msg").html(jsxls.lang_string['ipmismatchblurb']);
+        var blurb = jsxls.lang_string['ipmismatchblurb'];
+        if ($('#dataset').attr('data-remotesummative')) {
+            blurb = jsxls.lang_string['remoteipmismatchblurb'];
+        }
+        $("#info_submit_dialog_msg").html(blurb);
         $("#info_submit_dialog").css('left', (($(window).width() / 2) - 250) + 'px');
         $("#info_submit_dialog").css('top', (($(window).height() / 2) - 100) + 'px');
     }
