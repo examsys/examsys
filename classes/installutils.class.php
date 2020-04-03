@@ -1114,6 +1114,8 @@ class InstallUtils
         $priv_SQL[] = 'GRANT INSERT ON ' . $dbname . ".save_fail_log TO '" . self::$cfg_db_student_user . "'@'" . self::$cfg_web_host . "'";
         $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".academic_year TO '" . self::$cfg_db_student_user . "'@'" . self::$cfg_web_host . "'";
         $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".config TO '" . self::$cfg_db_student_user . "'@'" . self::$cfg_web_host . "'";
+        $priv_SQL[] = 'GRANT INSERT ON ' . $dbname . ".toilet_breaks TO '" . self::$cfg_db_student_user . "'@'" . self::$cfg_web_host . "'";
+
         $priv_SQL[] = 'FLUSH PRIVILEGES';
 
         foreach ($priv_SQL as $sql) {

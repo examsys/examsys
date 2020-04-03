@@ -30,6 +30,7 @@ data.previewmode - are we in question preview mode
 data.msg - a call out mesage
 data.adminview - does the user have admin rights
 data.fire - fire action flag
+data.breaks - breaks action flag
 data.copyright - copyright notice
 data.previousscreen - previous screen number
 data.bidirectional - is this paper in bidirectional mode
@@ -91,8 +92,13 @@ lang.screen
                 <div class="copyright">
                     {{data.copyright}}
                 </div>
-                <div class="timer">
-                    {{data.timerlabel}} <span id="theTime" type="text" class="thetime"></span>
+                <div class="timerdiv">
+                    <div class="timer">
+                        {{data.timerlabel}} <span id="theTime" type="text" class="thetime"></span>
+                    </div>
+                    {% if data.breaks %}
+                    <div id ="breaks" class="pause"></div>
+                    {% endif %}
                 </div>
                 <div class="controls">
                     <span id="savemsg"></span>

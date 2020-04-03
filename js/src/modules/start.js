@@ -92,20 +92,26 @@ define(['editor', 'html5', 'qarea', 'qlabelling', 'jsxls', 'jquery'], function(E
          * @constructor
          */
         this.UpdateTimerWithRemainingTime = function(remaining_time, close) {
-
-            var minutes = Math.floor( remaining_time / 60 );
-            minutes = Math.round( minutes );
-            var seconds = remaining_time % 60;
-
-            scope.UpdateClock(0, minutes, seconds);
-
-            if (remaining_time == 0 && close == true) {
-                scope.KillClock();
-                scope.forceSave();
-                return;
+            var resume = true;
+            if ($('#breaks').hasClass('play')) {
+                resume = false;
             }
-            if( remaining_time > 0 ){
-                remaining_time = remaining_time -1;
+
+            if (resume) {
+                var minutes = Math.floor(remaining_time / 60);
+                minutes = Math.round(minutes);
+                var seconds = remaining_time % 60;
+
+                scope.UpdateClock(0, minutes, seconds);
+
+                if (remaining_time == 0 && close == true) {
+                    scope.KillClock();
+                    scope.forceSave();
+                    return;
+                }
+                if (remaining_time > 0) {
+                    remaining_time = remaining_time - 1;
+                }
             }
             scope.clockID = setTimeout(scope.UpdateTimerWithRemainingTime, 1000, remaining_time, close);
         };
@@ -622,5 +628,28 @@ define(['editor', 'html5', 'qarea', 'qlabelling', 'jsxls', 'jquery'], function(E
                 $('.inact').css('color', dismiss_color);
             }
         };
+
+        /**
+         * Pause the exam.
+         * @param int userid user idenifier
+         * @param int paperid paper identigier
+         */
+        this.pause = function(userid, paperid) {
+            // Record break.
+            $.post($('#dataset').attr('data-rootpath') + "/ajax/invigilator/toilet_break.php",
+                {
+                    userID: userid,
+                    paperID: paperid
+                });
+            $('#breaks').removeClass('pause');
+            $('#breaks').addClass('play');
+            scope.info_dialog(Jsxls.lang_string['paperpaused']);
+
+            $("#info_dialog_ok").click(function() {
+                $('#breaks').removeClass('play');
+                $('#breaks').addClass('pause');
+                $("#info_overlay").hide();
+            });
+        }
     }
 });

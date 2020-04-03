@@ -548,8 +548,12 @@ if ($userObject->has_role(array('SysAdmin', 'Admin', 'Staff')) and $is_question_
     $footer_data['adminview'] = true;
 } else {
     $footer_data['adminview'] = false;
+    $footer_data['breaks'] = false;
     if ($papertype == '2') {
         $footer_data['fire'] = true;
+        if ($remote and $userObject->getRequiresBreaks()) {
+            $footer_data['breaks'] = true;
+        }
     } else {
         $footer_data['fire'] = false;
     }
@@ -592,6 +596,7 @@ $render->render(array(), $string, 'paper/overlays.html');
 // Paper dataset.
 $dataset['name'] = 'paper';
 $dataset['attributes']['pid'] = $id;
+$dataset['attributes']['paperid'] = $paperID;
 $dataset['attributes']['urlmod'] = html_entity_decode($url_mod);
 $dataset['attributes']['submittype'] = $submitype;
 $dataset['attributes']['refcount'] = count($reference_materials);
@@ -623,6 +628,7 @@ $render->render($datasetcss, array(), 'dataset.html');
 // User dataset.
 $datasetuser['name'] = 'user';
 $datasetuser['attributes']['student'] = $userObject->has_role('Student');
+$datasetuser['attributes']['uid'] = $userObject->get_user_ID();
 if (!is_null($remaining_time)) {
     $datasetuser['attributes']['remaining_time'] = $remaining_time;
 }
@@ -639,6 +645,8 @@ $render->render($jsdataset, array(), 'dataset.html');
 $miscdataset['name'] = 'dataset';
 $miscdataset['attributes']['language'] = $language;
 $miscdataset['attributes']['rootpath'] = $cfg_root_path;
+$miscdataset['attributes']['remotesummative'] = $remote;
+$miscdataset['attributes']['breaks'] = $footer_data['breaks'];
 $render->render($miscdataset, array(), 'dataset.html');
 
 if (count($reference_materials) > 0) {

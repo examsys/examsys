@@ -432,3 +432,23 @@ div.error {
   text-align: center;
   color: white;
 }
+
+.pause {
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  background-image: url('../artwork/pause.png');
+  background-repeat: no-repeat;
+}
+
+.play {
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  background-image: url('../artwork/play.png');
+  background-repeat: no-repeat;
+}
+
+.timerdiv {
+  display: flex;
+}

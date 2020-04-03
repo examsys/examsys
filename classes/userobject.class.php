@@ -45,6 +45,7 @@ class UserObject extends RogoStaticSingleton
     private $year;
     private $special_needs;
     private $special_needs_percentage;
+    private $breaks = false;
     private $record_no;
     private $split_username;
     private $demomode = false;
@@ -599,6 +600,16 @@ class UserObject extends RogoStaticSingleton
     }
 
     /**
+     * Does the user require breaks in an exam
+     *
+     * @return bool
+     */
+    public function getRequiresBreaks()
+    {
+        return $this->breaks;
+    }
+
+    /**
      * Get a list of modules the current user has access to.
      *
      * @return array of staff module that this user has access to.
@@ -836,13 +847,18 @@ class UserObject extends RogoStaticSingleton
 
         // Add additional special needs data.
         if ($this->special_needs == 1) {
-            $stmt = $this->db->prepare('SELECT background, foreground, textsize, extra_time, marks_color, themecolor, labelcolor, font, unanswered, dismiss FROM special_needs WHERE userID = ?');
+            $stmt = $this->db->prepare('SELECT background, foreground, textsize, extra_time, marks_color, themecolor, labelcolor, font, unanswered, dismiss, breaks FROM special_needs WHERE userID = ?');
             $stmt->bind_param('i', $userID);
             $stmt->execute();
             $stmt->store_result();
-            $stmt->bind_result($this->background, $this->foreground, $this->textsize, $this->extra_time, $this->marks_color, $this->themecolor, $this->labelcolor, $this->font, $this->unanswered, $this->dismiss);
+            $stmt->bind_result($this->background, $this->foreground, $this->textsize, $this->extra_time, $this->marks_color, $this->themecolor, $this->labelcolor, $this->font, $this->unanswered, $this->dismiss, $breaks);
             $stmt->fetch();
             $stmt->close();
+            if (strlen($breaks) > 0) {
+                $this->breaks = true;
+            } else {
+                $this->breaks = false;
+            }
         }
     
         // Add temporary account data.

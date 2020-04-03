@@ -109,6 +109,19 @@ requirejs(['media', 'reference', 'start', 'jquery'], function (Media, REF, START
             $('#unansweredkey').show();
         }
 
+        $('#breaks').click(function() {
+            if ($('#dataset').attr('data-remotesummative') && $('#dataset').attr('data-breaks')) {
+                if ($(this).hasClass('pause')) {
+                    // Pause exam.
+                    start.pause(el2.dataset.uid, el.dataset.paperid);
+                } else {
+                    // Re-start exam.
+                    $(this).removeClass('play');
+                    $(this).addClass('pause');
+                }
+            }
+        });
+
         start.html5init();
     });
 });

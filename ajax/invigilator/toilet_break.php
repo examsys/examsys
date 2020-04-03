@@ -23,7 +23,7 @@
  * @package
  */
 
-require '../../include/invigilator_auth.inc';
+require '../../include/staff_student_auth.inc';
 require_once '../../include/errors.php';
 
 $userID  = check_var('userID', 'POST', true, false, true);
