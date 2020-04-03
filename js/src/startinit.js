@@ -100,9 +100,11 @@ requirejs(['media', 'reference', 'start', 'jquery'], function (Media, REF, START
         start.startAutoSave();
 
         $('#fire_exit').click(function() {
-            $('#button_pressed').val('fire_exit');
-            $('#qForm').attr('action',"fire_evacuation.php?id=" + el.dataset.pid + "&dont_record=true");
-            start.ajaxSave(1, 'userSubmit');
+            if ($('#dataset').attr('data-remotesummative')) {
+                $('#button_pressed').val('fire_exit');
+                $('#qForm').attr('action', "fire_evacuation.php?id=" + el.dataset.pid + "&dont_record=true");
+                start.ajaxSave(1, 'userSubmit');
+            }
         });
 
         if (el.dataset.unanswered) {

@@ -549,13 +549,14 @@ if ($userObject->has_role(array('SysAdmin', 'Admin', 'Staff')) and $is_question_
 } else {
     $footer_data['adminview'] = false;
     $footer_data['breaks'] = false;
+    $footer_data['fire'] = false;
     if ($papertype == '2') {
-        $footer_data['fire'] = true;
+        if (!$remote) {
+            $footer_data['fire'] = true;
+        }
         if ($remote and $userObject->getRequiresBreaks()) {
             $footer_data['breaks'] = true;
         }
-    } else {
-        $footer_data['fire'] = false;
     }
 
     $footer_data['timerlabel'] = $timer_label;
