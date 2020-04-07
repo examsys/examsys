@@ -24,7 +24,7 @@ requirejs(['datecopy', 'form', 'newpaperform', 'jquery'], function (DATECOPY, FO
     var form = new FORM();
     var type = $('#paper_type').val();
     var datecheck = false;
-    if ($('#dataset').attr('data-remotesummative')) {
+    if ($('#dataset').attr('data-remotesummative') == 1) {
         if (type == 'offline') {
             datecheck = true;
         }

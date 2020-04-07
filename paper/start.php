@@ -544,18 +544,18 @@ if ($is_question_preview_mode) {
     }
 }
 
+$footer_data['breaks'] = 0;
+$footer_data['fire'] = 0;
 if ($userObject->has_role(array('SysAdmin', 'Admin', 'Staff')) and $is_question_preview_mode) {
     $footer_data['adminview'] = true;
 } else {
     $footer_data['adminview'] = false;
-    $footer_data['breaks'] = false;
-    $footer_data['fire'] = false;
     if ($papertype == '2') {
         if (!$remote) {
-            $footer_data['fire'] = true;
+            $footer_data['fire'] = 1;
         }
         if ($remote and $userObject->getRequiresBreaks()) {
-            $footer_data['breaks'] = true;
+            $footer_data['breaks'] = 1;
         }
     }
 

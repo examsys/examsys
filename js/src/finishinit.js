@@ -27,7 +27,7 @@ requirejs(['rogoconfig', 'media', 'helplauncher', 'html5', 'qarea', 'qlabelling'
     });
 
     $('.logoutandclose').click(function() {
-        if ($('#dataset').attr('data-papertype') == '2' && $('#dataset').attr('data-remotesummative')) {
+        if ($('#dataset').attr('data-papertype') == '2' && $('#dataset').attr('data-remotesummative') == 1) {
             window.close();
             window.opener.location.href = Config.cfgrootpath + '/logout.php';
         }

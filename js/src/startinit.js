@@ -100,7 +100,7 @@ requirejs(['media', 'reference', 'start', 'jquery'], function (Media, REF, START
         start.startAutoSave();
 
         $('#fire_exit').click(function() {
-            if ($('#dataset').attr('data-remotesummative')) {
+            if ($('#dataset').attr('data-remotesummative') == 0) {
                 $('#button_pressed').val('fire_exit');
                 $('#qForm').attr('action', "fire_evacuation.php?id=" + el.dataset.pid + "&dont_record=true");
                 start.ajaxSave(1, 'userSubmit');
@@ -112,7 +112,7 @@ requirejs(['media', 'reference', 'start', 'jquery'], function (Media, REF, START
         }
 
         $('#breaks').click(function() {
-            if ($('#dataset').attr('data-remotesummative') && $('#dataset').attr('data-breaks')) {
+            if ($('#dataset').attr('data-remotesummative') == 1 && $('#dataset').attr('data-breaks') == 1) {
                 if ($(this).hasClass('pause')) {
                     // Pause exam.
                     start.pause(el2.dataset.uid, el.dataset.paperid);

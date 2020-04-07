@@ -32,7 +32,7 @@ requirejs(['paperproperties', 'colourpicker', 'datecopy', 'form', 'alert', 'help
     var type = $('#dataset').attr('data-type');
     var noadd = $('#noadd').val();
     var datecheck = false;
-    if ($('#dataset').attr('data-remotesummative')) {
+    if ($('#dataset').attr('data-remotesummative') == 1) {
         if (type == 5) {
             datecheck = true;
         }

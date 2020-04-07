@@ -31,7 +31,7 @@ requirejs(['userindex', 'jsxls', 'jquery'], function (USER, jsxls, $) {
         $("#info_overlay").show();
         $("#info_submit_dialog_title").html(jsxls.lang_string['ipmismatchtitle']);
         var blurb = jsxls.lang_string['ipmismatchblurb'];
-        if ($('#dataset').attr('data-remotesummative')) {
+        if ($('#dataset').attr('data-remotesummative') == 1) {
             blurb = jsxls.lang_string['remoteipmismatchblurb'];
         }
         $("#info_submit_dialog_msg").html(blurb);
