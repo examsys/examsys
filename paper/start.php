@@ -115,7 +115,11 @@ $current_address = NetworkUtils::get_client_address();
 //get the module Ids for this paper
 $modIDs = array_keys(Paper_utils::get_modules($paperID, $mysqli));
 $moduleID = $propertyObj->get_modules();
-$remote = $configObject->get_setting('core', 'summative_remote');
+$paper_settings = new PaperSettings($paperID, $papertype);
+$remote = false;
+if ($configObject->get_setting('core', 'summative_remote') and $paper_settings->getSetting('remote_summative')) {
+    $remote = true;
+}
 
 if ($userObject->has_role('Staff') and check_staff_modules($moduleID, $userObject)) {
     // No further security checks.

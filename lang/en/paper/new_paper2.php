@@ -17,6 +17,7 @@
 require_once '../lang/' . $language . '/include/paper_types.php';
 require_once '../lang/' . $language . '/paper/new_paper1.php';
 require_once '../lang/' . $language . '/include/months.php';
+require_once '../classes/lang/' . $language . '/papersettings.lang.php';
 
 $string['availability'] = 'Availability';
 $string['summativeexamdetails'] = 'Summative Exam Details';

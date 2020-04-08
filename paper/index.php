@@ -119,9 +119,16 @@ $paper_display = array();
 $paper_no = $paper_utils->get_active_papers($paper_display, array('1', '2'), $userObject, $mysqli);     // Get active Progress Tests and Summative Exams.
 
 // Go straight to paper if only one exam and no password set (or remote summatives in operation).
+$remote = false;
+if ($paper_no == 1) {
+    $paper_settings = new PaperSettings($paper_display[0]['id'], $paper_display[0]['paper_type']);
+    if ($configObject->get_setting('core', 'summative_remote') and $paper_settings->getSetting('remote_summative')) {
+        $remote = true;
+    }
+}
 if (
     $paper_no == 1 and
-    ($paper_display[0]['password'] == '' or $configObject->get_setting('core', 'summative_remote'))
+    ($paper_display[0]['password'] == '' or $remote)
 ) {
     header('location: user_index.php?id=' . $paper_display[0]['crypt_name']);
     exit();

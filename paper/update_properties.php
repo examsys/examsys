@@ -96,6 +96,7 @@ $int_tyear = param::optional('int_tyear', null, param::INT, param::FETCH_POST);
 $texteditorplugin = \plugins\plugins_texteditor::get_editor();
 
 $properties = PaperProperties::get_paper_properties_by_id($paperID, $mysqli, $string);
+$papertype = $properties->get_paper_type();
 $old_marking = $properties->get_marking();
 $old_paper_title = $properties->get_paper_title();
 $old_externals = $properties->get_externals();
@@ -128,7 +129,7 @@ if (!$title_unique) {
     if (isset($_POST['paper_title'])) {  // Check is set, could be disabled.
         $properties->set_paper_title($_POST['paper_title']);
     }
-    if (isset($_POST['paper_type']) and ($properties->get_paper_type() == '0' or $properties->get_paper_type() == '1')) {
+    if (isset($_POST['paper_type']) and ($papertype == '0' or $papertype == '1')) {
         $properties->set_paper_type($_POST['paper_type']);
     }
 
@@ -146,7 +147,7 @@ if (!$title_unique) {
         $properties->set_externalsys($extsys);
     }
 
-    if ($properties->get_paper_type() == '6') {
+    if ($papertype == '6') {
         if (isset($_POST['display_photos'])) {
             $properties->set_display_correct_answer(1);
         } else {
@@ -164,7 +165,7 @@ if (!$title_unique) {
     } else {
         $properties->set_display_students_response(0);
     }
-    if ($properties->get_paper_type() == '6') {
+    if ($papertype == '6') {
         $properties->set_display_question_mark($_POST['review']);
     } else {
         if (isset($_POST['display_question_mark'])) {
@@ -189,7 +190,7 @@ if (!$title_unique) {
         $_POST['timezone'] = $properties->get_timezone();
     }
 
-    if (($configObject->get_setting('core', 'cfg_summative_mgmt') and $properties->get_paper_type() == '2' and $userObject->has_role(array('SysAdmin', 'Admin'))) or !$configObject->get_setting('core', 'cfg_summative_mgmt') or $properties->get_paper_type() != '2') {
+    if (($configObject->get_setting('core', 'cfg_summative_mgmt') and $papertype == '2' and $userObject->has_role(array('SysAdmin', 'Admin'))) or !$configObject->get_setting('core', 'cfg_summative_mgmt') or $papertype != '2') {
         $local_time = new DateTimeZone($configObject->get('cfg_timezone'));
         $target_timezone = new DateTimeZone($_POST['timezone']);
 
@@ -261,6 +262,15 @@ if (!$title_unique) {
             }
         }
         $properties->set_labs($lab_string);
+
+        if ($papertype == '2' and $configObject->get_setting('core', 'summative_remote')) {
+            $paper_settings = new PaperSettings($paperID, $papertype);
+            $remote = check_var('remote_summative', 'POST', false, false, true);
+            if (is_null($remote)) {
+                $remote = 0;
+            }
+            $paper_settings->updateSetting('remote_summative', $remote, Config::BOOLEAN, $paperID);
+        }
     }
 
     $_POST['ext_tday'] = fix_leapyear_day($ext_tyear, $_POST['ext_tmonth'], $_POST['ext_tday']);
@@ -319,13 +329,13 @@ if (!$title_unique) {
         $properties->set_paper_postscript(clearMSOtags($texteditorplugin->prepare_text_for_save($_POST['paper_postscript'])));
     }
 
-    if ($properties->get_paper_type() == '6') {
+    if ($papertype == '6') {
         $properties->set_rubric($_POST['type']);      // Reuse the 'rubric' field to store which field in the metadata to use for groups.
     } else {
         $properties->set_rubric(clearMSOtags($texteditorplugin->prepare_text_for_save($_POST['rubric_text'])));
     }
 
-    if (!isset($_POST['marking']) and $properties->get_paper_type() == 4) {
+    if (!isset($_POST['marking']) and $papertype == 4) {
         // Do nothing, the marking method is locked.
     } elseif (!isset($_POST['marking']) or $_POST['marking'] == '') {
         $properties->set_marking(MARK_NO_ADJUSTMENT);
@@ -369,7 +379,7 @@ if (!$title_unique) {
     $properties->set_labelcolor($_POST['labelcolor']);
     $properties->set_folder($_POST['folderID']);
 
-    if ($properties->get_paper_type() == '2' and $old_marking != $properties->get_marking()) {
+    if ($papertype == '2' and $old_marking != $properties->get_marking()) {
         $properties->set_recache_marks(1);
     }
 
@@ -469,7 +479,7 @@ if (!$title_unique) {
         $logger->track_change('Paper', $paperID, $userObject->get_user_ID(), '', 'External Examiner Feedback', 'feedback');
     }
 
-    if ($properties->get_paper_type() != '2' and $properties->get_paper_type() != '4') {    // Update textual feedback if not a summative paper or OSCE station.
+    if ($papertype != '2' and $papertype != '4') {    // Update textual feedback if not a summative paper or OSCE station.
         // Get old settings
         $old_textual_feedback = Paper_utils::get_textual_feedback($paperID, $mysqli);
         for ($i = 1; $i < 10; $i++) {

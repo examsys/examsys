@@ -37,6 +37,7 @@ if (!Paper_utils::is_paper_title_unique($paper_name, $mysqli)) {
 
 $assessment = new assessment($mysqli, $configObject);
 $papertype = $assessment->get_type_value($paper_type);
+$central_mgmt = $configObject->get_setting('core', 'cfg_summative_mgmt');
 ?>
 <!DOCTYPE html>
 <html>
@@ -70,7 +71,7 @@ if (isset($_POST['folder'])) {
 <td>
 <?php
   echo "<table width=\"100%\" border=\"0\">\n";
-if (!$configObject->get_setting('core', 'cfg_summative_mgmt') or $papertype != $assessment::TYPE_SUMMATIVE) {
+if (!$central_mgmt or $papertype != $assessment::TYPE_SUMMATIVE) {
     echo '<tr><td colspan="6" class="titlebar">' . $string['availability'] . "</td></tr>\n";
 } else {
     echo '<tr><td colspan="6" class="titlebar">' . $string['summativeexamdetails'] . "</td></tr>\n";
@@ -86,7 +87,7 @@ if ($papertype == $assessment::TYPE_SUMMATIVE or $papertype == $assessment::TYPE
     echo "<input type=\"hidden\" name=\"session\" value=\"\" />\n";
 }
 
-if (!$configObject->get_setting('core', 'cfg_summative_mgmt') or $papertype != $assessment::TYPE_SUMMATIVE) {
+if (!$central_mgmt or $papertype != $assessment::TYPE_SUMMATIVE) {
     echo '</tr><tr><td align="right" valign="top">' . $string['from'] . '&nbsp;</td><td>';
     $date_array = getdate();
 
@@ -262,12 +263,16 @@ if (!$configObject->get_setting('core', 'cfg_summative_mgmt') or $papertype != $
     echo '<tr><td style="text-align:right">' . $string['notes'] . '</td><td colspan="5"><textarea style="width:100%; height:75px" cols="40" rows="3" name="notes"></textarea></td></tr>';
 }
 
-  echo "</table>\n";
+echo "</table>\n";
 
-  echo '<div class="titlebar" style="margin-top:5px; border-top:1px solid #295AAD; border-left:1px solid #295AAD; border-right:1px solid #295AAD">' . $string['modules'] . '</div>';
-if ($configObject->get_setting('core', 'cfg_summative_mgmt') and $papertype == $assessment::TYPE_SUMMATIVE) {
+if (!$central_mgmt) {
+    PaperSettings::renderNewSettings($string, $mysqli, $paper_type, 'security');
+}
+
+echo '<div class="titlebar" style="margin-top:5px; border-top:1px solid #295AAD; border-left:1px solid #295AAD; border-right:1px solid #295AAD">' . $string['modules'] . '</div>';
+if ($central_mgmt and $papertype == $assessment::TYPE_SUMMATIVE) {
     echo '<div style="display:block; background-color:white; height:230px; overflow-y:scroll; border:1px solid #295AAD; font-size:90%">';
-} elseif ($papertype == $assessment::TYPE_OSCE or (!$configObject->get_setting('core', 'cfg_summative_mgmt') and $papertype == $assessment::TYPE_SUMMATIVE)) {
+} elseif ($papertype == $assessment::TYPE_OSCE or (!$central_mgmt and $papertype == $assessment::TYPE_SUMMATIVE)) {
     echo '<div style="display:block; background-color:white; height:310px; overflow-y:scroll; border:1px solid #295AAD; font-size:90%">';
 } else {
     echo '<div style="display:block; background-color:white; height:340px; overflow-y:scroll; border:1px solid #295AAD; font-size:90%">';
@@ -319,9 +324,6 @@ foreach ($module_array as $module) {
     $jsdataset['name'] = 'jsutils';
     $jsdataset['attributes']['xls'] = json_encode($string);
     $render->render($jsdataset, array(), 'dataset.html');
-    $dataset['name'] = 'dataset';
-    $dataset['attributes']['remotesummative'] = $configObject->get_setting('core', 'summative_remote');
-    $render->render($dataset, array(), 'dataset.html');
 ?>
 </body>
 </html>

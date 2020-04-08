@@ -653,6 +653,9 @@ class InstallUtils
         $alter[] = 'ALTER TABLE review_comments ADD CONSTRAINT `metadata_fk0` FOREIGN KEY (`metadataID`) REFERENCES `review_metadata` (`id`)';
         $alter[] = 'ALTER TABLE external_systems_mapping ADD CONSTRAINT `external_systems_mapping_fk1` FOREIGN KEY (`ext_id`) REFERENCES `external_systems` (`id`)';
         $alter[] = 'ALTER TABLE external_systems_mapping ADD CONSTRAINT `external_systems_mapping_fk2` FOREIGN KEY (`client_id`) REFERENCES `oauth_clients` (`client_id`)';
+        $alter[] = 'ALTER TABLE paper_settings ADD CONSTRAINT paper_settings_fk0 FOREIGN KEY (paperid) REFERENCES properties(property_id)';
+        $alter[] = 'ALTER TABLE paper_settings ADD CONSTRAINT paper_settings_fk1 FOREIGN KEY (setting) REFERENCES paper_settings_setting(setting)';
+        $alter[] = 'ALTER TABLE paper_settings_setting ADD CONSTRAINT paper_settings_setting_fk0 FOREIGN KEY (category) REFERENCES paper_settings_category(category)';
 
         foreach ($alter as $a) {
             $res = self::$db->prepare($a);
@@ -832,6 +835,7 @@ class InstallUtils
         self::createDefaultUsers();
         self::createDefaultFacultiesSchoolsModules();
         self::createQuestionStatuses();
+        self::createPaperSettings();
     }
 
     /**
@@ -1028,6 +1032,9 @@ class InstallUtils
         $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".users_metadata TO '" . self::$cfg_db_username . "'@'" . self::$cfg_web_host . "'";
         $priv_SQL[] = 'GRANT INSERT ON ' . $dbname . ".denied_log TO '" . self::$cfg_db_username . "'@'" . self::$cfg_web_host . "'";
         $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".config TO '" . self::$cfg_db_username . "'@'" . self::$cfg_web_host . "'";
+        $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".paper_settings TO '" . self::$cfg_db_username . "'@'" . self::$cfg_web_host . "'";
+        $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".paper_settings_category TO '" . self::$cfg_db_username . "'@'" . self::$cfg_web_host . "'";
+        $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".paper_settings_setting TO '" . self::$cfg_db_username . "'@'" . self::$cfg_web_host . "'";
 
         $priv_SQL[] = 'FLUSH PRIVILEGES';
 
@@ -1115,6 +1122,9 @@ class InstallUtils
         $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".academic_year TO '" . self::$cfg_db_student_user . "'@'" . self::$cfg_web_host . "'";
         $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".config TO '" . self::$cfg_db_student_user . "'@'" . self::$cfg_web_host . "'";
         $priv_SQL[] = 'GRANT INSERT ON ' . $dbname . ".toilet_breaks TO '" . self::$cfg_db_student_user . "'@'" . self::$cfg_web_host . "'";
+        $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".paper_settings TO '" . self::$cfg_db_student_user . "'@'" . self::$cfg_web_host . "'";
+        $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".paper_settings_category TO '" . self::$cfg_db_student_user . "'@'" . self::$cfg_web_host . "'";
+        $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".paper_settings_setting TO '" . self::$cfg_db_student_user . "'@'" . self::$cfg_web_host . "'";
 
         $priv_SQL[] = 'FLUSH PRIVILEGES';
 
@@ -1194,6 +1204,9 @@ class InstallUtils
         $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".sessions TO '" . self::$cfg_db_external_user . "'@'" . self::$cfg_web_host . "'";
         $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".academic_year TO '" . self::$cfg_db_external_user . "'@'" . self::$cfg_web_host . "'";
         $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".config TO '" . self::$cfg_db_external_user . "'@'" . self::$cfg_web_host . "'";
+        $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".paper_settings TO '" . self::$cfg_db_external_user . "'@'" . self::$cfg_web_host . "'";
+        $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".paper_settings_category TO '" . self::$cfg_db_external_user . "'@'" . self::$cfg_web_host . "'";
+        $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".paper_settings_setting TO '" . self::$cfg_db_external_user . "'@'" . self::$cfg_web_host . "'";
         $priv_SQL[] = 'FLUSH PRIVILEGES';
         foreach ($priv_SQL as $sql) {
             self::$db->query($sql);
@@ -1237,6 +1250,9 @@ class InstallUtils
         $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".keywords_link TO '" . self::$cfg_db_internal_user . "'@'" . self::$cfg_web_host . "'";
         $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".random_link TO '" . self::$cfg_db_internal_user . "'@'" . self::$cfg_web_host . "'";
         $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".config TO '" . self::$cfg_db_internal_user . "'@'" . self::$cfg_web_host . "'";
+        $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".paper_settings TO '" . self::$cfg_db_internal_user . "'@'" . self::$cfg_web_host . "'";
+        $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".paper_settings_category TO '" . self::$cfg_db_internal_user . "'@'" . self::$cfg_web_host . "'";
+        $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".paper_settings_setting TO '" . self::$cfg_db_internal_user . "'@'" . self::$cfg_web_host . "'";
         $priv_SQL[] = 'FLUSH PRIVILEGES';
         foreach ($priv_SQL as $sql) {
             self::$db->query($sql);
@@ -1336,6 +1352,9 @@ class InstallUtils
         $priv_SQL[] = 'GRANT SELECT, INSERT ON ' . $dbname . ".save_fail_log TO '" . self::$cfg_db_staff_user . "'@'" . self::$cfg_web_host . "'";
         $priv_SQL[] = 'GRANT SELECT, UPDATE ON ' . $dbname . ".toilet_breaks TO '" . self::$cfg_db_staff_user . "'@'" . self::$cfg_web_host . "'";
         $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".academic_year TO '" . self::$cfg_db_staff_user . "'@'" . self::$cfg_web_host . "'";
+        $priv_SQL[] = 'GRANT SELECT, INSERT, UPDATE, DELETE ON ' . $dbname . ".paper_settings TO '" . self::$cfg_db_staff_user . "'@'" . self::$cfg_web_host . "'";
+        $priv_SQL[] = 'GRANT SELECT, INSERT, UPDATE, DELETE ON ' . $dbname . ".paper_settings_category TO '" . self::$cfg_db_staff_user . "'@'" . self::$cfg_web_host . "'";
+        $priv_SQL[] = 'GRANT SELECT, INSERT, UPDATE, DELETE ON ' . $dbname . ".paper_settings_setting TO '" . self::$cfg_db_staff_user . "'@'" . self::$cfg_web_host . "'";
 
         $priv_SQL[] = 'FLUSH PRIVILEGES';
         foreach ($priv_SQL as $sql) {
@@ -1367,6 +1386,9 @@ class InstallUtils
         $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".config TO '" . self::$cfg_db_sct_user . "'@'" . self::$cfg_web_host . "'";
         $priv_SQL[] = 'GRANT SELECT, INSERT, UPDATE, DELETE ON ' . $dbname . ".sct_reviews TO '" . self::$cfg_db_sct_user . "'@'" . self::$cfg_web_host . "'";
         $priv_SQL[] = 'GRANT INSERT ON ' . $dbname . ".denied_log TO '" . self::$cfg_db_sct_user . "'@'" . self::$cfg_web_host . "'";
+        $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".paper_settings TO '" . self::$cfg_db_sct_user . "'@'" . self::$cfg_web_host . "'";
+        $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".paper_settings_category TO '" . self::$cfg_db_sct_user . "'@'" . self::$cfg_web_host . "'";
+        $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".paper_settings_setting TO '" . self::$cfg_db_sct_user . "'@'" . self::$cfg_web_host . "'";
         $priv_SQL[] = 'FLUSH PRIVILEGES';
         foreach ($priv_SQL as $sql) {
             self::$db->query($sql);
@@ -1413,6 +1435,9 @@ class InstallUtils
         $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".schools TO '" . self::$cfg_db_inv_user . "'@'" . self::$cfg_web_host . "'";
         $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".state TO '" . self::$cfg_db_inv_user . "'@'" . self::$cfg_web_host . "'";
         $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".staff_help TO '" . self::$cfg_db_inv_user . "'@'" . self::$cfg_web_host . "'";
+        $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".paper_settings TO '" . self::$cfg_db_inv_user . "'@'" . self::$cfg_web_host . "'";
+        $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".paper_settings_category TO '" . self::$cfg_db_inv_user . "'@'" . self::$cfg_web_host . "'";
+        $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".paper_settings_setting TO '" . self::$cfg_db_inv_user . "'@'" . self::$cfg_web_host . "'";
         $priv_SQL[] = 'FLUSH PRIVILEGES';
         foreach ($priv_SQL as $sql) {
             self::$db->query($sql);
@@ -1451,6 +1476,9 @@ class InstallUtils
         $priv_SQL[] = 'GRANT SELECT, INSERT, UPDATE, DELETE ON ' . $dbname . ".properties_modules TO '" . self::$cfg_db_webservice_user . "'@'" . self::$cfg_web_host . "'";
         $priv_SQL[] = 'GRANT SELECT, INSERT, UPDATE, DELETE ON ' . $dbname . ".scheduling TO '" . self::$cfg_db_webservice_user . "'@'" . self::$cfg_web_host . "'";
         $priv_SQL[] = 'GRANT INSERT ON ' . $dbname . ".track_changes TO '" . self::$cfg_db_webservice_user . "'@'" . self::$cfg_web_host . "'";
+        $priv_SQL[] = 'GRANT SELECT, INSERT, UPDATE, DELETE ON ' . $dbname . ".paper_settings TO '" . self::$cfg_db_webservice_user . "'@'" . self::$cfg_web_host . "'";
+        $priv_SQL[] = 'GRANT SELECT, INSERT, UPDATE, DELETE ON ' . $dbname . ".paper_settings_category TO '" . self::$cfg_db_webservice_user . "'@'" . self::$cfg_web_host . "'";
+        $priv_SQL[] = 'GRANT SELECT, INSERT, UPDATE, DELETE ON ' . $dbname . ".paper_settings_setting TO '" . self::$cfg_db_webservice_user . "'@'" . self::$cfg_web_host . "'";
 
 
         $priv_SQL[] = 'FLUSH PRIVILEGES';
@@ -1671,6 +1699,23 @@ class InstallUtils
         } else {
             return false;
         }
+    }
+
+    /**
+     * Insert default paper settings.
+     */
+    protected static function createPaperSettings()
+    {
+        // Categories.
+        $insert = self::$db->prepare('INSERT INTO paper_settings_category VALUES ("security")');
+        $insert->execute();
+        $insert->close();
+
+        // Setting declarations.
+        $insert = self::$db->prepare('INSERT INTO paper_settings_setting VALUES ("remote_summative", "security", "boolean",
+            \'{"formative": 0, "progress": 0, "summative": 1, "survey": 0, "osce": 0, "offline": 0, "peer_review": 0}\');');
+        $insert->execute();
+        $insert->close();
     }
 
     /**

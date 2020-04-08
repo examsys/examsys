@@ -1667,6 +1667,33 @@ QUERY;
             UNIQUE INDEX `client_id_idx` (`client_id`)
         ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
+
+        $this->tableList['paper_settings_category'] = <<<QUERY
+        CREATE TABLE paper_settings_category (
+            `category` varchar(10) NOT NULL,
+            PRIMARY KEY (`category`)
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
+QUERY;
+
+        $this->tableList['paper_settings_setting'] = <<<QUERY
+        CREATE TABLE paper_settings_setting (
+            `setting` varchar(100) NOT NULL,
+            `category` varchar(10) NOT NULL,
+            `type` varchar(10) NOT NULL,
+            `supported` json,
+            PRIMARY KEY (`setting`),
+            INDEX (`category`)
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
+QUERY;
+
+        $this->tableList['paper_settings'] = <<<QUERY
+        CREATE TABLE paper_settings (
+            `paperid` mediumint(8) NOT NULL,
+            `setting` varchar(100) NOT NULL,
+            `value` TEXT,
+            PRIMARY KEY (`paperid`, `setting`)
+        ) ENGINE={$engine} DEFAULT CHARSET={$charset}
+QUERY;
     }
   
     function next()

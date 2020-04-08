@@ -523,7 +523,6 @@ if ($test_type != '2') {
     </div>
 </div>
 <?php
-$mysqli->close();
 // JS utils dataset.
 $render = new render($configObject);
 $jsdataset['name'] = 'jsutils';
@@ -534,8 +533,14 @@ $dataset['attributes']['ipmismatch'] = $ipmismatch;
 $dataset['attributes']['id'] = $id;
 $dataset['attributes']['mode'] = $mode;
 $dataset['attributes']['fullscreen'] = $fullscreen;
-$dataset['attributes']['remotesummative'] = $configObject->get_setting('core', 'summative_remote');
+$paper_settings = new PaperSettings($property_id, $test_type);
+$remote = false;
+if ($configObject->get_setting('core', 'summative_remote') and $paper_settings->getSetting('remote_summative')) {
+    $remote = true;
+}
+$dataset['attributes']['remotesummative'] = $remote;
 $render->render($dataset, array(), 'dataset.html');
+$mysqli->close();
 ?>
 </body>
 </html>

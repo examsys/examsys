@@ -91,3 +91,7 @@ extarea, input[type=text], select, textarea, input[type=password] {
 .cancel {
   margin-right: 0;
 }
+.settings {
+    display: flex;
+    padding-left:10px
+}

@@ -29,7 +29,7 @@ require '../include/staff_auth.inc';
 require_once '../include/errors.php';
 
 $assessment = new assessment($mysqli, $configObject);
-
+$central_mgmt = $configObject->get_setting('core', 'cfg_summative_mgmt');
 $paper_name = check_var('paper_name', 'POST', true, false, true);
 $paper_type = check_var('paper_type', 'POST', true, false, true);
 $paper_owner = check_var('paper_owner', 'POST', true, false, true);
@@ -64,7 +64,7 @@ if (isset($_POST['timezone'])) {
 } else {
     $timezone = $configObject->get('cfg_timezone');
 }
-if ($configObject->get_setting('core', 'cfg_summative_mgmt') and $papertype == $assessment::TYPE_SUMMATIVE) {
+if ($central_mgmt and $papertype == $assessment::TYPE_SUMMATIVE) {
     $duration = 0;
     if (isset($_POST['duration_hours'])) {
         $duration += ($_POST['duration_hours'] * 60);
@@ -110,9 +110,19 @@ if ($configObject->get_setting('core', 'cfg_summative_mgmt') and $papertype == $
 }
 
 try {
-    $property_id = $assessment->create($paper_name, $papertype, $paper_owner, $start_date, $end_date, '', $duration, $session, $modules, $timezone);
+    $remote = 0;
+    if ($papertype == $assessment::TYPE_SUMMATIVE and !$central_mgmt and $configObject->get_setting('core', 'summative_remote')) {
+        $remote = check_var('remote_summative', 'POST', false, false, true);
+        if (is_null($remote)) {
+            $remote = 0;
+        } else {
+            $remote = 1;
+        }
+    }
 
-    if ($configObject->get_setting('core', 'cfg_summative_mgmt') and $papertype == $assessment::TYPE_SUMMATIVE) {
+    $property_id = $assessment->create($paper_name, $papertype, $paper_owner, $start_date, $end_date, '', $duration, $session, $modules, $timezone, null, null, $remote);
+
+    if ($central_mgmt and $papertype == $assessment::TYPE_SUMMATIVE) {
         if (isset($_POST['barriers_needed'])) {
             $barriers_needed = 1;
         } else {

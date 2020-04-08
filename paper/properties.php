@@ -103,6 +103,9 @@ $change_callbacks = setup_change_callbacks($changed_reviewers, $changed_labs);
 
 $logger = new Logger($mysqli);
 
+$remote = $configObject->get_setting('core', 'summative_remote');
+$paper_settings = new PaperSettings($paperID, $properties->get_paper_type());
+
 // Get the changes to be used later
 $changes = $logger->get_changes('Paper', $paperID, $change_callbacks);
 
@@ -1152,6 +1155,9 @@ for ($tmp_minute = 0; $tmp_minute <= 59; $tmp_minute++) {
     echo "</select>\n</td></tr>\n";
     echo "</table>\n";
 
+    if ($remote) {
+        $paper_settings->renderSettings('security');
+    }
     echo "<table cellpadding=\"0\" cellspacing=\"4\" border=\"0\" width=\"100%\">\n";
     echo '<tr><td class="headbar" style="padding:2px; width:400px">&nbsp;' . $string['modules'] . '</td><td class="headbar" style="padding:2px">&nbsp;' . $string['restricttolabs'] . '</td></tr>';
     echo '<tr><td rowspan="3" style="vertical-align:top">';
@@ -1718,7 +1724,6 @@ for ($i = 0; $i < $rows; $i++) {
     }
     echo '<tr><td>' . ucfirst($part) . "</td><td>$old</td><td>$new</td><td>" . date($configObject->get('cfg_very_short_datetime_php'), $changes[$i]['date']) . '</td><td>' . $changes[$i]['title'] . ' ' . $changes[$i]['surname'] . "</td><tr>\n";
 }
-$mysqli->close();
 ?>
 </table>
 </div></td></tr>
@@ -1741,12 +1746,16 @@ $render = new render($configObject);
 $dataset['name'] = 'dataset';
 $dataset['attributes']['type'] = $properties->get_paper_type();
 $dataset['attributes']['id'] = $paperID;
-$dataset['attributes']['remotesummative'] = $configObject->get_setting('core', 'summative_remote');
+$dataset['attributes']['remotesummative']= 0;
+if ($remote and $paper_settings->getSetting('remote_summative')) {
+    $dataset['attributes']['remotesummative'] = 1;
+}
 $render->render($dataset, array(), 'dataset.html');
 // JS utils dataset.
 $jsdataset['name'] = 'jsutils';
 $jsdataset['attributes']['xls'] = json_encode($string);
 $render->render($jsdataset, array(), 'dataset.html');
+$mysqli->close();
 ?>
 </body>
 </html>

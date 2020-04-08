@@ -856,7 +856,6 @@ if ($user_no > 0) {
     echo "</body>\n</html>";
     exit;
 }
-  $mysqli->close();
 ?>
   <input type="hidden" id="datetime" value="<?php echo $configObject->get('cfg_tablesorter_date_time'); ?>" />
   <input type="hidden" id="markall" value="0" />
@@ -868,8 +867,14 @@ if ($user_no > 0) {
   $jsdataset['attributes']['xls'] = json_encode($string);
   $render->render($jsdataset, array(), 'dataset.html');
   $dataset['name'] = 'dataset';
-  $dataset['attributes']['remotesummative'] = $configObject->get_setting('core', 'summative_remote');
+  $paper_settings = new PaperSettings($paperID, $paper_type);
+  $remote = false;
+  if ($configObject->get_setting('core', 'summative_remote') and $paper_settings->getSetting('remote_summative')) {
+    $remote = true;
+  }
+  $dataset['attributes']['remotesummative'] = $remote;
   $render->render($dataset, array(), 'dataset.html');
+  $mysqli->close();
 ?>
 </body>
 </html>

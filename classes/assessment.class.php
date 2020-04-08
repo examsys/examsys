@@ -77,7 +77,7 @@ class assessment
     private $max_duration;
 
     // Paper type name and keys
-    private $type;
+    public $type;
 
     // Maximum number of exam sittings
     private $max_sittings;
@@ -153,9 +153,10 @@ class assessment
      * @param string $timezone - timezone paper is being taken in
      * @param string $externalid - External system id
      * @param string $externalsys - External system name
+     * @param integer $remote - flag to indicate remote summative
      * @return integer|bool - id of new assessment or false on error
      */
-    public function create($papertitle, $papertype, $paperowner, $startdate, $enddate, $labs, $duration, $session, $modules, $timezone, $externalid = null, $externalsys = null)
+    public function create($papertitle, $papertype, $paperowner, $startdate, $enddate, $labs, $duration, $session, $modules, $timezone, $externalid = null, $externalsys = null, $remote = 0)
     {
             
         // Check externalid is unique.
@@ -215,7 +216,7 @@ class assessment
         // Set the summative rubric
         if ($papertype == self::TYPE_SUMMATIVE) {
             $langpack = new langpack();
-            if ($this->summative_remote) {
+            if ($this->summative_remote and $remote) {
                 $default_rubric = $langpack->get_string($this->langcomponent, 'remote_summative_rubric');
             } else {
                 $default_rubric = $langpack->get_string($this->langcomponent, 'summative_rubric');
@@ -259,6 +260,11 @@ class assessment
         );
         $property_id = $this->db_insert_assessment($params);
         if ($property_id) {
+            // Settings.
+            if ($papertype == self::TYPE_SUMMATIVE and $this->summative_remote) {
+                $paper_settings = new \PaperSettings($property_id, $papertype);
+                $paper_settings->updateSetting('remote_summative', $remote, Config::BOOLEAN, $property_id);
+            }
             // Add to Modules.
             foreach ($modules as $module) {
                 $result = $this->db->prepare('INSERT INTO properties_modules (property_id, idMod) VALUES (?, ?)');
