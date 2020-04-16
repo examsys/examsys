@@ -1,0 +1,5 @@
+## Data for the paper_settings_category table.
+---
+paper_settings_category:
+  -
+    category: "security"

@@ -1,0 +1,8 @@
+## Data for the paper_settings_setting table.
+---
+paper_settings_setting:
+  -
+    setting: "remote_summative"
+    category: "security"
+    type: "boolean"
+    supported: "{\"osce\": 0, \"survey\": 0, \"offline\": 0, \"progress\": 0, \"formative\": 0, \"summative\": 1, \"peer_review\": 0}"

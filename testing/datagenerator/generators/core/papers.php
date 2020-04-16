@@ -100,7 +100,18 @@ class papers extends generator
             $paperowner = UserUtils::username_exists($parameters['paperowner'], $this->db);
             $modulename = $parameters['modulename'];
         }
-        $default = array('startdate' => null, 'enddate' => null, 'labs' => null, 'duration' => null, 'session' => null, 'timezone' => 'Europe/London', 'externalid' => null, 'externalsys' => null, 'calendaryear' => null);
+        $default = array(
+            'startdate' => null,
+            'enddate' => null,
+            'labs' => null,
+            'duration' => null,
+            'session' => null,
+            'timezone' => 'Europe/London',
+            'externalid' => null,
+            'externalsys' => null,
+            'calendaryear' => null,
+            'remote' => 0
+        );
         $settings = $this->set_defaults_and_clean($default, $parameters);
 
         if (!empty($settings['startdate'])) {
@@ -158,7 +169,21 @@ class papers extends generator
         $settings['end_date'] = $enddate->format('Y-m-d H:i:s');
 
         try {
-            $pid = $paper->create($settings['papertitle'], $settings['papertype'], $settings['paperowner'], $settings['start_date'], $settings['end_date'], $settings['labs'], $settings['duration'], $settings['session'], $settings['moduleids'], $settings['timezone'], $settings['externalid'], $settings['externalsys']);
+            $pid = $paper->create(
+                $settings['papertitle'],
+                $settings['papertype'],
+                $settings['paperowner'],
+                $settings['start_date'],
+                $settings['end_date'],
+                $settings['labs'],
+                $settings['duration'],
+                $settings['session'],
+                $settings['moduleids'],
+                $settings['timezone'],
+                $settings['externalid'],
+                $settings['externalsys'],
+                $settings['remote'],
+            );
         } catch (Exception $e) {
             $message = $e->getMessage();
             echo $message;
