@@ -14,5 +14,5 @@
 // You should have received a copy of the GNU General Public License
 // along with Rogo.  If not, see <http://www.gnu.org/licenses/>.
 
-$string['err'] = '<strong>ERROR:</strong> Requested toilet break cannot be found.';
-$string['toiletbreak'] = '<strong>Toilet Break</strong>';
+$string['err'] = '<strong>ERROR:</strong> Requested rest break cannot be found.';
+$string['toiletbreak'] = '<strong>Rest Break</strong>';

@@ -28,7 +28,7 @@ $string['endtime'] = 'End';
 $string['extendtime'] = 'Extend Time';
 $string['extendtimeby'] = 'Extend Time By';
 $string['addnote'] = 'Add note';
-$string['toiletbreak'] = 'Toilet Break';
+$string['toiletbreak'] = 'Rest Break';
 $string['currenttime']    = 'Current Time';
 $string['start']     = 'Start';
 $string['end']       = 'End';
@@ -53,7 +53,7 @@ $string['midexam'] = 'Mid-Exam';
 $string['midexamlist'] = '<ol>
     <li>For emergency support call one of the numbers show on the paper tabs</li>
     <li>Record IT/personal problems against relevant students (click their name)</li>
-    <li>Record toilet breaks against relevant students (click their name)</li>
+    <li>Record rest breaks against relevant students (click their name)</li>
     <li>Record general paper/question problems using \'Add Paper Note...\' button.</li>
     </ol>';
 $string['postexam'] = 'Post-Exam';
