@@ -239,6 +239,13 @@ if (
     }
     echo "</li>\n</ul>\n<p style=\"margin-left:90px\">" . $string['try'] . ":</p>\n<ul style=\"margin-left:80px\">\n<li>" . $string['f5'] . "</li>\n<li>" . $string['RaiseYourHand '] . "</li>\n</ul>\n";
 
+    echo "<div class=\"hr_line\"></div>\n<p style=\"margin-left:90px\">" . $string['notinalab'];
+    $link = $configObject->get_setting('core', 'summative_issuelink');
+    if (!empty($link)) {
+        echo ' via the <a href="' . $link . '" target="_blank">' . $string['logissue'] . '</a>';
+    }
+    echo "</p>\n";
+
     // Show staff a list of summative papers in the next 6 weeks with a link to test & preview
     if ($userObject->has_role('Staff')) {
         if (!isset($staff_modules)) {
