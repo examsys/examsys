@@ -249,7 +249,7 @@ if (!$central_mgmt or $papertype != $assessment::TYPE_SUMMATIVE) {
     }
     echo '</select></td></tr>';
 
-    echo '<tr><td style="text-align:right">' . $string['campus'] . '</td><td colspan="5"><select name="campus">';
+    echo '<tr><td style="text-align:right">' . $string['campus'] . '</td><td colspan="5"><select id="campus" name="campus">';
     $campusobj = new campus($mysqli);
     $campuses = $campusobj->get_all_campus_details();
     foreach ($campuses as $key => $campusarray) {
@@ -265,9 +265,7 @@ if (!$central_mgmt or $papertype != $assessment::TYPE_SUMMATIVE) {
 
 echo "</table>\n";
 
-if (!$central_mgmt) {
-    PaperSettings::renderNewSettings($string, $mysqli, $paper_type, 'security');
-}
+PaperSettings::renderNewSettings($string, $mysqli, $paper_type, 'security');
 
 echo '<div class="titlebar" style="margin-top:5px; border-top:1px solid #295AAD; border-left:1px solid #295AAD; border-right:1px solid #295AAD">' . $string['modules'] . '</div>';
 if ($central_mgmt and $papertype == $assessment::TYPE_SUMMATIVE) {
@@ -324,6 +322,9 @@ foreach ($module_array as $module) {
     $jsdataset['name'] = 'jsutils';
     $jsdataset['attributes']['xls'] = json_encode($string);
     $render->render($jsdataset, array(), 'dataset.html');
+    $miscdataset['name'] = 'dataset';
+    $miscdataset['attributes']['central'] = $central_mgmt;
+    $render->render($miscdataset, array(), 'dataset.html');
 ?>
 </body>
 </html>

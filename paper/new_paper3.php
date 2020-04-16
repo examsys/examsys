@@ -111,7 +111,7 @@ if ($central_mgmt and $papertype == $assessment::TYPE_SUMMATIVE) {
 
 try {
     $remote = 0;
-    if ($papertype == $assessment::TYPE_SUMMATIVE and !$central_mgmt and $configObject->get_setting('core', 'summative_remote')) {
+    if ($papertype == $assessment::TYPE_SUMMATIVE and $configObject->get_setting('core', 'summative_remote')) {
         $remote = check_var('remote_summative', 'POST', false, false, true);
         if (is_null($remote)) {
             $remote = 0;
