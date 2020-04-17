@@ -604,7 +604,7 @@ if ($properties->get_paper_type() != '4' and $properties->get_paper_type() != '5
     echo "</select>\n</td></tr>\n";
     if ($userObject->has_role('SysAdmin')) {
         // Sys admins can edit.
-        echo '<tr><td>' . $string['externalsys'] . '</td><td><select name="externalsys">';
+        echo '<tr><td align="right" valign="top">' . $string['externalsys'] . '</td><td><select name="externalsys">';
         echo "<option value=\"\"></option>\n";
         foreach ($extsys as $i => $s) {
             if ($s == $properties->get_externalsys()) {
@@ -615,7 +615,7 @@ if ($properties->get_paper_type() != '4' and $properties->get_paper_type() != '5
             echo "<option value=\"$s\" $selected>$s</option>\n";
         }
         echo '</select></td></tr>';
-        echo '<tr><td>' . $string['externalid'] . '</td><td><input type="text" size="30" maxlength="255" name="externalid" value="' . $properties->get_externalid() . '"></td></tr>';
+        echo '<tr><td align="right" valign="top">' . $string['externalid'] . '</td><td><input type="text" size="30" maxlength="255" name="externalid" value="' . $properties->get_externalid() . '"></td></tr>';
     } else {
         // Non sys admins can only view.
         echo '<tr><td>' . $string['externalid'] . '</td><td>' . $properties->get_externalid() . '</td></tr>';
