@@ -103,7 +103,7 @@ if ($properties->get_summative_lock() == 1) {
     $max_screen = ($properties->get_max_screen() != '') ? $properties->get_max_screen() : 0;
     echo '<div class="menuitem addquestions" data-dispno="' . ($properties->get_max_display_pos() + 1) . '" data-screen="' . $max_screen . "\"><img class=\"sidebar_icon\" src=\"{$configObject->get('cfg_root_path')}/artwork/add_questions_16.gif\" alt=\"" . $string['addquestionspaper'] . '" /><a href="#">' . $string['addquestionspaper'] . "</a></div>\n";
 }
-  echo "<div class=\"menuitem properties\"><a href=\"#\"><img class=\"sidebar_icon\" src=\"{$configObject->get('cfg_root_path')}/artwork/properties_icon.gif\" alt=\"" . $string['editproperties'] . '" />' . $string['editproperties'] . "</a></div>\n";
+  echo "<div class=\"menuitem properties\"><a href=\"{$configObject->get('cfg_root_path')}/paper/properties.php?paperID={$paperID}&caller=details&module={$module}&folder={$folder}\"><img class=\"sidebar_icon\" src=\"{$configObject->get('cfg_root_path')}/artwork/properties_icon.gif\" alt=\"" . $string['editproperties'] . '" />' . $string['editproperties'] . "</a></div>\n";
 if ($properties->get_paper_type() == '2') {
     if (is_null($properties->get_external_review_deadline())) {
         echo "<div class=\"grey menuitem\" id=\"emailexternalsgrey\"><img class=\"sidebar_icon\" src=\"{$configObject->get('cfg_root_path')}/artwork/small_email_grey.png\" alt=\"" . $string['emailexternals'] . '" />' . $string['emailexternals'] . "</a></div>\n";

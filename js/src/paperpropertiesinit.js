@@ -18,7 +18,7 @@
 // @author Dr Joseph Baxter <joseph.baxter@nottingham.ac.uk>
 // @copyright Copyright (c) 2018 The University of Nottingham
 //
-requirejs(['paperproperties', 'colourpicker', 'datecopy', 'form', 'alert', 'helplauncher', 'jquery', 'jqueryui'], function (PROP, PICKER, DATECOPY, FORM, ALERT, HELPLAUNCHER, $) {
+requirejs(['rogoconfig', 'paperproperties', 'colourpicker', 'datecopy', 'form', 'alert', 'helplauncher', 'jquery', 'jqueryui'], function (Config, PROP, PICKER, DATECOPY, FORM, ALERT, HELPLAUNCHER, $) {
     var properties = new PROP();
 
     var picker = new PICKER();
@@ -95,8 +95,7 @@ requirejs(['paperproperties', 'colourpicker', 'datecopy', 'form', 'alert', 'help
                 dataType: "json",
                 success: function (data) {
                     if (data == 'SUCCESS') {
-                        window.opener.location.reload();
-                        window.close()
+                        window.location.href = Config.cfgrootpath  + '/paper/details.php?paperID=' + $('#dataset').attr('data-id');
                     } else if (data == 'DUPLICATE_TITLE') {
                         $('#papertitle').addClass('errfield');
                         properties.buttonclick('general','tab1');

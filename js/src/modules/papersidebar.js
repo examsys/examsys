@@ -43,10 +43,6 @@ define(['rogoconfig', 'jsxls', 'state', 'sidebar', 'jquery'], function(config, j
                 scope.addQuestions($(this).attr('data-dispno'), $(this).attr('data-screen'));
             });
 
-            $('.properties').click(function() {
-                scope.paperProperties();
-            });
-
             $('.edit').click(function() {
                 scope.editQuestion();
             });
@@ -230,21 +226,6 @@ define(['rogoconfig', 'jsxls', 'state', 'sidebar', 'jquery'], function(config, j
             if (window.focus) {
                 notice.focus();
             }
-        };
-
-        /**
-         * Open paper properties window.
-         * @returns bool
-         */
-        this.paperProperties = function() {
-            var notice = window.open(config.cfgrootpath + "/paper/properties.php?paperID=" + this.paperid + "&caller=details&module=" +this.module + "&folder=" + this.folder,"properties","width=888,height=650,left="+(screen.width/2-431)+",top="+(screen.height/2-325)+",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
-            if (window.focus) {
-                notice.focus();
-            }
-            if (this.event) {
-                this.event.returnValue = false;
-            }
-            return false;
         };
 
         /**

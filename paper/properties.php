@@ -37,7 +37,7 @@ define('MARK_RANDOM', '1');
 define('MARK_STD_SET', '2');
 
 $paperID = check_var('paperID', 'REQUEST', true, false, true);
-
+$render = new render($configObject);
 $texteditorplugin = \plugins\plugins_texteditor::get_editor();
 /**
  * Define callbacks to be used when retrieving tracked changes
@@ -427,6 +427,50 @@ if ($configObject->get_setting('core', 'cfg_summative_mgmt') and $properties->ge
 ?>
 </head>
 <body>
+<div id="content">
+<?php
+require '../include/toprightmenu.inc';
+
+echo draw_toprightmenu();
+// initial link of breadcrumb
+$links = array('/' => $string['home']);
+
+if ($folder) {
+    // links of parent folders
+    $folderName = folder_utils::get_folder_name($folder, $mysqli);
+    foreach (folder_utils::get_parent_list($folderName, $userObject, $mysqli) as $parentId => $parentName) {
+        $href = '/folder/index.php?folder=' . $parentId;
+        $links[$href] = $parentName;
+    }
+
+    // link of current folder
+    $href = '/folder/index.php?folder=' . $folder;
+    $links[$href] = false === strpos($folderName, ';') ? $folderName : substr($folderName, strrpos($folderName, ';') + 1);
+} else {
+    if (is_null($module)) {
+        // Get the modules from paper properties
+        $modules = Paper_utils::get_modules($paperID, $mysqli);
+        $module = key($modules);
+    }
+    // link to module
+    $href = '/module/index.php?module=' . $module ;
+    $links[$href] = module_utils::get_moduleid_from_id($module, $mysqli);
+
+    // link to module
+    $href = '/paper/type.php?module=' . $module . '&type=' . $properties->get_paper_type();
+    $links[$href] = Paper_utils::type_to_name($properties->get_paper_type(), $string);
+}
+
+// link of current paper
+$href = '/paper/details.php?paperID=' . $paperID;
+$links[$href] = $properties->get_paper_title();
+$href = $_SERVER['PHP_SELF'] . '?paperID=' . $paperID . '&caller=details&module=' . $module . '&folder=' . $folder;
+$links[$href] = $string['propertiestitle'];
+
+// breadcrumb
+echo $render->render_admin_navigation($links);
+?>
+</div>
 <form id="theform" name="edit_form" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>" autocomplete="off">
 <?php
   require '../tools/colour_picker/colour_picker.inc';
@@ -1742,7 +1786,6 @@ for ($i = 0; $i < $rows; $i++) {
                                           } ?>" />
 </form>
 <?php
-$render = new render($configObject);
 $dataset['name'] = 'dataset';
 $dataset['attributes']['type'] = $properties->get_paper_type();
 $dataset['attributes']['id'] = $paperID;
