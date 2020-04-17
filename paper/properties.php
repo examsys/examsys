@@ -1789,10 +1789,6 @@ for ($i = 0; $i < $rows; $i++) {
 $dataset['name'] = 'dataset';
 $dataset['attributes']['type'] = $properties->get_paper_type();
 $dataset['attributes']['id'] = $paperID;
-$dataset['attributes']['remotesummative']= 0;
-if ($remote and $paper_settings->getSetting('remote_summative')) {
-    $dataset['attributes']['remotesummative'] = 1;
-}
 $render->render($dataset, array(), 'dataset.html');
 // JS utils dataset.
 $jsdataset['name'] = 'jsutils';

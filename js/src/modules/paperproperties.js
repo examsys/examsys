@@ -126,7 +126,7 @@ define(['alert', 'jquery', 'jqueryui'], function(ALERT, $) {
                 return false;
             }
 
-            if ($('#paper_type').val() == '2' && $('#dataset').attr('data-remotesummative') == 0) {
+            if ($('#paper_type').val() == '2' && $('#remote_summative').is(':checked') == 0) {
                 if ($('#fday').val() != $('#tday').val() || $('#fmonth').val() != $('#tmonth').val() || $('#fyear').val() != $('#tyear').val()) {
                     alert.notification('msg2');
                     return false;
