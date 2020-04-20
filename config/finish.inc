@@ -18,7 +18,9 @@ if (isset($low_bandwidth) and $low_bandwidth == 1) {
 }
 
 $properties = PaperProperties::get_paper_properties_by_id($paperID, $mysqli, $string);
-if ($properties->get_paper_type() == '2' and $configObject->get_setting('core', 'summative_remote')) {
+$papertype = $properties->get_paper_type();
+$paper_settings = new PaperSettings($paperID, $papertype);
+if ($papertype == '2' and $paper_settings->getSetting('remote_summative')) {
     $leaving_rules = '<div class="logoutandclose">' . $string['msg2remote'] . '</div>';
 } elseif ($properties->get_fullscreen() == 1) {
     $leaving_rules = $string['msg2'];

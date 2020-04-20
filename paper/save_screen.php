@@ -108,8 +108,9 @@ if ($userObject->has_role('Staff') and check_staff_modules($moduleID, $userObjec
     check_finished($propertyObj, $userObject, $string, $mysqli);
     // Check current IP address with that of attempt in log.
     // Warn user they are logged into mulitple devices in this exam.
-    if ($propertyObj->get_paper_type() == '2') {
-        check_ipmismatch($propertyObj->get_property_id(), $current_address, $string, $userObject, $mysqli);
+    $papertype = $propertyObj->get_paper_type();
+    if ($papertype == '2') {
+        check_ipmismatch($propertyObj->get_property_id(), $current_address, $string, $userObject, $mysqli, $papertype);
     }
   
     $summative_exam_session_started = false;

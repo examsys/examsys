@@ -321,10 +321,7 @@ $overrides = $paper_utils->get_marking_overrides($log_type, $temp_userID, $paper
 
 $status_array = QuestionStatus::get_all_statuses($mysqli, $string, true);
 $paper_settings = new PaperSettings($paperID, $paper_type);
-$remote = false;
-if ($configObject->get_setting('core', 'summative_remote') and $paper_settings->getSetting('remote_summative')) {
-    $remote = true;
-}
+$remote = $paper_settings->getSetting('remote_summative');
 if ($show_feedback) {
     display_feedback($propertyObj, $temp_userID, $log_type, $userObject, $log_metadata, $mysqli, $status_array, $overrides, $preview_q_id);
 

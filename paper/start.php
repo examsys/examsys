@@ -116,10 +116,7 @@ $current_address = NetworkUtils::get_client_address();
 $modIDs = array_keys(Paper_utils::get_modules($paperID, $mysqli));
 $moduleID = $propertyObj->get_modules();
 $paper_settings = new PaperSettings($paperID, $papertype);
-$remote = false;
-if ($configObject->get_setting('core', 'summative_remote') and $paper_settings->getSetting('remote_summative')) {
-    $remote = true;
-}
+$remote = $paper_settings->getSetting('remote_summative');
 
 if ($userObject->has_role('Staff') and check_staff_modules($moduleID, $userObject)) {
     // No further security checks.
@@ -158,7 +155,7 @@ if ($userObject->has_role('Staff') and check_staff_modules($moduleID, $userObjec
     if ($papertype == '2') {
         // Check current IP address with that of attempt in log.
         // Warn user they are logged into mulitple devices in this exam and log them out.
-        check_ipmismatch($paperID, $current_address, $string, $userObject, $mysqli);
+        check_ipmismatch($paperID, $current_address, $string, $userObject, $mysqli, $papertype);
     }
 }
 

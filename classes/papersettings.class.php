@@ -106,15 +106,17 @@ class PaperSettings
      */
     public function updateSetting(string $setting, string $value, string $type, int $paper): void
     {
-        // Ensure boolean value.
-        if ($type == Config::BOOLEAN) {
-            if (empty($value)) {
-                $value = 0;
-            } else {
+        // Use type default value if empty.
+        if (empty($value)) {
+            $value = $this->defaultValue($type);
+        } else {
+            // Ensure value conforms to type.
+            if ($type == \Config::BOOLEAN) {
                 $value = 1;
             }
         }
-        //Check cache.
+
+        // Check cache.
         $currentsetting = $this->getSetting($setting);
         if (!is_null($currentsetting)) {
             // Update Settings.
@@ -197,6 +199,9 @@ class PaperSettings
         $result->execute();
         $result->store_result();
         $result->bind_result($value);
+        if ($result->num_rows() == 0) {
+            $value = $this->defaultValue($this->getType($setting));
+        }
         $result->fetch();
         $this->settings[$setting]['value'] = $value;
         return $value;
@@ -270,5 +275,46 @@ class PaperSettings
         }
         $render = new render(Config::get_instance());
         $render->render($data, $strings, 'admin/paper/new_settings.html');
+    }
+
+    /**
+     * Get default value for type
+     * @param mixed $type settings type
+     * @return mixed
+     */
+    public function defaultValue($type)
+    {
+        switch ($type) {
+            case \Config::BOOLEAN:
+                $value = 0;
+                break;
+            default:
+                $value = '';
+        }
+        return $value;
+    }
+
+    /**
+     * Get setting type
+     * @param string $setting the setting
+     * @return string|null
+     */
+    public function getType(string $setting)
+    {
+        $result = $this->db->prepare(
+            'SELECT
+                type
+            FROM 
+                rogo.paper_settings_setting
+            WHERE
+                setting = ?'
+        );
+        $result->bind_param('s', $setting);
+        $result->execute();
+        $result->store_result();
+        $result->bind_result($type);
+        $result->fetch();
+        $result->close();
+        return $type;
     }
 }

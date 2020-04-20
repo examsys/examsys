@@ -825,7 +825,6 @@ class InstallUtils
             $maxsize = round($maxsize);
         }
         $configObject->set_setting('system_maxmediasize', $maxsize, Config::INTEGER);
-        $configObject->set_setting('summative_remote', false, Config::BOOLEAN);
         $configObject->set_setting('summative_issuelink', '', Config::URL);
         $configObject->set_setting('summative_issuelink2', '', Config::URL);
         // Add external systems.

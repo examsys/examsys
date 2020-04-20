@@ -265,14 +265,15 @@ function check_metadata($property_id, $userObj, $moduleIDs, $string, $db)
  * @param array $string tranlsations
  * @param object $userObj user object
  * @param object $db database object
+ * @param string $papertype the paper type
  */
-function check_ipmismatch($paperid, $current_address, $string, $userObj, $db)
+function check_ipmismatch($paperid, $current_address, $string, $userObj, $db, $papertype)
 {
     $log_metadata = new LogMetadata($userObj->get_user_ID(), $paperid, $db);
     $log_metadata->get_record('', false);
-    $configObject = Config::get_instance();
     $blurb = $string['ipmismatchblurb'];
-    if ($configObject->get_setting('core', 'summative_remote')) {
+    $paper_settings = new PaperSettings($paperid, $papertype);
+    if ($paper_settings->getSetting('remote_summative')) {
         $blurb = $string['remoteipmismatchblurb'];
     }
     // Warn user they are logged into mulitple devices in this exam and log them out.

@@ -223,11 +223,6 @@ config:
     type: "boolean"
   -
     component: "core"
-    setting: "summative_remote"
-    value: "0"
-    type: "boolean"
-  -
-    component: "core"
     setting: "support_contact_email"
     value: "[\"test@example.com\"]"
     type: "email"

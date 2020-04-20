@@ -139,7 +139,8 @@ $password           = $propertyObj->get_password();
 $modIDs             = array_keys($propertyObj->get_modules());
 $deleted            = $propertyObj->get_deleted();
 
-$remote = $configObject->get_setting('core', 'summative_remote');
+$paper_settings = new PaperSettings($property_id, $test_type);
+$remote = $paper_settings->getSetting('remote_summative');
 
 // If OSCE paper or if the paper has been deleted we should exit as this is an invalid page.
 if ($test_type == '4' or $deleted != null) {
@@ -467,7 +468,7 @@ if ($start_available === false) {
 } elseif ($metadata_security === false) {
     echo "<div style=\"color:#C00000;font-size:90%\">$metadata_msg</div>\n";
 } elseif ($test_type == '2' and !$userObject->has_role('External Examiner')) {
-    if ($configObject->get_setting('core', 'summative_remote')) {
+    if ($remote) {
         echo '<div style="color:#C00000;font-size:90%">' . $string['waitforpassword'] . "</div>\n";
     } else {
         echo '<div style="color:#C00000;font-size:90%">' . $string['donotstart'] . "</div>\n";
@@ -533,11 +534,6 @@ $dataset['attributes']['ipmismatch'] = $ipmismatch;
 $dataset['attributes']['id'] = $id;
 $dataset['attributes']['mode'] = $mode;
 $dataset['attributes']['fullscreen'] = $fullscreen;
-$paper_settings = new PaperSettings($property_id, $test_type);
-$remote = false;
-if ($configObject->get_setting('core', 'summative_remote') and $paper_settings->getSetting('remote_summative')) {
-    $remote = true;
-}
 $dataset['attributes']['remotesummative'] = $remote;
 $render->render($dataset, array(), 'dataset.html');
 $mysqli->close();

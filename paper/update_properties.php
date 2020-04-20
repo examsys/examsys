@@ -263,7 +263,7 @@ if (!$title_unique) {
         }
         $properties->set_labs($lab_string);
 
-        if ($papertype == '2' and $configObject->get_setting('core', 'summative_remote')) {
+        if ($papertype == '2') {
             $paper_settings = new PaperSettings($paperID, $papertype);
             $remote = check_var('remote_summative', 'POST', false, false, true);
             if (is_null($remote)) {

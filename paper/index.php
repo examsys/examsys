@@ -122,9 +122,7 @@ $paper_no = $paper_utils->get_active_papers($paper_display, array('1', '2'), $us
 $remote = false;
 if ($paper_no == 1) {
     $paper_settings = new PaperSettings($paper_display[0]['id'], $paper_display[0]['paper_type']);
-    if ($configObject->get_setting('core', 'summative_remote') and $paper_settings->getSetting('remote_summative')) {
-        $remote = true;
-    }
+    $remote = $paper_settings->getSetting('remote_summative');
 }
 if (
     $paper_no == 1 and

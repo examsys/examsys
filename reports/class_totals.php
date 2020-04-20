@@ -218,7 +218,9 @@ echo draw_toprightmenu(30);
   </div>
   <?php
     // Only allow reset of timer for Progress tests and Remote Summative exams.
-    if ($paper_type == '1' or ($paper_type == '2' and $configObject->get_setting('core', 'summative_remote'))) {
+    $paper_settings = new PaperSettings($paperID, $paper_type);
+    $remote = $paper_settings->getSetting('remote_summative');
+    if ($paper_type == '1' or ($paper_type == '2' and $remote)) {
         $class = 'popup_row';
     } else {
         $class = 'popup_row_disabled';
@@ -868,11 +870,7 @@ if ($user_no > 0) {
   $render->render($jsdataset, array(), 'dataset.html');
   $dataset['name'] = 'dataset';
   $paper_settings = new PaperSettings($paperID, $paper_type);
-  $remote = false;
-  if ($configObject->get_setting('core', 'summative_remote') and $paper_settings->getSetting('remote_summative')) {
-    $remote = true;
-  }
-  $dataset['attributes']['remotesummative'] = $remote;
+  $dataset['attributes']['remotesummative'] = $paper_settings->getSetting('remote_summative');
   $render->render($dataset, array(), 'dataset.html');
   $mysqli->close();
 ?>

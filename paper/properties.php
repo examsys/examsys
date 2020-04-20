@@ -103,7 +103,6 @@ $change_callbacks = setup_change_callbacks($changed_reviewers, $changed_labs);
 
 $logger = new Logger($mysqli);
 
-$remote = $configObject->get_setting('core', 'summative_remote');
 $paper_settings = new PaperSettings($paperID, $properties->get_paper_type());
 
 // Get the changes to be used later
@@ -1198,10 +1197,7 @@ for ($tmp_minute = 0; $tmp_minute <= 59; $tmp_minute++) {
 }
     echo "</select>\n</td></tr>\n";
     echo "</table>\n";
-
-    if ($remote) {
-        $paper_settings->renderSettings('security');
-    }
+    $paper_settings->renderSettings('security');
     echo "<table cellpadding=\"0\" cellspacing=\"4\" border=\"0\" width=\"100%\">\n";
     echo '<tr><td class="headbar" style="padding:2px; width:400px">&nbsp;' . $string['modules'] . '</td><td class="headbar" style="padding:2px">&nbsp;' . $string['restricttolabs'] . '</td></tr>';
     echo '<tr><td rowspan="3" style="vertical-align:top">';

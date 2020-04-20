@@ -39,7 +39,6 @@ if (isset($_GET['calyear'])) {
 function display_papers($day_no, $subtract, $current_year, $current_month, $paper_details, &$papers, &$cellID, $string, $default_timezone, $userObject, $mysqli)
 {
     $configObject = Config::get_instance();
-    $remote = $configObject->get_setting('core', 'summative_remote');
     echo "<table id=\"month_grid\" cellspacing=\"0\" cellpadding=\"2\" style=\"width:100%\">\n";
     foreach ($paper_details as $paper) {
         if ($paper['type'] == 'extra_date') {
@@ -86,7 +85,7 @@ function display_papers($day_no, $subtract, $current_year, $current_month, $pape
 
                 $properties = PaperProperties::get_paper_properties_by_id($paper['property_id'], $mysqli, $string);
                 $paper['password']  = $properties->get_decrypted_password();
-                if ($properties->get_paper_type() == '2' and $remote) {
+                if ($properties->get_paper_type() == '2') {
                     $start =  $properties->get_display_start_date();
                     $end  = $properties->get_display_end_date();
                     $fromdate = date('ymd', $properties->get_start_date());
@@ -94,7 +93,6 @@ function display_papers($day_no, $subtract, $current_year, $current_month, $pape
                     // Flag paper as running over multiple days.
                     if ($fromdate != $todate) {
                         echo '<img src="../artwork/calendar.png" alt="' . $string['multipledays'] . '" title="' . $string['multipledays'] . '" />';
-
                     }
                 } else {
                     $start = $paper['start_time'];

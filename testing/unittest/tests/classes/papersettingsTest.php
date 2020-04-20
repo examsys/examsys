@@ -45,7 +45,6 @@ class PaperSetttingsTest extends unittestdatabase
      */
     public function datageneration(): void
     {
-        $this->config->set_setting('summative_remote', 1, 'boolean');
         $datagenerator = $this->get_datagenerator('papers', 'core');
         $this->paper = $datagenerator->create_paper(
             array(
@@ -132,5 +131,25 @@ class PaperSetttingsTest extends unittestdatabase
         $paper_settings = new \PaperSettings($this->paper['id'], $this->paper['papertype']);
         $this->assertEquals('1', $paper_settings->getSetting('remote_summative'));
         $this->assertNull($paper_settings->getSetting('doesnotexist'));
+    }
+
+    /**
+     * Test getting default type value
+     * @group paper
+     */
+    public function testDefaultValue(): void
+    {
+        $paper_settings = new \PaperSettings($this->paper['id'], $this->paper['papertype']);
+        $this->assertEquals(0, $paper_settings->defaultValue(\Config::BOOLEAN));
+    }
+
+    /**
+     * Test getting setting type
+     * @group paper
+     */
+    public function testGetType(): void
+    {
+        $paper_settings = new \PaperSettings($this->paper['id'], $this->paper['papertype']);
+        $this->assertEquals(\Config::BOOLEAN, $paper_settings->getType('remote_summative'));
     }
 }

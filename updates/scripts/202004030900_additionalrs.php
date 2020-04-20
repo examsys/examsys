@@ -137,6 +137,9 @@ if ($updater_utils->check_version('7.1.1')) {
             \'{"formative": 0, "progress": 0, "summative": 1, "survey": 0, "osce": 0, "offline": 0, "peer_review": 0}\');';
         $id = $updater_utils->execute_query($sql, false);
 
+        $sql = 'DELETE FROM config WHERE setting = "summative_remote"';
+        $updater_utils->execute_query($sql, false);
+
         $updater_utils->record_update('rogo2767');
     }
 }
