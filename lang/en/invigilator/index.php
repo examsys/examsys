@@ -50,11 +50,20 @@ $string['preexamlist'] = '<ol>
     <li>Use \'Guest Login\' accounts for anyone not able to log in</li>
     <li><strong>NOTE:</strong> Do not start before scheduled start time</li>
     </ol>';
+$string['remotepreexamlist'] = '<ol>
+    <li>Confirm all students have the exam password</li>
+    <li>If a user cannot start the exam ask them to provide evidence via the log issue link</li>
+    </ol>';
 $string['midexam'] = 'Mid-Exam';
 $string['midexamlist'] = '<ol>
     <li>For emergency support call one of the numbers show on the paper tabs</li>
     <li>Record IT/personal problems against relevant students (click their name)</li>
     <li>Record rest breaks against relevant students (click their name)</li>
+    <li>Record general paper/question problems using \'Add Paper Note...\' button.</li>
+    </ol>';
+$string['remotemidexamlist'] = '<ol>
+    <li>For emergency support call one of the numbers show on the paper tabs</li>
+    <li>Record IT/personal problems against relevant students (click their name)</li>
     <li>Record general paper/question problems using \'Add Paper Note...\' button.</li>
     </ol>';
 $string['postexam'] = 'Post-Exam';
@@ -64,6 +73,9 @@ $string['postexamlist'] = '<ol>
     <li>Collect up log in instructions for reuse</li>
     <li>Collect and dispose of blank paper</li>
     <li>Ensure <strong>all</strong> workstations are logged out</li>
+    </ol>';
+$string['remotepostexamlist'] = '<ol>
+    <li>Ask users to provide evidence of any issues during the exam via the log issue link.</li>
     </ol>';
 $string['time'] = 'Time';
 $string['timedexam'] = 'Timed Exam:';

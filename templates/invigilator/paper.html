@@ -78,7 +78,7 @@
             </tr>
             <tr>
                 <td colspan="4">
-                    <input type="button" data-id="{{id}}" value="{{lang.papernote}}" class="ok papernote" />
+                    <input type="button" data-id="{{id}}" data-remote="{{info.remote}}" value="{{lang.papernote}}" class="ok papernote" />
                     <input type="button" data-id="{{id}}" value="{{lang.viewrubric}}" class="ok viewrubric" />
                 </td>
             </tr>
@@ -122,4 +122,5 @@
 <input type="hidden" id="userID" value="" />
 <input type="hidden" id="old_highlightID" value="" />
 <input type="hidden" id="paperID" value="" />
+<input type="hidden" id="remote" value="" />
 <div id="opaque"></div>

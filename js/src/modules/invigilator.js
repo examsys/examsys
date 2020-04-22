@@ -46,10 +46,11 @@ define(['jquery', 'jqueryui'], function($) {
          * @param integer tmpUserID user menu relates to
          * @param integer paperID paper menu relates to
          * @param bool showExtension if true time extension option available
+         * @param bool remote true if remote summative
          * @param object e event
          * @returns bool
          */
-        this.popMenu = function(tmpUserID, paperID, showExtension, e) {
+        this.popMenu = function(tmpUserID, paperID, showExtension, remote, e) {
             if ($('#old_highlightID').val() != '') {
                 $('#l' + $('#old_highlightID').val()).css('background-color', 'white');
             }
@@ -69,6 +70,7 @@ define(['jquery', 'jqueryui'], function($) {
 
             $('#userID').val(tmpUserID);
             $('#paperID').val(paperID);
+            $('#remote').val(remote);
 
             var top_pos = currentY + scrOfY;
 
@@ -157,7 +159,7 @@ define(['jquery', 'jqueryui'], function($) {
          */
         this.newStudentNote = function() {
             $('#menudiv').hide();
-            var studentnote = window.open("new_student_note.php?userID=" + $('#userID').val() + "&paperID=" + $('#paperID').val() + "", "studentnote", "width=650,height=430,left=" + (screen.width / 2 - 300) + ",top=" + (screen.height / 2 - 200) + ",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+            var studentnote = window.open("new_student_note.php?userID=" + $('#userID').val() + "&paperID=" + $('#paperID').val() + "&remote=" + $('#remote').val() + "", "studentnote", "width=650,height=430,left=" + (screen.width / 2 - 300) + ",top=" + (screen.height / 2 - 200) + ",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
 
             if (window.focus) {
                 studentnote.focus();
@@ -176,7 +178,7 @@ define(['jquery', 'jqueryui'], function($) {
                     paperID:$('#paperID').val()
                 },
                 function() {
-                    scope.refreshCohortList($('#paperID').val());
+                    scope.refreshCohortList($('#paperID').val(), $('#remote').val());
                 });
         };
 
@@ -185,7 +187,7 @@ define(['jquery', 'jqueryui'], function($) {
          */
         this.unfinishExam = function() {
             $('#menudiv').hide();
-            var unfinish = window.open("check_unfinish_exam.php?userID=" + $('#userID').val() + "&paperID=" + $('#paperID').val() + "", "unfinish", "width=450,height=200,left=" + (screen.width / 2 - 275) + ",top=" + (screen.height / 2 - 100) + ",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+            var unfinish = window.open("check_unfinish_exam.php?userID=" + $('#userID').val() + "&paperID=" + $('#paperID').val() + "&remote=" + $('#remote').val() + "", "unfinish", "width=450,height=200,left=" + (screen.width / 2 - 275) + ",top=" + (screen.height / 2 - 100) + ",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
 
             if (window.focus) {
                 unfinish.focus();
@@ -195,9 +197,10 @@ define(['jquery', 'jqueryui'], function($) {
         /**
          * Refresh the cohort list.
          * @param integer paperID the paper id
+         * @param boolean remote flag to indicate remote summative
          */
-        this.refreshCohortList = function(paperID) {
-            var dataSource = "../ajax/invigilator/refresh_cohort_list.php?paperID=" + paperID;
+        this.refreshCohortList = function(paperID, remote) {
+            var dataSource = "../ajax/invigilator/refresh_cohort_list.php?paperID=" + paperID + '&remote=' + remote;
 
             $("#cohortlist_" + paperID).load(dataSource);
         };
@@ -205,9 +208,10 @@ define(['jquery', 'jqueryui'], function($) {
         /**
          * Open paper note window.
          * @param integer paperID the paper id
+         * @param boolean remote flag to indicate remote summative
          */
-        this.newPaperNote = function(paperID) {
-            var papernote = window.open("new_paper_note.php?paperID=" + paperID + "","papernote","width=650,height=410,left="+(screen.width/2-300)+",top="+(screen.height/2-200)+",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+        this.newPaperNote = function(paperID, remote) {
+            var papernote = window.open("new_paper_note.php?paperID=" + paperID + "&remote=" + remote+ "","papernote","width=650,height=410,left="+(screen.width/2-300)+",top="+(screen.height/2-200)+",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
             if (window.focus) {
                 papernote.focus();
             }

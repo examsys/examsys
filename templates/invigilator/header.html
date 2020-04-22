@@ -5,24 +5,11 @@
 </div>
 <div id="menudiv" class="popupmenu">
     <ul>
-        <li class="menu-time">{{lang.extendtime}}</li>
         <li class="menu-note">{{lang.addnote}}</li>
+        {% if not data.remote %}
+        <li class="menu-time">{{lang.extendtime}}</li>
         <li class="menu-toilet">{{lang.toiletbreak}}</li>
+        {% endif %}
         <li class="menu-unfinish">{{lang.unfinished}}</li>
     </ul>
-</div>
-<div class="tab-bar">
-    <div class="tab-holder">
-        <ol class="tabs">
-            <li class="on"><a href="#" rel="checklist">{{lang.examchecklist}}</a></li>
-            {% for id, info in data %}
-            <li class='tab' data-id={{id}}><a href="#" rel="paper{{id}}">{{info.title}}</a></li>
-            {% endfor %}
-        </ol>
-        <div style="float:right; padding-right:5px">
-            <a href="{{path}}/logout.php">
-                <img src="{{path}}/artwork/student_logout.png" width="24" height="24" />
-            </a>
-        </div>
-    </div>
 </div>

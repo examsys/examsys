@@ -27,6 +27,7 @@ requirejs(['jquery'], function ($) {
                 data: {userID: $('#userID').val(), paperID: $('#paperID').val()},
                 dataType: "json",
                 success: function () {
+                    window.opener.location.href='./index.php?tab=' + $('#paperID').val() + '&remote=' + $('#remote').val();
                     window.close();
                 },
                 error: function(xhr, textStatus) {

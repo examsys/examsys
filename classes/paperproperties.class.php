@@ -176,6 +176,78 @@ class PaperProperties
 
 
     /*
+     * Load the paper properties for active remote summative exams
+     * used in the invigilator screens
+     * @param object $db - Link to MySQL db.
+     * @return array of PaperProperties
+     */
+    public static function getRemoteSummativePaperProperties($db): array
+    {
+        $sql = "SELECT
+                properties.property_id,
+                paper_title,
+                UNIX_TIMESTAMP(start_date) AS start_date,
+                UNIX_TIMESTAMP(end_date) AS end_date,
+                exam_duration,
+                calendar_year,
+                password,
+                timezone,
+                rubric
+            FROM
+                properties, paper_settings
+            WHERE
+                properties.property_id = paper_settings.paperid AND
+                properties.paper_type = '2' AND
+                paper_settings.setting = 'remote_summative' AND
+                paper_settings.value = 1 AND
+                properties.start_date < DATE_ADD( NOW(), interval 30 minute ) AND
+                properties.end_date > NOW() AND
+                properties.deleted IS NULL";
+        $paper_results = $db->prepare($sql);
+        $paper_results->execute();
+        $paper_results->store_result();
+        $paper_results->bind_result(
+            $property_id,
+            $paper_title,
+            $start_date,
+            $end_date,
+            $exam_duration,
+            $calendar_year,
+            $password,
+            $timezone,
+            $rubric
+        );
+
+        if ($paper_results->num_rows <= 0) {
+            $paper_results->close();
+            return false;
+        }
+
+        $properties = array();
+        while ($paper_results->fetch()) {
+            $property_object = new PaperProperties($db);
+            $property_object->set_property_id($property_id);
+            $property_object->set_paper_title($paper_title);
+            $property_object->set_start_date($start_date);
+            $property_object->set_end_date($end_date);
+            $property_object->set_exam_duration($exam_duration);
+            $property_object->set_calendar_year($calendar_year);
+            $property_object->set_calendar_year($calendar_year);
+            $property_object->password = $password;
+            $property_object->set_timezone($timezone);
+            $property_object->set_display_start_date();
+            $property_object->set_display_start_time();
+            $property_object->set_display_end_date();
+            $property_object->set_display_end_time();
+            $property_object->set_rubric($rubric);
+            $properties[] = $property_object;
+        }
+
+        $paper_results->close();
+        return $properties;
+    }
+
+    /*
     * Load the paper properties by lab ID
     * used in the invigilator screens. previously called (get_invigilator_properties)
     * @param object $lab_object - Lab object.

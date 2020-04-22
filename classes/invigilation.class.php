@@ -55,6 +55,29 @@ class Invigilation
     }
 
     /**
+     * Check if user has completed the exam.
+     * @param int $userid
+     * @param int $paperid
+     * @return boolean
+     */
+    private function getCompleted(int $userid, int $paperid): bool
+    {
+        $completed = true;
+        $sql = 'SELECT completed FROM log_metadata WHERE userID = ? AND paperID = ?';
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param('ii', $userid, $paperid);
+        $stmt->execute();
+        $stmt->store_result();
+        $stmt->bind_result($completed);
+        $stmt->fetch();
+        if (is_null($completed)) {
+            $completed = false;
+        }
+        $stmt->close();
+        return $completed;
+    }
+
+    /**
      * Get emergency numbers
      * @return array
      */
@@ -77,14 +100,14 @@ class Invigilation
      * Get the student list for a paper
      * @param string $modules
      * @param PaperProperties $property_object
-     * @param LogLabEndTime $log_lab_end_time
+     * @param LogLabEndTime|boolean $log_lab_end_time lab end time object / false if not in a lab
      * @param boolean $allow_timing
      * @return array
      */
     public function getStudents(
         string $modules,
         PaperProperties $property_object,
-        LogLabEndTime $log_lab_end_time,
+        $log_lab_end_time,
         bool $allow_timing
     ): array {
         $paperID = $property_object->get_property_id();
@@ -92,7 +115,9 @@ class Invigilation
         $configObject = Config::get_instance();
 
         // Create a caching LogExtraTime gets all the results in one hit.
-        $log_extra_time = new LogExtraTime($log_lab_end_time, array(), $this->db, true);
+        if ($log_lab_end_time !== false) {
+            $log_extra_time = new LogExtraTime($log_lab_end_time, array(), $this->db, true);
+        }
 
         // Get any student notes.
         $notes_array = PaperNotes::get_all_notes_by_paper($paperID, $this->db);
@@ -185,15 +210,25 @@ class Invigilation
         $data = array();
         foreach ($student_object as $student_id => $student_obj) {
             try {
-                $data[] = $this->processStudentList(
-                    $log_lab_end_time,
-                    $log_extra_time,
-                    $student_obj,
-                    $property_object,
-                    $notes_array,
-                    $toilet_break_array,
-                    $allow_timing
-                );
+                if ($log_lab_end_time !== false) {
+                    $data[] = $this->processLabStudentList(
+                        $log_lab_end_time,
+                        $log_extra_time,
+                        $student_obj,
+                        $property_object,
+                        $notes_array,
+                        $toilet_break_array,
+                        $allow_timing
+                    );
+                } else {
+                    $data[] = $this->processStudentList(
+                        $student_obj,
+                        $property_object,
+                        $notes_array,
+                        $toilet_break_array,
+                        $allow_timing
+                    );
+                }
             } catch (ErrorException $e) {
                 // Skip students with bad data.
                 $logger = new \logger($this->db);
@@ -208,7 +243,7 @@ class Invigilation
     }
 
     /**
-     * Generate the student list
+     * Generate the in lab student list
      * @param LogLabEndTime $log_lab_end_time
      * @param LogExtraTime $log_extra_time
      * @param array $student_object
@@ -219,7 +254,7 @@ class Invigilation
      * @throws ErrorException
      * @return array
      */
-    public function processStudentList(
+    public function processLabStudentList(
         LogLabEndTime $log_lab_end_time,
         LogExtraTime $log_extra_time,
         array $student_object,
@@ -290,7 +325,6 @@ class Invigilation
         $surname = $student_object['surname'];
         $first_names = $student_object['first_names'];
         $title = $student_object['title'];
-
         $paperID = $property_object->get_property_id();
 
         $has_student_exceeded_end = ($student_end_datetime < $current_datetime);
@@ -304,6 +338,7 @@ class Invigilation
         $data['paperid'] = $paperID;
         $data['userid'] = $tmp_userID;
         $data['timing'] = $allow_timing ? 'true' : 'false';
+        $data['completed'] = $this->getCompleted($student_object['user_ID'], $paperID);
         $data['notes'] = 0;
         if (isset($notes_array[$tmp_userID]) and $notes_array[$tmp_userID] == 'y') {
             $data['notes'] = 1;
@@ -330,6 +365,82 @@ class Invigilation
         if ($extra_time_mins != '') {
             $data['specialextratime'] = $extra_time_mins;
         }
+        $data['accessibility'] = 0;
+        if ($student_object['medical'] != '' or $student_object['breaks'] != '') {
+            $data['accessibility'] = 1;
+        }
+        $data['medical'] = '';
+        if ($student_object['medical'] != '') {
+            $data['medical'] = addslashes($student_object['medical']);
+        }
+        $data['breaks'] = '';
+        if ($student_object['breaks'] != '') {
+            $data['breaks'] = addslashes($student_object['breaks']);
+        }
+        return $data;
+    }
+
+    /**
+     * Generate the remote student list
+     * @param array $student_object
+     * @param PaperProperties $property_object
+     * @param array $notes_array
+     * @param array $toilet_break_array
+     * @param bool $allow_timing
+     * @throws ErrorException
+     * @return array
+     */
+    public function processStudentList(
+        array $student_object,
+        PaperProperties $property_object,
+        array $notes_array,
+        array $toilet_break_array,
+        bool $allow_timing
+    ): array {
+        $data = array();
+
+        $exam_duration_mins = $property_object->get_exam_duration();
+
+        $class = 'student';
+
+        if ($exam_duration_mins == null) {
+            throw new ErrorException('Exam duration is mandatory in summative exams');
+        }
+
+        if (is_int($exam_duration_mins) === false) {
+            throw new ErrorException('$exam_duration_mins ' . $exam_duration_mins . ' must be an integer');
+        }
+
+        // Get student description
+        $tmp_userID = $student_object['user_ID'];
+        $surname = $student_object['surname'];
+        $first_names = $student_object['first_names'];
+        $title = $student_object['title'];
+        $paperID = $property_object->get_property_id();
+
+        $data['class'] = $class;
+        $data['id'] = $paperID . '_' . $tmp_userID;
+        $data['paperid'] = $paperID;
+        $data['userid'] = $tmp_userID;
+        $data['timing'] = $allow_timing ? 'true' : 'false';
+        $data['notes'] = 0;
+        $data['completed'] = $this->getCompleted($student_object['user_ID'], $paperID);
+        if (isset($notes_array[$tmp_userID]) and $notes_array[$tmp_userID] == 'y') {
+            $data['notes'] = 1;
+        }
+        $data['restbreak'] = 0;
+        if (isset($toilet_break_array[$tmp_userID])) {
+            for ($i = 0; $i < count($toilet_break_array[$tmp_userID]); $i++) {
+                $data['restbreak']++;
+            }
+        }
+        $data['title'] = $title;
+        $data['forname'] = $first_names;
+        $data['surname'] = $surname;
+        $data['endtime'] = '';
+        $data['special'] = '';
+        $data['specialextra'] = '';
+        $data['specialextratime'] = '';
         $data['accessibility'] = 0;
         if ($student_object['medical'] != '' or $student_object['breaks'] != '') {
             $data['accessibility'] = 1;

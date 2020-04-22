@@ -38,7 +38,7 @@ requirejs(['form', 'jquery', 'jqueryui'], function (FORM, $) {
             dataType: "json",
             success: function (data) {
                 if (data == 'SUCCESS') {
-                    window.opener.location.href='./index.php?tab=' + $('#paperID').val();
+                    window.opener.location.href='./index.php?tab=' + $('#paperID').val() + '&remote=' + $('#remote').val();
                     window.close();
                 }
             },
@@ -59,7 +59,7 @@ requirejs(['form', 'jquery', 'jqueryui'], function (FORM, $) {
             dataType: "json",
             success: function (data) {
                 if (data == 'SUCCESS') {
-                    window.opener.location.href='./index.php?tab=' + $('#paperID').val();
+                    window.opener.location.href='./index.php?tab=' + $('#paperID').val() + '&remote=' + $('#remote').val();
                     window.close();
                 }
             },

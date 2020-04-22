@@ -27,18 +27,21 @@ require_once '../../include/invigilator_auth.inc';
 require_once '../../include/errors.php';
 
 $paperID = check_var('paperID', 'GET', true, false, true);
+$remote = param::optional('remote', 0, param::BOOLEAN, param::FETCH_GET);
 $invigilation = new Invigilation();
 $current_address = NetworkUtils::get_client_address();
-
-$lab = new LabFactory($mysqli);
-
-$lab_object = $lab->get_lab_based_on_client($current_address);
-$lab_id = $lab_object->get_id();
-$room_name = $lab_object->get_name();
-
 $properties_list = array();
+if (!$remote) {
+    $lab = new LabFactory($mysqli);
 
-$properties_list = PaperProperties::get_paper_properties_by_lab($lab_object, $mysqli);
+    $lab_object = $lab->get_lab_based_on_client($current_address);
+    $lab_id = $lab_object->get_id();
+    $room_name = $lab_object->get_name();
+    $properties_list = PaperProperties::get_paper_properties_by_lab($lab_object, $mysqli);
+} else {
+    $properties_list = PaperProperties::getRemoteSummativePaperProperties($mysqli);
+}
+
 
 foreach ($properties_list as $property_object) {
     if ($property_object->get_property_id() == $paperID) {
@@ -63,11 +66,14 @@ foreach ($properties_list as $property_object) {
         }
 
         $allow_timing = ($timed_modules == $all_modules);
-        $log_lab_end_time = new LogLabEndTime($lab_object->get_id(), $property_object, $mysqli);
-
         $modules = implode('\',\'', $modules);
         $modules = '\'' . $modules . '\'';
 
+        if (!$remote) {
+            $log_lab_end_time = new LogLabEndTime($lab_object->get_id(), $property_object, $mysqli);
+        } else {
+            $log_lab_end_time = false;
+        }
         $list = $invigilation->getStudents($modules, $property_object, $log_lab_end_time, $allow_timing);
         $configObject = Config::get_instance();
         $render = new render($configObject);

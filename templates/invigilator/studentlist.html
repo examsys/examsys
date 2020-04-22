@@ -30,8 +30,11 @@
     </thead>
     <tbody>
     {% for i, row in data %}
-    <tr class="{{row.class}}" id="{{row.id}}" data-userid="{{row.userid}}" data-paperid="{{row.paperid}}" data-timing="{{row.timing}}">
+    <tr class="{{row.class}}" id="{{row.id}}" data-userid="{{row.userid}}" data-paperid="{{row.paperid}}" data-timing="{{row.timing}}" data-remote="{{info.remote}}">
         <td>
+            {% if row.completed %}
+            <img src="{{path}}/artwork/finished.png" class="16icon" />
+            {% endif %}
             {% if row.notes == 1 %}
             <img src="{{path}}/artwork/notes_icon.gif" class="16icon" />
             {% endif %}

@@ -29,6 +29,8 @@ require '../include/invigilator_auth.inc';
 require '../include/errors.php';
 $userID = check_var('userID', 'GET', true, false, true);
 $paperID = check_var('paperID', 'GET', true, false, true);
+$remote = param::optional('remote', false, param::BOOLEAN, param::FETCH_REQUEST);
+
 $user_details = UserUtils::get_user_details($userID, $mysqli);
 $name = $user_details['title'] . ' ' . $user_details['first_name'] . ' ' . $user_details['surname'];
 ?>
@@ -56,6 +58,7 @@ $name = $user_details['title'] . ' ' . $user_details['first_name'] . ' ' . $user
   <div class="button_bar">
   <input id="userID"  type="hidden" name="userID" value="<?php echo $userID ?>" />
   <input id="paperID" type="hidden" name="paperID" value="<?php echo $paperID ?>" />
+  <input id="remote" type="hidden" name="remote" value="<?php echo $remote ?>" />
   <input id="unfinishexam" class="ok" type="submit" name="submit" value=" <?php echo $string['ok'] ?> " /><input class="cancel" type="button" name="cancel" value=" <?php echo $string['cancel'] ?> " onclick="javascript:window.close();" />
   </div>
 

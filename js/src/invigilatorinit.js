@@ -69,7 +69,7 @@ requirejs(['invigilator', 'jquery', 'jqueryui'], function (INV, $) {
     });
 
     $('.papernote').click(function() {
-        inv.newPaperNote($(this).attr('data-id'));
+        inv.newPaperNote($(this).attr('data-id'), $(this).attr('data-remote'));
     });
 
     $('.viewrubric').click(function() {
@@ -78,7 +78,7 @@ requirejs(['invigilator', 'jquery', 'jqueryui'], function (INV, $) {
 
     // Student rows are dynamically re-created via an ajax call so need the event re-created.
     $(document).on('click', '.student', function(e){
-        inv.popMenu($(this).attr('data-userid'), $(this).attr('data-paperid'), $(this).attr('data-timing'), e);
+        inv.popMenu($(this).attr('data-userid'), $(this).attr('data-paperid'), $(this).attr('data-timing'), $(this).attr('data-remote'), e);
     });
 
     $('.popupmenu').mouseover(function() {

@@ -28,6 +28,7 @@ require_once '../include/errors.php';
 
 $paperID = check_var('paperID', 'REQUEST', true, false, true);
 $userID = check_var('userID', 'REQUEST', true, false, true);  // User ID is the student ID.
+$remote = param::optional('remote', false, param::BOOLEAN, param::FETCH_REQUEST);
 
 // Does the paper exist?
 if (!Paper_utils::paper_exists($paperID, $mysqli)) {
@@ -80,6 +81,7 @@ if ($student_details['student_id'] != '') {
   
 
   echo "<input type=\"hidden\" id=\"paperID\" name=\"paperID\" value=\"$paperID\" />\n";
+  echo '<input type="hidden" id="remote" name="remote" value="' . $remote . "\" />\n";
   echo '<strong>' . $string['note'] . ":</strong><br />\n";
   echo '<textarea name="note" id="note" cols="60" rows="17" style="font-size:110%; width:100%" required>' . $note_details['note'] . "</textarea><br />\n";
 ?>
