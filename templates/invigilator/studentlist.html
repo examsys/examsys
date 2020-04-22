@@ -1,0 +1,73 @@
+<table style="font-size:100%; line-height:150%" cellpadding="2" cellspacing="0" border="0" width="100%">
+    <thead>
+    <tr>
+        <th>
+        </th>
+
+        <th>
+            {{lang.title}}
+        </th>
+
+        <th>
+            {{lang.surname}}
+        </th>
+
+        <th>
+            {{lang.forenames}}
+        </th>
+
+        <th>
+            {{lang.endtime}}
+        </th>
+
+        <th>
+            {{lang.extension_mins}}
+        </th>
+
+        <th>
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for i, row in data %}
+    <tr class="{{row.class}}" id="{{row.id}}" data-userid="{{row.userid}}" data-paperid="{{row.paperid}}" data-timing="{{row.timing}}">
+        <td>
+            {% if row.notes == 1 %}
+            <img src="{{path}}/artwork/notes_icon.gif" class="16icon" />
+            {% endif %}
+            {% for i in 1..row.restbreak %}
+            <img src="{{path}}/artwork/wc.png" class="16icon" />
+            {% endfor %}
+        </td>
+        <td>{{row.title}}</td>
+        <td>{{row.surname}}</td>
+        <td>{{row.forname}}</td>
+        <td>{{row.endtime|raw}}</td>
+        <td>
+            {% if row.special != '' %}
+            <span>{{row.special}}</span>
+            {% endif %}
+            {% if row.specialextra != '' %}
+            {{row.specialextra}}
+            {% endif %}
+            {% if row.specialextratime != '' %}
+            <img src="{{path}}/artwork/clock_16.png" class="small_icon"  />
+            <span>{{row.specialextratime}}</span>
+            {% endif %}
+        </td>
+        <td>
+            {% if row.accessibility == 1 %}
+            <div id="p{{row.id}}">
+                {% if row.medical != '' %}
+                <img src="{{path}}/artwork/medical_16.gif" class="16icon" id="medical" data-id="{{row.id}}" data-msg="{{row.medical}}"/>
+                {% endif %}
+                {% if row.breaks != '' %}
+                <img src="{{path}}/artwork/moon_16.gif" class="16icon" id="break" data-id="{{row.id}}" data-msg="{{row.breaks}}"/>
+                {% endif %}
+            </div>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>

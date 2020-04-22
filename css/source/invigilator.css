@@ -64,10 +64,10 @@ fieldset {
   background: url('../artwork/notes_icon.gif') no-repeat 6px 4px;
 }
 .menu-toilet {
-  background: url('../artwork/wc.png') no-repeat 6px 4px;  
+  background: url('../artwork/wc.png') no-repeat 6px 4px;
 }
 .menu-unfinish {
-  background: url('../artwork/unfinish_exam.png') no-repeat 6px 4px;    
+  background: url('../artwork/unfinish_exam.png') no-repeat 6px 4px;
 }
 .tight {
   margin: 4px 0 2px 0;
@@ -296,4 +296,12 @@ fieldset {
 }
 * html #opaque {
     position: absolute;
+}
+
+.popupmenu {
+  padding-right: 6px !important;
+}
+
+.off {
+  display: none;
 }

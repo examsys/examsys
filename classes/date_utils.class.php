@@ -144,4 +144,19 @@ class date_utils
 
         return $html;
     }
+
+    /**
+     * Get the timestamp
+     *
+     * @param integer $hours hours
+     * @param integer $minutes minutes
+     * @param DateTimeZone $timezone timezone object
+     * @throws Exception
+     * @return int
+     */
+    public static function getTimestampFromTime(int $hours, int $minutes, DateTimeZone $timezone): int
+    {
+        $tmp_datetime = new DateTime(date('Y-m-d') . $hours . ':' . $minutes . ':00', $timezone);
+        return $tmp_datetime->getTimestamp();
+    }
 }

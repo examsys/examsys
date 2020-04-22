@@ -1,0 +1,12 @@
+<div style="background-color:white">
+    <div style="float:right; padding-right:5px">
+        <a href="{{path}}/logout.php"><img src="{{path}}/artwork/student_logout.png" width="24" height="24" /></a>
+    </div>
+    {% include 'invigilator/emergency.html' %}
+    <p>
+        <img src="{{path}}/artwork/exclamation_48.png" width="48" height="48" alt="!" style="float:left; padding-left:10px; padding-right:10px" />
+        <span style="font-weight:bold; color:#C00000; font-size:150%">{{lang.nopapersfound}}</span>
+        <br /><br />{{lang.nopapersfoundmsg}}
+    </p>
+    <br clear="all" />
+</div>

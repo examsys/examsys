@@ -1,0 +1,125 @@
+{% for id, info in data %}
+<div class="rubric" id="rubric_{{id}}">
+    <div class="rubrictitle">
+        {{lang.examrubric}}<img data-id="rubric_{{id}}" src="{{path}}/artwork/lrg_close.png" class="rubricclose" />
+    </div>
+    <div class="rubric_txt">
+        {{info.rubric|raw}}
+    </div>
+</div>
+<div id="paper{{id}}" class="tab-area off">
+    <div class="exam_details">
+        <table style="width:100%" cellpadding="2" cellspacing="0" border="0">
+            <tr>
+                <td rowspan="5" style="width:50px; vertical-align:top">
+                    <img src="{{path}}/artwork/summative.png" align="left" width="48" height="48" alt="paper icon" />
+                </td>
+                <td style="font-weight:bold; width:150px">{{lang.currenttime}}</td>
+                <td style="font-weight:bold" class="theTime"></td>
+                <td rowspan="5" style="vertical-align:top">
+                    {% if info.timing %}
+                    <form id="start_exam_form" method="post" action="{{info.action}}" autocomplete="off">
+                        <input name="paper_id" type="hidden" value="{{id}}" />
+                        {% if info.started %}
+                        <fieldset id="set_end">
+                            <input id="end_exam_button" name="end_exam_form" type="submit" value="{{lang.endat_but}}" class="exam-button" /><br />
+                            {{lang.time}}: <select id="hour" name="hour">
+                            {% for hr in 0..24 %}
+                                {% set selected = '' %}
+                                {% if hr == info.end_time_h %}
+                                        {% set selected = ' selected' %}
+                                {% endif %}
+                                <option value="{{hr}}"{{selected}}>{{ "%02d"|format(hr) }}</option>';
+                            {% endfor %}
+                            </select>:<select id="minute" name="minute">
+                            {% for min in 0..60 %}
+                                {% set selected = '' %}
+                                {% if min == info.end_time_m %}
+                                    {% set selected = ' selected' %}
+                                {% endif %}
+                                <option value="{{hr}}"{{selected}}>{{ "%02d"|format(min) }}</option>';
+                            {% endfor %}
+                        </select>
+                        </fieldset>
+                        {% else %}
+                        <fieldset id="start_exam">
+                            <input id="start_exam_button" name="start_exam_form" type="submit" value="{{lang.start_but}}" class="exam-button" />
+                        </fieldset>
+                        {% endif %}
+                    </form>
+                    {% endif %}
+                </td>
+                <td rowspan="5">
+                    {% include 'invigilator/emergency.html' with {'data': info} %}
+                </td>
+            </tr>
+
+            <tr>
+                <td>{{lang.start}}</td>
+                <td>{{info.start_date}}</td>
+            </tr>
+
+            <tr>
+                <td>{{lang.end}}</td>
+                <td>{{info.end_date}}</td>
+            </tr>
+            <tr>
+                <td>{{lang.duration}}</td>
+                <td>{{info.duration}}</td>
+            </tr>
+            <tr>
+                {% if info.password == '' %}
+                <td>&nbsp;</td>
+                <td></td>
+                {% else %}
+                <td class="password">{{lang.password}} <img src="{{path}}/artwork/key.png" width="16" height="16" />
+                </td><td style="font-family:'Lucida Console', monospace">{{info.password}}</td>
+                {% endif %}
+            </tr>
+            <tr>
+                <td colspan="4">
+                    <input type="button" data-id="{{id}}" value="{{lang.papernote}}" class="ok papernote" />
+                    <input type="button" data-id="{{id}}" value="{{lang.viewrubric}}" class="ok viewrubric" />
+                </td>
+            </tr>
+        </table>
+    </div>
+    {% if info.clarification %}
+    <div id="clarifymsgtbl" class="cohortlist" style="float:left; width:50%">
+        <table cellpadding="2" cellspacing="0" style="width:100%; line-height:150%">
+            <tr>
+                <th>{{lang.midexamclarifications}}</th>
+            </tr>
+        </table>
+        <div id="msg{{id}}" class="clarifymsg">
+            <span class="blankclarification">{{lang.examquestionclarifications}}</span>
+        </div>
+    </div>
+    <div id="store_{{id}}" style="display: none;"></div>
+    {% endif %}
+    <div class="cohortlist" id="cohortlist_{{id}}">
+        {% include 'invigilator/studentlist.html' with {'data': info.students} %}
+    </div>
+{% endfor %}
+</div>
+<div id="checklist" class="tab-area" style="padding: 30px 100px 0px 100px;">
+    <div class="preexam">
+        <h1>{{lang.preexam}}</h1>
+        {{lang.preexamlist|raw}}
+    </div>
+    <br />
+    <div class="midexam">
+        <h1>{{lang.midexam}}</h1>
+        {{lang.midexamlist|raw}}
+    </div>
+    <br />
+    <div class="postexam">
+        <h1>{{lang.postexam}}</h1>
+        {{lang.postexamlist|raw}}
+    </div>
+    <br/>
+</div>
+<input type="hidden" id="userID" value="" />
+<input type="hidden" id="old_highlightID" value="" />
+<input type="hidden" id="paperID" value="" />
+<div id="opaque"></div>

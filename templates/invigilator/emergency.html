@@ -1,0 +1,12 @@
+<table cellpadding="4" cellspacing="0" border="0" style="font-size:100%; float:right; line-height:100%; margin-right:20px">
+    <tr>
+        <td colspan="2" class="en">{{lang.emergencynumbers}}</td>
+    </tr>
+    {% for name, number in data.emergency %}
+    <tr>
+        <td>
+            <img src="{{path}}/artwork/phone.png" width="28" height="28" alt="call" />
+        </td>
+        <td><strong>{{number}}</strong><br />{{name}}</td></tr>
+    {% endfor %}
+</table>

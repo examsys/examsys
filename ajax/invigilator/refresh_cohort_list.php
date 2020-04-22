@@ -25,10 +25,9 @@
 
 require_once '../../include/invigilator_auth.inc';
 require_once '../../include/errors.php';
-require_once '../../include/invigilator_common.inc';
 
 $paperID = check_var('paperID', 'GET', true, false, true);
-
+$invigilation = new Invigilation();
 $current_address = NetworkUtils::get_client_address();
 
 $lab = new LabFactory($mysqli);
@@ -68,8 +67,11 @@ foreach ($properties_list as $property_object) {
 
         $modules = implode('\',\'', $modules);
         $modules = '\'' . $modules . '\'';
-        
-        get_students($modules, $property_object, $log_lab_end_time, $allow_timing, $string, $mysqli);
+
+        $list = $invigilation->getStudents($modules, $property_object, $log_lab_end_time, $allow_timing);
+        $configObject = Config::get_instance();
+        $render = new render($configObject);
+        $render->render($list, $string, 'invigilator/studentlist.html');
     }
 }
 
