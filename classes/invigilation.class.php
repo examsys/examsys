@@ -345,9 +345,7 @@ class Invigilation
         }
         $data['restbreak'] = 0;
         if (isset($toilet_break_array[$tmp_userID])) {
-            for ($i = 0; $i < count($toilet_break_array[$tmp_userID]); $i++) {
-                $data['restbreak']++;
-            }
+            $data['restbreak'] = count($toilet_break_array[$tmp_userID]);
         }
         $data['title'] = $title;
         $data['forname'] = $first_names;
@@ -430,9 +428,7 @@ class Invigilation
         }
         $data['restbreak'] = 0;
         if (isset($toilet_break_array[$tmp_userID])) {
-            for ($i = 0; $i < count($toilet_break_array[$tmp_userID]); $i++) {
-                $data['restbreak']++;
-            }
+            $data['restbreak'] = count($toilet_break_array[$tmp_userID]);
         }
         $data['title'] = $title;
         $data['forname'] = $first_names;

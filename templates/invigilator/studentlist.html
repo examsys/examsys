@@ -38,9 +38,11 @@
             {% if row.notes == 1 %}
             <img src="{{path}}/artwork/notes_icon.gif" class="16icon" />
             {% endif %}
+            {% if row.restbreak > 0 %}
             {% for i in 1..row.restbreak %}
             <img src="{{path}}/artwork/wc.png" class="16icon" />
             {% endfor %}
+            {% endif %}
         </td>
         <td>{{row.title}}</td>
         <td>{{row.surname}}</td>
