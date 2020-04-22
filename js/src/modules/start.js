@@ -643,11 +643,13 @@ define(['editor', 'html5', 'qarea', 'qlabelling', 'jsxls', 'jquery'], function(E
                 });
             $('#breaks').removeClass('pause');
             $('#breaks').addClass('play');
+            $('#breakstext').html(Jsxls.lang_string['resume']);
             scope.info_dialog(Jsxls.lang_string['paperpaused']);
 
             $("#info_dialog_ok").click(function() {
                 $('#breaks').removeClass('play');
                 $('#breaks').addClass('pause');
+                $('#breakstext').html(Jsxls.lang_string['pause']);
                 $("#info_overlay").hide();
             });
         }

@@ -18,7 +18,7 @@
 // @author Dr Joseph Baxter <joseph.baxter@nottingham.ac.uk>
 // @copyright Copyright (c) 2018 The University of Nottingham
 //
-requirejs(['media', 'reference', 'start', 'jquery'], function (Media, REF, START, $) {
+requirejs(['jsxls', 'media', 'reference', 'start', 'jquery'], function (Jsxls, Media, REF, START, $) {
     var media = new Media();
     media.init();
     var start = new START();
@@ -111,15 +111,16 @@ requirejs(['media', 'reference', 'start', 'jquery'], function (Media, REF, START
             $('#unansweredkey').show();
         }
 
-        $('#breaks').click(function() {
+        $('#breaks, #breakstext').click(function() {
             if ($('#dataset').attr('data-remotesummative') == 1 && $('#dataset').attr('data-breaks') == 1) {
-                if ($(this).hasClass('pause')) {
+                if ($('#breaks').hasClass('pause')) {
                     // Pause exam.
                     start.pause(el2.dataset.uid, el.dataset.paperid);
                 } else {
                     // Re-start exam.
-                    $(this).removeClass('play');
-                    $(this).addClass('pause');
+                    $('#breaks').removeClass('play');
+                    $('#breaks').addClass('pause');
+                    $('#breakstext').html(Jsxls.lang_string['pause']);
                 }
             }
         });

@@ -100,3 +100,5 @@ $string['threereset'] = 'Reset';
 $string['threeload'] = 'Load';
 $string['threeplyerror'] = 'Your browser does not support the display of %s files.';
 $string['paperpaused'] = 'The paper is paused. Click OK to resume.';
+$string['pause'] = 'Pause';
+$string['resume'] = 'Resume';

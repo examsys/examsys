@@ -439,6 +439,7 @@ div.error {
   cursor: pointer;
   background-image: url('../artwork/pause.png');
   background-repeat: no-repeat;
+  padding-right: 5px;
 }
 
 .play {
@@ -447,8 +448,14 @@ div.error {
   cursor: pointer;
   background-image: url('../artwork/play.png');
   background-repeat: no-repeat;
+  padding-right: 5px;
 }
 
 .timerdiv {
   display: flex;
+  align-items: center;
+}
+
+#breakstext {
+  cursor: pointer;
 }
