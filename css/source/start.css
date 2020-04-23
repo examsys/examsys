@@ -458,4 +458,6 @@ div.error {
 
 #breakstext {
   cursor: pointer;
+  color: white;
+  font-weight: bold;
 }
