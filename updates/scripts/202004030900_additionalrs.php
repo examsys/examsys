@@ -94,7 +94,7 @@ if ($updater_utils->check_version('7.1.1')) {
         $updater_utils->execute_query($sql, false);
 
         $sqlproperties = 'CREATE TABLE `paper_settings` (
-            `paperid` mediumint(8) NOT NULL,
+            `paperid` mediumint(8) unsigned NOT NULL,
             `setting` varchar(100) NOT NULL,
             `value` TEXT,
             PRIMARY KEY (`paperid`, `setting`),

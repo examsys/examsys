@@ -1688,7 +1688,7 @@ QUERY;
 
         $this->tableList['paper_settings'] = <<<QUERY
         CREATE TABLE paper_settings (
-            `paperid` mediumint(8) NOT NULL,
+            `paperid` mediumint(8) unsigned NOT NULL,
             `setting` varchar(100) NOT NULL,
             `value` TEXT,
             PRIMARY KEY (`paperid`, `setting`)
