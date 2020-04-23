@@ -409,6 +409,9 @@ class Invigilation
             throw new ErrorException('$exam_duration_mins ' . $exam_duration_mins . ' must be an integer');
         }
 
+        // Calculate extra time
+        $special_needs_extra_time_mins = ($exam_duration_mins / 100) * $student_object['extra_time_percentage'];
+
         // Get student description
         $tmp_userID = $student_object['user_ID'];
         $surname = $student_object['surname'];
@@ -435,6 +438,9 @@ class Invigilation
         $data['surname'] = $surname;
         $data['endtime'] = '';
         $data['special'] = '';
+        if ($special_needs_extra_time_mins != '') {
+            $data['special'] = $special_needs_extra_time_mins;
+        }
         $data['specialextra'] = '';
         $data['specialextratime'] = '';
         $data['accessibility'] = 0;

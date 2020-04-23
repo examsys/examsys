@@ -16,10 +16,12 @@
             {{lang.forenames}}
         </th>
 
+        {% if row.endtime != '' %}
         <th>
             {{lang.endtime}}
         </th>
-
+        {% endif %}
+        
         <th>
             {{lang.extension_mins}}
         </th>
@@ -47,7 +49,9 @@
         <td>{{row.title}}</td>
         <td>{{row.surname}}</td>
         <td>{{row.forname}}</td>
+        {% if row.endtime != '' %}
         <td>{{row.endtime|raw}}</td>
+        {% endif %}
         <td>
             {% if row.special != '' %}
             <span>{{row.special}}</span>
