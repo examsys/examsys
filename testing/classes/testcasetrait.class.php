@@ -79,7 +79,7 @@ trait testcasetrait
         $datagenerator->create_user(array('surname' => 'Administrator', 'username' => 'admin', 'roles' => 'Staff,SysAdmin', 'grade' => 'University Lecturer',
             'initials' => 'S', 'title' => 'Miss', 'email' => 'admin@example.com', 'first_names' => 'System', 'gender' => null));
         $datagenerator->create_user(array('surname' => 'User1', 'username' => 'test1', 'roles' => 'Student', 'grade' => 'TEST2',
-            'initials' => 'A', 'title' => 'Dr', 'first_names' => 'A', 'sid' => '1234567890', 'gender' => null));
+            'initials' => 'A', 'title' => 'Dr', 'first_names' => 'A', 'sid' => '1234567890', 'gender' => null, 'special_needs' => array('breaks' => 'yes')));
         $datagenerator->create_user(array('surname' => 'User2', 'username' => 'test2', 'roles' => 'Student', 'grade' => 'TEST2',
             'initials' => 'A', 'title' => 'Dr', 'first_names' => 'A', 'sid' => '00000001', 'gender' => null));
         $fixtures = glob("$this->fixture_base*.yml");

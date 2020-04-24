@@ -25,7 +25,7 @@ use testing\unittest\unittestdatabase;
  * @copyright Copyright (c) 2017 onwards The University of Nottingham
  * @package tests
  */
-class userobjecttest extends unittestdatabase
+class UserObjectTest extends unittestdatabase
 {
     /**
      * Generate data for test.
@@ -34,20 +34,47 @@ class userobjecttest extends unittestdatabase
     public function datageneration(): void
     {
         $datagenerator = $this->get_datagenerator('log', 'core');
-        $datagenerator->create_metadata(array('userID' => $this->student['id'], 'paperID' => 1, 'started' => '2017-01-01 00:00:00', 'completed' => '2017-01-02 00:00:00'));
-        $datagenerator->create_metadata(array('userID' => $this->student['id'], 'paperID' => 2, 'started' => '2017-01-01 00:00:00'));
+        $datagenerator->create_metadata(
+            array(
+                'userID' => $this->student['id'],
+                'paperID' => 1,
+                'started' => '2017-01-01 00:00:00',
+                'completed' => '2017-01-02 00:00:00'
+            )
+        );
+        $datagenerator->create_metadata(
+            array(
+                'userID' => $this->student['id'],
+                'paperID' => 2,
+                'started' => '2017-01-01 00:00:00'
+            )
+        );
     }
 
     /**
      * Test user completed paper
      * @group user
      */
-    public function test_user_completed_paper()
+    public function testUserCompletedPaper()
     {
         $this->set_active_user($this->student['id']);
         // User completed a paper.
         $this->assertTrue($this->userobject->user_completed_paper(1));
         // User did not complete a paper.
         $this->assertFalse($this->userobject->user_completed_paper(2));
+    }
+
+    /**
+     * Test if user requires breaks
+     * @group user
+     */
+    public function testGetRequiresBreaks()
+    {
+        // Does require breaks.
+        $this->set_active_user($this->student['id']);
+        $this->assertTrue($this->userobject->getRequiresBreaks());
+        // Does not require breaks.
+        $this->set_active_user($this->get_user_id('test2'));
+        $this->assertTrue($this->userobject->getRequiresBreaks());
     }
 }

@@ -854,7 +854,7 @@ class UserObject extends RogoStaticSingleton
             $stmt->bind_result($this->background, $this->foreground, $this->textsize, $this->extra_time, $this->marks_color, $this->themecolor, $this->labelcolor, $this->font, $this->unanswered, $this->dismiss, $breaks);
             $stmt->fetch();
             $stmt->close();
-            if (strlen($breaks) > 0) {
+            if (mb_strlen($breaks) > 0) {
                 $this->breaks = true;
             } else {
                 $this->breaks = false;
