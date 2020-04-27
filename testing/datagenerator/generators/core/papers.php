@@ -110,7 +110,8 @@ class papers extends generator
             'externalid' => null,
             'externalsys' => null,
             'calendaryear' => null,
-            'remote' => 0
+            'remote' => 0,
+            'password' => null,
         );
         $settings = $this->set_defaults_and_clean($default, $parameters);
 
@@ -217,8 +218,9 @@ class papers extends generator
      * @param integer $pid property id
      * @param array $parameters
      * @throws data_error If passed parameter is invalid
+     * @return array
      */
-    public function set_post_creation_settings(int $pid, array $parameters)
+    public function set_post_creation_settings(int $pid, array $parameters): array
     {
         $default = array('paper_prologue' => null, 'paper_postscript' => null, 'bgcolor' => 'white',
             'fgcolor' => 'black', 'themecolor' => '#316AC5', 'labelcolor' => '#C00000',
@@ -239,6 +241,7 @@ class papers extends generator
                 $sql->close();
             }
         }
+        return $settings;
     }
 
     /**

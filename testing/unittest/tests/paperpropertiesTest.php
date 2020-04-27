@@ -25,33 +25,133 @@ use testing\unittest\unittestdatabase;
  * @copyright Copyright (c) 2016 onwards The University of Nottingham
  * @package tests
  */
-class paperpropertiestest extends unittestdatabase
+class PaperPropertiesTest extends unittestdatabase
 {
 
     /**
      * @var array Storage for paper data in tests
      */
-    private $pid1, $pid2, $pid3, $pid4;
+    private $pid1;
+
+    /**
+     * @var array Storage for paper data in tests
+     */
+    private $pid2;
+
+    /**
+     * @var array Storage for paper data in tests
+     */
+    private $pid3;
+
+    /**
+     * @var array Storage for paper data in tests
+     */
+    private $pid4;
 
     /*
      * @var array Storage for question data in tests
      */
-    private $question, $question2, $question3, $question4, $question5, $question6;
+    private $question;
+
+    /*
+     * @var array Storage for question data in tests
+     */
+    private $question2;
+
+    /*
+     * @var array Storage for question data in tests
+     */
+    private $question3;
+
+    /*
+     * @var array Storage for question data in tests
+     */
+    private $question4;
+
+    /*
+     * @var array Storage for question data in tests
+     */
+    private $question5;
+
+    /*
+     * @var array Storage for question data in tests
+     */
+    private $question6;
 
     /*
     * @var array Storage for question/paper data in tests
     */
-    private $qpaper, $qpaper2;
+    private $qpaper;
+
+    /*
+    * @var array Storage for question/paper data in tests
+    */
+    private $qpaper2;
 
     /*
      * @var array Storage for options data in tests
      */
-    private $options, $options2, $options3;
+    private $options;
+
+    /*
+     * @var array Storage for options data in tests
+     */
+    private $options2;
+
+    /*
+     * @var array Storage for options data in tests
+     */
+    private $options3;
 
     /*
      * @var array Storage for log data in tests
      */
-    private $log, $log2, $log3, $log4, $log5, $log6, $log7, $log8, $log9, $log10;
+    private $log;
+
+    /*
+     * @var array Storage for log data in tests
+     */
+    private $log2;
+
+    /*
+     * @var array Storage for log data in tests
+     */
+    private $log3;
+
+    /*
+     * @var array Storage for log data in tests
+     */
+    private $log4;
+
+    /*
+     * @var array Storage for log data in tests
+     */
+    private $log5;
+
+    /*
+     * @var array Storage for log data in tests
+     */
+    private $log6;
+
+    /*
+     * @var array Storage for log data in tests
+     */
+    private $log7;
+
+    /*
+     * @var array Storage for log data in tests
+     */
+    private $log8;
+
+    /*
+     * @var array Storage for log data in tests
+     */
+    private $log9;
+
+    /*
+     * @var array Storage for log data in tests
+     */
+    private $log10;
 
     /**
      * Generate data for test.
@@ -65,11 +165,19 @@ class paperpropertiestest extends unittestdatabase
         $datagenerator->create_module(array('fullname' => 'Test module 3', 'moduleid' => 'TEST3', 'timed_exams' => 1));
         $datagenerator->create_enrolment(array('userid' => $this->student['id'], 'moduleid' => $this->module, 'calendar_year' => 2015));
         $datagenerator = $this->get_datagenerator('papers', 'core');
-        $this->pid1 = $datagenerator->create_paper(array('papertitle' => 'Test summative 1',
-            'calendaryear' => 2015,
-            'modulename' => 'Training Module',
-            'paperowner' => 'admin',
-            'papertype' => '2'));
+        $this->config->set_setting('cfg_summative_mgmt', false, \Config::BOOLEAN);
+        $this->pid1 = $datagenerator->create_paper(
+            array(
+                'papertitle' => 'Test summative 1',
+                'calendaryear' => 2015,
+                'modulename' => 'Training Module',
+                'paperowner' => 'admin',
+                'papertype' => '2',
+                'remote' => '1',
+                )
+        );
+        $settings = $datagenerator->set_post_creation_settings($this->pid1['id'], array('rubric' => 'This is a rubric'));
+        $this->pid1 = array_merge($this->pid1, $settings);
         $this->pid2 = $datagenerator->create_paper(array('papertitle' => 'Test summative 2',
             'calendaryear' => 2015,
             'password' => 'EC1VbYJtOq8NsidA+q60rDEzjZZ8eHmHm6dEtfVBpeQ=',
@@ -163,13 +271,14 @@ class paperpropertiestest extends unittestdatabase
             'marks_correct' => 2,
             'marks_incorrect' => -2,
             'marks_partial' => 0));
+        $this->config->set_setting('cfg_summative_mgmt', true, \Config::BOOLEAN);
     }
 
     /**
      * Test setting paper password
      * @group paper
      */
-    public function test_set_password()
+    public function testSetPassword()
     {
         // Load user id 1.
         $this->set_active_user($this->admin['id']);
@@ -203,7 +312,7 @@ class paperpropertiestest extends unittestdatabase
      * Test calculation question getter - all users
      * @group paper
      */
-    public function test_get_enhancedcalc_questions_all()
+    public function testGetEnhancedcalcQuestionsAll()
     {
         // Load user id 1.
         $this->set_active_user($this->admin['id']);
@@ -216,7 +325,7 @@ class paperpropertiestest extends unittestdatabase
      * Test calculation question getter - all users after unmarked_enhancedcalc called for student
      * @group paper
      */
-    public function test_get_enhancedcalc_questions_all_2()
+    public function testGetEnhancedcalcQuestionsAll2()
     {
         // Load user id 1.
         $this->set_active_user($this->admin['id']);
@@ -231,7 +340,7 @@ class paperpropertiestest extends unittestdatabase
      * Test calculation question getter - student users
      * @group paper
      */
-    public function test_get_enhancedcalc_questions_student()
+    public function testGetEnhancedcalcQuestionsStudent()
     {
         // Load user id 1.
         $this->set_active_user($this->admin['id']);
@@ -244,7 +353,7 @@ class paperpropertiestest extends unittestdatabase
      * Test calculation question getter - student users after unmarked_enhancedcalc called for all
      * @group paper
      */
-    public function test_get_enhancedcalc_questions_student_2()
+    public function testGetEnhancedcalcQuestionsStudent2()
     {
         // Load user id 1.
         $this->set_active_user($this->admin['id']);
@@ -259,7 +368,7 @@ class paperpropertiestest extends unittestdatabase
      * Test building a paper
      * @group paper
      */
-    public function test_build_paper()
+    public function testBuildPaper()
     {
         $properties = PaperProperties::get_paper_properties_by_id($this->pid1['id'], $this->db, '');
         $expected = array(
@@ -351,7 +460,7 @@ class paperpropertiestest extends unittestdatabase
      * Test building a paper = question preview
      * @group paper
      */
-    public function test_build_paper_question_preview()
+    public function testBuildPaperQuestionPreview()
     {
         $properties = PaperProperties::get_paper_properties_by_id($this->pid1['id'], $this->db, '');
         $expected = array(1 => array(
@@ -391,7 +500,7 @@ class paperpropertiestest extends unittestdatabase
      * Test display timer
      * @group paper
      */
-    public function test_display_timer()
+    public function testDisplayTimer()
     {
         // Summative - no timed modules
         $properties = PaperProperties::get_paper_properties_by_id($this->pid1['id'], $this->db, '');
@@ -411,7 +520,7 @@ class paperpropertiestest extends unittestdatabase
      * Test get student list for paper
      * @group paper
      */
-    public function test_get_user_list()
+    public function testGetUserList()
     {
         $expected = array($this->student['id']);
         $startdate = '2015-01-01 00:00:00';
@@ -451,7 +560,7 @@ class paperpropertiestest extends unittestdatabase
      * Test get assessment data for paper
      * @group paper
      */
-    public function test_paper_assessment_data()
+    public function testPaperAssessmentData()
     {
         $expected[0][1][$this->question['id']] = $this->log['user_answer'];
         $expected[0][2][$this->question2['id']] = $this->log3['user_answer'];
@@ -485,13 +594,12 @@ class paperpropertiestest extends unittestdatabase
      * Test get paper details
      * @group paper
      */
-    public function test_get_paper_questions()
+    public function testGetPaperQuestions()
     {
         $properties = PaperProperties::get_paper_properties_by_id($this->pid1['id'], $this->db, '');
         $expected[0]['ID'] = $this->question2['id'];
         $expected[0]['type'] = $this->question2['q_type'];
         $expected[0]['screen'] = $this->qpaper['screen'];
-        ;
         $expected[0]['correct'] = ',';
         $expected[0]['correct_text'] = "\t";
         $expected[0]['score_method'] = $this->question2['score_method'];
@@ -504,5 +612,34 @@ class paperpropertiestest extends unittestdatabase
         $expected[1]['score_method'] = $this->question6['score_method'];
         $expected[1]['settings'] = $this->question6['settings'];
         $this->assertEquals($expected, $properties->get_paper_questions());
+    }
+
+    /**
+     * Test get remote summative details
+     * @group paper
+     */
+    public function testGetRemoteSummativePaperProperties(): void
+    {
+        $expected = array();
+        $property_object = new PaperProperties($this->db);
+        $property_object->set_property_id($this->pid1['id']);
+        $property_object->set_paper_title($this->pid1['papertitle']);
+        // Datetime in mysql is in UTC.
+        $tz = new DateTimeZone('UTC');
+        $startdatetime = new DateTime($this->pid1['start_date'], $tz);
+        $property_object->set_start_date($startdatetime->getTimestamp());
+        $enddatetime = new DateTime($this->pid1['end_date'], $tz);
+        $property_object->set_end_date($enddatetime->getTimestamp());
+        $property_object->set_exam_duration($this->pid1['duration']);
+        $property_object->set_calendar_year($this->pid1['calendaryear']);
+        $property_object->set_password($this->pid1['password']);
+        $property_object->set_timezone($this->pid1['timezone']);
+        $property_object->set_display_start_date();
+        $property_object->set_display_start_time();
+        $property_object->set_display_end_date();
+        $property_object->set_display_end_time();
+        $property_object->set_rubric($this->pid1['rubric']);
+        $expected[] = $property_object;
+        $this->assertEquals($expected, PaperProperties::getRemoteSummativePaperProperties($this->db));
     }
 }

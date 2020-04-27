@@ -179,9 +179,9 @@ class PaperProperties
      * Load the paper properties for active remote summative exams
      * used in the invigilator screens
      * @param object $db - Link to MySQL db.
-     * @return array of PaperProperties
+     * @return mixed array of PaperProperties or false on error
      */
-    public static function getRemoteSummativePaperProperties($db): array
+    public static function getRemoteSummativePaperProperties($db)
     {
         $sql = "SELECT
                 properties.property_id,
@@ -200,9 +200,10 @@ class PaperProperties
                 properties.paper_type = '2' AND
                 paper_settings.setting = 'remote_summative' AND
                 paper_settings.value = 1 AND
-                properties.start_date < DATE_ADD( NOW(), interval 30 minute ) AND
+                properties.start_date IS NOT NULL AND
                 properties.end_date > NOW() AND
-                properties.deleted IS NULL";
+                properties.deleted IS NULL
+                ORDER BY properties.property_id";
         $paper_results = $db->prepare($sql);
         $paper_results->execute();
         $paper_results->store_result();
@@ -231,7 +232,6 @@ class PaperProperties
             $property_object->set_start_date($start_date);
             $property_object->set_end_date($end_date);
             $property_object->set_exam_duration($exam_duration);
-            $property_object->set_calendar_year($calendar_year);
             $property_object->set_calendar_year($calendar_year);
             $property_object->password = $password;
             $property_object->set_timezone($timezone);
