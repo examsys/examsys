@@ -3,7 +3,7 @@
         <label for="{{data.setting}}_host">{{data.setting}}</label>
         <img src="{{path}}/artwork/tooltip_icon.gif" class="help_tip" title="{{attribute(lang, data.setting)}}" />
     </div>
-    {% if data.setting == 'system_mediatypes' %}
+    {% if data.setting == 'system_mediatypes' or data.setting == 'paper_types' %}
         <div class="configtable">
             {% for idx in data.item %}
             {{idx.i}}

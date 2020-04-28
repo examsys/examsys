@@ -140,6 +140,18 @@ if ($updater_utils->check_version('7.1.1')) {
         $sql = 'DELETE FROM config WHERE setting = "summative_remote"';
         $updater_utils->execute_query($sql, false);
 
+        // Paper type configuration.
+        $papertypes = array(
+            'formative' => 1,
+            'progress' => 1,
+            'summative' => 1,
+            'survey' => 1,
+            'osce' => 1,
+            'offline' => 1,
+            'peer review' => 1
+        );
+        $configObject->set_setting('paper_types', $papertypes, Config::ASSOC);
+
         $updater_utils->record_update('rogo2767');
     }
 }

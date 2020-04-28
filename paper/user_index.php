@@ -108,6 +108,12 @@ $total_marks = 0;
 // Create paper object.
 $propertyObj = PaperProperties::get_paper_properties_by_crypt_name($id, $mysqli, $string, true);
 
+if (!$propertyObj->isEnabled()) {
+    $contactemail = support::get_email();
+    $msg = sprintf($string['furtherassistance'], $contactemail, $contactemail);
+    $notice->display_notice_and_exit($mysqli, $string['pagenotfound'], $msg, $string['papertypenotenabled'], '/artwork/exclamation_48.png', '#C00000', true, true);
+
+}
 // Get lab information.
 $current_address = NetworkUtils::get_client_address();
 $lab_factory = new LabFactory($mysqli);

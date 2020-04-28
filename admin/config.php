@@ -32,8 +32,8 @@ if (isset($_POST['submit'])) {
         $type = $configObject->get_setting_type('core', $setting);
         if ($type === Config::ASSOC) {
             $new_value = array();
-            // Media types have a boolean value.
-            if ($setting == 'system_mediatypes') {
+            // Media types / Paper types have a boolean value.
+            if ($setting == 'system_mediatypes' or $setting == 'paper_types') {
                 foreach ($value as $name => $oldval) {
                     $enabled = param::optional($setting . '_' . str_replace('.', '_', $name), false, param::BOOLEAN, param::FETCH_POST);
                     if ($enabled) {

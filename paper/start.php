@@ -57,8 +57,17 @@ $q_number = param::optional('qNo', null, param::INT, param::FETCH_GET);
 $do_not_record = param::optional('dont_record', false, param::BOOLEAN, param::FETCH_GET);
 $refpane = param::optional('refpane', 0, param::INT, param::FETCH_POST);
 
+// Are we in a staff test and preview mode?
+$is_preview_mode = ($userObject->has_role(array('Staff', 'Admin', 'SysAdmin')) and $mode === 'preview');
+
 // Get the paper properties
 $propertyObj = PaperProperties::get_paper_properties_by_crypt_name($id, $mysqli, $string, true);
+if (!$propertyObj->isEnabled() and !$is_preview_mode) {
+    $contactemail = support::get_email();
+    $msg = sprintf($string['furtherassistance'], $contactemail, $contactemail);
+    $notice->display_notice_and_exit($mysqli, $string['pagenotfound'], $msg, $string['papertypenotenabled'], '/artwork/exclamation_48.png', '#C00000', true, true);
+
+}
 $papertype = $propertyObj->get_paper_type();
 $deleted = $propertyObj->get_deleted();
 
@@ -77,9 +86,6 @@ $paperID = $propertyObj->get_property_id();
  * Setup some feature related flags
  *
  */
-
-// Are we in a staff test and preview mode?
-$is_preview_mode = ($userObject->has_role(array('Staff', 'Admin', 'SysAdmin')) and $mode === 'preview');
 
 // Are we on the first screen?
 $is_first_launch = is_null($post_screen);

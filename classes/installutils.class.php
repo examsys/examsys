@@ -827,6 +827,17 @@ class InstallUtils
         $configObject->set_setting('system_maxmediasize', $maxsize, Config::INTEGER);
         $configObject->set_setting('summative_issuelink', '', Config::URL);
         $configObject->set_setting('summative_issuelink2', '', Config::URL);
+        // Paper type configuration.
+        $papertypes = array(
+            'formative' => 1,
+            'progress' => 1,
+            'summative' => 1,
+            'survey' => 1,
+            'osce' => 1,
+            'offline' => 1,
+            'peer review' => 1
+        );
+        $configObject->set_setting('paper_types', $papertypes, Config::ASSOC);
         // Add external systems.
         $insert = self::$db->prepare("INSERT INTO external_systems (name, type) values ('ims_enterprise', 'plugin')");
         $insert->execute();

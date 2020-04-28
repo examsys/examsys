@@ -642,4 +642,38 @@ class PaperPropertiesTest extends unittestdatabase
         $expected[] = $property_object;
         $this->assertEquals($expected, PaperProperties::getRemoteSummativePaperProperties($this->db));
     }
+
+    /**
+     * Test if paper type is enabled
+     * @group paper
+     */
+    public function testIsEnabled(): void
+    {
+        // Disable paper type.
+        $papertypes = array(
+            'formative' => 1,
+            'progress' => 1,
+            'summative' => 0,
+            'survey' => 1,
+            'osce' => 1,
+            'offline' => 1,
+            'peer review' => 1
+        );
+        $this->config->set_setting('paper_types', $papertypes, Config::ASSOC);
+        $properties = PaperProperties::get_paper_properties_by_id($this->pid2['id'], $this->db, '');
+        $this->assertFalse($properties->isEnabled());
+        // Enable paper type.
+        $papertypes = array(
+            'formative' => 1,
+            'progress' => 1,
+            'summative' => 1,
+            'survey' => 1,
+            'osce' => 1,
+            'offline' => 1,
+            'peer review' => 1
+        );
+        $this->config->set_setting('paper_types', $papertypes, Config::ASSOC);
+        $properties = PaperProperties::get_paper_properties_by_id($this->pid2['id'], $this->db, '');
+        $this->assertTrue($properties->isEnabled());
+    }
 }

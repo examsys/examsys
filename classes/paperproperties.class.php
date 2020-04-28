@@ -3011,4 +3011,32 @@ class PaperProperties
         );
         return isset($stores_user_answers[$this->get_paper_type()]);
     }
+
+    /**
+     * Check if paper type is enabled.
+     * @return bool
+     */
+    public function isEnabled(): bool
+    {
+        $type = array(
+            assessment::TYPE_FORMATIVE => 'formative',
+            assessment::TYPE_PROGRESS => 'progress',
+            assessment::TYPE_SUMMATIVE => 'summative',
+            assessment::TYPE_SURVEY => 'survey',
+            assessment::TYPE_OSCE => 'osce',
+            assessment::TYPE_OFFLINE => 'offline',
+            assessment::TYPE_PEERREVIEW => 'peer_review'
+        );
+
+        if (!array_key_exists($this->get_paper_type(), $type)) {
+            return false;
+        }
+        $checktype = $type[$this->get_paper_type()];
+        $config = Config::get_instance();
+        $settings = $config->get_setting('core', 'paper_types');
+        if (isset($settings[$checktype])) {
+            return $settings[$checktype];
+        }
+        return false;
+    }
 }
