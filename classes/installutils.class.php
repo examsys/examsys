@@ -835,7 +835,7 @@ class InstallUtils
             'survey' => 1,
             'osce' => 1,
             'offline' => 1,
-            'peer review' => 1
+            'peer_review' => 1
         );
         $configObject->set_setting('paper_types', $papertypes, Config::ASSOC);
         // Add external systems.

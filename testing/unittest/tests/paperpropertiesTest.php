@@ -657,7 +657,7 @@ class PaperPropertiesTest extends unittestdatabase
             'survey' => 1,
             'osce' => 1,
             'offline' => 1,
-            'peer review' => 1
+            'peer_review' => 1
         );
         $this->config->set_setting('paper_types', $papertypes, Config::ASSOC);
         $properties = PaperProperties::get_paper_properties_by_id($this->pid2['id'], $this->db, '');
@@ -670,7 +670,7 @@ class PaperPropertiesTest extends unittestdatabase
             'survey' => 1,
             'osce' => 1,
             'offline' => 1,
-            'peer review' => 1
+            'peer_review' => 1
         );
         $this->config->set_setting('paper_types', $papertypes, Config::ASSOC);
         $properties = PaperProperties::get_paper_properties_by_id($this->pid2['id'], $this->db, '');
