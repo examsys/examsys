@@ -281,10 +281,12 @@ class users extends generator
 
         // Add special needs.
         if (is_array($values['special_needs'])) {
-            $this->insertSpecial($values['id'], $values['special_needs']);
+            $special = $this->insertSpecial($values['id'], $values['special_needs']);
             $values['special_needs'] = '1';
+            foreach ($special as $name => $value) {
+                $values[$name] = $value;
+            }
         }
-
         return $values;
     }
 
@@ -386,8 +388,9 @@ class users extends generator
      * Creates users spcial needs
      * @param integer $userID the user
      * @param array $special special needs data
+     * @return array
      */
-    protected function insertSpecial($userID, $special): void
+    protected function insertSpecial($userID, $special): array
     {
         $default_needs = array(
             'background' => null,
@@ -426,5 +429,6 @@ class users extends generator
         );
         $result->execute();
         $result->close();
+        return $special;
     }
 }
