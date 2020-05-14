@@ -127,7 +127,6 @@ class Statistics
                 paper_type = "2" AND
                 start_date >= ' . $current_year . '0901000000 AND
                 end_date < ' . ($current_year + 1) . '0831235959 AND
-                labs != "" AND
                 deleted IS NULL
                 ORDER BY start_date
         ');
@@ -171,7 +170,6 @@ class Statistics
                 paper_type = "2" AND
                 start_date >= ' . $monthstart . ' AND
                 end_date < ' . $monthend . ' AND
-                labs != "" AND
                 deleted IS NULL
                 ORDER BY start_date
         ');
