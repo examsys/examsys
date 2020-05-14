@@ -66,7 +66,6 @@ foreach ($details as $pid => $data) {
         $class = '';
     }
     $renderdata['papers'][] = array(
-            'start' => $data['display_start'],
             'link' => '../paper/details.php?paperID=' . $pid,
             'linklabel' => $data['title'],
             'class' => $class,

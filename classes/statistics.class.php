@@ -65,7 +65,7 @@ class Statistics
      * @param string $month the month - padded integer representation i.e. 05 = May
      * @return string
      */
-    private function getMonthStart(int $year, string $month): string
+    public function getMonthStart(int $year, string $month): string
     {
         $month_start['09'] = $year . '0901000000';
         $month_start['10'] = $year . '1001000000';
@@ -88,7 +88,7 @@ class Statistics
      * @param string $month the month - padded integer representation i.e. 05 = May
      * @return string
      */
-    private function getMonthEnd(int $year, string $month): string
+    public function getMonthEnd(int $year, string $month): string
     {
         $month_end['09'] = $year . '1001000000';
         $month_end['10'] = $year . '1101000000';
@@ -159,29 +159,27 @@ class Statistics
         $details = array();
         $result = $this->db->prepare('
             SELECT
-                property_id,
-                paper_title,
-                DATE_FORMAT(start_date, "' . $this->config->get('cfg_long_date_time') . '") AS display_start_date,
-                start_date,
-                end_date
+                DISTINCT lm.paperID,
+                p.paper_title
             FROM
-                properties
+                log_metadata lm,
+                properties p
             WHERE
-                paper_type = "2" AND
-                start_date >= ' . $monthstart . ' AND
-                end_date < ' . $monthend . ' AND
-                deleted IS NULL
-                ORDER BY start_date
+                lm.paperID = p.property_id AND
+                p.paper_type = "2" AND
+                lm.started >= ' . $monthstart . ' AND
+                lm.started < ' . $monthend . ' AND
+                p.deleted IS NULL
+                ORDER BY lm.paperID
         ');
         $result->execute();
         $result->store_result();
-        $result->bind_result($property_id, $paper_title, $display_start_date, $start_date, $end_date);
+        $result->bind_result($property_id, $paper_title);
         while ($result->fetch()) {
             $details[$property_id] = array(
                 'title' => $paper_title,
-                'display_start' => $display_start_date,
-                'start' => $start_date,
-                'end' => $end_date,
+                'start' => $monthstart,
+                'end' => $monthend,
             );
         }
         $result->close();
@@ -191,8 +189,8 @@ class Statistics
     /**
      * Get number of distinct students that have taken an exam in a date range
      * @param int $pid the paper
-     * @param string $start the paper start date
-     * @param string $end the paper end date
+     * @param string $start the date to start looking for exam instance from
+     * @param string $end the date to start looking for exam instance to
      * @return array
      */
     public function getStudentCount(int $pid, string $start, string $end): array

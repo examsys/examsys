@@ -26,7 +26,6 @@ $string['min'] = 'Min';
 $string['max'] = 'Max';
 $string['computerlab'] = 'Computer Lab';
 $string['examno'] = 'Exam No';
-$string['date'] = 'Date';
 $string['january'] = 'January';
 $string['february'] = 'February';
 $string['march'] = 'March';

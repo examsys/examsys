@@ -33,13 +33,11 @@ lang.students
 <blockquote>
     <table class="stats">
         <tr>
-            <th>{{lang.date}}</th>
             <th>{{lang.papers}}</th>
             <th>{{lang.students}}</th>
         </tr>
         {% for paper in data.papers %}
         <tr>
-            <td>{{paper.start}}</td>
             <td>
                 <a href="{{paper.link}}">{{paper.linklabel}}</a>
             </td>

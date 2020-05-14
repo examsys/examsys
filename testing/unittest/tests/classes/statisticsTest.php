@@ -201,18 +201,15 @@ class StatisticsTest extends unittestdatabase
     public function testGetSummativePapersDetails(): void
     {
         $stats = new Statistics();
-        $longdate = str_replace('%', '', $this->config->get('cfg_long_date_time'));
         $expected2020[$this->paper2['id']] = array(
             'title' => $this->paper2['papertitle'],
-            'display_start' => date($longdate, strtotime($this->paper2['startdate'])),
-            'start' => $this->paper2['startdate'],
-            'end' => $this->paper2['enddate']
+            'start' =>  $stats->getMonthStart('2019', '06'),
+            'end' =>  $stats->getMonthEnd('2019', '06')
         );
         $expected2019[$this->paper['id']] = array(
             'title' => $this->paper['papertitle'],
-            'display_start' => date($longdate, strtotime($this->paper['startdate'])),
-            'start' => $this->paper['startdate'],
-            'end' => $this->paper['enddate']
+            'start' =>  $stats->getMonthStart('2020', '10'),
+            'end' =>  $stats->getMonthEnd('2020', '10')
         );
         // Check October.
         $this->assertEquals($expected2019, $stats->getSummativePapersDetails('10', '2020'));
