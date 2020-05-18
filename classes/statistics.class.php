@@ -163,10 +163,13 @@ class Statistics
                 p.paper_title
             FROM
                 log_metadata lm,
-                properties p
+                properties p,
+                users u
             WHERE
                 lm.paperID = p.property_id AND
+                lm.userID = u.id AND
                 p.paper_type = "2" AND
+                u.roles IN ("Student", "graduate") AND
                 lm.started >= ' . $monthstart . ' AND
                 lm.started < ' . $monthend . ' AND
                 p.deleted IS NULL
