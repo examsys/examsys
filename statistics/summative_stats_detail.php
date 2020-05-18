@@ -60,15 +60,9 @@ foreach ($details as $pid => $data) {
     $user_no = count($users);
     $distinct_users += $users;
 
-    if ($user_no == 0) {
-        $class = ' grey';
-    } else {
-        $class = '';
-    }
     $renderdata['papers'][] = array(
             'link' => '../paper/details.php?paperID=' . $pid,
             'linklabel' => $data['title'],
-            'class' => $class,
             'userno' => $user_no,
     );
     $total_student_no += $user_no;
