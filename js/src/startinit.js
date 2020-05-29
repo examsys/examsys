@@ -30,6 +30,14 @@ requirejs(['jsxls', 'media', 'reference', 'start', 'jquery'], function (Jsxls, M
         var el = document.getElementById('paper');
         var el2 = document.getElementById('user');
 
+        // Disable the back button if linear exam.
+        if (el.dataset.submittype === 'linear') {
+            window.history.pushState(null, "", window.location.href);
+            window.onpopstate = function () {
+                window.history.pushState(null, "", window.location.href);
+            };
+        }
+
         if (el.dataset.timed) {
             start.StartTimer(el2.dataset.remaining_time, true);
         } else {
