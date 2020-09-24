@@ -133,6 +133,13 @@ trait frontend_hooks
         $session->start();
 
         try {
+            $session->maximizeWindow();
+        } catch (\Behat\Mink\Exception\UnsupportedDriverActionException $e) {
+            // The current driver does not support maximising the window.
+            // We have to hope for the best.
+        }
+
+        try {
             $windows = $session->getWindowNames();
             $this->mainwindow = $windows[0];
         } catch (\Behat\Mink\Exception\UnsupportedDriverActionException $e) {
