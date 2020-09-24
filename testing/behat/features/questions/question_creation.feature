@@ -25,7 +25,7 @@ Feature: Question creation
       | teacher | true_false | tf 2 leadin | tf 2 scenario | ["key","words"] | {"correct":"f","marks_correct":"1","marks_incorrect":"0","marks_partial":"0"} |
       | teacher | true_false | tf 3 leadin | tf 3 scenario | | {"correct":"t","marks_correct":"1","marks_incorrect":"0","marks_partial":"0"} |
 
-  @question_area @mousemanipulation
+  @question_area @mousemanipulation @attachfile
   Scenario: Create a area question
     Given I login as "teacher"
     And I follow "TEST1001"
@@ -141,7 +141,7 @@ Feature: Question creation
     When I click "Add to Bank" "button"
     Then I should see "Module: TEST1001" "paper_title"
 
-  @question_hotspot @mousemanipulation
+  @question_hotspot @mousemanipulation @attachfile
   Scenario: Create a hotspot question
     Given I login as "teacher"
     And I follow "TEST1001"
@@ -158,7 +158,7 @@ Feature: Question creation
     When I click "Add to Bank" "button"
     Then I should see "Module: TEST1001" "paper_title"
 
-  @question_labelling @mousemanipulation
+  @question_labelling @mousemanipulation @attachfile
   Scenario: Create a labelling question
     Given I login as "teacher"
     And I follow "TEST1001"
@@ -281,7 +281,7 @@ Feature: Question creation
     When I click "Add to Bank" "button"
     Then I should see "Module: TEST1001" "paper_title"
 
-  @question_textbox
+  @question_textbox @attachfile
   Scenario: Create a text question
     Given I login as "teacher"
     And I follow "TEST1001"
@@ -296,7 +296,7 @@ Feature: Question creation
     When I click "Add to Bank" "button"
     Then I should see "Module: TEST1001" "paper_title"
 
-  @question_true_false
+  @question_true_false @attachfile
   Scenario: Create a true_false question
     Given I login as "teacher"
     And I follow "TEST1001"
