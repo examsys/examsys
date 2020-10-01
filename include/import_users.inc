@@ -39,6 +39,7 @@ function add_users_from_file($fileName) {
   $users['html'] = "<table style=\"width:100%\">\n";
 
   $lines = file($fileName);
+  $support_email = support::get_primary_email();
   foreach ($lines as $separate_line) {
     if (strpos($separate_line,'","') !== false) {
       $separate_line = '","' . $separate_line . ',"';
@@ -218,7 +219,7 @@ function add_users_from_file($fileName) {
 
       //send Welcome Email if ticked
       if (isset($_POST['welcome']) and $_POST['welcome'] != '') {
-        send_welcome_email($title, $surname, $username, $password, $email);
+        send_welcome_email($title, $surname, $support_email, $email, $string);
       }
     } elseif ($username != '' and stristr('ps_', $username) === false) {
       //update existing student records
@@ -271,9 +272,16 @@ function add_users_from_file($fileName) {
   return $users;
 }
 
-function send_welcome_email($title, $surname, $username, $password, $user_email) {
-global $string;
-  $subject = "New Rogo account";
+/**
+ * Send welcome email
+ * @param string $title users title
+ * @param string $surname users surname
+ * @param string $support_email the suport accounts email address
+ * @param string $user_email the users email
+ * @param array $string translations
+ */
+function send_welcome_email($title, $surname, $support_email, $user_email, $string) {
+  $subject = $string['newrogoaccount'];
   $headers = "From: $support_email\n";
   $headers .= "MIME-Version: 1.0\nContent-type: text/html; charset=iso-8859-1\n";
   $message = "<!doctype html public \"-//w3c//dtd html 4.0 transitional//en\">

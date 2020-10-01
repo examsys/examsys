@@ -125,9 +125,8 @@ if (isset($_POST['submit'])) {
     $tmp_email = trim($_POST['new_email']);
 
     $subject = "{$string['newrogoaccount']}";
-    $headers = "From: $tmp_email\n";
+    $headers = 'From: ' . support::get_primary_email() . "\n";
     $headers .= "MIME-Version: 1.0\nContent-type: text/html; charset=UTF-8\n";
-    $headers .= "bcc: $tmp_email\n";
     $sname = ucwords($_POST['new_surname']);
     $message = <<< MESSAGE
 <!DOCTYPE html>

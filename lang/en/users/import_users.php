@@ -28,7 +28,7 @@ $string['usersadded'] = 'users added';
 $string['usersupdated'] = 'existing users updated';
 $string['missingcolumn'] = 'Missing \'%s\' Colum from import please add it.';
 $string['finished'] = 'Finished';
-
+$string['newrogoaccount'] = 'New Rogo Account';
 $string['emailmsg1'] = 'Create new user account';
 $string['emailmsg2'] = 'Dear';
 $string['emailmsg3'] = 'A new account has been created to access the online assessment and survey system Rogō. Your personal authentication details are the same as your university log in details.';
