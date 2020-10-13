@@ -75,6 +75,8 @@ class selectors
         'question_type' => 'question_type',
         'paper_question_leadin' => 'paper_question_leadin',
         'bank_question_leadin' => 'bank_question_leadin',
+        'summary_mark' => 'summary_mark',
+        'classification_button' => 'classification_button',
     );
 
     /**
@@ -151,6 +153,12 @@ XPATH
 XPATH
     ,'bank_question_leadin' => <<<XPATH
 //*[contains(@class, 'viewq') and contains(normalize-space(.) , %locator%)]
+XPATH
+    ,'summary_mark' => <<<XPATH
+//td[contains(text(),'Your mark')]/following-sibling::td[contains(normalize-space(.), %locator%)]
+XPATH
+    ,'classification_button' => <<<XPATH
+//td[contains(@class, 'overall') and contains(normalize-space(.) , %locator%)]
 XPATH
     );
 

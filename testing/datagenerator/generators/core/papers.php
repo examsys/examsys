@@ -112,6 +112,7 @@ class papers extends generator
             'calendaryear' => null,
             'remote' => 0,
             'password' => null,
+            'settings' => '',
         );
         $settings = $this->set_defaults_and_clean($default, $parameters);
 
@@ -191,6 +192,11 @@ class papers extends generator
             throw new data_error('Error: ' . $message);
         }
         $settings['id'] = $pid;
+
+        // Post creation settings may be provided as a json array.
+        if (!empty($settings['settings'])) {
+            $this->set_post_creation_settings($settings['id'], json_decode($settings['settings'], true));
+        }
         return $settings;
     }
 

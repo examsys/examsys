@@ -636,14 +636,45 @@ JS;
     }
 
     /**
-     * Waits for the an element loaded by ajax to be visible. So we know it has finished loading.
-     * @param string $element the element we are waiting for
+     * Waits for the an element to load.
+     * @param string $selector the selector type
+     * @param string $content the content to find
      */
-    public function iWaitForTheAjaxToLoad(string $element): void
+    public function iWaitForElement(string $selector, string $content): void
     {
-        $session = $this->getSession();
-        $this->spin(function (rogo_test $context) use ($session, $element) {
-            return $session->evaluateScript("return $('" . $element . "').is(':visible');");
-        });
+        if ($this->running_javascript()) {
+            $this->spin(
+                function (rogo_test $context) use ($selector, $content) {
+                    $element = $this->find($selector, $content);
+                    if (!is_null($element) and $element->isVisible()) {
+                        return true;
+                    }
+                    return false;
+                }
+            );
+        } else {
+            throw new \Exception("The \"$selector\" with the value of \"$content\" is hidden");
+        }
+    }
+
+    /**
+     * Waits for the screen number to change
+     * @param string $current_screen the screen we have navigated from
+     */
+    public function iWaitForScreen(string $current_screen): void
+    {
+        if ($this->running_javascript()) {
+            $this->spin(
+                function (rogo_test $context) use ($current_screen) {
+                    $screen = $this->find('id_or_name', 'current_screen');
+                    if ($screen->getValue() !== $current_screen) {
+                        return true;
+                    }
+                    return false;
+                }
+            );
+        } else {
+            throw new \Exception('The "id_or_name" with the value of "current_screen" could not be found');
+        }
     }
 }

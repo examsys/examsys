@@ -162,7 +162,7 @@ trait Question
      * @Given I wait for questions to load
      */
     public function iWaitForQuestionsToLoad() {
-        $this->iWaitForTheAjaxToLoad('#link_1');
+        $this->iWaitForElement('id', 'link_1');
     }
 
     /**

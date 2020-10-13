@@ -31,8 +31,148 @@ use Exception;
  * @package testing
  * @subpackage behat
  */
-trait paper
+trait Paper
 {
+    /**
+     * Click on an element on the page.
+     *
+     * @Given I navigate paper :name
+     * @param string $type The type of navigation - Next, Previous, Finish
+     * @throws Exception
+     */
+    public function iNavigatePaper(string $type): void
+    {
+        $selector = 'button';
+        switch ($type) {
+            case 'Previous':
+                $content = '<';
+                break;
+            case 'Finish':
+                $content = 'Finish';
+                break;
+            default:
+                $content = '>';
+        }
+        $screen = $this->find('id_or_name', 'current_screen');
+        $this->iWaitForElement($selector, $content);
+        $element = $this->find($selector, $content);
+        $element->click();
+        if ($content === 'Finish') {
+            $this->i_click('OK', 'button');
+        } else {
+            $this->iWaitForScreen($screen->getValue());
+        }
+    }
+
+    /**
+     * Checks the mark for the paper
+     *
+     * @Given I should see your mark is :mark
+     * @param string $mark the mark scored
+     */
+    public function iShouldSeeYourMarkIs(string $mark): void
+    {
+        $selector = 'summary_mark';
+        $this->iWaitForElement($selector, $mark);
+        $this->i_should_see($mark, $selector);
+    }
+
+    /**
+     * Opens an exam preview.
+     *
+     * @Given I open the exam preview
+     */
+    public function iOpenTheExamPreview(): void
+    {
+        $this->i_click('Test & Preview', 'link');
+        $this->i_focus_popup('Rogō: Assessment');
+    }
+
+    /**
+     * Opens an osce preview.
+     *
+     * @Given I open the osce preview
+     */
+    public function iOpenTheOscePreview(): void
+    {
+        $this->i_click('Test & Preview', 'link');
+        $this->i_focus_popup('OSCE Form');
+    }
+
+    /**
+     * Closes an osce preview.
+     *
+     * @Given I close the osce preview
+     */
+    public function iCloseTheOscePreview(): void
+    {
+        $this->i_close_popup_window('OSCE Form');
+        $this->i_focus_main_window();
+    }
+
+    /**
+     * Answer the overall classifcation
+     * @Given I answer overall with :classification
+     * @param string $classification the classification
+     */
+    public function iAnswerOverallWith(string $classification): void
+    {
+        $this->i_click($classification, 'classification_button');
+    }
+
+    /**
+     * Enter feedback
+     * @Given I enter the feedback :feedback
+     * @param string $feedback the feedback
+     */
+    public function iEnterTheFeedback(string $feedback): void
+    {
+        $this->fillField('fback', $feedback);
+    }
+
+    /**
+     * Select a radio field.
+     * @Given I answer the questions:
+     * @param TableNode $data The parameters used to answer the question
+     */
+    public function iAnswerTheQuestions(TableNode $data): void
+    {
+        foreach ($data->getHash() as $row) {
+            switch ($row['type']) {
+                case 'sct':
+                    $this->selectRadio('q' . $row['position'] . '_' . $row['answer']);
+                    break;
+                case 'blank':
+                case 'extmatch':
+                case 'rank':
+                    // Cannot use fillDropdown as no ids on exam script.
+                    $this->fillAnswer($row['type'], $row['position'], $row['answer']);
+                    break;
+                case 'dichotomous':
+                case 'likert':
+                case 'matrix':
+                case 'mcq':
+                case 'mrq':
+                case 'true_false':
+                    // Cannot use selectRadio/selectCheckPoints as no ids on exam script.
+                    $this->clickAnswer($row['type'], $row['position'], $row['answer']);
+                    break;
+                case 'textbox':
+                    if ($row['answer'] != 'u') {
+                        $this->fillTinyMCE('q' . $row['position'], $row['answer']);
+                    }
+                    break;
+                case 'enhancedcalc':
+                    if ($row['answer'] != 'u') {
+                        $this->fillField('q' . $row['position'], $row['answer']);
+                    }
+                    break;
+                default:
+                    throw new PendingException('No handler for answering ' . $row['type'] . 'questions');
+            }
+        }
+    }
+
     /**
      * Creates a new paper when the user is on a module page.
      *
@@ -40,31 +180,31 @@ trait paper
      * @param string $type The type of paper
      * @param TableNode $data The parameters used to create the paper
      */
-    public function i_create_a_new_paper($type, TableNode $data)
+    public function iCreateANewPaper(string $type, TableNode $data): void
     {
         $this->i_click('New Paper', 'link');
         $this->i_focus_popup('Rogō: Create new Paper');
         switch ($type) {
             case 'formative':
-                $this->create_formative($data);
+                $this->createFormative($data);
                 break;
             case 'offline':
-                $this->create_offline($data);
+                $this->createOffline($data);
                 break;
             case 'osce':
-                $this->create_osce($data);
+                $this->createOsce($data);
                 break;
             case 'peer review':
-                $this->create_peer_review($data);
+                $this->createPeerReview($data);
                 break;
             case 'progress':
-                $this->create_progress($data);
+                $this->createProgress($data);
                 break;
             case 'summative':
-                $this->create_summative($data);
+                $this->createSummative($data);
                 break;
             case 'survey':
-                $this->create_survey($data);
+                $this->createSurvey($data);
                 break;
             default:
                 throw new PendingException("No handler for creating $type papers");
@@ -80,20 +220,20 @@ trait paper
      *
      * @param TableNode $data
      */
-    protected function create_formative(TableNode $data)
+    protected function createFormative(TableNode $data): void
     {
         $fields = $data->getRowsHash();
-        $this->paper_basics('Formative Self-Assessment', $fields['name']);
+        $this->paperBasics('Formative Self-Assessment', $fields['name']);
         // Set the start date.
-        $this->fill_in_date_time('f', $fields['start']);
+        $this->fillInDateTime('f', $fields['start']);
         // Set the end date.
-        $this->fill_in_date_time('t', $fields['end']);
+        $this->fillInDateTime('t', $fields['end']);
         // Set optional fields.
         if (isset($fields['timezone'])) {
-            $this->fill_in_timezone($fields['timezone']);
+            $this->fillInTimezone($fields['timezone']);
         }
         if (isset($fields['modules'])) {
-            $this->fill_in_modules($fields['modules']);
+            $this->fillInModules($fields['modules']);
         }
     }
 
@@ -102,23 +242,23 @@ trait paper
      *
      * @param TableNode $data
      */
-    protected function create_offline(TableNode $data)
+    protected function createOffline(TableNode $data): void
     {
         $fields = $data->getRowsHash();
-        $this->paper_basics('Offline Paper', $fields['name']);
+        $this->paperBasics('Offline Paper', $fields['name']);
         // Set the start date.
-        $this->fill_in_date_time('f', $fields['start']);
+        $this->fillInDateTime('f', $fields['start']);
         // Set the end date.
-        $this->fill_in_date_time('t', $fields['end']);
+        $this->fillInDateTime('t', $fields['end']);
         if (isset($fields['session'])) {
-            $this->fill_in_session($fields['session']);
+            $this->fillInSession($fields['session']);
         }
         // Set optional fields.
         if (isset($fields['timezone'])) {
-            $this->fill_in_timezone($fields['timezone']);
+            $this->fillInTimezone($fields['timezone']);
         }
         if (isset($fields['modules'])) {
-            $this->fill_in_modules($fields['modules']);
+            $this->fillInModules($fields['modules']);
         }
     }
 
@@ -127,23 +267,23 @@ trait paper
      *
      * @param TableNode $data
      */
-    protected function create_osce(TableNode $data)
+    protected function createOsce(TableNode $data): void
     {
         $fields = $data->getRowsHash();
-        $this->paper_basics('OSCE Station', $fields['name']);
+        $this->paperBasics('OSCE Station', $fields['name']);
         // Set the start date.
-        $this->fill_in_date_time('f', $fields['start']);
+        $this->fillInDateTime('f', $fields['start']);
         // Set the end date.
-        $this->fill_in_date_time('t', $fields['end']);
+        $this->fillInDateTime('t', $fields['end']);
         if (isset($fields['session'])) {
-            $this->fill_in_session($fields['session']);
+            $this->fillInSession($fields['session']);
         }
         // Set optional fields.
         if (isset($fields['timezone'])) {
-            $this->fill_in_timezone($fields['timezone']);
+            $this->fillInTimezone($fields['timezone']);
         }
         if (isset($fields['modules'])) {
-            $this->fill_in_modules($fields['modules']);
+            $this->fillInModules($fields['modules']);
         }
     }
 
@@ -152,20 +292,20 @@ trait paper
      *
      * @param TableNode $data
      */
-    protected function create_peer_review(TableNode $data)
+    protected function createPeerReview(TableNode $data): void
     {
         $fields = $data->getRowsHash();
-        $this->paper_basics('Peer Review', $fields['name']);
+        $this->paperBasics('Peer Review', $fields['name']);
         // Set the start date.
-        $this->fill_in_date_time('f', $fields['start']);
+        $this->fillInDateTime('f', $fields['start']);
         // Set the end date.
-        $this->fill_in_date_time('t', $fields['end']);
+        $this->fillInDateTime('t', $fields['end']);
         // Set optional fields.
         if (isset($fields['timezone'])) {
-            $this->fill_in_timezone($fields['timezone']);
+            $this->fillInTimezone($fields['timezone']);
         }
         if (isset($fields['modules'])) {
-            $this->fill_in_modules($fields['modules']);
+            $this->fillInModules($fields['modules']);
         }
     }
 
@@ -174,20 +314,20 @@ trait paper
      *
      * @param TableNode $data
      */
-    protected function create_progress(TableNode $data)
+    protected function createProgress(TableNode $data): void
     {
         $fields = $data->getRowsHash();
-        $this->paper_basics('Progress Test', $fields['name']);
+        $this->paperBasics('Progress Test', $fields['name']);
         // Set the start date.
-        $this->fill_in_date_time('f', $fields['start']);
+        $this->fillInDateTime('f', $fields['start']);
         // Set the end date.
-        $this->fill_in_date_time('t', $fields['end']);
+        $this->fillInDateTime('t', $fields['end']);
         // Set optional fields.
         if (isset($fields['timezone'])) {
-            $this->fill_in_timezone($fields['timezone']);
+            $this->fillInTimezone($fields['timezone']);
         }
         if (isset($fields['modules'])) {
-            $this->fill_in_modules($fields['modules']);
+            $this->fillInModules($fields['modules']);
         }
     }
 
@@ -196,17 +336,17 @@ trait paper
      *
      * @param TableNode $data
      */
-    protected function create_summative(TableNode $data)
+    protected function createSummative(TableNode $data): void
     {
         $config = \Config::get_instance();
         $management = $config->get_setting('core', 'cfg_summative_mgmt');
         $fields = $data->getRowsHash();
-        $this->paper_basics('Summative Exam', $fields['name']);
+        $this->paperBasics('Summative Exam', $fields['name']);
         if ($management) {
-            $this->fill_in_session($fields['session']);
+            $this->fillInSession($fields['session']);
             $this->fillField('barriers_needed', ($fields['barriers'] == 1));
-            $this->fill_in_duration($fields['duration']);
-            $this->fill_in_date_required($fields['period']);
+            $this->fillInDuration($fields['duration']);
+            $this->fillInDateRequired($fields['period']);
             $this->fillField('cohort_size', $fields['size']);
             $this->fillField('sittings', $fields['sittings']);
             $this->fillField('campus', $fields['campus']);
@@ -215,20 +355,20 @@ trait paper
             }
         } else {
             // Set the start date.
-            $this->fill_in_date_time('f', $fields['start']);
+            $this->fillInDateTime('f', $fields['start']);
             // Set the end date.
-            $this->fill_in_date_time('t', $fields['end']);
+            $this->fillInDateTime('t', $fields['end']);
             // Set optional fields.
             if (isset($fields['session'])) {
-                $this->fill_in_session($fields['session']);
+                $this->fillInSession($fields['session']);
             }
             if (isset($fields['timezone'])) {
-                $this->fill_in_timezone($fields['timezone']);
+                $this->fillInTimezone($fields['timezone']);
             }
         }
         // This is present in both forms of summative creation.
         if (isset($fields['modules'])) {
-            $this->fill_in_modules($fields['modules']);
+            $this->fillInModules($fields['modules']);
         }
     }
 
@@ -237,20 +377,20 @@ trait paper
      *
      * @param TableNode $data
      */
-    protected function create_survey(TableNode $data)
+    protected function createSurvey(TableNode $data): void
     {
         $fields = $data->getRowsHash();
-        $this->paper_basics('Survey', $fields['name']);
+        $this->paperBasics('Survey', $fields['name']);
         // Set the start date.
-        $this->fill_in_date_time('f', $fields['start']);
+        $this->fillInDateTime('f', $fields['start']);
         // Set the end date.
-        $this->fill_in_date_time('t', $fields['end']);
+        $this->fillInDateTime('t', $fields['end']);
         // Set optional fields.
         if (isset($fields['timezone'])) {
-            $this->fill_in_timezone($fields['timezone']);
+            $this->fillInTimezone($fields['timezone']);
         }
         if (isset($fields['modules'])) {
-            $this->fill_in_modules($fields['modules']);
+            $this->fillInModules($fields['modules']);
         }
     }
 
@@ -259,7 +399,7 @@ trait paper
      *
      * @param string $month English month name
      */
-    protected function fill_in_date_required($month)
+    protected function fillInDateRequired(string $month): void
     {
         $dates = ['January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'];
@@ -272,7 +412,7 @@ trait paper
      * @param string $prefix The prefix for the datetime fields
      * @param string $datestring A string that will evaluate to a valid date time object
      */
-    protected function fill_in_date_time($prefix, $datestring)
+    protected function fillInDateTime(string $prefix, string $datestring): void
     {
         $date = new \DateTime($datestring);
         $this->fillField("{$prefix}day", $date->format('d'));
@@ -287,7 +427,7 @@ trait paper
      * @param string $duration
      * @throws Exception
      */
-    protected function fill_in_duration($duration)
+    protected function fillInDuration(string $duration): void
     {
         $duration = explode(':', $duration);
         if (count($duration) !== 2) {
@@ -302,7 +442,7 @@ trait paper
      *
      * @param string $modules_string Comma separated list of module codes.
      */
-    protected function fill_in_modules($modules_string)
+    protected function fillInModules(string $modules_string): void
     {
         // TODO: Refactor form so it will be possible to select the modules for a paper.
     }
@@ -310,9 +450,9 @@ trait paper
     /**
      * Fills in a Academic session field.
      *
-     * @param type $session
+     * @param string $session
      */
-    protected function fill_in_session($session)
+    protected function fillInSession(string $session): void
     {
         $date = new \DateTime($session);
         $this->fillField('session', $date->format('Y'));
@@ -323,7 +463,7 @@ trait paper
      *
      * @param string $timezone
      */
-    protected function fill_in_timezone($timezone)
+    protected function fillInTimezone(string $timezone): void
     {
         $this->fillField('timezone', $timezone);
     }
@@ -334,10 +474,67 @@ trait paper
      * @param string $type The type of paper to be created.
      * @param string $name The name of the paper
      */
-    protected function paper_basics($type, $name)
+    protected function paperBasics(string $type, string $name): void
     {
         $this->i_click($type, 'paper_type');
         $this->fillField('paper_name', $name);
         $this->i_click('Next >', 'button');
+    }
+
+    /**
+     * Click on an answer
+     * @param string $type question type
+     * @param string $position the question position
+     * @param string $answer the answer supplied
+     */
+    protected function clickAnswer(string $type, string $position, string $answer): void
+    {
+        if ($answer != 'u') {
+            switch ($type) {
+                case 'likert':
+                    $select = $this->find('xpath', '//*[@id="c' . $position . '_' . $answer . '"]');
+                    $select->click();
+                    break;
+                case 'mrq':
+                    foreach (json_decode($answer) as $ans) {
+                        $select = $this->find('xpath', '//*[@id="q' . $position . '_' . $ans . '"]');
+                        $select->click();
+                    }
+                    break;
+                case 'matrix':
+                case 'dichotomous':
+                    foreach (json_decode($answer, true) as $idx => $ans) {
+                        $option = $idx + 1;
+                        $select = $this->find('xpath', '//*[@name="q' . $position . '_' . $option . '" and @value="' . $ans . '"]');
+                        $select->click();
+                    }
+                    break;
+                default:
+                    $select = $this->find('xpath', '//*[@name="q' . $position . '" and @value="' . $answer . '"]');
+                    $select->click();
+                    break;
+            }
+        }
+    }
+
+    /**
+     * Fill an answer
+     * @param string $type question type
+     * @param string $position the question position
+     * @param string $answer the answer supplied
+     */
+    protected function fillAnswer(string $type, string $position, string $answer): void
+    {
+        if ($answer != 'u') {
+            switch ($type) {
+                default:
+                    foreach (json_decode($answer, true) as $idx => $ans) {
+                        $option = $idx + 1;
+                        $select = $this->find('xpath', '//*[@name="q' . $position . '_' . $option . '"]');
+                        $select->selectOption($ans, true);
+                    }
+                    break;
+            }
+        }
     }
 }

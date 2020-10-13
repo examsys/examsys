@@ -34,7 +34,7 @@ trait include_frontend
     use forms;
     use menu;
     use pages;
-    use paper;
+    use Paper;
     use Question;
     use Keyword;
 }

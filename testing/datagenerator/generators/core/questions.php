@@ -82,6 +82,7 @@ class questions extends generator
             'guid' => uniqid(),
             'keywords' => '',
             'options' => '',
+            'paper' => '',
         );
         $qdata = $this->set_defaults_and_clean($defaults, $data);
         $now = date('Y-m-d H:i:s');
@@ -152,9 +153,23 @@ class questions extends generator
             }
             // Options may be passed as a json array.
             if (!empty($qdata['options'])) {
-                $qdata['options'] = json_decode($qdata['options'], true);
-                $qdata['options']['question'] = $qdata['id'];
-                $this->add_options_to_question($qdata['options']);
+                $decode = json_decode($qdata['options'], false);
+                if (is_array($decode)) {
+                    foreach ($decode as $opt) {
+                        $opt->question = $qdata['id'];
+                        $this->add_options_to_question((array) $opt);
+                    }
+                } else {
+                    $decode->question = $qdata['id'];
+                    $this->add_options_to_question((array) $decode);
+                }
+            }
+            // Paper details may be provided as a json array.
+            if (!empty($qdata['paper'])) {
+                $paperparams = json_decode($qdata['paper'], true);
+                $paperparams['question'] = $qdata['id'];
+                $paperparams['paper'] = \PaperUtils::getPaperId($paperparams['paper']);
+                $this->add_question_to_paper($paperparams);
             }
             return $qdata;
         } catch (Exception $e) {
