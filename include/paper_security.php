@@ -236,17 +236,17 @@ function check_modules($userObj, $moduleIDs, $calendar_year, $string, $db)
 /**
  * Check if the paper metadata security settings are met
  * @param object $property_id paper object
- * @param object $userObj user object
- * @param array $moduleIDs list of modules
- * @param array $string tranlsations
- * @param object $db database object
+ * @param object $userObj    user object
+ * @param array  $moduleIDs  list of modules
+ * @param array  $string     tranlsations
+ * @param object $db         database object
  */
-function check_metadata($property_id, $userObj, $moduleIDs, $string, $db)
+function check_security_metadata($property_id, $userObj, $moduleIDs, $string, $db)
 {
     $contactemail = support::get_email();
     if (!$userObj->is_temporary_account()) {          // Do not check metadata security if temporary account
         $notice = UserNotices::get_instance();
-        $metadata = Paper_utils::get_metadata($property_id, $db);
+        $metadata = Paper_utils::get_security_metadata($property_id, $db);
 
         foreach ($metadata as $security_type => $security_value) {
             if (!$userObj->has_metadata($moduleIDs, $security_type, $security_value)) {
@@ -256,6 +256,43 @@ function check_metadata($property_id, $userObj, $moduleIDs, $string, $db)
             }
         }
     }
+}
+
+/**
+ * Check Safe Exam Browser header strings if enabled and set
+ *
+ * @param int      $property_id paper object
+ * @param object   $userObj     user object
+ * @param string[] $string      translations
+ * @param \mysqli  $db          database object
+ * @return boolean
+ */
+function check_seb_headers($property_id, $userObj, $string, $db, $exit = true) {
+    $properties = PaperProperties::get_paper_properties_by_id($property_id, $db, $string);
+    if ($properties->getSetting('seb_enabled')) {
+        $metadata = Paper_utils::get_metadata($db, $property_id, 'seb_hash');
+
+        if (!empty($metadata)) {
+            $hashes = [];
+            $url = Url::fromGlobals();
+
+            foreach ($metadata['seb_hash'] as $hash) {
+                $hashes[] = hash('sha256', $url->getCanonical() . $hash);
+            }
+
+            if (empty($_SERVER['HTTP_X_SAFEEXAMBROWSER_CONFIGKEYHASH']) or !in_array($_SERVER['HTTP_X_SAFEEXAMBROWSER_CONFIGKEYHASH'], $hashes)) {
+                if ($exit) {
+                    // This needs tidying up to ensure errors are correctly shown
+                    $notice = UserNotices::get_instance();
+                    $msg = sprintf($string['sebblurb'], $userObj->get_first_names(), $userObj->get_surname(), $userObj->get_username());
+                    $notice->display_notice_and_exit($db, $string['accessdenied'], $msg, $reason, '../artwork/access_denied.png', '#C00000', true, true);
+                } else {
+                    return false;
+                }
+            }
+        }
+    }
+    return true;
 }
 
 /**

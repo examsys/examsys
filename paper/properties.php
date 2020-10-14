@@ -489,32 +489,38 @@ if (isset($_GET['noadd']) and $_GET['noadd'] == 'y') {
     echo '<tr><td id="tab1" class="tabon" data-name="general">' . $string['generaltab'] . "</td></tr>\n";
     echo '<tr><td id="tab2" class="tab" data-name="security">' . $string['securitytab'] . "</td></tr>\n";
 }
-if ($properties->get_paper_type() != '3' and $properties->get_paper_type() != '6') {
-    echo '<tr><td id="tab3" class="tab" data-name="feedback">' . $string['feedback'] . '</td></tr>';
-    echo '<tr><td id="tab4" class="tab" data-name="reviewers">' . $string['reviewerstab'] . '</td></tr>';
+$papersettings = new PaperSettings($paperID, $properties->get_paper_type());
+if ($papersettings->settingsCategoryEnabled('seb')) {
+    echo '<tr><td id="tab3" class="tab" data-name="seb">' . $string['sebtab'] . '</td></tr>';
 } else {
-    echo '<tr><td id="tab3" style="display:none">' . $string['feedback'] . '</td></tr>';
-    echo '<tr><td id="tab4" style="display:none">' . $string['reviewerstab'] . '</td></tr>';
+    echo '<tr><td id="tab3" style="display:none">' . $string['sebtab'] . '</td></tr>';
+}
+if ($properties->get_paper_type() != '3' and $properties->get_paper_type() != '6') {
+    echo '<tr><td id="tab4" class="tab" data-name="feedback">' . $string['feedback'] . '</td></tr>';
+    echo '<tr><td id="tab5" class="tab" data-name="reviewers">' . $string['reviewerstab'] . '</td></tr>';
+} else {
+    echo '<tr><td id="tab4" style="display:none">' . $string['feedback'] . '</td></tr>';
+    echo '<tr><td id="tab5" style="display:none">' . $string['reviewerstab'] . '</td></tr>';
 }
 if ($properties->get_paper_type() != '3' and $properties->get_paper_type() != '4' and $properties->get_paper_type() != '5' and $properties->get_paper_type() != '6') {
-    echo '<tr><td id="tab5" class="tab" data-name="rubric">' . $string['rubrictab'] . '</td></tr>';
+    echo '<tr><td id="tab6" class="tab" data-name="rubric">' . $string['rubrictab'] . '</td></tr>';
 } else {
-    echo '<tr><td id="tab5" style="display:none">' . $string['rubrictab'] . '</td></tr>';
+    echo '<tr><td id="tab6" style="display:none">' . $string['rubrictab'] . '</td></tr>';
 }
 if ($properties->get_paper_type() != '4' and $properties->get_paper_type() != '5') {
-    echo '<tr><td id="tab6" class="tab" data-name="prologue">' . $string['prologuetab'] . '</td></tr>';
-    echo '<tr><td id="tab7" class="tab" data-name="postscript">' . $string['postscripttab'] . '</td></tr>';
+    echo '<tr><td id="tab7" class="tab" data-name="prologue">' . $string['prologuetab'] . '</td></tr>';
+    echo '<tr><td id="tab8" class="tab" data-name="postscript">' . $string['postscripttab'] . '</td></tr>';
 } else {
-    echo '<tr><td id="tab6" style="display:none">' . $string['prologuetab'] . '</td></tr>';
-    echo '<tr><td id="tab7" style="display:none">' . $string['postscripttab'] . '</td></tr>';
+    echo '<tr><td id="tab7" style="display:none">' . $string['prologuetab'] . '</td></tr>';
+    echo '<tr><td id="tab8" style="display:none">' . $string['postscripttab'] . '</td></tr>';
 }
 if ($properties->get_paper_type() != '4' and $properties->get_paper_type() != '5' and $properties->get_paper_type() != '6') {
-    echo '<tr><td id="tab8" class="tab" data-name="reference">' . $string['referencematerial'] . '</td></tr>';
+    echo '<tr><td id="tab9" class="tab" data-name="reference">' . $string['referencematerial'] . '</td></tr>';
 } else {
-    echo '<tr><td id="tab8" style="display:none">' . $string['referencematerial'] . '</td></tr>';
+    echo '<tr><td id="tab9" style="display:none">' . $string['referencematerial'] . '</td></tr>';
 }
 ?>
-<tr><td id="tab9" class="tab" data-name="changes"><?php echo $string['changes']; ?></td></tr>
+<tr><td id="tab10" class="tab" data-name="changes"><?php echo $string['changes']; ?></td></tr>
 </table>
 
 </td>
@@ -1312,6 +1318,21 @@ if ($module_sql != '') {
   <tr><td style="vertical-align:top; height:110px" colspan="2"><div style="height:111px; overflow-y:scroll;border:1px solid #828790; font-size:90%" id="metadata_security"></div></td></tr>
   </table>
 
+  </td></tr>
+</table>
+
+<table id="seb" class="tabsection" style="display: none">
+<?php
+  $seb_metadata = Paper_utils::get_metadata($mysqli, $paperID, 'seb_hash');
+  $seb_keys = $seb_metadata['seb_hash'] ?? [];
+?>
+  <tr><td class="tabtitle"><img src="../artwork/safe_exam_browser.png" alt="Icon" align="middle" /><?php echo $string['seb_keys_heading']; ?></td></tr>
+  <tr><td>
+    <?php $properties->renderSettings('seb'); ?>
+  </td></tr>
+  <tr><td style="padding: 5px 0; text-align: center;"><?php echo $string['seb_keys_title'] ?></td></tr>
+  <tr><td>
+    <?php $texteditorplugin->get_textarea('seb_keys_text', 'seb_keys_text', $texteditorplugin->get_text_for_display(htmlspecialchars(implode("\n", $seb_keys))), plugins\plugins_texteditor::TYPE_SIMPLE, "width:95%; height:500px; margin: 0 2%;"); ?>
   </td></tr>
 </table>
 

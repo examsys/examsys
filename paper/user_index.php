@@ -374,7 +374,7 @@ foreach ($modIDs as $modID) {
   // Display any metadata
   $metadata_security = true;
   $metadata_msg = '';
-  $metadata = Paper_utils::get_metadata($property_id, $mysqli);
+  $metadata = Paper_utils::get_security_metadata($property_id, $mysqli);
 if (!$userObject->is_temporary_account()) {         // Do not check metadata security if temporary account
     foreach ($metadata as $security_type => $security_value) {
         $html = '';
@@ -468,9 +468,12 @@ if ($userObject->has_role(array('Staff', 'Admin', 'SysAdmin', 'External Examiner
     }
 }
 
-  echo '<tr><td style="text-align:center" colspan="4"><br />';
+echo '<tr><td style="text-align:center" colspan="4"><br />';
 
-if ($start_available === false) {
+if (!check_seb_headers($propertyObj->get_property_id(), $userObject, $string, $mysqli, false)) {
+    echo '<div style="color:#C00000; font-size:90%">' . $string['sebrequired'] . '</div>' . "\n";
+    $start_available = false;
+} elseif ($start_available === false) {
     echo '<div style="color:#C00000;font-size:90%">' . $string['papernotavailable'] . "</div>\n";
 } elseif ($remaining_available === false) {
     echo '<div style="color:#C00000;font-size:90%">' . $string['timeexpired'] . "</div>\n";

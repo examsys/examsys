@@ -262,13 +262,127 @@ class PaperUtils
     }
 
     /**
-     * Return a array of metadata pairs assigned to a paper
+     * Sets a array of metadata pairs assigned to a paper (non-security related)
      *
-     * @param $paperID the id of the paper or property_id
-     * @param $db Database connection
+     * @param \mysqli  $db         Database connection
+     * @param int      $paperID    the id of the paper or property_id
+     * @param string[] $metadata   Key(s) to update (array in form of key=>value, or key=>array(value,value,value))
+     * @param boolean  $delete_old Remove old matching keys first, default off
+     */
+    public function set_metadata($db, $paperID, $metadata, $delete_old = false)
+    {
+        $keys = array_keys($metadata);
+        if (empty($keys)) {
+            return;
+        }
+
+        if ($delete_old) {
+            $sql = 'DELETE FROM paper_metadata WHERE paperID = ? AND name IN (' . implode(',', array_fill(0, count($keys), '?')) . ')';
+            $result = $db->prepare($sql);
+            $result->bind_param('i' . str_repeat('s', count($keys)), $paperID, ...$keys);
+            $result->execute();
+            $result->close();
+        }
+
+        $insert_array = [];
+
+        foreach ($keys as $key) {
+            if (is_array($metadata[$key])) {
+                foreach ($metadata[$key] as $value) {
+                    if (!empty(trim($value))) {
+                        $insert_array[] = [$key, $value];
+                    }
+                }
+            } else {
+                if (!empty(trim($metadata[$key]))) {
+                    $insert_array[] = [$key, $metadata[$key]];
+                }
+            }
+        }
+
+        // ON DUPLICATE KEY UPDATE is less prone to issues than INSERT IGNORE, and won't actually trigger a real update
+        $sql = 'INSERT INTO paper_metadata (`paperID`, `name`, `value`) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE `paperID` = `paperID`';
+        $result = $db->prepare($sql);
+
+        foreach ($insert_array as $row) {
+            $result->bind_param('iss', $paperID, ...$row);
+            $result->execute();
+        }
+        $result->close();
+    }
+
+    /**
+     * Return a array of metadata pairs assigned to a paper (non-security related)
+     *
+     * @param \mysqli         $db      Database connection
+     * @param int             $paperID the id of the paper or property_id
+     * @param string|string[] $keys    Specific key(s) to retrieve instead of all
      * @return array
      */
-    public function get_metadata($paperID, $db)
+    public function get_metadata($db, $paperID, $keys = [])
+    {
+        $metadata = array();
+
+        $sql = 'SELECT name, value FROM paper_metadata WHERE paperID = ?';
+        if (empty($keys)) {
+            $result = $db->prepare($sql);
+            $result->bind_param('i', $paperID);
+        } else {
+            if (!is_array($keys)) {
+                $keys = array($keys);
+            }
+            $sql .= ' AND name IN (' . implode(',', array_fill(0, count($keys), '?')) . ')';
+            $result = $db->prepare($sql);
+            $result->bind_param('i' . str_repeat('s', count($keys)), $paperID, ...$keys);
+        }
+        $result->execute();
+        $result->bind_result($key, $value);
+        $result->store_result();
+        while ($result->fetch()) {
+            if (!isset($metadata[$key])) {
+                $metadata[$key] = [ $value ];
+            } else {
+                $metadata[$key][] = $value;
+            }
+        }
+        $result->close();
+
+        // Did have this set up to return single $key => $values, e.g. 'seb_hash' => 'foobar' when only one entry present,
+        // but the code was complex and meant additional handling needed on the calling function.
+        return $metadata;
+    }
+
+    /**
+     * Deletes metadata pairs assigned to a paper by label(s) (non-security related)
+     *
+     * @param \mysqli         $db      Database connection
+     * @param int             $paperID the id of the paper or property_id
+     * @param string|string[] $keys    Specific key(s) to delete
+     */
+    public function delete_metadata($db, $paperID, $keys)
+    {
+        if (empty($keys)) {
+            return;
+        }
+        if (!is_array($keys)) {
+            $keys = [$keys];
+        }
+        $keys = array_unique($keys);
+
+        $sql = 'DELETE FROM paper_metadata WHERE paperID = ? AND name IN (' . implode(',', array_fill(0, count($keys), '?')) . ')';
+        $result = $db->prepare($sql);
+        $result->bind_param('i' . str_repeat('s', count($keys)), $paperID, ...$keys);
+        $result->execute();
+        $result->close();
+    }
+
+    /**
+     * Return a array of security metadata pairs assigned to a paper
+     * @param int     $paperID the id of the paper or property_id
+     * @param \mysqli $db      Database connection
+     * @return array
+     */
+    public function get_security_metadata($paperID, $db)
     {
         $metadata = array();
 

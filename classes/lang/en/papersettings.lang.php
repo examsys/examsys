@@ -17,3 +17,5 @@
 
 $string['remote_summative'] = 'Remote Summative';
 $string['remote_summative_tip'] = 'Remote summative exams are not locked down to secure labs. A paper password is required.';
+$string['seb_enabled'] = 'Enable';
+$string['seb_enabled_tip'] = 'Enable Safe Exam Browser key support';

@@ -819,6 +819,18 @@ QUERY;
         ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
 QUERY;
 
+        $this->tableList['paper_metadata'] = <<<QUERY
+        CREATE TABLE `paper_metadata` (
+          `id` INT(11) NOT NULL AUTO_INCREMENT,
+          `paperID` MEDIUMINT(8) UNSIGNED NOT NULL,
+          `name` VARCHAR(255) NOT NULL,
+          `value` VARCHAR(255) NOT NULL,
+          PRIMARY KEY (`id`),
+          UNIQUE INDEX `paperID_name_value` (`name`, `value`, `paperID`),
+          INDEX `idx_paperID` (`paperID`)
+        ) ENGINE={$engine} AUTO_INCREMENT=0 DEFAULT CHARSET={$charset}
+QUERY;
+
         $this->tableList['paper_metadata_security'] = <<<QUERY
         CREATE TABLE `paper_metadata_security` (
           `id` int(11) NOT NULL auto_increment,

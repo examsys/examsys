@@ -107,7 +107,10 @@ if ($userObject->has_role('Staff') and check_staff_modules($moduleID, $userObjec
     $attempt = check_modules($userObject, $modIDs, $calendar_year, $string, $mysqli);
 
     // Check for any metadata security restrictions
-    check_metadata($property_id, $userObject, $modIDs, $string, $mysqli);
+    check_security_metadata($property_id, $userObject, $modIDs, $string, $mysqli);
+
+    // Check for Safe Exam Browser restrictions
+    check_seb_headers($property_id, $userObject, $string, $mysqli);
 }
 
 // Get lab info used in log metadata

@@ -69,6 +69,7 @@ define(['jsxls', 'alert', 'jquery', 'jqueryui'], function(JsXls, ALERT, $) {
         this.buttonclick = function(sectionID, tabID) {
             $('#general').hide();
             $('#security').hide();
+            $('#seb').hide();
             $('#reviewers').hide();
             $('#feedback').hide();
             $('#rubric').hide();

@@ -21,7 +21,7 @@
         <script src='{{path}}/js/require.js'></script>
         <script src='{{path}}/js/main.min.js'></script>
 {% for scriptname in data.scripts %}
-        <script type="text/javascript" src="{{path}}{{scriptname}}"></script>
+        <script src="{{path}}{{scriptname}}"></script>
 {% endfor %}
         {% if data.texteditor != '' %}
             {% include data.texteditor %}

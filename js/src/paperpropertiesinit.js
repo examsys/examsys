@@ -142,4 +142,18 @@ requirejs(['rogoconfig', 'paperproperties', 'colourpicker', 'datecopy', 'form', 
             });
         }
     });
+
+    // Disable key input if not enabled.
+    if ($('#seb_enabled').is(':checked')) {
+        $('#seb_keys_text').prop("disabled", false);
+    } else {
+        $('#seb_keys_text').prop("disabled", true);
+    }
+    $('#seb_enabled').click(function () {
+        if ($(this).is(':checked')) {
+            $('#seb_keys_text').prop("disabled", false);
+        } else {
+            $('#seb_keys_text').prop("disabled", true);
+        }
+    });
 });

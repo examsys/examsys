@@ -62,3 +62,4 @@ $string['ipmismatchblurb'] = 'This device will now assume control of the exam. N
 $string['remoteipmismatchblurb'] = 'Your exam attempt will resume on this device.';
 $string['waitforpassword'] = 'You may start once you have received the exam password.';
 $string['logissue'] = 'Log an issue that stops you completing the exam';
+$string['sebrequired'] = 'This paper must be accessed via the Safe Exam Browser.';

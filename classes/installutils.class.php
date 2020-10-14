@@ -648,6 +648,7 @@ class InstallUtils
         $alter[] = 'ALTER TABLE questions_module ADD CONSTRAINT `questions_modules_fk2` FOREIGN KEY (`idMod`) REFERENCES `modules` (`id`)';
         $alter[] = 'ALTER TABLE questions ADD CONSTRAINT `questions_fk1` FOREIGN KEY (`status`) REFERENCES `question_statuses` (`id`)';
         $alter[] = 'ALTER TABLE paper_feedback ADD CONSTRAINT `paper_feedback_fk1` FOREIGN KEY (`paperID`) REFERENCES `properties` (`property_id`)';
+        $alter[] = 'ALTER TABLE paper_metadata ADD CONSTRAINT `paper_metadata_fk1` FOREIGN KEY (`paperID`) REFERENCES `properties` (`property_id`) ON DELETE CASCADE';
         $alter[] = 'ALTER TABLE paper_metadata_security ADD CONSTRAINT `paper_metadata_security_fk1` FOREIGN KEY (`paperID`) REFERENCES `properties` (`property_id`)';
         $alter[] = 'ALTER TABLE modules_staff ADD CONSTRAINT `modules_staff_fk1` FOREIGN KEY (`idMod`) REFERENCES `modules` (`id`)';
         $alter[] = 'ALTER TABLE modules_staff ADD CONSTRAINT `modules_staff_fk2` FOREIGN KEY (`memberID`) REFERENCES `users` (`id`)';
@@ -1042,6 +1043,7 @@ class InstallUtils
         $priv_SQL[] = 'GRANT SELECT, INSERT, UPDATE ON ' . $dbname . ".lti_keys TO '" . self::$cfg_db_username . "'@'" . self::$cfg_web_host . "'";
         $priv_SQL[] = 'GRANT SELECT, INSERT, UPDATE ON ' . $dbname . ".lti_user TO '" . self::$cfg_db_username . "'@'" . self::$cfg_web_host . "'";
         $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".modules_student TO '" . self::$cfg_db_username . "'@'" . self::$cfg_web_host . "'";
+        $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".paper_metadata TO '" . self::$cfg_db_username . "'@'" . self::$cfg_web_host . "'";
         $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".paper_metadata_security TO '" . self::$cfg_db_username . "'@'" . self::$cfg_web_host . "'";
         $priv_SQL[] = 'GRANT SELECT, UPDATE, INSERT, DELETE ON ' . $dbname . ".password_tokens TO '" . self::$cfg_db_username . "'@'" . self::$cfg_web_host . "'";
         $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".properties TO '" . self::$cfg_db_username . "'@'" . self::$cfg_web_host . "'";
@@ -1116,6 +1118,7 @@ class InstallUtils
         $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".objectives TO '" . self::$cfg_db_student_user . "'@'" . self::$cfg_web_host . "'";
         $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".options TO '" . self::$cfg_db_student_user . "'@'" . self::$cfg_web_host . "'";
         $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".paper_feedback TO '" . self::$cfg_db_student_user . "'@'" . self::$cfg_web_host . "'";
+        $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".paper_metadata TO '" . self::$cfg_db_student_user . "'@'". self::$cfg_web_host . "'";
         $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".paper_metadata_security TO '" . self::$cfg_db_student_user . "'@'" . self::$cfg_web_host . "'";
         $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".papers TO '" . self::$cfg_db_student_user . "'@'" . self::$cfg_web_host . "'";
         $priv_SQL[] = 'GRANT SELECT ON ' . $dbname . ".properties TO '" . self::$cfg_db_student_user . "'@'" . self::$cfg_web_host . "'";
@@ -1353,6 +1356,7 @@ class InstallUtils
         $priv_SQL[] = 'GRANT SELECT, INSERT, UPDATE, DELETE ON ' . $dbname . ".modules_student TO '" . self::$cfg_db_staff_user . "'@'" . self::$cfg_web_host . "'";
         $priv_SQL[] = 'GRANT SELECT, INSERT, UPDATE, DELETE ON ' . $dbname . ".objectives TO '" . self::$cfg_db_staff_user . "'@'" . self::$cfg_web_host . "'";
         $priv_SQL[] = 'GRANT SELECT, INSERT, UPDATE, DELETE ON ' . $dbname . ".options TO '" . self::$cfg_db_staff_user . "'@'" . self::$cfg_web_host . "'";
+        $priv_SQL[] = 'GRANT SELECT, INSERT, UPDATE, DELETE ON ' . $dbname . ".paper_metadata TO '" . self::$cfg_db_staff_user . "'@'". self::$cfg_web_host . "'";
         $priv_SQL[] = 'GRANT SELECT, INSERT, UPDATE, DELETE ON ' . $dbname . ".paper_metadata_security TO '" . self::$cfg_db_staff_user . "'@'" . self::$cfg_web_host . "'";
         $priv_SQL[] = 'GRANT SELECT, INSERT, UPDATE, DELETE ON ' . $dbname . ".paper_notes TO '" . self::$cfg_db_staff_user . "'@'" . self::$cfg_web_host . "'";
         $priv_SQL[] = 'GRANT SELECT, INSERT, UPDATE, DELETE ON ' . $dbname . ".paper_feedback TO '" . self::$cfg_db_staff_user . "'@'" . self::$cfg_web_host . "'";
@@ -1789,7 +1793,7 @@ class InstallUtils
     protected static function createPaperSettings()
     {
         // Categories.
-        $categories = array('general', 'security', 'prologue', 'postscript',
+        $categories = array('general', 'security', 'seb', 'prologue', 'postscript',
             'rubric', 'feedback', 'reviewers', 'reference');
         PaperSettings::createPaperSettingsCategories(self::$db, $categories);
 
@@ -1800,6 +1804,13 @@ class InstallUtils
             'security',
             'boolean',
             '{"formative": 0, "progress": 0, "summative": 1, "survey": 0, "osce": 0, "offline": 0, "peer_review": 0}'
+        );
+        PaperSettings::createPaperSettingsSetting(
+            self::$db,
+            'seb_enabled',
+            'seb',
+            'boolean',
+            '{"formative": 0, "progress": 1, "summative": 1, "survey": 0, "osce": 0, "offline": 0, "peer_review": 0}'
         );
     }
 

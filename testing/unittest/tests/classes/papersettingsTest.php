@@ -115,6 +115,7 @@ class PaperSetttingsTest extends unittestdatabase
     {
         $paper_settings = new \PaperSettings($this->paper['id'], $this->paper['papertype']);
         $expected['remote_summative'] = array('value' => 1, 'type' => \Config::BOOLEAN, 'category' => 'security');
+        $expected['seb_enabled'] = array('value' => null, 'type' => \Config::BOOLEAN, 'category' => 'seb');
         $this->assertEquals($expected, $paper_settings->get());
         // Not supported.
         $paper_settings = new \PaperSettings($this->paper2['id'], $this->paper2['papertype']);
@@ -191,9 +192,12 @@ class PaperSetttingsTest extends unittestdatabase
                 'category' => 'rubric',
             ),
             7 => array(
-                'category' => 'security',
+                'category' => 'seb',
             ),
             8 => array(
+                'category' => 'security',
+            ),
+            9 => array(
                 'category' => 'test',
             ),
         );
@@ -222,6 +226,12 @@ class PaperSetttingsTest extends unittestdatabase
                 'supported' => '{"osce": 0, "survey": 0, "offline": 0, "progress": 0, "formative": 0, "summative": 1, "peer_review": 0}'
             ),
             1 => array(
+                'setting' => 'seb_enabled',
+                'category' => 'seb',
+                'type' => 'boolean',
+                'supported' => '{"osce": 0, "survey": 0, "offline": 0, "progress": 1, "formative": 0, "summative": 1, "peer_review": 0}'
+            ),
+            2 => array(
                 'setting' => 'test',
                 'category' => 'general',
                 'type' => 'boolean',
@@ -229,5 +239,17 @@ class PaperSetttingsTest extends unittestdatabase
             ),
         );
         $this->assertEquals($expectedTable, $queryTable);
+    }
+
+    /**
+     * Test getting if setting is enabled for a category
+     * @group paper
+     */
+    public function testSettingsCategoryEnabled(): void
+    {
+        $paper_settings = new \PaperSettings($this->paper['id'], $this->paper['papertype']);
+        $this->assertTrue($paper_settings->settingsCategoryEnabled('seb'));
+        $paper_settings2 = new \PaperSettings($this->paper2['id'], $this->paper2['papertype']);
+        $this->assertFalse($paper_settings2->settingsCategoryEnabled('seb'));
     }
 }

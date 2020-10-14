@@ -140,6 +140,7 @@ class PaperSettings
         FROM properties
         CROSS JOIN paper_settings_setting
         LEFT JOIN paper_settings ON properties.property_id = paper_settings.paperid
+        AND paper_settings_setting.setting = paper_settings.setting
         WHERE properties.property_id = ?';
         $result = $this->db->prepare($sql);
         $result->bind_param('i', $this->paper);
@@ -273,6 +274,25 @@ class PaperSettings
         }
         $render = new render(Config::get_instance());
         $render->render($data, $strings, 'admin/paper/settings.html');
+    }
+
+    /**
+     * Check it settings category is enabled
+     * @param string $category the setting category
+     * @return boolean
+     */
+    public function settingsCategoryEnabled(string $category): bool
+    {
+        $papertype = array_search($this->papertype, $this->types);
+        $declarations = self::getSettingDeclartions($papertype);
+        $data = array();
+        if (count($declarations) > 0) {
+            $data = $declarations[$category];
+        }
+        if (count($data) > 0) {
+            return true;
+        }
+        return false;
     }
 
     /**

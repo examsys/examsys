@@ -103,7 +103,9 @@ if ($userObject->has_role('Staff') and check_staff_modules($moduleID, $userObjec
     // Check modules if the user is a student and the paper is not formative
     $attempt = check_modules($userObject, $modIDs, $propertyObj->get_calendar_year(), $string, $mysqli);
     // Check for any metadata security restrictions
-    check_metadata($propertyObj->get_property_id(), $userObject, $modIDs, $string, $mysqli);
+    check_security_metadata($propertyObj->get_property_id(), $userObject, $modIDs, $string, $mysqli);
+    // Check for Safe Exam Browser restrictions
+    check_seb_headers($paperID, $userObject, $string, $mysqli);
     // Check if the student has clicked 'Finish'.
     check_finished($propertyObj, $userObject, $string, $mysqli);
     // Check current IP address with that of attempt in log.

@@ -6,3 +6,8 @@ paper_settings_setting:
     category: "security"
     type: "boolean"
     supported: "{\"osce\": 0, \"survey\": 0, \"offline\": 0, \"progress\": 0, \"formative\": 0, \"summative\": 1, \"peer_review\": 0}"
+  -
+    setting: "seb_enabled"
+    category: "seb"
+    type: "boolean"
+    supported: "{\"osce\": 0, \"survey\": 0, \"offline\": 0, \"progress\": 1, \"formative\": 0, \"summative\": 1, \"peer_review\": 0}"

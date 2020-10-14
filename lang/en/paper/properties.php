@@ -116,6 +116,11 @@ $string['tooltip_password'] = 'This will put an extra password on the paper in a
 $string['donotchangewarning'] = 'This paper is locked. It is recommended you only make changes if no students have attempted this paper';
 $string['minavailability'] = '*The minimum valid availability due to student accomodations is %s minutes.';
 
+// Safe Exam Browser tab
+$string['sebtab'] = 'Safe Exam Browser';
+$string['seb_keys_heading'] = 'Safe Exam Browser';
+$string['seb_keys_title'] = 'If this paper is to be run in the Safe Exam Browser environment, please paste a list of permitted Config Keys below, one per line. Students without the correct SEB configuration/key will be denied access.';
+
 // Reviewers tab
 $string['reviewerstab'] = 'Reviewers';
 $string['reviewersheading'] = 'Set internal/external reviewers and deadlines.';

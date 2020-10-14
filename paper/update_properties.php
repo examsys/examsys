@@ -101,7 +101,7 @@ $old_marking = $properties->get_marking();
 $old_paper_title = $properties->get_paper_title();
 $old_externals = $properties->get_externals();
 $old_internals = $properties->get_internal_reviewers();
-
+$papersettings = new PaperSettings($paperID, $properties->get_paper_type());
 $logger = new Logger($mysqli);
 
 if ($properties->get_summative_lock() and !$userObject->has_role('SysAdmin')) {
@@ -407,6 +407,63 @@ if (!$title_unique) {
         }
     }
 
+    // Update Safe Exam Browser settings if enabled.
+    if ($papersettings->settingsCategoryEnabled('seb')) {
+        $seb = check_var('seb_enabled', 'POST', false, false, true);
+        if (is_null($seb)) {
+            $seb = 0;
+        }
+        $properties->updateSetting('seb_enabled', $seb, $paperID);
+        if ($papersettings->verifyValue(\Config::BOOLEAN, $seb)) {
+            $seb_keys = param::optional('seb_keys_text', '', param::RAW, param::FETCH_POST);
+
+            // Get existing keys to check for changes
+            $seb_metadata = Paper_utils::get_metadata($mysqli, $paperID, 'seb_hash');
+            $old_seb_key_array = $seb_metadata['seb_hash'] ?? [];
+
+            if (empty(trim($seb_keys))) {
+                if (!empty($old_seb_key_array)) {
+                    Paper_utils::delete_metadata(
+                        $mysqli,
+                        $paperID,
+                        'seb_hash'
+                    ); // Should this be PaperUtils::delete_metadata and declared static?
+                    $logger->track_change(
+                        'Paper',
+                        $paperID,
+                        $userObject->get_user_ID(),
+                        'Safe Exam Browser keys removed',
+                        '',
+                        'SEB'
+                    );
+                }
+            } else {
+                $seb_key_array = explode("\n", $seb_keys);
+                $seb_key_array = array_map('trim', $seb_key_array);
+
+                // Sort and compare key arrays
+                sort($old_seb_key_array);
+                sort($seb_key_array);
+
+                if ($old_seb_key_array !== $seb_key_array) {
+                    Paper_utils::set_metadata(
+                        $mysqli,
+                        $paperID,
+                        array('seb_hash' => $seb_key_array),
+                        true
+                    ); // Delete old entries, replace with new
+                    $logger->track_change(
+                        'Paper',
+                        $paperID,
+                        $userObject->get_user_ID(),
+                        'Safe Exam Browser keys added/updated',
+                        '',
+                        'SEB'
+                    );
+                }
+            }
+        }
+    }
     // Release objectives-based feedback
     if (isset($_POST['old_objectives_report']) and $_POST['old_objectives_report'] != '' and isset($_POST['objectives_report']) and $_POST['objectives_report'] == '0') {
         $editProperties = $mysqli->prepare("DELETE FROM feedback_release WHERE paper_id = ? AND type = 'objectives'");
