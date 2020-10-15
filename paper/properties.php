@@ -490,7 +490,7 @@ if (isset($_GET['noadd']) and $_GET['noadd'] == 'y') {
     echo '<tr><td id="tab2" class="tab" data-name="security">' . $string['securitytab'] . "</td></tr>\n";
 }
 $papersettings = new PaperSettings($paperID, $properties->get_paper_type());
-if ($papersettings->settingsCategoryEnabled('seb')) {
+if ($configObject->get_setting('core', 'paper_seb_enabled') and $papersettings->settingsCategoryEnabled('seb')) {
     echo '<tr><td id="tab3" class="tab" data-name="seb">' . $string['sebtab'] . '</td></tr>';
 } else {
     echo '<tr><td id="tab3" style="display:none">' . $string['sebtab'] . '</td></tr>';

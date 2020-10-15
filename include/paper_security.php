@@ -269,7 +269,8 @@ function check_security_metadata($property_id, $userObj, $moduleIDs, $string, $d
  */
 function check_seb_headers($property_id, $userObj, $string, $db, $exit = true) {
     $properties = PaperProperties::get_paper_properties_by_id($property_id, $db, $string);
-    if ($properties->getSetting('seb_enabled')) {
+    $configObject = Config::get_instance();
+    if ($configObject->get_setting('core', 'paper_seb_enabled') and $properties->getSetting('seb_enabled')) {
         $metadata = Paper_utils::get_metadata($db, $property_id, 'seb_hash');
 
         if (!empty($metadata)) {

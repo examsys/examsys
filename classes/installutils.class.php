@@ -850,6 +850,7 @@ class InstallUtils
         $configObject->set_setting('paper_breaktime_scale', array(5, 10, 25, 33, 50, 100, 200, 300), Config::CSV);
         $configObject->set_setting('paper_breaktime_mins', 0, Config::BOOLEAN);
         $configObject->set_setting('paper_pause_exam', 0, Config::BOOLEAN);
+        $configObject->set_setting('paper_seb_enabled', 1, Config::BOOLEAN);
         // Add external systems.
         $insert = self::$db->prepare("INSERT INTO external_systems (name, type) values ('ims_enterprise', 'plugin')");
         $insert->execute();

@@ -104,3 +104,4 @@ $string['paper_types'] = 'Enable/Disable paper types from being available';
 $string['paper_breaktime_scale'] = 'Scale for additional break time availble to students during exams.';
 $string['paper_breaktime_mins'] = 'If selected scale values are minutes per hour, otherwise they are a percentage of the total exam time.';
 $string['paper_pause_exam'] = 'Enable/Disable pausing of remote summative exams for students with accomodations.';
+$string['paper_seb_enabled'] = 'Safe Exam Browser key support enabled';

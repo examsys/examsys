@@ -408,7 +408,7 @@ if (!$title_unique) {
     }
 
     // Update Safe Exam Browser settings if enabled.
-    if ($papersettings->settingsCategoryEnabled('seb')) {
+    if ($configObject->get_setting('core', 'paper_seb_enabled') and $papersettings->settingsCategoryEnabled('seb')) {
         $seb = check_var('seb_enabled', 'POST', false, false, true);
         if (is_null($seb)) {
             $seb = 0;
