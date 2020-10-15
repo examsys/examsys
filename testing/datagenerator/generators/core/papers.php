@@ -33,7 +33,7 @@ use UserUtils;
 class papers extends generator
 {
     /**
-     * Creates metadata restrictions for a paper.
+     * Creates security metadata restrictions for a paper.
      *
      * Parameters:
      * - name string The type of metadata
@@ -44,7 +44,7 @@ class papers extends generator
      * @return array
      * @throws data_error
      */
-    public function create_metadata(int $paperid, $parameters): array
+    public function createSecurityMetadata(int $paperid, $parameters): array
     {
         // If an object is passed convert it into an array.
         if (is_object($parameters)) {
@@ -60,7 +60,39 @@ class papers extends generator
             'value' => 'Default',
         );
         $values = $this->set_defaults_and_clean($defaults, $parameters);
-        $valued['id'] = $this->insert_mertadata($values);
+        $values['id'] = $this->insertSecurityMetadata($values);
+        return $values;
+    }
+
+    /**
+     * Creates (non security) metadata restrictions for a paper.
+     *
+     * Parameters:
+     * - name string The type of metadata
+     * - value string The value of the metadata a student must have
+     *
+     * @param int $paperid The database id of the paper.
+     * @param array|stdClass $parameters
+     * @return array
+     * @throws data_error
+     */
+    public function createMetadata(int $paperid, $parameters): array
+    {
+        // If an object is passed convert it into an array.
+        if (is_object($parameters)) {
+            $parameters = (array)$parameters;
+        }
+        // Check that the right type has been passed.
+        if (!is_array($parameters)) {
+            throw new data_error('Must pass an array or object');
+        }
+        $defaults = array(
+            'paperID' => $paperid,
+            'name' => 'SomeType',
+            'value' => 'Default',
+        );
+        $values = $this->set_defaults_and_clean($defaults, $parameters);
+        $values['id'] = $this->insertMetadata($values);
         return $values;
     }
 
@@ -195,15 +227,34 @@ class papers extends generator
     }
 
     /**
-     * Inserts meta data restrictions for the paper.
+     * Inserts security meta data restrictions for the paper.
      *
      * @param array $data
      * @return int The id of the record inserted.
      * @throws data_error
      */
-    protected function insert_mertadata(array $data): int
+    protected function insertSecurityMetadata(array $data): int
     {
         $sql = 'INSERT INTO paper_metadata_security (paperID, name, value) VALUES (?, ?, ?)';
+        $query = $this->db->prepare($sql);
+        $query->bind_param('iss', $data['paperID'], $data['name'], $data['value']);
+        if (!$query->execute()) {
+            // The metadata was not successfully inserted.
+            throw new data_error("Security Metadata {$data['value']} for paper {$data['paperID']} was not inserted into database");
+        }
+        return $query->insert_id;
+    }
+
+    /**
+     * Inserts (non security) meta data restrictions for the paper.
+     *
+     * @param array $data
+     * @return int The id of the record inserted.
+     * @throws data_error
+     */
+    protected function insertMetadata(array $data): int
+    {
+        $sql = 'INSERT INTO paper_metadata (paperID, name, value) VALUES (?, ?, ?)';
         $query = $this->db->prepare($sql);
         $query->bind_param('iss', $data['paperID'], $data['name'], $data['value']);
         if (!$query->execute()) {

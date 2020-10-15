@@ -152,7 +152,7 @@ class PaperPropertiesGetUsersTest extends testing\unittest\unittestdatabase
         ];
         $papergen = $this->get_datagenerator('papers', 'core');
         $paper = $papergen->create_paper($paperparams);
-        $papergen->create_metadata($paper['id'], ['name' => 'Group', 'value' => 'Theta']);
+        $papergen->createSecurityMetadata($paper['id'], ['name' => 'Group', 'value' => 'Theta']);
         // Add metadata to a student on another module.
         $metadata = ['type' => 'Group', 'value' => 'Theta', 'calendar_year' => $paper['session']];
         $usergen->create_metadata($student['id'], $this->module1['id'], $metadata);
