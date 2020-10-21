@@ -97,10 +97,10 @@ define(['jsxls', 'rogoconfig', 'jquery', 'jqueryui'], function(jsxls, config, $)
                         line++;
                     }
                     var downID = submenuID.substr(5,1) + '_down';
-                    $('#' + downID).html('<img src="' + config.cfgrootpath + '/artwork/submenu_down_on.png" width="9" height="5" alt="'+ jsxls.lang_string("down") + '" />&nbsp;');
+                    $('#' + downID).html('<img src="' + config.cfgrootpath + '/artwork/submenu_down_on.png" width="9" height="5" alt="'+ jsxls.lang_string["down"] + '" />&nbsp;');
                 } else {
                     var upID = submenuID.substr(5,1) + '_up';
-                    $('#' + upID).html('<img src="' + config.cfgrootpath + '/artwork/submenu_up_off.png" width="9" height="5" alt="'+ jsxls.lang_string("up") + '" />&nbsp;');
+                    $('#' + upID).html('<img src="' + config.cfgrootpath + '/artwork/submenu_up_off.png" width="9" height="5" alt="'+ jsxls.lang_string["up"] + '" />&nbsp;');
                     clearInterval(this.myDownInterval);
                 }
             }.bind(this),50);
@@ -125,7 +125,7 @@ define(['jsxls', 'rogoconfig', 'jquery', 'jqueryui'], function(jsxls, config, $)
             if (this.scrollLine < (arrayID.length-20)) {
                 if (this.scrollLine == 0) {
                     var upID = submenuID.substr(5,1) + '_up';
-                    $('#' + upID).html('<img src="' + config.cfgrootpath + '/artwork/submenu_up_on.png" width="9" height="5" alt="'+ jsxls.lang_string("up") + '" />&nbsp;');
+                    $('#' + upID).html('<img src="' + config.cfgrootpath + '/artwork/submenu_up_on.png" width="9" height="5" alt="'+ jsxls.lang_string["up"] + '" />&nbsp;');
                 }
                 this.scrollLine++;
                 var limit = (this.scrollLine + 19);
@@ -148,7 +148,7 @@ define(['jsxls', 'rogoconfig', 'jquery', 'jqueryui'], function(jsxls, config, $)
                 }
             } else {
                 var downID = submenuID.substr(5,1) + '_down';
-                $('#' + downID).html('<img src="' + config.cfgrootpath + '/artwork/submenu_down_off.png" width="9" height="5" alt="'+ jsxls.lang_string("down") + '" />&nbsp;');
+                $('#' + downID).html('<img src="' + config.cfgrootpath + '/artwork/submenu_down_off.png" width="9" height="5" alt="'+ jsxls.lang_string["down"] + '" />&nbsp;');
                 clearInterval(this.myDownInterval);
             }
             }.bind(this),50);
@@ -181,9 +181,9 @@ define(['jsxls', 'rogoconfig', 'jquery', 'jqueryui'], function(jsxls, config, $)
             }
             if (arrayID.length > 20) {
                 var upID = submenuID.substr(5,1) + '_up';
-                $('#' + upID).html('<img src="' + config.cfgrootpath + '/artwork/submenu_up_off.png" width="9" height="5" alt="'+ jsxls.lang_string("up") + '" />&nbsp;');
+                $('#' + upID).html('<img src="' + config.cfgrootpath + '/artwork/submenu_up_off.png" width="9" height="5" alt="'+ jsxls.lang_string["up"] + '" />&nbsp;');
                 var downID = submenuID.substr(5,1) + '_down';
-                $('#' + downID).html('<img src="' + config.cfgrootpath + '/artwork/submenu_down_on.png" width="9" height="5" alt="'+ jsxls.lang_string("down") + '" />&nbsp;');
+                $('#' + downID).html('<img src="' + config.cfgrootpath + '/artwork/submenu_down_on.png" width="9" height="5" alt="'+ jsxls.lang_string["down"] + '" />&nbsp;');
             }
             var line = 0;
             for (var i = this.scrollLine; i <= limit; i++) {

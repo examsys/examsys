@@ -43,10 +43,10 @@ requirejs(['jsxls', 'classtotals', 'popupmenu', 'jquery', 'jquerytablesorter'], 
                     }
                 },
                 error: function (xhr, textStatus) {
-                    $("#msg").html(jsxls.lang_string('ajaxerror') + textStatus);
+                    $("#msg").html(jsxls.lang_string['ajaxerror'] + textStatus);
                 },
                 fail: function (jqXHR, textStatus) {
-                    $("#msg").html(jsxls.lang_string('ajaxfail') + textStatus);
+                    $("#msg").html(jsxls.lang_string['ajaxfail'] + textStatus);
                 },
             });
         }

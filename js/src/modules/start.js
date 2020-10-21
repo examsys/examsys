@@ -600,7 +600,7 @@ define(['editor', 'html5', 'qarea', 'qlabelling', 'jsxls', 'jquery'], function(E
                             var htmlend = ret_data.indexOf("</title>");
                             var htmltitle = ret_data.substring(htmlstart, htmlend);
                             if (htmltitle === '') {
-                                htmltitle = Jsxls.lang_string('htmlresp');
+                                htmltitle = Jsxls.lang_string['htmlresp'];
                             }
                             scope.saveFail('record_marks', this.url, htmltitle, submitType);
                         }
