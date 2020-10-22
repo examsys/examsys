@@ -72,6 +72,7 @@ $string['answer_to'] = 'answer to';
 $string['decimal_places'] = 'decimal places';
 $string['significant_figures'] = 'significant figures';
 $string['forcesave'] = 'Your time has expired and your answers have been saved';
+$string['forcesaveextra'] = 'If this exam does not close within a couple of minutes please contat an invigilator / administrator.';
 $string['failedanswer'] = 'You failed to answer question %s, this provides the value required for this question. This question will also be treated as if you failed to answer it.';
 $string['answerrequired'] = 'The answer to this question(s) [X] should be provided as it forms the basis of a subsequent question. If you cannot answer the question then you have the option to pass. Any subsequent dependent questions will be treated as if you failed to answer them.';
 $string['answerrequired_confirm'] = 'Do you still wish to pass this question or go back and answer it?';

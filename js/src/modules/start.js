@@ -472,10 +472,11 @@ define(['editor', 'html5', 'qarea', 'qlabelling', 'jsxls', 'jquery'], function(E
         this.forceSave = function() {
             var el = document.getElementById('paper');
             scope.stopAutoSave();
-            scope.ajaxSave(1, 'forcedSubmit');
             scope.info_dialog(Jsxls.lang_string['forcesave']);
+            $('#info_submit_dialog_buttons').hide();
+            $("#info_submit_dialog_extra").html(Jsxls.lang_string['forcesaveextra']);
             $('#qForm').attr('action',"finish.php?id=" + el.dataset.pid + el.dataset.urlmod + "&dont_record=true");
-            $('#qForm').submit();
+            scope.ajaxSave(1, 'forcedSubmit');
         };
 
         /**
