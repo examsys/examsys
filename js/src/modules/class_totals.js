@@ -18,7 +18,7 @@
 // @author Dr Joseph Baxter <joseph.baxter@nottingham.ac.uk>
 // @copyright Copyright (c) 2018 The University of Nottingham
 //
-define(['jquery', 'helplauncher'], function($, HELPLAUNCHER) {
+define(['jquery', 'helplauncher', 'rogoconfig'], function($, HELPLAUNCHER, CONFIG) {
     return function () {
         /**
          * Initialise class totals report screen.
@@ -155,7 +155,8 @@ define(['jquery', 'helplauncher'], function($, HELPLAUNCHER) {
             if (this.metadataid != '') {
                 var winwidth = screen.width - 80;
                 var winheight = screen.height - 80;
-                var url = "/paper/finish.php?id=" + this.cryptname + "&userID=" + this.userid + "&metadataID=" + this.metadataid + "&log_type=" + this.papertype;
+
+                var url = CONFIG.cfgrootpath + "/paper/finish.php?id=" + this.cryptname + "&userID=" + this.userid + "&metadataID=" + this.metadataid + "&log_type=" + this.papertype;
                 if (this.percent != undefined) {
                     url = url + "&percent=" + this.percent;
                 }
@@ -252,7 +253,7 @@ define(['jquery', 'helplauncher'], function($, HELPLAUNCHER) {
         this.reassignScript = function() {
             $('#menudiv').hide();
             if (this.reassign == 'y') {
-                var reassign = window.open("/reports/check_reassign_script.php?userID=" + this.userid + "&paperID=" + this.paperid,"reassign","width=600,height=500,left="+(screen.width/2-300)+",top="+(screen.height/2-250)+",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+                var reassign = window.open(CONFIG.cfgrootpath + "/reports/check_reassign_script.php?userID=" + this.userid + "&paperID=" + this.paperid,"reassign","width=600,height=500,left="+(screen.width/2-300)+",top="+(screen.height/2-250)+",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
                 if (window.focus) {
                     reassign.focus();
                 }
@@ -265,7 +266,7 @@ define(['jquery', 'helplauncher'], function($, HELPLAUNCHER) {
         this.popupEmailTemplate = function() {
             var winwidth = 785;
             var winheight = 550;
-            var templatewin = window.open("/reports/emailtemplate.php","templatewin","width="+winwidth+",height="+winheight+",left=30,top=20,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+            var templatewin = window.open(CONFIG.cfgrootpath + "/reports/emailtemplate.php","templatewin","width="+winwidth+",height="+winheight+",left=30,top=20,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
             templatewin.moveTo(screen.width/2-350,screen.height/2-275);
         };
 
@@ -275,7 +276,7 @@ define(['jquery', 'helplauncher'], function($, HELPLAUNCHER) {
         this.popupPublishMarks = function() {
             var winwidth = 785;
             var winheight = 150;
-            var templatewin = window.open("/reports/publishmarks.php","templatewin","width="+winwidth+",height="+winheight+",left=30,top=20,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+            var templatewin = window.open(CONFIG.cfgrootpath + "/reports/publishmarks.php","templatewin","width="+winwidth+",height="+winheight+",left=30,top=20,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
             templatewin.moveTo(screen.width/2-390,screen.height/2-75);
         };
 
@@ -286,7 +287,7 @@ define(['jquery', 'helplauncher'], function($, HELPLAUNCHER) {
             // Only allow reset of timer for Progress tests and Remote Summative exams.
             if (this.papertype == '1' || (this.papertype == '2' && $('#dataset').attr('data-remotesummative') == 1)) {
                 $('#menudiv').hide();
-                var reassign = window.open("/reports/check_reset_timer.php?userID=" + this.userid + "&paperID=" + this.paperid + "&metadataID=" + this.metadataid + "", "reassign", "width=550,height=200,left=" + (screen.width / 2 - 275) + ",top=" + (screen.height / 2 - 100) + ",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+                var reassign = window.open(CONFIG.cfgrootpath + "/reports/check_reset_timer.php?userID=" + this.userid + "&paperID=" + this.paperid + "&metadataID=" + this.metadataid + "", "reassign", "width=550,height=200,left=" + (screen.width / 2 - 275) + ",top=" + (screen.height / 2 - 100) + ",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
                 if (window.focus) {
                     reassign.focus();
                 }
@@ -299,7 +300,7 @@ define(['jquery', 'helplauncher'], function($, HELPLAUNCHER) {
         this.reassignLogLate = function() {
             $('#menudiv').hide();
             if (this.late == 'y') {
-                var loglate = window.open("/reports/check_reassign_log_late.php?userID=" + this.userid + "&paperID=" + this.paperid + "&metadataID=" + this.metadataid + "&log_type=" + this.papertype + "","reassign","width=600,height=480,left="+(screen.width/2-300)+",top="+(screen.height/2-240)+",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
+                var loglate = window.open(CONFIG.cfgrootpath + "/reports/check_reassign_log_late.php?userID=" + this.userid + "&paperID=" + this.paperid + "&metadataID=" + this.metadataid + "&log_type=" + this.papertype + "","reassign","width=600,height=480,left="+(screen.width/2-300)+",top="+(screen.height/2-240)+",scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
                 if (window.focus) {
                     loglate.focus();
                 }
