@@ -544,7 +544,7 @@ threed_handler::render_js($string);
 <?php
 if ($question != null and file_exists($cfg_web_root . 'plugins/questions/' . $question->get_type() . '/js/editinit.min.js')) {
     ?>
-<script src="/plugins/questions/<?php echo $question->get_type() ?>/js/editinit.min.js"></script>
+<script src="../../plugins/questions/<?php echo $question->get_type() ?>/js/editinit.min.js"></script>
     <?php
 }
 ?>
