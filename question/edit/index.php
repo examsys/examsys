@@ -266,7 +266,7 @@ if ($critical_error == '') {
 
     // Get any existing media
     $current_media = $question->get_media();
-    
+
     $do_save = false;
     $show_media_upload = false;
     $show_correction_intermediate = false;
@@ -279,7 +279,7 @@ if ($critical_error == '') {
         } else {
             $unified_part_names = $question->get_unified_fields();
             $save_individual = in_array('correct', array_keys($unified_part_names));
-           
+
             if ($save_individual) {
                 // Calculation, MCQ
                 $part_names = $question->get_change_fields();
@@ -552,7 +552,7 @@ if ($question != null and file_exists($cfg_web_root . 'plugins/questions/' . $qu
 <body>
 <?php
   require '../../include/toprightmenu.inc';
-    
+
     echo draw_toprightmenu();
 ?>
   <div id="debug" class="debug"></div>
