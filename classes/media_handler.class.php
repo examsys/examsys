@@ -58,10 +58,10 @@ class media_handler
 
     /**
      * Clean the alternate text so it is suitable for display
-     * @param string $alt the alternate text
+     * @param ?string $alt the alternate text
      * @return string
      */
-    private static function cleanAltText(string $alt): string
+    private static function cleanAltText(?string $alt): string
     {
         return \param::clean($alt, \param::TEXT);
     }
@@ -326,11 +326,11 @@ class media_handler
      * @param string $source the file
      * @param int $width width of media
      * @param int $height height of media
-     * @param string $alt alternate text for media
+     * @param ?string $alt alternate text for media
      * @param int $owner owner of the media
      * @return int
      */
-    public static function insertMedia(string $source, int $width, int $height, string $alt, int $owner): int
+    public static function insertMedia(string $source, int $width, int $height, ?string $alt, int $owner): int
     {
         $alt = self::cleanAltText($alt);
         $db = Config::get_instance()->db;
