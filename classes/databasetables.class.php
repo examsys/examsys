@@ -1737,7 +1737,7 @@ QUERY;
             `width` smallint,
             `height` smallint,
             `alt` TEXT,
-            `ownerid` int(10) unsigned NOT NULL,
+            `ownerid` int(11) default NULL,
             PRIMARY KEY (`id`)
         ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
