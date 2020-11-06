@@ -660,7 +660,6 @@ class InstallUtils
         $alter[] = 'ALTER TABLE paper_settings_setting ADD CONSTRAINT paper_settings_setting_fk0 FOREIGN KEY (category) REFERENCES paper_settings_category(category)';
         $alter[] = 'ALTER TABLE user_roles ADD CONSTRAINT `user_roles_fk0` FOREIGN KEY (`userID`) REFERENCES users (`id`)';
         $alter[] = 'ALTER TABLE user_roles ADD CONSTRAINT `user_roles_fk1` FOREIGN KEY (`roleID`) REFERENCES roles (`id`)';
-        $alter[] = 'ALTER TABLE media ADD CONSTRAINT media_fk0 FOREIGN KEY (ownerid) REFERENCES users(id)';
         $alter[] = 'ALTER TABLE questions_media ADD CONSTRAINT questions_media_fk0 FOREIGN KEY (qid) REFERENCES questions(q_id)';
         $alter[] = 'ALTER TABLE questions_media ADD CONSTRAINT questions_media_fk1 FOREIGN KEY (mediaid) REFERENCES media(id)';
         $alter[] = 'ALTER TABLE options_media ADD CONSTRAINT options_media_fk0 FOREIGN KEY (oid) REFERENCES options(id_num)';
