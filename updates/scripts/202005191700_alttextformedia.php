@@ -24,9 +24,8 @@ if ($updater_utils->check_version('7.2.0')) {
             `width` smallint,
             `height` smallint,
             `alt` TEXT,
-            `ownerid` int(10) unsigned NOT NULL,
-            PRIMARY KEY (`id`),
-            FOREIGN KEY media_fk0 (ownerid) REFERENCES users(id)
+            `ownerid` int(11) default NULL,
+            PRIMARY KEY (`id`)
         )';
         $updater_utils->execute_query($sqlmedia, false);
 
