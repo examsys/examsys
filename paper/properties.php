@@ -1658,110 +1658,102 @@ AND user_deleted IS NULL
 SQL;
     }
 
-    // Make sure that current reviewers always appear on the list
-    $current_internals = $properties->get_internal_reviewers();
-    $current_internals_sql = '';
-    if (count($properties->get_internal_reviewers()) > 0) {
-        $current_internals_sql = 'UNION SELECT DISTINCT id, title, initials, surname, first_names FROM users WHERE id IN (' . implode(',', array_keys($current_internals)) . ') AND user_deleted IS NULL';
-    }
-    // Add internal reviewers to list.
-    $internal_reviwers = "
-    UNION SELECT DISTINCT 
-        id, title, initials, surname, first_names 
-    FROM 
-        users 
-    WHERE
-        EXISTS (
-            SELECT 1
-            FROM user_roles ur JOIN roles r ON ur.roleid = r.id
-            WHERE r.name = 'Internal Reviewer' AND users.id = ur.userid
-        )
-        AND user_deleted IS NULL
-    ";
+// Make sure that current reviewers always appear on the list
+$current_internals = $properties->get_internal_reviewers();
+$current_internals_sql = '';
+if (count($properties->get_internal_reviewers()) > 0) {
+    $current_internals_sql = 'UNION SELECT DISTINCT id, title, initials, surname, first_names FROM users WHERE id IN (' . implode(',', array_keys($current_internals)) . ') AND user_deleted IS NULL';
+}
+// Add internal reviewers to list.
+$internal_reviwers = "
+UNION SELECT DISTINCT 
+    users.id, title, initials, surname, first_names 
+FROM 
+    users, user_roles ur, roles r  
+WHERE
+    ur.roleid = r.id
+AND r.name = 'Internal Reviewer'
+AND users.id = ur.userid
+AND user_deleted IS NULL
+";
 
-    // Dynamically choose tables and join based on role.
-    if ($userObject->has_role('SysAdmin')) {
-        $tables = 'users, modules_staff';
-        $join = 'users.id = modules_staff.memberID';
+// Dynamically choose tables and join based on role.
+if ($userObject->has_role('SysAdmin')) {
+    $tables = 'users, modules_staff, user_roles ur, roles r';
+    $join = 'users.id = modules_staff.memberID AND ur.roleid = r.id AND users.id = ur.userid';
+} else {
+    $tables = 'users, modules_staff, modules, user_roles ur, roles r';
+    $join = 'users.id = modules_staff.memberID AND modules.id = modules_staff.idMod AND ur.roleid = r.id AND users.id = ur.userid';
+}
+
+$query = "
+SELECT DISTINCT 
+    users.id, title, initials, surname, first_names 
+FROM 
+    $tables 
+WHERE 
+    r.name != 'left'
+    AND $join $school_sql $admin_school_sql $current_internals_sql $internal_reviwers 
+ORDER BY 
+    surname, initials
+";
+$internal_details = $mysqli->prepare($query);
+$internal_details->execute();
+$internal_details->bind_result($internal_id, $internal_title, $internal_initials, $internal_surname, $internal_first_names);
+$internal_no = 0;
+while ($internal_details->fetch()) {
+    $match = false;
+    foreach ($current_internals as $reviewerID => $reviewer_name) {
+        if ($internal_id == $reviewerID) {
+            $match = true;
+        }
+    }
+    if ($match) {
+        echo "<div class=\"r2\" id=\"divinternal$internal_no\"><input type=\"checkbox\" class=\"toggle\" data-toggleid=\"internal" . $internal_no . "\" name=\"internal$internal_no\" id=\"internal$internal_no\" value=\"$internal_id\" checked><label for=\"internal$internal_no\">" . ucwords(mb_strtolower($internal_surname)) . "<span style=\"color:#808080\">, $internal_first_names. $internal_title</span></label></div>\n";
     } else {
-        $tables = 'users, modules_staff, modules';
-        $join = 'users.id = modules_staff.memberID AND modules.id = modules_staff.idMod';
+        echo "<div class=\"r1\" id=\"divinternal$internal_no\"><input type=\"checkbox\" class=\"toggle\" data-toggleid=\"internal" . $internal_no . "\" name=\"internal$internal_no\" id=\"internal$internal_no\" value=\"$internal_id\"><label for=\"internal$internal_no\">" . ucwords(mb_strtolower($internal_surname)) . "<span style=\"color:#808080\">, $internal_first_names. $internal_title</span></label></div>\n";
     }
+    $internal_no++;
+}
+$internal_details->close();
+echo "<input type=\"hidden\" id=\"internal_no\" name=\"internal_no\" value=\"$internal_no\" /></div></td><td></td>";
 
-    $query = "
-    SELECT DISTINCT 
-        users.id, title, initials, surname, first_names 
-    FROM 
-        $tables 
-    WHERE
-        NOT EXISTS (
-            SELECT 1
-            FROM user_roles ur JOIN roles r ON ur.roleid = r.id
-            WHERE r.name = 'left' AND users.id = ur.userid
-        )
-        AND $join $school_sql $admin_school_sql $current_internals_sql $internal_reviwers 
-    ORDER BY 
-        surname, initials
-    ";
-    $internal_details = $mysqli->prepare($query);
-    $internal_details->execute();
-    $internal_details->bind_result($internal_id, $internal_title, $internal_initials, $internal_surname, $internal_first_names);
-    $internal_no = 0;
-    while ($internal_details->fetch()) {
-        $match = false;
-        foreach ($current_internals as $reviewerID => $reviewer_name) {
-            if ($internal_id == $reviewerID) {
-                $match = true;
-            }
+echo '<td><div style="width:350px; height:468px; overflow-y:scroll; border:1px solid #828790; font-size:90%">';
+$current_externals = $properties->get_externals();
+$sql = "
+SELECT DISTINCT 
+    users.id, title, initials, surname, first_names 
+FROM 
+    users, user_roles ur, roles r  
+WHERE
+    ur.roleid = r.id
+    AND r.name = 'External Examiner'
+    AND users.id = ur.userid
+    AND grade != 'left' AND user_deleted IS NULL 
+ORDER BY 
+    surname, initials
+";
+$external_details = $mysqli->prepare($sql);
+$external_details->execute();
+$external_details->bind_result($external_id, $external_title, $external_initials, $external_surname, $external_first_names);
+$examiner_no = 0;
+while ($external_details->fetch()) {
+    $match = false;
+    foreach ($current_externals as $reviewerID => $reviewer_name) {
+        if ($external_id == $reviewerID) {
+            $match = true;
         }
-        if ($match) {
-            echo "<div class=\"r2\" id=\"divinternal$internal_no\"><input type=\"checkbox\" class=\"toggle\" data-toggleid=\"internal" . $internal_no . "\" name=\"internal$internal_no\" id=\"internal$internal_no\" value=\"$internal_id\" checked><label for=\"internal$internal_no\">" . ucwords(mb_strtolower($internal_surname)) . "<span style=\"color:#808080\">, $internal_first_names. $internal_title</span></label></div>\n";
-        } else {
-            echo "<div class=\"r1\" id=\"divinternal$internal_no\"><input type=\"checkbox\" class=\"toggle\" data-toggleid=\"internal" . $internal_no . "\" name=\"internal$internal_no\" id=\"internal$internal_no\" value=\"$internal_id\"><label for=\"internal$internal_no\">" . ucwords(mb_strtolower($internal_surname)) . "<span style=\"color:#808080\">, $internal_first_names. $internal_title</span></label></div>\n";
-        }
-        $internal_no++;
     }
-    $internal_details->close();
-    echo "<input type=\"hidden\" id=\"internal_no\" name=\"internal_no\" value=\"$internal_no\" /></div></td><td></td>";
-
-    echo '<td><div style="width:350px; height:468px; overflow-y:scroll; border:1px solid #828790; font-size:90%">';
-    $current_externals = $properties->get_externals();
-    $sql = "
-    SELECT DISTINCT 
-        id, title, initials, surname, first_names 
-    FROM 
-        users 
-    WHERE
-        EXISTS (
-            SELECT 1
-            FROM user_roles ur JOIN roles r ON ur.roleid = r.id
-            WHERE r.name = 'External Examiner' AND users.id = ur.userid
-        )
-        AND grade != 'left' AND user_deleted IS NULL 
-    ORDER BY 
-        surname, initials
-    ";
-    $external_details = $mysqli->prepare($sql);
-    $external_details->execute();
-    $external_details->bind_result($external_id, $external_title, $external_initials, $external_surname, $external_first_names);
-    $examiner_no = 0;
-    while ($external_details->fetch()) {
-        $match = false;
-        foreach ($current_externals as $reviewerID => $reviewer_name) {
-            if ($external_id == $reviewerID) {
-                $match = true;
-            }
-        }
-        if ($match) {
-            echo "<div class=\"r2\" id=\"divexaminer$examiner_no\"><input type=\"checkbox\" class=\"toggle\" data-toggleid=\"examiner" . $examiner_no . "\" name=\"examiner$examiner_no\" id=\"examiner$examiner_no\" value=\"$external_id\" checked><label for=\"examiner$examiner_no\">" . ucwords(mb_strtolower($external_surname)) . "<span style=\"color:#808080\">, $external_first_names. $external_title</span></label></div>\n";
-        } else {
-            echo "<div class=\"r1\" id=\"divexaminer$examiner_no\"><input type=\"checkbox\" class=\"toggle\" data-toggleid=\"examiner" . $examiner_no . "\" name=\"examiner$examiner_no\" id=\"examiner$examiner_no\" value=\"$external_id\"><label for=\"examiner$examiner_no\">" . ucwords(mb_strtolower($external_surname)) . "<span style=\"color:#808080\">, $external_first_names. $external_title</span></label></div>\n";
-        }
-        $examiner_no++;
+    if ($match) {
+        echo "<div class=\"r2\" id=\"divexaminer$examiner_no\"><input type=\"checkbox\" class=\"toggle\" data-toggleid=\"examiner" . $examiner_no . "\" name=\"examiner$examiner_no\" id=\"examiner$examiner_no\" value=\"$external_id\" checked><label for=\"examiner$examiner_no\">" . ucwords(mb_strtolower($external_surname)) . "<span style=\"color:#808080\">, $external_first_names. $external_title</span></label></div>\n";
+    } else {
+        echo "<div class=\"r1\" id=\"divexaminer$examiner_no\"><input type=\"checkbox\" class=\"toggle\" data-toggleid=\"examiner" . $examiner_no . "\" name=\"examiner$examiner_no\" id=\"examiner$examiner_no\" value=\"$external_id\"><label for=\"examiner$examiner_no\">" . ucwords(mb_strtolower($external_surname)) . "<span style=\"color:#808080\">, $external_first_names. $external_title</span></label></div>\n";
     }
-    $external_details->close();
-    echo "<input type=\"hidden\" name=\"examiner_no\" id=\"examiner_no\" value=\"$examiner_no\" /></div></td>\n</tr>\n";
-    ?>
+    $examiner_no++;
+}
+$external_details->close();
+echo "<input type=\"hidden\" name=\"examiner_no\" id=\"examiner_no\" value=\"$examiner_no\" /></div></td>\n</tr>\n";
+?>
 </table>
 </td>
 </tr>
