@@ -1672,9 +1672,9 @@ FROM
     users, user_roles ur, roles r  
 WHERE
     ur.roleid = r.id
-AND r.name = 'Internal Reviewer'
-AND users.id = ur.userid
-AND user_deleted IS NULL
+    AND r.name = 'Internal Reviewer'
+    AND users.id = ur.userid
+    AND user_deleted IS NULL
 ";
 
 // Dynamically choose tables and join based on role.
