@@ -185,7 +185,6 @@ class Role
             if ($newquery === false) {
                 throw new coding_exception(Config::get_instance()->db->error);
             }
-            echo Config::get_instance()->db->error;
             $newtypes = [str_pad('', $newcount * 2, 'i')];
             call_user_func_array(array($newquery, 'bind_param'), array_merge($newtypes, $arguments));
             $newquery->execute();
