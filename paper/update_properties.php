@@ -120,6 +120,8 @@ if (isset($_POST['paper_title'])) {
     } else {
         $title_unique = Paper_utils::is_paper_title_unique($_POST['paper_title'], $mysqli);
     }
+} else {
+    $title_unique = true;
 }
 
 if (!$title_unique) {
@@ -364,8 +366,8 @@ if (!$title_unique) {
         $properties->set_sound_demo(0);
     }
 
-    $password = trim($_POST['password']);
     if (!$locked) {
+        $password = trim($_POST['password']);
         if ($password != $properties->get_decrypted_password()) {
             $properties->set_password($password);
         }
