@@ -1072,10 +1072,10 @@ function display_question($configObject, &$question, $paper_type, $calculator, $
             if (isset($matching_media[$part_id]['source']) and $matching_media[$part_id]['source'] != '') {
                 echo '<div>';
                 $questiondata->set_media(
-                    $matching_media[$i]['source'],
-                    $matching_media[$i]['width'],
-                    $matching_media[$i]['height'],
-                    $matching_media[$i]['alt'],
+                    $matching_media[$part_id]['source'],
+                    $matching_media[$part_id]['width'],
+                    $matching_media[$part_id]['height'],
+                    $matching_media[$part_id]['alt'],
                     ''
                 );
                 $render->render($questiondata, $string, 'paper/media.html');

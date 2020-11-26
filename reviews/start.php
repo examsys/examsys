@@ -58,20 +58,8 @@ $paper_prologue             = $propertyObj->get_paper_prologue();
 require '../config/start.inc';
 
 // Get how many screens make up the question paper.
-$screen_data = array();
-$stmt = $mysqli->prepare('SELECT screen, q_type, question FROM (papers, questions) WHERE papers.paper = ? AND papers.question = questions.q_id ORDER BY screen, display_pos');
-$stmt->bind_param('i', $paperID);
-$stmt->execute();
-$stmt->store_result();
-$stmt->bind_result($screen, $q_type, $q_id);
-while ($stmt->fetch()) {
-    $no_screens = $screen;
-    if ($q_type != 'info') {
-        $screen_data[$no_screens][] = array($q_type, $q_id);
-    }
-}
-$stmt->free_result();
-$stmt->close();
+$screen_data = $propertyObj->get_screens(false);
+$no_screens = $propertyObj->get_max_screen();
 
 // Determine which review deadline to use.
 if ($userObject->has_role('External Examiner')) {
@@ -258,6 +246,11 @@ echo '" autocomplete="off">';   // Warning message only in linear navigation mod
 
     // Display the questions
     foreach ($tmp_questions_array as &$question) {
+        // Question not on this screen, don't display
+        if ($question['screen'] != $current_screen) {
+            continue;
+        }
+
         if ($question['q_type'] == 'enhancedcalc') {
             require_once '../plugins/questions/enhancedcalc/enhancedcalc.class.php';
             if (!isset($configObj)) {
