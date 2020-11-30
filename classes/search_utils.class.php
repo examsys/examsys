@@ -120,7 +120,7 @@ class search_utils
             if ($team_sql != '') {
                 $team_sql = " AND idMod IN ($team_sql) ";
             }
-            $stmt = $db->prepare("$select, modules_staff WHERE users.id=modules_staff.memberID $team_sql AND $roles $order");
+            $stmt = $db->prepare("$select, modules_staff WHERE u.id=modules_staff.memberID $team_sql AND $roles $order");
         }
         $stmt->execute();
         $stmt->bind_result($id, $title, $initials, $surname);
