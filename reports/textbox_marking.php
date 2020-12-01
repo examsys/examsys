@@ -160,25 +160,27 @@ if ($phase == 2) {
 if ($paper_type == '0') {
     $sql = <<< SQL
 SELECT 0 AS logtype, l.id, lm.userID, l.user_answer, t.mark, l.q_id, comments, reminders
-  FROM log0 l, log_metadata lm, users u, user_roles ur JOIN roles r ON ur.roleid = r.id
+  FROM log0 l
+  JOIN log_metadata lm ON l.metadataID = lm.id
+  JOIN users u ON u.id = lm.userID
+  JOIN user_roles ur ON u.id = ur.userid
+  JOIN roles r ON ur.roleid = r.id
   LEFT JOIN textbox_marking t ON l.id = t.answer_id AND lm.paperID = t.paperID AND t.phase = ?
   WHERE lm.paperID = ?
-  AND l.metadataID = lm.id
-  AND u.id = ur.userid
   AND r.name IN ('Student', 'graduate')
-  AND u.id = lm.userID
   AND l.q_id = ?
   AND DATE_ADD(lm.started, INTERVAL 2 MINUTE) >= ?
   AND lm.started <= ? $marked $studentstr
 UNION ALL
 SELECT 1 AS logtype, l.id, lm.userID, l.user_answer, t.mark, l.q_id, comments, reminders
-  FROM log1 l, log_metadata lm, users u, user_roles ur JOIN roles r ON ur.roleid = r.id
+  FROM log1 l
+  JOIN log_metadata lm ON l.metadataID = lm.id
+  JOIN users u ON u.id = lm.userID
+  JOIN user_roles ur ON u.id = ur.userid
+  JOIN roles r ON ur.roleid = r.id
   LEFT JOIN textbox_marking t ON l.id = t.answer_id AND lm.paperID = t.paperID AND t.phase = ?
   WHERE lm.paperID = ?
-  AND l.metadataID = lm.id
-  AND u.id = ur.userid
   AND r.name IN ('Student', 'graduate')
-  AND u.id = lm.userID
   AND l.q_id = ?
   AND DATE_ADD(lm.started, INTERVAL 2 MINUTE) >= ?
   AND lm.started <= ? $marked $studentstr
@@ -189,13 +191,14 @@ SQL;
 } else {
     $sql = <<< SQL
 SELECT $paper_type AS logtype, l.id, lm.userID, l.user_answer, t.mark, l.q_id, comments, reminders
-FROM log{$paper_type} l, log_metadata lm, users u, user_roles ur JOIN roles r ON ur.roleid = r.id
+FROM log{$paper_type} l
+JOIN log_metadata lm ON l.metadataID = lm.id
+JOIN users u ON u.id = lm.userID
+JOIN user_roles ur ON u.id = ur.userid
+JOIN roles r ON ur.roleid = r.id
 LEFT JOIN textbox_marking t ON l.id = t.answer_id AND lm.paperID = t.paperID AND t.phase = ?
 WHERE lm.paperID = ?
-AND l.metadataID = lm.id
-AND u.id = ur.userid
 AND r.name IN ('Student', 'graduate')
-AND u.id = lm.userID
 AND l.q_id = ?
 AND DATE_ADD(lm.started, INTERVAL 2 MINUTE) >= ?
 AND lm.started <= ? $marked $studentstr
