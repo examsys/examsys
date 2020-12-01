@@ -178,9 +178,8 @@ define(['menu', 'state', 'jquery', 'jqueryui', 'jquerytablesorter'], function(ME
          */
         this.selQ = function(questionID, qType, lineID, evt) {
             $('#menu2a').hide();
-            $('#menu2b').hide();
-            $('#menu2c').show();
-
+            $('#menu2b').show();
+            $('#deleteitem').css('display', 'none');
             this.highlight_line(questionID, qType, lineID, evt);
         };
 
@@ -193,9 +192,8 @@ define(['menu', 'state', 'jquery', 'jqueryui', 'jquerytablesorter'], function(ME
          */
         this.selL = function(questionID, qType, lineID, evt) {
             $('#menu2a').hide();
-            $('#menu2c').hide();
             $('#menu2b').show();
-
+            $('#deleteitem').css('display', 'block');
             this.highlight_line(questionID, qType, lineID, evt);
         };
 

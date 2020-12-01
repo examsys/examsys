@@ -379,16 +379,7 @@ while ($stmt->fetch()) {
     <div class="menuitem"><a id="information" href="#"><img class="sidebar_icon" src="../artwork/information_icon.gif" alt="<?php echo $string['information']; ?>" /><?php echo $string['information']; ?></a></div>
     <div class="menuitem"><a id="copy" href="#"><img class="sidebar_icon" src="../artwork/copy_icon.gif" alt="<?php echo $string['copyontopaperx']; ?>" /><?php echo $string['copyontopaperx']; ?></a></div>
     <div class="menuitem"><a id="link" href="#"><img class="sidebar_icon" src="../artwork/link.png" alt="<?php echo $string['linktopaper']; ?>" /><?php echo $string['linktopaper']; ?></a></div>
-    <div class="menuitem"><a id="delete" href="#"><img class="sidebar_icon" src="../artwork/red_cross.png" alt="<?php echo $string['deletequestion']; ?>" /><?php echo $string['deletequestion']; ?></a></div>
-</div>
-
-<div style="display:none" id="menu2c">
-    <div class="menuitem"><a id="preview" href="#"><img class="sidebar_icon" src="../artwork/small_play.png" alt="<?php echo $string['quickview']; ?>" /><?php echo $string['quickview']; ?></a></div>
-    <div class="menuitem"><a id="edit" href="#"><img class="sidebar_icon" src="../artwork/edit.png" alt="<?php echo $string['editquestion']; ?>" /><?php echo $string['editquestion']; ?></a></div>
-    <div class="menuitem"><a id="information" href="#"><img class="sidebar_icon" src="../artwork/information_icon.gif" alt="<?php echo $string['information']; ?>" /><?php echo $string['information']; ?></a></div>
-    <div class="menuitem"><a id="copy" href="#"><img class="sidebar_icon" src="../artwork/copy_icon.gif" alt="<?php echo $string['copyontopaperx']; ?>" /><?php echo $string['copyontopaperx']; ?></a></div>
-    <div class="menuitem"><a id="link" href="#"><img class="sidebar_icon" src="../artwork/link.png" alt="<?php echo $string['linktopaper']; ?>" /><?php echo $string['linktopaper']; ?></a></div>
-    <div class="grey menuitem"><img class="sidebar_icon" src="../artwork/red_cross_grey.png" alt="<?php echo $string['deletequestion']; ?>" /><?php echo $string['deletequestion']; ?></div>
+    <div id="deleteitem" class="menuitem"><a id="delete" href="#"><img class="sidebar_icon" src="../artwork/red_cross.png" alt="<?php echo $string['deletequestion']; ?>" /><?php echo $string['deletequestion']; ?></a></div>
 </div>
 
 <input type="hidden" name="questionID" id="questionID" value="" />
