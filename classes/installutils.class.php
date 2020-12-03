@@ -766,27 +766,18 @@ class InstallUtils
         $configObject->set_setting('system_academic_year_start', '07/01', Config::STRING);
         $configObject->set_setting('misc_search_leadin_length', self::$cfg_search_leadin_length, Config::INTEGER);
         $configObject->set_setting('rpt_percent_decimals', 2, Config::INTEGER);
-        $configObject->set_setting('rpt_fd_show_wordlist', 1, Config::BOOLEAN);
-        $configObject->set_setting(
-            'stdset_hofstee_pass',
-            array(
-                'min_pass' => 0,
-                'max_pass' => 'median',
-                'min_fail' => 0,
-                'max_fail' => 100,
-            ),
-            Config::ASSOC
-        );
-        $configObject->set_setting(
-            'stdset_hofstee_distinction',
-            array(
-                'min_pass' => 'median',
-                'max_pass' => 100,
-                'min_fail' => 0,
-                'max_fail' => 100,
-            ),
-            Config::ASSOC
-        );
+        $configObject->set_setting('stdset_hofstee_pass', array(
+        'min_pass' => 0,
+        'max_pass' => 'median',
+        'min_fail' => 0,
+        'max_fail' => 100
+        ), Config::ASSOC);
+        $configObject->set_setting('stdset_hofstee_distinction', array(
+        'min_pass' => 'median',
+        'max_pass' => 100,
+        'min_fail' => 0,
+        'max_fail' => 100
+        ), Config::ASSOC);
         $configObject->set_setting('stdset_hofstee_whole_numbers', true, Config::BOOLEAN);
         $configObject->set_setting('stdset_copy_std_setting', false, Config::BOOLEAN);
         $configObject->set_setting('summative_hour_warning', 10, Config::INTEGER);
