@@ -41,11 +41,11 @@ requirejs(['list', 'questionlist', 'questionsearch', 'leadinpopup', 'sidebar'], 
 
         $('#menu2a').hide();
         if ($('#' + passed_id).hasClass('lock')) {
-            $('#menu2b').hide();
-            $('#menu2c').show();
-        } else {
-            $('#menu2c').hide();
             $('#menu2b').show();
+            $('#deleteitem').css('display', 'none');
+        } else {
+            $('#menu2b').show();
+            $('#deleteitem').css('display', 'block');
         }
         
         if (evt.ctrlKey == false && evt.metaKey == false) {
