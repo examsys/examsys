@@ -601,7 +601,7 @@ class logtest extends unittestdatabase
         $paper->max_screen = $this->log9['screen'];
         $paper->max_mark = round($this->log9['mark'], 1);
         // Progress turned formative.
-        $paper->paper_type = 0;
+        $paper->paper_type = 1;
         $paper->human_log_started = date_format($date, 'd/m/Y H:i');
         $paper->percent = number_format(
             ($this->log9['mark'] / 10) * 100,
@@ -657,7 +657,7 @@ class logtest extends unittestdatabase
         $paper->max_screen = $this->log9['screen'];
         $paper->max_mark = round($this->log9['mark'], 1);
         // Progress turned formative.
-        $paper->paper_type = 0;
+        $paper->paper_type = 1;
         $paper->human_log_started = date_format($date, 'd/m/Y H:i');
         $adjusted = number_format(
             (($this->log9['mark'] - 5 ) / 5) * 100,

@@ -264,7 +264,7 @@ class log extends \log
 
         // If type is Formative query the Progress Test log table as well and add into array if max screen is not blank.
         $result = $this->db->prepare('SELECT lm.id, MAX(l.screen) AS screen, SUM(l.mark) AS mark,'
-            . ' DATE_FORMAT(lm.started,"%Y%m%d%H%i%s") AS started, 0 AS paper_type,'
+            . ' DATE_FORMAT(lm.started,"%Y%m%d%H%i%s") AS started, 1 AS paper_type,'
             . ' DATE_FORMAT(lm.started,"%d/%m/%Y %H:%i") AS temp_date'
             . ' FROM log_metadata lm LEFT JOIN log1 l ON l.metadataID = lm.id'
             . ' WHERE started IS NOT NULL AND lm.paperID = ? AND lm.userID = ? AND screen IS NOT NULL'
