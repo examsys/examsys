@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <rogo>
-    <version>7.2.1</version>
+    <version>7.2.2</version>
     <php>
         <min_version>7.3.0</min_version>
         <extensions>
