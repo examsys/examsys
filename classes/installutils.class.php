@@ -1421,7 +1421,6 @@ class InstallUtils
         $priv_SQL[] = 'GRANT SELECT, INSERT, UPDATE, DELETE ON ' . $dbname . ".questions_media TO '" . self::$cfg_db_staff_user . "'@'" . self::$cfg_web_host . "'";
         $priv_SQL[] = 'GRANT SELECT, INSERT, UPDATE, DELETE ON ' . $dbname . ".options_media TO '" . self::$cfg_db_staff_user . "'@'" . self::$cfg_web_host . "'";
         $priv_SQL[] = 'GRANT SELECT, UPDATE ON ' . $dbname . ".breaks TO '" . self::$cfg_db_staff_user . "'@'" . self::$cfg_web_host . "'";
-        $priv_SQL[] = 'GRANT DELETE ON ' . $dbname . ".log_break_time TO '" . self::$cfg_db_staff_user . "'@'" . self::$cfg_web_host . "'";
 
         $priv_SQL[] = 'FLUSH PRIVILEGES';
         foreach ($priv_SQL as $sql) {
