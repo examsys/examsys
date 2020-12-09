@@ -131,3 +131,7 @@ lang.screen
 <textarea id="save_failed" name="save_failed" style="display:none"></textarea>
 </form>
 </div>
+
+{% if data.editorconfig != '' %}
+    {% include data.editorconfig %}
+{% endif %}

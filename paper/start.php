@@ -483,6 +483,9 @@ if (in_array('students', $midexam_clarification)) {
   // Initialise for scenario filtering
   $last_scenario = '';
 
+// Initialise textbox editor config file.
+$textconfigfile = '';
+$textconfigfiletemplate = '';
 foreach ($questions_array as &$question) {
     // Question not on this screen, don't display
     if ($question['screen'] != $current_screen) {
@@ -517,6 +520,11 @@ foreach ($questions_array as &$question) {
         $unanswered = true;
     }
     $q_displayed++;
+    if ($question['q_type'] === 'textbox') {
+        // Set editor config file.
+        $textconfigfile = $questionrender->questiondata->file;
+        $textconfigfiletemplate = $questionrender->questiondata->editorconfig;
+    }
 }
 
   $current_screen++;
@@ -527,6 +535,8 @@ foreach ($questions_array as &$question) {
   $footer_data['old_screen'] = $current_screen - 1;
   $footer_data['previous_duration'] = $previous_duration;
   $footer_data['refpane'] = $refpane;
+  $footer_data['file'] = $textconfigfile;
+  $footer_data['editorconfig'] = $textconfigfiletemplate;
 
 if ($is_question_preview_mode === true) {
     $submitype = 'preview';
