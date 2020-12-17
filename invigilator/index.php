@@ -137,7 +137,7 @@ if (!$lab_object and !$remote) {
             if ($papers[$id]['timing'] and !is_null($end)) {
                 // Does the submitted paperID correspond it to the currently iterated paper?
 
-                if ($paper_id === $property_id) {
+                if ($paper_id === $id) {
                     $hour = check_var('hour', param::FETCH_POST, false, false, true, param::INT);
                     $minute = check_var('minute', param::FETCH_POST, false, false, true, param::INT);
                     $end_timestamp = date_utils::getTimestampFromTime($hour, $minute, $disptimezone);

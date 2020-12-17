@@ -97,7 +97,7 @@ lang.postexamlist
                                 {% if min == info.end_time_m %}
                                     {% set selected = ' selected' %}
                                 {% endif %}
-                                <option value="{{hr}}"{{selected}}>{{ "%02d"|format(min) }}</option>';
+                                <option value="{{min}}"{{selected}}>{{ "%02d"|format(min) }}</option>';
                             {% endfor %}
                         </select>
                         </fieldset>
