@@ -136,6 +136,7 @@ class ClassTotalsTest extends \testing\unittest\unittestdatabase
                 'papertype' => $paper_type,
                 'paperowner' => $this->staff1['username'],
                 'modulename' => $this->module1['fullname'],
+                'calendaryear' => '2020'
             ]
         );
 
