@@ -30,6 +30,10 @@ requirejs(['alert', 'form', 'studentnote', 'jquery'], function (ALERT, FORM, NOT
         note.resizeTextbox();
     });
 
+    if ($("#paperID").val() == '') {
+        $("#note").attr("disabled", "disabled");
+    }
+
     $('#theform').submit(function(e) {
         e.preventDefault();
         var alert = new ALERT();
@@ -65,5 +69,9 @@ requirejs(['alert', 'form', 'studentnote', 'jquery'], function (ALERT, FORM, NOT
                 alert(textStatus);
             },
         });
+    });
+
+    $('#paperID').change(function () {
+        window.location.href = 'new_student_note.php?userID=' + $('#userID').val() + '&paperID=' + $('#paperID').val();
     });
 });

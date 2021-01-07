@@ -20,6 +20,12 @@ namespace testing\behat\steps\database;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use Behat\Behat\Tester\Exception\PendingException;
+use module_utils;
+use PaperUtils;
+use StudentNotes;
+use testing\behat\helpers\database\state;
+use testing\datagenerator\data_error;
+use UserUtils;
 
 /**
  * Core steps that add data into the Rogo database.
@@ -54,6 +60,8 @@ trait datageneration
         'labs' => array('labs', 'core', 'create_lab', null),
         'exam pcs' => array('labs', 'core', 'create_exam_pc', null),
         'module keywords' => array('modules', 'core', 'createModuleKeywords', null),
+        'module enrolment' => array('modules', 'core', 'create_enrolment', 'preProcessmoduleEnrolment'),
+        'paper note' => array('users', 'core', 'addPaperNote', 'preProcessPaperNote'),
     );
 
     /**
@@ -486,6 +494,74 @@ trait datageneration
             }
             $row['settings'] = '{"marking":"' . $marking . '"}';
         }
+        return $row;
+    }
+
+    /**
+     * Enrol a student onto a module
+     *
+     * @param array $row module enrolment data row
+     * @return array
+     * @throws data_error
+     */
+    private function preProcessmoduleEnrolment(array $row): array
+    {
+        if (empty($row['modulecode'])) {
+            throw new data_error('modulecode must be provided');
+        }
+        if (empty($row['sid'])) {
+            throw new data_error('sid must be provided');
+        }
+        if (empty($row['attempt'])) {
+            $row['attempt'] = 1;
+        }
+        if (empty($row['calendar_year'])) {
+            $row['calendar_year'] = null;
+        }
+        if (empty($row['auto_update'])) {
+            $row['auto_update'] = 0;
+        }
+        $row['userid'] = UserUtils::studentid_exists($row['sid'], state::get_db());
+        $row['moduleid'] = module_utils::get_idMod($row['modulecode'], state::get_db());
+        unset($row['sid']);
+        unset($row['modulecode']);
+        return $row;
+    }
+
+    /**
+     * Add a student note to a paper
+     *
+     * @param array $row paper note data row
+     * @return array
+     * @throws data_error
+     */
+    private function preProcessPaperNote(array $row): array
+    {
+        if (empty($row['user'])) {
+            throw new data_error('user must be provided');
+        }
+        if (empty($row['paper'])) {
+            throw new data_error('paper must be provided');
+        }
+        if (empty($row['author'])) {
+            throw new data_error('author must be provided');
+        }
+
+        if (empty($row['note'])) {
+            $row['note'] = '';
+        }
+        $row['userID'] = UserUtils::username_exists($row['user'], state::get_db());
+        $row['paperID'] = PaperUtils::getPaperId($row['paper']);
+        $row['authorID'] = UserUtils::username_exists($row['author'], state::get_db());
+        $existingnote = StudentNotes::get_note($row['paperID'], $row['userID'], state::get_db());
+        if ($existingnote === false) {
+            $row['noteID'] = 0;
+        } else {
+            $row['noteID'] = $existingnote['note_id'];
+        }
+        unset($row['user']);
+        unset($row['paper']);
+        unset($row['author']);
         return $row;
     }
 

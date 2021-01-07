@@ -291,6 +291,44 @@ class users extends generator
     }
 
     /**
+     * Add a paper note
+     * @param array $parameters the paper note parameters
+     *   int userID the user
+     *   string note the note
+     *   int paperID the paper the note refers to
+     *   int authorID the author of the note
+     *   int noteID the id of the existing note
+     * @throws data_error
+     */
+    public function addPaperNote(array $parameters): void
+    {
+        if (
+            empty($parameters['userID'])
+            or empty($parameters['paperID'])
+            or empty($parameters['authorID'])
+        ) {
+            throw new data_error('Error in | userID | paperID | authorID |');
+        }
+
+        $default = array(
+            'note' => '',
+            'noteID' => 0
+        );
+        $settings = $this->set_defaults_and_clean($default, $parameters);
+        if ($settings['noteID'] === 0) {
+            \StudentNotes::add_note(
+                $parameters['userID'],
+                $settings['note'],
+                $parameters['paperID'],
+                $parameters['authorID'],
+                $this->db
+            );
+        } else {
+            \StudentNotes::update_note($settings['note'], $settings['noteID'], $this->db);
+        }
+    }
+
+    /**
      * Inserts metadata into the database.
      *
      * @param Array $data
