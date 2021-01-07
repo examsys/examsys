@@ -671,30 +671,30 @@ SQL;
     {
         $media = self::getMedia($qid);
         $mediaarray = array(
-            'source' => '',
-            'width' => '',
-            'height' => '',
-            'alt' => '',
-            'num' => '',
-            'owner' => '',
-            'id' => '',
+            'source' => [],
+            'width' => [],
+            'height' => [],
+            'alt' => [],
+            'num' => [],
+            'owner' => [],
+            'id' => [],
         );
         foreach ($media as $m) {
-            $mediaarray['id'] .= $m->id . '|';
-            $mediaarray['source'] .= $m->source . '|';
-            $mediaarray['width'] .= $m->width . '|';
-            $mediaarray['height'] .= $m->height . '|';
-            $mediaarray['alt'] .= $m->alt . '|';
-            $mediaarray['owner'] .= $m->owner . '|';
-            $mediaarray['num'] .= $m->num . '|';
+            $mediaarray['id'][] = $m->id;
+            $mediaarray['source'][] = $m->source;
+            $mediaarray['width'][] = $m->width;
+            $mediaarray['height'][] = $m->height;
+            $mediaarray['alt'][] = $m->alt;
+            $mediaarray['owner'][] = $m->owner;
+            $mediaarray['num'][] = $m->num;
         }
-        $mediaarray['source'] = rtrim($mediaarray['source'], '|');
-        $mediaarray['width'] = rtrim($mediaarray['width'], '|');
-        $mediaarray['height'] = rtrim($mediaarray['height'], '|');
-        $mediaarray['alt'] = rtrim($mediaarray['alt'], '|');
-        $mediaarray['owner'] = rtrim($mediaarray['owner'], '|');
-        $mediaarray['num'] = rtrim($mediaarray['num'], '|');
-        $mediaarray['id'] = rtrim($mediaarray['id'], '|');
+        $mediaarray['source'] = implode('|', $mediaarray['source']);
+        $mediaarray['width'] = implode('|', $mediaarray['width']);
+        $mediaarray['height'] = implode('|', $mediaarray['height']);
+        $mediaarray['alt'] = implode('|', $mediaarray['alt']);
+        $mediaarray['owner'] = implode('|', $mediaarray['owner']);
+        $mediaarray['num'] = implode('|', $mediaarray['num']);
+        $mediaarray['id'] = implode('|', $mediaarray['id']);
         return $mediaarray;
     }
 
