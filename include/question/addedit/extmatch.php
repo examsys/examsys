@@ -53,10 +53,8 @@ for ($i = 0; $i < $question->max_stems; $i++) {
 foreach ($all_media['nums'] as $num) {
     if ($num != '' and $num != 0) {
         $n = $num - 1;
-        if ($n != 0) {
-            if (!in_array($n, $visble)) {
-                $visble[] = $n;
-            }
+        if (!in_array($n, $visble)) {
+            $visble[] = $n;
         }
     }
 }
