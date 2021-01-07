@@ -40,7 +40,15 @@ $option_texts = array();
 $all_media = $question->get_all_media();
 $stems = $question->get_all_stems();
 $all_feedback = $question->get_all_correct_fbacks();
-$current_media = array('filename' => $all_media['filenames'][0], 'width' => $all_media['widths'][0], 'height' => $all_media['heights'][0], 'alt' => $all_media['alts'][0], 'owner' => $all_media['owners'][0], 'num' => $all_media['nums'][0]);
+// We need to coalesce the values as there will be no array key 0 when there is no media for the leadin.
+$current_media = array(
+    'filename' => $all_media['filenames'][0] ?? '',
+    'width' => $all_media['widths'][0] ?? '',
+    'height' => $all_media['heights'][0] ?? '',
+    'alt' => $all_media['alts'][0] ?? '',
+    'owner' => $all_media['owners'][0] ?? '',
+    'num' => $all_media['nums'][0] ?? '',
+);
 $disabled = ($dis_class != '') ? ' disabled="disabled"' : '';
 
 // Work out how many 'questions' to show
