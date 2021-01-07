@@ -247,7 +247,7 @@ define(['menu', 'state', 'jquery', 'jqueryui', 'jquerytablesorter'], function(ME
          */
         this.copyToPaper = function() {
             var url = "../question/copy_onto_paper.php?q_id=" + $('#questionID').val();
-            if ($('#qType').val() != '') {
+            if ($('#qType').val() != '' && $('#module').val()) {
                 url += '&type=' + $('#qType').val() + '&module=' + $('#module').val();
             }
             var notice = window.open(url,"notice","width=600,height=" + (screen.height-50) + ",scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,resizable");
@@ -262,7 +262,7 @@ define(['menu', 'state', 'jquery', 'jqueryui', 'jquerytablesorter'], function(ME
          */
         this.linkToPaper = function() {
             var url = "../question/link_to_paper.php?q_id=" + $('#questionID').val();
-            if ($('#qType').val() != '') {
+            if ($('#qType').val() != '' && $('#module').val()) {
                 url += '&type=' + $('#qType').val() + '&module=' + $('#module').val();
             }
             var notice = window.open(url,"linktopaper","width=600,height=" + (screen.height-50) + ",scrollbars=yes,toolbar=no,location=no,directories=no,status=yes,menubar=no,resizable");
