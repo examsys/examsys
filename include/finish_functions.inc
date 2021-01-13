@@ -373,6 +373,7 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
         $q_media_height = $media['height'];
         $q_media_width = $media['width'];
         $q_media_alt = $media['alt'];
+        $q_media_num = $media['num'];
         if ($old_q_id != $q_id or $old_display_pos != $display_pos) {  // New question.
             $o_no = 0;
             if ($old_q_id != 0) {
@@ -408,6 +409,7 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
             $paper[$q_no]['q_media_height'] = $q_media_height;
             $paper[$q_no]['q_media_width'] = $q_media_width;
             $paper[$q_no]['q_media_alt'] = $q_media_alt;
+            $paper[$q_no]['q_media_num'] = $q_media_num;
             $paper[$q_no]['display_method'] = $display_method;
             $paper[$q_no]['score_method'] = $score_method;
             $paper[$q_no]['settings'] = $settings;
@@ -645,6 +647,7 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
                 $paper[$i]['q_media_height'] = $media['height'];
                 $paper[$i]['q_media_width'] = $media['width'];
                 $paper[$i]['q_media_alt'] = $media['alt'];
+                $paper[$i]['q_media_num'] = $media['num'];
             } else {
                 $paper[$i]['q_type'] = 'random_failed';
                 $paper[$i]['leadin'] = "<span style=\"color:#C00000\">{$string['errorrandomnotfound']}</span>";
@@ -1944,12 +1947,23 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
                     $user_answers = array('','','','','','','','','','','');
                 }
                 $correct_answers = explode('|', $paper[$question]['correct'][0]);
-                $matching_media = explode('|', $paper[$question]['q_media']);
-                $matching_media_width = explode('|', $paper[$question]['q_media_width']);
-                $matching_media_height = explode('|', $paper[$question]['q_media_height']);
-                $matching_media_alt = explode('|', $paper[$question]['q_media_alt']);
+                $matching_source = explode('|', $paper[$question]['q_media']);
+                $matching_width = explode('|', $paper[$question]['q_media_width']);
+                $matching_height = explode('|', $paper[$question]['q_media_height']);
+                $matching_alt = explode('|', $paper[$question]['q_media_alt']);
+                $matching_num = explode('|', $paper[$question]['q_media_num']);
                 $matching_media_correct_fback = explode('|', $paper[$question]['correct_fback']);
                 $matching_media_incorrect_fback = explode('|', $paper[$question]['incorrect_fback']);
+
+                $matching_media = array();
+                for ($i = 0; $i < count($matching_source); $i++) {
+                    $matching_media[$matching_num[$i]] = array(
+                        'source' => $matching_source[$i],
+                        'width' => $matching_width[$i],
+                        'height' => $matching_height[$i],
+                        'alt' => $matching_alt[$i],
+                    );
+                }
 
                 $text_scenarios = 0;
                 for ($part_id = 0; $part_id < 10; $part_id++) {
@@ -1965,9 +1979,16 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
                 }
                 $total_scenarios = max($text_scenarios, $media_scenarios);
 
-                if ($matching_media[0] != '') {
+                if (!empty($matching_media[0])) {
                     echo '<div class="mediadiv">';
-                    $questiondata->set_media($matching_media[0], $matching_media_width[0], $matching_media_height[0], $matching_media_alt[0], '', true);
+                    $questiondata->set_media(
+                        $matching_media[0]['source'],
+                        $matching_media[0]['width'],
+                        $matching_media[0]['height'],
+                        $matching_media[0]['alt'],
+                        '',
+                        true
+                    );
                     $render->render($questiondata, $string, 'paper/media.html');
                     echo "</div>\n";
                 }
@@ -1985,9 +2006,16 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
                     if ($single_scenario != '') {
                         echo "$single_scenario<br />";
                     }
-                    if (isset($matching_media[$i + 1]) and $matching_media[$i + 1] != '') {
+                    if (isset($matching_media[$i + 1]['source']) and $matching_media[$i + 1]['source'] != '') {
                         echo '<div>';
-                        $questiondata->set_media($matching_media[$i + 1], $matching_media_width[$i + 1], $matching_media_height[$i + 1], $matching_media_alt[$i + 1], '', true);
+                        $questiondata->set_media(
+                            $matching_media[$i + 1]['source'],
+                            $matching_media[$i + 1]['width'],
+                            $matching_media[$i + 1]['height'],
+                            $matching_media[$i + 1]['alt'],
+                            '',
+                            true
+                        );
                         $render->render($questiondata, $string, 'paper/media.html');
                         echo "</div>\n";
                     }

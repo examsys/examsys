@@ -224,10 +224,24 @@ function record_marks($paper_id, $db, $paper_type, $metadataID, $preview_q_id = 
                     while ($random_data->fetch()) {
                         $media = QuestionUtils::getMediaAsString($q_id);
                         $q_media = $media['source'];
-                        $paper_array[] = array('q_id' => $new_q_id, 'scenario' => $scenario, 'q_type' => $q_type, 'option_text' => $option_text,
-                        'q_media' => $q_media, 'correct' => $correct, 'display_method' => $display_method, 'settings' => $settings,
-                        'score_method' => $score_method, 'marks_correct' => $marks_correct, 'marks_incorrect' => $marks_incorrect,
-                        'marks_partial' => $marks_partial, 'question_no' => $tmp_question_no, 'display_pos' => $display_pos);
+                        $q_media_num = $media['num'];
+                        $paper_array[] = array(
+                            'q_id' => $new_q_id,
+                            'scenario' => $scenario,
+                            'q_type' => $q_type,
+                            'option_text' => $option_text,
+                            'q_media' => $q_media,
+                            'q_media_num' => $q_media_num,
+                            'correct' => $correct,
+                            'display_method' => $display_method,
+                            'settings' => $settings,
+                            'score_method' => $score_method,
+                            'marks_correct' => $marks_correct,
+                            'marks_incorrect' => $marks_incorrect,
+                            'marks_partial' => $marks_partial,
+                            'question_no' => $tmp_question_no,
+                            'display_pos' => $display_pos
+                        );
                     }
                       /*
                       if ($random_data->num_rows == 0) {
@@ -245,7 +259,24 @@ function record_marks($paper_id, $db, $paper_type, $metadataID, $preview_q_id = 
         } else {
             $media = QuestionUtils::getMediaAsString($q_id);
             $q_media = $media['source'];
-            $paper_array[] = array('q_id' => $q_id, 'scenario' => $scenario, 'q_type' => $q_type, 'option_text' => $option_text, 'q_media' => $q_media, 'correct' => $correct, 'display_method' => $display_method, 'settings' => $settings, 'score_method' => $score_method, 'marks_correct' => $marks_correct, 'marks_incorrect' => $marks_incorrect, 'marks_partial' => $marks_partial, 'question_no' => $tmp_question_no, 'display_pos' => $display_pos);
+            $q_media_num = $media['num'];
+            $paper_array[] = array(
+                'q_id' => $q_id,
+                'scenario' => $scenario,
+                'q_type' => $q_type,
+                'option_text' => $option_text,
+                'q_media' => $q_media,
+                'q_media_num' => $q_media_num,
+                'correct' => $correct,
+                'display_method' => $display_method,
+                'settings' => $settings,
+                'score_method' => $score_method,
+                'marks_correct' => $marks_correct,
+                'marks_incorrect' => $marks_incorrect,
+                'marks_partial' => $marks_partial,
+                'question_no' => $tmp_question_no,
+                'display_pos' => $display_pos
+            );
         }
         $old_q_type = $q_type;
         $old_q_id = $q_id;
@@ -288,6 +319,7 @@ function record_marks($paper_id, $db, $paper_type, $metadataID, $preview_q_id = 
         $q_type = $row['q_type'];
         $option_text = $row['option_text'];
         $q_media = $row['q_media'];
+        $q_media_num = $row['q_media_num'];
         $correct = $row['correct'];
         $score_method = $row['score_method'];
         $display_method = $row['display_method'];
@@ -494,13 +526,19 @@ function record_marks($paper_id, $db, $paper_type, $metadataID, $preview_q_id = 
                         }
                     }
 
-                    $matching_media = explode('|', $q_media);
+                    $matching_media = array();
+                    $matching_source = explode('|', $q_media);
+                    $matching_num = explode('|', $q_media_num);
+                    for ($i = 0; $i < count($matching_source); $i++) {
+                        $matching_media[$matching_num[$i]] = $matching_source[$i];
+                    }
                     $media_scenarios = 0;
                     for ($part_id = 1; $part_id <= 10; $part_id++) {
                         if (isset($matching_media[$part_id]) and $matching_media[$part_id] != '') {
                             $media_scenarios++;
                         }
                     }
+
                     $part_no = max($text_scenarios, $media_scenarios);
 
                     $option_no = 1;
