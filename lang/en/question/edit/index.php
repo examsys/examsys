@@ -264,7 +264,6 @@ $string['markchangewarning'] = 'Warning: changing mark allocations post-exam sho
 $string['percenttolerance'] = 'Tolerances may now be expressed as percentages (e.g. 5%) as well as absolute numbers';
 $string['answercorrect'] = 'Answer Correct';
 $string['marks'] = 'Marks';
-$string['lockedquestionnoedit'] = 'You cannot edit a locked question outside of a paper.';
 // Extended calc
 $string['addanswers'] = 'Add More Answers...';
 $string['newvariable'] = 'New Variable';

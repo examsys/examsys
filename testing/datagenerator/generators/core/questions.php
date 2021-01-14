@@ -85,6 +85,7 @@ class questions extends generator
             'paper' => '',
             'correct_fback' => '',
             'incorrect_fback' => '',
+            'modules' => '',
         );
         $qdata = $this->set_defaults_and_clean($defaults, $data);
         $now = date('Y-m-d H:i:s');
@@ -172,6 +173,16 @@ class questions extends generator
                 $paperparams['question'] = $qdata['id'];
                 $paperparams['paper'] = \PaperUtils::getPaperId($paperparams['paper']);
                 $this->add_question_to_paper($paperparams);
+            }
+            // Module details may be provided as a json array.
+            if (!empty($qdata['modules'])) {
+                $moduleids = json_decode($qdata['modules'], false);
+                foreach ($moduleids as $modid) {
+                    $idmod = \module_utils::get_idMod($modid, $this->db);
+                    $moduleparams['module'][$idmod] = $modid;
+                }
+                $moduleparams['question'] = $qdata['id'];
+                $this->add_to_module($moduleparams);
             }
             return $qdata;
         } catch (Exception $e) {

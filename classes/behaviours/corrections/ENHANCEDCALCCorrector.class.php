@@ -133,7 +133,7 @@ class ENHANCEDCALCCorrector extends Corrector
             try {
                 if (!$this->_question->save()) {
                     $errors[] = $this->_lang_strings['datasaveerror'];
-                } else {
+                } elseif ($paper_id !== -1) {
                     enhancedcalc_remark($paper_type, $paper_id, $this->_question->id, $this->_question->get_settings(), $this->_mysqli, 'all');
                 }
             } catch (ValidationException $vex) {

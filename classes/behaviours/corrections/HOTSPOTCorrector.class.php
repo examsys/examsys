@@ -48,7 +48,7 @@ class HOTSPOTCorrector extends Corrector
         try {
             if (!$this->_question->save()) {
                 $errors[] = $this->_lang_strings['datasaveerror'];
-            } else {
+            } elseif ($paper_id !== -1) {
                 // Marking MUST not be client side.
                 $student_records = explode(';', $new_correct['option_correct1']);
                 foreach ($student_records as $student_record) {

@@ -55,7 +55,7 @@ class MCQCorrector extends Corrector
             try {
                 if (!$this->_question->save()) {
                     $errors[] = $this->_lang_strings['datasaveerror'];
-                } else {
+                } elseif ($paper_id !== -1) {
                     // Remark the student's answers in 'log{$paper_type}'.
                     $result = $this->_mysqli->prepare("SELECT l.user_answer, l.id FROM log{$paper_type} l INNER JOIN log_metadata lm ON l.metadataID = lm.id WHERE l.q_id = ? AND lm.paperID = ?");
                     $result->bind_param('ii', $this->_question->id, $paper_id);

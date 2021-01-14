@@ -295,6 +295,12 @@ trait datageneration
 
         $row['options'] = '[';
         $correct = str_replace(',', '|', $row['correct_options']) . '|';
+        // Pad out pipes to max.
+        $count = substr_count($correct, '|');
+        if ($count < 9) {
+            $append = str_repeat('|', 9 - $count);
+            $correct .= $append;
+        }
         for ($i = 0; $i < $row['num_options']; $i++) {
             $needle = $i + 1;
             $row['options'] .= '{"option_text":"option ' . $needle

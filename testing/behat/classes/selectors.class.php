@@ -79,6 +79,7 @@ class selectors
         'classification_button' => 'classification_button',
         'class_totals_menu_item' => 'class_totals_menu_item',
         'class_totals_student' => 'class_totals_student',
+        'question_bank_item' => 'question_bank_item',
     );
 
     /**
@@ -167,6 +168,9 @@ XPATH
 XPATH
     ,'class_totals_student' => <<<XPATH
 //td[contains(normalize-space(.) , %locator%)]      
+XPATH
+    ,'question_bank_item' => <<<XPATH
+//tr[contains(@class, 'q') and contains(normalize-space(.) , %locator%)]
 XPATH
     );
 

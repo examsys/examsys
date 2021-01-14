@@ -289,7 +289,7 @@ if ($critical_error == '') {
                         $fields[$field] = $_POST[$field];
                     }
                 }
-                $errors = $question->update_correct($fields, $paper_id, $string);
+                $errors = $question->update_correct($fields, $paper_id);
                 foreach ($fields as $feild_to_update => $value) {
                     if (stristr($feild_to_update, 'option_') !== false) {
                         continue;
@@ -325,7 +325,7 @@ if ($critical_error == '') {
                     }
                 }
 
-                $errors = $question->update_correct($correct_answers, $paper_id, $string);
+                $errors = $question->update_correct($correct_answers, $paper_id);
             }
 
             $question_teams = array();

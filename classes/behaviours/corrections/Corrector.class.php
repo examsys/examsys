@@ -50,11 +50,13 @@ abstract class Corrector
      */
     protected function invalidate_paper_cache($paper_id)
     {
-        $properties = new PaperProperties($this->_mysqli);
-        $properties->set_property_id($paper_id);
-        $properties->load();
+        if ($paper_id !== -1) {
+            $properties = new PaperProperties($this->_mysqli);
+            $properties->set_property_id($paper_id);
+            $properties->load();
 
-        $properties->set_recache_marks(1);
-        $properties->save();
+            $properties->set_recache_marks(1);
+            $properties->save();
+        }
     }
 }

@@ -93,6 +93,24 @@ trait basic
     }
 
     /**
+     * Double click on an element on the page.
+     *
+     * @Given /^I double click "([^"]*)" "([^"]*)"$/
+     * @param string $name The value to be searched for
+     * @param string $selector The type of selector
+     * @throws Exception
+     */
+    public function iDoubleClick($name, $selector)
+    {
+        $element = $this->find($selector, $name);
+        if (is_null($element)) {
+            throw new \Exception("The \"$selector\" with the value of \"$name\" could not be found");
+        }
+        $element->doubleclick();
+        $this->lookForErrors();
+    }
+
+    /**
      * Checks for the presense of text.
      *
      * @Then /^I should see "([^"]*)" "([^"]*)"$/

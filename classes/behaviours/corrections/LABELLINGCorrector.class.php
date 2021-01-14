@@ -47,7 +47,7 @@ class LABELLINGCorrector extends Corrector
             try {
                 if (!$this->_question->save()) {
                     $errors[] = $this->_lang_strings['datasaveerror'];
-                } else {
+                } elseif ($paper_id !== -1) {
                     // Remark the student's answers in 'log{$paper_type}'.
                     $label_details = $option->get_correct();
 

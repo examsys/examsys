@@ -167,6 +167,18 @@ trait Question
     }
 
     /**
+     * Adds keywords to a question:
+     * @Given I add keyword :keyword
+     * @param string $keyword keyword to check
+     */
+    public function iAddKeywords(string $keyword): void
+    {
+        // Bottom Bar obscures page elements so need to scroll so we can draw.
+        $this->scrollToElement('#keyword-select');
+        $this->i_click($keyword, 'checkbox');
+    }
+
+    /**
      * Creates a area question.
      *
      * @param TableNode $data

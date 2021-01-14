@@ -44,7 +44,7 @@ class TEXTBOXCorrector extends Corrector
             try {
                 if (!$this->_question->save()) {
                     $errors[] = $this->_lang_strings['datasaveerror'];
-                } else {
+                } elseif ($paper_id !== -1) {
                     // Get metadata ID
                     $result = $this->_mysqli->prepare('SELECT id FROM log_metadata WHERE paperID = ?');
                     $result->bind_param('i', $paper_id);

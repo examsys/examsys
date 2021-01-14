@@ -80,7 +80,7 @@ class AREACorrector extends Corrector
             try {
                 if (!$this->_question->save()) {
                     $errors[] = $this->_lang_strings['datasaveerror'];
-                } else {
+                } elseif ($paper_id !== -1) {
                     $correct_full = $this->_question->get_correct_full();
                     $error_full = $this->_question->get_error_full();
                     $correct_partial = $this->_question->get_correct_partial();
