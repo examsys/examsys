@@ -77,6 +77,8 @@ class selectors
         'bank_question_leadin' => 'bank_question_leadin',
         'summary_mark' => 'summary_mark',
         'classification_button' => 'classification_button',
+        'class_totals_menu_item' => 'class_totals_menu_item',
+        'class_totals_student' => 'class_totals_student',
     );
 
     /**
@@ -159,6 +161,12 @@ XPATH
 XPATH
     ,'classification_button' => <<<XPATH
 //td[contains(@class, 'overall') and contains(normalize-space(.) , %locator%)]
+XPATH
+    ,'class_totals_menu_item' => <<<XPATH
+//div[contains(concat(' ', normalize-space(@class), ' '), ' popup_title ') and contains(normalize-space(.) , %locator%)]      
+XPATH
+    ,'class_totals_student' => <<<XPATH
+//td[contains(normalize-space(.) , %locator%)]      
 XPATH
     );
 

@@ -18,6 +18,7 @@
 namespace testing\behat\steps\frontend;
 
 use Behat\Behat\Tester\Exception\PendingException;
+use Behat\Gherkin\Node\TableNode;
 use testing\behat\helpers\database\state;
 use testing\behat\helpers\rogo\Url;
 
@@ -60,6 +61,30 @@ trait pages
     public function i_am_on_page_for($page, $data)
     {
         $this->visit_rogo_page($page, $data);
+    }
+
+    /**
+     * Visit a Rogo report where the specific filters are identified by a some data.
+     *
+     * @Given I run report :name for :page with filters:
+     *
+     * @param string $name The name of the report
+     * @param string $instance The instance the report relates to e.g. a paper or a module
+     * @param TableNode $data The report filters
+     * @throws PendingException
+     */
+    public function iRunReportForWithFilters(string $name, string $instance, TableNode $data)
+    {
+        switch ($name) {
+            case 'Class Totals':
+                $filters = $data->getRowsHash();
+                $this->visitClassTotals($instance, $filters['moduleid'], $data);
+                break;
+            default:
+                // Unsupported page type.
+                throw new PendingException("A handler for the report '$name' page has not been implemented.");
+                break;
+        }
     }
 
     /**
@@ -150,5 +175,28 @@ trait pages
             throw new \Exception('Invalid paper title');
         }
         $this->visit(Url::paperDetails($paperid));
+    }
+
+    /**
+     * Loads the class totals report for a paper.
+     *
+     * @param string $paper the paper name
+     * @param string $module the module code
+     * @param TableNode $filters the report filters
+     * @throws \Exception
+     * @throws PendingException
+     */
+    protected function visitClassTotals(string $paper, string $module, TableNode $filters): void
+    {
+        $paperid = \PaperUtils::getPaperId($paper);
+        if ($paperid === null) {
+            throw new \Exception('Invalid paper title');
+        }
+        $data = $filters->getRowsHash();
+        $data['module'] = \module_utils::get_idMod($module, state::get_db());
+        if ($data['module']  === false) {
+            throw new \Exception('Invalid module code');
+        }
+        $this->visit(Url::classTotals($paperid, $data));
     }
 }

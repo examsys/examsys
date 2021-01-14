@@ -29,6 +29,8 @@ require '../include/staff_auth.inc';
 require_once '../include/errors.php';
 $userID = check_var('userID', 'REQUEST', true, false, true);
 $paperID = check_var('paperID', 'REQUEST', false, false, true);
+$calling = param::optional('calling', '', param::TEXT, param::FETCH_GET);
+
 // Does the paper exist?
 if (!is_null($paperID) and !Paper_utils::paper_exists($paperID, $mysqli)) {
     $contactemail = support::get_email();
@@ -72,8 +74,9 @@ if (isset($_GET['paperID'])) {
     echo '<input type="hidden" name="paperID" value="' . $_GET['paperID'] . "\" />\n";
         
     $note_details = StudentNotes::get_note($_GET['paperID'], $userID, $mysqli);
-       
-    echo '<strong>' . $student_details['title'] . ' ' . $student_details['surname'] . ', ' . $student_details['initials'] . '</strong><br />';
+    if ($calling === 'class_totals') {
+        echo '<strong>' . $student_details['title'] . ' ' . $student_details['surname'] . ', ' . $student_details['initials'] . '</strong><br />';
+    }
 } else {
     $student_modules = UserUtils::load_student_modules($userID, $mysqli);
     $yearutils = new yearutils($mysqli);
@@ -106,9 +109,7 @@ echo '<div style="text-align:center"><textarea name="note" id="note" required>' 
 ?>
 <div style="text-align:center"><input type="submit" class="ok" name="submit" value="<?php echo $string['save'] ?>"<?php echo $disabled ?> /><input class="cancel" type="button" name="cancel" value="<?php echo $string['cancel']; ?>" /></div>
 <input type="hidden" id="userID" name="userID" value="<?php echo $userID ?>" />
-<input type="hidden" name="calling" value="<?php if (isset($_GET['calling'])) {
-    echo $_GET['calling'];
-                                           } ?>" />
+<input type="hidden" name="calling" value="<?php echo $calling; ?>" />
 <input type="hidden" name="note_id" value="<?php echo $note_details['note_id'] ?>" />
 </form>
 <?php

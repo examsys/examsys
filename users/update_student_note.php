@@ -48,9 +48,9 @@ if (!UserUtils::userid_exists($userID, $mysqli)) {
     exit();
 }
 
-$note_id = param::required('note_id', param::INT, param::FETCH_POST);
+$note_id = param::optional('note_id', '', param::INT, param::FETCH_POST);
 $note = param::required('note', param::TEXT, param::FETCH_POST);
-$calling = param::required('calling', param::TEXT, param::FETCH_POST);
+$calling = param::optional('calling', '', param::TEXT, param::FETCH_POST);
 
 if ($note_id == '' or $note_id == '0') {
     StudentNotes::add_note($userID, $note, $paperID, $userObject->get_user_ID(), $mysqli);

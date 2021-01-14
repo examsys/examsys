@@ -75,4 +75,49 @@ class Url
     {
         return '/paper/details.php?paperID=' . $paperid;
     }
+
+    /**
+     * Generates the URL to a class totals report.
+     *
+     * @param int $paperid The id of the paper.
+     * @param array $filters the report filters
+     * @return string
+     */
+    public static function classTotals(
+        int $paperid,
+        array $filters
+    ): string {
+        $startdate = new \DateTime('tomorrow');
+        $startdate->setTime(12, 00);
+        $enddate = new \DateTime('tomorrow');
+        $enddate->setTime(13, 00);
+        $defaults = array(
+            'startdate' => $startdate->format('YmdHis'),
+            'enddate' => $enddate->format('YmdHis'),
+            'repmodule' => '',
+            'repcourse' => '%',
+            'sortby' => 'name',
+            'module' => '',
+            'folder' => '',
+            'percent' => '100',
+            'absent' => '0',
+            'studentsonly' => '1',
+            'ordering' => 'asc',
+        );
+        $return = array_merge($defaults, $filters);
+        $settings = array_intersect_key($return, $defaults);
+        return '/reports/class_totals.php?paperID='
+            . $paperid
+            . '&startdate=' . $settings['startdate']
+            . '&enddate=' . $settings['enddate']
+            . '&repmodule=' . $settings['repmodule']
+            . '&repcourse=' . $settings['repcourse']
+            . '&sortby=' . $settings['sortby']
+            . '&module=' . $settings['module']
+            . '&folder=' . $settings['folder']
+            . '&percent=' . $settings['percent']
+            . '&absent=' . $settings['absent']
+            . '&studentsonly=' . $settings['studentsonly']
+            . '&ordering=' . $settings['ordering'];
+    }
 }

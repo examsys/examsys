@@ -37,4 +37,6 @@ trait include_frontend
     use Paper;
     use Question;
     use Keyword;
+    use User;
+    use ClassTotals;
 }
