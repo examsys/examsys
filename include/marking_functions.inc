@@ -793,8 +793,10 @@ function record_marks($paper_id, $db, $paper_type, $metadataID, $preview_q_id = 
                         if (!is_null($blank_answer) and $blank_answer != 'u' and $blank_answer != '') {
                             $have_answer = true;
                             $is_correct = false;
+                            $user_answer = html_entity_decode(StringUtils::clean_and_trim($blank_answer));
                             foreach ($answer_list as $individual_answer) {
-                                if (str_replace('&nbsp;', ' ', trim(mb_strtolower($blank_answer))) == str_replace('&nbsp;', ' ', trim(mb_strtolower($individual_answer)))) {
+                                $possible_correct = html_entity_decode(StringUtils::clean_and_trim($individual_answer));
+                                if (strtolower($possible_correct) == strtolower($user_answer)) {
                                     $is_correct = true;
                                     break;
                                 }
@@ -804,7 +806,7 @@ function record_marks($paper_id, $db, $paper_type, $metadataID, $preview_q_id = 
                     } else {
                         if (!is_null($blank_answer) and $blank_answer != 'u') {
                             $have_answer = true;
-                            $mark += (str_replace('&nbsp;', ' ', trim($blank_answer)) == str_replace('&nbsp;', ' ', trim($answer_list[0]))) ? $individual_q_mark : $marks_incorrect;
+                            $mark += html_entity_decode(StringUtils::clean_and_trim($answer_list[0])) == html_entity_decode(StringUtils::clean_and_trim($blank_answer)) ? $individual_q_mark : $marks_incorrect;
                         }
                     }
                 }
