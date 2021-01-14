@@ -83,7 +83,7 @@ if (file_exists($templatefile)) {
 <td><?php echo $string['bcc'] ?></td><td><input type="text" size="70" id="bccaddress" name="bccaddress" value="<?php echo $bccaddress ?>" /></td>
 </tr>
 <tr>
-<td><?php echo $string['subject'] ?></td><td><input type="text" size="70" id="subject name="subject" value="<?php echo $subject ?>" /></td>
+<td><?php echo $string['subject'] ?></td><td><input type="text" size="70" id="subject" name="subject" value="<?php echo $subject ?>" /></td>
 </tr>
 <tr>
 <td colspan="3"><?php $texteditorplugin->get_textarea('template', 'template', htmlspecialchars($message, ENT_NOQUOTES), plugins\plugins_texteditor::TYPE_STANDARD); ?></td>
