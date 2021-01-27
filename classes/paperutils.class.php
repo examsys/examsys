@@ -99,9 +99,15 @@ class PaperUtils
      * @param int $screen_no   - Number of the screen to add to
      * @param int $display_pos - The display position of the new question
      * @param object $db               -   Database connection
+     * @throws coding_exception
      */
-    public function add_question($paperID, $questionID, $screen_no, $display_pos, $db)
+    public function add_question(int $paperID, int $questionID, int $screen_no, int $display_pos, $db): void
     {
+        if ($paperID === 0 or $questionID === 0 or $screen_no === 0 or $display_pos === 0) {
+            // Not a valid entry.
+            throw new coding_exception('Cannot add question to paper. Invalid paramters.');
+        }
+
         $display_pos_free = false;
 
         $result = $db->prepare('SELECT p_id FROM papers WHERE paper = ? AND display_pos = ?');

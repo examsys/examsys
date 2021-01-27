@@ -24,12 +24,11 @@
  */
 
 require '../../include/staff_auth.inc';
-
-if ($_POST['questions_to_add'] != '') {
+$questionstoadd = param::optional('questions_to_add', '', param::TEXT, param::FETCH_POST);
+if ($questionstoadd != '') {
     $logger = new Logger($mysqli);
-    $questions = explode(',', $_POST['questions_to_add']);
+    $questions = explode(',', ltrim($questionstoadd, ','));
     $display_pos = $_GET['display_pos'];
-  
     foreach ($questions as $item) {
         Paper_utils::add_question($_GET['paperID'], $item, $_POST['screen'], $display_pos, $mysqli);
         $display_pos++;

@@ -39,6 +39,15 @@ class paperutilstest extends unittestdatabase
     /** @var array Storage for user data in tests. */
     private $user2;
 
+    /** @var array Storage for question data in tests. */
+    private $question1;
+
+    /** @var array Storage for question data in tests. */
+    private $question2;
+
+    /** @var array Storage for question data in tests. */
+    private $question3;
+
     /**
      * Generate data for test.
      * @throws \testing\datagenerator\not_found
@@ -74,7 +83,7 @@ class paperutilstest extends unittestdatabase
         $datagenerator->create_module_team(array('moduleid' => 'TRAIN', 'username' => 'staff1'));
         $datagenerator->create_module_team(array('moduleid' => 'ABC300', 'username' => 'staff2'));
         $datagenerator = $this->get_datagenerator('questions', 'core');
-        $question = $datagenerator->create_question(array('user' => 'admin',
+        $this->question1 = $datagenerator->create_question(array('user' => 'admin',
             'type' => 'enhancedcalc',
             'theme' => 'test theme',
             'leadin' => 'test leadin',
@@ -83,8 +92,8 @@ class paperutilstest extends unittestdatabase
             'display_method' => '',
             'score_method' => 'Allow partial Marks',
             'settings' => '{"strictdisplay":true,"strictzeros":false,"dp":"0","tolerance_full":"0","fulltoltyp":"#","tolerance_partial":"0","parttoltyp":"#","marks_partial":0,"marks_incorrect":0,"marks_correct":1,"marks_unit":0,"show_units":true,"answers":[{"formula":"$A*$B","units":"cm"}],"vars":{"$A":{"min":"2","max":"10","inc":"1","dec":"0"},"$B":{"min":"5","max":"10","inc":"1","dec":"0"}}}'));
-        $datagenerator->add_question_to_paper(array('paper' => $this->pid1['id'], 'question' => $question['id'], 'screen' => 1, 'displaypos' => 2));
-        $question = $datagenerator->create_question(array('user' => 'admin',
+        $datagenerator->add_question_to_paper(array('paper' => $this->pid1['id'], 'question' => $this->question1['id'], 'screen' => 1, 'displaypos' => 2));
+        $this->question2 = $datagenerator->create_question(array('user' => 'admin',
             'type' => 'enhancedcalc',
             'theme' => 'test theme 3',
             'leadin' => 'test leadin 3',
@@ -93,8 +102,8 @@ class paperutilstest extends unittestdatabase
             'display_method' => '',
             'score_method' => 'Allow partial Marks',
             'settings' => '{"strictdisplay":true,"strictzeros":false,"dp":"0","tolerance_full":"0","fulltoltyp":"#","tolerance_partial":"0","parttoltyp":"#","marks_partial":0,"marks_incorrect":0,"marks_correct":1,"marks_unit":0,"show_units":true,"answers":[{"formula":"$A-$B","units":"cm"}],"vars":{"$A":{"min":"ans2","max":"ans2","inc":"1","dec":"0"},"$B":{"min":"5","max":"10","inc":"1","dec":"0"}}}'));
-        $datagenerator->add_question_to_paper(array('paper' => $this->pid1['id'], 'question' => $question['id'], 'screen' => 2, 'displaypos' => 3));
-        $question = $datagenerator->create_question(array('user' => 'admin',
+        $datagenerator->add_question_to_paper(array('paper' => $this->pid1['id'], 'question' => $this->question2['id'], 'screen' => 2, 'displaypos' => 3));
+        $this->question3 = $datagenerator->create_question(array('user' => 'admin',
             'type' => 'mcq',
             'theme' => 'test theme 2',
             'leadin' => 'test leadin 2',
@@ -107,8 +116,8 @@ class paperutilstest extends unittestdatabase
             'q_media_width' => 480,
             'q_media_height' => 105,
             'settings' => '[]'));
-        $datagenerator->add_question_to_paper(array('paper' => $this->pid1['id'], 'question' => $question['id'], 'screen' => 1, 'displaypos' => 1));
-        $datagenerator->add_options_to_question(array('question' => $question['id'],
+        $datagenerator->add_question_to_paper(array('paper' => $this->pid1['id'], 'question' => $this->question3['id'], 'screen' => 1, 'displaypos' => 1));
+        $datagenerator->add_options_to_question(array('question' => $this->question3['id'],
             'option_text' => 'true',
             'correct' => 1,
             'o_media' => '1517409282.jpg',
@@ -117,13 +126,13 @@ class paperutilstest extends unittestdatabase
             'marks_correct' => 2,
             'marks_incorrect' => -2,
             'marks_partial' => 0));
-        $datagenerator->add_options_to_question(array('question' => $question['id'],
+        $datagenerator->add_options_to_question(array('question' => $this->question3['id'],
             'option_text' => 'false',
             'correct' => 1,
             'marks_correct' => 2,
             'marks_incorrect' => -2,
             'marks_partial' => 0));
-        $datagenerator->add_options_to_question(array('question' => $question['id'],
+        $datagenerator->add_options_to_question(array('question' => $this->question3['id'],
             'option_text' => 'maybe',
             'correct' => 1,
             'marks_correct' => 2,
@@ -644,5 +653,52 @@ class paperutilstest extends unittestdatabase
     {
         $this->assertEquals($this->pid1['id'], Paper_utils::getPaperId($this->pid1['papertitle']));
         $this->assertNull(Paper_utils::getPaperId('Paper 3'));
+    }
+
+    /**
+     * Tests attempting to add a question to a paper with an invalid question id
+     * @group assessment
+     */
+    public function testAddQuestionInvalid(): void
+    {
+        $this->expectException(coding_exception::class);
+        Paper_utils::add_question($this->pid1['id'], 0, 2, 1, $this->db);
+    }
+
+    /**
+     * Tests attempting to add a question to a paper with valid data
+     * @group assessment
+     */
+    public function testAddQuestionValid(): void
+    {
+        Paper_utils::add_question($this->pid1['id'], $this->question1['id'], 2, 4, $this->db);
+        $papers = $this->query(array('table' => 'papers','columns' => array('paper, question, screen, display_pos')));
+        $expected = array(
+            0 => array(
+                'paper' => $this->pid1['id'],
+                'question' => $this->question1['id'],
+                'screen' => 1,
+                'display_pos' => 2
+            ),
+            1 => array(
+                'paper' => $this->pid1['id'],
+                'question' => $this->question2['id'],
+                'screen' => 2,
+                'display_pos' => 3
+            ),
+            2 => array(
+                'paper' => $this->pid1['id'],
+                'question' => $this->question3['id'],
+                'screen' => 1,
+                'display_pos' => 1
+            ),
+            3 => array(
+                'paper' => $this->pid1['id'],
+                'question' => $this->question1['id'],
+                'screen' => 2,
+                'display_pos' => 4
+            ),
+        );
+        $this->assertEquals($expected, $papers);
     }
 }
