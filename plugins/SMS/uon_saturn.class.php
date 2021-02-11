@@ -230,7 +230,23 @@ class UON_SATURN extends SmsUtils
 
         // Get the currently enrolled students in Rogo for the module.
         $current_users = array();
-        $student_data = $mysqli->prepare('SELECT modules_student.id, users.id, username, grade, title, surname, first_names, initials, roles, yearofstudy, auto_update, sid.student_id FROM (modules_student, users) LEFT JOIN sid ON users.id = sid.userID WHERE modules_student.userID = users.id AND calendar_year = ? AND idMod = ?');
+        $sql = "
+        SELECT
+            m.id, u.id, username, grade, title, surname, first_names, initials, GROUP_CONCAT(r.name  SEPARATOR ','), yearofstudy,
+            auto_update, sid.student_id
+        FROM
+            modules_student m
+            JOIN users u ON m.userID = u.id
+            JOIN user_roles ur ON u.id = ur.userid
+            JOIN roles r ON r.id = ur.roleid
+            LEFT JOIN sid ON u.id = sid.userID
+        WHERE
+            calendar_year = ?
+            AND idMod = ?
+        GROUP BY
+            m.id, u.id, sid.student_id
+        ";
+        $student_data = $mysqli->prepare($sql);
         $student_data->bind_param('si', $session, $idMod);
         $student_data->execute();
         $student_data->store_result();
@@ -279,7 +295,22 @@ class UON_SATURN extends SmsUtils
                         $current_users[$lookup_username]['delete'] = 0; // Mark as being legitimate
                     } else {
                         // Student missing from Rogo module
-                        $student_data = $mysqli->prepare("SELECT id, yearofstudy, initials, grade, title, surname, first_names, roles, email, COALESCE(sid.student_id,'SID_ERROR') FROM users LEFT JOIN sid ON users.id = sid.userID WHERE username = ? LIMIT 1"); // Do they have a Rogo user record?
+                        $sql = "
+                        SELECT
+                            u.id, yearofstudy, initials, grade, title, surname, first_names, GROUP_CONCAT(r.name  SEPARATOR ','),
+                            email, COALESCE(sid.student_id,'SID_ERROR')
+                        FROM
+                            users u
+                            JOIN user_roles ur ON u.id = ur.userid
+                            JOIN roles r ON r.id = ur.roleid
+                            LEFT JOIN sid ON u.id = sid.userID
+                        WHERE
+                            username = ?
+                        GROUP BY
+                            u.id, sid.student_id
+                        LIMIT 1
+                        ";
+                        $student_data = $mysqli->prepare($sql); // Do they have a Rogo user record?
                         $student_data->bind_param('s', $lookup_username);
                         $student_data->execute();
                         $student_data->store_result();
@@ -375,10 +406,11 @@ class UON_SATURN extends SmsUtils
                         $current_users[$lookup_username]['roles'] != $new_roles or
                         (isset($current_users[$lookup_username]['email']) and $current_users[$lookup_username]['email'] != $sms->Email)
                     ) {
-                        $result = $mysqli->prepare('UPDATE users SET yearofstudy = ?, roles = ?, grade = ?, title = ?, surname = ?, first_names = ?, initials = ?, email = ? WHERE username = ?');
-                        $result->bind_param('issssssss', $sms->YearofStudy, $new_roles, $sms->CourseCode, $sms->Title, $sms->Surname, $sms->Forename, $tmp_initials, $sms->Email, $lookup_username);
+                        $result = $mysqli->prepare('UPDATE users SET yearofstudy = ?, grade = ?, title = ?, surname = ?, first_names = ?, initials = ?, email = ? WHERE username = ?');
+                        $result->bind_param('issssssss', $sms->YearofStudy, $sms->CourseCode, $sms->Title, $sms->Surname, $sms->Forename, $tmp_initials, $sms->Email, $lookup_username);
                         if (!$demomode) {
                             $result->execute();
+                            Role::updateRoles($current_users[$lookup_username]['userID'], explode(',', $new_roles));
                         }
                         $result->close();
                     }
