@@ -329,7 +329,7 @@ class PaperSettings
             'SELECT
                 type
             FROM 
-                rogo.paper_settings_setting
+                paper_settings_setting
             WHERE
                 setting = ?'
         );
