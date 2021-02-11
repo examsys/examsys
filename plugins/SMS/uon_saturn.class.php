@@ -378,9 +378,9 @@ class UON_SATURN extends SmsUtils
                         $result = $mysqli->prepare('UPDATE users SET yearofstudy = ?, roles = ?, grade = ?, title = ?, surname = ?, first_names = ?, initials = ?, email = ? WHERE username = ?');
                         $result->bind_param('issssssss', $sms->YearofStudy, $new_roles, $sms->CourseCode, $sms->Title, $sms->Surname, $sms->Forename, $tmp_initials, $sms->Email, $lookup_username);
                         if (!$demomode) {
-                              $result->execute();
+                            $result->execute();
                         }
-                                $result->close();
+                        $result->close();
                     }
 
                     // Check if SID needs updating - rare but could happen
