@@ -260,7 +260,7 @@ class usermanagementtest extends unittestdatabase
         $responsearray['id'] = null;
         $params['username'] = 'unknowntest';
         $params['surname'] = 'unknown';
-        $params['role'] = 'unknownrole';
+        $params['role'] = 'Left';
         $this->assertEquals($responsearray, $user->create($params, $this->admin['id']));
     }
 
