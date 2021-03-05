@@ -1718,6 +1718,7 @@ QUERY;
             `name` varchar(30) NOT NULL,
             `grouping` varchar(30) NOT NULL,
             `group` INT(4) NOT NULL,
+            `api_enabled` BOOLEAN NOT NULL default false,
             PRIMARY KEY (`id`)
         ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;

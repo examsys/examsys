@@ -6,68 +6,82 @@ roles:
     name: "SysAdmin"
     grouping: "staff"
     group: 1
+    api_enabled: 0
   -
     id: 2
     name: "Admin"
     grouping: "staff"
     group: 1
+    api_enabled: 0
   -
     id: 3
     name: "Staff"
     grouping: "staff"
     group: 1
+    api_enabled: 1
   -
     id: 4
     name: "Student"
     grouping: "student"
     group: 1
+    api_enabled: 1
   -
     id: 5
     name: "graduate"
     grouping: "student"
     group: 2
+    api_enabled: 1
   -
     id: 6
     name: "Internal Reviewer"
     grouping: "staff"
     group: 2
+    api_enabled: 0
   -
     id: 7
     name: "left"
     grouping: "staff"
     group: 3
+    api_enabled: 1
   -
     id: 8
     name: "Inactive Staff"
     grouping: "staff"
     group: 4
+    api_enabled: 1
   -
     id: 9
     name: "Suspended"
     grouping: "student"
     group: 3
+    api_enabled: 1
   -
     id: 10
     name: "Locked"
     grouping: "student"
     group: 4
+    api_enabled: 1
   -
     id: 11
     name: "External Examiner"
     grouping: "staff"
     group: 5
+    api_enabled: 0
   -
     id: 12
     name: "Invigilator"
     grouping: "staff"
     group: 6
+    api_enabled: 0
   -
     id: 13
     name: "SysCron"
     grouping: "system"
     group: 1
+    api_enabled: 0
   -
     id: 14
     name: "Standards Setter"
     grouping: "staff"
     group: 1
+    api_enabled: 0

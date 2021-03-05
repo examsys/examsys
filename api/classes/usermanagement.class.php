@@ -34,16 +34,6 @@ class usermanagement extends \api\abstractmanagement
      */
     private $langcomponent = 'api/usermanagement';
     /**
-     * List of valid roles for students within Rogo that the API can assign.
-     * @var array $studentroles
-     */
-    private static $studentroles = array('Student', 'left', 'graduate', 'Suspended', 'Locked');
-    /**
-     * List of valid roles for staff members within Rogo that the API can assign.
-     * @var array $staffroles
-     */
-    private static $staffroles = array('Staff', 'Inactive Staff');
-    /**
      * List of valid staff member courses within Rogo that the API can assign.
      * @var array $staffcourses
      */
@@ -98,30 +88,25 @@ class usermanagement extends \api\abstractmanagement
     }
     
     /**
-     * Check role is valid.
-     * @param string $params action parameters
-     * @return string|bool course student is enrolled on or staff type if staff, false if staff member course is invalid,
-     * 'UNKNOWN if user role is invalid.
+     * Check role / course of user is valid.
+     * @param array $params action parameters
+     * @return string|bool false if course is invalid, 'UNKNOWN if user role is invalid, true otherwise
      */
-    private function check_roles($params)
+    private function checkRolesAndCourse(array $params): bool
     {
-        $roles = array_merge(self::$studentroles, self::$staffroles);
-        if (!in_array($params['role'], $roles)) {
+        // Check valid role supplied.
+        if (!in_array($params['role'], \Role::getApiRoles())) {
             return 'UNKNOWN';
         } else {
-            // Students.
-            if (in_array($params['role'], self::$studentroles)) {
-                $course = \CourseUtils::course_exists($params['course'], $this->db);
-            // Staff.
-            } else {
-                if (in_array($params['course'], self::$staffcourses)) {
-                    $course = $params['course'];
-                } else {
-                    $course = false;
-                }
+            // Check valid course supplied.
+            if (
+                in_array($params['course'], self::$staffcourses)
+                or \CourseUtils::course_exists($params['course'], $this->db) !== false
+            ) {
+                return true;
             }
         }
-        return $course;
+        return false;
     }
     /**
      * Create user
@@ -143,7 +128,7 @@ class usermanagement extends \api\abstractmanagement
                 $params[$name] = '';
             }
         }
-        $course = $this->check_roles($params);
+        $course = $this->checkRolesAndCourse($params);
         if ($course === 'UNKNOWN') {
             $data = array('statuscode' => $this->statuscodes['USER_INVALID_ROLE'], 'status' => $strings['user_invalid_role'], 'id' => null, 'externalid' => null);
             return $this->get_response($data, 'create', $params['nodeid'], array());
@@ -246,7 +231,7 @@ class usermanagement extends \api\abstractmanagement
         if ((!$userexists and $params['id']) or (!$userexists and $params['id'] === 0)) {
             $data = array('statuscode' => $this->statuscodes['USER_DOES_NOT_EXIST'], 'status' => $strings['user_does_not_exist'], 'id' => null, 'externalid' => null);
         } else {
-            $course = $this->check_roles($params);
+            $course = $this->checkRolesAndCourse($params);
             if ($course === 'UNKNOWN') {
                 $data = array('statuscode' => $this->statuscodes['USER_INVALID_ROLE'], 'status' => $strings['user_invalid_role'], 'id' => null, 'externalid' => null);
                 return $this->get_response($data, 'update', $params['nodeid'], array());

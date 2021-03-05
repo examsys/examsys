@@ -1660,20 +1660,20 @@ class InstallUtils
     public static function createUserRoles(): void
     {
         $sql = "INSERT INTO roles VALUES
-            (1, 'SysAdmin', 'staff', 1),
-            (2, 'Admin', 'staff', 1),
-            (3, 'Staff', 'staff', 1),
-            (4, 'Student', 'student', 1),
-            (5, 'graduate', 'student', 2),
-            (6, 'Internal Reviewer', 'staff', 2),
-            (7, 'left', 'staff', 3),
-            (8, 'Inactive Staff', 'staff', 4),
-            (9, 'Suspended', 'student', 3),
-            (10, 'Locked', 'student', 4),
-            (11, 'External Examiner', 'staff', 5),
-            (12, 'Invigilator', 'staff', 6),
-            (13, 'SysCron', 'system', 1),
-            (14, 'Standards Setter', 'staff', 1)";
+            (1, 'SysAdmin', 'staff', 1, 0),
+            (2, 'Admin', 'staff', 1, 0),
+            (3, 'Staff', 'staff', 1, 1),
+            (4, 'Student', 'student', 1, 1),
+            (5, 'graduate', 'student', 2, 1),
+            (6, 'Internal Reviewer', 'staff', 2, 0),
+            (7, 'left', 'staff', 3, 1),
+            (8, 'Inactive Staff', 'staff', 4, 1),
+            (9, 'Suspended', 'student', 3, 1),
+            (10, 'Locked', 'student', 4, 1),
+            (11, 'External Examiner', 'staff', 5, 0),
+            (12, 'Invigilator', 'staff', 6, 0),
+            (13, 'SysCron', 'system', 1, 0),
+            (14, 'Standards Setter', 'staff', 1, 0)";
         $insert = self::$db->prepare($sql);
         $insert->execute();
         $insert->close();

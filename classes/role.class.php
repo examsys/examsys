@@ -59,6 +59,29 @@ class Role
     }
 
     /**
+     * Gets all the roles for an api.
+     *
+     * @return array
+     */
+    public static function getApiRoles(): array
+    {
+        static $roles;
+        if (!isset($roles)) {
+            $sql = 'SELECT name FROM roles WHERE api_enabled = 1 ORDER BY name';
+            $query = Config::get_instance()->db->prepare($sql);
+            $query->execute();
+            $query->bind_result($role);
+
+            $roles = [];
+            while ($query->fetch()) {
+                $roles[] = $role;
+            }
+            $query->close();
+        }
+        return $roles;
+    }
+
+    /**
      * Gets all the roles for a user.
      *
      * @param int $user The database id of a user.

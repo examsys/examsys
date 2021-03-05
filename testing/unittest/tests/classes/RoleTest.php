@@ -225,4 +225,13 @@ class RoleTest extends \testing\unittest\unittestdatabase
         $role = new Role(5, 'graduate', 'student', 2);
         self::assertEquals('Graduate', $role->localName());
     }
+
+    /**
+     * Tests that the api roles are found.
+     */
+    public function testGetApiRoles(): void
+    {
+        $expected = array( 'graduate', 'Inactive Staff', 'left', 'Locked', 'Staff', 'Student', 'Suspended');
+        self::assertEquals($expected, Role::getApiRoles());
+    }
 }
