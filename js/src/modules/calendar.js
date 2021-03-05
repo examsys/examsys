@@ -37,7 +37,7 @@ define(['jsxls', 'jquery'], function(jsxls, $) {
         this.showCallout = function(type, cellID, start_time, end_time, duration, labs, password, timezone, metadata) {
             var lab_names = JSON.parse($('#dataset').attr('data-lab_names'));
             var p = $('#p' + cellID);
-            var position = p.position();
+            var position = p.offset();
 
             var left_pos = position.left;
             if (left_pos + 302 > $(window).width()) {
@@ -132,7 +132,7 @@ define(['jsxls', 'jquery'], function(jsxls, $) {
          */
         this.showCallout2 = function(cellID, message) {
             var p = $('#p' + cellID);
-            var position = p.position();
+            var position = p.offset();
 
             var left_pos = position.left;
             if (left_pos + 302 > $(window).width()) {

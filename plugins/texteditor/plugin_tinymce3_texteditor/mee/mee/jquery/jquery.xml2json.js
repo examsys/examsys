@@ -147,12 +147,11 @@ This simple script converts XML (document of code) into a JSON object. It is the
             //return $(xml)[0];
             var out;
             try {
-                var xml = ($.browser.msie) ? new ActiveXObject("Microsoft.XMLDOM") : new DOMParser();
+                var xml = new DOMParser();
                 xml.async = false;
             } catch (e) { throw new Error("XML Parser could not be instantiated") };
             try {
-                if ($.browser.msie) out = (xml.loadXML(str)) ? xml : false;
-                else out = xml.parseFromString(str, "text/xml");
+                out = xml.parseFromString(str, "text/xml");
             } catch (e) { throw new Error("Error parsing XML string") };
             return out;
         }

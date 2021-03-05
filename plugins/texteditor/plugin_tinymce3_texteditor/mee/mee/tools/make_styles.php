@@ -23,9 +23,13 @@
  * @package
  */
 
-require '../../../../include/sysadmin_auth.inc';
+if (PHP_SAPI != 'cli') {
+    die("Please run this script from the CLI!\n");
+}
 
-echo '<h2>Building combined css files</h2>';
+require_once '../../../../../../include/load_config.php';
+
+cli_utils::prompt('Building combined css files');
 
 function compress($buffer)
 {
@@ -45,9 +49,9 @@ $files[] = 'fonts.css';
 $files[] = 'main.css';
 $files[] = 'toolbar.css';
 foreach ($files as $file) {
-    echo "Compressing $file<br />";
+    cli_utils::prompt('Compressing ' . $file);
     $output .= compress(file_get_contents('../css/' . $file));
 }
 
 file_put_contents('../css/combined.css', $output);
-echo 'Saved as css/combined.css<br>';
+cli_utils::prompt('Saved as css/combined.css');

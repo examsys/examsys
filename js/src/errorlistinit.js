@@ -25,7 +25,7 @@ requirejs(['errorlist', 'state', 'list', 'jquery', 'jquerytablesorter'], functio
     var list = new LIST();
     list.init();
 
-    if ($("#maindata").find("tr").size() > 1) {
+    if ($("#maindata").find("tr").length > 1) {
         $("#maindata").tablesorter({
             dateFormat: $('#dataset').attr('data-datetime'),
             sortList: [[0, 1]]

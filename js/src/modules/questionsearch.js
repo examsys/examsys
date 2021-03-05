@@ -28,7 +28,7 @@ define(['menu', 'state', 'jquery', 'jqueryui', 'jquerytablesorter'], function(ME
             var scope = this;
             var menu = new MENU();
 
-            if ($("#maindata").find("tr").size() > 1) {
+            if ($("#maindata").find("tr").length > 1) {
                 $("#maindata").tablesorter({
                     dateFormat: datetime,
                     sortList: [[0,0]]

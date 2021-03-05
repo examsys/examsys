@@ -21,7 +21,7 @@
 requirejs(['list', 'modulessidebar', 'jquery', 'jquerytablesorter'], function (LIST, MODULE, $) {
     var module = new MODULE();
     module.init();
-    if ($("#maindata").find("tr").size() > 1) {
+    if ($("#maindata").find("tr").length > 1) {
         $("#maindata").tablesorter({
             sortList: [[0,0]]
         });

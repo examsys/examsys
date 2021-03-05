@@ -19,7 +19,7 @@
 // @copyright Copyright (c) 2019 The University of Nottingham
 //
 requirejs(['jquery', 'jquerytablesorter'], function ($) {
-    if ($("#maindata").find("tr").size() > 1) {
+    if ($("#maindata").find("tr").length > 1) {
         $("#maindata").tablesorter({
             dateFormat: $('#dataset').attr('data-datetime'),
             sortList: [[1,0]]

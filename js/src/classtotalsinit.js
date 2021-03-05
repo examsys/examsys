@@ -51,7 +51,7 @@ requirejs(['jsxls', 'classtotals', 'popupmenu', 'jquery', 'jquerytablesorter'], 
             });
         }
 
-        if ($("#maindata").find("tr").size() > 1) {
+        if ($("#maindata").find("tr").length > 1) {
             $("#maindata").tablesorter({
                 // sort on the first column and third column, order asc
                 dateFormat: $('#datatime').val(),

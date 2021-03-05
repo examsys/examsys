@@ -23,9 +23,13 @@
  * @package
  */
 
-require '../../../../include/sysadmin_auth.inc';
+if (PHP_SAPI != 'cli') {
+    die("Please run this script from the CLI!\n");
+}
 
-echo '<h2>Building combined JS files</h2>';
+require_once '../../../../../../include/load_config.php';
+
+cli_utils::prompt('Building combined JS files');
 $debug = 0;
 
 $files = array();
@@ -75,9 +79,9 @@ $files[] = 'js/mee.maxima.js';
 require('include/jsmin.php');
 $js = "/*DO NOT MODIFY THIS FILE*/\n";
 foreach ($files as $file) {
-    echo "Compressing $file<br>";
+    cli_utils::prompt('Compressing ' .  $file);
     $js .= JSMin::minify(file_get_contents('../' . $file)) . "\n";
     //$js .= file_get_contents("../".$file) . "\n";
 }
 file_put_contents('../js/mee.js', $js);
-echo 'Saved as js/mee.js<br>';
+cli_utils::prompt('Saved as js/mee.js');

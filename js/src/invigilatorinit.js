@@ -43,7 +43,7 @@ requirejs(['invigilator', 'jquery', 'jqueryui'], function (INV, $) {
     inv.StartClock();
     inv.resizeLists();
 
-    $(window).unload(function() {
+    $(window).on("unload", function() {
         inv.KillClock();
     });
 

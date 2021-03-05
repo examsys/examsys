@@ -23,7 +23,7 @@ requirejs(['usersearch', 'state', 'menu', 'jquery', 'jquerytablesorter'], functi
 
     var menu = new MENU();
 
-    if ($("#maindata").find("tr").size() > 1) {
+    if ($("#maindata").find("tr").length > 1) {
         $("#maindata").tablesorter({
             // sort on the third column, order asc
             sortList: [[3, 0]]

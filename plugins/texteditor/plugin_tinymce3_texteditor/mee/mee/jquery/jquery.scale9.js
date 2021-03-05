@@ -6,21 +6,6 @@
 */
 (function ($) {
 
-    var supportsBorderImage = false;
-    var borderImageStyle;
-
-    // TODO: we should check webkit's version as well
-    if ($.browser.safari) {
-        supportsBorderImage = true;
-        borderImageStyle = '-webkit-border-image';
-    } else if ($.browser.mozilla
-    // requires firefox 3.1 or greater
-		&& $.browser.version.substr(0, 3) == "1.9"
-		&& parseFloat($.browser.version.substr(3)) > 1.0) {
-        supportsBorderImage = true;
-        borderImageStyle = '-moz-border-image';
-    }
-
     $.fn.extend({
 
         scale9Grid: function (settings) {
@@ -46,12 +31,6 @@
                     return;
                 }
                 var backgroundUrl = match[1];
-
-                // ie6 breaks on a floated child with a staticly positioned parent
-                if ($.browser.msie && $.browser.version < 7 && $target.css('float') != 'none' && $target.css('position') == 'static') {
-                    $target.css('position', 'relative');
-                }
-
                 $target.wrapInner('<div class="s9gwrapper"></div>');
                 var $wrapper = $target.find('.s9gwrapper');
                 $wrapper.css({
@@ -87,14 +66,12 @@
                 });
                 $background.addClass('s9gbackground');
 
-                if (supportsBorderImage) {
-                    var cssProperties = {
-                        'border-width': gridTop + 'px ' + gridRight + 'px ' + gridBottom + 'px ' + gridLeft + 'px ',
-                        'position': 'absolute'
-                    }
-                    cssProperties[borderImageStyle] = backgroundImage + ' ' + gridTop + ' ' + gridRight + ' ' + gridBottom + ' ' + gridLeft + ' stretch stretch';
-                    $background.css(cssProperties);
+                var cssProperties = {
+                    'border-width': gridTop + 'px ' + gridRight + 'px ' + gridBottom + 'px ' + gridLeft + 'px ',
+                    'position': 'absolute'
                 }
+                cssProperties['border-image'] = backgroundImage + ' ' + gridTop + ' ' + gridRight + ' ' + gridBottom + ' ' + gridLeft + ' stretch stretch';
+                $background.css(cssProperties);
 
                 var imageWidth;
                 var imageHeight;
@@ -113,13 +90,11 @@
                         return;
                     }
 
-                    if (supportsBorderImage) {
-                        $background.css({
-                            'width': width - gridLeft - gridRight + 'px',
-                            'height': height - gridTop - gridBottom + 'px'
-                        })
-                        return;
-                    }
+                    $background.css({
+                        'width': width - gridLeft - gridRight + 'px',
+                        'height': height - gridTop - gridBottom + 'px'
+                    })
+                    return;
 
                     lastWidth = width;
                     lastHeight = height;

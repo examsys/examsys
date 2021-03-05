@@ -3,6 +3,8 @@ requirejs(['tinyMCE', 'rogoconfig'], function (tinyMCE, config) {
 		mode: "specific_textareas",
 		editor_selector: "editorStandard",
 		theme: "advanced",
+		language : 'en',
+		language_load : true,
 		skin: "default",
 		plugins: "table,visualchars,nonbreaking,xhtmlxtras,insertimagestaff,insertcaptivatestaff,paste",
 		theme_advanced_blockformats: "p,div,h1,h2,h3,h4,h5",

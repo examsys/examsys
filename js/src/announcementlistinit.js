@@ -25,7 +25,7 @@ requirejs(['announcement', 'list', 'jquery', 'jquerytablesorter'], function (ANN
     var announcement = new ANNOUNCEMENT();
     announcement.init();
 
-    if ($("#maindata").find("tr").size() > 1) {
+    if ($("#maindata").find("tr").length > 1) {
         $("#maindata").tablesorter({
             dateFormat: $('#dataset').attr('data-datetime'),
             sortList: [[1,1]]

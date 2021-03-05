@@ -38,7 +38,7 @@ define(['user', 'jquery', 'jqueryui'], function(USER, $) {
             this.textBox = pickerID;
 
             var pickerSpan = $('#span_' + pickerID);
-            var position = pickerSpan.position();
+            var position = pickerSpan.offset();
 
             $('#picker').css('top', 20 + position.top + 'px');
             $('#picker').css('left', position.left + 'px');

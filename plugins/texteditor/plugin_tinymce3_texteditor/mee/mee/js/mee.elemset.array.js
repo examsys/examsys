@@ -225,23 +225,13 @@ MEE.ElemSet.extend("MEE.ElemSetArray",
         this.html_elem.append(this.html_padding);
 
         // sort depth out
-
-        if ($.browser.msie && document.documentMode > 7) {
-            this.depth = depth + 1;
-            if (this.eldata.nodepth) {
-                this.depth = depth;
-            }
-            this.html_elem.attr('depth', this.depth);
-            var subdepth = this.depth;
-        } else {
-            this.depth = depth;
-            this.html_elem.attr('depth', depth);
-            var subdepth = depth + 1;
-            if (this.eldata.nodepth) {
-                subdepth = depth;
-            } else if (this.eldata.extradepth) {
-                subdepth = depth + 2;
-            }
+        this.depth = depth;
+        this.html_elem.attr('depth', depth);
+        var subdepth = depth + 1;
+        if (this.eldata.nodepth) {
+            subdepth = depth;
+        } else if (this.eldata.extradepth) {
+            subdepth = depth + 2;
         }
         var dodepth = true;
         if (this.parent && this.parent.depth == this.depth)

@@ -22,7 +22,7 @@ requirejs(['sessionslist', 'list', 'jquery', 'jquerytablesorter'], function (SES
     var sessions = new SESSIONS();
     var list = new LIST();
     list.init();
-    if ($("#maindata").find("tr").size() > 1) {
+    if ($("#maindata").find("tr").length > 1) {
         $("#maindata").tablesorter({
             sortList: [[0,0]],
             headers: { 2: { sorter: false}, 3: {sorter: false} }

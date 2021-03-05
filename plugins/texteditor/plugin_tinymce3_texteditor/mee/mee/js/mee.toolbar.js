@@ -1006,10 +1006,6 @@ $.Class.extend("MEE.Toolbar",
 
                 MEE.Toolbar.images[size] = -1;
 
-                // dont scale with ie
-                if ($.browser.msie)
-                    return;
-
                 var overlaydiv = $('<div>');
                 //overlaydiv.css('border', '1px solid orange');
                 overlaydiv.css('position', 'absolute');

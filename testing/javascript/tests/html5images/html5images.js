@@ -21,22 +21,22 @@ requirejs(['qunit', 'html5images'], function(QUnit, images) {
   QUnit.test("HTML5 images object", function (assert) {
     var done = assert.async();
     // Check the object if contains exists as we expect.
-    assert.ok(images.menuImages, 'menuImages is defined');
-    for (var image in images.menuImages) {
+    assert.ok(images.map, 'map is defined');
+    for (var image in images.map) {
       if (image !== 'zzz') {
         // Every menu image must have a left, top, width and height property.
-        assert.deepEqual(typeof images.menuImages[image].left, 'number', image + '.left is a number');
-        assert.deepEqual(typeof images.menuImages[image].top, 'number', image + '.top is a number');
-        assert.deepEqual(typeof images.menuImages[image].width, 'number', image + '.width is a number');
-        assert.deepEqual(typeof images.menuImages[image].height, 'number', image + '.height is a number');
+        assert.deepEqual(typeof images.map[image].left, 'number', image + '.left is a number');
+        assert.deepEqual(typeof images.map[image].top, 'number', image + '.top is a number');
+        assert.deepEqual(typeof images.map[image].width, 'number', image + '.width is a number');
+        assert.deepEqual(typeof images.map[image].height, 'number', image + '.height is a number');
         // The value of left and top must be 0 or greater.
-        assert.ok(images.menuImages[image].left >= 0, image + '.left is greater or equal to zero');
-        assert.ok(images.menuImages[image].top >= 0, image + '.top is greater or equal to zero');
+        assert.ok(images.map[image].left >= 0, image + '.left is greater or equal to zero');
+        assert.ok(images.map[image].top >= 0, image + '.top is greater or equal to zero');
         // The value of width and height must be positive.
-        assert.ok(images.menuImages[image].width > 0, image + '.width is greater than zero');
-        assert.ok(images.menuImages[image].height > 0, image + '.height is greater than zero');
+        assert.ok(images.map[image].width > 0, image + '.width is greater than zero');
+        assert.ok(images.map[image].height > 0, image + '.height is greater than zero');
       } else {
-        assert.deepEqual(images.menuImages[image], 'zzz', 'zzz is correct');
+        assert.deepEqual(images.map[image], 'zzz', 'zzz is correct');
       }
     }
     done();

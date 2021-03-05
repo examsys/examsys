@@ -79,12 +79,10 @@ Adam Clarke<br />
 <td>
 <strong><?php echo $string['3rdparty'] ?></strong><br />
 <table cellpaddding="0" cellspacing="0" border="0">
-<tr><td style="width:120px"><?php echo $string['editor']; ?></td><td>TinyMCE 3.5.11 - <a href="http://tinymce.moxiecode.com/" target="_blank">tinymce.moxiecode.com</a></td></tr>
+<tr><td style="width:120px"><?php echo $string['editor']; ?></td><td>TinyMCE - <a href="https://www.tiny.cloud/tinymce/" target="_blank">tiny.cloud/tinymce</a></td></tr>
 <tr><td colspan="2">&nbsp;</td></tr>
-<tr><td><?php echo $string['javascriptlibrary']; ?></td><td>jQuery 1.11.1 - <a href="http://jquery.com" target="_blank">jquery.com</a><br />
-jQuery UI 1.10.4 - <a href="http://jqueryui.com" target="_blank">http://jqueryui.com</a></td></tr>
-<tr><td colspan="2">&nbsp;</td></tr>
-<tr><td><?php echo $string['videoplayer']; ?></td><td>FLV Player 1.6.0 - <a href="http://flv-player.net/players/maxi/" target="_blank">flv-player.net/players/maxi/</a></td></tr>
+<tr><td><?php echo $string['javascriptlibrary']; ?></td><td>jQuery - <a href="http://jquery.com" target="_blank">jquery.com</a><br />
+jQuery UI - <a href="http://jqueryui.com" target="_blank">jqueryui.com</a></td></tr>
 <tr><td colspan="2">&nbsp;</td></tr>
 <tr><td><?php echo $string['graphics']; ?></td><td><a href="http://www.iconfinder.com/" target="_blank">www.iconfinder.com</a><br />
 <a href="http://www.psdgraphics.com/" target="_blank">www.psdgraphics.com</a><br />

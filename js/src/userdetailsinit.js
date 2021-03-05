@@ -81,7 +81,7 @@ requirejs(['user', 'colourpicker', 'osce', 'classtotals', 'menu', 'rolelist', 'j
         osce.viewScript();
     });
 
-    if ($("#maindata").find("tr").size() > 2) {
+    if ($("#maindata").find("tr").length > 2) {
         $("#maindata").tablesorter({
             dateFormat: datetime,
             sortList: [[1,0]]
