@@ -46,7 +46,7 @@ requirejs(['peerreview', 'popupmenu', 'jquery', 'jquerytablesorter'], function (
         $('#toprightmenu').hide();
     })
 
-    if ($("#maindata").find("tr").size() > 1) {
+    if ($("#maindata").find("tr").length > 1) {
         $("#maindata").tablesorter({
             sortList: [[2,0],[3,0]]
         });

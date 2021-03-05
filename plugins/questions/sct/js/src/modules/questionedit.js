@@ -25,7 +25,7 @@ define(['jquery'], function($) {
          * @param object el element
          */
         this.updateSctType = function (el) {
-            var sct_types = $.parseJSON($('#sctdataset').attr('data-sct_types'));
+            var sct_types = JSON.parse($('#sctdataset').attr('data-sct_types'));
             var type_index = $(el).val() - 1;
             $('#sct-hypothesis').text(sct_types[type_index][0]);
 

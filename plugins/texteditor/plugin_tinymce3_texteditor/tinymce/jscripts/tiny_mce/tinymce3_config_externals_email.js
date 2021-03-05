@@ -8,6 +8,8 @@ requirejs(['tinyMCE', 'rogoconfig', 'jquery'], function (tinyMCE, config, $) {
         force_p_newlines: false,
         editor_selector: "editorStandard",
         theme: "advanced",
+        language : 'en',
+        language_load : true,
         skin: "default",
         plugins: "table,visualchars,nonbreaking,xhtmlxtras,paste",
         // Theme options

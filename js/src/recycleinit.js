@@ -21,7 +21,7 @@
 requirejs(['recyclelist', 'jquery', 'jquerytablesorter'], function (RECYCLE, $) {
     var recycle = new RECYCLE();
 
-    if ($("#maindata").find("tr").size() > 1) {
+    if ($("#maindata").find("tr").length > 1) {
         $("#maindata").tablesorter({
             dateFormat: $('#dataset').attr('data-datetime'),
             sortList: [[1,0]]

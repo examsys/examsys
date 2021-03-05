@@ -22,7 +22,7 @@ requirejs(['courseslist', 'list', 'jquery', 'jquerytablesorter'], function (COUR
     var list = new LIST();
     list.init();
     var course = new COURSE();
-    if ($("#maindata").find("tr").size() > 1) {
+    if ($("#maindata").find("tr").length > 1) {
         $("#maindata").tablesorter({
             sortList: [[0,0]]
         });

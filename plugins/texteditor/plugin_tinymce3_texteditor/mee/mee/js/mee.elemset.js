@@ -177,12 +177,6 @@ $.Class.extend("MEE.ElemSet",
         hldiv.css('display', 'none');
 
         var elem = this.getElemBeforeInput();
-        /*if ($.browser.msie && document.documentMode == 7) {
-        $('.mee_ie7_highlight').removeClass('mee_ie7_highlight');
-        if (elem)
-        elem.html_elem.addClass('mee_ie7_highlight');
-        return;
-        }*/
         if (this.single && !this.inmatrix) {
             var hldiv = $('.mee_edit_highlight');
             MEE.Tools.HTML.AlignElementOver(this.html_elem, hldiv, this.align);

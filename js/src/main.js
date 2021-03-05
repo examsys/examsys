@@ -36,7 +36,7 @@ requirejs.config({
     baseUrl: baseUrl(),
     // paths to modules.
     paths: {
-        jquery: "js/jquery-1.11.1.min",
+        jquery: "node_modules/jquery/dist/jquery.min",
         jqueryvalidate: "js/jquery.validate.min",
         jqueryui: "js/jquery-ui-1.10.4.min",
         jquerytablesorter: "js/jquery.tablesorter.min",

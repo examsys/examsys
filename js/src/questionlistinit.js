@@ -93,7 +93,7 @@ requirejs(['list', 'questionlist', 'questionsearch', 'leadinpopup', 'sidebar'], 
     }
 
     var list = new LIST();
-    var offset = $('#list').position().top;
+    var offset = $('#list').offset().top;
     var winH = ($(window).height() - offset) - 2;
 
     list.resizeList(winH);

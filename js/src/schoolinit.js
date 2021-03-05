@@ -22,7 +22,7 @@ requirejs(['schoolslist', 'list', 'jquery', 'jquerytablesorter'], function (SCHO
     var schools = new SCHOOLS();
     var list = new LIST();
     list.init();
-    if ($("#maindata").find("tr").size() > 1) {
+    if ($("#maindata").find("tr").length > 1) {
         $("#maindata").tablesorter({
             sortList: [[0,0]]
         });

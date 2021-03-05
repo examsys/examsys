@@ -28,8 +28,6 @@ function updateMEE(frame, w, h , inline) {
 
 function clickMEEiFrame(frame) {
 
-    edit = false;
-    
     if (frame.document)
         frame = getFrameForDocument(frame.document);
     else
@@ -40,20 +38,7 @@ function clickMEEiFrame(frame) {
     var e = tinymce.activeEditor;
     
     e.selection.select(frame);
-    
-    if ($.browser.mozilla || $.browser.msie) {
-        var plugin = e.plugins["mee"];
-        if( plugin.getCurrentElement() == frame) {
-          edit = true;
-        }
-        plugin.nodeChange(e, e.controlManager, frame);
-    }
-    
-    if(edit) {
-      e.execCommand('mceMEE');
-    } else if(!$.browser.mozilla) {
-      e.execCommand('mceMEE');
-    }
+    e.execCommand('mceMEE');
 }
 
 function unencodeQuotes(str) {

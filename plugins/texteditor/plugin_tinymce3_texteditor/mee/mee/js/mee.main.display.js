@@ -109,19 +109,12 @@ MEE.Main.extend("MEE.Display",
             
         this.elementset.sortAlign();
         var JQelement = $(this.element);
-        if ($.browser.msie && document.documentMode == 7) {
-            JQelement.css({
-                                  'height': this.elementset.align.height - (this.elementset.align.top + this.elementset.align.bottom) + 'px',
-                                  'margin-top': this.elementset.align.top + 'px',
-                                  'margin-bottom': this.elementset.align.bottom + 'px'
-                               });
-        } else {
-            JQelement.css({
-                                  'height': this.elementset.align.height - (this.elementset.align.top + this.elementset.align.bottom) + 'px',
-                                  'padding-top': this.elementset.align.top + 'px',
-                                  'padding-bottom': this.elementset.align.bottom + 'px'
-                               });          
-        }
+        JQelement.css({
+          'height': this.elementset.align.height - (this.elementset.align.top + this.elementset.align.bottom) + 'px',
+          'padding-top': this.elementset.align.top + 'px',
+          'padding-bottom': this.elementset.align.bottom + 'px'
+        });
+
 
         // apply id to any input boxed
         var baseid = this.baseid;
@@ -175,24 +168,14 @@ MEE.Main.extend("MEE.Display",
         this.elementset.sortAlign();
         if (inline) {
             JQelement.css('height', this.elementset.align.height - (this.elementset.align.top + this.elementset.align.bottom) + 'px');
-            if ($.browser.msie && document.documentMode == 7) {
-                JQelement.css('margin-top', this.elementset.align.top + 'px');
-                JQelement.css('margin-bottom', this.elementset.align.bottom + 'px');
-            } else {
-                JQelement.css('padding-top', this.elementset.align.top + 'px');
-                JQelement.css('padding-bottom', this.elementset.align.bottom + 'px');
-            }
+            JQelement.css('padding-top', this.elementset.align.top + 'px');
+            JQelement.css('padding-bottom', this.elementset.align.bottom + 'px');
 
             JQelement.css('height', this.elementset.align.height + 'px');
             JQelement.html(MEE.Data.blankspace);
         } else {
-            if ($.browser.msie && document.documentMode == 7) {
-                JQelement.css('margin-top', this.elementset.align.top + 'px');
-                JQelement.css('margin-bottom', this.elementset.align.bottom + 'px');
-            } else {
-                JQelement.css('padding-top', this.elementset.align.top + 'px');
-                JQelement.css('padding-bottom', this.elementset.align.bottom + 'px');
-            }
+            JQelement.css('padding-top', this.elementset.align.top + 'px');
+            JQelement.css('padding-bottom', this.elementset.align.bottom + 'px');
             JQelement.css('height', this.elementset.align.height - (this.elementset.align.top + this.elementset.align.bottom) + 'px');
             JQelement.css('width', '100%');
             JQelement.html(MEE.Data.blankspace);

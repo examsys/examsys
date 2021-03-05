@@ -154,9 +154,6 @@ MEE.Elem.extend("MEE.ElemAccent",
 
             //topoffset += $(top).toPx({ 'scope': this.args[0].html_elem });
         } else if (hasTall(text) && !this.eldata.handledots) { // do we have tall text, ie t char
-            if($.browser.msie) {
-              tall = '-1.22em';
-            }
             $(this.html_main).css('top', tall);
             topoffset += 0.22;
         }

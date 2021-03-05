@@ -100,7 +100,7 @@ define(['jquery', 'jqueryui'], function($) {
          */
         this.showCallout = function(cellID, displayTxt) {
             var p = $('#p' + cellID);
-            var position = p.position();
+            var position = p.offset();
 
             var left_pos = position.left;
             if (left_pos + 302 > $(window).width()) {

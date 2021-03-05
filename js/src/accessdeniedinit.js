@@ -21,7 +21,7 @@
 //
 //
 requirejs(['alert', 'jquery', 'jquerytablesorter'], function (ALERT, $) {
-    if ($("#maindata").find("tr").size() > 1) {
+    if ($("#maindata").find("tr").length > 1) {
         $("#maindata").tablesorter({
             dateFormat: $('#dataset').attr('data-datetime'),
             sortList: [[0,1]]

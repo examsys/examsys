@@ -23,10 +23,14 @@
  * @package
  */
 
-require '../../../../include/sysadmin_auth.inc';
+if (PHP_SAPI != 'cli') {
+    die("Please run this script from the CLI!\n");
+}
+
+require_once '../../../../../../include/load_config.php';
 
 ob_start();
-echo '<h2>Combining Images</h2>';
+cli_utils::prompt('Combining Images');
 
 $paths = array();
 $paths[] = 'tbicons';
@@ -126,10 +130,10 @@ foreach ($images as $img) {
 $output .= "'zzz': 'zzz' };\n";
 
 $target = '../images/combined.png';
-echo "Saving as $target<br />";
+cli_utils::prompt('Saving as ' . $target);
 ob_flush();
 imagepng($resim, $target);
 
 $target = '../js/mee.images.js';
-echo "Saving js data as $target<br />";
+cli_utils::prompt('Saving js data as ' . $target);
 file_put_contents($target, $output);

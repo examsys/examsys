@@ -23,16 +23,20 @@
  * @package
  */
 
-require '../../../../include/sysadmin_auth.inc';
+if (PHP_SAPI != 'cli') {
+    die("Please run this script from the CLI!\n");
+}
 
-echo 'Making Images<br />';
+require_once '../../../../../../include/load_config.php';
+
+cli_utils::prompt('Making Images');
 
 $toconvert = array();
 //$toconvert['&#x221A;'] = 'MathJax_Main-Regular';
 $toconvert['log'] = 'MathJax_Main-Regular';
 
 foreach ($toconvert as $char => $font) {
-    echo "Converting <span style='font-family:$font;font-size:300%;'>$char</span><br>";
+    cli_utils::prompt('Converting ' . $char);
     
     $im = imagecreatetruecolor(1000, 1000);
     $white = imagecolorallocate($im, 255, 255, 255);
@@ -40,7 +44,7 @@ foreach ($toconvert as $char => $font) {
     $black = imagecolorallocate($im, 0, 0, 0);
     imagecolortransparent($im, $white);
     $font = 'fonts/' . $font . '.ttf';
-    echo $font . '<br>';
+    cli_utils::prompt($font);
     imagettftext($im, 400, 0, 200, 700, $black, $font, $char);
     imagepng($im, $char . '.png');
 }

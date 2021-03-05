@@ -13,9 +13,6 @@ MEE.Main.extend("MEE.Edit",
     element: null,
     //#region Initialization
     init: function (element) {
-        // make sure we are ok to run
-        if (!this.checkProtocol())
-            return;
           
         this.element = element.name;
         this.active[this.element] = false;
@@ -65,15 +62,6 @@ MEE.Main.extend("MEE.Edit",
 
         this.createUndo();
         // dump element tree
-    },
-
-    // check if we are running a browser that cant load xml files locally
-    checkProtocol: function () {
-        if (document.location.protocol == 'file:' && $.browser.safari) {
-            alert("The eeditor does not work properly on the local file system due to security settings in your browser. Please use a real webserver.");
-            return false;
-        }
-        return true;
     },
 
     initHTML: function () {

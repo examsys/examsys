@@ -594,8 +594,6 @@ $.Class.extend("MEE.Elem",
                 var suph = this.subscript.align.height - this.subscript.align.top; ; // was $(this.html_superscript).outerHeight(true)
                 var elemh = this.main.align.height; // was $(this.html_elem).outerHeight(true);
                 elemh = Math.floor(elemh/2) + this.main.align.bottom - this.subscript.align.top;
-                if($.browser.msie) 
-                  elemh += suph/2;
                   
                 var pad = 0.3;
                 if (this.eldata.limits_l)
@@ -612,8 +610,6 @@ $.Class.extend("MEE.Elem",
                 var suph = this.superscript.align.height - this.superscript.align.top; ; // was $(this.html_superscript).outerHeight(true)
                 var elemh = this.main.align.height; // was $(this.html_elem).outerHeight(true);
                 elemh = Math.floor(elemh / 2) + this.main.align.top - this.superscript.align.top;
-                if($.browser.msie) 
-                  elemh += suph;
                   
                 var pad = 0.4;
                 if (this.eldata.limits_h)
@@ -789,11 +785,7 @@ $.Class.extend("MEE.Elem",
         
         var bh = MEE.Data.getBaseSize(scopeelem);
         var pad = Math.floor((mainh - bh) / 2);
-        
-        if($.browser.msie &&  $.browser.version >= 8) {
-          //nasty hack to fix brackets iin ie 8 and 9
-          pad += 12;
-        }
+
         JQbracketelem.css('top', -pad + 'px');
 
         // position the top part   
