@@ -92,7 +92,7 @@ class usermanagement extends \api\abstractmanagement
      * @param array $params action parameters
      * @return string|bool false if course is invalid, 'UNKNOWN if user role is invalid, true otherwise
      */
-    private function checkRolesAndCourse(array $params): bool
+    private function checkRolesAndCourse(array $params)
     {
         // Check valid role supplied.
         if (!in_array($params['role'], \Role::getApiRoles())) {
