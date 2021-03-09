@@ -63,7 +63,6 @@ $string['system_academic_year_start'] = 'Month / Day of academic year start';
 $string['misc_search_leadin_length'] = 'Length in characters of question leadin in question search list.';
 $string['rpt'] = 'Reports';
 $string['rpt_percent_decimals'] = 'Decimal places to display in reports.';
-$string['rpt_fd_show_wordlist'] = 'Show word usage count for textbox questions';
 $string['stdset'] = 'Standard setting';
 $string['stdset_hofstee_pass'] = 'Default Hofstee pass settings';
 $string['stdset_hofstee_distinction'] = 'Default Hofstee distinction settings';
