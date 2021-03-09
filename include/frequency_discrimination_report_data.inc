@@ -1290,7 +1290,7 @@ function compile_question_data($screen_no, $exclusions, $q_no, $q_id, $theme, $s
                     if ($individual_option['option_text'] != '') {
                         $question_data['parts'][$i]['option_text'] = $individual_option['option_text'];
                     }
-                    if (!empty($individual_option['o_media'])) {
+                    if (isset($individual_option['o_media'])) {
                         $question_data['parts'][$i]['media'] = array($individual_option['o_media'], $individual_option['o_media_width'], $individual_option['o_media_height'], $individual_option['o_media_alt'], '', true);
                     }
                 }
