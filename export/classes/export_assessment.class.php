@@ -946,24 +946,12 @@ class export_assessment extends exporter
                         case 'textbox':
                             if (!$exclusions->is_question_excluded($tmp_question_ID)) {
                                 if (isset($individual[$tmp_screen][$tmp_question_ID])) {
-                                    $tmp_data = trim($individual[$tmp_screen][$tmp_question_ID]);
-                                    // Strip leading hyphens (including after HTML tags) and newlines, swap double for single quotes
-                                    $tmp_data = trim(preg_replace(array(
-                                        "/(\r\n|\n|\r)/",
-                                        '/^-/',
-                                        '/^\s*<(.+?)>\s*-\s*/',
-                                        '/^\s*<(.+?)>\s+/',
-                                        '/"/'
-                                    ), array(
-                                        ' ',
-                                        '',
-                                        '<\1>',
-                                        '<\1>',
-                                        '\'',
-                                    ), $tmp_data));
+                                      $tmp_data = trim($individual[$tmp_screen][$tmp_question_ID]);
                                 } else {
                                     $tmp_data = '<unanswered>';
                                 }
+                                $tmp_data = trim(preg_replace(array("/(\r\n|\n|\r)/", "/^-/"), array("", "\xE2\x80\x91"), $tmp_data));
+                                $tmp_data = str_replace('"', "'", $tmp_data);
 
                                 $csvdata[$j][] =  $tmp_data;
                             }
