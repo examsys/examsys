@@ -180,10 +180,6 @@ class csv_handler extends \file_handler
         // We create a temp file so we can check it has been created successfully before allowing the user to download it.
         if ($this->write_file_handle !== false) {
             if (!empty($this->required_header)) {
-                // Add a UTF-8 BOM to the file before the headers. All exports seem to be in UTF-8 format, this helps Excel and LibreOffice recognise the format.
-                if (fwrite($this->write_file_handle, "\xEF\xBB\xBF") === false) {
-                    throw new csv_write_exception($this->file . ' ' . $this->string['cannotwritebom']);
-                }
                 if (fputcsv($this->write_file_handle, $this->required_header) === false) {
                     $this->delete_temp_file();
                     throw new csv_write_exception($this->file . ' ' . $this->string['cannotwriteheaders']);

@@ -26,7 +26,6 @@ $string['unknownissue'] = 'Unknown problem.';
 $string['doesnotexist'] = ' does not exist';
 $string['cannotberead'] = ' cannot be read';
 $string['invalidheaders'] = ' has invalid headers';
-$string['cannotwritebom'] = 'Cannot write UTF-8 byte order mark';
 $string['cannotwriteheaders'] = 'Cannot write file header';
 $string['noheaders'] = 'No file header to write';
 $string['cannotwritefile'] = 'Cannot write to file';

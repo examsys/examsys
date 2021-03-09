@@ -950,9 +950,12 @@ class export_assessment extends exporter
                                 } else {
                                     $tmp_data = '<unanswered>';
                                 }
-                                $tmp_data = trim(preg_replace(array("/(\r\n|\n|\r)/", "/^-/"), array("", "\xE2\x80\x91"), $tmp_data));
+                                $tmp_data = preg_replace("/(\r\n|\n|\r)/", '', $tmp_data);
                                 $tmp_data = str_replace('"', "'", $tmp_data);
 
+                                if (mb_substr($tmp_data, 0, 1) == '-') {
+                                    $tmp_data = trim(mb_substr($tmp_data, 1));
+                                }
                                 $csvdata[$j][] =  $tmp_data;
                             }
                             break;
