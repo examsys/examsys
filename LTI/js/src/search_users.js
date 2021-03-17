@@ -46,7 +46,7 @@ define(['list', 'jquery', 'jqueryui', 'jquerytablesorter'], function(LIST, $) {
      */
     this.init = function() {
       var scope = this;
-      if ($("#maindata").find("tr").size() > 1) {
+      if ($("#maindata").find("tr").length > 1) {
         $("#maindata").tablesorter({
           sortList: [[0, 0]]
         });
