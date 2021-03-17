@@ -24,7 +24,7 @@ define(['jsxls', 'jquery', 'jqueryvalidate'], function(jsxls, $) {
          * Add keyword validation methods to jquery-validate.
          */
         this.init = function () {
-            if ($('#option_text1').size() == 0) {
+            if ($('#option_text1').length == 0) {
                 $('#addbank').attr('disabled', 'disabled');
                 $('#addpaper').attr('disabled', 'disabled');
             }
