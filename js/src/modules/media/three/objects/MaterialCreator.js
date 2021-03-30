@@ -377,15 +377,13 @@ define(['three'], function (THREE) {
         this.loadTexture = function (url, mapping, onLoad, onProgress, onError) {
 
             var texture;
-            var loader = THREE.Loader.Handlers.get(url);
             var manager = (this.manager !== undefined) ? this.manager : THREE.DefaultLoadingManager;
-
+            var loader = manager.getHandler(url);
             if (loader === null) {
 
                 loader = new THREE.TextureLoader(manager);
 
             }
-
             if (loader.setCrossOrigin) loader.setCrossOrigin(this.crossOrigin);
             texture = loader.load(url, onLoad, onProgress, onError);
 

@@ -53,8 +53,6 @@ define(['three', 'threeshared', 'PLYLoader', 'TrackballControls', 'jquery'], fun
                 }
                 this.renderer.setPixelRatio(window.devicePixelRatio);
                 this.renderer.setSize(width, height);
-                this.renderer.gammaInput = true;
-                this.renderer.gammaOutput = true;
 
                 this.renderer.shadowMap.enabled = true;
 

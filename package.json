@@ -26,6 +26,6 @@
     "jquery": "^3.6.0",
     "mathjax": "^2.7.0",
     "mediaelement": "^4.2.14",
-    "three": "^0.91.0"
+    "three": "^0.126.1"
   }
 }
