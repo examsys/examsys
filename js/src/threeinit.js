@@ -49,7 +49,7 @@ requirejs(['rogoconfig', 'jquery'], function(config, $) {
         } else {
             delay = true;
         }
-        if (type == "") {
+        if (type != "pdb" && type != "ply") {
             type = 'obj';
         }
 

@@ -107,7 +107,7 @@ define(['three', 'threeshared', 'OBJLoader', 'MTLLoader', 'DDSLoader', 'Trackbal
             } else {
                 file = scope.file.substr(scope.file.indexOf('filename=') + 9);
                 dir = file.replace('.zip', '');
-                THREE.Loader.Handlers.add(/\.dds$/i, new DDSLoader());
+                manager.addHandler(/\.dds$/i, new DDSLoader());
                 loader = new MTLLoader(manager);
                 loader.setPath('/getfile.php?type=media&filename=' + dir + '/');
                 loader.load(scope.mtl, function (materials) {

@@ -306,11 +306,11 @@ define(['three', 'ParserState'], function (THREE, ParserState) {
 
                 var buffergeometry = new THREE.BufferGeometry();
 
-                buffergeometry.addAttribute( 'position', new THREE.Float32BufferAttribute( geometry.vertices, 3 ) );
+                buffergeometry.setAttribute( 'position', new THREE.Float32BufferAttribute( geometry.vertices, 3 ) );
 
                 if ( geometry.normals.length > 0 ) {
 
-                    buffergeometry.addAttribute( 'normal', new THREE.Float32BufferAttribute( geometry.normals, 3 ) );
+                    buffergeometry.setAttribute( 'normal', new THREE.Float32BufferAttribute( geometry.normals, 3 ) );
 
                 } else {
 
@@ -321,13 +321,13 @@ define(['three', 'ParserState'], function (THREE, ParserState) {
                 if ( geometry.colors.length > 0 ) {
 
                     hasVertexColors = true;
-                    buffergeometry.addAttribute( 'color', new THREE.Float32BufferAttribute( geometry.colors, 3 ) );
+                    buffergeometry.setAttribute( 'color', new THREE.Float32BufferAttribute( geometry.colors, 3 ) );
 
                 }
 
                 if ( geometry.uvs.length > 0 ) {
 
-                    buffergeometry.addAttribute( 'uv', new THREE.Float32BufferAttribute( geometry.uvs, 2 ) );
+                    buffergeometry.setAttribute( 'uv', new THREE.Float32BufferAttribute( geometry.uvs, 2 ) );
 
                 }
 

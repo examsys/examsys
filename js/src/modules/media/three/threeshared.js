@@ -68,10 +68,13 @@ define([], function () {
          * @return bool
          */
         detectweblextensions: function (renderer, extension) {
-            var gl = renderer.getContext();
-            var ext = gl.getExtension(extension);
-            if (!ext) {
-                return false;
+            var canvas = document.createElement( 'canvas' );
+            if (!(window.WebGL2RenderingContext && canvas.getContext('webgl2'))) {
+                var gl = renderer.getContext();
+                var ext = gl.getExtension(extension);
+                if (!ext) {
+                    return false;
+                }
             }
             return true;
         }
