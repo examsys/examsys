@@ -603,6 +603,7 @@ $dataset['attributes']['submittype'] = $submitype;
 $dataset['attributes']['refcount'] = count($reference_materials);
 $dataset['attributes']['savefreq'] = (($configObject->get_setting('core', 'paper_autosave_frequency') + rand(-5, 5)) * 1000);
 $dataset['attributes']['page'] = $page;
+$dataset['attributes']['type'] = $papertype;
 // Set the time out of one requst to be the maximum total time plus 5s for network latency
 // PHP handles normal timeouts. This is just to make sure the user won't wait forever if somthing
 // weird happens.

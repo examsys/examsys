@@ -35,6 +35,7 @@ requirejs(['jsxls', 'media', 'reference', 'start', 'jquery'], function (Jsxls, M
         };
 
         if (el.dataset.timed) {
+            start.type = el.dataset.type;
             start.paused = false;
             start.examtime = el2.dataset.remaining_time;
             start.breaktime = $('#dataset').attr('data-breaks');
@@ -121,6 +122,8 @@ requirejs(['jsxls', 'media', 'reference', 'start', 'jquery'], function (Jsxls, M
         start.last_save_point = (new Date).getTime();
         start.last_saved_user_answers = null; // Holds the data of the last successful auto save
         start.submitted = false;
+        start.screen = $('#current_screen').val() - 1;
+        start.paperid = el.dataset.paperid;
 
         // Setup autosave
         start.startAutoSave();

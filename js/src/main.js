@@ -220,6 +220,7 @@ requirejs.config({
         polyfill: "js/modules/polyfill.min",
         rolelist: "js/modules/rolelist.min",
         audit: "admin/audit/js/audit.min",
+        anomaly: "js/modules/anomaly.min",
     },
     shim: {
         // Mathjax configration.

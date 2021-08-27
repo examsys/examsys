@@ -18,7 +18,7 @@
 // @author Dr Joseph Baxter <joseph.baxter@nottingham.ac.uk>
 // @copyright Copyright (c) 2018 The University of Nottingham
 //
-define(['editor', 'html5', 'qarea', 'qlabelling', 'jsxls', 'jquery'], function(Editor, Html5, Qarea, Qlabelling, Jsxls, $) {
+define(['anomaly', 'editor', 'html5', 'qarea', 'qlabelling', 'jsxls', 'jquery'], function(Anomaly, Editor, Html5, Qarea, Qlabelling, Jsxls, $) {
     return function() {
         var scope = this;
 
@@ -114,6 +114,16 @@ define(['editor', 'html5', 'qarea', 'qlabelling', 'jsxls', 'jquery'], function(E
             var diff = nowtime - scope.lastheartbeat;
             // Expeted to be one second since last heartbeat.
             var offBy = diff - 1000;
+            if (scope.type == 2) {
+                // Log an anomaly if clock is not what was expected.
+                //   - A positive diff should be handle by the clock correction logic below, we log an anomlay anyway for our records
+                //   - A negative diff would be odd as the client would be losing time, log it as user might have been having pc issues
+                //   - A diff of 0 might indicate the client is tampering with there system clock
+                if (diff > 3000 || diff <= 0) {
+                    var anomaly = new Anomaly();
+                    anomaly.log(scope.paperid, scope.screen, scope.lastheartbeat, now);
+                }
+            }
             scope.lastheartbeat = now;
             // Give some wiggle room.
             if (offBy > 100) {

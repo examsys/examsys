@@ -1,0 +1,57 @@
+<div class="head_title">
+    <nav class="navmenu">
+        <img tabindex="0" src="../artwork/toprightmenu.gif" id="toprightmenu_icon" alt="{{lang.menu}}"/>
+    </nav>
+    <div class="breadcrumb">
+        {% for href, title in data.links %}
+        <a href="{{ path }}{{ href }}">{{ title }}</a>
+        <img src="{{ path }}/artwork/breadcrumb_arrow.png" class="breadcrumb_arrow" alt="-" />
+        {% endfor %}
+        {{ data.current }}
+    </div>
+    {{data.toprightmenu|raw}}
+    <h1 class="page_title">{{lang.title}}</h1>
+</div>
+<div id="content">
+    <main>
+        {% if data.noanomalies %}
+        <div class="yellowwarn">{{lang.noanomalies}}</div>
+        {% else %}
+        <div class="greywarn details">
+            <div>{{lang.anomalies}}</div>
+            <ul>
+                <li>{{lang.anomalieskey1}}</li>
+            </ul>
+        </div>
+        <input type="hidden" id="datetime" value="{{data.datetime}}" />
+        <table id="maindata" class="header tablesorter">
+            <thead>
+                <tr>
+                    <th>{{lang.timestamp}}</th>
+                    <th>{{lang.name}}</th>
+                    <th>{{lang.sid}}</th>
+                    <th>{{lang.type}}</th>
+                    <th>{{lang.screen}}</th>
+                    <th>{{lang.details}}</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for item in data.anomalies %}
+                <tr>
+                    <td>{{item.timestamp}}</td>
+                    <td><a href="{{path}}/users/details.php?userID={{item.userid}}">{{item.forename}} {{item.surname}}</a></td>
+                    <td>{{item.sid}}</td>
+                    <td>{{lang[item.type]}}</td>
+                    <td>{{item.screen}}</td>
+                    <td>
+                    {% for key,value in item.details %}
+                        <span class="details">{{key}} : {{value}}</span>
+                    {% endfor %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </main>
+</div>

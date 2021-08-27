@@ -267,6 +267,10 @@ if ($properties->get_paper_type() == '0' or $properties->get_paper_type() == '1'
     } else {
         echo "<div class=\"bullet\"><a href=\"#\" class='reports' data-url='../export/assessment_marks.php?'>" . $string['exportmarkscsv'] . "</a></div>\n";
     }
+    if ($properties->get_paper_type() == '2') {
+        echo '<div class="reports_header">' . $string['misc'] . "</div>\n";
+        echo "<div class=\"bullet\"><a href=\"#\" class='reports' data-url='../reports/anomalies.php?'>" . $string['anomalies'] . "</a></div>\n";
+    }
 }
 
 switch ($properties->get_paper_type()) {

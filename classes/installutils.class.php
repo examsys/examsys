@@ -666,6 +666,8 @@ class InstallUtils
         $alter[] = 'ALTER TABLE options_media ADD CONSTRAINT options_media_fk1 FOREIGN KEY (mediaid) REFERENCES media(id)';
         $alter[] = 'ALTER TABLE questions_metadata ADD CONSTRAINT questions_metadata_fk0 FOREIGN KEY (questionID) REFERENCES questions(q_id)';
         $alter[] = 'ALTER TABLE audit_log ADD CONSTRAINT `audit_log_fk0` FOREIGN KEY (`userID`) REFERENCES `users` (`id`)';
+        $alter[] = 'ALTER TABLE anomaly ADD CONSTRAINT `anomaly_log_fk0` FOREIGN KEY (`userID`) REFERENCES `users` (`id`)';
+        $alter[] = 'ALTER TABLE anomaly ADD CONSTRAINT `anomaly_log_fk1` FOREIGN KEY (`paperID`) REFERENCES `properties` (`property_id`)';
         foreach ($alter as $a) {
             $res = self::$db->prepare($a);
             $res->execute();
@@ -1185,6 +1187,7 @@ class InstallUtils
         $priv_SQL[] = 'GRANT SELECT, INSERT, UPDATE ON ' . $dbname . ".log_break_time TO '" . self::$cfg_db_student_user . "'@'" . self::$cfg_web_host . "'";
         $priv_SQL[] = 'GRANT INSERT ON ' . $dbname . ".breaks TO '" . self::$cfg_db_student_user . "'@'" . self::$cfg_web_host . "'";
         $priv_SQL[] = 'GRANT INSERT ON ' . $dbname . ".audit_log TO '" . self::$cfg_db_student_user . "'@'" . self::$cfg_web_host . "'";
+        $priv_SQL[] = 'GRANT INSERT ON ' . $dbname . ".anomaly TO '" . self::$cfg_db_student_user . "'@'" . self::$cfg_web_host . "'";
 
         $priv_SQL[] = 'FLUSH PRIVILEGES';
 

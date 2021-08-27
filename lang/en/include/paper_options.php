@@ -160,3 +160,5 @@ $string['copyquestionsblurb'] = 'n.b. Objective mappings will also be copied.';
 $string['cancel'] = 'Cancel';
 $string['ok'] = 'Ok';
 $string['skull'] = 'skull';
+$string['misc'] = 'Miscellaneous';
+$string['anomalies'] = 'Paper Anomalies';

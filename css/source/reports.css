@@ -1,0 +1,17 @@
+.head_title {
+    font-size: 80%;
+}
+
+.navmenu {
+    text-align: right;
+    padding-right: 2px;
+}
+
+.details {
+    display: flex;
+    flex-flow: column;
+}
+
+.greywarn {
+    height: unset;
+}
