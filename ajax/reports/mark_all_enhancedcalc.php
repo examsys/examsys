@@ -108,7 +108,12 @@ if (count($q_ids) == 0) {
 }
 
 foreach ($q_ids as $q_id => $setting) {
-    $data = enhancedcalc_remark($paper_type, $paperID, $q_id, $setting, $mysqli, 'all');
+    // We want to remark all summative paper questions, other paper types just unmarked questions.
+    $mode = 'unmarked';
+    if ($paper_type == '2') {
+        $mode = 'all';
+    }
+    $data = enhancedcalc_remark($paper_type, $paperID, $q_id, $setting, $mysqli, $mode);
     if ($data[-3] > 0) {
         $server_connection = false;
     }
