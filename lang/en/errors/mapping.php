@@ -17,3 +17,5 @@
 
 $string['objectives_error'] = 'Error retrieving objectives';
 $string['could_not_retrieve_objectives'] = 'Learning objectives could not be retrieved for the question.';
+$string['mappingerror1'] = 'Question Mapping Error #1';
+$string['mappingerror2'] = 'Question Mapping Error #2';

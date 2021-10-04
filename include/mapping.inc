@@ -170,15 +170,32 @@ function save_objective_mappings($db, $modules, $paper_id, $question_id)
         $old_mappings = '';
         $new_mappings = '';
 
+        $delete = $db->prepare('
+            DELETE
+            FROM
+                relationships
+            WHERE
+                idMod = ?
+            AND
+                paper_id = ?
+            AND
+                question_id = ?
+            AND
+                calendar_year = ?
+            AND
+                vle_api= ?
+        ');
+
         foreach ($modules as $idMod) {
+            $session = param::optional($idMod . '_session', null, param::INT, param::FETCH_POST);
             $relationships = array();
-            if (isset($_POST[$idMod . '_session'])) {
-                $session = $_POST[$idMod . '_session'];
-                $old_mappings = $_POST[$idMod . '_old_mappings'];
-                $vle_api = $_POST[$idMod . '_vle_api'];
-                $map_level = $_POST[$idMod . '_map_level'];
-                if (isset($_POST[$idMod . '_objectives'])) {
-                    foreach ($_POST[$idMod . '_objectives'] as $objective_id) {
+            if (!is_null($session)) {
+                $old_mappings = param::optional($idMod . '_old_mappings', '', param::TEXT, param::FETCH_POST);
+                $vle_api = param::optional($idMod . '_vle_api', '', param::TEXT, param::FETCH_POST);
+                $map_level = param::optional($idMod . '_map_level', 0, param::INT, param::FETCH_POST);
+                $objectives = param::optional($idMod . '_objectives', null, param::RAW, param::FETCH_POST);
+                if (!is_null($objectives)) {
+                    foreach ($objectives as $objective_id) {
                         $data = array(
                         'idMod' => $idMod,
                         'paper_id' => $paper_id,
@@ -191,9 +208,9 @@ function save_objective_mappings($db, $modules, $paper_id, $question_id)
                         $new_mappings .= $objective_id . ',';
                     }
                 }
-
+                $noneoftheabove = param::optional($idMod . 'none_of_the_above', null, param::INT, param::FETCH_POST);
                 //check for none of the above
-                if (isset($_POST['none_of_the_above']) and $_POST['none_of_the_above'] == -1 and count($relationships) == 0) {
+                if ($noneoftheabove == -1 and count($relationships) == 0) {
                     $data = array(
                     'idMod' => $idMod,
                     'paper_id' => $paper_id,
@@ -209,23 +226,26 @@ function save_objective_mappings($db, $modules, $paper_id, $question_id)
                 }
 
                 if ($new_mappings != $old_mappings) {
+                    $string = LangUtils::loadlangfile('errors' . DIRECTORY_SEPARATOR . 'mapping.php');
                     // prepend the delete
                     if ($old_mappings != '') {
-                        $delete = "DELETE FROM relationships WHERE idMod = $idMod AND paper_id = $paper_id AND question_id = $question_id AND calendar_year = '$session' AND vle_api= '$vle_api'";
-                        if (!$result = $db->query($delete)) {
-                               echo 'Question Mapping Error #1 ' . $db->error . "<br/> $delete <br/>";
+                        $delete->bind_param('iiiis', $idMod, $paper_id, $question_id, $session, $vle_api);
+                        $delete->execute();
+                        if ($delete->errno != 0) {
+                            echo $string['mappingerror1'];
                         }
                     }
                     foreach ($relationships as $rel) {
                         try {
                             $rel->save();
                         } catch (DatabaseException $ex) {
-                            echo 'Question Mapping Error #1 ' . $ex->getMessage();
+                            echo $string['mappingerror2'];
                         }
                     }
                 }
             }
         }
+        $delete->close();
     }
 }
 
