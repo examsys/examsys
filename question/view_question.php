@@ -135,12 +135,12 @@ $question['assigned_number'] = (isset($_GET['qNo'])) ? $_GET['qNo'] : 1;
 <?php
 $css = PaperProperties::paperCss(
     $userObject,
-    $propertyObj->get_bgcolor(),
-    $propertyObj->get_fgcolor(),
+    UserObject::BGCOLOUR,
+    UserObject::FGCOLOUR,
     UserObject::TEXTSIZE,
     UserObject::MARKSCOLOUR,
-    $propertyObj->get_themecolor(),
-    $propertyObj->get_labelcolor(),
+    UserObject::THEMECOLOUR,
+    UserObject::LABELCOLOUR,
 );
 
 echo $css;
