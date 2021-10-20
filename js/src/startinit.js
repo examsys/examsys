@@ -163,8 +163,7 @@ requirejs(['micromodal', 'jsxls', 'media', 'reference', 'start', 'jquery'], func
             $('#breaks').removeClass('play');
             $('#breaks').addClass('pause');
             $('#breakstext').html(Jsxls.lang_string['pause']);
-            $("#info_overlay").hide();
-            Modal.show('info_overlay');
+            Modal.close('info_overlay');
             start.paused = false;
             start.formatTimeRemaining(start.breaktime);
             start.saveBreaks(start.breaktime);
