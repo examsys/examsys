@@ -74,8 +74,14 @@ class textbox_marking_utils
     {
         if (isset($settings['terms'])) {
             $correct_answers = json_decode($settings['terms']);
-            foreach ($correct_answers as $single_answer) {
-                $answer = str_ireplace($single_answer, '<span class="highlight">' . $single_answer . '</span>', $answer);
+            if (!is_null($correct_answers)) {
+                foreach ($correct_answers as $single_answer) {
+                    $answer = str_ireplace(
+                        $single_answer,
+                        '<span class="highlight">' . $single_answer . '</span>',
+                        $answer
+                    );
+                }
             }
         }
         return $answer;
