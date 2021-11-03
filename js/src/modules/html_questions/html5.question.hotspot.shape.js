@@ -45,7 +45,7 @@ define(['log', 'html5helper'], function(Log, Helper) {
      * @type {String}
      * @public
      */
-    this.coordinates = coordiantes;
+    this.coordinates = this.validateCoordinates(coordiantes);
 
     /**
      * An id for the shape.
@@ -99,6 +99,37 @@ define(['log', 'html5helper'], function(Log, Helper) {
       coordinates[i] = parseInt(coordinates[i], 16);
     }
     return coordinates;
+  };
+
+  /**
+   * Validate loaded coordinates.
+   *
+   * @param {String} coords
+   * @returns {String}
+   */
+  hotspot_shape.prototype.validateCoordinates = function (coords) {
+    var coordinates = coords.split(','),
+        boundary = {
+          minx: 0,
+          miny: 0
+        };
+    for (var i in coordinates) {
+      coordinates[i] = parseInt(coordinates[i], 16);
+    }
+    // Test if the coordinates have gone outside the boundary.
+    for (var j = 0; j < coordinates.length; j += 2) {
+      if (coordinates[j] < boundary.minx) {
+        // To the left of the boundary.
+        coordinates[j] = boundary.minx;
+      }
+      if (coordinates[j + 1] < boundary.miny) {
+        // Above the boundary.
+        coordinates[j + 1] = boundary.miny;
+      }
+    }
+    // Convert coordinates back to hexidecimal.
+    coordinates.forEach(this.decimal_to_hex);
+    return coordinates.join(',');
   };
 
   /**

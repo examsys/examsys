@@ -504,7 +504,13 @@ define(['log', 'hotspot', 'hotspot_colourselector', 'jquery'], function(Log, Hot
     this.viewarea_end_drag = function (event) {
       var question = instance.get_question(event),
           x = event.offsetX,
-          y = event.offsetY;
+          y = event.offsetY,
+          boundary = {
+            minx: 0,
+            miny: 0,
+            maxx: instance.questions[question.id].view_context.canvas.width,
+            maxy: instance.questions[question.id].view_context.canvas.height
+          };
       if (instance.active_drag_coordinates.x === null) {
         // No active drag in progress.
         return;
@@ -513,6 +519,20 @@ define(['log', 'hotspot', 'hotspot_colourselector', 'jquery'], function(Log, Hot
         // We are no longer over the shape we should be.
         x = instance.active_drag_coordinates.x;
         y = instance.active_drag_coordinates.y;
+      }
+      // Test if the coordinate has gone outside the boundary.
+      if (x < boundary.minx) {
+        // To the left of the boundary.
+        x = boundary.minx;
+      } else if (x > boundary.maxx) {
+        // To the right of the boundary.
+        x = boundary.maxx;
+      }
+      if (y < boundary.miny) {
+        // Above or below the boundaries.
+        y = boundary.miny;
+      } else if (y > boundary.maxy) {
+        y = boundary.maxy;
       }
       instance.questions[instance.active_drag_question].end_drag(x, y);
       instance.active_drag_coordinates.x = null;
