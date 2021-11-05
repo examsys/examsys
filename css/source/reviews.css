@@ -1,6 +1,9 @@
 body {
+    background-color: #FFFFFF;
     background-color: var(--paper-backgroundcolour, '#FFFFFF');
+    color: #000000;
     color: var(--paper-foregroundcolour, '#000000');
+    font-size: 90%;
     font-size: var(--paper-fontsize, 90%);
 }
 
@@ -21,7 +24,10 @@ blockquote {
 }
 
 select,button,input,textarea {
+    background-color: #FFFFFF;
     background-color: var(--paper-backgroundcolour, '#FFFFFF');
+    color: #000000;
     color: var(--paper-foregroundcolour, '#000000');
+    font-family: Arial, sans-sarif;
     font-family: var(--paper-font, 'Arial, sans-sarif');
 }

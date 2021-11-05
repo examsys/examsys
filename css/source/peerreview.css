@@ -1,7 +1,11 @@
 body {
+    font-size: 90%;
     font-size: var(--paper-fontsize, 90%);
+    font-family: Arial, sans-sarif;
     font-family: var(--paper-font, 'Arial, sans-sarif');
+    background-color: #FFFFFF;
     background-color: var(--paper-backgroundcolour, '#FFFFFF');
+    color: #000000;
     color: var(--paper-foregroundcolour, '#000000');
 }
 
@@ -24,12 +28,14 @@ td p {
 .title {
     font-size: 130%;
     font-weight: bold;
+    color: #316AC5;
     color: var(--paper-themecolour, '#316AC5');
     border-top: 1px solid #C0C0C0;
 }
 
 .col {
     text-align: center;
+    color: #C00000;
     color: var(--paper-notecolour, '#C00000');
 }
 
@@ -64,7 +70,10 @@ td p {
 }
 
 select,button,input,textarea {
+    background-color: #FFFFFF;
     background-color: var(--paper-backgroundcolour, '#FFFFFF');
+    color: #000000;
     color: var(--paper-foregroundcolour, '#000000');
+    font-family: Arial, sans-sarif;
     font-family: var(--paper-font, 'Arial, sans-sarif');
 }

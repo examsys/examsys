@@ -9,13 +9,16 @@ html {
 }
 .objH {
   font-weight: bold;
+  color: #316AC5;
   color: var(--paper-themecolour, '#316AC5');
 }
 .fback {
   font-style: italic;
+  color: #C00000;
   color: var(--paper-notecolour, '#C00000');
 }
 .label {
+  color: #C00000;
   color: var(--paper-notecolour, '#C00000');
 }
 .err {
@@ -83,11 +86,14 @@ input.exclude, select.exclude {
   padding-bottom: 2px;
 }
 .staffview {
+  color: #000000;
   color: var(--paper-foregroundcolour, '#000000');
+  font-size: 90%;
   font-size: var(--paper-fontsize, 90%);
   height: 70px;
   width: 100%;
   border-top: 2px solid #C00000;
+  background-color: #FFC0C0;
   background-color: var(--paper-unanswered, '#FFC0C0');
 }
 .textbox_answer {
@@ -145,6 +151,7 @@ input.exclude, select.exclude {
 
 .key {
   width: 90%;
+  background-color: #FCF6CF;
   background-color: var(--paper-highlightbgcolour, '#FCF6CF');
   border: 2px solid #FCE699;
   text-align: left;
@@ -154,6 +161,7 @@ input.exclude, select.exclude {
 }
 
 .theme {
+  color: #316AC5;
   color: var(--paper-themecolour, '#316AC5');
 }
 
