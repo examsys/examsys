@@ -260,7 +260,7 @@ QUERY;
                 $insertmediaparams = array();
                 $updatemediaparams = array();
                 if ($source != '') {
-                    if (!empty($media)) {
+                    if ($media > 0) {
                         // Update.
                         $updatemediaparams = array(
                             'source' => $source,
