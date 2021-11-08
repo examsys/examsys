@@ -18,7 +18,7 @@
 // @author Dr Joseph Baxter <joseph.baxter@nottingham.ac.uk>
 // @copyright Copyright (c) 2019 The University of Nottingham
 //
-requirejs(['micromodal', 'userindex', 'jsxls', 'jquery'], function (Modal, USER, jsxls, $) {
+requirejs(['rogomodal', 'userindex', 'jsxls', 'jquery'], function (Modal, USER, jsxls, $) {
     Modal.init();
     var user = new USER();
 

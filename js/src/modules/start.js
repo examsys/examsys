@@ -18,7 +18,7 @@
 // @author Dr Joseph Baxter <joseph.baxter@nottingham.ac.uk>
 // @copyright Copyright (c) 2018 The University of Nottingham
 //
-define(['micromodal', 'editor', 'html5', 'qarea', 'qlabelling', 'jsxls', 'jquery'], function(Modal, Editor, Html5, Qarea, Qlabelling, Jsxls, $) {
+define(['rogomodal', 'editor', 'html5', 'qarea', 'qlabelling', 'jsxls', 'jquery'], function(Modal, Editor, Html5, Qarea, Qlabelling, Jsxls, $) {
     return function() {
         var scope = this;
 
@@ -421,7 +421,7 @@ define(['micromodal', 'editor', 'html5', 'qarea', 'qlabelling', 'jsxls', 'jquery
                 }
                 $('#savemsg').html("");
                 $('body').css('cursor','default');
-                Modal.show('overlay');
+                Modal.close('overlay');
             });
             scope.confirmSubmit(event);
         };
