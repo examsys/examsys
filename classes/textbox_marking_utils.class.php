@@ -76,8 +76,11 @@ class textbox_marking_utils
             $correct_answers = json_decode($settings['terms']);
             if (!is_null($correct_answers)) {
                 foreach ($correct_answers as $single_answer) {
-                    $answer = str_ireplace(
-                        $single_answer,
+                    $regexp = '/(?![^<]*>)' // Checks the term is not inside a html tag like structure.
+                        . '(' . preg_quote($single_answer, '/') .')' // Adds in the term.
+                        . '/i'; // Is case-insensitive.
+                    $answer = preg_replace(
+                        $regexp,
                         '<span class="highlight">' . $single_answer . '</span>',
                         $answer
                     );
