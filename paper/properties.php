@@ -1332,7 +1332,7 @@ if ($module_sql != '') {
   </td></tr>
   <tr><td style="padding: 5px 0; text-align: center;"><?php echo $string['seb_keys_title'] ?></td></tr>
   <tr><td>
-    <?php $texteditorplugin->get_textarea('seb_keys_text', 'seb_keys_text', $texteditorplugin->get_text_for_display(htmlspecialchars(implode("\n", $seb_keys))), plugins\plugins_texteditor::TYPE_SIMPLE, 'width:95%; height:500px; margin: 0 2%;'); ?>
+    <textarea id="seb_keys_text" name="seb_keys_text" class="sebkeys"><?php echo htmlspecialchars(implode("\n", $seb_keys)); ?></textarea>
   </td></tr>
 </table>
 

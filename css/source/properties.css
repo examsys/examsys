@@ -95,3 +95,9 @@ extarea, input[type=text], select, textarea, input[type=password] {
     display: flex;
     padding-left: 10px
 }
+
+.sebkeys {
+    width: 95%;
+    height: 500px;
+    margin: 0 2%;
+}
