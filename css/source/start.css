@@ -561,10 +561,13 @@ div.error {
   margin-bottom: 2em
 }
 
-.sct .question-cell,
-.blank .question-container {
+.sct .question-cell {
   display: flex;
   align-items: baseline;
+}
+
+.blank .question-container {
+  display: block;
 }
 
 .horizontal {

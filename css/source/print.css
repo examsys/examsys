@@ -30,6 +30,12 @@ body {
   page-break-inside: avoid;
 }
 
+.blank .question-cell {
+  display: table-cell;
+  text-align: center;
+  padding: 2px;
+}
+
 .matrix .question-cell {
   display: table-cell;
   background-image: url('../artwork/print_box_tick.png');
