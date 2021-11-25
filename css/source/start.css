@@ -630,6 +630,10 @@ div.error {
   font-size: 90%;
 }
 
+.dichotomous-stem {
+  text-align: left;
+}
+
 .overlay.is-open {
   display: block;
 }

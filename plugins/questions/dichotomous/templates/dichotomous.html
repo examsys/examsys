@@ -58,7 +58,7 @@ data.partid - the question part id
         </div>
 {% for i,p in data.options %}
         <ul id="q{{p.question_no}}_opt{{p.optionno}}" class="question-row {% if p.unanswered %} unans{% endif %}">
-            <li class="question-cell question-label">
+            <li class="question-cell question-label dichotomous-stem">
             {% if p.optiontext != '' %}
                 {{p.optiontext}}<br />
             {% endif %}

@@ -79,10 +79,9 @@ body {
 
 .question-dichotomous .question-cell {
   display: table-cell;
-  text-align: center;
+  text-align: left;
   padding: 2px;
   background-image: url('../artwork/print_box_circle.png');
-  width: 24px;
   height: 24px;
   background-repeat: no-repeat;
   -webkit-print-color-adjust: exact;
