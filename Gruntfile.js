@@ -23,7 +23,7 @@
 module.exports = function(grunt) {
   /**
    * Utility function to remanme Javascript files.
-   * 
+   *
    * @param {String} destination The current destination path
    * @param {String} source The source path
    * @returns {String}
@@ -63,7 +63,8 @@ module.exports = function(grunt) {
     },
     uglify: {
       options: {
-        mangle: false
+        mangle: false,
+        sourceMap: true
       },
       admin: {
         files: [{
