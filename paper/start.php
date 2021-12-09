@@ -390,7 +390,7 @@ if ($propertyObj->get_calculator()) {
 if ($current_screen < $no_screens) {
     $contentdata['action'] = Url::fromGlobals();
 } else {
-    $contentdata['action'] = '/finish.php?id=' . $id . $url_mod;
+    $contentdata['action'] = 'finish.php?id=' . $id . $url_mod;
 }
 $contentdata['hidden'] = $hidden;
 $contentdata['previewmode'] = $is_question_preview_mode;
