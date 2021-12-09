@@ -279,9 +279,6 @@ $headerdata = array(
         '/css/html5.css',
         '/node_modules/mediaelement/build/mediaelementplayer.min.css',
     ),
-    'scripts' => array(
-        '/js/startinit.min.js',
-    ),
     'metadata' => array(
         'pragma' => 'no-cache',
     ),
@@ -648,4 +645,4 @@ $render->render($miscdataset, array(), 'dataset.html');
 $mysqli->close();
 
 $render->render(array('rootpath' => $cfg_root_path), html5_helper::get_instance()->get_lang_strings(), 'html5_footer.html');
-$render->render(array(), array(), 'footer.html');
+$render->render(array('scripts' => array('/js/startinit.min.js')), array(), 'footer.html');
