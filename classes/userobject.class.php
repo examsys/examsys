@@ -1078,8 +1078,9 @@ class UserObject extends RogoStaticSingleton
     }
 
     /**
-     * Set accessibilty settings.
-     * This is called by the user themselves. It does not update break, extra tiem and medical conditions.
+     * Set accessibility settings.
+     *
+     * This is called by the user themselves. It does not update break, extra time and medical conditions.
      *
      * @param ?string $bgcolor the paper back ground colour
      * @param ?string $fgcolor the paper font colour
@@ -1108,10 +1109,18 @@ class UserObject extends RogoStaticSingleton
         ?string $paper_global_themefont_colour,
         ?string $highlight_bgcolour
     ): void {
-        // Remove existing settings.
-        $result = $this->db->prepare('DELETE FROM special_needs WHERE userID = ?');
+        $result = $this->db->prepare('SELECT 1 FROM special_needs WHERE userID = ?');
         $result->bind_param('i', $this->userID);
         $result->execute();
+        $result->store_result();
+
+        if ($result->num_rows < 1) {
+            // The user has no entry, so we need to create a special needs entry for them.
+            $insert = $this->db->prepare('INSERT INTO special_needs (userID) VALUES (?)');
+            $insert->bind_param('i', $this->userID);
+            $insert->execute();
+            $insert->close();
+        }
         $result->close();
 
         // Default values if null provided.
@@ -1303,14 +1312,14 @@ class UserObject extends RogoStaticSingleton
             $changes > 0
         ) {
             $result = $this->db->prepare(
-                'INSERT INTO special_needs (
-                special_id, userID, background, foreground, textsize, marks_color, themecolor, labelcolor, font,
-                unanswered, dismiss, globalthemecolour, globalthemefont_colour, highlight_bgcolour)
-                VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+                'UPDATE special_needs 
+                 SET background = ?, foreground = ?, textsize = ?, marks_color = ?, themecolor = ?, 
+                     labelcolor = ?, font = ?, unanswered = ?, dismiss = ?, globalthemecolour = ?, 
+                     globalthemefont_colour =?, highlight_bgcolour = ?
+                 WHERE userID = ?'
             );
             $result->bind_param(
-                'ississsssssss',
-                $this->userID,
+                'ssisssssssssi',
                 $bgcolor,
                 $fgcolor,
                 $textsize,
@@ -1322,7 +1331,8 @@ class UserObject extends RogoStaticSingleton
                 $dismiss_color,
                 $paper_global_themecolour,
                 $paper_global_themefont_colour,
-                $highlight_bgcolour
+                $highlight_bgcolour,
+                $this->userID
             );
             $result->execute();
             $result->close();
