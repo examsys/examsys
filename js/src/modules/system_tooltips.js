@@ -30,8 +30,8 @@ define(['jquery', 'helplauncher'], function($, HELPLAUNCHER) {
         this.init = function () {
             if (typeof $(document).tooltip !== 'undefined') {
                 $(document).tooltip({items: ".help_tip[title]", position: {my: "top+10", at: "center+125"}});
-                this.addHelpLinks();
             }
+            this.addHelpLinks();
         };
 
         /**
