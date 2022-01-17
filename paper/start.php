@@ -279,6 +279,7 @@ $headerdata = array(
         '/css/html5.css',
         '/node_modules/mediaelement/build/mediaelementplayer.min.css',
     ),
+    'scripts' => array(),
     'metadata' => array(
         'pragma' => 'no-cache',
     ),
