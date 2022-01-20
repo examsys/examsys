@@ -64,14 +64,6 @@ requirejs(['rogomodal', 'jsxls', 'media', 'reference', 'start', 'jquery'], funct
             });
         }
 
-        $('#previous').click(function() {
-            $('#button_pressed').val('previous');
-        });
-
-        $('#finish').click(function() {
-            $('#button_pressed').val('finish');
-        });
-
         $('.act').mousedown(function(event) {
             if (event.which == 3) {
                 document.oncontextmenu = function(event){
@@ -113,10 +105,20 @@ requirejs(['rogomodal', 'jsxls', 'media', 'reference', 'start', 'jquery'], funct
             Modal.close('info_overlay');
         });
 
-        $('#next').click(start.checkSubmit);
+        $('#next').click(function(event) {
+            $('#button_pressed').val('next');
+            start.checkSubmit(event);
+        });
 
-        $('#previous').click(start.checkSubmit);
-        $('#finish').click(start.checkSubmit);
+        $('#previous').click(function(event) {
+            $('#button_pressed').val('previous');
+            start.checkSubmit(event);
+        });
+
+        $('#finish').click(function(event) {
+            $('#button_pressed').val('finish');
+            start.checkSubmit(event);
+        });
 
         start.autoSaveRef = '';
         start.last_save_point = (new Date).getTime();
