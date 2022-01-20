@@ -120,6 +120,9 @@ requirejs(['rogomodal', 'jsxls', 'media', 'reference', 'start', 'jquery'], funct
             start.checkSubmit(event);
         });
 
+        // Enable the navigation buttons.
+        $('#previous').removeAttr('disabled');
+
         start.autoSaveRef = '';
         start.last_save_point = (new Date).getTime();
         start.last_saved_user_answers = null; // Holds the data of the last successful auto save
