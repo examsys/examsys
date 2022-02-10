@@ -239,11 +239,15 @@ class labs extends generator
         $values = $this->set_defaults_and_clean($defaults, $parameters);
 
         // Ensure that the dates are a Timestamp.
-        $start = new \DateTime($values['start_time']);
-        $values['start_time'] = $start->getTimestamp();
+        if (!is_numeric($values['start_time'])) {
+            $start = new \DateTime($values['start_time']);
+            $values['start_time'] = $start->getTimestamp();
+        }
 
-        $end = new \DateTime($values['end_time']);
-        $values['end_time'] = $end->getTimestamp();
+        if (!is_numeric($values['end_time'])) {
+            $end = new \DateTime($values['end_time']);
+            $values['end_time'] = $end->getTimestamp();
+        }
 
         // Create the record.
         $sql = 'INSERT INTO log_lab_end_time (labID, invigilatorID, paperID, start_time, end_time) VALUES (?, ?, ?, ?, ?)';

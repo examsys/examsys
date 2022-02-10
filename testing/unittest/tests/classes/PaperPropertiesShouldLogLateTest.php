@@ -96,6 +96,23 @@ class PaperPropertiesShouldLogLateTest extends unittestdatabase
         ];
         $paper = $datagenerator->create_paper($papaer_details);
 
+        if (!$remote and !is_null($labs)) {
+            // Also generate the lab start and end time.
+            $labgenerator = $this->get_datagenerator('labs');
+
+            // The exams is hardcoded for an hour.
+            $end = new DateTime($start);
+            $end->add(DateInterval::createFromDateString('1 hour'));
+
+            $lab_details = [
+                'paperID' => $paper['id'],
+                'labID' => $labs,
+                'start_time' => $start,
+                'end_time' => $end->getTimestamp(),
+            ];
+            $labgenerator->createLabTime($lab_details);
+        }
+
         $paper_property = new PaperProperties(Config::get_instance()->db);
         $paper_property->set_property_id($paper['id']);
         $paper_property->load();
