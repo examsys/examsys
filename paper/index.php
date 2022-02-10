@@ -278,29 +278,27 @@ if (
         $render->render($data, $string, 'paper/indexnopapers.html');
         exit;
     } else {
-        if ($paper_no > 1) {
-            $exams = array();
-            for ($i = 0; $i < $paper_no; $i++) {
-                $exams[$i]['cryptname'] = $paper_display[$i]['crypt_name'];
-                $exams[$i]['title'] = $paper_display[$i]['paper_title'];
-                $exams[$i]['password'] = false;
-                if ($paper_display[$i]['password'] != '') {
-                    $exams[$i]['password'] = true;
-                }
-                if ($paper_display[$i]['completed'] == '') {
-                    $exams[$i]['completed'] = false;
-                    $exams[$i]['maxscreen'] = $paper_display[$i]['max_screen'];
-                    if ($paper_display[$i]['bidirectional'] == 1) {
-                        $exams[$i]['direction'] = $string['Bidirectional'];
-                    } else {
-                        $exams[$i]['direction'] = $string['Unidirectional'];
-                    }
-                } else {
-                    $exams[$i]['completed'] = true;
-                }
+        $exams = array();
+        for ($i = 0; $i < $paper_no; $i++) {
+            $exams[$i]['cryptname'] = $paper_display[$i]['crypt_name'];
+            $exams[$i]['title'] = $paper_display[$i]['paper_title'];
+            $exams[$i]['password'] = false;
+            if ($paper_display[$i]['password'] != '') {
+                $exams[$i]['password'] = true;
             }
-            $render->render($exams, $string, 'paper/indexmultipapers.html');
+            if ($paper_display[$i]['completed'] == '') {
+                $exams[$i]['completed'] = false;
+                $exams[$i]['maxscreen'] = $paper_display[$i]['max_screen'];
+                if ($paper_display[$i]['bidirectional'] == 1) {
+                    $exams[$i]['direction'] = $string['Bidirectional'];
+                } else {
+                    $exams[$i]['direction'] = $string['Unidirectional'];
+                }
+            } else {
+                $exams[$i]['completed'] = true;
+            }
         }
+        $render->render($exams, $string, 'paper/indexmultipapers.html');
     }
 }
 $mysqli->close();

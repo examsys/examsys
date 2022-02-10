@@ -30,8 +30,10 @@ lang.screen
 lang.screens
 #}
 <main class="multiple">
+    {% if data|length > 1 %}
     <h1>{{lang.multipleExams}}</h1>
     <p>{{lang.selectOne}}</p>
+    {% endif %}
     <ul class="exams">
         {% for i,exam in data %}
         <li class="examsrow">
