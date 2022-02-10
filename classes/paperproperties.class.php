@@ -3275,7 +3275,7 @@ class PaperProperties
         $user = UserObject::get_instance();
         $special_needs_percentage = $user->get_special_needs_percentage();
 
-        if (!$this->getSetting('remote_summative') and $this->get_paper_type() == assessment::TYPE_SUMMATIVE and $preview) {
+        if (!$this->getSetting('remote_summative') and $this->get_paper_type() == assessment::TYPE_SUMMATIVE and !$preview) {
             $log_lab_end_time = $this->getLogLabEndTime($lab_id);
 
             // Has the student been allotted extra time by an invigilator?
