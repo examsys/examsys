@@ -39,7 +39,13 @@ $low_bandwidth = param::optional('low_bandwidth', 0, param::INT, param::FETCH_PO
 $timetabling = param::optional('timetabling', null, param::TEXT, param::FETCH_POST);
 $it_support = param::optional('it_support', null, param::TEXT, param::FETCH_POST);
 $plagarism = param::optional('plagarism', null, param::TEXT, param::FETCH_POST);
-$addresses = array_unique(explode("\n", trim(param::optional('addresses', null, param::TEXT, param::FETCH_POST))));
+
+// We need to process the text list of addresses into an array.
+$raw_addresses = param::optional('addresses', null, param::RAW, param::FETCH_POST);
+// Split up the addresses based on any of the major OS line ending types.
+$split_addresses = preg_split('#\r\n|\r|\n#', trim($raw_addresses));
+// Make sure we only have unique addresses.
+$addresses = array_unique($split_addresses);
 
 $labFactory = new LabFactory($mysqli);
 $hostname_lookup = $configObject->get_setting('core', 'system_hostname_lookup');
