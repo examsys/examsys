@@ -468,11 +468,14 @@ if ($test_type == '2' and $remote) {
 
 if ($test_type != '2') {
     // Display previous attempts
+    $contentdata['displaypreviousattempts'] = true;
     if (log::hasPreviousAttempts($property_id, $userObject->get_user_ID())) {
         $contentdata['previousattemptlink'] = $configObject->get('cfg_root_path') . '/users/previous.php?id=' . $id;
     } else {
         $contentdata['previousattemptlink'] = '';
     }
+} else {
+    $contentdata['displaypreviousattempts'] = false;
 }
 
 $render->render($contentdata, $string, 'paper/start.html');

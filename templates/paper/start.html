@@ -49,6 +49,7 @@ data.donotstart - flag to indicate wait for permission to start
 data.switch - flag to indicate user can switch to another paper
 data.oktostart - flag to indicate the paper can be started
 data.link - issue link url
+data.displaypreviousattempts - flag to indicate if the paper should display previous attempts to the user
 data.previousattemptlink - previous attempts link url
 data.version - rogo version
 data.photourl - user image url
@@ -258,10 +259,12 @@ lang.ok
                     </div>
                     {% endif %}
                     <div class="previous">
-                        {% if data.previousattemptlink != '' %}
-                        <hr /><a href="{{data.previousattemptlink}}" target="_blank">{{lang.previouscompletions}}</a>
-                        {% else %}
-                        <hr />{{lang.nottakenpaper}}
+                        {% if data.displaypreviousattempts %}
+                            {% if data.previousattemptlink != '' %}
+                            <hr /><a href="{{data.previousattemptlink}}" target="_blank">{{lang.previouscompletions}}</a>
+                            {% else %}
+                            <hr />{{lang.nottakenpaper}}
+                            {% endif %}
                         {% endif %}
                     </div>
                 </div>
