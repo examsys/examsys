@@ -85,14 +85,13 @@ define(['sidebar', 'jsxls', 'jquery', 'jqueryui'], function(SIDEBAR, jsxls, $) {
     this.deleteScreenBreak = function() {
       var paperid = $('#dataset').attr('data-paperid');
       var screenNo = $(this).data('screenID').substring(10);
-      $.get('../ajax/paper/delete-screen-break.php?paperID=' + paperid + '&screen=' + screenNo)
-          .success(function (data) {
-            if (data == 'SUCCESS') {
-              window.location.reload();
-            } else {
-              alert(jsxls.lang_string['invalidscreenbreak']);
-            }
-          });
+      $.get('../ajax/paper/delete-screen-break.php?paperID=' + paperid + '&screen=' + screenNo, function (data) {
+        if (data == 'SUCCESS') {
+          window.location.reload();
+        } else {
+          alert(jsxls.lang_string['invalidscreenbreak']);
+        }
+      });
     };
 
     /**
