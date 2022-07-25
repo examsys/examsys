@@ -118,17 +118,17 @@ $target_student = array();
 // Look up the temporary information in 'users'.
 if ($temp_student_id != '') {
     // Try student number lookup.
-    $result = $mysqli->prepare('SELECT id, surname, first_names, title, gender FROM users, sid WHERE users.id = sid.userID AND student_id = ?');
-    $result->bind_param('i', $temp_student_id);
+    $result = $mysqli->prepare('SELECT id, surname, first_names, title, gender, student_id FROM users, sid WHERE users.id = sid.userID AND student_id = ?');
+    $result->bind_param('s', $temp_student_id);
     $result->execute();
     $result->store_result();
-    $result->bind_result($target_userID, $target_surname, $target_first_names, $target_title, $gender);
+    $result->bind_result($target_userID, $target_surname, $target_first_names, $target_title, $gender, $student_id);
     while ($result->fetch()) {
         $target_student[$target_userID]['surname']      = $target_surname;
         $target_student[$target_userID]['first_names']  = $target_first_names;
         $target_student[$target_userID]['title']        = $target_title;
         $target_student[$target_userID]['gender']       = $gender;
-        $target_student[$target_userID]['student_id']   = $temp_student_id;
+        $target_student[$target_userID]['student_id']   = $student_id;
         $target_student[$target_userID]['modules']      = getModules($target_userID, $mysqli, $properties);
     }
     $result->close();
