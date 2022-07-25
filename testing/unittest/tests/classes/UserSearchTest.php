@@ -50,6 +50,9 @@ class UserSearchTest extends testing\unittest\unittestdatabase
     /** @var array Locked user. */
     protected $locked;
 
+    /** @var array A second module with users enrolled on it. */
+    protected $othermodule;
+
     /** @var array Staff user. */
     protected $staff;
 
@@ -108,18 +111,27 @@ class UserSearchTest extends testing\unittest\unittestdatabase
         $this->inactive = $usergen->create_user(['roles' => 'Inactive Staff']);
         $this->internal = $usergen->create_user(['roles' => 'Internal Reviewer']);
         $this->invigilator = $usergen->create_user(['roles' => 'Invigilator']);
-        $this->staff = $usergen->create_user(['roles' => 'Staff']);
+        $this->staff = $usergen->create_user(
+            [
+                'first_names' => 'Kelly',
+                'surname' => 'Shelly',
+                'initials' => 'K',
+                'title' => 'Mx',
+                'username' => 'staff1',
+                'roles' => 'Staff'
+            ]
+        );
         $this->standard = $usergen->create_user(['roles' => 'Staff,Standards Setter']);
 
         // Enrol the students on a module.
         $modgen = $this->get_datagenerator('modules', 'core');
         $modgen->create_enrolment(['userid' => $this->student1['id'], 'moduleid' => $this->module, 'calendar_year' => 2012]);
         $modgen->create_enrolment(['userid' => $this->student2['id'], 'moduleid' => $this->module, 'calendar_year' => 2013]);
-        $othermodule = $modgen->create_module(['moduleid' => 'ROLETEST', 'fullname' => 'Other module']);
-        $modgen->create_enrolment(['userid' => $this->student1['id'], 'moduleid' => $othermodule['id'], 'calendar_year' => 2012]);
+        $this->othermodule = $modgen->create_module(['moduleid' => 'ROLETEST', 'fullname' => 'Other module']);
+        $modgen->create_enrolment(['userid' => $this->student1['id'], 'moduleid' => $this->othermodule['id'], 'calendar_year' => 2012]);
 
         // Staff in a team.
-        $modgen->create_module_team(['moduleid' => $othermodule['moduleid'], 'username' => $this->staff['username']]);
+        $modgen->create_module_team(['moduleid' => $this->othermodule['moduleid'], 'username' => $this->staff['username']]);
         $othermodule2 = $modgen->create_module(['moduleid' => 'ROLETEST2', 'fullname' => 'Yet Another module']);
         $modgen->create_module_team(['moduleid' => $othermodule2['moduleid'], 'username' => $this->staff['username']]);
     }
@@ -285,6 +297,46 @@ class UserSearchTest extends testing\unittest\unittestdatabase
         self::assertEquals('student2', $username);
         self::assertEquals('Bob', $first_names);
         self::assertEquals('Coxley', $surname);
+    }
+
+    /**
+     * @return void
+     */
+    public function testModuleSearchIncludingStaff()
+    {
+        $search = new UserSearch();
+        $search->setSearchStudents();
+        $search->setSearchStaff();
+        $search->setModule($this->othermodule['id']);
+
+        $result = $search->execute();
+        self::assertInstanceOf(SearchResult::class, $result);
+        self::assertEquals(2, $result->total);
+
+        $result->query->bind_result(
+            $id,
+            $roles,
+            $sid,
+            $surname,
+            $initials,
+            $first_names,
+            $title,
+            $username,
+            $grade,
+            $yearofstudy,
+            $email,
+            $special_id
+        );
+
+        $result->query->fetch();
+        self::assertEquals('student1', $username);
+        self::assertEquals('Amanda', $first_names);
+        self::assertEquals('Cox', $surname);
+
+        $result->query->fetch();
+        self::assertEquals('staff1', $username);
+        self::assertEquals('Kelly', $first_names);
+        self::assertEquals('Shelly', $surname);
     }
 
     /**
