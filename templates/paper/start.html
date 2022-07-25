@@ -195,6 +195,9 @@ lang.ok
                     <div class="contentcell">
                         <div class="multicolumn">
                             <div class="header">
+                                {% if data.guestaccount %}
+                                <img src="../artwork/guest_account_16.png" width="16" height="16" alt="{{lang.guestaccount}}" />
+                                {% endif %}
                                 {{data.currentuser}}
                             </div>
                             {% if data.duration != '' %}

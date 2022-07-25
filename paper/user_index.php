@@ -105,7 +105,7 @@ if ($userObject->is_special_needs()) {
 }
 
 if ($userObject->is_temporary_account()) {
-    $person = '<img src="../artwork/guest_account_16.png" width="16" height="16" alt="Guest User" /> ' . $string['guestaccount'] . ' (' . $userObject->get_temp_title() . ' ' . $userObject->get_temp_surname() . ')';
+    $person = $string['guestaccount'] . ' (' . $userObject->get_temp_title() . ' ' . $userObject->get_temp_surname() . ')';
 } else {
     $person = $userObject->get_title() . ' ' . $userObject->get_initials() . ' ' . $userObject->get_surname();
 }
@@ -292,6 +292,7 @@ $contentdata = array(
     'rubric' => $rubric,
     'screens' => $paper_screens,
     'currentuser' => $person,
+    'guestaccount' => $userObject->is_temporary_account(),
     'sounddemo' => '',
     'switch' => false,
     'issuelink' => '',
