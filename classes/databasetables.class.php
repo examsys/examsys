@@ -1236,7 +1236,8 @@ QUERY;
         CREATE TABLE `sid` (
           `student_id` char(15) NOT NULL,
           `userID` int(10) unsigned NOT NULL,
-          PRIMARY KEY  (`userID`,`student_id`)
+          PRIMARY KEY  (`userID`,`student_id`),
+          KEY `student_id` (`student_id`)
         ) ENGINE={$engine} DEFAULT CHARSET={$charset}
 QUERY;
 
