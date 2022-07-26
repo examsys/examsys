@@ -113,13 +113,19 @@ class UserSearch extends Search
         $student_where = SQLFragment::combine(' AND ', $not_deleted, $year, $studentmods, $name, $username, $idnumber, $roles);
         $student_query = "SELECT $fields FROM $student_tables WHERE $student_where->sql GROUP BY users.id, sid.student_id";
 
-        // Query for finding staff.
-        $staff_tables = $this->generateStaffTableSQL();
-        // Need to get only staff,student roles to avoid duplication.
-        $staff_where = SQLFragment::combine(' AND ', $not_deleted, $staffyear, $staffmods, $name, $username, $idnumber, $roles);
-        $staff_query = "SELECT $fields FROM $staff_tables WHERE $staff_where->sql GROUP BY users.id, sid.student_id";
+        if (isset($this->module)) {
+            // Query for finding staff.
+            $staff_tables = $this->generateStaffTableSQL();
+            // Need to get only staff,student roles to avoid duplication.
+            $staff_where = SQLFragment::combine(' AND ', $not_deleted, $staffyear, $staffmods, $name, $username, $idnumber, $roles);
+            $staff_query = "SELECT $fields FROM $staff_tables WHERE $staff_where->sql GROUP BY users.id, sid.student_id";
 
-        $sql = "($student_query) UNION ($staff_query) ORDER BY $this->orderby LIMIT $this->limit OFFSET $this->offset";
+            $sql = "($student_query) UNION ($staff_query) ORDER BY $this->orderby LIMIT $this->limit OFFSET $this->offset";
+        } else {
+            // When there is no module filter we do not need the separate staff search part of the query.
+            $staff_where = new SQLFragment();
+            $sql = "$student_query ORDER BY $this->orderby LIMIT $this->limit OFFSET $this->offset";
+        }
 
         $query = Config::get_instance()->db->prepare($sql);
 
@@ -749,14 +755,20 @@ class UserSearch extends Search
         $student_where = SQLFragment::combine(' AND ', $not_deleted, $year, $studentmods, $name, $username, $idnumber, $roles);
         $student_query = "SELECT users.id FROM $student_tables WHERE $student_where->sql";
 
-        // Query for finding staff.
-        $staff_tables = $this->generateStaffTableSQL();
-        // Need to get only staff,student roles to avoid duplication.
-        $staff_where = SQLFragment::combine(' AND ', $not_deleted, $staffyear, $staffmods, $name, $username, $idnumber, $roles);
-        $where = str_replace('Student', 'Staff,Student', $staff_where->sql);
-        $staff_query = "SELECT users.id FROM $staff_tables WHERE $where";
+        if (isset($this->module)) {
+            // Query for finding staff.
+            $staff_tables = $this->generateStaffTableSQL();
+            // Need to get only staff,student roles to avoid duplication.
+            $staff_where = SQLFragment::combine(' AND ', $not_deleted, $staffyear, $staffmods, $name, $username, $idnumber, $roles);
+            $where = str_replace('Student', 'Staff,Student', $staff_where->sql);
+            $staff_query = "SELECT users.id FROM $staff_tables WHERE $where";
 
-        $sql = "SELECT COUNT(id) FROM ($student_query UNION DISTINCT $staff_query) AS users";
+            $sql = "SELECT COUNT(id) FROM ($student_query UNION DISTINCT $staff_query) AS users";
+        } else {
+            // When there is no module filter we do not need the separate staff search part of the query.
+            $staff_where = new SQLFragment();
+            $sql = "SELECT COUNT(DISTINCT id) FROM ($student_query) AS users";
+        }
 
         $query = Config::get_instance()->db->prepare($sql);
 
