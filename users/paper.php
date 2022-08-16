@@ -34,9 +34,9 @@ $render = new render($configObject);
 
 $headerdata = array(
   'css' => [
-    '../css/header.css',
-    '../css/warnings.css',
-    '../css/list.css',
+    '/css/header.css',
+    '/css/warnings.css',
+    '/css/list.css',
   ],
   'scripts' => [],
   'metadata' => [],
