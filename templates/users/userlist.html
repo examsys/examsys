@@ -73,7 +73,7 @@ lang.nostudents - No students for the paper
 </div>
 <script type="text/javascript">
   requirejs(['jquery', 'jquerytablesorter'], function ($) {
-    if ($("#userlist").find("tr").size() > 1) {
+    if ($("#userlist").find("tr").length > 1) {
       $("#userlist").tablesorter({
         sortList: [[1, 0]]
       });
