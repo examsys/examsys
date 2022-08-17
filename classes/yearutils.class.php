@@ -99,32 +99,21 @@ class yearutils
     {
 
         if ($state == self::STAT) {
-            $filter = 'WHERE stat_status = 1 AND deleted is NULL ORDER BY calendar_year ASC';
+            $filter = 'WHERE a.stat_status = 1 AND a.deleted is NULL ORDER BY a.calendar_year ASC';
         } elseif ($state == self::CAL) {
-            $filter = 'WHERE cal_status = 1 AND deleted is NULL ORDER BY calendar_year ASC';
+            $filter = 'WHERE a.cal_status = 1 AND a.deleted is NULL ORDER BY a.calendar_year ASC';
         } elseif ($state == self::BOTH) {
-            $filter = 'WHERE cal_status = 1 AND stat_status = 1 AND deleted is NULL ORDER BY calendar_year ASC';
+            $filter = 'WHERE a.cal_status = 1 AND a.stat_status = 1 AND a.deleted is NULL ORDER BY a.calendar_year ASC';
         } elseif ($state == self::USERS) {
-            $paperyears = $this->mysqli->prepare('SELECT DISTINCT calendar_year FROM modules_student');
-            $paperyears->execute();
-            $paperyears->bind_result($year);
-            $years = array();
-            while ($paperyears->fetch()) {
-                $years[] = $year;
-            }
-            $paperyears->close();
-            if (count($years) > 0) {
-                $years = ltrim(implode(',', $years), ',');
-                $filter = "WHERE deleted is NULL AND calendar_year in ($years) ORDER BY calendar_year ASC";
-            } else {
-                return array();
-            }
+            $filter = "WHERE a.deleted is NULL
+                       AND a.calendar_year IN (SELECT calendar_year FROM modules_student m WHERE m.calendar_year = a.calendar_year)
+                       ORDER BY a.calendar_year ASC";
         } else {
-            $filter = 'WHERE deleted is NULL ORDER BY calendar_year ASC';
+            $filter = 'WHERE a.deleted is NULL ORDER BY a.calendar_year ASC';
         }
 
         $supported_years = array();
-        $result = $this->mysqli->prepare("SELECT calendar_year, academic_year FROM academic_year $filter");
+        $result = $this->mysqli->prepare("SELECT a.calendar_year, a.academic_year FROM academic_year a $filter");
         $result->execute();
         $result->bind_result($calendar_year, $academic_year);
         while ($result->fetch()) {
