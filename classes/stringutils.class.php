@@ -47,31 +47,22 @@ class StringUtils
         return substr_compare($string, $test, -$testlen) === 0;
     }
 
+    /**
+     * Converts a number to a localised ordinal.
+     *
+     * Returns N/A if 0 or a non-numeric value is passed.
+     *
+     * @param mixed $number
+     * @param string $language
+     * @return string
+     */
     public static function ordinal_suffix($number, $language = 'en')
     {
-        $suffix = ($number === 0) ? 'N/A' : $number;
-        if ($language == 'en') {
-            if ($number !== '') {
-                switch ($number) {
-                    case 0:
-                        $suffix .= '';
-                        break;
-                    case 1:
-                        $suffix .= 'st';
-                        break;
-                    case 2:
-                        $suffix .= 'nd';
-                        break;
-                    case 3:
-                        $suffix .= 'rd';
-                        break;
-                    default:
-                            $suffix .= 'th';
-                        break;
-                }
-            }
+        if (!is_numeric($number) || $number === 0) {
+            return 'N/A';
         }
-        return $suffix;
+        $formatter = new NumberFormatter($language, NumberFormatter::ORDINAL);
+        return $formatter->format($number);
     }
 
     /**
