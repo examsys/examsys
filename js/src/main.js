@@ -273,9 +273,13 @@ requirejs(['rogoconfig'], function(config) {
 
 requirejs(['systemtooltips'], function (TOOLTIPS) {
     var tooltips = new TOOLTIPS();
-    window.addEventListener("load", function() {
+    if (document.readyState == 'complete') {
         tooltips.init();
-    });
+    } else {
+        window.addEventListener("load", function () {
+            tooltips.init();
+        });
+    }
 });
 
 requirejs(['helplauncher', 'jquery'], function (HELPLAUNCHER, $) {
@@ -293,16 +297,24 @@ requirejs(['helplauncher', 'jquery'], function (HELPLAUNCHER, $) {
 
 requirejs(['toprightmenu'], function (MENU) {
     var menu = new MENU();
-    window.addEventListener("load", function() {
+    if (document.readyState == 'complete') {
         menu.init();
-    });
+    } else {
+        window.addEventListener("load", function () {
+            menu.init();
+        });
+    }
 });
 
 requirejs(['ui'], function (UI) {
     var ui = new UI();
-    window.addEventListener("load", function() {
+    if (document.readyState == 'complete') {
         ui.init();
-    });
+    } else {
+        window.addEventListener("load", function () {
+            ui.init();
+        });
+    }
 });
 
 requirejs(['polyfill'], function (Polyfill) {
