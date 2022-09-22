@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<ruleset name="Rogo">
-    <description>The Rogō coding standard</description>
+<ruleset name="ExamSys">
+    <description>The ExamSys coding standard</description>
     <!-- Skip 3rd party code-->
     <exclude-pattern>*/node_modules/*</exclude-pattern>
     <exclude-pattern>*/vendor/*</exclude-pattern>
@@ -57,7 +57,7 @@
     <rule ref="Generic.Files.InlineHTML">
         <type>warning</type>
     </rule>
-    <!-- Rogo specific coding standards warning for now as lots to fix -->
+    <!-- ExamSys specific coding standards warning for now as lots to fix -->
     <rule ref="Rogo.Operators.ValidBooleanOperators">
         <type>warning</type>
     </rule>

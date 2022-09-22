@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 $string['company'] = 'Company';
 $string['companyname'] = 'Company Name';
@@ -26,10 +26,10 @@ $string['dbpassword'] = 'DB Password';
 $string['databasesetup'] = 'Database Setup';
 $string['databasehost'] = 'Database host';
 $string['webhost'] = 'WebServer host';
-$string['datadirectory'] = 'Rogō data directory';
+$string['datadirectory'] = 'ExamSys data directory';
 $string['databaseport'] = 'Database port';
 $string['databasename'] = 'Database Name';
-$string['databaseuser'] = 'Rogō Database user';
+$string['databaseuser'] = 'ExamSys Database user';
 $string['rdbusername'] = 'Username';
 $string['rdbpassword'] = 'Password';
 $string['timedateformats'] = 'Time/Date formats';
@@ -51,7 +51,7 @@ $string['authentication'] = 'Authentication';
 $string['allowlti'] = 'Allow via LTI';
 $string['allowltitip'] = 'Allow authentication from successful LTI launch';
 $string['allowintdb'] = 'Internal database';
-$string['allowintdbtip'] = 'Allow authentication from internal Rogo user database';
+$string['allowintdbtip'] = 'Allow authentication from internal ExamSys user database';
 $string['allowguest'] = 'Guest log in (for summative exams)';
 $string['allowguesttip'] = 'Allow guest temporary accouts for students who forget their normal log in details';
 $string['allowimpersonation'] = 'User impersonation (SysAdmin only)';
@@ -69,7 +69,7 @@ $string['bindusername'] = 'bind username';
 $string['bindpassword'] = 'bind password';
 $string['userprefix'] = 'Username prefix';
 $string['userprefixtip'] = 'Prefix for username in LDAP search, e.g. sAMAccountName=';
-$string['sysadminuser'] = 'Rogō SysAdmin User';
+$string['sysadminuser'] = 'ExamSys SysAdmin User';
 $string['initialsysadmin'] = 'An initial SysAdmin user account is required to log in and create further normal staff accounts and generally administer the system.';
 $string['title'] = 'Title';
 $string['title_types'] = 'Mx,Mr,Mrs,Miss,Ms,Dr,Professor';
@@ -78,9 +78,9 @@ $string['surname'] = 'Surname';
 $string['emailaddress'] = 'Email Address';
 $string['username'] = 'Username';
 $string['password'] = 'Password';
-$string['helpdb'] = 'Rogō Help Database';
+$string['helpdb'] = 'ExamSys Help Database';
 $string['loadhelp'] = 'Load Help';
-$string['translationpack'] = 'Rogō Translations';
+$string['translationpack'] = 'ExamSys Translations';
 $string['loadtranslations'] = 'Download All Translation Packs';
 $string['manualtranslations'] = 'Alternatively you can download individual translation packs';
 $string['supportemail'] = 'Support Email';
@@ -88,9 +88,9 @@ $string['supportnumbers'] = 'Emergency Support Numbers';
 $string['supportemailaddress'] = 'Email Address (Comma seperate list)';
 $string['name'] = 'Name';
 $string['number'] = 'Number';
-$string['install'] = 'Install Rogō';
+$string['install'] = 'Install ExamSys';
 $string['altintallicon'] = 'Install Icon';
-$string['installed'] = 'Rogō is now successfully installed.';
+$string['installed'] = 'ExamSys is now successfully installed.';
 $string['config'] = 'Configure settings';
 $string['invalidsetting'] = 'Setting %s either not provided or invalid!';
 
@@ -105,24 +105,24 @@ $string['wdatabaseuser'] = 'Database user ';
 $string['wnotcreated'] = ' could not be created';
 $string['wnotpermission'] = ' could not set permissions';
 $string['logwarning20'] = 'Unable to FLUSH PRIVILEGES';
-$string['errors1'] = 'Rogō has already been installed! Please contact a system adminstrator.';
-$string['errors3'] = 'Rogō requires %s to exist and be writeable to the webserver';
-$string['errors7'] = 'Rogō requires %s/temp to exist and be writeable to the webserver';
-$string['errors10'] = 'Rogō requires PHP version %s or above you have %s';
-$string['errors11'] = 'Rogō requires the PHP %s module to function please install or activate it.';
-$string['errors12'] = 'Rogō can only be accessed through https. Please update you apache config.';
+$string['errors1'] = 'ExamSys has already been installed! Please contact a system adminstrator.';
+$string['errors3'] = 'ExamSys requires %s to exist and be writeable to the webserver';
+$string['errors7'] = 'ExamSys requires %s/temp to exist and be writeable to the webserver';
+$string['errors10'] = 'ExamSys requires PHP version %s or above you have %s';
+$string['errors11'] = 'ExamSys requires the PHP %s module to function please install or activate it.';
+$string['errors12'] = 'ExamSys can only be accessed through https. Please update you apache config.';
 $string['errors13'] = 'Error';
 $string['errors14'] = 'The following warnings were generated';
 $string['errors15'] = 'Warning';
-$string['errors16'] = 'Rogō requires ability to write its config file %s/config/config.inc.php. One way to fix this is you can temporarily allow write access to %s/config and change permissions once update has run.';
-$string['errors17'] = 'Rogō requires MySQL version %s or above.';
-$string['errors18'] = 'The Rogō data directory requires %s path to exist';
-$string['errors19'] = 'The Rogō data directory requires %s must be writable';
-$string['errors20'] = 'Rogō cannot connect to the database (%s)';
-$string['installscript'] = 'Rogō Install script';
+$string['errors16'] = 'ExamSys requires ability to write its config file %s/config/config.inc.php. One way to fix this is you can temporarily allow write access to %s/config and change permissions once update has run.';
+$string['errors17'] = 'ExamSys requires MySQL version %s or above.';
+$string['errors18'] = 'The ExamSys data directory requires %s path to exist';
+$string['errors19'] = 'The ExamSys data directory requires %s must be writable';
+$string['errors20'] = 'ExamSys cannot connect to the database (%s)';
+$string['installscript'] = 'ExamSys Install script';
 $string['systeminstallation'] = 'System Installation';
 $string['labsecuritytype'] = 'Summative Exam Lab Security';
-$string['labsecuritytypetip'] = 'Rogo can lock summative exams to either IP address or hostname. If your institution uses static IPs then chose IP address otherwise chose hostname.';
+$string['labsecuritytypetip'] = 'ExamSys can lock summative exams to either IP address or hostname. If your institution uses static IPs then chose IP address otherwise chose hostname.';
 $string['IP'] = 'IP address';
 $string['hostname'] = 'Machine hostname';
 

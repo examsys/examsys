@@ -34,7 +34,7 @@ Czech Republic
 
 /*
  *
- * Modified by Simon Atack to stick it into an Object for use in Rogo
+ * Modified by Simon Atack to stick it into an Object for use in ExamSys
  *
  */
 

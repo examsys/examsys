@@ -1,30 +1,30 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
-// Start Rogo autoloading.
-require_once dirname(dirname(dirname(__DIR__))) . '/include/autoload.inc.php';
+// Start ExamSys autoloading.
+require_once dirname(__DIR__, 3) . '/include/autoload.inc.php';
 autoloader::init();
 
 use testing\behat\rogo_test;
 
 /**
- * This is the frontend context for Rogo.
+ * This is the frontend context for ExamSys.
  *
- * It is designed to be used by Behat tests that test Rogo via it's own UI.
+ * It is designed to be used by Behat tests that test ExamSys via it's own UI.
  * It will use Mink to run the tests via a web browser.
  *
  * Please do not add setps to it directly.

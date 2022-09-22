@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 use testing\unittest\unittestdatabase;
 
@@ -195,7 +195,7 @@ class moduleutilstest extends unittestdatabase
             'active' => 1,
             'vle_api' => '',
             'checklist' => 'mapping',
-            'sms' => 'test rogo api',
+            'sms' => 'test ExamSys api',
             'selfenroll' => 0,
             'schoolid' => $this->school2,
             'neg_marking' => null,
@@ -207,7 +207,7 @@ class moduleutilstest extends unittestdatabase
             'academic_year_start' => '07/01',
             'externalid' => 'abc123def',
             'syncpreviousyear' => 1);
-        $details = module_utils::get_full_details('external', 'abc123def', $this->db, 'test rogo api');
+        $details = module_utils::get_full_details('external', 'abc123def', $this->db, 'test ExamSys api');
         $this->assertEquals($detailsarray, $details);
     }
 
@@ -228,7 +228,7 @@ class moduleutilstest extends unittestdatabase
     public function test_get_sync_previous_year_modules()
     {
         $expected = array('abc123def');
-        $actual = module_utils::get_sync_previous_year_modules('test rogo api');
+        $actual = module_utils::get_sync_previous_year_modules('test ExamSys api');
         $this->assertEquals($expected, $actual);
     }
 

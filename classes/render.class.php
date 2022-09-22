@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Render package
@@ -41,7 +41,7 @@ class render
 
     /**
      * Constructor
-     * @param object $configObject - rogo configuration object
+     * @param object $configObject - ExamSys configuration object
      * @param string|array $templatedir - path to templates or list of paths to search for template
      * @return void
      */
@@ -66,9 +66,9 @@ class render
      * @param string $template The template filename
      * @param string $additionaljs additional javascript required
      * @param string $additionalcss additional css required
-     * @param string $path rogo root path
-     * @param string $charset rogo display charset
-     * @param string $language rogo display language
+     * @param string $path ExamSys root path
+     * @param string $charset ExamSys display charset
+     * @param string $language ExamSys display language
      */
     public function render(
         $data,
@@ -206,7 +206,7 @@ class render
     }
 
     /**
-     * Render admin update rogo pane.
+     * Render admin update ExamSys pane.
      * @param array $plugins - array of plugins available
      * @param array $header - headers for data
      * @param string $action - the form action

@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 use testing\unittest\unittestdatabase;
 
@@ -35,9 +35,9 @@ class abstractmanagementtest extends unittestdatabase
     {
         $datagenerator = $this->get_datagenerator('api', 'core');
         $client = $datagenerator->create_client(array('clientid' => 'test1', 'userid' => $this->admin['id'], 'secret' => 'test'));
-        $datagenerator->create_external(array('clientid' => $client['clientid'], 'name' => 'test rogo api', 'type' => 'api'));
+        $datagenerator->create_external(array('clientid' => $client['clientid'], 'name' => 'test ExamSys api', 'type' => 'api'));
         $client = $datagenerator->create_client(array('clientid' => 'test2', 'userid' => $this->admin['id'], 'secret' => 'test2'));
-        $datagenerator->create_external(array('name' => 'test rogo plugin', 'type' => 'plugin'));
+        $datagenerator->create_external(array('name' => 'test ExamSys plugin', 'type' => 'plugin'));
     }
 
     /**
@@ -47,8 +47,8 @@ class abstractmanagementtest extends unittestdatabase
     public function test_get_external_system_api()
     {
         $faculty = new \api\facultymanagement($this->db, 'test1');
-        $response = 'test rogo api';
-        $this->assertEquals($response, $faculty->get_external_system('test rogo api'));
+        $response = 'test ExamSys api';
+        $this->assertEquals($response, $faculty->get_external_system('test ExamSys api'));
         $this->assertEquals($response, $faculty->get_external_system(null));
     }
 
@@ -59,8 +59,8 @@ class abstractmanagementtest extends unittestdatabase
     public function test_get_external_system_plugin()
     {
         $faculty = new \api\facultymanagement($this->db);
-        $response = 'test rogo plugin';
-        $this->assertEquals($response, $faculty->get_external_system('test rogo plugin'));
+        $response = 'test ExamSys plugin';
+        $this->assertEquals($response, $faculty->get_external_system('test ExamSys plugin'));
     }
 
     /**
@@ -70,11 +70,11 @@ class abstractmanagementtest extends unittestdatabase
     public function test_get_external_system_api_super()
     {
         $faculty = new \api\facultymanagement($this->db, 'test2');
-        $response = 'test rogo api';
+        $response = 'test ExamSys api';
         $this->config->set_setting('api_allow_superuser', 1, 'boolean');
-        $this->assertEquals($response, $faculty->get_external_system('test rogo api'));
+        $this->assertEquals($response, $faculty->get_external_system('test ExamSys api'));
         $this->config->set_setting('api_allow_superuser', 0, 'boolean');
         $response = null;
-        $this->assertEquals($response, $faculty->get_external_system('test rogo api'));
+        $this->assertEquals($response, $faculty->get_external_system('test ExamSys api'));
     }
 }

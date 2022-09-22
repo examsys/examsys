@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 use testing\unittest\unittestdatabase;
 
@@ -64,7 +64,7 @@ class gradebooktest extends unittestdatabase
             'papertype' => '2',
             'modulename' => 'Training Module',
             'externalid' => 'ass1234',
-            'externalsys' => 'test rogo api'));
+            'externalsys' => 'test ExamSys api'));
         $this->pid2 = $datagenerator->create_paper(array('papertitle' => 'Test create summativ 2',
             'startdate' => '2016-01-25 09:00:00',
             'enddate' => '2016-01-25 10:00:00',
@@ -76,13 +76,13 @@ class gradebooktest extends unittestdatabase
             'papertype' => '2',
             'modulename' => 'Training Module',
             'externalid' => 'erwer346547',
-            'externalsys' => 'test rogo api'));
+            'externalsys' => 'test ExamSys api'));
         $datagenerator = $this->get_datagenerator('gradebook', 'core');
         $datagenerator->create_paper(array('paperid' => $this->pid1['id'], 'timestamp' => '2016-01-25 10:10:00'));
         $datagenerator->create_user(array('paperid' => $this->pid1['id'], 'userid' => $this->student['id'], 'grade' => 60, 'adjustedgrade' => 62, 'classification' => 'Pass'));
         $datagenerator = $this->get_datagenerator('api', 'core');
         $client = $datagenerator->create_client(array('clientid' => 'test1', 'userid' => $this->admin['id'], 'secret' => 'test'));
-        $datagenerator->create_external(array('clientid' => $client['clientid'], 'name' => 'test rogo api', 'type' => 'api'));
+        $datagenerator->create_external(array('clientid' => $client['clientid'], 'name' => 'test ExamSys api', 'type' => 'api'));
     }
 
     /**
@@ -216,7 +216,7 @@ class gradebooktest extends unittestdatabase
         $users[1234567890] = array('raw_grade' => 60, 'adjusted_grade' => 62.0,
             'classification' => 'Pass', 'username' => 'test1');
         $expected['ass1234'] = $users;
-        $this->assertEquals($expected, $gradebook->get_paper_gradebook('extpaper', 'ass1234', 'test rogo api'));
+        $this->assertEquals($expected, $gradebook->get_paper_gradebook('extpaper', 'ass1234', 'test ExamSys api'));
         // Test get paper gradebook - ERROR not found.
         $this->assertFalse($gradebook->get_paper_gradebook('extpaper', 'ass5678'));
     }
@@ -234,7 +234,7 @@ class gradebooktest extends unittestdatabase
         $papers['ass1234'][1234567890] = array('raw_grade' => 60, 'adjusted_grade' => 62.0,
             'classification' => 'Pass', 'username' => 'test1');
         $expected['abc123def'] = $papers;
-        $this->assertEquals($expected, $gradebook->get_module_gradebook('extmodule', 'abc123def', 'test rogo api'));
+        $this->assertEquals($expected, $gradebook->get_module_gradebook('extmodule', 'abc123def', 'test ExamSys api'));
         // Test get module gradebook - ERROR not found.
         $this->assertFalse($gradebook->get_module_gradebook('extmodule', 'mod5678'));
     }

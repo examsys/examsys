@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 require $cfg_web_root . '/lang/' . $language . '/include/user_search_options.php';
 require $cfg_web_root . '/lang/' . $language . '/include/titles.php';
@@ -48,8 +48,8 @@ $string['internalreviewer'] = 'Internal Reviewer';
 $string['standardssetter'] = 'Standards Setter';
 $string['invigilator'] = 'Invigilator';
 $string['students'] = 'Students';
-$string['newrogoaccount'] = 'New Rogo Account';
-$string['rogoaccount'] = 'Rogo Account';
+$string['newrogoaccount'] = 'New ExamSys Account';
+$string['rogoaccount'] = 'ExamSys Account';
 $string['newaccountcreated'] = 'New account created for';
 $string['reqfirstname'] = "Please enter the user's First names.";
 $string['reqsurname'] = "Please enter the user's Surname.";
@@ -61,7 +61,7 @@ $string['reqpassword'] = 'Please enter a default Password for the user.';
 $string['usernameinuse'] = 'The username is already in use. Please enter a different one.';
 $string['usernameinvalid'] = 'The username is invalid. Please ensure it does not contain an underscore.';
 $string['dear'] = 'Dear';
-$string['email1'] = 'A new account has been created to access the online assessment and survey system Rogo. Your personal authentication details are:';
+$string['email1'] = 'A new account has been created to access the online assessment and survey system ExamSys. Your personal authentication details are:';
 $string['email2'] = 'To log into the system go to:';
 $string['email3'] = 'When you log in you will be taken to a personal screen listing all the papers that require your attention for review.';
 $string['casesensitive'] = '(case-sensitive)';

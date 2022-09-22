@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  *
@@ -674,7 +674,7 @@ class InstallUtils
     }
 
     /**
-     * Load default data needed for rogo to function
+     * Load default data needed for ExamSys to function
      */
     public static function loadData()
     {
@@ -1596,7 +1596,7 @@ class InstallUtils
     }
 
     /**
-     * Creates the default set of faculties, schools and modules in the Rogo database.
+     * Creates the default set of faculties, schools and modules in the ExamSys database.
      *
      * @return void
      */
@@ -1699,7 +1699,7 @@ class InstallUtils
     }
 
     /**
-     * Creates the deafult Rogo users in the database:
+     * Creates the deafult ExamSys users in the database:
      * - The system admin
      * - The cron user
      * - 100 guest accounts
@@ -1882,7 +1882,7 @@ class InstallUtils
     }
 
     /**
-     * Ensures that the rogo user directories are created.
+     * Ensures that the ExamSys user directories are created.
      */
     public static function createDirectories()
     {

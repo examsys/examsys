@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  *
@@ -81,7 +81,7 @@ if (isset($_POST['submit'])) {
         <table cellspaing="0" cellpadding="2" border="0" style="margin-top:15px; margin-bottom:15px">
 
             <?php
-            // Get a list of courses held by Rogo.
+            // Get a list of courses held by ExamSys.
             $course_list = array();
             $result = $mysqli->prepare('SELECT DISTINCT name FROM courses WHERE deleted IS NULL');
             $result->execute();
@@ -90,8 +90,8 @@ if (isset($_POST['submit'])) {
                 $course_list[] = $course_name;
             }
             $result->close();
-        
-            // Get a list of schools held by Rogo.
+
+            // Get a list of schools held by ExamSys.
             $unknown_schoolID = 0;
             $school_list = array();
             $result = $mysqli->prepare('SELECT DISTINCT id, school FROM schools WHERE deleted IS NULL');
@@ -112,7 +112,7 @@ if (isset($_POST['submit'])) {
             foreach ($lines as $separate_line) {
                 if (trim($separate_line) != '') {
                     $fields = explode(',', $separate_line);
-            
+
                     if (trim($fields[0]) != 'Course ID' and trim($fields[0]) != 'ID') {  // Ignore header line
                         $courseid = trim($fields[0]);
                         $description = trim($fields[1]);

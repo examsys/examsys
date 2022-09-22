@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 require '../lang/' . $language . '/include/months.php';
 require '../lang/' . $language . '/include/paper_types.php';
@@ -91,7 +91,7 @@ $string['allpeerspergroup'] = 'All peers per group';
 $string['singlereview'] = 'Single Review';
 $string['numberfrom'] = 'Number from';
 $string['groupdetails'] = 'Group Details';
-$string['tooltip_random'] = 'Rogo will calculate the number of marks a student would get answering all questions randomly. Percentages are then scaled accordingly.';
+$string['tooltip_random'] = 'ExamSys will calculate the number of marks a student would get answering all questions randomly. Percentages are then scaled accordingly.';
 $string['tooltip_calculator'] = 'A JavaScript software calculator is available to students within the assessment.';
 $string['tooltip_audio'] = 'A test audio clip will be placed on the exam information page so students can test sound levels before starting.';
 $string['tooltip_osceclassification'] = 'Warning: Once marking has started the overall classification is not changeable.';
@@ -113,7 +113,7 @@ $string['to'] = 'to';
 $string['restricttolabs'] = 'Restrict to Labs';
 $string['restricttometadata'] = 'Restrict to Metadata';
 $string['na'] = 'N/A';
-$string['tooltip_password'] = 'This will put an extra password on the paper in addition to students logging into Rogo with their own personal password. This password can be given out to students within the computer lab.';
+$string['tooltip_password'] = 'This will put an extra password on the paper in addition to students logging into ExamSys with their own personal password. This password can be given out to students within the computer lab.';
 $string['donotchangewarning'] = 'This paper is locked. It is recommended you only make changes if no students have attempted this paper';
 $string['minavailability'] = '*The minimum valid availability due to student accomodations is %s minutes.';
 

@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * A class for getting the values from GET, POST and REQUEST and ensuring that they are correctly sanatised.
@@ -54,7 +54,7 @@ class param
     /** A IPv4 or IPv6 address. */
     public const IP_ADDRESS = 8;
 
-    /** A url for the current Rogo site. */
+    /** A url for the current ExamSys site. */
     public const LOCAL_URL = 6;
 
     /** Any input is valid. */
@@ -220,7 +220,7 @@ class param
                 break;
             case self::LOCAL_URL:
                 $rogo_url = Config::get_instance()->get('cfg_web_host');
-                // We now know if it is a valid URL or not, we just need to ensure it is for the local instance of Rogo.
+                // We now know if it is a valid URL or not, we just need to ensure it is for the local instance of ExamSys.
                 $filter = FILTER_VALIDATE_REGEXP;
                 $options = array(
                     'options' => array(

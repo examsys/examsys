@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  *
@@ -50,7 +50,7 @@ class FacultyUtils
     /**
      * Get the faculty id given external id
      *
-     * @param string $externalid externalid of the faculty rogo id
+     * @param string $externalid externalid of the faculty ExamSys id
      * @param string $externalsys external system source
      * @param object $db database connection
      *
@@ -195,7 +195,7 @@ class FacultyUtils
 
     /**
      * Update a faculty.
-     * @param integer $id     - Faculty id in rogo
+     * @param integer $id     - Faculty id in ExamSys
      * @param string $faculty - The name of the faculty to be added
      * @param string $code    - The code of the faculty to be added
      * @param string $externalid - External sustem id for the faculty
@@ -261,11 +261,11 @@ class FacultyUtils
     }
 
     /**
-     * Compare the faculties in the external system and rogo
+     * Compare the faculties in the external system and ExamSys
      * @param array $external list of external system faculties
      * @param string $sms external system
      * @param mysqli $db db connection
-     * @return array list of faculties in rogo but not in external system
+     * @return array list of faculties in ExamSys but not in external system
      */
     public static function diff_external_faculties_to_internal_faculties($external, $sms, $db)
     {
@@ -280,7 +280,7 @@ class FacultyUtils
             if (!in_array($externalid, $external)) {
                 $diff[] = $externalid;
             } else {
-                // Restore if deleted in Rogo but found in external list.
+                // Restore if deleted in ExamSys but found in external list.
                 if (!is_null($deleted)) {
                     self::restore_faculty($db, $id);
                 }
@@ -293,7 +293,7 @@ class FacultyUtils
     /**
      * Restore faculty from recycle bin
      * @param mysqli $db db connection
-     * @param integer $id rogo id of faculty
+     * @param integer $id ExamSys id of faculty
      * @return boolean true on success, false otherwise
      */
     public static function restore_faculty($db, $id)

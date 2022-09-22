@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * The ldap lookup handler class
@@ -167,12 +167,12 @@ class ldap_lookup extends outline_lookup
     }
 
     /**
-     * Extracts data from an LDAP result and maps it to the Rogo user fields.
+     * Extracts data from an LDAP result and maps it to the ExamSys user fields.
      *
      * The first value for a given field will be used unless there is an override for it.
      *
      * @param array $datablock A single record from LDAP
-     * @param array $ldap_attributes An array where the keys are an LDAP field name and the values are a Rogo user field.
+     * @param array $ldap_attributes An array where the keys are an LDAP field name and the values are a ExamSys user field.
      * @param stdClass $lookupobj The lookup object
      * @return stdClass The modified lookup object.
      */
@@ -193,7 +193,7 @@ class ldap_lookup extends outline_lookup
         $overrideany = (isset($lookupobj->settings->overrideall) and $lookupobj->settings->overrideall == true);
         // Store all the values for this LDAP record, even when they are not put into the main lookup record.
         $lookupdatas = new stdClass();
-        // Extract fields related to Rogo.
+        // Extract fields related to ExamSys.
         foreach ($ldap_attributes as $key => $value) {
             $keyorig = $key;
             if (isset($this->settings['lowercasecompare']) and $this->settings['lowercasecompare'] == true) {
@@ -205,11 +205,11 @@ class ldap_lookup extends outline_lookup
             $valuefound = isset($datablock[$key][0]);
             // We always use the latest value from this LDAP attribute.
             $overrideldapattribute = (isset($lookupobj->settings->override[$key]) and $lookupobj->settings->override[$key] == true);
-            // We always use the latest value for this Rogo field.
+            // We always use the latest value for this ExamSys field.
             $overriderogoattribute = (isset($lookupobj->settings->override[$reverse_attribute]) and $lookupobj->settings->override[$reverse_attribute] == true);
             // We will overwite this value.
             $canoverride = ($overrideany or $overrideldapattribute or $overriderogoattribute);
-            // Test if we already have a value for this Rogo attribute.
+            // Test if we already have a value for this ExamSys attribute.
             $isset = isset($lookupobj->lookupdata->$reverse_attribute);
             if ($valuefound and (($isset and $canoverride) or (!$isset))) {
                   // Store data to lookup if ldap_attribute listed and ( not set or if set and ( overrideall or override value or override inverse ldap set))
@@ -221,7 +221,7 @@ class ldap_lookup extends outline_lookup
             }
         }
         $lookupobj->lookupdatas[] = $lookupdatas;
-        // Store all the values returned by LDAP event when they are not used by Rogo.
+        // Store all the values returned by LDAP event when they are not used by ExamSys.
         $datablockstore = array();
         foreach ($datablock as $key => $value) {
             if (!is_int($key)) {
@@ -251,10 +251,10 @@ class ldap_lookup extends outline_lookup
     }
 
     /**
-     * Creates an LDAP query for all fields that could contain a particular Rogo field type.
+     * Creates an LDAP query for all fields that could contain a particular ExamSys field type.
      *
-     * @param array $ldap_attributes An array where the keys are an LDAP field name and the values are a Rogo user field.
-     * @param string $reverse_attribute A Rogo user field
+     * @param array $ldap_attributes An array where the keys are an LDAP field name and the values are a ExamSys user field.
+     * @param string $reverse_attribute A ExamSys user field
      * @param string $value The value we want to search for in the field
      * @return string
      */

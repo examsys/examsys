@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  *
@@ -156,7 +156,7 @@ HTML;
 
 
 /**
- * This is function save_objective_mappings it saves mappings to the relationships table in the Rogo database
+ * This is function save_objective_mappings it saves mappings to the relationships table in the ExamSys database
  *
  * @param mysqli          $db           Database link
  * @param string          $modules      List of modules that are being mapped
@@ -315,7 +315,7 @@ function getObjectives($thisModuleid, $session, $paperID, $questionID, $db, $sco
                 $objsBySession[$thisModuleid] = $objsBySession_cache[$thisModuleid][$session][$thisModuleid];
             }
         } else {
-            // Use Rogō's internally stored objectves
+            // Use ExamSys's internally stored objectves
             if ($scope == 'all') {
                 $sql = "SELECT sess_id, identifier, idMod, title, source_url, calendar_year, DATE_FORMAT(occurrence,' {$configObject->get('cfg_short_date')}') AS occurrence FROM sessions WHERE idMod = ? ORDER BY calendar_year, sess_id";
                 $stmt = $db->prepare($sql);
@@ -345,7 +345,7 @@ function getObjectives($thisModuleid, $session, $paperID, $questionID, $db, $sco
 
             $stmt->close();
             if (isset($objsBySession[$thisModuleid]) and count($objsBySession[$thisModuleid]) > 0) {
-                // Get internal objectives from Rogo.
+                // Get internal objectives from ExamSys.
                 $sql = 'SELECT obj_id, objective, sequence FROM objectives WHERE identifier=? AND calendar_year = ? ORDER BY sequence';
                 $stmt = $db->prepare($sql);
                 foreach ($objsBySession[$thisModuleid] as $identifier => $sess) {
@@ -366,7 +366,7 @@ function getObjectives($thisModuleid, $session, $paperID, $questionID, $db, $sco
         }
     }
 
-    //START:: get the currently mapped objectives in Rogo.
+    //START:: get the currently mapped objectives in ExamSys.
     $mapped = array();
     if ($questionID != '') {
         $rels = Relationship::find($db, array_keys($original_thisModuleid), $session, $paperID, explode(',', $questionID));
@@ -378,7 +378,7 @@ function getObjectives($thisModuleid, $session, $paperID, $questionID, $db, $sco
             echo 'Error: ' . $db->error;
         }
     }
-    //END:: get the currently mapped objetives in Rogo
+    //END:: get the currently mapped objetives in ExamSys
 
     // Get all the objetives
     foreach ($objsBySession as $moduleid => $sessions) {

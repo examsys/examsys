@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Abstract LTI integration helper
@@ -85,11 +85,11 @@ abstract class lti_integration
     abstract public function user_time_check($time);
 
     /**
-     * Convert VLE module shortcode into Rogo moduleid
+     * Convert VLE module shortcode into ExamSys moduleid
      * @param mysqli $mysqli db connection
      * @param string $moduleshortcode VLE module shortcode
      * @param string $course_title VLE module title
-     * @return array rogo module information
+     * @return array ExamSys module information
      */
     abstract public function module_code_translate($mysqli, $c_internal_id, $course_title = '');
 
@@ -101,7 +101,7 @@ abstract class lti_integration
     abstract public function sms_api($data);
 
     /**
-     * Translate source id in rogo external id.
+     * Translate source id in ExamSys external id.
      * @param string $sourceid source id from VLE
      * @return mixed module external id or null
      */

@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  *
@@ -105,7 +105,7 @@ class SchoolUtils
     /**
      * Get the school id given external id
      *
-     * @param string $externalid externalid of the school rogo id
+     * @param string $externalid externalid of the school ExamSys id
      * @param string $externalsys external system source of the school
      * @param object $db database connection
      *
@@ -385,11 +385,11 @@ class SchoolUtils
     }
 
     /**
-     * Compare the schools in the external system and rogo
+     * Compare the schools in the external system and ExamSys
      * @param array $external list of external system schools
      * @param string $sms list external system syncing schools
      * @param mysqli $db db connection
-     * @return array list of schools in rogo but not in external system
+     * @return array list of schools in ExamSys but not in external system
      */
     public static function diff_external_schools_to_internal_schools($external, $sms, $db)
     {
@@ -404,7 +404,7 @@ class SchoolUtils
             if (!in_array($externalid, $external)) {
                 $diff[] = $externalid;
             } else {
-                // Restore if deleted in Rogo but found in external list.
+                // Restore if deleted in ExamSys but found in external list.
                 if (!is_null($deleted)) {
                     self::restore_school($db, $id);
                 }
@@ -416,7 +416,7 @@ class SchoolUtils
     /**
      * Restore school from recycle bin
      * @param mysqli $db db connection
-     * @param integer $id rogo id of school
+     * @param integer $id ExamSys id of school
      * @return boolean true on success, false otherwise
      */
     public static function restore_school($db, $id)

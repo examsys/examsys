@@ -1,17 +1,17 @@
-{#This file is part of Rogō
+{#This file is part of ExamSys
 
- Rogō is free software: you can redistribute it and/or modify
+ ExamSys is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
- Rogō is distributed in the hope that it will be useful,
+ ExamSys is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+ along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 #}
 
 {#
@@ -20,7 +20,7 @@ This template is for the question media display.
 author Dr Joseph Baxter <joseph.baxter@nottingham.ac.uk>
 copyright 2018 onwards The University of Nottingham
 
-Required variables - 
+Required variables -
 data.mediaid - id
 data.mediatype - type of media
 data.mediawidth - width
@@ -45,7 +45,7 @@ lang.flashendoflife - flash end of life message
 {# Display images #}
 {% if data.mediatype == 2 %}
     <img src="{{data.mediaurl}}" width="{{data.mediawidth}}" height="{{data.mediaheight}}" alt="{{data.mediaalt}}"
-    {% if data.mediaborder %} 
+    {% if data.mediaborder %}
      style="border: 1px solid {{data.mediabordercolour}}"
     {% endif %}
      />

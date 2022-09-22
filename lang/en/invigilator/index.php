@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 $string['invigilatoraccess'] = 'Invigilator Access';
 $string['lab'] = 'Lab:';
@@ -88,5 +88,5 @@ $string['examchecklist'] = 'Exam Checklist';
 $string['viewrubric'] = 'View Rubric';
 $string['examrubric'] = 'Exam Rubric';
 $string['unknowncomputer'] = 'Unknown Computer';
-$string['unknowncomputermsg'] = 'The computer you are attempting to access Rog&#333; from is not recognised.<br />Please call one of the emergency numbers for help.';
+$string['unknowncomputermsg'] = 'The computer you are attempting to access ExamSys from is not recognised.<br />Please call one of the emergency numbers for help.';
 $string['logout'] = 'Logout';

@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Faculty api functions
@@ -28,12 +28,12 @@ namespace api;
  */
 class facultymanagement extends \api\abstractmanagement
 {
-    
+
     /**
      * Language pack component.
      */
     private $langcomponent = 'api/facultymanagement';
-       
+
     /**
      * Status codes
      */
@@ -48,18 +48,18 @@ class facultymanagement extends \api\abstractmanagement
         'FACUTLY_NAME_NOT_SUPPLIED' => 406,
         'FACUTLY_NOTHING_TO_UPDATE' => 407
     );
-    
+
     /**
      * Create faculty
      * @param array $params faculty creation parameters
-     * @param integer $userid rogo user id linked to web service client
+     * @param integer $userid ExamSys user id linked to web service client
      * @return - success status and faculty id
      */
     public function create($params, $userid)
     {
         $langpack = new \langpack();
         $strings = $langpack->get_strings($this->langcomponent, array('faculty_not_created', 'faculty_already_exists', 'faculty_name_not_supplied'));
-        
+
         // Name must be supplied.
         if (!isset($params['name']) or $params['name'] === '') {
             $data = array('statuscode' => $this->statuscodes['FACUTLY_NAME_NOT_SUPPLIED'], 'status' => $strings['faculty_name_not_supplied'], 'id' => null, 'externalid' => null);
@@ -108,11 +108,11 @@ class facultymanagement extends \api\abstractmanagement
         }
         return $this->get_response($data, 'create', $params['nodeid']);
     }
-    
+
     /**
      * Update faculty
      * @param array $params faculty update parameters
-     * @param integer $userid rogo user id linked to web service client
+     * @param integer $userid ExamSys user id linked to web service client
      * @return - success status and faculty id
      */
     public function update($params, $userid)
@@ -136,7 +136,7 @@ class facultymanagement extends \api\abstractmanagement
         } else {
             $facultyid = false;
         }
-        
+
         if ($facultyid) {
             $details = \FacultyUtils::get_faculty_details_by_id($params['id'], $this->db);
             // Check if anything has been updated.
@@ -170,8 +170,8 @@ class facultymanagement extends \api\abstractmanagement
     /**
      * Delete faculty
      * @param array $parms delete faculty parameters
-     * @param integer $userid rogo user id linked to web service client
-     * @return success status and faculty id
+     * @param integer $userid ExamSys user id linked to web service client
+     * @return array success status and faculty id
      */
     public function delete($params, $userid)
     {

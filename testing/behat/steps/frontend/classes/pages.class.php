@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace testing\behat\steps\frontend;
 
@@ -23,7 +23,7 @@ use testing\behat\helpers\database\state;
 use testing\behat\helpers\rogo\Url;
 
 /**
- * Step definitions for navigating to pages in Rogo.
+ * Step definitions for navigating to pages in ExamSys.
  *
  * @copyright Copyright (c) 2020 The University of Nottingham
  * @author Neill Magill <neill.magill@nottingham.ac.uk>
@@ -33,7 +33,7 @@ use testing\behat\helpers\rogo\Url;
 trait pages
 {
     /**
-     * Visit a Rogo page.
+     * Visit a ExamSys page.
      *
      * For valid page types and data @see visit_rogo_page()
      *
@@ -48,7 +48,7 @@ trait pages
     }
 
     /**
-     * Visit a Rogo page where the specific content is identified by a some data.
+     * Visit a ExamSys page where the specific content is identified by a some data.
      *
      * For valid page types and data @see visit_rogo_page()
      *
@@ -64,7 +64,7 @@ trait pages
     }
 
     /**
-     * Visit a Rogo report where the specific filters are identified by a some data.
+     * Visit a ExamSys report where the specific filters are identified by a some data.
      *
      * @Given I run report :name for :page with filters:
      *
@@ -88,7 +88,7 @@ trait pages
     }
 
     /**
-     * Visit a specific section of a Rogo page where the specific content is identified by a some data.
+     * Visit a specific section of a ExamSys page where the specific content is identified by a some data.
      *
      * For valid page types and data @see visit_rogo_page()
      *
@@ -105,7 +105,7 @@ trait pages
     }
 
     /**
-     * Visit a Rogo page
+     * Visit a ExamSys page
      *
      * Valid pages:
      *

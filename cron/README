@@ -1,7 +1,7 @@
-Rogo cron jobs
+ExamSys cron jobs
 ##############
 
-Scripts that are to be run via the crontab should be in this directory. 
+Scripts that are to be run via the crontab should be in this directory.
 
 This directory and the files within it should be readable/executable by the user running the cronjob.
 
@@ -19,7 +19,7 @@ For example, you can run the class totals check at 6 p.m every day with:
 
 Scripts should use the following system environment variables:
 
-ROGO - location of rogo base directory.
+ROGO - location of ExamSys base directory.
 
 ROGOCRONLOGS - location to log output of script, this should be a writable location to the user running the cronjob.
 

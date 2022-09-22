@@ -3,9 +3,9 @@
 * Users of the CAS module would have to modify the code to suit their needs. They may either:
 	1. Display the CAS login page if no user is logged in/let authenticated users through OR
 	2. Check if a CAS user is authenticated and automatically route them to the appropriate page; otherwise, use another form of authentication. This doesn't require the CAS library; it only makes use of the variable $_SESSION['phpCAS']['user'].
-	
+
 	Option 1 is known as "forcing authentication". This method would apply to users who only want to use CAS for authentication. This functionality has been included but commented out in the code.
-	Option 2 is for users who use CAS among other authentication methods and don't want to display the CAS login page within Rogō.
+	Option 2 is for users who use CAS among other authentication methods and don't want to display the CAS login page within ExamSys.
 
 * The CAS configuration file is unnecessary when using basic CAS settings but it needs to be included if users want to use some advanced settings e.g. change the session name.
 * I have the document root referenced as "$_SERVER['DOCUMENT_ROOT']" due to its location on our server.

@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  *
@@ -87,7 +87,7 @@ if (!$lti->valid) {
 
 list($lti_user, $user_updated) = $lti->lookup_lti_user();
 if ($lti_user !== $userObject->get_user_ID()) {
-    // The LTi request is not for the logged in user or the user has not had their external account properly connected to Rogo,
+    // The LTi request is not for the logged in user or the user has not had their external account properly connected to ExamSys,
     // so force a logout and display a message.
     session_unset();
     session_destroy();
@@ -281,7 +281,7 @@ if (!$lti->isInstructor()) {
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta http-equiv="content-type" content="text/html;charset={$configObject->get('cfg_page_charset')}" />
 END;
-        echo '<title>' . page::title('Rog&#333;:') . '</title>';
+        echo '<title>' . page::title('ExamSys:') . '</title>';
         echo <<<END
   <link rel="stylesheet" type="text/css" href="../css/body.css" />
   <style type="text/css">

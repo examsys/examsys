@@ -1,6 +1,6 @@
-# Three js Rogo library
+# Three js ExamSys library
 
-These file enable Rogo to display different types of 3d image files.
+These file enable ExamSys to display different types of 3d image files.
 
 obj.js - .obj file support
 pdb.js - .pdb file support

@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 //HTML5 part
 require $configObject->get('cfg_web_root') . 'lang/' . $language . '/question/edit/hotspot_correct.php';
@@ -299,5 +299,5 @@ $string['stemdisplayerror'] = 'Every scenario must have a stem, or evey scenario
 $string['uploadmedia'] = 'Upload Media';
 $string['selectmedia'] = 'Select Media:';
 $string['altmedia'] = 'Alternate Text:';
-$string['mediaagreement'] = 'I have ensured that the media is licensed so that it may be used on any paper in in Rogō';
+$string['mediaagreement'] = 'I have ensured that the media is licensed so that it may be used on any paper in in ExamSys';
 $string['decorativemedia'] = 'I confirm that the media is only decorative and does not require alternate text';

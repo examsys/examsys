@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  *
@@ -33,7 +33,7 @@ require '../include/sysadmin_auth.inc';
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
 
- <title>Rog&#333;: Online Help gaps</title>
+ <title>ExamSys: Online Help gaps</title>
 
     <style>
         .content {font-size:80%}
@@ -56,13 +56,13 @@ require '../include/sysadmin_auth.inc';
 echo draw_toprightmenu();
 ?>
 <div id="content">
-  
+
   <div class="head_title">
     <div><img src="../artwork/toprightmenu.gif" id="toprightmenu_icon" /></div>
     <div class="breadcrumb"><a href="../index.php"><?php echo $string['home'] ?></a><img src="../artwork/breadcrumb_arrow.png" class="breadcrumb_arrow" alt="-" /><a href="../admin/index.php"><?php echo $string['administrativetools'] ?></a></div>
     <div class="page_title">Online Help gaps</div>
   </div>
-  
+
 <?php
   // Get a list of the distinct languages used.
   $languages = get_languages($mysqli);
@@ -102,7 +102,7 @@ foreach ($languages as $language) {
 }
   
 ?>
-  
+
 </div>
 </body>
 </html>

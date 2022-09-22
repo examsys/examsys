@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace testing\unittest;
 
@@ -23,7 +23,7 @@ use cli_utils;
 use mysqli;
 
 /**
- * This class is used to manage the database used for Rogo unit testing.
+ * This class is used to manage the database used for ExamSys unit testing.
  *
  * Based on /testing/behat/classes/database.php by Neill Magill <neill.magill@nottingham.ac.uk>
  *
@@ -35,7 +35,7 @@ use mysqli;
 class database
 {
     /**
-     * Creates a Rogo database for phpunit testing.
+     * Creates a ExamSys database for phpunit testing.
      *
      * @throws Exception
      */
@@ -87,10 +87,10 @@ class database
         InstallUtils::$sysadmin_title = 'Miss';
         InstallUtils::$sysadmin_email = 'admin@example.com';
 
-        // Ensure that an existing Rogo phpunit database and users are deleted.
+        // Ensure that an existing ExamSys phpunit database and users are deleted.
         self::drop_db();
 
-        // Start installing the base Rogo database.
+        // Start installing the base ExamSys database.
         InstallUtils::checkDBUsers();
         InstallUtils::createDirectories();
         InstallUtils::createDatabase(
@@ -148,7 +148,7 @@ class database
     }
 
     /**
-     * Connect to the Rogo database.
+     * Connect to the ExamSys database.
      *
      * @param string $username
      * @param string $password

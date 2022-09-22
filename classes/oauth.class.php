@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Oauth package
@@ -56,7 +56,7 @@ class oauth
 
     /**
      * Constructor
-     * @param object $configObject - rogo configuration object
+     * @param object $configObject - ExamSys configuration object
      * @return void
      */
     public function __construct($configObject)
@@ -268,7 +268,7 @@ class oauth
     }
 
     /**
-     * get the rogo user id of the oauth client
+     * get the ExamSys user id of the oauth client
      * @param string $client - oauth client
      * @return int|bool - user id if one exists, false otherwise
      */
@@ -289,7 +289,7 @@ class oauth
     }
 
     /**
-     * get the rogo user id from the access token.
+     * get the ExamSys user id from the access token.
      * @param string $access - the accesstoken
      * @return int|bool - user id if one exists, false otherwise
      */

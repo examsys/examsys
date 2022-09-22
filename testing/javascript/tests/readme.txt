@@ -1,7 +1,7 @@
 JavaScript Unit Tests
 =====================
 
-Rogō uses QUnit (https://qunitjs.com/) for testing JavaScript
+ExamSys uses QUnit (https://qunitjs.com/) for testing JavaScript
 
 Each sub-directory is a separate suite of tests, they are run in isolation from each other.
 
@@ -27,7 +27,7 @@ $setup->required_js
 -------------------
 
 Contains an array of all the JavaScript files that are needed by the tests in the suite.
-They should be described by the full path to them from the root of Rogō, without a leading slash.
+They should be described by the full path to them from the root of ExamSys, without a leading slash.
 The scripts will be loaded in the order they are in the array.
 
 $setup->fixture_html

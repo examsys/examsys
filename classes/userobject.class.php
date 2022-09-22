@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 
 /**
@@ -57,6 +57,7 @@ class UserObject extends RogoStaticSingleton
     private $staffModules;
     private $staffTeamModules;
     private $studentModules;
+    /** @var \mysqli The ExamSys database connection.*/
     private $db;
     private $configObj;
 
@@ -106,7 +107,7 @@ class UserObject extends RogoStaticSingleton
     public const GLOBALTHEMEFONTCOLOUR = '#FFFFFF';
     /** @var string the default highlight option colour for an exam */
     public const HIGHLIGHTCOLOUR = '#FCF6CF';
-    
+
     /**
      * Called when the object is unserialised.
      */
@@ -121,8 +122,8 @@ class UserObject extends RogoStaticSingleton
     /**
      * constructor
      *
-     * @param $db is a mysqli link to db
-     * @param $configObject a Rogo config object populated from config.inc
+     * @param mysqli $db is a mysqli link to db
+     * @param Config $configObject a ExamSys config object populated from config.inc
      *
      * @return none
      */

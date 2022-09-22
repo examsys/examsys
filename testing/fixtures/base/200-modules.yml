@@ -8,7 +8,7 @@ modules:
     active: 1
     vle_api: ""
     checklist: "mapping"
-    sms: "test rogo api"
+    sms: "test ExamSys api"
     selfenroll: 0
     schoolid: 2
     neg_marking:

@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 include 'lti_common.php';
 
@@ -23,8 +23,8 @@ $string['firstnames'] = 'First Names';
 $string['initials'] = 'Initials';
 $string['ltiusersearch'] = 'Search LTi User Links (%s)';
 $string['search'] = 'Search';
-$string['searchdesc'] = 'Search for a user by their Rogō username or their external system id';
-$string['searchinternalid'] = 'Rogō Username';
+$string['searchdesc'] = 'Search for a user by their ExamSys username or their external system id';
+$string['searchinternalid'] = 'ExamSys Username';
 $string['searchexternalid'] = 'External User ID';
 $string['surname'] = 'Surname';
 $string['title'] = 'Title';

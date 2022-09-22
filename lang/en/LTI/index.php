@@ -1,25 +1,25 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 include 'lti_common.php';
 
-$string['invaliduser'] = 'The LTi request is not for the user logged into Rogo. Please reload the page to login.';
+$string['invaliduser'] = 'The LTi request is not for the user logged into ExamSys. Please reload the page to login.';
 $string['NoPapers'] = 'No Papers for this module';
-$string['NoPapersDesc'] = 'There are no papers available for this module.  This is probably because you have just created a new link from the VLE with a new module and therefore havent got any papers currently configured.<br /><br />Please <a href="../" target="_blank">launch Rogo</a> to create a paper'; //close the browser (<strong>very important</strong>) and then go to the Rogo homepage and create a paper.
+$string['NoPapersDesc'] = 'There are no papers available for this module.  This is probably because you have just created a new link from the VLE with a new module and therefore havent got any papers currently configured.<br /><br />Please <a href="../" target="_blank">launch ExamSys</a> to create a paper'; //close the browser (<strong>very important</strong>) and then go to the ExamSys homepage and create a paper.
 
 $string['NoModCreateTitle'] = 'Module Creation is not enabled';
 $string['NoModCreate'] = 'Module Creation from LTI is not enabled in the config so we cannot create the module with course code: ';

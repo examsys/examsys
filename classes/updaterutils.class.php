@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  *
@@ -358,7 +358,7 @@ class UpdaterUtils
             $checkcfg = (version::is_version_higher($version, $cfg_version) or $cfg_version == $version);
         } else {
             // Production systems should not run update files for versions that were built if the config file is
-            // for that version of Rogo, as they should have already been run.
+            // for that version of ExamSys, as they should have already been run.
             $checkcfg = version::is_version_higher($version, $cfg_version);
         }
         $run_update = ($checkcfg and $checkcode);
@@ -372,7 +372,7 @@ class UpdaterUtils
      * @param string $search              - A string to look for to see if the new lines already exist
      * @param array $new_lines        - An array of new lines to insert.
      * @param int $default_line       - Default line number to add to if no $target_line is found. Use -1 for end-of-file.
-     * @param string $cfg_web_root    - Path to the root of Rogo.
+     * @param string $cfg_web_root    - Path to the root of ExamSys.
      * @param string $target_line     - A string to find on a target line to act as a location for the new lines
      * @param int $offset                     - A plus or negative offset from $target_line to insert the new lines
      */
@@ -415,7 +415,7 @@ class UpdaterUtils
      * @param string $string              - Language translations.
      * @param string $replace             - A string to replace
      * @param string $new_line        - A  new line to insert.
-     * @param string $cfg_web_root    - Path to the root of Rogo.
+     * @param string $cfg_web_root    - Path to the root of ExamSys.
      */
     public function replace_line($string, $replace, $new_line, $cfg_web_root)
     {
@@ -445,8 +445,8 @@ class UpdaterUtils
     /**
      * Takes a backup of the configuration file.
      *
-     * @param string $cfg_web_root    - Path to the root of Rogo.
-     * @param string $old_version     - Uses the old version of Rogo to make the backup filename.
+     * @param string $cfg_web_root    - Path to the root of ExamSys.
+     * @param string $old_version     - Uses the old version of ExamSys to make the backup filename.
      */
     public function backup_file($cfg_web_root, $old_version)
     {
@@ -461,7 +461,7 @@ class UpdaterUtils
      * Safety checks in place in case there is other closing tag usage.
      *
      * @param string $string               - Language translations.
-     * @param string $cfg_web_root     - Path to the root of Rogo.
+     * @param string $cfg_web_root     - Path to the root of ExamSys.
      */
     public function clean_php_closing_tag($string, $cfg_web_root)
     {

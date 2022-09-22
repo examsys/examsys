@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 $string['formative self-assessment'] = 'Formative Self-Assessment';
 $string['formative quiz'] = 'Formative Quiz';
@@ -34,5 +34,5 @@ $string['description1'] = 'Normally used for mid-term tests where feedback is no
 $string['description2'] = "High-stakes exams where marks contribute to a student's course.";
 $string['description3'] = 'A questionnaire used for eliciting views and feedback from students.';
 $string['description4'] = 'Objective Structured Clinical Examination (OSCE) assessment type used for medical and health sciences fields.';
-$string['description5'] = 'This paper type allows marks from offline papers to be loaded into Rogo.';
+$string['description5'] = 'This paper type allows marks from offline papers to be loaded into ExamSys.';
 $string['description6'] = 'Generates a form for students to review their peers.';

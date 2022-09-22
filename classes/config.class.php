@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  *
@@ -29,7 +29,7 @@
 class Config extends RogoStaticSingleton
 {
     /**
-     * Areas of the Rogo system that can be configured.
+     * Areas of the ExamSys system that can be configured.
      * @var array list of areas
      */
     public static $config_area = array('api', 'gradebook', 'lti', 'paper', 'summative', 'url', 'misc', 'calc', 'system', 'rpt', 'stdset', 'ims', 'contact');
@@ -53,10 +53,10 @@ class Config extends RogoStaticSingleton
     /** @var bool Stores if the config object has been setup for phpunit. */
     protected $phpunitsetup = false;
 
-    /** The path to the behat config file relative to the root Rogo directory. */
+    /** The path to the behat config file relative to the root ExamSys directory. */
     public const BEHAT_CONFIG_FILE = '/config/behat.xml';
 
-    /** The path to the phpunit config file relative to the root Rogo directory. */
+    /** The path to the phpunit config file relative to the root ExamSys directory. */
     public const PHP_UNIT_CONFIG_FILE = '/config/phpunit.xml';
 
     /**
@@ -170,7 +170,7 @@ class Config extends RogoStaticSingleton
     }
 
     /**
-     * Loads the behat configuration for Rogo.
+     * Loads the behat configuration for ExamSys.
      *
      * @return void
      */
@@ -187,7 +187,7 @@ class Config extends RogoStaticSingleton
     }
 
     /**
-     * Loads the phpunit configuration for Rogo.
+     * Loads the phpunit configuration for ExamSys.
      *
      * @return void
      */
@@ -303,7 +303,7 @@ class Config extends RogoStaticSingleton
     }
 
     /**
-     * Test if Rogo is being accessed as a behat website.
+     * Test if ExamSys is being accessed as a behat website.
      *
      * @return boolean
      */
@@ -315,7 +315,7 @@ class Config extends RogoStaticSingleton
     }
 
     /**
-     * Test if Rogo is being accessed as a phpunit suite.
+     * Test if ExamSys is being accessed as a phpunit suite.
      *
      * @return boolean
      */
@@ -326,7 +326,7 @@ class Config extends RogoStaticSingleton
     }
 
     /**
-     * Setup Rogo site to use the the behat database.
+     * Setup ExamSys site to use the the behat database.
      *
      * @return void
      */
@@ -374,7 +374,7 @@ class Config extends RogoStaticSingleton
     }
 
     /**
-     * Setup Rogo site to use the the phpunit database.
+     * Setup ExamSys site to use the the phpunit database.
      *
      * @return void
      */

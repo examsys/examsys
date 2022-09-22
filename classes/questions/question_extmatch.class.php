@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  *
@@ -414,7 +414,7 @@ class QuestionEXTMATCH extends QuestionEdit
         }
 
         // The question requires that every scenario has either a stem or every scenario has media.
-        // Some with one and some with another breaks Rogo...
+        // Some with one and some with another breaks ExamSys...
         if ($used !== $stems and $used !== $media) {
             // Make this the first error.
             array_unshift($errors, $this->_lang_strings['stemdisplayerror']);

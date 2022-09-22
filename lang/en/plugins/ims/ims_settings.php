@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Strings for component 'enrol_imsenterprise', language 'en'.
@@ -30,37 +30,37 @@ $string['allowunenrol'] = 'Allow the IMS data to <strong>unenrol</strong> studen
 $string['allowunenrol_desc'] = 'If enabled, course enrolments will be removed when specified in the Enterprise data.';
 $string['basicsettings'] = 'Basic settings';
 $string['coursesettings'] = 'Module data options';
-$string['createschools'] = 'Create new schools if not found in Rogō';
+$string['createschools'] = 'Create new schools if not found in ExamSys';
 $string['createschools_desc'] = 'If the <org><orgunit> element is present in a course\'s incoming data, its content will be used to specify a school if the module is to be created from scratch. The plugin will NOT re-categorise existing courses.
 
 If no category exists with the desired name, then a hidden category will be created.';
-$string['createmodules'] = 'Create new modules if not found in Rogō';
-$string['createmodules_desc'] = 'If enabled, the IMS Enterprise enrolment plugin can create new modules for any it finds in the IMS data but not in Rogō\'s database.' ;
-$string['createfaculties'] = 'Create new faculties if not found in Rogō';
-$string['createprogrammes'] = 'Create new programmes if not found in Rogō';
-$string['createprogrammes_desc'] = 'If enabled, the IMS Enterprise enrolment plugin can create new programmes for any it finds in the IMS data but not in Rogō\'s database. ';
-$string['createfaculties_desc'] = 'If enabled, the IMS Enterprise enrolment plugin can create new faculties for any it finds in the IMS data but not in Rogō\'s database. ';
-$string['createusers'] = 'Create user accounts for users not yet registered in Rogō';
-$string['createusers_desc'] = 'IMS Enterprise enrolment data typically describes a set of users. If enabled, accounts can be created for any users not found in Rogō\'s database.
+$string['createmodules'] = 'Create new modules if not found in ExamSys';
+$string['createmodules_desc'] = 'If enabled, the IMS Enterprise enrolment plugin can create new modules for any it finds in the IMS data but not in ExamSys\'s database.' ;
+$string['createfaculties'] = 'Create new faculties if not found in ExamSys';
+$string['createprogrammes'] = 'Create new programmes if not found in ExamSys';
+$string['createprogrammes_desc'] = 'If enabled, the IMS Enterprise enrolment plugin can create new programmes for any it finds in the IMS data but not in ExamSys\'s database. ';
+$string['createfaculties_desc'] = 'If enabled, the IMS Enterprise enrolment plugin can create new faculties for any it finds in the IMS data but not in ExamSys\'s database. ';
+$string['createusers'] = 'Create user accounts for users not yet registered in ExamSys';
+$string['createusers_desc'] = 'IMS Enterprise enrolment data typically describes a set of users. If enabled, accounts can be created for any users not found in ExamSys\'s database.
 
-Users are searched for first by their idnumber, and second by their Rogō username. Passwords are not imported by the IMS Enterprise plugin. The use of an authentication plugin is recommended for authenticating users.';
+Users are searched for first by their idnumber, and second by their ExamSys username. Passwords are not imported by the IMS Enterprise plugin. The use of an authentication plugin is recommended for authenticating users.';
 $string['cronfrequency'] = 'Frequency of processing';
 $string['default'] = 'Default: ';
 $string['yes'] = 'Yes';
 $string['no'] = 'No';
 $string['empty'] = 'Empty';
 $string['deleteusers'] = 'Delete user accounts when specified in IMS data';
-$string['deleteusers_desc'] = 'If enabled, IMS Enterprise enrolment data can specify the deletion of user accounts (if the recstatus flag is set to 3, which represents deletion of an account). As is standard in Rogō, the user record isn\'t actually deleted from Rogō\'s database, but a flag is set to mark the account as deleted.';
+$string['deleteusers_desc'] = 'If enabled, IMS Enterprise enrolment data can specify the deletion of user accounts (if the recstatus flag is set to 3, which represents deletion of an account). As is standard in ExamSys, the user record isn\'t actually deleted from ExamSys\'s database, but a flag is set to mark the account as deleted.';
 $string['doitnow'] = 'perform an IMS Enterprise import right now';
 $string['emptyattribute'] = 'Leave it empty';
-$string['filelockedmail'] = 'The text file you are using for IMS-file-based enrolments ({$a}) can not be deleted by the cron process.  This usually means the permissions are wrong on it.  Please fix the permissions so that Rogō can delete the file, otherwise it might be processed repeatedly.';
+$string['filelockedmail'] = 'The text file you are using for IMS-file-based enrolments ({$a}) can not be deleted by the cron process.  This usually means the permissions are wrong on it.  Please fix the permissions so that ExamSys can delete the file, otherwise it might be processed repeatedly.';
 $string['filelockedmailsubject'] = 'Important error: Enrolment file';
 $string['fixcasenames'] = 'Change  names to Title Case';
 $string['fixcasenames_desc'] = "This would break certain names like: McGuiness, Temple-Nugent, d'Aramitz,
 de Porthau";
 $string['fixcaseusernames'] = 'Change usernames to lower case';
 $string['imstitle'] = 'IMS Enterprise enrolment';
-$string['imsrolesdescription'] = 'The IMS Enterprise specification includes 8 distinct role types. Please choose how you want them to be assigned in Rogō, including whether any of them should be ignored.';
+$string['imsrolesdescription'] = 'The IMS Enterprise specification includes 8 distinct role types. Please choose how you want them to be assigned in ExamSys, including whether any of them should be ignored.';
 $string['imssettings'] = 'IMS Settings';
 $string['location'] = 'File location';
 $string['logtolocation'] = 'Log file output location (blank for no logging)';
@@ -76,7 +76,7 @@ $string['processphotowarning'] = 'Warning: Image processing is likely to add a s
 $string['restricttarget'] = 'Only process data if the following target is specified';
 $string['restricttarget_desc'] = 'An IMS Enterprise data file could be intended for multiple targets - different LMSes, or different systems within a school/university. It\'s possible to specify in the Enterprise file that the data is intended for one or more named target systems, by naming them in target tags contained within the properties tag.
 
-In general you don\'t need to worry about this. Leave the setting blank and Rogō will always process the data file, no matter whether a target is specified or not. Otherwise, fill in the exact name that will be output inside the target tag.';
+In general you don\'t need to worry about this. Leave the setting blank and ExamSys will always process the data file, no matter whether a target is specified or not. Otherwise, fill in the exact name that will be output inside the target tag.';
 $string['role_learner'] = 'Learner  (01)';
 $string['role_instructor'] = 'Instructor (02)';
 $string['role_contentdeveloper'] = 'Content Developer (03)';
@@ -92,7 +92,7 @@ $string['settingmoduleiddescription'] = 'The short name is a required course fie
 $string['sourcedidfailback'] = 'Use the &quot;sourcedid&quot; for a person\'s userid if the &quot;userid&quot; field is not found';
 $string['sourcedidfailback_desc'] = 'In IMS data, the <sourcedid> field represents the persistent ID code for a person as used in the source system. The <userid> field is a separate field which should contain the ID code used by the user when logging in. In many cases these two codes may be the same - but not always.
 
-Some student information systems fail to output the <userid> field. If this is the case, you should enable this setting to allow for using the <sourcedid> as the Rogō user ID. Otherwise, leave this setting disabled.';
+Some student information systems fail to output the <userid> field. If this is the case, you should enable this setting to allow for using the <sourcedid> as the ExamSys user ID. Otherwise, leave this setting disabled.';
 $string['student'] = 'Student';
 $string['teacher'] = 'Teacher';
 $string['noneditingteacher'] = 'Non-editing teacher';

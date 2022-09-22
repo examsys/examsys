@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 require '../lang/' . $language . '/include/user_search_options.php';
 
@@ -29,10 +29,10 @@ $string['usersadded'] = 'users added';
 $string['usersupdated'] = 'existing users updated';
 $string['missingcolumn'] = 'Missing \'%s\' Colum from import please add it.';
 $string['finished'] = 'Finished';
-$string['newrogoaccount'] = 'New Rogo Account';
+$string['newrogoaccount'] = 'New ExamSys Account';
 $string['emailmsg1'] = 'Create new user account';
 $string['emailmsg2'] = 'Dear';
-$string['emailmsg3'] = 'A new account has been created to access the online assessment and survey system Rogō. Your personal authentication details are the same as your university log in details.';
+$string['emailmsg3'] = 'A new account has been created to access the online assessment and survey system ExamSys. Your personal authentication details are the same as your university log in details.';
 $string['emailmsg4'] = 'Note:';
 $string['emailmsg5'] = 'Never share your university username/password with anyone.';
 $string['emailmsg6'] = 'Cheating in summative examinations is an academic offence and will not be tolerated.';

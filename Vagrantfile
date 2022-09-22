@@ -4,7 +4,7 @@
 # makes the "works on my machine" excuse a relic of the past.
 #
 # For more details visit `https://www.vagrantup.com/` or just type `vagrant up`
-# to start your local Rogo environment.
+# to start your local ExamSys environment.
 #
 Vagrant.configure("2") do |config|
   config.vm.box = "bento/ubuntu-18.04"
@@ -59,7 +59,7 @@ Vagrant.configure("2") do |config|
             SSLCertificateFile /etc/ssl/certs/ssl-cert-snakeoil.pem
             SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
     </VirtualHost>
-" > /etc/apache2/sites-available/rogo.conf
+" > /etc/apache2/sites-available/examsys.conf
 
     # enable apache mods
     a2enmod rewrite
@@ -67,10 +67,10 @@ Vagrant.configure("2") do |config|
 
     # set Apache virtual hosts
     a2dissite 000-default
-    a2ensite rogo
+    a2ensite examsys
     rm -rf /var/www/html
 
-    # rogo php settings
+    # ExamSys php settings
     echo "
 max_execution_time = 120
 memory_limit = 512M
@@ -93,7 +93,7 @@ session.save_path = "localhost:11211"
 
     # create data dir
     cd /
-    mkdir rogodata
+    mkdir examsysdata
 
     # remove config file
     if [ -e /var/www/config/config.inc.php ]; then
@@ -102,9 +102,9 @@ session.save_path = "localhost:11211"
     fi
 
     if [ -e /var/www/config/settings.xml ]; then
-        # install rogo via setting file
+        # install ExamSys via setting file
         cd /var/www
-        php cli/init.php -uroot -pPassw0rd -s127.0.0.1 -t3306 -nrogo
+        php cli/init.php -uroot -pPassw0rd -s127.0.0.1 -t3306 -nexamsys
     else
         # manual install - just get composer files
         cd /var/www
@@ -114,7 +114,7 @@ session.save_path = "localhost:11211"
 
     # set data dir perms
     cd /
-    chown -R www-data:www-data rogodata
+    chown -R www-data:www-data examsysdata
 
     # start up Rrserve
     R CMD Rserve --no-save

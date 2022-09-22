@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  *
@@ -50,7 +50,7 @@ if (isset($_SESSION['_lti_context'])) {
     $css = "<style type=\"text/css\">\n  body {background-color:transparent !important}\n</style>\n";
 }
 
-$lang['title'] = 'Rogō - ' . $string['signin'];
+$lang['title'] = 'ExamSys - ' . $string['signin'];
 $render->render($headerdata, $lang, 'header.html', $js, $css);
 ?>
 <div class="html5warn"><?php echo $string['html5warn'] ?></div>
@@ -59,7 +59,7 @@ $render->render($headerdata, $lang, 'header.html', $js, $css);
 
         <img src="<?php echo $this->configObj->get('cfg_root_path') ?>/artwork/r_logo.gif" alt="logo" class="logo_img" />
 
-        <h1 class="logo_lrg_txt">Rogō</h1>
+        <h1 class="logo_lrg_txt">ExamSys</h1>
         <div class="logo_small_txt"><?php echo $string['eassessmentmanagementsystem']; ?></div>
 
         <br/>
@@ -166,7 +166,7 @@ HTML;
         }
         ?>
 
-        <div class="versionno">Rogō <?php echo $this->configObj->get_setting('core', 'rogo_version') ?></div>
+        <div class="versionno">ExamSys <?php echo $this->configObj->get_setting('core', 'rogo_version') ?></div>
 
     </div>
 </form>

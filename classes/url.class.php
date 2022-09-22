@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Utility class to handle URLs.
@@ -38,7 +38,7 @@ class Url
     public const QUERY = 'query';
     public const FRAGMENT = 'fragment';
 
-    /** The path relative to the base of Rogo. */
+    /** The path relative to the base of ExamSys. */
     public const ROGOPATH = 'rogo';
 
     /**
@@ -120,9 +120,9 @@ class Url
         // Get the base url with no trailing space.
         $base = rtrim(Config::get_instance()->get('cfg_root_path'), '/');
 
-        // Calculate the URL relative to the base of Rogo.
+        // Calculate the URL relative to the base of ExamSys.
         if (!empty($base) and mb_strpos($this->parts[static::PATH], $base) === 0) {
-            // Rogo is in a sub directory.
+            // ExamSys is in a sub directory.
             $this->parts[self::ROGOPATH] = mb_substr($this->parts[static::PATH], mb_strlen($base));
         } else {
             $this->parts[self::ROGOPATH] = $this->parts[static::PATH];
@@ -202,7 +202,7 @@ class Url
     }
 
     /**
-     * Get URL path relative to the Rogo base path.
+     * Get URL path relative to the ExamSys base path.
      *
      * @return string
      */

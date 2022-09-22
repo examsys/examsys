@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * IMS Enterprise file enrolment plugin.
@@ -99,9 +99,9 @@ class ims_enterprise
     protected $validatexml;
     /** @var stdClass DB Object */
     protected $db;
-    /** @var $modulemappings array of mappings between IMS data fields and Rogō module fields. */
+    /** @var $modulemappings array of mappings between IMS data fields and ExamSys module fields. */
     protected $modulemappings;
-    /** @var $rolemappings array of mappings between IMS roles and Rogō roles. */
+    /** @var $rolemappings array of mappings between IMS roles and ExamSys roles. */
     protected $rolemappings;
     /** @var string Xml file location */
     protected $filename;
@@ -597,7 +597,7 @@ class ims_enterprise
     }
 
     /**
-     * Process the group tag. This defines a Rogō module.
+     * Process the group tag. This defines a ExamSys module.
      * @param string $domnode The raw contents of the XML element
      */
     protected function process_group_tag($domnode)
@@ -878,7 +878,7 @@ class ims_enterprise
     }
 
     /**
-     * Process the person tag. This defines a Rogō user.
+     * Process the person tag. This defines a ExamSys user.
      *
      * @param string $node The raw contents of the XML element
      * @param stdClass $xml
@@ -1045,7 +1045,7 @@ class ims_enterprise
     }
 
     /**
-     * Process the membership tag. This defines whether the specified Rogō users
+     * Process the membership tag. This defines whether the specified ExamSys users
      * should be added/removed as teachers/students.
      *
      * @param string $domnode The raw contents of the XML element

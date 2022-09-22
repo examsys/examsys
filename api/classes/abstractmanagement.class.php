@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Abstract API functionality
@@ -38,7 +38,7 @@ abstract class abstractmanagement
      *
      * Operation to create an academic construct such as a module or school.
      * @param array $params - parametes in request
-     * @param integer $userid rogo user id linked to web service client
+     * @param integer $userid ExamSys user id linked to web service client
      * @return array response to operation, id of construct or error message.
      */
     abstract public function create($params, $userid);
@@ -48,7 +48,7 @@ abstract class abstractmanagement
      *
      * Operation to delete an academic construct such as a module or school.
      * @param array $params - parametes in request
-     * @param integer $userid rogo user id linked to web service client
+     * @param integer $userid ExamSys user id linked to web service client
      * @return array response to operation, id of construct or error message.
      */
     abstract public function delete($params, $userid);

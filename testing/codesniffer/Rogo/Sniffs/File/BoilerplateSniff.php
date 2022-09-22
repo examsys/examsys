@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace PHP_CodeSniffer\Standards\Rogo\Sniffs\File;
 
@@ -70,20 +70,20 @@ class BoilerplateSniff implements Sniff
             return;
         }
         $expected_boilderplate = array(
-            2 => '// This file is part of Rogō',
+            2 => '// This file is part of ExamSys',
             3 => '//',
-            4 => '// Rogō is free software: you can redistribute it and/or modify',
+            4 => '// ExamSys is free software: you can redistribute it and/or modify',
             5 => '// it under the terms of the GNU General Public License as published by',
             6 => '// the Free Software Foundation, either version 3 of the License, or',
             7 => '// (at your option) any later version.',
             8 => '//',
-            9 => '// Rogō is distributed in the hope that it will be useful,',
+            9 => '// ExamSys is distributed in the hope that it will be useful,',
             10 => '// but WITHOUT ANY WARRANTY; without even the implied warranty of',
             11 => '// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the',
             12 => '// GNU General Public License for more details.',
             13 => '//',
             14 => '// You should have received a copy of the GNU General Public License',
-            15 => '// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.',
+            15 => '// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.',
         );
         foreach ($expected_boilderplate as $offset => $value) {
             $next_comment = $phpcsFile->findNext(T_COMMENT, $stackPtr + $offset);

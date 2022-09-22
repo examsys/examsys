@@ -1,26 +1,26 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace testing\datagenerator;
 
 use UserUtils;
 
 /**
- * Generates Rogo users.
+ * Generates ExamSys users.
  *
  * @author Neill Magill <neill.magill@nottingham.ac.uk>
  * @copyright Copyright (c) 2015 The University of Nottingham
@@ -167,7 +167,7 @@ class users extends generator
      * - value string The value of the metadata.
      * - calendar_year int The id of the the year.
      *
-     * @param int $userid Internal id of a Rogo user.
+     * @param int $userid Internal id of a ExamSys user.
      * @param int $moduleid Internal id of a module.
      * @param array|stdClass $parameters
      * @return array Contains the values that were inserted into the database for the metadata.
@@ -205,7 +205,7 @@ class users extends generator
     }
 
     /**
-     * Create a Rogo user based on the parameters passed. The parameters should
+     * Create a ExamSys user based on the parameters passed. The parameters should
      * correspond to fields in the users database table.
      *
      * Note there are two password paramters you can set:

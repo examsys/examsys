@@ -1,6 +1,6 @@
 @core
 Feature: Home page
-   In order to allow access to Rogo
+   In order to allow access to ExamSys
    As a user
    I should be able to see home page after login
 
@@ -19,10 +19,10 @@ Feature: Home page
          | Administrative Tools |
          | Help & Support |
          | Sign Out |
-         | About Rogō | 
+         | About ExamSys |
       When I click "Help & Support" "main_menu_item"
-      Then I should see popup page with title "Rogō: Help"
-      When I close popup window "Rogō: Help"
+      Then I should see popup page with title "ExamSys: Help"
+      When I close popup window "ExamSys: Help"
       And I toggle the main menu
       And I click "Administrative Tools" "main_menu_item"
       Then I should see page with title "Administrative Tools"

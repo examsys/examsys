@@ -1,6 +1,6 @@
 @core
 Feature: Login
-  In order to allow access to Rogo
+  In order to allow access to ExamSys
   As a user
   I should be able to login
 

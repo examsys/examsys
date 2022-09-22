@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Course enrolment api functions
@@ -34,7 +34,7 @@ class usermanagement extends \api\abstractmanagement
      */
     private $langcomponent = 'api/usermanagement';
     /**
-     * List of valid staff member courses within Rogo that the API can assign.
+     * List of valid staff member courses within ExamSys that the API can assign.
      * @var array $staffcourses
      */
     private static $staffcourses = array('University Lecturer', 'NHS Lecturer');
@@ -111,7 +111,7 @@ class usermanagement extends \api\abstractmanagement
     /**
      * Create user
      * @param array $params create user params
-     * @param integer $userid rogo user id linked to web service client
+     * @param integer $userid ExamSys user id linked to web service client
      * @return - success status and user id
      */
     public function create($params, $userid)
@@ -174,7 +174,7 @@ class usermanagement extends \api\abstractmanagement
     /**
      * Update user
      * @param array $params update user params
-     * @param integer $userid rogo user id linked to web service client
+     * @param integer $userid ExamSys user id linked to web service client
      * @return - success status and user id
      */
     public function update($params, $userid)
@@ -272,7 +272,7 @@ class usermanagement extends \api\abstractmanagement
     /**
      * Delete user
      * @param array $parms delete user parameters
-     * @param integer $userid rogo user id linked to web service client
+     * @param integer $userid ExamSys user id linked to web service client
      * @return
      */
     public function delete($params, $userid)

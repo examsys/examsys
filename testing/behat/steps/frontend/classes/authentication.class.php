@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace testing\behat\steps\frontend;
 
@@ -32,14 +32,14 @@ use Behat\Gherkin\Node\TableNode;
 trait authentication
 {
     /**
-     * Log into Rogo.
+     * Log into ExamSys.
      *
      * @Given /^I login as "([^"]*)"$/
      * @param $username The username to be logged in.
      */
     public function i_login_as($username)
     {
-        // Goto the base Rogo path.
+        // Goto the base ExamSys path.
         $this->getSession()->visit($this->locatePath('/'));
         $this->lookForErrors();
         $this->i_set_field('ROGO_USER', $username);
@@ -55,7 +55,7 @@ trait authentication
     }
 
     /**
-     * Log out Rogo.
+     * Log out ExamSys.
      *
      * @Then /^I log out$/
      * @param $username The username to be logged in.
@@ -67,7 +67,7 @@ trait authentication
     }
 
     /**
-     * Log out Rogo transparently without changing page
+     * Log out ExamSys transparently without changing page
      *
      * @Then /^I destroy the session$/
      */
@@ -78,7 +78,7 @@ trait authentication
     }
 
     /**
-     * Re-log into Rogo from the current page.
+     * Re-log into ExamSys from the current page.
      *
      * @Given /^I relogin as "([^"]*)"$/
      * @param $username The username to be logged in.

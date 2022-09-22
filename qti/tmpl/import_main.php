@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  *
@@ -39,7 +39,7 @@ if (isset($_GET['module'])) {
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta http-equiv="content-type" content="text/html;charset=<?php echo $configObject->get('cfg_page_charset') ?>" />
     <title><?php echo $string['importfromqti'] ?></title>
-  
+
     <link rel="stylesheet" type="text/css" href="../css/body.css" />
     <link rel="stylesheet" type="text/css" href="../css/header.css" />
     <link rel="stylesheet" type="text/css" href="../css/dialog.css" />
@@ -86,12 +86,12 @@ if (!isset($qtiimportdirectory)) {
 <br/>
 <br/>
 
-<table border="0" cellpadding="0" cellspacing="0" class="dialog_border" style="width:500px; text-align:left"> 
-    <tr> 
+<table border="0" cellpadding="0" cellspacing="0" class="dialog_border" style="width:500px; text-align:left">
+    <tr>
         <td class="dialog_header" style="width:55px"><img src="../artwork/ims_logo.png" width="47" height="44" alt="IMS Logo" /></td><td class="dialog_header" style="width:445px; font-size:160%; font-weight:bold; color:#5582D2"><?php echo $string['qtiimport'] ?></td>
-    </tr> 
-    <tr> 
-        <td align="left" class="dialog_body" colspan="2"> 
+    </tr>
+    <tr>
+        <td align="left" class="dialog_body" colspan="2">
 <?php
 if (isset($result['load']['data'])) {
     $total = count($result['load']['data']->questions);

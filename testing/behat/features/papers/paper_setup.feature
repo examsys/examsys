@@ -43,7 +43,7 @@ Feature: Paper setup
     Given I login as "teacher"
     And I am on "Paper Details" page for "a formative paper"
     And I follow "Add Questions to Paper"
-    And I add the following questions via "Rogō: Questions Bank":
+    And I add the following questions via "ExamSys: Questions Bank":
       | tf 1 leadin |
       | tf 2 leadin |
     And I wait for questions to load

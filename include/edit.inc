@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  *
@@ -269,9 +269,9 @@ HTML;
 /**
  * Inserts a question into a paper.
  *
- * @param int $p_id The id of the Rogo paper the question should be inserted into.
+ * @param int $p_id The id of the ExamSys paper the question should be inserted into.
  * @param int $q_id The id of the question that should be inserted.
- * @param mysqli $db The database connection for Rogo
+ * @param mysqli $db The database connection for ExamSys
  * @return int The id of the record that links the question to the paper.
  */
 function insert_into_papers($p_id, $q_id, $db)

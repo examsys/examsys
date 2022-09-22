@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Dchool api functions
@@ -28,12 +28,12 @@ namespace api;
  */
 class schoolmanagement extends \api\abstractmanagement
 {
-    
+
     /**
      * Language pack component.
      */
     private $langcomponent = 'api/schoolmanagement';
-    
+
     /**
      * Status codes
      */
@@ -49,11 +49,11 @@ class schoolmanagement extends \api\abstractmanagement
         'SCHOOL_NOTHING_TO_UPDATE' => 607,
         'SCHOOL_FACULTY_EXTID_INVALID' => 608
     );
-        
+
     /**
      * Create school
      * @param array $params school creation parameters
-     * @param integer $userid rogo user id linked to web service client
+     * @param integer $userid ExamSys user id linked to web service client
      * @return - success status and school id
      */
     public function create($params, $userid)
@@ -118,11 +118,11 @@ class schoolmanagement extends \api\abstractmanagement
         }
         return $this->get_response($data, 'create', $params['nodeid']);
     }
-    
+
     /**
      * Update school
      * @param array $params school update parameters
-     * @param integer $userid rogo user id linked to web service client
+     * @param integer $userid ExamSys user id linked to web service client
      * @return - success status and school id
      */
     public function update($params, $userid)
@@ -145,7 +145,7 @@ class schoolmanagement extends \api\abstractmanagement
         } else {
             $schoolid = false;
         }
-        
+
         if ($schoolid) {
             $details = \SchoolUtils::get_school_details_by_id($params['id'], $this->db);
             // Check if anything has been updated.
@@ -155,19 +155,19 @@ class schoolmanagement extends \api\abstractmanagement
             $data = array('statuscode' => $this->statuscodes['SCHOOL_DOES_NOT_EXIST'], 'status' => $strings['school_does_not_exist'], 'id' => null, 'externalid' => null);
             return $this->get_response($data, 'update', $params['nodeid']);
         }
-        
+
         // Get name if not provided.
         if (empty($params['name'])) {
             if (!isset($params['name'])) {
                 $params['name'] = $details['name'];
             }
         }
-        
+
         // Get code if not provided.
         if (!isset($params['code'])) {
             $params['code'] = $details['code'];
         }
-        
+
         // Get faculty if provided.
         if (!empty($params['facultyextid'])) {
             $facultyid = \FacultyUtils::get_facultyid_from_externalid($params['facultyextid'], $params['externalsys'], $this->db);
@@ -194,7 +194,7 @@ class schoolmanagement extends \api\abstractmanagement
         } else {
             $faculty = false;
         }
-        
+
         if ($faculty) {
             // Update school.
             if ($change) {
@@ -216,8 +216,8 @@ class schoolmanagement extends \api\abstractmanagement
     /**
      * Delete school
      * @param array $parms delete school parameters
-     * @param integer $userid rogo user id linked to web service client
-     * @return success status and school id
+     * @param integer $userid ExamSys user id linked to web service client
+     * @return array success status and school id
      */
     public function delete($params, $userid)
     {

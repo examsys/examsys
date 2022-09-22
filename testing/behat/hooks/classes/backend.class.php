@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace testing\behat\hooks;
 
@@ -34,7 +34,7 @@ use Config as RogoConfig;
 use Exception;
 
 /**
- * This class should define all the pre and post hooks for Rogo backend behat tests.
+ * This class should define all the pre and post hooks for ExamSys backend behat tests.
  *
  * This includes:
  * - cleaning up the database
@@ -76,7 +76,7 @@ trait backend
         $config = RogoConfig::get_instance();
         // Check version behat built for matches code version.
         if (environment::upgrade_needed()) {
-            $message = 'The version of the Rogo that the Behat database was built for does not match the version of the Rogo code (' . $config->getxml('version') . ')';
+            $message = 'The version of the ExamSys that the Behat database was built for does not match the version of the ExamSys code (' . $config->getxml('version') . ')';
             throw new Exception($message);
         }
         self::$default_config = clone($config);
@@ -123,7 +123,7 @@ trait backend
     }
 
     /**
-     * Cleanup up Rogo after a scenario has been run.
+     * Cleanup up ExamSys after a scenario has been run.
      *
      * @AfterScenario
      */
@@ -143,7 +143,7 @@ trait backend
     }
 
     /**
-     * Clean up Rogo after a feature file has been run.
+     * Clean up ExamSys after a feature file has been run.
      *
      * @AfterFeature
      */
@@ -158,7 +158,7 @@ trait backend
     }
 
     /**
-     * Clean up Rogo after the suite has finished running.
+     * Clean up ExamSys after the suite has finished running.
      *
      * @AfterSuite
      */

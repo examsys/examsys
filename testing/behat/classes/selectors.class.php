@@ -1,26 +1,26 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace testing\behat;
 
 use Behat\Mink\Session;
 
 /**
- * Used to define things that behat can select in Rogo
+ * Used to define things that behat can select in ExamSys
  *
  * @author Neill Magill <neill.magill@nottingham.ac.uk>
  * @copyright Copyright (c) 2015 The University of Nottingham
@@ -53,7 +53,7 @@ class selectors
         'option' => 'option',
         'fieldset' => 'fieldset',
         'table' => 'table',
-        // Rogo selectors.
+        // ExamSys selectors.
         'menu' => 'menu', //<div class="sidebar
         'sub_menu' => 'sub_menu', //<div id="popup3" class="popup"
         'menu_section' => 'menu_section', //<div class="submenuheading"
@@ -86,7 +86,7 @@ class selectors
     );
 
     /**
-     * An array containing XPATH selectors for elements of Rogo that behat can select.
+     * An array containing XPATH selectors for elements of ExamSys that behat can select.
      * The key is the name of the selector, the value the XPATH string describing it.
      *
      * @var array
@@ -187,7 +187,7 @@ XPATH
     );
 
     /**
-     * Get the custom Rogo selector list or a selector.
+     * Get the custom ExamSys selector list or a selector.
      *
      * @param string $selectorname
      * @return array
@@ -202,7 +202,7 @@ XPATH
     }
 
     /**
-     * Checks if the the named selector is allowed in Rogo behat tests.
+     * Checks if the the named selector is allowed in ExamSys behat tests.
      *
      * @param string $namesselector
      * @return boolean
@@ -213,7 +213,7 @@ XPATH
     }
 
     /**
-     * Adds the custom Rogo selectors to behat.
+     * Adds the custom ExamSys selectors to behat.
      *
      * @param \testing\behat\Behat\Mink\Session $session The mink session
      * @return void

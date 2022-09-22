@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  *
@@ -30,9 +30,9 @@ require_once '../include/staff_auth.inc';
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta http-equiv="content-type" content="text/html;charset=<?php echo $configObject->get('cfg_page_charset') ?>" />
-  
-    <title>Rog&#333;: <?php echo $string['importfromqti'] ?></title>
-  
+
+    <title>ExamSys: <?php echo $string['importfromqti'] ?></title>
+
   <link rel="stylesheet" type="text/css" href="../css/body.css" />
   <link rel="stylesheet" type="text/css" href="../css/header.css" />
   <link rel="stylesheet" type="text/css" href="../css/dialog.css" />
@@ -76,13 +76,13 @@ echo '</div>';
 <br/>
 <br/>
 
-<table cellspacing="0" cellpadding="0" border="0" style="width:500px; text-align:left" class="dialog_border"> 
-    <tr> 
+<table cellspacing="0" cellpadding="0" border="0" style="width:500px; text-align:left" class="dialog_border">
+    <tr>
         <td class="inline_dialog_header" style="width:55px"><img src="../artwork/ims_logo.png" width="47" height="44" alt="IMS Logo" /></td><td class="dialog_header" style="width:445px"><?php echo $string['import'] ?></td>
-    </tr> 
-    <tr> 
-        <td class="dialog_body" colspan="2"> 
-            
+    </tr>
+    <tr>
+        <td class="dialog_body" colspan="2">
+
             <div style="padding-top:16px;padding-left:16px;padding-right:16px;">
                 <form id="file_form" action="import.php?<?php echo $_SERVER['QUERY_STRING'];?>" method="post" enctype="multipart/form-data" autocomplete="off">
                 <table width="100%" cellspacing="0" cellpadding="10">

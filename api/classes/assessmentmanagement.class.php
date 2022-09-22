@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Assessment api functions
@@ -126,7 +126,7 @@ class assessmentmanagement extends \api\abstractmanagement
     /**
      * Create assessment
      * @param array $parms create assessment parameters
-     * @param integer $userid rogo user id linked to web service client
+     * @param integer $userid ExamSys user id linked to web service client
      * @return array assessment id and status
      */
     public function create($params, $userid)
@@ -231,7 +231,7 @@ class assessmentmanagement extends \api\abstractmanagement
     /**
      * Update assessment
      * @param array $parms update assessment parameters
-     * @param integer $userid rogo user id linked to web service client
+     * @param integer $userid ExamSys user id linked to web service client
      * @return array assessment id and status
      */
     public function update($params, $userid)
@@ -243,7 +243,7 @@ class assessmentmanagement extends \api\abstractmanagement
         $configObject = \Config::get_instance();
         $paper = new \assessment($this->db, $configObject);
         if (isset($params['id']) and $params['id'] !== '') {
-            // Try internal rogo id.
+            // Try internal ExamSys id.
             $paperid = \Paper_utils::paper_exists($params['id'], $this->db);
         } elseif (!empty($params['externalid'])) {
             // What external system is the client mapped to.
@@ -403,7 +403,7 @@ class assessmentmanagement extends \api\abstractmanagement
     /**
      * Schedule a summative assessment
      * @param array $parms schedule summative parameters
-     * @param integer $userid rogo user id linked to web service client
+     * @param integer $userid ExamSys user id linked to web service client
      * @return array summative assessment id and status
      */
     public function schedule($params, $userid)
@@ -515,7 +515,7 @@ class assessmentmanagement extends \api\abstractmanagement
     /**
      * Delete assessment
      * @param array $parms delete assessment parameters
-     * @param integer $userid rogo user id linked to web service client
+     * @param integer $userid ExamSys user id linked to web service client
      * @return array assessment id and status
      */
     public function delete($params, $userid)

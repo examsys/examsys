@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace testing\unittest;
 
@@ -29,7 +29,7 @@ namespace testing\unittest;
  */
 class help
 {
-    /** The URL to documentation for phpunit in Rogo. */
+    /** The URL to documentation for phpunit in ExamSys. */
     public const DOCUMENTATION = 'https://rogo-eassessment-docs.atlassian.net/wiki/display/ROGO/Unit+testing';
 
     /**
@@ -43,7 +43,7 @@ class help
     }
 
     /**
-     * The command a user needs to type to run phpunit tests from the root of Rogo.
+     * The command a user needs to type to run phpunit tests from the root of ExamSys.
      *
      * @return string
      */
@@ -59,7 +59,7 @@ class help
      */
     public static function run_help()
     {
-        $message = PHP_EOL . 'Phpunit is now installed and can be run from the root Rogo directory using:'
+        $message = PHP_EOL . 'Phpunit is now installed and can be run from the root ExamSys directory using:'
             . PHP_EOL . self::get_test_run_command();
         return $message;
     }
@@ -71,7 +71,7 @@ class help
      */
     public static function error()
     {
-        $message = PHP_EOL . 'For details about Phpunit testing in Rogo visit: ' . PHP_EOL . self::DOCUMENTATION;
+        $message = PHP_EOL . 'For details about Phpunit testing in ExamSys visit: ' . PHP_EOL . self::DOCUMENTATION;
         return $message;
     }
 
@@ -82,7 +82,7 @@ class help
      */
     public static function init_help()
     {
-        $message = 'Rogo Phpunit initialisation script options'
+        $message = 'ExamSys Phpunit initialisation script options'
             . PHP_EOL . PHP_EOL . "-h, --help \tDisplay help"
             . PHP_EOL . "--clean \tForce a database install"
             . PHP_EOL . "--update \tUpdate the composer dependancies.";

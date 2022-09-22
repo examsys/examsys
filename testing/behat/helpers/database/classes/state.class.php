@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace testing\behat\helpers\database;
 
@@ -22,7 +22,7 @@ use mysqli;
 use Exception;
 
 /**
- * Helpers for resetting the Rogo database state during behat tests.
+ * Helpers for resetting the ExamSys database state during behat tests.
  *
  * @author Neill Magill <neill.magill@nottingham.ac.uk>
  * @copyright Copyright (c) 2015 The University of Nottingham
@@ -31,11 +31,11 @@ use Exception;
  */
 class state
 {
-    /** @var mysqli A Rogo database connection. */
+    /** @var mysqli A ExamSys database connection. */
     private static $db;
     /** @var array Stores an array of tables per named transaction that can be used to detect changes if a transaction fails. */
     private static $tablestates = array();
-    /** @var array Stores a list of temporary tables we have created to backup Rogo data in. */
+    /** @var array Stores a list of temporary tables we have created to backup ExamSys data in. */
     private static $temptables = array();
     /** @var string Stores the database schema we connect to. */
     private static $schema;
@@ -48,7 +48,7 @@ class state
     public const TRANSACTION_FEATURE = 'behatfeature';
 
     /**
-     * Connects to a Rogo database.
+     * Connects to a ExamSys database.
      *
      * @param Config $config
      */
@@ -83,7 +83,7 @@ class state
     }
 
     /**
-     * Save the state of the Rogo database so we can rollback any changes.
+     * Save the state of the ExamSys database so we can rollback any changes.
      *
      * @param string $name
      * @throws Exception
@@ -100,7 +100,7 @@ class state
         foreach (self::$tablestates[$name] as $status) {
             self::save_table_state($name, $status);
         }
-        // We cannot use database transactions because Rogo will be accessed by a browser during the tests.
+        // We cannot use database transactions because ExamSys will be accessed by a browser during the tests.
     }
 
     /**
@@ -221,13 +221,13 @@ class state
             throw new Exception("Tables not reset correctly in $name");
         }
         if (!empty($deletedtables)) {
-            throw new Exception('Tables have been deleted from Rogo. You must reinitialise the Rogo database.');
+            throw new Exception('Tables have been deleted from ExamSys. You must reinitialise the ExamSys database.');
         }
         unset(self::$tablestates[$name]);
     }
 
     /**
-     * Gets the full table status information for all the tables in Rogo and returns them as an associative array.
+     * Gets the full table status information for all the tables in ExamSys and returns them as an associative array.
      *
      * @return array
      */

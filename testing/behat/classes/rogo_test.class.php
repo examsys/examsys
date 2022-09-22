@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace testing\behat;
 
@@ -27,9 +27,9 @@ use Exception;
 use Config;
 
 /**
- * All Rogo behat test definitions should extend this class if they wish to do browser based tests.
+ * All ExamSys behat test definitions should extend this class if they wish to do browser based tests.
  *
- * It should contain only utility functions we wish all Rogo
+ * It should contain only utility functions we wish all ExamSys
  * behat tests to have access to.
  *
  * @author Neill Magill <neill.magill@nottingham.ac.uk>
@@ -40,7 +40,7 @@ use Config;
 class rogo_test extends MinkContext
 {
     /**
-     * Get a data generator for adding information into the Rogo database.
+     * Get a data generator for adding information into the ExamSys database.
      *
      * @param string $name The name of the generator.
      * @param string $component The component the generator is from (optional).
@@ -97,7 +97,7 @@ class rogo_test extends MinkContext
             }
             $name = $locator[0];
             if (!selectors::is_allowed_named($name)) {
-                throw new Exception("The named selector $name is not enabled in rogo behat tests");
+                throw new Exception("The named selector $name is not enabled in ExamSys behat tests");
             }
         }
     }
@@ -111,7 +111,7 @@ class rogo_test extends MinkContext
      * @throws coding_exception
      * @throws exception If the element cannot be found
      *
-     * @see \testing\behat\selectors for Rogo specific selectors
+     * @see \testing\behat\selectors for ExamSys specific selectors
      * @see \Behat\Mink\Element\ElementInterface::findAll for the supported selectors
      */
     public function find($name, $value)
@@ -144,7 +144,7 @@ class rogo_test extends MinkContext
      * @param string $value the value to search for
      * @return boolean
      *
-     * @see \testing\behat\selectors for Rogo specific selectors
+     * @see \testing\behat\selectors for ExamSys specific selectors
      * @see \Behat\Mink\Element\ElementInterface::findAll for the supported selectors
      */
     public function has($name, $value)
@@ -167,7 +167,7 @@ class rogo_test extends MinkContext
      * @param string $value the value to search for
      * @return \Behat\Mink\Element\NodeElement[]
      *
-     * @see \testing\behat\selectors for Rogo specific selectors
+     * @see \testing\behat\selectors for ExamSys specific selectors
      * @see \Behat\Mink\Element\ElementInterface::findAll for the supported selectors
      */
     public function find_all($name, $value)

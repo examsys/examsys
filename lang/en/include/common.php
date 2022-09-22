@@ -1,24 +1,24 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 $string['administrativetools'] = 'Administrative Tools';
 $string['helpsupport'] = 'Help &amp; Support';
-$string['aboutrogo'] = 'About Rog&#333; %s';
-$string['html5warn'] = 'Rog&#333; needs HTML5 support, please upgrade your browser to a newer version.';
+$string['aboutrogo'] = 'About ExamSys %s';
+$string['html5warn'] = 'ExamSys needs HTML5 support, please upgrade your browser to a newer version.';
 $string['furtherassistance'] = 'For further assistance contact: <a href="mailto:%s">%s</a>';
 $string['pagenotfound'] = 'Page not Found';
 $string['papertypenotenabled'] = 'Paper type is not enabled';
@@ -52,26 +52,26 @@ $string['noldapaccount'] = 'No LDAP account found!';
 $string['ldapservernosearch'] = 'LDAP Server Unavailable: unable to search';
 $string['nodatabaseconnection'] = 'Could not connect to the database please contact your administrator';
 $string['as'] = 'as';
-$string['localtsauthfailed'] = 'Local Rog&#333; authentication failed.';
-$string['notsaccount'] = 'No Rog&#333; account found!';
+$string['localtsauthfailed'] = 'Local ExamSys authentication failed.';
+$string['notsaccount'] = 'No ExamSys account found!';
 $string['tempaccount'] = 'Temporary Account';
-$string['authenticationfailed'] = 'Authentication with Rogō has failed, please remember:';
+$string['authenticationfailed'] = 'Authentication with ExamSys has failed, please remember:';
 $string['usernamecasesensitive'] = 'Usernames/passwords are case-sensitive';
 $string['pressf5'] = "Press 'F5' on the keyboard to try logging in again";
-$string['tsonldap'] = 'Rogō uses the LDAP passwords';
+$string['tsonldap'] = 'ExamSys uses the LDAP passwords';
 $string['ifstuckinvigilator'] = 'If you are still stuck ask an invigilator for a';
 $string['forgottenpassword'] = 'Forgotten Password';
 $string['warning'] = 'Warning';
 $string['secureconnection'] = 'Secure Connection Required';
-$string['secureconnectionmsg'] = 'Rog&#333; can only be accessed through a secure web connection. Instead use:';
+$string['secureconnectionmsg'] = 'ExamSys can only be accessed through a secure web connection. Instead use:';
 $string['errormsg'] = 'If you repeatedly get this error please contact:';
-$string['ltifirstlogin'] = 'Rog&#333; Authorisation';
-$string['ltifirstlogindesc'] = 'Rogō e-assessment system needs to confirm your identity to ensure you have the correct permissions.  This will only happen on your first visit and at infrequent intervals afterwards to ensure security.<br /><br /><input type="button" value=" Log In " onclick="window.location=\'./\'" />';
+$string['ltifirstlogin'] = 'ExamSys Authorisation';
+$string['ltifirstlogindesc'] = 'ExamSys e-assessment system needs to confirm your identity to ensure you have the correct permissions.  This will only happen on your first visit and at infrequent intervals afterwards to ensure security.<br /><br /><input type="button" value=" Log In " onclick="window.location=\'./\'" />';
 $string['ltinotconfigured'] = 'The link you have followed has not yet been configured.';
 $string['LTIFAILURE'] = 'LTI Failure';
 $string['expiredtimestamp'] = 'Timestamp has now expired. Please go back and relaunch the link (do not hit refresh in the browser).';
 $string['UserMissing'] = 'Associated User Missing';
-$string['UserMissingDesc'] = 'Somehow the associated user is missing from the rogo user system this is a serious error and you need to contact support';
+$string['UserMissingDesc'] = 'Somehow the associated user is missing from the ExamSys user system this is a serious error and you need to contact support';
 $string['impersonatepriv'] = 'You do not have sufficient privileges to impersonate users.';
 
 $string['NoAuthenticationConfigured'] = 'No Authentication configured';

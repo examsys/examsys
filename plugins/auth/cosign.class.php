@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  *
@@ -117,7 +117,7 @@ class cosign_auth extends outline_authentication
         }
 
         $this->savetodebug('cosign block reports auth as SUCCEEDED');
-        // Bit below looks username up in the rogo table to get an id.
+        // Bit below looks username up in the ExamSys table to get an id.
 
         extract($this->settings);
 
@@ -160,7 +160,7 @@ class cosign_auth extends outline_authentication
 
             return $authobj;
         } elseif ($result->num_rows() == 0) {
-            // Cosign says OK but no association to Rogo
+            // Cosign says OK but no association to ExamSys
 
             $this->savetodebug('cosign authenticated but no local account');
             $data = new stdClass();

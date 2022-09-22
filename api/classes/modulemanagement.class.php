@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Module api functions
@@ -59,7 +59,7 @@ class modulemanagement extends \api\abstractmanagement
     /**
      * Enrol student on a Module.
      * @param array $params module enrol parameters
-     * @param integer $userid rogo user id linked to web service client
+     * @param integer $userid ExamSys user id linked to web service client
      * @return array - success status and enrolment id
      */
     public function enrol($params, $userid)
@@ -152,7 +152,7 @@ class modulemanagement extends \api\abstractmanagement
     /**
      * UnEnrol student on a Module.
      * @param array $params module enrol parameters
-     * @param integer $userid rogo user id linked to web service client
+     * @param integer $userid ExamSys user id linked to web service client
      * @return array - success status and enrolment id
      */
     public function unenrol($params, $userid)
@@ -240,7 +240,7 @@ class modulemanagement extends \api\abstractmanagement
     /**
      * Create module
      * @param array $params module creation parameters
-     * @param integer $userid rogo user id linked to web service client
+     * @param integer $userid ExamSys user id linked to web service client
      * @return array - success status and module id
      */
     public function create($params, $userid)
@@ -373,7 +373,7 @@ class modulemanagement extends \api\abstractmanagement
     /**
      * Update module
      * @param array $params module update parameters
-     * @param integer $userid rogo user id linked to web service client
+     * @param integer $userid ExamSys user id linked to web service client
      * @return array - success status and module id
      */
     public function update($params, $userid)
@@ -557,7 +557,7 @@ class modulemanagement extends \api\abstractmanagement
     /**
      * Delete module
      * @param array $params delete module parameters
-     * @param integer $userid rogo user id linked to web service client
+     * @param integer $userid ExamSys user id linked to web service client
      * @return array - success status and module id
      */
     public function delete($params, $userid)

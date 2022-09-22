@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 use testing\unittest\unittestdatabase;
 
@@ -90,7 +90,7 @@ class assessmentmanagementtest extends unittestdatabase
             'labs' => "$this->labid1",
             'papertype' => '0',
             'externalid' => '123abc456',
-            'externalsys' => 'test rogo api',
+            'externalsys' => 'test ExamSys api',
             'modulename' => 'Training Module'));
         $this->pid3 = $datagenerator->create_paper(array('papertitle' => 'Test create osce 3',
             'startdate' => '2016-01-25 09:00:00',
@@ -120,7 +120,7 @@ class assessmentmanagementtest extends unittestdatabase
         $datagenerator->create_osceoverall(array('q_paper' => $this->pid3['id'], 'userID' => $this->student['id']));
         $datagenerator = $this->get_datagenerator('api', 'core');
         $client = $datagenerator->create_client(array('clientid' => 'test1', 'userid' => $this->admin['id'], 'secret' => 'test'));
-        $datagenerator->create_external(array('clientid' => $client['clientid'], 'name' => 'test rogo api', 'type' => 'api'));
+        $datagenerator->create_external(array('clientid' => $client['clientid'], 'name' => 'test ExamSys api', 'type' => 'api'));
     }
 
     /**
@@ -712,7 +712,7 @@ class assessmentmanagementtest extends unittestdatabase
                 'labs' => "$this->labid1",
                 'paper_type' => '0',
                 'externalid' =>  '123abc456',
-                'externalsys' => 'test rogo api'
+                'externalsys' => 'test ExamSys api'
             ),
             2 => array(
                 'paper_title' => 'Test osce 3 update',
@@ -914,7 +914,7 @@ class assessmentmanagementtest extends unittestdatabase
                 'labs' => "$this->labid1",
                 'paper_type' => '0',
                 'externalid' =>  '123abc456',
-                'externalsys' => 'test rogo api'
+                'externalsys' => 'test ExamSys api'
             ),
             2 => array(
                 'paper_title' => 'Test create osce 3',
@@ -1084,7 +1084,7 @@ class assessmentmanagementtest extends unittestdatabase
                 'labs' => "$this->labid1",
                 'paper_type' => '0',
                 'externalid' =>  '123abc456',
-                'externalsys' => 'test rogo api'
+                'externalsys' => 'test ExamSys api'
             ),
             1 => array(
                 'paper_title' => 'Test create osce 3',

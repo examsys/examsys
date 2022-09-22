@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  *
@@ -89,7 +89,7 @@ if (isset($_POST['submit']) and $_POST['submit'] == $string['send']) {
 <!doctype html public \"-//w3c//dtd html 4.0 transitional//en\">
 <html>
 <head>
-<title>Rogō {$string['passwordreset']}</title>
+<title>ExamSys {$string['passwordreset']}</title>
 <style type="text/css">
 body, td, p, div {font-family:Arial,sans-serif; background-color:white; color:#003366; font-size:90%}
 h1 {font-size:140%}
@@ -106,7 +106,7 @@ EMAIL;
 </html>
 EMAIL;
                 $mail_to = $email;
-                $subject = "Rogo {$string['passwordreset']}";
+                $subject = "ExamSys {$string['passwordreset']}";
                 $headers = 'From: ' . $contactemail . "\n";
                 $headers .= "MIME-Version: 1.0\nContent-type: text/html; charset=utf-8\n";
                 if (!@mail($mail_to, $subject, $email_body, $headers)) {

@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  *
@@ -38,9 +38,9 @@ echo '<?mso-application progid="Word.Document"?><w:wordDocument xmlns:w="http://
 echo StringUtils::wordToUtf8($paper);
 $tmp_start = date_utils::rogoToDisplay($_GET['startdate']);
 $tmp_end = date_utils::rogoToDisplay($_GET['enddate']);
-echo '</o:Title><o:Author>Rogo ' . $configObject->get_setting('core', 'rogo_version') . '</o:Author>';
+echo '</o:Title><o:Author>ExamSys ' . $configObject->get_setting('core', 'rogo_version') . '</o:Author>';
 echo '<o:Description>' . sprintf($string['period'], $tmp_start, $tmp_end) . '</o:Description>';
-echo '<o:LastAuthor>Rogo ' . $configObject->get_setting('core', 'rogo_version') . '</o:LastAuthor><o:Revision>1</o:Revision><o:TotalTime>0</o:TotalTime><o:Created>';
+echo '<o:LastAuthor>ExamSys ' . $configObject->get_setting('core', 'rogo_version') . '</o:LastAuthor><o:Revision>1</o:Revision><o:TotalTime>0</o:TotalTime><o:Created>';
 echo date('Y-m-d', time()) . 'T' . date('H:i:s') . 'Z';
 echo '</o:Created><o:LastSaved>';
 echo date('Y-m-d', time()) . 'T' . date('H:i:s') . 'Z';

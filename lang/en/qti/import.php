@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 require '../lang/' . $language . '/include/paper_options.php';
 require 'shared.php';
@@ -38,7 +38,7 @@ $string['qunsupported'] = 'Question type %s not yet supported';
 $string['noresponsegroups'] = 'Response groups are not currently supported.';
 $string['norenderextensions'] = 'Render extensions are not currently supported.';
 $string['mrq1other'] = 'Multiple Response - 1 mark per True Option with Other';
-$string['nomultiplecard'] = 'All sets of labels are different and we have multiple cardinality, question is not supported in Rog&#333;.';
+$string['nomultiplecard'] = 'All sets of labels are different and we have multiple cardinality, question is not supported in ExamSys.';
 $string['labelsetserror'] = 'Label sets for all question stems arent the same, prehaps this should be imprted as a blank with dropdowns??';
 $string['nomultiinputs'] = 'Questions with multiple numeric imputs cannot be imported';
 $string['blanktypeerror'] = 'Blank type question with not dropdowns or text entries';
@@ -47,11 +47,11 @@ $string['posnocond'] = 'Positive outcome with no condition, unable to work out c
 $string['multiplepos'] = 'Multiple positive values on outcome, correct answer may be wrong';
 $string['multiposmultiopt'] = 'Multiple positive outcomes, with multiple options on an outcome, correct answer may be wrong';
 $string['nomatchinglabel'] = 'Unable to find label matching information';
-$string['nolikertfeedback'] = 'Rog&#333; doesn\'t store any feedback for likert questions so it has been lost';
+$string['nolikertfeedback'] = 'ExamSys doesn\'t store any feedback for likert questions so it has been lost';
 $string['nocorrect'] = 'Unable to find a correct answer';
 $string['multipleconds'] = 'Found multiple conditions that are scoring the question, ignoring all but the 1st';
 $string['mrqnoismulti'] = 'Trying to load MRQ without ismulti set!';
-$string['importingtext'] = 'Importing text entry question with marking criteria. This will not be automatically marked in Rog&#333;';
+$string['importingtext'] = 'Importing text entry question with marking criteria. This will not be automatically marked in ExamSys';
 $string['someneg'] = 'Some negatives - 1 mark per true option with negative';
 $string['noneg'] = 'No negatives and multiple positives, 1 mark per true option';
 

@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  *
@@ -25,7 +25,7 @@
 
 require '../include/sysadmin_auth.inc';
 require '../include/errors.php';
-  
+
 $gridID = check_var('id', 'GET', true, false, true);
 
 function ebelDropdown($dropdownID, $default, $required = false)
@@ -56,14 +56,14 @@ if (isset($_POST['submit'])) {
             $$type = 0;
         }
     }
-  
+
     $result = $mysqli->prepare('UPDATE ebel_grid_templates SET EE = ?, EI = ?, EN = ?, ME = ?, MI = ?, MN = ?, HE = ?, HI = ?, HN = ?, EE2 = ?, EI2 = ?, EN2 = ?, ME2 = ?, MI2 = ?, MN2 = ?, HE2 = ?, HI2 = ?, HN2 = ?, name = ? WHERE id = ?');
     $result->bind_param('iiiiiiiiiiiiiiiiiisi', $EE, $EI, $EN, $ME, $MI, $MN, $HE, $HI, $HN, $EE2, $EI2, $EN2, $ME2, $MI2, $MN2, $HE2, $HI2, $HN2, $_POST['name'], $gridID);
     $result->execute();
     $result->close();
-  
+
     $mysqli->close();
-  
+
     header('location: list_ebel_grids.php');
     exit();
 } else {
@@ -86,8 +86,8 @@ if (isset($_POST['submit'])) {
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta http-equiv="content-type" content="text/html;charset=<?php echo $configObject->get('cfg_page_charset') ?>" />
-  <title><?php echo page::title('Rog&#333;: ' . $string['edittemplate']); ?></title>
-  
+  <title><?php echo page::title('ExamSys: ' . $string['edittemplate']); ?></title>
+
   <link rel="stylesheet" type="text/css" href="../css/body.css" />
   <link rel="stylesheet" type="text/css" href="../css/header.css" />
   <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
@@ -100,7 +100,7 @@ if (isset($_POST['submit'])) {
   <script src='../js/main.min.js'></script>
   <script src="../js/ebelinit.min.js"></script>
 </head>
-  
+
 <body>
     <?php
     require '../include/ebel_grid_options.php';
@@ -109,28 +109,28 @@ if (isset($_POST['submit'])) {
         echo draw_toprightmenu();
     ?>
   <div id="content">
-  
+
   <div class="head_title">
     <div><img src="../artwork/toprightmenu.gif" id="toprightmenu_icon" /></div>
     <div class="breadcrumb"><a href="../index.php"><?php echo $string['home'] ?></a><img src="../artwork/breadcrumb_arrow.png" class="breadcrumb_arrow" alt="-" /><a href="./index.php"><?php echo $string['administrativetools']; ?></a><img src="../artwork/breadcrumb_arrow.png" class="breadcrumb_arrow" alt="-" /><a href="./list_ebel_grids.php"><?php echo $string['ebelgridtemplates'] ?></a></div>
     <div class="page_title"><?php echo $string['edittemplate']?></div>
-  </div>   
+  </div>
 
   <blockquote>
   <form id="theform" name="myform" method="post" action="<?php echo $_SERVER['PHP_SELF'] . '?id=' . $_GET['id']; ?>" autocomplete="off">
- 
+
     <table cellpadding="5" cellspacing="0" border="0">
     <tr><td style="text-align:right"><?php echo $string['templatename']; ?></td><td colspan="3"><input type="text" name="name" size="40" maxlength="255" value="<?php echo $name; ?>" required /></td></tr>
-    
+
     <tr><td colspan="4"><h1><?php echo $string['passmark']; ?></h1></td></tr>
-    
+
     <tr><td>&nbsp;</td><td style="width:170px; text-align:center"><?php echo $string['essential'] ?></td><td style="width:170px; text-align:center"><?php echo $string['important'] ?></td><td style="width:170px; text-align:center"><?php echo $string['nicetoknow'] ?></td></tr>
     <tr><td style="text-align:right"><?php echo $string['easy'] ?></td><td style="text-align:center; background-color:#F8F8F2"><?php echo ebelDropdown('EE', $EE, true) ?></td><td style="text-align:center; background-color:#F0F0E6"><?php echo ebelDropdown('EI', $EI, true) ?></td><td style="text-align:center; background-color:#E4E4D2"><?php echo ebelDropdown('EN', $EN, true) ?></td></tr>
     <tr><td style="text-align:right"><?php echo $string['medium'] ?></td><td style="text-align:center; background-color:#F0F0E6"><?php echo ebelDropdown('ME', $ME, true) ?></td><td style="text-align:center; background-color:#E4E4D2"><?php echo ebelDropdown('MI', $MI, true) ?></td><td style="text-align:center; background-color:#D5D5BB"><?php echo ebelDropdown('MN', $MN, true) ?></td></tr>
     <tr><td style="text-align:right"><?php echo $string['hard'] ?></td><td style="text-align:center; background-color:#E4E4D2"><?php echo ebelDropdown('HE', $HE, true) ?></td><td style="text-align:center; background-color:#D5D5BB"><?php echo ebelDropdown('HI', $HI, true) ?></td><td style="text-align:center; background-color:#C8C8A6"><?php echo ebelDropdown('HN', $HN, true) ?></td></tr>
 
     <tr><td colspan="4"><h1><?php echo $string['distinctionlevel']; ?></h1></td></tr>
-    
+
     <tr><td>&nbsp;</td><td style="width:170px; text-align:center"><?php echo $string['essential']; ?></td><td style="width:170px; text-align:center"><?php echo $string['important']; ?></td><td style="width:170px; text-align:center"><?php echo $string['nicetoknow'] ?></td></tr>
     <tr><td style="text-align:right"><?php echo $string['easy'] ?></td><td style="text-align:center; background-color:#F8F8F2"><?php echo ebelDropdown('EE2', $EE2) ?></td><td style="text-align:center; background-color:#F0F0E6"><?php echo ebelDropdown('EI2', $EI2) ?></td><td style="text-align:center; background-color:#E4E4D2"><?php echo ebelDropdown('EN2', $EN2) ?></td></tr>
     <tr><td style="text-align:right"><?php echo $string['medium'] ?></td><td style="text-align:center; background-color:#F0F0E6"><?php echo ebelDropdown('ME2', $ME2) ?></td><td style="text-align:center; background-color:#E4E4D2"><?php echo ebelDropdown('MI2', $MI2) ?></td><td style="text-align:center; background-color:#D5D5BB"><?php echo ebelDropdown('MN2', $MN2) ?></td></tr>
@@ -138,7 +138,7 @@ if (isset($_POST['submit'])) {
 
     <tr><td colspan="4"style="text-align:center"><input type="submit" class="ok" name="submit" value="<?php echo $string['save'] ?>"><input class="cancel" type="button" name="home" id="cancel" value="<?php echo $string['cancel'] ?>" /></td></tr>
     </table>
-    
+
     <br />
   </form>
   </blockquote>

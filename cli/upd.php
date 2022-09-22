@@ -1,22 +1,22 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This file is used to install Rogo.
+ * This file is used to install ExamSys.
  *
  * @author Joseph Baxter <joseph.baxter@nottingham.ac.uk>
  * @copyright Copyright (c) 2017 The University of Nottingham
@@ -29,13 +29,13 @@ if (PHP_SAPI != 'cli') {
 
 set_time_limit(0);
 
-$error = PHP_EOL . 'For details about installing Rogo visit: ' . PHP_EOL . 'https://rogo-eassessment-docs.atlassian.net/wiki/pages/viewpage.action?pageId=491546';
+$error = PHP_EOL . 'For details about installing ExamSys visit: ' . PHP_EOL . 'https://rogo-eassessment-docs.atlassian.net/wiki/pages/viewpage.action?pageId=491546';
 
 $language = 'en';
 
 $rogo_path = dirname(__DIR__);
 if (!file_exists($rogo_path . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'config.inc.php')) {
-    echo 'Rogo is not installed.' . $error;
+    echo 'ExamSys is not installed.' . $error;
     exit(0);
 }
 
@@ -52,7 +52,7 @@ $longoptions = array(
 
 $optionslist = getopt($options, $longoptions);
 
-$help = 'Rogo initialisation script options'
+$help = 'ExamSys initialisation script options'
     . PHP_EOL . PHP_EOL . "-h, --help \t\tDisplay help"
     . PHP_EOL . PHP_EOL . "-u, --user, \t\tDatabase username"
     . PHP_EOL . PHP_EOL . "-p, --passwd, \t\tDatabase password"
@@ -121,12 +121,13 @@ $updater_utils = new UpdaterUtils($mysqli, $configObject->get('cfg_db_database')
 $version = $configObject->getxml('version');
 // Get the installed version.
 $old_version = $configObject->get_setting('core', 'rogo_version');
+
 if ($version == $old_version) {
     cli_utils::prompt('Nothing to update.');
     exit(0);
 }
 if ($updater_utils->check_version('7.2.0')) {
-    cli_utils::prompt('This version of Rogo requires at least version 7.2.0 is installed prior to upgrade.');
+    cli_utils::prompt('This version of ExamSys requires at least version 7.2.0 is installed prior to upgrade.');
     exit(0);
 }
 // Get update file dir.

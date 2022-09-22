@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  *
@@ -43,7 +43,7 @@ $academic_year = $yearutils->get_academic_session($session);
 <!DOCTYPE html>
 <html>
   <head>
-    <title><?php echo page::title('Rog&#333;:'); ?></title>
+    <title><?php echo page::title('ExamSys:'); ?></title>
     <link rel="stylesheet" type="text/css" href="../css/body.css" />
     <link rel="stylesheet" type="text/css" href="../css/header.css" />
     <link rel="stylesheet" type="text/css" href="../css/submenu.css" />
@@ -68,12 +68,12 @@ echo draw_toprightmenu();
   <div class="breadcrumb"><a href="../index.php"><?php echo $string['home']; ?></a><img src="../artwork/breadcrumb_arrow.png" class="breadcrumb_arrow" alt="-" /><a href="./index.php"><?php echo $string['administrativetools'] ?></a><img src="../artwork/breadcrumb_arrow.png" class="breadcrumb_arrow" alt="-" /><a href="list_modules.php"><?php echo $string['modules'] ?></a></div>
   <div class="page_title"><?php echo $string['runningsmsimport'] ?></div>
 </div>
-  
+
 <table id="maindata" class="header tablesorter" cellspacing="0" cellpadding="2" border="0" style="width:100%">
   <thead>
     <tr><th class="col"><?php echo $string['academicyear'] ?></th><th class="col"><?php echo $string['modulecode'] ?></th><th class="col"><?php echo $string['url'] ?></th><th class="col"><?php echo $string['enrolements'] ?></th><th class="col"><?php echo $string['deletions'] ?></th></tr>
   </thead>
-  
+
 <?php
 // Only include sms integration modules.
 // Do not include deleted modules or non-active modules.

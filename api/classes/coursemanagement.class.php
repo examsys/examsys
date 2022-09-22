@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Course api functions
@@ -28,12 +28,12 @@ namespace api;
  */
 class coursemanagement extends \api\abstractmanagement
 {
-    
+
     /**
      * Language pack component.
      */
     private $langcomponent = 'api/coursemanagement';
-    
+
     /**
      * Status codes
      */
@@ -50,11 +50,11 @@ class coursemanagement extends \api\abstractmanagement
         'COURSE_NOTHING_TO_UPDATE' => 308,
         'COURSE_SCHOOL_EXTID_INVALID' => 309
     );
-    
+
     /**
      * Update course
      * @param array $params course update parameters
-     * @param integer $userid rogo user id linked to web service client
+     * @param integer $userid ExamSys user id linked to web service client
      * @return - success status and course id
      */
     public function update($params, $userid)
@@ -64,7 +64,7 @@ class coursemanagement extends \api\abstractmanagement
             'course_already_exists', 'faculty_not_supplied', 'school_not_supplied', 'course_nothing_to_update', 'external_school_invalid'));
         $faculty = true;
         if (isset($params['id']) and $params['id'] !== '') {
-            // Using internal rogo id to update course.
+            // Using internal ExamSys id to update course.
             $courseid = \CourseUtils::courseid_exists($params['id'], $this->db);
         } elseif (!empty($params['externalid'])) {
             // What external system is the client mapped to.
@@ -150,11 +150,11 @@ class coursemanagement extends \api\abstractmanagement
         }
         return $this->get_response($data, 'update', $params['nodeid']);
     }
-    
+
     /**
      * Create course
      * @param array $params course creation parameters
-     * @param integer $userid rogo user id linked to web service client
+     * @param integer $userid ExamSys user id linked to web service client
      * @return - success status and course id
      */
     public function create($params, $userid)
@@ -215,12 +215,12 @@ class coursemanagement extends \api\abstractmanagement
         }
         return $this->get_response($data, 'create', $params['nodeid']);
     }
-    
+
     /**
      * Delete course
      * @param array $parms delete course parameters
-     * @param integer $userid rogo user id linked to web service client
-     * @return success status and course id
+     * @param integer $userid ExamSys user id linked to web service client
+     * @return array success status and course id
      */
     public function delete($params, $userid)
     {
@@ -228,7 +228,7 @@ class coursemanagement extends \api\abstractmanagement
         $strings = $langpack->get_strings($this->langcomponent, array('course_not_deleted_inuse', 'course_not_deleted'
             , 'course_does_not_exist'));
         if (isset($params['id']) and $params['id'] !== '') {
-            // Try using rogo internal id to delete course.
+            // Try using ExamSys internal id to delete course.
             $courseid = \CourseUtils::courseid_exists($params['id'], $this->db);
         } elseif (!empty($params['externalid'])) {
             // What external system is the client mapped to.

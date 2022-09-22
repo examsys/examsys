@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  *
@@ -31,9 +31,9 @@ require '../include/staff_student_auth.inc';
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta http-equiv="content-type" content="text/html;charset=<?php echo $configObject->get('cfg_page_charset') ?>" />
-   
+
   <title><?php echo $string['credits']; ?></title>
-    
+
   <link rel="stylesheet" type="text/css" href="../css/body.css" />
   <link rel="stylesheet" type="text/css" href="../css/rogo_logo.css" />
   <style type="text/css">
@@ -46,13 +46,13 @@ require '../include/staff_student_auth.inc';
 
 <div style="position:absolute; top:12px; left:25px; width:300px">
   <img src="../artwork/r_logo.gif" alt="logo" class="logo_img" />
-  <div class="logo_lrg_txt">Rog&#333;</div>
+  <div class="logo_lrg_txt">ExamSys</div>
   <div class="logo_small_txt"><?php echo $string['eassessmentmanagementsystem'] ?></div>
 </div>
 
 <div style="position:absolute; top:60px; left:20px; font-size:75%; padding-top:10px; padding-right:2px; padding-left:10px">
 <br />
-<p>Rog&#333; <?php echo $configObject->get_setting('core', 'rogo_version') . ' ' . $string['msg']; ?></p>
+<p>ExamSys <?php echo $configObject->get_setting('core', 'rogo_version') . ' ' . $string['msg']; ?></p>
 <table cellpadding="0" cellspacing="0" border="0" style="width:660px">
 <tr><td style="width:240px">
 <strong><?php echo $string['designprogramming'] ?></strong><br />

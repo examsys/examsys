@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Environment variables in use:
-# ROGO - location of rogo base directory
+# ROGO - location of ExamSys base directory
 # ROGOCRONLOGS - location to log output of script
 # ROGOCRONLOCK - location to write the lock file
 
@@ -19,7 +19,7 @@ fi
 
 LOGFILE="${LOGDIR}/checktotals.log.${TIMESTAMP}"
 
-# Run rogo script and log if not already running.
+# Run ExamSys script and log if not already running.
 if [ ! -f ${ROGOCRONLOCK}/${LOCKFILE} ]
    then
         touch ${ROGOCRONLOCK}/${LOCKFILE}

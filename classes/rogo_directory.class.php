@@ -1,22 +1,22 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Utility class to get information about Rogo directories.
+ * Utility class to get information about ExamSys directories.
  *
  * @author Neill Magill
  * @copyright Copyright (c) 2015 The University of Nottingham
@@ -24,7 +24,7 @@
  */
 abstract class rogo_directory
 {
-    /** @var string Path relative to the Rogo root directory used to download files. */
+    /** @var string Path relative to the ExamSys root directory used to download files. */
     protected $downloadfile = 'getfile.php';
 
     /** @var int The file permissions to be used by the directory. */
@@ -56,15 +56,15 @@ abstract class rogo_directory
     }
 
     /**
-     * Gets the configured Rogo data directory.
+     * Gets the configured ExamSys data directory.
      *
-     * @return string A path to the Rogo data directory, including a trailing slash.
+     * @return string A path to the ExamSys data directory, including a trailing slash.
      * @throws directory_not_found
      */
     protected function base_directory()
     {
         if (!empty(InstallUtils::$cfg_rogo_data)) {
-            // Rogo is being installed. We should take the settings from InstallUtills
+            // ExamSys is being installed. We should take the settings from InstallUtills
             $rogodata = InstallUtils::$cfg_rogo_data;
         } else {
             $config = Config::get_instance();
@@ -85,7 +85,7 @@ abstract class rogo_directory
             $path = $rogodata;
         } else {
             // Data directory not configured.
-            // We should return the root Rogo path.
+            // We should return the root ExamSys path.
             $path = $this->default_base_directory();
         }
         return $path;
@@ -180,7 +180,7 @@ abstract class rogo_directory
     }
 
     /**
-     * Returns the default location of the Rogo data directory.
+     * Returns the default location of the ExamSys data directory.
      *
      * @return string
      */
@@ -249,7 +249,7 @@ abstract class rogo_directory
      * Get an instance of a specific type of rogo_directory class.
      * The instanciated class is cached in the loaded array.
      *
-     * @param string $type A type of Rogo directory that should be loaded.
+     * @param string $type A type of ExamSys directory that should be loaded.
      * @return rogo_directory
      * @throws directory_not_found
      */

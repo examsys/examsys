@@ -1,7 +1,7 @@
-Rogo Behat data definitions
+ExamSys Behat data definitions
 ---------------------------
 
-This directory SHOULD contain a file for each Rogo database table that has data in it by default.
+This directory SHOULD contain a file for each ExamSys database table that has data in it by default.
 
 There SHOULD NOT not be any files for a table that does not need default data.
 

@@ -1,19 +1,19 @@
 <?php
 
-// This file is part of Rogō
+// This file is part of ExamSys
 //
-// Rogō is free software: you can redistribute it and/or modify
+// ExamSys is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Rogō is distributed in the hope that it will be useful,
+// ExamSys is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Rogō.  If not, see <http://www.gnu.org/licenses/>.
+// along with ExamSys.  If not, see <http://www.gnu.org/licenses/>.
 
 require_once dirname(dirname(dirname(__DIR__))) . '/lang/' . $language . '/include/paper_security.php';
 require_once dirname(dirname(dirname(__DIR__))) . '/lang/' . $language . '/question/sct_shared.php';
@@ -45,7 +45,7 @@ $string['feedback'] = 'Feedback';
 $string['msg1'] = 'Thank you for completing <strong>%s</strong>. Your responses have been recorded.';
 $string['msg2'] = 'To log out please click “Close window” and then press CTRL, ALT and DELETE to log out of your workstation.';
 $string['msg2short'] = 'Please press CTRL, ALT and DELETE to log out of your workstation.';
-$string['msg2remote'] = 'Please click here to close this window and logout of Rog&#333;.';
+$string['msg2remote'] = 'Please click here to close this window and logout of ExamSys.';
 $string['closewindow'] = 'Close Window';
 $string['overallcorrectorder'] = 'Overall correct order (Bonus Mark)';
 $string['outof'] = 'out of';
