@@ -45,7 +45,7 @@ require '../include/staff_student_auth.inc';
 <body>
 
 <div style="position:absolute; top:12px; left:25px; width:300px">
-  <img src="../artwork/r_logo.gif" alt="logo" class="logo_img" />
+  <img src="../artwork/r_logo.svg" alt="logo" class="logo_img" />
   <div class="logo_lrg_txt">ExamSys</div>
   <div class="logo_small_txt"><?php echo $string['eassessmentmanagementsystem'] ?></div>
 </div>

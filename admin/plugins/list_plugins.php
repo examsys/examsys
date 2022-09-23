@@ -55,7 +55,7 @@ $additionaljs = '<script type="text/javascript" src="js/pluginsinit.min.js"></sc
 $addtionalcss = '<link rel="stylesheet" type="text/css" href="../../css/list.css"/>';
 $breadcrumb = array($string['home'] => '../../index.php', $string['administrativetools'] => '../index.php');
 $render->render_admin_header($lang, $additionaljs, $addtionalcss);
-$render->render_admin_options('../../plugins/index.php', 'plugins_16.png', $lang, $toprightmenu, 'admin/options_link.html');
+$render->render_admin_options('../../plugins/index.php', 'plugins.svg', $lang, $toprightmenu, 'admin/options_link.html');
 $render->render_admin_content($breadcrumb, $lang);
 $render->render_admin_list($pluginstatus, $header);
 $render->render_admin_footer();

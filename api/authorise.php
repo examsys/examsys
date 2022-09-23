@@ -83,7 +83,7 @@ if (isset($_POST['submit'])) {
 <form method="post" id="theform" action="<?php echo $_SERVER['PHP_SELF'] ?>" autocomplete="off">
     <div class="mainbox">
 
-        <img src="<?php echo $configObject->get('cfg_root_path') ?>/artwork/r_logo.gif" alt="logo" class="logo_img" />
+        <img src="<?php echo $configObject->get('cfg_root_path') ?>/artwork/r_logo.svg" alt="logo" class="logo_img" />
 
         <div class="logo_lrg_txt">ExamSys</div>
         <div class="logo_small_txt"><?php echo $string['eassessmentmanagementsystem']; ?></div>

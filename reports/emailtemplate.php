@@ -77,7 +77,7 @@ if (file_exists($templatefile)) {
 <table cellpadding="2" cellspacing="0" border="0" width="100%" style="text-align:left">
 <tr>
 <td><?php echo $string['cc'] ?></td><td><input type="text" size="70" id ="ccaddress" name="ccaddress" value="<?php echo $ccaddress ?>" /></td>
-<td style="text-align:right" rowspan="3" valign="top"><img src="../artwork/stamp.png" width="89" height="93" alt="stamp" /></td>
+<td style="text-align:right" rowspan="3" valign="top"><img src="../artwork/r_logo.svg" width="89" height="93" alt="stamp" /></td>
 </tr>
 <tr>
 <td><?php echo $string['bcc'] ?></td><td><input type="text" size="70" id="bccaddress" name="bccaddress" value="<?php echo $bccaddress ?>" /></td>

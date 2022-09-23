@@ -143,7 +143,7 @@ if (isset($_POST['submit'])) {
     <tr>
     <td><?php echo $string['to'] ?></td>
     <td><input type="text" size="70" name="toaddress" value="<?php echo $to ?>" class="email" /></td>
-    <td style="text-align:right" rowspan="4" valign="top"><img src="../artwork/stamp.png" width="89" height="93" alt="stamp" /></td>
+    <td style="text-align:right" rowspan="4" valign="top"><img src="../artwork/r_logo.svg" width="89" height="93" alt="stamp" /></td>
     </tr>
     <tr>
     <td><?php echo $string['cc'] ?></td>

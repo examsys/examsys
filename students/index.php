@@ -245,7 +245,7 @@ if ($userObject->is_special_needs()) {
     <table cellpadding="0" cellspacing="0" border="0" class="header">
         <tr>
       <th style="padding-left:16px; padding-top:5px">
-        <img src="../artwork/r_logo.gif" alt="logo" class="logo_img" />
+        <img src="../artwork/r_logo.svg" alt="logo" class="logo_img" />
                 <div class="logo_lrg_txt">ExamSys</div>
                 <div class="logo_small_txt"><?php echo $string['eassessmentmanagementsystem']; ?></div>
       </th>

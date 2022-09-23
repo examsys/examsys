@@ -57,7 +57,7 @@ $render->render($headerdata, $lang, 'header.html', $js, $css);
 <form method="post" id="theform" autocomplete="off">
     <div role="main" class="mainbox">
 
-        <img src="<?php echo $this->configObj->get('cfg_root_path') ?>/artwork/r_logo.gif" alt="logo" class="logo_img" />
+        <img src="<?php echo $this->configObj->get('cfg_root_path') ?>/artwork/r_logo.svg" alt="logo" class="logo_img" />
 
         <h1 class="logo_lrg_txt">ExamSys</h1>
         <div class="logo_small_txt"><?php echo $string['eassessmentmanagementsystem']; ?></div>

@@ -141,7 +141,7 @@ if ($configObject->get_setting('core', 'cfg_summative_mgmt')) {  // Enable summa
   $menudata['systeminformation']    = array('system_info.php', 'information.png');
   $menudata['testing']              = array('../testing/', 'crash_test.png');
   $menudata['usermanagement']       = array('../users/search.php', 'user_accounts_icon.png');
-  $menudata['plugins']       = array('./plugins/list_plugins.php', 'plugins.png');
+  $menudata['plugins']       = array('./plugins/list_plugins.php', 'plugins.svg');
   $menudata['config']        = array('config.php', 'config.png');
   $menudata['externalsystems']        = array('external/list_extsys.php', 'sync.png');
 if ($configObject->get('cfg_setting_icons_order')) {
