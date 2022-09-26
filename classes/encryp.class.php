@@ -163,8 +163,9 @@ class encryp
 
         $pass = '';
         $disppass = '';
+        $max = count($this->dictionary) - 1;
         for ($i = 0; $i < 3; $i++) {
-            $word = rtrim($this->dictionary[rand(0, count($this->dictionary))]);
+            $word = rtrim($this->dictionary[rand(0, $max)]);
             $pass .= $word;
             $disppass .= $word . ' ';
         }
