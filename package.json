@@ -1,14 +1,14 @@
 {
-  "name": "rogo-oss",
+  "name": "examsys-oss",
   "version": "7.2.0",
   "private": true,
   "description": "eAssessment Management System",
   "repository": {
     "type": "git",
-    "url": "https://bitbucket.org/rogoOOS/rogo.git"
+    "url": "https://bitbucket.org/examsys/examsys.git"
   },
   "bugs": {
-    "url": "https://rogo-eassessment.atlassian.net"
+    "url": "https://examsys.atlassian.net"
   },
   "author": "University of Nottingham",
   "license": "GPL-3.0",

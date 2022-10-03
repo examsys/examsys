@@ -27,7 +27,7 @@
 
 /**
  * Calculate the 'Pearson product-moment correlation coefficient'
- * https://rogo-eassessment-docs.atlassian.net/wiki/pages/viewpage.action?pageId=1049586
+ * https://examsys-eassessment-docs.atlassian.net/wiki/pages/viewpage.action?pageId=1049586
  * https://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficient
  *
  * @param int   $no_students The number of users in each cohort

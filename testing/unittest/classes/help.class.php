@@ -30,7 +30,7 @@ namespace testing\unittest;
 class help
 {
     /** The URL to documentation for phpunit in ExamSys. */
-    public const DOCUMENTATION = 'https://rogo-eassessment-docs.atlassian.net/wiki/display/ROGO/Unit+testing';
+    public const DOCUMENTATION = 'https://examsys-eassessment-docs.atlassian.net/wiki/display/ROGO/Unit+testing';
 
     /**
      * The location of the phpunit execution script.

@@ -32,7 +32,7 @@ set_time_limit(0);
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'include' . DIRECTORY_SEPARATOR . 'autoload.inc.php';
 autoloader::init();
 
-$error = PHP_EOL . 'For details about installing ExamSys visit: ' . PHP_EOL . 'https://rogo-eassessment-docs.atlassian.net/wiki/pages/viewpage.action?pageId=491546';
+$error = PHP_EOL . 'For details about installing ExamSys visit: ' . PHP_EOL . 'https://examsys-eassessment-docs.atlassian.net/wiki/pages/viewpage.action?pageId=491546';
 
 if (!file_exists(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'settings.xml')) {
     cli_utils::prompt('settings.xml is requried to perform an install of ExamSys.' . $error);

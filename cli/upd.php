@@ -29,7 +29,7 @@ if (PHP_SAPI != 'cli') {
 
 set_time_limit(0);
 
-$error = PHP_EOL . 'For details about installing ExamSys visit: ' . PHP_EOL . 'https://rogo-eassessment-docs.atlassian.net/wiki/pages/viewpage.action?pageId=491546';
+$error = PHP_EOL . 'For details about installing ExamSys visit: ' . PHP_EOL . 'https://examsys-eassessment-docs.atlassian.net/wiki/pages/viewpage.action?pageId=491546';
 
 $language = 'en';
 
