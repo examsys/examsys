@@ -28,6 +28,6 @@
         </mysql>
     </database>
     <translations>
-        <url>http://rogo-oss.nottingham.ac.uk/langpacks</url>
+        <url>http://examsys-oss.nottingham.ac.uk/langpacks</url>
     </translations>
 </rogo>

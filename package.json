@@ -12,7 +12,7 @@
   },
   "author": "University of Nottingham",
   "license": "GPL-3.0",
-  "homepage": "http://rogo-oss.nottingham.ac.uk/",
+  "homepage": "http://examsys-oss.nottingham.ac.uk/",
   "devDependencies": {
     "qunit": "^2.16.0"
   },
