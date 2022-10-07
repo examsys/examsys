@@ -46,6 +46,10 @@ define(['menu', 'state', 'jquery', 'jqueryui', 'jquerytablesorter'], function(ME
 
             $("tr[id^=l]").each(function(){
                 $(this).click(function(e) {
+                    if (e.ctrlKey == true || e.metaKey == true) {
+                        // We should not handle this event.
+                        return;
+                    }
                     var questionid = $(this).attr('data-qid');
                     var qtype = $(this).attr('data-qtype');
                     var lineid = $(this).attr('data-dispno');
@@ -133,10 +137,13 @@ define(['menu', 'state', 'jquery', 'jqueryui', 'jquerytablesorter'], function(ME
          * @param bool clearall false if only one question selected
          */
         this.addQID = function(qID, clearall) {
+            var questionList = $('#questionID').val();
+            var toAdd = ',' + qID;
             if (clearall) {
                 $('#questionID').val(',' + qID);
-            } else {
-                $('#questionID').val($('#questionID').val() + ',' + qID);
+            } else if(!questionList.match(new RegExp(toAdd + '(,|$)'))) {
+                // Only add a question if it is not already in the list.
+                $('#questionID').val(questionList + toAdd);
             }
         };
 
@@ -209,8 +216,9 @@ define(['menu', 'state', 'jquery', 'jqueryui', 'jquerytablesorter'], function(ME
          * @param integer qID question id.
          */
         this.subQID = function(qID) {
-            var tmpq = ',' + qID;
-            $('#questionID').val($('#questionID').val().replace(tmpq, ''));
+            var tmpq = new RegExp(',' + qID + '(,|$)', 'g');
+            var fixedval = $('#questionID').val().replaceAll(tmpq, '$1');
+            $('#questionID').val(fixedval);
         };
 
         /**
