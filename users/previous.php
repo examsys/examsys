@@ -42,11 +42,11 @@ $render = new render($configObject);
 
 $headerdata = array(
     'css' => [
-        '../css/header.css',
-        '../css/warnings.css',
-        '../css/list.css',
+        '/css/header.css',
+        '/css/warnings.css',
+        '/css/list.css',
     ],
-    'scripts' => ['../js/previousinit.min.js'],
+    'scripts' => ['/js/previousinit.min.js'],
 );
 $render->render($headerdata, $string, 'header.html');
 
