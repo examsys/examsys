@@ -19,6 +19,12 @@
 //
 define(['sidebar', 'jsxls', 'jquery', 'jqueryui'], function(SIDEBAR, jsxls, $) {
   return function() {
+    /**
+     * Stores if a delete screen break handler has been added to the page.
+     *
+     * @type {boolean}
+     */
+    this.deleteScreenHandler = false;
 
     /**
      * Dynamically set list item order attribute.
@@ -43,7 +49,10 @@ define(['sidebar', 'jsxls', 'jquery', 'jqueryui'], function(SIDEBAR, jsxls, $) {
     this.activateDelete = function(element, sid) {
       element.removeClass('greymenuitem');
       element.addClass('menuitem');
-      element.click(this.deleteScreenBreak);
+      if (!this.deleteScreenHandler) {
+        element.click(this.deleteScreenBreak);
+        this.deleteScreenHandler = true;
+      }
       element.data('screenID', sid);
       element.children('a').css('cursor', 'pointer');
     };
@@ -56,6 +65,8 @@ define(['sidebar', 'jsxls', 'jquery', 'jqueryui'], function(SIDEBAR, jsxls, $) {
       $('.breakline').removeClass('line-selected');
       element.addClass('greymenuitem');
       element.removeClass('menuitem');
+      element.unbind('click', this.deleteScreenBreak);
+      this.deleteScreenHandler = false;
       element.children('a').css('cursor', 'text');
     };
 
