@@ -134,10 +134,10 @@ define(['sidebar', 'jsxls', 'jquery', 'jqueryui'], function(SIDEBAR, jsxls, $) {
      * @param integer pID papers table id
      */
     this.subQID = function(qID, pID) {
-      var tmpq = ',' + qID;
-      var tmpp = ',' + pID;
-      $('#questionID').val($('#questionID').val().replace(tmpq, ''));
-      $('#pID').val($('#pID').val().replace(tmpp, ''));
+      var tmpq = new RegExp(',' + qID + '(,|$)', 'g');
+      var tmpp = new RegExp(',' + pID + '(,|$)', 'g');
+      $('#questionID').val($('#questionID').val().replace(tmpq, '$1'));
+      $('#pID').val($('#pID').val().replace(tmpp, '$1'));
     };
 
     /**
