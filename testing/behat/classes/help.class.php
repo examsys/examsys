@@ -28,7 +28,7 @@ namespace testing\behat;
 class help
 {
     /** The URL to documentation for behat in ExamSys. */
-    public const DOCUMENTATION = 'https://examsys-eassessment-docs.atlassian.net/wiki/display/ROGO/Automatic+functional+testing';
+    public const DOCUMENTATION = 'https://examsys-eassessment-docs.atlassian.net/wiki/display/examsys/Automatic+functional+testing';
 
     /**
      * The location of the behat execution script.
