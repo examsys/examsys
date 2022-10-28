@@ -58,15 +58,28 @@ $longoptions = array(
 
 $optionslist = getopt($options, $longoptions);
 
-$help = 'ExamSys initialisation script options'
-    . PHP_EOL . PHP_EOL . "-h, --help \tDisplay help"
-    . PHP_EOL . PHP_EOL . "-u, --user, \tDatabase username"
-    . PHP_EOL . PHP_EOL . "-p, --passwd, \tDatabase password"
-    . PHP_EOL . PHP_EOL . "-s, --host, \tDatabase host"
-    . PHP_EOL . PHP_EOL . "-t, --port, \tDatabase port"
-    . PHP_EOL . PHP_EOL . "-n, --name, \tDatabase name";
+$help = 'ExamSys initialisation script options:'
+    . PHP_EOL . "\t-h, --help \tDisplay help"
+    . PHP_EOL . "\t-u \t\tDatabase username (required)"
+    . PHP_EOL . "\t-p \t\tDatabase password (required)"
+    . PHP_EOL . "\t-s \t\tDatabase host (required)"
+    . PHP_EOL . "\t-t \t\tDatabase port (required)"
+    . PHP_EOL . "\t-n \t\tDatabase name (required)";
 
-if (isset($optionslist['h']) or isset($optionslist['help'])) {
+$display_help = false;
+
+if (
+    !isset($optionslist['u']) or
+    !isset($optionslist['p']) or
+    !isset($optionslist['s']) or
+    !isset($optionslist['t']) or
+    !isset($optionslist['n'])
+) {
+    // A required command line argument is missing.
+    $display_help = true;
+}
+
+if ($display_help or isset($optionslist['h']) or isset($optionslist['help'])) {
     // Display some help information.
     cli_utils::prompt($help);
     exit(0);
