@@ -38,16 +38,19 @@ require '../include/sysadmin_auth.inc';
 
 <div id="main">
 <?php
-  $target = 'staff';
+$target = 'staff';
+
 if (isset($_GET['target'])) {
     $target = $_GET['target'];
 }
-  $targettable = $target . '_help';
-  $dbresult = $mysqli->prepare('SELECT id, body, title, type FROM ' . $targettable . ' ORDER BY id');
-  $dbresult->execute();
-  $help_toc = array();
-  $help_img = array();
-  $dbresult->bind_result($id, $body, $title, $type);
+
+$targettable = $target . '_help';
+$dbresult = $mysqli->prepare('SELECT id, body, title, type FROM ' . $targettable . ' ORDER BY id');
+$dbresult->execute();
+$help_toc = array();
+$help_img = array();
+$dbresult->bind_result($id, $body, $title, $type);
+
 while ($dbresult->fetch()) {
     $help_toc[$id]['id'] = $id;
     $help_toc[$id]['body'] = $body;
@@ -55,16 +58,17 @@ while ($dbresult->fetch()) {
     $help_toc[$id]['title'] = $title;
     $help_toc[$id]['links'] = '';
 }
-  $dbresult->close();
+$dbresult->close();
 
-  echo '<a href="help_test.php?target=staff">staff</a> ';
-  echo '<a href="help_test.php?target=student">student</a>';
-  echo '<h1>Help pages internal consistency test</h1>';
+echo '<a href="help_test.php?target=staff">staff</a> ';
+echo '<a href="help_test.php?target=student">student</a>';
+echo '<h1>Help pages internal consistency test</h1>';
 
-  //reading image files' names
-  $avail_images = array();
-  $help_directory = rogo_directory::get_directory('help_' . $target);
-  $pubs = $help_directory->location();
+//reading image files' names
+$avail_images = array();
+$help_directory = rogo_directory::get_directory('help_' . $target);
+$pubs = $help_directory->location();
+
 if ($handle = opendir($pubs)) {
     while (false !== ($file = readdir($handle))) {
         if ($file != '' && $file != '.' && $file != '..' && $file != '.DS_Store') {
@@ -74,8 +78,9 @@ if ($handle = opendir($pubs)) {
     closedir($handle);
 }
 
-  //internal links
-  $result = '';
+//internal links
+$result = '';
+
 foreach ($help_toc as $help_item) {
     $test = explode('?id=', $help_item['body']);
     if (count($test) > 1) {
@@ -93,14 +98,18 @@ foreach ($help_toc as $help_item) {
         }
     }
 }
-  echo '<h3>Broken internal links:</h3>';
-  echo $result;
+
+echo '<h3>Broken internal links:</h3>';
+echo $result;
+
 if ($result == '') {
     echo ' - not detected.';
 }
-  echo '<hr>';
-  //incorporated images
-  $helpimage_regexp = '#src=".*filename=(?<filename>.*)" alt=".*?" width="(?<width>.*?)" height="(?<height>.*?)"#';
+
+echo '<hr>';
+//incorporated images
+$helpimage_regexp = '#src=".*filename=(?<filename>.*)" alt=".*?" width="(?<width>.*?)" height="(?<height>.*?)"#';
+
 foreach ($help_toc as $help_item) {
     //search for <img scr=
     $test = array();
@@ -133,12 +142,14 @@ foreach ($help_toc as $help_item) {
         }
     }
 }
-  $result1 = '';
-  $result2 = '';
-  $result3 = '';
-  $result_array_2 = array();
-  $result_array_3 = array();
-  $i = 0;
+
+$result1 = '';
+$result2 = '';
+$result3 = '';
+$result_array_2 = array();
+$result_array_3 = array();
+$i = 0;
+
 foreach ($help_img as $img_item => $img_ids) {
     $path = $help_directory->fullpath($img_item);
     if (file_exists($path)) {
@@ -177,18 +188,24 @@ foreach ($help_img as $img_item => $img_ids) {
         $result1 .= '<br />';
     }
 }
-  echo '<h3>Missing images:</h3>';
-  echo $result1;
+
+echo '<h3>Missing images:</h3>';
+echo $result1;
+
 if ($result1 == '') {
     echo ' - not detected.<br />';
 }
-  echo '<hr />';
-  echo '<h3>Image dimensions\' inconsistencies:</h3>';
-  ksort($result_array_2);
+
+echo '<hr />';
+echo '<h3>Image dimensions\' inconsistencies:</h3>';
+ksort($result_array_2);
+
 foreach ($result_array_2 as $result2) {
     echo $result2;
 }
-  ksort($result_array_3);
+
+ksort($result_array_3);
+
 foreach ($result_array_3 as $result3) {
     echo $result3;
 }
@@ -221,21 +238,22 @@ foreach ($avail_images as $img_item => $img_use) {
     $dbresult2->close();
 }
 
-  $img_count = 0;
+$img_count = 0;
 foreach ($help_img as $img_item => $img_ids) {
     if (mb_strpos($img_item, 'images') > -1) {
         $img_count++;
     }
 }
 
-  echo '<hr>';
-  echo 'Number of images used from "images" folder:' . ($img_count) . '<br />';
-  echo 'Number of images available from "images" folder:' . (count($avail_images)) . '<br />';
-  echo 'Number of unused images from "images" folder:' . (count($avail_images) - count($help_img)) . '<br />';
-  echo 'Number of images used from other locations:' . (count($help_img) - $img_count) . '<br />';
+echo '<hr>';
+echo 'Number of images used from "images" folder:' . ($img_count) . '<br />';
+echo 'Number of images available from "images" folder:' . (count($avail_images)) . '<br />';
+echo 'Number of unused images from "images" folder:' . (count($avail_images) - count($help_img)) . '<br />';
+echo 'Number of images used from other locations:' . (count($help_img) - $img_count) . '<br />';
 
-  echo '<h3>Unused images:</h3>';
-  $result = '';
+echo '<h3>Unused images:</h3>';
+$result = '';
+
 foreach ($avail_images as $img_item => $img_use) {
     if ($img_use == 1) {
         $imgurl = $help_directory->url($img_item);
@@ -243,42 +261,51 @@ foreach ($avail_images as $img_item => $img_use) {
         unlink($help_directory->fullpath($img_item));
     }
 }
-  echo '<ol>' . $result . '</ol>';
+
+echo '<ol>' . $result . '</ol>';
+
 if ($result == '') {
     echo ' - not found.<br />';
 }
 
-  echo '<h3>Files from deleted pages:</h3>';
-  $result = '';
+echo '<h3>Files from deleted pages:</h3>';
+$result = '';
+
 foreach ($avail_images as $img_item => $img_use) {
     if ($img_use >= 2000) {
         $imgurl = $help_directory->url($img_item);
         $result .= "<li><a href=\"$imgurl\">$img_item</a> on page: <a href='../help/$target/index.php?id=" . ($img_use - 2000) . "'>#" . ($img_use - 2000) . '</a></li>';
     }
 }
-  echo '<ol>' . $result . '</ol>';
+
+echo '<ol>' . $result . '</ol>';
+
 if ($result == '') {
     echo ' - not found.<br />';
 }
 
-  echo "<h3>'Unusually' used files:</h3>";
-  $result = '';
+echo "<h3>'Unusually' used files:</h3>";
+$result = '';
+
 foreach ($avail_images as $img_item => $img_use) {
     if ($img_use >= 1000 && $img_use < 2000) {
         $imgurl = $help_directory->url($img_item);
         $result .= "<li><a href=\"$imgurl\">$img_item</a> on page: <a href='../help/$target/index.php?id=" . ($img_use - 1000) . "'>#" . ($img_use - 1000) . '</a></li>';
     }
 }
-  echo '<ol>' . $result . '</ol>';
+
+echo '<ol>' . $result . '</ol>';
+
 if ($result == '') {
     echo ' - not found.<br />';
 }
 
-  echo '<hr><h2>Help pages ids:</h2>';
-  $div_num = round(count($help_toc) / 15);
-  echo '<table><tr><td><ol>';
-  $i = 0;
-  $j = 1;
+echo '<hr><h2>Help pages ids:</h2>';
+$div_num = round(count($help_toc) / 15);
+echo '<table><tr><td><ol>';
+$i = 0;
+$j = 1;
+
 foreach ($help_toc as $help_item) {
     $i++;
     if ($i > ($div_num * $j)) {
@@ -287,7 +314,8 @@ foreach ($help_toc as $help_item) {
     }
     echo '<li><strong><a href="../help/' . $target . '/index.php?id=' . $help_item['id'] . '">' . $help_item['id'] . '</a></strong></li>';
 }
-  echo '</ol></td></tr></table>';
+
+echo '</ol></td></tr></table>';
 
 if (isset($_GET['content']) && $_GET['content'] == 'show') {
     echo '<he>';
@@ -296,7 +324,8 @@ if (isset($_GET['content']) && $_GET['content'] == 'show') {
         echo $help_item['body'];
     }
 }
-  $mysqli->close();
+
+$mysqli->close();
 ?>
 </div>
 </body>
