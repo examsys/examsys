@@ -104,21 +104,34 @@ if ($result == '') {
 
 echo '<hr>';
 //incorporated images
-$helpimage_regexp = '#src=".*filename=(?<filename>.*)" alt=".*?" width="(?<width>.*?)" height="(?<height>.*?)"#';
+$helpimage_regexp = '#src="' // Image tags all have a src attribute.
+    // We want to get all images. If they are stored in the system they will use getfile.php for access
+    // from this we need to parse out the directory type and file name.
+    . '(.*type=(?<directory>.*?)&.*filename=)?(?<filename>.*?)"'
+    // Images should, but may not have an alt attribute.
+    . '( alt=".*?")?'
+    // Detect the width attribute if it is present.
+    . '( width="(?<width>.*?)")?'
+    // Detect the height attribute if it is present.
+    . '( height="(?<height>.*?)")?#';
 
 foreach ($help_toc as $help_item) {
-    //search for <img scr=
     $test = array();
     $imagecount = preg_match_all($helpimage_regexp, $help_item['body'], $test);
     if ($imagecount > 0) {
         for ($i = 0; $i < $imagecount; $i++) {
             $code = $test['filename'][$i];
-            $width = $test['width'][$i];
-            $height = $test['height'][$i];
+            $details = [
+                'id' => $help_item['id'],
+                'code' => $code,
+                'width' => $test['width'][$i],
+                'height' => $test['height'][$i],
+                'directory' => $test['directory'][$i],
+            ];
             if (!isset($help_img[$code])) {
                 $help_img[$code] = array();
             }
-            array_push($help_img[$code], array($help_item['id'], $width, $height));
+            array_push($help_img[$code], $details);
         }
     } else {
         //search for background-image: url
@@ -126,13 +139,18 @@ foreach ($help_toc as $help_item) {
         if (count($test) > 1) {
             for ($i = 1; $i < count($test); $i++) {
                 $code = preg_split("/\'|\"/", $test[$i]);
-                $w = - 2;
-                $h = - 2;
+                $details = [
+                    'id' => $help_item['id'],
+                    'code' => $code,
+                    'width' =>  -2,
+                    'height' => -2,
+                    'directory' => '',
+                ];
                 if (!isset($help_img[$code[1]])) {
                     $help_img[$code[1]] = array();
                 }
                 if (count($code) >= 2) {
-                    array_push($help_img[$code[1]], array($help_item['id'], $w, $h));
+                    array_push($help_img[$code[1]], $details);
                 }
             }
         }
@@ -142,45 +160,76 @@ foreach ($help_toc as $help_item) {
 $result1 = '';
 $result2 = '';
 $result3 = '';
+$elsewehereimages = '';
 $result_array_2 = array();
 $result_array_3 = array();
 $i = 0;
 
+$from_help_dir = 0;
+$from_other_dir = 0;
+$from_elsewhere = 0;
+
 foreach ($help_img as $img_item => $img_ids) {
-    $path = $help_directory->fullpath($img_item);
-    if (file_exists($path)) {
-        if (!($img_size = getimagesize($path))) {
-            $img_size = false;
+    $img_size = false;
+    $elsewhere = false;
+    if (!empty($img_ids[0]['directory'])) {
+        if ($img_ids[0]['directory'] === 'help_' . $target) {
+            $path = $help_directory->fullpath($img_item);
+            $from_help_dir++;
+        } else {
+            $directory = rogo_directory::get_directory($img_ids[0]['directory']);
+            $path = $directory->fullpath($img_item);
+            $from_other_dir++;
         }
+        if (file_exists($path)) {
+            if (!($img_size = getimagesize($path))) {
+                $img_size = false;
+            }
+        }
+    } else {
+        $elsewhere = true;
+        $from_elsewhere++;
     }
 
-    if (!$img_size) {
+    if ($elsewhere) {
+        $elsewehereimages .= 'image "' . $img_item . '" is not from ExamSys directory - ';
+    } elseif (!$img_size) {
         $result1 .= 'image "' . $img_item . '" is missing - ';
     }
     foreach ($img_ids as $item_id => $item_val) {
         $i++;
-        if (!$img_size && $item_val != '') {
-            $result1 .= '"<a href="../help/' . $target . '/index.php?id=' . $item_val[0] . '">' . $help_toc[$item_val[0]]['title'] . '</a>" (id=<a href="../help/' . $target . '/index.php?id=' . $item_val[0] . '">' . $item_val[0] . '</a>) ';
+        if ($elsewhere and !$img_size and $item_val != '') {
+            $elsewehereimages .= '"<a href="../help/' . $target . '/index.php?id=' . $item_val['id'] . '">' . $help_toc[$item_val['id']]['title'] . '</a>" (id=<a href="../help/' . $target . '/index.php?id=' . $item_val['id'] . '">' . $item_val['id'] . '</a>) ';
+        } elseif (!$img_size && $item_val != '') {
+            $result1 .= '"<a href="../help/' . $target . '/index.php?id=' . $item_val['id'] . '">' . $help_toc[$item_val['id']]['title'] . '</a>" (id=<a href="../help/' . $target . '/index.php?id=' . $item_val['id'] . '">' . $item_val['id'] . '</a>) ';
         }
         if ($img_size) {
-            array_push($help_img[$img_item][$item_id], $img_size[0], $img_size[1]);
+            $help_img[$img_item][$item_id]['actual_width'] = $img_size[0];
+            $help_img[$img_item][$item_id]['actual_height'] = $img_size[1];
 
-            if (($help_img[$img_item][$item_id][1] * 1 != $help_img[$img_item][$item_id][3]) || ($help_img[$img_item][$item_id][2] * 1 != $help_img[$img_item][$item_id][4])) {
-                if ($help_img[$img_item][$item_id][1] == '-1' || $help_img[$img_item][$item_id][2] == '-1') {
-                    $result3 = 'Dimensions ( width="' . $help_img[$img_item][$item_id][3] . '" height="' . $help_img[$img_item][$item_id][4] . '" ) for image "' . $img_item . '" are ';
+            if ($help_img[$img_item][$item_id]['width'] === '' or $help_img[$img_item][$item_id]['height'] === '') {
+                $result3 = 'Dimensions ( width="' . $help_img[$img_item][$item_id]['actual_width'] . '" height="' . $help_img[$img_item][$item_id]['actual_height'] . '" ) for image "' . $img_item . '" are ';
+                $result3 .= 'not fully set ';
+                $result3 .= 'in: "<a href="../help/' . $target . '/index.php?id=' . $item_val['id'] . '">' . $help_toc[$item_val['id']]['title'] . '</a>" (id=<a href="../help/' . $target . '/index.php?id=' . $item_val['id'] . '">' . $item_val['id'] . '</a>)<br />';
+                $result_array_3[$item_val['id'] * 1000 + $i] = $result3;
+            } elseif (($help_img[$img_item][$item_id]['width'] * 1 != $help_img[$img_item][$item_id]['actual_width']) || ($help_img[$img_item][$item_id]['height'] * 1 != $help_img[$img_item][$item_id]['actual_height'])) {
+                if ($help_img[$img_item][$item_id]['width'] == '-1' || $help_img[$img_item][$item_id]['height'] == '-1') {
+                    $result3 = 'Dimensions ( width="' . $help_img[$img_item][$item_id]['actual_width'] . '" height="' . $help_img[$img_item][$item_id]['actual_height'] . '" ) for image "' . $img_item . '" are ';
                     $result3 .= 'not fully set ';
-                    $result3 .= 'in: "<a href="../help/' . $target . '/index.php?id=' . $item_val[0] . '">' . $help_toc[$item_val[0]]['title'] . '</a>" (id=<a href="../help/' . $target . '/index.php?id=' . $item_val[0] . '">' . $item_val[0] . '</a>)<br />';
-                    $result_array_3[$item_val[0] * 1000 + $i] = $result3;
-                } elseif ($help_img[$img_item][$item_id][1] != '-2') {
-                    $result2 = 'Dimensions ( width="' . $help_img[$img_item][$item_id][3] . '" height="' . $help_img[$img_item][$item_id][4] . '" ) for image "' . $img_item . '" are ';
-                    $result2 .= 'set to ( width="' . $help_img[$img_item][$item_id][1] . '" height="' . $help_img[$img_item][$item_id][2] . '" ) ';
-                    $result2 .= 'in: "<a href="../help/' . $target . '/index.php?id=' . $item_val[0] . '">' . $help_toc[$item_val[0]]['title'] . '</a>" (id=<a href="../help/' . $target . '/index.php?id=' . $item_val[0] . '">' . $item_val[0] . '</a>)<br />';
-                    $result_array_2[$item_val[0] * 1000 + $i] = $result2;
+                    $result3 .= 'in: "<a href="../help/' . $target . '/index.php?id=' . $item_val['id'] . '">' . $help_toc[$item_val['id']]['title'] . '</a>" (id=<a href="../help/' . $target . '/index.php?id=' . $item_val['id'] . '">' . $item_val['id'] . '</a>)<br />';
+                    $result_array_3[$item_val['id'] * 1000 + $i] = $result3;
+                } elseif ($help_img[$img_item][$item_id]['width'] != '-2') {
+                    $result2 = 'Dimensions ( width="' . $help_img[$img_item][$item_id]['actual_width'] . '" height="' . $help_img[$img_item][$item_id]['actual_height'] . '" ) for image "' . $img_item . '" are ';
+                    $result2 .= 'set to ( width="' . $help_img[$img_item][$item_id]['width'] . '" height="' . $help_img[$img_item][$item_id]['height'] . '" ) ';
+                    $result2 .= 'in: "<a href="../help/' . $target . '/index.php?id=' . $item_val['id'] . '">' . $help_toc[$item_val['id']]['title'] . '</a>" (id=<a href="../help/' . $target . '/index.php?id=' . $item_val['id'] . '">' . $item_val['id'] . '</a>)<br />';
+                    $result_array_2[$item_val['id'] * 1000 + $i] = $result2;
                 }
             }
         }
     }
-    if (!$img_size) {
+    if ($elsewhere) {
+        $elsewehereimages .= '<br/>';
+    } elseif (!$img_size) {
         $result1 .= '<br />';
     }
 }
@@ -189,6 +238,14 @@ echo '<h3>Missing images:</h3>';
 echo $result1;
 
 if ($result1 == '') {
+    echo ' - not detected.<br />';
+}
+
+echo '<hr />';
+echo '<h3>Images from outside ExamSys directories:</h3>';
+echo $elsewehereimages;
+
+if ($elsewehereimages == '') {
     echo ' - not detected.<br />';
 }
 
@@ -234,18 +291,12 @@ foreach ($avail_images as $img_item => $img_use) {
     $dbresult2->close();
 }
 
-$img_count = 0;
-foreach ($help_img as $img_item => $img_ids) {
-    if (mb_strpos($img_item, 'images') > -1) {
-        $img_count++;
-    }
-}
-
 echo '<hr>';
-echo 'Number of images used from "images" folder:' . ($img_count) . '<br />';
-echo 'Number of images available from "images" folder:' . (count($avail_images)) . '<br />';
-echo 'Number of unused images from "images" folder:' . (count($avail_images) - count($help_img)) . '<br />';
-echo 'Number of images used from other locations:' . (count($help_img) - $img_count) . '<br />';
+echo 'Number of images used from "images" folder: ' . ($from_help_dir) . '<br />';
+echo 'Number of images available from "images" folder: ' . (count($avail_images)) . '<br />';
+echo 'Number of unused images from "images" folder: ' . (count($avail_images) - $from_help_dir) . '<br />';
+echo 'Number of images used from other ExamSys directories: ' . ($from_other_dir) . '<br />';
+echo 'Number of images used from other locations: ' . ($from_elsewhere) . '<br />';
 
 echo '<h3>Unused images:</h3>';
 $result = '';
