@@ -339,17 +339,18 @@ class OnlineHelp
     public function display_page($id)
     {
         $page_details = $this->get_page_details($id);
-        $original_title = $page_details['title'];
         $contactemail = support::get_email();
+
+        if ($page_details === false or ($page_details['body'] == '' and $page_details['title'] == '')) {
+            $msg = sprintf($this->string['furtherassistance'], $contactemail, $contactemail);
+            $this->notice->display_notice_and_exit($this->db, $this->string['pagenotfound'], $msg, $this->string['pagenotfound'], '/artwork/page_not_found.png', '#C00000');
+        }
+
+        $original_title = $page_details['title'];
 
         if ($page_details['page_type'] == 'pointer') {    // If pointer look up source page.
             $page_details = $this->get_page_details($page_details['body']);
             $page_details['title'] = $original_title;   // Set the title back to the pointer title.
-        }
-
-        if ($page_details['body'] == '' and $page_details['title'] == '') {
-            $msg = sprintf($this->string['furtherassistance'], $contactemail, $contactemail);
-            $this->notice->display_notice_and_exit($this->db, $this->string['pagenotfound'], $msg, $this->string['pagenotfound'], '/artwork/page_not_found.png', '#C00000');
         }
 
         $this->display_header($id, $page_details['title']);
