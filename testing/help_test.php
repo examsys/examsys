@@ -38,11 +38,7 @@ require '../include/sysadmin_auth.inc';
 
 <div id="main">
 <?php
-$target = 'staff';
-
-if (isset($_GET['target'])) {
-    $target = $_GET['target'];
-}
+$target = param::optional('target', 'staff', param::ALPHA);
 
 $targettable = $target . '_help';
 $dbresult = $mysqli->prepare('SELECT id, body, title, type FROM ' . $targettable . ' ORDER BY id');
