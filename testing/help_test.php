@@ -88,7 +88,7 @@ foreach ($help_toc as $help_item) {
             if (isset($help_toc[$link])) {
                 $help_toc[$link]['links'] .= $help_item['id'] . ',';
             } else {
-                $result .= 'link reference is missing in: "<strong><a href="/help/' . $target . '/index.php?id=' . $help_item['id'] . '">' . $help_item['title'] . '</a></strong>" (id=<strong><a href="/help/' . $target . '/index.php?id=' . $help_item['id'] . '">' . $help_item['id'] . '</a></strong>) to: "' . $text . '" (id=' . $link . ')<br />';
+                $result .= 'link reference is missing in: "<strong><a href="../help/' . $target . '/index.php?id=' . $help_item['id'] . '">' . $help_item['title'] . '</a></strong>" (id=<strong><a href="../help/' . $target . '/index.php?id=' . $help_item['id'] . '">' . $help_item['id'] . '</a></strong>) to: "' . $text . '" (id=' . $link . ')<br />';
             }
         }
     }
@@ -153,7 +153,7 @@ foreach ($help_img as $img_item => $img_ids) {
     foreach ($img_ids as $item_id => $item_val) {
         $i++;
         if (!$img_size && $item_val != '') {
-            $result1 .= '"<a href="/help/' . $target . '/index.php?id=' . $item_val[0] . '">' . $help_toc[$item_val[0]]['title'] . '</a>" (id=<a href="/help/' . $target . '/index.php?id=' . $item_val[0] . '">' . $item_val[0] . '</a>) ';
+            $result1 .= '"<a href="../help/' . $target . '/index.php?id=' . $item_val[0] . '">' . $help_toc[$item_val[0]]['title'] . '</a>" (id=<a href="../help/' . $target . '/index.php?id=' . $item_val[0] . '">' . $item_val[0] . '</a>) ';
         }
         if ($img_size) {
             array_push($help_img[$img_item][$item_id], $img_size[0], $img_size[1]);
@@ -162,12 +162,12 @@ foreach ($help_img as $img_item => $img_ids) {
                 if ($help_img[$img_item][$item_id][1] == '-1' || $help_img[$img_item][$item_id][2] == '-1') {
                     $result3 = 'Dimensions ( width="' . $help_img[$img_item][$item_id][3] . '" height="' . $help_img[$img_item][$item_id][4] . '" ) for image "' . $img_item . '" are ';
                     $result3 .= 'not fully set ';
-                    $result3 .= 'in: "<a href="/help/' . $target . '/index.php?id=' . $item_val[0] . '">' . $help_toc[$item_val[0]]['title'] . '</a>" (id=<a href="/help/' . $target . '/index.php?id=' . $item_val[0] . '">' . $item_val[0] . '</a>)<br />';
+                    $result3 .= 'in: "<a href="../help/' . $target . '/index.php?id=' . $item_val[0] . '">' . $help_toc[$item_val[0]]['title'] . '</a>" (id=<a href="../help/' . $target . '/index.php?id=' . $item_val[0] . '">' . $item_val[0] . '</a>)<br />';
                     $result_array_3[$item_val[0] * 1000 + $i] = $result3;
                 } elseif ($help_img[$img_item][$item_id][1] != '-2') {
                     $result2 = 'Dimensions ( width="' . $help_img[$img_item][$item_id][3] . '" height="' . $help_img[$img_item][$item_id][4] . '" ) for image "' . $img_item . '" are ';
                     $result2 .= 'set to ( width="' . $help_img[$img_item][$item_id][1] . '" height="' . $help_img[$img_item][$item_id][2] . '" ) ';
-                    $result2 .= 'in: "<a href="/help/' . $target . '/index.php?id=' . $item_val[0] . '">' . $help_toc[$item_val[0]]['title'] . '</a>" (id=<a href="/help/' . $target . '/index.php?id=' . $item_val[0] . '">' . $item_val[0] . '</a>)<br />';
+                    $result2 .= 'in: "<a href="../help/' . $target . '/index.php?id=' . $item_val[0] . '">' . $help_toc[$item_val[0]]['title'] . '</a>" (id=<a href="../help/' . $target . '/index.php?id=' . $item_val[0] . '">' . $item_val[0] . '</a>)<br />';
                     $result_array_2[$item_val[0] * 1000 + $i] = $result2;
                 }
             }
@@ -253,7 +253,7 @@ if ($result == '') {
 foreach ($avail_images as $img_item => $img_use) {
     if ($img_use >= 2000) {
         $imgurl = $help_directory->url($img_item);
-        $result .= "<li><a href=\"$imgurl\">$img_item</a> on page: <a href='/help/$target/index.php?id=" . ($img_use - 2000) . "'>#" . ($img_use - 2000) . '</a></li>';
+        $result .= "<li><a href=\"$imgurl\">$img_item</a> on page: <a href='../help/$target/index.php?id=" . ($img_use - 2000) . "'>#" . ($img_use - 2000) . '</a></li>';
     }
 }
   echo '<ol>' . $result . '</ol>';
@@ -266,7 +266,7 @@ if ($result == '') {
 foreach ($avail_images as $img_item => $img_use) {
     if ($img_use >= 1000 && $img_use < 2000) {
         $imgurl = $help_directory->url($img_item);
-        $result .= "<li><a href=\"$imgurl\">$img_item</a> on page: <a href='/help/$target/index.php?id=" . ($img_use - 1000) . "'>#" . ($img_use - 1000) . '</a></li>';
+        $result .= "<li><a href=\"$imgurl\">$img_item</a> on page: <a href='../help/$target/index.php?id=" . ($img_use - 1000) . "'>#" . ($img_use - 1000) . '</a></li>';
     }
 }
   echo '<ol>' . $result . '</ol>';
@@ -285,7 +285,7 @@ foreach ($help_toc as $help_item) {
         $j++;
         echo '</ol></td><td><ol start=' . $i . '>';
     }
-    echo '<li><strong><a href="/help/' . $target . '/index.php?id=' . $help_item['id'] . '">' . $help_item['id'] . '</a></strong></li>';
+    echo '<li><strong><a href="../help/' . $target . '/index.php?id=' . $help_item['id'] . '">' . $help_item['id'] . '</a></strong></li>';
 }
   echo '</ol></td></tr></table>';
 
