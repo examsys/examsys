@@ -305,7 +305,10 @@ foreach ($avail_images as $img_item => $img_use) {
     if ($img_use == 1) {
         $imgurl = $help_directory->url($img_item);
         $result .= "<li><a href=\"$imgurl\">$img_item</a></li>";
-        unlink($help_directory->fullpath($img_item));
+        if ($configObject->get('cfg_dev_system')) {
+            // Only delete files on development systems, just in case something goes wrong with this code.
+            unlink($help_directory->fullpath($img_item));
+        }
     }
 }
 
