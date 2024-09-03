@@ -89,7 +89,16 @@ if (isset($_GET['folder']) and $_GET['folder'] != '') {
   $old_userID = '';
   $frequencies = array();
   $user_no = 0;
-  $result = $mysqli->prepare('SELECT log4.q_id, log4.rating, l4o.userID FROM log4 INNER JOIN log4_overall l4o ON log4.log4_overallID = l4o.id WHERE l4o.q_paper = ? AND l4o.started >= ? AND l4o.started <= ? ORDER BY l4o.userID');
+  $time_int = \log::getStartInterval(\assessment::TYPE_OSCE);
+  $sql = "SELECT 
+              log4.q_id, log4.rating, l4o.userID 
+          FROM 
+              log4 INNER JOIN log4_overall l4o ON log4.log4_overallID = l4o.id 
+          WHERE 
+              l4o.q_paper = ? AND DATE_ADD(l4o.started, INTERVAL $time_int MINUTE) >= ? AND l4o.started <= ? 
+          ORDER BY 
+              l4o.userID";
+  $result = $mysqli->prepare($sql);
   $result->bind_param('iss', $_GET['paperID'], $startdate, $enddate);
   $result->execute();
   $result->bind_result($q_id, $rating, $userObject->get_user_ID());

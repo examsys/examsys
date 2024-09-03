@@ -1171,11 +1171,13 @@ class ClassTotals
         $late_ts = strtotime($this->enddate) + 7200;
         $late_end = date('Y-m-d H:i:s', $late_ts);
 
+        $time_int = \log::getStartInterval($this->paper_type);
+
         $result = $this->db->prepare("SELECT DISTINCT metadataID, userID, title, surname, initials, first_names,
         DATE_FORMAT(started, '" . $this->config->get('cfg_long_date_time') . "') AS display_started, started
         FROM log_late, log_metadata, users
         WHERE log_late.metadataID = log_metadata.id AND log_metadata.userID = users.id AND paperID = ?
-        AND DATE_ADD(started, INTERVAL 2 MINUTE) >= ? AND started <= ?
+        AND DATE_ADD(started, INTERVAL $time_int MINUTE) >= ? AND started <= ?
         ORDER BY surname, initials");
         $result->bind_param('iss', $this->paperID, $this->startdate, $late_end);
         $result->execute();
@@ -1342,11 +1344,8 @@ class ClassTotals
         $metadataids = array();
 
         // Load started records from 'log_metadata'.
-        if ($this->paper_type == '2') {
-            $time_int = 2;
-        } else {
-            $time_int = 0;
-        }
+        $time_int = \log::getStartInterval($this->paper_type);
+
         $result = $this->db->prepare("SELECT
                                     log_metadata.id,
                                     users.id,

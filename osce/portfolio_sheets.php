@@ -84,7 +84,7 @@ function get_user_no($user_no, $user_results, $userID)
 
     return $match;
 }
-
+$time_int = \log::getStartInterval(\assessment::TYPE_OSCE);
 $sql = <<<SQL
 SELECT log4_overall.userID, students.title, students.surname, students.first_names, log4.q_id,
  rating, q_parts, REPLACE(leadin,'&amp;','&') AS leadin, REPLACE(theme,'&amp;','&') AS THEME,
@@ -95,7 +95,7 @@ user_roles ur JOIN roles r ON ur.roleid = r.id
 WHERE log4.log4_overallID = log4_overall.id
  AND log4_overall.userID = students.id AND log4_overall.examinerID = examiners.id
  AND papers.question = questions.q_id AND papers.paper = ? AND log4_overall.q_paper = ?
- AND log4.q_id = questions.q_id AND log4_overall.started >= ?
+ AND log4.q_id = questions.q_id AND DATE_ADD(log4_overall.started, INTERVAL $time_int MINUTE) >= ?
  AND log4_overall.started <= ? 
  AND students.id = ur.userid
  AND r.name IN ('Student', 'graduate')

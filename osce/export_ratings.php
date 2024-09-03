@@ -41,6 +41,7 @@ $log_array = array();
 $hits = 0;
 $user_no = 0;
 // Capture the log data first.
+$time_int = \log::getStartInterval(\assessment::TYPE_OSCE);
 $sql = <<<SQL
 SELECT DISTINCT sid.student_id, student.username, student.title, student.surname, student.initials, examiner.title, examiner.surname, examiner.initials, student.grade, student.gender,
  started, log4.q_id, rating, year, feedback, numeric_score
@@ -52,7 +53,7 @@ WHERE log4.log4_overallID = log4_overall.id AND log4.q_id = questions.q_id AND q
  AND student.id = ur.userid
  AND r.name IN ('Student', 'graduate')
  AND student.grade LIKE ?
- AND started >= ? AND started <= ?
+ AND DATE_ADD(started, INTERVAL $time_int MINUTE) >= ? AND started <= ?
 SQL;
 $result = $mysqli->prepare($sql);
 $result->bind_param('isss', $paperID, $repcourse, $startdate, $enddate);

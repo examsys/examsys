@@ -165,6 +165,10 @@ class log extends \log
             $from = 'log0, log_metadata, questions,users';
             $from1 = 'log1, log_metadata, questions, users';
         }
+
+        $time_int = self::getStartInterval($this->papertype);
+        $progress_time_int = self::getStartInterval(\assessment::TYPE_PROGRESS);
+
         $sql = "SELECT DISTINCT 
               username, 
               log_metadata.userID, 
@@ -189,7 +193,7 @@ class log extends \log
               users.id = log_metadata.userID 
               $rolefilter AND 
               grade LIKE ? 
-              AND started >= ? AND 
+              AND DATE_ADD(started, INTERVAL $time_int MINUTE) >= ? AND 
               started <= ?
             UNION ALL
             SELECT DISTINCT 
@@ -215,7 +219,7 @@ class log extends \log
                 users.id = log_metadata.userID
                 $rolefilter AND 
                 grade LIKE ? 
-                AND started >= ? 
+                AND DATE_ADD(started, INTERVAL $progress_time_int MINUTE) >= ? 
                 AND started <= ?
               ORDER BY 
                 surname, 

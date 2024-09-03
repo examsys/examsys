@@ -52,7 +52,9 @@ $result->close();
 
 // Read user answers from log.
 $log_answers = array();
-if ($paper_type == '0') {
+$time_int = \log::getStartInterval($paper_type);
+if ($paper_type == \assessment::TYPE_FORMATIVE) {
+    $progress_time_int = \log::getStartInterval(\assessment::TYPE_PROGRESS);
     $sql = "
     (
         SELECT 
@@ -63,7 +65,8 @@ if ($paper_type == '0') {
             lm.userID = u.id 
             AND u.id = ur.userid
             AND r.name IN ('Student', 'graduate')
-            AND l.metadataID = lm.id AND l.q_id = ? AND lm.paperID = ? AND lm.started >= ? AND lm.started <= ?
+            AND l.metadataID = lm.id AND l.q_id = ? AND lm.paperID = ?
+            AND DATE_ADD(lm.started, INTERVAL $time_int MINUTE) >= ? AND lm.started <= ?
     ) UNION ALL (
         SELECT 
             1 AS type, l.id, l.mark, l.user_answer, lm.userID 
@@ -73,7 +76,8 @@ if ($paper_type == '0') {
             lm.userID = u.id 
             AND u.id = ur.userid
             AND r.name IN ('Student', 'graduate')
-            AND l.metadataID = lm.id AND l.q_id = ? AND lm.paperID = ? AND lm.started >= ? AND lm.started <= ?
+            AND l.metadataID = lm.id AND l.q_id = ? AND lm.paperID = ?
+            AND DATE_ADD(lm.started, INTERVAL $progress_time_int MINUTE) >= ? AND lm.started <= ?
     )
     ";
     $result = $mysqli->prepare($sql);
@@ -88,7 +92,8 @@ if ($paper_type == '0') {
         lm.userID = u.id 
         AND u.id = ur.userid
         AND r.name IN ('Student', 'graduate')
-        AND l.metadataID = lm.id AND l.q_id = ? AND lm.paperID = ? AND lm.started >= ? AND lm.started <= ?
+        AND l.metadataID = lm.id AND l.q_id = ? AND lm.paperID = ?
+        AND DATE_ADD(lm.started, INTERVAL $time_int MINUTE) >= ? AND lm.started <= ?
     ";
     $result = $mysqli->prepare($sql);
     $result->bind_param('iiss', $q_id, $paperID, $_GET['startdate'], $_GET['enddate']);

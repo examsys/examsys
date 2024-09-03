@@ -53,8 +53,10 @@ function getCohortData($mysqli, $moduleIDs, $startdate, $enddate, $repcourse, $r
         $student_modules_sql = " AND log$paper_type.userID IN ($users_on_modules)";
     }
 
+    $time_int = \log::getStartInterval($paper_type);
+
     // Get order of the class.
-    if ($paper_type == '0') {
+    if ($paper_type == \assessment::TYPE_FORMATIVE) {
         if ($users_on_modules != '') {
             $student_modules_sql1 = " AND userID IN ($users_on_modules)";
             $student_modules_sql2 = " AND userID IN ($users_on_modules)";
@@ -62,11 +64,64 @@ function getCohortData($mysqli, $moduleIDs, $startdate, $enddate, $repcourse, $r
             $student_modules_sql1 = '';
             $student_modules_sql2 = '';
         }
-        $marks_query = "(SELECT log_metadata.userID, sum(mark) AS total_mark FROM (log0, log_metadata) WHERE log0.metadataID = log_metadata.id AND paperID = $paperID AND started >= $startdate AND started <= $enddate AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE '%staff%' AND student_grade NOT LIKE '%nhs%' AND year LIKE '" . $repyear . "'$student_modules_sql1 GROUP BY log_metadata.userID, paperID, started) UNION ALL (SELECT log_metadata.userID, sum(mark) AS total_mark FROM (log1, log_metadata) WHERE log1.metadataID = log_metadata.id AND paperID = $paperID AND started >= $startdate AND started <= $enddate AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE '%staff%' AND student_grade NOT LIKE '%nhs%' AND year LIKE '" . $repyear . "'$student_modules_sql2 GROUP BY log_metadata.userID, paperID, started) ORDER BY total_mark " . $direction;
-    } elseif ($paper_type == '4') {
-        $marks_query = "SELECT l4o.userID, sum(log4.rating) AS total_mark FROM log4 INNER JOIN log4_overall l4o ON log4.log4_overallID = l4o.id WHERE l4o.q_paper = $paperID AND DATE_ADD(l4o.started, INTERVAL 2 MINUTE)>=$startdate AND l4o.started<=$enddate$student_modules_sql GROUP BY l4o.userID, l4o.q_paper, l4o.started ORDER BY total_mark " . $direction;
+        $progress_time_int = \log::getStartInterval(\assessment::TYPE_PROGRESS);
+        $marks_query = "(
+                            SELECT 
+                                log_metadata.userID, sum(mark) AS total_mark 
+                            FROM 
+                                (log0, log_metadata) 
+                            WHERE 
+                                log0.metadataID = log_metadata.id AND paperID = $paperID 
+                                AND DATE_ADD(started, INTERVAL $time_int MINUTE) >= $startdate AND started <= $enddate 
+                                AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE '%staff%' 
+                                AND student_grade NOT LIKE '%nhs%' AND year LIKE '" . $repyear . "'
+                                $student_modules_sql1 
+                            GROUP BY 
+                                log_metadata.userID, paperID, started
+                        ) UNION ALL (
+                            SELECT 
+                                log_metadata.userID, sum(mark) AS total_mark 
+                            FROM 
+                                (log1, log_metadata) 
+                            WHERE 
+                                log1.metadataID = log_metadata.id AND paperID = $paperID 
+                                AND DATE_ADD(started, INTERVAL $progress_time_int MINUTE) >= $startdate AND started <= $enddate 
+                                AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE '%staff%' 
+                                AND student_grade NOT LIKE '%nhs%' AND year LIKE '" . $repyear . "'
+                                $student_modules_sql2 
+                            GROUP BY 
+                                log_metadata.userID, paperID, started
+                        )
+                        ORDER BY total_mark " . $direction;
+    } elseif ($paper_type == \assessment::TYPE_OSCE) {
+        $marks_query = "SELECT 
+                            l4o.userID, sum(log4.rating) AS total_mark 
+                        FROM 
+                            log4 INNER JOIN log4_overall l4o ON log4.log4_overallID = l4o.id 
+                        WHERE 
+                            l4o.q_paper = $paperID AND DATE_ADD(l4o.started, INTERVAL $time_int MINUTE)>=$startdate 
+                             AND l4o.started<=$enddate
+                             $student_modules_sql 
+                        GROUP BY 
+                            l4o.userID, l4o.q_paper, l4o.started 
+                        ORDER BY 
+                            total_mark " . $direction;
     } else {
-        $marks_query = "SELECT log_metadata.userID, sum(mark) AS total_mark FROM (log$paper_type, log_metadata) WHERE log$paper_type.metadataID = log_metadata.id AND paperID = $paperID AND DATE_ADD(started, INTERVAL 2 MINUTE) >= $startdate AND started <= $enddate AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE '%staff%' AND student_grade NOT LIKE '%nhs%' AND student_grade LIKE '" . $repcourse . "' AND year LIKE '" . $repyear . "'$student_modules_sql GROUP BY log_metadata.userID, paperID, started ORDER BY total_mark " . $direction;
+        $marks_query = "SELECT 
+                            log_metadata.userID, sum(mark) AS total_mark 
+                        FROM 
+                            (log$paper_type, log_metadata) 
+                        WHERE 
+                            log$paper_type.metadataID = log_metadata.id AND paperID = $paperID 
+                            AND DATE_ADD(started, INTERVAL $time_int MINUTE) >= $startdate AND started <= $enddate 
+                            AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE '%staff%' 
+                            AND student_grade NOT LIKE '%nhs%' AND student_grade LIKE '" . $repcourse . "' 
+                            AND year LIKE '" . $repyear . "'
+                            $student_modules_sql 
+                        GROUP BY 
+                            log_metadata.userID, paperID, started 
+                        ORDER BY 
+                            total_mark " . $direction;
     }
 
     $student_no = 0;

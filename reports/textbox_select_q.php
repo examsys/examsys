@@ -68,7 +68,8 @@ $paper = $propertyObj->get_paper_title();
     echo draw_toprightmenu(214);
 
   $candidate_no = 0;
-if ($paper_type == '0' or $paper_type == '1' or $paper_type == '2') {
+if (in_array($paper_type, [\assessment::TYPE_FORMATIVE, \assessment::TYPE_PROGRESS, \assessment::TYPE_SUMMATIVE])) {
+    $time_int = \log::getStartInterval($paper_type);
     // Get how many students took the paper.
     $sql = "
     SELECT DISTINCT 
@@ -79,7 +80,7 @@ if ($paper_type == '0' or $paper_type == '1' or $paper_type == '2') {
         JOIN user_roles ur ON u.id = ur.userid
         JOIN roles r ON r.id = ur.roleid 
     WHERE 
-        lm.paperID = ? AND DATE_ADD(lm.started, INTERVAL 2 MINUTE) >= ? AND lm.started <= ? 
+        lm.paperID = ? AND DATE_ADD(lm.started, INTERVAL $time_int MINUTE) >= ? AND lm.started <= ? 
         AND r.name IN ('Student', 'graduate')
     ";
     $result = $mysqli->prepare($sql);

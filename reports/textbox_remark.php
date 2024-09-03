@@ -108,11 +108,7 @@ if (isset($_POST['submit'])) {
   <table>
     <?php
 
-    if ($paper_type == '2') {
-        $time_int = 2;
-    } else {
-        $time_int = 0;
-    }
+    $time_int = \log::getStartInterval($paper_type);
 
     // Get any previous remark settings.
     $remark_array = textbox_marking_utils::get_remark_users($paperID, $mysqli);
@@ -125,7 +121,8 @@ if (isset($_POST['submit'])) {
 
     // Get back total marks for the paper excluding all textboxes.
     $marks_array = array();
-    if ($paper_type == '0') {
+    if ($paper_type == \assessment::TYPE_FORMATIVE) {
+        $progress_time_int = \log::getStartInterval(\assessment::TYPE_PROGRESS);
         $sql = <<< SQL
 			SELECT SUM(adjmark) AS adjmark_total, log_metadata.userID, users.username
 				FROM log0, log_metadata, questions, users, user_roles ur JOIN roles r ON ur.roleid = r.id
@@ -149,7 +146,7 @@ if (isset($_POST['submit'])) {
 				AND log_metadata.userID = users.id
 				AND users.id = ur.userid
 				AND r.name IN ('Student', 'graduate')
-				AND DATE_ADD(started, INTERVAL $time_int MINUTE) >= ?
+				AND DATE_ADD(started, INTERVAL $progress_time_int MINUTE) >= ?
 				AND started <= ?
 			GROUP BY log_metadata.userID, users.username
 SQL;

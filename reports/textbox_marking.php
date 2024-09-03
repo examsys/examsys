@@ -116,8 +116,10 @@ require '../include/toprightmenu.inc';
 
 echo draw_toprightmenu();
 
+$time_int = \log::getStartInterval($paper_type);
+
 $candidate_no = 0;
-if ($paper_type == '0' or $paper_type == '1' or $paper_type == '2') {
+if (in_array($paper_type, [\assessment::TYPE_FORMATIVE, \assessment::TYPE_PROGRESS, \assessment::TYPE_SUMMATIVE])) {
     // Get how many students took the paper.
     $sql = "
     SELECT DISTINCT
@@ -128,7 +130,7 @@ if ($paper_type == '0' or $paper_type == '1' or $paper_type == '2') {
         user_roles ur JOIN roles r ON ur.roleid = r.id
     WHERE 
         lm.paperID = ?
-        AND DATE_ADD(lm.started, INTERVAL 2 MINUTE) >= ?
+        AND DATE_ADD(lm.started, INTERVAL $time_int MINUTE) >= ?
         AND lm.started <= ?
         AND u.id = ur.userid
         AND r.name IN ('Student', 'graduate')
@@ -156,7 +158,8 @@ if ($phase == 2) {
     $studentstr = 'AND u.id IN (' .  implode(',', $students) . ')';
 }
 
-if ($paper_type == '0') {
+if ($paper_type == \assessment::TYPE_FORMATIVE) {
+    $progress_time_int = \log::getStartInterval(\assessment::TYPE_PROGRESS);
     $sql = <<< SQL
 SELECT 0 AS logtype, l.id, lm.userID, l.user_answer, t.mark, l.q_id, comments, reminders
   FROM log0 l
@@ -168,7 +171,7 @@ SELECT 0 AS logtype, l.id, lm.userID, l.user_answer, t.mark, l.q_id, comments, r
   WHERE lm.paperID = ?
   AND r.name IN ('Student', 'graduate')
   AND l.q_id = ?
-  AND DATE_ADD(lm.started, INTERVAL 2 MINUTE) >= ?
+  AND DATE_ADD(lm.started, INTERVAL $time_int MINUTE) >= ?
   AND lm.started <= ? $marked $studentstr
 UNION ALL
 SELECT 1 AS logtype, l.id, lm.userID, l.user_answer, t.mark, l.q_id, comments, reminders
@@ -181,7 +184,7 @@ SELECT 1 AS logtype, l.id, lm.userID, l.user_answer, t.mark, l.q_id, comments, r
   WHERE lm.paperID = ?
   AND r.name IN ('Student', 'graduate')
   AND l.q_id = ?
-  AND DATE_ADD(lm.started, INTERVAL 2 MINUTE) >= ?
+  AND DATE_ADD(lm.started, INTERVAL $progress_time_int MINUTE) >= ?
   AND lm.started <= ? $marked $studentstr
 ORDER BY id
 SQL;
@@ -199,7 +202,7 @@ LEFT JOIN textbox_marking t ON l.id = t.answer_id AND lm.paperID = t.paperID AND
 WHERE lm.paperID = ?
 AND r.name IN ('Student', 'graduate')
 AND l.q_id = ?
-AND DATE_ADD(lm.started, INTERVAL 2 MINUTE) >= ?
+AND DATE_ADD(lm.started, INTERVAL $time_int MINUTE) >= ?
 AND lm.started <= ? $marked $studentstr
 ORDER BY l.id
 SQL;

@@ -157,8 +157,11 @@ if (isset($_POST['submit'])) {
     echo '<tr><td colspan="4"><img src="../artwork/tooltip_icon.gif" />' . $string['comments'] . '</td></tr>';
     $student_no = 0;
 
+    $time_int = \log::getStartInterval($paper_type);
+
     // Get student answers
-    if ($paper_type == '0') {
+    if ($paper_type == \assessment::TYPE_FORMATIVE) {
+        $progress_time_int = \log::getStartInterval(\assessment::TYPE_PROGRESS);
         $sql = <<< SQL
 SELECT 0 AS logtype, l.id, lm.userID, l.user_answer, l.mark
   FROM log0 l, log_metadata lm, users u, user_roles ur JOIN roles r ON ur.roleid = r.id
@@ -168,7 +171,7 @@ SELECT 0 AS logtype, l.id, lm.userID, l.user_answer, l.mark
   AND r.name IN ('Student', 'graduate')
   AND u.id = lm.userID
   AND l.q_id = ?
-  AND DATE_ADD(lm.started, INTERVAL 2 MINUTE) >= ?
+  AND DATE_ADD(lm.started, INTERVAL $time_int MINUTE) >= ?
   AND lm.started <= ?
 UNION ALL
 SELECT 1 AS logtype, l.id, lm.userID, l.user_answer, l.mark
@@ -179,7 +182,7 @@ SELECT 1 AS logtype, l.id, lm.userID, l.user_answer, l.mark
   AND r.name IN ('Student', 'graduate')
   AND u.id = lm.userID
   AND l.q_id = ?
-  AND DATE_ADD(lm.started, INTERVAL 2 MINUTE) >= ?
+  AND DATE_ADD(lm.started, INTERVAL $progress_time_int MINUTE) >= ?
   AND lm.started <= ?
 SQL;
 
@@ -195,7 +198,7 @@ AND u.id = ur.userid
 AND r.name IN ('Student', 'graduate')
 AND u.id = lm.userID
 AND l.q_id = ?
-AND DATE_ADD(lm.started, INTERVAL 2 MINUTE) >= ?
+AND DATE_ADD(lm.started, INTERVAL $time_int MINUTE) >= ?
 AND lm.started <= ?;
 SQL;
 

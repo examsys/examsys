@@ -38,6 +38,7 @@
 function get_quantitative_log_data($paper_id, $course, $start_date, $end_date, $exclude, &$log_array, $db, $number_of_questions)
 {
     $excluded = '';
+    $time_int = \log::getStartInterval(\assessment::TYPE_SURVEY);
     if ($exclude) {
         $result = $db->prepare("SELECT 
       lm.userID,
@@ -48,7 +49,7 @@ function get_quantitative_log_data($paper_id, $course, $start_date, $end_date, $
     WHERE
       l.metadataID = lm.id
       AND lm.paperID = ?
-      AND lm.started >= ?
+      AND DATE_ADD(lm.started, INTERVAL $time_int MINUTE) >= ?
       AND lm.started <= ?
       AND l.user_answer NOT IN ('u', '')
     GROUP BY lm.userID
@@ -78,7 +79,7 @@ AND u.id = ur.userid
 AND r.name IN ('Student', 'graduate')
 $excluded
 AND u.grade LIKE ?
-AND lm.started >= ? AND lm.started <= ?
+AND DATE_ADD(lm.started, INTERVAL $time_int MINUTE) >= ? AND lm.started <= ?
 SQL;
     $result = $db->prepare($sql);
     $result->bind_param('isss', $paper_id, $course, $start_date, $end_date);

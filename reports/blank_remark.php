@@ -45,11 +45,43 @@ $result->fetch();
 $result->close();
 // Read user answers from log.
 $log_answers = array();
-if ($paper_type == '0') {
-    $result = $mysqli->prepare("(SELECT 0 AS type, l.id, l.user_answer FROM log0 l, log_metadata lm WHERE l.metadataID = lm.id AND l.q_id = ? AND lm.paperID = ? AND lm.started >= ? AND lm.started <= ? AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE 'Staff%' AND student_grade NOT LIKE '%nhs%') UNION ALL (SELECT 1 AS type, l.id, l.user_answer FROM log1 l, log_metadata lm WHERE l.metadataID = lm.id AND l.q_id = ? AND lm.paperID = ? AND lm.started >= ? AND lm.started <= ? AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE 'Staff%' AND student_grade NOT LIKE '%nhs%')");
+$time_int = \log::getStartInterval($paper_type);
+if ($paper_type == \assessment::TYPE_FORMATIVE) {
+    $progress_time_int = \log::getStartInterval(\assessment::TYPE_PROGRESS);
+    $sql = "(
+                SELECT 
+                    0 AS type, l.id, l.user_answer 
+                FROM 
+                    log0 l, log_metadata lm 
+                WHERE 
+                    l.metadataID = lm.id AND l.q_id = ? AND lm.paperID = ? 
+                    AND DATE_ADD(lm.started, INTERVAL $time_int MINUTE) >= ? AND lm.started <= ?  
+                    AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE 'Staff%'
+                    AND student_grade NOT LIKE '%nhs%'
+            ) UNION ALL (
+                SELECT 
+                    1 AS type, l.id, l.user_answer 
+                FROM 
+                    log1 l, log_metadata lm 
+                WHERE 
+                    l.metadataID = lm.id AND l.q_id = ? AND lm.paperID = ?  
+                    AND DATE_ADD(lm.started, INTERVAL $progress_time_int MINUTE)d >= ? AND lm.started <= ? 
+                    AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE 'Staff%' 
+                    AND student_grade NOT LIKE '%nhs%'
+            )";
+    $result = $mysqli->prepare($sql);
     $result->bind_param('iissiiss', $q_id, $paperID, $_GET['startdate'], $_GET['enddate'], $q_id, $paperID, $_GET['startdate'], $_GET['enddate']);
 } else {
-    $result = $mysqli->prepare("SELECT $paper_type AS type, l.id, l.user_answer FROM log$paper_type l, log_metadata lm WHERE l.metadataID = lm.id AND l.q_id = ? AND lm.paperID = ? AND DATE_ADD(lm.started, INTERVAL 2 MINUTE) >= ? AND lm.started <= ? AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE 'Staff%' AND student_grade NOT LIKE '%nhs%'");
+    $sql = "SELECT
+                $paper_type AS type, l.id, l.user_answer 
+            FROM
+                log$paper_type l, log_metadata lm 
+            WHERE
+                l.metadataID = lm.id AND l.q_id = ? AND lm.paperID = ? AND DATE_ADD(lm.started, INTERVAL $time_int MINUTE) >= ? 
+                AND lm.started <= ? AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE 'Staff%' 
+                AND student_grade NOT LIKE '%nhs%'";
+
+    $result = $mysqli->prepare($sql);
     $result->bind_param('iiss', $q_id, $paperID, $_GET['startdate'], $_GET['enddate']);
 }
 $result->execute();

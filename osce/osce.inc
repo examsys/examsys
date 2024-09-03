@@ -282,11 +282,39 @@ function load_osce_results($propertyObj, $demo, $configObj, $question_no, $db)
 
     $total_mark = $propertyObj->get_total_mark();
 
+    $time_int = \log::getStartInterval(\assessment::TYPE_OSCE);
     if (!isset($_GET['absent']) or $_GET['absent'] == 0) {
-        $result = $db->prepare("SELECT DISTINCT log4_overall.id, students.id, students.gender, log4_overall.student_grade, log4_overall.year, students.surname, students.initials, students.first_names, students.title, student_id, started, DATE_FORMAT(started,'{$configObj->get('cfg_long_date_time')}') AS display_started, overall_rating, numeric_score, feedback, examiners.title, examiners.surname, examiners.initials FROM (users AS students, users AS examiners, sid, log4_overall) WHERE students.id = log4_overall.userID AND examiners.id = log4_overall.examinerID AND started >= ? AND started <= ? AND q_paper = ? AND students.id=sid.userID ORDER BY students.surname, students.initials");
+        $sql = "SELECT DISTINCT 
+                    log4_overall.id, students.id, students.gender, log4_overall.student_grade, log4_overall.year,
+                    students.surname, students.initials, students.first_names, students.title, student_id, started,
+                    DATE_FORMAT(started,'{$configObj->get('cfg_long_date_time')}') AS display_started, overall_rating,
+                    numeric_score, feedback, examiners.title, examiners.surname, examiners.initials 
+                FROM
+                    (users AS students, users AS examiners, sid, log4_overall) 
+                WHERE
+                    students.id = log4_overall.userID AND examiners.id = log4_overall.examinerID
+                  AND DATE_ADD(started, INTERVAL $time_int MINUTE) >= ? AND started <= ? AND q_paper = ? AND students.id=sid.userID 
+                ORDER BY
+                    students.surname, students.initials";
+        $result = $db->prepare($sql);
         $result->bind_param('ssi', $_GET['startdate'], $_GET['enddate'], $_GET['paperID']);
     } else {
-        $result = $db->prepare("SELECT log4_overall.id, students.id, students.gender, log4_overall.student_grade, log4_overall.year, students.surname, students.initials, students.first_names, students.title, student_id, started, DATE_FORMAT(started,'{$configObj->get('cfg_long_date_time')}') AS display_started, overall_rating, numeric_score, feedback, examiners.title, examiners.surname, examiners.initials FROM (modules_student, users AS students, sid) LEFT JOIN log4_overall ON students.id = log4_overall.userID AND started >= ? AND started <= ? AND q_paper = ? LEFT JOIN users AS examiners ON log4_overall.examinerID = examiners.id WHERE modules_student.userID=students.id AND students.id = sid.userID AND modules_student.idMod IN ($modIDs) AND calendar_year = ? ORDER BY students.surname, students.initials");
+        $sql = "SELECT
+                    log4_overall.id, students.id, students.gender, log4_overall.student_grade, log4_overall.year,
+                    students.surname, students.initials, students.first_names, students.title, student_id, started,
+                    DATE_FORMAT(started,'{$configObj->get('cfg_long_date_time')}') AS display_started, overall_rating,
+                    numeric_score, feedback, examiners.title, examiners.surname, examiners.initials
+                FROM
+                    (modules_student, users AS students, sid)
+                    LEFT JOIN log4_overall ON students.id = log4_overall.userID
+                        AND DATE_ADD(started, INTERVAL $time_int MINUTE) >= ? AND started <= ? AND q_paper = ?
+                    LEFT JOIN users AS examiners ON log4_overall.examinerID = examiners.id
+                WHERE
+                    modules_student.userID=students.id AND students.id = sid.userID
+                    AND modules_student.idMod IN ($modIDs) AND calendar_year = ?
+                ORDER BY
+                    students.surname, students.initials";
+        $result = $db->prepare($sql);
         $result->bind_param('ssis', $_GET['startdate'], $_GET['enddate'], $_GET['paperID'], $calendar_year);
     }
     $result->execute();
@@ -353,7 +381,15 @@ function find_user_result($user_results, $target_userID)
 
 function check_killer_answers(&$user_results, $killer_questions, $db)
 {
-    $result = $db->prepare('SELECT q_id, rating, userID FROM log4, log4_overall WHERE log4.log4_overallID = log4_overall.id AND started >= ? AND started <= ? AND q_paper = ?');
+    $time_int = \log::getStartInterval(\assessment::TYPE_OSCE);
+    $sql = "SELECT
+                q_id, rating, userID
+            FROM
+                log4, log4_overall
+            WHERE
+                log4.log4_overallID = log4_overall.id AND DATE_ADD(started, INTERVAL $time_int MINUTE) >= ?
+                AND started <= ? AND q_paper = ?";
+    $result = $db->prepare($sql);
     $result->bind_param('ssi', $_GET['startdate'], $_GET['enddate'], $_GET['paperID']);
     $result->execute();
     $result->bind_result($q_id, $rating, $userID);
@@ -376,8 +412,15 @@ function check_killer_answers(&$user_results, $killer_questions, $db)
 function load_osce_medians($db)
 {
     $q_medians = array();
-
-    $result = $db->prepare('SELECT q_id, rating, userID FROM log4, log4_overall WHERE log4.log4_overallID = log4_overall.id AND started >= ? AND started <= ? AND q_paper = ?');
+    $time_int = \log::getStartInterval(\assessment::TYPE_OSCE);
+    $sql = "SELECT
+                q_id, rating, userID 
+            FROM
+                log4, log4_overall 
+            WHERE
+                log4.log4_overallID = log4_overall.id AND DATE_ADD(started, INTERVAL $time_int MINUTE) >= ?
+                AND started <= ? AND q_paper = ?";
+    $result = $db->prepare($sql);
     $result->bind_param('ssi', $_GET['startdate'], $_GET['enddate'], $_GET['paperID']);
     $result->execute();
     $result->bind_result($q_id, $rating, $userID);
