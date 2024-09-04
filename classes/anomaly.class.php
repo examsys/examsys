@@ -125,6 +125,7 @@ class Anomaly
     /**
      * Get anomalies for the paper
      * @param int $paperid the paper
+     * @param int $papertype The type of paper
      * @param int $startdate datetime to start from
      * @param int $enddate datetime to end at
      * @param bool $studentsonly flag to indicate if only student results required
@@ -132,13 +133,14 @@ class Anomaly
      */
     public static function getAnomalies(
         int $paperid,
+        int $papertype,
         int $startdate,
         int $enddate,
         int $limit,
         int $page,
         bool $studentsonly = true
     ): array {
-        $search = new AnomalySearch();
+        $search = new AnomalySearch($papertype);
         $search->setLimit($limit);
         $search->setPage($page);
         $search->setParameters($startdate, $enddate, $paperid, $studentsonly);

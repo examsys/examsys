@@ -35,8 +35,21 @@ class AnomalySearch extends Search
     /** @var int A paper to search. */
     protected int $paperid;
 
+    /** @var int The paper type that is being searched for. */
+    protected int $papertype;
+
     /** @var bool Filter by students only. */
     protected bool $studentonly;
+
+    /**
+     * Constructor for the anomaly search.
+     *
+     * @param int $papertype
+     */
+    public function __construct(int $papertype)
+    {
+        $this->papertype = $papertype;
+    }
 
     /**
      * Gets the fields that will be used in the query.
@@ -64,8 +77,9 @@ class AnomalySearch extends Search
      */
     protected function generateStartTimeSQL(): SQLFragment
     {
+        $interval = \log::getStartInterval($this->papertype) * 60;
         $sql = new SQLFragment();
-        $sql->sql = 'a.time >= ?';
+        $sql->sql = "(a.time + $interval) >= ?";
         $sql->addParameter($this->starttime, SQLFragment::TYPE_INTEGER);
         return $sql;
     }

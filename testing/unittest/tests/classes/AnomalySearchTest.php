@@ -23,6 +23,7 @@
  * @package tests
  * @group core
  * @group search
+ * @group anomaly
  */
 class AnomalySearchTest extends testing\unittest\unittestdatabase
 {
@@ -82,7 +83,7 @@ class AnomalySearchTest extends testing\unittest\unittestdatabase
      */
     public function testSearch()
     {
-        $search = new AnomalySearch();
+        $search = new AnomalySearch($this->paper['papertype']);
         $search->setLimit(100);
         $search->setPage(1);
         $search->setParameters(strtotime('-1 day'), strtotime('+1 day'), $this->paper['id'], true);

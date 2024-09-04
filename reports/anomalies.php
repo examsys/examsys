@@ -113,6 +113,7 @@ $data['current'] = count($links) > 0 ? array_pop($links) : '';
 $data['links'] = $links;
 $data['anomalies'] = Anomaly::getAnomalies(
     $paperid,
+    $properties->get_paper_type(),
     date_utils::rogoToTimestamp($startdate),
     date_utils::rogoToTimestamp($enddate),
     $limit,

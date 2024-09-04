@@ -153,6 +153,7 @@ class AnomalyTest extends \testing\unittest\unittestdatabase
             $expectedarray,
             \Anomaly::getAnomalies(
                 $this->paper['id'],
+                $this->paper['papertype'],
                 time() - 1000,
                 time(),
                 100,
@@ -172,6 +173,7 @@ class AnomalyTest extends \testing\unittest\unittestdatabase
             $expectedarray,
             \Anomaly::getAnomalies(
                 $this->paper['id'],
+                $this->paper['papertype'],
                 time() + 1000,
                 time() + 2000,
                 100,
@@ -204,6 +206,7 @@ class AnomalyTest extends \testing\unittest\unittestdatabase
             $expectedarray,
             \Anomaly::getAnomalies(
                 $this->paper['id'],
+                $this->paper['papertype'],
                 time() - 1000,
                 time(),
                 100,
