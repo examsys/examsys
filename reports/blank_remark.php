@@ -65,7 +65,7 @@ if ($paper_type == \assessment::TYPE_FORMATIVE) {
                     log1 l, log_metadata lm 
                 WHERE 
                     l.metadataID = lm.id AND l.q_id = ? AND lm.paperID = ?  
-                    AND DATE_ADD(lm.started, INTERVAL $progress_time_int MINUTE)d >= ? AND lm.started <= ? 
+                    AND DATE_ADD(lm.started, INTERVAL $progress_time_int MINUTE) >= ? AND lm.started <= ? 
                     AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE 'Staff%' 
                     AND student_grade NOT LIKE '%nhs%'
             )";

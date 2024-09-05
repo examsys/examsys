@@ -2040,8 +2040,8 @@ function capture_log_data(
 
     // Calculate top and bottom cohorts.
     $time_int = \log::getStartInterval($paper_type);
+    $progress_time_int = \log::getStartInterval(\assessment::TYPE_PROGRESS);
     if ($paper_type == \assessment::TYPE_FORMATIVE) {
-        $progress_time_int = \log::getStartInterval(\assessment::TYPE_PROGRESS);
         $sql = "(
                     SELECT
                         username, sum(mark) AS total_mark, started
@@ -2126,11 +2126,43 @@ function capture_log_data(
         $roles_sql = '';
     }
 
-    if ($paper_type == '0') {
-        $result = $mysqli->prepare("(SELECT username, log_metadata.userID, log0.q_id, user_answer, q_type, score_method, display_method, settings, mark, totalpos, option_order, started FROM $from_sql WHERE log0.metadataID = log_metadata.id $roles_sql AND log0.q_id = questions.q_id AND paperID = ? AND grade LIKE ? AND users.id = log_metadata.userID $roles_sql AND started >= ? AND started <= ? $student_modules_sql) UNION ALL (SELECT username, log_metadata.userID, log1.q_id, user_answer, q_type, score_method, display_method, settings, mark, totalpos, option_order, started FROM $from_sql2 WHERE log1.metadataID = log_metadata.id $roles_sql AND log1.q_id=questions.q_id AND paperID = ? AND grade LIKE ? AND users.id = log_metadata.userID $roles_sql AND started >= ? AND started <= ? " . str_replace('log0', 'log1', $student_modules_sql) . ')');
+    if ($paper_type == \assessment::TYPE_FORMATIVE) {
+        $sql = "(
+                    SELECT
+                        username, log_metadata.userID, log0.q_id, user_answer, q_type, score_method, display_method,
+                        settings, mark, totalpos, option_order, started
+                    FROM
+                        $from_sql
+                    WHERE
+                        log0.metadataID = log_metadata.id $roles_sql AND log0.q_id = questions.q_id AND paperID = ?
+                        AND grade LIKE ? AND users.id = log_metadata.userID $roles_sql
+                        AND DATE_ADD(started, INTERVAL $time_int MINUTE) >= ? AND started <= ?
+                        $student_modules_sql
+                ) UNION ALL (
+                    SELECT
+                        username, log_metadata.userID, log1.q_id, user_answer, q_type, score_method, display_method,
+                        settings, mark, totalpos, option_order, started 
+                    FROM
+                        $from_sql2
+                    WHERE
+                        log1.metadataID = log_metadata.id $roles_sql AND log1.q_id=questions.q_id AND paperID = ?
+                        AND grade LIKE ? AND users.id = log_metadata.userID $roles_sql
+                        AND DATE_ADD(started, INTERVAL $progress_time_int MINUTE) >= ? AND started <= ?
+                        " . str_replace('log0', 'log1', $student_modules_sql) . '
+                )';
+        $result = $mysqli->prepare($sql);
         $result->bind_param('isssisss', $paperID, $repcourse, $startdate, $enddate, $paperID, $repcourse, $startdate, $enddate);
     } else {
-        $result = $mysqli->prepare("SELECT username, log_metadata.userID, log$paper_type.q_id, user_answer, q_type, score_method, display_method, settings, mark, totalpos, option_order, started FROM $from_sql WHERE log$paper_type.metadataID = log_metadata.id $roles_sql AND log$paper_type.q_id = questions.q_id AND paperID = ? AND grade LIKE ? AND users.id = log_metadata.userID $roles_sql AND DATE_ADD(started, INTERVAL 2 MINUTE) >= ? AND started <= ? $student_modules_sql");
+        $sql = "SELECT
+                    username, log_metadata.userID, log$paper_type.q_id, user_answer, q_type, score_method, display_method, settings, mark, totalpos, option_order, started
+                FROM
+                    $from_sql
+                WHERE
+                    log$paper_type.metadataID = log_metadata.id $roles_sql AND log$paper_type.q_id = questions.q_id
+                    AND paperID = ? AND grade LIKE ? AND users.id = log_metadata.userID $roles_sql
+                    AND DATE_ADD(started, INTERVAL $time_int MINUTE) >= ? AND started <= ?
+                    $student_modules_sql";
+        $result = $mysqli->prepare($sql);
         $result->bind_param('isss', $paperID, $repcourse, $startdate, $enddate);
     }
     $result->execute();
