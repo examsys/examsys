@@ -94,6 +94,8 @@ class log extends \log
             $from1 = 'log1, log_metadata, users';
         }
         $userfilter = self::get_user_filter($userlist);
+        $time_int = self::getStartInterval($this->papertype);
+        $progress_time_int = self::getStartInterval(\assessment::TYPE_PROGRESS);
         $sql = "SELECT
               log_metadata.userID,
               SUM(mark) AS total_mark
@@ -103,7 +105,7 @@ class log extends \log
               log0.metadataID = log_metadata.id AND
               log_metadata.userID = users.id
               AND paperID = ?
-              AND started >= ?
+              AND DATE_ADD(started, INTERVAL $time_int MINUTE) >= ?
               AND started <= ? $userfilter $rolefilter
             GROUP BY
               log_metadata.userID,
@@ -119,7 +121,7 @@ class log extends \log
               log1.metadataID = log_metadata.id AND
               log_metadata.userID = users.id AND
               paperID = ? AND
-              started >= ? AND
+              DATE_ADD(started, INTERVAL $progress_time_int MINUTE) >= ? AND
               started <= ? $userfilter $rolefilter
             GROUP BY
               log_metadata.userID,

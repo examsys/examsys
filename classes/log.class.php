@@ -198,6 +198,7 @@ abstract class log
             $from = 'log' . $this->papertype . ', log_metadata, users';
         }
         $userfilter = self::get_user_filter($userlist);
+        $time_int = self::getStartInterval($this->papertype);
         $sql = "SELECT
             log_metadata.userID,
             SUM(mark) AS total_mark 
@@ -206,7 +207,7 @@ abstract class log
           WHERE
             log$this->papertype.metadataID = log_metadata.id AND
             paperID = ? AND
-            DATE_ADD(started, INTERVAL 2 MINUTE) >= ? AND
+            DATE_ADD(started, INTERVAL $time_int MINUTE) >= ? AND
             started <= ? $userfilter AND
             log_metadata.userID = users.id $rolefilter
           GROUP BY
