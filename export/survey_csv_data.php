@@ -104,11 +104,12 @@ $stmt->bind_result($number_of_questions);
 $stmt->fetch();
 $stmt->close();
 
+$time_int = \log::getStartInterval(\assessment::TYPE_SURVEY);
 $exclude = '';
 if ($complete == 1) {
-    $stmt = $mysqli->prepare('SELECT lm.userID, COUNT(l.id) AS answer_no FROM log3 l 
+    $stmt = $mysqli->prepare("SELECT lm.userID, COUNT(l.id) AS answer_no FROM log3 l 
     INNER JOIN log_metadata lm ON l.metadataID = lm.id 
-    WHERE lm.paperID=? AND lm.started>=? AND lm.started<=? GROUP BY lm.userID');
+    WHERE lm.paperID=? AND DATE_ADD(lm.started, INTERVAL $time_int MINUTE) >=? AND lm.started<=? GROUP BY lm.userID");
     $stmt->bind_param('iii', $paper_id, $startdate, $enddate);
     $stmt->execute();
     $stmt->bind_result($uID, $answer_no); //TODO replaced $userID with $uID
@@ -134,7 +135,7 @@ user_roles ur JOIN roles r ON ur.roleid = r.id
 WHERE lm.paperID = ? $repyear_sql
 AND u.id = ur.userid AND r.name IN ('Student', 'graduate')
 $exclude $repcourse_sql
-AND lm.started >= ? AND lm.started <= ?
+AND DATE_ADD(lm.started, INTERVAL $time_int MINUTE) >= ? AND lm.started <= ?
 SQL;
 
 $bind_types_str = implode('', $bind_types);

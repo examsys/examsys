@@ -77,6 +77,7 @@ header('Content-Disposition: attachment; filename="' . \file_handler::make_filen
 $log_array = array();
 $hits = 0;
 $exclude = '';
+$time_int = \log::getStartInterval(\assessment::TYPE_SURVEY);
 if ($complete == 1) {
     $result = $mysqli->prepare('SELECT COUNT(question) AS question_no FROM papers WHERE paper=?');
     $result->bind_param('i', $paper_id);
@@ -88,7 +89,7 @@ if ($complete == 1) {
         FROM log$paper_type l 
         INNER JOIN log_metadata lm 
         ON l.metadataID = lm.id 
-        WHERE lm.paperID=? AND lm.started>=? AND lm.started<=? GROUP BY lm.userID");
+        WHERE lm.paperID=? AND DATE_ADD(lm.started, INTERVAL $time_int MINUTE) >=? AND lm.started<=? GROUP BY lm.userID");
     $result->bind_param('iii', $paper_id, $startdate, $enddate);
     $result->execute();
     $result->bind_result($tmp_username, $answer_no);
@@ -112,7 +113,7 @@ user_roles ur JOIN roles r ON ur.roleid = r.id
 WHERE lm.paperID = ? $repyear_sql $repcourse_sql 
 AND u.id = ur.userid AND r.name IN ('Student', 'graduate')
 $exclude
-AND lm.started>= ? AND lm.started<= ? ORDER BY u.surname, u.initials
+AND DATE_ADD(lm.started, INTERVAL $time_int MINUTE) >= ? AND lm.started<= ? ORDER BY u.surname, u.initials
 SQL;
 
 $bind_types_str = implode('', $bind_types);

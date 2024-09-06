@@ -120,8 +120,8 @@ if (!isset($paper_type)) {
 // Get order of the class.
 $student_list = '';
 $time_int = \log::getStartInterval($paper_type);
+$progress_time_int = \log::getStartInterval(\assessment::TYPE_PROGRESS);
 if ($paper_type == \assessment::TYPE_FORMATIVE) {
-    $progress_time_int = \log::getStartInterval(\assessment::TYPE_PROGRESS);
     $sql = "(
                 SELECT 
                     log_metadata.userID, SUM(mark) AS total_mark 
@@ -184,7 +184,7 @@ if ($student_no > 0) {
     $hits = 0;
     $rowID = 0;
     // Capture the log data.
-    if ($paper_type == '0') {
+    if ($paper_type == \assessment::TYPE_FORMATIVE) {
         $sql = "
             (
                 SELECT DISTINCT 
@@ -197,7 +197,7 @@ if ($student_no > 0) {
                     AND paperID = ? AND u.id = lm.userID 
                     AND u.id = ur.userid
                     AND r.name IN ('Student', 'graduate')
-                    AND grade LIKE ? AND started >= ? AND started <= ?
+                    AND grade LIKE ? AND DATE_ADD(started, INTERVAL $time_int MINUTE) >= ? AND started <= ?
             ) UNION ALL (
                  SELECT DISTINCT 
                     username, lm.userID, title, surname, first_names, grade, gender, year, started, 
@@ -209,7 +209,7 @@ if ($student_no > 0) {
                     AND paperID = ? AND u.id = lm.userID 
                     AND u.id = ur.userid
                     AND r.name IN ('Student', 'graduate')
-                    AND grade LIKE ? AND started >= ? AND started <= ?
+                    AND grade LIKE ? AND DATE_ADD(started, INTERVAL $progress_time_int MINUTE) >= ? AND started <= ?
             ) ORDER BY 
                 surname, first_names, started, userID
         ";
@@ -228,7 +228,7 @@ if ($student_no > 0) {
                 AND u.id = ur.userid
                 AND r.name IN ('Student', 'graduate')
                 AND grade LIKE ? 
-                AND DATE_ADD(started, INTERVAL 2 MINUTE) >= ? AND started <= ? 
+                AND DATE_ADD(started, INTERVAL $time_int MINUTE) >= ? AND started <= ? 
             ORDER BY
                 surname, first_names, started, userID
         ";
