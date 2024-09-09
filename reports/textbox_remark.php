@@ -27,6 +27,7 @@ require '../include/staff_auth.inc';
 require '../include/errors.php';
 
 $paperID    = check_var('paperID', 'GET', true, false, true);
+$studentsonly = param::optional('studentsonly', 1, param::BOOLEAN);
 
 $module = (isset($_GET['module']) and $_GET['module'] != '') ? $_GET['module'] : '';
 
@@ -119,33 +120,35 @@ if (isset($_POST['submit'])) {
         $prev_remark = false;
     }
 
+    if ($studentsonly) {
+        $rolesjoin = \log::get_student_only('u.id');
+    } else {
+        $rolesjoin = '';
+    }
+
     // Get back total marks for the paper excluding all textboxes.
     $marks_array = array();
     if ($paper_type == \assessment::TYPE_FORMATIVE) {
         $progress_time_int = \log::getStartInterval(\assessment::TYPE_PROGRESS);
         $sql = <<< SQL
 			SELECT SUM(adjmark) AS adjmark_total, log_metadata.userID, users.username
-				FROM log0, log_metadata, questions, users, user_roles ur JOIN roles r ON ur.roleid = r.id
+				FROM log0, log_metadata, questions, users $rolesjoin
 				WHERE log0.metadataID = log_metadata.id
 				AND paperID = ?
 				AND log0.q_id = questions.q_id
 				AND q_type NOT IN ('textbox','info')
 				AND log_metadata.userID = users.id
-				AND users.id = ur.userid
-				AND r.name IN ('Student', 'graduate')
 				AND DATE_ADD(started, INTERVAL $time_int MINUTE) >= ?
 				AND started <= ?
 			GROUP BY log_metadata.userID, users.username
 			UNION ALL
 			SELECT SUM(adjmark) AS adjmark_total, log_metadata.userID, users.username
-				FROM log1, log_metadata, questions, users, user_roles ur JOIN roles r ON ur.roleid = r.id
+				FROM log1, log_metadata, questions, users $rolesjoin
 				WHERE log1.metadataID = log_metadata.id
 				AND paperID = ?
 				AND log1.q_id = questions.q_id
 				AND q_type NOT IN ('textbox','info')
 				AND log_metadata.userID = users.id
-				AND users.id = ur.userid
-				AND r.name IN ('Student', 'graduate')
 				AND DATE_ADD(started, INTERVAL $progress_time_int MINUTE) >= ?
 				AND started <= ?
 			GROUP BY log_metadata.userID, users.username
@@ -155,14 +158,12 @@ SQL;
     } else {
         $sql = <<< SQL
 			SELECT SUM(adjmark) AS adjmark_total, log_metadata.userID, users.username
-				FROM log$paper_type, log_metadata, questions, users, user_roles ur JOIN roles r ON ur.roleid = r.id
+				FROM log$paper_type, log_metadata, questions, users $rolesjoin
 				WHERE log$paper_type.metadataID = log_metadata.id
 				AND paperID = ?
 				AND log$paper_type.q_id = questions.q_id
 				AND q_type NOT IN ('textbox','info')
 				AND log_metadata.userID = users.id
-				AND users.id = ur.userid
-				AND r.name IN ('Student', 'graduate')
 				AND DATE_ADD(started, INTERVAL $time_int MINUTE) >= ?
 				AND started <= ?
 				GROUP BY log_metadata.userID, users.username

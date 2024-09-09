@@ -33,9 +33,10 @@
  * @param  array   $log_array  Reference to array that will be populatesd with the data
  * @param  mysqli  $db         Database connection
  * @param integer $number_of_questions number of questions in paper
+ * @param bool $studentsonly
  * @return integer             Number of records we're returning
  */
-function get_quantitative_log_data($paper_id, $course, $start_date, $end_date, $exclude, &$log_array, $db, $number_of_questions)
+function get_quantitative_log_data($paper_id, $course, $start_date, $end_date, $exclude, &$log_array, $db, $number_of_questions, $studentsonly)
 {
     $excluded = '';
     $time_int = \log::getStartInterval(\assessment::TYPE_SURVEY);
@@ -68,15 +69,18 @@ function get_quantitative_log_data($paper_id, $course, $start_date, $end_date, $
     }
     $hits = 0;
     // Capture the log data first.
+    if ($studentsonly) {
+        $rolesjoin = \log::get_student_only('u.id');
+    } else {
+        $rolesjoin = '';
+    }
     $sql = <<< SQL
 SELECT DISTINCT lm.userID, l.q_id, l.user_answer, q.q_type, l.screen, q.score_method
 FROM log3 l INNER JOIN log_metadata lm ON l.metadataID = lm.id
 INNER JOIN questions q ON l.q_id = q.q_id
-INNER JOIN users u on lm.userID = u.id,
-user_roles ur JOIN roles r ON ur.roleid = r.id
+INNER JOIN users u on lm.userID = u.id
+$rolesjoin
 WHERE lm.paperID = ?
-AND u.id = ur.userid
-AND r.name IN ('Student', 'graduate')
 $excluded
 AND u.grade LIKE ?
 AND DATE_ADD(lm.started, INTERVAL $time_int MINUTE) >= ? AND lm.started <= ?

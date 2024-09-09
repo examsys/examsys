@@ -31,6 +31,7 @@ require_once '../include/errors.php';
 $paperID   = check_var('paperID', 'GET', true, false, true);
 $startdate = check_var('startdate', 'GET', true, false, true);
 $enddate   = check_var('enddate', 'GET', true, false, true);
+$studentsonly = param::optional('studentsonly', 1, param::BOOLEAN);
 
 // Get properties of the paper.
 $propertyObj = PaperProperties::get_paper_properties_by_id($paperID, $mysqli, $string);
@@ -90,10 +91,17 @@ if (isset($_GET['folder']) and $_GET['folder'] != '') {
   $frequencies = array();
   $user_no = 0;
   $time_int = \log::getStartInterval(\assessment::TYPE_OSCE);
+
+if ($studentsonly) {
+    $rolesjoin = \log::get_student_only('l4o.userID');
+} else {
+    $rolesjoin = '';
+}
+
   $sql = "SELECT 
               log4.q_id, log4.rating, l4o.userID 
           FROM 
-              log4 INNER JOIN log4_overall l4o ON log4.log4_overallID = l4o.id 
+              log4 INNER JOIN log4_overall l4o ON log4.log4_overallID = l4o.id $rolesjoin
           WHERE 
               l4o.q_paper = ? AND DATE_ADD(l4o.started, INTERVAL $time_int MINUTE) >= ? AND l4o.started <= ? 
           ORDER BY 

@@ -31,6 +31,7 @@ require_once '../plugins/questions/enhancedcalc/enhancedcalc.class.php';
 
 $q_id  = check_var('q_id', 'GET', true, false, true);
 $paperID  = check_var('paperID', 'GET', true, false, true);
+$studentsonly = param::optional('studentsonly', 1, param::BOOLEAN);
 
 // Get some paper properties
 $propertyObj = PaperProperties::get_paper_properties_by_id($paperID, $mysqli, $string);
@@ -51,6 +52,11 @@ $result->fetch();
 $result->close();
 
 // Read user answers from log.
+if ($studentsonly) {
+    $rolesjoin = \log::get_student_only('u.id');
+} else {
+    $rolesjoin = '';
+}
 $log_answers = array();
 $time_int = \log::getStartInterval($paper_type);
 if ($paper_type == \assessment::TYPE_FORMATIVE) {
@@ -60,22 +66,20 @@ if ($paper_type == \assessment::TYPE_FORMATIVE) {
         SELECT 
             0 AS type, l.id, l.mark, l.user_answer, lm.userID 
         FROM 
-            log0 l, log_metadata lm, users u, user_roles ur JOIN roles r ON ur.roleid = r.id
+            log0 l, log_metadata lm, users u $rolesjoin
         WHERE 
             lm.userID = u.id 
             AND u.id = ur.userid
-            AND r.name IN ('Student', 'graduate')
             AND l.metadataID = lm.id AND l.q_id = ? AND lm.paperID = ?
             AND DATE_ADD(lm.started, INTERVAL $time_int MINUTE) >= ? AND lm.started <= ?
     ) UNION ALL (
         SELECT 
             1 AS type, l.id, l.mark, l.user_answer, lm.userID 
         FROM 
-            log1 l, log_metadata lm, users u, user_roles ur JOIN roles r ON ur.roleid = r.id
+            log1 l, log_metadata lm, users u $rolesjoin
         WHERE 
             lm.userID = u.id 
             AND u.id = ur.userid
-            AND r.name IN ('Student', 'graduate')
             AND l.metadataID = lm.id AND l.q_id = ? AND lm.paperID = ?
             AND DATE_ADD(lm.started, INTERVAL $progress_time_int MINUTE) >= ? AND lm.started <= ?
     )
@@ -87,7 +91,7 @@ if ($paper_type == \assessment::TYPE_FORMATIVE) {
     SELECT 
         $paper_type AS type, l.id, l.mark, l.user_answer, lm.userID 
     FROM 
-        log$paper_type l, log_metadata lm, users u, user_roles ur JOIN roles r ON ur.roleid = r.id
+        log$paper_type l, log_metadata lm, users u $rolesjoin
     WHERE 
         lm.userID = u.id 
         AND u.id = ur.userid

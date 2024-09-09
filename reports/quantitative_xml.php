@@ -306,6 +306,7 @@ function displayQuestion($q_id, $theme, $scenario, $leadin, $q_type, $correct, $
 }
 
 $exclude = param::optional('complete', false, param::BOOLEAN, param::FETCH_GET);
+$studentsonly = param::optional('studentsonly', 1, param::BOOLEAN);
 
 $paper = str_replace('&', '&amp;', $propertyObj->get_paper_title());
 $number_of_questions = $propertyObj->get_question_no();
@@ -330,7 +331,7 @@ echo '<w:body><wx:sect><wx:sub-section>';
 echo '<w:p><w:pPr><w:pStyle w:val="Heading1"/></w:pPr><w:r><w:t>' . StringUtils::wordToUtf8($paper) . '</w:t></w:r></w:p>';
 
 $log_array = array();
-$hits = get_quantitative_log_data($paperID, $_GET['repcourse'], $startdate, $enddate, $exclude, $log_array, $mysqli, $number_of_questions);
+$hits = get_quantitative_log_data($paperID, $_GET['repcourse'], $startdate, $enddate, $exclude, $log_array, $mysqli, $number_of_questions, $studentsonly);
 
 $table_on = 0;
 

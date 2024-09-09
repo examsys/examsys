@@ -29,6 +29,7 @@ require_once '../include/errors.php';
 $paperID    = check_var('paperID', 'GET', true, false, true);
 $startdate  = check_var('startdate', 'GET', true, false, true);
 $enddate    = check_var('enddate', 'GET', true, false, true);
+$studentsonly = param::optional('studentsonly', 1, param::BOOLEAN);
 
 $propertyObj = PaperProperties::get_paper_properties_by_id($paperID, $mysqli, $string);
 $paper_type = $propertyObj->get_paper_type();
@@ -68,6 +69,13 @@ $paper = $propertyObj->get_paper_title();
     echo draw_toprightmenu(214);
 
   $candidate_no = 0;
+
+if ($studentsonly) {
+    $rolesjoin = \log::get_student_only('u.id');
+} else {
+    $rolesjoin = '';
+}
+
 if (in_array($paper_type, [\assessment::TYPE_FORMATIVE, \assessment::TYPE_PROGRESS, \assessment::TYPE_SUMMATIVE])) {
     $time_int = \log::getStartInterval($paper_type);
     // Get how many students took the paper.
@@ -77,11 +85,9 @@ if (in_array($paper_type, [\assessment::TYPE_FORMATIVE, \assessment::TYPE_PROGRE
     FROM 
         log_metadata lm 
         INNER JOIN users u ON lm.userID = u.id
-        JOIN user_roles ur ON u.id = ur.userid
-        JOIN roles r ON r.id = ur.roleid 
+        $rolesjoin
     WHERE 
-        lm.paperID = ? AND DATE_ADD(lm.started, INTERVAL $time_int MINUTE) >= ? AND lm.started <= ? 
-        AND r.name IN ('Student', 'graduate')
+        lm.paperID = ? AND DATE_ADD(lm.started, INTERVAL $time_int MINUTE) >= ? AND lm.started <= ?
     ";
     $result = $mysqli->prepare($sql);
     $result->bind_param('iss', $paperID, $startdate, $enddate);
@@ -162,11 +168,9 @@ while ($result->fetch()) {
             SELECT 
                 mark 
             FROM 
-                log$paper_type, log_metadata, users, user_roles ur JOIN roles r ON ur.roleid = r.id
+                log$paper_type, log_metadata, users $rolesjoin
             WHERE 
                 log$paper_type.metadataID = log_metadata.id AND log_metadata.userID = users.id 
-                AND users.id = ur.userid
-                AND r.name IN ('Student', 'graduate')
                 AND paperID = ? AND q_id = ?
             ";
             $marked = $mysqli->prepare($sql);
@@ -198,7 +202,8 @@ while ($result->fetch()) {
         } else {
             echo '<a href="textbox_marking.php';
         }
-        echo "?q_id=$q_id&qNo=$question_no&paperID=$paperID&startdate=$startdate&enddate=$enddate&folder=" . $_GET['folder'] . '&module=' . $_GET['module'] . '&repcourse=' . $_GET['repcourse'] . "$tmp_phase\">" . trim($leadin) . "</a></td></tr>\n";
+        echo "?q_id=$q_id&qNo=$question_no&paperID=$paperID&startdate=$startdate&enddate=$enddate&studentsonly=$studentsonly&folder=" . $_GET['folder'];
+        echo '&module=' . $_GET['module'] . '&repcourse=' . $_GET['repcourse'] . "$tmp_phase\">" . trim($leadin) . "</a></td></tr>\n";
     }
     $question_no++;
 }

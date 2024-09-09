@@ -31,6 +31,7 @@ require_once '../include/errors.php';
 $paperID = check_var('paperID', 'GET', true, false, true);
 $startdate = check_var('startdate', 'GET', true, false, true);
 $enddate = check_var('enddate', 'GET', true, false, true);
+$studentsonly = param::optional('studentsonly', 1, param::BOOLEAN);
 ?>
 <!DOCTYPE html>
 <html>
@@ -77,7 +78,22 @@ if ($_GET['percent'] != 100 and $_GET['percent'] != '') {
 
   $student_no = 0;
   $user_total = 0;
-  $question_data = getCohortData($mysqli, $moduleID, $startdate, $enddate, $_GET['repcourse'], $_GET['repmodule'], '%', $paperID, $paper_type, $_GET['ordering'], $student_no, $user_total, $percent);
+$question_data = getCohortData(
+    $mysqli,
+    $moduleID,
+    $startdate,
+    $enddate,
+    $_GET['repcourse'],
+    $_GET['repmodule'],
+    '%',
+    $paperID,
+    $paper_type,
+    $_GET['ordering'],
+    $student_no,
+    $user_total,
+    $percent,
+    $studentsonly
+);
 
   echo '<div class="head_title">';
   echo '<div><img src="../artwork/toprightmenu.gif" id="toprightmenu_icon" /></div>';

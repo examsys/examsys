@@ -104,6 +104,7 @@ if (isset($_POST['submit'])) {
     $q_id       = check_var('q_id', 'GET', true, false, true);
     $startdate  = check_var('startdate', 'GET', true, false, true);
     $enddate    = check_var('enddate', 'GET', true, false, true);
+    $studentsonly = param::optional('studentsonly', 1, param::BOOLEAN);
 
     // Check the question exists.
     if (!QuestionUtils::question_exists($q_id, $mysqli)) {
@@ -159,28 +160,29 @@ if (isset($_POST['submit'])) {
 
     $time_int = \log::getStartInterval($paper_type);
 
+    if ($studentsonly) {
+        $rolesjoin = \log::get_student_only('u.id');
+    } else {
+        $rolesjoin = '';
+    }
+
     // Get student answers
     if ($paper_type == \assessment::TYPE_FORMATIVE) {
         $progress_time_int = \log::getStartInterval(\assessment::TYPE_PROGRESS);
         $sql = <<< SQL
 SELECT 0 AS logtype, l.id, lm.userID, l.user_answer, l.mark
-  FROM log0 l, log_metadata lm, users u, user_roles ur JOIN roles r ON ur.roleid = r.id
+  FROM log0 l, log_metadata lm, users u $rolesjoin
   WHERE lm.paperID = ?
   AND l.metadataID = lm.id
-  AND u.id = ur.userid
-  AND r.name IN ('Student', 'graduate')
   AND u.id = lm.userID
   AND l.q_id = ?
   AND DATE_ADD(lm.started, INTERVAL $time_int MINUTE) >= ?
   AND lm.started <= ?
 UNION ALL
 SELECT 1 AS logtype, l.id, lm.userID, l.user_answer, l.mark
-  FROM log1 l, log_metadata lm, users u, user_roles ur JOIN roles r ON ur.roleid = r.id
+  FROM log1 l, log_metadata lm, users u $rolesjoin
   WHERE lm.paperID = ?
   AND l.metadataID = lm.id
-  AND u.id = ur.userid
-  AND r.name IN ('Student', 'graduate')
-  AND u.id = lm.userID
   AND l.q_id = ?
   AND DATE_ADD(lm.started, INTERVAL $progress_time_int MINUTE) >= ?
   AND lm.started <= ?
@@ -191,11 +193,9 @@ SQL;
     } else {
         $sql = <<< SQL
 SELECT $paper_type AS logtype, l.id, lm.userID, l.user_answer, l.mark
-FROM log{$paper_type} l, log_metadata lm, users u, user_roles ur JOIN roles r ON ur.roleid = r.id
+FROM log{$paper_type} l, log_metadata lm, users u $rolesjoin
 WHERE lm.paperID = ?
 AND l.metadataID = lm.id
-AND u.id = ur.userid
-AND r.name IN ('Student', 'graduate')
 AND u.id = lm.userID
 AND l.q_id = ?
 AND DATE_ADD(lm.started, INTERVAL $time_int MINUTE) >= ?

@@ -508,9 +508,10 @@ function displayQuestion($q_no, $q_id, $theme, $scenario, $leadin, $q_type, $cor
   $result->close();
 
   $exclude = param::optional('complete', false, param::BOOLEAN, param::FETCH_GET);
+  $studentsonly = param::optional('studentsonly', 1, param::BOOLEAN);
 
   $log_array = array();
-  $hits = get_quantitative_log_data($_GET['paperID'], $_GET['repcourse'], $_GET['startdate'], $_GET['enddate'], $exclude, $log_array, $mysqli, $number_of_questions);
+  $hits = get_quantitative_log_data($_GET['paperID'], $_GET['repcourse'], $_GET['startdate'], $_GET['enddate'], $exclude, $log_array, $mysqli, $number_of_questions, $studentsonly);
 
   $module_code = '';
   $module = (isset($_GET['module']) and $_GET['module'] != '') ? $_GET['module'] : '';

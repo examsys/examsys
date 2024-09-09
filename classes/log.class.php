@@ -191,10 +191,8 @@ abstract class log
     {
         $user_list = array();
         if ($studentonly) {
-            $rolefilter = self::get_student_only();
-            $from = 'log' . $this->papertype . ', users, log_metadata, user_roles ur JOIN roles r ON ur.roleid = r.id';
+            $from = 'log' . $this->papertype . ', log_metadata, users ' . self::get_student_only();
         } else {
-            $rolefilter = '';
             $from = 'log' . $this->papertype . ', log_metadata, users';
         }
         $userfilter = self::get_user_filter($userlist);
@@ -209,7 +207,7 @@ abstract class log
             paperID = ? AND
             DATE_ADD(started, INTERVAL $time_int MINUTE) >= ? AND
             started <= ? $userfilter AND
-            log_metadata.userID = users.id $rolefilter
+            log_metadata.userID = users.id
           GROUP BY
             log_metadata.userID,
             paperID,
@@ -246,10 +244,8 @@ abstract class log
     {
         $data = array();
         if ($studentonly) {
-            $rolefilter = self::get_student_only();
-            $from = 'log' . $this->papertype . ', log_metadata, questions, users, user_roles ur JOIN roles r ON ur.roleid = r.id';
+            $from = 'log' . $this->papertype . ', log_metadata, questions, users ' . self::get_student_only();
         } else {
-            $rolefilter = '';
             $from = 'log' . $this->papertype . ', log_metadata, questions, users';
         }
 
@@ -276,7 +272,7 @@ abstract class log
         log$this->papertype.q_id = questions.q_id AND
         log_metadata.userID IN ($userlist) AND
         paperID = ? AND
-        users.id = log_metadata.userID $rolefilter AND
+        users.id = log_metadata.userID AND
         grade LIKE ? AND
         DATE_ADD(started, INTERVAL $time_int MINUTE) >= ? AND 
         started <= ?
@@ -362,11 +358,19 @@ abstract class log
 
     /**
      * Retrieve student only sql filter.
+     *
+     * @param string $userfield The userid field that the userroles table should be joined to
+     * @param string $userrolesalias The alias for the user
+     * @param string $rolesalias
      * @return string
      */
-    public static function get_student_only()
-    {
-        return "AND users.id = ur.userid AND r.name IN ('Student', 'graduate')";
+    public static function get_student_only(
+        string $userfield = 'users.id',
+        string $userrolesalias = 'ur',
+        string $rolesalias = 'r'
+    ) {
+        return "JOIN user_roles $userrolesalias ON $userfield = $userrolesalias.userid JOIN roles $rolesalias
+                    ON $userrolesalias.roleid = $rolesalias.id AND $rolesalias.name IN ('Student', 'graduate')";
     }
 
     /**

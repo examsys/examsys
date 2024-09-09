@@ -23,8 +23,39 @@
  * @package
  */
 
-function getCohortData($mysqli, $moduleIDs, $startdate, $enddate, $repcourse, $repmodule, $repyear, $paperID, $paper_type, $direction, &$student_no = 0, &$user_total = 0, $percent = 100)
-{
+/**
+ * @param mysqli $mysqli
+ * @param array $moduleIDs An array oof module ids
+ * @param string $startdate The date time for the start of the period we wish to display data for
+ * @param string $enddate The date time for the end of the period we wish to display data for
+ * @param string $repcourse The code for the course we wish to filter by, or % for all (unused)
+ * @param string $repmodule The module id we wish to display users for
+ * @param string $repyear The year we wish student enrolments to be part of
+ * @param int $paperID The id of the paper we want data for
+ * @param int $paper_type The type of paper we are getting data for
+ * @param string $direction The order of the results. ASC lowest to highest, or DESC highest to lowest.
+ * @param int $student_no Holds the number of users found in the data returned (should have a variable holding 0 passed into it)
+ * @param int $user_total Holds the total number of users that can be selected (the variable will be overwritten)
+ * @param int|float $percent The percentage of the total uses to select
+ * @param bool $studentsonly If we should only select student results
+ * @return array
+ */
+function getCohortData(
+    $mysqli,
+    $moduleIDs,
+    $startdate,
+    $enddate,
+    $repcourse,
+    $repmodule,
+    $repyear,
+    $paperID,
+    $paper_type,
+    $direction,
+    &$student_no = 0,
+    &$user_total = 0,
+    $percent = 100,
+    $studentsonly = true
+) {
     global $qid_list;
 
     $users_on_modules = '';
@@ -55,6 +86,12 @@ function getCohortData($mysqli, $moduleIDs, $startdate, $enddate, $repcourse, $r
 
     $time_int = \log::getStartInterval($paper_type);
 
+    if ($studentsonly) {
+        $rolesjoin = log::get_student_only('lm.userID');
+    } else {
+        $rolesjoin = '';
+    }
+
     // Get order of the class.
     if ($paper_type == \assessment::TYPE_FORMATIVE) {
         if ($users_on_modules != '') {
@@ -67,59 +104,55 @@ function getCohortData($mysqli, $moduleIDs, $startdate, $enddate, $repcourse, $r
         $progress_time_int = \log::getStartInterval(\assessment::TYPE_PROGRESS);
         $marks_query = "(
                             SELECT 
-                                log_metadata.userID, sum(mark) AS total_mark 
+                                lm.userID, sum(mark) AS total_mark 
                             FROM 
-                                (log0, log_metadata) 
+                                (log0, log_metadata lm $rolesjoin) 
                             WHERE 
-                                log0.metadataID = log_metadata.id AND paperID = $paperID 
-                                AND DATE_ADD(started, INTERVAL $time_int MINUTE) >= $startdate AND started <= $enddate 
-                                AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE '%staff%' 
-                                AND student_grade NOT LIKE '%nhs%' AND year LIKE '" . $repyear . "'
+                                log0.metadataID = lm.id AND paperID = $paperID 
+                                AND DATE_ADD(started, INTERVAL $time_int MINUTE) >= $startdate AND started <= $enddate
+                                AND year LIKE '" . $repyear . "'
                                 $student_modules_sql1 
                             GROUP BY 
-                                log_metadata.userID, paperID, started
+                                lm.userID, paperID, started
                         ) UNION ALL (
                             SELECT 
-                                log_metadata.userID, sum(mark) AS total_mark 
+                                lm.userID, sum(mark) AS total_mark 
                             FROM 
-                                (log1, log_metadata) 
+                                (log1, log_metadata lm $rolesjoin) 
                             WHERE 
-                                log1.metadataID = log_metadata.id AND paperID = $paperID 
-                                AND DATE_ADD(started, INTERVAL $progress_time_int MINUTE) >= $startdate AND started <= $enddate 
-                                AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE '%staff%' 
-                                AND student_grade NOT LIKE '%nhs%' AND year LIKE '" . $repyear . "'
+                                log1.metadataID = lm.id AND paperID = $paperID 
+                                AND DATE_ADD(started, INTERVAL $progress_time_int MINUTE) >= $startdate AND started <= $enddate
+                                 AND year LIKE '" . $repyear . "'
                                 $student_modules_sql2 
                             GROUP BY 
-                                log_metadata.userID, paperID, started
+                                lm.userID, paperID, started
                         )
                         ORDER BY total_mark " . $direction;
     } elseif ($paper_type == \assessment::TYPE_OSCE) {
         $marks_query = "SELECT 
-                            l4o.userID, sum(log4.rating) AS total_mark 
+                            lm.userID, sum(log4.rating) AS total_mark 
                         FROM 
-                            log4 INNER JOIN log4_overall l4o ON log4.log4_overallID = l4o.id 
+                            log4 INNER JOIN log4_overall lm ON log4.log4_overallID = lm.id 
                         WHERE 
-                            l4o.q_paper = $paperID AND DATE_ADD(l4o.started, INTERVAL $time_int MINUTE)>=$startdate 
-                             AND l4o.started<=$enddate
+                            lm.q_paper = $paperID AND DATE_ADD(lm.started, INTERVAL $time_int MINUTE)>=$startdate 
+                             AND lm.started<=$enddate
                              $student_modules_sql 
                         GROUP BY 
-                            l4o.userID, l4o.q_paper, l4o.started 
+                            lm.userID, lm.q_paper, lm.started 
                         ORDER BY 
                             total_mark " . $direction;
     } else {
         $marks_query = "SELECT 
-                            log_metadata.userID, sum(mark) AS total_mark 
+                            lm.userID, sum(mark) AS total_mark 
                         FROM 
-                            (log$paper_type, log_metadata) 
+                            (log$paper_type, log_metadata lm $rolesjoin) 
                         WHERE 
-                            log$paper_type.metadataID = log_metadata.id AND paperID = $paperID 
-                            AND DATE_ADD(started, INTERVAL $time_int MINUTE) >= $startdate AND started <= $enddate 
-                            AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE '%staff%' 
-                            AND student_grade NOT LIKE '%nhs%' AND student_grade LIKE '" . $repcourse . "' 
+                            log$paper_type.metadataID = lm.id AND paperID = $paperID 
+                            AND DATE_ADD(started, INTERVAL $time_int MINUTE) >= $startdate AND started <= $enddate
                             AND year LIKE '" . $repyear . "'
                             $student_modules_sql 
                         GROUP BY 
-                            log_metadata.userID, paperID, started 
+                            lm.userID, paperID, started 
                         ORDER BY 
                             total_mark " . $direction;
     }

@@ -32,6 +32,8 @@ $enddate = check_var('enddate', 'GET', true, false, true, param::SQLDATETIME);
 $get_repyear = param::optional('repyear', null, param::INT, param::FETCH_GET);
 $get_repcourse = param::optional('repcourse', '%', param::TEXT, param::FETCH_GET);
 $complete = param::optional('completerpt', null, param::INT, param::FETCH_GET);
+$studentsonly = param::optional('studentsonly', 1, param::BOOLEAN);
+
 $bind_types = array();
 $queryParams[] = $paper_id;
 $bind_types[] = 'i';
@@ -78,6 +80,13 @@ $log_array = array();
 $hits = 0;
 $exclude = '';
 $time_int = \log::getStartInterval(\assessment::TYPE_SURVEY);
+
+if ($studentsonly) {
+    $rolesjoin = \log::get_student_only('lm.userID');
+} else {
+    $rolesjoin = '';
+}
+
 if ($complete == 1) {
     $result = $mysqli->prepare('SELECT COUNT(question) AS question_no FROM papers WHERE paper=?');
     $result->bind_param('i', $paper_id);
@@ -88,7 +97,7 @@ if ($complete == 1) {
     $result = $mysqli->prepare("SELECT lm.userID, COUNT(l.id) AS answer_no 
         FROM log$paper_type l 
         INNER JOIN log_metadata lm 
-        ON l.metadataID = lm.id 
+        ON l.metadataID = lm.id $rolesjoin
         WHERE lm.paperID=? AND DATE_ADD(lm.started, INTERVAL $time_int MINUTE) >=? AND lm.started<=? GROUP BY lm.userID");
     $result->bind_param('iii', $paper_id, $startdate, $enddate);
     $result->execute();
@@ -104,14 +113,20 @@ if ($complete == 1) {
 
 // Capture the log data first.
 $user_no = 0;
+
+if ($studentsonly) {
+    $rolesjoin = \log::get_student_only('u.id');
+} else {
+    $rolesjoin = '';
+}
+
 $sql = <<< SQL
 SELECT l.q_id, u.grade, DATE_FORMAT(lm.started,"%d/%m/%Y %T") AS started, lm.year, u.surname,
 u.initials, u.title, REPLACE(l.user_answer,'"',"'") AS user_answer, lm.userID
 FROM log3 l INNER JOIN log_metadata lm ON l.metadataID = lm.id
-INNER JOIN users u ON lm.userID = u.id,
-user_roles ur JOIN roles r ON ur.roleid = r.id
-WHERE lm.paperID = ? $repyear_sql $repcourse_sql 
-AND u.id = ur.userid AND r.name IN ('Student', 'graduate')
+INNER JOIN users u ON lm.userID = u.id
+$rolesjoin
+WHERE lm.paperID = ? $repyear_sql $repcourse_sql
 $exclude
 AND DATE_ADD(lm.started, INTERVAL $time_int MINUTE) >= ? AND lm.started<= ? ORDER BY u.surname, u.initials
 SQL;

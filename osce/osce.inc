@@ -270,10 +270,11 @@ function getBlinePassmk($user_results, $user_no, $propertyObj)
  * @param object $propertyObj   - Paper properties object.
  * @param bool $demo                    - Is the system in demo mode.
  * @param object $configObj     - Configuration object.
- * @param object $db                    - MySQL database object.
+ * @param mysqli $db                    - MySQL database object.
+ * @param bool $studentsonly Return results for students only
  * @return array - details of students who have taken the OSCE station.
  */
-function load_osce_results($propertyObj, $demo, $configObj, $question_no, $db)
+function load_osce_results($propertyObj, $demo, $configObj, $question_no, $db, $studentsonly)
 {
 
     $modIDs = implode(',', array_keys(Paper_utils::get_modules($_GET['paperID'], $db)));
@@ -281,6 +282,12 @@ function load_osce_results($propertyObj, $demo, $configObj, $question_no, $db)
     $calendar_year = $propertyObj->get_calendar_year();
 
     $total_mark = $propertyObj->get_total_mark();
+
+    if ($studentsonly) {
+        $rolesjoin = \log::get_student_only('students.id');
+    } else {
+        $rolesjoin = '';
+    }
 
     $time_int = \log::getStartInterval(\assessment::TYPE_OSCE);
     if (!isset($_GET['absent']) or $_GET['absent'] == 0) {
@@ -290,10 +297,11 @@ function load_osce_results($propertyObj, $demo, $configObj, $question_no, $db)
                     DATE_FORMAT(started,'{$configObj->get('cfg_long_date_time')}') AS display_started, overall_rating,
                     numeric_score, feedback, examiners.title, examiners.surname, examiners.initials 
                 FROM
-                    (users AS students, users AS examiners, sid, log4_overall) 
+                    (users AS examiners, log4_overall, users AS students $rolesjoin)
+                    LEFT JOIN sid ON students.id = sid.userID
                 WHERE
                     students.id = log4_overall.userID AND examiners.id = log4_overall.examinerID
-                  AND DATE_ADD(started, INTERVAL $time_int MINUTE) >= ? AND started <= ? AND q_paper = ? AND students.id=sid.userID 
+                  AND DATE_ADD(started, INTERVAL $time_int MINUTE) >= ? AND started <= ? AND q_paper = ?
                 ORDER BY
                     students.surname, students.initials";
         $result = $db->prepare($sql);
@@ -305,12 +313,13 @@ function load_osce_results($propertyObj, $demo, $configObj, $question_no, $db)
                     DATE_FORMAT(started,'{$configObj->get('cfg_long_date_time')}') AS display_started, overall_rating,
                     numeric_score, feedback, examiners.title, examiners.surname, examiners.initials
                 FROM
-                    (modules_student, users AS students, sid)
+                    (modules_student, users AS students $rolesjoin)
                     LEFT JOIN log4_overall ON students.id = log4_overall.userID
                         AND DATE_ADD(started, INTERVAL $time_int MINUTE) >= ? AND started <= ? AND q_paper = ?
                     LEFT JOIN users AS examiners ON log4_overall.examinerID = examiners.id
+                    LEFT JOIN sid ON students.id = sid.userID
                 WHERE
-                    modules_student.userID=students.id AND students.id = sid.userID
+                    modules_student.userID=students.id
                     AND modules_student.idMod IN ($modIDs) AND calendar_year = ?
                 ORDER BY
                     students.surname, students.initials";
@@ -359,7 +368,7 @@ function load_osce_results($propertyObj, $demo, $configObj, $question_no, $db)
     $killer_questions = new Killer_question($_GET['paperID'], $db);
     $killer_questions->load();
 
-    check_killer_answers($user_results, $killer_questions, $db);
+    check_killer_answers($user_results, $killer_questions, $db, $studentsonly);
 
     return $user_results;
 }
@@ -379,15 +388,31 @@ function find_user_result($user_results, $target_userID)
     return $user_no;
 }
 
-function check_killer_answers(&$user_results, $killer_questions, $db)
+/**
+ * Checks if users have failed a killer question on the paper.
+ *
+ * @param array $user_results The results array for the paper.
+ * @param Killer_question $killer_questions The killer question object for the paper.
+ * @param mysqli $db
+ * @param bool $studentsonly Fetch only student responses
+ * @return void
+ */
+function check_killer_answers(&$user_results, $killer_questions, $db, $studentsonly)
 {
     $time_int = \log::getStartInterval(\assessment::TYPE_OSCE);
+
+    if ($studentsonly) {
+        $rolesjoin = \log::get_student_only('lo.userID');
+    } else {
+        $rolesjoin = '';
+    }
+
     $sql = "SELECT
-                q_id, rating, userID
+                q_id, rating, lo.userID
             FROM
-                log4, log4_overall
+                log4, log4_overall lo $rolesjoin
             WHERE
-                log4.log4_overallID = log4_overall.id AND DATE_ADD(started, INTERVAL $time_int MINUTE) >= ?
+                log4.log4_overallID = lo.id AND DATE_ADD(started, INTERVAL $time_int MINUTE) >= ?
                 AND started <= ? AND q_paper = ?";
     $result = $db->prepare($sql);
     $result->bind_param('ssi', $_GET['startdate'], $_GET['enddate'], $_GET['paperID']);
@@ -407,18 +432,24 @@ function check_killer_answers(&$user_results, $killer_questions, $db)
 /**
  * Load all the ratings of questions on a paper.
  * @param object $db - MySQL database object.
+ * @param bool $studentsonly Fetch only student responses
  * @return array - set of ratings for each question.
  */
-function load_osce_medians($db)
+function load_osce_medians($db, $studentsonly)
 {
     $q_medians = array();
     $time_int = \log::getStartInterval(\assessment::TYPE_OSCE);
+    if ($studentsonly) {
+        $rolesjoin = \log::get_student_only('lo.userID');
+    } else {
+        $rolesjoin = '';
+    }
     $sql = "SELECT
-                q_id, rating, userID 
+                q_id, rating, lo.userID 
             FROM
-                log4, log4_overall 
+                log4, log4_overall lo $rolesjoin
             WHERE
-                log4.log4_overallID = log4_overall.id AND DATE_ADD(started, INTERVAL $time_int MINUTE) >= ?
+                log4.log4_overallID = lo.id AND DATE_ADD(started, INTERVAL $time_int MINUTE) >= ?
                 AND started <= ? AND q_paper = ?";
     $result = $db->prepare($sql);
     $result->bind_param('ssi', $_GET['startdate'], $_GET['enddate'], $_GET['paperID']);

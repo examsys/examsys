@@ -176,7 +176,7 @@ if ($user_total == 0) {
     // No one has taken the paper yet.
     render_notattempted($paper_title, $mysqli, $string);
     $mysqli->close();
-    render_footer($paperID, $startdate, $enddate, $language, $cfg_root_path, $string, $render);
+    render_footer($paperID, $startdate, $enddate, $language, $cfg_root_path, $string, $render, $students_only);
     exit;
 } elseif ($user_total == 1) {
     $cohort_percent = 100; // Moved here for header display
@@ -268,4 +268,4 @@ refresh_performance_stats($mysqli, $paperID, $startdate, $cohort_percent, $pstat
 // $startdate is likely to cause issues if the exam was spanned over two dates, it's using substrings
 
 render_prefooter($ex_no, $string, $graded);
-render_footer($paperID, $startdate, $enddate, $language, $configObject->get('cfg_root_path'), $string, $render);
+render_footer($paperID, $startdate, $enddate, $language, $configObject->get('cfg_root_path'), $string, $render, $students_only);

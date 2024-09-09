@@ -2029,13 +2029,13 @@ function capture_log_data(
         $student_modules_sql = " AND log_metadata.userID IN ($users_on_modules)";
     }
 
-    if ($students_only or $paper_type == '0') {
-        $from_sql = 'log' . $paper_type . ', users, log_metadata, user_roles ur JOIN roles r ON ur.roleid = r.id';
-        $from_sql2 = 'log1, users, log_metadata, user_roles ur JOIN roles r ON ur.roleid = r.id';
-        $roles_sql = " AND users.id = ur.userid AND r.name IN ('Student', 'graduate')";
+    if ($students_only) {
+        $studentssql = \log::get_student_only();
+        $from_sql = 'log' . $paper_type . ', log_metadata, users ' . $studentssql;
+        $from_sql2 = 'log1, log_metadata, users ' . $studentssql;
     } else {
         $from_sql = '(log' . $paper_type . ', users, log_metadata)';
-        $roles_sql = '';
+        $from_sql2 = 'log1, users, log_metadata';
     }
 
     // Calculate top and bottom cohorts.
@@ -2048,11 +2048,9 @@ function capture_log_data(
                     FROM
                         $from_sql
                     WHERE
-                        log0.metadataID = log_metadata.id AND log_metadata.userID = users.id $roles_sql
+                        log0.metadataID = log_metadata.id AND log_metadata.userID = users.id
                         AND paperID = ? AND grade LIKE ?
                         AND DATE_ADD(started, INTERVAL $time_int MINUTE) >= ? AND started <= ?
-                        AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE 'Staff%'
-                        AND student_grade NOT LIKE '%nhs%'
                         $student_modules_sql
                     GROUP BY username, paperID, started
                 ) UNION ALL (
@@ -2061,7 +2059,7 @@ function capture_log_data(
                     FROM
                         $from_sql2
                     WHERE
-                        log1.metadataID = log_metadata.id AND log_metadata.userID = users.id $roles_sql
+                        log1.metadataID = log_metadata.id AND log_metadata.userID = users.id
                         AND paperID = ?
                         AND DATE_ADD(started, INTERVAL $progress_time_int MINUTE) >= ? AND started <= ?
                         " . str_replace('log0', 'log1', $student_modules_sql) . '
@@ -2076,7 +2074,7 @@ function capture_log_data(
                 FROM
                     $from_sql
                 WHERE
-                    log$paper_type.metadataID = log_metadata.id $roles_sql AND log_metadata.userID = users.id
+                    log$paper_type.metadataID = log_metadata.id AND log_metadata.userID = users.id
                     AND paperID = ? AND grade LIKE ?
                     AND DATE_ADD(started, INTERVAL $time_int MINUTE) >= ? AND started <= ? 
                     $student_modules_sql 
@@ -2117,13 +2115,13 @@ function capture_log_data(
     }
     $result->close();
 
-    if ($students_only or $paper_type == '0') {
-        $from_sql = 'log' . $paper_type . ', log_metadata, questions, users, user_roles ur JOIN roles r ON ur.roleid = r.id';
-        $from_sql2 = 'log1, log_metadata, questions, users, user_roles ur JOIN roles r ON ur.roleid = r.id';
-        $roles_sql = " AND users.id = ur.userid AND r.name IN ('Student', 'graduate')";
+    if ($students_only) {
+        $studentssql = \log::get_student_only();
+        $from_sql = 'log' . $paper_type . ', log_metadata, questions, users ' . $studentssql;
+        $from_sql2 = 'log1, log_metadata, questions, users ' . $studentssql;
     } else {
         $from_sql = 'log' . $paper_type . ', log_metadata, questions, users';
-        $roles_sql = '';
+        $from_sql2 = 'log1, log_metadata, questions, users';
     }
 
     if ($paper_type == \assessment::TYPE_FORMATIVE) {
@@ -2134,8 +2132,8 @@ function capture_log_data(
                     FROM
                         $from_sql
                     WHERE
-                        log0.metadataID = log_metadata.id $roles_sql AND log0.q_id = questions.q_id AND paperID = ?
-                        AND grade LIKE ? AND users.id = log_metadata.userID $roles_sql
+                        log0.metadataID = log_metadata.id AND log0.q_id = questions.q_id AND paperID = ?
+                        AND grade LIKE ? AND users.id = log_metadata.userID
                         AND DATE_ADD(started, INTERVAL $time_int MINUTE) >= ? AND started <= ?
                         $student_modules_sql
                 ) UNION ALL (
@@ -2145,8 +2143,8 @@ function capture_log_data(
                     FROM
                         $from_sql2
                     WHERE
-                        log1.metadataID = log_metadata.id $roles_sql AND log1.q_id=questions.q_id AND paperID = ?
-                        AND grade LIKE ? AND users.id = log_metadata.userID $roles_sql
+                        log1.metadataID = log_metadata.id AND log1.q_id=questions.q_id AND paperID = ?
+                        AND grade LIKE ? AND users.id = log_metadata.userID
                         AND DATE_ADD(started, INTERVAL $progress_time_int MINUTE) >= ? AND started <= ?
                         " . str_replace('log0', 'log1', $student_modules_sql) . '
                 )';
@@ -2158,8 +2156,8 @@ function capture_log_data(
                 FROM
                     $from_sql
                 WHERE
-                    log$paper_type.metadataID = log_metadata.id $roles_sql AND log$paper_type.q_id = questions.q_id
-                    AND paperID = ? AND grade LIKE ? AND users.id = log_metadata.userID $roles_sql
+                    log$paper_type.metadataID = log_metadata.id AND log$paper_type.q_id = questions.q_id
+                    AND paperID = ? AND grade LIKE ? AND users.id = log_metadata.userID
                     AND DATE_ADD(started, INTERVAL $time_int MINUTE) >= ? AND started <= ?
                     $student_modules_sql";
         $result = $mysqli->prepare($sql);

@@ -45,7 +45,7 @@ $percent      = (isset($_GET['percent'])) ? $_GET['percent'] : 100;
 $ordering     = (isset($_GET['ordering'])) ? $_GET['ordering'] : 'asc';
 $absent       = (isset($_GET['absent'])) ? $_GET['absent'] : 0;
 $sortby       = (isset($_GET['sortby'])) ? $_GET['sortby'] : 'name';
-$studentsonly = (isset($_GET['studentsonly'])) ? $_GET['studentsonly'] : 1;
+$studentsonly = param::optional('studentsonly', 1, param::BOOLEAN);
 $repcourse    = (isset($_GET['repcourse'])) ? $_GET['repcourse'] : '%';
 $repmodule    = (isset($_GET['repmodule'])) ? $_GET['repmodule'] : '';
 
@@ -121,12 +121,19 @@ if (!isset($paper_type)) {
 $student_list = '';
 $time_int = \log::getStartInterval($paper_type);
 $progress_time_int = \log::getStartInterval(\assessment::TYPE_PROGRESS);
+
+if ($studentsonly) {
+    $rolesjoin = \log::get_student_only('log_metadata.userID');
+} else {
+    $rolesjoin = '';
+}
+
 if ($paper_type == \assessment::TYPE_FORMATIVE) {
     $sql = "(
                 SELECT 
                     log_metadata.userID, SUM(mark) AS total_mark 
                 FROM 
-                    log0, log_metadata 
+                    log0, log_metadata $rolesjoin
                 WHERE 
                     log0.metadataID = log_metadata.id AND paperID = ? 
                     AND DATE_ADD(started, INTERVAL $time_int MINUTE) >= ? AND started <= ? $user_sql 
@@ -136,7 +143,7 @@ if ($paper_type == \assessment::TYPE_FORMATIVE) {
                 SELECT
                     log_metadata.userID, sum(mark) AS total_mark 
                 FROM 
-                    log1, log_metadata 
+                    log1, log_metadata $rolesjoin
                 WHERE 
                     log1.metadataID = log_metadata.id AND paperID = ? 
                     AND DATE_ADD(started, INTERVAL $progress_time_int MINUTE) >= ? AND started <= ? $user_sql 
@@ -150,7 +157,7 @@ if ($paper_type == \assessment::TYPE_FORMATIVE) {
     $sql = "SELECT
                 log_metadata.userID, SUM(mark) AS total_mark 
             FROM
-                log$paper_type, log_metadata 
+                log$paper_type, log_metadata $rolesjoin
             WHERE
                 log$paper_type.metadataID = log_metadata.id AND paperID = ? 
                 AND DATE_ADD(started, INTERVAL $time_int MINUTE) >= ? AND started <= ? $user_sql 
@@ -184,6 +191,11 @@ if ($student_no > 0) {
     $hits = 0;
     $rowID = 0;
     // Capture the log data.
+    if ($studentsonly) {
+        $rolesjoin = \log::get_student_only('u.id');
+    } else {
+        $rolesjoin = '';
+    }
     if ($paper_type == \assessment::TYPE_FORMATIVE) {
         $sql = "
             (
@@ -191,24 +203,20 @@ if ($student_no > 0) {
                     username, lm.userID, title, surname, first_names, grade, gender, year, started, 
                     l.q_id, user_answer, q_type, screen, settings 
                 FROM 
-                    log0 l, log_metadata lm, questions q, users u, user_roles ur JOIN roles r ON ur.roleid = r.id 
+                    log0 l, log_metadata lm, questions q, users u $rolesjoin 
                 WHERE 
                     l.metadataID = lm.id AND l.q_id = q.q_id AND lm.userID IN ($student_list) 
-                    AND paperID = ? AND u.id = lm.userID 
-                    AND u.id = ur.userid
-                    AND r.name IN ('Student', 'graduate')
+                    AND paperID = ? AND u.id = lm.userID
                     AND grade LIKE ? AND DATE_ADD(started, INTERVAL $time_int MINUTE) >= ? AND started <= ?
             ) UNION ALL (
                  SELECT DISTINCT 
                     username, lm.userID, title, surname, first_names, grade, gender, year, started, 
                     l.q_id, user_answer, q_type, screen, settings 
                 FROM 
-                    log1 l, log_metadata lm, questions q, users u, user_roles ur JOIN roles r ON ur.roleid = r.id
+                    log1 l, log_metadata lm, questions q, users u $rolesjoin
                 WHERE 
                     l.metadataID = lm.id AND l.q_id = q.q_id AND lm.userID IN ($student_list) 
-                    AND paperID = ? AND u.id = lm.userID 
-                    AND u.id = ur.userid
-                    AND r.name IN ('Student', 'graduate')
+                    AND paperID = ? AND u.id = lm.userID
                     AND grade LIKE ? AND DATE_ADD(started, INTERVAL $progress_time_int MINUTE) >= ? AND started <= ?
             ) ORDER BY 
                 surname, first_names, started, userID
@@ -218,15 +226,13 @@ if ($student_no > 0) {
     } else {
         $sql = "
             SELECT DISTINCT 
-                username, log_metadata.userID, title, surname, first_names, grade, gender, year, started, l.q_id, 
+                username, lm.userID, title, surname, first_names, grade, gender, year, started, l.q_id, 
                 user_answer, q_type, screen, settings 
             FROM 
-                log$paper_type l, log_metadata lm, questions q, users u, user_roles ur JOIN roles r ON ur.roleid = r.id
+                log$paper_type l, log_metadata lm, questions q, users u $rolesjoin
             WHERE 
                 l.metadataID = lm.id AND l.q_id = q.q_id 
-                AND lm.userID IN ($student_list) AND paperID = ? AND u.id = lm.userID 
-                AND u.id = ur.userid
-                AND r.name IN ('Student', 'graduate')
+                AND lm.userID IN ($student_list) AND paperID = ? AND u.id = lm.userID
                 AND grade LIKE ? 
                 AND DATE_ADD(started, INTERVAL $time_int MINUTE) >= ? AND started <= ? 
             ORDER BY

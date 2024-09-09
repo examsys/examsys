@@ -34,6 +34,7 @@ $q_id       = check_var('q_id', 'GET', true, false, true);
 $startdate  = check_var('startdate', 'GET', true, false, true);
 $enddate    = check_var('enddate', 'GET', true, false, true);
 $phase      = check_var('phase', 'GET', true, false, true);
+$studentsonly = param::optional('studentsonly', 1, param::BOOLEAN);
 $marked     = ''; // init hiden marked
 $properties = PaperProperties::get_paper_properties_by_id($paperID, $mysqli, $string);
 $paper_type = $properties->get_paper_type();
@@ -118,6 +119,12 @@ echo draw_toprightmenu();
 
 $time_int = \log::getStartInterval($paper_type);
 
+if ($studentsonly) {
+    $rolesjoin = \log::get_student_only('u.id');
+} else {
+    $rolesjoin = '';
+}
+
 $candidate_no = 0;
 if (in_array($paper_type, [\assessment::TYPE_FORMATIVE, \assessment::TYPE_PROGRESS, \assessment::TYPE_SUMMATIVE])) {
     // Get how many students took the paper.
@@ -126,14 +133,12 @@ if (in_array($paper_type, [\assessment::TYPE_FORMATIVE, \assessment::TYPE_PROGRE
         lm.userID
     FROM
         log_metadata lm
-        INNER JOIN users u ON lm.userID = u.id,
-        user_roles ur JOIN roles r ON ur.roleid = r.id
+        INNER JOIN users u ON lm.userID = u.id
+        $rolesjoin
     WHERE 
         lm.paperID = ?
         AND DATE_ADD(lm.started, INTERVAL $time_int MINUTE) >= ?
         AND lm.started <= ?
-        AND u.id = ur.userid
-        AND r.name IN ('Student', 'graduate')
     ";
     $result = $mysqli->prepare($sql);
     $result->bind_param('iss', $paperID, $startdate, $enddate);
@@ -165,11 +170,9 @@ SELECT 0 AS logtype, l.id, lm.userID, l.user_answer, t.mark, l.q_id, comments, r
   FROM log0 l
   JOIN log_metadata lm ON l.metadataID = lm.id
   JOIN users u ON u.id = lm.userID
-  JOIN user_roles ur ON u.id = ur.userid
-  JOIN roles r ON ur.roleid = r.id
+  $rolesjoin
   LEFT JOIN textbox_marking t ON l.id = t.answer_id AND lm.paperID = t.paperID AND t.phase = ?
   WHERE lm.paperID = ?
-  AND r.name IN ('Student', 'graduate')
   AND l.q_id = ?
   AND DATE_ADD(lm.started, INTERVAL $time_int MINUTE) >= ?
   AND lm.started <= ? $marked $studentstr
@@ -178,11 +181,9 @@ SELECT 1 AS logtype, l.id, lm.userID, l.user_answer, t.mark, l.q_id, comments, r
   FROM log1 l
   JOIN log_metadata lm ON l.metadataID = lm.id
   JOIN users u ON u.id = lm.userID
-  JOIN user_roles ur ON u.id = ur.userid
-  JOIN roles r ON ur.roleid = r.id
+  $rolesjoin
   LEFT JOIN textbox_marking t ON l.id = t.answer_id AND lm.paperID = t.paperID AND t.phase = ?
   WHERE lm.paperID = ?
-  AND r.name IN ('Student', 'graduate')
   AND l.q_id = ?
   AND DATE_ADD(lm.started, INTERVAL $progress_time_int MINUTE) >= ?
   AND lm.started <= ? $marked $studentstr

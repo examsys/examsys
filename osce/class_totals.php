@@ -33,6 +33,7 @@ $demo = \demo::is_demo($userObject);
 $paperID   = check_var('paperID', 'GET', true, false, true);
 $startdate = check_var('startdate', 'GET', true, false, true);
 $enddate   = check_var('enddate', 'GET', true, false, true);
+$studentsonly = param::optional('studentsonly', 1, param::BOOLEAN);
 
 $percent      = (isset($_GET['percent'])) ? $_GET['percent'] : 100;
 $ordering     = (isset($_GET['ordering'])) ? $_GET['ordering'] : 'asc';
@@ -56,13 +57,13 @@ $report->load_answers();
 $paper_buffer = $report->get_paper_buffer();
 $question_no  = $report->get_question_no();
 
-$user_results = load_osce_results($propertyObj, $demo, $configObject, $question_no, $mysqli);
+$user_results = load_osce_results($propertyObj, $demo, $configObject, $question_no, $mysqli, $studentsonly);
 
 $report->set_user_results($user_results);
 $report->generate_stats();
 $user_no = $report->get_user_no();
 
-$q_medians = load_osce_medians($mysqli);
+$q_medians = load_osce_medians($mysqli, $studentsonly);
 
 if ($propertyObj->get_pass_mark() == 101) {
     $borderline_method = true;

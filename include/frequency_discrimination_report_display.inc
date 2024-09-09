@@ -163,14 +163,16 @@ function render_prefooter(int $ex_no, array $string, bool $graded)
  * @param string   $cfg_root_path Root install path
  * @param string[] $string        Language strings
  * @param render   $render        Rendering object
+ * @param bool $studentsonly If only students should be displayed
  */
-function render_footer($paperID, $startdate, $enddate, $language, $cfg_root_path, $string, $render)
+function render_footer($paperID, $startdate, $enddate, $language, $cfg_root_path, $string, $render, $studentsonly)
 {
     $dataset['name'] = 'dataset';
     $dataset['attributes']['id'] = $paperID;
     $dataset['attributes']['startdate'] = $startdate;
     $dataset['attributes']['enddate'] = $enddate;
     $dataset['attributes']['language'] = $language;
+    $dataset['attributes']['studentsonly'] = $studentsonly;
     $dataset['attributes']['rootpath'] = $cfg_root_path;
     $render->render($dataset, array(), 'dataset.html');
     // JS utils dataset.

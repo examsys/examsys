@@ -32,6 +32,8 @@ $enddate = check_var('enddate', 'GET', true, false, true, param::SQLDATETIME);
 $get_repyear = param::optional('repyear', null, param::INT, param::FETCH_GET);
 $get_repcourse = param::optional('repcourse', '%', param::TEXT, param::FETCH_GET);
 $complete = param::optional('completerpt', null, param::INT, param::FETCH_GET);
+$studentsonly = param::optional('studentsonly', 1, param::BOOLEAN);
+
 $bind_types = array();
 $queryParams[] = $paper_id;
 $bind_types[] = 'i';
@@ -105,10 +107,15 @@ $stmt->fetch();
 $stmt->close();
 
 $time_int = \log::getStartInterval(\assessment::TYPE_SURVEY);
+if ($studentsonly) {
+    $rolesjoin = \log::get_student_only('lm.userID');
+} else {
+    $rolesjoin = '';
+}
 $exclude = '';
 if ($complete == 1) {
     $stmt = $mysqli->prepare("SELECT lm.userID, COUNT(l.id) AS answer_no FROM log3 l 
-    INNER JOIN log_metadata lm ON l.metadataID = lm.id 
+    INNER JOIN log_metadata lm ON l.metadataID = lm.id $rolesjoin
     WHERE lm.paperID=? AND DATE_ADD(lm.started, INTERVAL $time_int MINUTE) >=? AND lm.started<=? GROUP BY lm.userID");
     $stmt->bind_param('iii', $paper_id, $startdate, $enddate);
     $stmt->execute();
@@ -125,15 +132,19 @@ if ($complete == 1) {
 $log_array = array();
 $hits = 0;
 
+if ($studentsonly) {
+    $rolesjoin = \log::get_student_only('u.id');
+} else {
+    $rolesjoin = '';
+}
+
 $sql = <<< SQL
 SELECT DISTINCT sid.student_id, u.username, u.title, u.surname, u.initials, u.grade,
 u.gender, lm.year, lm.started, l.q_id, l.user_answer, l.screen
 FROM log3 l INNER JOIN log_metadata lm ON l.metadataID = lm.id
-INNER JOIN users u ON lm.userID = u.id
-LEFT JOIN sid ON u.id = sid.userID,
-user_roles ur JOIN roles r ON ur.roleid = r.id
+INNER JOIN users u ON lm.userID = u.id $rolesjoin
+LEFT JOIN sid ON u.id = sid.userID
 WHERE lm.paperID = ? $repyear_sql
-AND u.id = ur.userid AND r.name IN ('Student', 'graduate')
 $exclude $repcourse_sql
 AND DATE_ADD(lm.started, INTERVAL $time_int MINUTE) >= ? AND lm.started <= ?
 SQL;

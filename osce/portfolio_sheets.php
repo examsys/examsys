@@ -29,6 +29,8 @@ require_once './osce.inc';
 $paperID      = check_var('paperID', 'GET', true, false, true);
 $startdate    = check_var('startdate', 'GET', true, false, true);
 $enddate      = check_var('enddate', 'GET', true, false, true);
+$studentsonly = param::optional('studentsonly', 1, param::BOOLEAN);
+
 // Get some paper properties
 $propertyObj = PaperProperties::get_paper_properties_by_id($paperID, $mysqli, $string);
 $paper              = $propertyObj->get_paper_title();
@@ -40,7 +42,7 @@ if ($userObject->has_role('Demo')) {
     $demo = false;
 }
 
-$user_results = load_osce_results($propertyObj, $demo, $configObject, $question_no, $mysqli);
+$user_results = load_osce_results($propertyObj, $demo, $configObject, $question_no, $mysqli, $studentsonly);
 $user_no = count($user_results);
 if ($propertyObj->get_pass_mark() == 101) {
     $borderline_method = true;

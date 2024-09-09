@@ -31,6 +31,7 @@ require '../include/staff_auth.inc';
 require '../include/errors.php';
 $q_id     = check_var('q_id', 'GET', true, false, true);
 $paperID  = check_var('paperID', 'GET', true, false, true);
+$studentsonly = param::optional('studentsonly', 1, param::BOOLEAN);
 // The number of the blank that is being considered, starting at 1.
 $part = param::optional('blank', 0, param::INT);
 // Get some paper properties
@@ -44,6 +45,12 @@ $result->bind_result($option_text);
 $result->fetch();
 $result->close();
 // Read user answers from log.
+if ($studentsonly) {
+    $rolesjoin = \log::get_student_only('lm.userID');
+} else {
+    $rolesjoin = '';
+}
+
 $log_answers = array();
 $time_int = \log::getStartInterval($paper_type);
 if ($paper_type == \assessment::TYPE_FORMATIVE) {
@@ -52,22 +59,18 @@ if ($paper_type == \assessment::TYPE_FORMATIVE) {
                 SELECT 
                     0 AS type, l.id, l.user_answer 
                 FROM 
-                    log0 l, log_metadata lm 
+                    log0 l, log_metadata lm $rolesjoin
                 WHERE 
                     l.metadataID = lm.id AND l.q_id = ? AND lm.paperID = ? 
-                    AND DATE_ADD(lm.started, INTERVAL $time_int MINUTE) >= ? AND lm.started <= ?  
-                    AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE 'Staff%'
-                    AND student_grade NOT LIKE '%nhs%'
+                    AND DATE_ADD(lm.started, INTERVAL $time_int MINUTE) >= ? AND lm.started <= ?
             ) UNION ALL (
                 SELECT 
                     1 AS type, l.id, l.user_answer 
                 FROM 
-                    log1 l, log_metadata lm 
+                    log1 l, log_metadata lm $rolesjoin
                 WHERE 
                     l.metadataID = lm.id AND l.q_id = ? AND lm.paperID = ?  
-                    AND DATE_ADD(lm.started, INTERVAL $progress_time_int MINUTE) >= ? AND lm.started <= ? 
-                    AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE 'Staff%' 
-                    AND student_grade NOT LIKE '%nhs%'
+                    AND DATE_ADD(lm.started, INTERVAL $progress_time_int MINUTE) >= ? AND lm.started <= ?
             )";
     $result = $mysqli->prepare($sql);
     $result->bind_param('iissiiss', $q_id, $paperID, $_GET['startdate'], $_GET['enddate'], $q_id, $paperID, $_GET['startdate'], $_GET['enddate']);
@@ -75,11 +78,10 @@ if ($paper_type == \assessment::TYPE_FORMATIVE) {
     $sql = "SELECT
                 $paper_type AS type, l.id, l.user_answer 
             FROM
-                log$paper_type l, log_metadata lm 
+                log$paper_type l, log_metadata lm $rolesjoin
             WHERE
                 l.metadataID = lm.id AND l.q_id = ? AND lm.paperID = ? AND DATE_ADD(lm.started, INTERVAL $time_int MINUTE) >= ? 
-                AND lm.started <= ? AND student_grade NOT LIKE 'university%' AND student_grade NOT LIKE 'Staff%' 
-                AND student_grade NOT LIKE '%nhs%'";
+                AND lm.started <= ?";
 
     $result = $mysqli->prepare($sql);
     $result->bind_param('iiss', $q_id, $paperID, $_GET['startdate'], $_GET['enddate']);
@@ -206,6 +208,7 @@ foreach ($unique_list as $word => $occurrance) {
 <input type="hidden" name="paperID" value="<?php echo $_GET['paperID']; ?>" />
 <input type="hidden" name="startdate" value="<?php echo $_GET['startdate']; ?>" />
 <input type="hidden" name="enddate" value="<?php echo $_GET['enddate']; ?>" />
+<input type="hidden" name="studentsonly" value="<?php echo $studentsonly ?>" />
 <div style="text-align:center"><input type="submit" name="submit" value="<?php echo $string['save']; ?>" class="ok" /><input type="button" name="cancel" value="<?php echo $string['cancel']; ?>" class="cancel" /></div>
 
 </form>

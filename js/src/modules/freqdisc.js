@@ -62,7 +62,8 @@ define(['jquery'], function ($) {
             var paperid = $('#dataset').attr('data-id');
             var startdate = $('#dataset').attr('data-startdate');
             var enddate = $('#dataset').attr('data-enddate');
-            window.open("blank_remark.php?q_id=" + q_id + "&blank=" + part_no + "&paperID=" + paperid + "&startdate=" + startdate + "&enddate=" + enddate,"remark","width=500,height="+(screen.height-80)+",left=20,top=10,scrollbars=yes,toolbar=no,location=no,directories=no,status=yes,menubar=no,resizable");
+            var studentsonly = $('#dataset').attr('data-studentsonly');
+            window.open("blank_remark.php?q_id=" + q_id + "&blank=" + part_no + "&paperID=" + paperid + "&startdate=" + startdate + "&enddate=" + enddate + "&studentsonly=" + studentsonly,"remark","width=500,height="+(screen.height-80)+",left=20,top=10,scrollbars=yes,toolbar=no,location=no,directories=no,status=yes,menubar=no,resizable");
             return false;
         };
 
@@ -75,7 +76,8 @@ define(['jquery'], function ($) {
             var paperid = $('#dataset').attr('data-id');
             var startdate = $('#dataset').attr('data-startdate');
             var enddate = $('#dataset').attr('data-enddate');
-            window.open("enhanced_calc_remark.php?q_id=" + q_id + "&paperID=" + paperid + "&startdate=" + startdate + "&enddate=" + enddate,"remark","width=850,height="+(screen.height-80)+",left=20,top=10,scrollbars=yes,toolbar=no,location=no,directories=no,status=yes,menubar=no,resizable");
+            var studentsonly = $('#dataset').attr('data-studentsonly');
+            window.open("enhanced_calc_remark.php?q_id=" + q_id + "&paperID=" + paperid + "&startdate=" + startdate + "&enddate=" + enddate + "&studentsonly=" + studentsonly,"remark","width=850,height="+(screen.height-80)+",left=20,top=10,scrollbars=yes,toolbar=no,location=no,directories=no,status=yes,menubar=no,resizable");
             return false;
         };
     }

@@ -28,6 +28,7 @@ require_once '../include/errors.php';
 $paperID        = check_var('paperID', 'GET', true, false, true);
 $startdate  = check_var('startdate', 'GET', true, false, true);
 $enddate        = check_var('enddate', 'GET', true, false, true);
+$studentsonly = param::optional('studentsonly', 1, param::BOOLEAN);
 ?>
 <!DOCTYPE html>
 <html>
@@ -103,21 +104,24 @@ $old_q_id = 0;
 $comment_flag = 1;
 $list_on = 0;
 $q_no = 0;
+if ($studentsonly) {
+    $rolesjoin = \log::get_student_only('u.id');
+} else {
+    $rolesjoin = '';
+}
 $time_int = \log::getStartInterval(\assessment::TYPE_SURVEY);
 $sql = <<< SQL
 SELECT DISTINCT l.screen, p.display_pos, q.theme, lm.started, u.username, u.surname, l.q_id, q.leadin, l.user_answer
 FROM log3 l INNER JOIN log_metadata lm ON l.metadataID = lm.id
 INNER JOIN papers p ON p.question = l.q_id AND p.screen = l.screen AND p.paper = lm.paperID
 INNER JOIN questions q ON l.q_id = q.q_id
-INNER JOIN users u ON lm.userID = u.id,
-user_roles ur JOIN roles r ON ur.roleid = r.id
+INNER JOIN users u ON lm.userID = u.id
+$rolesjoin
 WHERE p.paper = ?
 AND lm.student_grade LIKE ?
 AND lm.year LIKE ?
 AND q.q_type = 'textbox'
 AND DATE_ADD(lm.started, INTERVAL $time_int MINUTE) >= ? AND lm.started <= ?
-AND u.id = ur.userid
-AND r.name IN ('Student', 'graduate')
 ORDER BY l.screen, p.display_pos
 SQL;
 $result = $mysqli->prepare($sql);

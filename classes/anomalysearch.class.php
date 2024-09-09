@@ -118,11 +118,12 @@ class AnomalySearch extends Search
     protected function generateUserSQL(): SQLFragment
     {
         $sql = new SQLFragment();
-        $userjoin = 'LEFT JOIN';
+
+        $roles = '';
         if ($this->studentonly) {
-            $userjoin = 'JOIN';
+            $roles = \log::get_student_only('u.id');
         }
-        $sql->sql = $userjoin . ' sid s ON s.userID = u.id';
+        $sql->sql = $roles . 'LEFT JOIN sid s ON s.userID = u.id';
         return $sql;
     }
 

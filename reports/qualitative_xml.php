@@ -26,6 +26,7 @@
 require '../include/staff_auth.inc';
 require_once '../include/errors.php';
 $paperID = check_var('paperID', 'GET', true, false, true);
+$studentsonly = param::optional('studentsonly', 1, param::BOOLEAN);
 // Get some paper properties
   $propertyObj = PaperProperties::get_paper_properties_by_id($paperID, $mysqli, $string);
 header('Pragma: public');
@@ -64,21 +65,25 @@ $comment_flag = 1;
 $startdate = $_GET['startdate'];
 $enddate = $_GET['enddate'];
 $q_no = 0;
+if ($studentsonly) {
+    $rolesjoin = \log::get_student_only('u.id');
+} else {
+    $rolesjoin = '';
+}
 $time_int = \log::getStartInterval(\assessment::TYPE_SURVEY);
 $sql = <<< SQL
 SELECT DISTINCT l.screen, p.display_pos, q.theme, u.username, l.q_id, REPLACE(q.leadin,'&','&amp;') AS leadin, REPLACE(l.user_answer,'&','&amp;') AS user_answer
 FROM log3 l INNER JOIN log_metadata lm ON l.metadataID = lm.id
 INNER JOIN papers p ON p.question = l.q_id AND p.screen = l.screen AND p.paper = lm.paperID
 INNER JOIN questions q ON l.q_id = q.q_id
-INNER JOIN users u ON lm.userID = u.id,
-user_roles ur JOIN roles r ON ur.roleid = r.id
+INNER JOIN users u ON lm.userID = u.id
+$rolesjoin
 WHERE p.paper = ?
 AND lm.student_grade LIKE ?
 AND lm.year LIKE ?
 AND q.q_type = 'textbox'
 AND DATE_ADD(lm.started, INTERVAL $time_int MINUTE) >= ? AND lm.started <= ?
 AND u.id = ur.userid
-AND r.name IN ('Student', 'graduate')
 ORDER BY l.screen, p.display_pos
 SQL;
 $result = $mysqli->prepare($sql);
