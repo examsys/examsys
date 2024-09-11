@@ -128,6 +128,8 @@ class Anomaly
      * @param int $papertype The type of paper
      * @param int $startdate datetime to start from
      * @param int $enddate datetime to end at
+     * @param int $limit The maximum number of results to return per page
+     * @param int $page The page of anomaly results to display (starts at 1)
      * @param bool $studentsonly flag to indicate if only student results required
      * @return array
      */
