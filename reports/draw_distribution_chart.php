@@ -142,7 +142,8 @@ if (is_null($plotuser)) {
 
   // Label y axis
 for ($label = 0; $label <= $points; $label += $label_inc) {
-    ImageLine($Image, 41, 260 - ($label * $gap), 740 + $negative, 260 - ($label * $gap), $ltgrey);
+    $line_y = floor(260 - ($label * $gap));
+    ImageLine($Image, 41, $line_y, 740 + $negative, $line_y, $ltgrey);
 }
 
 if ($negative > 10) {
@@ -168,31 +169,39 @@ if ($quartile1 and $quartile2 and $quartile3) {
     for ($i = 1; $i <= 3; $i++) {
         $quartile = round(${'quartile' . $i}, 2);
         imagesetstyle($Image, $dashedline);
-        imageline($Image, ($quartile * 7) + 40 + $negative, 20, ($quartile * 7) + 40 + $negative, 260, IMG_COLOR_STYLED);
+        $line_x = floor($quartile * 7) + 40 + $negative;
+        imageline($Image, $line_x, 20, $line_x, 260, IMG_COLOR_STYLED);
     }
 }
+
+// Calculate the quartile positions, they must be an integer.
+$quartile1_x = floor(round($quartile1, 2) * 7) + 40 + $negative;
+$quartile2_x = floor(round($quartile2, 2) * 7) + 40 + $negative;
+$quartile3_x = floor(round($quartile3, 2) * 7) + 40 + $negative;
+
 imagesetstyle($Image, $dashedline);
 imageline($Image, ($min_mark * 7) + 38 + $negative, 20, ($min_mark * 7) + 38 + $negative, 260, IMG_COLOR_STYLED);
 imagesetstyle($Image, $dashedline);
 imageline($Image, ($max_mark * 7) + 43 + $negative, 20, ($max_mark * 7) + 43 + $negative, 260, IMG_COLOR_STYLED);
-ImageRectangle($Image, (round($quartile1, 2) * 7) + 40 + $negative, 1, (round($quartile3, 2) * 7) + 40 + $negative, 13, $blue);
+ImageRectangle($Image, $quartile1_x, 1, $quartile3_x, 13, $blue);
 
-ImageLine($Image, (round($quartile2, 2) * 7) + 40 + $negative, 1, (round($quartile2, 2) * 7) + 40 + $negative, 12, $blue);                // Median vertical
+ImageLine($Image, $quartile2_x, 1, $quartile2_x, 12, $blue); // Median vertical
 
-ImageLine($Image, ($min_mark * 7) + 38 + $negative, 1, ($min_mark * 7) + 38 + $negative, 13, $blue);                // Min vertical
-ImageLine($Image, ($min_mark * 7) + 38 + $negative, 7, (round($quartile1, 2) * 7) + 40 + $negative, 7, $blue);   // Min whisker
+ImageLine($Image, ($min_mark * 7) + 38 + $negative, 1, ($min_mark * 7) + 38 + $negative, 13, $blue); // Min vertical
+ImageLine($Image, ($min_mark * 7) + 38 + $negative, 7, $quartile1_x, 7, $blue); // Min whisker
 
-ImageLine($Image, ($max_mark * 7) + 43 + $negative, 1, ($max_mark * 7) + 43 + $negative, 13, $blue);                // Max vertical
-ImageLine($Image, ($max_mark * 7) + 43 + $negative, 7, (round($quartile3, 2) * 7) + 40 + $negative, 7, $blue);   // Max whisker
+ImageLine($Image, ($max_mark * 7) + 43 + $negative, 1, ($max_mark * 7) + 43 + $negative, 13, $blue); // Max vertical
+ImageLine($Image, ($max_mark * 7) + 43 + $negative, 7, $quartile3_x, 7, $blue); // Max whisker
 
 for ($i = $scale_start; $i <= 100; $i++) {
     if (isset($mydata[$i]) and $mydata[$i] > 0) {
+        $data_y = floor(260 - ($mydata[$i] * $gap));
         if ($i < $passmark) {
-            ImageFilledRectangle($Image, ($i * 7) + 38 + $negative, 260 - ($mydata[$i] * $gap), ($i * 7) + 43 + $negative, 260, $red);
+            ImageFilledRectangle($Image, ($i * 7) + 38 + $negative, $data_y, ($i * 7) + 43 + $negative, 260, $red);
         } elseif ($i >= $passmark and $i < $distinction_mark) {
-            ImageFilledRectangle($Image, ($i * 7) + 38 + $negative, 260 - ($mydata[$i] * $gap), ($i * 7) + 43 + $negative, 260, $black);
+            ImageFilledRectangle($Image, ($i * 7) + 38 + $negative, $data_y, ($i * 7) + 43 + $negative, 260, $black);
         } else {
-            ImageFilledRectangle($Image, ($i * 7) + 38 + $negative, 260 - ($mydata[$i] * $gap), ($i * 7) + 43 + $negative, 260, $dkgreen);
+            ImageFilledRectangle($Image, ($i * 7) + 38 + $negative, $data_y, ($i * 7) + 43 + $negative, 260, $dkgreen);
         }
     }
 }
@@ -220,12 +229,14 @@ if (!is_null($plotuser)) {
 
 // Label y axis
 for ($label = 0; $label <= $points; $label += $label_inc) {
+    $text_y = floor(265 - ($label * $gap));
     if ($label < 10) {
-        imagettftext($Image, 10, 0, 35, 265 - ($label * $gap), $black, $font, $label);
+        imagettftext($Image, 10, 0, 35, $text_y, $black, $font, $label);
     } else {
-        imagettftext($Image, 10, 0, 30, 265 - ($label * $gap), $black, $font, $label);
+        imagettftext($Image, 10, 0, 30, $text_y, $black, $font, $label);
     }
-    ImageLine($Image, 45, 260 - ($label * $gap), 50, 260 - ($label * $gap), $dkgrey);
+    $line_y = floor(260 - ($label * $gap));
+    ImageLine($Image, 45, $line_y, 50, $line_y, $dkgrey);
 }
 
 header('Content-Type: image/png');
