@@ -32,9 +32,9 @@ $passmark = param::required('pmk', param::INT, param::FETCH_GET);
 $distinction_mark = param::required('distinction_mark', param::INT, param::FETCH_GET);
 $adjust = param::optional('adjust', false, param::BOOLEAN, param::FETCH_GET);
 $plotuser = param::optional('plotuser', null, param::INT, param::FETCH_GET);
-$quartile1 = param::optional('q1', 0, param::INT, param::FETCH_GET);
-$quartile2 = param::optional('q2', 0, param::INT, param::FETCH_GET);
-$quartile3 = param::optional('q3', 0, param::INT, param::FETCH_GET);
+$quartile1 = param::optional('q1', 0, param::FLOAT, param::FETCH_GET);
+$quartile2 = param::optional('q2', 0, param::FLOAT, param::FETCH_GET);
+$quartile3 = param::optional('q3', 0, param::FLOAT, param::FETCH_GET);
 
 $mydata = file($configObject->get('cfg_tmpdir') . $userObject->get_user_ID() . '_distribution.dat');
 $mydata = unserialize($mydata[0]);
