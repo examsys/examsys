@@ -168,9 +168,9 @@ while ($result->fetch()) {
             SELECT 
                 mark 
             FROM 
-                log$paper_type, log_metadata, users $rolesjoin
+                log$paper_type, log_metadata, users u $rolesjoin
             WHERE 
-                log$paper_type.metadataID = log_metadata.id AND log_metadata.userID = users.id 
+                log$paper_type.metadataID = log_metadata.id AND log_metadata.userID = u.id 
                 AND paperID = ? AND q_id = ?
             ";
             $marked = $mysqli->prepare($sql);

@@ -121,7 +121,7 @@ if (isset($_POST['submit'])) {
     }
 
     if ($studentsonly) {
-        $rolesjoin = \log::get_student_only('u.id');
+        $rolesjoin = \log::get_student_only();
     } else {
         $rolesjoin = '';
     }
