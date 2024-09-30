@@ -82,4 +82,21 @@ class RServeEngineTest extends EngineTest
         Engine::resetConnection();
         parent::tearDownAfterClass();
     }
+
+    /**
+     * Tests that the calculation engine can handle bad data.
+     *
+     * @param array $variables An array with the key being the variable name and
+     *                          the value being the value that should be used in the formula.
+     * @param string $formula The formula used to calculate the answer.
+     * @return void
+     * @dataProvider dataCalculationCorrectAnsError
+     */
+    public function testCalculationCorrectAnsError(array $variables, string $formula)
+    {
+        $engine = $this->getEngine();
+        $this->expectException(Rserve_Exception::class);
+        $this->expectExceptionMessage('unable to evaluate');
+        $engine->calculate_correct_ans($variables, $formula);
+    }
 }

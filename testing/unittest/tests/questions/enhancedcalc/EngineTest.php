@@ -149,6 +149,29 @@ class EngineTest extends \testing\unittest\UnitTest
     }
 
     /**
+     * Tests that the calculation engine can handle bad data.
+     *
+     * @param array $variables An array with the key being the variable name and
+     *                          the value being the value that should be used in the formula.
+     * @param string $formula The formula used to calculate the answer.
+     * @return void
+     * @dataProvider dataCalculationCorrectAnsError
+     */
+    public function testCalculationCorrectAnsError(array $variables, string $formula)
+    {
+        $engine = $this->getEngine();
+        $this->assertEquals('ERROR', $engine->calculate_correct_ans($variables, $formula));
+    }
+
+    public function dataCalculationCorrectAnsError(): array
+    {
+        return [
+            // Test that we can handle whn there is an error in a variable.
+            [['$A' => 4, '$B' => 'ERROR'], '$A / $B'],
+        ];
+    }
+
+    /**
      * Tests that we check is answers are correct.
      *
      * @param string $user_answer The users answer.

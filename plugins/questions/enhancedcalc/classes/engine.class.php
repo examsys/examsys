@@ -233,6 +233,9 @@ class Engine
         } catch (\DivisionByZeroError $e) {
             // Return the same answer we would get from RServe when a division by 0 happens.
             $correctanswer = 'Inf';
+        } catch (\Error $e) {
+            // Catch any parsing errors.
+            $correctanswer = 'ERROR';
         }
 
         return (string)$correctanswer;
