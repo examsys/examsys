@@ -303,6 +303,8 @@ if ($propertyObj->get_calculator()) {
 
 $tmp_questions_array = $propertyObj->build_paper($is_question_preview_mode, $get_qid, $q_number);
 foreach ($tmp_questions_array as $question) {
+    // Ensure that random and keyword questions do not duplicate questions from the paper.
+    $used_questions[$question['q_id']] = true;
     if ($current_screen == $question['screen'] and file_exists($cfg_web_root . 'plugins/questions/' . $question['q_type'] . '/js/paperinit.min.js')) {
         $headerdata['scripts'][$question['q_type']] = '/plugins/questions/' . $question['q_type'] . '/js/paperinit.min.js';
     }
