@@ -1955,8 +1955,8 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
                 $matching_height = explode('|', $paper[$question]['q_media_height']);
                 $matching_alt = explode('|', $paper[$question]['q_media_alt']);
                 $matching_num = explode('|', $paper[$question]['q_media_num']);
-                $matching_media_correct_fback = explode('|', $paper[$question]['correct_fback']);
-                $matching_media_incorrect_fback = explode('|', $paper[$question]['incorrect_fback']);
+                $matching_media_correct_fback = explode('|', $paper[$question]['correct_fback'] ?? '');
+                $matching_media_incorrect_fback = explode('|', $paper[$question]['incorrect_fback'] ?? '');
 
                 $matching_media = array();
                 for ($i = 0; $i < count($matching_source); $i++) {
