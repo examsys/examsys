@@ -2188,6 +2188,7 @@ function display_feedback($propertyObj, $temp_userID, $log_type, $userObj, $log_
                 $matching_media = explode('|', $paper[$question]['q_media']);
                 $matching_media_width = explode('|', $paper[$question]['q_media_width']);
                 $matching_media_height = explode('|', $paper[$question]['q_media_height']);
+                $matching_media_alt = explode('|', $paper[$question]['q_media_alt']);
                 $matching_media_correct_fback = explode('|', $paper[$question]['correct_fback'] ?? '');
                 $matching_media_incorrect_fback = explode('|', $paper[$question]['incorrect_fback'] ?? '');
                 if (isset($paper[$question]['user_answer'])) {
