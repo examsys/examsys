@@ -98,7 +98,20 @@ function quick_links($string)
         $student_no = 0;
         $old_letter = '';
 
-        $result = $mysqli->prepare('SELECT users.id, surname, first_names, title, student_id, started FROM (modules_student, users, sid) LEFT JOIN log4_overall ON users.id = log4_overall.userID AND q_paper = ? WHERE modules_student.userID = users.id AND users.id = sid.userID AND modules_student.idMod IN (' . implode(',', array_keys($modules)) . ') AND calendar_year = ? ORDER BY surname, initials');
+        $rolesjoin = \log::get_student_only();
+        $sql = "SELECT
+                    users.id, surname, first_names, title, student_id, started 
+                FROM
+                    (modules_student, users $rolesjoin)
+                    LEFT JOIN sid ON users.id = sid.userID
+                    LEFT JOIN log4_overall ON users.id = log4_overall.userID AND q_paper = ? 
+                WHERE
+                    modules_student.userID = users.id
+                    AND modules_student.idMod IN (" . implode(',', array_keys($modules)) . ')
+                    AND calendar_year = ?
+                ORDER BY surname, initials';
+
+        $result = $mysqli->prepare($sql);
         $result->bind_param('is', $paperID, $calendar_year);
         $result->execute();
         $result->store_result();
