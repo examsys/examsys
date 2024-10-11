@@ -352,10 +352,10 @@ if ($hits > 0) {
     $result->store_result();
     $result->bind_result($screen, $q_id, $q_type, $theme, $scenario, $leadin, $option_text, $display_method, $correct);
     while ($result->fetch()) {
-        $theme = str_replace('&nbsp;', ' ', $theme);
-        $scenario = str_replace('&nbsp;', ' ', $scenario);
-        $leadin = str_replace('&nbsp;', ' ', $leadin);
-        $option_text = str_replace('&nbsp;', ' ', $option_text);
+        $theme = str_replace('&nbsp;', ' ', $theme ?? '');
+        $scenario = str_replace('&nbsp;', ' ', $scenario ?? '');
+        $leadin = str_replace('&nbsp;', ' ', $leadin ?? '');
+        $option_text = str_replace('&nbsp;', ' ', $option_text ?? '');
 
         // Replace & characters.
         $theme = str_replace('&', '&amp;', $theme);
