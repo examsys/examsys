@@ -164,7 +164,7 @@ while ($result->fetch()) {
 }
 $result->close();
 $mysqli->close();
-if ($old_userID != '') {
+if ($old_userID != 0) {
     echo '<w:p wsp:rsidR="00472B21" wsp:rsidRDefault="00472B21" wsp:rsidP="00472B21"><w:pPr><w:spacing w:after="0"/><w:rPr><w:b/></w:rPr></w:pPr></w:p><w:p wsp:rsidR="000E6B7A" wsp:rsidRPr="000E6B7A" wsp:rsidRDefault="00472B21" wsp:rsidP="00ED0EA8"><w:pPr><w:rPr><w:b/></w:rPr></w:pPr><w:r wsp:rsidRPr="000E6B7A"><w:rPr><w:b/></w:rPr><w:t>Feedback:</w:t></w:r></w:p>';
     echo '<w:p wsp:rsidR="000E6B7A" wsp:rsidRPr="00A11D0F" wsp:rsidRDefault="00273482" wsp:rsidP="00ED0EA8"><w:r><w:t>' . StringUtils::wordToUtf8($old_feedback) . '</w:t></w:r></w:p>';
     echo '</w:tbl></wx:sub-section>';
