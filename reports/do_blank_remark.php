@@ -85,7 +85,7 @@ if ($paper_type == \assessment::TYPE_FORMATIVE) {
                     log1 l, log_metadata lm $rolesjoin
                 WHERE 
                     l.metadataID = lm.id AND l.q_id = ? AND lm.paperID = ? 
-                    AND DATE_ADD(lm.started, INTERVAL $progress_time_int MINUTE)d >= ? AND lm.started <= ?
+                    AND DATE_ADD(lm.started, INTERVAL $progress_time_int MINUTE) >= ? AND lm.started <= ?
             )";
     $result = $mysqli->prepare($sql);
     $result->bind_param('iissiiss', $q_id, $paperID, $startdate, $enddate, $q_id, $paperID, $startdate, $enddate);
