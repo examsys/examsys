@@ -742,7 +742,8 @@ function compile_question_data($screen_no, $exclusions, $q_no, $q_id, $theme, $s
         'display_method' => $display_method,
         'screen_no' => $screen_no,
         'std' => $std,
-        'excluded' => $exclusions->is_question_excluded($q_id)
+        'excluded' => $exclusions->is_question_excluded($q_id),
+        'parts' => [],
     );
 
     $tmp_std_array = (!empty($std)) ? explode(',', $std) : array();
