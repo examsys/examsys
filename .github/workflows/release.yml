@@ -1,0 +1,117 @@
+name: Build release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      # We will need to bump this when changing the version of PHP ExamSys supports.
+      image: uonlearningtech/examsys-php-apache:8.3-nodebug
+      volumes:
+        - ${{ github.workspace }}:/var/www/html
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout ExamSys
+        uses: actions/checkout@v7
+        with:
+          path: examsys
+
+      # We will build them in an extras directory, which we will clean up after moving the built editors.
+      - name: Checkout equation editor
+        uses: actions/checkout@v7
+        with:
+          repository: examsys/examsys-tinymce-plugin-maths-equation-editor
+          path: extras/maths-equation-editor
+
+      - name: Install dependencies equation editor
+        uses: borales/actions-yarn@v5
+        with:
+          dir: extras/maths-equation-editor
+          cmd: install
+
+      - name: Build equation editor
+        uses: borales/actions-yarn@v5
+        with:
+          dir: extras/maths-equation-editor
+          cmd: build
+
+      - name: Checkout ruby editor
+        uses: actions/checkout@v7
+        with:
+          repository: examsys/examsys-tinymce-plugin-ruby-annotation
+          path: extras/ruby-annotation
+
+      - name: Install dependencies ruby editor
+        uses: borales/actions-yarn@v5
+        with:
+          dir: extras/ruby-annotation
+          cmd: install
+
+      - name: Build ruby editor
+        uses: borales/actions-yarn@v5
+        with:
+          dir: extras/ruby-annotation
+          cmd: build
+
+      - name: Install text editor plugins
+        run: |
+          mv extras/maths-equation-editor/dist/maths-equation-editor examsys/plugins/texteditor/plugin_tinymce_texteditor/js/plugins
+          mv extras/ruby-annotation/dist/ruby-annotation examsys/plugins/texteditor/plugin_tinymce_texteditor/js/plugins
+          rm -rf extras
+
+      - name: Install composer dependencies
+        run: |
+          curl -O https://getcomposer.org/composer.phar
+          php composer.phar install --no-dev --ignore-platform-reqs
+          rm composer.phar
+        working-directory: ./examsys
+
+      - name: Install npm dependencies
+        run: |
+          npm install --production
+          npm install --production --prefix plugins/texteditor/plugin_tinymce_texteditor
+        working-directory: ./examsys
+
+      - name: Run grunt
+        run: grunt
+        working-directory: ./examsys
+
+      - name: Promote translations to master branch
+        # This step should only run in the main repository.
+        if: ${{ github.repository == 'examsys/examsys' }}
+        uses: crowdin/github-action@v3
+        with:
+          upload_sources: true
+          upload_translations: false
+          download_translations: false
+          push_translations: false
+          push_sources: false
+          create_pull_request: false
+          upload_sources_args: --branch=master
+        env:
+          # A numeric ID, found at https://crowdin.com/project/<projectName>/tools/api
+          CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
+          # Visit https://crowdin.com/settings#api-key to create this token
+          CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
+
+      - name: Create ExamSys release files
+        run: |
+          cp .github/workflows/exclude.txt exclude.txt
+          tar -czf examsys-${{ github.ref_name }}.tar.gz --exclude-from exclude.txt * .htaccess
+        working-directory: ./examsys
+
+      - name: Create release
+        uses: softprops/action-gh-release@v3
+        with:
+          files: examsys-${{ github.ref_name }}.tar.gz
+          draft: true
+          prerelease: false
+          working_directory: ./examsys
+          generate_release_notes: false
