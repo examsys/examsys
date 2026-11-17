@@ -56,7 +56,8 @@ class CM_UoNCM implements iCMAPI
         $this->_moodle_base_url = $configObject->get_setting('core', 'cfg_moodle_base_url') . '/local/uonlib/findcourse.php?m=%s&y=%s&nid=%s';
         $url = $this->_root_url . "api/find_json?search={$moduleID}&type=module&where=attrib&attrib=code&output=module_session_obs";
         $req = new restful($db);
-        $options = [CURLOPT_TIMEOUT => 10,
+        $options = [
+            CURLOPT_TIMEOUT => 20,
             CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_SSL_VERIFYHOST => false,
             CURLOPT_HTTPHEADER => ['Accept: application/json'],
