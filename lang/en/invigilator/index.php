@@ -70,7 +70,7 @@ $string['remotemidexamlist'] = '<ol>
 $string['postexam'] = 'Post-Exam';
 $string['postexamlist'] = '<ol>
     <li><img src="../artwork/green_speech.gif" width="15" height="14" /> "That is the end of the exam. Please navigate to the last screen and click \'Finish\'."</li>
-    <li><img src="../artwork/green_speech.gif" width="15" height="14" /> "Click \'Close Window\' and then log out of Rog&#333."</li>
+    <li><img src="../artwork/green_speech.gif" width="15" height="14" /> "Click \'Close Window\' and then log out of ExamSys."</li>
     <li>Collect up log in instructions for reuse</li>
     <li>Collect and dispose of blank paper</li>
     <li>Ensure <strong>all</strong> workstations are logged out</li>
